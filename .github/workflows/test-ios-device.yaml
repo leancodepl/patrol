@@ -70,7 +70,6 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ matrix.flutter_version }}
-          cache: true
 
       - name: Preload Flutter artifacts
         run: flutter precache
