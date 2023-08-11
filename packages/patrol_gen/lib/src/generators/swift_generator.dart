@@ -1,3 +1,4 @@
+import 'package:patrol_gen/src/generators/swift_telegraph_generator.dart';
 import 'package:patrol_gen/src/schema.dart';
 
 class SwiftOutputConfig {
@@ -11,6 +12,15 @@ class SwiftGenerator {
     final buffer = StringBuffer()..write(_contentPrefix(outputConfig));
 
     schema.messages.forEach((e) => buffer.writeln(_createMessage(e)));
+
+    for (var service in schema.services) {
+      if (service.swift.needsServer) {
+        buffer.writeln(_createServer(service));
+      }
+      if (service.swift.needsClient) {
+        buffer.writeln(_createClient(service));
+      }
+    }
 
     return buffer.toString();
   }
@@ -35,6 +45,13 @@ struct ${message.name}: Codable {
 $fields
 }
 ''';
+  }
+
+  String _createServer(Service service) =>
+      SwiftTelegraphGenerator().generateServer(service);
+
+  String _createClient(Service service) {
+    return '';
   }
 
   String _transformDartType(String type) {
