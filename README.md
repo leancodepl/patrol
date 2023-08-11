@@ -131,7 +131,7 @@ To run widget tests, you can continue to use `flutter test`.
 See [packages/patrol][github_patrol].
 
 [patrol_badge]: https://img.shields.io/pub/v/patrol?label=patrol
-[patrol_finders_badge]: https://img.shields.io/pub/v/patrol?label=patrol_finders
+[patrol_finders_badge]: https://img.shields.io/pub/v/patrol_finders?label=patrol_finders
 [patrol_cli_badge]: https://img.shields.io/pub/v/patrol_cli?label=patrol_cli
 [leancode_lint_badge]: https://img.shields.io/badge/code%20style-leancode__lint-black
 [docs_page_badge]: https://img.shields.io/badge/documentation-docs.page-34C4AC.svg?style
