@@ -1,0 +1,18 @@
+name: patrol_gen
+description: >
+  Generate contracts for all languages
+version: 1.0.0
+homepage: https://patrol.leancode.co
+repository: https://github.com/leancodepl/patrol
+issue_tracker: https://github.com/leancodepl/patrol/issues
+
+environment:
+  sdk: '>=2.18.0 <4.0.0'
+
+dependencies:
+  meta: ^1.7.0
+  path: ^1.8.2
+  analyzer: ^6.1.0
+  
+dev_dependencies:
+  leancode_lint: ^3.0.0
