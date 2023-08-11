@@ -1,7 +1,7 @@
-import 'package:example/loading_screen.dart';
-import 'package:example/overlay_screen.dart';
-import 'package:example/scrolling_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:patrol_finders_example/loading_screen.dart';
+import 'package:patrol_finders_example/overlay_screen.dart';
+import 'package:patrol_finders_example/scrolling_screen.dart';
 
 void main() {
   runApp(const ExampleApp());

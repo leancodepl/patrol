@@ -1,7 +1,7 @@
-import 'package:example/keys.dart';
-import 'package:example/main.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol_finders/patrol_finders.dart';
+import 'package:patrol_finders_example/keys.dart';
+import 'package:patrol_finders_example/main.dart';
 
 void main() {
   patrolWidgetTest('drags to a widget', ($) async {
