@@ -170,7 +170,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ['3.3.x', '3.7.x', '3.10.0']
+        flutter-version: ['3.3.x', '3.7.x', '3.10.x']
 
     defaults:
       run:
@@ -197,7 +197,7 @@ jobs:
         run: flutter analyze
 
       - name: dart format
-        if: success() || failure()
+        if: ${{ (success() || failure()) && contains('3.10.x', matrix.flutter-version) }}
         run: dart format --set-exit-if-changed .
 
       - name: flutter pub publish --dry-run
