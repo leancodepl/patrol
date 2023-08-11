@@ -14,10 +14,10 @@ class MessageField {
 }
 
 class Message {
-  const Message(this.name, this.properties);
+  const Message(this.name, this.fields);
 
   final String name;
-  final List<MessageField> properties;
+  final List<MessageField> fields;
 }
 
 class Endpoint {
