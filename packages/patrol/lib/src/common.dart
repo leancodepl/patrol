@@ -173,11 +173,14 @@ DartTestGroup createDartTestGroup(
     if (entry is Group) {
       // print('PATROL_DEBUG: Added group: ${entry.name}');
       groupDTO.groups.add(createDartTestGroup(entry));
-    } else if (entry is Test && entry.name != 'patrol_test_explorer') {
-      // throw StateError('Expected group, got test: ${entry.name}');
-      // Ignore the bogus test that is used to discover the test structure.
-      continue;
     } else if (entry is Test) {
+      if (entry.name == 'patrol_test_explorer') {
+        // throw StateError('Expected group, got test: ${entry.name}');
+        // Ignore the bogus test that is used to discover the test structure.
+        continue;
+      }
+
+      print('PATROL_DEBUG: Found test! ${entry.name}}');
       groupDTO.tests.add(DartTestCase(name: entry.name));
     } else {
       throw StateError('invalid state');
