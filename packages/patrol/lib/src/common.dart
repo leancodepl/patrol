@@ -19,6 +19,7 @@ import 'constants.dart' as constants;
 import 'custom_finders/patrol_integration_tester.dart';
 
 /// Signature for callback to [patrolTest].
+// ignore: deprecated_member_use_from_same_package
 typedef PatrolTesterCallback = Future<void> Function(PatrolTester $);
 
 /// Like [testWidgets], but with support for Patrol custom finders.
@@ -40,6 +41,7 @@ typedef PatrolTesterCallback = Future<void> Function(PatrolTester $);
 /// ```
 ///
 /// [bindingType] specifies the binding to use. [bindingType] is ignored if
+// ignore: deprecated_member_use_from_same_package
 /// [nativeAutomation] is false.
 @isTest
 void patrolTest(

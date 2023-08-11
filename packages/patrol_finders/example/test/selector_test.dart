@@ -1,7 +1,7 @@
-import 'package:example/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol_finders/patrol_finders.dart';
+import 'package:patrol_finders_example/main.dart';
 
 void main() {
   patrolWidgetTest('Counter increments smoke test', ($) async {

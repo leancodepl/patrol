@@ -1,7 +1,7 @@
-import 'package:example/loading_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol_finders/patrol_finders.dart';
+import 'package:patrol_finders_example/loading_screen.dart';
 
 void main() {
   patrolWidgetTest('shows hello text when loading completes', ($) async {

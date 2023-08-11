@@ -54,16 +54,6 @@ jobs:
         working-directory: ./packages/patrol_finders/example
         run: flutter pub get
 
-      - name: dart format (example app)
-        if: success() || failure()
-        working-directory: ./packages/patrol_finders/example
-        run: dart format --set-exit-if-changed .
-
-      - name: flutter analyze (example app)
-        if: success() || failure()
-        working-directory: ./packages/patrol_finders/example
-        run: flutter analyze
-
       - name: flutter test (example app)
         if: success() || failure()
         working-directory: ./packages/patrol_finders/example

@@ -1,6 +1,6 @@
-import 'package:example/main.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol_finders/patrol_finders.dart';
+import 'package:patrol_finders_example/main.dart';
 
 void main() {
   patrolWidgetTest('correctly handles non-hittestable widgets', ($) async {

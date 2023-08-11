@@ -1,12 +1,12 @@
-import 'package:example/loading_screen.dart';
-import 'package:example/location_screen.dart';
-import 'package:example/notifications_screen.dart';
-import 'package:example/overlay_screen.dart';
-import 'package:example/permissions_screen.dart';
-import 'package:example/scrolling_screen.dart';
-import 'package:example/webview_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
+import 'package:patrol_example/loading_screen.dart';
+import 'package:patrol_example/location_screen.dart';
+import 'package:patrol_example/notifications_screen.dart';
+import 'package:patrol_example/overlay_screen.dart';
+import 'package:patrol_example/permissions_screen.dart';
+import 'package:patrol_example/scrolling_screen.dart';
+import 'package:patrol_example/webview_screen.dart';
 import 'package:timezone/data/latest.dart' as tz_data;
 import 'package:timezone/timezone.dart' as tz;
 
