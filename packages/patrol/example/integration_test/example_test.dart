@@ -1,7 +1,7 @@
 import 'common.dart';
 
 void main() {
-  group('example_test.dart', () {
+  group('top level group in file', () {
     group('alpha', () {
       patrol('first', ($) async {
         await _testBody($);

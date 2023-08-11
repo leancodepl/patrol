@@ -160,19 +160,20 @@ if you use nativeAutomation with false, we recommend using patrolWidgetTest()'''
 /// The initial [parentGroup] is the implicit, unnamed top-level [Group] present
 /// in every test case.
 @internal
-DartTestGroup createDartTestGroup(
-  Group parentGroup, {
-  String prefix = '',
-}) {
-  final groupName = parentGroup.name.replaceFirst(prefix, '').trim();
-  final groupDTO = DartTestGroup(name: groupName);
-
-  print('PATROL_DEBUG: Added top-level group: ${groupDTO.name}');
+DartTestGroup createDartTestGroup(Group parentGroup, {String name = ''}) {
+  final groupDTO = DartTestGroup(name: name);
 
   for (final entry in parentGroup.entries) {
+    // Trim names of current groups
+
+    var name = entry.name;
+    if (parentGroup.name.isNotEmpty) {
+      name = deduplicateGroupEntryName(parentGroup.name, entry.name);
+    }
+
     if (entry is Group) {
-      // print('PATROL_DEBUG: Added group: ${entry.name}');
-      groupDTO.groups.add(createDartTestGroup(entry));
+      groupDTO.groups.add(createDartTestGroup(entry, name: name));
+      print('PATROL_DEBUG: Added group: $name');
     } else if (entry is Test) {
       if (entry.name == 'patrol_test_explorer') {
         // throw StateError('Expected group, got test: ${entry.name}');
@@ -180,9 +181,11 @@ DartTestGroup createDartTestGroup(
         continue;
       }
 
-      print('PATROL_DEBUG: Found test! ${entry.name}}');
-      groupDTO.tests.add(DartTestCase(name: entry.name));
+      groupDTO.tests.add(DartTestCase(name: name));
+      print('PATROL_DEBUG: Added test: $name');
     } else {
+      // This should really never happen, because Group and Test are the only
+      // subclasses of GroupEntry.
       throw StateError('invalid state');
     }
   }
@@ -201,4 +204,11 @@ void printGroupStructure(DartTestGroup group, int indentation) {
   for (final subgroup in group.groups) {
     printGroupStructure(subgroup, indentation + 5);
   }
+}
+
+String deduplicateGroupEntryName(String parentName, String currentName) {
+  return currentName.substring(
+    parentName.length + 1,
+    currentName.length,
+  );
 }
