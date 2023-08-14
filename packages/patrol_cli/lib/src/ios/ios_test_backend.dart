@@ -236,7 +236,7 @@ class IOSTestBackend {
     bool absolutePath = true,
   }) async {
     final targetPlatform = real ? 'iphoneos' : 'iphonesimulator';
-    final glob = Glob('${scheme}_$targetPlatform$sdkVersion*.xctestrun');
+    final glob = Glob('${scheme}_*$targetPlatform$sdkVersion*.xctestrun');
 
     var root = 'build/ios_integ/Build/Products';
     if (absolutePath) {
