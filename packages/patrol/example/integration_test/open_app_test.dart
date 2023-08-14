@@ -32,7 +32,7 @@ void main() {
     if (Platform.isIOS) {
       browserId = 'com.apple.mobilesafari';
     } else if (Platform.isAndroid) {
-      browserId = 'com.google.chrome';
+      browserId = 'com.android.chrome';
     }
 
     await createApp($);

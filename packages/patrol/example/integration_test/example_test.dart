@@ -6,7 +6,7 @@ void main() {
       patrol('first', ($) async {
         await _testBody($);
       });
-      patrol('Second', ($) async {
+      patrol('second', ($) async {
         await _testBody($);
       });
     });
