@@ -36,9 +36,9 @@ class DartTestGroupExtensionsTest {
         // then
         assertContentEquals(
             listOf(
-                dartTestCase { name = "example_test.increments counter, exits the app, and comes back" },
-                dartTestCase { name = "open_app_test.open maps" },
-                dartTestCase { name = "webview_test.interacts with the LeanCode website in a webview" },
+                dartTestCase { name = "example_test increments counter, exits the app, and comes back" },
+                dartTestCase { name = "open_app_test open maps" },
+                dartTestCase { name = "webview_test interacts with the LeanCode website in a webview" },
             ),
             dartTestFiles,
         )
@@ -91,13 +91,13 @@ class DartTestGroupExtensionsTest {
         assertContentEquals(
             listOf(
                 // example_test
-                dartTestCase { name = "example_test.top level group in file.alpha.first" },
-                dartTestCase { name = "example_test.top level group in file.alpha.second" },
-                dartTestCase { name = "example_test.top level group in file.bravo.first" },
-                dartTestCase { name = "example_test.top level group in file.bravo.second" },
+                dartTestCase { name = "example_test top level group in file alpha first" },
+                dartTestCase { name = "example_test top level group in file alpha second" },
+                dartTestCase { name = "example_test top level group in file bravo first" },
+                dartTestCase { name = "example_test top level group in file bravo second" },
                 // open_app_test
-                dartTestCase { name = "open_app_test.open maps" },
-                dartTestCase { name = "open_app_test.open browser" },
+                dartTestCase { name = "open_app_test open maps" },
+                dartTestCase { name = "open_app_test open browser" },
             ),
             dartTestFiles,
         )

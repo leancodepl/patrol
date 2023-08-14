@@ -201,14 +201,14 @@ fun DartTestGroup.listTestsFlat(parentGroupName: String = ""): List<DartTestCase
             throw IllegalStateException("Test $test has no named parent group")
         }
 
-        tests.add(test.copy { name = "$parentGroupName.${test.name}" })
+        tests.add(test.copy { name = "$parentGroupName ${test.name}" })
     }
 
     for (group in groupsList) {
         if (parentGroupName.isEmpty()) {
             tests.addAll(group.listTestsFlat(parentGroupName = group.name))
         } else {
-            tests.addAll(group.listTestsFlat(parentGroupName = "$parentGroupName.${group.name}"))
+            tests.addAll(group.listTestsFlat(parentGroupName = "$parentGroupName ${group.name}"))
         }
     }
 
