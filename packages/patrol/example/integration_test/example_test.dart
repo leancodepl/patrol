@@ -1,3 +1,6 @@
+import 'package:patrol/src/extensions.dart';
+import 'package:test_api/src/backend/invoker.dart';
+
 import 'common.dart';
 
 void main() {
@@ -24,6 +27,10 @@ void main() {
 
 Future<void> _testBody(PatrolTester $) async {
   await createApp($);
+
+  final testName = Invoker.current!.fullCurrentTestName();
+  await $(#textField).enterText(testName);
+
   await $.native.pressHome();
   await $.native.openApp();
 }

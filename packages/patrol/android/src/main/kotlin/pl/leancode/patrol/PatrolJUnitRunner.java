@@ -56,7 +56,8 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
      * This default behavior doesn't work with Flutter apps. That's because in Flutter
      * apps, the tests are in the app itself, so running only the instrumentation
      * during the initial run is not enough.
-     * The app must also be run, and queried for Dart tests That's what this method does.
+     * The app must also be run, and queried for Dart tests.
+     * That's what this method does.
      * </p>
      */
     public void setUp(Class<?> activityClass) {
