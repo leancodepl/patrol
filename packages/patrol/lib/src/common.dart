@@ -7,6 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:meta/meta.dart';
 import 'package:patrol/src/binding.dart';
+import 'package:patrol/src/extensions.dart';
 import 'package:patrol/src/native/contracts/contracts.pb.dart';
 import 'package:patrol/src/native/contracts/contracts.pbgrpc.dart';
 import 'package:patrol/src/native/native.dart';
@@ -110,9 +111,10 @@ if you use nativeAutomation with false, we recommend using patrolWidgetTest()'''
         // "integration_test/examples" directory, we assume that the name of the
         // immediate parent group is "examples.example_test".
 
-        final parentGroupName = Invoker.current!.liveTest.groups.last.name;
+        final testName = Invoker.current!.fullCurrentTestName();
+
         final requestedToExecute = await patrolBinding.patrolAppService
-            .waitForExecutionRequest(parentGroupName);
+            .waitForExecutionRequest(testName);
 
         if (!requestedToExecute) {
           return;

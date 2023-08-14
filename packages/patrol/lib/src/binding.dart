@@ -8,10 +8,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/common.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:patrol/patrol.dart';
+import 'package:patrol/src/extensions.dart';
 // ignore: implementation_imports, depend_on_referenced_packages
 import 'package:test_api/src/backend/invoker.dart';
+
 // ignore: implementation_imports, depend_on_referenced_packages
-import 'package:test_api/src/backend/live_test.dart';
 
 import 'constants.dart' as constants;
 
@@ -45,7 +46,7 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
   PatrolBinding() {
     final oldTestExceptionReporter = reportTestException;
     reportTestException = (details, testDescription) {
-      final currentDartTestFile = _currentDartTestFile;
+      final currentDartTestFile = _currentDartTest;
       if (currentDartTestFile != null) {
         assert(!constants.hotRestartEnabled);
         _testResults[currentDartTestFile] =
@@ -60,7 +61,7 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
         return;
       }
 
-      _currentDartTestFile = Invoker.current!.liveTest.parentGroupName;
+      _currentDartTest = Invoker.current!.fullCurrentTestName();
     });
 
     tearDown(() async {
@@ -82,17 +83,26 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
       final invoker = Invoker.current!;
 
       final nameOfRequestedTest = await patrolAppService.testExecutionRequested;
-      if (nameOfRequestedTest == _currentDartTestFile) {
+
+      if (nameOfRequestedTest == _currentDartTest) {
+        logger(
+          'finished test $_currentDartTest. Will report its status back to the native side',
+        );
+
         final passed = invoker.liveTest.state.result.isPassing;
         logger(
-          'tearDown(): test "$testName" in group "$_currentDartTestFile", passed: $passed',
+          'tearDown(): test "$testName" in group "$_currentDartTest", passed: $passed',
         );
         await patrolAppService.markDartTestAsCompleted(
-          dartFileName: _currentDartTestFile!,
+          dartFileName: _currentDartTest!,
           passed: passed,
-          details: _testResults[_currentDartTestFile!] is Failure
-              ? (_testResults[_currentDartTestFile!] as Failure?)?.details
+          details: _testResults[_currentDartTest!] is Failure
+              ? (_testResults[_currentDartTest!] as Failure?)?.details
               : null,
+        );
+      } else {
+        logger(
+          'finished test $_currentDartTest, but it was not requested, so its status will not be reported back to the native side',
         );
       }
     });
@@ -127,7 +137,7 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
   static PatrolBinding get instance => BindingBase.checkInstance(_instance);
   static PatrolBinding? _instance;
 
-  String? _currentDartTestFile;
+  String? _currentDartTest;
 
   /// Keys are the test descriptions, and values are either [_success] or
   /// a [Failure].
@@ -164,7 +174,7 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
   @override
   void attachRootWidget(Widget rootWidget) {
     assert(
-      (_currentDartTestFile != null) != (constants.hotRestartEnabled),
+      (_currentDartTest != null) != (constants.hotRestartEnabled),
       '_currentDartTestFile can be null if and only if Hot Restart is enabled',
     );
 
@@ -185,7 +195,7 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
                   left: 4,
                 ),
                 child: Text(
-                  _currentDartTestFile!,
+                  _currentDartTest!,
                   textDirection: TextDirection.ltr,
                   style: const TextStyle(color: Colors.red),
                 ),
@@ -196,11 +206,4 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
       );
     }
   }
-}
-
-extension on LiveTest {
-  /// Get the direct parent group of the currently running test.
-  ///
-  /// The group's name is the name of the Dart test file the test is defined in.
-  String get parentGroupName => groups.last.name;
 }
