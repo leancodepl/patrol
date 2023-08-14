@@ -1,6 +1,6 @@
 import 'package:permission_handler/permission_handler.dart';
 
-import 'common.dart';
+import '../common.dart';
 
 const _timeout = Duration(seconds: 5); // to avoid timeouts on CI
 
