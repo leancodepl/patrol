@@ -67,15 +67,17 @@ void main() {
         String scheme = 'Runner',
         bool simulator = false,
         String? arch,
+        String? testPlan,
       }) {
         test(description, () async {
-          final targetPlatform = simulator ? 'iphonesimulator' : 'iphoneos';
-          var targetArch = arch;
-          if (targetArch != null) {
-            targetArch = '-$targetArch';
+          final target = simulator ? 'iphonesimulator' : 'iphoneos';
+          if (arch != null) {
+            arch = '-$arch';
           }
 
-          final name = '${scheme}_${targetPlatform}16.2$targetArch.xctestrun';
+          final xcTestPlan = testPlan != null ? '-$testPlan' : '';
+
+          final name = '${scheme}_$xcTestPlan${target}16.2$arch.xctestrun';
 
           fs
               .file('build/ios_integ/Build/Products/$name')
@@ -101,6 +103,12 @@ void main() {
       testXcTestRunPath(
         'finds xctestrun with single arch on iphoneos',
         arch: 'arm64',
+      );
+
+      testXcTestRunPath(
+        'finds xctestrun with single arch on iphoneos (test plan)',
+        arch: 'arm64',
+        testPlan: 'TestPlan',
       );
 
       testXcTestRunPath(
@@ -160,6 +168,14 @@ void main() {
         arch: 'arm64-x86_64',
         simulator: true,
         scheme: 'dev',
+      );
+
+      testXcTestRunPath(
+        'finds xctestrun with double arch and custom scheme on iphonesimulator (test plan)',
+        arch: 'arm64-x86_64',
+        simulator: true,
+        scheme: 'dev',
+        testPlan: 'SomeTestPlan',
       );
     });
   });
