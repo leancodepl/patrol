@@ -214,22 +214,3 @@ fun DartTestGroup.listTestsFlat(parentGroupName: String = ""): List<DartTestCase
 
     return tests
 }
-
-fun DartTestGroup.listFlatDartFiles(): List<String> {
-    val files = mutableListOf<String>()
-    for (group in groupsList) {
-        files.addAll(group.listGroups())
-    }
-
-    return files
-}
-
-// Recursively lists groups in this group.
-private fun DartTestGroup.listGroups(): List<String> {
-    val groups = mutableListOf<String>(this.name)
-    for (group in groupsList) {
-        groups.addAll(group.listGroups())
-    }
-
-    return groups
-}

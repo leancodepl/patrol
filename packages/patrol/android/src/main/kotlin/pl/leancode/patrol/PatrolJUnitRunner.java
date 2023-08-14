@@ -11,9 +11,12 @@ import android.os.Bundle;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.AndroidJUnitRunner;
 import io.grpc.StatusRuntimeException;
+import pl.leancode.patrol.contracts.Contracts.DartTestCase;
 import pl.leancode.patrol.contracts.Contracts.DartTestGroup;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import static pl.leancode.patrol.contracts.Contracts.RunDartTestResponse;
@@ -107,9 +110,14 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
 
         try {
             final DartTestGroup dartTestGroup = patrolAppServiceClient.listDartTests();
-            Object[] dartTestFiles = ContractsExtensionsKt.listFlatDartFiles(dartTestGroup).toArray();
-            Logger.INSTANCE.i(TAG + "Got Dart tests: " + Arrays.toString(dartTestFiles));
-            return dartTestFiles;
+            List<DartTestCase> dartTestCases = ContractsExtensionsKt.listTestsFlat(dartTestGroup, "");
+            List<String> dartTestCaseNamesList = new ArrayList<>();
+            for (DartTestCase dartTestCase : dartTestCases) {
+                dartTestCaseNamesList.add(dartTestCase.getName());
+            }
+            Object[] dartTestCaseNames = dartTestCaseNamesList.toArray();
+            Logger.INSTANCE.i(TAG + "Got Dart tests: " + Arrays.toString(dartTestCaseNames));
+            return dartTestCaseNames;
         } catch (StatusRuntimeException e) {
             Logger.INSTANCE.e(TAG + "Failed to list Dart tests: ", e);
             throw e;
