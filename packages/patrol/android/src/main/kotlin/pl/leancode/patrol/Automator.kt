@@ -222,7 +222,7 @@ class Automator private constructor() {
         uiSelector: UiSelector,
         bySelector: BySelector,
         index: Int,
-        keyboardBehavior: KeyboardBehavior,
+        keyboardBehavior: KeyboardBehavior
     ) {
         Logger.d("enterText($text): $uiSelector, $bySelector")
 
