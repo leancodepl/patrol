@@ -97,10 +97,15 @@
       _ data: String,
       byText text: String,
       atIndex index: Int,
-      inApp bundleId: String
+      inApp bundleId: String,
+      showKeyboard: Bool
     ) async throws {
+      var data = data
+      if showKeyboard {
+        data = "\(data)\n"
+      }
+
       let view = "text field with text \(format: text) at index \(index) in app \(bundleId)"
-      var data = "\(data)\n"
 
       try await runAction("entering text \(format: data) into \(view)") {
         let app = try self.getApp(withBundleId: bundleId)
@@ -152,9 +157,13 @@
     func enterText(
       _ data: String,
       byIndex index: Int,
-      inApp bundleId: String
+      inApp bundleId: String,
+      showKeyboard: Bool
     ) async throws {
-      var data = "\(data)\n"
+      var data = data
+      if showKeyboard {
+        data = "\(data)\n"
+      }
 
       try await runAction("entering text \(format: data) by index \(index) in app \(bundleId)") {
         let app = try self.getApp(withBundleId: bundleId)
