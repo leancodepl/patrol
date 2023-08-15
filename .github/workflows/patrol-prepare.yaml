@@ -118,7 +118,6 @@ jobs:
           brew update
           brew install swift-format
           brew install clang-format
-          brew install xcbeautify
 
       # Disabled because of generated protobuf code
       #- name: swift-format lint
@@ -161,7 +160,7 @@ jobs:
             -only-testing RunnerTests \
             -configuration Debug \
             -sdk iphoneos -destination 'platform=iOS Simulator,name=iPhone 14' \
-            -derivedDataPath ../build/ios_unit | xcbeautify
+            -derivedDataPath ../build/ios_unit
 
   prepare-flutter:
     name: Flutter ${{ matrix.flutter-version }}
