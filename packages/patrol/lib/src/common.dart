@@ -185,7 +185,6 @@ DartTestGroup createDartTestGroup(
           level: level + 1,
         ),
       );
-      print('PATROL_DEBUG: Added group: $name');
     } else if (entry is Test) {
       if (entry.name == 'patrol_test_explorer') {
         // throw StateError('Expected group, got test: ${entry.name}');
@@ -198,7 +197,6 @@ DartTestGroup createDartTestGroup(
       }
 
       groupDTO.tests.add(DartTestCase(name: name));
-      print('PATROL_DEBUG: Added test: $name');
     } else {
       // This should really never happen, because Group and Test are the only
       // subclasses of GroupEntry.
@@ -207,6 +205,15 @@ DartTestGroup createDartTestGroup(
   }
 
   return groupDTO;
+}
+
+/// Allows for retrieving the name of a GroupEntry by stripping the names of all ancestor groups.
+@internal
+String deduplicateGroupEntryName(String parentName, String currentName) {
+  return currentName.substring(
+    parentName.length + 1,
+    currentName.length,
+  );
 }
 
 void printGroupStructure(DartTestGroup group, int indentation) {
@@ -220,11 +227,4 @@ void printGroupStructure(DartTestGroup group, int indentation) {
   for (final subgroup in group.groups) {
     printGroupStructure(subgroup, indentation + 5);
   }
-}
-
-String deduplicateGroupEntryName(String parentName, String currentName) {
-  return currentName.substring(
-    parentName.length + 1,
-    currentName.length,
-  );
 }

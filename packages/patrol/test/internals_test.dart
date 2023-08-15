@@ -1,7 +1,7 @@
 // ignore_for_file: invalid_use_of_internal_member, depend_on_referenced_packages, implementation_imports
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/src/common.dart'
-    show createDartTestGroup, deduplicateGroupEntryName, printGroupStructure;
+    show createDartTestGroup, deduplicateGroupEntryName;
 import 'package:patrol/src/native/contracts/contracts.pbgrpc.dart';
 import 'package:test_api/src/backend/group.dart';
 import 'package:test_api/src/backend/invoker.dart';
@@ -92,8 +92,6 @@ void main() {
           ),
         ),
       );
-
-      printGroupStructure(dartTestGroup, 0);
     });
   });
 
