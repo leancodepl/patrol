@@ -85,7 +85,7 @@ Future<void> main() async {
     final dartTestGroup = createDartTestGroup(topLevelGroup);
     testExplorationCompleter.complete(dartTestGroup);
     print('PATROL_DEBUG: group structure:');
-    printGroupStructure(dartTestGroup, 0);
+    printGroupStructure(dartTestGroup);
   });
 
   // START: GENERATED TEST GROUPS

@@ -4,6 +4,9 @@ import 'package:test_api/src/backend/invoker.dart';
 import 'common.dart';
 
 void main() {
+  patrol('at the beginning, haha!', ($) async {
+    await _testBody($);
+  });
   group('top level group in file', () {
     group('alpha', () {
       patrol('first', ($) async {
@@ -12,6 +15,10 @@ void main() {
       patrol('second', ($) async {
         await _testBody($);
       });
+    });
+
+    patrol('in the middle, haha!', ($) async {
+      await _testBody($);
     });
 
     group('bravo', () {

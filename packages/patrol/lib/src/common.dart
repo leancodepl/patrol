@@ -221,7 +221,9 @@ String deduplicateGroupEntryName(String parentName, String currentName) {
   );
 }
 
-void printGroupStructure(DartGroupEntry group, int indentation) {
+/// Recursively prints the structure of the test suite.
+@internal
+void printGroupStructure(DartGroupEntry group, {int indentation = 0}) {
   final indent = ' ' * indentation;
   print("$indent-- group: '${group.name}'");
 
@@ -230,7 +232,7 @@ void printGroupStructure(DartGroupEntry group, int indentation) {
       print("$indent     -- test: '${entry.name}'");
     } else {
       for (final subgroup in entry.entries) {
-        printGroupStructure(subgroup, indentation + 5);
+        printGroupStructure(subgroup, indentation: indentation + 5);
       }
     }
   }
