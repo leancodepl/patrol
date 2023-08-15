@@ -9,6 +9,35 @@
 import 'dart:core' as $core;
 import 'package:protobuf/protobuf.dart' as $pb;
 
+class DartGroupEntry_GroupEntryType extends $pb.ProtobufEnum {
+  static const DartGroupEntry_GroupEntryType GROUP =
+      DartGroupEntry_GroupEntryType._(
+          0,
+          const $core.bool.fromEnvironment('protobuf.omit_enum_names')
+              ? ''
+              : 'GROUP');
+  static const DartGroupEntry_GroupEntryType TEST =
+      DartGroupEntry_GroupEntryType._(
+          1,
+          const $core.bool.fromEnvironment('protobuf.omit_enum_names')
+              ? ''
+              : 'TEST');
+
+  static const $core.List<DartGroupEntry_GroupEntryType> values =
+      <DartGroupEntry_GroupEntryType>[
+    GROUP,
+    TEST,
+  ];
+
+  static final $core.Map<$core.int, DartGroupEntry_GroupEntryType> _byValue =
+      $pb.ProtobufEnum.initByValue(values);
+  static DartGroupEntry_GroupEntryType? valueOf($core.int value) =>
+      _byValue[value];
+
+  const DartGroupEntry_GroupEntryType._($core.int v, $core.String n)
+      : super(v, n);
+}
+
 class RunDartTestResponse_Result extends $pb.ProtobufEnum {
   static const RunDartTestResponse_Result SUCCESS =
       RunDartTestResponse_Result._(

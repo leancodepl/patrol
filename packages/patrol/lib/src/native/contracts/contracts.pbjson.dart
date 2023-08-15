@@ -18,7 +18,7 @@ const ListDartTestsResponse$json = const {
       '3': 1,
       '4': 1,
       '5': 11,
-      '6': '.patrol.DartTestGroup',
+      '6': '.patrol.DartGroupEntry',
       '10': 'group'
     },
   ],
@@ -26,45 +26,45 @@ const ListDartTestsResponse$json = const {
 
 /// Descriptor for `ListDartTestsResponse`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List listDartTestsResponseDescriptor = $convert.base64Decode(
-    'ChVMaXN0RGFydFRlc3RzUmVzcG9uc2USKwoFZ3JvdXAYASABKAsyFS5wYXRyb2wuRGFydFRlc3RHcm91cFIFZ3JvdXA=');
-@$core.Deprecated('Use dartTestGroupDescriptor instead')
-const DartTestGroup$json = const {
-  '1': 'DartTestGroup',
+    'ChVMaXN0RGFydFRlc3RzUmVzcG9uc2USLAoFZ3JvdXAYASABKAsyFi5wYXRyb2wuRGFydEdyb3VwRW50cnlSBWdyb3Vw');
+@$core.Deprecated('Use dartGroupEntryDescriptor instead')
+const DartGroupEntry$json = const {
+  '1': 'DartGroupEntry',
   '2': const [
     const {'1': 'name', '3': 1, '4': 1, '5': 9, '10': 'name'},
+    const {'1': 'fullName', '3': 2, '4': 1, '5': 9, '10': 'fullName'},
     const {
-      '1': 'tests',
-      '3': 2,
-      '4': 3,
-      '5': 11,
-      '6': '.patrol.DartTestCase',
-      '10': 'tests'
-    },
-    const {
-      '1': 'groups',
+      '1': 'type',
       '3': 3,
+      '4': 1,
+      '5': 14,
+      '6': '.patrol.DartGroupEntry.GroupEntryType',
+      '10': 'type'
+    },
+    const {
+      '1': 'entries',
+      '3': 4,
       '4': 3,
       '5': 11,
-      '6': '.patrol.DartTestGroup',
-      '10': 'groups'
+      '6': '.patrol.DartGroupEntry',
+      '10': 'entries'
     },
   ],
+  '4': const [DartGroupEntry_GroupEntryType$json],
 };
 
-/// Descriptor for `DartTestGroup`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List dartTestGroupDescriptor = $convert.base64Decode(
-    'Cg1EYXJ0VGVzdEdyb3VwEhIKBG5hbWUYASABKAlSBG5hbWUSKgoFdGVzdHMYAiADKAsyFC5wYXRyb2wuRGFydFRlc3RDYXNlUgV0ZXN0cxItCgZncm91cHMYAyADKAsyFS5wYXRyb2wuRGFydFRlc3RHcm91cFIGZ3JvdXBz');
-@$core.Deprecated('Use dartTestCaseDescriptor instead')
-const DartTestCase$json = const {
-  '1': 'DartTestCase',
+@$core.Deprecated('Use dartGroupEntryDescriptor instead')
+const DartGroupEntry_GroupEntryType$json = const {
+  '1': 'GroupEntryType',
   '2': const [
-    const {'1': 'name', '3': 1, '4': 1, '5': 9, '10': 'name'},
+    const {'1': 'GROUP', '2': 0},
+    const {'1': 'TEST', '2': 1},
   ],
 };
 
-/// Descriptor for `DartTestCase`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List dartTestCaseDescriptor =
-    $convert.base64Decode('CgxEYXJ0VGVzdENhc2USEgoEbmFtZRgBIAEoCVIEbmFtZQ==');
+/// Descriptor for `DartGroupEntry`. Decode as a `google.protobuf.DescriptorProto`.
+final $typed_data.Uint8List dartGroupEntryDescriptor = $convert.base64Decode(
+    'Cg5EYXJ0R3JvdXBFbnRyeRISCgRuYW1lGAEgASgJUgRuYW1lEhoKCGZ1bGxOYW1lGAIgASgJUghmdWxsTmFtZRI5CgR0eXBlGAMgASgOMiUucGF0cm9sLkRhcnRHcm91cEVudHJ5Lkdyb3VwRW50cnlUeXBlUgR0eXBlEjAKB2VudHJpZXMYBCADKAsyFi5wYXRyb2wuRGFydEdyb3VwRW50cnlSB2VudHJpZXMiJQoOR3JvdXBFbnRyeVR5cGUSCQoFR1JPVVAQABIICgRURVNUEAE=');
 @$core.Deprecated('Use runDartTestRequestDescriptor instead')
 const RunDartTestRequest$json = const {
   '1': 'RunDartTestRequest',

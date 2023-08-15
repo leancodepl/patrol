@@ -3,26 +3,25 @@ package pl.leancode.patrol
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.BySelector
 import androidx.test.uiautomator.UiSelector
-import pl.leancode.patrol.contracts.Contracts.DartTestCase
-import pl.leancode.patrol.contracts.Contracts.DartTestGroup
+import pl.leancode.patrol.contracts.Contracts.DartGroupEntry
 import pl.leancode.patrol.contracts.Contracts.Selector
 import pl.leancode.patrol.contracts.copy
 
 private fun Selector.isEmpty(): Boolean {
     return (
-        !hasText() &&
-            !hasTextStartsWith() &&
-            !hasTextContains() &&
-            !hasClassName() &&
-            !hasContentDescription() &&
-            !hasContentDescriptionStartsWith() &&
-            !hasContentDescriptionContains() &&
-            !hasResourceId() &&
-            !hasInstance() &&
-            !hasEnabled() &&
-            !hasFocused() &&
-            !hasPkg()
-        )
+            !hasText() &&
+                    !hasTextStartsWith() &&
+                    !hasTextContains() &&
+                    !hasClassName() &&
+                    !hasContentDescription() &&
+                    !hasContentDescriptionStartsWith() &&
+                    !hasContentDescriptionContains() &&
+                    !hasResourceId() &&
+                    !hasInstance() &&
+                    !hasEnabled() &&
+                    !hasFocused() &&
+                    !hasPkg()
+            )
 }
 
 fun Selector.toUiSelector(): UiSelector {
@@ -189,26 +188,26 @@ fun Selector.toBySelector(): BySelector {
 /**
  * Flattens the structure of a DartTestSuite into a flat list of tests.
  */
-fun DartTestGroup.listTestsFlat(parentGroupName: String = ""): List<DartTestCase> {
-    val tests = mutableListOf<DartTestCase>()
+fun DartGroupEntry.listTestsFlat(parentGroupName: String = ""): List<DartGroupEntry> {
+    val tests = mutableListOf<DartGroupEntry>()
 
     // FIXME: This doesn't preserve the order of groups and tests in Dart!
     //  We should iterate over "group entries", instead of iterating over "groups" and "tests".
 
-    for (test in testsList) {
-        if (parentGroupName.isEmpty()) {
-            // This case is invalid, because every test will have at least 1 named group - its filename.
-            throw IllegalStateException("Test $test has no named parent group")
-        }
+    for (test in entriesList) {
+        if (test.type == DartGroupEntry.GroupEntryType.TEST) {
+            if (parentGroupName.isEmpty()) {
+                // This case is invalid, because every test will have at least 1 named group - its filename.
+                throw IllegalStateException("Test $test has no named parent group")
+            }
 
-        tests.add(test.copy { name = "$parentGroupName ${test.name}" })
-    }
-
-    for (group in groupsList) {
-        if (parentGroupName.isEmpty()) {
-            tests.addAll(group.listTestsFlat(parentGroupName = group.name))
-        } else {
-            tests.addAll(group.listTestsFlat(parentGroupName = "$parentGroupName ${group.name}"))
+            tests.add(test.copy { name = "$parentGroupName ${test.name}" })
+        } else if (test.type == DartGroupEntry.GroupEntryType.GROUP) {
+            if (parentGroupName.isEmpty()) {
+                tests.addAll(test.listTestsFlat(parentGroupName = test.name))
+            } else {
+                tests.addAll(test.listTestsFlat(parentGroupName = "$parentGroupName ${test.name}"))
+            }
         }
     }
 
