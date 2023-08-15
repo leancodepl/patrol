@@ -16,6 +16,7 @@ import androidx.test.uiautomator.UiObject2
 import androidx.test.uiautomator.UiObjectNotFoundException
 import androidx.test.uiautomator.UiSelector
 import pl.leancode.patrol.contracts.Contracts
+import pl.leancode.patrol.contracts.Contracts.EnterTextRequest.KeyboardBehavior
 import pl.leancode.patrol.contracts.nativeView
 import pl.leancode.patrol.contracts.notification
 import kotlin.math.roundToInt
@@ -192,7 +193,7 @@ class Automator private constructor() {
         delay()
     }
 
-    fun enterText(text: String, index: Int, showKeyboard: Boolean) {
+    fun enterText(text: String, index: Int, keyboardBehavior: KeyboardBehavior) {
         Logger.d("enterText(text: $text, index: $index)")
 
         val selector = By.clazz(EditText::class.java)
@@ -205,18 +206,24 @@ class Automator private constructor() {
         val uiSelector = UiSelector().className(EditText::class.java).instance(index)
         val uiObject = uiDevice.findObject(uiSelector)
 
-        if (showKeyboard) {
+        if (keyboardBehavior == KeyboardBehavior.SHOW_AND_DISMISS) {
             uiObject.click()
         }
 
         uiObject.text = text
 
-        if (showKeyboard) {
+        if (keyboardBehavior == KeyboardBehavior.SHOW_AND_DISMISS) {
             pressBack() // Hide keyboard.
         }
     }
 
-    fun enterText(text: String, uiSelector: UiSelector, bySelector: BySelector, index: Int, showKeyboard: Boolean) {
+    fun enterText(
+        text: String,
+        uiSelector: UiSelector,
+        bySelector: BySelector,
+        index: Int,
+        keyboardBehavior: KeyboardBehavior,
+    ) {
         Logger.d("enterText($text): $uiSelector, $bySelector")
 
         if (waitForView(bySelector, index) == null) {
@@ -225,13 +232,13 @@ class Automator private constructor() {
 
         val uiObject = uiDevice.findObject(uiSelector).getFromParent(UiSelector().className(EditText::class.java))
 
-        if (showKeyboard) {
+        if (keyboardBehavior == KeyboardBehavior.SHOW_AND_DISMISS) {
             uiObject.click()
         }
 
         uiObject.text = text
 
-        if (showKeyboard) {
+        if (keyboardBehavior == KeyboardBehavior.SHOW_AND_DISMISS) {
             pressBack() // Hide keyboard.
         }
     }
