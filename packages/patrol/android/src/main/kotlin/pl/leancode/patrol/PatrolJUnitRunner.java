@@ -11,14 +11,13 @@ import android.os.Bundle;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.AndroidJUnitRunner;
 import io.grpc.StatusRuntimeException;
-import pl.leancode.patrol.contracts.Contracts.DartTestCase;
-import pl.leancode.patrol.contracts.Contracts.DartTestGroup;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import static pl.leancode.patrol.contracts.Contracts.DartGroupEntry;
 import static pl.leancode.patrol.contracts.Contracts.RunDartTestResponse;
 
 /**
@@ -110,10 +109,10 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
         final String TAG = "PatrolJUnitRunner.listDartTests(): ";
 
         try {
-            final DartTestGroup dartTestGroup = patrolAppServiceClient.listDartTests();
-            List<DartTestCase> dartTestCases = ContractsExtensionsKt.listTestsFlat(dartTestGroup, "");
+            final DartGroupEntry dartTestGroup = patrolAppServiceClient.listDartTests();
+            List<DartGroupEntry> dartTestCases = ContractsExtensionsKt.listTestsFlat(dartTestGroup, "");
             List<String> dartTestCaseNamesList = new ArrayList<>();
-            for (DartTestCase dartTestCase : dartTestCases) {
+            for (DartGroupEntry dartTestCase : dartTestCases) {
                 dartTestCaseNamesList.add(dartTestCase.getName());
             }
             Object[] dartTestCaseNames = dartTestCaseNamesList.toArray();

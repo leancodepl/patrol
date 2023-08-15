@@ -1,11 +1,19 @@
 package pl.leancode.patrol
 
 import org.junit.Test
-import pl.leancode.patrol.contracts.dartTestCase
-import pl.leancode.patrol.contracts.dartTestGroup
+import pl.leancode.patrol.contracts.Contracts.DartGroupEntry
+import pl.leancode.patrol.contracts.DartGroupEntryKt
+import pl.leancode.patrol.contracts.copy
+import pl.leancode.patrol.contracts.dartGroupEntry
 import kotlin.test.assertContentEquals
 
-// TODO: Make sure these tests are run on CI
+fun dartTestGroup(block: DartGroupEntryKt.Dsl.() -> Unit): DartGroupEntry {
+    return dartGroupEntry(block).copy { type = DartGroupEntry.GroupEntryType.GROUP }
+}
+
+fun dartTestCase(block: DartGroupEntryKt.Dsl.() -> Unit): DartGroupEntry {
+    return dartGroupEntry(block).copy { type = DartGroupEntry.GroupEntryType.TEST }
+}
 
 class DartTestGroupExtensionsTest {
 
@@ -14,18 +22,18 @@ class DartTestGroupExtensionsTest {
         // given
         val dartTestGroup = dartTestGroup {
             name = ""
-            groups += listOf(
+            entries += listOf(
                 dartTestGroup {
                     name = "example_test"
-                    tests += listOf(dartTestCase { name = "increments counter, exits the app, and comes back" })
+                    entries += listOf(dartTestCase { name = "increments counter, exits the app, and comes back" })
                 },
                 dartTestGroup {
                     name = "open_app_test"
-                    tests += listOf(dartTestCase { name = "open maps" })
+                    entries += listOf(dartTestCase { name = "open maps" })
                 },
                 dartTestGroup {
                     name = "webview_test"
-                    tests += listOf(dartTestCase { name = "interacts with the LeanCode website in a webview" })
+                    entries += listOf(dartTestCase { name = "interacts with the LeanCode website in a webview" })
                 }
             )
         }
@@ -47,52 +55,57 @@ class DartTestGroupExtensionsTest {
     @Test
     fun `listTestsFlat() handles nested hierarchy`() {
         // given
-        val dartTestGroup = dartTestGroup {
-            name = ""
-            groups += listOf(
+        val exampleTest = dartTestGroup {
+            name = "example_test"
+            entries += listOf(
+                dartTestCase { name = "the first test" },
                 dartTestGroup {
-                    name = "example_test"
-                    groups += listOf(
+                    name = "top level group in file"
+                    entries += listOf(
                         dartTestGroup {
-                            name = "top level group in file"
-                            groups += listOf(
-                                dartTestGroup {
-                                    name = "alpha"
-                                    tests += listOf(
-                                        dartTestCase { name = "first" },
-                                        dartTestCase { name = "second" },
-                                    )
-                                },
-                                dartTestGroup {
-                                    name = "bravo"
-                                    tests += listOf(
-                                        dartTestCase { name = "first" },
-                                        dartTestCase { name = "second" },
-                                    )
-                                },
+                            name = "alpha"
+                            entries += listOf(
+                                dartTestCase { name = "first" },
+                                dartTestCase { name = "second" },
                             )
-                        }
+                        },
+                        dartTestCase { name = "test between groups" },
+                        dartTestGroup {
+                            name = "bravo"
+                            entries += listOf(
+                                dartTestCase { name = "first" },
+                                dartTestCase { name = "second" },
+                            )
+                        },
                     )
-                },
-                dartTestGroup {
-                    name = "open_app_test"
-                    tests += listOf(
-                        dartTestCase { name = "open maps" },
-                        dartTestCase { name = "open browser" },
-                    )
-                },
+                }
             )
         }
 
+        val openAppTest = dartTestGroup {
+            name = "open_app_test"
+            entries += listOf(
+                dartTestCase { name = "open maps" },
+                dartTestCase { name = "open browser" },
+            )
+        }
+
+        val rootDartTestGroup = dartTestGroup {
+            name = ""
+            entries += listOf(exampleTest, openAppTest)
+        }
+
         // when
-        val dartTestFiles = dartTestGroup.listTestsFlat()
+        val dartTestFiles = rootDartTestGroup.listTestsFlat()
 
         // then
         assertContentEquals(
             listOf(
                 // example_test
+                dartTestCase { name = "example_test the first test" },
                 dartTestCase { name = "example_test top level group in file alpha first" },
                 dartTestCase { name = "example_test top level group in file alpha second" },
+                dartTestCase { name = "example_test top level group in file test between groups" },
                 dartTestCase { name = "example_test top level group in file bravo first" },
                 dartTestCase { name = "example_test top level group in file bravo second" },
                 // open_app_test

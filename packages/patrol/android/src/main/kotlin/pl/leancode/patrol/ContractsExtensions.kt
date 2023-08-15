@@ -9,19 +9,19 @@ import pl.leancode.patrol.contracts.copy
 
 private fun Selector.isEmpty(): Boolean {
     return (
-            !hasText() &&
-                    !hasTextStartsWith() &&
-                    !hasTextContains() &&
-                    !hasClassName() &&
-                    !hasContentDescription() &&
-                    !hasContentDescriptionStartsWith() &&
-                    !hasContentDescriptionContains() &&
-                    !hasResourceId() &&
-                    !hasInstance() &&
-                    !hasEnabled() &&
-                    !hasFocused() &&
-                    !hasPkg()
-            )
+        !hasText() &&
+            !hasTextStartsWith() &&
+            !hasTextContains() &&
+            !hasClassName() &&
+            !hasContentDescription() &&
+            !hasContentDescriptionStartsWith() &&
+            !hasContentDescriptionContains() &&
+            !hasResourceId() &&
+            !hasInstance() &&
+            !hasEnabled() &&
+            !hasFocused() &&
+            !hasPkg()
+        )
 }
 
 fun Selector.toUiSelector(): UiSelector {
