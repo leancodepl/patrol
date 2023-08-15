@@ -7,6 +7,8 @@ import 'package:test_api/src/backend/group.dart';
 import 'package:test_api/src/backend/invoker.dart';
 import 'package:test_api/src/backend/metadata.dart';
 
+typedef GroupEntryType = DartGroupEntry_GroupEntryType;
+
 void main() {
   group('createDartTestGroup()', () {
     test('fails if a test is defined at top-level', () {
@@ -20,7 +22,7 @@ void main() {
       ]);
 
       // when
-      DartTestGroup callback() => createDartTestGroup(topLevelGroup);
+      DartGroupEntry callback() => createDartTestGroup(topLevelGroup);
 
       // then
       expect(
@@ -29,7 +31,7 @@ void main() {
       );
     });
 
-    test('smoke test', () {
+    test('smoke test 1', () {
       // given
       final topLevelGroup = Group.root([
         LocalTest('patrol_test_explorer', Metadata.empty, () {}),
@@ -59,33 +61,105 @@ void main() {
       expect(
         dartTestGroup,
         equals(
-          DartTestGroup(
+          DartGroupEntry(
             name: '',
-            groups: [
-              DartTestGroup(
+            type: GroupEntryType.GROUP,
+            entries: [
+              DartGroupEntry(
                 name: 'example_test',
-                groups: [
-                  DartTestGroup(
+                type: GroupEntryType.GROUP,
+                entries: [
+                  DartGroupEntry(
                     name: 'alpha',
-                    tests: [
-                      DartTestCase(name: 'first'),
-                      DartTestCase(name: 'second')
+                    type: GroupEntryType.GROUP,
+                    entries: [
+                      DartGroupEntry(name: 'first', type: GroupEntryType.TEST),
+                      DartGroupEntry(name: 'second', type: GroupEntryType.TEST),
                     ],
                   ),
-                  DartTestGroup(
+                  DartGroupEntry(
                     name: 'bravo',
-                    tests: [
-                      DartTestCase(name: 'first'),
-                      DartTestCase(name: 'second'),
+                    type: GroupEntryType.GROUP,
+                    entries: [
+                      DartGroupEntry(name: 'first', type: GroupEntryType.TEST),
+                      DartGroupEntry(name: 'second', type: GroupEntryType.TEST),
                     ],
                   ),
                 ],
               ),
-              DartTestGroup(
+              DartGroupEntry(
                 name: 'open_app_test',
-                tests: [
-                  DartTestCase(name: 'open maps'),
-                  DartTestCase(name: 'open browser'),
+                type: GroupEntryType.GROUP,
+                entries: [
+                  DartGroupEntry(name: 'open maps', type: GroupEntryType.TEST),
+                  DartGroupEntry(
+                    name: 'open browser',
+                    type: GroupEntryType.TEST,
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
+    });
+
+    test('smoke test 2', () {
+      // given
+      final topLevelGroup = Group.root([
+        LocalTest('patrol_test_explorer', Metadata.empty, () {}),
+        Group(
+          'example_test',
+          [
+            _localTest('example_test alpha'),
+            Group('example_test bravo', [
+              _localTest('example_test bravo first'),
+              _localTest('example_test bravo second'),
+            ]),
+            _localTest('example_test charlie'),
+            Group('example_test delta', [
+              _localTest('example_test delta first'),
+              _localTest('example_test delta second'),
+            ]),
+            _localTest('example_test echo'),
+          ],
+        ),
+      ]);
+
+      // when
+      final dartTestGroup = createDartTestGroup(topLevelGroup);
+
+      // then
+      expect(
+        dartTestGroup,
+        equals(
+          DartGroupEntry(
+            name: '',
+            type: GroupEntryType.GROUP,
+            entries: [
+              DartGroupEntry(
+                name: 'example_test',
+                type: GroupEntryType.GROUP,
+                entries: [
+                  DartGroupEntry(name: 'alpha', type: GroupEntryType.TEST),
+                  DartGroupEntry(
+                    name: 'bravo',
+                    type: GroupEntryType.GROUP,
+                    entries: [
+                      DartGroupEntry(name: 'first', type: GroupEntryType.TEST),
+                      DartGroupEntry(name: 'second', type: GroupEntryType.TEST),
+                    ],
+                  ),
+                  DartGroupEntry(name: 'charlie', type: GroupEntryType.TEST),
+                  DartGroupEntry(
+                    name: 'delta',
+                    type: GroupEntryType.GROUP,
+                    entries: [
+                      DartGroupEntry(name: 'first', type: GroupEntryType.TEST),
+                      DartGroupEntry(name: 'second', type: GroupEntryType.TEST),
+                    ],
+                  ),
+                  DartGroupEntry(name: 'echo', type: GroupEntryType.TEST),
                 ],
               ),
             ],

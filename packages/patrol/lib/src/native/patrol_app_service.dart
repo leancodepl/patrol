@@ -37,7 +37,7 @@ class PatrolAppService extends PatrolAppServiceBase {
 
   /// The ambient test group that wraps all the other groups and tests in the
   /// bundled Dart test file.
-  final DartTestGroup topLevelDartTestGroup;
+  final DartGroupEntry topLevelDartTestGroup;
 
   /// A completer that completes with the name of the Dart test file that was
   /// requested to execute by the native side.

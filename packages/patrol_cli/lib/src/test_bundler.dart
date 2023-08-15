@@ -71,7 +71,7 @@ Future<void> main() async {
   final nativeAutomator = NativeAutomator(config: NativeAutomatorConfig());
   await nativeAutomator.initialize();
   final binding = PatrolBinding.ensureInitialized();
-  final testExplorationCompleter = Completer<DartTestGroup>();
+  final testExplorationCompleter = Completer<DartGroupEntry>();
 
   // A special test to expore the hierarchy of groups and tests. This is a hack
   // around https://github.com/dart-lang/test/issues/1998.

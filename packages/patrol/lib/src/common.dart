@@ -157,17 +157,20 @@ if you use nativeAutomation with false, we recommend using patrolWidgetTest()'''
   );
 }
 
-/// Creates a DartTestGroup by visiting the subgroups of [parentGroup].
+/// Creates a DartGroupEntry by visiting the subgroups of [parentGroup].
 ///
 /// The initial [parentGroup] is the implicit, unnamed top-level [Group] present
 /// in every test case.
 @internal
-DartTestGroup createDartTestGroup(
+DartGroupEntry createDartTestGroup(
   Group parentGroup, {
   String name = '',
   int level = 0,
 }) {
-  final groupDTO = DartTestGroup(name: name);
+  final groupDTO = DartGroupEntry(
+    name: name,
+    type: DartGroupEntry_GroupEntryType.GROUP,
+  );
 
   for (final entry in parentGroup.entries) {
     // Trim names of current groups
@@ -178,7 +181,7 @@ DartTestGroup createDartTestGroup(
     }
 
     if (entry is Group) {
-      groupDTO.groups.add(
+      groupDTO.entries.add(
         createDartTestGroup(
           entry,
           name: name,
@@ -196,7 +199,9 @@ DartTestGroup createDartTestGroup(
         throw StateError('Test is not allowed to be defined at level $level');
       }
 
-      groupDTO.tests.add(DartTestCase(name: name));
+      groupDTO.entries.add(
+        DartGroupEntry(name: name, type: DartGroupEntry_GroupEntryType.TEST),
+      );
     } else {
       // This should really never happen, because Group and Test are the only
       // subclasses of GroupEntry.
@@ -216,15 +221,17 @@ String deduplicateGroupEntryName(String parentName, String currentName) {
   );
 }
 
-void printGroupStructure(DartTestGroup group, int indentation) {
+void printGroupStructure(DartGroupEntry group, int indentation) {
   final indent = ' ' * indentation;
   print("$indent-- group: '${group.name}'");
 
-  for (final testCase in group.tests) {
-    print("$indent     -- test: '${testCase.name}'");
-  }
-
-  for (final subgroup in group.groups) {
-    printGroupStructure(subgroup, indentation + 5);
+  for (final entry in group.entries) {
+    if (entry.type == DartGroupEntry_GroupEntryType.TEST) {
+      print("$indent     -- test: '${entry.name}'");
+    } else {
+      for (final subgroup in entry.entries) {
+        printGroupStructure(subgroup, indentation + 5);
+      }
+    }
   }
 }
