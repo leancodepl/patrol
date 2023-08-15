@@ -5601,10 +5601,15 @@ public final class Contracts {
     pl.leancode.patrol.contracts.Contracts.Selector getSelector();
 
     /**
-     * <code>bool showKeyboard = 5;</code>
-     * @return The showKeyboard.
+     * <code>.patrol.EnterTextRequest.KeyboardBehavior keyboardBehavior = 5;</code>
+     * @return The enum numeric value on the wire for keyboardBehavior.
      */
-    boolean getShowKeyboard();
+    int getKeyboardBehaviorValue();
+    /**
+     * <code>.patrol.EnterTextRequest.KeyboardBehavior keyboardBehavior = 5;</code>
+     * @return The keyboardBehavior.
+     */
+    pl.leancode.patrol.contracts.Contracts.EnterTextRequest.KeyboardBehavior getKeyboardBehavior();
 
     public pl.leancode.patrol.contracts.Contracts.EnterTextRequest.FindByCase getFindByCase();
   }
@@ -5620,6 +5625,127 @@ public final class Contracts {
       data_ = "";
       appId_ = "";
     }
+    /**
+     * Protobuf enum {@code patrol.EnterTextRequest.KeyboardBehavior}
+     */
+    public enum KeyboardBehavior
+        implements com.google.protobuf.Internal.EnumLite {
+      /**
+       * <pre>
+       * The default keyboard behavior.
+       *
+       * Keyboard will be shown when entering text starts, and will be
+       * automatically dismissed afterwards.
+       * </pre>
+       *
+       * <code>SHOW_AND_DISMISS = 0;</code>
+       */
+      SHOW_AND_DISMISS(0),
+      /**
+       * <pre>
+       * The alternative keyboard behavior.
+       *
+       * On Android, no keyboard will be shown at all. The text will simply appear
+       * inside the TextField.
+       *
+       * On iOS, the keyboard will not be dismissed after entering text.
+       * </pre>
+       *
+       * <code>ALTERNATIVE = 1;</code>
+       */
+      ALTERNATIVE(1),
+      UNRECOGNIZED(-1),
+      ;
+
+      /**
+       * <pre>
+       * The default keyboard behavior.
+       *
+       * Keyboard will be shown when entering text starts, and will be
+       * automatically dismissed afterwards.
+       * </pre>
+       *
+       * <code>SHOW_AND_DISMISS = 0;</code>
+       */
+      public static final int SHOW_AND_DISMISS_VALUE = 0;
+      /**
+       * <pre>
+       * The alternative keyboard behavior.
+       *
+       * On Android, no keyboard will be shown at all. The text will simply appear
+       * inside the TextField.
+       *
+       * On iOS, the keyboard will not be dismissed after entering text.
+       * </pre>
+       *
+       * <code>ALTERNATIVE = 1;</code>
+       */
+      public static final int ALTERNATIVE_VALUE = 1;
+
+
+      @java.lang.Override
+      public final int getNumber() {
+        if (this == UNRECOGNIZED) {
+          throw new java.lang.IllegalArgumentException(
+              "Can't get the number of an unknown enum value.");
+        }
+        return value;
+      }
+
+      /**
+       * @param value The number of the enum to look for.
+       * @return The enum associated with the given number.
+       * @deprecated Use {@link #forNumber(int)} instead.
+       */
+      @java.lang.Deprecated
+      public static KeyboardBehavior valueOf(int value) {
+        return forNumber(value);
+      }
+
+      public static KeyboardBehavior forNumber(int value) {
+        switch (value) {
+          case 0: return SHOW_AND_DISMISS;
+          case 1: return ALTERNATIVE;
+          default: return null;
+        }
+      }
+
+      public static com.google.protobuf.Internal.EnumLiteMap<KeyboardBehavior>
+          internalGetValueMap() {
+        return internalValueMap;
+      }
+      private static final com.google.protobuf.Internal.EnumLiteMap<
+          KeyboardBehavior> internalValueMap =
+            new com.google.protobuf.Internal.EnumLiteMap<KeyboardBehavior>() {
+              @java.lang.Override
+              public KeyboardBehavior findValueByNumber(int number) {
+                return KeyboardBehavior.forNumber(number);
+              }
+            };
+
+      public static com.google.protobuf.Internal.EnumVerifier 
+          internalGetVerifier() {
+        return KeyboardBehaviorVerifier.INSTANCE;
+      }
+
+      private static final class KeyboardBehaviorVerifier implements 
+           com.google.protobuf.Internal.EnumVerifier { 
+              static final com.google.protobuf.Internal.EnumVerifier           INSTANCE = new KeyboardBehaviorVerifier();
+              @java.lang.Override
+              public boolean isInRange(int number) {
+                return KeyboardBehavior.forNumber(number) != null;
+              }
+            };
+
+      private final int value;
+
+      private KeyboardBehavior(int value) {
+        this.value = value;
+      }
+
+      // @@protoc_insertion_point(enum_scope:patrol.EnterTextRequest.KeyboardBehavior)
+    }
+
     private int findByCase_ = 0;
     private java.lang.Object findBy_;
     public enum FindByCase {
@@ -5845,30 +5971,46 @@ public final class Contracts {
       }
     }
 
-    public static final int SHOWKEYBOARD_FIELD_NUMBER = 5;
-    private boolean showKeyboard_;
+    public static final int KEYBOARDBEHAVIOR_FIELD_NUMBER = 5;
+    private int keyboardBehavior_;
     /**
-     * <code>bool showKeyboard = 5;</code>
-     * @return The showKeyboard.
+     * <code>.patrol.EnterTextRequest.KeyboardBehavior keyboardBehavior = 5;</code>
+     * @return The enum numeric value on the wire for keyboardBehavior.
      */
     @java.lang.Override
-    public boolean getShowKeyboard() {
-      return showKeyboard_;
+    public int getKeyboardBehaviorValue() {
+      return keyboardBehavior_;
     }
     /**
-     * <code>bool showKeyboard = 5;</code>
-     * @param value The showKeyboard to set.
+     * <code>.patrol.EnterTextRequest.KeyboardBehavior keyboardBehavior = 5;</code>
+     * @return The keyboardBehavior.
      */
-    private void setShowKeyboard(boolean value) {
-      
-      showKeyboard_ = value;
+    @java.lang.Override
+    public pl.leancode.patrol.contracts.Contracts.EnterTextRequest.KeyboardBehavior getKeyboardBehavior() {
+      pl.leancode.patrol.contracts.Contracts.EnterTextRequest.KeyboardBehavior result = pl.leancode.patrol.contracts.Contracts.EnterTextRequest.KeyboardBehavior.forNumber(keyboardBehavior_);
+      return result == null ? pl.leancode.patrol.contracts.Contracts.EnterTextRequest.KeyboardBehavior.UNRECOGNIZED : result;
     }
     /**
-     * <code>bool showKeyboard = 5;</code>
+     * <code>.patrol.EnterTextRequest.KeyboardBehavior keyboardBehavior = 5;</code>
+     * @param value The enum numeric value on the wire for keyboardBehavior to set.
      */
-    private void clearShowKeyboard() {
+    private void setKeyboardBehaviorValue(int value) {
+        keyboardBehavior_ = value;
+    }
+    /**
+     * <code>.patrol.EnterTextRequest.KeyboardBehavior keyboardBehavior = 5;</code>
+     * @param value The keyboardBehavior to set.
+     */
+    private void setKeyboardBehavior(pl.leancode.patrol.contracts.Contracts.EnterTextRequest.KeyboardBehavior value) {
+      keyboardBehavior_ = value.getNumber();
 
-      showKeyboard_ = false;
+    }
+    /**
+     * <code>.patrol.EnterTextRequest.KeyboardBehavior keyboardBehavior = 5;</code>
+     */
+    private void clearKeyboardBehavior() {
+
+      keyboardBehavior_ = 0;
     }
 
     public static pl.leancode.patrol.contracts.Contracts.EnterTextRequest parseFrom(
@@ -6163,30 +6305,48 @@ public final class Contracts {
       }
 
       /**
-       * <code>bool showKeyboard = 5;</code>
-       * @return The showKeyboard.
+       * <code>.patrol.EnterTextRequest.KeyboardBehavior keyboardBehavior = 5;</code>
+       * @return The enum numeric value on the wire for keyboardBehavior.
        */
       @java.lang.Override
-      public boolean getShowKeyboard() {
-        return instance.getShowKeyboard();
+      public int getKeyboardBehaviorValue() {
+        return instance.getKeyboardBehaviorValue();
       }
       /**
-       * <code>bool showKeyboard = 5;</code>
-       * @param value The showKeyboard to set.
+       * <code>.patrol.EnterTextRequest.KeyboardBehavior keyboardBehavior = 5;</code>
+       * @param value The keyboardBehavior to set.
        * @return This builder for chaining.
        */
-      public Builder setShowKeyboard(boolean value) {
+      public Builder setKeyboardBehaviorValue(int value) {
         copyOnWrite();
-        instance.setShowKeyboard(value);
+        instance.setKeyboardBehaviorValue(value);
         return this;
       }
       /**
-       * <code>bool showKeyboard = 5;</code>
+       * <code>.patrol.EnterTextRequest.KeyboardBehavior keyboardBehavior = 5;</code>
+       * @return The keyboardBehavior.
+       */
+      @java.lang.Override
+      public pl.leancode.patrol.contracts.Contracts.EnterTextRequest.KeyboardBehavior getKeyboardBehavior() {
+        return instance.getKeyboardBehavior();
+      }
+      /**
+       * <code>.patrol.EnterTextRequest.KeyboardBehavior keyboardBehavior = 5;</code>
+       * @param value The enum numeric value on the wire for keyboardBehavior to set.
        * @return This builder for chaining.
        */
-      public Builder clearShowKeyboard() {
+      public Builder setKeyboardBehavior(pl.leancode.patrol.contracts.Contracts.EnterTextRequest.KeyboardBehavior value) {
         copyOnWrite();
-        instance.clearShowKeyboard();
+        instance.setKeyboardBehavior(value);
+        return this;
+      }
+      /**
+       * <code>.patrol.EnterTextRequest.KeyboardBehavior keyboardBehavior = 5;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearKeyboardBehavior() {
+        copyOnWrite();
+        instance.clearKeyboardBehavior();
         return this;
       }
 
@@ -6211,11 +6371,11 @@ public final class Contracts {
               "data_",
               "appId_",
               pl.leancode.patrol.contracts.Contracts.Selector.class,
-              "showKeyboard_",
+              "keyboardBehavior_",
             };
             java.lang.String info =
                 "\u0000\u0005\u0001\u0000\u0001\u0005\u0005\u0000\u0000\u0000\u0001\u0208\u0002\u0208" +
-                "\u0003>\u0000\u0004<\u0000\u0005\u0007";
+                "\u0003>\u0000\u0004<\u0000\u0005\f";
             return newMessageInfo(DEFAULT_INSTANCE, info, objects);
         }
         // fall through
