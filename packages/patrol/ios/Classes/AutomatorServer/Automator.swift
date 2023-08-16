@@ -98,10 +98,10 @@
       byText text: String,
       atIndex index: Int,
       inApp bundleId: String,
-      showKeyboard: Bool
+      dismissKeyboard: Bool
     ) async throws {
       var data = data
-      if showKeyboard {
+      if dismissKeyboard {
         data = "\(data)\n"
       }
 
@@ -158,10 +158,10 @@
       _ data: String,
       byIndex index: Int,
       inApp bundleId: String,
-      showKeyboard: Bool
+      dismissKeyboard: Bool
     ) async throws {
       var data = data
-      if showKeyboard {
+      if dismissKeyboard {
         data = "\(data)\n"
       }
 

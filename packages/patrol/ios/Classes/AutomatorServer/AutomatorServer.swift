@@ -146,7 +146,7 @@
             request.data,
             byIndex: Int(index),
             inApp: request.appID,
-            showKeyboard: request.keyboardBehavior == .alternative
+            dismissKeyboard: request.keyboardBehavior == .showAndDismiss
           )
         case .selector(let selector):
           try await automator.enterText(
@@ -154,7 +154,7 @@
             byText: selector.text,
             atIndex: Int(selector.instance),
             inApp: request.appID,
-            showKeyboard: request.keyboardBehavior == .alternative
+            dismissKeyboard: request.keyboardBehavior == .showAndDismiss
           )
         default:
           throw PatrolError.internal("enterText(): neither index nor selector are set")
