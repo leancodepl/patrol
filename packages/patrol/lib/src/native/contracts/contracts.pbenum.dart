@@ -44,6 +44,35 @@ class RunDartTestResponse_Result extends $pb.ProtobufEnum {
   const RunDartTestResponse_Result._($core.int v, $core.String n) : super(v, n);
 }
 
+class EnterTextRequest_KeyboardBehavior extends $pb.ProtobufEnum {
+  static const EnterTextRequest_KeyboardBehavior SHOW_AND_DISMISS =
+      EnterTextRequest_KeyboardBehavior._(
+          0,
+          const $core.bool.fromEnvironment('protobuf.omit_enum_names')
+              ? ''
+              : 'SHOW_AND_DISMISS');
+  static const EnterTextRequest_KeyboardBehavior ALTERNATIVE =
+      EnterTextRequest_KeyboardBehavior._(
+          1,
+          const $core.bool.fromEnvironment('protobuf.omit_enum_names')
+              ? ''
+              : 'ALTERNATIVE');
+
+  static const $core.List<EnterTextRequest_KeyboardBehavior> values =
+      <EnterTextRequest_KeyboardBehavior>[
+    SHOW_AND_DISMISS,
+    ALTERNATIVE,
+  ];
+
+  static final $core.Map<$core.int, EnterTextRequest_KeyboardBehavior>
+      _byValue = $pb.ProtobufEnum.initByValue(values);
+  static EnterTextRequest_KeyboardBehavior? valueOf($core.int value) =>
+      _byValue[value];
+
+  const EnterTextRequest_KeyboardBehavior._($core.int v, $core.String n)
+      : super(v, n);
+}
+
 class HandlePermissionRequest_Code extends $pb.ProtobufEnum {
   static const HandlePermissionRequest_Code WHILE_USING =
       HandlePermissionRequest_Code._(

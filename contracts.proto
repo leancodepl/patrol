@@ -133,8 +133,12 @@ message EnterTextRequest {
     uint32 index = 3;
     Selector selector = 4;
   }
+  KeyboardBehavior keyboardBehavior = 5;
 
-  bool showKeyboard = 5;
+  enum KeyboardBehavior {
+    SHOW_AND_DISMISS = 0;
+    ALTERNATIVE = 1;
+  }
 }
 
 message SwipeRequest {

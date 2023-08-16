@@ -368,7 +368,7 @@ public struct Patrol_EnterTextRequest {
     set {findBy = .selector(newValue)}
   }
 
-  public var showKeyboard: Bool = false
+  public var keyboardBehavior: Patrol_EnterTextRequest.KeyboardBehavior = .showAndDismiss
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -396,8 +396,60 @@ public struct Patrol_EnterTextRequest {
   #endif
   }
 
+  public enum KeyboardBehavior: SwiftProtobuf.Enum {
+    public typealias RawValue = Int
+
+    /// The default keyboard behavior.
+    ///
+    /// Keyboard will be shown when entering text starts, and will be
+    /// automatically dismissed afterwards.
+    case showAndDismiss // = 0
+
+    /// The alternative keyboard behavior.
+    ///
+    /// On Android, no keyboard will be shown at all. The text will simply appear
+    /// inside the TextField.
+    ///
+    /// On iOS, the keyboard will not be dismissed after entering text.
+    case alternative // = 1
+    case UNRECOGNIZED(Int)
+
+    public init() {
+      self = .showAndDismiss
+    }
+
+    public init?(rawValue: Int) {
+      switch rawValue {
+      case 0: self = .showAndDismiss
+      case 1: self = .alternative
+      default: self = .UNRECOGNIZED(rawValue)
+      }
+    }
+
+    public var rawValue: Int {
+      switch self {
+      case .showAndDismiss: return 0
+      case .alternative: return 1
+      case .UNRECOGNIZED(let i): return i
+      }
+    }
+
+  }
+
   public init() {}
 }
+
+#if swift(>=4.2)
+
+extension Patrol_EnterTextRequest.KeyboardBehavior: CaseIterable {
+  // The compiler won't synthesize support with the UNRECOGNIZED case.
+  public static var allCases: [Patrol_EnterTextRequest.KeyboardBehavior] = [
+    .showAndDismiss,
+    .alternative,
+  ]
+}
+
+#endif  // swift(>=4.2)
 
 public struct Patrol_SwipeRequest {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
@@ -799,6 +851,7 @@ extension Patrol_GetNotificationsResponse: @unchecked Sendable {}
 extension Patrol_TapRequest: @unchecked Sendable {}
 extension Patrol_EnterTextRequest: @unchecked Sendable {}
 extension Patrol_EnterTextRequest.OneOf_FindBy: @unchecked Sendable {}
+extension Patrol_EnterTextRequest.KeyboardBehavior: @unchecked Sendable {}
 extension Patrol_SwipeRequest: @unchecked Sendable {}
 extension Patrol_WaitUntilVisibleRequest: @unchecked Sendable {}
 extension Patrol_HandlePermissionRequest: @unchecked Sendable {}
@@ -1384,7 +1437,7 @@ extension Patrol_EnterTextRequest: SwiftProtobuf.Message, SwiftProtobuf._Message
     2: .same(proto: "appId"),
     3: .same(proto: "index"),
     4: .same(proto: "selector"),
-    5: .same(proto: "showKeyboard"),
+    5: .same(proto: "keyboardBehavior"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -1416,7 +1469,7 @@ extension Patrol_EnterTextRequest: SwiftProtobuf.Message, SwiftProtobuf._Message
           self.findBy = .selector(v)
         }
       }()
-      case 5: try { try decoder.decodeSingularBoolField(value: &self.showKeyboard) }()
+      case 5: try { try decoder.decodeSingularEnumField(value: &self.keyboardBehavior) }()
       default: break
       }
     }
@@ -1444,8 +1497,8 @@ extension Patrol_EnterTextRequest: SwiftProtobuf.Message, SwiftProtobuf._Message
     }()
     case nil: break
     }
-    if self.showKeyboard != false {
-      try visitor.visitSingularBoolField(value: self.showKeyboard, fieldNumber: 5)
+    if self.keyboardBehavior != .showAndDismiss {
+      try visitor.visitSingularEnumField(value: self.keyboardBehavior, fieldNumber: 5)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -1454,10 +1507,17 @@ extension Patrol_EnterTextRequest: SwiftProtobuf.Message, SwiftProtobuf._Message
     if lhs.data != rhs.data {return false}
     if lhs.appID != rhs.appID {return false}
     if lhs.findBy != rhs.findBy {return false}
-    if lhs.showKeyboard != rhs.showKeyboard {return false}
+    if lhs.keyboardBehavior != rhs.keyboardBehavior {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
+}
+
+extension Patrol_EnterTextRequest.KeyboardBehavior: SwiftProtobuf._ProtoNameProviding {
+  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    0: .same(proto: "SHOW_AND_DISMISS"),
+    1: .same(proto: "ALTERNATIVE"),
+  ]
 }
 
 extension Patrol_SwipeRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {

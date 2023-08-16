@@ -296,16 +296,33 @@ const EnterTextRequest$json = const {
       '9': 0,
       '10': 'selector'
     },
-    const {'1': 'showKeyboard', '3': 5, '4': 1, '5': 8, '10': 'showKeyboard'},
+    const {
+      '1': 'keyboardBehavior',
+      '3': 5,
+      '4': 1,
+      '5': 14,
+      '6': '.patrol.EnterTextRequest.KeyboardBehavior',
+      '10': 'keyboardBehavior'
+    },
   ],
+  '4': const [EnterTextRequest_KeyboardBehavior$json],
   '8': const [
     const {'1': 'findBy'},
   ],
 };
 
+@$core.Deprecated('Use enterTextRequestDescriptor instead')
+const EnterTextRequest_KeyboardBehavior$json = const {
+  '1': 'KeyboardBehavior',
+  '2': const [
+    const {'1': 'SHOW_AND_DISMISS', '2': 0},
+    const {'1': 'ALTERNATIVE', '2': 1},
+  ],
+};
+
 /// Descriptor for `EnterTextRequest`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List enterTextRequestDescriptor = $convert.base64Decode(
-    'ChBFbnRlclRleHRSZXF1ZXN0EhIKBGRhdGEYASABKAlSBGRhdGESFAoFYXBwSWQYAiABKAlSBWFwcElkEhYKBWluZGV4GAMgASgNSABSBWluZGV4Ei4KCHNlbGVjdG9yGAQgASgLMhAucGF0cm9sLlNlbGVjdG9ySABSCHNlbGVjdG9yEiIKDHNob3dLZXlib2FyZBgFIAEoCFIMc2hvd0tleWJvYXJkQggKBmZpbmRCeQ==');
+    'ChBFbnRlclRleHRSZXF1ZXN0EhIKBGRhdGEYASABKAlSBGRhdGESFAoFYXBwSWQYAiABKAlSBWFwcElkEhYKBWluZGV4GAMgASgNSABSBWluZGV4Ei4KCHNlbGVjdG9yGAQgASgLMhAucGF0cm9sLlNlbGVjdG9ySABSCHNlbGVjdG9yElUKEGtleWJvYXJkQmVoYXZpb3IYBSABKA4yKS5wYXRyb2wuRW50ZXJUZXh0UmVxdWVzdC5LZXlib2FyZEJlaGF2aW9yUhBrZXlib2FyZEJlaGF2aW9yIjkKEEtleWJvYXJkQmVoYXZpb3ISFAoQU0hPV19BTkRfRElTTUlTUxAAEg8KC0FMVEVSTkFUSVZFEAFCCAoGZmluZEJ5');
 @$core.Deprecated('Use swipeRequestDescriptor instead')
 const SwipeRequest$json = const {
   '1': 'SwipeRequest',

@@ -1201,12 +1201,16 @@ class EnterTextRequest extends $pb.GeneratedMessage {
             ? ''
             : 'selector',
         subBuilder: Selector.create)
-    ..aOB(
+    ..e<EnterTextRequest_KeyboardBehavior>(
         5,
         const $core.bool.fromEnvironment('protobuf.omit_field_names')
             ? ''
-            : 'showKeyboard',
-        protoName: 'showKeyboard')
+            : 'keyboardBehavior',
+        $pb.PbFieldType.OE,
+        protoName: 'keyboardBehavior',
+        defaultOrMaker: EnterTextRequest_KeyboardBehavior.SHOW_AND_DISMISS,
+        valueOf: EnterTextRequest_KeyboardBehavior.valueOf,
+        enumValues: EnterTextRequest_KeyboardBehavior.values)
     ..hasRequiredFields = false;
 
   EnterTextRequest._() : super();
@@ -1215,7 +1219,7 @@ class EnterTextRequest extends $pb.GeneratedMessage {
     $core.String? appId,
     $core.int? index,
     Selector? selector,
-    $core.bool? showKeyboard,
+    EnterTextRequest_KeyboardBehavior? keyboardBehavior,
   }) {
     final _result = create();
     if (data != null) {
@@ -1230,8 +1234,8 @@ class EnterTextRequest extends $pb.GeneratedMessage {
     if (selector != null) {
       _result.selector = selector;
     }
-    if (showKeyboard != null) {
-      _result.showKeyboard = showKeyboard;
+    if (keyboardBehavior != null) {
+      _result.keyboardBehavior = keyboardBehavior;
     }
     return _result;
   }
@@ -1317,16 +1321,16 @@ class EnterTextRequest extends $pb.GeneratedMessage {
   Selector ensureSelector() => $_ensure(3);
 
   @$pb.TagNumber(5)
-  $core.bool get showKeyboard => $_getBF(4);
+  EnterTextRequest_KeyboardBehavior get keyboardBehavior => $_getN(4);
   @$pb.TagNumber(5)
-  set showKeyboard($core.bool v) {
-    $_setBool(4, v);
+  set keyboardBehavior(EnterTextRequest_KeyboardBehavior v) {
+    setField(5, v);
   }
 
   @$pb.TagNumber(5)
-  $core.bool hasShowKeyboard() => $_has(4);
+  $core.bool hasKeyboardBehavior() => $_has(4);
   @$pb.TagNumber(5)
-  void clearShowKeyboard() => clearField(5);
+  void clearKeyboardBehavior() => clearField(5);
 }
 
 class SwipeRequest extends $pb.GeneratedMessage {
