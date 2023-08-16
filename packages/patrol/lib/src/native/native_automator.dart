@@ -151,6 +151,7 @@ class NativeAutomatorConfig {
     String? iosAppName,
     Duration? connectionTimeout,
     Duration? findTimeout,
+    KeyboardBehavior? keyboardBehavior,
     void Function(String)? logger,
   }) {
     return NativeAutomatorConfig(
@@ -162,6 +163,7 @@ class NativeAutomatorConfig {
       iosAppName: iosAppName ?? this.iosAppName,
       connectionTimeout: connectionTimeout ?? this.connectionTimeout,
       findTimeout: findTimeout ?? this.findTimeout,
+      keyboardBehavior: keyboardBehavior ?? this.keyboardBehavior,
       logger: logger ?? this.logger,
     );
   }
