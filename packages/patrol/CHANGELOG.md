@@ -1,3 +1,8 @@
+## 2.2.3
+
+- Make `KeyboardBehavior.alternative` not automatically try to hide the keyboard
+  on iOS (#1638)
+
 ## 2.2.2
 
 - Fix deprecation message for `andSettle` (settleBehavior -> settlePolicy)
