@@ -6,6 +6,7 @@ class IOSGenerator {
   String generateContent(Schema schema, IOSConfig config) {
     final buffer = StringBuffer()..write(_contentPrefix(config));
 
+    schema.enums.forEach((e) => buffer.writeln(_createEnum(e)));
     schema.messages.forEach((e) => buffer.writeln(_createMessage(e)));
 
     for (var service in schema.services) {
@@ -40,6 +41,16 @@ class IOSGenerator {
     return '''
 struct ${message.name}: Codable {
 $fields
+}
+''';
+  }
+
+  String _createEnum(Enum enumDefinition) {
+    final cases = enumDefinition.fields.map((e) => '  case ${e}').join('\n');
+
+    return '''
+enum ${enumDefinition.name}: String, Codable {
+$cases
 }
 ''';
   }
