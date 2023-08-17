@@ -9,6 +9,7 @@ PODS:
   - CNIOHTTPParser (2.40.0)
   - CNIOLinux (2.40.0)
   - CNIOWindows (2.40.0)
+  - CocoaAsyncSocket (7.6.5)
   - Flutter (1.0.0)
   - flutter_local_notifications (0.0.1):
     - Flutter
@@ -25,12 +26,14 @@ PODS:
     - SwiftNIOSSL (< 3.0.0, >= 2.14.0)
     - SwiftNIOTransportServices (< 2.0.0, >= 1.11.1)
     - SwiftProtobuf (< 2.0.0, >= 1.19.0)
+  - HTTPParserC (2.9.4)
   - integration_test (0.0.1):
     - Flutter
   - Logging (1.4.0)
   - patrol (0.0.1):
     - Flutter
     - gRPC-Swift (~> 1.8.0)
+    - Telegraph (~> 0.30.0)
   - permission_handler_apple (9.1.1):
     - Flutter
   - SwiftNIO (2.40.0):
@@ -164,6 +167,9 @@ PODS:
     - SwiftNIOPosix (< 3, >= 2.32.0)
     - SwiftNIOTLS (< 3, >= 2.32.0)
   - SwiftProtobuf (1.20.3)
+  - Telegraph (0.30.0):
+    - CocoaAsyncSocket (~> 7.6)
+    - HTTPParserC (~> 2.9)
   - webview_flutter_wkwebview (0.0.1):
     - Flutter
 
@@ -188,7 +194,9 @@ SPEC REPOS:
     - CNIOHTTPParser
     - CNIOLinux
     - CNIOWindows
+    - CocoaAsyncSocket
     - gRPC-Swift
+    - HTTPParserC
     - Logging
     - SwiftNIO
     - SwiftNIOConcurrencyHelpers
@@ -204,6 +212,7 @@ SPEC REPOS:
     - SwiftNIOTLS
     - SwiftNIOTransportServices
     - SwiftProtobuf
+    - Telegraph
 
 EXTERNAL SOURCES:
   Flutter:
@@ -233,14 +242,16 @@ SPEC CHECKSUMS:
   CNIOHTTPParser: 8ce395236fa1d09ac3b4f4bcfba79b849b2ac684
   CNIOLinux: 62e3505f50de558c393dc2f273dde71dcce518da
   CNIOWindows: 3047f2d8165848a3936a0a755fee27c6b5ee479b
+  CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
   flutter_local_notifications: 0c0b1ae97e741e1521e4c1629a459d04b9aec743
   flutter_timezone: ffb07bdad3c6276af8dada0f11978d8a1f8a20bb
   geolocator_apple: cc556e6844d508c95df1e87e3ea6fa4e58c50401
   gRPC-Swift: 74adcaaa62ac5e0a018938840328cb1fdfb09e7b
+  HTTPParserC: aea14c3d2d4ac5beb3988781daa36dfa62e0d9ef
   integration_test: 13825b8a9334a850581300559b8839134b124670
   Logging: beeb016c9c80cf77042d62e83495816847ef108b
-  patrol: a7622350c42b3a944962fbfe052d07e3691789e5
+  patrol: 23cee8114af27ad57b6c8a068b2a68c8f81018ca
   permission_handler_apple: e76247795d700c14ea09e3a2d8855d41ee80a2e6
   SwiftNIO: 829958aab300642625091f82fc2f49cb7cf4ef24
   SwiftNIOConcurrencyHelpers: 697370136789b1074e4535eaae75cbd7f900370e
@@ -256,6 +267,7 @@ SPEC CHECKSUMS:
   SwiftNIOTLS: 598af547490133e9aac52aed0c23c4a90c31dcfc
   SwiftNIOTransportServices: 0b2b407819d82eb63af558c5396e33c945759503
   SwiftProtobuf: b02b5075dcf60c9f5f403000b3b0c202a11b6ae1
+  Telegraph: 12576b119324138e4929792af9e5a1085c2ecbc1
   webview_flutter_wkwebview: 2e2d318f21a5e036e2c3f26171342e95908bd60a
 
 PODFILE CHECKSUM: 0976da911d4a3d1a369deaf59f82a1c7d01a40d5
