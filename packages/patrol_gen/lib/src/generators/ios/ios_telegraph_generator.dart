@@ -1,6 +1,6 @@
 import 'package:patrol_gen/src/schema.dart';
 
-class SwiftTelegraphGenerator {
+class IOSTelegraphGenerator {
   String generateServer(Service service) {
     return '''
 ${_generateInterface(service)}

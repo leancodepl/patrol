@@ -8,11 +8,12 @@ cd "$(dirname "$0")" || exit
 
 schema="./schema.dart"
 patrol_package="./packages/patrol"
-patrol_out_dir="/lib/src/native/contracts"
+patrol_dart_out_dir="lib/src/native/contracts"
 
-dart_out="$patrol_package/$patrol_out_dir"
+ios_out="$patrol_package/ios/Classes/AutomatorServer"
+dart_out="$patrol_package/$patrol_dart_out_dir"
 
-dart run packages/patrol_gen/bin/main.dart $schema $dart_out
+dart run packages/patrol_gen/bin/main.dart $schema $dart_out $ios_out
 
 cd "${patrol_package}"
-dart run build_runner build --delete-conflicting-outputs --build-filter="$patrol_out_dir/*.dart"
+dart run build_runner build --delete-conflicting-outputs --build-filter="$patrol_dart_out_dir/*.dart"

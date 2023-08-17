@@ -1,15 +1,10 @@
-import 'package:patrol_gen/src/generators/swift_telegraph_generator.dart';
+import 'package:patrol_gen/src/generators/ios/ios_config.dart';
+import 'package:patrol_gen/src/generators/ios/ios_telegraph_generator.dart';
 import 'package:patrol_gen/src/schema.dart';
 
-class SwiftOutputConfig {
-  const SwiftOutputConfig({required this.path});
-
-  final String path;
-}
-
-class SwiftGenerator {
-  String generateContent(Schema schema, SwiftOutputConfig outputConfig) {
-    final buffer = StringBuffer()..write(_contentPrefix(outputConfig));
+class IOSGenerator {
+  String generateContent(Schema schema, IOSConfig config) {
+    final buffer = StringBuffer()..write(_contentPrefix(config));
 
     schema.messages.forEach((e) => buffer.writeln(_createMessage(e)));
 
@@ -25,7 +20,7 @@ class SwiftGenerator {
     return buffer.toString();
   }
 
-  String _contentPrefix(SwiftOutputConfig outputConfig) {
+  String _contentPrefix(IOSConfig config) {
     return '''
 ///
 //  Generated code. Do not modify.
@@ -37,7 +32,9 @@ class SwiftGenerator {
 
   String _createMessage(Message message) {
     final fields = message.fields
-        .map((e) => ' var ${e.name}: ${_transformDartType(e.type)}')
+        .map((e) => e.isList
+            ? ' var ${e.name}: [${_transformType(e.type)}]'
+            : ' var ${e.name}: ${_transformType(e.type)}')
         .join('\n');
 
     return '''
@@ -48,13 +45,22 @@ $fields
   }
 
   String _createServer(Service service) =>
-      SwiftTelegraphGenerator().generateServer(service);
+      IOSTelegraphGenerator().generateServer(service);
 
   String _createClient(Service service) {
     return '';
   }
 
-  String _transformDartType(String type) {
-    return type;
+  String _transformType(String type) {
+    switch (type) {
+      case 'int':
+        return 'Int';
+      case 'double':
+        return 'Double';
+      case 'bool':
+        return 'Bool';
+      default:
+        return type;
+    }
   }
 }
