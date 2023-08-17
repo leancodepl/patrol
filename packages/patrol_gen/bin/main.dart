@@ -1,12 +1,14 @@
+import 'package:patrol_gen/src/generators/dart/dart_config.dart';
 import 'package:patrol_gen/src/patrol_gen.dart';
+import 'package:patrol_gen/src/utils.dart';
 
-void main(List<String> args) {
-  if (args.length == 1) {
-    PatrolGen().run(args[0]);
-  } else {
-    print('''
-You should only pass one argument (path to schema). Example:
-dart run bin/main.dart ../schema.dart
-''');
-  }
+Future<void> main(List<String> args) {
+  return PatrolGen().run(
+    PatrolGenConfig(
+      schemaFilename: normalizePath(args[0]),
+      dartConfig: DartConfig(
+        outputDirectory: normalizePath(args[1]),
+      ),
+    ),
+  );
 }

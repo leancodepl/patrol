@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# gen_from_schema generates classes from schema.dart for every used language
+# (Dart, Swift, Kotlin/Java) in the appropriate directory.
+
+cd "$(dirname "$0")" || exit
+
+schema="./schema.dart"
+patrol_package="./packages/patrol"
+patrol_out_dir="/lib/src/native/contracts"
+
+dart_out="$patrol_package/$patrol_out_dir"
+
+dart run packages/patrol_gen/bin/main.dart $schema $dart_out
+
+cd "${patrol_package}"
+dart run build_runner build --delete-conflicting-outputs --build-filter="$patrol_out_dir/*.dart"

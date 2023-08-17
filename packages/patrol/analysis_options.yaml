@@ -9,3 +9,4 @@ analyzer:
     - lib/**/*.pbjson.dart
     - lib/**/*.pbserver.dart
     - lib/**/*.pbgrpc.dart
+    - lib/**/*.g.dart
