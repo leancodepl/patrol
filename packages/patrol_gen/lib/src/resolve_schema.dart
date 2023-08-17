@@ -90,8 +90,18 @@ Message _createMessage(ClassDeclaration declaration) {
           .map((e) {
         final type = e.type;
         if (type is NamedType) {
-          return MessageField(type.question != null,
-              e.variables.first.name.lexeme, type.name2.lexeme);
+          final isOptional = type.question != null;
+          final fieldName = e.variables.first.name.lexeme;
+
+          if (type.type?.isDartCoreList ?? false) {
+            final genericType =
+                type.typeArguments!.arguments.first as NamedType;
+            return MessageField(
+                isOptional, fieldName, genericType.name2.lexeme, true);
+          } else {
+            return MessageField(
+                isOptional, fieldName, type.name2.lexeme, false);
+          }
         } else {
           throw 'unsupported type $type';
         }

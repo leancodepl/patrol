@@ -47,11 +47,13 @@ enum ${enumDefinition.name} {
 
   String? _createMessage(Message message) {
     final fieldsContent = message.fields
-        .map((f) => 'final ${f.type}${f.optional ? '?' : ''} ${f.name};')
+        .map((f) => f.isList
+            ? 'final List<${f.type}>${f.isOptional ? '?' : ''} ${f.name};'
+            : 'final ${f.type}${f.isOptional ? '?' : ''} ${f.name};')
         .join('\n');
 
     var constructorParameters = message.fields
-        .map((e) => '${e.optional ? '' : 'required'} this.${e.name}')
+        .map((e) => '${e.isOptional ? '' : 'required'} this.${e.name}')
         .join(',');
 
     constructorParameters =

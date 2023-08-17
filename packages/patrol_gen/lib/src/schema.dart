@@ -6,9 +6,10 @@ class Enum {
 }
 
 class MessageField {
-  const MessageField(this.optional, this.name, this.type);
+  const MessageField(this.isOptional, this.name, this.type, this.isList);
 
-  final bool optional;
+  final bool isOptional;
+  final bool isList;
   final String name;
   final String type;
 }
