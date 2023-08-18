@@ -5,7 +5,7 @@ class DartTestCase {
 class DartTestGroup {
   String? name;
   List<DartTestCase>? tests;
-  List<DartTestGroup>? groups;
+  late List<DartTestGroup> groups;
 }
 
 class ListDartTestsResponse {
