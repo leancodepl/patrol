@@ -66,7 +66,7 @@ This code:
 The timeout can be configured globally:
 
 ```dart
-patrolTest(
+patrolWidgetTest(
   'logs in successfully',
   config: PatrolTestConfig(findTimeout: Duration(seconds: 10)),
   ($) async {
@@ -212,7 +212,7 @@ To fix this problem, you have to explicitly specify which `Scrollable` you want
 to use:
 
 ```dart
-await $('index: 100').scrollTo(scrollable: $(#listView2).$(Scrollable)).tap();
+await $('index: 100').scrollTo(view: $(#listView2).$(Scrollable)).tap();
 ```
 
 The above snippet will scroll the second `Scrollable` and find the widget with
@@ -220,7 +220,7 @@ The above snippet will scroll the second `Scrollable` and find the widget with
 
 **Why so verbose?**
 
-You might be wondering why `scrollTo(scrollable: $(#listView2))` is not enough?
+You might be wondering why `scrollTo(view: $(#listView2))` is not enough?
 Why is it needed to look for a `Scrollable` widget inside the widget with the
 `listView2` key?
 
