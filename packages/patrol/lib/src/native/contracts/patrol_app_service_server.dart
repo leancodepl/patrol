@@ -13,12 +13,12 @@ import 'contracts.dart';
 
 abstract class PatrolAppServiceServer {
   FutureOr<Response?> handle(Request request) async {
-    if ('listDartTests' == request.handlerPath) {
+    if ('/listDartTests' == request.url.path) {
       final result = await listDartTests();
 
       final body = jsonEncode(result.toJson());
       return Response.ok(body);
-    } else if ('runDartTest' == request.handlerPath) {
+    } else if ('/runDartTest' == request.url.path) {
       final stringContent = await request.readAsString(utf8);
       final json = jsonDecode(stringContent);
       final requestObj =

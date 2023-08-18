@@ -62,7 +62,7 @@ return Response.ok(body);''';
       final elseKeyword = e == service.endpoints.first ? '' : 'else';
 
       return '''
-$elseKeyword if ('${e.name}' == request.handlerPath){
+$elseKeyword if ('/${e.name}' == request.url.path){
 
 $requestDeserialization
 
