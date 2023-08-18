@@ -25,6 +25,7 @@ dependencies:
   path: ^1.8.2
   patrol_finders: ^1.0.0
   protobuf: ^2.1.0
+  shelf: ^1.4.1
   test_api: '>=0.4.0 <0.7.0'
 
 dev_dependencies:

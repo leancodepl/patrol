@@ -2,10 +2,11 @@
 // TODO: Use a logger instead of print
 
 import 'dart:async';
-import 'dart:io' as io;
 
-import 'package:grpc/grpc.dart';
-import 'package:patrol/src/native/contracts/contracts.pbgrpc.dart';
+import 'package:patrol/src/native/contracts/contracts.dart';
+import 'package:patrol/src/native/contracts/patrol_app_service_server.dart';
+
+import 'package:shelf/shelf_io.dart' as shelf_io;
 
 const _port = 8082;
 
@@ -18,12 +19,15 @@ class _TestExecutionResult {
 
 /// Starts the gRPC server that runs the [PatrolAppService].
 Future<void> runAppService(PatrolAppService service) async {
-  final services = [service];
-  final interceptors = <Interceptor>[];
-  final codecRegistry = CodecRegistry();
+  await shelf_io.serve(
+    (request) async {
+      final result = await service.handle(request);
+      return result!;
+    },
+    '0.0.0.0',
+    _port,
+  );
 
-  final server = Server(services, interceptors, codecRegistry);
-  await server.serve(address: io.InternetAddress.anyIPv4, port: _port);
   print('PatrolAppService started on port $_port');
 }
 
@@ -31,7 +35,7 @@ Future<void> runAppService(PatrolAppService service) async {
 ///
 /// This is an internal class and you don't want to use it. It's public so that
 /// the generated code can access it.
-class PatrolAppService extends PatrolAppServiceBase {
+class PatrolAppService extends PatrolAppServiceServer {
   /// Creates a new [PatrolAppService].
   PatrolAppService({required this.topLevelDartTestGroup});
 
@@ -113,19 +117,13 @@ class PatrolAppService extends PatrolAppServiceBase {
   }
 
   @override
-  Future<ListDartTestsResponse> listDartTests(
-    ServiceCall call,
-    Empty request,
-  ) async {
+  Future<ListDartTestsResponse> listDartTests() async {
     print('PatrolAppService.listDartTests() called');
     return ListDartTestsResponse(group: topLevelDartTestGroup);
   }
 
   @override
-  Future<RunDartTestResponse> runDartTest(
-    ServiceCall call,
-    RunDartTestRequest request,
-  ) async {
+  Future<RunDartTestResponse> runDartTest(RunDartTestRequest request) async {
     assert(_testExecutionCompleted.isCompleted == false);
     // patrolTest() always calls this method.
 
@@ -135,8 +133,8 @@ class PatrolAppService extends PatrolAppServiceBase {
     final testExecutionResult = await testExecutionCompleted;
     return RunDartTestResponse(
       result: testExecutionResult.passed
-          ? RunDartTestResponse_Result.SUCCESS
-          : RunDartTestResponse_Result.FAILURE,
+          ? RunDartTestResponseResult.success
+          : RunDartTestResponseResult.failure,
       details: testExecutionResult.details,
     );
   }

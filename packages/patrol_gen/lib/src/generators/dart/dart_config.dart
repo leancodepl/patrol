@@ -7,4 +7,14 @@ class DartConfig {
 
   final String outputDirectory;
   final String contractsFilename;
+
+  String serviceFileName(String serviceName) =>
+      path.join(outputDirectory, '${_fileName(serviceName)}_server.dart');
+
+  String _fileName(String pascalCaseName) {
+    final beforeCapitalLetter = RegExp(r"(?=[A-Z])");
+
+    final parts = pascalCaseName.split(beforeCapitalLetter);
+    return parts.map((e) => e.toLowerCase()).join('_');
+  }
 }

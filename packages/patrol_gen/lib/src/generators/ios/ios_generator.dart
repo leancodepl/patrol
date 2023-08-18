@@ -9,14 +9,14 @@ class IOSGenerator {
     schema.enums.forEach((e) => buffer.writeln(_createEnum(e)));
     schema.messages.forEach((e) => buffer.writeln(_createMessage(e)));
 
-    for (var service in schema.services) {
-      if (service.swift.needsServer) {
-        buffer.writeln(_createServer(service));
-      }
-      if (service.swift.needsClient) {
-        buffer.writeln(_createClient(service));
-      }
-    }
+    // for (var service in schema.services) {
+    //   if (service.swift.needsServer) {
+    //     buffer.writeln(_createServer(service));
+    //   }
+    //   if (service.swift.needsClient) {
+    //     buffer.writeln(_createClient(service));
+    //   }
+    // }
 
     return buffer.toString();
   }
