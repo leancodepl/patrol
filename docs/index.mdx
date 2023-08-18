@@ -3,26 +3,29 @@ title: Main
 description: The powerful Flutter-first UI testing framework. Ready for action!
 ---
 
-# About
+# About Patrol framework
 
 ![Patrol promotial graphics][promo_graphics]
 
 Patrol is a new testing framework for Flutter. It builds on top of Flutter's
 existing test tooling to let you do things which were previously impossible.
 
-Patrol lets you [access native features of the platform][native] that the
+Patrol is combined of 3 packages - one dedicated to widget testing, and other
+two made for UI testing. Together they provide enhanced testing experience
+both for developers and for automating testers.
+
+`patrol` package lets you [access native features of the platform][native] that the
 Flutter app is running on. Finally, you can interact with permission dialogs,
 notifications, WebViews, change device settings, toggle Wi-Fi, and much more –
 and you can code this very easily in plain Dart.
 
-Patrol also provides a [new custom finder system][finders] that extends
-Flutter's default finders, making them shorter and easier to understand.
-Patrol's custom finders, coupled with [Hot Restart], make writing widget tests
-and integration tests _dramatically_ faster, easier, and more fun!
+`patrol_finders` package provides a [new custom finder system][finders] that extends
+Flutter's default finders, making them shorter and easier to understand. They can be
+used in all kinds of Flutter tests, and in Patrol-specific UI tests.
 
-Patrol is also a revamped, production-quality version of Flutter's built-in
-`integration_test` plugin. It fixes its shortcomings and enables features such
-as full isolation between tests and sharding.
+`patrol_cli` package has dedicated commands for running UI tests. It also contains
+[Hot Restart] feature, which makes writing integration tests _dramatically_ faster,
+easier, and more fun!
 
 Patrol is an open-source project which is being developed and maintained by us –
 [LeanCode][leancode]! We use it to test our clients' production-grade apps, and
@@ -34,18 +37,18 @@ Learn more about Patrol:
 - [Read the article about the stable 1.0 release][article_1x]
 - [Read the article about the about how Patrol fixes integration_test][article_2x]
 
-or [get Patrol from pub.dev!][patrol_on_pubdev]
+or [get Patrol from pub.dev!][pubdev]
 
 [![Automated UI testing services][services_graphics]][services]
 
 [leancode]: https://leancode.co
-[native]: /native/overview
-[finders]: /finders/overview
+[native]: 
+[finders]: 
 [hot restart]: /cli-commands/develop
 [article_0x]: https://leancode.co/blog/patrol-flutter-first-ui-testing-framework
 [article_1x]: https://leancode.co/blog/patrol-1-0-powerful-flutter-ui-testing-framework
 [article_2x]: https://leancode.co/blog/patrol-2-0-improved-flutter-ui-testing
 [promo_graphics]: /assets/promo.png
-[patrol_on_pubdev]: https://pub.dev/packages/patrol
+[pubdev]: https://pub.dev
 [services_graphics]: /assets/services.png
 [services]: https://leancode.co/products/automated-ui-testing-in-flutter?utm_source=patrol_page&utm_medium=banner&utm_campaign=service
