@@ -37,11 +37,11 @@ class ServiceGenConfig {
 }
 
 class Service {
-  const Service(this.name, this.swift, this.dart, this.endpoints);
+  const Service(this.name, this.ios, this.dart, this.endpoints);
 
   final List<Endpoint> endpoints;
   final String name;
-  final ServiceGenConfig swift;
+  final ServiceGenConfig ios;
   final ServiceGenConfig dart;
 }
 

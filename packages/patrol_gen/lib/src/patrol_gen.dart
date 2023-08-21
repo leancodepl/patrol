@@ -20,17 +20,13 @@ class PatrolGenConfig {
 class PatrolGen {
   Future<void> run(PatrolGenConfig config) async {
     final schema = await resolveSchema(config.schemaFilename);
-    final files = DartGenerator().generate(schema, config.dartConfig);
 
-    final swiftContent =
-        IOSGenerator().generateContent(schema, config.iosConfig);
+    final files = DartGenerator().generate(schema, config.dartConfig);
+    files.addAll(IOSGenerator().generate(schema, config.iosConfig));
 
     for (var outputFile in files) {
       await File(outputFile.filename)
           .writeAsString(outputFile.content, flush: true);
     }
-
-    await File(config.iosConfig.contractsFilename)
-        .writeAsString(swiftContent, flush: true);
   }
 }

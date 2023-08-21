@@ -37,9 +37,9 @@ Service _createService(ClassDeclaration declaration, List<Message> messages) {
           .toSet() ??
       {};
 
-  final swiftGenConfig = ServiceGenConfig(
-    genericTypes.contains('SwiftClient'),
-    genericTypes.contains('SwiftServer'),
+  final iosGenConfig = ServiceGenConfig(
+    genericTypes.contains('IOSClient'),
+    genericTypes.contains('IOSServer'),
   );
 
   final dartGenConfig = ServiceGenConfig(
@@ -49,7 +49,7 @@ Service _createService(ClassDeclaration declaration, List<Message> messages) {
 
   return Service(
     declaration.name.lexeme,
-    swiftGenConfig,
+    iosGenConfig,
     dartGenConfig,
     declaration.members.whereType<MethodDeclaration>().map((method) {
       final returnType = method.returnType;
