@@ -1,0 +1,331 @@
+---
+title: Native automation setup
+---
+
+# Native automation setup
+
+Using Patrol's native automation feature requires more setup work than using
+custom finders. Unfortunately it's necessary, because you have to integrate your
+app with Android and/or iOS native testing tools.
+
+We believe that the powerful features you'll get will make up for it!
+
+<Warning>
+        In this tutorial, we are using example app, which has package name
+        `com.example.myapp` on Android, bundle id `com.example.MyApp` on iOS
+        and `My App` name on both Android and iOS. Replace any occurences
+        of those names with proper values.
+</Warning>
+
+### Add dependency on patrol
+
+If you haven't already, add a dependency on the `patrol` package in the
+`dev_dependencies` section of **pubspec.yaml**.
+
+```
+flutter pub add patrol --dev
+```
+
+### Configure Patrol in pubspec.yaml
+
+Create `patrol` section in your **pubspec.yaml**:
+
+```yaml title="pubspec.yaml"
+dependencies:
+  # ...
+
+dev_dependencies:
+  # ...
+
+patrol:
+  app_name: My App
+  android:
+    package_name: com.example.myapp
+  ios:
+    bundle_id: com.example.MyApp
+```
+
+### Install patrol_cli
+
+Patrol CLI (command-line interface) is a small program that enables running
+Patrol UI tests. It handles the complexity of native iOS and Android testing
+tools itself, so you can focus on writing your tests instead of learning yet
+another platform-specific tool.
+
+1. Install `patrol_cli` executable:
+
+   ```
+   dart pub global activate patrol_cli
+   ```
+
+2. Verify that installation was successful and your enviroment is set up properly:
+
+   ```
+   patrol doctor
+   ```
+
+### Integrate with native side
+
+The 3 first steps were common across platforms. The rest is platform-specific.
+
+Psst... Android is a bit easier to set up, so we recommend starting with it!
+
+<Tabs 
+  defaultValue="android" 
+  values={[
+    { label: "Android", value: "android" },
+    { label: "iOS", value: "ios" },
+  ]}>
+  <TabItem value="android">
+
+      Go to **android/app/src/androidTest/java/com/example/myapp/** in your project
+      directory. If there are no such folders, create them.
+
+      Create a file named `MainActivityTest.java` and copy there the code below.
+
+      ```java title="MainActivityTest.java"
+      package com.example.myapp; // replace "com.example.myapp" with your app's package
+
+      import androidx.test.platform.app.InstrumentationRegistry;
+      import org.junit.Test;
+      import org.junit.runner.RunWith;
+      import org.junit.runners.Parameterized;
+      import org.junit.runners.Parameterized.Parameters;
+      import pl.leancode.patrol.PatrolJUnitRunner;
+
+      @RunWith(Parameterized.class)
+      public class MainActivityTest {
+          @Parameters(name = "{0}")
+          public static Object[] testCases() {
+              PatrolJUnitRunner instrumentation = (PatrolJUnitRunner) InstrumentationRegistry.getInstrumentation();
+              instrumentation.setUp(MainActivity.class);
+              instrumentation.waitForPatrolAppService();
+              return instrumentation.listDartTests();
+          }
+
+          public MainActivityTest(String dartTestName) {
+              this.dartTestName = dartTestName;
+          }
+
+          private final String dartTestName;
+
+          @Test
+          public void runDartTest() {
+              PatrolJUnitRunner instrumentation = (PatrolJUnitRunner) InstrumentationRegistry.getInstrumentation();
+              instrumentation.runDartTest(dartTestName);
+          }
+      }
+      ```
+
+      Go to the **biuld.gradle** file, located in **android/app** folder in your
+      project directory.
+
+      Add these 2 lines to the `defaultConfig` section:
+
+      ```groovy
+        testInstrumentationRunner "pl.leancode.patrol.PatrolJUnitRunner"
+        testInstrumentationRunnerArguments clearPackageData: "true"
+      ```
+
+      Add these section to the `android` section:
+
+      ```groovy
+        testOptions {
+          execution "ANDROIDX_TEST_ORCHESTRATOR"
+        }
+      ```
+
+      Add this line to `dependencies` section:
+
+      ```groovy
+        androidTestUtil "androidx.test:orchestrator:1.4.2"
+      ```
+
+  </TabItem>
+  <TabItem value="ios">
+
+      Open `ios/Runner.xcworkspace` in Xcode. Create a test target if you
+      do not already have one via `File > New > Target...` and select `UI Testing Bundle`.
+      Change the `Product Name` to `RunnerUITests`. Make sure `Target to be Tested` is set to `Runner` and language is set to `Objective-C`.
+      Select `Finish`.
+
+      2 files are created: `RunnerUITests.m` and `RunnerUITestsLaunchTests.m`.
+      Delete `RunnerUITestsLaunchTests.m` **through Xcode**.
+
+      Make sure that the **iOS Deployment Target** of `RunnerUITests` within the
+      **Build Settings** section is the same as `Runner`.
+      The minimum supported **iOS Deployment Target** is `13.0`.
+
+      ![Xcode iOS deployment target](/assets/ios_deployment_target.png)
+
+      ![Xcode iOS deployment target 2](/assets/ios_deployment_target_2.png)
+
+      Replace contents of `RunnerUITests.m` file with the following:
+
+      ```objective-c title="ios/RunnerUITests/RunnerUITests.m"
+      @import XCTest;
+      @import patrol;
+      @import ObjectiveC.runtime;
+
+      PATROL_INTEGRATION_TEST_IOS_RUNNER(RunnerUITests)
+      ```
+
+      Add the newly created target to `ios/Podfile` by embedding in the existing
+      `Runner` target.
+
+      ```ruby title="ios/Podfile"
+      target 'Runner' do
+        # Do not change existing lines.
+        ...
+
+        target 'RunnerUITests' do
+          inherit! :complete
+        end
+      end
+      ```
+
+      To build `integration_test/example_test.dart` from the command line, run:
+
+      ```
+      $ flutter build ios --config-only integration_test/example_test.dart
+      ```
+
+      Now, go to your `ios` directory and set up the new target:
+
+      ```
+      $ pod install --repo-update
+      ```
+
+      Open your Xcode project and make sure every target has correct base
+      Build Configurations:
+
+      ```
+      $ open Runner.xcworkspace
+      ```
+
+      ![Xcode config setup](/assets/ios_runner_configs.png)
+
+      RunnerUITests depends on Patrol, which depens on Flutter, so we need to
+      tell Xcode to embed Flutter in the RunnerUITests target. To do this, add
+      2 new "Run Script Phase" Build Phases to the RunnerUITests target:
+
+      ![Xcode config setup](/assets/ios_runner_build_phases.png)
+
+      Paste this code into the first `xcode_backend build` Build Phase:
+
+      ```
+      /bin/sh "$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh" build
+      ```
+
+      Paste this code into the second `xcode_backend embed_and_thin` Build Phase:
+
+      ```
+      /bin/sh "$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh" embed_and_thin
+      ```
+
+      Xcode by default also enables a "parallel execution" setting, which
+      breaks Patrol. Disable it:
+
+      <YouTube id="9LdEJR59fW4" />
+
+      <Info>
+        If your app is using flavors, then you can pass them like so:
+
+        ```
+        patrol test --target integration_test/example_test.dart --flavor development
+        ```
+
+        or you can specify them in **pubspec.yaml** (recommended):
+
+        ```yaml title="pubspec.yaml"
+        patrol:
+          app_name: Awesome App
+          flavor: development
+          android:
+            package_name: pl.leancode.awesomeapp
+          ios:
+            bundle_id: pl.leancode.AwesomeApp
+            app_name: The Awesome App
+        ```
+      </Info>
+
+  </TabItem>
+</Tabs>
+
+### Create a simple integration test
+
+Let's create a dummy Flutter integration test that you'll use to verify
+that Patrol is correctly set up.
+
+Paste the following code into `integration_test/example_test.dart`:
+
+```dart title="integration_test/example_test.dart"
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:patrol/patrol.dart';
+
+void main() {
+  patrolTest(
+    'counter state is the same after going to home and switching apps',
+    nativeAutomation: true,
+    ($) async {
+      // Replace later with your app's main widget
+      await $.pumpWidgetAndSettle(
+        MaterialApp(
+          home: Scaffold(
+            appBar: AppBar(title: const Text('app')),
+            backgroundColor: Colors.blue,
+          ),
+        ),
+      );
+
+      expect($('app'), findsOneWidget);
+      await $.native.pressHome();
+    },
+  );
+}
+```
+
+It does only 2 things:
+
+- first, it finds a text `app`
+- then, it then exits to home screen
+
+It's a very simple test, but it's enough to verify that Patrol is correctly set
+up. To run `integration_test/example_test.dart` on a local Android or iOS device
+      (emulated or physical):
+
+      ```
+      patrol test -t integration_test/example_test.dart
+      ```
+
+      If the setup is successful, you should see a **TEST PASSED** message.
+
+      <Info>
+        If your app is using flavors, then you can pass them like so:
+
+        ```
+        patrol test --target integration_test/example_test.dart --flavor development
+        ```
+
+        or you can specify them in **pubspec.yaml** (recommended):
+
+        ```yaml title="pubspec.yaml"
+        patrol:
+          app_name: Awesome App
+          flavor: development
+          android:
+            package_name: pl.leancode.awesomeapp
+          ios:
+            bundle_id: pl.leancode.AwesomeApp
+            app_name: The Awesome App
+        ```
+      </Info>
+
+### Going from here
+
+To learn more about native capabilities, see [native automation] section.
+
+[integration_test]: https://github.com/flutter/flutter/tree/master/packages/integration_test
+[fastlane scan]: https://docs.fastlane.tools/actions/scan
+[native automation]: /native/overview
