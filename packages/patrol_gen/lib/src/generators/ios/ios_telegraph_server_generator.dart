@@ -1,11 +1,24 @@
+import 'package:patrol_gen/src/generators/ios/ios_config.dart';
+import 'package:patrol_gen/src/generators/output_file.dart';
 import 'package:patrol_gen/src/schema.dart';
 
-class IOSTelegraphGenerator {
-  String generateServer(Service service) {
-    return '''
-${_generateInterface(service)}
+class IOSTelegraphServerGenerator {
+  OutputFile generate(Service service, IOSConfig config) {
+    final buffer = StringBuffer()..write(_contentPrefix(config));
 
-${_generateSetUpRoutes(service)}
+    return OutputFile(
+      filename: config.serverFileName(service.name),
+      content: buffer.toString(),
+    );
+  }
+
+  String _contentPrefix(IOSConfig config) {
+    return '''
+///
+//  Generated code. Do not modify.
+//  source: schema.dart
+//
+
 ''';
   }
 

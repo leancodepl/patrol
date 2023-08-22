@@ -10,4 +10,6 @@ class IOSConfig {
 
   String clientFileName(String serviceName) =>
       path.join(outputDirectory, '${serviceName}Client.swift');
+  String serverFileName(String serviceName) =>
+      path.join(outputDirectory, '${serviceName}Server.swift');
 }
