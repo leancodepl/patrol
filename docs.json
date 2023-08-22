@@ -17,30 +17,32 @@
     ["Getting started", "/getting-started"],
     ["Patrol 2.0 is here!", "/v2"],
     [
-      "Custom finders",
+      "Widget testing - patrol_finders",
       [
-        ["Overview", "/finders/overview"],
-        ["Usage", "/finders/usage"],
-        ["Advanced", "/finders/advanced"]
+        ["Overview", "/patrol_finders/overview"],
+        ["Setup", "/patrol_finders/setup"],
+        ["Usage", "/patrol_finders/usage"],
+        ["Advanced", "/patrol_finders/advanced"]
       ]
     ],
     [
-      "Native automation",
+      "UI testing - patrol",
       [
-        ["Overview", "/native/overview"],
-        ["Usage", "/native/usage"],
-        ["Feature parity", "/native/feature-parity"]
+        ["Overview", "/patrol/overview"],
+        ["Setup", "/patrol/new-native-setup"],
+        ["Usage", "/patrol/usage"],
+        ["Feature parity", "/patrol/feature-parity"]
       ]
     ],
     [
-      "CLI commands",
+      "Running UI tests - patrol_cli",
       [
-        ["build", "/cli-commands/build"],
-        ["develop", "/cli-commands/develop"],
-        ["devices", "/cli-commands/devices"],
-        ["doctor", "/cli-commands/doctor"],
-        ["test", "/cli-commands/test"],
-        ["update", "/cli-commands/update"]
+        ["build", "/patrol_cli/build"],
+        ["develop", "/patrol_cli/develop"],
+        ["devices", "/patrol_cli/devices"],
+        ["doctor", "/patrol_cli/doctor"],
+        ["test", "/patrol_cli/test"],
+        ["update", "/patrol_cli/update"]
       ]
     ],
     [
