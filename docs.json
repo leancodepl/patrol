@@ -17,7 +17,7 @@
     ["Getting started", "/getting-started"],
     ["Patrol 2.0 is here!", "/v2"],
     [
-      "Widget testing - `patrol_finders`",
+      "Widget testing - patrol_finders",
       [
         ["Overview", "/patrol_finders/overview"],
         ["Setup", "/patrol_finders/setup"],
@@ -26,7 +26,7 @@
       ]
     ],
     [
-      "UI testing - `patrol`",
+      "UI testing - patrol",
       [
         ["Overview", "/patrol/overview"],
         ["Setup", "/patrol/new-native-setup"],
@@ -35,7 +35,7 @@
       ]
     ],
     [
-      "Running UI tests - `patrol_cli`",
+      "Running UI tests - patrol_cli",
       [
         ["build", "/patrol_cli/build"],
         ["develop", "/patrol_cli/develop"],
