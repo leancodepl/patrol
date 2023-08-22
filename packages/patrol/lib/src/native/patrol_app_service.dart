@@ -28,13 +28,13 @@ Future<void> runAppService(PatrolAppService service) async {
     return result!;
   });
 
-  await shelf_io.serve(
-    pipeline,
-    InternetAddress.anyIPv4,
-    _port,
-  );
+  final server = await shelf_io.serve(pipeline, InternetAddress.anyIPv4, _port);
 
-  print('PatrolAppService started on port $_port');
+  final address = server.address;
+
+  print(
+    'PatrolAppService started, address: ${address.address}, host: ${address.host}, port: ${server.port}',
+  );
 }
 
 /// Implements a stateful gRPC service for querying and executing Dart tests.
