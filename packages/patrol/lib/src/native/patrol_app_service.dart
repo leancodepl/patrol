@@ -23,10 +23,7 @@ class _TestExecutionResult {
 Future<void> runAppService(PatrolAppService service) async {
   final pipeline = const shelf.Pipeline()
       .addMiddleware(shelf.logRequests())
-      .addHandler((request) async {
-    final result = await service.handle(request);
-    return result!;
-  });
+      .addHandler(service.handle);
 
   final server = await shelf_io.serve(pipeline, InternetAddress.anyIPv4, _port);
 

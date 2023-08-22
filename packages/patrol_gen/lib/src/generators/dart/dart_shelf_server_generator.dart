@@ -84,13 +84,19 @@ $responseSerialization
   }
 
   String _createClass(Service service, String handlerCalls, String handlers) {
+    var notFoundRespone =
+        r"return Response.notFound('Request ${request.url} not found');";
+    if (service.endpoints.isNotEmpty) {
+      notFoundRespone = 'else { $notFoundRespone }';
+    }
+
     return '''
 abstract class ${service.name}Server {
-  FutureOr<Response?> handle(Request request) async {
+  FutureOr<Response> handle(Request request) async {
 
 $handlerCalls    
 
-    return null;
+$notFoundRespone
   }
 
 $handlers

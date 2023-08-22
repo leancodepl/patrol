@@ -12,7 +12,7 @@ import 'package:shelf/shelf.dart';
 import 'contracts.dart';
 
 abstract class PatrolAppServiceServer {
-  FutureOr<Response?> handle(Request request) async {
+  FutureOr<Response> handle(Request request) async {
     if ('listDartTests' == request.url.path) {
       final result = await listDartTests();
 
@@ -28,9 +28,9 @@ abstract class PatrolAppServiceServer {
 
       final body = jsonEncode(result.toJson());
       return Response.ok(body);
+    } else {
+      return Response.notFound('Request ${request.url} not found');
     }
-
-    return null;
   }
 
   Future<ListDartTestsResponse> listDartTests();
