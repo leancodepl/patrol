@@ -13,16 +13,16 @@ class PatrolAppServiceClient {
   }
 
   func listDartTests() async throws -> ListDartTestsResponse {
-    return try await performRequest(commandName: "listDartTests")
+    return try await performRequest(requestName: "listDartTests")
   }
 
   func runDartTest(request: RunDartTestRequest) async throws -> RunDartTestResponse {
     let body = try JSONEncoder().encode(request)
-    return try await performRequest(commandName: "runDartTest", body: body)
+    return try await performRequest(requestName: "runDartTest", body: body)
   }
 
-  private func performRequest<TResult: Codable>(commandName: String, body: Data? = nil) async throws -> TResult {
-    let url = URL(string: "http://\(address):\(port)/\(commandName)")!
+  private func performRequest<TResult: Codable>(requestName: String, body: Data? = nil) async throws -> TResult {
+    let url = URL(string: "http://\(address):\(port)/\(requestName)")!
 
     var request = URLRequest(url: url)
     request.httpMethod = "POST"

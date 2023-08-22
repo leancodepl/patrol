@@ -18,6 +18,7 @@ dependencies:
   flutter_test:
     sdk: flutter
   grpc: ^3.1.0
+  http: ^1.1.0
   integration_test:
     sdk: flutter
   json_annotation: ^4.8.1

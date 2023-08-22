@@ -27,7 +27,7 @@ class IOSURLSessionClientGenerator {
   String _createClass(Service service) {
     final endpoints = service.endpoints.map(_createEndpoint).join('\n\n');
 
-    final url = r'http://\(address):\(port)/\(commandName)';
+    final url = r'http://\(address):\(port)/\(requestName)';
 
     final throwException =
         r'throw PatrolError.internal("Invalid response: \(response) \(data)")';
@@ -44,7 +44,7 @@ class ${service.name}Client {
 
 $endpoints
 
-  private func performRequest<TResult: Codable>(commandName: String, body: Data? = nil) async throws -> TResult {
+  private func performRequest<TResult: Codable>(requestName: String, body: Data? = nil) async throws -> TResult {
     let url = URL(string: "$url")!
 
     var request = URLRequest(url: url)
@@ -76,7 +76,7 @@ $endpoints
 
     return '''
   func ${endpoint.name}($parameterDef) async throws $returnDef {$bodyCode
-    return try await performRequest(commandName: "${endpoint.name}"${bodyArgument})
+    return try await performRequest(requestName: "${endpoint.name}"${bodyArgument})
   }''';
   }
 }

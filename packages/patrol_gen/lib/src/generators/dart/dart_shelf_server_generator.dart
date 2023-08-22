@@ -11,7 +11,7 @@ class DartShelfServerGenerator {
     final handlerCalls = _generateHandlerCalls(service);
     final handlers = _generateHandlers(service);
 
-    buffer.write(_createClass(service, handlerCalls, handlers));
+    buffer.write(_createServerClass(service, handlerCalls, handlers));
 
     return OutputFile(
       filename: config.serviceFileName(service.name),
@@ -83,7 +83,8 @@ $responseSerialization
     }).join('\n');
   }
 
-  String _createClass(Service service, String handlerCalls, String handlers) {
+  String _createServerClass(
+      Service service, String handlerCalls, String handlers) {
     var notFoundRespone =
         r"return Response.notFound('Request ${request.url} not found');";
     if (service.endpoints.isNotEmpty) {

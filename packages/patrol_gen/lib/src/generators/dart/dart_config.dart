@@ -11,6 +11,9 @@ class DartConfig {
   String serviceFileName(String serviceName) =>
       path.join(outputDirectory, '${_fileName(serviceName)}_server.dart');
 
+  String clientFileName(String serviceName) =>
+      path.join(outputDirectory, '${_fileName(serviceName)}_client.dart');
+
   String _fileName(String pascalCaseName) {
     final beforeCapitalLetter = RegExp(r"(?=[A-Z])");
 
