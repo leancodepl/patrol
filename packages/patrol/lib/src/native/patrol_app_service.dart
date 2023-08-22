@@ -2,10 +2,12 @@
 // TODO: Use a logger instead of print
 
 import 'dart:async';
+import 'dart:io';
 
 import 'package:patrol/src/native/contracts/contracts.dart';
 import 'package:patrol/src/native/contracts/patrol_app_service_server.dart';
 
+import 'package:shelf/shelf.dart' as shelf;
 import 'package:shelf/shelf_io.dart' as shelf_io;
 
 const _port = 8082;
@@ -19,12 +21,16 @@ class _TestExecutionResult {
 
 /// Starts the gRPC server that runs the [PatrolAppService].
 Future<void> runAppService(PatrolAppService service) async {
+  final pipeline = const shelf.Pipeline()
+      .addMiddleware(shelf.logRequests())
+      .addHandler((request) async {
+    final result = await service.handle(request);
+    return result!;
+  });
+
   await shelf_io.serve(
-    (request) async {
-      final result = await service.handle(request);
-      return result!;
-    },
-    '0.0.0.0',
+    pipeline,
+    InternetAddress.anyIPv4,
     _port,
   );
 

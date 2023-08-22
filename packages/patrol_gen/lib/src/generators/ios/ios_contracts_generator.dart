@@ -26,11 +26,12 @@ class IOSContractsGenerator {
   }
 
   String _createMessage(Message message) {
-    final fields = message.fields
-        .map((e) => e.isList
-            ? ' var ${e.name}: [${_transformType(e.type)}]'
-            : ' var ${e.name}: ${_transformType(e.type)}')
-        .join('\n');
+    final fields = message.fields.map((e) {
+      final optional = e.isOptional ? '?' : '';
+      return e.isList
+          ? ' var ${e.name}: [${_transformType(e.type)}]$optional'
+          : ' var ${e.name}: ${_transformType(e.type)}$optional';
+    }).join('\n');
 
     return '''
 struct ${message.name}: Codable {

@@ -56,7 +56,7 @@ import NIOPosix
         host: "0.0.0.0", port: port
       ).get()
 
-      Logger.shared.i("Server started on http://localhost:\(port)")
+      Logger.shared.i("Server started on http://0.0.0.0:\(port)")
 
       try await server.onClose.get()
       Logger.shared.i("Server stopped")

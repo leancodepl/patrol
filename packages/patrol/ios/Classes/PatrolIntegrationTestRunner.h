@@ -23,7 +23,7 @@
     }];                                                                                                          \
                                                                                                                  \
     /* Create a client for PatrolAppService, which lets us list and run Dart tests */                            \
-    __block PatrolAppServiceClient *appServiceClient = [[PatrolAppServiceClient alloc] init];                    \
+    __block ObjCPatrolAppServiceClient *appServiceClient = [[ObjCPatrolAppServiceClient alloc] init];            \
                                                                                                                  \
     /* Allow the Local Network permission required by Dart Observatory */                                        \
     XCUIApplication *springboard = [[XCUIApplication alloc] initWithBundleIdentifier:@"com.apple.springboard"];  \
