@@ -289,7 +289,6 @@ class SwipeRequest {
     required this.endX,
     required this.endY,
     required this.steps,
-    required this.appId,
   });
 
   factory SwipeRequest.fromJson(Map<String, dynamic> json) =>
@@ -300,7 +299,6 @@ class SwipeRequest {
   final double endX;
   final double endY;
   final int steps;
-  final String appId;
 
   Map<String, dynamic> toJson() => _$SwipeRequestToJson(this);
 }

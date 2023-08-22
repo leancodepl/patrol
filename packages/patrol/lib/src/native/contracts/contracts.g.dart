@@ -225,7 +225,6 @@ SwipeRequest _$SwipeRequestFromJson(Map<String, dynamic> json) => SwipeRequest(
       endX: (json['endX'] as num).toDouble(),
       endY: (json['endY'] as num).toDouble(),
       steps: json['steps'] as int,
-      appId: json['appId'] as String,
     );
 
 Map<String, dynamic> _$SwipeRequestToJson(SwipeRequest instance) =>
@@ -235,7 +234,6 @@ Map<String, dynamic> _$SwipeRequestToJson(SwipeRequest instance) =>
       'endX': instance.endX,
       'endY': instance.endY,
       'steps': instance.steps,
-      'appId': instance.appId,
     };
 
 WaitUntilVisibleRequest _$WaitUntilVisibleRequestFromJson(

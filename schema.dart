@@ -97,7 +97,6 @@ class SwipeRequest {
   late double endX;
   late double endY;
   late int steps;
-  late String appId;
 }
 
 class WaitUntilVisibleRequest {

@@ -110,7 +110,6 @@ struct SwipeRequest: Codable {
  var endX: Double
  var endY: Double
  var steps: Int
- var appId: String
 }
 
 struct WaitUntilVisibleRequest: Codable {
