@@ -19,10 +19,10 @@
     [
       "Widget testing - patrol_finders",
       [
-        ["Overview", "/patrol_finders/overview"],
-        ["Setup", "/patrol_finders/setup"],
-        ["Usage", "/patrol_finders/usage"],
-        ["Advanced", "/patrol_finders/advanced"]
+        ["Overview", "/patrol-finders/overview"],
+        ["Setup", "/patrol-finders/setup"],
+        ["Usage", "/patrol-finders/usage"],
+        ["Advanced", "/patrol-finders/advanced"]
       ]
     ],
     [
