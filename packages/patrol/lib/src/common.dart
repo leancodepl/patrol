@@ -161,11 +161,11 @@ DartTestGroup createDartTestGroup(
   String prefix = '',
 }) {
   final groupName = topLevelGroup.name.replaceFirst(prefix, '').trim();
-  final group = DartTestGroup(name: groupName, groups: []);
+  final group = DartTestGroup(name: groupName, tests: [], groups: []);
 
   for (final entry in topLevelGroup.entries) {
     if (entry is Group) {
-      group.groups.add(DartTestGroup(name: entry.name, groups: []));
+      group.groups.add(DartTestGroup(name: entry.name, tests: [], groups: []));
     }
 
     if (entry is Test && entry.name != 'patrol_test_explorer') {

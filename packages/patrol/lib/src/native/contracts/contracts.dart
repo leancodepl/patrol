@@ -50,16 +50,16 @@ class DartTestCase {
 @JsonSerializable()
 class DartTestGroup {
   DartTestGroup({
-    this.name,
-    this.tests,
+    required this.name,
+    required this.tests,
     required this.groups,
   });
 
   factory DartTestGroup.fromJson(Map<String, dynamic> json) =>
       _$DartTestGroupFromJson(json);
 
-  final String? name;
-  final List<DartTestCase>? tests;
+  final String name;
+  final List<DartTestCase> tests;
   final List<DartTestGroup> groups;
 
   Map<String, dynamic> toJson() => _$DartTestGroupToJson(this);
@@ -82,13 +82,13 @@ class ListDartTestsResponse {
 @JsonSerializable()
 class RunDartTestRequest {
   RunDartTestRequest({
-    this.name,
+    required this.name,
   });
 
   factory RunDartTestRequest.fromJson(Map<String, dynamic> json) =>
       _$RunDartTestRequestFromJson(json);
 
-  final String? name;
+  final String name;
 
   Map<String, dynamic> toJson() => _$RunDartTestRequestToJson(this);
 }
@@ -126,13 +126,13 @@ class ConfigureRequest {
 @JsonSerializable()
 class OpenAppRequest {
   OpenAppRequest({
-    this.appId,
+    required this.appId,
   });
 
   factory OpenAppRequest.fromJson(Map<String, dynamic> json) =>
       _$OpenAppRequestFromJson(json);
 
-  final String? appId;
+  final String appId;
 
   Map<String, dynamic> toJson() => _$OpenAppRequestToJson(this);
 }
@@ -186,15 +186,15 @@ class Selector {
 @JsonSerializable()
 class GetNativeViewsRequest {
   GetNativeViewsRequest({
-    this.selector,
-    this.appId,
+    required this.selector,
+    required this.appId,
   });
 
   factory GetNativeViewsRequest.fromJson(Map<String, dynamic> json) =>
       _$GetNativeViewsRequestFromJson(json);
 
-  final Selector? selector;
-  final String? appId;
+  final Selector selector;
+  final String appId;
 
   Map<String, dynamic> toJson() => _$GetNativeViewsRequestToJson(this);
 }
@@ -202,29 +202,29 @@ class GetNativeViewsRequest {
 @JsonSerializable()
 class NativeView {
   NativeView({
-    this.className,
-    this.text,
-    this.contentDescription,
-    this.focused,
-    this.enabled,
-    this.childCount,
-    this.resourceName,
-    this.applicationPackage,
-    this.children,
+    required this.className,
+    required this.text,
+    required this.contentDescription,
+    required this.focused,
+    required this.enabled,
+    required this.childCount,
+    required this.resourceName,
+    required this.applicationPackage,
+    required this.children,
   });
 
   factory NativeView.fromJson(Map<String, dynamic> json) =>
       _$NativeViewFromJson(json);
 
-  final String? className;
-  final String? text;
-  final String? contentDescription;
-  final bool? focused;
-  final bool? enabled;
-  final int? childCount;
-  final String? resourceName;
-  final String? applicationPackage;
-  final List<NativeView>? children;
+  final String className;
+  final String text;
+  final String contentDescription;
+  final bool focused;
+  final bool enabled;
+  final int childCount;
+  final String resourceName;
+  final String applicationPackage;
+  final List<NativeView> children;
 
   Map<String, dynamic> toJson() => _$NativeViewToJson(this);
 }
@@ -232,13 +232,13 @@ class NativeView {
 @JsonSerializable()
 class GetNativeViewsResponse {
   GetNativeViewsResponse({
-    this.nativeViews,
+    required this.nativeViews,
   });
 
   factory GetNativeViewsResponse.fromJson(Map<String, dynamic> json) =>
       _$GetNativeViewsResponseFromJson(json);
 
-  final List<NativeView>? nativeViews;
+  final List<NativeView> nativeViews;
 
   Map<String, dynamic> toJson() => _$GetNativeViewsResponseToJson(this);
 }
@@ -246,15 +246,15 @@ class GetNativeViewsResponse {
 @JsonSerializable()
 class TapRequest {
   TapRequest({
-    this.selector,
-    this.appId,
+    required this.selector,
+    required this.appId,
   });
 
   factory TapRequest.fromJson(Map<String, dynamic> json) =>
       _$TapRequestFromJson(json);
 
-  final Selector? selector;
-  final String? appId;
+  final Selector selector;
+  final String appId;
 
   Map<String, dynamic> toJson() => _$TapRequestToJson(this);
 }
@@ -262,8 +262,8 @@ class TapRequest {
 @JsonSerializable()
 class EnterTextRequest {
   EnterTextRequest({
-    this.data,
-    this.appId,
+    required this.data,
+    required this.appId,
     this.index,
     this.selector,
     this.showKeyboard,
@@ -272,8 +272,8 @@ class EnterTextRequest {
   factory EnterTextRequest.fromJson(Map<String, dynamic> json) =>
       _$EnterTextRequestFromJson(json);
 
-  final String? data;
-  final String? appId;
+  final String data;
+  final String appId;
   final int? index;
   final Selector? selector;
   final bool? showKeyboard;
@@ -284,23 +284,23 @@ class EnterTextRequest {
 @JsonSerializable()
 class SwipeRequest {
   SwipeRequest({
-    this.startX,
-    this.startY,
-    this.endX,
-    this.endY,
-    this.steps,
-    this.appId,
+    required this.startX,
+    required this.startY,
+    required this.endX,
+    required this.endY,
+    required this.steps,
+    required this.appId,
   });
 
   factory SwipeRequest.fromJson(Map<String, dynamic> json) =>
       _$SwipeRequestFromJson(json);
 
-  final double? startX;
-  final double? startY;
-  final double? endX;
-  final double? endY;
-  final int? steps;
-  final String? appId;
+  final double startX;
+  final double startY;
+  final double endX;
+  final double endY;
+  final int steps;
+  final String appId;
 
   Map<String, dynamic> toJson() => _$SwipeRequestToJson(this);
 }
@@ -308,15 +308,15 @@ class SwipeRequest {
 @JsonSerializable()
 class WaitUntilVisibleRequest {
   WaitUntilVisibleRequest({
-    this.selector,
-    this.appId,
+    required this.selector,
+    required this.appId,
   });
 
   factory WaitUntilVisibleRequest.fromJson(Map<String, dynamic> json) =>
       _$WaitUntilVisibleRequestFromJson(json);
 
-  final Selector? selector;
-  final String? appId;
+  final Selector selector;
+  final String appId;
 
   Map<String, dynamic> toJson() => _$WaitUntilVisibleRequestToJson(this);
 }
@@ -324,13 +324,13 @@ class WaitUntilVisibleRequest {
 @JsonSerializable()
 class DarkModeRequest {
   DarkModeRequest({
-    this.appId,
+    required this.appId,
   });
 
   factory DarkModeRequest.fromJson(Map<String, dynamic> json) =>
       _$DarkModeRequestFromJson(json);
 
-  final String? appId;
+  final String appId;
 
   Map<String, dynamic> toJson() => _$DarkModeRequestToJson(this);
 }
@@ -339,18 +339,18 @@ class DarkModeRequest {
 class Notification {
   Notification({
     this.appName,
-    this.title,
-    this.content,
-    this.raw,
+    required this.title,
+    required this.content,
+    required this.raw,
   });
 
   factory Notification.fromJson(Map<String, dynamic> json) =>
       _$NotificationFromJson(json);
 
   final String? appName;
-  final String? title;
-  final String? content;
-  final String? raw;
+  final String title;
+  final String content;
+  final String raw;
 
   Map<String, dynamic> toJson() => _$NotificationToJson(this);
 }
@@ -358,13 +358,13 @@ class Notification {
 @JsonSerializable()
 class GetNotificationsResponse {
   GetNotificationsResponse({
-    this.notifications,
+    required this.notifications,
   });
 
   factory GetNotificationsResponse.fromJson(Map<String, dynamic> json) =>
       _$GetNotificationsResponseFromJson(json);
 
-  final List<Notification>? notifications;
+  final List<Notification> notifications;
 
   Map<String, dynamic> toJson() => _$GetNotificationsResponseToJson(this);
 }
@@ -398,13 +398,13 @@ class TapOnNotificationRequest {
 @JsonSerializable()
 class PermissionDialogVisibleResponse {
   PermissionDialogVisibleResponse({
-    this.visible,
+    required this.visible,
   });
 
   factory PermissionDialogVisibleResponse.fromJson(Map<String, dynamic> json) =>
       _$PermissionDialogVisibleResponseFromJson(json);
 
-  final bool? visible;
+  final bool visible;
 
   Map<String, dynamic> toJson() =>
       _$PermissionDialogVisibleResponseToJson(this);
@@ -413,13 +413,13 @@ class PermissionDialogVisibleResponse {
 @JsonSerializable()
 class PermissionDialogVisibleRequest {
   PermissionDialogVisibleRequest({
-    this.timeoutMillis,
+    required this.timeoutMillis,
   });
 
   factory PermissionDialogVisibleRequest.fromJson(Map<String, dynamic> json) =>
       _$PermissionDialogVisibleRequestFromJson(json);
 
-  final int? timeoutMillis;
+  final int timeoutMillis;
 
   Map<String, dynamic> toJson() => _$PermissionDialogVisibleRequestToJson(this);
 }
@@ -427,13 +427,13 @@ class PermissionDialogVisibleRequest {
 @JsonSerializable()
 class HandlePermissionRequest {
   HandlePermissionRequest({
-    this.code,
+    required this.code,
   });
 
   factory HandlePermissionRequest.fromJson(Map<String, dynamic> json) =>
       _$HandlePermissionRequestFromJson(json);
 
-  final HandlePermissionRequestCode? code;
+  final HandlePermissionRequestCode code;
 
   Map<String, dynamic> toJson() => _$HandlePermissionRequestToJson(this);
 }
@@ -441,13 +441,13 @@ class HandlePermissionRequest {
 @JsonSerializable()
 class SetLocationAccuracyRequest {
   SetLocationAccuracyRequest({
-    this.locationAccuracy,
+    required this.locationAccuracy,
   });
 
   factory SetLocationAccuracyRequest.fromJson(Map<String, dynamic> json) =>
       _$SetLocationAccuracyRequestFromJson(json);
 
-  final SetLocationAccuracyRequestLocationAccuracy? locationAccuracy;
+  final SetLocationAccuracyRequestLocationAccuracy locationAccuracy;
 
   Map<String, dynamic> toJson() => _$SetLocationAccuracyRequestToJson(this);
 }

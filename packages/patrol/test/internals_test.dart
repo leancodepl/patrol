@@ -61,16 +61,23 @@ void main() {
         dartTestGroup,
         DartTestGroup(
           name: '',
+          tests: [],
           groups: [
             DartTestGroup(
               name: 'permissions.permissions_location_test',
               groups: [],
+              tests: [],
             ),
             DartTestGroup(
               name: 'permissions.permissions_many_test',
               groups: [],
+              tests: [],
             ),
-            DartTestGroup(name: 'example_test', groups: []),
+            DartTestGroup(
+              name: 'example_test',
+              groups: [],
+              tests: [],
+            ),
           ],
         ),
       );

@@ -3,8 +3,8 @@ class DartTestCase {
 }
 
 class DartTestGroup {
-  String? name;
-  List<DartTestCase>? tests;
+  late String name;
+  late List<DartTestCase> tests;
   late List<DartTestGroup> groups;
 }
 
@@ -19,7 +19,7 @@ enum RunDartTestResponseResult {
 }
 
 class RunDartTestRequest {
-  String? name;
+  late String name;
 }
 
 class RunDartTestResponse {
@@ -37,7 +37,7 @@ class ConfigureRequest {
 }
 
 class OpenAppRequest {
-  String? appId;
+  late String appId;
 }
 
 class OpenQuickSettingsRequest {}
@@ -58,66 +58,66 @@ class Selector {
 }
 
 class GetNativeViewsRequest {
-  Selector? selector;
-  String? appId;
+  late Selector selector;
+  late String appId;
 }
 
 class NativeView {
-  String? className;
-  String? text;
-  String? contentDescription;
-  bool? focused;
-  bool? enabled;
-  int? childCount;
-  String? resourceName;
-  String? applicationPackage;
-  List<NativeView>? children;
+  late String className;
+  late String text;
+  late String contentDescription;
+  late bool focused;
+  late bool enabled;
+  late int childCount;
+  late String resourceName;
+  late String applicationPackage;
+  late List<NativeView> children;
 }
 
 class GetNativeViewsResponse {
-  List<NativeView>? nativeViews;
+  late List<NativeView> nativeViews;
 }
 
 class TapRequest {
-  Selector? selector;
-  String? appId;
+  late Selector selector;
+  late String appId;
 }
 
 class EnterTextRequest {
-  String? data;
-  String? appId;
+  late String data;
+  late String appId;
   int? index;
   Selector? selector;
   bool? showKeyboard;
 }
 
 class SwipeRequest {
-  double? startX;
-  double? startY;
-  double? endX;
-  double? endY;
-  int? steps;
-  String? appId;
+  late double startX;
+  late double startY;
+  late double endX;
+  late double endY;
+  late int steps;
+  late String appId;
 }
 
 class WaitUntilVisibleRequest {
-  Selector? selector;
-  String? appId;
+  late Selector selector;
+  late String appId;
 }
 
 class DarkModeRequest {
-  String? appId;
+  late String appId;
 }
 
 class Notification {
   String? appName;
-  String? title;
-  String? content;
-  String? raw;
+  late String title;
+  late String content;
+  late String raw;
 }
 
 class GetNotificationsResponse {
-  List<Notification>? notifications;
+  late List<Notification> notifications;
 }
 
 class GetNotificationsRequest {}
@@ -128,11 +128,11 @@ class TapOnNotificationRequest {
 }
 
 class PermissionDialogVisibleResponse {
-  bool? visible;
+  late bool visible;
 }
 
 class PermissionDialogVisibleRequest {
-  int? timeoutMillis;
+  late int timeoutMillis;
 }
 
 enum HandlePermissionRequestCode {
@@ -142,7 +142,7 @@ enum HandlePermissionRequestCode {
 }
 
 class HandlePermissionRequest {
-  HandlePermissionRequestCode? code;
+  late HandlePermissionRequestCode code;
 }
 
 enum SetLocationAccuracyRequestLocationAccuracy {
@@ -151,7 +151,7 @@ enum SetLocationAccuracyRequestLocationAccuracy {
 }
 
 class SetLocationAccuracyRequest {
-  SetLocationAccuracyRequestLocationAccuracy? locationAccuracy;
+  late SetLocationAccuracyRequestLocationAccuracy locationAccuracy;
 }
 
 abstract class NativeAutomator<IOSServer, DartClient> {

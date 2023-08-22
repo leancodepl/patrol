@@ -17,9 +17,9 @@ Map<String, dynamic> _$DartTestCaseToJson(DartTestCase instance) =>
 
 DartTestGroup _$DartTestGroupFromJson(Map<String, dynamic> json) =>
     DartTestGroup(
-      name: json['name'] as String?,
-      tests: (json['tests'] as List<dynamic>?)
-          ?.map((e) => DartTestCase.fromJson(e as Map<String, dynamic>))
+      name: json['name'] as String,
+      tests: (json['tests'] as List<dynamic>)
+          .map((e) => DartTestCase.fromJson(e as Map<String, dynamic>))
           .toList(),
       groups: (json['groups'] as List<dynamic>)
           .map((e) => DartTestGroup.fromJson(e as Map<String, dynamic>))
@@ -47,7 +47,7 @@ Map<String, dynamic> _$ListDartTestsResponseToJson(
 
 RunDartTestRequest _$RunDartTestRequestFromJson(Map<String, dynamic> json) =>
     RunDartTestRequest(
-      name: json['name'] as String?,
+      name: json['name'] as String,
     );
 
 Map<String, dynamic> _$RunDartTestRequestToJson(RunDartTestRequest instance) =>
@@ -86,7 +86,7 @@ Map<String, dynamic> _$ConfigureRequestToJson(ConfigureRequest instance) =>
 
 OpenAppRequest _$OpenAppRequestFromJson(Map<String, dynamic> json) =>
     OpenAppRequest(
-      appId: json['appId'] as String?,
+      appId: json['appId'] as String,
     );
 
 Map<String, dynamic> _$OpenAppRequestToJson(OpenAppRequest instance) =>
@@ -136,10 +136,8 @@ Map<String, dynamic> _$SelectorToJson(Selector instance) => <String, dynamic>{
 GetNativeViewsRequest _$GetNativeViewsRequestFromJson(
         Map<String, dynamic> json) =>
     GetNativeViewsRequest(
-      selector: json['selector'] == null
-          ? null
-          : Selector.fromJson(json['selector'] as Map<String, dynamic>),
-      appId: json['appId'] as String?,
+      selector: Selector.fromJson(json['selector'] as Map<String, dynamic>),
+      appId: json['appId'] as String,
     );
 
 Map<String, dynamic> _$GetNativeViewsRequestToJson(
@@ -150,16 +148,16 @@ Map<String, dynamic> _$GetNativeViewsRequestToJson(
     };
 
 NativeView _$NativeViewFromJson(Map<String, dynamic> json) => NativeView(
-      className: json['className'] as String?,
-      text: json['text'] as String?,
-      contentDescription: json['contentDescription'] as String?,
-      focused: json['focused'] as bool?,
-      enabled: json['enabled'] as bool?,
-      childCount: json['childCount'] as int?,
-      resourceName: json['resourceName'] as String?,
-      applicationPackage: json['applicationPackage'] as String?,
-      children: (json['children'] as List<dynamic>?)
-          ?.map((e) => NativeView.fromJson(e as Map<String, dynamic>))
+      className: json['className'] as String,
+      text: json['text'] as String,
+      contentDescription: json['contentDescription'] as String,
+      focused: json['focused'] as bool,
+      enabled: json['enabled'] as bool,
+      childCount: json['childCount'] as int,
+      resourceName: json['resourceName'] as String,
+      applicationPackage: json['applicationPackage'] as String,
+      children: (json['children'] as List<dynamic>)
+          .map((e) => NativeView.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
 
@@ -179,8 +177,8 @@ Map<String, dynamic> _$NativeViewToJson(NativeView instance) =>
 GetNativeViewsResponse _$GetNativeViewsResponseFromJson(
         Map<String, dynamic> json) =>
     GetNativeViewsResponse(
-      nativeViews: (json['nativeViews'] as List<dynamic>?)
-          ?.map((e) => NativeView.fromJson(e as Map<String, dynamic>))
+      nativeViews: (json['nativeViews'] as List<dynamic>)
+          .map((e) => NativeView.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
 
@@ -191,10 +189,8 @@ Map<String, dynamic> _$GetNativeViewsResponseToJson(
     };
 
 TapRequest _$TapRequestFromJson(Map<String, dynamic> json) => TapRequest(
-      selector: json['selector'] == null
-          ? null
-          : Selector.fromJson(json['selector'] as Map<String, dynamic>),
-      appId: json['appId'] as String?,
+      selector: Selector.fromJson(json['selector'] as Map<String, dynamic>),
+      appId: json['appId'] as String,
     );
 
 Map<String, dynamic> _$TapRequestToJson(TapRequest instance) =>
@@ -205,8 +201,8 @@ Map<String, dynamic> _$TapRequestToJson(TapRequest instance) =>
 
 EnterTextRequest _$EnterTextRequestFromJson(Map<String, dynamic> json) =>
     EnterTextRequest(
-      data: json['data'] as String?,
-      appId: json['appId'] as String?,
+      data: json['data'] as String,
+      appId: json['appId'] as String,
       index: json['index'] as int?,
       selector: json['selector'] == null
           ? null
@@ -224,12 +220,12 @@ Map<String, dynamic> _$EnterTextRequestToJson(EnterTextRequest instance) =>
     };
 
 SwipeRequest _$SwipeRequestFromJson(Map<String, dynamic> json) => SwipeRequest(
-      startX: (json['startX'] as num?)?.toDouble(),
-      startY: (json['startY'] as num?)?.toDouble(),
-      endX: (json['endX'] as num?)?.toDouble(),
-      endY: (json['endY'] as num?)?.toDouble(),
-      steps: json['steps'] as int?,
-      appId: json['appId'] as String?,
+      startX: (json['startX'] as num).toDouble(),
+      startY: (json['startY'] as num).toDouble(),
+      endX: (json['endX'] as num).toDouble(),
+      endY: (json['endY'] as num).toDouble(),
+      steps: json['steps'] as int,
+      appId: json['appId'] as String,
     );
 
 Map<String, dynamic> _$SwipeRequestToJson(SwipeRequest instance) =>
@@ -245,10 +241,8 @@ Map<String, dynamic> _$SwipeRequestToJson(SwipeRequest instance) =>
 WaitUntilVisibleRequest _$WaitUntilVisibleRequestFromJson(
         Map<String, dynamic> json) =>
     WaitUntilVisibleRequest(
-      selector: json['selector'] == null
-          ? null
-          : Selector.fromJson(json['selector'] as Map<String, dynamic>),
-      appId: json['appId'] as String?,
+      selector: Selector.fromJson(json['selector'] as Map<String, dynamic>),
+      appId: json['appId'] as String,
     );
 
 Map<String, dynamic> _$WaitUntilVisibleRequestToJson(
@@ -260,7 +254,7 @@ Map<String, dynamic> _$WaitUntilVisibleRequestToJson(
 
 DarkModeRequest _$DarkModeRequestFromJson(Map<String, dynamic> json) =>
     DarkModeRequest(
-      appId: json['appId'] as String?,
+      appId: json['appId'] as String,
     );
 
 Map<String, dynamic> _$DarkModeRequestToJson(DarkModeRequest instance) =>
@@ -270,9 +264,9 @@ Map<String, dynamic> _$DarkModeRequestToJson(DarkModeRequest instance) =>
 
 Notification _$NotificationFromJson(Map<String, dynamic> json) => Notification(
       appName: json['appName'] as String?,
-      title: json['title'] as String?,
-      content: json['content'] as String?,
-      raw: json['raw'] as String?,
+      title: json['title'] as String,
+      content: json['content'] as String,
+      raw: json['raw'] as String,
     );
 
 Map<String, dynamic> _$NotificationToJson(Notification instance) =>
@@ -286,8 +280,8 @@ Map<String, dynamic> _$NotificationToJson(Notification instance) =>
 GetNotificationsResponse _$GetNotificationsResponseFromJson(
         Map<String, dynamic> json) =>
     GetNotificationsResponse(
-      notifications: (json['notifications'] as List<dynamic>?)
-          ?.map((e) => Notification.fromJson(e as Map<String, dynamic>))
+      notifications: (json['notifications'] as List<dynamic>)
+          .map((e) => Notification.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
 
@@ -324,7 +318,7 @@ Map<String, dynamic> _$TapOnNotificationRequestToJson(
 PermissionDialogVisibleResponse _$PermissionDialogVisibleResponseFromJson(
         Map<String, dynamic> json) =>
     PermissionDialogVisibleResponse(
-      visible: json['visible'] as bool?,
+      visible: json['visible'] as bool,
     );
 
 Map<String, dynamic> _$PermissionDialogVisibleResponseToJson(
@@ -336,7 +330,7 @@ Map<String, dynamic> _$PermissionDialogVisibleResponseToJson(
 PermissionDialogVisibleRequest _$PermissionDialogVisibleRequestFromJson(
         Map<String, dynamic> json) =>
     PermissionDialogVisibleRequest(
-      timeoutMillis: json['timeoutMillis'] as int?,
+      timeoutMillis: json['timeoutMillis'] as int,
     );
 
 Map<String, dynamic> _$PermissionDialogVisibleRequestToJson(
@@ -348,14 +342,13 @@ Map<String, dynamic> _$PermissionDialogVisibleRequestToJson(
 HandlePermissionRequest _$HandlePermissionRequestFromJson(
         Map<String, dynamic> json) =>
     HandlePermissionRequest(
-      code: $enumDecodeNullable(
-          _$HandlePermissionRequestCodeEnumMap, json['code']),
+      code: $enumDecode(_$HandlePermissionRequestCodeEnumMap, json['code']),
     );
 
 Map<String, dynamic> _$HandlePermissionRequestToJson(
         HandlePermissionRequest instance) =>
     <String, dynamic>{
-      'code': _$HandlePermissionRequestCodeEnumMap[instance.code],
+      'code': _$HandlePermissionRequestCodeEnumMap[instance.code]!,
     };
 
 const _$HandlePermissionRequestCodeEnumMap = {
@@ -367,7 +360,7 @@ const _$HandlePermissionRequestCodeEnumMap = {
 SetLocationAccuracyRequest _$SetLocationAccuracyRequestFromJson(
         Map<String, dynamic> json) =>
     SetLocationAccuracyRequest(
-      locationAccuracy: $enumDecodeNullable(
+      locationAccuracy: $enumDecode(
           _$SetLocationAccuracyRequestLocationAccuracyEnumMap,
           json['locationAccuracy']),
     );
@@ -376,7 +369,7 @@ Map<String, dynamic> _$SetLocationAccuracyRequestToJson(
         SetLocationAccuracyRequest instance) =>
     <String, dynamic>{
       'locationAccuracy': _$SetLocationAccuracyRequestLocationAccuracyEnumMap[
-          instance.locationAccuracy],
+          instance.locationAccuracy]!,
     };
 
 const _$SetLocationAccuracyRequestLocationAccuracyEnumMap = {
