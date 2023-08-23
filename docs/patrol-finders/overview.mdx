@@ -46,7 +46,7 @@ testWidgets('signs up', (WidgetTester tester) async {
 to this:
 
 ```dart
-patrolTest('signs up', (PatrolTester $) async {
+patrolWidgetTest('signs up', (PatrolTester $) async {
   await $.pumpWidgetAndSettle(AwesomeApp());
 
   await $(#emailTextField).enterText('charlie@root.me');

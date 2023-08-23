@@ -117,7 +117,7 @@ Psst... Android is a bit easier to set up, so we recommend starting with it!
       }
       ```
 
-      Go to the **biuld.gradle** file, located in **android/app** folder in your
+      Go to the **build.gradle** file, located in **android/app** folder in your
       project directory.
 
       Add these 2 lines to the `defaultConfig` section:
@@ -127,7 +127,7 @@ Psst... Android is a bit easier to set up, so we recommend starting with it!
         testInstrumentationRunnerArguments clearPackageData: "true"
       ```
 
-      Add these section to the `android` section:
+      Add this section to the `android` section:
 
       ```groovy
         testOptions {
@@ -227,6 +227,8 @@ Psst... Android is a bit easier to set up, so we recommend starting with it!
       breaks Patrol. Disable it:
 
       <YouTube id="9LdEJR59fW4" />
+
+      
 
       <Info>
         If your app is using flavors, then you can pass them like so:
