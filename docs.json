@@ -29,7 +29,9 @@
       "UI testing - patrol",
       [
         ["Overview", "/patrol/overview"],
-        ["Setup", "/patrol/new-native-setup"],
+        ["Old Setup", "/patrol/native-setup"],
+        ["New Setup", "/patrol/new-native-setup"],
+        ["Alt new Setup", "/patrol/alt-native-setup"],
         ["Usage", "/patrol/usage"],
         ["Feature parity", "/patrol/feature-parity"]
       ]
