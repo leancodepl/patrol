@@ -2,7 +2,7 @@
 
 import Foundation
 
-final class AutomatorServer: NativeAutomatorClient {
+final class AutomatorServer: NativeAutomatorServer {
     private let automator: Automator
     
     private let onAppReady: (Bool) -> Void
@@ -63,13 +63,11 @@ final class AutomatorServer: NativeAutomatorClient {
     ) async throws -> GetNativeViewsResponse {
         return try await runCatching {
             let nativeViews = try await automator.getNativeViews(
-                byText: request.selector.text,
+                byText: request.selector.text ?? String(),
                 inApp: request.appId
             )
             
-            return GetNativeViewsResponse.with {
-                $0.nativeViews = nativeViews
-            }
+            return GetNativeViewsResponse(nativeViews: nativeViews)
         }
     }
     
@@ -215,9 +213,7 @@ final class AutomatorServer: NativeAutomatorClient {
     ) async throws -> GetNotificationsResponse {
         return try await runCatching {
             let notifications = try await automator.getNotifications()
-            return GetNotificationsResponse.with {
-                $0.notifications = notifications
-            }
+            return GetNotificationsResponse(notifications: notifications)
         }
     }
     

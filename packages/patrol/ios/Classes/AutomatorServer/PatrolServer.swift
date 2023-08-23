@@ -1,7 +1,4 @@
 import Foundation
-import GRPC
-import NIOCore
-import NIOPosix
 
 @objc public class PatrolServer: NSObject {
   private static let envPortKey = "PATROL_PORT"
