@@ -1,5 +1,3 @@
-import Logging
-
 /// The sole reason for existence of this class is that Swift Protobufs can't be used in Objective-C.
 @objc public class RunDartTestResponse2: NSObject {
   @objc public dynamic let passed: Bool
