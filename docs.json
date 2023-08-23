@@ -33,6 +33,7 @@
         ["New Setup", "/patrol/new-native-setup"],
         ["Alt new Setup", "/patrol/alt-native-setup"],
         ["Usage", "/patrol/usage"],
+        ["Advanced", "/patrol/advanced"],
         ["Feature parity", "/patrol/feature-parity"]
       ]
     ],
