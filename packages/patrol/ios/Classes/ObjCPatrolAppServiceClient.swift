@@ -24,7 +24,7 @@
     
     NSLog("PatrolAppServiceClient: created, port: \(port)")
     
-    client = PatrolAppServiceClient(port: port, address: "127.0.0.1")
+    client = PatrolAppServiceClient(port: port, address: "localhost")
   }
 
   @objc public func listDartTests() async throws -> [String] {
