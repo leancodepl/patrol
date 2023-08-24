@@ -100,7 +100,7 @@
       inApp bundleId: String
     ) async throws {
       let view = "text field with text \(format: text) at index \(index) in app \(bundleId)"
-      var data = "\(data)\n"
+      let data = "\(data)\n"
 
       try await runAction("entering text \(format: data) into \(view)") {
         let app = try self.getApp(withBundleId: bundleId)
@@ -210,8 +210,8 @@
           self.preferences.descendants(matching: .any)["Developer"].firstMatch.tap()
 
           let value =
-            self.preferences.descendants(matching: .any)["Dark Appearance"].firstMatch.value!
-            as! String
+            self.preferences.descendants(matching: .any)["Dark Appearance"].firstMatch.value
+            as? String?
           if value == "0" {
             self.preferences.descendants(matching: .any)["Dark Appearance"].firstMatch.tap()
           }
@@ -228,8 +228,8 @@
           self.preferences.descendants(matching: .any)["Developer"].firstMatch.tap()
 
           let value =
-            self.preferences.descendants(matching: .any)["Dark Appearance"].firstMatch.value!
-            as! String
+            self.preferences.descendants(matching: .any)["Dark Appearance"].firstMatch.value
+            as? String?
           if value == "1" {
             self.preferences.descendants(matching: .any)["Dark Appearance"].firstMatch.tap()
           }
