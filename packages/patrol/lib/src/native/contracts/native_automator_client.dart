@@ -300,6 +300,9 @@ class NativeAutomatorClient {
     if (response.statusCode != 200) {
       throw NativeAutomatorClientException(response.statusCode, response.body);
     }
-    return jsonDecode(response.body) as Map<String, dynamic>;
+
+    return response.body.isNotEmpty
+        ? jsonDecode(response.body) as Map<String, dynamic>
+        : {};
   }
 }
