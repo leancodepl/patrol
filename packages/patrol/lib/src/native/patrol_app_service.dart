@@ -25,7 +25,13 @@ Future<void> runAppService(PatrolAppService service) async {
       .addMiddleware(shelf.logRequests())
       .addHandler(service.handle);
 
-  final server = await shelf_io.serve(pipeline, InternetAddress.anyIPv4, _port);
+  final server = await shelf_io.serve(
+    pipeline,
+    InternetAddress.anyIPv4,
+    _port,
+    poweredByHeader: null,
+    shared: true,
+  );
 
   final address = server.address;
 

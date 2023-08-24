@@ -60,6 +60,8 @@
           dartTestFiles = dartTests;                                                                             \
         }];                                                                                                      \
                                                                                                                  \
+    NSLog(@"Spin the runloop waiting");                                                                          \
+                                                                                                                 \
     /* Spin the runloop waiting until the app reports the Dart tests it contains */                              \
     while (!dartTestFiles) {                                                                                     \
       [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];                         \
