@@ -22,8 +22,12 @@
       NSLog(@"Server loop done, error: %@", err);                                                                \
     }];                                                                                                          \
                                                                                                                  \
+    NSLog(@"Create PatrolAppServiceClient");                                                                     \
+                                                                                                                 \
     /* Create a client for PatrolAppService, which lets us list and run Dart tests */                            \
     __block ObjCPatrolAppServiceClient *appServiceClient = [[ObjCPatrolAppServiceClient alloc] init];            \
+                                                                                                                 \
+    NSLog(@"Allow the Local Network permission required by Dart Observatory");                                   \
                                                                                                                  \
     /* Allow the Local Network permission required by Dart Observatory */                                        \
     XCUIApplication *springboard = [[XCUIApplication alloc] initWithBundleIdentifier:@"com.apple.springboard"];  \
@@ -32,13 +36,19 @@
       [systemAlerts.buttons[@"Allow"] tap];                                                                      \
     }                                                                                                            \
                                                                                                                  \
+    NSLog(@"Run the app for the first time");                                                                    \
+                                                                                                                 \
     /* Run the app for the first time to gather Dart tests */                                                    \
     [[[XCUIApplication alloc] init] launch];                                                                     \
+                                                                                                                 \
+    NSLog(@"Waiting until the app reports that it is ready");                                                    \
                                                                                                                  \
     /* Spin the runloop waiting until the app reports that it is ready to report Dart tests */                   \
     while (!server.appReady) {                                                                                   \
       [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];                         \
     }                                                                                                            \
+                                                                                                                 \
+    NSLog(@"listDartTests");                                                                                     \
                                                                                                                  \
     __block NSArray<NSString *> *dartTestFiles = NULL;                                                           \
     [appServiceClient                                                                                            \
