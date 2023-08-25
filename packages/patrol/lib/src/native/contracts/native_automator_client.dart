@@ -27,7 +27,7 @@ class NativeAutomatorClient {
   const NativeAutomatorClient(
     this._client,
     this._apiUri, {
-    Duration timeout = const Duration(seconds: 30),
+    Duration timeout = const Duration(seconds: 300),
   }) : _timeout = timeout;
 
   final Duration _timeout;
