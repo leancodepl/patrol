@@ -10,7 +10,7 @@ import Telegraph
     private let port: Int
     private let automator: Automator
     private let server: Server
-    private let dispatchGroup = DispatchGroup()
+//    private let dispatchGroup = DispatchGroup()
   #endif
 
   @objc
@@ -60,10 +60,8 @@ import Telegraph
       
       provider.setupRoutes(server: server)
      
-      dispatchGroup.enter()
-      dispatchGroup.wait()
-      
-      Logger.shared.i("Server stopped")
+//      dispatchGroup.enter()
+//      dispatchGroup.wait()
     #endif
   }
 }
