@@ -65,7 +65,7 @@
     /* Spin the runloop waiting until the app reports the Dart tests it contains */                              \
     while (!dartTestFiles) {                                                                                     \
       [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:5.0]];                         \
-      [NSException raise:@"TODOInvalid runUntilDate"]                                                                \
+      @throw [NSException exceptionWithName:@"TODO exception1234" reason:@"Test" userInfo:nil];                  \
     }                                                                                                            \
                                                                                                                  \
     NSLog(@"Got %lu Dart tests: %@", dartTestFiles.count, dartTestFiles);                                        \
