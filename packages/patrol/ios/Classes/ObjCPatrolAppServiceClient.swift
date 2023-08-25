@@ -36,6 +36,8 @@
   }
 
   @objc public func runDartTest(name: String) async throws -> RunDartTestResponse2 {
+    try await Task.sleep(nanoseconds: UInt64(2 * Double(NSEC_PER_SEC)))
+
     NSLog("PatrolAppServiceClient.runDartTest(\(name))")
 
     let request = RunDartTestRequest(name: name)
