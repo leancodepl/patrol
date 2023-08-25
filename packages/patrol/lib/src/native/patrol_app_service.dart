@@ -30,8 +30,9 @@ Future<void> runAppService(PatrolAppService service) async {
     InternetAddress.anyIPv4,
     _port,
     poweredByHeader: null,
-    shared: true,
   );
+
+  server.idleTimeout = const Duration(seconds: 300);
 
   final address = server.address;
 

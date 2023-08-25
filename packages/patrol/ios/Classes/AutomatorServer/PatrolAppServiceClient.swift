@@ -23,12 +23,17 @@ class PatrolAppServiceClient {
 
   private func performRequest<TResult: Codable>(requestName: String, body: Data? = nil) async throws -> TResult {
     let url = URL(string: "http://\(address):\(port)/\(requestName)")!
-
+      
+  let urlconfig = URLSessionConfiguration.default
+  urlconfig.timeoutIntervalForRequest = TimeInterval(300)
+  urlconfig.timeoutIntervalForResource = TimeInterval(300)
+  
     var request = URLRequest(url: url)
     request.httpMethod = "POST"
     request.httpBody = body
+    request.timeoutInterval = TimeInterval(300)
 
-    let (data, response) = try await URLSession.shared.data(for: request)
+    let (data, response) = try await URLSession(configuration: urlconfig).data(for: request)
     guard (response as? HTTPURLResponse)?.statusCode == 200 else {
         throw PatrolError.internal("Invalid response: \(response) \(data)")
     }
