@@ -16,8 +16,8 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_test:
-    sdk: flutter
-  http: ^1.1.0
+    sdk: flutter 
+  http: ^0.13.6
   integration_test:
     sdk: flutter
   json_annotation: ^4.8.1
