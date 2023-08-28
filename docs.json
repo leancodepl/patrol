@@ -14,15 +14,8 @@
   },
   "sidebar": [
     ["About", "/"],
+    ["Getting started", "/getting-started"],
     ["Patrol 2.0 is here!", "/v2"],
-    [
-      "Getting started",
-      [
-        ["Getting started", "/getting-started/getting-started"],
-        ["Native automation setup", "/getting-started/native"],
-        ["Custom finders setup", "/getting-started/custom-finders"]
-      ]
-    ],
     [
       "Custom finders",
       [
