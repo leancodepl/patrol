@@ -6,8 +6,10 @@ class AndroidContractsGenerator {
   OutputFile generate(Schema schema, AndroidConfig config) {
     final buffer = StringBuffer()..write(_contentPrefix(config));
 
+    buffer.writeln("class Contracts {");
     schema.enums.forEach((e) => buffer.writeln(_createEnum(e)));
     schema.messages.forEach((e) => buffer.writeln(_createMessage(e)));
+    buffer.writeln("}");
 
     return OutputFile(
       filename: config.contractsFilename,
@@ -33,28 +35,28 @@ import kotlinx.serialization.Serializable
     final fields = message.fields.map((e) {
       final optional = e.isOptional ? '?' : '';
       return e.isList
-          ? ' val ${e.name}: List<${_transformType(e.type)}>$optional'
-          : ' val ${e.name}: ${_transformType(e.type)}$optional';
+          ? '    val ${e.name}: List<${_transformType(e.type)}>$optional'
+          : '    val ${e.name}: ${_transformType(e.type)}$optional';
     }).join(',\n');
 
     final dataKeyword = fields.isNotEmpty ? 'data ' : '';
 
     return '''
-@Serializable
-${dataKeyword}class ${message.name} (
+  @Serializable
+  ${dataKeyword}class ${message.name} (
 $fields
-)
+  )
 ''';
   }
 
   String _createEnum(Enum enumDefinition) {
-    final cases = enumDefinition.fields.map((e) => '  ${e},').join('\n');
+    final cases = enumDefinition.fields.map((e) => '    ${e},').join('\n');
 
     return '''
-@Serializable
-enum class ${enumDefinition.name} {
+  @Serializable
+  enum class ${enumDefinition.name} {
 $cases
-}
+  }
 ''';
   }
 
