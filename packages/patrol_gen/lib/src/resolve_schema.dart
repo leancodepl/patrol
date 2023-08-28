@@ -47,10 +47,16 @@ Service _createService(ClassDeclaration declaration, List<Message> messages) {
     genericTypes.contains('DartServer'),
   );
 
+  final androidGenConfig = ServiceGenConfig(
+    genericTypes.contains('AndroidClient'),
+    genericTypes.contains('AndroidServer'),
+  );
+
   return Service(
     declaration.name.lexeme,
     iosGenConfig,
     dartGenConfig,
+    androidGenConfig,
     declaration.members.whereType<MethodDeclaration>().map((method) {
       final returnType = method.returnType;
       if (returnType is NamedType) {

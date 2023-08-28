@@ -27,7 +27,7 @@ class RunDartTestResponse {
   String? details;
 }
 
-abstract class PatrolAppService<IOSClient, DartServer> {
+abstract class PatrolAppService<IOSClient, AndroidClient, DartServer> {
   ListDartTestsResponse listDartTests();
   RunDartTestResponse runDartTest(RunDartTestRequest request);
 }
@@ -153,7 +153,7 @@ class SetLocationAccuracyRequest {
   late SetLocationAccuracyRequestLocationAccuracy locationAccuracy;
 }
 
-abstract class NativeAutomator<IOSServer, DartClient> {
+abstract class NativeAutomator<IOSServer, AndroidServer, DartClient> {
   void initialize();
   void configure(ConfigureRequest request);
 

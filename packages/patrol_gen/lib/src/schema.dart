@@ -37,12 +37,13 @@ class ServiceGenConfig {
 }
 
 class Service {
-  const Service(this.name, this.ios, this.dart, this.endpoints);
+  const Service(this.name, this.ios, this.dart, this.android, this.endpoints);
 
   final List<Endpoint> endpoints;
   final String name;
   final ServiceGenConfig ios;
   final ServiceGenConfig dart;
+  final ServiceGenConfig android;
 }
 
 class Schema {

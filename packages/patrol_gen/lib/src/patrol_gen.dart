@@ -1,3 +1,5 @@
+import 'package:patrol_gen/src/generators/android/android_config.dart';
+import 'package:patrol_gen/src/generators/android/android_generator.dart';
 import 'package:patrol_gen/src/generators/dart/dart_config.dart';
 import 'package:patrol_gen/src/generators/dart/dart_generator.dart';
 import 'package:patrol_gen/src/generators/ios/ios_config.dart';
@@ -10,8 +12,10 @@ class PatrolGenConfig {
     required this.schemaFilename,
     required this.dartConfig,
     required this.iosConfig,
+    required this.androidConfig,
   });
 
+  final AndroidConfig androidConfig;
   final IOSConfig iosConfig;
   final DartConfig dartConfig;
   final String schemaFilename;
@@ -22,7 +26,9 @@ class PatrolGen {
     final schema = await resolveSchema(config.schemaFilename);
 
     final files = DartGenerator().generate(schema, config.dartConfig);
-    files.addAll(IOSGenerator().generate(schema, config.iosConfig));
+    files
+      ..addAll(IOSGenerator().generate(schema, config.iosConfig))
+      ..addAll(AndroidGenerator().generate(schema, config.androidConfig));
 
     for (var outputFile in files) {
       await File(outputFile.filename)
