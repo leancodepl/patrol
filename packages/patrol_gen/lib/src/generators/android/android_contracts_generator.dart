@@ -1,6 +1,7 @@
 import 'package:patrol_gen/src/generators/android/android_config.dart';
 import 'package:patrol_gen/src/generators/output_file.dart';
 import 'package:patrol_gen/src/schema.dart';
+import 'package:patrol_gen/src/utils.dart';
 
 class AndroidContractsGenerator {
   OutputFile generate(Schema schema, AndroidConfig config) {
@@ -41,12 +42,27 @@ import kotlinx.serialization.Serializable
 
     final dataKeyword = fields.isNotEmpty ? 'data ' : '';
 
+    final optionalFields = message.fields.where((e) => e.isOptional).toList();
+    var optionalFieldUtils = optionalFields.map(_optionalFieldUtil).join('\n');
+    if (optionalFields.isNotEmpty) {
+      optionalFieldUtils = '''{
+$optionalFieldUtils
+  }''';
+    }
+
     return '''
   @Serializable
   ${dataKeyword}class ${message.name} (
 $fields
-  )
+  )$optionalFieldUtils
 ''';
+  }
+
+  String _optionalFieldUtil(MessageField field) {
+    return '''
+    fun has${field.name.capitalize()}(): Boolean {
+      return ${field.name} != null
+    }''';
   }
 
   String _createEnum(Enum enumDefinition) {
@@ -63,7 +79,7 @@ $cases
   String _transformType(String type) {
     switch (type) {
       case 'int':
-        return 'Int';
+        return 'Long';
       case 'double':
         return 'Double';
       case 'bool':

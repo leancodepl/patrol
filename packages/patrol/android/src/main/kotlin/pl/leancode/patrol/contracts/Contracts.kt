@@ -54,11 +54,15 @@ class Contracts {
   data class RunDartTestResponse (
     val result: RunDartTestResponseResult,
     val details: String?
-  )
+  ){
+    fun hasDetails(): Boolean {
+      return details != null
+    }
+  }
 
   @Serializable
   data class ConfigureRequest (
-    val findTimeoutMillis: Int
+    val findTimeoutMillis: Long
   )
 
   @Serializable
@@ -81,11 +85,48 @@ class Contracts {
     val contentDescriptionStartsWith: String?,
     val contentDescriptionContains: String?,
     val resourceId: String?,
-    val instance: Int?,
+    val instance: Long?,
     val enabled: Boolean?,
     val focused: Boolean?,
     val pkg: String?
-  )
+  ){
+    fun hasText(): Boolean {
+      return text != null
+    }
+    fun hasTextStartsWith(): Boolean {
+      return textStartsWith != null
+    }
+    fun hasTextContains(): Boolean {
+      return textContains != null
+    }
+    fun hasClassName(): Boolean {
+      return className != null
+    }
+    fun hasContentDescription(): Boolean {
+      return contentDescription != null
+    }
+    fun hasContentDescriptionStartsWith(): Boolean {
+      return contentDescriptionStartsWith != null
+    }
+    fun hasContentDescriptionContains(): Boolean {
+      return contentDescriptionContains != null
+    }
+    fun hasResourceId(): Boolean {
+      return resourceId != null
+    }
+    fun hasInstance(): Boolean {
+      return instance != null
+    }
+    fun hasEnabled(): Boolean {
+      return enabled != null
+    }
+    fun hasFocused(): Boolean {
+      return focused != null
+    }
+    fun hasPkg(): Boolean {
+      return pkg != null
+    }
+  }
 
   @Serializable
   data class GetNativeViewsRequest (
@@ -100,7 +141,7 @@ class Contracts {
     val contentDescription: String,
     val focused: Boolean,
     val enabled: Boolean,
-    val childCount: Int,
+    val childCount: Long,
     val resourceName: String,
     val applicationPackage: String,
     val children: List<NativeView>
@@ -121,10 +162,20 @@ class Contracts {
   data class EnterTextRequest (
     val data: String,
     val appId: String,
-    val index: Int?,
+    val index: Long?,
     val selector: Selector?,
     val showKeyboard: Boolean?
-  )
+  ){
+    fun hasIndex(): Boolean {
+      return index != null
+    }
+    fun hasSelector(): Boolean {
+      return selector != null
+    }
+    fun hasShowKeyboard(): Boolean {
+      return showKeyboard != null
+    }
+  }
 
   @Serializable
   data class SwipeRequest (
@@ -132,7 +183,7 @@ class Contracts {
     val startY: Double,
     val endX: Double,
     val endY: Double,
-    val steps: Int
+    val steps: Long
   )
 
   @Serializable
@@ -152,7 +203,11 @@ class Contracts {
     val title: String,
     val content: String,
     val raw: String
-  )
+  ){
+    fun hasAppName(): Boolean {
+      return appName != null
+    }
+  }
 
   @Serializable
   data class GetNotificationsResponse (
@@ -166,9 +221,16 @@ class Contracts {
 
   @Serializable
   data class TapOnNotificationRequest (
-    val index: Int?,
+    val index: Long?,
     val selector: Selector?
-  )
+  ){
+    fun hasIndex(): Boolean {
+      return index != null
+    }
+    fun hasSelector(): Boolean {
+      return selector != null
+    }
+  }
 
   @Serializable
   data class PermissionDialogVisibleResponse (
@@ -177,7 +239,7 @@ class Contracts {
 
   @Serializable
   data class PermissionDialogVisibleRequest (
-    val timeoutMillis: Int
+    val timeoutMillis: Long
   )
 
   @Serializable

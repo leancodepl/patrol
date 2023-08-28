@@ -59,15 +59,15 @@ fun Contracts.Selector.toUiSelector(): UiSelector {
     }
 
     if (hasInstance()) {
-        selector = selector.instance(instance)
+        selector = selector.instance(instance!!.toInt())
     }
 
     if (hasEnabled()) {
-        selector = selector.enabled(enabled)
+        selector = selector.enabled(enabled!!)
     }
 
     if (hasFocused()) {
-        selector = selector.focused(focused)
+        selector = selector.focused(focused!!)
     }
 
     if (hasPkg()) {
@@ -122,10 +122,10 @@ fun Contracts.Selector.toBySelector(): BySelector {
         throw IllegalArgumentException("instance() argument is not supported for BySelector")
     } else if (hasEnabled()) {
         matchedEnabled = true
-        By.enabled(enabled)
+        By.enabled(enabled!!)
     } else if (hasFocused()) {
         matchedFocused = true
-        By.focused(focused)
+        By.focused(focused!!)
     } else if (hasPkg()) {
         matchedPkg = true
         By.pkg(pkg)
@@ -170,11 +170,11 @@ fun Contracts.Selector.toBySelector(): BySelector {
     }
 
     if (!matchedEnabled && hasEnabled()) {
-        bySelector = bySelector.enabled(enabled)
+        bySelector = bySelector.enabled(enabled!!)
     }
 
     if (!matchedFocused && hasFocused()) {
-        bySelector = bySelector.focused(focused)
+        bySelector = bySelector.focused(focused!!)
     }
 
     if (!matchedPkg && hasPkg()) {

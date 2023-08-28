@@ -1,16 +1,13 @@
 package pl.leancode.patrol
 
 import androidx.test.platform.app.InstrumentationRegistry
-import com.google.common.util.concurrent.SettableFuture
-import io.grpc.InsecureServerCredentials
-import io.grpc.Server
-import io.grpc.okhttp.OkHttpServerBuilder
+import org.http4k.server.Http4kServer
 import java.util.concurrent.Future
 
 class PatrolServer {
     private val envPortKey = "PATROL_PORT"
     private val port: Int
-    private var server: Server? = null
+    private var server: Http4kServer? = null
 
     init {
         port = arguments.getString(envPortKey)?.toInt() ?: 8081

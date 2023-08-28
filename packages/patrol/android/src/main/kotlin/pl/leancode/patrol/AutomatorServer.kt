@@ -1,158 +1,121 @@
 package pl.leancode.patrol
 
 import pl.leancode.patrol.contracts.Contracts
-import pl.leancode.patrol.contracts.Contracts.EnterTextRequest.FindByCase.INDEX
-import pl.leancode.patrol.contracts.Contracts.EnterTextRequest.FindByCase.SELECTOR
-import pl.leancode.patrol.contracts.Contracts.HandlePermissionRequest.Code.DENIED
-import pl.leancode.patrol.contracts.Contracts.HandlePermissionRequest.Code.ONLY_THIS_TIME
-import pl.leancode.patrol.contracts.Contracts.HandlePermissionRequest.Code.WHILE_USING
-import pl.leancode.patrol.contracts.Contracts.SetLocationAccuracyRequest.LocationAccuracy.COARSE
-import pl.leancode.patrol.contracts.Contracts.SetLocationAccuracyRequest.LocationAccuracy.FINE
-import pl.leancode.patrol.contracts.NativeAutomatorGrpcKt
-import pl.leancode.patrol.contracts.empty
-import pl.leancode.patrol.contracts.getNativeViewsResponse
-import pl.leancode.patrol.contracts.getNotificationsResponse
-import pl.leancode.patrol.contracts.permissionDialogVisibleResponse
+import pl.leancode.patrol.contracts.NativeAutomatorServer
 
-typealias Empty = Contracts.Empty
+class AutomatorServer(private val automation: Automator) : NativeAutomatorServer() {
 
-class AutomatorServer(private val automation: Automator) : NativeAutomatorGrpcKt.NativeAutomatorCoroutineImplBase() {
-
-    override suspend fun initialize(request: Empty): Empty {
+    override fun initialize() {
         automation.initialize()
-        return empty { }
     }
 
-    override suspend fun configure(request: Contracts.ConfigureRequest): Empty {
+    override fun configure(request: Contracts.ConfigureRequest) {
         automation.configure(waitForSelectorTimeout = request.findTimeoutMillis)
-        return empty { }
     }
 
-    override suspend fun pressHome(request: Empty): Empty {
+    override fun pressHome() {
         automation.pressHome()
-        return empty { }
     }
 
-    override suspend fun pressBack(request: Empty): Empty {
+    override fun pressBack() {
         automation.pressBack()
-        return empty { }
     }
 
-    override suspend fun pressRecentApps(request: Empty): Empty {
+    override fun pressRecentApps() {
         automation.pressRecentApps()
-        return empty { }
     }
 
-    override suspend fun doublePressRecentApps(request: Empty): Empty {
+    override fun doublePressRecentApps() {
         automation.pressDoubleRecentApps()
-        return empty { }
     }
 
-    override suspend fun openApp(request: Contracts.OpenAppRequest): Empty {
+    override fun openApp(request: Contracts.OpenAppRequest) {
         automation.openApp(request.appId)
-        return empty { }
     }
 
-    override suspend fun openNotifications(request: Empty): Empty {
+    override fun openNotifications() {
         automation.openNotifications()
-        return empty { }
     }
 
-    override suspend fun closeNotifications(request: Empty): Empty {
+    override fun closeNotifications() {
         automation.closeNotifications()
-        return empty { }
     }
 
-    override suspend fun openQuickSettings(request: Contracts.OpenQuickSettingsRequest): Empty {
+    override fun openQuickSettings(request: Contracts.OpenQuickSettingsRequest) {
         automation.openQuickSettings()
-        return empty { }
     }
 
-    override suspend fun enableDarkMode(request: Contracts.DarkModeRequest): Empty {
+    override fun enableDarkMode(request: Contracts.DarkModeRequest) {
         automation.enableDarkMode()
-        return empty { }
     }
 
-    override suspend fun disableDarkMode(request: Contracts.DarkModeRequest): Empty {
+    override fun disableDarkMode(request: Contracts.DarkModeRequest) {
         automation.disableDarkMode()
-        return empty { }
     }
 
-    override suspend fun enableAirplaneMode(request: Empty): Empty {
+    override fun enableAirplaneMode() {
         automation.enableAirplaneMode()
-        return empty {}
     }
 
-    override suspend fun disableAirplaneMode(request: Empty): Empty {
+    override fun disableAirplaneMode() {
         automation.disableAirplaneMode()
-        return empty {}
     }
 
-    override suspend fun enableCellular(request: Empty): Empty {
+    override fun enableCellular() {
         automation.enableCellular()
-        return empty { }
     }
 
-    override suspend fun disableCellular(request: Empty): Empty {
+    override fun disableCellular() {
         automation.disableCellular()
-        return empty { }
     }
 
-    override suspend fun enableWiFi(request: Empty): Empty {
+    override fun enableWiFi() {
         automation.enableWifi()
-        return empty { }
     }
 
-    override suspend fun disableWiFi(request: Empty): Empty {
+    override fun disableWiFi() {
         automation.disableWifi()
-        return empty { }
     }
 
-    override suspend fun enableBluetooth(request: Empty): Empty {
+    override fun enableBluetooth() {
         automation.enableBluetooth()
-        return empty { }
     }
 
-    override suspend fun disableBluetooth(request: Empty): Empty {
+    override fun disableBluetooth() {
         automation.disableBluetooth()
-        return empty { }
     }
 
-    override suspend fun getNativeViews(request: Contracts.GetNativeViewsRequest): Contracts.GetNativeViewsResponse {
+    override fun getNativeViews(request: Contracts.GetNativeViewsRequest): Contracts.GetNativeViewsResponse {
         val views = automation.getNativeViews(request.selector.toBySelector())
         return getNativeViewsResponse { nativeViews.addAll(views) }
     }
 
-    override suspend fun getNotifications(request: Contracts.GetNotificationsRequest): Contracts.GetNotificationsResponse {
+    override fun getNotifications(request: Contracts.GetNotificationsRequest): Contracts.GetNotificationsResponse {
         val notifs = automation.getNotifications()
         return getNotificationsResponse { notifications.addAll(notifs) }
     }
 
-    override suspend fun tap(request: Contracts.TapRequest): Empty {
+    override fun tap(request: Contracts.TapRequest) {
         automation.tap(
             uiSelector = request.selector.toUiSelector(),
             bySelector = request.selector.toBySelector(),
-            index = request.selector.instance
+            index = request.selector.instance?.toInt() ?: 0
         )
-
-        return empty { }
     }
 
-    override suspend fun doubleTap(request: Contracts.TapRequest): Empty {
+    override fun doubleTap(request: Contracts.TapRequest) {
         automation.doubleTap(
             uiSelector = request.selector.toUiSelector(),
             bySelector = request.selector.toBySelector(),
-            index = request.selector.instance
+            index = request.selector.instance?.toInt() ?: 0
         )
-
-        return empty { }
     }
 
-    override suspend fun enterText(request: Contracts.EnterTextRequest): Empty {
+    override fun enterText(request: Contracts.EnterTextRequest) {
         when (request.findByCase) {
             INDEX -> automation.enterText(
                 text = request.data,
-                index = request.index,
+                index = request.index?.toInt() ?: 0,
                 showKeyboard = request.showKeyboard
             )
 
@@ -166,65 +129,68 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorGrpcKt
 
             else -> throw PatrolException("enterText(): neither index nor selector are set")
         }
-
-        return empty { }
     }
 
-    override suspend fun swipe(request: Contracts.SwipeRequest): Empty {
+    override fun swipe(request: Contracts.SwipeRequest) {
         automation.swipe(
-            startX = request.startX,
-            startY = request.startY,
-            endX = request.endX,
-            endY = request.endY,
-            steps = request.steps
+            startX = request.startX.toFloat(),
+            startY = request.startY.toFloat(),
+            endX = request.endX.toFloat(),
+            endY = request.endY.toFloat(),
+            steps = request.steps.toInt()
         )
-        return empty { }
     }
 
-    override suspend fun waitUntilVisible(request: Contracts.WaitUntilVisibleRequest): Empty {
+    override fun waitUntilVisible(request: Contracts.WaitUntilVisibleRequest) {
         automation.waitUntilVisible(
             uiSelector = request.selector.toUiSelector(),
             bySelector = request.selector.toBySelector(),
-            index = request.selector.instance
+            index = request.selector.instance?.toInt() ?: 0
         )
-        return empty { }
     }
 
-    override suspend fun isPermissionDialogVisible(request: Contracts.PermissionDialogVisibleRequest): Contracts.PermissionDialogVisibleResponse {
+    override fun isPermissionDialogVisible(request: Contracts.PermissionDialogVisibleRequest): Contracts.PermissionDialogVisibleResponse {
         val visible = automation.isPermissionDialogVisible(timeout = request.timeoutMillis)
         return permissionDialogVisibleResponse { this.visible = visible }
     }
 
-    override suspend fun handlePermissionDialog(request: Contracts.HandlePermissionRequest): Empty {
+    override fun handlePermissionDialog(request: Contracts.HandlePermissionRequest) {
         when (request.code) {
-            WHILE_USING -> automation.allowPermissionWhileUsingApp()
-            ONLY_THIS_TIME -> automation.allowPermissionOnce()
-            DENIED -> automation.denyPermission()
-            else -> throw PatrolException("handlePermissionDialog(): bad permission code")
+            Contracts.HandlePermissionRequestCode.whileUsing
+            -> automation.allowPermissionWhileUsingApp()
+            Contracts.HandlePermissionRequestCode.onlyThisTime
+            -> automation.allowPermissionOnce()
+            Contracts.HandlePermissionRequestCode.denied
+            -> automation.denyPermission()
         }
-        return empty { }
     }
 
-    override suspend fun setLocationAccuracy(request: Contracts.SetLocationAccuracyRequest): Empty {
+    override fun setLocationAccuracy(request: Contracts.SetLocationAccuracyRequest) {
         when (request.locationAccuracy) {
-            COARSE -> automation.selectCoarseLocation()
-            FINE -> automation.selectFineLocation()
-            else -> throw PatrolException("setLocationAccuracy(): bad location accuracy")
+            Contracts.SetLocationAccuracyRequestLocationAccuracy.coarse
+            -> automation.selectCoarseLocation()
+            Contracts.SetLocationAccuracyRequestLocationAccuracy.fine
+            -> automation.selectFineLocation()
         }
-        return empty { }
     }
 
-    override suspend fun tapOnNotification(request: Contracts.TapOnNotificationRequest): Empty {
+    override fun tapOnNotification(request: Contracts.TapOnNotificationRequest) {
         when (request.findByCase) {
-            Contracts.TapOnNotificationRequest.FindByCase.INDEX -> automation.tapOnNotification(request.index)
-            Contracts.TapOnNotificationRequest.FindByCase.SELECTOR -> automation.tapOnNotification(request.selector.toUiSelector())
+            Contracts.TapOnNotificationRequest.FindByCase.INDEX -> automation.tapOnNotification(
+                request.index
+            )
+
+            Contracts.TapOnNotificationRequest.FindByCase.SELECTOR -> automation.tapOnNotification(
+                request.selector.toUiSelector()
+            )
+
             else -> throw PatrolException("tapOnNotification(): neither index nor selector are set")
         }
-        return empty { }
+
     }
 
-    override suspend fun markPatrolAppServiceReady(request: Empty): Empty {
+    override fun markPatrolAppServiceReady() {
         PatrolServer.appReady.set(true)
-        return empty { }
+
     }
 }
