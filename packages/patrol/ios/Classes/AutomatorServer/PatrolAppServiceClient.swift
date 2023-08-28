@@ -23,11 +23,11 @@ class PatrolAppServiceClient {
 
   private func performRequest<TResult: Codable>(requestName: String, body: Data? = nil) async throws -> TResult {
     let url = URL(string: "http://\(address):\(port)/\(requestName)")!
-      
-  let urlconfig = URLSessionConfiguration.default
-  urlconfig.timeoutIntervalForRequest = TimeInterval(300)
-  urlconfig.timeoutIntervalForResource = TimeInterval(300)
-  
+
+    let urlconfig = URLSessionConfiguration.default
+    urlconfig.timeoutIntervalForRequest = TimeInterval(300)
+    urlconfig.timeoutIntervalForResource = TimeInterval(300)
+
     var request = URLRequest(url: url)
     request.httpMethod = "POST"
     request.httpBody = body
