@@ -164,16 +164,13 @@ class Contracts {
     val appId: String,
     val index: Long?,
     val selector: Selector?,
-    val showKeyboard: Boolean?
+    val showKeyboard: Boolean
   ){
     fun hasIndex(): Boolean {
       return index != null
     }
     fun hasSelector(): Boolean {
       return selector != null
-    }
-    fun hasShowKeyboard(): Boolean {
-      return showKeyboard != null
     }
   }
 

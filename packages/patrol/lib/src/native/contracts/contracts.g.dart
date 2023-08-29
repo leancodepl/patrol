@@ -207,7 +207,7 @@ EnterTextRequest _$EnterTextRequestFromJson(Map<String, dynamic> json) =>
       selector: json['selector'] == null
           ? null
           : Selector.fromJson(json['selector'] as Map<String, dynamic>),
-      showKeyboard: json['showKeyboard'] as bool?,
+      showKeyboard: json['showKeyboard'] as bool,
     );
 
 Map<String, dynamic> _$EnterTextRequestToJson(EnterTextRequest instance) =>

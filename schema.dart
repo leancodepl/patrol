@@ -88,7 +88,7 @@ class EnterTextRequest {
   late String appId;
   int? index;
   Selector? selector;
-  bool? showKeyboard;
+  late bool showKeyboard;
 }
 
 class SwipeRequest {

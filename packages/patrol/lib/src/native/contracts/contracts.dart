@@ -266,7 +266,7 @@ class EnterTextRequest {
     required this.appId,
     this.index,
     this.selector,
-    this.showKeyboard,
+    required this.showKeyboard,
   });
 
   factory EnterTextRequest.fromJson(Map<String, dynamic> json) =>
@@ -276,7 +276,7 @@ class EnterTextRequest {
   final String appId;
   final int? index;
   final Selector? selector;
-  final bool? showKeyboard;
+  final bool showKeyboard;
 
   Map<String, dynamic> toJson() => _$EnterTextRequestToJson(this);
 }
