@@ -186,7 +186,7 @@ fun Contracts.Selector.toBySelector(): BySelector {
 
 fun DartTestGroup.listFlatDartFiles(): List<String> {
     val files = mutableListOf<String>()
-    for (group in groupsList) {
+    for (group in groups) {
         files.addAll(group.listGroups())
     }
 
@@ -195,10 +195,10 @@ fun DartTestGroup.listFlatDartFiles(): List<String> {
 
 // Recursively lists groups in this group.
 private fun DartTestGroup.listGroups(): List<String> {
-    val groups = mutableListOf<String>(this.name)
-    for (group in groupsList) {
-        groups.addAll(group.listGroups())
+    val outGroups = mutableListOf<String>(this.name)
+    for (group in groups) {
+        outGroups.addAll(group.listGroups())
     }
 
-    return groups
+    return outGroups
 }

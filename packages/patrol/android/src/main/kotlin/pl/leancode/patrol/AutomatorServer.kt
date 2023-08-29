@@ -41,6 +41,10 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
         automation.closeNotifications()
     }
 
+    override fun closeHeadsUpNotification() {
+        // iOS only
+    }
+
     override fun openQuickSettings(request: Contracts.OpenQuickSettingsRequest) {
         automation.openQuickSettings()
     }
@@ -87,12 +91,14 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
 
     override fun getNativeViews(request: Contracts.GetNativeViewsRequest): Contracts.GetNativeViewsResponse {
         val views = automation.getNativeViews(request.selector.toBySelector())
-        return getNativeViewsResponse { nativeViews.addAll(views) }
+        return Contracts.GetNativeViewsResponse(
+            nativeViews = views
+        )
     }
 
     override fun getNotifications(request: Contracts.GetNotificationsRequest): Contracts.GetNotificationsResponse {
         val notifs = automation.getNotifications()
-        return getNotificationsResponse { notifications.addAll(notifs) }
+        return Contracts.GetNotificationsResponse(notifs)
     }
 
     override fun tap(request: Contracts.TapRequest) {
@@ -112,22 +118,22 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
     }
 
     override fun enterText(request: Contracts.EnterTextRequest) {
-        when (request.findByCase) {
-            INDEX -> automation.enterText(
+        if (request.index != null) {
+            automation.enterText(
                 text = request.data,
-                index = request.index?.toInt() ?: 0,
+                index = request.index!!.toInt(),
                 showKeyboard = request.showKeyboard
             )
-
-            SELECTOR -> automation.enterText(
+        } else if (request.selector != null) {
+            automation.enterText(
                 text = request.data,
                 uiSelector = request.selector.toUiSelector(),
                 bySelector = request.selector.toBySelector(),
-                index = request.selector.instance,
+                index = request.selector.instance?.toInt() ?: 0,
                 showKeyboard = request.showKeyboard
             )
-
-            else -> throw PatrolException("enterText(): neither index nor selector are set")
+        } else {
+            throw PatrolException("enterText(): neither index nor selector are set")
         }
     }
 
@@ -151,15 +157,17 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
 
     override fun isPermissionDialogVisible(request: Contracts.PermissionDialogVisibleRequest): Contracts.PermissionDialogVisibleResponse {
         val visible = automation.isPermissionDialogVisible(timeout = request.timeoutMillis)
-        return permissionDialogVisibleResponse { this.visible = visible }
+        return Contracts.PermissionDialogVisibleResponse(visible)
     }
 
     override fun handlePermissionDialog(request: Contracts.HandlePermissionRequest) {
         when (request.code) {
             Contracts.HandlePermissionRequestCode.whileUsing
             -> automation.allowPermissionWhileUsingApp()
+
             Contracts.HandlePermissionRequestCode.onlyThisTime
             -> automation.allowPermissionOnce()
+
             Contracts.HandlePermissionRequestCode.denied
             -> automation.denyPermission()
         }
@@ -169,28 +177,31 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
         when (request.locationAccuracy) {
             Contracts.SetLocationAccuracyRequestLocationAccuracy.coarse
             -> automation.selectCoarseLocation()
+
             Contracts.SetLocationAccuracyRequestLocationAccuracy.fine
             -> automation.selectFineLocation()
         }
     }
 
-    override fun tapOnNotification(request: Contracts.TapOnNotificationRequest) {
-        when (request.findByCase) {
-            Contracts.TapOnNotificationRequest.FindByCase.INDEX -> automation.tapOnNotification(
-                request.index
-            )
+    override fun debug() {
+        // iOS only
+    }
 
-            Contracts.TapOnNotificationRequest.FindByCase.SELECTOR -> automation.tapOnNotification(
+    override fun tapOnNotification(request: Contracts.TapOnNotificationRequest) {
+        if (request.index != null) {
+            automation.tapOnNotification(
+                request.index.toInt()
+            )
+        } else if (request.selector != null) {
+            automation.tapOnNotification(
                 request.selector.toUiSelector()
             )
-
-            else -> throw PatrolException("tapOnNotification(): neither index nor selector are set")
+        } else {
+            throw PatrolException("tapOnNotification(): neither index nor selector are set")
         }
-
     }
 
     override fun markPatrolAppServiceReady() {
         PatrolServer.appReady.set(true)
-
     }
 }
