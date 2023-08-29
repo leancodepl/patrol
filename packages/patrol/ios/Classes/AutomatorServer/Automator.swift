@@ -799,10 +799,9 @@
         return NativeView(
             className: String(xcuielement.elementType.rawValue),  // TODO: Provide mapping for names
             text: xcuielement.label,
-            contentDescription: xcuielement.accessibilityLabel ?? String(),
+            contentDescription: xcuielement.accessibilityLabel,
             focused: xcuielement.hasFocus,
             enabled: xcuielement.isEnabled,
-            childCount: 0, //TODO nullable?
             resourceName: xcuielement.identifier,
             applicationPackage: bundleId,
             children: xcuielement.children(matching: .any).allElementsBoundByIndex.map { child in

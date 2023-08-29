@@ -8,7 +8,7 @@ import pl.leancode.patrol.contracts.Contracts.DartTestGroup
 
 private fun Contracts.Selector.isEmpty(): Boolean {
     return (
-        !hasText() &&
+            !hasText() &&
             !hasTextStartsWith() &&
             !hasTextContains() &&
             !hasClassName() &&
@@ -20,7 +20,7 @@ private fun Contracts.Selector.isEmpty(): Boolean {
             !hasEnabled() &&
             !hasFocused() &&
             !hasPkg()
-        )
+            )
 }
 
 fun Contracts.Selector.toUiSelector(): UiSelector {

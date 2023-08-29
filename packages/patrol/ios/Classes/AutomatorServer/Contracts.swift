@@ -76,14 +76,14 @@ struct GetNativeViewsRequest: Codable {
 }
 
 struct NativeView: Codable {
- var className: String
- var text: String
- var contentDescription: String
+ var className: String?
+ var text: String?
+ var contentDescription: String?
  var focused: Bool
  var enabled: Bool
- var childCount: Int
- var resourceName: String
- var applicationPackage: String
+ var childCount: Int?
+ var resourceName: String?
+ var applicationPackage: String?
  var children: [NativeView]
 }
 

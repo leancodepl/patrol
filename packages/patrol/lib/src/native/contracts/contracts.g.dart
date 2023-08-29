@@ -148,14 +148,14 @@ Map<String, dynamic> _$GetNativeViewsRequestToJson(
     };
 
 NativeView _$NativeViewFromJson(Map<String, dynamic> json) => NativeView(
-      className: json['className'] as String,
-      text: json['text'] as String,
-      contentDescription: json['contentDescription'] as String,
+      className: json['className'] as String?,
+      text: json['text'] as String?,
+      contentDescription: json['contentDescription'] as String?,
       focused: json['focused'] as bool,
       enabled: json['enabled'] as bool,
-      childCount: json['childCount'] as int,
-      resourceName: json['resourceName'] as String,
-      applicationPackage: json['applicationPackage'] as String,
+      childCount: json['childCount'] as int?,
+      resourceName: json['resourceName'] as String?,
+      applicationPackage: json['applicationPackage'] as String?,
       children: (json['children'] as List<dynamic>)
           .map((e) => NativeView.fromJson(e as Map<String, dynamic>))
           .toList(),

@@ -34,7 +34,7 @@ import kotlinx.serialization.Serializable
 
   String _createMessage(Message message) {
     final fields = message.fields.map((e) {
-      final optional = e.isOptional ? '?' : '';
+      final optional = e.isOptional ? '? = null' : '';
       return e.isList
           ? '    val ${e.name}: List<${_transformType(e.type)}>$optional'
           : '    val ${e.name}: ${_transformType(e.type)}$optional';
@@ -43,6 +43,7 @@ import kotlinx.serialization.Serializable
     final dataKeyword = fields.isNotEmpty ? 'data ' : '';
 
     final optionalFields = message.fields.where((e) => e.isOptional).toList();
+
     var optionalFieldUtils = optionalFields.map(_optionalFieldUtil).join('\n');
     if (optionalFields.isNotEmpty) {
       optionalFieldUtils = '''{

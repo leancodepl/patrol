@@ -63,14 +63,14 @@ class GetNativeViewsRequest {
 }
 
 class NativeView {
-  late String className;
-  late String text;
-  late String contentDescription;
+  String? className;
+  String? text;
+  String? contentDescription;
   late bool focused;
   late bool enabled;
-  late int childCount;
-  late String resourceName;
-  late String applicationPackage;
+  int? childCount;
+  String? resourceName;
+  String? applicationPackage;
   late List<NativeView> children;
 }
 

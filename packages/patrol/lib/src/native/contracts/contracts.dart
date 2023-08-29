@@ -202,28 +202,28 @@ class GetNativeViewsRequest {
 @JsonSerializable()
 class NativeView {
   NativeView({
-    required this.className,
-    required this.text,
-    required this.contentDescription,
+    this.className,
+    this.text,
+    this.contentDescription,
     required this.focused,
     required this.enabled,
-    required this.childCount,
-    required this.resourceName,
-    required this.applicationPackage,
+    this.childCount,
+    this.resourceName,
+    this.applicationPackage,
     required this.children,
   });
 
   factory NativeView.fromJson(Map<String, dynamic> json) =>
       _$NativeViewFromJson(json);
 
-  final String className;
-  final String text;
-  final String contentDescription;
+  final String? className;
+  final String? text;
+  final String? contentDescription;
   final bool focused;
   final bool enabled;
-  final int childCount;
-  final String resourceName;
-  final String applicationPackage;
+  final int? childCount;
+  final String? resourceName;
+  final String? applicationPackage;
   final List<NativeView> children;
 
   Map<String, dynamic> toJson() => _$NativeViewToJson(this);

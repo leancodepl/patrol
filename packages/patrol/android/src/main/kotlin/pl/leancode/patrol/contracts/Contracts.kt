@@ -53,7 +53,7 @@ class Contracts {
   @Serializable
   data class RunDartTestResponse (
     val result: RunDartTestResponseResult,
-    val details: String?
+    val details: String? = null
   ){
     fun hasDetails(): Boolean {
       return details != null
@@ -77,18 +77,18 @@ class Contracts {
 
   @Serializable
   data class Selector (
-    val text: String?,
-    val textStartsWith: String?,
-    val textContains: String?,
-    val className: String?,
-    val contentDescription: String?,
-    val contentDescriptionStartsWith: String?,
-    val contentDescriptionContains: String?,
-    val resourceId: String?,
-    val instance: Long?,
-    val enabled: Boolean?,
-    val focused: Boolean?,
-    val pkg: String?
+    val text: String? = null,
+    val textStartsWith: String? = null,
+    val textContains: String? = null,
+    val className: String? = null,
+    val contentDescription: String? = null,
+    val contentDescriptionStartsWith: String? = null,
+    val contentDescriptionContains: String? = null,
+    val resourceId: String? = null,
+    val instance: Long? = null,
+    val enabled: Boolean? = null,
+    val focused: Boolean? = null,
+    val pkg: String? = null
   ){
     fun hasText(): Boolean {
       return text != null
@@ -136,16 +136,35 @@ class Contracts {
 
   @Serializable
   data class NativeView (
-    val className: String,
-    val text: String,
-    val contentDescription: String,
+    val className: String? = null,
+    val text: String? = null,
+    val contentDescription: String? = null,
     val focused: Boolean,
     val enabled: Boolean,
-    val childCount: Long,
-    val resourceName: String,
-    val applicationPackage: String,
+    val childCount: Long? = null,
+    val resourceName: String? = null,
+    val applicationPackage: String? = null,
     val children: List<NativeView>
-  )
+  ){
+    fun hasClassName(): Boolean {
+      return className != null
+    }
+    fun hasText(): Boolean {
+      return text != null
+    }
+    fun hasContentDescription(): Boolean {
+      return contentDescription != null
+    }
+    fun hasChildCount(): Boolean {
+      return childCount != null
+    }
+    fun hasResourceName(): Boolean {
+      return resourceName != null
+    }
+    fun hasApplicationPackage(): Boolean {
+      return applicationPackage != null
+    }
+  }
 
   @Serializable
   data class GetNativeViewsResponse (
@@ -162,8 +181,8 @@ class Contracts {
   data class EnterTextRequest (
     val data: String,
     val appId: String,
-    val index: Long?,
-    val selector: Selector?,
+    val index: Long? = null,
+    val selector: Selector? = null,
     val showKeyboard: Boolean
   ){
     fun hasIndex(): Boolean {
@@ -196,7 +215,7 @@ class Contracts {
 
   @Serializable
   data class Notification (
-    val appName: String?,
+    val appName: String? = null,
     val title: String,
     val content: String,
     val raw: String
@@ -218,8 +237,8 @@ class Contracts {
 
   @Serializable
   data class TapOnNotificationRequest (
-    val index: Long?,
-    val selector: Selector?
+    val index: Long? = null,
+    val selector: Selector? = null
   ){
     fun hasIndex(): Boolean {
       return index != null
