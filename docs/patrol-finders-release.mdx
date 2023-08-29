@@ -1,0 +1,36 @@
+---
+title: New package - patrol_finders
+---
+
+# New package - `patrol_finders`
+We're introducing [`patrol_finders`] - a new package in Patrol framework! It was
+created to make it easier to use Patrol finders in widget tests.
+
+### How to use it?
+
+We made a short tutorial on how to use `patrol_finders` package separately
+in widget tests, you can find it in [Using Patrol finders in widget tests]
+section.
+
+### Does this change affect my Patrol tests?
+
+If you have already some Patrol tests in your project, there are no breaking
+changes in this release - everything works the same as before. Though you may
+see some deprecation warnings in your code - you can get your code aligned with
+them to prepare for future changes.
+
+### What to do with `nativeAutomation` flag?
+
+Despite the deprecation message that is written for this parameter of
+`patrolTest()` method, you should not remove it yet in your UI tests. This flag
+will be removed in next major release and the default value of it will be set
+to `true`.
+
+It means, that if you are using `patrolTest()` method to write widget tests, we
+recommend you to migrate to `patrolWidgetTest()` method from `patrol_finders`
+package, which is essentially a version of `patrolTest` method with
+`nativeAutomation` set to `false`. `patrolTest()` method will have
+`nativeAutomation` set to `true` unconditionally in next major version.
+
+[Using Patrol finders in widget tests]: /patrol/finders/finders-setup
+[`patrol_finders`]: https://pub.dev/packages/patrol_finders

@@ -6,7 +6,7 @@ title: Getting started
 
 <Info>
      If you want to use Patrol finders in your existing widget or golden
-     tests, go to [`patrol_finders` Getting started].
+     tests, go to [Using Patrol finders in widget tests].
 </Info>
 
 <Warning>
@@ -16,18 +16,18 @@ title: Getting started
         of those names with proper values.
 </Warning>
 
-### Add dependency on patrol
+### Add dependency on `patrol`
 
 If you haven't already, add a dependency on the `patrol` package in the
-`dev_dependencies` section of **pubspec.yaml**.
+`dev_dependencies` section of `pubspec.yaml`.
 
 ```
 flutter pub add patrol --dev
 ```
 
-### Configure Patrol in pubspec.yaml
+### Configure Patrol in `pubspec.yaml`
 
-Create `patrol` section in your **pubspec.yaml**:
+Create `patrol` section in your `pubspec.yaml`:
 
 ```yaml title="pubspec.yaml"
 dependencies:
@@ -44,10 +44,10 @@ patrol:
     bundle_id: com.example.MyApp
 ```
 
-### Install patrol_cli
+### Install `patrol_cli`
 
-Patrol CLI (command-line interface) is a small program that enables running
-Patrol UI tests. It is necessary to run UI tests (`flutter test` won't work!).
+[Patrol CLI] (command-line interface) is a small program that enables running
+Patrol UI tests. It is necessary to run UI tests (`flutter test` won't work! [Here's why]).
 
 1. Install `patrol_cli` executable:
 
@@ -67,7 +67,7 @@ The 3 first steps were common across platforms. The rest is platform-specific.
 
 Psst... Android is a bit easier to set up, so we recommend starting with it!
 
-#### Android setup
+<Accordion defaultOpen title="Android setup">
 
       1. Go to **android/app/src/androidTest/java/com/example/myapp/** in your project
          directory. If there are no such folders, create them.
@@ -131,8 +131,9 @@ Psst... Android is a bit easier to set up, so we recommend starting with it!
       ```groovy
         androidTestUtil "androidx.test:orchestrator:1.4.2"
       ```
+</Accordion>
 
-#### iOS setup
+<Accordion defaultOpen title="iOS setup">
 
       1. Open `ios/Runner.xcworkspace` in Xcode. 
       
@@ -218,6 +219,8 @@ Psst... Android is a bit easier to set up, so we recommend starting with it!
 
       <YouTube id="9LdEJR59fW4" />
 
+</Accordion>
+
 ### Create a simple integration test
 
 Let's create a dummy Flutter integration test that you'll use to verify
@@ -274,7 +277,7 @@ up. To run `integration_test/example_test.dart` on a local Android or iOS device
         patrol test --target integration_test/example_test.dart --flavor development
         ```
 
-        or you can specify them in **pubspec.yaml** (recommended):
+        or you can specify them in `pubspec.yaml` (recommended):
 
         ```yaml title="pubspec.yaml"
         patrol:
@@ -290,7 +293,10 @@ up. To run `integration_test/example_test.dart` on a local Android or iOS device
 
 ### Going from here
 
-To learn more about native capabilities, see [usage] section.
+To learn how to write Patrol tests, see [finders] and [native automation] sections.
 
-[usage]: /patrol/native/usage
-[`patrol_finders` Getting started]: /patrol/finders/finders-setup
+[native automation]: /patrol/native/usage
+[finders]: /patrol/finders/usage
+[Using Patrol finders in widget tests]: /patrol/finders/finders-setup
+[Here's why]: /patrol/native/advanced#embrace-the-native-tests
+[Patrol CLI]: https://pub.dev/packages/patrol_cli

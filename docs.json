@@ -17,28 +17,25 @@
     ["Getting started", "/getting-started"],
     ["Patrol 2.0 is here!", "/v2"],
     [
-      "Widget testing - patrol_finders",
+      "Interacting with Flutter app - finders",
       [
         ["Overview", "/patrol-finders/overview"],
-        ["Setup", "/patrol-finders/setup"],
         ["Usage", "/patrol-finders/usage"],
-        ["Advanced", "/patrol-finders/advanced"]
+        ["Advanced", "/patrol-finders/advanced"],
+        ["Using Patrol finders in widget tests", "/patrol-finders/setup"]
       ]
     ],
     [
-      "UI testing - patrol",
+      "Interacting with native elements - native automation",
       [
-        ["Overview", "/patrol/overview"],
-        ["Old Setup", "/patrol/native-setup"],
-        ["New Setup", "/patrol/new-native-setup"],
-        ["Alt new Setup", "/patrol/alt-native-setup"],
-        ["Usage", "/patrol/usage"],
-        ["Advanced", "/patrol/advanced"],
-        ["Feature parity", "/patrol/feature-parity"]
+        ["Overview", "/native/overview"],
+        ["Usage", "/native/usage"],
+        ["Advanced", "/native/advanced"],
+        ["Feature parity", "/native/feature-parity"]
       ]
     ],
     [
-      "Running UI tests - patrol_cli",
+      "CLI commands",
       [
         ["build", "/patrol_cli/build"],
         ["develop", "/patrol_cli/develop"],

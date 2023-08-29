@@ -1,8 +1,12 @@
 ---
-title: Patrol finders - setup
+title: Using Patrol finders in widget tests
 ---
 
-# Patrol finders setup
+# Using Patrol finders in widget tests
+
+Since `patrol_finders` is a separate package, referenced in `patrol` package,
+you can use it in your widget or golden tests, without depending on `patrol`.
+Below you can find a short tutorial on how to use `$` in already existing widget tests.
 
 ### Install
 
@@ -16,13 +20,44 @@ flutter pub add patrol_finders --dev
 
 ### Use
 
+<Success>
+  Our custom finders depend only on Flutter itself. This means you can use them
+  no matter if you're writing a mobile, web, desktop, or embedded app!
+</Success>
+
 To use Patrol finders in your test files, first import it:
 
 ```dart
 import 'package:patrol_finders/patrol_finders.dart';
 ```
 
-Once imported, you can write widget tests:
+Once imported, you can use it in widget tests:
+
+```dart title="test/widget_test_with_patrol_finders.dart"
+void main() {
+  testWidgets(
+    'counter is incremented when plus button is tapped',
+    (WidgetTester tester) async {
+      PatrolTester $ = PatrolTester(
+        tester: tester,
+        config: PatrolTesterConfig(),
+      );
+      await $.pumpWidget(const MyApp());
+
+      expect($('0'), findsOneWidget);
+      expect($('-1'), findsNothing);
+
+      await $(Icons.remove).tap();
+
+      expect($('0'), findsNothing);
+      expect($('-1'), findsOneWidget);
+    },
+  );
+}
+```
+
+Or you can use our wrapper on `testWidgets` method, which initializes
+`PatrolTester` object for you.
 
 ```dart title="test/patrol_widget_test.dart"
 void main() {
@@ -47,39 +82,4 @@ To run the test, simply execute:
 
 ```console
 flutter test
-```
-
-<Success>
-  Our custom finders depend only on Flutter itself. This means you can use them
-  no matter if you're writing a mobile, web, desktop, or embedded app!
-</Success>
-
-### Using patrol_finders in other test types
-
-If you write golden file tests or just have some wrappers on Flutter's
-`testWidgets` method, you can still use Patrol finders there.
-To do so, initialize `PatrolTester` object and use it instead of
-`WidgetTester`.
-
-```dart title="test/widget_test_with_patrol_finders.dart"
-void main() {
-  testWidgets(
-    'counter is incremented when plus button is tapped',
-    (WidgetTester tester) async {
-      PatrolTester $ = PatrolTester(
-        tester: tester,
-        config: PatrolTesterConfig(),
-      );
-      await $.pumpWidget(const MyApp());
-
-      expect($('0'), findsOneWidget);
-      expect($('-1'), findsNothing);
-
-      await $(Icons.remove).tap();
-
-      expect($('0'), findsNothing);
-      expect($('-1'), findsOneWidget);
-    },
-  );
-}
 ```
