@@ -15,6 +15,7 @@
   "sidebar": [
     ["About", "/"],
     ["Getting started", "/getting-started"],
+    ["New package - patrol_finders", "/patrol-finders-release"],
     ["Patrol 2.0 is here!", "/v2"],
     [
       "Interacting with Flutter app - finders",
