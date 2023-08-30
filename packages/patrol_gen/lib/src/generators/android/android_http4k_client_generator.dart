@@ -28,6 +28,9 @@ package ${config.package};
 
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import org.apache.hc.client5.http.config.RequestConfig
+import org.apache.hc.client5.http.impl.classic.HttpClients
+import org.apache.hc.core5.util.Timeout
 import org.http4k.client.ApacheClient
 import org.http4k.core.Method
 import org.http4k.core.Request
@@ -37,23 +40,33 @@ import org.http4k.core.Status
   }
 
   String _generateClientClass(Service service) {
-    final url = r'"http://$address:$port"';
+    final url = r'"http://$address:$port/"';
     final endpoints = service.endpoints.map(_createEndpoint).join('\n\n');
     final throwException =
-        r'throw PatrolAppServiceClientException("Invalid response ${response.status}")';
+        r'throw PatrolAppServiceClientException("Invalid response ${response.status}, ${response.bodyString()}")';
+
+    final urlWithPath = r'"$serverUrl$path"';
 
     return '''
 class ${service.name}Client(private val address: String, private val port: Int) {
 
 $endpoints
 
-    private fun performRequest(requestBody: String? = null): String {
-        var request = Request(Method.POST, serverUrl)
+    private fun performRequest(path: String, requestBody: String? = null): String {
+        var request = Request(Method.POST, $urlWithPath)
         if (requestBody != null) {
             request = request.body(requestBody)
         }
 
-        val client = ApacheClient()
+        val client = ApacheClient(
+              HttpClients.custom().setDefaultRequestConfig(
+                  RequestConfig
+                    .copy(RequestConfig.DEFAULT)
+                    .setResponseTimeout(Timeout.ofSeconds(300))
+                    .setConnectionRequestTimeout(Timeout.ofSeconds(300))
+                    .build()
+              ).build())
+        
         val response = client(request)
 
         if (response.status != Status.OK) {
@@ -78,14 +91,14 @@ $endpoints
         : '';
 
     final serializeParameter =
-        endpoint.request != null ? 'json.encodeToString(request)' : '';
+        endpoint.request != null ? ', json.encodeToString(request)' : '';
 
     final body = endpoint.response != null
         ? '''
-        val response = performRequest($serializeParameter)
+        val response = performRequest("${endpoint.name}"$serializeParameter)
         return json.decodeFromString(response)'''
         : '''
-        return performRequest($serializeParameter)''';
+        return performRequest("${endpoint.name}"$serializeParameter)''';
 
     return '''
     fun ${endpoint.name}($parameterDef) $returnDef {
