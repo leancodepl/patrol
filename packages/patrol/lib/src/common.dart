@@ -19,8 +19,7 @@ import 'constants.dart' as constants;
 import 'custom_finders/patrol_integration_tester.dart';
 
 /// Signature for callback to [patrolTest].
-// ignore: deprecated_member_use_from_same_package
-typedef PatrolTesterCallback = Future<void> Function(PatrolTester $);
+typedef PatrolTesterCallback = Future<void> Function(PatrolIntegrationTester $);
 
 /// Like [testWidgets], but with support for Patrol custom finders.
 ///
@@ -41,7 +40,6 @@ typedef PatrolTesterCallback = Future<void> Function(PatrolTester $);
 /// ```
 ///
 /// [bindingType] specifies the binding to use. [bindingType] is ignored if
-// ignore: deprecated_member_use_from_same_package
 /// [nativeAutomation] is false.
 @isTest
 void patrolTest(
@@ -54,9 +52,6 @@ void patrolTest(
   dynamic tags,
   finders.PatrolTesterConfig config = const finders.PatrolTesterConfig(),
   NativeAutomatorConfig nativeAutomatorConfig = const NativeAutomatorConfig(),
-  @Deprecated('''
-This variable will be removed in the future, 
-if you use nativeAutomation with false, we recommend using patrolWidgetTest()''')
   bool nativeAutomation = false,
   BindingType bindingType = BindingType.patrol,
   LiveTestWidgetsFlutterBindingFramePolicy framePolicy =
