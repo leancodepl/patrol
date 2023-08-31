@@ -8,7 +8,7 @@ import pl.leancode.patrol.contracts.Contracts.DartTestGroup
 
 private fun Contracts.Selector.isEmpty(): Boolean {
     return (
-        !hasText() &&
+            !hasText() &&
             !hasTextStartsWith() &&
             !hasTextContains() &&
             !hasClassName() &&
@@ -20,7 +20,7 @@ private fun Contracts.Selector.isEmpty(): Boolean {
             !hasEnabled() &&
             !hasFocused() &&
             !hasPkg()
-        )
+            )
 }
 
 fun Contracts.Selector.toUiSelector(): UiSelector {
@@ -59,15 +59,15 @@ fun Contracts.Selector.toUiSelector(): UiSelector {
     }
 
     if (hasInstance()) {
-        selector = selector.instance(instance)
+        selector = selector.instance(instance!!.toInt())
     }
 
     if (hasEnabled()) {
-        selector = selector.enabled(enabled)
+        selector = selector.enabled(enabled!!)
     }
 
     if (hasFocused()) {
-        selector = selector.focused(focused)
+        selector = selector.focused(focused!!)
     }
 
     if (hasPkg()) {
@@ -122,10 +122,10 @@ fun Contracts.Selector.toBySelector(): BySelector {
         throw IllegalArgumentException("instance() argument is not supported for BySelector")
     } else if (hasEnabled()) {
         matchedEnabled = true
-        By.enabled(enabled)
+        By.enabled(enabled!!)
     } else if (hasFocused()) {
         matchedFocused = true
-        By.focused(focused)
+        By.focused(focused!!)
     } else if (hasPkg()) {
         matchedPkg = true
         By.pkg(pkg)
@@ -170,11 +170,11 @@ fun Contracts.Selector.toBySelector(): BySelector {
     }
 
     if (!matchedEnabled && hasEnabled()) {
-        bySelector = bySelector.enabled(enabled)
+        bySelector = bySelector.enabled(enabled!!)
     }
 
     if (!matchedFocused && hasFocused()) {
-        bySelector = bySelector.focused(focused)
+        bySelector = bySelector.focused(focused!!)
     }
 
     if (!matchedPkg && hasPkg()) {
@@ -186,7 +186,7 @@ fun Contracts.Selector.toBySelector(): BySelector {
 
 fun DartTestGroup.listFlatDartFiles(): List<String> {
     val files = mutableListOf<String>()
-    for (group in groupsList) {
+    for (group in groups) {
         files.addAll(group.listGroups())
     }
 
@@ -195,10 +195,10 @@ fun DartTestGroup.listFlatDartFiles(): List<String> {
 
 // Recursively lists groups in this group.
 private fun DartTestGroup.listGroups(): List<String> {
-    val groups = mutableListOf<String>(this.name)
-    for (group in groupsList) {
-        groups.addAll(group.listGroups())
+    val outGroups = mutableListOf<String>(this.name)
+    for (group in groups) {
+        outGroups.addAll(group.listGroups())
     }
 
-    return groups
+    return outGroups
 }

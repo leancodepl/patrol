@@ -7,8 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:meta/meta.dart';
 import 'package:patrol/src/binding.dart';
-import 'package:patrol/src/native/contracts/contracts.pb.dart';
-import 'package:patrol/src/native/contracts/contracts.pbgrpc.dart';
+import 'package:patrol/src/native/contracts/contracts.dart';
 import 'package:patrol/src/native/native.dart';
 import 'package:patrol_finders/patrol_finders.dart' as finders;
 import 'package:test_api/src/backend/group.dart';
@@ -162,11 +161,11 @@ DartTestGroup createDartTestGroup(
   String prefix = '',
 }) {
   final groupName = topLevelGroup.name.replaceFirst(prefix, '').trim();
-  final group = DartTestGroup(name: groupName);
+  final group = DartTestGroup(name: groupName, tests: [], groups: []);
 
   for (final entry in topLevelGroup.entries) {
     if (entry is Group) {
-      group.groups.add(DartTestGroup(name: entry.name));
+      group.groups.add(DartTestGroup(name: entry.name, tests: [], groups: []));
     }
 
     if (entry is Test && entry.name != 'patrol_test_explorer') {

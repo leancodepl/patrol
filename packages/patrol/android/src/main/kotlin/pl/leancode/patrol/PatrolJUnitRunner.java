@@ -10,8 +10,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.AndroidJUnitRunner;
-import io.grpc.StatusRuntimeException;
+
+import pl.leancode.patrol.contracts.Contracts;
 import pl.leancode.patrol.contracts.Contracts.DartTestGroup;
+import pl.leancode.patrol.contracts.PatrolAppServiceClientException;
 
 import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
@@ -102,7 +104,7 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
         Logger.INSTANCE.i(TAG + "PatrolAppService is ready to report Dart tests");
     }
 
-    public Object[] listDartTests() {
+    public Object[] listDartTests() throws PatrolAppServiceClientException {
         final String TAG = "PatrolJUnitRunner.listDartTests(): ";
 
         try {
@@ -110,7 +112,7 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
             Object[] dartTestFiles = ContractsExtensionsKt.listFlatDartFiles(dartTestGroup).toArray();
             Logger.INSTANCE.i(TAG + "Got Dart tests: " + Arrays.toString(dartTestFiles));
             return dartTestFiles;
-        } catch (StatusRuntimeException e) {
+        } catch (PatrolAppServiceClientException e) {
             Logger.INSTANCE.e(TAG + "Failed to list Dart tests: ", e);
             throw e;
         }
@@ -120,17 +122,17 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
      * Requests execution of a Dart test and waits for it to finish.
      * Throws AssertionError if the test fails.
      */
-    public RunDartTestResponse runDartTest(String name) {
+    public RunDartTestResponse runDartTest(String name) throws PatrolAppServiceClientException {
         final String TAG = "PatrolJUnitRunner.runDartTest(" + name + "): ";
 
         try {
             Logger.INSTANCE.i(TAG + "Requested execution");
             RunDartTestResponse response = patrolAppServiceClient.runDartTest(name);
-            if (response.getResult() == RunDartTestResponse.Result.FAILURE) {
+            if (response.getResult() == Contracts.RunDartTestResponseResult.failure) {
                 throw new AssertionError("Dart test failed: " + name + "\n" + response.getDetails());
             }
             return response;
-        } catch (StatusRuntimeException e) {
+        } catch (PatrolAppServiceClientException e) {
             Logger.INSTANCE.e(TAG + e.getMessage(), e.getCause());
             throw e;
         }

@@ -1,7 +1,7 @@
 // ignore_for_file: invalid_use_of_internal_member, depend_on_referenced_packages, implementation_imports
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/src/common.dart' show createDartTestGroup;
-import 'package:patrol/src/native/contracts/contracts.pbgrpc.dart';
+import 'package:patrol/src/native/contracts/contracts.dart';
 import 'package:test_api/src/backend/group.dart';
 import 'package:test_api/src/backend/invoker.dart';
 import 'package:test_api/src/backend/metadata.dart';
@@ -61,10 +61,23 @@ void main() {
         dartTestGroup,
         DartTestGroup(
           name: '',
+          tests: [],
           groups: [
-            DartTestGroup(name: 'permissions.permissions_location_test'),
-            DartTestGroup(name: 'permissions.permissions_many_test'),
-            DartTestGroup(name: 'example_test'),
+            DartTestGroup(
+              name: 'permissions.permissions_location_test',
+              groups: [],
+              tests: [],
+            ),
+            DartTestGroup(
+              name: 'permissions.permissions_many_test',
+              groups: [],
+              tests: [],
+            ),
+            DartTestGroup(
+              name: 'example_test',
+              groups: [],
+              tests: [],
+            ),
           ],
         ),
       );

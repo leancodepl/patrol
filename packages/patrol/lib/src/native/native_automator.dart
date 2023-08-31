@@ -1,12 +1,12 @@
 import 'dart:io' as io;
 
-import 'package:fixnum/fixnum.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:grpc/grpc.dart';
+import 'package:http/http.dart' as http;
 import 'package:integration_test/integration_test.dart';
 import 'package:meta/meta.dart';
 import 'package:patrol/src/binding.dart';
-import 'package:patrol/src/native/contracts/contracts.pbgrpc.dart';
+import 'package:patrol/src/native/contracts/contracts.dart';
+import 'package:patrol/src/native/contracts/native_automator_client.dart';
 
 /// Thrown when a native action fails.
 class PatrolActionException implements Exception {
@@ -194,17 +194,10 @@ class NativeAutomator {
     // _config.logger('Android package name: ${_config.packageName}');
     // _config.logger('iOS bundle identifier: ${_config.bundleId}');
 
-    final channel = ClientChannel(
-      _config.host,
-      port: int.parse(_config.port),
-      options: const ChannelOptions(
-        credentials: ChannelCredentials.insecure(),
-      ),
-    );
-
     _client = NativeAutomatorClient(
-      channel,
-      options: CallOptions(timeout: _config.connectionTimeout),
+      http.Client(),
+      Uri.http('${_config.host}:${_config.port}'),
+      timeout: _config.connectionTimeout,
     );
   }
 
@@ -229,10 +222,10 @@ class NativeAutomator {
       final result = await request();
       _config.logger('$name() succeeded');
       return result;
-    } on GrpcError catch (err) {
+    } on NativeAutomatorClientException catch (err) {
       _config.logger('$name() failed');
-      final log = 'GrpcError: '
-          '$name() failed with code ${err.codeName} (${err.message})';
+      final log = 'NativeAutomatorClientException: '
+          '$name() failed with $err';
       throw PatrolActionException(log);
     } catch (err) {
       _config.logger('$name() failed');
@@ -250,10 +243,7 @@ class NativeAutomator {
   /// See also:
   ///  * https://github.com/flutter/flutter/issues/129231
   Future<void> initialize() async {
-    await _wrapRequest(
-      'initialize',
-      () => _client.initialize(Empty()),
-    );
+    await _wrapRequest('initialize', _client.initialize);
   }
 
   /// Configures the native automator.
@@ -269,7 +259,7 @@ class NativeAutomator {
           'configure',
           () => _client.configure(
             ConfigureRequest(
-              findTimeoutMillis: Int64(_config.findTimeout.inMilliseconds),
+              findTimeoutMillis: _config.findTimeout.inMilliseconds,
             ),
           ),
         );
@@ -299,7 +289,7 @@ class NativeAutomator {
   ///  * <https://developer.android.com/reference/androidx/test/uiautomator/UiDevice#pressback>,
   ///    which is used on Android.
   Future<void> pressBack() async {
-    await _wrapRequest('pressBack', () => _client.pressBack(Empty()));
+    await _wrapRequest('pressBack', _client.pressBack);
   }
 
   /// Presses the home button.
@@ -311,7 +301,7 @@ class NativeAutomator {
   /// * <https://developer.apple.com/documentation/xctest/xcuidevice/button/home>,
   ///   which is used on iOS
   Future<void> pressHome() async {
-    await _wrapRequest('pressHome', () => _client.pressHome(Empty()));
+    await _wrapRequest('pressHome', _client.pressHome);
   }
 
   /// Opens the app specified by [appId]. If [appId] is null, then the app under
@@ -331,18 +321,12 @@ class NativeAutomator {
   ///  * <https://developer.android.com/reference/androidx/test/uiautomator/UiDevice#pressrecentapps>,
   ///    which is used on Android
   Future<void> pressRecentApps() async {
-    await _wrapRequest(
-      'pressRecentApps',
-      () => _client.pressRecentApps(Empty()),
-    );
+    await _wrapRequest('pressRecentApps', _client.pressRecentApps);
   }
 
   /// Double presses the recent apps button.
   Future<void> pressDoubleRecentApps() async {
-    await _wrapRequest(
-      'pressDoubleRecentApps',
-      () => _client.doublePressRecentApps(Empty()),
-    );
+    await _wrapRequest('pressDoubleRecentApps', _client.doublePressRecentApps);
   }
 
   /// Opens the notification shade.
@@ -351,20 +335,14 @@ class NativeAutomator {
   ///  * <https://developer.android.com/reference/androidx/test/uiautomator/UiDevice#opennotification>,
   ///    which is used on Android
   Future<void> openNotifications() async {
-    await _wrapRequest(
-      'openNotifications',
-      () => _client.openNotifications(Empty()),
-    );
+    await _wrapRequest('openNotifications', _client.openNotifications);
   }
 
   /// Closes the notification shade.
   ///
   /// It must be visible, otherwise the behavior is undefined.
   Future<void> closeNotifications() async {
-    await _wrapRequest(
-      'closeNotifications',
-      () => _client.closeNotifications(Empty()),
-    );
+    await _wrapRequest('closeNotifications', _client.closeNotifications);
   }
 
   /// Opens the quick settings shade on Android and Control Center on iOS.
@@ -416,7 +394,7 @@ class NativeAutomator {
   Future<void> closeHeadsUpNotification() async {
     await _wrapRequest(
       'closeHeadsUpNotification',
-      () => _client.closeHeadsUpNotification(Empty()),
+      _client.closeHeadsUpNotification,
     );
   }
 
@@ -475,66 +453,42 @@ class NativeAutomator {
 
   /// Enables airplane mode.
   Future<void> enableAirplaneMode() async {
-    await _wrapRequest(
-      'enableAirplaneMode',
-      () => _client.enableAirplaneMode(Empty()),
-    );
+    await _wrapRequest('enableAirplaneMode', _client.enableAirplaneMode);
   }
 
   /// Enables airplane mode.
   Future<void> disableAirplaneMode() async {
-    await _wrapRequest(
-      'disableAirplaneMode',
-      () => _client.disableAirplaneMode(Empty()),
-    );
+    await _wrapRequest('disableAirplaneMode', _client.disableAirplaneMode);
   }
 
   /// Enables cellular (aka mobile data connection).
   Future<void> enableCellular() async {
-    await _wrapRequest(
-      'enableCellular',
-      () => _client.enableCellular(Empty()),
-    );
+    await _wrapRequest('enableCellular', _client.enableCellular);
   }
 
   /// Disables cellular (aka mobile data connection).
   Future<void> disableCellular() {
-    return _wrapRequest(
-      'disableCellular',
-      () => _client.disableCellular(Empty()),
-    );
+    return _wrapRequest('disableCellular', _client.disableCellular);
   }
 
   /// Enables Wi-Fi.
   Future<void> enableWifi() async {
-    await _wrapRequest(
-      'enableWifi',
-      () => _client.enableWiFi(Empty()),
-    );
+    await _wrapRequest('enableWifi', _client.enableWiFi);
   }
 
   /// Disables Wi-Fi.
   Future<void> disableWifi() async {
-    await _wrapRequest(
-      'disableWifi',
-      () => _client.disableWiFi(Empty()),
-    );
+    await _wrapRequest('disableWifi', _client.disableWiFi);
   }
 
   /// Enables bluetooth.
   Future<void> enableBluetooth() async {
-    await _wrapRequest(
-      'enableBluetooth',
-      () => _client.enableBluetooth(Empty()),
-    );
+    await _wrapRequest('enableBluetooth', _client.enableBluetooth);
   }
 
   /// Disables bluetooth.
   Future<void> disableBluetooth() async {
-    await _wrapRequest(
-      'disableBluetooth',
-      () => _client.disableBluetooth(Empty()),
-    );
+    await _wrapRequest('disableBluetooth', _client.disableBluetooth);
   }
 
   /// Taps on the native view specified by [selector].
@@ -701,7 +655,7 @@ class NativeAutomator {
       'isPermissionDialogVisible',
       () => _client.isPermissionDialogVisible(
         PermissionDialogVisibleRequest(
-          timeoutMillis: Int64(timeout.inMilliseconds),
+          timeoutMillis: timeout.inMilliseconds,
         ),
       ),
     );
@@ -726,7 +680,7 @@ class NativeAutomator {
     await _wrapRequest(
       'grantPermissionWhenInUse',
       () => _client.handlePermissionDialog(
-        HandlePermissionRequest(code: HandlePermissionRequest_Code.WHILE_USING),
+        HandlePermissionRequest(code: HandlePermissionRequestCode.whileUsing),
       ),
     );
   }
@@ -752,7 +706,7 @@ class NativeAutomator {
       'grantPermissionOnlyThisTime',
       () => _client.handlePermissionDialog(
         HandlePermissionRequest(
-          code: HandlePermissionRequest_Code.ONLY_THIS_TIME,
+          code: HandlePermissionRequestCode.onlyThisTime,
         ),
       ),
     );
@@ -775,7 +729,7 @@ class NativeAutomator {
     await _wrapRequest(
       'denyPermission',
       () => _client.handlePermissionDialog(
-        HandlePermissionRequest(code: HandlePermissionRequest_Code.DENIED),
+        HandlePermissionRequest(code: HandlePermissionRequestCode.denied),
       ),
     );
   }
@@ -789,7 +743,7 @@ class NativeAutomator {
       'selectCoarseLocation',
       () => _client.setLocationAccuracy(
         SetLocationAccuracyRequest(
-          locationAccuracy: SetLocationAccuracyRequest_LocationAccuracy.COARSE,
+          locationAccuracy: SetLocationAccuracyRequestLocationAccuracy.coarse,
         ),
       ),
     );
@@ -804,7 +758,7 @@ class NativeAutomator {
       'selectFineLocation',
       () => _client.setLocationAccuracy(
         SetLocationAccuracyRequest(
-          locationAccuracy: SetLocationAccuracyRequest_LocationAccuracy.FINE,
+          locationAccuracy: SetLocationAccuracyRequestLocationAccuracy.fine,
         ),
       ),
     );
@@ -816,7 +770,7 @@ class NativeAutomator {
   Future<void> markPatrolAppServiceReady() async {
     await _wrapRequest(
       'markPatrolAppServiceReady',
-      () => _client.markPatrolAppServiceReady(Empty()),
+      _client.markPatrolAppServiceReady,
     );
   }
 }

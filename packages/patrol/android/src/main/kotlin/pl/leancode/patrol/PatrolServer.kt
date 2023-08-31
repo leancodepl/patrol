@@ -1,43 +1,46 @@
 package pl.leancode.patrol
 
 import androidx.test.platform.app.InstrumentationRegistry
-import com.google.common.util.concurrent.SettableFuture
-import io.grpc.InsecureServerCredentials
-import io.grpc.Server
-import io.grpc.okhttp.OkHttpServerBuilder
+import org.http4k.core.ContentType
+import org.http4k.filter.ServerFilters
+import org.http4k.server.Http4kServer
+import org.http4k.server.Netty
+import org.http4k.server.asServer
 import java.util.concurrent.Future
+import com.google.common.util.concurrent.SettableFuture;
 
 class PatrolServer {
     private val envPortKey = "PATROL_PORT"
     private val port: Int
-    private var server: Server? = null
+    private var server: Http4kServer? = null
+    private var automatorServer: AutomatorServer? = null
 
     init {
         port = arguments.getString(envPortKey)?.toInt() ?: 8081
-        server = OkHttpServerBuilder
-            .forPort(port, InsecureServerCredentials.create())
-            .intercept(LoggerInterceptor())
-            .addService(AutomatorServer(automation = Automator.instance))
-            .build()
     }
 
     private val arguments get() = InstrumentationRegistry.getArguments()
 
     fun start() {
+        Logger.i("Starting server...")
+
+        automatorServer = AutomatorServer(Automator.instance)
+        server = automatorServer!!.router
+            .withFilter(catcher)
+            .withFilter(printer)
+            .withFilter(ServerFilters.SetContentType(ContentType.TEXT_PLAIN))
+            .asServer(Netty(port))
+
         server?.start()
         Logger.i("Created and started PatrolServer, port: $port")
 
         Runtime.getRuntime().addShutdownHook(
             Thread {
                 Logger.i("Stopping server...")
-                server?.shutdown()
+                server?.close()
                 Logger.i("Server stopped")
             }
         )
-    }
-
-    fun blockUntilShutdown() {
-        server?.awaitTermination()
     }
 
     companion object {

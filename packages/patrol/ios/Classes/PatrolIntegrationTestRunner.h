@@ -22,8 +22,12 @@
       NSLog(@"Server loop done, error: %@", err);                                                                \
     }];                                                                                                          \
                                                                                                                  \
+    NSLog(@"Create PatrolAppServiceClient");                                                                     \
+                                                                                                                 \
     /* Create a client for PatrolAppService, which lets us list and run Dart tests */                            \
-    __block PatrolAppServiceClient *appServiceClient = [[PatrolAppServiceClient alloc] init];                    \
+    __block ObjCPatrolAppServiceClient *appServiceClient = [[ObjCPatrolAppServiceClient alloc] init];            \
+                                                                                                                 \
+    NSLog(@"Allow the Local Network permission required by Dart Observatory");                                   \
                                                                                                                  \
     /* Allow the Local Network permission required by Dart Observatory */                                        \
     XCUIApplication *springboard = [[XCUIApplication alloc] initWithBundleIdentifier:@"com.apple.springboard"];  \
@@ -32,13 +36,19 @@
       [systemAlerts.buttons[@"Allow"] tap];                                                                      \
     }                                                                                                            \
                                                                                                                  \
+    NSLog(@"Run the app for the first time");                                                                    \
+                                                                                                                 \
     /* Run the app for the first time to gather Dart tests */                                                    \
     [[[XCUIApplication alloc] init] launch];                                                                     \
+                                                                                                                 \
+    NSLog(@"Waiting until the app reports that it is ready");                                                    \
                                                                                                                  \
     /* Spin the runloop waiting until the app reports that it is ready to report Dart tests */                   \
     while (!server.appReady) {                                                                                   \
       [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];                         \
     }                                                                                                            \
+                                                                                                                 \
+    NSLog(@"listDartTests");                                                                                     \
                                                                                                                  \
     __block NSArray<NSString *> *dartTestFiles = NULL;                                                           \
     [appServiceClient                                                                                            \
@@ -50,9 +60,12 @@
           dartTestFiles = dartTests;                                                                             \
         }];                                                                                                      \
                                                                                                                  \
+    NSLog(@"Spin the runloop waiting");                                                                          \
+                                                                                                                 \
     /* Spin the runloop waiting until the app reports the Dart tests it contains */                              \
     while (!dartTestFiles) {                                                                                     \
-      [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];                         \
+      [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:5.0]];                         \
+     /* @throw [NSException exceptionWithName:@"TODO exception1234" reason:@"Test" userInfo:nil];           */   \
     }                                                                                                            \
                                                                                                                  \
     NSLog(@"Got %lu Dart tests: %@", dartTestFiles.count, dartTestFiles);                                        \
@@ -73,9 +86,9 @@
       IMP implementation = imp_implementationWithBlock(^(id _self) {                                             \
         [[[XCUIApplication alloc] init] launch];                                                                 \
                                                                                                                  \
-        __block RunDartTestResponse *response = NULL;                                                            \
+        __block RunDartTestResponse2 *response = NULL;                                                            \
         [appServiceClient runDartTestWithName:dartTestFile                                                       \
-                            completionHandler:^(RunDartTestResponse *_Nullable r, NSError *_Nullable err) {      \
+                            completionHandler:^(RunDartTestResponse2 *_Nullable r, NSError *_Nullable err) {      \
                               if (err != NULL) {                                                                 \
                                 NSLog(@"runDartTestWithName(%@): failed, err: %@", dartTestFile, err);           \
                               }                                                                                  \

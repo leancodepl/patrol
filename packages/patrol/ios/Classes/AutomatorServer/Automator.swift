@@ -100,7 +100,7 @@
       inApp bundleId: String
     ) async throws {
       let view = "text field with text \(format: text) at index \(index) in app \(bundleId)"
-      var data = "\(data)\n"
+      let data = "\(data)\n"
 
       try await runAction("entering text \(format: data) into \(view)") {
         let app = try self.getApp(withBundleId: bundleId)
@@ -210,8 +210,8 @@
           self.preferences.descendants(matching: .any)["Developer"].firstMatch.tap()
 
           let value =
-            self.preferences.descendants(matching: .any)["Dark Appearance"].firstMatch.value!
-            as! String
+            self.preferences.descendants(matching: .any)["Dark Appearance"].firstMatch.value
+            as? String?
           if value == "0" {
             self.preferences.descendants(matching: .any)["Dark Appearance"].firstMatch.tap()
           }
@@ -228,8 +228,8 @@
           self.preferences.descendants(matching: .any)["Developer"].firstMatch.tap()
 
           let value =
-            self.preferences.descendants(matching: .any)["Dark Appearance"].firstMatch.value!
-            as! String
+            self.preferences.descendants(matching: .any)["Dark Appearance"].firstMatch.value
+            as? String?
           if value == "1" {
             self.preferences.descendants(matching: .any)["Dark Appearance"].firstMatch.tap()
           }
@@ -363,7 +363,7 @@
     func getNativeViews(
       byText text: String,
       inApp bundleId: String
-    ) async throws -> [Patrol_NativeView] {
+    ) async throws -> [NativeView] {
       try await runAction("getting native views matching \(text)") {
         let app = try self.getApp(withBundleId: bundleId)
 
@@ -379,7 +379,7 @@
         let elements = query.allElementsBoundByIndex
 
         let views = elements.map { xcuielement in
-          return Patrol_NativeView.fromXCUIElement(xcuielement, bundleId)
+          return NativeView.fromXCUIElement(xcuielement, bundleId)
         }
 
         return views
@@ -424,17 +424,15 @@
       try await Task.sleep(nanoseconds: UInt64(1 * Double(NSEC_PER_SEC)))
     }
 
-    func getNotifications() async throws -> [Patrol_Notification] {
-      var notifications = [Patrol_Notification]()
+    func getNotifications() async throws -> [Notification] {
+      var notifications = [Notification]()
       await runAction("getting notifications") {
         let cells = self.springboard.buttons.matching(identifier: "NotificationCell")
           .allElementsBoundByIndex
         for (i, cell) in cells.enumerated() {
-          let notification = Patrol_Notification.with {
             Logger.shared.i("found notification at index \(i) with label \(format: cell.label)")
-            $0.raw = cell.label
-          }
-          notifications.append(notification)
+            let notification = Notification(title: String(), content: String(), raw: cell.label)
+            notifications.append(notification)
         }
       }
 
@@ -795,23 +793,20 @@
     }
   }
 
-  extension Patrol_NativeView {
-    static func fromXCUIElement(_ xcuielement: XCUIElement, _ bundleId: String) -> Patrol_NativeView
+  extension NativeView {
+    static func fromXCUIElement(_ xcuielement: XCUIElement, _ bundleId: String) -> NativeView
     {
-      return Patrol_NativeView.with {
-        $0.text = xcuielement.label
-        if xcuielement.accessibilityLabel != nil {
-          $0.contentDescription = xcuielement.accessibilityLabel!
-        }
-        $0.resourceName = xcuielement.identifier
-        $0.enabled = xcuielement.isEnabled
-        $0.focused = xcuielement.hasFocus
-        $0.className = String(xcuielement.elementType.rawValue)  // TODO: Provide mapping for names
-        $0.applicationPackage = bundleId
-        $0.children = xcuielement.children(matching: .any).allElementsBoundByIndex.map { child in
-          return Patrol_NativeView.fromXCUIElement(child, bundleId)
-        }
-      }
+        return NativeView(
+            className: String(xcuielement.elementType.rawValue),  // TODO: Provide mapping for names
+            text: xcuielement.label,
+            contentDescription: xcuielement.accessibilityLabel,
+            focused: xcuielement.hasFocus,
+            enabled: xcuielement.isEnabled,
+            resourceName: xcuielement.identifier,
+            applicationPackage: bundleId,
+            children: xcuielement.children(matching: .any).allElementsBoundByIndex.map { child in
+                return NativeView.fromXCUIElement(child, bundleId)
+              })
     }
   }
 
