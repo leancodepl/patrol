@@ -1,0 +1,60 @@
+name: patrol_finders prepare
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [master]
+    paths:
+      - 'packages/patrol_finders/**'
+
+jobs:
+  prepare:
+    name: Flutter ${{ matrix.flutter-version }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        flutter-version: ['3.3.x', '3.7.x', '3.10.0']
+
+    defaults:
+      run:
+        working-directory: packages/patrol_finders
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+
+      - name: flutter pub get
+        run: flutter pub get
+
+      - name: flutter test
+        if: success() || failure()
+        run: flutter test --coverage
+
+      - name: flutter analyze
+        if: success() || failure()
+        run: flutter analyze
+
+      - name: dart format
+        if: success() || failure()
+        run: dart format --set-exit-if-changed .
+
+      - name: flutter pub publish --dry-run
+        if: success() || failure()
+        run: flutter pub publish --dry-run
+
+      - name: flutter pub get (example app)
+        if: success() || failure()
+        working-directory: ./packages/patrol_finders/example
+        run: flutter pub get
+
+      - name: flutter test (example app)
+        if: success() || failure()
+        working-directory: ./packages/patrol_finders/example
+        run: flutter test

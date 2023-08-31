@@ -1,0 +1,6 @@
+include: package:leancode_lint/analysis_options.yaml
+
+linter:
+  rules:
+    prefer_const_constructors: false
+    avoid_print: false

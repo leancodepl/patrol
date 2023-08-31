@@ -32,7 +32,6 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: stable
-          cache: true
 
       - name: Publish to pub.dev
         id: pub_release

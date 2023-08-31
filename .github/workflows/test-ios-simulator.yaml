@@ -37,7 +37,6 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ matrix.flutter_version }}
-          cache: true
 
       - name: Preload Flutter artifacts
         run: flutter precache
@@ -109,7 +108,7 @@ jobs:
 
       - name: Find xcresult path
         if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
-        run: echo "XCRESULT_PATH=$(find ~/Library/Developer/Xcode/DerivedData -name "*.xcresult" -type d)" >> $GITHUB_ENV
+        run: echo "XCRESULT_PATH=$(realpath build/ios_results_*.xcresult)" >> $GITHUB_ENV
 
       - name: Publish test report to summary
         if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}

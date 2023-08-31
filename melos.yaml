@@ -1,20 +1,32 @@
-name: Patrol
-
+name: patrol
+repository: https://github.com/leancodepl/patrol
 packages:
   - packages/**
 
 scripts:
-  get:
-    run: melos exec flutter pub get
+  lint:all:
+    run: melos run analyze && melos run format-check
+    description: Run all static analysis checks.
 
   analyze:
-    run: melos exec flutter analyze
+    run: |
+      melos exec -- \
+        flutter analyze --fatal-infos
+    description: Run `flutter analyze` for all packages.
 
   format:
-    run: melos exec dart format .
+    run: melos exec -- \
+      dart format . --set-exit-if-changed
+    description: Run `dart format` checks for all packages.
+
+  # TODO: re-add
+  # dartdoc:
+  #   run: melos exec flutter pub run dartdoc
+  #   description: Run dartdoc checks for all packages.
 
   test:
-    run: melos exec flutter test
-    select-package:
-      dir-exists:
-        - test
+    run: melos exec -- flutter test .
+    packageFilters:
+      dirExists:
+        - 'test'
+    description: Run `flutter test` for selected packages.

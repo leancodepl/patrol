@@ -58,6 +58,13 @@
         ["Firebase Test Lab", "/ci/firebase-test-lab"]
       ]
     ],
+    [
+      "Integrations",
+      [
+        ["Allure", "/integrations/allure"],
+        ["Browserstack", "/integrations/browserstack"]
+      ]
+    ],
     ["Effective Patrol", "/effective-patrol"],
     ["Tips and tricks", "/tips-and-tricks"]
   ]
