@@ -61,6 +61,15 @@ void patrolTest(
 
   PatrolBinding? patrolBinding;
 
+  debugPrint('''
+╔════════════════════════════════════════════════════════════════════════════════════╗
+║ In next major release, patrolTest method will be intended for UI tests only        ║
+║ If you want to use Patrol in your widget tests, use patrol_finders package.        ║
+║                                                                                    ║
+║ For more information, see https://patrol.leancode.co/patrol-finders-release        ║
+╚════════════════════════════════════════════════════════════════════════════════════╝
+''');
+
   if (nativeAutomation) {
     switch (bindingType) {
       case BindingType.patrol:
