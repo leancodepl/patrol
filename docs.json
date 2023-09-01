@@ -23,7 +23,7 @@
         ["Overview", "/patrol/finders/overview"],
         ["Usage", "/patrol/finders/usage"],
         ["Advanced", "/patrol/finders/advanced"],
-        ["Using Patrol finders in widget tests", "/patrol/finders/setup"]
+        ["Using Patrol finders in widget tests", "/patrol/finders/finders-setup"]
       ]
     ],
     [
