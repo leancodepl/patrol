@@ -1,3 +1,7 @@
+## 2.1.3
+
+- Add migration message due to release of `patrol_finders`
+
 ## 2.1.2
 
 - Fix `.xctestrun` file not being found when the `RunnerUITests` targe uses
