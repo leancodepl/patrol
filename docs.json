@@ -18,7 +18,7 @@
     ["New package - patrol_finders", "/patrol-finders-release"],
     ["Patrol 2.0 is here!", "/v2"],
     [
-      "Interacting with Flutter app - finders",
+      "Finders",
       [
         ["Overview", "/patrol/finders/overview"],
         ["Usage", "/patrol/finders/usage"],
@@ -27,7 +27,7 @@
       ]
     ],
     [
-      "Interacting with native elements - native automation",
+      "Native automation",
       [
         ["Overview", "/patrol/native/overview"],
         ["Usage", "/patrol/native/usage"],
