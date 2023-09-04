@@ -1,5 +1,5 @@
 ---
-title: Finders - overview
+title: Patrol finders - overview
 ---
 
 # Custom finders overview
@@ -46,7 +46,7 @@ testWidgets('signs up', (WidgetTester tester) async {
 to this:
 
 ```dart
-patrolTest('signs up', (PatrolTester $) async {
+patrolWidgetTest('signs up', (PatrolTester $) async {
   await $.pumpWidgetAndSettle(AwesomeApp());
 
   await $(#emailTextField).enterText('charlie@root.me');
@@ -58,51 +58,3 @@ patrolTest('signs up', (PatrolTester $) async {
   await $('Welcome, Charlie!').waitUntilVisible();
 });
 ```
-
-### Set up
-
-All you have to do is to add package `patrol` to `dev_dependencies` in your
-project's `pubspec.yaml`.
-
-```
-flutter pub add patrol --dev
-```
-
-<Success>
-  Our custom finders depend only on Flutter itself. This means you can use them
-  no matter if you're writing a mobile, web, desktop, or embedded app!
-</Success>
-
-### Writing
-
-When using Patrol's custom finders, you use `patrolTest` function instead of
-`testWidgets`.
-
-The main difference between the `testWidgets()` function and the `patrolTest()`
-function is the type of the _tester_ you get in the test callback.
-`patrolTest()` gives you a [PatrolTester], which is much more powerful that the
-default [WidgetTester].
-
-```dart
-testWidgets('sign in', (WidgetTester tester) async {
-  await tester.tap(find.byKey(Key('signUpButton')));
-}
-```
-
-```dart
-patrolTest('sign in', (PatrolTester $) async {
-  await $(#signUpButton).tap();
-}
-```
-
-### Usage
-
-You run widget tests using Patrol's custom finders the same way as you run
-normal widget tests:
-
-```
-flutter test
-```
-
-[widgettester]: https://api.flutter.dev/flutter/flutter_test/WidgetTester-class.html
-[patroltester]: https://pub.dev/documentation/patrol/latest/patrol/PatrolTester-class.html

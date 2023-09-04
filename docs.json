@@ -15,21 +15,24 @@
   "sidebar": [
     ["About", "/"],
     ["Getting started", "/getting-started"],
+    ["New package - patrol_finders", "/patrol-finders-release"],
     ["Patrol 2.0 is here!", "/v2"],
     [
-      "Custom finders",
+      "Finders",
       [
-        ["Overview", "/finders/overview"],
-        ["Usage", "/finders/usage"],
-        ["Advanced", "/finders/advanced"]
+        ["Overview", "/patrol/finders/overview"],
+        ["Usage", "/patrol/finders/usage"],
+        ["Advanced", "/patrol/finders/advanced"],
+        ["Using Patrol finders in widget tests", "/patrol/finders/finders-setup"]
       ]
     ],
     [
       "Native automation",
       [
-        ["Overview", "/native/overview"],
-        ["Usage", "/native/usage"],
-        ["Feature parity", "/native/feature-parity"]
+        ["Overview", "/patrol/native/overview"],
+        ["Usage", "/patrol/native/usage"],
+        ["Advanced", "/patrol/native/advanced"],
+        ["Feature parity", "/patrol/native/feature-parity"]
       ]
     ],
     [
