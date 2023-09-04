@@ -27,14 +27,14 @@
     /* Create a client for PatrolAppService, which lets us list and run Dart tests */                            \
     __block ObjCPatrolAppServiceClient *appServiceClient = [[ObjCPatrolAppServiceClient alloc] init];            \
                                                                                                                  \
-    NSLog(@"Allow the Local Network permission required by Dart Observatory");                                   \
+    /*NSLog(@"Allow the Local Network permission required by Dart Observatory");*/                               \
                                                                                                                  \
     /* Allow the Local Network permission required by Dart Observatory */                                        \
-    XCUIApplication *springboard = [[XCUIApplication alloc] initWithBundleIdentifier:@"com.apple.springboard"];  \
-    XCUIElementQuery *systemAlerts = springboard.alerts;                                                         \
-    if (systemAlerts.buttons[@"Allow"].exists) {                                                                 \
-      [systemAlerts.buttons[@"Allow"] tap];                                                                      \
-    }                                                                                                            \
+    /*XCUIApplication *springboard = [[XCUIApplication alloc] initWithBundleIdentifier:@"com.apple.springboard"];*/  \
+    /*XCUIElementQuery *systemAlerts = springboard.alerts;*/                                                         \
+    /*if (systemAlerts.buttons[@"Allow"].exists) {*/                                                                 \
+    /* [systemAlerts.buttons[@"Allow"] tap];  */                                                                    \
+    /*}  */                                                                                                         \
                                                                                                                  \
     NSLog(@"Run the app for the first time");                                                                    \
                                                                                                                  \

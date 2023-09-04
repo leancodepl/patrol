@@ -16,7 +16,7 @@
 /// various UI actions such as tapping, entering text, etc., and they must be called on the main thread.
 @objc public class ObjCPatrolAppServiceClient: NSObject {
 
-  // private let client: PatrolAppServiceClient
+   private let client: PatrolAppServiceClient
 
   /// Construct client for accessing PatrolAppService server using the existing channel.
   @objc public override init() {
@@ -24,16 +24,15 @@
     
     NSLog("PatrolAppServiceClient: created, port: \(port)")
     
-    // client = PatrolAppServiceClient(port: port, address: "localhost")
+     client = PatrolAppServiceClient(port: port, address: "localhost")
   }
 
   @objc public func listDartTests() async throws -> [String] {
     NSLog("PatrolAppServiceClient.listDartTests()")
 
-    // let response = try await client.listDartTests()
+     let response = try await client.listDartTests()
 
-    // return response.group.groups.map { $0.name }
-    return []
+     return response.group.groups.map { $0.name }
   }
 
   @objc public func runDartTest(name: String) async throws -> RunDartTestResponse2 {
@@ -41,13 +40,13 @@
 
     NSLog("PatrolAppServiceClient.runDartTest(\(name))")
 
-    // let request = RunDartTestRequest(name: name)
-    // let result = try await client.runDartTest(request: request)
+     let request = RunDartTestRequest(name: name)
+     let result = try await client.runDartTest(request: request)
 
-    // return RunDartTestResponse2(
-    //   passed: result.result == .success,
-    //   details: result.details
-    // )
+     return RunDartTestResponse2(
+       passed: result.result == .success,
+       details: result.details
+     )
 
     return RunDartTestResponse2(
       passed: false,

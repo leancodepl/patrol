@@ -1,5 +1,5 @@
 import Foundation
-import Telegraph
+import FlyingFox
 
 @objc public class PatrolServer: NSObject {
   private static let envPortKey = "PATROL_PORT"
@@ -9,7 +9,7 @@ import Telegraph
   #if PATROL_ENABLED
     private let port: Int
     private let automator: Automator
-    private let server: Server
+    private let server: HTTPServer
 //    private let dispatchGroup = DispatchGroup()
   #endif
 
@@ -39,7 +39,7 @@ import Telegraph
       Logger.shared.i("PATROL_ENABLED flag is defined")
       self.port = passedPort
       self.automator = Automator()
-      self.server = Server()
+      self.server = HTTPServer(address: .loopback(port: UInt16(port)))
     #else
       Logger.shared.i("Fatal error: PATROL_ENABLED flag is not defined")
     #endif
@@ -54,9 +54,31 @@ import Telegraph
       //   self.appReady = appReady
       // }
       
-      try server.start(port: port)
+      await server.appendRoute("/initialize") { request in
+        return HTTPResponse(statusCode: .ok)
+      }
+      await server.appendRoute("/markPatrolAppServiceReady") { request in
+          Logger.shared.i("App reported that it is ready")
+          self.appReady = true
+          return HTTPResponse(statusCode: .ok)
+      }
+      await server.appendRoute("/configure") { request in
+          let requestArg = try JSONDecoder().decode(ConfigureRequest.self, from: request.body)
+          self.automator.configure(timeout: TimeInterval(requestArg.findTimeoutMillis / 1000))
+          return HTTPResponse(statusCode: .ok)
+      }
       
-      Logger.shared.i("Server started on http://0.0.0.0:\(port)")
+      await server.appendRoute("/openApp") { request in
+          let requestArg = try JSONDecoder().decode(OpenAppRequest.self, from: request.body)
+          try await self.automator.openApp(requestArg.appId)
+          return HTTPResponse(statusCode: .ok)
+      }
+      
+      try await server.start()
+      try await server.waitUntilListening()
+      let address = await server.listeningAddress
+      
+      Logger.shared.i("Server started on :\(address)")
       
       // provider.setupRoutes(server: server)
      
