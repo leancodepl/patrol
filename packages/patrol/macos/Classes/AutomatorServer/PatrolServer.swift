@@ -39,7 +39,7 @@ import FlyingFox
       Logger.shared.i("PATROL_ENABLED flag is defined")
       self.port = passedPort
       self.automator = Automator()
-      self.server = HTTPServer(address: .loopback(port: UInt16(port)))
+      self.server = HTTPServer(address: .loopback(port: UInt16(self.port)))
     #else
       Logger.shared.i("Fatal error: PATROL_ENABLED flag is not defined")
     #endif
@@ -49,38 +49,18 @@ import FlyingFox
     #if PATROL_ENABLED
       Logger.shared.i("Starting server...")
       
-      // let provider = AutomatorServer(automator: automator) { appReady in
-      //   Logger.shared.i("App reported that it is ready")
-      //   self.appReady = appReady
-      // }
-      
-      await server.appendRoute("/initialize") { request in
-        return HTTPResponse(statusCode: .ok)
-      }
-      await server.appendRoute("/markPatrolAppServiceReady") { request in
-          Logger.shared.i("App reported that it is ready")
-          self.appReady = true
-          return HTTPResponse(statusCode: .ok)
-      }
-      await server.appendRoute("/configure") { request in
-          let requestArg = try JSONDecoder().decode(ConfigureRequest.self, from: request.body)
-          self.automator.configure(timeout: TimeInterval(requestArg.findTimeoutMillis / 1000))
-          return HTTPResponse(statusCode: .ok)
+      let provider = AutomatorServer(automator: automator) { appReady in
+        Logger.shared.i("App reported that it is ready")
+        self.appReady = appReady
       }
       
-      await server.appendRoute("/openApp") { request in
-          let requestArg = try JSONDecoder().decode(OpenAppRequest.self, from: request.body)
-          try await self.automator.openApp(requestArg.appId)
-          return HTTPResponse(statusCode: .ok)
-      }
+      await provider.setupRoutes(server: server)
       
-      try await server.start()
+      Task { try await server.start() }
       try await server.waitUntilListening()
       let address = await server.listeningAddress
-      
+
       Logger.shared.i("Server started on :\(address)")
-      
-      // provider.setupRoutes(server: server)
      
 //      dispatchGroup.enter()
 //      dispatchGroup.wait()
