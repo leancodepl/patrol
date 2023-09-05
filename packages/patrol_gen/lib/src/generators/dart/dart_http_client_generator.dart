@@ -37,17 +37,23 @@ import '${path.basename(config.contractsFilename)}';
   String _generateClientClass(Service service) {
     final endpoints = service.endpoints.map(_createEndpoint).join('\n\n');
 
+    final headers = r'''_headers = {
+          'Connection': 'keep-alive',
+          'Keep-Alive': 'timeout=${timeout.inSeconds}'
+        }''';
+
     return '''
 class ${service.name}Client {
-  const ${service.name}Client(
+  ${service.name}Client(
     this._client,
     this._apiUri, {
     Duration timeout = const Duration(seconds: 300),
-  }) : _timeout = timeout;
+  }) : _timeout = timeout, $headers;
 
   final Duration _timeout;
   final http.Client _client;
   final Uri _apiUri;
+  final Map<String, String> _headers;
 
 $endpoints
 
@@ -56,7 +62,7 @@ $endpoints
     Map<String, dynamic>? request,
   ]) async {
     final response = await _client
-        .post(_apiUri.resolve(requestName), body: jsonEncode(request))
+        .post(_apiUri.resolve(requestName), body: jsonEncode(request), headers: _headers,)
         .timeout(_timeout);
 
     if (response.statusCode != 200) {
