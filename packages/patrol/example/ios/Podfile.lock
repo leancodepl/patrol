@@ -1,23 +1,21 @@
 PODS:
-  - CocoaAsyncSocket (7.6.5)
   - Flutter (1.0.0)
   - flutter_local_notifications (0.0.1):
     - Flutter
   - flutter_timezone (0.0.1):
     - Flutter
+  - FlyingFox (0.12.2):
+    - FlyingSocks (~> 0.12.2)
+  - FlyingSocks (0.12.2)
   - geolocator_apple (1.2.0):
     - Flutter
-  - HTTPParserC (2.9.4)
   - integration_test (0.0.1):
     - Flutter
   - patrol (0.0.1):
     - Flutter
-    - Telegraph (~> 0.30.0)
+    - FlyingFox (~> 0.12.0)
   - permission_handler_apple (9.1.1):
     - Flutter
-  - Telegraph (0.30.0):
-    - CocoaAsyncSocket (~> 7.6)
-    - HTTPParserC (~> 2.9)
   - webview_flutter_wkwebview (0.0.1):
     - Flutter
 
@@ -33,9 +31,8 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
-    - CocoaAsyncSocket
-    - HTTPParserC
-    - Telegraph
+    - FlyingFox
+    - FlyingSocks
 
 EXTERNAL SOURCES:
   Flutter:
@@ -56,16 +53,15 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/webview_flutter_wkwebview/ios"
 
 SPEC CHECKSUMS:
-  CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
   flutter_local_notifications: 0c0b1ae97e741e1521e4c1629a459d04b9aec743
   flutter_timezone: ffb07bdad3c6276af8dada0f11978d8a1f8a20bb
+  FlyingFox: 64c3302f81bd8690514a8988dafc9ff951781e7d
+  FlyingSocks: 7b2a722af4be5cf74499c0a5a94d3f31f028a4f7
   geolocator_apple: cc556e6844d508c95df1e87e3ea6fa4e58c50401
-  HTTPParserC: aea14c3d2d4ac5beb3988781daa36dfa62e0d9ef
   integration_test: 13825b8a9334a850581300559b8839134b124670
-  patrol: 0966206ac7e717e0ee4d9b6b4e86c8aab62acbfc
+  patrol: 8726a57cd3859ed03bc0b5217784b58bbdbf57c5
   permission_handler_apple: e76247795d700c14ea09e3a2d8855d41ee80a2e6
-  Telegraph: 12576b119324138e4929792af9e5a1085c2ecbc1
   webview_flutter_wkwebview: 2e2d318f21a5e036e2c3f26171342e95908bd60a
 
 PODFILE CHECKSUM: 0976da911d4a3d1a369deaf59f82a1c7d01a40d5
