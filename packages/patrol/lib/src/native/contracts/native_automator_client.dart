@@ -24,15 +24,20 @@ class NativeAutomatorClientException implements Exception {
 }
 
 class NativeAutomatorClient {
-  const NativeAutomatorClient(
+  NativeAutomatorClient(
     this._client,
     this._apiUri, {
     Duration timeout = const Duration(seconds: 300),
-  }) : _timeout = timeout;
+  })  : _timeout = timeout,
+        _headers = {
+          'Connection': 'keep-alive',
+          'Keep-Alive': 'timeout=${timeout.inSeconds}'
+        };
 
   final Duration _timeout;
   final http.Client _client;
   final Uri _apiUri;
+  final Map<String, String> _headers;
 
   Future<void> initialize() {
     return _sendRequest(
@@ -294,7 +299,11 @@ class NativeAutomatorClient {
     Map<String, dynamic>? request,
   ]) async {
     final response = await _client
-        .post(_apiUri.resolve(requestName), body: jsonEncode(request))
+        .post(
+          _apiUri.resolve(requestName),
+          body: jsonEncode(request),
+          headers: _headers,
+        )
         .timeout(_timeout);
 
     if (response.statusCode != 200) {

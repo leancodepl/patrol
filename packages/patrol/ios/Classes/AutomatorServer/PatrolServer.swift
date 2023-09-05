@@ -1,5 +1,5 @@
 import Foundation
-import Telegraph
+import FlyingFox
 
 @objc public class PatrolServer: NSObject {
   private static let envPortKey = "PATROL_PORT"
@@ -9,7 +9,7 @@ import Telegraph
   #if PATROL_ENABLED
     private let port: Int
     private let automator: Automator
-    private let server: Server
+    private let server: HTTPServer
 //    private let dispatchGroup = DispatchGroup()
   #endif
 
@@ -39,7 +39,7 @@ import Telegraph
       Logger.shared.i("PATROL_ENABLED flag is defined")
       self.port = passedPort
       self.automator = Automator()
-      self.server = Server()
+      self.server = HTTPServer(address: .loopback(port: UInt16(self.port)))
     #else
       Logger.shared.i("Fatal error: PATROL_ENABLED flag is not defined")
     #endif
@@ -54,11 +54,13 @@ import Telegraph
         self.appReady = appReady
       }
       
-      try server.start(port: port)
+      await provider.setupRoutes(server: server)
       
-      Logger.shared.i("Server started on http://0.0.0.0:\(port)")
-      
-      provider.setupRoutes(server: server)
+      Task { try await server.start() }
+      try await server.waitUntilListening()
+      let address = await server.listeningAddress
+
+      Logger.shared.i("Server started on :\(address)")
      
 //      dispatchGroup.enter()
 //      dispatchGroup.wait()
