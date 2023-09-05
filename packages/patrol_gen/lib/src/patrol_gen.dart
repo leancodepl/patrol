@@ -12,10 +12,12 @@ class PatrolGenConfig {
     required this.schemaFilename,
     required this.dartConfig,
     required this.iosConfig,
+    required this.macosConfig,
     required this.androidConfig,
   });
 
   final AndroidConfig androidConfig;
+  final IOSConfig macosConfig;
   final IOSConfig iosConfig;
   final DartConfig dartConfig;
   final String schemaFilename;
@@ -27,6 +29,10 @@ class PatrolGen {
 
     final files = DartGenerator().generate(schema, config.dartConfig);
     files
+      //TODO: We should rename IOSGenerator to SwiftGenerator
+      // but we should wait until feature/stop-depending-on-gRPC-code-generator
+      // is marged to master branch. We will avoid conflicts.
+      ..addAll(IOSGenerator().generate(schema, config.macosConfig))
       ..addAll(IOSGenerator().generate(schema, config.iosConfig))
       ..addAll(AndroidGenerator().generate(schema, config.androidConfig));
 

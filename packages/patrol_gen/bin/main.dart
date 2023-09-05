@@ -18,6 +18,9 @@ Future<void> main(List<String> args) {
         outputDirectory: normalizePath(args[3]),
         package: args[4],
       ),
+      macosConfig: IOSConfig(
+        outputDirectory: normalizePath(args[5]),
+      ),
     ),
   );
 }
