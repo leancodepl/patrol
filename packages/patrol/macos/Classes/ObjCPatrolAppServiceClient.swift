@@ -24,15 +24,15 @@
     
     NSLog("PatrolAppServiceClient: created, port: \(port)")
     
-     client = PatrolAppServiceClient(port: port, address: "localhost")
+    client = PatrolAppServiceClient(port: port, address: "localhost")
   }
 
   @objc public func listDartTests() async throws -> [String] {
     NSLog("PatrolAppServiceClient.listDartTests()")
 
-     let response = try await client.listDartTests()
+    let response = try await client.listDartTests()
 
-     return response.group.groups.map { $0.name }
+    return response.group.groups.map { $0.name }
   }
 
   @objc public func runDartTest(name: String) async throws -> RunDartTestResponse2 {
@@ -47,10 +47,5 @@
        passed: result.result == .success,
        details: result.details
      )
-
-    return RunDartTestResponse2(
-      passed: false,
-      details: nil
-    )
   }
 }

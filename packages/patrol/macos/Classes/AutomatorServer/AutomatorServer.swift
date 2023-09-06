@@ -136,13 +136,13 @@ final class AutomatorServer: NativeAutomatorServer {
     
     func enableBluetooth() async throws {
         return try await runCatching {
-            throw PatrolError.methodNotImplemented("enableBluetooth")
+            try await automator.enableBluetooth()
         }
     }
     
     func disableBluetooth() async throws {
         return try await runCatching {
-            throw PatrolError.methodNotImplemented("disableBluetooth")
+            try await automator.disableBluetooth()
         }
     }
     
