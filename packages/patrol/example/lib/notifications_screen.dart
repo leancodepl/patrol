@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -31,6 +32,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             iOS: DarwinInitializationSettings(
               defaultPresentAlert: false,
             ),
+            macOS: DarwinInitializationSettings(
+              defaultPresentAlert: false,
+            ),
           ),
           onDidReceiveNotificationResponse: (notificationResponse) {
             setState(() {
@@ -39,10 +43,21 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           },
         );
 
-        await _notificationsPlugin
-            .resolvePlatformSpecificImplementation<
-                AndroidFlutterLocalNotificationsPlugin>()
-            ?.requestPermission();
+        if (Platform.isAndroid) {
+          await _notificationsPlugin
+              .resolvePlatformSpecificImplementation<
+                  AndroidFlutterLocalNotificationsPlugin>()
+              ?.requestPermission();
+        } else if (Platform.isMacOS) {
+          await _notificationsPlugin
+              .resolvePlatformSpecificImplementation<
+                  MacOSFlutterLocalNotificationsPlugin>()
+              ?.requestPermissions(
+                alert: true,
+                badge: true,
+                sound: true,
+              );
+        }
       }(),
     );
   }
@@ -61,6 +76,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           'main',
           'Default notification channel',
         ),
+        macOS: DarwinNotificationDetails(),
       ),
     );
   }
@@ -76,6 +92,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       tz.TZDateTime.now(tz.local).add(const Duration(seconds: 5)),
       NotificationDetails(
         iOS: DarwinNotificationDetails(
+          interruptionLevel: InterruptionLevel.passive,
+        ),
+        macOS: DarwinNotificationDetails(
           interruptionLevel: InterruptionLevel.passive,
         ),
         android: AndroidNotificationDetails(
