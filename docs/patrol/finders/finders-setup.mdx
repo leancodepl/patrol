@@ -1,0 +1,85 @@
+---
+title: Using Patrol finders in widget tests
+---
+
+# Using Patrol finders in widget tests
+
+Since `patrol_finders` is a separate package, referenced in `patrol` package,
+you can use it in your widget or golden tests, without depending on `patrol`.
+Below you can find a short tutorial on how to use `$` in already existing widget tests.
+
+### Install
+
+First, add the `patrol_finders` package as a `dev_dependency` in your app's
+`pubspec.yaml`. You can do this by executing the following command in the app's
+directory:
+
+```console
+flutter pub add patrol_finders --dev
+```
+
+### Use
+
+<Success>
+  Our custom finders depend only on Flutter itself. This means you can use them
+  no matter if you're writing a mobile, web, desktop, or embedded app!
+</Success>
+
+To use Patrol finders in your test files, first import it:
+
+```dart
+import 'package:patrol_finders/patrol_finders.dart';
+```
+
+Once imported, you can use it in widget tests:
+
+```dart title="test/widget_test_with_patrol_finders.dart"
+void main() {
+  testWidgets(
+    'counter is incremented when plus button is tapped',
+    (WidgetTester tester) async {
+      PatrolTester $ = PatrolTester(
+        tester: tester,
+        config: PatrolTesterConfig(),
+      );
+      await $.pumpWidget(const MyApp());
+
+      expect($('0'), findsOneWidget);
+      expect($('-1'), findsNothing);
+
+      await $(Icons.remove).tap();
+
+      expect($('0'), findsNothing);
+      expect($('-1'), findsOneWidget);
+    },
+  );
+}
+```
+
+Or you can use our wrapper on `testWidgets` method, which initializes
+`PatrolTester` object for you.
+
+```dart title="test/patrol_widget_test.dart"
+void main() {
+  patrolWidgetTest(
+    'counter is incremented when plus button is tapped',
+    (PatrolTester $) async {
+      await $.pumpWidget(const MyApp());
+
+      expect($('0'), findsOneWidget);
+      expect($('-1'), findsNothing);
+
+      await $(Icons.remove).tap();
+
+      expect($('0'), findsNothing);
+      expect($('-1'), findsOneWidget);
+    },
+  );
+}
+```
+
+To run the test, simply execute:
+
+```console
+flutter test
+```

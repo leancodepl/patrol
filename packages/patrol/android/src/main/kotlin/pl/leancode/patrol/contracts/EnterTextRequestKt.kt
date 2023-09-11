@@ -110,20 +110,27 @@ public object EnterTextRequestKt {
     }
 
     /**
-     * <code>bool showKeyboard = 5;</code>
+     * `.patrol.EnterTextRequest.KeyboardBehavior keyboardBehavior = 5;`
      */
-    public var showKeyboard: kotlin.Boolean
-      @JvmName("getShowKeyboard")
-      get() = _builder.getShowKeyboard()
-      @JvmName("setShowKeyboard")
+    public var keyboardBehavior: pl.leancode.patrol.contracts.Contracts.EnterTextRequest.KeyboardBehavior
+      @JvmName("getKeyboardBehavior")
+      get() = _builder.getKeyboardBehavior()
+      @JvmName("setKeyboardBehavior")
       set(value) {
-        _builder.setShowKeyboard(value)
+        _builder.setKeyboardBehavior(value)
+      }
+    public var keyboardBehaviorValue: kotlin.Int
+      @JvmName("getKeyboardBehaviorValue")
+      get() = _builder.getKeyboardBehaviorValue()
+      @JvmName("setKeyboardBehaviorValue")
+      set(value) {
+        _builder.setKeyboardBehaviorValue(value)
       }
     /**
-     * `bool showKeyboard = 5;`
+     * `.patrol.EnterTextRequest.KeyboardBehavior keyboardBehavior = 5;`
      */
-    public fun clearShowKeyboard() {
-      _builder.clearShowKeyboard()
+    public fun clearKeyboardBehavior() {
+      _builder.clearKeyboardBehavior()
     }
     public val findByCase: pl.leancode.patrol.contracts.Contracts.EnterTextRequest.FindByCase
       @JvmName("getFindByCase")

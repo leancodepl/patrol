@@ -55,6 +55,15 @@ Future<int> patrolCommandRunner(List<String> args) async {
     isCI: isCI,
   );
 
+  if (!platform.environment.containsKey('PATROL_FINDERS')) {
+    logger.warn('''
+In next major release, patrolTest method will be intended for UI tests.
+If you want to use Patrol in your widget tests, use patrol_finders package.\n
+For more information, see https://patrol.leancode.co/patrol-finders-release
+Disable this warning by setting the PATROL_FINDERS environment variable.
+      ''');
+  }
+
   if (!platform.environment.containsKey('PATROL_MIGRATED')) {
     logger.warn('''
 You're using Patrol CLI 2.0, which has breaking changes.

@@ -46,18 +46,17 @@ enum KeyboardBehavior {
   /// On Android, no keyboard will be shown at all. The text will simply appear
   /// inside the TextField.
   ///
-  /// On iOS, the behavior is currently the same as [showAndDismiss], but that
-  /// might change in the future.
+  /// On iOS, the keyboard will not be dismissed after entering text.
   alternative,
 }
 
 extension on KeyboardBehavior {
-  bool get toShowKeyboardBool {
+  EnterTextRequest_KeyboardBehavior get toProtoEnum {
     switch (this) {
       case KeyboardBehavior.showAndDismiss:
-        return true;
+        return EnterTextRequest_KeyboardBehavior.SHOW_AND_DISMISS;
       case KeyboardBehavior.alternative:
-        return false;
+        return EnterTextRequest_KeyboardBehavior.ALTERNATIVE;
     }
   }
 }
@@ -152,6 +151,7 @@ class NativeAutomatorConfig {
     String? iosAppName,
     Duration? connectionTimeout,
     Duration? findTimeout,
+    KeyboardBehavior? keyboardBehavior,
     void Function(String)? logger,
   }) {
     return NativeAutomatorConfig(
@@ -163,6 +163,7 @@ class NativeAutomatorConfig {
       iosAppName: iosAppName ?? this.iosAppName,
       connectionTimeout: connectionTimeout ?? this.connectionTimeout,
       findTimeout: findTimeout ?? this.findTimeout,
+      keyboardBehavior: keyboardBehavior ?? this.keyboardBehavior,
       logger: logger ?? this.logger,
     );
   }
@@ -591,8 +592,8 @@ class NativeAutomator {
           data: text,
           appId: appId ?? resolvedAppId,
           selector: selector,
-          showKeyboard:
-              (keyboardBehavior ?? _config.keyboardBehavior).toShowKeyboardBool,
+          keyboardBehavior:
+              (keyboardBehavior ?? _config.keyboardBehavior).toProtoEnum,
         ),
       ),
     );
@@ -625,8 +626,8 @@ class NativeAutomator {
           data: text,
           appId: appId ?? resolvedAppId,
           index: index,
-          showKeyboard:
-              (keyboardBehavior ?? _config.keyboardBehavior).toShowKeyboardBool,
+          keyboardBehavior:
+              (keyboardBehavior ?? _config.keyboardBehavior).toProtoEnum,
         ),
       ),
     );
@@ -634,10 +635,9 @@ class NativeAutomator {
 
   /// Swipes from [from] to [to].
   ///
-  /// On Android, [steps] controls speed and smoothness.
-  /// One unit of [steps] is equivalent to 5 ms.
-  /// If you want to slow down the swipe time, increase [steps].
-  /// If [swipe] doesn't work, try increasing [steps].
+  /// On Android, [steps] controls speed and smoothness. One unit of [steps] is
+  /// equivalent to 5 ms. If you want to slow down the swipe time, increase
+  /// [steps]. If [swipe] doesn't work, try increasing [steps].
   ///
   Future<void> swipe({
     required Offset from,
