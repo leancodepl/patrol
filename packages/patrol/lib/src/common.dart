@@ -231,11 +231,11 @@ String deduplicateGroupEntryName(String parentName, String currentName) {
 @internal
 void printGroupStructure(DartGroupEntry group, {int indentation = 0}) {
   final indent = ' ' * indentation;
-  print("$indent-- group: '${group.name}'");
+  debugPrint("$indent-- group: '${group.name}'");
 
   for (final entry in group.entries) {
     if (entry.type == DartGroupEntry_GroupEntryType.TEST) {
-      print("$indent     -- test: '${entry.name}'");
+      debugPrint("$indent     -- test: '${entry.name}'");
     } else {
       for (final subgroup in entry.entries) {
         printGroupStructure(subgroup, indentation: indentation + 5);

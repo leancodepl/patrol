@@ -1,4 +1,5 @@
 import 'package:patrol/src/extensions.dart';
+// ignore: depend_on_referenced_packages
 import 'package:test_api/src/backend/invoker.dart';
 
 import 'common.dart';
@@ -32,6 +33,7 @@ void main() {
   });
 }
 
+// FIXME: Only for debugging and development. To be removed.
 Future<void> _testBody(PatrolTester $) async {
   await createApp($);
 

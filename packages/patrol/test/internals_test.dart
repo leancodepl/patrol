@@ -18,7 +18,7 @@ void main() {
         LocalTest('some_test', Metadata.empty, () => null),
         Group('example_test', [
           LocalTest('example_test some example test', Metadata.empty, () {}),
-        ])
+        ]),
       ]);
 
       // when
