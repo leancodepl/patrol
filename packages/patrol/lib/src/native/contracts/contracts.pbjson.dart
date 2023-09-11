@@ -34,8 +34,15 @@ const DartGroupEntry$json = const {
     const {'1': 'name', '3': 1, '4': 1, '5': 9, '10': 'name'},
     const {'1': 'fullName', '3': 2, '4': 1, '5': 9, '10': 'fullName'},
     const {
-      '1': 'type',
+      '1': 'encodedFullName',
       '3': 3,
+      '4': 1,
+      '5': 9,
+      '10': 'encodedFullName'
+    },
+    const {
+      '1': 'type',
+      '3': 4,
       '4': 1,
       '5': 14,
       '6': '.patrol.DartGroupEntry.GroupEntryType',
@@ -43,7 +50,7 @@ const DartGroupEntry$json = const {
     },
     const {
       '1': 'entries',
-      '3': 4,
+      '3': 5,
       '4': 3,
       '5': 11,
       '6': '.patrol.DartGroupEntry',
@@ -64,7 +71,7 @@ const DartGroupEntry_GroupEntryType$json = const {
 
 /// Descriptor for `DartGroupEntry`. Decode as a `google.protobuf.DescriptorProto`.
 final $typed_data.Uint8List dartGroupEntryDescriptor = $convert.base64Decode(
-    'Cg5EYXJ0R3JvdXBFbnRyeRISCgRuYW1lGAEgASgJUgRuYW1lEhoKCGZ1bGxOYW1lGAIgASgJUghmdWxsTmFtZRI5CgR0eXBlGAMgASgOMiUucGF0cm9sLkRhcnRHcm91cEVudHJ5Lkdyb3VwRW50cnlUeXBlUgR0eXBlEjAKB2VudHJpZXMYBCADKAsyFi5wYXRyb2wuRGFydEdyb3VwRW50cnlSB2VudHJpZXMiJQoOR3JvdXBFbnRyeVR5cGUSCQoFR1JPVVAQABIICgRURVNUEAE=');
+    'Cg5EYXJ0R3JvdXBFbnRyeRISCgRuYW1lGAEgASgJUgRuYW1lEhoKCGZ1bGxOYW1lGAIgASgJUghmdWxsTmFtZRIoCg9lbmNvZGVkRnVsbE5hbWUYAyABKAlSD2VuY29kZWRGdWxsTmFtZRI5CgR0eXBlGAQgASgOMiUucGF0cm9sLkRhcnRHcm91cEVudHJ5Lkdyb3VwRW50cnlUeXBlUgR0eXBlEjAKB2VudHJpZXMYBSADKAsyFi5wYXRyb2wuRGFydEdyb3VwRW50cnlSB2VudHJpZXMiJQoOR3JvdXBFbnRyeVR5cGUSCQoFR1JPVVAQABIICgRURVNUEAE=');
 @$core.Deprecated('Use runDartTestRequestDescriptor instead')
 const RunDartTestRequest$json = const {
   '1': 'RunDartTestRequest',

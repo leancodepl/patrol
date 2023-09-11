@@ -107,8 +107,14 @@ class DartGroupEntry extends $pb.GeneratedMessage {
             ? ''
             : 'fullName',
         protoName: 'fullName')
-    ..e<DartGroupEntry_GroupEntryType>(
+    ..aOS(
         3,
+        const $core.bool.fromEnvironment('protobuf.omit_field_names')
+            ? ''
+            : 'encodedFullName',
+        protoName: 'encodedFullName')
+    ..e<DartGroupEntry_GroupEntryType>(
+        4,
         const $core.bool.fromEnvironment('protobuf.omit_field_names')
             ? ''
             : 'type',
@@ -117,7 +123,7 @@ class DartGroupEntry extends $pb.GeneratedMessage {
         valueOf: DartGroupEntry_GroupEntryType.valueOf,
         enumValues: DartGroupEntry_GroupEntryType.values)
     ..pc<DartGroupEntry>(
-        4,
+        5,
         const $core.bool.fromEnvironment('protobuf.omit_field_names')
             ? ''
             : 'entries',
@@ -129,6 +135,7 @@ class DartGroupEntry extends $pb.GeneratedMessage {
   factory DartGroupEntry({
     $core.String? name,
     $core.String? fullName,
+    $core.String? encodedFullName,
     DartGroupEntry_GroupEntryType? type,
     $core.Iterable<DartGroupEntry>? entries,
   }) {
@@ -138,6 +145,9 @@ class DartGroupEntry extends $pb.GeneratedMessage {
     }
     if (fullName != null) {
       _result.fullName = fullName;
+    }
+    if (encodedFullName != null) {
+      _result.encodedFullName = encodedFullName;
     }
     if (type != null) {
       _result.type = type;
@@ -199,19 +209,31 @@ class DartGroupEntry extends $pb.GeneratedMessage {
   void clearFullName() => clearField(2);
 
   @$pb.TagNumber(3)
-  DartGroupEntry_GroupEntryType get type => $_getN(2);
+  $core.String get encodedFullName => $_getSZ(2);
   @$pb.TagNumber(3)
-  set type(DartGroupEntry_GroupEntryType v) {
-    setField(3, v);
+  set encodedFullName($core.String v) {
+    $_setString(2, v);
   }
 
   @$pb.TagNumber(3)
-  $core.bool hasType() => $_has(2);
+  $core.bool hasEncodedFullName() => $_has(2);
   @$pb.TagNumber(3)
-  void clearType() => clearField(3);
+  void clearEncodedFullName() => clearField(3);
 
   @$pb.TagNumber(4)
-  $core.List<DartGroupEntry> get entries => $_getList(3);
+  DartGroupEntry_GroupEntryType get type => $_getN(3);
+  @$pb.TagNumber(4)
+  set type(DartGroupEntry_GroupEntryType v) {
+    setField(4, v);
+  }
+
+  @$pb.TagNumber(4)
+  $core.bool hasType() => $_has(3);
+  @$pb.TagNumber(4)
+  void clearType() => clearField(4);
+
+  @$pb.TagNumber(5)
+  $core.List<DartGroupEntry> get entries => $_getList(4);
 }
 
 class RunDartTestRequest extends $pb.GeneratedMessage {
