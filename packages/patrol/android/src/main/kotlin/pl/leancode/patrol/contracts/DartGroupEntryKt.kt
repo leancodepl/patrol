@@ -62,24 +62,7 @@ public object DartGroupEntryKt {
     }
 
     /**
-     * `string encodedFullName = 3;`
-     */
-    public var encodedFullName: kotlin.String
-      @JvmName("getEncodedFullName")
-      get() = _builder.getEncodedFullName()
-      @JvmName("setEncodedFullName")
-      set(value) {
-        _builder.setEncodedFullName(value)
-      }
-    /**
-     * `string encodedFullName = 3;`
-     */
-    public fun clearEncodedFullName() {
-      _builder.clearEncodedFullName()
-    }
-
-    /**
-     * `.patrol.DartGroupEntry.GroupEntryType type = 4;`
+     * `.patrol.DartGroupEntry.GroupEntryType type = 3;`
      */
     public var type: pl.leancode.patrol.contracts.Contracts.DartGroupEntry.GroupEntryType
       @JvmName("getType")
@@ -96,7 +79,7 @@ public object DartGroupEntryKt {
         _builder.setTypeValue(value)
       }
     /**
-     * `.patrol.DartGroupEntry.GroupEntryType type = 4;`
+     * `.patrol.DartGroupEntry.GroupEntryType type = 3;`
      */
     public fun clearType() {
       _builder.clearType()
@@ -109,7 +92,7 @@ public object DartGroupEntryKt {
     @kotlin.OptIn(com.google.protobuf.kotlin.OnlyForUseByGeneratedProtoCode::class)
     public class EntriesProxy private constructor() : com.google.protobuf.kotlin.DslProxy()
     /**
-     * `repeated .patrol.DartGroupEntry entries = 5;`
+     * `repeated .patrol.DartGroupEntry entries = 4;`
      */
      public val entries: com.google.protobuf.kotlin.DslList<pl.leancode.patrol.contracts.Contracts.DartGroupEntry, EntriesProxy>
       @kotlin.jvm.JvmSynthetic
@@ -117,7 +100,7 @@ public object DartGroupEntryKt {
         _builder.getEntriesList()
       )
     /**
-     * `repeated .patrol.DartGroupEntry entries = 5;`
+     * `repeated .patrol.DartGroupEntry entries = 4;`
      * @param value The entries to add.
      */
     @kotlin.jvm.JvmSynthetic
@@ -126,7 +109,7 @@ public object DartGroupEntryKt {
       _builder.addEntries(value)
     }
     /**
-     * `repeated .patrol.DartGroupEntry entries = 5;`
+     * `repeated .patrol.DartGroupEntry entries = 4;`
      * @param value The entries to add.
      */
     @kotlin.jvm.JvmSynthetic
@@ -136,7 +119,7 @@ public object DartGroupEntryKt {
       add(value)
     }
     /**
-     * `repeated .patrol.DartGroupEntry entries = 5;`
+     * `repeated .patrol.DartGroupEntry entries = 4;`
      * @param values The entries to add.
      */
     @kotlin.jvm.JvmSynthetic
@@ -145,7 +128,7 @@ public object DartGroupEntryKt {
       _builder.addAllEntries(values)
     }
     /**
-     * `repeated .patrol.DartGroupEntry entries = 5;`
+     * `repeated .patrol.DartGroupEntry entries = 4;`
      * @param values The entries to add.
      */
     @kotlin.jvm.JvmSynthetic
@@ -155,7 +138,7 @@ public object DartGroupEntryKt {
       addAll(values)
     }
     /**
-     * `repeated .patrol.DartGroupEntry entries = 5;`
+     * `repeated .patrol.DartGroupEntry entries = 4;`
      * @param index The index to set the value at.
      * @param value The entries to set.
      */
@@ -165,7 +148,7 @@ public object DartGroupEntryKt {
       _builder.setEntries(index, value)
     }
     /**
-     * `repeated .patrol.DartGroupEntry entries = 5;`
+     * `repeated .patrol.DartGroupEntry entries = 4;`
      */
     @kotlin.jvm.JvmSynthetic
     @kotlin.jvm.JvmName("clearEntries")

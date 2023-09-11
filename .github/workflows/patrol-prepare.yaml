@@ -154,7 +154,7 @@ jobs:
       - name: Run unit tests
         working-directory: packages/patrol/example/ios
         run: |
-          brew install xcbeautify
+          brew install  xcbeautify
           set -o pipefail && xcodebuild test \
             -workspace Runner.xcworkspace \
             -scheme Runner \

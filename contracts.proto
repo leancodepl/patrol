@@ -15,9 +15,8 @@ message ListDartTestsResponse {
 message DartGroupEntry {
   string name = 1;
   string fullName = 2;
-  string encodedFullName = 3;
-  GroupEntryType type = 4;
-  repeated DartGroupEntry entries = 5;
+  GroupEntryType type = 3;
+  repeated DartGroupEntry entries = 4;
 
   enum GroupEntryType {
     GROUP = 0;

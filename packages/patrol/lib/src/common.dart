@@ -206,11 +206,7 @@ DartGroupEntry createDartTestGroup(
       }
 
       groupDTO.entries.add(
-        DartGroupEntry(
-          name: name,
-          fullName: entry.name,
-          type: DartGroupEntry_GroupEntryType.TEST,
-        ),
+        DartGroupEntry(name: name, type: DartGroupEntry_GroupEntryType.TEST),
       );
     } else {
       // This should really never happen, because Group and Test are the only
