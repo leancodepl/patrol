@@ -1,5 +1,3 @@
-// TODO: Run these tests on CI
-
 import XCTest
 import patrol
 
