@@ -48,7 +48,7 @@ import org.http4k.core.Status
     final urlWithPath = r'"$serverUrl$path"';
 
     return '''
-class ${service.name}Client(private val address: String, private val port: Int) {
+class ${service.name}Client(private val address: String, private val port: Int, private val timeout: Timeout) {
 
 $endpoints
 
@@ -62,8 +62,8 @@ $endpoints
               HttpClients.custom().setDefaultRequestConfig(
                   RequestConfig
                     .copy(RequestConfig.DEFAULT)
-                    .setResponseTimeout(Timeout.ofSeconds(300))
-                    .setConnectionRequestTimeout(Timeout.ofSeconds(300))
+                    .setResponseTimeout(timeout)
+                    .setConnectionRequestTimeout(timeout)
                     .build()
               ).build())
         

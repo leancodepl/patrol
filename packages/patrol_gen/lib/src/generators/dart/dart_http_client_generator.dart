@@ -47,7 +47,7 @@ class ${service.name}Client {
   ${service.name}Client(
     this._client,
     this._apiUri, {
-    Duration timeout = const Duration(seconds: 300),
+    Duration timeout = const Duration(seconds: 30),
   }) : _timeout = timeout, $headers;
 
   final Duration _timeout;

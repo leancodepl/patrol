@@ -21,10 +21,12 @@
   /// Construct client for accessing PatrolAppService server using the existing channel.
   @objc public override init() {
     let port = 8082  // TODO: Document this value better
+    // https://github.com/leancodepl/patrol/issues/1683
+    let timeout = TimeInterval(2*60*60)
     
     NSLog("PatrolAppServiceClient: created, port: \(port)")
     
-    client = PatrolAppServiceClient(port: port, address: "localhost")
+    client = PatrolAppServiceClient(port: port, address: "localhost", timeout: timeout)
   }
 
   @objc public func listDartTests() async throws -> [String] {

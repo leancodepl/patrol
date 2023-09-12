@@ -27,7 +27,7 @@ class NativeAutomatorClient {
   NativeAutomatorClient(
     this._client,
     this._apiUri, {
-    Duration timeout = const Duration(seconds: 300),
+    Duration timeout = const Duration(seconds: 30),
   })  : _timeout = timeout,
         _headers = {
           'Connection': 'keep-alive',

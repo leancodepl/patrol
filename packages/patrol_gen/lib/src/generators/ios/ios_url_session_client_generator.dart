@@ -36,10 +36,12 @@ class IOSURLSessionClientGenerator {
 class ${service.name}Client {
   private let port: Int
   private let address: String
+  private let timeout: TimeInterval
 
-  init(port: Int, address: String) {
+  init(port: Int, address: String, timeout: TimeInterval) {
     self.port = port
     self.address = address
+    self.timeout = timeout
   }
 
 $endpoints
@@ -48,13 +50,13 @@ $endpoints
     let url = URL(string: "$url")!
 
     let urlconfig = URLSessionConfiguration.default
-    urlconfig.timeoutIntervalForRequest = TimeInterval(300)
-    urlconfig.timeoutIntervalForResource = TimeInterval(300)
+    urlconfig.timeoutIntervalForRequest = timeout
+    urlconfig.timeoutIntervalForResource = timeout
 
     var request = URLRequest(url: url)
     request.httpMethod = "POST"
     request.httpBody = body
-    request.timeoutInterval = TimeInterval(300)
+    request.timeoutInterval = timeout
 
     let (data, response) = try await URLSession(configuration: urlconfig).data(for: request)
     guard (response as? HTTPURLResponse)?.statusCode == 200 else {

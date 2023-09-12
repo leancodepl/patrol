@@ -11,6 +11,7 @@ import 'package:shelf/shelf.dart' as shelf;
 import 'package:shelf/shelf_io.dart' as shelf_io;
 
 const _port = 8082;
+const _idleTimeout = Duration(hours: 2);
 
 class _TestExecutionResult {
   const _TestExecutionResult({required this.passed, required this.details});
@@ -32,7 +33,7 @@ Future<void> runAppService(PatrolAppService service) async {
     poweredByHeader: null,
   );
 
-  server.idleTimeout = const Duration(seconds: 300);
+  server.idleTimeout = _idleTimeout;
 
   final address = server.address;
 

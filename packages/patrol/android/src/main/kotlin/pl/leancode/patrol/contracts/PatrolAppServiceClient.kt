@@ -15,7 +15,7 @@ import org.http4k.core.Method
 import org.http4k.core.Request
 import org.http4k.core.Status
 
-class PatrolAppServiceClient(private val address: String, private val port: Int) {
+class PatrolAppServiceClient(private val address: String, private val port: Int, private val timeout: Timeout) {
 
     fun listDartTests() : Contracts.ListDartTestsResponse {
         val response = performRequest("listDartTests")
@@ -37,8 +37,8 @@ class PatrolAppServiceClient(private val address: String, private val port: Int)
               HttpClients.custom().setDefaultRequestConfig(
                   RequestConfig
                     .copy(RequestConfig.DEFAULT)
-                    .setResponseTimeout(Timeout.ofSeconds(300))
-                    .setConnectionRequestTimeout(Timeout.ofSeconds(300))
+                    .setResponseTimeout(timeout)
+                    .setConnectionRequestTimeout(timeout)
                     .build()
               ).build())
         
