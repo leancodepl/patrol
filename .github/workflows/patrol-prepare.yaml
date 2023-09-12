@@ -118,6 +118,7 @@ jobs:
           brew update
           brew install swift-format
           brew install clang-format
+          brew install xcbeautify
 
       # Disabled because of generated protobuf code
       #- name: swift-format lint
@@ -154,7 +155,6 @@ jobs:
       - name: Run unit tests
         working-directory: packages/patrol/example/ios
         run: |
-          brew install  xcbeautify
           set -o pipefail && xcodebuild test \
             -workspace Runner.xcworkspace \
             -scheme Runner \

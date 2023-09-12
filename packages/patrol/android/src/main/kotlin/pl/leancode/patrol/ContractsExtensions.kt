@@ -191,9 +191,6 @@ fun Selector.toBySelector(): BySelector {
 fun DartGroupEntry.listTestsFlat(parentGroupName: String = ""): List<DartGroupEntry> {
     val tests = mutableListOf<DartGroupEntry>()
 
-    // FIXME: This doesn't preserve the order of groups and tests in Dart!
-    //  We should iterate over "group entries", instead of iterating over "groups" and "tests".
-
     for (test in entriesList) {
         if (test.type == DartGroupEntry.GroupEntryType.TEST) {
             if (parentGroupName.isEmpty()) {
