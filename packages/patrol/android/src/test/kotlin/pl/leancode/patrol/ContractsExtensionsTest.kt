@@ -39,7 +39,7 @@ class DartTestGroupExtensionsTest {
         }
 
         // when
-        val dartTestFiles = dartTestGroup.listTestsFlat()
+        val dartTests = dartTestGroup.listTestsFlat()
 
         // then
         assertContentEquals(
@@ -48,7 +48,7 @@ class DartTestGroupExtensionsTest {
                 dartTestCase { name = "open_app_test open maps" },
                 dartTestCase { name = "webview_test interacts with the LeanCode website in a webview" },
             ),
-            dartTestFiles,
+            dartTests,
         )
     }
 
@@ -96,7 +96,7 @@ class DartTestGroupExtensionsTest {
         }
 
         // when
-        val dartTestFiles = rootDartTestGroup.listTestsFlat()
+        val dartTests = rootDartTestGroup.listTestsFlat()
 
         // then
         assertContentEquals(
@@ -112,7 +112,7 @@ class DartTestGroupExtensionsTest {
                 dartTestCase { name = "open_app_test open maps" },
                 dartTestCase { name = "open_app_test open browser" },
             ),
-            dartTestFiles,
+            dartTests,
         )
     }
 }

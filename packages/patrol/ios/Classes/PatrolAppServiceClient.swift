@@ -41,8 +41,6 @@ import NIO
     let request = Patrol_Empty()
     let response = try await client.listDartTests(request)
 
-    NSLog("RAW: Got tests: \(response.group)")
-
     return response.group.listTestsFlat(parentGroupName: "").map {
       $0.name
     }

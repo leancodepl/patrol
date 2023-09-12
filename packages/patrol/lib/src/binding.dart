@@ -46,11 +46,10 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
   PatrolBinding() {
     final oldTestExceptionReporter = reportTestException;
     reportTestException = (details, testDescription) {
-      final currentDartTestFile = _currentDartTest;
-      if (currentDartTestFile != null) {
+      final currentDartTest = _currentDartTest;
+      if (currentDartTest != null) {
         assert(!constants.hotRestartEnabled);
-        _testResults[currentDartTestFile] =
-            Failure(testDescription, '$details');
+        _testResults[currentDartTest] = Failure(testDescription, '$details');
       }
       oldTestExceptionReporter(details, testDescription);
     };
@@ -175,7 +174,7 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
   void attachRootWidget(Widget rootWidget) {
     assert(
       (_currentDartTest != null) != (constants.hotRestartEnabled),
-      '_currentDartTestFile can be null if and only if Hot Restart is enabled',
+      '_currentDartTest can be null if and only if Hot Restart is enabled',
     );
 
     const testLabelEnabled = bool.fromEnvironment('PATROL_TEST_LABEL_ENABLED');
