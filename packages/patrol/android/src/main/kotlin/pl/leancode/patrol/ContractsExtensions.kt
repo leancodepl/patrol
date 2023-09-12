@@ -195,7 +195,7 @@ fun DartGroupEntry.listTestsFlat(parentGroupName: String = ""): List<DartGroupEn
         if (test.type == DartGroupEntry.GroupEntryType.TEST) {
             if (parentGroupName.isEmpty()) {
                 // This case is invalid, because every test will have at least 1 named group - its filename.
-                throw IllegalStateException("Test $test has no named parent group")
+                throw IllegalStateException("Invariant violated: test $test has no named parent group")
             }
 
             tests.add(test.copy { name = "$parentGroupName ${test.name}" })

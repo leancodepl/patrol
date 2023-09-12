@@ -71,7 +71,7 @@ extension Patrol_DartGroupEntry {
           // This case is invalid, because every test will have at least
           // 1 named group - its filename.
 
-          continue  // Ignore - what else can we do?
+          fatalError("Invariant violated: test \(test.name) has no named parent group")
         }
 
         test.name = "\(parentGroupName) \(test.name)"
