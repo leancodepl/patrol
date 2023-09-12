@@ -11,6 +11,8 @@ void main() {
       mapsId = 'com.apple.Maps';
     } else if (Platform.isAndroid) {
       mapsId = 'com.google.android.apps.maps';
+    } else {
+      throw UnsupportedError('Unsupported platform');
     }
 
     await createApp($);
@@ -33,6 +35,8 @@ void main() {
       browserId = 'com.apple.mobilesafari';
     } else if (Platform.isAndroid) {
       browserId = 'com.android.chrome';
+    } else {
+      throw UnsupportedError('Unsupported platform');
     }
 
     await createApp($);
