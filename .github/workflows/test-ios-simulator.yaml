@@ -20,7 +20,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter_version: ['3.10.x']
+        flutter_version: ['3.13.x']
         device_model: [iPhone 8, iPhone 14, iPad (9th generation)]
         os: [iOS]
         os_version: ['16.2']
@@ -108,7 +108,9 @@ jobs:
 
       - name: Find xcresult path
         if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
-        run: echo "XCRESULT_PATH=$(realpath build/ios_results_*.xcresult)" >> $GITHUB_ENV
+        run: |
+          brew install coreutils # to provide realpath binary
+          echo "XCRESULT_PATH=$(realpath build/ios_results_*.xcresult)" >> $GITHUB_ENV
 
       - name: Publish test report to summary
         if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}

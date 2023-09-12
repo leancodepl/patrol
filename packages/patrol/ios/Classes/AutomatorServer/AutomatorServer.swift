@@ -70,7 +70,7 @@ final class AutomatorServer: NativeAutomatorServer {
             return GetNativeViewsResponse(nativeViews: nativeViews)
         }
     }
-    
+
     func tap(request: TapRequest) async throws {
         return try await runCatching {
             try await automator.tap(
@@ -96,14 +96,16 @@ final class AutomatorServer: NativeAutomatorServer {
                 try await automator.enterText(
                     request.data,
                     byIndex: Int(index),
-                    inApp: request.appId
+                    inApp: request.appId,
+                    dismissKeyboard: request.keyboardBehavior == .showAndDismiss
                 )
             } else if let selector = request.selector {
                 try await automator.enterText(
                     request.data,
                     byText: selector.text ?? String(),
                     atIndex: selector.instance ?? 0,
-                    inApp: request.appId
+                    inApp: request.appId,
+                    dismissKeyboard: request.keyboardBehavior == .showAndDismiss
                 )
             } else {
                 throw PatrolError.internal("enterText(): neither index nor selector are set")

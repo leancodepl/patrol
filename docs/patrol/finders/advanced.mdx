@@ -1,5 +1,5 @@
 ---
-title: Finders - advanced
+title: Patrol finders - advanced
 ---
 
 # Advanced
@@ -7,7 +7,7 @@ title: Finders - advanced
 We aim to make Patrol as simple as possible, but there are still a few matters
 that we feel require some more attention. We'll explain them in this section.
 
-### How is Patrol's `tap()` different from Flutter `tap()`?
+### How is Patrol's `tap()` different from Flutter's `tap()`?
 
 Let's consider this test, written without Patrol:
 
@@ -66,7 +66,7 @@ This code:
 The timeout can be configured globally:
 
 ```dart
-patrolTest(
+patrolWidgetTest(
   'logs in successfully',
   config: PatrolTestConfig(findTimeout: Duration(seconds: 10)),
   ($) async {
@@ -212,7 +212,7 @@ To fix this problem, you have to explicitly specify which `Scrollable` you want
 to use:
 
 ```dart
-await $('index: 100').scrollTo(scrollable: $(#listView2).$(Scrollable)).tap();
+await $('index: 100').scrollTo(view: $(#listView2).$(Scrollable)).tap();
 ```
 
 The above snippet will scroll the second `Scrollable` and find the widget with
@@ -220,7 +220,7 @@ The above snippet will scroll the second `Scrollable` and find the widget with
 
 **Why so verbose?**
 
-You might be wondering why `scrollTo(scrollable: $(#listView2))` is not enough?
+You might be wondering why `scrollTo(view: $(#listView2))` is not enough?
 Why is it needed to look for a `Scrollable` widget inside the widget with the
 `listView2` key?
 

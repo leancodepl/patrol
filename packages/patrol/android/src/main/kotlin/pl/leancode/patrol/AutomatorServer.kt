@@ -122,7 +122,7 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
             automation.enterText(
                 text = request.data,
                 index = request.index!!.toInt(),
-                showKeyboard = request.showKeyboard
+                keyboardBehavior = request.keyboardBehavior
             )
         } else if (request.selector != null) {
             automation.enterText(
@@ -130,7 +130,7 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
                 uiSelector = request.selector.toUiSelector(),
                 bySelector = request.selector.toBySelector(),
                 index = request.selector.instance?.toInt() ?: 0,
-                showKeyboard = request.showKeyboard
+                keyboardBehavior = request.keyboardBehavior
             )
         } else {
             throw PatrolException("enterText(): neither index nor selector are set")

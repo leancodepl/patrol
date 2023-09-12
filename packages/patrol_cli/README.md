@@ -38,7 +38,7 @@ directories to PATH:
 
 Read the documentation:
 
-- [setup](https://patrol.leancode.pl/getting-started/getting-started)
+- [setup](https://patrol.leancode.pl/getting-started)
 - [test command](https://patrol.leancode.co/cli-commands/test)
 
 [pub_badge]: https://img.shields.io/pub/v/patrol_cli.svg

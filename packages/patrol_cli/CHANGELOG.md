@@ -1,3 +1,12 @@
+## 2.1.3
+
+- Add migration message due to release of `patrol_finders`
+
+## 2.1.2
+
+- Fix `.xctestrun` file not being found when the `RunnerUITests` targe uses
+  XCTestPlans (#1636)
+
 ## 2.1.1
 
 - Change the location of iOS test reports to `build/ios_results` with timestamp
