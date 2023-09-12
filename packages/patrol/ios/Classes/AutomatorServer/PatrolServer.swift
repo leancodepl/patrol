@@ -10,7 +10,6 @@ import FlyingFox
     private let port: Int
     private let automator: Automator
     private let server: HTTPServer
-//    private let dispatchGroup = DispatchGroup()
   #endif
 
   @objc
@@ -61,9 +60,6 @@ import FlyingFox
       let address = await server.listeningAddress
 
       Logger.shared.i("Server started on :\(address)")
-     
-//      dispatchGroup.enter()
-//      dispatchGroup.wait()
     #endif
   }
 }
