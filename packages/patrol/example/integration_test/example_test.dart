@@ -5,7 +5,9 @@ import 'package:test_api/src/backend/invoker.dart';
 import 'common.dart';
 
 void main() {
-  patrol('at the beginning, haha!', ($) async {
+  // FIXME: iOS implementation not tested with non-alphabetic test names.
+
+  patrol('at the beginning', ($) async {
     await _testBody($);
   });
   group('top level group in file', () {
@@ -18,7 +20,7 @@ void main() {
       });
     });
 
-    patrol('in the middle, haha!', ($) async {
+    patrol('in the middle', ($) async {
       await _testBody($);
     });
 

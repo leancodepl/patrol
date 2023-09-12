@@ -41,7 +41,10 @@ import NIO
     let request = Patrol_Empty()
     let response = try await client.listDartTests(request)
 
-    return response.group.groups.map { $0.name }
+    return response.group.entries.map {
+      $0.name
+    }
+    // return response.group.groups.map { $0.name }
   }
 
   @objc public func runDartTest(name: String) async throws -> RunDartTestResponse {

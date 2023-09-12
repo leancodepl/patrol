@@ -27,10 +27,18 @@
       [[components subarrayWithRange:NSMakeRange(0, components.count - 1)] mutableCopy];
   if (pathComponents.count > 0) {
     NSString *path = [pathComponents componentsJoinedByString:@"_"];
-    return [NSString stringWithFormat:@"%@_%@", path, fileName];
-  } else {
-    return fileName;
+    [fileName setString:[NSString stringWithFormat:@"%@_%@", path, fileName]];
   }
+
+  // Objective-C method names must be alphanumeric.
+  NSMutableCharacterSet *allowedCharacters = [NSMutableCharacterSet alphanumericCharacterSet];  // invertedSet
+  [allowedCharacters addCharactersInString:@"_"];
+  NSCharacterSet *disallowedCharacters = allowedCharacters.invertedSet;
+
+  // Remove disallowed characters.
+  NSString *upperCamelTestName =
+      [[fileName componentsSeparatedByCharactersInSet:disallowedCharacters] componentsJoinedByString:@""];
+  return upperCamelTestName;
 }
 
 @end
