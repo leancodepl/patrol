@@ -42,7 +42,7 @@ final class RunnerTests: XCTestCase {
 
   func testCreateMethodNameFromPatrolGeneratedGroup_example6() {
     let input = "example_test at the beginning"
-    let expectedOutput = "exampleTest___atTheBeginning"  // FIXME: This is temporary
+    let expectedOutput = "exampleTest___atTheBeginning"
     let result = PatrolUtils.createMethodName(fromPatrolGeneratedGroup: input)
     XCTAssertEqual(result, expectedOutput)
   }

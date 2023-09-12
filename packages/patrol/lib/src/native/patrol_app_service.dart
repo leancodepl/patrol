@@ -1,6 +1,6 @@
-//TODO: Use a logger instead of print
-
 // ignore_for_file: avoid_print
+
+// TODO: Use a logger instead of print
 
 import 'dart:async';
 import 'dart:io' as io;
@@ -100,9 +100,9 @@ class PatrolAppService extends PatrolAppServiceBase {
 
     final requestedDartTest = await testExecutionRequested;
     if (requestedDartTest != dartTest) {
-      // If the requested Dart test is not the one we're waiting for now,
-      // it means that dartTest was already executed. Return false so that
-      // callers can skip the already executed test.
+      // If the requested Dart test is not the one we're waiting for now, it
+      // means that dartTest was already executed. Return false so that callers
+      // can skip the already executed test.
 
       print(
         'PatrolAppService: registered test "$dartTest" was not matched by requested test "$requestedDartTest"',
