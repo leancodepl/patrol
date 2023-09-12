@@ -41,10 +41,11 @@ import NIO
     let request = Patrol_Empty()
     let response = try await client.listDartTests(request)
 
-    return response.group.entries.map {
+    NSLog("RAW: Got tests: \(response.group)")
+
+    return response.group.listTestsFlat(parentGroupName: "").map {
       $0.name
     }
-    // return response.group.groups.map { $0.name }
   }
 
   @objc public func runDartTest(name: String) async throws -> RunDartTestResponse {
@@ -56,5 +57,41 @@ import NIO
       passed: result.result == .success,
       details: result.details
     )
+  }
+}
+
+extension Patrol_DartGroupEntry {
+
+  func listTestsFlat(parentGroupName: String) -> [Patrol_DartGroupEntry] {
+    var tests = [Patrol_DartGroupEntry]()
+
+    for test in self.entries {
+      if test.type == Patrol_DartGroupEntry.GroupEntryType.test {
+        if parentGroupName.isEmpty {
+          // This case is invalid, because every test will have at least
+          // 1 named group - its filename.
+
+          continue  // What else can we do?
+        }
+
+        // TODO: There has to be some copy() function
+        tests.append(
+          .with {
+            $0.name = "\(parentGroupName) \(test.name)"
+            $0.fullName = test.fullName
+            $0.type = test.type
+            $0.entries = test.entries
+          })
+      } else if test.type == Patrol_DartGroupEntry.GroupEntryType.group {
+        if parentGroupName.isEmpty {
+          tests.append(contentsOf: test.listTestsFlat(parentGroupName: test.name))
+        } else {
+          tests.append(
+            contentsOf: test.listTestsFlat(parentGroupName: "\(parentGroupName) \(test.name)"))
+        }
+      }
+    }
+
+    return tests
   }
 }
