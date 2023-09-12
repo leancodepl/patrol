@@ -66,28 +66,25 @@ extension Patrol_DartGroupEntry {
     var tests = [Patrol_DartGroupEntry]()
 
     for test in self.entries {
+      var test = test
+
       if test.type == Patrol_DartGroupEntry.GroupEntryType.test {
         if parentGroupName.isEmpty {
           // This case is invalid, because every test will have at least
           // 1 named group - its filename.
 
-          continue  // What else can we do?
+          continue  // Ignore - what else can we do?
         }
 
-        // TODO: There has to be some copy() function
-        tests.append(
-          .with {
-            $0.name = "\(parentGroupName) \(test.name)"
-            $0.fullName = test.fullName
-            $0.type = test.type
-            $0.entries = test.entries
-          })
+        test.name = "\(parentGroupName) \(test.name)"
+        tests.append(test)
       } else if test.type == Patrol_DartGroupEntry.GroupEntryType.group {
         if parentGroupName.isEmpty {
           tests.append(contentsOf: test.listTestsFlat(parentGroupName: test.name))
         } else {
           tests.append(
-            contentsOf: test.listTestsFlat(parentGroupName: "\(parentGroupName) \(test.name)"))
+            contentsOf: test.listTestsFlat(parentGroupName: "\(parentGroupName) \(test.name)")
+          )
         }
       }
     }
