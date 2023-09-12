@@ -83,12 +83,17 @@ class TapRequest {
   late String appId;
 }
 
+enum KeyboardBehavior {
+  showAndDismiss,
+  alternative,
+}
+
 class EnterTextRequest {
   late String data;
   late String appId;
   int? index;
   Selector? selector;
-  late bool showKeyboard;
+  late KeyboardBehavior keyboardBehavior;
 }
 
 class SwipeRequest {

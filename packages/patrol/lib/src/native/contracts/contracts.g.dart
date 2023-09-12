@@ -207,7 +207,8 @@ EnterTextRequest _$EnterTextRequestFromJson(Map<String, dynamic> json) =>
       selector: json['selector'] == null
           ? null
           : Selector.fromJson(json['selector'] as Map<String, dynamic>),
-      showKeyboard: json['showKeyboard'] as bool,
+      keyboardBehavior:
+          $enumDecode(_$KeyboardBehaviorEnumMap, json['keyboardBehavior']),
     );
 
 Map<String, dynamic> _$EnterTextRequestToJson(EnterTextRequest instance) =>
@@ -216,8 +217,13 @@ Map<String, dynamic> _$EnterTextRequestToJson(EnterTextRequest instance) =>
       'appId': instance.appId,
       'index': instance.index,
       'selector': instance.selector,
-      'showKeyboard': instance.showKeyboard,
+      'keyboardBehavior': _$KeyboardBehaviorEnumMap[instance.keyboardBehavior]!,
     };
+
+const _$KeyboardBehaviorEnumMap = {
+  KeyboardBehavior.showAndDismiss: 'showAndDismiss',
+  KeyboardBehavior.alternative: 'alternative',
+};
 
 SwipeRequest _$SwipeRequestFromJson(Map<String, dynamic> json) => SwipeRequest(
       startX: (json['startX'] as num).toDouble(),

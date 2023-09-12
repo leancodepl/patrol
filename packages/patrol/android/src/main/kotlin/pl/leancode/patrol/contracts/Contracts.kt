@@ -16,6 +16,12 @@ class Contracts {
   }
 
   @Serializable
+  enum class KeyboardBehavior {
+    showAndDismiss,
+    alternative,
+  }
+
+  @Serializable
   enum class HandlePermissionRequestCode {
     whileUsing,
     onlyThisTime,
@@ -183,7 +189,7 @@ class Contracts {
     val appId: String,
     val index: Long? = null,
     val selector: Selector? = null,
-    val showKeyboard: Boolean
+    val keyboardBehavior: KeyboardBehavior
   ){
     fun hasIndex(): Boolean {
       return index != null

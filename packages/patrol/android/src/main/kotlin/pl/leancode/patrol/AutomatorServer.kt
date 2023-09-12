@@ -121,7 +121,7 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
         if (request.index != null) {
             automation.enterText(
                 text = request.data,
-                index = request.index!!.toInt(),
+                index = request.index.toInt(),
                 keyboardBehavior = request.keyboardBehavior
             )
         } else if (request.selector != null) {

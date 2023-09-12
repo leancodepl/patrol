@@ -6,6 +6,7 @@ import 'package:integration_test/integration_test.dart';
 import 'package:meta/meta.dart';
 import 'package:patrol/src/binding.dart';
 import 'package:patrol/src/native/contracts/contracts.dart';
+import 'package:patrol/src/native/contracts/contracts.dart' as contracts;
 import 'package:patrol/src/native/contracts/native_automator_client.dart';
 
 /// Thrown when a native action fails.
@@ -51,12 +52,12 @@ enum KeyboardBehavior {
 }
 
 extension on KeyboardBehavior {
-  EnterTextRequest_KeyboardBehavior get toProtoEnum {
+  contracts.KeyboardBehavior get toContractsEnum {
     switch (this) {
       case KeyboardBehavior.showAndDismiss:
-        return EnterTextRequest_KeyboardBehavior.SHOW_AND_DISMISS;
+        return contracts.KeyboardBehavior.showAndDismiss;
       case KeyboardBehavior.alternative:
-        return EnterTextRequest_KeyboardBehavior.ALTERNATIVE;
+        return contracts.KeyboardBehavior.alternative;
     }
   }
 }
@@ -547,7 +548,7 @@ class NativeAutomator {
           appId: appId ?? resolvedAppId,
           selector: selector,
           keyboardBehavior:
-              (keyboardBehavior ?? _config.keyboardBehavior).toProtoEnum,
+              (keyboardBehavior ?? _config.keyboardBehavior).toContractsEnum,
         ),
       ),
     );
@@ -581,7 +582,7 @@ class NativeAutomator {
           appId: appId ?? resolvedAppId,
           index: index,
           keyboardBehavior:
-              (keyboardBehavior ?? _config.keyboardBehavior).toProtoEnum,
+              (keyboardBehavior ?? _config.keyboardBehavior).toContractsEnum,
         ),
       ),
     );

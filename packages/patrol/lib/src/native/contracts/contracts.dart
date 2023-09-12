@@ -17,6 +17,13 @@ enum RunDartTestResponseResult {
   failure
 }
 
+enum KeyboardBehavior {
+  @JsonValue('showAndDismiss')
+  showAndDismiss,
+  @JsonValue('alternative')
+  alternative
+}
+
 enum HandlePermissionRequestCode {
   @JsonValue('whileUsing')
   whileUsing,
@@ -266,7 +273,7 @@ class EnterTextRequest {
     required this.appId,
     this.index,
     this.selector,
-    required this.showKeyboard,
+    required this.keyboardBehavior,
   });
 
   factory EnterTextRequest.fromJson(Map<String, dynamic> json) =>
@@ -276,7 +283,7 @@ class EnterTextRequest {
   final String appId;
   final int? index;
   final Selector? selector;
-  final bool showKeyboard;
+  final KeyboardBehavior keyboardBehavior;
 
   Map<String, dynamic> toJson() => _$EnterTextRequestToJson(this);
 }

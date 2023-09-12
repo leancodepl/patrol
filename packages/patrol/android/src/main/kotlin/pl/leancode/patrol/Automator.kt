@@ -174,7 +174,7 @@ class Automator private constructor() {
         delay()
     }
 
-    fun enterText(text: String, index: Int, keyboardBehavior: KeyboardBehavior) {
+    fun enterText(text: String, index: Int, keyboardBehavior: Contracts.KeyboardBehavior) {
         Logger.d("enterText(text: $text, index: $index)")
 
         val selector = By.clazz(EditText::class.java)
@@ -187,13 +187,13 @@ class Automator private constructor() {
         val uiSelector = UiSelector().className(EditText::class.java).instance(index)
         val uiObject = uiDevice.findObject(uiSelector)
 
-        if (keyboardBehavior == KeyboardBehavior.SHOW_AND_DISMISS) {
+        if (keyboardBehavior == Contracts.KeyboardBehavior.showAndDismiss) {
             uiObject.click()
         }
 
         uiObject.text = text
 
-        if (keyboardBehavior == KeyboardBehavior.SHOW_AND_DISMISS) {
+        if (keyboardBehavior == Contracts.KeyboardBehavior.showAndDismiss) {
             pressBack() // Hide keyboard.
         }
     }
@@ -203,7 +203,7 @@ class Automator private constructor() {
         uiSelector: UiSelector,
         bySelector: BySelector,
         index: Int,
-        keyboardBehavior: KeyboardBehavior
+        keyboardBehavior: Contracts.KeyboardBehavior
     ) {
         Logger.d("enterText($text): $uiSelector, $bySelector")
 
@@ -213,13 +213,13 @@ class Automator private constructor() {
 
         val uiObject = uiDevice.findObject(uiSelector).getFromParent(UiSelector().className(EditText::class.java))
 
-        if (keyboardBehavior == KeyboardBehavior.SHOW_AND_DISMISS) {
+        if (keyboardBehavior == Contracts.KeyboardBehavior.showAndDismiss) {
             uiObject.click()
         }
 
         uiObject.text = text
 
-        if (keyboardBehavior == KeyboardBehavior.SHOW_AND_DISMISS) {
+        if (keyboardBehavior == Contracts.KeyboardBehavior.showAndDismiss) {
             pressBack() // Hide keyboard.
         }
     }

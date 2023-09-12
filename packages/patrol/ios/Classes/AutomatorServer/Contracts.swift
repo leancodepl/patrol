@@ -9,6 +9,11 @@ enum RunDartTestResponseResult: String, Codable {
   case failure
 }
 
+enum KeyboardBehavior: String, Codable {
+  case showAndDismiss
+  case alternative
+}
+
 enum HandlePermissionRequestCode: String, Codable {
   case whileUsing
   case onlyThisTime
@@ -101,7 +106,7 @@ struct EnterTextRequest: Codable {
  var appId: String
  var index: Int?
  var selector: Selector?
- var showKeyboard: Bool
+ var keyboardBehavior: KeyboardBehavior
 }
 
 struct SwipeRequest: Codable {
