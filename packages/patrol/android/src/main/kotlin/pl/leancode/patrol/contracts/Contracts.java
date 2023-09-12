@@ -33,6 +33,7 @@ public final class Contracts {
       ListDartTestsResponseOrBuilder {
     private ListDartTestsResponse() {
     }
+    private int bitField0_;
     public static final int GROUP_FIELD_NUMBER = 1;
     private pl.leancode.patrol.contracts.Contracts.DartGroupEntry group_;
     /**
@@ -40,7 +41,7 @@ public final class Contracts {
      */
     @java.lang.Override
     public boolean hasGroup() {
-      return group_ != null;
+      return ((bitField0_ & 0x00000001) != 0);
     }
     /**
      * <code>.patrol.DartGroupEntry group = 1;</code>
@@ -55,7 +56,7 @@ public final class Contracts {
     private void setGroup(pl.leancode.patrol.contracts.Contracts.DartGroupEntry value) {
       value.getClass();
   group_ = value;
-
+      bitField0_ |= 0x00000001;
       }
     /**
      * <code>.patrol.DartGroupEntry group = 1;</code>
@@ -70,13 +71,13 @@ public final class Contracts {
       } else {
         group_ = value;
       }
-
+      bitField0_ |= 0x00000001;
     }
     /**
      * <code>.patrol.DartGroupEntry group = 1;</code>
      */
     private void clearGroup() {  group_ = null;
-
+      bitField0_ = (bitField0_ & ~0x00000001);
     }
 
     public static pl.leancode.patrol.contracts.Contracts.ListDartTestsResponse parseFrom(
@@ -159,7 +160,7 @@ public final class Contracts {
       return (Builder) DEFAULT_INSTANCE.createBuilder();
     }
     public static Builder newBuilder(pl.leancode.patrol.contracts.Contracts.ListDartTestsResponse prototype) {
-      return (Builder) DEFAULT_INSTANCE.createBuilder(prototype);
+      return DEFAULT_INSTANCE.createBuilder(prototype);
     }
 
     /**
@@ -239,10 +240,11 @@ public final class Contracts {
         }
         case BUILD_MESSAGE_INFO: {
             java.lang.Object[] objects = new java.lang.Object[] {
+              "bitField0_",
               "group_",
             };
             java.lang.String info =
-                "\u0000\u0001\u0000\u0000\u0001\u0001\u0001\u0000\u0000\u0000\u0001\t";
+                "\u0000\u0001\u0000\u0001\u0001\u0001\u0001\u0000\u0000\u0000\u0001\u1009\u0000";
             return newMessageInfo(DEFAULT_INSTANCE, info, objects);
         }
         // fall through
@@ -314,18 +316,6 @@ public final class Contracts {
         getNameBytes();
 
     /**
-     * <code>string fullName = 2;</code>
-     * @return The fullName.
-     */
-    java.lang.String getFullName();
-    /**
-     * <code>string fullName = 2;</code>
-     * @return The bytes for fullName.
-     */
-    com.google.protobuf.ByteString
-        getFullNameBytes();
-
-    /**
      * <code>.patrol.DartGroupEntry.GroupEntryType type = 3;</code>
      * @return The enum numeric value on the wire for type.
      */
@@ -360,7 +350,6 @@ public final class Contracts {
       DartGroupEntryOrBuilder {
     private DartGroupEntry() {
       name_ = "";
-      fullName_ = "";
       entries_ = emptyProtobufList();
     }
     /**
@@ -496,53 +485,6 @@ public final class Contracts {
         com.google.protobuf.ByteString value) {
       checkByteStringIsUtf8(value);
       name_ = value.toStringUtf8();
-
-    }
-
-    public static final int FULLNAME_FIELD_NUMBER = 2;
-    private java.lang.String fullName_;
-    /**
-     * <code>string fullName = 2;</code>
-     * @return The fullName.
-     */
-    @java.lang.Override
-    public java.lang.String getFullName() {
-      return fullName_;
-    }
-    /**
-     * <code>string fullName = 2;</code>
-     * @return The bytes for fullName.
-     */
-    @java.lang.Override
-    public com.google.protobuf.ByteString
-        getFullNameBytes() {
-      return com.google.protobuf.ByteString.copyFromUtf8(fullName_);
-    }
-    /**
-     * <code>string fullName = 2;</code>
-     * @param value The fullName to set.
-     */
-    private void setFullName(
-        java.lang.String value) {
-      java.lang.Class<?> valueClass = value.getClass();
-  
-      fullName_ = value;
-    }
-    /**
-     * <code>string fullName = 2;</code>
-     */
-    private void clearFullName() {
-
-      fullName_ = getDefaultInstance().getFullName();
-    }
-    /**
-     * <code>string fullName = 2;</code>
-     * @param value The bytes for fullName to set.
-     */
-    private void setFullNameBytes(
-        com.google.protobuf.ByteString value) {
-      checkByteStringIsUtf8(value);
-      fullName_ = value.toStringUtf8();
 
     }
 
@@ -762,7 +704,7 @@ public final class Contracts {
       return (Builder) DEFAULT_INSTANCE.createBuilder();
     }
     public static Builder newBuilder(pl.leancode.patrol.contracts.Contracts.DartGroupEntry prototype) {
-      return (Builder) DEFAULT_INSTANCE.createBuilder(prototype);
+      return DEFAULT_INSTANCE.createBuilder(prototype);
     }
 
     /**
@@ -825,55 +767,6 @@ public final class Contracts {
           com.google.protobuf.ByteString value) {
         copyOnWrite();
         instance.setNameBytes(value);
-        return this;
-      }
-
-      /**
-       * <code>string fullName = 2;</code>
-       * @return The fullName.
-       */
-      @java.lang.Override
-      public java.lang.String getFullName() {
-        return instance.getFullName();
-      }
-      /**
-       * <code>string fullName = 2;</code>
-       * @return The bytes for fullName.
-       */
-      @java.lang.Override
-      public com.google.protobuf.ByteString
-          getFullNameBytes() {
-        return instance.getFullNameBytes();
-      }
-      /**
-       * <code>string fullName = 2;</code>
-       * @param value The fullName to set.
-       * @return This builder for chaining.
-       */
-      public Builder setFullName(
-          java.lang.String value) {
-        copyOnWrite();
-        instance.setFullName(value);
-        return this;
-      }
-      /**
-       * <code>string fullName = 2;</code>
-       * @return This builder for chaining.
-       */
-      public Builder clearFullName() {
-        copyOnWrite();
-        instance.clearFullName();
-        return this;
-      }
-      /**
-       * <code>string fullName = 2;</code>
-       * @param value The bytes for fullName to set.
-       * @return This builder for chaining.
-       */
-      public Builder setFullNameBytes(
-          com.google.protobuf.ByteString value) {
-        copyOnWrite();
-        instance.setFullNameBytes(value);
         return this;
       }
 
@@ -1042,14 +935,13 @@ public final class Contracts {
         case BUILD_MESSAGE_INFO: {
             java.lang.Object[] objects = new java.lang.Object[] {
               "name_",
-              "fullName_",
               "type_",
               "entries_",
               pl.leancode.patrol.contracts.Contracts.DartGroupEntry.class,
             };
             java.lang.String info =
-                "\u0000\u0004\u0000\u0000\u0001\u0004\u0004\u0000\u0001\u0000\u0001\u0208\u0002\u0208" +
-                "\u0003\f\u0004\u001b";
+                "\u0000\u0003\u0000\u0000\u0001\u0004\u0003\u0000\u0001\u0000\u0001\u0208\u0003\f" +
+                "\u0004\u001b";
             return newMessageInfo(DEFAULT_INSTANCE, info, objects);
         }
         // fall through
@@ -1258,7 +1150,7 @@ public final class Contracts {
       return (Builder) DEFAULT_INSTANCE.createBuilder();
     }
     public static Builder newBuilder(pl.leancode.patrol.contracts.Contracts.RunDartTestRequest prototype) {
-      return (Builder) DEFAULT_INSTANCE.createBuilder(prototype);
+      return DEFAULT_INSTANCE.createBuilder(prototype);
     }
 
     /**
@@ -1717,7 +1609,7 @@ public final class Contracts {
       return (Builder) DEFAULT_INSTANCE.createBuilder();
     }
     public static Builder newBuilder(pl.leancode.patrol.contracts.Contracts.RunDartTestResponse prototype) {
-      return (Builder) DEFAULT_INSTANCE.createBuilder(prototype);
+      return DEFAULT_INSTANCE.createBuilder(prototype);
     }
 
     /**
@@ -2040,7 +1932,7 @@ public final class Contracts {
       return (Builder) DEFAULT_INSTANCE.createBuilder();
     }
     public static Builder newBuilder(pl.leancode.patrol.contracts.Contracts.ConfigureRequest prototype) {
-      return (Builder) DEFAULT_INSTANCE.createBuilder(prototype);
+      return DEFAULT_INSTANCE.createBuilder(prototype);
     }
 
     /**
@@ -2313,7 +2205,7 @@ public final class Contracts {
       return (Builder) DEFAULT_INSTANCE.createBuilder();
     }
     public static Builder newBuilder(pl.leancode.patrol.contracts.Contracts.OpenAppRequest prototype) {
-      return (Builder) DEFAULT_INSTANCE.createBuilder(prototype);
+      return DEFAULT_INSTANCE.createBuilder(prototype);
     }
 
     /**
@@ -2702,7 +2594,7 @@ public final class Contracts {
       return (Builder) DEFAULT_INSTANCE.createBuilder();
     }
     public static Builder newBuilder(pl.leancode.patrol.contracts.Contracts.TapOnNotificationRequest prototype) {
-      return (Builder) DEFAULT_INSTANCE.createBuilder(prototype);
+      return DEFAULT_INSTANCE.createBuilder(prototype);
     }
 
     /**
@@ -2994,7 +2886,7 @@ public final class Contracts {
       return (Builder) DEFAULT_INSTANCE.createBuilder();
     }
     public static Builder newBuilder(pl.leancode.patrol.contracts.Contracts.Empty prototype) {
-      return (Builder) DEFAULT_INSTANCE.createBuilder(prototype);
+      return DEFAULT_INSTANCE.createBuilder(prototype);
     }
 
     /**
@@ -3184,7 +3076,7 @@ public final class Contracts {
       return (Builder) DEFAULT_INSTANCE.createBuilder();
     }
     public static Builder newBuilder(pl.leancode.patrol.contracts.Contracts.OpenQuickSettingsRequest prototype) {
-      return (Builder) DEFAULT_INSTANCE.createBuilder(prototype);
+      return DEFAULT_INSTANCE.createBuilder(prototype);
     }
 
     /**
@@ -3426,7 +3318,7 @@ public final class Contracts {
       return (Builder) DEFAULT_INSTANCE.createBuilder();
     }
     public static Builder newBuilder(pl.leancode.patrol.contracts.Contracts.DarkModeRequest prototype) {
-      return (Builder) DEFAULT_INSTANCE.createBuilder(prototype);
+      return DEFAULT_INSTANCE.createBuilder(prototype);
     }
 
     /**
@@ -3604,6 +3496,7 @@ public final class Contracts {
     private GetNativeViewsRequest() {
       appId_ = "";
     }
+    private int bitField0_;
     public static final int SELECTOR_FIELD_NUMBER = 1;
     private pl.leancode.patrol.contracts.Contracts.Selector selector_;
     /**
@@ -3611,7 +3504,7 @@ public final class Contracts {
      */
     @java.lang.Override
     public boolean hasSelector() {
-      return selector_ != null;
+      return ((bitField0_ & 0x00000001) != 0);
     }
     /**
      * <code>.patrol.Selector selector = 1;</code>
@@ -3626,7 +3519,7 @@ public final class Contracts {
     private void setSelector(pl.leancode.patrol.contracts.Contracts.Selector value) {
       value.getClass();
   selector_ = value;
-
+      bitField0_ |= 0x00000001;
       }
     /**
      * <code>.patrol.Selector selector = 1;</code>
@@ -3641,13 +3534,13 @@ public final class Contracts {
       } else {
         selector_ = value;
       }
-
+      bitField0_ |= 0x00000001;
     }
     /**
      * <code>.patrol.Selector selector = 1;</code>
      */
     private void clearSelector() {  selector_ = null;
-
+      bitField0_ = (bitField0_ & ~0x00000001);
     }
 
     public static final int APPID_FIELD_NUMBER = 2;
@@ -3777,7 +3670,7 @@ public final class Contracts {
       return (Builder) DEFAULT_INSTANCE.createBuilder();
     }
     public static Builder newBuilder(pl.leancode.patrol.contracts.Contracts.GetNativeViewsRequest prototype) {
-      return (Builder) DEFAULT_INSTANCE.createBuilder(prototype);
+      return DEFAULT_INSTANCE.createBuilder(prototype);
     }
 
     /**
@@ -3906,12 +3799,13 @@ public final class Contracts {
         }
         case BUILD_MESSAGE_INFO: {
             java.lang.Object[] objects = new java.lang.Object[] {
+              "bitField0_",
               "selector_",
               "appId_",
             };
             java.lang.String info =
-                "\u0000\u0002\u0000\u0000\u0001\u0002\u0002\u0000\u0000\u0000\u0001\t\u0002\u0208" +
-                "";
+                "\u0000\u0002\u0000\u0001\u0001\u0002\u0002\u0000\u0000\u0000\u0001\u1009\u0000\u0002" +
+                "\u0208";
             return newMessageInfo(DEFAULT_INSTANCE, info, objects);
         }
         // fall through
@@ -4169,7 +4063,7 @@ public final class Contracts {
       return (Builder) DEFAULT_INSTANCE.createBuilder();
     }
     public static Builder newBuilder(pl.leancode.patrol.contracts.Contracts.GetNativeViewsResponse prototype) {
-      return (Builder) DEFAULT_INSTANCE.createBuilder(prototype);
+      return DEFAULT_INSTANCE.createBuilder(prototype);
     }
 
     /**
@@ -4457,7 +4351,7 @@ public final class Contracts {
       return (Builder) DEFAULT_INSTANCE.createBuilder();
     }
     public static Builder newBuilder(pl.leancode.patrol.contracts.Contracts.GetNotificationsRequest prototype) {
-      return (Builder) DEFAULT_INSTANCE.createBuilder(prototype);
+      return DEFAULT_INSTANCE.createBuilder(prototype);
     }
 
     /**
@@ -4748,7 +4642,7 @@ public final class Contracts {
       return (Builder) DEFAULT_INSTANCE.createBuilder();
     }
     public static Builder newBuilder(pl.leancode.patrol.contracts.Contracts.GetNotificationsResponse prototype) {
-      return (Builder) DEFAULT_INSTANCE.createBuilder(prototype);
+      return DEFAULT_INSTANCE.createBuilder(prototype);
     }
 
     /**
@@ -4980,6 +4874,7 @@ public final class Contracts {
     private TapRequest() {
       appId_ = "";
     }
+    private int bitField0_;
     public static final int SELECTOR_FIELD_NUMBER = 1;
     private pl.leancode.patrol.contracts.Contracts.Selector selector_;
     /**
@@ -4987,7 +4882,7 @@ public final class Contracts {
      */
     @java.lang.Override
     public boolean hasSelector() {
-      return selector_ != null;
+      return ((bitField0_ & 0x00000001) != 0);
     }
     /**
      * <code>.patrol.Selector selector = 1;</code>
@@ -5002,7 +4897,7 @@ public final class Contracts {
     private void setSelector(pl.leancode.patrol.contracts.Contracts.Selector value) {
       value.getClass();
   selector_ = value;
-
+      bitField0_ |= 0x00000001;
       }
     /**
      * <code>.patrol.Selector selector = 1;</code>
@@ -5017,13 +4912,13 @@ public final class Contracts {
       } else {
         selector_ = value;
       }
-
+      bitField0_ |= 0x00000001;
     }
     /**
      * <code>.patrol.Selector selector = 1;</code>
      */
     private void clearSelector() {  selector_ = null;
-
+      bitField0_ = (bitField0_ & ~0x00000001);
     }
 
     public static final int APPID_FIELD_NUMBER = 2;
@@ -5153,7 +5048,7 @@ public final class Contracts {
       return (Builder) DEFAULT_INSTANCE.createBuilder();
     }
     public static Builder newBuilder(pl.leancode.patrol.contracts.Contracts.TapRequest prototype) {
-      return (Builder) DEFAULT_INSTANCE.createBuilder(prototype);
+      return DEFAULT_INSTANCE.createBuilder(prototype);
     }
 
     /**
@@ -5282,12 +5177,13 @@ public final class Contracts {
         }
         case BUILD_MESSAGE_INFO: {
             java.lang.Object[] objects = new java.lang.Object[] {
+              "bitField0_",
               "selector_",
               "appId_",
             };
             java.lang.String info =
-                "\u0000\u0002\u0000\u0000\u0001\u0002\u0002\u0000\u0000\u0000\u0001\t\u0002\u0208" +
-                "";
+                "\u0000\u0002\u0000\u0001\u0001\u0002\u0002\u0000\u0000\u0000\u0001\u1009\u0000\u0002" +
+                "\u0208";
             return newMessageInfo(DEFAULT_INSTANCE, info, objects);
         }
         // fall through
@@ -5423,26 +5319,10 @@ public final class Contracts {
     public enum KeyboardBehavior
         implements com.google.protobuf.Internal.EnumLite {
       /**
-       * <pre>
-       * The default keyboard behavior.
-       *
-       * Keyboard will be shown when entering text starts, and will be
-       * automatically dismissed afterwards.
-       * </pre>
-       *
        * <code>SHOW_AND_DISMISS = 0;</code>
        */
       SHOW_AND_DISMISS(0),
       /**
-       * <pre>
-       * The alternative keyboard behavior.
-       *
-       * On Android, no keyboard will be shown at all. The text will simply appear
-       * inside the TextField.
-       *
-       * On iOS, the keyboard will not be dismissed after entering text.
-       * </pre>
-       *
        * <code>ALTERNATIVE = 1;</code>
        */
       ALTERNATIVE(1),
@@ -5450,26 +5330,10 @@ public final class Contracts {
       ;
 
       /**
-       * <pre>
-       * The default keyboard behavior.
-       *
-       * Keyboard will be shown when entering text starts, and will be
-       * automatically dismissed afterwards.
-       * </pre>
-       *
        * <code>SHOW_AND_DISMISS = 0;</code>
        */
       public static final int SHOW_AND_DISMISS_VALUE = 0;
       /**
-       * <pre>
-       * The alternative keyboard behavior.
-       *
-       * On Android, no keyboard will be shown at all. The text will simply appear
-       * inside the TextField.
-       *
-       * On iOS, the keyboard will not be dismissed after entering text.
-       * </pre>
-       *
        * <code>ALTERNATIVE = 1;</code>
        */
       public static final int ALTERNATIVE_VALUE = 1;
@@ -5885,7 +5749,7 @@ public final class Contracts {
       return (Builder) DEFAULT_INSTANCE.createBuilder();
     }
     public static Builder newBuilder(pl.leancode.patrol.contracts.Contracts.EnterTextRequest prototype) {
-      return (Builder) DEFAULT_INSTANCE.createBuilder(prototype);
+      return DEFAULT_INSTANCE.createBuilder(prototype);
     }
 
     /**
@@ -6536,7 +6400,7 @@ public final class Contracts {
       return (Builder) DEFAULT_INSTANCE.createBuilder();
     }
     public static Builder newBuilder(pl.leancode.patrol.contracts.Contracts.SwipeRequest prototype) {
-      return (Builder) DEFAULT_INSTANCE.createBuilder(prototype);
+      return DEFAULT_INSTANCE.createBuilder(prototype);
     }
 
     /**
@@ -6860,6 +6724,7 @@ public final class Contracts {
     private WaitUntilVisibleRequest() {
       appId_ = "";
     }
+    private int bitField0_;
     public static final int SELECTOR_FIELD_NUMBER = 1;
     private pl.leancode.patrol.contracts.Contracts.Selector selector_;
     /**
@@ -6867,7 +6732,7 @@ public final class Contracts {
      */
     @java.lang.Override
     public boolean hasSelector() {
-      return selector_ != null;
+      return ((bitField0_ & 0x00000001) != 0);
     }
     /**
      * <code>.patrol.Selector selector = 1;</code>
@@ -6882,7 +6747,7 @@ public final class Contracts {
     private void setSelector(pl.leancode.patrol.contracts.Contracts.Selector value) {
       value.getClass();
   selector_ = value;
-
+      bitField0_ |= 0x00000001;
       }
     /**
      * <code>.patrol.Selector selector = 1;</code>
@@ -6897,13 +6762,13 @@ public final class Contracts {
       } else {
         selector_ = value;
       }
-
+      bitField0_ |= 0x00000001;
     }
     /**
      * <code>.patrol.Selector selector = 1;</code>
      */
     private void clearSelector() {  selector_ = null;
-
+      bitField0_ = (bitField0_ & ~0x00000001);
     }
 
     public static final int APPID_FIELD_NUMBER = 2;
@@ -7033,7 +6898,7 @@ public final class Contracts {
       return (Builder) DEFAULT_INSTANCE.createBuilder();
     }
     public static Builder newBuilder(pl.leancode.patrol.contracts.Contracts.WaitUntilVisibleRequest prototype) {
-      return (Builder) DEFAULT_INSTANCE.createBuilder(prototype);
+      return DEFAULT_INSTANCE.createBuilder(prototype);
     }
 
     /**
@@ -7162,12 +7027,13 @@ public final class Contracts {
         }
         case BUILD_MESSAGE_INFO: {
             java.lang.Object[] objects = new java.lang.Object[] {
+              "bitField0_",
               "selector_",
               "appId_",
             };
             java.lang.String info =
-                "\u0000\u0002\u0000\u0000\u0001\u0002\u0002\u0000\u0000\u0000\u0001\t\u0002\u0208" +
-                "";
+                "\u0000\u0002\u0000\u0001\u0001\u0002\u0002\u0000\u0000\u0000\u0001\u1009\u0000\u0002" +
+                "\u0208";
             return newMessageInfo(DEFAULT_INSTANCE, info, objects);
         }
         // fall through
@@ -7467,7 +7333,7 @@ public final class Contracts {
       return (Builder) DEFAULT_INSTANCE.createBuilder();
     }
     public static Builder newBuilder(pl.leancode.patrol.contracts.Contracts.HandlePermissionRequest prototype) {
-      return (Builder) DEFAULT_INSTANCE.createBuilder(prototype);
+      return DEFAULT_INSTANCE.createBuilder(prototype);
     }
 
     /**
@@ -7840,7 +7706,7 @@ public final class Contracts {
       return (Builder) DEFAULT_INSTANCE.createBuilder();
     }
     public static Builder newBuilder(pl.leancode.patrol.contracts.Contracts.SetLocationAccuracyRequest prototype) {
-      return (Builder) DEFAULT_INSTANCE.createBuilder(prototype);
+      return DEFAULT_INSTANCE.createBuilder(prototype);
     }
 
     /**
@@ -8103,7 +7969,7 @@ public final class Contracts {
       return (Builder) DEFAULT_INSTANCE.createBuilder();
     }
     public static Builder newBuilder(pl.leancode.patrol.contracts.Contracts.PermissionDialogVisibleRequest prototype) {
-      return (Builder) DEFAULT_INSTANCE.createBuilder(prototype);
+      return DEFAULT_INSTANCE.createBuilder(prototype);
     }
 
     /**
@@ -8348,7 +8214,7 @@ public final class Contracts {
       return (Builder) DEFAULT_INSTANCE.createBuilder();
     }
     public static Builder newBuilder(pl.leancode.patrol.contracts.Contracts.PermissionDialogVisibleResponse prototype) {
-      return (Builder) DEFAULT_INSTANCE.createBuilder(prototype);
+      return DEFAULT_INSTANCE.createBuilder(prototype);
     }
 
     /**
@@ -9354,7 +9220,7 @@ public final class Contracts {
       return (Builder) DEFAULT_INSTANCE.createBuilder();
     }
     public static Builder newBuilder(pl.leancode.patrol.contracts.Contracts.Selector prototype) {
-      return (Builder) DEFAULT_INSTANCE.createBuilder(prototype);
+      return DEFAULT_INSTANCE.createBuilder(prototype);
     }
 
     /**
@@ -10685,7 +10551,7 @@ public final class Contracts {
       return (Builder) DEFAULT_INSTANCE.createBuilder();
     }
     public static Builder newBuilder(pl.leancode.patrol.contracts.Contracts.NativeView prototype) {
-      return (Builder) DEFAULT_INSTANCE.createBuilder(prototype);
+      return DEFAULT_INSTANCE.createBuilder(prototype);
     }
 
     /**
@@ -11575,7 +11441,7 @@ public final class Contracts {
       return (Builder) DEFAULT_INSTANCE.createBuilder();
     }
     public static Builder newBuilder(pl.leancode.patrol.contracts.Contracts.Notification prototype) {
-      return (Builder) DEFAULT_INSTANCE.createBuilder(prototype);
+      return DEFAULT_INSTANCE.createBuilder(prototype);
     }
 
     /**
@@ -12104,7 +11970,7 @@ java.lang.String defaultValue) {
       return (Builder) DEFAULT_INSTANCE.createBuilder();
     }
     public static Builder newBuilder(pl.leancode.patrol.contracts.Contracts.SubmitTestResultsRequest prototype) {
-      return (Builder) DEFAULT_INSTANCE.createBuilder(prototype);
+      return DEFAULT_INSTANCE.createBuilder(prototype);
     }
 
     /**

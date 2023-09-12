@@ -101,12 +101,6 @@ class DartGroupEntry extends $pb.GeneratedMessage {
         const $core.bool.fromEnvironment('protobuf.omit_field_names')
             ? ''
             : 'name')
-    ..aOS(
-        2,
-        const $core.bool.fromEnvironment('protobuf.omit_field_names')
-            ? ''
-            : 'fullName',
-        protoName: 'fullName')
     ..e<DartGroupEntry_GroupEntryType>(
         3,
         const $core.bool.fromEnvironment('protobuf.omit_field_names')
@@ -128,16 +122,12 @@ class DartGroupEntry extends $pb.GeneratedMessage {
   DartGroupEntry._() : super();
   factory DartGroupEntry({
     $core.String? name,
-    $core.String? fullName,
     DartGroupEntry_GroupEntryType? type,
     $core.Iterable<DartGroupEntry>? entries,
   }) {
     final _result = create();
     if (name != null) {
       _result.name = name;
-    }
-    if (fullName != null) {
-      _result.fullName = fullName;
     }
     if (type != null) {
       _result.type = type;
@@ -186,32 +176,20 @@ class DartGroupEntry extends $pb.GeneratedMessage {
   @$pb.TagNumber(1)
   void clearName() => clearField(1);
 
-  @$pb.TagNumber(2)
-  $core.String get fullName => $_getSZ(1);
-  @$pb.TagNumber(2)
-  set fullName($core.String v) {
-    $_setString(1, v);
-  }
-
-  @$pb.TagNumber(2)
-  $core.bool hasFullName() => $_has(1);
-  @$pb.TagNumber(2)
-  void clearFullName() => clearField(2);
-
   @$pb.TagNumber(3)
-  DartGroupEntry_GroupEntryType get type => $_getN(2);
+  DartGroupEntry_GroupEntryType get type => $_getN(1);
   @$pb.TagNumber(3)
   set type(DartGroupEntry_GroupEntryType v) {
     setField(3, v);
   }
 
   @$pb.TagNumber(3)
-  $core.bool hasType() => $_has(2);
+  $core.bool hasType() => $_has(1);
   @$pb.TagNumber(3)
   void clearType() => clearField(3);
 
   @$pb.TagNumber(4)
-  $core.List<DartGroupEntry> get entries => $_getList(3);
+  $core.List<DartGroupEntry> get entries => $_getList(2);
 }
 
 class RunDartTestRequest extends $pb.GeneratedMessage {

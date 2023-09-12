@@ -14,7 +14,6 @@ message ListDartTestsResponse {
 
 message DartGroupEntry {
   string name = 1;
-  string fullName = 2;
   GroupEntryType type = 3;
   repeated DartGroupEntry entries = 4;
 

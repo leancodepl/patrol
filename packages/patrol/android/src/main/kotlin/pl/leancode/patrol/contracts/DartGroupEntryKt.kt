@@ -45,23 +45,6 @@ public object DartGroupEntryKt {
     }
 
     /**
-     * `string fullName = 2;`
-     */
-    public var fullName: kotlin.String
-      @JvmName("getFullName")
-      get() = _builder.getFullName()
-      @JvmName("setFullName")
-      set(value) {
-        _builder.setFullName(value)
-      }
-    /**
-     * `string fullName = 2;`
-     */
-    public fun clearFullName() {
-      _builder.clearFullName()
-    }
-
-    /**
      * `.patrol.DartGroupEntry.GroupEntryType type = 3;`
      */
     public var type: pl.leancode.patrol.contracts.Contracts.DartGroupEntry.GroupEntryType
