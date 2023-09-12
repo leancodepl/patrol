@@ -6,12 +6,11 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import pl.leancode.patrol.PatrolJUnitRunner;
-import pl.leancode.patrol.contracts.PatrolAppServiceClientException;
 
 @RunWith(Parameterized.class)
 public class MainActivityTest {
     @Parameters(name = "{0}")
-    public static Object[] testCases() throws PatrolAppServiceClientException {
+    public static Object[] testCases() {
         PatrolJUnitRunner instrumentation = (PatrolJUnitRunner) InstrumentationRegistry.getInstrumentation();
         instrumentation.setUp(MainActivity.class);
         instrumentation.waitForPatrolAppService();
@@ -25,8 +24,8 @@ public class MainActivityTest {
     private final String dartTestName;
 
     @Test
-    public void runDartTest() throws PatrolAppServiceClientException {
+    public void runDartTest() {
         PatrolJUnitRunner instrumentation = (PatrolJUnitRunner) InstrumentationRegistry.getInstrumentation();
-                instrumentation.runDartTest(dartTestName);
+        instrumentation.runDartTest(dartTestName);
     }
 }

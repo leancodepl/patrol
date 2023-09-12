@@ -104,7 +104,7 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
         Logger.INSTANCE.i(TAG + "PatrolAppService is ready to report Dart tests");
     }
 
-    public Object[] listDartTests() throws PatrolAppServiceClientException {
+    public Object[] listDartTests() {
         final String TAG = "PatrolJUnitRunner.listDartTests(): ";
 
         try {
@@ -114,7 +114,7 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
             return dartTestFiles;
         } catch (PatrolAppServiceClientException e) {
             Logger.INSTANCE.e(TAG + "Failed to list Dart tests: ", e);
-            throw e;
+            throw new RuntimeException(e);
         }
     }
 
@@ -122,7 +122,7 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
      * Requests execution of a Dart test and waits for it to finish.
      * Throws AssertionError if the test fails.
      */
-    public RunDartTestResponse runDartTest(String name) throws PatrolAppServiceClientException {
+    public RunDartTestResponse runDartTest(String name) {
         final String TAG = "PatrolJUnitRunner.runDartTest(" + name + "): ";
 
         try {
@@ -134,7 +134,7 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
             return response;
         } catch (PatrolAppServiceClientException e) {
             Logger.INSTANCE.e(TAG + e.getMessage(), e.getCause());
-            throw e;
+            throw new RuntimeException(e);
         }
     }
 }
