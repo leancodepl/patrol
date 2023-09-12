@@ -4,6 +4,14 @@ import XCTest
 class Automator {
     private var timeout: TimeInterval = 10
     
+    private lazy var controlCenter: XCUIApplication = {
+        return XCUIApplication(bundleIdentifier: "com.apple.controlcenter")
+    }()
+    
+    private lazy var notificationCenter: XCUIApplication = {
+        return XCUIApplication(bundleIdentifier: "com.apple.notificationcenterui")
+    }()
+    
     private lazy var systemPreferences: XCUIApplication = {
         return XCUIApplication(bundleIdentifier: "com.apple.systempreferences")
     }()
@@ -102,6 +110,38 @@ class Automator {
             
             return views
         }
+    }
+    
+    // MARK: Notifications
+    
+    func openNotifications() async throws {
+        try await runAction("opening notifications") {
+            let clockItem = self.controlCenter.statusItems["com.apple.menuextra.clock"]
+            var exists = clockItem.waitForExistence(timeout: self.timeout)
+            guard exists else {
+                throw PatrolError.viewNotExists("com.apple.menuextra.clock")
+            }
+            
+            clockItem.tap()
+        }
+    }
+    
+    func tapOnNotification(byIndex index: Int) async throws {
+        try await runAction("tapping on notification at index \(index)") {
+            throw PatrolError.methodNotImplemented("tapOnNotification(byIndex)")
+        }
+    }
+    
+    func tapOnNotification(bySubstring substring: String) async throws { 
+        await runAction("tapping on notification containing text \(format: substring)") {
+            throw PatrolError.methodNotImplemented("tapOnNotification(bySubstring)")
+        }
+    }
+    
+    // MARK: Permissions
+    
+    func isPermissionDialogVisible(timeout: TimeInterval) async -> Bool {
+        return false // TODO:
     }
     
     private func runSystemPreferencesAction(_ log: String, block: @escaping () throws -> Void)

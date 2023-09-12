@@ -162,7 +162,7 @@ final class AutomatorServer: NativeAutomatorServer {
     
     func openNotifications() async throws {
         return try await runCatching {
-            throw PatrolError.methodNotImplemented("openNotifications")
+            try await automator.openNotifications()
         }
     }
     
@@ -188,7 +188,17 @@ final class AutomatorServer: NativeAutomatorServer {
     
     func tapOnNotification(request: TapOnNotificationRequest) async throws {
         return try await runCatching {
-            throw PatrolError.methodNotImplemented("tapOnNotification")
+            if let index = request.index {
+                try await automator.tapOnNotification(
+                    byIndex: index
+                )
+            } else if let selector = request.selector {
+                try await automator.tapOnNotification(
+                    bySubstring: selector.textContains ?? String()
+                )
+            } else {
+                throw PatrolError.internal("tapOnNotification(): neither index nor selector are set")
+            }
         }
     }
     
@@ -198,7 +208,11 @@ final class AutomatorServer: NativeAutomatorServer {
         request: PermissionDialogVisibleRequest
     ) async throws -> PermissionDialogVisibleResponse {
         return try await runCatching {
-            throw PatrolError.methodNotImplemented("isPermissionDialogVisible")
+            let visible = await automator.isPermissionDialogVisible(
+                timeout: TimeInterval(request.timeoutMillis / 1000)
+            )
+            
+            return PermissionDialogVisibleResponse(visible: visible)
         }
     }
     

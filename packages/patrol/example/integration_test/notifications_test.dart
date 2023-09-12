@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'common.dart';
 
 void main() {
@@ -12,7 +14,9 @@ void main() {
       }
 
       await $('Show in a few seconds').tap();
-      await $.native.pressHome();
+      if (!Platform.isMacOS) {
+        await $.native.pressHome();
+      }
       await $.native.openNotifications();
 
       // wait for notification to show up
