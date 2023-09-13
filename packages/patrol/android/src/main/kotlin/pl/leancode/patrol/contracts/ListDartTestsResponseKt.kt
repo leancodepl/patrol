@@ -28,9 +28,9 @@ public object ListDartTestsResponseKt {
     internal fun _build(): pl.leancode.patrol.contracts.Contracts.ListDartTestsResponse = _builder.build()
 
     /**
-     * `.patrol.DartTestGroup group = 1;`
+     * `.patrol.DartGroupEntry group = 1;`
      */
-    public var group: pl.leancode.patrol.contracts.Contracts.DartTestGroup
+    public var group: pl.leancode.patrol.contracts.Contracts.DartGroupEntry
       @JvmName("getGroup")
       get() = _builder.getGroup()
       @JvmName("setGroup")
@@ -38,13 +38,13 @@ public object ListDartTestsResponseKt {
         _builder.setGroup(value)
       }
     /**
-     * `.patrol.DartTestGroup group = 1;`
+     * `.patrol.DartGroupEntry group = 1;`
      */
     public fun clearGroup() {
       _builder.clearGroup()
     }
     /**
-     * `.patrol.DartTestGroup group = 1;`
+     * `.patrol.DartGroupEntry group = 1;`
      * @return Whether the group field is set.
      */
     public fun hasGroup(): kotlin.Boolean {
@@ -55,6 +55,6 @@ public object ListDartTestsResponseKt {
 public inline fun pl.leancode.patrol.contracts.Contracts.ListDartTestsResponse.copy(block: pl.leancode.patrol.contracts.ListDartTestsResponseKt.Dsl.() -> kotlin.Unit): pl.leancode.patrol.contracts.Contracts.ListDartTestsResponse =
   pl.leancode.patrol.contracts.ListDartTestsResponseKt.Dsl._create(this.toBuilder()).apply { block() }._build()
 
-public val pl.leancode.patrol.contracts.Contracts.ListDartTestsResponseOrBuilder.groupOrNull: pl.leancode.patrol.contracts.Contracts.DartTestGroup?
+public val pl.leancode.patrol.contracts.Contracts.ListDartTestsResponseOrBuilder.groupOrNull: pl.leancode.patrol.contracts.Contracts.DartGroupEntry?
   get() = if (hasGroup()) getGroup() else null
 

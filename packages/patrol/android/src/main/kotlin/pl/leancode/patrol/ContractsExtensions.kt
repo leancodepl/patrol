@@ -3,10 +3,11 @@ package pl.leancode.patrol
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.BySelector
 import androidx.test.uiautomator.UiSelector
-import pl.leancode.patrol.contracts.Contracts
-import pl.leancode.patrol.contracts.Contracts.DartTestGroup
+import pl.leancode.patrol.contracts.Contracts.DartGroupEntry
+import pl.leancode.patrol.contracts.Contracts.Selector
+import pl.leancode.patrol.contracts.copy
 
-private fun Contracts.Selector.isEmpty(): Boolean {
+private fun Selector.isEmpty(): Boolean {
     return (
         !hasText() &&
             !hasTextStartsWith() &&
@@ -23,7 +24,7 @@ private fun Contracts.Selector.isEmpty(): Boolean {
         )
 }
 
-fun Contracts.Selector.toUiSelector(): UiSelector {
+fun Selector.toUiSelector(): UiSelector {
     var selector = UiSelector()
 
     if (hasText()) {
@@ -77,7 +78,7 @@ fun Contracts.Selector.toUiSelector(): UiSelector {
     return selector
 }
 
-fun Contracts.Selector.toBySelector(): BySelector {
+fun Selector.toBySelector(): BySelector {
     if (isEmpty()) {
         throw PatrolException("Selector is empty")
     }
@@ -184,21 +185,28 @@ fun Contracts.Selector.toBySelector(): BySelector {
     return bySelector
 }
 
-fun DartTestGroup.listFlatDartFiles(): List<String> {
-    val files = mutableListOf<String>()
-    for (group in groupsList) {
-        files.addAll(group.listGroups())
+/**
+ * Flattens the structure of a DartTestSuite into a flat list of tests.
+ */
+fun DartGroupEntry.listTestsFlat(parentGroupName: String = ""): List<DartGroupEntry> {
+    val tests = mutableListOf<DartGroupEntry>()
+
+    for (test in entriesList) {
+        if (test.type == DartGroupEntry.GroupEntryType.TEST) {
+            if (parentGroupName.isEmpty()) {
+                // This case is invalid, because every test will have at least 1 named group - its filename.
+                throw IllegalStateException("Invariant violated: test $test has no named parent group")
+            }
+
+            tests.add(test.copy { name = "$parentGroupName ${test.name}" })
+        } else if (test.type == DartGroupEntry.GroupEntryType.GROUP) {
+            if (parentGroupName.isEmpty()) {
+                tests.addAll(test.listTestsFlat(parentGroupName = test.name))
+            } else {
+                tests.addAll(test.listTestsFlat(parentGroupName = "$parentGroupName ${test.name}"))
+            }
+        }
     }
 
-    return files
-}
-
-// Recursively lists groups in this group.
-private fun DartTestGroup.listGroups(): List<String> {
-    val groups = mutableListOf<String>(this.name)
-    for (group in groupsList) {
-        groups.addAll(group.listGroups())
-    }
-
-    return groups
+    return tests
 }

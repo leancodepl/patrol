@@ -47,7 +47,7 @@ class FlutterTool {
         target: target,
         appId: appId,
         dartDefines: dartDefines,
-      )
+      ),
     ]);
   }
 

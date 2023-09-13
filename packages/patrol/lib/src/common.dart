@@ -7,6 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:meta/meta.dart';
 import 'package:patrol/src/binding.dart';
+import 'package:patrol/src/extensions.dart';
 import 'package:patrol/src/native/contracts/contracts.pb.dart';
 import 'package:patrol/src/native/contracts/contracts.pbgrpc.dart';
 import 'package:patrol/src/native/native.dart';
@@ -116,9 +117,10 @@ void patrolTest(
         // "integration_test/examples" directory, we assume that the name of the
         // immediate parent group is "examples.example_test".
 
-        final parentGroupName = Invoker.current!.liveTest.groups.last.name;
+        final testName = Invoker.current!.fullCurrentTestName();
+
         final requestedToExecute = await patrolBinding.patrolAppService
-            .waitForExecutionRequest(parentGroupName);
+            .waitForExecutionRequest(testName);
 
         if (!requestedToExecute) {
           return;
@@ -161,24 +163,83 @@ void patrolTest(
   );
 }
 
-/// Creates a DartTestGroup by visiting the subgroups of [topLevelGroup].
+/// Creates a DartGroupEntry by visiting the subgroups of [parentGroup].
+///
+/// The initial [parentGroup] is the implicit, unnamed top-level [Group] present
+/// in every test case.
 @internal
-DartTestGroup createDartTestGroup(
-  Group topLevelGroup, {
-  String prefix = '',
+DartGroupEntry createDartTestGroup(
+  Group parentGroup, {
+  String name = '',
+  int level = 0,
 }) {
-  final groupName = topLevelGroup.name.replaceFirst(prefix, '').trim();
-  final group = DartTestGroup(name: groupName);
+  final groupDTO = DartGroupEntry(
+    name: name,
+    type: DartGroupEntry_GroupEntryType.GROUP,
+  );
 
-  for (final entry in topLevelGroup.entries) {
-    if (entry is Group) {
-      group.groups.add(DartTestGroup(name: entry.name));
+  for (final entry in parentGroup.entries) {
+    // Trim names of current groups
+
+    var name = entry.name;
+    if (parentGroup.name.isNotEmpty) {
+      name = deduplicateGroupEntryName(parentGroup.name, entry.name);
     }
 
-    if (entry is Test && entry.name != 'patrol_test_explorer') {
-      throw StateError('Expected group, got test: ${entry.name}');
+    if (entry is Group) {
+      groupDTO.entries.add(
+        createDartTestGroup(
+          entry,
+          name: name,
+          level: level + 1,
+        ),
+      );
+    } else if (entry is Test) {
+      if (entry.name == 'patrol_test_explorer') {
+        // throw StateError('Expected group, got test: ${entry.name}');
+        // Ignore the bogus test that is used to discover the test structure.
+        continue;
+      }
+
+      if (level < 1) {
+        throw StateError('Test is not allowed to be defined at level $level');
+      }
+
+      groupDTO.entries.add(
+        DartGroupEntry(name: name, type: DartGroupEntry_GroupEntryType.TEST),
+      );
+    } else {
+      // This should really never happen, because Group and Test are the only
+      // subclasses of GroupEntry.
+      throw StateError('invalid state');
     }
   }
 
-  return group;
+  return groupDTO;
+}
+
+/// Allows for retrieving the name of a GroupEntry by stripping the names of all ancestor groups.
+@internal
+String deduplicateGroupEntryName(String parentName, String currentName) {
+  return currentName.substring(
+    parentName.length + 1,
+    currentName.length,
+  );
+}
+
+/// Recursively prints the structure of the test suite.
+@internal
+void printGroupStructure(DartGroupEntry group, {int indentation = 0}) {
+  final indent = ' ' * indentation;
+  debugPrint("$indent-- group: '${group.name}'");
+
+  for (final entry in group.entries) {
+    if (entry.type == DartGroupEntry_GroupEntryType.TEST) {
+      debugPrint("$indent     -- test: '${entry.name}'");
+    } else {
+      for (final subgroup in entry.entries) {
+        printGroupStructure(subgroup, indentation: indentation + 5);
+      }
+    }
+  }
 }

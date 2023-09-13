@@ -58,7 +58,7 @@ void main(List<String> args) async {
     [
       'develop',
       ...['--target', 'integration_test/example_test.dart'],
-      ...args
+      ...args,
     ],
     runInShell: true,
     workingDirectory: exampleAppDirectory.path,

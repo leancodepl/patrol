@@ -25,8 +25,8 @@ public struct Patrol_ListDartTestsResponse {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var group: Patrol_DartTestGroup {
-    get {return _group ?? Patrol_DartTestGroup()}
+  public var group: Patrol_DartGroupEntry {
+    get {return _group ?? Patrol_DartGroupEntry()}
     set {_group = newValue}
   }
   /// Returns true if `group` has been explicitly set.
@@ -38,36 +38,64 @@ public struct Patrol_ListDartTestsResponse {
 
   public init() {}
 
-  fileprivate var _group: Patrol_DartTestGroup? = nil
+  fileprivate var _group: Patrol_DartGroupEntry? = nil
 }
 
-public struct Patrol_DartTestGroup {
+public struct Patrol_DartGroupEntry {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
   public var name: String = String()
 
-  public var tests: [Patrol_DartTestCase] = []
+  public var type: Patrol_DartGroupEntry.GroupEntryType = .group
 
-  public var groups: [Patrol_DartTestGroup] = []
+  public var entries: [Patrol_DartGroupEntry] = []
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public enum GroupEntryType: SwiftProtobuf.Enum {
+    public typealias RawValue = Int
+    case group // = 0
+    case test // = 1
+    case UNRECOGNIZED(Int)
+
+    public init() {
+      self = .group
+    }
+
+    public init?(rawValue: Int) {
+      switch rawValue {
+      case 0: self = .group
+      case 1: self = .test
+      default: self = .UNRECOGNIZED(rawValue)
+      }
+    }
+
+    public var rawValue: Int {
+      switch self {
+      case .group: return 0
+      case .test: return 1
+      case .UNRECOGNIZED(let i): return i
+      }
+    }
+
+  }
 
   public init() {}
 }
 
-public struct Patrol_DartTestCase {
-  // SwiftProtobuf.Message conformance is added in an extension below. See the
-  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
-  // methods supported on all messages.
+#if swift(>=4.2)
 
-  public var name: String = String()
-
-  public var unknownFields = SwiftProtobuf.UnknownStorage()
-
-  public init() {}
+extension Patrol_DartGroupEntry.GroupEntryType: CaseIterable {
+  // The compiler won't synthesize support with the UNRECOGNIZED case.
+  public static let allCases: [Patrol_DartGroupEntry.GroupEntryType] = [
+    .group,
+    .test,
+  ]
 }
+
+#endif  // swift(>=4.2)
 
 public struct Patrol_RunDartTestRequest {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
@@ -139,7 +167,7 @@ public struct Patrol_RunDartTestResponse {
 
 extension Patrol_RunDartTestResponse.Result: CaseIterable {
   // The compiler won't synthesize support with the UNRECOGNIZED case.
-  public static var allCases: [Patrol_RunDartTestResponse.Result] = [
+  public static let allCases: [Patrol_RunDartTestResponse.Result] = [
     .success,
     .skipped,
     .failure,
@@ -398,19 +426,7 @@ public struct Patrol_EnterTextRequest {
 
   public enum KeyboardBehavior: SwiftProtobuf.Enum {
     public typealias RawValue = Int
-
-    /// The default keyboard behavior.
-    ///
-    /// Keyboard will be shown when entering text starts, and will be
-    /// automatically dismissed afterwards.
     case showAndDismiss // = 0
-
-    /// The alternative keyboard behavior.
-    ///
-    /// On Android, no keyboard will be shown at all. The text will simply appear
-    /// inside the TextField.
-    ///
-    /// On iOS, the keyboard will not be dismissed after entering text.
     case alternative // = 1
     case UNRECOGNIZED(Int)
 
@@ -443,7 +459,7 @@ public struct Patrol_EnterTextRequest {
 
 extension Patrol_EnterTextRequest.KeyboardBehavior: CaseIterable {
   // The compiler won't synthesize support with the UNRECOGNIZED case.
-  public static var allCases: [Patrol_EnterTextRequest.KeyboardBehavior] = [
+  public static let allCases: [Patrol_EnterTextRequest.KeyboardBehavior] = [
     .showAndDismiss,
     .alternative,
   ]
@@ -543,7 +559,7 @@ public struct Patrol_HandlePermissionRequest {
 
 extension Patrol_HandlePermissionRequest.Code: CaseIterable {
   // The compiler won't synthesize support with the UNRECOGNIZED case.
-  public static var allCases: [Patrol_HandlePermissionRequest.Code] = [
+  public static let allCases: [Patrol_HandlePermissionRequest.Code] = [
     .whileUsing,
     .onlyThisTime,
     .denied,
@@ -596,7 +612,7 @@ public struct Patrol_SetLocationAccuracyRequest {
 
 extension Patrol_SetLocationAccuracyRequest.LocationAccuracy: CaseIterable {
   // The compiler won't synthesize support with the UNRECOGNIZED case.
-  public static var allCases: [Patrol_SetLocationAccuracyRequest.LocationAccuracy] = [
+  public static let allCases: [Patrol_SetLocationAccuracyRequest.LocationAccuracy] = [
     .coarse,
     .fine,
   ]
@@ -832,8 +848,8 @@ public struct Patrol_SubmitTestResultsRequest {
 
 #if swift(>=5.5) && canImport(_Concurrency)
 extension Patrol_ListDartTestsResponse: @unchecked Sendable {}
-extension Patrol_DartTestGroup: @unchecked Sendable {}
-extension Patrol_DartTestCase: @unchecked Sendable {}
+extension Patrol_DartGroupEntry: @unchecked Sendable {}
+extension Patrol_DartGroupEntry.GroupEntryType: @unchecked Sendable {}
 extension Patrol_RunDartTestRequest: @unchecked Sendable {}
 extension Patrol_RunDartTestResponse: @unchecked Sendable {}
 extension Patrol_RunDartTestResponse.Result: @unchecked Sendable {}
@@ -906,12 +922,12 @@ extension Patrol_ListDartTestsResponse: SwiftProtobuf.Message, SwiftProtobuf._Me
   }
 }
 
-extension Patrol_DartTestGroup: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  public static let protoMessageName: String = _protobuf_package + ".DartTestGroup"
+extension Patrol_DartGroupEntry: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".DartGroupEntry"
   public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "name"),
-    2: .same(proto: "tests"),
-    3: .same(proto: "groups"),
+    3: .same(proto: "type"),
+    4: .same(proto: "entries"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -921,8 +937,8 @@ extension Patrol_DartTestGroup: SwiftProtobuf.Message, SwiftProtobuf._MessageImp
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularStringField(value: &self.name) }()
-      case 2: try { try decoder.decodeRepeatedMessageField(value: &self.tests) }()
-      case 3: try { try decoder.decodeRepeatedMessageField(value: &self.groups) }()
+      case 3: try { try decoder.decodeSingularEnumField(value: &self.type) }()
+      case 4: try { try decoder.decodeRepeatedMessageField(value: &self.entries) }()
       default: break
       }
     }
@@ -932,54 +948,29 @@ extension Patrol_DartTestGroup: SwiftProtobuf.Message, SwiftProtobuf._MessageImp
     if !self.name.isEmpty {
       try visitor.visitSingularStringField(value: self.name, fieldNumber: 1)
     }
-    if !self.tests.isEmpty {
-      try visitor.visitRepeatedMessageField(value: self.tests, fieldNumber: 2)
+    if self.type != .group {
+      try visitor.visitSingularEnumField(value: self.type, fieldNumber: 3)
     }
-    if !self.groups.isEmpty {
-      try visitor.visitRepeatedMessageField(value: self.groups, fieldNumber: 3)
+    if !self.entries.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.entries, fieldNumber: 4)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: Patrol_DartTestGroup, rhs: Patrol_DartTestGroup) -> Bool {
+  public static func ==(lhs: Patrol_DartGroupEntry, rhs: Patrol_DartGroupEntry) -> Bool {
     if lhs.name != rhs.name {return false}
-    if lhs.tests != rhs.tests {return false}
-    if lhs.groups != rhs.groups {return false}
+    if lhs.type != rhs.type {return false}
+    if lhs.entries != rhs.entries {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
 }
 
-extension Patrol_DartTestCase: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  public static let protoMessageName: String = _protobuf_package + ".DartTestCase"
+extension Patrol_DartGroupEntry.GroupEntryType: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "name"),
+    0: .same(proto: "GROUP"),
+    1: .same(proto: "TEST"),
   ]
-
-  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      // The use of inline closures is to circumvent an issue where the compiler
-      // allocates stack space for every case branch when no optimizations are
-      // enabled. https://github.com/apple/swift-protobuf/issues/1034
-      switch fieldNumber {
-      case 1: try { try decoder.decodeSingularStringField(value: &self.name) }()
-      default: break
-      }
-    }
-  }
-
-  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if !self.name.isEmpty {
-      try visitor.visitSingularStringField(value: self.name, fieldNumber: 1)
-    }
-    try unknownFields.traverse(visitor: &visitor)
-  }
-
-  public static func ==(lhs: Patrol_DartTestCase, rhs: Patrol_DartTestCase) -> Bool {
-    if lhs.name != rhs.name {return false}
-    if lhs.unknownFields != rhs.unknownFields {return false}
-    return true
-  }
 }
 
 extension Patrol_RunDartTestRequest: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {

@@ -28,7 +28,7 @@ public class PatrolAppServiceClient {
         blockingStub = PatrolAppServiceGrpc.newBlockingStub(channel);
     }
 
-    public DartTestGroup listDartTests() throws StatusRuntimeException {
+    public DartGroupEntry listDartTests() throws StatusRuntimeException {
         Empty request = Empty.newBuilder().build();
         ListDartTestsResponse response = blockingStub.listDartTests(request);
 
