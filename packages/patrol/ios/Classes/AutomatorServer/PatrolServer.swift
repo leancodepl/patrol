@@ -1,5 +1,5 @@
-import Foundation
 import FlyingFox
+import Foundation
 
 @objc public class PatrolServer: NSObject {
   private static let envPortKey = "PATROL_PORT"
@@ -47,14 +47,14 @@ import FlyingFox
   @objc public func start() async throws {
     #if PATROL_ENABLED
       Logger.shared.i("Starting server...")
-      
+
       let provider = AutomatorServer(automator: automator) { appReady in
         Logger.shared.i("App reported that it is ready")
         self.appReady = appReady
       }
-      
+
       await provider.setupRoutes(server: server)
-      
+
       Task { try await server.start() }
       try await server.waitUntilListening()
       let address = await server.listeningAddress

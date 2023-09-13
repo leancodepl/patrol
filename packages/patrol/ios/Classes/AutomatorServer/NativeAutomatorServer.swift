@@ -1,4 +1,6 @@
 ///
+//  swift-format-ignore-file
+//
 //  Generated code. Do not modify.
 //  source: schema.dart
 //

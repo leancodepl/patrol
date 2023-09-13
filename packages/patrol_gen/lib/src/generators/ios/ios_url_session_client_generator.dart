@@ -17,6 +17,8 @@ class IOSURLSessionClientGenerator {
   String _contentPrefix(IOSConfig config) {
     return '''
 ///
+//  swift-format-ignore-file
+//
 //  Generated code. Do not modify.
 //  source: schema.dart
 //
@@ -62,7 +64,7 @@ $endpoints
     guard (response as? HTTPURLResponse)?.statusCode == 200 else {
         $throwException
     }
-    
+
     return try JSONDecoder().decode(TResult.self, from: data)
   }
 }

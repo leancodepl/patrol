@@ -439,9 +439,9 @@
         let cells = self.springboard.buttons.matching(identifier: "NotificationCell")
           .allElementsBoundByIndex
         for (i, cell) in cells.enumerated() {
-            Logger.shared.i("found notification at index \(i) with label \(format: cell.label)")
-            let notification = Notification(title: String(), content: String(), raw: cell.label)
-            notifications.append(notification)
+          Logger.shared.i("found notification at index \(i) with label \(format: cell.label)")
+          let notification = Notification(title: String(), content: String(), raw: cell.label)
+          notifications.append(notification)
         }
       }
 
@@ -803,19 +803,18 @@
   }
 
   extension NativeView {
-    static func fromXCUIElement(_ xcuielement: XCUIElement, _ bundleId: String) -> NativeView
-    {
-        return NativeView(
-            className: String(xcuielement.elementType.rawValue),  // TODO: Provide mapping for names
-            text: xcuielement.label,
-            contentDescription: xcuielement.accessibilityLabel,
-            focused: xcuielement.hasFocus,
-            enabled: xcuielement.isEnabled,
-            resourceName: xcuielement.identifier,
-            applicationPackage: bundleId,
-            children: xcuielement.children(matching: .any).allElementsBoundByIndex.map { child in
-                return NativeView.fromXCUIElement(child, bundleId)
-              })
+    static func fromXCUIElement(_ xcuielement: XCUIElement, _ bundleId: String) -> NativeView {
+      return NativeView(
+        className: String(xcuielement.elementType.rawValue),  // TODO: Provide mapping for names
+        text: xcuielement.label,
+        contentDescription: xcuielement.accessibilityLabel,
+        focused: xcuielement.hasFocus,
+        enabled: xcuielement.isEnabled,
+        resourceName: xcuielement.identifier,
+        applicationPackage: bundleId,
+        children: xcuielement.children(matching: .any).allElementsBoundByIndex.map { child in
+          return NativeView.fromXCUIElement(child, bundleId)
+        })
     }
   }
 

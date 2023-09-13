@@ -1,4 +1,6 @@
 ///
+//  swift-format-ignore-file
+//
 //  Generated code. Do not modify.
 //  source: schema.dart
 //
@@ -39,7 +41,7 @@ class PatrolAppServiceClient {
     guard (response as? HTTPURLResponse)?.statusCode == 200 else {
         throw PatrolError.internal("Invalid response: \(response) \(data)")
     }
-    
+
     return try JSONDecoder().decode(TResult.self, from: data)
   }
 }

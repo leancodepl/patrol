@@ -23,6 +23,8 @@ class IOSTelegraphServerGenerator {
   String _contentPrefix(IOSConfig config) {
     return '''
 ///
+//  swift-format-ignore-file
+//
 //  Generated code. Do not modify.
 //  source: schema.dart
 //

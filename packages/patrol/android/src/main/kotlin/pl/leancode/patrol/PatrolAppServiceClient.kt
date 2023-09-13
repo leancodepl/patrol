@@ -1,4 +1,4 @@
-package pl.leancode.patrol;
+package pl.leancode.patrol
 
 import org.apache.hc.core5.util.Timeout
 import pl.leancode.patrol.contracts.Contracts
@@ -11,6 +11,7 @@ import pl.leancode.patrol.contracts.PatrolAppServiceClient as Client
 class PatrolAppServiceClient {
 
     private var client: Client
+
     // https://github.com/leancodepl/patrol/issues/1683
     private val timeout = Timeout.ofHours(2)
 

@@ -8,19 +8,19 @@ import pl.leancode.patrol.contracts.Contracts.DartTestGroup
 
 private fun Contracts.Selector.isEmpty(): Boolean {
     return (
-            !hasText() &&
-            !hasTextStartsWith() &&
-            !hasTextContains() &&
-            !hasClassName() &&
-            !hasContentDescription() &&
-            !hasContentDescriptionStartsWith() &&
-            !hasContentDescriptionContains() &&
-            !hasResourceId() &&
-            !hasInstance() &&
-            !hasEnabled() &&
-            !hasFocused() &&
-            !hasPkg()
-            )
+        !hasText() &&
+        !hasTextStartsWith() &&
+        !hasTextContains() &&
+        !hasClassName() &&
+        !hasContentDescription() &&
+        !hasContentDescriptionStartsWith() &&
+        !hasContentDescriptionContains() &&
+        !hasResourceId() &&
+        !hasInstance() &&
+        !hasEnabled() &&
+        !hasFocused() &&
+        !hasPkg()
+        )
 }
 
 fun Contracts.Selector.toUiSelector(): UiSelector {
