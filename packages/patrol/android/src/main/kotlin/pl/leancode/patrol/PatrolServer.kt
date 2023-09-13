@@ -40,7 +40,7 @@ class PatrolServer {
                 Logger.i("Stopping server...")
                 server?.close()
                 Logger.i("Server stopped")
-            },
+            }
         )
     }
 

@@ -20,7 +20,7 @@ private fun Contracts.Selector.isEmpty(): Boolean {
             !hasEnabled() &&
             !hasFocused() &&
             !hasPkg()
-    )
+        )
 }
 
 fun Contracts.Selector.toUiSelector(): UiSelector {
