@@ -1,47 +1,27 @@
-import 'package:patrol/src/extensions.dart';
-// ignore: depend_on_referenced_packages
-import 'package:test_api/src/backend/invoker.dart';
+import 'package:flutter/material.dart';
 
 import 'common.dart';
 
 void main() {
-  // FIXME: iOS implementation not tested with non-alphabetic test names.
+  patrol(
+    'counter state is the same after going to Home and switching apps',
+    ($) async {
+      await createApp($);
 
-  patrol('at the beginning', ($) async {
-    await _testBody($);
-  });
-  group('top level group in file', () {
-    group('alpha', () {
-      patrol('first', ($) async {
-        await _testBody($);
-      });
-      patrol('second', ($) async {
-        await _testBody($);
-      });
-    });
+      await $(FloatingActionButton).tap();
+      expect($(#counterText).text, '1');
 
-    patrol('in the middle', ($) async {
-      await _testBody($);
-    });
+      await $(#textField).enterText('Hello, Flutter!');
+      expect($('Hello, Flutter!'), findsOneWidget);
 
-    group('bravo', () {
-      patrol('first', ($) async {
-        await _testBody($);
-      });
-      patrol('second', ($) async {
-        await _testBody($);
-      });
-    });
-  });
-}
+      await $.native.pressHome();
+      await $.native.openApp();
 
-// FIXME: Only for debugging and development. To be removed.
-Future<void> _testBody(PatrolTester $) async {
-  await createApp($);
+      expect($(#counterText).text, '1');
+      await $(FloatingActionButton).tap();
 
-  final testName = Invoker.current!.fullCurrentTestName();
-  await $(#textField).enterText(testName);
-
-  await $.native.pressHome();
-  await $.native.openApp();
+      expect($(#counterText).text, '2');
+      expect($('Hello, Flutter!'), findsOneWidget);
+    },
+  );
 }
