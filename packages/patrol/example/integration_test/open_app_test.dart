@@ -6,7 +6,7 @@ import 'common.dart';
 
 void main() {
   patrol('open maps', ($) async {
-    late String mapsId;
+    final String mapsId;
     if (Platform.isIOS) {
       mapsId = 'com.apple.Maps';
     } else if (Platform.isAndroid) {
@@ -30,7 +30,7 @@ void main() {
   });
 
   patrol('open browser', ($) async {
-    late String browserId;
+    final String browserId;
     if (Platform.isIOS) {
       browserId = 'com.apple.mobilesafari';
     } else if (Platform.isAndroid) {
