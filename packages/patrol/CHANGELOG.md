@@ -1,3 +1,9 @@
+## 2.3.0-dev.1
+
+- Add support for `group()` (#1634)
+
+This version requires version 2.2.0-dev.1 of `patrol_cli` package.
+
 ## 2.2.4
 
 - Remove deprecation of `nativeAutomation` and add message about migration to `patrol_finders` (#1670)
