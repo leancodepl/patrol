@@ -84,7 +84,7 @@ Future<void> main() async {
     final topLevelGroup = Invoker.current!.liveTest.groups.first;
     final dartTestGroup = createDartTestGroup(topLevelGroup);
     testExplorationCompleter.complete(dartTestGroup);
-    print('PATROL_DEBUG: group structure:');
+    print('patrol_test_explorer: obtained Dart-side test hierarchy:');
     printGroupStructure(dartTestGroup);
   });
 
