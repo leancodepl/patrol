@@ -1,13 +1,13 @@
 package pl.leancode.patrol
 
 import androidx.test.platform.app.InstrumentationRegistry
+import com.google.common.util.concurrent.SettableFuture
 import org.http4k.core.ContentType
 import org.http4k.filter.ServerFilters
 import org.http4k.server.Http4kServer
 import org.http4k.server.Netty
 import org.http4k.server.asServer
 import java.util.concurrent.Future
-import com.google.common.util.concurrent.SettableFuture;
 
 class PatrolServer {
     private val envPortKey = "PATROL_PORT"
@@ -25,11 +25,12 @@ class PatrolServer {
         Logger.i("Starting server...")
 
         automatorServer = AutomatorServer(Automator.instance)
-        server = automatorServer!!.router
-            .withFilter(catcher)
-            .withFilter(printer)
-            .withFilter(ServerFilters.SetContentType(ContentType.TEXT_PLAIN))
-            .asServer(Netty(port))
+        server =
+            automatorServer!!.router
+                .withFilter(catcher)
+                .withFilter(printer)
+                .withFilter(ServerFilters.SetContentType(ContentType.TEXT_PLAIN))
+                .asServer(Netty(port))
 
         server?.start()
         Logger.i("Created and started PatrolServer, port: $port")
@@ -39,7 +40,7 @@ class PatrolServer {
                 Logger.i("Stopping server...")
                 server?.close()
                 Logger.i("Server stopped")
-            }
+            },
         )
     }
 

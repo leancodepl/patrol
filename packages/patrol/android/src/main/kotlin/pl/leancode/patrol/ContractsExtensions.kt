@@ -9,18 +9,18 @@ import pl.leancode.patrol.contracts.Contracts.DartTestGroup
 private fun Contracts.Selector.isEmpty(): Boolean {
     return (
         !hasText() &&
-        !hasTextStartsWith() &&
-        !hasTextContains() &&
-        !hasClassName() &&
-        !hasContentDescription() &&
-        !hasContentDescriptionStartsWith() &&
-        !hasContentDescriptionContains() &&
-        !hasResourceId() &&
-        !hasInstance() &&
-        !hasEnabled() &&
-        !hasFocused() &&
-        !hasPkg()
-        )
+            !hasTextStartsWith() &&
+            !hasTextContains() &&
+            !hasClassName() &&
+            !hasContentDescription() &&
+            !hasContentDescriptionStartsWith() &&
+            !hasContentDescriptionContains() &&
+            !hasResourceId() &&
+            !hasInstance() &&
+            !hasEnabled() &&
+            !hasFocused() &&
+            !hasPkg()
+    )
 }
 
 fun Contracts.Selector.toUiSelector(): UiSelector {
@@ -94,44 +94,45 @@ fun Contracts.Selector.toBySelector(): BySelector {
     var matchedFocused = false
     var matchedPkg = false
 
-    var bySelector = if (hasText()) {
-        matchedText = true
-        By.text(text)
-    } else if (hasTextStartsWith()) {
-        matchedTextStartsWith = true
-        By.textStartsWith(textStartsWith)
-    } else if (hasTextContains()) {
-        matchedTextContains = true
-        By.textContains(textContains)
-    } else if (hasClassName()) {
-        matchedClassName = true
-        By.clazz(className)
-    } else if (hasContentDescription()) {
-        matchedContentDescription = true
-        By.desc(contentDescription)
-    } else if (hasContentDescriptionStartsWith()) {
-        matchedContentDescriptionStartsWith = true
-        By.descStartsWith(contentDescriptionStartsWith)
-    } else if (hasContentDescriptionContains()) {
-        matchedContentDescriptionContains = true
-        By.descContains(contentDescriptionContains)
-    } else if (hasResourceId()) {
-        matchedResourceId = true
-        By.res(resourceId)
-    } else if (hasInstance()) {
-        throw IllegalArgumentException("instance() argument is not supported for BySelector")
-    } else if (hasEnabled()) {
-        matchedEnabled = true
-        By.enabled(enabled!!)
-    } else if (hasFocused()) {
-        matchedFocused = true
-        By.focused(focused!!)
-    } else if (hasPkg()) {
-        matchedPkg = true
-        By.pkg(pkg)
-    } else {
-        throw IllegalArgumentException("SelectorQuery is empty")
-    }
+    var bySelector =
+        if (hasText()) {
+            matchedText = true
+            By.text(text)
+        } else if (hasTextStartsWith()) {
+            matchedTextStartsWith = true
+            By.textStartsWith(textStartsWith)
+        } else if (hasTextContains()) {
+            matchedTextContains = true
+            By.textContains(textContains)
+        } else if (hasClassName()) {
+            matchedClassName = true
+            By.clazz(className)
+        } else if (hasContentDescription()) {
+            matchedContentDescription = true
+            By.desc(contentDescription)
+        } else if (hasContentDescriptionStartsWith()) {
+            matchedContentDescriptionStartsWith = true
+            By.descStartsWith(contentDescriptionStartsWith)
+        } else if (hasContentDescriptionContains()) {
+            matchedContentDescriptionContains = true
+            By.descContains(contentDescriptionContains)
+        } else if (hasResourceId()) {
+            matchedResourceId = true
+            By.res(resourceId)
+        } else if (hasInstance()) {
+            throw IllegalArgumentException("instance() argument is not supported for BySelector")
+        } else if (hasEnabled()) {
+            matchedEnabled = true
+            By.enabled(enabled!!)
+        } else if (hasFocused()) {
+            matchedFocused = true
+            By.focused(focused!!)
+        } else if (hasPkg()) {
+            matchedPkg = true
+            By.pkg(pkg)
+        } else {
+            throw IllegalArgumentException("SelectorQuery is empty")
+        }
 
     if (!matchedText && hasText()) {
         bySelector = By.copy(bySelector).text(text)
