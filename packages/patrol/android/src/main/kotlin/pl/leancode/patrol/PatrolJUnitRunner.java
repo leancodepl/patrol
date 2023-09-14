@@ -12,7 +12,6 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.AndroidJUnitRunner;
 
 import pl.leancode.patrol.contracts.Contracts;
-import pl.leancode.patrol.contracts.Contracts.DartTestGroup;
 import pl.leancode.patrol.contracts.PatrolAppServiceClientException;
 
 import java.util.ArrayList;
@@ -121,7 +120,7 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
             Object[] dartTestCaseNames = dartTestCaseNamesList.toArray();
             Logger.INSTANCE.i(TAG + "Got Dart tests: " + Arrays.toString(dartTestCaseNames));
             return dartTestCaseNames;
-        } catch (StatusRuntimeException e) {
+        } catch (PatrolAppServiceClientException e) {
             Logger.INSTANCE.e(TAG + "Failed to list Dart tests: ", e);
             throw new RuntimeException(e);
         }

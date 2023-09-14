@@ -4,8 +4,8 @@ import androidx.test.uiautomator.By
 import androidx.test.uiautomator.BySelector
 import androidx.test.uiautomator.UiSelector
 import pl.leancode.patrol.contracts.Contracts.DartGroupEntry
+import pl.leancode.patrol.contracts.Contracts.GroupEntryType
 import pl.leancode.patrol.contracts.Contracts.Selector
-import pl.leancode.patrol.contracts.copy
 
 private fun Selector.isEmpty(): Boolean {
     return (
@@ -192,15 +192,19 @@ fun Selector.toBySelector(): BySelector {
 fun DartGroupEntry.listTestsFlat(parentGroupName: String = ""): List<DartGroupEntry> {
     val tests = mutableListOf<DartGroupEntry>()
 
-    for (test in entriesList) {
-        if (test.type == DartGroupEntry.GroupEntryType.TEST) {
+    for (test in entries) {
+        if (test.type == GroupEntryType.test) {
             if (parentGroupName.isEmpty()) {
                 // This case is invalid, because every test will have at least 1 named group - its filename.
                 throw IllegalStateException("Invariant violated: test $test has no named parent group")
             }
 
-            tests.add(test.copy { name = "$parentGroupName ${test.name}" })
-        } else if (test.type == DartGroupEntry.GroupEntryType.GROUP) {
+            tests.add(DartGroupEntry(
+                name = "$parentGroupName ${test.name}",
+                type = GroupEntryType.test,
+                entries = listOf()
+                ))
+        } else if (test.type == GroupEntryType.group) {
             if (parentGroupName.isEmpty()) {
                 tests.addAll(test.listTestsFlat(parentGroupName = test.name))
             } else {
