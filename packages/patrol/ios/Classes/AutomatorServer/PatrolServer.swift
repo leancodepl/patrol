@@ -59,7 +59,7 @@ import Foundation
       try await server.waitUntilListening()
       let address = await server.listeningAddress
 
-      Logger.shared.i("Server started on :\(address)")
+      Logger.shared.i("Server started on :\(String(describing: address))")
     #endif
   }
 }

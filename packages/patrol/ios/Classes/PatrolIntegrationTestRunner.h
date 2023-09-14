@@ -23,7 +23,7 @@
     }];                                                                                                         \
                                                                                                                 \
     /* Create a client for PatrolAppService, which lets us list and run Dart tests */                           \
-    __block ObjCPatrolAppServiceClient *appServiceClient = [[PatrolAppServiceClient alloc] init];               \
+    __block ObjCPatrolAppServiceClient *appServiceClient = [[ObjCPatrolAppServiceClient alloc] init];           \
                                                                                                                 \
     /* Allow the Local Network permission required by Dart Observatory */                                       \
     XCUIApplication *springboard = [[XCUIApplication alloc] initWithBundleIdentifier:@"com.apple.springboard"]; \
@@ -73,9 +73,9 @@
       IMP implementation = imp_implementationWithBlock(^(id _self) {                                            \
         [[[XCUIApplication alloc] init] launch];                                                                \
                                                                                                                 \
-        __block RunDartTestResponse *response = NULL;                                                           \
+        __block ObjCRunDartTestResponse *response = NULL;                                                       \
         [appServiceClient runDartTestWithName:dartTest                                                          \
-                            completionHandler:^(RunDartTestResponse *_Nullable r, NSError *_Nullable err) {     \
+                            completionHandler:^(ObjCRunDartTestResponse *_Nullable r, NSError *_Nullable err) { \
                               if (err != NULL) {                                                                \
                                 NSLog(@"runDartTestWithName(%@): failed, err: %@", dartTest, err);              \
                               }                                                                                 \
