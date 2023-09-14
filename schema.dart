@@ -1,15 +1,13 @@
-class DartTestCase {
+class DartGroupEntry {
   late String name;
+  late GroupEntryType type;
+  late List<DartGroupEntry> entries;
 }
 
-class DartTestGroup {
-  late String name;
-  late List<DartTestCase> tests;
-  late List<DartTestGroup> groups;
-}
+enum GroupEntryType { group, test }
 
 class ListDartTestsResponse {
-  late DartTestGroup group;
+  late DartGroupEntry group;
 }
 
 enum RunDartTestResponseResult {

@@ -26,7 +26,7 @@ class PatrolAppServiceClient {
     }
 
     @Throws(PatrolAppServiceClientException::class)
-    fun listDartTests(): Contracts.DartTestGroup {
+    fun listDartTests(): Contracts.DartGroupEntry {
         Logger.i("PatrolAppServiceClient.listDartTests()")
         val result = client.listDartTests()
         return result.group

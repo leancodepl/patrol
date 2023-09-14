@@ -34,7 +34,9 @@
 
     let response = try await client.listDartTests()
 
-    return response.group.groups.map { $0.name }
+    return response.group.listTestsFlat(parentGroupName: "").map {
+      $0.name
+    }
   }
 
   @objc public func runDartTest(name: String) async throws -> RunDartTestResponse2 {
@@ -49,5 +51,38 @@
       passed: result.result == .success,
       details: result.details
     )
+  }
+}
+
+extension Patrol_DartGroupEntry {
+
+  func listTestsFlat(parentGroupName: String) -> [Patrol_DartGroupEntry] {
+    var tests = [Patrol_DartGroupEntry]()
+
+    for test in self.entries {
+      var test = test
+
+      if test.type == Patrol_DartGroupEntry.GroupEntryType.test {
+        if parentGroupName.isEmpty {
+          // This case is invalid, because every test will have at least
+          // 1 named group - its filename.
+
+          fatalError("Invariant violated: test \(test.name) has no named parent group")
+        }
+
+        test.name = "\(parentGroupName) \(test.name)"
+        tests.append(test)
+      } else if test.type == Patrol_DartGroupEntry.GroupEntryType.group {
+        if parentGroupName.isEmpty {
+          tests.append(contentsOf: test.listTestsFlat(parentGroupName: test.name))
+        } else {
+          tests.append(
+            contentsOf: test.listTestsFlat(parentGroupName: "\(parentGroupName) \(test.name)")
+          )
+        }
+      }
+    }
+
+    return tests
   }
 }

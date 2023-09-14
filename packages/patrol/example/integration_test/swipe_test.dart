@@ -3,11 +3,13 @@ import 'dart:io' show Platform;
 import 'common.dart';
 
 void main() {
-  late String appId;
+  final String appId;
   if (Platform.isIOS) {
     appId = 'com.apple.Preferences';
   } else if (Platform.isAndroid) {
     appId = 'com.android.settings';
+  } else {
+    throw UnsupportedError('Unsupported platform');
   }
 
   patrol('scrolls the Settings app', ($) async {
