@@ -451,7 +451,7 @@ class Notification with EquatableMixin {
     this.appName,
     required this.title,
     required this.content,
-    required this.raw,
+    this.raw,
   });
 
   factory Notification.fromJson(Map<String, dynamic> json) =>
@@ -460,7 +460,7 @@ class Notification with EquatableMixin {
   final String? appName;
   final String title;
   final String content;
-  final String raw;
+  final String? raw;
 
   Map<String, dynamic> toJson() => _$NotificationToJson(this);
 

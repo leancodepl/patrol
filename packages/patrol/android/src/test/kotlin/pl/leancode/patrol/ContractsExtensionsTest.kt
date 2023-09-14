@@ -20,24 +20,23 @@ class DartTestGroupExtensionsTest {
     @Test
     fun `listTestsFlat() handles simple hierarchy`() {
         // given
-        val dartTestGroup =
-            dartTestGroup(
-                "",
-                listOf(
-                    dartTestGroup(
-                        "example_test",
-                        listOf(dartTestCase("increments counter, exits the app, and comes back")),
-                    ),
-                    dartTestGroup(
-                        "open_app_test",
-                        listOf(dartTestCase("open maps")),
-                    ),
-                    dartTestGroup(
-                        "webview_test",
-                        listOf(dartTestCase("interacts with the LeanCode website in a webview")),
-                    ),
+        val dartTestGroup = dartTestGroup(
+            "",
+            listOf(
+                dartTestGroup(
+                    "example_test",
+                    listOf(dartTestCase("increments counter, exits the app, and comes back")),
                 ),
-            )
+                dartTestGroup(
+                    "open_app_test",
+                    listOf(dartTestCase("open maps")),
+                ),
+                dartTestGroup(
+                    "webview_test",
+                    listOf(dartTestCase("interacts with the LeanCode website in a webview")),
+                ),
+            ),
+        )
 
         // when
         val dartTests = dartTestGroup.listTestsFlat()
@@ -56,36 +55,34 @@ class DartTestGroupExtensionsTest {
     @Test
     fun `listTestsFlat() handles nested hierarchy`() {
         // given
-        val exampleTest =
-            dartTestGroup(
-                "example_test",
-                listOf(
-                    dartTestCase("the first test"),
-                    dartTestGroup(
-                        "top level group in file",
-                        listOf(
-                            dartTestGroup(
-                                "alpha",
-                                listOf(
-                                    dartTestCase("first"),
-                                    dartTestCase("second"),
-                                ),
+        val exampleTest = dartTestGroup(
+            "example_test",
+            listOf(
+                dartTestCase("the first test"),
+                dartTestGroup(
+                    "top level group in file",
+                    listOf(
+                        dartTestGroup(
+                            "alpha",
+                            listOf(
+                                dartTestCase("first"),
+                                dartTestCase("second"),
                             ),
-                            dartTestCase("test between groups"),
-                            dartTestGroup(
-                                "bravo",
-                                listOf(
-                                    dartTestCase("first"),
-                                    dartTestCase("second"),
-                                ),
+                        ),
+                        dartTestCase("test between groups"),
+                        dartTestGroup(
+                            "bravo",
+                            listOf(
+                                dartTestCase("first"),
+                                dartTestCase("second"),
                             ),
                         ),
                     ),
                 ),
-            )
+            ),
+        )
 
-        val openAppTest =
-            dartTestGroup(
+        val openAppTest = dartTestGroup(
                 "open_app_test",
                 listOf(
                     dartTestCase("open maps"),

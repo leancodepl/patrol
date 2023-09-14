@@ -65,7 +65,7 @@ android {
         api "androidx.test.espresso:espresso-core:3.5.0"
         api "androidx.test.uiautomator:uiautomator:2.2.0"
 
-        implementation(platform("org.http4k:http4k-bom:5.7.4.0"))
+        implementation platform("org.http4k:http4k-bom:5.7.4.0")
         implementation "org.http4k:http4k-core:5.7.4.0"
         implementation "org.http4k:http4k-client-apache:5.7.4.0"
         implementation "org.http4k:http4k-server-netty:5.7.4.0"

@@ -264,7 +264,7 @@ Notification _$NotificationFromJson(Map<String, dynamic> json) => Notification(
       appName: json['appName'] as String?,
       title: json['title'] as String,
       content: json['content'] as String,
-      raw: json['raw'] as String,
+      raw: json['raw'] as String?,
     );
 
 Map<String, dynamic> _$NotificationToJson(Notification instance) =>

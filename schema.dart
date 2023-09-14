@@ -115,7 +115,7 @@ class Notification {
   String? appName;
   late String title;
   late String content;
-  late String raw;
+  String? raw;
 }
 
 class GetNotificationsResponse {

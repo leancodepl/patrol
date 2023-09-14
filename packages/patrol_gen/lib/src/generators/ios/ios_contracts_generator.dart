@@ -31,8 +31,8 @@ class IOSContractsGenerator {
     final fields = message.fields.map((e) {
       final optional = e.isOptional ? '?' : '';
       return e.isList
-          ? ' var ${e.name}: [${_transformType(e.type)}]$optional'
-          : ' var ${e.name}: ${_transformType(e.type)}$optional';
+          ? '  var ${e.name}: [${_transformType(e.type)}]$optional'
+          : '  var ${e.name}: ${_transformType(e.type)}$optional';
     }).join('\n');
 
     return '''

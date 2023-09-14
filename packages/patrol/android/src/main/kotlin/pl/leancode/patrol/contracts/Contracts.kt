@@ -225,10 +225,13 @@ class Contracts {
     val appName: String? = null,
     val title: String,
     val content: String,
-    val raw: String
+    val raw: String? = null
   ){
     fun hasAppName(): Boolean {
       return appName != null
+    }
+    fun hasRaw(): Boolean {
+      return raw != null
     }
   }
 

@@ -1,4 +1,4 @@
-/// The sole reason for existence of this class is that Swift Protobufs can't be used in Objective-C.
+/// Simplified objective-c RunDartTestResponse model that we use in PatrolIntegrationTestRunner.h
 @objc public class ObjCRunDartTestResponse: NSObject {
   @objc public dynamic let passed: Bool
   @objc public dynamic let details: String?
@@ -41,7 +41,8 @@
 
   @objc public func runDartTest(name: String) async throws -> ObjCRunDartTestResponse {
     // TODO: simple workaround - patrolAppService starts running too slowly. 
-    // We should wait for appReady or something...
+    // We should wait for appReady in the dynamically created test case method, 
+    // before calling runDartTest() (in PATROL_INTEGRATION_TEST_IOS_MACRO)
     try await Task.sleep(nanoseconds: UInt64(1 * Double(NSEC_PER_SEC)))
 
     NSLog("PatrolAppServiceClient.runDartTest(\(name))")

@@ -33,30 +33,30 @@ enum SetLocationAccuracyRequestLocationAccuracy: String, Codable {
 }
 
 struct DartGroupEntry: Codable {
- var name: String
- var type: GroupEntryType
- var entries: [DartGroupEntry]
+  var name: String
+  var type: GroupEntryType
+  var entries: [DartGroupEntry]
 }
 
 struct ListDartTestsResponse: Codable {
- var group: DartGroupEntry
+  var group: DartGroupEntry
 }
 
 struct RunDartTestRequest: Codable {
- var name: String
+  var name: String
 }
 
 struct RunDartTestResponse: Codable {
- var result: RunDartTestResponseResult
- var details: String?
+  var result: RunDartTestResponseResult
+  var details: String?
 }
 
 struct ConfigureRequest: Codable {
- var findTimeoutMillis: Int
+  var findTimeoutMillis: Int
 }
 
 struct OpenAppRequest: Codable {
- var appId: String
+  var appId: String
 }
 
 struct OpenQuickSettingsRequest: Codable {
@@ -64,80 +64,80 @@ struct OpenQuickSettingsRequest: Codable {
 }
 
 struct Selector: Codable {
- var text: String?
- var textStartsWith: String?
- var textContains: String?
- var className: String?
- var contentDescription: String?
- var contentDescriptionStartsWith: String?
- var contentDescriptionContains: String?
- var resourceId: String?
- var instance: Int?
- var enabled: Bool?
- var focused: Bool?
- var pkg: String?
+  var text: String?
+  var textStartsWith: String?
+  var textContains: String?
+  var className: String?
+  var contentDescription: String?
+  var contentDescriptionStartsWith: String?
+  var contentDescriptionContains: String?
+  var resourceId: String?
+  var instance: Int?
+  var enabled: Bool?
+  var focused: Bool?
+  var pkg: String?
 }
 
 struct GetNativeViewsRequest: Codable {
- var selector: Selector
- var appId: String
+  var selector: Selector
+  var appId: String
 }
 
 struct NativeView: Codable {
- var className: String?
- var text: String?
- var contentDescription: String?
- var focused: Bool
- var enabled: Bool
- var childCount: Int?
- var resourceName: String?
- var applicationPackage: String?
- var children: [NativeView]
+  var className: String?
+  var text: String?
+  var contentDescription: String?
+  var focused: Bool
+  var enabled: Bool
+  var childCount: Int?
+  var resourceName: String?
+  var applicationPackage: String?
+  var children: [NativeView]
 }
 
 struct GetNativeViewsResponse: Codable {
- var nativeViews: [NativeView]
+  var nativeViews: [NativeView]
 }
 
 struct TapRequest: Codable {
- var selector: Selector
- var appId: String
+  var selector: Selector
+  var appId: String
 }
 
 struct EnterTextRequest: Codable {
- var data: String
- var appId: String
- var index: Int?
- var selector: Selector?
- var keyboardBehavior: KeyboardBehavior
+  var data: String
+  var appId: String
+  var index: Int?
+  var selector: Selector?
+  var keyboardBehavior: KeyboardBehavior
 }
 
 struct SwipeRequest: Codable {
- var startX: Double
- var startY: Double
- var endX: Double
- var endY: Double
- var steps: Int
+  var startX: Double
+  var startY: Double
+  var endX: Double
+  var endY: Double
+  var steps: Int
 }
 
 struct WaitUntilVisibleRequest: Codable {
- var selector: Selector
- var appId: String
+  var selector: Selector
+  var appId: String
 }
 
 struct DarkModeRequest: Codable {
- var appId: String
+  var appId: String
 }
 
 struct Notification: Codable {
- var appName: String?
- var title: String
- var content: String
- var raw: String
+  var appName: String?
+  var title: String
+  var content: String
+  var raw: String?
 }
 
 struct GetNotificationsResponse: Codable {
- var notifications: [Notification]
+  var notifications: [Notification]
 }
 
 struct GetNotificationsRequest: Codable {
@@ -145,23 +145,23 @@ struct GetNotificationsRequest: Codable {
 }
 
 struct TapOnNotificationRequest: Codable {
- var index: Int?
- var selector: Selector?
+  var index: Int?
+  var selector: Selector?
 }
 
 struct PermissionDialogVisibleResponse: Codable {
- var visible: Bool
+  var visible: Bool
 }
 
 struct PermissionDialogVisibleRequest: Codable {
- var timeoutMillis: Int
+  var timeoutMillis: Int
 }
 
 struct HandlePermissionRequest: Codable {
- var code: HandlePermissionRequestCode
+  var code: HandlePermissionRequestCode
 }
 
 struct SetLocationAccuracyRequest: Codable {
- var locationAccuracy: SetLocationAccuracyRequestLocationAccuracy
+  var locationAccuracy: SetLocationAccuracyRequestLocationAccuracy
 }
 

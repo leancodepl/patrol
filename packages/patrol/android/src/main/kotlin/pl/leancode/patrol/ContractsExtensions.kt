@@ -95,8 +95,7 @@ fun Selector.toBySelector(): BySelector {
     var matchedFocused = false
     var matchedPkg = false
 
-    var bySelector =
-        if (hasText()) {
+    var bySelector = if (hasText()) {
             matchedText = true
             By.text(text)
         } else if (hasTextStartsWith()) {
@@ -199,13 +198,7 @@ fun DartGroupEntry.listTestsFlat(parentGroupName: String = ""): List<DartGroupEn
                 throw IllegalStateException("Invariant violated: test $test has no named parent group")
             }
 
-            tests.add(
-                DartGroupEntry(
-                    name = "$parentGroupName ${test.name}",
-                    type = GroupEntryType.test,
-                    entries = listOf()
-                )
-            )
+            tests.add(test.copy(name = "$parentGroupName ${test.name}"))
         } else if (test.type == GroupEntryType.group) {
             if (parentGroupName.isEmpty()) {
                 tests.addAll(test.listTestsFlat(parentGroupName = test.name))

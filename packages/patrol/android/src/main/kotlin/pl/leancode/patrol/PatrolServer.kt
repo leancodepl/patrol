@@ -25,14 +25,13 @@ class PatrolServer {
         Logger.i("Starting server...")
 
         automatorServer = AutomatorServer(Automator.instance)
-        server =
-            automatorServer!!.router
-                .withFilter(catcher)
-                .withFilter(printer)
-                .withFilter(ServerFilters.SetContentType(ContentType.TEXT_PLAIN))
-                .asServer(Netty(port))
+        server = automatorServer!!.router
+            .withFilter(catcher)
+            .withFilter(printer)
+            .withFilter(ServerFilters.SetContentType(ContentType.TEXT_PLAIN))
+            .asServer(Netty(port))
+            .start()
 
-        server?.start()
         Logger.i("Created and started PatrolServer, port: $port")
 
         Runtime.getRuntime().addShutdownHook(
