@@ -21,7 +21,7 @@ private fun Selector.isEmpty(): Boolean {
             !hasEnabled() &&
             !hasFocused() &&
             !hasPkg()
-        )
+    )
 }
 
 fun Selector.toUiSelector(): UiSelector {
@@ -199,11 +199,13 @@ fun DartGroupEntry.listTestsFlat(parentGroupName: String = ""): List<DartGroupEn
                 throw IllegalStateException("Invariant violated: test $test has no named parent group")
             }
 
-            tests.add(DartGroupEntry(
-                name = "$parentGroupName ${test.name}",
-                type = GroupEntryType.test,
-                entries = listOf()
-                ))
+            tests.add(
+                DartGroupEntry(
+                    name = "$parentGroupName ${test.name}",
+                    type = GroupEntryType.test,
+                    entries = listOf(),
+                ),
+            )
         } else if (test.type == GroupEntryType.group) {
             if (parentGroupName.isEmpty()) {
                 tests.addAll(test.listTestsFlat(parentGroupName = test.name))
