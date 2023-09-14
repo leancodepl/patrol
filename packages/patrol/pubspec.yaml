@@ -12,6 +12,7 @@ environment:
   flutter: '>=3.3.0'
 
 dependencies:
+  equatable: ^2.0.3
   fixnum: ^1.0.1
   flutter:
     sdk: flutter

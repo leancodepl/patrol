@@ -4,6 +4,7 @@
 //
 // ignore_for_file: public_member_api_docs
 
+import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'contracts.g.dart';
@@ -48,7 +49,7 @@ enum SetLocationAccuracyRequestLocationAccuracy {
 }
 
 @JsonSerializable()
-class DartGroupEntry {
+class DartGroupEntry with EquatableMixin {
   DartGroupEntry({
     required this.name,
     required this.type,
@@ -63,10 +64,17 @@ class DartGroupEntry {
   final List<DartGroupEntry> entries;
 
   Map<String, dynamic> toJson() => _$DartGroupEntryToJson(this);
+
+  @override
+  List<Object?> get props => [
+        name,
+        type,
+        entries,
+      ];
 }
 
 @JsonSerializable()
-class ListDartTestsResponse {
+class ListDartTestsResponse with EquatableMixin {
   ListDartTestsResponse({
     required this.group,
   });
@@ -77,10 +85,15 @@ class ListDartTestsResponse {
   final DartGroupEntry group;
 
   Map<String, dynamic> toJson() => _$ListDartTestsResponseToJson(this);
+
+  @override
+  List<Object?> get props => [
+        group,
+      ];
 }
 
 @JsonSerializable()
-class RunDartTestRequest {
+class RunDartTestRequest with EquatableMixin {
   RunDartTestRequest({
     required this.name,
   });
@@ -91,10 +104,15 @@ class RunDartTestRequest {
   final String name;
 
   Map<String, dynamic> toJson() => _$RunDartTestRequestToJson(this);
+
+  @override
+  List<Object?> get props => [
+        name,
+      ];
 }
 
 @JsonSerializable()
-class RunDartTestResponse {
+class RunDartTestResponse with EquatableMixin {
   RunDartTestResponse({
     required this.result,
     this.details,
@@ -107,10 +125,16 @@ class RunDartTestResponse {
   final String? details;
 
   Map<String, dynamic> toJson() => _$RunDartTestResponseToJson(this);
+
+  @override
+  List<Object?> get props => [
+        result,
+        details,
+      ];
 }
 
 @JsonSerializable()
-class ConfigureRequest {
+class ConfigureRequest with EquatableMixin {
   ConfigureRequest({
     required this.findTimeoutMillis,
   });
@@ -121,10 +145,15 @@ class ConfigureRequest {
   final int findTimeoutMillis;
 
   Map<String, dynamic> toJson() => _$ConfigureRequestToJson(this);
+
+  @override
+  List<Object?> get props => [
+        findTimeoutMillis,
+      ];
 }
 
 @JsonSerializable()
-class OpenAppRequest {
+class OpenAppRequest with EquatableMixin {
   OpenAppRequest({
     required this.appId,
   });
@@ -135,20 +164,28 @@ class OpenAppRequest {
   final String appId;
 
   Map<String, dynamic> toJson() => _$OpenAppRequestToJson(this);
+
+  @override
+  List<Object?> get props => [
+        appId,
+      ];
 }
 
 @JsonSerializable()
-class OpenQuickSettingsRequest {
+class OpenQuickSettingsRequest with EquatableMixin {
   OpenQuickSettingsRequest();
 
   factory OpenQuickSettingsRequest.fromJson(Map<String, dynamic> json) =>
       _$OpenQuickSettingsRequestFromJson(json);
 
   Map<String, dynamic> toJson() => _$OpenQuickSettingsRequestToJson(this);
+
+  @override
+  List<Object?> get props => const [];
 }
 
 @JsonSerializable()
-class Selector {
+class Selector with EquatableMixin {
   Selector({
     this.text,
     this.textStartsWith,
@@ -181,10 +218,26 @@ class Selector {
   final String? pkg;
 
   Map<String, dynamic> toJson() => _$SelectorToJson(this);
+
+  @override
+  List<Object?> get props => [
+        text,
+        textStartsWith,
+        textContains,
+        className,
+        contentDescription,
+        contentDescriptionStartsWith,
+        contentDescriptionContains,
+        resourceId,
+        instance,
+        enabled,
+        focused,
+        pkg,
+      ];
 }
 
 @JsonSerializable()
-class GetNativeViewsRequest {
+class GetNativeViewsRequest with EquatableMixin {
   GetNativeViewsRequest({
     required this.selector,
     required this.appId,
@@ -197,10 +250,16 @@ class GetNativeViewsRequest {
   final String appId;
 
   Map<String, dynamic> toJson() => _$GetNativeViewsRequestToJson(this);
+
+  @override
+  List<Object?> get props => [
+        selector,
+        appId,
+      ];
 }
 
 @JsonSerializable()
-class NativeView {
+class NativeView with EquatableMixin {
   NativeView({
     this.className,
     this.text,
@@ -227,10 +286,23 @@ class NativeView {
   final List<NativeView> children;
 
   Map<String, dynamic> toJson() => _$NativeViewToJson(this);
+
+  @override
+  List<Object?> get props => [
+        className,
+        text,
+        contentDescription,
+        focused,
+        enabled,
+        childCount,
+        resourceName,
+        applicationPackage,
+        children,
+      ];
 }
 
 @JsonSerializable()
-class GetNativeViewsResponse {
+class GetNativeViewsResponse with EquatableMixin {
   GetNativeViewsResponse({
     required this.nativeViews,
   });
@@ -241,10 +313,15 @@ class GetNativeViewsResponse {
   final List<NativeView> nativeViews;
 
   Map<String, dynamic> toJson() => _$GetNativeViewsResponseToJson(this);
+
+  @override
+  List<Object?> get props => [
+        nativeViews,
+      ];
 }
 
 @JsonSerializable()
-class TapRequest {
+class TapRequest with EquatableMixin {
   TapRequest({
     required this.selector,
     required this.appId,
@@ -257,10 +334,16 @@ class TapRequest {
   final String appId;
 
   Map<String, dynamic> toJson() => _$TapRequestToJson(this);
+
+  @override
+  List<Object?> get props => [
+        selector,
+        appId,
+      ];
 }
 
 @JsonSerializable()
-class EnterTextRequest {
+class EnterTextRequest with EquatableMixin {
   EnterTextRequest({
     required this.data,
     required this.appId,
@@ -279,10 +362,19 @@ class EnterTextRequest {
   final KeyboardBehavior keyboardBehavior;
 
   Map<String, dynamic> toJson() => _$EnterTextRequestToJson(this);
+
+  @override
+  List<Object?> get props => [
+        data,
+        appId,
+        index,
+        selector,
+        keyboardBehavior,
+      ];
 }
 
 @JsonSerializable()
-class SwipeRequest {
+class SwipeRequest with EquatableMixin {
   SwipeRequest({
     required this.startX,
     required this.startY,
@@ -301,10 +393,19 @@ class SwipeRequest {
   final int steps;
 
   Map<String, dynamic> toJson() => _$SwipeRequestToJson(this);
+
+  @override
+  List<Object?> get props => [
+        startX,
+        startY,
+        endX,
+        endY,
+        steps,
+      ];
 }
 
 @JsonSerializable()
-class WaitUntilVisibleRequest {
+class WaitUntilVisibleRequest with EquatableMixin {
   WaitUntilVisibleRequest({
     required this.selector,
     required this.appId,
@@ -317,10 +418,16 @@ class WaitUntilVisibleRequest {
   final String appId;
 
   Map<String, dynamic> toJson() => _$WaitUntilVisibleRequestToJson(this);
+
+  @override
+  List<Object?> get props => [
+        selector,
+        appId,
+      ];
 }
 
 @JsonSerializable()
-class DarkModeRequest {
+class DarkModeRequest with EquatableMixin {
   DarkModeRequest({
     required this.appId,
   });
@@ -331,10 +438,15 @@ class DarkModeRequest {
   final String appId;
 
   Map<String, dynamic> toJson() => _$DarkModeRequestToJson(this);
+
+  @override
+  List<Object?> get props => [
+        appId,
+      ];
 }
 
 @JsonSerializable()
-class Notification {
+class Notification with EquatableMixin {
   Notification({
     this.appName,
     required this.title,
@@ -351,10 +463,18 @@ class Notification {
   final String raw;
 
   Map<String, dynamic> toJson() => _$NotificationToJson(this);
+
+  @override
+  List<Object?> get props => [
+        appName,
+        title,
+        content,
+        raw,
+      ];
 }
 
 @JsonSerializable()
-class GetNotificationsResponse {
+class GetNotificationsResponse with EquatableMixin {
   GetNotificationsResponse({
     required this.notifications,
   });
@@ -365,20 +485,28 @@ class GetNotificationsResponse {
   final List<Notification> notifications;
 
   Map<String, dynamic> toJson() => _$GetNotificationsResponseToJson(this);
+
+  @override
+  List<Object?> get props => [
+        notifications,
+      ];
 }
 
 @JsonSerializable()
-class GetNotificationsRequest {
+class GetNotificationsRequest with EquatableMixin {
   GetNotificationsRequest();
 
   factory GetNotificationsRequest.fromJson(Map<String, dynamic> json) =>
       _$GetNotificationsRequestFromJson(json);
 
   Map<String, dynamic> toJson() => _$GetNotificationsRequestToJson(this);
+
+  @override
+  List<Object?> get props => const [];
 }
 
 @JsonSerializable()
-class TapOnNotificationRequest {
+class TapOnNotificationRequest with EquatableMixin {
   TapOnNotificationRequest({
     this.index,
     this.selector,
@@ -391,10 +519,16 @@ class TapOnNotificationRequest {
   final Selector? selector;
 
   Map<String, dynamic> toJson() => _$TapOnNotificationRequestToJson(this);
+
+  @override
+  List<Object?> get props => [
+        index,
+        selector,
+      ];
 }
 
 @JsonSerializable()
-class PermissionDialogVisibleResponse {
+class PermissionDialogVisibleResponse with EquatableMixin {
   PermissionDialogVisibleResponse({
     required this.visible,
   });
@@ -406,10 +540,15 @@ class PermissionDialogVisibleResponse {
 
   Map<String, dynamic> toJson() =>
       _$PermissionDialogVisibleResponseToJson(this);
+
+  @override
+  List<Object?> get props => [
+        visible,
+      ];
 }
 
 @JsonSerializable()
-class PermissionDialogVisibleRequest {
+class PermissionDialogVisibleRequest with EquatableMixin {
   PermissionDialogVisibleRequest({
     required this.timeoutMillis,
   });
@@ -420,10 +559,15 @@ class PermissionDialogVisibleRequest {
   final int timeoutMillis;
 
   Map<String, dynamic> toJson() => _$PermissionDialogVisibleRequestToJson(this);
+
+  @override
+  List<Object?> get props => [
+        timeoutMillis,
+      ];
 }
 
 @JsonSerializable()
-class HandlePermissionRequest {
+class HandlePermissionRequest with EquatableMixin {
   HandlePermissionRequest({
     required this.code,
   });
@@ -434,10 +578,15 @@ class HandlePermissionRequest {
   final HandlePermissionRequestCode code;
 
   Map<String, dynamic> toJson() => _$HandlePermissionRequestToJson(this);
+
+  @override
+  List<Object?> get props => [
+        code,
+      ];
 }
 
 @JsonSerializable()
-class SetLocationAccuracyRequest {
+class SetLocationAccuracyRequest with EquatableMixin {
   SetLocationAccuracyRequest({
     required this.locationAccuracy,
   });
@@ -448,4 +597,9 @@ class SetLocationAccuracyRequest {
   final SetLocationAccuracyRequestLocationAccuracy locationAccuracy;
 
   Map<String, dynamic> toJson() => _$SetLocationAccuracyRequestToJson(this);
+
+  @override
+  List<Object?> get props => [
+        locationAccuracy,
+      ];
 }

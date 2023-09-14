@@ -174,7 +174,8 @@ DartGroupEntry createDartTestGroup(
 }) {
   final groupDTO = DartGroupEntry(
     name: name,
-    type: DartGroupEntry_GroupEntryType.GROUP,
+    type: GroupEntryType.group,
+    entries: [],
   );
 
   for (final entry in parentGroup.entries) {
@@ -205,7 +206,7 @@ DartGroupEntry createDartTestGroup(
       }
 
       groupDTO.entries.add(
-        DartGroupEntry(name: name, type: DartGroupEntry_GroupEntryType.TEST),
+        DartGroupEntry(name: name, type: GroupEntryType.test, entries: []),
       );
     } else {
       // This should really never happen, because Group and Test are the only
@@ -233,7 +234,7 @@ void printGroupStructure(DartGroupEntry group, {int indentation = 0}) {
   debugPrint("$indent-- group: '${group.name}'");
 
   for (final entry in group.entries) {
-    if (entry.type == DartGroupEntry_GroupEntryType.TEST) {
+    if (entry.type == GroupEntryType.test) {
       debugPrint("$indent     -- test: '${entry.name}'");
     } else {
       for (final subgroup in entry.entries) {

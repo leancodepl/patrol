@@ -24,6 +24,7 @@ class DartContractsGenerator {
 //
 // ignore_for_file: public_member_api_docs
 
+import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part '${path.basenameWithoutExtension(config.contractsFilename)}.g.dart';
@@ -52,6 +53,8 @@ enum ${enumDefinition.name} {
             : 'final ${f.type}${f.isOptional ? '?' : ''} ${f.name};')
         .join('\n');
 
+    final propsGetter = _createPropsGetter(message);
+
     var constructorParameters = message.fields
         .map((e) => '${e.isOptional ? '' : 'required'} this.${e.name},')
         .join();
@@ -61,7 +64,7 @@ enum ${enumDefinition.name} {
 
     return '''
 @JsonSerializable()
-class ${message.name} {
+class ${message.name} with EquatableMixin {
   ${message.name}(${constructorParameters});
 
   factory ${message.name}.fromJson(Map<String,dynamic> json) => _\$${message.name}FromJson(json);
@@ -69,7 +72,20 @@ class ${message.name} {
   $fieldsContent
 
   Map<String, dynamic> toJson() => _\$${message.name}ToJson(this);
+
+  $propsGetter
 }
+''';
+  }
+
+  String _createPropsGetter(Message message) {
+    final properties = message.fields.map((e) => e.name).join(',');
+    final propertiesContent =
+        properties.isEmpty ? 'const []' : '[$properties,]';
+
+    return '''
+  @override
+  List<Object?> get props => $propertiesContent;
 ''';
   }
 }
