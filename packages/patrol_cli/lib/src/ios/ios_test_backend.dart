@@ -4,6 +4,7 @@ import 'dart:io' show Process;
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
 import 'package:glob/glob.dart';
+import 'package:meta/meta.dart';
 import 'package:path/path.dart' show join;
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/logger.dart';
@@ -189,7 +190,14 @@ class IOSTestBackend {
     });
   }
 
-  Future<void> uninstall(String appId, Device device) async {
+  /// Uninstalls the app under test and the test runner from [device].
+  ///
+  /// [flavor] is required to infer the test runner bundle ID.
+  Future<void> uninstall({
+    required String appId,
+    required String? flavor,
+    required Device device,
+  }) async {
     if (device.real) {
       // uninstall from iOS device
       await _processManager.run(
@@ -208,8 +216,10 @@ class IOSTestBackend {
       );
     }
 
-    // TODO: Not being removed https://github.com/leancodepl/patrol/issues/1094
-    final testApp = '$appId.RunnerUITests.xctrunner';
+    // See rationale: https://github.com/leancodepl/patrol/issues/1094
+    final appIdWithoutFlavor = stripFlavorFromAppId(appId, flavor);
+    final testApp = '$appIdWithoutFlavor.RunnerUITests.xctrunner';
+
     if (device.real) {
       // uninstall from iOS device
       await _processManager.run(
@@ -227,6 +237,24 @@ class IOSTestBackend {
         runInShell: true,
       );
     }
+  }
+
+  /// Removes [flavor] from the end of [appId].
+  ///
+  /// Assumes that [appId] and [flavor] are separated by a dot.
+  @visibleForTesting
+  String stripFlavorFromAppId(String appId, String? flavor) {
+    if (flavor == null) {
+      return appId;
+    }
+
+    final idx = appId.indexOf('.$flavor');
+
+    if (idx == -1) {
+      return appId;
+    }
+
+    return appId.substring(0, idx);
   }
 
   Future<String> xcTestRunPath({
