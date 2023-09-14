@@ -21,7 +21,7 @@ private fun Selector.isEmpty(): Boolean {
             !hasEnabled() &&
             !hasFocused() &&
             !hasPkg()
-    )
+        )
 }
 
 fun Selector.toUiSelector(): UiSelector {
@@ -203,8 +203,8 @@ fun DartGroupEntry.listTestsFlat(parentGroupName: String = ""): List<DartGroupEn
                 DartGroupEntry(
                     name = "$parentGroupName ${test.name}",
                     type = GroupEntryType.test,
-                    entries = listOf(),
-                ),
+                    entries = listOf()
+                )
             )
         } else if (test.type == GroupEntryType.group) {
             if (parentGroupName.isEmpty()) {
