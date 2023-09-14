@@ -8,6 +8,13 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'contracts.g.dart';
 
+enum GroupEntryType {
+  @JsonValue('group')
+  group,
+  @JsonValue('test')
+  test
+}
+
 enum RunDartTestResponseResult {
   @JsonValue('success')
   success,
@@ -41,35 +48,21 @@ enum SetLocationAccuracyRequestLocationAccuracy {
 }
 
 @JsonSerializable()
-class DartTestCase {
-  DartTestCase({
+class DartGroupEntry {
+  DartGroupEntry({
     required this.name,
+    required this.type,
+    required this.entries,
   });
 
-  factory DartTestCase.fromJson(Map<String, dynamic> json) =>
-      _$DartTestCaseFromJson(json);
+  factory DartGroupEntry.fromJson(Map<String, dynamic> json) =>
+      _$DartGroupEntryFromJson(json);
 
   final String name;
+  final GroupEntryType type;
+  final List<DartGroupEntry> entries;
 
-  Map<String, dynamic> toJson() => _$DartTestCaseToJson(this);
-}
-
-@JsonSerializable()
-class DartTestGroup {
-  DartTestGroup({
-    required this.name,
-    required this.tests,
-    required this.groups,
-  });
-
-  factory DartTestGroup.fromJson(Map<String, dynamic> json) =>
-      _$DartTestGroupFromJson(json);
-
-  final String name;
-  final List<DartTestCase> tests;
-  final List<DartTestGroup> groups;
-
-  Map<String, dynamic> toJson() => _$DartTestGroupToJson(this);
+  Map<String, dynamic> toJson() => _$DartGroupEntryToJson(this);
 }
 
 @JsonSerializable()
@@ -81,7 +74,7 @@ class ListDartTestsResponse {
   factory ListDartTestsResponse.fromJson(Map<String, dynamic> json) =>
       _$ListDartTestsResponseFromJson(json);
 
-  final DartTestGroup group;
+  final DartGroupEntry group;
 
   Map<String, dynamic> toJson() => _$ListDartTestsResponseToJson(this);
 }

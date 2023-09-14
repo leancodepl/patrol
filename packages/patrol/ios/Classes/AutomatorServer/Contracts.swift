@@ -5,6 +5,11 @@
 //  source: schema.dart
 //
 
+enum GroupEntryType: String, Codable {
+  case group
+  case test
+}
+
 enum RunDartTestResponseResult: String, Codable {
   case success
   case skipped
@@ -27,18 +32,14 @@ enum SetLocationAccuracyRequestLocationAccuracy: String, Codable {
   case fine
 }
 
-struct DartTestCase: Codable {
+struct DartGroupEntry: Codable {
  var name: String
-}
-
-struct DartTestGroup: Codable {
- var name: String
- var tests: [DartTestCase]
- var groups: [DartTestGroup]
+ var type: GroupEntryType
+ var entries: [DartGroupEntry]
 }
 
 struct ListDartTestsResponse: Codable {
- var group: DartTestGroup
+ var group: DartGroupEntry
 }
 
 struct RunDartTestRequest: Codable {

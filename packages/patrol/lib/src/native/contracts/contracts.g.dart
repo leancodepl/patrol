@@ -6,37 +6,31 @@ part of 'contracts.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-DartTestCase _$DartTestCaseFromJson(Map<String, dynamic> json) => DartTestCase(
+DartGroupEntry _$DartGroupEntryFromJson(Map<String, dynamic> json) =>
+    DartGroupEntry(
       name: json['name'] as String,
-    );
-
-Map<String, dynamic> _$DartTestCaseToJson(DartTestCase instance) =>
-    <String, dynamic>{
-      'name': instance.name,
-    };
-
-DartTestGroup _$DartTestGroupFromJson(Map<String, dynamic> json) =>
-    DartTestGroup(
-      name: json['name'] as String,
-      tests: (json['tests'] as List<dynamic>)
-          .map((e) => DartTestCase.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      groups: (json['groups'] as List<dynamic>)
-          .map((e) => DartTestGroup.fromJson(e as Map<String, dynamic>))
+      type: $enumDecode(_$GroupEntryTypeEnumMap, json['type']),
+      entries: (json['entries'] as List<dynamic>)
+          .map((e) => DartGroupEntry.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
 
-Map<String, dynamic> _$DartTestGroupToJson(DartTestGroup instance) =>
+Map<String, dynamic> _$DartGroupEntryToJson(DartGroupEntry instance) =>
     <String, dynamic>{
       'name': instance.name,
-      'tests': instance.tests,
-      'groups': instance.groups,
+      'type': _$GroupEntryTypeEnumMap[instance.type]!,
+      'entries': instance.entries,
     };
+
+const _$GroupEntryTypeEnumMap = {
+  GroupEntryType.group: 'group',
+  GroupEntryType.test: 'test',
+};
 
 ListDartTestsResponse _$ListDartTestsResponseFromJson(
         Map<String, dynamic> json) =>
     ListDartTestsResponse(
-      group: DartTestGroup.fromJson(json['group'] as Map<String, dynamic>),
+      group: DartGroupEntry.fromJson(json['group'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$ListDartTestsResponseToJson(

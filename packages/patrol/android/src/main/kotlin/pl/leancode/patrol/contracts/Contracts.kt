@@ -9,6 +9,12 @@ import kotlinx.serialization.Serializable
 
 class Contracts {
   @Serializable
+  enum class GroupEntryType {
+    group,
+    test,
+  }
+
+  @Serializable
   enum class RunDartTestResponseResult {
     success,
     skipped,
@@ -35,20 +41,15 @@ class Contracts {
   }
 
   @Serializable
-  data class DartTestCase (
-    val name: String
-  )
-
-  @Serializable
-  data class DartTestGroup (
+  data class DartGroupEntry (
     val name: String,
-    val tests: List<DartTestCase>,
-    val groups: List<DartTestGroup>
+    val type: GroupEntryType,
+    val entries: List<DartGroupEntry>
   )
 
   @Serializable
   data class ListDartTestsResponse (
-    val group: DartTestGroup
+    val group: DartGroupEntry
   )
 
   @Serializable
