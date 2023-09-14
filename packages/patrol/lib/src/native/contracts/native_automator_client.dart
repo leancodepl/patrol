@@ -31,7 +31,7 @@ class NativeAutomatorClient {
   })  : _timeout = timeout,
         _headers = {
           'Connection': 'keep-alive',
-          'Keep-Alive': 'timeout=${timeout.inSeconds}'
+          'Keep-Alive': 'timeout=${timeout.inSeconds}',
         };
 
   final Duration _timeout;

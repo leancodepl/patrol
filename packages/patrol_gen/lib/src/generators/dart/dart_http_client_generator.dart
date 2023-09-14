@@ -39,7 +39,7 @@ import '${path.basename(config.contractsFilename)}';
 
     final headers = r'''_headers = {
           'Connection': 'keep-alive',
-          'Keep-Alive': 'timeout=${timeout.inSeconds}'
+          'Keep-Alive': 'timeout=${timeout.inSeconds}',
         }''';
 
     return '''
