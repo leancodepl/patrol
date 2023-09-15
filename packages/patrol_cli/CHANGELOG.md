@@ -4,6 +4,10 @@
 
 This version requires version 2.3.0-dev.1 of `patrol` package.
 
+## 2.1.4
+
+- Uninstall RunnerUITests app on iOS when flavor is present (#1694)
+
 ## 2.1.3
 
 - Add migration message due to release of `patrol_finders`

@@ -200,7 +200,11 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       case TargetPlatform.iOS:
         final bundleId = iosOpts.bundleId;
         if (bundleId != null) {
-          action = () => _iosTestBackend.uninstall(bundleId, device);
+          action = () => _iosTestBackend.uninstall(
+                appId: bundleId,
+                flavor: iosOpts.flutter.flavor,
+                device: device,
+              );
         }
         break;
     }
@@ -240,7 +244,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
   Future<bool> _execute(
     FlutterAppOptions flutterOpts,
     AndroidAppOptions android,
-    IOSAppOptions ios, {
+    IOSAppOptions iosOpts, {
     required bool uninstall,
     required Device device,
   }) async {
@@ -256,10 +260,14 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
         }
         break;
       case TargetPlatform.iOS:
-        action = () async => _iosTestBackend.execute(ios, device);
-        final bundle = ios.bundleId;
-        if (bundle != null && uninstall) {
-          finalizer = () => _iosTestBackend.uninstall(bundle, device);
+        action = () async => _iosTestBackend.execute(iosOpts, device);
+        final bundleId = iosOpts.bundleId;
+        if (bundleId != null && uninstall) {
+          finalizer = () => _iosTestBackend.uninstall(
+                appId: bundleId,
+                flavor: iosOpts.flutter.flavor,
+                device: device,
+              );
         }
         break;
     }

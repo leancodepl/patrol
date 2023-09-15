@@ -223,7 +223,11 @@ class DevelopCommand extends PatrolCommand {
       case TargetPlatform.iOS:
         final bundleId = iosOpts.bundleId;
         if (bundleId != null) {
-          action = () => _iosTestBackend.uninstall(bundleId, device);
+          action = () => _iosTestBackend.uninstall(
+                appId: bundleId,
+                flavor: iosOpts.flutter.flavor,
+                device: device,
+              );
         }
         break;
     }
@@ -238,7 +242,7 @@ class DevelopCommand extends PatrolCommand {
   Future<void> _execute(
     FlutterAppOptions flutterOpts,
     AndroidAppOptions android,
-    IOSAppOptions ios, {
+    IOSAppOptions iosOpts, {
     required bool uninstall,
     required Device device,
   }) async {
@@ -257,12 +261,16 @@ class DevelopCommand extends PatrolCommand {
         }
         break;
       case TargetPlatform.iOS:
-        appId = ios.bundleId;
+        appId = iosOpts.bundleId;
         action = () async =>
-            _iosTestBackend.execute(ios, device, interruptible: true);
-        final bundle = ios.bundleId;
-        if (bundle != null && uninstall) {
-          finalizer = () => _iosTestBackend.uninstall(bundle, device);
+            _iosTestBackend.execute(iosOpts, device, interruptible: true);
+        final bundleId = iosOpts.bundleId;
+        if (bundleId != null && uninstall) {
+          finalizer = () => _iosTestBackend.uninstall(
+                appId: bundleId,
+                flavor: iosOpts.flutter.flavor,
+                device: device,
+              );
         }
     }
 

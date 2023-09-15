@@ -4,9 +4,14 @@
 
 This version requires version 2.2.0-dev.1 of `patrol_cli` package.
 
+## 2.2.5
+
+- Fix `grantPermissionOnlyThisTime()` crashing on Android <11 (#1698)
+
 ## 2.2.4
 
-- Remove deprecation of `nativeAutomation` and add message about migration to `patrol_finders` (#1670)
+- Remove deprecation of `nativeAutomation` and add message about migration to
+  `patrol_finders` (#1670)
 
 ## 2.2.3
 
