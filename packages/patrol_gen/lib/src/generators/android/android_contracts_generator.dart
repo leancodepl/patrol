@@ -5,12 +5,18 @@ import 'package:patrol_gen/src/utils.dart';
 
 class AndroidContractsGenerator {
   OutputFile generate(Schema schema, AndroidConfig config) {
-    final buffer = StringBuffer()..write(_contentPrefix(config));
+    final buffer = StringBuffer()
+      ..write(_contentPrefix(config))
+      ..writeln('class Contracts {');
 
-    buffer.writeln("class Contracts {");
-    schema.enums.forEach((e) => buffer.writeln(_createEnum(e)));
-    schema.messages.forEach((e) => buffer.writeln(_createMessage(e)));
-    buffer.writeln("}");
+    for (final enumDefinition in schema.enums) {
+      buffer.writeln(_createEnum(enumDefinition));
+    }
+    for (final messageDefintion in schema.messages) {
+      buffer.writeln(_createMessage(messageDefintion));
+    }
+
+    buffer.writeln('}');
 
     return OutputFile(
       filename: config.contractsFilename,
@@ -46,7 +52,8 @@ import kotlinx.serialization.Serializable
 
     var optionalFieldUtils = optionalFields.map(_optionalFieldUtil).join('\n');
     if (optionalFields.isNotEmpty) {
-      optionalFieldUtils = '''{
+      optionalFieldUtils = '''
+{
 $optionalFieldUtils
   }''';
     }
@@ -67,7 +74,7 @@ $fields
   }
 
   String _createEnum(Enum enumDefinition) {
-    final cases = enumDefinition.fields.map((e) => '    ${e},').join('\n');
+    final cases = enumDefinition.fields.map((e) => '    $e,').join('\n');
 
     return '''
   @Serializable

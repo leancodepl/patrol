@@ -4,9 +4,9 @@ import 'package:patrol_gen/src/schema.dart';
 
 class AndroidHttp4kServerGenerator {
   OutputFile generate(Service service, AndroidConfig config) {
-    final buffer = StringBuffer()..write(_contentPrefix(config));
-
-    buffer.writeln(_createServerClass(service));
+    final buffer = StringBuffer()
+      ..write(_contentPrefix(config))
+      ..writeln(_createServerClass(service));
 
     return OutputFile(
       filename: config.serverFileName(service.name),
@@ -68,7 +68,7 @@ $routes
       return '''
       "${e.name}" bind POST to {$requestDeserialization
         $responseVariable${e.name}($requestArg)
-        Response(OK)${responseSerialization}
+        Response(OK)$responseSerialization
       }''';
     }).join(',\n');
   }

@@ -4,9 +4,9 @@ import 'package:patrol_gen/src/schema.dart';
 
 class IOSURLSessionClientGenerator {
   OutputFile generate(Service service, IOSConfig config) {
-    final buffer = StringBuffer()..write(_contentPrefix(config));
-
-    buffer.write(_createClass(service));
+    final buffer = StringBuffer()
+      ..write(_contentPrefix(config))
+      ..write(_createClass(service));
 
     return OutputFile(
       filename: config.clientFileName(service.name),
@@ -29,9 +29,9 @@ class IOSURLSessionClientGenerator {
   String _createClass(Service service) {
     final endpoints = service.endpoints.map(_createEndpoint).join('\n\n');
 
-    final url = r'http://\(address):\(port)/\(requestName)';
+    const url = r'http://\(address):\(port)/\(requestName)';
 
-    final throwException =
+    const throwException =
         r'throw PatrolError.internal("Invalid response: \(response) \(data)")';
 
     return '''
@@ -85,7 +85,7 @@ $endpoints
 
     return '''
   func ${endpoint.name}($parameterDef) async throws $returnDef {$bodyCode
-    return try await performRequest(requestName: "${endpoint.name}"${bodyArgument})
+    return try await performRequest(requestName: "${endpoint.name}"$bodyArgument)
   }''';
   }
 }

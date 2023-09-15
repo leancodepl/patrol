@@ -1,8 +1,8 @@
 import 'package:dart_style/dart_style.dart';
+import 'package:path/path.dart' as path;
 import 'package:patrol_gen/src/generators/dart/dart_config.dart';
 import 'package:patrol_gen/src/generators/output_file.dart';
 import 'package:patrol_gen/src/schema.dart';
-import 'package:path/path.dart' as path;
 
 class DartShelfServerGenerator {
   OutputFile generate(Service service, DartConfig config) {
@@ -84,7 +84,10 @@ $responseSerialization
   }
 
   String _createServerClass(
-      Service service, String handlerCalls, String handlers) {
+    Service service,
+    String handlerCalls,
+    String handlers,
+  ) {
     var notFoundRespone =
         r"return Response.notFound('Request ${request.url} not found');";
     if (service.endpoints.isNotEmpty) {

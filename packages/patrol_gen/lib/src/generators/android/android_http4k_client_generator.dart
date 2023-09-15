@@ -4,9 +4,8 @@ import 'package:patrol_gen/src/schema.dart';
 
 class AndroidHttp4kClientGenerator {
   OutputFile generate(Service service, AndroidConfig config) {
-    final buffer = StringBuffer()..write(_contentPrefix(config));
-
-    buffer
+    final buffer = StringBuffer()
+      ..write(_contentPrefix(config))
       ..writeln(_generateClientClass(service))
       ..writeln()
       ..writeln(_generateExceptionClass(service));
@@ -40,12 +39,12 @@ import org.http4k.core.Status
   }
 
   String _generateClientClass(Service service) {
-    final url = r'"http://$address:$port/"';
+    const url = r'"http://$address:$port/"';
     final endpoints = service.endpoints.map(_createEndpoint).join('\n\n');
-    final throwException =
+    const throwException =
         r'throw PatrolAppServiceClientException("Invalid response ${response.status}, ${response.bodyString()}")';
 
-    final urlWithPath = r'"$serverUrl$path"';
+    const urlWithPath = r'"$serverUrl$path"';
 
     return '''
 class ${service.name}Client(private val address: String, private val port: Int, private val timeout: Timeout) {

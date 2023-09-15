@@ -14,7 +14,7 @@ class IOSGenerator {
     final serverGenerator = IOSFlyingFoxServerGenerator();
     final clientGenerator = IOSURLSessionClientGenerator();
 
-    for (var service in schema.services) {
+    for (final service in schema.services) {
       if (service.ios.needsServer) {
         result.add(serverGenerator.generate(service, config));
       }

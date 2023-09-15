@@ -1,8 +1,8 @@
 import 'package:dart_style/dart_style.dart';
+import 'package:path/path.dart' as path;
 import 'package:patrol_gen/src/generators/dart/dart_config.dart';
 import 'package:patrol_gen/src/generators/output_file.dart';
 import 'package:patrol_gen/src/schema.dart';
-import 'package:path/path.dart' as path;
 
 class DartHttpClientGenerator {
   OutputFile generate(Service service, DartConfig config) {
@@ -37,10 +37,11 @@ import '${path.basename(config.contractsFilename)}';
   String _generateClientClass(Service service) {
     final endpoints = service.endpoints.map(_createEndpoint).join('\n\n');
 
-    final headers = r'''_headers = {
-          'Connection': 'keep-alive',
-          'Keep-Alive': 'timeout=${timeout.inSeconds}',
-        }''';
+    const headers = r'''
+_headers = {
+  'Connection': 'keep-alive',
+  'Keep-Alive': 'timeout=${timeout.inSeconds}',
+}''';
 
     return '''
 class ${service.name}Client {
@@ -86,11 +87,11 @@ $endpoints
 
     final sendRequest = endpoint.response != null
         ? '''
-final json = await _sendRequest('${endpoint.name}', ${jsonRequest});
+final json = await _sendRequest('${endpoint.name}', $jsonRequest);
 return ${endpoint.response!.name}.fromJson(json);
 '''
         : '''
-return _sendRequest('${endpoint.name}', ${jsonRequest});''';
+return _sendRequest('${endpoint.name}', $jsonRequest);''';
 
     return '''
 Future<$returnType> ${endpoint.name}($parameter) $asyncKeyword {
@@ -100,7 +101,8 @@ Future<$returnType> ${endpoint.name}($parameter) $asyncKeyword {
   }
 
   String _generateExceptionClass(Service service) {
-    final toStringMethod = r'''@override
+    const toStringMethod = r'''
+@override
   String toString() {
     return 'Invalid response: $statusCode $responseBody';
   }''';

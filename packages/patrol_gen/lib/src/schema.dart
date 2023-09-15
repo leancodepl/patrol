@@ -6,7 +6,12 @@ class Enum {
 }
 
 class MessageField {
-  const MessageField(this.isOptional, this.name, this.type, this.isList);
+  const MessageField({
+    required this.name,
+    required this.type,
+    required this.isOptional,
+    required this.isList,
+  });
 
   final bool isOptional;
   final bool isList;
@@ -30,7 +35,10 @@ class Endpoint {
 }
 
 class ServiceGenConfig {
-  const ServiceGenConfig(this.needsClient, this.needsServer);
+  const ServiceGenConfig({
+    required this.needsClient,
+    required this.needsServer,
+  });
 
   final bool needsClient;
   final bool needsServer;

@@ -6,8 +6,12 @@ class IOSContractsGenerator {
   OutputFile generate(Schema schema, IOSConfig config) {
     final buffer = StringBuffer()..write(_contentPrefix(config));
 
-    schema.enums.forEach((e) => buffer.writeln(_createEnum(e)));
-    schema.messages.forEach((e) => buffer.writeln(_createMessage(e)));
+    for (final enumDefinition in schema.enums) {
+      buffer.writeln(_createEnum(enumDefinition));
+    }
+    for (final messageDefintion in schema.messages) {
+      buffer.writeln(_createMessage(messageDefintion));
+    }
 
     return OutputFile(
       filename: config.contractsFilename,
@@ -43,7 +47,7 @@ $fields
   }
 
   String _createEnum(Enum enumDefinition) {
-    final cases = enumDefinition.fields.map((e) => '  case ${e}').join('\n');
+    final cases = enumDefinition.fields.map((e) => '  case $e').join('\n');
 
     return '''
 enum ${enumDefinition.name}: String, Codable {

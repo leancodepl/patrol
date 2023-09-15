@@ -14,7 +14,7 @@ class DartGenerator {
     final serverGenerator = DartShelfServerGenerator();
     final clientGenerator = DartHttpClientGenerator();
 
-    for (var service in schema.services) {
+    for (final service in schema.services) {
       if (service.dart.needsServer) {
         result.add(serverGenerator.generate(service, config));
       }

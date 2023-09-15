@@ -1,6 +1,6 @@
 import 'package:dart_style/dart_style.dart';
-import 'package:patrol_gen/src/generators/dart/dart_config.dart';
 import 'package:path/path.dart' as path;
+import 'package:patrol_gen/src/generators/dart/dart_config.dart';
 import 'package:patrol_gen/src/generators/output_file.dart';
 import 'package:patrol_gen/src/schema.dart';
 
@@ -8,8 +8,12 @@ class DartContractsGenerator {
   OutputFile generate(Schema schema, DartConfig config) {
     final buffer = StringBuffer()..write(_contentPrefix(config));
 
-    schema.enums.forEach((e) => buffer.writeln(_createEnum(e)));
-    schema.messages.forEach((e) => buffer.writeln(_createMessage(e)));
+    for (final enumDefinition in schema.enums) {
+      buffer.writeln(_createEnum(enumDefinition));
+    }
+    for (final messageDefintion in schema.messages) {
+      buffer.writeln(_createMessage(messageDefintion));
+    }
 
     final content = DartFormatter().format(buffer.toString());
 
@@ -35,8 +39,8 @@ part '${path.basenameWithoutExtension(config.contractsFilename)}.g.dart';
   String _createEnum(Enum enumDefinition) {
     final fieldsContent = enumDefinition.fields.map((e) {
       return '''
-@JsonValue('${e}')
-${e}''';
+@JsonValue('$e')
+$e''';
     }).join(',\n');
 
     return '''
@@ -48,9 +52,11 @@ enum ${enumDefinition.name} {
 
   String? _createMessage(Message message) {
     final fieldsContent = message.fields
-        .map((f) => f.isList
-            ? 'final List<${f.type}>${f.isOptional ? '?' : ''} ${f.name};'
-            : 'final ${f.type}${f.isOptional ? '?' : ''} ${f.name};')
+        .map(
+          (f) => f.isList
+              ? 'final List<${f.type}>${f.isOptional ? '?' : ''} ${f.name};'
+              : 'final ${f.type}${f.isOptional ? '?' : ''} ${f.name};',
+        )
         .join('\n');
 
     final propsGetter = _createPropsGetter(message);
@@ -65,7 +71,7 @@ enum ${enumDefinition.name} {
     return '''
 @JsonSerializable()
 class ${message.name} with EquatableMixin {
-  ${message.name}(${constructorParameters});
+  ${message.name}($constructorParameters);
 
   factory ${message.name}.fromJson(Map<String,dynamic> json) => _\$${message.name}FromJson(json);
 
