@@ -15,7 +15,7 @@ void main() {
         LocalTest('some_test', Metadata.empty, () => null),
         Group('example_test', [
           LocalTest('example_test some example test', Metadata.empty, () {}),
-        ])
+        ]),
       ]);
 
       // when
@@ -38,7 +38,7 @@ void main() {
               'permissions.permissions_location_test accepts location permission',
               Metadata.empty,
               () {},
-            )
+            ),
           ],
         ),
         Group('permissions.permissions_many_test', [
@@ -50,7 +50,7 @@ void main() {
         ]),
         Group('example_test', [
           LocalTest('example_test some example test', Metadata.empty, () {}),
-        ])
+        ]),
       ]);
 
       // when
