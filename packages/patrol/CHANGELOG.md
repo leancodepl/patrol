@@ -1,6 +1,11 @@
+## Unreleased
+
+- Fix `grantPermissionOnlyThisTime()` crashing on Android <11 (#1698)
+
 ## 2.2.4
 
-- Remove deprecation of `nativeAutomation` and add message about migration to `patrol_finders` (#1670)
+- Remove deprecation of `nativeAutomation` and add message about migration to
+  `patrol_finders` (#1670)
 
 ## 2.2.3
 
