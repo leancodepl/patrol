@@ -420,6 +420,13 @@ class Automator private constructor() {
     }
 
     fun allowPermissionOnce() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+            // One-time permissions are available only on Android 11 (R) and above.
+            // See: https://developer.android.com/training/permissions/requesting#one-time
+            allowPermissionWhileUsingApp()
+            return
+        }
+
         val identifiers = arrayOf(
             "com.android.packageinstaller:id/permission_allow_button",
             "com.android.permissioncontroller:id/permission_allow_button",
