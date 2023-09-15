@@ -17,7 +17,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_test:
-    sdk: flutter 
+    sdk: flutter
   http: '>=0.13.5 <2.0.0'
   integration_test:
     sdk: flutter
