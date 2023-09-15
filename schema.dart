@@ -1,3 +1,12 @@
+/// Schema supports:
+// - enum definition
+// - late type name - required field definition
+// - type? name - optional field definition
+// - abstract class - service definition where we define:
+//    - ResponseModel endpointName(RequestModel) - endpoint definition (void = no response)
+//    - Generic types (IOSServer, IOSClient, AndroidServer, AndroidClient, DartServer, DartClient)
+//      control where we need clients and servers
+
 class DartGroupEntry {
   late String name;
   late GroupEntryType type;
