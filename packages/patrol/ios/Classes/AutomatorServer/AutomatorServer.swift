@@ -1,12 +1,8 @@
 #if PATROL_ENABLED
 
   import Foundation
-  import GRPC
 
-  typealias Empty = Patrol_Empty
-  typealias DefaultResponse = Patrol_Empty
-
-  final class AutomatorServer: Patrol_NativeAutomatorAsyncProvider {
+  final class AutomatorServer: NativeAutomatorServer {
     private let automator: Automator
 
     private let onAppReady: (Bool) -> Void
@@ -16,365 +12,245 @@
       self.onAppReady = onAppReady
     }
 
-    func initialize(
-      request: Empty,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> Empty {
-      return DefaultResponse()
-    }
+    func initialize() async throws {}
 
-    func configure(
-      request: Patrol_ConfigureRequest,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> Empty {
+    func configure(request: ConfigureRequest) async throws {
       automator.configure(timeout: TimeInterval(request.findTimeoutMillis / 1000))
-      return DefaultResponse()
     }
 
     // MARK: General
 
-    func pressHome(
-      request: Empty,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> DefaultResponse {
+    func pressHome() async throws {
       return try await runCatching {
         try await automator.pressHome()
-        return DefaultResponse()
       }
     }
 
-    func pressBack(
-      request: Empty,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> DefaultResponse {
+    func pressBack() async throws {
       return try await runCatching {
         throw PatrolError.methodNotImplemented("pressBack")
       }
     }
-    func pressRecentApps(
-      request: Empty,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> DefaultResponse {
+
+    func pressRecentApps() async throws {
       return try await runCatching {
         try await automator.openAppSwitcher()
-        return DefaultResponse()
       }
     }
 
-    func doublePressRecentApps(
-      request: Empty,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> DefaultResponse {
+    func doublePressRecentApps() async throws {
       return try await runCatching {
         throw PatrolError.methodNotImplemented("doublePressRecentApps")
       }
     }
 
-    func openApp(
-      request: Patrol_OpenAppRequest,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> DefaultResponse {
+    func openApp(request: OpenAppRequest) async throws {
       return try await runCatching {
-        try await automator.openApp(request.appID)
-        return DefaultResponse()
+        try await automator.openApp(request.appId)
       }
     }
 
-    func openQuickSettings(
-      request: Patrol_OpenQuickSettingsRequest,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> DefaultResponse {
+    func openQuickSettings(request: OpenQuickSettingsRequest) async throws {
       return try await runCatching {
         try await automator.openControlCenter()
-        return DefaultResponse()
       }
     }
 
     // MARK: General UI interaction
 
     func getNativeViews(
-      request: Patrol_GetNativeViewsRequest,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> Patrol_GetNativeViewsResponse {
+      request: GetNativeViewsRequest
+    ) async throws -> GetNativeViewsResponse {
       return try await runCatching {
         let nativeViews = try await automator.getNativeViews(
-          byText: request.selector.text,
-          inApp: request.appID
+          byText: request.selector.text ?? String(),
+          inApp: request.appId
         )
 
-        return Patrol_GetNativeViewsResponse.with {
-          $0.nativeViews = nativeViews
-        }
+        return GetNativeViewsResponse(nativeViews: nativeViews)
       }
     }
 
-    func tap(
-      request: Patrol_TapRequest,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> DefaultResponse {
+    func tap(request: TapRequest) async throws {
       return try await runCatching {
         try await automator.tap(
-          onText: request.selector.text,
-          inApp: request.appID,
-          atIndex: Int(request.selector.instance)
+          onText: request.selector.text ?? String(),
+          inApp: request.appId,
+          atIndex: request.selector.instance ?? 0
         )
-        return DefaultResponse()
       }
     }
 
-    func doubleTap(
-      request: Patrol_TapRequest,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> DefaultResponse {
+    func doubleTap(request: TapRequest) async throws {
       return try await runCatching {
         try await automator.doubleTap(
-          onText: request.selector.text,
-          inApp: request.appID
+          onText: request.selector.text ?? String(),
+          inApp: request.appId
         )
-        return DefaultResponse()
       }
     }
 
-    func enterText(
-      request: Patrol_EnterTextRequest,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> DefaultResponse {
+    func enterText(request: EnterTextRequest) async throws {
       return try await runCatching {
-        switch request.findBy {
-        case .index(let index):
+        if let index = request.index {
           try await automator.enterText(
             request.data,
             byIndex: Int(index),
-            inApp: request.appID,
+            inApp: request.appId,
             dismissKeyboard: request.keyboardBehavior == .showAndDismiss
           )
-        case .selector(let selector):
+        } else if let selector = request.selector {
           try await automator.enterText(
             request.data,
-            byText: selector.text,
-            atIndex: Int(selector.instance),
-            inApp: request.appID,
+            byText: selector.text ?? String(),
+            atIndex: selector.instance ?? 0,
+            inApp: request.appId,
             dismissKeyboard: request.keyboardBehavior == .showAndDismiss
           )
-        default:
+        } else {
           throw PatrolError.internal("enterText(): neither index nor selector are set")
         }
-
-        return DefaultResponse()
       }
     }
 
-    func swipe(
-      request: Patrol_SwipeRequest,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> DefaultResponse {
+    func swipe(request: SwipeRequest) async throws {
       return try await runCatching {
         throw PatrolError.methodNotImplemented("swipe")
       }
     }
 
-    func waitUntilVisible(
-      request: Patrol_WaitUntilVisibleRequest,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> DefaultResponse {
+    func waitUntilVisible(request: WaitUntilVisibleRequest) async throws {
       return try await runCatching {
         try await automator.waitUntilVisible(
-          onText: request.selector.text,
-          inApp: request.appID
+          onText: request.selector.text ?? String(),
+          inApp: request.appId
         )
-        return DefaultResponse()
       }
     }
 
     // MARK: Services
 
-    func enableAirplaneMode(
-      request: Empty,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> DefaultResponse {
+    func enableAirplaneMode() async throws {
       return try await runCatching {
         try await automator.enableAirplaneMode()
-        return DefaultResponse()
       }
     }
 
-    func disableAirplaneMode(
-      request: Empty,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> DefaultResponse {
+    func disableAirplaneMode() async throws {
       return try await runCatching {
         try await automator.disableAirplaneMode()
-        return DefaultResponse()
       }
     }
 
-    func enableWiFi(
-      request: Empty,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> DefaultResponse {
+    func enableWiFi() async throws {
       return try await runCatching {
         try await automator.enableWiFi()
-        return DefaultResponse()
       }
     }
 
-    func disableWiFi(
-      request: Empty,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> DefaultResponse {
+    func disableWiFi() async throws {
       return try await runCatching {
         try await automator.disableWiFi()
-        return DefaultResponse()
       }
     }
 
-    func enableCellular(
-      request: Empty,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> DefaultResponse {
+    func enableCellular() async throws {
       return try await runCatching {
         try await automator.enableCellular()
-        return DefaultResponse()
       }
     }
 
-    func disableCellular(
-      request: Empty,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> DefaultResponse {
+    func disableCellular() async throws {
       return try await runCatching {
         try await automator.disableCellular()
-        return DefaultResponse()
       }
     }
 
-    func enableBluetooth(
-      request: Empty,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> DefaultResponse {
+    func enableBluetooth() async throws {
       return try await runCatching {
         try await automator.enableBluetooth()
-        return DefaultResponse()
       }
     }
 
-    func disableBluetooth(
-      request: Empty,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> DefaultResponse {
+    func disableBluetooth() async throws {
       return try await runCatching {
         try await automator.disableBluetooth()
-        return DefaultResponse()
       }
     }
 
-    func enableDarkMode(
-      request: Patrol_DarkModeRequest,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> DefaultResponse {
+    func enableDarkMode(request: DarkModeRequest) async throws {
       return try await runCatching {
-        try await automator.enableDarkMode(request.appID)
-        return DefaultResponse()
+        try await automator.enableDarkMode(request.appId)
       }
     }
 
-    func disableDarkMode(
-      request: Patrol_DarkModeRequest,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> DefaultResponse {
+    func disableDarkMode(request: DarkModeRequest) async throws {
       return try await runCatching {
-        try await automator.disableDarkMode(request.appID)
-        return DefaultResponse()
+        try await automator.disableDarkMode(request.appId)
       }
     }
 
     // MARK: Notifications
 
-    func openNotifications(
-      request: Empty,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> DefaultResponse {
+    func openNotifications() async throws {
       return try await runCatching {
         try await automator.openNotifications()
-        return DefaultResponse()
       }
     }
 
-    func closeNotifications(
-      request: Empty,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> DefaultResponse {
+    func closeNotifications() async throws {
       return try await runCatching {
         try await automator.closeNotifications()
-        return DefaultResponse()
       }
     }
 
-    func closeHeadsUpNotification(
-      request: Empty,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> DefaultResponse {
+    func closeHeadsUpNotification() async throws {
       return try await runCatching {
         try await automator.closeHeadsUpNotification()
-        return DefaultResponse()
       }
     }
 
     func getNotifications(
-      request: Patrol_GetNotificationsRequest,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> Patrol_GetNotificationsResponse {
+      request: GetNotificationsRequest
+    ) async throws -> GetNotificationsResponse {
       return try await runCatching {
         let notifications = try await automator.getNotifications()
-        return Patrol_GetNotificationsResponse.with {
-          $0.notifications = notifications
-        }
+        return GetNotificationsResponse(notifications: notifications)
       }
     }
 
-    func tapOnNotification(
-      request: Patrol_TapOnNotificationRequest,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> DefaultResponse {
+    func tapOnNotification(request: TapOnNotificationRequest) async throws {
       return try await runCatching {
-        switch request.findBy {
-        case .index(let index):
+        if let index = request.index {
           try await automator.tapOnNotification(
-            byIndex: Int(index)
+            byIndex: index
           )
-        case .selector(let selector):
+        } else if let selector = request.selector {
           try await automator.tapOnNotification(
-            bySubstring: selector.textContains
+            bySubstring: selector.textContains ?? String()
           )
-        default:
+        } else {
           throw PatrolError.internal("tapOnNotification(): neither index nor selector are set")
         }
-
-        return DefaultResponse()
       }
     }
 
     // MARK: Permissions
 
     func isPermissionDialogVisible(
-      request: Patrol_PermissionDialogVisibleRequest,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> Patrol_PermissionDialogVisibleResponse {
+      request: PermissionDialogVisibleRequest
+    ) async throws -> PermissionDialogVisibleResponse {
       return try await runCatching {
         let visible = await automator.isPermissionDialogVisible(
           timeout: TimeInterval(request.timeoutMillis / 1000)
         )
 
-        return Patrol_PermissionDialogVisibleResponse.with {
-          $0.visible = visible
-        }
+        return PermissionDialogVisibleResponse(visible: visible)
+
       }
     }
 
-    func handlePermissionDialog(
-      request: Patrol_HandlePermissionRequest,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> DefaultResponse {
+    func handlePermissionDialog(request: HandlePermissionRequest) async throws {
       return try await runCatching {
         switch request.code {
         case .whileUsing:
@@ -383,39 +259,24 @@
           try await automator.allowPermissionOnce()
         case .denied:
           try await automator.denyPermission()
-        case .UNRECOGNIZED:
-          throw PatrolError.internal("handlePermissionDialog(): bad permission code")
         }
-
-        return DefaultResponse()
       }
     }
 
-    func setLocationAccuracy(
-      request: Patrol_SetLocationAccuracyRequest,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> DefaultResponse {
+    func setLocationAccuracy(request: SetLocationAccuracyRequest) async throws {
       return try await runCatching {
         switch request.locationAccuracy {
         case .coarse:
           try await automator.selectCoarseLocation()
         case .fine:
           try await automator.selectFineLocation()
-        case .UNRECOGNIZED:
-          throw PatrolError.internal("unrecognized location accuracy")
         }
-
-        return DefaultResponse()
       }
     }
 
-    func debug(
-      request: Empty,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> DefaultResponse {
+    func debug() async throws {
       return try await runCatching {
         try await automator.debug()
-        return DefaultResponse()
       }
     }
 
@@ -432,12 +293,8 @@
       }
     }
 
-    func markPatrolAppServiceReady(
-      request: Patrol_Empty,
-      context: GRPCAsyncServerCallContext
-    ) async throws -> Patrol_Empty {
+    func markPatrolAppServiceReady() async throws {
       onAppReady(true)
-      return Empty()
     }
   }
 

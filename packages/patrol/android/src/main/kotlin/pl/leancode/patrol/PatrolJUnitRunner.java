@@ -10,7 +10,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.AndroidJUnitRunner;
-import io.grpc.StatusRuntimeException;
+
+import pl.leancode.patrol.contracts.Contracts;
+import pl.leancode.patrol.contracts.PatrolAppServiceClientException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -118,9 +120,9 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
             Object[] dartTestCaseNames = dartTestCaseNamesList.toArray();
             Logger.INSTANCE.i(TAG + "Got Dart tests: " + Arrays.toString(dartTestCaseNames));
             return dartTestCaseNames;
-        } catch (StatusRuntimeException e) {
+        } catch (PatrolAppServiceClientException e) {
             Logger.INSTANCE.e(TAG + "Failed to list Dart tests: ", e);
-            throw e;
+            throw new RuntimeException(e);
         }
     }
 
@@ -134,13 +136,13 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
         try {
             Logger.INSTANCE.i(TAG + "Requested execution");
             RunDartTestResponse response = patrolAppServiceClient.runDartTest(name);
-            if (response.getResult() == RunDartTestResponse.Result.FAILURE) {
+            if (response.getResult() == Contracts.RunDartTestResponseResult.failure) {
                 throw new AssertionError("Dart test failed: " + name + "\n" + response.getDetails());
             }
             return response;
-        } catch (StatusRuntimeException e) {
+        } catch (PatrolAppServiceClientException e) {
             Logger.INSTANCE.e(TAG + e.getMessage(), e.getCause());
-            throw e;
+            throw new RuntimeException(e);
         }
     }
 }

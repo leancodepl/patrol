@@ -1,7 +1,5 @@
+import FlyingFox
 import Foundation
-import GRPC
-import NIOCore
-import NIOPosix
 
 @objc public class PatrolServer: NSObject {
   private static let envPortKey = "PATROL_PORT"
@@ -11,6 +9,7 @@ import NIOPosix
   #if PATROL_ENABLED
     private let port: Int
     private let automator: Automator
+    private let server: HTTPServer
   #endif
 
   @objc
@@ -39,6 +38,7 @@ import NIOPosix
       Logger.shared.i("PATROL_ENABLED flag is defined")
       self.port = passedPort
       self.automator = Automator()
+      self.server = HTTPServer(address: .loopback(port: UInt16(self.port)))
     #else
       Logger.shared.i("Fatal error: PATROL_ENABLED flag is not defined")
     #endif
@@ -46,20 +46,20 @@ import NIOPosix
 
   @objc public func start() async throws {
     #if PATROL_ENABLED
-      let group = MultiThreadedEventLoopGroup(numberOfThreads: 1)
+      Logger.shared.i("Starting server...")
+
       let provider = AutomatorServer(automator: automator) { appReady in
         Logger.shared.i("App reported that it is ready")
         self.appReady = appReady
       }
 
-      let server = try await Server.insecure(group: group).withServiceProviders([provider]).bind(
-        host: "0.0.0.0", port: port
-      ).get()
+      await provider.setupRoutes(server: server)
 
-      Logger.shared.i("Server started on http://localhost:\(port)")
+      Task { try await server.start() }
+      try await server.waitUntilListening()
+      let address = await server.listeningAddress
 
-      try await server.onClose.get()
-      Logger.shared.i("Server stopped")
+      Logger.shared.i("Server started on :\(String(describing: address))")
     #endif
   }
 }

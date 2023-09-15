@@ -1,5 +1,3 @@
-import GRPC
-
 enum PatrolError: Error {
   case viewNotExists(_ elementDescription: String)
   case appNotInstalled(_ bundleId: String)
@@ -8,7 +6,7 @@ enum PatrolError: Error {
   case unknown(_ error: Error)
 }
 
-extension PatrolError: CustomStringConvertible, GRPCStatusTransformable {
+extension PatrolError: CustomStringConvertible {
   var description: String {
     switch self {
     case .viewNotExists(let elementDescription):
@@ -21,19 +19,6 @@ extension PatrolError: CustomStringConvertible, GRPCStatusTransformable {
       return message
     case .unknown(let err):
       return "\(err)"
-    }
-  }
-
-  func makeGRPCStatus() -> GRPC.GRPCStatus {
-    switch self {
-    case .viewNotExists, .appNotInstalled:
-      return GRPCStatus(code: .notFound, message: self.description)
-    case .methodNotImplemented:
-      return GRPCStatus(code: .unimplemented, message: self.description)
-    case .internal:
-      return GRPCStatus(code: .internalError, message: self.description)
-    case .unknown(let err):
-      return GRPCStatus(code: .unknown, message: "unknown error: \(err)")
     }
   }
 }

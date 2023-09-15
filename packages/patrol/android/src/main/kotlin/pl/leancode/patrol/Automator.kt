@@ -15,40 +15,24 @@ import androidx.test.uiautomator.UiObject
 import androidx.test.uiautomator.UiObject2
 import androidx.test.uiautomator.UiObjectNotFoundException
 import androidx.test.uiautomator.UiSelector
-import pl.leancode.patrol.contracts.Contracts
-import pl.leancode.patrol.contracts.Contracts.EnterTextRequest.KeyboardBehavior
-import pl.leancode.patrol.contracts.nativeView
-import pl.leancode.patrol.contracts.notification
+import pl.leancode.patrol.contracts.Contracts.KeyboardBehavior
+import pl.leancode.patrol.contracts.Contracts.NativeView
+import pl.leancode.patrol.contracts.Contracts.Notification
+import pl.leancode.patrol.contracts.Contracts.Selector
 import kotlin.math.roundToInt
 
-private fun fromUiObject2(obj: UiObject2): Contracts.NativeView {
-    return nativeView {
-        if (obj.className != null) {
-            className = obj.className
-        }
-
-        if (obj.text != null) {
-            text = obj.text
-        }
-
-        if (obj.contentDescription != null) {
-            contentDescription = obj.contentDescription
-        }
-
-        focused = obj.isFocused
-        enabled = obj.isEnabled
-        childCount = obj.childCount
-
-        if (obj.resourceName != null) {
-            resourceName = obj.resourceName
-        }
-
-        if (obj.applicationPackage != null) {
-            applicationPackage = obj.applicationPackage
-        }
-
-        children.addAll(obj.children?.map { fromUiObject2(it) } ?: listOf())
-    }
+private fun fromUiObject2(obj: UiObject2): NativeView {
+    return NativeView(
+        className = obj.className,
+        text = obj.text,
+        contentDescription = obj.contentDescription,
+        focused = obj.isFocused,
+        enabled = obj.isEnabled,
+        childCount = obj.childCount.toLong(),
+        resourceName = obj.resourceName,
+        applicationPackage = obj.applicationPackage,
+        children = obj.children?.map { fromUiObject2(it) } ?: listOf()
+    )
 }
 
 class Automator private constructor() {
@@ -155,7 +139,7 @@ class Automator private constructor() {
 
     fun disableBluetooth(): Unit = throw NotImplementedError("disableBluetooth")
 
-    fun getNativeViews(selector: BySelector): List<Contracts.NativeView> {
+    fun getNativeViews(selector: BySelector): List<NativeView> {
         Logger.d("getNativeViews()")
 
         val uiObjects2 = uiDevice.findObjects(selector)
@@ -206,13 +190,13 @@ class Automator private constructor() {
         val uiSelector = UiSelector().className(EditText::class.java).instance(index)
         val uiObject = uiDevice.findObject(uiSelector)
 
-        if (keyboardBehavior == KeyboardBehavior.SHOW_AND_DISMISS) {
+        if (keyboardBehavior == KeyboardBehavior.showAndDismiss) {
             uiObject.click()
         }
 
         uiObject.text = text
 
-        if (keyboardBehavior == KeyboardBehavior.SHOW_AND_DISMISS) {
+        if (keyboardBehavior == KeyboardBehavior.showAndDismiss) {
             pressBack() // Hide keyboard.
         }
     }
@@ -232,13 +216,13 @@ class Automator private constructor() {
 
         val uiObject = uiDevice.findObject(uiSelector).getFromParent(UiSelector().className(EditText::class.java))
 
-        if (keyboardBehavior == KeyboardBehavior.SHOW_AND_DISMISS) {
+        if (keyboardBehavior == KeyboardBehavior.showAndDismiss) {
             uiObject.click()
         }
 
         uiObject.text = text
 
-        if (keyboardBehavior == KeyboardBehavior.SHOW_AND_DISMISS) {
+        if (keyboardBehavior == KeyboardBehavior.showAndDismiss) {
             pressBack() // Hide keyboard.
         }
     }
@@ -310,7 +294,7 @@ class Automator private constructor() {
         delay()
     }
 
-    fun getNotifications(): List<Contracts.Notification> {
+    fun getNotifications(): List<Notification> {
         Logger.d("getNotifications()")
 
         val notificationContainers = mutableListOf<UiObject2>()
@@ -332,31 +316,29 @@ class Automator private constructor() {
 
         Logger.d("Found ${notificationContainers.size} notifications")
 
-        val notifications = mutableListOf<Contracts.Notification>()
+        val notifications = mutableListOf<Notification>()
         for (notificationContainer in notificationContainers) {
-            val notification = notification {
-                val appName = notificationContainer.findObject(By.res("android:id/app_name_text"))?.text
-                if (appName != null) {
-                    this.appName = appName
-                }
+            val appName = notificationContainer.findObject(By.res("android:id/app_name_text"))?.text
 
-                val title = notificationContainer.findObject(By.res("android:id/title"))?.text
-                    ?: notificationContainer.findObject(By.res("com.android.systemui:id/notification_title"))?.text
-                if (title != null) {
-                    this.title = title
-                } else {
-                    Logger.e("Could not find title text")
-                }
-
-                val content = notificationContainer.findObject(By.res("android:id/text"))?.text
-                    ?: notificationContainer.findObject(By.res("android:id/big_text"))?.text
-                    ?: notificationContainer.findObject(By.res("com.android.systemui:id/notification_text"))?.text
-                if (content != null) {
-                    this.content = content
-                } else {
-                    Logger.e("Could not find content text")
-                }
+            val content = notificationContainer.findObject(By.res("android:id/text"))?.text
+                ?: notificationContainer.findObject(By.res("android:id/big_text"))?.text
+                ?: notificationContainer.findObject(By.res("com.android.systemui:id/notification_text"))?.text
+            if (content == null) {
+                Logger.e("Could not find content text")
             }
+
+            val title = notificationContainer.findObject(By.res("android:id/title"))?.text
+                ?: notificationContainer.findObject(By.res("com.android.systemui:id/notification_title"))?.text
+            if (title == null) {
+                Logger.e("Could not find title text")
+            }
+
+            val notification = Notification(
+                appName = appName,
+                content = content ?: "",
+                title = title ?: ""
+            )
+
             notifications.add(notification)
         }
 
@@ -367,8 +349,10 @@ class Automator private constructor() {
         Logger.d("tapOnNotification($index)")
 
         try {
-            val query = Contracts.Selector.newBuilder().setResourceId("android:id/status_bar_latest_event_content")
-                .setInstance(index).build()
+            val query = Selector(
+                resourceId = "android:id/status_bar_latest_event_content",
+                instance = index.toLong()
+            )
             val obj = uiDevice.findObject(query.toUiSelector())
             obj.click()
         } catch (err: UiObjectNotFoundException) {

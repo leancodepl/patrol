@@ -2,12 +2,10 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/src/common.dart'
     show createDartTestGroup, deduplicateGroupEntryName;
-import 'package:patrol/src/native/contracts/contracts.pbgrpc.dart';
+import 'package:patrol/src/native/contracts/contracts.dart';
 import 'package:test_api/src/backend/group.dart';
 import 'package:test_api/src/backend/invoker.dart';
 import 'package:test_api/src/backend/metadata.dart';
-
-typedef GroupEntryType = DartGroupEntry_GroupEntryType;
 
 void main() {
   group('createDartTestGroup()', () {
@@ -63,39 +61,36 @@ void main() {
         equals(
           DartGroupEntry(
             name: '',
-            type: GroupEntryType.GROUP,
+            type: GroupEntryType.group,
             entries: [
               DartGroupEntry(
                 name: 'example_test',
-                type: GroupEntryType.GROUP,
+                type: GroupEntryType.group,
                 entries: [
                   DartGroupEntry(
                     name: 'alpha',
-                    type: GroupEntryType.GROUP,
+                    type: GroupEntryType.group,
                     entries: [
-                      DartGroupEntry(name: 'first', type: GroupEntryType.TEST),
-                      DartGroupEntry(name: 'second', type: GroupEntryType.TEST),
+                      _testEntry('first'),
+                      _testEntry('second'),
                     ],
                   ),
                   DartGroupEntry(
                     name: 'bravo',
-                    type: GroupEntryType.GROUP,
+                    type: GroupEntryType.group,
                     entries: [
-                      DartGroupEntry(name: 'first', type: GroupEntryType.TEST),
-                      DartGroupEntry(name: 'second', type: GroupEntryType.TEST),
+                      _testEntry('first'),
+                      _testEntry('second'),
                     ],
                   ),
                 ],
               ),
               DartGroupEntry(
                 name: 'open_app_test',
-                type: GroupEntryType.GROUP,
+                type: GroupEntryType.group,
                 entries: [
-                  DartGroupEntry(name: 'open maps', type: GroupEntryType.TEST),
-                  DartGroupEntry(
-                    name: 'open browser',
-                    type: GroupEntryType.TEST,
-                  ),
+                  _testEntry('open maps'),
+                  _testEntry('open browser'),
                 ],
               ),
             ],
@@ -135,31 +130,31 @@ void main() {
         equals(
           DartGroupEntry(
             name: '',
-            type: GroupEntryType.GROUP,
+            type: GroupEntryType.group,
             entries: [
               DartGroupEntry(
                 name: 'example_test',
-                type: GroupEntryType.GROUP,
+                type: GroupEntryType.group,
                 entries: [
-                  DartGroupEntry(name: 'alpha', type: GroupEntryType.TEST),
+                  _testEntry('alpha'),
                   DartGroupEntry(
                     name: 'bravo',
-                    type: GroupEntryType.GROUP,
+                    type: GroupEntryType.group,
                     entries: [
-                      DartGroupEntry(name: 'first', type: GroupEntryType.TEST),
-                      DartGroupEntry(name: 'second', type: GroupEntryType.TEST),
+                      _testEntry('first'),
+                      _testEntry('second'),
                     ],
                   ),
-                  DartGroupEntry(name: 'charlie', type: GroupEntryType.TEST),
+                  _testEntry('charlie'),
                   DartGroupEntry(
                     name: 'delta',
-                    type: GroupEntryType.GROUP,
+                    type: GroupEntryType.group,
                     entries: [
-                      DartGroupEntry(name: 'first', type: GroupEntryType.TEST),
-                      DartGroupEntry(name: 'second', type: GroupEntryType.TEST),
+                      _testEntry('first'),
+                      _testEntry('second'),
                     ],
                   ),
-                  DartGroupEntry(name: 'echo', type: GroupEntryType.TEST),
+                  _testEntry('echo'),
                 ],
               ),
             ],
@@ -188,3 +183,7 @@ void main() {
 }
 
 LocalTest _localTest(String name) => LocalTest(name, Metadata.empty, () {});
+
+DartGroupEntry _testEntry(String name) {
+  return DartGroupEntry(name: name, type: GroupEntryType.test, entries: []);
+}

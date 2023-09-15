@@ -3,13 +3,17 @@
 // TODO: Use a logger instead of print
 
 import 'dart:async';
-import 'dart:io' as io;
+import 'dart:io';
 
-import 'package:grpc/grpc.dart';
 import 'package:patrol/src/common.dart';
-import 'package:patrol/src/native/contracts/contracts.pbgrpc.dart';
+import 'package:patrol/src/native/contracts/contracts.dart';
+import 'package:patrol/src/native/contracts/patrol_app_service_server.dart';
+
+import 'package:shelf/shelf.dart' as shelf;
+import 'package:shelf/shelf_io.dart' as shelf_io;
 
 const _port = 8082;
+const _idleTimeout = Duration(hours: 2);
 
 class _TestExecutionResult {
   const _TestExecutionResult({required this.passed, required this.details});
@@ -20,20 +24,31 @@ class _TestExecutionResult {
 
 /// Starts the gRPC server that runs the [PatrolAppService].
 Future<void> runAppService(PatrolAppService service) async {
-  final services = [service];
-  final interceptors = <Interceptor>[];
-  final codecRegistry = CodecRegistry();
+  final pipeline = const shelf.Pipeline()
+      .addMiddleware(shelf.logRequests())
+      .addHandler(service.handle);
 
-  final server = Server(services, interceptors, codecRegistry);
-  await server.serve(address: io.InternetAddress.anyIPv4, port: _port);
-  print('PatrolAppService started on port $_port');
+  final server = await shelf_io.serve(
+    pipeline,
+    InternetAddress.anyIPv4,
+    _port,
+    poweredByHeader: null,
+  );
+
+  server.idleTimeout = _idleTimeout;
+
+  final address = server.address;
+
+  print(
+    'PatrolAppService started, address: ${address.address}, host: ${address.host}, port: ${server.port}',
+  );
 }
 
 /// Implements a stateful gRPC service for querying and executing Dart tests.
 ///
 /// This is an internal class and you don't want to use it. It's public so that
 /// the generated code can access it.
-class PatrolAppService extends PatrolAppServiceBase {
+class PatrolAppService extends PatrolAppServiceServer {
   /// Creates a new [PatrolAppService].
   PatrolAppService({required this.topLevelDartTestGroup});
 
@@ -117,19 +132,13 @@ class PatrolAppService extends PatrolAppServiceBase {
   }
 
   @override
-  Future<ListDartTestsResponse> listDartTests(
-    ServiceCall call,
-    Empty request,
-  ) async {
+  Future<ListDartTestsResponse> listDartTests() async {
     print('PatrolAppService.listDartTests() called');
     return ListDartTestsResponse(group: topLevelDartTestGroup);
   }
 
   @override
-  Future<RunDartTestResponse> runDartTest(
-    ServiceCall call,
-    RunDartTestRequest request,
-  ) async {
+  Future<RunDartTestResponse> runDartTest(RunDartTestRequest request) async {
     assert(_testExecutionCompleted.isCompleted == false);
     // patrolTest() always calls this method.
 
@@ -139,8 +148,8 @@ class PatrolAppService extends PatrolAppServiceBase {
     final testExecutionResult = await testExecutionCompleted;
     return RunDartTestResponse(
       result: testExecutionResult.passed
-          ? RunDartTestResponse_Result.SUCCESS
-          : RunDartTestResponse_Result.FAILURE,
+          ? RunDartTestResponseResult.success
+          : RunDartTestResponseResult.failure,
       details: testExecutionResult.details,
     );
   }
