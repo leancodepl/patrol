@@ -1,3 +1,7 @@
+## Unreleased
+
+- Uninstall RunnerUITests app on iOS when flavor is present (#1694)
+
 ## 2.1.3
 
 - Add migration message due to release of `patrol_finders`
