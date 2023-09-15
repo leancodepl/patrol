@@ -1,5 +1,5 @@
-import Telegraph
 import Foundation
+import Telegraph
 
 @objc public class PatrolServer: NSObject {
   private static let envPortKey = "PATROL_PORT"
@@ -52,11 +52,11 @@ import Foundation
         Logger.shared.i("App reported that it is ready")
         self.appReady = appReady
       }
-      
+
       provider.setupRoutes(server: server)
 
       try server.start(port: port)
-      
+
       Logger.shared.i("Server started on http://0.0.0.0:\(port)")
     #endif
   }

@@ -120,7 +120,7 @@ extension NativeAutomatorServer {
             return HTTPResponse(.badRequest, headers: [:], error: err)
         }
     }
-    
+
     private func unsafeWait<ResultType>(_ f: @escaping () async throws -> ResultType) throws -> ResultType {
         let box = Box<ResultType>()
         let sema = DispatchSemaphore(value: 0)
