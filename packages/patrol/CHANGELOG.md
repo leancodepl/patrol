@@ -1,3 +1,10 @@
+## 2.3.0-dev.2
+
+- Replace Protocol Buffers and gRPC with a custom code generation solution that
+  is more lightweight (#1681)
+
+This version requires version 2.2.0-dev.2 of `patrol_cli` package.
+
 ## 2.3.0-dev.1
 
 - Add support for `group()` (#1634)
