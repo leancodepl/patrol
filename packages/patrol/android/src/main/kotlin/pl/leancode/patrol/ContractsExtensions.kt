@@ -21,7 +21,7 @@ private fun Selector.isEmpty(): Boolean {
             !hasEnabled() &&
             !hasFocused() &&
             !hasPkg()
-        )
+    )
 }
 
 fun Selector.toUiSelector(): UiSelector {
@@ -95,7 +95,8 @@ fun Selector.toBySelector(): BySelector {
     var matchedFocused = false
     var matchedPkg = false
 
-    var bySelector = if (hasText()) {
+    var bySelector =
+        if (hasText()) {
             matchedText = true
             By.text(text)
         } else if (hasTextStartsWith()) {
