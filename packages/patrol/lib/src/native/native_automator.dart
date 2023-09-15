@@ -694,6 +694,10 @@ class NativeAutomator {
   /// On iOS, this is the same as [grantPermissionWhenInUse] except for the
   /// location permission.
   ///
+  /// On Android versions older than 11 (R, API level 30), the concept of
+  /// "one-time permissions" doesn't exist. In this case, this method is the
+  /// same as [grantPermissionWhenInUse].
+  ///
   /// See also:
   ///
   ///  * [grantPermissionWhenInUse] and [denyPermission]

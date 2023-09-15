@@ -392,9 +392,9 @@ class Automator private constructor() {
 
     fun allowPermissionWhileUsingApp() {
         val identifiers = arrayOf(
-            "com.android.packageinstaller:id/permission_allow_button",
-            "com.android.permissioncontroller:id/permission_allow_button",
-            "com.android.permissioncontroller:id/permission_allow_foreground_only_button"
+            "com.android.packageinstaller:id/permission_allow_button", // API <= 28
+            "com.android.permissioncontroller:id/permission_allow_button", // API 29
+            "com.android.permissioncontroller:id/permission_allow_foreground_only_button" // API >= 30 + API 29 (only for location permission)
         )
 
         val uiObject = waitForUiObjectByResourceId(*identifiers, timeout = timeoutMillis)
@@ -404,10 +404,15 @@ class Automator private constructor() {
     }
 
     fun allowPermissionOnce() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+            // One-time permissions are available only on API 30 (R) and above.
+            // See: https://developer.android.com/training/permissions/requesting#one-time
+            allowPermissionWhileUsingApp()
+            return
+        }
+
         val identifiers = arrayOf(
-            "com.android.packageinstaller:id/permission_allow_button",
-            "com.android.permissioncontroller:id/permission_allow_button",
-            "com.android.permissioncontroller:id/permission_allow_one_time_button"
+            "com.android.permissioncontroller:id/permission_allow_one_time_button" // API >= 30
         )
 
         val uiObject = waitForUiObjectByResourceId(*identifiers, timeout = timeoutMillis)
@@ -418,8 +423,8 @@ class Automator private constructor() {
 
     fun denyPermission() {
         val identifiers = arrayOf(
-            "com.android.packageinstaller:id/permission_deny_button",
-            "com.android.permissioncontroller:id/permission_deny_button"
+            "com.android.packageinstaller:id/permission_deny_button", // API <= 28
+            "com.android.permissioncontroller:id/permission_deny_button" // API >= 29
         )
 
         val uiObject = waitForUiObjectByResourceId(*identifiers, timeout = timeoutMillis)

@@ -178,6 +178,38 @@ void main() {
         testPlan: 'SomeTestPlan',
       );
     });
+
+    group('stripFlavorFromAppId', () {
+      test('simply returns appId when flavor is null', () {
+        const appId = 'com.company.app';
+        const String? flavor = null;
+
+        expect(
+          iosTestBackend.stripFlavorFromAppId(appId, flavor),
+          'com.company.app',
+        );
+      });
+
+      test('works when appId contains flavor', () {
+        const appId = 'com.company.app.dev';
+        const flavor = 'dev';
+
+        expect(
+          iosTestBackend.stripFlavorFromAppId(appId, flavor),
+          'com.company.app',
+        );
+      });
+
+      test('ignores when appId contains flavor not preceded by a dot', () {
+        const appId = 'com.company.app_dev';
+        const flavor = 'dev';
+
+        expect(
+          iosTestBackend.stripFlavorFromAppId(appId, flavor),
+          'com.company.app_dev',
+        );
+      });
+    });
   });
 }
 
