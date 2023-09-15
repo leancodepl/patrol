@@ -1,0 +1,42 @@
+name: patrol_gen prepare
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [master]
+    paths:
+      - 'packages/patrol_gen/**'
+
+jobs:
+  prepare:
+    name: Flutter ${{ matrix.flutter-version }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        sdk: ['2.18.0', stable]
+
+    defaults:
+      run:
+        working-directory: packages/patrol_gen
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v3
+
+      - name: Set up Dart
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: ${{ matrix.sdk }}
+
+      - name: dart pub get
+        run: dart pub get
+
+      - name: dart analyze
+        if: success() || failure()
+        run: dart analyze
+
+      - name: dart format
+        if: success() || failure()
+        run: dart format --set-exit-if-changed .
