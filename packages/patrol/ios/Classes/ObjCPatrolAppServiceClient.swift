@@ -40,8 +40,8 @@
   }
 
   @objc public func runDartTest(name: String) async throws -> ObjCRunDartTestResponse {
-    // TODO: simple workaround - patrolAppService starts running too slowly. 
-    // We should wait for appReady in the dynamically created test case method, 
+    // TODO: simple workaround - patrolAppService starts running too slowly.
+    // We should wait for appReady in the dynamically created test case method,
     // before calling runDartTest() (in PATROL_INTEGRATION_TEST_IOS_MACRO)
     try await Task.sleep(nanoseconds: UInt64(1 * Double(NSEC_PER_SEC)))
 
