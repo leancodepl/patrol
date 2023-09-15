@@ -21,7 +21,7 @@ private fun Selector.isEmpty(): Boolean {
             !hasEnabled() &&
             !hasFocused() &&
             !hasPkg()
-    )
+        )
 }
 
 fun Selector.toUiSelector(): UiSelector {
