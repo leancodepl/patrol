@@ -1,4 +1,4 @@
-## Unreleased
+## 2.1.4
 
 - Uninstall RunnerUITests app on iOS when flavor is present (#1694)
 

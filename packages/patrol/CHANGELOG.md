@@ -1,4 +1,4 @@
-## Unreleased
+## 2.2.5
 
 - Fix `grantPermissionOnlyThisTime()` crashing on Android <11 (#1698)
 
