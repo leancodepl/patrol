@@ -55,7 +55,7 @@ import Foundation
       
       provider.setupRoutes(server: server)
 
-      try server.start(onPort: UInt16(port))
+      try server.start(port: port)
       
       Logger.shared.i("Server started on http://0.0.0.0:\(port)")
     #endif
