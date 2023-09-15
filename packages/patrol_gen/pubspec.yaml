@@ -11,7 +11,7 @@ environment:
   sdk: '>=2.18.0 <4.0.0'
 
 dependencies:
-  analyzer: ^6.1.0
+  analyzer: ^5.6.0
   dart_style: ^2.2.5
   meta: ^1.7.0
   path: ^1.8.2
