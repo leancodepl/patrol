@@ -1,0 +1,24 @@
+builders:
+  keyBuilder:
+    import: "package:code_generator/builder.dart"
+    builder_factories: ["keyBuilder"]
+    build_extensions: {".dart": [".keys.dart"]}
+    auto_apply: dependents
+    build_to: source
+  objectModelBuilder:
+    import: "package:code_generator/builder.dart"
+    builder_factories: ["objectModelBuilder"]
+    build_extensions: {".dart": [".object_model.dart"]}
+    auto_apply: dependents
+    build_to: source
+
+targets:
+  $default:
+    builders:
+      code_generator|keyBuilder:
+        enabled: true
+      code_generator|objectModelBuilder:
+        enabled: true
+        options:
+          build_extensions:
+            'lib/{{}}.dart': 'integration_test/models/{{}}.object_model.dart'

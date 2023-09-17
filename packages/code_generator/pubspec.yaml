@@ -1,0 +1,24 @@
+name: code_generator
+description: A new Flutter package project.
+version: 0.0.1
+homepage:
+
+environment:
+  sdk: '>=3.1.0 <4.0.0'
+  flutter: ">=1.17.0"
+
+dependencies:
+  analyzer: ^6.2.0
+  flutter:
+    sdk: flutter
+  build: ^2.4.1
+  path: ^1.8.3
+  source_gen: ^1.4.0
+
+dev_dependencies:
+  build_runner: ^2.4.6
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+
+flutter:
