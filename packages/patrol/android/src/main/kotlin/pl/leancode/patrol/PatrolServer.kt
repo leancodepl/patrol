@@ -7,7 +7,6 @@ import org.http4k.filter.ServerFilters
 import org.http4k.server.Http4kServer
 import org.http4k.server.KtorCIO
 import org.http4k.server.asServer
-import java.util.concurrent.Future
 
 class PatrolServer {
     private val envPortKey = "PATROL_PORT"
