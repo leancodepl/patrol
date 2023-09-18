@@ -33,7 +33,7 @@ android {
         jvmTarget = "1.8"
     }
     
-    //TODO verify
+    // TODO: Find workaround
     packagingOptions {
         pickFirst "META-INF/INDEX.LIST"
         pickFirst "META-INF/io.netty.versions.properties"

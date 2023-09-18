@@ -5,7 +5,7 @@ import com.google.common.util.concurrent.SettableFuture
 import org.http4k.core.ContentType
 import org.http4k.filter.ServerFilters
 import org.http4k.server.Http4kServer
-import org.http4k.server.Netty
+import org.http4k.server.KtorCIO
 import org.http4k.server.asServer
 import java.util.concurrent.Future
 
@@ -29,7 +29,7 @@ class PatrolServer {
             .withFilter(catcher)
             .withFilter(printer)
             .withFilter(ServerFilters.SetContentType(ContentType.TEXT_PLAIN))
-            .asServer(Netty(port))
+            .asServer(KtorCIO(port))
             .start()
 
         Logger.i("Created and started PatrolServer, port: $port")
