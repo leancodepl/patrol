@@ -33,10 +33,11 @@ class PatrolAppServiceClient(address: String, port: Int, private val timeout: Lo
             request = request.body(requestBody)
         }
 
-        // FIXME: Figure out how to add timeouts (java.time is API 26+ only)
         val okHttpClient = OkHttp(
             OkHttpClient.Builder()
-                // all other timeouts (write, read, connect) default to 10 seconds
+                .connectTimeout(timeout, timeUnit)
+                .readTimeout(timeout, timeUnit)
+                .writeTimeout(timeout, timeUnit)
                 .callTimeout(timeout, timeUnit)
                 .build()
         )
