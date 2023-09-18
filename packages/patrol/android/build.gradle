@@ -67,7 +67,7 @@ android {
 
         implementation platform("org.http4k:http4k-bom:5.7.4.0")
         implementation "org.http4k:http4k-core"
-        implementation "org.http4k:http4k-client-okhttp"
+        implementation "org.http4k:http4k-client-fuel"
         implementation "org.http4k:http4k-server-ktorcio"
         implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0"
         implementation "org.jetbrains.kotlinx:kotlinx-coroutines-guava:1.5.2"

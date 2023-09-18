@@ -5,21 +5,10 @@
 
 package pl.leancode.patrol.contracts;
 
+import com.github.kittinunf.fuel.httpPost
+import com.github.kittinunf.result.Result
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import org.http4k.client.JavaHttpClient
-import org.http4k.core.HttpHandler
-import org.http4k.core.Method
-import org.http4k.core.Request
-import org.http4k.core.Status
-import org.http4k.core.then
-import org.http4k.filter.DebuggingFilters.PrintResponse
-//import okhttp3.OkHttpClient
-//import org.http4k.client.OkHttp
-//import org.http4k.core.Method
-//import org.http4k.core.Request
-//import org.http4k.core.Status
-import java.time.Duration
 import java.util.concurrent.TimeUnit
 
 class PatrolAppServiceClient(address: String, port: Int, private val timeout: Long, private val timeUnit: TimeUnit) {
@@ -35,31 +24,38 @@ class PatrolAppServiceClient(address: String, port: Int, private val timeout: Lo
     }
 
     private fun performRequest(path: String, requestBody: String? = null): String {
-        var request = Request(Method.POST, "$serverUrl$path")
-        if (requestBody != null) {
-            request = request.body(requestBody)
+        val endpoint = "$serverUrl$path"
+
+        val (_, response, result) = endpoint
+            .httpPost()
+            .also {
+                if (requestBody != null) {
+                    it.body(requestBody)
+                }
+            }
+            .responseString()
+
+        when (result) {
+            is Result.Failure -> {
+                val ex = result.getException()
+                println(ex)
+            }
+
+            is Result.Success -> {
+                val data = result.get()
+                println(data)
+            }
         }
 
-        val client = JavaHttpClient()
+        println("response: $response")
 
-        // val printingClient = PrintResponse().then(client)
+        val bodyString = response.body().asString(null)
 
-//        val okHttpClient = OkHttp(
-//            OkHttpClient.Builder()
-//                .connectTimeout(timeout, timeUnit)
-//                .readTimeout(timeout, timeUnit)
-//                .writeTimeout(timeout, timeUnit)
-//                .callTimeout(timeout, timeUnit)
-//                .build()
-//        )
-
-        val response = client(request)
-
-        if (response.status != Status.OK) {
-            throw PatrolAppServiceClientException("Invalid response ${response.status}, ${response.bodyString()}")
+        if (response.statusCode != 200) {
+            throw PatrolAppServiceClientException("Invalid response ${response.statusCode}, $bodyString")
         }
 
-        return response.bodyString()
+        return bodyString
     }
 
     val serverUrl = "http://$address:$port/"
