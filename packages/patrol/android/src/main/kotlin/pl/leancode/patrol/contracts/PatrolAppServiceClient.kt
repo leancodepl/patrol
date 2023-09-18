@@ -8,26 +8,21 @@ package pl.leancode.patrol.contracts;
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
-import okio.Timeout
 import org.http4k.client.OkHttp
-//import org.apache.hc.client5.http.config.RequestConfig
-//import org.apache.hc.client5.http.impl.classic.HttpClients
-//import org.apache.hc.core5.util.Timeout
-// import org.http4k.client.ApacheClient
 import org.http4k.core.Method
 import org.http4k.core.Request
 import org.http4k.core.Status
-import org.http4k.metrics.MetricsDefaults.Companion.client
 import java.time.Duration
+import java.util.concurrent.TimeUnit
 
-class PatrolAppServiceClient(private val address: String, private val port: Int) {
+class PatrolAppServiceClient(address: String, port: Int, private val timeout: Long, private val timeUnit: TimeUnit) {
 
-    fun listDartTests() : Contracts.ListDartTestsResponse {
+    fun listDartTests(): Contracts.ListDartTestsResponse {
         val response = performRequest("listDartTests")
         return json.decodeFromString(response)
     }
 
-    fun runDartTest(request: Contracts.RunDartTestRequest) : Contracts.RunDartTestResponse {
+    fun runDartTest(request: Contracts.RunDartTestRequest): Contracts.RunDartTestResponse {
         val response = performRequest("runDartTest", json.encodeToString(request))
         return json.decodeFromString(response)
     }
@@ -39,11 +34,14 @@ class PatrolAppServiceClient(private val address: String, private val port: Int)
         }
 
         // FIXME: Figure out how to add timeouts (java.time is API 26+ only)
-        val okHttpClient = OkHttp(OkHttpClient.Builder()
-            .build()
+        val okHttpClient = OkHttp(
+            OkHttpClient.Builder()
+                // all other timeouts (write, read, connect) default to 10 seconds
+                .callTimeout(timeout, timeUnit)
+                .build()
         )
-        
-        val response = okHttpClient (request)
+
+        val response = okHttpClient(request)
 
         if (response.status != Status.OK) {
             throw PatrolAppServiceClientException("Invalid response ${response.status}, ${response.bodyString()}")
