@@ -1,6 +1,6 @@
 package pl.leancode.patrol
 
-import org.apache.hc.core5.util.Timeout
+import okio.Timeout
 import pl.leancode.patrol.contracts.Contracts
 import pl.leancode.patrol.contracts.PatrolAppServiceClientException
 import pl.leancode.patrol.contracts.PatrolAppServiceClient as Client
@@ -13,15 +13,15 @@ class PatrolAppServiceClient {
     private var client: Client
 
     // https://github.com/leancodepl/patrol/issues/1683
-    private val timeout = Timeout.ofHours(2)
+    // private val timeout = Timeout.ofHours(2)
 
     constructor() {
-        client = Client(address = "localhost", port = 8082, timeout = timeout)
+        client = Client(address = "localhost", port = 8082)
         Logger.i("Created PatrolAppServiceClient: ${client.serverUrl}")
     }
 
     constructor(address: String) {
-        client = Client(address = address, port = 8082, timeout = timeout)
+        client = Client(address = address, port = 8082)
         Logger.i("Created PatrolAppServiceClient: ${client.serverUrl}")
     }
 
