@@ -5,13 +5,17 @@
 
 package pl.leancode.patrol.contracts;
 
-import com.github.kittinunf.fuel.httpPost
-import com.github.kittinunf.result.Result
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import java.util.concurrent.TimeUnit
+import java.io.BufferedReader
+import java.io.IOException
+import java.io.InputStreamReader
+import java.net.HttpURLConnection
+import java.net.URL
+import java.nio.charset.StandardCharsets
 
-class PatrolAppServiceClient(address: String, port: Int, private val timeout: Long, private val timeUnit: TimeUnit) {
+
+class PatrolAppServiceClient(private val address: String, private val port: Int) {
 
     fun listDartTests(): Contracts.ListDartTestsResponse {
         val response = performRequest("listDartTests")
@@ -23,39 +27,50 @@ class PatrolAppServiceClient(address: String, port: Int, private val timeout: Lo
         return json.decodeFromString(response)
     }
 
-    private fun performRequest(path: String, requestBody: String? = null): String {
+    private fun performRequest(path: String, requestBody: String = ""): String {
         val endpoint = "$serverUrl$path"
 
-        val (_, response, result) = endpoint
-            .httpPost()
-            .also {
-                if (requestBody != null) {
-                    it.body(requestBody)
-                }
-            }
-            .responseString()
+        var urlConnection: HttpURLConnection? = null
+        try {
+            val url = URL(endpoint)
+            urlConnection = url.openConnection() as HttpURLConnection
 
-        when (result) {
-            is Result.Failure -> {
-                val ex = result.getException()
-                println(ex)
+            // Set request properties
+            urlConnection.setRequestMethod("POST")
+            urlConnection.setRequestProperty("Content-Type", "application/json")
+
+            // Create request body
+            val postData = requestBody.toByteArray(StandardCharsets.UTF_8)
+            val postDataLength = postData.size
+            urlConnection.setDoOutput(true)
+            urlConnection.instanceFollowRedirects = false
+            urlConnection.setRequestProperty("Content-Length", postDataLength.toString())
+            urlConnection.outputStream.write(postData)
+
+            // Read the response
+            val responseCode = urlConnection.getResponseCode()
+            if (responseCode != 200) {
+                throw PatrolAppServiceClientException("Invalid response $responseCode")
             }
 
-            is Result.Success -> {
-                val data = result.get()
-                println(data)
+            val reader = BufferedReader(InputStreamReader(urlConnection.inputStream))
+            val response = StringBuilder()
+            var line: String?
+            while (reader.readLine().also { line = it } != null) {
+                response.append(line)
             }
+            reader.close()
+            val responseData = response.toString()
+            println("Response: $responseData")
+            return responseData
+        } catch (e: IOException) {
+            e.printStackTrace()
+        } finally {
+            urlConnection?.disconnect()
         }
 
-        println("response: $response")
 
-        val bodyString = response.body().asString(null)
-
-        if (response.statusCode != 200) {
-            throw PatrolAppServiceClientException("Invalid response ${response.statusCode}, $bodyString")
-        }
-
-        return bodyString
+        throw PatrolAppServiceClientException("something bad hapened!")
     }
 
     val serverUrl = "http://$address:$port/"

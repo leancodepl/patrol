@@ -17,12 +17,12 @@ class PatrolAppServiceClient {
     private val timeUnit = TimeUnit.HOURS
 
     constructor() {
-        client = Client(address = "localhost", port = 8082, timeout = timeout, timeUnit = timeUnit)
+        client = Client(address = "localhost", port = 8082)
         Logger.i("Created PatrolAppServiceClient: ${client.serverUrl}")
     }
 
     constructor(address: String) {
-        client = Client(address = address, port = 8082, timeout = timeout, timeUnit = timeUnit)
+        client = Client(address = address, port = 8082)
         Logger.i("Created PatrolAppServiceClient: ${client.serverUrl}")
     }
 
