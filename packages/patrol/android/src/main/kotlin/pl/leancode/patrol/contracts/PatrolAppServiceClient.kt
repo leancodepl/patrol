@@ -8,6 +8,7 @@ package pl.leancode.patrol.contracts;
 
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import okhttp3.ConnectionSpec
 import okhttp3.OkHttpClient
 import org.http4k.client.OkHttp
 import org.http4k.core.Method
@@ -35,6 +36,7 @@ class PatrolAppServiceClient(address: String, port: Int, private val timeout: Lo
 
         val okHttpClient = OkHttp(
             OkHttpClient.Builder()
+                .connectionSpecs(listOf(ConnectionSpec.CLEARTEXT))
                 .connectTimeout(timeout, timeUnit)
                 .readTimeout(timeout, timeUnit)
                 .writeTimeout(timeout, timeUnit)
