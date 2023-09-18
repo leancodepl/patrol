@@ -208,6 +208,6 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
     }
 
     override fun markPatrolAppServiceReady() {
-        PatrolServer.appReady.set(true)
+        PatrolServer.appReady.open()
     }
 }

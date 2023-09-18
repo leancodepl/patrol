@@ -1,7 +1,7 @@
 package pl.leancode.patrol
 
+import android.os.ConditionVariable
 import androidx.test.platform.app.InstrumentationRegistry
-import com.google.common.util.concurrent.SettableFuture
 import org.http4k.core.ContentType
 import org.http4k.filter.ServerFilters
 import org.http4k.server.Http4kServer
@@ -44,9 +44,7 @@ class PatrolServer {
     }
 
     companion object {
-        val appReady: SettableFuture<Boolean> = SettableFuture.create()
-        val appReadyFuture: Future<Boolean>
-            get() = appReady
+        val appReady: ConditionVariable = ConditionVariable()
     }
 }
 
