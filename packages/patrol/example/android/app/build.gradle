@@ -35,8 +35,6 @@ android {
     
     // TODO: Find workaround
     packagingOptions {
-        pickFirst "META-INF/INDEX.LIST"
-        pickFirst "META-INF/io.netty.versions.properties"
         pickFirst "META-INF/DEPENDENCIES"
     }
 
