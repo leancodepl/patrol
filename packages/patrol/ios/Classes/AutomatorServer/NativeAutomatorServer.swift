@@ -8,229 +8,229 @@
 import Telegraph
 
 protocol NativeAutomatorServer {
-    func initialize() async throws
-    func configure(request: ConfigureRequest) async throws
-    func pressHome() async throws
-    func pressBack() async throws
-    func pressRecentApps() async throws
-    func doublePressRecentApps() async throws
-    func openApp(request: OpenAppRequest) async throws
-    func openQuickSettings(request: OpenQuickSettingsRequest) async throws
-    func getNativeViews(request: GetNativeViewsRequest) async throws -> GetNativeViewsResponse
-    func tap(request: TapRequest) async throws
-    func doubleTap(request: TapRequest) async throws
-    func enterText(request: EnterTextRequest) async throws
-    func swipe(request: SwipeRequest) async throws
-    func waitUntilVisible(request: WaitUntilVisibleRequest) async throws
-    func enableAirplaneMode() async throws
-    func disableAirplaneMode() async throws
-    func enableWiFi() async throws
-    func disableWiFi() async throws
-    func enableCellular() async throws
-    func disableCellular() async throws
-    func enableBluetooth() async throws
-    func disableBluetooth() async throws
-    func enableDarkMode(request: DarkModeRequest) async throws
-    func disableDarkMode(request: DarkModeRequest) async throws
-    func openNotifications() async throws
-    func closeNotifications() async throws
-    func closeHeadsUpNotification() async throws
-    func getNotifications(request: GetNotificationsRequest) async throws -> GetNotificationsResponse
-    func tapOnNotification(request: TapOnNotificationRequest) async throws
-    func isPermissionDialogVisible(request: PermissionDialogVisibleRequest) async throws -> PermissionDialogVisibleResponse
-    func handlePermissionDialog(request: HandlePermissionRequest) async throws
-    func setLocationAccuracy(request: SetLocationAccuracyRequest) async throws
-    func debug() async throws
-    func markPatrolAppServiceReady() async throws
+    func initialize() throws
+    func configure(request: ConfigureRequest) throws
+    func pressHome() throws
+    func pressBack() throws
+    func pressRecentApps() throws
+    func doublePressRecentApps() throws
+    func openApp(request: OpenAppRequest) throws
+    func openQuickSettings(request: OpenQuickSettingsRequest) throws
+    func getNativeViews(request: GetNativeViewsRequest) throws -> GetNativeViewsResponse
+    func tap(request: TapRequest) throws
+    func doubleTap(request: TapRequest) throws
+    func enterText(request: EnterTextRequest) throws
+    func swipe(request: SwipeRequest) throws
+    func waitUntilVisible(request: WaitUntilVisibleRequest) throws
+    func enableAirplaneMode() throws
+    func disableAirplaneMode() throws
+    func enableWiFi() throws
+    func disableWiFi() throws
+    func enableCellular() throws
+    func disableCellular() throws
+    func enableBluetooth() throws
+    func disableBluetooth() throws
+    func enableDarkMode(request: DarkModeRequest) throws
+    func disableDarkMode(request: DarkModeRequest) throws
+    func openNotifications() throws
+    func closeNotifications() throws
+    func closeHeadsUpNotification() throws
+    func getNotifications(request: GetNotificationsRequest) throws -> GetNotificationsResponse
+    func tapOnNotification(request: TapOnNotificationRequest) throws
+    func isPermissionDialogVisible(request: PermissionDialogVisibleRequest) throws -> PermissionDialogVisibleResponse
+    func handlePermissionDialog(request: HandlePermissionRequest) throws
+    func setLocationAccuracy(request: SetLocationAccuracyRequest) throws
+    func debug() throws
+    func markPatrolAppServiceReady() throws
 }
 
 extension NativeAutomatorServer {
-    private func initializeHandler(request: HTTPRequest) async throws -> HTTPResponse {
-        try await initialize()
+    private func initializeHandler(request: HTTPRequest) throws -> HTTPResponse {
+        try initialize()
         return HTTPResponse(.ok)
     }
 
-    private func configureHandler(request: HTTPRequest) async throws -> HTTPResponse {
+    private func configureHandler(request: HTTPRequest) throws -> HTTPResponse {
         let requestArg = try JSONDecoder().decode(ConfigureRequest.self, from: request.body)
-        try await configure(request: requestArg)
+        try configure(request: requestArg)
         return HTTPResponse(.ok)
     }
 
-    private func pressHomeHandler(request: HTTPRequest) async throws -> HTTPResponse {
-        try await pressHome()
+    private func pressHomeHandler(request: HTTPRequest) throws -> HTTPResponse {
+        try pressHome()
         return HTTPResponse(.ok)
     }
 
-    private func pressBackHandler(request: HTTPRequest) async throws -> HTTPResponse {
-        try await pressBack()
+    private func pressBackHandler(request: HTTPRequest) throws -> HTTPResponse {
+        try pressBack()
         return HTTPResponse(.ok)
     }
 
-    private func pressRecentAppsHandler(request: HTTPRequest) async throws -> HTTPResponse {
-        try await pressRecentApps()
+    private func pressRecentAppsHandler(request: HTTPRequest) throws -> HTTPResponse {
+        try pressRecentApps()
         return HTTPResponse(.ok)
     }
 
-    private func doublePressRecentAppsHandler(request: HTTPRequest) async throws -> HTTPResponse {
-        try await doublePressRecentApps()
+    private func doublePressRecentAppsHandler(request: HTTPRequest) throws -> HTTPResponse {
+        try doublePressRecentApps()
         return HTTPResponse(.ok)
     }
 
-    private func openAppHandler(request: HTTPRequest) async throws -> HTTPResponse {
+    private func openAppHandler(request: HTTPRequest) throws -> HTTPResponse {
         let requestArg = try JSONDecoder().decode(OpenAppRequest.self, from: request.body)
-        try await openApp(request: requestArg)
+        try openApp(request: requestArg)
         return HTTPResponse(.ok)
     }
 
-    private func openQuickSettingsHandler(request: HTTPRequest) async throws -> HTTPResponse {
+    private func openQuickSettingsHandler(request: HTTPRequest) throws -> HTTPResponse {
         let requestArg = try JSONDecoder().decode(OpenQuickSettingsRequest.self, from: request.body)
-        try await openQuickSettings(request: requestArg)
+        try openQuickSettings(request: requestArg)
         return HTTPResponse(.ok)
     }
 
-    private func getNativeViewsHandler(request: HTTPRequest) async throws -> HTTPResponse {
+    private func getNativeViewsHandler(request: HTTPRequest) throws -> HTTPResponse {
         let requestArg = try JSONDecoder().decode(GetNativeViewsRequest.self, from: request.body)
-        let response = try await getNativeViews(request: requestArg)
+        let response = try getNativeViews(request: requestArg)
         let body = try JSONEncoder().encode(response)
         return HTTPResponse(.ok, body: body)
     }
 
-    private func tapHandler(request: HTTPRequest) async throws -> HTTPResponse {
+    private func tapHandler(request: HTTPRequest) throws -> HTTPResponse {
         let requestArg = try JSONDecoder().decode(TapRequest.self, from: request.body)
-        try await tap(request: requestArg)
+        try tap(request: requestArg)
         return HTTPResponse(.ok)
     }
 
-    private func doubleTapHandler(request: HTTPRequest) async throws -> HTTPResponse {
+    private func doubleTapHandler(request: HTTPRequest) throws -> HTTPResponse {
         let requestArg = try JSONDecoder().decode(TapRequest.self, from: request.body)
-        try await doubleTap(request: requestArg)
+        try doubleTap(request: requestArg)
         return HTTPResponse(.ok)
     }
 
-    private func enterTextHandler(request: HTTPRequest) async throws -> HTTPResponse {
+    private func enterTextHandler(request: HTTPRequest) throws -> HTTPResponse {
         let requestArg = try JSONDecoder().decode(EnterTextRequest.self, from: request.body)
-        try await enterText(request: requestArg)
+        try enterText(request: requestArg)
         return HTTPResponse(.ok)
     }
 
-    private func swipeHandler(request: HTTPRequest) async throws -> HTTPResponse {
+    private func swipeHandler(request: HTTPRequest) throws -> HTTPResponse {
         let requestArg = try JSONDecoder().decode(SwipeRequest.self, from: request.body)
-        try await swipe(request: requestArg)
+        try swipe(request: requestArg)
         return HTTPResponse(.ok)
     }
 
-    private func waitUntilVisibleHandler(request: HTTPRequest) async throws -> HTTPResponse {
+    private func waitUntilVisibleHandler(request: HTTPRequest) throws -> HTTPResponse {
         let requestArg = try JSONDecoder().decode(WaitUntilVisibleRequest.self, from: request.body)
-        try await waitUntilVisible(request: requestArg)
+        try waitUntilVisible(request: requestArg)
         return HTTPResponse(.ok)
     }
 
-    private func enableAirplaneModeHandler(request: HTTPRequest) async throws -> HTTPResponse {
-        try await enableAirplaneMode()
+    private func enableAirplaneModeHandler(request: HTTPRequest) throws -> HTTPResponse {
+        try enableAirplaneMode()
         return HTTPResponse(.ok)
     }
 
-    private func disableAirplaneModeHandler(request: HTTPRequest) async throws -> HTTPResponse {
-        try await disableAirplaneMode()
+    private func disableAirplaneModeHandler(request: HTTPRequest) throws -> HTTPResponse {
+        try disableAirplaneMode()
         return HTTPResponse(.ok)
     }
 
-    private func enableWiFiHandler(request: HTTPRequest) async throws -> HTTPResponse {
-        try await enableWiFi()
+    private func enableWiFiHandler(request: HTTPRequest) throws -> HTTPResponse {
+        try enableWiFi()
         return HTTPResponse(.ok)
     }
 
-    private func disableWiFiHandler(request: HTTPRequest) async throws -> HTTPResponse {
-        try await disableWiFi()
+    private func disableWiFiHandler(request: HTTPRequest) throws -> HTTPResponse {
+        try disableWiFi()
         return HTTPResponse(.ok)
     }
 
-    private func enableCellularHandler(request: HTTPRequest) async throws -> HTTPResponse {
-        try await enableCellular()
+    private func enableCellularHandler(request: HTTPRequest) throws -> HTTPResponse {
+        try enableCellular()
         return HTTPResponse(.ok)
     }
 
-    private func disableCellularHandler(request: HTTPRequest) async throws -> HTTPResponse {
-        try await disableCellular()
+    private func disableCellularHandler(request: HTTPRequest) throws -> HTTPResponse {
+        try disableCellular()
         return HTTPResponse(.ok)
     }
 
-    private func enableBluetoothHandler(request: HTTPRequest) async throws -> HTTPResponse {
-        try await enableBluetooth()
+    private func enableBluetoothHandler(request: HTTPRequest) throws -> HTTPResponse {
+        try enableBluetooth()
         return HTTPResponse(.ok)
     }
 
-    private func disableBluetoothHandler(request: HTTPRequest) async throws -> HTTPResponse {
-        try await disableBluetooth()
+    private func disableBluetoothHandler(request: HTTPRequest) throws -> HTTPResponse {
+        try disableBluetooth()
         return HTTPResponse(.ok)
     }
 
-    private func enableDarkModeHandler(request: HTTPRequest) async throws -> HTTPResponse {
+    private func enableDarkModeHandler(request: HTTPRequest) throws -> HTTPResponse {
         let requestArg = try JSONDecoder().decode(DarkModeRequest.self, from: request.body)
-        try await enableDarkMode(request: requestArg)
+        try enableDarkMode(request: requestArg)
         return HTTPResponse(.ok)
     }
 
-    private func disableDarkModeHandler(request: HTTPRequest) async throws -> HTTPResponse {
+    private func disableDarkModeHandler(request: HTTPRequest) throws -> HTTPResponse {
         let requestArg = try JSONDecoder().decode(DarkModeRequest.self, from: request.body)
-        try await disableDarkMode(request: requestArg)
+        try disableDarkMode(request: requestArg)
         return HTTPResponse(.ok)
     }
 
-    private func openNotificationsHandler(request: HTTPRequest) async throws -> HTTPResponse {
-        try await openNotifications()
+    private func openNotificationsHandler(request: HTTPRequest) throws -> HTTPResponse {
+        try openNotifications()
         return HTTPResponse(.ok)
     }
 
-    private func closeNotificationsHandler(request: HTTPRequest) async throws -> HTTPResponse {
-        try await closeNotifications()
+    private func closeNotificationsHandler(request: HTTPRequest) throws -> HTTPResponse {
+        try closeNotifications()
         return HTTPResponse(.ok)
     }
 
-    private func closeHeadsUpNotificationHandler(request: HTTPRequest) async throws -> HTTPResponse {
-        try await closeHeadsUpNotification()
+    private func closeHeadsUpNotificationHandler(request: HTTPRequest) throws -> HTTPResponse {
+        try closeHeadsUpNotification()
         return HTTPResponse(.ok)
     }
 
-    private func getNotificationsHandler(request: HTTPRequest) async throws -> HTTPResponse {
+    private func getNotificationsHandler(request: HTTPRequest) throws -> HTTPResponse {
         let requestArg = try JSONDecoder().decode(GetNotificationsRequest.self, from: request.body)
-        let response = try await getNotifications(request: requestArg)
+        let response = try getNotifications(request: requestArg)
         let body = try JSONEncoder().encode(response)
         return HTTPResponse(.ok, body: body)
     }
 
-    private func tapOnNotificationHandler(request: HTTPRequest) async throws -> HTTPResponse {
+    private func tapOnNotificationHandler(request: HTTPRequest) throws -> HTTPResponse {
         let requestArg = try JSONDecoder().decode(TapOnNotificationRequest.self, from: request.body)
-        try await tapOnNotification(request: requestArg)
+        try tapOnNotification(request: requestArg)
         return HTTPResponse(.ok)
     }
 
-    private func isPermissionDialogVisibleHandler(request: HTTPRequest) async throws -> HTTPResponse {
+    private func isPermissionDialogVisibleHandler(request: HTTPRequest) throws -> HTTPResponse {
         let requestArg = try JSONDecoder().decode(PermissionDialogVisibleRequest.self, from: request.body)
-        let response = try await isPermissionDialogVisible(request: requestArg)
+        let response = try isPermissionDialogVisible(request: requestArg)
         let body = try JSONEncoder().encode(response)
         return HTTPResponse(.ok, body: body)
     }
 
-    private func handlePermissionDialogHandler(request: HTTPRequest) async throws -> HTTPResponse {
+    private func handlePermissionDialogHandler(request: HTTPRequest) throws -> HTTPResponse {
         let requestArg = try JSONDecoder().decode(HandlePermissionRequest.self, from: request.body)
-        try await handlePermissionDialog(request: requestArg)
+        try handlePermissionDialog(request: requestArg)
         return HTTPResponse(.ok)
     }
 
-    private func setLocationAccuracyHandler(request: HTTPRequest) async throws -> HTTPResponse {
+    private func setLocationAccuracyHandler(request: HTTPRequest) throws -> HTTPResponse {
         let requestArg = try JSONDecoder().decode(SetLocationAccuracyRequest.self, from: request.body)
-        try await setLocationAccuracy(request: requestArg)
+        try setLocationAccuracy(request: requestArg)
         return HTTPResponse(.ok)
     }
 
-    private func debugHandler(request: HTTPRequest) async throws -> HTTPResponse {
-        try await debug()
+    private func debugHandler(request: HTTPRequest) throws -> HTTPResponse {
+        try debug()
         return HTTPResponse(.ok)
     }
 
-    private func markPatrolAppServiceReadyHandler(request: HTTPRequest) async throws -> HTTPResponse {
-        try await markPatrolAppServiceReady()
+    private func markPatrolAppServiceReadyHandler(request: HTTPRequest) throws -> HTTPResponse {
+        try markPatrolAppServiceReady()
         return HTTPResponse(.ok)
     }
 }
@@ -410,34 +410,14 @@ extension NativeAutomatorServer {
     }
 }
 
-fileprivate class Box<ResultType> {
-    var result: Result<ResultType, Error>? = nil
-}
 
 extension NativeAutomatorServer {
-    private func handleRequest(request: HTTPRequest, handler: @escaping (HTTPRequest) async throws -> HTTPResponse) -> HTTPResponse {
+    private func handleRequest(request: HTTPRequest, handler: @escaping (HTTPRequest) throws -> HTTPResponse) -> HTTPResponse {
         do {
-            return try unsafeWait {
-                return try await handler(request)
-            }
+            return try handler(request)
         } catch let err {
             return HTTPResponse(.badRequest, headers: [:], error: err)
         }
     }
-
-    private func unsafeWait<ResultType>(_ f: @escaping () async throws -> ResultType) throws -> ResultType {
-        let box = Box<ResultType>()
-        let sema = DispatchSemaphore(value: 0)
-        Task {
-            do {
-                let val = try await f()
-                box.result = .success(val)
-            } catch {
-                box.result = .failure(error)
-            }
-            sema.signal()
-        }
-        sema.wait()
-        return try box.result!.get()
-    }
 }
+
