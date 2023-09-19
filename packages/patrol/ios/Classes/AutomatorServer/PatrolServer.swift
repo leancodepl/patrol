@@ -44,7 +44,7 @@ import Telegraph
     #endif
   }
 
-  @objc public func start() async throws {
+  @objc public func start() throws -> Void {
     #if PATROL_ENABLED
       Logger.shared.i("Starting server...")
 
