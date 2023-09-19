@@ -3,6 +3,7 @@ test_linux_task:
   required_pr_labels: 
     - 'package: patrol_cli'
     - 'package: patrol'
+    - 'cirrusci'
   container:
     image: ghcr.io/cirruslabs/flutter:stable
     cpu: 6

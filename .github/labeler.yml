@@ -2,6 +2,8 @@
   - packages/adb/**/*
 'package: patrol_cli':
   - packages/patrol_cli/**/*
+'cirrusci':
+  - .cirrus.yml
 'package: patrol':
   - packages/patrol/**/*
 'docs':
