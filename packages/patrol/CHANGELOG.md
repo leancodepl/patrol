@@ -1,3 +1,8 @@
+## 2.3.0-dev.3
+
+- Fix problem with Gradle build failing unless correct `packagingOptions {}` are
+  specified (#1709) (#1711)
+
 ## 2.3.0-dev.2
 
 - Replace Protocol Buffers and gRPC with a custom code generation solution that
