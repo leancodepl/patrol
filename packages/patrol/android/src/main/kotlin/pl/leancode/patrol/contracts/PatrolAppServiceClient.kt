@@ -5,7 +5,6 @@
 
 package pl.leancode.patrol.contracts;
 
-
 import com.squareup.okhttp.MediaType
 import com.squareup.okhttp.OkHttpClient
 import com.squareup.okhttp.Request
@@ -13,7 +12,6 @@ import com.squareup.okhttp.RequestBody
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.util.concurrent.TimeUnit
-
 
 class PatrolAppServiceClient(address: String, port: Int, private val timeout: Long, private val timeUnit: TimeUnit) {
 
@@ -34,7 +32,6 @@ class PatrolAppServiceClient(address: String, port: Int, private val timeout: Lo
             setConnectTimeout(timeout, timeUnit)
             setReadTimeout(timeout, timeUnit)
             setWriteTimeout(timeout, timeUnit)
-            // setCallTimeout(timeout, timeUnit) // not available in OkHttp 2
         }
 
         val request = Request.Builder()
