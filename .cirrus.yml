@@ -71,6 +71,7 @@ test_macos_task:
   required_pr_labels: 
     - 'package: patrol_cli'
     - 'package: patrol'
+    - 'cirrusci'
   macos_instance:
     image: ghcr.io/cirruslabs/macos-ventura-xcode:latest
   env:
