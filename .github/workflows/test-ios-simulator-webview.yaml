@@ -1,13 +1,13 @@
-name: test ios simulator
+name: test ios simulator webview
 
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 */12 * * *'
+    - cron: '0 */24 * * *'
 
 jobs:
   run_tests:
-    name: Flutter ${{ matrix.flutter_version }} on ${{ matrix.device_model }} (${{ matrix.os_version }}) simulator
+    name: Flutter ${{ matrix.flutter_version }} webview on ${{ matrix.device_model }} (${{ matrix.os_version }}) simulator
     runs-on: macos-latest
     timeout-minutes: 40
     outputs:
@@ -15,13 +15,12 @@ jobs:
       TESTS_EXIT_CODE: ${{ steps.tests_step.outputs.TESTS_EXIT_CODE }}
       FAILURE_STATUS: ${{ steps.status_step.outputs.FAILURE_STATUS }}
       ERROR_STATUS: ${{ steps.status_step.outputs.ERROR_STATUS }}
-      EXCLUDED_TESTS: ${{ steps.set_excluded_tests.outputs.EXCLUDED_TESTS }}
 
     strategy:
       fail-fast: false
       matrix:
         flutter_version: ['3.13.x']
-        device_model: [iPhone 8, iPhone 14, iPad (9th generation)]
+        device_model: [iPhone 14]
         os: [iOS]
         os_version: ['16.2']
 
@@ -54,29 +53,18 @@ jobs:
           erase_before_boot: true
           shutdown_after_job: true
 
-      - name: Set simulator location
-        run: xcrun simctl location booted set 52.17469,21.03193
-
-      - name: Set tests to exclude
-        id: set_excluded_tests
+      - name: Set tests to include
         run: |
-          TESTS_TO_EXCLUDE="android_app_test,\
-          service_airplane_mode_test,\
-          service_bluetooth_test,\
-          service_cellular_test,\
-          service_wifi_test,\
-          webview_stackoverflow_test,\
+          TESTS_TO_INCLUDE="webview_hackernews_test,\
           webview_leancode_test,\
-          webview_hackernews_test,\
-          swipe_test"
+          webview_stackoverflow_test"
 
           target_paths=""
-          for target in $(echo $TESTS_TO_EXCLUDE | tr ',' '\n'); do
+          for target in $(echo $TESTS_TO_INCLUDE | tr ',' '\n'); do
               target_paths+="integration_test/${target}.dart,"
           done
 
-          echo "EXCLUDED_TESTS=$TESTS_TO_EXCLUDE" >> "$GITHUB_OUTPUT"
-          echo "EXCLUDED_TESTS=$target_paths" >> "$GITHUB_ENV"
+          echo "INCLUDED_TESTS=$target_paths" >> "$GITHUB_ENV"
 
       - name: Run tests
         id: tests_step
@@ -90,7 +78,7 @@ jobs:
           sleep 10 # See https://github.com/leancodepl/patrol/issues/1282
 
           TESTS_EXIT_CODE=0
-          patrol test --exclude ${{ env.EXCLUDED_TESTS }} --verbose || TESTS_EXIT_CODE=$?
+          patrol test --target ${{ env.INCLUDED_TESTS }} --verbose || TESTS_EXIT_CODE=$?
 
           kill -SIGINT $recordingpid
           kill -SIGINT $logpid
@@ -154,5 +142,4 @@ jobs:
       FAILURE_STATUS: ${{ needs.run_tests.outputs.FAILURE_STATUS }}
       ERROR_STATUS: ${{ needs.run_tests.outputs.ERROR_STATUS }}
       SLACK_MESSAGE_TITLE: ${{ needs.run_tests.outputs.SLACK_MESSAGE_TITLE }}
-      EXCLUDED_TESTS: ${{ needs.run_tests.outputs.EXCLUDED_TESTS }}
     secrets: inherit
