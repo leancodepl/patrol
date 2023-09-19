@@ -16,11 +16,12 @@
   @implementation __test_class                                                                                  \
                                                                                                                 \
   +(NSArray<NSInvocation *> *)testInvocations {                                                                 \
-    /* Start native automation gRPC server */                                                                   \
+    /* Start native automation server */                                                                        \
     PatrolServer *server = [[PatrolServer alloc] init];                                                         \
-    [server startWithCompletionHandler:^(NSError * err) {                                                       \
-      NSLog(@"Server loop done, error: %@", err);                                                               \
-    }];                                                                                                         \
+                                                                                                                \
+    NSError * _Nullable __autoreleasing * _Nullable err = NULL;                                                 \
+    [server startAndReturnError: err];                                                                          \
+    /* TODO handle error */                                                                                     \
                                                                                                                 \
     /* Create a client for PatrolAppService, which lets us list and run Dart tests */                           \
     __block ObjCPatrolAppServiceClient *appServiceClient = [[ObjCPatrolAppServiceClient alloc] init];           \
@@ -42,7 +43,7 @@
                                                                                                                 \
     __block NSArray<NSString *> *dartTests = NULL;                                                              \
     [appServiceClient                                                                                           \
-        listDartTestsWithCompletionHandler:^(NSArray<NSString *> *_Nullable tests, NSError *_Nullable err) {    \
+        listDartTestsWithCompletion:^(NSArray<NSString *> *_Nullable tests, NSError *_Nullable err) {           \
           if (err != NULL) {                                                                                    \
             NSLog(@"listDartTests(): failed, err: %@", err);                                                    \
           }                                                                                                     \
@@ -75,7 +76,7 @@
                                                                                                                 \
         __block ObjCRunDartTestResponse *response = NULL;                                                       \
         [appServiceClient runDartTestWithName:dartTest                                                          \
-                            completionHandler:^(ObjCRunDartTestResponse *_Nullable r, NSError *_Nullable err) { \
+                            completion:^(ObjCRunDartTestResponse *_Nullable r, NSError *_Nullable err) {        \
                               if (err != NULL) {                                                                \
                                 NSLog(@"runDartTestWithName(%@): failed, err: %@", dartTest, err);              \
                               }                                                                                 \

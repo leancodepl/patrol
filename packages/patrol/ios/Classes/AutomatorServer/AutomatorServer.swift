@@ -12,47 +12,47 @@
       self.onAppReady = onAppReady
     }
 
-    func initialize() async throws {}
+    func initialize() throws {}
 
-    func configure(request: ConfigureRequest) async throws {
+    func configure(request: ConfigureRequest) throws {
       automator.configure(timeout: TimeInterval(request.findTimeoutMillis / 1000))
     }
 
     // MARK: General
 
-    func pressHome() async throws {
-      return try await runCatching {
-        try await automator.pressHome()
+    func pressHome() throws {
+      return try runCatching {
+        try automator.pressHome()
       }
     }
 
-    func pressBack() async throws {
-      return try await runCatching {
+    func pressBack() throws {
+      return try runCatching {
         throw PatrolError.methodNotImplemented("pressBack")
       }
     }
 
-    func pressRecentApps() async throws {
-      return try await runCatching {
-        try await automator.openAppSwitcher()
+    func pressRecentApps() throws {
+      return try runCatching {
+        try automator.openAppSwitcher()
       }
     }
 
-    func doublePressRecentApps() async throws {
-      return try await runCatching {
+    func doublePressRecentApps() throws {
+      return try runCatching {
         throw PatrolError.methodNotImplemented("doublePressRecentApps")
       }
     }
 
-    func openApp(request: OpenAppRequest) async throws {
-      return try await runCatching {
-        try await automator.openApp(request.appId)
+    func openApp(request: OpenAppRequest) throws {
+      return try runCatching {
+        try automator.openApp(request.appId)
       }
     }
 
-    func openQuickSettings(request: OpenQuickSettingsRequest) async throws {
-      return try await runCatching {
-        try await automator.openControlCenter()
+    func openQuickSettings(request: OpenQuickSettingsRequest) throws {
+      return try runCatching {
+        try automator.openControlCenter()
       }
     }
 
@@ -60,9 +60,9 @@
 
     func getNativeViews(
       request: GetNativeViewsRequest
-    ) async throws -> GetNativeViewsResponse {
-      return try await runCatching {
-        let nativeViews = try await automator.getNativeViews(
+    ) throws -> GetNativeViewsResponse {
+      return try runCatching {
+        let nativeViews = try automator.getNativeViews(
           byText: request.selector.text ?? String(),
           inApp: request.appId
         )
@@ -71,9 +71,9 @@
       }
     }
 
-    func tap(request: TapRequest) async throws {
-      return try await runCatching {
-        try await automator.tap(
+    func tap(request: TapRequest) throws {
+      return try runCatching {
+        try automator.tap(
           onText: request.selector.text ?? String(),
           inApp: request.appId,
           atIndex: request.selector.instance ?? 0
@@ -81,26 +81,26 @@
       }
     }
 
-    func doubleTap(request: TapRequest) async throws {
-      return try await runCatching {
-        try await automator.doubleTap(
+    func doubleTap(request: TapRequest) throws {
+      return try runCatching {
+        try automator.doubleTap(
           onText: request.selector.text ?? String(),
           inApp: request.appId
         )
       }
     }
 
-    func enterText(request: EnterTextRequest) async throws {
-      return try await runCatching {
+    func enterText(request: EnterTextRequest) throws {
+      return try runCatching {
         if let index = request.index {
-          try await automator.enterText(
+          try automator.enterText(
             request.data,
             byIndex: Int(index),
             inApp: request.appId,
             dismissKeyboard: request.keyboardBehavior == .showAndDismiss
           )
         } else if let selector = request.selector {
-          try await automator.enterText(
+          try automator.enterText(
             request.data,
             byText: selector.text ?? String(),
             atIndex: selector.instance ?? 0,
@@ -113,15 +113,15 @@
       }
     }
 
-    func swipe(request: SwipeRequest) async throws {
-      return try await runCatching {
+    func swipe(request: SwipeRequest) throws {
+      return try runCatching {
         throw PatrolError.methodNotImplemented("swipe")
       }
     }
 
-    func waitUntilVisible(request: WaitUntilVisibleRequest) async throws {
-      return try await runCatching {
-        try await automator.waitUntilVisible(
+    func waitUntilVisible(request: WaitUntilVisibleRequest) throws {
+      return try runCatching {
+        try automator.waitUntilVisible(
           onText: request.selector.text ?? String(),
           inApp: request.appId
         )
@@ -130,103 +130,103 @@
 
     // MARK: Services
 
-    func enableAirplaneMode() async throws {
-      return try await runCatching {
-        try await automator.enableAirplaneMode()
+    func enableAirplaneMode() throws {
+      return try runCatching {
+        try automator.enableAirplaneMode()
       }
     }
 
-    func disableAirplaneMode() async throws {
-      return try await runCatching {
-        try await automator.disableAirplaneMode()
+    func disableAirplaneMode() throws {
+      return try runCatching {
+        try automator.disableAirplaneMode()
       }
     }
 
-    func enableWiFi() async throws {
-      return try await runCatching {
-        try await automator.enableWiFi()
+    func enableWiFi() throws {
+      return try runCatching {
+        try automator.enableWiFi()
       }
     }
 
-    func disableWiFi() async throws {
-      return try await runCatching {
-        try await automator.disableWiFi()
+    func disableWiFi() throws {
+      return try runCatching {
+        try automator.disableWiFi()
       }
     }
 
-    func enableCellular() async throws {
-      return try await runCatching {
-        try await automator.enableCellular()
+    func enableCellular() throws {
+      return try runCatching {
+        try automator.enableCellular()
       }
     }
 
-    func disableCellular() async throws {
-      return try await runCatching {
-        try await automator.disableCellular()
+    func disableCellular() throws {
+      return try runCatching {
+        try automator.disableCellular()
       }
     }
 
-    func enableBluetooth() async throws {
-      return try await runCatching {
-        try await automator.enableBluetooth()
+    func enableBluetooth() throws {
+      return try runCatching {
+        try automator.enableBluetooth()
       }
     }
 
-    func disableBluetooth() async throws {
-      return try await runCatching {
-        try await automator.disableBluetooth()
+    func disableBluetooth() throws {
+      return try runCatching {
+        try automator.disableBluetooth()
       }
     }
 
-    func enableDarkMode(request: DarkModeRequest) async throws {
-      return try await runCatching {
-        try await automator.enableDarkMode(request.appId)
+    func enableDarkMode(request: DarkModeRequest) throws {
+      return try runCatching {
+        try automator.enableDarkMode(request.appId)
       }
     }
 
-    func disableDarkMode(request: DarkModeRequest) async throws {
-      return try await runCatching {
-        try await automator.disableDarkMode(request.appId)
+    func disableDarkMode(request: DarkModeRequest) throws {
+      return try runCatching {
+        try automator.disableDarkMode(request.appId)
       }
     }
 
     // MARK: Notifications
 
-    func openNotifications() async throws {
-      return try await runCatching {
-        try await automator.openNotifications()
+    func openNotifications() throws {
+      return try runCatching {
+        try automator.openNotifications()
       }
     }
 
-    func closeNotifications() async throws {
-      return try await runCatching {
-        try await automator.closeNotifications()
+    func closeNotifications() throws {
+      return try runCatching {
+        try automator.closeNotifications()
       }
     }
 
-    func closeHeadsUpNotification() async throws {
-      return try await runCatching {
-        try await automator.closeHeadsUpNotification()
+    func closeHeadsUpNotification() throws {
+      return try runCatching {
+        try automator.closeHeadsUpNotification()
       }
     }
 
     func getNotifications(
       request: GetNotificationsRequest
-    ) async throws -> GetNotificationsResponse {
-      return try await runCatching {
-        let notifications = try await automator.getNotifications()
+    ) throws -> GetNotificationsResponse {
+      return try runCatching {
+        let notifications = try automator.getNotifications()
         return GetNotificationsResponse(notifications: notifications)
       }
     }
 
-    func tapOnNotification(request: TapOnNotificationRequest) async throws {
-      return try await runCatching {
+    func tapOnNotification(request: TapOnNotificationRequest) throws {
+      return try runCatching {
         if let index = request.index {
-          try await automator.tapOnNotification(
+          try automator.tapOnNotification(
             byIndex: index
           )
         } else if let selector = request.selector {
-          try await automator.tapOnNotification(
+          try automator.tapOnNotification(
             bySubstring: selector.textContains ?? String()
           )
         } else {
@@ -239,9 +239,9 @@
 
     func isPermissionDialogVisible(
       request: PermissionDialogVisibleRequest
-    ) async throws -> PermissionDialogVisibleResponse {
-      return try await runCatching {
-        let visible = await automator.isPermissionDialogVisible(
+    ) throws -> PermissionDialogVisibleResponse {
+      return try runCatching {
+        let visible = automator.isPermissionDialogVisible(
           timeout: TimeInterval(request.timeoutMillis / 1000)
         )
 
@@ -250,41 +250,41 @@
       }
     }
 
-    func handlePermissionDialog(request: HandlePermissionRequest) async throws {
-      return try await runCatching {
+    func handlePermissionDialog(request: HandlePermissionRequest) throws {
+      return try runCatching {
         switch request.code {
         case .whileUsing:
-          try await automator.allowPermissionWhileUsingApp()
+          try automator.allowPermissionWhileUsingApp()
         case .onlyThisTime:
-          try await automator.allowPermissionOnce()
+          try automator.allowPermissionOnce()
         case .denied:
-          try await automator.denyPermission()
+          try automator.denyPermission()
         }
       }
     }
 
-    func setLocationAccuracy(request: SetLocationAccuracyRequest) async throws {
-      return try await runCatching {
+    func setLocationAccuracy(request: SetLocationAccuracyRequest) throws {
+      return try runCatching {
         switch request.locationAccuracy {
         case .coarse:
-          try await automator.selectCoarseLocation()
+          try automator.selectCoarseLocation()
         case .fine:
-          try await automator.selectFineLocation()
+          try automator.selectFineLocation()
         }
       }
     }
 
-    func debug() async throws {
-      return try await runCatching {
-        try await automator.debug()
+    func debug() throws {
+      return try runCatching {
+        try automator.debug()
       }
     }
 
-    private func runCatching<T>(_ block: () async throws -> T) async throws -> T {
+    private func runCatching<T>(_ block: () throws -> T) throws -> T {
       // TODO: Use an interceptor (like on Android)
       // See: https://github.com/grpc/grpc-swift/issues/1148
       do {
-        return try await block()
+        return try block()
       } catch let err as PatrolError {
         Logger.shared.e(err.description)
         throw err
@@ -293,7 +293,7 @@
       }
     }
 
-    func markPatrolAppServiceReady() async throws {
+    func markPatrolAppServiceReady() throws {
       onAppReady(true)
     }
   }
