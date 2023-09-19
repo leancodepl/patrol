@@ -1,19 +1,18 @@
-name: test android emulator
+name: test android emulator webview
 
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 */12 * * *'
+    - cron: '0 */24 * * *'
 
 jobs:
   run_tests:
-    name: Flutter ${{ matrix.flutter_version }} on emulator.wtf
+    name: Flutter ${{ matrix.flutter_version }} webview on emulator.wtf
     runs-on: ubuntu-latest
     timeout-minutes: 30
     outputs:
-      SLACK_MESSAGE_TITLE: Flutter ${{ matrix.flutter_version }} on emulator.wtf
+      SLACK_MESSAGE_TITLE: Flutter ${{ matrix.flutter_version }} webview on emulator.wtf
       TESTS_EXIT_CODE: ${{ steps.tests_step.outputs.TESTS_EXIT_CODE }}
-      EXCLUDED_TESTS: ${{ steps.set_excluded_tests.outputs.EXCLUDED_TESTS }}
       URL_TO_DETAILS: ${{ steps.tests_step.outputs.URL_TO_DETAILS }}
 
     strategy:
@@ -63,33 +62,28 @@ jobs:
           echo "$HOME/bin" >> $GITHUB_PATH
           echo "EW_API_TOKEN=${{ secrets.EW_API_TOKEN }}" >> $GITHUB_ENV
 
-      - name: Set tests to exclude
-        id: set_excluded_tests
+      - name: Set tests to include
         run: |
-          TESTS_TO_EXCLUDE="service_airplane_mode_test,\
-          service_bluetooth_test,\
-          notifications_test,\
-          webview_hackernews_test,\
+          TESTS_TO_INCLUDE="webview_hackernews_test,\
           webview_leancode_test,\
           webview_stackoverflow_test"
 
           target_paths=""
-          for target in $(echo $TESTS_TO_EXCLUDE | tr ',' '\n'); do
+          for target in $(echo $TESTS_TO_INCLUDE | tr ',' '\n'); do
               target_paths+="integration_test/${target}.dart,"
           done
 
-          echo "EXCLUDED_TESTS=$TESTS_TO_EXCLUDE" >> "$GITHUB_OUTPUT"
-          echo "EXCLUDED_TESTS=$target_paths" >> "$GITHUB_ENV"
+          echo "INCLUDED_TESTS=$target_paths" >> "$GITHUB_ENV"
 
       - name: patrol build android
-        run: patrol build android --exclude ${{ env.EXCLUDED_TESTS }} --verbose
+        run: patrol build android --target ${{ env.INCLUDED_TESTS }} --verbose
 
       - name: Upload APKs to emulator.wtf and wait for tests to finish
         id: tests_step
         run: |
           set +e
           output="$(ew-cli \
-            emulatorwtf.yaml:ci --json \
+            emulatorwtf.yaml:ci_webview --json \
             --display-name "Patrol example app (${GITHUB_SHA::7})")"
           TESTS_EXIT_CODE=$?
           set -e
@@ -110,6 +104,5 @@ jobs:
     with:
       TESTS_EXIT_CODE: ${{ needs.run_tests.outputs.TESTS_EXIT_CODE }}
       SLACK_MESSAGE_TITLE: ${{ needs.run_tests.outputs.SLACK_MESSAGE_TITLE }}
-      EXCLUDED_TESTS: ${{ needs.run_tests.outputs.EXCLUDED_TESTS }}
       URL_TO_DETAILS: ${{ needs.run_tests.outputs.URL_TO_DETAILS }}
     secrets: inherit
