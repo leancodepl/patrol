@@ -96,13 +96,8 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
     public void waitForPatrolAppService() {
         final String TAG = "PatrolJUnitRunner.setUp(): ";
 
-        try {
-            Logger.INSTANCE.i(TAG + "Waiting for PatrolAppService to report its readiness...");
-            PatrolServer.Companion.getAppReadyFuture().get();
-        } catch (InterruptedException | ExecutionException e) {
-            Logger.INSTANCE.e(TAG + "Exception was thrown when waiting for appReady: ", e);
-            throw new RuntimeException(e);
-        }
+        Logger.INSTANCE.i(TAG + "Waiting for PatrolAppService to report its readiness...");
+        PatrolServer.Companion.getAppReady().block();
 
         Logger.INSTANCE.i(TAG + "PatrolAppService is ready to report Dart tests");
     }
