@@ -32,11 +32,6 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
-    
-    // TODO: Find workaround
-    packagingOptions {
-        pickFirst "META-INF/DEPENDENCIES"
-    }
 
     sourceSets {
         main.java.srcDirs += "src/main/kotlin"

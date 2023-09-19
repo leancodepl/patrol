@@ -5,55 +5,57 @@
 
 package pl.leancode.patrol.contracts;
 
+import com.squareup.okhttp.MediaType
+import com.squareup.okhttp.OkHttpClient
+import com.squareup.okhttp.Request
+import com.squareup.okhttp.RequestBody
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import org.apache.hc.client5.http.config.RequestConfig
-import org.apache.hc.client5.http.impl.classic.HttpClients
-import org.apache.hc.core5.util.Timeout
-import org.http4k.client.ApacheClient
-import org.http4k.core.Method
-import org.http4k.core.Request
-import org.http4k.core.Status
+import java.util.concurrent.TimeUnit
 
-class PatrolAppServiceClient(private val address: String, private val port: Int, private val timeout: Timeout) {
+class PatrolAppServiceClient(address: String, port: Int, private val timeout: Long, private val timeUnit: TimeUnit) {
 
-    fun listDartTests() : Contracts.ListDartTestsResponse {
+    fun listDartTests(): Contracts.ListDartTestsResponse {
         val response = performRequest("listDartTests")
         return json.decodeFromString(response)
     }
 
-    fun runDartTest(request: Contracts.RunDartTestRequest) : Contracts.RunDartTestResponse {
+    fun runDartTest(request: Contracts.RunDartTestRequest): Contracts.RunDartTestResponse {
         val response = performRequest("runDartTest", json.encodeToString(request))
         return json.decodeFromString(response)
     }
 
     private fun performRequest(path: String, requestBody: String? = null): String {
-        var request = Request(Method.POST, "$serverUrl$path")
-        if (requestBody != null) {
-            request = request.body(requestBody)
+        val endpoint = "$serverUrl$path"
+
+        val client = OkHttpClient().apply {
+            setConnectTimeout(timeout, timeUnit)
+            setReadTimeout(timeout, timeUnit)
+            setWriteTimeout(timeout, timeUnit)
         }
 
-        val client = ApacheClient(
-              HttpClients.custom().setDefaultRequestConfig(
-                  RequestConfig
-                    .copy(RequestConfig.DEFAULT)
-                    .setResponseTimeout(timeout)
-                    .setConnectionRequestTimeout(timeout)
-                    .build()
-              ).build())
-        
-        val response = client(request)
+        val request = Request.Builder()
+            .url(endpoint)
+            .also {
+                if (requestBody != null) {
+                    it.post(RequestBody.create(jsonMediaType, requestBody))
+                }
+            }
+            .build()
 
-        if (response.status != Status.OK) {
-            throw PatrolAppServiceClientException("Invalid response ${response.status}, ${response.bodyString()}")
+        val response = client.newCall(request).execute()
+        if (response.code() != 200) {
+            throw PatrolAppServiceClientException("Invalid response ${response.code()}, ${response?.body()?.string()}")
         }
 
-        return response.bodyString()
+        return response.body().string()
     }
 
     val serverUrl = "http://$address:$port/"
 
     private val json = Json { ignoreUnknownKeys = true }
+
+    private val jsonMediaType = MediaType.parse("application/json; charset=utf-8")
 }
 
 class PatrolAppServiceClientException(message: String) : Exception(message)
