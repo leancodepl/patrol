@@ -6,15 +6,14 @@
 package pl.leancode.patrol.contracts;
 
 
+import com.squareup.okhttp.MediaType
+import com.squareup.okhttp.OkHttpClient
+import com.squareup.okhttp.Request
+import com.squareup.okhttp.RequestBody
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import okhttp3.ConnectionSpec
-import okhttp3.OkHttpClient
-import org.http4k.client.OkHttp
-import org.http4k.core.Method
-import org.http4k.core.Request
-import org.http4k.core.Status
 import java.util.concurrent.TimeUnit
+
 
 class PatrolAppServiceClient(address: String, port: Int, private val timeout: Long, private val timeUnit: TimeUnit) {
 
@@ -29,33 +28,37 @@ class PatrolAppServiceClient(address: String, port: Int, private val timeout: Lo
     }
 
     private fun performRequest(path: String, requestBody: String? = null): String {
-        var request = Request(Method.POST, "$serverUrl$path")
-        if (requestBody != null) {
-            request = request.body(requestBody)
+        val endpoint = "$serverUrl$path"
+
+        val client = OkHttpClient().apply {
+            setConnectTimeout(timeout, timeUnit)
+            setReadTimeout(timeout, timeUnit)
+            setWriteTimeout(timeout, timeUnit)
+            // setCallTimeout(timeout, timeUnit) // not available in OkHttp 2
         }
 
-        val okHttpClient = OkHttp(
-            OkHttpClient.Builder()
-                .connectionSpecs(listOf(ConnectionSpec.CLEARTEXT))
-                .connectTimeout(timeout, timeUnit)
-                .readTimeout(timeout, timeUnit)
-                .writeTimeout(timeout, timeUnit)
-                .callTimeout(timeout, timeUnit)
-                .build()
-        )
+        val request = Request.Builder()
+            .url(endpoint)
+            .also {
+                if (requestBody != null) {
+                    it.post(RequestBody.create(jsonMediaType, requestBody))
+                }
+            }
+            .build()
 
-        val response = okHttpClient(request)
-
-        if (response.status != Status.OK) {
-            throw PatrolAppServiceClientException("Invalid response ${response.status}, ${response.bodyString()}")
+        val response = client.newCall(request).execute()
+        if (response.code() != 200) {
+            throw PatrolAppServiceClientException("Invalid response ${response.code()}, ${response?.body()?.string()}")
         }
 
-        return response.bodyString()
+        return response.body().string()
     }
 
     val serverUrl = "http://$address:$port/"
 
     private val json = Json { ignoreUnknownKeys = true }
+
+    private val jsonMediaType = MediaType.parse("application/json; charset=utf-8")
 }
 
 class PatrolAppServiceClientException(message: String) : Exception(message)
