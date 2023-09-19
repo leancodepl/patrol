@@ -35,7 +35,7 @@ jobs:
           java-version: 17
 
       - name: Gradle cache
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v2.8.0
         with:
           generate-job-summary: false
 
