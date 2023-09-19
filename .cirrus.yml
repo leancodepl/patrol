@@ -3,6 +3,7 @@ test_linux_task:
   required_pr_labels: 
     - 'package: patrol_cli'
     - 'package: patrol'
+    - 'cirrusci'
   container:
     image: ghcr.io/cirruslabs/flutter:stable
     cpu: 6
@@ -94,7 +95,7 @@ test_macos_task:
   setup_patrol_cli_script:
     - dart pub global activate --source path packages/patrol_cli && patrol
   setup_simulator_script: |
-    xcrun simctl boot "iPhone 14 Pro Max"
+    xcrun simctl boot "iPhone 15 Pro Max"
   patrol_test_script: |
     cd dev/cli_tests
     dart pub get
