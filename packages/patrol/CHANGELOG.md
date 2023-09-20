@@ -1,3 +1,7 @@
+## 2.3.0-dev.4
+
+- Fix test name label blocking hit testing (#1731)
+
 ## 2.3.0-dev.3
 
 - Fix problem with Gradle build failing unless correct `packagingOptions {}` are
