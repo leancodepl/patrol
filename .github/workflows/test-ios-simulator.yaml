@@ -74,6 +74,7 @@ jobs:
           for target in $(echo $TESTS_TO_EXCLUDE | tr ',' '\n'); do
               target_paths+="integration_test/${target}.dart,"
           done
+          target_paths="${target_paths%,}"
 
           echo "EXCLUDED_TESTS=$TESTS_TO_EXCLUDE" >> "$GITHUB_OUTPUT"
           echo "EXCLUDED_TESTS=$target_paths" >> "$GITHUB_ENV"

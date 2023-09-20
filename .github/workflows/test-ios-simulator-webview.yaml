@@ -63,6 +63,7 @@ jobs:
           for target in $(echo $TESTS_TO_INCLUDE | tr ',' '\n'); do
               target_paths+="integration_test/${target}.dart,"
           done
+          target_paths="${target_paths%,}"
 
           echo "INCLUDED_TESTS=$target_paths" >> "$GITHUB_ENV"
 
