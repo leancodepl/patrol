@@ -122,7 +122,6 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
             // runDartTest is 10 characters.
             // Opening "[" and closing "]" are 2 characters.
             // This gives 192 - 16 - 10 - 2 = 164 characters for the Dart test name.
-            // Cropping the test name must be done on Dart side, otherwise
             for (int i = 0; i < dartTestCaseNames.length; i++) {
                 final int limit = 164;
                 if (dartTestCaseNames[i].toString().length() > limit) {

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'common.dart';
 
 String _generateString(int length) {
-  // not random
   return 'a' * length;
 }
 
