@@ -193,10 +193,12 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
                   top: MediaQueryData.fromWindow(window).padding.top + 4,
                   left: 4,
                 ),
-                child: Text(
-                  _currentDartTest!,
-                  textDirection: TextDirection.ltr,
-                  style: const TextStyle(color: Colors.red),
+                child: IgnorePointer(
+                  child: Text(
+                    _currentDartTest!,
+                    textDirection: TextDirection.ltr,
+                    style: const TextStyle(color: Colors.red),
+                  ),
                 ),
               ),
             ),
