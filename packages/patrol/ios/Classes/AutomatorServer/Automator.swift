@@ -738,8 +738,7 @@
       }
     }
 
-    private func runControlCenterAction(_ log: String, block: @escaping () throws -> Void) throws
-    {
+    private func runControlCenterAction(_ log: String, block: @escaping () throws -> Void) throws {
       #if targetEnvironment(simulator)
         throw PatrolError.internal("Control Center is not available on Simulator")
       #endif
@@ -777,24 +776,24 @@
     }
 
     private func runAction<T>(_ log: String, block: @escaping () throws -> T) rethrows -> T {
-        return try DispatchQueue.main.sync {
-            Logger.shared.i("\(log)...")
-            let result = try block()
-            Logger.shared.i("done \(log)")
-            Logger.shared.i("result: \(result)")
-            return result
-        }
+      return try DispatchQueue.main.sync {
+        Logger.shared.i("\(log)...")
+        let result = try block()
+        Logger.shared.i("done \(log)")
+        Logger.shared.i("result: \(result)")
+        return result
+      }
     }
-      
-      private func sleepTask(timeInSeconds: Double) -> Void {
-        let group = DispatchGroup()
-        group.enter()
-        
-        DispatchQueue.global().asyncAfter(deadline: .now() + timeInSeconds) {
-            group.leave()
-        }
 
-        group.wait()
+    private func sleepTask(timeInSeconds: Double) {
+      let group = DispatchGroup()
+      group.enter()
+
+      DispatchQueue.global().asyncAfter(deadline: .now() + timeInSeconds) {
+        group.leave()
+      }
+
+      group.wait()
     }
   }
 
