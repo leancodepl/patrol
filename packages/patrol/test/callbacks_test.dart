@@ -17,11 +17,21 @@ void main() {
   });
 
   group('groupA', () {
-    test('testA', () {});
-    test('testB', () {});
-    test('testC', () {});
+    patrolSetUp(() {
+      print('setting up before $currentTest');
+    });
+
+    tearDown(() {
+      print('tearing down after $currentTest');
+    });
+
+    test('testA', _body);
+    test('testB', _body);
+    test('testC', _body);
   });
 }
+
+void _body() => print(Invoker.current!.fullCurrentTestName());
 
 void patrolSetUp(dynamic Function() body) {
   setUp(() {
