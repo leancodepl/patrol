@@ -21,7 +21,9 @@
                                                                                                                 \
     NSError * _Nullable __autoreleasing * _Nullable err = NULL;                                                 \
     [server startAndReturnError: err];                                                                          \
-    /* TODO handle error */                                                                                     \
+    if (err != NULL) {                                                                                          \
+      NSLog(@"patrolServer.start(): failed, err: %@", err);                                                     \
+    }                                                                                                           \
                                                                                                                 \
     /* Create a client for PatrolAppService, which lets us list and run Dart tests */                           \
     __block ObjCPatrolAppServiceClient *appServiceClient = [[ObjCPatrolAppServiceClient alloc] init];           \
