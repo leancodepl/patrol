@@ -114,6 +114,22 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
             }
             Object[] dartTestCaseNames = dartTestCaseNamesList.toArray();
             Logger.INSTANCE.i(TAG + "Got Dart tests: " + Arrays.toString(dartTestCaseNames));
+
+            // We need to limit the max length of the test name, otherwise Android Test Orchestrator will crash.
+            // See https://github.com/leancodepl/patrol/pull/1731.
+            // Max length of class name + test method name is 192 characters.
+            // MainActivityTest (the default test class name) is 16 characters.
+            // runDartTest is 10 characters.
+            // Opening "[" and closing "]" are 2 characters.
+            // This gives 192 - 16 - 10 - 2 = 164 characters for the Dart test name.
+            // Cropping the test name must be done on Dart side, otherwise
+            for (int i = 0; i < dartTestCaseNames.length; i++) {
+                final int limit = 164;
+                if (dartTestCaseNames[i].toString().length() > limit) {
+                    dartTestCaseNames[i] = dartTestCaseNames[i].toString().substring(0, 164);
+                }
+            }
+
             return dartTestCaseNames;
         } catch (PatrolAppServiceClientException e) {
             Logger.INSTANCE.e(TAG + "Failed to list Dart tests: ", e);
