@@ -13,4 +13,7 @@ extension InvokerX on Invoker {
 
     return '$parentGroupName $testName';
   }
+
+  /// Returns the name of the current test only. No group prefixes.
+  String get currentTestName => liveTest.individualName;
 }
