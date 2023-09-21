@@ -11,12 +11,16 @@ void _print(String text) => print('PATROL_DEBUG: $text');
 
 void main() {
   patrolSetUp(() async {
+    await Future<void>.delayed(Duration(seconds: 1));
     _print('setting up before $currentTest');
   });
 
   patrolTearDown(() async {
+    await Future<void>.delayed(Duration(seconds: 1));
     _print('tearing down after $currentTest');
   });
+
+  patrolTest('testFirst', nativeAutomation: true, _body);
 
   group('groupA', () {
     patrolSetUp(() async {
@@ -31,6 +35,8 @@ void main() {
     patrolTest('testB', nativeAutomation: true, _body);
     patrolTest('testC', nativeAutomation: true, _body);
   });
+
+  patrolTest('testLast', nativeAutomation: true, _body);
 }
 
 Future<void> _body(PatrolTester $) async {
