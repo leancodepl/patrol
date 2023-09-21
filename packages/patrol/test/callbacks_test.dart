@@ -21,17 +21,28 @@ void main() {
       print('setting up before $currentTest');
     });
 
-    tearDown(() {
+    patrolTearDown(() {
       print('tearing down after $currentTest');
     });
 
-    test('testA', _body);
-    test('testB', _body);
-    test('testC', _body);
+    patrolTest('testA', _body);
+    patrolTest('testB', _body);
+    patrolTest('testC', _body);
   });
 }
 
-void _body() => print(Invoker.current!.fullCurrentTestName());
+Future<void> _body() async => print(Invoker.current!.fullCurrentTestName());
+
+void patrolTest(String name, Future<void> Function() body) {
+  test(name, () async {
+    final currentTest = Invoker.current!.fullCurrentTestName();
+
+    if (currentTest == requestedTest) {
+      print('Requested test $currentTest, will execute it');
+      await body();
+    }
+  });
+}
 
 void patrolSetUp(dynamic Function() body) {
   setUp(() {
