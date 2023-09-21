@@ -34,8 +34,7 @@ void patrolSetUp(Future<void> Function() body) {
   setUp(() async {
     final currentTest = Invoker.current!.fullCurrentTestName();
 
-    final requestedToExecute = await PatrolBinding.ensureInitialized()
-        .patrolAppService
+    final requestedToExecute = await PatrolBinding.instance.patrolAppService
         .waitForExecutionRequest(currentTest);
 
     // TODO: Determine if requestedTest is inside this setUps scope?
@@ -51,8 +50,7 @@ void patrolTearDown(Future<void> Function() body) {
   tearDown(() async {
     final currentTest = Invoker.current!.fullCurrentTestName();
 
-    final requestedToExecute = await PatrolBinding.ensureInitialized()
-        .patrolAppService
+    final requestedToExecute = await PatrolBinding.instance.patrolAppService
         .waitForExecutionRequest(currentTest);
 
     // TODO: Determine if requestedTest is inside this setUps scope?
@@ -120,7 +118,8 @@ void patrolTest(
       case BindingType.patrol:
         automator = NativeAutomator(config: nativeAutomatorConfig);
 
-        patrolBinding = PatrolBinding.ensureInitialized();
+        // PatrolBinding is initialized in the generated test bundle file.
+        patrolBinding = PatrolBinding.instance;
         patrolBinding.framePolicy = framePolicy;
         break;
       case BindingType.integrationTest:
