@@ -21,6 +21,44 @@ import 'custom_finders/patrol_integration_tester.dart';
 /// Signature for callback to [patrolTest].
 typedef PatrolTesterCallback = Future<void> Function(PatrolIntegrationTester $);
 
+// PROBLEM: PatrolBinding.ensureInitialized() adds a setUp() and tearDown()
+// PROBLEM: Reporting results back to the native side depends on tearDown()
+// PROBLEM: What if an exception in thrown inside setUp or tearDown?
+
+void patrolSetUp(Future<void> Function() body) {
+  setUp(() async {
+    final currentTest = Invoker.current!.fullCurrentTestName();
+
+    final requestedToExecute = await PatrolBinding.ensureInitialized()
+        .patrolAppService
+        .waitForExecutionRequest(currentTest);
+
+    // TODO: Determine if requestedTest is inside this setUps scope?
+    // Hipothesis: package:test cares about this automatically!
+
+    if (requestedToExecute) {
+      await body();
+    }
+  });
+}
+
+void patrolTearDown(Future<void> Function() body) {
+  tearDown(() async {
+    final currentTest = Invoker.current!.fullCurrentTestName();
+
+    final requestedToExecute = await PatrolBinding.ensureInitialized()
+        .patrolAppService
+        .waitForExecutionRequest(currentTest);
+
+    // TODO: Determine if requestedTest is inside this setUps scope?
+    // Hipothesis: package:test cares about this automatically!
+
+    if (requestedToExecute) {
+      await body();
+    }
+  });
+}
+
 /// Like [testWidgets], but with support for Patrol custom finders.
 ///
 /// To customize the Patrol-specific configuration, set [config].
