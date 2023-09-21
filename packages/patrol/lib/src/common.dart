@@ -22,7 +22,12 @@ import 'custom_finders/patrol_integration_tester.dart';
 typedef PatrolTesterCallback = Future<void> Function(PatrolIntegrationTester $);
 
 // PROBLEM: PatrolBinding.ensureInitialized() adds a setUp() and tearDown()
+// ANSWER: Yes, but it does it only does it once, in generated test_bundle.dart.
+
 // PROBLEM: Reporting results back to the native side depends on tearDown()
+// ANSWER: Yes, but tearDown execute in the reverse order, so the first tearDown
+// that PatrolBinding adds executes the last. This is what we want.
+
 // PROBLEM: What if an exception in thrown inside setUp or tearDown?
 
 void patrolSetUp(Future<void> Function() body) {
