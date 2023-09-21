@@ -10,6 +10,10 @@ This version requires version 2.3.0-dev.2 of `patrol` package.
 
 This version requires version 2.3.0-dev.1 of `patrol` package.
 
+## 2.1.5
+
+- Remove notice about migrating to Patrol 2.0 (#1738)
+
 ## 2.1.4
 
 - Uninstall RunnerUITests app on iOS when flavor is present (#1694)
