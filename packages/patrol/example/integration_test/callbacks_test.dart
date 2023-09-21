@@ -24,6 +24,9 @@ void main() {
 
   group('groupA', () {
     patrolSetUp(() async {
+      if (currentTest == 'callbacks_test groupA testB') {
+        throw Exception('PATROL_DEBUG: Crashing testB on purpose!');
+      }
       _print('setting up before $currentTest');
     });
 

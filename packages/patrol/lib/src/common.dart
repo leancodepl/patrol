@@ -29,6 +29,8 @@ typedef PatrolTesterCallback = Future<void> Function(PatrolIntegrationTester $);
 // that PatrolBinding adds executes the last. This is what we want.
 
 // PROBLEM: What if an exception in thrown inside setUp or tearDown?
+// ANSWER: The subsequent setUps and the test won't be executed. TearDowns will
+// be executed.
 
 void patrolSetUp(Future<void> Function() body) {
   setUp(() async {
