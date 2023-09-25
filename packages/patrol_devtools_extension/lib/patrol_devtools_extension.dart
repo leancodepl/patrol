@@ -4,7 +4,6 @@ import 'dart:convert';
 import 'package:devtools_extensions/devtools_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:vm_service/vm_service.dart';
-import 'package:flutter/src/widgets/widget_inspector.dart';
 
 class PatrolDevToolsExtension extends StatefulWidget {
   const PatrolDevToolsExtension({Key? key}) : super(key: key);
@@ -46,6 +45,13 @@ class _PatrolDevToolsExtensionState extends State<PatrolDevToolsExtension> {
                   child: const Text('getRootWidgetSummaryTree'),
                 ),
                 Text(state.getRootWidgetSummaryTreeResponse),
+                TextButton(
+                  onPressed: state.appConnected
+                      ? () => runner.getRootWidgetSummaryTreeWithPreviews()
+                      : null,
+                  child: const Text('getRootWidgetSummaryTreeWithPreviews'),
+                ),
+                Text(state.getRootWidgetSummaryTreeWithPreviewsResponse),
               ],
             ),
           );
@@ -76,9 +82,28 @@ OperatingSystem: ${app.operatingSystem}
         WidgetInspectorServiceExtensions.getRootWidget.name);
 
     if (res is InstanceRef) {
-      value.getRootWidgetRespone = res.valueAsString ?? ':((';
+      value.getRootWidgetRespone =
+          const JsonEncoder.withIndent('  ').convert(res.toJson());
     } else {
       value.getRootWidgetRespone = res?.toString() ?? ':(';
+    }
+
+    notifyListeners();
+  }
+
+  Future<void> getRootWidgetSummaryTreeWithPreviews() async {
+    const groupName = 'debugName_0';
+    final res = await Tree().invokeServiceMethodDaemonParams(
+      WidgetInspectorServiceExtensions
+          .getRootWidgetSummaryTreeWithPreviews.name,
+      {'groupName': groupName},
+    );
+
+    if (res is Map<String, dynamic>) {
+      value.getRootWidgetSummaryTreeWithPreviewsResponse =
+          const JsonEncoder.withIndent('  ').convert(res);
+    } else {
+      value.getRootWidgetSummaryTreeWithPreviewsResponse = ':(';
     }
 
     notifyListeners();
@@ -104,6 +129,7 @@ class _State {
   String appConnectedDesc = '';
   String getRootWidgetRespone = '';
   String getRootWidgetSummaryTreeResponse = '';
+  String getRootWidgetSummaryTreeWithPreviewsResponse = '';
 }
 
 class Tree {
@@ -124,13 +150,13 @@ class Tree {
   Future<Object?> invokeServiceMethodDaemon(String methodName) {
     const groupName = 'debugName_0';
 
-    return _invokeServiceMethodDaemonParams(
+    return invokeServiceMethodDaemonParams(
       methodName,
       {'objectGroup': groupName},
     );
   }
 
-  Future<Object?> _invokeServiceMethodDaemonParams(
+  Future<Object?> invokeServiceMethodDaemonParams(
       String methodName, Map<String, Object?> params) async {
     final callMethodName = '$serviceExtensionPrefix.$methodName';
     if (!serviceManager.serviceExtensionManager
