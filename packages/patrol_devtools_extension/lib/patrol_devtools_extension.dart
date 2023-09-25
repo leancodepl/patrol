@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:devtools_extensions/devtools_extensions.dart';
 import 'package:flutter/material.dart';
@@ -21,26 +22,32 @@ class _PatrolDevToolsExtensionState extends State<PatrolDevToolsExtension> {
     return ValueListenableBuilder<_State>(
         valueListenable: runner,
         builder: (context, state, child) {
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              TextButton(
-                onPressed: () {
-                  runner.checkConnection();
-                },
-                child: const Text('Check app connection'),
-              ),
-              Text('Connection status: ${state.appConnectedDesc}'),
-              TextButton(
-                onPressed: state.appConnected
-                    ? () {
-                        runner.showTree();
-                      }
-                    : null,
-                child: const Text('Show widget tree'),
-              ),
-              Text(state.root),
-            ],
+          return SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                TextButton(
+                  onPressed: () {
+                    runner.checkConnection();
+                  },
+                  child: const Text('Check app connection'),
+                ),
+                Text('Connection status: ${state.appConnectedDesc}'),
+                TextButton(
+                  onPressed:
+                      state.appConnected ? () => runner.getRootWidget() : null,
+                  child: const Text('getRootWidget'),
+                ),
+                Text(state.getRootWidgetRespone),
+                TextButton(
+                  onPressed: state.appConnected
+                      ? () => runner.getRootWidgetSummaryTree()
+                      : null,
+                  child: const Text('getRootWidgetSummaryTree'),
+                ),
+                Text(state.getRootWidgetSummaryTreeResponse),
+              ],
+            ),
           );
         });
   }
@@ -64,16 +71,28 @@ OperatingSystem: ${app.operatingSystem}
     notifyListeners();
   }
 
-  Future<void> showTree() async {
-    final tree = Tree();
-
-    final res = await tree.invokeServiceMethodReturningNode(
+  Future<void> getRootWidget() async {
+    final res = await Tree().invokeServiceMethodReturningNode(
         WidgetInspectorServiceExtensions.getRootWidget.name);
 
     if (res is InstanceRef) {
-      value.root = res.valueAsString ?? ':((';
+      value.getRootWidgetRespone = res.valueAsString ?? ':((';
     } else {
-      value.root = res?.toString() ?? ':(';
+      value.getRootWidgetRespone = res?.toString() ?? ':(';
+    }
+
+    notifyListeners();
+  }
+
+  Future<void> getRootWidgetSummaryTree() async {
+    final res = await Tree().invokeServiceMethodDaemon(
+        WidgetInspectorServiceExtensions.getRootWidgetSummaryTree.name);
+
+    if (res is Map<String, dynamic>) {
+      value.getRootWidgetSummaryTreeResponse =
+          const JsonEncoder.withIndent('  ').convert(res);
+    } else {
+      value.getRootWidgetSummaryTreeResponse = ':(';
     }
 
     notifyListeners();
@@ -83,13 +102,15 @@ OperatingSystem: ${app.operatingSystem}
 class _State {
   bool appConnected = false;
   String appConnectedDesc = '';
-  String root = '';
+  String getRootWidgetRespone = '';
+  String getRootWidgetSummaryTreeResponse = '';
 }
 
 class Tree {
-  bool get useDaemonApi => serviceManager.isMainIsolatePaused;
   static const inspectorLibraryUri =
       'package:flutter/src/widgets/widget_inspector.dart';
+  static const serviceExtensionPrefix = 'ext.flutter.inspector';
+
   final EvalOnDartLibrary inspectorLibrary =
       EvalOnDartLibrary(libraryName: inspectorLibraryUri);
 
@@ -97,16 +118,55 @@ class Tree {
     String methodName,
   ) async {
     const groupName = 'debugName_0';
-    return invokeServiceMethodObservatory1(methodName, groupName);
+    return _invokeServiceMethodObservatory1(methodName, groupName);
   }
 
-  Future<InstanceRef?> invokeServiceMethodObservatory1(
+  Future<Object?> invokeServiceMethodDaemon(String methodName) {
+    const groupName = 'debugName_0';
+
+    return _invokeServiceMethodDaemonParams(
+      methodName,
+      {'objectGroup': groupName},
+    );
+  }
+
+  Future<Object?> _invokeServiceMethodDaemonParams(
+      String methodName, Map<String, Object?> params) async {
+    final callMethodName = '$serviceExtensionPrefix.$methodName';
+    if (!serviceManager.serviceExtensionManager
+        .isServiceExtensionAvailable(callMethodName)) {
+      final available = await serviceManager.serviceExtensionManager
+          .waitForServiceExtensionAvailable(callMethodName);
+      if (!available) return null;
+    }
+
+    return await _callServiceExtension(callMethodName, params);
+  }
+
+  Future<InstanceRef?> _invokeServiceMethodObservatory1(
     String methodName,
     String arg1,
   ) {
     return inspectorLibrary.eval(
       "WidgetInspectorService.instance.$methodName('$arg1')",
     );
+  }
+
+  Future<Object?> _callServiceExtension(
+    String extension,
+    Map<String, Object?> args,
+  ) async {
+    final r = await serviceManager.service!.callServiceExtension(
+      extension,
+      isolateId: inspectorLibrary.isolateRef!.id,
+      args: args,
+    );
+
+    final json = r.json!;
+    if (json['errorMessage'] != null) {
+      throw Exception('$extension -- ${json['errorMessage']}');
+    }
+    return json['result'];
   }
 }
 
@@ -116,11 +176,11 @@ class EvalOnDartLibrary {
   EvalOnDartLibrary({required this.libraryName});
 
   Future<InstanceRef?> eval(String expression) async {
-    await init();
+    await _init();
     return _eval(expression);
   }
 
-  Future<void> init() async {
+  Future<void> _init() async {
     final Isolate? isolate =
         await serviceManager.isolateManager.isolateState(isolateRef!).isolate;
     _isolateRef = isolate;
@@ -153,7 +213,7 @@ class EvalOnDartLibrary {
         throw result;
       }
       return result as FutureOr<InstanceRef?>;
-    } catch (e, stack) {
+    } catch (e) {
       print('$e - $expression');
     }
     return null;
