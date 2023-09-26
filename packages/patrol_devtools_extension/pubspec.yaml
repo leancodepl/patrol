@@ -11,8 +11,11 @@ dependencies:
   flutter:
     sdk: flutter
 
+  devtools_shared:
+  devtools_app_shared:
   devtools_extensions: 0.0.6
   cupertino_icons: ^1.0.2
+  vm_service:
 
 dev_dependencies:
   flutter_test:

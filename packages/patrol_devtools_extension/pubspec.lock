@@ -66,7 +66,7 @@ packages:
     source: hosted
     version: "1.0.6"
   devtools_app_shared:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: devtools_app_shared
       sha256: "2ba4cbc1e863d25ddc89ac367c3361a806be613bc2cc90d978f884029f179052"
@@ -82,7 +82,7 @@ packages:
     source: hosted
     version: "0.0.6"
   devtools_shared:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: devtools_shared
       sha256: "81528e760c89f0e9e093e8a01135bb067e4ea7beab509e8effc2916452c4a4c1"
@@ -305,7 +305,7 @@ packages:
     source: hosted
     version: "2.1.4"
   vm_service:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: vm_service
       sha256: c538be99af830f478718b51630ec1b6bee5e74e52c8a802d328d9e71d35d2583
