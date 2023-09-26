@@ -39,6 +39,13 @@ class _PatrolDevToolsExtensionState extends State<PatrolDevToolsExtension> {
                 ),
                 Text(state.getRootWidgetRespone),
                 TextButton(
+                  onPressed: state.rootWidgetId.isNotEmpty
+                      ? () => runner.getRootWidgetObject()
+                      : null,
+                  child: const Text('getRootWidgetObject'),
+                ),
+                Text(state.getRootWidgetObjectResponse),
+                TextButton(
                   onPressed: state.appConnected
                       ? () => runner.getRootWidgetSummaryTree()
                       : null,
@@ -78,12 +85,13 @@ OperatingSystem: ${app.operatingSystem}
   }
 
   Future<void> getRootWidget() async {
-    final res = await Tree().invokeServiceMethodReturningNode(
+    final res = await Api().invokeServiceMethodReturningNode(
         WidgetInspectorServiceExtensions.getRootWidget.name);
 
     if (res is InstanceRef) {
       value.getRootWidgetRespone =
           const JsonEncoder.withIndent('  ').convert(res.toJson());
+      value.rootWidgetId = res.id!;
     } else {
       value.getRootWidgetRespone = res?.toString() ?? ':(';
     }
@@ -91,9 +99,21 @@ OperatingSystem: ${app.operatingSystem}
     notifyListeners();
   }
 
+  Future<void> getRootWidgetObject() async {
+    try {
+      final obj = await Api().getObject(value.rootWidgetId);
+      value.getRootWidgetObjectResponse =
+          const JsonEncoder.withIndent('  ').convert(obj.toJson());
+    } catch (e) {
+      value.getRootWidgetObjectResponse = ':( $e';
+    }
+
+    notifyListeners();
+  }
+
   Future<void> getRootWidgetSummaryTreeWithPreviews() async {
     const groupName = 'debugName_0';
-    final res = await Tree().invokeServiceMethodDaemonParams(
+    final res = await Api().invokeServiceMethodDaemonParams(
       WidgetInspectorServiceExtensions
           .getRootWidgetSummaryTreeWithPreviews.name,
       {'groupName': groupName},
@@ -110,7 +130,7 @@ OperatingSystem: ${app.operatingSystem}
   }
 
   Future<void> getRootWidgetSummaryTree() async {
-    final res = await Tree().invokeServiceMethodDaemon(
+    final res = await Api().invokeServiceMethodDaemon(
         WidgetInspectorServiceExtensions.getRootWidgetSummaryTree.name);
 
     if (res is Map<String, dynamic>) {
@@ -127,18 +147,25 @@ OperatingSystem: ${app.operatingSystem}
 class _State {
   bool appConnected = false;
   String appConnectedDesc = '';
+  String rootWidgetId = '';
+  String getRootWidgetObjectResponse = '';
   String getRootWidgetRespone = '';
   String getRootWidgetSummaryTreeResponse = '';
   String getRootWidgetSummaryTreeWithPreviewsResponse = '';
 }
 
-class Tree {
+class Api {
   static const inspectorLibraryUri =
       'package:flutter/src/widgets/widget_inspector.dart';
   static const serviceExtensionPrefix = 'ext.flutter.inspector';
 
   final EvalOnDartLibrary inspectorLibrary =
       EvalOnDartLibrary(libraryName: inspectorLibraryUri);
+
+  Future<Obj> getObject(String objectId) {
+    return serviceManager.service!
+        .getObject(inspectorLibrary.isolateRef!.id!, objectId);
+  }
 
   Future<Object?> invokeServiceMethodReturningNode(
     String methodName,
