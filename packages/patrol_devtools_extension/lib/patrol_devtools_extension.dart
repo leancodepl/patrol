@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:devtools_app_shared/service.dart';
 import 'package:devtools_extensions/devtools_extensions.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:vm_service/vm_service.dart';
 
 class PatrolDevToolsExtension extends StatefulWidget {
@@ -45,6 +47,7 @@ class _PatrolDevToolsExtensionState extends State<PatrolDevToolsExtension> {
                   child: const Text('getRootWidgetObject'),
                 ),
                 Text(state.getRootWidgetObjectResponse),
+                Text(state.rootWidgetValueAsJson),
                 TextButton(
                   onPressed: state.appConnected
                       ? () => runner.getRootWidgetSummaryTree()
@@ -59,6 +62,13 @@ class _PatrolDevToolsExtensionState extends State<PatrolDevToolsExtension> {
                   child: const Text('getRootWidgetSummaryTreeWithPreviews'),
                 ),
                 Text(state.getRootWidgetSummaryTreeWithPreviewsResponse),
+                TextButton(
+                  onPressed: state.appConnected
+                      ? () => runner.debugDumpRenderTree()
+                      : null,
+                  child: const Text('debugDumpRenderTree'),
+                ),
+                Text(state.debugDumpRenderTreeResponse),
               ],
             ),
           );
@@ -104,6 +114,10 @@ OperatingSystem: ${app.operatingSystem}
       final obj = await Api().getObject(value.rootWidgetId);
       value.getRootWidgetObjectResponse =
           const JsonEncoder.withIndent('  ').convert(obj.toJson());
+
+      final valueAsString = obj.json!['valueAsString'];
+      value.rootWidgetValueAsJson =
+          const JsonEncoder.withIndent('  ').convert(jsonDecode(valueAsString));
     } catch (e) {
       value.getRootWidgetObjectResponse = ':( $e';
     }
@@ -142,6 +156,15 @@ OperatingSystem: ${app.operatingSystem}
 
     notifyListeners();
   }
+
+  Future<void> debugDumpRenderTree() async {
+    final res = await ExtensionApi().debugDumpRenderTree();
+
+    value.debugDumpRenderTreeResponse =
+        const JsonEncoder.withIndent('  ').convert(res.json).substring(0, 1000);
+
+    notifyListeners();
+  }
 }
 
 class _State {
@@ -149,9 +172,21 @@ class _State {
   String appConnectedDesc = '';
   String rootWidgetId = '';
   String getRootWidgetObjectResponse = '';
+  String rootWidgetValueAsJson = '';
   String getRootWidgetRespone = '';
   String getRootWidgetSummaryTreeResponse = '';
   String getRootWidgetSummaryTreeWithPreviewsResponse = '';
+  String debugDumpRenderTreeResponse = '';
+}
+
+class ExtensionApi {
+  static const _flutterExtensionPrefix = 'ext.flutter.';
+
+  Future<Response> debugDumpRenderTree() async {
+    final name =
+        '$_flutterExtensionPrefix${RenderingServiceExtensions.debugDumpRenderTree.name}';
+    return serviceManager.callServiceExtensionOnMainIsolate(name);
+  }
 }
 
 class Api {
@@ -159,8 +194,11 @@ class Api {
       'package:flutter/src/widgets/widget_inspector.dart';
   static const serviceExtensionPrefix = 'ext.flutter.inspector';
 
-  final EvalOnDartLibrary inspectorLibrary =
-      EvalOnDartLibrary(libraryName: inspectorLibraryUri);
+  final inspectorLibrary = EvalOnDartLibrary(
+    inspectorLibraryUri,
+    serviceManager.service!,
+    serviceManager: serviceManager,
+  );
 
   Future<Obj> getObject(String objectId) {
     return serviceManager.service!
@@ -202,6 +240,7 @@ class Api {
   ) {
     return inspectorLibrary.eval(
       "WidgetInspectorService.instance.$methodName('$arg1')",
+      isAlive: null,
     );
   }
 
@@ -221,56 +260,4 @@ class Api {
     }
     return json['result'];
   }
-}
-
-class EvalOnDartLibrary {
-  final String libraryName;
-
-  EvalOnDartLibrary({required this.libraryName});
-
-  Future<InstanceRef?> eval(String expression) async {
-    await _init();
-    return _eval(expression);
-  }
-
-  Future<void> _init() async {
-    final Isolate? isolate =
-        await serviceManager.isolateManager.isolateState(isolateRef!).isolate;
-    _isolateRef = isolate;
-
-    for (LibraryRef library in isolate?.libraries ?? []) {
-      if (libraryName == library.uri) {
-        _libraryRef = library;
-        return;
-      }
-    }
-  }
-
-  IsolateRef? get isolateRef =>
-      serviceManager.isolateManager.selectedIsolate.value;
-  IsolateRef? _isolateRef;
-
-  Future<InstanceRef?> _eval(String expression) async {
-    try {
-      final result = await serviceManager.service!.evaluate(
-        _isolateRef!.id!,
-        _libraryRef!.id!,
-        expression,
-        scope: null,
-        disableBreakpoints: null,
-      );
-      if (result is Sentinel) {
-        return null;
-      }
-      if (result is ErrorRef) {
-        throw result;
-      }
-      return result as FutureOr<InstanceRef?>;
-    } catch (e) {
-      print('$e - $expression');
-    }
-    return null;
-  }
-
-  LibraryRef? _libraryRef;
 }
