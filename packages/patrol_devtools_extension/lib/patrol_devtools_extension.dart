@@ -39,7 +39,6 @@ class _PatrolDevToolsExtensionState extends State<PatrolDevToolsExtension> {
                       state.appConnected ? () => runner.getRootWidget() : null,
                   child: const Text('getRootWidget'),
                 ),
-                Text(state.getRootWidgetRespone),
                 TextButton(
                   onPressed: state.rootWidgetId.isNotEmpty
                       ? () => runner.getRootWidgetObject()
@@ -48,6 +47,13 @@ class _PatrolDevToolsExtensionState extends State<PatrolDevToolsExtension> {
                 ),
                 Text(state.getRootWidgetObjectResponse),
                 Text(state.rootWidgetValueAsJson),
+                Text(state.getRootWidgetRespone),
+                TextButton(
+                  onPressed:
+                      state.appConnected ? () => runner.getNativeViews() : null,
+                  child: const Text('getNativeViews'),
+                ),
+                Text(state.getNativeViewsResponse),
                 TextButton(
                   onPressed: state.appConnected
                       ? () => runner.getRootWidgetSummaryTree()
@@ -95,8 +101,9 @@ OperatingSystem: ${app.operatingSystem}
   }
 
   Future<void> getRootWidget() async {
-    final res = await Api().invokeServiceMethodReturningNode(
-        WidgetInspectorServiceExtensions.getRootWidget.name);
+    final res = await Api(serviceExtensionPrefix: 'ext.flutter.inspector')
+        .invokeServiceMethodReturningNode(
+            WidgetInspectorServiceExtensions.getRootWidget.name);
 
     if (res is InstanceRef) {
       value.getRootWidgetRespone =
@@ -111,7 +118,8 @@ OperatingSystem: ${app.operatingSystem}
 
   Future<void> getRootWidgetObject() async {
     try {
-      final obj = await Api().getObject(value.rootWidgetId);
+      final obj = await Api(serviceExtensionPrefix: 'ext.flutter.inspector')
+          .getObject(value.rootWidgetId);
       value.getRootWidgetObjectResponse =
           const JsonEncoder.withIndent('  ').convert(obj.toJson());
 
@@ -127,7 +135,8 @@ OperatingSystem: ${app.operatingSystem}
 
   Future<void> getRootWidgetSummaryTreeWithPreviews() async {
     const groupName = 'debugName_0';
-    final res = await Api().invokeServiceMethodDaemonParams(
+    final res = await Api(serviceExtensionPrefix: 'ext.flutter.inspector')
+        .invokeServiceMethodDaemonParams(
       WidgetInspectorServiceExtensions
           .getRootWidgetSummaryTreeWithPreviews.name,
       {'groupName': groupName},
@@ -143,9 +152,24 @@ OperatingSystem: ${app.operatingSystem}
     notifyListeners();
   }
 
+  Future<void> getNativeViews() async {
+    final res = await Api(serviceExtensionPrefix: 'ext.flutter')
+        .invokeServiceMethodDaemon('PatrolDevToolsGetNativeViews');
+
+    if (res is Map<String, dynamic>) {
+      value.getNativeViewsResponse =
+          const JsonEncoder.withIndent('  ').convert(res);
+    } else {
+      value.getNativeViewsResponse = ':(';
+    }
+
+    notifyListeners();
+  }
+
   Future<void> getRootWidgetSummaryTree() async {
-    final res = await Api().invokeServiceMethodDaemon(
-        WidgetInspectorServiceExtensions.getRootWidgetSummaryTree.name);
+    final res = await Api(serviceExtensionPrefix: 'ext.flutter.inspector')
+        .invokeServiceMethodDaemon(
+            WidgetInspectorServiceExtensions.getRootWidgetSummaryTree.name);
 
     if (res is Map<String, dynamic>) {
       value.getRootWidgetSummaryTreeResponse =
@@ -175,6 +199,7 @@ class _State {
   String rootWidgetValueAsJson = '';
   String getRootWidgetRespone = '';
   String getRootWidgetSummaryTreeResponse = '';
+  String getNativeViewsResponse = '';
   String getRootWidgetSummaryTreeWithPreviewsResponse = '';
   String debugDumpRenderTreeResponse = '';
 }
@@ -192,7 +217,11 @@ class ExtensionApi {
 class Api {
   static const inspectorLibraryUri =
       'package:flutter/src/widgets/widget_inspector.dart';
-  static const serviceExtensionPrefix = 'ext.flutter.inspector';
+
+  final String serviceExtensionPrefix;
+  Api({
+    required this.serviceExtensionPrefix,
+  });
 
   final inspectorLibrary = EvalOnDartLibrary(
     inspectorLibraryUri,

@@ -111,6 +111,7 @@ class FlutterTool {
           }
           completer.complete();
         }
+        print(line);
         _logger.detail('\t: $line');
       }).disposedBy(scope);
 

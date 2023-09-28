@@ -153,6 +153,22 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
   }
 
   @override
+  void initServiceExtensions() {
+    super.initServiceExtensions();
+
+    print('register service extension');
+    registerServiceExtension(
+      name: 'PatrolDevToolsGetNativeViews',
+      callback: (args) async {
+        print('inside service extension');
+        return <String, dynamic>{
+          'result': <String, dynamic>{'custom_response': 'hehehe'}
+        };
+      },
+    );
+  }
+
+  @override
   Future<void> runTest(
     Future<void> Function() testBody,
     VoidCallback invariantTester, {
