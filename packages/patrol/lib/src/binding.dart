@@ -8,7 +8,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/common.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:patrol/patrol.dart';
+import 'package:http/http.dart' as http;
 import 'package:patrol/src/extensions.dart';
+import 'package:patrol/src/native/contracts/contracts.dart';
+import 'package:patrol/src/native/contracts/native_automator_client.dart';
 // ignore: implementation_imports, depend_on_referenced_packages
 import 'package:test_api/src/backend/invoker.dart';
 
@@ -161,9 +164,29 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
       name: 'PatrolDevToolsGetNativeViews',
       callback: (args) async {
         print('inside service extension');
-        return <String, dynamic>{
-          'result': <String, dynamic>{'custom_response': 'hehehe'}
-        };
+
+        const _config = NativeAutomatorConfig();
+        final client = NativeAutomatorClient(
+          http.Client(),
+          Uri.http('${_config.host}:${_config.port}'),
+          timeout: _config.connectionTimeout,
+        );
+
+        try {
+          final res = await client.getNativeViews(GetNativeViewsRequest(
+              selector: Selector(textContains: 'Network'),
+              appId: _config.packageName));
+
+          return <String, dynamic>{
+            'result': <String, dynamic>{'custom_response': res.toJson()}
+          };
+        } catch (e) {
+          return <String, dynamic>{
+            'result': <String, dynamic>{
+              'custom_response': 'client.getNativeViews failed'
+            }
+          };
+        }
       },
     );
   }
