@@ -15,22 +15,20 @@ void main() {
     ($) async {
       await createApp($);
 
-      await Future.delayed(Duration(seconds: 5));
-
       await $(FloatingActionButton).tap();
       expect($(#counterText).text, '1');
     },
   );
 
-  // WORKS
+  // FAILS
   // 12 + 1 + 180 + 2 = 195
   //
   // example_test: 12
   // space: 1
-  // alpha * 36: 180
+  // kocyk * 36: 180
   // A: 2
   patrol(
-    '${"alpha" * 36}AA', // 195
+    '${"kocyk" * 36}AA', // 195
     ($) async {
       await createApp($);
 

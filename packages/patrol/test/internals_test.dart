@@ -170,13 +170,17 @@ void main() {
         Group(
           'example_test',
           [
-            _localTest('example_test ${"alpha" * 40}'), // 12 + 1 + 200 = 213
+            _localTest('example_test alpha'), // 18 chars
+            _localTest('example_test zielony kocyk'), // 26 chars, 6 too many
           ],
         ),
       ]);
 
       // when
-      final dartTestGroup = createDartTestGroup(topLevelGroup);
+      final dartTestGroup = createDartTestGroup(
+        topLevelGroup,
+        maxTestCaseLength: 20,
+      );
 
       // then
       expect(
@@ -191,6 +195,7 @@ void main() {
                 type: GroupEntryType.group,
                 entries: [
                   _testEntry('alpha'),
+                  _testEntry('zielony'),
                 ],
               ),
             ],

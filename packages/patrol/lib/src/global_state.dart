@@ -14,7 +14,11 @@ String get currentTestFullName {
   final parentGroupName = invoker.liveTest.groups.last.name;
   final testName = invoker.liveTest.individualName;
 
-  return '$parentGroupName $testName'.substring(0, 190);
+  var nameCandidate = '$parentGroupName $testName';
+  if (nameCandidate.length > 190) {
+    nameCandidate = nameCandidate.substring(0, 190);
+  }
+  return nameCandidate;
 }
 
 /// Returns the individual name of the current test. Omits all ancestor groups.

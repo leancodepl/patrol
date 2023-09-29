@@ -168,6 +168,7 @@ DartGroupEntry createDartTestGroup(
   Group parentGroup, {
   String name = '',
   int level = 0,
+  int maxTestCaseLength = 190,
 }) {
   final groupDTO = DartGroupEntry(
     name: name,
@@ -180,8 +181,14 @@ DartGroupEntry createDartTestGroup(
 
     var name = entry.name;
     if (parentGroup.name.isNotEmpty) {
-      name = deduplicateGroupEntryName(parentGroup.name, entry.name);
-      name = name.substring(0, 190);
+      // Assume that parentGroupName fits maxTestCaseLength
+      // Assume that after cropping, test names are different.
+
+      if (name.length > maxTestCaseLength) {
+        name = name.substring(0, maxTestCaseLength);
+      }
+
+      name = deduplicateGroupEntryName(parentGroup.name, name);
     }
 
     if (entry is Group) {
@@ -190,6 +197,7 @@ DartGroupEntry createDartTestGroup(
           entry,
           name: name,
           level: level + 1,
+          maxTestCaseLength: maxTestCaseLength,
         ),
       );
     } else if (entry is Test) {
@@ -217,6 +225,11 @@ DartGroupEntry createDartTestGroup(
 }
 
 /// Allows for retrieving the name of a GroupEntry by stripping the names of all ancestor groups.
+///
+/// Example:
+/// parentName = 'example_test myGroup'
+/// currentName = 'example_test myGroup myTest'
+/// should return 'myTest'
 @internal
 String deduplicateGroupEntryName(String parentName, String currentName) {
   return currentName.substring(
