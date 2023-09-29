@@ -1,5 +1,3 @@
-// ignore_for_file: invalid_use_of_internal_member, implementation_imports
-
 import 'dart:io' as io;
 
 import 'package:flutter/foundation.dart';
@@ -7,12 +5,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:meta/meta.dart';
 import 'package:patrol/src/binding.dart';
-import 'package:patrol/src/extensions.dart';
+import 'package:patrol/src/global_state.dart' as global_state;
 import 'package:patrol/src/native/contracts/contracts.dart';
 import 'package:patrol/src/native/native.dart';
 import 'package:patrol_finders/patrol_finders.dart' as finders;
+// ignore: implementation_imports
 import 'package:test_api/src/backend/group.dart';
-import 'package:test_api/src/backend/invoker.dart';
+// ignore: implementation_imports
 import 'package:test_api/src/backend/test.dart';
 
 import 'constants.dart' as constants;
@@ -116,10 +115,8 @@ void patrolTest(
         // "integration_test/examples" directory, we assume that the name of the
         // immediate parent group is "examples.example_test".
 
-        final testName = Invoker.current!.fullCurrentTestName();
-
         final requestedToExecute = await patrolBinding.patrolAppService
-            .waitForExecutionRequest(testName);
+            .waitForExecutionRequest(global_state.currentTestFullName);
 
         if (!requestedToExecute) {
           return;

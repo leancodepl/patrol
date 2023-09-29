@@ -4,7 +4,7 @@ import 'package:patrol/src/common.dart'
     show createDartTestGroup, deduplicateGroupEntryName;
 import 'package:patrol/src/native/contracts/contracts.dart';
 import 'package:test_api/src/backend/group.dart';
-import 'package:test_api/src/backend/invoker.dart';
+import 'package:test_api/src/backend/invoker.dart' show LocalTest;
 import 'package:test_api/src/backend/metadata.dart';
 
 void main() {
