@@ -162,6 +162,42 @@ void main() {
         ),
       );
     });
+
+    test('smoke test 3 (long test names)', () {
+      // given
+      final topLevelGroup = Group.root([
+        LocalTest('patrol_test_explorer', Metadata.empty, () {}),
+        Group(
+          'example_test',
+          [
+            _localTest('example_test ${"alpha" * 40}'), // 12 + 1 + 200 = 213
+          ],
+        ),
+      ]);
+
+      // when
+      final dartTestGroup = createDartTestGroup(topLevelGroup);
+
+      // then
+      expect(
+        dartTestGroup,
+        equals(
+          DartGroupEntry(
+            name: '',
+            type: GroupEntryType.group,
+            entries: [
+              DartGroupEntry(
+                name: 'example_test',
+                type: GroupEntryType.group,
+                entries: [
+                  _testEntry('alpha'),
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
+    });
   });
 
   group('deduplicateGroupEntryName()', () {
