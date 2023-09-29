@@ -21,6 +21,6 @@ String get currentTestIndividualName {
 }
 
 /// Returns whether the current test is passing.
-bool isCurrentTestPassing() {
+bool get isCurrentTestPassing {
   return Invoker.current!.liveTest.state.result.isPassing;
 }

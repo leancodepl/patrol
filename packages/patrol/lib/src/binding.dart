@@ -78,7 +78,7 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
           'finished test $_currentDartTest. Will report its status back to the native side',
         );
 
-        final passed = global_state.isCurrentTestPassing();
+        final passed = global_state.isCurrentTestPassing;
         logger(
           'tearDown(): test "$testName" in group "$_currentDartTest", passed: $passed',
         );
