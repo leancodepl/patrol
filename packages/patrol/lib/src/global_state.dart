@@ -1,6 +1,9 @@
 // ignore: implementation_imports
 import 'package:test_api/src/backend/invoker.dart';
 
+/// Maximum test case length for ATO, after transformations.
+///
+/// See https://github.com/leancodepl/patrol/issues/1725
 const maxTestLength = 190;
 
 /// This file wraps the [Invoker] API, which is internal to package:test. We

@@ -168,7 +168,7 @@ DartGroupEntry createDartTestGroup(
   Group parentGroup, {
   String name = '',
   int level = 0,
-  int maxTestCaseLength = 190,
+  int maxTestCaseLength = global_state.maxTestLength,
 }) {
   final groupDTO = DartGroupEntry(
     name: name,
