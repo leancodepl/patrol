@@ -1,6 +1,8 @@
 // ignore: implementation_imports
 import 'package:test_api/src/backend/invoker.dart';
 
+const maxTestLength = 190;
+
 /// This file wraps the [Invoker] API, which is internal to package:test. We
 /// want to minimize the usage of internal APIs to a minimum.
 
@@ -12,7 +14,7 @@ String get currentTestFullName {
   final parentGroupName = invoker.liveTest.groups.last.name;
   final testName = invoker.liveTest.individualName;
 
-  return '$parentGroupName $testName';
+  return '$parentGroupName $testName'.substring(0, 190);
 }
 
 /// Returns the individual name of the current test. Omits all ancestor groups.

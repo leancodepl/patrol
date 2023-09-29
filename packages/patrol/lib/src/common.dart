@@ -181,6 +181,7 @@ DartGroupEntry createDartTestGroup(
     var name = entry.name;
     if (parentGroup.name.isNotEmpty) {
       name = deduplicateGroupEntryName(parentGroup.name, entry.name);
+      name = name.substring(0, 190);
     }
 
     if (entry is Group) {
