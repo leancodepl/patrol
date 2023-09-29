@@ -4,7 +4,8 @@ import 'common.dart';
 
 void main() {
   patrol(
-    'counter state is the same after going to Home and switching apps',
+    // '${"alpha" * 30}ABCDE', / 12 + 1 + 150 = 163
+    'alpha' * 40,
     ($) async {
       await createApp($);
 
