@@ -5,7 +5,14 @@ set -euo pipefail
 # * DEVICE_MODEL (for example: "iphone11pro")
 # * DEVICE_VERSION (for example: "16.3")
 
-# And ios_tests.zip containing the iOS app and XCTest files
+# patrol build ios must be called before this script
+
+cd build/ios_integ/Build/Products
+
+rm -f ios_tests.zip
+zip -r ios_tests.zip Release-iphoneos/*.app *.xctestrun
+
+cd -
 
 gcloud firebase test ios run \
 	--type xctest \

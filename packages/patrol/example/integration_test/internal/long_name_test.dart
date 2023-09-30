@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'common.dart';
+import '../common.dart';
 
 String _generateString(int length) {
   return 'a' * length;
@@ -27,6 +27,26 @@ void main() {
 
       expect($(#counterText).text, '2');
       expect($('Hello, Flutter!'), findsOneWidget);
+    },
+  );
+
+  patrol(
+    '${"alpha" * 36}A', // 194 - max allowed value
+    ($) async {
+      await createApp($);
+
+      await $(FloatingActionButton).tap();
+      expect($(#counterText).text, '1');
+    },
+  );
+
+  patrol(
+    '${"kocyk" * 36}AA', // 195 - 1 too many
+    ($) async {
+      await createApp($);
+
+      await $(FloatingActionButton).tap();
+      expect($(#counterText).text, '1');
     },
   );
 }
