@@ -154,13 +154,14 @@ jobs:
       - name: Run unit tests
         working-directory: packages/patrol/example/ios
         run: |
+          set -o pipefail
           xcodebuild test \
             -workspace Runner.xcworkspace \
             -scheme Runner \
             -only-testing RunnerTests \
             -configuration Debug \
             -sdk iphoneos -destination 'platform=iOS Simulator,name=iPhone 14' \
-            -derivedDataPath ../build/ios_unit | xcbeautify
+            -derivedDataPath ../build/ios_unit | xcbeautify --renderer github-actions
 
   prepare-flutter:
     name: Flutter ${{ matrix.flutter-version }}

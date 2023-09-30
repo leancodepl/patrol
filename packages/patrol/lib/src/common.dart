@@ -1,5 +1,3 @@
-// ignore_for_file: invalid_use_of_internal_member, implementation_imports
-
 import 'dart:io' as io;
 
 import 'package:flutter/foundation.dart';
@@ -7,12 +5,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:meta/meta.dart';
 import 'package:patrol/src/binding.dart';
-import 'package:patrol/src/native/contracts/contracts.pb.dart';
-import 'package:patrol/src/native/contracts/contracts.pbgrpc.dart';
+import 'package:patrol/src/global_state.dart' as global_state;
+import 'package:patrol/src/native/contracts/contracts.dart';
 import 'package:patrol/src/native/native.dart';
 import 'package:patrol_finders/patrol_finders.dart' as finders;
+// ignore: implementation_imports
 import 'package:test_api/src/backend/group.dart';
-import 'package:test_api/src/backend/invoker.dart';
+// ignore: implementation_imports
 import 'package:test_api/src/backend/test.dart';
 
 import 'constants.dart' as constants;
@@ -116,9 +115,8 @@ void patrolTest(
         // "integration_test/examples" directory, we assume that the name of the
         // immediate parent group is "examples.example_test".
 
-        final parentGroupName = Invoker.current!.liveTest.groups.last.name;
         final requestedToExecute = await patrolBinding.patrolAppService
-            .waitForExecutionRequest(parentGroupName);
+            .waitForExecutionRequest(global_state.currentTestFullName);
 
         if (!requestedToExecute) {
           return;
@@ -161,24 +159,98 @@ void patrolTest(
   );
 }
 
-/// Creates a DartTestGroup by visiting the subgroups of [topLevelGroup].
+/// Creates a DartGroupEntry by visiting the subgroups of [parentGroup].
+///
+/// The initial [parentGroup] is the implicit, unnamed top-level [Group] present
+/// in every test case.
 @internal
-DartTestGroup createDartTestGroup(
-  Group topLevelGroup, {
-  String prefix = '',
+DartGroupEntry createDartTestGroup(
+  Group parentGroup, {
+  String name = '',
+  int level = 0,
+  int maxTestCaseLength = global_state.maxTestLength,
 }) {
-  final groupName = topLevelGroup.name.replaceFirst(prefix, '').trim();
-  final group = DartTestGroup(name: groupName);
+  final groupDTO = DartGroupEntry(
+    name: name,
+    type: GroupEntryType.group,
+    entries: [],
+  );
 
-  for (final entry in topLevelGroup.entries) {
-    if (entry is Group) {
-      group.groups.add(DartTestGroup(name: entry.name));
+  for (final entry in parentGroup.entries) {
+    // Trim names of current groups
+
+    var name = entry.name;
+    if (parentGroup.name.isNotEmpty) {
+      // Assume that parentGroupName fits maxTestCaseLength
+      // Assume that after cropping, test names are different.
+
+      if (name.length > maxTestCaseLength) {
+        name = name.substring(0, maxTestCaseLength);
+      }
+
+      name = deduplicateGroupEntryName(parentGroup.name, name);
     }
 
-    if (entry is Test && entry.name != 'patrol_test_explorer') {
-      throw StateError('Expected group, got test: ${entry.name}');
+    if (entry is Group) {
+      groupDTO.entries.add(
+        createDartTestGroup(
+          entry,
+          name: name,
+          level: level + 1,
+          maxTestCaseLength: maxTestCaseLength,
+        ),
+      );
+    } else if (entry is Test) {
+      if (entry.name == 'patrol_test_explorer') {
+        // throw StateError('Expected group, got test: ${entry.name}');
+        // Ignore the bogus test that is used to discover the test structure.
+        continue;
+      }
+
+      if (level < 1) {
+        throw StateError('Test is not allowed to be defined at level $level');
+      }
+
+      groupDTO.entries.add(
+        DartGroupEntry(name: name, type: GroupEntryType.test, entries: []),
+      );
+    } else {
+      // This should really never happen, because Group and Test are the only
+      // subclasses of GroupEntry.
+      throw StateError('invalid state');
     }
   }
 
-  return group;
+  return groupDTO;
+}
+
+/// Allows for retrieving the name of a GroupEntry by stripping the names of all ancestor groups.
+///
+/// Example:
+/// parentName = 'example_test myGroup'
+/// currentName = 'example_test myGroup myTest'
+/// should return 'myTest'
+@internal
+String deduplicateGroupEntryName(String parentName, String currentName) {
+  return currentName.substring(
+    parentName.length + 1,
+    currentName.length,
+  );
+}
+
+/// Recursively prints the structure of the test suite.
+@internal
+void printGroupStructure(DartGroupEntry group, {int indentation = 0}) {
+  final indent = ' ' * indentation;
+  debugPrint("$indent-- group: '${group.name}'");
+
+  for (final entry in group.entries) {
+    if (entry.type == GroupEntryType.test) {
+      debugPrint("$indent     -- test: '${entry.name}'");
+    } else {
+      for (final subgroup in entry.entries) {
+        printGroupStructure(subgroup, indentation: indentation + 5);
+      }
+    }
+  }
 }

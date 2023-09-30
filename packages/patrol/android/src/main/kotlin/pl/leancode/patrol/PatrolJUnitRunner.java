@@ -10,12 +10,16 @@ import android.content.Intent;
 import android.os.Bundle;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.AndroidJUnitRunner;
-import io.grpc.StatusRuntimeException;
-import pl.leancode.patrol.contracts.Contracts.DartTestGroup;
 
+import pl.leancode.patrol.contracts.Contracts;
+import pl.leancode.patrol.contracts.PatrolAppServiceClientException;
+
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import static pl.leancode.patrol.contracts.Contracts.DartGroupEntry;
 import static pl.leancode.patrol.contracts.Contracts.RunDartTestResponse;
 
 /**
@@ -53,7 +57,8 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
      * This default behavior doesn't work with Flutter apps. That's because in Flutter
      * apps, the tests are in the app itself, so running only the instrumentation
      * during the initial run is not enough.
-     * The app must also be run, and queried for Dart tests That's what this method does.
+     * The app must also be run, and queried for Dart tests.
+     * That's what this method does.
      * </p>
      */
     public void setUp(Class<?> activityClass) {
@@ -91,13 +96,8 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
     public void waitForPatrolAppService() {
         final String TAG = "PatrolJUnitRunner.setUp(): ";
 
-        try {
-            Logger.INSTANCE.i(TAG + "Waiting for PatrolAppService to report its readiness...");
-            PatrolServer.Companion.getAppReadyFuture().get();
-        } catch (InterruptedException | ExecutionException e) {
-            Logger.INSTANCE.e(TAG + "Exception was thrown when waiting for appReady: ", e);
-            throw new RuntimeException(e);
-        }
+        Logger.INSTANCE.i(TAG + "Waiting for PatrolAppService to report its readiness...");
+        PatrolServer.Companion.getAppReady().block();
 
         Logger.INSTANCE.i(TAG + "PatrolAppService is ready to report Dart tests");
     }
@@ -106,13 +106,18 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
         final String TAG = "PatrolJUnitRunner.listDartTests(): ";
 
         try {
-            final DartTestGroup dartTestGroup = patrolAppServiceClient.listDartTests();
-            Object[] dartTestFiles = ContractsExtensionsKt.listFlatDartFiles(dartTestGroup).toArray();
-            Logger.INSTANCE.i(TAG + "Got Dart tests: " + Arrays.toString(dartTestFiles));
-            return dartTestFiles;
-        } catch (StatusRuntimeException e) {
+            final DartGroupEntry dartTestGroup = patrolAppServiceClient.listDartTests();
+            List<DartGroupEntry> dartTestCases = ContractsExtensionsKt.listTestsFlat(dartTestGroup, "");
+            List<String> dartTestCaseNamesList = new ArrayList<>();
+            for (DartGroupEntry dartTestCase : dartTestCases) {
+                dartTestCaseNamesList.add(dartTestCase.getName());
+            }
+            Object[] dartTestCaseNames = dartTestCaseNamesList.toArray();
+            Logger.INSTANCE.i(TAG + "Got Dart tests: " + Arrays.toString(dartTestCaseNames));
+            return dartTestCaseNames;
+        } catch (PatrolAppServiceClientException e) {
             Logger.INSTANCE.e(TAG + "Failed to list Dart tests: ", e);
-            throw e;
+            throw new RuntimeException(e);
         }
     }
 
@@ -126,13 +131,13 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
         try {
             Logger.INSTANCE.i(TAG + "Requested execution");
             RunDartTestResponse response = patrolAppServiceClient.runDartTest(name);
-            if (response.getResult() == RunDartTestResponse.Result.FAILURE) {
+            if (response.getResult() == Contracts.RunDartTestResponseResult.failure) {
                 throw new AssertionError("Dart test failed: " + name + "\n" + response.getDetails());
             }
             return response;
-        } catch (StatusRuntimeException e) {
+        } catch (PatrolAppServiceClientException e) {
             Logger.INSTANCE.e(TAG + e.getMessage(), e.getCause());
-            throw e;
+            throw new RuntimeException(e);
         }
     }
 }

@@ -1,5 +1,4 @@
 import Flutter
-import GRPC
 import UIKit
 
 let kChannelName = "pl.leancode.patrol/main"

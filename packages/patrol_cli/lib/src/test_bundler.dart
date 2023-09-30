@@ -28,7 +28,7 @@ import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
-import 'package:patrol/src/native/contracts/contracts.pbgrpc.dart';
+import 'package:patrol/src/native/contracts/contracts.dart';
 import 'package:test_api/src/backend/invoker.dart';
 
 // START: GENERATED TEST IMPORTS
@@ -71,7 +71,7 @@ Future<void> main() async {
   final nativeAutomator = NativeAutomator(config: NativeAutomatorConfig());
   await nativeAutomator.initialize();
   final binding = PatrolBinding.ensureInitialized();
-  final testExplorationCompleter = Completer<DartTestGroup>();
+  final testExplorationCompleter = Completer<DartGroupEntry>();
 
   // A special test to expore the hierarchy of groups and tests. This is a hack
   // around https://github.com/dart-lang/test/issues/1998.
@@ -79,9 +79,13 @@ Future<void> main() async {
   // This test must be the first to run. If not, the native side likely won't
   // receive any tests, and everything will fall apart.
   test('patrol_test_explorer', () {
+    // Maybe somewhat counterintuitively, this callback runs *after* the calls
+    // to group() below.
     final topLevelGroup = Invoker.current!.liveTest.groups.first;
     final dartTestGroup = createDartTestGroup(topLevelGroup);
     testExplorationCompleter.complete(dartTestGroup);
+    print('patrol_test_explorer: obtained Dart-side test hierarchy:');
+    printGroupStructure(dartTestGroup);
   });
 
   // START: GENERATED TEST GROUPS

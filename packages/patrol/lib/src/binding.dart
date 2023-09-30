@@ -1,17 +1,10 @@
-// We allow for using properties of IntegrationTestWidgetsFlutterBinding, which
-// are marked as @visibleForTesting but we need them (we could write our own,
-// but we're lazy and prefer to use theirs).
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/common.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:patrol/patrol.dart';
-// ignore: implementation_imports, depend_on_referenced_packages
-import 'package:test_api/src/backend/invoker.dart';
-// ignore: implementation_imports, depend_on_referenced_packages
-import 'package:test_api/src/backend/live_test.dart';
+import 'package:patrol/src/global_state.dart' as global_state;
 
 import 'constants.dart' as constants;
 
@@ -45,11 +38,10 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
   PatrolBinding() {
     final oldTestExceptionReporter = reportTestException;
     reportTestException = (details, testDescription) {
-      final currentDartTestFile = _currentDartTestFile;
-      if (currentDartTestFile != null) {
+      final currentDartTest = _currentDartTest;
+      if (currentDartTest != null) {
         assert(!constants.hotRestartEnabled);
-        _testResults[currentDartTestFile] =
-            Failure(testDescription, '$details');
+        _testResults[currentDartTest] = Failure(testDescription, '$details');
       }
       oldTestExceptionReporter(details, testDescription);
     };
@@ -60,7 +52,7 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
         return;
       }
 
-      _currentDartTestFile = Invoker.current!.liveTest.parentGroupName;
+      _currentDartTest = global_state.currentTestFullName;
     });
 
     tearDown(() async {
@@ -69,7 +61,7 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
         return;
       }
 
-      final testName = Invoker.current!.liveTest.individualName;
+      final testName = global_state.currentTestIndividualName;
       final isTestExplorer = testName == 'patrol_test_explorer';
       if (isTestExplorer) {
         return;
@@ -79,20 +71,27 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
         );
       }
 
-      final invoker = Invoker.current!;
-
       final nameOfRequestedTest = await patrolAppService.testExecutionRequested;
-      if (nameOfRequestedTest == _currentDartTestFile) {
-        final passed = invoker.liveTest.state.result.isPassing;
+
+      if (nameOfRequestedTest == _currentDartTest) {
         logger(
-          'tearDown(): test "$testName" in group "$_currentDartTestFile", passed: $passed',
+          'finished test $_currentDartTest. Will report its status back to the native side',
+        );
+
+        final passed = global_state.isCurrentTestPassing;
+        logger(
+          'tearDown(): test "$testName" in group "$_currentDartTest", passed: $passed',
         );
         await patrolAppService.markDartTestAsCompleted(
-          dartFileName: _currentDartTestFile!,
+          dartFileName: _currentDartTest!,
           passed: passed,
-          details: _testResults[_currentDartTestFile!] is Failure
-              ? (_testResults[_currentDartTestFile!] as Failure?)?.details
+          details: _testResults[_currentDartTest!] is Failure
+              ? (_testResults[_currentDartTest!] as Failure?)?.details
               : null,
+        );
+      } else {
+        logger(
+          'finished test $_currentDartTest, but it was not requested, so its status will not be reported back to the native side',
         );
       }
     });
@@ -127,7 +126,7 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
   static PatrolBinding get instance => BindingBase.checkInstance(_instance);
   static PatrolBinding? _instance;
 
-  String? _currentDartTestFile;
+  String? _currentDartTest;
 
   /// Keys are the test descriptions, and values are either [_success] or
   /// a [Failure].
@@ -164,8 +163,8 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
   @override
   void attachRootWidget(Widget rootWidget) {
     assert(
-      (_currentDartTestFile != null) != (constants.hotRestartEnabled),
-      '_currentDartTestFile can be null if and only if Hot Restart is enabled',
+      (_currentDartTest != null) != (constants.hotRestartEnabled),
+      '_currentDartTest can be null if and only if Hot Restart is enabled',
     );
 
     const testLabelEnabled = bool.fromEnvironment('PATROL_TEST_LABEL_ENABLED');
@@ -184,10 +183,12 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
                   top: MediaQueryData.fromWindow(window).padding.top + 4,
                   left: 4,
                 ),
-                child: Text(
-                  _currentDartTestFile!,
-                  textDirection: TextDirection.ltr,
-                  style: const TextStyle(color: Colors.red),
+                child: IgnorePointer(
+                  child: Text(
+                    _currentDartTest!,
+                    textDirection: TextDirection.ltr,
+                    style: const TextStyle(color: Colors.red),
+                  ),
                 ),
               ),
             ),
@@ -196,11 +197,4 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
       );
     }
   }
-}
-
-extension on LiveTest {
-  /// Get the direct parent group of the currently running test.
-  ///
-  /// The group's name is the name of the Dart test file the test is defined in.
-  String get parentGroupName => groups.last.name;
 }

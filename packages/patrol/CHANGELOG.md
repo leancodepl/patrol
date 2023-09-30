@@ -1,3 +1,25 @@
+## 2.3.0-dev.4
+
+- Fix test name label blocking hit testing (#1731)
+
+## 2.3.0-dev.3
+
+- Fix problem with Gradle build failing unless correct `packagingOptions {}` are
+  specified (#1709) (#1711)
+
+## 2.3.0-dev.2
+
+- Replace Protocol Buffers and gRPC with a custom code generation solution that
+  is more lightweight (#1681)
+
+This version requires version 2.2.0-dev.2 of `patrol_cli` package.
+
+## 2.3.0-dev.1
+
+- Add support for `group()` (#1634)
+
+This version requires version 2.2.0-dev.1 of `patrol_cli` package.
+
 ## 2.2.5
 
 - Fix `grantPermissionOnlyThisTime()` crashing on Android <11 (#1698)
