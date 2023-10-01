@@ -5,7 +5,7 @@ void main() {
     'taps on notification',
     ($) async {
       await createApp($);
-      await $('Open notifications screen').tap();
+      await $('Open notifications screen').scrollTo().tap();
 
       if (await $.native.isPermissionDialogVisible()) {
         await $.native.grantPermissionWhenInUse();
