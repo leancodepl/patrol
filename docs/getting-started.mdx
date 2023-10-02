@@ -177,7 +177,7 @@ Psst... Android is a bit easier to set up, so we recommend starting with it!
       end
       ```
 
-      6. Create an empty file `integration_test/example_test.dart`. From the command line, run:
+      6. Create an empty file `integration_test/example_test.dart` in the root of your Flutter project. From the command line, run:
 
       ```
       $ flutter build ios --config-only integration_test/example_test.dart
@@ -290,6 +290,13 @@ up. To run `integration_test/example_test.dart` on a local Android or iOS device
             app_name: The Awesome App
         ```
       </Info>
+
+      <Error>
+        To prevent issues during Patrol tests, please follow these guidelines:
+
+        1. Avoid using `WidgetsFlutterBinding.ensureInitialized` as Patrol already initializes its own binding. Using another one may lead to complications.
+        2. Refrain from overriding `FlutterError.onError` as it hinders Patrol's ability to listen to timeouts and ultimately causes it to never finish.
+      </Error>
 
 ### Going from here
 

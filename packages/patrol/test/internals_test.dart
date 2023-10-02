@@ -4,7 +4,7 @@ import 'package:patrol/src/common.dart'
     show createDartTestGroup, deduplicateGroupEntryName;
 import 'package:patrol/src/native/contracts/contracts.dart';
 import 'package:test_api/src/backend/group.dart';
-import 'package:test_api/src/backend/invoker.dart';
+import 'package:test_api/src/backend/invoker.dart' show LocalTest;
 import 'package:test_api/src/backend/metadata.dart';
 
 void main() {
@@ -155,6 +155,47 @@ void main() {
                     ],
                   ),
                   _testEntry('echo'),
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
+    });
+
+    test('smoke test 3 (long test names)', () {
+      // given
+      final topLevelGroup = Group.root([
+        LocalTest('patrol_test_explorer', Metadata.empty, () {}),
+        Group(
+          'example_test',
+          [
+            _localTest('example_test alpha'), // 18 chars
+            _localTest('example_test zielony kocyk'), // 26 chars, 6 too many
+          ],
+        ),
+      ]);
+
+      // when
+      final dartTestGroup = createDartTestGroup(
+        topLevelGroup,
+        maxTestCaseLength: 20,
+      );
+
+      // then
+      expect(
+        dartTestGroup,
+        equals(
+          DartGroupEntry(
+            name: '',
+            type: GroupEntryType.group,
+            entries: [
+              DartGroupEntry(
+                name: 'example_test',
+                type: GroupEntryType.group,
+                entries: [
+                  _testEntry('alpha'),
+                  _testEntry('zielony'),
                 ],
               ),
             ],

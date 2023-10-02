@@ -1,24 +1,15 @@
-## 2.3.0-dev.4
+## 2.4.0-dev.1
 
-- Fix test name label blocking hit testing (#1731)
+- Add support for iOS 11 and 12 (#1733)
 
-## 2.3.0-dev.3
+## 2.3.0
 
-- Fix problem with Gradle build failing unless correct `packagingOptions {}` are
-  specified (#1709) (#1711)
-
-## 2.3.0-dev.2
-
+- Add support for nested test hierarchies using `group()`s (#1634)
 - Replace Protocol Buffers and gRPC with a custom code generation solution that
   is more lightweight (#1681)
+- Fix test name label blocking hit testing (#1731)
 
-This version requires version 2.2.0-dev.2 of `patrol_cli` package.
-
-## 2.3.0-dev.1
-
-- Add support for `group()` (#1634)
-
-This version requires version 2.2.0-dev.1 of `patrol_cli` package.
+This version requires version 2.2.0 of `patrol_cli` package.
 
 ## 2.2.5
 

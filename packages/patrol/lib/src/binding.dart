@@ -1,18 +1,10 @@
-// We allow for using properties of IntegrationTestWidgetsFlutterBinding, which
-// are marked as @visibleForTesting but we need them (we could write our own,
-// but we're lazy and prefer to use theirs).
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/common.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:patrol/patrol.dart';
-import 'package:patrol/src/extensions.dart';
-// ignore: implementation_imports, depend_on_referenced_packages
-import 'package:test_api/src/backend/invoker.dart';
-
-// ignore: implementation_imports, depend_on_referenced_packages
+import 'package:patrol/src/global_state.dart' as global_state;
 
 import 'constants.dart' as constants;
 
@@ -61,12 +53,12 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
         return;
       }
 
-      if (Invoker.current!.currentTestName == 'patrol_test_explorer') {
+      _currentDartTest = global_state.currentTestFullName;
+      if (_currentDartTest == 'patrol_test_explorer') {
         // Ignore the fake test.
         return;
       }
 
-      _currentDartTest = Invoker.current!.fullCurrentTestName();
       logger('setUp(): called with current Dart test = "$_currentDartTest"');
     });
 
@@ -76,7 +68,9 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
         return;
       }
 
-      if (Invoker.current!.currentTestName == 'patrol_test_explorer') {
+      final testName = global_state.currentTestIndividualName;
+      final isTestExplorer = testName == 'patrol_test_explorer';
+      if (isTestExplorer) {
         // Ignore the fake test.
         return;
       }
@@ -93,7 +87,7 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
           'tearDown(): finished test "$_currentDartTest". Will report its status back to the native side',
         );
 
-        final passed = Invoker.current!.liveTest.state.result.isPassing;
+        final passed = global_state.isCurrentTestPassing;
         logger('tearDown(): test "$_currentDartTest", passed: $passed');
         await patrolAppService.markDartTestAsCompleted(
           dartFileName: _currentDartTest!,

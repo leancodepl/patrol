@@ -1,6 +1,4 @@
-import 'package:patrol/src/extensions.dart';
-// ignore: depend_on_referenced_packages
-import 'package:test_api/src/backend/invoker.dart';
+import 'package:patrol/src/global_state.dart' as global_state;
 
 import '../common.dart';
 
@@ -37,7 +35,7 @@ void main() {
 Future<void> _testBody(PatrolTester $) async {
   await createApp($);
 
-  final testName = Invoker.current!.fullCurrentTestName();
+  final testName = global_state.currentTestFullName;
   await $(#textField).enterText(testName);
 
   await $.native.pressHome();
