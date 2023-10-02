@@ -1,3 +1,7 @@
+## 2.4.0-dev.1
+
+- Add support for iOS 11 and 12 (#1733)
+
 ## 2.3.0
 
 - Add support for nested test hierarchies using `group()`s (#1634)
