@@ -22,6 +22,7 @@ abstract class NativeAutomatorServer {
     abstract fun doublePressRecentApps()
     abstract fun openApp(request: Contracts.OpenAppRequest)
     abstract fun openQuickSettings(request: Contracts.OpenQuickSettingsRequest)
+    abstract fun getNativeUITree(): Contracts.GetNativeUITreeRespone
     abstract fun getNativeViews(request: Contracts.GetNativeViewsRequest): Contracts.GetNativeViewsResponse
     abstract fun tap(request: Contracts.TapRequest)
     abstract fun doubleTap(request: Contracts.TapRequest)
@@ -84,6 +85,10 @@ abstract class NativeAutomatorServer {
         val body = json.decodeFromString<Contracts.OpenQuickSettingsRequest>(it.bodyString())
         openQuickSettings(body)
         Response(OK)
+      },
+      "getNativeUITree" bind POST to {
+        val response = getNativeUITree()
+        Response(OK).body(json.encodeToString(response))
       },
       "getNativeViews" bind POST to {
         val body = json.decodeFromString<Contracts.GetNativeViewsRequest>(it.bodyString())

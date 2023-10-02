@@ -141,6 +141,20 @@ Map<String, dynamic> _$GetNativeViewsRequestToJson(
       'appId': instance.appId,
     };
 
+GetNativeUITreeRespone _$GetNativeUITreeResponeFromJson(
+        Map<String, dynamic> json) =>
+    GetNativeUITreeRespone(
+      roots: (json['roots'] as List<dynamic>)
+          .map((e) => NativeView.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+
+Map<String, dynamic> _$GetNativeUITreeResponeToJson(
+        GetNativeUITreeRespone instance) =>
+    <String, dynamic>{
+      'roots': instance.roots,
+    };
+
 NativeView _$NativeViewFromJson(Map<String, dynamic> json) => NativeView(
       className: json['className'] as String?,
       text: json['text'] as String?,

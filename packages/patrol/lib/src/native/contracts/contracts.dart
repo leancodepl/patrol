@@ -259,6 +259,25 @@ class GetNativeViewsRequest with EquatableMixin {
 }
 
 @JsonSerializable()
+class GetNativeUITreeRespone with EquatableMixin {
+  GetNativeUITreeRespone({
+    required this.roots,
+  });
+
+  factory GetNativeUITreeRespone.fromJson(Map<String, dynamic> json) =>
+      _$GetNativeUITreeResponeFromJson(json);
+
+  final List<NativeView> roots;
+
+  Map<String, dynamic> toJson() => _$GetNativeUITreeResponeToJson(this);
+
+  @override
+  List<Object?> get props => [
+        roots,
+      ];
+}
+
+@JsonSerializable()
 class NativeView with EquatableMixin {
   NativeView({
     this.className,

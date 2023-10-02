@@ -142,6 +142,11 @@ class Contracts {
   )
 
   @Serializable
+  data class GetNativeUITreeRespone (
+    val roots: List<NativeView>
+  )
+
+  @Serializable
   data class NativeView (
     val className: String? = null,
     val text: String? = null,

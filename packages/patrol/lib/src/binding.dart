@@ -173,9 +173,7 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
         );
 
         try {
-          final res = await client.getNativeViews(GetNativeViewsRequest(
-              selector: Selector(textContains: 'Network'),
-              appId: _config.packageName));
+          final res = await client.getNativeUITree();
 
           return <String, dynamic>{
             'result': <String, dynamic>{'custom_response': res.toJson()}
@@ -183,7 +181,7 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
         } catch (e) {
           return <String, dynamic>{
             'result': <String, dynamic>{
-              'custom_response': 'client.getNativeViews failed'
+              'custom_response': 'client.getNativeViews failed $e :('
             }
           };
         }
