@@ -49,7 +49,7 @@ $endpoints
         endpoint.request != null ? 'request: ${endpoint.request!.name}' : '';
     final response =
         endpoint.response != null ? ' -> ${endpoint.response!.name}' : '';
-    return '    func ${endpoint.name}($request) async throws$response';
+    return '    func ${endpoint.name}($request) throws$response';
   }
 
   String _generateHandlers(Service service) {
@@ -76,8 +76,8 @@ $handlers
         : '        return HTTPResponse(.ok)';
 
     return '''
-    private func ${endpoint.name}Handler(request: HTTPRequest) async throws -> HTTPResponse {$requestArg
-        ${responseVariable}try await ${endpoint.name}(${requestArg.isNotEmpty ? 'request: requestArg' : ''})
+    private func ${endpoint.name}Handler(request: HTTPRequest) throws -> HTTPResponse {$requestArg
+        ${responseVariable}try ${endpoint.name}(${requestArg.isNotEmpty ? 'request: requestArg' : ''})
 $response
     }''';
   }
@@ -106,37 +106,17 @@ $routes
   String _generateUtils() {
     // https://forums.swift.org/t/using-async-functions-from-synchronous-functions-and-breaking-all-the-rules/59782
     return '''
-fileprivate class Box<ResultType> {
-    var result: Result<ResultType, Error>? = nil
-}
 
 extension NativeAutomatorServer {
-    private func handleRequest(request: HTTPRequest, handler: @escaping (HTTPRequest) async throws -> HTTPResponse) -> HTTPResponse {
+    private func handleRequest(request: HTTPRequest, handler: @escaping (HTTPRequest) throws -> HTTPResponse) -> HTTPResponse {
         do {
-            return try unsafeWait {
-                return try await handler(request)
-            }
+            return try handler(request)
         } catch let err {
             return HTTPResponse(.badRequest, headers: [:], error: err)
         }
     }
-
-    private func unsafeWait<ResultType>(_ f: @escaping () async throws -> ResultType) throws -> ResultType {
-        let box = Box<ResultType>()
-        let sema = DispatchSemaphore(value: 0)
-        Task {
-            do {
-                let val = try await f()
-                box.result = .success(val)
-            } catch {
-                box.result = .failure(error)
-            }
-            sema.signal()
-        }
-        sema.wait()
-        return try box.result!.get()
-    }
 }
+
 ''';
   }
 }
