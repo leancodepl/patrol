@@ -136,6 +136,9 @@ can specify globally in [PatrolTesterConfig] or as argument to the `tap()`
 method) and taps on the first widget as soon as it becomes visible. This lets
 you get rid of fixed timeouts and test your app just like a real user would.
 
+<Error>Note that `WidgetsFlutterBinding.ensureInitialized` and `FlutterError.onError`
+MUST NOT be used in integration tests otherwise Patrol cannot fail after timeout.</Error>
+
 If you wanted to tap on the third "Subscribe" text, you'd do:
 
 ```dart
