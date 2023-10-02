@@ -3,7 +3,7 @@ import 'package:patrol/src/extensions.dart';
 // ignore: depend_on_referenced_packages
 import 'package:test_api/src/backend/invoker.dart';
 
-import 'common.dart';
+import '../common.dart';
 
 String get currentTest => Invoker.current!.fullCurrentTestName();
 
