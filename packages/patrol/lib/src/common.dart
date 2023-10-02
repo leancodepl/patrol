@@ -48,6 +48,25 @@ void patrolTearDown(Future<void> Function() body) {
   });
 }
 
+/// A modification of [setUpAll] that works with Patrol's native automation.
+void patrolSetUpAll(Future<void> Function() body) {
+  setUpAll(() async {
+    final currentTest = global_state.currentTestFullName;
+
+    final parentGroups = global_state.currentGroupFullName;
+
+    final patrolAppService = PatrolBinding.instance.patrolAppService;
+    final currentSetUpAllIndex = patrolAppService.setUpAllCount += 1;
+
+    final requestedToExecute = await PatrolBinding.instance.patrolAppService
+        .waitForExecutionRequest(currentTest);
+
+    if (requestedToExecute) {
+      await body();
+    }
+  });
+}
+
 /// Like [testWidgets], but with support for Patrol custom finders.
 ///
 /// To customize the Patrol-specific configuration, set [config].

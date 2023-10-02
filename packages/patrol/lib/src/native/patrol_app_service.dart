@@ -10,6 +10,8 @@ import 'package:patrol/src/native/contracts/contracts.dart';
 import 'package:patrol/src/native/contracts/patrol_app_service_server.dart';
 import 'package:shelf/shelf.dart' as shelf;
 import 'package:shelf/shelf_io.dart' as shelf_io;
+// ignore: implementation_imports
+import 'package:test_api/src/backend/live_test.dart';
 
 const _port = 8082;
 const _idleTimeout = Duration(hours: 2);
@@ -54,6 +56,13 @@ class PatrolAppService extends PatrolAppServiceServer {
   /// The ambient test group that wraps all the other groups and tests in the
   /// bundled Dart test file.
   final DartGroupEntry topLevelDartTestGroup;
+
+  /// The number of all setUpAll callbacks.
+  ///
+  /// setUpAlls, unlike setUps, aren't executed in the [LiveTest] context.
+  /// Because of this, we can't depend on the [LiveTest]'s name, so we identify
+  /// them by indexes instead.
+  int setUpAllCount = 0;
 
   /// A completer that completes with the name of the Dart test file that was
   /// requested to execute by the native side.
@@ -135,6 +144,8 @@ class PatrolAppService extends PatrolAppServiceServer {
     print('PatrolAppService.listDartTests() called');
     return ListDartTestsResponse(group: topLevelDartTestGroup);
   }
+
+  
 
   @override
   Future<RunDartTestResponse> runDartTest(RunDartTestRequest request) async {
