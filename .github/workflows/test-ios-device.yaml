@@ -83,9 +83,9 @@ jobs:
         run: |
           TESTS_TO_EXCLUDE="android_app_test,\
           swipe_test,\
-          permissions_location_test,\
+          permissions/permissions_location_test,\
           service_dark_mode_test,\
-          notifications_test"
+          permissions/notifications_test"
 
           target_paths=""
           for target in $(echo $TESTS_TO_EXCLUDE | tr ',' '\n'); do
