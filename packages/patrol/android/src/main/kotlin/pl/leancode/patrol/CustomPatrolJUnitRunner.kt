@@ -15,7 +15,6 @@ class CustomPatrolJUnitRunner : PatrolJUnitRunner() {
     private var testStorage: TestStorage? = null
 
     override fun onCreate(arguments: Bundle) {
-
 //        try {
 //            val outputStream = testStorage!!.openOutputFile("patrol_state/teardowns.txt")
 //        } catch (e: FileNotFoundException) {
@@ -24,7 +23,7 @@ class CustomPatrolJUnitRunner : PatrolJUnitRunner() {
 
         val listeners = listOfNotNull(
             arguments.getCharSequence("listener"),
-            PatrolStoragePermissionListener::class.java.name,
+            PatrolStoragePermissionListener::class.java.name
         ).joinToString(separator = ",")
 
         arguments.putCharSequence("listener", listeners)
@@ -45,11 +44,9 @@ class PatrolStoragePermissionListener : RunListener() {
 
     override fun testStarted(description: Description) {
         Logger.d("testStarted with description: $description")
-
-
+        
         val os = testStorage.openOutputFile("patrol.txt", true)
         os.write("testStarted with description: $description\n".toByteArray())
-
 
         InstrumentationRegistry.getInstrumentation().uiAutomation.apply {
             val testServicesPackage = "androidx.test.services"
