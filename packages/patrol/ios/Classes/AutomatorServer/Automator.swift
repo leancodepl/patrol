@@ -1,5 +1,6 @@
 #if PATROL_ENABLED
   import XCTest
+  import os
 
   class Automator {
     private lazy var device: XCUIDevice = {
@@ -392,6 +393,23 @@
         }
 
         return views
+      }
+    }
+      
+    func getUITreeRoots() async throws -> [NativeView] {
+      try await runAction("getting ui tree roots") {
+	          let start = DispatchTime.now()
+//          let result = [NativeView.fromXCUIElement(self.preferences, "heheszki")]
+//          let result = [NativeView(
+//            className: self.preferences.debugDescription, focused: false, enabled: false, children: [])]
+          let snapshot = try self.preferences.snapshot()
+          let result = [NativeView.fromXCUIElementSnapshot(snapshot, "heheszki")]
+        
+          let end = DispatchTime.now()
+          let nanoTime = end.uptimeNanoseconds - start.uptimeNanoseconds // <<<<< Difference in nano seconds (UInt64)
+          let timeInterval = Double(nanoTime) / 1_000_000_000 // Technically could overflow for long running tests
+          Logger.shared.i("Time to evaluate problem: \(timeInterval) seconds")
+          return result;
       }
     }
 
@@ -816,6 +834,20 @@
           return NativeView.fromXCUIElement(child, bundleId)
         })
     }
-  }
+  
+    static func fromXCUIElementSnapshot(_ xcuielement: XCUIElementSnapshot, _ bundleId: String) -> NativeView {
+      return NativeView(
+        className: String(xcuielement.elementType.rawValue),  // TODO: Provide mapping for names
+        text: xcuielement.label,
+        contentDescription: "", // TODO: Separate request
+        focused: xcuielement.hasFocus,
+        enabled: xcuielement.isEnabled,
+        resourceName: xcuielement.identifier,
+        applicationPackage: bundleId,
+        children: xcuielement.children.map { child in
+          return NativeView.fromXCUIElementSnapshot(child, bundleId)
+        })
+    }
+}
 
 #endif

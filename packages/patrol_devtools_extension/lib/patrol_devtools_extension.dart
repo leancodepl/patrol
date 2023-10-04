@@ -153,6 +153,7 @@ OperatingSystem: ${app.operatingSystem}
   }
 
   Future<void> getNativeViews() async {
+    final stopwatch = Stopwatch()..start();
     final res = await Api(serviceExtensionPrefix: 'ext.flutter')
         .invokeServiceMethodDaemon('PatrolDevToolsGetNativeViews');
 
@@ -163,6 +164,12 @@ OperatingSystem: ${app.operatingSystem}
       value.getNativeViewsResponse = ':(';
     }
 
+    stopwatch.stop();
+
+    value.getNativeViewsResponse =
+        stopwatch.elapsed.toString() + value.getNativeViewsResponse;
+
+    print(value.getNativeViewsResponse);
     notifyListeners();
   }
 
