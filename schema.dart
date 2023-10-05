@@ -19,6 +19,11 @@ class ListDartTestsResponse {
   late DartGroupEntry group;
 }
 
+class ListDartLifecycleCallbacksResponse {
+  late List<String> setUpAlls;
+  late List<String> tearDownAlls;
+}
+
 enum RunDartTestResponseResult {
   success,
   skipped,
@@ -36,6 +41,7 @@ class RunDartTestResponse {
 
 abstract class PatrolAppService<IOSClient, AndroidClient, DartServer> {
   ListDartTestsResponse listDartTests();
+  ListDartLifecycleCallbacksResponse listDartLifecycleCallbacks();
   RunDartTestResponse runDartTest(RunDartTestRequest request);
 }
 
