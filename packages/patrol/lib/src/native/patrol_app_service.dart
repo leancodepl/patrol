@@ -45,7 +45,7 @@ Future<void> runAppService(PatrolAppService service) async {
   );
 }
 
-/// Implements a stateful gRPC service for querying and executing Dart tests.
+/// Implements a stateful HTTP service for querying and executing Dart tests.
 ///
 /// This is an internal class and you don't want to use it. It's public so that
 /// the generated code can access it.
@@ -61,8 +61,8 @@ class PatrolAppService extends PatrolAppServiceServer {
   ///
   /// setUpAlls, unlike setUps, aren't executed in the [LiveTest] context.
   /// Because of this, we can't depend on the [LiveTest]'s name, so we identify
-  /// them by indexes instead.
-  int setUpAllCount = 0;
+  /// them by the parent group ID instead.
+  final List<String> setUpAlls = [];
 
   /// A completer that completes with the name of the Dart test file that was
   /// requested to execute by the native side.
@@ -80,6 +80,13 @@ class PatrolAppService extends PatrolAppServiceServer {
   /// Returns true if the test passed, false otherwise.
   Future<_TestExecutionResult> get testExecutionCompleted {
     return _testExecutionCompleted.future;
+  }
+
+  /// Adds a setUpAll callback to the list of all setUpAll callbacks.
+  void addSetUpAll(String group) {
+    // add an index at the end of setUpAlls
+    // parent testA 1
+    // parent testA 2
   }
 
   /// Marks [dartFileName] as completed with the given [passed] status.
@@ -145,8 +152,6 @@ class PatrolAppService extends PatrolAppServiceServer {
     return ListDartTestsResponse(group: topLevelDartTestGroup);
   }
 
-  
-
   @override
   Future<RunDartTestResponse> runDartTest(RunDartTestRequest request) async {
     assert(_testExecutionCompleted.isCompleted == false);
@@ -162,5 +167,11 @@ class PatrolAppService extends PatrolAppServiceServer {
           : RunDartTestResponseResult.failure,
       details: testExecutionResult.details,
     );
+  }
+
+  @override
+  Future<ListDartLifecycleCallbacksResponse> listDartLifecycleCallbacks() {
+    // TODO: implement listDartLifecycleCallbacks
+    throw UnimplementedError();
   }
 }

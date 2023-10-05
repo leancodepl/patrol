@@ -53,7 +53,9 @@ void patrolSetUpAll(Future<void> Function() body) {
   setUpAll(() async {
     final currentTest = global_state.currentTestFullName;
 
-    final parentGroups = global_state.currentGroupFullName;
+    final parentGroup = global_state.currentGroupFullName;
+
+    final setUpAllName = 'setUpAll $parentGroup';
 
     final patrolAppService = PatrolBinding.instance.patrolAppService;
     final currentSetUpAllIndex = patrolAppService.setUpAllCount += 1;

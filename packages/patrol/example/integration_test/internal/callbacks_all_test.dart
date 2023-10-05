@@ -10,14 +10,16 @@ String get currentTest => Invoker.current!.fullCurrentTestName();
 void _print(String text) => print('PATROL_DEBUG: $text');
 
 void main() {
-  patrolSetUpAll(() async {
-    await Future<void>.delayed(Duration(seconds: 1));
-    _print('setting up all before $currentTest');
-  });
+  group('parent', () {
+    patrolSetUpAll(() async {
+      await Future<void>.delayed(Duration(seconds: 1));
+      _print('setting up all before $currentTest');
+    });
 
-  patrolTest('testA', nativeAutomation: true, _body);
-  patrolTest('testB', nativeAutomation: true, _body);
-  patrolTest('testC', nativeAutomation: true, _body);
+    patrolTest('testA', nativeAutomation: true, _body);
+    patrolTest('testB', nativeAutomation: true, _body);
+    patrolTest('testC', nativeAutomation: true, _body);
+  });
 }
 
 Future<void> _body(PatrolTester $) async {
