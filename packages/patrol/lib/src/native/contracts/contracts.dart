@@ -93,6 +93,30 @@ class ListDartTestsResponse with EquatableMixin {
 }
 
 @JsonSerializable()
+class ListDartLifecycleCallbacksResponse with EquatableMixin {
+  ListDartLifecycleCallbacksResponse({
+    required this.setUpAlls,
+    required this.tearDownAlls,
+  });
+
+  factory ListDartLifecycleCallbacksResponse.fromJson(
+          Map<String, dynamic> json) =>
+      _$ListDartLifecycleCallbacksResponseFromJson(json);
+
+  final List<String> setUpAlls;
+  final List<String> tearDownAlls;
+
+  Map<String, dynamic> toJson() =>
+      _$ListDartLifecycleCallbacksResponseToJson(this);
+
+  @override
+  List<Object?> get props => [
+        setUpAlls,
+        tearDownAlls,
+      ];
+}
+
+@JsonSerializable()
 class RunDartTestRequest with EquatableMixin {
   RunDartTestRequest({
     required this.name,

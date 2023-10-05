@@ -42,6 +42,11 @@ struct ListDartTestsResponse: Codable {
   var group: DartGroupEntry
 }
 
+struct ListDartLifecycleCallbacksResponse: Codable {
+  var setUpAlls: [String]
+  var tearDownAlls: [String]
+}
+
 struct RunDartTestRequest: Codable {
   var name: String
 }

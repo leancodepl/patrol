@@ -20,6 +20,11 @@ class PatrolAppServiceClient(address: String, port: Int, private val timeout: Lo
         return json.decodeFromString(response)
     }
 
+    fun listDartLifecycleCallbacks(): Contracts.ListDartLifecycleCallbacksResponse {
+        val response = performRequest("listDartLifecycleCallbacks")
+        return json.decodeFromString(response)
+    }
+
     fun runDartTest(request: Contracts.RunDartTestRequest): Contracts.RunDartTestResponse {
         val response = performRequest("runDartTest", json.encodeToString(request))
         return json.decodeFromString(response)

@@ -53,6 +53,12 @@ class Contracts {
   )
 
   @Serializable
+  data class ListDartLifecycleCallbacksResponse (
+    val setUpAlls: List<String>,
+    val tearDownAlls: List<String>
+  )
+
+  @Serializable
   data class RunDartTestRequest (
     val name: String
   )

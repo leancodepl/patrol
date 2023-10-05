@@ -39,6 +39,23 @@ Map<String, dynamic> _$ListDartTestsResponseToJson(
       'group': instance.group,
     };
 
+ListDartLifecycleCallbacksResponse _$ListDartLifecycleCallbacksResponseFromJson(
+        Map<String, dynamic> json) =>
+    ListDartLifecycleCallbacksResponse(
+      setUpAlls:
+          (json['setUpAlls'] as List<dynamic>).map((e) => e as String).toList(),
+      tearDownAlls: (json['tearDownAlls'] as List<dynamic>)
+          .map((e) => e as String)
+          .toList(),
+    );
+
+Map<String, dynamic> _$ListDartLifecycleCallbacksResponseToJson(
+        ListDartLifecycleCallbacksResponse instance) =>
+    <String, dynamic>{
+      'setUpAlls': instance.setUpAlls,
+      'tearDownAlls': instance.tearDownAlls,
+    };
+
 RunDartTestRequest _$RunDartTestRequestFromJson(Map<String, dynamic> json) =>
     RunDartTestRequest(
       name: json['name'] as String,
