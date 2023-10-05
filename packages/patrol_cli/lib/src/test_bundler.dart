@@ -70,7 +70,7 @@ Future<void> main() async {
 
   final nativeAutomator = NativeAutomator(config: NativeAutomatorConfig());
   await nativeAutomator.initialize();
-  final binding = PatrolBinding.ensureInitialized();
+  final binding = PatrolBinding.ensureInitialized(NativeAutomatorConfig());
   final testExplorationCompleter = Completer<DartGroupEntry>();
 
   // A special test to expore the hierarchy of groups and tests. This is a hack
@@ -138,7 +138,7 @@ ${generateImports([testFilePath])}
 Future<void> main() async {
   final nativeAutomator = NativeAutomator(config: NativeAutomatorConfig());
   await nativeAutomator.initialize();
-  PatrolBinding.ensureInitialized();
+  PatrolBinding.ensureInitialized(NativeAutomatorConfig());
 
   // START: GENERATED TEST GROUPS
 ${generateGroupsCode([testFilePath]).split('\n').map((e) => '  $e').join('\n')}

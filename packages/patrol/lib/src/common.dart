@@ -77,7 +77,7 @@ void patrolTest(
       case BindingType.patrol:
         automator = NativeAutomator(config: nativeAutomatorConfig);
 
-        patrolBinding = PatrolBinding.ensureInitialized();
+        patrolBinding = PatrolBinding.ensureInitialized(nativeAutomatorConfig);
         patrolBinding.framePolicy = framePolicy;
         break;
       case BindingType.integrationTest:

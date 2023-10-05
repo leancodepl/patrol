@@ -8,10 +8,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/common.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:patrol/patrol.dart';
-import 'package:http/http.dart' as http;
+import 'package:patrol/src/devtools_service_extensions/devtools_service_extensions.dart';
 import 'package:patrol/src/extensions.dart';
-import 'package:patrol/src/native/contracts/contracts.dart';
-import 'package:patrol/src/native/contracts/native_automator_client.dart';
 // ignore: implementation_imports, depend_on_referenced_packages
 import 'package:test_api/src/backend/invoker.dart';
 
@@ -46,7 +44,8 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
   /// Creates a new [PatrolBinding].
   ///
   /// You most likely don't want to call it yourself.
-  PatrolBinding() {
+  PatrolBinding(NativeAutomatorConfig config)
+      : _serviceExtensions = DevtoolsServiceExtensions(config) {
     final oldTestExceptionReporter = reportTestException;
     reportTestException = (details, testDescription) {
       final currentDartTest = _currentDartTest;
@@ -114,9 +113,9 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
   /// if necessary.
   ///
   /// This method is idempotent.
-  factory PatrolBinding.ensureInitialized() {
+  factory PatrolBinding.ensureInitialized(NativeAutomatorConfig config) {
     if (_instance == null) {
-      PatrolBinding();
+      PatrolBinding(config);
     }
     return _instance!;
   }
@@ -145,6 +144,8 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
   /// a [Failure].
   final Map<String, Object> _testResults = <String, Object>{};
 
+  final DevtoolsServiceExtensions _serviceExtensions;
+
   // TODO: Remove once https://github.com/flutter/flutter/pull/108430 is available on the stable channel
   @override
   TestBindingEventSource get pointerEventSource => TestBindingEventSource.test;
@@ -159,33 +160,11 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
   void initServiceExtensions() {
     super.initServiceExtensions();
 
-    print('register service extension');
+    logger('Register Patrol service extensions');
+
     registerServiceExtension(
-      name: 'PatrolDevToolsGetNativeViews',
-      callback: (args) async {
-        print('inside service extension');
-
-        const _config = NativeAutomatorConfig();
-        final client = NativeAutomatorClient(
-          http.Client(),
-          Uri.http('${_config.host}:${_config.port}'),
-          timeout: _config.connectionTimeout,
-        );
-
-        try {
-          final res = await client.getNativeUITree();
-
-          return <String, dynamic>{
-            'result': <String, dynamic>{'custom_response': res.toJson()}
-          };
-        } catch (e) {
-          return <String, dynamic>{
-            'result': <String, dynamic>{
-              'custom_response': 'client.getNativeViews failed $e :('
-            }
-          };
-        }
-      },
+      name: 'patrol.getNativeUITree',
+      callback: _serviceExtensions.getNativeUITree,
     );
   }
 

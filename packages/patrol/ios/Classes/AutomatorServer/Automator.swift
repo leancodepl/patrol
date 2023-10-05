@@ -823,7 +823,7 @@
   extension NativeView {
     static func fromXCUIElement(_ xcuielement: XCUIElement, _ bundleId: String) -> NativeView {
       return NativeView(
-        className: String(xcuielement.elementType.rawValue),  // TODO: Provide mapping for names
+        className: getElementTypeName(elementType: xcuielement.elementType),
         text: xcuielement.label,
         contentDescription: xcuielement.accessibilityLabel,
         focused: xcuielement.hasFocus,
@@ -837,7 +837,7 @@
   
     static func fromXCUIElementSnapshot(_ xcuielement: XCUIElementSnapshot, _ bundleId: String) -> NativeView {
       return NativeView(
-        className: String(xcuielement.elementType.rawValue),  // TODO: Provide mapping for names
+        className: getElementTypeName(elementType: xcuielement.elementType),
         text: xcuielement.label,
         contentDescription: "", // TODO: Separate request
         focused: xcuielement.hasFocus,
