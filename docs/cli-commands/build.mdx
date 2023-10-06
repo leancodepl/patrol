@@ -34,7 +34,7 @@ Test Lab. It works the same as `patrol test`, except that it does run tests.
 
 ### Examples
 
-**To build for Android in debug mode**
+**To build a single test for Android in debug mode**
 
 ```
 patrol build android --target integration_test/example_test.dart
@@ -46,48 +46,29 @@ or alternatively (but redundantly):
 patrol build android --target integration_test/example_test.dart --debug
 ```
 
-**To build for iOS device in release mode**
+**To build all tests for Android in debug mode**
+
+```
+patrol build android
+```
+
+**To build a single test for iOS device in release mode**
 
 ```
 patrol build ios --target integration_test/example_test.dart --release
 ```
 
-**To build for iOS simulator in debug mode**
+**To build a single test for iOS simulator in debug mode**
 
 ```
 patrol build ios --target integration_test/example_test.dart --debug
 ```
 
-### Caveats
+### Under the hood
 
-Only a single test target file can be built. For example, consider the following
-`integration_test` directory containing 4 test targets:
-
-```
-integration_test/
-├── common.dart
-├── example_test.dart
-├── notifications_test.dart
-├── permissions_location_test.dart
-├── webview_login_test.dart
-```
-
-<Info>Dart file must end with `_test.dart` to be considered to be a test.</Info>
-
-To build the app for testing on Android, you have to run:
-
-```
-patrol build android --target <your file>
-```
-
-4 times, each time with a different `--target`, to get 4 different app binaries.
-
-These 4 different binaries are almost the same – the only difference is the
-entrypoint. This is needlessly inefficient for apps with many tests, but it's a
-design flaw in the way integration testing in Flutter works.
-
-[We know about this issue][bundling_issue] and we're aiming to fix it soon with
-an approach we call "test bundling". This will dramatically speed up testing
-apps with many integration tests.
-
-[bundling_issue]: https://github.com/leancodepl/patrol/issues/1004
+The `patrol build` command walks through hierarchy of the `integration_test`
+directory and finds all files that end with `_test.dart`, and then creates an
+additional "test bundle" file that references all the tests it found. Thanks to
+this, all tests are built into a single app binary - only a single build is
+required. If you're curious to learn more about this problem, see [Flutter issue
+#115751](https://github.com/flutter/flutter/issues/115751)
