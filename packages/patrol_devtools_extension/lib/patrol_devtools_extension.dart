@@ -5,6 +5,7 @@ import 'package:devtools_app_shared/service.dart';
 import 'package:devtools_extensions/devtools_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:patrol_devtools_extension/api/patrol_service_extension_api.dart';
 import 'package:vm_service/vm_service.dart';
 
 class PatrolDevToolsExtension extends StatefulWidget {
@@ -154,22 +155,26 @@ OperatingSystem: ${app.operatingSystem}
 
   Future<void> getNativeViews() async {
     final stopwatch = Stopwatch()..start();
-    final res = await Api(serviceExtensionPrefix: 'ext.flutter')
-        .invokeServiceMethodDaemon('PatrolDevToolsGetNativeViews');
 
-    if (res is Map<String, dynamic>) {
-      value.getNativeViewsResponse =
-          const JsonEncoder.withIndent('  ').convert(res);
-    } else {
-      value.getNativeViewsResponse = ':(';
-    }
+    final api = PatrolServiceExtensionApi(
+      service: serviceManager.service!,
+      isolate: serviceManager.isolateManager.mainIsolate,
+    );
+
+    final res = await api.getNativeUITree();
 
     stopwatch.stop();
+
+    switch (res) {
+      case ApiSuccess(:final data):
+        value.getNativeViewsResponse = ' ${data.roots.length} ';
+      case ApiFailure(:final error, :final stackTrace):
+        value.getNativeViewsResponse = ':( $error $stackTrace';
+    }
 
     value.getNativeViewsResponse =
         stopwatch.elapsed.toString() + value.getNativeViewsResponse;
 
-    print(value.getNativeViewsResponse);
     notifyListeners();
   }
 
