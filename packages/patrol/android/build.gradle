@@ -67,7 +67,7 @@ android {
         implementation "org.http4k:http4k-core"
         implementation "com.squareup.okhttp:okhttp:2.7.5" // See https://github.com/square/okhttp/issues/8031
         implementation "org.http4k:http4k-server-ktorcio"
-        implementation 'com.google.code.gson:gson:2.10.1'
+        implementation "com.google.code.gson:gson:2.10.1"
 
         testImplementation "org.jetbrains.kotlin:kotlin-test"
     }
