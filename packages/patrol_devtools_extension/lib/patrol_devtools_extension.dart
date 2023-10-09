@@ -5,7 +5,9 @@ import 'package:devtools_app_shared/service.dart';
 import 'package:devtools_extensions/devtools_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:patrol_devtools_extension/api/contracts.dart';
 import 'package:patrol_devtools_extension/api/patrol_service_extension_api.dart';
+import 'package:patrol_devtools_extension/native_inspector/native_inspector_tree.dart';
 import 'package:vm_service/vm_service.dart';
 
 class PatrolDevToolsExtension extends StatefulWidget {
@@ -50,9 +52,13 @@ class _PatrolDevToolsExtensionState extends State<PatrolDevToolsExtension> {
                 Text(state.rootWidgetValueAsJson),
                 Text(state.getRootWidgetRespone),
                 TextButton(
-                  onPressed:
-                      state.appConnected ? () => runner.getNativeViews() : null,
+                  onPressed: state.appConnected
+                      ? () => runner.getNativeUITree()
+                      : null,
                   child: const Text('getNativeViews'),
+                ),
+                NativeInspectorTree(
+                  roots: state.roots,
                 ),
                 Text(state.getNativeViewsResponse),
                 TextButton(
@@ -153,8 +159,9 @@ OperatingSystem: ${app.operatingSystem}
     notifyListeners();
   }
 
-  Future<void> getNativeViews() async {
+  Future<void> getNativeUITree() async {
     final stopwatch = Stopwatch()..start();
+    value.roots = [];
 
     final api = PatrolServiceExtensionApi(
       service: serviceManager.service!,
@@ -168,6 +175,7 @@ OperatingSystem: ${app.operatingSystem}
     switch (res) {
       case ApiSuccess(:final data):
         value.getNativeViewsResponse = ' ${data.roots.length} ';
+        value.roots = data.roots;
       case ApiFailure(:final error, :final stackTrace):
         value.getNativeViewsResponse = ':( $error $stackTrace';
     }
@@ -214,6 +222,7 @@ class _State {
   String getNativeViewsResponse = '';
   String getRootWidgetSummaryTreeWithPreviewsResponse = '';
   String debugDumpRenderTreeResponse = '';
+  List<NativeView> roots = [];
 }
 
 class ExtensionApi {
