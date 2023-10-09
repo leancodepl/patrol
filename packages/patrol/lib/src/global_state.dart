@@ -24,11 +24,16 @@ String get currentTestFullName {
   return nameCandidate;
 }
 
+/// Returns the name of the current group.
+///
+/// Includes all ancestor groups.
 String get currentGroupFullName {
   return Invoker.current!.liveTest.groups.last.name;
 }
 
-/// Returns the individual name of the current test. Omits all ancestor groups.
+/// Returns the individual name of the current test.
+///
+/// Omits all ancestor groups.
 String get currentTestIndividualName {
   return Invoker.current!.liveTest.individualName;
 }
