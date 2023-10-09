@@ -57,7 +57,7 @@ class PatrolAppService extends PatrolAppServiceServer {
   /// bundled Dart test file.
   final DartGroupEntry topLevelDartTestGroup;
 
-  /// The number of all setUpAll callbacks.
+  /// The names of all setUpAll callbacks.
   ///
   /// setUpAlls, unlike setUps, aren't executed in the [LiveTest] context.
   /// Because of this, we can't depend on the [LiveTest]'s name, so we identify
@@ -84,6 +84,24 @@ class PatrolAppService extends PatrolAppServiceServer {
 
   /// Adds a setUpAll callback to the list of all setUpAll callbacks.
   void addSetUpAll(String group) {
+    // Not very optimal, but good enough for now.
+
+    setUpAlls.add('$group + ${group.hashCode}');
+
+    // for (final setUpAll in setUpAlls) {
+    //   final parts = setUpAll.split(' ');
+    //   final groupName = parts.sublist(0, parts.length - 1).join(' ');
+
+    //   if (groupName == group) {
+
+    //   }
+
+    //   final index = parts.last;
+    //   if (setUpAll == group) {
+    //     return;
+    //   }
+    // }
+
     // add an index at the end of setUpAlls
     // parent testA 1
     // parent testA 2
@@ -149,6 +167,8 @@ class PatrolAppService extends PatrolAppServiceServer {
   @override
   Future<ListDartTestsResponse> listDartTests() async {
     print('PatrolAppService.listDartTests() called');
+    print('PATROL_DEBUG: setUpAlls: $setUpAlls');
+
     return ListDartTestsResponse(group: topLevelDartTestGroup);
   }
 

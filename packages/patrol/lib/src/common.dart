@@ -51,21 +51,17 @@ void patrolTearDown(Future<void> Function() body) {
 /// A modification of [setUpAll] that works with Patrol's native automation.
 void patrolSetUpAll(Future<void> Function() body) {
   setUpAll(() async {
-    final currentTest = global_state.currentTestFullName;
-
-    final parentGroup = global_state.currentGroupFullName;
-
-    final setUpAllName = 'setUpAll $parentGroup';
-
     final patrolAppService = PatrolBinding.instance.patrolAppService;
-    final currentSetUpAllIndex = patrolAppService.setUpAllCount += 1;
 
-    final requestedToExecute = await PatrolBinding.instance.patrolAppService
-        .waitForExecutionRequest(currentTest);
+    final parentGroupsName = global_state.currentGroupFullName;
+    patrolAppService.addSetUpAll(parentGroupsName);
 
-    if (requestedToExecute) {
-      await body();
-    }
+    // final requestedToExecute = await PatrolBinding.instance.patrolAppService
+    //     .waitForExecutionRequest(currentSetUpAllIndex);
+
+    // if (requestedToExecute) {
+    //   await body();
+    // }
   });
 }
 

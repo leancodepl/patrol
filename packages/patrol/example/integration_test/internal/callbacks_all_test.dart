@@ -13,7 +13,12 @@ void main() {
   group('parent', () {
     patrolSetUpAll(() async {
       await Future<void>.delayed(Duration(seconds: 1));
-      _print('setting up all before $currentTest');
+      _print('setting up all (1) before $currentTest');
+    });
+
+    patrolSetUpAll(() async {
+      await Future<void>.delayed(Duration(seconds: 1));
+      _print('setting up all (2) before $currentTest');
     });
 
     patrolTest('testA', nativeAutomation: true, _body);
