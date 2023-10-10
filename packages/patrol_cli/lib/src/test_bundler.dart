@@ -72,6 +72,7 @@ Future<void> main() async {
   await nativeAutomator.initialize();
   final binding = PatrolBinding.ensureInitialized();
   final testExplorationCompleter = Completer<DartGroupEntry>();
+  late final PatrolAppService appService;
 
   // A special test to expore the hierarchy of groups and tests. This is a hack
   // around https://github.com/dart-lang/test/issues/1998.
@@ -94,11 +95,11 @@ ${generateGroupsCode(testFilePaths).split('\n').map((e) => '  $e').join('\n')}
 
   // An additional callback to discover setUpAlls.
   tearDownAll(() {
-    print('PATROL_DEBUG: calling tearDownAll to print setUpAlls');
+    print('PATROL_DEBUG: tearDownAll(): setUpAlls: \${appService.setUpAlls}');
   });
 
   final dartTestGroup = await testExplorationCompleter.future;
-  final appService = PatrolAppService(topLevelDartTestGroup: dartTestGroup);
+  appService = PatrolAppService(topLevelDartTestGroup: dartTestGroup);
   binding.patrolAppService = appService;
   await runAppService(appService);
 

@@ -62,6 +62,9 @@ class PatrolAppService extends PatrolAppServiceServer {
   /// setUpAlls, unlike setUps, aren't executed in the [LiveTest] context.
   /// Because of this, we can't depend on the [LiveTest]'s name, so we identify
   /// them by the parent group ID instead.
+  ///
+  /// This is a list of groups containing setUpAllCallbacks with an index
+  /// appended.
   final List<String> setUpAlls = [];
 
   /// A completer that completes with the name of the Dart test file that was
@@ -83,28 +86,26 @@ class PatrolAppService extends PatrolAppServiceServer {
   }
 
   /// Adds a setUpAll callback to the list of all setUpAll callbacks.
-  void addSetUpAll(String group) {
-    // Not very optimal, but good enough for now.
+  ///
+  /// Returns the name under which this setUpAll callback was added.
+  String addSetUpAll(String group) {
+    // Not optimal, but good enough for now.
 
-    setUpAlls.add('$group + ${group.hashCode}');
+    // Go over all groups, checking if the group is already in the list.
+    var groupIndex = 0;
+    for (final setUpAll in setUpAlls) {
+      final parts = setUpAll.split(' ');
+      final groupName = parts.sublist(0, parts.length - 1).join(' ');
 
-    // for (final setUpAll in setUpAlls) {
-    //   final parts = setUpAll.split(' ');
-    //   final groupName = parts.sublist(0, parts.length - 1).join(' ');
+      if (groupName == group) {
+        groupIndex++;
+      }
+    }
 
-    //   if (groupName == group) {
+    final name = '$group $groupIndex';
 
-    //   }
-
-    //   final index = parts.last;
-    //   if (setUpAll == group) {
-    //     return;
-    //   }
-    // }
-
-    // add an index at the end of setUpAlls
-    // parent testA 1
-    // parent testA 2
+    setUpAlls.add(name);
+    return name;
   }
 
   /// Marks [dartFileName] as completed with the given [passed] status.
@@ -167,7 +168,6 @@ class PatrolAppService extends PatrolAppServiceServer {
   @override
   Future<ListDartTestsResponse> listDartTests() async {
     print('PatrolAppService.listDartTests() called');
-    print('PATROL_DEBUG: setUpAlls: $setUpAlls');
 
     return ListDartTestsResponse(group: topLevelDartTestGroup);
   }
@@ -175,7 +175,6 @@ class PatrolAppService extends PatrolAppServiceServer {
   @override
   Future<RunDartTestResponse> runDartTest(RunDartTestRequest request) async {
     assert(_testExecutionCompleted.isCompleted == false);
-    // patrolTest() always calls this method.
 
     print('PatrolAppService.runDartTest(${request.name}) called');
     _testExecutionRequested.complete(request.name);
@@ -190,8 +189,13 @@ class PatrolAppService extends PatrolAppServiceServer {
   }
 
   @override
-  Future<ListDartLifecycleCallbacksResponse> listDartLifecycleCallbacks() {
-    // TODO: implement listDartLifecycleCallbacks
-    throw UnimplementedError();
+  Future<ListDartLifecycleCallbacksResponse>
+      listDartLifecycleCallbacks() async {
+    print('PatrolAppService.listDartLifecycleCallbacks() called');
+
+    return ListDartLifecycleCallbacksResponse(
+      setUpAlls: setUpAlls,
+      tearDownAlls: [],
+    );
   }
 }

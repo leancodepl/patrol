@@ -49,19 +49,35 @@ void patrolTearDown(Future<void> Function() body) {
 }
 
 /// A modification of [setUpAll] that works with Patrol's native automation.
+///
+/// It keeps track of calls made to setUpAll.
 void patrolSetUpAll(Future<void> Function() body) {
   setUpAll(() async {
     final patrolAppService = PatrolBinding.instance.patrolAppService;
-
     final parentGroupsName = global_state.currentGroupFullName;
-    patrolAppService.addSetUpAll(parentGroupsName);
+    final setUpAllName = patrolAppService.addSetUpAll(parentGroupsName);
 
-    // final requestedToExecute = await PatrolBinding.instance.patrolAppService
-    //     .waitForExecutionRequest(currentSetUpAllIndex);
+    if (await global_state.isInitialRun) {
+      // Skip calling body if we're in test discovery phase
+      print(
+        "PATROL_DEBUG: Skipping setUpAll '$setUpAllName' because it's test discovery phase",
+      );
+      return;
+    }
 
-    // if (requestedToExecute) {
-    //   await body();
-    // }
+    // TODO: Skip calling body if it this setUpAll was already executed
+
+    final requestedTest = await patrolAppService.testExecutionRequested;
+
+    // Skip calling if parentGroupName is not a substring of requestedTestName
+    if (!requestedTest.startsWith(parentGroupsName)) {
+      // This is not exhaustive.
+      return;
+    }
+
+    await body();
+
+    // TODO: Mark this setUpAll as executed
   });
 }
 
@@ -142,6 +158,9 @@ void patrolTest(
     (widgetTester) async {
       if (!constants.hotRestartEnabled) {
         if (await global_state.isInitialRun) {
+          print(
+            'PATROL_DEBUG: falling through test "${global_state.currentTestFullName}"',
+          );
           // Fall through tests during the initial run that discovers tests.
           //
           // This is required to be able to find all setUpAll callbacks.

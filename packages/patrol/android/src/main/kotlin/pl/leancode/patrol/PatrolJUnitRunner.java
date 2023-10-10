@@ -132,7 +132,7 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
      * Throws AssertionError if the test fails.
      */
     public RunDartTestResponse runDartTest(String name) {
-        final String TAG = "PatrolJUnitRunner.runDartTest(" + name + "): ";
+        final String TAG = "PatrolJUnitRunner.runDartTest(\"" + name + "\"): ";
 
         try {
             Logger.INSTANCE.i(TAG + "Requested execution");

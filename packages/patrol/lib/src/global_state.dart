@@ -1,5 +1,5 @@
-// ignore: implementation_imports
 import 'package:flutter/services.dart';
+// ignore: implementation_imports
 import 'package:test_api/src/backend/invoker.dart';
 
 /// Maximum test case length for ATO, after transformations.
@@ -46,6 +46,8 @@ bool get isCurrentTestPassing {
 
 const _channel = MethodChannel('pl.leancode.patrol/main');
 
+/// Returns whether this is the first run of the app under test during which
+/// test discovery happens.
 Future<bool> get isInitialRun async {
   return await _channel.invokeMethod('isInitialRun') as bool;
 }
