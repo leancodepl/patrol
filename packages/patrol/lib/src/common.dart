@@ -141,6 +141,13 @@ void patrolTest(
     tags: tags,
     (widgetTester) async {
       if (!constants.hotRestartEnabled) {
+        if (await global_state.isInitialRun) {
+          // Fall through tests during the initial run that discovers tests.
+          //
+          // This is required to be able to find all setUpAll callbacks.
+          return;
+        }
+
         // If Patrol's native automation feature is enabled, then this test will
         // be executed only if the native side requested it to be executed.
         // Otherwise, it returns early.
@@ -153,6 +160,7 @@ void patrolTest(
           return;
         }
       }
+
       if (!kIsWeb && io.Platform.isIOS) {
         widgetTester.binding.platformDispatcher.onSemanticsEnabledChanged = () {
           // This callback is empty on purpose. It's a workaround for tests

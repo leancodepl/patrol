@@ -1,4 +1,5 @@
 // ignore: implementation_imports
+import 'package:flutter/services.dart';
 import 'package:test_api/src/backend/invoker.dart';
 
 /// Maximum test case length for ATO, after transformations.
@@ -41,4 +42,10 @@ String get currentTestIndividualName {
 /// Returns whether the current test is passing.
 bool get isCurrentTestPassing {
   return Invoker.current!.liveTest.state.result.isPassing;
+}
+
+const _channel = MethodChannel('pl.leancode.patrol/main');
+
+Future<bool> get isInitialRun async {
+  return await _channel.invokeMethod('isInitialRun') as bool;
 }

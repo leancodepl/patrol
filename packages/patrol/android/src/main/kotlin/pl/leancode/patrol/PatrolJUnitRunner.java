@@ -10,14 +10,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.AndroidJUnitRunner;
-
 import pl.leancode.patrol.contracts.Contracts;
 import pl.leancode.patrol.contracts.PatrolAppServiceClientException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import static pl.leancode.patrol.contracts.Contracts.DartGroupEntry;
 import static pl.leancode.patrol.contracts.Contracts.RunDartTestResponse;
@@ -30,6 +28,13 @@ import static pl.leancode.patrol.contracts.Contracts.RunDartTestResponse;
 public class PatrolJUnitRunner extends AndroidJUnitRunner {
     public PatrolAppServiceClient patrolAppServiceClient;
 
+    /**
+     * <p>
+     * Available only after onCreate() has been run.
+     * </p>
+     */
+    protected boolean isInitialRun;
+
     @Override
     protected boolean shouldWaitForActivitiesToComplete() {
         return false;
@@ -40,10 +45,10 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
         super.onCreate(arguments);
 
         // This is only true when the ATO requests a list of tests from the app during the initial run.
-        boolean isInitialRun = Boolean.parseBoolean(arguments.getString("listTestsForOrchestrator"));
+        this.isInitialRun = Boolean.parseBoolean(arguments.getString("listTestsForOrchestrator"));
 
         Logger.INSTANCE.i("--------------------------------");
-        Logger.INSTANCE.i("PatrolJUnitRunner.onCreate() " + (isInitialRun ? "(initial run)" : ""));
+        Logger.INSTANCE.i("PatrolJUnitRunner.onCreate() " + (this.isInitialRun ? "(initial run)" : ""));
     }
 
     /**
@@ -69,6 +74,7 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
         // Currently, the only synchronization point we're interested in is when the app under test returns the list of tests.
         Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
         Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.putExtra("isInitialRun", isInitialRun);
         intent.setClassName(instrumentation.getTargetContext(), activityClass.getCanonicalName());
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         instrumentation.getTargetContext().startActivity(intent);

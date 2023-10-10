@@ -92,6 +92,11 @@ Future<void> main() async {
 ${generateGroupsCode(testFilePaths).split('\n').map((e) => '  $e').join('\n')}
   // END: GENERATED TEST GROUPS
 
+  // An additional callback to discover setUpAlls.
+  tearDownAll(() {
+    print('PATROL_DEBUG: calling tearDownAll to print setUpAlls');
+  });
+
   final dartTestGroup = await testExplorationCompleter.future;
   final appService = PatrolAppService(topLevelDartTestGroup: dartTestGroup);
   binding.patrolAppService = appService;
