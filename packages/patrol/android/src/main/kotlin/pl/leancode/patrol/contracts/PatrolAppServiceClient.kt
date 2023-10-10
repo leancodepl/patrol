@@ -5,24 +5,23 @@
 
 package pl.leancode.patrol.contracts;
 
+import com.google.gson.Gson
 import com.squareup.okhttp.MediaType
 import com.squareup.okhttp.OkHttpClient
 import com.squareup.okhttp.Request
 import com.squareup.okhttp.RequestBody
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import java.util.concurrent.TimeUnit
 
 class PatrolAppServiceClient(address: String, port: Int, private val timeout: Long, private val timeUnit: TimeUnit) {
 
     fun listDartTests(): Contracts.ListDartTestsResponse {
         val response = performRequest("listDartTests")
-        return json.decodeFromString(response)
+        return json.fromJson(response, Contracts.ListDartTestsResponse::class.java)
     }
 
     fun runDartTest(request: Contracts.RunDartTestRequest): Contracts.RunDartTestResponse {
-        val response = performRequest("runDartTest", json.encodeToString(request))
-        return json.decodeFromString(response)
+        val response = performRequest("runDartTest", json.toJson(request))
+        return json.fromJson(response, Contracts.RunDartTestResponse::class.java)
     }
 
     private fun performRequest(path: String, requestBody: String? = null): String {
@@ -53,7 +52,7 @@ class PatrolAppServiceClient(address: String, port: Int, private val timeout: Lo
 
     val serverUrl = "http://$address:$port/"
 
-    private val json = Json { ignoreUnknownKeys = true }
+    private val json = Gson()
 
     private val jsonMediaType = MediaType.parse("application/json; charset=utf-8")
 }
