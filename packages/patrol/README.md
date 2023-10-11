@@ -6,10 +6,12 @@
 `patrol` package builds on top of `flutter_test` and `integration_test` to make
 it easy to control the native UI from Dart test code.
 
-It also provides a new custom finder system to make Flutter widget tests more
-concise and understandable, and writing them – faster and more fun.
+It must be used together with [patrol_cli].
 
-It can be used on its own or with [patrol_cli].
+It also provides a new custom finder system to make Flutter widget tests more
+concise and understandable, and writing them – faster and more fun. It you want
+to only use custom finders, check out
+[patrol_finders](https://pub.dev/packages/patrol_finders).
 
 ## Installation
 
