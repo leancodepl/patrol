@@ -68,6 +68,12 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
         return;
       }
 
+      if (await global_state.isInitialRun) {
+        // If this is the initial run, then no test has been requested to
+        // execute. Return to avoid blocking on testExecutionRequested below.
+        return;
+      }
+
       final testName = global_state.currentTestIndividualName;
       final isTestExplorer = testName == 'patrol_test_explorer';
       if (isTestExplorer) {
