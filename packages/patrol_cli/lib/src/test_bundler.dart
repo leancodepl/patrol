@@ -177,7 +177,8 @@ ${generateGroupsCode([testFilePath]).split('\n').map((e) => '  $e').join('\n')}
     for (final testFilePath in testFilePaths) {
       final relativeTestFilePath = _normalizeTestPath(testFilePath);
       final testName = _createTestName(relativeTestFilePath);
-      imports.add("import '$relativeTestFilePath' as $testName;");
+      final relativeTestFilePathWithoutSlash = relativeTestFilePath[0] == '/' ? relativeTestFilePath.replaceFirst('/', '') : relativeTestFilePath;
+      imports.add("import '$relativeTestFilePathWithoutSlash' as $testName;");
     }
 
     return imports.join('\n');
