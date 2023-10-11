@@ -100,7 +100,7 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
      * </p>
      */
     public void waitForPatrolAppService() {
-        final String TAG = "PatrolJUnitRunner.setUp(): ";
+        final String TAG = "PatrolJUnitRunner.waitForPatrolAppService(): ";
 
         Logger.INSTANCE.i(TAG + "Waiting for PatrolAppService to report its readiness...");
         PatrolServer.Companion.getAppReady().block();
