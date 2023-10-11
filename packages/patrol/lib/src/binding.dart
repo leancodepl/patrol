@@ -53,12 +53,12 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
         return;
       }
 
-      _currentDartTest = global_state.currentTestFullName;
-      if (_currentDartTest == 'patrol_test_explorer') {
+      if (global_state.currentTestIndividualName == 'patrol_test_explorer') {
         // Ignore the fake test.
         return;
       }
 
+      _currentDartTest = global_state.currentTestFullName;
       logger('setUp(): called with current Dart test = "$_currentDartTest"');
     });
 
