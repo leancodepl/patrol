@@ -6,7 +6,6 @@ import 'package:integration_test/integration_test.dart';
 import 'package:patrol/patrol.dart';
 import 'package:patrol/src/global_state.dart' as global_state;
 
-import 'constants.dart' as constants;
 
 const _success = 'success';
 
@@ -41,14 +40,14 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
     reportTestException = (details, testDescription) {
       final currentDartTest = _currentDartTest;
       if (currentDartTest != null) {
-        assert(!constants.hotRestartEnabled);
+        assert(!global_state.hotRestartEnabled);
         _testResults[currentDartTest] = Failure(testDescription, '$details');
       }
       oldTestExceptionReporter(details, testDescription);
     };
 
     setUp(() {
-      if (constants.hotRestartEnabled) {
+      if (global_state.hotRestartEnabled) {
         // Sending results ends the test, which we don't want for Hot Restart
         return;
       }
@@ -63,7 +62,7 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
     });
 
     tearDown(() async {
-      if (constants.hotRestartEnabled) {
+      if (global_state.hotRestartEnabled) {
         // Sending results ends the test, which we don't want for Hot Restart
         return;
       }
@@ -176,12 +175,12 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
   @override
   void attachRootWidget(Widget rootWidget) {
     assert(
-      (_currentDartTest != null) != (constants.hotRestartEnabled),
+      (_currentDartTest != null) != (global_state.hotRestartEnabled),
       '_currentDartTest can be null if and only if Hot Restart is enabled',
     );
 
     const testLabelEnabled = bool.fromEnvironment('PATROL_TEST_LABEL_ENABLED');
-    if (!testLabelEnabled || constants.hotRestartEnabled) {
+    if (!testLabelEnabled || global_state.hotRestartEnabled) {
       super.attachRootWidget(RepaintBoundary(child: rootWidget));
     } else {
       super.attachRootWidget(

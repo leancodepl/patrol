@@ -1,4 +1,5 @@
 import 'package:flutter/services.dart';
+import 'package:meta/meta.dart';
 // ignore: implementation_imports
 import 'package:test_api/src/backend/invoker.dart';
 
@@ -6,6 +7,10 @@ import 'package:test_api/src/backend/invoker.dart';
 ///
 /// See https://github.com/leancodepl/patrol/issues/1725
 const maxTestLength = 190;
+
+/// Whether Hot Restart is enabled.
+@internal
+const bool hotRestartEnabled = bool.fromEnvironment('PATROL_HOT_RESTART');
 
 /// This file wraps the [Invoker] API, which is internal to package:test. We
 /// want to minimize the usage of internal APIs to a minimum.

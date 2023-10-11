@@ -14,7 +14,6 @@ import 'package:test_api/src/backend/group.dart';
 // ignore: implementation_imports
 import 'package:test_api/src/backend/test.dart';
 
-import 'constants.dart' as constants;
 import 'custom_finders/patrol_integration_tester.dart';
 
 /// Signature for callback to [patrolTest].
@@ -156,7 +155,7 @@ void patrolTest(
     variant: variant,
     tags: tags,
     (widgetTester) async {
-      if (!constants.hotRestartEnabled) {
+      if (!global_state.hotRestartEnabled) {
         if (await global_state.isInitialRun) {
           print(
             'PATROL_DEBUG: falling through test "${global_state.currentTestFullName}"',
