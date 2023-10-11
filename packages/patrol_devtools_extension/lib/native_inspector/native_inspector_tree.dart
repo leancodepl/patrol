@@ -1,4 +1,5 @@
-import 'package:flutter/widgets.dart';
+import 'package:devtools_app_shared/ui.dart';
+import 'package:flutter/material.dart';
 import 'package:patrol_devtools_extension/api/contracts.dart';
 
 class NativeInspectorTree extends StatelessWidget {
@@ -15,38 +16,72 @@ class NativeInspectorTree extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: roots.map((e) => _Root(root: e, onTap: onNodeTap)).toList(),
-    );
+    return LayoutBuilder(builder: (context, constraints) {
+      return SizedBox(
+        height: constraints.maxHeight,
+        child: ListView(
+          children: roots
+              .map(
+                (e) => _Node(
+                  nativeView: e,
+                  onTap: onNodeTap,
+                  currentNativeView: currentNativeView,
+                ),
+              )
+              .toList(),
+        ),
+      );
+    });
   }
 }
 
-class _Root extends StatelessWidget {
-  const _Root({Key? key, required this.root, required this.onTap})
-      : super(key: key);
+class _Node extends StatelessWidget {
+  const _Node({
+    Key? key,
+    required this.currentNativeView,
+    required this.nativeView,
+    required this.onTap,
+  }) : super(key: key);
 
-  final NativeView root;
   final ValueChanged<NativeView> onTap;
+  final NativeView? currentNativeView;
+  final NativeView nativeView;
 
   @override
   Widget build(BuildContext context) {
-    final name = root.applicationPackage ?? 'root';
+    final className = nativeView.className ?? '';
+    final resourceName = nativeView.resourceName ?? '';
+    final nodeText =
+        '$className${resourceName.isNotEmpty ? '<$resourceName>' : ''}';
+
     return GestureDetector(
-      onTap: () => onTap(root),
-      child: Text('[$name]'),
+      onTap: () => onTap(nativeView),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            color: identical(currentNativeView, nativeView)
+                ? Theme.of(context).colorScheme.selectedRowBackgroundColor
+                : null,
+            child: Text(nodeText),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 8),
+            child: Column(
+                children: nativeView.children
+                    .map((e) => Padding(
+                          padding: const EdgeInsets.only(left: 8),
+                          child: _Node(
+                            currentNativeView: currentNativeView,
+                            nativeView: e,
+                            onTap: onTap,
+                          ),
+                        ))
+                    .toList()),
+          ),
+        ],
+      ),
     );
   }
 }
-
-// class _Expandable extends StatelessWidget {
-//   const _Expandable({Key? key, required this.root, required this.nativeView})
-//       : super(key: key);
-
-//   final bool root;
-//   final NativeView nativeView;
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(child: Text(context.));
-//   }
-// }

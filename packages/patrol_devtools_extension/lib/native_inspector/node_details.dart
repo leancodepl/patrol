@@ -16,7 +16,7 @@ class NodeDetails extends StatelessWidget {
       ['enabled:', '${node.enabled}'],
       ['focused:', '${node.focused}'],
       ['resourceName:', '${node.resourceName}'],
-      ['text', '${node.text}'],
+      ['text:', '${node.text}'],
     ]
         .map(
           (e) => TableRow(

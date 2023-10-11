@@ -23,18 +23,21 @@ class NativeInspectorView extends StatelessWidget {
     final splitAxis = Split.axisFor(context, 0.85);
     final child = Split(
       axis: splitAxis,
-      initialFractions: const [0.33, 0.67],
+      initialFractions: const [0.6, 0.4],
       children: [
         RoundedOutlinedBorder(
+          clip: true,
           child: Column(
             children: [
               _InspectorTreeControls(
                 onRefreshPressed: onRefreshPressed,
               ),
-              NativeInspectorTree(
-                roots: roots,
-                currentNativeView: currentNode,
-                onNodeTap: onNodeChanged,
+              Expanded(
+                child: NativeInspectorTree(
+                  roots: roots,
+                  currentNativeView: currentNode,
+                  onNodeTap: onNodeChanged,
+                ),
               ),
             ],
           ),
