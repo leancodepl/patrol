@@ -69,18 +69,18 @@ packages:
     dependency: "direct main"
     description:
       name: devtools_app_shared
-      sha256: "2ba4cbc1e863d25ddc89ac367c3361a806be613bc2cc90d978f884029f179052"
+      sha256: acac871c8be6d44c88f2170ac267933578b474da6b11ba400a179ea3297934a1
       url: "https://pub.dev"
     source: hosted
-    version: "0.0.4"
+    version: "0.0.5"
   devtools_extensions:
     dependency: "direct main"
     description:
       name: devtools_extensions
-      sha256: db51af213b7b5413ad8fcf37bdccc6defbb6cce109e536a9b3d8261062f71956
+      sha256: d717578e8330c625ff3fe33cba274bf54147cfb07aee3501db541ab40442d87a
       url: "https://pub.dev"
     source: hosted
-    version: "0.0.6"
+    version: "0.0.8"
   devtools_shared:
     dependency: "direct main"
     description:

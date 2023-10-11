@@ -11,9 +11,9 @@ dependencies:
   flutter:
     sdk: flutter
 
-  devtools_shared:
-  devtools_app_shared:
-  devtools_extensions: 0.0.6
+  devtools_shared: ^4.0.1
+  devtools_app_shared: ^0.0.5
+  devtools_extensions: ^0.0.8
   cupertino_icons: ^1.0.2
   equatable: ^2.0.3
   json_annotation: ^4.6.0

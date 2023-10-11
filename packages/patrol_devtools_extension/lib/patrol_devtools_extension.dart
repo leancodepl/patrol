@@ -8,6 +8,7 @@ import 'package:flutter/rendering.dart';
 import 'package:patrol_devtools_extension/api/contracts.dart';
 import 'package:patrol_devtools_extension/api/patrol_service_extension_api.dart';
 import 'package:patrol_devtools_extension/native_inspector/native_inspector_tree.dart';
+import 'package:patrol_devtools_extension/native_inspector/native_inspector_view.dart';
 import 'package:vm_service/vm_service.dart';
 
 class PatrolDevToolsExtension extends StatefulWidget {
@@ -23,6 +24,17 @@ class _PatrolDevToolsExtensionState extends State<PatrolDevToolsExtension> {
 
   @override
   Widget build(BuildContext context) {
+    return ValueListenableBuilder(
+        valueListenable: runner,
+        builder: (context, state, child) {
+          return NativeInspectorView(
+            roots: state.roots,
+            currentNode: state.currentNode,
+            onNodeChanged: runner.changeNode,
+            onRefreshPressed: runner.getNativeUITree,
+          );
+        });
+
     return ValueListenableBuilder<_State>(
         valueListenable: runner,
         builder: (context, state, child) {
@@ -57,9 +69,6 @@ class _PatrolDevToolsExtensionState extends State<PatrolDevToolsExtension> {
                       : null,
                   child: const Text('getNativeViews'),
                 ),
-                NativeInspectorTree(
-                  roots: state.roots,
-                ),
                 Text(state.getNativeViewsResponse),
                 TextButton(
                   onPressed: state.appConnected
@@ -91,6 +100,34 @@ class _PatrolDevToolsExtensionState extends State<PatrolDevToolsExtension> {
 
 class _Runner extends ValueNotifier<_State> {
   _Runner() : super(_State());
+
+  void changeNode(NativeView? node) {
+    value.currentNode = node;
+    notifyListeners();
+  }
+
+  Future<void> getNativeUITree() async {
+    value.roots = [];
+    value.currentNode = null;
+
+    final api = PatrolServiceExtensionApi(
+      service: serviceManager.service!,
+      isolate: serviceManager.isolateManager.mainIsolate,
+    );
+
+    final res = await api.getNativeUITree();
+
+    switch (res) {
+      case ApiSuccess(:final data):
+        value.roots = data.roots;
+      case ApiFailure(:final error, :final stackTrace):
+      //TODO
+    }
+
+    notifyListeners();
+  }
+
+  /// deprecated
 
   void checkConnection() {
     final app = serviceManager.connectedApp;
@@ -159,7 +196,7 @@ OperatingSystem: ${app.operatingSystem}
     notifyListeners();
   }
 
-  Future<void> getNativeUITree() async {
+  Future<void> oldGetNativeUITree() async {
     final stopwatch = Stopwatch()..start();
     value.roots = [];
 
@@ -212,6 +249,9 @@ OperatingSystem: ${app.operatingSystem}
 }
 
 class _State {
+  List<NativeView> roots = [];
+  NativeView? currentNode;
+
   bool appConnected = false;
   String appConnectedDesc = '';
   String rootWidgetId = '';
@@ -222,7 +262,6 @@ class _State {
   String getNativeViewsResponse = '';
   String getRootWidgetSummaryTreeWithPreviewsResponse = '';
   String debugDumpRenderTreeResponse = '';
-  List<NativeView> roots = [];
 }
 
 class ExtensionApi {
