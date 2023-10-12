@@ -15,3 +15,13 @@ Search for `TestRunner: started`.
 ### Find out when a test ends
 
 Search for `TestRunner: finished`.
+
+### I made some changes to test bundling code that result in a deadlock
+
+This is normal when editing this code. It's a mine field of shared global
+mutable state and things happening in parallel.
+
+Look for `await`s in custom functions provided by Patrol (e.g. `patrolTest()`
+and `patrolSetUpAll()`) and global lifecycle callbacks registered by the
+generated Dart test bundle or PatrolBinding (e.g. `tearDown()`s). Use `print`s
+amply to pinpint where the code is stuck.
