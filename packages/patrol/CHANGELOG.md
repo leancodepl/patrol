@@ -1,10 +1,7 @@
-## 2.4.0-dev.2
-
-- Fix build-time and run-time crashes when app doesn't use Kotlin 1.8.x (#1782)
-
-## 2.4.0-dev.1
+## 2.3.1
 
 - Add support for iOS 11 and 12 (#1733)
+- Fix build-time and run-time crashes when app doesn't use Kotlin 1.8.x (#1782)
 
 ## 2.3.0
 
