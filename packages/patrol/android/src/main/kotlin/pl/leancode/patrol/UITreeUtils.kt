@@ -51,14 +51,14 @@ private fun fromUiAccessibilityNodeInfo(obj: AccessibilityNodeInfo): NativeView 
     }
 
     return NativeView(
-        className = obj.className?.toString() ?: "",
-        text = obj.text?.toString() ?: "",
-        contentDescription = obj.contentDescription?.toString() ?: "",
+        className = obj.className?.toString(),
+        text = obj.text?.toString(),
+        contentDescription = obj.contentDescription?.toString(),
         focused = obj.isFocused,
         enabled = obj.isEnabled,
         childCount = obj.childCount.toLong(),
         resourceName = obj.viewIdResourceName,
-        applicationPackage = obj.packageName?.toString() ?: "",
+        applicationPackage = obj.packageName?.toString(),
         children = children
     )
 }
