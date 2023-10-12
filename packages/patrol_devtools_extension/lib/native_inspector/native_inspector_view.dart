@@ -1,7 +1,7 @@
 import 'package:devtools_app_shared/ui.dart';
 import 'package:flutter/material.dart';
-import 'package:patrol_devtools_extension/api/contracts.dart';
 import 'package:patrol_devtools_extension/native_inspector/native_inspector_tree.dart';
+import 'package:patrol_devtools_extension/native_inspector/node.dart';
 import 'package:patrol_devtools_extension/native_inspector/node_details.dart';
 
 class NativeInspectorView extends StatelessWidget {
@@ -13,9 +13,9 @@ class NativeInspectorView extends StatelessWidget {
     required this.currentNode,
   }) : super(key: key);
 
-  final List<NativeView> roots;
-  final NativeView? currentNode;
-  final ValueChanged<NativeView?> onNodeChanged;
+  final List<Node> roots;
+  final Node? currentNode;
+  final ValueChanged<Node?> onNodeChanged;
   final VoidCallback onRefreshPressed;
 
   @override
@@ -35,7 +35,7 @@ class NativeInspectorView extends StatelessWidget {
               Expanded(
                 child: NativeInspectorTree(
                   roots: roots,
-                  currentNativeView: currentNode,
+                  currentNode: currentNode,
                   onNodeTap: onNodeChanged,
                 ),
               ),
@@ -97,7 +97,7 @@ class _NativeViewDetails extends StatelessWidget {
   const _NativeViewDetails({Key? key, required this.currentNode})
       : super(key: key);
 
-  final NativeView? currentNode;
+  final Node? currentNode;
 
   @override
   Widget build(BuildContext context) {

@@ -1,18 +1,18 @@
 import 'package:devtools_app_shared/ui.dart';
 import 'package:flutter/material.dart';
-import 'package:patrol_devtools_extension/api/contracts.dart';
+import 'package:patrol_devtools_extension/native_inspector/node.dart';
 
 class NativeInspectorTree extends StatelessWidget {
   const NativeInspectorTree({
     Key? key,
-    required this.currentNativeView,
+    required this.currentNode,
     required this.roots,
     required this.onNodeTap,
   }) : super(key: key);
 
-  final List<NativeView> roots;
-  final ValueChanged<NativeView> onNodeTap;
-  final NativeView? currentNativeView;
+  final List<Node> roots;
+  final ValueChanged<Node> onNodeTap;
+  final Node? currentNode;
 
   @override
   Widget build(BuildContext context) {
@@ -23,9 +23,9 @@ class NativeInspectorTree extends StatelessWidget {
           children: roots
               .map(
                 (e) => _Node(
-                  nativeView: e,
+                  node: e,
                   onTap: onNodeTap,
-                  currentNativeView: currentNativeView,
+                  currentNode: currentNode,
                 ),
               )
               .toList(),
@@ -38,30 +38,30 @@ class NativeInspectorTree extends StatelessWidget {
 class _Node extends StatelessWidget {
   const _Node({
     Key? key,
-    required this.currentNativeView,
-    required this.nativeView,
+    required this.currentNode,
+    required this.node,
     required this.onTap,
   }) : super(key: key);
 
-  final ValueChanged<NativeView> onTap;
-  final NativeView? currentNativeView;
-  final NativeView nativeView;
+  final ValueChanged<Node> onTap;
+  final Node? currentNode;
+  final Node node;
 
   @override
   Widget build(BuildContext context) {
-    final className = nativeView.className ?? '';
-    final resourceName = nativeView.resourceName ?? '';
+    final className = node.nativeView.className ?? '';
+    final resourceName = node.nativeView.resourceName ?? '';
     final nodeText =
         '$className${resourceName.isNotEmpty ? '<$resourceName>' : ''}';
 
     return GestureDetector(
-      onTap: () => onTap(nativeView),
+      onTap: () => onTap(node),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            color: identical(currentNativeView, nativeView)
+            color: identical(currentNode, node)
                 ? Theme.of(context).colorScheme.selectedRowBackgroundColor
                 : null,
             child: Text(nodeText),
@@ -69,12 +69,12 @@ class _Node extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(left: 8),
             child: Column(
-                children: nativeView.children
+                children: node.children
                     .map((e) => Padding(
                           padding: const EdgeInsets.only(left: 8),
                           child: _Node(
-                            currentNativeView: currentNativeView,
-                            nativeView: e,
+                            currentNode: currentNode,
+                            node: e,
                             onTap: onTap,
                           ),
                         ))

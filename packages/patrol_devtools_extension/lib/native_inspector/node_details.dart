@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:patrol_devtools_extension/api/contracts.dart';
+import 'package:patrol_devtools_extension/native_inspector/node.dart';
 
 class NodeDetails extends StatelessWidget {
   const NodeDetails({Key? key, required this.node}) : super(key: key);
 
-  final NativeView node;
+  final Node node;
 
   @override
   Widget build(BuildContext context) {
     final rows = [
-      ['applicationPackage:', '${node.applicationPackage}'],
-      ['childCount:', '${node.childCount}'],
-      ['className:', '${node.className}'],
-      ['contentDescription:', '${node.contentDescription}'],
-      ['enabled:', '${node.enabled}'],
-      ['focused:', '${node.focused}'],
-      ['resourceName:', '${node.resourceName}'],
-      ['text:', '${node.text}'],
+      ['applicationPackage:', '${node.nativeView.applicationPackage}'],
+      ['childCount:', '${node.nativeView.childCount}'],
+      ['className:', '${node.nativeView.className}'],
+      ['contentDescription:', '${node.nativeView.contentDescription}'],
+      ['enabled:', '${node.nativeView.enabled}'],
+      ['focused:', '${node.nativeView.focused}'],
+      ['resourceName:', '${node.nativeView.resourceName}'],
+      ['text:', '${node.nativeView.text}'],
     ]
         .map(
           (e) => TableRow(

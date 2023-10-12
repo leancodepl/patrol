@@ -5,10 +5,9 @@ import 'package:devtools_app_shared/service.dart';
 import 'package:devtools_extensions/devtools_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:patrol_devtools_extension/api/contracts.dart';
 import 'package:patrol_devtools_extension/api/patrol_service_extension_api.dart';
-import 'package:patrol_devtools_extension/native_inspector/native_inspector_tree.dart';
 import 'package:patrol_devtools_extension/native_inspector/native_inspector_view.dart';
+import 'package:patrol_devtools_extension/native_inspector/node.dart';
 import 'package:vm_service/vm_service.dart';
 
 class PatrolDevToolsExtension extends StatefulWidget {
@@ -101,7 +100,7 @@ class _PatrolDevToolsExtensionState extends State<PatrolDevToolsExtension> {
 class _Runner extends ValueNotifier<_State> {
   _Runner() : super(_State());
 
-  void changeNode(NativeView? node) {
+  void changeNode(Node? node) {
     value.currentNode = node;
     notifyListeners();
   }
@@ -119,7 +118,7 @@ class _Runner extends ValueNotifier<_State> {
 
     switch (res) {
       case ApiSuccess(:final data):
-        value.roots = data.roots;
+        value.roots = data.roots.map((e) => Node(e)).toList();
       case ApiFailure(:final error, :final stackTrace):
       //TODO
     }
@@ -212,7 +211,6 @@ OperatingSystem: ${app.operatingSystem}
     switch (res) {
       case ApiSuccess(:final data):
         value.getNativeViewsResponse = ' ${data.roots.length} ';
-        value.roots = data.roots;
       case ApiFailure(:final error, :final stackTrace):
         value.getNativeViewsResponse = ':( $error $stackTrace';
     }
@@ -249,8 +247,8 @@ OperatingSystem: ${app.operatingSystem}
 }
 
 class _State {
-  List<NativeView> roots = [];
-  NativeView? currentNode;
+  List<Node> roots = [];
+  Node? currentNode;
 
   bool appConnected = false;
   String appConnectedDesc = '';
