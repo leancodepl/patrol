@@ -259,6 +259,25 @@ class GetNativeViewsRequest with EquatableMixin {
 }
 
 @JsonSerializable()
+class GetNativeUITreeRequest with EquatableMixin {
+  GetNativeUITreeRequest({
+    this.iosInstalledApps,
+  });
+
+  factory GetNativeUITreeRequest.fromJson(Map<String, dynamic> json) =>
+      _$GetNativeUITreeRequestFromJson(json);
+
+  final List<String>? iosInstalledApps;
+
+  Map<String, dynamic> toJson() => _$GetNativeUITreeRequestToJson(this);
+
+  @override
+  List<Object?> get props => [
+        iosInstalledApps,
+      ];
+}
+
+@JsonSerializable()
 class GetNativeUITreeRespone with EquatableMixin {
   GetNativeUITreeRespone({
     required this.roots,

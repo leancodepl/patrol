@@ -83,6 +83,10 @@ struct GetNativeViewsRequest: Codable {
   var appId: String
 }
 
+struct GetNativeUITreeRequest: Codable {
+  var iosInstalledApps: [String]?
+}
+
 struct GetNativeUITreeRespone: Codable {
   var roots: [NativeView]
 }

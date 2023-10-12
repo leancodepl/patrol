@@ -112,6 +112,12 @@ class DevelopCommand extends PatrolCommand {
     final displayLabel = boolArg('label');
     final uninstall = boolArg('uninstall');
 
+    String? iOSInstalledAppsEnvVariable;
+    if (device.targetPlatform == TargetPlatform.iOS) {
+      iOSInstalledAppsEnvVariable =
+          await _iosTestBackend.getInstalledAppsEnvVariable(device.id);
+    }
+
     final customDartDefines = {
       ..._dartDefinesReader.fromFile(),
       ..._dartDefinesReader.fromCli(args: stringsArg('dart-define')),
@@ -125,7 +131,10 @@ class DevelopCommand extends PatrolCommand {
       'INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE': 'false',
       'PATROL_TEST_LABEL_ENABLED': displayLabel.toString(),
       // develop-specific
-      ...{'PATROL_HOT_RESTART': 'true'},
+      ...{
+        'PATROL_HOT_RESTART': 'true',
+        'PATROL_IOS_INSTALLED_APPS': iOSInstalledAppsEnvVariable,
+      },
     }.withNullsRemoved();
 
     final dartDefines = {...customDartDefines, ...internalDartDefines};

@@ -141,6 +141,20 @@ Map<String, dynamic> _$GetNativeViewsRequestToJson(
       'appId': instance.appId,
     };
 
+GetNativeUITreeRequest _$GetNativeUITreeRequestFromJson(
+        Map<String, dynamic> json) =>
+    GetNativeUITreeRequest(
+      iosInstalledApps: (json['iosInstalledApps'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList(),
+    );
+
+Map<String, dynamic> _$GetNativeUITreeRequestToJson(
+        GetNativeUITreeRequest instance) =>
+    <String, dynamic>{
+      'iosInstalledApps': instance.iosInstalledApps,
+    };
+
 GetNativeUITreeRespone _$GetNativeUITreeResponeFromJson(
         Map<String, dynamic> json) =>
     GetNativeUITreeRespone(

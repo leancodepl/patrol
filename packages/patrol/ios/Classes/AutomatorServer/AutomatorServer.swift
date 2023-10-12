@@ -71,8 +71,8 @@ final class AutomatorServer: NativeAutomatorServer {
       }
     }
     
-    func getNativeUITree() async throws -> GetNativeUITreeRespone {
-        let roots = try await automator.getUITreeRoots()
+    func getNativeUITree(request: GetNativeUITreeRequest) async throws -> GetNativeUITreeRespone {
+        let roots = try await automator.getUITreeRoots(installedApps: request.iosInstalledApps ?? [])
 
         return GetNativeUITreeRespone(roots: roots)
     }

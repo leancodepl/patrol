@@ -142,6 +142,15 @@ class Contracts {
   )
 
   @Serializable
+  data class GetNativeUITreeRequest (
+    val iosInstalledApps: List<String>? = null
+  ){
+    fun hasIosInstalledApps(): Boolean {
+      return iosInstalledApps != null
+    }
+  }
+
+  @Serializable
   data class GetNativeUITreeRespone (
     val roots: List<NativeView>
   )

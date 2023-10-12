@@ -69,6 +69,10 @@ class GetNativeViewsRequest {
   late String appId;
 }
 
+class GetNativeUITreeRequest {
+  List<String>? iosInstalledApps;
+}
+
 class GetNativeUITreeRespone {
   late List<NativeView> roots;
 }
@@ -182,7 +186,7 @@ abstract class NativeAutomator<IOSServer, AndroidServer, DartClient> {
   void openQuickSettings(OpenQuickSettingsRequest request);
 
 // general UI interaction
-  GetNativeUITreeRespone getNativeUITree();
+  GetNativeUITreeRespone getNativeUITree(GetNativeUITreeRequest request);
   GetNativeViewsResponse getNativeViews(GetNativeViewsRequest request);
   void tap(TapRequest request);
   void doubleTap(TapRequest request);

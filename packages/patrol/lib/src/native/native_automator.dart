@@ -80,6 +80,8 @@ class NativeAutomatorConfig {
       defaultValue: '8081',
     ),
     this.packageName = const String.fromEnvironment('PATROL_APP_PACKAGE_NAME'),
+    this.iosInstalledApps =
+        const String.fromEnvironment('PATROL_IOS_INSTALLED_APPS'),
     this.bundleId = const String.fromEnvironment('PATROL_APP_BUNDLE_ID'),
     this.androidAppName =
         const String.fromEnvironment('PATROL_ANDROID_APP_NAME'),
@@ -89,6 +91,8 @@ class NativeAutomatorConfig {
     this.keyboardBehavior = KeyboardBehavior.showAndDismiss,
     this.logger = _defaultPrintLogger,
   });
+
+  final String iosInstalledApps;
 
   /// Host on which Patrol server instrumentation is running.
   final String host;

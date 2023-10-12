@@ -96,9 +96,12 @@ class NativeAutomatorClient {
     );
   }
 
-  Future<GetNativeUITreeRespone> getNativeUITree() async {
+  Future<GetNativeUITreeRespone> getNativeUITree(
+    GetNativeUITreeRequest request,
+  ) async {
     final json = await _sendRequest(
       'getNativeUITree',
+      request.toJson(),
     );
     return GetNativeUITreeRespone.fromJson(json);
   }

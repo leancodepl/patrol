@@ -396,20 +396,26 @@
       }
     }
       
-    func getUITreeRoots() async throws -> [NativeView] {
+    func getUITreeRoots(installedApps: [String]) async throws -> [NativeView] {
       try await runAction("getting ui tree roots") {
-	          let start = DispatchTime.now()
-//          let result = [NativeView.fromXCUIElement(self.preferences, "heheszki")]
-//          let result = [NativeView(
-//            className: self.preferences.debugDescription, focused: false, enabled: false, children: [])]
-          let snapshot = try self.preferences.snapshot()
-          let result = [NativeView.fromXCUIElementSnapshot(snapshot, "heheszki")]
-        
-          let end = DispatchTime.now()
-          let nanoTime = end.uptimeNanoseconds - start.uptimeNanoseconds // <<<<< Difference in nano seconds (UInt64)
-          let timeInterval = Double(nanoTime) / 1_000_000_000 // Technically could overflow for long running tests
-          Logger.shared.i("Time to evaluate problem: \(timeInterval) seconds")
-          return result;
+          let foregroundApp = self.getForegroundApp(installedApps: installedApps)
+          let snapshot = try foregroundApp.snapshot()
+          return [NativeView.fromXCUIElementSnapshot(snapshot, foregroundApp.identifier)]
+      }
+    }
+      
+    private func getForegroundApp(installedApps: [String]) -> XCUIApplication {
+      let app = XCUIApplication()
+      if app.state == .runningForeground {
+          return app
+      } else {
+          for bundleIdentifier in installedApps {
+              let app = XCUIApplication(bundleIdentifier: bundleIdentifier)
+              if app.state == .runningForeground {
+                  return app
+              }
+          }
+          return self.springboard
       }
     }
 

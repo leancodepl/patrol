@@ -340,4 +340,20 @@ class IOSTestBackend {
     _logger.detail('Assuming SDK version $sdkVersion for $platform');
     return sdkVersion;
   }
+
+  Future<String> getInstalledAppsEnvVariable(String deviceId) async {
+    final processResult = await _processManager.run(
+      ['xcrun', 'simctl', 'listapps', deviceId],
+      runInShell: true,
+    );
+
+    const lineSplitter = LineSplitter();
+    final ids = lineSplitter
+        .convert(processResult.stdOut)
+        .where((line) => line.contains('CFBundleIdentifier ='))
+        .map((e) => e.substring(e.indexOf('"') + 1, e.lastIndexOf('"')))
+        .toList();
+
+    return jsonEncode(ids);
+  }
 }
