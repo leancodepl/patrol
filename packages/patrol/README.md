@@ -4,7 +4,8 @@
 [![codestyle][pub_badge_style]][pub_badge_link]
 
 `patrol` package builds on top of `flutter_test` and `integration_test` to make
-it easy to control the native UI from Dart test code.
+it easy to control the native UI from Dart test code. Created and supported by
+[LeanCode](https://leancode.co).
 
 It must be used together with [patrol_cli].
 
