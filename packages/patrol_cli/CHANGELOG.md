@@ -1,3 +1,7 @@
+## Unreleased
+
+- Fix bug with `test_bundle.dart` being sometimes garbled on Windows (#1797)
+
 ## 2.2.0
 
 - Add support for `group()` (#1634)
