@@ -35,7 +35,7 @@ class NativeInspectorTree extends StatelessWidget {
   }
 }
 
-class _Node extends StatelessWidget {
+class _Node extends StatefulWidget {
   const _Node({
     Key? key,
     required this.currentNode,
@@ -48,40 +48,70 @@ class _Node extends StatelessWidget {
   final Node node;
 
   @override
+  State<_Node> createState() => _NodeState();
+}
+
+class _NodeState extends State<_Node> {
+  bool isExpanded = true;
+
+  @override
   Widget build(BuildContext context) {
-    final className = node.nativeView.className ?? '';
-    final resourceName = node.nativeView.resourceName ?? '';
+    final className = widget.node.nativeView.className ?? '';
+    final resourceName = widget.node.nativeView.resourceName ?? '';
     final nodeText =
         '$className${resourceName.isNotEmpty ? '<$resourceName>' : ''}';
 
     return GestureDetector(
-      onTap: () => onTap(node),
+      onTap: () => widget.onTap(widget.node),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Container(
-            color: identical(currentNode, node)
-                ? Theme.of(context).colorScheme.selectedRowBackgroundColor
-                : null,
-            child: Text(nodeText),
+          Row(
+            children: [
+              if (widget.node.children.isNotEmpty)
+                InkWell(
+                  onTap: _toogleIsExpanded,
+                  child: AnimatedRotation(
+                    turns: isExpanded ? 1 : 6 / 8,
+                    duration: const Duration(milliseconds: 150),
+                    child: Icon(
+                      Icons.expand_more,
+                      size: defaultIconSize,
+                    ),
+                  ),
+                ),
+              Container(
+                color: widget.currentNode == widget.node
+                    ? Theme.of(context).colorScheme.selectedRowBackgroundColor
+                    : null,
+                child: Text(nodeText),
+              ),
+            ],
           ),
-          Padding(
-            padding: const EdgeInsets.only(left: 8),
-            child: Column(
-                children: node.children
-                    .map((e) => Padding(
-                          padding: const EdgeInsets.only(left: 8),
-                          child: _Node(
-                            currentNode: currentNode,
-                            node: e,
-                            onTap: onTap,
-                          ),
-                        ))
-                    .toList()),
-          ),
+          if (isExpanded)
+            Padding(
+              padding: const EdgeInsets.only(left: 8),
+              child: Column(
+                  children: widget.node.children
+                      .map((e) => Padding(
+                            padding: const EdgeInsets.only(left: 8),
+                            child: _Node(
+                              currentNode: widget.currentNode,
+                              node: e,
+                              onTap: widget.onTap,
+                            ),
+                          ))
+                      .toList()),
+            ),
         ],
       ),
     );
+  }
+
+  void _toogleIsExpanded() {
+    setState(() {
+      isExpanded = !isExpanded;
+    });
   }
 }
