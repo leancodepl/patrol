@@ -13,12 +13,12 @@ void main() {
   group('parent', () {
     patrolSetUpAll(() async {
       await Future<void>.delayed(Duration(seconds: 1));
-      patrolDebug('setting up all (1) before $currentTest');
+      patrolDebug('ran setUpAll (1) before "$currentTest"');
     });
 
     patrolSetUpAll(() async {
       await Future<void>.delayed(Duration(seconds: 1));
-      patrolDebug('setting up all (2) before $currentTest');
+      patrolDebug('ran setUpAll (2) before "$currentTest"');
     });
 
     patrolTest('testA', nativeAutomation: true, _body);
@@ -29,7 +29,7 @@ void main() {
 
 Future<void> _body(PatrolTester $) async {
   final testName = Invoker.current!.fullCurrentTestName();
-  patrolDebug('test body: name=$testName');
+  patrolDebug('ran body of test "$testName"');
 
   await createApp($);
 

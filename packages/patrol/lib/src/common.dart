@@ -67,7 +67,7 @@ void patrolSetUpAll(Future<void> Function() body) {
 
     // TODO: Skip calling body if it this setUpAll was already executed
 
-    patrolDebug('OH SO ARE WE BLOCKED HERE???');
+    // patrolDebug('OH SO ARE WE BLOCKED HERE???');
     final requestedTest = await patrolAppService.testExecutionRequested;
 
     // Skip calling if parentGroupName is not a substring of requestedTestName

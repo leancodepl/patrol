@@ -14,7 +14,10 @@ public class MainActivityTest {
         PatrolJUnitRunner instrumentation = (PatrolJUnitRunner) InstrumentationRegistry.getInstrumentation();
         instrumentation.setUp(MainActivity.class);
         instrumentation.waitForPatrolAppService();
-        return instrumentation.listDartTests();
+        Object[] dartTests = instrumentation.listDartTests();
+        Object[] lifecycleCallbacks = instrumentation.listLifecycleCallbacks();
+
+        return dartTests;
     }
 
     public MainActivityTest(String dartTestName) {

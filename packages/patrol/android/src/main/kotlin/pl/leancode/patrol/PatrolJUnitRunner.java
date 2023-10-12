@@ -127,6 +127,25 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
         }
     }
 
+    public Object[] listLifecycleCallbacks() {
+        final String TAG = "PatrolJUnitRunner.listLifecycleCallbacks(): ";
+
+        try {
+            final DartGroupEntry dartTestGroup = patrolAppServiceClient.listDartTests();
+            List<DartGroupEntry> dartTestCases = ContractsExtensionsKt.listTestsFlat(dartTestGroup, "");
+            List<String> dartTestCaseNamesList = new ArrayList<>();
+            for (DartGroupEntry dartTestCase : dartTestCases) {
+                dartTestCaseNamesList.add(dartTestCase.getName());
+            }
+            Object[] dartTestCaseNames = dartTestCaseNamesList.toArray();
+            Logger.INSTANCE.i(TAG + "Got Dart tests: " + Arrays.toString(dartTestCaseNames));
+            return dartTestCaseNames;
+        } catch (PatrolAppServiceClientException e) {
+            Logger.INSTANCE.e(TAG + "Failed to list Dart tests: ", e);
+            throw new RuntimeException(e);
+        }
+    }
+
     /**
      * Requests execution of a Dart test and waits for it to finish.
      * Throws AssertionError if the test fails.
