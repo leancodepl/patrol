@@ -28,6 +28,7 @@ import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
+import 'package:patrol/src/logs.dart';
 import 'package:patrol/src/native/contracts/contracts.dart';
 import 'package:test_api/src/backend/invoker.dart';
 
@@ -96,7 +97,7 @@ ${generateGroupsCode(testFilePaths).split('\n').map((e) => '  $e').join('\n')}
 
   // An additional callback to discover setUpAlls.
   tearDownAll(() async {
-    print('PATROL_DEBUG: tearDownAll(): setUpAlls: \${appService.setUpAlls}');
+    patrolDebug('tearDownAll(): setUpAlls: \${appService.setUpAlls}');
 
     callbacksExplorationCompleter.complete();
   });

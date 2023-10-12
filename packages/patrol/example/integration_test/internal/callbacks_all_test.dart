@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:patrol/src/extensions.dart';
+// ignore: implementation_imports
+import 'package:patrol/src/logs.dart';
 // ignore: depend_on_referenced_packages
 import 'package:test_api/src/backend/invoker.dart';
 
@@ -7,18 +9,16 @@ import '../common.dart';
 
 String get currentTest => Invoker.current!.fullCurrentTestName();
 
-void _print(String text) => print('PATROL_DEBUG: $text');
-
 void main() {
   group('parent', () {
     patrolSetUpAll(() async {
       await Future<void>.delayed(Duration(seconds: 1));
-      _print('setting up all (1) before $currentTest');
+      patrolDebug('setting up all (1) before $currentTest');
     });
 
     patrolSetUpAll(() async {
       await Future<void>.delayed(Duration(seconds: 1));
-      _print('setting up all (2) before $currentTest');
+      patrolDebug('setting up all (2) before $currentTest');
     });
 
     patrolTest('testA', nativeAutomation: true, _body);
@@ -29,7 +29,7 @@ void main() {
 
 Future<void> _body(PatrolTester $) async {
   final testName = Invoker.current!.fullCurrentTestName();
-  _print('test body: name=$testName');
+  patrolDebug('test body: name=$testName');
 
   await createApp($);
 

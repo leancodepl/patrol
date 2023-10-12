@@ -5,7 +5,7 @@ import 'package:integration_test/common.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:patrol/patrol.dart';
 import 'package:patrol/src/global_state.dart' as global_state;
-
+import 'package:patrol/src/logs.dart';
 
 const _success = 'success';
 
@@ -86,7 +86,9 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
         logger('tearDown(): test "$dartTestName": "$result"');
       });
 
+      patrolDebug('WE ARE HERE');
       final requestedDartTest = await patrolAppService.testExecutionRequested;
+      patrolDebug('BUT ARE WE HERE?');
       if (requestedDartTest == _currentDartTest) {
         logger(
           'tearDown(): finished test "$_currentDartTest". Will report its status back to the native side',

@@ -6,6 +6,7 @@ import 'package:integration_test/integration_test.dart';
 import 'package:meta/meta.dart';
 import 'package:patrol/src/binding.dart';
 import 'package:patrol/src/global_state.dart' as global_state;
+import 'package:patrol/src/logs.dart';
 import 'package:patrol/src/native/contracts/contracts.dart';
 import 'package:patrol/src/native/native.dart';
 import 'package:patrol_finders/patrol_finders.dart' as finders;
@@ -58,14 +59,15 @@ void patrolSetUpAll(Future<void> Function() body) {
 
     if (await global_state.isInitialRun) {
       // Skip calling body if we're in test discovery phase
-      print(
-        "PATROL_DEBUG: Skipping setUpAll '$setUpAllName' because it's test discovery phase",
+      patrolDebug(
+        "skipping setUpAll '$setUpAllName' because it's test discovery phase",
       );
       return;
     }
 
     // TODO: Skip calling body if it this setUpAll was already executed
 
+    patrolDebug('OH SO ARE WE BLOCKED HERE???');
     final requestedTest = await patrolAppService.testExecutionRequested;
 
     // Skip calling if parentGroupName is not a substring of requestedTestName
@@ -157,9 +159,8 @@ void patrolTest(
     (widgetTester) async {
       if (!global_state.hotRestartEnabled) {
         if (await global_state.isInitialRun) {
-          print(
-            'PATROL_DEBUG: falling through test "${global_state.currentTestFullName}"',
-          );
+          await Future<void>.delayed(const Duration(seconds: 2));
+          patrolDebug('fallthrough test "${global_state.currentTestFullName}"');
           // Fall through tests during the initial run that discovers tests.
           //
           // This is required to be able to find all setUpAll callbacks.
