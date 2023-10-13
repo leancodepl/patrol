@@ -40,8 +40,9 @@ class PatrolAppServiceClient {
     }
 
     @Throws(PatrolAppServiceClientException::class)
-    fun runDartTest(name: String): Contracts.RunDartTestResponse {
-        Logger.i("PatrolAppServiceClient.runDartTest($name)")
-        return client.runDartTest(Contracts.RunDartTestRequest(name))
+    fun listDartLifecycleCallbacks(name: String): Contracts.ListDartLifecycleCallbacksResponse {
+        Logger.i("PatrolAppServiceClient.listDartLifecycleCallbacks($name)")
+        val result = client.listDartLifecycleCallbacks()
+        return result
     }
 }
