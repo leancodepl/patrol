@@ -1,14 +1,11 @@
 package pl.leancode.patrol
 
 import androidx.test.uiautomator.UiObjectNotFoundException
-import kotlinx.serialization.json.Json
 import org.http4k.core.Filter
 import org.http4k.core.Response
 import org.http4k.core.Status.Companion.INTERNAL_SERVER_ERROR
 import org.http4k.core.Status.Companion.NOT_FOUND
 import org.http4k.core.Status.Companion.NOT_IMPLEMENTED
-
-private val json = Json { ignoreUnknownKeys = true }
 
 val printer =
     Filter { next ->

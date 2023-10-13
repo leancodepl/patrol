@@ -33,8 +33,6 @@ class AndroidContractsGenerator {
 
 package ${config.package};
 
-import kotlinx.serialization.Serializable
-
 ''';
   }
 
@@ -59,7 +57,6 @@ $optionalFieldUtils
     }
 
     return '''
-  @Serializable
   ${dataKeyword}class ${message.name} (
 $fields
   )$optionalFieldUtils
@@ -77,7 +74,6 @@ $fields
     final cases = enumDefinition.fields.map((e) => '    $e,').join('\n');
 
     return '''
-  @Serializable
   enum class ${enumDefinition.name} {
 $cases
   }
