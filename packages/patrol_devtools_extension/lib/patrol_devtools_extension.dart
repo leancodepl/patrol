@@ -100,6 +100,9 @@ class _PatrolDevToolsExtensionState extends State<PatrolDevToolsExtension> {
 class _Runner extends ValueNotifier<_State> {
   _Runner() : super(_State());
 
+  bool get isAndroidApp =>
+      serviceManager.connectedApp?.operatingSystem == 'android';
+
   void changeNode(Node? node) {
     value.currentNode = node;
     notifyListeners();
@@ -118,7 +121,7 @@ class _Runner extends ValueNotifier<_State> {
 
     switch (res) {
       case ApiSuccess(:final data):
-        value.roots = data.roots.map((e) => Node(e)).toList();
+        value.roots = data.roots.map((e) => Node(e, isAndroidApp)).toList();
       case ApiFailure(:final error, :final stackTrace):
       //TODO
     }

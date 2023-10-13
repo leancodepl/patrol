@@ -35,8 +35,10 @@ class NativeInspectorView extends StatelessWidget {
               Expanded(
                 child: NativeInspectorTree(
                   roots: roots,
-                  currentNode: currentNode,
-                  onNodeTap: onNodeChanged,
+                  props: NodeProps(
+                    currentNode: currentNode,
+                    onNodeTap: onNodeChanged,
+                  ),
                 ),
               ),
             ],

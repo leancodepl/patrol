@@ -2,17 +2,22 @@ import 'package:devtools_app_shared/ui.dart';
 import 'package:flutter/material.dart';
 import 'package:patrol_devtools_extension/native_inspector/node.dart';
 
+class NodeProps {
+  final Node? currentNode;
+  final ValueChanged<Node> onNodeTap;
+
+  NodeProps({required this.currentNode, required this.onNodeTap});
+}
+
 class NativeInspectorTree extends StatelessWidget {
   const NativeInspectorTree({
     Key? key,
-    required this.currentNode,
     required this.roots,
-    required this.onNodeTap,
+    required this.props,
   }) : super(key: key);
 
   final List<Node> roots;
-  final ValueChanged<Node> onNodeTap;
-  final Node? currentNode;
+  final NodeProps props;
 
   @override
   Widget build(BuildContext context) {
@@ -24,8 +29,7 @@ class NativeInspectorTree extends StatelessWidget {
               .map(
                 (e) => _Node(
                   node: e,
-                  onTap: onNodeTap,
-                  currentNode: currentNode,
+                  props: props,
                 ),
               )
               .toList(),
@@ -38,13 +42,11 @@ class NativeInspectorTree extends StatelessWidget {
 class _Node extends StatefulWidget {
   const _Node({
     Key? key,
-    required this.currentNode,
     required this.node,
-    required this.onTap,
+    required this.props,
   }) : super(key: key);
 
-  final ValueChanged<Node> onTap;
-  final Node? currentNode;
+  final NodeProps props;
   final Node node;
 
   @override
@@ -56,13 +58,8 @@ class _NodeState extends State<_Node> {
 
   @override
   Widget build(BuildContext context) {
-    final className = widget.node.nativeView.className ?? '';
-    final resourceName = widget.node.nativeView.resourceName ?? '';
-    final nodeText =
-        '$className${resourceName.isNotEmpty ? '<$resourceName>' : ''}';
-
     return GestureDetector(
-      onTap: () => widget.onTap(widget.node),
+      onTap: () => widget.props.onNodeTap(widget.node),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
@@ -82,10 +79,10 @@ class _NodeState extends State<_Node> {
                   ),
                 ),
               Container(
-                color: widget.currentNode == widget.node
+                color: widget.props.currentNode == widget.node
                     ? Theme.of(context).colorScheme.selectedRowBackgroundColor
                     : null,
-                child: Text(nodeText),
+                child: Text(widget.node.fullNodeName),
               ),
             ],
           ),
@@ -97,9 +94,8 @@ class _NodeState extends State<_Node> {
                       .map((e) => Padding(
                             padding: const EdgeInsets.only(left: 8),
                             child: _Node(
-                              currentNode: widget.currentNode,
+                              props: widget.props,
                               node: e,
-                              onTap: widget.onTap,
                             ),
                           ))
                       .toList()),
