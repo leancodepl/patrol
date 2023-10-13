@@ -5,13 +5,12 @@
 
 package pl.leancode.patrol.contracts;
 
+import com.google.gson.Gson
 import org.http4k.core.Response
 import org.http4k.core.Method.POST
 import org.http4k.routing.bind
 import org.http4k.core.Status.Companion.OK
 import org.http4k.routing.routes
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 
 abstract class NativeAutomatorServer {
     abstract fun initialize()
@@ -55,7 +54,7 @@ abstract class NativeAutomatorServer {
         Response(OK)
       },
       "configure" bind POST to {
-        val body = json.decodeFromString<Contracts.ConfigureRequest>(it.bodyString())
+        val body = json.fromJson(it.bodyString(), Contracts.ConfigureRequest::class.java)
         configure(body)
         Response(OK)
       },
@@ -76,42 +75,42 @@ abstract class NativeAutomatorServer {
         Response(OK)
       },
       "openApp" bind POST to {
-        val body = json.decodeFromString<Contracts.OpenAppRequest>(it.bodyString())
+        val body = json.fromJson(it.bodyString(), Contracts.OpenAppRequest::class.java)
         openApp(body)
         Response(OK)
       },
       "openQuickSettings" bind POST to {
-        val body = json.decodeFromString<Contracts.OpenQuickSettingsRequest>(it.bodyString())
+        val body = json.fromJson(it.bodyString(), Contracts.OpenQuickSettingsRequest::class.java)
         openQuickSettings(body)
         Response(OK)
       },
       "getNativeViews" bind POST to {
-        val body = json.decodeFromString<Contracts.GetNativeViewsRequest>(it.bodyString())
+        val body = json.fromJson(it.bodyString(), Contracts.GetNativeViewsRequest::class.java)
         val response = getNativeViews(body)
-        Response(OK).body(json.encodeToString(response))
+        Response(OK).body(json.toJson(response))
       },
       "tap" bind POST to {
-        val body = json.decodeFromString<Contracts.TapRequest>(it.bodyString())
+        val body = json.fromJson(it.bodyString(), Contracts.TapRequest::class.java)
         tap(body)
         Response(OK)
       },
       "doubleTap" bind POST to {
-        val body = json.decodeFromString<Contracts.TapRequest>(it.bodyString())
+        val body = json.fromJson(it.bodyString(), Contracts.TapRequest::class.java)
         doubleTap(body)
         Response(OK)
       },
       "enterText" bind POST to {
-        val body = json.decodeFromString<Contracts.EnterTextRequest>(it.bodyString())
+        val body = json.fromJson(it.bodyString(), Contracts.EnterTextRequest::class.java)
         enterText(body)
         Response(OK)
       },
       "swipe" bind POST to {
-        val body = json.decodeFromString<Contracts.SwipeRequest>(it.bodyString())
+        val body = json.fromJson(it.bodyString(), Contracts.SwipeRequest::class.java)
         swipe(body)
         Response(OK)
       },
       "waitUntilVisible" bind POST to {
-        val body = json.decodeFromString<Contracts.WaitUntilVisibleRequest>(it.bodyString())
+        val body = json.fromJson(it.bodyString(), Contracts.WaitUntilVisibleRequest::class.java)
         waitUntilVisible(body)
         Response(OK)
       },
@@ -148,12 +147,12 @@ abstract class NativeAutomatorServer {
         Response(OK)
       },
       "enableDarkMode" bind POST to {
-        val body = json.decodeFromString<Contracts.DarkModeRequest>(it.bodyString())
+        val body = json.fromJson(it.bodyString(), Contracts.DarkModeRequest::class.java)
         enableDarkMode(body)
         Response(OK)
       },
       "disableDarkMode" bind POST to {
-        val body = json.decodeFromString<Contracts.DarkModeRequest>(it.bodyString())
+        val body = json.fromJson(it.bodyString(), Contracts.DarkModeRequest::class.java)
         disableDarkMode(body)
         Response(OK)
       },
@@ -170,27 +169,27 @@ abstract class NativeAutomatorServer {
         Response(OK)
       },
       "getNotifications" bind POST to {
-        val body = json.decodeFromString<Contracts.GetNotificationsRequest>(it.bodyString())
+        val body = json.fromJson(it.bodyString(), Contracts.GetNotificationsRequest::class.java)
         val response = getNotifications(body)
-        Response(OK).body(json.encodeToString(response))
+        Response(OK).body(json.toJson(response))
       },
       "tapOnNotification" bind POST to {
-        val body = json.decodeFromString<Contracts.TapOnNotificationRequest>(it.bodyString())
+        val body = json.fromJson(it.bodyString(), Contracts.TapOnNotificationRequest::class.java)
         tapOnNotification(body)
         Response(OK)
       },
       "isPermissionDialogVisible" bind POST to {
-        val body = json.decodeFromString<Contracts.PermissionDialogVisibleRequest>(it.bodyString())
+        val body = json.fromJson(it.bodyString(), Contracts.PermissionDialogVisibleRequest::class.java)
         val response = isPermissionDialogVisible(body)
-        Response(OK).body(json.encodeToString(response))
+        Response(OK).body(json.toJson(response))
       },
       "handlePermissionDialog" bind POST to {
-        val body = json.decodeFromString<Contracts.HandlePermissionRequest>(it.bodyString())
+        val body = json.fromJson(it.bodyString(), Contracts.HandlePermissionRequest::class.java)
         handlePermissionDialog(body)
         Response(OK)
       },
       "setLocationAccuracy" bind POST to {
-        val body = json.decodeFromString<Contracts.SetLocationAccuracyRequest>(it.bodyString())
+        val body = json.fromJson(it.bodyString(), Contracts.SetLocationAccuracyRequest::class.java)
         setLocationAccuracy(body)
         Response(OK)
       },
@@ -204,6 +203,6 @@ abstract class NativeAutomatorServer {
       }
     )
 
-    private val json = Json { ignoreUnknownKeys = true }
+    private val json = Gson()
 }
 

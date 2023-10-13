@@ -5,65 +5,53 @@
 
 package pl.leancode.patrol.contracts;
 
-import kotlinx.serialization.Serializable
-
 class Contracts {
-  @Serializable
   enum class GroupEntryType {
     group,
     test,
   }
 
-  @Serializable
   enum class RunDartTestResponseResult {
     success,
     skipped,
     failure,
   }
 
-  @Serializable
   enum class KeyboardBehavior {
     showAndDismiss,
     alternative,
   }
 
-  @Serializable
   enum class HandlePermissionRequestCode {
     whileUsing,
     onlyThisTime,
     denied,
   }
 
-  @Serializable
   enum class SetLocationAccuracyRequestLocationAccuracy {
     coarse,
     fine,
   }
 
-  @Serializable
   data class DartGroupEntry (
     val name: String,
     val type: GroupEntryType,
     val entries: List<DartGroupEntry>
   )
 
-  @Serializable
   data class ListDartTestsResponse (
     val group: DartGroupEntry
   )
 
-  @Serializable
   data class ListDartLifecycleCallbacksResponse (
     val setUpAlls: List<String>,
     val tearDownAlls: List<String>
   )
 
-  @Serializable
   data class RunDartTestRequest (
     val name: String
   )
 
-  @Serializable
   data class RunDartTestResponse (
     val result: RunDartTestResponseResult,
     val details: String? = null
@@ -73,22 +61,18 @@ class Contracts {
     }
   }
 
-  @Serializable
   data class ConfigureRequest (
     val findTimeoutMillis: Long
   )
 
-  @Serializable
   data class OpenAppRequest (
     val appId: String
   )
 
-  @Serializable
   class OpenQuickSettingsRequest (
 
   )
 
-  @Serializable
   data class Selector (
     val text: String? = null,
     val textStartsWith: String? = null,
@@ -141,13 +125,11 @@ class Contracts {
     }
   }
 
-  @Serializable
   data class GetNativeViewsRequest (
     val selector: Selector,
     val appId: String
   )
 
-  @Serializable
   data class NativeView (
     val className: String? = null,
     val text: String? = null,
@@ -179,18 +161,15 @@ class Contracts {
     }
   }
 
-  @Serializable
   data class GetNativeViewsResponse (
     val nativeViews: List<NativeView>
   )
 
-  @Serializable
   data class TapRequest (
     val selector: Selector,
     val appId: String
   )
 
-  @Serializable
   data class EnterTextRequest (
     val data: String,
     val appId: String,
@@ -206,7 +185,6 @@ class Contracts {
     }
   }
 
-  @Serializable
   data class SwipeRequest (
     val startX: Double,
     val startY: Double,
@@ -215,18 +193,15 @@ class Contracts {
     val steps: Long
   )
 
-  @Serializable
   data class WaitUntilVisibleRequest (
     val selector: Selector,
     val appId: String
   )
 
-  @Serializable
   data class DarkModeRequest (
     val appId: String
   )
 
-  @Serializable
   data class Notification (
     val appName: String? = null,
     val title: String,
@@ -241,17 +216,14 @@ class Contracts {
     }
   }
 
-  @Serializable
   data class GetNotificationsResponse (
     val notifications: List<Notification>
   )
 
-  @Serializable
   class GetNotificationsRequest (
 
   )
 
-  @Serializable
   data class TapOnNotificationRequest (
     val index: Long? = null,
     val selector: Selector? = null
@@ -264,22 +236,18 @@ class Contracts {
     }
   }
 
-  @Serializable
   data class PermissionDialogVisibleResponse (
     val visible: Boolean
   )
 
-  @Serializable
   data class PermissionDialogVisibleRequest (
     val timeoutMillis: Long
   )
 
-  @Serializable
   data class HandlePermissionRequest (
     val code: HandlePermissionRequestCode
   )
 
-  @Serializable
   data class SetLocationAccuracyRequest (
     val locationAccuracy: SetLocationAccuracyRequestLocationAccuracy
   )
