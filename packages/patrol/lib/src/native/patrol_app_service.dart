@@ -49,13 +49,25 @@ Future<void> runAppService(PatrolAppService service) async {
 ///
 /// This is an internal class and you don't want to use it. It's public so that
 /// the generated code can access it.
+///
+/// PatrolAppService lifecycle during initial run:
+///
+///  1. Initial
+///  2. Has Dart tests
+///  3. Has Dart lifecycle callbacks
+///
+/// PatrolAppService lifecycle during test run:
+///
+///  1. Initial
+///  2. Has Dart tests
+///  3. Has Dart test to execute
 class PatrolAppService extends PatrolAppServiceServer {
   /// Creates a new [PatrolAppService].
-  PatrolAppService({required this.topLevelDartTestGroup});
+  PatrolAppService();
 
   /// The ambient test group that wraps all the other groups and tests in the
   /// bundled Dart test file.
-  final DartGroupEntry topLevelDartTestGroup;
+  DartGroupEntry? topLevelDartTestGroup;
 
   /// The names of all setUpAll callbacks.
   ///
@@ -65,7 +77,7 @@ class PatrolAppService extends PatrolAppServiceServer {
   ///
   /// This is a list of groups containing setUpAllCallbacks with an index
   /// appended.
-  final List<String> setUpAlls = [];
+  List<String> setUpAlls = [];
 
   /// A completer that completes with the name of the Dart test file that was
   /// requested to execute by the native side.
@@ -168,6 +180,13 @@ class PatrolAppService extends PatrolAppServiceServer {
   @override
   Future<ListDartTestsResponse> listDartTests() async {
     print('PatrolAppService.listDartTests() called');
+
+    final topLevelDartTestGroup = this.topLevelDartTestGroup;
+    if (topLevelDartTestGroup == null) {
+      throw StateError(
+        'PatrolAppService.listDartTests(): tests not discovered yet',
+      );
+    }
 
     return ListDartTestsResponse(group: topLevelDartTestGroup);
   }
