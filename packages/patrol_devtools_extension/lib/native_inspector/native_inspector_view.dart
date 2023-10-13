@@ -1,10 +1,11 @@
 import 'package:devtools_app_shared/ui.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:patrol_devtools_extension/native_inspector/native_inspector_tree.dart';
 import 'package:patrol_devtools_extension/native_inspector/node.dart';
 import 'package:patrol_devtools_extension/native_inspector/node_details.dart';
 
-class NativeInspectorView extends StatelessWidget {
+class NativeInspectorView extends HookWidget {
   const NativeInspectorView({
     Key? key,
     required this.onNodeChanged,
@@ -20,6 +21,8 @@ class NativeInspectorView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final fullNodeNames = useState(false);
+
     final splitAxis = Split.axisFor(context, 0.85);
     final child = Split(
       axis: splitAxis,
@@ -31,6 +34,7 @@ class NativeInspectorView extends StatelessWidget {
             children: [
               _InspectorTreeControls(
                 onRefreshPressed: onRefreshPressed,
+                fullNodeNames: fullNodeNames,
               ),
               Expanded(
                 child: NativeInspectorTree(
@@ -38,6 +42,7 @@ class NativeInspectorView extends StatelessWidget {
                   props: NodeProps(
                     currentNode: currentNode,
                     onNodeTap: onNodeChanged,
+                    fullNodeName: fullNodeNames.value,
                   ),
                 ),
               ),
@@ -59,10 +64,12 @@ class NativeInspectorView extends StatelessWidget {
 }
 
 class _InspectorTreeControls extends StatelessWidget {
-  const _InspectorTreeControls({Key? key, required this.onRefreshPressed})
+  const _InspectorTreeControls(
+      {Key? key, required this.onRefreshPressed, required this.fullNodeNames})
       : super(key: key);
 
   final VoidCallback onRefreshPressed;
+  final ValueNotifier<bool> fullNodeNames;
 
   @override
   Widget build(BuildContext context) {
@@ -74,22 +81,53 @@ class _InspectorTreeControls extends StatelessWidget {
             child: Text('View Tree'),
           ),
           const Spacer(),
-          DevToolsTooltip(
-            message: 'Refresh Tree',
-            child: TextButton(
-              style: TextButton.styleFrom(
-                padding: EdgeInsets.zero,
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              ),
-              onPressed: onRefreshPressed,
-              child: Icon(
-                Icons.refresh,
-                size: actionsIconSize,
-                color: Theme.of(context).colorScheme.onSurface,
-              ),
-            ),
+          _ControlButton(
+              message: 'Full node names',
+              onPressed: () {
+                fullNodeNames.value = !fullNodeNames.value;
+              },
+              icon: fullNodeNames.value
+                  ? Icons.visibility
+                  : Icons.visibility_off),
+          const SizedBox(width: 4),
+          _ControlButton(
+            icon: Icons.refresh,
+            message: 'Refresh tree',
+            onPressed: onRefreshPressed,
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _ControlButton extends StatelessWidget {
+  const _ControlButton(
+      {Key? key,
+      required this.message,
+      required this.onPressed,
+      required this.icon})
+      : super(key: key);
+
+  final String message;
+  final VoidCallback onPressed;
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    return DevToolsTooltip(
+      message: message,
+      child: TextButton(
+        style: TextButton.styleFrom(
+          padding: EdgeInsets.zero,
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        ),
+        onPressed: onPressed,
+        child: Icon(
+          icon,
+          size: actionsIconSize,
+          color: Theme.of(context).colorScheme.onSurface,
+        ),
       ),
     );
   }

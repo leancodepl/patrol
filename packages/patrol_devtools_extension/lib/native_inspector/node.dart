@@ -30,7 +30,7 @@ class Node {
       }
     }
 
-    return _nodeName(type, resourceName);
+    return _nodeName(typeName, resourceName);
   }
 
   String _nodeName(String? type, String? resourceName) {

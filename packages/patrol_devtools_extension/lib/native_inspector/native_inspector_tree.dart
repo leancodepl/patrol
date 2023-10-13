@@ -1,12 +1,18 @@
 import 'package:devtools_app_shared/ui.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:patrol_devtools_extension/native_inspector/node.dart';
 
 class NodeProps {
   final Node? currentNode;
   final ValueChanged<Node> onNodeTap;
+  final bool fullNodeName;
 
-  NodeProps({required this.currentNode, required this.onNodeTap});
+  NodeProps({
+    required this.currentNode,
+    required this.onNodeTap,
+    required this.fullNodeName,
+  });
 }
 
 class NativeInspectorTree extends StatelessWidget {
@@ -39,7 +45,7 @@ class NativeInspectorTree extends StatelessWidget {
   }
 }
 
-class _Node extends StatefulWidget {
+class _Node extends HookWidget {
   const _Node({
     Key? key,
     required this.node,
@@ -50,27 +56,22 @@ class _Node extends StatefulWidget {
   final Node node;
 
   @override
-  State<_Node> createState() => _NodeState();
-}
-
-class _NodeState extends State<_Node> {
-  bool isExpanded = true;
-
-  @override
   Widget build(BuildContext context) {
+    final isExpanded = useState(true);
+
     return GestureDetector(
-      onTap: () => widget.props.onNodeTap(widget.node),
+      onTap: () => props.onNodeTap(node),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
           Row(
             children: [
-              if (widget.node.children.isNotEmpty)
+              if (node.children.isNotEmpty)
                 InkWell(
-                  onTap: _toogleIsExpanded,
+                  onTap: () => isExpanded.value = !isExpanded.value,
                   child: AnimatedRotation(
-                    turns: isExpanded ? 1 : 6 / 8,
+                    turns: isExpanded.value ? 1 : 6 / 8,
                     duration: const Duration(milliseconds: 150),
                     child: Icon(
                       Icons.expand_more,
@@ -79,22 +80,24 @@ class _NodeState extends State<_Node> {
                   ),
                 ),
               Container(
-                color: widget.props.currentNode == widget.node
+                color: props.currentNode == node
                     ? Theme.of(context).colorScheme.selectedRowBackgroundColor
                     : null,
-                child: Text(widget.node.fullNodeName),
+                child: Text(props.fullNodeName
+                    ? node.fullNodeName
+                    : node.shortNodeName),
               ),
             ],
           ),
-          if (isExpanded)
+          if (isExpanded.value)
             Padding(
               padding: const EdgeInsets.only(left: 8),
               child: Column(
-                  children: widget.node.children
+                  children: node.children
                       .map((e) => Padding(
                             padding: const EdgeInsets.only(left: 8),
                             child: _Node(
-                              props: widget.props,
+                              props: props,
                               node: e,
                             ),
                           ))
@@ -103,11 +106,5 @@ class _NodeState extends State<_Node> {
         ],
       ),
     );
-  }
-
-  void _toogleIsExpanded() {
-    setState(() {
-      isExpanded = !isExpanded;
-    });
   }
 }

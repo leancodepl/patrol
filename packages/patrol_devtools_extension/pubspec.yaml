@@ -16,6 +16,7 @@ dependencies:
   devtools_extensions: ^0.0.8
   cupertino_icons: ^1.0.2
   equatable: ^2.0.3
+  flutter_hooks: ^0.20.3
   json_annotation: ^4.6.0
   vm_service: ^11.10.0
 
