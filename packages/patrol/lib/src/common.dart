@@ -20,6 +20,34 @@ import 'custom_finders/patrol_integration_tester.dart';
 /// Signature for callback to [patrolTest].
 typedef PatrolTesterCallback = Future<void> Function(PatrolIntegrationTester $);
 
+/// A modification of [setUp] that works with Patrol's native automation.
+void patrolSetUp(Future<void> Function() body) {
+  setUp(() async {
+    final currentTest = global_state.currentTestFullName;
+
+    final requestedToExecute = await PatrolBinding.instance.patrolAppService
+        .waitForExecutionRequest(currentTest);
+
+    if (requestedToExecute) {
+      await body();
+    }
+  });
+}
+
+/// A modification of [tearDown] that works with Patrol's native automation.
+void patrolTearDown(Future<void> Function() body) {
+  tearDown(() async {
+    final currentTest = global_state.currentTestFullName;
+
+    final requestedToExecute = await PatrolBinding.instance.patrolAppService
+        .waitForExecutionRequest(currentTest);
+
+    if (requestedToExecute) {
+      await body();
+    }
+  });
+}
+
 /// Like [testWidgets], but with support for Patrol custom finders.
 ///
 /// To customize the Patrol-specific configuration, set [config].
@@ -58,8 +86,6 @@ void patrolTest(
 }) {
   NativeAutomator? automator;
 
-  PatrolBinding? patrolBinding;
-
   if (!nativeAutomation) {
     debugPrint('''
 ╔════════════════════════════════════════════════════════════════════════════════════╗
@@ -76,8 +102,8 @@ void patrolTest(
       case BindingType.patrol:
         automator = NativeAutomator(config: nativeAutomatorConfig);
 
-        patrolBinding = PatrolBinding.ensureInitialized();
-        patrolBinding.framePolicy = framePolicy;
+        // PatrolBinding is initialized in the generated test bundle file.
+        PatrolBinding.instance.framePolicy = framePolicy;
         break;
       case BindingType.integrationTest:
         IntegrationTestWidgetsFlutterBinding.ensureInitialized().framePolicy =
@@ -97,28 +123,16 @@ void patrolTest(
     variant: variant,
     tags: tags,
     (widgetTester) async {
-      if (patrolBinding != null && !constants.hotRestartEnabled) {
+      if (!constants.hotRestartEnabled) {
         // If Patrol's native automation feature is enabled, then this test will
         // be executed only if the native side requested it to be executed.
         // Otherwise, it returns early.
-        //
-        // The assumption here is that this test doesn't have any extra parent
-        // groups. Every Dart test suite has an implict, unnamed, top-level
-        // group. An additional group is present in the bundled_test.dart, and
-        // its name is equal to the path to the Dart test file in the
-        // integration_test directory.
-        //
-        // In other words, the developer cannot use `group()` in the tests.
-        //
-        // Example: if this function is called from the Dart test file named
-        // "example_test.dart", and that file is located in the
-        // "integration_test/examples" directory, we assume that the name of the
-        // immediate parent group is "examples.example_test".
 
-        final requestedToExecute = await patrolBinding.patrolAppService
+        final isRequestedToExecute = await PatrolBinding
+            .instance.patrolAppService
             .waitForExecutionRequest(global_state.currentTestFullName);
 
-        if (!requestedToExecute) {
+        if (!isRequestedToExecute) {
           return;
         }
       }
@@ -202,7 +216,6 @@ DartGroupEntry createDartTestGroup(
       );
     } else if (entry is Test) {
       if (entry.name == 'patrol_test_explorer') {
-        // throw StateError('Expected group, got test: ${entry.name}');
         // Ignore the bogus test that is used to discover the test structure.
         continue;
       }

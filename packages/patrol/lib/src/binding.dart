@@ -36,6 +36,7 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
   ///
   /// You most likely don't want to call it yourself.
   PatrolBinding() {
+    logger('created');
     final oldTestExceptionReporter = reportTestException;
     reportTestException = (details, testDescription) {
       final currentDartTest = _currentDartTest;
@@ -52,7 +53,13 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
         return;
       }
 
+      if (global_state.currentTestIndividualName == 'patrol_test_explorer') {
+        // Ignore the fake test.
+        return;
+      }
+
       _currentDartTest = global_state.currentTestFullName;
+      logger('setUp(): called with current Dart test = "$_currentDartTest"');
     });
 
     tearDown(() async {
@@ -64,24 +71,24 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
       final testName = global_state.currentTestIndividualName;
       final isTestExplorer = testName == 'patrol_test_explorer';
       if (isTestExplorer) {
+        // Ignore the fake test.
         return;
-      } else {
-        logger(
-          'tearDown(): count: ${_testResults.length}, results: $_testResults',
-        );
       }
 
-      final nameOfRequestedTest = await patrolAppService.testExecutionRequested;
+      logger('tearDown(): called with current Dart test = "$_currentDartTest"');
+      logger('tearDown(): there are ${_testResults.length} test results:');
+      _testResults.forEach((dartTestName, result) {
+        logger('tearDown(): test "$dartTestName": "$result"');
+      });
 
-      if (nameOfRequestedTest == _currentDartTest) {
+      final requestedDartTest = await patrolAppService.testExecutionRequested;
+      if (requestedDartTest == _currentDartTest) {
         logger(
-          'finished test $_currentDartTest. Will report its status back to the native side',
+          'tearDown(): finished test "$_currentDartTest". Will report its status back to the native side',
         );
 
         final passed = global_state.isCurrentTestPassing;
-        logger(
-          'tearDown(): test "$testName" in group "$_currentDartTest", passed: $passed',
-        );
+        logger('tearDown(): test "$_currentDartTest", passed: $passed');
         await patrolAppService.markDartTestAsCompleted(
           dartFileName: _currentDartTest!,
           passed: passed,
@@ -91,7 +98,7 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
         );
       } else {
         logger(
-          'finished test $_currentDartTest, but it was not requested, so its status will not be reported back to the native side',
+          'tearDown(): finished test "$_currentDartTest", but it was not requested, so its status will not be reported back to the native side',
         );
       }
     });
