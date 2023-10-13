@@ -59,27 +59,31 @@ class _Node extends HookWidget {
   Widget build(BuildContext context) {
     final isExpanded = useState(true);
 
-    return GestureDetector(
-      onTap: () => props.onNodeTap(node),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Row(
-            children: [
-              if (node.children.isNotEmpty)
-                InkWell(
-                  onTap: () => isExpanded.value = !isExpanded.value,
-                  child: AnimatedRotation(
-                    turns: isExpanded.value ? 1 : 6 / 8,
-                    duration: const Duration(milliseconds: 150),
-                    child: Icon(
-                      Icons.expand_more,
-                      size: defaultIconSize,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Row(
+          children: [
+            node.children.isNotEmpty
+                ? InkWell(
+                    onTap: () => isExpanded.value = !isExpanded.value,
+                    child: AnimatedRotation(
+                      turns: isExpanded.value ? 1 : 6 / 8,
+                      duration: const Duration(milliseconds: 150),
+                      child: Icon(
+                        Icons.expand_more,
+                        size: defaultIconSize,
+                      ),
                     ),
+                  )
+                : const SizedBox(
+                    width: defaultSpacing,
+                    height: defaultSpacing,
                   ),
-                ),
-              Container(
+            GestureDetector(
+              onTap: () => props.onNodeTap(node),
+              child: Container(
                 color: props.currentNode == node
                     ? Theme.of(context).colorScheme.selectedRowBackgroundColor
                     : null,
@@ -87,24 +91,24 @@ class _Node extends HookWidget {
                     ? node.fullNodeName
                     : node.shortNodeName),
               ),
-            ],
-          ),
-          if (isExpanded.value)
-            Padding(
-              padding: const EdgeInsets.only(left: 8),
-              child: Column(
-                  children: node.children
-                      .map((e) => Padding(
-                            padding: const EdgeInsets.only(left: 8),
-                            child: _Node(
-                              props: props,
-                              node: e,
-                            ),
-                          ))
-                      .toList()),
             ),
-        ],
-      ),
+          ],
+        ),
+        if (isExpanded.value)
+          Padding(
+            padding: const EdgeInsets.only(left: 8),
+            child: Column(
+                children: node.children
+                    .map((e) => Padding(
+                          padding: const EdgeInsets.only(left: 8),
+                          child: _Node(
+                            props: props,
+                            node: e,
+                          ),
+                        ))
+                    .toList()),
+          ),
+      ],
     );
   }
 }
