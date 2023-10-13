@@ -15,7 +15,10 @@ public class MainActivityTest {
         instrumentation.setUp(MainActivity.class);
         instrumentation.waitForPatrolAppService();
         Object[] dartTests = instrumentation.listDartTests();
-        Object[] lifecycleCallbacks = instrumentation.listLifecycleCallbacks();
+
+        if (instrumentation.isInitialRun()) {
+            Object[] lifecycleCallbacks = instrumentation.listLifecycleCallbacks();
+        }
 
         return dartTests;
     }

@@ -36,6 +36,10 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
      */
     protected boolean isInitialRun;
 
+    public boolean isInitialRun() {
+        return isInitialRun;
+    }
+
     @Override
     protected boolean shouldWaitForActivitiesToComplete() {
         return false;
