@@ -11,6 +11,7 @@ import android.os.Bundle;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.AndroidJUnitRunner;
 import pl.leancode.patrol.contracts.Contracts;
+import pl.leancode.patrol.contracts.Contracts.ListDartLifecycleCallbacksResponse;
 import pl.leancode.patrol.contracts.PatrolAppServiceClientException;
 
 import java.util.ArrayList;
@@ -131,17 +132,13 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
         final String TAG = "PatrolJUnitRunner.listLifecycleCallbacks(): ";
 
         try {
-            final DartGroupEntry dartTestGroup = patrolAppServiceClient.listDartTests();
-            List<DartGroupEntry> dartTestCases = ContractsExtensionsKt.listTestsFlat(dartTestGroup, "");
-            List<String> dartTestCaseNamesList = new ArrayList<>();
-            for (DartGroupEntry dartTestCase : dartTestCases) {
-                dartTestCaseNamesList.add(dartTestCase.getName());
-            }
-            Object[] dartTestCaseNames = dartTestCaseNamesList.toArray();
-            Logger.INSTANCE.i(TAG + "Got Dart tests: " + Arrays.toString(dartTestCaseNames));
-            return dartTestCaseNames;
+            final ListDartLifecycleCallbacksResponse response = patrolAppServiceClient.listDartLifecycleCallbacks();
+            final List<String> setUpAlls = response.getSetUpAlls();
+            Logger.INSTANCE.i(TAG + "Got Dart lifecycle callbacks: " + setUpAlls);
+
+            return setUpAlls.toArray();
         } catch (PatrolAppServiceClientException e) {
-            Logger.INSTANCE.e(TAG + "Failed to list Dart tests: ", e);
+            Logger.INSTANCE.e(TAG + "Failed to list Dart lifecycle callbacks: ", e);
             throw new RuntimeException(e);
         }
     }

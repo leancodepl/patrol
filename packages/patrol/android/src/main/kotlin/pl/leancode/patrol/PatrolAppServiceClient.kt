@@ -40,8 +40,8 @@ class PatrolAppServiceClient {
     }
 
     @Throws(PatrolAppServiceClientException::class)
-    fun listDartLifecycleCallbacks(name: String): Contracts.ListDartLifecycleCallbacksResponse {
-        Logger.i("PatrolAppServiceClient.listDartLifecycleCallbacks($name)")
+    fun listDartLifecycleCallbacks(): Contracts.ListDartLifecycleCallbacksResponse {
+        Logger.i("PatrolAppServiceClient.listDartLifecycleCallbacks()")
         val result = client.listDartLifecycleCallbacks()
         return result
     }
