@@ -88,6 +88,24 @@ class _Node extends HookWidget {
                       width: iconSize,
                       height: iconSize,
                     ),
+              Container(
+                decoration: const BoxDecoration(
+                  color: Colors.blue,
+                  shape: BoxShape.circle,
+                ),
+                width: iconSize,
+                height: iconSize,
+                child: Center(
+                  child: Text(
+                    node.initialCharacter,
+                    style: DefaultTextStyle.of(context).style.copyWith(
+                          fontSize: iconSize * 0.7,
+                          color: props.colorScheme.background,
+                        ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 4),
               GestureDetector(
                 onTap: () => props.onNodeTap(node),
                 child: Container(

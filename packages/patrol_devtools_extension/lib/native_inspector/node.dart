@@ -7,6 +7,8 @@ class Node {
     fullNodeName = _nodeName(nativeView.className, nativeView.resourceName);
     shortNodeName =
         _shortNodeName(nativeView.className, nativeView.resourceName);
+    initialCharacter =
+        shortNodeName.isNotEmpty ? shortNodeName[0].toUpperCase() : '';
   }
 
   final bool androidNode;
@@ -16,6 +18,7 @@ class Node {
   late final List<Node> children;
   late final String fullNodeName;
   late final String shortNodeName;
+  late final String initialCharacter;
 
   static List<String> ignoreTypePrefixes = ['android.widget.', 'android.view.'];
 
