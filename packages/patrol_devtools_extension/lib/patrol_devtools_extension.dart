@@ -121,7 +121,8 @@ class _Runner extends ValueNotifier<_State> {
 
     switch (res) {
       case ApiSuccess(:final data):
-        value.roots = data.roots.map((e) => Node(e, isAndroidApp)).toList();
+        value.roots =
+            data.roots.map((e) => Node(e, isAndroidApp, null)).toList();
       case ApiFailure(:final error, :final stackTrace):
       //TODO
     }

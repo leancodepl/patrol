@@ -7,11 +7,13 @@ class NodeProps {
   final Node? currentNode;
   final ValueChanged<Node> onNodeTap;
   final bool fullNodeName;
+  final ColorScheme colorScheme;
 
   NodeProps({
     required this.currentNode,
     required this.onNodeTap,
     required this.fullNodeName,
+    required this.colorScheme,
   });
 }
 
@@ -57,58 +59,118 @@ class _Node extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
+    final iconSize = defaultIconSize;
+    final nodeNeedsLines = (node.parent?.children.length ?? 0) > 1;
+
     final isExpanded = useState(true);
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Row(
-          children: [
-            node.children.isNotEmpty
-                ? InkWell(
-                    onTap: () => isExpanded.value = !isExpanded.value,
-                    child: AnimatedRotation(
-                      turns: isExpanded.value ? 1 : 6 / 8,
-                      duration: const Duration(milliseconds: 150),
-                      child: Icon(
-                        Icons.expand_more,
-                        size: defaultIconSize,
+    final child = Padding(
+      padding: EdgeInsets.only(left: iconSize),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            children: [
+              node.children.isNotEmpty
+                  ? InkWell(
+                      onTap: () => isExpanded.value = !isExpanded.value,
+                      child: AnimatedRotation(
+                        turns: isExpanded.value ? 1 : 6 / 8,
+                        duration: const Duration(milliseconds: 150),
+                        child: Icon(
+                          Icons.expand_more,
+                          size: iconSize,
+                        ),
                       ),
+                    )
+                  : SizedBox(
+                      width: iconSize,
+                      height: iconSize,
+                    ),
+              GestureDetector(
+                onTap: () => props.onNodeTap(node),
+                child: Container(
+                  color: props.currentNode == node
+                      ? props.colorScheme.selectedRowBackgroundColor
+                      : null,
+                  child: Text(props.fullNodeName
+                      ? node.fullNodeName
+                      : node.shortNodeName),
+                ),
+              ),
+            ],
+          ),
+          if (isExpanded.value)
+            Column(
+              children: node.children
+                  .map(
+                    (e) => _Node(
+                      props: props,
+                      node: e,
                     ),
                   )
-                : const SizedBox(
-                    width: defaultSpacing,
-                    height: defaultSpacing,
-                  ),
-            GestureDetector(
-              onTap: () => props.onNodeTap(node),
-              child: Container(
-                color: props.currentNode == node
-                    ? Theme.of(context).colorScheme.selectedRowBackgroundColor
-                    : null,
-                child: Text(props.fullNodeName
-                    ? node.fullNodeName
-                    : node.shortNodeName),
-              ),
+                  .toList(),
             ),
-          ],
-        ),
-        if (isExpanded.value)
-          Padding(
-            padding: const EdgeInsets.only(left: 8),
-            child: Column(
-                children: node.children
-                    .map((e) => Padding(
-                          padding: const EdgeInsets.only(left: 8),
-                          child: _Node(
-                            props: props,
-                            node: e,
-                          ),
-                        ))
-                    .toList()),
-          ),
-      ],
+        ],
+      ),
     );
+
+    return nodeNeedsLines
+        ? CustomPaint(
+            painter: _LinesPainter(
+              colorScheme: props.colorScheme,
+              iconSize: iconSize,
+              lastChildren: node == node.parent?.children.last,
+              hasExpandMoreIcon: node.children.isNotEmpty,
+            ),
+            child: child,
+          )
+        : child;
   }
 }
+
+class _LinesPainter extends CustomPainter {
+  _LinesPainter({
+    required this.iconSize,
+    required this.lastChildren,
+    required this.colorScheme,
+    required this.hasExpandMoreIcon,
+  });
+
+  final ColorScheme colorScheme;
+  final double iconSize;
+  final bool hasExpandMoreIcon;
+  final bool lastChildren;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = _defaultLinePaint(colorScheme);
+    final halfOfIconSize = iconSize / 2;
+
+    final yEnd = lastChildren ? halfOfIconSize : size.height;
+
+    canvas.drawLine(
+      Offset(halfOfIconSize, 0),
+      Offset(halfOfIconSize, yEnd),
+      paint,
+    );
+
+    canvas.drawLine(
+      Offset(halfOfIconSize, halfOfIconSize),
+      Offset(hasExpandMoreIcon ? iconSize : (iconSize + halfOfIconSize),
+          halfOfIconSize),
+      paint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(_LinesPainter oldDelegate) =>
+      oldDelegate.colorScheme.isLight != colorScheme.isLight;
+}
+
+Paint _defaultLinePaint(ColorScheme colorScheme) => Paint()
+  ..color = colorScheme.isLight
+      ? Colors.black54
+      : const Color.fromARGB(255, 200, 200, 200)
+  ..strokeWidth = 1.0;

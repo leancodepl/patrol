@@ -1,9 +1,9 @@
 import 'package:patrol_devtools_extension/api/contracts.dart';
 
 class Node {
-  Node(this.nativeView, this.androidNode)
-      : children =
-            nativeView.children.map((e) => Node(e, androidNode)).toList() {
+  Node(this.nativeView, this.androidNode, this.parent) {
+    children =
+        nativeView.children.map((e) => Node(e, androidNode, this)).toList();
     fullNodeName = _nodeName(nativeView.className, nativeView.resourceName);
     shortNodeName =
         _shortNodeName(nativeView.className, nativeView.resourceName);
@@ -11,8 +11,9 @@ class Node {
 
   final bool androidNode;
   final NativeView nativeView;
-  final List<Node> children;
+  final Node? parent;
 
+  late final List<Node> children;
   late final String fullNodeName;
   late final String shortNodeName;
 

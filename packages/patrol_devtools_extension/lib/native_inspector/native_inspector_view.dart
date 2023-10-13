@@ -43,6 +43,7 @@ class NativeInspectorView extends HookWidget {
                     currentNode: currentNode,
                     onNodeTap: onNodeChanged,
                     fullNodeName: fullNodeNames.value,
+                    colorScheme: Theme.of(context).colorScheme,
                   ),
                 ),
               ),
