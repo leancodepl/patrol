@@ -51,11 +51,8 @@ class NativeInspectorView extends HookWidget {
           ),
         ),
         RoundedOutlinedBorder(
-          child: Column(
-            children: [
-              _NativeViewDetails(currentNode: currentNode),
-            ],
-          ),
+          clip: true,
+          child: _NativeViewDetails(currentNode: currentNode),
         ),
       ],
     );
@@ -143,7 +140,7 @@ class _NativeViewDetails extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      // crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: [
         const _HeaderDecoration(
           child: Padding(
@@ -159,12 +156,14 @@ class _NativeViewDetails extends StatelessWidget {
             ),
           ),
         ),
-        currentNode != null
-            ? Padding(
-                padding: const EdgeInsets.symmetric(horizontal: denseSpacing),
-                child: NodeDetails(node: currentNode!),
-              )
-            : const Center(child: Text('Select a node to view its details')),
+        Expanded(
+          child: currentNode != null
+              ? Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: denseSpacing),
+                  child: NodeDetails(node: currentNode!),
+                )
+              : const Center(child: Text('Select a node to view its details')),
+        ),
       ],
     );
   }

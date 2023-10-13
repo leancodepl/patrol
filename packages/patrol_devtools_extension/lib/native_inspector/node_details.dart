@@ -1,5 +1,7 @@
 import 'package:devtools_app_shared/ui.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:patrol_devtools_extension/native_inspector/node.dart';
 
 class NodeDetails extends StatelessWidget {
@@ -11,18 +13,14 @@ class NodeDetails extends StatelessWidget {
   Widget build(BuildContext context) {
     final view = node.nativeView;
     final rows = [
-      _KeyValueItem('applicationPackage:', '${view.applicationPackage}',
-          view.applicationPackage != null),
-      _KeyValueItem(
-          'childCount:', '${view.childCount}', view.childCount != null),
-      _KeyValueItem('className:', '${view.className}', view.className != null),
-      _KeyValueItem('contentDescription:', '${view.contentDescription}',
-          view.contentDescription != null),
-      _KeyValueItem('enabled:', '${view.enabled}', true),
-      _KeyValueItem('focused:', '${view.focused}', true),
-      _KeyValueItem(
-          'resourceName:', '${view.resourceName}', view.resourceName != null),
-      _KeyValueItem('text:', '${view.text}', view.text != null),
+      _KeyValueItem('applicationPackage:', view.applicationPackage),
+      _KeyValueItem('childCount:', view.childCount),
+      _KeyValueItem('className:', view.className),
+      _KeyValueItem('contentDescription:', view.contentDescription),
+      _KeyValueItem('enabled:', view.enabled),
+      _KeyValueItem('focused:', view.focused),
+      _KeyValueItem('resourceName:', view.resourceName),
+      _KeyValueItem('text:', view.text),
     ];
 
     final unimportantTextStyle = TextStyle(
@@ -31,22 +29,57 @@ class NodeDetails extends StatelessWidget {
             : Colors.grey.shade600);
 
     return SelectionArea(
-      child: Table(
-        columnWidths: const {0: IntrinsicColumnWidth(), 1: FlexColumnWidth()},
+      child: ListView(
         children: rows
             .map(
-              (e) => TableRow(
-                children: [
-                  Text(e.key),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 4),
-                    child: Text(
-                      e.value,
-                      style: e.important ? null : unimportantTextStyle,
-                    ),
-                  )
-                ],
-              ),
+              (item) => HookBuilder(builder: (context) {
+                final displayCopyButton = useState(false);
+
+                return MouseRegion(
+                  onEnter: (e) {
+                    displayCopyButton.value = true;
+                  },
+                  onExit: (e) {
+                    displayCopyButton.value = false;
+                  },
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Flexible(
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(item.key),
+                            const SizedBox(width: 4),
+                            Flexible(
+                              child: Text(
+                                item.value,
+                                style: item.important
+                                    ? null
+                                    : unimportantTextStyle,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Opacity(
+                        opacity: displayCopyButton.value ? 1 : 0,
+                        child: IconButton(
+                          iconSize: defaultIconSize,
+                          onPressed: displayCopyButton.value
+                              ? () {
+                                  Clipboard.setData(
+                                      ClipboardData(text: item.copyValue));
+                                }
+                              : null,
+                          icon: const Icon(Icons.copy),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }),
             )
             .toList(),
       ),
@@ -55,8 +88,18 @@ class NodeDetails extends StatelessWidget {
 }
 
 class _KeyValueItem {
-  const _KeyValueItem(this.key, this.value, this.important);
+  _KeyValueItem(this.key, Object? val) : important = val != null {
+    value = switch (val) {
+      null => 'null',
+      String v => '"$v"',
+      _ => val.toString(),
+    };
+
+    copyValue = '$key $value';
+  }
+
   final String key;
-  final String value;
+  late final String value;
+  late final String copyValue;
   final bool important;
 }
