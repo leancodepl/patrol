@@ -33,7 +33,7 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
   /// Creates a new [PatrolBinding].
   ///
   /// You most likely don't want to call it yourself.
-  PatrolBinding() {
+  PatrolBinding(this.patrolAppService) {
     logger('created');
     final oldTestExceptionReporter = reportTestException;
     reportTestException = (details, testDescription) {
@@ -113,9 +113,9 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
   /// if necessary.
   ///
   /// This method is idempotent.
-  factory PatrolBinding.ensureInitialized() {
+  factory PatrolBinding.ensureInitialized(PatrolAppService patrolAppService) {
     if (_instance == null) {
-      PatrolBinding();
+      PatrolBinding(patrolAppService);
     }
     return _instance!;
   }
@@ -128,7 +128,7 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
   ///
   /// It's only for test reporting purposes and should not be used for anything
   /// else.
-  late PatrolAppService patrolAppService;
+  final PatrolAppService patrolAppService;
 
   /// The singleton instance of this object.
   ///
