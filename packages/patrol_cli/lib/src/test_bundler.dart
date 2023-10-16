@@ -76,7 +76,7 @@ Future<void> main() async {
   final appService = PatrolAppService();
   await runAppService(appService);
 
-  PatrolBinding.ensureInitialized(appService);
+  PatrolBinding.ensureInitialized(appService, nativeAutomator);
 
   final testsExplorationCompleter = Completer<DartGroupEntry>();
   final callbacksExplorationCompleter = Completer<void>();

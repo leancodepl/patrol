@@ -33,7 +33,7 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
   /// Creates a new [PatrolBinding].
   ///
   /// You most likely don't want to call it yourself.
-  PatrolBinding(this.patrolAppService) {
+  PatrolBinding(this.patrolAppService, this.nativeAutomator) {
     logger('created');
     final oldTestExceptionReporter = reportTestException;
     reportTestException = (details, testDescription) {
@@ -113,9 +113,12 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
   /// if necessary.
   ///
   /// This method is idempotent.
-  factory PatrolBinding.ensureInitialized(PatrolAppService patrolAppService) {
+  factory PatrolBinding.ensureInitialized(
+    PatrolAppService patrolAppService,
+    NativeAutomator nativeAutomator,
+  ) {
     if (_instance == null) {
-      PatrolBinding(patrolAppService);
+      PatrolBinding(patrolAppService, nativeAutomator);
     }
     return _instance!;
   }
@@ -129,6 +132,10 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
   /// It's only for test reporting purposes and should not be used for anything
   /// else.
   final PatrolAppService patrolAppService;
+
+  /// The [NativeAutomator] used by this binding to interact with the native
+  /// side.
+  final NativeAutomator? nativeAutomator;
 
   /// The singleton instance of this object.
   ///

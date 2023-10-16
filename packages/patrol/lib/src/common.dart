@@ -76,13 +76,14 @@ void patrolSetUpAll(Future<void> Function() body) {
       return;
     }
 
-    await body();
-
     // TODO: Mark this setUpAll as executed
+    final nativeAutomator = PatrolBinding.instance.nativeAutomator;
+
+    await body();
   });
 }
 
-/// Like [testWidgets], but with support for Patrol custom finders.
+/// Like [testWidgets], but with support for Patrol custom fiders.
 ///
 /// To customize the Patrol-specific configuration, set [config].
 ///
@@ -118,8 +119,6 @@ void patrolTest(
   LiveTestWidgetsFlutterBindingFramePolicy framePolicy =
       LiveTestWidgetsFlutterBindingFramePolicy.fadePointers,
 }) {
-  NativeAutomator? automator;
-
   if (!nativeAutomation) {
     debugPrint('''
 ╔════════════════════════════════════════════════════════════════════════════════════╗
@@ -134,8 +133,6 @@ void patrolTest(
   if (nativeAutomation) {
     switch (bindingType) {
       case BindingType.patrol:
-        automator = NativeAutomator(config: nativeAutomatorConfig);
-
         // PatrolBinding is initialized in the generated test bundle file.
         PatrolBinding.instance.framePolicy = framePolicy;
         break;
@@ -188,11 +185,11 @@ void patrolTest(
           // See https://github.com/leancodepl/patrol/issues/1474
         };
       }
-      await automator?.configure();
+      await PatrolBinding.instance.nativeAutomator?.configure();
 
       final patrolTester = PatrolIntegrationTester(
         tester: widgetTester,
-        nativeAutomator: automator,
+        nativeAutomator: PatrolBinding.instance.nativeAutomator,
         config: config,
       );
       await callback(patrolTester);
