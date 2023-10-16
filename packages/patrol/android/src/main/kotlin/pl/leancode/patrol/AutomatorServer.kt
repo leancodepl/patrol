@@ -1,5 +1,6 @@
 package pl.leancode.patrol
 
+import androidx.test.platform.app.InstrumentationRegistry
 import pl.leancode.patrol.contracts.Contracts.ConfigureRequest
 import pl.leancode.patrol.contracts.Contracts.DarkModeRequest
 import pl.leancode.patrol.contracts.Contracts.EnterTextRequest
@@ -9,6 +10,7 @@ import pl.leancode.patrol.contracts.Contracts.GetNotificationsRequest
 import pl.leancode.patrol.contracts.Contracts.GetNotificationsResponse
 import pl.leancode.patrol.contracts.Contracts.HandlePermissionRequest
 import pl.leancode.patrol.contracts.Contracts.HandlePermissionRequestCode
+import pl.leancode.patrol.contracts.Contracts.MarkLifecycleCallbackExecutedRequest
 import pl.leancode.patrol.contracts.Contracts.OpenAppRequest
 import pl.leancode.patrol.contracts.Contracts.OpenQuickSettingsRequest
 import pl.leancode.patrol.contracts.Contracts.PermissionDialogVisibleRequest
@@ -209,5 +211,10 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
 
     override fun markPatrolAppServiceReady() {
         PatrolServer.appReady.open()
+    }
+
+    override fun markLifecycleCallbackExecuted(request: MarkLifecycleCallbackExecutedRequest) {
+        val instrumentation = InstrumentationRegistry.getInstrumentation() as PatrolJUnitRunner
+        instrumentation.markLifecycleCallbackExecuted(request.name)
     }
 }

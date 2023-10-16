@@ -78,6 +78,7 @@ void patrolSetUpAll(Future<void> Function() body) {
 
     // TODO: Mark this setUpAll as executed
     final nativeAutomator = PatrolBinding.instance.nativeAutomator;
+    await nativeAutomator.markLifecycleCallbackExecuted(setUpAllName);
 
     await body();
   });
@@ -185,7 +186,7 @@ void patrolTest(
           // See https://github.com/leancodepl/patrol/issues/1474
         };
       }
-      await PatrolBinding.instance.nativeAutomator?.configure();
+      await PatrolBinding.instance.nativeAutomator.configure();
 
       final patrolTester = PatrolIntegrationTester(
         tester: widgetTester,

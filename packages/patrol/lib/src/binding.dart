@@ -135,7 +135,7 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
 
   /// The [NativeAutomator] used by this binding to interact with the native
   /// side.
-  final NativeAutomator? nativeAutomator;
+  final NativeAutomator nativeAutomator;
 
   /// The singleton instance of this object.
   ///

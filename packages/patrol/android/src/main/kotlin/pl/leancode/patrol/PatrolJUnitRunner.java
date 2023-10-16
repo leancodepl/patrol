@@ -7,22 +7,32 @@ package pl.leancode.patrol;
 
 import android.annotation.SuppressLint;
 import android.app.Instrumentation;
+import android.content.ContentResolver;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.AndroidJUnitRunner;
 import androidx.test.services.storage.TestStorage;
+import androidx.test.services.storage.file.HostedFile;
+import androidx.test.services.storage.internal.TestStorageUtil;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import pl.leancode.patrol.contracts.Contracts;
 import pl.leancode.patrol.contracts.Contracts.ListDartLifecycleCallbacksResponse;
 import pl.leancode.patrol.contracts.PatrolAppServiceClientException;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
 
 import static pl.leancode.patrol.contracts.Contracts.DartGroupEntry;
 import static pl.leancode.patrol.contracts.Contracts.RunDartTestResponse;
@@ -32,7 +42,7 @@ import static pl.leancode.patrol.contracts.Contracts.RunDartTestResponse;
  * A customized AndroidJUnitRunner that enables Patrol on Android.
  * </p>
  */
-@SuppressLint("UnsafeOptInUsageError")
+@SuppressLint({"UnsafeOptInUsageError", "RestrictedApi"})
 public class PatrolJUnitRunner extends AndroidJUnitRunner {
     public PatrolAppServiceClient patrolAppServiceClient;
 
@@ -43,7 +53,14 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
      */
     protected boolean isInitialRun;
 
-    private TestStorage testStorage;
+    private ContentResolver getContentResolver() {
+        return InstrumentationRegistry.getInstrumentation().getTargetContext().getContentResolver();
+    }
+
+    private Uri stateFileUri = HostedFile.buildUri(
+            HostedFile.FileHost.OUTPUT,
+            "patrol_callbacks.json"
+    );
 
     public boolean isInitialRun() {
         return isInitialRun;
@@ -57,8 +74,6 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
     @Override
     public void onCreate(Bundle arguments) {
         super.onCreate(arguments);
-
-        this.testStorage = new TestStorage();
 
         // This is only true when the ATO requests a list of tests from the app during the initial run.
         this.isInitialRun = Boolean.parseBoolean(arguments.getString("listTestsForOrchestrator"));
@@ -158,22 +173,52 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
         }
     }
 
-    @SuppressLint("UnsafeOptInUsageError")
     public void saveLifecycleCallbacks(Object[] callbacks) {
-        HashMap<String, Boolean> callbackMap = new HashMap<>();
+        Map<String, Boolean> callbackMap = new HashMap<>();
         for (Object callback : callbacks) {
             callbackMap.put((String) callback, false);
         }
 
-        Gson gson = new Gson();
+        writeStateFile(callbackMap);
+    }
+
+    public void markLifecycleCallbackExecuted(String name) {
+        Logger.INSTANCE.i("PatrolJUnitRunnerMarking.markLifecycleCallbackExecuted(" + name + ")");
+        Map<String, Boolean> state = readStateFile();
+        state.put(name, true);
+        writeStateFile(state);
+    }
+
+    private Map<String, Boolean> readStateFile() {
         try {
-            String json = gson.toJson(callbackMap);
-            OutputStream outputStream = testStorage.openOutputFile("patrol_callbacks.json");
+            InputStream inputStream = TestStorageUtil.getInputStream(stateFileUri, getContentResolver());
+            String content = convertStreamToString(inputStream);
+            Gson gson = new Gson();
+            Type typeOfHashMap = new TypeToken<Map<String, String>>() {}.getType();
+            Map<String, Boolean> data = gson.fromJson(content, typeOfHashMap);
+            return data;
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException("Failed to read state file", e);
+        }
+    }
+
+    private void writeStateFile(Map<String, Boolean> data) {
+        try {
+            OutputStream outputStream = TestStorageUtil.getOutputStream(stateFileUri, getContentResolver());
+            Gson gson = new Gson();
+            Type typeOfHashMap = new TypeToken<Map<String, String>>() {
+            }.getType();
+            String json = gson.toJson(data, typeOfHashMap);
             outputStream.write(json.getBytes());
             outputStream.write("\n".getBytes());
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Failed to write state file", e);
         }
+    }
+
+    static String convertStreamToString(InputStream inputStream) {
+        Scanner s = new Scanner(inputStream).useDelimiter("\\A");
+        return s.hasNext() ? s.next() : "";
     }
 
     /**
