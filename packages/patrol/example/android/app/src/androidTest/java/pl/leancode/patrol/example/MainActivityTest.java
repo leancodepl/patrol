@@ -18,6 +18,7 @@ public class MainActivityTest {
 
         if (instrumentation.isInitialRun()) {
             Object[] lifecycleCallbacks = instrumentation.listLifecycleCallbacks();
+            instrumentation.saveLifecycleCallbacks(lifecycleCallbacks);
         }
 
         return dartTests;
