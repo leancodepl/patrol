@@ -230,10 +230,15 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
      *
      * This is required because the app is launched in a new process for each test.
      */
-    public void setLifecycleCallbacksStateInApp() {
+    public void setLifecycleCallbacksState() {
         final String TAG = "PatrolJUnitRunner.setLifecycleCallbacksStateInApp(): ";
 
-        
+        try {
+            patrolAppServiceClient.setLifecycleCallbacksState(readStateFile());
+        } catch (PatrolAppServiceClientException e) {
+            Logger.INSTANCE.e(TAG + "Failed to set lifecycle callbacks state in app: ", e);
+            throw new RuntimeException(e);
+        }
     }
 
     /**

@@ -33,6 +33,10 @@ class Contracts {
     fine,
   }
 
+  class Empty (
+
+  )
+
   data class DartGroupEntry (
     val name: String,
     val type: GroupEntryType,
@@ -62,7 +66,7 @@ class Contracts {
   }
 
   data class SetLifecycleCallbacksStateRequest (
-    val state: Map
+    val state: Map<String, Boolean>
   )
 
   data class ConfigureRequest (

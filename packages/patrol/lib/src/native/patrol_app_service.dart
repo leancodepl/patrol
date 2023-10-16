@@ -79,6 +79,11 @@ class PatrolAppService extends PatrolAppServiceServer {
   /// appended.
   List<String> setUpAlls = [];
 
+  /// Map that knows which lifecycle callbacks have been already executed.
+  ///
+  /// It's populated near the beginning of the app startup during each test.
+  Map<String, bool> lifecycleCallbacksState = {};
+
   /// A completer that completes with the name of the Dart test file that was
   /// requested to execute by the native side.
   final _testExecutionRequested = Completer<String>();
@@ -216,5 +221,14 @@ class PatrolAppService extends PatrolAppServiceServer {
       setUpAlls: setUpAlls,
       tearDownAlls: [],
     );
+  }
+
+  @override
+  Future<Empty> setLifecycleCallbacksState(
+    SetLifecycleCallbacksStateRequest request,
+  ) async {
+    print('PatrolAppService.setLifecycleCallbacksState() called');
+    lifecycleCallbacksState = request.state.cast<String, bool>();
+    return Empty();
   }
 }

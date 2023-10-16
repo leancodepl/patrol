@@ -49,6 +49,18 @@ enum SetLocationAccuracyRequestLocationAccuracy {
 }
 
 @JsonSerializable()
+class Empty with EquatableMixin {
+  Empty();
+
+  factory Empty.fromJson(Map<String, dynamic> json) => _$EmptyFromJson(json);
+
+  Map<String, dynamic> toJson() => _$EmptyToJson(this);
+
+  @override
+  List<Object?> get props => const [];
+}
+
+@JsonSerializable()
 class DartGroupEntry with EquatableMixin {
   DartGroupEntry({
     required this.name,

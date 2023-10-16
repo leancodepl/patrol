@@ -65,7 +65,16 @@ void patrolSetUpAll(Future<void> Function() body) {
       return;
     }
 
-    // TODO: Skip calling body if it this setUpAll was already executed
+    // Skip calling body if it this setUpAll was already executed
+    assert(
+      patrolAppService.lifecycleCallbacksState[setUpAllName] != null,
+      'setUpAll "$setUpAllName" was not registered in PatrolAppService. This looks very nasty.',
+    );
+
+    if (patrolAppService.lifecycleCallbacksState[setUpAllName] ?? false) {
+      patrolDebug('skipping setUpAll "$setUpAllName" because it already ran');
+      return;
+    }
 
     // patrolDebug('OH SO ARE WE BLOCKED HERE???');
     final requestedTest = await patrolAppService.testExecutionRequested;
@@ -76,7 +85,7 @@ void patrolSetUpAll(Future<void> Function() body) {
       return;
     }
 
-    // TODO: Mark this setUpAll as executed
+    // Mark this setUpAll as executed
     final nativeAutomator = PatrolBinding.instance.nativeAutomator;
     await nativeAutomator.markLifecycleCallbackExecuted(setUpAllName);
 

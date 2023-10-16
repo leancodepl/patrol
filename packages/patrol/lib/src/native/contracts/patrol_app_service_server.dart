@@ -30,6 +30,9 @@ abstract class PatrolAppServiceServer {
           json as Map<String, dynamic>);
 
       final result = await setLifecycleCallbacksState(requestObj);
+
+      final body = jsonEncode(result.toJson());
+      return Response.ok(body);
     } else if ('runDartTest' == request.url.path) {
       final stringContent = await request.readAsString(utf8);
       final json = jsonDecode(stringContent);
@@ -47,7 +50,7 @@ abstract class PatrolAppServiceServer {
 
   Future<ListDartTestsResponse> listDartTests();
   Future<ListDartLifecycleCallbacksResponse> listDartLifecycleCallbacks();
-  Future<void> setLifecycleCallbacksState(
+  Future<Empty> setLifecycleCallbacksState(
       SetLifecycleCallbacksStateRequest request);
   Future<RunDartTestResponse> runDartTest(RunDartTestRequest request);
 }

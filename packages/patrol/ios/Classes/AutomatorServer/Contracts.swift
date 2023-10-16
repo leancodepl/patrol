@@ -32,6 +32,10 @@ enum SetLocationAccuracyRequestLocationAccuracy: String, Codable {
   case fine
 }
 
+struct Empty: Codable {
+
+}
+
 struct DartGroupEntry: Codable {
   var name: String
   var type: GroupEntryType

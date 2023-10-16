@@ -6,6 +6,10 @@ part of 'contracts.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
+Empty _$EmptyFromJson(Map<String, dynamic> json) => Empty();
+
+Map<String, dynamic> _$EmptyToJson(Empty instance) => <String, dynamic>{};
+
 DartGroupEntry _$DartGroupEntryFromJson(Map<String, dynamic> json) =>
     DartGroupEntry(
       name: json['name'] as String,

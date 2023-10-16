@@ -7,6 +7,9 @@
 //    - Generic types (IOSServer, IOSClient, AndroidServer, AndroidClient, DartServer, DartClient)
 //      control where we need clients and servers
 
+// void doesn't work
+class Empty {}
+
 class DartGroupEntry {
   late String name;
   late GroupEntryType type;
@@ -46,7 +49,7 @@ class SetLifecycleCallbacksStateRequest {
 abstract class PatrolAppService<IOSClient, AndroidClient, DartServer> {
   ListDartTestsResponse listDartTests();
   ListDartLifecycleCallbacksResponse listDartLifecycleCallbacks();
-  void setLifecycleCallbacksState(SetLifecycleCallbacksStateRequest request);
+  Empty setLifecycleCallbacksState(SetLifecycleCallbacksStateRequest request);
   RunDartTestResponse runDartTest(RunDartTestRequest request);
 }
 

@@ -24,7 +24,7 @@ class PatrolAppServiceClient {
     performRequest(requestName: "listDartLifecycleCallbacks", completion: completion)
   }
 
-  func setLifecycleCallbacksState(request: SetLifecycleCallbacksStateRequest, completion: @escaping (Result<Void, Error>) -> Void) {
+  func setLifecycleCallbacksState(request: SetLifecycleCallbacksStateRequest, completion: @escaping (Result<Empty, Error>) -> Void) {
     do {
       let body = try JSONEncoder().encode(request)
       performRequest(requestName: "setLifecycleCallbacksState", body: body, completion: completion)
