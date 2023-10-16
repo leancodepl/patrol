@@ -36,6 +36,7 @@ public class MainActivityTest {
     @Test
     public void runDartTest() {
         PatrolJUnitRunner instrumentation = (PatrolJUnitRunner) InstrumentationRegistry.getInstrumentation();
+        instrumentation.setLifecycleCallbacksState();
         instrumentation.runDartTest(dartTestName);
     }
 }

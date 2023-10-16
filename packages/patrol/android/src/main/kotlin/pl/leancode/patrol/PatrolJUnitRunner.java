@@ -211,8 +211,7 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
         try {
             OutputStream outputStream = TestStorageUtil.getOutputStream(stateFileUri, getContentResolver());
             Gson gson = new Gson();
-            Type typeOfHashMap = new TypeToken<Map<String, String>>() {
-            }.getType();
+            Type typeOfHashMap = new TypeToken<Map<String, String>>() {}.getType();
             String json = gson.toJson(data, typeOfHashMap);
             outputStream.write(json.getBytes());
             outputStream.write("\n".getBytes());
@@ -224,6 +223,17 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
     static String convertStreamToString(InputStream inputStream) {
         Scanner s = new Scanner(inputStream).useDelimiter("\\A");
         return s.hasNext() ? s.next() : "";
+    }
+
+    /**
+     * Sets the state of lifecycle callbacks in the app.
+     *
+     * This is required because the app is launched in a new process for each test.
+     */
+    public void setLifecycleCallbacksStateInApp() {
+        final String TAG = "PatrolJUnitRunner.setLifecycleCallbacksStateInApp(): ";
+
+        
     }
 
     /**

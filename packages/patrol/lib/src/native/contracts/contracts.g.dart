@@ -85,6 +85,18 @@ const _$RunDartTestResponseResultEnumMap = {
   RunDartTestResponseResult.failure: 'failure',
 };
 
+SetLifecycleCallbacksStateRequest _$SetLifecycleCallbacksStateRequestFromJson(
+        Map<String, dynamic> json) =>
+    SetLifecycleCallbacksStateRequest(
+      state: json['state'] as Map<String, dynamic>,
+    );
+
+Map<String, dynamic> _$SetLifecycleCallbacksStateRequestToJson(
+        SetLifecycleCallbacksStateRequest instance) =>
+    <String, dynamic>{
+      'state': instance.state,
+    };
+
 ConfigureRequest _$ConfigureRequestFromJson(Map<String, dynamic> json) =>
     ConfigureRequest(
       findTimeoutMillis: json['findTimeoutMillis'] as int,

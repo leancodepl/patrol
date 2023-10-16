@@ -61,6 +61,10 @@ class Contracts {
     }
   }
 
+  data class SetLifecycleCallbacksStateRequest (
+    val state: Map
+  )
+
   data class ConfigureRequest (
     val findTimeoutMillis: Long
   )

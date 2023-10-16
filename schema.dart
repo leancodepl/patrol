@@ -39,9 +39,14 @@ class RunDartTestResponse {
   String? details;
 }
 
+class SetLifecycleCallbacksStateRequest {
+  late Map<String, bool> state;
+}
+
 abstract class PatrolAppService<IOSClient, AndroidClient, DartServer> {
   ListDartTestsResponse listDartTests();
   ListDartLifecycleCallbacksResponse listDartLifecycleCallbacks();
+  void setLifecycleCallbacksState(SetLifecycleCallbacksStateRequest request);
   RunDartTestResponse runDartTest(RunDartTestRequest request);
 }
 

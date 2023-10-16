@@ -158,6 +158,27 @@ class RunDartTestResponse with EquatableMixin {
 }
 
 @JsonSerializable()
+class SetLifecycleCallbacksStateRequest with EquatableMixin {
+  SetLifecycleCallbacksStateRequest({
+    required this.state,
+  });
+
+  factory SetLifecycleCallbacksStateRequest.fromJson(
+          Map<String, dynamic> json) =>
+      _$SetLifecycleCallbacksStateRequestFromJson(json);
+
+  final Map state;
+
+  Map<String, dynamic> toJson() =>
+      _$SetLifecycleCallbacksStateRequestToJson(this);
+
+  @override
+  List<Object?> get props => [
+        state,
+      ];
+}
+
+@JsonSerializable()
 class ConfigureRequest with EquatableMixin {
   ConfigureRequest({
     required this.findTimeoutMillis,

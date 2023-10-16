@@ -56,6 +56,10 @@ struct RunDartTestResponse: Codable {
   var details: String?
 }
 
+struct SetLifecycleCallbacksStateRequest: Codable {
+  var state: Map
+}
+
 struct ConfigureRequest: Codable {
   var findTimeoutMillis: Int
 }
