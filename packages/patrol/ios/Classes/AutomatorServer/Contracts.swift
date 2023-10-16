@@ -170,3 +170,7 @@ struct SetLocationAccuracyRequest: Codable {
   var locationAccuracy: SetLocationAccuracyRequestLocationAccuracy
 }
 
+struct MarkLifecycleCallbackExecutedRequest: Codable {
+  var name: String
+}
+

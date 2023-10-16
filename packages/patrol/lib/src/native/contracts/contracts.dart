@@ -627,3 +627,24 @@ class SetLocationAccuracyRequest with EquatableMixin {
         locationAccuracy,
       ];
 }
+
+@JsonSerializable()
+class MarkLifecycleCallbackExecutedRequest with EquatableMixin {
+  MarkLifecycleCallbackExecutedRequest({
+    required this.name,
+  });
+
+  factory MarkLifecycleCallbackExecutedRequest.fromJson(
+          Map<String, dynamic> json) =>
+      _$MarkLifecycleCallbackExecutedRequestFromJson(json);
+
+  final String name;
+
+  Map<String, dynamic> toJson() =>
+      _$MarkLifecycleCallbackExecutedRequestToJson(this);
+
+  @override
+  List<Object?> get props => [
+        name,
+      ];
+}

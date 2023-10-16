@@ -391,3 +391,15 @@ const _$SetLocationAccuracyRequestLocationAccuracyEnumMap = {
   SetLocationAccuracyRequestLocationAccuracy.coarse: 'coarse',
   SetLocationAccuracyRequestLocationAccuracy.fine: 'fine',
 };
+
+MarkLifecycleCallbackExecutedRequest
+    _$MarkLifecycleCallbackExecutedRequestFromJson(Map<String, dynamic> json) =>
+        MarkLifecycleCallbackExecutedRequest(
+          name: json['name'] as String,
+        );
+
+Map<String, dynamic> _$MarkLifecycleCallbackExecutedRequestToJson(
+        MarkLifecycleCallbackExecutedRequest instance) =>
+    <String, dynamic>{
+      'name': instance.name,
+    };

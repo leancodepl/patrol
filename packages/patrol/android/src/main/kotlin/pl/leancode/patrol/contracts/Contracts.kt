@@ -252,4 +252,8 @@ class Contracts {
     val locationAccuracy: SetLocationAccuracyRequestLocationAccuracy
   )
 
+  data class MarkLifecycleCallbackExecutedRequest (
+    val name: String
+  )
+
 }

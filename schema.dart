@@ -171,6 +171,10 @@ class SetLocationAccuracyRequest {
   late SetLocationAccuracyRequestLocationAccuracy locationAccuracy;
 }
 
+class MarkLifecycleCallbackExecutedRequest {
+  late String name;
+}
+
 abstract class NativeAutomator<IOSServer, AndroidServer, DartClient> {
   void initialize();
   void configure(ConfigureRequest request);
@@ -221,4 +225,6 @@ abstract class NativeAutomator<IOSServer, AndroidServer, DartClient> {
 
 // TODO(bartekpacia): Move this RPC into a new PatrolNativeTestService service because it doesn't fit here
   void markPatrolAppServiceReady();
+  void markLifecycleCallbackExecuted(
+      MarkLifecycleCallbackExecutedRequest request);
 }
