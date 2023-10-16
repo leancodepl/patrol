@@ -44,7 +44,8 @@ class PatrolStoragePermissionListener : RunListener() {
 
     override fun testStarted(description: Description) {
         Logger.d("testStarted with description: $description")
-        
+
+        // This file is created at /sdcard/googletest/test_outputfiles
         val os = testStorage.openOutputFile("patrol.txt", true)
         os.write("testStarted with description: $description\n".toByteArray())
 
