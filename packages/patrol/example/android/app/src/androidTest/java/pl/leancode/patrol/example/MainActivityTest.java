@@ -17,6 +17,9 @@ public class MainActivityTest {
         Object[] dartTests = instrumentation.listDartTests();
 
         if (instrumentation.isInitialRun()) {
+            // Clear the list of lifecycle callbacks from the previous run.
+            instrumentation.clearStateFile();
+
             Object[] lifecycleCallbacks = instrumentation.listLifecycleCallbacks();
             instrumentation.saveLifecycleCallbacks(lifecycleCallbacks);
         }

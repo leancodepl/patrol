@@ -189,6 +189,11 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
         writeStateFile(state);
     }
 
+    public void clearStateFile() {
+        Logger.INSTANCE.i("PatrolJUnitRunner.clearStateFile()");
+        writeStateFile(new HashMap<>());
+    }
+
     private Map<String, Boolean> readStateFile() {
         try {
             InputStream inputStream = TestStorageUtil.getInputStream(stateFileUri, getContentResolver());
