@@ -412,7 +412,8 @@ class Automator private constructor() {
         }
 
         val identifiers = arrayOf(
-            "com.android.permissioncontroller:id/permission_allow_one_time_button" // API >= 30
+            "com.android.permissioncontroller:id/permission_allow_one_time_button", // API >= 30
+            "com.android.permissioncontroller:id/permission_allow_button" // API >30 for POST_NOTIFICATIONS
         )
 
         val uiObject = waitForUiObjectByResourceId(*identifiers, timeout = timeoutMillis)
