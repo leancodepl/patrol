@@ -13,7 +13,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.AndroidJUnitRunner;
-import androidx.test.services.storage.TestStorage;
 import androidx.test.services.storage.file.HostedFile;
 import androidx.test.services.storage.internal.TestStorageUtil;
 import com.google.gson.Gson;
@@ -142,6 +141,10 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
     public Object[] listDartTests() {
         final String TAG = "PatrolJUnitRunner.listDartTests(): ";
 
+        // This call is here for backward compatibility.
+        // It should be in MainActivityTest.java.
+        handleLifecycleCallbacks();
+
         try {
             final DartGroupEntry dartTestGroup = patrolAppServiceClient.listDartTests();
             List<DartGroupEntry> dartTestCases = ContractsExtensionsKt.listTestsFlat(dartTestGroup, "");
@@ -155,6 +158,15 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
         } catch (PatrolAppServiceClientException e) {
             Logger.INSTANCE.e(TAG + "Failed to list Dart tests: ", e);
             throw new RuntimeException(e);
+        }
+    }
+
+    private void handleLifecycleCallbacks() {
+        if (isInitialRun()) {
+            Object[] lifecycleCallbacks = listLifecycleCallbacks();
+            saveLifecycleCallbacks(lifecycleCallbacks);
+        } else {
+            setLifecycleCallbacksState();
         }
     }
 
@@ -222,7 +234,7 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
 
     /**
      * Sets the state of lifecycle callbacks in the app.
-     *
+     * <p>
      * This is required because the app is launched in a new process for each test.
      */
     public void setLifecycleCallbacksState() {

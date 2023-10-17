@@ -14,16 +14,7 @@ public class MainActivityTest {
         PatrolJUnitRunner instrumentation = (PatrolJUnitRunner) InstrumentationRegistry.getInstrumentation();
         instrumentation.setUp(MainActivity.class);
         instrumentation.waitForPatrolAppService();
-        Object[] dartTests = instrumentation.listDartTests();
-
-        if (instrumentation.isInitialRun()) {
-            Object[] lifecycleCallbacks = instrumentation.listLifecycleCallbacks();
-            instrumentation.saveLifecycleCallbacks(lifecycleCallbacks);
-        } else {
-            instrumentation.setLifecycleCallbacksState();
-        }
-
-        return dartTests;
+        return instrumentation.listDartTests();
     }
 
     public MainActivityTest(String dartTestName) {
