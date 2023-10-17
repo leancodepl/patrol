@@ -67,20 +67,17 @@ void patrolSetUpAll(Future<void> Function() body) {
 
     final callbacksState = await patrolAppService.callbacksStateSet;
 
-    // Skip calling body if it this setUpAll was already executed
-    print('lifecycleCallbacksState: $callbacksState');
-
     assert(
       callbacksState[setUpAllName] != null,
       'setUpAll "$setUpAllName" was not registered in PatrolAppService. This looks very nasty.',
     );
 
     if (callbacksState[setUpAllName] ?? false) {
+      // Skip calling body if this setUpAll was already executed
       patrolDebug('skipping setUpAll "$setUpAllName" because it already ran');
       return;
     }
 
-    // patrolDebug('OH SO ARE WE BLOCKED HERE???');
     final requestedTest = await patrolAppService.testExecutionRequested;
 
     // Skip calling if parentGroupName is not a substring of requestedTestName
