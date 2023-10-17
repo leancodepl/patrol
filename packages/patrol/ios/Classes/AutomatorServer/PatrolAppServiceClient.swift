@@ -17,20 +17,51 @@ class PatrolAppServiceClient {
   }
 
   func listDartTests(completion: @escaping (Result<ListDartTestsResponse, Error>) -> Void) {
-    performRequest(requestName: "listDartTests", completion: completion)
+    performRequestWithResult(requestName: "listDartTests", completion: completion)
   }
 
   func runDartTest(request: RunDartTestRequest, completion: @escaping (Result<RunDartTestResponse, Error>) -> Void) {
     do {
       let body = try JSONEncoder().encode(request)
-      performRequest(requestName: "runDartTest", body: body, completion: completion)
+      performRequestWithResult(requestName: "runDartTest", body: body, completion: completion)
     } catch let err {
       completion(.failure(err))
     }
   }
 
-  private func performRequest<TResult: Codable>(
+  private func performRequestWithResult<TResult: Decodable>(
     requestName: String, body: Data? = nil, completion: @escaping (Result<TResult, Error>) -> Void
+  ) {
+    performRequest(requestName: requestName, body: body) { result in
+      switch result {
+        case .success(let data):
+          do {
+            let object = try JSONDecoder().decode(TResult.self, from: data)
+            completion(.success(object))
+          } catch let err {
+            completion(.failure(err))
+          }
+        case .failure(let error):
+          completion(.failure(error))
+      }
+    }
+  }
+
+  private func performRequestWithEmptyResult(
+    requestName: String, body: Data? = nil, completion: @escaping (Error?) -> Void
+  ) {
+    performRequest(requestName: requestName, body: body) { result in
+      switch result {
+        case .success(_):
+          completion(nil)
+        case .failure(let error):
+          completion(error)
+      }
+    }
+  }
+
+  private func performRequest(
+    requestName: String, body: Data? = nil, completion: @escaping (Result<Data, Error>) -> Void
   ) {
     let url = URL(string: "http://\(address):\(port)/\(requestName)")!
 
@@ -47,12 +78,7 @@ class PatrolAppServiceClient {
 
     session.dataTask(with: request) { data, response, error in
       if (response as? HTTPURLResponse)?.statusCode == 200 {
-        do {
-          let object = try JSONDecoder().decode(TResult.self, from: data!)
-          completion(.success(object))
-        } catch let err {
-          completion(.failure(err))
-        }
+        completion(.success(data!))
       } else {
         let message =
           "Invalid response: \(String(describing: response)) \(String(describing: data))"
