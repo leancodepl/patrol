@@ -103,7 +103,6 @@ ${generateGroupsCode(testFilePaths).split('\n').map((e) => '  $e').join('\n')}
   // An additional callback to discover setUpAlls.
   tearDownAll(() async {
     if (await global_state.isInitialRun) {
-      patrolDebug('tearDownAll(): setUpAlls: \${appService.setUpAlls}');
       callbacksExplorationCompleter.complete();
     }
   });
