@@ -68,7 +68,7 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
 
       if (await global_state.isInitialRun) {
         // If this is the initial run, then no test has been requested to
-        // execute. Return to avoid blocking on testExecutionRequested below.
+        // execute. Return to avoid blocking on didRequestTestExecution below.
         return;
       }
 
@@ -85,7 +85,7 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
         logger('tearDown(): test "$dartTestName": "$result"');
       });
 
-      final requestedDartTest = await patrolAppService.testExecutionRequested;
+      final requestedDartTest = await patrolAppService.didRequestTestExecution;
 
       if (requestedDartTest == _currentDartTest) {
         logger(

@@ -78,8 +78,8 @@ Future<void> main() async {
 
   PatrolBinding.ensureInitialized(appService, nativeAutomator);
 
-  final testsExplorationCompleter = Completer<DartGroupEntry>();
-  final callbacksExplorationCompleter = Completer<void>();
+  final didExploreTests = Completer<DartGroupEntry>();
+  final didExploreLifecycleCallbacks = Completer<void>();
 
   // A special test to expore the hierarchy of groups and tests. This is a hack
   // around https://github.com/dart-lang/test/issues/1998.
@@ -91,7 +91,7 @@ Future<void> main() async {
     // to group() below.
     final topLevelGroup = Invoker.current!.liveTest.groups.first;
     final dartTestGroup = createDartTestGroup(topLevelGroup);
-    testsExplorationCompleter.complete(dartTestGroup);
+    didExploreTests.complete(dartTestGroup);
     print('patrol_test_explorer: obtained Dart-side test hierarchy:');
     printGroupStructure(dartTestGroup);
   });
@@ -103,14 +103,14 @@ ${generateGroupsCode(testFilePaths).split('\n').map((e) => '  $e').join('\n')}
   // An additional callback to discover setUpAlls.
   tearDownAll(() async {
     if (await global_state.isInitialRun) {
-      callbacksExplorationCompleter.complete();
+      didExploreLifecycleCallbacks.complete();
     }
   });
 
-  appService.topLevelDartTestGroup = await testsExplorationCompleter.future;
+  appService.topLevelDartTestGroup = await didExploreTests.future;
 
   if (await global_state.isInitialRun) {
-    await callbacksExplorationCompleter.future;
+    await didExploreLifecycleCallbacks.future;
   }
 
   // Until now, the native test runner was waiting for us, the Dart side, to

@@ -65,7 +65,8 @@ void patrolSetUpAll(Future<void> Function() body) {
       return;
     }
 
-    final callbacksState = await patrolAppService.callbacksStateSet;
+    final callbacksState =
+        await patrolAppService.didReceiveLifecycleCallbacksState;
 
     assert(
       callbacksState[setUpAllName] != null,
@@ -78,7 +79,7 @@ void patrolSetUpAll(Future<void> Function() body) {
       return;
     }
 
-    final requestedTest = await patrolAppService.testExecutionRequested;
+    final requestedTest = await patrolAppService.didRequestTestExecution;
 
     // Skip calling if parentGroupName is not a substring of requestedTestName
     if (!requestedTest.startsWith(parentGroupsName)) {
