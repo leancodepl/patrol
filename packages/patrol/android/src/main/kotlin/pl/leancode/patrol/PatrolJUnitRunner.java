@@ -141,8 +141,9 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
     public Object[] listDartTests() {
         final String TAG = "PatrolJUnitRunner.listDartTests(): ";
 
-        // This call is here for backward compatibility.
-        // It should be in MainActivityTest.java.
+        // This call should be in MainActivityTest.java, but that would require
+        // users to change that file in their projects, thus breaking backward
+        // compatibility.
         handleLifecycleCallbacks();
 
         try {
