@@ -22,6 +22,8 @@ public class MainActivityTest {
 
             Object[] lifecycleCallbacks = instrumentation.listLifecycleCallbacks();
             instrumentation.saveLifecycleCallbacks(lifecycleCallbacks);
+        } else {
+            instrumentation.setLifecycleCallbacksState();
         }
 
         return dartTests;
@@ -36,7 +38,6 @@ public class MainActivityTest {
     @Test
     public void runDartTest() {
         PatrolJUnitRunner instrumentation = (PatrolJUnitRunner) InstrumentationRegistry.getInstrumentation();
-        instrumentation.setLifecycleCallbacksState();
         instrumentation.runDartTest(dartTestName);
     }
 }

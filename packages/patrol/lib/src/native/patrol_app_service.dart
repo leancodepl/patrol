@@ -79,10 +79,14 @@ class PatrolAppService extends PatrolAppServiceServer {
   /// appended.
   List<String> setUpAlls = [];
 
-  /// Map that knows which lifecycle callbacks have been already executed.
+  final _callbacksStateSet = Completer<Map<String, bool>>();
+
+  /// A completer that completes when the native side sets the state of
+  /// lifecycle callbacks.
   ///
-  /// It's populated near the beginning of the app startup during each test.
-  Map<String, bool> lifecycleCallbacksState = {};
+  /// Completes with a map that knows which lifecycle callbacks have been
+  /// already executed.
+  Future<Map<String, bool>> get callbacksStateSet => _callbacksStateSet.future;
 
   /// A completer that completes with the name of the Dart test file that was
   /// requested to execute by the native side.
@@ -135,6 +139,7 @@ class PatrolAppService extends PatrolAppServiceServer {
     required String? details,
   }) async {
     print('PatrolAppService.markDartTestAsCompleted(): $dartFileName');
+
     assert(
       _testExecutionRequested.isCompleted,
       'Tried to mark a test as completed, but no tests were requested to run',
@@ -198,9 +203,10 @@ class PatrolAppService extends PatrolAppServiceServer {
 
   @override
   Future<RunDartTestResponse> runDartTest(RunDartTestRequest request) async {
+    print('PatrolAppService.runDartTest(${request.name}) called');
+
     assert(_testExecutionCompleted.isCompleted == false);
 
-    print('PatrolAppService.runDartTest(${request.name}) called');
     _testExecutionRequested.complete(request.name);
 
     final testExecutionResult = await testExecutionCompleted;
@@ -217,6 +223,10 @@ class PatrolAppService extends PatrolAppServiceServer {
       listDartLifecycleCallbacks() async {
     print('PatrolAppService.listDartLifecycleCallbacks() called');
 
+    assert(_testExecutionRequested.isCompleted == false);
+    assert(_testExecutionCompleted.isCompleted == false);
+    assert(_callbacksStateSet.isCompleted == false);
+
     return ListDartLifecycleCallbacksResponse(
       setUpAlls: setUpAlls,
       tearDownAlls: [],
@@ -228,7 +238,16 @@ class PatrolAppService extends PatrolAppServiceServer {
     SetLifecycleCallbacksStateRequest request,
   ) async {
     print('PatrolAppService.setLifecycleCallbacksState() called');
-    lifecycleCallbacksState = request.state.cast<String, bool>();
+    assert(_testExecutionRequested.isCompleted == false);
+    assert(_testExecutionCompleted.isCompleted == false);
+    assert(_callbacksStateSet.isCompleted == false);
+
+    final state = <String, bool>{};
+    for (final e in request.state.entries) {
+      state[e.key as String] = (e.value as String).toLowerCase() == 'true';
+    }
+
+    _callbacksStateSet.complete(state);
     return Empty();
   }
 }

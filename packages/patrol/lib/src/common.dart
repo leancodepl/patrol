@@ -60,18 +60,22 @@ void patrolSetUpAll(Future<void> Function() body) {
     if (await global_state.isInitialRun) {
       // Skip calling body if we're in test discovery phase
       patrolDebug(
-        "skipping setUpAll '$setUpAllName' because it's test discovery phase",
+        'skipping setUpAll "$setUpAllName" because we are in the initial run',
       );
       return;
     }
 
+    final callbacksState = await patrolAppService.callbacksStateSet;
+
     // Skip calling body if it this setUpAll was already executed
+    print('lifecycleCallbacksState: $callbacksState');
+
     assert(
-      patrolAppService.lifecycleCallbacksState[setUpAllName] != null,
+      callbacksState[setUpAllName] != null,
       'setUpAll "$setUpAllName" was not registered in PatrolAppService. This looks very nasty.',
     );
 
-    if (patrolAppService.lifecycleCallbacksState[setUpAllName] ?? false) {
+    if (callbacksState[setUpAllName] ?? false) {
       patrolDebug('skipping setUpAll "$setUpAllName" because it already ran');
       return;
     }
