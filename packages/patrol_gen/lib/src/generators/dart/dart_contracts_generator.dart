@@ -53,9 +53,14 @@ enum ${enumDefinition.name} {
   String? _createMessage(Message message) {
     final fieldsContent = message.fields
         .map(
-          (f) => f.isList
-              ? 'final List<${f.type}>${f.isOptional ? '?' : ''} ${f.name};'
-              : 'final ${f.type}${f.isOptional ? '?' : ''} ${f.name};',
+          (f) => switch (f.type) {
+            ListFieldType(type: final type) =>
+              'final List<$type>${f.isOptional ? '?' : ''} ${f.name};',
+            MapFieldType(keyType: final keyType, valueType: final valueType) =>
+              'final Map<$keyType,$valueType>${f.isOptional ? '?' : ''} ${f.name};',
+            OrdinaryFieldType(type: final type) =>
+              'final $type${f.isOptional ? '?' : ''} ${f.name};'
+          },
         )
         .join('\n');
 
