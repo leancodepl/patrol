@@ -29,7 +29,6 @@ import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
 import 'package:patrol/src/global_state.dart' as global_state;
-import 'package:patrol/src/logs.dart';
 import 'package:patrol/src/native/contracts/contracts.dart';
 import 'package:test_api/src/backend/invoker.dart';
 
@@ -118,7 +117,7 @@ ${generateGroupsCode(testFilePaths).split('\n').map((e) => '  $e').join('\n')}
   // about Dart tests.
   await nativeAutomator.markPatrolAppServiceReady();
 
-  await appService.testExecutionCompleted;
+  await appService.didCompleteTestExecution;
 }
 ''';
 
