@@ -85,6 +85,7 @@ void patrolSetUpAll(Future<void> Function() body) {
       return;
     }
 
+    patrolDebug('Waiting for lifecycle callbacks state...');
     final callbacksState =
         await patrolAppService.didReceiveLifecycleCallbacksState;
 
