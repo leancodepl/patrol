@@ -207,7 +207,7 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
             InputStream inputStream = TestStorageUtil.getInputStream(stateFileUri, getContentResolver());
             String content = convertStreamToString(inputStream);
             Gson gson = new Gson();
-            Type typeOfHashMap = new TypeToken<Map<String, String>>() {}.getType();
+            Type typeOfHashMap = new TypeToken<Map<String, Boolean>>() {}.getType();
             Map<String, Boolean> data = gson.fromJson(content, typeOfHashMap);
             return data;
         } catch (FileNotFoundException e) {
@@ -219,7 +219,7 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
         try {
             OutputStream outputStream = TestStorageUtil.getOutputStream(stateFileUri, getContentResolver());
             Gson gson = new Gson();
-            Type typeOfHashMap = new TypeToken<Map<String, String>>() {}.getType();
+            Type typeOfHashMap = new TypeToken<Map<String, Boolean>>() {}.getType();
             String json = gson.toJson(data, typeOfHashMap);
             outputStream.write(json.getBytes());
             outputStream.write("\n".getBytes());

@@ -244,12 +244,7 @@ class PatrolAppService extends PatrolAppServiceServer {
     assert(_didCompleteTestExecution.isCompleted == false);
     assert(_didReceiveLifecycleCallbacksState.isCompleted == false);
 
-    final state = <String, bool>{};
-    for (final e in request.state.entries) {
-      state[e.key as String] = (e.value as String).toLowerCase() == 'true';
-    }
-
-    _didReceiveLifecycleCallbacksState.complete(state);
+    _didReceiveLifecycleCallbacksState.complete(request.state);
     return Empty();
   }
 }
