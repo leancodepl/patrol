@@ -50,8 +50,7 @@
   ) {
     NSLog("PatrolAppService.listDartLifecycleCallbacks()")
 
-    client.listDartLifecycleCallbacks {
-      result in
+    client.listDartLifecycleCallbacks { result in
       switch result {
       case .success(let result):
         completion(result.setUpAlls, result.tearDownAlls, nil)
@@ -64,12 +63,11 @@
   @objc public func setLifecycleCallbacksState(
     state: [String: Bool], completion: @escaping (Error?) -> Void
   ) {
-    NSLog("PatrolAppService.setLifecycleCallbacksState()")
+    NSLog("PatrolAppService.setLifecycleCallbacksState(\(state)")
 
     DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
       let request = SetLifecycleCallbacksStateRequest(state: state)
-      self.client.setLifecycleCallbacksState(request: request) {
-        result in
+      self.client.setLifecycleCallbacksState(request: request) { result in
         switch result {
         case .success(_):
           completion(nil)

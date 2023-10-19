@@ -40,16 +40,27 @@
   }
   
   // MARK: List Dart lifecycle callbacks
-
-  __block NSMutableDictionary<NSString *, NSNumber *> *callbacksState = [[NSMutableDictionary alloc] init];
+  
+  __block NSMutableDictionary<NSString *, NSNumber *> *callbacksState = NULL;
   [appServiceClient
     listDartLifecycleCallbacksWithCompletion:^(NSArray<NSString *> * _Nullable setUpAlls,
                                                NSArray<NSString *> * _Nullable tearDownAlls,
                                                NSError * _Nullable err) {
+    if (err != NULL) {
+      NSLog(@"listDartLifecycleCallbacks(): failed, err: %@", err);
+    }
+    
+    callbacksState = [[NSMutableDictionary alloc] init];
     for (NSString* setUpAll in setUpAlls) {
       [callbacksState setObject:@NO forKey:setUpAll];
     }
   }];
+  
+  /* Spin the runloop waiting until the app reports the Dart lifecycle callbacks it contains */
+  while (!callbacksState) {
+    [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
+  }
+  NSLog(@"Got %lu Dart lifecycle callbacks: %@", callbacksState.count, callbacksState);
   
   // MARK: List Dart tests
   
@@ -66,7 +77,6 @@
   while (!dartTests) {
     [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
   }
-  
   NSLog(@"Got %lu Dart tests: %@", dartTests.count, dartTests);
   
   // MARK: Dynamically create test case methods
@@ -87,7 +97,7 @@
     IMP implementation = imp_implementationWithBlock(^(id _self) {
       XCUIApplication *app = [[XCUIApplication alloc] init];
       NSDictionary *args = @{ @"PATROL_INITIAL_RUN" : @"false" };
-      app.launchEnvironment = args;
+      [app setLaunchEnvironment:args];
       [app launch];
       
       // TODO: wait for patrolAppService to be ready
@@ -97,6 +107,7 @@
         if (err != NULL) {
           NSLog(@"setLifecycleCallbacksStateWithState(): failed, err: %@", err);
         }
+      
         
         callbacksSet = YES;
       }];
@@ -123,6 +134,7 @@
       
       XCTAssertTrue(response.passed, @"%@", response.details);
     });
+    
     NSString *selectorName = [PatrolUtils createMethodNameFromPatrolGeneratedGroup:dartTest];
     SEL selector = NSSelectorFromString(selectorName);
     class_addMethod(self, selector, implementation, "v@:");
