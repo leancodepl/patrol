@@ -296,6 +296,10 @@
     func markPatrolAppServiceReady() throws {
       onAppReady(true)
     }
+
+    func markLifecycleCallbackExecuted(request: MarkLifecycleCallbackExecutedRequest) throws {
+      // TODO: Implement
+    }
   }
 
 #endif
