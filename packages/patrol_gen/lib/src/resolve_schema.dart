@@ -106,20 +106,28 @@ Message _createMessage(ClassDeclaration declaration) {
         final isOptional = type.question != null;
         final fieldName = e.variables.first.name.lexeme;
 
-        if (type.type?.isDartCoreList ?? false) {
+        if (type.type?.isDartCoreMap ?? false) {
+          final arguments = type.typeArguments!.arguments;
+          return MessageField(
+            isOptional: isOptional,
+            name: fieldName,
+            type: MapFieldType(
+              keyType: (arguments[0] as NamedType).name2.lexeme,
+              valueType: (arguments[1] as NamedType).name2.lexeme,
+            ),
+          );
+        } else if (type.type?.isDartCoreList ?? false) {
           final genericType = type.typeArguments!.arguments.first as NamedType;
           return MessageField(
             isOptional: isOptional,
             name: fieldName,
-            type: genericType.name2.lexeme,
-            isList: true,
+            type: ListFieldType(type: genericType.name2.lexeme),
           );
         } else {
           return MessageField(
             isOptional: isOptional,
             name: fieldName,
-            type: type.name2.lexeme,
-            isList: false,
+            type: OrdinaryFieldType(type: type.name2.lexeme),
           );
         }
       } else {

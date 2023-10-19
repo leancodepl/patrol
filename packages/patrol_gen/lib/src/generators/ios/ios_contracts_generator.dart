@@ -34,9 +34,14 @@ class IOSContractsGenerator {
   String _createMessage(Message message) {
     final fields = message.fields.map((e) {
       final optional = e.isOptional ? '?' : '';
-      return e.isList
-          ? '  var ${e.name}: [${_transformType(e.type)}]$optional'
-          : '  var ${e.name}: ${_transformType(e.type)}$optional';
+      return switch (e.type) {
+        MapFieldType(keyType: final keyType, valueType: final valueType) =>
+          '  var ${e.name}: [${_transformType(keyType)}: ${_transformType(valueType)}]$optional',
+        ListFieldType(type: final type) =>
+          '  var ${e.name}: [${_transformType(type)}]$optional',
+        OrdinaryFieldType(type: final type) =>
+          '  var ${e.name}: ${_transformType(type)}$optional',
+      };
     }).join('\n');
 
     return '''

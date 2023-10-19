@@ -48,8 +48,39 @@ class ${service.name}Client {
 
 $endpoints
 
-  private func performRequest<TResult: Codable>(
+  private func performRequestWithResult<TResult: Decodable>(
     requestName: String, body: Data? = nil, completion: @escaping (Result<TResult, Error>) -> Void
+  ) {
+    performRequest(requestName: requestName, body: body) { result in
+      switch result {
+        case .success(let data):
+          do {
+            let object = try JSONDecoder().decode(TResult.self, from: data)
+            completion(.success(object))
+          } catch let err {
+            completion(.failure(err))
+          }
+        case .failure(let error):
+          completion(.failure(error))
+      }
+    }
+  }
+
+  private func performRequestWithEmptyResult(
+    requestName: String, body: Data? = nil, completion: @escaping (Error?) -> Void
+  ) {
+    performRequest(requestName: requestName, body: body) { result in
+      switch result {
+        case .success(_):
+          completion(nil)
+        case .failure(let error):
+          completion(error)
+      }
+    }
+  }
+
+  private func performRequest(
+    requestName: String, body: Data? = nil, completion: @escaping (Result<Data, Error>) -> Void
   ) {
     let url = URL(string: "$url")!
 
@@ -66,12 +97,7 @@ $endpoints
 
     session.dataTask(with: request) { data, response, error in
       if (response as? HTTPURLResponse)?.statusCode == 200 {
-        do {
-          let object = try JSONDecoder().decode(TResult.self, from: data!)
-          completion(.success(object))
-        } catch let err {
-          completion(.failure(err))
-        }
+        completion(.success(data!))
       } else {
         let message =
           "$exceptionMessage"
@@ -89,7 +115,7 @@ $endpoints
 
     final completionDef = endpoint.response != null
         ? 'completion: @escaping (Result<${endpoint.response!.name}, Error>) -> Void'
-        : 'completion: @escaping (Result<Void, Error>) -> Void';
+        : 'completion: @escaping (Error?) -> Void';
 
     final parameters = endpoint.request != null
         ? '$requestDef, $completionDef'
@@ -98,18 +124,25 @@ $endpoints
     final arguments = [
       'requestName: "${endpoint.name}"',
       if (endpoint.request != null) 'body: body',
-      'completion: completion'
+      'completion: completion',
     ].join(', ');
+
+    final performRequest = endpoint.response != null
+        ? 'performRequestWithResult'
+        : 'performRequestWithEmptyResult';
+    final failureCompletion = endpoint.response != null
+        ? 'completion(.failure(err))'
+        : 'completion(err)';
 
     final bodyCode = endpoint.request != null
         ? '''
     do {
       let body = try JSONEncoder().encode(request)
-      performRequest($arguments)
+      $performRequest($arguments)
     } catch let err {
-      completion(.failure(err))
+      $failureCompletion
     }'''
-        : '    performRequest($arguments)';
+        : '    $performRequest($arguments)';
 
     return '''
   func ${endpoint.name}($parameters) {
