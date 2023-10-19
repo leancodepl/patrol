@@ -66,14 +66,16 @@
   ) {
     NSLog("PatrolAppService.setLifecycleCallbacksState()")
 
-    let request = SetLifecycleCallbacksStateRequest(state: state)
-    client.setLifecycleCallbacksState(request: request) {
-      result in
-      switch result {
-      case .success(_):
-        completion(nil)
-      case .failure(let error):
-        completion(error)
+    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+      let request = SetLifecycleCallbacksStateRequest(state: state)
+      self.client.setLifecycleCallbacksState(request: request) {
+        result in
+        switch result {
+        case .success(_):
+          completion(nil)
+        case .failure(let error):
+          completion(error)
+        }
       }
     }
   }
