@@ -45,6 +45,39 @@
     }
   }
 
+  @objc public func listDartLifecycleCallbacks(
+    completion: @escaping ([String]?, [String]?, Error?) -> Void
+  ) {
+    NSLog("PatrolAppService.listDartLifecycleCallbacks()")
+
+    client.listDartLifecycleCallbacks {
+      result in
+      switch result {
+      case .success(let result):
+        completion(result.setUpAlls, result.tearDownAlls, nil)
+      case .failure(let error):
+        completion(nil, nil, error)
+      }
+    }
+  }
+
+  @objc public func setLifecycleCallbacksState(
+    state: [String: Bool], completion: @escaping (Error?) -> Void
+  ) {
+    NSLog("PatrolAppService.setLifecycleCallbacksState()")
+
+    let request = SetLifecycleCallbacksStateRequest(state: state)
+    client.setLifecycleCallbacksState(request: request) {
+      result in
+      switch result {
+      case .success(_):
+        completion(nil)
+      case .failure(let error):
+        completion(error)
+      }
+    }
+  }
+
   @objc public func runDartTest(
     name: String, completion: @escaping (ObjCRunDartTestResponse?, Error?) -> Void
   ) {
@@ -66,7 +99,6 @@
         case .failure(let error):
           completion(nil, error)
         }
-
       }
     }
   }
