@@ -29,9 +29,12 @@
   }
   
   /* Run the app for the first time to gather Dart tests */
-  [[[XCUIApplication alloc] init] launch];
+  XCUIApplication *app = [[XCUIApplication alloc] init];
+  NSDictionary *args = @{ @"PATROL_INITIAL_RUN" : @"true" };
+  app.launchEnvironment = args;
+  [app launch];
   
-  /* Spin the runloop waiting until the app reports that it is ready to report Dart tests */
+  /* Spin the runloop waiting until the app reports that PatrolAppService is up */
   while (!server.appReady) {
     [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
   }
