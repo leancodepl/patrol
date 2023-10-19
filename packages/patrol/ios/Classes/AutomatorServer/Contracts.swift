@@ -61,7 +61,7 @@ struct RunDartTestResponse: Codable {
 }
 
 struct SetLifecycleCallbacksStateRequest: Codable {
-  var state: Map
+  var state: [String: Bool]
 }
 
 struct ConfigureRequest: Codable {

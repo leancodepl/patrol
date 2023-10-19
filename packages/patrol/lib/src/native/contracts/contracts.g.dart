@@ -92,7 +92,7 @@ const _$RunDartTestResponseResultEnumMap = {
 SetLifecycleCallbacksStateRequest _$SetLifecycleCallbacksStateRequestFromJson(
         Map<String, dynamic> json) =>
     SetLifecycleCallbacksStateRequest(
-      state: json['state'] as Map<String, dynamic>,
+      state: Map<String, bool>.from(json['state'] as Map),
     );
 
 Map<String, dynamic> _$SetLifecycleCallbacksStateRequestToJson(

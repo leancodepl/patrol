@@ -179,7 +179,7 @@ class SetLifecycleCallbacksStateRequest with EquatableMixin {
           Map<String, dynamic> json) =>
       _$SetLifecycleCallbacksStateRequestFromJson(json);
 
-  final Map state;
+  final Map<String, bool> state;
 
   Map<String, dynamic> toJson() =>
       _$SetLifecycleCallbacksStateRequestToJson(this);
