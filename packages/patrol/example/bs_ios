@@ -1,0 +1,87 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# bs_ios uploads app binaries for UI testing on BrowserStack.
+#
+# This version of the script works only with the V2 endpoint (XC Test Plans).
+
+if [[ "$(patrol --version)" != *"v2"* ]]; then
+  echo "Error: patrol_cli v2 is required"
+  exit 1
+fi
+
+if [ -z "${BROWSERSTACK_CREDS:-}" ]; then
+    echo "Error: missing BROWSERSTACK_CREDS env var"
+    exit 1
+fi
+
+pushd ios
+pod install
+FLUTTER_ROOT="$HOME/fvm/versions/stable" xcodebuild build-for-testing \
+  -workspace Runner.xcworkspace \
+  -scheme Runner \
+  -configuration Release \
+  -sdk iphoneos -destination 'generic/platform=iOS' \
+  -quiet \
+  -derivedDataPath ../build/ios_integ \
+  -testPlan TestPlan \
+  OTHER_SWIFT_FLAGS='$(inherited) -D PATROL_ENABLED'
+
+popd
+
+cd build/ios_integ/Build/Products
+
+rm -rf Payload && mkdir -p Payload
+cp -r Release-iphoneos/Runner.app Payload
+zip -r Runner.ipa Payload
+
+cd -
+
+# https://www.browserstack.com/docs/app-automate/api-reference/xcuitest/apps#upload-an-app
+app_upload_response="$(
+  curl -u "$BROWSERSTACK_CREDS" \
+    -X POST "https://api-cloud.browserstack.com/app-automate/xcuitest/v2/app" \
+    -F "file=@$PWD/build/ios_integ/Build/Products/Runner.ipa"
+)"
+
+app_url="$(echo "$app_upload_response" | jq --raw-output .app_url)"
+echo "Uploaded app, url: $app_url"
+
+
+echo "Will zip tests now"
+cd build/ios_integ/Build/Products/Release-iphoneos
+rm -rf ios_tests.zip
+
+# BrowserStack fails if DiagnosticCollectionPolicy is present
+plutil -remove 'TestConfigurations.TestTargets.DiagnosticCollectionPolicy' ../Runner_TestPlan_iphoneos*.xctestrun
+
+cp ../Runner_TestPlan_iphoneos*.xctestrun .
+zip -r ios_tests.zip Runner_TestPlan_iphoneos*.xctestrun RunnerUITests-Runner.app
+cd -
+
+# https://www.browserstack.com/docs/app-automate/api-reference/xcuitest/tests#upload-a-test-suite
+test_upload_response="$(
+  curl -u "$BROWSERSTACK_CREDS" \
+    -X POST "https://api-cloud.browserstack.com/app-automate/xcuitest/v2/test-suite" \
+    -F "file=@$PWD/build/ios_integ/Build/Products/Release-iphoneos/ios_tests.zip"
+)"
+
+test_url="$(echo "$test_upload_response" | jq --raw-output .test_suite_url)"
+echo "Uploaded test, url: $test_url"
+
+echo "Will schedule test execution now"
+
+# https://www.browserstack.com/docs/app-automate/api-reference/xcuitest/builds#execute-a-build
+curl -u "$BROWSERSTACK_CREDS" \
+  -X POST "https://api-cloud.browserstack.com/app-automate/xcuitest/v2/xctestrun-build" \
+  -H "Content-Type: application/json" \
+  --data-binary @- <<EOF
+{
+    "app": "$app_url",
+    "testSuite": "$test_url",
+    "project": "Patrol example app",
+    "devices": ["iPhone 14-16"],
+    "deviceLogs": "true",
+    "idleTimeout": 300
+}
+EOF
