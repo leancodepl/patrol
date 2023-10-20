@@ -131,6 +131,23 @@ Psst... Android is a bit easier to set up, so we recommend starting with it!
       ```groovy
         androidTestUtil "androidx.test:orchestrator:1.4.2"
       ```
+
+      <Warning>
+        Bear in mind that ProGuard can lead to some problems if not well configured, potentially causing issues such as class not found errors.
+        Keep all the patrol packages or disable proguard in `android/app/build.gradle`:
+        ```groovy
+          ...
+          buildTypes {
+            release {
+                ...
+            }
+            debug {
+                minifyEnabled false
+            }
+          }
+        ```
+      </Warning>
+
 </Accordion>
 
 <Accordion defaultOpen title="iOS setup">
