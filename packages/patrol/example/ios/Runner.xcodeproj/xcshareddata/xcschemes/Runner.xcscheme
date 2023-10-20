@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
    LastUpgradeVersion = "1430"
-   version = "1.3">
+   version = "1.7">
    <BuildAction
       parallelizeBuildables = "YES"
       buildImplicitDependencies = "YES">
@@ -36,6 +36,12 @@
             ReferencedContainer = "container:Runner.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
+      <TestPlans>
+         <TestPlanReference
+            reference = "container:TestPlan.xctestplan"
+            default = "YES">
+         </TestPlanReference>
+      </TestPlans>
       <Testables>
          <TestableReference
             skipped = "NO">
