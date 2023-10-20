@@ -98,7 +98,7 @@ $endpoints
         val response = performRequest("${endpoint.name}"$serializeParameter)
         return json.fromJson(response, Contracts.${endpoint.response!.name}::class.java)'''
         : '''
-        return performRequest("${endpoint.name}"$serializeParameter)''';
+        performRequest("${endpoint.name}"$serializeParameter)''';
 
     return '''
     fun ${endpoint.name}($parameterDef)$returnDef {

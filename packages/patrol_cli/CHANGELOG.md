@@ -1,4 +1,4 @@
-## Unreleased
+## 2.2.1
 
 - Fix bug with `test_bundle.dart` being sometimes garbled on Windows (#1797)
 
