@@ -294,7 +294,7 @@ class PatrolTester {
   ///
   /// After long press gesture this method automatically calls
   /// [WidgetTester.pumpAndSettle]. If you want to disable this behavior,
-  /// set [andSettle] to false.
+  /// set [settlePolicy] to [SettlePolicy.noSettle].
   ///
   /// See also:
   ///  - [PatrolFinder.waitUntilVisible], which is used to wait for the widget
