@@ -1,6 +1,6 @@
 import 'package:meta/meta.dart';
 
-final _runKey = Object().hashCode;
+final _runKey = Object().hashCode.toRadixString(16).padLeft(4, '0');
 
 /// Logs a message with a tag that's constant in the single app process
 /// instance.
