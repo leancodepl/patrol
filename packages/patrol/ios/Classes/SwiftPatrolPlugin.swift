@@ -22,21 +22,22 @@ public class SwiftPatrolPlugin: NSObject, FlutterPlugin {
   }
 
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-    switch (call.method) {
-      case "isInitialRun":
+    switch call.method {
+    case "isInitialRun":
       let rawInitialRun = ProcessInfo.processInfo.environment["PATROL_INITIAL_RUN"]
       let initialRun = Bool(rawInitialRun ?? "invalid")
       if initialRun == nil {
-        result(FlutterError(
-          code: kErrorInvalidValue,
-          message: "PATROL_INITIAL_RUN value is invalid: \(String(describing: rawInitialRun))",
-          details: nil)
+        result(
+          FlutterError(
+            code: kErrorInvalidValue,
+            message: "PATROL_INITIAL_RUN value is invalid: \(String(describing: rawInitialRun))",
+            details: nil)
         )
       } else {
         result(initialRun)
       }
-      default:
-        result(FlutterMethodNotImplemented)
+    default:
+      result(FlutterMethodNotImplemented)
     }
   }
 }
