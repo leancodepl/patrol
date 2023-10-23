@@ -294,6 +294,71 @@ void main() {
       });
     });
 
+    group('longPress()', () {
+      patrolWidgetTest(
+        'throws exception when no widget to make longPress gesture on is found',
+        ($) async {
+          await $.pumpWidget(const MaterialApp());
+
+          await expectLater(
+            $('some text').longPress,
+            throwsA(isA<WaitUntilVisibleTimeoutException>()),
+          );
+        },
+      );
+
+      patrolWidgetTest('makes longPress gesture on widget and pumps',
+          ($) async {
+        var count = 0;
+        await $.pumpWidget(
+          MaterialApp(
+            home: StatefulBuilder(
+              builder: (state, setState) => Column(
+                children: [
+                  Text('count: $count'),
+                  GestureDetector(
+                    onLongPress: () => setState(() => count++),
+                    child: const Text('Long press'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+
+        await $('Long press').longPress();
+        expect($('count: 1'), findsOneWidget);
+      });
+
+      patrolWidgetTest(
+          'makes longPress gesture on the first widget by default and pumps',
+          ($) async {
+        var count = 0;
+        await $.pumpWidget(
+          MaterialApp(
+            home: StatefulBuilder(
+              builder: (state, setState) => Column(
+                children: [
+                  Text('count: $count'),
+                  GestureDetector(
+                    onLongPress: () => setState(() => count++),
+                    child: const Text('Long press'),
+                  ),
+                  GestureDetector(
+                    onLongPress: () {},
+                    child: const Text('Long press'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+
+        await $('Long press').longPress();
+        expect($('count: 1'), findsOneWidget);
+      });
+    });
+
     group('enterText()', () {
       patrolWidgetTest(
         'throws exception when no widget to enter text in is found',
