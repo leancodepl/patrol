@@ -49,18 +49,6 @@ Future<void> runAppService(PatrolAppService service) async {
 ///
 /// This is an internal class and you don't want to use it. It's public so that
 /// the generated code can access it.
-///
-/// PatrolAppService lifecycle during initial run:
-///
-///  1. Initial
-///  2. Has Dart tests
-///  3. Has Dart lifecycle callbacks
-///
-/// PatrolAppService lifecycle during test run:
-///
-///  1. Initial
-///  2. Has Dart tests
-///  3. Has Dart test to execute
 class PatrolAppService extends PatrolAppServiceServer {
   /// Creates a new [PatrolAppService].
   PatrolAppService();
