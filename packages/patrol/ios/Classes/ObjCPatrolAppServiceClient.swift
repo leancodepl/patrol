@@ -60,10 +60,10 @@
     }
   }
 
-  @objc public func setLifecycleCallbacksState(
-    state: [String: Bool], completion: @escaping (Error?) -> Void
+  @objc public func setDartLifecycleCallbacksState(
+    _ state: [String: Bool], completion: @escaping (Error?) -> Void
   ) {
-    NSLog("PatrolAppService.setLifecycleCallbacksState(\(state)")
+    NSLog("PatrolAppService.setDartLifecycleCallbacksState(\(state)")
 
     DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
       let request = SetLifecycleCallbacksStateRequest(state: state)
@@ -79,7 +79,7 @@
   }
 
   @objc public func runDartTest(
-    name: String, completion: @escaping (ObjCRunDartTestResponse?, Error?) -> Void
+    _ name: String, completion: @escaping (ObjCRunDartTestResponse?, Error?) -> Void
   ) {
     // TODO: simple workaround - patrolAppService starts running too slowly.
     // We should wait for appReady in the dynamically created test case method,

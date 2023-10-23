@@ -9,8 +9,15 @@
 @implementation __test_class
 
 +(NSArray<NSInvocation *> *)testInvocations {
+  __block NSMutableDictionary<NSString *, NSNumber *> *callbacksState = NULL;
+  __block NSArray<NSString *> *dartTests = NULL;
+  
   /* Start native automation server */
-  PatrolServer *server = [[PatrolServer alloc] init];
+  PatrolServer *server = [[PatrolServer alloc] initOnLifecycleCallbackExecuted:^(NSString * _Nonnull callbackName) {
+    /* callbacksState dictionary will have been already initialized when this callback is executed */
+    NSLog(@"onLifecycleCallbackExecuted for %@", callbackName);
+    [callbacksState setObject:@YES forKey:callbackName];
+  }];
   
   NSError *_Nullable __autoreleasing *_Nullable err = NULL;
   [server startAndReturnError:err];
@@ -41,7 +48,6 @@
   
   // MARK: List Dart lifecycle callbacks
   
-  __block NSMutableDictionary<NSString *, NSNumber *> *callbacksState = NULL;
   [appServiceClient
     listDartLifecycleCallbacksWithCompletion:^(NSArray<NSString *> * _Nullable setUpAlls,
                                                NSArray<NSString *> * _Nullable tearDownAlls,
@@ -64,7 +70,6 @@
   
   // MARK: List Dart tests
   
-  __block NSArray<NSString *> *dartTests = NULL;
   [appServiceClient listDartTestsWithCompletion:^(NSArray<NSString *> *_Nullable tests, NSError *_Nullable err) {
     if (err != NULL) {
       NSLog(@"listDartTests(): failed, err: %@", err);
@@ -103,12 +108,12 @@
       // TODO: wait for patrolAppService to be ready
       
       __block BOOL callbacksSet = NO;
-      [appServiceClient setLifecycleCallbacksStateWithState:callbacksState completion:^(NSError * _Nullable err) {
+      [appServiceClient setDartLifecycleCallbacksState:callbacksState completion:^(NSError * _Nullable err) {
         if (err != NULL) {
-          NSLog(@"setLifecycleCallbacksStateWithState(): failed, err: %@", err);
+          NSLog(@"setDartLifecycleCallbacksState(): failed, err: %@", err);
         }
       
-        
+        NSLog(@"setDartLifecycleCallbacksState(): succeeded");
         callbacksSet = YES;
       }];
       
@@ -118,12 +123,13 @@
       }
       
       __block ObjCRunDartTestResponse *response = NULL;
-      [appServiceClient runDartTestWithName:dartTest
-                                 completion:^(ObjCRunDartTestResponse *_Nullable r, NSError *_Nullable err) {
+      [appServiceClient runDartTest:dartTest
+                         completion:^(ObjCRunDartTestResponse *_Nullable r, NSError *_Nullable err) {
         if (err != NULL) {
-          NSLog(@"runDartTestWithName(%@): failed, err: %@", dartTest, err);
+          NSLog(@"runDartTest(%@): failed, err: %@", dartTest, err);
         }
         
+        NSLog(@"runDartTest(%@): succeeded", dartTest);
         response = r;
       }];
       

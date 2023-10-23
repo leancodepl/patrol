@@ -7,9 +7,16 @@
 
     private let onAppReady: (Bool) -> Void
 
-    init(automator: Automator, onAppReady: @escaping (Bool) -> Void) {
+    private let onLifecycleCallbackExecuted: (String) -> Void
+
+    init(
+      automator: Automator,
+      onAppReady: @escaping (Bool) -> Void,
+      onLifecycleCallbackExecuted: @escaping (String) -> Void
+    ) {
       self.automator = automator
       self.onAppReady = onAppReady
+      self.onLifecycleCallbackExecuted = onLifecycleCallbackExecuted
     }
 
     func initialize() throws {}
@@ -298,7 +305,7 @@
     }
 
     func markLifecycleCallbackExecuted(request: MarkLifecycleCallbackExecutedRequest) throws {
-      // TODO: Implement
+      onLifecycleCallbackExecuted(request.name)
     }
   }
 

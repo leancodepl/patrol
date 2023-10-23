@@ -15,6 +15,8 @@ import Telegraph
   @objc
   public private(set) var appReady = false
 
+  private let onLifecycleCallbackExecuted: (String) -> Void
+
   private var passedPort: Int = {
     guard let portStr = ProcessInfo.processInfo.environment[envPortKey] else {
       Logger.shared.i("\(envPortKey) is null, falling back to default (\(defaultPort))")
@@ -31,7 +33,8 @@ import Telegraph
     return portInt
   }()
 
-  @objc public override init() {
+  @objc public init(onLifecycleCallbackExecuted: @escaping (String) -> Void) {
+    self.onLifecycleCallbackExecuted = onLifecycleCallbackExecuted
     Logger.shared.i("PatrolServer constructor called")
 
     #if PATROL_ENABLED
@@ -48,10 +51,14 @@ import Telegraph
     #if PATROL_ENABLED
       Logger.shared.i("Starting server...")
 
-      let provider = AutomatorServer(automator: automator) { appReady in
-        Logger.shared.i("App reported that it is ready")
-        self.appReady = appReady
-      }
+      let provider = AutomatorServer(
+        automator: automator,
+        onAppReady: { appReady in
+          Logger.shared.i("App reported that it is ready")
+          self.appReady = appReady
+        },
+        onLifecycleCallbackExecuted: onLifecycleCallbackExecuted
+      )
 
       provider.setupRoutes(server: server)
 
