@@ -11,9 +11,12 @@
 +(NSArray<NSInvocation *> *)testInvocations {
   __block NSMutableDictionary<NSString *, NSNumber *> *callbacksState = NULL;
   __block NSArray<NSString *> *dartTests = NULL;
+  __block BOOL appReady = NO;
   
   /* Start native automation server */
-  PatrolServer *server = [[PatrolServer alloc] initOnLifecycleCallbackExecuted:^(NSString * _Nonnull callbackName) {
+  PatrolServer *server = [[PatrolServer alloc] initWithOnAppReadyCallback:^{
+    appReady = YES;
+  } onDartLifecycleCallbackExecuted:^(NSString * _Nonnull callbackName) {
     /* callbacksState dictionary will have been already initialized when this callback is executed */
     NSLog(@"onLifecycleCallbackExecuted for %@", callbackName);
     [callbacksState setObject:@YES forKey:callbackName];
@@ -42,7 +45,7 @@
   [app launch];
   
   /* Spin the runloop waiting until the app reports that PatrolAppService is up */
-  while (!server.appReady) {
+  while (!appReady) {
     [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
   }
   
@@ -101,7 +104,7 @@
     
     IMP implementation = imp_implementationWithBlock(^(id _self) {
       /* Reset server's appReady state, because new app process will be started */
-      server.appReady = NO;
+      appReady = NO;
       
       XCUIApplication *app = [[XCUIApplication alloc] init];
       NSDictionary *args = @{ @"PATROL_INITIAL_RUN" : @"false" };
@@ -109,7 +112,7 @@
       [app launch];
       
       /* Spin the runloop waiting until the app reports that PatrolAppService is up */
-      while (!server.appReady) {
+      while (!appReady) {
         [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
       }
       

@@ -12,10 +12,9 @@ import Telegraph
     private let server: Server
   #endif
 
-  @objc
-  public var appReady = false
+  private let onAppReady: () -> Void
 
-  private let onLifecycleCallbackExecuted: (String) -> Void
+  private let onDartLifecycleCallbackExecuted: (String) -> Void
 
   private var passedPort: Int = {
     guard let portStr = ProcessInfo.processInfo.environment[envPortKey] else {
@@ -33,8 +32,12 @@ import Telegraph
     return portInt
   }()
 
-  @objc public init(onLifecycleCallbackExecuted: @escaping (String) -> Void) {
-    self.onLifecycleCallbackExecuted = onLifecycleCallbackExecuted
+  @objc public init(
+    withOnAppReadyCallback onAppReady: @escaping () -> Void,
+    onDartLifecycleCallbackExecuted: @escaping (String) -> Void
+  ) {
+    self.onDartLifecycleCallbackExecuted = onDartLifecycleCallbackExecuted
+    self.onAppReady = onAppReady
     Logger.shared.i("PatrolServer constructor called")
 
     #if PATROL_ENABLED
@@ -53,11 +56,15 @@ import Telegraph
 
       let provider = AutomatorServer(
         automator: automator,
-        onAppReady: { appReady in
+        onAppReady: {
           Logger.shared.i("App reported that it is ready")
-          self.appReady = appReady
+          self.onAppReady()
         },
-        onLifecycleCallbackExecuted: onLifecycleCallbackExecuted
+        onDartLifecycleCallbackExecuted: { callback in
+          Logger.shared.i(
+            "App reported that Dart lifecycle callback \(format: callback) was executed")
+          self.onDartLifecycleCallbackExecuted(callback)
+        }
       )
 
       provider.setupRoutes(server: server)

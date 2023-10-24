@@ -5,18 +5,18 @@
   final class AutomatorServer: NativeAutomatorServer {
     private let automator: Automator
 
-    private let onAppReady: (Bool) -> Void
+    private let onAppReady: () -> Void
 
-    private let onLifecycleCallbackExecuted: (String) -> Void
+    private let onDartLifecycleCallbackExecuted: (String) -> Void
 
     init(
       automator: Automator,
-      onAppReady: @escaping (Bool) -> Void,
-      onLifecycleCallbackExecuted: @escaping (String) -> Void
+      onAppReady: @escaping () -> Void,
+      onDartLifecycleCallbackExecuted: @escaping (String) -> Void
     ) {
       self.automator = automator
       self.onAppReady = onAppReady
-      self.onLifecycleCallbackExecuted = onLifecycleCallbackExecuted
+      self.onDartLifecycleCallbackExecuted = onDartLifecycleCallbackExecuted
     }
 
     func initialize() throws {}
@@ -301,11 +301,11 @@
     }
 
     func markPatrolAppServiceReady() throws {
-      onAppReady(true)
+      onAppReady()
     }
 
     func markLifecycleCallbackExecuted(request: MarkLifecycleCallbackExecutedRequest) throws {
-      onLifecycleCallbackExecuted(request.name)
+      onDartLifecycleCallbackExecuted(request.name)
     }
   }
 
