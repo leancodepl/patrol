@@ -38,6 +38,7 @@
     [systemAlerts.buttons[@"Allow"] tap];
   }
   
+  /* MARK: Start initial run */
   /* Run the app for the first time to gather Dart tests */
   XCUIApplication *app = [[XCUIApplication alloc] init];
   NSDictionary *args = @{ @"PATROL_INITIAL_RUN" : @"true" };
@@ -49,7 +50,7 @@
     [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
   }
   
-  // MARK: List Dart lifecycle callbacks
+  /* MARK: List Dart lifecycle callbacks */
   
   [appServiceClient
     listDartLifecycleCallbacksWithCompletion:^(NSArray<NSString *> * _Nullable setUpAlls,
@@ -71,7 +72,7 @@
   }
   NSLog(@"Got %lu Dart lifecycle callbacks: %@", callbacksState.count, callbacksState);
   
-  // MARK: List Dart tests
+  /* MARK: List Dart tests */
   
   [appServiceClient listDartTestsWithCompletion:^(NSArray<NSString *> *_Nullable tests, NSError *_Nullable err) {
     if (err != NULL) {
@@ -87,11 +88,12 @@
   }
   NSLog(@"Got %lu Dart tests: %@", dartTests.count, dartTests);
   
-  // MARK: Dynamically create test case methods
+  /* MARK: Create tests at runtime */
   
   NSMutableArray<NSInvocation *> *invocations = [[NSMutableArray alloc] init];
   
   /**
+   *
    * Once Dart tests are available, we:
    *
    *  Step 1. Dynamically add test case methods that request execution of an individual Dart test file.
