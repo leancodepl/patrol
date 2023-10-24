@@ -189,8 +189,9 @@ void patrolTest(
     (widgetTester) async {
       if (!global_state.hotRestartEnabled) {
         if (await global_state.isInitialRun) {
-          await Future<void>.delayed(const Duration(seconds: 2));
-          patrolDebug('fallthrough test "${global_state.currentTestFullName}"');
+          patrolDebug(
+            'skippng test "${global_state.currentTestFullName}" because this is the initial run',
+          );
           // Fall through tests during the initial run that discovers tests.
           //
           // This is required to be able to find all setUpAll callbacks.
