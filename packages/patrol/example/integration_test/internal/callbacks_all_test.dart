@@ -37,6 +37,4 @@ Future<void> _body(PatrolTester $) async {
   expect($(#counterText).text, '1');
 
   await $(#textField).enterText(testName);
-
-  await $.pumpAndSettle(duration: Duration(seconds: 2));
 }
