@@ -13,7 +13,7 @@ import Telegraph
   #endif
 
   @objc
-  public private(set) var appReady = false
+  public var appReady = false
 
   private let onLifecycleCallbackExecuted: (String) -> Void
 

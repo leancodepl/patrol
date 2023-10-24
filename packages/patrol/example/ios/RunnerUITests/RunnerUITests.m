@@ -100,20 +100,26 @@
     /* Step 1 - dynamically create test cases */
     
     IMP implementation = imp_implementationWithBlock(^(id _self) {
+      /* Reset server's appReady state, because new app process will be started */
+      server.appReady = NO;
+      
       XCUIApplication *app = [[XCUIApplication alloc] init];
       NSDictionary *args = @{ @"PATROL_INITIAL_RUN" : @"false" };
       [app setLaunchEnvironment:args];
       [app launch];
       
-      // TODO: wait for patrolAppService to be ready
+      /* Spin the runloop waiting until the app reports that PatrolAppService is up */
+      while (!server.appReady) {
+        [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
+      }
       
       __block BOOL callbacksSet = NO;
       [appServiceClient setDartLifecycleCallbacksState:callbacksState completion:^(NSError * _Nullable err) {
         if (err != NULL) {
-          NSLog(@"setDartLifecycleCallbacksState(): failed, err: %@", err);
+          NSLog(@"setDartLifecycleCallbacksState(): call failed, err: %@", err);
         }
       
-        NSLog(@"setDartLifecycleCallbacksState(): succeeded");
+        NSLog(@"setDartLifecycleCallbacksState(): call succeeded");
         callbacksSet = YES;
       }];
       
@@ -123,22 +129,30 @@
       }
       
       __block ObjCRunDartTestResponse *response = NULL;
+      __block NSError *error;
       [appServiceClient runDartTest:dartTest
                          completion:^(ObjCRunDartTestResponse *_Nullable r, NSError *_Nullable err) {
+        NSString *status;
         if (err != NULL) {
-          NSLog(@"runDartTest(%@): failed, err: %@", dartTest, err);
+          error = err;
+          status = @"CRASHED";
+        } else {
+          response = r;
+          status = response.passed ? @"PASSED" : @"FAILED";
         }
         
-        NSLog(@"runDartTest(%@): succeeded", dartTest);
-        response = r;
+        NSLog(@"runDartTest(\"%@\"): call finished, test result: %@", dartTest, status);
       }];
       
-      /* Wait until Dart test finishes */
-      while (!response) {
+      /* Wait until Dart test finishes (either fails or passes) or crashes */
+      while (!response && !error) {
         [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
       }
       
-      XCTAssertTrue(response.passed, @"%@", response.details);
+      BOOL passed = response ? response.passed : NO;
+      NSString *details = response ? response.details : @"(no details - app likely crashed)";
+      
+      XCTAssertTrue(passed, @"%@", details);
     });
     
     NSString *selectorName = [PatrolUtils createMethodNameFromPatrolGeneratedGroup:dartTest];
