@@ -23,7 +23,7 @@ class Node {
   static List<String> ignoreTypePrefixes = ['android.widget.', 'android.view.'];
 
   String _shortNodeName(String? type, String? resourceName) {
-    String typeName = type ?? '';
+    var typeName = type ?? '';
 
     if (androidNode && typeName.isNotEmpty) {
       for (final prefix in ignoreTypePrefixes) {

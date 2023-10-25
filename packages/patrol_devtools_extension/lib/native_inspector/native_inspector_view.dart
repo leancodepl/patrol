@@ -7,12 +7,12 @@ import 'package:patrol_devtools_extension/native_inspector/node_details.dart';
 
 class NativeInspectorView extends HookWidget {
   const NativeInspectorView({
-    Key? key,
+    super.key,
     required this.onNodeChanged,
     required this.onRefreshPressed,
     required this.roots,
     required this.currentNode,
-  }) : super(key: key);
+  });
 
   final List<Node> roots;
   final Node? currentNode;
@@ -62,9 +62,10 @@ class NativeInspectorView extends HookWidget {
 }
 
 class _InspectorTreeControls extends StatelessWidget {
-  const _InspectorTreeControls(
-      {Key? key, required this.onRefreshPressed, required this.fullNodeNames})
-      : super(key: key);
+  const _InspectorTreeControls({
+    required this.onRefreshPressed,
+    required this.fullNodeNames,
+  });
 
   final VoidCallback onRefreshPressed;
   final ValueNotifier<bool> fullNodeNames;
@@ -80,13 +81,12 @@ class _InspectorTreeControls extends StatelessWidget {
           ),
           const Spacer(),
           _ControlButton(
-              message: 'Full node names',
-              onPressed: () {
-                fullNodeNames.value = !fullNodeNames.value;
-              },
-              icon: fullNodeNames.value
-                  ? Icons.visibility
-                  : Icons.visibility_off),
+            message: 'Full node names',
+            onPressed: () {
+              fullNodeNames.value = !fullNodeNames.value;
+            },
+            icon: fullNodeNames.value ? Icons.visibility : Icons.visibility_off,
+          ),
           const SizedBox(width: 4),
           _ControlButton(
             icon: Icons.refresh,
@@ -100,12 +100,11 @@ class _InspectorTreeControls extends StatelessWidget {
 }
 
 class _ControlButton extends StatelessWidget {
-  const _ControlButton(
-      {Key? key,
-      required this.message,
-      required this.onPressed,
-      required this.icon})
-      : super(key: key);
+  const _ControlButton({
+    required this.message,
+    required this.onPressed,
+    required this.icon,
+  });
 
   final String message;
   final VoidCallback onPressed;
@@ -132,8 +131,7 @@ class _ControlButton extends StatelessWidget {
 }
 
 class _NativeViewDetails extends StatelessWidget {
-  const _NativeViewDetails({Key? key, required this.currentNode})
-      : super(key: key);
+  const _NativeViewDetails({required this.currentNode});
 
   final Node? currentNode;
 
@@ -170,7 +168,7 @@ class _NativeViewDetails extends StatelessWidget {
 }
 
 class _HeaderDecoration extends StatelessWidget {
-  const _HeaderDecoration({Key? key, required this.child}) : super(key: key);
+  const _HeaderDecoration({required this.child});
 
   final Widget child;
 

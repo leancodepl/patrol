@@ -1,21 +1,20 @@
 name: patrol_devtools_extension
 description: A new Flutter project.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: none
 
-version: 1.0.0
+version: 0.1.0
 
 environment:
-  sdk: '>=3.0.6 <4.0.0'
+  sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
-  flutter:
-    sdk: flutter
-
-  devtools_shared: ^4.0.1
+  cupertino_icons: ^1.0.2
   devtools_app_shared: ^0.0.5
   devtools_extensions: ^0.0.8
-  cupertino_icons: ^1.0.2
+  devtools_shared: ^4.0.1
   equatable: ^2.0.3
+  flutter:
+    sdk: flutter
   flutter_hooks: ^0.20.3
   json_annotation: ^4.6.0
   vm_service: ^11.10.0

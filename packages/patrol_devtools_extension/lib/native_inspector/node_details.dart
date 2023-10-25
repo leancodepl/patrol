@@ -5,7 +5,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:patrol_devtools_extension/native_inspector/node.dart';
 
 class NodeDetails extends StatelessWidget {
-  const NodeDetails({Key? key, required this.node}) : super(key: key);
+  const NodeDetails({super.key, required this.node});
 
   final Node node;
 
@@ -24,62 +24,65 @@ class NodeDetails extends StatelessWidget {
     ];
 
     final unimportantTextStyle = TextStyle(
-        color: Theme.of(context).colorScheme.isLight
-            ? Colors.grey.shade500
-            : Colors.grey.shade600);
+      color: Theme.of(context).colorScheme.isLight
+          ? Colors.grey.shade500
+          : Colors.grey.shade600,
+    );
 
     return SelectionArea(
       child: ListView(
         children: rows
             .map(
-              (item) => HookBuilder(builder: (context) {
-                final displayCopyButton = useState(false);
+              (item) => HookBuilder(
+                builder: (context) {
+                  final displayCopyButton = useState(false);
 
-                return MouseRegion(
-                  onEnter: (e) {
-                    displayCopyButton.value = true;
-                  },
-                  onExit: (e) {
-                    displayCopyButton.value = false;
-                  },
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Flexible(
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(item.key),
-                            const SizedBox(width: 4),
-                            Flexible(
-                              child: Text(
-                                item.value,
-                                style: item.important
-                                    ? null
-                                    : unimportantTextStyle,
+                  return MouseRegion(
+                    onEnter: (e) {
+                      displayCopyButton.value = true;
+                    },
+                    onExit: (e) {
+                      displayCopyButton.value = false;
+                    },
+                    child: Row(
+                      children: [
+                        Flexible(
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(item.key),
+                              const SizedBox(width: 4),
+                              Flexible(
+                                child: Text(
+                                  item.value,
+                                  style: item.important
+                                      ? null
+                                      : unimportantTextStyle,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                      Opacity(
-                        opacity: displayCopyButton.value ? 1 : 0,
-                        child: IconButton(
-                          iconSize: defaultIconSize,
-                          onPressed: displayCopyButton.value
-                              ? () {
-                                  Clipboard.setData(
-                                      ClipboardData(text: item.copyValue));
-                                }
-                              : null,
-                          icon: const Icon(Icons.copy),
+                        Opacity(
+                          opacity: displayCopyButton.value ? 1 : 0,
+                          child: IconButton(
+                            iconSize: defaultIconSize,
+                            onPressed: displayCopyButton.value
+                                ? () {
+                                    Clipboard.setData(
+                                      ClipboardData(text: item.copyValue),
+                                    );
+                                  }
+                                : null,
+                            icon: const Icon(Icons.copy),
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                );
-              }),
+                      ],
+                    ),
+                  );
+                },
+              ),
             )
             .toList(),
       ),
@@ -91,7 +94,7 @@ class _KeyValueItem {
   _KeyValueItem(this.key, Object? val) : important = val != null {
     value = switch (val) {
       null => 'null',
-      String v => '"$v"',
+      final String v => '"$v"',
       _ => val.toString(),
     };
 

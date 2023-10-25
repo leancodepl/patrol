@@ -3,11 +3,11 @@ import 'package:flutter/widgets.dart';
 import 'package:patrol_devtools_extension/patrol_devtools_extension.dart';
 
 void main() {
-  runApp(const FooPackageDevToolsExtension());
+  runApp(const PatrolPackageDevToolsExtension());
 }
 
-class FooPackageDevToolsExtension extends StatelessWidget {
-  const FooPackageDevToolsExtension({super.key});
+class PatrolPackageDevToolsExtension extends StatelessWidget {
+  const PatrolPackageDevToolsExtension({super.key});
 
   @override
   Widget build(BuildContext context) {
