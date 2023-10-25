@@ -11,10 +11,13 @@ environment:
   sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
-  analyzer: ^6.1.0
+  analyzer: ^6.2.0
   dart_style: ^2.3.2
   meta: ^1.7.0
   path: ^1.8.2
-  
+
 dev_dependencies:
   leancode_lint: ^3.0.0
+
+dependency_overrides:
+  watcher: ^1.1.0

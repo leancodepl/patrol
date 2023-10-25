@@ -10,6 +10,8 @@ import 'package:patrol/src/native/contracts/contracts.dart';
 import 'package:patrol/src/native/contracts/patrol_app_service_server.dart';
 import 'package:shelf/shelf.dart' as shelf;
 import 'package:shelf/shelf_io.dart' as shelf_io;
+// ignore: implementation_imports
+import 'package:test_api/src/backend/live_test.dart';
 
 const _port = 8082;
 const _idleTimeout = Duration(hours: 2);
@@ -43,34 +45,78 @@ Future<void> runAppService(PatrolAppService service) async {
   );
 }
 
-/// Implements a stateful gRPC service for querying and executing Dart tests.
+/// Implements a stateful HTTP service for querying and executing Dart tests.
 ///
 /// This is an internal class and you don't want to use it. It's public so that
 /// the generated code can access it.
 class PatrolAppService extends PatrolAppServiceServer {
   /// Creates a new [PatrolAppService].
-  PatrolAppService({required this.topLevelDartTestGroup});
+  PatrolAppService();
 
   /// The ambient test group that wraps all the other groups and tests in the
   /// bundled Dart test file.
-  final DartGroupEntry topLevelDartTestGroup;
+  DartGroupEntry? topLevelDartTestGroup;
+
+  /// The names of all setUpAll callbacks.
+  ///
+  /// setUpAlls, unlike setUps, aren't executed in the [LiveTest] context.
+  /// Because of this, we can't depend on the [LiveTest]'s name, so we identify
+  /// them by the parent group ID instead.
+  ///
+  /// This is a list of groups containing setUpAllCallbacks with an index
+  /// appended.
+  List<String> setUpAlls = [];
+
+  final _didReceiveLifecycleCallbacksState = Completer<Map<String, bool>>();
+
+  /// A completer that completes when the native side sets the state of
+  /// lifecycle callbacks.
+  ///
+  /// Completes with a map that knows which lifecycle callbacks have been
+  /// already executed.
+  Future<Map<String, bool>> get didReceiveLifecycleCallbacksState {
+    return _didReceiveLifecycleCallbacksState.future;
+  }
 
   /// A completer that completes with the name of the Dart test file that was
   /// requested to execute by the native side.
-  final _testExecutionRequested = Completer<String>();
+  final _didRequestTestExecution = Completer<String>();
 
   /// A future that completes with the name of the Dart test file that was
   /// requested to execute by the native side.
-  Future<String> get testExecutionRequested => _testExecutionRequested.future;
+  Future<String> get didRequestTestExecution => _didRequestTestExecution.future;
 
-  final _testExecutionCompleted = Completer<_TestExecutionResult>();
+  final _didCompleteTestExecution = Completer<_TestExecutionResult>();
 
   /// A future that completes when the Dart test file (whose execution was
   /// requested by the native side) completes.
   ///
   /// Returns true if the test passed, false otherwise.
-  Future<_TestExecutionResult> get testExecutionCompleted {
-    return _testExecutionCompleted.future;
+  Future<_TestExecutionResult> get didCompleteTestExecution {
+    return _didCompleteTestExecution.future;
+  }
+
+  /// Adds a setUpAll callback to the list of all setUpAll callbacks.
+  ///
+  /// Returns the name under which this setUpAll callback was added.
+  String addSetUpAll(String group) {
+    // Not optimal, but good enough for now.
+
+    // Go over all groups, checking if the group is already in the list.
+    var groupIndex = 0;
+    for (final setUpAll in setUpAlls) {
+      final parts = setUpAll.split(' ');
+      final groupName = parts.sublist(0, parts.length - 1).join(' ');
+
+      if (groupName == group) {
+        groupIndex++;
+      }
+    }
+
+    final name = '$group $groupIndex';
+
+    setUpAlls.add(name);
+    return name;
   }
 
   /// Marks [dartFileName] as completed with the given [passed] status.
@@ -83,19 +129,20 @@ class PatrolAppService extends PatrolAppServiceServer {
     required String? details,
   }) async {
     print('PatrolAppService.markDartTestAsCompleted(): $dartFileName');
+
     assert(
-      _testExecutionRequested.isCompleted,
+      _didRequestTestExecution.isCompleted,
       'Tried to mark a test as completed, but no tests were requested to run',
     );
 
-    final requestedDartTestName = await testExecutionRequested;
+    final requestedDartTestName = await didRequestTestExecution;
     assert(
       requestedDartTestName == dartFileName,
       'Tried to mark test $dartFileName as completed, but the test '
       'that was most recently requested to run was $requestedDartTestName',
     );
 
-    _testExecutionCompleted.complete(
+    _didCompleteTestExecution.complete(
       _TestExecutionResult(passed: passed, details: details),
     );
   }
@@ -112,7 +159,7 @@ class PatrolAppService extends PatrolAppServiceServer {
   Future<bool> waitForExecutionRequest(String dartTest) async {
     print('PatrolAppService: registered "$dartTest"');
 
-    final requestedDartTest = await testExecutionRequested;
+    final requestedDartTest = await didRequestTestExecution;
     if (requestedDartTest != dartTest) {
       // If the requested Dart test is not the one we're waiting for now, it
       // means that dartTest was already executed. Return false so that callers
@@ -133,23 +180,59 @@ class PatrolAppService extends PatrolAppServiceServer {
   @override
   Future<ListDartTestsResponse> listDartTests() async {
     print('PatrolAppService.listDartTests() called');
+
+    final topLevelDartTestGroup = this.topLevelDartTestGroup;
+    if (topLevelDartTestGroup == null) {
+      throw StateError(
+        'PatrolAppService.listDartTests(): tests not discovered yet',
+      );
+    }
+
     return ListDartTestsResponse(group: topLevelDartTestGroup);
   }
 
   @override
   Future<RunDartTestResponse> runDartTest(RunDartTestRequest request) async {
-    assert(_testExecutionCompleted.isCompleted == false);
-    // patrolTest() always calls this method.
-
     print('PatrolAppService.runDartTest(${request.name}) called');
-    _testExecutionRequested.complete(request.name);
 
-    final testExecutionResult = await testExecutionCompleted;
+    assert(_didCompleteTestExecution.isCompleted == false);
+
+    _didRequestTestExecution.complete(request.name);
+
+    final testExecutionResult = await didCompleteTestExecution;
     return RunDartTestResponse(
       result: testExecutionResult.passed
           ? RunDartTestResponseResult.success
           : RunDartTestResponseResult.failure,
       details: testExecutionResult.details,
     );
+  }
+
+  @override
+  Future<ListDartLifecycleCallbacksResponse>
+      listDartLifecycleCallbacks() async {
+    print('PatrolAppService.listDartLifecycleCallbacks() called');
+
+    assert(_didRequestTestExecution.isCompleted == false);
+    assert(_didCompleteTestExecution.isCompleted == false);
+    assert(_didReceiveLifecycleCallbacksState.isCompleted == false);
+
+    return ListDartLifecycleCallbacksResponse(
+      setUpAlls: setUpAlls,
+      tearDownAlls: [],
+    );
+  }
+
+  @override
+  Future<Empty> setLifecycleCallbacksState(
+    SetLifecycleCallbacksStateRequest request,
+  ) async {
+    print('PatrolAppService.setLifecycleCallbacksState() called');
+    assert(_didRequestTestExecution.isCompleted == false);
+    assert(_didCompleteTestExecution.isCompleted == false);
+    assert(_didReceiveLifecycleCallbacksState.isCompleted == false);
+
+    _didReceiveLifecycleCallbacksState.complete(request.state);
+    return Empty();
   }
 }

@@ -3,35 +3,36 @@ import 'package:patrol/src/extensions.dart';
 // ignore: depend_on_referenced_packages
 import 'package:test_api/src/backend/invoker.dart';
 
-import 'common.dart';
+import '../common.dart';
 
 String get currentTest => Invoker.current!.fullCurrentTestName();
 
-void _print(String text) => print('PATROL_DEBUG: $text');
+void _print(String text) => print('TEST_DEBUG: $text');
 
 void main() {
   patrolSetUp(() async {
     await Future<void>.delayed(Duration(seconds: 1));
-    _print('setting up before $currentTest');
+    _print('ran patrolSetUp (1) up before "$currentTest"');
   });
 
   patrolTearDown(() async {
     await Future<void>.delayed(Duration(seconds: 1));
-    _print('tearing down after $currentTest');
+    _print('ran patrolTearDown (1) after "$currentTest"');
   });
 
   patrolTest('testFirst', nativeAutomation: true, _body);
 
   group('groupA', () {
     patrolSetUp(() async {
-      if (currentTest == 'callbacks_test groupA testB') {
-        throw Exception('PATROL_DEBUG: Crashing testB on purpose!');
+      if (currentTest == 'internal.callbacks_test groupA testB') {
+        throw Exception('TEST_DEBUG: "$currentTest" crashed on purpose');
       }
-      _print('setting up before $currentTest');
+
+      _print('ran patrolSetUp (2) before "$currentTest"');
     });
 
     patrolTearDown(() async {
-      _print('tearing down after $currentTest');
+      _print('ran patrolTearDown (2) after "$currentTest"');
     });
 
     patrolTest('testA', nativeAutomation: true, _body);
@@ -44,7 +45,7 @@ void main() {
 
 Future<void> _body(PatrolTester $) async {
   final testName = Invoker.current!.fullCurrentTestName();
-  _print('test body: name=$testName');
+  _print('ran body of test "$testName"');
 
   await createApp($);
 

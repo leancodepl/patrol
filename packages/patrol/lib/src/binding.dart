@@ -6,8 +6,6 @@ import 'package:integration_test/integration_test.dart';
 import 'package:patrol/patrol.dart';
 import 'package:patrol/src/global_state.dart' as global_state;
 
-import 'constants.dart' as constants;
-
 const _success = 'success';
 
 void _defaultPrintLogger(String message) {
@@ -35,20 +33,20 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
   /// Creates a new [PatrolBinding].
   ///
   /// You most likely don't want to call it yourself.
-  PatrolBinding() {
+  PatrolBinding(this.patrolAppService, this.nativeAutomator) {
     logger('created');
     final oldTestExceptionReporter = reportTestException;
     reportTestException = (details, testDescription) {
       final currentDartTest = _currentDartTest;
       if (currentDartTest != null) {
-        assert(!constants.hotRestartEnabled);
+        assert(!global_state.hotRestartEnabled);
         _testResults[currentDartTest] = Failure(testDescription, '$details');
       }
       oldTestExceptionReporter(details, testDescription);
     };
 
     setUp(() {
-      if (constants.hotRestartEnabled) {
+      if (global_state.hotRestartEnabled) {
         // Sending results ends the test, which we don't want for Hot Restart
         return;
       }
@@ -63,8 +61,14 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
     });
 
     tearDown(() async {
-      if (constants.hotRestartEnabled) {
+      if (global_state.hotRestartEnabled) {
         // Sending results ends the test, which we don't want for Hot Restart
+        return;
+      }
+
+      if (await global_state.isInitialRun) {
+        // If this is the initial run, then no test has been requested to
+        // execute. Return to avoid blocking on didRequestTestExecution below.
         return;
       }
 
@@ -81,7 +85,8 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
         logger('tearDown(): test "$dartTestName": "$result"');
       });
 
-      final requestedDartTest = await patrolAppService.testExecutionRequested;
+      final requestedDartTest = await patrolAppService.didRequestTestExecution;
+
       if (requestedDartTest == _currentDartTest) {
         logger(
           'tearDown(): finished test "$_currentDartTest". Will report its status back to the native side',
@@ -108,9 +113,12 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
   /// if necessary.
   ///
   /// This method is idempotent.
-  factory PatrolBinding.ensureInitialized() {
+  factory PatrolBinding.ensureInitialized(
+    PatrolAppService patrolAppService,
+    NativeAutomator nativeAutomator,
+  ) {
     if (_instance == null) {
-      PatrolBinding();
+      PatrolBinding(patrolAppService, nativeAutomator);
     }
     return _instance!;
   }
@@ -123,7 +131,11 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
   ///
   /// It's only for test reporting purposes and should not be used for anything
   /// else.
-  late PatrolAppService patrolAppService;
+  final PatrolAppService patrolAppService;
+
+  /// The [NativeAutomator] used by this binding to interact with the native
+  /// side.
+  final NativeAutomator nativeAutomator;
 
   /// The singleton instance of this object.
   ///
@@ -170,12 +182,12 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
   @override
   void attachRootWidget(Widget rootWidget) {
     assert(
-      (_currentDartTest != null) != (constants.hotRestartEnabled),
+      (_currentDartTest != null) != (global_state.hotRestartEnabled),
       '_currentDartTest can be null if and only if Hot Restart is enabled',
     );
 
     const testLabelEnabled = bool.fromEnvironment('PATROL_TEST_LABEL_ENABLED');
-    if (!testLabelEnabled || constants.hotRestartEnabled) {
+    if (!testLabelEnabled || global_state.hotRestartEnabled) {
       super.attachRootWidget(RepaintBoundary(child: rootWidget));
     } else {
       super.attachRootWidget(

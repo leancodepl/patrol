@@ -294,6 +294,15 @@ class NativeAutomatorClient {
     );
   }
 
+  Future<void> markLifecycleCallbackExecuted(
+    MarkLifecycleCallbackExecutedRequest request,
+  ) {
+    return _sendRequest(
+      'markLifecycleCallbackExecuted',
+      request.toJson(),
+    );
+  }
+
   Future<Map<String, dynamic>> _sendRequest(
     String requestName, [
     Map<String, dynamic>? request,

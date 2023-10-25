@@ -42,6 +42,7 @@ protocol NativeAutomatorServer {
     func setLocationAccuracy(request: SetLocationAccuracyRequest) throws
     func debug() throws
     func markPatrolAppServiceReady() throws
+    func markLifecycleCallbackExecuted(request: MarkLifecycleCallbackExecutedRequest) throws
 }
 
 extension NativeAutomatorServer {
@@ -233,6 +234,12 @@ extension NativeAutomatorServer {
         try markPatrolAppServiceReady()
         return HTTPResponse(.ok)
     }
+
+    private func markLifecycleCallbackExecutedHandler(request: HTTPRequest) throws -> HTTPResponse {
+        let requestArg = try JSONDecoder().decode(MarkLifecycleCallbackExecutedRequest.self, from: request.body)
+        try markLifecycleCallbackExecuted(request: requestArg)
+        return HTTPResponse(.ok)
+    }
 }
 
 extension NativeAutomatorServer {
@@ -406,6 +413,11 @@ extension NativeAutomatorServer {
             request in handleRequest(
                 request: request,
                 handler: markPatrolAppServiceReadyHandler)
+        }
+        server.route(.POST, "markLifecycleCallbackExecuted") {
+            request in handleRequest(
+                request: request,
+                handler: markLifecycleCallbackExecutedHandler)
         }
     }
 }

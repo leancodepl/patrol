@@ -32,6 +32,10 @@ enum SetLocationAccuracyRequestLocationAccuracy: String, Codable {
   case fine
 }
 
+struct Empty: Codable {
+
+}
+
 struct DartGroupEntry: Codable {
   var name: String
   var type: GroupEntryType
@@ -42,6 +46,11 @@ struct ListDartTestsResponse: Codable {
   var group: DartGroupEntry
 }
 
+struct ListDartLifecycleCallbacksResponse: Codable {
+  var setUpAlls: [String]
+  var tearDownAlls: [String]
+}
+
 struct RunDartTestRequest: Codable {
   var name: String
 }
@@ -49,6 +58,10 @@ struct RunDartTestRequest: Codable {
 struct RunDartTestResponse: Codable {
   var result: RunDartTestResponseResult
   var details: String?
+}
+
+struct SetLifecycleCallbacksStateRequest: Codable {
+  var state: [String: Bool]
 }
 
 struct ConfigureRequest: Codable {
@@ -163,5 +176,9 @@ struct HandlePermissionRequest: Codable {
 
 struct SetLocationAccuracyRequest: Codable {
   var locationAccuracy: SetLocationAccuracyRequestLocationAccuracy
+}
+
+struct MarkLifecycleCallbackExecutedRequest: Codable {
+  var name: String
 }
 

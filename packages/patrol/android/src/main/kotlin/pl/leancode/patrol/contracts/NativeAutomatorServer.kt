@@ -47,6 +47,7 @@ abstract class NativeAutomatorServer {
     abstract fun setLocationAccuracy(request: Contracts.SetLocationAccuracyRequest)
     abstract fun debug()
     abstract fun markPatrolAppServiceReady()
+    abstract fun markLifecycleCallbackExecuted(request: Contracts.MarkLifecycleCallbackExecutedRequest)
 
     val router = routes(
       "initialize" bind POST to {
@@ -199,6 +200,11 @@ abstract class NativeAutomatorServer {
       },
       "markPatrolAppServiceReady" bind POST to {
         markPatrolAppServiceReady()
+        Response(OK)
+      },
+      "markLifecycleCallbackExecuted" bind POST to {
+        val body = json.fromJson(it.bodyString(), Contracts.MarkLifecycleCallbackExecutedRequest::class.java)
+        markLifecycleCallbackExecuted(body)
         Response(OK)
       }
     )
