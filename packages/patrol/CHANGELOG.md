@@ -1,6 +1,12 @@
+## 2.4.0-dev.4
+
+- Add `patrolSetUpAll()` (#1751)
+
+This version requires version 2.3.0-dev.1 of `patrol_cli` package.
+
 ## 2.4.0-dev.3
 
-- Add support for iOS 11 and 12 (#1733)
+- Add `patrolSetUp()` and `patrolTearDown()` (#1721)
 
 ## 2.3.1
 

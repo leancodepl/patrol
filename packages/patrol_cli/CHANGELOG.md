@@ -1,3 +1,9 @@
+## 2.3.0-dev.1
+
+- Add support for `patrolSetUpAll` (#1751)
+
+This version requires version 2.4.0-dev.4 of `patrol` package.
+
 ## 2.2.1
 
 - Fix bug with `test_bundle.dart` being sometimes garbled on Windows (#1797)
