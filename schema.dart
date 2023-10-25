@@ -231,7 +231,7 @@ abstract class NativeAutomator<IOSServer, AndroidServer, DartClient> {
 // other
   void debug();
 
-// TODO(bartekpacia): Move these RPCc into a new service (PatrolNativeTestService) because it doesn't fit here
+// TODO: Move these RPCc into a new service (PatrolNativeTestService) because it doesn't fit here
   void markPatrolAppServiceReady();
   void markLifecycleCallbackExecuted(
       MarkLifecycleCallbackExecutedRequest request);

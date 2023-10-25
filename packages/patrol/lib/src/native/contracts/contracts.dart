@@ -112,7 +112,8 @@ class ListDartLifecycleCallbacksResponse with EquatableMixin {
   });
 
   factory ListDartLifecycleCallbacksResponse.fromJson(
-          Map<String, dynamic> json) =>
+    Map<String, dynamic> json,
+  ) =>
       _$ListDartLifecycleCallbacksResponseFromJson(json);
 
   final List<String> setUpAlls;
@@ -176,7 +177,8 @@ class SetLifecycleCallbacksStateRequest with EquatableMixin {
   });
 
   factory SetLifecycleCallbacksStateRequest.fromJson(
-          Map<String, dynamic> json) =>
+    Map<String, dynamic> json,
+  ) =>
       _$SetLifecycleCallbacksStateRequestFromJson(json);
 
   final Map<String, bool> state;
@@ -668,7 +670,8 @@ class MarkLifecycleCallbackExecutedRequest with EquatableMixin {
   });
 
   factory MarkLifecycleCallbackExecutedRequest.fromJson(
-          Map<String, dynamic> json) =>
+    Map<String, dynamic> json,
+  ) =>
       _$MarkLifecycleCallbackExecutedRequestFromJson(json);
 
   final String name;
