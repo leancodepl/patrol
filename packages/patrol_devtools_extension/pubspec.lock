@@ -127,7 +127,7 @@ packages:
     source: hosted
     version: "0.20.3"
   flutter_lints:
-    dependency: "direct dev"
+    dependency: transitive
     description:
       name: flutter_lints
       sha256: a25a15ebbdfc33ab1cd26c63a6ee519df92338a9c10f122adda92938253bef04
@@ -171,6 +171,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.8.1"
+  leancode_lint:
+    dependency: "direct dev"
+    description:
+      name: leancode_lint
+      sha256: "7351ee2eebd94944880d4d58ac56a3f2fa0fbde3372f73337b3b8f734905078a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.0"
   lints:
     dependency: transitive
     description:
