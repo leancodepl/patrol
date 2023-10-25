@@ -1,3 +1,7 @@
+## 2.4.0-dev.5
+
+- Add more logs when iOS test is starting up to aid in debugging
+
 ## 2.4.0-dev.4
 
 - Add `patrolSetUpAll()` (#1751)
