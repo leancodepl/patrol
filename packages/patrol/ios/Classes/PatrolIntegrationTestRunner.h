@@ -47,12 +47,16 @@
       [systemAlerts.buttons[@"Allow"] tap];                                                                         \
     }                                                                                                               \
                                                                                                                     \
+    NSLog(@"Performing initial run of the app...");                                                                 \
+                                                                                                                    \
     /* MARK: Start initial run */                                                                                   \
     /* Run the app for the first time to gather Dart tests */                                                       \
     XCUIApplication *app = [[XCUIApplication alloc] init];                                                          \
     NSDictionary *args = @{@"PATROL_INITIAL_RUN" : @"true"};                                                        \
     app.launchEnvironment = args;                                                                                   \
     [app launch];                                                                                                   \
+                                                                                                                    \
+    NSLog(@"Waiting for PatrolAppService (running in the app under test) to report its readiness...");              \
                                                                                                                     \
     /* Spin the runloop waiting until the app reports that PatrolAppService is up */                                \
     while (!appReady) {                                                                                             \
