@@ -66,72 +66,77 @@ class _Node extends HookWidget {
 
     final child = Padding(
       padding: EdgeInsets.only(left: iconSize),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Row(
-            children: [
-              if (node.children.isNotEmpty)
-                InkWell(
-                  onTap: () => isExpanded.value = !isExpanded.value,
-                  child: AnimatedRotation(
-                    turns: isExpanded.value ? 1 : 6 / 8,
-                    duration: const Duration(milliseconds: 150),
-                    child: Icon(
-                      Icons.expand_more,
-                      size: iconSize,
-                    ),
-                  ),
-                )
-              else
-                SizedBox(
-                  width: iconSize,
-                  height: iconSize,
-                ),
-              Container(
-                decoration: const BoxDecoration(
-                  color: Colors.blue,
-                  shape: BoxShape.circle,
-                ),
-                width: iconSize,
-                height: iconSize,
-                child: Center(
-                  child: Text(
-                    node.initialCharacter,
-                    style: DefaultTextStyle.of(context).style.copyWith(
-                          fontSize: iconSize * 0.7,
-                          color: props.colorScheme.background,
-                        ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 4),
-              GestureDetector(
-                onTap: () => props.onNodeTap(node),
-                child: Container(
-                  color: props.currentNode == node
-                      ? props.colorScheme.selectedRowBackgroundColor
-                      : null,
-                  child: Text(
-                    props.fullNodeName ? node.fullNodeName : node.shortNodeName,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          if (isExpanded.value)
-            Column(
-              children: node.children
-                  .map(
-                    (e) => _Node(
-                      props: props,
-                      node: e,
+      child: LayoutBuilder(
+        builder: (context, constraints) => Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              children: [
+                if (node.children.isNotEmpty)
+                  InkWell(
+                    onTap: () => isExpanded.value = !isExpanded.value,
+                    child: AnimatedRotation(
+                      turns: isExpanded.value ? 1 : 6 / 8,
+                      duration: const Duration(milliseconds: 150),
+                      child: Icon(
+                        Icons.expand_more,
+                        size: iconSize,
+                      ),
                     ),
                   )
-                  .toList(),
+                else
+                  SizedBox(
+                    width: iconSize,
+                    height: iconSize,
+                  ),
+                Container(
+                  decoration: const BoxDecoration(
+                    color: Colors.blue,
+                    shape: BoxShape.circle,
+                  ),
+                  width: iconSize,
+                  height: iconSize,
+                  child: Center(
+                    child: Text(
+                      node.initialCharacter,
+                      style: DefaultTextStyle.of(context).style.copyWith(
+                            fontSize: iconSize * 0.7,
+                            color: props.colorScheme.background,
+                          ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 4),
+                GestureDetector(
+                  onTap: () => props.onNodeTap(node),
+                  child: SizedBox(
+                    width: constraints.maxWidth - iconSize - iconSize - 4,
+                    height: iconSize + 4,
+                    child: OverflowBox(
+                      child: Text(
+                        props.fullNodeName
+                            ? node.fullNodeName
+                            : node.shortNodeName,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
-        ],
+            if (isExpanded.value)
+              Column(
+                children: node.children
+                    .map(
+                      (e) => _Node(
+                        props: props,
+                        node: e,
+                      ),
+                    )
+                    .toList(),
+              ),
+          ],
+        ),
       ),
     );
 
