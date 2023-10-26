@@ -74,24 +74,44 @@ class _InspectorTreeControls extends StatelessWidget {
   Widget build(BuildContext context) {
     return _HeaderDecoration(
       child: Row(
-        children: <Widget>[
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: denseSpacing),
-            child: Text('View Tree'),
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          const Expanded(
+            child: Row(
+              children: [
+                Flexible(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: denseSpacing),
+                    child: Text('View Tree', maxLines: 1),
+                  ),
+                ),
+              ],
+            ),
           ),
-          const Spacer(),
-          _ControlButton(
-            message: 'Full node names',
-            onPressed: () {
-              fullNodeNames.value = !fullNodeNames.value;
-            },
-            icon: fullNodeNames.value ? Icons.visibility : Icons.visibility_off,
-          ),
-          const SizedBox(width: 4),
-          _ControlButton(
-            icon: Icons.refresh,
-            message: 'Refresh tree',
-            onPressed: onRefreshPressed,
+          Expanded(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Flexible(
+                  child: _ControlButton(
+                    message: 'Full node names',
+                    onPressed: () {
+                      fullNodeNames.value = !fullNodeNames.value;
+                    },
+                    icon: fullNodeNames.value
+                        ? Icons.visibility
+                        : Icons.visibility_off,
+                  ),
+                ),
+                Flexible(
+                  child: _ControlButton(
+                    icon: Icons.refresh,
+                    message: 'Refresh tree',
+                    onPressed: onRefreshPressed,
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
