@@ -82,7 +82,7 @@ class _InspectorTreeControls extends StatelessWidget {
                 Flexible(
                   child: Padding(
                     padding: EdgeInsets.symmetric(horizontal: denseSpacing),
-                    child: Text('View Tree', maxLines: 1),
+                    child: Text('Native view tree', maxLines: 1),
                   ),
                 ),
               ],
@@ -168,7 +168,8 @@ class _NativeViewDetails extends StatelessWidget {
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  'View details',
+                  'Native view details',
+                  maxLines: 1,
                 ),
               ),
             ),

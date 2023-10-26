@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:patrol_devtools_extension/native_inspector/node.dart';
+import 'package:patrol_devtools_extension/native_inspector/overflowing_flex.dart';
 
 class NodeDetails extends StatelessWidget {
   const NodeDetails({super.key, required this.node});
@@ -38,31 +39,16 @@ class NodeDetails extends StatelessWidget {
                   final displayCopyButton = useState(false);
 
                   return MouseRegion(
-                    onEnter: (e) {
-                      displayCopyButton.value = true;
-                    },
-                    onExit: (e) {
-                      displayCopyButton.value = false;
-                    },
-                    child: Row(
+                    onEnter: (_) => displayCopyButton.value = true,
+                    onExit: (_) => displayCopyButton.value = false,
+                    child: OverflowingFlex(
+                      direction: Axis.horizontal,
                       children: [
-                        Flexible(
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(item.key),
-                              const SizedBox(width: 4),
-                              Flexible(
-                                child: Text(
-                                  item.value,
-                                  style: item.important
-                                      ? null
-                                      : unimportantTextStyle,
-                                ),
-                              ),
-                            ],
-                          ),
+                        Text(item.key),
+                        const SizedBox(width: 4),
+                        Text(
+                          item.value,
+                          style: item.important ? null : unimportantTextStyle,
                         ),
                         Opacity(
                           opacity: displayCopyButton.value ? 1 : 0,
