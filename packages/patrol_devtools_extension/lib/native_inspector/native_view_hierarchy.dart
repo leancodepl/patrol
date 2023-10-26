@@ -2,7 +2,8 @@ import 'package:devtools_app_shared/ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:patrol_devtools_extension/native_inspector/node.dart';
-import 'package:patrol_devtools_extension/native_inspector/overflowing_flex.dart';
+import 'package:patrol_devtools_extension/native_inspector/widgets/header_decoration.dart';
+import 'package:patrol_devtools_extension/native_inspector/widgets/overflowing_flex.dart';
 
 class NodeProps {
   NodeProps({
@@ -11,15 +12,48 @@ class NodeProps {
     required this.fullNodeName,
     required this.colorScheme,
   });
+
   final Node? currentNode;
   final ValueChanged<Node?> onNodeTap;
   final bool fullNodeName;
   final ColorScheme colorScheme;
 }
 
-class NativeInspectorTree extends StatelessWidget {
-  const NativeInspectorTree({
+class NativeViewHierarchy extends StatelessWidget {
+  const NativeViewHierarchy({
     super.key,
+    required this.roots,
+    required this.props,
+    required this.onRefreshPressed,
+    required this.fullNodeNames,
+  });
+
+  final List<Node> roots;
+  final NodeProps props;
+  final VoidCallback onRefreshPressed;
+  final ValueNotifier<bool> fullNodeNames;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        _InspectorTreeControls(
+          onRefreshPressed: onRefreshPressed,
+          fullNodeNames: fullNodeNames,
+        ),
+        Expanded(
+          child: _NativeViewHierarchyTree(
+            roots: roots,
+            props: props,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _NativeViewHierarchyTree extends StatelessWidget {
+  const _NativeViewHierarchyTree({
     required this.roots,
     required this.props,
   });
@@ -34,17 +68,101 @@ class NativeInspectorTree extends StatelessWidget {
         return GestureDetector(
           onTap: () => props.onNodeTap(null),
           child: ListView(
-            children: roots
-                .map(
-                  (e) => _Node(
-                    node: e,
-                    props: props,
-                  ),
-                )
-                .toList(),
+            children: [
+              for (final root in roots) _Node(node: root, props: props),
+            ],
           ),
         );
       },
+    );
+  }
+}
+
+class _InspectorTreeControls extends StatelessWidget {
+  const _InspectorTreeControls({
+    required this.onRefreshPressed,
+    required this.fullNodeNames,
+  });
+
+  final VoidCallback onRefreshPressed;
+  final ValueNotifier<bool> fullNodeNames;
+
+  @override
+  Widget build(BuildContext context) {
+    return HeaderDecoration(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          const Expanded(
+            child: Row(
+              children: [
+                Flexible(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: denseSpacing),
+                    child: Text('Native view tree', maxLines: 1),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Flexible(
+                  child: _ControlButton(
+                    message: 'Full node names',
+                    onPressed: () {
+                      fullNodeNames.value = !fullNodeNames.value;
+                    },
+                    icon: fullNodeNames.value
+                        ? Icons.visibility
+                        : Icons.visibility_off,
+                  ),
+                ),
+                Flexible(
+                  child: _ControlButton(
+                    icon: Icons.refresh,
+                    message: 'Refresh tree',
+                    onPressed: onRefreshPressed,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ControlButton extends StatelessWidget {
+  const _ControlButton({
+    required this.message,
+    required this.onPressed,
+    required this.icon,
+  });
+
+  final String message;
+  final VoidCallback onPressed;
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    return DevToolsTooltip(
+      message: message,
+      child: TextButton(
+        style: TextButton.styleFrom(
+          padding: EdgeInsets.zero,
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        ),
+        onPressed: onPressed,
+        child: Icon(
+          icon,
+          size: actionsIconSize,
+          color: Theme.of(context).colorScheme.onSurface,
+        ),
+      ),
     );
   }
 }
@@ -171,20 +289,20 @@ class _LinesPainter extends CustomPainter {
 
     final yEnd = lastChildren ? halfOfIconSize : size.height;
 
-    canvas.drawLine(
-      Offset(halfOfIconSize, 0),
-      Offset(halfOfIconSize, yEnd),
-      paint,
-    );
-
-    canvas.drawLine(
-      Offset(halfOfIconSize, halfOfIconSize),
-      Offset(
-        hasExpandMoreIcon ? iconSize : (iconSize + halfOfIconSize),
-        halfOfIconSize,
-      ),
-      paint,
-    );
+    canvas
+      ..drawLine(
+        Offset(halfOfIconSize, 0),
+        Offset(halfOfIconSize, yEnd),
+        paint,
+      )
+      ..drawLine(
+        Offset(halfOfIconSize, halfOfIconSize),
+        Offset(
+          hasExpandMoreIcon ? iconSize : (iconSize + halfOfIconSize),
+          halfOfIconSize,
+        ),
+        paint,
+      );
   }
 
   @override

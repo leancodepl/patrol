@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:devtools_extensions/devtools_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:patrol_devtools_extension/api/patrol_service_extension_api.dart';
-import 'package:patrol_devtools_extension/native_inspector/native_inspector_view.dart';
+import 'package:patrol_devtools_extension/native_inspector/native_inspector.dart';
 import 'package:patrol_devtools_extension/native_inspector/node.dart';
 
 class PatrolDevToolsExtension extends StatefulWidget {
@@ -23,7 +23,7 @@ class _PatrolDevToolsExtensionState extends State<PatrolDevToolsExtension> {
     return ValueListenableBuilder(
       valueListenable: runner,
       builder: (context, state, child) {
-        return NativeInspectorView(
+        return NativeInspector(
           roots: state.roots,
           currentNode: state.currentNode,
           onNodeChanged: runner.changeNode,
@@ -56,12 +56,13 @@ class _Runner extends ValueNotifier<_State> {
       isolate: serviceManager.isolateManager.mainIsolate,
     );
 
-    final res = await api.getNativeUITree();
+    final result = await api.getNativeUITree();
 
-    switch (res) {
+    switch (result) {
       case ApiSuccess(:final data):
-        value.roots =
-            data.roots.map((e) => Node(e, isAndroidApp, null)).toList();
+        value.roots = data.roots
+            .map((e) => Node(e, null, androidNode: isAndroidApp))
+            .toList();
       case ApiFailure<void> _:
       // TODO: Handle failure
     }

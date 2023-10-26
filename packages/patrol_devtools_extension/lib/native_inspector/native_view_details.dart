@@ -3,10 +3,79 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:patrol_devtools_extension/native_inspector/node.dart';
-import 'package:patrol_devtools_extension/native_inspector/overflowing_flex.dart';
+import 'package:patrol_devtools_extension/native_inspector/widgets/overflowing_flex.dart';
 
-class NodeDetails extends StatelessWidget {
-  const NodeDetails({super.key, required this.node});
+class NativeViewDetails extends StatelessWidget {
+  const NativeViewDetails({super.key, required this.currentNode});
+
+  final Node? currentNode;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const _HeaderDecoration(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: denseSpacing),
+            child: SizedBox(
+              width: double.infinity,
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  'Native view details',
+                  maxLines: 1,
+                ),
+              ),
+            ),
+          ),
+        ),
+        Expanded(
+          child: currentNode != null
+              ? Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: denseSpacing),
+                  child: _NodeDetails(node: currentNode!),
+                )
+              : Container(
+                  alignment: Alignment.center,
+                  padding: const EdgeInsets.all(densePadding),
+                  child: const Text(
+                    'Select a node to view its details',
+                    textAlign: TextAlign.center,
+                    maxLines: 4,
+                  ),
+                ),
+        ),
+      ],
+    );
+  }
+}
+
+class _HeaderDecoration extends StatelessWidget {
+  const _HeaderDecoration({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: defaultHeaderHeight(isDense: _isDense()),
+      decoration: BoxDecoration(
+        border: Border(
+          bottom: defaultBorderSide(Theme.of(context)),
+        ),
+      ),
+      child: child,
+    );
+  }
+
+  bool _isDense() {
+    return ideTheme.embed;
+  }
+}
+
+class _NodeDetails extends StatelessWidget {
+  const _NodeDetails({required this.node});
 
   final Node node;
 

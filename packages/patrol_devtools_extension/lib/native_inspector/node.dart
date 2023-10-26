@@ -1,19 +1,25 @@
 import 'package:patrol_devtools_extension/api/contracts.dart';
 
 class Node {
-  Node(this.nativeView, this.androidNode, this.parent) {
-    children =
-        nativeView.children.map((e) => Node(e, androidNode, this)).toList();
+  Node(this.nativeView, this.parent, {required this.androidNode}) {
+    children = nativeView.children
+        .map((e) => Node(e, this, androidNode: androidNode))
+        .toList();
+
     fullNodeName = _nodeName(nativeView.className, nativeView.resourceName);
-    shortNodeName =
-        _shortNodeName(nativeView.className, nativeView.resourceName);
+
+    shortNodeName = _shortNodeName(
+      nativeView.className,
+      nativeView.resourceName,
+    );
+
     initialCharacter =
         shortNodeName.isNotEmpty ? shortNodeName[0].toUpperCase() : '';
   }
 
-  final bool androidNode;
   final NativeView nativeView;
   final Node? parent;
+  final bool androidNode;
 
   late final List<Node> children;
   late final String fullNodeName;
