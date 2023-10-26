@@ -12,7 +12,7 @@ class NodeProps {
     required this.colorScheme,
   });
   final Node? currentNode;
-  final ValueChanged<Node> onNodeTap;
+  final ValueChanged<Node?> onNodeTap;
   final bool fullNodeName;
   final ColorScheme colorScheme;
 }
@@ -31,8 +31,8 @@ class NativeInspectorTree extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        return SizedBox(
-          height: constraints.maxHeight,
+        return GestureDetector(
+          onTap: () => props.onNodeTap(null),
           child: ListView(
             children: roots
                 .map(
