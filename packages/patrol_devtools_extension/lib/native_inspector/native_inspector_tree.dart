@@ -66,37 +66,37 @@ class _Node extends HookWidget {
 
     final child = Padding(
       padding: EdgeInsets.only(left: iconSize),
-      child: LayoutBuilder(
-        builder: (context, constraints) => Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              children: [
-                if (node.children.isNotEmpty)
-                  InkWell(
-                    onTap: () => isExpanded.value = !isExpanded.value,
-                    child: AnimatedRotation(
-                      turns: isExpanded.value ? 1 : 6 / 8,
-                      duration: const Duration(milliseconds: 150),
-                      child: Icon(
-                        Icons.expand_more,
-                        size: iconSize,
-                      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            children: [
+              if (node.children.isNotEmpty)
+                InkWell(
+                  onTap: () => isExpanded.value = !isExpanded.value,
+                  child: AnimatedRotation(
+                    turns: isExpanded.value ? 1 : 6 / 8,
+                    duration: const Duration(milliseconds: 150),
+                    child: Icon(
+                      Icons.expand_more,
+                      size: iconSize,
                     ),
-                  )
-                else
-                  SizedBox(
-                    width: iconSize,
-                    height: iconSize,
                   ),
-                Container(
-                  decoration: const BoxDecoration(
-                    color: Colors.blue,
-                    shape: BoxShape.circle,
-                  ),
+                )
+              else
+                SizedBox(
                   width: iconSize,
                   height: iconSize,
+                ),
+              Container(
+                decoration: const BoxDecoration(
+                  color: Colors.blue,
+                  shape: BoxShape.circle,
+                ),
+                width: iconSize,
+                height: iconSize,
+                child: OverflowBox(
                   child: Center(
                     child: Text(
                       node.initialCharacter,
@@ -107,38 +107,31 @@ class _Node extends HookWidget {
                     ),
                   ),
                 ),
-                const SizedBox(width: 4),
-                GestureDetector(
+              ),
+              const SizedBox(width: 4),
+              Flexible(
+                child: GestureDetector(
                   onTap: () => props.onNodeTap(node),
-                  child: SizedBox(
-                    width: (constraints.maxWidth - iconSize - iconSize - 4)
-                        .clamp(0, double.infinity),
-                    height: iconSize + 4,
-                    child: OverflowBox(
-                      child: Text(
-                        props.fullNodeName
-                            ? node.fullNodeName
-                            : node.shortNodeName,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
+                  child: Text(
+                    props.fullNodeName ? node.fullNodeName : node.shortNodeName,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
-              ],
-            ),
-            if (isExpanded.value)
-              Column(
-                children: node.children
-                    .map(
-                      (e) => _Node(
-                        props: props,
-                        node: e,
-                      ),
-                    )
-                    .toList(),
               ),
-          ],
-        ),
+            ],
+          ),
+          if (isExpanded.value)
+            Column(
+              children: node.children
+                  .map(
+                    (e) => _Node(
+                      props: props,
+                      node: e,
+                    ),
+                  )
+                  .toList(),
+            ),
+        ],
       ),
     );
 
