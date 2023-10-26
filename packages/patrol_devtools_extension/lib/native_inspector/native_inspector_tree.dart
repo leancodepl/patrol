@@ -111,7 +111,8 @@ class _Node extends HookWidget {
                 GestureDetector(
                   onTap: () => props.onNodeTap(node),
                   child: SizedBox(
-                    width: constraints.maxWidth - iconSize - iconSize - 4,
+                    width: (constraints.maxWidth - iconSize - iconSize - 4)
+                        .clamp(0, double.infinity),
                     height: iconSize + 4,
                     child: OverflowBox(
                       child: Text(
