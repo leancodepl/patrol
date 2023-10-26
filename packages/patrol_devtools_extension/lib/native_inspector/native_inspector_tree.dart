@@ -2,6 +2,7 @@ import 'package:devtools_app_shared/ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:patrol_devtools_extension/native_inspector/node.dart';
+import 'package:patrol_devtools_extension/native_inspector/overflowing_flex.dart';
 
 class NodeProps {
   NodeProps({
@@ -70,7 +71,8 @@ class _Node extends HookWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Row(
+          OverflowingFlex(
+            direction: Axis.horizontal,
             children: [
               if (node.children.isNotEmpty)
                 InkWell(
