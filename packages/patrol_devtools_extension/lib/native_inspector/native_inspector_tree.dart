@@ -119,6 +119,7 @@ class _Node extends HookWidget {
                         props.fullNodeName
                             ? node.fullNodeName
                             : node.shortNodeName,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                   ),
