@@ -11,9 +11,10 @@ import 'package:timezone/data/latest.dart' as tz_data;
 import 'package:timezone/timezone.dart' as tz;
 
 void main() {
-  runApp(const ExampleApp());
-
+  WidgetsFlutterBinding.ensureInitialized();
   setUpTimezone();
+
+  runApp(const ExampleApp());
 }
 
 Future<void> setUpTimezone() async {
