@@ -10,9 +10,9 @@ import 'package:patrol_example/webview_screen.dart';
 import 'package:timezone/data/latest.dart' as tz_data;
 import 'package:timezone/timezone.dart' as tz;
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  setUpTimezone();
+  await setUpTimezone();
 
   runApp(const ExampleApp());
 }
