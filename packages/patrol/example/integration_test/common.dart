@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
-import 'package:patrol_example/main.dart';
+import 'package:patrol_example/main.dart' as app_main;
 
 export 'package:flutter_test/flutter_test.dart';
 export 'package:patrol/patrol.dart';
@@ -11,8 +11,7 @@ final _nativeAutomatorConfig = NativeAutomatorConfig(
 );
 
 Future<void> createApp(PatrolTester $) async {
-  await setUpTimezone();
-  await $.pumpWidget(ExampleApp());
+  await app_main.main();
 }
 
 void patrol(
