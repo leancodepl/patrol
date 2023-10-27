@@ -416,7 +416,7 @@ class PatrolFinder extends MatchFinder {
   }
 
   @override
-  Iterable<Element> evaluate() => finder.evaluate();
+  FinderResult<Element> evaluate() => finder.evaluate();
 
   @override
   Iterable<Element> apply(Iterable<Element> candidates) {
@@ -467,7 +467,9 @@ class PatrolFinder extends MatchFinder {
   String get description => finder.description;
 
   @override
-  String toString() => finder.toString();
+  String toString({bool describeSelf = true}) {
+    return finder.toString(describeSelf: describeSelf);
+  }
 }
 
 /// Useful methods that make chained finders more readable.
