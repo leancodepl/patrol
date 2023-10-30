@@ -6,19 +6,18 @@ version: 0.1.0
 
 environment:
   sdk: '>=3.1.0 <4.0.0'
-  flutter: '>=3.16.0-0.3.pre'
+  flutter: 3.16.0-0.3.pre
 
 dependencies:
   cupertino_icons: ^1.0.6
-  devtools_app_shared: ^0.0.6
-  devtools_extensions: ^0.0.8
-  devtools_shared: ^4.0.1
-  equatable: ^2.0.3
+  devtools_app_shared: 0.0.5
+  devtools_extensions: 0.0.9
+  equatable: ^2.0.5
   flutter:
     sdk: flutter
   flutter_hooks: ^0.20.3
-  json_annotation: ^4.6.0
-  vm_service: ^11.10.0
+  json_annotation: ^4.8.1
+  vm_service: 11.10.0
 
 dev_dependencies:
   flutter_test:
