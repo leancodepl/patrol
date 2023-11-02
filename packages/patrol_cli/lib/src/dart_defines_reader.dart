@@ -27,15 +27,20 @@ class DartDefinesReader {
 
   Map<String, String> _parse(List<String> args) {
     final map = <String, String>{};
+    var currentKey = ' ';
     for (final arg in args) {
+      if (!arg.contains('=') && currentKey != ' ') {
+        map[currentKey] = '${map[currentKey]}, $arg';
+        continue;
+      }
       final parts = arg.splitFirst('=');
-      final key = parts.first;
-      if (key.contains(' ')) {
-        throw FormatException('key "$key" contains whitespace');
+      currentKey = parts.first;
+      if (currentKey.contains(' ')) {
+        throw FormatException('key "$currentKey" contains whitespace');
       }
 
       final value = parts.elementAt(1);
-      map[key] = value;
+      map[currentKey] = value;
     }
 
     return map;
