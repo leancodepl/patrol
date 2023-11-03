@@ -166,6 +166,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         flutterTool: FlutterTool(
           stdin: stdin,
           processManager: _processManager,
+          platform: _platform,
           parentDisposeScope: _disposeScope,
           logger: _logger,
         ),

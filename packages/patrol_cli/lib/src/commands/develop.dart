@@ -49,6 +49,12 @@ class DevelopCommand extends PatrolCommand {
 
     usesAndroidOptions();
     usesIOSOptions();
+
+    argParser.addFlag(
+      'open-devtools',
+      help: 'Automatically open Patrol extension in DevTools when ready.',
+      defaultsTo: true,
+    );
   }
 
   final DeviceFinder _deviceFinder;
@@ -179,6 +185,7 @@ class DevelopCommand extends PatrolCommand {
       iosOpts,
       uninstall: uninstall,
       device: device,
+      openDevtools: boolArg('open-devtools'),
     );
 
     return 0; // for now, all exit codes are 0
@@ -254,6 +261,7 @@ class DevelopCommand extends PatrolCommand {
     IOSAppOptions iosOpts, {
     required bool uninstall,
     required Device device,
+    required bool openDevtools,
   }) async {
     Future<void> Function() action;
     Future<void> Function()? finalizer;
@@ -291,6 +299,7 @@ class DevelopCommand extends PatrolCommand {
         target: flutterOpts.target,
         appId: appId,
         dartDefines: flutterOpts.dartDefines,
+        openDevtools: openDevtools,
       );
 
       await future;
