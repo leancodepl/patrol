@@ -275,6 +275,55 @@ class PatrolTester {
     });
   }
 
+  /// Waits until this finder finds at least 1 visible widget and then makes
+  /// long press gesture on it.
+  ///
+  /// Example:
+  /// ```dart
+  /// // long presses on the first widget having Key('createAccount')
+  /// await $(#createAccount).longPress();
+  /// ```
+  ///
+  /// If the finder finds more than 1 widget, you can choose which one to make
+  /// long press on:
+  ///
+  /// ```dart
+  /// // long presses on the third TextButton widget
+  /// await $(TextButton).at(2).longPress();
+  /// ```
+  ///
+  /// After long press gesture this method automatically calls
+  /// [WidgetTester.pumpAndSettle]. If you want to disable this behavior,
+  /// set [settlePolicy] to [SettlePolicy.noSettle].
+  ///
+  /// See also:
+  ///  - [PatrolFinder.waitUntilVisible], which is used to wait for the widget
+  ///    to appear
+  ///  - [WidgetController.longPress]
+  Future<void> longPress(
+    Finder finder, {
+    @Deprecated('Use settlePolicy argument instead') bool? andSettle,
+    SettlePolicy? settlePolicy,
+    Duration? visibleTimeout,
+    Duration? settleTimeout,
+  }) {
+    return TestAsyncUtils.guard(() async {
+      final resolvedFinder = await waitUntilVisible(
+        finder,
+        timeout: visibleTimeout,
+      );
+      await tester.longPress(resolvedFinder.first);
+      final settle = chooseSettlePolicy(
+        andSettle: andSettle,
+        settlePolicy: settlePolicy,
+      );
+      await _performPump(
+        settlePolicy: settle,
+        settleTimeout: settleTimeout,
+      );
+    });
+  }
+
   /// Waits until [finder] finds at least 1 visible widget and then enters text
   /// into it.
   ///

@@ -12,6 +12,10 @@ This version requires version 2.3.0-dev.1 of `patrol_cli` package.
 
 - Add `patrolSetUp()` and `patrolTearDown()` (#1721)
 
+## 2.3.2
+
+- Add `PatrolFinder.longPress()` (#1825)
+
 ## 2.3.1
 
 - Add support for iOS 11 and 12 (#1733)
