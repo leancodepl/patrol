@@ -1,3 +1,7 @@
+## 2.2.2
+
+- Fix parsing `--dart-defines` when a value contains a comma (#1845)
+
 ## 2.2.1
 
 - Fix bug with `test_bundle.dart` being sometimes garbled on Windows (#1797)
