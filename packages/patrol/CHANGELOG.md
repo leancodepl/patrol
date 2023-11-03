@@ -1,3 +1,7 @@
+## 2.3.2
+
+- Add `PatrolFinder.longPress()` (#1825)
+
 ## 2.3.1
 
 - Add support for iOS 11 and 12 (#1733)
