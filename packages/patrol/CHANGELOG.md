@@ -1,3 +1,7 @@
+## 2.4.0-dev.6
+
+- Service release with latest changes from stable `master` branch (#1851)
+
 ## 2.4.0-dev.5
 
 - Add more logs when iOS test is starting up to aid in debugging
