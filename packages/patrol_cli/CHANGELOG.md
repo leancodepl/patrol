@@ -1,3 +1,8 @@
+## 2.3.0-dev.2
+
+- Service release with latest changes from stable `master` branch (#1851)
+- Disable incorrect update prompt when using `dev` version (#1854)
+
 ## 2.3.0-dev.1
 
 - Add support for `patrolSetUpAll` (#1751)
