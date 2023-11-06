@@ -135,7 +135,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
       projectRoot: _fs.currentDirectory,
       logger: _logger,
     );
-    final testFinder = TestFinder(testDir: _fs.directory('lib'));
+    final testFinder = TestFinder(testDir: _fs.directory('integration_test'));
 
     final deviceFinder = DeviceFinder(
       processManager: _processManager,

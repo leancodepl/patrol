@@ -120,7 +120,7 @@ ${generateGroupsCode(testFilePaths).split('\n').map((e) => '  $e').join('\n')}
   // This file must not end with "_test.dart", otherwise it'll be picked up
   // when finding tests to bundle.
   File get bundledTestFile => _projectRoot
-      .childDirectory('lib')
+      .childDirectory('integration_test')
       .childFile('test_bundle.dart');
 
   /// Creates an entrypoint for use with `patrol develop`.
@@ -158,9 +158,9 @@ ${generateGroupsCode([testFilePath]).split('\n').map((e) => '  $e').join('\n')}
   ///
   /// ```dart
   /// [
-  ///   'lib/example_test.dart',
-  ///   'lib/permissions/permissions_location_test.dart',
-  ///   '/Users/charlie/awesome_app/lib/app_test.dart',
+  ///   'integration_test/example_test.dart',
+  ///   'integration_test/permissions/permissions_location_test.dart',
+  ///   '/Users/charlie/awesome_app/integration_test/app_test.dart',
   /// ]
   /// ```
   /// Output:
@@ -168,7 +168,7 @@ ${generateGroupsCode([testFilePath]).split('\n').map((e) => '  $e').join('\n')}
   /// '''
   /// import 'example_test.dart' as example_test;
   /// import 'permissions/permissions_location_test.dart' as permissions__permissions_location_test;
-  /// import 'lib/app_test.dart' as app_test;
+  /// import 'integration_test/app_test.dart' as app_test;
   /// '''
   /// ```
   @visibleForTesting
@@ -187,8 +187,8 @@ ${generateGroupsCode([testFilePath]).split('\n').map((e) => '  $e').join('\n')}
   ///
   /// ```dart
   /// [
-  ///   'lib/permissions/permissions_location_test.dart',
-  ///   'lib/example_test.dart',
+  ///   'integration_test/permissions/permissions_location_test.dart',
+  ///   'integration_test/example_test.dart',
   /// ]
   /// ```
   ///
@@ -214,16 +214,16 @@ ${generateGroupsCode([testFilePath]).split('\n').map((e) => '  $e').join('\n')}
   }
 
   /// Normalizes [testFilePath] so that it always starts with
-  /// 'lib'.
+  /// 'integration_test'.
   String _normalizeTestPath(String testFilePath) {
     var relativeTestFilePath = testFilePath.replaceAll(
-      _projectRoot.childDirectory('lib').absolute.path,
+      _projectRoot.childDirectory('integration_test').absolute.path,
       '',
     );
 
-    if (relativeTestFilePath.startsWith('lib')) {
+    if (relativeTestFilePath.startsWith('integration_test')) {
       relativeTestFilePath = relativeTestFilePath.replaceFirst(
-        'lib',
+        'integration_test',
         '',
       );
     }
@@ -238,7 +238,7 @@ ${generateGroupsCode([testFilePath]).split('\n').map((e) => '  $e').join('\n')}
 
   String _createTestName(String relativeTestFilePath) {
     var testName = relativeTestFilePath
-        .replaceFirst('lib${_fs.path.separator}', '')
+        .replaceFirst('integration_test${_fs.path.separator}', '')
         .replaceAll('/', '__');
 
     testName = testName.substring(0, testName.length - 5);
