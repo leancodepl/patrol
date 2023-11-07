@@ -90,45 +90,38 @@ class _InspectorTreeControls extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return HeaderDecoration(
-      child: Row(
+      child: OverflowingFlex(
+        direction: Axis.horizontal,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Expanded(
-            child: Row(
-              children: [
-                Flexible(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: denseSpacing),
-                    child: Text('Native view tree', maxLines: 1),
-                  ),
-                ),
-              ],
-            ),
+          const OverflowingFlex(
+            direction: Axis.horizontal,
+            children: [
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: denseSpacing),
+                child: Text('Native view tree', maxLines: 1),
+              ),
+            ],
           ),
-          Expanded(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Flexible(
-                  child: _ControlButton(
-                    message: 'Full node names',
-                    onPressed: () {
-                      fullNodeNames.value = !fullNodeNames.value;
-                    },
-                    icon: fullNodeNames.value
-                        ? Icons.visibility
-                        : Icons.visibility_off,
-                  ),
-                ),
-                Flexible(
-                  child: _ControlButton(
-                    icon: Icons.refresh,
-                    message: 'Refresh tree',
-                    onPressed: onRefreshPressed,
-                  ),
-                ),
-              ],
-            ),
+          OverflowingFlex(
+            direction: Axis.horizontal,
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              _ControlButton(
+                message: 'Full node names',
+                onPressed: () {
+                  fullNodeNames.value = !fullNodeNames.value;
+                },
+                icon: fullNodeNames.value
+                    ? Icons.visibility
+                    : Icons.visibility_off,
+              ),
+              _ControlButton(
+                icon: Icons.refresh,
+                message: 'Refresh tree',
+                onPressed: onRefreshPressed,
+              ),
+            ],
           ),
         ],
       ),
@@ -229,13 +222,11 @@ class _Node extends HookWidget {
                 ),
               ),
               const SizedBox(width: 4),
-              Flexible(
-                child: GestureDetector(
-                  onTap: () => props.onNodeTap(node),
-                  child: Text(
-                    props.fullNodeName ? node.fullNodeName : node.shortNodeName,
-                    overflow: TextOverflow.ellipsis,
-                  ),
+              GestureDetector(
+                onTap: () => props.onNodeTap(node),
+                child: Text(
+                  props.fullNodeName ? node.fullNodeName : node.shortNodeName,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ],
