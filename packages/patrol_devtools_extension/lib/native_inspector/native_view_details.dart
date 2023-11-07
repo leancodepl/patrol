@@ -100,62 +100,95 @@ class _NodeDetails extends StatelessWidget {
     );
 
     return SelectionArea(
-      child: ListView(
-        children: rows
-            .map(
-              (item) => HookBuilder(
-                builder: (context) {
-                  final displayCopyButton = useState(false);
+      child: OverflowingFlex(
+        direction: Axis.horizontal,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ...rows.map(
+                (kvItem) => Container(
+                  height: 32,
+                  alignment: Alignment.center,
+                  child: HookBuilder(
+                    builder: (context) {
+                      final displayCopyButton = useState(false);
 
-                  return MouseRegion(
-                    onEnter: (_) => displayCopyButton.value = true,
-                    onExit: (_) => displayCopyButton.value = false,
-                    child: Stack(
-                      children: [
-                        OverflowingFlex(
-                          direction: Axis.horizontal,
-                          children: [
-                            Expanded(
-                              child: Padding(
-                                padding: const EdgeInsets.only(right: 4),
-                                child: Text(item.key, maxLines: 1),
-                              ),
-                            ),
-                            Flexible(
-                              child: Text(
-                                item.value,
-                                style: item.important
-                                    ? null
-                                    : unimportantTextStyle,
-                                maxLines: 1,
-                              ),
-                            ),
-                          ],
+                      return MouseRegion(
+                        onEnter: (_) => displayCopyButton.value = true,
+                        onExit: (_) => displayCopyButton.value = false,
+                        child: Text(
+                          kvItem.key,
+                          style: kvItem.important ? null : unimportantTextStyle,
+                          maxLines: 1,
                         ),
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: Opacity(
-                            opacity: displayCopyButton.value ? 1 : 0,
-                            child: IconButton(
-                              iconSize: defaultIconSize,
-                              onPressed: displayCopyButton.value
-                                  ? () {
-                                      Clipboard.setData(
-                                        ClipboardData(text: item.copyValue),
-                                      );
-                                    }
-                                  : null,
-                              icon: const Icon(Icons.copy),
-                            ),
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(width: 8),
+          IntrinsicWidth(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ...rows.map(
+                  (kvItem) => HookBuilder(
+                    builder: (context) {
+                      final displayCopyButton = useState(false);
+
+                      return SizedBox(
+                        height: 32,
+                        child: MouseRegion(
+                          onEnter: (_) => displayCopyButton.value = true,
+                          onExit: (_) => displayCopyButton.value = false,
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              Row(
+                                children: [
+                                  Text(
+                                    kvItem.value,
+                                    maxLines: 1,
+                                    style: kvItem.important
+                                        ? null
+                                        : unimportantTextStyle,
+                                  ),
+                                  SizedBox(width: defaultIconSize * 2),
+                                ],
+                              ),
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: Opacity(
+                                  opacity: displayCopyButton.value ? 1 : 0,
+                                  child: IconButton(
+                                    iconSize: defaultIconSize,
+                                    onPressed: displayCopyButton.value
+                                        ? () {
+                                            Clipboard.setData(
+                                              ClipboardData(
+                                                text: kvItem.copyValue,
+                                              ),
+                                            );
+                                          }
+                                        : null,
+                                    icon: const Icon(Icons.copy),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
-                  );
-                },
-              ),
-            )
-            .toList(),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
