@@ -52,7 +52,7 @@ class NativeViewHierarchy extends StatelessWidget {
   }
 }
 
-class _NativeViewHierarchyTree extends StatelessWidget {
+class _NativeViewHierarchyTree extends StatefulWidget {
   const _NativeViewHierarchyTree({
     required this.roots,
     required this.props,
@@ -62,15 +62,64 @@ class _NativeViewHierarchyTree extends StatelessWidget {
   final NodeProps props;
 
   @override
+  State<_NativeViewHierarchyTree> createState() =>
+      _NativeViewHierarchyTreeState();
+}
+
+class _NativeViewHierarchyTreeState extends State<_NativeViewHierarchyTree> {
+  late final ScrollController horizontalScrollController;
+  late final ScrollController verticalScrollController;
+
+  @override
+  void initState() {
+    super.initState();
+
+    horizontalScrollController = ScrollController();
+    verticalScrollController = ScrollController();
+  }
+
+  @override
+  void dispose() {
+    horizontalScrollController.dispose();
+    verticalScrollController.dispose();
+
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
         return GestureDetector(
-          onTap: () => props.onNodeTap(null),
-          child: ListView(
-            children: [
-              for (final root in roots) _Node(node: root, props: props),
-            ],
+          onTap: () => widget.props.onNodeTap(null),
+          child: Scrollbar(
+            controller: horizontalScrollController,
+            thumbVisibility: true,
+            child: SingleChildScrollView(
+              controller: horizontalScrollController,
+              scrollDirection: Axis.horizontal,
+              child: SizedBox(
+                width: 1000,
+                // This is ugly, but we want scrollbar on the left side.
+                child: Directionality(
+                  textDirection: TextDirection.rtl,
+                  child: Scrollbar(
+                    controller: verticalScrollController,
+                    thumbVisibility: true,
+                    child: Directionality(
+                      textDirection: TextDirection.ltr,
+                      child: ListView(
+                        controller: verticalScrollController,
+                        children: [
+                          for (final root in widget.roots)
+                            _Node(node: root, props: widget.props),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
           ),
         );
       },
