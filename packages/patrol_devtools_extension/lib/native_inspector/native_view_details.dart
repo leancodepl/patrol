@@ -110,27 +110,43 @@ class _NodeDetails extends StatelessWidget {
                   return MouseRegion(
                     onEnter: (_) => displayCopyButton.value = true,
                     onExit: (_) => displayCopyButton.value = false,
-                    child: OverflowingFlex(
-                      direction: Axis.horizontal,
+                    child: Stack(
                       children: [
-                        Text(item.key),
-                        const SizedBox(width: 4),
-                        Text(
-                          item.value,
-                          style: item.important ? null : unimportantTextStyle,
+                        OverflowingFlex(
+                          direction: Axis.horizontal,
+                          children: [
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.only(right: 4),
+                                child: Text(item.key, maxLines: 1),
+                              ),
+                            ),
+                            Flexible(
+                              child: Text(
+                                item.value,
+                                style: item.important
+                                    ? null
+                                    : unimportantTextStyle,
+                                maxLines: 1,
+                              ),
+                            ),
+                          ],
                         ),
-                        Opacity(
-                          opacity: displayCopyButton.value ? 1 : 0,
-                          child: IconButton(
-                            iconSize: defaultIconSize,
-                            onPressed: displayCopyButton.value
-                                ? () {
-                                    Clipboard.setData(
-                                      ClipboardData(text: item.copyValue),
-                                    );
-                                  }
-                                : null,
-                            icon: const Icon(Icons.copy),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: Opacity(
+                            opacity: displayCopyButton.value ? 1 : 0,
+                            child: IconButton(
+                              iconSize: defaultIconSize,
+                              onPressed: displayCopyButton.value
+                                  ? () {
+                                      Clipboard.setData(
+                                        ClipboardData(text: item.copyValue),
+                                      );
+                                    }
+                                  : null,
+                              icon: const Icon(Icons.copy),
+                            ),
                           ),
                         ),
                       ],
