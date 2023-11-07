@@ -42,10 +42,17 @@ class NativeViewHierarchy extends StatelessWidget {
           fullNodeNames: fullNodeNames,
         ),
         Expanded(
-          child: _NativeViewHierarchyTree(
-            roots: roots,
-            props: props,
-          ),
+          child: roots.isEmpty
+              ? Center(
+                  child: DevToolsButton(
+                    label: 'Fetch native view hierarchy',
+                    onPressed: onRefreshPressed,
+                  ),
+                )
+              : _NativeViewHierarchyTree(
+                  roots: roots,
+                  props: props,
+                ),
         ),
       ],
     );
