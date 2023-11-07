@@ -225,7 +225,9 @@ class _Node extends HookWidget {
 
     final isExpanded = useState(true);
 
-    final child = Padding(
+    final isSelected = props.currentNode == node;
+
+    final child = Container(
       padding: EdgeInsets.only(left: iconSize),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -234,48 +236,63 @@ class _Node extends HookWidget {
           OverflowingFlex(
             direction: Axis.horizontal,
             children: [
-              if (node.children.isNotEmpty)
-                InkWell(
-                  onTap: () => isExpanded.value = !isExpanded.value,
-                  child: AnimatedRotation(
-                    turns: isExpanded.value ? 1 : 6 / 8,
-                    duration: const Duration(milliseconds: 150),
-                    child: Icon(
-                      Icons.expand_more,
-                      size: iconSize,
-                    ),
-                  ),
-                )
-              else
-                SizedBox(
-                  width: iconSize,
-                  height: iconSize,
-                ),
               Container(
-                decoration: const BoxDecoration(
-                  color: Colors.blue,
-                  shape: BoxShape.circle,
-                ),
-                width: iconSize,
-                height: iconSize,
-                child: OverflowBox(
-                  child: Center(
-                    child: Text(
-                      node.initialCharacter,
-                      style: DefaultTextStyle.of(context).style.copyWith(
-                            fontSize: iconSize * 0.7,
-                            color: props.colorScheme.background,
+                color: isSelected ? props.colorScheme.primaryContainer : null,
+                child: OverflowingFlex(
+                  direction: Axis.horizontal,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (node.children.isNotEmpty)
+                      InkWell(
+                        onTap: () => isExpanded.value = !isExpanded.value,
+                        child: AnimatedRotation(
+                          turns: isExpanded.value ? 1 : 6 / 8,
+                          duration: const Duration(milliseconds: 150),
+                          child: Icon(
+                            Icons.expand_more,
+                            size: iconSize,
                           ),
+                        ),
+                      )
+                    else
+                      SizedBox(
+                        width: iconSize,
+                        height: iconSize,
+                      ),
+                    Container(
+                      decoration: const BoxDecoration(
+                        color: Colors.blue,
+                        shape: BoxShape.circle,
+                      ),
+                      width: iconSize,
+                      height: iconSize,
+                      child: Center(
+                        child: Text(
+                          node.initialCharacter,
+                          style: DefaultTextStyle.of(context).style.copyWith(
+                                fontSize: iconSize * 0.7,
+                                color: props.colorScheme.background,
+                              ),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 4),
-              GestureDetector(
-                onTap: () => props.onNodeTap(node),
-                child: Text(
-                  props.fullNodeName ? node.fullNodeName : node.shortNodeName,
-                  overflow: TextOverflow.ellipsis,
+                    const SizedBox(width: 4),
+                    GestureDetector(
+                      onTap: () => props.onNodeTap(node),
+                      child: Text(
+                        props.fullNodeName
+                            ? node.fullNodeName
+                            : node.shortNodeName,
+                        overflow: TextOverflow.ellipsis,
+                        style: DefaultTextStyle.of(context).style.copyWith(
+                              fontWeight: isSelected
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                            ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
