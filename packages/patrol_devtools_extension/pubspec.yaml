@@ -9,6 +9,7 @@ environment:
   flutter: 3.16.0-0.3.pre
 
 dependencies:
+  collection: ^1.18.0
   cupertino_icons: ^1.0.6
   devtools_app_shared: 0.0.5
   devtools_extensions: 0.0.9

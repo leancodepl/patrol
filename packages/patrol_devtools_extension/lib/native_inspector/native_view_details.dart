@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:devtools_app_shared/ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -79,7 +80,7 @@ class _HeaderDecoration extends StatelessWidget {
   }
 }
 
-class _NodeDetails extends StatelessWidget {
+class _NodeDetails extends HookWidget {
   const _NodeDetails({required this.node});
 
   final Node node;
@@ -93,13 +94,15 @@ class _NodeDetails extends StatelessWidget {
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Copied ${kvItem.copyValue}'),
+        content: Text('Copied ${kvItem.copyValue}', maxLines: 1),
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final hoveredIndex = useState<int?>(null);
+
     final view = node.nativeView;
     final rows = [
       _KeyValueItem('applicationPackage:', view.applicationPackage),
@@ -126,18 +129,18 @@ class _NodeDetails extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ...rows.map(
-                  (kvItem) => HookBuilder(
+                ...rows.mapIndexed(
+                  (index, kvItem) => Builder(
                     builder: (context) {
-                      final displayCopyButton = useState(false);
+                      final hovered = hoveredIndex.value == index;
 
                       return MouseRegion(
-                        onEnter: (_) => displayCopyButton.value = true,
-                        onExit: (_) => displayCopyButton.value = false,
+                        onEnter: (_) => hoveredIndex.value = index,
+                        onExit: (_) => hoveredIndex.value = null,
                         child: Container(
                           height: 32,
                           alignment: Alignment.centerLeft,
-                          color: displayCopyButton.value
+                          color: hovered
                               ? Theme.of(context).colorScheme.primaryContainer
                               : null,
                           child: Text(
@@ -154,24 +157,23 @@ class _NodeDetails extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(width: 8),
           IntrinsicWidth(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ...rows.map(
-                  (kvItem) => HookBuilder(
+                ...rows.mapIndexed(
+                  (index, kvItem) => Builder(
                     builder: (context) {
-                      final displayCopyButton = useState(false);
+                      final hovered = hoveredIndex.value == index;
 
                       return Container(
                         height: 32,
-                        color: displayCopyButton.value
+                        color: hovered
                             ? Theme.of(context).colorScheme.primaryContainer
                             : null,
                         child: MouseRegion(
-                          onEnter: (_) => displayCopyButton.value = true,
-                          onExit: (_) => displayCopyButton.value = false,
+                          onEnter: (_) => hoveredIndex.value = index,
+                          onExit: (_) => hoveredIndex.value = null,
                           child: Stack(
                             alignment: Alignment.center,
                             children: [
@@ -190,10 +192,10 @@ class _NodeDetails extends StatelessWidget {
                               Align(
                                 alignment: Alignment.centerRight,
                                 child: Opacity(
-                                  opacity: displayCopyButton.value ? 1 : 0,
+                                  opacity: hovered ? 1 : 0,
                                   child: IconButton(
                                     iconSize: defaultIconSize,
-                                    onPressed: displayCopyButton.value
+                                    onPressed: hovered
                                         ? () => _onCopyClick(context, kvItem)
                                         : null,
                                     icon: const Icon(Icons.copy),
