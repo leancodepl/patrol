@@ -244,7 +244,12 @@ class _Node extends HookWidget {
             direction: Axis.horizontal,
             children: [
               Container(
-                color: isSelected ? props.colorScheme.primaryContainer : null,
+                padding: const EdgeInsets.only(right: 8),
+                decoration: BoxDecoration(
+                  color: isSelected ? props.colorScheme.primaryContainer : null,
+                  border: Border.all(color: Colors.transparent),
+                  borderRadius: BorderRadius.circular(8),
+                ),
                 child: OverflowingFlex(
                   direction: Axis.horizontal,
                   mainAxisAlignment: MainAxisAlignment.center,

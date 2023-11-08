@@ -86,12 +86,9 @@ class _NodeDetails extends HookWidget {
   final Node node;
 
   void _onCopyClick(BuildContext context, _KeyValueItem kvItem) {
-    Clipboard.setData(
-      ClipboardData(
-        text: kvItem.copyValue,
-      ),
-    );
+    Clipboard.setData(ClipboardData(text: kvItem.copyValue));
 
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('Copied ${kvItem.copyValue}', maxLines: 1),
@@ -134,20 +131,33 @@ class _NodeDetails extends HookWidget {
                     builder: (context) {
                       final hovered = hoveredIndex.value == index;
 
-                      return MouseRegion(
-                        onEnter: (_) => hoveredIndex.value = index,
-                        onExit: (_) => hoveredIndex.value = null,
-                        child: Container(
-                          height: 32,
-                          alignment: Alignment.centerLeft,
-                          color: hovered
-                              ? Theme.of(context).colorScheme.primaryContainer
-                              : null,
-                          child: Text(
-                            kvItem.key,
-                            style:
-                                kvItem.important ? null : unimportantTextStyle,
-                            maxLines: 1,
+                      return GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () => _onCopyClick(context, kvItem),
+                        child: MouseRegion(
+                          onEnter: (_) => hoveredIndex.value = index,
+                          onExit: (_) => hoveredIndex.value = null,
+                          child: Container(
+                            height: 32,
+                            alignment: Alignment.centerLeft,
+                            padding: const EdgeInsets.only(left: 8),
+                            decoration: BoxDecoration(
+                              borderRadius: const BorderRadius.horizontal(
+                                left: Radius.circular(8),
+                              ),
+                              color: hovered
+                                  ? Theme.of(context)
+                                      .colorScheme
+                                      .primaryContainer
+                                  : null,
+                            ),
+                            child: Text(
+                              kvItem.key,
+                              style: kvItem.important
+                                  ? null
+                                  : unimportantTextStyle,
+                              maxLines: 1,
+                            ),
                           ),
                         ),
                       );
@@ -166,43 +176,47 @@ class _NodeDetails extends HookWidget {
                     builder: (context) {
                       final hovered = hoveredIndex.value == index;
 
-                      return Container(
-                        height: 32,
-                        color: hovered
-                            ? Theme.of(context).colorScheme.primaryContainer
-                            : null,
-                        child: MouseRegion(
-                          onEnter: (_) => hoveredIndex.value = index,
-                          onExit: (_) => hoveredIndex.value = null,
-                          child: Stack(
-                            alignment: Alignment.center,
-                            children: [
-                              Row(
-                                children: [
-                                  Text(
-                                    kvItem.value,
-                                    maxLines: 1,
-                                    style: kvItem.important
-                                        ? null
-                                        : unimportantTextStyle,
-                                  ),
-                                  SizedBox(width: defaultIconSize * 2),
-                                ],
-                              ),
-                              Align(
-                                alignment: Alignment.centerRight,
-                                child: Opacity(
-                                  opacity: hovered ? 1 : 0,
-                                  child: IconButton(
-                                    iconSize: defaultIconSize,
-                                    onPressed: hovered
-                                        ? () => _onCopyClick(context, kvItem)
-                                        : null,
-                                    icon: const Icon(Icons.copy),
+                      return GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () => _onCopyClick(context, kvItem),
+                        child: Container(
+                          height: 32,
+                          padding: const EdgeInsets.only(left: 8),
+                          decoration: BoxDecoration(
+                            borderRadius: const BorderRadius.horizontal(
+                              right: Radius.circular(8),
+                            ),
+                            color: hovered
+                                ? Theme.of(context).colorScheme.primaryContainer
+                                : null,
+                          ),
+                          child: MouseRegion(
+                            onEnter: (_) => hoveredIndex.value = index,
+                            onExit: (_) => hoveredIndex.value = null,
+                            child: Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                Row(
+                                  children: [
+                                    Text(
+                                      kvItem.value,
+                                      maxLines: 1,
+                                      style: kvItem.important
+                                          ? null
+                                          : unimportantTextStyle,
+                                    ),
+                                    SizedBox(width: defaultIconSize * 2),
+                                  ],
+                                ),
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: Opacity(
+                                    opacity: hovered ? 1 : 0,
+                                    child: const Icon(Icons.copy),
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       );
