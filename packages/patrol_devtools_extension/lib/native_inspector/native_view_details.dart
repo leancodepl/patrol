@@ -122,31 +122,37 @@ class _NodeDetails extends StatelessWidget {
       child: OverflowingFlex(
         direction: Axis.horizontal,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              ...rows.map(
-                (kvItem) => Container(
-                  height: 32,
-                  alignment: Alignment.center,
-                  child: HookBuilder(
+          IntrinsicWidth(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ...rows.map(
+                  (kvItem) => HookBuilder(
                     builder: (context) {
                       final displayCopyButton = useState(false);
 
                       return MouseRegion(
                         onEnter: (_) => displayCopyButton.value = true,
                         onExit: (_) => displayCopyButton.value = false,
-                        child: Text(
-                          kvItem.key,
-                          style: kvItem.important ? null : unimportantTextStyle,
-                          maxLines: 1,
+                        child: Container(
+                          height: 32,
+                          alignment: Alignment.centerLeft,
+                          color: displayCopyButton.value
+                              ? Theme.of(context).colorScheme.primaryContainer
+                              : null,
+                          child: Text(
+                            kvItem.key,
+                            style:
+                                kvItem.important ? null : unimportantTextStyle,
+                            maxLines: 1,
+                          ),
                         ),
                       );
                     },
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
           const SizedBox(width: 8),
           IntrinsicWidth(
@@ -158,8 +164,11 @@ class _NodeDetails extends StatelessWidget {
                     builder: (context) {
                       final displayCopyButton = useState(false);
 
-                      return SizedBox(
+                      return Container(
                         height: 32,
+                        color: displayCopyButton.value
+                            ? Theme.of(context).colorScheme.primaryContainer
+                            : null,
                         child: MouseRegion(
                           onEnter: (_) => displayCopyButton.value = true,
                           onExit: (_) => displayCopyButton.value = false,
