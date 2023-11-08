@@ -12,41 +12,46 @@ class NativeViewDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        const _HeaderDecoration(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: denseSpacing),
-            child: SizedBox(
-              width: double.infinity,
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  'Native view details',
-                  maxLines: 1,
+    return ScaffoldMessenger(
+      child: Scaffold(
+        body: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const _HeaderDecoration(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: denseSpacing),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Native view details',
+                      maxLines: 1,
+                    ),
+                  ),
                 ),
               ),
             ),
-          ),
+            Expanded(
+              child: currentNode != null
+                  ? Padding(
+                      padding:
+                          const EdgeInsets.symmetric(horizontal: denseSpacing),
+                      child: _NodeDetails(node: currentNode!),
+                    )
+                  : Container(
+                      alignment: Alignment.center,
+                      padding: const EdgeInsets.all(densePadding),
+                      child: const Text(
+                        'Select a node to view its details',
+                        textAlign: TextAlign.center,
+                        maxLines: 4,
+                      ),
+                    ),
+            ),
+          ],
         ),
-        Expanded(
-          child: currentNode != null
-              ? Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: denseSpacing),
-                  child: _NodeDetails(node: currentNode!),
-                )
-              : Container(
-                  alignment: Alignment.center,
-                  padding: const EdgeInsets.all(densePadding),
-                  child: const Text(
-                    'Select a node to view its details',
-                    textAlign: TextAlign.center,
-                    maxLines: 4,
-                  ),
-                ),
-        ),
-      ],
+      ),
     );
   }
 }
@@ -78,6 +83,20 @@ class _NodeDetails extends StatelessWidget {
   const _NodeDetails({required this.node});
 
   final Node node;
+
+  void _onCopyClick(BuildContext context, _KeyValueItem kvItem) {
+    Clipboard.setData(
+      ClipboardData(
+        text: kvItem.copyValue,
+      ),
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Copied ${kvItem.copyValue}'),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -166,13 +185,7 @@ class _NodeDetails extends StatelessWidget {
                                   child: IconButton(
                                     iconSize: defaultIconSize,
                                     onPressed: displayCopyButton.value
-                                        ? () {
-                                            Clipboard.setData(
-                                              ClipboardData(
-                                                text: kvItem.copyValue,
-                                              ),
-                                            );
-                                          }
+                                        ? () => _onCopyClick(context, kvItem)
                                         : null,
                                     icon: const Icon(Icons.copy),
                                   ),
