@@ -102,6 +102,7 @@ class _NativeViewHierarchyTreeState extends State<_NativeViewHierarchyTree> {
           child: Scrollbar(
             controller: horizontalScrollController,
             thumbVisibility: true,
+            thickness: 12,
             child: SingleChildScrollView(
               controller: horizontalScrollController,
               scrollDirection: Axis.horizontal,
@@ -112,15 +113,21 @@ class _NativeViewHierarchyTreeState extends State<_NativeViewHierarchyTree> {
                   textDirection: TextDirection.rtl,
                   child: Scrollbar(
                     controller: verticalScrollController,
+                    thickness: 12,
                     thumbVisibility: true,
                     child: Directionality(
                       textDirection: TextDirection.ltr,
-                      child: ListView(
-                        controller: verticalScrollController,
-                        children: [
-                          for (final root in widget.roots)
-                            _Node(node: root, props: widget.props),
-                        ],
+                      child: ScrollConfiguration(
+                        behavior: ScrollConfiguration.of(context).copyWith(
+                          scrollbars: false,
+                        ),
+                        child: ListView(
+                          controller: verticalScrollController,
+                          children: [
+                            for (final root in widget.roots)
+                              _Node(node: root, props: widget.props),
+                          ],
+                        ),
                       ),
                     ),
                   ),
