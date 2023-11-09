@@ -27,8 +27,10 @@ private fun getWindowRoots(uiDevice: UiDevice, uiAutomation: UiAutomation): Arra
     }
 
     // Support multi-window searches for API level 21 and up.
-    val apiLevelActual = (Build.VERSION.SDK_INT
-            + if ("REL" == Build.VERSION.CODENAME) 0 else 1)
+    val apiLevelActual = (
+        Build.VERSION.SDK_INT +
+            if ("REL" == Build.VERSION.CODENAME) 0 else 1
+        )
     if (apiLevelActual >= Build.VERSION_CODES.LOLLIPOP) {
         for (window in uiAutomation.windows) {
             val root = window.root
