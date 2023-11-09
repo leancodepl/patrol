@@ -1,0 +1,278 @@
+---
+title: Patrol finders - usage
+---
+
+# Usage
+
+This page introduces Patrol finder system. Let's get our hands dirty
+and find some widgets!
+
+### Finding widgets
+
+Let's say you want to find some `Text` widget – nothing easier than that!
+
+```dart
+find.byType(Text);
+```
+
+Using Patrol finder, you'd write the above as:
+
+```dart
+$(Text);
+```
+
+Or let's find a `Text` widget with a specific text:
+
+```dart
+find.text('Subscribe');
+```
+
+Using Patrol finder, you'd write the above as:
+
+```dart
+$('Subscribe');
+```
+
+Worth mentioning is also `Key`. The below lines are equivalent:
+
+```dart
+find.byKey(Key('loginButton'));
+$(Key('loginButton'));
+$(#loginButton);
+```
+
+For those wondering what is that `#` thing – it's a
+[Symbol](https://api.dart.dev/dart-core/Symbol-class.html)! Yes, we're Dart
+(ab)users.
+
+<Info>All the types that can be passed to `$` are [listed here][doc].</Info>
+
+### Making assertions
+
+Creating a finder doesn't do anything – it just _is_. Let's put them to use and
+write a few simple assertions.
+
+Here's how you can make sure that a widget with text `Log in` exists in the
+widget tree:
+
+```dart
+expect(find.text('Log in'), findsOneWidget);
+```
+
+With our Patrol finders, you'd write the above as:
+
+```dart
+expect($('Log in'), findsOneWidget);
+```
+
+Alternatively, you could also use the `exists` getter, which returns true if the
+finder finds at least 1 widget:
+
+```dart
+expect($('Log in').exists, equals(true));
+```
+
+We can also make sure that no widget exists, or that a particular number of
+widgets exist:
+
+```dart
+expect(find.text("Can't touch this"), findsNothing);
+expect(find.byType(Card), findsNWidgets(3));
+```
+
+The above expressed with Patrol finders:
+
+```dart
+expect($("Can't touch this"), findsNothing);
+expect($(Card), findsNWidgets(3));
+```
+
+You could alternatively write the first line as:
+
+```dart
+expect($("Can't touch this").exists, equals(false));
+```
+
+[//]: # (not true, TODO: rewrite)
+It's important to note that Flutter's default finder functions, such as
+[findsNothing] and [findsOneWidget], check if the widget is present in the
+widget tree, not if it is visible to the user, which is usually not what we're
+interested in.
+
+To check if the finder finds at least 1 _visible_ widget, use the `visible`
+getter:
+
+```dart
+expect($('Log in').visible, equals(true));
+```
+
+And to wait for at least 1 widget with the "Log in" text to become visible:
+
+```dart
+await $('Log in').waitUntilVisible();
+```
+
+### Performing actions
+
+Finding widgets alone is cool, but what's even cooler is being able to tap on
+them! Let's tap on the first "Subscribe" text:
+
+```dart
+await tester.tap(find.text('Subscribe').first);
+```
+
+It's usually a good practice to use `first`, because if there were multiple
+"Subscribe" texts, `tap()` would throw an exception.
+
+With Patrol, you get concise code, but you preserve the flexibility:
+
+```dart
+await $('Subscribe').tap();
+```
+
+What's very cool about Patrol's `tap()` is that it doesn't immediately fail if
+the finder finds no visible widgets – instead, it waits for some time (which you
+can specify globally in [PatrolTesterConfig] or as argument to the `tap()`
+method) and taps on the first widget as soon as it becomes visible. This lets
+you get rid of fixed timeouts and test your app just like a real user would.
+
+If you wanted to tap on the third "Subscribe" text, you'd do:
+
+```dart
+await $('Subscribe').at(2).tap();
+```
+
+And if the "Subscribe" text was in a [Scrollable] widget, such as
+[SingleChildScrollView] or [ListView], and you want to make sure that it is
+visible (so you can `tap()` on it), you can scroll to it very easily:
+
+```dart
+await $('Subscribe').scrollTo().tap();
+```
+
+### Going deeper
+
+But hey, these were very simple examples. In real apps, unfortunately, finding
+widgets is not that easy.
+
+Often, you'll need to tap on a widget which is in some other widget.
+
+```dart
+await tester.tap(
+  find.descendant(
+    of: find.byType(ListView),
+    matching: find.text('Subscribe'),
+  ).first
+);
+```
+
+Flutter's finders are starting to grow, while Patrol stays lean:
+
+```dart
+await $(ListView).$('Subscribe').tap();
+```
+
+Now, we also make sure that the `Subscribe` text is in a `ListTile`:
+
+```dart
+await tester.tap(
+  find.descendant(
+    of: find.byType(ListView),
+    matching: find.descendant(
+      of: find.byType(ListTile),
+      matching: find.text('Subscribe'),
+    ),
+  ).first
+);
+```
+
+Hey, this is starting to look complex! Fortunately, you have Patrol:
+
+```dart
+await $(ListView).$(ListTile).$('Subscribe').tap();
+```
+
+Sometimes, you might want to perform a lookahead check. Let's say that you want
+tap on the first widget with the `Key('learnMore')` that is a descendant of some
+`ListTile`, but that `ListTile` must also have the `Text` descendant with the
+`Activated` text.
+
+If you were to express the above as a `Finder`, you'd get:
+
+```dart
+await tester.tap(
+  find.ancestor(
+    of: find.text('Activated'),
+    matching: find.descendant(
+      of: find.byType(ListTile),
+      matching: find.byKey(Key('learnMore')),
+    ),
+  ).first
+);
+```
+
+With the help of Patrol's custom finders, it's much easier:
+
+```dart
+await $(ListTile).containing('Activated').$(#learnMore).tap();
+```
+
+Sometimes, however, the logic required to find a widget cannot be expressed by
+the descendant/ancestor relationship like above. In situations like this,
+when all ways of finding widgets known to you fail, Patrol has an ace up its
+sleeve: the [which()] method. You can use it to find widgets by their
+properties. A few examples include:
+.
+
+- entering a text into a text field with no text entered:
+
+  ```dart
+  await $(#cityTextField)
+      .which<TextField>((widget) => widget.controller.text.isNotEmpty)
+      .enterText('Warsaw, Poland');
+  ```
+
+- asserting that the icon has the correct color:
+
+  ```dart
+  await $(Icons.error)
+      .which<Icon>((widget) => widget.color == Colors.red)
+      .waitUntilVisible();
+  ```
+
+- asserting that the button is disabled and has the correct color
+
+  ```dart
+  await $('Delete account')
+    .which<ElevatedButton>((button) => !button.enabled)
+    .which<ElevatedButton>(
+      (btn) => btn.style?.backgroundColor?.resolve({}) == Colors.red,
+    )
+    .waitUntilVisible();
+
+  ```
+
+### Falling back
+
+What's cool about Patrol is that it builds on top of `flutter_test` instead of
+replacing it. This means that you can freely mix Patrol's finders with finders
+from `flutter_test`, `PatrolTester` with `WidgetTester`, and so on.
+
+Here's how you can access the default `WidgetTester`:
+
+```dart
+patrolWidgetTest('adds comment', (PatrolTester $) async {
+  final WidgetTester tester = $.tester;
+
+  await tester.enterText(find.byKey(Key('commentTextField')), 'Very nice!');
+});
+```
+
+[doc]: https://pub.dev/documentation/patrol_finders/latest/patrol_finders/createFinder.html
+[which()]: https://pub.dev/documentation/patrol_finders/latest/patrol_finders/PatrolFinder/which.html
+[findsNothing]: https://api.flutter.dev/flutter/flutter_test/findsNothing-constant.html
+[findsOneWidget]: https://api.flutter.dev/flutter/flutter_test/findsOneWidget-constant.html
+[PatrolTesterConfig]: https://pub.dev/documentation/patrol_finders/latest/patrol_finders/PatrolTesterConfig-class.html
+[singlechildscrollview]: https://api.flutter.dev/flutter/widgets/SingleChildScrollView-class.html
+[listview]: https://api.flutter.dev/flutter/widgets/ListView-class.html
+[Scrollable]: https://api.flutter.dev/flutter/widgets/Scrollable-class.html

@@ -29,31 +29,46 @@
     client = PatrolAppServiceClient(port: port, address: "localhost", timeout: timeout)
   }
 
-  @objc public func listDartTests() async throws -> [String] {
+  @objc public func listDartTests(completion: @escaping ([String]?, Error?) -> Void) {
     NSLog("PatrolAppServiceClient.listDartTests()")
 
-    let response = try await client.listDartTests()
-
-    return response.group.listTestsFlat(parentGroupName: "").map {
-      $0.name
+    client.listDartTests { result in
+      switch result {
+      case .success(let result):
+        let output = result.group.listTestsFlat(parentGroupName: "").map {
+          $0.name
+        }
+        completion(output, nil)
+      case .failure(let error):
+        completion(nil, error)
+      }
     }
   }
 
-  @objc public func runDartTest(name: String) async throws -> ObjCRunDartTestResponse {
+  @objc public func runDartTest(
+    name: String, completion: @escaping (ObjCRunDartTestResponse?, Error?) -> Void
+  ) {
     // TODO: simple workaround - patrolAppService starts running too slowly.
     // We should wait for appReady in the dynamically created test case method,
     // before calling runDartTest() (in PATROL_INTEGRATION_TEST_IOS_MACRO)
-    try await Task.sleep(nanoseconds: UInt64(1 * Double(NSEC_PER_SEC)))
+    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+      NSLog("PatrolAppServiceClient.runDartTest(\(name))")
 
-    NSLog("PatrolAppServiceClient.runDartTest(\(name))")
+      let request = RunDartTestRequest(name: name)
+      self.client.runDartTest(request: request) { result in
+        switch result {
+        case .success(let result):
+          let testRespone = ObjCRunDartTestResponse(
+            passed: result.result == .success,
+            details: result.details
+          )
+          completion(testRespone, nil)
+        case .failure(let error):
+          completion(nil, error)
+        }
 
-    let request = RunDartTestRequest(name: name)
-    let result = try await client.runDartTest(request: request)
-
-    return ObjCRunDartTestResponse(
-      passed: result.result == .success,
-      details: result.details
-    )
+      }
+    }
   }
 }
 

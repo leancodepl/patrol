@@ -25,12 +25,11 @@ class AndroidHttp4kClientGenerator {
 
 package ${config.package};
 
+import com.google.gson.Gson
 import com.squareup.okhttp.MediaType
 import com.squareup.okhttp.OkHttpClient
 import com.squareup.okhttp.Request
 import com.squareup.okhttp.RequestBody
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import java.util.concurrent.TimeUnit
 
 ''';
@@ -77,7 +76,7 @@ $endpoints
 
     val serverUrl = $url
 
-    private val json = Json { ignoreUnknownKeys = true }
+    private val json = Gson()
 
     private val jsonMediaType = MediaType.parse("application/json; charset=utf-8")
 }''';
@@ -92,14 +91,14 @@ $endpoints
         : '';
 
     final serializeParameter =
-        endpoint.request != null ? ', json.encodeToString(request)' : '';
+        endpoint.request != null ? ', json.toJson(request)' : '';
 
     final body = endpoint.response != null
         ? '''
         val response = performRequest("${endpoint.name}"$serializeParameter)
-        return json.decodeFromString(response)'''
+        return json.fromJson(response, Contracts.${endpoint.response!.name}::class.java)'''
         : '''
-        return performRequest("${endpoint.name}"$serializeParameter)''';
+        performRequest("${endpoint.name}"$serializeParameter)''';
 
     return '''
     fun ${endpoint.name}($parameterDef)$returnDef {

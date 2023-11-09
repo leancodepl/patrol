@@ -1,24 +1,20 @@
-## 2.3.0-dev.4
+## 2.3.2
 
-- Fix test name label blocking hit testing (#1731)
+- Add `PatrolFinder.longPress()` (#1825)
 
-## 2.3.0-dev.3
+## 2.3.1
 
-- Fix problem with Gradle build failing unless correct `packagingOptions {}` are
-  specified (#1709) (#1711)
+- Add support for iOS 11 and 12 (#1733)
+- Fix build-time and run-time crashes when app doesn't use Kotlin 1.8.x (#1782)
 
-## 2.3.0-dev.2
+## 2.3.0
 
+- Add support for nested test hierarchies using `group()`s (#1634)
 - Replace Protocol Buffers and gRPC with a custom code generation solution that
   is more lightweight (#1681)
+- Fix test name label blocking hit testing (#1731)
 
-This version requires version 2.2.0-dev.2 of `patrol_cli` package.
-
-## 2.3.0-dev.1
-
-- Add support for `group()` (#1634)
-
-This version requires version 2.2.0-dev.1 of `patrol_cli` package.
+This version requires version 2.2.0 of `patrol_cli` package.
 
 ## 2.2.5
 

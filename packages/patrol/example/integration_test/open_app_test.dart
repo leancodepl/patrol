@@ -16,6 +16,7 @@ void main() {
     }
 
     await createApp($);
+    await $.waitUntilVisible($(#counterText));
 
     expect($(#counterText).text, '0');
 
@@ -40,6 +41,7 @@ void main() {
     }
 
     await createApp($);
+    await $.waitUntilVisible($(#counterText));
 
     expect($(#counterText).text, '0');
 

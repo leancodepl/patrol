@@ -73,7 +73,7 @@ Future<void> main() async {
   final binding = PatrolBinding.ensureInitialized(NativeAutomatorConfig());
   final testExplorationCompleter = Completer<DartGroupEntry>();
 
-  // A special test to expore the hierarchy of groups and tests. This is a hack
+  // A special test to explore the hierarchy of groups and tests. This is a hack
   // around https://github.com/dart-lang/test/issues/1998.
   //
   // This test must be the first to run. If not, the native side likely won't
@@ -177,7 +177,10 @@ ${generateGroupsCode([testFilePath]).split('\n').map((e) => '  $e').join('\n')}
     for (final testFilePath in testFilePaths) {
       final relativeTestFilePath = _normalizeTestPath(testFilePath);
       final testName = _createTestName(relativeTestFilePath);
-      imports.add("import '$relativeTestFilePath' as $testName;");
+      final relativeTestFilePathWithoutSlash = relativeTestFilePath[0] == '/'
+          ? relativeTestFilePath.replaceFirst('/', '')
+          : relativeTestFilePath;
+      imports.add("import '$relativeTestFilePathWithoutSlash' as $testName;");
     }
 
     return imports.join('\n');

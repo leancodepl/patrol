@@ -1,14 +1,21 @@
-## 2.2.0-dev.2
+## 2.2.2
 
-- Adjust generated `test_bundle.dart` to not depend on gRPC contracts (#1681)
+- Fix parsing `--dart-defines` when a value contains a comma (#1845)
 
-This version requires version 2.3.0-dev.2 of `patrol` package.
+## 2.2.1
 
-## 2.2.0-dev.1
+- Fix bug with `test_bundle.dart` being sometimes garbled on Windows (#1797)
+
+## 2.2.0
 
 - Add support for `group()` (#1634)
+- Adjust generated `test_bundle.dart` to not depend on gRPC contracts (#1681)
 
-This version requires version 2.3.0-dev.1 of `patrol` package.
+This version requires version 2.3.0 of `patrol` package.
+
+## 2.1.5
+
+- Remove notice about migrating to Patrol 2.0 (#1738)
 
 ## 2.1.4
 
