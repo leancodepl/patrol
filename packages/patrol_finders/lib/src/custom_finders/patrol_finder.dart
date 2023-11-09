@@ -509,7 +509,7 @@ class PatrolFinder extends MatchFinder {
   String get description => finder.description;
 
   @override
-  String toString({bool describeSelf = true}) {
+  String toString({bool describeSelf = false}) {
     return finder.toString(describeSelf: describeSelf);
   }
 }
