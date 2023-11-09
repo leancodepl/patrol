@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/common.dart';
-import 'package:integration_test/integration_test.dart';
 import 'package:patrol/patrol.dart';
 import 'package:patrol/src/devtools_service_extensions/devtools_service_extensions.dart';
 // ignore: implementation_imports, depend_on_referenced_packages
@@ -33,12 +33,14 @@ void _defaultPrintLogger(String message) {
 /// [PatrolBinding] submits the Dart test file name that is being currently
 /// executed to [PatrolAppService]. Once the name is submitted to it, that
 /// pending `runDartTest()` method returns.
-class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
+class PatrolBinding extends LiveTestWidgetsFlutterBinding {
   /// Creates a new [PatrolBinding].
   ///
   /// You most likely don't want to call it yourself.
   PatrolBinding(NativeAutomatorConfig config)
       : _serviceExtensions = DevtoolsServiceExtensions(config) {
+    shouldPropagateDevicePointerEvents = true;
+
     final oldTestExceptionReporter = reportTestException;
     reportTestException = (details, testDescription) {
       final currentDartTest = _currentDartTest;
@@ -111,6 +113,12 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
     return _instance!;
   }
 
+  @override
+  bool get overrideHttpClient => false;
+
+  @override
+  bool get registerTestTextInput => false;
+
   /// Logger used by this binding.
   void Function(String message) logger = _defaultPrintLogger;
 
@@ -131,15 +139,11 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
 
   String? _currentDartTest;
 
-  /// Keys are the test descriptions, and values are either [_success] or
-  /// a [Failure].
+  /// Keys are the test descriptions, and values are either [_success] or a
+  /// [Failure].
   final Map<String, Object> _testResults = <String, Object>{};
 
   final DevtoolsServiceExtensions _serviceExtensions;
-
-  // TODO: Remove once https://github.com/flutter/flutter/pull/108430 is available on the stable channel
-  @override
-  TestBindingEventSource get pointerEventSource => TestBindingEventSource.test;
 
   @override
   void initInstances() {
@@ -178,6 +182,15 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
   }
 
   @override
+  ViewConfiguration createViewConfigurationFor(RenderView renderView) {
+    final view = renderView.flutterView;
+    return TestViewConfiguration.fromView(
+      size: view.physicalSize / view.devicePixelRatio,
+      view: view,
+    );
+  }
+
+  @override
   Widget wrapWithDefaultView(Widget rootWidget) {
     assert(
       (_currentDartTest != null) != (constants.hotRestartEnabled),
@@ -193,7 +206,8 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
           textDirection: TextDirection.ltr,
           children: [
             RepaintBoundary(child: rootWidget),
-            // Prevents crashes when Android activity is resumed (see https://github.com/leancodepl/patrol/issues/901)
+            // Prevents crashes when Android activity is resumed (see
+            // https://github.com/leancodepl/patrol/issues/901)
             ExcludeSemantics(
               child: Padding(
                 padding: EdgeInsets.only(
@@ -213,5 +227,13 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
         ),
       );
     }
+  }
+
+  @override
+  void reportExceptionNoticed(FlutterErrorDetails exception) {
+    // This override is copied from IntegrationTestWidgetsFlutterBinding. It may
+    // be not needed.
+    //
+    // See: https://github.com/flutter/flutter/issues/81534
   }
 }
