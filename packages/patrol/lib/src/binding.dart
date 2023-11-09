@@ -1,8 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:integration_test/common.dart';
 import 'package:patrol/patrol.dart';
 import 'package:patrol/src/devtools_service_extensions/devtools_service_extensions.dart';
 // ignore: implementation_imports, depend_on_referenced_packages
@@ -235,5 +236,38 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
     // be not needed.
     //
     // See: https://github.com/flutter/flutter/issues/81534
+  }
+}
+
+/// Representing a failure includes the method name and the failure details.
+class Failure {
+  /// Constructor requiring all fields during initialization.
+  Failure(this.methodName, this.details);
+
+  /// The name of the test method which failed.
+  final String methodName;
+
+  /// The details of the failure such as stack trace.
+  final String? details;
+
+  /// Serializes the object to JSON.
+  String toJson() {
+    return json.encode(<String, String?>{
+      'methodName': methodName,
+      'details': details,
+    });
+  }
+
+  @override
+  String toString() => toJson();
+
+  /// Decode a JSON string to create a Failure object.
+  // ignore: prefer_constructors_over_static_methods
+  static Failure fromJsonString(String jsonString) {
+    final failure = json.decode(jsonString) as Map<String, dynamic>;
+    return Failure(
+      failure['methodName'] as String,
+      failure['details'] as String?,
+    );
   }
 }
