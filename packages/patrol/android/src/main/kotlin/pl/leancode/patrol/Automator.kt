@@ -58,7 +58,7 @@ class Automator private constructor() {
             uiDevice = UiDevice.getInstance(instrumentation)
         }
         if (!this::uiAutomation.isInitialized) {
-            uiAutomation = instrumentation.uiAutomation;
+            uiAutomation = instrumentation.uiAutomation
         }
     }
 
