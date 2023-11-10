@@ -183,8 +183,9 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
   }
 
   @override
-  ViewConfiguration createViewConfigurationFor(RenderView renderView) {
-    final view = renderView.flutterView;
+  ViewConfiguration createViewConfiguration() {
+    final view = platformDispatcher.implicitView!;
+
     return TestViewConfiguration.fromView(
       size: view.physicalSize / view.devicePixelRatio,
       view: view,
