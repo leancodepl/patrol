@@ -16,7 +16,6 @@ class PatrolIntegrationTester extends finders.PatrolTester {
   ///
   final NativeAutomator nativeAutomator;
 
-  /// Shorthand for [nativeAutomator]. Throws if [nativeAutomator] is null,
-  /// which is the case if it wasn't initialized.
+  /// Shorthand for [nativeAutomator].
   NativeAutomator get native => nativeAutomator;
 }
