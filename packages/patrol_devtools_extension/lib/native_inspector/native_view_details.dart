@@ -102,13 +102,13 @@ class _NodeDetails extends HookWidget {
 
     final view = node.nativeView;
     final rows = [
-      _KeyValueItem('applicationPackage:', view.applicationPackage),
+      _KeyValueItem('pkg:', view.applicationPackage),
       _KeyValueItem('childCount:', view.childCount),
       _KeyValueItem('className:', view.className),
       _KeyValueItem('contentDescription:', view.contentDescription),
       _KeyValueItem('enabled:', view.enabled),
       _KeyValueItem('focused:', view.focused),
-      _KeyValueItem('resourceName:', view.resourceName),
+      _KeyValueItem('resourceId:', view.resourceName),
       _KeyValueItem('text:', view.text),
     ];
 
