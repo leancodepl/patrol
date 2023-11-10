@@ -32,7 +32,7 @@ void main() {
   });
 }
 
-Future<void> _testBody(PatrolTester $) async {
+Future<void> _testBody(PatrolIntegrationTester $) async {
   await createApp($);
 
   final testName = global_state.currentTestFullName;
