@@ -1,12 +1,5 @@
 include: package:leancode_lint/analysis_options_package.yaml
 
 analyzer:
-  errors:
-    deprecated_member_use: ignore # TODO: Remove after deprections are fixed
   exclude:
-    - lib/**/*.pb.dart
-    - lib/**/*.pbenum.dart
-    - lib/**/*.pbjson.dart
-    - lib/**/*.pbserver.dart
-    - lib/**/*.pbgrpc.dart
     - lib/**/*.g.dart

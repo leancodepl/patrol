@@ -210,18 +210,23 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
             // Prevents crashes when Android activity is resumed (see
             // https://github.com/leancodepl/patrol/issues/901)
             ExcludeSemantics(
-              child: Padding(
-                padding: EdgeInsets.only(
-                  top: MediaQueryData.fromWindow(window).padding.top + 4,
-                  left: 4,
-                ),
-                child: IgnorePointer(
-                  child: Text(
-                    _currentDartTest!,
-                    textDirection: TextDirection.ltr,
-                    style: const TextStyle(color: Colors.red),
-                  ),
-                ),
+              child: Builder(
+                builder: (context) {
+                  final view = View.of(context);
+                  return Padding(
+                    padding: EdgeInsets.only(
+                      top: MediaQueryData.fromView(view).padding.top + 4,
+                      left: 4,
+                    ),
+                    child: IgnorePointer(
+                      child: Text(
+                        _currentDartTest!,
+                        textDirection: TextDirection.ltr,
+                        style: const TextStyle(color: Colors.red),
+                      ),
+                    ),
+                  );
+                },
               ),
             ),
           ],
