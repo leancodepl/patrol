@@ -132,7 +132,7 @@ Finder createFinder(dynamic matching) {
 ///
 /// This is decorator around [Finder] that extends it with Patrol features, but
 /// also preserves Finder's behavior.
-class PatrolFinder extends MatchFinder {
+class PatrolFinder implements MatchFinder {
   /// Creates a new [PatrolFinder] with the given [finder] and [tester].
   ///
   /// Usually, you won't use this constructor directly. Instead, you'll use the
@@ -449,12 +449,12 @@ class PatrolFinder extends MatchFinder {
   FinderResult<Element> evaluate() => finder.evaluate();
 
   @override
-  bool tryEvaluate() => finder.tryEvaluate();
+  Iterable<Element> findInCandidates(Iterable<Element> candidates) {
+    return finder.findInCandidates(candidates);
+  }
 
   @override
-  Iterable<Element> apply(Iterable<Element> candidates) {
-    return finder.apply(candidates);
-  }
+  bool tryEvaluate() => finder.tryEvaluate();
 
   @override
   PatrolFinder get first {
@@ -486,9 +486,6 @@ class PatrolFinder extends MatchFinder {
   }
 
   @override
-  bool precache() => finder.precache();
-
-  @override
   FinderResult<Element> get found => finder.found;
 
   @override
@@ -500,12 +497,35 @@ class PatrolFinder extends MatchFinder {
   Iterable<Element> get allCandidates => finder.allCandidates;
 
   @override
-  String get description => finder.description;
-
-  @override
   String toString({bool describeSelf = false}) {
     return finder.toString(describeSelf: describeSelf);
   }
+
+  @override
+  bool get hasFound => finder.hasFound;
+
+  @override
+  void reset() => finder.reset();
+
+  @override
+  void runCached(VoidCallback run) => finder.runCached(run);
+
+  @override
+  bool get skipOffstage => finder.skipOffstage;
+
+  @override
+  Iterable<Element> apply(Iterable<Element> candidates) {
+    // ignore: deprecated_member_use
+    return finder.apply(candidates);
+  }
+
+  @override
+  // ignore: deprecated_member_use
+  String get description => finder.description;
+
+  @override
+  // ignore: deprecated_member_use
+  bool precache() => finder.precache();
 }
 
 /// Useful methods that make chained finders more readable.
