@@ -24,17 +24,11 @@ test_linux_task:
     echo "y" | fvm global $FLUTTER_VERSION
     fvm doctor
     flutter --version
-    flutter precache
-  generate_gradlew_script: |
-    cd packages/patrol/example
-    flutter build apk --target lib/main.dart --debug --flavor=does-not-exist &
-    start=$SECONDS
-    until [ -e "android/gradlew" ] || [ $(($SECONDS - start)) -ge 120 ]; do sleep 2; done
-    if [ ! -e "android/gradlew" ]; then
-        echo "android/gradlew was not generated within the 2 minutes timeout"
-        exit 1
-    fi
-    kill $!
+    flutter precache --android
+    flutter build apk --config-only
+  melos_bootstrap_script: |
+    dart pub global activate melos
+    melos bootstrap
   setup_patrol_cli_script:
     - dart pub global activate --source path packages/patrol_cli && patrol
   setup_emulator_script: |
@@ -82,7 +76,10 @@ test_macos_task:
     echo "y" | fvm global $FLUTTER_VERSION
     fvm doctor
     flutter --version
-    flutter precache
+    flutter precache --ios
+  melos_bootstrap_script: |
+    dart pub global activate melos
+    melos bootstrap
   setup_patrol_cli_script:
     - dart pub global activate --source path packages/patrol_cli && patrol
   setup_simulator_script: |
