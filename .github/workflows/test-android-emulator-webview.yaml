@@ -54,7 +54,7 @@ jobs:
         run: dart pub global activate --source path . && patrol
 
       - name: Generate Gradle wrapper
-        run: flutter build apk --debug --flavor=does-not-exist || true
+        run: flutter build apk --config-only
 
       - name: Install ew-cli
         run: |

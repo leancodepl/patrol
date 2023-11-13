@@ -40,7 +40,7 @@ jobs:
 
       - name: Generate Gradle wrapper
         working-directory: packages/patrol/example
-        run: flutter build apk --debug --flavor=does-not-exist || true
+        run: flutter build apk --config-only
 
       - name: ktlint check
         run: .\gradlew.bat :patrol:ktlintCheck
@@ -81,7 +81,7 @@ jobs:
 
       - name: Generate Gradle wrapper
         working-directory: packages/patrol/example
-        run: flutter build apk --debug --flavor=does-not-exist || true
+        run: flutter build apk --config-only
 
       - name: Run unit tests
         if: success() || failure()
