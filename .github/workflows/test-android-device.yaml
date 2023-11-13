@@ -59,7 +59,7 @@ jobs:
           channel: ${{ matrix.flutter-channel }}
 
       - name: Preload Flutter artifacts
-        run: flutter precache
+        run: flutter precache --android
 
       - name: Set up Patrol CLI
         working-directory: packages/patrol_cli

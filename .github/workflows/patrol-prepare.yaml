@@ -26,17 +26,20 @@ jobs:
       - name: Clone repository
         uses: actions/checkout@v3
 
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 17
+
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ matrix.flutter-version }}
           channel: ${{ matrix.flutter-channel }}
 
-      - name: Set up Java
-        uses: actions/setup-java@v3
-        with:
-          distribution: temurin
-          java-version: 17
+      - name: Preload Flutter artifacts
+        run: flutter precache --android
 
       - name: Generate Gradle wrapper
         working-directory: packages/patrol/example
@@ -73,11 +76,20 @@ jobs:
       - name: Clone repository
         uses: actions/checkout@v3
 
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 17
+
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ matrix.flutter-version }}
           channel: ${{ matrix.flutter-channel }}
+
+      - name: Preload Flutter artifacts
+        run: flutter precache --android
 
       - name: Generate Gradle wrapper
         working-directory: packages/patrol/example
@@ -146,6 +158,9 @@ jobs:
         with:
           flutter-version: ${{ matrix.flutter-version }}
           channel: ${{ matrix.flutter-channel }}
+
+      - name: Preload Flutter artifacts
+        run: flutter precache --ios
 
       - name: Generate iOS build files
         working-directory: packages/patrol/example
