@@ -46,6 +46,6 @@ jobs:
         if: ${{ (success() || failure()) && (contains('3.10.x', matrix.flutter-version) || contains('3.13.x', matrix.flutter-version)) }}
         run: dart format --set-exit-if-changed .
 
-      - name: flutter pub publish --dry-run
+      - name: Build extension
         if: success() || failure()
-        run: flutter pub publish --dry-run
+        run: dart run devtools_extensions build_and_copy --source . --dest ./build/devtool_extension
