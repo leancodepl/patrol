@@ -214,7 +214,7 @@ jobs:
         run: flutter analyze
 
       - name: dart format
-        if: ${{ (success() || failure()) && (contains('3.10.x', matrix.flutter-version) || contains('3.13.x', matrix.flutter-version)) }}
+        if: success() || failure()
         run: dart format --set-exit-if-changed .
 
       - name: flutter pub publish --dry-run
