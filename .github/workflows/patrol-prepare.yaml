@@ -196,6 +196,12 @@ jobs:
           flutter-version: ${{ matrix.flutter-version }}
           channel: ${{ matrix.flutter-channel }}
 
+      - name: Set up Melos
+        run: dart pub global activate melos
+
+      - name: Activate Melos workspace
+        run: cd ../.. && melos bootstrap
+
       - name: flutter pub get
         run: flutter pub get
 
