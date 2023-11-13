@@ -121,7 +121,7 @@ why it has "`try`" in it's name.
 When to use this new pumping method? Let us picture a scenario, in which we have
 to deal with some animations. Let's say, that your app has some endless
 animations, e.g. on a homescreen, to keep user's attention. You'd like to wait
-for some things to happen, but using `pumoAndSettle`, you'll keep getting an
+for some things to happen, but using `pumpAndSettle`, you'll keep getting an
 exception, because after some time, defined by `timeout`, there will be still
 new frames to render. On the other hand, you still want to pump frames for some
 time - if you didn't, the screen you want to interact with might not be rendered
