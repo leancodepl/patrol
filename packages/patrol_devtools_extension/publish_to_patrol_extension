@@ -5,5 +5,7 @@ cd "$(dirname "$0")" || exit
 
 out="../patrol/extension/devtools"
 
+mkdir -p "$out/build"
+
 flutter pub get
 dart run devtools_extensions build_and_copy --source="." --dest="$out"
