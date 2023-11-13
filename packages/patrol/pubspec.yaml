@@ -19,8 +19,6 @@ dependencies:
   flutter_test:
     sdk: flutter
   http: '>=0.13.5 <2.0.0'
-  integration_test:
-    sdk: flutter
   json_annotation: ^4.6.0
   meta: ^1.7.0
   path: ^1.8.2

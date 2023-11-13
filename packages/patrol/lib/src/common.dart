@@ -2,7 +2,6 @@ import 'dart:io' as io;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:integration_test/integration_test.dart';
 import 'package:meta/meta.dart';
 import 'package:patrol/src/binding.dart';
 import 'package:patrol/src/global_state.dart' as global_state;
@@ -37,9 +36,6 @@ typedef PatrolTesterCallback = Future<void> Function(PatrolIntegrationTester $);
 ///    },
 /// );
 /// ```
-///
-/// [bindingType] specifies the binding to use. [bindingType] is ignored if
-/// [nativeAutomation] is false.
 @isTest
 void patrolTest(
   String description,
@@ -52,7 +48,6 @@ void patrolTest(
   finders.PatrolTesterConfig config = const finders.PatrolTesterConfig(),
   NativeAutomatorConfig nativeAutomatorConfig = const NativeAutomatorConfig(),
   bool nativeAutomation = false,
-  BindingType bindingType = BindingType.patrol,
   LiveTestWidgetsFlutterBindingFramePolicy framePolicy =
       LiveTestWidgetsFlutterBindingFramePolicy.fadePointers,
 }) {
@@ -72,21 +67,9 @@ void patrolTest(
   }
 
   if (nativeAutomation) {
-    switch (bindingType) {
-      case BindingType.patrol:
-        automator = NativeAutomator(config: nativeAutomatorConfig);
-
-        patrolBinding = PatrolBinding.ensureInitialized(nativeAutomatorConfig);
-        patrolBinding.framePolicy = framePolicy;
-        break;
-      case BindingType.integrationTest:
-        IntegrationTestWidgetsFlutterBinding.ensureInitialized().framePolicy =
-            framePolicy;
-
-        break;
-      case BindingType.none:
-        break;
-    }
+    automator = NativeAutomator(config: nativeAutomatorConfig);
+    patrolBinding = PatrolBinding.ensureInitialized(nativeAutomatorConfig)
+      ..framePolicy = framePolicy;
   }
 
   testWidgets(
