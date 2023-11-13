@@ -148,6 +148,8 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
 
   /// Temporary workaround for DevTools extension changing this value and not
   /// resetting it.
+  /// 
+  /// See https://github.com/flutter/devtools/issues/6719
   TargetPlatform? workaroundDebugDefaultTargetPlatformOverride;
 
   @override
