@@ -395,27 +395,27 @@
         return views
       }
     }
-      
+
     func getUITreeRoots(installedApps: [String]) throws -> [NativeView] {
       try runAction("getting ui tree roots") {
-          let foregroundApp = self.getForegroundApp(installedApps: installedApps)
-          let snapshot = try foregroundApp.snapshot()
-          return [NativeView.fromXCUIElementSnapshot(snapshot, foregroundApp.identifier)]
+        let foregroundApp = self.getForegroundApp(installedApps: installedApps)
+        let snapshot = try foregroundApp.snapshot()
+        return [NativeView.fromXCUIElementSnapshot(snapshot, foregroundApp.identifier)]
       }
     }
-      
+
     private func getForegroundApp(installedApps: [String]) -> XCUIApplication {
       let app = XCUIApplication()
       if app.state == .runningForeground {
-          return app
+        return app
       } else {
-          for bundleIdentifier in installedApps {
-              let app = XCUIApplication(bundleIdentifier: bundleIdentifier)
-              if app.state == .runningForeground {
-                  return app
-              }
+        for bundleIdentifier in installedApps {
+          let app = XCUIApplication(bundleIdentifier: bundleIdentifier)
+          if app.state == .runningForeground {
+            return app
           }
-          return self.springboard
+        }
+        return self.springboard
       }
     }
 
@@ -849,12 +849,14 @@
           return NativeView.fromXCUIElement(child, bundleId)
         })
     }
-  
-    static func fromXCUIElementSnapshot(_ xcuielement: XCUIElementSnapshot, _ bundleId: String) -> NativeView {
+
+    static func fromXCUIElementSnapshot(_ xcuielement: XCUIElementSnapshot, _ bundleId: String)
+      -> NativeView
+    {
       return NativeView(
         className: getElementTypeName(elementType: xcuielement.elementType),
         text: xcuielement.label,
-        contentDescription: "", // TODO: Separate request
+        contentDescription: "",  // TODO: Separate request
         focused: xcuielement.hasFocus,
         enabled: xcuielement.isEnabled,
         resourceName: xcuielement.identifier,
@@ -863,6 +865,6 @@
           return NativeView.fromXCUIElementSnapshot(child, bundleId)
         })
     }
-}
+  }
 
 #endif

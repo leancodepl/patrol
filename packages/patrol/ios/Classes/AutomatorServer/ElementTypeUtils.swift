@@ -1,9 +1,9 @@
 #if PATROL_ENABLED
 
-import Foundation
-import XCTest
+  import Foundation
+  import XCTest
 
-private let elementTypeNames = [
+  private let elementTypeNames = [
     XCUIElement.ElementType.any: "any",
     XCUIElement.ElementType.other: "other",
     XCUIElement.ElementType.application: "application",
@@ -86,12 +86,11 @@ private let elementTypeNames = [
     XCUIElement.ElementType.stepper: "stepper",
     XCUIElement.ElementType.tab: "tab",
     XCUIElement.ElementType.touchBar: "touchBar",
-    XCUIElement.ElementType.statusItem: "statusItem"
-]
-   
+    XCUIElement.ElementType.statusItem: "statusItem",
+  ]
 
-func getElementTypeName(elementType: XCUIElement.ElementType) -> String? {
+  func getElementTypeName(elementType: XCUIElement.ElementType) -> String? {
     return elementTypeNames[elementType]
-}
+  }
 
 #endif
