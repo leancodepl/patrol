@@ -19,8 +19,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ['3.17.0-5.0.pre.26']
-        flutter-channel: ['master']
+        flutter-version: ['3.16.0-0.5.pre']
+        flutter-channel: ['beta']
         device_model: ['iphone14pro']
         os_version: ['16.6']
         os: [iOS]

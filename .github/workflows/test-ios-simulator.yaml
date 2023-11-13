@@ -20,8 +20,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ['3.17.0-5.0.pre.26']
-        flutter-channel: ['master']
+        flutter-version: ['3.16.0-0.5.pre']
+        flutter-channel: ['beta']
         device_model: [iPhone 8, iPhone 14, iPad (9th generation)]
         os: [iOS]
         os_version: ['16.2']

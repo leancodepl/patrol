@@ -18,8 +18,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ['3.17.0-5.0.pre.26']
-        flutter-channel: ['master']
+        flutter-version: ['3.16.0-0.5.pre']
+        flutter-channel: ['beta']
 
     defaults:
       run:
