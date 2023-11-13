@@ -2,7 +2,7 @@
 
   import Foundation
 
-final class AutomatorServer: NativeAutomatorServer {
+  final class AutomatorServer: NativeAutomatorServer {
     private let automator: Automator
 
     private let onAppReady: (Bool) -> Void
@@ -70,11 +70,11 @@ final class AutomatorServer: NativeAutomatorServer {
         return GetNativeViewsResponse(nativeViews: nativeViews)
       }
     }
-    
-    func getNativeUITree(request: GetNativeUITreeRequest) async throws -> GetNativeUITreeRespone {
-        let roots = try await automator.getUITreeRoots(installedApps: request.iosInstalledApps ?? [])
 
-        return GetNativeUITreeRespone(roots: roots)
+    func getNativeUITree(request: GetNativeUITreeRequest) throws -> GetNativeUITreeRespone {
+      let roots = try automator.getUITreeRoots(installedApps: request.iosInstalledApps ?? [])
+
+      return GetNativeUITreeRespone(roots: roots)
     }
 
     func tap(request: TapRequest) throws {
