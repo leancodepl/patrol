@@ -78,6 +78,10 @@ class NativeAutomatorConfig {
     this.logger = _defaultPrintLogger,
   });
 
+  /// Apps installed on the iOS simulator.
+  ///
+  /// This is needed for purpose of native view inspection in the Patrol
+  /// DevTools extension.
   final String iosInstalledApps;
 
   /// Host on which Patrol server instrumentation is running.
