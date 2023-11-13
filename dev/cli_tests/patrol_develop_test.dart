@@ -58,6 +58,7 @@ void main(List<String> args) async {
     [
       'develop',
       ...['--target', 'integration_test/example_test.dart'],
+      ...['--no-open-devtools'],
       ...args,
     ],
     runInShell: true,
