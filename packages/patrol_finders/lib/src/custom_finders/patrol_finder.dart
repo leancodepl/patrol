@@ -444,6 +444,9 @@ class PatrolFinder extends MatchFinder {
   /// Returns true if this finder finds at least 1 widget.
   bool get exists => evaluate().isNotEmpty;
 
+  @override
+  String describeMatch(Plurality plurality) => finder.describeMatch(plurality);
+
   /// Returns true if this finder finds at least 1 visible widget.
   bool get visible {
     final isVisible = hitTestable().evaluate().isNotEmpty;
@@ -459,6 +462,9 @@ class PatrolFinder extends MatchFinder {
 
   @override
   FinderResult<Element> evaluate() => finder.evaluate();
+
+  @override
+  bool tryEvaluate() => finder.tryEvaluate();
 
   @override
   Iterable<Element> apply(Iterable<Element> candidates) {
@@ -496,6 +502,9 @@ class PatrolFinder extends MatchFinder {
 
   @override
   bool precache() => finder.precache();
+
+  @override
+  FinderResult<Element> get found => finder.found;
 
   @override
   PatrolFinder hitTestable({Alignment at = Alignment.center}) {
