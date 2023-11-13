@@ -48,4 +48,4 @@ jobs:
 
       - name: Build extension
         if: success() || failure()
-        run: dart run devtools_extensions build_and_copy --source . --dest ./build/devtool_extension
+        run: ./publish_to_patrol_extension
