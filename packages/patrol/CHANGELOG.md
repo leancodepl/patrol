@@ -1,3 +1,16 @@
+## 3.0.0
+
+Give a warm welcome to our DevTools Extension!
+
+- Bump minimum supported Flutter version to 3.16
+- **BREAKING:**
+  - Remove `bindingType` parameter from `patrolTest()` function. Now only
+    `PatrolBinding` is used and it's automatically initialized (#1882)
+  - Remove `nativeAutomation` parameter from `patrolTest()` function. Now it's
+    enabled by default (#1882)
+
+- Remove dependency on `integration_test` plugin (#1882)
+
 ## 2.3.2
 
 - Add `PatrolFinder.longPress()` (#1825)
