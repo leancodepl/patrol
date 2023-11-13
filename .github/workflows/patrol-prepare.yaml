@@ -15,6 +15,8 @@ jobs:
       fail-fast: false
       matrix:
         os: [windows-latest]
+        flutter-version: ['3.17.0-5.0.pre.26']
+        flutter-channel: ['master']
 
     defaults:
       run:
@@ -27,8 +29,8 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.17.0-5.0.pre.20'
-          channel: master
+          flutter-version: ${{ matrix.flutter-version }}
+          channel: ${{ matrix.flutter-channel }}
 
       - name: Set up Java
         uses: actions/setup-java@v3
@@ -60,6 +62,8 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
+        flutter-version: ['3.17.0-5.0.pre.26']
+        flutter-channel: ['master']
 
     defaults:
       run:
@@ -72,7 +76,8 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.13.x'
+          flutter-version: ${{ matrix.flutter-version }}
+          channel: ${{ matrix.flutter-channel }}
 
       - name: Generate Gradle wrapper
         working-directory: packages/patrol/example
@@ -104,6 +109,8 @@ jobs:
       fail-fast: false
       matrix:
         os: [macos-latest]
+        flutter-version: ['3.17.0-5.0.pre.26']
+        flutter-channel: ['master']
 
     defaults:
       run:
@@ -137,7 +144,8 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.13.x'
+          flutter-version: ${{ matrix.flutter-version }}
+          channel: ${{ matrix.flutter-channel }}
 
       - name: Generate iOS build files
         working-directory: packages/patrol/example
@@ -171,7 +179,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ['3.3.x', '3.7.x', '3.10.x', '3.13.x']
+        flutter-version: ['3.17.0-5.0.pre.26']
+        flutter-channel: ['master']
 
     defaults:
       run:
@@ -185,6 +194,13 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ matrix.flutter-version }}
+          channel: ${{ matrix.flutter-channel }}
+
+      - name: Set up Melos
+        run: dart pub global activate melos
+
+      - name: Activate Melos workspace
+        run: cd ../.. && melos bootstrap
 
       - name: flutter pub get
         run: flutter pub get
