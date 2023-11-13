@@ -25,7 +25,7 @@ test_linux_task:
     fvm doctor
     flutter --version
     flutter precache --android
-    flutter build apk --config-only
+    cd packages/patrol/example && flutter build apk --config-only
   melos_bootstrap_script: |
     dart pub global activate melos
     melos bootstrap

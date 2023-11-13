@@ -8,13 +8,13 @@ on:
 
 jobs:
   main:
-    name: Dart ${{ matrix.sdk }}
+    name: Dart ${{ matrix.dart-version }}
     runs-on: ubuntu-latest
 
     strategy:
       fail-fast: false
       matrix:
-        sdk: ['3.1']
+        dart-version: ['3.1']
 
     defaults:
       run:
