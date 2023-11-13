@@ -396,8 +396,8 @@
       }
     }
       
-    func getUITreeRoots(installedApps: [String]) async throws -> [NativeView] {
-      try await runAction("getting ui tree roots") {
+    func getUITreeRoots(installedApps: [String]) throws -> [NativeView] {
+      try runAction("getting ui tree roots") {
           let foregroundApp = self.getForegroundApp(installedApps: installedApps)
           let snapshot = try foregroundApp.snapshot()
           return [NativeView.fromXCUIElementSnapshot(snapshot, foregroundApp.identifier)]
