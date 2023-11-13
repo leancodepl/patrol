@@ -146,6 +146,10 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
 
   final DevtoolsServiceExtensions _serviceExtensions;
 
+  /// Temporary workaround for DevTools extension changing this value and not
+  /// resetting it.
+  TargetPlatform? workaroundDebugDefaultTargetPlatformOverride;
+
   @override
   void initInstances() {
     super.initInstances();

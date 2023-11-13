@@ -55,8 +55,9 @@ void patrolTest(
   PatrolBinding? patrolBinding;
 
   automator = NativeAutomator(config: nativeAutomatorConfig);
-  patrolBinding = PatrolBinding.ensureInitialized(nativeAutomatorConfig)
-    ..framePolicy = framePolicy;
+  final binding =
+      patrolBinding = PatrolBinding.ensureInitialized(nativeAutomatorConfig)
+        ..framePolicy = framePolicy;
 
   testWidgets(
     description,
@@ -111,6 +112,9 @@ void patrolTest(
       // ignore: prefer_const_declarations
       final waitSeconds = const int.fromEnvironment('PATROL_WAIT');
       final waitDuration = Duration(seconds: waitSeconds);
+
+      debugDefaultTargetPlatformOverride =
+          binding.workaroundDebugDefaultTargetPlatformOverride;
 
       if (waitDuration > Duration.zero) {
         final stopwatch = Stopwatch()..start();
