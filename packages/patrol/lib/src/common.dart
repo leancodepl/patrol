@@ -47,30 +47,16 @@ void patrolTest(
   dynamic tags,
   finders.PatrolTesterConfig config = const finders.PatrolTesterConfig(),
   NativeAutomatorConfig nativeAutomatorConfig = const NativeAutomatorConfig(),
-  bool nativeAutomation = false,
   LiveTestWidgetsFlutterBindingFramePolicy framePolicy =
       LiveTestWidgetsFlutterBindingFramePolicy.fadePointers,
 }) {
-  NativeAutomator? automator;
+  NativeAutomator automator;
 
   PatrolBinding? patrolBinding;
 
-  if (!nativeAutomation) {
-    debugPrint('''
-╔════════════════════════════════════════════════════════════════════════════════════╗
-║ In next major release, patrolTest method will be intended for UI tests only        ║
-║ If you want to use Patrol in your widget tests, use patrol_finders package.        ║
-║                                                                                    ║
-║ For more information, see https://patrol.leancode.co/patrol-finders-release        ║
-╚════════════════════════════════════════════════════════════════════════════════════╝
-''');
-  }
-
-  if (nativeAutomation) {
-    automator = NativeAutomator(config: nativeAutomatorConfig);
-    patrolBinding = PatrolBinding.ensureInitialized(nativeAutomatorConfig)
-      ..framePolicy = framePolicy;
-  }
+  automator = NativeAutomator(config: nativeAutomatorConfig);
+  patrolBinding = PatrolBinding.ensureInitialized(nativeAutomatorConfig)
+    ..framePolicy = framePolicy;
 
   testWidgets(
     description,
@@ -113,7 +99,7 @@ void patrolTest(
           // See https://github.com/leancodepl/patrol/issues/1474
         };
       }
-      await automator?.configure();
+      await automator.configure();
 
       final patrolTester = PatrolIntegrationTester(
         tester: widgetTester,

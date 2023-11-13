@@ -1039,13 +1039,12 @@ void main() {
         expect($('count: 1'), findsOneWidget);
       });
 
-      patrolWidgetTest('is not used by default', ($) async {
+      patrolWidgetTest('is used by default', ($) async {
         await $.pumpWidget(appWithInfiniteAnimation);
 
-        await expectLater(
-          () => $(ElevatedButton).tap(),
-          throwsFlutterError,
-        );
+        await $('count: 0').waitUntilVisible();
+        await $(ElevatedButton).tap();
+        await $('count: 1').waitUntilVisible();
       });
     });
   });

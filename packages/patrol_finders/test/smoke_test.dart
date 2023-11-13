@@ -100,7 +100,7 @@ void main() {
         isA<PatrolFinderException>().having(
           (error) => error.message,
           'message',
-          "Finder \"zero widgets with key [<'someWrongKey'>] (ignoring offstage widgets)\" found no widgets",
+          "Finder \"Found 0 widgets with key [<'someWrongKey'>]: []\" found no widgets",
         ),
       ),
     );
