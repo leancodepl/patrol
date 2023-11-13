@@ -5,14 +5,14 @@ repository: https://github.com/leancodepl/patrol
 issue_tracker: https://github.com/leancodepl/patrol/issues
 
 environment:
-  sdk: '>=2.18.0 <4.0.0'
+  sdk: '>=3.1.0 <4.0.0'
 
 dependencies:
   mocktail: ^0.3.0
   path: ^1.8.3
 
 dev_dependencies:
-  leancode_lint: ^3.0.0
+  leancode_lint: ^7.0.0+1
   test: ^1.22.2
 
 executables:

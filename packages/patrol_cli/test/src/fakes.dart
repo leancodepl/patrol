@@ -1,9 +1,5 @@
-import 'dart:io' as io;
-
 import 'package:mocktail/mocktail.dart';
 import 'package:platform/platform.dart';
-
-class FakeProcessResult extends Fake implements io.ProcessResult {}
 
 void setUpFakes() {
   registerFallbackValue(Uri());
