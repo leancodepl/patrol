@@ -217,5 +217,5 @@ class FakeProcessManager extends Fake implements ProcessManager {}
 
 class FakeLogger extends Fake implements Logger {
   @override
-  void detail(String? message) {}
+  void detail(String? message, {String? Function(String?)? style}) {}
 }
