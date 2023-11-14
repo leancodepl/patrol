@@ -61,6 +61,12 @@ jobs:
       - name: Preload Flutter artifacts
         run: flutter precache --android
 
+      - name: Set up Melos and activate workspace
+        working-directory: .
+        run: |
+          dart pub global activate melos
+          melos bootstrap
+
       - name: Set up Patrol CLI
         working-directory: packages/patrol_cli
         run: dart pub global activate --source path . && patrol
