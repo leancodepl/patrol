@@ -213,10 +213,8 @@ class FlutterTool {
     switch (_platform.operatingSystem) {
       case Platform.macOS:
         process = await _processManager.start(['open', url]);
-        break;
       case Platform.windows:
         process = await _processManager.start(['start', url]);
-        break;
       case Platform.linux:
         process = await _processManager.start(['xdg-open', url]);
     }

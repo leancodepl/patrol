@@ -196,7 +196,6 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
         if (packageName != null) {
           action = () => _androidTestBackend.uninstall(packageName, device);
         }
-        break;
       case TargetPlatform.iOS:
         final bundleId = iosOpts.bundleId;
         if (bundleId != null) {
@@ -206,7 +205,6 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
                 device: device,
               );
         }
-        break;
     }
 
     try {
@@ -225,7 +223,6 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
     switch (device.targetPlatform) {
       case TargetPlatform.android:
         buildAction = () => _androidTestBackend.build(androidOpts);
-        break;
       case TargetPlatform.iOS:
         buildAction = () => _iosTestBackend.build(iosOpts);
     }
@@ -258,7 +255,6 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
         if (package != null && uninstall) {
           finalizer = () => _androidTestBackend.uninstall(package, device);
         }
-        break;
       case TargetPlatform.iOS:
         action = () async => _iosTestBackend.execute(iosOpts, device);
         final bundleId = iosOpts.bundleId;
@@ -269,7 +265,6 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
                 device: device,
               );
         }
-        break;
     }
 
     var allPassed = true;

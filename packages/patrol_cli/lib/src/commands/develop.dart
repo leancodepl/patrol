@@ -200,7 +200,6 @@ class DevelopCommand extends PatrolCommand {
     switch (device.targetPlatform) {
       case TargetPlatform.android:
         buildAction = () => _androidTestBackend.build(androidOpts);
-        break;
       case TargetPlatform.iOS:
         buildAction = () => _iosTestBackend.build(iosOpts);
     }
@@ -235,7 +234,6 @@ class DevelopCommand extends PatrolCommand {
         if (packageName != null) {
           action = () => _androidTestBackend.uninstall(packageName, device);
         }
-        break;
       case TargetPlatform.iOS:
         final bundleId = iosOpts.bundleId;
         if (bundleId != null) {
@@ -245,7 +243,6 @@ class DevelopCommand extends PatrolCommand {
                 device: device,
               );
         }
-        break;
     }
 
     try {
@@ -276,7 +273,6 @@ class DevelopCommand extends PatrolCommand {
         if (package != null && uninstall) {
           finalizer = () => _androidTestBackend.uninstall(package, device);
         }
-        break;
       case TargetPlatform.iOS:
         appId = iosOpts.bundleId;
         action = () async =>
