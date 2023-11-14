@@ -1,4 +1,4 @@
-## Unreleased
+## 3.0.0
 
 Give a warm welcome to the new **Patrol DevTools Extension**!
 
@@ -22,6 +22,8 @@ Other changes:
     its breaking changes.
 
 - Remove dependency on `integration_test` plugin (#1882)
+
+This version requires version 2.3.0 of `patrol_cli` package.
 
 ## 2.3.2
 
