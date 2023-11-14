@@ -1,9 +1,13 @@
+## 3.0.1
+
+- Fix extension code not being bundled by GitHub Actions workflow (#1902)
+
 ## 3.0.0
 
 Give a warm welcome to the new **Patrol DevTools Extension**!
 
 Patrol DevTools extension allows you to explore the native view hierarchy when
-developing tests with `patrol develop`. . Now you can easily see what Android /
+developing tests with `patrol develop`. Now you can easily see what Android /
 iOS views are currently visible and discover their properties so that they can
 be used in native selectors like `$.native.tap()`. You don’t have to use any
 external tools for that. This is just the beginning, and we plan to add more

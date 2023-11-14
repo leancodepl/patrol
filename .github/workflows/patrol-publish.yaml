@@ -43,6 +43,10 @@ jobs:
         working-directory: packages/patrol_devtools_extension
         run: ./publish_to_patrol_extension
 
+      - name: Verify that built DevTools extension is in the correct location
+        working-directory: packages/patrol
+        run: test ! -z "$(ls -lA extension/devtools/build)"
+
       - name: Publish to pub.dev
         id: pub_release
         uses: leancodepl/mobile-tools/.github/actions/pub-release@pub-release-v1
