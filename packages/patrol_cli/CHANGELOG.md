@@ -1,3 +1,7 @@
+## Unreleased
+
+- Bump dependencies, populate `topics` in pubspec (#1904)
+
 ## 2.3.0
 
 - Add support for Patrol 3.0 and its DevTools extension (#1829)
