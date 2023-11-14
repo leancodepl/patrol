@@ -63,7 +63,7 @@ test_macos_task:
     - 'package: patrol'
     - 'cirrusci'
   macos_instance:
-    image: ghcr.io/cirruslabs/macos-ventura-xcode:latest
+    image: ghcr.io/cirruslabs/macos-sonoma-xcode:latest
   env:
     PATH: $HOME/.pub-cache/bin:$HOME/fvm/default/bin:${PATH}
     FLUTTER_VERSION: '3.16.0-0.5.pre'
