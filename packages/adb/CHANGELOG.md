@@ -1,3 +1,10 @@
+## 0.3.0
+
+- Clean up (#1903)
+  - Bump minimum Dart SDK version to 3.1.0
+  - Remove `mocktail` from `dependecnies`
+  - Update `issue_tracker` and `repository` fields in pubspec
+
 ## 0.2.5
 
 - Throw an exception if `adb` executable is not present in $PATH (#1118)
