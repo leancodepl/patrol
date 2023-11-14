@@ -1,8 +1,10 @@
-## Unreleased
+## 2.3.0
 
 - Add support for Patrol 3.0 and its DevTools extension (#1829)
   - Automatically open DevTools when running `patrol develop`. This behavior can
     be disabled by passing `--no-open-devtools` flag.
+
+This version requires version 3.0.0 of `patrol` package.
 
 ## 2.2.2
 
