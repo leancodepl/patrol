@@ -18,6 +18,11 @@ jobs:
       id-token: write
       contents: write
 
+    strategy:
+      matrix:
+        flutter-version: ['3.16.0-0.5.pre']
+        flutter-channel: ['beta']
+
     steps:
       - name: Clone repository
         uses: actions/checkout@v4
@@ -31,7 +36,8 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: stable
+          flutter-version: ${{ matrix.flutter-version }}
+          channel: ${{ matrix.flutter-channel }}
 
       - name: Publish to pub.dev
         id: pub_release
