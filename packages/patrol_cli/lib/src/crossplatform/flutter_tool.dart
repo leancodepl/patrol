@@ -6,16 +6,19 @@ import 'package:meta/meta.dart';
 import 'package:path/path.dart' show basename;
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
+import 'package:platform/platform.dart';
 import 'package:process/process.dart';
 
 class FlutterTool {
   FlutterTool({
     required Stream<List<int>> stdin,
     required ProcessManager processManager,
+    required Platform platform,
     required DisposeScope parentDisposeScope,
     required Logger logger,
   })  : _stdin = stdin,
         _processManager = processManager,
+        _platform = platform,
         _disposeScope = DisposeScope(),
         _logger = logger {
     _disposeScope.disposedBy(parentDisposeScope);
@@ -23,6 +26,7 @@ class FlutterTool {
 
   final Stream<List<int>> _stdin;
   final ProcessManager _processManager;
+  final Platform _platform;
   final DisposeScope _disposeScope;
   final Logger _logger;
 
@@ -35,6 +39,7 @@ class FlutterTool {
     required String target,
     required String? appId,
     required Map<String, String> dartDefines,
+    required bool openDevtools,
   }) async {
     if (io.stdin.hasTerminal) {
       _enableInteractiveMode();
@@ -47,18 +52,24 @@ class FlutterTool {
         target: target,
         appId: appId,
         dartDefines: dartDefines,
+        openBrowser: openDevtools,
       ),
     ]);
   }
 
   /// Attaches to the running app. Returns a [Future] that completes when the
   /// connection is ready.
+  ///
+  /// If [openBrowser] is true, Dart DevTools (with Patrol extension page
+  /// selected) will be automatically opened in the browser once DevTools URL is
+  /// printed by Flutter CLI.
   @visibleForTesting
   Future<void> attach({
     required String deviceId,
     required String target,
     required String? appId,
     required Map<String, String> dartDefines,
+    required bool openBrowser,
   }) async {
     await _disposeScope.run((scope) async {
       final process = await _processManager.start(
@@ -111,6 +122,13 @@ class FlutterTool {
           }
           completer.complete();
         }
+
+        if (openBrowser &&
+            line.startsWith('The Flutter DevTools debugger and profiler')) {
+          final url = _getDevtoolsUrl(line);
+          unawaited(_openDevtoolsPage(url));
+        }
+
         _logger.detail('\t: $line');
       }).disposedBy(scope);
 
@@ -186,5 +204,29 @@ class FlutterTool {
     io.stdin.lineMode = false;
 
     _logger.detail('Interactive shell mode enabled.');
+  }
+
+  Future<void> _openDevtoolsPage(String url) async {
+    _logger.success('Patrol DevTools extension is available at $url');
+
+    io.Process? process;
+    switch (_platform.operatingSystem) {
+      case Platform.macOS:
+        process = await _processManager.start(['open', url]);
+        break;
+      case Platform.windows:
+        process = await _processManager.start(['start', url]);
+        break;
+      case Platform.linux:
+        process = await _processManager.start(['xdg-open', url]);
+    }
+
+    await process?.exitCode;
+  }
+
+  String _getDevtoolsUrl(String line) {
+    final startIndex = line.indexOf('http');
+    final url = line.substring(startIndex);
+    return url.replaceAllMapped('?uri=', (_) => '/patrol_ext?uri=');
   }
 }

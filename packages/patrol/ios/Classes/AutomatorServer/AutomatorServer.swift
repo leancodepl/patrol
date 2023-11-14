@@ -71,6 +71,12 @@
       }
     }
 
+    func getNativeUITree(request: GetNativeUITreeRequest) throws -> GetNativeUITreeRespone {
+      let roots = try automator.getUITreeRoots(installedApps: request.iosInstalledApps ?? [])
+
+      return GetNativeUITreeRespone(roots: roots)
+    }
+
     func tap(request: TapRequest) throws {
       return try runCatching {
         try automator.tap(

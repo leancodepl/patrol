@@ -15,6 +15,8 @@ jobs:
       fail-fast: false
       matrix:
         os: [windows-latest]
+        flutter-version: ['3.16.0-0.5.pre']
+        flutter-channel: ['beta']
 
     defaults:
       run:
@@ -22,12 +24,7 @@ jobs:
 
     steps:
       - name: Clone repository
-        uses: actions/checkout@v3
-
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.13.x'
+        uses: actions/checkout@v4
 
       - name: Set up Java
         uses: actions/setup-java@v3
@@ -35,9 +32,18 @@ jobs:
           distribution: temurin
           java-version: 17
 
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+          channel: ${{ matrix.flutter-channel }}
+
+      - name: Preload Flutter artifacts
+        run: flutter precache --android
+
       - name: Generate Gradle wrapper
         working-directory: packages/patrol/example
-        run: flutter build apk --debug --flavor=does-not-exist || true
+        run: flutter build apk --config-only
 
       - name: ktlint check
         run: .\gradlew.bat :patrol:ktlintCheck
@@ -59,6 +65,8 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
+        flutter-version: ['3.16.0-0.5.pre']
+        flutter-channel: ['beta']
 
     defaults:
       run:
@@ -66,16 +74,26 @@ jobs:
 
     steps:
       - name: Clone repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 17
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.13.x'
+          flutter-version: ${{ matrix.flutter-version }}
+          channel: ${{ matrix.flutter-channel }}
+
+      - name: Preload Flutter artifacts
+        run: flutter precache --android
 
       - name: Generate Gradle wrapper
         working-directory: packages/patrol/example
-        run: flutter build apk --debug --flavor=does-not-exist || true
+        run: flutter build apk --config-only
 
       - name: Run unit tests
         if: success() || failure()
@@ -103,6 +121,8 @@ jobs:
       fail-fast: false
       matrix:
         os: [macos-latest]
+        flutter-version: ['3.16.0-0.5.pre']
+        flutter-channel: ['beta']
 
     defaults:
       run:
@@ -110,7 +130,7 @@ jobs:
 
     steps:
       - name: Clone repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install tools
         run: |
@@ -136,7 +156,11 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.13.x'
+          flutter-version: ${{ matrix.flutter-version }}
+          channel: ${{ matrix.flutter-channel }}
+
+      - name: Preload Flutter artifacts
+        run: flutter precache --ios
 
       - name: Generate iOS build files
         working-directory: packages/patrol/example
@@ -170,7 +194,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ['3.3.x', '3.7.x', '3.10.x', '3.13.x']
+        flutter-version: ['3.16.0-0.5.pre']
+        flutter-channel: ['beta']
 
     defaults:
       run:
@@ -178,12 +203,19 @@ jobs:
 
     steps:
       - name: Clone repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ matrix.flutter-version }}
+          channel: ${{ matrix.flutter-channel }}
+
+      - name: Set up Melos and activate workspace
+        working-directory: .
+        run: |
+          dart pub global activate melos
+          melos bootstrap
 
       - name: flutter pub get
         run: flutter pub get
@@ -197,7 +229,7 @@ jobs:
         run: flutter analyze
 
       - name: dart format
-        if: ${{ (success() || failure()) && (contains('3.10.x', matrix.flutter-version) || contains('3.13.x', matrix.flutter-version)) }}
+        if: success() || failure()
         run: dart format --set-exit-if-changed .
 
       - name: flutter pub publish --dry-run

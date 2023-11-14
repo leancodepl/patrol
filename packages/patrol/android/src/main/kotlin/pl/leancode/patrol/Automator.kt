@@ -42,6 +42,7 @@ class Automator private constructor() {
     private lateinit var configurator: Configurator
     private lateinit var uiDevice: UiDevice
     private lateinit var targetContext: Context
+    private lateinit var uiAutomation: UiAutomation
 
     fun initialize() {
         if (!this::instrumentation.isInitialized) {
@@ -55,6 +56,9 @@ class Automator private constructor() {
         }
         if (!this::uiDevice.isInitialized) {
             uiDevice = UiDevice.getInstance(instrumentation)
+        }
+        if (!this::uiAutomation.isInitialized) {
+            uiAutomation = instrumentation.uiAutomation
         }
     }
 
@@ -144,6 +148,12 @@ class Automator private constructor() {
 
         val uiObjects2 = uiDevice.findObjects(selector)
         return uiObjects2.map { fromUiObject2(it) }
+    }
+
+    fun getNativeUITrees(): List<NativeView> {
+        Logger.d("getNativeUITrees()")
+
+        return getWindowTrees(uiDevice, uiAutomation)
     }
 
     fun tap(uiSelector: UiSelector, bySelector: BySelector, index: Int) {

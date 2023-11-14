@@ -11,7 +11,7 @@ test_linux_task:
     kvm: 'true'
   env:
     PATH: $HOME/.pub-cache/bin:$HOME/fvm/default/bin:$CIRRUS_WORKING_DIR/fvm:${PATH}
-    FLUTTER_VERSION: '3.13'
+    FLUTTER_VERSION: '3.16.0-0.5.pre'
     EMULATOR_API_LEVEL: '34'
     EMULATOR_ABI: google_apis_playstore;x86_64
     EMULATOR_IMAGE: system-images;android-${EMULATOR_API_LEVEL};${EMULATOR_ABI}
@@ -20,26 +20,15 @@ test_linux_task:
   set_up_fvm_script: |
     curl -LO https://github.com/fluttertools/fvm/releases/download/2.4.1/fvm-2.4.1-linux-x64.tar.gz
     tar -xf fvm-2.4.1-linux-x64.tar.gz
-  find_latest_matching_flutter_version_script: |
-    flutter_versions=$(fvm releases)
-    flutter_matching_versions=$(echo "$flutter_versions" | grep -v "pre" | grep -o " ${FLUTTER_VERSION}.[0-9]*")
-    latest_flutter_matching_version=$(echo "$flutter_matching_versions" | sort -rV | head -n 1)
-    echo "LATEST_MATCHING_FLUTTER_VERSION=$latest_flutter_matching_version" >> $CIRRUS_ENV
   setup_flutter_script: |
-    echo "y" | fvm global $LATEST_MATCHING_FLUTTER_VERSION
+    echo "y" | fvm global $FLUTTER_VERSION
     fvm doctor
     flutter --version
-    flutter precache
-  generate_gradlew_script: |
-    cd packages/patrol/example
-    flutter build apk --target lib/main.dart --debug --flavor=does-not-exist &
-    start=$SECONDS
-    until [ -e "android/gradlew" ] || [ $(($SECONDS - start)) -ge 120 ]; do sleep 2; done
-    if [ ! -e "android/gradlew" ]; then
-        echo "android/gradlew was not generated within the 2 minutes timeout"
-        exit 1
-    fi
-    kill $!
+    flutter precache --android
+    cd packages/patrol/example && flutter build apk --config-only
+  melos_bootstrap_script: |
+    dart pub global activate melos
+    melos bootstrap
   setup_patrol_cli_script:
     - dart pub global activate --source path packages/patrol_cli && patrol
   setup_emulator_script: |
@@ -74,25 +63,23 @@ test_macos_task:
     - 'package: patrol'
     - 'cirrusci'
   macos_instance:
-    image: ghcr.io/cirruslabs/macos-ventura-xcode:latest
+    image: ghcr.io/cirruslabs/macos-sonoma-xcode:latest
   env:
     PATH: $HOME/.pub-cache/bin:$HOME/fvm/default/bin:${PATH}
-    FLUTTER_VERSION: '3.13'
+    FLUTTER_VERSION: '3.16.0-0.5.pre'
   timeout_in: 30m
 
   set_up_fvm_script: |
     brew tap leoafarias/fvm
     brew install fvm
-  find_latest_matching_flutter_version_script: |
-    flutter_versions=$(fvm releases)
-    flutter_matching_versions=$(echo "$flutter_versions" | grep -v "pre" | grep -o " ${FLUTTER_VERSION}.[0-9]*")
-    latest_flutter_matching_version=$(echo "$flutter_matching_versions" | sort -rV | head -n 1)
-    echo "LATEST_MATCHING_FLUTTER_VERSION=$latest_flutter_matching_version" >> $CIRRUS_ENV
   setup_flutter_script: |
-    echo "y" | fvm global $LATEST_MATCHING_FLUTTER_VERSION
+    echo "y" | fvm global $FLUTTER_VERSION
     fvm doctor
     flutter --version
-    flutter precache
+    flutter precache --ios
+  melos_bootstrap_script: |
+    dart pub global activate melos
+    melos bootstrap
   setup_patrol_cli_script:
     - dart pub global activate --source path packages/patrol_cli && patrol
   setup_simulator_script: |

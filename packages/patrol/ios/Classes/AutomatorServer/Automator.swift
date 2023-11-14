@@ -1,5 +1,6 @@
 #if PATROL_ENABLED
   import XCTest
+  import os
 
   class Automator {
     private lazy var device: XCUIDevice = {
@@ -392,6 +393,29 @@
         }
 
         return views
+      }
+    }
+
+    func getUITreeRoots(installedApps: [String]) throws -> [NativeView] {
+      try runAction("getting ui tree roots") {
+        let foregroundApp = self.getForegroundApp(installedApps: installedApps)
+        let snapshot = try foregroundApp.snapshot()
+        return [NativeView.fromXCUIElementSnapshot(snapshot, foregroundApp.identifier)]
+      }
+    }
+
+    private func getForegroundApp(installedApps: [String]) -> XCUIApplication {
+      let app = XCUIApplication()
+      if app.state == .runningForeground {
+        return app
+      } else {
+        for bundleIdentifier in installedApps {
+          let app = XCUIApplication(bundleIdentifier: bundleIdentifier)
+          if app.state == .runningForeground {
+            return app
+          }
+        }
+        return self.springboard
       }
     }
 
@@ -814,7 +838,7 @@
   extension NativeView {
     static func fromXCUIElement(_ xcuielement: XCUIElement, _ bundleId: String) -> NativeView {
       return NativeView(
-        className: String(xcuielement.elementType.rawValue),  // TODO: Provide mapping for names
+        className: getElementTypeName(elementType: xcuielement.elementType),
         text: xcuielement.label,
         contentDescription: xcuielement.accessibilityLabel,
         focused: xcuielement.hasFocus,
@@ -823,6 +847,22 @@
         applicationPackage: bundleId,
         children: xcuielement.children(matching: .any).allElementsBoundByIndex.map { child in
           return NativeView.fromXCUIElement(child, bundleId)
+        })
+    }
+
+    static func fromXCUIElementSnapshot(_ xcuielement: XCUIElementSnapshot, _ bundleId: String)
+      -> NativeView
+    {
+      return NativeView(
+        className: getElementTypeName(elementType: xcuielement.elementType),
+        text: xcuielement.label,
+        contentDescription: "",  // TODO: Separate request
+        focused: xcuielement.hasFocus,
+        enabled: xcuielement.isEnabled,
+        resourceName: xcuielement.identifier,
+        applicationPackage: bundleId,
+        children: xcuielement.children.map { child in
+          return NativeView.fromXCUIElementSnapshot(child, bundleId)
         })
     }
   }

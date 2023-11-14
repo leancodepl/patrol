@@ -70,7 +70,7 @@ Future<void> main() async {
 
   final nativeAutomator = NativeAutomator(config: NativeAutomatorConfig());
   await nativeAutomator.initialize();
-  final binding = PatrolBinding.ensureInitialized();
+  final binding = PatrolBinding.ensureInitialized(NativeAutomatorConfig());
   final testExplorationCompleter = Completer<DartGroupEntry>();
 
   // A special test to explore the hierarchy of groups and tests. This is a hack
@@ -128,6 +128,7 @@ ${generateGroupsCode(testFilePaths).split('\n').map((e) => '  $e').join('\n')}
     final contents = '''
 // ignore_for_file: type=lint, invalid_use_of_internal_member
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
 
@@ -138,7 +139,9 @@ ${generateImports([testFilePath])}
 Future<void> main() async {
   final nativeAutomator = NativeAutomator(config: NativeAutomatorConfig());
   await nativeAutomator.initialize();
-  PatrolBinding.ensureInitialized();
+  PatrolBinding.ensureInitialized(NativeAutomatorConfig())
+    ..workaroundDebugDefaultTargetPlatformOverride =
+        debugDefaultTargetPlatformOverride;
 
   // START: GENERATED TEST GROUPS
 ${generateGroupsCode([testFilePath]).split('\n').map((e) => '  $e').join('\n')}

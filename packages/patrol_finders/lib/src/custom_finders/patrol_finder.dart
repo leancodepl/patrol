@@ -132,7 +132,7 @@ Finder createFinder(dynamic matching) {
 ///
 /// This is decorator around [Finder] that extends it with Patrol features, but
 /// also preserves Finder's behavior.
-class PatrolFinder extends MatchFinder {
+class PatrolFinder implements MatchFinder {
   /// Creates a new [PatrolFinder] with the given [finder] and [tester].
   ///
   /// Usually, you won't use this constructor directly. Instead, you'll use the
@@ -192,24 +192,21 @@ class PatrolFinder extends MatchFinder {
   /// ```
   ///
   /// This method automatically calls [WidgetTester.pumpAndSettle] after
-  /// tapping. If you want to disable this behavior, set [andSettle] to false.
+  /// tapping. If you want to disable this behavior, set [settlePolicy] to
+  /// [SettlePolicy.noSettle].
   ///
   /// See also:
   ///  - [PatrolFinder.waitUntilVisible], which is used to wait for the widget
   ///    to appear
   ///  - [WidgetController.tap]
   Future<void> tap({
-    @Deprecated('Use settlePolicy argument instead') bool? andSettle,
     SettlePolicy? settlePolicy,
     Duration? visibleTimeout,
     Duration? settleTimeout,
   }) async {
     await tester.tap(
       this,
-      settlePolicy: chooseSettlePolicy(
-        andSettle: andSettle,
-        settlePolicy: settlePolicy,
-      ),
+      settlePolicy: settlePolicy,
       visibleTimeout: visibleTimeout,
       settleTimeout: settleTimeout,
     );
@@ -241,17 +238,13 @@ class PatrolFinder extends MatchFinder {
   ///    to appear
   ///  - [WidgetController.longPress]
   Future<void> longPress({
-    @Deprecated('Use settlePolicy argument instead') bool? andSettle,
     SettlePolicy? settlePolicy,
     Duration? visibleTimeout,
     Duration? settleTimeout,
   }) async {
     await tester.longPress(
       this,
-      settlePolicy: chooseSettlePolicy(
-        andSettle: andSettle,
-        settlePolicy: settlePolicy,
-      ),
+      settlePolicy: settlePolicy,
       visibleTimeout: visibleTimeout,
       settleTimeout: settleTimeout,
     );
@@ -275,8 +268,8 @@ class PatrolFinder extends MatchFinder {
   /// ```
   ///
   /// This method automatically calls [WidgetTester.pumpAndSettle] after
-  /// entering text. If you want to disable this behavior, set [andSettle] to
-  /// false.
+  /// entering text. If you want to disable this behavior, set [settlePolicy] to
+  /// [SettlePolicy.noSettle].
   ///
   /// See also:
   ///  - [PatrolFinder.waitUntilVisible], which is used to wait for the widget
@@ -284,7 +277,6 @@ class PatrolFinder extends MatchFinder {
   ///  - [WidgetTester.enterText]
   Future<void> enterText(
     String text, {
-    @Deprecated('Use settlePolicy instead') bool? andSettle,
     SettlePolicy? settlePolicy,
     Duration? visibleTimeout,
     Duration? settleTimeout,
@@ -292,10 +284,7 @@ class PatrolFinder extends MatchFinder {
     await tester.enterText(
       this,
       text,
-      settlePolicy: chooseSettlePolicy(
-        andSettle: andSettle,
-        settlePolicy: settlePolicy,
-      ),
+      settlePolicy: settlePolicy,
       visibleTimeout: visibleTimeout,
       settleTimeout: settleTimeout,
     );
@@ -318,7 +307,6 @@ class PatrolFinder extends MatchFinder {
     int maxScrolls = defaultScrollMaxIteration,
     Duration? settleBetweenScrollsTimeout,
     Duration? dragDuration,
-    @Deprecated('Use settlePolicy argument instead') bool? andSettle,
     SettlePolicy? settlePolicy,
   }) {
     return tester.scrollUntilVisible(
@@ -328,10 +316,7 @@ class PatrolFinder extends MatchFinder {
       scrollDirection: scrollDirection,
       maxScrolls: maxScrolls,
       settleBetweenScrollsTimeout: settleBetweenScrollsTimeout,
-      settlePolicy: chooseSettlePolicy(
-        andSettle: andSettle,
-        settlePolicy: settlePolicy,
-      ),
+      settlePolicy: settlePolicy,
       dragDuration: dragDuration,
     );
   }
@@ -444,6 +429,9 @@ class PatrolFinder extends MatchFinder {
   /// Returns true if this finder finds at least 1 widget.
   bool get exists => evaluate().isNotEmpty;
 
+  @override
+  String describeMatch(Plurality plurality) => finder.describeMatch(plurality);
+
   /// Returns true if this finder finds at least 1 visible widget.
   bool get visible {
     final isVisible = hitTestable().evaluate().isNotEmpty;
@@ -458,12 +446,15 @@ class PatrolFinder extends MatchFinder {
   }
 
   @override
-  Iterable<Element> evaluate() => finder.evaluate();
+  FinderResult<Element> evaluate() => finder.evaluate();
 
   @override
-  Iterable<Element> apply(Iterable<Element> candidates) {
-    return finder.apply(candidates);
+  Iterable<Element> findInCandidates(Iterable<Element> candidates) {
+    return finder.findInCandidates(candidates);
   }
+
+  @override
+  bool tryEvaluate() => finder.tryEvaluate();
 
   @override
   PatrolFinder get first {
@@ -495,7 +486,7 @@ class PatrolFinder extends MatchFinder {
   }
 
   @override
-  bool precache() => finder.precache();
+  FinderResult<Element> get found => finder.found;
 
   @override
   PatrolFinder hitTestable({Alignment at = Alignment.center}) {
@@ -506,10 +497,35 @@ class PatrolFinder extends MatchFinder {
   Iterable<Element> get allCandidates => finder.allCandidates;
 
   @override
+  String toString({bool describeSelf = false}) {
+    return finder.toString(describeSelf: describeSelf);
+  }
+
+  @override
+  bool get hasFound => finder.hasFound;
+
+  @override
+  void reset() => finder.reset();
+
+  @override
+  void runCached(VoidCallback run) => finder.runCached(run);
+
+  @override
+  bool get skipOffstage => finder.skipOffstage;
+
+  @override
+  Iterable<Element> apply(Iterable<Element> candidates) {
+    // ignore: deprecated_member_use
+    return finder.apply(candidates);
+  }
+
+  @override
+  // ignore: deprecated_member_use
   String get description => finder.description;
 
   @override
-  String toString() => finder.toString();
+  // ignore: deprecated_member_use
+  bool precache() => finder.precache();
 }
 
 /// Useful methods that make chained finders more readable.
@@ -517,16 +533,12 @@ extension ActionCombiner on Future<PatrolFinder> {
   /// Same as [PatrolFinder.tap], but on a [PatrolFinder] which is not yet
   /// visible.
   Future<void> tap({
-    @Deprecated('Use settlePolicy argument instead') bool? andSettle,
     SettlePolicy? settlePolicy,
     Duration? visibleTimeout,
     Duration? settleTimoeut,
   }) async {
     await (await this).tap(
-      settlePolicy: chooseSettlePolicy(
-        andSettle: andSettle,
-        settlePolicy: settlePolicy,
-      ),
+      settlePolicy: settlePolicy,
       visibleTimeout: visibleTimeout,
       settleTimeout: settleTimoeut,
     );
@@ -536,17 +548,13 @@ extension ActionCombiner on Future<PatrolFinder> {
   /// visible.
   Future<void> enterText(
     String text, {
-    @Deprecated('Use settlePolicy argument instead') bool? andSettle,
     SettlePolicy? settlePolicy,
     Duration? visibleTimeout,
     Duration? settleTimoeut,
   }) async {
     await (await this).enterText(
       text,
-      settlePolicy: chooseSettlePolicy(
-        andSettle: andSettle,
-        settlePolicy: settlePolicy,
-      ),
+      settlePolicy: settlePolicy,
       visibleTimeout: visibleTimeout,
       settleTimeout: settleTimoeut,
     );

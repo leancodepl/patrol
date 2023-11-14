@@ -7,11 +7,11 @@ on:
 
 jobs:
   run_tests:
-    name: Flutter ${{ matrix.flutter_version }} on ${{ matrix.os }} ${{ matrix.os_version }}
+    name: Flutter ${{ matrix.flutter-version }} on ${{ matrix.os }} ${{ matrix.os_version }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     outputs:
-      SLACK_MESSAGE_TITLE: Flutter ${{ matrix.flutter_version }} on ${{ matrix.os }} ${{ matrix.os_version }}
+      SLACK_MESSAGE_TITLE: Flutter ${{ matrix.flutter-version }} on ${{ matrix.os }} ${{ matrix.os_version }}
       TESTS_EXIT_CODE: ${{ steps.tests_step.outputs.TESTS_EXIT_CODE }}
       EXCLUDED_TESTS: ${{ steps.set_excluded_tests.outputs.EXCLUDED_TESTS }}
       URL_TO_DETAILS: ${{ steps.tests_step.outputs.URL_TO_DETAILS }}
@@ -19,7 +19,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter_version: ['3.13.x']
+        flutter-version: ['3.16.0-0.5.pre']
+        flutter-channel: ['beta']
         device_model: ['oriole']
         os: ['Android API']
         os_version: ['33']
@@ -30,7 +31,7 @@ jobs:
 
     steps:
       - name: Clone repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Java
         uses: actions/setup-java@v3
@@ -54,17 +55,24 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: ${{ matrix.flutter_version }}
+          flutter-version: ${{ matrix.flutter-version }}
+          channel: ${{ matrix.flutter-channel }}
 
       - name: Preload Flutter artifacts
-        run: flutter precache
+        run: flutter precache --android
+
+      - name: Set up Melos and activate workspace
+        working-directory: .
+        run: |
+          dart pub global activate melos
+          melos bootstrap
 
       - name: Set up Patrol CLI
         working-directory: packages/patrol_cli
         run: dart pub global activate --source path . && patrol
 
       - name: Generate Gradle wrapper
-        run: flutter build apk --debug --flavor=does-not-exist || true
+        run: flutter build apk --config-only
 
       - name: Set tests to exclude
         id: set_excluded_tests

@@ -2,11 +2,9 @@ import 'dart:io' as io;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
-import 'package:integration_test/integration_test.dart';
 import 'package:meta/meta.dart';
-import 'package:patrol/src/binding.dart';
-import 'package:patrol/src/native/contracts/contracts.dart';
 import 'package:patrol/src/native/contracts/contracts.dart' as contracts;
+import 'package:patrol/src/native/contracts/contracts.dart';
 import 'package:patrol/src/native/contracts/native_automator_client.dart';
 
 /// Thrown when a native action fails.
@@ -19,18 +17,6 @@ class PatrolActionException implements Exception {
 
   @override
   String toString() => 'Patrol action failed: $message';
-}
-
-/// Bindings available to use with [NativeAutomator].
-enum BindingType {
-  /// Initialize [PatrolBinding].
-  patrol,
-
-  /// Initializes [IntegrationTestWidgetsFlutterBinding]
-  integrationTest,
-
-  /// Doesn't initialize any binding.
-  none,
 }
 
 /// Specifies how the OS keyboard should behave when using
@@ -80,6 +66,8 @@ class NativeAutomatorConfig {
       defaultValue: '8081',
     ),
     this.packageName = const String.fromEnvironment('PATROL_APP_PACKAGE_NAME'),
+    this.iosInstalledApps =
+        const String.fromEnvironment('PATROL_IOS_INSTALLED_APPS'),
     this.bundleId = const String.fromEnvironment('PATROL_APP_BUNDLE_ID'),
     this.androidAppName =
         const String.fromEnvironment('PATROL_ANDROID_APP_NAME'),
@@ -89,6 +77,12 @@ class NativeAutomatorConfig {
     this.keyboardBehavior = KeyboardBehavior.showAndDismiss,
     this.logger = _defaultPrintLogger,
   });
+
+  /// Apps installed on the iOS simulator.
+  ///
+  /// This is needed for purpose of native view inspection in the Patrol
+  /// DevTools extension.
+  final String iosInstalledApps;
 
   /// Host on which Patrol server instrumentation is running.
   final String host;

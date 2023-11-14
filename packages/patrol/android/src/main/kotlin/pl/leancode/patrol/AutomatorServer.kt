@@ -3,6 +3,8 @@ package pl.leancode.patrol
 import pl.leancode.patrol.contracts.Contracts.ConfigureRequest
 import pl.leancode.patrol.contracts.Contracts.DarkModeRequest
 import pl.leancode.patrol.contracts.Contracts.EnterTextRequest
+import pl.leancode.patrol.contracts.Contracts.GetNativeUITreeRequest
+import pl.leancode.patrol.contracts.Contracts.GetNativeUITreeRespone
 import pl.leancode.patrol.contracts.Contracts.GetNativeViewsRequest
 import pl.leancode.patrol.contracts.Contracts.GetNativeViewsResponse
 import pl.leancode.patrol.contracts.Contracts.GetNotificationsRequest
@@ -65,6 +67,11 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
 
     override fun openQuickSettings(request: OpenQuickSettingsRequest) {
         automation.openQuickSettings()
+    }
+
+    override fun getNativeUITree(request: GetNativeUITreeRequest): GetNativeUITreeRespone {
+        val trees = automation.getNativeUITrees()
+        return GetNativeUITreeRespone(trees)
     }
 
     override fun enableDarkMode(request: DarkModeRequest) {
