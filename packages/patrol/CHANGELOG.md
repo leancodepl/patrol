@@ -1,6 +1,6 @@
 ## 3.0.1
 
-- Fix extension code not being bundled by GitHub Actions workflow (#)
+- Fix extension code not being bundled by GitHub Actions workflow (#1902)
 
 ## 3.0.0
 
