@@ -1,3 +1,9 @@
+## Unreleased
+
+- Add support for Patrol 3.0 and its DevTools extension (#1829)
+  - Automatically open DevTools when running `patrol develop`. This behavior can
+    be disabled by passing `--no-open-devtools` flag.
+
 ## 2.2.2
 
 - Fix parsing `--dart-defines` when a value contains a comma (#1845)

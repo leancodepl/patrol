@@ -1,4 +1,4 @@
-## 2.0.0
+## Unreleased
 
 - Bump minimum supported Flutter version to 3.16
 - **BREAKING**:
