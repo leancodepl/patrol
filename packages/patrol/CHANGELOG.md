@@ -1,3 +1,8 @@
+## Unreleased
+
+- Bump dependencies for Flutter 3.16 and Dart 3.2
+- Populate `topics` in pubspec
+
 ## 3.0.1
 
 - Fix extension code not being bundled by GitHub Actions workflow (#1902)

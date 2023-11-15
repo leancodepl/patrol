@@ -1,6 +1,10 @@
 ## Unreleased
 
-- Bump dependencies, populate `topics` in pubspec (#1904)
+- Bump dependencies for Flutter 3.16 and Dart 3.2
+- Populate `topics` in pubspec (#1904)
+- Remove warning about `patrol_finders` being split from `patrol`
+- Allow to disable autogenerating shell completion code in `~/.zshrc` (and
+  alike) by setting the `PATROL_NO_COMPLETION` environment variable
 
 ## 2.3.0
 
