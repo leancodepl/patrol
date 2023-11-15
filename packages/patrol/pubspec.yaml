@@ -4,31 +4,29 @@ description: >
   existing Flutter testing tools. Ready for action!
 version: 3.0.1
 homepage: https://patrol.leancode.co
-repository: https://github.com/leancodepl/patrol
+repository: https://github.com/leancodepl/patrol/tree/master/packages/patrol
 issue_tracker: https://github.com/leancodepl/patrol/issues
 
 environment:
-  sdk: '>=3.1.0 <4.0.0' # TODO: https://github.com/leancodepl/patrol/issues/1893
-  flutter: '>=3.16.0-0'
+  sdk: '>=3.2.0 <4.0.0'
+  flutter: '>=3.16.0'
 
 dependencies:
-  equatable: ^2.0.3
+  equatable: ^2.0.5
   flutter:
     sdk: flutter
   flutter_test:
     sdk: flutter
-  http: '>=0.13.5 <2.0.0'
-  json_annotation: ^4.6.0
-  meta: ^1.7.0
-  path: ^1.8.2
+  http: '^1.1.0'
+  json_annotation: ^4.8.1
+  meta: ^1.10.0
   patrol_finders: ^2.0.0
   shelf: ^1.4.1
-  test_api: '>=0.4.0 <0.7.0'
+  test_api: '^0.6.1'
 
 dev_dependencies:
-  build_runner: ^2.3.3
-  json_serializable: ^6.3.2
-  leancode_lint: ^3.0.0
+  build_runner: ^2.4.6
+  leancode_lint: ^7.0.0+1
 
 flutter:
   plugin:

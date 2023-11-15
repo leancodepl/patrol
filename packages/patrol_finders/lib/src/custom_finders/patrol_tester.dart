@@ -600,21 +600,12 @@ class PatrolTester {
     }
 
     return TestAsyncUtils.guard<PatrolFinder>(() async {
-      Offset moveStep;
-      switch (direction) {
-        case AxisDirection.up:
-          moveStep = Offset(0, delta);
-          break;
-        case AxisDirection.down:
-          moveStep = Offset(0, -delta);
-          break;
-        case AxisDirection.left:
-          moveStep = Offset(delta, 0);
-          break;
-        case AxisDirection.right:
-          moveStep = Offset(-delta, 0);
-          break;
-      }
+      final moveStep = switch (direction) {
+        AxisDirection.up => Offset(0, delta),
+        AxisDirection.down => Offset(0, -delta),
+        AxisDirection.left => Offset(delta, 0),
+        AxisDirection.right => Offset(-delta, 0),
+      };
 
       final resolvedFinder = await dragUntilExists(
         finder: finder,
@@ -673,16 +664,12 @@ class PatrolTester {
       switch (direction) {
         case AxisDirection.up:
           moveStep = Offset(0, delta);
-          break;
         case AxisDirection.down:
           moveStep = Offset(0, -delta);
-          break;
         case AxisDirection.left:
           moveStep = Offset(delta, 0);
-          break;
         case AxisDirection.right:
           moveStep = Offset(-delta, 0);
-          break;
       }
 
       final resolvedFinder = await dragUntilVisible(
