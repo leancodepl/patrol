@@ -11,23 +11,11 @@ if [[ "$(patrol --version)" != *"v2"* ]]; then
 fi
 
 if [ -z "${BROWSERSTACK_CREDS:-}" ]; then
-    echo "Error: missing BROWSERSTACK_CREDS env var"
-    exit 1
+  echo "Error: missing BROWSERSTACK_CREDS env var"
+  exit 1
 fi
 
-pushd ios
-pod install
-FLUTTER_ROOT="$HOME/fvm/versions/stable" xcodebuild build-for-testing \
-  -workspace Runner.xcworkspace \
-  -scheme Runner \
-  -configuration Release \
-  -sdk iphoneos -destination 'generic/platform=iOS' \
-  -quiet \
-  -derivedDataPath ../build/ios_integ \
-  -testPlan TestPlan \
-  OTHER_SWIFT_FLAGS='$(inherited) -D PATROL_ENABLED'
-
-popd
+patrol build ios --release -t integration_test/example_test.dart --verbose
 
 cd build/ios_integ/Build/Products
 
@@ -46,7 +34,6 @@ app_upload_response="$(
 
 app_url="$(echo "$app_upload_response" | jq --raw-output .app_url)"
 echo "Uploaded app, url: $app_url"
-
 
 echo "Will zip tests now"
 cd build/ios_integ/Build/Products/Release-iphoneos
@@ -82,6 +69,7 @@ curl -u "$BROWSERSTACK_CREDS" \
     "project": "Patrol example app",
     "devices": ["iPhone 14-16"],
     "deviceLogs": "true",
-    "idleTimeout": 300
+    "enableResultBundle": "true",
+    "idleTimeout": 60
 }
 EOF

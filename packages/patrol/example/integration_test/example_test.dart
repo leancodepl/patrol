@@ -19,6 +19,7 @@ void main() {
 
       expect($(#counterText).text, '1');
       await $(FloatingActionButton).tap();
+      await $(CircleAvatar()).tap();
 
       expect($(#counterText).text, '2');
       expect($('Hello, Flutter!'), findsOneWidget);
