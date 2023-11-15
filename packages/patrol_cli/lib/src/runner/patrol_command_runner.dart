@@ -233,6 +233,11 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
   }
 
   @override
+  bool get enableAutoInstall {
+    return !_platform.environment.containsKey('PATROL_NO_COMPLETION');
+  }
+
+  @override
   String? get usageFooter => '''
 Read documentation at https://patrol.leancode.pl
 Report bugs, request features at https://github.com/leancodepl/patrol/issues
