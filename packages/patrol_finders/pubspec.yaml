@@ -14,7 +14,7 @@ dependencies:
     sdk: flutter
   flutter_test:
     sdk: flutter
-  meta: ^1.7.0
+  meta: ^1.10.0
 
 dev_dependencies:
-  leancode_lint: ^3.0.0
+  leancode_lint: ^7.0.0+1

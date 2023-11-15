@@ -4,7 +4,3 @@ linter:
   rules:
     prefer_const_constructors: false
     avoid_print: false
-
-analyzer:
-  errors:
-    deprecated_member_use: ignore # TODO: Remove after deprections are fixed
