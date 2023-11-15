@@ -1,4 +1,4 @@
-## 3.0.1
+## 3.0.2
 
 - Bump dependencies for Flutter 3.16 and Dart 3.2
 - Populate `topics` in pubspec
