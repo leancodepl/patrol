@@ -14,7 +14,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        dart-version: ['3.1']
+        dart-version: ['3.2']
 
     defaults:
       run:
