@@ -1,3 +1,7 @@
+## Unreleased
+
+- Bump minimum Dart SDK to version 3.2.0 (#1917)
+
 ## 0.3.0
 
 - Clean up (#1903)
