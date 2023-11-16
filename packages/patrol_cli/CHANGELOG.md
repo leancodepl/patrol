@@ -1,3 +1,7 @@
+## 2.3.1+1
+
+- Add screenshots to `pubspec.yaml` (#1917)
+
 ## 2.3.1
 
 - Bump dependencies for Flutter 3.16 and Dart 3.2
