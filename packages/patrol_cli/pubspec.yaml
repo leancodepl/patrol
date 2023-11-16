@@ -5,10 +5,11 @@ version: 2.3.1 # Must be kept in sync with constants.dart
 homepage: https://patrol.leancode.co
 repository: https://github.com/leancodepl/patrol/tree/master/packages/patrol_cli
 issue_tracker: https://github.com/leancodepl/patrol/issues?q=is%3Aopen+is%3Aissue+label%3A%22package%3A+patrol_cli%22
-topics:
-  - test
-  - cli
-  - patrol
+documentation: https://patrol.leancode.co
+topics: [test, cli, patrol]
+screenshots:
+  - description: The Patrol framework logo.
+    path: screenshots/logo.png
 
 environment:
   sdk: '>=3.2.0 <4.0.0'
