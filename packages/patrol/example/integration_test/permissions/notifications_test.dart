@@ -11,6 +11,16 @@ void main() {
         await $.native.grantPermissionWhenInUse();
       }
 
+      // Android 14+ requires additional permission to schedule notifications
+      try {
+        await $.native.tap(
+          Selector(text: 'Allow setting alarms and reminders'),
+        );
+        await $.native.pressBack();
+      } on PatrolActionException catch (_) {
+        // ignore
+      }
+
       await $('Show in a few seconds').tap();
       await $.native.pressHome();
       await $.native.openNotifications();
