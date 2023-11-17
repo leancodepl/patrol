@@ -11,14 +11,17 @@ void main() {
         await $.native.grantPermissionWhenInUse();
       }
 
-      // Android 14+ requires additional permission to schedule notifications
-      try {
-        await $.native.tap(
-          Selector(text: 'Allow setting alarms and reminders'),
-        );
+      // Android 14+ requires additional permission to schedule notifications.
+      // Workaround for conditionally granting permission.
+      final android14PermissionSelector = Selector(
+        text: 'Allow setting alarms and reminders',
+      );
+      final android14PermissionScreen = await $.native.getNativeViews(
+        android14PermissionSelector,
+      );
+      if (android14PermissionScreen.isNotEmpty) {
+        await $.native.tap(android14PermissionSelector);
         await $.native.pressBack();
-      } on PatrolActionException catch (_) {
-        // ignore
       }
 
       await $('Show in a few seconds').tap();
