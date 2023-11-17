@@ -21,7 +21,6 @@ jobs:
       matrix:
         flutter-version: ['3.16.x']
         flutter-channel: ['stable']
-        device_model: ['oriole', 'shiba']
         os: ['Android API']
         include:
           - device_model: 'oriole'
