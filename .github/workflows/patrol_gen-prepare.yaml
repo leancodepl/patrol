@@ -8,13 +8,13 @@ on:
 
 jobs:
   prepare:
-    name: Flutter ${{ matrix.flutter-version }}
+    name: Dart ${{ matrix.dart-version }}
     runs-on: ubuntu-latest
 
     strategy:
       fail-fast: false
       matrix:
-        sdk: ['3.0.0', stable]
+        dart-version: ['3.2']
 
     defaults:
       run:
@@ -22,12 +22,12 @@ jobs:
 
     steps:
       - name: Clone repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Dart
         uses: dart-lang/setup-dart@v1
         with:
-          sdk: ${{ matrix.sdk }}
+          sdk: ${{ matrix.dart-version }}
 
       - name: dart pub get
         run: dart pub get

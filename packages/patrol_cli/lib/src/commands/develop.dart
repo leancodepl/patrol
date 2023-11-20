@@ -49,6 +49,12 @@ class DevelopCommand extends PatrolCommand {
 
     usesAndroidOptions();
     usesIOSOptions();
+
+    argParser.addFlag(
+      'open-devtools',
+      help: 'Automatically open Patrol extension in DevTools when ready.',
+      defaultsTo: true,
+    );
   }
 
   final DeviceFinder _deviceFinder;
@@ -112,6 +118,12 @@ class DevelopCommand extends PatrolCommand {
     final displayLabel = boolArg('label');
     final uninstall = boolArg('uninstall');
 
+    String? iOSInstalledAppsEnvVariable;
+    if (device.targetPlatform == TargetPlatform.iOS) {
+      iOSInstalledAppsEnvVariable =
+          await _iosTestBackend.getInstalledAppsEnvVariable(device.id);
+    }
+
     final customDartDefines = {
       ..._dartDefinesReader.fromFile(),
       ..._dartDefinesReader.fromCli(args: stringsArg('dart-define')),
@@ -125,7 +137,10 @@ class DevelopCommand extends PatrolCommand {
       'INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE': 'false',
       'PATROL_TEST_LABEL_ENABLED': displayLabel.toString(),
       // develop-specific
-      ...{'PATROL_HOT_RESTART': 'true'},
+      ...{
+        'PATROL_HOT_RESTART': 'true',
+        'PATROL_IOS_INSTALLED_APPS': iOSInstalledAppsEnvVariable,
+      },
     }.withNullsRemoved();
 
     final dartDefines = {...customDartDefines, ...internalDartDefines};
@@ -170,6 +185,7 @@ class DevelopCommand extends PatrolCommand {
       iosOpts,
       uninstall: uninstall,
       device: device,
+      openDevtools: boolArg('open-devtools'),
     );
 
     return 0; // for now, all exit codes are 0
@@ -184,7 +200,6 @@ class DevelopCommand extends PatrolCommand {
     switch (device.targetPlatform) {
       case TargetPlatform.android:
         buildAction = () => _androidTestBackend.build(androidOpts);
-        break;
       case TargetPlatform.iOS:
         buildAction = () => _iosTestBackend.build(iosOpts);
     }
@@ -219,7 +234,6 @@ class DevelopCommand extends PatrolCommand {
         if (packageName != null) {
           action = () => _androidTestBackend.uninstall(packageName, device);
         }
-        break;
       case TargetPlatform.iOS:
         final bundleId = iosOpts.bundleId;
         if (bundleId != null) {
@@ -229,7 +243,6 @@ class DevelopCommand extends PatrolCommand {
                 device: device,
               );
         }
-        break;
     }
 
     try {
@@ -245,6 +258,7 @@ class DevelopCommand extends PatrolCommand {
     IOSAppOptions iosOpts, {
     required bool uninstall,
     required Device device,
+    required bool openDevtools,
   }) async {
     Future<void> Function() action;
     Future<void> Function()? finalizer;
@@ -259,7 +273,6 @@ class DevelopCommand extends PatrolCommand {
         if (package != null && uninstall) {
           finalizer = () => _androidTestBackend.uninstall(package, device);
         }
-        break;
       case TargetPlatform.iOS:
         appId = iosOpts.bundleId;
         action = () async =>
@@ -282,6 +295,7 @@ class DevelopCommand extends PatrolCommand {
         target: flutterOpts.target,
         appId: appId,
         dartDefines: flutterOpts.dartDefines,
+        openDevtools: openDevtools,
       );
 
       await future;

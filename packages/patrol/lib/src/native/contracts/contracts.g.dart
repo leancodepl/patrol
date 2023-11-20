@@ -174,6 +174,34 @@ Map<String, dynamic> _$GetNativeViewsRequestToJson(
       'appId': instance.appId,
     };
 
+GetNativeUITreeRequest _$GetNativeUITreeRequestFromJson(
+        Map<String, dynamic> json) =>
+    GetNativeUITreeRequest(
+      iosInstalledApps: (json['iosInstalledApps'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList(),
+    );
+
+Map<String, dynamic> _$GetNativeUITreeRequestToJson(
+        GetNativeUITreeRequest instance) =>
+    <String, dynamic>{
+      'iosInstalledApps': instance.iosInstalledApps,
+    };
+
+GetNativeUITreeRespone _$GetNativeUITreeResponeFromJson(
+        Map<String, dynamic> json) =>
+    GetNativeUITreeRespone(
+      roots: (json['roots'] as List<dynamic>)
+          .map((e) => NativeView.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+
+Map<String, dynamic> _$GetNativeUITreeResponeToJson(
+        GetNativeUITreeRespone instance) =>
+    <String, dynamic>{
+      'roots': instance.roots,
+    };
+
 NativeView _$NativeViewFromJson(Map<String, dynamic> json) => NativeView(
       className: json['className'] as String?,
       text: json['text'] as String?,
@@ -253,6 +281,7 @@ const _$KeyboardBehaviorEnumMap = {
 };
 
 SwipeRequest _$SwipeRequestFromJson(Map<String, dynamic> json) => SwipeRequest(
+      appId: json['appId'] as String,
       startX: (json['startX'] as num).toDouble(),
       startY: (json['startY'] as num).toDouble(),
       endX: (json['endX'] as num).toDouble(),
@@ -262,6 +291,7 @@ SwipeRequest _$SwipeRequestFromJson(Map<String, dynamic> json) => SwipeRequest(
 
 Map<String, dynamic> _$SwipeRequestToJson(SwipeRequest instance) =>
     <String, dynamic>{
+      'appId': instance.appId,
       'startX': instance.startX,
       'startY': instance.startY,
       'endX': instance.endX,

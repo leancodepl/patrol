@@ -1,9 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:integration_test/common.dart';
-import 'package:integration_test/integration_test.dart';
 import 'package:patrol/patrol.dart';
+import 'package:patrol/src/devtools_service_extensions/devtools_service_extensions.dart';
+// ignore: implementation_imports, depend_on_referenced_packages
 import 'package:patrol/src/global_state.dart' as global_state;
 
 const _success = 'success';
@@ -29,12 +32,19 @@ void _defaultPrintLogger(String message) {
 /// [PatrolBinding] submits the Dart test file name that is being currently
 /// executed to [PatrolAppService]. Once the name is submitted to it, that
 /// pending `runDartTest()` method returns.
-class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
+class PatrolBinding extends LiveTestWidgetsFlutterBinding {
   /// Creates a new [PatrolBinding].
   ///
   /// You most likely don't want to call it yourself.
-  PatrolBinding(this.patrolAppService, this.nativeAutomator) {
+
+  PatrolBinding(
+    this.patrolAppService,
+    this.nativeAutomator,
+    NativeAutomatorConfig config,
+  ) : _serviceExtensions = DevtoolsServiceExtensions(config) {
     logger('created');
+    shouldPropagateDevicePointerEvents = true;
+
     final oldTestExceptionReporter = reportTestException;
     reportTestException = (details, testDescription) {
       final currentDartTest = _currentDartTest;
@@ -113,15 +123,19 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
   /// if necessary.
   ///
   /// This method is idempotent.
-  factory PatrolBinding.ensureInitialized(
-    PatrolAppService patrolAppService,
-    NativeAutomator nativeAutomator,
-  ) {
+  factory PatrolBinding.ensureInitialized(PatrolAppService patrolAppService,
+      NativeAutomator nativeAutomator, NativeAutomatorConfig config,) {
     if (_instance == null) {
-      PatrolBinding(patrolAppService, nativeAutomator);
+      PatrolBinding(patrolAppService, nativeAutomator, config);
     }
     return _instance!;
   }
+
+  @override
+  bool get overrideHttpClient => false;
+
+  @override
+  bool get registerTestTextInput => false;
 
   /// Logger used by this binding.
   void Function(String message) logger = _defaultPrintLogger;
@@ -147,18 +161,34 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
 
   String? _currentDartTest;
 
-  /// Keys are the test descriptions, and values are either [_success] or
-  /// a [Failure].
+  /// Keys are the test descriptions, and values are either [_success] or a
+  /// [Failure].
   final Map<String, Object> _testResults = <String, Object>{};
 
-  // TODO: Remove once https://github.com/flutter/flutter/pull/108430 is available on the stable channel
-  @override
-  TestBindingEventSource get pointerEventSource => TestBindingEventSource.test;
+  final DevtoolsServiceExtensions _serviceExtensions;
+
+  /// Temporary workaround for DevTools extension changing this value and not
+  /// resetting it.
+  ///
+  /// See https://github.com/flutter/devtools/issues/6719
+  TargetPlatform? workaroundDebugDefaultTargetPlatformOverride;
 
   @override
   void initInstances() {
     super.initInstances();
     _instance = this;
+  }
+
+  @override
+  void initServiceExtensions() {
+    super.initServiceExtensions();
+
+    logger('Register Patrol service extensions');
+
+    registerServiceExtension(
+      name: 'patrol.getNativeUITree',
+      callback: _serviceExtensions.getNativeUITree,
+    );
   }
 
   @override
@@ -180,7 +210,16 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
   }
 
   @override
-  void attachRootWidget(Widget rootWidget) {
+  ViewConfiguration createViewConfigurationFor(RenderView renderView) {
+    final view = renderView.flutterView;
+    return TestViewConfiguration.fromView(
+      size: view.physicalSize / view.devicePixelRatio,
+      view: view,
+    );
+  }
+
+  @override
+  Widget wrapWithDefaultView(Widget rootWidget) {
     assert(
       (_currentDartTest != null) != (global_state.hotRestartEnabled),
       '_currentDartTest can be null if and only if Hot Restart is enabled',
@@ -188,32 +227,79 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
 
     const testLabelEnabled = bool.fromEnvironment('PATROL_TEST_LABEL_ENABLED');
     if (!testLabelEnabled || global_state.hotRestartEnabled) {
-      super.attachRootWidget(RepaintBoundary(child: rootWidget));
+      return super.wrapWithDefaultView(RepaintBoundary(child: rootWidget));
     } else {
-      super.attachRootWidget(
+      return super.wrapWithDefaultView(
         Stack(
           textDirection: TextDirection.ltr,
           children: [
             RepaintBoundary(child: rootWidget),
-            // Prevents crashes when Android activity is resumed (see https://github.com/leancodepl/patrol/issues/901)
+            // Prevents crashes when Android activity is resumed (see
+            // https://github.com/leancodepl/patrol/issues/901)
             ExcludeSemantics(
-              child: Padding(
-                padding: EdgeInsets.only(
-                  top: MediaQueryData.fromWindow(window).padding.top + 4,
-                  left: 4,
-                ),
-                child: IgnorePointer(
-                  child: Text(
-                    _currentDartTest!,
-                    textDirection: TextDirection.ltr,
-                    style: const TextStyle(color: Colors.red),
-                  ),
-                ),
+              child: Builder(
+                builder: (context) {
+                  final view = View.of(context);
+                  return Padding(
+                    padding: EdgeInsets.only(
+                      top: MediaQueryData.fromView(view).padding.top + 4,
+                      left: 4,
+                    ),
+                    child: IgnorePointer(
+                      child: Text(
+                        _currentDartTest!,
+                        textDirection: TextDirection.ltr,
+                        style: const TextStyle(color: Colors.red),
+                      ),
+                    ),
+                  );
+                },
               ),
             ),
           ],
         ),
       );
     }
+  }
+
+  @override
+  void reportExceptionNoticed(FlutterErrorDetails exception) {
+    // This override is copied from IntegrationTestWidgetsFlutterBinding. It may
+    // be not needed.
+    //
+    // See: https://github.com/flutter/flutter/issues/81534
+  }
+}
+
+/// Representing a failure includes the method name and the failure details.
+class Failure {
+  /// Constructor requiring all fields during initialization.
+  Failure(this.methodName, this.details);
+
+  /// The name of the test method which failed.
+  final String methodName;
+
+  /// The details of the failure such as stack trace.
+  final String? details;
+
+  /// Serializes the object to JSON.
+  String toJson() {
+    return json.encode(<String, String?>{
+      'methodName': methodName,
+      'details': details,
+    });
+  }
+
+  @override
+  String toString() => toJson();
+
+  /// Decode a JSON string to create a Failure object.
+  // ignore: prefer_constructors_over_static_methods
+  static Failure fromJsonString(String jsonString) {
+    final failure = json.decode(jsonString) as Map<String, dynamic>;
+    return Failure(
+      failure['methodName'] as String,
+      failure['details'] as String?,
+    );
   }
 }

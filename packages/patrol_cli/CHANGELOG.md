@@ -1,13 +1,28 @@
-## 2.3.0-dev.2
-
-- Service release with latest changes from stable `master` branch (#1851)
-- Disable incorrect update prompt when using `dev` version (#1854)
-
-## 2.3.0-dev.1
+## 2.4.0-dev.1
 
 - Add support for `patrolSetUpAll` (#1751)
 
-This version requires version 2.4.0-dev.4 of `patrol` package.
+This version requires version 3.1.0-dev1 of `patrol` package.
+
+## 2.3.1+1
+
+- Add screenshots to `pubspec.yaml` (#1917)
+
+## 2.3.1
+
+- Bump dependencies for Flutter 3.16 and Dart 3.2
+- Populate `topics` in pubspec (#1904)
+- Remove warning about `patrol_finders` being split from `patrol`
+- Allow to disable autogenerating shell completion code in `~/.zshrc` (and
+  alike) by setting the `PATROL_NO_COMPLETION` environment variable
+
+## 2.3.0
+
+- Add support for Patrol 3.0 and its DevTools extension (#1829)
+  - Automatically open DevTools when running `patrol develop`. This behavior can
+    be disabled by passing `--no-open-devtools` flag.
+
+This version requires version 3.0.0 of `patrol` package.
 
 ## 2.2.2
 

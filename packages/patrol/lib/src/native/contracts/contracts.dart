@@ -318,6 +318,44 @@ class GetNativeViewsRequest with EquatableMixin {
 }
 
 @JsonSerializable()
+class GetNativeUITreeRequest with EquatableMixin {
+  GetNativeUITreeRequest({
+    this.iosInstalledApps,
+  });
+
+  factory GetNativeUITreeRequest.fromJson(Map<String, dynamic> json) =>
+      _$GetNativeUITreeRequestFromJson(json);
+
+  final List<String>? iosInstalledApps;
+
+  Map<String, dynamic> toJson() => _$GetNativeUITreeRequestToJson(this);
+
+  @override
+  List<Object?> get props => [
+        iosInstalledApps,
+      ];
+}
+
+@JsonSerializable()
+class GetNativeUITreeRespone with EquatableMixin {
+  GetNativeUITreeRespone({
+    required this.roots,
+  });
+
+  factory GetNativeUITreeRespone.fromJson(Map<String, dynamic> json) =>
+      _$GetNativeUITreeResponeFromJson(json);
+
+  final List<NativeView> roots;
+
+  Map<String, dynamic> toJson() => _$GetNativeUITreeResponeToJson(this);
+
+  @override
+  List<Object?> get props => [
+        roots,
+      ];
+}
+
+@JsonSerializable()
 class NativeView with EquatableMixin {
   NativeView({
     this.className,
@@ -435,6 +473,7 @@ class EnterTextRequest with EquatableMixin {
 @JsonSerializable()
 class SwipeRequest with EquatableMixin {
   SwipeRequest({
+    required this.appId,
     required this.startX,
     required this.startY,
     required this.endX,
@@ -445,6 +484,7 @@ class SwipeRequest with EquatableMixin {
   factory SwipeRequest.fromJson(Map<String, dynamic> json) =>
       _$SwipeRequestFromJson(json);
 
+  final String appId;
   final double startX;
   final double startY;
   final double endX;
@@ -455,6 +495,7 @@ class SwipeRequest with EquatableMixin {
 
   @override
   List<Object?> get props => [
+        appId,
         startX,
         startY,
         endX,

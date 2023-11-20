@@ -42,7 +42,11 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         await _notificationsPlugin
             .resolvePlatformSpecificImplementation<
                 AndroidFlutterLocalNotificationsPlugin>()
-            ?.requestPermission();
+            ?.requestNotificationsPermission();
+        await _notificationsPlugin
+            .resolvePlatformSpecificImplementation<
+                AndroidFlutterLocalNotificationsPlugin>()
+            ?.requestExactAlarmsPermission();
       }(),
     );
   }
@@ -84,6 +88,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           channelDescription: "For all the notifications, because we're lazy",
         ),
       ),
+      androidScheduleMode: AndroidScheduleMode.exact,
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.wallClockTime,
     );

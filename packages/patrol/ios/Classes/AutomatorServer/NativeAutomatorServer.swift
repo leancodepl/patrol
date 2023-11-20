@@ -16,6 +16,7 @@ protocol NativeAutomatorServer {
     func doublePressRecentApps() throws
     func openApp(request: OpenAppRequest) throws
     func openQuickSettings(request: OpenQuickSettingsRequest) throws
+    func getNativeUITree(request: GetNativeUITreeRequest) throws -> GetNativeUITreeRespone
     func getNativeViews(request: GetNativeViewsRequest) throws -> GetNativeViewsResponse
     func tap(request: TapRequest) throws
     func doubleTap(request: TapRequest) throws
@@ -87,6 +88,13 @@ extension NativeAutomatorServer {
         let requestArg = try JSONDecoder().decode(OpenQuickSettingsRequest.self, from: request.body)
         try openQuickSettings(request: requestArg)
         return HTTPResponse(.ok)
+    }
+
+    private func getNativeUITreeHandler(request: HTTPRequest) throws -> HTTPResponse {
+        let requestArg = try JSONDecoder().decode(GetNativeUITreeRequest.self, from: request.body)
+        let response = try getNativeUITree(request: requestArg)
+        let body = try JSONEncoder().encode(response)
+        return HTTPResponse(.ok, body: body)
     }
 
     private func getNativeViewsHandler(request: HTTPRequest) throws -> HTTPResponse {
@@ -283,6 +291,11 @@ extension NativeAutomatorServer {
             request in handleRequest(
                 request: request,
                 handler: openQuickSettingsHandler)
+        }
+        server.route(.POST, "getNativeUITree") {
+            request in handleRequest(
+                request: request,
+                handler: getNativeUITreeHandler)
         }
         server.route(.POST, "getNativeViews") {
             request in handleRequest(

@@ -10,13 +10,13 @@ final _nativeAutomatorConfig = NativeAutomatorConfig(
   findTimeout: Duration(seconds: 20), // 10 seconds is too short for some CIs
 );
 
-Future<void> createApp(PatrolTester $) async {
+Future<void> createApp(PatrolIntegrationTester $) async {
   await app_main.main();
 }
 
 void patrol(
   String description,
-  Future<void> Function(PatrolTester) callback, {
+  Future<void> Function(PatrolIntegrationTester) callback, {
   bool? skip,
   NativeAutomatorConfig? nativeAutomatorConfig,
   LiveTestWidgetsFlutterBindingFramePolicy framePolicy =
@@ -26,7 +26,6 @@ void patrol(
     description,
     config: _patrolTesterConfig,
     nativeAutomatorConfig: nativeAutomatorConfig ?? _nativeAutomatorConfig,
-    nativeAutomation: true,
     framePolicy: framePolicy,
     skip: skip,
     callback,

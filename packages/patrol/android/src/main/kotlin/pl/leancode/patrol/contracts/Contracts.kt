@@ -138,6 +138,18 @@ class Contracts {
     val appId: String
   )
 
+  data class GetNativeUITreeRequest (
+    val iosInstalledApps: List<String>? = null
+  ){
+    fun hasIosInstalledApps(): Boolean {
+      return iosInstalledApps != null
+    }
+  }
+
+  data class GetNativeUITreeRespone (
+    val roots: List<NativeView>
+  )
+
   data class NativeView (
     val className: String? = null,
     val text: String? = null,
@@ -194,6 +206,7 @@ class Contracts {
   }
 
   data class SwipeRequest (
+    val appId: String,
     val startX: Double,
     val startY: Double,
     val endX: Double,

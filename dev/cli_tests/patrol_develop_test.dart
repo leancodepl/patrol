@@ -38,7 +38,7 @@ void main() {
 void main(List<String> args) async {
   _verifyWorkingDirectory();
 
-  const afterBuildCompletedTimeout = Duration(minutes: 2);
+  const afterBuildCompletedTimeout = Duration(minutes: 4);
   const inactivityTimeout = Duration(minutes: 15);
 
   var isFirstTestPassed = false;
@@ -58,6 +58,7 @@ void main(List<String> args) async {
     [
       'develop',
       ...['--target', 'integration_test/example_test.dart'],
+      ...['--no-open-devtools'],
       ...args,
     ],
     runInShell: true,
@@ -109,7 +110,9 @@ void main(List<String> args) async {
 
     if (stringOutput.contains('Completed building')) {
       inactivityTimer = Timer(afterBuildCompletedTimeout, () {
-        print('Two minutes of inactivity, something went wrong...');
+        print(
+          '${afterBuildCompletedTimeout.inSeconds} seconds of inactivity, something went wrong...',
+        );
         print('isFirstTestPassed: $isFirstTestPassed');
         print('isReloaded: $isReloaded');
         print('Running file:');

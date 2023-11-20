@@ -75,7 +75,8 @@ Future<void> main() async {
   final appService = PatrolAppService();
   await runAppService(appService);
 
-  PatrolBinding.ensureInitialized(appService, nativeAutomator);
+  final config = NativeAutomatorConfig();
+  PatrolBinding.ensureInitialized(appService, nativeAutomator, config);
 
   final didExploreTests = Completer<DartGroupEntry>();
   final didExploreLifecycleCallbacks = Completer<void>();
@@ -143,6 +144,7 @@ ${generateGroupsCode(testFilePaths).split('\n').map((e) => '  $e').join('\n')}
     final contents = '''
 // ignore_for_file: type=lint, invalid_use_of_internal_member
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
 
@@ -157,7 +159,10 @@ Future<void> main() async {
   final appService = PatrolAppService();
   await runAppService(appService);
 
-  PatrolBinding.ensureInitialized(appService, nativeAutomator);
+  final config = NativeAutomatorConfig();
+  PatrolBinding.ensureInitialized(appService, nativeAutomator, config)
+    ..workaroundDebugDefaultTargetPlatformOverride =
+        debugDefaultTargetPlatformOverride;
 
   // START: GENERATED TEST GROUPS
 ${generateGroupsCode([testFilePath]).split('\n').map((e) => '  $e').join('\n')}

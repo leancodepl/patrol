@@ -2,7 +2,6 @@ import 'dart:io' as io;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:integration_test/integration_test.dart';
 import 'package:meta/meta.dart';
 import 'package:patrol/src/binding.dart';
 import 'package:patrol/src/global_state.dart' as global_state;
@@ -133,9 +132,6 @@ void patrolSetUpAll(dynamic Function() body) {
 ///    },
 /// );
 /// ```
-///
-/// [bindingType] specifies the binding to use. [bindingType] is ignored if
-/// [nativeAutomation] is false.
 @isTest
 void patrolTest(
   String description,
@@ -147,37 +143,11 @@ void patrolTest(
   dynamic tags,
   finders.PatrolTesterConfig config = const finders.PatrolTesterConfig(),
   NativeAutomatorConfig nativeAutomatorConfig = const NativeAutomatorConfig(),
-  bool nativeAutomation = false,
-  BindingType bindingType = BindingType.patrol,
   LiveTestWidgetsFlutterBindingFramePolicy framePolicy =
       LiveTestWidgetsFlutterBindingFramePolicy.fadePointers,
 }) {
-  if (!nativeAutomation) {
-    debugPrint('''
-╔════════════════════════════════════════════════════════════════════════════════════╗
-║ In next major release, patrolTest method will be intended for UI tests only        ║
-║ If you want to use Patrol in your widget tests, use patrol_finders package.        ║
-║                                                                                    ║
-║ For more information, see https://patrol.leancode.co/patrol-finders-release        ║
-╚════════════════════════════════════════════════════════════════════════════════════╝
-''');
-  }
-
-  if (nativeAutomation) {
-    switch (bindingType) {
-      case BindingType.patrol:
-        // PatrolBinding is initialized in the generated test bundle file.
-        PatrolBinding.instance.framePolicy = framePolicy;
-        break;
-      case BindingType.integrationTest:
-        IntegrationTestWidgetsFlutterBinding.ensureInitialized().framePolicy =
-            framePolicy;
-
-        break;
-      case BindingType.none:
-        break;
-    }
-  }
+  final automator = NativeAutomator(config: nativeAutomatorConfig);
+  final binding = PatrolBinding.instance..framePolicy = framePolicy;
 
   testWidgets(
     description,
@@ -219,7 +189,7 @@ void patrolTest(
           // See https://github.com/leancodepl/patrol/issues/1474
         };
       }
-      await PatrolBinding.instance.nativeAutomator.configure();
+      await automator.configure();
 
       final patrolTester = PatrolIntegrationTester(
         tester: widgetTester,
@@ -231,6 +201,9 @@ void patrolTest(
       // ignore: prefer_const_declarations
       final waitSeconds = const int.fromEnvironment('PATROL_WAIT');
       final waitDuration = Duration(seconds: waitSeconds);
+
+      debugDefaultTargetPlatformOverride =
+          binding.workaroundDebugDefaultTargetPlatformOverride;
 
       if (waitDuration > Duration.zero) {
         final stopwatch = Stopwatch()..start();

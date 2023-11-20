@@ -18,9 +18,14 @@ jobs:
       id-token: write
       contents: write
 
+    strategy:
+      matrix:
+        flutter-version: ['3.16.x']
+        flutter-channel: ['stable']
+
     steps:
       - name: Clone repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # This step adds the auth token for pub.dev
       - name: Set up Dart
@@ -31,7 +36,16 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: stable
+          flutter-version: ${{ matrix.flutter-version }}
+          channel: ${{ matrix.flutter-channel }}
+
+      - name: Build DevTools extension
+        working-directory: packages/patrol_devtools_extension
+        run: ./publish_to_patrol_extension
+
+      - name: Verify that built DevTools extension is in the correct location
+        working-directory: packages/patrol
+        run: test ! -z "$(ls -lA extension/devtools/build)"
 
       - name: Publish to pub.dev
         id: pub_release
