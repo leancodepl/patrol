@@ -197,12 +197,13 @@
       // Prevent keyboard dismissal from happening too fast
       sleepTask(timeInSeconds: 1)
     }
-    
+
     func swipe(from start: CGVector, to end: CGVector, inApp bundleId: String) throws {
       try runAction("swiping from \(start) to \(end) in app \(bundleId)") {
         let app = try self.getApp(withBundleId: bundleId)
-        
-        let startCoordinate = app.coordinate(withNormalizedOffset: CGVector(dx: start.dx, dy: start.dy))
+
+        let startCoordinate = app.coordinate(
+          withNormalizedOffset: CGVector(dx: start.dx, dy: start.dy))
         let endCoordinate = app.coordinate(withNormalizedOffset: CGVector(dx: end.dx, dy: end.dy))
         startCoordinate.press(forDuration: 0.1, thenDragTo: endCoordinate)
       }
