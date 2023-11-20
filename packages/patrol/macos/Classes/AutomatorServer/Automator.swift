@@ -133,7 +133,7 @@ class Automator {
     }
     
     func tapOnNotification(bySubstring substring: String) async throws { 
-        await runAction("tapping on notification containing text \(format: substring)") {
+        try await runAction("tapping on notification containing text \(format: substring)") {
             throw PatrolError.methodNotImplemented("tapOnNotification(bySubstring)")
         }
     }
