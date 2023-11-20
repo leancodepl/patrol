@@ -121,6 +121,7 @@ struct EnterTextRequest: Codable {
 }
 
 struct SwipeRequest: Codable {
+  var appId: String
   var startX: Double
   var startY: Double
   var endX: Double
