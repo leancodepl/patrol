@@ -20,7 +20,7 @@ void main() {
     _print('ran patrolTearDown (1) after "$currentTest"');
   });
 
-  patrolTest('testFirst', nativeAutomation: true, _body);
+  patrolTest('testFirst', _body);
 
   group('groupA', () {
     patrolSetUp(() async {
@@ -35,15 +35,15 @@ void main() {
       _print('ran patrolTearDown (2) after "$currentTest"');
     });
 
-    patrolTest('testA', nativeAutomation: true, _body);
-    patrolTest('testB', nativeAutomation: true, _body);
-    patrolTest('testC', nativeAutomation: true, _body);
+    patrolTest('testA', _body);
+    patrolTest('testB', _body);
+    patrolTest('testC', _body);
   });
 
-  patrolTest('testLast', nativeAutomation: true, _body);
+  patrolTest('testLast', _body);
 }
 
-Future<void> _body(PatrolTester $) async {
+Future<void> _body(PatrolIntegrationTester $) async {
   final testName = Invoker.current!.fullCurrentTestName();
   _print('ran body of test "$testName"');
 

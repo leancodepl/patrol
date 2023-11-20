@@ -8,6 +8,11 @@ scripts:
     run: melos run analyze && melos run format-check
     description: Run all static analysis checks.
 
+  get:all:
+    run: melos exec -- \
+      flutter pub get
+    description: Run `flutter pub get` for all packages.
+
   analyze:
     run: |
       melos exec -- \

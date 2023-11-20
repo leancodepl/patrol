@@ -123,8 +123,11 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
   /// if necessary.
   ///
   /// This method is idempotent.
-  factory PatrolBinding.ensureInitialized(PatrolAppService patrolAppService,
-      NativeAutomator nativeAutomator, NativeAutomatorConfig config,) {
+  factory PatrolBinding.ensureInitialized(
+    PatrolAppService patrolAppService,
+    NativeAutomator nativeAutomator,
+    NativeAutomatorConfig config,
+  ) {
     if (_instance == null) {
       PatrolBinding(patrolAppService, nativeAutomator, config);
     }

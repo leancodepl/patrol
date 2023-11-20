@@ -21,13 +21,13 @@ void main() {
       _print('ran patrolSetUpAll (2) before "$currentTest"');
     });
 
-    patrolTest('testA', nativeAutomation: true, _body);
-    patrolTest('testB', nativeAutomation: true, _body);
-    patrolTest('testC', nativeAutomation: true, _body);
+    patrolTest('testA', _body);
+    patrolTest('testB', _body);
+    patrolTest('testC', _body);
   });
 }
 
-Future<void> _body(PatrolTester $) async {
+Future<void> _body(PatrolIntegrationTester $) async {
   final testName = Invoker.current!.fullCurrentTestName();
   _print('ran body of test "$testName"');
 
