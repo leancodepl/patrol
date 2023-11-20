@@ -238,7 +238,7 @@ class Automator private constructor() {
     }
 
     fun swipe(startX: Float, startY: Float, endX: Float, endY: Float, steps: Int) {
-        Logger.d("swipe()")
+        Logger.d("swipe(startX: $startX, startY: $startY, endX: $endX, endY: $endY, steps: $steps)")
 
         if (startX !in 0f..1f) {
             throw IllegalArgumentException("startX represents a percentage and must be between 0 and 1")

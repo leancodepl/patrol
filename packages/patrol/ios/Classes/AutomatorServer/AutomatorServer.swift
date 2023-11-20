@@ -121,7 +121,11 @@
 
     func swipe(request: SwipeRequest) throws {
       return try runCatching {
-        throw PatrolError.methodNotImplemented("swipe")
+        try automator.swipe(
+          from: CGVector(dx: request.startX, dy: request.startY),
+          to: CGVector(dx: request.startY, dy: request.endY),
+          inApp: request.appId
+        )
       }
     }
 
