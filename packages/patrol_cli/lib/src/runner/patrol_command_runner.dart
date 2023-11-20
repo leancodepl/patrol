@@ -374,11 +374,6 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
       return;
     }
 
-    if (_version.contains('dev')) {
-      // TODO: Remove this "if" when we bump pub_updater to 0.4.0.
-      return;
-    }
-
     final latestVersion = await _pubUpdater.getLatestVersion('patrol_cli');
     final isUpToDate = _version == latestVersion;
 
