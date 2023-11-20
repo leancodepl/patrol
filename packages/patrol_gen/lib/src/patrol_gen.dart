@@ -6,6 +6,7 @@ import 'package:patrol_gen/src/generators/dart/dart_config.dart';
 import 'package:patrol_gen/src/generators/dart/dart_generator.dart';
 import 'package:patrol_gen/src/generators/ios/ios_config.dart';
 import 'package:patrol_gen/src/generators/ios/ios_generator.dart';
+import 'package:patrol_gen/src/generators/ios/macos_generator.dart';
 import 'package:patrol_gen/src/resolve_schema.dart';
 
 class PatrolGenConfig {
@@ -32,7 +33,7 @@ class PatrolGen {
       //TODO: We should rename IOSGenerator to SwiftGenerator
       // but we should wait until feature/stop-depending-on-gRPC-code-generator
       // is marged to master branch. We will avoid conflicts.
-      ..addAll(IOSGenerator().generate(schema, config.macosConfig))
+      ..addAll(MacosGenerator().generate(schema, config.macosConfig))
       ..addAll(IOSGenerator().generate(schema, config.iosConfig))
       ..addAll(AndroidGenerator().generate(schema, config.androidConfig));
 

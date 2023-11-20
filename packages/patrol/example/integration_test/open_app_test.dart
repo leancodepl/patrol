@@ -42,6 +42,8 @@ void main() {
       browserId = 'com.apple.mobilesafari';
     } else if (Platform.isAndroid) {
       browserId = 'com.android.chrome';
+    } else if (Platform.isMacOS) {
+      browserId = 'com.apple.mobilesafari';
     } else {
       throw UnsupportedError('Unsupported platform');
     }

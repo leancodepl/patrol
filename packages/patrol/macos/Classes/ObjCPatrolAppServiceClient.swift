@@ -32,7 +32,7 @@
 
     let response = try await client.listDartTests()
 
-    return response.group.groups.map { $0.name }
+      return response.group.entries.map { $0.name }
   }
 
   @objc public func runDartTest(name: String) async throws -> RunDartTestResponse2 {

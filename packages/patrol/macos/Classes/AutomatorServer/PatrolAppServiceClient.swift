@@ -1,4 +1,6 @@
 ///
+//  swift-format-ignore-file
+//
 //  Generated code. Do not modify.
 //  source: schema.dart
 //
@@ -13,31 +15,50 @@ class PatrolAppServiceClient {
   }
 
   func listDartTests() async throws -> ListDartTestsResponse {
-    return try await performRequest(requestName: "listDartTests")
+    return try await performRequestWithResult(requestName: "listDartTests")
   }
 
-  func runDartTest(request: RunDartTestRequest) async throws -> RunDartTestResponse {
-    let body = try JSONEncoder().encode(request)
-    return try await performRequest(requestName: "runDartTest", body: body)
-  }
-
-  private func performRequest<TResult: Codable>(requestName: String, body: Data? = nil) async throws -> TResult {
-    let url = URL(string: "http://\(address):\(port)/\(requestName)")!
-
-    let urlconfig = URLSessionConfiguration.default
-    urlconfig.timeoutIntervalForRequest = TimeInterval(300)
-    urlconfig.timeoutIntervalForResource = TimeInterval(300)
-
-    var request = URLRequest(url: url)
-    request.httpMethod = "POST"
-    request.httpBody = body
-    request.timeoutInterval = TimeInterval(300)
-
-    let (data, response) = try await URLSession(configuration: urlconfig).data(for: request)
-    guard (response as? HTTPURLResponse)?.statusCode == 200 else {
-        throw PatrolError.internal("Invalid response: \(response) \(data)")
+    func runDartTest(request: RunDartTestRequest) async throws -> RunDartTestResponse {
+        NSLog("Test invoked")
+        let body = try JSONEncoder().encode(request)
+        return try await performRequestWithResult(requestName: "runDartTest", body: body)
     }
-    
-    return try JSONDecoder().decode(TResult.self, from: data)
-  }
+
+    private func performRequestWithResult<TResult: Decodable>(
+        requestName: String, body: Data? = nil
+    ) async throws -> TResult {
+        let responseData = try await performRequest(requestName: requestName, body: body)
+        let object = try JSONDecoder().decode(TResult.self, from: responseData)
+        return object
+    }
+
+    private func performRequest(requestName: String, body: Data? = nil) async throws -> Data {
+        let url = URL(string: "http://\(address):\(port)/\(requestName)")!
+
+        let urlconfig = URLSessionConfiguration.default
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.httpBody = body
+
+        NSLog("Performing request to: \(url)")
+
+        let session = URLSession(configuration: urlconfig)
+
+        do {
+            let (data, response) = try await session.data(for: request)
+
+            guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+                let message = "Invalid response: \(String(describing: response)) \(String(describing: data))"
+                NSLog("Received invalid response: \(message)")
+                throw PatrolError.internal(message)
+            }
+
+            NSLog("Request successful for: \(requestName)")
+            return data
+        } catch {
+            NSLog("Error while performing request: \(error)")
+            throw error
+        }
+    }
 }

@@ -1,4 +1,6 @@
 ///
+//  swift-format-ignore-file
+//
 //  Generated code. Do not modify.
 //  source: schema.dart
 //
@@ -14,6 +16,7 @@ protocol NativeAutomatorServer {
     func doublePressRecentApps() async throws
     func openApp(request: OpenAppRequest) async throws
     func openQuickSettings(request: OpenQuickSettingsRequest) async throws
+    func getNativeUITree(request: GetNativeUITreeRequest) async throws -> GetNativeUITreeRespone
     func getNativeViews(request: GetNativeViewsRequest) async throws -> GetNativeViewsResponse
     func tap(request: TapRequest) async throws
     func doubleTap(request: TapRequest) async throws
@@ -84,6 +87,13 @@ extension NativeAutomatorServer {
         let requestArg = try await JSONDecoder().decode(OpenQuickSettingsRequest.self, from: request.bodyData)
         try await openQuickSettings(request: requestArg)
         return HTTPResponse(statusCode: .ok)
+    }
+
+    private func getNativeUITreeHandler(request: HTTPRequest) async throws -> HTTPResponse {
+        let requestArg = try await JSONDecoder().decode(GetNativeUITreeRequest.self, from: request.bodyData)
+        let response = try await getNativeUITree(request: requestArg)
+        let body = try JSONEncoder().encode(response)
+        return HTTPResponse(statusCode: .ok, body: body)
     }
 
     private func getNativeViewsHandler(request: HTTPRequest) async throws -> HTTPResponse {
@@ -274,6 +284,11 @@ extension NativeAutomatorServer {
             return await handleRequest(
                 request: request,
                 handler: openQuickSettingsHandler)
+        }
+        await server.appendRoute("/getNativeUITree") { request in
+            return await handleRequest(
+                request: request,
+                handler: getNativeUITreeHandler)
         }
         await server.appendRoute("/getNativeViews") { request in
             return await handleRequest(

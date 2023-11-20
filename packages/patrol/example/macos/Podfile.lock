@@ -4,9 +4,9 @@ PODS:
   - flutter_timezone (0.1.0):
     - FlutterMacOS
   - FlutterMacOS (1.0.0)
-  - FlyingFox (0.12.2):
-    - FlyingSocks (~> 0.12.2)
-  - FlyingSocks (0.12.2)
+  - FlyingFox (0.12.3):
+    - FlyingSocks (~> 0.12.3)
+  - FlyingSocks (0.12.3)
   - geolocator_apple (1.2.0):
     - FlutterMacOS
   - patrol (0.0.1):
@@ -41,8 +41,8 @@ SPEC CHECKSUMS:
   flutter_local_notifications: 3805ca215b2fb7f397d78b66db91f6a747af52e4
   flutter_timezone: 6b906d1740654acb16e50b639835628fea851037
   FlutterMacOS: 8f6f14fa908a6fb3fba0cd85dbd81ec4b251fb24
-  FlyingFox: 64c3302f81bd8690514a8988dafc9ff951781e7d
-  FlyingSocks: 7b2a722af4be5cf74499c0a5a94d3f31f028a4f7
+  FlyingFox: f052489b7f3853b1a974557661d6754654d46687
+  FlyingSocks: f095b16c074068e49e0c87e9eb944c4ec1fcd5bd
   geolocator_apple: 72a78ae3f3e4ec0db62117bd93e34523f5011d58
   patrol: 7f90ef5a40fd0ee5b841f9250e5fbb516643f28d
 

@@ -134,6 +134,11 @@ final class AutomatorServer: NativeAutomatorServer {
         }
     }
     
+    func getNativeUITree(request: GetNativeUITreeRequest) async throws -> GetNativeUITreeRespone {
+        //TODO: Implement
+        return GetNativeUITreeRespone(roots: [])
+    }
+    
     func enableBluetooth() async throws {
         return try await runCatching {
             try await automator.enableBluetooth()
