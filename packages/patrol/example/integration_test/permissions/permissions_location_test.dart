@@ -3,12 +3,12 @@ import 'dart:io' as io;
 
 import 'package:permission_handler/permission_handler.dart';
 
-import 'common.dart';
+import '../common.dart';
 
 const _timeout = Duration(seconds: 5); // to avoid timeouts on CI
 
 // Firebase Test Lab pops out another dialog we need to handle
-Future<void> tapOkIfGoogleDialogAppears(PatrolTester $) async {
+Future<void> tapOkIfGoogleDialogAppears(PatrolIntegrationTester $) async {
   var listWithOkText = <NativeView>[];
   final inactivityTimer = Timer(Duration(seconds: 10), () {});
 
@@ -40,7 +40,7 @@ void main() {
         await $.native.selectFineLocation();
         await $.native.selectCoarseLocation();
         await $.native.selectFineLocation();
-        await $.native.grantPermissionWhenInUse();
+        await $.native.grantPermissionOnlyThisTime();
       }
       await $.pump();
 

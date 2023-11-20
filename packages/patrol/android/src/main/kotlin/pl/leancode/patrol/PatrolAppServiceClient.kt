@@ -1,7 +1,8 @@
-package pl.leancode.patrol;
+package pl.leancode.patrol
 
 import pl.leancode.patrol.contracts.Contracts
 import pl.leancode.patrol.contracts.PatrolAppServiceClientException
+import java.util.concurrent.TimeUnit
 import pl.leancode.patrol.contracts.PatrolAppServiceClient as Client
 
 /**
@@ -11,18 +12,22 @@ class PatrolAppServiceClient {
 
     private var client: Client
 
+    // https://github.com/leancodepl/patrol/issues/1683
+    private val timeout = 2L
+    private val timeUnit = TimeUnit.HOURS
+
     constructor() {
-        client = Client(address = "localhost", port = 8082)
+        client = Client(address = "localhost", port = 8082, timeout = timeout, timeUnit = timeUnit)
         Logger.i("Created PatrolAppServiceClient: ${client.serverUrl}")
     }
 
     constructor(address: String) {
-        client = Client(address = address, port = 8082)
+        client = Client(address = address, port = 8082, timeout = timeout, timeUnit = timeUnit)
         Logger.i("Created PatrolAppServiceClient: ${client.serverUrl}")
     }
 
     @Throws(PatrolAppServiceClientException::class)
-    fun listDartTests(): Contracts.DartTestGroup {
+    fun listDartTests(): Contracts.DartGroupEntry {
         Logger.i("PatrolAppServiceClient.listDartTests()")
         val result = client.listDartTests()
         return result.group

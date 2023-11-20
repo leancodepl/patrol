@@ -14,21 +14,16 @@
   },
   "sidebar": [
     ["About", "/"],
-    ["Patrol 2.0 is here!", "/v2"],
+    ["Getting started", "/getting-started"],
+    ["Patrol 3.0 is here!", "/v3"],
+    ["New package - patrol_finders", "/patrol-finders-release"],
     [
-      "Getting started",
-      [
-        ["Getting started", "/getting-started/getting-started"],
-        ["Native automation setup", "/getting-started/native"],
-        ["Custom finders setup", "/getting-started/custom-finders"]
-      ]
-    ],
-    [
-      "Custom finders",
+      "Finders",
       [
         ["Overview", "/finders/overview"],
         ["Usage", "/finders/usage"],
-        ["Advanced", "/finders/advanced"]
+        ["Advanced", "/finders/advanced"],
+        ["Using Patrol finders in widget tests", "/finders/finders-setup"]
       ]
     ],
     [
@@ -36,6 +31,7 @@
       [
         ["Overview", "/native/overview"],
         ["Usage", "/native/usage"],
+        ["Advanced", "/native/advanced"],
         ["Feature parity", "/native/feature-parity"]
       ]
     ],
@@ -66,6 +62,7 @@
       ]
     ],
     ["Effective Patrol", "/effective-patrol"],
-    ["Tips and tricks", "/tips-and-tricks"]
+    ["Tips and tricks", "/tips-and-tricks"],
+    ["LeanCode", "https://leancode.co"]
   ]
 }

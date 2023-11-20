@@ -1,13 +1,12 @@
 package pl.leancode.patrol
 
+import android.os.ConditionVariable
 import androidx.test.platform.app.InstrumentationRegistry
 import org.http4k.core.ContentType
 import org.http4k.filter.ServerFilters
 import org.http4k.server.Http4kServer
-import org.http4k.server.Netty
+import org.http4k.server.KtorCIO
 import org.http4k.server.asServer
-import java.util.concurrent.Future
-import com.google.common.util.concurrent.SettableFuture;
 
 class PatrolServer {
     private val envPortKey = "PATROL_PORT"
@@ -29,9 +28,9 @@ class PatrolServer {
             .withFilter(catcher)
             .withFilter(printer)
             .withFilter(ServerFilters.SetContentType(ContentType.TEXT_PLAIN))
-            .asServer(Netty(port))
+            .asServer(KtorCIO(port))
+            .start()
 
-        server?.start()
         Logger.i("Created and started PatrolServer, port: $port")
 
         Runtime.getRuntime().addShutdownHook(
@@ -44,9 +43,7 @@ class PatrolServer {
     }
 
     companion object {
-        val appReady: SettableFuture<Boolean> = SettableFuture.create()
-        val appReadyFuture: Future<Boolean>
-            get() = appReady
+        val appReady: ConditionVariable = ConditionVariable()
     }
 }
 

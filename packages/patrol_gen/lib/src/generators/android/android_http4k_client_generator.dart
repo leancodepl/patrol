@@ -4,9 +4,8 @@ import 'package:patrol_gen/src/schema.dart';
 
 class AndroidHttp4kClientGenerator {
   OutputFile generate(Service service, AndroidConfig config) {
-    final buffer = StringBuffer()..write(_contentPrefix(config));
-
-    buffer
+    final buffer = StringBuffer()
+      ..write(_contentPrefix(config))
       ..writeln(_generateClientClass(service))
       ..writeln()
       ..writeln(_generateExceptionClass(service));
@@ -26,59 +25,60 @@ class AndroidHttp4kClientGenerator {
 
 package ${config.package};
 
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import org.apache.hc.client5.http.config.RequestConfig
-import org.apache.hc.client5.http.impl.classic.HttpClients
-import org.apache.hc.core5.util.Timeout
-import org.http4k.client.ApacheClient
-import org.http4k.core.Method
-import org.http4k.core.Request
-import org.http4k.core.Status
+import com.google.gson.Gson
+import com.squareup.okhttp.MediaType
+import com.squareup.okhttp.OkHttpClient
+import com.squareup.okhttp.Request
+import com.squareup.okhttp.RequestBody
+import java.util.concurrent.TimeUnit
 
 ''';
   }
 
   String _generateClientClass(Service service) {
-    final url = r'"http://$address:$port/"';
+    const url = r'"http://$address:$port/"';
     final endpoints = service.endpoints.map(_createEndpoint).join('\n\n');
-    final throwException =
-        r'throw PatrolAppServiceClientException("Invalid response ${response.status}, ${response.bodyString()}")';
+    const throwException =
+        r'throw PatrolAppServiceClientException("Invalid response ${response.code()}, ${response?.body()?.string()}")';
 
-    final urlWithPath = r'"$serverUrl$path"';
+    const urlWithPath = r'"$serverUrl$path"';
 
     return '''
-class ${service.name}Client(private val address: String, private val port: Int) {
+class ${service.name}Client(address: String, port: Int, private val timeout: Long, private val timeUnit: TimeUnit) {
 
 $endpoints
 
     private fun performRequest(path: String, requestBody: String? = null): String {
-        var request = Request(Method.POST, $urlWithPath)
-        if (requestBody != null) {
-            request = request.body(requestBody)
+        val endpoint = $urlWithPath
+
+        val client = OkHttpClient().apply {
+            setConnectTimeout(timeout, timeUnit)
+            setReadTimeout(timeout, timeUnit)
+            setWriteTimeout(timeout, timeUnit)
         }
 
-        val client = ApacheClient(
-              HttpClients.custom().setDefaultRequestConfig(
-                  RequestConfig
-                    .copy(RequestConfig.DEFAULT)
-                    .setResponseTimeout(Timeout.ofSeconds(300))
-                    .setConnectionRequestTimeout(Timeout.ofSeconds(300))
-                    .build()
-              ).build())
-        
-        val response = client(request)
+        val request = Request.Builder()
+            .url(endpoint)
+            .also {
+                if (requestBody != null) {
+                    it.post(RequestBody.create(jsonMediaType, requestBody))
+                }
+            }
+            .build()
 
-        if (response.status != Status.OK) {
+        val response = client.newCall(request).execute()
+        if (response.code() != 200) {
             $throwException
         }
 
-        return response.bodyString()
+        return response.body().string()
     }
 
     val serverUrl = $url
 
-    private val json = Json { ignoreUnknownKeys = true }
+    private val json = Gson()
+
+    private val jsonMediaType = MediaType.parse("application/json; charset=utf-8")
 }''';
   }
 
@@ -91,17 +91,17 @@ $endpoints
         : '';
 
     final serializeParameter =
-        endpoint.request != null ? ', json.encodeToString(request)' : '';
+        endpoint.request != null ? ', json.toJson(request)' : '';
 
     final body = endpoint.response != null
         ? '''
         val response = performRequest("${endpoint.name}"$serializeParameter)
-        return json.decodeFromString(response)'''
+        return json.fromJson(response, Contracts.${endpoint.response!.name}::class.java)'''
         : '''
-        return performRequest("${endpoint.name}"$serializeParameter)''';
+        performRequest("${endpoint.name}"$serializeParameter)''';
 
     return '''
-    fun ${endpoint.name}($parameterDef) $returnDef {
+    fun ${endpoint.name}($parameterDef)$returnDef {
 $body
     }''';
   }

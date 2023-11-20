@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:patrol_cli/src/crossplatform/flutter_tool.dart';
+import 'package:platform/platform.dart';
 import 'package:test/test.dart';
 
 import '../src/mocks.dart';
@@ -10,16 +11,19 @@ import '../src/mocks.dart';
 void main() {
   late FlutterTool flutterTool;
   late MockProcessManager processManager;
+  late Platform platform;
 
   setUp(() {
     final disposeScope = DisposeScope();
     final stdin = StreamController<List<int>>();
     processManager = MockProcessManager();
+    platform = FakePlatform();
 
     flutterTool = FlutterTool(
       logger: MockLogger(),
       parentDisposeScope: disposeScope,
       processManager: processManager,
+      platform: platform,
       stdin: stdin.stream,
     );
   });
@@ -43,6 +47,7 @@ void main() {
             target: 'target',
             appId: 'appId',
             dartDefines: {},
+            openBrowser: false,
           );
 
           verify(

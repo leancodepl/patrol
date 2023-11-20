@@ -27,11 +27,11 @@ class NativeAutomatorClient {
   NativeAutomatorClient(
     this._client,
     this._apiUri, {
-    Duration timeout = const Duration(seconds: 300),
+    Duration timeout = const Duration(seconds: 30),
   })  : _timeout = timeout,
         _headers = {
           'Connection': 'keep-alive',
-          'Keep-Alive': 'timeout=${timeout.inSeconds}'
+          'Keep-Alive': 'timeout=${timeout.inSeconds}',
         };
 
   final Duration _timeout;
@@ -94,6 +94,16 @@ class NativeAutomatorClient {
       'openQuickSettings',
       request.toJson(),
     );
+  }
+
+  Future<GetNativeUITreeRespone> getNativeUITree(
+    GetNativeUITreeRequest request,
+  ) async {
+    final json = await _sendRequest(
+      'getNativeUITree',
+      request.toJson(),
+    );
+    return GetNativeUITreeRespone.fromJson(json);
   }
 
   Future<GetNativeViewsResponse> getNativeViews(

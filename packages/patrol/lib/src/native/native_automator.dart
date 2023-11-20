@@ -2,9 +2,8 @@ import 'dart:io' as io;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
-import 'package:integration_test/integration_test.dart';
 import 'package:meta/meta.dart';
-import 'package:patrol/src/binding.dart';
+import 'package:patrol/src/native/contracts/contracts.dart' as contracts;
 import 'package:patrol/src/native/contracts/contracts.dart';
 import 'package:patrol/src/native/contracts/native_automator_client.dart';
 
@@ -18,18 +17,6 @@ class PatrolActionException implements Exception {
 
   @override
   String toString() => 'Patrol action failed: $message';
-}
-
-/// Bindings available to use with [NativeAutomator].
-enum BindingType {
-  /// Initialize [PatrolBinding].
-  patrol,
-
-  /// Initializes [IntegrationTestWidgetsFlutterBinding]
-  integrationTest,
-
-  /// Doesn't initialize any binding.
-  none,
 }
 
 /// Specifies how the OS keyboard should behave when using
@@ -46,18 +33,17 @@ enum KeyboardBehavior {
   /// On Android, no keyboard will be shown at all. The text will simply appear
   /// inside the TextField.
   ///
-  /// On iOS, the behavior is currently the same as [showAndDismiss], but that
-  /// might change in the future.
+  /// On iOS, the keyboard will not be dismissed after entering text.
   alternative,
 }
 
 extension on KeyboardBehavior {
-  bool get toShowKeyboardBool {
+  contracts.KeyboardBehavior get toContractsEnum {
     switch (this) {
       case KeyboardBehavior.showAndDismiss:
-        return true;
+        return contracts.KeyboardBehavior.showAndDismiss;
       case KeyboardBehavior.alternative:
-        return false;
+        return contracts.KeyboardBehavior.alternative;
     }
   }
 }
@@ -80,6 +66,8 @@ class NativeAutomatorConfig {
       defaultValue: '8081',
     ),
     this.packageName = const String.fromEnvironment('PATROL_APP_PACKAGE_NAME'),
+    this.iosInstalledApps =
+        const String.fromEnvironment('PATROL_IOS_INSTALLED_APPS'),
     this.bundleId = const String.fromEnvironment('PATROL_APP_BUNDLE_ID'),
     this.androidAppName =
         const String.fromEnvironment('PATROL_ANDROID_APP_NAME'),
@@ -89,6 +77,12 @@ class NativeAutomatorConfig {
     this.keyboardBehavior = KeyboardBehavior.showAndDismiss,
     this.logger = _defaultPrintLogger,
   });
+
+  /// Apps installed on the iOS simulator.
+  ///
+  /// This is needed for purpose of native view inspection in the Patrol
+  /// DevTools extension.
+  final String iosInstalledApps;
 
   /// Host on which Patrol server instrumentation is running.
   final String host;
@@ -152,6 +146,7 @@ class NativeAutomatorConfig {
     String? iosAppName,
     Duration? connectionTimeout,
     Duration? findTimeout,
+    KeyboardBehavior? keyboardBehavior,
     void Function(String)? logger,
   }) {
     return NativeAutomatorConfig(
@@ -163,6 +158,7 @@ class NativeAutomatorConfig {
       iosAppName: iosAppName ?? this.iosAppName,
       connectionTimeout: connectionTimeout ?? this.connectionTimeout,
       findTimeout: findTimeout ?? this.findTimeout,
+      keyboardBehavior: keyboardBehavior ?? this.keyboardBehavior,
       logger: logger ?? this.logger,
     );
   }
@@ -545,8 +541,8 @@ class NativeAutomator {
           data: text,
           appId: appId ?? resolvedAppId,
           selector: selector,
-          showKeyboard:
-              (keyboardBehavior ?? _config.keyboardBehavior).toShowKeyboardBool,
+          keyboardBehavior:
+              (keyboardBehavior ?? _config.keyboardBehavior).toContractsEnum,
         ),
       ),
     );
@@ -579,8 +575,8 @@ class NativeAutomator {
           data: text,
           appId: appId ?? resolvedAppId,
           index: index,
-          showKeyboard:
-              (keyboardBehavior ?? _config.keyboardBehavior).toShowKeyboardBool,
+          keyboardBehavior:
+              (keyboardBehavior ?? _config.keyboardBehavior).toContractsEnum,
         ),
       ),
     );
@@ -588,10 +584,9 @@ class NativeAutomator {
 
   /// Swipes from [from] to [to].
   ///
-  /// On Android, [steps] controls speed and smoothness.
-  /// One unit of [steps] is equivalent to 5 ms.
-  /// If you want to slow down the swipe time, increase [steps].
-  /// If [swipe] doesn't work, try increasing [steps].
+  /// On Android, [steps] controls speed and smoothness. One unit of [steps] is
+  /// equivalent to 5 ms. If you want to slow down the swipe time, increase
+  /// [steps]. If [swipe] doesn't work, try increasing [steps].
   ///
   Future<void> swipe({
     required Offset from,
@@ -692,6 +687,10 @@ class NativeAutomator {
   ///
   /// On iOS, this is the same as [grantPermissionWhenInUse] except for the
   /// location permission.
+  ///
+  /// On Android versions older than 11 (R, API level 30), the concept of
+  /// "one-time permissions" doesn't exist. In this case, this method is the
+  /// same as [grantPermissionWhenInUse].
   ///
   /// See also:
   ///

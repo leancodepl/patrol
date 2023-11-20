@@ -18,10 +18,12 @@ public class BrowserstackPatrolJUnitRunner extends PatrolJUnitRunner {
 
         try {
             client.listDartTests();
-        } catch (PatrolAppServiceClientException ex) {//TODO
+
+            //TODO verify in a project where we use Browserstack
+        } catch (PatrolAppServiceClientException ex) {
             ex.printStackTrace();
             // If the client on localhost:8082 fails, let's apply the wokraround
-            Logger.INSTANCE.i("StatusRuntimeException in createAppServiceClient " + ex.getMessage());
+            Logger.INSTANCE.i("PatrolAppServiceClientException in createAppServiceClient " + ex.getMessage());
             Logger.INSTANCE.i("LOOPBACK: " + getLoopback());
             client = new PatrolAppServiceClient(getLoopback());
         }

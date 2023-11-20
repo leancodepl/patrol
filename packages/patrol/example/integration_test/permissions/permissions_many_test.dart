@@ -1,6 +1,6 @@
 import 'package:permission_handler/permission_handler.dart';
 
-import 'common.dart';
+import '../common.dart';
 
 const _timeout = Duration(seconds: 5); // to avoid timeouts on CI
 
@@ -16,7 +16,7 @@ void main() {
   });
 }
 
-Future<void> _requestAndGrantCameraPermission(PatrolTester $) async {
+Future<void> _requestAndGrantCameraPermission(PatrolIntegrationTester $) async {
   if (!await Permission.camera.isGranted) {
     expect($(#camera).$(#statusText).text, 'Not granted');
     await $('Request camera permission').tap();
@@ -29,7 +29,9 @@ Future<void> _requestAndGrantCameraPermission(PatrolTester $) async {
   expect($(#camera).$(#statusText).text, 'Granted');
 }
 
-Future<void> _requestAndGrantMicrophonePermission(PatrolTester $) async {
+Future<void> _requestAndGrantMicrophonePermission(
+  PatrolIntegrationTester $,
+) async {
   if (!await Permission.microphone.isGranted) {
     expect($(#microphone).$(#statusText).text, 'Not granted');
     await $('Request microphone permission').tap();
@@ -42,7 +44,9 @@ Future<void> _requestAndGrantMicrophonePermission(PatrolTester $) async {
   expect($(#microphone).$(#statusText).text, 'Granted');
 }
 
-Future<void> _requestAndDenyContactsPermission(PatrolTester $) async {
+Future<void> _requestAndDenyContactsPermission(
+  PatrolIntegrationTester $,
+) async {
   if (!await Permission.contacts.isGranted) {
     expect($(#contacts).$(#statusText).text, 'Not granted');
     await $('Request contacts permission').tap();

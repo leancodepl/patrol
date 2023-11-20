@@ -1,8 +1,8 @@
 import 'package:dart_style/dart_style.dart';
+import 'package:path/path.dart' as path;
 import 'package:patrol_gen/src/generators/dart/dart_config.dart';
 import 'package:patrol_gen/src/generators/output_file.dart';
 import 'package:patrol_gen/src/schema.dart';
-import 'package:path/path.dart' as path;
 
 class DartShelfServerGenerator {
   OutputFile generate(Service service, DartConfig config) {
@@ -39,7 +39,6 @@ import '${path.basename(config.contractsFilename)}';
   String _generateHandlerCalls(Service service) {
     return service.endpoints.map((e) {
       var requestDeserialization = '';
-      var responseSerialization = '';
 
       if (e.request != null) {
         requestDeserialization = '''
@@ -49,15 +48,18 @@ final requestObj = ${e.request!.name}.fromJson(json as Map<String,dynamic>);
 ''';
       }
 
-      final handlerCall = e.request != null
-          ? 'final result = await ${e.name}(requestObj);'
-          : 'final result = await ${e.name}();';
-
+      var handlerCall = e.request != null
+          ? 'await ${e.name}(requestObj);'
+          : 'await ${e.name}();';
       if (e.response != null) {
-        responseSerialization = '''
-final body = jsonEncode(result.toJson());
-return Response.ok(body);''';
+        handlerCall = 'final result = $handlerCall';
       }
+
+      final responseSerialization = e.response != null
+          ? '''
+final body = jsonEncode(result.toJson());
+return Response.ok(body);'''
+          : "return Response.ok('');";
 
       final elseKeyword = e == service.endpoints.first ? '' : 'else';
 
@@ -84,7 +86,10 @@ $responseSerialization
   }
 
   String _createServerClass(
-      Service service, String handlerCalls, String handlers) {
+    Service service,
+    String handlerCalls,
+    String handlers,
+  ) {
     var notFoundRespone =
         r"return Response.notFound('Request ${request.url} not found');";
     if (service.endpoints.isNotEmpty) {

@@ -3,7 +3,6 @@ name: patrol_cli prepare
 on:
   workflow_dispatch:
   pull_request:
-    branches: [master]
     paths:
       - 'packages/patrol_cli/**'
 
@@ -16,7 +15,8 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
-        flutter-version: ['3.3.x', '3.7.x', '3.10.0']
+        flutter-version: ['3.16.x']
+        flutter-channel: ['stable']
 
     defaults:
       run:
@@ -24,12 +24,13 @@ jobs:
 
     steps:
       - name: Clone repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ matrix.flutter-version }}
+          channel: ${{ matrix.flutter-channel }}
 
       - name: Run flutter tool (to dismiss the first run experience)
         run: flutter

@@ -1,20 +1,25 @@
 name: patrol_finders
-description: Streamlined, high-level API on top of `flutter_test`.
-version: 1.0.0
+description: Streamlined, high-level API on top of flutter_test.
+version: 2.0.1+1
 homepage: https://patrol.leancode.co
-repository: https://github.com/leancodepl/patrol
-issue_tracker: https://github.com/leancodepl/patrol/issues
+repository: https://github.com/leancodepl/patrol/tree/master/packages/patrol_finders
+issue_tracker: https://github.com/leancodepl/patrol/issues?q=is%3Aopen+is%3Aissue+label%3Apackage%3Apatrol_finders
+documentation: https://patrol.leancode.co
+topics: [test, widget-test, patrol]
+screenshots:
+  - description: The Patrol framework logo.
+    path: screenshots/logo.png
 
 environment:
-  sdk: '>=2.18.0 <4.0.0'
-  flutter: '>=3.3.0'
+  sdk: '>=3.2.0 <4.0.0'
+  flutter: '>=3.16.0'
 
 dependencies:
   flutter:
     sdk: flutter
   flutter_test:
     sdk: flutter
-  meta: ^1.7.0
+  meta: ^1.10.0
 
 dev_dependencies:
-  leancode_lint: ^3.0.0
+  leancode_lint: ^7.0.0+1

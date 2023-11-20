@@ -5,12 +5,18 @@ import 'package:patrol_gen/src/utils.dart';
 
 class AndroidContractsGenerator {
   OutputFile generate(Schema schema, AndroidConfig config) {
-    final buffer = StringBuffer()..write(_contentPrefix(config));
+    final buffer = StringBuffer()
+      ..write(_contentPrefix(config))
+      ..writeln('class Contracts {');
 
-    buffer.writeln("class Contracts {");
-    schema.enums.forEach((e) => buffer.writeln(_createEnum(e)));
-    schema.messages.forEach((e) => buffer.writeln(_createMessage(e)));
-    buffer.writeln("}");
+    for (final enumDefinition in schema.enums) {
+      buffer.writeln(_createEnum(enumDefinition));
+    }
+    for (final messageDefintion in schema.messages) {
+      buffer.writeln(_createMessage(messageDefintion));
+    }
+
+    buffer.writeln('}');
 
     return OutputFile(
       filename: config.contractsFilename,
@@ -27,17 +33,20 @@ class AndroidContractsGenerator {
 
 package ${config.package};
 
-import kotlinx.serialization.Serializable
-
 ''';
   }
 
   String _createMessage(Message message) {
     final fields = message.fields.map((e) {
       final optional = e.isOptional ? '? = null' : '';
-      return e.isList
-          ? '    val ${e.name}: List<${_transformType(e.type)}>$optional'
-          : '    val ${e.name}: ${_transformType(e.type)}$optional';
+      return switch (e.type) {
+        MapFieldType(keyType: final keyType, valueType: final valueType) =>
+          '    val ${e.name}: Map<${_transformType(keyType)}, ${_transformType(valueType)}>$optional',
+        ListFieldType(type: final type) =>
+          '    val ${e.name}: List<${_transformType(type)}>$optional',
+        OrdinaryFieldType(type: final type) =>
+          '    val ${e.name}: ${_transformType(type)}$optional',
+      };
     }).join(',\n');
 
     final dataKeyword = fields.isNotEmpty ? 'data ' : '';
@@ -46,13 +55,13 @@ import kotlinx.serialization.Serializable
 
     var optionalFieldUtils = optionalFields.map(_optionalFieldUtil).join('\n');
     if (optionalFields.isNotEmpty) {
-      optionalFieldUtils = '''{
+      optionalFieldUtils = '''
+{
 $optionalFieldUtils
   }''';
     }
 
     return '''
-  @Serializable
   ${dataKeyword}class ${message.name} (
 $fields
   )$optionalFieldUtils
@@ -67,10 +76,9 @@ $fields
   }
 
   String _createEnum(Enum enumDefinition) {
-    final cases = enumDefinition.fields.map((e) => '    ${e},').join('\n');
+    final cases = enumDefinition.fields.map((e) => '    $e,').join('\n');
 
     return '''
-  @Serializable
   enum class ${enumDefinition.name} {
 $cases
   }

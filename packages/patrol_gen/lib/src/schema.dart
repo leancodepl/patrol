@@ -5,13 +5,37 @@ class Enum {
   final List<String> fields;
 }
 
+sealed class MessageFieldType {}
+
+class OrdinaryFieldType implements MessageFieldType {
+  const OrdinaryFieldType({required this.type});
+
+  final String type;
+}
+
+class ListFieldType implements MessageFieldType {
+  const ListFieldType({required this.type});
+
+  final String type;
+}
+
+class MapFieldType implements MessageFieldType {
+  const MapFieldType({required this.keyType, required this.valueType});
+
+  final String keyType;
+  final String valueType;
+}
+
 class MessageField {
-  const MessageField(this.isOptional, this.name, this.type, this.isList);
+  const MessageField({
+    required this.name,
+    required this.type,
+    required this.isOptional,
+  });
 
   final bool isOptional;
-  final bool isList;
   final String name;
-  final String type;
+  final MessageFieldType type;
 }
 
 class Message {
@@ -30,7 +54,10 @@ class Endpoint {
 }
 
 class ServiceGenConfig {
-  const ServiceGenConfig(this.needsClient, this.needsServer);
+  const ServiceGenConfig({
+    required this.needsClient,
+    required this.needsServer,
+  });
 
   final bool needsClient;
   final bool needsServer;

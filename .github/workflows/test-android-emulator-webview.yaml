@@ -1,0 +1,111 @@
+name: test android emulator webview
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 23 * * *'
+
+jobs:
+  run_tests:
+    name: Flutter ${{ matrix.flutter-version }} webview on emulator.wtf
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    outputs:
+      SLACK_MESSAGE_TITLE: Flutter ${{ matrix.flutter-version }} webview on emulator.wtf
+      TESTS_EXIT_CODE: ${{ steps.tests_step.outputs.TESTS_EXIT_CODE }}
+      URL_TO_DETAILS: ${{ steps.tests_step.outputs.URL_TO_DETAILS }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        flutter-version: ['3.16.x']
+        flutter-channel: ['stable']
+
+    defaults:
+      run:
+        working-directory: packages/patrol/example
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Gradle cache
+        uses: gradle/gradle-build-action@v2
+        with:
+          generate-job-summary: false
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+          channel: ${{ matrix.flutter-channel }}
+
+      - name: Preload Flutter artifacts
+        run: flutter precache --android
+
+      - name: Set up Patrol CLI
+        working-directory: packages/patrol_cli
+        run: dart pub global activate --source path . && patrol
+
+      - name: Generate Gradle wrapper
+        run: flutter build apk --config-only
+
+      - name: Install ew-cli
+        run: |
+          mkdir -p "$HOME/bin"
+          curl "https://maven.emulator.wtf/releases/ew-cli" -o "$HOME/bin/ew-cli"
+          chmod a+x "$HOME/bin/ew-cli"
+          echo "$HOME/bin" >> $GITHUB_PATH
+          echo "EW_API_TOKEN=${{ secrets.EW_API_TOKEN }}" >> $GITHUB_ENV
+
+      - name: Set tests to include
+        run: |
+          TESTS_TO_INCLUDE="webview_hackernews_test,\
+          webview_leancode_test,\
+          webview_stackoverflow_test"
+
+          target_paths=""
+          for target in $(echo $TESTS_TO_INCLUDE | tr ',' '\n'); do
+              target_paths+="integration_test/${target}.dart,"
+          done
+          target_paths="${target_paths%,}"
+
+          echo "INCLUDED_TESTS=$target_paths" >> "$GITHUB_ENV"
+
+      - name: patrol build android
+        run: patrol build android --target ${{ env.INCLUDED_TESTS }} --verbose
+
+      - name: Upload APKs to emulator.wtf and wait for tests to finish
+        id: tests_step
+        run: |
+          set +e
+          output="$(ew-cli \
+            emulatorwtf.yaml:ci_webview --json \
+            --display-name "Patrol example app (${GITHUB_SHA::7})")"
+          TESTS_EXIT_CODE=$?
+          set -e
+
+          # Extract the results URL and write it to Github Summmary
+          link="$(echo "$output" | jq -r ".resultsUrl")"
+          echo "[Test details on emulator.wtf]($link) (LeanCode members only)" >> "$GITHUB_STEP_SUMMARY"
+
+          echo "URL_TO_DETAILS=$link" >> "$GITHUB_OUTPUT"
+          echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> "$GITHUB_OUTPUT"
+          exit $TESTS_EXIT_CODE
+
+  call_send_slack_message:
+    name: Notify on Slack
+    uses: ./.github/workflows/send-slack-message.yaml
+    needs: run_tests
+    if: always()
+    with:
+      TESTS_EXIT_CODE: ${{ needs.run_tests.outputs.TESTS_EXIT_CODE }}
+      SLACK_MESSAGE_TITLE: ${{ needs.run_tests.outputs.SLACK_MESSAGE_TITLE }}
+      URL_TO_DETAILS: ${{ needs.run_tests.outputs.URL_TO_DETAILS }}
+    secrets: inherit

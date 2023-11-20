@@ -3,7 +3,6 @@ name: patrol_finders prepare
 on:
   workflow_dispatch:
   pull_request:
-    branches: [master]
     paths:
       - 'packages/patrol_finders/**'
 
@@ -15,7 +14,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ['3.3.x', '3.7.x', '3.10.0']
+        flutter-version: ['3.16.x']
+        flutter-channel: ['stable']
 
     defaults:
       run:
@@ -23,12 +23,13 @@ jobs:
 
     steps:
       - name: Clone repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ matrix.flutter-version }}
+          channel: ${{ matrix.flutter-channel }}
 
       - name: flutter pub get
         run: flutter pub get

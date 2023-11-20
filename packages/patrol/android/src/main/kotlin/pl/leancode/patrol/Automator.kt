@@ -15,11 +15,14 @@ import androidx.test.uiautomator.UiObject
 import androidx.test.uiautomator.UiObject2
 import androidx.test.uiautomator.UiObjectNotFoundException
 import androidx.test.uiautomator.UiSelector
-import pl.leancode.patrol.contracts.Contracts
+import pl.leancode.patrol.contracts.Contracts.KeyboardBehavior
+import pl.leancode.patrol.contracts.Contracts.NativeView
+import pl.leancode.patrol.contracts.Contracts.Notification
+import pl.leancode.patrol.contracts.Contracts.Selector
 import kotlin.math.roundToInt
 
-private fun fromUiObject2(obj: UiObject2): Contracts.NativeView {
-    return Contracts.NativeView(
+private fun fromUiObject2(obj: UiObject2): NativeView {
+    return NativeView(
         className = obj.className,
         text = obj.text,
         contentDescription = obj.contentDescription,
@@ -39,6 +42,7 @@ class Automator private constructor() {
     private lateinit var configurator: Configurator
     private lateinit var uiDevice: UiDevice
     private lateinit var targetContext: Context
+    private lateinit var uiAutomation: UiAutomation
 
     fun initialize() {
         if (!this::instrumentation.isInitialized) {
@@ -52,6 +56,9 @@ class Automator private constructor() {
         }
         if (!this::uiDevice.isInitialized) {
             uiDevice = UiDevice.getInstance(instrumentation)
+        }
+        if (!this::uiAutomation.isInitialized) {
+            uiAutomation = instrumentation.uiAutomation
         }
     }
 
@@ -136,11 +143,17 @@ class Automator private constructor() {
 
     fun disableBluetooth(): Unit = throw NotImplementedError("disableBluetooth")
 
-    fun getNativeViews(selector: BySelector): List<Contracts.NativeView> {
+    fun getNativeViews(selector: BySelector): List<NativeView> {
         Logger.d("getNativeViews()")
 
         val uiObjects2 = uiDevice.findObjects(selector)
         return uiObjects2.map { fromUiObject2(it) }
+    }
+
+    fun getNativeUITrees(): List<NativeView> {
+        Logger.d("getNativeUITrees()")
+
+        return getWindowTrees(uiDevice, uiAutomation)
     }
 
     fun tap(uiSelector: UiSelector, bySelector: BySelector, index: Int) {
@@ -174,7 +187,7 @@ class Automator private constructor() {
         delay()
     }
 
-    fun enterText(text: String, index: Int, showKeyboard: Boolean) {
+    fun enterText(text: String, index: Int, keyboardBehavior: KeyboardBehavior) {
         Logger.d("enterText(text: $text, index: $index)")
 
         val selector = By.clazz(EditText::class.java)
@@ -187,18 +200,24 @@ class Automator private constructor() {
         val uiSelector = UiSelector().className(EditText::class.java).instance(index)
         val uiObject = uiDevice.findObject(uiSelector)
 
-        if (showKeyboard) {
+        if (keyboardBehavior == KeyboardBehavior.showAndDismiss) {
             uiObject.click()
         }
 
         uiObject.text = text
 
-        if (showKeyboard) {
+        if (keyboardBehavior == KeyboardBehavior.showAndDismiss) {
             pressBack() // Hide keyboard.
         }
     }
 
-    fun enterText(text: String, uiSelector: UiSelector, bySelector: BySelector, index: Int, showKeyboard: Boolean) {
+    fun enterText(
+        text: String,
+        uiSelector: UiSelector,
+        bySelector: BySelector,
+        index: Int,
+        keyboardBehavior: KeyboardBehavior
+    ) {
         Logger.d("enterText($text): $uiSelector, $bySelector")
 
         if (waitForView(bySelector, index) == null) {
@@ -207,13 +226,13 @@ class Automator private constructor() {
 
         val uiObject = uiDevice.findObject(uiSelector).getFromParent(UiSelector().className(EditText::class.java))
 
-        if (showKeyboard) {
+        if (keyboardBehavior == KeyboardBehavior.showAndDismiss) {
             uiObject.click()
         }
 
         uiObject.text = text
 
-        if (showKeyboard) {
+        if (keyboardBehavior == KeyboardBehavior.showAndDismiss) {
             pressBack() // Hide keyboard.
         }
     }
@@ -285,7 +304,7 @@ class Automator private constructor() {
         delay()
     }
 
-    fun getNotifications(): List<Contracts.Notification> {
+    fun getNotifications(): List<Notification> {
         Logger.d("getNotifications()")
 
         val notificationContainers = mutableListOf<UiObject2>()
@@ -307,7 +326,7 @@ class Automator private constructor() {
 
         Logger.d("Found ${notificationContainers.size} notifications")
 
-        val notifications = mutableListOf<Contracts.Notification>()
+        val notifications = mutableListOf<Notification>()
         for (notificationContainer in notificationContainers) {
             val appName = notificationContainer.findObject(By.res("android:id/app_name_text"))?.text
 
@@ -324,11 +343,10 @@ class Automator private constructor() {
                 Logger.e("Could not find title text")
             }
 
-            val notification = Contracts.Notification(
+            val notification = Notification(
                 appName = appName,
                 content = content ?: "",
-                title = title ?: "",
-                raw = "" //  Should it be optional ?
+                title = title ?: ""
             )
 
             notifications.add(notification)
@@ -341,7 +359,7 @@ class Automator private constructor() {
         Logger.d("tapOnNotification($index)")
 
         try {
-            val query = Contracts.Selector(
+            val query = Selector(
                 resourceId = "android:id/status_bar_latest_event_content",
                 instance = index.toLong()
             )
@@ -384,9 +402,9 @@ class Automator private constructor() {
 
     fun allowPermissionWhileUsingApp() {
         val identifiers = arrayOf(
-            "com.android.packageinstaller:id/permission_allow_button",
-            "com.android.permissioncontroller:id/permission_allow_button",
-            "com.android.permissioncontroller:id/permission_allow_foreground_only_button"
+            "com.android.packageinstaller:id/permission_allow_button", // API <= 28
+            "com.android.permissioncontroller:id/permission_allow_button", // API 29
+            "com.android.permissioncontroller:id/permission_allow_foreground_only_button" // API >= 30 + API 29 (only for location permission)
         )
 
         val uiObject = waitForUiObjectByResourceId(*identifiers, timeout = timeoutMillis)
@@ -396,10 +414,15 @@ class Automator private constructor() {
     }
 
     fun allowPermissionOnce() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+            // One-time permissions are available only on API 30 (R) and above.
+            // See: https://developer.android.com/training/permissions/requesting#one-time
+            allowPermissionWhileUsingApp()
+            return
+        }
+
         val identifiers = arrayOf(
-            "com.android.packageinstaller:id/permission_allow_button",
-            "com.android.permissioncontroller:id/permission_allow_button",
-            "com.android.permissioncontroller:id/permission_allow_one_time_button"
+            "com.android.permissioncontroller:id/permission_allow_one_time_button" // API >= 30
         )
 
         val uiObject = waitForUiObjectByResourceId(*identifiers, timeout = timeoutMillis)
@@ -410,8 +433,8 @@ class Automator private constructor() {
 
     fun denyPermission() {
         val identifiers = arrayOf(
-            "com.android.packageinstaller:id/permission_deny_button",
-            "com.android.permissioncontroller:id/permission_deny_button"
+            "com.android.packageinstaller:id/permission_deny_button", // API <= 28
+            "com.android.permissioncontroller:id/permission_deny_button" // API >= 29
         )
 
         val uiObject = waitForUiObjectByResourceId(*identifiers, timeout = timeoutMillis)

@@ -1,6 +1,26 @@
 package pl.leancode.patrol
 
-import pl.leancode.patrol.contracts.Contracts
+import pl.leancode.patrol.contracts.Contracts.ConfigureRequest
+import pl.leancode.patrol.contracts.Contracts.DarkModeRequest
+import pl.leancode.patrol.contracts.Contracts.EnterTextRequest
+import pl.leancode.patrol.contracts.Contracts.GetNativeUITreeRequest
+import pl.leancode.patrol.contracts.Contracts.GetNativeUITreeRespone
+import pl.leancode.patrol.contracts.Contracts.GetNativeViewsRequest
+import pl.leancode.patrol.contracts.Contracts.GetNativeViewsResponse
+import pl.leancode.patrol.contracts.Contracts.GetNotificationsRequest
+import pl.leancode.patrol.contracts.Contracts.GetNotificationsResponse
+import pl.leancode.patrol.contracts.Contracts.HandlePermissionRequest
+import pl.leancode.patrol.contracts.Contracts.HandlePermissionRequestCode
+import pl.leancode.patrol.contracts.Contracts.OpenAppRequest
+import pl.leancode.patrol.contracts.Contracts.OpenQuickSettingsRequest
+import pl.leancode.patrol.contracts.Contracts.PermissionDialogVisibleRequest
+import pl.leancode.patrol.contracts.Contracts.PermissionDialogVisibleResponse
+import pl.leancode.patrol.contracts.Contracts.SetLocationAccuracyRequest
+import pl.leancode.patrol.contracts.Contracts.SetLocationAccuracyRequestLocationAccuracy
+import pl.leancode.patrol.contracts.Contracts.SwipeRequest
+import pl.leancode.patrol.contracts.Contracts.TapOnNotificationRequest
+import pl.leancode.patrol.contracts.Contracts.TapRequest
+import pl.leancode.patrol.contracts.Contracts.WaitUntilVisibleRequest
 import pl.leancode.patrol.contracts.NativeAutomatorServer
 
 class AutomatorServer(private val automation: Automator) : NativeAutomatorServer() {
@@ -9,7 +29,7 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
         automation.initialize()
     }
 
-    override fun configure(request: Contracts.ConfigureRequest) {
+    override fun configure(request: ConfigureRequest) {
         automation.configure(waitForSelectorTimeout = request.findTimeoutMillis)
     }
 
@@ -29,7 +49,7 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
         automation.pressDoubleRecentApps()
     }
 
-    override fun openApp(request: Contracts.OpenAppRequest) {
+    override fun openApp(request: OpenAppRequest) {
         automation.openApp(request.appId)
     }
 
@@ -45,15 +65,20 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
         // iOS only
     }
 
-    override fun openQuickSettings(request: Contracts.OpenQuickSettingsRequest) {
+    override fun openQuickSettings(request: OpenQuickSettingsRequest) {
         automation.openQuickSettings()
     }
 
-    override fun enableDarkMode(request: Contracts.DarkModeRequest) {
+    override fun getNativeUITree(request: GetNativeUITreeRequest): GetNativeUITreeRespone {
+        val trees = automation.getNativeUITrees()
+        return GetNativeUITreeRespone(trees)
+    }
+
+    override fun enableDarkMode(request: DarkModeRequest) {
         automation.enableDarkMode()
     }
 
-    override fun disableDarkMode(request: Contracts.DarkModeRequest) {
+    override fun disableDarkMode(request: DarkModeRequest) {
         automation.disableDarkMode()
     }
 
@@ -89,19 +114,19 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
         automation.disableBluetooth()
     }
 
-    override fun getNativeViews(request: Contracts.GetNativeViewsRequest): Contracts.GetNativeViewsResponse {
+    override fun getNativeViews(request: GetNativeViewsRequest): GetNativeViewsResponse {
         val views = automation.getNativeViews(request.selector.toBySelector())
-        return Contracts.GetNativeViewsResponse(
+        return GetNativeViewsResponse(
             nativeViews = views
         )
     }
 
-    override fun getNotifications(request: Contracts.GetNotificationsRequest): Contracts.GetNotificationsResponse {
+    override fun getNotifications(request: GetNotificationsRequest): GetNotificationsResponse {
         val notifs = automation.getNotifications()
-        return Contracts.GetNotificationsResponse(notifs)
+        return GetNotificationsResponse(notifs)
     }
 
-    override fun tap(request: Contracts.TapRequest) {
+    override fun tap(request: TapRequest) {
         automation.tap(
             uiSelector = request.selector.toUiSelector(),
             bySelector = request.selector.toBySelector(),
@@ -109,7 +134,7 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
         )
     }
 
-    override fun doubleTap(request: Contracts.TapRequest) {
+    override fun doubleTap(request: TapRequest) {
         automation.doubleTap(
             uiSelector = request.selector.toUiSelector(),
             bySelector = request.selector.toBySelector(),
@@ -117,12 +142,12 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
         )
     }
 
-    override fun enterText(request: Contracts.EnterTextRequest) {
+    override fun enterText(request: EnterTextRequest) {
         if (request.index != null) {
             automation.enterText(
                 text = request.data,
-                index = request.index!!.toInt(),
-                showKeyboard = request.showKeyboard
+                index = request.index.toInt(),
+                keyboardBehavior = request.keyboardBehavior
             )
         } else if (request.selector != null) {
             automation.enterText(
@@ -130,14 +155,14 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
                 uiSelector = request.selector.toUiSelector(),
                 bySelector = request.selector.toBySelector(),
                 index = request.selector.instance?.toInt() ?: 0,
-                showKeyboard = request.showKeyboard
+                keyboardBehavior = request.keyboardBehavior
             )
         } else {
             throw PatrolException("enterText(): neither index nor selector are set")
         }
     }
 
-    override fun swipe(request: Contracts.SwipeRequest) {
+    override fun swipe(request: SwipeRequest) {
         automation.swipe(
             startX = request.startX.toFloat(),
             startY = request.startY.toFloat(),
@@ -147,7 +172,7 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
         )
     }
 
-    override fun waitUntilVisible(request: Contracts.WaitUntilVisibleRequest) {
+    override fun waitUntilVisible(request: WaitUntilVisibleRequest) {
         automation.waitUntilVisible(
             uiSelector = request.selector.toUiSelector(),
             bySelector = request.selector.toBySelector(),
@@ -155,31 +180,23 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
         )
     }
 
-    override fun isPermissionDialogVisible(request: Contracts.PermissionDialogVisibleRequest): Contracts.PermissionDialogVisibleResponse {
+    override fun isPermissionDialogVisible(request: PermissionDialogVisibleRequest): PermissionDialogVisibleResponse {
         val visible = automation.isPermissionDialogVisible(timeout = request.timeoutMillis)
-        return Contracts.PermissionDialogVisibleResponse(visible)
+        return PermissionDialogVisibleResponse(visible)
     }
 
-    override fun handlePermissionDialog(request: Contracts.HandlePermissionRequest) {
+    override fun handlePermissionDialog(request: HandlePermissionRequest) {
         when (request.code) {
-            Contracts.HandlePermissionRequestCode.whileUsing
-            -> automation.allowPermissionWhileUsingApp()
-
-            Contracts.HandlePermissionRequestCode.onlyThisTime
-            -> automation.allowPermissionOnce()
-
-            Contracts.HandlePermissionRequestCode.denied
-            -> automation.denyPermission()
+            HandlePermissionRequestCode.whileUsing -> automation.allowPermissionWhileUsingApp()
+            HandlePermissionRequestCode.onlyThisTime -> automation.allowPermissionOnce()
+            HandlePermissionRequestCode.denied -> automation.denyPermission()
         }
     }
 
-    override fun setLocationAccuracy(request: Contracts.SetLocationAccuracyRequest) {
+    override fun setLocationAccuracy(request: SetLocationAccuracyRequest) {
         when (request.locationAccuracy) {
-            Contracts.SetLocationAccuracyRequestLocationAccuracy.coarse
-            -> automation.selectCoarseLocation()
-
-            Contracts.SetLocationAccuracyRequestLocationAccuracy.fine
-            -> automation.selectFineLocation()
+            SetLocationAccuracyRequestLocationAccuracy.coarse -> automation.selectCoarseLocation()
+            SetLocationAccuracyRequestLocationAccuracy.fine -> automation.selectFineLocation()
         }
     }
 
@@ -187,21 +204,17 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
         // iOS only
     }
 
-    override fun tapOnNotification(request: Contracts.TapOnNotificationRequest) {
+    override fun tapOnNotification(request: TapOnNotificationRequest) {
         if (request.index != null) {
-            automation.tapOnNotification(
-                request.index.toInt()
-            )
+            automation.tapOnNotification(request.index.toInt())
         } else if (request.selector != null) {
-            automation.tapOnNotification(
-                request.selector.toUiSelector()
-            )
+            automation.tapOnNotification(request.selector.toUiSelector())
         } else {
             throw PatrolException("tapOnNotification(): neither index nor selector are set")
         }
     }
 
     override fun markPatrolAppServiceReady() {
-        PatrolServer.appReady.set(true)
+        PatrolServer.appReady.open()
     }
 }

@@ -1,9 +1,11 @@
 // ignore_for_file: avoid_print
+
 // TODO: Use a logger instead of print
 
 import 'dart:async';
 import 'dart:io';
 
+import 'package:patrol/src/common.dart';
 import 'package:patrol/src/native/contracts/contracts.dart';
 import 'package:patrol/src/native/contracts/patrol_app_service_server.dart';
 
@@ -11,6 +13,7 @@ import 'package:shelf/shelf.dart' as shelf;
 import 'package:shelf/shelf_io.dart' as shelf_io;
 
 const _port = 8082;
+const _idleTimeout = Duration(hours: 2);
 
 class _TestExecutionResult {
   const _TestExecutionResult({required this.passed, required this.details});
@@ -32,7 +35,7 @@ Future<void> runAppService(PatrolAppService service) async {
     poweredByHeader: null,
   );
 
-  server.idleTimeout = const Duration(seconds: 300);
+  server.idleTimeout = _idleTimeout;
 
   final address = server.address;
 
@@ -51,7 +54,7 @@ class PatrolAppService extends PatrolAppServiceServer {
 
   /// The ambient test group that wraps all the other groups and tests in the
   /// bundled Dart test file.
-  final DartTestGroup topLevelDartTestGroup;
+  final DartGroupEntry topLevelDartTestGroup;
 
   /// A completer that completes with the name of the Dart test file that was
   /// requested to execute by the native side.
@@ -98,30 +101,32 @@ class PatrolAppService extends PatrolAppServiceServer {
     );
   }
 
-  /// Returns when the native side requests execution of a Dart test file.
+  /// Returns when the native side requests execution of a Dart test. If the
+  /// native side requsted execution of [dartTest], returns true. Otherwise
+  /// returns false.
+  ///
+  /// It's used inside of [patrolTest] to halt execution of test body until
+  /// [runDartTest] is called.
   ///
   /// The native side requests execution by RPC-ing [runDartTest] and providing
-  /// name of a Dart test file.
-  ///
-  /// Returns true if the native side requsted execution of [dartTestFile].
-  /// Returns false otherwise.
-  Future<bool> waitForExecutionRequest(String dartTestFile) async {
-    print('PatrolAppService: registered "$dartTestFile"');
+  /// name of a Dart test that it wants to currently execute [dartTest].
+  Future<bool> waitForExecutionRequest(String dartTest) async {
+    print('PatrolAppService: registered "$dartTest"');
 
-    final requestedDartTestFile = await testExecutionRequested;
-    if (requestedDartTestFile != dartTestFile) {
-      // If the requested Dart test file is not the one we're waiting for now,
-      // it means that dartTestFile was already executed. Return false so that
-      // callers can skip the already executed test.
+    final requestedDartTest = await testExecutionRequested;
+    if (requestedDartTest != dartTest) {
+      // If the requested Dart test is not the one we're waiting for now, it
+      // means that dartTest was already executed. Return false so that callers
+      // can skip the already executed test.
 
       print(
-        'PatrolAppService: registered test "$dartTestFile" was not matched by requested test "$requestedDartTestFile"',
+        'PatrolAppService: registered test "$dartTest" was not matched by requested test "$requestedDartTest"',
       );
 
       return false;
     }
 
-    print('PatrolAppService: requested execution of test "$dartTestFile"');
+    print('PatrolAppService: requested execution of test "$dartTest"');
 
     return true;
   }

@@ -43,6 +43,8 @@ void _test(Platform platform) {
         final args = [
           'EMAIL=email@wrong=domain.com',
           r'PASSWORD="ny4ncat\n"',
+          'ATTRIBUTES=foo',
+          'bar',
         ];
 
         expect(
@@ -50,6 +52,7 @@ void _test(Platform platform) {
           equals({
             'EMAIL': 'email@wrong=domain.com',
             'PASSWORD': r'"ny4ncat\n"',
+            'ATTRIBUTES': 'foo, bar',
           }),
         );
       });

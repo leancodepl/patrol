@@ -67,15 +67,17 @@ void main() {
         String scheme = 'Runner',
         bool simulator = false,
         String? arch,
+        String? testPlan,
       }) {
         test(description, () async {
-          final targetPlatform = simulator ? 'iphonesimulator' : 'iphoneos';
-          var targetArch = arch;
-          if (targetArch != null) {
-            targetArch = '-$targetArch';
+          final target = simulator ? 'iphonesimulator' : 'iphoneos';
+          if (arch != null) {
+            arch = '-$arch';
           }
 
-          final name = '${scheme}_${targetPlatform}16.2$targetArch.xctestrun';
+          final xcTestPlan = testPlan != null ? '-$testPlan' : '';
+
+          final name = '${scheme}_$xcTestPlan${target}16.2$arch.xctestrun';
 
           fs
               .file('build/ios_integ/Build/Products/$name')
@@ -101,6 +103,12 @@ void main() {
       testXcTestRunPath(
         'finds xctestrun with single arch on iphoneos',
         arch: 'arm64',
+      );
+
+      testXcTestRunPath(
+        'finds xctestrun with single arch on iphoneos (test plan)',
+        arch: 'arm64',
+        testPlan: 'TestPlan',
       );
 
       testXcTestRunPath(
@@ -161,6 +169,46 @@ void main() {
         simulator: true,
         scheme: 'dev',
       );
+
+      testXcTestRunPath(
+        'finds xctestrun with double arch and custom scheme on iphonesimulator (test plan)',
+        arch: 'arm64-x86_64',
+        simulator: true,
+        scheme: 'dev',
+        testPlan: 'SomeTestPlan',
+      );
+    });
+
+    group('stripFlavorFromAppId', () {
+      test('simply returns appId when flavor is null', () {
+        const appId = 'com.company.app';
+        const String? flavor = null;
+
+        expect(
+          iosTestBackend.stripFlavorFromAppId(appId, flavor),
+          'com.company.app',
+        );
+      });
+
+      test('works when appId contains flavor', () {
+        const appId = 'com.company.app.dev';
+        const flavor = 'dev';
+
+        expect(
+          iosTestBackend.stripFlavorFromAppId(appId, flavor),
+          'com.company.app',
+        );
+      });
+
+      test('ignores when appId contains flavor not preceded by a dot', () {
+        const appId = 'com.company.app_dev';
+        const flavor = 'dev';
+
+        expect(
+          iosTestBackend.stripFlavorFromAppId(appId, flavor),
+          'com.company.app_dev',
+        );
+      });
     });
   });
 }
@@ -169,5 +217,5 @@ class FakeProcessManager extends Fake implements ProcessManager {}
 
 class FakeLogger extends Fake implements Logger {
   @override
-  void detail(String? message) {}
+  void detail(String? message, {String? Function(String?)? style}) {}
 }

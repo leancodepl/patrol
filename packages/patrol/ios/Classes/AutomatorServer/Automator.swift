@@ -1,5 +1,6 @@
 #if PATROL_ENABLED
   import XCTest
+  import os
 
   class Automator {
     private lazy var device: XCUIDevice = {
@@ -22,41 +23,41 @@
 
     // MARK: General
 
-    func pressHome() async throws {
-      await runAction("pressing home button") {
+    func pressHome() throws {
+      runAction("pressing home button") {
         self.device.press(XCUIDevice.Button.home)
       }
     }
 
-    func openApp(_ bundleId: String) async throws {
-      try await runAction("opening app with id \(bundleId)") {
+    func openApp(_ bundleId: String) throws {
+      try runAction("opening app with id \(bundleId)") {
         let app = try self.getApp(withBundleId: bundleId)
         app.activate()
       }
     }
 
-    func openAppSwitcher() async throws {
+    func openAppSwitcher() throws {
       // TODO: Implement for iPhones without notch
 
-      await runAction("opening app switcher") {
+      runAction("opening app switcher") {
         let start = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.999))
         let end = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.001))
         start.press(forDuration: 0.1, thenDragTo: end)
       }
     }
 
-    func openControlCenter() async throws {
-      await runAction("opening control center") {
+    func openControlCenter() throws {
+      runAction("opening control center") {
         self.swipeToOpenControlCenter()
       }
     }
 
     // MARK: General UI interaction
 
-    func tap(onText text: String, inApp bundleId: String, atIndex index: Int) async throws {
+    func tap(onText text: String, inApp bundleId: String, atIndex index: Int) throws {
       let view = "view with text \(format: text) at index \(index) in app \(bundleId)"
 
-      try await runAction("tapping on \(view)") {
+      try runAction("tapping on \(view)") {
         let app = try self.getApp(withBundleId: bundleId)
 
         // The below selector is an equivalent of `app.descendants(matching: .any)[text]`
@@ -78,8 +79,8 @@
       }
     }
 
-    func doubleTap(onText text: String, inApp bundleId: String) async throws {
-      try await runAction("double tapping on text \(format: text) in app \(bundleId)") {
+    func doubleTap(onText text: String, inApp bundleId: String) throws {
+      try runAction("double tapping on text \(format: text) in app \(bundleId)") {
         let app = try self.getApp(withBundleId: bundleId)
         let element = app.descendants(matching: .any)[text]
 
@@ -97,12 +98,17 @@
       _ data: String,
       byText text: String,
       atIndex index: Int,
-      inApp bundleId: String
-    ) async throws {
-      let view = "text field with text \(format: text) at index \(index) in app \(bundleId)"
-      let data = "\(data)\n"
+      inApp bundleId: String,
+      dismissKeyboard: Bool
+    ) throws {
+      var data = data
+      if dismissKeyboard {
+        data = "\(data)\n"
+      }
 
-      try await runAction("entering text \(format: data) into \(view)") {
+      let view = "text field with text \(format: text) at index \(index) in app \(bundleId)"
+
+      try runAction("entering text \(format: data) into \(view)") {
         let app = try self.getApp(withBundleId: bundleId)
 
         // elementType must be specified as integer
@@ -146,17 +152,21 @@
       }
 
       // Prevent keyboard dismissal from happening too fast
-      try await Task.sleep(nanoseconds: UInt64(1 * Double(NSEC_PER_SEC)))
+      sleepTask(timeInSeconds: 1)
     }
 
     func enterText(
       _ data: String,
       byIndex index: Int,
-      inApp bundleId: String
-    ) async throws {
-      var data = "\(data)\n"
+      inApp bundleId: String,
+      dismissKeyboard: Bool
+    ) throws {
+      var data = data
+      if dismissKeyboard {
+        data = "\(data)\n"
+      }
 
-      try await runAction("entering text \(format: data) by index \(index) in app \(bundleId)") {
+      try runAction("entering text \(format: data) by index \(index) in app \(bundleId)") {
         let app = try self.getApp(withBundleId: bundleId)
 
         // elementType must be specified as integer
@@ -185,11 +195,11 @@
       }
 
       // Prevent keyboard dismissal from happening too fast
-      try await Task.sleep(nanoseconds: UInt64(1 * Double(NSEC_PER_SEC)))
+      sleepTask(timeInSeconds: 1)
     }
 
-    func waitUntilVisible(onText text: String, inApp bundleId: String) async throws {
-      try await runAction(
+    func waitUntilVisible(onText text: String, inApp bundleId: String) throws {
+      try runAction(
         "waiting until view with text \(format: text) in app \(bundleId) becomes visible"
       ) {
         let app = try self.getApp(withBundleId: bundleId)
@@ -204,8 +214,8 @@
 
     // MARK: Services
 
-    func enableDarkMode(_ bundleId: String) async throws {
-      try await runSettingsAction("enabling dark mode", bundleId) {
+    func enableDarkMode(_ bundleId: String) throws {
+      try runSettingsAction("enabling dark mode", bundleId) {
         #if targetEnvironment(simulator)
           self.preferences.descendants(matching: .any)["Developer"].firstMatch.tap()
 
@@ -222,8 +232,8 @@
       }
     }
 
-    func disableDarkMode(_ bundleId: String) async throws {
-      try await runSettingsAction("disabling dark mode", bundleId) {
+    func disableDarkMode(_ bundleId: String) throws {
+      try runSettingsAction("disabling dark mode", bundleId) {
         #if targetEnvironment(simulator)
           self.preferences.descendants(matching: .any)["Developer"].firstMatch.tap()
 
@@ -240,8 +250,8 @@
       }
     }
 
-    func enableAirplaneMode() async throws {
-      try await runControlCenterAction("enabling airplane mode") {
+    func enableAirplaneMode() throws {
+      try runControlCenterAction("enabling airplane mode") {
         let toggle = self.springboard.switches["airplane-mode-button"]
         if toggle.value! as! String == "0" {
           toggle.tap()
@@ -251,8 +261,8 @@
       }
     }
 
-    func disableAirplaneMode() async throws {
-      try await runControlCenterAction("disabling airplane mode") {
+    func disableAirplaneMode() throws {
+      try runControlCenterAction("disabling airplane mode") {
         let toggle = self.springboard.switches["airplane-mode-button"]
         if toggle.value! as! String == "1" {
           toggle.tap()
@@ -264,8 +274,8 @@
       }
     }
 
-    func enableCellular() async throws {
-      try await runControlCenterAction("enabling cellular") {
+    func enableCellular() throws {
+      try runControlCenterAction("enabling cellular") {
         let toggle = self.springboard.switches["cellular-data-button"]
         let exists = toggle.waitForExistence(timeout: self.timeout)
         guard exists else {
@@ -280,8 +290,8 @@
       }
     }
 
-    func disableCellular() async throws {
-      try await runControlCenterAction("disabling cellular") {
+    func disableCellular() throws {
+      try runControlCenterAction("disabling cellular") {
         let toggle = self.springboard.switches["cellular-data-button"]
         let exists = toggle.waitForExistence(timeout: self.timeout)
         guard exists else {
@@ -296,8 +306,8 @@
       }
     }
 
-    func enableWiFi() async throws {
-      try await runControlCenterAction("enabling wifi") {
+    func enableWiFi() throws {
+      try runControlCenterAction("enabling wifi") {
         let toggle = self.springboard.switches["wifi-button"]
         let exists = toggle.waitForExistence(timeout: self.timeout)
         guard exists else {
@@ -312,8 +322,8 @@
       }
     }
 
-    func disableWiFi() async throws {
-      try await runControlCenterAction("disabling wifi") {
+    func disableWiFi() throws {
+      try runControlCenterAction("disabling wifi") {
         let toggle = self.springboard.switches["wifi-button"]
         let exists = toggle.waitForExistence(timeout: self.timeout)
         guard exists else {
@@ -328,8 +338,8 @@
       }
     }
 
-    func enableBluetooth() async throws {
-      try await runControlCenterAction("enabling bluetooth") {
+    func enableBluetooth() throws {
+      try runControlCenterAction("enabling bluetooth") {
         let toggle = self.springboard.switches["bluetooth-button"]
         let exists = toggle.waitForExistence(timeout: self.timeout)
         guard exists else {
@@ -344,8 +354,8 @@
       }
     }
 
-    func disableBluetooth() async throws {
-      try await runControlCenterAction("disabling bluetooth") {
+    func disableBluetooth() throws {
+      try runControlCenterAction("disabling bluetooth") {
         let toggle = self.springboard.switches["bluetooth-button"]
         let exists = toggle.waitForExistence(timeout: self.timeout)
         guard exists else {
@@ -363,8 +373,8 @@
     func getNativeViews(
       byText text: String,
       inApp bundleId: String
-    ) async throws -> [NativeView] {
-      try await runAction("getting native views matching \(text)") {
+    ) throws -> [NativeView] {
+      try runAction("getting native views matching \(text)") {
         let app = try self.getApp(withBundleId: bundleId)
 
         // The below selector is an equivalent of `app.descendants(matching: .any)[text]`
@@ -386,33 +396,56 @@
       }
     }
 
+    func getUITreeRoots(installedApps: [String]) throws -> [NativeView] {
+      try runAction("getting ui tree roots") {
+        let foregroundApp = self.getForegroundApp(installedApps: installedApps)
+        let snapshot = try foregroundApp.snapshot()
+        return [NativeView.fromXCUIElementSnapshot(snapshot, foregroundApp.identifier)]
+      }
+    }
+
+    private func getForegroundApp(installedApps: [String]) -> XCUIApplication {
+      let app = XCUIApplication()
+      if app.state == .runningForeground {
+        return app
+      } else {
+        for bundleIdentifier in installedApps {
+          let app = XCUIApplication(bundleIdentifier: bundleIdentifier)
+          if app.state == .runningForeground {
+            return app
+          }
+        }
+        return self.springboard
+      }
+    }
+
     // MARK: Notifications
 
-    func openNotifications() async throws {
+    func openNotifications() throws {
       // TODO: Check if works on iPhones without notch
 
-      await runAction("opening notifications") {
+      runAction("opening notifications") {
         let start = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.01))
         let end = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.6))
         start.press(forDuration: 0.1, thenDragTo: end)
       }
     }
 
-    func closeNotifications() async throws {
+    func closeNotifications() throws {
       // TODO: Check if works on iPhones without notch
 
-      await runAction("closing notifications") {
+      runAction("closing notifications") {
         let start = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.99))
         let end = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.6))
         start.press(forDuration: 0.1, thenDragTo: end)
       }
     }
 
-    func closeHeadsUpNotification() async throws {
+    func closeHeadsUpNotification() throws {
       // If the notification was triggered just now, let's wait for it
-      try await Task.sleep(nanoseconds: UInt64(2 * Double(NSEC_PER_SEC)))
+      sleepTask(timeInSeconds: 2)
 
-      await runAction("closing heads up notification") {
+      runAction("closing heads up notification") {
         let start = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.12))
         let end = self.springboard.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.07))
         start.press(forDuration: 0.1, thenDragTo: end)
@@ -421,26 +454,26 @@
       // We can't open notification shade immediately after dismissing
       // the heads-up notification. Let's wait some reasonable amount of
       // time for it.
-      try await Task.sleep(nanoseconds: UInt64(1 * Double(NSEC_PER_SEC)))
+      sleepTask(timeInSeconds: 1)
     }
 
-    func getNotifications() async throws -> [Notification] {
+    func getNotifications() throws -> [Notification] {
       var notifications = [Notification]()
-      await runAction("getting notifications") {
+      runAction("getting notifications") {
         let cells = self.springboard.buttons.matching(identifier: "NotificationCell")
           .allElementsBoundByIndex
         for (i, cell) in cells.enumerated() {
-            Logger.shared.i("found notification at index \(i) with label \(format: cell.label)")
-            let notification = Notification(title: String(), content: String(), raw: cell.label)
-            notifications.append(notification)
+          Logger.shared.i("found notification at index \(i) with label \(format: cell.label)")
+          let notification = Notification(title: String(), content: String(), raw: cell.label)
+          notifications.append(notification)
         }
       }
 
       return notifications
     }
 
-    func tapOnNotification(byIndex index: Int) async throws {
-      try await runAction("tapping on notification at index \(index)") {
+    func tapOnNotification(byIndex index: Int) throws {
+      try runAction("tapping on notification at index \(index)") {
         let cells = self.springboard.buttons.matching(identifier: "NotificationCell")
           .allElementsBoundByIndex
         guard cells.indices.contains(index) else {
@@ -457,8 +490,8 @@
       }
     }
 
-    func tapOnNotification(bySubstring substring: String) async throws {
-      try await runAction("tapping on notification containing text \(format: substring)") {
+    func tapOnNotification(bySubstring substring: String) throws {
+      try runAction("tapping on notification containing text \(format: substring)") {
         let cells = self.springboard.buttons.matching(identifier: "NotificationCell")
           .allElementsBoundByIndex
         for (i, cell) in cells.enumerated() {
@@ -482,8 +515,8 @@
 
     // MARK: Permissions
 
-    func isPermissionDialogVisible(timeout: TimeInterval) async -> Bool {
-      return await runAction("checking if permission dialog is visible") {
+    func isPermissionDialogVisible(timeout: TimeInterval) -> Bool {
+      return runAction("checking if permission dialog is visible") {
         let systemAlerts = self.springboard.alerts
         let labels = ["OK", "Allow", "Allow once", "Allow While Using App", "Don’t Allow"]
 
@@ -496,8 +529,8 @@
       }
     }
 
-    func allowPermissionWhileUsingApp() async throws {
-      try await runAction("allowing while using app") {
+    func allowPermissionWhileUsingApp() throws {
+      try runAction("allowing while using app") {
         let systemAlerts = self.springboard.alerts
         let labels = ["OK", "Allow", "Allow While Using App"]
 
@@ -514,8 +547,8 @@
       }
     }
 
-    func allowPermissionOnce() async throws {
-      try await runAction("allowing once") {
+    func allowPermissionOnce() throws {
+      try runAction("allowing once") {
         let systemAlerts = self.springboard.alerts
         let labels = ["OK", "Allow", "Allow Once"]
 
@@ -532,8 +565,8 @@
       }
     }
 
-    func denyPermission() async throws {
-      try await runAction("denying permission") {
+    func denyPermission() throws {
+      try runAction("denying permission") {
         let label = "Don’t Allow"  // not "Don't Allow"!
         let systemAlerts = self.springboard.alerts
         let button = systemAlerts.buttons[label]
@@ -547,13 +580,13 @@
       }
     }
 
-    func selectFineLocation() async throws {
+    func selectFineLocation() throws {
       if iOS13orOlder() {
         Logger.shared.i("Ignored call to selectFineLocation() (iOS < 14)")
         return
       }
 
-      try await runAction("selecting fine location") {
+      try runAction("selecting fine location") {
         let alerts = self.springboard.alerts
         let button = alerts.buttons["Precise: Off"]
 
@@ -566,13 +599,13 @@
       }
     }
 
-    func selectCoarseLocation() async throws {
+    func selectCoarseLocation() throws {
       if iOS13orOlder() {
         Logger.shared.i("Ignored call to selectCoarseLocation() (iOS < 14)")
         return
       }
 
-      try await runAction("selecting coarse location") {
+      try runAction("selecting coarse location") {
         let alerts = self.springboard.alerts
         let button = alerts.buttons["Precise: On"]
 
@@ -587,8 +620,8 @@
 
     // MARK: Other
 
-    func debug() async throws {
-      await runAction("debug()") {
+    func debug() throws {
+      runAction("debug()") {
         // TODO: Remove later
         for i in 0...150 {
           let element = self.springboard.descendants(matching: .any).element(boundBy: i)
@@ -729,14 +762,12 @@
       }
     }
 
-    private func runControlCenterAction(_ log: String, block: @escaping () throws -> Void)
-      async throws
-    {
+    private func runControlCenterAction(_ log: String, block: @escaping () throws -> Void) throws {
       #if targetEnvironment(simulator)
         throw PatrolError.internal("Control Center is not available on Simulator")
       #endif
 
-      try await runAction(log) {
+      try runAction(log) {
         self.swipeToOpenControlCenter()
 
         // perform the action
@@ -752,8 +783,8 @@
       _ log: String,
       _ bundleId: String,
       block: @escaping () -> Void
-    ) async throws {
-      try await runAction(log) {
+    ) throws {
+      try runAction(log) {
         self.springboard.activate()
         self.preferences.launch()  // reset to a known state
 
@@ -768,14 +799,25 @@
       }
     }
 
-    private func runAction<T>(_ log: String, block: @escaping () throws -> T) async rethrows -> T {
-      return try await MainActor.run {
+    private func runAction<T>(_ log: String, block: @escaping () throws -> T) rethrows -> T {
+      return try DispatchQueue.main.sync {
         Logger.shared.i("\(log)...")
         let result = try block()
         Logger.shared.i("done \(log)")
         Logger.shared.i("result: \(result)")
         return result
       }
+    }
+
+    private func sleepTask(timeInSeconds: Double) {
+      let group = DispatchGroup()
+      group.enter()
+
+      DispatchQueue.global().asyncAfter(deadline: .now() + timeInSeconds) {
+        group.leave()
+      }
+
+      group.wait()
     }
   }
 
@@ -794,19 +836,34 @@
   }
 
   extension NativeView {
-    static func fromXCUIElement(_ xcuielement: XCUIElement, _ bundleId: String) -> NativeView
+    static func fromXCUIElement(_ xcuielement: XCUIElement, _ bundleId: String) -> NativeView {
+      return NativeView(
+        className: getElementTypeName(elementType: xcuielement.elementType),
+        text: xcuielement.label,
+        contentDescription: xcuielement.accessibilityLabel,
+        focused: xcuielement.hasFocus,
+        enabled: xcuielement.isEnabled,
+        resourceName: xcuielement.identifier,
+        applicationPackage: bundleId,
+        children: xcuielement.children(matching: .any).allElementsBoundByIndex.map { child in
+          return NativeView.fromXCUIElement(child, bundleId)
+        })
+    }
+
+    static func fromXCUIElementSnapshot(_ xcuielement: XCUIElementSnapshot, _ bundleId: String)
+      -> NativeView
     {
-        return NativeView(
-            className: String(xcuielement.elementType.rawValue),  // TODO: Provide mapping for names
-            text: xcuielement.label,
-            contentDescription: xcuielement.accessibilityLabel,
-            focused: xcuielement.hasFocus,
-            enabled: xcuielement.isEnabled,
-            resourceName: xcuielement.identifier,
-            applicationPackage: bundleId,
-            children: xcuielement.children(matching: .any).allElementsBoundByIndex.map { child in
-                return NativeView.fromXCUIElement(child, bundleId)
-              })
+      return NativeView(
+        className: getElementTypeName(elementType: xcuielement.elementType),
+        text: xcuielement.label,
+        contentDescription: "",  // TODO: Separate request
+        focused: xcuielement.hasFocus,
+        enabled: xcuielement.isEnabled,
+        resourceName: xcuielement.identifier,
+        applicationPackage: bundleId,
+        children: xcuielement.children.map { child in
+          return NativeView.fromXCUIElementSnapshot(child, bundleId)
+        })
     }
   }
 

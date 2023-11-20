@@ -34,11 +34,19 @@ directories to PATH:
 - on Unix-like systems, add `$HOME/.pub-cache/bin`
 - on Windows, add `%USERPROFILE%\AppData\Local\Pub\Cache\bin`
 
+### Shell completion
+
+Patrol CLI supports shell completion for bash, zsh and fish, thanks to the
+[cli_completion package]. It will automatically append code necessary to make
+the completion work to your shell's respective config file (e.g. `~/.zshrc`). To
+disable this value, set the `PATROL_NO_COMPLETION` environment variable to any
+value.
+
 ## Usage
 
 Read the documentation:
 
-- [setup](https://patrol.leancode.pl/getting-started/getting-started)
+- [setup](https://patrol.leancode.pl/getting-started)
 - [test command](https://patrol.leancode.co/cli-commands/test)
 
 [pub_badge]: https://img.shields.io/pub/v/patrol_cli.svg
@@ -48,3 +56,4 @@ Read the documentation:
 [pub_link]: https://pub.dartlang.org/packages/patrol_cli
 [pub_badge_style]: https://img.shields.io/badge/style-leancode__lint-black
 [pub_badge_link]: https://pub.dartlang.org/packages/leancode_lint
+[cli_completion package]: https://pub.dev/packages/cli_completion

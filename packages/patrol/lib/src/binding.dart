@@ -1,17 +1,13 @@
-// We allow for using properties of IntegrationTestWidgetsFlutterBinding, which
-// are marked as @visibleForTesting but we need them (we could write our own,
-// but we're lazy and prefer to use theirs).
+import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:integration_test/common.dart';
-import 'package:integration_test/integration_test.dart';
 import 'package:patrol/patrol.dart';
+import 'package:patrol/src/devtools_service_extensions/devtools_service_extensions.dart';
 // ignore: implementation_imports, depend_on_referenced_packages
-import 'package:test_api/src/backend/invoker.dart';
-// ignore: implementation_imports, depend_on_referenced_packages
-import 'package:test_api/src/backend/live_test.dart';
+import 'package:patrol/src/global_state.dart' as global_state;
 
 import 'constants.dart' as constants;
 
@@ -38,18 +34,20 @@ void _defaultPrintLogger(String message) {
 /// [PatrolBinding] submits the Dart test file name that is being currently
 /// executed to [PatrolAppService]. Once the name is submitted to it, that
 /// pending `runDartTest()` method returns.
-class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
+class PatrolBinding extends LiveTestWidgetsFlutterBinding {
   /// Creates a new [PatrolBinding].
   ///
   /// You most likely don't want to call it yourself.
-  PatrolBinding() {
+  PatrolBinding(NativeAutomatorConfig config)
+      : _serviceExtensions = DevtoolsServiceExtensions(config) {
+    shouldPropagateDevicePointerEvents = true;
+
     final oldTestExceptionReporter = reportTestException;
     reportTestException = (details, testDescription) {
-      final currentDartTestFile = _currentDartTestFile;
-      if (currentDartTestFile != null) {
+      final currentDartTest = _currentDartTest;
+      if (currentDartTest != null) {
         assert(!constants.hotRestartEnabled);
-        _testResults[currentDartTestFile] =
-            Failure(testDescription, '$details');
+        _testResults[currentDartTest] = Failure(testDescription, '$details');
       }
       oldTestExceptionReporter(details, testDescription);
     };
@@ -60,7 +58,7 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
         return;
       }
 
-      _currentDartTestFile = Invoker.current!.liveTest.parentGroupName;
+      _currentDartTest = global_state.currentTestFullName;
     });
 
     tearDown(() async {
@@ -69,7 +67,7 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
         return;
       }
 
-      final testName = Invoker.current!.liveTest.individualName;
+      final testName = global_state.currentTestIndividualName;
       final isTestExplorer = testName == 'patrol_test_explorer';
       if (isTestExplorer) {
         return;
@@ -79,20 +77,27 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
         );
       }
 
-      final invoker = Invoker.current!;
-
       final nameOfRequestedTest = await patrolAppService.testExecutionRequested;
-      if (nameOfRequestedTest == _currentDartTestFile) {
-        final passed = invoker.liveTest.state.result.isPassing;
+
+      if (nameOfRequestedTest == _currentDartTest) {
         logger(
-          'tearDown(): test "$testName" in group "$_currentDartTestFile", passed: $passed',
+          'finished test $_currentDartTest. Will report its status back to the native side',
+        );
+
+        final passed = global_state.isCurrentTestPassing;
+        logger(
+          'tearDown(): test "$testName" in group "$_currentDartTest", passed: $passed',
         );
         await patrolAppService.markDartTestAsCompleted(
-          dartFileName: _currentDartTestFile!,
+          dartFileName: _currentDartTest!,
           passed: passed,
-          details: _testResults[_currentDartTestFile!] is Failure
-              ? (_testResults[_currentDartTestFile!] as Failure?)?.details
+          details: _testResults[_currentDartTest!] is Failure
+              ? (_testResults[_currentDartTest!] as Failure?)?.details
               : null,
+        );
+      } else {
+        logger(
+          'finished test $_currentDartTest, but it was not requested, so its status will not be reported back to the native side',
         );
       }
     });
@@ -102,12 +107,18 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
   /// if necessary.
   ///
   /// This method is idempotent.
-  factory PatrolBinding.ensureInitialized() {
+  factory PatrolBinding.ensureInitialized(NativeAutomatorConfig config) {
     if (_instance == null) {
-      PatrolBinding();
+      PatrolBinding(config);
     }
     return _instance!;
   }
+
+  @override
+  bool get overrideHttpClient => false;
+
+  @override
+  bool get registerTestTextInput => false;
 
   /// Logger used by this binding.
   void Function(String message) logger = _defaultPrintLogger;
@@ -127,20 +138,36 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
   static PatrolBinding get instance => BindingBase.checkInstance(_instance);
   static PatrolBinding? _instance;
 
-  String? _currentDartTestFile;
+  String? _currentDartTest;
 
-  /// Keys are the test descriptions, and values are either [_success] or
-  /// a [Failure].
+  /// Keys are the test descriptions, and values are either [_success] or a
+  /// [Failure].
   final Map<String, Object> _testResults = <String, Object>{};
 
-  // TODO: Remove once https://github.com/flutter/flutter/pull/108430 is available on the stable channel
-  @override
-  TestBindingEventSource get pointerEventSource => TestBindingEventSource.test;
+  final DevtoolsServiceExtensions _serviceExtensions;
+
+  /// Temporary workaround for DevTools extension changing this value and not
+  /// resetting it.
+  ///
+  /// See https://github.com/flutter/devtools/issues/6719
+  TargetPlatform? workaroundDebugDefaultTargetPlatformOverride;
 
   @override
   void initInstances() {
     super.initInstances();
     _instance = this;
+  }
+
+  @override
+  void initServiceExtensions() {
+    super.initServiceExtensions();
+
+    logger('Register Patrol service extensions');
+
+    registerServiceExtension(
+      name: 'patrol.getNativeUITree',
+      callback: _serviceExtensions.getNativeUITree,
+    );
   }
 
   @override
@@ -162,33 +189,50 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
   }
 
   @override
-  void attachRootWidget(Widget rootWidget) {
+  ViewConfiguration createViewConfigurationFor(RenderView renderView) {
+    final view = renderView.flutterView;
+    return TestViewConfiguration.fromView(
+      size: view.physicalSize / view.devicePixelRatio,
+      view: view,
+    );
+  }
+
+  @override
+  Widget wrapWithDefaultView(Widget rootWidget) {
     assert(
-      (_currentDartTestFile != null) != (constants.hotRestartEnabled),
-      '_currentDartTestFile can be null if and only if Hot Restart is enabled',
+      (_currentDartTest != null) != (constants.hotRestartEnabled),
+      '_currentDartTest can be null if and only if Hot Restart is enabled',
     );
 
     const testLabelEnabled = bool.fromEnvironment('PATROL_TEST_LABEL_ENABLED');
     if (!testLabelEnabled || constants.hotRestartEnabled) {
-      super.attachRootWidget(RepaintBoundary(child: rootWidget));
+      return super.wrapWithDefaultView(RepaintBoundary(child: rootWidget));
     } else {
-      super.attachRootWidget(
+      return super.wrapWithDefaultView(
         Stack(
           textDirection: TextDirection.ltr,
           children: [
             RepaintBoundary(child: rootWidget),
-            // Prevents crashes when Android activity is resumed (see https://github.com/leancodepl/patrol/issues/901)
+            // Prevents crashes when Android activity is resumed (see
+            // https://github.com/leancodepl/patrol/issues/901)
             ExcludeSemantics(
-              child: Padding(
-                padding: EdgeInsets.only(
-                  top: MediaQueryData.fromWindow(window).padding.top + 4,
-                  left: 4,
-                ),
-                child: Text(
-                  _currentDartTestFile!,
-                  textDirection: TextDirection.ltr,
-                  style: const TextStyle(color: Colors.red),
-                ),
+              child: Builder(
+                builder: (context) {
+                  final view = View.of(context);
+                  return Padding(
+                    padding: EdgeInsets.only(
+                      top: MediaQueryData.fromView(view).padding.top + 4,
+                      left: 4,
+                    ),
+                    child: IgnorePointer(
+                      child: Text(
+                        _currentDartTest!,
+                        textDirection: TextDirection.ltr,
+                        style: const TextStyle(color: Colors.red),
+                      ),
+                    ),
+                  );
+                },
               ),
             ),
           ],
@@ -196,11 +240,45 @@ class PatrolBinding extends IntegrationTestWidgetsFlutterBinding {
       );
     }
   }
+
+  @override
+  void reportExceptionNoticed(FlutterErrorDetails exception) {
+    // This override is copied from IntegrationTestWidgetsFlutterBinding. It may
+    // be not needed.
+    //
+    // See: https://github.com/flutter/flutter/issues/81534
+  }
 }
 
-extension on LiveTest {
-  /// Get the direct parent group of the currently running test.
-  ///
-  /// The group's name is the name of the Dart test file the test is defined in.
-  String get parentGroupName => groups.last.name;
+/// Representing a failure includes the method name and the failure details.
+class Failure {
+  /// Constructor requiring all fields during initialization.
+  Failure(this.methodName, this.details);
+
+  /// The name of the test method which failed.
+  final String methodName;
+
+  /// The details of the failure such as stack trace.
+  final String? details;
+
+  /// Serializes the object to JSON.
+  String toJson() {
+    return json.encode(<String, String?>{
+      'methodName': methodName,
+      'details': details,
+    });
+  }
+
+  @override
+  String toString() => toJson();
+
+  /// Decode a JSON string to create a Failure object.
+  // ignore: prefer_constructors_over_static_methods
+  static Failure fromJsonString(String jsonString) {
+    final failure = json.decode(jsonString) as Map<String, dynamic>;
+    return Failure(
+      failure['methodName'] as String,
+      failure['details'] as String?,
+    );
+  }
 }

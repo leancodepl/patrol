@@ -3,12 +3,13 @@ package pl.leancode.patrol
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.BySelector
 import androidx.test.uiautomator.UiSelector
-import pl.leancode.patrol.contracts.Contracts
-import pl.leancode.patrol.contracts.Contracts.DartTestGroup
+import pl.leancode.patrol.contracts.Contracts.DartGroupEntry
+import pl.leancode.patrol.contracts.Contracts.GroupEntryType
+import pl.leancode.patrol.contracts.Contracts.Selector
 
-private fun Contracts.Selector.isEmpty(): Boolean {
+private fun Selector.isEmpty(): Boolean {
     return (
-            !hasText() &&
+        !hasText() &&
             !hasTextStartsWith() &&
             !hasTextContains() &&
             !hasClassName() &&
@@ -20,10 +21,10 @@ private fun Contracts.Selector.isEmpty(): Boolean {
             !hasEnabled() &&
             !hasFocused() &&
             !hasPkg()
-            )
+        )
 }
 
-fun Contracts.Selector.toUiSelector(): UiSelector {
+fun Selector.toUiSelector(): UiSelector {
     var selector = UiSelector()
 
     if (hasText()) {
@@ -77,7 +78,7 @@ fun Contracts.Selector.toUiSelector(): UiSelector {
     return selector
 }
 
-fun Contracts.Selector.toBySelector(): BySelector {
+fun Selector.toBySelector(): BySelector {
     if (isEmpty()) {
         throw PatrolException("Selector is empty")
     }
@@ -94,44 +95,45 @@ fun Contracts.Selector.toBySelector(): BySelector {
     var matchedFocused = false
     var matchedPkg = false
 
-    var bySelector = if (hasText()) {
-        matchedText = true
-        By.text(text)
-    } else if (hasTextStartsWith()) {
-        matchedTextStartsWith = true
-        By.textStartsWith(textStartsWith)
-    } else if (hasTextContains()) {
-        matchedTextContains = true
-        By.textContains(textContains)
-    } else if (hasClassName()) {
-        matchedClassName = true
-        By.clazz(className)
-    } else if (hasContentDescription()) {
-        matchedContentDescription = true
-        By.desc(contentDescription)
-    } else if (hasContentDescriptionStartsWith()) {
-        matchedContentDescriptionStartsWith = true
-        By.descStartsWith(contentDescriptionStartsWith)
-    } else if (hasContentDescriptionContains()) {
-        matchedContentDescriptionContains = true
-        By.descContains(contentDescriptionContains)
-    } else if (hasResourceId()) {
-        matchedResourceId = true
-        By.res(resourceId)
-    } else if (hasInstance()) {
-        throw IllegalArgumentException("instance() argument is not supported for BySelector")
-    } else if (hasEnabled()) {
-        matchedEnabled = true
-        By.enabled(enabled!!)
-    } else if (hasFocused()) {
-        matchedFocused = true
-        By.focused(focused!!)
-    } else if (hasPkg()) {
-        matchedPkg = true
-        By.pkg(pkg)
-    } else {
-        throw IllegalArgumentException("SelectorQuery is empty")
-    }
+    var bySelector =
+        if (hasText()) {
+            matchedText = true
+            By.text(text)
+        } else if (hasTextStartsWith()) {
+            matchedTextStartsWith = true
+            By.textStartsWith(textStartsWith)
+        } else if (hasTextContains()) {
+            matchedTextContains = true
+            By.textContains(textContains)
+        } else if (hasClassName()) {
+            matchedClassName = true
+            By.clazz(className)
+        } else if (hasContentDescription()) {
+            matchedContentDescription = true
+            By.desc(contentDescription)
+        } else if (hasContentDescriptionStartsWith()) {
+            matchedContentDescriptionStartsWith = true
+            By.descStartsWith(contentDescriptionStartsWith)
+        } else if (hasContentDescriptionContains()) {
+            matchedContentDescriptionContains = true
+            By.descContains(contentDescriptionContains)
+        } else if (hasResourceId()) {
+            matchedResourceId = true
+            By.res(resourceId)
+        } else if (hasInstance()) {
+            throw IllegalArgumentException("instance() argument is not supported for BySelector")
+        } else if (hasEnabled()) {
+            matchedEnabled = true
+            By.enabled(enabled!!)
+        } else if (hasFocused()) {
+            matchedFocused = true
+            By.focused(focused!!)
+        } else if (hasPkg()) {
+            matchedPkg = true
+            By.pkg(pkg)
+        } else {
+            throw IllegalArgumentException("SelectorQuery is empty")
+        }
 
     if (!matchedText && hasText()) {
         bySelector = By.copy(bySelector).text(text)
@@ -184,21 +186,28 @@ fun Contracts.Selector.toBySelector(): BySelector {
     return bySelector
 }
 
-fun DartTestGroup.listFlatDartFiles(): List<String> {
-    val files = mutableListOf<String>()
-    for (group in groups) {
-        files.addAll(group.listGroups())
+/**
+ * Flattens the structure of a DartTestSuite into a flat list of tests.
+ */
+fun DartGroupEntry.listTestsFlat(parentGroupName: String = ""): List<DartGroupEntry> {
+    val tests = mutableListOf<DartGroupEntry>()
+
+    for (test in entries) {
+        if (test.type == GroupEntryType.test) {
+            if (parentGroupName.isEmpty()) {
+                // This case is invalid, because every test will have at least 1 named group - its filename.
+                throw IllegalStateException("Invariant violated: test $test has no named parent group")
+            }
+
+            tests.add(test.copy(name = "$parentGroupName ${test.name}"))
+        } else if (test.type == GroupEntryType.group) {
+            if (parentGroupName.isEmpty()) {
+                tests.addAll(test.listTestsFlat(parentGroupName = test.name))
+            } else {
+                tests.addAll(test.listTestsFlat(parentGroupName = "$parentGroupName ${test.name}"))
+            }
+        }
     }
 
-    return files
-}
-
-// Recursively lists groups in this group.
-private fun DartTestGroup.listGroups(): List<String> {
-    val outGroups = mutableListOf<String>(this.name)
-    for (group in groups) {
-        outGroups.addAll(group.listGroups())
-    }
-
-    return outGroups
+    return tests
 }

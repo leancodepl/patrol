@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
-import 'package:patrol_example/main.dart';
+import 'package:patrol_example/main.dart' as app_main;
 
 export 'package:flutter_test/flutter_test.dart';
 export 'package:patrol/patrol.dart';
@@ -10,14 +10,13 @@ final _nativeAutomatorConfig = NativeAutomatorConfig(
   findTimeout: Duration(seconds: 20), // 10 seconds is too short for some CIs
 );
 
-Future<void> createApp(PatrolTester $) async {
-  await setUpTimezone();
-  await $.pumpWidget(ExampleApp());
+Future<void> createApp(PatrolIntegrationTester $) async {
+  await app_main.main();
 }
 
 void patrol(
   String description,
-  Future<void> Function(PatrolTester) callback, {
+  Future<void> Function(PatrolIntegrationTester) callback, {
   bool? skip,
   NativeAutomatorConfig? nativeAutomatorConfig,
   LiveTestWidgetsFlutterBindingFramePolicy framePolicy =
@@ -27,7 +26,6 @@ void patrol(
     description,
     config: _patrolTesterConfig,
     nativeAutomatorConfig: nativeAutomatorConfig ?? _nativeAutomatorConfig,
-    nativeAutomation: true,
     framePolicy: framePolicy,
     timeout: Timeout(Duration(seconds: 60)),
     skip: skip,

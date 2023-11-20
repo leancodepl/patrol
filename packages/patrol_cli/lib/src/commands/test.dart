@@ -214,19 +214,20 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
         if (packageName != null) {
           action = () => _androidTestBackend.uninstall(packageName, device);
         }
-        break;
       case TargetPlatform.macOS:
         final bundleId = macosOpts.bundleId;
         if (bundleId != null) {
           action = () => _macosTestBackend.uninstall(bundleId, device);
         }
-        break;
       case TargetPlatform.iOS:
         final bundleId = iosOpts.bundleId;
         if (bundleId != null) {
-          action = () => _iosTestBackend.uninstall(bundleId, device);
+          action = () => _iosTestBackend.uninstall(
+                appId: bundleId,
+                flavor: iosOpts.flutter.flavor,
+                device: device,
+              );
         }
-        break;
     }
 
     try {
@@ -246,10 +247,8 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
     switch (device.targetPlatform) {
       case TargetPlatform.android:
         buildAction = () => _androidTestBackend.build(androidOpts);
-        break;
       case TargetPlatform.macOS:
         buildAction = () => _macosTestBackend.build(macosOpts);
-        break;
       case TargetPlatform.iOS:
         buildAction = () => _iosTestBackend.build(iosOpts);
     }
@@ -283,21 +282,22 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
         if (package != null && uninstall) {
           finalizer = () => _androidTestBackend.uninstall(package, device);
         }
-        break;
       case TargetPlatform.macOS:
         action = () async => _macosTestBackend.execute(macos, device);
         final bundle = macos.bundleId;
         if (bundle != null && uninstall) {
           finalizer = () => _macosTestBackend.uninstall(bundle, device);
         }
-        break;
       case TargetPlatform.iOS:
         action = () async => _iosTestBackend.execute(ios, device);
-        final bundle = ios.bundleId;
-        if (bundle != null && uninstall) {
-          finalizer = () => _iosTestBackend.uninstall(bundle, device);
+        final bundleId = ios.bundleId;
+        if (bundleId != null && uninstall) {
+          finalizer = () => _iosTestBackend.uninstall(
+                appId: bundleId,
+                flavor: ios.flutter.flavor,
+                device: device,
+              );
         }
-        break;
     }
 
     var allPassed = true;

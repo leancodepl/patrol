@@ -14,7 +14,7 @@ class AndroidGenerator {
     final serverGenerator = AndroidHttp4kServerGenerator();
     final clientGenerator = AndroidHttp4kClientGenerator();
 
-    for (var service in schema.services) {
+    for (final service in schema.services) {
       if (service.android.needsServer) {
         result.add(serverGenerator.generate(service, config));
       }

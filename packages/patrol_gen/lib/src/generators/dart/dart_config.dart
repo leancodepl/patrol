@@ -15,7 +15,7 @@ class DartConfig {
       path.join(outputDirectory, '${_fileName(serviceName)}_client.dart');
 
   String _fileName(String pascalCaseName) {
-    final beforeCapitalLetter = RegExp(r"(?=[A-Z])");
+    final beforeCapitalLetter = RegExp('(?=[A-Z])');
 
     final parts = pascalCaseName.split(beforeCapitalLetter);
     return parts.map((e) => e.toLowerCase()).join('_');

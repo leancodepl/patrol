@@ -1,3 +1,75 @@
+## 3.0.2+1
+
+- Add screenshots to `pubspec.yaml` (#1917)
+
+## 3.0.2
+
+- Bump dependencies for Flutter 3.16 and Dart 3.2
+- Populate `topics` in pubspec
+
+## 3.0.1
+
+- Fix extension code not being bundled by GitHub Actions workflow (#1902)
+
+## 3.0.0
+
+Give a warm welcome to the new **Patrol DevTools Extension**!
+
+Patrol DevTools extension allows you to explore the native view hierarchy when
+developing tests with `patrol develop`. Now you can easily see what Android /
+iOS views are currently visible and discover their properties so that they can
+be used in native selectors like `$.native.tap()`. You don’t have to use any
+external tools for that. This is just the beginning, and we plan to add more
+features to our extension in the future.
+
+Other changes:
+
+- Bump minimum supported Flutter version to 3.16
+- **BREAKING:**
+  - Remove `bindingType` parameter from `patrolTest()` function. Now only
+    `PatrolBinding` is used and it's automatically initialized (#1882)
+  - Remove `nativeAutomation` parameter from `patrolTest()` function. Now it's
+    enabled by default (#1882)
+  - This release also depends on [patrol_finders
+    v2](https://pub.dev/packages/patrol_finders/changelog#200) and includes
+    its breaking changes.
+
+- Remove dependency on `integration_test` plugin (#1882)
+
+This version requires version 2.3.0 of `patrol_cli` package.
+
+## 2.3.2
+
+- Add `PatrolFinder.longPress()` (#1825)
+
+## 2.3.1
+
+- Add support for iOS 11 and 12 (#1733)
+- Fix build-time and run-time crashes when app doesn't use Kotlin 1.8.x (#1782)
+
+## 2.3.0
+
+- Add support for nested test hierarchies using `group()`s (#1634)
+- Replace Protocol Buffers and gRPC with a custom code generation solution that
+  is more lightweight (#1681)
+- Fix test name label blocking hit testing (#1731)
+
+This version requires version 2.2.0 of `patrol_cli` package.
+
+## 2.2.5
+
+- Fix `grantPermissionOnlyThisTime()` crashing on Android <11 (#1698)
+
+## 2.2.4
+
+- Remove deprecation of `nativeAutomation` and add message about migration to
+  `patrol_finders` (#1670)
+
+## 2.2.3
+
+- Make `KeyboardBehavior.alternative` not automatically try to hide the keyboard
+  on iOS (#1638)
+
 ## 2.2.2
 
 - Fix deprecation message for `andSettle` (settleBehavior -> settlePolicy)

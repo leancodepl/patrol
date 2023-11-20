@@ -57,7 +57,11 @@ class Logger extends mason_logger.Logger {
   }
 
   @override
-  void warn(String? message, {String tag = ''}) {
+  void warn(
+    String? message, {
+    String tag = 'WARN',
+    mason_logger.LogStyle? style,
+  }) {
     super.warn(message, tag: tag);
   }
 }

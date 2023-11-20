@@ -6,37 +6,31 @@ part of 'contracts.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-DartTestCase _$DartTestCaseFromJson(Map<String, dynamic> json) => DartTestCase(
+DartGroupEntry _$DartGroupEntryFromJson(Map<String, dynamic> json) =>
+    DartGroupEntry(
       name: json['name'] as String,
-    );
-
-Map<String, dynamic> _$DartTestCaseToJson(DartTestCase instance) =>
-    <String, dynamic>{
-      'name': instance.name,
-    };
-
-DartTestGroup _$DartTestGroupFromJson(Map<String, dynamic> json) =>
-    DartTestGroup(
-      name: json['name'] as String,
-      tests: (json['tests'] as List<dynamic>)
-          .map((e) => DartTestCase.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      groups: (json['groups'] as List<dynamic>)
-          .map((e) => DartTestGroup.fromJson(e as Map<String, dynamic>))
+      type: $enumDecode(_$GroupEntryTypeEnumMap, json['type']),
+      entries: (json['entries'] as List<dynamic>)
+          .map((e) => DartGroupEntry.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
 
-Map<String, dynamic> _$DartTestGroupToJson(DartTestGroup instance) =>
+Map<String, dynamic> _$DartGroupEntryToJson(DartGroupEntry instance) =>
     <String, dynamic>{
       'name': instance.name,
-      'tests': instance.tests,
-      'groups': instance.groups,
+      'type': _$GroupEntryTypeEnumMap[instance.type]!,
+      'entries': instance.entries,
     };
+
+const _$GroupEntryTypeEnumMap = {
+  GroupEntryType.group: 'group',
+  GroupEntryType.test: 'test',
+};
 
 ListDartTestsResponse _$ListDartTestsResponseFromJson(
         Map<String, dynamic> json) =>
     ListDartTestsResponse(
-      group: DartTestGroup.fromJson(json['group'] as Map<String, dynamic>),
+      group: DartGroupEntry.fromJson(json['group'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$ListDartTestsResponseToJson(
@@ -147,6 +141,34 @@ Map<String, dynamic> _$GetNativeViewsRequestToJson(
       'appId': instance.appId,
     };
 
+GetNativeUITreeRequest _$GetNativeUITreeRequestFromJson(
+        Map<String, dynamic> json) =>
+    GetNativeUITreeRequest(
+      iosInstalledApps: (json['iosInstalledApps'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList(),
+    );
+
+Map<String, dynamic> _$GetNativeUITreeRequestToJson(
+        GetNativeUITreeRequest instance) =>
+    <String, dynamic>{
+      'iosInstalledApps': instance.iosInstalledApps,
+    };
+
+GetNativeUITreeRespone _$GetNativeUITreeResponeFromJson(
+        Map<String, dynamic> json) =>
+    GetNativeUITreeRespone(
+      roots: (json['roots'] as List<dynamic>)
+          .map((e) => NativeView.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+
+Map<String, dynamic> _$GetNativeUITreeResponeToJson(
+        GetNativeUITreeRespone instance) =>
+    <String, dynamic>{
+      'roots': instance.roots,
+    };
+
 NativeView _$NativeViewFromJson(Map<String, dynamic> json) => NativeView(
       className: json['className'] as String?,
       text: json['text'] as String?,
@@ -207,7 +229,8 @@ EnterTextRequest _$EnterTextRequestFromJson(Map<String, dynamic> json) =>
       selector: json['selector'] == null
           ? null
           : Selector.fromJson(json['selector'] as Map<String, dynamic>),
-      showKeyboard: json['showKeyboard'] as bool,
+      keyboardBehavior:
+          $enumDecode(_$KeyboardBehaviorEnumMap, json['keyboardBehavior']),
     );
 
 Map<String, dynamic> _$EnterTextRequestToJson(EnterTextRequest instance) =>
@@ -216,8 +239,13 @@ Map<String, dynamic> _$EnterTextRequestToJson(EnterTextRequest instance) =>
       'appId': instance.appId,
       'index': instance.index,
       'selector': instance.selector,
-      'showKeyboard': instance.showKeyboard,
+      'keyboardBehavior': _$KeyboardBehaviorEnumMap[instance.keyboardBehavior]!,
     };
+
+const _$KeyboardBehaviorEnumMap = {
+  KeyboardBehavior.showAndDismiss: 'showAndDismiss',
+  KeyboardBehavior.alternative: 'alternative',
+};
 
 SwipeRequest _$SwipeRequestFromJson(Map<String, dynamic> json) => SwipeRequest(
       startX: (json['startX'] as num).toDouble(),
@@ -264,7 +292,7 @@ Notification _$NotificationFromJson(Map<String, dynamic> json) => Notification(
       appName: json['appName'] as String?,
       title: json['title'] as String,
       content: json['content'] as String,
-      raw: json['raw'] as String,
+      raw: json['raw'] as String?,
     );
 
 Map<String, dynamic> _$NotificationToJson(Notification instance) =>

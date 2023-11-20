@@ -56,14 +56,6 @@ Future<int> patrolCommandRunner(List<String> args) async {
     isCI: isCI,
   );
 
-  if (!platform.environment.containsKey('PATROL_MIGRATED')) {
-    logger.warn('''
-You're using Patrol CLI 2.0, which has breaking changes.
-Read the migration guide at https://patrol.leancode.co/v2.
-Disable this warning by setting the PATROL_MIGRATED environment variable.
-''');
-  }
-
   ProcessSignal.sigint.watch().listen((signal) async {
     logger.detail('Caught SIGINT, exiting...');
     await runner.dispose().onError((err, st) {
@@ -166,6 +158,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         flutterTool: FlutterTool(
           stdin: stdin,
           processManager: _processManager,
+          platform: _platform,
           parentDisposeScope: _disposeScope,
           logger: _logger,
         ),
@@ -247,6 +240,11 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         ..err('$err')
         ..err('$st');
     }
+  }
+
+  @override
+  bool get enableAutoInstall {
+    return !_platform.environment.containsKey('PATROL_NO_COMPLETION');
   }
 
   @override

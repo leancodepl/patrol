@@ -1,3 +1,55 @@
+## 2.3.1+1
+
+- Add screenshots to `pubspec.yaml` (#1917)
+
+## 2.3.1
+
+- Bump dependencies for Flutter 3.16 and Dart 3.2
+- Populate `topics` in pubspec (#1904)
+- Remove warning about `patrol_finders` being split from `patrol`
+- Allow to disable autogenerating shell completion code in `~/.zshrc` (and
+  alike) by setting the `PATROL_NO_COMPLETION` environment variable
+
+## 2.3.0
+
+- Add support for Patrol 3.0 and its DevTools extension (#1829)
+  - Automatically open DevTools when running `patrol develop`. This behavior can
+    be disabled by passing `--no-open-devtools` flag.
+
+This version requires version 3.0.0 of `patrol` package.
+
+## 2.2.2
+
+- Fix parsing `--dart-defines` when a value contains a comma (#1845)
+
+## 2.2.1
+
+- Fix bug with `test_bundle.dart` being sometimes garbled on Windows (#1797)
+
+## 2.2.0
+
+- Add support for `group()` (#1634)
+- Adjust generated `test_bundle.dart` to not depend on gRPC contracts (#1681)
+
+This version requires version 2.3.0 of `patrol` package.
+
+## 2.1.5
+
+- Remove notice about migrating to Patrol 2.0 (#1738)
+
+## 2.1.4
+
+- Uninstall RunnerUITests app on iOS when flavor is present (#1694)
+
+## 2.1.3
+
+- Add migration message due to release of `patrol_finders`
+
+## 2.1.2
+
+- Fix `.xctestrun` file not being found when the `RunnerUITests` targe uses
+  XCTestPlans (#1636)
+
 ## 2.1.1
 
 - Change the location of iOS test reports to `build/ios_results` with timestamp

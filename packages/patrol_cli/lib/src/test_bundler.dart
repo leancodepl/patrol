@@ -70,18 +70,22 @@ Future<void> main() async {
 
   final nativeAutomator = NativeAutomator(config: NativeAutomatorConfig());
   await nativeAutomator.initialize();
-  final binding = PatrolBinding.ensureInitialized();
-  final testExplorationCompleter = Completer<DartTestGroup>();
+  final binding = PatrolBinding.ensureInitialized(NativeAutomatorConfig());
+  final testExplorationCompleter = Completer<DartGroupEntry>();
 
-  // A special test to expore the hierarchy of groups and tests. This is a hack
+  // A special test to explore the hierarchy of groups and tests. This is a hack
   // around https://github.com/dart-lang/test/issues/1998.
   //
   // This test must be the first to run. If not, the native side likely won't
   // receive any tests, and everything will fall apart.
   test('patrol_test_explorer', () {
+    // Maybe somewhat counterintuitively, this callback runs *after* the calls
+    // to group() below.
     final topLevelGroup = Invoker.current!.liveTest.groups.first;
     final dartTestGroup = createDartTestGroup(topLevelGroup);
     testExplorationCompleter.complete(dartTestGroup);
+    print('patrol_test_explorer: obtained Dart-side test hierarchy:');
+    printGroupStructure(dartTestGroup);
   });
 
   // START: GENERATED TEST GROUPS
@@ -124,6 +128,7 @@ ${generateGroupsCode(testFilePaths).split('\n').map((e) => '  $e').join('\n')}
     final contents = '''
 // ignore_for_file: type=lint, invalid_use_of_internal_member
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
 
@@ -134,7 +139,9 @@ ${generateImports([testFilePath])}
 Future<void> main() async {
   final nativeAutomator = NativeAutomator(config: NativeAutomatorConfig());
   await nativeAutomator.initialize();
-  PatrolBinding.ensureInitialized();
+  PatrolBinding.ensureInitialized(NativeAutomatorConfig())
+    ..workaroundDebugDefaultTargetPlatformOverride =
+        debugDefaultTargetPlatformOverride;
 
   // START: GENERATED TEST GROUPS
 ${generateGroupsCode([testFilePath]).split('\n').map((e) => '  $e').join('\n')}
@@ -173,7 +180,10 @@ ${generateGroupsCode([testFilePath]).split('\n').map((e) => '  $e').join('\n')}
     for (final testFilePath in testFilePaths) {
       final relativeTestFilePath = _normalizeTestPath(testFilePath);
       final testName = _createTestName(relativeTestFilePath);
-      imports.add("import '$relativeTestFilePath' as $testName;");
+      final relativeTestFilePathWithoutSlash = relativeTestFilePath[0] == '/'
+          ? relativeTestFilePath.replaceFirst('/', '')
+          : relativeTestFilePath;
+      imports.add("import '$relativeTestFilePathWithoutSlash' as $testName;");
     }
 
     return imports.join('\n');

@@ -4,7 +4,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol_finders/patrol_finders.dart';
-import 'package:patrol_finders/src/custom_finders/utils.dart';
 
 /// Common configuration for [PatrolTester] and [PatrolFinder].
 class PatrolTesterConfig {
@@ -13,9 +12,7 @@ class PatrolTesterConfig {
     this.existsTimeout = const Duration(seconds: 10),
     this.visibleTimeout = const Duration(seconds: 10),
     this.settleTimeout = const Duration(seconds: 10),
-    @Deprecated('Use settlePolicy argument instead') this.andSettle = true,
-    // TODO: change default to trySettle, see #1369 (https://github.com/leancodepl/patrol/issues/1369)
-    this.settlePolicy = SettlePolicy.settle,
+    this.settlePolicy = SettlePolicy.trySettle,
     this.dragDuration = const Duration(milliseconds: 100),
     this.settleBetweenScrollsTimeout = const Duration(seconds: 5),
   });
@@ -42,12 +39,6 @@ class PatrolTesterConfig {
   /// [settlePolicy]).
   final Duration settleTimeout;
 
-  /// Whether to call [WidgetTester.pumpAndSettle] after actions such as
-  /// [PatrolFinder.tap] and [PatrolFinder]. If false, only [WidgetTester.pump]
-  /// is called.
-  @Deprecated('Use PatrolTester.settlePolicy instead')
-  final bool andSettle;
-
   /// Defines which pump method should be called after actions such as
   /// [PatrolTester.tap], [PatrolTester.enterText], and [PatrolFinder.scrollTo].
   ///
@@ -69,7 +60,6 @@ class PatrolTesterConfig {
     Duration? existsTimeout,
     Duration? visibleTimeout,
     Duration? settleTimeout,
-    @Deprecated('Use settlePolicy argument instead') bool? andSettle,
     SettlePolicy? settlePolicy,
     Duration? dragDuration,
   }) {
@@ -77,9 +67,6 @@ class PatrolTesterConfig {
       existsTimeout: existsTimeout ?? this.existsTimeout,
       visibleTimeout: visibleTimeout ?? this.visibleTimeout,
       settleTimeout: settleTimeout ?? this.settleTimeout,
-      // TODO: remove after andSettle is removed, see #1369 (https://github.com/leancodepl/patrol/issues/1369)
-      // ignore: deprecated_member_use_from_same_package
-      andSettle: andSettle ?? this.andSettle,
       settlePolicy: settlePolicy ?? this.settlePolicy,
       dragDuration: dragDuration ?? this.dragDuration,
     );
@@ -245,7 +232,8 @@ class PatrolTester {
   /// ```
   ///
   /// This method automatically calls [WidgetTester.pumpAndSettle] after
-  /// tapping. If you want to disable this behavior, set [andSettle] to false.
+  /// tapping. If you want to disable this behavior, set [settlePolicy] to
+  /// [SettlePolicy.noSettle].
   ///
   /// See also:
   ///  - [PatrolFinder.waitUntilVisible], which is used to wait for the widget
@@ -253,7 +241,6 @@ class PatrolTester {
   ///  - [WidgetController.tap]
   Future<void> tap(
     Finder finder, {
-    @Deprecated('Use settlePolicy argument instead') bool? andSettle,
     SettlePolicy? settlePolicy,
     Duration? visibleTimeout,
     Duration? settleTimeout,
@@ -264,12 +251,52 @@ class PatrolTester {
         timeout: visibleTimeout,
       );
       await tester.tap(resolvedFinder.first);
-      final settle = chooseSettlePolicy(
-        andSettle: andSettle,
-        settlePolicy: settlePolicy,
-      );
       await _performPump(
-        settlePolicy: settle,
+        settlePolicy: settlePolicy,
+        settleTimeout: settleTimeout,
+      );
+    });
+  }
+
+  /// Waits until this finder finds at least 1 visible widget and then makes
+  /// long press gesture on it.
+  ///
+  /// Example:
+  /// ```dart
+  /// // long presses on the first widget having Key('createAccount')
+  /// await $(#createAccount).longPress();
+  /// ```
+  ///
+  /// If the finder finds more than 1 widget, you can choose which one to make
+  /// long press on:
+  ///
+  /// ```dart
+  /// // long presses on the third TextButton widget
+  /// await $(TextButton).at(2).longPress();
+  /// ```
+  ///
+  /// After long press gesture this method automatically calls
+  /// [WidgetTester.pumpAndSettle]. If you want to disable this behavior,
+  /// set [settlePolicy] to [SettlePolicy.noSettle].
+  ///
+  /// See also:
+  ///  - [PatrolFinder.waitUntilVisible], which is used to wait for the widget
+  ///    to appear
+  ///  - [WidgetController.longPress]
+  Future<void> longPress(
+    Finder finder, {
+    SettlePolicy? settlePolicy,
+    Duration? visibleTimeout,
+    Duration? settleTimeout,
+  }) {
+    return TestAsyncUtils.guard(() async {
+      final resolvedFinder = await waitUntilVisible(
+        finder,
+        timeout: visibleTimeout,
+      );
+      await tester.longPress(resolvedFinder.first);
+      await _performPump(
+        settlePolicy: settlePolicy,
         settleTimeout: settleTimeout,
       );
     });
@@ -293,8 +320,8 @@ class PatrolTester {
   /// ```
   ///
   /// This method automatically calls [WidgetTester.pumpAndSettle] after
-  /// entering text. If you want to disable this behavior, set [andSettle] to
-  /// false.
+  /// entering text. If you want to disable this behavior, set [settlePolicy] to
+  /// [SettlePolicy.noSettle].
   ///
   /// See also:
   ///  - [PatrolFinder.waitUntilVisible], which is used to wait for the widget
@@ -303,7 +330,6 @@ class PatrolTester {
   Future<void> enterText(
     Finder finder,
     String text, {
-    @Deprecated('Use settlePolicy argument instead') bool? andSettle,
     SettlePolicy? settlePolicy,
     Duration? visibleTimeout,
     Duration? settleTimeout,
@@ -320,12 +346,8 @@ class PatrolTester {
         timeout: visibleTimeout,
       );
       await tester.enterText(resolvedFinder.first, text);
-      final settle = chooseSettlePolicy(
-        andSettle: andSettle,
-        settlePolicy: settlePolicy,
-      );
       await _performPump(
-        settlePolicy: settle,
+        settlePolicy: settlePolicy,
         settleTimeout: settleTimeout,
       );
     });
@@ -423,8 +445,8 @@ class PatrolTester {
   ///    [PatrolTester.config].
   ///
   /// See also:
-  ///  * [PatrolTester.config.andSettle], which controls the default behavior if
-  ///    [andSettle] is null
+  ///  * [PatrolTester.config.settlePolicy], which controls the default settle
+  ///     behavior
   ///  * [PatrolTester.dragUntilVisible], which scrolls to visible widget,
   ///    not only existing one.
   Future<PatrolFinder> dragUntilExists({
@@ -434,7 +456,6 @@ class PatrolTester {
     int maxIteration = defaultScrollMaxIteration,
     Duration? settleBetweenScrollsTimeout,
     Duration? dragDuration,
-    @Deprecated('Use settlePolicy argument instead') bool? andSettle,
     SettlePolicy? settlePolicy,
   }) {
     return TestAsyncUtils.guard(() async {
@@ -443,10 +464,6 @@ class PatrolTester {
       viewPatrolFinder = viewPatrolFinder.hitTestable().first;
       dragDuration ??= config.dragDuration;
       settleBetweenScrollsTimeout ??= config.settleBetweenScrollsTimeout;
-      final settle = chooseSettlePolicy(
-        andSettle: andSettle,
-        settlePolicy: settlePolicy,
-      );
 
       var iterationsLeft = maxIteration;
       while (iterationsLeft > 0 && finder.evaluate().isEmpty) {
@@ -456,7 +473,7 @@ class PatrolTester {
           dragDuration!,
         );
         await _performPump(
-          settlePolicy: settle,
+          settlePolicy: settlePolicy,
           settleTimeout: settleBetweenScrollsTimeout,
         );
         iterationsLeft -= 1;
@@ -512,7 +529,6 @@ class PatrolTester {
     int maxIteration = defaultScrollMaxIteration,
     Duration? settleBetweenScrollsTimeout,
     Duration? dragDuration,
-    @Deprecated('Use settlePolicy argument instead') bool? andSettle,
     SettlePolicy? settlePolicy,
   }) {
     return TestAsyncUtils.guard(() async {
@@ -521,10 +537,6 @@ class PatrolTester {
       viewPatrolFinder = viewPatrolFinder.hitTestable().first;
       dragDuration ??= config.dragDuration;
       settleBetweenScrollsTimeout ??= config.settleBetweenScrollsTimeout;
-      final settle = chooseSettlePolicy(
-        andSettle: andSettle,
-        settlePolicy: settlePolicy,
-      );
 
       var iterationsLeft = maxIteration;
       while (iterationsLeft > 0 && finder.hitTestable().evaluate().isEmpty) {
@@ -534,7 +546,7 @@ class PatrolTester {
           dragDuration!,
         );
         await _performPump(
-          settlePolicy: settle,
+          settlePolicy: settlePolicy,
           settleTimeout: settleBetweenScrollsTimeout,
         );
         iterationsLeft -= 1;
@@ -567,7 +579,6 @@ class PatrolTester {
     int maxScrolls = defaultScrollMaxIteration,
     Duration? settleBetweenScrollsTimeout,
     Duration? dragDuration,
-    @Deprecated('Use settlePolicy argument instead') bool? andSettle,
     SettlePolicy? settlePolicy,
   }) async {
     assert(maxScrolls > 0, 'maxScrolls must be positive number');
@@ -589,26 +600,13 @@ class PatrolTester {
     }
 
     return TestAsyncUtils.guard<PatrolFinder>(() async {
-      Offset moveStep;
-      switch (direction) {
-        case AxisDirection.up:
-          moveStep = Offset(0, delta);
-          break;
-        case AxisDirection.down:
-          moveStep = Offset(0, -delta);
-          break;
-        case AxisDirection.left:
-          moveStep = Offset(delta, 0);
-          break;
-        case AxisDirection.right:
-          moveStep = Offset(-delta, 0);
-          break;
-      }
+      final moveStep = switch (direction) {
+        AxisDirection.up => Offset(0, delta),
+        AxisDirection.down => Offset(0, -delta),
+        AxisDirection.left => Offset(delta, 0),
+        AxisDirection.right => Offset(-delta, 0),
+      };
 
-      final settle = chooseSettlePolicy(
-        andSettle: andSettle,
-        settlePolicy: settlePolicy,
-      );
       final resolvedFinder = await dragUntilExists(
         finder: finder,
         view: scrollablePatrolFinder.first,
@@ -616,7 +614,7 @@ class PatrolTester {
         maxIteration: maxScrolls,
         settleBetweenScrollsTimeout: settleBetweenScrollsTimeout,
         dragDuration: dragDuration,
-        settlePolicy: settle,
+        settlePolicy: settlePolicy,
       );
 
       return resolvedFinder;
@@ -641,7 +639,6 @@ class PatrolTester {
     int maxScrolls = defaultScrollMaxIteration,
     Duration? settleBetweenScrollsTimeout,
     Duration? dragDuration,
-    @Deprecated('Use settlePolicy argument instead') bool? andSettle,
     SettlePolicy? settlePolicy,
   }) async {
     assert(maxScrolls > 0, 'maxScrolls must be positive number');
@@ -667,22 +664,14 @@ class PatrolTester {
       switch (direction) {
         case AxisDirection.up:
           moveStep = Offset(0, delta);
-          break;
         case AxisDirection.down:
           moveStep = Offset(0, -delta);
-          break;
         case AxisDirection.left:
           moveStep = Offset(delta, 0);
-          break;
         case AxisDirection.right:
           moveStep = Offset(-delta, 0);
-          break;
       }
 
-      final settle = chooseSettlePolicy(
-        andSettle: andSettle,
-        settlePolicy: settlePolicy,
-      );
       final resolvedFinder = await dragUntilVisible(
         finder: finder,
         view: scrollablePatrolFinder.first,
@@ -690,7 +679,7 @@ class PatrolTester {
         maxIteration: maxScrolls,
         settleBetweenScrollsTimeout: settleBetweenScrollsTimeout,
         dragDuration: dragDuration,
-        settlePolicy: settle,
+        settlePolicy: settlePolicy,
       );
 
       return resolvedFinder;

@@ -49,6 +49,12 @@ class DevelopCommand extends PatrolCommand {
 
     usesAndroidOptions();
     usesIOSOptions();
+
+    argParser.addFlag(
+      'open-devtools',
+      help: 'Automatically open Patrol extension in DevTools when ready.',
+      defaultsTo: true,
+    );
   }
 
   final DeviceFinder _deviceFinder;
@@ -112,6 +118,12 @@ class DevelopCommand extends PatrolCommand {
     final displayLabel = boolArg('label');
     final uninstall = boolArg('uninstall');
 
+    String? iOSInstalledAppsEnvVariable;
+    if (device.targetPlatform == TargetPlatform.iOS) {
+      iOSInstalledAppsEnvVariable =
+          await _iosTestBackend.getInstalledAppsEnvVariable(device.id);
+    }
+
     final customDartDefines = {
       ..._dartDefinesReader.fromFile(),
       ..._dartDefinesReader.fromCli(args: stringsArg('dart-define')),
@@ -125,7 +137,10 @@ class DevelopCommand extends PatrolCommand {
       'INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE': 'false',
       'PATROL_TEST_LABEL_ENABLED': displayLabel.toString(),
       // develop-specific
-      ...{'PATROL_HOT_RESTART': 'true'},
+      ...{
+        'PATROL_HOT_RESTART': 'true',
+        'PATROL_IOS_INSTALLED_APPS': iOSInstalledAppsEnvVariable,
+      },
     }.withNullsRemoved();
 
     final dartDefines = {...customDartDefines, ...internalDartDefines};
@@ -170,6 +185,7 @@ class DevelopCommand extends PatrolCommand {
       iosOpts,
       uninstall: uninstall,
       device: device,
+      openDevtools: boolArg('open-devtools'),
     );
 
     return 0; // for now, all exit codes are 0
@@ -184,11 +200,9 @@ class DevelopCommand extends PatrolCommand {
     switch (device.targetPlatform) {
       case TargetPlatform.android:
         buildAction = () => _androidTestBackend.build(androidOpts);
-        break;
       case TargetPlatform.macOS: //TODO verify
       case TargetPlatform.iOS:
         buildAction = () => _iosTestBackend.build(iosOpts);
-        break;
     }
 
     try {
@@ -221,14 +235,16 @@ class DevelopCommand extends PatrolCommand {
         if (packageName != null) {
           action = () => _androidTestBackend.uninstall(packageName, device);
         }
-        break;
       case TargetPlatform.macOS: //TODO verify
       case TargetPlatform.iOS:
         final bundleId = iosOpts.bundleId;
         if (bundleId != null) {
-          action = () => _iosTestBackend.uninstall(bundleId, device);
+          action = () => _iosTestBackend.uninstall(
+                appId: bundleId,
+                flavor: iosOpts.flutter.flavor,
+                device: device,
+              );
         }
-        break;
     }
 
     try {
@@ -241,9 +257,10 @@ class DevelopCommand extends PatrolCommand {
   Future<void> _execute(
     FlutterAppOptions flutterOpts,
     AndroidAppOptions android,
-    IOSAppOptions ios, {
+    IOSAppOptions iosOpts, {
     required bool uninstall,
     required Device device,
+    required bool openDevtools,
   }) async {
     Future<void> Function() action;
     Future<void> Function()? finalizer;
@@ -258,15 +275,18 @@ class DevelopCommand extends PatrolCommand {
         if (package != null && uninstall) {
           finalizer = () => _androidTestBackend.uninstall(package, device);
         }
-        break;
       case TargetPlatform.macOS: //TODO verify
       case TargetPlatform.iOS:
-        appId = ios.bundleId;
+        appId = iosOpts.bundleId;
         action = () async =>
-            _iosTestBackend.execute(ios, device, interruptible: true);
-        final bundle = ios.bundleId;
-        if (bundle != null && uninstall) {
-          finalizer = () => _iosTestBackend.uninstall(bundle, device);
+            _iosTestBackend.execute(iosOpts, device, interruptible: true);
+        final bundleId = iosOpts.bundleId;
+        if (bundleId != null && uninstall) {
+          finalizer = () => _iosTestBackend.uninstall(
+                appId: bundleId,
+                flavor: iosOpts.flutter.flavor,
+                device: device,
+              );
         }
     }
 
@@ -278,6 +298,7 @@ class DevelopCommand extends PatrolCommand {
         target: flutterOpts.target,
         appId: appId,
         dartDefines: flutterOpts.dartDefines,
+        openDevtools: openDevtools,
       );
 
       await future;

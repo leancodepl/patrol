@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:patrol_gen/src/generators/android/android_config.dart';
 import 'package:patrol_gen/src/generators/android/android_generator.dart';
 import 'package:patrol_gen/src/generators/dart/dart_config.dart';
@@ -5,7 +7,6 @@ import 'package:patrol_gen/src/generators/dart/dart_generator.dart';
 import 'package:patrol_gen/src/generators/ios/ios_config.dart';
 import 'package:patrol_gen/src/generators/ios/ios_generator.dart';
 import 'package:patrol_gen/src/resolve_schema.dart';
-import 'dart:io';
 
 class PatrolGenConfig {
   const PatrolGenConfig({
@@ -27,8 +28,7 @@ class PatrolGen {
   Future<void> run(PatrolGenConfig config) async {
     final schema = await resolveSchema(config.schemaFilename);
 
-    final files = DartGenerator().generate(schema, config.dartConfig);
-    files
+    final files = DartGenerator().generate(schema, config.dartConfig)
       //TODO: We should rename IOSGenerator to SwiftGenerator
       // but we should wait until feature/stop-depending-on-gRPC-code-generator
       // is marged to master branch. We will avoid conflicts.
@@ -36,7 +36,7 @@ class PatrolGen {
       ..addAll(IOSGenerator().generate(schema, config.iosConfig))
       ..addAll(AndroidGenerator().generate(schema, config.androidConfig));
 
-    for (var outputFile in files) {
+    for (final outputFile in files) {
       await File(outputFile.filename)
           .writeAsString(outputFile.content, flush: true);
     }

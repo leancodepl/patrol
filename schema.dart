@@ -1,15 +1,22 @@
-class DartTestCase {
+/// Schema supports:
+// - enum definition
+// - late type name - required field definition
+// - type? name - optional field definition
+// - abstract class - service definition where we define:
+//    - ResponseModel endpointName(RequestModel) - endpoint definition (void = no response)
+//    - Generic types (IOSServer, IOSClient, AndroidServer, AndroidClient, DartServer, DartClient)
+//      control where we need clients and servers
+
+class DartGroupEntry {
   late String name;
+  late GroupEntryType type;
+  late List<DartGroupEntry> entries;
 }
 
-class DartTestGroup {
-  late String name;
-  late List<DartTestCase> tests;
-  late List<DartTestGroup> groups;
-}
+enum GroupEntryType { group, test }
 
 class ListDartTestsResponse {
-  late DartTestGroup group;
+  late DartGroupEntry group;
 }
 
 enum RunDartTestResponseResult {
@@ -62,6 +69,14 @@ class GetNativeViewsRequest {
   late String appId;
 }
 
+class GetNativeUITreeRequest {
+  List<String>? iosInstalledApps;
+}
+
+class GetNativeUITreeRespone {
+  late List<NativeView> roots;
+}
+
 class NativeView {
   String? className;
   String? text;
@@ -83,12 +98,17 @@ class TapRequest {
   late String appId;
 }
 
+enum KeyboardBehavior {
+  showAndDismiss,
+  alternative,
+}
+
 class EnterTextRequest {
   late String data;
   late String appId;
   int? index;
   Selector? selector;
-  late bool showKeyboard;
+  late KeyboardBehavior keyboardBehavior;
 }
 
 class SwipeRequest {
@@ -112,7 +132,7 @@ class Notification {
   String? appName;
   late String title;
   late String content;
-  late String raw;
+  String? raw;
 }
 
 class GetNotificationsResponse {
@@ -166,6 +186,7 @@ abstract class NativeAutomator<IOSServer, AndroidServer, DartClient> {
   void openQuickSettings(OpenQuickSettingsRequest request);
 
 // general UI interaction
+  GetNativeUITreeRespone getNativeUITree(GetNativeUITreeRequest request);
   GetNativeViewsResponse getNativeViews(GetNativeViewsRequest request);
   void tap(TapRequest request);
   void doubleTap(TapRequest request);
