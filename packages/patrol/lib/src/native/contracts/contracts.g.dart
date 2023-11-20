@@ -248,6 +248,7 @@ const _$KeyboardBehaviorEnumMap = {
 };
 
 SwipeRequest _$SwipeRequestFromJson(Map<String, dynamic> json) => SwipeRequest(
+      appId: json['appId'] as String,
       startX: (json['startX'] as num).toDouble(),
       startY: (json['startY'] as num).toDouble(),
       endX: (json['endX'] as num).toDouble(),
@@ -257,6 +258,7 @@ SwipeRequest _$SwipeRequestFromJson(Map<String, dynamic> json) => SwipeRequest(
 
 Map<String, dynamic> _$SwipeRequestToJson(SwipeRequest instance) =>
     <String, dynamic>{
+      'appId': instance.appId,
       'startX': instance.startX,
       'startY': instance.startY,
       'endX': instance.endX,
