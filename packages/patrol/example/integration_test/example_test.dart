@@ -8,8 +8,7 @@ void main() {
     ($) async {
       await createApp($);
 
-      await Future.delayed(Duration(seconds: 10));
-
+      await $(ListView).$(ListTile).tap();
       await $(ListView).$(ListTile).at(1).tap();
     },
   );
