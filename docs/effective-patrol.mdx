@@ -122,7 +122,7 @@ Widget build(BuildContext context) {
 
 ```dart title="In app test code"
 void main() {
-  patrolTest('logs in', (PatrolTester $) {
+  patrolTest('logs in', (PatrolIntegrationTester $) {
     // some code
     await $(K.usernameTextField).enterText('CoolGuy');
     // more code
@@ -160,7 +160,6 @@ import 'package:patrol/patrol.dart';
 void main() {
   patrolTest(
     'signs up for the newsletter and receives a reward',
-    nativeAutomation: true,
     ($) async {
       await $.pumpWidgetAndSettle(AwesomeApp());
 
@@ -178,7 +177,6 @@ void main() {
 void main() {
   patrolTest(
     'test',
-    nativeAutomation: true,
     ($) async {
       await $.pumpWidgetAndSettle(AwesomeApp());
 

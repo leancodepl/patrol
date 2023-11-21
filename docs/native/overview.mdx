@@ -22,7 +22,7 @@ tiny snippet to spice things up:
 
 ```dart title="integration_test/demo_test.dart"
 void main() {
-  patrolTest('demo', nativeAutomation: true, (PatrolTester $) async {
+  patrolTest('demo', (PatrolIntegrationTester $) async {
     await $.pumpWidgetAndSettle(AwesomeApp());
     // prepare network conditions
     await $.native.enableCellular();
