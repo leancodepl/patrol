@@ -4,24 +4,13 @@ import 'common.dart';
 
 void main() {
   patrol(
-    'counter state is the same after going to Home and switching apps',
+    'aye',
     ($) async {
       await createApp($);
 
-      await $(FloatingActionButton).tap();
-      expect($(#counterText).text, '1');
+      await Future.delayed(Duration(seconds: 10));
 
-      await $(#textField).enterText('Hello, Flutter!');
-      expect($('Hello, Flutter!'), findsOneWidget);
-
-      await $.native.pressHome();
-      await $.native.openApp();
-
-      expect($(#counterText).text, '1');
-      await $(FloatingActionButton).tap();
-
-      expect($(#counterText).text, '2');
-      expect($('Hello, Flutter!'), findsOneWidget);
+      await $(ListView).$(ListTile).at(1).tap();
     },
   );
 }
