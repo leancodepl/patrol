@@ -97,7 +97,7 @@
     func sendKeyEvent(_ data: String, inApp bundleId: String) throws {
       try runAction("Entering ") {
         let app = try self.getApp(withBundleId: bundleId)
-        try app.keys[data].tap()
+        app.keys[data].tap()
       }
     }
       
