@@ -1,3 +1,7 @@
+## 3.0.3
+
+- Implement `$.native.swipe()` on iOS (#1927)
+
 ## 3.0.2+1
 
 - Add screenshots to `pubspec.yaml` (#1917)

@@ -414,6 +414,7 @@ class EnterTextRequest with EquatableMixin {
 @JsonSerializable()
 class SwipeRequest with EquatableMixin {
   SwipeRequest({
+    required this.appId,
     required this.startX,
     required this.startY,
     required this.endX,
@@ -424,6 +425,7 @@ class SwipeRequest with EquatableMixin {
   factory SwipeRequest.fromJson(Map<String, dynamic> json) =>
       _$SwipeRequestFromJson(json);
 
+  final String appId;
   final double startX;
   final double startY;
   final double endX;
@@ -434,6 +436,7 @@ class SwipeRequest with EquatableMixin {
 
   @override
   List<Object?> get props => [
+        appId,
         startX,
         startY,
         endX,

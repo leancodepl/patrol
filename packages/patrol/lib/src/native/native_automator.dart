@@ -584,15 +584,20 @@ class NativeAutomator {
 
   /// Swipes from [from] to [to].
   ///
+  /// [from] and [to] must be in the inclusive 0-1 range.
+  ///
   /// On Android, [steps] controls speed and smoothness. One unit of [steps] is
   /// equivalent to 5 ms. If you want to slow down the swipe time, increase
   /// [steps]. If [swipe] doesn't work, try increasing [steps].
-  ///
   Future<void> swipe({
     required Offset from,
     required Offset to,
     int steps = 12,
+    String? appId,
   }) async {
+    assert(from.dx >= 0 && from.dx <= 1);
+    assert(from.dy >= 0 && from.dy <= 1);
+
     await _wrapRequest(
       'swipe',
       () => _client.swipe(
@@ -602,6 +607,7 @@ class NativeAutomator {
           endX: to.dx,
           endY: to.dy,
           steps: steps,
+          appId: appId ?? resolvedAppId,
         ),
       ),
     );

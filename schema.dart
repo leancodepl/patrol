@@ -112,6 +112,7 @@ class EnterTextRequest {
 }
 
 class SwipeRequest {
+  late String appId;
   late double startX;
   late double startY;
   late double endX;

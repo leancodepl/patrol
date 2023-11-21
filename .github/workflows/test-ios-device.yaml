@@ -90,7 +90,6 @@ jobs:
         id: set_excluded_tests
         run: |
           TESTS_TO_EXCLUDE="android_app_test,\
-          swipe_test,\
           permissions/permissions_location_test,\
           service_dark_mode_test,\
           permissions/notifications_test"
