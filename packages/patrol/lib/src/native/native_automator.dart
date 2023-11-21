@@ -66,11 +66,9 @@ class NativeAutomatorConfig {
       defaultValue: '8081',
     ),
     this.packageName = const String.fromEnvironment('PATROL_APP_PACKAGE_NAME'),
-    this.iosInstalledApps =
-        const String.fromEnvironment('PATROL_IOS_INSTALLED_APPS'),
+    this.iosInstalledApps = const String.fromEnvironment('PATROL_IOS_INSTALLED_APPS'),
     this.bundleId = const String.fromEnvironment('PATROL_APP_BUNDLE_ID'),
-    this.androidAppName =
-        const String.fromEnvironment('PATROL_ANDROID_APP_NAME'),
+    this.androidAppName = const String.fromEnvironment('PATROL_ANDROID_APP_NAME'),
     this.iosAppName = const String.fromEnvironment('PATROL_IOS_APP_NAME'),
     this.connectionTimeout = const Duration(seconds: 60),
     this.findTimeout = const Duration(seconds: 10),
@@ -516,6 +514,21 @@ class NativeAutomator {
     );
   }
 
+  Future<void> sendKeyEvent(
+    String keyEvent, {
+    String? appId,
+  }) async {
+    await _wrapRequest(
+      'sendKeyEvent',
+      () => _client.sendKeyEvent(
+        SendKeyEventRequest(
+          data: keyEvent,
+          appId: appId ?? resolvedAppId,
+        ),
+      ),
+    );
+  }
+
   /// Enters text to the native view specified by [selector].
   ///
   /// If the text field isn't visible immediately, this method waits for the
@@ -541,8 +554,7 @@ class NativeAutomator {
           data: text,
           appId: appId ?? resolvedAppId,
           selector: selector,
-          keyboardBehavior:
-              (keyboardBehavior ?? _config.keyboardBehavior).toContractsEnum,
+          keyboardBehavior: (keyboardBehavior ?? _config.keyboardBehavior).toContractsEnum,
         ),
       ),
     );
@@ -575,8 +587,7 @@ class NativeAutomator {
           data: text,
           appId: appId ?? resolvedAppId,
           index: index,
-          keyboardBehavior:
-              (keyboardBehavior ?? _config.keyboardBehavior).toContractsEnum,
+          keyboardBehavior: (keyboardBehavior ?? _config.keyboardBehavior).toContractsEnum,
         ),
       ),
     );

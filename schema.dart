@@ -98,6 +98,11 @@ class TapRequest {
   late String appId;
 }
 
+class SendKeyEventRequest {
+  late String data;
+  late String appId;
+}
+
 enum KeyboardBehavior {
   showAndDismiss,
   alternative,
@@ -189,6 +194,7 @@ abstract class NativeAutomator<IOSServer, AndroidServer, DartClient> {
 // general UI interaction
   GetNativeUITreeRespone getNativeUITree(GetNativeUITreeRequest request);
   GetNativeViewsResponse getNativeViews(GetNativeViewsRequest request);
+  void sendKeyEvent(SendKeyEventRequest request);
   void tap(TapRequest request);
   void doubleTap(TapRequest request);
   void enterText(EnterTextRequest request);
@@ -215,8 +221,7 @@ abstract class NativeAutomator<IOSServer, AndroidServer, DartClient> {
   void tapOnNotification(TapOnNotificationRequest request);
 
 // permissions
-  PermissionDialogVisibleResponse isPermissionDialogVisible(
-      PermissionDialogVisibleRequest request);
+  PermissionDialogVisibleResponse isPermissionDialogVisible(PermissionDialogVisibleRequest request);
   void handlePermissionDialog(HandlePermissionRequest request);
   void setLocationAccuracy(SetLocationAccuracyRequest request);
 

@@ -94,7 +94,14 @@
         element.firstMatch.forceTap()
       }
     }
-
+   
+    func sendKeyEvent(_ data: String, inApp bundleId: String) throws {
+      try runAction("Entering ") {
+        let app = try self.getApp(withBundleId: bundleId)
+        try app.keys[data].tap()
+      }
+    }
+      
     func enterText(
       _ data: String,
       byText text: String,

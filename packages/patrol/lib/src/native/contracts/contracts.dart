@@ -381,6 +381,28 @@ class TapRequest with EquatableMixin {
 }
 
 @JsonSerializable()
+class SendKeyEventRequest with EquatableMixin {
+  SendKeyEventRequest({
+    required this.data,
+    required this.appId,
+  });
+
+  factory SendKeyEventRequest.fromJson(Map<String, dynamic> json) =>
+      _$SendKeyEventRequestFromJson(json);
+
+  final String data;
+  final String appId;
+
+  Map<String, dynamic> toJson() => _$SendKeyEventRequestToJson(this);
+
+  @override
+  List<Object?> get props => [
+        data,
+        appId,
+      ];
+}
+
+@JsonSerializable()
 class EnterTextRequest with EquatableMixin {
   EnterTextRequest({
     required this.data,
