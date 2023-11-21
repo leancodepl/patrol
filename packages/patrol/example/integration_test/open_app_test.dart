@@ -42,6 +42,8 @@ void main() {
       browserId = 'com.apple.mobilesafari';
     } else if (Platform.isAndroid) {
       browserId = 'com.android.chrome';
+    } else if (Platform.isMacOS) {
+      browserId = 'com.apple.Safari';
     } else {
       throw UnsupportedError('Unsupported platform');
     }
@@ -53,10 +55,14 @@ void main() {
 
     await $(FloatingActionButton).tap();
 
-    await $.native.pressHome();
-    await $.native.openApp(appId: browserId);
-    await $.native.pressHome();
-    await $.native.openApp();
+    if (Platform.isMacOS) {
+      await $.native.openApp(appId: browserId);
+    } else {
+      await $.native.pressHome();
+      await $.native.openApp(appId: browserId);
+      await $.native.pressHome();
+      await $.native.openApp();
+    }
 
     expect($(#counterText).text, '1');
   });
