@@ -70,7 +70,7 @@ $endpoints
 
         guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
             let message = "$exceptionMessage"
-            NSLog("Received invalid response: \(message)")
+            NSLog("Received invalid response: (message)")
             throw PatrolError.internal(message)
         }
 
