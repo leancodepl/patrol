@@ -63,7 +63,7 @@ testWidgets('signs up', (WidgetTester tester) async {
 to this:
 
 ```dart
-patrolTest('signs up', (PatrolTester $) async {
+patrolTest('signs up', (PatrolIntegrationTester $) async {
   await $.pumpWidgetAndSettle(AwesomeApp());
 
   await $(#emailTextField).enterText('charlie@root.me');
@@ -96,7 +96,7 @@ Patrol's native automation feature solves these problems:
 
 ```dart
 void main() {
-  patrolTest('showtime', nativeAutomation: true, (PatrolTester $) async {
+  patrolTest('showtime', (PatrolIntegrationTester $) async {
     await $.pumpWidgetAndSettle(AwesomeApp());
     // prepare network conditions
     await $.native.enableCellular();
