@@ -113,9 +113,6 @@ void patrolTest(
       final waitSeconds = const int.fromEnvironment('PATROL_WAIT');
       final waitDuration = Duration(seconds: waitSeconds);
 
-      debugDefaultTargetPlatformOverride =
-          binding.workaroundDebugDefaultTargetPlatformOverride;
-
       if (waitDuration > Duration.zero) {
         final stopwatch = Stopwatch()..start();
         await Future.doWhile(() async {

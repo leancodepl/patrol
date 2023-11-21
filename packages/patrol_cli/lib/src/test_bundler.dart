@@ -139,9 +139,7 @@ ${generateImports([testFilePath])}
 Future<void> main() async {
   final nativeAutomator = NativeAutomator(config: NativeAutomatorConfig());
   await nativeAutomator.initialize();
-  PatrolBinding.ensureInitialized(NativeAutomatorConfig())
-    ..workaroundDebugDefaultTargetPlatformOverride =
-        debugDefaultTargetPlatformOverride;
+  PatrolBinding.ensureInitialized(NativeAutomatorConfig());
 
   // START: GENERATED TEST GROUPS
 ${generateGroupsCode([testFilePath]).split('\n').map((e) => '  $e').join('\n')}
