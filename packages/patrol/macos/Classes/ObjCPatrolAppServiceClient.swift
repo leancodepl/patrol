@@ -16,14 +16,14 @@
 /// various UI actions such as tapping, entering text, etc., and they must be called on the main thread.
 @objc public class ObjCPatrolAppServiceClient: NSObject {
 
-   private let client: PatrolAppServiceClient
+  private let client: PatrolAppServiceClient
 
   /// Construct client for accessing PatrolAppService server using the existing channel.
   @objc public override init() {
     let port = 8082  // TODO: Document this value better
-    
+
     NSLog("PatrolAppServiceClient: created, port: \(port)")
-    
+
     client = PatrolAppServiceClient(port: port, address: "localhost")
   }
 
@@ -40,13 +40,13 @@
 
     NSLog("PatrolAppServiceClient.runDartTest(\(name))")
 
-     let request = RunDartTestRequest(name: name)
-     let result = try await client.runDartTest(request: request)
+    let request = RunDartTestRequest(name: name)
+    let result = try await client.runDartTest(request: request)
 
-     return RunDartTestResponse2(
-       passed: result.result == .success,
-       details: result.details
-     )
+    return RunDartTestResponse2(
+      passed: result.result == .success,
+      details: result.details
+    )
   }
 }
 
