@@ -11,8 +11,6 @@ void main() {
       mapsId = 'com.apple.Maps';
     } else if (Platform.isAndroid) {
       mapsId = 'com.google.android.apps.maps';
-    } else if (Platform.isMacOS) {
-      mapsId = 'com.apple.Maps';
     } else {
       throw UnsupportedError('Unsupported platform');
     }
@@ -24,14 +22,10 @@ void main() {
 
     await $(FloatingActionButton).tap();
 
-    if (Platform.isMacOS) {
-      await $.native.openApp(appId: mapsId);
-    } else {
-      await $.native.pressHome();
-      await $.native.openApp(appId: mapsId);
-      await $.native.pressHome();
-      await $.native.openApp();
-    }
+    await $.native.pressHome();
+    await $.native.openApp(appId: mapsId);
+    await $.native.pressHome();
+    await $.native.openApp();
 
     expect($(#counterText).text, '1');
   });
@@ -42,8 +36,6 @@ void main() {
       browserId = 'com.apple.mobilesafari';
     } else if (Platform.isAndroid) {
       browserId = 'com.android.chrome';
-    } else if (Platform.isMacOS) {
-      browserId = 'com.apple.Safari';
     } else {
       throw UnsupportedError('Unsupported platform');
     }
@@ -55,14 +47,10 @@ void main() {
 
     await $(FloatingActionButton).tap();
 
-    if (Platform.isMacOS) {
-      await $.native.openApp(appId: browserId);
-    } else {
-      await $.native.pressHome();
-      await $.native.openApp(appId: browserId);
-      await $.native.pressHome();
-      await $.native.openApp();
-    }
+    await $.native.pressHome();
+    await $.native.openApp(appId: browserId);
+    await $.native.pressHome();
+    await $.native.openApp();
 
     expect($(#counterText).text, '1');
   });
