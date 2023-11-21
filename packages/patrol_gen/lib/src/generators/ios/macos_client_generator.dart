@@ -47,61 +47,37 @@ class ${service.name}Client {
 $endpoints
 
   private func performRequestWithResult<TResult: Decodable>(
-    requestName: String, body: Data? = nil, completion: @escaping (Result<TResult, Error>) -> Void
-  ) {
-    performRequest(requestName: requestName, body: body) { result in
-      switch result {
-        case .success(let data):
-          do {
-            let object = try JSONDecoder().decode(TResult.self, from: data)
-            completion(.success(object))
-          } catch let err {
-            completion(.failure(err))
-          }
-        case .failure(let error):
-          completion(.failure(error))
-      }
-    }
+      requestName: String, body: Data? = nil
+  ) async throws -> TResult {
+      let responseData = try await performRequest(requestName: requestName, body: body)
+      let object = try JSONDecoder().decode(TResult.self, from: responseData)
+      return object
   }
 
-  private func performRequestWithEmptyResult(
-    requestName: String, body: Data? = nil, completion: @escaping (Error?) -> Void
-  ) {
-    performRequest(requestName: requestName, body: body) { result in
-      switch result {
-        case .success(_):
-          completion(nil)
-        case .failure(let error):
-          completion(error)
-      }
-    }
-  }
-
-  private func performRequest(
-    requestName: String, body: Data? = nil, completion: @escaping (Result<Data, Error>) -> Void
-  ) {
+  private func performRequest(requestName: String, body: Data? = nil) async throws -> Data {
     let url = URL(string: "$url")!
 
     let urlconfig = URLSessionConfiguration.default
-    urlconfig.timeoutIntervalForRequest = timeout
-    urlconfig.timeoutIntervalForResource = timeout
 
     var request = URLRequest(url: url)
     request.httpMethod = "POST"
     request.httpBody = body
-    request.timeoutInterval = timeout
 
     let session = URLSession(configuration: urlconfig)
 
-    session.dataTask(with: request) { data, response, error in
-      if (response as? HTTPURLResponse)?.statusCode == 200 {
-        completion(.success(data!))
-      } else {
-        let message =
-          "$exceptionMessage"
-        completion(.failure(PatrolError.internal(message)))
-      }
-    }.resume()
+    do {
+        let (data, response) = try await session.data(for: request)
+
+        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+            let message = "$exceptionMessage"
+            NSLog("Received invalid response: \(message)")
+            throw PatrolError.internal(message)
+        }
+
+        return data
+    } catch {
+        throw error
+    }
   }
 }
 ''';
@@ -111,39 +87,25 @@ $endpoints
     final requestDef =
         endpoint.request != null ? 'request: ${endpoint.request!.name}' : '';
 
-    final completionDef = endpoint.response != null
-        ? 'completion: @escaping (Result<${endpoint.response!.name}, Error>) -> Void'
-        : 'completion: @escaping (Error?) -> Void';
+    final completionDef = 'async throws -> ${endpoint.response!.name}';
 
-    final parameters = endpoint.request != null
-        ? '$requestDef, $completionDef'
-        : completionDef;
+    final parameters = '($requestDef) $completionDef';
 
     final arguments = [
       'requestName: "${endpoint.name}"',
       if (endpoint.request != null) 'body: body',
-      'completion: completion',
     ].join(', ');
 
-    final performRequest = endpoint.response != null
-        ? 'performRequestWithResult'
-        : 'performRequestWithEmptyResult';
-    final failureCompletion = endpoint.response != null
-        ? 'completion(.failure(err))'
-        : 'completion(err)';
+    const performRequest = 'performRequestWithResult';
 
     final bodyCode = endpoint.request != null
         ? '''
-    do {
-      let body = try JSONEncoder().encode(request)
-      $performRequest($arguments)
-    } catch let err {
-      $failureCompletion
-    }'''
-        : '    $performRequest($arguments)';
+    let body = try JSONEncoder().encode(request)
+    return try await $performRequest($arguments)'''
+        : '    return try await $performRequest($arguments)';
 
     return '''
-  func ${endpoint.name}($parameters) {
+  func ${endpoint.name}$parameters {
 $bodyCode
   }''';
   }
