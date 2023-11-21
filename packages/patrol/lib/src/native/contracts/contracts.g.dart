@@ -221,6 +221,19 @@ Map<String, dynamic> _$TapRequestToJson(TapRequest instance) =>
       'appId': instance.appId,
     };
 
+SendKeyEventRequest _$SendKeyEventRequestFromJson(Map<String, dynamic> json) =>
+    SendKeyEventRequest(
+      data: json['data'] as String,
+      appId: json['appId'] as String,
+    );
+
+Map<String, dynamic> _$SendKeyEventRequestToJson(
+        SendKeyEventRequest instance) =>
+    <String, dynamic>{
+      'data': instance.data,
+      'appId': instance.appId,
+    };
+
 EnterTextRequest _$EnterTextRequestFromJson(Map<String, dynamic> json) =>
     EnterTextRequest(
       data: json['data'] as String,

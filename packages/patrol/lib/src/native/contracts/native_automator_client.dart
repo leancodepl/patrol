@@ -116,6 +116,15 @@ class NativeAutomatorClient {
     return GetNativeViewsResponse.fromJson(json);
   }
 
+  Future<void> sendKeyEvent(
+    SendKeyEventRequest request,
+  ) {
+    return _sendRequest(
+      'sendKeyEvent',
+      request.toJson(),
+    );
+  }
+
   Future<void> tap(
     TapRequest request,
   ) {

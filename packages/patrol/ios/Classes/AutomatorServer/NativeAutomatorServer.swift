@@ -18,6 +18,7 @@ protocol NativeAutomatorServer {
     func openQuickSettings(request: OpenQuickSettingsRequest) throws
     func getNativeUITree(request: GetNativeUITreeRequest) throws -> GetNativeUITreeRespone
     func getNativeViews(request: GetNativeViewsRequest) throws -> GetNativeViewsResponse
+    func sendKeyEvent(request: SendKeyEventRequest) throws
     func tap(request: TapRequest) throws
     func doubleTap(request: TapRequest) throws
     func enterText(request: EnterTextRequest) throws
@@ -101,6 +102,12 @@ extension NativeAutomatorServer {
         let response = try getNativeViews(request: requestArg)
         let body = try JSONEncoder().encode(response)
         return HTTPResponse(.ok, body: body)
+    }
+
+    private func sendKeyEventHandler(request: HTTPRequest) throws -> HTTPResponse {
+        let requestArg = try JSONDecoder().decode(SendKeyEventRequest.self, from: request.body)
+        try sendKeyEvent(request: requestArg)
+        return HTTPResponse(.ok)
     }
 
     private func tapHandler(request: HTTPRequest) throws -> HTTPResponse {
@@ -294,6 +301,11 @@ extension NativeAutomatorServer {
             request in handleRequest(
                 request: request,
                 handler: getNativeViewsHandler)
+        }
+        server.route(.POST, "sendKeyEvent") {
+            request in handleRequest(
+                request: request,
+                handler: sendKeyEventHandler)
         }
         server.route(.POST, "tap") {
             request in handleRequest(
