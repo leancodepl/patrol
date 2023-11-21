@@ -38,7 +38,6 @@ import 'package:patrol/patrol.dart';
 void main() {
   patrolTest(
     'counter state is the same after going to home and going back',
-    nativeAutomation: true,
     ($) async {
       await $.pumpWidgetAndSettle(const MyApp());
 
