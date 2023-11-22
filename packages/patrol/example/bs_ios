@@ -4,13 +4,12 @@ set -euo pipefail
 # bs_ios uploads app binaries for UI testing on BrowserStack.
 #
 # This version of the script works only with the V2 endpoint (XC Test Plans).
-# This scirpt assumes that Xcode Test Plan name is Patrol
+# This script assumes that Xcode Test Plan name is TestPlan
 #
 # It forwards all arguments to `patrol build ios`, so you can pass --target, --exclude etc.
 #
-# It can also be configured with the following environment variables:
 
-BROWSERSTACK_CREDS="${BROWSERSTACK_CREDS:-}"
+xcode_test_plan_name="TestPlan"
 
 # Capture all arguments because they'll be consumed by getopt
 original_args=("$@")
@@ -37,10 +36,10 @@ cd build/ios_integ/Build/Products/Release-iphoneos
 rm -rf ios_tests.zip
 
 # BrowserStack fails if DiagnosticCollectionPolicy is present
-plutil -remove 'TestConfigurations.TestTargets.DiagnosticCollectionPolicy' ../Runner_TestPlan_iphoneos*.xctestrun
+plutil -remove 'TestConfigurations.TestTargets.DiagnosticCollectionPolicy' ../Runner_${xcode_test_plan_name}_iphoneos*.xctestrun
 
-cp ../Runner_TestPlan_iphoneos*.xctestrun .
-zip -r ios_tests.zip Runner_TestPlan_iphoneos*.xctestrun RunnerUITests-Runner.app >/dev/null
+cp ../Runner_${xcode_test_plan_name}_iphoneos*.xctestrun .
+zip -r ios_tests.zip Runner_${xcode_test_plan_name}_iphoneos*.xctestrun RunnerUITests-Runner.app >/dev/null
 cd - >/dev/null
 printf "Completed zipping\n"
 
