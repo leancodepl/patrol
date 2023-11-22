@@ -3,7 +3,7 @@ import 'package:equatable/equatable.dart';
 import 'package:path/path.dart' show basename;
 import 'package:patrol_cli/src/devices.dart';
 
-// TODO(bartekpacia): Lots of this code is not needed after #1004 is done.
+// TODO: Lots of this code is not needed after #1004 is done.
 
 enum TargetRunStatus { failedToBuild, failedToExecute, passed, canceled }
 

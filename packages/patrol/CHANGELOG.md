@@ -1,3 +1,23 @@
+## 3.1.0-dev.1
+
+- Add `patrolSetUp()` and `patrolTearDown()` (#1721)
+- Add `patrolSetUpAll()` (#1751)
+
+This version requires version 2.4.0-dev.1 of `patrol_cli` package.
+
+## 3.0.3
+
+- Implement `$.native.swipe()` on iOS (#1927)
+
+## 3.0.2+1
+
+- Add screenshots to `pubspec.yaml` (#1917)
+
+## 3.0.2
+
+- Bump dependencies for Flutter 3.16 and Dart 3.2
+- Populate `topics` in pubspec
+
 ## 3.0.1
 
 - Fix extension code not being bundled by GitHub Actions workflow (#1902)
@@ -17,6 +37,7 @@ Other changes:
 
 - Bump minimum supported Flutter version to 3.16
 - **BREAKING:**
+
   - Remove `bindingType` parameter from `patrolTest()` function. Now only
     `PatrolBinding` is used and it's automatically initialized (#1882)
   - Remove `nativeAutomation` parameter from `patrolTest()` function. Now it's

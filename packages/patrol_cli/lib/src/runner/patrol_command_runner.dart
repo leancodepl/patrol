@@ -10,7 +10,7 @@ import 'package:file/file.dart';
 import 'package:file/local.dart';
 import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
-import 'package:patrol_cli/src/base/constants.dart';
+import 'package:patrol_cli/src/base/constants.dart' as constants;
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
@@ -55,15 +55,6 @@ Future<int> patrolCommandRunner(List<String> args) async {
     isCI: isCI,
   );
 
-  if (!platform.environment.containsKey('PATROL_FINDERS')) {
-    logger.warn('''
-In next major release, patrolTest method will be intended for UI tests.
-If you want to use Patrol in your widget tests, use patrol_finders package.\n
-For more information, see https://patrol.leancode.co/patrol-finders-release
-Disable this warning by setting the PATROL_FINDERS environment variable.
-      ''');
-  }
-
   ProcessSignal.sigint.watch().listen((signal) async {
     logger.detail('Caught SIGINT, exiting...');
     await runner.dispose().onError((err, st) {
@@ -95,6 +86,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
     required Analytics analytics,
     required Logger logger,
     required bool isCI,
+    String version = constants.version,
   })  : _platform = platform,
         _pubUpdater = pubUpdater,
         _fs = fs,
@@ -103,6 +95,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         _disposeScope = DisposeScope(),
         _logger = logger,
         _isCI = isCI,
+        _version = version,
         super(
           'patrol',
           'Tool for running Flutter-native UI tests with superpowers',
@@ -229,6 +222,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
   final DisposeScope _disposeScope;
   final Logger _logger;
   final bool _isCI;
+  final String _version;
 
   Future<void> dispose() async {
     try {
@@ -239,6 +233,11 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         ..err('$err')
         ..err('$st');
     }
+  }
+
+  @override
+  bool get enableAutoInstall {
+    return !_platform.environment.containsKey('PATROL_NO_COMPLETION');
   }
 
   @override
@@ -316,7 +315,7 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
 
     final int? exitCode;
     if (topLevelResults['version'] == true) {
-      _logger.info('patrol_cli v$version');
+      _logger.info('patrol_cli v$_version');
       exitCode = 0;
     } else {
       exitCode = await super.runCommand(topLevelResults);
@@ -376,7 +375,7 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
     }
 
     final latestVersion = await _pubUpdater.getLatestVersion('patrol_cli');
-    final isUpToDate = version == latestVersion;
+    final isUpToDate = _version == latestVersion;
 
     if (isUpToDate) {
       return;
@@ -386,7 +385,7 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
       ..info('')
       ..info(
         '''
-${lightYellow.wrap('Update available!')} ${lightCyan.wrap(version)} \u2192 ${lightCyan.wrap(latestVersion)}
+${lightYellow.wrap('Update available!')} ${lightCyan.wrap(_version)} \u2192 ${lightCyan.wrap(latestVersion)}
 Run ${lightCyan.wrap('patrol update')} to update''',
       )
       ..info('');

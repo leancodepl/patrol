@@ -20,6 +20,19 @@ class PatrolAppServiceClient {
     performRequestWithResult(requestName: "listDartTests", completion: completion)
   }
 
+  func listDartLifecycleCallbacks(completion: @escaping (Result<ListDartLifecycleCallbacksResponse, Error>) -> Void) {
+    performRequestWithResult(requestName: "listDartLifecycleCallbacks", completion: completion)
+  }
+
+  func setLifecycleCallbacksState(request: SetLifecycleCallbacksStateRequest, completion: @escaping (Result<Empty, Error>) -> Void) {
+    do {
+      let body = try JSONEncoder().encode(request)
+      performRequestWithResult(requestName: "setLifecycleCallbacksState", body: body, completion: completion)
+    } catch let err {
+      completion(.failure(err))
+    }
+  }
+
   func runDartTest(request: RunDartTestRequest, completion: @escaping (Result<RunDartTestResponse, Error>) -> Void) {
     do {
       let body = try JSONEncoder().encode(request)

@@ -1,3 +1,12 @@
+## 2.0.1+1
+
+- Add screenshots to `pubspec.yaml` (#1917)
+
+## 2.0.1
+
+- Bump dependencies for Flutter 3.16 and Dart 3.2
+- Populate `topics` in pubspec
+
 ## 2.0.0
 
 - Bump minimum supported Flutter version to 3.16 to be compatible with breaking

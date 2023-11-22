@@ -3,7 +3,7 @@ name: test android emulator webview
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 */24 * * *'
+    - cron: '0 23 * * *'
 
 jobs:
   run_tests:
@@ -18,8 +18,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ['3.16.0-0.5.pre']
-        flutter-channel: ['beta']
+        flutter-version: ['3.16.x']
+        flutter-channel: ['stable']
 
     defaults:
       run:

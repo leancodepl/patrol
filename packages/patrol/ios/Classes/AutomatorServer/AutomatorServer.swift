@@ -5,11 +5,18 @@
   final class AutomatorServer: NativeAutomatorServer {
     private let automator: Automator
 
-    private let onAppReady: (Bool) -> Void
+    private let onAppReady: () -> Void
 
-    init(automator: Automator, onAppReady: @escaping (Bool) -> Void) {
+    private let onDartLifecycleCallbackExecuted: (String) -> Void
+
+    init(
+      automator: Automator,
+      onAppReady: @escaping () -> Void,
+      onDartLifecycleCallbackExecuted: @escaping (String) -> Void
+    ) {
       self.automator = automator
       self.onAppReady = onAppReady
+      self.onDartLifecycleCallbackExecuted = onDartLifecycleCallbackExecuted
     }
 
     func initialize() throws {}
@@ -121,7 +128,11 @@
 
     func swipe(request: SwipeRequest) throws {
       return try runCatching {
-        throw PatrolError.methodNotImplemented("swipe")
+        try automator.swipe(
+          from: CGVector(dx: request.startX, dy: request.startY),
+          to: CGVector(dx: request.startY, dy: request.endY),
+          inApp: request.appId
+        )
       }
     }
 
@@ -300,7 +311,11 @@
     }
 
     func markPatrolAppServiceReady() throws {
-      onAppReady(true)
+      onAppReady()
+    }
+
+    func markLifecycleCallbackExecuted(request: MarkLifecycleCallbackExecutedRequest) throws {
+      onDartLifecycleCallbackExecuted(request.name)
     }
   }
 

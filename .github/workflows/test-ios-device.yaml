@@ -19,8 +19,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ['3.16.0-0.5.pre']
-        flutter-channel: ['beta']
+        flutter-version: ['3.16.x']
+        flutter-channel: ['stable']
         device_model: ['iphone14pro']
         os_version: ['16.6']
         os: [iOS]
@@ -90,7 +90,6 @@ jobs:
         id: set_excluded_tests
         run: |
           TESTS_TO_EXCLUDE="android_app_test,\
-          swipe_test,\
           permissions/permissions_location_test,\
           service_dark_mode_test,\
           permissions/notifications_test"

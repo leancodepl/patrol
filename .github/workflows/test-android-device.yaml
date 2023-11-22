@@ -19,11 +19,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ['3.16.0-0.5.pre']
-        flutter-channel: ['beta']
-        device_model: ['oriole']
+        flutter-version: ['3.16.x']
+        flutter-channel: ['stable']
         os: ['Android API']
-        os_version: ['33']
+        include:
+          - device_model: 'oriole'
+            os_version: '33'
+          - device_model: 'shiba'
+            os_version: '34'
 
     defaults:
       run:

@@ -6,6 +6,10 @@ part of 'contracts.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
+Empty _$EmptyFromJson(Map<String, dynamic> json) => Empty();
+
+Map<String, dynamic> _$EmptyToJson(Empty instance) => <String, dynamic>{};
+
 DartGroupEntry _$DartGroupEntryFromJson(Map<String, dynamic> json) =>
     DartGroupEntry(
       name: json['name'] as String,
@@ -39,6 +43,23 @@ Map<String, dynamic> _$ListDartTestsResponseToJson(
       'group': instance.group,
     };
 
+ListDartLifecycleCallbacksResponse _$ListDartLifecycleCallbacksResponseFromJson(
+        Map<String, dynamic> json) =>
+    ListDartLifecycleCallbacksResponse(
+      setUpAlls:
+          (json['setUpAlls'] as List<dynamic>).map((e) => e as String).toList(),
+      tearDownAlls: (json['tearDownAlls'] as List<dynamic>)
+          .map((e) => e as String)
+          .toList(),
+    );
+
+Map<String, dynamic> _$ListDartLifecycleCallbacksResponseToJson(
+        ListDartLifecycleCallbacksResponse instance) =>
+    <String, dynamic>{
+      'setUpAlls': instance.setUpAlls,
+      'tearDownAlls': instance.tearDownAlls,
+    };
+
 RunDartTestRequest _$RunDartTestRequestFromJson(Map<String, dynamic> json) =>
     RunDartTestRequest(
       name: json['name'] as String,
@@ -67,6 +88,18 @@ const _$RunDartTestResponseResultEnumMap = {
   RunDartTestResponseResult.skipped: 'skipped',
   RunDartTestResponseResult.failure: 'failure',
 };
+
+SetLifecycleCallbacksStateRequest _$SetLifecycleCallbacksStateRequestFromJson(
+        Map<String, dynamic> json) =>
+    SetLifecycleCallbacksStateRequest(
+      state: Map<String, bool>.from(json['state'] as Map),
+    );
+
+Map<String, dynamic> _$SetLifecycleCallbacksStateRequestToJson(
+        SetLifecycleCallbacksStateRequest instance) =>
+    <String, dynamic>{
+      'state': instance.state,
+    };
 
 ConfigureRequest _$ConfigureRequestFromJson(Map<String, dynamic> json) =>
     ConfigureRequest(
@@ -248,6 +281,7 @@ const _$KeyboardBehaviorEnumMap = {
 };
 
 SwipeRequest _$SwipeRequestFromJson(Map<String, dynamic> json) => SwipeRequest(
+      appId: json['appId'] as String,
       startX: (json['startX'] as num).toDouble(),
       startY: (json['startY'] as num).toDouble(),
       endX: (json['endX'] as num).toDouble(),
@@ -257,6 +291,7 @@ SwipeRequest _$SwipeRequestFromJson(Map<String, dynamic> json) => SwipeRequest(
 
 Map<String, dynamic> _$SwipeRequestToJson(SwipeRequest instance) =>
     <String, dynamic>{
+      'appId': instance.appId,
       'startX': instance.startX,
       'startY': instance.startY,
       'endX': instance.endX,
@@ -402,3 +437,15 @@ const _$SetLocationAccuracyRequestLocationAccuracyEnumMap = {
   SetLocationAccuracyRequestLocationAccuracy.coarse: 'coarse',
   SetLocationAccuracyRequestLocationAccuracy.fine: 'fine',
 };
+
+MarkLifecycleCallbackExecutedRequest
+    _$MarkLifecycleCallbackExecutedRequestFromJson(Map<String, dynamic> json) =>
+        MarkLifecycleCallbackExecutedRequest(
+          name: json['name'] as String,
+        );
+
+Map<String, dynamic> _$MarkLifecycleCallbackExecutedRequestToJson(
+        MarkLifecycleCallbackExecutedRequest instance) =>
+    <String, dynamic>{
+      'name': instance.name,
+    };

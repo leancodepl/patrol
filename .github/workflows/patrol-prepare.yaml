@@ -15,8 +15,8 @@ jobs:
       fail-fast: false
       matrix:
         os: [windows-latest]
-        flutter-version: ['3.16.0-0.5.pre']
-        flutter-channel: ['beta']
+        flutter-version: ['3.16.x']
+        flutter-channel: ['stable']
 
     defaults:
       run:
@@ -65,8 +65,8 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        flutter-version: ['3.16.0-0.5.pre']
-        flutter-channel: ['beta']
+        flutter-version: ['3.16.x']
+        flutter-channel: ['stable']
 
     defaults:
       run:
@@ -121,8 +121,8 @@ jobs:
       fail-fast: false
       matrix:
         os: [macos-latest]
-        flutter-version: ['3.16.0-0.5.pre']
-        flutter-channel: ['beta']
+        flutter-version: ['3.16.x']
+        flutter-channel: ['stable']
 
     defaults:
       run:
@@ -144,12 +144,14 @@ jobs:
       #  run: test -z $(swift-format lint --recursive --strict .)
 
       - name: swift-format format
+        if: success() || failure()
         run: |
           swift-format format --recursive --in-place .
           git update-index --refresh
           git diff-index --quiet HEAD --
 
       - name: clang-format
+        if: success() || failure()
         run: |
           find . -iname '*.h' -o -iname '*.m' | xargs -I {} clang-format --dry-run --Werror {}
 
@@ -194,8 +196,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ['3.16.0-0.5.pre']
-        flutter-channel: ['beta']
+        flutter-version: ['3.16.x']
+        flutter-channel: ['stable']
 
     defaults:
       run:

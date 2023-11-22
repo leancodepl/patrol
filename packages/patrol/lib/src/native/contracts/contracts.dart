@@ -49,6 +49,18 @@ enum SetLocationAccuracyRequestLocationAccuracy {
 }
 
 @JsonSerializable()
+class Empty with EquatableMixin {
+  Empty();
+
+  factory Empty.fromJson(Map<String, dynamic> json) => _$EmptyFromJson(json);
+
+  Map<String, dynamic> toJson() => _$EmptyToJson(this);
+
+  @override
+  List<Object?> get props => const [];
+}
+
+@JsonSerializable()
 class DartGroupEntry with EquatableMixin {
   DartGroupEntry({
     required this.name,
@@ -93,6 +105,31 @@ class ListDartTestsResponse with EquatableMixin {
 }
 
 @JsonSerializable()
+class ListDartLifecycleCallbacksResponse with EquatableMixin {
+  ListDartLifecycleCallbacksResponse({
+    required this.setUpAlls,
+    required this.tearDownAlls,
+  });
+
+  factory ListDartLifecycleCallbacksResponse.fromJson(
+    Map<String, dynamic> json,
+  ) =>
+      _$ListDartLifecycleCallbacksResponseFromJson(json);
+
+  final List<String> setUpAlls;
+  final List<String> tearDownAlls;
+
+  Map<String, dynamic> toJson() =>
+      _$ListDartLifecycleCallbacksResponseToJson(this);
+
+  @override
+  List<Object?> get props => [
+        setUpAlls,
+        tearDownAlls,
+      ];
+}
+
+@JsonSerializable()
 class RunDartTestRequest with EquatableMixin {
   RunDartTestRequest({
     required this.name,
@@ -130,6 +167,28 @@ class RunDartTestResponse with EquatableMixin {
   List<Object?> get props => [
         result,
         details,
+      ];
+}
+
+@JsonSerializable()
+class SetLifecycleCallbacksStateRequest with EquatableMixin {
+  SetLifecycleCallbacksStateRequest({
+    required this.state,
+  });
+
+  factory SetLifecycleCallbacksStateRequest.fromJson(
+    Map<String, dynamic> json,
+  ) =>
+      _$SetLifecycleCallbacksStateRequestFromJson(json);
+
+  final Map<String, bool> state;
+
+  Map<String, dynamic> toJson() =>
+      _$SetLifecycleCallbacksStateRequestToJson(this);
+
+  @override
+  List<Object?> get props => [
+        state,
       ];
 }
 
@@ -414,6 +473,7 @@ class EnterTextRequest with EquatableMixin {
 @JsonSerializable()
 class SwipeRequest with EquatableMixin {
   SwipeRequest({
+    required this.appId,
     required this.startX,
     required this.startY,
     required this.endX,
@@ -424,6 +484,7 @@ class SwipeRequest with EquatableMixin {
   factory SwipeRequest.fromJson(Map<String, dynamic> json) =>
       _$SwipeRequestFromJson(json);
 
+  final String appId;
   final double startX;
   final double startY;
   final double endX;
@@ -434,6 +495,7 @@ class SwipeRequest with EquatableMixin {
 
   @override
   List<Object?> get props => [
+        appId,
         startX,
         startY,
         endX,
@@ -639,5 +701,27 @@ class SetLocationAccuracyRequest with EquatableMixin {
   @override
   List<Object?> get props => [
         locationAccuracy,
+      ];
+}
+
+@JsonSerializable()
+class MarkLifecycleCallbackExecutedRequest with EquatableMixin {
+  MarkLifecycleCallbackExecutedRequest({
+    required this.name,
+  });
+
+  factory MarkLifecycleCallbackExecutedRequest.fromJson(
+    Map<String, dynamic> json,
+  ) =>
+      _$MarkLifecycleCallbackExecutedRequestFromJson(json);
+
+  final String name;
+
+  Map<String, dynamic> toJson() =>
+      _$MarkLifecycleCallbackExecutedRequestToJson(this);
+
+  @override
+  List<Object?> get props => [
+        name,
       ];
 }

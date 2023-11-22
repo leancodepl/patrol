@@ -9,8 +9,6 @@ import 'package:patrol/src/devtools_service_extensions/devtools_service_extensio
 // ignore: implementation_imports, depend_on_referenced_packages
 import 'package:patrol/src/global_state.dart' as global_state;
 
-import 'constants.dart' as constants;
-
 const _success = 'success';
 
 void _defaultPrintLogger(String message) {
@@ -38,56 +36,74 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
   /// Creates a new [PatrolBinding].
   ///
   /// You most likely don't want to call it yourself.
-  PatrolBinding(NativeAutomatorConfig config)
-      : _serviceExtensions = DevtoolsServiceExtensions(config) {
+
+  PatrolBinding(
+    this.patrolAppService,
+    this.nativeAutomator,
+    NativeAutomatorConfig config,
+  ) : _serviceExtensions = DevtoolsServiceExtensions(config) {
+    logger('created');
     shouldPropagateDevicePointerEvents = true;
 
     final oldTestExceptionReporter = reportTestException;
     reportTestException = (details, testDescription) {
       final currentDartTest = _currentDartTest;
       if (currentDartTest != null) {
-        assert(!constants.hotRestartEnabled);
+        assert(!global_state.hotRestartEnabled);
         _testResults[currentDartTest] = Failure(testDescription, '$details');
       }
       oldTestExceptionReporter(details, testDescription);
     };
 
     setUp(() {
-      if (constants.hotRestartEnabled) {
+      if (global_state.hotRestartEnabled) {
         // Sending results ends the test, which we don't want for Hot Restart
         return;
       }
 
+      if (global_state.currentTestIndividualName == 'patrol_test_explorer') {
+        // Ignore the fake test.
+        return;
+      }
+
       _currentDartTest = global_state.currentTestFullName;
+      logger('setUp(): called with current Dart test = "$_currentDartTest"');
     });
 
     tearDown(() async {
-      if (constants.hotRestartEnabled) {
+      if (global_state.hotRestartEnabled) {
         // Sending results ends the test, which we don't want for Hot Restart
+        return;
+      }
+
+      if (await global_state.isInitialRun) {
+        // If this is the initial run, then no test has been requested to
+        // execute. Return to avoid blocking on didRequestTestExecution below.
         return;
       }
 
       final testName = global_state.currentTestIndividualName;
       final isTestExplorer = testName == 'patrol_test_explorer';
       if (isTestExplorer) {
+        // Ignore the fake test.
         return;
-      } else {
-        logger(
-          'tearDown(): count: ${_testResults.length}, results: $_testResults',
-        );
       }
 
-      final nameOfRequestedTest = await patrolAppService.testExecutionRequested;
+      logger('tearDown(): called with current Dart test = "$_currentDartTest"');
+      logger('tearDown(): there are ${_testResults.length} test results:');
+      _testResults.forEach((dartTestName, result) {
+        logger('tearDown(): test "$dartTestName": "$result"');
+      });
 
-      if (nameOfRequestedTest == _currentDartTest) {
+      final requestedDartTest = await patrolAppService.didRequestTestExecution;
+
+      if (requestedDartTest == _currentDartTest) {
         logger(
-          'finished test $_currentDartTest. Will report its status back to the native side',
+          'tearDown(): finished test "$_currentDartTest". Will report its status back to the native side',
         );
 
         final passed = global_state.isCurrentTestPassing;
-        logger(
-          'tearDown(): test "$testName" in group "$_currentDartTest", passed: $passed',
-        );
+        logger('tearDown(): test "$_currentDartTest", passed: $passed');
         await patrolAppService.markDartTestAsCompleted(
           dartFileName: _currentDartTest!,
           passed: passed,
@@ -97,7 +113,7 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
         );
       } else {
         logger(
-          'finished test $_currentDartTest, but it was not requested, so its status will not be reported back to the native side',
+          'tearDown(): finished test "$_currentDartTest", but it was not requested, so its status will not be reported back to the native side',
         );
       }
     });
@@ -107,9 +123,13 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
   /// if necessary.
   ///
   /// This method is idempotent.
-  factory PatrolBinding.ensureInitialized(NativeAutomatorConfig config) {
+  factory PatrolBinding.ensureInitialized(
+    PatrolAppService patrolAppService,
+    NativeAutomator nativeAutomator,
+    NativeAutomatorConfig config,
+  ) {
     if (_instance == null) {
-      PatrolBinding(config);
+      PatrolBinding(patrolAppService, nativeAutomator, config);
     }
     return _instance!;
   }
@@ -128,7 +148,11 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
   ///
   /// It's only for test reporting purposes and should not be used for anything
   /// else.
-  late PatrolAppService patrolAppService;
+  final PatrolAppService patrolAppService;
+
+  /// The [NativeAutomator] used by this binding to interact with the native
+  /// side.
+  final NativeAutomator nativeAutomator;
 
   /// The singleton instance of this object.
   ///
@@ -200,12 +224,12 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
   @override
   Widget wrapWithDefaultView(Widget rootWidget) {
     assert(
-      (_currentDartTest != null) != (constants.hotRestartEnabled),
+      (_currentDartTest != null) != (global_state.hotRestartEnabled),
       '_currentDartTest can be null if and only if Hot Restart is enabled',
     );
 
     const testLabelEnabled = bool.fromEnvironment('PATROL_TEST_LABEL_ENABLED');
-    if (!testLabelEnabled || constants.hotRestartEnabled) {
+    if (!testLabelEnabled || global_state.hotRestartEnabled) {
       return super.wrapWithDefaultView(RepaintBoundary(child: rootWidget));
     } else {
       return super.wrapWithDefaultView(

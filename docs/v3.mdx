@@ -1,0 +1,82 @@
+---
+title: Patrol 2.0 is here
+---
+
+# Patrol 3.0 is here!
+
+Patrol 3.0 is the new major version of Patrol.
+
+## `patrol v3` and DevTools extension
+
+The highlight of this release is the **Patrol DevTools Extension**. We created
+it to enhance your UI test development experience with `patrol develop` by
+making it much easier to explore the native view hierarchy. With Patrol's new
+DevTools extension, you can effortlessly inspect the currently visible
+Android/iOS views and discover their properties. This information can be then
+used in native selectors like `$.native.tap()`, eliminating the need for
+external tools.
+
+Patrol is one of the first packages in the whole Flutter ecosystem to have a
+DevTools extension. We have started working on it as soon as the Flutter team
+has announced that they're working on making DevTools extensible. We immediately
+realized how powerful this feature is and how it can enable us to deliver better
+UI testing experience.
+
+This is, of course, just the beginning, and we have plans to introduce more
+features in future updates of our DevTools extension.
+
+### Changes in `patrol` v3:
+
+The DevTools extension is not the only new feature in this release. Other
+changes include:
+
+- **Minimum Flutter version**: The minimum supported Flutter version has been
+  bumped to 3.16 to make it compatible with a few breaking changes that were
+  introduced to the `flutter_test` package that `patrol` and `patrol_finders`
+  depend on. We hope you'll have an easy time upgrading to 3.16, but if not, you
+  can always using Patrol v2 until you're ready to upgrade.
+
+- **A few breaking changes**:
+  - The `bindingType` parameter has been removed from the `patrolTest()`
+    function. Now, only `PatrolBinding` is used and it's also automatically
+    initialized.
+  - The `nativeAutomation` parameter has also been removed from the
+    `patrolTest()` function. Now `patrolTest()` implies native automation and
+    you can use `patrolWidgetTest()` if you don't need it.
+  - `PatrolTester` class has been renamed to `PatrolIntegrationTester`. Now
+    `PatrolTester` is used with `patrolWidgetTest()` *without* native automation
+    and `PatrolIntegrationTester` is used with `patrolTest()` *with* native
+    automation.
+- **Patrol CLI version requirement**: Patrol v3 requires Patrol CLI v2.3.0 or
+  newer, so make sure to `patrol update`!
+
+## `patrol_finders` v2
+
+Along with `patrol` v3, we are releasing the v2 of [patrol_finders]. In case you
+missed it, we split `patrol_finders` from `patrol` a few months ago in response
+to our community members who loved Patrol's lean finders syntax, but weren't
+interested in developing integration tests. [Here's the docs
+page][patrol_finders_docs] about `patrol_finders` in case you missed it.
+
+### Changes in `patrol_finders` v2:
+
+- **Minimum Flutter version**: The minimum supported Flutter version of
+  `patrol_finders` has been bumped to 3.16, just like in `patrol`'s case.
+- The deprecated `andSettle` method has been removed from all `PatrolTester` and
+  `PatrolFinder` methods like `tap()`, `enterText()`, and so on. Developers
+  should now use `settlePolicy` as a replacement, which has been available since
+  June.
+- The default `settlePolicy` has been changed to [SettlePolicy.trySettle].
+
+## Wrapping up
+
+As you can see, these updates have a little bit of everything - a large new
+feature, support for the latest Flutter version, and a clean up up a few
+deprecations. We encourage you to explore our new DevTools extension and look
+forward to your feedback and ideas for new features as we continue to evolve the
+Patrol ecosystem. Meanwhile, we're getting back to work on Patrol, with a single
+goal in mind – to make it the go-to UI testing framework for Flutter apps.
+
+[patrol_finders]: https://pub.dev/packages/patrol_finders
+[patrol_finders_docs]: https://patrol.leancode.co/patrol-finders-release
+[SettlePolicy.trySettle]: https://pub.dev/documentation/patrol_finders/latest/patrol_finders/SettlePolicy.html#trySettle
