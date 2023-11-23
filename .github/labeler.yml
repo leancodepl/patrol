@@ -8,3 +8,4 @@
   - packages/patrol/**/*
 'docs':
   - docs/**/*
+  - docs.json
