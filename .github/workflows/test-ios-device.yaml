@@ -28,14 +28,14 @@ jobs:
 
     defaults:
       run:
-        working-directory: packages/patrol/example
+        working-directory: dev/e2e_app
 
     steps:
       - name: Clone repository
         uses: actions/checkout@v4
 
       - name: Add current platform to Gemfile
-        working-directory: packages/patrol/example/ios
+        working-directory: dev/e2e_app/ios
         run: bundle lock --add-platform ruby
 
       - name: Set up Ruby
@@ -43,14 +43,14 @@ jobs:
         with:
           ruby-version: '3.2'
           bundler-cache: true
-          working-directory: packages/patrol/example/ios
+          working-directory: dev/e2e_app/ios
 
       - name: Set up fastlane
-        working-directory: packages/patrol/example/ios
+        working-directory: dev/e2e_app/ios
         run: bundle install
 
       - name: Run fastlane match
-        working-directory: packages/patrol/example/ios
+        working-directory: dev/e2e_app/ios
         env:
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
           GIT_USERNAME: ${{ secrets.PATROL_FASTLANE_CERTS_REPO_TOKEN_USERNAME }}
