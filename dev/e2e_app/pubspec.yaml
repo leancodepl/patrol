@@ -1,4 +1,4 @@
-name: patrol_example
+name: example
 description: A new Flutter project.
 publish_to: none
 version: 1.0.0+1
@@ -23,7 +23,7 @@ dev_dependencies:
     sdk: flutter
   leancode_lint: ^7.0.0+1
   patrol:
-    path: ../
+    path: ../../packages/patrol
 
 flutter:
   uses-material-design: true

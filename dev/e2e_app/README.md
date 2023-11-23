@@ -1,6 +1,6 @@
-# patrol example app
+# patrol e2e app
 
-This application demonstrates most of Patrol's features.
+This application is used to test Patrol itself.
 
 ## Building
 
@@ -12,7 +12,8 @@ $ dart pub global activate --source path packages/patrol_cli && patrol
 
 from the repository root.
 
-Once you have the right Patrol CLI version, building artifacts for testing is easy.
+Once you have the right Patrol CLI version, building artifacts for testing is
+easy.
 
 ### Android
 
@@ -23,8 +24,9 @@ $ patrol build android
 ```
 
 This builds 2 APKs:
-- the app under test: `<example_root>/build/app/outputs/apk/debug/app-debug.apk`
-- the instrumentation app: `<example_root>/build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk`
+
+- the app under test: `<app_project_root>/build/app/outputs/apk/debug/app-debug.apk`
+- the instrumentation app: `<app_project_root>/build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk`
 
 ### iOS device
 
