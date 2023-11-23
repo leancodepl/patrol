@@ -8,9 +8,9 @@ import 'package:patrol_finders/src/custom_finders/custom_finders.dart';
 void main() {
   group('PatrolFinder', () {
     group('finds widget by', () {
-      final app = MaterialApp(
+      const app = MaterialApp(
         home: Row(
-          children: const [
+          children: [
             Icon(Icons.front_hand, key: ValueKey({'key': 'icon'})),
             Text('Hello', key: Key('helloText')),
           ],
@@ -580,10 +580,10 @@ void main() {
 
       patrolWidgetTest('scrolls to existing and visible widget', ($) async {
         await $.pumpWidget(
-          MaterialApp(
+          const MaterialApp(
             home: SingleChildScrollView(
               child: Column(
-                children: const [Text('some text')],
+                children: [Text('some text')],
               ),
             ),
           ),
@@ -603,18 +603,18 @@ void main() {
             MaterialApp(
               home: LayoutBuilder(
                 builder: (_, constraints) {
-                  return Column(
+                  return const Column(
                     children: [
                       SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: Column(
-                          children: const [Text('text 1')],
+                          children: [Text('text 1')],
                         ),
                       ),
                       SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: Column(
-                          children: const [Text('text 2')],
+                          children: [Text('text 2')],
                         ),
                       ),
                     ],
@@ -643,18 +643,18 @@ void main() {
             MaterialApp(
               home: LayoutBuilder(
                 builder: (_, constraints) {
-                  return Column(
+                  return const Column(
                     children: [
                       SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: Column(
-                          children: const [
+                          children: [
                             Text('text 1'),
                             Text('text 1'),
                           ],
                         ),
                       ),
-                      const SingleChildScrollView(
+                      SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: Text('text 1'),
                       ),
@@ -862,13 +862,11 @@ void main() {
             child: StatefulBuilder(
               builder: (context, setState) {
                 return Column(
-                  key: Key('column'),
+                  key: const Key('column'),
                   children: [
-                    Row(
+                    const Row(
                       children: [
-                        Column(
-                          children: [],
-                        ),
+                        Column(),
                       ],
                     ),
                     Text('count: $count'),
@@ -973,9 +971,9 @@ void main() {
     group('at()', () {
       patrolWidgetTest('finds single widget at index', ($) async {
         await $.pumpWidget(
-          MaterialApp(
+          const MaterialApp(
             home: Column(
-              children: const [Text('text'), Text('text'), Text('text')],
+              children: [Text('text'), Text('text'), Text('text')],
             ),
           ),
         );
@@ -987,7 +985,7 @@ void main() {
 
       patrolWidgetTest("works identically to Flutter's finders", ($) async {
         await $.pumpWidget(
-          MaterialApp(home: Column(children: const [Text('text')])),
+          const MaterialApp(home: Column(children: [Text('text')])),
         );
 
         expect($(Text).at(0).toString(), find.byType(Text).at(0).toString());
@@ -1013,8 +1011,8 @@ void main() {
     group('first', () {
       patrolWidgetTest('finds first widget', ($) async {
         await $.pumpWidget(
-          MaterialApp(
-            home: Column(children: const [Text('text'), Text('text')]),
+          const MaterialApp(
+            home: Column(children: [Text('text'), Text('text')]),
           ),
         );
 
@@ -1053,8 +1051,8 @@ void main() {
     group('last', () {
       patrolWidgetTest('finds last widget', ($) async {
         await $.pumpWidget(
-          MaterialApp(
-            home: Column(children: const [Text('text'), Text('text')]),
+          const MaterialApp(
+            home: Column(children: [Text('text'), Text('text')]),
           ),
         );
 
