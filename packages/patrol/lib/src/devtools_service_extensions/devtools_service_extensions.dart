@@ -1,6 +1,7 @@
 // ignore_for_file: public_member_api_docs
 
 import 'dart:convert';
+
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:patrol/src/native/contracts/contracts.dart';
@@ -47,9 +48,9 @@ class DevtoolsServiceExtensions {
         'result': res,
         'success': true,
       };
-    } catch (e, t) {
+    } catch (err, st) {
       return <String, dynamic>{
-        'result': '$e $t',
+        'result': '$err $st',
         'success': false,
       };
     }
