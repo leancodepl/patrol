@@ -38,9 +38,11 @@ jobs:
         if: success() || failure()
         run: flutter test --coverage
 
-      - name: flutter analyze
+      - name: Run analyzer
         if: success() || failure()
-        run: flutter analyze
+        run: |
+          flutter analyze
+          dart run custom_lint
 
       - name: dart format
         if: success() || failure()

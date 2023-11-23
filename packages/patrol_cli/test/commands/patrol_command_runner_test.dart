@@ -34,7 +34,7 @@ void main() {
       ).thenAnswer((_) async => version);
 
       commandRunner = PatrolCommandRunner(
-        platform: FakePlatform(),
+        platform: FakePlatform(environment: {}),
         processManager: FakeProcessManager(),
         pubUpdater: pubUpdater,
         fs: MemoryFileSystem.test(),

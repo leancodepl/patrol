@@ -32,9 +32,11 @@ jobs:
       - name: dart pub get
         run: dart pub get
 
-      - name: dart analyze
+      - name: Run analyzer
         if: success() || failure()
-        run: dart analyze
+        run: |
+          dart analyze
+          dart run custom_lint
 
       - name: dart format
         if: success() || failure()

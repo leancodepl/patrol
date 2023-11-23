@@ -253,10 +253,10 @@ void main() {
 
       patrolWidgetTest('drags to existing and visible widget', (tester) async {
         await tester.pumpWidget(
-          MaterialApp(
+          const MaterialApp(
             home: SingleChildScrollView(
               child: Column(
-                children: const [Text('some text')],
+                children: [Text('some text')],
               ),
             ),
           ),
@@ -346,13 +346,13 @@ void main() {
         'drags to existing and visible widget in the first Scrollable',
         (tester) async {
           await tester.pumpWidget(
-            MaterialApp(
+            const MaterialApp(
               home: Column(
                 children: [
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Column(
-                      children: const [
+                      children: [
                         Text('text 1'),
                         Text('text 1'),
                       ],
@@ -361,7 +361,7 @@ void main() {
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Column(
-                      children: const [Text('text 2')],
+                      children: [Text('text 2')],
                     ),
                   ),
                 ],
@@ -435,10 +435,10 @@ void main() {
 
       patrolWidgetTest('drags to existing and visible widget', (tester) async {
         await tester.pumpWidget(
-          MaterialApp(
+          const MaterialApp(
             home: SingleChildScrollView(
               child: Column(
-                children: const [Text('some text')],
+                children: [Text('some text')],
               ),
             ),
           ),
@@ -522,12 +522,12 @@ void main() {
         'drags to existing and visible widget in the first Scrollable',
         (tester) async {
           await tester.pumpWidget(
-            MaterialApp(
+            const MaterialApp(
               home: Column(
                 children: [
                   SingleChildScrollView(
                     child: Column(
-                      children: const [
+                      children: [
                         Text('text 1'),
                         Text('text 1'),
                       ],
@@ -535,7 +535,7 @@ void main() {
                   ),
                   SingleChildScrollView(
                     child: Column(
-                      children: const [Text('text 2')],
+                      children: [Text('text 2')],
                     ),
                   ),
                 ],
@@ -578,13 +578,13 @@ void main() {
                     return const CircularProgressIndicator();
                   }
 
-                  return Column(
+                  return const Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: Column(
-                          children: const [
+                          children: [
                             SizedBox(width: 2000),
                             Text('text 1'),
                             Text('text 1'),
@@ -594,7 +594,7 @@ void main() {
                       SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: Column(
-                          children: const [
+                          children: [
                             SizedBox(width: 2000),
                             Text('text 2'),
                           ],
@@ -718,10 +718,10 @@ void main() {
       patrolWidgetTest('scrolls to existing and visible widget',
           (tester) async {
         await tester.pumpWidget(
-          MaterialApp(
+          const MaterialApp(
             home: SingleChildScrollView(
               child: Column(
-                children: const [Text('some text')],
+                children: [Text('some text')],
               ),
             ),
           ),
@@ -738,19 +738,19 @@ void main() {
         'scrolls to existing and visible widget in the first Scrollable',
         (tester) async {
           await tester.pumpWidget(
-            MaterialApp(
+            const MaterialApp(
               home: Column(
                 children: [
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Column(
-                      children: const [Text('text 1')],
+                      children: [Text('text 1')],
                     ),
                   ),
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Column(
-                      children: const [Text('text 2')],
+                      children: [Text('text 2')],
                     ),
                   ),
                 ],
@@ -774,19 +774,19 @@ void main() {
         'many same widgets are present',
         (tester) async {
           await tester.pumpWidget(
-            MaterialApp(
+            const MaterialApp(
               home: Column(
                 children: [
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Column(
-                      children: const [
+                      children: [
                         Text('text 1'),
                         Text('text 1'),
                       ],
                     ),
                   ),
-                  const SingleChildScrollView(
+                  SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Text('text 1'),
                   ),
@@ -960,7 +960,7 @@ void main() {
               builder: (context, setState) {
                 return Column(
                   children: [
-                    CircularProgressIndicator(),
+                    const CircularProgressIndicator(),
                     Text('count: $count'),
                     ElevatedButton(
                       onPressed: () => setState(() => count++),
@@ -988,7 +988,7 @@ void main() {
                     ElevatedButton(
                       onPressed: () => setState(() {
                         state = 1;
-                        Timer(Duration(seconds: 5), () {
+                        Timer(const Duration(seconds: 5), () {
                           setState(() {
                             state = 0;
                             count++;
@@ -999,7 +999,7 @@ void main() {
                         textStyle: const TextStyle(fontSize: 20),
                       ),
                       child: state != 0
-                          ? CircularProgressIndicator()
+                          ? const CircularProgressIndicator()
                           : const Text('Enabled button'),
                     ),
                   ],
@@ -1016,7 +1016,8 @@ void main() {
           await $.pumpWidget(appWithInfiniteAnimation);
 
           // 10 seconds is verbatim here to guard against changing the default
-          final end = $.tester.binding.clock.now().add(Duration(seconds: 10));
+          final end =
+              $.tester.binding.clock.now().add(const Duration(seconds: 10));
 
           await $(ElevatedButton).tap(settlePolicy: SettlePolicy.trySettle);
 
@@ -1033,7 +1034,7 @@ void main() {
 
         await $(ElevatedButton).tap(
           settlePolicy: SettlePolicy.trySettle,
-          settleTimeout: Duration(seconds: 10),
+          settleTimeout: const Duration(seconds: 10),
         );
 
         expect($('count: 1'), findsOneWidget);

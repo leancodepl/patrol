@@ -49,8 +49,11 @@ jobs:
           dart test --coverage coverage
           dart run coverage:format_coverage --lcov --in coverage --out coverage/lcov.info --report-on lib
 
-      - name: dart analyze
-        run: dart analyze
+      - name: Run analyzer
+        if: success() || failure()
+        run: |
+          flutter analyze
+          dart run custom_lint
 
       - name: dart format
         run: dart format --set-exit-if-changed .
