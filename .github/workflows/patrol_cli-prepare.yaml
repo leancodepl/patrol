@@ -45,9 +45,7 @@ jobs:
         run: patrol
 
       - name: dart test
-        run: |
-          dart test --coverage coverage
-          dart run coverage:format_coverage --lcov --in coverage --out coverage/lcov.info --report-on lib
+        run: dart test
 
       - name: Run analyzer
         if: success() || failure()

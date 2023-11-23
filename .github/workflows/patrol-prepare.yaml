@@ -224,7 +224,7 @@ jobs:
 
       - name: flutter test
         if: success() || failure()
-        run: flutter test --coverage
+        run: flutter test
 
       - name: Run analyzer
         if: success() || failure()
