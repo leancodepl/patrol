@@ -4,6 +4,7 @@ on:
   workflow_dispatch:
   schedule:
     - cron: '30 21 * * *'
+  pull_request:
 
 jobs:
   run_tests:
