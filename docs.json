@@ -12,6 +12,13 @@
     "apiKey": "4d41430f0f5928c58db0acfdace04a8b",
     "indexName": "patrol-leancode"
   },
+  "anchors": [
+    {
+      "title": "Join our Discord",
+      "icon": "discord",
+      "link": "https://discord.gg/ukBK5t4EZg"
+    }
+  ],
   "sidebar": [
     ["About", "/"],
     ["Getting started", "/getting-started"],
