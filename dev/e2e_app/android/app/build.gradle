@@ -27,7 +27,7 @@ apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
     compileSdk 33
-    namespace "pl.leancode.patrol.example"
+    namespace "pl.leancode.patrol.e2e_app"
 
     kotlinOptions {
         jvmTarget = "1.8"
@@ -38,7 +38,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "pl.leancode.patrol.example"
+        applicationId "pl.leancode.patrol.e2e_app"
         minSdk 21
         targetSdk 33
         versionCode flutterVersionCode.toInteger()

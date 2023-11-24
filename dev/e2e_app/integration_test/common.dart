@@ -1,6 +1,6 @@
+import 'package:e2e_app/main.dart' as app_main;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
-import 'package:patrol_example/main.dart' as app_main;
 
 export 'package:flutter_test/flutter_test.dart';
 export 'package:patrol/patrol.dart';

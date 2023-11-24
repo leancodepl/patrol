@@ -19,8 +19,8 @@ class PTScaffold extends StatelessWidget {
   Widget build(BuildContext context) {
     final top = this.top;
 
-    return WillPopScope(
-      onWillPop: () => Future.value(false),
+    return PopScope(
+      onPopInvoked: (didPop) => Future.value(false),
       child: Scaffold(
         backgroundColor: PTColors.textDark,
         body: DefaultTextStyle(

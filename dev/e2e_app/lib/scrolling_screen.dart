@@ -1,5 +1,5 @@
+import 'package:e2e_app/keys.dart';
 import 'package:flutter/material.dart';
-import 'package:patrol_example/keys.dart';
 
 class ScrollingScreen extends StatelessWidget {
   const ScrollingScreen({super.key});

@@ -32,7 +32,8 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   leancode_lint: ^6.0.0
-  patrol: ^2.3.1
+  patrol:
+    path: ..
 
 flutter_launcher_icons:
   android: 'launcher_icon'
@@ -60,8 +61,7 @@ flutter:
           weight: 600
 
 patrol:
-  flavor: dev
   android:
     package_name: com.example.patrol_challenge
   ios:
-    bundle_id: pl.leancode.patrol.challenge.dev
+    bundle_id: pl.leancode.patrol.challenge

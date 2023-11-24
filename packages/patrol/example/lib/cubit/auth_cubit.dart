@@ -41,7 +41,7 @@ class AuthCubit extends Cubit<AuthState> {
       );
 
       await _firebaseAuth.signInWithCredential(credential);
-    } catch (e) {
+    } catch (err) {
       emit(AuthStateUnauthenticated(showError: true));
       emit(AuthStateUnauthenticated());
     }

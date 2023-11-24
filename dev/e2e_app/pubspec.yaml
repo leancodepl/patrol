@@ -1,4 +1,4 @@
-name: example
+name: e2e_app
 description: A new Flutter project.
 publish_to: none
 version: 1.0.0+1
@@ -31,6 +31,6 @@ flutter:
 patrol:
   app_name: Patrol example
   android:
-    package_name: pl.leancode.patrol.example
+    package_name: pl.leancode.patrol.e2e_app
   ios:
     bundle_id: pl.leancode.patrol.Example
