@@ -9,17 +9,17 @@
 	<key>ANDROID_CLIENT_ID</key>
 	<string>REMOVED.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
-	<string>REMOVED</string>
+	<string>AIzaSyChw7aDlxxJBfLRDxb1qIoBXqxrJ-8_fw1</string>
 	<key>GCM_SENDER_ID</key>
-	<string>1084544097393</string>
+	<string>1814244492393</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>pl.leancode.patrol.challenge</string>
+	<string>pl.leancode.patrol.Example</string>
 	<key>PROJECT_ID</key>
-	<string>opentouristics</string>
-	<key>STORAGE_BUCKET</key>
 	<string>REMOVED</string>
+	<key>STORAGE_BUCKET</key>
+	<string>REMOVED.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -31,6 +31,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>REMOVED</string>
+	<string>1:1984545047423:ios:ad10dafb0621e0382c8ff5</string>
 </dict>
 </plist>

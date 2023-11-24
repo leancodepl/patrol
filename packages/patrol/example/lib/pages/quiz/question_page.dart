@@ -1,14 +1,14 @@
+import 'package:example/handlers/notification_handler.dart';
+import 'package:example/pages/quiz/error_page.dart';
+import 'package:example/pages/quiz/success_page.dart';
+import 'package:example/ui/components/button/elevated_button.dart';
+import 'package:example/ui/components/button/text_button.dart';
+import 'package:example/ui/components/scaffold.dart';
+import 'package:example/ui/style/colors.dart';
+import 'package:example/ui/style/test_style.dart';
+import 'package:example/ui/widgets/top_bar.dart';
+import 'package:example/ui/widgets/utils.dart';
 import 'package:flutter/material.dart';
-import 'package:patrol_challenge/handlers/notification_handler.dart';
-import 'package:patrol_challenge/pages/quiz/error_page.dart';
-import 'package:patrol_challenge/pages/quiz/success_page.dart';
-import 'package:patrol_challenge/ui/components/button/elevated_button.dart';
-import 'package:patrol_challenge/ui/components/button/text_button.dart';
-import 'package:patrol_challenge/ui/components/scaffold.dart';
-import 'package:patrol_challenge/ui/style/colors.dart';
-import 'package:patrol_challenge/ui/style/test_style.dart';
-import 'package:patrol_challenge/ui/widgets/top_bar.dart';
-import 'package:patrol_challenge/ui/widgets/utils.dart';
 import 'package:provider/provider.dart';
 
 Route<void> get questionRoute =>

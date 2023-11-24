@@ -1,9 +1,9 @@
+import 'package:example/ui/components/button/elevated_button.dart';
+import 'package:example/ui/components/scaffold.dart';
+import 'package:example/ui/images.dart';
+import 'package:example/ui/style/colors.dart';
+import 'package:example/ui/style/test_style.dart';
 import 'package:flutter/material.dart';
-import 'package:patrol_challenge/ui/components/button/elevated_button.dart';
-import 'package:patrol_challenge/ui/components/scaffold.dart';
-import 'package:patrol_challenge/ui/images.dart';
-import 'package:patrol_challenge/ui/style/colors.dart';
-import 'package:patrol_challenge/ui/style/test_style.dart';
 
 Route<void> get successRoute =>
     MaterialPageRoute(builder: (_) => const _SuccessPage());

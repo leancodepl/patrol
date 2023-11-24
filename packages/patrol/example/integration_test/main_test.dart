@@ -1,10 +1,10 @@
+import 'package:example/main.dart';
+import 'package:example/pages/quiz/form_page.dart';
+import 'package:example/ui/components/button/elevated_button.dart';
+import 'package:example/ui/style/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
-import 'package:patrol_challenge/main.dart';
-import 'package:patrol_challenge/pages/quiz/form_page.dart';
-import 'package:patrol_challenge/ui/components/button/elevated_button.dart';
-import 'package:patrol_challenge/ui/style/colors.dart';
 
 void main() {
   patrolTest('main flow', ($) async {

@@ -1,5 +1,5 @@
+import 'package:example/ui/style/colors.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:patrol_challenge/ui/style/colors.dart';
 
 abstract class PTTextStyles {
   static const _baseStyle = TextStyle(

@@ -164,7 +164,7 @@ jobs:
       - name: Preload Flutter artifacts
         run: flutter precache --ios
 
-      - name: Generate iOS build files
+      - name: Generate iOS build filesP
         working-directory: packages/patrol/example
         run: flutter build ios --config-only --simulator
 

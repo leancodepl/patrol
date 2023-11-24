@@ -1,5 +1,5 @@
+import 'package:example/ui/images.dart';
 import 'package:flutter/widgets.dart';
-import 'package:patrol_challenge/ui/images.dart';
 
 class LogoHero extends StatelessWidget {
   const LogoHero({super.key});

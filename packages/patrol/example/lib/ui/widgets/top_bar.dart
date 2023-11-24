@@ -1,6 +1,6 @@
+import 'package:example/ui/style/colors.dart';
+import 'package:example/ui/widgets/logos_hero.dart';
 import 'package:flutter/widgets.dart';
-import 'package:patrol_challenge/ui/style/colors.dart';
-import 'package:patrol_challenge/ui/widgets/logos_hero.dart';
 
 class TopBar extends StatelessWidget {
   const TopBar({super.key});

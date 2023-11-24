@@ -1,11 +1,11 @@
 import 'dart:async';
 
 import 'package:confetti/confetti.dart';
+import 'package:example/ui/components/scaffold.dart';
+import 'package:example/ui/style/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:patrol_challenge/ui/components/scaffold.dart';
-import 'package:patrol_challenge/ui/style/colors.dart';
 
 Route<void> get notificationRoute =>
     MaterialPageRoute(builder: (_) => const _NotificationSuccessPage());

@@ -1,13 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:dispose_scope/dispose_scope.dart';
+import 'package:example/handlers/permission_handler.dart';
+import 'package:example/ui/style/colors.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart' as http;
-import 'package:patrol_challenge/handlers/permission_handler.dart';
-import 'package:patrol_challenge/ui/style/colors.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class NotificationHandler {
@@ -17,13 +16,11 @@ class NotificationHandler {
   );
 
   final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin;
-  final FirebaseMessaging _firebaseMessaging;
-
-  final _disposeScope = DisposeScope();
+  final FirebaseMessaging? _firebaseMessaging;
 
   Future<void> init(VoidCallback onNotificationTap) async {
     await _init(onNotificationTap);
-    final token = await _firebaseMessaging.getToken();
+    final token = await _firebaseMessaging?.getToken();
     debugPrint('Device FCM token: $token');
     _listenForPushNotifications();
   }
@@ -40,7 +37,7 @@ class NotificationHandler {
       ),
       onDidReceiveNotificationResponse: (_) => onNotificationTap(),
     );
-    await _firebaseMessaging.setForegroundNotificationPresentationOptions(
+    await _firebaseMessaging?.setForegroundNotificationPresentationOptions(
       alert: true,
       badge: true,
       sound: true,
@@ -76,7 +73,7 @@ class NotificationHandler {
       return;
     }
     await _init(onPressed);
-    final fcmToken = await _firebaseMessaging.getToken();
+    final fcmToken = await _firebaseMessaging?.getToken();
     await http.post(
       Uri.parse(
         'https://us-central1-patrol-poc.cloudfunctions.net/sendNotification',
@@ -87,6 +84,10 @@ class NotificationHandler {
   }
 
   void _listenForPushNotifications() {
+    if (_firebaseMessaging == null) {
+      return;
+    }
+
     FirebaseMessaging.onMessage.listen((message) {
       if (message.notification != null) {
         final notification = message.notification;
@@ -95,7 +96,7 @@ class NotificationHandler {
           body: notification?.body,
         );
       }
-    }).disposedBy(_disposeScope);
+    });
   }
 
   Future<void> _showNotification({

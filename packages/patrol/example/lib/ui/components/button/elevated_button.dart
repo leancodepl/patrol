@@ -1,7 +1,7 @@
+import 'package:example/ui/style/colors.dart';
+import 'package:example/ui/style/test_style.dart';
+import 'package:example/ui/widgets/utils.dart';
 import 'package:flutter/material.dart';
-import 'package:patrol_challenge/ui/style/colors.dart';
-import 'package:patrol_challenge/ui/style/test_style.dart';
-import 'package:patrol_challenge/ui/widgets/utils.dart';
 
 class PTElevatedButton extends StatelessWidget {
   const PTElevatedButton({

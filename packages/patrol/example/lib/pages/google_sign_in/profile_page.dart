@@ -1,12 +1,12 @@
+import 'package:example/cubit/auth_cubit.dart';
+import 'package:example/handlers/notification_handler.dart';
+import 'package:example/pages/push_notification/notification_success_page.dart';
+import 'package:example/ui/components/scaffold.dart';
+import 'package:example/ui/style/colors.dart';
+import 'package:example/ui/style/test_style.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:patrol_challenge/cubit/auth_cubit.dart';
-import 'package:patrol_challenge/handlers/notification_handler.dart';
-import 'package:patrol_challenge/pages/push_notification/notification_success_page.dart';
-import 'package:patrol_challenge/ui/components/scaffold.dart';
-import 'package:patrol_challenge/ui/style/colors.dart';
-import 'package:patrol_challenge/ui/style/test_style.dart';
 
 Route<void> get profileRoute =>
     MaterialPageRoute(builder: (_) => const _ProfilePage());

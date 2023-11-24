@@ -1,4 +1,4 @@
-package pl.leancode.patrol.challenge;
+package pl.leancode.patrol.example;
 
 import androidx.test.platform.app.InstrumentationRegistry;
 import org.junit.Test;

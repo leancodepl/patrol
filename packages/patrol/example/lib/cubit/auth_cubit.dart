@@ -6,13 +6,18 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthCubit extends Cubit<AuthState> {
-  AuthCubit() : super(AuthStateLoading());
+  AuthCubit(this._firebaseAuth, this._googleSignIn) : super(AuthStateLoading());
 
-  late final _firebaseAuth = FirebaseAuth.instance;
-  late final _googleSignIn = GoogleSignIn();
+  final FirebaseAuth? _firebaseAuth;
+  final GoogleSignIn? _googleSignIn;
   late final StreamSubscription<User?> _authStateChangesSubscription;
 
   void init() {
+    if (_firebaseAuth == null || _googleSignIn == null) {
+      emit(AuthStateUnauthenticated());
+      return;
+    }
+
     final user = _firebaseAuth.currentUser;
     _emitAuthState(user);
 
@@ -29,6 +34,10 @@ class AuthCubit extends Cubit<AuthState> {
   }
 
   Future<void> signInWithGoogle() async {
+    if (_firebaseAuth == null || _googleSignIn == null) {
+      return;
+    }
+
     emit(AuthStateLoading());
     try {
       final googleUser = await _googleSignIn.signIn();
@@ -48,6 +57,10 @@ class AuthCubit extends Cubit<AuthState> {
   }
 
   Future<void> signOut() async {
+    if (_firebaseAuth == null || _googleSignIn == null) {
+      return;
+    }
+
     await _googleSignIn.signOut();
     await _firebaseAuth.signOut();
   }

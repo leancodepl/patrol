@@ -1,4 +1,11 @@
 import 'package:animations/animations.dart';
+import 'package:example/cubit/auth_cubit.dart';
+import 'package:example/firebase_options.dart';
+import 'package:example/handlers/notification_handler.dart';
+import 'package:example/pages/home_page.dart';
+import 'package:example/pages/push_notification/notification_success_page.dart';
+import 'package:example/ui/style/colors.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -6,13 +13,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:patrol_challenge/cubit/auth_cubit.dart';
-import 'package:patrol_challenge/firebase_options.dart';
-import 'package:patrol_challenge/handlers/notification_handler.dart';
-import 'package:patrol_challenge/pages/home_page.dart';
-import 'package:patrol_challenge/pages/push_notification/notification_success_page.dart';
-import 'package:patrol_challenge/ui/style/colors.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
+
+const firebaseEnabled = String.fromEnvironment('FIREBASE_ENABLED') == 'true';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,7 +28,10 @@ void main() async {
 
 Future<void> initApp() async {
   _setUpTheme();
-  await _initFirebase();
+
+  if (firebaseEnabled) {
+    await _initFirebase();
+  }
   await _askForLocationPermission();
 }
 
@@ -49,12 +56,15 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<AuthCubit>(
-      create: (context) => AuthCubit()..init(),
+      create: (context) => AuthCubit(
+        firebaseEnabled ? FirebaseAuth.instance : null,
+        firebaseEnabled ? GoogleSignIn() : null,
+      )..init(),
       child: Provider(
         lazy: false,
         create: (_) => NotificationHandler(
           FlutterLocalNotificationsPlugin(),
-          FirebaseMessaging.instance,
+          firebaseEnabled ? FirebaseMessaging.instance : null,
         )..init(() => Navigator.push(context, notificationRoute)),
         child: MaterialApp(
           theme: ThemeData.dark().copyWith(

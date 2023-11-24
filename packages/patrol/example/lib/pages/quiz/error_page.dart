@@ -1,7 +1,7 @@
+import 'package:example/ui/components/scaffold.dart';
+import 'package:example/ui/icons.dart';
+import 'package:example/ui/style/test_style.dart';
 import 'package:flutter/material.dart';
-import 'package:patrol_challenge/ui/components/scaffold.dart';
-import 'package:patrol_challenge/ui/icons.dart';
-import 'package:patrol_challenge/ui/style/test_style.dart';
 
 Route<void> get errorRoute =>
     MaterialPageRoute(builder: (_) => const _ErrorPage());
