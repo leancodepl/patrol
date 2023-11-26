@@ -1,3 +1,9 @@
+## 2.4.0-dev.1
+
+- Add support for `patrolSetUpAll` (#1751)
+
+This version requires version 3.1.0-dev1 of `patrol` package.
+
 ## 2.3.1+1
 
 - Add screenshots to `pubspec.yaml` (#1917)

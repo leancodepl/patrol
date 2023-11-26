@@ -34,6 +34,20 @@ class PatrolAppServiceClient {
     }
 
     @Throws(PatrolAppServiceClientException::class)
+    fun listDartLifecycleCallbacks(): Contracts.ListDartLifecycleCallbacksResponse {
+        Logger.i("PatrolAppServiceClient.listDartLifecycleCallbacks()")
+        val result = client.listDartLifecycleCallbacks()
+        return result
+    }
+
+    @Throws(PatrolAppServiceClientException::class)
+    fun setLifecycleCallbacksState(data: Map<String, Boolean>): Contracts.Empty {
+        Logger.i("PatrolAppServiceClient.setLifecycleCallbacksState()")
+        val result = client.setLifecycleCallbacksState(Contracts.SetLifecycleCallbacksStateRequest(data))
+        return result
+    }
+
+    @Throws(PatrolAppServiceClientException::class)
     fun runDartTest(name: String): Contracts.RunDartTestResponse {
         Logger.i("PatrolAppServiceClient.runDartTest($name)")
         return client.runDartTest(Contracts.RunDartTestRequest(name))

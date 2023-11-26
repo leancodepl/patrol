@@ -769,13 +769,26 @@ class NativeAutomator {
     );
   }
 
-  /// Tells the AndroidJUnitRunner that PatrolAppService is ready to answer
+  /// Tells the native test runner that PatrolAppService is ready to answer
   /// requests about the structure of Dart tests.
   @internal
   Future<void> markPatrolAppServiceReady() async {
     await _wrapRequest(
       'markPatrolAppServiceReady',
       _client.markPatrolAppServiceReady,
+    );
+  }
+
+  /// Tells the native test runner that callback [name] has been executed.
+  ///
+  /// The native test runner persists that information.
+  @internal
+  Future<void> markLifecycleCallbackExecuted(String name) async {
+    await _wrapRequest(
+      'markLifecycleCallbackExecuted',
+      () => _client.markLifecycleCallbackExecuted(
+        MarkLifecycleCallbackExecutedRequest(name: name),
+      ),
     );
   }
 }
