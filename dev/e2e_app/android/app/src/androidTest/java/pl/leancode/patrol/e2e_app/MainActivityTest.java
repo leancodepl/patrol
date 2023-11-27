@@ -1,4 +1,4 @@
-package pl.leancode.patrol.example;
+package pl.leancode.patrol.e2e_app;
 
 import androidx.test.platform.app.InstrumentationRegistry;
 import org.junit.Test;
