@@ -300,9 +300,9 @@ class NativeView with EquatableMixin {
   final bool focused;
   final bool enabled;
   final int? childCount;
-  //TODO: rename to "resourceId" for consistency
+  // TODO: rename to "resourceId" for consistency
   final String? resourceName;
-  //TODO: rename to "pkg" for consistency
+  // TODO: rename to "pkg" for consistency
   final String? applicationPackage;
   final List<NativeView> children;
 

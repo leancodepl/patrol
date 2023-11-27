@@ -10,3 +10,4 @@
 *.iml
 /pubspec.lock
 pubspec_overrides.yaml
+custom_lint.log

@@ -10,13 +10,13 @@ void main() {
 
     group('correctly encodes default invocation', () {
       test('on Windows', () {
-        final flutterOptions = FlutterAppOptions(
+        const flutterOptions = FlutterAppOptions(
           target: r'C:\Users\john\app\integration_test\app_test.dart',
           buildMode: BuildMode.debug,
           flavor: null,
           dartDefines: {},
         );
-        options = AndroidAppOptions(flutter: flutterOptions);
+        options = const AndroidAppOptions(flutter: flutterOptions);
 
         final invocation =
             options.toGradleAssembleTestInvocation(isWindows: true);
@@ -31,13 +31,13 @@ void main() {
       });
 
       test('on macOS', () {
-        final flutterOpts = FlutterAppOptions(
+        const flutterOpts = FlutterAppOptions(
           target: '/Users/john/app/integration_test/app_test.dart',
           buildMode: BuildMode.release,
           flavor: null,
           dartDefines: {},
         );
-        options = AndroidAppOptions(flutter: flutterOpts);
+        options = const AndroidAppOptions(flutter: flutterOpts);
 
         final invocation =
             options.toGradleAssembleTestInvocation(isWindows: false);
@@ -60,13 +60,13 @@ void main() {
       };
 
       test('on Windows', () {
-        final flutterOpts = FlutterAppOptions(
+        const flutterOpts = FlutterAppOptions(
           target: r'C:\Users\john\app\integration_test\app_test.dart',
           buildMode: BuildMode.release,
           flavor: 'dev',
           dartDefines: dartDefines,
         );
-        options = AndroidAppOptions(flutter: flutterOpts);
+        options = const AndroidAppOptions(flutter: flutterOpts);
 
         final invocation =
             options.toGradleAssembleTestInvocation(isWindows: true);
@@ -82,13 +82,13 @@ void main() {
       });
 
       test('on macOS', () {
-        final flutterOpts = FlutterAppOptions(
+        const flutterOpts = FlutterAppOptions(
           target: '/Users/john/app/integration_test/app_test.dart',
           buildMode: BuildMode.debug,
           flavor: 'dev',
           dartDefines: dartDefines,
         );
-        options = AndroidAppOptions(flutter: flutterOpts);
+        options = const AndroidAppOptions(flutter: flutterOpts);
 
         final invocation =
             options.toGradleAssembleTestInvocation(isWindows: false);
@@ -109,7 +109,7 @@ void main() {
     late IOSAppOptions options;
 
     group('correctly encodes default xcodebuild invocation for simulator', () {
-      final flutterOpts = FlutterAppOptions(
+      const flutterOpts = FlutterAppOptions(
         target: 'integration_test/app_test.dart',
         buildMode: BuildMode.debug,
         flavor: null,
@@ -185,7 +185,7 @@ void main() {
     group(
       'correctly encodes customized xcodebuild invocation for real device',
       () {
-        final flutterOpts = FlutterAppOptions(
+        const flutterOpts = FlutterAppOptions(
           target: 'integration_test/app_test.dart',
           buildMode: BuildMode.release,
           flavor: 'prod',

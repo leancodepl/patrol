@@ -111,10 +111,10 @@ void main() {
     ($) async {
       await expectLater(
         () async => $.pumpWidgetAndSettle(
-          MaterialApp(
+          const MaterialApp(
             home: Scaffold(
               body: IndexedStack(
-                children: const [
+                children: [
                   Center(child: Text('first child')),
                   Center(child: CircularProgressIndicator()),
                 ],
@@ -176,9 +176,9 @@ void main() {
 
 Future<void> smallPump(PatrolTester $) async {
   await $.pumpWidgetAndSettle(
-    MaterialApp(
+    const MaterialApp(
       home: Row(
-        children: const [
+        children: [
           Icon(Icons.front_hand),
           Text('Hello', key: Key('helloText')),
         ],

@@ -21,6 +21,7 @@ dependencies:
   vm_service: ^11.0.0
 
 dev_dependencies:
+  custom_lint: ^0.5.7
   flutter_test:
     sdk: flutter
   leancode_lint: ^7.0.0+1

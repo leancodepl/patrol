@@ -31,6 +31,7 @@ dependencies:
 
 dev_dependencies:
   build_runner: ^2.4.6
+  custom_lint: ^0.5.7
   json_serializable: ^6.7.1
   leancode_lint: ^7.0.0+1
 

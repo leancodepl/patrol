@@ -58,7 +58,7 @@ class PatrolServiceExtensionApi {
       final extensionName = 'ext.flutter.$methodName';
       final r = await _service.callServiceExtension(
         extensionName,
-        isolateId: _isolate.value!.id, //Verify
+        isolateId: _isolate.value!.id,
         args: args,
       );
 
@@ -70,8 +70,8 @@ class PatrolServiceExtensionApi {
       final res = resultFactory(json['result']);
 
       return ApiSuccess(res);
-    } catch (e, t) {
-      return ApiFailure(e, t);
+    } catch (err, st) {
+      return ApiFailure(err, st);
     }
   }
 }

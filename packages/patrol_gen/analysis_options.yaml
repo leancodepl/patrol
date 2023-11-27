@@ -1,9 +1,7 @@
-include: package:leancode_lint/analysis_options_package.yaml
-
-linter:
-  rules:
-    public_member_api_docs: false 
+include: package:leancode_lint/analysis_options.yaml
 
 analyzer:
+  plugins:
+    - custom_lint
   exclude:
     - lib/**/*.g.dart
