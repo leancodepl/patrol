@@ -33,33 +33,6 @@ class FlutterTool {
   bool _hotRestartActive = false;
   bool _logsActive = false;
 
-  Future<void> attachForHotRestartByUrl({
-    required String url,
-    required String target,
-    required String deviceId,
-    required Map<String, String> dartDefines,
-    required bool openDevtools,
-  }) async {
-    await attachByUrl(
-      url: url,
-      target: target,
-      deviceId: deviceId,
-      dartDefines: dartDefines,
-      openBrowser: openDevtools,
-    );
-  }
-
-  Future<void> attachLogs({
-    required String deviceId,
-    Completer<String>? observationUrlCompleter,
-  }) async {
-    if (io.stdin.hasTerminal) {
-      _enableInteractiveMode();
-    }
-
-    await logs(deviceId, observationUrlCompleter: observationUrlCompleter);
-  }
-
   /// Forwards logs and hot restarts the app when "r" is pressed.
   Future<void> attachForHotRestart({
     required String deviceId,
@@ -67,101 +40,36 @@ class FlutterTool {
     required String? appId,
     required Map<String, String> dartDefines,
     required bool openDevtools,
+    bool attachUsingUrl = false,
   }) async {
     if (io.stdin.hasTerminal) {
       _enableInteractiveMode();
     }
 
-    await Future.wait<void>([
-      logs(deviceId),
-      attach(
-        deviceId: deviceId,
+    if (attachUsingUrl) {
+      final urlCompleter = Completer<String>();
+      await logs(deviceId, observationUrlCompleter: urlCompleter);
+      final url = await urlCompleter.future;
+      await attach(
         target: target,
+        deviceId: deviceId,
         appId: appId,
+        debugUrl: url,
         dartDefines: dartDefines,
         openBrowser: openDevtools,
-      ),
-    ]);
-  }
-
-  @visibleForTesting
-  Future<void> attachByUrl({
-    required String url,
-    required String target,
-    required String deviceId,
-    required Map<String, String> dartDefines,
-    required bool openBrowser,
-  }) async {
-    await _disposeScope.run((scope) async {
-      final process = await _processManager.start(
-        [
-          ...['flutter', 'attach'],
-          '--no-version-check',
-          '--debug',
-          ...['--device-id', deviceId],
-          ...['--debug-url', url],
-          for (final dartDefine in dartDefines.entries) ...[
-            '--dart-define',
-            '${dartDefine.key}=${dartDefine.value}',
-          ],
-        ],
-      )
-        ..disposedBy(scope);
-
-      _stdin.listen((event) {
-        final char = String.fromCharCode(event.first);
-        if (char == 'r' || char == 'R') {
-          if (!_hotRestartActive) {
-            _logger.warn('Hot Restart: not attached to the app yet!');
-            return;
-          }
-
-          _logger.success('Hot Restart for entrypoint ${basename(target)}...');
-          process.stdin.add('R'.codeUnits);
-        }
-      }).disposedBy(scope);
-
-      final completer = Completer<void>();
-      scope.addDispose(() async {
-        if (!completer.isCompleted) {
-          _logger.detail('Killed before attached to the app');
-          completer.complete();
-        }
-      });
-
-      _logger.detail('Hot Restart: waiting for attach to the app...');
-      process.listenStdOut((line) {
-        if (line == 'Flutter run key commands.' && !completer.isCompleted) {
-          _logger.success(
-            'Hot Restart: attached to the app (press "r" to restart)',
-          );
-          _hotRestartActive = true;
-
-          if (!_logsActive) {
-            _logger.warn('Hot Restart: logs are not connected yet');
-          }
-          completer.complete();
-        }
-
-        if (openBrowser &&
-            line.startsWith('The Flutter DevTools debugger and profiler')) {
-          final url = _getDevtoolsUrl(line);
-          unawaited(_openDevtoolsPage(url));
-        }
-
-        _logger.detail('\t: $line');
-      }).disposedBy(scope);
-
-      process.listenStdErr((line) {
-        if (line.startsWith('Waiting for another flutter command')) {
-          // This is a warning that we can ignore
-          return;
-        }
-        _logger.err('\t$line');
-      }).disposedBy(scope);
-
-      await completer.future;
-    });
+      );
+    } else {
+      await Future.wait<void>([
+        logs(deviceId),
+        attach(
+          target: target,
+          deviceId: deviceId,
+          appId: appId,
+          dartDefines: dartDefines,
+          openBrowser: openDevtools,
+        ),
+      ]);
+    }
   }
 
   /// Attaches to the running app. Returns a [Future] that completes when the
@@ -174,6 +82,7 @@ class FlutterTool {
   Future<void> attach({
     required String deviceId,
     required String target,
+    String? debugUrl,
     required String? appId,
     required Map<String, String> dartDefines,
     required bool openBrowser,
@@ -185,6 +94,7 @@ class FlutterTool {
           '--no-version-check',
           '--debug',
           ...['--device-id', deviceId],
+          if (debugUrl != null) ...['--debug-url', debugUrl],
           if (appId != null) ...['--app-id', appId],
           ...['--target', target],
           for (final dartDefine in dartDefines.entries) ...[
@@ -337,8 +247,7 @@ class FlutterTool {
   }
 
   String _getDevtoolsUrl(String line) {
-    final startIndex = line.indexOf('http');
-    final url = line.substring(startIndex);
+    final url = _getObservationUrl(line);
     return url.replaceAllMapped('?uri=', (_) => '/patrol_ext?uri=');
   }
 

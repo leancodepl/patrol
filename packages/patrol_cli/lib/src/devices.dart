@@ -34,7 +34,6 @@ class DeviceFinder {
       if (!targetPlatform.startsWith('android-') &&
           targetPlatform != 'ios' &&
           targetPlatform != 'darwin') {
-        //TODO verify darwin
         continue;
       }
 
@@ -173,7 +172,7 @@ class Device {
       case TargetPlatform.iOS:
         return name;
       case TargetPlatform.macOS:
-        return name; //TODO verify
+        return name;
     }
   }
 
@@ -188,7 +187,7 @@ class Device {
       case TargetPlatform.iOS:
         return '$platformDescription $name';
       case TargetPlatform.macOS:
-        return '$platformDescription $name'; //TODO verify
+        return '$platformDescription $name';
     }
   }
 
@@ -199,7 +198,7 @@ class Device {
       case TargetPlatform.iOS:
         return real ? 'device' : 'simulator';
       case TargetPlatform.macOS:
-        return 'desktop'; //TODO verify
+        return 'desktop';
     }
   }
 }

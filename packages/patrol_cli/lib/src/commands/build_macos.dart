@@ -35,7 +35,7 @@ class BuildMacOSCommand extends PatrolCommand {
     usesLabelOption();
     usesWaitOption();
 
-    usesIOSOptions(); //TODO
+    usesMacOSOptions();
   }
 
   final TestFinder _testFinder;

@@ -276,10 +276,11 @@ class DevelopCommand extends PatrolCommand {
   }) async {
     Future<void> Function() action;
     Future<void> Function()? finalizer;
-    final completer = Completer<String>();
+    String? appId;
 
     switch (device.targetPlatform) {
       case TargetPlatform.android:
+        appId = android.packageName;
         action = () =>
             _androidTestBackend.execute(android, device, interruptible: true);
         final package = android.packageName;
@@ -287,9 +288,11 @@ class DevelopCommand extends PatrolCommand {
           finalizer = () => _androidTestBackend.uninstall(package, device);
         }
       case TargetPlatform.macOS:
+        appId = macos.bundleId;
         action = () async =>
             _macosTestBackend.execute(macos, device, interruptible: true);
       case TargetPlatform.iOS:
+        appId = iosOpts.bundleId;
         action = () async =>
             _iosTestBackend.execute(iosOpts, device, interruptible: true);
         final bundleId = iosOpts.bundleId;
@@ -304,18 +307,13 @@ class DevelopCommand extends PatrolCommand {
 
     try {
       final future = action();
-      await _flutterTool.attachLogs(
-        deviceId: device.id,
-        observationUrlCompleter: completer,
-      );
-      final url = await completer.future;
-
-      await _flutterTool.attachForHotRestartByUrl(
-        url: url,
+      await _flutterTool.attachForHotRestart(
         deviceId: device.id,
         target: flutterOpts.target,
+        appId: appId,
         dartDefines: flutterOpts.dartDefines,
         openDevtools: true,
+        attachUsingUrl: device.targetPlatform == TargetPlatform.macOS,
       );
 
       await future;
