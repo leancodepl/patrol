@@ -114,6 +114,13 @@ class DevelopCommand extends PatrolCommand {
 
     final devices = await _deviceFinder.find(stringsArg('device'));
     final device = devices.single;
+
+    // `flutter logs` doesn't work on macOS, so we don't support it for now
+    // https://github.com/flutter/flutter/issues/138974
+    if (device.targetPlatform == TargetPlatform.macOS) {
+      throwToolExit('macOS is not supported with develop');
+    }
+
     _logger.detail('Received device: ${device.resolvedName}');
 
     final packageName = stringArg('package-name') ?? config.android.packageName;
