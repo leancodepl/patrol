@@ -71,7 +71,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: dev/e2e_app
+        working-directory: dev/e2e_app/android
 
     steps:
       - name: Clone repository
@@ -126,7 +126,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: packages/patrol/ios
+        working-directory: dev/e2e_app/ios
 
     steps:
       - name: Clone repository
