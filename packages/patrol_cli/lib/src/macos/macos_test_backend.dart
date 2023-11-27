@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io' show Process;
 
@@ -174,48 +175,6 @@ class MacOSTestBackend {
     });
   }
 
-  Future<void> uninstall(String appId, Device device) async {
-    //TODO
-    //
-    // if (device.real) {
-    //   // uninstall from iOS device
-    //   await _processManager.run(
-    //     [
-    //       'ideviceinstaller',
-    //       ...['--udid', device.id],
-    //       ...['--uninstall', appId],
-    //     ],
-    //     runInShell: true,
-    //   );
-    // } else {
-    //   // uninstall from iOS simulator
-    //   await _processManager.run(
-    //     ['xcrun', 'simctl', 'uninstall', device.id, appId],
-    //     runInShell: true,
-    //   );
-    // }
-
-    // // TODO: Not being removed https://github.com/leancodepl/patrol/issues/1094
-    // final testApp = '$appId.RunnerUITests.xctrunner';
-    // if (device.real) {
-    //   // uninstall from iOS device
-    //   await _processManager.run(
-    //     [
-    //       'ideviceinstaller',
-    //       ...['--udid', device.id],
-    //       ...['--uninstall', testApp],
-    //     ],
-    //     runInShell: true,
-    //   );
-    // } else {
-    //   // uninstall from iOS simulator
-    //   await _processManager.run(
-    //     ['xcrun', 'simctl', 'uninstall', device.id, testApp],
-    //     runInShell: true,
-    //   );
-    // }
-  }
-
   Future<String> xcTestRunPath({
     required String scheme,
     required String sdkVersion,
@@ -247,11 +206,6 @@ class MacOSTestBackend {
   }
 
   Future<String> getSdkVersion() async {
-    // See the versions yourself:
-    //
-    // $ xcodebuild -showsdks -json | jq '.[] | {sdkVersion, platform} | select(.platform=="iphoneos")'
-    // $ xcodebuild -showsdks -json | jq '.[] | {sdkVersion, platform} | select(.platform=="iphonesimulator")'
-
     final processResult = await _processManager.run(
       ['xcodebuild', '-showsdks', '-json'],
       runInShell: true,

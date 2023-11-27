@@ -214,11 +214,6 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
         if (packageName != null) {
           action = () => _androidTestBackend.uninstall(packageName, device);
         }
-      case TargetPlatform.macOS:
-        final bundleId = macosOpts.bundleId;
-        if (bundleId != null) {
-          action = () => _macosTestBackend.uninstall(bundleId, device);
-        }
       case TargetPlatform.iOS:
         final bundleId = iosOpts.bundleId;
         if (bundleId != null) {
@@ -228,6 +223,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
                 device: device,
               );
         }
+      case TargetPlatform.macOS:
     }
 
     try {
@@ -243,15 +239,11 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
     MacOSAppOptions macosOpts,
     Device device,
   ) async {
-    Future<void> Function() buildAction;
-    switch (device.targetPlatform) {
-      case TargetPlatform.android:
-        buildAction = () => _androidTestBackend.build(androidOpts);
-      case TargetPlatform.macOS:
-        buildAction = () => _macosTestBackend.build(macosOpts);
-      case TargetPlatform.iOS:
-        buildAction = () => _iosTestBackend.build(iosOpts);
-    }
+    final buildAction = switch (device.targetPlatform) {
+      TargetPlatform.android => () => _androidTestBackend.build(androidOpts),
+      TargetPlatform.macOS => () => _macosTestBackend.build(macosOpts),
+      TargetPlatform.iOS => () => _iosTestBackend.build(iosOpts),
+    };
 
     try {
       await buildAction();
@@ -284,10 +276,6 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
         }
       case TargetPlatform.macOS:
         action = () async => _macosTestBackend.execute(macos, device);
-        final bundle = macos.bundleId;
-        if (bundle != null && uninstall) {
-          finalizer = () => _macosTestBackend.uninstall(bundle, device);
-        }
       case TargetPlatform.iOS:
         action = () async => _iosTestBackend.execute(ios, device);
         final bundleId = ios.bundleId;
