@@ -87,7 +87,7 @@ jobs:
           echo "EXCLUDED_TESTS=$TESTS_TO_EXCLUDE" >> "$GITHUB_OUTPUT"
           echo "EXCLUDED_TESTS=$target_paths" >> "$GITHUB_ENV"
 
-      - name: Run tests
+      - name: Run UI tests
         id: tests_step
         run: |
           xcrun simctl io booted recordVideo --codec=h264 "${{ matrix.device_model }}.mp4" &
