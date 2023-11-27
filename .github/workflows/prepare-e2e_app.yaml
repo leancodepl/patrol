@@ -164,7 +164,6 @@ jobs:
         run: flutter precache --ios
 
       - name: Generate iOS build files
-        working-directory: packages/patrol/example
         run: flutter build ios --config-only --simulator
 
       - name: Start iOS simulator
@@ -177,7 +176,6 @@ jobs:
           shutdown_after_job: true
 
       - name: Run unit tests
-        working-directory: packages/patrol/example/ios
         run: |
           set -o pipefail
           xcodebuild test \
@@ -200,7 +198,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: packages/patrol
+        working-directory: dev/e2e_app
 
     steps:
       - name: Clone repository
@@ -234,12 +232,3 @@ jobs:
       - name: dart format
         if: success() || failure()
         run: dart format --set-exit-if-changed .
-
-      - name: flutter pub publish --dry-run
-        if: success() || failure()
-        run: flutter pub publish --dry-run
-
-      - name: flutter pub get (example app)
-        if: success() || failure()
-        working-directory: ./packages/patrol/example
-        run: flutter pub get
