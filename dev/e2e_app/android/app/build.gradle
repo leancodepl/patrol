@@ -60,6 +60,6 @@ flutter {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.9.20"
     androidTestUtil "androidx.test:orchestrator:1.4.2"
 }
