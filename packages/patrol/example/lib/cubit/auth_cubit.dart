@@ -10,7 +10,7 @@ class AuthCubit extends Cubit<AuthState> {
 
   final FirebaseAuth? _firebaseAuth;
   final GoogleSignIn? _googleSignIn;
-  late final StreamSubscription<User?> _authStateChangesSubscription;
+  StreamSubscription<User?>? _authStateChangesSubscription;
 
   void init() {
     if (_firebaseAuth == null || _googleSignIn == null) {
@@ -67,7 +67,7 @@ class AuthCubit extends Cubit<AuthState> {
 
   @override
   Future<void> close() {
-    _authStateChangesSubscription.cancel();
+    _authStateChangesSubscription?.cancel();
     return super.close();
   }
 }
