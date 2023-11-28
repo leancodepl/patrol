@@ -31,8 +31,8 @@ Future<void> initApp() async {
 
   if (firebaseEnabled) {
     await _initFirebase();
+    await _askForLocationPermission();
   }
-  await _askForLocationPermission();
 }
 
 void _setUpTheme() {
