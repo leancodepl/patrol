@@ -98,7 +98,7 @@ class TestCommand extends PatrolCommand {
       _logger.detail('Received iOS flavor: $iosFlavor');
     }
     if (macosFlavor != null) {
-      _logger.detail('Received macos flavor: $macosFlavor');
+      _logger.detail('Received macOS flavor: $macosFlavor');
     }
 
     final devices = await _deviceFinder.find(stringsArg('device'));
