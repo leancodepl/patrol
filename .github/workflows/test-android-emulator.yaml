@@ -24,7 +24,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: packages/patrol/example
+        working-directory: dev/e2e_app
 
     steps:
       - name: Clone repository

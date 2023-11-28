@@ -1,43 +1,26 @@
-# patrol example app
+# patrol_challenge
 
-This application demonstrates most of Patrol's features.
+App with the quiz for Fluttercon
 
-## Building
+### Set up
 
-Make sure to use the compatible Patrol CLI version. The easiest way is to run:
+This project is a simple quiz Flutter app. It uses flavors.
 
-```console
-$ dart pub global activate --source path packages/patrol_cli && patrol
-```
-
-from the repository root.
-
-Once you have the right Patrol CLI version, building artifacts for testing is easy.
-
-### Android
-
-Run in the example app's root:
-
-```console
-$ patrol build android
-```
-
-This builds 2 APKs:
-- the app under test: `<example_root>/build/app/outputs/apk/debug/app-debug.apk`
-- the instrumentation app: `<example_root>/build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk`
-
-### iOS device
-
-Run in the example app's root:
-
-```console
-$ patrol build ios --release
-```
-
-### iOS simulator
-
-Run in the example app's root:
+To run tests:
 
 ```
-$ patrol build ios --debug --simulator
+dart run patrol test
 ```
+
+### Google credentials
+
+This app allows the user to sign in with Google. This requires some
+configuration, but it's not needed if you don't plan on using this feature.
+
+**Android**
+
+Place `google-services.json` in `android/app`.
+
+**iOS**
+
+Place `GoogleService-Info.plist` in `ios/Runner`.

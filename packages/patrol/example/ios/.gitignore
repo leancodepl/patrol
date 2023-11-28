@@ -32,8 +32,3 @@ Runner/GeneratedPluginRegistrant.*
 !default.mode2v3
 !default.pbxuser
 !default.perspectivev3
-
-# Files for XCTestHTMLReport
-TestResults
-TestResults.xcresult
-index.html
