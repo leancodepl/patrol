@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:io';
+import 'dart:io' as io;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -43,7 +43,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           },
         );
 
-        if (Platform.isAndroid) {
+        if (io.Platform.isAndroid) {
           await _notificationsPlugin
               .resolvePlatformSpecificImplementation<
                   AndroidFlutterLocalNotificationsPlugin>()
@@ -52,7 +52,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               .resolvePlatformSpecificImplementation<
                   AndroidFlutterLocalNotificationsPlugin>()
               ?.requestExactAlarmsPermission();
-        } else if (Platform.isMacOS) {
+        } else if (io.Platform.isMacOS) {
           await _notificationsPlugin
               .resolvePlatformSpecificImplementation<
                   MacOSFlutterLocalNotificationsPlugin>()

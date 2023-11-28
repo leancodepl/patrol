@@ -1,4 +1,4 @@
-import 'dart:io' show Platform;
+import 'dart:io' as io;
 
 import 'package:flutter/material.dart';
 
@@ -6,10 +6,10 @@ import 'common.dart';
 
 void main() {
   patrol('open maps', ($) async {
-    late String mapsId;
-    if (Platform.isIOS) {
+    final String mapsId;
+    if (io.Platform.isIOS) {
       mapsId = 'com.apple.Maps';
-    } else if (Platform.isAndroid) {
+    } else if (io.Platform.isAndroid) {
       mapsId = 'com.google.android.apps.maps';
     } else {
       throw UnsupportedError('Unsupported platform');
@@ -32,9 +32,9 @@ void main() {
 
   patrol('open browser', ($) async {
     final String browserId;
-    if (Platform.isIOS) {
+    if (io.Platform.isIOS) {
       browserId = 'com.apple.mobilesafari';
-    } else if (Platform.isAndroid) {
+    } else if (io.Platform.isAndroid) {
       browserId = 'com.android.chrome';
     } else {
       throw UnsupportedError('Unsupported platform');
