@@ -1,3 +1,4 @@
+# TODO: Check what's the minimum version of macOS
 platform :osx, '11'
 
 # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
