@@ -1,4 +1,4 @@
-#if PATROL_ENABLED
+// #if PATROL_ENABLED
 
 import Foundation
 
@@ -12,46 +12,46 @@ final class AutomatorServer: NativeAutomatorServer {
         self.onAppReady = onAppReady
     }
     
-    func initialize() async throws {}
+    func initialize() throws {}
     
-    func configure(request: ConfigureRequest) async throws {
+    func configure(request: ConfigureRequest) throws {
         automator.configure(timeout: TimeInterval(request.findTimeoutMillis / 1000))
     }
     
     // MARK: General
     
-    func pressHome() async throws {
-        return try await runCatching {
+    func pressHome() throws {
+        return try runCatching {
             throw PatrolError.methodNotImplemented("pressHome")
         }
     }
     
-    func pressBack() async throws {
-        return try await runCatching {
+    func pressBack() throws {
+        return try runCatching {
             throw PatrolError.methodNotImplemented("pressBack")
         }
     }
     
-    func pressRecentApps() async throws {
-        return try await runCatching {
+    func pressRecentApps() throws {
+        return try runCatching {
             throw PatrolError.methodNotImplemented("pressRecentApps")
         }
     }
     
-    func doublePressRecentApps() async throws {
-        return try await runCatching {
+    func doublePressRecentApps() throws {
+        return try runCatching {
             throw PatrolError.methodNotImplemented("doublePressRecentApps")
         }
     }
     
-    func openApp(request: OpenAppRequest) async throws {
-        return try await runCatching {
-            try await automator.openApp(request.appId)
+    func openApp(request: OpenAppRequest) throws {
+        return try runCatching {
+            try automator.openApp(request.appId)
         }
     }
     
-    func openQuickSettings(request: OpenQuickSettingsRequest) async throws {
-        return try await runCatching {
+    func openQuickSettings(request: OpenQuickSettingsRequest) throws {
+        return try runCatching {
             throw PatrolError.methodNotImplemented("openQuickSettings")
         }
     }
@@ -60,145 +60,145 @@ final class AutomatorServer: NativeAutomatorServer {
     
     func getNativeViews(
         request: GetNativeViewsRequest
-    ) async throws -> GetNativeViewsResponse {
-        return try await runCatching {
+    ) throws -> GetNativeViewsResponse {
+        return try runCatching {
             throw PatrolError.methodNotImplemented("getNativeViews")
         }
     }
     
-    func tap(request: TapRequest) async throws {
-        return try await runCatching {
+    func tap(request: TapRequest) throws {
+        return try runCatching {
             throw PatrolError.methodNotImplemented("tap")
         }
     }
     
-    func doubleTap(request: TapRequest) async throws {
-        return try await runCatching {
+    func doubleTap(request: TapRequest) throws {
+        return try runCatching {
             throw PatrolError.methodNotImplemented("doubleTap")
         }
     }
     
-    func enterText(request: EnterTextRequest) async throws {
-        return try await runCatching {
+    func enterText(request: EnterTextRequest) throws {
+        return try runCatching {
             throw PatrolError.methodNotImplemented("enterText")
         }
     }
     
-    func swipe(request: SwipeRequest) async throws {
-        return try await runCatching {
+    func swipe(request: SwipeRequest) throws {
+        return try runCatching {
             throw PatrolError.methodNotImplemented("swipe")
         }
     }
     
-    func waitUntilVisible(request: WaitUntilVisibleRequest) async throws {
-        return try await runCatching {
+    func waitUntilVisible(request: WaitUntilVisibleRequest) throws {
+        return try runCatching {
             throw PatrolError.methodNotImplemented("waitUntilVisible")
         }
     }
     
     // MARK: Services
     
-    func enableAirplaneMode() async throws {
-        return try await runCatching {
+    func enableAirplaneMode() throws {
+        return try runCatching {
             throw PatrolError.methodNotImplemented("enableAirplaneMode")
         }
     }
     
-    func disableAirplaneMode() async throws {
-        return try await runCatching {
+    func disableAirplaneMode() throws {
+        return try runCatching {
             throw PatrolError.methodNotImplemented("disableAirplaneMode")
         }
     }
     
-    func enableWiFi() async throws {
-        return try await runCatching {
+    func enableWiFi() throws {
+        return try runCatching {
             throw PatrolError.methodNotImplemented("enableWiFi")
         }
     }
     
-    func disableWiFi() async throws {
-        return try await runCatching {
+    func disableWiFi() throws {
+        return try runCatching {
             throw PatrolError.methodNotImplemented("disableWiFi")
         }
     }
     
-    func enableCellular() async throws {
-        return try await runCatching {
+    func enableCellular() throws {
+        return try runCatching {
             throw PatrolError.methodNotImplemented("enableCellular")
         }
     }
     
-    func disableCellular() async throws {
-        return try await runCatching {
+    func disableCellular() throws {
+        return try runCatching {
             throw PatrolError.methodNotImplemented("disableCellular")
         }
     }
     
-    func getNativeUITree(request: GetNativeUITreeRequest) async throws -> GetNativeUITreeRespone {
+    func getNativeUITree(request: GetNativeUITreeRequest) throws -> GetNativeUITreeRespone {
         //TODO: Implement
         return GetNativeUITreeRespone(roots: [])
     }
     
-    func enableBluetooth() async throws {
-        return try await runCatching {
-            try await automator.enableBluetooth()
+    func enableBluetooth() throws {
+        return try runCatching {
+            try automator.enableBluetooth()
         }
     }
     
-    func disableBluetooth() async throws {
-        return try await runCatching {
-            try await automator.disableBluetooth()
+    func disableBluetooth() throws {
+        return try runCatching {
+            try automator.disableBluetooth()
         }
     }
     
-    func enableDarkMode(request: DarkModeRequest) async throws {
-        return try await runCatching {
+    func enableDarkMode(request: DarkModeRequest) throws {
+        return try runCatching {
             throw PatrolError.methodNotImplemented("enableDarkMode")
         }
     }
     
-    func disableDarkMode(request: DarkModeRequest) async throws {
-        return try await runCatching {
+    func disableDarkMode(request: DarkModeRequest) throws {
+        return try runCatching {
             throw PatrolError.methodNotImplemented("disableDarkMode")
         }
     }
     
     // MARK: Notifications
     
-    func openNotifications() async throws {
-        return try await runCatching {
-            try await automator.openNotifications()
+    func openNotifications() throws {
+        return try runCatching {
+            try automator.openNotifications()
         }
     }
     
-    func closeNotifications() async throws {
-        return try await runCatching {
+    func closeNotifications() throws {
+        return try runCatching {
             throw PatrolError.methodNotImplemented("closeNotifications")
         }
     }
     
-    func closeHeadsUpNotification() async throws {
-        return try await runCatching {
+    func closeHeadsUpNotification() throws {
+        return try runCatching {
             throw PatrolError.methodNotImplemented("closeHeadsUpNotification")
         }
     }
     
     func getNotifications(
         request: GetNotificationsRequest
-    ) async throws -> GetNotificationsResponse {
-        return try await runCatching {
+    ) throws -> GetNotificationsResponse {
+        return try runCatching {
             throw PatrolError.methodNotImplemented("getNotifications")
         }
     }
     
-    func tapOnNotification(request: TapOnNotificationRequest) async throws {
-        return try await runCatching {
+    func tapOnNotification(request: TapOnNotificationRequest) throws {
+        return try runCatching {
             if let index = request.index {
-                try await automator.tapOnNotification(
+                try automator.tapOnNotification(
                     byIndex: index
                 )
             } else if let selector = request.selector {
-                try await automator.tapOnNotification(
+                try automator.tapOnNotification(
                     bySubstring: selector.textContains ?? String()
                 )
             } else {
@@ -211,9 +211,9 @@ final class AutomatorServer: NativeAutomatorServer {
     
     func isPermissionDialogVisible(
         request: PermissionDialogVisibleRequest
-    ) async throws -> PermissionDialogVisibleResponse {
-        return try await runCatching {
-            let visible = await automator.isPermissionDialogVisible(
+    ) throws -> PermissionDialogVisibleResponse {
+        return try runCatching {
+            let visible = automator.isPermissionDialogVisible(
                 timeout: TimeInterval(request.timeoutMillis / 1000)
             )
             
@@ -221,29 +221,29 @@ final class AutomatorServer: NativeAutomatorServer {
         }
     }
     
-    func handlePermissionDialog(request: HandlePermissionRequest) async throws {
-        return try await runCatching {
+    func handlePermissionDialog(request: HandlePermissionRequest) throws {
+        return try runCatching {
             throw PatrolError.methodNotImplemented("handlePermissionDialog")
         }
     }
     
-    func setLocationAccuracy(request: SetLocationAccuracyRequest) async throws {
-        return try await runCatching {
+    func setLocationAccuracy(request: SetLocationAccuracyRequest) throws {
+        return try runCatching {
             throw PatrolError.methodNotImplemented("setLocationAccuracy")
         }
     }
     
-    func debug() async throws {
-        return try await runCatching {
+    func debug() throws {
+        return try runCatching {
             throw PatrolError.methodNotImplemented("debug")
         }
     }
     
-    private func runCatching<T>(_ block: () async throws -> T) async throws -> T {
+    private func runCatching<T>(_ block: () throws -> T) throws -> T {
         // TODO: Use an interceptor (like on Android)
         // See: https://github.com/grpc/grpc-swift/issues/1148
         do {
-            return try await block()
+            return try block()
         } catch let err as PatrolError {
             Logger.shared.e(err.description)
             throw err
@@ -252,9 +252,9 @@ final class AutomatorServer: NativeAutomatorServer {
         }
     }
     
-    func markPatrolAppServiceReady() async throws {
+    func markPatrolAppServiceReady() throws {
         onAppReady(true)
     }
 }
 
-#endif
+// #endif

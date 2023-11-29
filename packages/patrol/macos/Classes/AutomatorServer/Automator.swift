@@ -1,4 +1,4 @@
-#if PATROL_ENABLED
+// #if PATROL_ENABLED
 import XCTest
 
 class Automator {
@@ -20,8 +20,8 @@ class Automator {
         self.timeout = timeout
     }
     
-    func openApp(_ bundleId: String) async throws {
-        try await runAction("opening app with id \(bundleId)") {
+    func openApp(_ bundleId: String) throws {
+        try runAction("opening app with id \(bundleId)") {
             let app = try self.getApp(withBundleId: bundleId)
             app.activate()
         }
@@ -40,8 +40,8 @@ class Automator {
     
     // MARK: Services
     
-    func enableBluetooth() async throws {
-        try await runSystemPreferencesAction("enabling bluetooth") {
+    func enableBluetooth() throws {
+        try runSystemPreferencesAction("enabling bluetooth") {
             let bluetoothMenuItem = self.systemPreferences.menuItems["Bluetooth"]
             var exists = bluetoothMenuItem.waitForExistence(timeout: self.timeout)
             guard exists else {
@@ -63,8 +63,8 @@ class Automator {
         }
     }
     
-    func disableBluetooth() async throws {
-        try await runSystemPreferencesAction("disabling bluetooth") {
+    func disableBluetooth() throws {
+        try runSystemPreferencesAction("disabling bluetooth") {
             let bluetoothMenuItem = self.systemPreferences.menuItems["Bluetooth"]
             var exists = bluetoothMenuItem.waitForExistence(timeout: self.timeout)
             guard exists else {
@@ -89,8 +89,8 @@ class Automator {
     func getNativeViews(
         byText text: String,
         inApp bundleId: String
-    ) async throws -> [NativeView] {
-        try await runAction("getting native views matching \(text)") {
+    ) throws -> [NativeView] {
+        try runAction("getting native views matching \(text)") {
             let app = try self.getApp(withBundleId: bundleId)
             
             // The below selector is an equivalent of `app.descendants(matching: .any)[text]`
@@ -114,8 +114,8 @@ class Automator {
     
     // MARK: Notifications
     
-    func openNotifications() async throws {
-        try await runAction("opening notifications") {
+    func openNotifications() throws {
+        try runAction("opening notifications") {
             let clockItem = self.controlCenter.statusItems["com.apple.menuextra.clock"]
             var exists = clockItem.waitForExistence(timeout: self.timeout)
             guard exists else {
@@ -126,28 +126,28 @@ class Automator {
         }
     }
     
-    func tapOnNotification(byIndex index: Int) async throws {
-        try await runAction("tapping on notification at index \(index)") {
+    func tapOnNotification(byIndex index: Int) throws {
+        try runAction("tapping on notification at index \(index)") {
             throw PatrolError.methodNotImplemented("tapOnNotification(byIndex)")
         }
     }
     
-    func tapOnNotification(bySubstring substring: String) async throws { 
-        try await runAction("tapping on notification containing text \(format: substring)") {
+    func tapOnNotification(bySubstring substring: String) throws { 
+        try runAction("tapping on notification containing text \(format: substring)") {
             throw PatrolError.methodNotImplemented("tapOnNotification(bySubstring)")
         }
     }
     
     // MARK: Permissions
     
-    func isPermissionDialogVisible(timeout: TimeInterval) async -> Bool {
+    func isPermissionDialogVisible(timeout: TimeInterval) -> Bool {
         return false // TODO:
     }
     
     private func runSystemPreferencesAction(_ log: String, block: @escaping () throws -> Void)
-    async throws
+    throws
     {
-        try await runAction(log) {
+        try runAction(log) {
             self.systemPreferences.activate()
             
             try block()
@@ -156,15 +156,15 @@ class Automator {
         }
     }
     
-    private func runAction<T>(_ log: String, block: @escaping () throws -> T) async rethrows -> T {
-        return try await MainActor.run {
+    private func runAction<T>(_ log: String, block: @escaping () throws -> T) rethrows -> T {
+          return try DispatchQueue.main.sync {
             Logger.shared.i("\(log)...")
             let result = try block()
             Logger.shared.i("done \(log)")
             Logger.shared.i("result: \(result)")
             return result
+          }
         }
-    }
 }
 
 extension NativeView {
@@ -184,4 +184,4 @@ extension NativeView {
     }
 }
 
-#endif
+// #endif

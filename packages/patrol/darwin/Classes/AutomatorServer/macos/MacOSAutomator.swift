@@ -1,0 +1,1 @@
+class MacOSAutomator: Automator {}
