@@ -1,9 +1,9 @@
-import 'package:patrol_gen/src/generators/ios/ios_config.dart';
+import 'package:patrol_gen/src/generators/darwin/darwin_config.dart';
 import 'package:patrol_gen/src/generators/output_file.dart';
 import 'package:patrol_gen/src/schema.dart';
 
-class IOSContractsGenerator {
-  OutputFile generate(Schema schema, IOSConfig config) {
+class DarwinContractsGenerator {
+  OutputFile generate(Schema schema, DarwinConfig config) {
     final buffer = StringBuffer()..write(_contentPrefix(config));
 
     for (final enumDefinition in schema.enums) {
@@ -19,7 +19,7 @@ class IOSContractsGenerator {
     );
   }
 
-  String _contentPrefix(IOSConfig config) {
+  String _contentPrefix(DarwinConfig config) {
     return '''
 ///
 //  swift-format-ignore-file

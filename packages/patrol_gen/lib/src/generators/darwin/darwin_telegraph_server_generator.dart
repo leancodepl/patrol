@@ -1,9 +1,9 @@
-import 'package:patrol_gen/src/generators/ios/ios_config.dart';
+import 'package:patrol_gen/src/generators/darwin/darwin_config.dart';
 import 'package:patrol_gen/src/generators/output_file.dart';
 import 'package:patrol_gen/src/schema.dart';
 
-class IOSTelegraphServerGenerator {
-  OutputFile generate(Service service, IOSConfig config) {
+class DarwinTelegraphServerGenerator {
+  OutputFile generate(Service service, DarwinConfig config) {
     final buffer = StringBuffer()
       ..write(_contentPrefix(config))
       ..write(_generateServerProtocol(service))
@@ -20,7 +20,7 @@ class IOSTelegraphServerGenerator {
     );
   }
 
-  String _contentPrefix(IOSConfig config) {
+  String _contentPrefix(DarwinConfig config) {
     return '''
 ///
 //  swift-format-ignore-file

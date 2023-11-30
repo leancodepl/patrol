@@ -1,7 +1,7 @@
 import 'package:path/path.dart' as path;
 
-class IOSConfig {
-  IOSConfig({
+class DarwinConfig {
+  DarwinConfig({
     required this.outputDirectory,
   }) : contractsFilename = path.join(outputDirectory, 'Contracts.swift');
 
