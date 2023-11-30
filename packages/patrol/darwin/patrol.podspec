@@ -14,13 +14,10 @@ Runs tests that use flutter_test and patrol APIs as native macOS / iOS integrati
   s.author           = { 'Bartek Pacia' => 'bartek.pacia@leancode.pl' }
   s.source           = { :http => 'https://github.com/leancodepl/patrol/tree/master/packages/patrol' }
   s.source_files = 'Classes/**/*'
-  s.public_header_files = 'Classes/**/*.h'
   s.ios.dependency 'Flutter'
   s.osx.dependency 'FlutterMacOS'
   s.ios.deployment_target = '11.0'
   s.osx.deployment_target = '10.13'
-  s.platform = :ios, '11.0'
-  s.platform = :osx, '10.13'
   s.weak_framework = 'XCTest'
   s.ios.framework  = 'UIKit'
   s.osx.framework  = 'AppKit'

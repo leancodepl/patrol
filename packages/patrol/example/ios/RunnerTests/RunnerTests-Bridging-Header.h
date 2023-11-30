@@ -3,4 +3,4 @@
 //  expose to Swift.
 //
 
-#import "PatrolIntegrationTestRunner.h"
+#import "PatrolIntegrationTestIosRunner.h"

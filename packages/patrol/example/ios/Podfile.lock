@@ -10,6 +10,7 @@ PODS:
   - HTTPParserC (2.9.4)
   - patrol (0.0.1):
     - Flutter
+    - FlutterMacOS
     - Telegraph (~> 0.30.0)
   - permission_handler_apple (9.1.1):
     - Flutter
@@ -24,7 +25,7 @@ DEPENDENCIES:
   - flutter_local_notifications (from `.symlinks/plugins/flutter_local_notifications/ios`)
   - flutter_timezone (from `.symlinks/plugins/flutter_timezone/ios`)
   - geolocator_apple (from `.symlinks/plugins/geolocator_apple/ios`)
-  - patrol (from `.symlinks/plugins/patrol/ios`)
+  - patrol (from `.symlinks/plugins/patrol/darwin`)
   - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
   - webview_flutter_wkwebview (from `.symlinks/plugins/webview_flutter_wkwebview/ios`)
 
@@ -44,7 +45,7 @@ EXTERNAL SOURCES:
   geolocator_apple:
     :path: ".symlinks/plugins/geolocator_apple/ios"
   patrol:
-    :path: ".symlinks/plugins/patrol/ios"
+    :path: ".symlinks/plugins/patrol/darwin"
   permission_handler_apple:
     :path: ".symlinks/plugins/permission_handler_apple/ios"
   webview_flutter_wkwebview:
@@ -57,7 +58,7 @@ SPEC CHECKSUMS:
   flutter_timezone: ffb07bdad3c6276af8dada0f11978d8a1f8a20bb
   geolocator_apple: cc556e6844d508c95df1e87e3ea6fa4e58c50401
   HTTPParserC: aea14c3d2d4ac5beb3988781daa36dfa62e0d9ef
-  patrol: 792c0bb6cc4d552fc8b37f49266341c39e659b4d
+  patrol: 513c6a1a28d031c7966807112dfd48b1f0c9f09e
   permission_handler_apple: e76247795d700c14ea09e3a2d8855d41ee80a2e6
   Telegraph: 12576b119324138e4929792af9e5a1085c2ecbc1
   webview_flutter_wkwebview: 2e2d318f21a5e036e2c3f26171342e95908bd60a
