@@ -43,5 +43,7 @@ flutter:
         pluginClass: PatrolPlugin
       ios:
         pluginClass: PatrolPlugin
+        sharedDarwinSource: true
       macos:
         pluginClass: PatrolPlugin
+        sharedDarwinSource: true

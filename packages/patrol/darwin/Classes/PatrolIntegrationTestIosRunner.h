@@ -57,7 +57,7 @@
       [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];                            \
     }                                                                                                               \
                                                                                                                     \
-    NSLog(@"Got %lu Dart tests: %@", dartTests.count, dartTests);                                                   \
+    NSLog(@"Got %lu AAAAAA Dart tests: %@", dartTests.count, dartTests);                                                   \
                                                                                                                     \
     NSMutableArray<NSInvocation *> *invocations = [[NSMutableArray alloc] init];                                    \
                                                                                                                     \

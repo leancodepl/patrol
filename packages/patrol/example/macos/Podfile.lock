@@ -1,29 +1,32 @@
 PODS:
+  - CocoaAsyncSocket (7.6.5)
   - flutter_local_notifications (0.0.1):
     - FlutterMacOS
   - flutter_timezone (0.1.0):
     - FlutterMacOS
   - FlutterMacOS (1.0.0)
-  - FlyingFox (0.12.3):
-    - FlyingSocks (~> 0.12.3)
-  - FlyingSocks (0.12.3)
   - geolocator_apple (1.2.0):
     - FlutterMacOS
+  - HTTPParserC (2.9.4)
   - patrol (0.0.1):
     - FlutterMacOS
-    - FlyingFox (~> 0.12.0)
+    - Telegraph (~> 0.30.0)
+  - Telegraph (0.30.0):
+    - CocoaAsyncSocket (~> 7.6)
+    - HTTPParserC (~> 2.9)
 
 DEPENDENCIES:
   - flutter_local_notifications (from `Flutter/ephemeral/.symlinks/plugins/flutter_local_notifications/macos`)
   - flutter_timezone (from `Flutter/ephemeral/.symlinks/plugins/flutter_timezone/macos`)
   - FlutterMacOS (from `Flutter/ephemeral`)
   - geolocator_apple (from `Flutter/ephemeral/.symlinks/plugins/geolocator_apple/macos`)
-  - patrol (from `Flutter/ephemeral/.symlinks/plugins/patrol/macos`)
+  - patrol (from `Flutter/ephemeral/.symlinks/plugins/patrol/darwin`)
 
 SPEC REPOS:
   trunk:
-    - FlyingFox
-    - FlyingSocks
+    - CocoaAsyncSocket
+    - HTTPParserC
+    - Telegraph
 
 EXTERNAL SOURCES:
   flutter_local_notifications:
@@ -35,16 +38,17 @@ EXTERNAL SOURCES:
   geolocator_apple:
     :path: Flutter/ephemeral/.symlinks/plugins/geolocator_apple/macos
   patrol:
-    :path: Flutter/ephemeral/.symlinks/plugins/patrol/macos
+    :path: Flutter/ephemeral/.symlinks/plugins/patrol/darwin
 
 SPEC CHECKSUMS:
+  CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   flutter_local_notifications: 3805ca215b2fb7f397d78b66db91f6a747af52e4
   flutter_timezone: 6b906d1740654acb16e50b639835628fea851037
   FlutterMacOS: 8f6f14fa908a6fb3fba0cd85dbd81ec4b251fb24
-  FlyingFox: f052489b7f3853b1a974557661d6754654d46687
-  FlyingSocks: f095b16c074068e49e0c87e9eb944c4ec1fcd5bd
   geolocator_apple: 72a78ae3f3e4ec0db62117bd93e34523f5011d58
-  patrol: 7f90ef5a40fd0ee5b841f9250e5fbb516643f28d
+  HTTPParserC: aea14c3d2d4ac5beb3988781daa36dfa62e0d9ef
+  patrol: 111a76d21d6a79010b1319ca430bc83a77ceb6e4
+  Telegraph: 12576b119324138e4929792af9e5a1085c2ecbc1
 
 PODFILE CHECKSUM: 590b05b8d33ff4fc90b7ff84a6d5df5dbe98510f
 

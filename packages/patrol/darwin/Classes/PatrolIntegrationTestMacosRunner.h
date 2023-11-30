@@ -18,9 +18,13 @@
   +(NSArray<NSInvocation *> *)testInvocations {                                                                  \
     /* Start native automation gRPC server */                                                                    \
     PatrolServer *server = [[PatrolServer alloc] init];                                                          \
-    [server startWithCompletionHandler:^(NSError * err) {                                                        \
-      NSLog(@"Server loop done, error: %@", err);                                                                \
+    NSError *_Nullable __autoreleasing *_Nullable err = NULL;                                                    \
+    [server startWithCompletionHandler:^(NSError * _Nullable err) {                                              \
+      if (err != NULL) {                                                                                         \
+        NSLog(@"patrolServer.start(): failed, err: %@", err);                                                    \
+      }                                                                                                          \
     }];                                                                                                          \
+                                                                                                                 \
                                                                                                                  \
     NSLog(@"Create PatrolAppServiceClient");                                                                     \
                                                                                                                  \
@@ -50,25 +54,24 @@
                                                                                                                  \
     NSLog(@"listDartTests");                                                                                     \
                                                                                                                  \
-    __block NSArray<NSString *> *dartTestFiles = NULL;                                                           \
-    [appServiceClient                                                                                            \
-        listDartTestsWithCompletionHandler:^(NSArray<NSString *> *_Nullable dartTests, NSError *_Nullable err) { \
-          if (err != NULL) {                                                                                     \
-            NSLog(@"listDartTests(): failed, err: %@", err);                                                     \
-          }                                                                                                      \
-                                                                                                                 \
-          dartTestFiles = dartTests;                                                                             \
-        }];                                                                                                      \
+    __block NSArray<NSString *> *dartTests = NULL;                                                           \
+    [appServiceClient listDartTestsWithCompletion:^(NSArray<NSString *> *_Nullable tests, NSError *_Nullable err) { \
+      if (err != NULL) {                                                                                            \
+        NSLog(@"listDartTests(): failed, err: %@", err);                                                            \
+      }                                                                                                             \
+                                                                                                                    \
+      dartTests = tests;                                                                                            \
+    }];                                                                                                             \
                                                                                                                  \
     NSLog(@"Spin the runloop waiting");                                                                          \
                                                                                                                  \
     /* Spin the runloop waiting until the app reports the Dart tests it contains */                              \
-    while (!dartTestFiles) {                                                                                     \
+    while (!dartTests) {                                                                                     \
       [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:5.0]];                         \
      /* @throw [NSException exceptionWithName:@"TODO exception1234" reason:@"Test" userInfo:nil];           */   \
     }                                                                                                            \
                                                                                                                  \
-    NSLog(@"Got %lu Dart tests: %@", dartTestFiles.count, dartTestFiles);                                        \
+    NSLog(@"Got %lu Dart tests: %@", dartTests.count, dartTests);                                        \
                                                                                                                  \
     NSMutableArray<NSInvocation *> *invocations = [[NSMutableArray alloc] init];                                 \
                                                                                                                  \
@@ -80,17 +83,17 @@
      *  Step 2. Create invocations to the generated methods and return them                                      \
      */                                                                                                          \
                                                                                                                  \
-    for (NSString * dartTestFile in dartTestFiles) {                                                             \
+    for (NSString * dartTest in dartTests) {                                                             \
       /* Step 1 - dynamically create test cases */                                                               \
                                                                                                                  \
       IMP implementation = imp_implementationWithBlock(^(id _self) {                                             \
         [[[XCUIApplication alloc] init] launch];                                                                 \
                                                                                                                  \
-        __block RunDartTestResponse2 *response = NULL;                                                            \
-        [appServiceClient runDartTestWithName:dartTestFile                                                       \
-                            completionHandler:^(RunDartTestResponse2 *_Nullable r, NSError *_Nullable err) {      \
+        __block ObjCRunDartTestResponse *response = NULL;                                                            \
+        [appServiceClient runDartTestWithName:dartTest                                                       \
+                            completion:^(ObjCRunDartTestResponse *_Nullable r, NSError *_Nullable err) {      \
                               if (err != NULL) {                                                                 \
-                                NSLog(@"runDartTestWithName(%@): failed, err: %@", dartTestFile, err);           \
+                                NSLog(@"runDartTestWithName(%@): failed, err: %@", dartTest, err);           \
                               }                                                                                  \
                                                                                                                  \
                               response = r;                                                                      \
@@ -103,7 +106,7 @@
                                                                                                                  \
         XCTAssertTrue(response.passed, @"%@", response.details);                                                 \
       });                                                                                                        \
-      NSString *selectorName = [PatrolUtils createMethodNameFromPatrolGeneratedGroup:dartTestFile];              \
+      NSString *selectorName = [PatrolUtils createMethodNameFromPatrolGeneratedGroup:dartTest];              \
       SEL selector = NSSelectorFromString(selectorName);                                                         \
       class_addMethod(self, selector, implementation, "v@:");                                                    \
                                                                                                                  \
