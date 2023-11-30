@@ -1,9 +1,5 @@
 import Foundation
-#if os(iOS)
 import Telegraph
-#elseif os(macOS)
-import FlyingFox
-#endif
 
 @objc public class PatrolServer: NSObject {
   private static let envPortKey = "PATROL_PORT"
@@ -13,12 +9,7 @@ import FlyingFox
   #if PATROL_ENABLED
     private let port: Int
     private let automator: Automator
-    #if os(iOS)
-      private let server: Server
-    #elseif os(macOS)
-      private let server: HTTPServer
-    #endif
-//    private let dispatchGroup = DispatchGroup()
+    private let server: Server
   #endif
 
   @objc
@@ -46,11 +37,10 @@ import FlyingFox
     #if PATROL_ENABLED
       Logger.shared.i("PATROL_ENABLED flag is defined")
       self.port = passedPort
+      self.server = Server()
       #if os(iOS)
         self.automator = IOSAutomator()
-        self.server = Server()
       #elseif os(macOS)
-        self.server = HTTPServer(address: .loopback(port: UInt16(self.port)))
         self.automator = MacOSAutomator()
       #endif
     #else
@@ -61,29 +51,17 @@ import FlyingFox
   @objc public func start() async throws {
     #if PATROL_ENABLED
       Logger.shared.i("Starting server...")
-      
+
       let provider = AutomatorServer(automator: automator) { appReady in
         Logger.shared.i("App reported that it is ready")
         self.appReady = appReady
       }
-      
-      #if os(iOS)
-        provider.setupRoutes(server: server)
 
-        try server.start(port: port)
-      #elseif os(macOS)
-        await provider.setupRoutes(server: server)
-      
-        Task { try await server.start() }
-        try await server.waitUntilListening()
-        let address = await server.listeningAddress
-      #endif
-      
+      provider.setupRoutes(server: server)
 
-      Logger.shared.i("Server started on :\(address)")
-     
-//      dispatchGroup.enter()
-//      dispatchGroup.wait()
+      try server.start(port: port)
+
+      Logger.shared.i("Server started on http://0.0.0.0:\(port)")
     #endif
   }
 }

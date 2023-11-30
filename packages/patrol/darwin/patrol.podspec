@@ -17,9 +17,9 @@ Runs tests that use flutter_test and patrol APIs as native macOS / iOS integrati
   s.ios.dependency 'Flutter'
   s.osx.dependency 'FlutterMacOS'
   s.ios.deployment_target = '11.0'
-  s.osx.deployment_target = '10.15'
+  s.osx.deployment_target = '10.13'
   s.platform = :ios, '11.0'
-  s.platform = :osx, '10.15'
+  s.platform = :osx, '10.13'
   s.weak_framework = 'XCTest'
   s.ios.framework  = 'UIKit'
   s.osx.framework  = 'AppKit'
@@ -28,6 +28,5 @@ Runs tests that use flutter_test and patrol APIs as native macOS / iOS integrati
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386' }
   s.swift_version = '5.0'
 
-  s.ios.dependency 'Telegraph', '~> 0.30.0'
-  s.osx.dependency 'FlyingFox', '~> 0.12.0'
+  s.dependency 'Telegraph', '~> 0.30.0'
 end

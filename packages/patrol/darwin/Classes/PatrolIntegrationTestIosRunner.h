@@ -17,7 +17,7 @@
                                                                                                                     \
   +(NSArray<NSInvocation *> *)testInvocations {                                                                     \
     /* Start native automation server */                                                                            \
-    IOSPatrolServer *server = [[IOSPatrolServer alloc] init];                                                             \
+    PatrolServer *server = [[PatrolServer alloc] init];                                                             \
                                                                                                                     \
     NSError *_Nullable __autoreleasing *_Nullable err = NULL;                                                       \
     [server startAndReturnError:err];                                                                               \

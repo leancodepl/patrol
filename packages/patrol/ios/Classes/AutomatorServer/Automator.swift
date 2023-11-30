@@ -1,4 +1,4 @@
-//#if PATROL_ENABLED
+#if PATROL_ENABLED
   import XCTest
   import os
 
