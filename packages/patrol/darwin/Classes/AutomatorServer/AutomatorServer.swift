@@ -251,7 +251,7 @@
       request: PermissionDialogVisibleRequest
     ) throws -> PermissionDialogVisibleResponse {
       return try runCatching {
-        let visible = automator.isPermissionDialogVisible(
+        let visible = try automator.isPermissionDialogVisible(
           timeout: TimeInterval(request.timeoutMillis / 1000)
         )
 

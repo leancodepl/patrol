@@ -527,7 +527,7 @@ class IOSAutomator: Automator {
 
     // MARK: Permissions
 
-    func isPermissionDialogVisible(timeout: TimeInterval) -> Bool {
+    func isPermissionDialogVisible(timeout: TimeInterval) throws -> Bool {
       return runAction("checking if permission dialog is visible") {
         let systemAlerts = self.springboard.alerts
         let labels = ["OK", "Allow", "Allow once", "Allow While Using App", "Don’t Allow"]

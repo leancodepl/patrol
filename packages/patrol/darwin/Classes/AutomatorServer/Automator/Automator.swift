@@ -56,7 +56,7 @@
     func tapOnNotification(bySubstring substring: String) throws
 
     // MARK: Permissions
-    func isPermissionDialogVisible(timeout: TimeInterval) -> Bool
+    func isPermissionDialogVisible(timeout: TimeInterval) throws -> Bool
     func allowPermissionWhileUsingApp() throws
     func allowPermissionOnce() throws
     func denyPermission() throws
