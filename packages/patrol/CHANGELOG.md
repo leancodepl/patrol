@@ -1,3 +1,9 @@
+## 3.1.0
+
+- Implement `patrolSetUp()` and `patrolTearDown()`, which are equivalents of 
+	vanilla `setUp()` and `tearDown()` but work with Patrol's native automation
+	and test bundling feature (#1967) (#1721)
+
 ## 3.0.3
 
 - Implement `$.native.swipe()` on iOS (#1927)
