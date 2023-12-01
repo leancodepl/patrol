@@ -113,9 +113,9 @@ jobs:
       - name: Build example app with Flutter tool
         run: flutter build apk --debug
 
-  prepare-ios:
+  prepare-darwin:
     runs-on: ${{ matrix.os }}
-    name: iOS on ${{ matrix.os }}
+    name: darwin on ${{ matrix.os }}
 
     strategy:
       fail-fast: false
@@ -126,7 +126,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: packages/patrol/ios
+        working-directory: packages/patrol/darwin
 
     steps:
       - name: Clone repository
