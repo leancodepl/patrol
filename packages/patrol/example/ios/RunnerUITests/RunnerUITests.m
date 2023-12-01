@@ -23,13 +23,10 @@ static NSString *_selectedTest = nil;
 }
 
 + (BOOL)instancesRespondToSelector:(SEL)aSelector {
-  NSLog(@"DBG: Called instancesRespondToSelector with arg: %@", NSStringFromSelector(aSelector));
-
   [self setSelectedTest:NSStringFromSelector(aSelector)];
   [self defaultTestSuite]; // calls testInvocations
 
   BOOL result = [super instancesRespondToSelector:aSelector];
-  NSLog(@"DBG: instancesRespondToSelector will return: %d", result);
   return true;
 }
 
