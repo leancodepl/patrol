@@ -7,7 +7,6 @@
 @import AppKit;
 #endif
 
-
 @implementation PatrolUtils
 
 + (NSString *)createMethodNameFromPatrolGeneratedGroup:(NSString *)dartGroupName {
