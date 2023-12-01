@@ -1,0 +1,36 @@
+name: e2e_app
+description: A new Flutter project.
+publish_to: none
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.2.0 <4.0.0'
+  flutter: '>=3.16.0'
+
+dependencies:
+  cupertino_icons: ^1.0.6
+  flutter:
+    sdk: flutter
+  flutter_local_notifications: ^16.1.0
+  flutter_timezone: ^1.0.8
+  geolocator: ^10.1.0
+  permission_handler: ^10.4.5
+  timezone: ^0.9.2
+  webview_flutter: ^4.4.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  leancode_lint: ^7.0.0+1
+  patrol:
+    path: ../../packages/patrol
+
+flutter:
+  uses-material-design: true
+
+patrol:
+  app_name: Patrol example
+  android:
+    package_name: pl.leancode.patrol.e2e_app
+  ios:
+    bundle_id: pl.leancode.patrol.Example

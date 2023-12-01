@@ -1,0 +1,234 @@
+name: prepare e2e_app
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '**'
+      - '!**.md' # ignore readmes
+      - '!**.mdx' # ignore docs
+
+jobs:
+  prepare-android-on-windows:
+    runs-on: ${{ matrix.os }}
+    name: Android on ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest]
+        flutter-version: ['3.16.x']
+        flutter-channel: ['stable']
+
+    defaults:
+      run:
+        working-directory: dev/e2e_app/android
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+          channel: ${{ matrix.flutter-channel }}
+
+      - name: Preload Flutter artifacts
+        run: flutter precache --android
+
+      - name: Generate Gradle wrapper
+        run: flutter build apk --config-only
+
+      - name: ktlint check
+        run: .\gradlew.bat :patrol:ktlintCheck
+
+      - name: ktlint format
+        run: .\gradlew.bat :patrol:ktlintFormat
+
+      - name: Build app with Gradle
+        run: .\gradlew.bat :app:assembleDebug
+
+      - name: Build app with Flutter tool
+        run: flutter build apk --debug
+
+  prepare-android-on-linux:
+    runs-on: ${{ matrix.os }}
+    name: Android on ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        flutter-version: ['3.16.x']
+        flutter-channel: ['stable']
+
+    defaults:
+      run:
+        working-directory: dev/e2e_app/android
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+          channel: ${{ matrix.flutter-channel }}
+
+      - name: Preload Flutter artifacts
+        run: flutter precache --android
+
+      - name: Generate Gradle wrapper
+        run: flutter build apk --config-only
+
+      - name: Run unit tests
+        if: success() || failure()
+        run: ./gradlew :patrol:testDebug
+
+      - name: ktlint check
+        if: success() || failure()
+        run: ./gradlew :patrol:ktlintCheck
+
+      - name: ktlint format
+        if: success() || failure()
+        run: ./gradlew :patrol:ktlintFormat
+
+      - name: Build app with Gradle
+        run: ./gradlew :app:assembleDebug
+
+      - name: Build app with Flutter tool
+        run: flutter build apk --debug
+
+  prepare-ios:
+    runs-on: ${{ matrix.os }}
+    name: iOS on ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest]
+        flutter-version: ['3.16.x']
+        flutter-channel: ['stable']
+
+    defaults:
+      run:
+        working-directory: dev/e2e_app/ios
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+
+      - name: Install tools
+        run: |
+          brew update
+          brew install swift-format
+          brew install clang-format
+          brew install xcbeautify
+
+      - name: swift-format lint
+        run: test -z $(swift-format lint --recursive --strict .)
+
+      - name: swift-format format
+        if: success() || failure()
+        run: |
+          swift-format format --recursive --in-place .
+          git update-index --refresh
+          git diff-index --quiet HEAD --
+
+      - name: clang-format
+        if: success() || failure()
+        run: |
+          find . -iname '*.h' -o -iname '*.m' | xargs -I {} clang-format --dry-run --Werror {}
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+          channel: ${{ matrix.flutter-channel }}
+
+      - name: Preload Flutter artifacts
+        run: flutter precache --ios
+
+      - name: Generate iOS build files
+        run: flutter build ios --config-only --simulator
+
+      - name: Start iOS simulator
+        uses: futureware-tech/simulator-action@v2
+        with:
+          model: iPhone 14
+          os: iOS
+          os_version: 16.2
+          erase_before_boot: true
+          shutdown_after_job: true
+
+      - name: Run unit tests
+        run: |
+          set -o pipefail
+          xcodebuild test \
+            -workspace Runner.xcworkspace \
+            -scheme Runner \
+            -only-testing RunnerTests \
+            -configuration Debug \
+            -sdk iphoneos -destination 'platform=iOS Simulator,name=iPhone 14' \
+            -derivedDataPath ../build/ios_unit | xcbeautify --renderer github-actions
+
+  prepare-flutter:
+    name: Flutter ${{ matrix.flutter-version }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        flutter-version: ['3.16.x']
+        flutter-channel: ['stable']
+
+    defaults:
+      run:
+        working-directory: dev/e2e_app
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+          channel: ${{ matrix.flutter-channel }}
+
+      - name: Set up Melos and activate workspace
+        working-directory: .
+        run: |
+          dart pub global activate melos
+          melos bootstrap
+
+      - name: flutter pub get
+        run: flutter pub get
+
+      - name: flutter test
+        if: success() || failure()
+        run: flutter test
+
+      - name: Run analyzer
+        if: success() || failure()
+        run: |
+          flutter analyze
+          dart run custom_lint
+
+      - name: dart format
+        if: success() || failure()
+        run: dart format --set-exit-if-changed .

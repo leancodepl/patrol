@@ -27,7 +27,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: packages/patrol/example
+        working-directory: dev/e2e_app
 
     steps:
       - name: Clone repository
@@ -126,14 +126,14 @@ jobs:
         with:
           name: Logs from ${{ matrix.device_model }}
           path: |
-            ${{ github.workspace }}/packages/patrol/example/all_simulator_logs.txt
+            ${{ github.workspace }}/dev/e2e_app/all_simulator_logs.txt
 
       - name: Upload captured video to artifacts
         if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
         uses: actions/upload-artifact@v3
         with:
           name: Captured video from ${{ matrix.device_model }}.mp4
-          path: ${{ github.workspace }}/packages/patrol/example/${{ matrix.device_model }}.mp4
+          path: ${{ github.workspace }}/dev/e2e_app/${{ matrix.device_model }}.mp4
 
   call_send_slack_message:
     name: Notify on Slack

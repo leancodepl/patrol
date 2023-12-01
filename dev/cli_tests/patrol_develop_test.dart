@@ -46,9 +46,7 @@ void main(List<String> args) async {
   Timer? inactivityTimer;
   final output = StringBuffer();
 
-  final exampleAppDirectory = io.Directory(
-    join('..', '..', 'packages', 'patrol', 'example'),
-  );
+  final exampleAppDirectory = io.Directory(join('..', 'e2e_app'));
   final exampleTestFile = io.File(
     join(exampleAppDirectory.path, 'integration_test', 'example_test.dart'),
   );

@@ -54,7 +54,10 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
 
     setUp(() {
       if (constants.hotRestartEnabled) {
-        // Sending results ends the test, which we don't want for Hot Restart
+        return;
+      }
+
+      if (global_state.currentTestIndividualName == 'patrol_test_explorer') {
         return;
       }
 
@@ -68,8 +71,7 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
       }
 
       final testName = global_state.currentTestIndividualName;
-      final isTestExplorer = testName == 'patrol_test_explorer';
-      if (isTestExplorer) {
+      if (testName == 'patrol_test_explorer') {
         return;
       } else {
         logger(

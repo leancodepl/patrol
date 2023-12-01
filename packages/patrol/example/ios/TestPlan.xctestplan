@@ -1,0 +1,29 @@
+{
+  "configurations" : [
+    {
+      "id" : "939A83E4-5059-4987-9414-28779DA07207",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "codeCoverage" : false,
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:Runner.xcodeproj",
+      "identifier" : "97C146ED1CF9000F007C117D",
+      "name" : "Runner"
+    }
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:Runner.xcodeproj",
+        "identifier" : "9835C3B62AEBE2B200AD4576",
+        "name" : "RunnerUITests"
+      }
+    }
+  ],
+  "version" : 1
+}

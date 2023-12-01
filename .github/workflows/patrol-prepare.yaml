@@ -140,8 +140,8 @@ jobs:
           brew install xcbeautify
 
       # Disabled because of generated protobuf code
-      #- name: swift-format lint
-      #  run: test -z $(swift-format lint --recursive --strict .)
+      - name: swift-format lint
+        run: test -z $(swift-format lint --recursive --strict .)
 
       - name: swift-format format
         if: success() || failure()
@@ -154,41 +154,6 @@ jobs:
         if: success() || failure()
         run: |
           find . -iname '*.h' -o -iname '*.m' | xargs -I {} clang-format --dry-run --Werror {}
-
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: ${{ matrix.flutter-version }}
-          channel: ${{ matrix.flutter-channel }}
-
-      - name: Preload Flutter artifacts
-        run: flutter precache --ios
-
-      - name: Generate iOS build files
-        working-directory: packages/patrol/example
-        run: flutter build ios --config-only --simulator
-
-      - name: Start iOS simulator
-        uses: futureware-tech/simulator-action@v2
-        with:
-          model: iPhone 14
-          os: iOS
-          os_version: 16.2
-          erase_before_boot: true
-          shutdown_after_job: true
-
-      - name: Run unit tests
-        working-directory: packages/patrol/example/ios
-        run: |
-          set -o pipefail
-          xcodebuild test \
-            -workspace Runner.xcworkspace \
-            -scheme Runner \
-            -only-testing RunnerTests \
-            -configuration Debug \
-            -sdk iphoneos -destination 'platform=iOS Simulator,name=iPhone 14' \
-            -derivedDataPath ../build/ios_unit | xcbeautify --renderer github-actions
-
   prepare-flutter:
     name: Flutter ${{ matrix.flutter-version }}
     runs-on: ubuntu-latest
@@ -224,7 +189,7 @@ jobs:
 
       - name: flutter test
         if: success() || failure()
-        run: flutter test --coverage
+        run: flutter test
 
       - name: Run analyzer
         if: success() || failure()
