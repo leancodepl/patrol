@@ -5,8 +5,6 @@
 //  source: schema.dart
 //
 
-import Telegraph
-
 protocol NativeAutomatorServer {
     func initialize() throws
     func configure(request: ConfigureRequest) throws

@@ -1,5 +1,4 @@
 import Foundation
-import Telegraph
 
 @objc public class PatrolServer: NSObject {
   private static let envPortKey = "PATROL_PORT"

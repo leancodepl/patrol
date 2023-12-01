@@ -26,5 +26,5 @@ Runs tests that use flutter_test and patrol APIs as native macOS / iOS integrati
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386' }
   s.swift_version = '5.0'
 
-  s.dependency 'Telegraph', '~> 0.30.0'
+  s.dependency 'CocoaAsyncSocket', '~> 7.6'
 end

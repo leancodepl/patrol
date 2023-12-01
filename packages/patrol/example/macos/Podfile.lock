@@ -7,14 +7,10 @@ PODS:
   - FlutterMacOS (1.0.0)
   - geolocator_apple (1.2.0):
     - FlutterMacOS
-  - HTTPParserC (2.9.4)
   - patrol (0.0.1):
+    - CocoaAsyncSocket (~> 7.6)
     - Flutter
     - FlutterMacOS
-    - Telegraph (~> 0.30.0)
-  - Telegraph (0.30.0):
-    - CocoaAsyncSocket (~> 7.6)
-    - HTTPParserC (~> 2.9)
 
 DEPENDENCIES:
   - flutter_local_notifications (from `Flutter/ephemeral/.symlinks/plugins/flutter_local_notifications/macos`)
@@ -26,8 +22,6 @@ DEPENDENCIES:
 SPEC REPOS:
   trunk:
     - CocoaAsyncSocket
-    - HTTPParserC
-    - Telegraph
 
 EXTERNAL SOURCES:
   flutter_local_notifications:
@@ -47,9 +41,7 @@ SPEC CHECKSUMS:
   flutter_timezone: 6b906d1740654acb16e50b639835628fea851037
   FlutterMacOS: 8f6f14fa908a6fb3fba0cd85dbd81ec4b251fb24
   geolocator_apple: 72a78ae3f3e4ec0db62117bd93e34523f5011d58
-  HTTPParserC: aea14c3d2d4ac5beb3988781daa36dfa62e0d9ef
-  patrol: 513c6a1a28d031c7966807112dfd48b1f0c9f09e
-  Telegraph: 12576b119324138e4929792af9e5a1085c2ecbc1
+  patrol: 3e21d514020dbee24b3e3383caac9e8e051292ac
 
 PODFILE CHECKSUM: 590b05b8d33ff4fc90b7ff84a6d5df5dbe98510f
 

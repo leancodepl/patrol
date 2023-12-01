@@ -29,8 +29,6 @@ class DarwinTelegraphServerGenerator {
 //  source: schema.dart
 //
 
-import Telegraph
-
 ''';
   }
 
