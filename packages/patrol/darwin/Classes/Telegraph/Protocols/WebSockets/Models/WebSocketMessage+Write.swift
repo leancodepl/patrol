@@ -8,8 +8,10 @@
 
 import Foundation
 
-public extension WebSocketMessage {
-  func write(to stream: WriteStream, headerTimeout: TimeInterval, payloadTimeout: TimeInterval) {
+extension WebSocketMessage {
+  public func write(
+    to stream: WriteStream, headerTimeout: TimeInterval, payloadTimeout: TimeInterval
+  ) {
     var header = Data()
 
     // Gather information
@@ -64,8 +66,8 @@ public extension WebSocketMessage {
 
 // MARK: WebSocketPayload data conversion
 
-public extension WebSocketPayload {
-  var data: Data? {
+extension WebSocketPayload {
+  public var data: Data? {
     switch self {
     case .binary(let data):
       return data

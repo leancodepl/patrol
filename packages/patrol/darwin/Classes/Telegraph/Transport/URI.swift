@@ -27,7 +27,9 @@ public struct URI: Hashable, Equatable {
 
   /// Creates a URI from the provided URL.
   public init?(url: URL) {
-    guard let components = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return nil }
+    guard let components = URLComponents(url: url, resolvingAgainstBaseURL: false) else {
+      return nil
+    }
     self.init(components: components)
   }
 
@@ -38,60 +40,60 @@ public struct URI: Hashable, Equatable {
   }
 }
 
-public extension URI {
+extension URI {
   /// The path of the URI. Always starts with a slash.
-  var path: String {
+  public var path: String {
     get { return components.path.ensurePrefix("/") }
     set { components.path = newValue }
   }
 
   /// The query string of the URI.
-  var query: String? {
+  public var query: String? {
     get { return components.query }
     set { components.query = newValue }
   }
 
   /// The query string items of the URI as an array.
-  var queryItems: [URLQueryItem]? {
+  public var queryItems: [URLQueryItem]? {
     get { return components.queryItems }
     set { components.queryItems = newValue }
   }
 }
 
-public extension URI {
+extension URI {
   /// Creates a URI from the provided percent encoded path and query string.
-  init(percentEncodedPath: String, percentEncodedQuery: String? = nil) {
+  public init(percentEncodedPath: String, percentEncodedQuery: String? = nil) {
     self.components = URLComponents()
     self.components.percentEncodedPath = percentEncodedPath
     self.components.percentEncodedQuery = percentEncodedQuery
   }
 
   /// The path of the URI percent encoded.
-  var percentEncodedPath: String {
+  public var percentEncodedPath: String {
     get { return components.percentEncodedPath.ensurePrefix("/") }
     set { components.percentEncodedPath = newValue }
   }
 
   /// The query string of the URI percent encoded.
-  var percentEncodedQuery: String? {
+  public var percentEncodedQuery: String? {
     get { return components.percentEncodedQuery }
     set { components.percentEncodedQuery = newValue }
   }
 
   /// A string representing the entire URI.
-  var string: String {
+  public var string: String {
     guard let encodedQuery = percentEncodedQuery else { return percentEncodedPath }
     return percentEncodedPath + "?" + encodedQuery
   }
 }
 
-public extension URI {
+extension URI {
   /// Returns a URI indicating the root.
-  static let root = URI(path: "/")
+  public static let root = URI(path: "/")
 
   /// Returns the part of the path that doesn't overlap.
   /// For example '/files/today' with argument '/files' returns 'today'.
-  func relativePath(from path: String) -> String? {
+  public func relativePath(from path: String) -> String? {
     var result = self.path
 
     // Remove the part of the path that overlaps
@@ -111,9 +113,9 @@ extension URI: CustomStringConvertible {
   }
 }
 
-private extension String {
+extension String {
   /// Ensures that this String has a specific prefix.
-  func ensurePrefix(_ prefix: String) -> String {
+  fileprivate func ensurePrefix(_ prefix: String) -> String {
     if hasPrefix(prefix) { return self }
     return prefix + self
   }

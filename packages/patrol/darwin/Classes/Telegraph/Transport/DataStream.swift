@@ -10,7 +10,7 @@ import Foundation
 
 public final class DataStream {
   private let data: Data
-  public private (set) var position: Int
+  public private(set) var position: Int
 
   /// Initializes a new DataStream.
   public init(data: Data = Data()) {

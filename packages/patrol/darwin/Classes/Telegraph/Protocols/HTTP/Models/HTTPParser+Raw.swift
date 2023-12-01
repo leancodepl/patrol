@@ -26,7 +26,10 @@ extension HTTPRawParser {
   }
 
   /// Parses the incoming data and returns how many bytes were parsed.
-  static func parse(parser: UnsafeMutablePointer<HTTPRawParser>, settings: UnsafeMutablePointer<HTTPRawParserSettings>, data: Data) -> Int {
+  static func parse(
+    parser: UnsafeMutablePointer<HTTPRawParser>,
+    settings: UnsafeMutablePointer<HTTPRawParserSettings>, data: Data
+  ) -> Int {
     return data.withUnsafeBytes {
       let pointer = $0.bindMemory(to: Int8.self).baseAddress
       return http_parser_execute(parser, settings, pointer, data.count)
@@ -133,7 +136,8 @@ extension HTTPError {
       self = .invalidVersion
     case HPE_INVALID_METHOD:
       self = .invalidMethod
-    case HPE_INVALID_URL, HPE_INVALID_HOST, HPE_INVALID_PORT, HPE_INVALID_PATH, HPE_INVALID_QUERY_STRING, HPE_INVALID_FRAGMENT:
+    case HPE_INVALID_URL, HPE_INVALID_HOST, HPE_INVALID_PORT, HPE_INVALID_PATH,
+      HPE_INVALID_QUERY_STRING, HPE_INVALID_FRAGMENT:
       self = .invalidURI
     case HPE_INVALID_HEADER_TOKEN:
       self = .invalidHeader

@@ -108,7 +108,8 @@ open class Server {
     // Call the delegate
     delegateQueue.async { [weak self] in
       guard let self = self else { return }
-      self.webSocketDelegate?.server(self, webSocketDidConnect: webSocketConnection, handshake: request)
+      self.webSocketDelegate?.server(
+        self, webSocketDidConnect: webSocketConnection, handshake: request)
     }
   }
 
@@ -118,7 +119,8 @@ open class Server {
     let response = try httpConfig.requestChain(request)
 
     // Check that a possible connection upgrade was handled properly
-    if let response = response, response.status != .switchingProtocols, request.isConnectionUpgrade {
+    if let response = response, response.status != .switchingProtocols, request.isConnectionUpgrade
+    {
       throw HTTPError.protocolNotSupported
     }
 
@@ -143,50 +145,50 @@ open class Server {
 
 // MARK: Server properties
 
-public extension Server {
+extension Server {
   /// The number of concurrent requests that can be handled.
-  var concurrency: Int {
+  public var concurrency: Int {
     get { return workerQueue.maxConcurrentOperationCount }
     set { workerQueue.maxConcurrentOperationCount = newValue }
   }
 
   /// The port on which the listener is accepting connections.
-  var port: Endpoint.Port {
+  public var port: Endpoint.Port {
     return listener?.port ?? 0
   }
 
   /// Indicates if the server is running.
-  var isRunning: Bool {
+  public var isRunning: Bool {
     return listener?.isListening ?? false
   }
 
   /// Indicates if the server is secure (HTTPS).
-  var isSecure: Bool {
+  public var isSecure: Bool {
     return tlsConfig != nil
   }
 
   /// The active HTTP connections.
-  var httpConnections: Set<HTTPConnection> {
+  public var httpConnections: Set<HTTPConnection> {
     return httpConnectionSet.toSet()
   }
 
   /// The number of active HTTP connections.
-  var httpConnectionCount: Int {
+  public var httpConnectionCount: Int {
     return httpConnectionSet.count
   }
 
   /// The active WebSocket connections.
-  var webSocketConnections: Set<WebSocketConnection> {
+  public var webSocketConnections: Set<WebSocketConnection> {
     return webSocketConnectionSet.toSet()
   }
 
   /// The WebSockets currently connected to this server.
-  var webSockets: [WebSocket] {
+  public var webSockets: [WebSocket] {
     return webSocketConnectionSet.toArray()
   }
 
   /// The number of active WebSocket connections.
-  var webSocketCount: Int {
+  public var webSocketCount: Int {
     return webSocketConnectionSet.count
   }
 }
@@ -213,17 +215,23 @@ extension Server: TCPListenerDelegate {
 
 extension Server: HTTPConnectionDelegate {
   /// Raised when an HTTP connection receives a request.
-  public func connection(_ httpConnection: HTTPConnection, handleIncomingRequest request: HTTPRequest, error: Error?) {
+  public func connection(
+    _ httpConnection: HTTPConnection, handleIncomingRequest request: HTTPRequest, error: Error?
+  ) {
     handleIncoming(request: request, connection: httpConnection, error: error)
   }
 
   /// Raised when an HTTP connection receives a response.
-  public func connection(_ httpConnection: HTTPConnection, handleIncomingResponse response: HTTPResponse, error: Error?) {
+  public func connection(
+    _ httpConnection: HTTPConnection, handleIncomingResponse response: HTTPResponse, error: Error?
+  ) {
     httpConnection.close(immediately: true)
   }
 
   /// Raised when an HTTP connection requests a connection upgrade.
-  public func connection(_ httpConnection: HTTPConnection, handleUpgradeByRequest request: HTTPRequest) {
+  public func connection(
+    _ httpConnection: HTTPConnection, handleUpgradeByRequest request: HTTPRequest
+  ) {
     handleUpgrade(request: request, connection: httpConnection)
   }
 
@@ -237,15 +245,20 @@ extension Server: HTTPConnectionDelegate {
 
 extension Server: WebSocketConnectionDelegate {
   /// Raised when a WebSocket connection receives a message.
-  public func connection(_ webSocketConnection: WebSocketConnection, didReceiveMessage message: WebSocketMessage) {
+  public func connection(
+    _ webSocketConnection: WebSocketConnection, didReceiveMessage message: WebSocketMessage
+  ) {
     delegateQueue.async { [weak self] in
       guard let self = self else { return }
-      self.webSocketDelegate?.server(self, webSocket: webSocketConnection, didReceiveMessage: message)
+      self.webSocketDelegate?.server(
+        self, webSocket: webSocketConnection, didReceiveMessage: message)
     }
   }
 
   /// Raised when a WebSocket connection sends a message.
-  public func connection(_ webSocketConnection: WebSocketConnection, didSendMessage message: WebSocketMessage) {
+  public func connection(
+    _ webSocketConnection: WebSocketConnection, didSendMessage message: WebSocketMessage
+  ) {
     delegateQueue.async { [weak self] in
       guard let self = self else { return }
       self.webSocketDelegate?.server(self, webSocket: webSocketConnection, didSendMessage: message)
@@ -253,12 +266,15 @@ extension Server: WebSocketConnectionDelegate {
   }
 
   /// Raised when a WebSocket connection is closed, optionally with an error.
-  public func connection(_ webSocketConnection: WebSocketConnection, didCloseWithError error: Error?) {
+  public func connection(
+    _ webSocketConnection: WebSocketConnection, didCloseWithError error: Error?
+  ) {
     webSocketConnectionSet.remove(webSocketConnection)
 
     delegateQueue.async { [weak self] in
       guard let self = self else { return }
-      self.webSocketDelegate?.server(self, webSocketDidDisconnect: webSocketConnection, error: error)
+      self.webSocketDelegate?.server(
+        self, webSocketDidDisconnect: webSocketConnection, error: error)
     }
   }
 }

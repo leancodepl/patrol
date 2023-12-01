@@ -8,9 +8,9 @@
 
 import Foundation
 
-public extension HTTPRequest {
+extension HTTPRequest {
   // Sets the host header to the specified host and port.
-  func setHostHeader(host: String?, port: Int? = nil) {
+  public func setHostHeader(host: String?, port: Int? = nil) {
     var value: String?
 
     if let host = host {

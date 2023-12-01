@@ -4,7 +4,7 @@
 
   protocol Automator {
     func configure(timeout: TimeInterval)
-    
+
     // MARK: General
     func pressHome() throws
     func openApp(_ bundleId: String) throws

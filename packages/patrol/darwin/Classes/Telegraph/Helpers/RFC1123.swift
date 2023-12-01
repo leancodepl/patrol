@@ -13,9 +13,9 @@ public struct RFC1123 {
   public static var formatter = DateFormatter.rfc1123
 }
 
-public extension DateFormatter {
+extension DateFormatter {
   /// Creates a new RFC1123 DateFormatter.
-  static var rfc1123: DateFormatter {
+  public static var rfc1123: DateFormatter {
     let formatter = DateFormatter()
     formatter.dateFormat = "EEE, dd MMM yyyy HH:mm:ss z"
     formatter.locale = Locale(identifier: "en_US_POSIX")
@@ -24,9 +24,9 @@ public extension DateFormatter {
   }
 }
 
-public extension Date {
+extension Date {
   /// Returns the date formatted as RFC1123.
-  var rfc1123: String {
+  public var rfc1123: String {
     return RFC1123.formatter.string(from: self)
   }
 }

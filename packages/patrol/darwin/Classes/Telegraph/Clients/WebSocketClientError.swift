@@ -19,9 +19,11 @@ extension WebSocketClientError: CustomStringConvertible {
   public var description: String {
     switch self {
     case .invalidURL: return "The provided URL is not a valid"
-    case .invalidScheme: return "The provided URL does not have a WebSocket scheme (http, https, ws or wss)"
+    case .invalidScheme:
+      return "The provided URL does not have a WebSocket scheme (http, https, ws or wss)"
     case .invalidHost: return "The provided URL should have a host"
-    case let .handshakeFailed(response): return "The handshake request failed with status \(response.status)"
+    case let .handshakeFailed(response):
+      return "The handshake request failed with status \(response.status)"
     }
   }
 }

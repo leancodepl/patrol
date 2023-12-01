@@ -18,8 +18,8 @@ public struct HTTPVersion {
   }
 }
 
-public extension HTTPVersion {
-  static let `default` = HTTPVersion(major: 1, minor: 1)
+extension HTTPVersion {
+  public static let `default` = HTTPVersion(major: 1, minor: 1)
 }
 
 extension HTTPVersion: CustomStringConvertible {

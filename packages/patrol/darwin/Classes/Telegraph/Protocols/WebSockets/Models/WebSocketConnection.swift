@@ -11,8 +11,10 @@ import Foundation
 // MARK: WebSocketConnectionDelegate
 
 public protocol WebSocketConnectionDelegate: AnyObject {
-  func connection(_ webSocketConnection: WebSocketConnection, didReceiveMessage message: WebSocketMessage)
-  func connection(_ webSocketConnection: WebSocketConnection, didSendMessage message: WebSocketMessage)
+  func connection(
+    _ webSocketConnection: WebSocketConnection, didReceiveMessage message: WebSocketMessage)
+  func connection(
+    _ webSocketConnection: WebSocketConnection, didSendMessage message: WebSocketMessage)
   func connection(_ webSocketConnection: WebSocketConnection, didCloseWithError error: Error?)
 }
 
@@ -90,7 +92,9 @@ open class WebSocketConnection: TCPConnection, WebSocket {
 
       // Send the message
       message.maskBit = config.maskMessages
-      message.write(to: socket, headerTimeout: config.writeHeaderTimeout, payloadTimeout: config.writePayloadTimeout)
+      message.write(
+        to: socket, headerTimeout: config.writeHeaderTimeout,
+        payloadTimeout: config.writePayloadTimeout)
 
       delegate?.connection(self, didSendMessage: message)
     } catch {
@@ -125,14 +129,14 @@ open class WebSocketConnection: TCPConnection, WebSocket {
   }
 }
 
-public extension WebSocketConnection {
+extension WebSocketConnection {
   /// The local endpoint information of the connection.
-  var localEndpoint: Endpoint? {
+  public var localEndpoint: Endpoint? {
     return socket.localEndpoint
   }
 
   /// The remote endpoint information of the connection.
-  var remoteEndpoint: Endpoint? {
+  public var remoteEndpoint: Endpoint? {
     return socket.remoteEndpoint
   }
 }

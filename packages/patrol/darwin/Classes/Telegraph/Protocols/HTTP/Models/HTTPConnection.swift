@@ -12,8 +12,10 @@ import Foundation
 
 public protocol HTTPConnectionDelegate: AnyObject {
   func connection(_ httpConnection: HTTPConnection, didCloseWithError error: Error?)
-  func connection(_ httpConnection: HTTPConnection, handleIncomingRequest request: HTTPRequest, error: Error?)
-  func connection(_ httpConnection: HTTPConnection, handleIncomingResponse response: HTTPResponse, error: Error?)
+  func connection(
+    _ httpConnection: HTTPConnection, handleIncomingRequest request: HTTPRequest, error: Error?)
+  func connection(
+    _ httpConnection: HTTPConnection, handleIncomingResponse response: HTTPResponse, error: Error?)
   func connection(_ httpConnection: HTTPConnection, handleUpgradeByRequest request: HTTPRequest)
 }
 
@@ -60,7 +62,8 @@ public class HTTPConnection: TCPConnection {
   /// Sends the request by writing it to the stream.
   public func send(request: HTTPRequest) {
     request.prepareForWrite()
-    request.write(to: socket, headerTimeout: config.writeHeaderTimeout, bodyTimeout: config.writeBodyTimeout)
+    request.write(
+      to: socket, headerTimeout: config.writeHeaderTimeout, bodyTimeout: config.writeBodyTimeout)
   }
 
   /// Sends the response by writing it to the stream.
@@ -77,7 +80,8 @@ public class HTTPConnection: TCPConnection {
 
     // Prepare and send the response
     response.prepareForWrite()
-    response.write(to: socket, headerTimeout: config.writeHeaderTimeout, bodyTimeout: config.writeBodyTimeout)
+    response.write(
+      to: socket, headerTimeout: config.writeHeaderTimeout, bodyTimeout: config.writeBodyTimeout)
 
     // Does the response request a connection upgrade?
     if response.isConnectionUpgrade {
@@ -139,14 +143,14 @@ public class HTTPConnection: TCPConnection {
   }
 }
 
-public extension HTTPConnection {
+extension HTTPConnection {
   /// The local endpoint information of the connection.
-  var localEndpoint: Endpoint? {
+  public var localEndpoint: Endpoint? {
     return socket.localEndpoint
   }
 
   /// The remote endpoint information of the connection.
-  var remoteEndpoint: Endpoint? {
+  public var remoteEndpoint: Endpoint? {
     return socket.remoteEndpoint
   }
 }

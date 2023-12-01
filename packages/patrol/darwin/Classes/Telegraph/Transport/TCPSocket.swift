@@ -6,8 +6,8 @@
 //  Copyright © 2017 Building42. All rights reserved.
 //
 
-import Foundation
 import CocoaAsyncSocket
+import Foundation
 
 // MARK: TCPSocketClose
 
@@ -180,7 +180,9 @@ extension TCPSocket: GCDAsyncSocketDelegate {
   }
 
   /// Raised when the socket is asking to evaluate the trust as part of the TLS handshake.
-  public func socket(_ sock: GCDAsyncSocket, didReceive trust: SecTrust, completionHandler: @escaping (Bool) -> Void) {
+  public func socket(
+    _ sock: GCDAsyncSocket, didReceive trust: SecTrust, completionHandler: @escaping (Bool) -> Void
+  ) {
     let trusted = tlsPolicy?.evaluate(trust: trust) ?? false
     completionHandler(trusted)
   }

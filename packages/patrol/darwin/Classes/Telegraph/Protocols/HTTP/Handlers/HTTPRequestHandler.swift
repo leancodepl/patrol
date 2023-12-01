@@ -12,8 +12,8 @@ public protocol HTTPRequestHandler {
   func respond(to request: HTTPRequest, nextHandler: HTTPRequest.Handler) throws -> HTTPResponse?
 }
 
-public extension HTTPRequest {
-  typealias Handler = (HTTPRequest) throws -> HTTPResponse?
+extension HTTPRequest {
+  public typealias Handler = (HTTPRequest) throws -> HTTPResponse?
 }
 
 extension Collection where Element == HTTPRequestHandler {

@@ -8,14 +8,14 @@
 
 import Foundation
 
-public extension HTTPConfig {
-  static var clientDefault: HTTPConfig {
+extension HTTPConfig {
+  public static var clientDefault: HTTPConfig {
     return HTTPConfig(requestHandlers: [])
   }
 }
 
-public extension WebSocketConfig {
-  static var clientDefault: WebSocketConfig {
+extension WebSocketConfig {
+  public static var clientDefault: WebSocketConfig {
     var config = WebSocketConfig()
     config.maskMessages = true
     config.pingInterval = 0

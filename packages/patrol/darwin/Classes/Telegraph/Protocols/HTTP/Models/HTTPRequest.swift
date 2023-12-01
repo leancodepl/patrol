@@ -16,8 +16,10 @@ open class HTTPRequest: HTTPMessage {
   public var params = Params()
 
   /// Creates a new HTTPRequest.
-  public init(_ method: HTTPMethod = .GET, uri: URI = .root, version: HTTPVersion = .default,
-              headers: HTTPHeaders = .empty, body: Data = Data()) {
+  public init(
+    _ method: HTTPMethod = .GET, uri: URI = .root, version: HTTPVersion = .default,
+    headers: HTTPHeaders = .empty, body: Data = Data()
+  ) {
     self.method = method
     self.uri = uri
     super.init(version: version, headers: headers, body: body)
@@ -41,6 +43,7 @@ open class HTTPRequest: HTTPMessage {
 extension HTTPRequest: CustomStringConvertible {
   public var description: String {
     let typeName = type(of: self)
-    return "<\(typeName): \(method) \(uri) \(version), headers: \(headers.count), body: \(body.count)>"
+    return
+      "<\(typeName): \(method) \(uri) \(version), headers: \(headers.count), body: \(body.count)>"
   }
 }

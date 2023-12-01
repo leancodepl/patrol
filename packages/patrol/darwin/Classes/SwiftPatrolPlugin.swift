@@ -1,11 +1,11 @@
 import Foundation
 
 #if os(iOS)
-import Flutter
-import UIKit
+  import Flutter
+  import UIKit
 #elseif os(macOS)
-import FlutterMacOS
-import AppKit
+  import FlutterMacOS
+  import AppKit
 #endif
 
 let kChannelName = "pl.leancode.patrol/main"

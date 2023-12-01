@@ -41,9 +41,9 @@ open class TLSPolicy {
 
 // MARK: URLSession helper
 
-public extension TLSPolicy {
+extension TLSPolicy {
   /// Evaluates the trust, returns a credential if it can be trusted or nil if not.
-  func evaluateSession(trust: SecTrust?) -> URLCredential? {
+  public func evaluateSession(trust: SecTrust?) -> URLCredential? {
     guard let trust = trust, evaluate(trust: trust) else { return nil }
     return URLCredential(trust: trust)
   }

@@ -20,12 +20,12 @@ public protocol WebSocket: AnyObject {
 
 // MARK: Default implementation
 
-public extension WebSocket {
-  func send(data: Data) {
+extension WebSocket {
+  public func send(data: Data) {
     send(message: WebSocketMessage(data: data))
   }
 
-  func send(text: String) {
+  public func send(text: String) {
     send(message: WebSocketMessage(text: text))
   }
 }

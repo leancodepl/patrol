@@ -12,9 +12,9 @@ import Foundation
   import MobileCoreServices
 #endif
 
-public extension FileManager {
+extension FileManager {
   /// Returns the mime type for a path extension (e.g. wasm).
-  func mimeType(pathExtension: String) -> String {
+  public func mimeType(pathExtension: String) -> String {
     // Check if there is an override for the extension
     switch pathExtension {
     case "wasm": return "application/wasm"
@@ -22,9 +22,10 @@ public extension FileManager {
     }
 
     // Let the system determine the proper mime-type
-    if
-      let uti = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, pathExtension as CFString, nil)?.takeRetainedValue(),
-      let mimeType = UTTypeCopyPreferredTagWithClass(uti, kUTTagClassMIMEType)?.takeRetainedValue() {
+    if let uti = UTTypeCreatePreferredIdentifierForTag(
+      kUTTagClassFilenameExtension, pathExtension as CFString, nil)?.takeRetainedValue(),
+      let mimeType = UTTypeCopyPreferredTagWithClass(uti, kUTTagClassMIMEType)?.takeRetainedValue()
+    {
       return mimeType as String
     }
 

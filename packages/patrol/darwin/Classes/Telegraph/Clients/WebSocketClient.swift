@@ -151,35 +151,35 @@ open class WebSocketClient: WebSocket {
 
 // MARK: WebSocket conformance
 
-public extension WebSocketClient {
+extension WebSocketClient {
   /// The local endpoint information, only available when connected.
-  var localEndpoint: Endpoint? {
+  public var localEndpoint: Endpoint? {
     return socket?.localEndpoint
   }
 
   /// The remote endpoint information, only available when connected.
-  var remoteEndpoint: Endpoint? {
+  public var remoteEndpoint: Endpoint? {
     return socket?.remoteEndpoint
   }
 }
 
 // MARK: Convenience initializers
 
-public extension WebSocketClient {
+extension WebSocketClient {
   /// Creates a new WebSocketClient with an url in string form.
-  convenience init(_ string: String) throws {
+  public convenience init(_ string: String) throws {
     guard let url = URL(string: string) else { throw WebSocketClientError.invalidURL }
     try self.init(url: url)
   }
 
   /// Creates a new WebSocketClient with an url in string form and certificates to trust.
-  convenience init(_ string: String, certificates: [Certificate]) throws {
+  public convenience init(_ string: String, certificates: [Certificate]) throws {
     try self.init(string)
     self.tlsPolicy = TLSPolicy(certificates: certificates)
   }
 
   /// Creates a new WebSocketClient with an url and certificates to trust.
-  convenience init(url: URL, certificates: [Certificate]) throws {
+  public convenience init(url: URL, certificates: [Certificate]) throws {
     try self.init(url: url)
     self.tlsPolicy = TLSPolicy(certificates: certificates)
   }
@@ -227,7 +227,9 @@ extension WebSocketClient: HTTPConnectionDelegate {
   }
 
   /// Raised when the HTTPConnecion received a response.
-  public func connection(_ httpConnection: HTTPConnection, handleIncomingResponse response: HTTPResponse, error: Error?) {
+  public func connection(
+    _ httpConnection: HTTPConnection, handleIncomingResponse response: HTTPResponse, error: Error?
+  ) {
     guard httpConnection == self.httpConnection else { return }
 
     if let error = error {
@@ -238,13 +240,17 @@ extension WebSocketClient: HTTPConnectionDelegate {
   }
 
   /// Raised when the HTTPConnecion received a request (client doesn't support requests -> close).
-  public func connection(_ httpConnection: HTTPConnection, handleIncomingRequest request: HTTPRequest, error: Error?) {
+  public func connection(
+    _ httpConnection: HTTPConnection, handleIncomingRequest request: HTTPRequest, error: Error?
+  ) {
     guard httpConnection == self.httpConnection else { return }
     httpConnection.close(immediately: true)
   }
 
   /// Raised when the HTTPConnecion received a request (client doesn't support request upgrades -> close).
-  public func connection(_ httpConnection: HTTPConnection, handleUpgradeByRequest request: HTTPRequest) {
+  public func connection(
+    _ httpConnection: HTTPConnection, handleUpgradeByRequest request: HTTPRequest
+  ) {
     guard httpConnection == self.httpConnection else { return }
     httpConnection.close(immediately: true)
   }
@@ -254,13 +260,17 @@ extension WebSocketClient: HTTPConnectionDelegate {
 
 extension WebSocketClient: WebSocketConnectionDelegate {
   /// Raised when the WebSocketConnection disconnected.
-  public func connection(_ webSocketConnection: WebSocketConnection, didCloseWithError error: Error?) {
+  public func connection(
+    _ webSocketConnection: WebSocketConnection, didCloseWithError error: Error?
+  ) {
     guard webSocketConnection == self.webSocketConnection else { return }
     handleConnectionClose(error: error)
   }
 
   /// Raised when the WebSocketConnection receives a message.
-  public func connection(_ webSocketConnection: WebSocketConnection, didReceiveMessage message: WebSocketMessage) {
+  public func connection(
+    _ webSocketConnection: WebSocketConnection, didReceiveMessage message: WebSocketMessage
+  ) {
     guard webSocketConnection == self.webSocketConnection else { return }
 
     // We are only interested in binary and text messages
@@ -278,5 +288,7 @@ extension WebSocketClient: WebSocketConnectionDelegate {
   }
 
   /// Raised when the WebSocketConnection sent a message (ignore).
-  public func connection(_ webSocketConnection: WebSocketConnection, didSendMessage message: WebSocketMessage) {}
+  public func connection(
+    _ webSocketConnection: WebSocketConnection, didSendMessage message: WebSocketMessage
+  ) {}
 }

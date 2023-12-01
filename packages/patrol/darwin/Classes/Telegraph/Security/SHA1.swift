@@ -6,8 +6,8 @@
 //  Copyright © 2017 Building42. All rights reserved.
 //
 
-import Foundation
 import CommonCrypto
+import Foundation
 
 public struct SHA1 {
   /// The message digest.
@@ -22,14 +22,14 @@ public struct SHA1 {
   }
 }
 
-public extension SHA1 {
+extension SHA1 {
   /// Hashes the provided data using the SHA1 algorithm and returns the digest.
-  static func hash(_ data: Data) -> Data {
+  public static func hash(_ data: Data) -> Data {
     return SHA1(data: data).digest
   }
 
   /// Hashes the provided string using the SHA1 algorithm and returns the digest.
-  static func hash(_ string: String) -> Data {
+  public static func hash(_ string: String) -> Data {
     return SHA1(data: string.utf8Data).digest
   }
 }

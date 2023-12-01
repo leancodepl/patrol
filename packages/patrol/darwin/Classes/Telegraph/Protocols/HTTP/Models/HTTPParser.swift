@@ -89,7 +89,8 @@ public final class HTTPParser {
     }
 
     // Parse the provided data
-    let bytesParsed = HTTPRawParser.parse(parser: &rawParser, settings: &rawParserSettings, data: data)
+    let bytesParsed = HTTPRawParser.parse(
+      parser: &rawParser, settings: &rawParserSettings, data: data)
 
     // Was there an error?
     if let error = rawParser.httpError {
@@ -136,7 +137,8 @@ extension HTTPParser {
 
     // Check that the URI is valid
     guard let uriString = String(data: urlData, encoding: .utf8),
-      let uriComponents = URLComponents(string: uriString) else { return stopParsing }
+      let uriComponents = URLComponents(string: uriString)
+    else { return stopParsing }
 
     // Set the URI, method and the host header
     request?.uri = URI(components: uriComponents)
@@ -161,7 +163,9 @@ extension HTTPParser {
   }
 
   /// Raised when the parser parsed part of a header field.
-  func parserDidParseHeaderField(_ rawParser: HTTPRawParser, chunk: ChunkPointer?, count: Int) -> Int32 {
+  func parserDidParseHeaderField(_ rawParser: HTTPRawParser, chunk: ChunkPointer?, count: Int)
+    -> Int32
+  {
     // For each header we first get key chunks and then value chunks,
     // when we get to a key chunk after a value chunk it means a single header is done
     if headerChunkWasValue {
@@ -173,7 +177,9 @@ extension HTTPParser {
   }
 
   /// Raised when the parser parsed part of a header value.
-  func parserDidParseHeaderValue(_ rawParser: HTTPRawParser, chunk: ChunkPointer?, count: Int) -> Int32 {
+  func parserDidParseHeaderValue(_ rawParser: HTTPRawParser, chunk: ChunkPointer?, count: Int)
+    -> Int32
+  {
     headerChunkWasValue = true
 
     headerValueData.append(chunk, count: count)
@@ -240,7 +246,10 @@ extension HTTPParser {
 
 // MARK: C helpers
 
-private func parserCall(_ rawParserPointer: UnsafeMutablePointer<HTTPRawParser>?, block: (HTTPParser, HTTPRawParser) -> Int32) -> Int32 {
+private func parserCall(
+  _ rawParserPointer: UnsafeMutablePointer<HTTPRawParser>?,
+  block: (HTTPParser, HTTPRawParser) -> Int32
+) -> Int32 {
   guard let rawParser = rawParserPointer?.pointee else { return stopParsing }
   let parser: HTTPParser = rawParser.context()
   return block(parser, rawParser)
@@ -248,9 +257,9 @@ private func parserCall(_ rawParserPointer: UnsafeMutablePointer<HTTPRawParser>?
 
 // MARK: Data extensions
 
-private extension Data {
+extension Data {
   /// Appends the bytes to the data object.
-  mutating func append(_ chunk: ChunkPointer?, count: Int) {
+  fileprivate mutating func append(_ chunk: ChunkPointer?, count: Int) {
     guard let chunk = chunk else { return }
     self.append(UnsafeRawPointer(chunk).assumingMemoryBound(to: UInt8.self), count: count)
   }

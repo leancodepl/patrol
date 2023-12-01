@@ -24,9 +24,12 @@ open class HTTPFileHandler: HTTPRequestHandler {
   }
 
   /// Creates a response to the provided request or passes it to the next handler.
-  open func respond(to request: HTTPRequest, nextHandler: HTTPRequest.Handler) throws -> HTTPResponse? {
+  open func respond(to request: HTTPRequest, nextHandler: HTTPRequest.Handler) throws
+    -> HTTPResponse?
+  {
     // Only respond to GET requests targetted at our path
-    guard request.method == .GET, let relativePath = request.uri.relativePath(from: baseURI.path) else {
+    guard request.method == .GET, let relativePath = request.uri.relativePath(from: baseURI.path)
+    else {
       return try nextHandler(request)
     }
 
@@ -35,7 +38,9 @@ open class HTTPFileHandler: HTTPRequestHandler {
     var byteRange: ByteRange?
 
     // Is a specific range requested? Fallback to a non-range request if the range isn't about bytes
-    if let rangeInHeaders = request.headers.range, let byteRangeInHeaders = byteRangeFrom(rangeInHeaders) {
+    if let rangeInHeaders = request.headers.range,
+      let byteRangeInHeaders = byteRangeFrom(rangeInHeaders)
+    {
       byteRange = byteRangeInHeaders
     }
 
@@ -43,11 +48,14 @@ open class HTTPFileHandler: HTTPRequestHandler {
   }
 
   /// Creates a response that serves the provided URL.
-  open func responseForURL(_ url: URL, byteRange: ByteRange?, request: HTTPRequest) throws -> HTTPResponse {
+  open func responseForURL(_ url: URL, byteRange: ByteRange?, request: HTTPRequest) throws
+    -> HTTPResponse
+  {
     let fileManager = FileManager.default
 
     // Check if the requested path exists
-    guard let attributes = try? fileManager.attributesOfItem(atPath: url.path) as NSDictionary else {
+    guard let attributes = try? fileManager.attributesOfItem(atPath: url.path) as NSDictionary
+    else {
       return HTTPResponse(.notFound)
     }
 
@@ -57,8 +65,10 @@ open class HTTPFileHandler: HTTPRequestHandler {
 
     // Check for symbolic link destination
     if resourceType == .typeSymbolicLink,
-       let destination = try? fileManager.destinationOfSymbolicLink(atPath: url.path) {
-        return try responseForURL(URL(fileURLWithPath: destination), byteRange: byteRange, request: request)
+      let destination = try? fileManager.destinationOfSymbolicLink(atPath: url.path)
+    {
+      return try responseForURL(
+        URL(fileURLWithPath: destination), byteRange: byteRange, request: request)
     }
 
     // Allow directories
@@ -85,7 +95,8 @@ open class HTTPFileHandler: HTTPRequestHandler {
 
       // Did the client send us a last modified date?
       if let clientLastModified = request.headers.ifModifiedSince,
-         let clientLastModifiedDate = DateFormatter.rfc1123.date(from: clientLastModified) {
+        let clientLastModifiedDate = DateFormatter.rfc1123.date(from: clientLastModified)
+      {
         // Compare the two dates, round down because the local date is more precise than the one the client sent
         let lastModifiedEpoch = lastModifiedDate.timeIntervalSince1970.rounded(.down)
         let clientLastModifiedEpoch = clientLastModifiedDate.timeIntervalSince1970.rounded(.down)

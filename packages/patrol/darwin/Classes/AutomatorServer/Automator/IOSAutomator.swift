@@ -1,9 +1,9 @@
 #if PATROL_ENABLED && os(iOS)
 
-import XCTest
-import os
+  import XCTest
+  import os
 
-class IOSAutomator: Automator {
+  class IOSAutomator: Automator {
     private lazy var device: XCUIDevice = {
       return XCUIDevice.shared
     }()
@@ -407,7 +407,7 @@ class IOSAutomator: Automator {
         return views
       }
     }
-    
+
     func getUITreeRoots(installedApps: [String]) throws -> [NativeView] {
       try runAction("getting ui tree roots") {
         let foregroundApp = self.getForegroundApp(installedApps: installedApps)
@@ -831,7 +831,7 @@ class IOSAutomator: Automator {
 
       group.wait()
     }
-}
+  }
 
   // MARK: Utilities
 

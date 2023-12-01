@@ -46,32 +46,32 @@ public struct WebSocketMasks {
 
 // MARK: Convenience initializers
 
-public extension WebSocketMessage {
+extension WebSocketMessage {
   /// Creates a WebSocketMessage that instructs to close the connection.
-  convenience init(closeCode: UInt16, reason: String = "") {
+  public convenience init(closeCode: UInt16, reason: String = "") {
     self.init(opcode: .connectionClose, payload: .close(code: closeCode, reason: reason))
   }
 
   /// Creates a WebSocketMessage that reports an error and closes the connection.
-  convenience init(error: WebSocketError) {
+  public convenience init(error: WebSocketError) {
     self.init(closeCode: error.code, reason: error.description)
   }
 
   /// Creates a WebSocketMessage with a binary payload.
-  convenience init(data: Data) {
+  public convenience init(data: Data) {
     self.init(opcode: .binaryFrame, payload: .binary(data))
   }
 
   /// Creates a WebSocketMessage with a text payload.
-  convenience init(text: String) {
+  public convenience init(text: String) {
     self.init(opcode: .textFrame, payload: .text(text))
   }
 }
 
 // MARK: Masking
 
-public extension WebSocketMessage {
-  func generateMask() -> [UInt8] {
+extension WebSocketMessage {
+  public func generateMask() -> [UInt8] {
     return [UInt8.random, UInt8.random, UInt8.random, UInt8.random]
   }
 }

@@ -16,7 +16,9 @@ open class HTTPWebSocketHandler: HTTPRequestHandler {
     self.protocolName = protocolName
   }
 
-  open func respond(to request: HTTPRequest, nextHandler: HTTPRequest.Handler) throws -> HTTPResponse? {
+  open func respond(to request: HTTPRequest, nextHandler: HTTPRequest.Handler) throws
+    -> HTTPResponse?
+  {
     // Skip if this isn't a websocket upgrade request
     guard request.isWebSocketUpgrade else {
       return try nextHandler(request)
@@ -37,7 +39,9 @@ open class HTTPWebSocketHandler: HTTPRequestHandler {
     }
 
     // Check that we support the websocket protocol
-    if let serverProtocol = protocolName, let clientProtocol = request.headers.webSocketProtocol, !clientProtocol.isEmpty {
+    if let serverProtocol = protocolName, let clientProtocol = request.headers.webSocketProtocol,
+      !clientProtocol.isEmpty
+    {
       let clientProtocols = clientProtocol.split(separator: ",")
       guard clientProtocols.contains(Substring(serverProtocol)) else {
         return HTTPResponse(.notImplemented, content: "Websocket protocol not supported")

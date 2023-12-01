@@ -6,8 +6,8 @@
 //  Copyright © 2017 Building42. All rights reserved.
 //
 
-import Foundation
 import CocoaAsyncSocket
+import Foundation
 
 public protocol TCPListenerDelegate: AnyObject {
   /// Called when the listener accepts a new incoming socket

@@ -25,8 +25,11 @@ extension NSRegularExpression {
     return matches(in: value, options: options, range: value.fullRange)
   }
 
-  func stringByReplacingMatches(in value: String, withPattern pattern: String, options: Regex.MatchingOptions = []) -> String {
-    return stringByReplacingMatches(in: value, options: options, range: value.fullRange, withTemplate: pattern)
+  func stringByReplacingMatches(
+    in value: String, withPattern pattern: String, options: Regex.MatchingOptions = []
+  ) -> String {
+    return stringByReplacingMatches(
+      in: value, options: options, range: value.fullRange, withTemplate: pattern)
   }
 }
 
@@ -38,7 +41,9 @@ struct RegexMatch {
 
   init(input: String, result: NSTextCheckingResult) {
     value = input.substring(with: result.range) ?? ""
-    groupValues = (1..<result.numberOfRanges).compactMap { input.substring(with: result.range(at: $0)) }
+    groupValues = (1..<result.numberOfRanges).compactMap {
+      input.substring(with: result.range(at: $0))
+    }
   }
 }
 
@@ -50,12 +55,12 @@ extension NSRegularExpression {
 
 // MARK: String helpers
 
-private extension String {
-  var fullRange: NSRange {
+extension String {
+  fileprivate var fullRange: NSRange {
     return NSRange(location: 0, length: count)
   }
 
-  func substring(with range: NSRange) -> String? {
+  fileprivate func substring(with range: NSRange) -> String? {
     guard let range = Range(range) else { return nil }
     let from = index(startIndex, offsetBy: range.lowerBound)
     let to = index(startIndex, offsetBy: range.upperBound)

@@ -10,16 +10,16 @@ public struct HTTPMethod: Hashable {
   public let name: String
 }
 
-public extension HTTPMethod {
-  static let GET = HTTPMethod(name: "GET")
-  static let HEAD = HTTPMethod(name: "HEAD")
-  static let DELETE = HTTPMethod(name: "DELETE")
-  static let POST = HTTPMethod(name: "POST")
-  static let PUT = HTTPMethod(name: "PUT")
-  static let OPTIONS = HTTPMethod(name: "OPTIONS")
-  static let CONNECT = HTTPMethod(name: "CONNECT")
-  static let TRACE = HTTPMethod(name: "TRACE")
-  static let PATCH = HTTPMethod(name: "PATCH")
+extension HTTPMethod {
+  public static let GET = HTTPMethod(name: "GET")
+  public static let HEAD = HTTPMethod(name: "HEAD")
+  public static let DELETE = HTTPMethod(name: "DELETE")
+  public static let POST = HTTPMethod(name: "POST")
+  public static let PUT = HTTPMethod(name: "PUT")
+  public static let OPTIONS = HTTPMethod(name: "OPTIONS")
+  public static let CONNECT = HTTPMethod(name: "CONNECT")
+  public static let TRACE = HTTPMethod(name: "TRACE")
+  public static let PATCH = HTTPMethod(name: "PATCH")
 }
 
 // MARK: CustomStringConvertible implementation

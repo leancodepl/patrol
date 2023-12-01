@@ -32,7 +32,8 @@ open class HTTPMessage {
   }
 
   /// Writes the HTTP message to the provided stream.
-  public func write(to stream: WriteStream, headerTimeout: TimeInterval, bodyTimeout: TimeInterval) {
+  public func write(to stream: WriteStream, headerTimeout: TimeInterval, bodyTimeout: TimeInterval)
+  {
     writeHeader(to: stream, timeout: headerTimeout)
     writeBody(to: stream, timeout: bodyTimeout)
     stream.flush()
@@ -69,15 +70,15 @@ open class HTTPMessage {
 
 // MARK: Helper methods
 
-public extension HTTPMessage {
+extension HTTPMessage {
   /// Returns a boolean indicating if the connection should be kept open.
-  var keepAlive: Bool {
+  public var keepAlive: Bool {
     guard let connection = headers.connection else { return version.minor != 0 }
     return connection.caseInsensitiveCompare("close") != .orderedSame
   }
 
   /// Returns a boolean indicating if this message carries an instruction to upgrade.
-  var isConnectionUpgrade: Bool {
+  public var isConnectionUpgrade: Bool {
     return headers.connection?.caseInsensitiveCompare("upgrade") == .orderedSame
   }
 }

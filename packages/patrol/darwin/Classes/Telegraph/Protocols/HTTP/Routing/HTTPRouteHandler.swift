@@ -10,7 +10,9 @@ open class HTTPRouteHandler: HTTPRequestHandler {
   public var routes = [HTTPRoute]()
   public var implicitHeadRequests = true
 
-  open func respond(to request: HTTPRequest, nextHandler: HTTPRequest.Handler) throws -> HTTPResponse? {
+  open func respond(to request: HTTPRequest, nextHandler: HTTPRequest.Handler) throws
+    -> HTTPResponse?
+  {
     var matchingRoute: HTTPRoute?
 
     // Do we want to allow HEAD requests on GET routes?

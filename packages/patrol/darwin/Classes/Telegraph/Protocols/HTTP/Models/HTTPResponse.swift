@@ -16,8 +16,10 @@ open class HTTPResponse: HTTPMessage {
   internal let isComplete: Bool
 
   /// Initializes a new HTTPResponse
-  public init(_ status: HTTPStatus = .ok, version: HTTPVersion = .default,
-              headers: HTTPHeaders = .empty, body: Data = Data(), isComplete: Bool = true) {
+  public init(
+    _ status: HTTPStatus = .ok, version: HTTPVersion = .default,
+    headers: HTTPHeaders = .empty, body: Data = Data(), isComplete: Bool = true
+  ) {
     self.status = status
     self.isComplete = isComplete
     super.init(version: version, headers: headers, body: body)
@@ -50,14 +52,18 @@ open class HTTPResponse: HTTPMessage {
 
 // MARK: Convenience initializers
 
-public extension HTTPResponse {
+extension HTTPResponse {
   /// Creates an HTTP response to send textual content.
-  convenience init(_ status: HTTPStatus = .ok, headers: HTTPHeaders = .empty, content: String) {
+  public convenience init(
+    _ status: HTTPStatus = .ok, headers: HTTPHeaders = .empty, content: String
+  ) {
     self.init(status, headers: headers, body: content.utf8Data)
   }
 
   /// Creates an HTTP response to send an error.
-  convenience init(_ status: HTTPStatus = .internalServerError, headers: HTTPHeaders = .empty, error: Error) {
+  public convenience init(
+    _ status: HTTPStatus = .internalServerError, headers: HTTPHeaders = .empty, error: Error
+  ) {
     var errorHeaders = headers
     errorHeaders.connection = "close"
 

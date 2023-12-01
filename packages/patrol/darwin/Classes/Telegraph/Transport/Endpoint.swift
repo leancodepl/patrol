@@ -22,9 +22,9 @@ public struct Endpoint: Hashable {
   }
 }
 
-public extension Endpoint {
+extension Endpoint {
   /// Creates an Endpoint based on an URL.
-  init?(url: URL) {
+  public init?(url: URL) {
     guard let host = url.host else { return nil }
     let port = url.port ?? url.portBasedOnScheme
 
@@ -32,7 +32,7 @@ public extension Endpoint {
   }
 
   /// Creates an Endpoint based on a host and unsigned port.
-  init(host: Host, port: UInt16) {
+  public init(host: Host, port: UInt16) {
     self.host = host
     self.port = Int(port)
   }

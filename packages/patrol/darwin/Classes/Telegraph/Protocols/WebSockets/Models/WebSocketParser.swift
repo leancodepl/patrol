@@ -193,7 +193,9 @@ public class WebSocketParser {
       message.payload = .binary(payload)
     case .textFrame:
       // Text payload
-      guard let text = String(data: payload, encoding: .utf8) else { throw WebSocketError.payloadIsNotText }
+      guard let text = String(data: payload, encoding: .utf8) else {
+        throw WebSocketError.payloadIsNotText
+      }
       message.payload = .text(text)
     case .connectionClose:
       // Close payload

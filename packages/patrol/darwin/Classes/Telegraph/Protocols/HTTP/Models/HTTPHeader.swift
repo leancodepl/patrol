@@ -49,12 +49,12 @@ extension HTTPHeaderName: ExpressibleByStringLiteral {
 
 // MARK: Convenience methods
 
-public extension Dictionary where Key == HTTPHeaderName, Value == String {
-  static var empty: HTTPHeaders {
+extension Dictionary where Key == HTTPHeaderName, Value == String {
+  public static var empty: HTTPHeaders {
     return self.init(minimumCapacity: 3)
   }
 
-  subscript(key: String) -> String? {
+  public subscript(key: String) -> String? {
     get { return self[HTTPHeaderName(key)] }
     set { self[HTTPHeaderName(key)] = newValue }
   }

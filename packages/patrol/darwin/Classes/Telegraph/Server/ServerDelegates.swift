@@ -32,7 +32,9 @@ public protocol ServerWebSocketDelegate: AnyObject {
 
 // MARK: Default implementation
 
-public extension ServerWebSocketDelegate {
-  func server(_ server: Server, webSocket: WebSocket, didSendMessage message: WebSocketMessage) {}
-  func serverDidDisconnect(_ server: Server) {}
+extension ServerWebSocketDelegate {
+  public func server(
+    _ server: Server, webSocket: WebSocket, didSendMessage message: WebSocketMessage
+  ) {}
+  public func serverDidDisconnect(_ server: Server) {}
 }

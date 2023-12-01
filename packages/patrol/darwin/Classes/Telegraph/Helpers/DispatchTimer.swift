@@ -56,16 +56,20 @@ public final class DispatchTimer {
 
 // MARK: DispatchTimer convenience methods
 
-public extension DispatchTimer {
+extension DispatchTimer {
   /// Creates and starts a timer that runs multiple times with a specific interval.
-  static func run(interval: TimeInterval, queue: DispatchQueue, execute block: @escaping () -> Void) -> DispatchTimer {
+  public static func run(
+    interval: TimeInterval, queue: DispatchQueue, execute block: @escaping () -> Void
+  ) -> DispatchTimer {
     let timer = DispatchTimer(interval: interval, queue: queue, execute: block)
     timer.start()
     return timer
   }
 
   /// Creates and starts a timer that runs at a specfic data, optionally repeating with a specific interval.
-  static func run(at: Date, interval: TimeInterval = 0, queue: DispatchQueue, execute block: @escaping () -> Void) -> DispatchTimer {
+  public static func run(
+    at: Date, interval: TimeInterval = 0, queue: DispatchQueue, execute block: @escaping () -> Void
+  ) -> DispatchTimer {
     let timer = DispatchTimer(interval: interval, queue: queue, execute: block)
     timer.start(at: at)
     return timer
@@ -74,9 +78,9 @@ public extension DispatchTimer {
 
 // MARK: DispatchWallTime convenience initializers
 
-private extension DispatchWallTime {
+extension DispatchWallTime {
   /// Creates a dispatch wall time from a date.
-  init(date: Date) {
+  fileprivate init(date: Date) {
     let (seconds, frac) = modf(date.timeIntervalSince1970)
     let wallTime = timespec(tv_sec: Int(seconds), tv_nsec: Int(frac * Double(NSEC_PER_SEC)))
     self.init(timespec: wallTime)

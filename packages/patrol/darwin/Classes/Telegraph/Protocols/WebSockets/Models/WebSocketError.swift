@@ -16,8 +16,8 @@ public enum WebSocketError: Error {
   case payloadTooLarge
 }
 
-public extension WebSocketError {
-  var code: UInt16 {
+extension WebSocketError {
+  public var code: UInt16 {
     switch self {
     case .invalidMessage: return 1002
     case .invalidOpcode: return 1002
