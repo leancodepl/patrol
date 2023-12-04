@@ -5,6 +5,7 @@ import android.app.UiAutomation
 import android.content.Context
 import android.os.Build
 import android.os.SystemClock
+import android.view.KeyEvent
 import android.widget.EditText
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.By
@@ -185,6 +186,10 @@ class Automator private constructor() {
         uiObject.click()
         Logger.d("After second click")
         delay()
+    }
+
+    fun sendKeyEvent(data: String) {
+        uiDevice.pressKeyCode(KeyEvent.keyCodeFromString(data))
     }
 
     fun enterText(text: String, index: Int, keyboardBehavior: KeyboardBehavior) {
@@ -503,6 +508,8 @@ class Automator private constructor() {
 
         return null
     }
+
+
 
     companion object {
         val instance = Automator()
