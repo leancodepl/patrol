@@ -51,8 +51,12 @@ test_linux_task:
     - $ANDROID_HOME/emulator/emulator @MyAVD -verbose -no-snapshot-save -no-window -noaudio -no-boot-anim -accel on
   wait_for_emulator_script:
     - android-wait-for-emulator
+  generate_gradle_wrapper: |
+    cd dev/e2e_app/lib
+    flutter pub get
+    flutter build apk --config-only
   patrol_develop_script: |
-    cd dev/cli_tests
+    cd ../../cli_tests
     dart pub get
     dart patrol_develop_test.dart
 
