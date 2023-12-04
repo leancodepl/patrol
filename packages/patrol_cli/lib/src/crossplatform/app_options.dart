@@ -205,3 +205,79 @@ class IOSAppOptions {
     return cmd;
   }
 }
+
+class MacOSAppOptions {
+  MacOSAppOptions({
+    required this.flutter,
+    this.bundleId,
+    required this.scheme,
+    required this.configuration,
+  });
+
+  final FlutterAppOptions flutter;
+  final String? bundleId;
+  final String scheme;
+  final String configuration;
+
+  String get description {
+    return 'app with entrypoint ${basename(flutter.target)} for macos';
+  }
+
+  /// Translates these options into a proper flutter build invocation, which
+  /// runs before xcodebuild and performs configuration.
+  List<String> toFlutterBuildInvocation(BuildMode buildMode) {
+    final cmd = [
+      ...['flutter', 'build', 'macos'],
+      '--no-version-check',
+      ...[
+        '--config-only',
+        '--${buildMode.name}', // for example '--debug',
+      ],
+      if (flutter.flavor != null) ...['--flavor', flutter.flavor!],
+      ...['--target', flutter.target],
+      for (final dartDefine in flutter.dartDefines.entries) ...[
+        '--dart-define',
+        '${dartDefine.key}=${dartDefine.value}',
+      ],
+    ];
+
+    return cmd;
+  }
+
+  /// Translates these options into a proper `xcodebuild build-for-testing`
+  /// invocation.
+  List<String> buildForTestingInvocation() {
+    final cmd = [
+      ...['xcodebuild', 'build-for-testing'],
+      ...['-workspace', 'Runner.xcworkspace'],
+      ...['-scheme', scheme],
+      ...['-configuration', configuration],
+      ...['-only-testing', 'RunnerUITests'],
+      '-quiet',
+      ...['-derivedDataPath', '../build/macos_integ'],
+      r'OTHER_SWIFT_FLAGS=$(inherited) -D PATROL_ENABLED',
+    ];
+
+    return cmd;
+  }
+
+  /// Translates these options into a proper `xcodebuild test-without-building`
+  /// invocation.
+  List<String> testWithoutBuildingInvocation(
+    Device device, {
+    required String xcTestRunPath,
+  }) {
+    final cmd = [
+      ...['xcodebuild', 'test-without-building'],
+      ...['-xctestrun', xcTestRunPath],
+      ...['-only-testing', 'RunnerUITests'],
+      ...[
+        '-destination',
+        'platform=macOS',
+      ],
+      '-verbose',
+    ];
+
+    return cmd;
+  }
+}

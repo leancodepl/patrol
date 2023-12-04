@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:example/main.dart';
 import 'package:example/pages/quiz/form_page.dart';
 import 'package:example/ui/components/button/elevated_button.dart';
@@ -36,30 +38,33 @@ void main() {
 
     await $(ListTile).containing($(Icons.flutter_dash)).$('click').tap();
 
-    await $(ElevatedButton)
-        .which<ElevatedButton>(
-          (widget) => widget.enabled,
-        )
-        .at(2)
-        .scrollTo()
-        .tap();
+    // For macOS we don't want to continue the test as we don't have support for native interactions
+    if (!Platform.isMacOS) {
+      await $(ElevatedButton)
+          .which<ElevatedButton>(
+            (widget) => widget.enabled,
+          )
+          .at(2)
+          .scrollTo()
+          .tap();
 
-    if (await $.native.isPermissionDialogVisible()) {
-      await $.native.grantPermissionWhenInUse();
+      if (await $.native.isPermissionDialogVisible()) {
+        await $.native.grantPermissionWhenInUse();
+      }
+
+      await $.native.pressHome();
+      await $.native.openNotifications();
+
+      // wait for notification to show up
+      await Future<void>.delayed(const Duration(seconds: 5));
+
+      await $.native.openNotifications();
+
+      await $.native.tapOnNotificationByIndex(0);
+
+      await $.pumpAndSettle();
+
+      expect($('Congratulations!'), findsOneWidget);
     }
-
-    await $.native.pressHome();
-    await $.native.openNotifications();
-
-    // wait for notification to show up
-    await Future<void>.delayed(const Duration(seconds: 5));
-
-    await $.native.openNotifications();
-
-    await $.native.tapOnNotificationByIndex(0);
-
-    await $.pumpAndSettle();
-
-    expect($('Congratulations!'), findsOneWidget);
   });
 }

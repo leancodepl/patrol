@@ -33,4 +33,6 @@ patrol:
   android:
     package_name: pl.leancode.patrol.e2e_app
   ios:
-    bundle_id: pl.leancode.patrol.Example
+    bundle_id: pl.leancode.patrol.e2eApp
+  macos:
+    bundle_id: pl.leancode.patrol.macos.e2eApp

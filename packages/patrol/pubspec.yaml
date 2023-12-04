@@ -43,6 +43,10 @@ flutter:
         pluginClass: PatrolPlugin
       ios:
         pluginClass: PatrolPlugin
+        sharedDarwinSource: true
+      macos:
+        pluginClass: PatrolPlugin
+        sharedDarwinSource: true
 
 # These files don't contain real credentials. They exist only for build to pass.
 false_secrets:

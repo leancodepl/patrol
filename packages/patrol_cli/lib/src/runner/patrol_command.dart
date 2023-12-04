@@ -117,6 +117,14 @@ abstract class PatrolCommand extends Command<int> {
     );
   }
 
+  void usesMacOSOptions() {
+    argParser.addOption(
+      'bundle-id',
+      help: 'Bundle identifier of the MacOS app under test.',
+      valueHelp: 'pl.leancode.macos.AwesomeApp',
+    );
+  }
+
   // Runtime-only options
 
   void usesUninstallOption() {

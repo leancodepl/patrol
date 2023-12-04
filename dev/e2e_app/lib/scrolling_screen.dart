@@ -8,6 +8,7 @@ class ScrollingScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: BackButton(key: K.backButton),
         title: const Text('Scrolling'),
       ),
       body: SingleChildScrollView(

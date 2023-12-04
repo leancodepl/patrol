@@ -10,6 +10,7 @@ import 'package:patrol_cli/src/crossplatform/flutter_tool.dart';
 import 'package:patrol_cli/src/dart_defines_reader.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
+import 'package:patrol_cli/src/macos/macos_test_backend.dart';
 import 'package:patrol_cli/src/pubspec_reader.dart';
 import 'package:patrol_cli/src/runner/patrol_command.dart';
 import 'package:patrol_cli/src/test_bundler.dart';
@@ -24,6 +25,7 @@ class DevelopCommand extends PatrolCommand {
     required PubspecReader pubspecReader,
     required AndroidTestBackend androidTestBackend,
     required IOSTestBackend iosTestBackend,
+    required MacOSTestBackend macosTestBackend,
     required FlutterTool flutterTool,
     required Analytics analytics,
     required Logger logger,
@@ -34,6 +36,7 @@ class DevelopCommand extends PatrolCommand {
         _pubspecReader = pubspecReader,
         _androidTestBackend = androidTestBackend,
         _iosTestBackend = iosTestBackend,
+        _macosTestBackend = macosTestBackend,
         _flutterTool = flutterTool,
         _analytics = analytics,
         _logger = logger {
@@ -64,6 +67,7 @@ class DevelopCommand extends PatrolCommand {
   final PubspecReader _pubspecReader;
   final AndroidTestBackend _androidTestBackend;
   final IOSTestBackend _iosTestBackend;
+  final MacOSTestBackend _macosTestBackend;
   final FlutterTool _flutterTool;
 
   final Analytics _analytics;
@@ -110,6 +114,13 @@ class DevelopCommand extends PatrolCommand {
 
     final devices = await _deviceFinder.find(stringsArg('device'));
     final device = devices.single;
+
+    // `flutter logs` doesn't work on macOS, so we don't support it for now
+    // https://github.com/leancodepl/patrol/issues/1974
+    if (device.targetPlatform == TargetPlatform.macOS) {
+      throwToolExit('macOS is not supported with develop');
+    }
+
     _logger.detail('Received device: ${device.resolvedName}');
 
     final packageName = stringArg('package-name') ?? config.android.packageName;
@@ -132,6 +143,7 @@ class DevelopCommand extends PatrolCommand {
       'PATROL_WAIT': defaultWait.toString(),
       'PATROL_APP_PACKAGE_NAME': packageName,
       'PATROL_APP_BUNDLE_ID': bundleId,
+      'PATROL_MACOS_APP_BUNDLE_ID': config.macos.bundleId,
       'PATROL_ANDROID_APP_NAME': config.android.appName,
       'PATROL_IOS_APP_NAME': config.ios.appName,
       'INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE': 'false',
@@ -177,12 +189,19 @@ class DevelopCommand extends PatrolCommand {
       simulator: !device.real,
     );
 
-    await _build(androidOpts, iosOpts, device);
+    final macosOpts = MacOSAppOptions(
+      flutter: flutterOpts,
+      scheme: buildMode.createScheme(iosFlavor),
+      configuration: buildMode.createConfiguration(iosFlavor),
+    );
+
+    await _build(androidOpts, iosOpts, macosOpts, device);
     await _preExecute(androidOpts, iosOpts, device, uninstall);
     await _execute(
       flutterOpts,
       androidOpts,
       iosOpts,
+      macosOpts,
       uninstall: uninstall,
       device: device,
       openDevtools: boolArg('open-devtools'),
@@ -194,15 +213,15 @@ class DevelopCommand extends PatrolCommand {
   Future<void> _build(
     AndroidAppOptions androidOpts,
     IOSAppOptions iosOpts,
+    MacOSAppOptions macosOpts,
     Device device,
   ) async {
     Future<void> Function() buildAction;
-    switch (device.targetPlatform) {
-      case TargetPlatform.android:
-        buildAction = () => _androidTestBackend.build(androidOpts);
-      case TargetPlatform.iOS:
-        buildAction = () => _iosTestBackend.build(iosOpts);
-    }
+    buildAction = switch (device.targetPlatform) {
+      TargetPlatform.android => () => _androidTestBackend.build(androidOpts),
+      TargetPlatform.iOS => () => _iosTestBackend.build(iosOpts),
+      TargetPlatform.macOS => () => _macosTestBackend.build(macosOpts),
+    };
 
     try {
       await buildAction();
@@ -243,6 +262,7 @@ class DevelopCommand extends PatrolCommand {
                 device: device,
               );
         }
+      case TargetPlatform.macOS:
     }
 
     try {
@@ -255,7 +275,8 @@ class DevelopCommand extends PatrolCommand {
   Future<void> _execute(
     FlutterAppOptions flutterOpts,
     AndroidAppOptions android,
-    IOSAppOptions iosOpts, {
+    IOSAppOptions iosOpts,
+    MacOSAppOptions macos, {
     required bool uninstall,
     required Device device,
     required bool openDevtools,
@@ -273,6 +294,10 @@ class DevelopCommand extends PatrolCommand {
         if (package != null && uninstall) {
           finalizer = () => _androidTestBackend.uninstall(package, device);
         }
+      case TargetPlatform.macOS:
+        appId = macos.bundleId;
+        action = () async =>
+            _macosTestBackend.execute(macos, device, interruptible: true);
       case TargetPlatform.iOS:
         appId = iosOpts.bundleId;
         action = () async =>
@@ -289,13 +314,13 @@ class DevelopCommand extends PatrolCommand {
 
     try {
       final future = action();
-
       await _flutterTool.attachForHotRestart(
         deviceId: device.id,
         target: flutterOpts.target,
         appId: appId,
         dartDefines: flutterOpts.dartDefines,
         openDevtools: openDevtools,
+        attachUsingUrl: device.targetPlatform == TargetPlatform.macOS,
       );
 
       await future;

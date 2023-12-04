@@ -26,14 +26,16 @@ class NotificationHandler {
   }
 
   Future<void> _init(VoidCallback onNotificationTap) async {
+    const darwinInitSettings = DarwinInitializationSettings(
+      requestAlertPermission: false,
+      requestBadgePermission: false,
+      requestSoundPermission: false,
+    );
     await _flutterLocalNotificationsPlugin.initialize(
       const InitializationSettings(
         android: AndroidInitializationSettings('notification_icon'),
-        iOS: DarwinInitializationSettings(
-          requestAlertPermission: false,
-          requestBadgePermission: false,
-          requestSoundPermission: false,
-        ),
+        iOS: darwinInitSettings,
+        macOS: darwinInitSettings,
       ),
       onDidReceiveNotificationResponse: (_) => onNotificationTap(),
     );

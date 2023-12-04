@@ -40,21 +40,36 @@ class FlutterTool {
     required String? appId,
     required Map<String, String> dartDefines,
     required bool openDevtools,
+    bool attachUsingUrl = false,
   }) async {
     if (io.stdin.hasTerminal) {
       _enableInteractiveMode();
     }
 
-    await Future.wait<void>([
-      logs(deviceId),
-      attach(
-        deviceId: deviceId,
+    if (attachUsingUrl) {
+      final urlCompleter = Completer<String>();
+      await logs(deviceId, observationUrlCompleter: urlCompleter);
+      final url = await urlCompleter.future;
+      await attach(
         target: target,
+        deviceId: deviceId,
         appId: appId,
+        debugUrl: url,
         dartDefines: dartDefines,
         openBrowser: openDevtools,
-      ),
-    ]);
+      );
+    } else {
+      await Future.wait<void>([
+        logs(deviceId),
+        attach(
+          target: target,
+          deviceId: deviceId,
+          appId: appId,
+          dartDefines: dartDefines,
+          openBrowser: openDevtools,
+        ),
+      ]);
+    }
   }
 
   /// Attaches to the running app. Returns a [Future] that completes when the
@@ -67,6 +82,7 @@ class FlutterTool {
   Future<void> attach({
     required String deviceId,
     required String target,
+    String? debugUrl,
     required String? appId,
     required Map<String, String> dartDefines,
     required bool openBrowser,
@@ -78,6 +94,7 @@ class FlutterTool {
           '--no-version-check',
           '--debug',
           ...['--device-id', deviceId],
+          if (debugUrl != null) ...['--debug-url', debugUrl],
           if (appId != null) ...['--app-id', appId],
           ...['--target', target],
           for (final dartDefine in dartDefines.entries) ...[
@@ -147,7 +164,10 @@ class FlutterTool {
   /// Connects to app's logs. Returns a [Future] that completes when the logs
   /// are connected.
   @visibleForTesting
-  Future<void> logs(String deviceId) async {
+  Future<void> logs(
+    String deviceId, {
+    Completer<String>? observationUrlCompleter,
+  }) async {
     await _disposeScope.run((scope) async {
       _logger.detail('Logs: waiting for them...');
       final process = await _processManager.start(
@@ -164,6 +184,10 @@ class FlutterTool {
       });
 
       process.listenStdOut((line) {
+        if (line.contains('Dart VM service')) {
+          final url = _getObservationUrl(line);
+          observationUrlCompleter?.complete(url);
+        }
         if (line.startsWith('Showing ') && line.endsWith('logs:')) {
           _logger.success('Hot Restart: logs connected');
           _logsActive = true;
@@ -223,8 +247,12 @@ class FlutterTool {
   }
 
   String _getDevtoolsUrl(String line) {
-    final startIndex = line.indexOf('http');
-    final url = line.substring(startIndex);
+    final url = _getObservationUrl(line);
     return url.replaceAllMapped('?uri=', (_) => '/patrol_ext?uri=');
+  }
+
+  String _getObservationUrl(String line) {
+    final startIndex = line.indexOf('http');
+    return line.substring(startIndex);
   }
 }

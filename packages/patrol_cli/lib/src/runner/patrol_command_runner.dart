@@ -24,6 +24,7 @@ import 'package:patrol_cli/src/crossplatform/flutter_tool.dart';
 import 'package:patrol_cli/src/dart_defines_reader.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
+import 'package:patrol_cli/src/macos/macos_test_backend.dart';
 import 'package:patrol_cli/src/pubspec_reader.dart';
 import 'package:patrol_cli/src/test_bundler.dart';
 import 'package:patrol_cli/src/test_finder.dart';
@@ -114,6 +115,13 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
       logger: _logger,
     );
 
+    final macosTestBackend = MacOSTestBackend(
+      processManager: _processManager,
+      fs: _fs,
+      parentDisposeScope: _disposeScope,
+      logger: _logger,
+    );
+
     final testBundler = TestBundler(
       projectRoot: _fs.currentDirectory,
       logger: _logger,
@@ -134,6 +142,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         pubspecReader: PubspecReader(projectRoot: _fs.currentDirectory),
         androidTestBackend: androidTestBackend,
         iosTestBackend: iosTestBackend,
+        macosTestBackend: macosTestBackend,
         analytics: _analytics,
         logger: _logger,
       ),
@@ -155,6 +164,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         ),
         androidTestBackend: androidTestBackend,
         iosTestBackend: iosTestBackend,
+        macosTestBackend: macosTestBackend,
         analytics: _analytics,
         logger: _logger,
       ),
@@ -169,6 +179,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         pubspecReader: PubspecReader(projectRoot: _fs.currentDirectory),
         androidTestBackend: androidTestBackend,
         iosTestBackend: iosTestBackend,
+        macOSTestBackend: macosTestBackend,
         analytics: _analytics,
         logger: _logger,
       ),

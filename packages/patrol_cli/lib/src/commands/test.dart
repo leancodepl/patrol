@@ -8,6 +8,7 @@ import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/dart_defines_reader.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
+import 'package:patrol_cli/src/macos/macos_test_backend.dart';
 import 'package:patrol_cli/src/pubspec_reader.dart';
 import 'package:patrol_cli/src/runner/patrol_command.dart';
 import 'package:patrol_cli/src/test_bundler.dart';
@@ -22,6 +23,7 @@ class TestCommand extends PatrolCommand {
     required PubspecReader pubspecReader,
     required AndroidTestBackend androidTestBackend,
     required IOSTestBackend iosTestBackend,
+    required MacOSTestBackend macOSTestBackend,
     required Analytics analytics,
     required Logger logger,
   })  : _deviceFinder = deviceFinder,
@@ -31,6 +33,7 @@ class TestCommand extends PatrolCommand {
         _pubspecReader = pubspecReader,
         _androidTestBackend = androidTestBackend,
         _iosTestBackend = iosTestBackend,
+        _macosTestBackend = macOSTestBackend,
         _analytics = analytics,
         _logger = logger {
     usesTargetOption();
@@ -54,6 +57,7 @@ class TestCommand extends PatrolCommand {
   final PubspecReader _pubspecReader;
   final AndroidTestBackend _androidTestBackend;
   final IOSTestBackend _iosTestBackend;
+  final MacOSTestBackend _macosTestBackend;
 
   final Analytics _analytics;
   final Logger _logger;
@@ -86,11 +90,15 @@ class TestCommand extends PatrolCommand {
     final config = _pubspecReader.read();
     final androidFlavor = stringArg('flavor') ?? config.android.flavor;
     final iosFlavor = stringArg('flavor') ?? config.ios.flavor;
+    final macosFlavor = stringArg('flavor') ?? config.macos.flavor;
     if (androidFlavor != null) {
       _logger.detail('Received Android flavor: $androidFlavor');
     }
     if (iosFlavor != null) {
       _logger.detail('Received iOS flavor: $iosFlavor');
+    }
+    if (macosFlavor != null) {
+      _logger.detail('Received macOS flavor: $macosFlavor');
     }
 
     final devices = await _deviceFinder.find(stringsArg('device'));
@@ -110,6 +118,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
 
     final packageName = stringArg('package-name') ?? config.android.packageName;
     final bundleId = stringArg('bundle-id') ?? config.ios.bundleId;
+    final macosBundleId = stringArg('bundle-id') ?? config.macos.bundleId;
 
     final wait = intArg('wait') ?? defaultWait;
     final displayLabel = boolArg('label');
@@ -123,6 +132,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       'PATROL_WAIT': wait.toString(),
       'PATROL_APP_PACKAGE_NAME': packageName,
       'PATROL_APP_BUNDLE_ID': bundleId,
+      'PATROL_MACOS_APP_BUNDLE_ID': macosBundleId,
       'PATROL_ANDROID_APP_NAME': config.android.appName,
       'PATROL_IOS_APP_NAME': config.ios.appName,
       'INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE': 'false',
@@ -164,12 +174,19 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       simulator: !device.real,
     );
 
-    await _build(androidOpts, iosOpts, device);
-    await _preExecute(androidOpts, iosOpts, device, uninstall);
+    final macosOpts = MacOSAppOptions(
+      flutter: flutterOpts,
+      scheme: buildMode.createScheme(macosFlavor),
+      configuration: buildMode.createConfiguration(macosFlavor),
+    );
+
+    await _build(androidOpts, iosOpts, macosOpts, device);
+    await _preExecute(androidOpts, iosOpts, macosOpts, device, uninstall);
     final allPassed = await _execute(
       flutterOpts,
       androidOpts,
       iosOpts,
+      macosOpts,
       uninstall: uninstall,
       device: device,
     );
@@ -181,6 +198,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
   Future<void> _preExecute(
     AndroidAppOptions androidOpts,
     IOSAppOptions iosOpts,
+    MacOSAppOptions macosOpts,
     Device device,
     bool uninstall,
   ) async {
@@ -205,6 +223,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
                 device: device,
               );
         }
+      case TargetPlatform.macOS:
     }
 
     try {
@@ -217,15 +236,14 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
   Future<void> _build(
     AndroidAppOptions androidOpts,
     IOSAppOptions iosOpts,
+    MacOSAppOptions macosOpts,
     Device device,
   ) async {
-    Future<void> Function() buildAction;
-    switch (device.targetPlatform) {
-      case TargetPlatform.android:
-        buildAction = () => _androidTestBackend.build(androidOpts);
-      case TargetPlatform.iOS:
-        buildAction = () => _iosTestBackend.build(iosOpts);
-    }
+    final buildAction = switch (device.targetPlatform) {
+      TargetPlatform.android => () => _androidTestBackend.build(androidOpts),
+      TargetPlatform.macOS => () => _macosTestBackend.build(macosOpts),
+      TargetPlatform.iOS => () => _iosTestBackend.build(iosOpts),
+    };
 
     try {
       await buildAction();
@@ -241,7 +259,8 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
   Future<bool> _execute(
     FlutterAppOptions flutterOpts,
     AndroidAppOptions android,
-    IOSAppOptions iosOpts, {
+    IOSAppOptions ios,
+    MacOSAppOptions macos, {
     required bool uninstall,
     required Device device,
   }) async {
@@ -255,13 +274,15 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
         if (package != null && uninstall) {
           finalizer = () => _androidTestBackend.uninstall(package, device);
         }
+      case TargetPlatform.macOS:
+        action = () async => _macosTestBackend.execute(macos, device);
       case TargetPlatform.iOS:
-        action = () async => _iosTestBackend.execute(iosOpts, device);
-        final bundleId = iosOpts.bundleId;
+        action = () async => _iosTestBackend.execute(ios, device);
+        final bundleId = ios.bundleId;
         if (bundleId != null && uninstall) {
           finalizer = () => _iosTestBackend.uninstall(
                 appId: bundleId,
-                flavor: iosOpts.flutter.flavor,
+                flavor: ios.flutter.flavor,
                 device: device,
               );
         }
