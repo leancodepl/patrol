@@ -176,6 +176,7 @@ void main() {
             ...['-xctestrun', xcTestRunPath],
             ...['-only-testing', 'RunnerUITests'],
             ...['-destination', 'platform=iOS,name=iPhone 13'],
+            ...['-destination-timeout', '1'],
             ...['-resultBundlePath', ''],
           ]),
         );
