@@ -199,6 +199,7 @@ class IOSAppOptions {
         '-destination',
         'platform=${device.real ? 'iOS' : 'iOS Simulator'},name=${device.name}',
       ],
+      ...['-destination-timeout', '1'],
       ...['-resultBundlePath', resultBundlePath],
     ];
 
