@@ -1,5 +1,6 @@
 package pl.leancode.patrol
 
+import pl.leancode.patrol.contracts.Contracts.SendKeyEventRequest
 import pl.leancode.patrol.contracts.Contracts.ConfigureRequest
 import pl.leancode.patrol.contracts.Contracts.DarkModeRequest
 import pl.leancode.patrol.contracts.Contracts.EnterTextRequest
@@ -140,6 +141,11 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
             bySelector = request.selector.toBySelector(),
             index = request.selector.instance?.toInt() ?: 0
         )
+    }
+
+
+    override fun sendKeyEvent(request: SendKeyEventRequest) {
+        automation.sendKeyEvent(request.data)
     }
 
     override fun enterText(request: EnterTextRequest) {
