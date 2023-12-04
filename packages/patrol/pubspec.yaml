@@ -22,7 +22,7 @@ dependencies:
     sdk: flutter
   flutter_test:
     sdk: flutter
-  http: '^1.1.0'
+  http: '^0.13.4'
   json_annotation: ^4.8.1
   meta: ^1.10.0
   patrol_finders: ^2.0.1
