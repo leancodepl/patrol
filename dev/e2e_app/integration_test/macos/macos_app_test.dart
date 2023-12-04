@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'common.dart';
+import '../common.dart';
 
 void main() {
   patrol('taps around', ($) async {
