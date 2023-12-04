@@ -257,6 +257,8 @@ class IOSTestBackend {
     return appId.substring(0, idx);
   }
 
+  // TODO: The path should be joined using platform-specific separator.
+  // https://github.com/leancodepl/patrol/issues/1980
   Future<String> xcTestRunPath({
     required bool real,
     required String scheme,
