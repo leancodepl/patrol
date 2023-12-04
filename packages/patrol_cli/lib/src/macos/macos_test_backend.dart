@@ -141,6 +141,10 @@ class MacOSTestBackend {
       final subject = '${options.description} on ${device.description}';
       final task = _logger.task('Running $subject');
 
+      final resultsPath = resultBundlePath(
+        timestamp: DateTime.now().millisecondsSinceEpoch,
+      );
+
       final sdkVersion = await getSdkVersion();
       final process = await _processManager.start(
         options.testWithoutBuildingInvocation(
@@ -149,6 +153,7 @@ class MacOSTestBackend {
             scheme: options.scheme,
             sdkVersion: sdkVersion,
           ),
+          resultBundlePath: resultsPath,
         ),
         runInShell: true,
         workingDirectory: _fs.currentDirectory.childDirectory('macos').path,
@@ -203,6 +208,21 @@ class MacOSTestBackend {
       return files.first.absolute.path;
     }
     return files.first.path;
+  }
+
+  /// [timestamp] (milliseconds since UNIX epoch) is required for the generation
+  /// of unique path for the results bundle.
+  String resultBundlePath({required int timestamp}) {
+    return _fs
+        .file(
+          join(
+            _fs.currentDirectory.path,
+            'build',
+            'macos_results_$timestamp.xcresult',
+          ),
+        )
+        .absolute
+        .path;
   }
 
   Future<String> getSdkVersion() async {
