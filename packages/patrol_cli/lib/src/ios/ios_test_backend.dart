@@ -257,6 +257,8 @@ class IOSTestBackend {
     return appId.substring(0, idx);
   }
 
+  // TODO: The path should be joined using platform-specific separator.
+  // https://github.com/leancodepl/patrol/issues/1980
   Future<String> xcTestRunPath({
     required bool real,
     required String scheme,
@@ -268,7 +270,7 @@ class IOSTestBackend {
 
     var root = 'build/ios_integ/Build/Products';
     if (absolutePath) {
-      root = join(_fs.currentDirectory.absolute.path, root);
+      root = '${_fs.currentDirectory.absolute.path}/$root';
     }
     _logger.detail('Looking for .xctestrun matching ${glob.pattern} at $root');
     final files = await glob.listFileSystem(_fs, root: root).toList();
