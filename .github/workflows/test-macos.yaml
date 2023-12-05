@@ -1,9 +1,7 @@
 name: test macos
 
 on:
-  workflow_dispatch:
-  schedule:
-    - cron: '0 */12 * * *'
+  pull_request:
 
 jobs:
   run_tests:
