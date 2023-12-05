@@ -1,13 +1,15 @@
 name: test macos
 
 on:
-  pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 */12 * * *'
 
 jobs:
   run_tests:
     name: Flutter ${{ matrix.flutter-version }} on ${{ matrix.device_model }}
     runs-on: macos-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     outputs:
       SLACK_MESSAGE_TITLE: Flutter ${{ matrix.flutter-version }} on ${{ matrix.os }}
       TESTS_EXIT_CODE: ${{ steps.tests_step.outputs.TESTS_EXIT_CODE }}
