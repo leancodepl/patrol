@@ -78,14 +78,9 @@ jobs:
       - name: Run UI tests
         id: tests_step
         run: |
-          screencapture -v ${{ matrix.device_model }}.mp4 & recordingpid="$!"
-
-          sleep 10
-
           TESTS_EXIT_CODE=0
           patrol test -t integration_test/macos --verbose || TESTS_EXIT_CODE=$?
 
-          kill -SIGINT $recordingpid
           echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> "$GITHUB_OUTPUT"
           exit $TESTS_EXIT_CODE
 
@@ -120,10 +115,3 @@ jobs:
         with:
           name: Test result from ${{ matrix.device_model }}.xcresult
           path: ${{ env.XCRESULT_PATH }}
-
-      - name: Upload captured video to artifacts
-        if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
-        uses: actions/upload-artifact@v3
-        with:
-            name: Captured video from ${{ matrix.device_model }}.mp4
-            path: ${{ github.workspace }}/dev/e2e_app/${{ matrix.device_model }}.mp4
