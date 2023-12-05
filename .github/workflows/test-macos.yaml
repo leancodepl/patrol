@@ -54,7 +54,7 @@ jobs:
           APP_STORE_KEY_ID: ${{ secrets.APP_STORE_KEY_ID }}
           APP_STORE_ISSUER_ID: ${{ secrets.APP_STORE_ISSUER_ID }}
           APP_STORE_KEY: ${{ secrets.APP_STORE_KEY }}
-        run: bundle exec fastlane macos certificates
+        run: bundle exec fastlane mac certificates
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
