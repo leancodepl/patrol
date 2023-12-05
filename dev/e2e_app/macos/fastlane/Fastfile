@@ -1,11 +1,11 @@
-default_platform(:ios)
+default_platform(:macos)
 
 git_authorization = "#{ENV.fetch("GIT_USERNAME")}:#{ENV.fetch("GIT_TOKEN")}"
 key_id = ENV.fetch("APP_STORE_KEY_ID")
 issuer_id = ENV.fetch("APP_STORE_ISSUER_ID")
 key_content = ENV.fetch("APP_STORE_KEY")
 
-platform :ios do
+platform :macos do
   desc "Signs app on CI"
   lane :certificates do
     setup_ci if is_ci
