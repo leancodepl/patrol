@@ -1,6 +1,5 @@
 package pl.leancode.patrol
 
-import pl.leancode.patrol.contracts.Contracts.SendKeyEventRequest
 import pl.leancode.patrol.contracts.Contracts.ConfigureRequest
 import pl.leancode.patrol.contracts.Contracts.DarkModeRequest
 import pl.leancode.patrol.contracts.Contracts.EnterTextRequest
@@ -16,6 +15,7 @@ import pl.leancode.patrol.contracts.Contracts.OpenAppRequest
 import pl.leancode.patrol.contracts.Contracts.OpenQuickSettingsRequest
 import pl.leancode.patrol.contracts.Contracts.PermissionDialogVisibleRequest
 import pl.leancode.patrol.contracts.Contracts.PermissionDialogVisibleResponse
+import pl.leancode.patrol.contracts.Contracts.SendKeyEventRequest
 import pl.leancode.patrol.contracts.Contracts.SetLocationAccuracyRequest
 import pl.leancode.patrol.contracts.Contracts.SetLocationAccuracyRequestLocationAccuracy
 import pl.leancode.patrol.contracts.Contracts.SwipeRequest
@@ -142,7 +142,6 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
             index = request.selector.instance?.toInt() ?: 0
         )
     }
-
 
     override fun sendKeyEvent(request: SendKeyEventRequest) {
         automation.sendKeyEvent(request.data)

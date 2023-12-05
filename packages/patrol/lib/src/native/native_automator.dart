@@ -514,6 +514,7 @@ class NativeAutomator {
     );
   }
 
+  /// Sends key pressed event to the native keyboard
   Future<void> sendKeyEvent(
     String keyEvent, {
     String? appId,

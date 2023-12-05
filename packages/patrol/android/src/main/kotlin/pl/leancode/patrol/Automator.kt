@@ -509,8 +509,6 @@ class Automator private constructor() {
         return null
     }
 
-
-
     companion object {
         val instance = Automator()
     }
