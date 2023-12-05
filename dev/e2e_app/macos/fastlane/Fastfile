@@ -20,7 +20,7 @@ platform :mac do
     match(
       type: "development",
       git_basic_authorization: Base64.strict_encode64(git_authorization),
-      app_identifier: ["pl.leancode.patrol.*"]
+      app_identifier: ["pl.leancode.patrol.macos.*"]
     )
 
     update_code_signing_settings(
