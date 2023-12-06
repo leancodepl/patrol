@@ -8,6 +8,13 @@
 
 @implementation RunnerUITests
 
++ (instancetype)testCaseWithSelector:(SEL)selector {
+  NSLog(@"DEBUG: testCaseWithSelector CALLED with \"%@\"", NSStringFromSelector(selector));
+  return [super testCaseWithSelector:selector];
+}
+
+// - (instancetype)initWithSelector:(SEL)selector {}
+
 + (XCTestSuite *)defaultTestSuite {
   NSLog(@"DEBUG: defaultTestSuite CALLED");
   [super setRunnerClass:self];

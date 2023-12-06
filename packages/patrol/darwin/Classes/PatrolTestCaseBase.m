@@ -4,6 +4,20 @@
 #import "PatrolTestCaseBase.h"
 #import "patrol/patrol-Swift.h"
 
+@interface PTRInvocation : NSInvocation
+// + (NSInvocation *)invocationWithMethodSignature:(NSMethodSignature *)sig;
+@end
+
+@implementation PTRInvocation
+
++ (NSInvocation *)invocationWithMethodSignature:(NSMethodSignature *)sig {
+  NSLog(@"DEBUG PTRInvocation.invocationWithMethodSignature: sig return type: %s", sig.methodReturnType);
+  
+  return [super invocationWithMethodSignature:sig];
+}
+
+@end
+
 
 @implementation PatrolTestCaseBase
 
@@ -115,11 +129,7 @@ static Class _runnerClass = nil;
 
   for (NSString *dartTest in dartTests) {
     NSString *selectorStr = [dartTest copy];
-    //if ([self selectedDartTest] == nil) {
-    if (true) {
-      NSLog(@"DEBUG: selectedDartTest is nil!");
-      selectorStr = [PatrolUtils createMethodNameFromPatrolGeneratedGroup:dartTest];
-    }
+    selectorStr = [PatrolUtils createMethodNameFromPatrolGeneratedGroup:dartTest];
     SEL selector = NSSelectorFromString(selectorStr);
     
     NSString *classStr = NSStringFromClass([self runnerClass]);
@@ -134,7 +144,7 @@ static Class _runnerClass = nil;
     
     NSMethodSignature *signature = [[self runnerClass] instanceMethodSignatureForSelector:selector];
     NSLog(@"NSMethodSignature for selector %@: %@", selectorStr, signature);
-    NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];
+    NSInvocation *invocation = [PTRInvocation invocationWithMethodSignature:signature];
     invocation.selector = selector;
     
     [invocations addObject:invocation];
@@ -230,4 +240,5 @@ static Class _runnerClass = nil;
 }
 
 @end
+
 
