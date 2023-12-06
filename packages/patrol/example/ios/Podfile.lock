@@ -94,23 +94,19 @@ PODS:
     - AppAuth/Core (~> 1.6)
     - GTMSessionFetcher/Core (< 3.0, >= 1.5)
   - GTMSessionFetcher/Core (2.3.0)
-  - HTTPParserC (2.9.4)
   - nanopb (2.30909.1):
     - nanopb/decode (= 2.30909.1)
     - nanopb/encode (= 2.30909.1)
   - nanopb/decode (2.30909.1)
   - nanopb/encode (2.30909.1)
   - patrol (0.0.1):
+    - CocoaAsyncSocket (~> 7.6)
     - Flutter
     - FlutterMacOS
-    - Telegraph (~> 0.30.0)
   - permission_handler_apple (9.1.1):
     - Flutter
   - PromisesObjC (2.3.1)
   - RecaptchaInterop (100.0.0)
-  - Telegraph (0.30.0):
-    - CocoaAsyncSocket (~> 7.6)
-    - HTTPParserC (~> 2.9)
 
 DEPENDENCIES:
   - firebase_auth (from `.symlinks/plugins/firebase_auth/ios`)
@@ -121,8 +117,8 @@ DEPENDENCIES:
   - flutter_native_splash (from `.symlinks/plugins/flutter_native_splash/ios`)
   - geocoding_ios (from `.symlinks/plugins/geocoding_ios/ios`)
   - geolocator_apple (from `.symlinks/plugins/geolocator_apple/ios`)
-  - patrol (from `.symlinks/plugins/patrol/darwin`)
   - google_sign_in_ios (from `.symlinks/plugins/google_sign_in_ios/ios`)
+  - patrol (from `.symlinks/plugins/patrol/darwin`)
   - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
 
 SPEC REPOS:
@@ -141,11 +137,9 @@ SPEC REPOS:
     - GoogleUtilities
     - GTMAppAuth
     - GTMSessionFetcher
-    - HTTPParserC
     - nanopb
     - PromisesObjC
     - RecaptchaInterop
-    - Telegraph
 
 EXTERNAL SOURCES:
   firebase_auth:
@@ -195,13 +189,11 @@ SPEC CHECKSUMS:
   GoogleUtilities: 0759d1a57ebb953965c2dfe0ba4c82e95ccc2e34
   GTMAppAuth: 0ff230db599948a9ad7470ca667337803b3fc4dd
   GTMSessionFetcher: 3a63d75eecd6aa32c2fc79f578064e1214dfdec2
-  HTTPParserC: aea14c3d2d4ac5beb3988781daa36dfa62e0d9ef
   nanopb: d4d75c12cd1316f4a64e3c6963f879ecd4b5e0d5
-  patrol: 792c0bb6cc4d552fc8b37f49266341c39e659b4d
+  patrol: 3e21d514020dbee24b3e3383caac9e8e051292ac
   permission_handler_apple: e76247795d700c14ea09e3a2d8855d41ee80a2e6
   PromisesObjC: c50d2056b5253dadbd6c2bea79b0674bd5a52fa4
   RecaptchaInterop: 7d1a4a01a6b2cb1610a47ef3f85f0c411434cb21
-  Telegraph: 12576b119324138e4929792af9e5a1085c2ecbc1
 
 PODFILE CHECKSUM: a2f999e8fe2642046eaa22133617aca7cd25a681
 
