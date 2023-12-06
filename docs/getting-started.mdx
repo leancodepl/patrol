@@ -333,6 +333,8 @@ that Patrol is correctly set up.
 Paste the following code into `integration_test/example_test.dart`:
 
 ```dart title="integration_test/example_test.dart"
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
@@ -352,7 +354,9 @@ void main() {
       );
 
       expect($('app'), findsOneWidget);
-      await $.native.pressHome();
+      if (!Platform.isMacOS) {
+        await $.native.pressHome();
+      }
     },
   );
 }
@@ -361,11 +365,10 @@ void main() {
 It does only 2 things:
 
 - first, it finds a text `app`
-- then, it then exits to home screen
+- then (on mobile platforms), it exits to home screen
 
 It's a very simple test, but it's enough to verify that Patrol is correctly set
-up. To run `integration_test/example_test.dart` on a local Android or iOS device
-      (emulated or physical):
+up. To run `integration_test/example_test.dart` on a local Android, iOS device or macOS:
 
       ```
       patrol test -t integration_test/example_test.dart
@@ -391,6 +394,8 @@ up. To run `integration_test/example_test.dart` on a local Android or iOS device
           ios:
             bundle_id: com.example.MyApp
             app_name: The Awesome App
+          macos:
+            bundle_id: com.example.macos.MyApp
         ```
       </Info>
 
