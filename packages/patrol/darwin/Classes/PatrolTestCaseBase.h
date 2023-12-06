@@ -13,7 +13,6 @@
 @property(class, nonatomic, readwrite, copy) NSString *selectedDartTest;
 @property(class, nonatomic, readwrite, strong) Class runnerClass;
 
-// - (instancetype)init;
 + (NSArray<NSString *> *)_ptr_listDartTests;
 + (IMP)_ptr_methodIplementationForDartTest:(NSString *)testName;
 
