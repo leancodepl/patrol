@@ -57,6 +57,10 @@ Patrol UI tests. It is necessary to run UI tests (`flutter test` won't work! [He
    dart pub global activate patrol_cli
    ```
 
+  <Info>
+     Make sure to add `$HOME/.pub-cache/bin` to your `PATH` environment variable.
+  </Info>
+
 2. Verify that installation was successful and your enviroment is set up properly:
 
    ```
@@ -374,7 +378,9 @@ up. To run `integration_test/example_test.dart` on a connected Android, iOS or m
       patrol test -t integration_test/example_test.dart
       ```
 
-      If the setup is successful, you should see a **TEST PASSED** message.
+      If the setup is successful, you should see a **TEST PASSED** message. 
+      If something went wrong, please proceed to the [FAQ](#setup-faq) section which might
+      contain an answer to your issue.
 
       <Info>
         If your app is using flavors, then you can pass them like so:
@@ -407,6 +413,15 @@ up. To run `integration_test/example_test.dart` on a connected Android, iOS or m
         2. Do not modify the global `FlutterError.onError` callback. Patrol's
           internals depend on it.
       </Error>
+
+### Setup FAQ
+
+<Accordion title="Where do I get `package_name` from?">
+  Go to `android/app/build.gradle` and look for `applicationId` in `defaultConfig` section.
+</Accordion>
+<Accordion title="Where do I get `bundle_id` from?">
+  Go to `ios/Runner.xcodeproj/project.pbxproj` and look for `PRODUCT_BUNDLE_IDENTIFIER`.
+</Accordion>
 
 ### Going from here
 

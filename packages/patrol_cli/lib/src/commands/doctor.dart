@@ -39,17 +39,20 @@ class DoctorCommand extends PatrolCommand {
   }
 
   void _printAndroidSpecifics() {
+    _logger.info('Android: ');
+
     _checkIfToolInstalled('adb');
 
     final androidHome = _platform.environment['ANDROID_HOME'];
     if (androidHome?.isNotEmpty ?? false) {
-      _logger.success('Env var \$ANDROID_HOME set to $androidHome');
+      _logger.success('• Env var \$ANDROID_HOME set to $androidHome');
     } else {
-      _logger.err(r'Env var $ANDROID_HOME is not set');
+      _logger.err(r'• Env var $ANDROID_HOME is not set');
     }
   }
 
   void _printIosSpecifics() {
+    _logger.info('iOS / macOS: ');
     _checkIfToolInstalled('xcodebuild');
     _checkIfToolInstalled('ideviceinstaller', 'brew install ideviceinstaller');
   }
@@ -59,10 +62,10 @@ class DoctorCommand extends PatrolCommand {
         ? io.Process.runSync('where.exe', [tool])
         : io.Process.runSync('which', [tool]);
     if (result.exitCode == 0) {
-      _logger.success('Program $tool found in ${result.stdOut.trim()}');
+      _logger.success('• Program $tool found in ${result.stdOut.trim()}');
     } else {
       _logger.err(
-        'Program $tool not found ${hint != null ? "(install with `$hint`)" : ""}',
+        '• Program $tool not found ${hint != null ? "(install with `$hint`)" : ""}',
       );
     }
   }
