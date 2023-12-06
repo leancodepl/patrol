@@ -58,7 +58,7 @@ Patrol UI tests. It is necessary to run UI tests (`flutter test` won't work! [He
    ```
 
   <Info>
-     Make sure to add `$HOME/.pub-cache/bin` to your `PATH` environment variable.
+     Make sure to add `patrol_cli` to your `PATH` environment variable.
   </Info>
 
 2. Verify that installation was successful and your enviroment is set up properly:
@@ -66,6 +66,11 @@ Patrol UI tests. It is necessary to run UI tests (`flutter test` won't work! [He
    ```
    patrol doctor
    ```
+
+   <Warning>
+        Make sure that the `patrol doctor` does not show any errors for the
+        platform you intend to test.
+   </Warning>
 
 ### Integrate with native side
 
@@ -75,8 +80,17 @@ Psst... Android is a bit easier to set up, so we recommend starting with it!
 
 <Accordion defaultOpen title="Android setup">
 
+      <Info>
+        `patrol` package requires Android SDK version 21 or higher.
+      </Info>
+
       1. Go to **android/app/src/androidTest/java/com/example/myapp/** in your project
          directory. If there are no such folders, create them.
+
+      <Info>
+        Remember to replace `/com/example/myapp/` with the path created by your app's 
+        package name.
+      </Info>
 
       2. Create a file named `MainActivityTest.java` and copy there the code below.
 
@@ -416,12 +430,63 @@ up. To run `integration_test/example_test.dart` on a connected Android, iOS or m
 
 ### Setup FAQ
 
+<Accordion title="Testing fails with error inside `integration_test/test_bundle.dart`">
+  The reason is a mismatch of `patrol` and `patrol_cli` versions. Make sure that you 
+  use the latest versions of both packages.
+</Accordion>
+
+<Accordion title="`example_test.dart` passed but I can't get my application to run 
+within the patrol test.">
+  To run your application within the patrol test, you need to call `$.pumpWidgetAndSettle()`,
+  and pass your application's main widget to it. Be sure that you registered all the 
+  necessary services before calling `$.pumpWidgetAndSettle()`.
+  Here's the example of running an app within the patrol test:
+  ```dart
+  void main() {
+    patrolTest('real app test', ($) async {
+    
+    // Do all the necessary setup here (DI, services, etc.)
+
+    await $.pumpWidgetAndSettle(const MyApp()); // Your's app main widget
+
+    // Start testing your app here
+
+    });
+  }
+  ```
+  It's a good practice to create a setup wrapper function for your tests, so you don't have to
+  repeat the same code in every test.
+</Accordion>
+
+## Android
+
 <Accordion title="Where do I get `package_name` from?">
   Go to `android/app/build.gradle` and look for `applicationId` in `defaultConfig` section.
 </Accordion>
+
+<Accordion title="Running patrol test fails containing `Unsupported class file major version` error">
+  It's most likely caused by using incompatible JDK version. 
+  Change your $JAVA_HOME path to use JetBrainsRuntime.
+</Accordion>
+
+## iOS
+
 <Accordion title="Where do I get `bundle_id` from?">
   Go to `ios/Runner.xcodeproj/project.pbxproj` and look for `PRODUCT_BUNDLE_IDENTIFIER`.
 </Accordion>
+
+<Accordion title="When I run tests the emulator is getting cloned">
+  Make sure that you disabled "Paralell execution" for **all schemes** in Xcode.
+  See [this video](https://www.youtube.com/watch?v=9LdEJR59fW4) for details.
+</Accordion>
+
+<Accordion title="Running test stops on `Wait for com.example.myapp to idle`">
+  Open your XCode project, go to **Runner** target -> **Build Settings**, search for `FLUTTER_TARGET`
+  and remove set path to targets for all configurations.  
+</Accordion>
+
+If you couldn't find an answer to your question/problem, feel free to ask on 
+[Patrol Discord Channel](https://discord.gg/ukBK5t4EZg).
 
 ### Going from here
 
