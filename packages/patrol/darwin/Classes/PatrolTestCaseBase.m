@@ -30,10 +30,10 @@ static ObjCPatrolAppServiceClient *_appServiceClient = nil;
 }
 
 static NSString *_selectedTest = nil;
-+ (NSString *)selectedTest {
++ (NSString *)selectedDartTest {
   return _selectedTest;
 }
-+ (void)setSelectedTest:(NSString *)newSelectedTest {
++ (void)setSelectedDartTest:(NSString *)newSelectedTest {
   if (newSelectedTest != _selectedTest) {
     _selectedTest = [newSelectedTest copy];
   }
@@ -52,26 +52,35 @@ static Class _runnerClass = nil;
 
 // MARK: Initializer
 
-- (instancetype)init {
-  self = [super initWithInvocation:nil];
-
-  return self;
-}
-
+//- (instancetype)init {
+//  self = [super initWithInvocation:nil];
+//
+//  return self;
+//}
+//
 - (instancetype)initWithSelector:(SEL)selector {
-  NSLog(@"DEBUG: PatrolTestCaseBase.initWithSelector: called with %@", NSStringFromSelector(selector));
+  NSString *selectorStr = [PatrolUtils createMethodNameFromPatrolGeneratedGroup:NSStringFromSelector(selector)];
+  selector = NSSelectorFromString(selectorStr);
+  
+  NSLog(@"DEBUG: PatrolTestCaseBase.initWithSelector: called with \"%@\"", NSStringFromSelector(selector));
+  NSLog(@"DEBUG: PatrolTestCaseBase.initWithSelector: before super initWithSelector");
   self = [super initWithSelector:selector];
+  NSLog(@"DEBUG: PatrolTestCaseBase.initWithSelector: after super initWithSelector");
   
   return self;
 }
 
 // MARK: Header implementation
 
-+ (NSArray<NSString *> *)_ptr_dartTests {
-  if ([self selectedTest] != nil) {
++ (NSArray<NSString *> *)_ptr_listDartTests {
+  if ([self selectedDartTest] != nil) {
     // A single test was specified with the -only-testing option of xcodebuild
-    NSLog(@"selectedTest: %@", [self selectedTest]);
-    return [NSArray arrayWithObject:[self selectedTest]];
+    // NSString *selectorStr = [PatrolUtils createMethodNameFromPatrolGeneratedGroup:_selectedTest];
+    
+    // NSLog(@"Selected Dart test \"%@\" as selector \"%@\"", [self selectedTest], selectorStr);
+    NSLog(@"Selected Dart test \"%@\"", [self selectedDartTest]);
+    
+    return [NSArray arrayWithObject:[self selectedDartTest]];
   }
 
   // No test was specified. Run app under test and perform test discovery
@@ -116,7 +125,7 @@ static Class _runnerClass = nil;
   return dartTests;
 }
 
-+ (IMP)_ptr_testMethodImplementation:(NSString *)testName {
++ (IMP)_ptr_methodIplementationForDartTest:(NSString *)testName {
   IMP implementation = imp_implementationWithBlock(^(id _self) {
     [[[XCUIApplication alloc] init] launch];
 
@@ -143,15 +152,20 @@ static Class _runnerClass = nil;
 // MARK: Core logic
 
 + (BOOL)instancesRespondToSelector:(SEL)aSelector {
-  NSString *selectedTest = NSStringFromSelector(aSelector);
-  NSLog(@"instancesRespondToSelector: selected test \"%@\"", selectedTest);
+  // aSelector is not really a valid selector here! Rename to make it obvious.
+  NSString *dartTest = NSStringFromSelector(aSelector);
+  [self setSelectedDartTest:dartTest];
+  // NSString *selectorStr = [PatrolUtils createMethodNameFromPatrolGeneratedGroup:[self selectedDartTest]];
+  
+  NSLog(@"Selected Dart test \"%@\" as selector \"%@\"", [self selectedDartTest], NSStringFromSelector(aSelector));
+  
+  [self defaultTestSuite];  // calls testInvocations and swizzles-in test methods
 
-  [self setSelectedTest:selectedTest];
-  [self defaultTestSuite];  // calls testInvocations
-
+  // SEL selector = NSSelectorFromString(selectorStr);
+  
   BOOL responds = [super instancesRespondToSelector:aSelector];
   if (!responds) {
-    NSLog(@"Fatal error: instance does not respond to selector \"%@\"", selectedTest);
+    NSLog(@"Fatal error: instance does not respond to selector \"%@\"", NSStringFromSelector(aSelector));
   }
   
   return responds;
@@ -169,22 +183,25 @@ static Class _runnerClass = nil;
 
   [self setAppServiceClient:[[ObjCPatrolAppServiceClient alloc] init]];
 
-  NSLog(@"Will call _ptr_dartTests...");
-  NSArray<NSString *> *dartTests = [self _ptr_dartTests];
+  NSLog(@"Will call _ptr_listDartTests...");
+  NSArray<NSString *> *dartTests = [self _ptr_listDartTests];
   NSMutableArray<NSInvocation *> *invocations = [NSMutableArray arrayWithCapacity:dartTests.count];
 
   for (NSString *dartTest in dartTests) {
-    NSString *selectorStr = [PatrolUtils createMethodNameFromPatrolGeneratedGroup:dartTest];
+    NSString *selectorStr = [dartTest copy];
+    if ([self selectedDartTest] != nil) {
+      selectorStr = [PatrolUtils createMethodNameFromPatrolGeneratedGroup:dartTest];
+    }
     SEL selector = NSSelectorFromString(selectorStr);
     
     NSString *classStr = NSStringFromClass([self runnerClass]);
-    NSLog(@"Will create method %@ in class %@ for Dart test \"%@\"", selectorStr, classStr, dartTest);
+    NSLog(@"Will create method \"%@\" in class \"%@\" for Dart test \"%@\"", selectorStr, classStr, dartTest);
     
     // Instance method must be created before calling instanceMethodSignatureForSelector
-    IMP imp = [self _ptr_testMethodImplementation:dartTest];
+    IMP imp = [self _ptr_methodIplementationForDartTest:dartTest];
     BOOL ok = class_addMethod([self runnerClass], selector, imp, "v@:");
     if (!ok) {
-      NSLog(@"DEBUG: Failed to class_addMethod");
+      NSLog(@"Fatal error: ailed to class_addMethod");
     }
     
     NSMethodSignature *signature = [[self runnerClass] instanceMethodSignatureForSelector:selector];
@@ -195,7 +212,13 @@ static Class _runnerClass = nil;
     [invocations addObject:invocation];
   }
 
-  NSLog(@"testInvocations: end, invocation count: %lu", invocations.count);
+  NSLog(@"testInvocations: end, invocation count: %lu, will list them...", invocations.count);
+  for (int i = 0; i < invocations.count; i++) {
+    NSInvocation *invocation = [invocations objectAtIndex:i];
+    NSLog(@"invocation %d: %@", i, NSStringFromSelector(invocation.selector));
+  }
+    
+  
   return invocations;
 }
 

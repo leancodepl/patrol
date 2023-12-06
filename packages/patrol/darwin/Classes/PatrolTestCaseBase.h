@@ -10,11 +10,11 @@
 
 @property(class, nonatomic, readwrite, strong) PatrolServer *server;
 @property(class, nonatomic, readwrite, strong) ObjCPatrolAppServiceClient *appServiceClient;
-@property(class, nonatomic, readwrite, copy) NSString *selectedTest;
+@property(class, nonatomic, readwrite, copy) NSString *selectedDartTest;
 @property(class, nonatomic, readwrite, strong) Class runnerClass;
 
 // - (instancetype)init;
-+ (NSArray<NSString *> *)_ptr_dartTests;
-+ (IMP)_ptr_testMethodImplementation:(NSString *)testName;
++ (NSArray<NSString *> *)_ptr_listDartTests;
++ (IMP)_ptr_methodIplementationForDartTest:(NSString *)testName;
 
 @end
