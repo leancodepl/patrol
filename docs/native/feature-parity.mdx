@@ -8,35 +8,39 @@ Here you can see what you can already do with Patrol, and what is yet to be
 implemented. We hope that it will help you evaluate Patrol.
 
 We strive for high feature parity across iOS and Android, but in some cases it's
-impossible to reach 100%.
+impossible to reach 100%. macOs support is still in alpha, so it has no native features yet.
+
 
 ### Table
 
-| **Feature**                 | **Android**    | **iOS**       |
-| --------------------------- | -------------- | ------------- |
-| [Press home]                | ✅             | ✅            |
-| [Press back]                | ✅             | ❌ (no API)   |
-| [Open any app]              | ✅             | ✅            |
-| [Open notifications]        | ✅             | ✅            |
-| [Tap on notification]       | ✅             | ✅            |
-| [Open quick settings]       | ✅             | ✅            |
-| [Toggle dark mode]          | ✅             | ✅            |
-| [Toggle airplane mode]      | ✅ see [#1359] | ✅            |
-| [Toggle cellular]           | ✅             | ✅            |
-| [Toggle Wi-Fi]              | ✅             | ✅            |
-| [Toggle Bluetooth]          | ✅ see [#282]  | ✅            |
-| Toggle location             | ✅ see [#283]  | ✅ see [#326] |
-| [Tap]                       | ✅             | ✅            |
-| [Double tap]                | ✅             | ✅            |
-| [Enter text]                | ✅             | ✅            |
-| [Swipe]                     | ✅             | ✅            |
-| [Handle permission dialogs] | ✅             | ✅            |
-| Interact with WebView       | ⚠️ see [#244]   | ✅            |
+| **Feature**                 | **Android**    | **iOS**       | **macOS (alpha)** |
+| --------------------------- | -------------- | ------------- | ----------------- |
+| [Press home]                | ✅             | ✅            | ❌                 |
+| [Press back]                | ✅             | ❌ (no API)   | ❌                 |
+| [Open any app]              | ✅             | ✅            | ✅                 |
+| [Open notifications]        | ✅             | ✅            | ❌                 |
+| [Tap on notification]       | ✅             | ✅            | ❌                 |
+| [Open quick settings]       | ✅             | ✅            | ❌                 |
+| [Toggle dark mode]          | ✅             | ✅            | ❌                 |
+| [Toggle airplane mode]      | ✅ see [#1359] | ✅            | ❌                 |
+| [Toggle cellular]           | ✅             | ✅            | ❌                 |
+| [Toggle Wi-Fi]              | ✅             | ✅            | ❌                 |
+| [Toggle Bluetooth]          | ✅ see [#282]  | ✅            | ❌                 |
+| Toggle location             | ✅ see [#283]  | ✅ see [#326] | ❌                 |
+| [Tap]                       | ✅             | ✅            | ❌                 |
+| [Double tap]                | ✅             | ✅            | ❌                 |
+| [Enter text]                | ✅             | ✅            | ❌                 |
+| [Swipe]                     | ✅             | ✅            | ❌                 |
+| [Handle permission dialogs] | ✅             | ✅            | ❌                 |
+| Interact with WebView       | ⚠️ see [#244]   | ✅            | ❌                 |
 
 ### Platfom support
 
-Patrol works on virtual and physical devices running Android 5.0 (API 21) and
-newer, and iOS 11 and newer.
+Patrol works on:
+ - Android 5.0 (API 21) and newer,
+ - iOS 11 and newer,
+ - macOS 10.14 and newer.
+On mobile platforms it works on both physical and virtual devices.
 
 [#244]: https://github.com/leancodepl/patrol/issues/244
 [#282]: https://github.com/leancodepl/patrol/issues/282
