@@ -2,16 +2,19 @@
 @import XCTest;
 
 #import "PatrolUtils.h"
-#import "patrol/patrol-Swift.h"
+
+@class PatrolServer;
+@class ObjCPatrolAppServiceClient;
 
 @interface PatrolTestCaseBase : XCTestCase
 
-@property(class, nonatomic, readwrite) PatrolServer *server;
-@property(class, nonatomic, readwrite) ObjCPatrolAppServiceClient *appServiceClient;
-@property(class, strong, nonatomic) NSString *selectedTest;
+@property(class, nonatomic, readwrite, strong) PatrolServer *server;
+@property(class, nonatomic, readwrite, strong) ObjCPatrolAppServiceClient *appServiceClient;
+@property(class, nonatomic, readwrite, copy) NSString *selectedTest;
+@property(class, nonatomic, readwrite, strong) Class runnerClass;
 
-- (instancetype)init NS_DESIGNATED_INITIALIZER;
-+ (NSArray<NSString *> *)_ptr_testMethodSelectors;
+// - (instancetype)init;
++ (NSArray<NSString *> *)_ptr_dartTests;
 + (IMP)_ptr_testMethodImplementation:(NSString *)testName;
 
 @end

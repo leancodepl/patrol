@@ -1,6 +1,9 @@
 @import Foundation;
 @import ObjectiveC.runtime;
+
 #import "PatrolTestCaseBase.h"
+#import "patrol/patrol-Swift.h"
+
 
 @implementation PatrolTestCaseBase
 
@@ -36,6 +39,17 @@ static NSString *_selectedTest = nil;
   }
 }
 
+static Class _runnerClass = nil;
++ (Class)runnerClass {
+  return _runnerClass;
+}
++ (void)setRunnerClass:(Class)newRunnerClass {
+  NSLog(@"DEBUG: set runner class to %@", newRunnerClass);
+  if (newRunnerClass != _runnerClass) {
+    _runnerClass = newRunnerClass;
+  }
+}
+
 // MARK: Initializer
 
 - (instancetype)init {
@@ -44,9 +58,16 @@ static NSString *_selectedTest = nil;
   return self;
 }
 
+- (instancetype)initWithSelector:(SEL)selector {
+  NSLog(@"DEBUG: PatrolTestCaseBase.initWithSelector: called with %@", NSStringFromSelector(selector));
+  self = [super initWithSelector:selector];
+  
+  return self;
+}
+
 // MARK: Header implementation
 
-+ (NSArray<NSString *> *)_ptr_testMethodSelectors {
++ (NSArray<NSString *> *)_ptr_dartTests {
   if ([self selectedTest] != nil) {
     // A single test was specified with the -only-testing option of xcodebuild
     NSLog(@"selectedTest: %@", [self selectedTest]);
@@ -59,18 +80,23 @@ static NSString *_selectedTest = nil;
   XCUIApplication *springboard = [[XCUIApplication alloc] initWithBundleIdentifier:@"com.apple.springboard"];
   XCUIElementQuery *systemAlerts = springboard.alerts;
   if (systemAlerts.buttons[@"Allow"].exists) {
+    NSLog(@"Local Network permission dialog appeared, will accept it...");
     [systemAlerts.buttons[@"Allow"] tap];
   }
 
   __block NSArray<NSString *> *dartTests = NULL;
   /* Run the app for the first time to gather Dart tests */
   [[[XCUIApplication alloc] init] launch];
+  
+  NSLog(@"Will wait for the app to report its readiness...");
 
   /* Spin the runloop waiting until the app reports that it is ready to report Dart tests */
-  while (![self server].appReady) {
+  while (![[self server] appReady]) {
+    NSLog(@"Waiting for the app to report its readiness... appReady: %d", [[self server] appReady]);
     [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
   }
 
+  NSLog(@"Will list Dart tests...");
   [[self appServiceClient] listDartTestsWithCompletion:^(NSArray<NSString *> *_Nullable tests, NSError *_Nullable err) {
     if (err != NULL) {
       NSLog(@"listDartTests(): failed, err: %@", err);
@@ -81,6 +107,7 @@ static NSString *_selectedTest = nil;
 
   /* Spin the runloop waiting until the app reports the Dart tests it contains */
   while (!dartTests) {
+    NSLog(@"Waiting for app to return list of Dart tests..");
     [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
   }
 
@@ -116,18 +143,22 @@ static NSString *_selectedTest = nil;
 // MARK: Core logic
 
 + (BOOL)instancesRespondToSelector:(SEL)aSelector {
-  NSString *selectedTest = [PatrolUtils createMethodNameFromPatrolGeneratedGroup:NSStringFromSelector(aSelector)];
-
+  NSString *selectedTest = NSStringFromSelector(aSelector);
   NSLog(@"instancesRespondToSelector: selected test \"%@\"", selectedTest);
 
   [self setSelectedTest:selectedTest];
   [self defaultTestSuite];  // calls testInvocations
 
-  BOOL result = [super instancesRespondToSelector:aSelector];
-  return true;  // TODO: return real result
+  BOOL responds = [super instancesRespondToSelector:aSelector];
+  if (!responds) {
+    NSLog(@"Fatal error: instance does not respond to selector \"%@\"", selectedTest);
+  }
+  
+  return responds;
 }
 
 + (NSArray<NSInvocation *> *)testInvocations {
+  NSLog(@"testInvocations: begin");
   [self setServer:[[PatrolServer alloc] init]];
 
   NSError *_Nullable __autoreleasing *_Nullable err = NULL;
@@ -138,20 +169,33 @@ static NSString *_selectedTest = nil;
 
   [self setAppServiceClient:[[ObjCPatrolAppServiceClient alloc] init]];
 
-  NSArray<NSString *> *selectors = [self _ptr_testMethodSelectors];
-  NSArray<NSInvocation *> *invocations = [NSMutableArray arrayWithCapacity:selectors.count];
+  NSLog(@"Will call _ptr_dartTests...");
+  NSArray<NSString *> *dartTests = [self _ptr_dartTests];
+  NSMutableArray<NSInvocation *> *invocations = [NSMutableArray arrayWithCapacity:dartTests.count];
 
-  for (NSString *selectorStr in selectors) {
+  for (NSString *dartTest in dartTests) {
+    NSString *selectorStr = [PatrolUtils createMethodNameFromPatrolGeneratedGroup:dartTest];
     SEL selector = NSSelectorFromString(selectorStr);
-
-    NSMethodSignature *signature = [self instanceMethodSignatureForSelector:selector];
+    
+    NSString *classStr = NSStringFromClass([self runnerClass]);
+    NSLog(@"Will create method %@ in class %@ for Dart test \"%@\"", selectorStr, classStr, dartTest);
+    
+    // Instance method must be created before calling instanceMethodSignatureForSelector
+    IMP imp = [self _ptr_testMethodImplementation:dartTest];
+    BOOL ok = class_addMethod([self runnerClass], selector, imp, "v@:");
+    if (!ok) {
+      NSLog(@"DEBUG: Failed to class_addMethod");
+    }
+    
+    NSMethodSignature *signature = [[self runnerClass] instanceMethodSignatureForSelector:selector];
+    NSLog(@"NSMethodSignature for selector %@: %@", selectorStr, signature);
     NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];
     invocation.selector = selector;
-
-    // TODO: Re-add
-    // class_addMethod(self, selector, implementation, "v@:");
+    
+    [invocations addObject:invocation];
   }
 
+  NSLog(@"testInvocations: end, invocation count: %lu", invocations.count);
   return invocations;
 }
 
