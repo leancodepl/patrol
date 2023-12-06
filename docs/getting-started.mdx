@@ -19,7 +19,8 @@ title: Getting started
 ### Add dependency on `patrol`
 
 If you haven't already, add a dependency on the `patrol` package in the
-`dev_dependencies` section of `pubspec.yaml`.
+`dev_dependencies` section of `pubspec.yaml`.  `patrol` package requires 
+Android SDK version 21 or higher.
 
 ```
 flutter pub add patrol --dev
@@ -66,11 +67,17 @@ Patrol UI tests. It is necessary to run UI tests (`flutter test` won't work! [He
    ```
    patrol doctor
    ```
-
-   <Warning>
-        Make sure that the `patrol doctor` does not show any errors for the
-        platform you intend to test.
-   </Warning>
+   Example output:
+   ```
+   Patrol CLI version: 2.3.1+1
+   Android: 
+   • Program adb found in /Users/username/Library/Android/sdk/platform-tools/adb
+   • Env var $ANDROID_HOME set to /Users/username/Library/Android/sdk
+   iOS / macOS: 
+   • Program xcodebuild found in /usr/bin/xcodebuild
+   • Program ideviceinstaller found in /opt/homebrew/bin/ideviceinstaller
+   ```
+   Be sure that for the platform you want to run the test on, all the checks are green.
 
 ### Integrate with native side
 
@@ -80,17 +87,9 @@ Psst... Android is a bit easier to set up, so we recommend starting with it!
 
 <Accordion defaultOpen title="Android setup">
 
-      <Info>
-        `patrol` package requires Android SDK version 21 or higher.
-      </Info>
-
       1. Go to **android/app/src/androidTest/java/com/example/myapp/** in your project
-         directory. If there are no such folders, create them.
-
-      <Info>
-        Remember to replace `/com/example/myapp/` with the path created by your app's 
-        package name.
-      </Info>
+         directory. If there are no such folders, create them. **Remember to replace 
+         `/com/example/myapp/` with the path created by your app's package name.**
 
       2. Create a file named `MainActivityTest.java` and copy there the code below.
 
@@ -393,7 +392,7 @@ up. To run `integration_test/example_test.dart` on a connected Android, iOS or m
       ```
 
       If the setup is successful, you should see a **TEST PASSED** message. 
-      If something went wrong, please proceed to the [FAQ](#setup-faq) section which might
+      If something went wrong, please proceed to the [FAQ](/getting-started#faq) section which might
       contain an answer to your issue.
 
       <Info>
@@ -428,7 +427,7 @@ up. To run `integration_test/example_test.dart` on a connected Android, iOS or m
           internals depend on it.
       </Error>
 
-### Setup FAQ
+### FAQ
 
 <Accordion title="Testing fails with error inside `integration_test/test_bundle.dart`">
   The reason is a mismatch of `patrol` and `patrol_cli` versions. Make sure that you 
@@ -458,7 +457,8 @@ within the patrol test.">
   repeat the same code in every test.
 </Accordion>
 
-## Android
+
+#### Android
 
 <Accordion title="Where do I get `package_name` from?">
   Go to `android/app/build.gradle` and look for `applicationId` in `defaultConfig` section.
@@ -469,7 +469,8 @@ within the patrol test.">
   Change your $JAVA_HOME path to use JetBrainsRuntime.
 </Accordion>
 
-## iOS
+
+#### iOS
 
 <Accordion title="Where do I get `bundle_id` from?">
   Go to `ios/Runner.xcodeproj/project.pbxproj` and look for `PRODUCT_BUNDLE_IDENTIFIER`.
