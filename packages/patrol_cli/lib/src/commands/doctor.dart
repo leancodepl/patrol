@@ -46,21 +46,38 @@ class DoctorCommand extends PatrolCommand {
   void _printAndroidSpecifics() {
     _logger.info('Android: ');
 
-    _checkIfToolInstalled('adb');
+    _checkIfToolInstalled(
+      'adb',
+      'See the link: https://www.xda-developers.com/install-adb-windows-macos-linux/#how-to-set-up-adb',
+    );
 
     final androidHome = _platform.environment['ANDROID_HOME'];
     if (androidHome?.isNotEmpty ?? false) {
       _logger.success('• Env var \$ANDROID_HOME set to $androidHome');
     } else {
-      _logger.err(r'• Env var $ANDROID_HOME is not set');
+      final linkHint = switch (_platform.operatingSystem) {
+        Platform.linux => 'https://stackoverflow.com/a/28889144/9899010',
+        Platform.macOS => 'https://stackoverflow.com/a/33631853/9899010',
+        Platform.windows =>
+          'https://www.ibm.com/docs/en/rtw/10.5.1?topic=prwut-setting-changing-android-home-path-in-windows-operating-systems',
+        _ => '',
+      };
+      _logger.err(
+        '• Env var \$ANDROID_HOME is not set. (See the link: $linkHint)',
+      );
     }
   }
 
   void _printIosSpecifics() {
     _logger.info('iOS / macOS: ');
-    _checkIfToolInstalled('xcodebuild');
-    _checkIfToolInstalled('ideviceinstaller', 'brew install ideviceinstaller');
+    _checkIfToolInstalled('xcodebuild', 'Install Xcode on your Mac');
+    _checkIfToolInstalled(
+      'ideviceinstaller',
+      _commandHint('brew install ideviceinstaller'),
+    );
   }
+
+  String _commandHint(String command) => 'install with `$command`';
 
   void _checkIfToolInstalled(String tool, [String? hint]) {
     final result = io.Platform.isWindows
@@ -70,7 +87,7 @@ class DoctorCommand extends PatrolCommand {
       _logger.success('• Program $tool found in ${result.stdOut.trim()}');
     } else {
       _logger.err(
-        '• Program $tool not found ${hint != null ? "(install with `$hint`)" : ""}',
+        '• Program $tool not found ${hint != null ? "($hint)" : ""}',
       );
     }
   }
