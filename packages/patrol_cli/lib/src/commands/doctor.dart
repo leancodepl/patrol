@@ -24,6 +24,7 @@ class DoctorCommand extends PatrolCommand {
 
   @override
   Future<int> run() async {
+    _printHeader();
     _printVersion();
     _printAndroidSpecifics();
 
@@ -32,6 +33,10 @@ class DoctorCommand extends PatrolCommand {
     }
 
     return 0;
+  }
+
+  void _printHeader() {
+    _logger.info('Patrol doctor:');
   }
 
   void _printVersion() {

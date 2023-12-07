@@ -260,7 +260,7 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
 
     var exitCode = 1;
     try {
-      _handleAnalytics();
+      _handleFirstRun();
 
       final topLevelResults = parse(args);
       verbose = topLevelResults['verbose'] == true;
@@ -335,10 +335,16 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
   @override
   void printUsage() => _logger.info(usage);
 
-  void _handleAnalytics() {
+  void _handleFirstRun() {
     if (_analytics.firstRun && !_isCI) {
-      _logger.info(
-        '''
+      _handleAnalytics();
+      _runDoctor();
+    }
+  }
+
+  void _handleAnalytics() {
+    _logger.info(
+      '''
 \n
 +---------------------------------------------------+
 |             Patrol - Ready for action!            |
@@ -348,18 +354,21 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
 | information will ever leave your machine.         |
 +---------------------------------------------------+
 \n''',
-      );
-      final analyticsEnabled = _logger.confirm(
-        'Enable analytics?',
-        defaultValue: true,
-      );
-      _analytics.enabled = analyticsEnabled;
-      if (analyticsEnabled) {
-        _logger.info('Analytics enabled. Thank you!');
-      } else {
-        _logger.info('Analytics disabled.');
-      }
+    );
+    final analyticsEnabled = _logger.confirm(
+      'Enable analytics?',
+      defaultValue: true,
+    );
+    _analytics.enabled = analyticsEnabled;
+    if (analyticsEnabled) {
+      _logger.info('Analytics enabled. Thank you!');
+    } else {
+      _logger.info('Analytics disabled.');
     }
+  }
+
+  void _runDoctor() {
+    DoctorCommand(logger: _logger, platform: _platform).run();
   }
 
   bool _wantsUpdateCheck(String? commandName) {
