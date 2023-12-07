@@ -1,7 +1,6 @@
 import 'package:args/command_runner.dart';
 import 'package:file/memory.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:patrol_cli/src/base/constants.dart';
 import 'package:patrol_cli/src/base/extensions/command_runner.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/runner/patrol_command_runner.dart';
@@ -12,10 +11,11 @@ import 'package:test/test.dart';
 import '../ios/ios_test_backend_test.dart';
 import '../src/mocks.dart';
 
-const latestVersion = '0.0.0';
+const currentVersion = '1.2.0';
+const latestVersion = '1.3.0';
 
 final updatePrompt = '''
-${lightYellow.wrap('Update available!')} ${lightCyan.wrap(version)} \u2192 ${lightCyan.wrap(latestVersion)}
+${lightYellow.wrap('Update available!')} ${lightCyan.wrap(currentVersion)} \u2192 ${lightCyan.wrap(latestVersion)}
 Run ${lightCyan.wrap('patrol update')} to update''';
 
 void main() {
@@ -31,7 +31,7 @@ void main() {
 
       when(
         () => pubUpdater.getLatestVersion(any()),
-      ).thenAnswer((_) async => version);
+      ).thenAnswer((_) async => currentVersion);
 
       commandRunner = PatrolCommandRunner(
         platform: FakePlatform(environment: {}),
@@ -41,6 +41,7 @@ void main() {
         analytics: MockAnalytics(),
         logger: logger,
         isCI: false,
+        version: currentVersion,
       );
     });
 
@@ -91,7 +92,7 @@ void main() {
     });
 
     test(
-      'prints error message and usage when command option is passed',
+      'prints error message and usage when invalid command is invoked',
       () async {
         final result = await commandRunner.run(['foo']);
         expect(result, equals(1));
@@ -122,7 +123,7 @@ void main() {
       test('prints current version', () async {
         final result = await commandRunner.run(['--version']);
         expect(result, equals(0));
-        verify(() => logger.info('patrol_cli v$version')).called(1);
+        verify(() => logger.info('patrol_cli v$currentVersion')).called(1);
       });
     });
 

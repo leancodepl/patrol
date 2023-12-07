@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:meta/meta.dart';
 import 'package:patrol/src/binding.dart';
 import 'package:patrol/src/global_state.dart' as global_state;
+import 'package:patrol/src/logs.dart';
 import 'package:patrol/src/native/contracts/contracts.dart';
 import 'package:patrol/src/native/native.dart';
 import 'package:patrol_finders/patrol_finders.dart' as finders;
@@ -13,7 +14,6 @@ import 'package:test_api/src/backend/group.dart';
 // ignore: implementation_imports
 import 'package:test_api/src/backend/test.dart';
 
-import 'constants.dart' as constants;
 import 'custom_finders/patrol_integration_tester.dart';
 
 /// Signature for callback to [patrolTest].
@@ -22,6 +22,16 @@ typedef PatrolTesterCallback = Future<void> Function(PatrolIntegrationTester $);
 /// A modification of [setUp] that works with Patrol's native automation.
 void patrolSetUp(dynamic Function() body) {
   setUp(() async {
+    if (global_state.hotRestartEnabled) {
+      await body();
+      return;
+    }
+
+    if (await global_state.isInitialRun) {
+      // Skip calling body if we're in test discovery phase
+      return;
+    }
+
     final currentTest = global_state.currentTestFullName;
 
     final requestedToExecute = await PatrolBinding.instance.patrolAppService
@@ -36,6 +46,16 @@ void patrolSetUp(dynamic Function() body) {
 /// A modification of [tearDown] that works with Patrol's native automation.
 void patrolTearDown(dynamic Function() body) {
   tearDown(() async {
+    if (global_state.hotRestartEnabled) {
+      await body();
+      return;
+    }
+
+    if (await global_state.isInitialRun) {
+      // Skip calling body if we're in test discovery phase
+      return;
+    }
+
     final currentTest = global_state.currentTestFullName;
 
     final requestedToExecute = await PatrolBinding.instance.patrolAppService
@@ -47,7 +67,55 @@ void patrolTearDown(dynamic Function() body) {
   });
 }
 
-/// Like [testWidgets], but with support for Patrol custom finders.
+/// A modification of [setUpAll] that works with Patrol's native automation.
+///
+/// It keeps track of calls made to setUpAll.
+void patrolSetUpAll(dynamic Function() body) {
+  setUpAll(() async {
+    final patrolAppService = PatrolBinding.instance.patrolAppService;
+    final parentGroupsName = global_state.currentGroupFullName;
+    final setUpAllName = patrolAppService.addSetUpAll(parentGroupsName);
+
+    if (await global_state.isInitialRun) {
+      // Skip calling body if we're in test discovery phase
+      patrolDebug(
+        'skipping setUpAll "$setUpAllName" because we are in the initial run',
+      );
+      return;
+    }
+
+    patrolDebug('Waiting for lifecycle callbacks state...');
+    final callbacksState =
+        await patrolAppService.didReceiveLifecycleCallbacksState;
+
+    assert(
+      callbacksState[setUpAllName] != null,
+      'setUpAll "$setUpAllName" was not registered in PatrolAppService. This looks very nasty.',
+    );
+
+    if (callbacksState[setUpAllName] ?? false) {
+      // Skip calling body if this setUpAll was already executed
+      patrolDebug('skipping setUpAll "$setUpAllName" because it already ran');
+      return;
+    }
+
+    final requestedTest = await patrolAppService.didRequestTestExecution;
+
+    // Skip calling if parentGroupName is not a substring of requestedTestName
+    if (!requestedTest.startsWith(parentGroupsName)) {
+      // This is not exhaustive.
+      return;
+    }
+
+    // Mark this setUpAll as executed
+    final nativeAutomator = PatrolBinding.instance.nativeAutomator;
+    await nativeAutomator.markLifecycleCallbackExecuted(setUpAllName);
+
+    await body();
+  });
+}
+
+/// Like [testWidgets], but with support for Patrol custom fiders.
 ///
 /// To customize the Patrol-specific configuration, set [config].
 ///
@@ -79,8 +147,7 @@ void patrolTest(
       LiveTestWidgetsFlutterBindingFramePolicy.fadePointers,
 }) {
   final automator = NativeAutomator(config: nativeAutomatorConfig);
-  final patrolBinding = PatrolBinding.ensureInitialized(nativeAutomatorConfig)
-    ..framePolicy = framePolicy;
+  final patrolBinding = PatrolBinding.instance..framePolicy = framePolicy;
 
   testWidgets(
     description,
@@ -90,18 +157,30 @@ void patrolTest(
     variant: variant,
     tags: tags,
     (widgetTester) async {
-      if (!constants.hotRestartEnabled) {
+      if (!global_state.hotRestartEnabled) {
+        if (await global_state.isInitialRun) {
+          patrolDebug(
+            'skippng test "${global_state.currentTestFullName}" because this is the initial run',
+          );
+          // Fall through tests during the initial run that discovers tests.
+          //
+          // This is required to be able to find all setUpAll callbacks.
+          return;
+        }
+
         // If Patrol's native automation feature is enabled, then this test will
         // be executed only if the native side requested it to be executed.
         // Otherwise, it returns early.
 
-        final requestedToExecute = await patrolBinding.patrolAppService
+        final isRequestedToExecute = await PatrolBinding
+            .instance.patrolAppService
             .waitForExecutionRequest(global_state.currentTestFullName);
 
-        if (!requestedToExecute) {
+        if (!isRequestedToExecute) {
           return;
         }
       }
+
       if (!kIsWeb && io.Platform.isIOS) {
         widgetTester.binding.platformDispatcher.onSemanticsEnabledChanged = () {
           // This callback is empty on purpose. It's a workaround for tests
@@ -114,7 +193,7 @@ void patrolTest(
 
       final patrolTester = PatrolIntegrationTester(
         tester: widgetTester,
-        nativeAutomator: automator,
+        nativeAutomator: PatrolBinding.instance.nativeAutomator,
         config: config,
       );
       await callback(patrolTester);

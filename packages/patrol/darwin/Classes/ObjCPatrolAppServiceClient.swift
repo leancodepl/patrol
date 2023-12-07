@@ -45,8 +45,39 @@
     }
   }
 
+  @objc public func listDartLifecycleCallbacks(
+    completion: @escaping ([String]?, [String]?, Error?) -> Void
+  ) {
+    NSLog("PatrolAppService.listDartLifecycleCallbacks()")
+
+    client.listDartLifecycleCallbacks { result in
+      switch result {
+      case .success(let result):
+        completion(result.setUpAlls, result.tearDownAlls, nil)
+      case .failure(let error):
+        completion(nil, nil, error)
+      }
+    }
+  }
+
+  @objc public func setDartLifecycleCallbacksState(
+    _ state: [String: Bool], completion: @escaping (Error?) -> Void
+  ) {
+    NSLog("PatrolAppService.setDartLifecycleCallbacksState(\(state)")
+
+    let request = SetLifecycleCallbacksStateRequest(state: state)
+    self.client.setLifecycleCallbacksState(request: request) { result in
+      switch result {
+      case .success(_):
+        completion(nil)
+      case .failure(let error):
+        completion(error)
+      }
+    }
+  }
+
   @objc public func runDartTest(
-    name: String, completion: @escaping (ObjCRunDartTestResponse?, Error?) -> Void
+    _ name: String, completion: @escaping (ObjCRunDartTestResponse?, Error?) -> Void
   ) {
     // TODO: simple workaround - patrolAppService starts running too slowly.
     // We should wait for appReady in the dynamically created test case method,
@@ -66,7 +97,6 @@
         case .failure(let error):
           completion(nil, error)
         }
-
       }
     }
   }
@@ -85,7 +115,7 @@ extension DartGroupEntry {
           // This case is invalid, because every test will have at least
           // 1 named group - its filename.
 
-          fatalError("Invariant violated: test \(test.name) has no named parent group")
+          fatalError("Invariant violated: test \(format: test.name) has no named parent group")
         }
 
         test.name = "\(parentGroupName) \(test.name)"

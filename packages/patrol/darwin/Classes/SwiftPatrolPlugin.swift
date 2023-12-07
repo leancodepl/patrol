@@ -9,10 +9,9 @@ import Foundation
 #endif
 
 let kChannelName = "pl.leancode.patrol/main"
-let kMethodAllTestsFinished = "allTestsFinished"
 
-let kErrorCreateChannelFailed = "create_channel_failed"
-let kErrorCreateChannelFailedMsg = "Failed to create GRPC channel"
+let kErrorInvalidValue = "invalid value"
+let kErrorInvalidValueMsg = "isInitialRun env var is not a bool"
 
 /// A Flutter plugin that was responsible for communicating the test results back
 /// to iOS/macOS XCUITest.
@@ -36,6 +35,22 @@ public class SwiftPatrolPlugin: NSObject, FlutterPlugin {
   }
 
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-    result(FlutterMethodNotImplemented)
+    switch call.method {
+    case "isInitialRun":
+      let rawInitialRun = ProcessInfo.processInfo.environment["PATROL_INITIAL_RUN"]
+      let initialRun = Bool(rawInitialRun ?? "invalid")
+      if initialRun == nil {
+        result(
+          FlutterError(
+            code: kErrorInvalidValue,
+            message: "PATROL_INITIAL_RUN value is invalid: \(String(describing: rawInitialRun))",
+            details: nil)
+        )
+      } else {
+        result(initialRun)
+      }
+    default:
+      result(FlutterMethodNotImplemented)
+    }
   }
 }

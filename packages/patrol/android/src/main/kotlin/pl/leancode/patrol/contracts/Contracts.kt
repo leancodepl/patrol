@@ -33,6 +33,10 @@ class Contracts {
     fine,
   }
 
+  class Empty (
+
+  )
+
   data class DartGroupEntry (
     val name: String,
     val type: GroupEntryType,
@@ -41,6 +45,11 @@ class Contracts {
 
   data class ListDartTestsResponse (
     val group: DartGroupEntry
+  )
+
+  data class ListDartLifecycleCallbacksResponse (
+    val setUpAlls: List<String>,
+    val tearDownAlls: List<String>
   )
 
   data class RunDartTestRequest (
@@ -55,6 +64,10 @@ class Contracts {
       return details != null
     }
   }
+
+  data class SetLifecycleCallbacksStateRequest (
+    val state: Map<String, Boolean>
+  )
 
   data class ConfigureRequest (
     val findTimeoutMillis: Long
@@ -258,6 +271,10 @@ class Contracts {
 
   data class SetLocationAccuracyRequest (
     val locationAccuracy: SetLocationAccuracyRequestLocationAccuracy
+  )
+
+  data class MarkLifecycleCallbackExecutedRequest (
+    val name: String
   )
 
 }

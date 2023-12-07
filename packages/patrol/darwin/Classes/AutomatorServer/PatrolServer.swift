@@ -11,8 +11,9 @@ import Foundation
     private let server: Server
   #endif
 
-  @objc
-  public private(set) var appReady = false
+  private let onAppReady: () -> Void
+
+  private let onDartLifecycleCallbackExecuted: (String) -> Void
 
   private var passedPort: Int = {
     guard let portStr = ProcessInfo.processInfo.environment[envPortKey] else {
@@ -30,7 +31,12 @@ import Foundation
     return portInt
   }()
 
-  @objc public override init() {
+  @objc public init(
+    withOnAppReadyCallback onAppReady: @escaping () -> Void,
+    onDartLifecycleCallbackExecuted: @escaping (String) -> Void
+  ) {
+    self.onDartLifecycleCallbackExecuted = onDartLifecycleCallbackExecuted
+    self.onAppReady = onAppReady
     Logger.shared.i("PatrolServer constructor called")
 
     #if PATROL_ENABLED
@@ -51,10 +57,18 @@ import Foundation
     #if PATROL_ENABLED
       Logger.shared.i("Starting server...")
 
-      let provider = AutomatorServer(automator: automator) { appReady in
-        Logger.shared.i("App reported that it is ready")
-        self.appReady = appReady
-      }
+      let provider = AutomatorServer(
+        automator: automator,
+        onAppReady: {
+          Logger.shared.i("App reported that it is ready")
+          self.onAppReady()
+        },
+        onDartLifecycleCallbackExecuted: { callback in
+          Logger.shared.i(
+            "App reported that Dart lifecycle callback \(format: callback) was executed")
+          self.onDartLifecycleCallbackExecuted(callback)
+        }
+      )
 
       provider.setupRoutes(server: server)
 

@@ -7,6 +7,9 @@
 //    - Generic types (IOSServer, IOSClient, AndroidServer, AndroidClient, DartServer, DartClient)
 //      control where we need clients and servers
 
+// void doesn't work
+class Empty {}
+
 class DartGroupEntry {
   late String name;
   late GroupEntryType type;
@@ -17,6 +20,11 @@ enum GroupEntryType { group, test }
 
 class ListDartTestsResponse {
   late DartGroupEntry group;
+}
+
+class ListDartLifecycleCallbacksResponse {
+  late List<String> setUpAlls;
+  late List<String> tearDownAlls;
 }
 
 enum RunDartTestResponseResult {
@@ -34,8 +42,14 @@ class RunDartTestResponse {
   String? details;
 }
 
+class SetLifecycleCallbacksStateRequest {
+  late Map<String, bool> state;
+}
+
 abstract class PatrolAppService<IOSClient, AndroidClient, DartServer> {
   ListDartTestsResponse listDartTests();
+  ListDartLifecycleCallbacksResponse listDartLifecycleCallbacks();
+  Empty setLifecycleCallbacksState(SetLifecycleCallbacksStateRequest request);
   RunDartTestResponse runDartTest(RunDartTestRequest request);
 }
 
@@ -174,6 +188,10 @@ class SetLocationAccuracyRequest {
   late SetLocationAccuracyRequestLocationAccuracy locationAccuracy;
 }
 
+class MarkLifecycleCallbackExecutedRequest {
+  late String name;
+}
+
 abstract class NativeAutomator<IOSServer, AndroidServer, DartClient> {
   void initialize();
   void configure(ConfigureRequest request);
@@ -223,6 +241,8 @@ abstract class NativeAutomator<IOSServer, AndroidServer, DartClient> {
 // other
   void debug();
 
-// TODO(bartekpacia): Move this RPC into a new PatrolNativeTestService service because it doesn't fit here
+// TODO: Move these RPCc into a new service (PatrolNativeTestService) because it doesn't fit here
   void markPatrolAppServiceReady();
+  void markLifecycleCallbackExecuted(
+      MarkLifecycleCallbackExecutedRequest request);
 }

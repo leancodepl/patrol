@@ -28,6 +28,7 @@ import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
+import 'package:patrol/src/global_state.dart' as global_state;
 import 'package:patrol/src/native/contracts/contracts.dart';
 import 'package:test_api/src/backend/invoker.dart';
 
@@ -70,8 +71,15 @@ Future<void> main() async {
 
   final nativeAutomator = NativeAutomator(config: NativeAutomatorConfig());
   await nativeAutomator.initialize();
-  final binding = PatrolBinding.ensureInitialized(NativeAutomatorConfig());
-  final testExplorationCompleter = Completer<DartGroupEntry>();
+
+  final appService = PatrolAppService();
+  await runAppService(appService);
+
+  final config = NativeAutomatorConfig();
+  PatrolBinding.ensureInitialized(appService, nativeAutomator, config);
+
+  final didExploreTests = Completer<DartGroupEntry>();
+  final didExploreLifecycleCallbacks = Completer<void>();
 
   // A special test to explore the hierarchy of groups and tests. This is a hack
   // around https://github.com/dart-lang/test/issues/1998.
@@ -83,7 +91,7 @@ Future<void> main() async {
     // to group() below.
     final topLevelGroup = Invoker.current!.liveTest.groups.first;
     final dartTestGroup = createDartTestGroup(topLevelGroup);
-    testExplorationCompleter.complete(dartTestGroup);
+    didExploreTests.complete(dartTestGroup);
     print('patrol_test_explorer: obtained Dart-side test hierarchy:');
     printGroupStructure(dartTestGroup);
   });
@@ -92,17 +100,25 @@ Future<void> main() async {
 ${generateGroupsCode(testFilePaths).split('\n').map((e) => '  $e').join('\n')}
   // END: GENERATED TEST GROUPS
 
-  final dartTestGroup = await testExplorationCompleter.future;
-  final appService = PatrolAppService(topLevelDartTestGroup: dartTestGroup);
-  binding.patrolAppService = appService;
-  await runAppService(appService);
+  // An additional callback to discover setUpAlls.
+  tearDownAll(() async {
+    if (await global_state.isInitialRun) {
+      didExploreLifecycleCallbacks.complete();
+    }
+  });
+
+  appService.topLevelDartTestGroup = await didExploreTests.future;
+
+  if (await global_state.isInitialRun) {
+    await didExploreLifecycleCallbacks.future;
+  }
 
   // Until now, the native test runner was waiting for us, the Dart side, to
   // come alive. Now that we did, let's tell it that we're ready to be asked
   // about Dart tests.
   await nativeAutomator.markPatrolAppServiceReady();
 
-  await appService.testExecutionCompleted;
+  await appService.didCompleteTestExecution;
 }
 ''';
 
@@ -139,7 +155,12 @@ ${generateImports([testFilePath])}
 Future<void> main() async {
   final nativeAutomator = NativeAutomator(config: NativeAutomatorConfig());
   await nativeAutomator.initialize();
-  PatrolBinding.ensureInitialized(NativeAutomatorConfig())
+
+  final appService = PatrolAppService();
+  await runAppService(appService);
+
+  final config = NativeAutomatorConfig();
+  PatrolBinding.ensureInitialized(appService, nativeAutomator, config)
     ..workaroundDebugDefaultTargetPlatformOverride =
         debugDefaultTargetPlatformOverride;
 
