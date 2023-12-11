@@ -16,61 +16,65 @@ void main() {
   final alphaGroupTearDownIndexes = [7, 14];
 
   patrolSetUp(() {
-    print(globalSetUpIndexes.elementAt(globalSetUpIndex));
+    _printOrder(globalSetUpIndexes.elementAt(globalSetUpIndex));
     globalSetUpIndex += 1;
   });
   patrolTearDown(() {
-    print(globalTearDownIndexes.elementAt(globalTearDownIndex));
+    _printOrder(globalTearDownIndexes.elementAt(globalTearDownIndex));
     globalTearDownIndex += 1;
   });
 
   patrol('at the beginning', ($) async {
-    await _testBody($, '1');
+    await _testBody($, 1);
   });
 
   group('top level group', () {
     patrolSetUp(() {
-      print(topGroupSetUpIndexes.elementAt(topGroupSetUpIndex));
+      _printOrder(topGroupSetUpIndexes.elementAt(topGroupSetUpIndex));
       topGroupSetUpIndex += 1;
     });
     patrolTearDown(() {
-      print(topGroupTearDownIndexes.elementAt(topGroupTearDownIndex));
+      _printOrder(topGroupTearDownIndexes.elementAt(topGroupTearDownIndex));
       topGroupTearDownIndex += 1;
     });
 
     group('alpha', () {
       patrolSetUp(() {
-        print(alphaGroupSetUpIndexes.elementAt(alphaGroupSetUpIndex));
+        _printOrder(alphaGroupSetUpIndexes.elementAt(alphaGroupSetUpIndex));
         alphaGroupSetUpIndex += 1;
       });
       patrolTearDown(() {
-        print(alphaGroupTearDownIndexes.elementAt(alphaGroupTearDownIndex));
+        _printOrder(
+          alphaGroupTearDownIndexes.elementAt(alphaGroupTearDownIndex),
+        );
         alphaGroupTearDownIndex += 1;
       });
 
       patrol('first', ($) async {
-        await _testBody($, '6');
+        await _testBody($, 6);
       });
       patrol('second', ($) async {
-        await _testBody($, '13');
+        await _testBody($, 13);
       });
     });
 
     patrol('test between groups', ($) async {
-      await _testBody($, '19');
+      await _testBody($, 19);
     });
 
     group('bravo', () {
       patrol('first', ($) async {
-        await _testBody($, '24');
+        await _testBody($, 24);
       });
       patrol('second', ($) async {
-        await _testBody($, '29');
+        await _testBody($, 29);
       });
     });
   });
 }
 
-Future<void> _testBody(PatrolIntegrationTester $, String text) async {
-  print(text);
+Future<void> _testBody(PatrolIntegrationTester $, int number) async {
+  _printOrder(number);
 }
+
+void _printOrder(int number) => print('ORDER OF RUN: $number');

@@ -97,7 +97,7 @@ void _verifyWorkingDirectory() {
 }
 
 bool _isOutputCorrect(String output) {
-  final numbers = RegExp(r'(?<=\s)(\d+)(?=\s|$)')
+  final numbers = RegExp(r'(?<=ORDER OF RUN:\s)(\d+)(?=\s|$)')
       .allMatches(output)
       .map((match) => int.parse(match.group(1)!))
       .where((number) => number >= 1 && number <= 31)
