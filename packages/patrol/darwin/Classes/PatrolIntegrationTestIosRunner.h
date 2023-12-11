@@ -11,9 +11,29 @@
 // so it is reported as a native XCTest run result.
 #define PATROL_INTEGRATION_TEST_IOS_RUNNER(__test_class)                                                            \
   @interface __test_class : XCTestCase                                                                              \
+  @property (class, strong, nonatomic) NSString *selectedTest;                                                      \
   @end                                                                                                              \
                                                                                                                     \
   @implementation __test_class                                                                                      \
+                                                                                                                    \
+  static NSString *_selectedTest = nil;                                                                             \
+                                                                                                                    \
+  + (NSString *)selectedTest {                                                                                      \
+    return _selectedTest;                                                                                           \
+  }                                                                                                                 \
+                                                                                                                    \
+  + (void)setSelectedTest:(NSString *)newSelectedTest {                                                             \
+    if (newSelectedTest != _selectedTest) {                                                                         \
+      _selectedTest = [newSelectedTest copy];                                                                       \
+    }                                                                                                               \
+  }                                                                                                                 \
+                                                                                                                    \
+  + (BOOL)instancesRespondToSelector:(SEL)aSelector {                                                               \
+    [self setSelectedTest:NSStringFromSelector(aSelector)];                                                         \
+    [self defaultTestSuite]; /* calls testInvocations */                                                            \
+    BOOL result = [super instancesRespondToSelector:aSelector];                                                     \
+    return true;                                                                                                    \
+  }                                                                                                                 \
                                                                                                                     \
   +(NSArray<NSInvocation *> *)testInvocations {                                                                     \
     /* Start native automation server */                                                                            \
@@ -44,20 +64,26 @@
     }                                                                                                               \
                                                                                                                     \
     __block NSArray<NSString *> *dartTests = NULL;                                                                  \
-    [appServiceClient listDartTestsWithCompletion:^(NSArray<NSString *> *_Nullable tests, NSError *_Nullable err) { \
-      if (err != NULL) {                                                                                            \
-        NSLog(@"listDartTests(): failed, err: %@", err);                                                            \
+    if ([self selectedTest] != nil) {                                                                               \
+      NSLog(@"selectedTest: %@", [self selectedTest]);                                                              \
+      dartTests = [NSArray arrayWithObject:[self selectedTest]];                                                    \
+    } else {                                                                                                        \
+      [appServiceClient                                                                                             \
+        listDartTestsWithCompletion:^(NSArray<NSString *> *_Nullable tests, NSError *_Nullable err) {               \
+        if (err != NULL) {                                                                                          \
+          NSLog(@"listDartTests(): failed, err: %@", err);                                                          \
+        }                                                                                                           \
+                                                                                                                    \
+        dartTests = tests;                                                                                          \
+      }];                                                                                                           \
+                                                                                                                    \
+      /* Spin the runloop waiting until the app reports the Dart tests it contains */                               \
+      while (!dartTests) {                                                                                          \
+        [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];                          \
       }                                                                                                             \
                                                                                                                     \
-      dartTests = tests;                                                                                            \
-    }];                                                                                                             \
-                                                                                                                    \
-    /* Spin the runloop waiting until the app reports the Dart tests it contains */                                 \
-    while (!dartTests) {                                                                                            \
-      [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];                            \
+      NSLog(@"Got %lu Dart tests: %@", dartTests.count, dartTests);                                                 \
     }                                                                                                               \
-                                                                                                                    \
-    NSLog(@"Got %lu Dart tests: %@", dartTests.count, dartTests);                                                   \
                                                                                                                     \
     NSMutableArray<NSInvocation *> *invocations = [[NSMutableArray alloc] init];                                    \
                                                                                                                     \
@@ -92,11 +118,15 @@
                                                                                                                     \
         XCTAssertTrue(response.passed, @"%@", response.details);                                                    \
       });                                                                                                           \
-      NSString *selectorName = [PatrolUtils createMethodNameFromPatrolGeneratedGroup:dartTest];                     \
+      NSString *selectorName = dartTest;                                                                            \
+      if ([self selectedTest] == nil) {                                                                             \
+        /* FIXME: This results in generated method name being in different format */                                \
+        selectorName = [PatrolUtils createMethodNameFromPatrolGeneratedGroup:dartTest];                             \
+      }                                                                                                             \
       SEL selector = NSSelectorFromString(selectorName);                                                            \
       class_addMethod(self, selector, implementation, "v@:");                                                       \
                                                                                                                     \
-      /* Step 2 – create invocations to the dynamically created methods */                                        \
+      /* Step 2 – create invocations to the dynamically created methods */                                          \
       NSMethodSignature *signature = [self instanceMethodSignatureForSelector:selector];                            \
       NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];                            \
       invocation.selector = selector;                                                                               \
