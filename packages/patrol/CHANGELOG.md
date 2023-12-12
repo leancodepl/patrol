@@ -1,6 +1,6 @@
 ## 3.2.0
 
-- Add support for running patrol tests on macOS (alpha).
+- Add support for running patrol tests on macOS (alpha) (#1847)
 
 ## 3.1.0
 

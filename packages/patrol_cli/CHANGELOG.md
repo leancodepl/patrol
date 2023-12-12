@@ -1,6 +1,6 @@
 ## 2.4.0
 
-- Add support for running patrol tests on macOS (alpha).
+- Add support for running patrol tests on macOS (alpha) (#1847)
 - Set `--destination-timeout 1` when calling `xcodebuild test-without-building`
   to fail faster in error conditions (#1979)
 - Set `--only-testing RunnerUITests/RunnerUITests` to ignore other XCTest that
