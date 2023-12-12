@@ -48,7 +48,7 @@ class DoctorCommand extends PatrolCommand {
 
     _checkIfToolInstalled(
       'adb',
-      'See the link: https://www.xda-developers.com/install-adb-windows-macos-linux/#how-to-set-up-adb',
+      _commandHint(r'export PATH="$ANDROID_HOME/platform-tools:$PATH"'),
     );
 
     final androidHome = _platform.environment['ANDROID_HOME'];
@@ -56,10 +56,11 @@ class DoctorCommand extends PatrolCommand {
       _logger.success('• Env var \$ANDROID_HOME set to $androidHome');
     } else {
       final linkHint = switch (_platform.operatingSystem) {
-        Platform.linux => 'https://stackoverflow.com/a/28889144/9899010',
-        Platform.macOS => 'https://stackoverflow.com/a/33631853/9899010',
+        Platform.linux ||
+        Platform.macOS =>
+          'https://developer.android.com/tools/variables#set',
         Platform.windows =>
-          'https://www.ibm.com/docs/en/rtw/10.5.1?topic=prwut-setting-changing-android-home-path-in-windows-operating-systems',
+          'https://www.ibm.com/docs/en/rtw/11.0.0?topic=prwut-setting-changing-android-home-path-in-windows-operating-systems',
         _ => '',
       };
       _logger.err(

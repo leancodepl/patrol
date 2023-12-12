@@ -66,7 +66,8 @@ Patrol UI tests. It is necessary to run UI tests (`flutter test` won't work! [He
    ```
 
   <Info>
-     Make sure to add `patrol_cli` to your `PATH` environment variable.
+     Make sure to add `patrol` to your `PATH` environment variable.
+     It's explained how to do it in the [README](https://pub.dev/packages/patrol_cli#installation).
   </Info>
 
 2. Verify that installation was successful and your enviroment is set up properly:
@@ -458,6 +459,7 @@ within the patrol test.">
   necessary services before calling `$.pumpWidgetAndSettle()`.
   Here's the example of running an app within the patrol test:
   ```dart
+
   void main() {
     patrolTest('real app test', ($) async {
     
@@ -469,9 +471,11 @@ within the patrol test.">
 
     });
   }
+
   ```
   It's a good practice to create a setup wrapper function for your tests, so you don't have to
-  repeat the same code in every test.
+  repeat the same code in every test. Look at the [example](https://github.com/leancodepl/patrol/blob/d2c7493f9399a028e39cb94fd204affdb932c5fc/dev/e2e_app/integration_test/common.dart#L17-L33)
+  of a wrapper function.
 </Accordion>
 
 
@@ -483,7 +487,11 @@ within the patrol test.">
 
 <Accordion title="Running patrol test fails containing 'Unsupported class file major version' error">
   It's most likely caused by using incompatible JDK version. 
-  Change your $JAVA_HOME path to use JetBrainsRuntime.
+  Run `javac -version` to check your JDK version. Patrol requires JDK 17 or higher.
+  If you have AndroidStudio or Intellij IDEA installed, you can find the path to JDK by
+  opening your project's android directory in AS/Intellij and going to
+  **Settings** -> **Build, Execution, Deployment** -> **Build Tools** -> **Gradle** -> **Gradle JDK**.
+  [Learn more](https://developer.android.com/build/jdks)
 </Accordion>
 
 
@@ -493,7 +501,7 @@ within the patrol test.">
   Go to `ios/Runner.xcodeproj/project.pbxproj` and look for `PRODUCT_BUNDLE_IDENTIFIER`.
 </Accordion>
 
-<Accordion title="When I run tests the emulator is getting cloned">
+<Accordion title="When I run tests the simulator is getting cloned">
   Make sure that you disabled "Paralell execution" for **all schemes** in Xcode.
   See [this video](https://www.youtube.com/watch?v=9LdEJR59fW4) for details.
 </Accordion>
@@ -504,7 +512,7 @@ within the patrol test.">
 </Accordion>
 
 If you couldn't find an answer to your question/problem, feel free to ask on 
-[Patrol Discord Channel](https://discord.gg/ukBK5t4EZg).
+[Patrol Discord Server](https://discord.com/channels/1167030497612922931/1167063775925514311).
 
 ### Going from here
 
