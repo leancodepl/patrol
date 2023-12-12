@@ -1,3 +1,7 @@
+## 3.2.0
+
+- Add support for running patrol tests on macOS (alpha).
+
 ## 3.1.0
 
 - Implement `patrolSetUp()` and `patrolTearDown()`, which are equivalents of 
