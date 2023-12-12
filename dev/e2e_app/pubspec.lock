@@ -406,7 +406,7 @@ packages:
       path: "../../packages/patrol"
       relative: true
     source: path
-    version: "3.1.0"
+    version: "3.2.0"
   patrol_finders:
     dependency: transitive
     description:

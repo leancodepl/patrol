@@ -170,7 +170,6 @@ class IOSAppOptions {
       ...['-workspace', 'Runner.xcworkspace'],
       ...['-scheme', scheme],
       ...['-configuration', configuration],
-      ...['-only-testing', 'RunnerUITests'],
       ...['-sdk', if (simulator) 'iphonesimulator' else 'iphoneos'],
       ...[
         '-destination',
@@ -194,7 +193,7 @@ class IOSAppOptions {
     final cmd = [
       ...['xcodebuild', 'test-without-building'],
       ...['-xctestrun', xcTestRunPath],
-      ...['-only-testing', 'RunnerUITests'],
+      ...['-only-testing', 'RunnerUITests/RunnerUITests'],
       ...[
         '-destination',
         'platform=${device.real ? 'iOS' : 'iOS Simulator'},name=${device.name}',
@@ -253,7 +252,6 @@ class MacOSAppOptions {
       ...['-workspace', 'Runner.xcworkspace'],
       ...['-scheme', scheme],
       ...['-configuration', configuration],
-      ...['-only-testing', 'RunnerUITests'],
       '-quiet',
       ...['-derivedDataPath', '../build/macos_integ'],
       r'OTHER_SWIFT_FLAGS=$(inherited) -D PATROL_ENABLED',
@@ -272,11 +270,8 @@ class MacOSAppOptions {
     final cmd = [
       ...['xcodebuild', 'test-without-building'],
       ...['-xctestrun', xcTestRunPath],
-      ...['-only-testing', 'RunnerUITests'],
-      ...[
-        '-destination',
-        'platform=macOS',
-      ],
+      ...['-only-testing', 'RunnerUITests/RunnerUITests'],
+      ...['-destination', 'platform=macOS'],
       ...['-resultBundlePath', resultBundlePath],
       '-verbose',
     ];
