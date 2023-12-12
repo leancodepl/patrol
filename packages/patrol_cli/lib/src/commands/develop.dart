@@ -5,6 +5,7 @@ import 'package:patrol_cli/src/android/android_test_backend.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
 import 'package:patrol_cli/src/base/logger.dart';
+import 'package:patrol_cli/src/compatibility_checker.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/crossplatform/flutter_tool.dart';
 import 'package:patrol_cli/src/dart_defines_reader.dart';
@@ -22,6 +23,7 @@ class DevelopCommand extends PatrolCommand {
     required TestFinder testFinder,
     required TestBundler testBundler,
     required DartDefinesReader dartDefinesReader,
+    required CompatibilityChecker compatibilityChecker,
     required PubspecReader pubspecReader,
     required AndroidTestBackend androidTestBackend,
     required IOSTestBackend iosTestBackend,
@@ -33,6 +35,7 @@ class DevelopCommand extends PatrolCommand {
         _testFinder = testFinder,
         _testBundler = testBundler,
         _dartDefinesReader = dartDefinesReader,
+        _compatibilityChecker = compatibilityChecker,
         _pubspecReader = pubspecReader,
         _androidTestBackend = androidTestBackend,
         _iosTestBackend = iosTestBackend,
@@ -64,6 +67,7 @@ class DevelopCommand extends PatrolCommand {
   final TestFinder _testFinder;
   final TestBundler _testBundler;
   final DartDefinesReader _dartDefinesReader;
+  final CompatibilityChecker _compatibilityChecker;
   final PubspecReader _pubspecReader;
   final AndroidTestBackend _androidTestBackend;
   final IOSTestBackend _iosTestBackend;
@@ -82,6 +86,8 @@ class DevelopCommand extends PatrolCommand {
   @override
   Future<int> run() async {
     unawaited(_analytics.sendCommand(name));
+
+    await _compatibilityChecker.checkVersionsCompatibility();
 
     final targets = stringsArg('target');
     if (targets.isEmpty) {

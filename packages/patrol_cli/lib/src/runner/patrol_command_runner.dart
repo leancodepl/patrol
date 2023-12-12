@@ -20,6 +20,7 @@ import 'package:patrol_cli/src/commands/devices.dart';
 import 'package:patrol_cli/src/commands/doctor.dart';
 import 'package:patrol_cli/src/commands/test.dart';
 import 'package:patrol_cli/src/commands/update.dart';
+import 'package:patrol_cli/src/compatibility_checker.dart';
 import 'package:patrol_cli/src/crossplatform/flutter_tool.dart';
 import 'package:patrol_cli/src/dart_defines_reader.dart';
 import 'package:patrol_cli/src/devices.dart';
@@ -154,6 +155,10 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         testFinder: testFinder,
         testBundler: testBundler,
         dartDefinesReader: DartDefinesReader(projectRoot: _fs.currentDirectory),
+        compatibilityChecker: CompatibilityChecker(
+          projectRoot: _fs.currentDirectory,
+          processManager: _processManager,
+        ),
         pubspecReader: PubspecReader(projectRoot: _fs.currentDirectory),
         flutterTool: FlutterTool(
           stdin: stdin,
@@ -176,6 +181,10 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         testBundler: testBundler,
         testFinder: testFinder,
         dartDefinesReader: DartDefinesReader(projectRoot: _fs.currentDirectory),
+        compatibilityChecker: CompatibilityChecker(
+          projectRoot: _fs.currentDirectory,
+          processManager: _processManager,
+        ),
         pubspecReader: PubspecReader(projectRoot: _fs.currentDirectory),
         androidTestBackend: androidTestBackend,
         iosTestBackend: iosTestBackend,
