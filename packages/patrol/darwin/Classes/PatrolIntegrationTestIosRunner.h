@@ -117,12 +117,7 @@
                                                                                                                       \
         XCTAssertTrue(response.passed, @"%@", response.details);                                                      \
       });                                                                                                             \
-      NSString *selectorName = dartTest;                                                                              \
-      if ([self selectedTest] == nil) {                                                                               \
-        /* FIXME: This results in generated method name being in different format */                                  \
-        selectorName = [PatrolUtils createMethodNameFromPatrolGeneratedGroup:dartTest];                               \
-      }                                                                                                               \
-      SEL selector = NSSelectorFromString(selectorName);                                                              \
+      SEL selector = NSSelectorFromString(dartTest);                                                                  \
       class_addMethod(self, selector, implementation, "v@:");                                                         \
                                                                                                                       \
       /* Step 2 – create invocations to the dynamically created methods */                                          \
@@ -130,7 +125,7 @@
       NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];                              \
       invocation.selector = selector;                                                                                 \
                                                                                                                       \
-      NSLog(@"RunnerUITests.testInvocations(): selectorName = %@, signature: %@", selectorName, signature);           \
+      NSLog(@"RunnerUITests.testInvocations(): selectorName = %@, signature: %@", dartTest, signature);               \
                                                                                                                       \
       [invocations addObject:invocation];                                                                             \
     }                                                                                                                 \
