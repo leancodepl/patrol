@@ -13,7 +13,10 @@ class TestFinder {
   final Directory _integrationTestDirectory;
   final FileSystem _fs;
 
-  String findTest(String target, String? testFileSuffix) {
+  String findTest(
+    String target, [
+    String testFileSuffix = _kDefaultTestFileSuffix,
+  ]) {
     final testFiles = findTests([target], testFileSuffix);
     if (testFiles.length > 1) {
       throwToolExit(
@@ -33,11 +36,14 @@ class TestFinder {
   ///
   ///  * is a path to a directory recursively containing at least one Dart test
   ///    file
-  List<String> findTests(List<String> targets, [String? testFileSuffix]) {
+  List<String> findTests(
+    List<String> targets, [
+    String testFileSuffix = _kDefaultTestFileSuffix,
+  ]) {
     final testFiles = <String>[];
 
     for (final target in targets) {
-      if (target.endsWith(testFileSuffix ?? _kDefaultTestFileSuffix)) {
+      if (target.endsWith(testFileSuffix)) {
         final isFile = _fs.isFileSync(target);
         if (!isFile) {
           throwToolExit('target file $target does not exist');
@@ -69,7 +75,7 @@ class TestFinder {
   List<String> findAllTests({
     Directory? directory,
     Set<String> excludes = const {},
-    String? testFileSuffix,
+    String testFileSuffix = _kDefaultTestFileSuffix,
   }) {
     directory ??= _integrationTestDirectory;
 
@@ -83,9 +89,7 @@ class TestFinder {
         // Find only test files
         .where(
           (fileSystemEntity) {
-            final hasSuffix = fileSystemEntity.path.endsWith(
-              testFileSuffix ?? _kDefaultTestFileSuffix,
-            );
+            final hasSuffix = fileSystemEntity.path.endsWith(testFileSuffix);
             final isFile = _fs.isFileSync(fileSystemEntity.path);
             return hasSuffix && isFile;
           },

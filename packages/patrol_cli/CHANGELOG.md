@@ -1,6 +1,6 @@
 ## Unreleased 
 
-- Allow defining custom test file suffix
+- Allow defining custom test file suffix (#2009)
 
 ## 2.4.0
 
