@@ -1,0 +1,120 @@
+name: test macos
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 */12 * * *'
+
+jobs:
+  run_tests:
+    name: Flutter ${{ matrix.flutter-version }} on ${{ matrix.device_model }}
+    runs-on: macos-latest
+    timeout-minutes: 15
+    outputs:
+      SLACK_MESSAGE_TITLE: Flutter ${{ matrix.flutter-version }} on ${{ matrix.os }}
+      TESTS_EXIT_CODE: ${{ steps.tests_step.outputs.TESTS_EXIT_CODE }}
+      FAILURE_STATUS: ${{ steps.status_step.outputs.FAILURE_STATUS }}
+      ERROR_STATUS: ${{ steps.status_step.outputs.ERROR_STATUS }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        flutter-version: ['3.16.x']
+        flutter-channel: ['stable']
+        device_model: [macOS]
+        os: [macOS]
+
+    defaults:
+      run:
+        working-directory: dev/e2e_app
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+
+      - name: Add current platform to Gemfile
+        working-directory: dev/e2e_app/macos
+        run: bundle lock --add-platform ruby
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+          bundler-cache: true
+          working-directory: dev/e2e_app/macos
+
+      - name: Set up fastlane
+        working-directory: dev/e2e_app/macos
+        run: bundle install
+
+      - name: Run fastlane match
+        working-directory: dev/e2e_app/macos
+        env:
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          GIT_USERNAME: ${{ secrets.PATROL_FASTLANE_CERTS_REPO_TOKEN_USERNAME }}
+          GIT_TOKEN: ${{ secrets.PATROL_FASTLANE_CERTS_REPO_TOKEN }}
+          APP_STORE_KEY_ID: ${{ secrets.APP_STORE_KEY_ID }}
+          APP_STORE_ISSUER_ID: ${{ secrets.APP_STORE_ISSUER_ID }}
+          APP_STORE_KEY: ${{ secrets.APP_STORE_KEY }}
+        run: bundle exec fastlane mac certificates
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+          channel: ${{ matrix.flutter-channel }}
+
+      - name: Preload Flutter artifacts
+        run: flutter precache --macos
+
+      - name: Set up Melos and activate workspace
+        working-directory: .
+        run: |
+          dart pub global activate melos
+          melos bootstrap
+
+      - name: Set up Patrol CLI
+        working-directory: packages/patrol_cli
+        run: dart pub global activate --source path . && patrol
+
+      - name: Run UI tests
+        id: tests_step
+        run: |
+          TESTS_EXIT_CODE=0
+          patrol test -t integration_test/macos --verbose || TESTS_EXIT_CODE=$?
+
+          echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> "$GITHUB_OUTPUT"
+          exit $TESTS_EXIT_CODE
+
+      - name: Check if something went wrong
+        id: status_step
+        if: always()
+        run: >
+          if [ -z ${{ steps.tests_step.outputs.TESTS_EXIT_CODE }} ]; then 
+            echo "ERROR_STATUS=error" >> "$GITHUB_OUTPUT";
+          elif [ ! ${{ steps.tests_step.outputs.TESTS_EXIT_CODE }} == 0 ]; then
+            echo "FAILURE_STATUS=failure" >> "$GITHUB_OUTPUT";
+          fi;
+
+      - name: Find xcresult path
+        if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
+        run: |
+          brew install coreutils # to provide realpath binary
+          echo "XCRESULT_PATH=$(realpath build/macos_results_*.xcresult)" >> $GITHUB_ENV
+
+      - name: Publish test report to summary
+        if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
+        uses: kishikawakatsumi/xcresulttool@v1
+        with:
+          title: Patrol tests on ${{ matrix.device_model }}
+          upload-bundles: never
+          path: |
+            ${{ env.XCRESULT_PATH }}
+
+      - name: Upload XCRESULT test result to artifacts
+        if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: Test result from ${{ matrix.device_model }}.xcresult
+          path: ${{ env.XCRESULT_PATH }}
+          

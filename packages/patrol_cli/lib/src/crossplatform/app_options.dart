@@ -265,12 +265,14 @@ class MacOSAppOptions {
   List<String> testWithoutBuildingInvocation(
     Device device, {
     required String xcTestRunPath,
+    required String resultBundlePath,
   }) {
     final cmd = [
       ...['xcodebuild', 'test-without-building'],
       ...['-xctestrun', xcTestRunPath],
       ...['-only-testing', 'RunnerUITests/RunnerUITests'],
       ...['-destination', 'platform=macOS'],
+      ...['-resultBundlePath', resultBundlePath],
       '-verbose',
     ];
 
