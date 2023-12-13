@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
-import 'package:patrol_cli/src/base/constants.dart';
+import 'package:patrol_cli/src/base/constants.dart' as constants;
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:process/process.dart';
@@ -48,7 +48,7 @@ class CompatibilityChecker {
       );
     }
 
-    final cliVersion = Version.parse(version);
+    final cliVersion = Version.parse(constants.version);
     final patrolVersion = Version.parse(packageVersion);
 
     final isCompatible = cliVersion.isCompatibleWith(patrolVersion);
@@ -65,8 +65,8 @@ class CompatibilityChecker {
 extension VersionComparator on Version {
   /// Checks if the current Patrol CLI version is compatible with the given Patrol package version.
   bool isCompatibleWith(Version patrolVersion) {
-    final cliVersionRange = toRange(_cliVersionRangeList);
-    final versionRange = patrolVersion.toRange(_patrolVersionRangeList);
+    final cliVersionRange = toRange(_cliVersionRange);
+    final versionRange = patrolVersion.toRange(_patrolVersionRange);
 
     if (versionRange == null || cliVersionRange == null) {
       return false;
@@ -90,21 +90,21 @@ extension VersionComparator on Version {
   }
 }
 
-final _cliVersionRangeList = [
+final _cliVersionRange = [
   _VersionRange(
     min: Version.parse('2.3.0'),
   ),
 ];
 
-final _patrolVersionRangeList = [
+final _patrolVersionRange = [
   _VersionRange(
     min: Version.parse('3.0.0'),
   ),
 ];
 
 final cliToPatrolMap = Map.fromIterables(
-  _cliVersionRangeList,
-  _patrolVersionRangeList,
+  _cliVersionRange,
+  _patrolVersionRange,
 );
 
 class _VersionRange {

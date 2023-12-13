@@ -1,6 +1,6 @@
 import 'dart:io' as io;
 
-import 'package:patrol_cli/src/base/constants.dart';
+import 'package:patrol_cli/src/base/constants.dart' as constants;
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/runner/patrol_command.dart';
@@ -40,7 +40,7 @@ class DoctorCommand extends PatrolCommand {
   }
 
   void _printVersion() {
-    _logger.info('Patrol CLI version: $version');
+    _logger.info('Patrol CLI version: ${constants.version}');
   }
 
   void _printAndroidSpecifics() {

@@ -10,7 +10,7 @@ import 'package:file/file.dart';
 import 'package:file/local.dart';
 import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
-import 'package:patrol_cli/src/base/constants.dart';
+import 'package:patrol_cli/src/base/constants.dart' as constants;
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
@@ -332,7 +332,7 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
 
     final int? exitCode;
     if (topLevelResults['version'] == true) {
-      _logger.info('patrol_cli v$version');
+      _logger.info('patrol_cli v${constants.version}');
       exitCode = 0;
     } else {
       exitCode = await super.runCommand(topLevelResults);
@@ -401,7 +401,7 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
     }
 
     final latestVersion = await _pubUpdater.getLatestVersion('patrol_cli');
-    final isUpToDate = version == latestVersion;
+    final isUpToDate = constants.version == latestVersion;
 
     if (isUpToDate) {
       return;
@@ -411,7 +411,7 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
       ..info('')
       ..info(
         '''
-${lightYellow.wrap('Update available!')} ${lightCyan.wrap(version)} \u2192 ${lightCyan.wrap(latestVersion)}
+${lightYellow.wrap('Update available!')} ${lightCyan.wrap(constants.version)} \u2192 ${lightCyan.wrap(latestVersion)}
 Run ${lightCyan.wrap('patrol update')} to update''',
       )
       ..info('');
