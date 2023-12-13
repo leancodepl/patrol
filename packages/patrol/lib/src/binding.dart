@@ -40,8 +40,6 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
   /// You most likely don't want to call it yourself.
   PatrolBinding(NativeAutomatorConfig config)
       : _serviceExtensions = DevtoolsServiceExtensions(config) {
-    shouldPropagateDevicePointerEvents = true;
-
     final oldTestExceptionReporter = reportTestException;
     reportTestException = (details, testDescription) {
       final currentDartTest = _currentDartTest;
@@ -153,6 +151,20 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
   ///
   /// See https://github.com/flutter/devtools/issues/6719
   TargetPlatform? workaroundDebugDefaultTargetPlatformOverride;
+
+  /// Allows for gestures made with human finger to be percevied as gestures
+  /// made with [WidgetTester], allowing to interact with a running test.
+  ///
+  /// We thought we may replace this override by setting
+  /// [shouldPropagateDevicePointerEvents] to true but it doesn't work.
+  ///
+  /// See also:
+  ///
+  ///  * https://github.com/leancodepl/patrol/issues/1956
+  @override
+  TestBindingEventSource get pointerEventSource {
+    return TestBindingEventSource.test;
+  }
 
   @override
   void initInstances() {
