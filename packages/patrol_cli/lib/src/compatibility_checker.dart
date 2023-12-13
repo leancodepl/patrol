@@ -56,7 +56,7 @@ class CompatibilityChecker {
     if (!isCompatible) {
       throwToolExit(
         'Patrol version $patrolVersion defined in the project is not compatible with patrol_cli version $cliVersion\n'
-        'Please upgrade patrol_cli and patrol dependency in project to the latest version.',
+        'Please upgrade both "patrol_cli" and "patrol" dependency in project to the latest versions.',
       );
     }
   }
