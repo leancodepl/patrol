@@ -493,7 +493,8 @@ within the patrol test.">
 
 <Accordion title="Running patrol test fails containing 'Unsupported class file major version' error">
   It's most likely caused by using incompatible JDK version. 
-  Run `javac -version` to check your JDK version. Patrol requires JDK 17 or higher.
+  Run `javac -version` to check your JDK version. Patrol officially works on JDK 17, 
+  so unexpected errors may occur on other versions.
   If you have AndroidStudio or Intellij IDEA installed, you can find the path to JDK by
   opening your project's android directory in AS/Intellij and going to
   **Settings** -> **Build, Execution, Deployment** -> **Build Tools** -> **Gradle** -> **Gradle JDK**.
