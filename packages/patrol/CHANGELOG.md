@@ -1,12 +1,17 @@
+## Unreleased
+
+- Fix being unable to interact with the running app during testing with a finger
+  (#2008)
+
 ## 3.2.0
 
 - Add support for running patrol tests on macOS (alpha) (#1847)
 
 ## 3.1.0
 
-- Implement `patrolSetUp()` and `patrolTearDown()`, which are equivalents of 
-	vanilla `setUp()` and `tearDown()` but work with Patrol's native automation
-	and test bundling feature (#1967) (#1721)
+- Implement `patrolSetUp()` and `patrolTearDown()`, which are equivalents of
+  vanilla `setUp()` and `tearDown()` but work with Patrol's native automation
+  and test bundling feature (#1967) (#1721)
 
 ## 3.0.3
 
@@ -40,6 +45,7 @@ Other changes:
 
 - Bump minimum supported Flutter version to 3.16
 - **BREAKING:**
+
   - Remove `bindingType` parameter from `patrolTest()` function. Now only
     `PatrolBinding` is used and it's automatically initialized (#1882)
   - Remove `nativeAutomation` parameter from `patrolTest()` function. Now it's
