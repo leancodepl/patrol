@@ -62,7 +62,7 @@ class CompatibilityChecker {
   }
 }
 
-extension VersionComparator on Version {
+extension _VersionComparator on Version {
   /// Checks if the current Patrol CLI version is compatible with the given Patrol package version.
   bool isCompatibleWith(Version patrolVersion) {
     final cliVersionRange = toRange(_cliVersionRange);
@@ -81,12 +81,20 @@ extension VersionComparator on Version {
 
   _VersionRange? toRange(List<_VersionRange> versionRangeList) {
     for (final versionRange in versionRangeList) {
-      if (this >= versionRange.min &&
-          (versionRange.max == null || this <= versionRange.max)) {
+      if (isInRange(versionRange)) {
         return versionRange;
       }
     }
     return null;
+  }
+
+  bool isInRange(_VersionRange versionRange) {
+    return this >= versionRange.min &&
+        (hasNoUpperBound(versionRange) || this <= versionRange.max);
+  }
+
+  bool hasNoUpperBound(_VersionRange versionRange) {
+    return versionRange.max == null;
   }
 }
 
