@@ -186,7 +186,12 @@ class FlutterVersion {
 FlutterVersion _getFlutterVersion() {
   final result = io.Process.runSync(
     'flutter',
-    ['--no-version-check', '--version', '--machine'],
+    [
+      '--no-version-check',
+      '--suppress-analytics',
+      '--version',
+      '--machine',
+    ],
     runInShell: true,
   );
 

@@ -24,6 +24,7 @@ class FlutterAppOptions {
     final cmd = [
       ...['flutter', 'attach'],
       '--no-version-check',
+      '--suppress-analytics',
       '--debug',
       ...['--target', target],
       for (final dartDefine in dartDefines.entries) ...[
@@ -145,6 +146,7 @@ class IOSAppOptions {
     final cmd = [
       ...['flutter', 'build', 'ios'],
       '--no-version-check',
+      '--suppress-analytics',
       ...[
         '--config-only',
         '--no-codesign',
@@ -229,6 +231,7 @@ class MacOSAppOptions {
     final cmd = [
       ...['flutter', 'build', 'macos'],
       '--no-version-check',
+      '--suppress-analytics',
       ...[
         '--config-only',
         '--${buildMode.name}', // for example '--debug',

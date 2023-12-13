@@ -26,7 +26,14 @@ class CompatibilityChecker {
 
     await _disposeScope.run((scope) async {
       final process = await _processManager.start(
-        ['flutter', 'pub', 'deps', '--style=list'],
+        [
+          'flutter',
+          '--suppress-analytics',
+          '--no-version-check',
+          'pub',
+          'deps',
+          '--style=list',
+        ],
         workingDirectory: _projectRoot.path,
         runInShell: true,
       )
