@@ -2,6 +2,8 @@ import 'package:collection/collection.dart';
 import 'package:file/file.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
 
+const _kDefaultTestFileSuffix = '_test.dart';
+
 /// Discovers integration tests.
 class TestFinder {
   TestFinder({required Directory testDir})
@@ -11,8 +13,8 @@ class TestFinder {
   final Directory _integrationTestDirectory;
   final FileSystem _fs;
 
-  String findTest(String target) {
-    final testFiles = findTests([target]);
+  String findTest(String target, String? testFileSuffix) {
+    final testFiles = findTests([target], testFileSuffix);
     if (testFiles.length > 1) {
       throwToolExit(
         'target $target is ambiguous, '
@@ -31,18 +33,21 @@ class TestFinder {
   ///
   ///  * is a path to a directory recursively containing at least one Dart test
   ///    file
-  List<String> findTests(List<String> targets) {
+  List<String> findTests(List<String> targets, [String? testFileSuffix]) {
     final testFiles = <String>[];
 
     for (final target in targets) {
-      if (target.endsWith('_test.dart')) {
+      if (target.endsWith(testFileSuffix ?? _kDefaultTestFileSuffix)) {
         final isFile = _fs.isFileSync(target);
         if (!isFile) {
           throwToolExit('target file $target does not exist');
         }
         testFiles.add(_fs.file(target).absolute.path);
       } else if (_fs.isDirectorySync(target)) {
-        final foundTargets = findAllTests(directory: _fs.directory(target));
+        final foundTargets = findAllTests(
+          directory: _fs.directory(target),
+          testFileSuffix: testFileSuffix,
+        );
         if (foundTargets.isEmpty) {
           throwToolExit(
             'target directory $target does not contain any tests',
@@ -59,10 +64,12 @@ class TestFinder {
   }
 
   /// Recursively searches the `integration_test` directory and returns files
-  /// ending with `_test.dart` as absolute paths.
+  /// ending with defined [testFileSuffix]. If [testFileSuffix] is not defined,
+  /// the default suffix `_test.dart` is used.
   List<String> findAllTests({
     Directory? directory,
     Set<String> excludes = const {},
+    String? testFileSuffix,
   }) {
     directory ??= _integrationTestDirectory;
 
@@ -76,7 +83,9 @@ class TestFinder {
         // Find only test files
         .where(
           (fileSystemEntity) {
-            final hasSuffix = fileSystemEntity.path.endsWith('_test.dart');
+            final hasSuffix = fileSystemEntity.path.endsWith(
+              testFileSuffix ?? _kDefaultTestFileSuffix,
+            );
             final isFile = _fs.isFileSync(fileSystemEntity.path);
             return hasSuffix && isFile;
           },

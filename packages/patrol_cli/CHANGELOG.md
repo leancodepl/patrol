@@ -1,3 +1,7 @@
+## Unreleased 
+
+- Allow defining custom test file suffix
+
 ## 2.4.0
 
 - Add support for running patrol tests on macOS (alpha) (#1847)
