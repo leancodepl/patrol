@@ -2,6 +2,8 @@
 
 - Fix being unable to interact with the running app during testing with a finger
   (#2008)
+- Fix non-ASCII characters displaying as gibberish in Patrol's DevTools
+  extension (#2010)
 
 ## 3.2.0
 
