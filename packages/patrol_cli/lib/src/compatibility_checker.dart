@@ -63,7 +63,7 @@ class CompatibilityChecker {
 }
 
 extension VersionComparator on Version {
-  // checks if the current cli version is compatible with the given patrol version
+  /// Checks if the current Patrol CLI version is compatible with the given Patrol package version.
   bool isCompatibleWith(Version patrolVersion) {
     final cliVersionRange = toRange(_cliVersionRangeList);
     final versionRange = patrolVersion.toRange(_patrolVersionRangeList);
