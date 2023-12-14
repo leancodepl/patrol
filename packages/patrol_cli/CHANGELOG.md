@@ -1,3 +1,8 @@
+## 2.5.0
+
+- Allow for defining a custom test file suffix (#2009)
+- Fix opening devtools on Windows (#2011)
+
 ## 2.4.0
 
 - Add support for running patrol tests on macOS (alpha) (#1847)

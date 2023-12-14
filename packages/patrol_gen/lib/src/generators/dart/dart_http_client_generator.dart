@@ -71,7 +71,7 @@ $endpoints
     }
     
     return response.body.isNotEmpty
-        ? jsonDecode(response.body) as Map<String, dynamic>
+        ? jsonDecode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>
         : {};
   }
 }
