@@ -6,6 +6,7 @@
   extension (#2010)
 - Enable selecting individual tests with `xcodebuild`'s `-only-testing` option
   (#2001)
+- Fix Dart-side crash in test causing test suite to hang on iOS (#2013)
 
 ## 3.2.0
 

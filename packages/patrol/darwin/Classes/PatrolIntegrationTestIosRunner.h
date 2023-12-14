@@ -1,9 +1,9 @@
 // This file is a one giant macro to make the setup as easy as possible for the developer.
 // To edit it:
-//  1. Remove the trailing backslashes: $ sed 's/\\$//' darwin/Classes/PatrolIntegrationTestIosRunner.h
+//  1. Remove the trailing backslashes: $ sed 's/\\$//' PatrolIntegrationTestIosRunner.h
 //  2. Paste its contents into the RunnerUITests.m in the RunnerUITests target
 //  3. Make the changes, make sure it works
-//  4. Re-add trailing backslashes: $ sed 's/$/\\/' darwin/Classes/PatrolIntegrationTestIosRunner.h
+//  4. Re-add trailing backslashes: $ sed 's/$/\\/' PatrolIntegrationTestIosRunner.h
 //  5. Copy the contents from RunnerUITests.m back here
 //  6. Go back to using a macro in RunnerTests.m
 
@@ -99,21 +99,27 @@
         [[[XCUIApplication alloc] init] launch];                                                                      \
                                                                                                                       \
         __block ObjCRunDartTestResponse *response = NULL;                                                             \
+        __block NSError *error;                                                                                       \
         [appServiceClient runDartTestWithName:dartTest                                                                \
                                    completion:^(ObjCRunDartTestResponse *_Nullable r, NSError *_Nullable err) {       \
+                                     NSString *status;                                                                \
                                      if (err != NULL) {                                                               \
-                                       NSLog(@"runDartTestWithName(%@): failed, err: %@", dartTest, err);             \
+                                       error = err;                                                                   \
+                                       status = @"CRASHED";                                                           \
+                                     } else {                                                                         \
+                                       response = r;                                                                  \
+                                       status = response.passed ? @"PASSED" : @"FAILED";                              \
                                      }                                                                                \
-                                                                                                                      \
-                                     response = r;                                                                    \
+                                     NSLog(@"runDartTest(\"%@\"): call finished, test result: %@", dartTest, status); \
                                    }];                                                                                \
                                                                                                                       \
-        /* Wait until Dart test finishes */                                                                           \
-        while (!response) {                                                                                           \
+        /* Wait until Dart test finishes (either fails or passes) or crashes */                                       \
+        while (!response && !error) {                                                                                 \
           [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];                          \
         }                                                                                                             \
-                                                                                                                      \
-        XCTAssertTrue(response.passed, @"%@", response.details);                                                      \
+        BOOL passed = response ? response.passed : NO;                                                                \
+        NSString *details = response ? response.details : @"(no details - app likely crashed)";                       \
+        XCTAssertTrue(passed, @"%@", details);                                                                        \
       });                                                                                                             \
       SEL selector = NSSelectorFromString(dartTest);                                                                  \
       class_addMethod(self, selector, implementation, "v@:");                                                         \
