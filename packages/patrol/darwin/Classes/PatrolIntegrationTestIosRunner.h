@@ -1,9 +1,9 @@
 // This file is a one giant macro to make the setup as easy as possible for the developer.
 // To edit it:
-//  1. Remove the trailing backslashes: $ sed 's/\\$//' darwin/Classes/PatrolIntegrationTestIosRunner.h
+//  1. Remove the trailing backslashes: $ sed 's/\\$//' PatrolIntegrationTestIosRunner.h
 //  2. Paste its contents into the RunnerUITests.m in the RunnerUITests target
 //  3. Make the changes, make sure it works
-//  4. Re-add trailing backslashes: $ sed 's/$/\\/' darwin/Classes/PatrolIntegrationTestIosRunner.h
+//  4. Re-add trailing backslashes: $ sed 's/$/\\/' PatrolIntegrationTestIosRunner.h
 //  5. Copy the contents from RunnerUITests.m back here
 //  6. Go back to using a macro in RunnerTests.m
 
