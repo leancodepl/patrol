@@ -72,10 +72,16 @@ class TestCommand extends PatrolCommand {
   Future<int> run() async {
     unawaited(_analytics.sendCommand(name));
 
+    final config = _pubspecReader.read();
+    final testFileSuffix = config.testFileSuffix;
+
     final target = stringsArg('target');
     final targets = target.isNotEmpty
-        ? _testFinder.findTests(target)
-        : _testFinder.findAllTests(excludes: stringsArg('exclude').toSet());
+        ? _testFinder.findTests(target, testFileSuffix)
+        : _testFinder.findAllTests(
+            excludes: stringsArg('exclude').toSet(),
+            testFileSuffix: testFileSuffix,
+          );
 
     _logger.detail('Received ${targets.length} test target(s)');
     for (final t in targets) {
@@ -87,7 +93,6 @@ class TestCommand extends PatrolCommand {
       _testBundler.createTestBundle(targets);
     }
 
-    final config = _pubspecReader.read();
     final androidFlavor = stringArg('flavor') ?? config.android.flavor;
     final iosFlavor = stringArg('flavor') ?? config.ios.flavor;
     final macosFlavor = stringArg('flavor') ?? config.macos.flavor;

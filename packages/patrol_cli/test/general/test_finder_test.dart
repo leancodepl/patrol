@@ -201,6 +201,18 @@ void _test(Platform platform) {
         ]),
       );
     });
+
+    test('searches for file with provided suffix', () {
+      // given
+      final target = fs.path.join('integration_test', 'test_patrol.dart');
+      fs.file(target).createSync(recursive: true);
+
+      // when
+      final found = testFinder.findTests([target], '_patrol.dart');
+
+      // then
+      expect(found, equals([fs.path.join(fs.currentDirectory.path, target)]));
+    });
   });
 
   group('findAllTests', () {
@@ -287,6 +299,31 @@ void _test(Platform platform) {
           fs.path.join(testRoot, 'bravo', 'bravo_test.dart'),
           fs.path.join(testRoot, 'charlie', 'charlie_test.dart'),
           fs.path.join(testRoot, 'zulu_test.dart'),
+        ]),
+      );
+    });
+
+    test('searches for files with provided custom suffix', () {
+      // given
+      final files = [
+        fs.path.join('integration_test', 'alpha_patrol.dart'),
+        fs.path.join('integration_test', 'beta_patrol.dart'),
+      ];
+      for (final file in files) {
+        fs.file(file).createSync(recursive: true);
+      }
+
+      // when
+      final found = testFinder.findAllTests(testFileSuffix: '_patrol.dart');
+
+      // then
+      final wd = fs.currentDirectory.absolute.path;
+      final testRoot = fs.path.join(wd, 'integration_test');
+      expect(
+        found,
+        equals([
+          fs.path.join(testRoot, 'alpha_patrol.dart'),
+          fs.path.join(testRoot, 'beta_patrol.dart'),
         ]),
       );
     });

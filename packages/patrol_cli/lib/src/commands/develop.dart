@@ -90,7 +90,9 @@ class DevelopCommand extends PatrolCommand {
       throwToolExit('Only one target can be provided with --target');
     }
 
-    final target = _testFinder.findTest(targets.first);
+    final config = _pubspecReader.read();
+
+    final target = _testFinder.findTest(targets.first, config.testFileSuffix);
     _logger.detail('Received test target: $target');
 
     if (boolArg('release')) {
@@ -102,7 +104,6 @@ class DevelopCommand extends PatrolCommand {
       _testBundler.createDevelopTestBundle(target);
     }
 
-    final config = _pubspecReader.read();
     final androidFlavor = stringArg('flavor') ?? config.android.flavor;
     final iosFlavor = stringArg('flavor') ?? config.ios.flavor;
     if (androidFlavor != null) {
