@@ -1,3 +1,7 @@
+## Unreleased
+
+- Fix being unable to grant access to gallery on iOS (#2016)
+
 ## 3.3.0
 
 - Enable selecting individual tests with `xcodebuild`'s `-only-testing` option.
