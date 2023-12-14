@@ -1,80 +1,63 @@
 import '../common.dart';
 
 void main() {
-  var globalSetUpIndex = 0,
-      globalTearDownIndex = 0,
-      topGroupSetUpIndex = 0,
-      topGroupTearDownIndex = 0,
-      alphaGroupSetUpIndex = 0,
-      alphaGroupTearDownIndex = 0;
-
-  final globalSetUpIndexes = [0, 3, 10, 17, 22, 27];
-  final globalTearDownIndexes = [2, 9, 16, 21, 26, 31];
-  final topGroupSetUpIndexes = [4, 11, 18, 23, 28];
-  final topGroupTearDownIndexes = [8, 15, 20, 25, 30];
-  final alphaGroupSetUpIndexes = [5, 12];
-  final alphaGroupTearDownIndexes = [7, 14];
+  // TODO uncomment after https://github.com/leancodepl/patrol/issues/2017
+  // patrolSetUpAll(() {
+  //   _printOrder('SetUpAll - run only once');
+  // });
 
   patrolSetUp(() {
-    _printOrder(globalSetUpIndexes.elementAt(globalSetUpIndex));
-    globalSetUpIndex += 1;
+    _printOrder('SetUpTopLevel');
   });
   patrolTearDown(() {
-    _printOrder(globalTearDownIndexes.elementAt(globalTearDownIndex));
-    globalTearDownIndex += 1;
+    _printOrder('TearDownTopLevel');
   });
 
-  patrol('at the beginning', ($) async {
-    await _testBody($, 1);
+  patrol('alpha', ($) async {
+    await _testBody($, 'Test alpha');
   });
 
-  group('top level group', () {
+  group('group one', () {
     patrolSetUp(() {
-      _printOrder(topGroupSetUpIndexes.elementAt(topGroupSetUpIndex));
-      topGroupSetUpIndex += 1;
+      _printOrder('SetUp - GroupOne');
     });
     patrolTearDown(() {
-      _printOrder(topGroupTearDownIndexes.elementAt(topGroupTearDownIndex));
-      topGroupTearDownIndex += 1;
+      _printOrder('TearDown - GroupOne');
     });
 
-    group('alpha', () {
+    group('group two', () {
       patrolSetUp(() {
-        _printOrder(alphaGroupSetUpIndexes.elementAt(alphaGroupSetUpIndex));
-        alphaGroupSetUpIndex += 1;
+        _printOrder('SetUp - GroupTwo');
       });
       patrolTearDown(() {
-        _printOrder(
-          alphaGroupTearDownIndexes.elementAt(alphaGroupTearDownIndex),
-        );
-        alphaGroupTearDownIndex += 1;
+        _printOrder('TearDown - GroupTwo');
       });
 
-      patrol('first', ($) async {
-        await _testBody($, 6);
+      patrol('bravo', ($) async {
+        await _testBody($, 'Test bravo');
       });
-      patrol('second', ($) async {
-        await _testBody($, 13);
+      patrol('charlie', ($) async {
+        await _testBody($, 'Test charlie');
       });
     });
 
-    patrol('test between groups', ($) async {
-      await _testBody($, 19);
+    patrol('delta', ($) async {
+      await _testBody($, 'Test delta');
     });
 
-    group('bravo', () {
-      patrol('first', ($) async {
-        await _testBody($, 24);
+    group('group three', () {
+      patrol('echo', ($) async {
+        await _testBody($, 'Test echo');
       });
-      patrol('second', ($) async {
-        await _testBody($, 29);
+      patrol('foxtrot', ($) async {
+        await _testBody($, 'Test foxtrot');
       });
     });
   });
 }
 
-Future<void> _testBody(PatrolIntegrationTester $, int number) async {
-  _printOrder(number);
+Future<void> _testBody(PatrolIntegrationTester $, String text) async {
+  _printOrder(text);
 }
 
-void _printOrder(int number) => print('ORDER OF RUN: $number');
+void _printOrder(String text) => print('ORDER OF RUN: $text ~');

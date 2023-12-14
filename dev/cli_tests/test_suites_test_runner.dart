@@ -97,18 +97,53 @@ void _verifyWorkingDirectory() {
 }
 
 bool _isOutputCorrect(String output) {
-  final numbers = RegExp(r'(?<=ORDER OF RUN:\s)(\d+)(?=\s|$)')
-      .allMatches(output)
-      .map((match) => int.parse(match.group(1)!))
-      .where((number) => number >= 1 && number <= 31)
-      .toList();
+  final correctOutput = <String>[
+    // TODO uncomment after https://github.com/leancodepl/patrol/issues/2017
+    // 'SetUpAll - run only once',
+    'SetUpTopLevel',
+    'Test alpha',
+    'TearDownTopLevel',
+    'SetUpTopLevel',
+    'SetUp - GroupOne',
+    'SetUp - GroupTwo',
+    'Test bravo',
+    'TearDown - GroupTwo',
+    'TearDown - GroupOne',
+    'TearDownTopLevel',
+    'SetUpTopLevel',
+    'SetUp - GroupOne',
+    'SetUp - GroupTwo',
+    'Test charlie',
+    'TearDown - GroupTwo',
+    'TearDown - GroupOne',
+    'TearDownTopLevel',
+    'SetUpTopLevel',
+    'SetUp - GroupOne',
+    'Test delta',
+    'TearDown - GroupOne',
+    'TearDownTopLevel',
+    'SetUpTopLevel',
+    'SetUp - GroupOne',
+    'Test echo',
+    'TearDown - GroupOne',
+    'TearDownTopLevel',
+    'SetUpTopLevel',
+    'SetUp - GroupOne',
+    'Test foxtrot',
+    'TearDown - GroupOne',
+    'TearDownTopLevel',
+  ];
 
-  final expectedNumbers = List.generate(31, (index) => index + 1);
+  final regex = RegExp('ORDER OF RUN: (.+?) ~', multiLine: true);
+  final matches = regex.allMatches(output);
 
-  return listsAreEqual(numbers, expectedNumbers);
+  return listsAreEqual(
+    matches.map((match) => match.group(1)!).toList(),
+    correctOutput,
+  );
 }
 
-bool listsAreEqual(List<int> list1, List<int> list2) {
+bool listsAreEqual(List<String> list1, List<String> list2) {
   if (list1.length != list2.length) {
     return false;
   }
