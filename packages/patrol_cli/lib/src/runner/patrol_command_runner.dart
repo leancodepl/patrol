@@ -10,7 +10,7 @@ import 'package:file/file.dart';
 import 'package:file/local.dart';
 import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
-import 'package:patrol_cli/src/base/constants.dart';
+import 'package:patrol_cli/src/base/constants.dart' as constants;
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
@@ -20,6 +20,7 @@ import 'package:patrol_cli/src/commands/devices.dart';
 import 'package:patrol_cli/src/commands/doctor.dart';
 import 'package:patrol_cli/src/commands/test.dart';
 import 'package:patrol_cli/src/commands/update.dart';
+import 'package:patrol_cli/src/compatibility_checker.dart';
 import 'package:patrol_cli/src/crossplatform/flutter_tool.dart';
 import 'package:patrol_cli/src/dart_defines_reader.dart';
 import 'package:patrol_cli/src/devices.dart';
@@ -154,6 +155,10 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         testFinder: testFinder,
         testBundler: testBundler,
         dartDefinesReader: DartDefinesReader(projectRoot: _fs.currentDirectory),
+        compatibilityChecker: CompatibilityChecker(
+          projectRoot: _fs.currentDirectory,
+          processManager: _processManager,
+        ),
         pubspecReader: PubspecReader(projectRoot: _fs.currentDirectory),
         flutterTool: FlutterTool(
           stdin: stdin,
@@ -176,6 +181,10 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         testBundler: testBundler,
         testFinder: testFinder,
         dartDefinesReader: DartDefinesReader(projectRoot: _fs.currentDirectory),
+        compatibilityChecker: CompatibilityChecker(
+          projectRoot: _fs.currentDirectory,
+          processManager: _processManager,
+        ),
         pubspecReader: PubspecReader(projectRoot: _fs.currentDirectory),
         androidTestBackend: androidTestBackend,
         iosTestBackend: iosTestBackend,
@@ -260,7 +269,7 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
 
     var exitCode = 1;
     try {
-      _handleAnalytics();
+      _handleFirstRun();
 
       final topLevelResults = parse(args);
       verbose = topLevelResults['verbose'] == true;
@@ -323,7 +332,7 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
 
     final int? exitCode;
     if (topLevelResults['version'] == true) {
-      _logger.info('patrol_cli v$version');
+      _logger.info('patrol_cli v${constants.version}');
       exitCode = 0;
     } else {
       exitCode = await super.runCommand(topLevelResults);
@@ -335,10 +344,16 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
   @override
   void printUsage() => _logger.info(usage);
 
-  void _handleAnalytics() {
+  void _handleFirstRun() {
     if (_analytics.firstRun && !_isCI) {
-      _logger.info(
-        '''
+      _handleAnalytics();
+      _runDoctor();
+    }
+  }
+
+  void _handleAnalytics() {
+    _logger.info(
+      '''
 \n
 +---------------------------------------------------+
 |             Patrol - Ready for action!            |
@@ -348,18 +363,21 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
 | information will ever leave your machine.         |
 +---------------------------------------------------+
 \n''',
-      );
-      final analyticsEnabled = _logger.confirm(
-        'Enable analytics?',
-        defaultValue: true,
-      );
-      _analytics.enabled = analyticsEnabled;
-      if (analyticsEnabled) {
-        _logger.info('Analytics enabled. Thank you!');
-      } else {
-        _logger.info('Analytics disabled.');
-      }
+    );
+    final analyticsEnabled = _logger.confirm(
+      'Enable analytics?',
+      defaultValue: true,
+    );
+    _analytics.enabled = analyticsEnabled;
+    if (analyticsEnabled) {
+      _logger.info('Analytics enabled. Thank you!');
+    } else {
+      _logger.info('Analytics disabled.');
     }
+  }
+
+  void _runDoctor() {
+    DoctorCommand(logger: _logger, platform: _platform).run();
   }
 
   bool _wantsUpdateCheck(String? commandName) {
@@ -383,7 +401,7 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
     }
 
     final latestVersion = await _pubUpdater.getLatestVersion('patrol_cli');
-    final isUpToDate = version == latestVersion;
+    final isUpToDate = constants.version == latestVersion;
 
     if (isUpToDate) {
       return;
@@ -393,7 +411,7 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
       ..info('')
       ..info(
         '''
-${lightYellow.wrap('Update available!')} ${lightCyan.wrap(version)} \u2192 ${lightCyan.wrap(latestVersion)}
+${lightYellow.wrap('Update available!')} ${lightCyan.wrap(constants.version)} \u2192 ${lightCyan.wrap(latestVersion)}
 Run ${lightCyan.wrap('patrol update')} to update''',
       )
       ..info('');

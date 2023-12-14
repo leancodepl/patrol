@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:patrol_cli/src/analytics/analytics.dart';
-import 'package:patrol_cli/src/base/constants.dart';
+import 'package:patrol_cli/src/base/constants.dart' as constants;
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/runner/patrol_command.dart';
@@ -56,9 +56,11 @@ class UpdateCommand extends PatrolCommand {
       throwToolExit('Failed to check if newer $_cli version is available');
     }
 
-    final isUpToDate = version == newVersion;
+    final isUpToDate = constants.version == newVersion;
     if (isUpToDate) {
-      progress.complete("You're on the latest $_cli version ($version)");
+      progress.complete(
+        "You're on the latest $_cli version (${constants.version})",
+      );
       return;
     } else {
       progress.update('Updating $_cli to version $newVersion');

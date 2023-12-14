@@ -26,7 +26,8 @@ title: Getting started
 ### Add dependency on `patrol`
 
 If you haven't already, add a dependency on the `patrol` package in the
-`dev_dependencies` section of `pubspec.yaml`.
+`dev_dependencies` section of `pubspec.yaml`.  `patrol` package requires 
+Android SDK version 21 or higher.
 
 ```
 flutter pub add patrol --dev
@@ -64,11 +65,27 @@ Patrol UI tests. It is necessary to run UI tests (`flutter test` won't work! [He
    dart pub global activate patrol_cli
    ```
 
+  <Info>
+     Make sure to add `patrol` to your `PATH` environment variable.
+     It's explained how to do it in the [README](https://pub.dev/packages/patrol_cli#installation).
+  </Info>
+
 2. Verify that installation was successful and your enviroment is set up properly:
 
    ```
    patrol doctor
    ```
+   Example output:
+   ```
+   Patrol CLI version: 2.3.1+1
+   Android: 
+   • Program adb found in /Users/username/Library/Android/sdk/platform-tools/adb
+   • Env var $ANDROID_HOME set to /Users/username/Library/Android/sdk
+   iOS / macOS: 
+   • Program xcodebuild found in /usr/bin/xcodebuild
+   • Program ideviceinstaller found in /opt/homebrew/bin/ideviceinstaller
+   ```
+   Be sure that for the platform you want to run the test on, all the checks are green.
 
 ### Integrate with native side
 
@@ -79,7 +96,8 @@ Psst... Android is a bit easier to set up, so we recommend starting with it!
 <Accordion defaultOpen title="Android setup">
 
       1. Go to **android/app/src/androidTest/java/com/example/myapp/** in your project
-         directory. If there are no such folders, create them.
+         directory. If there are no such folders, create them. **Remember to replace 
+         `/com/example/myapp/` with the path created by your app's package name.**
 
       2. Create a file named `MainActivityTest.java` and copy there the code below.
 
@@ -200,8 +218,8 @@ Psst... Android is a bit easier to set up, so we recommend starting with it!
       $ pod install --repo-update
       ```
 
-      8. Open your Xcode project and make sure every target has correct base
-         Build Configurations:
+      8. Open your Xcode project and make sure that `Runner` and `RunnerUITests` 
+         target have correct base Build Configurations:
 
       ```
       $ open Runner.xcworkspace
@@ -209,28 +227,33 @@ Psst... Android is a bit easier to set up, so we recommend starting with it!
 
       ![Xcode config setup](/assets/ios_runner_configs.png)
 
-      9. Add 2 new "Run Script Phase" Build Phases to the RunnerUITests target:
+      9. Go to **RunnerUITests** -> **Build Phases** and add 2 new "Run Script Phase" Build Phases.
+         Name them `xcode_backend build` and `xcode_backend embed_and_thin`.
+
+      ![Xcode config setup](/assets/ios_runner_build_phases_create.png)
+
+      10. Arrange the newly created Build Phases in the order shown in the screenshot below.
 
       ![Xcode config setup](/assets/ios_runner_build_phases.png)
 
-      10. Paste this code into the first `xcode_backend build` Build Phase:
+      11. Paste this code into the first `xcode_backend build` Build Phase:
 
       ```
       /bin/sh "$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh" build
       ```
 
-      11. Paste this code into the second `xcode_backend embed_and_thin` Build Phase:
+      12. Paste this code into the second `xcode_backend embed_and_thin` Build Phase:
 
       ```
       /bin/sh "$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh" embed_and_thin
       ```
 
-      12. Xcode by default also enables a "parallel execution" setting, which
+      13. Xcode by default also enables a "parallel execution" setting, which
          breaks Patrol. Disable it **for all schemes** (if you have more than one):
 
       <YouTube id="9LdEJR59fW4" />
 
-      13. Go to **RunnerUITests** -> **Build Settings**, search for **User Script Sandboxing**
+      14. Go to **RunnerUITests** -> **Build Settings**, search for **User Script Sandboxing**
          and make sure it's set to **No**. 
 
 </Accordion>
@@ -291,37 +314,42 @@ Psst... Android is a bit easier to set up, so we recommend starting with it!
       $ pod install --repo-update
       ```
 
-      8. Add 2 new "Run Script Phase" Build Phases to the RunnerUITests target:
+      8. Go to **RunnerUITests** -> **Build Phases** and add 2 new "Run Script Phase" Build Phases.
+         Name them `xcode_backend build` and `xcode_backend embed_and_thin`.
+
+      ![Xcode config setup](/assets/macos_runner_build_phases_create.png)
+
+      9. Arrange the newly created Build Phases in the order shown in the screenshot below.
 
       ![Xcode config setup](/assets/macos_runner_build_phases.png)
 
-      9. Paste this code into the first `macos_assemble build` Build Phase:
+      10. Paste this code into the first `macos_assemble build` Build Phase:
 
       ```
       /bin/sh "$FLUTTER_ROOT/packages/flutter_tools/bin/macos_assemble.sh" build
       ```
 
-      10. Paste this code into the second `macos_assemble embed` Build Phase:
+      11. Paste this code into the second `macos_assemble embed` Build Phase:
 
       ```
       /bin/sh "$FLUTTER_ROOT/packages/flutter_tools/bin/macos_assemble.sh" embed
       ```
 
-      11. Xcode by default also enables a "parallel execution" setting, which
+      12. Xcode by default also enables a "parallel execution" setting, which
          breaks Patrol. Disable it **for all schemes** (if you have more than one):
 
       <YouTube id="9LdEJR59fW4" />
 
-      12. Go to **RunnerUITests** -> **Build Settings**, search for **User Script Sandboxing**
+      13. Go to **RunnerUITests** -> **Build Settings**, search for **User Script Sandboxing**
          and make sure it's set to **No**. 
       
-      13. Go to **Runner** -> **Signing & Capabilities**. Make sure that in all **App Sandbox** 
+      14. Go to **Runner** -> **Signing & Capabilities**. Make sure that in all **App Sandbox** 
          sections, **Incoming Connections (Server)** and **Outgoing Connections (Client)** checkboxes
          are checked.
 
       ![Xcode entitlements setup](/assets/macos_entitlements.png)
 
-      14. **Copy** `DebugProfile.entitlements` and `Release.entitlements` files from `macos/Runner` 
+      15. **Copy** `DebugProfile.entitlements` and `Release.entitlements` files from `macos/Runner` 
          to `macos/RunnerUITests` directory.
 
       15. Go to **RunnerUITests** -> **Build Settings** and set **Code Signing Entitlements** to 
@@ -381,7 +409,9 @@ up. To run `integration_test/example_test.dart` on a connected Android, iOS or m
       patrol test -t integration_test/example_test.dart
       ```
 
-      If the setup is successful, you should see a **TEST PASSED** message.
+      If the setup is successful, you should see a **TEST PASSED** message. 
+      If something went wrong, please proceed to the [FAQ](/getting-started#faq) section which might
+      contain an answer to your issue.
 
       <Info>
         If your app is using flavors, then you can pass them like so:
@@ -414,6 +444,82 @@ up. To run `integration_test/example_test.dart` on a connected Android, iOS or m
         2. Do not modify the global `FlutterError.onError` callback. Patrol's
           internals depend on it.
       </Error>
+
+      <Info>
+        If you are looking for a working example of a Flutter app with Patrol tests,
+        check out the [example app](https://github.com/leancodepl/patrol/tree/master/packages/patrol/example)
+         in the patrol repository.
+      </Info>
+
+### FAQ
+
+<Accordion title="Testing fails with error inside 'integration_test/test_bundle.dart'">
+  The reason is probably a mismatch of `patrol` and `patrol_cli` versions. Make sure that you 
+  use the latest versions of both packages.
+</Accordion>
+
+<Accordion title="'example_test.dart' passed but I can't get my application to run 
+within the patrol test.">
+  To run your application within the patrol test, you need to call `$.pumpWidgetAndSettle()`,
+  and pass your application's main widget to it. Be sure that you registered all the 
+  necessary services before calling `$.pumpWidgetAndSettle()`.
+  Here's the example of running an app within the patrol test:
+  ```dart
+
+  void main() {
+    patrolTest('real app test', ($) async {
+    
+    // Do all the necessary setup here (DI, services, etc.)
+
+    await $.pumpWidgetAndSettle(const MyApp()); // Your's app main widget
+
+    // Start testing your app here
+
+    });
+  }
+
+  ```
+  It's a good practice to create a setup wrapper function for your tests, so you don't have to
+  repeat the same code in every test. Look at the [example](https://github.com/leancodepl/patrol/blob/d2c7493f9399a028e39cb94fd204affdb932c5fc/dev/e2e_app/integration_test/common.dart#L17-L33)
+  of a wrapper function.
+</Accordion>
+
+
+#### Android
+
+<Accordion title="Where do I get 'package_name' from?">
+  Go to `android/app/build.gradle` and look for `applicationId` in `defaultConfig` section.
+</Accordion>
+
+<Accordion title="Running patrol test fails containing 'Unsupported class file major version' error">
+  It's most likely caused by using incompatible JDK version. 
+  Run `javac -version` to check your JDK version. Patrol officially works on JDK 17, 
+  so unexpected errors may occur on other versions.
+  If you have AndroidStudio or Intellij IDEA installed, you can find the path to JDK by
+  opening your project's android directory in AS/Intellij and going to
+  **Settings** -> **Build, Execution, Deployment** -> **Build Tools** -> **Gradle** -> **Gradle JDK**.
+  [Learn more](https://developer.android.com/build/jdks)
+</Accordion>
+
+
+#### iOS
+
+<Accordion title="Where do I get `bundle_id` from?">
+  Go to `ios/Runner.xcodeproj/project.pbxproj` and look for `PRODUCT_BUNDLE_IDENTIFIER`.
+</Accordion>
+
+<Accordion title="When I run tests the simulator is getting cloned">
+  Make sure that you disabled "Paralell execution" for **all schemes** in Xcode.
+  See [this video](https://www.youtube.com/watch?v=9LdEJR59fW4) for details.
+</Accordion>
+
+<Accordion title="Running test stops on 'Wait for com.example.myapp to idle'">
+  Open your XCode project, go to **Runner** target -> **Build Settings**, search for `FLUTTER_TARGET`
+  and remove set path to targets for all configurations.  
+</Accordion>
+
+If you couldn't find an answer to your question/problem, feel free to ask on 
+[Patrol Discord Server](https://discord.com/channels/1167030497612922931/1167063775925514311).
 
 ### Going from here
 

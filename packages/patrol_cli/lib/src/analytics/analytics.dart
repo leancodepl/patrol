@@ -4,7 +4,7 @@ import 'dart:io' as io;
 
 import 'package:file/file.dart';
 import 'package:http/http.dart' as http;
-import 'package:patrol_cli/src/base/constants.dart';
+import 'package:patrol_cli/src/base/constants.dart' as constants;
 import 'package:patrol_cli/src/base/extensions/platform.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:platform/platform.dart';
@@ -152,7 +152,7 @@ class Analytics {
         'engagement_time_msec': 1,
         'flutter_version': _flutterVersion.version,
         'flutter_channel': _flutterVersion.channel,
-        'patrol_cli_version': version,
+        'patrol_cli_version': constants.version,
         'os': _platform.operatingSystem,
         'os_version': _platform.operatingSystemVersion,
         'locale': _platform.localeName,
@@ -186,7 +186,12 @@ class FlutterVersion {
 FlutterVersion _getFlutterVersion() {
   final result = io.Process.runSync(
     'flutter',
-    ['--no-version-check', '--version', '--machine'],
+    [
+      '--no-version-check',
+      '--suppress-analytics',
+      '--version',
+      '--machine',
+    ],
     runInShell: true,
   );
 

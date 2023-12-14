@@ -135,6 +135,7 @@ void main() {
           equals([
             ...['flutter', 'build', 'ios'],
             '--no-version-check',
+            '--suppress-analytics',
             ...['--config-only', '--no-codesign', '--debug', '--simulator'],
             ...['--target', 'integration_test/app_test.dart'],
           ]),
@@ -215,6 +216,7 @@ void main() {
             equals([
               ...['flutter', 'build', 'ios'],
               '--no-version-check',
+              '--suppress-analytics',
               ...['--config-only', '--no-codesign', '--release'],
               ...['--flavor', 'prod'],
               ...['--target', 'integration_test/app_test.dart'],

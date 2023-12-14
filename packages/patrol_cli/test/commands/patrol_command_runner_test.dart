@@ -1,7 +1,7 @@
 import 'package:args/command_runner.dart';
 import 'package:file/memory.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:patrol_cli/src/base/constants.dart';
+import 'package:patrol_cli/src/base/constants.dart' as constants;
 import 'package:patrol_cli/src/base/extensions/command_runner.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/runner/patrol_command_runner.dart';
@@ -15,7 +15,7 @@ import '../src/mocks.dart';
 const latestVersion = '0.0.0';
 
 final updatePrompt = '''
-${lightYellow.wrap('Update available!')} ${lightCyan.wrap(version)} \u2192 ${lightCyan.wrap(latestVersion)}
+${lightYellow.wrap('Update available!')} ${lightCyan.wrap(constants.version)} \u2192 ${lightCyan.wrap(latestVersion)}
 Run ${lightCyan.wrap('patrol update')} to update''';
 
 void main() {
@@ -31,7 +31,7 @@ void main() {
 
       when(
         () => pubUpdater.getLatestVersion(any()),
-      ).thenAnswer((_) async => version);
+      ).thenAnswer((_) async => constants.version);
 
       commandRunner = PatrolCommandRunner(
         platform: FakePlatform(environment: {}),
@@ -122,7 +122,7 @@ void main() {
       test('prints current version', () async {
         final result = await commandRunner.run(['--version']);
         expect(result, equals(0));
-        verify(() => logger.info('patrol_cli v$version')).called(1);
+        verify(() => logger.info('patrol_cli v${constants.version}')).called(1);
       });
     });
 
