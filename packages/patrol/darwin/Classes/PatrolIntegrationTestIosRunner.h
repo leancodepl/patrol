@@ -55,19 +55,17 @@
       [systemAlerts.buttons[@"Allow"] tap];                                                                           \
     }                                                                                                                 \
                                                                                                                       \
-    /* Run the app for the first time to gather Dart tests */                                                         \
-    [[[XCUIApplication alloc] init] launch];                                                                          \
-                                                                                                                      \
-    /* Spin the runloop waiting until the app reports that it is ready to report Dart tests */                        \
-    while (!server.appReady) {                                                                                        \
-      [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];                              \
-    }                                                                                                                 \
-                                                                                                                      \
     __block NSArray<NSString *> *dartTests = NULL;                                                                    \
     if ([self selectedTest] != nil) {                                                                                 \
       NSLog(@"selectedTest: %@", [self selectedTest]);                                                                \
       dartTests = [NSArray arrayWithObject:[self selectedTest]];                                                      \
     } else {                                                                                                          \
+      /* Run the app for the first time to gather Dart tests */                                                       \
+      [[[XCUIApplication alloc] init] launch];                                                                        \
+      /* Spin the runloop waiting until the app reports that it is ready to report Dart tests */                      \
+      while (!server.appReady) {                                                                                      \
+        [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];                            \
+      }                                                                                                               \
       [appServiceClient listDartTestsWithCompletion:^(NSArray<NSString *> *_Nullable tests, NSError *_Nullable err) { \
         if (err != NULL) {                                                                                            \
           NSLog(@"listDartTests(): failed, err: %@", err);                                                            \
