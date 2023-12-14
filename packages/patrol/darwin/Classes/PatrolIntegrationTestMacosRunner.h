@@ -5,7 +5,7 @@
 //  3. Make the changes, make sure it works
 //  4. Re-add trailing backslashes: $ sed 's/$/\\/' PatrolIntegrationTestMacosRunner.h
 //  5. Copy the contents from RunnerUITests.m back here
-//  6. Go back to using a macro in RunnerTests.m
+//  6. Go back to using a macro in RunnerUITests.m
 
 // For every Flutter dart test, dynamically generate an Objective-C method mirroring the test results
 // so it is reported as a native XCTest run result.
