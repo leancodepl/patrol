@@ -1,11 +1,11 @@
-## Unreleased
+## 3.3.0
 
+- Enable selecting individual tests with `xcodebuild`'s `-only-testing` option.
+  Currently iOS only, does not support macOS (#2001)
 - Fix being unable to interact with the running app during testing with a finger
   (#2008)
 - Fix non-ASCII characters displaying as gibberish in Patrol's DevTools
   extension (#2010)
-- Enable selecting individual tests with `xcodebuild`'s `-only-testing` option
-  (#2001)
 - Fix Dart-side crash in test causing test suite to hang on iOS (#2013)
 
 ## 3.2.0
