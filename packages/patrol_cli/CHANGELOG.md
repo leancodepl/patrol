@@ -1,6 +1,7 @@
 ## Unreleased 
 
 - Allow defining custom test file suffix (#2009)
+- Fix opening devtools on Windows (#2011)
 
 ## 2.4.0
 
