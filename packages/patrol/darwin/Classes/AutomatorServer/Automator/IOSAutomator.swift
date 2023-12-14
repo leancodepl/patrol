@@ -544,7 +544,7 @@
     func allowPermissionWhileUsingApp() throws {
       try runAction("allowing while using app") {
         let systemAlerts = self.springboard.alerts
-        let labels = ["OK", "Allow", "Allow While Using App"]
+        let labels = ["OK", "Allow", "Allow While Using App", "Allow Full Access"]
 
         guard
           let button = self.waitForAnyElement(
