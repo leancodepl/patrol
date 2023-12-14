@@ -4,6 +4,8 @@
   (#2008)
 - Fix non-ASCII characters displaying as gibberish in Patrol's DevTools
   extension (#2010)
+- Enable selecting individual tests with `xcodebuild`'s `-only-testing` option
+  (#2001)
 
 ## 3.2.0
 

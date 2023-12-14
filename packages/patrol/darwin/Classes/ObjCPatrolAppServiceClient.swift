@@ -35,11 +35,13 @@
     client.listDartTests { result in
       switch result {
       case .success(let result):
+        NSLog("PatrolAppServiceClient.listDartTests(): succeeded")
         let output = result.group.listTestsFlat(parentGroupName: "").map {
           $0.name
         }
         completion(output, nil)
       case .failure(let error):
+        NSLog("PatrolAppServiceClient.listDartTests(): failed with error: \(error)")
         completion(nil, error)
       }
     }
