@@ -182,8 +182,9 @@ Psst... Android is a bit easier to set up, so we recommend starting with it!
 
       4. Make sure that the **iOS Deployment Target** of `RunnerUITests` within the
          **Build Settings** section is the same as `Runner`.
-         The minimum supported **iOS Deployment Target** is `11.0`. For the example app,
-         we set it to `13.0`.
+         The minimum supported **iOS Deployment Target** is `11.0`. For the 
+         [example app](https://github.com/leancodepl/patrol/tree/master/packages/patrol/example),
+         we set it to `13.0` because it's required by the app dependencies.
 
       ![Xcode iOS deployment target](/assets/ios_deployment_target.png)
 
@@ -449,6 +450,7 @@ up. To run `integration_test/example_test.dart` on a connected Android, iOS or m
         2. Do not modify the global `FlutterError.onError` callback. Patrol's
            internals depend on it. Keep in mind that this callback can also
            be modified by popular packages such as Sentry or Crashlytics.
+           In such cases, you can disable them for Patrol tests.
       </Error>
 
       <Info>
