@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:1084544027393:android:a954abb91299778a2c8ff0",
         "android_client_info": {
-          "package_name": "pl.leancode.patrol.example"
+          "package_name": "pl.leancode.patrol.example.dev"
         }
       },
       "oauth_client": [
@@ -17,7 +17,7 @@
           "client_id": "1082544097392-j48pqr8dkg4almagua8er7hcl86el0df.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "pl.leancode.patrol.example",
+            "package_name": "pl.leancode.patrol.example.dev",
             "certificate_hash": "04c4d550315e88f469e252e20d08aa7bf07d8657"
           }
         },
@@ -25,7 +25,7 @@
           "client_id": "1084144097393-vu46lsrqbkenn0kid9r469668m6rtd0.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "pl.leancode.patrol.Example",
+            "package_name": "pl.leancode.patrol.Example.dev",
             "certificate_hash": "77d5797c5c5481afe34d78ef8153d59cfd44f951"
           }
         },

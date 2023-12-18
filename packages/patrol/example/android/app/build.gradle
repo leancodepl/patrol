@@ -29,6 +29,20 @@ android {
 
     namespace "pl.leancode.patrol.example"
 
+    flavorDimensions "env"
+    productFlavors {
+        prod {
+            dimension "env"
+            resValue "string", "app_name", "Challange"
+        }
+        dev {
+            dimension "env"
+            applicationIdSuffix ".dev"
+            versionNameSuffix ".dev"
+            resValue "string", "app_name", "DEV Challange"
+        }
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
