@@ -133,7 +133,7 @@ class IOSAppOptions {
   final String? bundleId;
   final String scheme;
   final String configuration;
-  bool simulator;
+  final bool simulator;
 
   String get description {
     final platform = simulator ? 'simulator' : 'device';

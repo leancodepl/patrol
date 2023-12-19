@@ -195,6 +195,7 @@ class NativeAutomator {
       Uri.http('${_config.host}:${_config.port}'),
       timeout: _config.connectionTimeout,
     );
+    _config.logger('NativeAutomatorClient created, port: ${_config.port}');
   }
 
   final NativeAutomatorConfig _config;
