@@ -55,7 +55,7 @@ jobs:
         run: .\gradlew.bat :app:assembleDebug
 
       - name: Build app with Flutter tool
-        run: flutter build apk --debug
+        run: flutter build apk --debug --flavor dev
 
   prepare-android-on-linux:
     runs-on: ${{ matrix.os }}
@@ -111,7 +111,7 @@ jobs:
         run: ./gradlew :app:assembleDebug
 
       - name: Build example app with Flutter tool
-        run: flutter build apk --debug
+        run: flutter build apk --debug --flavor dev
 
   prepare-darwin:
     runs-on: ${{ matrix.os }}
