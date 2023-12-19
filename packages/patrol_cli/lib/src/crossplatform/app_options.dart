@@ -136,8 +136,8 @@ class IOSAppOptions {
   final String scheme;
   final String configuration;
   final bool simulator;
-  final String appServerPort;
-  final String testServerPort;
+  final int appServerPort;
+  final int testServerPort;
 
   String get description {
     final platform = simulator ? 'simulator' : 'device';

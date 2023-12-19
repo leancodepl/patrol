@@ -203,20 +203,20 @@ abstract class PatrolCommand extends Command<int> {
     return buildModes.single;
   }
 
-  String get appServerPort {
+  int get appServerPort {
     final port = intArg('app-server-port');
     if (port == null) {
       throw StateError('Command tried to use appServerPort but it is null');
     }
-    return port.toString();
+    return port;
   }
 
-  String get testServerPort {
+  int get testServerPort {
     final port = intArg('test-server-port');
     if (port == null) {
       throw StateError('Command tried to use testServerPort but it is null');
     }
-    return port.toString();
+    return port;
   }
 
   /// The name of the command in the online docs (https://patrol.leancode.co),

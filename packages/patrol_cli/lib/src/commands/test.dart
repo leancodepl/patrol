@@ -149,6 +149,8 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       'PATROL_IOS_APP_NAME': config.ios.appName,
       'INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE': 'false',
       'PATROL_TEST_LABEL_ENABLED': displayLabel.toString(),
+      'PATROL_TEST_SERVER_PORT': super.testServerPort.toString(),
+      'PATROL_APP_SERVER_PORT': super.appServerPort.toString(),
     }.withNullsRemoved();
 
     final dartDefines = {...customDartDefines, ...internalDartDefines};
@@ -184,6 +186,8 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       scheme: buildMode.createScheme(iosFlavor),
       configuration: buildMode.createConfiguration(iosFlavor),
       simulator: !device.real,
+      appServerPort: super.appServerPort,
+      testServerPort: super.testServerPort,
     );
 
     final macosOpts = MacOSAppOptions(

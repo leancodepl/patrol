@@ -122,6 +122,8 @@ void main() {
           scheme: 'Runner',
           configuration: 'Debug',
           simulator: true,
+          testServerPort: 8081,
+          appServerPort: 8082,
         );
       });
 
@@ -203,6 +205,8 @@ void main() {
             scheme: 'prod',
             configuration: 'Release-prod',
             simulator: false,
+            testServerPort: 8081,
+            appServerPort: 8082,
           );
         });
 

@@ -62,7 +62,7 @@ class NativeAutomatorConfig {
       defaultValue: 'localhost',
     ),
     this.port = const String.fromEnvironment(
-      'PATROL_PORT',
+      'PATROL_TEST_SERVER_PORT',
       defaultValue: '8081',
     ),
     this.packageName = const String.fromEnvironment('PATROL_APP_PACKAGE_NAME'),
