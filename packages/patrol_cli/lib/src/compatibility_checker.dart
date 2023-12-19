@@ -46,7 +46,7 @@ class CompatibilityChecker {
     javaVersion = await javaCompleter.future;
     if (javaVersion == null) {
       throwToolExit(
-        'Failed to read java version. Make sure you have java installed and added to PATH',
+        'Failed to read Java version. Make sure you have Java installed and added to PATH',
       );
     } else if (javaVersion.major != 17) {
       _logger.warn(
