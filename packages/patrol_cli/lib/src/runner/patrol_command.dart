@@ -8,6 +8,9 @@ abstract class PatrolCommand extends Command<int> {
 
   var _usesBuildOption = false;
 
+  final _defaultTestServerPort = 8081;
+  final _defaultAppServerPort = 8082;
+
   final defaultFailureMessage =
       'See the logs above to learn what happened. Also consider running with '
       "--verbose. If the logs still aren't useful, then it's a bug - please "
@@ -115,6 +118,7 @@ abstract class PatrolCommand extends Command<int> {
       help: 'Bundle identifier of the iOS app under test.',
       valueHelp: 'pl.leancode.AwesomeApp',
     );
+    _usesIOSPortOptions();
   }
 
   void usesMacOSOptions() {
@@ -123,6 +127,21 @@ abstract class PatrolCommand extends Command<int> {
       help: 'Bundle identifier of the MacOS app under test.',
       valueHelp: 'pl.leancode.macos.AwesomeApp',
     );
+    _usesIOSPortOptions();
+  }
+
+  void _usesIOSPortOptions() {
+    argParser
+      ..addOption(
+        'test-server-port',
+        help: 'Port to use for server running in the test instrumentation app.',
+        defaultsTo: _defaultTestServerPort.toString(),
+      )
+      ..addOption(
+        'app-server-port',
+        help: 'Port to use for server running in the app under test.',
+        defaultsTo: _defaultAppServerPort.toString(),
+      );
   }
 
   // Runtime-only options
@@ -182,6 +201,22 @@ abstract class PatrolCommand extends Command<int> {
     }
 
     return buildModes.single;
+  }
+
+  String get appServerPort {
+    final port = intArg('app-server-port');
+    if (port == null) {
+      throw StateError('Command tried to use appServerPort but it is null');
+    }
+    return port.toString();
+  }
+
+  String get testServerPort {
+    final port = intArg('test-server-port');
+    if (port == null) {
+      throw StateError('Command tried to use testServerPort but it is null');
+    }
+    return port.toString();
   }
 
   /// The name of the command in the online docs (https://patrol.leancode.co),

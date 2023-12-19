@@ -127,6 +127,8 @@ class IOSAppOptions {
     required this.scheme,
     required this.configuration,
     required this.simulator,
+    required this.appServerPort,
+    required this.testServerPort,
   });
 
   final FlutterAppOptions flutter;
@@ -134,6 +136,8 @@ class IOSAppOptions {
   final String scheme;
   final String configuration;
   final bool simulator;
+  final String appServerPort;
+  final String testServerPort;
 
   String get description {
     final platform = simulator ? 'simulator' : 'device';

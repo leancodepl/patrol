@@ -119,6 +119,7 @@ class TestCommand extends PatrolCommand {
     }
 
     if (devices.length > 1) {
+      // TODO: Throw an error when running on more than 1 device
       _logger.warn('''
 Running on multiple devices is deprecated and will be removed in the future.
 See https://github.com/leancodepl/patrol/issues/1316 to learn more.
