@@ -4,6 +4,7 @@ import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
 import 'package:patrol_cli/src/base/constants.dart' as constants;
 import 'package:patrol_cli/src/base/exceptions.dart';
+import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:process/process.dart';
 import 'package:version/version.dart';
@@ -12,17 +13,50 @@ class CompatibilityChecker {
   CompatibilityChecker({
     required Directory projectRoot,
     required ProcessManager processManager,
+    required Logger logger,
   })  : _projectRoot = projectRoot,
         _processManager = processManager,
-        _disposeScope = DisposeScope();
+        _disposeScope = DisposeScope(),
+        _logger = logger;
 
   final Directory _projectRoot;
   final ProcessManager _processManager;
   final DisposeScope _disposeScope;
+  final Logger _logger;
 
   Future<void> checkVersionsCompatibility() async {
+    Version? javaVersion;
+    final javaCompleter = Completer<Version?>();
+
+    await _disposeScope.run((scope) async {
+      final process = await _processManager.start(
+        ['javac', '--version'],
+        workingDirectory: _projectRoot.path,
+        runInShell: true,
+      )
+        ..disposedBy(scope);
+
+      process.listenStdOut((line) async {
+        if (line.startsWith('javac')) {
+          javaCompleter.complete(Version.parse(line.split(' ').last));
+        }
+      }).disposedBy(scope);
+    });
+
+    javaVersion = await javaCompleter.future;
+    if (javaVersion == null) {
+      throwToolExit(
+        'Failed to read java version. Make sure you have java installed and added to PATH',
+      );
+    } else if (javaVersion.major != 17) {
+      _logger.warn(
+        'You are using Java $javaVersion which can cause issues on Android.\n'
+        'If you encounter any issues, try changing your Java version to 17.',
+      );
+    }
+
     String? packageVersion;
-    final completer = Completer<String?>();
+    final packageCompleter = Completer<String?>();
 
     await _disposeScope.run((scope) async {
       final process = await _processManager.start(
@@ -41,12 +75,12 @@ class CompatibilityChecker {
 
       process.listenStdOut((line) async {
         if (line.startsWith('- patrol ')) {
-          completer.complete(line.split(' ').last);
+          packageCompleter.complete(line.split(' ').last);
         }
       }).disposedBy(scope);
     });
 
-    packageVersion = await completer.future;
+    packageVersion = await packageCompleter.future;
 
     if (packageVersion == null) {
       throwToolExit(
