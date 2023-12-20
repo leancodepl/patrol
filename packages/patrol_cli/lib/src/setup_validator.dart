@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:io' as io;
 
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
+import 'package:path/path.dart';
 import 'package:patrol_cli/src/base/constants.dart' as constants;
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/logger.dart';
@@ -9,8 +11,10 @@ import 'package:patrol_cli/src/base/process.dart';
 import 'package:process/process.dart';
 import 'package:version/version.dart';
 
-class CompatibilityChecker {
-  CompatibilityChecker({
+const _defaultPackageName = 'com.example.myapp';
+
+class SetupValidator {
+  SetupValidator({
     required Directory projectRoot,
     required ProcessManager processManager,
     required Logger logger,
@@ -23,6 +27,71 @@ class CompatibilityChecker {
   final ProcessManager _processManager;
   final DisposeScope _disposeScope;
   final Logger _logger;
+
+  Future<void> validateMainActivity() async {
+    final androidBasePath = join(_projectRoot.path, 'android', 'app', 'src');
+
+    // check if MainActivityTest.java exists
+    final testDirectoryFiles = io.Directory(
+      join(androidBasePath, 'androidTest', 'java'),
+    ).listSync(recursive: true);
+    for (final element in testDirectoryFiles) {
+      if (element.path.endsWith('MainActivityTest.java')) {
+        return;
+      }
+    }
+
+    String? packageName;
+
+    final mainDirectoryFiles = io.Directory(
+      join(androidBasePath, 'main'),
+    ).listSync(recursive: true);
+    for (final element in mainDirectoryFiles) {
+      if (element.path.endsWith('MainActivity.java') ||
+          element.path.endsWith('MainActivity.kt')) {
+        final mainActivity = io.File(element.path).readAsLinesSync();
+        packageName = mainActivity
+            .firstWhere((line) => line.startsWith('package'))
+            .split(' ')
+            .last
+            .split(';')
+            .first;
+      }
+    }
+
+    if (packageName == null) {
+      final path = _createMainActivityTest(androidBasePath);
+      throwToolExit(
+        'Could not find your android app package name.\n'
+        'Created MainActivityTest.java under default path:\n'
+        '$path\n'
+        'Please replace com.example.myapp with your package name in MainActivityTest.java '
+        'and change the path to match your package name.',
+      );
+    } else {
+      final path = _createMainActivityTest(androidBasePath, packageName);
+      _logger.info('Created MainActivityTest.java under $path');
+    }
+  }
+
+  String _createMainActivityTest(
+    String androidBasePath, [
+    String? packageName,
+  ]) {
+    final path = joinAll([
+      androidBasePath,
+      'androidTest',
+      'java',
+      ...(packageName ?? _defaultPackageName).split('.'),
+      'MainActivityTest.java',
+    ]);
+
+    io.File(path)
+      ..createSync(recursive: true)
+      ..writeAsStringSync(generateMainActivityTestContent(packageName));
+
+    return path;
+  }
 
   Future<void> checkVersionsCompatibility() async {
     Version? javaVersion;
@@ -165,4 +234,41 @@ class _VersionRange {
 
   final Version min;
   final Version? max;
+}
+
+String generateMainActivityTestContent([String? packageName]) {
+  return '''
+package ${packageName != null ? '$packageName;' : '$_defaultPackageName; // replace "com.example.myapp" with your app\'s package'}
+
+import androidx.test.platform.app.InstrumentationRegistry;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
+import pl.leancode.patrol.PatrolJUnitRunner;
+
+@RunWith(Parameterized.class)
+public class MainActivityTest {
+    @Parameters(name = "{0}")
+    public static Object[] testCases() {
+        PatrolJUnitRunner instrumentation = (PatrolJUnitRunner) InstrumentationRegistry.getInstrumentation();
+        instrumentation.setUp(MainActivity.class);
+        instrumentation.waitForPatrolAppService();
+        return instrumentation.listDartTests();
+    }
+
+    public MainActivityTest(String dartTestName) {
+        this.dartTestName = dartTestName;
+    }
+
+    private final String dartTestName;
+
+    @Test
+    public void runDartTest() {
+        PatrolJUnitRunner instrumentation = (PatrolJUnitRunner) InstrumentationRegistry.getInstrumentation();
+        instrumentation.runDartTest(dartTestName);
+    }
+}
+
+''';
 }

@@ -4,7 +4,6 @@ import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
 import 'package:patrol_cli/src/base/logger.dart';
-import 'package:patrol_cli/src/compatibility_checker.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/dart_defines_reader.dart';
 import 'package:patrol_cli/src/devices.dart';
@@ -12,6 +11,7 @@ import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:patrol_cli/src/macos/macos_test_backend.dart';
 import 'package:patrol_cli/src/pubspec_reader.dart';
 import 'package:patrol_cli/src/runner/patrol_command.dart';
+import 'package:patrol_cli/src/setup_validator.dart';
 import 'package:patrol_cli/src/test_bundler.dart';
 import 'package:patrol_cli/src/test_finder.dart';
 
@@ -21,7 +21,7 @@ class TestCommand extends PatrolCommand {
     required TestFinder testFinder,
     required TestBundler testBundler,
     required DartDefinesReader dartDefinesReader,
-    required CompatibilityChecker compatibilityChecker,
+    required SetupValidator setupValidator,
     required PubspecReader pubspecReader,
     required AndroidTestBackend androidTestBackend,
     required IOSTestBackend iosTestBackend,
@@ -32,7 +32,7 @@ class TestCommand extends PatrolCommand {
         _testBundler = testBundler,
         _testFinder = testFinder,
         _dartDefinesReader = dartDefinesReader,
-        _compatibilityChecker = compatibilityChecker,
+        _setupValidator = setupValidator,
         _pubspecReader = pubspecReader,
         _androidTestBackend = androidTestBackend,
         _iosTestBackend = iosTestBackend,
@@ -57,7 +57,7 @@ class TestCommand extends PatrolCommand {
   final TestFinder _testFinder;
   final TestBundler _testBundler;
   final DartDefinesReader _dartDefinesReader;
-  final CompatibilityChecker _compatibilityChecker;
+  final SetupValidator _setupValidator;
   final PubspecReader _pubspecReader;
   final AndroidTestBackend _androidTestBackend;
   final IOSTestBackend _iosTestBackend;
@@ -76,7 +76,8 @@ class TestCommand extends PatrolCommand {
   Future<int> run() async {
     unawaited(_analytics.sendCommand(name));
 
-    await _compatibilityChecker.checkVersionsCompatibility();
+    await _setupValidator.validateMainActivity();
+    await _setupValidator.checkVersionsCompatibility();
 
     final config = _pubspecReader.read();
     final testFileSuffix = config.testFileSuffix;

@@ -20,13 +20,13 @@ import 'package:patrol_cli/src/commands/devices.dart';
 import 'package:patrol_cli/src/commands/doctor.dart';
 import 'package:patrol_cli/src/commands/test.dart';
 import 'package:patrol_cli/src/commands/update.dart';
-import 'package:patrol_cli/src/compatibility_checker.dart';
 import 'package:patrol_cli/src/crossplatform/flutter_tool.dart';
 import 'package:patrol_cli/src/dart_defines_reader.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:patrol_cli/src/macos/macos_test_backend.dart';
 import 'package:patrol_cli/src/pubspec_reader.dart';
+import 'package:patrol_cli/src/setup_validator.dart';
 import 'package:patrol_cli/src/test_bundler.dart';
 import 'package:patrol_cli/src/test_finder.dart';
 import 'package:platform/platform.dart';
@@ -155,7 +155,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         testFinder: testFinder,
         testBundler: testBundler,
         dartDefinesReader: DartDefinesReader(projectRoot: _fs.currentDirectory),
-        compatibilityChecker: CompatibilityChecker(
+        setupValidator: SetupValidator(
           projectRoot: _fs.currentDirectory,
           processManager: _processManager,
           logger: _logger,
@@ -182,7 +182,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         testBundler: testBundler,
         testFinder: testFinder,
         dartDefinesReader: DartDefinesReader(projectRoot: _fs.currentDirectory),
-        compatibilityChecker: CompatibilityChecker(
+        setupValidator: SetupValidator(
           projectRoot: _fs.currentDirectory,
           processManager: _processManager,
           logger: _logger,
