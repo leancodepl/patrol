@@ -55,7 +55,8 @@
 
     // MARK: General UI interaction
 
-    func tap(onText text: String, inApp bundleId: String, atIndex index: Int) throws {
+    //func tap(onText text: String, inApp bundleId: String, atIndex index: Int) throws {
+    func tap(_ selector: Selector) throws {
       let view = "view with text \(format: text) at index \(index) in app \(bundleId)"
 
       try runAction("tapping on \(view)") {

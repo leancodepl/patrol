@@ -2,6 +2,57 @@
   import XCTest
   import os
 
+  extension Selector {
+    func toNSPredicate() -> NSPredicate {
+      
+      var format = ""
+      var begun = false
+      let values = [String]()
+      
+      var text: String?
+      var textStartsWith: String?
+      var textContains: String?
+      
+      if (self.text != nil) {
+        if (begun) { format += " AND " }
+        begun = true
+        format += "label == %@ AND title == %@"
+        values.append(self.text)
+      }
+      
+      if (self.textStartsWith) {
+        if (begun) { format += " AND " }
+        begun = true
+        format += "label == %@ OR title == %@"
+        values.append(self.text)
+      }
+      
+      if (self.textContains) {
+        
+      }
+      
+      if (self.resourceId) {
+        if (begun) { format += " AND " }
+        begun = true
+        format += "identifier == %@"
+        
+      }
+      
+      
+      
+      let format = """
+        label == %@ OR \
+        title == %@ OR \
+        identifier == %@
+        """
+      
+      let predicate = NSPredicate(format: format, text, text, text)
+      
+      
+      return predicate;
+    }
+  }
+
   protocol Automator {
     func configure(timeout: TimeInterval)
 
@@ -12,7 +63,7 @@
     func openControlCenter() throws
 
     // MARK: General UI interaction
-    func tap(predicate: NSPredicate, inApp bundleId: String, atIndex index: Int) throws
+    func tap(_ selector: Selector) throws
     func doubleTap(onText text: String, inApp bundleId: String) throws
     func enterText(
       _ data: String,
