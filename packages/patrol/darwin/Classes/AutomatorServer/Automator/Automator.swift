@@ -13,31 +13,33 @@
       var textStartsWith: String?
       var textContains: String?
       
-      if (self.text != nil) {
+      if (text != nil) {
         if (begun) { format += " AND " }
         begun = true
-        format += "label == %@ AND title == %@"
-        values.append(self.text)
+        format += "(label == %@ OR title == %@)"
+        values.append(text)
       }
       
-      if (self.textStartsWith) {
+      if (textStartsWith) {
         if (begun) { format += " AND " }
         begun = true
-        format += "label == %@ OR title == %@"
-        values.append(self.text)
+        format += "(label BEGINSWITH %@ OR title BEGINSWITH %@)"
+        values.append(textStartsWith)
       }
       
-      if (self.textContains) {
-        
+      if (textContains) {
+        if (begun) { format += " AND " }
+        begun = true
+        format += "(label CONTAINS %@ OR title CONTAINS %@)"
+        values.append(textContains)
       }
       
       if (self.resourceId) {
         if (begun) { format += " AND " }
         begun = true
-        format += "identifier == %@"
-        
+        format += "(identifier == %@)"
+        values.append(resourceId)
       }
-      
       
       
       let format = """
