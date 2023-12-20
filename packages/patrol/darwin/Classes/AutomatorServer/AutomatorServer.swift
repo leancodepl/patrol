@@ -79,6 +79,8 @@
 
     func tap(request: TapRequest) throws {
       return try runCatching {
+        NSSelectorFromString(<#T##aSelectorName: String##String#>)
+        
         try automator.tap(
           onText: request.selector.text ?? String(),
           inApp: request.appId,
