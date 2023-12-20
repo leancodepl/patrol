@@ -134,11 +134,15 @@ class PatrolTester {
   /// See also:
   ///  - [PatrolFinder.resolve]
   PatrolFinder call(dynamic matching) {
-    return PatrolFinder.resolve(
+    final finder = PatrolFinder.resolve(
       matching: matching,
       tester: this,
       parentFinder: null,
     );
+
+    print('resolve: ${finder.toString(describeSelf: true)}');
+
+    return finder;
   }
 
   /// See [WidgetTester.pumpWidget].
