@@ -1,61 +1,50 @@
+public extension Selector {
+  func toNSPredicate() -> NSPredicate {
+    var format = ""
+    var begun = false
+    var values = [String]()
+    
+    if (text != nil) {
+      begun = true
+      format += "(label == %@ OR title == %@)"
+      values.append(text!)
+      values.append(text!)
+    }
+    
+    if (textStartsWith != nil) {
+      if (begun) { format += " AND " }
+      begun = true
+      format += "(label BEGINSWITH %@ OR title BEGINSWITH %@)"
+      values.append(textStartsWith!)
+      values.append(textStartsWith!)
+    }
+    
+    if (textContains != nil) {
+      if (begun) { format += " AND " }
+      begun = true
+      format += "(label CONTAINS %@ OR title CONTAINS %@)"
+      values.append(textContains!)
+      values.append(textContains!)
+    }
+    
+    if (resourceId != nil) {
+      if (begun) { format += " AND " }
+      begun = true
+      format += "(identifier == %@)"
+      values.append(resourceId!)
+    }
+    
+    let predicate = NSPredicate(format: format, argumentArray: values)
+    
+    return predicate;
+  }
+}
+
 #if PATROL_ENABLED
   import XCTest
   import os
 
-  extension Selector {
-    func toNSPredicate() -> NSPredicate {
-      
-      var format = ""
-      var begun = false
-      let values = [String]()
-      
-      var text: String?
-      var textStartsWith: String?
-      var textContains: String?
-      
-      if (text != nil) {
-        if (begun) { format += " AND " }
-        begun = true
-        format += "(label == %@ OR title == %@)"
-        values.append(text)
-      }
-      
-      if (textStartsWith) {
-        if (begun) { format += " AND " }
-        begun = true
-        format += "(label BEGINSWITH %@ OR title BEGINSWITH %@)"
-        values.append(textStartsWith)
-      }
-      
-      if (textContains) {
-        if (begun) { format += " AND " }
-        begun = true
-        format += "(label CONTAINS %@ OR title CONTAINS %@)"
-        values.append(textContains)
-      }
-      
-      if (self.resourceId) {
-        if (begun) { format += " AND " }
-        begun = true
-        format += "(identifier == %@)"
-        values.append(resourceId)
-      }
-      
-      
-      let format = """
-        label == %@ OR \
-        title == %@ OR \
-        identifier == %@
-        """
-      
-      let predicate = NSPredicate(format: format, text, text, text)
-      
-      
-      return predicate;
-    }
-  }
-
-  protocol Automator {
+protocol Automator {
     func configure(timeout: TimeInterval)
 
     // MARK: General

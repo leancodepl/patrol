@@ -63,19 +63,21 @@ struct OpenQuickSettingsRequest: Codable {
 
 }
 
-struct Selector: Codable {
-  var text: String?
-  var textStartsWith: String?
-  var textContains: String?
-  var className: String?
-  var contentDescription: String?
-  var contentDescriptionStartsWith: String?
-  var contentDescriptionContains: String?
-  var resourceId: String?
-  var instance: Int?
-  var enabled: Bool?
-  var focused: Bool?
-  var pkg: String?
+public struct Selector: Codable {
+  public init() {}
+  
+  public var text: String?
+  public var textStartsWith: String?
+  public var textContains: String?
+  public var className: String?
+  public var contentDescription: String?
+  public var contentDescriptionStartsWith: String?
+  public var contentDescriptionContains: String?
+  public var resourceId: String?
+  public var instance: Int?
+  public var enabled: Bool?
+  public var focused: Bool?
+  public var pkg: String?
 }
 
 struct GetNativeViewsRequest: Codable {
