@@ -5,6 +5,7 @@ import 'package:meta/meta.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
+import 'package:platform/platform.dart';
 import 'package:process/process.dart';
 import 'package:test/test.dart';
 
@@ -54,6 +55,7 @@ void main() {
 
       iosTestBackend = IOSTestBackend(
         processManager: FakeProcessManager(),
+        platform: FakePlatform(),
         fs: fs,
         parentDisposeScope: DisposeScope(),
         logger: FakeLogger(),

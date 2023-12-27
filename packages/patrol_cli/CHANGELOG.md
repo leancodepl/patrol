@@ -1,3 +1,12 @@
+## Unreleased
+
+- Allow for changing the port when running on iOS (#2027).
+
+  To do so, pass `test-server-port` (default 8081) and `app-server-port`
+  (default 8082) to Patrol CLI commands (e.g `patrol test`)
+
+This version requires version UNRELEASED of `patrol` package.
+
 ## 2.5.0
 
 - Allow for defining a custom test file suffix (#2009)

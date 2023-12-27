@@ -111,6 +111,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
 
     final iosTestBackend = IOSTestBackend(
       processManager: _processManager,
+      platform: _platform,
       fs: _fs,
       parentDisposeScope: _disposeScope,
       logger: _logger,
