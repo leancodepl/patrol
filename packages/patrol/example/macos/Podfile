@@ -1,4 +1,4 @@
-# TODO: Check what's the minimum version of macOS
+# Firebase package requires osx 10.18 or newer
 platform :osx, '10.18'
 
 # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
