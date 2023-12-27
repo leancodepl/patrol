@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io' as io;
 
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
@@ -25,33 +26,12 @@ class CompatibilityChecker {
   final Logger _logger;
 
   Future<void> checkVersionsCompatibility() async {
-    Version? javaVersion;
-    final javaCompleter = Completer<Version?>();
-
-    await _disposeScope.run((scope) async {
-      final process = await _processManager.start(
-        ['javac', '--version'],
-        workingDirectory: _projectRoot.path,
-        runInShell: true,
-      )
-        ..disposedBy(scope);
-
-      process.listenStdOut((line) async {
-        if (line.startsWith('javac')) {
-          javaCompleter.complete(Version.parse(line.split(' ').last));
-        }
-      }).disposedBy(scope);
-    });
-
-    javaVersion = await javaCompleter.future;
-    if (javaVersion == null) {
-      throwToolExit(
-        'Failed to read Java version. Make sure you have Java installed and added to PATH',
-      );
-    } else if (javaVersion.major != 17) {
-      _logger.warn(
-        'You are using Java $javaVersion which can cause issues on Android.\n'
-        'If you encounter any issues, try changing your Java version to 17.',
+    if (io.Platform.isAndroid) {
+      await _checkJavaVersion(
+        _disposeScope,
+        _processManager,
+        _projectRoot,
+        _logger,
       );
     }
 
@@ -100,6 +80,43 @@ class CompatibilityChecker {
         'Please upgrade both "patrol_cli" and "patrol" dependency in project to the latest versions.',
       );
     }
+  }
+}
+
+Future<void> _checkJavaVersion(
+  DisposeScope disposeScope,
+  ProcessManager processManager,
+  Directory projectRoot,
+  Logger logger,
+) async {
+  Version? javaVersion;
+  final javaCompleter = Completer<Version?>();
+
+  await disposeScope.run((scope) async {
+    final process = await processManager.start(
+      ['javac', '--version'],
+      workingDirectory: projectRoot.path,
+      runInShell: true,
+    )
+      ..disposedBy(scope);
+
+    process.listenStdOut((line) async {
+      if (line.startsWith('javac')) {
+        javaCompleter.complete(Version.parse(line.split(' ').last));
+      }
+    }).disposedBy(scope);
+  });
+
+  javaVersion = await javaCompleter.future;
+  if (javaVersion == null) {
+    throwToolExit(
+      'Failed to read Java version. Make sure you have Java installed and added to PATH',
+    );
+  } else if (javaVersion.major != 17) {
+    logger.warn(
+      'You are using Java $javaVersion which can cause issues on Android.\n'
+      'If you encounter any issues, try changing your Java version to 17.',
+    );
   }
 }
 
