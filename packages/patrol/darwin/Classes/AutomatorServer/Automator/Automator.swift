@@ -1,42 +1,42 @@
-public extension Selector {
-  func toNSPredicate() -> NSPredicate {
+extension Selector {
+  public func toNSPredicate() -> NSPredicate {
     var format = ""
     var begun = false
     var values = [String]()
-    
-    if (text != nil) {
+
+    if text != nil {
       begun = true
       format += "(label == %@ OR title == %@)"
       values.append(text!)
       values.append(text!)
     }
-    
-    if (textStartsWith != nil) {
-      if (begun) { format += " AND " }
+
+    if textStartsWith != nil {
+      if begun { format += " AND " }
       begun = true
       format += "(label BEGINSWITH %@ OR title BEGINSWITH %@)"
       values.append(textStartsWith!)
       values.append(textStartsWith!)
     }
-    
-    if (textContains != nil) {
-      if (begun) { format += " AND " }
+
+    if textContains != nil {
+      if begun { format += " AND " }
       begun = true
       format += "(label CONTAINS %@ OR title CONTAINS %@)"
       values.append(textContains!)
       values.append(textContains!)
     }
-    
-    if (resourceId != nil) {
-      if (begun) { format += " AND " }
+
+    if resourceId != nil {
+      if begun { format += " AND " }
       begun = true
       format += "(identifier == %@)"
       values.append(resourceId!)
     }
-    
+
     let predicate = NSPredicate(format: format, argumentArray: values)
-    
-    return predicate;
+
+    return predicate
   }
 }
 
@@ -44,7 +44,7 @@ public extension Selector {
   import XCTest
   import os
 
-protocol Automator {
+  protocol Automator {
     func configure(timeout: TimeInterval)
 
     // MARK: General

@@ -80,11 +80,11 @@
     func tap(request: TapRequest) throws {
       return try runCatching {
         try automator.tap(request.selector)
-//        try automator.tap(
-//          onText: request.selector.text ?? String(),
-//          inApp: request.appId,
-//          atIndex: request.selector.instance ?? 0
-//        )
+        //        try automator.tap(
+        //          onText: request.selector.text ?? String(),
+        //          inApp: request.appId,
+        //          atIndex: request.selector.instance ?? 0
+        //        )
       }
     }
 

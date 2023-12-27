@@ -65,7 +65,7 @@ struct OpenQuickSettingsRequest: Codable {
 
 public struct Selector: Codable {
   public init() {}
-  
+
   public var text: String?
   public var textStartsWith: String?
   public var textContains: String?
