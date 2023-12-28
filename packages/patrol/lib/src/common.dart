@@ -22,6 +22,11 @@ typedef PatrolTesterCallback = Future<void> Function(PatrolIntegrationTester $);
 /// A modification of [setUp] that works with Patrol's native automation.
 void patrolSetUp(dynamic Function() body) {
   setUp(() async {
+    if (constants.hotRestartEnabled) {
+      await body();
+      return;
+    }
+
     final currentTest = global_state.currentTestFullName;
 
     final requestedToExecute = await PatrolBinding.instance.patrolAppService
@@ -36,6 +41,11 @@ void patrolSetUp(dynamic Function() body) {
 /// A modification of [tearDown] that works with Patrol's native automation.
 void patrolTearDown(dynamic Function() body) {
   tearDown(() async {
+    if (constants.hotRestartEnabled) {
+      await body();
+      return;
+    }
+
     final currentTest = global_state.currentTestFullName;
 
     final requestedToExecute = await PatrolBinding.instance.patrolAppService

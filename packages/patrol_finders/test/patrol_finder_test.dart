@@ -122,6 +122,10 @@ void main() {
         final patrolFinder = $(Container).$(Text);
 
         expect(flutterFinder.toString(), patrolFinder.toString());
+        expect(
+          flutterFinder.toString(describeSelf: true),
+          patrolFinder.toString(describeSelf: true),
+        );
       });
 
       patrolWidgetTest('(complex case 2)', ($) async {
@@ -136,6 +140,10 @@ void main() {
         final patrolFinder = $(MaterialApp).$(Container).$(Text);
 
         expect(flutterFinder.toString(), patrolFinder.toString());
+        expect(
+          flutterFinder.toString(describeSelf: true),
+          patrolFinder.toString(describeSelf: true),
+        );
       });
 
       patrolWidgetTest('(complex case 3)', ($) async {
@@ -150,6 +158,10 @@ void main() {
         final patrolFinder = $(MaterialApp).containing('layer').$(#SomeKey);
 
         expect(flutterFinder.toString(), patrolFinder.toString());
+        expect(
+          flutterFinder.toString(describeSelf: true),
+          patrolFinder.toString(describeSelf: true),
+        );
       });
 
       patrolWidgetTest('(complex case 4)', ($) async {
@@ -165,6 +177,10 @@ void main() {
             $(MaterialApp).containing($('layer').containing(#SomeKey));
 
         expect(flutterFinder.toString(), patrolFinder.toString());
+        expect(
+          flutterFinder.toString(describeSelf: true),
+          patrolFinder.toString(describeSelf: true),
+        );
       });
     });
 

@@ -159,6 +159,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         compatibilityChecker: CompatibilityChecker(
           projectRoot: _fs.currentDirectory,
           processManager: _processManager,
+          logger: _logger,
         ),
         pubspecReader: PubspecReader(projectRoot: _fs.currentDirectory),
         flutterTool: FlutterTool(
@@ -185,6 +186,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         compatibilityChecker: CompatibilityChecker(
           projectRoot: _fs.currentDirectory,
           processManager: _processManager,
+          logger: _logger,
         ),
         pubspecReader: PubspecReader(projectRoot: _fs.currentDirectory),
         androidTestBackend: androidTestBackend,
