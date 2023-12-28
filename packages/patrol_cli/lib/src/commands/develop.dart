@@ -197,7 +197,7 @@ class DevelopCommand extends PatrolCommand {
       configuration: buildMode.createConfiguration(iosFlavor),
       simulator: !device.real,
       appServerPort: super.appServerPort,
-      testServerPort: super.appServerPort,
+      testServerPort: super.testServerPort,
     );
 
     final macosOpts = MacOSAppOptions(
