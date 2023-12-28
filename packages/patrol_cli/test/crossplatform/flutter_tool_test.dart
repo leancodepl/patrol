@@ -3,12 +3,15 @@ import 'dart:async';
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:patrol_cli/src/crossplatform/flutter_tool.dart';
+import 'package:patrol_cli/src/runner/flutter_command.dart';
 import 'package:platform/platform.dart';
 import 'package:test/test.dart';
 
 import '../src/mocks.dart';
 
 void main() {
+  const flutterCommand = FlutterCommand('flutter');
+
   late FlutterTool flutterTool;
   late MockProcessManager processManager;
   late Platform platform;
@@ -43,6 +46,7 @@ void main() {
               .thenAnswer((_) async => process);
 
           flutterTool.attach(
+            flutterCommand: flutterCommand,
             deviceId: 'testDeviceId',
             target: 'target',
             appId: 'appId',

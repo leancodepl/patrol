@@ -59,7 +59,12 @@ class BuildMacOSCommand extends PatrolCommand {
 
   @override
   Future<int> run() async {
-    unawaited(_analytics.sendCommand('build_macos'));
+    unawaited(
+      _analytics.sendCommand(
+        FlutterVersion.fromCLI(flutterCommand),
+        'build_macos',
+      ),
+    );
 
     final config = _pubspecReader.read();
     final testFileSuffix = config.testFileSuffix;
@@ -120,6 +125,7 @@ class BuildMacOSCommand extends PatrolCommand {
     }
 
     final flutterOpts = FlutterAppOptions(
+      command: flutterCommand,
       target: entrypoint.path,
       flavor: flavor,
       buildMode: buildMode,

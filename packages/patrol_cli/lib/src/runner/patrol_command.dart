@@ -1,6 +1,7 @@
 import 'package:args/command_runner.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
+import 'package:patrol_cli/src/runner/flutter_command.dart';
 
 abstract class PatrolCommand extends Command<int> {
   /// Seconds to wait after the individual test case finishes executing.
@@ -177,6 +178,21 @@ abstract class PatrolCommand extends Command<int> {
   /// Gets the parsed command-line option named [name] as `List<String>`.
   List<String> stringsArg(String name) {
     return argResults![name]! as List<String>? ?? <String>[];
+  }
+
+  FlutterCommand get flutterCommand {
+    final arg = globalResults!['flutter-command'] as String?;
+
+    var cmd = arg;
+    if (cmd == null || cmd.isEmpty) {
+      cmd = const String.fromEnvironment('PATROL_FLUTTER_COMMAND');
+    }
+
+    if (cmd.isEmpty) {
+      cmd = 'flutter';
+    }
+
+    return FlutterCommand.parse(cmd);
   }
 
   BuildMode get buildMode {

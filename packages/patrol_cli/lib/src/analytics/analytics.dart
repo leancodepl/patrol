@@ -7,10 +7,9 @@ import 'package:http/http.dart' as http;
 import 'package:patrol_cli/src/base/constants.dart' as constants;
 import 'package:patrol_cli/src/base/extensions/platform.dart';
 import 'package:patrol_cli/src/base/process.dart';
+import 'package:patrol_cli/src/runner/flutter_command.dart';
 import 'package:platform/platform.dart';
 import 'package:uuid/uuid.dart';
-
-typedef FlutterVersionGetter = FlutterVersion Function();
 
 class AnalyticsConfig {
   AnalyticsConfig({
@@ -41,13 +40,11 @@ class Analytics {
     required FileSystem fs,
     required Platform platform,
     http.Client? httpClient,
-    FlutterVersionGetter getFlutterVersion = _getFlutterVersion,
     required bool isCI,
   })  : _fs = fs,
         _platform = platform,
         _httpClient = httpClient ?? http.Client(),
         _postUrl = _getAnalyticsUrl(measurementId, apiSecret),
-        _flutterVersion = getFlutterVersion(),
         _isCI = isCI;
 
   final FileSystem _fs;
@@ -56,13 +53,13 @@ class Analytics {
   final http.Client _httpClient;
   final String _postUrl;
 
-  final FlutterVersion _flutterVersion;
   final bool _isCI;
 
   /// Sends an event to Google Analytics that command [name] run.
   ///
   /// Returns true if the event was sent, false otherwise.
   Future<bool> sendCommand(
+    FlutterVersion flutterVersion,
     String name, {
     Map<String, Object?> eventData = const {},
   }) async {
@@ -82,6 +79,7 @@ class Analytics {
         'Content-Type': 'application/json; charset=UTF-8',
       },
       body: _generateRequestBody(
+        flutterVersion: flutterVersion,
         clientId: uuid,
         eventName: name,
         additionalEventData: eventData,
@@ -140,6 +138,7 @@ class Analytics {
   }
 
   String _generateRequestBody({
+    required FlutterVersion flutterVersion,
     required String clientId,
     required String eventName,
     required Map<String, Object?> additionalEventData,
@@ -150,8 +149,8 @@ class Analytics {
         // `engagement_time_msec` is required for users to be reported.
         // See https://stackoverflow.com/q/70708893/7009800
         'engagement_time_msec': 1,
-        'flutter_version': _flutterVersion.version,
-        'flutter_channel': _flutterVersion.channel,
+        'flutter_version': flutterVersion.version,
+        'flutter_channel': flutterVersion.channel,
         'patrol_cli_version': constants.version,
         'os': _platform.operatingSystem,
         'os_version': _platform.operatingSystemVersion,
@@ -179,27 +178,27 @@ class FlutterVersion {
 
   factory FlutterVersion.test() => FlutterVersion('1.2.3', 'stable');
 
+  factory FlutterVersion.fromCLI(FlutterCommand flutterCommand) {
+    final result = io.Process.runSync(
+      flutterCommand.executable,
+      [
+        ...flutterCommand.arguments,
+        '--no-version-check',
+        '--suppress-analytics',
+        '--version',
+        '--machine',
+      ],
+    );
+
+    final versionData =
+        jsonDecode(cleanJsonResult(result)) as Map<String, dynamic>;
+    final frameworkVersion = versionData['frameworkVersion'] as String;
+    final channel = versionData['channel'] as String;
+    return FlutterVersion(frameworkVersion, channel);
+  }
+
   final String version;
   final String channel;
-}
-
-FlutterVersion _getFlutterVersion() {
-  final result = io.Process.runSync(
-    'flutter',
-    [
-      '--no-version-check',
-      '--suppress-analytics',
-      '--version',
-      '--machine',
-    ],
-    runInShell: true,
-  );
-
-  final versionData =
-      jsonDecode(cleanJsonResult(result)) as Map<String, dynamic>;
-  final frameworkVersion = versionData['frameworkVersion'] as String;
-  final channel = versionData['channel'] as String;
-  return FlutterVersion(frameworkVersion, channel);
 }
 
 // Workaround for https://github.com/flutter/flutter/issues/122814
