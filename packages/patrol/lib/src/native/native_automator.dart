@@ -167,7 +167,7 @@ class NativeAutomatorConfig {
 /// Provides functionality to interact with the OS that the app under test is
 /// running on.
 ///
-/// Communicates over gRPC with the native automation server running on the
+/// Communicates over http with the native automation server running on the
 /// target device.
 // TODO: Rename to NativeAutomatorClient
 class NativeAutomator {
@@ -491,12 +491,17 @@ class NativeAutomator {
   /// Taps on the native view specified by [selector].
   ///
   /// If the native view is not found, an exception is thrown.
-  Future<void> tap(Selector selector, {String? appId}) async {
+  Future<void> tap(
+    Selector selector, {
+    String? appId,
+    Duration? timeout,
+  }) async {
     await _wrapRequest('tap', () async {
       await _client.tap(
         TapRequest(
           selector: selector,
           appId: appId ?? resolvedAppId,
+          timeoutMillis: timeout?.inMilliseconds,
         ),
       );
     });
@@ -505,13 +510,18 @@ class NativeAutomator {
   /// Double taps on the native view specified by [selector].
   ///
   /// If the native view is not found, an exception is thrown.
-  Future<void> doubleTap(Selector selector, {String? appId}) async {
+  Future<void> doubleTap(
+    Selector selector, {
+    String? appId,
+    Duration? timeout,
+  }) async {
     await _wrapRequest(
       'doubleTap',
       () => _client.doubleTap(
         TapRequest(
           selector: selector,
           appId: appId ?? resolvedAppId,
+          timeoutMillis: timeout?.inMilliseconds,
         ),
       ),
     );
@@ -534,6 +544,7 @@ class NativeAutomator {
     required String text,
     String? appId,
     KeyboardBehavior? keyboardBehavior,
+    Duration? timeout,
   }) async {
     await _wrapRequest(
       'enterText',
@@ -544,6 +555,7 @@ class NativeAutomator {
           selector: selector,
           keyboardBehavior:
               (keyboardBehavior ?? _config.keyboardBehavior).toContractsEnum,
+          timeoutMillis: timeout?.inMilliseconds,
         ),
       ),
     );
@@ -568,6 +580,7 @@ class NativeAutomator {
     required int index,
     String? appId,
     KeyboardBehavior? keyboardBehavior,
+    Duration? timeout,
   }) async {
     await _wrapRequest(
       'enterTextByIndex',
@@ -578,6 +591,7 @@ class NativeAutomator {
           index: index,
           keyboardBehavior:
               (keyboardBehavior ?? _config.keyboardBehavior).toContractsEnum,
+          timeoutMillis: timeout?.inMilliseconds,
         ),
       ),
     );
@@ -615,13 +629,18 @@ class NativeAutomator {
   }
 
   /// Waits until the native view specified by [selector] becomes visible.
-  Future<void> waitUntilVisible(Selector selector, {String? appId}) async {
+  Future<void> waitUntilVisible(
+    Selector selector, {
+    String? appId,
+    Duration? timeout,
+  }) async {
     await _wrapRequest(
       'waitUntilVisible',
       () => _client.waitUntilVisible(
         WaitUntilVisibleRequest(
           selector: selector,
           appId: appId ?? resolvedAppId,
+          timeoutMillis: timeout?.inMilliseconds,
         ),
       ),
     );
