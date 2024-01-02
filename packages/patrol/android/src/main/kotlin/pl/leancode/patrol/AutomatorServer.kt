@@ -130,7 +130,8 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
         automation.tap(
             uiSelector = request.selector.toUiSelector(),
             bySelector = request.selector.toBySelector(),
-            index = request.selector.instance?.toInt() ?: 0
+            index = request.selector.instance?.toInt() ?: 0,
+            timeout = request.timeoutMillis
         )
     }
 
@@ -138,7 +139,8 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
         automation.doubleTap(
             uiSelector = request.selector.toUiSelector(),
             bySelector = request.selector.toBySelector(),
-            index = request.selector.instance?.toInt() ?: 0
+            index = request.selector.instance?.toInt() ?: 0,
+            timeout = request.timeoutMillis,
         )
     }
 
@@ -147,7 +149,8 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
             automation.enterText(
                 text = request.data,
                 index = request.index.toInt(),
-                keyboardBehavior = request.keyboardBehavior
+                keyboardBehavior = request.keyboardBehavior,
+                    timeout = request.timeoutMillis,
             )
         } else if (request.selector != null) {
             automation.enterText(
@@ -155,7 +158,8 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
                 uiSelector = request.selector.toUiSelector(),
                 bySelector = request.selector.toBySelector(),
                 index = request.selector.instance?.toInt() ?: 0,
-                keyboardBehavior = request.keyboardBehavior
+                keyboardBehavior = request.keyboardBehavior,
+                    timeout = request.timeoutMillis,
             )
         } else {
             throw PatrolException("enterText(): neither index nor selector are set")
@@ -176,7 +180,8 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
         automation.waitUntilVisible(
             uiSelector = request.selector.toUiSelector(),
             bySelector = request.selector.toBySelector(),
-            index = request.selector.instance?.toInt() ?: 0
+            index = request.selector.instance?.toInt() ?: 0,
+            timeout = request.timeoutMillis,
         )
     }
 
