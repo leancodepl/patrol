@@ -23,15 +23,15 @@ import kotlin.math.roundToInt
 
 private fun fromUiObject2(obj: UiObject2): NativeView {
     return NativeView(
-        className = obj.className,
-        text = obj.text,
-        contentDescription = obj.contentDescription,
-        focused = obj.isFocused,
-        enabled = obj.isEnabled,
-        childCount = obj.childCount.toLong(),
-        resourceName = obj.resourceName,
-        applicationPackage = obj.applicationPackage,
-        children = obj.children?.map { fromUiObject2(it) } ?: listOf()
+            className = obj.className,
+            text = obj.text,
+            contentDescription = obj.contentDescription,
+            focused = obj.isFocused,
+            enabled = obj.isEnabled,
+            childCount = obj.childCount.toLong(),
+            resourceName = obj.resourceName,
+            applicationPackage = obj.applicationPackage,
+            children = obj.children?.map { fromUiObject2(it) } ?: listOf()
     )
 }
 
@@ -90,7 +90,7 @@ class Automator private constructor() {
 
     fun openApp(packageName: String) {
         val intent = targetContext.packageManager!!.getLaunchIntentForPackage(packageName)
-            ?: throw Exception("intent for launching package \"$packageName\" is null. Make sure you have android.permission.QUERY_ALL_PACKAGES in AndroidManifest.xml")
+                ?: throw Exception("intent for launching package \"$packageName\" is null. Make sure you have android.permission.QUERY_ALL_PACKAGES in AndroidManifest.xml")
         // intent?.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK) // clear out any previous task, i.e., make sure it starts on the initial screen
         targetContext.startActivity(intent) // starts the app
         delay()
@@ -212,12 +212,12 @@ class Automator private constructor() {
     }
 
     fun enterText(
-        text: String,
-        uiSelector: UiSelector,
-        bySelector: BySelector,
-        index: Int,
-        keyboardBehavior: KeyboardBehavior,
-        timeout: Long? = null
+            text: String,
+            uiSelector: UiSelector,
+            bySelector: BySelector,
+            index: Int,
+            keyboardBehavior: KeyboardBehavior,
+            timeout: Long? = null
     ) {
         Logger.d("enterText($text): $uiSelector, $bySelector")
 
@@ -310,8 +310,8 @@ class Automator private constructor() {
 
         val notificationContainers = mutableListOf<UiObject2>()
         val identifiers = listOf(
-            "android:id/status_bar_latest_event_content", // notification not bundled
-            "com.android.systemui:id/expandableNotificationRow" // notifications bundled
+                "android:id/status_bar_latest_event_content", // notification not bundled
+                "com.android.systemui:id/expandableNotificationRow" // notifications bundled
         )
 
         for (identifier in identifiers) {
@@ -332,22 +332,22 @@ class Automator private constructor() {
             val appName = notificationContainer.findObject(By.res("android:id/app_name_text"))?.text
 
             val content = notificationContainer.findObject(By.res("android:id/text"))?.text
-                ?: notificationContainer.findObject(By.res("android:id/big_text"))?.text
-                ?: notificationContainer.findObject(By.res("com.android.systemui:id/notification_text"))?.text
+                    ?: notificationContainer.findObject(By.res("android:id/big_text"))?.text
+                    ?: notificationContainer.findObject(By.res("com.android.systemui:id/notification_text"))?.text
             if (content == null) {
                 Logger.e("Could not find content text")
             }
 
             val title = notificationContainer.findObject(By.res("android:id/title"))?.text
-                ?: notificationContainer.findObject(By.res("com.android.systemui:id/notification_title"))?.text
+                    ?: notificationContainer.findObject(By.res("com.android.systemui:id/notification_title"))?.text
             if (title == null) {
                 Logger.e("Could not find title text")
             }
 
             val notification = Notification(
-                appName = appName,
-                content = content ?: "",
-                title = title ?: ""
+                    appName = appName,
+                    content = content ?: "",
+                    title = title ?: ""
             )
 
             notifications.add(notification)
@@ -356,14 +356,18 @@ class Automator private constructor() {
         return notifications
     }
 
-    fun tapOnNotification(index: Int) {
+    fun tapOnNotification(index: Int, timeout: Long? = null) {
         Logger.d("tapOnNotification($index)")
 
         try {
             val query = Selector(
-                resourceId = "android:id/status_bar_latest_event_content",
-                instance = index.toLong()
+                    resourceId = "android:id/status_bar_latest_event_content",
+                    instance = index.toLong()
             )
+            val selector = query.toBySelector()
+            if (waitForView(selector, index, timeout) == null) {
+                throw UiObjectNotFoundException("$selector")
+            }
             val obj = uiDevice.findObject(query.toUiSelector())
             obj.click()
         } catch (err: UiObjectNotFoundException) {
@@ -373,9 +377,12 @@ class Automator private constructor() {
         delay()
     }
 
-    fun tapOnNotification(selector: UiSelector) {
+    fun tapOnNotification(selector: UiSelector, bySelector: BySelector, timeout: Long? = null) {
         Logger.d("tapOnNotification()")
 
+        if (waitForView(bySelector, 0, timeout) == null) {
+            throw UiObjectNotFoundException("$bySelector")
+        }
         val obj = uiDevice.findObject(selector)
         obj.click()
 
@@ -384,17 +391,17 @@ class Automator private constructor() {
 
     fun isPermissionDialogVisible(timeout: Long): Boolean {
         val identifiers = arrayOf(
-            // while using
-            "com.android.packageinstaller:id/permission_allow_button",
-            "com.android.permissioncontroller:id/permission_allow_button",
-            "com.android.permissioncontroller:id/permission_allow_foreground_only_button",
-            // once
-            "com.android.packageinstaller:id/permission_allow_button",
-            "com.android.permissioncontroller:id/permission_allow_button",
-            "com.android.permissioncontroller:id/permission_allow_one_time_button",
-            // deny
-            "com.android.packageinstaller:id/permission_deny_button",
-            "com.android.permissioncontroller:id/permission_deny_button"
+                // while using
+                "com.android.packageinstaller:id/permission_allow_button",
+                "com.android.permissioncontroller:id/permission_allow_button",
+                "com.android.permissioncontroller:id/permission_allow_foreground_only_button",
+                // once
+                "com.android.packageinstaller:id/permission_allow_button",
+                "com.android.permissioncontroller:id/permission_allow_button",
+                "com.android.permissioncontroller:id/permission_allow_one_time_button",
+                // deny
+                "com.android.packageinstaller:id/permission_deny_button",
+                "com.android.permissioncontroller:id/permission_deny_button"
         )
 
         val uiObject = waitForUiObjectByResourceId(*identifiers, timeout = timeout)
@@ -403,13 +410,13 @@ class Automator private constructor() {
 
     fun allowPermissionWhileUsingApp() {
         val identifiers = arrayOf(
-            "com.android.packageinstaller:id/permission_allow_button", // API <= 28
-            "com.android.permissioncontroller:id/permission_allow_button", // API 29
-            "com.android.permissioncontroller:id/permission_allow_foreground_only_button" // API >= 30 + API 29 (only for location permission)
+                "com.android.packageinstaller:id/permission_allow_button", // API <= 28
+                "com.android.permissioncontroller:id/permission_allow_button", // API 29
+                "com.android.permissioncontroller:id/permission_allow_foreground_only_button" // API >= 30 + API 29 (only for location permission)
         )
 
         val uiObject = waitForUiObjectByResourceId(*identifiers, timeout = timeoutMillis)
-            ?: throw UiObjectNotFoundException("button to allow permission while using")
+                ?: throw UiObjectNotFoundException("button to allow permission while using")
 
         uiObject.click()
     }
@@ -423,23 +430,23 @@ class Automator private constructor() {
         }
 
         val identifiers = arrayOf(
-            "com.android.permissioncontroller:id/permission_allow_one_time_button" // API >= 30
+                "com.android.permissioncontroller:id/permission_allow_one_time_button" // API >= 30
         )
 
         val uiObject = waitForUiObjectByResourceId(*identifiers, timeout = timeoutMillis)
-            ?: throw UiObjectNotFoundException("button to allow permission once")
+                ?: throw UiObjectNotFoundException("button to allow permission once")
 
         uiObject.click()
     }
 
     fun denyPermission() {
         val identifiers = arrayOf(
-            "com.android.packageinstaller:id/permission_deny_button", // API <= 28
-            "com.android.permissioncontroller:id/permission_deny_button" // API >= 29
+                "com.android.packageinstaller:id/permission_deny_button", // API <= 28
+                "com.android.permissioncontroller:id/permission_deny_button" // API >= 29
         )
 
         val uiObject = waitForUiObjectByResourceId(*identifiers, timeout = timeoutMillis)
-            ?: throw UiObjectNotFoundException("button to deny permission")
+                ?: throw UiObjectNotFoundException("button to deny permission")
 
         uiObject.click()
     }
@@ -453,7 +460,7 @@ class Automator private constructor() {
         val resourceId = "com.android.permissioncontroller:id/permission_location_accuracy_radio_fine"
 
         val uiObject = waitForUiObjectByResourceId(resourceId, timeout = timeoutMillis)
-            ?: throw UiObjectNotFoundException("button to select fine location")
+                ?: throw UiObjectNotFoundException("button to select fine location")
 
         uiObject.click()
     }
@@ -467,7 +474,7 @@ class Automator private constructor() {
         val resourceId = "com.android.permissioncontroller:id/permission_location_accuracy_radio_coarse"
 
         val uiObject = waitForUiObjectByResourceId(resourceId, timeout = timeoutMillis)
-            ?: throw UiObjectNotFoundException("button to select coarse location")
+                ?: throw UiObjectNotFoundException("button to select coarse location")
 
         uiObject.click()
     }
@@ -477,7 +484,7 @@ class Automator private constructor() {
      */
     private fun waitForView(bySelector: BySelector, index: Int, timeout: Long? = null): UiObject2? {
         val startTime = System.currentTimeMillis()
-        while (System.currentTimeMillis() - startTime < timeout ?: timeoutMillis) {
+        while (System.currentTimeMillis() - startTime < (timeout ?: timeoutMillis)) {
             val objects = uiDevice.findObjects(bySelector)
             if (objects.size > index && objects[index] != null) {
                 return objects[index]
