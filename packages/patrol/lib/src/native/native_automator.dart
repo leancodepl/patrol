@@ -395,7 +395,12 @@ class NativeAutomator {
     );
   }
 
-  /// Taps on the [index]-th visible notification.
+  /// Searches for the [index]-th visible notification and taps on it.
+  ///
+  /// If the notification is not visible immediately, this method waits for the
+  /// notification to become visible for [timeout] duration. If [timeout] is not
+  /// specified, it utilizes the [NativeAutomatorConfig.findTimeout] duration
+  /// from the configuration.
   ///
   /// Notification shade has to be opened first with [openNotifications].
   ///
@@ -419,6 +424,11 @@ class NativeAutomator {
   }
 
   /// Taps on the visible notification using [selector].
+  ///
+  /// If the notification is not visible immediately, this method waits for the
+  /// notification to become visible for [timeout] duration. If [timeout] is not
+  /// specified, it utilizes the [NativeAutomatorConfig.findTimeout] duration
+  /// from the configuration.
   ///
   /// Notification shade has to be opened first with [openNotifications].
   ///
@@ -504,6 +514,9 @@ class NativeAutomator {
 
   /// Taps on the native view specified by [selector].
   ///
+  /// It waits for the view to become visible for [timeout] duration. If
+  /// [timeout] is not specified, it utilizes the
+  /// [NativeAutomatorConfig.findTimeout] duration from the configuration.
   /// If the native view is not found, an exception is thrown.
   Future<void> tap(
     Selector selector, {
@@ -523,6 +536,9 @@ class NativeAutomator {
 
   /// Double taps on the native view specified by [selector].
   ///
+  /// It waits for the view to become visible for [timeout] duration. If
+  /// [timeout] is not specified, it utilizes the
+  /// [NativeAutomatorConfig.findTimeout] duration from the configuration.
   /// If the native view is not found, an exception is thrown.
   Future<void> doubleTap(
     Selector selector, {
@@ -543,9 +559,10 @@ class NativeAutomator {
 
   /// Enters text to the native view specified by [selector].
   ///
-  /// If the text field isn't visible immediately, this method waits for the
-  /// view to become visible until [NativeAutomatorConfig.findTimeout] passes.
-  /// If the text field isn't found within the timeout, an exception is thrown.
+  /// If the text field isn't immediately visible, this method waits for the
+  /// view to become visible. It prioritizes the [timeout] duration provided
+  /// in the method call. If [timeout] is not specified, it utilizes the
+  /// [NativeAutomatorConfig.findTimeout] duration from the configuration.
   ///
   /// The native view specified by [selector] must be:
   ///  * EditText on Android
@@ -578,9 +595,9 @@ class NativeAutomator {
   /// Enters text to the [index]-th visible text field.
   ///
   /// If the text field at [index] isn't visible immediately, this method waits
-  /// for the view to become visible until [NativeAutomatorConfig.findTimeout]
-  /// passes. If the text field isn't found within the timeout, an exception is
-  /// thrown.
+  /// for the view to become visible. It prioritizes the [timeout] duration
+  /// provided in the method call. If [timeout] is not specified, it utilizes
+  /// the [NativeAutomatorConfig.findTimeout] duration from the configuration.
   ///
   /// Native views considered to be texts fields are:
   ///  * EditText on Android
@@ -643,6 +660,9 @@ class NativeAutomator {
   }
 
   /// Waits until the native view specified by [selector] becomes visible.
+  /// It waits for the view to become visible for [timeout] duration. If
+  /// [timeout] is not specified, it utilizes the
+  /// [NativeAutomatorConfig.findTimeout].
   Future<void> waitUntilVisible(
     Selector selector, {
     String? appId,

@@ -212,7 +212,7 @@
       }
     }
 
-      func waitUntilVisible(onText text: String, inApp bundleId: String, withTimeout timeout: TimeInterval?) throws {
+    func waitUntilVisible(onText text: String, inApp bundleId: String, withTimeout timeout: TimeInterval?) throws {
       try runAction(
         "waiting until view with text \(format: text) in app \(bundleId) becomes visible"
       ) {
