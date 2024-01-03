@@ -12,16 +12,16 @@
     func openControlCenter() throws
 
     // MARK: General UI interaction
-      func tap(
-        onText text: String,
-        inApp bundleId: String,
-        atIndex index: Int,
-        withTimeout timeout: TimeInterval?
-      ) throws
+    func tap(
+      onText text: String,
+      inApp bundleId: String,
+      atIndex index: Int,
+      withTimeout timeout: TimeInterval?
+    ) throws
     func doubleTap(
-        onText text: String,
-        inApp bundleId: String,
-        withTimeout timeout: TimeInterval?
+      onText text: String,
+      inApp bundleId: String,
+      withTimeout timeout: TimeInterval?
     ) throws
     func enterText(
       _ data: String,
@@ -40,9 +40,9 @@
     ) throws
     func swipe(from start: CGVector, to end: CGVector, inApp bundleId: String) throws
     func waitUntilVisible(
-        onText text: String,
-        inApp bundleId: String,
-        withTimeout timeout: TimeInterval?
+      onText text: String,
+      inApp bundleId: String,
+      withTimeout timeout: TimeInterval?
     ) throws
 
     // MARK: Services

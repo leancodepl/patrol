@@ -83,7 +83,7 @@
           onText: request.selector.text ?? String(),
           inApp: request.appId,
           atIndex: request.selector.instance ?? 0,
-          withTimeout: request.timeoutMillis.map { TimeInterval( $0 / 1000 ) }
+          withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) }
         )
       }
     }
@@ -93,7 +93,7 @@
         try automator.doubleTap(
           onText: request.selector.text ?? String(),
           inApp: request.appId,
-          withTimeout: request.timeoutMillis.map { TimeInterval( $0 / 1000 ) }
+          withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) }
         )
       }
     }
@@ -106,7 +106,7 @@
             byIndex: Int(index),
             inApp: request.appId,
             dismissKeyboard: request.keyboardBehavior == .showAndDismiss,
-            withTimeout: request.timeoutMillis.map { TimeInterval( $0 / 1000 ) }
+            withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) }
           )
         } else if let selector = request.selector {
           try automator.enterText(
@@ -115,7 +115,7 @@
             atIndex: selector.instance ?? 0,
             inApp: request.appId,
             dismissKeyboard: request.keyboardBehavior == .showAndDismiss,
-            withTimeout: request.timeoutMillis.map { TimeInterval( $0 / 1000 ) }
+            withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) }
           )
         } else {
           throw PatrolError.internal("enterText(): neither index nor selector are set")
@@ -138,7 +138,7 @@
         try automator.waitUntilVisible(
           onText: request.selector.text ?? String(),
           inApp: request.appId,
-          withTimeout: request.timeoutMillis.map { TimeInterval( $0 / 1000 ) }
+          withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) }
         )
       }
     }
@@ -239,12 +239,12 @@
         if let index = request.index {
           try automator.tapOnNotification(
             byIndex: index,
-            withTimeout: request.timeoutMillis.map { TimeInterval( $0 / 1000 ) }
+            withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) }
           )
         } else if let selector = request.selector {
           try automator.tapOnNotification(
             bySubstring: selector.textContains ?? String(),
-            withTimeout: request.timeoutMillis.map { TimeInterval( $0 / 1000 ) }
+            withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) }
           )
         } else {
           throw PatrolError.internal("tapOnNotification(): neither index nor selector are set")

@@ -55,7 +55,10 @@
 
     // MARK: General UI interaction
 
-      func tap(onText text: String, inApp bundleId: String, atIndex index: Int, withTimeout timeout: TimeInterval?) throws {
+    func tap(
+      onText text: String, inApp bundleId: String, atIndex index: Int,
+      withTimeout timeout: TimeInterval?
+    ) throws {
       let view = "view with text \(format: text) at index \(index) in app \(bundleId)"
 
       try runAction("tapping on \(view)") {
@@ -72,7 +75,9 @@
         let query = app.descendants(matching: .any).matching(predicate)
 
         Logger.shared.i("waiting for existence of \(view)")
-        guard let element = self.waitFor(query: query, index: index, timeout: timeout ?? self.timeout) else {
+        guard
+          let element = self.waitFor(query: query, index: index, timeout: timeout ?? self.timeout)
+        else {
           throw PatrolError.viewNotExists(view)
         }
 
@@ -80,7 +85,9 @@
       }
     }
 
-    func doubleTap(onText text: String, inApp bundleId: String, withTimeout timeout: TimeInterval?) throws {
+    func doubleTap(onText text: String, inApp bundleId: String, withTimeout timeout: TimeInterval?)
+      throws
+    {
       try runAction("double tapping on text \(format: text) in app \(bundleId)") {
         let app = try self.getApp(withBundleId: bundleId)
         let element = app.descendants(matching: .any)[text]
@@ -212,7 +219,9 @@
       }
     }
 
-    func waitUntilVisible(onText text: String, inApp bundleId: String, withTimeout timeout: TimeInterval?) throws {
+    func waitUntilVisible(
+      onText text: String, inApp bundleId: String, withTimeout timeout: TimeInterval?
+    ) throws {
       try runAction(
         "waiting until view with text \(format: text) in app \(bundleId) becomes visible"
       ) {
@@ -486,10 +495,12 @@
       return notifications
     }
 
-      func tapOnNotification(byIndex index: Int, withTimeout timeout: TimeInterval?) throws {
+    func tapOnNotification(byIndex index: Int, withTimeout timeout: TimeInterval?) throws {
       try runAction("tapping on notification at index \(index)") {
         let cellsQuery = self.springboard.buttons.matching(identifier: "NotificationCell")
-        guard let cell = self.waitFor(query: cellsQuery, index: index, timeout: timeout ?? self.timeout) else {
+        guard
+          let cell = self.waitFor(query: cellsQuery, index: index, timeout: timeout ?? self.timeout)
+        else {
           throw PatrolError.viewNotExists("notification at index \(index)")
         }
 
@@ -503,13 +514,16 @@
       }
     }
 
-    func tapOnNotification(bySubstring substring: String, withTimeout timeout: TimeInterval?) throws {
+    func tapOnNotification(bySubstring substring: String, withTimeout timeout: TimeInterval?) throws
+    {
       try runAction("tapping on notification containing text \(format: substring)") {
         let cellsQuery = self.springboard.buttons.matching(
-            NSPredicate(format: "identifier == %@ AND label CONTAINS %@", "NotificationCell", substring)
+          NSPredicate(
+            format: "identifier == %@ AND label CONTAINS %@", "NotificationCell", substring)
         )
-          
-        guard let cell = self.waitFor(query: cellsQuery, index: 0, timeout: timeout ?? self.timeout) else {
+
+        guard let cell = self.waitFor(query: cellsQuery, index: 0, timeout: timeout ?? self.timeout)
+        else {
           throw PatrolError.viewNotExists("notification containing text \(format: substring)")
         }
         Logger.shared.i("tapping on notification which contains text \(substring)")
