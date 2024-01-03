@@ -340,6 +340,7 @@ TapOnNotificationRequest _$TapOnNotificationRequestFromJson(
       selector: json['selector'] == null
           ? null
           : Selector.fromJson(json['selector'] as Map<String, dynamic>),
+      timeoutMillis: json['timeoutMillis'] as int?,
     );
 
 Map<String, dynamic> _$TapOnNotificationRequestToJson(
@@ -347,6 +348,7 @@ Map<String, dynamic> _$TapOnNotificationRequestToJson(
     <String, dynamic>{
       'index': instance.index,
       'selector': instance.selector,
+      'timeoutMillis': instance.timeoutMillis,
     };
 
 PermissionDialogVisibleResponse _$PermissionDialogVisibleResponseFromJson(

@@ -248,13 +248,17 @@ class Contracts {
 
   data class TapOnNotificationRequest (
     val index: Long? = null,
-    val selector: Selector? = null
+    val selector: Selector? = null,
+    val timeoutMillis: Long? = null
   ){
     fun hasIndex(): Boolean {
       return index != null
     }
     fun hasSelector(): Boolean {
       return selector != null
+    }
+    fun hasTimeoutMillis(): Boolean {
+      return timeoutMillis != null
     }
   }
 

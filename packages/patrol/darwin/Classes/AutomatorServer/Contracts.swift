@@ -159,6 +159,7 @@ struct GetNotificationsRequest: Codable {
 struct TapOnNotificationRequest: Codable {
   var index: Int?
   var selector: Selector?
+  var timeoutMillis: Int?
 }
 
 struct PermissionDialogVisibleResponse: Codable {

@@ -148,6 +148,7 @@ class GetNotificationsRequest {}
 class TapOnNotificationRequest {
   int? index;
   Selector? selector;
+  int? timeoutMillis;
 }
 
 class PermissionDialogVisibleResponse {

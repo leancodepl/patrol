@@ -207,13 +207,13 @@
       }
     }
 
-    func tapOnNotification(byIndex index: Int) throws {
+    func tapOnNotification(byIndex index: Int, withTimeout timeout: TimeInterval?) throws {
       try runAction("tapOnNotification") {
         throw PatrolError.methodNotImplemented("tapOnNotification")
       }
     }
 
-    func tapOnNotification(bySubstring substring: String) throws {
+    func tapOnNotification(bySubstring substring: String, withTimeout timeout: TimeInterval?) throws {
       try runAction("tapOnNotification") {
         throw PatrolError.methodNotImplemented("tapOnNotification")
       }

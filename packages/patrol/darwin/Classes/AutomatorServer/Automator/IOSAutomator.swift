@@ -486,44 +486,40 @@
       return notifications
     }
 
-    func tapOnNotification(byIndex index: Int) throws {
+      func tapOnNotification(byIndex index: Int, withTimeout timeout: TimeInterval?) throws {
       try runAction("tapping on notification at index \(index)") {
-        let cells = self.springboard.buttons.matching(identifier: "NotificationCell")
-          .allElementsBoundByIndex
-        guard cells.indices.contains(index) else {
+        let cellsQuery = self.springboard.buttons.matching(identifier: "NotificationCell")
+        guard let cell = self.waitFor(query: cellsQuery, index: index, timeout: timeout ?? self.timeout) else {
           throw PatrolError.viewNotExists("notification at index \(index)")
         }
 
         if self.isSimulator() && self.isPhone() {
           // For some weird reason, this works differently on Simulator
-          cells[index].doubleTap()
+          cell.doubleTap()
           self.springboard.buttons.matching(identifier: "Open").firstMatch.tap()
         } else {
-          cells[index].tap()
+          cell.tap()
         }
       }
     }
 
-    func tapOnNotification(bySubstring substring: String) throws {
+    func tapOnNotification(bySubstring substring: String, withTimeout timeout: TimeInterval?) throws {
       try runAction("tapping on notification containing text \(format: substring)") {
-        let cells = self.springboard.buttons.matching(identifier: "NotificationCell")
-          .allElementsBoundByIndex
-        for (i, cell) in cells.enumerated() {
-          if cell.label.contains(substring) {
-            Logger.shared.i(
-              "tapping on notification at index \(i) which contains text \(substring)")
-            if self.isSimulator() && self.isPhone() {
-              // For some weird reason, this works differently on Simulator
-              cell.doubleTap()
-              self.springboard.buttons.matching(identifier: "Open").firstMatch.tap()
-            } else {
-              cell.tap()
-            }
-            return
-          }
+        let cellsQuery = self.springboard.buttons.matching(
+            NSPredicate(format: "identifier == %@ AND label CONTAINS %@", "NotificationCell", substring)
+        )
+          
+        guard let cell = self.waitFor(query: cellsQuery, index: 0, timeout: timeout ?? self.timeout) else {
+          throw PatrolError.viewNotExists("notification containing text \(format: substring)")
         }
-
-        throw PatrolError.viewNotExists("notification containing text \(format: substring)")
+        Logger.shared.i("tapping on notification which contains text \(substring)")
+        if self.isSimulator() && self.isPhone() {
+          // For some weird reason, this works differently on Simulator
+          cell.doubleTap()
+          self.springboard.buttons.matching(identifier: "Open").firstMatch.tap()
+        } else {
+          cell.tap()
+        }
       }
     }
 

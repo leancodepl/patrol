@@ -238,11 +238,13 @@
       return try runCatching {
         if let index = request.index {
           try automator.tapOnNotification(
-            byIndex: index
+            byIndex: index,
+            withTimeout: request.timeoutMillis.map { TimeInterval( $0 / 1000 ) }
           )
         } else if let selector = request.selector {
           try automator.tapOnNotification(
-            bySubstring: selector.textContains ?? String()
+            bySubstring: selector.textContains ?? String(),
+            withTimeout: request.timeoutMillis.map { TimeInterval( $0 / 1000 ) }
           )
         } else {
           throw PatrolError.internal("tapOnNotification(): neither index nor selector are set")

@@ -403,10 +403,18 @@ class NativeAutomator {
   ///
   ///  * [tapOnNotificationBySelector], which allows for more precise
   ///    specification of the notification to tap on
-  Future<void> tapOnNotificationByIndex(int index) async {
+  Future<void> tapOnNotificationByIndex(
+    int index, {
+    Duration? timeout,
+  }) async {
     await _wrapRequest(
       'tapOnNotificationByIndex',
-      () => _client.tapOnNotification(TapOnNotificationRequest(index: index)),
+      () => _client.tapOnNotification(
+        TapOnNotificationRequest(
+          index: index,
+          timeoutMillis: timeout?.inMilliseconds,
+        ),
+      ),
     );
   }
 
@@ -419,11 +427,17 @@ class NativeAutomator {
   /// See also:
   ///
   /// * [tapOnNotificationByIndex], which is less flexible but also less verbose
-  Future<void> tapOnNotificationBySelector(Selector selector) async {
+  Future<void> tapOnNotificationBySelector(
+    Selector selector, {
+    Duration? timeout,
+  }) async {
     await _wrapRequest(
       'tapOnNotificationBySelector',
       () => _client.tapOnNotification(
-        TapOnNotificationRequest(selector: selector),
+        TapOnNotificationRequest(
+          selector: selector,
+          timeoutMillis: timeout?.inMilliseconds,
+        ),
       ),
     );
   }

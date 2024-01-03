@@ -67,8 +67,8 @@
     func closeNotifications() throws
     func closeHeadsUpNotification() throws
     func getNotifications() throws -> [Notification]
-    func tapOnNotification(byIndex index: Int) throws
-    func tapOnNotification(bySubstring substring: String) throws
+    func tapOnNotification(byIndex index: Int, withTimeout timeout: TimeInterval?) throws
+    func tapOnNotification(bySubstring substring: String, withTimeout timeout: TimeInterval?) throws
 
     // MARK: Permissions
     func isPermissionDialogVisible(timeout: TimeInterval) throws -> Bool
