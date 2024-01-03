@@ -117,7 +117,7 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
     override fun getNativeViews(request: GetNativeViewsRequest): GetNativeViewsResponse {
         val views = automation.getNativeViews(request.selector.toBySelector())
         return GetNativeViewsResponse(
-                nativeViews = views
+            nativeViews = views
         )
     }
 
@@ -128,38 +128,38 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
 
     override fun tap(request: TapRequest) {
         automation.tap(
-                uiSelector = request.selector.toUiSelector(),
-                bySelector = request.selector.toBySelector(),
-                index = request.selector.instance?.toInt() ?: 0,
-                timeout = request.timeoutMillis
+            uiSelector = request.selector.toUiSelector(),
+            bySelector = request.selector.toBySelector(),
+            index = request.selector.instance?.toInt() ?: 0,
+            timeout = request.timeoutMillis
         )
     }
 
     override fun doubleTap(request: TapRequest) {
         automation.doubleTap(
-                uiSelector = request.selector.toUiSelector(),
-                bySelector = request.selector.toBySelector(),
-                index = request.selector.instance?.toInt() ?: 0,
-                timeout = request.timeoutMillis,
+            uiSelector = request.selector.toUiSelector(),
+            bySelector = request.selector.toBySelector(),
+            index = request.selector.instance?.toInt() ?: 0,
+            timeout = request.timeoutMillis
         )
     }
 
     override fun enterText(request: EnterTextRequest) {
         if (request.index != null) {
             automation.enterText(
-                    text = request.data,
-                    index = request.index.toInt(),
-                    keyboardBehavior = request.keyboardBehavior,
-                    timeout = request.timeoutMillis,
+                text = request.data,
+                index = request.index.toInt(),
+                keyboardBehavior = request.keyboardBehavior,
+                timeout = request.timeoutMillis
             )
         } else if (request.selector != null) {
             automation.enterText(
-                    text = request.data,
-                    uiSelector = request.selector.toUiSelector(),
-                    bySelector = request.selector.toBySelector(),
-                    index = request.selector.instance?.toInt() ?: 0,
-                    keyboardBehavior = request.keyboardBehavior,
-                    timeout = request.timeoutMillis,
+                text = request.data,
+                uiSelector = request.selector.toUiSelector(),
+                bySelector = request.selector.toBySelector(),
+                index = request.selector.instance?.toInt() ?: 0,
+                keyboardBehavior = request.keyboardBehavior,
+                timeout = request.timeoutMillis
             )
         } else {
             throw PatrolException("enterText(): neither index nor selector are set")
@@ -168,20 +168,20 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
 
     override fun swipe(request: SwipeRequest) {
         automation.swipe(
-                startX = request.startX.toFloat(),
-                startY = request.startY.toFloat(),
-                endX = request.endX.toFloat(),
-                endY = request.endY.toFloat(),
-                steps = request.steps.toInt()
+            startX = request.startX.toFloat(),
+            startY = request.startY.toFloat(),
+            endX = request.endX.toFloat(),
+            endY = request.endY.toFloat(),
+            steps = request.steps.toInt()
         )
     }
 
     override fun waitUntilVisible(request: WaitUntilVisibleRequest) {
         automation.waitUntilVisible(
-                uiSelector = request.selector.toUiSelector(),
-                bySelector = request.selector.toBySelector(),
-                index = request.selector.instance?.toInt() ?: 0,
-                timeout = request.timeoutMillis,
+            uiSelector = request.selector.toUiSelector(),
+            bySelector = request.selector.toBySelector(),
+            index = request.selector.instance?.toInt() ?: 0,
+            timeout = request.timeoutMillis
         )
     }
 
