@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:e2e_app/keys.dart';
 import 'package:flutter/material.dart';
 
@@ -21,6 +22,10 @@ class ScrollingScreen extends StatelessWidget {
               key: K.topText,
               textAlign: TextAlign.center,
             ),
+            ElevatedButton(
+              onPressed: throwDioException,
+              child: Text('Throw dio exception'),
+            ),
             SizedBox(height: MediaQuery.of(context).size.height),
             const Text('Some text in the middle'),
             SizedBox(height: MediaQuery.of(context).size.height),
@@ -33,5 +38,15 @@ class ScrollingScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void throwDioException() {
+    final dio = Dio();
+    try {
+      final response = dio.get<dynamic>('https://assadadasdasdadsgoogle.com');
+    } on DioException catch (error) {
+      print('DioException!!!!');
+      print(error);
+    }
   }
 }
