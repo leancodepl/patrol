@@ -263,7 +263,7 @@ Psst... Android is a bit easier to set up, so we recommend starting with it!
 
 </Accordion>
 
-<Accordion defaultOpen title="macOS setup">
+<Accordion title="macOS setup">
 
       1. Open `macos/Runner.xcworkspace` in Xcode. 
       
@@ -416,7 +416,7 @@ up. To run `integration_test/example_test.dart` on a connected Android, iOS or m
       ```
 
       If the setup is successful, you should see a **TEST PASSED** message. 
-      If something went wrong, please proceed to the [FAQ](/getting-started#faq) section which might
+      If something went wrong, please proceed to the [FAQ] section which might
       contain an answer to your issue.
 
       <Info>
@@ -462,8 +462,8 @@ up. To run `integration_test/example_test.dart` on a connected Android, iOS or m
 ### FAQ
 
 <Accordion title="Testing fails with error inside 'integration_test/test_bundle.dart'">
-  The reason is probably a mismatch of `patrol` and `patrol_cli` versions. Make sure that you 
-  use the latest versions of both packages.
+  The reason is probably a mismatch of `patrol` and `patrol_cli` versions. Go to [Compatibility table]
+  and make sure that the versions of `patrol` and `patrol_cli` you are using are compatible.
 </Accordion>
 
 <Accordion title="'example_test.dart' passed but I can't get my application to run 
@@ -538,3 +538,5 @@ To learn how to write Patrol tests, see [finders] and [native automation] sectio
 [Using Patrol finders in widget tests]: /patrol/finders/finders-setup
 [Here's why]: /native/advanced#embrace-the-native-tests
 [Patrol CLI]: https://pub.dev/packages/patrol_cli
+[FAQ]: /getting-started#faq
+[Compatibility table]: /compatibility-table
