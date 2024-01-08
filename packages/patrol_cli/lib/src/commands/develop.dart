@@ -59,7 +59,6 @@ class DevelopCommand extends PatrolCommand {
     argParser.addFlag(
       'open-devtools',
       help: 'Automatically open Patrol extension in DevTools when ready.',
-      defaultsTo: true,
     );
   }
 
