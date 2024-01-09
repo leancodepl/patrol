@@ -63,7 +63,7 @@
     ) throws -> GetNativeViewsResponse {
       return try runCatching {
         let nativeViews = try automator.getNativeViews(
-          byText: request.selector.text ?? String(),
+          on: request.selector,
           inApp: request.appId
         )
 
@@ -79,19 +79,17 @@
 
     func tap(request: TapRequest) throws {
       return try runCatching {
-        try automator.tap(request.selector)
-        //        try automator.tap(
-        //          onText: request.selector.text ?? String(),
-        //          inApp: request.appId,
-        //          atIndex: request.selector.instance ?? 0
-        //        )
+        try automator.tap(
+          on: request.selector,
+          inApp: request.appId
+        )
       }
     }
 
     func doubleTap(request: TapRequest) throws {
       return try runCatching {
         try automator.doubleTap(
-          onText: request.selector.text ?? String(),
+          on: request.selector,
           inApp: request.appId
         )
       }
@@ -133,8 +131,8 @@
     func waitUntilVisible(request: WaitUntilVisibleRequest) throws {
       return try runCatching {
         try automator.waitUntilVisible(
-          onText: request.selector.text ?? String(),
-          inApp: request.appId
+            on: request.selector,
+            inApp: request.appId
         )
       }
     }

@@ -54,8 +54,8 @@ extension Selector {
     func openControlCenter() throws
 
     // MARK: General UI interaction
-    func tap(_ selector: Selector) throws
-    func doubleTap(onText text: String, inApp bundleId: String) throws
+    func tap(on selector: Selector, inApp bundleId: String) throws
+    func doubleTap(on selector: Selector, inApp bundleId: String) throws
     func enterText(
       _ data: String,
       byText text: String,
@@ -70,7 +70,7 @@ extension Selector {
       dismissKeyboard: Bool
     ) throws
     func swipe(from start: CGVector, to end: CGVector, inApp bundleId: String) throws
-    func waitUntilVisible(onText text: String, inApp bundleId: String) throws
+    func waitUntilVisible(on selector: Selector, inApp bundleId: String) throws
 
     // MARK: Services
     func enableDarkMode(_ bundleId: String) throws
@@ -84,7 +84,7 @@ extension Selector {
     func enableBluetooth() throws
     func disableBluetooth() throws
     func getNativeViews(
-      byText text: String,
+      on selector: Selector,
       inApp bundleId: String
     ) throws -> [NativeView]
     func getUITreeRoots(installedApps: [String]) throws -> [NativeView]
