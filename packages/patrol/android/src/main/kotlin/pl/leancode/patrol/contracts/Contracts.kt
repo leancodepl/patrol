@@ -177,6 +177,12 @@ class Contracts {
     val appId: String
   )
 
+  data class TapAtRequest (
+    val x: Double,
+    val y: Double,
+    val appId: String
+  )
+
   data class EnterTextRequest (
     val data: String,
     val appId: String,

@@ -25,6 +25,7 @@ abstract class NativeAutomatorServer {
     abstract fun getNativeViews(request: Contracts.GetNativeViewsRequest): Contracts.GetNativeViewsResponse
     abstract fun tap(request: Contracts.TapRequest)
     abstract fun doubleTap(request: Contracts.TapRequest)
+    abstract fun tapAt(request: Contracts.TapAtRequest)
     abstract fun enterText(request: Contracts.EnterTextRequest)
     abstract fun swipe(request: Contracts.SwipeRequest)
     abstract fun waitUntilVisible(request: Contracts.WaitUntilVisibleRequest)
@@ -103,6 +104,11 @@ abstract class NativeAutomatorServer {
       "doubleTap" bind POST to {
         val body = json.fromJson(it.bodyString(), Contracts.TapRequest::class.java)
         doubleTap(body)
+        Response(OK)
+      },
+      "tapAt" bind POST to {
+        val body = json.fromJson(it.bodyString(), Contracts.TapAtRequest::class.java)
+        tapAt(body)
         Response(OK)
       },
       "enterText" bind POST to {

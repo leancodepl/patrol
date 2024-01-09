@@ -517,6 +517,24 @@ class NativeAutomator {
     );
   }
 
+  /// Taps at a given [location].
+  ///
+  /// [location] must be in the inclusive 0-1 range.
+  Future<void> tapAt(Offset location, {String? appId}) async {
+    assert(location.dx >= 0 && location.dx <= 1);
+    assert(location.dy >= 0 && location.dy <= 1);
+
+    await _wrapRequest('tapAt', () async {
+      await _client.tapAt(
+        TapAtRequest(
+          x: location.dx,
+          y: location.dy,
+          appId: appId ?? resolvedAppId,
+        ),
+      );
+    });
+  }
+
   /// Enters text to the native view specified by [selector].
   ///
   /// If the text field isn't visible immediately, this method waits for the
