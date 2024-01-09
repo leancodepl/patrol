@@ -107,7 +107,7 @@
       if dismissKeyboard {
         data = "\(data)\n"
       }
-        
+
       let view = "text field with text \(format: text) at index \(index) in app \(bundleId)"
 
       try runAction("entering text \(format: data) into \(view)") {
@@ -218,12 +218,12 @@
       ) {
         let app = try self.getApp(withBundleId: bundleId)
         let query = app.descendants(matching: .any).containing(selector.toNSPredicate())
-          guard
-            let element = self.waitFor(
-              query: query, index: selector.instance ?? 0, timeout: self.timeout)
-          else {
-            throw PatrolError.viewNotExists(view)
-          }
+        guard
+          let element = self.waitFor(
+            query: query, index: selector.instance ?? 0, timeout: self.timeout)
+        else {
+          throw PatrolError.viewNotExists(view)
+        }
       }
     }
 
@@ -504,7 +504,7 @@
         let cells = self.springboard.buttons.matching(identifier: "NotificationCell")
           .allElementsBoundByIndex
         for (i, cell) in cells.enumerated() {
-            if cell.label.contains(substring) {
+          if cell.label.contains(substring) {
             Logger.shared.i(
               "tapping on notification at index \(i) which contains text \(substring)")
             if self.isSimulator() && self.isPhone() {
@@ -828,25 +828,25 @@
 
       group.wait()
     }
-      
-      func createLogMessage(element: String, from selector: Selector) -> String {
-        var logMessage = element
 
-        if let text = selector.text {
-          logMessage += " with text \(text)"
-        }
-        if let startsWith = selector.textStartsWith {
-          logMessage += " starting with \(startsWith)"
-        }
-        if let contains = selector.textContains {
-          logMessage += " containing \(contains)"
-        }
-        if let index = selector.instance {
-          logMessage += " at index \(index)"
-        }
+    func createLogMessage(element: String, from selector: Selector) -> String {
+      var logMessage = element
 
-        return logMessage
+      if let text = selector.text {
+        logMessage += " with text \(text)"
       }
+      if let startsWith = selector.textStartsWith {
+        logMessage += " starting with \(startsWith)"
+      }
+      if let contains = selector.textContains {
+        logMessage += " containing \(contains)"
+      }
+      if let index = selector.instance {
+        logMessage += " at index \(index)"
+      }
+
+      return logMessage
+    }
   }
 
   // MARK: Utilities

@@ -131,8 +131,8 @@
     func waitUntilVisible(request: WaitUntilVisibleRequest) throws {
       return try runCatching {
         try automator.waitUntilVisible(
-            on: request.selector,
-            inApp: request.appId
+          on: request.selector,
+          inApp: request.appId
         )
       }
     }
