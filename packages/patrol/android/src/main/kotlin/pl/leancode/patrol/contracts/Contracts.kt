@@ -177,6 +177,11 @@ class Contracts {
     val appId: String
   )
 
+  data class SendKeyEventRequest (
+    val data: String,
+    val appId: String
+  )
+
   data class EnterTextRequest (
     val data: String,
     val appId: String,

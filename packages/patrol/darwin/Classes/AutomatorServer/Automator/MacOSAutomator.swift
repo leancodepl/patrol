@@ -67,6 +67,12 @@
         throw PatrolError.methodNotImplemented("doubleTap")
       }
     }
+    
+    func sendKeyEvent(_ data: String, inApp bundleId: String) throws {
+      try runAction("sendKeyEvent") {
+        throw PatrolError.methodNotImplemented("sendKeyEvent")
+      }
+    }
 
     func enterText(
       _ data: String, byText text: String, atIndex index: Int, inApp bundleId: String,

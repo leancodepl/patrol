@@ -95,7 +95,13 @@
         )
       }
     }
-
+    
+    func sendKeyEvent(request: SendKeyEventRequest) throws {
+      return try runCatching {
+        try automator.sendKeyEvent(request.data, inApp: request.appId)
+      }
+    }
+    
     func enterText(request: EnterTextRequest) throws {
       return try runCatching {
         if let index = request.index {

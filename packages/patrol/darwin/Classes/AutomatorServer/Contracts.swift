@@ -112,6 +112,11 @@ struct TapRequest: Codable {
   var appId: String
 }
 
+struct SendKeyEventRequest: Codable {
+  var data: String
+  var appId: String
+}
+
 struct EnterTextRequest: Codable {
   var data: String
   var appId: String
