@@ -16,6 +16,7 @@ environment:
 
 dependencies:
   adb: ^0.3.0
+  analyzer: any
   ansi_styles: ^0.3.2+1
   args: ^2.4.2
   ci: ^0.1.0

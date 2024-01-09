@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
+import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/compatibility_checker.dart';
@@ -40,6 +41,7 @@ class TestCommand extends PatrolCommand {
         _analytics = analytics,
         _logger = logger {
     usesTargetOption();
+    usesTagsOption();
     usesDeviceOption();
     usesBuildModeOption();
     usesFlavorOption();
@@ -81,13 +83,24 @@ class TestCommand extends PatrolCommand {
     final config = _pubspecReader.read();
     final testFileSuffix = config.testFileSuffix;
 
+    final tags = stringArg('tags');
     final target = stringsArg('target');
+
+    if (tags != null && target.isNotEmpty) {
+      throwToolExit(
+        'Can not use the --tags and --target options at the same time',
+        exitCode: 64,
+      );
+    }
+
     final targets = target.isNotEmpty
         ? _testFinder.findTests(target, testFileSuffix)
-        : _testFinder.findAllTests(
-            excludes: stringsArg('exclude').toSet(),
-            testFileSuffix: testFileSuffix,
-          );
+        : tags != null
+            ? _testFinder.findTestsForTags(tags.split(','))
+            : _testFinder.findAllTests(
+                excludes: stringsArg('exclude').toSet(),
+                testFileSuffix: testFileSuffix,
+              );
 
     _logger.detail('Received ${targets.length} test target(s)');
     for (final t in targets) {
