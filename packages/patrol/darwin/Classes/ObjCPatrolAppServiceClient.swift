@@ -15,18 +15,37 @@
 /// That's because the main thread is used by methods in ``Automator``, which perform
 /// various UI actions such as tapping, entering text, etc., and they must be called on the main thread.
 @objc public class ObjCPatrolAppServiceClient: NSObject {
+  private static let envPortKey = "PATROL_APP_PORT"
+  private static let defaultPort = 8082
+
+  private let port: Int
 
   private let client: PatrolAppServiceClient
 
-  /// Construct client for accessing PatrolAppService server using the existing channel.
+  private var passedPort: Int = {
+    guard let portStr = ProcessInfo.processInfo.environment[envPortKey] else {
+      Logger.shared.i("\(envPortKey) is null, falling back to default (\(defaultPort))")
+      return defaultPort
+    }
+
+    guard let portInt = Int(portStr) else {
+      Logger.shared.i(
+        "\(envPortKey) with value \(portStr) is not valid, falling back to default (\(defaultPort))"
+      )
+      return defaultPort
+    }
+
+    return portInt
+  }()
+
   @objc public override init() {
-    let port = 8082  // TODO: Document this value better
+    self.port = passedPort
+
     // https://github.com/leancodepl/patrol/issues/1683
     let timeout = TimeInterval(2 * 60 * 60)
 
-    NSLog("PatrolAppServiceClient: created, port: \(port)")
-
     client = PatrolAppServiceClient(port: port, address: "localhost", timeout: timeout)
+    NSLog("PatrolAppServiceClient: created, port: \(port)")
   }
 
   @objc public func listDartTests(completion: @escaping ([String]?, Error?) -> Void) {

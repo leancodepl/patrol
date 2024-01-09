@@ -1,2 +1,3 @@
 /// Version of Patrol CLI. Must be kept in sync with pubspec.yaml.
-const version = '2.5.0';
+/// If you update this, make sure that compatibility-table.mdx is updated (if needed)
+const version = '2.6.0';

@@ -100,6 +100,8 @@ class BuildMacOSCommand extends PatrolCommand {
       'PATROL_IOS_APP_NAME': config.ios.appName,
       'PATROL_TEST_LABEL_ENABLED': displayLabel.toString(),
       'INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE': 'false',
+      'PATROL_TEST_SERVER_PORT': super.testServerPort.toString(),
+      'PATROL_APP_SERVER_PORT': super.appServerPort.toString(),
     }.withNullsRemoved();
 
     final dartDefines = {...customDartDefines, ...internalDartDefines};

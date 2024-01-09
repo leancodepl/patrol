@@ -11,6 +11,7 @@ import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/devices.dart';
+import 'package:platform/platform.dart';
 import 'package:process/process.dart';
 
 enum BuildMode {
@@ -51,10 +52,12 @@ enum BuildMode {
 class IOSTestBackend {
   IOSTestBackend({
     required ProcessManager processManager,
+    required Platform platform,
     required FileSystem fs,
     required DisposeScope parentDisposeScope,
     required Logger logger,
   })  : _processManager = processManager,
+        _platform = platform,
         _fs = fs,
         _disposeScope = DisposeScope(),
         _logger = logger {
@@ -64,6 +67,7 @@ class IOSTestBackend {
   static const _xcodebuildInterrupted = -15;
 
   final ProcessManager _processManager;
+  final Platform _platform;
   final FileSystem _fs;
   final DisposeScope _disposeScope;
   final Logger _logger;
@@ -165,6 +169,11 @@ class IOSTestBackend {
           resultBundlePath: resultsPath,
         ),
         runInShell: true,
+        environment: {
+          ..._platform.environment,
+          'TEST_RUNNER_PATROL_TEST_PORT': options.testServerPort.toString(),
+          'TEST_RUNNER_PATROL_APP_PORT': options.appServerPort.toString(),
+        },
         workingDirectory: _fs.currentDirectory.childDirectory('ios').path,
       )
         ..disposedBy(_disposeScope);

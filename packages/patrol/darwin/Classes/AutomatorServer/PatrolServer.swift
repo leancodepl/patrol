@@ -1,7 +1,7 @@
 import Foundation
 
 @objc public class PatrolServer: NSObject {
-  private static let envPortKey = "PATROL_PORT"
+  private static let envPortKey = "PATROL_TEST_PORT"
 
   private static let defaultPort = 8081
 

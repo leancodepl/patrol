@@ -8,11 +8,9 @@ import 'dart:io';
 import 'package:patrol/src/common.dart';
 import 'package:patrol/src/native/contracts/contracts.dart';
 import 'package:patrol/src/native/contracts/patrol_app_service_server.dart';
-
 import 'package:shelf/shelf.dart' as shelf;
 import 'package:shelf/shelf_io.dart' as shelf_io;
 
-const _port = 8082;
 const _idleTimeout = Duration(hours: 2);
 
 class _TestExecutionResult {
@@ -31,7 +29,7 @@ Future<void> runAppService(PatrolAppService service) async {
   final server = await shelf_io.serve(
     pipeline,
     InternetAddress.anyIPv4,
-    _port,
+    service.port,
     poweredByHeader: null,
   );
 
@@ -44,13 +42,20 @@ Future<void> runAppService(PatrolAppService service) async {
   );
 }
 
-/// Implements a stateful gRPC service for querying and executing Dart tests.
+/// Implements a stateful HTTP service for querying and executing Dart tests.
 ///
 /// This is an internal class and you don't want to use it. It's public so that
 /// the generated code can access it.
 class PatrolAppService extends PatrolAppServiceServer {
   /// Creates a new [PatrolAppService].
-  PatrolAppService({required this.topLevelDartTestGroup});
+  PatrolAppService({required this.topLevelDartTestGroup})
+      : port = const int.fromEnvironment(
+          'PATROL_APP_SERVER_PORT',
+          defaultValue: 8082,
+        );
+
+  /// Port the server will use to listen for incoming HTTP traffic.
+  final int port;
 
   /// The ambient test group that wraps all the other groups and tests in the
   /// bundled Dart test file.

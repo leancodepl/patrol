@@ -1,3 +1,14 @@
+## 3.4.0
+
+- Allow for changing the port when running on iOS (#2027).
+
+  To do so, pass `test-server-port` (default 8081) and `app-server-port`
+  (default 8082) to Patrol CLI commands (e.g `patrol test`)
+
+- Fix `patrolSetUp()` and `patrolTearDown()` not working in `patrol develop` (#2023).
+
+This version requires version 2.6.0 of `patrol_cli` package.
+
 ## 3.3.0
 
 - Enable selecting individual tests with `xcodebuild`'s `-only-testing` option.

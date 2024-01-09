@@ -59,7 +59,6 @@ class DevelopCommand extends PatrolCommand {
     argParser.addFlag(
       'open-devtools',
       help: 'Automatically open Patrol extension in DevTools when ready.',
-      defaultsTo: true,
     );
   }
 
@@ -160,6 +159,8 @@ class DevelopCommand extends PatrolCommand {
         'PATROL_HOT_RESTART': 'true',
         'PATROL_IOS_INSTALLED_APPS': iOSInstalledAppsEnvVariable,
       },
+      'PATROL_TEST_SERVER_PORT': super.testServerPort.toString(),
+      'PATROL_APP_SERVER_PORT': super.appServerPort.toString(),
     }.withNullsRemoved();
 
     final dartDefines = {...customDartDefines, ...internalDartDefines};
@@ -194,6 +195,8 @@ class DevelopCommand extends PatrolCommand {
       scheme: buildMode.createScheme(iosFlavor),
       configuration: buildMode.createConfiguration(iosFlavor),
       simulator: !device.real,
+      appServerPort: super.appServerPort,
+      testServerPort: super.testServerPort,
     );
 
     final macosOpts = MacOSAppOptions(
