@@ -825,13 +825,13 @@
       var logMessage = element
 
       if let text = selector.text {
-        logMessage += " with text \(text)"
+        logMessage += " with text '\(text)'"
       }
       if let startsWith = selector.textStartsWith {
-        logMessage += " starting with \(startsWith)"
+        logMessage += " starting with '\(startsWith)'"
       }
       if let contains = selector.textContains {
-        logMessage += " containing \(contains)"
+        logMessage += " containing '\(contains)'"
       }
       if let index = selector.instance {
         logMessage += " at index \(index)"

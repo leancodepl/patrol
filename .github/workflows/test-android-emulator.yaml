@@ -77,6 +77,7 @@ jobs:
           TESTS_TO_EXCLUDE="service_airplane_mode_test,\
           service_bluetooth_test,\
           permissions/notifications_test,\
+          ios_selector_test.dart,\
           webview_hackernews_test,\
           webview_leancode_test,\
           webview_stackoverflow_test"

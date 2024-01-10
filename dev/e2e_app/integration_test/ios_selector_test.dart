@@ -1,16 +1,12 @@
 import 'common.dart';
 
-// Same as example_test, but using only native selectors.
 void main() {
-  patrolSetUp(() {
-    // Smoke test for https://github.com/leancodepl/patrol/issues/2021
-    expect(2 + 2, equals(4));
-  });
-
   patrol(
     'tap and enterText work when matching exact strings',
     ($) async {
       await createApp($);
+
+      await $.native.waitUntilVisible(Selector(text: 'Increment counter'));
 
       await $.native.tap(Selector(text: 'Increment counter'));
 
@@ -36,6 +32,8 @@ void main() {
     ($) async {
       await createApp($);
 
+      await $.native.waitUntilVisible(Selector(textStartsWith: 'Increment'));
+
       await $.native.tap(Selector(textStartsWith: 'Increment coun'));
 
       await $.native.enterText(
@@ -47,6 +45,32 @@ void main() {
       await $.native.tap(Selector(textStartsWith: 'Increment c'));
       await $.pump();
       await $.native.tap(Selector(textStartsWith: 'Increment'));
+      await $.pump();
+
+      expect($('Hello from Patrol native automation!'), findsOneWidget);
+
+      expect($(#counterText).text, '3');
+    },
+  );
+
+  patrol(
+    'tap and enterText work when matching by textContains',
+    ($) async {
+      await createApp($);
+
+      await $.native.waitUntilVisible(Selector(textContains: 'counter'));
+
+      await $.native.tap(Selector(textContains: 'counter'));
+
+      await $.native.enterText(
+        Selector(textContains: 'entered th'),
+        text: 'Hello from Patrol native automation!',
+      );
+      await $.pump();
+
+      await $.native.tap(Selector(textContains: 'ent c'));
+      await $.pump();
+      await $.native.tap(Selector(textContains: 'rement'));
       await $.pump();
 
       expect($('Hello from Patrol native automation!'), findsOneWidget);
