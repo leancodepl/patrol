@@ -1,5 +1,7 @@
 import 'common.dart';
 
+// Those tests are failing with weird errors when you run them all together.
+// If you run them one by one, they pass.
 void main() {
   patrol(
     'tap and enterText work when matching exact strings',
