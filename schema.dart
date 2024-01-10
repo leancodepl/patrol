@@ -107,7 +107,6 @@ class EnterTextRequest {
   late String data;
   late String appId;
   int? index;
-  // TODO: Probably can be not nullable
   Selector? selector;
   late KeyboardBehavior keyboardBehavior;
 }
