@@ -98,8 +98,7 @@
 
     func enterText(
       _ data: String,
-      byText text: String,
-      atIndex index: Int,
+      on selector: Selector,
       inApp bundleId: String,
       dismissKeyboard: Bool
     ) throws {
@@ -108,7 +107,8 @@
         data = "\(data)\n"
       }
 
-      let view = "text field with text \(format: text) at index \(index) in app \(bundleId)"
+      var view = createLogMessage(element: "text field", from: selector)
+      view += " in app \(bundleId)"
 
       try runAction("entering text \(format: data) into \(view)") {
         let app = try self.getApp(withBundleId: bundleId)
@@ -117,16 +117,8 @@
         // See:
         // * https://developer.apple.com/documentation/xctest/xcuielementtype/xcuielementtypetextfield
         // * https://developer.apple.com/documentation/xctest/xcuielementtype/xcuielementtypesecuretextfield
-        // The below selector is an equivalent of `app.descendants(matching: .any)[text]`
         // TODO: We should consider more view properties. See #1554
-        let format = """
-          label == %@ OR \
-          title == %@ OR \
-          identifier == %@ OR \
-          value == %@ OR \
-          placeholderValue == %@
-          """
-        let contentPredicate = NSPredicate(format: format, text, text, text, text, text)
+        let contentPredicate = selector.toTextFieldNSPredicate()
         let textFieldPredicate = NSPredicate(format: "elementType == 49")
         let secureTextFieldPredicate = NSPredicate(format: "elementType == 50")
 
@@ -142,7 +134,7 @@
         guard
           let element = self.waitFor(
             query: query,
-            index: index,
+            index: selector.instance ?? 0,
             timeout: self.timeout
           )
         else {
@@ -390,7 +382,7 @@
       inApp bundleId: String
     ) throws -> [NativeView] {
       let view = createLogMessage(element: "views", from: selector)
-      try runAction("getting native \(view)") {
+      return try runAction("getting native \(view)") {
         let app = try self.getApp(withBundleId: bundleId)
 
         // TODO: We should consider more view properties. See #1554

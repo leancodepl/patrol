@@ -1,4 +1,52 @@
 extension Selector {
+  public func toTextFieldNSPredicate() -> NSPredicate {
+    var format = ""
+    var begun = false
+    var values = [String]()
+
+    if text != nil {
+      begun = true
+      format += "(label == %@ OR title == %@ OR value == %@ OR placeholderValue == %@)"
+      values.append(text!)
+      values.append(text!)
+      values.append(text!)
+      values.append(text!)
+    }
+
+    if textStartsWith != nil {
+      if begun { format += " AND " }
+      begun = true
+      format +=
+        "(label BEGINSWITH %@ OR title BEGINSWITH %@ OR value BEGINSWITH %@ OR placeholderValue BEGINSWITH %@)"
+      values.append(textStartsWith!)
+      values.append(textStartsWith!)
+      values.append(textStartsWith!)
+      values.append(textStartsWith!)
+    }
+
+    if textContains != nil {
+      if begun { format += " AND " }
+      begun = true
+      format +=
+        "(label CONTAINS %@ OR title CONTAINS %@ OR value CONTAINS %@ OR placeholderValue CONTAINS %@)"
+      values.append(textContains!)
+      values.append(textContains!)
+      values.append(textContains!)
+      values.append(textContains!)
+    }
+
+    if resourceId != nil {
+      if begun { format += " AND " }
+      begun = true
+      format += "(identifier == %@)"
+      values.append(resourceId!)
+    }
+
+    let predicate = NSPredicate(format: format, argumentArray: values)
+
+    return predicate
+  }
+
   public func toNSPredicate() -> NSPredicate {
     var format = ""
     var begun = false
@@ -58,8 +106,7 @@ extension Selector {
     func doubleTap(on selector: Selector, inApp bundleId: String) throws
     func enterText(
       _ data: String,
-      byText text: String,
-      atIndex index: Int,
+      on selector: Selector,
       inApp bundleId: String,
       dismissKeyboard: Bool
     ) throws

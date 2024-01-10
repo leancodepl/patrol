@@ -36,7 +36,7 @@ void main() {
     ($) async {
       await createApp($);
 
-      await $.native.tap(Selector(text: 'Increment coun'));
+      await $.native.tap(Selector(textStartsWith: 'Increment coun'));
 
       await $.native.enterText(
         Selector(textStartsWith: 'You have entered th'),

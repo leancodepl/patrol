@@ -107,8 +107,7 @@
         } else if let selector = request.selector {
           try automator.enterText(
             request.data,
-            byText: selector.text ?? String(),
-            atIndex: selector.instance ?? 0,
+            on: selector,
             inApp: request.appId,
             dismissKeyboard: request.keyboardBehavior == .showAndDismiss
           )
