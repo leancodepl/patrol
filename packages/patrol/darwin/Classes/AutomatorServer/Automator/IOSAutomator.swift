@@ -58,7 +58,7 @@
       on selector: Selector,
       inApp bundleId: String,
       withTimeout timeout: TimeInterval?
-      ) throws {
+    ) throws {
       var view = createLogMessage(element: "view", from: selector)
       view += " in app \(bundleId)"
 
@@ -70,7 +70,8 @@
 
         Logger.shared.i("waiting for existence of \(view)")
         guard
-          let element = self.waitFor(query: query, index: selector.instance ?? 0, timeout: timeout ?? self.timeout)
+          let element = self.waitFor(
+            query: query, index: selector.instance ?? 0, timeout: timeout ?? self.timeout)
         else {
           throw PatrolError.viewNotExists(view)
         }
@@ -83,7 +84,7 @@
       on selector: Selector,
       inApp bundleId: String,
       withTimeout timeout: TimeInterval?
-      ) throws {
+    ) throws {
       var view = createLogMessage(element: "view", from: selector)
       view += " in app \(bundleId)"
 
@@ -213,10 +214,10 @@
     }
 
     func waitUntilVisible(
-      on selector: Selector, 
+      on selector: Selector,
       inApp bundleId: String,
       withTimeout timeout: TimeInterval?
-      ) throws {
+    ) throws {
       let view = createLogMessage(element: "view", from: selector)
       try runAction(
         "waiting until \(view) in app \(bundleId) becomes visible"

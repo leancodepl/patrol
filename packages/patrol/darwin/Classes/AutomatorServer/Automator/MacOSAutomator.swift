@@ -57,20 +57,20 @@
     }
 
     func tap(
-      on selector: Selector, 
+      on selector: Selector,
       inApp bundleId: String,
       withTimeout timeout: TimeInterval?
-      ) throws {
+    ) throws {
       try runAction("tap") {
         throw PatrolError.methodNotImplemented("tap")
       }
     }
 
     func doubleTap(
-      on selector: Selector, 
+      on selector: Selector,
       inApp bundleId: String,
       withTimeout timeout: TimeInterval?
-      ) throws {
+    ) throws {
       try runAction("doubleTap") {
         throw PatrolError.methodNotImplemented("doubleTap")
       }
@@ -107,7 +107,7 @@
     }
 
     func waitUntilVisible(
-      on selector: Selector, 
+      on selector: Selector,
       inApp bundleId: String,
       withTimeout timeout: TimeInterval?
     ) throws {
