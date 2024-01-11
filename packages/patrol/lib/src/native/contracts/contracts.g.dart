@@ -213,12 +213,14 @@ Map<String, dynamic> _$GetNativeViewsResponseToJson(
 TapRequest _$TapRequestFromJson(Map<String, dynamic> json) => TapRequest(
       selector: Selector.fromJson(json['selector'] as Map<String, dynamic>),
       appId: json['appId'] as String,
+      timeoutMillis: json['timeoutMillis'] as int?,
     );
 
 Map<String, dynamic> _$TapRequestToJson(TapRequest instance) =>
     <String, dynamic>{
       'selector': instance.selector,
       'appId': instance.appId,
+      'timeoutMillis': instance.timeoutMillis,
     };
 
 EnterTextRequest _$EnterTextRequestFromJson(Map<String, dynamic> json) =>
@@ -231,6 +233,7 @@ EnterTextRequest _$EnterTextRequestFromJson(Map<String, dynamic> json) =>
           : Selector.fromJson(json['selector'] as Map<String, dynamic>),
       keyboardBehavior:
           $enumDecode(_$KeyboardBehaviorEnumMap, json['keyboardBehavior']),
+      timeoutMillis: json['timeoutMillis'] as int?,
     );
 
 Map<String, dynamic> _$EnterTextRequestToJson(EnterTextRequest instance) =>
@@ -240,6 +243,7 @@ Map<String, dynamic> _$EnterTextRequestToJson(EnterTextRequest instance) =>
       'index': instance.index,
       'selector': instance.selector,
       'keyboardBehavior': _$KeyboardBehaviorEnumMap[instance.keyboardBehavior]!,
+      'timeoutMillis': instance.timeoutMillis,
     };
 
 const _$KeyboardBehaviorEnumMap = {
@@ -271,6 +275,7 @@ WaitUntilVisibleRequest _$WaitUntilVisibleRequestFromJson(
     WaitUntilVisibleRequest(
       selector: Selector.fromJson(json['selector'] as Map<String, dynamic>),
       appId: json['appId'] as String,
+      timeoutMillis: json['timeoutMillis'] as int?,
     );
 
 Map<String, dynamic> _$WaitUntilVisibleRequestToJson(
@@ -278,6 +283,7 @@ Map<String, dynamic> _$WaitUntilVisibleRequestToJson(
     <String, dynamic>{
       'selector': instance.selector,
       'appId': instance.appId,
+      'timeoutMillis': instance.timeoutMillis,
     };
 
 DarkModeRequest _$DarkModeRequestFromJson(Map<String, dynamic> json) =>
@@ -334,6 +340,7 @@ TapOnNotificationRequest _$TapOnNotificationRequestFromJson(
       selector: json['selector'] == null
           ? null
           : Selector.fromJson(json['selector'] as Map<String, dynamic>),
+      timeoutMillis: json['timeoutMillis'] as int?,
     );
 
 Map<String, dynamic> _$TapOnNotificationRequestToJson(
@@ -341,6 +348,7 @@ Map<String, dynamic> _$TapOnNotificationRequestToJson(
     <String, dynamic>{
       'index': instance.index,
       'selector': instance.selector,
+      'timeoutMillis': instance.timeoutMillis,
     };
 
 PermissionDialogVisibleResponse _$PermissionDialogVisibleResponseFromJson(

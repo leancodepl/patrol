@@ -55,7 +55,10 @@
 
     // MARK: General UI interaction
 
-    func tap(onText text: String, inApp bundleId: String, atIndex index: Int) throws {
+    func tap(
+      onText text: String, inApp bundleId: String, atIndex index: Int,
+      withTimeout timeout: TimeInterval?
+    ) throws {
       let view = "view with text \(format: text) at index \(index) in app \(bundleId)"
 
       try runAction("tapping on \(view)") {
@@ -72,7 +75,9 @@
         let query = app.descendants(matching: .any).matching(predicate)
 
         Logger.shared.i("waiting for existence of \(view)")
-        guard let element = self.waitFor(query: query, index: index, timeout: self.timeout) else {
+        guard
+          let element = self.waitFor(query: query, index: index, timeout: timeout ?? self.timeout)
+        else {
           throw PatrolError.viewNotExists(view)
         }
 
@@ -80,12 +85,14 @@
       }
     }
 
-    func doubleTap(onText text: String, inApp bundleId: String) throws {
+    func doubleTap(onText text: String, inApp bundleId: String, withTimeout timeout: TimeInterval?)
+      throws
+    {
       try runAction("double tapping on text \(format: text) in app \(bundleId)") {
         let app = try self.getApp(withBundleId: bundleId)
         let element = app.descendants(matching: .any)[text]
 
-        let exists = element.waitForExistence(timeout: self.timeout)
+        let exists = element.waitForExistence(timeout: timeout ?? self.timeout)
         guard exists else {
           throw PatrolError.viewNotExists(
             "view with text \(format: text) in app \(format: bundleId)")
@@ -100,7 +107,8 @@
       byText text: String,
       atIndex index: Int,
       inApp bundleId: String,
-      dismissKeyboard: Bool
+      dismissKeyboard: Bool,
+      withTimeout timeout: TimeInterval?
     ) throws {
       var data = data
       if dismissKeyboard {
@@ -142,7 +150,7 @@
           let element = self.waitFor(
             query: query,
             index: index,
-            timeout: self.timeout
+            timeout: timeout ?? self.timeout
           )
         else {
           throw PatrolError.viewNotExists(view)
@@ -160,7 +168,8 @@
       _ data: String,
       byIndex index: Int,
       inApp bundleId: String,
-      dismissKeyboard: Bool
+      dismissKeyboard: Bool,
+      withTimeout timeout: TimeInterval?
     ) throws {
       var data = data
       if dismissKeyboard {
@@ -185,7 +194,7 @@
           let element = self.waitFor(
             query: textFieldsQuery,
             index: index,
-            timeout: self.timeout
+            timeout: timeout ?? self.timeout
           )
         else {
           throw PatrolError.viewNotExists("text field at index \(index) in app \(bundleId)")
@@ -210,13 +219,15 @@
       }
     }
 
-    func waitUntilVisible(onText text: String, inApp bundleId: String) throws {
+    func waitUntilVisible(
+      onText text: String, inApp bundleId: String, withTimeout timeout: TimeInterval?
+    ) throws {
       try runAction(
         "waiting until view with text \(format: text) in app \(bundleId) becomes visible"
       ) {
         let app = try self.getApp(withBundleId: bundleId)
         let element = app.descendants(matching: .any)[text]
-        let exists = element.waitForExistence(timeout: self.timeout)
+        let exists = element.waitForExistence(timeout: timeout ?? self.timeout)
         guard exists else {
           throw PatrolError.viewNotExists(
             "view with text \(format: text) in app \(format: bundleId)")
@@ -484,44 +495,45 @@
       return notifications
     }
 
-    func tapOnNotification(byIndex index: Int) throws {
+    func tapOnNotification(byIndex index: Int, withTimeout timeout: TimeInterval?) throws {
       try runAction("tapping on notification at index \(index)") {
-        let cells = self.springboard.buttons.matching(identifier: "NotificationCell")
-          .allElementsBoundByIndex
-        guard cells.indices.contains(index) else {
+        let cellsQuery = self.springboard.buttons.matching(identifier: "NotificationCell")
+        guard
+          let cell = self.waitFor(query: cellsQuery, index: index, timeout: timeout ?? self.timeout)
+        else {
           throw PatrolError.viewNotExists("notification at index \(index)")
         }
 
         if self.isSimulator() && self.isPhone() {
           // For some weird reason, this works differently on Simulator
-          cells[index].doubleTap()
+          cell.doubleTap()
           self.springboard.buttons.matching(identifier: "Open").firstMatch.tap()
         } else {
-          cells[index].tap()
+          cell.tap()
         }
       }
     }
 
-    func tapOnNotification(bySubstring substring: String) throws {
+    func tapOnNotification(bySubstring substring: String, withTimeout timeout: TimeInterval?) throws
+    {
       try runAction("tapping on notification containing text \(format: substring)") {
-        let cells = self.springboard.buttons.matching(identifier: "NotificationCell")
-          .allElementsBoundByIndex
-        for (i, cell) in cells.enumerated() {
-          if cell.label.contains(substring) {
-            Logger.shared.i(
-              "tapping on notification at index \(i) which contains text \(substring)")
-            if self.isSimulator() && self.isPhone() {
-              // For some weird reason, this works differently on Simulator
-              cell.doubleTap()
-              self.springboard.buttons.matching(identifier: "Open").firstMatch.tap()
-            } else {
-              cell.tap()
-            }
-            return
-          }
-        }
+        let cellsQuery = self.springboard.buttons.matching(
+          NSPredicate(
+            format: "identifier == %@ AND label CONTAINS %@", "NotificationCell", substring)
+        )
 
-        throw PatrolError.viewNotExists("notification containing text \(format: substring)")
+        guard let cell = self.waitFor(query: cellsQuery, index: 0, timeout: timeout ?? self.timeout)
+        else {
+          throw PatrolError.viewNotExists("notification containing text \(format: substring)")
+        }
+        Logger.shared.i("tapping on notification which contains text \(substring)")
+        if self.isSimulator() && self.isPhone() {
+          // For some weird reason, this works differently on Simulator
+          cell.doubleTap()
+          self.springboard.buttons.matching(identifier: "Open").firstMatch.tap()
+        } else {
+          cell.tap()
+        }
       }
     }
 

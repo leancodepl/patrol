@@ -12,23 +12,38 @@
     func openControlCenter() throws
 
     // MARK: General UI interaction
-    func tap(onText text: String, inApp bundleId: String, atIndex index: Int) throws
-    func doubleTap(onText text: String, inApp bundleId: String) throws
+    func tap(
+      onText text: String,
+      inApp bundleId: String,
+      atIndex index: Int,
+      withTimeout timeout: TimeInterval?
+    ) throws
+    func doubleTap(
+      onText text: String,
+      inApp bundleId: String,
+      withTimeout timeout: TimeInterval?
+    ) throws
     func enterText(
       _ data: String,
       byText text: String,
       atIndex index: Int,
       inApp bundleId: String,
-      dismissKeyboard: Bool
+      dismissKeyboard: Bool,
+      withTimeout timeout: TimeInterval?
     ) throws
     func enterText(
       _ data: String,
       byIndex index: Int,
       inApp bundleId: String,
-      dismissKeyboard: Bool
+      dismissKeyboard: Bool,
+      withTimeout timeout: TimeInterval?
     ) throws
     func swipe(from start: CGVector, to end: CGVector, inApp bundleId: String) throws
-    func waitUntilVisible(onText text: String, inApp bundleId: String) throws
+    func waitUntilVisible(
+      onText text: String,
+      inApp bundleId: String,
+      withTimeout timeout: TimeInterval?
+    ) throws
 
     // MARK: Services
     func enableDarkMode(_ bundleId: String) throws
@@ -52,8 +67,8 @@
     func closeNotifications() throws
     func closeHeadsUpNotification() throws
     func getNotifications() throws -> [Notification]
-    func tapOnNotification(byIndex index: Int) throws
-    func tapOnNotification(bySubstring substring: String) throws
+    func tapOnNotification(byIndex index: Int, withTimeout timeout: TimeInterval?) throws
+    func tapOnNotification(bySubstring substring: String, withTimeout timeout: TimeInterval?) throws
 
     // MARK: Permissions
     func isPermissionDialogVisible(timeout: TimeInterval) throws -> Bool
