@@ -16,10 +16,10 @@ void main() {
     await createApp($);
 
     await $.native.openApp(appId: appId);
-    // Native view with the text "Bluetooth" is universally present in the settings app
-    await $.native.waitUntilVisible(Selector(textContains: 'Bluetooth'));
+    // Only needed on Android, no wait needed on iOS
+    await Future<void>.delayed(const Duration(milliseconds: 50));
     await $.native.tapAt(
-      Offset(0.5, 0.5),
+      Offset(0.5, 0.8),
       appId: appId,
     );
   });

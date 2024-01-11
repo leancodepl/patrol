@@ -95,6 +95,16 @@
       }
     }
 
+      func tapAt(coordinate vector: CGVector, inApp bundleId: String) throws {
+          try runAction("tapping at coordinate \(vector) in app \(bundleId)") {
+              let app = try self.getApp(withBundleId: bundleId)
+              
+              let coordinate = app.coordinate(withNormalizedOffset: vector)
+              
+              coordinate.tap()
+          }
+      }
+
     func enterText(
       _ data: String,
       byText text: String,
