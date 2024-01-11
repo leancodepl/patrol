@@ -167,7 +167,7 @@ class NativeAutomatorConfig {
 /// Provides functionality to interact with the OS that the app under test is
 /// running on.
 ///
-/// Communicates over gRPC with the native automation server running on the
+/// Communicates over http with the native automation server running on the
 /// target device.
 // TODO: Rename to NativeAutomatorClient
 class NativeAutomator {
@@ -395,7 +395,12 @@ class NativeAutomator {
     );
   }
 
-  /// Taps on the [index]-th visible notification.
+  /// Searches for the [index]-th visible notification and taps on it.
+  ///
+  /// If the notification is not visible immediately, this method waits for the
+  /// notification to become visible for [timeout] duration. If [timeout] is not
+  /// specified, it utilizes the [NativeAutomatorConfig.findTimeout] duration
+  /// from the configuration.
   ///
   /// Notification shade has to be opened first with [openNotifications].
   ///
@@ -403,14 +408,27 @@ class NativeAutomator {
   ///
   ///  * [tapOnNotificationBySelector], which allows for more precise
   ///    specification of the notification to tap on
-  Future<void> tapOnNotificationByIndex(int index) async {
+  Future<void> tapOnNotificationByIndex(
+    int index, {
+    Duration? timeout,
+  }) async {
     await _wrapRequest(
       'tapOnNotificationByIndex',
-      () => _client.tapOnNotification(TapOnNotificationRequest(index: index)),
+      () => _client.tapOnNotification(
+        TapOnNotificationRequest(
+          index: index,
+          timeoutMillis: timeout?.inMilliseconds,
+        ),
+      ),
     );
   }
 
   /// Taps on the visible notification using [selector].
+  ///
+  /// If the notification is not visible immediately, this method waits for the
+  /// notification to become visible for [timeout] duration. If [timeout] is not
+  /// specified, it utilizes the [NativeAutomatorConfig.findTimeout] duration
+  /// from the configuration.
   ///
   /// Notification shade has to be opened first with [openNotifications].
   ///
@@ -419,11 +437,17 @@ class NativeAutomator {
   /// See also:
   ///
   /// * [tapOnNotificationByIndex], which is less flexible but also less verbose
-  Future<void> tapOnNotificationBySelector(Selector selector) async {
+  Future<void> tapOnNotificationBySelector(
+    Selector selector, {
+    Duration? timeout,
+  }) async {
     await _wrapRequest(
       'tapOnNotificationBySelector',
       () => _client.tapOnNotification(
-        TapOnNotificationRequest(selector: selector),
+        TapOnNotificationRequest(
+          selector: selector,
+          timeoutMillis: timeout?.inMilliseconds,
+        ),
       ),
     );
   }
@@ -490,13 +514,21 @@ class NativeAutomator {
 
   /// Taps on the native view specified by [selector].
   ///
+  /// It waits for the view to become visible for [timeout] duration. If
+  /// [timeout] is not specified, it utilizes the
+  /// [NativeAutomatorConfig.findTimeout] duration from the configuration.
   /// If the native view is not found, an exception is thrown.
-  Future<void> tap(Selector selector, {String? appId}) async {
+  Future<void> tap(
+    Selector selector, {
+    String? appId,
+    Duration? timeout,
+  }) async {
     await _wrapRequest('tap', () async {
       await _client.tap(
         TapRequest(
           selector: selector,
           appId: appId ?? resolvedAppId,
+          timeoutMillis: timeout?.inMilliseconds,
         ),
       );
     });
@@ -504,14 +536,22 @@ class NativeAutomator {
 
   /// Double taps on the native view specified by [selector].
   ///
+  /// It waits for the view to become visible for [timeout] duration. If
+  /// [timeout] is not specified, it utilizes the
+  /// [NativeAutomatorConfig.findTimeout] duration from the configuration.
   /// If the native view is not found, an exception is thrown.
-  Future<void> doubleTap(Selector selector, {String? appId}) async {
+  Future<void> doubleTap(
+    Selector selector, {
+    String? appId,
+    Duration? timeout,
+  }) async {
     await _wrapRequest(
       'doubleTap',
       () => _client.doubleTap(
         TapRequest(
           selector: selector,
           appId: appId ?? resolvedAppId,
+          timeoutMillis: timeout?.inMilliseconds,
         ),
       ),
     );
@@ -519,9 +559,10 @@ class NativeAutomator {
 
   /// Enters text to the native view specified by [selector].
   ///
-  /// If the text field isn't visible immediately, this method waits for the
-  /// view to become visible until [NativeAutomatorConfig.findTimeout] passes.
-  /// If the text field isn't found within the timeout, an exception is thrown.
+  /// If the text field isn't immediately visible, this method waits for the
+  /// view to become visible. It prioritizes the [timeout] duration provided
+  /// in the method call. If [timeout] is not specified, it utilizes the
+  /// [NativeAutomatorConfig.findTimeout] duration from the configuration.
   ///
   /// The native view specified by [selector] must be:
   ///  * EditText on Android
@@ -534,6 +575,7 @@ class NativeAutomator {
     required String text,
     String? appId,
     KeyboardBehavior? keyboardBehavior,
+    Duration? timeout,
   }) async {
     await _wrapRequest(
       'enterText',
@@ -544,6 +586,7 @@ class NativeAutomator {
           selector: selector,
           keyboardBehavior:
               (keyboardBehavior ?? _config.keyboardBehavior).toContractsEnum,
+          timeoutMillis: timeout?.inMilliseconds,
         ),
       ),
     );
@@ -552,9 +595,9 @@ class NativeAutomator {
   /// Enters text to the [index]-th visible text field.
   ///
   /// If the text field at [index] isn't visible immediately, this method waits
-  /// for the view to become visible until [NativeAutomatorConfig.findTimeout]
-  /// passes. If the text field isn't found within the timeout, an exception is
-  /// thrown.
+  /// for the view to become visible. It prioritizes the [timeout] duration
+  /// provided in the method call. If [timeout] is not specified, it utilizes
+  /// the [NativeAutomatorConfig.findTimeout] duration from the configuration.
   ///
   /// Native views considered to be texts fields are:
   ///  * EditText on Android
@@ -568,6 +611,7 @@ class NativeAutomator {
     required int index,
     String? appId,
     KeyboardBehavior? keyboardBehavior,
+    Duration? timeout,
   }) async {
     await _wrapRequest(
       'enterTextByIndex',
@@ -578,6 +622,7 @@ class NativeAutomator {
           index: index,
           keyboardBehavior:
               (keyboardBehavior ?? _config.keyboardBehavior).toContractsEnum,
+          timeoutMillis: timeout?.inMilliseconds,
         ),
       ),
     );
@@ -615,13 +660,21 @@ class NativeAutomator {
   }
 
   /// Waits until the native view specified by [selector] becomes visible.
-  Future<void> waitUntilVisible(Selector selector, {String? appId}) async {
+  /// It waits for the view to become visible for [timeout] duration. If
+  /// [timeout] is not specified, it utilizes the
+  /// [NativeAutomatorConfig.findTimeout].
+  Future<void> waitUntilVisible(
+    Selector selector, {
+    String? appId,
+    Duration? timeout,
+  }) async {
     await _wrapRequest(
       'waitUntilVisible',
       () => _client.waitUntilVisible(
         WaitUntilVisibleRequest(
           selector: selector,
           appId: appId ?? resolvedAppId,
+          timeoutMillis: timeout?.inMilliseconds,
         ),
       ),
     );

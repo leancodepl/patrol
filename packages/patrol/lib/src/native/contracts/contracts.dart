@@ -363,6 +363,7 @@ class TapRequest with EquatableMixin {
   TapRequest({
     required this.selector,
     required this.appId,
+    this.timeoutMillis,
   });
 
   factory TapRequest.fromJson(Map<String, dynamic> json) =>
@@ -370,6 +371,7 @@ class TapRequest with EquatableMixin {
 
   final Selector selector;
   final String appId;
+  final int? timeoutMillis;
 
   Map<String, dynamic> toJson() => _$TapRequestToJson(this);
 
@@ -377,6 +379,7 @@ class TapRequest with EquatableMixin {
   List<Object?> get props => [
         selector,
         appId,
+        timeoutMillis,
       ];
 }
 
@@ -388,6 +391,7 @@ class EnterTextRequest with EquatableMixin {
     this.index,
     this.selector,
     required this.keyboardBehavior,
+    this.timeoutMillis,
   });
 
   factory EnterTextRequest.fromJson(Map<String, dynamic> json) =>
@@ -398,6 +402,7 @@ class EnterTextRequest with EquatableMixin {
   final int? index;
   final Selector? selector;
   final KeyboardBehavior keyboardBehavior;
+  final int? timeoutMillis;
 
   Map<String, dynamic> toJson() => _$EnterTextRequestToJson(this);
 
@@ -408,6 +413,7 @@ class EnterTextRequest with EquatableMixin {
         index,
         selector,
         keyboardBehavior,
+        timeoutMillis,
       ];
 }
 
@@ -450,6 +456,7 @@ class WaitUntilVisibleRequest with EquatableMixin {
   WaitUntilVisibleRequest({
     required this.selector,
     required this.appId,
+    this.timeoutMillis,
   });
 
   factory WaitUntilVisibleRequest.fromJson(Map<String, dynamic> json) =>
@@ -457,6 +464,7 @@ class WaitUntilVisibleRequest with EquatableMixin {
 
   final Selector selector;
   final String appId;
+  final int? timeoutMillis;
 
   Map<String, dynamic> toJson() => _$WaitUntilVisibleRequestToJson(this);
 
@@ -464,6 +472,7 @@ class WaitUntilVisibleRequest with EquatableMixin {
   List<Object?> get props => [
         selector,
         appId,
+        timeoutMillis,
       ];
 }
 
@@ -551,6 +560,7 @@ class TapOnNotificationRequest with EquatableMixin {
   TapOnNotificationRequest({
     this.index,
     this.selector,
+    this.timeoutMillis,
   });
 
   factory TapOnNotificationRequest.fromJson(Map<String, dynamic> json) =>
@@ -558,6 +568,7 @@ class TapOnNotificationRequest with EquatableMixin {
 
   final int? index;
   final Selector? selector;
+  final int? timeoutMillis;
 
   Map<String, dynamic> toJson() => _$TapOnNotificationRequestToJson(this);
 
@@ -565,6 +576,7 @@ class TapOnNotificationRequest with EquatableMixin {
   List<Object?> get props => [
         index,
         selector,
+        timeoutMillis,
       ];
 }
 

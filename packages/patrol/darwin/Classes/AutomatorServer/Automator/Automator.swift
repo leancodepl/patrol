@@ -102,22 +102,36 @@ extension Selector {
     func openControlCenter() throws
 
     // MARK: General UI interaction
-    func tap(on selector: Selector, inApp bundleId: String) throws
-    func doubleTap(on selector: Selector, inApp bundleId: String) throws
+    func tap(
+      on selector: Selector,
+      inApp bundleId: String,
+      withTimeout timeout: TimeInterval?
+    ) throws
+    func doubleTap(
+      on selector: Selector,
+      inApp bundleId: String,
+      withTimeout timeout: TimeInterval?
+    ) throws
     func enterText(
       _ data: String,
       on selector: Selector,
       inApp bundleId: String,
-      dismissKeyboard: Bool
+      dismissKeyboard: Bool,
+      withTimeout timeout: TimeInterval?
     ) throws
     func enterText(
       _ data: String,
       byIndex index: Int,
       inApp bundleId: String,
-      dismissKeyboard: Bool
+      dismissKeyboard: Bool,
+      withTimeout timeout: TimeInterval?
     ) throws
     func swipe(from start: CGVector, to end: CGVector, inApp bundleId: String) throws
-    func waitUntilVisible(on selector: Selector, inApp bundleId: String) throws
+    func waitUntilVisible(
+      on selector: Selector,
+      inApp bundleId: String,
+      withTimeout timeout: TimeInterval?
+    ) throws
 
     // MARK: Services
     func enableDarkMode(_ bundleId: String) throws
@@ -141,8 +155,8 @@ extension Selector {
     func closeNotifications() throws
     func closeHeadsUpNotification() throws
     func getNotifications() throws -> [Notification]
-    func tapOnNotification(byIndex index: Int) throws
-    func tapOnNotification(bySubstring substring: String) throws
+    func tapOnNotification(byIndex index: Int, withTimeout timeout: TimeInterval?) throws
+    func tapOnNotification(bySubstring substring: String, withTimeout timeout: TimeInterval?) throws
 
     // MARK: Permissions
     func isPermissionDialogVisible(timeout: TimeInterval) throws -> Bool

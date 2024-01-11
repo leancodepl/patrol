@@ -56,13 +56,21 @@
       }
     }
 
-    func tap(on selector: Selector, inApp bundleId: String) throws {
+    func tap(
+      on selector: Selector, 
+      inApp bundleId: String,
+      withTimeout timeout: TimeInterval?
+      ) throws {
       try runAction("tap") {
         throw PatrolError.methodNotImplemented("tap")
       }
     }
 
-    func doubleTap(on selector: Selector, inApp bundleId: String) throws {
+    func doubleTap(
+      on selector: Selector, 
+      inApp bundleId: String,
+      withTimeout timeout: TimeInterval?
+      ) throws {
       try runAction("doubleTap") {
         throw PatrolError.methodNotImplemented("doubleTap")
       }
@@ -72,7 +80,8 @@
       _ data: String,
       on selector: Selector,
       inApp bundleId: String,
-      dismissKeyboard: Bool
+      dismissKeyboard: Bool,
+      withTimeout timeout: TimeInterval?
     ) throws {
       try runAction("enterText") {
         throw PatrolError.methodNotImplemented("enterText")
@@ -83,7 +92,8 @@
       _ data: String,
       byIndex index: Int,
       inApp bundleId: String,
-      dismissKeyboard: Bool
+      dismissKeyboard: Bool,
+      withTimeout timeout: TimeInterval?
     ) throws {
       try runAction("enterText") {
         throw PatrolError.methodNotImplemented("enterText")
@@ -96,7 +106,11 @@
       }
     }
 
-    func waitUntilVisible(on selector: Selector, inApp bundleId: String) throws {
+    func waitUntilVisible(
+      on selector: Selector, 
+      inApp bundleId: String,
+      withTimeout timeout: TimeInterval?
+    ) throws {
       try runAction("waitUntilVisible") {
         throw PatrolError.methodNotImplemented("waitUntilVisible")
       }
@@ -204,13 +218,14 @@
       }
     }
 
-    func tapOnNotification(byIndex index: Int) throws {
+    func tapOnNotification(byIndex index: Int, withTimeout timeout: TimeInterval?) throws {
       try runAction("tapOnNotification") {
         throw PatrolError.methodNotImplemented("tapOnNotification")
       }
     }
 
-    func tapOnNotification(bySubstring substring: String) throws {
+    func tapOnNotification(bySubstring substring: String, withTimeout timeout: TimeInterval?) throws
+    {
       try runAction("tapOnNotification") {
         throw PatrolError.methodNotImplemented("tapOnNotification")
       }

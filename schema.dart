@@ -96,6 +96,7 @@ class GetNativeViewsResponse {
 class TapRequest {
   late Selector selector;
   late String appId;
+  int? timeoutMillis;
 }
 
 enum KeyboardBehavior {
@@ -109,6 +110,7 @@ class EnterTextRequest {
   int? index;
   Selector? selector;
   late KeyboardBehavior keyboardBehavior;
+  int? timeoutMillis;
 }
 
 class SwipeRequest {
@@ -123,6 +125,7 @@ class SwipeRequest {
 class WaitUntilVisibleRequest {
   late Selector selector;
   late String appId;
+  int? timeoutMillis;
 }
 
 class DarkModeRequest {
@@ -145,6 +148,7 @@ class GetNotificationsRequest {}
 class TapOnNotificationRequest {
   int? index;
   Selector? selector;
+  int? timeoutMillis;
 }
 
 class PermissionDialogVisibleResponse {

@@ -1,3 +1,7 @@
+## Unreleased
+
+- Add optional timeout parameter to native methods (#2042).
+
 ## 3.4.0
 
 - Allow for changing the port when running on iOS (#2027).

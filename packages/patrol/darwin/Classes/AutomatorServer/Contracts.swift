@@ -112,6 +112,7 @@ struct GetNativeViewsResponse: Codable {
 struct TapRequest: Codable {
   var selector: Selector
   var appId: String
+  var timeoutMillis: Int?
 }
 
 struct EnterTextRequest: Codable {
@@ -120,6 +121,7 @@ struct EnterTextRequest: Codable {
   var index: Int?
   var selector: Selector?
   var keyboardBehavior: KeyboardBehavior
+  var timeoutMillis: Int?
 }
 
 struct SwipeRequest: Codable {
@@ -134,6 +136,7 @@ struct SwipeRequest: Codable {
 struct WaitUntilVisibleRequest: Codable {
   var selector: Selector
   var appId: String
+  var timeoutMillis: Int?
 }
 
 struct DarkModeRequest: Codable {
@@ -158,6 +161,7 @@ struct GetNotificationsRequest: Codable {
 struct TapOnNotificationRequest: Codable {
   var index: Int?
   var selector: Selector?
+  var timeoutMillis: Int?
 }
 
 struct PermissionDialogVisibleResponse: Codable {
