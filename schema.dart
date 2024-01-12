@@ -98,6 +98,12 @@ class TapRequest {
   late String appId;
 }
 
+class TapAtRequest {
+  late double x;
+  late double y;
+  late String appId;
+}
+
 enum KeyboardBehavior {
   showAndDismiss,
   alternative,
@@ -191,6 +197,7 @@ abstract class NativeAutomator<IOSServer, AndroidServer, DartClient> {
   GetNativeViewsResponse getNativeViews(GetNativeViewsRequest request);
   void tap(TapRequest request);
   void doubleTap(TapRequest request);
+  void tapAt(TapAtRequest request);
   void enterText(EnterTextRequest request);
   void swipe(SwipeRequest request);
   void waitUntilVisible(WaitUntilVisibleRequest request);

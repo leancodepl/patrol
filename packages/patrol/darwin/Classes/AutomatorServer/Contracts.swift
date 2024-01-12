@@ -113,9 +113,9 @@ struct TapRequest: Codable {
 }
 
 struct TapAtRequest: Codable {
-    var x: Double
-    var y: Double
-    var appId: String
+  var x: Double
+  var y: Double
+  var appId: String
 }
 
 struct EnterTextRequest: Codable {

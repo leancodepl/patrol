@@ -113,7 +113,7 @@ extension NativeAutomatorServer {
         try doubleTap(request: requestArg)
         return HTTPResponse(.ok)
     }
-    
+
     private func tapAtHandler(request: HTTPRequest) throws -> HTTPResponse {
         let requestArg = try JSONDecoder().decode(TapAtRequest.self, from: request.body)
         try tapAt(request: requestArg)
