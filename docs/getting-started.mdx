@@ -492,6 +492,17 @@ within the patrol test.">
   of a wrapper function.
 </Accordion>
 
+<Accordion title="Testing fails to start when using riverpod">
+  It seems atm riverpod and pumpAndSettle are not working, as a nasty quick hack you can try something like this:
+     ```
+     for (int i = 0; i < 5; i++) {
+       // because pumpAndSettle doesn't work with riverpod
+       await tester.pump(Duration(seconds: 1));
+     }
+     ```
+  [Learn more](https://stackoverflow.com/questions/67186472/error-pumpandsettle-timed-out-maybe-due-to-riverpod)
+</Accordion>
+
 
 #### Android
 
