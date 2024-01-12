@@ -524,6 +524,10 @@ class NativeAutomator {
     assert(location.dx >= 0 && location.dx <= 1);
     assert(location.dy >= 0 && location.dy <= 1);
 
+    // Needed for an edge case observed on Android where if a newly opened app
+    // updates its layout right after being launched, tapping without delay fails
+    await Future<void>.delayed(const Duration(milliseconds: 5));
+
     await _wrapRequest('tapAt', () async {
       await _client.tapAt(
         TapAtRequest(

@@ -12,12 +12,11 @@ void main() {
     throw UnsupportedError('Unsupported platform');
   }
 
-  patrol('taps at the middle of the screen in the Settings app', ($) async {
+  patrol('taps at the lower middle of the screen in the Settings app',
+      ($) async {
     await createApp($);
 
     await $.native.openApp(appId: appId);
-    // Only needed on Android, no wait needed on iOS
-    await Future<void>.delayed(const Duration(milliseconds: 50));
     await $.native.tapAt(
       Offset(0.5, 0.8),
       appId: appId,
