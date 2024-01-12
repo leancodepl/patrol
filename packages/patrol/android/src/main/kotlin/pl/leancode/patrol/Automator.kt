@@ -156,10 +156,10 @@ class Automator private constructor() {
         return getWindowTrees(uiDevice, uiAutomation)
     }
 
-    fun tap(uiSelector: UiSelector, bySelector: BySelector, index: Int) {
+    fun tap(uiSelector: UiSelector, bySelector: BySelector, index: Int, timeout: Long? = null) {
         Logger.d("tap(): $uiSelector, $bySelector")
 
-        if (waitForView(bySelector, index) == null) {
+        if (waitForView(bySelector, index, timeout) == null) {
             throw UiObjectNotFoundException("$uiSelector")
         }
 
@@ -169,12 +169,12 @@ class Automator private constructor() {
         delay()
     }
 
-    fun doubleTap(uiSelector: UiSelector, bySelector: BySelector, index: Int) {
+    fun doubleTap(uiSelector: UiSelector, bySelector: BySelector, index: Int, timeout: Long? = null) {
         Logger.d("doubleTap(): $uiSelector, $bySelector")
 
         val uiObject = uiDevice.findObject(uiSelector)
 
-        if (waitForView(bySelector, index) == null) {
+        if (waitForView(bySelector, index, timeout) == null) {
             throw UiObjectNotFoundException("$uiSelector")
         }
 
@@ -212,11 +212,36 @@ class Automator private constructor() {
         delay()
     }
 
-    fun enterText(text: String, index: Int, keyboardBehavior: KeyboardBehavior) {
+    fun tapAt(x: Float, y: Float) {
+        Logger.d("tapAt(x: $x, y: $y)")
+
+        if (x !in 0f..1f) {
+            throw IllegalArgumentException("x represents a percentage and must be between 0 and 1")
+        }
+
+        if (y !in 0f..1f) {
+            throw IllegalArgumentException("y represents a percentage and must be between 0 and 1")
+        }
+
+        val displayX = (uiDevice.displayWidth * x).roundToInt()
+        val displayY = (uiDevice.displayHeight * y).roundToInt()
+
+        Logger.d("Clicking at display location (pixels) [$displayX, $displayY]")
+
+        val successful = uiDevice.click(displayX, displayY)
+
+        if (!successful) {
+            throw IllegalArgumentException("Clicking at location [$displayX, $displayY] failed")
+        }
+
+        delay()
+    }
+
+    fun enterText(text: String, index: Int, keyboardBehavior: KeyboardBehavior, timeout: Long? = null) {
         Logger.d("enterText(text: $text, index: $index)")
 
         val selector = By.clazz(EditText::class.java)
-        if (waitForView(selector, index) == null) {
+        if (waitForView(selector, index, timeout) == null) {
             throw UiObjectNotFoundException("$selector")
         }
 
@@ -241,11 +266,12 @@ class Automator private constructor() {
         uiSelector: UiSelector,
         bySelector: BySelector,
         index: Int,
-        keyboardBehavior: KeyboardBehavior
+        keyboardBehavior: KeyboardBehavior,
+        timeout: Long? = null
     ) {
         Logger.d("enterText($text): $uiSelector, $bySelector")
 
-        if (waitForView(bySelector, index) == null) {
+        if (waitForView(bySelector, index, timeout) == null) {
             throw UiObjectNotFoundException("$uiSelector")
         }
 
@@ -295,10 +321,10 @@ class Automator private constructor() {
         delay()
     }
 
-    fun waitUntilVisible(uiSelector: UiSelector, bySelector: BySelector, index: Int) {
+    fun waitUntilVisible(uiSelector: UiSelector, bySelector: BySelector, index: Int, timeout: Long? = null) {
         Logger.d("waitUntilVisible(): $uiSelector, $bySelector")
 
-        if (waitForView(bySelector, index) == null) {
+        if (waitForView(bySelector, index, timeout) == null) {
             throw UiObjectNotFoundException("$uiSelector")
         }
     }
@@ -381,7 +407,7 @@ class Automator private constructor() {
         return notifications
     }
 
-    fun tapOnNotification(index: Int) {
+    fun tapOnNotification(index: Int, timeout: Long? = null) {
         Logger.d("tapOnNotification($index)")
 
         try {
@@ -389,6 +415,10 @@ class Automator private constructor() {
                 resourceId = "android:id/status_bar_latest_event_content",
                 instance = index.toLong()
             )
+            val selector = query.toBySelector()
+            if (waitForView(selector, index, timeout) == null) {
+                throw UiObjectNotFoundException("$selector")
+            }
             val obj = uiDevice.findObject(query.toUiSelector())
             obj.click()
         } catch (err: UiObjectNotFoundException) {
@@ -398,9 +428,12 @@ class Automator private constructor() {
         delay()
     }
 
-    fun tapOnNotification(selector: UiSelector) {
+    fun tapOnNotification(selector: UiSelector, bySelector: BySelector, timeout: Long? = null) {
         Logger.d("tapOnNotification()")
 
+        if (waitForView(bySelector, 0, timeout) == null) {
+            throw UiObjectNotFoundException("$bySelector")
+        }
         val obj = uiDevice.findObject(selector)
         obj.click()
 
@@ -500,9 +533,9 @@ class Automator private constructor() {
     /**
      * Returns true if [bySelector] found a view at [index] within [timeoutMillis], false otherwise.
      */
-    private fun waitForView(bySelector: BySelector, index: Int): UiObject2? {
+    private fun waitForView(bySelector: BySelector, index: Int, timeout: Long? = null): UiObject2? {
         val startTime = System.currentTimeMillis()
-        while (System.currentTimeMillis() - startTime < timeoutMillis) {
+        while (System.currentTimeMillis() - startTime < (timeout ?: timeoutMillis)) {
             val objects = uiDevice.findObjects(bySelector)
             if (objects.size > index && objects[index] != null) {
                 return objects[index]

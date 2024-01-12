@@ -1,11 +1,17 @@
 ## Unreleased
 
+- Add optional timeout parameter to native methods (#2042).
+
+## 3.4.0
+
 - Allow for changing the port when running on iOS (#2027).
 
   To do so, pass `test-server-port` (default 8081) and `app-server-port`
   (default 8082) to Patrol CLI commands (e.g `patrol test`)
 
-This version requires version UNRELEASED of `patrol_cli` package.
+- Fix `patrolSetUp()` and `patrolTearDown()` not working in `patrol develop` (#2023).
+
+This version requires version 2.6.0 of `patrol_cli` package.
 
 ## 3.3.0
 

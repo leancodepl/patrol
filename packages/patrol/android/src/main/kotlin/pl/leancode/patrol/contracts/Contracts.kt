@@ -174,8 +174,13 @@ class Contracts {
 
   data class TapRequest (
     val selector: Selector,
-    val appId: String
-  )
+    val appId: String,
+    val timeoutMillis: Long? = null
+  ){
+    fun hasTimeoutMillis(): Boolean {
+      return timeoutMillis != null
+    }
+  }
 
   data class TapAtRequest (
     val x: Double,
@@ -188,13 +193,17 @@ class Contracts {
     val appId: String,
     val index: Long? = null,
     val selector: Selector? = null,
-    val keyboardBehavior: KeyboardBehavior
+    val keyboardBehavior: KeyboardBehavior,
+    val timeoutMillis: Long? = null
   ){
     fun hasIndex(): Boolean {
       return index != null
     }
     fun hasSelector(): Boolean {
       return selector != null
+    }
+    fun hasTimeoutMillis(): Boolean {
+      return timeoutMillis != null
     }
   }
 
@@ -209,8 +218,13 @@ class Contracts {
 
   data class WaitUntilVisibleRequest (
     val selector: Selector,
-    val appId: String
-  )
+    val appId: String,
+    val timeoutMillis: Long? = null
+  ){
+    fun hasTimeoutMillis(): Boolean {
+      return timeoutMillis != null
+    }
+  }
 
   data class DarkModeRequest (
     val appId: String
@@ -240,13 +254,17 @@ class Contracts {
 
   data class TapOnNotificationRequest (
     val index: Long? = null,
-    val selector: Selector? = null
+    val selector: Selector? = null,
+    val timeoutMillis: Long? = null
   ){
     fun hasIndex(): Boolean {
       return index != null
     }
     fun hasSelector(): Boolean {
       return selector != null
+    }
+    fun hasTimeoutMillis(): Boolean {
+      return timeoutMillis != null
     }
   }
 
