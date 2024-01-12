@@ -203,7 +203,7 @@ class Automator private constructor() {
 
         Logger.d("Clicking at display location (pixels) [$displayX, $displayY]")
 
-        val successful = uiDevice.click(displayX, displayY);
+        val successful = uiDevice.click(displayX, displayY)
 
         if (!successful) {
             throw IllegalArgumentException("Clicking at location [$displayX, $displayY] failed")
