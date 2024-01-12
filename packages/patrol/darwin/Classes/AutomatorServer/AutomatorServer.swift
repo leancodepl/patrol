@@ -97,15 +97,15 @@
         )
       }
     }
-      
-      func tapAt(request: TapAtRequest) throws {
-        return try runCatching {
-          try automator.tapAt(
-            coordinate: CGVector(dx: request.x, dy: request.y),
-            inApp: request.appId
-          )
-        }
+
+    func tapAt(request: TapAtRequest) throws {
+      return try runCatching {
+        try automator.tapAt(
+          coordinate: CGVector(dx: request.x, dy: request.y),
+          inApp: request.appId
+        )
       }
+    }
 
     func enterText(request: EnterTextRequest) throws {
       return try runCatching {

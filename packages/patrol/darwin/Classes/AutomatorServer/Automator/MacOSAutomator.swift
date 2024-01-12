@@ -72,12 +72,12 @@
         throw PatrolError.methodNotImplemented("doubleTap")
       }
     }
-      
-      func tapAt(coordinate vector: CGVector, inApp bundleId: String) throws {
-          try runAction("tapAt") {
-              throw PatrolError.methodNotImplemented("tapAt")
-          }
+
+    func tapAt(coordinate vector: CGVector, inApp bundleId: String) throws {
+      try runAction("tapAt") {
+        throw PatrolError.methodNotImplemented("tapAt")
       }
+    }
 
     func enterText(
       _ data: String,
