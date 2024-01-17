@@ -135,7 +135,7 @@ class BuildIOSCommand extends PatrolCommand {
       configuration: flutterOpts.buildMode.createConfiguration(flavor),
       simulator: boolArg('simulator'),
       appServerPort: super.appServerPort,
-      testServerPort: super.appServerPort,
+      testServerPort: super.testServerPort,
     );
 
     try {
