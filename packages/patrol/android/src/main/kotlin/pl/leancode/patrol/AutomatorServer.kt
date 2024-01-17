@@ -1,5 +1,6 @@
 package pl.leancode.patrol
 
+import pl.leancode.patrol.contracts.Contracts
 import pl.leancode.patrol.contracts.Contracts.ConfigureRequest
 import pl.leancode.patrol.contracts.Contracts.DarkModeRequest
 import pl.leancode.patrol.contracts.Contracts.EnterTextRequest
@@ -141,6 +142,13 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
             bySelector = request.selector.toBySelector(),
             index = request.selector.instance?.toInt() ?: 0,
             timeout = request.timeoutMillis
+        )
+    }
+
+    override fun tapAt(request: Contracts.TapAtRequest) {
+        automation.tapAt(
+            x = request.x.toFloat(),
+            y = request.y.toFloat()
         )
     }
 

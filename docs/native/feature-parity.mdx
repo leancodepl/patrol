@@ -10,37 +10,38 @@ implemented. We hope that it will help you evaluate Patrol.
 We strive for high feature parity across iOS and Android, but in some cases it's
 impossible to reach 100%. macOs support is still in alpha, so it has no native features yet.
 
-
 ### Table
 
 | **Feature**                 | **Android**    | **iOS**       | **macOS (alpha)** |
 | --------------------------- | -------------- | ------------- | ----------------- |
-| [Press home]                | ✅             | ✅            | ❌                 |
-| [Press back]                | ✅             | ❌ (no API)   | ❌                 |
-| [Open any app]              | ✅             | ✅            | ✅                 |
-| [Open notifications]        | ✅             | ✅            | ❌                 |
-| [Tap on notification]       | ✅             | ✅            | ❌                 |
-| [Open quick settings]       | ✅             | ✅            | ❌                 |
-| [Toggle dark mode]          | ✅             | ✅            | ❌                 |
-| [Toggle airplane mode]      | ✅ see [#1359] | ✅            | ❌                 |
-| [Toggle cellular]           | ✅             | ✅            | ❌                 |
-| [Toggle Wi-Fi]              | ✅             | ✅            | ❌                 |
-| [Toggle Bluetooth]          | ✅ see [#282]  | ✅            | ❌                 |
-| Toggle location             | ✅ see [#283]  | ✅ see [#326] | ❌                 |
-| [Tap]                       | ✅             | ✅            | ❌                 |
-| [Double tap]                | ✅             | ✅            | ❌                 |
-| [Enter text]                | ✅             | ✅            | ❌                 |
-| [Swipe]                     | ✅             | ✅            | ❌                 |
-| [Handle permission dialogs] | ✅             | ✅            | ❌                 |
-| Interact with WebView       | ⚠️ see [#244]   | ✅            | ❌                 |
+| [Press home]                | ✅             | ✅            | ❌                |
+| [Press back]                | ✅             | ❌ (no API)   | ❌                |
+| [Open any app]              | ✅             | ✅            | ✅                |
+| [Open notifications]        | ✅             | ✅            | ❌                |
+| [Tap on notification]       | ✅             | ✅            | ❌                |
+| [Open quick settings]       | ✅             | ✅            | ❌                |
+| [Toggle dark mode]          | ✅             | ✅            | ❌                |
+| [Toggle airplane mode]      | ✅ see [#1359] | ✅            | ❌                |
+| [Toggle cellular]           | ✅             | ✅            | ❌                |
+| [Toggle Wi-Fi]              | ✅             | ✅            | ❌                |
+| [Toggle Bluetooth]          | ✅ see [#282]  | ✅            | ❌                |
+| Toggle location             | ✅ see [#283]  | ✅ see [#326] | ❌                |
+| [Tap]                       | ✅             | ✅            | ❌                |
+| [Double tap]                | ✅             | ✅            | ❌                |
+| [Tap at coordinate]         | ✅             | ✅            | ❌                |
+| [Enter text]                | ✅             | ✅            | ❌                |
+| [Swipe]                     | ✅             | ✅            | ❌                |
+| [Handle permission dialogs] | ✅             | ✅            | ❌                |
+| Interact with WebView       | ⚠️ see [#244]  | ✅            | ❌                |
 
 ### Platfom support
 
 Patrol works on:
- - Android 5.0 (API 21) and newer,
- - iOS 11 and newer,
- - macOS 10.14 and newer.
- 
+
+- Android 5.0 (API 21) and newer,
+- iOS 11 and newer,
+- macOS 10.14 and newer.
+
 On mobile platforms it works on both physical and virtual devices.
 
 [#244]: https://github.com/leancodepl/patrol/issues/244
@@ -61,6 +62,7 @@ On mobile platforms it works on both physical and virtual devices.
 [toggle bluetooth]: https://pub.dev/documentation/patrol/latest/patrol/NativeAutomator/enableBluetooth.html
 [tap]: https://pub.dev/documentation/patrol/latest/patrol/NativeAutomator/tap.html
 [double tap]: https://pub.dev/documentation/patrol/latest/patrol/NativeAutomator/doubleTap.html
+[tap at coordinate]: https://pub.dev/documentation/patrol/latest/patrol/NativeAutomator/tapAt.html
 [enter text]: https://pub.dev/documentation/patrol/latest/patrol/NativeAutomator/enterText.html
-[enter text]: https://pub.dev/documentation/patrol/latest/patrol/NativeAutomator/swipe.html
+[swipe]: https://pub.dev/documentation/patrol/latest/patrol/NativeAutomator/swipe.html
 [handle permission dialogs]: https://pub.dev/documentation/patrol/latest/patrol/NativeAutomator/grantPermissionWhenInUse.html

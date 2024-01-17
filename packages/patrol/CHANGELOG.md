@@ -1,6 +1,7 @@
 ## Unreleased
 
 - Add optional timeout parameter to native methods (#2042).
+- Add `$.native.tapAt()` (#2053)
 
 ## 3.4.0
 

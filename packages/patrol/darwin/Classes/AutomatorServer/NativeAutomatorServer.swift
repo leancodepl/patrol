@@ -18,6 +18,7 @@ protocol NativeAutomatorServer {
     func getNativeViews(request: GetNativeViewsRequest) throws -> GetNativeViewsResponse
     func tap(request: TapRequest) throws
     func doubleTap(request: TapRequest) throws
+    func tapAt(request: TapAtRequest) throws
     func enterText(request: EnterTextRequest) throws
     func swipe(request: SwipeRequest) throws
     func waitUntilVisible(request: WaitUntilVisibleRequest) throws
@@ -110,6 +111,12 @@ extension NativeAutomatorServer {
     private func doubleTapHandler(request: HTTPRequest) throws -> HTTPResponse {
         let requestArg = try JSONDecoder().decode(TapRequest.self, from: request.body)
         try doubleTap(request: requestArg)
+        return HTTPResponse(.ok)
+    }
+
+    private func tapAtHandler(request: HTTPRequest) throws -> HTTPResponse {
+        let requestArg = try JSONDecoder().decode(TapAtRequest.self, from: request.body)
+        try tapAt(request: requestArg)
         return HTTPResponse(.ok)
     }
 
@@ -302,6 +309,11 @@ extension NativeAutomatorServer {
             request in handleRequest(
                 request: request,
                 handler: doubleTapHandler)
+        }
+        server.route(.POST, "tapAt") {
+            request in handleRequest(
+                request: request,
+                handler: tapAtHandler)
         }
         server.route(.POST, "enterText") {
             request in handleRequest(

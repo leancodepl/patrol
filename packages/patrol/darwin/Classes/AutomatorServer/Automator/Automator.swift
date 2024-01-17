@@ -23,6 +23,7 @@
       inApp bundleId: String,
       withTimeout timeout: TimeInterval?
     ) throws
+    func tapAt(coordinate vector: CGVector, inApp bundleId: String) throws
     func enterText(
       _ data: String,
       byText text: String,
