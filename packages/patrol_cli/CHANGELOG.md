@@ -1,3 +1,7 @@
+## 2.6.1
+
+- Fix passing port on iOS when `patrol build` is executed (#2061). 
+
 ## 2.6.0
 
 - Allow for changing the port when running on iOS (#2027).
