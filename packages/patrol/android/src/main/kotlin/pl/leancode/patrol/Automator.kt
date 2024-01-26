@@ -250,7 +250,13 @@ class Automator private constructor() {
             throw UiObjectNotFoundException("$uiSelector")
         }
 
-        val uiObject = uiDevice.findObject(uiSelector).getFromParent(UiSelector().className(EditText::class.java))
+        var uiObject = uiDevice.findObject(uiSelector)
+
+        val uiObjectClassname = uiObject.getClassName()
+
+        if(uiObjectClassname != EditText::class.java.name) {
+            uiObject = uiObject.getChild(UiSelector().className(EditText::class.java))
+        }
 
         if (keyboardBehavior == KeyboardBehavior.showAndDismiss) {
             uiObject.click()
