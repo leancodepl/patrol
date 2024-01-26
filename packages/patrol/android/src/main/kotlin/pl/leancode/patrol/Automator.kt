@@ -254,7 +254,7 @@ class Automator private constructor() {
 
         val uiObjectClassname = uiObject.getClassName()
 
-        if(uiObjectClassname != EditText::class.java.name) {
+        if (uiObjectClassname != EditText::class.java.name) {
             uiObject = uiObject.getChild(UiSelector().className(EditText::class.java))
         }
 
