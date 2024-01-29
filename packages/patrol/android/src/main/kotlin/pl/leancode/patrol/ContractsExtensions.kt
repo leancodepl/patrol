@@ -29,35 +29,35 @@ fun Selector.toUiSelector(): UiSelector {
     var selector = UiSelector()
 
     if (hasText()) {
-        selector = selector.text(text)
+        selector = selector.text(text!!)
     }
 
     if (hasTextStartsWith()) {
-        selector = selector.textStartsWith(textStartsWith)
+        selector = selector.textStartsWith(textStartsWith!!)
     }
 
     if (hasTextContains()) {
-        selector = selector.textContains(textContains)
+        selector = selector.textContains(textContains!!)
     }
 
     if (hasClassName()) {
-        selector = selector.className(className)
+        selector = selector.className(className!!)
     }
 
     if (hasContentDescription()) {
-        selector = selector.description(contentDescription)
+        selector = selector.description(contentDescription!!)
     }
 
     if (hasContentDescriptionStartsWith()) {
-        selector = selector.descriptionStartsWith(contentDescriptionStartsWith)
+        selector = selector.descriptionStartsWith(contentDescriptionStartsWith!!)
     }
 
     if (hasContentDescriptionContains()) {
-        selector = selector.descriptionContains(contentDescriptionContains)
+        selector = selector.descriptionContains(contentDescriptionContains!!)
     }
 
     if (hasResourceId()) {
-        selector = selector.resourceId(resourceId)
+        selector = selector.resourceId(resourceId!!)
     }
 
     if (hasInstance()) {
@@ -73,7 +73,7 @@ fun Selector.toUiSelector(): UiSelector {
     }
 
     if (hasPkg()) {
-        selector = selector.packageName(pkg)
+        selector = selector.packageName(pkg!!)
     }
 
     return selector
@@ -99,28 +99,28 @@ fun Selector.toBySelector(): BySelector {
     var bySelector =
         if (hasText()) {
             matchedText = true
-            By.text(text)
+            By.text(text!!)
         } else if (hasTextStartsWith()) {
             matchedTextStartsWith = true
-            By.textStartsWith(textStartsWith)
+            By.textStartsWith(textStartsWith!!)
         } else if (hasTextContains()) {
             matchedTextContains = true
-            By.textContains(textContains)
+            By.textContains(textContains!!)
         } else if (hasClassName()) {
             matchedClassName = true
-            By.clazz(className)
+            By.clazz(className!!)
         } else if (hasContentDescription()) {
             matchedContentDescription = true
-            By.desc(contentDescription)
+            By.desc(contentDescription!!)
         } else if (hasContentDescriptionStartsWith()) {
             matchedContentDescriptionStartsWith = true
-            By.descStartsWith(contentDescriptionStartsWith)
+            By.descStartsWith(contentDescriptionStartsWith!!)
         } else if (hasContentDescriptionContains()) {
             matchedContentDescriptionContains = true
-            By.descContains(contentDescriptionContains)
+            By.descContains(contentDescriptionContains!!)
         } else if (hasResourceId()) {
             matchedResourceId = true
-            By.res(resourceId)
+            By.res(resourceId!!)
         } else if (hasInstance()) {
             throw IllegalArgumentException("instance() argument is not supported for BySelector")
         } else if (hasEnabled()) {
@@ -131,41 +131,41 @@ fun Selector.toBySelector(): BySelector {
             By.focused(focused!!)
         } else if (hasPkg()) {
             matchedPkg = true
-            By.pkg(pkg)
+            By.pkg(pkg!!)
         } else {
             throw IllegalArgumentException("SelectorQuery is empty")
         }
 
     if (!matchedText && hasText()) {
-        bySelector = By.copy(bySelector).text(text)
+        bySelector = By.copy(bySelector).text(text!!)
     }
 
     if (!matchedTextStartsWith && hasTextStartsWith()) {
-        bySelector = By.copy(bySelector).textStartsWith(textStartsWith)
+        bySelector = By.copy(bySelector).textStartsWith(textStartsWith!!)
     }
 
     if (!matchedTextContains && hasTextContains()) {
-        bySelector = By.copy(bySelector).textContains(textContains)
+        bySelector = By.copy(bySelector).textContains(textContains!!)
     }
 
     if (!matchedClassName && hasClassName()) {
-        bySelector = By.copy(bySelector).clazz(className)
+        bySelector = By.copy(bySelector).clazz(className!!)
     }
 
     if (!matchedContentDescription && hasContentDescription()) {
-        bySelector = By.copy(bySelector).desc(contentDescription)
+        bySelector = By.copy(bySelector).desc(contentDescription!!)
     }
 
     if (!matchedContentDescriptionStartsWith && hasContentDescriptionStartsWith()) {
-        bySelector = By.copy(bySelector).descStartsWith(contentDescriptionStartsWith)
+        bySelector = By.copy(bySelector).descStartsWith(contentDescriptionStartsWith!!)
     }
 
     if (!matchedContentDescriptionContains && hasContentDescriptionContains()) {
-        bySelector = By.copy(bySelector).descContains(contentDescriptionContains)
+        bySelector = By.copy(bySelector).descContains(contentDescriptionContains!!)
     }
 
     if (!matchedResourceId && hasResourceId()) {
-        bySelector = By.copy(bySelector).res(resourceId)
+        bySelector = By.copy(bySelector).res(resourceId!!)
     }
 
     if (hasInstance()) {
@@ -181,7 +181,7 @@ fun Selector.toBySelector(): BySelector {
     }
 
     if (!matchedPkg && hasPkg()) {
-        bySelector = bySelector.pkg(pkg)
+        bySelector = bySelector.pkg(pkg!!)
     }
 
     return bySelector
