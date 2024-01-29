@@ -2,6 +2,7 @@
 
 - Add optional timeout parameter to native methods (#2042).
 - Add `$.native.tapAt()` (#2053)
+- Fix `native.enterText` interacting with first EditText regardless of `Selector` passed (Android-only) (#2072)
 
 ## 3.4.0
 

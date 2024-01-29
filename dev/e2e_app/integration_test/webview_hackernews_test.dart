@@ -12,9 +12,9 @@ void main() {
       index: 0,
       keyboardBehavior: KeyboardBehavior.showAndDismiss,
     );
-    await $.native.enterTextByIndex(
-      'ny4ncat',
-      index: 1,
+    await $.native.enterText(
+      Selector(className: 'android.widget.EditText'),
+      text: 'ny4ncat',
       keyboardBehavior: KeyboardBehavior.showAndDismiss,
     );
   });
