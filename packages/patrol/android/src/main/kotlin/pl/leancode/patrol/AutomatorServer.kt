@@ -16,6 +16,7 @@ import pl.leancode.patrol.contracts.Contracts.OpenAppRequest
 import pl.leancode.patrol.contracts.Contracts.OpenQuickSettingsRequest
 import pl.leancode.patrol.contracts.Contracts.PermissionDialogVisibleRequest
 import pl.leancode.patrol.contracts.Contracts.PermissionDialogVisibleResponse
+import pl.leancode.patrol.contracts.Contracts.ScrollToRequest
 import pl.leancode.patrol.contracts.Contracts.SetLocationAccuracyRequest
 import pl.leancode.patrol.contracts.Contracts.SetLocationAccuracyRequestLocationAccuracy
 import pl.leancode.patrol.contracts.Contracts.SwipeRequest
@@ -245,6 +246,13 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
             endX = request.endX.toFloat(),
             endY = request.endY.toFloat(),
             steps = request.steps.toInt()
+        )
+    }
+
+    override fun scrollTo(request: ScrollToRequest) {
+        automation.scrollTo(
+            bySelector = request.selector.toBySelector(),
+            index = request.selector.instance?.toInt() ?: 0
         )
     }
 
