@@ -141,10 +141,15 @@ class FlutterTool {
           completer.complete();
         }
 
-        if (openBrowser &&
-            line.startsWith('The Flutter DevTools debugger and profiler')) {
-          final url = _getDevtoolsUrl(line);
-          unawaited(_openDevtoolsPage(url));
+        if (line.startsWith('The Flutter DevTools debugger and profiler')) {
+          final devtoolsUrl = _getDevtoolsUrl(line);
+          _logger.success(
+            'Patrol DevTools extension is available at $devtoolsUrl',
+          );
+
+          if (openBrowser) {
+            unawaited(_openDevtoolsPage(devtoolsUrl));
+          }
         }
 
         _logger.detail('\t: $line');
@@ -239,8 +244,6 @@ class FlutterTool {
   }
 
   Future<void> _openDevtoolsPage(String url) async {
-    _logger.success('Patrol DevTools extension is available at $url');
-
     io.Process? process;
     switch (_platform.operatingSystem) {
       case Platform.macOS:
