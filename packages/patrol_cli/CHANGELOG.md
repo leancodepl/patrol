@@ -1,3 +1,7 @@
+## 2.6.2
+
+- Print link to devtools regardless of open-devtools flag (#2076).
+
 ## 2.6.1
 
 - Fix passing port on iOS when `patrol build` is executed (#2061). 
