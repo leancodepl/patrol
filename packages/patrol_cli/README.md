@@ -12,6 +12,8 @@ Command-line tool to make working with [patrol][pub_link_test] easier.
 ```console
 $ dart pub global activate patrol_cli
 ```
+### From our repo..
+`dart pub global activate -source path <device directory>/zips_5/tools/patrol/packages/patrol_cli`
 
 ### From git
 
