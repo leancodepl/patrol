@@ -768,6 +768,21 @@ class NativeAutomator {
     );
   }
 
+  Future<void> scrollTo(
+    Selector selector, {
+    String? appId,
+  }) async {
+    await _wrapRequest(
+      'scrollTo',
+      () => _client.scrollTo(
+        ScrollToRequest(
+          selector: selector,
+          appId: appId ?? resolvedAppId,
+        ),
+      ),
+    );
+  }
+
   /// Waits until the native view specified by [selector] becomes visible.
   /// It waits for the view to become visible for [timeout] duration. If
   /// [timeout] is not specified, it utilizes the
