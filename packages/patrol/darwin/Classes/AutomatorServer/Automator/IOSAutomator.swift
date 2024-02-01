@@ -305,6 +305,14 @@
         startCoordinate.press(forDuration: 0.1, thenDragTo: endCoordinate)
       }
     }
+      
+    func scrollTo(
+      onText text: String, inApp bundleId: String, atIndex index: Int,
+      maxIterations: Int
+    ) throws {
+        throw PatrolError.methodNotImplemented('scrollTo')
+    }
+
 
     func waitUntilVisible(
       on selector: Selector,

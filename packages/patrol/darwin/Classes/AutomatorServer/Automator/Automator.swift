@@ -231,6 +231,12 @@ extension Selector {
       withTimeout timeout: TimeInterval?
     ) throws
     func swipe(from start: CGVector, to end: CGVector, inApp bundleId: String) throws
+    func scrollTo(
+      onText text: String,
+      inApp bundleId: String,
+      atIndex index: Int,
+      maxIterations: Int
+    ) throws
     func waitUntilVisible(
       on selector: Selector,
       inApp bundleId: String,
