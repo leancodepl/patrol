@@ -182,6 +182,17 @@
       }
     }
 
+    func scrollTo(request: ScrollToRequest) throws {
+      return try runCatching {
+        try automator.scrollTo(
+          onText: request.selector.text ?? String(),
+          inApp: request.appId,
+          atIndex: request.index ?? 0,
+          maxIterations: request.maxIterations ?? 10
+        )
+      }
+    }
+
     func waitUntilVisible(request: WaitUntilVisibleRequest) throws {
       return try runCatching {
         if let selector = request.selector {

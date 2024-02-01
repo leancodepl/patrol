@@ -556,6 +556,20 @@ class Contracts {
     val steps: Long
   )
 
+  data class ScrollToRequest (
+    val selector: Selector,
+    val appId: String,
+    val index: Long? = null,
+    val maxIterations: Long? = null
+  ){
+    fun hasIndex(): Boolean {
+      return index != null
+    }
+    fun hasMaxIterations(): Boolean {
+      return maxIterations != null
+    }
+  }
+
   data class WaitUntilVisibleRequest (
     val selector: Selector? = null,
     val androidSelector: AndroidSelector? = null,

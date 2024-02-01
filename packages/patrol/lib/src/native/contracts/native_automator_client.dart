@@ -161,6 +161,13 @@ class NativeAutomatorClient {
     );
   }
 
+  Future<void> scrollTo(ScrollToRequest request) {
+    return _sendRequest(
+      'scrollTo',
+      request.toJson(),
+    );
+  }
+
   Future<void> waitUntilVisible(
     WaitUntilVisibleRequest request,
   ) {
