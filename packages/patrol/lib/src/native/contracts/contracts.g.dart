@@ -621,6 +621,22 @@ Map<String, dynamic> _$SwipeRequestToJson(SwipeRequest instance) =>
       'steps': instance.steps,
     };
 
+ScrollToRequest _$ScrollToRequestFromJson(Map<String, dynamic> json) =>
+    ScrollToRequest(
+      selector: Selector.fromJson(json['selector'] as Map<String, dynamic>),
+      appId: json['appId'] as String,
+      index: json['index'] as int?,
+      maxIterations: json['maxIterations'] as int?,
+    );
+
+Map<String, dynamic> _$ScrollToRequestToJson(ScrollToRequest instance) =>
+    <String, dynamic>{
+      'selector': instance.selector,
+      'appId': instance.appId,
+      'index': instance.index,
+      'maxIterations': instance.maxIterations,
+    };
+
 WaitUntilVisibleRequest _$WaitUntilVisibleRequestFromJson(
         Map<String, dynamic> json) =>
     WaitUntilVisibleRequest(
