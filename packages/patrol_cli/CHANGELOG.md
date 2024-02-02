@@ -1,3 +1,7 @@
+## 2.6.4
+
+- Fix compatibility_checker getting stuck (#2091).
+
 ## 2.6.3
 
 - Fix invalid JSON output of version check command (#2087).
