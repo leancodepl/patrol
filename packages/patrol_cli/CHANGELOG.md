@@ -1,3 +1,7 @@
+## 2.6.3
+
+- Fix invalid JSON output of version check command (#2087).
+
 ## 2.6.2
 
 - Print link to devtools regardless of open-devtools flag (#2076).
