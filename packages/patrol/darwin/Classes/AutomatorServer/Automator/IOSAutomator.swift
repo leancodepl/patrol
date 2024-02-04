@@ -324,7 +324,7 @@
       onText text: String, inApp bundleId: String, atIndex index: Int,
       maxIterations: Int
     ) throws {
-        throw PatrolError.methodNotImplemented('scrollTo')
+        throw PatrolError.methodNotImplemented("scrollTo")
     }
 
 
