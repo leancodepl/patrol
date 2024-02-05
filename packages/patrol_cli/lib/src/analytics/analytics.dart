@@ -195,8 +195,16 @@ FlutterVersion _getFlutterVersion() {
     runInShell: true,
   );
 
-  final versionData = jsonDecode(result.stdOut) as Map<String, dynamic>;
+  final versionData =
+      jsonDecode(cleanJsonResult(result)) as Map<String, dynamic>;
   final frameworkVersion = versionData['frameworkVersion'] as String;
   final channel = versionData['channel'] as String;
   return FlutterVersion(frameworkVersion, channel);
+}
+
+// Workaround for https://github.com/flutter/flutter/issues/122814
+String cleanJsonResult(io.ProcessResult result) {
+  final parts = result.stdOut.split('}')..removeLast();
+  final cleanedString = parts.join('}');
+  return '$cleanedString}';
 }
