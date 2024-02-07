@@ -146,9 +146,10 @@ class PatrolAppService extends PatrolAppServiceServer {
   Future<RunDartTestResponse> runDartTest(RunDartTestRequest request) async {
     assert(_testExecutionCompleted.isCompleted == false);
     // patrolTest() always calls this method.
+    final normalizedTestName = request.name.replaceAll('+', ' ');
 
-    print('PatrolAppService.runDartTest(${request.name}) called');
-    _testExecutionRequested.complete(request.name);
+    print('PatrolAppService.runDartTest($normalizedTestName) called');
+    _testExecutionRequested.complete(normalizedTestName);
 
     final testExecutionResult = await testExecutionCompleted;
     return RunDartTestResponse(

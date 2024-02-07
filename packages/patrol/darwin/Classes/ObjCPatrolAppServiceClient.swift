@@ -109,14 +109,14 @@ extension DartGroupEntry {
           fatalError("Invariant violated: test \(test.name) has no named parent group")
         }
 
-        test.name = "\(parentGroupName) \(test.name)"
+        test.name = "\(parentGroupName)+\(test.name)"
         tests.append(test)
       } else if test.type == GroupEntryType.group {
         if parentGroupName.isEmpty {
           tests.append(contentsOf: test.listTestsFlat(parentGroupName: test.name))
         } else {
           tests.append(
-            contentsOf: test.listTestsFlat(parentGroupName: "\(parentGroupName) \(test.name)")
+            contentsOf: test.listTestsFlat(parentGroupName: "\(parentGroupName)+\(test.name)")
           )
         }
       }
