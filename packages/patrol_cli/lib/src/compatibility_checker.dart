@@ -53,24 +53,27 @@ class CompatibilityChecker {
       )
         ..disposedBy(scope);
 
-      process.listenStdOut((line) async {
-        if (line.startsWith('- patrol ')) {
-          packageCompleter.complete(line.split(' ').last);
-        }
-      }).disposedBy(scope);
+      process.listenStdOut(
+        (line) async {
+          if (line.startsWith('- patrol ')) {
+            packageCompleter.complete(line.split(' ').last);
+          }
+        },
+        onDone: () {
+          if (!packageCompleter.isCompleted) {
+            throwToolExit(
+              'Failed to read patrol version. Make sure you have patrol '
+              'dependency in your pubspec.yaml file',
+            );
+          }
+        },
+      ).disposedBy(scope);
     });
 
     packageVersion = await packageCompleter.future;
 
-    if (packageVersion == null) {
-      throwToolExit(
-        'Failed to read patrol version. Make sure you have patrol '
-        'dependency in your pubspec.yaml file',
-      );
-    }
-
     final cliVersion = Version.parse(constants.version);
-    final patrolVersion = Version.parse(packageVersion);
+    final patrolVersion = Version.parse(packageVersion!);
 
     final isCompatible = cliVersion.isCompatibleWith(patrolVersion);
 
