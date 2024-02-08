@@ -95,6 +95,7 @@
     for (NSString * dartTest in dartTests) {                                                                          \
       /* Step 1 - dynamically create test cases */                                                                    \
                                                                                                                       \
+      NSString *safeTestName = [dartTest stringByReplacingOccurrencesOfString:@" " withString:@"+"];                  \ 
       IMP implementation = imp_implementationWithBlock(^(id _self) {                                                  \
         [[[XCUIApplication alloc] init] launch];                                                                      \
                                                                                                                       \
@@ -121,10 +122,10 @@
         NSString *details = response ? response.details : @"(no details - app likely crashed)";                       \
         XCTAssertTrue(passed, @"%@", details);                                                                        \
       });                                                                                                             \
-      SEL selector = NSSelectorFromString(dartTest);                                                                  \
+      SEL selector = NSSelectorFromString(safeTestName);                                                              \
       class_addMethod(self, selector, implementation, "v@:");                                                         \
                                                                                                                       \
-      /* Step 2 – create invocations to the dynamically created methods */                                          \
+      /* Step 2 – create invocations to the dynamically created methods */                                            \
       NSMethodSignature *signature = [self instanceMethodSignatureForSelector:selector];                              \
       NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];                              \
       invocation.selector = selector;                                                                                 \
