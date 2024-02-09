@@ -10,7 +10,7 @@ final class RunnerTests: XCTestCase {
   }
 
   func testSelectorToNSPredicate_text() {
-    var selector = patrol.Selector()
+    var selector = createEmptySelector()
     selector.text = "Log in"
 
     let predicate = selector.toNSPredicate()
@@ -25,7 +25,7 @@ final class RunnerTests: XCTestCase {
   }
 
   func testSelectorToNSPredicate_textStartsWith() {
-    var selector = patrol.Selector()
+    var selector = createEmptySelector()
     selector.textStartsWith = "Log in"
 
     let predicate = selector.toNSPredicate()
@@ -40,7 +40,7 @@ final class RunnerTests: XCTestCase {
   }
 
   func testSelectorToNSPredicate_textContains() {
-    var selector = patrol.Selector()
+    var selector = createEmptySelector()
     selector.textContains = "Log in"
 
     let predicate = selector.toNSPredicate()
@@ -55,7 +55,7 @@ final class RunnerTests: XCTestCase {
   }
 
   func testSelectorToNSPredicate_resourceId() {
-    var selector = patrol.Selector()
+    var selector = createEmptySelector()
     selector.resourceId = "log_in"
 
     let predicate = selector.toNSPredicate()
@@ -69,7 +69,7 @@ final class RunnerTests: XCTestCase {
   }
 
   func testSelectorToNSPredicate_complex_1() {
-    var selector = patrol.Selector()
+    var selector = createEmptySelector()
     selector.textContains = "text_contains"
     selector.resourceId = "resource_id"
 
@@ -86,7 +86,7 @@ final class RunnerTests: XCTestCase {
   }
 
   func testSelectorToNSPredicate_complex_2() {
-    var selector = patrol.Selector()
+    var selector = createEmptySelector()
     selector.textContains = "text_contains"
     selector.resourceId = "resource_id"
 
@@ -101,4 +101,14 @@ final class RunnerTests: XCTestCase {
       identifier == "resource_id"
       """)
   }
+}
+
+private func createEmptySelector(text: String? = nil) -> patrol.Selector {
+    // Temporary fix. We will remove the Selector class later
+    let jsonString = "{}"
+
+    let jsonData = jsonString.data(using: .utf8)!
+    let decoder = JSONDecoder()
+    
+    return try! decoder.decode(patrol.Selector.self, from: jsonData)
 }
