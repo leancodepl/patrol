@@ -104,11 +104,11 @@ final class RunnerTests: XCTestCase {
 }
 
 private func createEmptySelector(text: String? = nil) -> patrol.Selector {
-    // Temporary fix. We will remove the Selector class later
-    let jsonString = "{}"
+  // Temporary fix. We will remove the Selector class later
+  let jsonString = "{}"
 
-    let jsonData = jsonString.data(using: .utf8)!
-    let decoder = JSONDecoder()
-    
-    return try! decoder.decode(patrol.Selector.self, from: jsonData)
+  let jsonData = jsonString.data(using: .utf8)!
+  let decoder = JSONDecoder()
+
+  return try! decoder.decode(patrol.Selector.self, from: jsonData)
 }
