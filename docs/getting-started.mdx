@@ -4,6 +4,10 @@ title: Getting started
 
 # Getting started
 
+Check out our video version of this tutorial on YouTube!
+
+<YouTube id="zwQB8LfnTN8" />
+
 <Info>
      If you want to use Patrol finders in your existing widget or golden
      tests, go to [Using Patrol finders in widget tests].
@@ -526,8 +530,23 @@ within the patrol test.">
   and remove set path to targets for all configurations.  
 </Accordion>
 
+<Accordion title="When running a test, real app without test is opened instead">
+  Open your XCode project, go to **Runner** target -> **Build Settings**, search for `FLUTTER_TARGET`
+  and remove set path to targets for all configurations.  
+</Accordion>
+
+<Accordion title="Build is failing with errors on mismatching iOS deployment versions">
+  Check if this line in `Podfile` is present and uncommented.
+  ```
+  platform :ios, '11.0'
+  ```
+  If yes, then check if **iOS deployment version** in Xcode project's **Build Settings**
+  section for all targets (Runner and RunnerUITests) are set to the same value as in Podfile 
+  (in case presented in snippet above, all should be set to 11.0).
+</Accordion>
+
 If you couldn't find an answer to your question/problem, feel free to ask on 
-[Patrol Discord Server](https://discord.com/channels/1167030497612922931/1167063775925514311).
+[Patrol Discord Server](https://discord.gg/ukBK5t4EZg).
 
 ### Going from here
 

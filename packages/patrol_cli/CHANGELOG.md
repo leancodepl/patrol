@@ -1,3 +1,19 @@
+## 2.6.4
+
+- Fix compatibility_checker getting stuck (#2091).
+
+## 2.6.3
+
+- Fix invalid JSON output of version check command (#2087).
+
+## 2.6.2
+
+- Print link to devtools regardless of open-devtools flag (#2076).
+
+## 2.6.1
+
+- Fix passing port on iOS when `patrol build` is executed (#2061). 
+
 ## 2.6.0
 
 - Allow for changing the port when running on iOS (#2027).

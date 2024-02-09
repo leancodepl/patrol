@@ -223,6 +223,19 @@ Map<String, dynamic> _$TapRequestToJson(TapRequest instance) =>
       'timeoutMillis': instance.timeoutMillis,
     };
 
+TapAtRequest _$TapAtRequestFromJson(Map<String, dynamic> json) => TapAtRequest(
+      x: (json['x'] as num).toDouble(),
+      y: (json['y'] as num).toDouble(),
+      appId: json['appId'] as String,
+    );
+
+Map<String, dynamic> _$TapAtRequestToJson(TapAtRequest instance) =>
+    <String, dynamic>{
+      'x': instance.x,
+      'y': instance.y,
+      'appId': instance.appId,
+    };
+
 EnterTextRequest _$EnterTextRequestFromJson(Map<String, dynamic> json) =>
     EnterTextRequest(
       data: json['data'] as String,

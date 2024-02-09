@@ -76,6 +76,12 @@
       }
     }
 
+    func tapAt(coordinate vector: CGVector, inApp bundleId: String) throws {
+      try runAction("tapAt") {
+        throw PatrolError.methodNotImplemented("tapAt")
+      }
+    }
+
     func enterText(
       _ data: String,
       on selector: Selector,

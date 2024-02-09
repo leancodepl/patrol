@@ -134,6 +134,15 @@ class NativeAutomatorClient {
     );
   }
 
+  Future<void> tapAt(
+    TapAtRequest request,
+  ) {
+    return _sendRequest(
+      'tapAt',
+      request.toJson(),
+    );
+  }
+
   Future<void> enterText(
     EnterTextRequest request,
   ) {

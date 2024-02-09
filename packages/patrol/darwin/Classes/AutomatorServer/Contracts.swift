@@ -113,6 +113,12 @@ public struct TapRequest: Codable {
   public var timeoutMillis: Int?
 }
 
+public struct TapAtRequest: Codable {
+  public var x: Double
+  public var y: Double
+  public var appId: String
+}
+
 public struct EnterTextRequest: Codable {
   public var data: String
   public var appId: String
