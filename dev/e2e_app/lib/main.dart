@@ -86,6 +86,7 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
           ),
           Text(
             '$_counter',
+            semanticsLabel: 'Counter: $_counter',
             key: const Key('counterText'),
             style: Theme.of(context).textTheme.headlineMedium,
           ),
@@ -110,7 +111,11 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
                   key: const Key('tile1'),
                   title: const Text('Add'),
                   trailing: IconButton(
-                    icon: const Icon(Icons.add, key: Key('icon1')),
+                    icon: const Icon(
+                      Icons.add,
+                      key: Key('icon1'),
+                      semanticLabel: 'Increment counter',
+                    ),
                     onPressed: _incrementCounter,
                   ),
                 ),

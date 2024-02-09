@@ -54,29 +54,24 @@
     }
 
     // MARK: General UI interaction
-
     func tap(
-      onText text: String, inApp bundleId: String, atIndex index: Int,
+      on selector: Selector,
+      inApp bundleId: String,
       withTimeout timeout: TimeInterval?
     ) throws {
-      let view = "view with text \(format: text) at index \(index) in app \(bundleId)"
+      var view = createLogMessage(element: "view", from: selector)
+      view += " in app \(bundleId)"
 
       try runAction("tapping on \(view)") {
         let app = try self.getApp(withBundleId: bundleId)
 
-        // The below selector is an equivalent of `app.descendants(matching: .any)[text]`
         // TODO: We should consider more view properties. See #1554
-        let format = """
-          label == %@ OR \
-          title == %@ OR \
-          identifier == %@
-          """
-        let predicate = NSPredicate(format: format, text, text, text)
-        let query = app.descendants(matching: .any).matching(predicate)
+        let query = app.descendants(matching: .any).matching(selector.toNSPredicate())
 
         Logger.shared.i("waiting for existence of \(view)")
         guard
-          let element = self.waitFor(query: query, index: index, timeout: timeout ?? self.timeout)
+          let element = self.waitFor(
+            query: query, index: selector.instance ?? 0, timeout: timeout ?? self.timeout)
         else {
           throw PatrolError.viewNotExists(view)
         }
@@ -85,20 +80,27 @@
       }
     }
 
-    func doubleTap(onText text: String, inApp bundleId: String, withTimeout timeout: TimeInterval?)
-      throws
-    {
-      try runAction("double tapping on text \(format: text) in app \(bundleId)") {
-        let app = try self.getApp(withBundleId: bundleId)
-        let element = app.descendants(matching: .any)[text]
+    func doubleTap(
+      on selector: Selector,
+      inApp bundleId: String,
+      withTimeout timeout: TimeInterval?
+    ) throws {
+      var view = createLogMessage(element: "view", from: selector)
+      view += " in app \(bundleId)"
 
-        let exists = element.waitForExistence(timeout: timeout ?? self.timeout)
-        guard exists else {
-          throw PatrolError.viewNotExists(
-            "view with text \(format: text) in app \(format: bundleId)")
+      try runAction("double tapping on \(view)") {
+        let app = try self.getApp(withBundleId: bundleId)
+        let query = app.descendants(matching: .any).matching(selector.toNSPredicate())
+
+        Logger.shared.i("waiting for existence of \(view)")
+        guard
+          let element = self.waitFor(
+            query: query, index: selector.instance ?? 0, timeout: timeout ?? self.timeout)
+        else {
+          throw PatrolError.viewNotExists(view)
         }
 
-        element.firstMatch.forceTap()
+        element.forceTap()
       }
     }
 
@@ -114,8 +116,7 @@
 
     func enterText(
       _ data: String,
-      byText text: String,
-      atIndex index: Int,
+      on selector: Selector,
       inApp bundleId: String,
       dismissKeyboard: Bool,
       withTimeout timeout: TimeInterval?
@@ -125,7 +126,8 @@
         data = "\(data)\n"
       }
 
-      let view = "text field with text \(format: text) at index \(index) in app \(bundleId)"
+      var view = createLogMessage(element: "text field", from: selector)
+      view += " in app \(bundleId)"
 
       try runAction("entering text \(format: data) into \(view)") {
         let app = try self.getApp(withBundleId: bundleId)
@@ -134,16 +136,8 @@
         // See:
         // * https://developer.apple.com/documentation/xctest/xcuielementtype/xcuielementtypetextfield
         // * https://developer.apple.com/documentation/xctest/xcuielementtype/xcuielementtypesecuretextfield
-        // The below selector is an equivalent of `app.descendants(matching: .any)[text]`
         // TODO: We should consider more view properties. See #1554
-        let format = """
-          label == %@ OR \
-          title == %@ OR \
-          identifier == %@ OR \
-          value == %@ OR \
-          placeholderValue == %@
-          """
-        let contentPredicate = NSPredicate(format: format, text, text, text, text, text)
+        let contentPredicate = selector.toTextFieldNSPredicate()
         let textFieldPredicate = NSPredicate(format: "elementType == 49")
         let secureTextFieldPredicate = NSPredicate(format: "elementType == 50")
 
@@ -159,7 +153,7 @@
         guard
           let element = self.waitFor(
             query: query,
-            index: index,
+            index: selector.instance ?? 0,
             timeout: timeout ?? self.timeout
           )
         else {
@@ -230,17 +224,21 @@
     }
 
     func waitUntilVisible(
-      onText text: String, inApp bundleId: String, withTimeout timeout: TimeInterval?
+      on selector: Selector,
+      inApp bundleId: String,
+      withTimeout timeout: TimeInterval?
     ) throws {
+      let view = createLogMessage(element: "view", from: selector)
       try runAction(
-        "waiting until view with text \(format: text) in app \(bundleId) becomes visible"
+        "waiting until \(view) in app \(bundleId) becomes visible"
       ) {
         let app = try self.getApp(withBundleId: bundleId)
-        let element = app.descendants(matching: .any)[text]
-        let exists = element.waitForExistence(timeout: timeout ?? self.timeout)
-        guard exists else {
-          throw PatrolError.viewNotExists(
-            "view with text \(format: text) in app \(format: bundleId)")
+        let query = app.descendants(matching: .any).containing(selector.toNSPredicate())
+        guard
+          let element = self.waitFor(
+            query: query, index: selector.instance ?? 0, timeout: timeout ?? self.timeout)
+        else {
+          throw PatrolError.viewNotExists(view)
         }
       }
     }
@@ -404,21 +402,15 @@
     }
 
     func getNativeViews(
-      byText text: String,
+      on selector: Selector,
       inApp bundleId: String
     ) throws -> [NativeView] {
-      try runAction("getting native views matching \(text)") {
+      let view = createLogMessage(element: "views", from: selector)
+      return try runAction("getting native \(view)") {
         let app = try self.getApp(withBundleId: bundleId)
 
-        // The below selector is an equivalent of `app.descendants(matching: .any)[text]`
         // TODO: We should consider more view properties. See #1554
-        let format = """
-          label == %@ OR \
-          title == %@ OR \
-          identifier == %@
-          """
-        let predicate = NSPredicate(format: format, text, text, text)
-        let query = app.descendants(matching: .any).matching(predicate)
+        let query = app.descendants(matching: .any).matching(selector.toNSPredicate())
         let elements = query.allElementsBoundByIndex
 
         let views = elements.map { xcuielement in
@@ -852,6 +844,25 @@
       }
 
       group.wait()
+    }
+
+    func createLogMessage(element: String, from selector: Selector) -> String {
+      var logMessage = element
+
+      if let text = selector.text {
+        logMessage += " with text '\(text)'"
+      }
+      if let startsWith = selector.textStartsWith {
+        logMessage += " starting with '\(startsWith)'"
+      }
+      if let contains = selector.textContains {
+        logMessage += " containing '\(contains)'"
+      }
+      if let index = selector.instance {
+        logMessage += " at index \(index)"
+      }
+
+      return logMessage
     }
   }
 

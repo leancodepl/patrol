@@ -57,7 +57,8 @@
     }
 
     func tap(
-      onText text: String, inApp bundleId: String, atIndex index: Int,
+      on selector: Selector,
+      inApp bundleId: String,
       withTimeout timeout: TimeInterval?
     ) throws {
       try runAction("tap") {
@@ -65,9 +66,11 @@
       }
     }
 
-    func doubleTap(onText text: String, inApp bundleId: String, withTimeout timeout: TimeInterval?)
-      throws
-    {
+    func doubleTap(
+      on selector: Selector,
+      inApp bundleId: String,
+      withTimeout timeout: TimeInterval?
+    ) throws {
       try runAction("doubleTap") {
         throw PatrolError.methodNotImplemented("doubleTap")
       }
@@ -81,8 +84,7 @@
 
     func enterText(
       _ data: String,
-      byText text: String,
-      atIndex index: Int,
+      on selector: Selector,
       inApp bundleId: String,
       dismissKeyboard: Bool,
       withTimeout timeout: TimeInterval?
@@ -111,7 +113,9 @@
     }
 
     func waitUntilVisible(
-      onText text: String, inApp bundleId: String, withTimeout timeout: TimeInterval?
+      on selector: Selector,
+      inApp bundleId: String,
+      withTimeout timeout: TimeInterval?
     ) throws {
       try runAction("waitUntilVisible") {
         throw PatrolError.methodNotImplemented("waitUntilVisible")
@@ -178,7 +182,7 @@
       }
     }
 
-    func getNativeViews(byText text: String, inApp bundleId: String) throws -> [NativeView] {
+    func getNativeViews(on selector: Selector, inApp bundleId: String) throws -> [NativeView] {
       try runAction("getNativeViews") {
         throw PatrolError.methodNotImplemented("getNativeViews")
       }

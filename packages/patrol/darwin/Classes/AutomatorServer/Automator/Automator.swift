@@ -1,3 +1,93 @@
+extension Selector {
+  public func toTextFieldNSPredicate() -> NSPredicate {
+    var format = ""
+    var begun = false
+    var values = [String]()
+
+    if text != nil {
+      begun = true
+      format += "(label == %@ OR title == %@ OR value == %@ OR placeholderValue == %@)"
+      values.append(text!)
+      values.append(text!)
+      values.append(text!)
+      values.append(text!)
+    }
+
+    if textStartsWith != nil {
+      if begun { format += " AND " }
+      begun = true
+      format +=
+        "(label BEGINSWITH %@ OR title BEGINSWITH %@ OR value BEGINSWITH %@ OR placeholderValue BEGINSWITH %@)"
+      values.append(textStartsWith!)
+      values.append(textStartsWith!)
+      values.append(textStartsWith!)
+      values.append(textStartsWith!)
+    }
+
+    if textContains != nil {
+      if begun { format += " AND " }
+      begun = true
+      format +=
+        "(label CONTAINS %@ OR title CONTAINS %@ OR value CONTAINS %@ OR placeholderValue CONTAINS %@)"
+      values.append(textContains!)
+      values.append(textContains!)
+      values.append(textContains!)
+      values.append(textContains!)
+    }
+
+    if resourceId != nil {
+      if begun { format += " AND " }
+      begun = true
+      format += "(identifier == %@)"
+      values.append(resourceId!)
+    }
+
+    let predicate = NSPredicate(format: format, argumentArray: values)
+
+    return predicate
+  }
+
+  public func toNSPredicate() -> NSPredicate {
+    var format = ""
+    var begun = false
+    var values = [String]()
+
+    if text != nil {
+      begun = true
+      format += "(label == %@ OR title == %@)"
+      values.append(text!)
+      values.append(text!)
+    }
+
+    if textStartsWith != nil {
+      if begun { format += " AND " }
+      begun = true
+      format += "(label BEGINSWITH %@ OR title BEGINSWITH %@)"
+      values.append(textStartsWith!)
+      values.append(textStartsWith!)
+    }
+
+    if textContains != nil {
+      if begun { format += " AND " }
+      begun = true
+      format += "(label CONTAINS %@ OR title CONTAINS %@)"
+      values.append(textContains!)
+      values.append(textContains!)
+    }
+
+    if resourceId != nil {
+      if begun { format += " AND " }
+      begun = true
+      format += "(identifier == %@)"
+      values.append(resourceId!)
+    }
+
+    let predicate = NSPredicate(format: format, argumentArray: values)
+
+    return predicate
+  }
+}
+
 #if PATROL_ENABLED
   import XCTest
   import os
@@ -13,21 +103,19 @@
 
     // MARK: General UI interaction
     func tap(
-      onText text: String,
+      on selector: Selector,
       inApp bundleId: String,
-      atIndex index: Int,
       withTimeout timeout: TimeInterval?
     ) throws
     func doubleTap(
-      onText text: String,
+      on selector: Selector,
       inApp bundleId: String,
       withTimeout timeout: TimeInterval?
     ) throws
     func tapAt(coordinate vector: CGVector, inApp bundleId: String) throws
     func enterText(
       _ data: String,
-      byText text: String,
-      atIndex index: Int,
+      on selector: Selector,
       inApp bundleId: String,
       dismissKeyboard: Bool,
       withTimeout timeout: TimeInterval?
@@ -41,7 +129,7 @@
     ) throws
     func swipe(from start: CGVector, to end: CGVector, inApp bundleId: String) throws
     func waitUntilVisible(
-      onText text: String,
+      on selector: Selector,
       inApp bundleId: String,
       withTimeout timeout: TimeInterval?
     ) throws
@@ -58,7 +146,7 @@
     func enableBluetooth() throws
     func disableBluetooth() throws
     func getNativeViews(
-      byText text: String,
+      on selector: Selector,
       inApp bundleId: String
     ) throws -> [NativeView]
     func getUITreeRoots(installedApps: [String]) throws -> [NativeView]

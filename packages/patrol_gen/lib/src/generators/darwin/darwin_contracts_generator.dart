@@ -32,20 +32,23 @@ class DarwinContractsGenerator {
   }
 
   String _createMessage(Message message) {
-    final fields = message.fields.map((e) {
-      final optional = e.isOptional ? '?' : '';
-      return switch (e.type) {
-        MapFieldType(keyType: final keyType, valueType: final valueType) =>
-          '  var ${e.name}: [${_transformType(keyType)}: ${_transformType(valueType)}]$optional',
-        ListFieldType(type: final type) =>
-          '  var ${e.name}: [${_transformType(type)}]$optional',
-        OrdinaryFieldType(type: final type) =>
-          '  var ${e.name}: ${_transformType(type)}$optional',
-      };
-    }).join('\n');
+    final fields = message.fields
+        .map((e) {
+          final optional = e.isOptional ? '?' : '';
+          return switch (e.type) {
+            MapFieldType(keyType: final keyType, valueType: final valueType) =>
+              '${e.name}: [${_transformType(keyType)}: ${_transformType(valueType)}]$optional',
+            ListFieldType(type: final type) =>
+              '${e.name}: [${_transformType(type)}]$optional',
+            OrdinaryFieldType(type: final type) =>
+              '${e.name}: ${_transformType(type)}$optional',
+          };
+        })
+        .map((e) => '  public var $e')
+        .join('\n');
 
     return '''
-struct ${message.name}: Codable {
+public struct ${message.name}: Codable {
 $fields
 }
 ''';
@@ -55,7 +58,7 @@ $fields
     final cases = enumDefinition.fields.map((e) => '  case $e').join('\n');
 
     return '''
-enum ${enumDefinition.name}: String, Codable {
+public enum ${enumDefinition.name}: String, Codable {
 $cases
 }
 ''';
