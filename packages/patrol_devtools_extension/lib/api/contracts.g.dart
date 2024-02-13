@@ -141,10 +141,27 @@ Map<String, dynamic> _$GetNativeViewsRequestToJson(
       'appId': instance.appId,
     };
 
+GetNativeUITreeRequest _$GetNativeUITreeRequestFromJson(
+        Map<String, dynamic> json) =>
+    GetNativeUITreeRequest(
+      iosInstalledApps: (json['iosInstalledApps'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList(),
+    );
+
+Map<String, dynamic> _$GetNativeUITreeRequestToJson(
+        GetNativeUITreeRequest instance) =>
+    <String, dynamic>{
+      'iosInstalledApps': instance.iosInstalledApps,
+    };
+
 GetNativeUITreeRespone _$GetNativeUITreeResponeFromJson(
         Map<String, dynamic> json) =>
     GetNativeUITreeRespone(
-      roots: (json['roots'] as List<dynamic>)
+      iOSroots: (json['iOSroots'] as List<dynamic>)
+          .map((e) => IOSNativeView.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      androidRoots: (json['androidRoots'] as List<dynamic>)
           .map((e) => NativeView.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
@@ -152,7 +169,8 @@ GetNativeUITreeRespone _$GetNativeUITreeResponeFromJson(
 Map<String, dynamic> _$GetNativeUITreeResponeToJson(
         GetNativeUITreeRespone instance) =>
     <String, dynamic>{
-      'roots': instance.roots,
+      'iOSroots': instance.iOSroots,
+      'androidRoots': instance.androidRoots,
     };
 
 NativeView _$NativeViewFromJson(Map<String, dynamic> json) => NativeView(
@@ -182,6 +200,50 @@ Map<String, dynamic> _$NativeViewToJson(NativeView instance) =>
       'children': instance.children,
     };
 
+IOSNativeView _$IOSNativeViewFromJson(Map<String, dynamic> json) =>
+    IOSNativeView(
+      children: (json['children'] as List<dynamic>)
+          .map((e) => IOSNativeView.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      elementType: json['elementType'] as String,
+      identifier: json['identifier'] as String,
+      label: json['label'] as String,
+      title: json['title'] as String,
+      hasFocus: json['hasFocus'] as bool,
+      isEnabled: json['isEnabled'] as bool,
+      isSelected: json['isSelected'] as bool,
+      frame: IOSRect.fromJson(json['frame'] as Map<String, dynamic>),
+      placeholderValue: json['placeholderValue'] as String?,
+    );
+
+Map<String, dynamic> _$IOSNativeViewToJson(IOSNativeView instance) =>
+    <String, dynamic>{
+      'children': instance.children,
+      'elementType': instance.elementType,
+      'identifier': instance.identifier,
+      'label': instance.label,
+      'title': instance.title,
+      'hasFocus': instance.hasFocus,
+      'isEnabled': instance.isEnabled,
+      'isSelected': instance.isSelected,
+      'frame': instance.frame,
+      'placeholderValue': instance.placeholderValue,
+    };
+
+IOSRect _$IOSRectFromJson(Map<String, dynamic> json) => IOSRect(
+      minX: (json['minX'] as num).toDouble(),
+      minY: (json['minY'] as num).toDouble(),
+      maxX: (json['maxX'] as num).toDouble(),
+      maxY: (json['maxY'] as num).toDouble(),
+    );
+
+Map<String, dynamic> _$IOSRectToJson(IOSRect instance) => <String, dynamic>{
+      'minX': instance.minX,
+      'minY': instance.minY,
+      'maxX': instance.maxX,
+      'maxY': instance.maxY,
+    };
+
 GetNativeViewsResponse _$GetNativeViewsResponseFromJson(
         Map<String, dynamic> json) =>
     GetNativeViewsResponse(
@@ -199,11 +261,26 @@ Map<String, dynamic> _$GetNativeViewsResponseToJson(
 TapRequest _$TapRequestFromJson(Map<String, dynamic> json) => TapRequest(
       selector: Selector.fromJson(json['selector'] as Map<String, dynamic>),
       appId: json['appId'] as String,
+      timeoutMillis: json['timeoutMillis'] as int?,
     );
 
 Map<String, dynamic> _$TapRequestToJson(TapRequest instance) =>
     <String, dynamic>{
       'selector': instance.selector,
+      'appId': instance.appId,
+      'timeoutMillis': instance.timeoutMillis,
+    };
+
+TapAtRequest _$TapAtRequestFromJson(Map<String, dynamic> json) => TapAtRequest(
+      x: (json['x'] as num).toDouble(),
+      y: (json['y'] as num).toDouble(),
+      appId: json['appId'] as String,
+    );
+
+Map<String, dynamic> _$TapAtRequestToJson(TapAtRequest instance) =>
+    <String, dynamic>{
+      'x': instance.x,
+      'y': instance.y,
       'appId': instance.appId,
     };
 
@@ -217,6 +294,7 @@ EnterTextRequest _$EnterTextRequestFromJson(Map<String, dynamic> json) =>
           : Selector.fromJson(json['selector'] as Map<String, dynamic>),
       keyboardBehavior:
           $enumDecode(_$KeyboardBehaviorEnumMap, json['keyboardBehavior']),
+      timeoutMillis: json['timeoutMillis'] as int?,
     );
 
 Map<String, dynamic> _$EnterTextRequestToJson(EnterTextRequest instance) =>
@@ -226,6 +304,7 @@ Map<String, dynamic> _$EnterTextRequestToJson(EnterTextRequest instance) =>
       'index': instance.index,
       'selector': instance.selector,
       'keyboardBehavior': _$KeyboardBehaviorEnumMap[instance.keyboardBehavior]!,
+      'timeoutMillis': instance.timeoutMillis,
     };
 
 const _$KeyboardBehaviorEnumMap = {
@@ -234,6 +313,7 @@ const _$KeyboardBehaviorEnumMap = {
 };
 
 SwipeRequest _$SwipeRequestFromJson(Map<String, dynamic> json) => SwipeRequest(
+      appId: json['appId'] as String,
       startX: (json['startX'] as num).toDouble(),
       startY: (json['startY'] as num).toDouble(),
       endX: (json['endX'] as num).toDouble(),
@@ -243,6 +323,7 @@ SwipeRequest _$SwipeRequestFromJson(Map<String, dynamic> json) => SwipeRequest(
 
 Map<String, dynamic> _$SwipeRequestToJson(SwipeRequest instance) =>
     <String, dynamic>{
+      'appId': instance.appId,
       'startX': instance.startX,
       'startY': instance.startY,
       'endX': instance.endX,
@@ -255,6 +336,7 @@ WaitUntilVisibleRequest _$WaitUntilVisibleRequestFromJson(
     WaitUntilVisibleRequest(
       selector: Selector.fromJson(json['selector'] as Map<String, dynamic>),
       appId: json['appId'] as String,
+      timeoutMillis: json['timeoutMillis'] as int?,
     );
 
 Map<String, dynamic> _$WaitUntilVisibleRequestToJson(
@@ -262,6 +344,7 @@ Map<String, dynamic> _$WaitUntilVisibleRequestToJson(
     <String, dynamic>{
       'selector': instance.selector,
       'appId': instance.appId,
+      'timeoutMillis': instance.timeoutMillis,
     };
 
 DarkModeRequest _$DarkModeRequestFromJson(Map<String, dynamic> json) =>
@@ -318,6 +401,7 @@ TapOnNotificationRequest _$TapOnNotificationRequestFromJson(
       selector: json['selector'] == null
           ? null
           : Selector.fromJson(json['selector'] as Map<String, dynamic>),
+      timeoutMillis: json['timeoutMillis'] as int?,
     );
 
 Map<String, dynamic> _$TapOnNotificationRequestToJson(
@@ -325,6 +409,7 @@ Map<String, dynamic> _$TapOnNotificationRequestToJson(
     <String, dynamic>{
       'index': instance.index,
       'selector': instance.selector,
+      'timeoutMillis': instance.timeoutMillis,
     };
 
 PermissionDialogVisibleResponse _$PermissionDialogVisibleResponseFromJson(
