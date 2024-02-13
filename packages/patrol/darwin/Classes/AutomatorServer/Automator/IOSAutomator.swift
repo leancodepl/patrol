@@ -421,11 +421,12 @@
       }
     }
 
-    func getUITreeRoots(installedApps: [String]) throws -> [NativeView] {
+    func getUITreeRoots(installedApps: [String]) throws -> GetNativeUITreeRespone {
       try runAction("getting ui tree roots") {
         let foregroundApp = self.getForegroundApp(installedApps: installedApps)
         let snapshot = try foregroundApp.snapshot()
-        return [NativeView.fromXCUIElementSnapshot(snapshot, foregroundApp.identifier)]
+        let root = NativeView.fromXCUIElementSnapshot(snapshot, foregroundApp.identifier)
+        return GetNativeUITreeRespone(iOSroots: [root], androidRoots: [])
       }
     }
 
@@ -880,34 +881,43 @@
     }
   }
 
-  extension NativeView {
+extension NativeView {
     static func fromXCUIElement(_ xcuielement: XCUIElement, _ bundleId: String) -> NativeView {
-      return NativeView(
-        className: getElementTypeName(elementType: xcuielement.elementType),
-        text: xcuielement.label,
-        contentDescription: xcuielement.accessibilityLabel,
-        focused: xcuielement.hasFocus,
-        enabled: xcuielement.isEnabled,
-        resourceName: xcuielement.identifier,
-        applicationPackage: bundleId,
-        children: xcuielement.children(matching: .any).allElementsBoundByIndex.map { child in
-          return NativeView.fromXCUIElement(child, bundleId)
-        })
+        return NativeView(
+            className: getElementTypeName(elementType: xcuielement.elementType),
+            text: xcuielement.label,
+            contentDescription: xcuielement.accessibilityLabel,
+            focused: xcuielement.hasFocus,
+            enabled: xcuielement.isEnabled,
+            resourceName: xcuielement.identifier,
+            applicationPackage: bundleId,
+            children: xcuielement.children(matching: .any).allElementsBoundByIndex.map { child in
+                return NativeView.fromXCUIElement(child, bundleId)
+            })
     }
+}
 
+extension IOSNativeView {
     static func fromXCUIElementSnapshot(_ xcuielement: XCUIElementSnapshot, _ bundleId: String)
-      -> NativeView
+      -> IOSNativeView
     {
-      return NativeView(
-        className: getElementTypeName(elementType: xcuielement.elementType),
-        text: xcuielement.label,
-        contentDescription: "",  // TODO: Separate request
-        focused: xcuielement.hasFocus,
-        enabled: xcuielement.isEnabled,
-        resourceName: xcuielement.identifier,
-        applicationPackage: bundleId,
+      return IOSNativeView(
+        elementType: getElementTypeName(elementType: xcuielement.elementType),
+        identifier: xcuielement.identifier,
+        label: xcuielement.label,
+        title: xcuielement.title,
+        hasFocus: xcuielement.hasFocus,
+        isEnabled: xcuielement.isEnabled,
+        isSelected: xcuielement.isSelected,
+        frame: IOSRect(
+            minX: xcuielement.frame.minX,
+            minY: xcuielement.frame.minY,
+            maxX: xcuielement.frame.maxX,
+            maxY: xcuielement.frame.maxY
+        ),
+        placeholderValue: xcuielement.placeholderValue,
         children: xcuielement.children.map { child in
-          return NativeView.fromXCUIElementSnapshot(child, bundleId)
+          return IOSNativeView.fromXCUIElementSnapshot(child, bundleId)
         })
     }
   }

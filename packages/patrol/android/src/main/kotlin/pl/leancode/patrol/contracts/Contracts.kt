@@ -134,7 +134,8 @@ class Contracts {
   }
 
   data class GetNativeUITreeRespone (
-    val roots: List<NativeView>
+    val iOSroots: List<IOSNativeView>,
+    val androidRoots: List<NativeView>
   )
 
   data class NativeView (
@@ -167,6 +168,30 @@ class Contracts {
       return applicationPackage != null
     }
   }
+
+  data class IOSNativeView (
+    val children: List<IOSNativeView>,
+    val elementType: String,
+    val identifier: String,
+    val label: String,
+    val title: String,
+    val hasFocus: Boolean,
+    val isEnabled: Boolean,
+    val isSelected: Boolean,
+    val frame: IOSRect,
+    val placeholderValue: String? = null
+  ){
+    fun hasPlaceholderValue(): Boolean {
+      return placeholderValue != null
+    }
+  }
+
+  data class IOSRect (
+    val minX: Double,
+    val minY: Double,
+    val maxX: Double,
+    val maxY: Double
+  )
 
   data class GetNativeViewsResponse (
     val nativeViews: List<NativeView>

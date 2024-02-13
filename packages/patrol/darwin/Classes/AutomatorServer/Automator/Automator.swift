@@ -149,7 +149,7 @@ extension Selector {
       on selector: Selector,
       inApp bundleId: String
     ) throws -> [NativeView]
-    func getUITreeRoots(installedApps: [String]) throws -> [NativeView]
+    func getUITreeRoots(installedApps: [String]) throws -> GetNativeUITreeRespone
 
     // MARK: Notifications
     func openNotifications() throws

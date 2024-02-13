@@ -74,7 +74,8 @@ class GetNativeUITreeRequest {
 }
 
 class GetNativeUITreeRespone {
-  late List<NativeView> roots;
+  late List<IOSNativeView> iOSroots;
+  late List<NativeView> androidRoots;
 }
 
 class NativeView {
@@ -87,6 +88,30 @@ class NativeView {
   String? resourceName;
   String? applicationPackage;
   late List<NativeView> children;
+}
+
+class IOSNativeView {
+  late List<IOSNativeView> children;
+  //TODO enum ?
+  late String elementType;
+  late String identifier;
+  late String label;
+  late String title;
+  late bool hasFocus;
+  late bool isEnabled;
+  late bool isSelected;
+  late IOSRect frame;
+  String? placeholderValue;
+  //TODO value
+  //TODO we can get other properties from XCUIElement in next request
+  // exists, isHittable,normalizedSliderPosition, accessibilityLabel, accessbilityHint, accessibilityValue, isAccessibilityElement etc..;
+}
+
+class IOSRect {
+  late double minX;
+  late double minY;
+  late double maxX;
+  late double maxY;
 }
 
 class GetNativeViewsResponse {

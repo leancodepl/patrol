@@ -88,7 +88,8 @@ public struct GetNativeUITreeRequest: Codable {
 }
 
 public struct GetNativeUITreeRespone: Codable {
-  public var roots: [NativeView]
+  public var iOSroots: [IOSNativeView]
+  public var androidRoots: [NativeView]
 }
 
 public struct NativeView: Codable {
@@ -101,6 +102,26 @@ public struct NativeView: Codable {
   public var resourceName: String?
   public var applicationPackage: String?
   public var children: [NativeView]
+}
+
+public struct IOSNativeView: Codable {
+  public var children: [IOSNativeView]
+  public var elementType: String
+  public var identifier: String
+  public var label: String
+  public var title: String
+  public var hasFocus: Bool
+  public var isEnabled: Bool
+  public var isSelected: Bool
+  public var frame: IOSRect
+  public var placeholderValue: String?
+}
+
+public struct IOSRect: Codable {
+  public var minX: Double
+  public var minY: Double
+  public var maxX: Double
+  public var maxY: Double
 }
 
 public struct GetNativeViewsResponse: Codable {

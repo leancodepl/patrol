@@ -188,7 +188,7 @@
       }
     }
 
-    func getUITreeRoots(installedApps: [String]) throws -> [NativeView] {
+    func getUITreeRoots(installedApps: [String]) throws -> GetNativeUITreeRespone {
       try runAction("getUITreeRoots") {
         throw PatrolError.methodNotImplemented("getUITreeRoots")
       }

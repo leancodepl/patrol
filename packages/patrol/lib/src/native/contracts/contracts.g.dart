@@ -158,7 +158,10 @@ Map<String, dynamic> _$GetNativeUITreeRequestToJson(
 GetNativeUITreeRespone _$GetNativeUITreeResponeFromJson(
         Map<String, dynamic> json) =>
     GetNativeUITreeRespone(
-      roots: (json['roots'] as List<dynamic>)
+      iOSroots: (json['iOSroots'] as List<dynamic>)
+          .map((e) => IOSNativeView.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      androidRoots: (json['androidRoots'] as List<dynamic>)
           .map((e) => NativeView.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
@@ -166,7 +169,8 @@ GetNativeUITreeRespone _$GetNativeUITreeResponeFromJson(
 Map<String, dynamic> _$GetNativeUITreeResponeToJson(
         GetNativeUITreeRespone instance) =>
     <String, dynamic>{
-      'roots': instance.roots,
+      'iOSroots': instance.iOSroots,
+      'androidRoots': instance.androidRoots,
     };
 
 NativeView _$NativeViewFromJson(Map<String, dynamic> json) => NativeView(
@@ -194,6 +198,50 @@ Map<String, dynamic> _$NativeViewToJson(NativeView instance) =>
       'resourceName': instance.resourceName,
       'applicationPackage': instance.applicationPackage,
       'children': instance.children,
+    };
+
+IOSNativeView _$IOSNativeViewFromJson(Map<String, dynamic> json) =>
+    IOSNativeView(
+      children: (json['children'] as List<dynamic>)
+          .map((e) => IOSNativeView.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      elementType: json['elementType'] as String,
+      identifier: json['identifier'] as String,
+      label: json['label'] as String,
+      title: json['title'] as String,
+      hasFocus: json['hasFocus'] as bool,
+      isEnabled: json['isEnabled'] as bool,
+      isSelected: json['isSelected'] as bool,
+      frame: IOSRect.fromJson(json['frame'] as Map<String, dynamic>),
+      placeholderValue: json['placeholderValue'] as String?,
+    );
+
+Map<String, dynamic> _$IOSNativeViewToJson(IOSNativeView instance) =>
+    <String, dynamic>{
+      'children': instance.children,
+      'elementType': instance.elementType,
+      'identifier': instance.identifier,
+      'label': instance.label,
+      'title': instance.title,
+      'hasFocus': instance.hasFocus,
+      'isEnabled': instance.isEnabled,
+      'isSelected': instance.isSelected,
+      'frame': instance.frame,
+      'placeholderValue': instance.placeholderValue,
+    };
+
+IOSRect _$IOSRectFromJson(Map<String, dynamic> json) => IOSRect(
+      minX: (json['minX'] as num).toDouble(),
+      minY: (json['minY'] as num).toDouble(),
+      maxX: (json['maxX'] as num).toDouble(),
+      maxY: (json['maxY'] as num).toDouble(),
+    );
+
+Map<String, dynamic> _$IOSRectToJson(IOSRect instance) => <String, dynamic>{
+      'minX': instance.minX,
+      'minY': instance.minY,
+      'maxX': instance.maxX,
+      'maxY': instance.maxY,
     };
 
 GetNativeViewsResponse _$GetNativeViewsResponseFromJson(

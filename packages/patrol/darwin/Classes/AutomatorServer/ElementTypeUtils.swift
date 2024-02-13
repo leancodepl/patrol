@@ -89,8 +89,8 @@
     XCUIElement.ElementType.statusItem: "statusItem",
   ]
 
-  func getElementTypeName(elementType: XCUIElement.ElementType) -> String? {
-    return elementTypeNames[elementType]
+  func getElementTypeName(elementType: XCUIElement.ElementType) -> String {
+      return elementTypeNames[elementType] ?? String(elementType.rawValue)
   }
 
 #endif

@@ -280,19 +280,22 @@ class GetNativeUITreeRequest with EquatableMixin {
 @JsonSerializable()
 class GetNativeUITreeRespone with EquatableMixin {
   GetNativeUITreeRespone({
-    required this.roots,
+    required this.iOSroots,
+    required this.androidRoots,
   });
 
   factory GetNativeUITreeRespone.fromJson(Map<String, dynamic> json) =>
       _$GetNativeUITreeResponeFromJson(json);
 
-  final List<NativeView> roots;
+  final List<IOSNativeView> iOSroots;
+  final List<NativeView> androidRoots;
 
   Map<String, dynamic> toJson() => _$GetNativeUITreeResponeToJson(this);
 
   @override
   List<Object?> get props => [
-        roots,
+        iOSroots,
+        androidRoots,
       ];
 }
 
@@ -336,6 +339,80 @@ class NativeView with EquatableMixin {
         resourceName,
         applicationPackage,
         children,
+      ];
+}
+
+@JsonSerializable()
+class IOSNativeView with EquatableMixin {
+  IOSNativeView({
+    required this.children,
+    required this.elementType,
+    required this.identifier,
+    required this.label,
+    required this.title,
+    required this.hasFocus,
+    required this.isEnabled,
+    required this.isSelected,
+    required this.frame,
+    this.placeholderValue,
+  });
+
+  factory IOSNativeView.fromJson(Map<String, dynamic> json) =>
+      _$IOSNativeViewFromJson(json);
+
+  final List<IOSNativeView> children;
+  final String elementType;
+  final String identifier;
+  final String label;
+  final String title;
+  final bool hasFocus;
+  final bool isEnabled;
+  final bool isSelected;
+  final IOSRect frame;
+  final String? placeholderValue;
+
+  Map<String, dynamic> toJson() => _$IOSNativeViewToJson(this);
+
+  @override
+  List<Object?> get props => [
+        children,
+        elementType,
+        identifier,
+        label,
+        title,
+        hasFocus,
+        isEnabled,
+        isSelected,
+        frame,
+        placeholderValue,
+      ];
+}
+
+@JsonSerializable()
+class IOSRect with EquatableMixin {
+  IOSRect({
+    required this.minX,
+    required this.minY,
+    required this.maxX,
+    required this.maxY,
+  });
+
+  factory IOSRect.fromJson(Map<String, dynamic> json) =>
+      _$IOSRectFromJson(json);
+
+  final double minX;
+  final double minY;
+  final double maxX;
+  final double maxY;
+
+  Map<String, dynamic> toJson() => _$IOSRectToJson(this);
+
+  @override
+  List<Object?> get props => [
+        minX,
+        minY,
+        maxX,
+        maxY,
       ];
 }
 
