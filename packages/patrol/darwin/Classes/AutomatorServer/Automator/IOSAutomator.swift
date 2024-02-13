@@ -425,7 +425,7 @@
       try runAction("getting ui tree roots") {
         let foregroundApp = self.getForegroundApp(installedApps: installedApps)
         let snapshot = try foregroundApp.snapshot()
-        let root = NativeView.fromXCUIElementSnapshot(snapshot, foregroundApp.identifier)
+        let root = IOSNativeView.fromXCUIElementSnapshot(snapshot, foregroundApp.identifier)
         return GetNativeUITreeRespone(iOSroots: [root], androidRoots: [])
       }
     }
@@ -902,6 +902,9 @@ extension IOSNativeView {
       -> IOSNativeView
     {
       return IOSNativeView(
+        children: xcuielement.children.map { child in
+          return IOSNativeView.fromXCUIElementSnapshot(child, bundleId)
+        },
         elementType: getElementTypeName(elementType: xcuielement.elementType),
         identifier: xcuielement.identifier,
         label: xcuielement.label,
@@ -915,10 +918,8 @@ extension IOSNativeView {
             maxX: xcuielement.frame.maxX,
             maxY: xcuielement.frame.maxY
         ),
-        placeholderValue: xcuielement.placeholderValue,
-        children: xcuielement.children.map { child in
-          return IOSNativeView.fromXCUIElementSnapshot(child, bundleId)
-        })
+        placeholderValue: xcuielement.placeholderValue
+      )
     }
   }
 #endif
