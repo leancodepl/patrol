@@ -3,8 +3,7 @@ name: test ios simulator
 on:
   workflow_dispatch:
   pull_request:
-    paths:
-      - 'packages/patrol/**'
+    branches: [master]
 
 jobs:
   run_tests:
