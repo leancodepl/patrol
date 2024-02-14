@@ -127,10 +127,47 @@ Map<String, dynamic> _$SelectorToJson(Selector instance) => <String, dynamic>{
       'pkg': instance.pkg,
     };
 
+IOSSelector _$IOSSelectorFromJson(Map<String, dynamic> json) => IOSSelector(
+      elementType: json['elementType'] as String?,
+      identifier: json['identifier'] as String?,
+      label: json['label'] as String?,
+      labelStartsWith: json['labelStartsWith'] as String?,
+      labelContains: json['labelContains'] as String?,
+      title: json['title'] as String?,
+      titleStartsWith: json['titleStartsWith'] as String?,
+      titleContains: json['titleContains'] as String?,
+      hasFocus: json['hasFocus'] as bool?,
+      isEnabled: json['isEnabled'] as bool?,
+      isSelected: json['isSelected'] as bool?,
+      placeholderValue: json['placeholderValue'] as String?,
+      placeholderValueStartsWith: json['placeholderValueStartsWith'] as String?,
+      placeholderValueContains: json['placeholderValueContains'] as String?,
+    );
+
+Map<String, dynamic> _$IOSSelectorToJson(IOSSelector instance) =>
+    <String, dynamic>{
+      'elementType': instance.elementType,
+      'identifier': instance.identifier,
+      'label': instance.label,
+      'labelStartsWith': instance.labelStartsWith,
+      'labelContains': instance.labelContains,
+      'title': instance.title,
+      'titleStartsWith': instance.titleStartsWith,
+      'titleContains': instance.titleContains,
+      'hasFocus': instance.hasFocus,
+      'isEnabled': instance.isEnabled,
+      'isSelected': instance.isSelected,
+      'placeholderValue': instance.placeholderValue,
+      'placeholderValueStartsWith': instance.placeholderValueStartsWith,
+      'placeholderValueContains': instance.placeholderValueContains,
+    };
+
 GetNativeViewsRequest _$GetNativeViewsRequestFromJson(
         Map<String, dynamic> json) =>
     GetNativeViewsRequest(
       selector: Selector.fromJson(json['selector'] as Map<String, dynamic>),
+      iosSelector:
+          IOSSelector.fromJson(json['iosSelector'] as Map<String, dynamic>),
       appId: json['appId'] as String,
     );
 
@@ -138,6 +175,7 @@ Map<String, dynamic> _$GetNativeViewsRequestToJson(
         GetNativeViewsRequest instance) =>
     <String, dynamic>{
       'selector': instance.selector,
+      'iosSelector': instance.iosSelector,
       'appId': instance.appId,
     };
 
@@ -260,6 +298,8 @@ Map<String, dynamic> _$GetNativeViewsResponseToJson(
 
 TapRequest _$TapRequestFromJson(Map<String, dynamic> json) => TapRequest(
       selector: Selector.fromJson(json['selector'] as Map<String, dynamic>),
+      iosSelector:
+          IOSSelector.fromJson(json['iosSelector'] as Map<String, dynamic>),
       appId: json['appId'] as String,
       timeoutMillis: json['timeoutMillis'] as int?,
     );
@@ -267,6 +307,7 @@ TapRequest _$TapRequestFromJson(Map<String, dynamic> json) => TapRequest(
 Map<String, dynamic> _$TapRequestToJson(TapRequest instance) =>
     <String, dynamic>{
       'selector': instance.selector,
+      'iosSelector': instance.iosSelector,
       'appId': instance.appId,
       'timeoutMillis': instance.timeoutMillis,
     };
@@ -292,6 +333,9 @@ EnterTextRequest _$EnterTextRequestFromJson(Map<String, dynamic> json) =>
       selector: json['selector'] == null
           ? null
           : Selector.fromJson(json['selector'] as Map<String, dynamic>),
+      iosSelector: json['iosSelector'] == null
+          ? null
+          : IOSSelector.fromJson(json['iosSelector'] as Map<String, dynamic>),
       keyboardBehavior:
           $enumDecode(_$KeyboardBehaviorEnumMap, json['keyboardBehavior']),
       timeoutMillis: json['timeoutMillis'] as int?,
@@ -303,6 +347,7 @@ Map<String, dynamic> _$EnterTextRequestToJson(EnterTextRequest instance) =>
       'appId': instance.appId,
       'index': instance.index,
       'selector': instance.selector,
+      'iosSelector': instance.iosSelector,
       'keyboardBehavior': _$KeyboardBehaviorEnumMap[instance.keyboardBehavior]!,
       'timeoutMillis': instance.timeoutMillis,
     };
@@ -335,6 +380,8 @@ WaitUntilVisibleRequest _$WaitUntilVisibleRequestFromJson(
         Map<String, dynamic> json) =>
     WaitUntilVisibleRequest(
       selector: Selector.fromJson(json['selector'] as Map<String, dynamic>),
+      iosSelector:
+          IOSSelector.fromJson(json['iosSelector'] as Map<String, dynamic>),
       appId: json['appId'] as String,
       timeoutMillis: json['timeoutMillis'] as int?,
     );
@@ -343,6 +390,7 @@ Map<String, dynamic> _$WaitUntilVisibleRequestToJson(
         WaitUntilVisibleRequest instance) =>
     <String, dynamic>{
       'selector': instance.selector,
+      'iosSelector': instance.iosSelector,
       'appId': instance.appId,
       'timeoutMillis': instance.timeoutMillis,
     };
@@ -401,6 +449,9 @@ TapOnNotificationRequest _$TapOnNotificationRequestFromJson(
       selector: json['selector'] == null
           ? null
           : Selector.fromJson(json['selector'] as Map<String, dynamic>),
+      iosSelector: json['iosSelector'] == null
+          ? null
+          : IOSSelector.fromJson(json['iosSelector'] as Map<String, dynamic>),
       timeoutMillis: json['timeoutMillis'] as int?,
     );
 
@@ -409,6 +460,7 @@ Map<String, dynamic> _$TapOnNotificationRequestToJson(
     <String, dynamic>{
       'index': instance.index,
       'selector': instance.selector,
+      'iosSelector': instance.iosSelector,
       'timeoutMillis': instance.timeoutMillis,
     };
 

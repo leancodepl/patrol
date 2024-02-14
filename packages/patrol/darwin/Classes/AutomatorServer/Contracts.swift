@@ -78,8 +78,26 @@ public struct Selector: Codable {
   public var pkg: String?
 }
 
+public struct IOSSelector: Codable {
+  public var elementType: String?
+  public var identifier: String?
+  public var label: String?
+  public var labelStartsWith: String?
+  public var labelContains: String?
+  public var title: String?
+  public var titleStartsWith: String?
+  public var titleContains: String?
+  public var hasFocus: Bool?
+  public var isEnabled: Bool?
+  public var isSelected: Bool?
+  public var placeholderValue: String?
+  public var placeholderValueStartsWith: String?
+  public var placeholderValueContains: String?
+}
+
 public struct GetNativeViewsRequest: Codable {
   public var selector: Selector
+  public var iosSelector: IOSSelector
   public var appId: String
 }
 
@@ -130,6 +148,7 @@ public struct GetNativeViewsResponse: Codable {
 
 public struct TapRequest: Codable {
   public var selector: Selector
+  public var iosSelector: IOSSelector
   public var appId: String
   public var timeoutMillis: Int?
 }
@@ -145,6 +164,7 @@ public struct EnterTextRequest: Codable {
   public var appId: String
   public var index: Int?
   public var selector: Selector?
+  public var iosSelector: IOSSelector?
   public var keyboardBehavior: KeyboardBehavior
   public var timeoutMillis: Int?
 }
@@ -160,6 +180,7 @@ public struct SwipeRequest: Codable {
 
 public struct WaitUntilVisibleRequest: Codable {
   public var selector: Selector
+  public var iosSelector: IOSSelector
   public var appId: String
   public var timeoutMillis: Int?
 }
@@ -186,6 +207,7 @@ public struct GetNotificationsRequest: Codable {
 public struct TapOnNotificationRequest: Codable {
   public var index: Int?
   public var selector: Selector?
+  public var iosSelector: IOSSelector?
   public var timeoutMillis: Int?
 }
 

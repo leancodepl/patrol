@@ -120,8 +120,69 @@ class Contracts {
     }
   }
 
+  data class IOSSelector (
+    val elementType: String? = null,
+    val identifier: String? = null,
+    val label: String? = null,
+    val labelStartsWith: String? = null,
+    val labelContains: String? = null,
+    val title: String? = null,
+    val titleStartsWith: String? = null,
+    val titleContains: String? = null,
+    val hasFocus: Boolean? = null,
+    val isEnabled: Boolean? = null,
+    val isSelected: Boolean? = null,
+    val placeholderValue: String? = null,
+    val placeholderValueStartsWith: String? = null,
+    val placeholderValueContains: String? = null
+  ){
+    fun hasElementType(): Boolean {
+      return elementType != null
+    }
+    fun hasIdentifier(): Boolean {
+      return identifier != null
+    }
+    fun hasLabel(): Boolean {
+      return label != null
+    }
+    fun hasLabelStartsWith(): Boolean {
+      return labelStartsWith != null
+    }
+    fun hasLabelContains(): Boolean {
+      return labelContains != null
+    }
+    fun hasTitle(): Boolean {
+      return title != null
+    }
+    fun hasTitleStartsWith(): Boolean {
+      return titleStartsWith != null
+    }
+    fun hasTitleContains(): Boolean {
+      return titleContains != null
+    }
+    fun hasHasFocus(): Boolean {
+      return hasFocus != null
+    }
+    fun hasIsEnabled(): Boolean {
+      return isEnabled != null
+    }
+    fun hasIsSelected(): Boolean {
+      return isSelected != null
+    }
+    fun hasPlaceholderValue(): Boolean {
+      return placeholderValue != null
+    }
+    fun hasPlaceholderValueStartsWith(): Boolean {
+      return placeholderValueStartsWith != null
+    }
+    fun hasPlaceholderValueContains(): Boolean {
+      return placeholderValueContains != null
+    }
+  }
+
   data class GetNativeViewsRequest (
     val selector: Selector,
+    val iosSelector: IOSSelector,
     val appId: String
   )
 
@@ -199,6 +260,7 @@ class Contracts {
 
   data class TapRequest (
     val selector: Selector,
+    val iosSelector: IOSSelector,
     val appId: String,
     val timeoutMillis: Long? = null
   ){
@@ -218,6 +280,7 @@ class Contracts {
     val appId: String,
     val index: Long? = null,
     val selector: Selector? = null,
+    val iosSelector: IOSSelector? = null,
     val keyboardBehavior: KeyboardBehavior,
     val timeoutMillis: Long? = null
   ){
@@ -226,6 +289,9 @@ class Contracts {
     }
     fun hasSelector(): Boolean {
       return selector != null
+    }
+    fun hasIosSelector(): Boolean {
+      return iosSelector != null
     }
     fun hasTimeoutMillis(): Boolean {
       return timeoutMillis != null
@@ -243,6 +309,7 @@ class Contracts {
 
   data class WaitUntilVisibleRequest (
     val selector: Selector,
+    val iosSelector: IOSSelector,
     val appId: String,
     val timeoutMillis: Long? = null
   ){
@@ -280,6 +347,7 @@ class Contracts {
   data class TapOnNotificationRequest (
     val index: Long? = null,
     val selector: Selector? = null,
+    val iosSelector: IOSSelector? = null,
     val timeoutMillis: Long? = null
   ){
     fun hasIndex(): Boolean {
@@ -287,6 +355,9 @@ class Contracts {
     }
     fun hasSelector(): Boolean {
       return selector != null
+    }
+    fun hasIosSelector(): Boolean {
+      return iosSelector != null
     }
     fun hasTimeoutMillis(): Boolean {
       return timeoutMillis != null

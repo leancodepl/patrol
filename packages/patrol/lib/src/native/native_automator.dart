@@ -439,6 +439,7 @@ class NativeAutomator {
   /// * [tapOnNotificationByIndex], which is less flexible but also less verbose
   Future<void> tapOnNotificationBySelector(
     Selector selector, {
+    IOSSelector? iosSelector,
     Duration? timeout,
   }) async {
     await _wrapRequest(
@@ -447,6 +448,7 @@ class NativeAutomator {
         TapOnNotificationRequest(
           selector: selector,
           timeoutMillis: timeout?.inMilliseconds,
+          iosSelector: iosSelector,
         ),
       ),
     );
@@ -520,12 +522,14 @@ class NativeAutomator {
   /// If the native view is not found, an exception is thrown.
   Future<void> tap(
     Selector selector, {
+    IOSSelector? iosSelector,
     String? appId,
     Duration? timeout,
   }) async {
     await _wrapRequest('tap', () async {
       await _client.tap(
         TapRequest(
+          iosSelector: iosSelector ?? IOSSelector(),
           selector: selector,
           appId: appId ?? resolvedAppId,
           timeoutMillis: timeout?.inMilliseconds,
@@ -542,6 +546,7 @@ class NativeAutomator {
   /// If the native view is not found, an exception is thrown.
   Future<void> doubleTap(
     Selector selector, {
+    IOSSelector? iosSelector,
     String? appId,
     Duration? timeout,
   }) async {
@@ -552,6 +557,7 @@ class NativeAutomator {
           selector: selector,
           appId: appId ?? resolvedAppId,
           timeoutMillis: timeout?.inMilliseconds,
+          iosSelector: iosSelector ?? IOSSelector(),
         ),
       ),
     );
@@ -595,6 +601,7 @@ class NativeAutomator {
   Future<void> enterText(
     Selector selector, {
     required String text,
+    IOSSelector? iosSelector,
     String? appId,
     KeyboardBehavior? keyboardBehavior,
     Duration? timeout,
@@ -606,6 +613,7 @@ class NativeAutomator {
           data: text,
           appId: appId ?? resolvedAppId,
           selector: selector,
+          iosSelector: iosSelector ?? IOSSelector(),
           keyboardBehavior:
               (keyboardBehavior ?? _config.keyboardBehavior).toContractsEnum,
           timeoutMillis: timeout?.inMilliseconds,
@@ -687,6 +695,7 @@ class NativeAutomator {
   /// [NativeAutomatorConfig.findTimeout].
   Future<void> waitUntilVisible(
     Selector selector, {
+    IOSSelector? iosSelector,
     String? appId,
     Duration? timeout,
   }) async {
@@ -695,6 +704,7 @@ class NativeAutomator {
       () => _client.waitUntilVisible(
         WaitUntilVisibleRequest(
           selector: selector,
+          iosSelector: iosSelector ?? IOSSelector(),
           appId: appId ?? resolvedAppId,
           timeoutMillis: timeout?.inMilliseconds,
         ),
@@ -706,6 +716,7 @@ class NativeAutomator {
   /// [selector], which are currently visible on screen.
   Future<List<NativeView>> getNativeViews(
     Selector selector, {
+    IOSSelector? iosSelector,
     String? appId,
   }) async {
     final response = await _wrapRequest(
@@ -713,6 +724,7 @@ class NativeAutomator {
       () => _client.getNativeViews(
         GetNativeViewsRequest(
           selector: selector,
+          iosSelector: iosSelector ?? IOSSelector(),
           appId: appId ?? resolvedAppId,
         ),
       ),

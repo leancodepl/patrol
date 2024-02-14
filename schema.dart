@@ -64,8 +64,26 @@ class Selector {
   String? pkg;
 }
 
+class IOSSelector {
+  String? elementType;
+  String? identifier;
+  String? label;
+  String? labelStartsWith;
+  String? labelContains;
+  String? title;
+  String? titleStartsWith;
+  String? titleContains;
+  bool? hasFocus;
+  bool? isEnabled;
+  bool? isSelected;
+  String? placeholderValue;
+  String? placeholderValueStartsWith;
+  String? placeholderValueContains;
+}
+
 class GetNativeViewsRequest {
   late Selector selector;
+  late IOSSelector iosSelector;
   late String appId;
 }
 
@@ -120,6 +138,7 @@ class GetNativeViewsResponse {
 
 class TapRequest {
   late Selector selector;
+  late IOSSelector iosSelector;
   late String appId;
   int? timeoutMillis;
 }
@@ -140,6 +159,7 @@ class EnterTextRequest {
   late String appId;
   int? index;
   Selector? selector;
+  IOSSelector? iosSelector;
   late KeyboardBehavior keyboardBehavior;
   int? timeoutMillis;
 }
@@ -155,6 +175,7 @@ class SwipeRequest {
 
 class WaitUntilVisibleRequest {
   late Selector selector;
+  late IOSSelector iosSelector;
   late String appId;
   int? timeoutMillis;
 }
@@ -179,6 +200,7 @@ class GetNotificationsRequest {}
 class TapOnNotificationRequest {
   int? index;
   Selector? selector;
+  IOSSelector? iosSelector;
   int? timeoutMillis;
 }
 
