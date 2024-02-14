@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:patrol_devtools_extension/native_inspector/native_view_details.dart';
 import 'package:patrol_devtools_extension/native_inspector/native_view_hierarchy.dart';
-import 'package:patrol_devtools_extension/native_inspector/node.dart';
+import 'package:patrol_devtools_extension/native_inspector/nodes/node.dart';
 
 class NativeInspector extends HookWidget {
   const NativeInspector({

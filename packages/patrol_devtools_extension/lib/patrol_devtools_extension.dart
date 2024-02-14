@@ -4,7 +4,7 @@ import 'package:devtools_extensions/devtools_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:patrol_devtools_extension/api/patrol_service_extension_api.dart';
 import 'package:patrol_devtools_extension/native_inspector/native_inspector.dart';
-import 'package:patrol_devtools_extension/native_inspector/node.dart';
+import 'package:patrol_devtools_extension/native_inspector/nodes/node.dart';
 
 class PatrolDevToolsExtension extends StatefulWidget {
   const PatrolDevToolsExtension({super.key});
@@ -60,9 +60,10 @@ class _Runner extends ValueNotifier<_State> {
 
     switch (result) {
       case ApiSuccess(:final data):
-        value.roots = data.roots
-            .map((e) => Node(e, null, androidNode: isAndroidApp))
-            .toList();
+        value.roots = isAndroidApp
+            ? data.androidRoots.map((e) => AndroidNode(view: e)).toList()
+            : data.iOSroots.map((e) => IOSNode(view: e)).toList();
+
       case ApiFailure<void> _:
       // TODO: Handle failure
     }

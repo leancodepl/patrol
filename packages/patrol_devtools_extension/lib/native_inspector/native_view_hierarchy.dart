@@ -1,7 +1,7 @@
 import 'package:devtools_app_shared/ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:patrol_devtools_extension/native_inspector/node.dart';
+import 'package:patrol_devtools_extension/native_inspector/nodes/node.dart';
 import 'package:patrol_devtools_extension/native_inspector/widgets/header_decoration.dart';
 import 'package:patrol_devtools_extension/native_inspector/widgets/overflowing_flex.dart';
 

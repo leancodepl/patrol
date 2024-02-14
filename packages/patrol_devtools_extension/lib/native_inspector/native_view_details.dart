@@ -3,7 +3,7 @@ import 'package:devtools_app_shared/ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:patrol_devtools_extension/native_inspector/node.dart';
+import 'package:patrol_devtools_extension/native_inspector/nodes/node.dart';
 import 'package:patrol_devtools_extension/native_inspector/widgets/overflowing_flex.dart';
 
 class NativeViewDetails extends StatelessWidget {
@@ -100,17 +100,30 @@ class _NodeDetails extends HookWidget {
   Widget build(BuildContext context) {
     final hoveredIndex = useState<int?>(null);
 
-    final view = node.nativeView;
-    final rows = [
-      _KeyValueItem('pkg:', view.applicationPackage),
-      _KeyValueItem('childCount:', view.childCount),
-      _KeyValueItem('className:', view.className),
-      _KeyValueItem('contentDescription:', view.contentDescription),
-      _KeyValueItem('enabled:', view.enabled),
-      _KeyValueItem('focused:', view.focused),
-      _KeyValueItem('resourceId:', view.resourceName),
-      _KeyValueItem('text:', view.text),
-    ];
+    final items = switch (node) {
+      final AndroidNode n => [
+          ('pkg:', n.view.applicationPackage),
+          ('childCount:', n.view.childCount),
+          ('className:', n.view.className),
+          ('contentDescription:', n.view.contentDescription),
+          ('enabled:', n.view.enabled),
+          ('focused:', n.view.focused),
+          ('resourceId:', n.view.resourceName),
+          ('text:', n.view.text),
+        ],
+      final IOSNode n => [
+          ('elementType:', n.view.elementType),
+          ('identifier:', n.view.identifier),
+          ('isEnabled:', n.view.isEnabled),
+          ('isSelected:', n.view.isSelected),
+          ('hasFocus:', n.view.hasFocus),
+          ('label:', n.view.label),
+          ('title:', n.view.title),
+          ('placeholderValue:', n.view.placeholderValue),
+        ]
+    };
+
+    final rows = items.map((e) => _KeyValueItem(e.$1, e.$2)).toList();
 
     final unimportantTextStyle = TextStyle(
       color: Theme.of(context).colorScheme.isLight
