@@ -128,6 +128,7 @@ Map<String, dynamic> _$SelectorToJson(Selector instance) => <String, dynamic>{
     };
 
 IOSSelector _$IOSSelectorFromJson(Map<String, dynamic> json) => IOSSelector(
+      instance: json['instance'] as int?,
       elementType: json['elementType'] as String?,
       identifier: json['identifier'] as String?,
       label: json['label'] as String?,
@@ -146,6 +147,7 @@ IOSSelector _$IOSSelectorFromJson(Map<String, dynamic> json) => IOSSelector(
 
 Map<String, dynamic> _$IOSSelectorToJson(IOSSelector instance) =>
     <String, dynamic>{
+      'instance': instance.instance,
       'elementType': instance.elementType,
       'identifier': instance.identifier,
       'label': instance.label,

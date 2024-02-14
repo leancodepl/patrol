@@ -55,18 +55,18 @@
 
     // MARK: General UI interaction
     func tap(
-      on selector: Selector,
+      on selector: IOSSelector,
       inApp bundleId: String,
       withTimeout timeout: TimeInterval?
     ) throws {
-      var view = createLogMessage(element: "view", from: selector)
+        let predicate = selector.toNSPredicate()
+      var view = createLogMessage(element: "view", from: predicate)
       view += " in app \(bundleId)"
 
       try runAction("tapping on \(view)") {
         let app = try self.getApp(withBundleId: bundleId)
 
-        // TODO: We should consider more view properties. See #1554
-        let query = app.descendants(matching: .any).matching(selector.toNSPredicate())
+        let query = app.descendants(matching: .any).matching(predicate)
 
         Logger.shared.i("waiting for existence of \(view)")
         guard
@@ -81,16 +81,17 @@
     }
 
     func doubleTap(
-      on selector: Selector,
+      on selector: IOSSelector,
       inApp bundleId: String,
       withTimeout timeout: TimeInterval?
     ) throws {
-      var view = createLogMessage(element: "view", from: selector)
+        let predicate = selector.toNSPredicate()
+      var view = createLogMessage(element: "view", from: predicate)
       view += " in app \(bundleId)"
 
       try runAction("double tapping on \(view)") {
         let app = try self.getApp(withBundleId: bundleId)
-        let query = app.descendants(matching: .any).matching(selector.toNSPredicate())
+        let query = app.descendants(matching: .any).matching(predicate)
 
         Logger.shared.i("waiting for existence of \(view)")
         guard
@@ -116,7 +117,7 @@
 
     func enterText(
       _ data: String,
-      on selector: Selector,
+      on selector: IOSSelector,
       inApp bundleId: String,
       dismissKeyboard: Bool,
       withTimeout timeout: TimeInterval?
@@ -125,8 +126,9 @@
       if dismissKeyboard {
         data = "\(data)\n"
       }
-
-      var view = createLogMessage(element: "text field", from: selector)
+        
+       let contentPredicate = selector.toNSPredicate()
+      var view = createLogMessage(element: "text field", from: contentPredicate)
       view += " in app \(bundleId)"
 
       try runAction("entering text \(format: data) into \(view)") {
@@ -136,8 +138,7 @@
         // See:
         // * https://developer.apple.com/documentation/xctest/xcuielementtype/xcuielementtypetextfield
         // * https://developer.apple.com/documentation/xctest/xcuielementtype/xcuielementtypesecuretextfield
-        // TODO: We should consider more view properties. See #1554
-        let contentPredicate = selector.toTextFieldNSPredicate()
+        
         let textFieldPredicate = NSPredicate(format: "elementType == 49")
         let secureTextFieldPredicate = NSPredicate(format: "elementType == 50")
 
@@ -224,16 +225,17 @@
     }
 
     func waitUntilVisible(
-      on selector: Selector,
+      on selector: IOSSelector,
       inApp bundleId: String,
       withTimeout timeout: TimeInterval?
     ) throws {
-      let view = createLogMessage(element: "view", from: selector)
+        let predicate = selector.toNSPredicate()
+      let view = createLogMessage(element: "view", from: predicate)
       try runAction(
         "waiting until \(view) in app \(bundleId) becomes visible"
       ) {
         let app = try self.getApp(withBundleId: bundleId)
-        let query = app.descendants(matching: .any).containing(selector.toNSPredicate())
+        let query = app.descendants(matching: .any).containing(predicate)
         guard
           let element = self.waitFor(
             query: query, index: selector.instance ?? 0, timeout: timeout ?? self.timeout)
@@ -402,15 +404,15 @@
     }
 
     func getNativeViews(
-      on selector: Selector,
+      on selector: IOSSelector,
       inApp bundleId: String
     ) throws -> [NativeView] {
-      let view = createLogMessage(element: "views", from: selector)
+        let predicate = selector.toNSPredicate()
+      let view = createLogMessage(element: "views", from: predicate)
       return try runAction("getting native \(view)") {
         let app = try self.getApp(withBundleId: bundleId)
 
-        // TODO: We should consider more view properties. See #1554
-        let query = app.descendants(matching: .any).matching(selector.toNSPredicate())
+        let query = app.descendants(matching: .any).matching(predicate)
         let elements = query.allElementsBoundByIndex
 
         let views = elements.map { xcuielement in
@@ -847,21 +849,11 @@
       group.wait()
     }
 
-    func createLogMessage(element: String, from selector: Selector) -> String {
+    func createLogMessage(element: String, from predicate: NSPredicate) -> String {
       var logMessage = element
-
-      if let text = selector.text {
-        logMessage += " with text '\(text)'"
-      }
-      if let startsWith = selector.textStartsWith {
-        logMessage += " starting with '\(startsWith)'"
-      }
-      if let contains = selector.textContains {
-        logMessage += " containing '\(contains)'"
-      }
-      if let index = selector.instance {
-        logMessage += " at index \(index)"
-      }
+        
+        logMessage += " "
+        logMessage += predicate.predicateFormat
 
       return logMessage
     }

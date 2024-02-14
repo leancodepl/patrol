@@ -93,4 +93,7 @@
       return elementTypeNames[elementType] ?? String(elementType.rawValue)
   }
 
+  func getElementType(typeName: String) -> XCUIElement.ElementType {
+      return elementTypeNames.first(where: {$1 == typeName})?.key ?? XCUIElement.ElementType.any
+  }
 #endif

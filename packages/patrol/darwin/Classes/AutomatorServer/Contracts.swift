@@ -79,6 +79,7 @@ public struct Selector: Codable {
 }
 
 public struct IOSSelector: Codable {
+  public var instance: Int?
   public var elementType: String?
   public var identifier: String?
   public var label: String?

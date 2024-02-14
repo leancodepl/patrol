@@ -63,7 +63,7 @@
     ) throws -> GetNativeViewsResponse {
       return try runCatching {
         let nativeViews = try automator.getNativeViews(
-          on: request.selector,
+            on: request.iosSelector,
           inApp: request.appId
         )
 
@@ -78,7 +78,7 @@
     func tap(request: TapRequest) throws {
       return try runCatching {
         try automator.tap(
-          on: request.selector,
+          on: request.iosSelector,
           inApp: request.appId,
           withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) }
         )
@@ -88,7 +88,7 @@
     func doubleTap(request: TapRequest) throws {
       return try runCatching {
         try automator.doubleTap(
-          on: request.selector,
+          on: request.iosSelector,
           inApp: request.appId,
           withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) }
         )
@@ -114,7 +114,7 @@
             dismissKeyboard: request.keyboardBehavior == .showAndDismiss,
             withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) }
           )
-        } else if let selector = request.selector {
+        } else if let selector = request.iosSelector {
           try automator.enterText(
             request.data,
             on: selector,
@@ -141,7 +141,7 @@
     func waitUntilVisible(request: WaitUntilVisibleRequest) throws {
       return try runCatching {
         try automator.waitUntilVisible(
-          on: request.selector,
+          on: request.iosSelector,
           inApp: request.appId,
           withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) }
         )

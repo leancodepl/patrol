@@ -1,87 +1,81 @@
-extension Selector {
-  public func toTextFieldNSPredicate() -> NSPredicate {
-    var format = ""
-    var begun = false
-    var values = [String]()
-
-    if text != nil {
-      begun = true
-      format += "(label == %@ OR title == %@ OR value == %@ OR placeholderValue == %@)"
-      values.append(text!)
-      values.append(text!)
-      values.append(text!)
-      values.append(text!)
-    }
-
-    if textStartsWith != nil {
-      if begun { format += " AND " }
-      begun = true
-      format +=
-        "(label BEGINSWITH %@ OR title BEGINSWITH %@ OR value BEGINSWITH %@ OR placeholderValue BEGINSWITH %@)"
-      values.append(textStartsWith!)
-      values.append(textStartsWith!)
-      values.append(textStartsWith!)
-      values.append(textStartsWith!)
-    }
-
-    if textContains != nil {
-      if begun { format += " AND " }
-      begun = true
-      format +=
-        "(label CONTAINS %@ OR title CONTAINS %@ OR value CONTAINS %@ OR placeholderValue CONTAINS %@)"
-      values.append(textContains!)
-      values.append(textContains!)
-      values.append(textContains!)
-      values.append(textContains!)
-    }
-
-    if resourceId != nil {
-      if begun { format += " AND " }
-      begun = true
-      format += "(identifier == %@)"
-      values.append(resourceId!)
-    }
-
-    let predicate = NSPredicate(format: format, argumentArray: values)
-
-    return predicate
-  }
-
+extension IOSSelector {
   public func toNSPredicate() -> NSPredicate {
-    var format = ""
-    var begun = false
     var values = [String]()
-
-    if text != nil {
-      begun = true
-      format += "(label == %@ OR title == %@)"
-      values.append(text!)
-      values.append(text!)
+    var conditions = [String]()
+      
+    if let elementName = elementType {
+        let elementTypeValue = getElementType(typeName: elementName).rawValue
+        conditions.append("elementType == %@")
+        values.append(String(elementTypeValue))
+    }
+      
+    if let identifier = identifier {
+        conditions.append("identifier == %@")
+        values.append(identifier)
+    }
+      
+    if let label = label {
+        conditions.append("label == %@")
+      values.append(label)
+    }
+      
+    if let labelStartsWith = labelStartsWith {
+        conditions.append("label BEGINSWITH %@")
+    values.append(labelStartsWith)
     }
 
-    if textStartsWith != nil {
-      if begun { format += " AND " }
-      begun = true
-      format += "(label BEGINSWITH %@ OR title BEGINSWITH %@)"
-      values.append(textStartsWith!)
-      values.append(textStartsWith!)
+    if let labelContains = labelContains {
+        conditions.append("label CONTAINS %@")
+    values.append(labelContains)
+    }
+      
+    if let title = title {
+        conditions.append("title == %@")
+    values.append(title)
     }
 
-    if textContains != nil {
-      if begun { format += " AND " }
-      begun = true
-      format += "(label CONTAINS %@ OR title CONTAINS %@)"
-      values.append(textContains!)
-      values.append(textContains!)
+    if let titleStartsWith = titleStartsWith {
+        conditions.append("title BEGINSWITH %@")
+      values.append(titleStartsWith)
     }
 
-    if resourceId != nil {
-      if begun { format += " AND " }
-      begun = true
-      format += "(identifier == %@)"
-      values.append(resourceId!)
+    if let titleContains = titleContains {
+        conditions.append("title CONTAINS %@")
+      values.append(titleContains)
     }
+      
+      if let hasFocus = hasFocus {
+          conditions.append("hasFocus == %@")
+          values.append(hasFocus ? "YES": "NO")
+      }
 
+      if let isEnabled = isEnabled {
+          conditions.append("isEnabled == %@")
+          values.append(isEnabled ? "YES": "NO")
+      }
+
+      if let isSelected = isSelected {
+          conditions.append("isSelected == %@")
+          values.append(isSelected ? "YES": "NO")
+      }
+
+      if let placeholderValue = placeholderValue {
+          conditions.append("placeholderValue == %@")
+      values.append(placeholderValue)
+      }
+
+      if let placeholderValueStartsWith = placeholderValueStartsWith {
+          conditions.append("placeholderValue BEGINSWITH %@")
+        values.append(placeholderValueStartsWith)
+      }
+
+      if let placeholderValueContains = placeholderValueContains {
+          conditions.append("placeholderValue CONTAINS %@")
+        values.append(placeholderValueContains)
+      }
+      
+     let format = conditions.joined(separator: " AND ")
+      
     let predicate = NSPredicate(format: format, argumentArray: values)
 
     return predicate
@@ -103,19 +97,19 @@ extension Selector {
 
     // MARK: General UI interaction
     func tap(
-      on selector: Selector,
+      on selector: IOSSelector,
       inApp bundleId: String,
       withTimeout timeout: TimeInterval?
     ) throws
     func doubleTap(
-      on selector: Selector,
+      on selector: IOSSelector,
       inApp bundleId: String,
       withTimeout timeout: TimeInterval?
     ) throws
     func tapAt(coordinate vector: CGVector, inApp bundleId: String) throws
     func enterText(
       _ data: String,
-      on selector: Selector,
+      on selector: IOSSelector,
       inApp bundleId: String,
       dismissKeyboard: Bool,
       withTimeout timeout: TimeInterval?
@@ -129,7 +123,7 @@ extension Selector {
     ) throws
     func swipe(from start: CGVector, to end: CGVector, inApp bundleId: String) throws
     func waitUntilVisible(
-      on selector: Selector,
+      on selector: IOSSelector,
       inApp bundleId: String,
       withTimeout timeout: TimeInterval?
     ) throws
@@ -146,7 +140,7 @@ extension Selector {
     func enableBluetooth() throws
     func disableBluetooth() throws
     func getNativeViews(
-      on selector: Selector,
+      on selector: IOSSelector,
       inApp bundleId: String
     ) throws -> [NativeView]
     func getUITreeRoots(installedApps: [String]) throws -> GetNativeUITreeRespone

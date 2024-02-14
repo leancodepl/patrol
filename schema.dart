@@ -65,6 +65,7 @@ class Selector {
 }
 
 class IOSSelector {
+  int? instance;
   String? elementType;
   String? identifier;
   String? label;
