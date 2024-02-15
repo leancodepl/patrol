@@ -334,9 +334,12 @@ class PatrolTester {
     Duration? visibleTimeout,
     Duration? settleTimeout,
   }) {
-    if (!kIsWeb && Platform.isIOS && kReleaseMode) {
+    if (!kIsWeb) {
       // Fix for enterText() not working in release mode on real iOS devices.
       // See https://github.com/flutter/flutter/pull/89703
+      // Also a fix for enterText() not being able to interact with the same
+      // textfield 2 times in the same test.
+      // See https://github.com/flutter/flutter/issues/134604
       tester.testTextInput.register();
     }
 
