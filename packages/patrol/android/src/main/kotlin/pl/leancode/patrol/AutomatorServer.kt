@@ -72,7 +72,7 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
 
     override fun getNativeUITree(request: GetNativeUITreeRequest): GetNativeUITreeRespone {
         val trees = automation.getNativeUITrees()
-        return GetNativeUITreeRespone(trees)
+        return GetNativeUITreeRespone(androidRoots = trees, iOSroots = listOf())
     }
 
     override fun enableDarkMode(request: DarkModeRequest) {
@@ -118,7 +118,8 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
     override fun getNativeViews(request: GetNativeViewsRequest): GetNativeViewsResponse {
         val views = automation.getNativeViews(request.selector.toBySelector())
         return GetNativeViewsResponse(
-            nativeViews = views
+            androidNativeViews = views,
+            iosNativeViews = listOf(),
         )
     }
 

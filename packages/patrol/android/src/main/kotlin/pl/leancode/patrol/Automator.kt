@@ -16,21 +16,43 @@ import androidx.test.uiautomator.UiObject2
 import androidx.test.uiautomator.UiObjectNotFoundException
 import androidx.test.uiautomator.UiSelector
 import pl.leancode.patrol.contracts.Contracts.KeyboardBehavior
-import pl.leancode.patrol.contracts.Contracts.NativeView
+import pl.leancode.patrol.contracts.Contracts.AndroidNativeView
 import pl.leancode.patrol.contracts.Contracts.Notification
+import pl.leancode.patrol.contracts.Contracts.Rectangle
+import pl.leancode.patrol.contracts.Contracts.Point2D
 import pl.leancode.patrol.contracts.Contracts.Selector
 import kotlin.math.roundToInt
 
-private fun fromUiObject2(obj: UiObject2): NativeView {
-    return NativeView(
+private fun fromUiObject2(obj: UiObject2): AndroidNativeView {
+    val bounds = obj.visibleBounds;
+    val center = obj.visibleCenter;
+
+    return AndroidNativeView(
         className = obj.className,
         text = obj.text,
         contentDescription = obj.contentDescription,
-        focused = obj.isFocused,
-        enabled = obj.isEnabled,
+        isFocused = obj.isFocused,
+        isEnabled = obj.isEnabled,
         childCount = obj.childCount.toLong(),
         resourceName = obj.resourceName,
         applicationPackage = obj.applicationPackage,
+        isCheckable = obj.isCheckable,
+        isChecked = obj.isChecked,
+        isClickable = obj.isClickable,
+        isFocusable = obj.isFocusable,
+        isLongClickable = obj.isLongClickable,
+        isScrollable = obj.isScrollable,
+        isSelected = obj.isSelected,
+        visibleBounds = Rectangle(
+            minX = bounds.left.toDouble(),
+            minY = bounds.top.toDouble(),
+            maxX = bounds.right.toDouble(),
+            maxY = bounds.top.toDouble(),
+        ),
+        visibleCenter = Point2D(
+            x = center.x.toDouble(),
+            y = center.y.toDouble()
+        ),
         children = obj.children?.map { fromUiObject2(it) } ?: listOf()
     )
 }
@@ -143,14 +165,14 @@ class Automator private constructor() {
 
     fun disableBluetooth(): Unit = throw NotImplementedError("disableBluetooth")
 
-    fun getNativeViews(selector: BySelector): List<NativeView> {
+    fun getNativeViews(selector: BySelector): List<AndroidNativeView> {
         Logger.d("getNativeViews()")
 
         val uiObjects2 = uiDevice.findObjects(selector)
         return uiObjects2.map { fromUiObject2(it) }
     }
 
-    fun getNativeUITrees(): List<NativeView> {
+    fun getNativeUITrees(): List<AndroidNativeView> {
         Logger.d("getNativeUITrees()")
 
         return getWindowTrees(uiDevice, uiAutomation)
