@@ -1,7 +1,7 @@
 import XCTest
 import patrol
 
-typealias Selector = patrol.Selector
+typealias IOSSelector = patrol.IOSSelector
 
 final class RunnerTests: XCTestCase {
   func testSample() {
@@ -11,7 +11,7 @@ final class RunnerTests: XCTestCase {
 
   func testSelectorToNSPredicate_text() {
     var selector = createEmptySelector()
-    selector.text = "Log in"
+    selector.elementType = "radioButton"
 
     let predicate = selector.toNSPredicate()
 
@@ -19,14 +19,13 @@ final class RunnerTests: XCTestCase {
     XCTAssertEqual(
       predicate.predicateFormat,
       """
-      label == "Log in" OR \
-      title == "Log in"
+      elementType == 11
       """)
   }
 
-  func testSelectorToNSPredicate_textStartsWith() {
+  func testSelectorToNSPredicate_hasFocus() {
     var selector = createEmptySelector()
-    selector.textStartsWith = "Log in"
+      selector.hasFocus = false
 
     let predicate = selector.toNSPredicate()
 
@@ -34,14 +33,13 @@ final class RunnerTests: XCTestCase {
     XCTAssertEqual(
       predicate.predicateFormat,
       """
-      label BEGINSWITH "Log in" OR \
-      title BEGINSWITH "Log in"
+      hasFocus == NO
       """)
   }
 
-  func testSelectorToNSPredicate_textContains() {
+  func testSelectorToNSPredicate_label() {
     var selector = createEmptySelector()
-    selector.textContains = "Log in"
+    selector.labelContains = "Log in"
 
     let predicate = selector.toNSPredicate()
 
@@ -49,29 +47,14 @@ final class RunnerTests: XCTestCase {
     XCTAssertEqual(
       predicate.predicateFormat,
       """
-      label CONTAINS "Log in" OR \
-      title CONTAINS "Log in"
-      """)
-  }
-
-  func testSelectorToNSPredicate_resourceId() {
-    var selector = createEmptySelector()
-    selector.resourceId = "log_in"
-
-    let predicate = selector.toNSPredicate()
-
-    NSLog(predicate.predicateFormat)
-    XCTAssertEqual(
-      predicate.predicateFormat,
-      """
-      identifier == "log_in"
+      label CONTAINS "Log in"
       """)
   }
 
   func testSelectorToNSPredicate_complex_1() {
     var selector = createEmptySelector()
-    selector.textContains = "text_contains"
-    selector.resourceId = "resource_id"
+    selector.labelContains = "text_contains"
+    selector.identifier = "identifier_id"
 
     let predicate = selector.toNSPredicate()
 
@@ -79,16 +62,15 @@ final class RunnerTests: XCTestCase {
     XCTAssertEqual(
       predicate.predicateFormat,
       """
-      (label CONTAINS "text_contains" OR \
-      title CONTAINS "text_contains") AND \
-      identifier == "resource_id"
+      label CONTAINS "text_contains" AND \
+      identifier == "identifier_id"
       """)
   }
 
   func testSelectorToNSPredicate_complex_2() {
     var selector = createEmptySelector()
-    selector.textContains = "text_contains"
-    selector.resourceId = "resource_id"
+    selector.labelContains = "text_contains"
+    selector.titleStartsWith = "title"
 
     let predicate = selector.toNSPredicate()
 
@@ -96,19 +78,17 @@ final class RunnerTests: XCTestCase {
     XCTAssertEqual(
       predicate.predicateFormat,
       """
-      (label CONTAINS "text_contains" OR \
-      title CONTAINS "text_contains") AND \
-      identifier == "resource_id"
+      label CONTAINS "text_contains" AND \
+      title BEGINS "title"
       """)
   }
 }
 
-private func createEmptySelector(text: String? = nil) -> patrol.Selector {
-  // Temporary fix. We will remove the Selector class later
+private func createEmptySelector(text: String? = nil) -> patrol.IOSSelector {
   let jsonString = "{}"
 
   let jsonData = jsonString.data(using: .utf8)!
   let decoder = JSONDecoder()
 
-  return try! decoder.decode(patrol.Selector.self, from: jsonData)
+  return try! decoder.decode(patrol.IOSSelector.self, from: jsonData)
 }
