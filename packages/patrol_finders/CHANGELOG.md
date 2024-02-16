@@ -1,3 +1,7 @@
+## 2.0.2
+
+- Add registering text input. (#2111)
+
 ## 2.0.1+1
 
 - Add screenshots to `pubspec.yaml` (#1917)
