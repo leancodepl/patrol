@@ -94,19 +94,28 @@ class GetNativeUITreeRequest {
 
 class GetNativeUITreeRespone {
   late List<IOSNativeView> iOSroots;
-  late List<NativeView> androidRoots;
+  late List<AndroidNativeView> androidRoots;
 }
 
-class NativeView {
-  String? className;
-  String? text;
-  String? contentDescription;
-  late bool focused;
-  late bool enabled;
-  int? childCount;
-  String? resourceName;
-  String? applicationPackage;
-  late List<NativeView> children;
+class AndroidNativeView {
+  late String text;
+  late String className;
+  late String resourceName;
+  late String contentDescription;
+  late String applicationPackage;
+  late int childCount;
+  late bool isCheckable;
+  late bool isChecked;
+  late bool isClickable;
+  late bool isEnabled;
+  late bool isFocusable;
+  late bool isFocused;
+  late bool isLongClickable;
+  late bool isScrollable;
+  late bool isSelected;
+  late Rectangle visibleBounds;
+  late Point2D visibleCenter;
+  late List<AndroidNativeView> children;
 }
 
 class IOSNativeView {
@@ -119,22 +128,28 @@ class IOSNativeView {
   late bool hasFocus;
   late bool isEnabled;
   late bool isSelected;
-  late IOSRect frame;
+  late Rectangle frame;
   String? placeholderValue;
   //TODO value
   //TODO we can get other properties from XCUIElement in next request
   // exists, isHittable,normalizedSliderPosition, accessibilityLabel, accessbilityHint, accessibilityValue, isAccessibilityElement etc..;
 }
 
-class IOSRect {
+class Rectangle {
   late double minX;
   late double minY;
   late double maxX;
   late double maxY;
 }
 
+class Point2D {
+  late double x;
+  late double y;
+}
+
 class GetNativeViewsResponse {
-  late List<NativeView> nativeViews;
+  late List<IOSNativeView> iosNativeViews;
+  late List<AndroidNativeView> androidNativeViews;
 }
 
 class TapRequest {

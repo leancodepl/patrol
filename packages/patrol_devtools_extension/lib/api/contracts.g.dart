@@ -202,7 +202,7 @@ GetNativeUITreeRespone _$GetNativeUITreeResponeFromJson(
           .map((e) => IOSNativeView.fromJson(e as Map<String, dynamic>))
           .toList(),
       androidRoots: (json['androidRoots'] as List<dynamic>)
-          .map((e) => NativeView.fromJson(e as Map<String, dynamic>))
+          .map((e) => AndroidNativeView.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
 
@@ -213,30 +213,51 @@ Map<String, dynamic> _$GetNativeUITreeResponeToJson(
       'androidRoots': instance.androidRoots,
     };
 
-NativeView _$NativeViewFromJson(Map<String, dynamic> json) => NativeView(
-      className: json['className'] as String?,
-      text: json['text'] as String?,
-      contentDescription: json['contentDescription'] as String?,
-      focused: json['focused'] as bool,
-      enabled: json['enabled'] as bool,
-      childCount: json['childCount'] as int?,
-      resourceName: json['resourceName'] as String?,
-      applicationPackage: json['applicationPackage'] as String?,
+AndroidNativeView _$AndroidNativeViewFromJson(Map<String, dynamic> json) =>
+    AndroidNativeView(
+      text: json['text'] as String,
+      className: json['className'] as String,
+      resourceName: json['resourceName'] as String,
+      contentDescription: json['contentDescription'] as String,
+      applicationPackage: json['applicationPackage'] as String,
+      childCount: json['childCount'] as int,
+      isCheckable: json['isCheckable'] as bool,
+      isChecked: json['isChecked'] as bool,
+      isClickable: json['isClickable'] as bool,
+      isEnabled: json['isEnabled'] as bool,
+      isFocusable: json['isFocusable'] as bool,
+      isFocused: json['isFocused'] as bool,
+      isLongClickable: json['isLongClickable'] as bool,
+      isScrollable: json['isScrollable'] as bool,
+      isSelected: json['isSelected'] as bool,
+      visibleBounds:
+          Rectangle.fromJson(json['visibleBounds'] as Map<String, dynamic>),
+      visibleCenter:
+          Point2D.fromJson(json['visibleCenter'] as Map<String, dynamic>),
       children: (json['children'] as List<dynamic>)
-          .map((e) => NativeView.fromJson(e as Map<String, dynamic>))
+          .map((e) => AndroidNativeView.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
 
-Map<String, dynamic> _$NativeViewToJson(NativeView instance) =>
+Map<String, dynamic> _$AndroidNativeViewToJson(AndroidNativeView instance) =>
     <String, dynamic>{
-      'className': instance.className,
       'text': instance.text,
-      'contentDescription': instance.contentDescription,
-      'focused': instance.focused,
-      'enabled': instance.enabled,
-      'childCount': instance.childCount,
+      'className': instance.className,
       'resourceName': instance.resourceName,
+      'contentDescription': instance.contentDescription,
       'applicationPackage': instance.applicationPackage,
+      'childCount': instance.childCount,
+      'isCheckable': instance.isCheckable,
+      'isChecked': instance.isChecked,
+      'isClickable': instance.isClickable,
+      'isEnabled': instance.isEnabled,
+      'isFocusable': instance.isFocusable,
+      'isFocused': instance.isFocused,
+      'isLongClickable': instance.isLongClickable,
+      'isScrollable': instance.isScrollable,
+      'isSelected': instance.isSelected,
+      'visibleBounds': instance.visibleBounds,
+      'visibleCenter': instance.visibleCenter,
       'children': instance.children,
     };
 
@@ -252,7 +273,7 @@ IOSNativeView _$IOSNativeViewFromJson(Map<String, dynamic> json) =>
       hasFocus: json['hasFocus'] as bool,
       isEnabled: json['isEnabled'] as bool,
       isSelected: json['isSelected'] as bool,
-      frame: IOSRect.fromJson(json['frame'] as Map<String, dynamic>),
+      frame: Rectangle.fromJson(json['frame'] as Map<String, dynamic>),
       placeholderValue: json['placeholderValue'] as String?,
     );
 
@@ -270,32 +291,46 @@ Map<String, dynamic> _$IOSNativeViewToJson(IOSNativeView instance) =>
       'placeholderValue': instance.placeholderValue,
     };
 
-IOSRect _$IOSRectFromJson(Map<String, dynamic> json) => IOSRect(
+Rectangle _$RectangleFromJson(Map<String, dynamic> json) => Rectangle(
       minX: (json['minX'] as num).toDouble(),
       minY: (json['minY'] as num).toDouble(),
       maxX: (json['maxX'] as num).toDouble(),
       maxY: (json['maxY'] as num).toDouble(),
     );
 
-Map<String, dynamic> _$IOSRectToJson(IOSRect instance) => <String, dynamic>{
+Map<String, dynamic> _$RectangleToJson(Rectangle instance) => <String, dynamic>{
       'minX': instance.minX,
       'minY': instance.minY,
       'maxX': instance.maxX,
       'maxY': instance.maxY,
     };
 
+Point2D _$Point2DFromJson(Map<String, dynamic> json) => Point2D(
+      x: (json['x'] as num).toDouble(),
+      y: (json['y'] as num).toDouble(),
+    );
+
+Map<String, dynamic> _$Point2DToJson(Point2D instance) => <String, dynamic>{
+      'x': instance.x,
+      'y': instance.y,
+    };
+
 GetNativeViewsResponse _$GetNativeViewsResponseFromJson(
         Map<String, dynamic> json) =>
     GetNativeViewsResponse(
-      nativeViews: (json['nativeViews'] as List<dynamic>)
-          .map((e) => NativeView.fromJson(e as Map<String, dynamic>))
+      iosNativeViews: (json['iosNativeViews'] as List<dynamic>)
+          .map((e) => IOSNativeView.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      androidNativeViews: (json['androidNativeViews'] as List<dynamic>)
+          .map((e) => AndroidNativeView.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
 
 Map<String, dynamic> _$GetNativeViewsResponseToJson(
         GetNativeViewsResponse instance) =>
     <String, dynamic>{
-      'nativeViews': instance.nativeViews,
+      'iosNativeViews': instance.iosNativeViews,
+      'androidNativeViews': instance.androidNativeViews,
     };
 
 TapRequest _$TapRequestFromJson(Map<String, dynamic> json) => TapRequest(

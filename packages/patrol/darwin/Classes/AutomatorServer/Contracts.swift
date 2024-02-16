@@ -108,19 +108,28 @@ public struct GetNativeUITreeRequest: Codable {
 
 public struct GetNativeUITreeRespone: Codable {
   public var iOSroots: [IOSNativeView]
-  public var androidRoots: [NativeView]
+  public var androidRoots: [AndroidNativeView]
 }
 
-public struct NativeView: Codable {
-  public var className: String?
-  public var text: String?
-  public var contentDescription: String?
-  public var focused: Bool
-  public var enabled: Bool
-  public var childCount: Int?
-  public var resourceName: String?
-  public var applicationPackage: String?
-  public var children: [NativeView]
+public struct AndroidNativeView: Codable {
+  public var text: String
+  public var className: String
+  public var resourceName: String
+  public var contentDescription: String
+  public var applicationPackage: String
+  public var childCount: Int
+  public var isCheckable: Bool
+  public var isChecked: Bool
+  public var isClickable: Bool
+  public var isEnabled: Bool
+  public var isFocusable: Bool
+  public var isFocused: Bool
+  public var isLongClickable: Bool
+  public var isScrollable: Bool
+  public var isSelected: Bool
+  public var visibleBounds: Rectangle
+  public var visibleCenter: Point2D
+  public var children: [AndroidNativeView]
 }
 
 public struct IOSNativeView: Codable {
@@ -132,19 +141,25 @@ public struct IOSNativeView: Codable {
   public var hasFocus: Bool
   public var isEnabled: Bool
   public var isSelected: Bool
-  public var frame: IOSRect
+  public var frame: Rectangle
   public var placeholderValue: String?
 }
 
-public struct IOSRect: Codable {
+public struct Rectangle: Codable {
   public var minX: Double
   public var minY: Double
   public var maxX: Double
   public var maxY: Double
 }
 
+public struct Point2D: Codable {
+  public var x: Double
+  public var y: Double
+}
+
 public struct GetNativeViewsResponse: Codable {
-  public var nativeViews: [NativeView]
+  public var iosNativeViews: [IOSNativeView]
+  public var androidNativeViews: [AndroidNativeView]
 }
 
 public struct TapRequest: Codable {

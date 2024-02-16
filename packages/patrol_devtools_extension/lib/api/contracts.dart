@@ -352,7 +352,7 @@ class GetNativeUITreeRespone with EquatableMixin {
       _$GetNativeUITreeResponeFromJson(json);
 
   final List<IOSNativeView> iOSroots;
-  final List<NativeView> androidRoots;
+  final List<AndroidNativeView> androidRoots;
 
   Map<String, dynamic> toJson() => _$GetNativeUITreeResponeToJson(this);
 
@@ -364,44 +364,71 @@ class GetNativeUITreeRespone with EquatableMixin {
 }
 
 @JsonSerializable()
-class NativeView with EquatableMixin {
-  NativeView({
-    this.className,
-    this.text,
-    this.contentDescription,
-    required this.focused,
-    required this.enabled,
-    this.childCount,
-    this.resourceName,
-    this.applicationPackage,
+class AndroidNativeView with EquatableMixin {
+  AndroidNativeView({
+    required this.text,
+    required this.className,
+    required this.resourceName,
+    required this.contentDescription,
+    required this.applicationPackage,
+    required this.childCount,
+    required this.isCheckable,
+    required this.isChecked,
+    required this.isClickable,
+    required this.isEnabled,
+    required this.isFocusable,
+    required this.isFocused,
+    required this.isLongClickable,
+    required this.isScrollable,
+    required this.isSelected,
+    required this.visibleBounds,
+    required this.visibleCenter,
     required this.children,
   });
 
-  factory NativeView.fromJson(Map<String, dynamic> json) =>
-      _$NativeViewFromJson(json);
+  factory AndroidNativeView.fromJson(Map<String, dynamic> json) =>
+      _$AndroidNativeViewFromJson(json);
 
-  final String? className;
-  final String? text;
-  final String? contentDescription;
-  final bool focused;
-  final bool enabled;
-  final int? childCount;
-  final String? resourceName;
-  final String? applicationPackage;
-  final List<NativeView> children;
+  final String text;
+  final String className;
+  final String resourceName;
+  final String contentDescription;
+  final String applicationPackage;
+  final int childCount;
+  final bool isCheckable;
+  final bool isChecked;
+  final bool isClickable;
+  final bool isEnabled;
+  final bool isFocusable;
+  final bool isFocused;
+  final bool isLongClickable;
+  final bool isScrollable;
+  final bool isSelected;
+  final Rectangle visibleBounds;
+  final Point2D visibleCenter;
+  final List<AndroidNativeView> children;
 
-  Map<String, dynamic> toJson() => _$NativeViewToJson(this);
+  Map<String, dynamic> toJson() => _$AndroidNativeViewToJson(this);
 
   @override
   List<Object?> get props => [
-        className,
         text,
-        contentDescription,
-        focused,
-        enabled,
-        childCount,
+        className,
         resourceName,
+        contentDescription,
         applicationPackage,
+        childCount,
+        isCheckable,
+        isChecked,
+        isClickable,
+        isEnabled,
+        isFocusable,
+        isFocused,
+        isLongClickable,
+        isScrollable,
+        isSelected,
+        visibleBounds,
+        visibleCenter,
         children,
       ];
 }
@@ -432,7 +459,7 @@ class IOSNativeView with EquatableMixin {
   final bool hasFocus;
   final bool isEnabled;
   final bool isSelected;
-  final IOSRect frame;
+  final Rectangle frame;
   final String? placeholderValue;
 
   Map<String, dynamic> toJson() => _$IOSNativeViewToJson(this);
@@ -453,23 +480,23 @@ class IOSNativeView with EquatableMixin {
 }
 
 @JsonSerializable()
-class IOSRect with EquatableMixin {
-  IOSRect({
+class Rectangle with EquatableMixin {
+  Rectangle({
     required this.minX,
     required this.minY,
     required this.maxX,
     required this.maxY,
   });
 
-  factory IOSRect.fromJson(Map<String, dynamic> json) =>
-      _$IOSRectFromJson(json);
+  factory Rectangle.fromJson(Map<String, dynamic> json) =>
+      _$RectangleFromJson(json);
 
   final double minX;
   final double minY;
   final double maxX;
   final double maxY;
 
-  Map<String, dynamic> toJson() => _$IOSRectToJson(this);
+  Map<String, dynamic> toJson() => _$RectangleToJson(this);
 
   @override
   List<Object?> get props => [
@@ -481,21 +508,46 @@ class IOSRect with EquatableMixin {
 }
 
 @JsonSerializable()
+class Point2D with EquatableMixin {
+  Point2D({
+    required this.x,
+    required this.y,
+  });
+
+  factory Point2D.fromJson(Map<String, dynamic> json) =>
+      _$Point2DFromJson(json);
+
+  final double x;
+  final double y;
+
+  Map<String, dynamic> toJson() => _$Point2DToJson(this);
+
+  @override
+  List<Object?> get props => [
+        x,
+        y,
+      ];
+}
+
+@JsonSerializable()
 class GetNativeViewsResponse with EquatableMixin {
   GetNativeViewsResponse({
-    required this.nativeViews,
+    required this.iosNativeViews,
+    required this.androidNativeViews,
   });
 
   factory GetNativeViewsResponse.fromJson(Map<String, dynamic> json) =>
       _$GetNativeViewsResponseFromJson(json);
 
-  final List<NativeView> nativeViews;
+  final List<IOSNativeView> iosNativeViews;
+  final List<AndroidNativeView> androidNativeViews;
 
   Map<String, dynamic> toJson() => _$GetNativeViewsResponseToJson(this);
 
   @override
   List<Object?> get props => [
-        nativeViews,
+        iosNativeViews,
+        androidNativeViews,
       ];
 }
 

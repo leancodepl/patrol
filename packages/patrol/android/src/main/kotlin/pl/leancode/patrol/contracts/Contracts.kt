@@ -200,39 +200,29 @@ class Contracts {
 
   data class GetNativeUITreeRespone (
     val iOSroots: List<IOSNativeView>,
-    val androidRoots: List<NativeView>
+    val androidRoots: List<AndroidNativeView>
   )
 
-  data class NativeView (
-    val className: String? = null,
-    val text: String? = null,
-    val contentDescription: String? = null,
-    val focused: Boolean,
-    val enabled: Boolean,
-    val childCount: Long? = null,
-    val resourceName: String? = null,
-    val applicationPackage: String? = null,
-    val children: List<NativeView>
-  ){
-    fun hasClassName(): Boolean {
-      return className != null
-    }
-    fun hasText(): Boolean {
-      return text != null
-    }
-    fun hasContentDescription(): Boolean {
-      return contentDescription != null
-    }
-    fun hasChildCount(): Boolean {
-      return childCount != null
-    }
-    fun hasResourceName(): Boolean {
-      return resourceName != null
-    }
-    fun hasApplicationPackage(): Boolean {
-      return applicationPackage != null
-    }
-  }
+  data class AndroidNativeView (
+    val text: String,
+    val className: String,
+    val resourceName: String,
+    val contentDescription: String,
+    val applicationPackage: String,
+    val childCount: Long,
+    val isCheckable: Boolean,
+    val isChecked: Boolean,
+    val isClickable: Boolean,
+    val isEnabled: Boolean,
+    val isFocusable: Boolean,
+    val isFocused: Boolean,
+    val isLongClickable: Boolean,
+    val isScrollable: Boolean,
+    val isSelected: Boolean,
+    val visibleBounds: Rectangle,
+    val visibleCenter: Point2D,
+    val children: List<AndroidNativeView>
+  )
 
   data class IOSNativeView (
     val children: List<IOSNativeView>,
@@ -243,7 +233,7 @@ class Contracts {
     val hasFocus: Boolean,
     val isEnabled: Boolean,
     val isSelected: Boolean,
-    val frame: IOSRect,
+    val frame: Rectangle,
     val placeholderValue: String? = null
   ){
     fun hasPlaceholderValue(): Boolean {
@@ -251,15 +241,21 @@ class Contracts {
     }
   }
 
-  data class IOSRect (
+  data class Rectangle (
     val minX: Double,
     val minY: Double,
     val maxX: Double,
     val maxY: Double
   )
 
+  data class Point2D (
+    val x: Double,
+    val y: Double
+  )
+
   data class GetNativeViewsResponse (
-    val nativeViews: List<NativeView>
+    val iosNativeViews: List<IOSNativeView>,
+    val androidNativeViews: List<AndroidNativeView>
   )
 
   data class TapRequest (
