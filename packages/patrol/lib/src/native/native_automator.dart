@@ -19,6 +19,21 @@ class PatrolActionException implements Exception {
   String toString() => 'Patrol action failed: $message';
 }
 
+/// This class represents the result of [NativeAutomator.getNativeViews].
+class GetNativeViewsResult {
+  /// Creates a new [GetNativeViewsResult].
+  const GetNativeViewsResult({
+    required this.androidViews,
+    required this.iosViews,
+  });
+
+  /// List of Android native views.
+  final List<AndroidNativeView> androidViews;
+
+  /// List of iOS native views.
+  final List<IOSNativeView> iosViews;
+}
+
 /// Specifies how the OS keyboard should behave when using
 /// [NativeAutomator.enterText] and [NativeAutomator.enterTextByIndex].
 enum KeyboardBehavior {
@@ -714,7 +729,7 @@ class NativeAutomator {
 
   /// Returns a list of currently visible native UI controls, specified by
   /// [selector], which are currently visible on screen.
-  Future<List<NativeView>> getNativeViews(
+  Future<GetNativeViewsResult> getNativeViews(
     Selector selector, {
     IOSSelector? iosSelector,
     String? appId,
@@ -730,7 +745,10 @@ class NativeAutomator {
       ),
     );
 
-    return response.nativeViews;
+    return GetNativeViewsResult(
+      androidViews: response.androidNativeViews,
+      iosViews: response.iosNativeViews,
+    );
   }
 
   /// Waits until a native permission request dialog becomes visible within

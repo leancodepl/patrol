@@ -366,11 +366,11 @@ class GetNativeUITreeRespone with EquatableMixin {
 @JsonSerializable()
 class AndroidNativeView with EquatableMixin {
   AndroidNativeView({
-    required this.text,
-    required this.className,
-    required this.resourceName,
-    required this.contentDescription,
-    required this.applicationPackage,
+    this.resourceName,
+    this.text,
+    this.className,
+    this.contentDescription,
+    this.applicationPackage,
     required this.childCount,
     required this.isCheckable,
     required this.isChecked,
@@ -389,11 +389,11 @@ class AndroidNativeView with EquatableMixin {
   factory AndroidNativeView.fromJson(Map<String, dynamic> json) =>
       _$AndroidNativeViewFromJson(json);
 
-  final String text;
-  final String className;
-  final String resourceName;
-  final String contentDescription;
-  final String applicationPackage;
+  final String? resourceName;
+  final String? text;
+  final String? className;
+  final String? contentDescription;
+  final String? applicationPackage;
   final int childCount;
   final bool isCheckable;
   final bool isChecked;
@@ -412,9 +412,9 @@ class AndroidNativeView with EquatableMixin {
 
   @override
   List<Object?> get props => [
+        resourceName,
         text,
         className,
-        resourceName,
         contentDescription,
         applicationPackage,
         childCount,

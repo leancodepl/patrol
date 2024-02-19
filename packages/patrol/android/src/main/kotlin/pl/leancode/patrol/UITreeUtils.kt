@@ -1,13 +1,16 @@
 package pl.leancode.patrol
 
 import android.app.UiAutomation
+import android.graphics.Rect
 import android.os.Build
 import android.view.accessibility.AccessibilityNodeInfo
 import androidx.test.uiautomator.UiDevice
-import pl.leancode.patrol.contracts.Contracts.NativeView
+import pl.leancode.patrol.contracts.Contracts.AndroidNativeView
+import pl.leancode.patrol.contracts.Contracts.Rectangle
+import pl.leancode.patrol.contracts.Contracts.Point2D
 
 // This function is similar to AccessibilityNodeInfoDumper.dumpWindowHierarchy()
-fun getWindowTrees(uiDevice: UiDevice, uiAutomation: UiAutomation): List<NativeView> {
+fun getWindowTrees(uiDevice: UiDevice, uiAutomation: UiAutomation): List<AndroidNativeView> {
     val windowRoots = getWindowRoots(uiDevice, uiAutomation)
     Logger.i("Found ${windowRoots.size} windowRoots")
 
@@ -42,8 +45,8 @@ private fun getWindowRoots(uiDevice: UiDevice, uiAutomation: UiAutomation): Arra
     return roots.toTypedArray()
 }
 
-private fun fromUiAccessibilityNodeInfo(obj: AccessibilityNodeInfo): NativeView {
-    val children = mutableListOf<NativeView>()
+private fun fromUiAccessibilityNodeInfo(obj: AccessibilityNodeInfo): AndroidNativeView {
+    val children = mutableListOf<AndroidNativeView>()
 
     for (i in 0 until obj.childCount) {
         val child = obj.getChild(i)
@@ -52,15 +55,44 @@ private fun fromUiAccessibilityNodeInfo(obj: AccessibilityNodeInfo): NativeView 
         }
     }
 
-    return NativeView(
+
+    var resourceName: String?= null
+
+    try {
+        resourceName = obj.viewIdResourceName
+    } catch (e: Exception){
+        // ignore
+    }
+
+    val visibleBounds = Rect()
+    obj.getBoundsInScreen(visibleBounds)
+
+    return AndroidNativeView(
         className = obj.className?.toString(),
         text = obj.text?.toString(),
         contentDescription = obj.contentDescription?.toString(),
-        focused = obj.isFocused,
-        enabled = obj.isEnabled,
         childCount = obj.childCount.toLong(),
-        resourceName = obj.viewIdResourceName,
+        resourceName = resourceName,
         applicationPackage = obj.packageName?.toString(),
+        visibleCenter = Point2D(
+            x = visibleBounds.centerX().toDouble(),
+            y = visibleBounds.centerY().toDouble(),
+        ),
+        visibleBounds = Rectangle(
+            minX = visibleBounds.left.toDouble(),
+            maxX = visibleBounds.right.toDouble(),
+            minY = visibleBounds.top.toDouble(),
+            maxY = visibleBounds.bottom.toDouble(),
+        ),
+        isSelected = obj.isSelected,
+        isScrollable = obj.isScrollable,
+        isLongClickable = obj.isLongClickable,
+        isFocusable = obj.isFocusable,
+        isClickable = obj.isClickable,
+        isChecked = obj.isChecked,
+        isCheckable = obj.isCheckable,
+        isEnabled = obj.isEnabled,
+        isFocused = obj.isFocused,
         children = children
     )
 }

@@ -98,11 +98,11 @@ class GetNativeUITreeRespone {
 }
 
 class AndroidNativeView {
-  late String text;
-  late String className;
-  late String resourceName;
-  late String contentDescription;
-  late String applicationPackage;
+  String? resourceName;
+  String? text;
+  String? className;
+  String? contentDescription;
+  String? applicationPackage;
   late int childCount;
   late bool isCheckable;
   late bool isChecked;

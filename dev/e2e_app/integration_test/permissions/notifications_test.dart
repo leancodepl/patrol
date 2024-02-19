@@ -16,10 +16,10 @@ void main() {
       final android14PermissionSelector = Selector(
         text: 'Allow setting alarms and reminders',
       );
-      final android14PermissionScreen = await $.native.getNativeViews(
+      final nativeViews = await $.native.getNativeViews(
         android14PermissionSelector,
       );
-      if (android14PermissionScreen.isNotEmpty) {
+      if (nativeViews.androidViews.isNotEmpty) {
         await $.native.tap(android14PermissionSelector);
         await $.native.pressBack();
       }

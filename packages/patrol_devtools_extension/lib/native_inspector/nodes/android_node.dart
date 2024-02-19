@@ -16,7 +16,7 @@ final class AndroidNode extends Node {
     initialCharacter = createInitialCharacter(shortNodeName);
   }
 
-  final NativeView view;
+  final AndroidNativeView view;
 
   @override
   late final List<AndroidNode> children;

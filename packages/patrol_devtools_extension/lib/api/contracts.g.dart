@@ -215,11 +215,11 @@ Map<String, dynamic> _$GetNativeUITreeResponeToJson(
 
 AndroidNativeView _$AndroidNativeViewFromJson(Map<String, dynamic> json) =>
     AndroidNativeView(
-      text: json['text'] as String,
-      className: json['className'] as String,
-      resourceName: json['resourceName'] as String,
-      contentDescription: json['contentDescription'] as String,
-      applicationPackage: json['applicationPackage'] as String,
+      resourceName: json['resourceName'] as String?,
+      text: json['text'] as String?,
+      className: json['className'] as String?,
+      contentDescription: json['contentDescription'] as String?,
+      applicationPackage: json['applicationPackage'] as String?,
       childCount: json['childCount'] as int,
       isCheckable: json['isCheckable'] as bool,
       isChecked: json['isChecked'] as bool,
@@ -241,9 +241,9 @@ AndroidNativeView _$AndroidNativeViewFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$AndroidNativeViewToJson(AndroidNativeView instance) =>
     <String, dynamic>{
+      'resourceName': instance.resourceName,
       'text': instance.text,
       'className': instance.className,
-      'resourceName': instance.resourceName,
       'contentDescription': instance.contentDescription,
       'applicationPackage': instance.applicationPackage,
       'childCount': instance.childCount,

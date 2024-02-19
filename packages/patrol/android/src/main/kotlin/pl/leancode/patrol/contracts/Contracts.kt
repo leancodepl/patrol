@@ -204,11 +204,11 @@ class Contracts {
   )
 
   data class AndroidNativeView (
-    val text: String,
-    val className: String,
-    val resourceName: String,
-    val contentDescription: String,
-    val applicationPackage: String,
+    val resourceName: String? = null,
+    val text: String? = null,
+    val className: String? = null,
+    val contentDescription: String? = null,
+    val applicationPackage: String? = null,
     val childCount: Long,
     val isCheckable: Boolean,
     val isChecked: Boolean,
@@ -222,7 +222,23 @@ class Contracts {
     val visibleBounds: Rectangle,
     val visibleCenter: Point2D,
     val children: List<AndroidNativeView>
-  )
+  ){
+    fun hasResourceName(): Boolean {
+      return resourceName != null
+    }
+    fun hasText(): Boolean {
+      return text != null
+    }
+    fun hasClassName(): Boolean {
+      return className != null
+    }
+    fun hasContentDescription(): Boolean {
+      return contentDescription != null
+    }
+    fun hasApplicationPackage(): Boolean {
+      return applicationPackage != null
+    }
+  }
 
   data class IOSNativeView (
     val children: List<IOSNativeView>,

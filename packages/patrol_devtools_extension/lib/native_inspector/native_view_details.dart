@@ -102,14 +102,21 @@ class _NodeDetails extends HookWidget {
 
     final items = switch (node) {
       final AndroidNode n => [
-          ('pkg:', n.view.applicationPackage),
-          ('childCount:', n.view.childCount),
-          ('className:', n.view.className),
-          ('contentDescription:', n.view.contentDescription),
-          ('enabled:', n.view.enabled),
-          ('focused:', n.view.focused),
-          ('resourceId:', n.view.resourceName),
           ('text:', n.view.text),
+          ('className:', n.view.className),
+          ('resourceName:', n.view.resourceName),
+          ('contentDescription:', n.view.contentDescription),
+          ('applicationPackage:', n.view.applicationPackage),
+          ('childCount:', n.view.childCount),
+          ('isCheckable:', n.view.isCheckable),
+          ('isChecked:', n.view.isChecked),
+          ('isClickable:', n.view.isClickable),
+          ('isEnabled:', n.view.isEnabled),
+          ('isFocusable:', n.view.isFocusable),
+          ('isFocused:', n.view.isFocused),
+          ('isLongClickable:', n.view.isLongClickable),
+          ('isScrollable:', n.view.isScrollable),
+          ('isSelected:', n.view.isSelected),
         ],
       final IOSNode n => [
           ('elementType:', n.view.elementType),

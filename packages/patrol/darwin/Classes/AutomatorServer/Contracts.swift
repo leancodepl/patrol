@@ -112,11 +112,11 @@ public struct GetNativeUITreeRespone: Codable {
 }
 
 public struct AndroidNativeView: Codable {
-  public var text: String
-  public var className: String
-  public var resourceName: String
-  public var contentDescription: String
-  public var applicationPackage: String
+  public var resourceName: String?
+  public var text: String?
+  public var className: String?
+  public var contentDescription: String?
+  public var applicationPackage: String?
   public var childCount: Int
   public var isCheckable: Bool
   public var isChecked: Bool
