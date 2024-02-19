@@ -96,35 +96,51 @@ Map<String, dynamic> _$OpenQuickSettingsRequestToJson(
         OpenQuickSettingsRequest instance) =>
     <String, dynamic>{};
 
-Selector _$SelectorFromJson(Map<String, dynamic> json) => Selector(
-      text: json['text'] as String?,
-      textStartsWith: json['textStartsWith'] as String?,
-      textContains: json['textContains'] as String?,
+AndroidSelector _$AndroidSelectorFromJson(Map<String, dynamic> json) =>
+    AndroidSelector(
       className: json['className'] as String?,
+      isCheckable: json['isCheckable'] as bool?,
+      isChecked: json['isChecked'] as bool?,
+      isClickable: json['isClickable'] as bool?,
+      isEnabled: json['isEnabled'] as bool?,
+      isFocusable: json['isFocusable'] as bool?,
+      isFocused: json['isFocused'] as bool?,
+      isLongClickable: json['isLongClickable'] as bool?,
+      isScrollable: json['isScrollable'] as bool?,
+      isSelected: json['isSelected'] as bool?,
+      applicationPackage: json['applicationPackage'] as String?,
       contentDescription: json['contentDescription'] as String?,
       contentDescriptionStartsWith:
           json['contentDescriptionStartsWith'] as String?,
       contentDescriptionContains: json['contentDescriptionContains'] as String?,
-      resourceId: json['resourceId'] as String?,
+      text: json['text'] as String?,
+      textStartsWith: json['textStartsWith'] as String?,
+      textContains: json['textContains'] as String?,
+      resourceName: json['resourceName'] as String?,
       instance: json['instance'] as int?,
-      enabled: json['enabled'] as bool?,
-      focused: json['focused'] as bool?,
-      pkg: json['pkg'] as String?,
     );
 
-Map<String, dynamic> _$SelectorToJson(Selector instance) => <String, dynamic>{
-      'text': instance.text,
-      'textStartsWith': instance.textStartsWith,
-      'textContains': instance.textContains,
+Map<String, dynamic> _$AndroidSelectorToJson(AndroidSelector instance) =>
+    <String, dynamic>{
       'className': instance.className,
+      'isCheckable': instance.isCheckable,
+      'isChecked': instance.isChecked,
+      'isClickable': instance.isClickable,
+      'isEnabled': instance.isEnabled,
+      'isFocusable': instance.isFocusable,
+      'isFocused': instance.isFocused,
+      'isLongClickable': instance.isLongClickable,
+      'isScrollable': instance.isScrollable,
+      'isSelected': instance.isSelected,
+      'applicationPackage': instance.applicationPackage,
       'contentDescription': instance.contentDescription,
       'contentDescriptionStartsWith': instance.contentDescriptionStartsWith,
       'contentDescriptionContains': instance.contentDescriptionContains,
-      'resourceId': instance.resourceId,
+      'text': instance.text,
+      'textStartsWith': instance.textStartsWith,
+      'textContains': instance.textContains,
+      'resourceName': instance.resourceName,
       'instance': instance.instance,
-      'enabled': instance.enabled,
-      'focused': instance.focused,
-      'pkg': instance.pkg,
     };
 
 IOSSelector _$IOSSelectorFromJson(Map<String, dynamic> json) => IOSSelector(
@@ -167,7 +183,8 @@ Map<String, dynamic> _$IOSSelectorToJson(IOSSelector instance) =>
 GetNativeViewsRequest _$GetNativeViewsRequestFromJson(
         Map<String, dynamic> json) =>
     GetNativeViewsRequest(
-      selector: Selector.fromJson(json['selector'] as Map<String, dynamic>),
+      androidSelector: AndroidSelector.fromJson(
+          json['androidSelector'] as Map<String, dynamic>),
       iosSelector:
           IOSSelector.fromJson(json['iosSelector'] as Map<String, dynamic>),
       appId: json['appId'] as String,
@@ -176,7 +193,7 @@ GetNativeViewsRequest _$GetNativeViewsRequestFromJson(
 Map<String, dynamic> _$GetNativeViewsRequestToJson(
         GetNativeViewsRequest instance) =>
     <String, dynamic>{
-      'selector': instance.selector,
+      'androidSelector': instance.androidSelector,
       'iosSelector': instance.iosSelector,
       'appId': instance.appId,
     };
@@ -334,7 +351,8 @@ Map<String, dynamic> _$GetNativeViewsResponseToJson(
     };
 
 TapRequest _$TapRequestFromJson(Map<String, dynamic> json) => TapRequest(
-      selector: Selector.fromJson(json['selector'] as Map<String, dynamic>),
+      androidSelector: AndroidSelector.fromJson(
+          json['androidSelector'] as Map<String, dynamic>),
       iosSelector:
           IOSSelector.fromJson(json['iosSelector'] as Map<String, dynamic>),
       appId: json['appId'] as String,
@@ -343,7 +361,7 @@ TapRequest _$TapRequestFromJson(Map<String, dynamic> json) => TapRequest(
 
 Map<String, dynamic> _$TapRequestToJson(TapRequest instance) =>
     <String, dynamic>{
-      'selector': instance.selector,
+      'androidSelector': instance.androidSelector,
       'iosSelector': instance.iosSelector,
       'appId': instance.appId,
       'timeoutMillis': instance.timeoutMillis,
@@ -367,9 +385,10 @@ EnterTextRequest _$EnterTextRequestFromJson(Map<String, dynamic> json) =>
       data: json['data'] as String,
       appId: json['appId'] as String,
       index: json['index'] as int?,
-      selector: json['selector'] == null
+      androidSelector: json['androidSelector'] == null
           ? null
-          : Selector.fromJson(json['selector'] as Map<String, dynamic>),
+          : AndroidSelector.fromJson(
+              json['androidSelector'] as Map<String, dynamic>),
       iosSelector: json['iosSelector'] == null
           ? null
           : IOSSelector.fromJson(json['iosSelector'] as Map<String, dynamic>),
@@ -383,7 +402,7 @@ Map<String, dynamic> _$EnterTextRequestToJson(EnterTextRequest instance) =>
       'data': instance.data,
       'appId': instance.appId,
       'index': instance.index,
-      'selector': instance.selector,
+      'androidSelector': instance.androidSelector,
       'iosSelector': instance.iosSelector,
       'keyboardBehavior': _$KeyboardBehaviorEnumMap[instance.keyboardBehavior]!,
       'timeoutMillis': instance.timeoutMillis,
@@ -416,7 +435,8 @@ Map<String, dynamic> _$SwipeRequestToJson(SwipeRequest instance) =>
 WaitUntilVisibleRequest _$WaitUntilVisibleRequestFromJson(
         Map<String, dynamic> json) =>
     WaitUntilVisibleRequest(
-      selector: Selector.fromJson(json['selector'] as Map<String, dynamic>),
+      androidSelector: AndroidSelector.fromJson(
+          json['androidSelector'] as Map<String, dynamic>),
       iosSelector:
           IOSSelector.fromJson(json['iosSelector'] as Map<String, dynamic>),
       appId: json['appId'] as String,
@@ -426,7 +446,7 @@ WaitUntilVisibleRequest _$WaitUntilVisibleRequestFromJson(
 Map<String, dynamic> _$WaitUntilVisibleRequestToJson(
         WaitUntilVisibleRequest instance) =>
     <String, dynamic>{
-      'selector': instance.selector,
+      'androidSelector': instance.androidSelector,
       'iosSelector': instance.iosSelector,
       'appId': instance.appId,
       'timeoutMillis': instance.timeoutMillis,
@@ -483,9 +503,10 @@ TapOnNotificationRequest _$TapOnNotificationRequestFromJson(
         Map<String, dynamic> json) =>
     TapOnNotificationRequest(
       index: json['index'] as int?,
-      selector: json['selector'] == null
+      androidSelector: json['androidSelector'] == null
           ? null
-          : Selector.fromJson(json['selector'] as Map<String, dynamic>),
+          : AndroidSelector.fromJson(
+              json['androidSelector'] as Map<String, dynamic>),
       iosSelector: json['iosSelector'] == null
           ? null
           : IOSSelector.fromJson(json['iosSelector'] as Map<String, dynamic>),
@@ -496,7 +517,7 @@ Map<String, dynamic> _$TapOnNotificationRequestToJson(
         TapOnNotificationRequest instance) =>
     <String, dynamic>{
       'index': instance.index,
-      'selector': instance.selector,
+      'androidSelector': instance.androidSelector,
       'iosSelector': instance.iosSelector,
       'timeoutMillis': instance.timeoutMillis,
     };

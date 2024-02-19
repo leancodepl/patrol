@@ -49,19 +49,26 @@ class OpenAppRequest {
 
 class OpenQuickSettingsRequest {}
 
-class Selector {
-  String? text;
-  String? textStartsWith;
-  String? textContains;
+class AndroidSelector {
   String? className;
+  bool? isCheckable;
+  bool? isChecked;
+  bool? isClickable;
+  bool? isEnabled;
+  bool? isFocusable;
+  bool? isFocused;
+  bool? isLongClickable;
+  bool? isScrollable;
+  bool? isSelected;
+  String? applicationPackage;
   String? contentDescription;
   String? contentDescriptionStartsWith;
   String? contentDescriptionContains;
-  String? resourceId;
+  String? text;
+  String? textStartsWith;
+  String? textContains;
+  String? resourceName;
   int? instance;
-  bool? enabled;
-  bool? focused;
-  String? pkg;
 }
 
 class IOSSelector {
@@ -83,7 +90,7 @@ class IOSSelector {
 }
 
 class GetNativeViewsRequest {
-  late Selector selector;
+  late AndroidSelector androidSelector;
   late IOSSelector iosSelector;
   late String appId;
 }
@@ -153,7 +160,7 @@ class GetNativeViewsResponse {
 }
 
 class TapRequest {
-  late Selector selector;
+  late AndroidSelector androidSelector;
   late IOSSelector iosSelector;
   late String appId;
   int? timeoutMillis;
@@ -174,7 +181,7 @@ class EnterTextRequest {
   late String data;
   late String appId;
   int? index;
-  Selector? selector;
+  AndroidSelector? androidSelector;
   IOSSelector? iosSelector;
   late KeyboardBehavior keyboardBehavior;
   int? timeoutMillis;
@@ -190,7 +197,7 @@ class SwipeRequest {
 }
 
 class WaitUntilVisibleRequest {
-  late Selector selector;
+  late AndroidSelector androidSelector;
   late IOSSelector iosSelector;
   late String appId;
   int? timeoutMillis;
@@ -215,7 +222,7 @@ class GetNotificationsRequest {}
 
 class TapOnNotificationRequest {
   int? index;
-  Selector? selector;
+  AndroidSelector? androidSelector;
   IOSSelector? iosSelector;
   int? timeoutMillis;
 }
