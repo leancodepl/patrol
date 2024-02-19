@@ -49,11 +49,11 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
       final currentDartTest = _currentDartTest;
       if (currentDartTest != null) {
         assert(!constants.hotRestartEnabled);
-        // On iOS in release mode, diagnostics are compacted or truncated. So we
-        // use the exceptionAsString() method to get at least an information
+        // On iOS in release mode, diagnostics are compacted or truncated.
+        // We use the exceptionAsString() and stack to get the information
         // about the exception. See [DiagnosticLevel].
         final detailsAsString = (kReleaseMode && io.Platform.isIOS)
-            ? details.exceptionAsString()
+            ? '${details.exceptionAsString()} \n ${details.stack}'
             : details.toString();
         _testResults[currentDartTest] = Failure(
           testDescription,
