@@ -1,3 +1,7 @@
+## 3.5.2
+
+- Fix reporting fail cause to native on ios in release mode (#2114).
+
 ## 3.5.1
 
 - Make more `Selector` properties work on iOS (#2030).
