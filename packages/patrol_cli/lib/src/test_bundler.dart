@@ -245,7 +245,8 @@ ${generateGroupsCode([testFilePath]).split('\n').map((e) => '  $e').join('\n')}
   String _createTestName(String relativeTestFilePath) {
     var testName = relativeTestFilePath
         .replaceFirst('integration_test${_fs.path.separator}', '')
-        .replaceAll('/', '__');
+        .replaceAll('/', '__')
+        .replaceAll('-', '___');
 
     testName = testName.substring(0, testName.length - 5);
     return testName;
