@@ -13,7 +13,8 @@ Directory _initFakeFs(FileSystem fs, Platform platform) {
   fs.directory(fs.path.join(platform.home)).createSync(recursive: true);
   fs.currentDirectory = platform.home;
 
-  final projectRootDir = fs.directory(fs.path.join(platform.home, 'awesome_app'))..createSync();
+  final projectRootDir =
+      fs.directory(fs.path.join(platform.home, 'awesome_app'))..createSync();
   fs.currentDirectory = projectRootDir;
   fs.directory('integration_test').createSync();
   return projectRootDir;
@@ -47,7 +48,8 @@ void _test(Platform platform) {
       final tests = [
         fs.path.join('integration_test', 'example_test.dart'),
         fs.path.join('integration_test', 'example', 'example_test.dart'),
-        fs.path.join('integration_test', 'example-dash-test', 'example_test.dart'),
+        fs.path
+            .join('integration_test', 'example-dash-test', 'example_test.dart'),
       ];
 
       // when
