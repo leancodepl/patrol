@@ -225,12 +225,6 @@ class Automator private constructor() {
     fun tap(uiSelector: UiSelector, bySelector: BySelector, index: Int, timeout: Long? = null) {
         Logger.d("tap(): $uiSelector, $bySelector")
 
-        waitForView(By.scrollable(true), 0)
-
-        val scrollableUiObject = uiDevice.findObject(By.scrollable(true))
-
-        scrollableUiObject?.scrollUntil(Direction.DOWN, Until.findObject(bySelector))
-
         if (waitForView(bySelector, index) == null) {
             throw UiObjectNotFoundException("$uiSelector")
         }
