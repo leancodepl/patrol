@@ -6,14 +6,16 @@ void main() {
 
     await $('Open webview (Hacker News)').scrollTo().tap();
 
-    await $.native.tap(Selector(text: 'login'));
+    await $.native.tap(
+      androidSelector: AndroidSelector(text: 'login'),
+    );
     await $.native.enterTextByIndex(
       'test@leancode.pl',
       index: 0,
       keyboardBehavior: KeyboardBehavior.showAndDismiss,
     );
     await $.native.enterText(
-      Selector(className: 'android.widget.EditText'),
+      androidSelector: AndroidSelector(className: 'android.widget.EditText'),
       text: 'ny4ncat',
       keyboardBehavior: KeyboardBehavior.showAndDismiss,
     );

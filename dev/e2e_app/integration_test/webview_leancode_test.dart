@@ -7,7 +7,9 @@ void main() {
     await $('Open webview (LeanCode)').scrollTo().tap();
 
     try {
-      await $.native.tap(Selector(text: 'Accept cookies'));
+      await $.native.tap(
+        androidSelector: AndroidSelector(text: 'Accept cookies'),
+      );
     } on PatrolActionException catch (_) {
       // ignore
     }
@@ -17,6 +19,6 @@ void main() {
       index: 0,
       keyboardBehavior: KeyboardBehavior.showAndDismiss,
     );
-    await $.native.tap(Selector(text: 'Subscribe'));
+    await $.native.tap(androidSelector: AndroidSelector(text: 'Subscribe'));
   });
 }

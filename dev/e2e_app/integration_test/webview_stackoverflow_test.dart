@@ -9,18 +9,19 @@ void main() {
       await $('Open webview (StackOverflow)').scrollTo().tap();
 
       try {
-        await $.native.tap(Selector(text: 'Accept all cookies'));
+        await $.native
+            .tap(androidSelector: AndroidSelector(text: 'Accept all cookies'));
       } on PatrolActionException catch (_) {
         // ignore
       }
-      await $.native.tap(Selector(text: 'Log in'));
+      await $.native.tap(androidSelector: AndroidSelector(text: 'Log in'));
 
       await $.pump(Duration(seconds: 2));
 
       // bug: using `Email` and `Password` selectors doesn't work (#1554)
       await $.native.enterTextByIndex('test@leancode.pl', index: 0);
       await $.native.enterTextByIndex('ny4ncat', index: 1);
-      await $.native.tap(Selector(text: 'Log in'));
+      await $.native.tap(androidSelector: AndroidSelector(text: 'Log in'));
     },
   );
 }

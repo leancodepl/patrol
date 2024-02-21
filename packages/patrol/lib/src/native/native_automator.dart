@@ -438,7 +438,7 @@ class NativeAutomator {
     );
   }
 
-  /// Taps on the visible notification using [selector].
+  /// Taps on the visible notification using [androidSelector] or [iosSelector].
   ///
   /// If the notification is not visible immediately, this method waits for the
   /// notification to become visible for [timeout] duration. If [timeout] is not
@@ -447,13 +447,11 @@ class NativeAutomator {
   ///
   /// Notification shade has to be opened first with [openNotifications].
   ///
-  /// On iOS, only [Selector.textContains] is taken into account.
-  ///
   /// See also:
   ///
   /// * [tapOnNotificationByIndex], which is less flexible but also less verbose
-  Future<void> tapOnNotificationBySelector(
-    Selector selector, {
+  Future<void> tapOnNotificationBySelector({
+    AndroidSelector? androidSelector,
     IOSSelector? iosSelector,
     Duration? timeout,
   }) async {
@@ -461,7 +459,7 @@ class NativeAutomator {
       'tapOnNotificationBySelector',
       () => _client.tapOnNotification(
         TapOnNotificationRequest(
-          selector: selector,
+          androidSelector: androidSelector,
           timeoutMillis: timeout?.inMilliseconds,
           iosSelector: iosSelector,
         ),
@@ -529,14 +527,14 @@ class NativeAutomator {
     await _wrapRequest('disableBluetooth', _client.disableBluetooth);
   }
 
-  /// Taps on the native view specified by [selector].
+  /// Taps on the native view specified by [androidSelector] or [iosSelector].
   ///
   /// It waits for the view to become visible for [timeout] duration. If
   /// [timeout] is not specified, it utilizes the
   /// [NativeAutomatorConfig.findTimeout] duration from the configuration.
   /// If the native view is not found, an exception is thrown.
-  Future<void> tap(
-    Selector selector, {
+  Future<void> tap({
+    AndroidSelector? androidSelector,
     IOSSelector? iosSelector,
     String? appId,
     Duration? timeout,
@@ -545,7 +543,7 @@ class NativeAutomator {
       await _client.tap(
         TapRequest(
           iosSelector: iosSelector ?? IOSSelector(),
-          selector: selector,
+          androidSelector: androidSelector ?? AndroidSelector(),
           appId: appId ?? resolvedAppId,
           timeoutMillis: timeout?.inMilliseconds,
         ),
@@ -553,14 +551,14 @@ class NativeAutomator {
     });
   }
 
-  /// Double taps on the native view specified by [selector].
+  /// Double taps on the native view specified by [androidSelector] or [iosSelector].
   ///
   /// It waits for the view to become visible for [timeout] duration. If
   /// [timeout] is not specified, it utilizes the
   /// [NativeAutomatorConfig.findTimeout] duration from the configuration.
   /// If the native view is not found, an exception is thrown.
-  Future<void> doubleTap(
-    Selector selector, {
+  Future<void> doubleTap({
+    AndroidSelector? androidSelector,
     IOSSelector? iosSelector,
     String? appId,
     Duration? timeout,
@@ -569,7 +567,7 @@ class NativeAutomator {
       'doubleTap',
       () => _client.doubleTap(
         TapRequest(
-          selector: selector,
+          androidSelector: androidSelector ?? AndroidSelector(),
           appId: appId ?? resolvedAppId,
           timeoutMillis: timeout?.inMilliseconds,
           iosSelector: iosSelector ?? IOSSelector(),
@@ -600,23 +598,26 @@ class NativeAutomator {
     });
   }
 
-  /// Enters text to the native view specified by [selector].
+  /// Enters text to the native view specified by [androidSelector] or [iosSelector].
   ///
   /// If the text field isn't immediately visible, this method waits for the
   /// view to become visible. It prioritizes the [timeout] duration provided
   /// in the method call. If [timeout] is not specified, it utilizes the
   /// [NativeAutomatorConfig.findTimeout] duration from the configuration.
   ///
-  /// The native view specified by [selector] must be:
+  /// The native view specified by [androidSelector] must be:
   ///  * EditText on Android
-  ///  * TextField or SecureTextField on iOS
+  ///
+  /// The native view specified by [iosSelector] must be:
+  ///  * TextField
+  ///  * SecureTextField
   ///
   /// See also:
   ///  * [enterTextByIndex], which is less flexible but also less verbose
-  Future<void> enterText(
-    Selector selector, {
+  Future<void> enterText({
     required String text,
     IOSSelector? iosSelector,
+    AndroidSelector? androidSelector,
     String? appId,
     KeyboardBehavior? keyboardBehavior,
     Duration? timeout,
@@ -627,8 +628,8 @@ class NativeAutomator {
         EnterTextRequest(
           data: text,
           appId: appId ?? resolvedAppId,
-          selector: selector,
-          iosSelector: iosSelector ?? IOSSelector(),
+          androidSelector: androidSelector,
+          iosSelector: iosSelector,
           keyboardBehavior:
               (keyboardBehavior ?? _config.keyboardBehavior).toContractsEnum,
           timeoutMillis: timeout?.inMilliseconds,
@@ -704,12 +705,12 @@ class NativeAutomator {
     );
   }
 
-  /// Waits until the native view specified by [selector] becomes visible.
+  /// Waits until the native view specified by [androidSelector] or [iosSelector] becomes visible.
   /// It waits for the view to become visible for [timeout] duration. If
   /// [timeout] is not specified, it utilizes the
   /// [NativeAutomatorConfig.findTimeout].
-  Future<void> waitUntilVisible(
-    Selector selector, {
+  Future<void> waitUntilVisible({
+    AndroidSelector? androidSelector,
     IOSSelector? iosSelector,
     String? appId,
     Duration? timeout,
@@ -718,7 +719,7 @@ class NativeAutomator {
       'waitUntilVisible',
       () => _client.waitUntilVisible(
         WaitUntilVisibleRequest(
-          selector: selector,
+          androidSelector: androidSelector ?? AndroidSelector(),
           iosSelector: iosSelector ?? IOSSelector(),
           appId: appId ?? resolvedAppId,
           timeoutMillis: timeout?.inMilliseconds,
@@ -728,9 +729,9 @@ class NativeAutomator {
   }
 
   /// Returns a list of currently visible native UI controls, specified by
-  /// [selector], which are currently visible on screen.
-  Future<GetNativeViewsResult> getNativeViews(
-    Selector selector, {
+  /// [androidSelector] or [iosSelector], which are currently visible on screen.
+  Future<GetNativeViewsResult> getNativeViews({
+    AndroidSelector? androidSelector,
     IOSSelector? iosSelector,
     String? appId,
   }) async {
@@ -738,7 +739,7 @@ class NativeAutomator {
       'getNativeViews',
       () => _client.getNativeViews(
         GetNativeViewsRequest(
-          selector: selector,
+          androidSelector: androidSelector ?? AndroidSelector(),
           iosSelector: iosSelector ?? IOSSelector(),
           appId: appId ?? resolvedAppId,
         ),

@@ -13,14 +13,14 @@ void main() {
 
       // Android 14+ requires additional permission to schedule notifications.
       // Workaround for conditionally granting permission.
-      final android14PermissionSelector = Selector(
+      final android14PermissionSelector = AndroidSelector(
         text: 'Allow setting alarms and reminders',
       );
       final nativeViews = await $.native.getNativeViews(
-        android14PermissionSelector,
+        androidSelector: android14PermissionSelector,
       );
       if (nativeViews.androidViews.isNotEmpty) {
-        await $.native.tap(android14PermissionSelector);
+        await $.native.tap(androidSelector: android14PermissionSelector);
         await $.native.pressBack();
       }
 
@@ -32,7 +32,7 @@ void main() {
       await Future<void>.delayed(const Duration(seconds: 5));
 
       await $.native.tapOnNotificationBySelector(
-        Selector(textContains: 'Someone liked'),
+        androidSelector: AndroidSelector(textContains: 'Someone liked'),
       );
 
       await $('Tapped notification with ID: 1').waitUntilVisible();

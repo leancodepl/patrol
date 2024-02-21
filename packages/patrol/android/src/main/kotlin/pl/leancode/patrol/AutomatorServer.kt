@@ -116,7 +116,7 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
     }
 
     override fun getNativeViews(request: GetNativeViewsRequest): GetNativeViewsResponse {
-        val views = automation.getNativeViews(request.selector.toBySelector())
+        val views = automation.getNativeViews(request.androidSelector.toBySelector())
         return GetNativeViewsResponse(
             androidNativeViews = views,
             iosNativeViews = listOf(),
@@ -130,18 +130,18 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
 
     override fun tap(request: TapRequest) {
         automation.tap(
-            uiSelector = request.selector.toUiSelector(),
-            bySelector = request.selector.toBySelector(),
-            index = request.selector.instance?.toInt() ?: 0,
+            uiSelector = request.androidSelector.toUiSelector(),
+            bySelector = request.androidSelector.toBySelector(),
+            index = request.androidSelector.instance?.toInt() ?: 0,
             timeout = request.timeoutMillis
         )
     }
 
     override fun doubleTap(request: TapRequest) {
         automation.doubleTap(
-            uiSelector = request.selector.toUiSelector(),
-            bySelector = request.selector.toBySelector(),
-            index = request.selector.instance?.toInt() ?: 0,
+            uiSelector = request.androidSelector.toUiSelector(),
+            bySelector = request.androidSelector.toBySelector(),
+            index = request.androidSelector.instance?.toInt() ?: 0,
             timeout = request.timeoutMillis
         )
     }
@@ -161,12 +161,12 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
                 keyboardBehavior = request.keyboardBehavior,
                 timeout = request.timeoutMillis
             )
-        } else if (request.selector != null) {
+        } else if (request.androidSelector != null) {
             automation.enterText(
                 text = request.data,
-                uiSelector = request.selector.toUiSelector(),
-                bySelector = request.selector.toBySelector(),
-                index = request.selector.instance?.toInt() ?: 0,
+                uiSelector = request.androidSelector.toUiSelector(),
+                bySelector = request.androidSelector.toBySelector(),
+                index = request.androidSelector.instance?.toInt() ?: 0,
                 keyboardBehavior = request.keyboardBehavior,
                 timeout = request.timeoutMillis
             )
@@ -187,9 +187,9 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
 
     override fun waitUntilVisible(request: WaitUntilVisibleRequest) {
         automation.waitUntilVisible(
-            uiSelector = request.selector.toUiSelector(),
-            bySelector = request.selector.toBySelector(),
-            index = request.selector.instance?.toInt() ?: 0,
+            uiSelector = request.androidSelector.toUiSelector(),
+            bySelector = request.androidSelector.toBySelector(),
+            index = request.androidSelector.instance?.toInt() ?: 0,
             timeout = request.timeoutMillis
         )
     }
@@ -221,8 +221,8 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
     override fun tapOnNotification(request: TapOnNotificationRequest) {
         if (request.index != null) {
             automation.tapOnNotification(request.index.toInt(), timeout = request.timeoutMillis)
-        } else if (request.selector != null) {
-            val selector = request.selector
+        } else if (request.androidSelector != null) {
+            val selector = request.androidSelector
             automation.tapOnNotification(selector.toUiSelector(), selector.toBySelector(), timeout = request.timeoutMillis)
         } else {
             throw PatrolException("tapOnNotification(): neither index nor selector are set")
