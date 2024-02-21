@@ -447,6 +447,8 @@ class NativeAutomator {
   ///
   /// Notification shade has to be opened first with [openNotifications].
   ///
+  /// On iOS, only [IOSSelector.titleContains] is taken into account.
+  ///
   /// See also:
   ///
   /// * [tapOnNotificationByIndex], which is less flexible but also less verbose

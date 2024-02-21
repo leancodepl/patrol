@@ -142,7 +142,7 @@ extension IOSSelector {
     func getNativeViews(
       on selector: IOSSelector,
       inApp bundleId: String
-    ) throws -> [NativeView]
+    ) throws -> [IOSNativeView]
     func getUITreeRoots(installedApps: [String]) throws -> GetNativeUITreeRespone
 
     // MARK: Notifications

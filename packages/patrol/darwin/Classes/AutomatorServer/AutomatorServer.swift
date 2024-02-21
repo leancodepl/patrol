@@ -67,7 +67,7 @@
           inApp: request.appId
         )
 
-        return GetNativeViewsResponse(nativeViews: nativeViews)
+        return GetNativeViewsResponse(iosNativeViews: nativeViews, androidNativeViews: [])
       }
     }
 
@@ -246,9 +246,9 @@
             byIndex: index,
             withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) }
           )
-        } else if let selector = request.selector {
+        } else if let selector = request.iosSelector {
           try automator.tapOnNotification(
-            bySubstring: selector.textContains ?? String(),
+            bySubstring: selector.titleContains ?? String(),
             withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) }
           )
         } else {

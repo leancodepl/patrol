@@ -406,7 +406,7 @@
     func getNativeViews(
       on selector: IOSSelector,
       inApp bundleId: String
-    ) throws -> [NativeView] {
+    ) throws -> [IOSNativeView] {
         let predicate = selector.toNSPredicate()
       let view = createLogMessage(element: "views", from: predicate)
       return try runAction("getting native \(view)") {
@@ -416,7 +416,7 @@
         let elements = query.allElementsBoundByIndex
 
         let views = elements.map { xcuielement in
-          return NativeView.fromXCUIElement(xcuielement, bundleId)
+          return IOSNativeView.fromXCUIElement(xcuielement, bundleId)
         }
 
         return views
@@ -873,19 +873,26 @@
     }
   }
 
-extension NativeView {
-    static func fromXCUIElement(_ xcuielement: XCUIElement, _ bundleId: String) -> NativeView {
-        return NativeView(
-            className: getElementTypeName(elementType: xcuielement.elementType),
-            text: xcuielement.label,
-            contentDescription: xcuielement.accessibilityLabel,
-            focused: xcuielement.hasFocus,
-            enabled: xcuielement.isEnabled,
-            resourceName: xcuielement.identifier,
-            applicationPackage: bundleId,
+extension IOSNativeView {
+    static func fromXCUIElement(_ xcuielement: XCUIElement, _ bundleId: String) -> IOSNativeView {
+        return IOSNativeView(
             children: xcuielement.children(matching: .any).allElementsBoundByIndex.map { child in
-                return NativeView.fromXCUIElement(child, bundleId)
-            })
+                return IOSNativeView.fromXCUIElement(child, bundleId)
+            },
+            elementType: getElementTypeName(elementType: xcuielement.elementType),
+            identifier: xcuielement.identifier,
+            label: xcuielement.label,
+            title: xcuielement.title,
+            hasFocus: xcuielement.hasFocus,
+            isEnabled: xcuielement.isEnabled,
+            isSelected: xcuielement.isSelected,
+            frame: Rectangle(
+                minX: xcuielement.frame.minX,
+                minY: xcuielement.frame.minY,
+                maxX: xcuielement.frame.maxX,
+                maxY: xcuielement.frame.maxY
+            ),
+            placeholderValue: xcuielement.placeholderValue)
     }
 }
 
@@ -904,7 +911,7 @@ extension IOSNativeView {
         hasFocus: xcuielement.hasFocus,
         isEnabled: xcuielement.isEnabled,
         isSelected: xcuielement.isSelected,
-        frame: IOSRect(
+        frame: Rectangle(
             minX: xcuielement.frame.minX,
             minY: xcuielement.frame.minY,
             maxX: xcuielement.frame.maxX,
