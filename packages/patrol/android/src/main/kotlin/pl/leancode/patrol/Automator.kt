@@ -20,7 +20,7 @@ import pl.leancode.patrol.contracts.Contracts.AndroidNativeView
 import pl.leancode.patrol.contracts.Contracts.Notification
 import pl.leancode.patrol.contracts.Contracts.Rectangle
 import pl.leancode.patrol.contracts.Contracts.Point2D
-import pl.leancode.patrol.contracts.Contracts.Selector
+import pl.leancode.patrol.contracts.Contracts.AndroidSelector
 import kotlin.math.roundToInt
 
 private fun fromUiObject2(obj: UiObject2): AndroidNativeView {
@@ -414,8 +414,8 @@ class Automator private constructor() {
         Logger.d("tapOnNotification($index)")
 
         try {
-            val query = Selector(
-                resourceId = "android:id/status_bar_latest_event_content",
+            val query = AndroidSelector(
+                resourceName = "android:id/status_bar_latest_event_content",
                 instance = index.toLong()
             )
             val selector = query.toBySelector()
