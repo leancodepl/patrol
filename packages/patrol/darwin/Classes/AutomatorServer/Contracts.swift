@@ -150,6 +150,7 @@ public struct IOSNativeView: Codable {
   public var isSelected: Bool
   public var frame: Rectangle
   public var placeholderValue: String?
+  public var value: String?
 }
 
 public struct Rectangle: Codable {

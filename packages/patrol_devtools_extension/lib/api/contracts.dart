@@ -467,6 +467,7 @@ class IOSNativeView with EquatableMixin {
     required this.isSelected,
     required this.frame,
     this.placeholderValue,
+    this.value,
   });
 
   factory IOSNativeView.fromJson(Map<String, dynamic> json) =>
@@ -482,6 +483,7 @@ class IOSNativeView with EquatableMixin {
   final bool isSelected;
   final Rectangle frame;
   final String? placeholderValue;
+  final String? value;
 
   Map<String, dynamic> toJson() => _$IOSNativeViewToJson(this);
 
@@ -497,6 +499,7 @@ class IOSNativeView with EquatableMixin {
         isSelected,
         frame,
         placeholderValue,
+        value,
       ];
 }
 

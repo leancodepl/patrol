@@ -127,6 +127,7 @@ class _NodeDetails extends HookWidget {
           ('label:', n.view.label),
           ('title:', n.view.title),
           ('placeholderValue:', n.view.placeholderValue),
+          ('value:', n.view.value),
         ]
     };
 

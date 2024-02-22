@@ -137,7 +137,7 @@ class IOSNativeView {
   late bool isSelected;
   late Rectangle frame;
   String? placeholderValue;
-  //TODO value
+  String? value;
   //TODO we can get other properties from XCUIElement in next request
   // exists, isHittable,normalizedSliderPosition, accessibilityLabel, accessbilityHint, accessibilityValue, isAccessibilityElement etc..;
 }

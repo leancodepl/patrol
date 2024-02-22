@@ -892,7 +892,9 @@ extension IOSNativeView {
                 maxX: xcuielement.frame.maxX,
                 maxY: xcuielement.frame.maxY
             ),
-            placeholderValue: xcuielement.placeholderValue)
+            placeholderValue: xcuielement.placeholderValue,
+            value: xcuielement.value as? String
+        )
     }
 }
 
@@ -917,7 +919,8 @@ extension IOSNativeView {
             maxX: xcuielement.frame.maxX,
             maxY: xcuielement.frame.maxY
         ),
-        placeholderValue: xcuielement.placeholderValue
+        placeholderValue: xcuielement.placeholderValue,
+        value: xcuielement.value as? String
       )
     }
   }

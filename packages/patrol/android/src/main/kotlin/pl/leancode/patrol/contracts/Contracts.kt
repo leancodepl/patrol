@@ -278,10 +278,14 @@ class Contracts {
     val isEnabled: Boolean,
     val isSelected: Boolean,
     val frame: Rectangle,
-    val placeholderValue: String? = null
+    val placeholderValue: String? = null,
+    val value: String? = null
   ){
     fun hasPlaceholderValue(): Boolean {
       return placeholderValue != null
+    }
+    fun hasValue(): Boolean {
+      return value != null
     }
   }
 

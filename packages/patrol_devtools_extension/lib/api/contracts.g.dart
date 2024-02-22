@@ -292,6 +292,7 @@ IOSNativeView _$IOSNativeViewFromJson(Map<String, dynamic> json) =>
       isSelected: json['isSelected'] as bool,
       frame: Rectangle.fromJson(json['frame'] as Map<String, dynamic>),
       placeholderValue: json['placeholderValue'] as String?,
+      value: json['value'] as String?,
     );
 
 Map<String, dynamic> _$IOSNativeViewToJson(IOSNativeView instance) =>
@@ -306,6 +307,7 @@ Map<String, dynamic> _$IOSNativeViewToJson(IOSNativeView instance) =>
       'isSelected': instance.isSelected,
       'frame': instance.frame,
       'placeholderValue': instance.placeholderValue,
+      'value': instance.value,
     };
 
 Rectangle _$RectangleFromJson(Map<String, dynamic> json) => Rectangle(
