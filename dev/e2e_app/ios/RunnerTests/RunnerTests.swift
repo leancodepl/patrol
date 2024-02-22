@@ -11,7 +11,7 @@ final class RunnerTests: XCTestCase {
 
   func testSelectorToNSPredicate_text() {
     var selector = createEmptySelector()
-    selector.elementType = "radioButton"
+    selector.elementType = IOSElementType.radioButton
 
     let predicate = selector.toNSPredicate()
 
