@@ -222,7 +222,8 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
     argParser
       ..addOption(
         'flutter-command',
-        help: 'Command to use to run the Flutter CLI. Alternatively set the PATROL_FLUTTER_COMMAND environment variable.',
+        help:
+            'Command to use to run the Flutter CLI. Alternatively set the PATROL_FLUTTER_COMMAND environment variable.',
         defaultsTo: 'flutter',
         valueHelp: 'fvm flutter',
       )
