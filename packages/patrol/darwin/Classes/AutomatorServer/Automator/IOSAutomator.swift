@@ -59,14 +59,13 @@
       inApp bundleId: String,
       withTimeout timeout: TimeInterval?
     ) throws {
-        let predicate = selector.toNSPredicate()
-      var view = createLogMessage(element: "view", from: predicate)
+      var view = createLogMessage(element: "view", from: selector)
       view += " in app \(bundleId)"
 
       try runAction("tapping on \(view)") {
         let app = try self.getApp(withBundleId: bundleId)
 
-        let query = app.descendants(matching: .any).matching(predicate)
+        let query = app.descendants(matching: .any).matching(selector.toNSPredicate())
 
         Logger.shared.i("waiting for existence of \(view)")
         guard
@@ -85,13 +84,12 @@
       inApp bundleId: String,
       withTimeout timeout: TimeInterval?
     ) throws {
-        let predicate = selector.toNSPredicate()
-      var view = createLogMessage(element: "view", from: predicate)
+      var view = createLogMessage(element: "view", from: selector)
       view += " in app \(bundleId)"
 
       try runAction("double tapping on \(view)") {
         let app = try self.getApp(withBundleId: bundleId)
-        let query = app.descendants(matching: .any).matching(predicate)
+        let query = app.descendants(matching: .any).matching(selector.toNSPredicate())
 
         Logger.shared.i("waiting for existence of \(view)")
         guard
@@ -127,8 +125,7 @@
         data = "\(data)\n"
       }
         
-       let contentPredicate = selector.toNSPredicate()
-      var view = createLogMessage(element: "text field", from: contentPredicate)
+      var view = createLogMessage(element: "text field", from: selector)
       view += " in app \(bundleId)"
 
       try runAction("entering text \(format: data) into \(view)") {
@@ -143,7 +140,7 @@
         let secureTextFieldPredicate = NSPredicate(format: "elementType == 50")
 
         let finalPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
-          contentPredicate,
+          selector.toNSPredicate(),
           NSCompoundPredicate(orPredicateWithSubpredicates: [
             textFieldPredicate, secureTextFieldPredicate,
           ]
@@ -229,13 +226,12 @@
       inApp bundleId: String,
       withTimeout timeout: TimeInterval?
     ) throws {
-        let predicate = selector.toNSPredicate()
-      let view = createLogMessage(element: "view", from: predicate)
+      let view = createLogMessage(element: "view", from: selector)
       try runAction(
         "waiting until \(view) in app \(bundleId) becomes visible"
       ) {
         let app = try self.getApp(withBundleId: bundleId)
-        let query = app.descendants(matching: .any).containing(predicate)
+        let query = app.descendants(matching: .any).containing(selector.toNSPredicate())
         guard
           let element = self.waitFor(
             query: query, index: selector.instance ?? 0, timeout: timeout ?? self.timeout)
@@ -407,12 +403,11 @@
       on selector: IOSSelector,
       inApp bundleId: String
     ) throws -> [IOSNativeView] {
-        let predicate = selector.toNSPredicate()
-      let view = createLogMessage(element: "views", from: predicate)
+      let view = createLogMessage(element: "views", from: selector)
       return try runAction("getting native \(view)") {
         let app = try self.getApp(withBundleId: bundleId)
 
-        let query = app.descendants(matching: .any).matching(predicate)
+        let query = app.descendants(matching: .any).matching(selector.toNSPredicate())
         let elements = query.allElementsBoundByIndex
 
         let views = elements.map { xcuielement in
@@ -849,11 +844,54 @@
       group.wait()
     }
 
-    func createLogMessage(element: String, from predicate: NSPredicate) -> String {
+    func createLogMessage(element: String, from selector: IOSSelector) -> String {
       var logMessage = element
-        
-        logMessage += " "
-        logMessage += predicate.predicateFormat
+
+      if let instance = selector.instance {
+         logMessage += " with instance '\(instance)'" 
+         }
+      if let elementType = selector.elementType {
+         logMessage += " with elementType '\(elementType)'" 
+         }
+      if let identifier = selector.identifier {
+         logMessage += " with identifier '\(identifier)'" 
+         }
+      if let label = selector.label {
+         logMessage += " with label '\(label)'" 
+         }
+      if let labelStartsWith = selector.labelStartsWith {
+         logMessage += " with labelStartsWith '\(labelStartsWith)'" 
+         }
+      if let labelContains = selector.labelContains {
+         logMessage += " with labelContains '\(labelContains)'" 
+         }
+      if let title = selector.title {
+         logMessage += " with title '\(title)'" 
+         }
+      if let titleStartsWith = selector.titleStartsWith {
+         logMessage += " with titleStartsWith '\(titleStartsWith)'" 
+         }
+      if let titleContains = selector.titleContains {
+         logMessage += " with titleContains '\(titleContains)'" 
+         }
+      if let hasFocus = selector.hasFocus {
+         logMessage += " with hasFocus '\(hasFocus)'" 
+         }
+      if let isEnabled = selector.isEnabled {
+         logMessage += " with isEnabled '\(isEnabled)'" 
+         }
+      if let isSelected = selector.isSelected {
+         logMessage += " with isSelected '\(isSelected)'" 
+         }
+      if let placeholderValue = selector.placeholderValue {
+         logMessage += " with placeholderValue '\(placeholderValue)'" 
+         }
+      if let placeholderValueStartsWith = selector.placeholderValueStartsWith {
+         logMessage += " with placeholderValueStartsWith '\(placeholderValueStartsWith)'" 
+         }
+      if let placeholderValueContains = selector.placeholderValueContains {
+         logMessage += " with placeholderValueContains '\(placeholderValueContains)'" 
+         }
 
       return logMessage
     }
