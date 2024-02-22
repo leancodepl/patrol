@@ -1,12 +1,12 @@
 extension IOSSelector {
   public func toNSPredicate() -> NSPredicate {
-    var values = [String]()
+    var values = [Any]()
     var conditions = [String]()
       
     if let iosElementType = elementType {
         let elementTypeValue = getXCUIElementType(elementType: iosElementType).rawValue
         conditions.append("elementType == %@")
-        values.append(String(elementTypeValue))
+        values.append(elementTypeValue)
     }
       
     if let identifier = identifier {

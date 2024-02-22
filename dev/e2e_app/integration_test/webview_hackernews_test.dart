@@ -8,6 +8,7 @@ void main() {
 
     await $.native.tap(
       androidSelector: AndroidSelector(text: 'login'),
+      iosSelector: IOSSelector(label: 'login'),
     );
     await $.native.enterTextByIndex(
       'test@leancode.pl',
@@ -16,6 +17,7 @@ void main() {
     );
     await $.native.enterText(
       androidSelector: AndroidSelector(className: 'android.widget.EditText'),
+      iosSelector: IOSSelector(elementType: IOSElementType.textField),
       text: 'ny4ncat',
       keyboardBehavior: KeyboardBehavior.showAndDismiss,
     );
