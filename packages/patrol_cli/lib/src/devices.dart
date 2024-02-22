@@ -153,9 +153,9 @@ class DeviceFinder {
     process.listenStdOut((line) => output += line).disposedBy(_disposeScope);
     final exitCode = await process.exitCode;
     if (exitCode != 0) {
-      throwToolExit('`flutter devices` exited with code $exitCode');
+      throwToolExit('`$flutterCommand devices` exited with code $exitCode');
     } else if (flutterKilled) {
-      throwToolInterrupted('`flutter devices` was interrupted');
+      throwToolInterrupted('`$flutterCommand devices` was interrupted');
     } else {
       return output;
     }
