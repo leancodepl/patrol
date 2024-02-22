@@ -5,7 +5,7 @@ final class IOSNode extends Node {
     children =
         view.children.map((view) => IOSNode(view: view, parent: this)).toList();
 
-    fullNodeName = createNodeName(view.elementType, view.identifier);
+    fullNodeName = createNodeName(view.elementType.name, view.identifier);
 
     initialCharacter = createInitialCharacter(fullNodeName);
   }

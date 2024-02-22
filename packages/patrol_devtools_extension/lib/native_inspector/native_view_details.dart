@@ -119,7 +119,7 @@ class _NodeDetails extends HookWidget {
           ('isSelected:', n.view.isSelected),
         ],
       final IOSNode n => [
-          ('elementType:', n.view.elementType),
+          ('elementType:', n.view.elementType.name),
           ('identifier:', n.view.identifier),
           ('isEnabled:', n.view.isEnabled),
           ('isSelected:', n.view.isSelected),

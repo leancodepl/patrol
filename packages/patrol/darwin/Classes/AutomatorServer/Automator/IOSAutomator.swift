@@ -879,7 +879,7 @@ extension IOSNativeView {
             children: xcuielement.children(matching: .any).allElementsBoundByIndex.map { child in
                 return IOSNativeView.fromXCUIElement(child, bundleId)
             },
-            elementType: getElementTypeName(elementType: xcuielement.elementType),
+            elementType: getIOSElementType(elementType: xcuielement.elementType),
             identifier: xcuielement.identifier,
             label: xcuielement.label,
             title: xcuielement.title,
@@ -906,7 +906,7 @@ extension IOSNativeView {
         children: xcuielement.children.map { child in
           return IOSNativeView.fromXCUIElementSnapshot(child, bundleId)
         },
-        elementType: getElementTypeName(elementType: xcuielement.elementType),
+        elementType: getIOSElementType(elementType: xcuielement.elementType),
         identifier: xcuielement.identifier,
         label: xcuielement.label,
         title: xcuielement.title,

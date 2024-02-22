@@ -73,7 +73,7 @@ class AndroidSelector {
 
 class IOSSelector {
   int? instance;
-  String? elementType;
+  IOSElementType? elementType;
   String? identifier;
   String? label;
   String? labelStartsWith;
@@ -127,8 +127,7 @@ class AndroidNativeView {
 
 class IOSNativeView {
   late List<IOSNativeView> children;
-  //TODO enum ?
-  late String elementType;
+  late IOSElementType elementType;
   late String identifier;
   late String label;
   late String title;
@@ -306,4 +305,90 @@ abstract class NativeAutomator<IOSServer, AndroidServer, DartClient> {
 
 // TODO(bartekpacia): Move this RPC into a new PatrolNativeTestService service because it doesn't fit here
   void markPatrolAppServiceReady();
+}
+
+enum IOSElementType {
+  any,
+  other,
+  application,
+  group,
+  window,
+  sheet,
+  drawer,
+  alert,
+  dialog,
+  button,
+  radioButton,
+  radioGroup,
+  checkBox,
+  disclosureTriangle,
+  popUpButton,
+  comboBox,
+  menuButton,
+  toolbarButton,
+  popover,
+  keyboard,
+  key,
+  navigationBar,
+  tabBar,
+  tabGroup,
+  toolbar,
+  statusBar,
+  table,
+  tableRow,
+  tableColumn,
+  outline,
+  outlineRow,
+  browser,
+  collectionView,
+  slider,
+  pageIndicator,
+  progressIndicator,
+  activityIndicator,
+  segmentedControl,
+  picker,
+  pickerWheel,
+  switch_,
+  toggle,
+  link,
+  image,
+  icon,
+  searchField,
+  scrollView,
+  scrollBar,
+  staticText,
+  textField,
+  secureTextField,
+  datePicker,
+  textView,
+  menu,
+  menuItem,
+  menuBar,
+  menuBarItem,
+  map,
+  webView,
+  incrementArrow,
+  decrementArrow,
+  timeline,
+  ratingIndicator,
+  valueIndicator,
+  splitGroup,
+  splitter,
+  relevanceIndicator,
+  colorWell,
+  helpTag,
+  matte,
+  dockItem,
+  ruler,
+  rulerMarker,
+  grid,
+  levelIndicator,
+  cell,
+  layoutArea,
+  layoutItem,
+  handle,
+  stepper,
+  tab,
+  touchBar,
+  statusItem,
 }

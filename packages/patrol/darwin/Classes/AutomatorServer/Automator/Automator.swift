@@ -3,8 +3,8 @@ extension IOSSelector {
     var values = [String]()
     var conditions = [String]()
       
-    if let elementName = elementType {
-        let elementTypeValue = getElementType(typeName: elementName).rawValue
+    if let iosElementType = elementType {
+        let elementTypeValue = getXCUIElementType(elementType: iosElementType).rawValue
         conditions.append("elementType == %@")
         values.append(String(elementTypeValue))
     }

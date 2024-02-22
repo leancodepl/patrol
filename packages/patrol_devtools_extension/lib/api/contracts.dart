@@ -48,6 +48,175 @@ enum SetLocationAccuracyRequestLocationAccuracy {
   fine
 }
 
+enum IOSElementType {
+  @JsonValue('any')
+  any,
+  @JsonValue('other')
+  other,
+  @JsonValue('application')
+  application,
+  @JsonValue('group')
+  group,
+  @JsonValue('window')
+  window,
+  @JsonValue('sheet')
+  sheet,
+  @JsonValue('drawer')
+  drawer,
+  @JsonValue('alert')
+  alert,
+  @JsonValue('dialog')
+  dialog,
+  @JsonValue('button')
+  button,
+  @JsonValue('radioButton')
+  radioButton,
+  @JsonValue('radioGroup')
+  radioGroup,
+  @JsonValue('checkBox')
+  checkBox,
+  @JsonValue('disclosureTriangle')
+  disclosureTriangle,
+  @JsonValue('popUpButton')
+  popUpButton,
+  @JsonValue('comboBox')
+  comboBox,
+  @JsonValue('menuButton')
+  menuButton,
+  @JsonValue('toolbarButton')
+  toolbarButton,
+  @JsonValue('popover')
+  popover,
+  @JsonValue('keyboard')
+  keyboard,
+  @JsonValue('key')
+  key,
+  @JsonValue('navigationBar')
+  navigationBar,
+  @JsonValue('tabBar')
+  tabBar,
+  @JsonValue('tabGroup')
+  tabGroup,
+  @JsonValue('toolbar')
+  toolbar,
+  @JsonValue('statusBar')
+  statusBar,
+  @JsonValue('table')
+  table,
+  @JsonValue('tableRow')
+  tableRow,
+  @JsonValue('tableColumn')
+  tableColumn,
+  @JsonValue('outline')
+  outline,
+  @JsonValue('outlineRow')
+  outlineRow,
+  @JsonValue('browser')
+  browser,
+  @JsonValue('collectionView')
+  collectionView,
+  @JsonValue('slider')
+  slider,
+  @JsonValue('pageIndicator')
+  pageIndicator,
+  @JsonValue('progressIndicator')
+  progressIndicator,
+  @JsonValue('activityIndicator')
+  activityIndicator,
+  @JsonValue('segmentedControl')
+  segmentedControl,
+  @JsonValue('picker')
+  picker,
+  @JsonValue('pickerWheel')
+  pickerWheel,
+  @JsonValue('switch_')
+  switch_,
+  @JsonValue('toggle')
+  toggle,
+  @JsonValue('link')
+  link,
+  @JsonValue('image')
+  image,
+  @JsonValue('icon')
+  icon,
+  @JsonValue('searchField')
+  searchField,
+  @JsonValue('scrollView')
+  scrollView,
+  @JsonValue('scrollBar')
+  scrollBar,
+  @JsonValue('staticText')
+  staticText,
+  @JsonValue('textField')
+  textField,
+  @JsonValue('secureTextField')
+  secureTextField,
+  @JsonValue('datePicker')
+  datePicker,
+  @JsonValue('textView')
+  textView,
+  @JsonValue('menu')
+  menu,
+  @JsonValue('menuItem')
+  menuItem,
+  @JsonValue('menuBar')
+  menuBar,
+  @JsonValue('menuBarItem')
+  menuBarItem,
+  @JsonValue('map')
+  map,
+  @JsonValue('webView')
+  webView,
+  @JsonValue('incrementArrow')
+  incrementArrow,
+  @JsonValue('decrementArrow')
+  decrementArrow,
+  @JsonValue('timeline')
+  timeline,
+  @JsonValue('ratingIndicator')
+  ratingIndicator,
+  @JsonValue('valueIndicator')
+  valueIndicator,
+  @JsonValue('splitGroup')
+  splitGroup,
+  @JsonValue('splitter')
+  splitter,
+  @JsonValue('relevanceIndicator')
+  relevanceIndicator,
+  @JsonValue('colorWell')
+  colorWell,
+  @JsonValue('helpTag')
+  helpTag,
+  @JsonValue('matte')
+  matte,
+  @JsonValue('dockItem')
+  dockItem,
+  @JsonValue('ruler')
+  ruler,
+  @JsonValue('rulerMarker')
+  rulerMarker,
+  @JsonValue('grid')
+  grid,
+  @JsonValue('levelIndicator')
+  levelIndicator,
+  @JsonValue('cell')
+  cell,
+  @JsonValue('layoutArea')
+  layoutArea,
+  @JsonValue('layoutItem')
+  layoutItem,
+  @JsonValue('handle')
+  handle,
+  @JsonValue('stepper')
+  stepper,
+  @JsonValue('tab')
+  tab,
+  @JsonValue('touchBar')
+  touchBar,
+  @JsonValue('statusItem')
+  statusItem
+}
+
 @JsonSerializable()
 class DartGroupEntry with EquatableMixin {
   DartGroupEntry({
@@ -281,7 +450,7 @@ class IOSSelector with EquatableMixin {
       _$IOSSelectorFromJson(json);
 
   final int? instance;
-  final String? elementType;
+  final IOSElementType? elementType;
   final String? identifier;
   final String? label;
   final String? labelStartsWith;
@@ -474,7 +643,7 @@ class IOSNativeView with EquatableMixin {
       _$IOSNativeViewFromJson(json);
 
   final List<IOSNativeView> children;
-  final String elementType;
+  final IOSElementType elementType;
   final String identifier;
   final String label;
   final String title;
