@@ -82,7 +82,9 @@ class TestCommand extends PatrolCommand {
       ),
     );
 
-    await _compatibilityChecker.checkVersionsCompatibility();
+    await _compatibilityChecker.checkVersionsCompatibility(
+      flutterCommand: flutterCommand,
+    );
 
     final config = _pubspecReader.read();
     final testFileSuffix = config.testFileSuffix;

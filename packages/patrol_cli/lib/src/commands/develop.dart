@@ -92,7 +92,9 @@ class DevelopCommand extends PatrolCommand {
       ),
     );
 
-    await _compatibilityChecker.checkVersionsCompatibility();
+    await _compatibilityChecker.checkVersionsCompatibility(
+      flutterCommand: flutterCommand,
+    );
 
     final targets = stringsArg('target');
     if (targets.isEmpty) {

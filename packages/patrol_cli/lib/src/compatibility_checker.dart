@@ -7,6 +7,7 @@ import 'package:patrol_cli/src/base/constants.dart' as constants;
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
+import 'package:patrol_cli/src/runner/flutter_command.dart';
 import 'package:process/process.dart';
 import 'package:version/version.dart';
 
@@ -25,7 +26,9 @@ class CompatibilityChecker {
   final DisposeScope _disposeScope;
   final Logger _logger;
 
-  Future<void> checkVersionsCompatibility() async {
+  Future<void> checkVersionsCompatibility({
+    required FlutterCommand flutterCommand,
+  }) async {
     if (io.Platform.isAndroid) {
       await _checkJavaVersion(
         _disposeScope,
@@ -41,7 +44,8 @@ class CompatibilityChecker {
     await _disposeScope.run((scope) async {
       final process = await _processManager.start(
         [
-          'flutter',
+          flutterCommand.executable,
+          ...flutterCommand.arguments,
           '--suppress-analytics',
           '--no-version-check',
           'pub',
