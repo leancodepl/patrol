@@ -57,7 +57,7 @@
     }
 
     func tap(
-      on selector: Selector,
+      on selector: IOSSelector,
       inApp bundleId: String,
       withTimeout timeout: TimeInterval?
     ) throws {
@@ -67,7 +67,7 @@
     }
 
     func doubleTap(
-      on selector: Selector,
+      on selector: IOSSelector,
       inApp bundleId: String,
       withTimeout timeout: TimeInterval?
     ) throws {
@@ -84,7 +84,7 @@
 
     func enterText(
       _ data: String,
-      on selector: Selector,
+      on selector: IOSSelector,
       inApp bundleId: String,
       dismissKeyboard: Bool,
       withTimeout timeout: TimeInterval?
@@ -113,7 +113,7 @@
     }
 
     func waitUntilVisible(
-      on selector: Selector,
+      on selector: IOSSelector,
       inApp bundleId: String,
       withTimeout timeout: TimeInterval?
     ) throws {
@@ -182,7 +182,7 @@
       }
     }
 
-    func getNativeViews(on selector: Selector, inApp bundleId: String) throws -> [NativeView] {
+    func getNativeViews(on selector: IOSSelector, inApp bundleId: String) throws -> [IOSNativeView] {
       try runAction("getNativeViews") {
         throw PatrolError.methodNotImplemented("getNativeViews")
       }
@@ -287,22 +287,6 @@
         Logger.shared.i("result: \(result)")
         return result
       }
-    }
-  }
-
-  extension NativeView {
-    static func fromXCUIElement(_ xcuielement: XCUIElement, _ bundleId: String) -> NativeView {
-      return NativeView(
-        className: String(xcuielement.elementType.rawValue),  // TODO: Provide mapping for names
-        text: xcuielement.label,
-        contentDescription: "",  // TODO:
-        focused: false,  // TODO:
-        enabled: xcuielement.isEnabled,
-        resourceName: xcuielement.identifier,
-        applicationPackage: bundleId,
-        children: xcuielement.children(matching: .any).allElementsBoundByIndex.map { child in
-          return NativeView.fromXCUIElement(child, bundleId)
-        })
     }
   }
 
