@@ -9,6 +9,7 @@ void main() {
     try {
       await $.native.tap(
         androidSelector: AndroidSelector(text: 'Accept cookies'),
+        iosSelector: IOSSelector(label: 'Accept cookies'),
       );
     } on PatrolActionException catch (_) {
       // ignore
@@ -19,6 +20,9 @@ void main() {
       index: 0,
       keyboardBehavior: KeyboardBehavior.showAndDismiss,
     );
-    await $.native.tap(androidSelector: AndroidSelector(text: 'Subscribe'));
+    await $.native.tap(
+      androidSelector: AndroidSelector(text: 'Subscribe'),
+      iosSelector: IOSSelector(label: 'Subscribe'),
+    );
   });
 }
