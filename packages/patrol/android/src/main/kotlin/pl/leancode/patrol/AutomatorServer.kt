@@ -137,7 +137,7 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
                 iosNativeViews = listOf(),
             )
         } else {
-            throw PatrolException("doubleTap(): neither selector nor androidSelector are set")
+            throw PatrolException("getNativeViews(): neither selector nor androidSelector are set")
         }
     }
 
@@ -162,7 +162,7 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
                 timeout = request.timeoutMillis
             )
         } else {
-            throw PatrolException("doubleTap(): neither selector nor androidSelector are set")
+            throw PatrolException("tap(): neither selector nor androidSelector are set")
         }
     }
 
