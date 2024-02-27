@@ -57,12 +57,32 @@
     }
 
     func tap(
+      on selector: Selector,
+      inApp bundleId: String,
+      withTimeout timeout: TimeInterval?
+    ) throws {
+      try runAction("tap") {
+        throw PatrolError.methodNotImplemented("tap")
+      }
+    }
+
+   func tap(
       on selector: IOSSelector,
       inApp bundleId: String,
       withTimeout timeout: TimeInterval?
     ) throws {
       try runAction("tap") {
         throw PatrolError.methodNotImplemented("tap")
+      }
+    }
+
+    func doubleTap(
+      on selector: Selector,
+      inApp bundleId: String,
+      withTimeout timeout: TimeInterval?
+    ) throws {
+      try runAction("doubleTap") {
+        throw PatrolError.methodNotImplemented("doubleTap")
       }
     }
 
@@ -79,6 +99,18 @@
     func tapAt(coordinate vector: CGVector, inApp bundleId: String) throws {
       try runAction("tapAt") {
         throw PatrolError.methodNotImplemented("tapAt")
+      }
+    }
+
+    func enterText(
+      _ data: String,
+      on selector: Selector,
+      inApp bundleId: String,
+      dismissKeyboard: Bool,
+      withTimeout timeout: TimeInterval?
+    ) throws {
+      try runAction("enterText") {
+        throw PatrolError.methodNotImplemented("enterText")
       }
     }
 
@@ -109,6 +141,16 @@
     func swipe(from start: CGVector, to end: CGVector, inApp bundleId: String) throws {
       try runAction("swipe") {
         throw PatrolError.methodNotImplemented("swipe")
+      }
+    }
+
+    func waitUntilVisible(
+      on selector: Selector,
+      inApp bundleId: String,
+      withTimeout timeout: TimeInterval?
+    ) throws {
+      try runAction("waitUntilVisible") {
+        throw PatrolError.methodNotImplemented("waitUntilVisible")
       }
     }
 
@@ -182,13 +224,25 @@
       }
     }
 
+    func getNativeViews(on selector: Selector, inApp bundleId: String) throws -> [NativeView] {
+      try runAction("getNativeViews") {
+        throw PatrolError.methodNotImplemented("getNativeViews")
+      }
+    }
+
     func getNativeViews(on selector: IOSSelector, inApp bundleId: String) throws -> [IOSNativeView] {
       try runAction("getNativeViews") {
         throw PatrolError.methodNotImplemented("getNativeViews")
       }
     }
 
-    func getUITreeRoots(installedApps: [String]) throws -> GetNativeUITreeRespone {
+    func getUITreeRoots(installedApps: [String]) throws -> [NativeView] {
+      try runAction("getUITreeRoots") {
+        throw PatrolError.methodNotImplemented("getUITreeRoots")
+      }
+    }
+
+    func getUITreeRootsV2(installedApps: [String]) throws -> GetNativeUITreeRespone {
       try runAction("getUITreeRoots") {
         throw PatrolError.methodNotImplemented("getUITreeRoots")
       }
@@ -287,6 +341,22 @@
         Logger.shared.i("result: \(result)")
         return result
       }
+    }
+  }
+
+  extension NativeView {
+    static func fromXCUIElement(_ xcuielement: XCUIElement, _ bundleId: String) -> NativeView {
+      return NativeView(
+        className: String(xcuielement.elementType.rawValue),  // TODO: Provide mapping for names
+        text: xcuielement.label,
+        contentDescription: "",  // TODO:
+        focused: false,  // TODO:
+        enabled: xcuielement.isEnabled,
+        resourceName: xcuielement.identifier,
+        applicationPackage: bundleId,
+        children: xcuielement.children(matching: .any).allElementsBoundByIndex.map { child in
+          return NativeView.fromXCUIElement(child, bundleId)
+        })
     }
   }
 

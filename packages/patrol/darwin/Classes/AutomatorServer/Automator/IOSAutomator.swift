@@ -55,6 +55,32 @@
 
     // MARK: General UI interaction
     func tap(
+      on selector: Selector,
+      inApp bundleId: String,
+      withTimeout timeout: TimeInterval?
+    ) throws {
+      var view = createLogMessage(element: "view", from: selector)
+      view += " in app \(bundleId)"
+
+      try runAction("tapping on \(view)") {
+        let app = try self.getApp(withBundleId: bundleId)
+
+        // TODO: We should consider more view properties. See #1554
+        let query = app.descendants(matching: .any).matching(selector.toNSPredicate())
+
+        Logger.shared.i("waiting for existence of \(view)")
+        guard
+          let element = self.waitFor(
+            query: query, index: selector.instance ?? 0, timeout: timeout ?? self.timeout)
+        else {
+          throw PatrolError.viewNotExists(view)
+        }
+
+        element.forceTap()
+      }
+    }
+
+    func tap(
       on selector: IOSSelector,
       inApp bundleId: String,
       withTimeout timeout: TimeInterval?
@@ -65,6 +91,30 @@
       try runAction("tapping on \(view)") {
         let app = try self.getApp(withBundleId: bundleId)
 
+        let query = app.descendants(matching: .any).matching(selector.toNSPredicate())
+
+        Logger.shared.i("waiting for existence of \(view)")
+        guard
+          let element = self.waitFor(
+            query: query, index: selector.instance ?? 0, timeout: timeout ?? self.timeout)
+        else {
+          throw PatrolError.viewNotExists(view)
+        }
+
+        element.forceTap()
+      }
+    }
+
+    func doubleTap(
+      on selector: Selector,
+      inApp bundleId: String,
+      withTimeout timeout: TimeInterval?
+    ) throws {
+      var view = createLogMessage(element: "view", from: selector)
+      view += " in app \(bundleId)"
+
+      try runAction("double tapping on \(view)") {
+        let app = try self.getApp(withBundleId: bundleId)
         let query = app.descendants(matching: .any).matching(selector.toNSPredicate())
 
         Logger.shared.i("waiting for existence of \(view)")
@@ -111,6 +161,60 @@
 
         coordinate.tap()
       }
+    }
+
+    func enterText(
+      _ data: String,
+      on selector: Selector,
+      inApp bundleId: String,
+      dismissKeyboard: Bool,
+      withTimeout timeout: TimeInterval?
+    ) throws {
+      var data = data
+      if dismissKeyboard {
+        data = "\(data)\n"
+      }
+
+      var view = createLogMessage(element: "text field", from: selector)
+      view += " in app \(bundleId)"
+
+      try runAction("entering text \(format: data) into \(view)") {
+        let app = try self.getApp(withBundleId: bundleId)
+
+        // elementType must be specified as integer
+        // See:
+        // * https://developer.apple.com/documentation/xctest/xcuielementtype/xcuielementtypetextfield
+        // * https://developer.apple.com/documentation/xctest/xcuielementtype/xcuielementtypesecuretextfield
+        // TODO: We should consider more view properties. See #1554
+        let contentPredicate = selector.toTextFieldNSPredicate()
+        let textFieldPredicate = NSPredicate(format: "elementType == 49")
+        let secureTextFieldPredicate = NSPredicate(format: "elementType == 50")
+
+        let finalPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
+          contentPredicate,
+          NSCompoundPredicate(orPredicateWithSubpredicates: [
+            textFieldPredicate, secureTextFieldPredicate,
+          ]
+          ),
+        ])
+
+        let query = app.descendants(matching: .any).matching(finalPredicate)
+        guard
+          let element = self.waitFor(
+            query: query,
+            index: selector.instance ?? 0,
+            timeout: timeout ?? self.timeout
+          )
+        else {
+          throw PatrolError.viewNotExists(view)
+        }
+
+        element.forceTap()
+        element.typeText(data)
+      }
+
+      // Prevent keyboard dismissal from happening too fast
+      sleepTask(timeInSeconds: 1)
     }
 
     func enterText(
@@ -218,6 +322,26 @@
           withNormalizedOffset: CGVector(dx: start.dx, dy: start.dy))
         let endCoordinate = app.coordinate(withNormalizedOffset: CGVector(dx: end.dx, dy: end.dy))
         startCoordinate.press(forDuration: 0.1, thenDragTo: endCoordinate)
+      }
+    }
+
+    func waitUntilVisible(
+      on selector: Selector,
+      inApp bundleId: String,
+      withTimeout timeout: TimeInterval?
+    ) throws {
+      let view = createLogMessage(element: "view", from: selector)
+      try runAction(
+        "waiting until \(view) in app \(bundleId) becomes visible"
+      ) {
+        let app = try self.getApp(withBundleId: bundleId)
+        let query = app.descendants(matching: .any).containing(selector.toNSPredicate())
+        guard
+          let element = self.waitFor(
+            query: query, index: selector.instance ?? 0, timeout: timeout ?? self.timeout)
+        else {
+          throw PatrolError.viewNotExists(view)
+        }
       }
     }
 
@@ -400,6 +524,26 @@
     }
 
     func getNativeViews(
+      on selector: Selector,
+      inApp bundleId: String
+    ) throws -> [NativeView] {
+      let view = createLogMessage(element: "views", from: selector)
+      return try runAction("getting native \(view)") {
+        let app = try self.getApp(withBundleId: bundleId)
+
+        // TODO: We should consider more view properties. See #1554
+        let query = app.descendants(matching: .any).matching(selector.toNSPredicate())
+        let elements = query.allElementsBoundByIndex
+
+        let views = elements.map { xcuielement in
+          return NativeView.fromXCUIElement(xcuielement, bundleId)
+        }
+
+        return views
+      }
+    }
+
+    func getNativeViews(
       on selector: IOSSelector,
       inApp bundleId: String
     ) throws -> [IOSNativeView] {
@@ -418,12 +562,20 @@
       }
     }
 
-    func getUITreeRoots(installedApps: [String]) throws -> GetNativeUITreeRespone {
+    func getUITreeRoots(installedApps: [String]) throws -> [NativeView] {
+      try runAction("getting ui tree roots") {
+        let foregroundApp = self.getForegroundApp(installedApps: installedApps)
+        let snapshot = try foregroundApp.snapshot()
+        return [NativeView.fromXCUIElementSnapshot(snapshot, foregroundApp.identifier)]
+      }
+    }
+
+    func getUITreeRootsV2(installedApps: [String]) throws -> GetNativeUITreeRespone {
       try runAction("getting ui tree roots") {
         let foregroundApp = self.getForegroundApp(installedApps: installedApps)
         let snapshot = try foregroundApp.snapshot()
         let root = IOSNativeView.fromXCUIElementSnapshot(snapshot, foregroundApp.identifier)
-        return GetNativeUITreeRespone(iOSroots: [root], androidRoots: [])
+        return GetNativeUITreeRespone(iOSroots: [root], androidRoots: [], roots: [])
       }
     }
 
@@ -844,6 +996,25 @@
       group.wait()
     }
 
+    func createLogMessage(element: String, from selector: Selector) -> String {
+      var logMessage = element
+
+      if let text = selector.text {
+        logMessage += " with text '\(text)'"
+      }
+      if let startsWith = selector.textStartsWith {
+        logMessage += " starting with '\(startsWith)'"
+      }
+      if let contains = selector.textContains {
+        logMessage += " containing '\(contains)'"
+      }
+      if let index = selector.instance {
+        logMessage += " at index \(index)"
+      }
+
+      return logMessage
+    }
+
     func createLogMessage(element: String, from selector: IOSSelector) -> String {
       var logMessage = element
 
@@ -908,6 +1079,39 @@
         let coordinate = self.coordinate(withNormalizedOffset: CGVector(dx: 0.0, dy: 0.0))
         coordinate.tap()
       }
+    }
+  }
+
+
+  extension NativeView {
+    static func fromXCUIElement(_ xcuielement: XCUIElement, _ bundleId: String) -> NativeView {
+      return NativeView(
+        className: getElementTypeName(elementType: xcuielement.elementType),
+        text: xcuielement.label,
+        contentDescription: xcuielement.accessibilityLabel,
+        focused: xcuielement.hasFocus,
+        enabled: xcuielement.isEnabled,
+        resourceName: xcuielement.identifier,
+        applicationPackage: bundleId,
+        children: xcuielement.children(matching: .any).allElementsBoundByIndex.map { child in
+          return NativeView.fromXCUIElement(child, bundleId)
+        })
+    }
+
+    static func fromXCUIElementSnapshot(_ xcuielement: XCUIElementSnapshot, _ bundleId: String)
+      -> NativeView
+    {
+      return NativeView(
+        className: getElementTypeName(elementType: xcuielement.elementType),
+        text: xcuielement.label,
+        contentDescription: "",  // TODO: Separate request
+        focused: xcuielement.hasFocus,
+        enabled: xcuielement.isEnabled,
+        resourceName: xcuielement.identifier,
+        applicationPackage: bundleId,
+        children: xcuielement.children.map { child in
+          return NativeView.fromXCUIElementSnapshot(child, bundleId)
+        })
     }
   }
 
