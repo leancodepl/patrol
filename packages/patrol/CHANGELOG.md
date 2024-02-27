@@ -1,3 +1,12 @@
+## 3.5.2
+
+- Fix reporting fail cause to native on ios in release mode (#2114).
+
+## 3.5.1
+
+- Make more `Selector` properties work on iOS (#2030).
+- Fix handling denying Android permissions when invoked second time (#2112).
+
 ## 3.5.0
 
 - Add optional timeout parameter to native methods (#2042).

@@ -455,7 +455,8 @@ class Automator private constructor() {
             "com.android.permissioncontroller:id/permission_allow_one_time_button",
             // deny
             "com.android.packageinstaller:id/permission_deny_button",
-            "com.android.permissioncontroller:id/permission_deny_button"
+            "com.android.permissioncontroller:id/permission_deny_button",
+            "com.android.permissioncontroller:id/permission_deny_and_dont_ask_again_button"
         )
 
         val uiObject = waitForUiObjectByResourceId(*identifiers, timeout = timeout)
@@ -496,7 +497,8 @@ class Automator private constructor() {
     fun denyPermission() {
         val identifiers = arrayOf(
             "com.android.packageinstaller:id/permission_deny_button", // API <= 28
-            "com.android.permissioncontroller:id/permission_deny_button" // API >= 29
+            "com.android.permissioncontroller:id/permission_deny_button", // API >= 29 (first invocation)
+            "com.android.permissioncontroller:id/permission_deny_and_dont_ask_again_button" // API >= 29 (second invocation)
         )
 
         val uiObject = waitForUiObjectByResourceId(*identifiers, timeout = timeoutMillis)
