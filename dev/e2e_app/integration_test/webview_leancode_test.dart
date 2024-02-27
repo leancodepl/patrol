@@ -7,10 +7,7 @@ void main() {
     await $('Open webview (LeanCode)').scrollTo().tap();
 
     try {
-      await $.native.tap(
-        androidSelector: AndroidSelector(text: 'Accept cookies'),
-        iosSelector: IOSSelector(label: 'Accept cookies'),
-      );
+      await $.native.tap(Selector(text: 'Accept cookies'));
     } on PatrolActionException catch (_) {
       // ignore
     }
@@ -20,9 +17,35 @@ void main() {
       index: 0,
       keyboardBehavior: KeyboardBehavior.showAndDismiss,
     );
-    await $.native.tap(
-      androidSelector: AndroidSelector(text: 'Subscribe'),
-      iosSelector: IOSSelector(label: 'Subscribe'),
+    await $.native.tap(Selector(text: 'Subscribe'));
+  });
+
+  patrol('interacts with the LeanCode website in a webview native2', ($) async {
+    await createApp($);
+
+    await $('Open webview (LeanCode)').scrollTo().tap();
+
+    try {
+      await $.native2.tap(
+        NativeSelector(
+          android: AndroidSelector(text: 'Accept cookies'),
+          ios: IOSSelector(label: 'Accept cookies'),
+        ),
+      );
+    } on PatrolActionException catch (_) {
+      // ignore
+    }
+
+    await $.native2.enterTextByIndex(
+      'test@leancode.pl',
+      index: 0,
+      keyboardBehavior: KeyboardBehavior.showAndDismiss,
+    );
+    await $.native2.tap(
+      NativeSelector(
+        android: AndroidSelector(text: 'Subscribe'),
+        ios: IOSSelector(label: 'Subscribe'),
+      ),
     );
   });
 }

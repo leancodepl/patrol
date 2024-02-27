@@ -40,7 +40,7 @@ void main() {
   );
 
   patrol(
-    'taps on notification - api v2',
+    'taps on notification native2',
     ($) async {
       await createApp($);
       await $('Open notifications screen').scrollTo().tap();
