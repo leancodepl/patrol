@@ -187,7 +187,17 @@ extension IOSSelector {
 
     // MARK: General UI interaction
     func tap(
+      on selector: Selector,
+      inApp bundleId: String,
+      withTimeout timeout: TimeInterval?
+    ) throws
+    func tap(
       on selector: IOSSelector,
+      inApp bundleId: String,
+      withTimeout timeout: TimeInterval?
+    ) throws
+    func doubleTap(
+      on selector: Selector,
       inApp bundleId: String,
       withTimeout timeout: TimeInterval?
     ) throws
@@ -197,6 +207,13 @@ extension IOSSelector {
       withTimeout timeout: TimeInterval?
     ) throws
     func tapAt(coordinate vector: CGVector, inApp bundleId: String) throws
+    func enterText(
+      _ data: String,
+      on selector: Selector,
+      inApp bundleId: String,
+      dismissKeyboard: Bool,
+      withTimeout timeout: TimeInterval?
+    ) throws
     func enterText(
       _ data: String,
       on selector: IOSSelector,
@@ -212,6 +229,11 @@ extension IOSSelector {
       withTimeout timeout: TimeInterval?
     ) throws
     func swipe(from start: CGVector, to end: CGVector, inApp bundleId: String) throws
+    func waitUntilVisible(
+      on selector: Selector,
+      inApp bundleId: String,
+      withTimeout timeout: TimeInterval?
+    ) throws
     func waitUntilVisible(
       on selector: IOSSelector,
       inApp bundleId: String,
@@ -230,10 +252,15 @@ extension IOSSelector {
     func enableBluetooth() throws
     func disableBluetooth() throws
     func getNativeViews(
+      on selector: Selector,
+      inApp bundleId: String
+    ) throws -> [NativeView]
+    func getNativeViews(
       on selector: IOSSelector,
       inApp bundleId: String
     ) throws -> [IOSNativeView]
-    func getUITreeRoots(installedApps: [String]) throws -> GetNativeUITreeRespone
+    func getUITreeRoots(installedApps: [String]) throws -> [NativeView]
+    func getUITreeRootsV2(installedApps: [String]) throws -> GetNativeUITreeRespone
 
     // MARK: Notifications
     func openNotifications() throws
