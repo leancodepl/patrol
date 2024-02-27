@@ -3,164 +3,47 @@ import 'dart:io' as io;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:meta/meta.dart';
-import 'package:patrol/src/native/contracts/contracts.dart' as contracts;
 import 'package:patrol/src/native/contracts/contracts.dart';
+import 'package:patrol/src/native/contracts/contracts.dart' as contracts;
 import 'package:patrol/src/native/contracts/native_automator_client.dart';
+import 'package:patrol/src/native/native_automator.dart';
+import 'package:patrol/src/native/native_automator.dart' as native_automator;
 
-/// Thrown when a native action fails.
-class PatrolActionException implements Exception {
-  /// Creates a new [PatrolActionException].
-  PatrolActionException(this.message);
-
-  /// Message that the native part returned.
-  String message;
-
-  @override
-  String toString() => 'Patrol action failed: $message';
-}
-
-/// Specifies how the OS keyboard should behave when using
-/// [NativeAutomator.enterText] and [NativeAutomator.enterTextByIndex].
-enum KeyboardBehavior {
-  /// The default keyboard behavior.
-  ///
-  /// Keyboard will be shown when entering text starts, and will be
-  /// automatically dismissed afterwards.
-  showAndDismiss,
-
-  /// The alternative keyboard behavior.
-  ///
-  /// On Android, no keyboard will be shown at all. The text will simply appear
-  /// inside the TextField.
-  ///
-  /// On iOS, the keyboard will not be dismissed after entering text.
-  alternative,
-}
-
-extension on KeyboardBehavior {
-  contracts.KeyboardBehavior get toContractsEnum {
-    switch (this) {
-      case KeyboardBehavior.showAndDismiss:
-        return contracts.KeyboardBehavior.showAndDismiss;
-      case KeyboardBehavior.alternative:
-        return contracts.KeyboardBehavior.alternative;
-    }
-  }
-}
-
-void _defaultPrintLogger(String message) {
-  // ignore: avoid_print
-  print('Patrol (native): $message');
-}
-
-/// Configuration for [NativeAutomator].
-class NativeAutomatorConfig {
-  /// Creates a new [NativeAutomatorConfig].
-  const NativeAutomatorConfig({
-    this.host = const String.fromEnvironment(
-      'PATROL_HOST',
-      defaultValue: 'localhost',
-    ),
-    this.port = const String.fromEnvironment(
-      'PATROL_TEST_SERVER_PORT',
-      defaultValue: '8081',
-    ),
-    this.packageName = const String.fromEnvironment('PATROL_APP_PACKAGE_NAME'),
-    this.iosInstalledApps =
-        const String.fromEnvironment('PATROL_IOS_INSTALLED_APPS'),
-    this.bundleId = const String.fromEnvironment('PATROL_APP_BUNDLE_ID'),
-    this.androidAppName =
-        const String.fromEnvironment('PATROL_ANDROID_APP_NAME'),
-    this.iosAppName = const String.fromEnvironment('PATROL_IOS_APP_NAME'),
-    this.connectionTimeout = const Duration(seconds: 60),
-    this.findTimeout = const Duration(seconds: 10),
-    this.keyboardBehavior = KeyboardBehavior.showAndDismiss,
-    this.logger = _defaultPrintLogger,
+/// This class represents the result of [NativeAutomator.getNativeViews].
+class GetNativeViewsResult {
+  /// Creates a new [GetNativeViewsResult].
+  const GetNativeViewsResult({
+    required this.androidViews,
+    required this.iosViews,
   });
 
-  /// Apps installed on the iOS simulator.
-  ///
-  /// This is needed for purpose of native view inspection in the Patrol
-  /// DevTools extension.
-  final String iosInstalledApps;
+  /// List of Android native views.
+  final List<AndroidNativeView> androidViews;
 
-  /// Host on which Patrol server instrumentation is running.
-  final String host;
+  /// List of iOS native views.
+  final List<IOSNativeView> iosViews;
+}
 
-  /// Port on [host] on which Patrol server instrumentation is running.
-  final String port;
+/// This class aggregates native selectors.
+class NativeSelector {
+  /// Creates a new [NativeSelector]
+  const NativeSelector({this.android, this.ios});
 
-  /// Time after which the connection with the native automator will fail.
-  ///
-  /// It must be longer than [findTimeout].
-  final Duration connectionTimeout;
+  /// Android selector.
+  final AndroidSelector? android;
 
-  /// Time to wait for native views to appear.
-  final Duration findTimeout;
+  /// iOS selector.
+  final IOSSelector? ios;
+}
 
-  /// How the keyboard should behave when entering text.
-  ///
-  /// See [KeyboardBehavior] to learn more.
-  final KeyboardBehavior keyboardBehavior;
-
-  /// Package name of the application under test.
-  ///
-  /// Android only.
-  final String packageName;
-
-  /// Bundle identifier name of the application under test.
-  ///
-  /// iOS only.
-  final String bundleId;
-
-  /// Name of the application under test on Android.
-  final String androidAppName;
-
-  /// Name of the application under test on iOS.
-  final String iosAppName;
-
-  /// Name of the application under test.
-  ///
-  /// Returns [androidAppName] on Android and [iosAppName] on iOS.
-  String get appName {
-    if (io.Platform.isAndroid) {
-      return androidAppName;
-    } else if (io.Platform.isIOS) {
-      return iosAppName;
-    } else {
-      throw StateError('Unsupported platform');
+extension on native_automator.KeyboardBehavior {
+  contracts.KeyboardBehavior get toContractsEnum {
+    switch (this) {
+      case native_automator.KeyboardBehavior.showAndDismiss:
+        return contracts.KeyboardBehavior.showAndDismiss;
+      case native_automator.KeyboardBehavior.alternative:
+        return contracts.KeyboardBehavior.alternative;
     }
-  }
-
-  /// Called when a native action is performed.
-  final void Function(String) logger;
-
-  /// Creates a copy of this config but with the given fields replaced with the
-  /// new values.
-  NativeAutomatorConfig copyWith({
-    String? host,
-    String? port,
-    String? packageName,
-    String? bundleId,
-    String? androidAppName,
-    String? iosAppName,
-    Duration? connectionTimeout,
-    Duration? findTimeout,
-    KeyboardBehavior? keyboardBehavior,
-    void Function(String)? logger,
-  }) {
-    return NativeAutomatorConfig(
-      host: host ?? this.host,
-      port: port ?? this.port,
-      packageName: packageName ?? this.packageName,
-      bundleId: bundleId ?? this.bundleId,
-      androidAppName: androidAppName ?? this.androidAppName,
-      iosAppName: iosAppName ?? this.iosAppName,
-      connectionTimeout: connectionTimeout ?? this.connectionTimeout,
-      findTimeout: findTimeout ?? this.findTimeout,
-      keyboardBehavior: keyboardBehavior ?? this.keyboardBehavior,
-      logger: logger ?? this.logger,
-    );
   }
 }
 
@@ -170,9 +53,9 @@ class NativeAutomatorConfig {
 /// Communicates over http with the native automation server running on the
 /// target device.
 // TODO: Rename to NativeAutomatorClient
-class NativeAutomator {
-  /// Creates a new [NativeAutomator].
-  NativeAutomator({required NativeAutomatorConfig config})
+class NativeAutomator2 {
+  /// Creates a new [NativeAutomator2].
+  NativeAutomator2({required NativeAutomatorConfig config})
       : assert(
           config.connectionTimeout > config.findTimeout,
           'find timeout is longer than connection timeout',
@@ -432,20 +315,21 @@ class NativeAutomator {
   ///
   /// Notification shade has to be opened first with [openNotifications].
   ///
-  /// On iOS, only [Selector.textContains] is taken into account.
+  /// On iOS, only [IOSSelector.titleContains] is taken into account.
   ///
   /// See also:
   ///
   /// * [tapOnNotificationByIndex], which is less flexible but also less verbose
   Future<void> tapOnNotificationBySelector(
-    Selector selector, {
+    NativeSelector selector, {
     Duration? timeout,
   }) async {
     await _wrapRequest(
       'tapOnNotificationBySelector',
       () => _client.tapOnNotification(
         TapOnNotificationRequest(
-          selector: selector,
+          androidSelector: selector.android,
+          iosSelector: selector.ios,
           timeoutMillis: timeout?.inMilliseconds,
         ),
       ),
@@ -519,14 +403,15 @@ class NativeAutomator {
   /// [NativeAutomatorConfig.findTimeout] duration from the configuration.
   /// If the native view is not found, an exception is thrown.
   Future<void> tap(
-    Selector selector, {
+    NativeSelector selector, {
     String? appId,
     Duration? timeout,
   }) async {
     await _wrapRequest('tap', () async {
       await _client.tap(
         TapRequest(
-          selector: selector,
+          androidSelector: selector.android,
+          iosSelector: selector.ios,
           appId: appId ?? resolvedAppId,
           timeoutMillis: timeout?.inMilliseconds,
         ),
@@ -541,7 +426,7 @@ class NativeAutomator {
   /// [NativeAutomatorConfig.findTimeout] duration from the configuration.
   /// If the native view is not found, an exception is thrown.
   Future<void> doubleTap(
-    Selector selector, {
+    NativeSelector selector, {
     String? appId,
     Duration? timeout,
   }) async {
@@ -549,9 +434,10 @@ class NativeAutomator {
       'doubleTap',
       () => _client.doubleTap(
         TapRequest(
-          selector: selector,
+          androidSelector: selector.android,
           appId: appId ?? resolvedAppId,
           timeoutMillis: timeout?.inMilliseconds,
+          iosSelector: selector.ios,
         ),
       ),
     );
@@ -593,10 +479,10 @@ class NativeAutomator {
   /// See also:
   ///  * [enterTextByIndex], which is less flexible but also less verbose
   Future<void> enterText(
-    Selector selector, {
+    NativeSelector selector, {
     required String text,
     String? appId,
-    KeyboardBehavior? keyboardBehavior,
+    native_automator.KeyboardBehavior? keyboardBehavior,
     Duration? timeout,
   }) async {
     await _wrapRequest(
@@ -605,7 +491,8 @@ class NativeAutomator {
         EnterTextRequest(
           data: text,
           appId: appId ?? resolvedAppId,
-          selector: selector,
+          androidSelector: selector.android,
+          iosSelector: selector.ios,
           keyboardBehavior:
               (keyboardBehavior ?? _config.keyboardBehavior).toContractsEnum,
           timeoutMillis: timeout?.inMilliseconds,
@@ -632,7 +519,7 @@ class NativeAutomator {
     String text, {
     required int index,
     String? appId,
-    KeyboardBehavior? keyboardBehavior,
+    native_automator.KeyboardBehavior? keyboardBehavior,
     Duration? timeout,
   }) async {
     await _wrapRequest(
@@ -686,7 +573,7 @@ class NativeAutomator {
   /// [timeout] is not specified, it utilizes the
   /// [NativeAutomatorConfig.findTimeout].
   Future<void> waitUntilVisible(
-    Selector selector, {
+    NativeSelector selector, {
     String? appId,
     Duration? timeout,
   }) async {
@@ -694,7 +581,8 @@ class NativeAutomator {
       'waitUntilVisible',
       () => _client.waitUntilVisible(
         WaitUntilVisibleRequest(
-          selector: selector,
+          androidSelector: selector.android,
+          iosSelector: selector.ios,
           appId: appId ?? resolvedAppId,
           timeoutMillis: timeout?.inMilliseconds,
         ),
@@ -704,21 +592,25 @@ class NativeAutomator {
 
   /// Returns a list of currently visible native UI controls, specified by
   /// [selector], which are currently visible on screen.
-  Future<List<NativeView>> getNativeViews(
-    Selector selector, {
+  Future<GetNativeViewsResult> getNativeViews(
+    NativeSelector selector, {
     String? appId,
   }) async {
     final response = await _wrapRequest(
       'getNativeViews',
       () => _client.getNativeViews(
         GetNativeViewsRequest(
-          selector: selector,
+          androidSelector: selector.android,
+          iosSelector: selector.ios,
           appId: appId ?? resolvedAppId,
         ),
       ),
     );
 
-    return response.nativeViews;
+    return GetNativeViewsResult(
+      androidViews: response.androidNativeViews,
+      iosViews: response.iosNativeViews,
+    );
   }
 
   /// Waits until a native permission request dialog becomes visible within
