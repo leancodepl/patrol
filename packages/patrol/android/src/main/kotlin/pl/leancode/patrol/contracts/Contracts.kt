@@ -298,11 +298,74 @@ class Contracts {
     }
   }
 
+  data class Selector (
+    val text: String? = null,
+    val textStartsWith: String? = null,
+    val textContains: String? = null,
+    val className: String? = null,
+    val contentDescription: String? = null,
+    val contentDescriptionStartsWith: String? = null,
+    val contentDescriptionContains: String? = null,
+    val resourceId: String? = null,
+    val instance: Long? = null,
+    val enabled: Boolean? = null,
+    val focused: Boolean? = null,
+    val pkg: String? = null
+  ){
+    fun hasText(): Boolean {
+      return text != null
+    }
+    fun hasTextStartsWith(): Boolean {
+      return textStartsWith != null
+    }
+    fun hasTextContains(): Boolean {
+      return textContains != null
+    }
+    fun hasClassName(): Boolean {
+      return className != null
+    }
+    fun hasContentDescription(): Boolean {
+      return contentDescription != null
+    }
+    fun hasContentDescriptionStartsWith(): Boolean {
+      return contentDescriptionStartsWith != null
+    }
+    fun hasContentDescriptionContains(): Boolean {
+      return contentDescriptionContains != null
+    }
+    fun hasResourceId(): Boolean {
+      return resourceId != null
+    }
+    fun hasInstance(): Boolean {
+      return instance != null
+    }
+    fun hasEnabled(): Boolean {
+      return enabled != null
+    }
+    fun hasFocused(): Boolean {
+      return focused != null
+    }
+    fun hasPkg(): Boolean {
+      return pkg != null
+    }
+  }
+
   data class GetNativeViewsRequest (
-    val androidSelector: AndroidSelector,
-    val iosSelector: IOSSelector,
+    val selector: Selector? = null,
+    val androidSelector: AndroidSelector? = null,
+    val iosSelector: IOSSelector? = null,
     val appId: String
-  )
+  ){
+    fun hasSelector(): Boolean {
+      return selector != null
+    }
+    fun hasAndroidSelector(): Boolean {
+      return androidSelector != null
+    }
+    fun hasIosSelector(): Boolean {
+      return iosSelector != null
+    }
+  }
 
   data class GetNativeUITreeRequest (
     val iosInstalledApps: List<String>? = null
@@ -314,7 +377,8 @@ class Contracts {
 
   data class GetNativeUITreeRespone (
     val iOSroots: List<IOSNativeView>,
-    val androidRoots: List<AndroidNativeView>
+    val androidRoots: List<AndroidNativeView>,
+    val roots: List<NativeView>
   )
 
   data class AndroidNativeView (
@@ -387,17 +451,59 @@ class Contracts {
     val y: Double
   )
 
+  data class NativeView (
+    val className: String? = null,
+    val text: String? = null,
+    val contentDescription: String? = null,
+    val focused: Boolean,
+    val enabled: Boolean,
+    val childCount: Long? = null,
+    val resourceName: String? = null,
+    val applicationPackage: String? = null,
+    val children: List<NativeView>
+  ){
+    fun hasClassName(): Boolean {
+      return className != null
+    }
+    fun hasText(): Boolean {
+      return text != null
+    }
+    fun hasContentDescription(): Boolean {
+      return contentDescription != null
+    }
+    fun hasChildCount(): Boolean {
+      return childCount != null
+    }
+    fun hasResourceName(): Boolean {
+      return resourceName != null
+    }
+    fun hasApplicationPackage(): Boolean {
+      return applicationPackage != null
+    }
+  }
+
   data class GetNativeViewsResponse (
+    val nativeViews: List<NativeView>,
     val iosNativeViews: List<IOSNativeView>,
     val androidNativeViews: List<AndroidNativeView>
   )
 
   data class TapRequest (
-    val androidSelector: AndroidSelector,
-    val iosSelector: IOSSelector,
+    val selector: Selector? = null,
+    val androidSelector: AndroidSelector? = null,
+    val iosSelector: IOSSelector? = null,
     val appId: String,
     val timeoutMillis: Long? = null
   ){
+    fun hasSelector(): Boolean {
+      return selector != null
+    }
+    fun hasAndroidSelector(): Boolean {
+      return androidSelector != null
+    }
+    fun hasIosSelector(): Boolean {
+      return iosSelector != null
+    }
     fun hasTimeoutMillis(): Boolean {
       return timeoutMillis != null
     }
@@ -413,6 +519,7 @@ class Contracts {
     val data: String,
     val appId: String,
     val index: Long? = null,
+    val selector: Selector? = null,
     val androidSelector: AndroidSelector? = null,
     val iosSelector: IOSSelector? = null,
     val keyboardBehavior: KeyboardBehavior,
@@ -420,6 +527,9 @@ class Contracts {
   ){
     fun hasIndex(): Boolean {
       return index != null
+    }
+    fun hasSelector(): Boolean {
+      return selector != null
     }
     fun hasAndroidSelector(): Boolean {
       return androidSelector != null
@@ -442,11 +552,21 @@ class Contracts {
   )
 
   data class WaitUntilVisibleRequest (
-    val androidSelector: AndroidSelector,
-    val iosSelector: IOSSelector,
+    val selector: Selector? = null,
+    val androidSelector: AndroidSelector? = null,
+    val iosSelector: IOSSelector? = null,
     val appId: String,
     val timeoutMillis: Long? = null
   ){
+    fun hasSelector(): Boolean {
+      return selector != null
+    }
+    fun hasAndroidSelector(): Boolean {
+      return androidSelector != null
+    }
+    fun hasIosSelector(): Boolean {
+      return iosSelector != null
+    }
     fun hasTimeoutMillis(): Boolean {
       return timeoutMillis != null
     }
@@ -480,12 +600,16 @@ class Contracts {
 
   data class TapOnNotificationRequest (
     val index: Long? = null,
+    val selector: Selector? = null,
     val androidSelector: AndroidSelector? = null,
     val iosSelector: IOSSelector? = null,
     val timeoutMillis: Long? = null
   ){
     fun hasIndex(): Boolean {
       return index != null
+    }
+    fun hasSelector(): Boolean {
+      return selector != null
     }
     fun hasAndroidSelector(): Boolean {
       return androidSelector != null

@@ -89,9 +89,25 @@ class IOSSelector {
   String? placeholderValueContains;
 }
 
+class Selector {
+  String? text;
+  String? textStartsWith;
+  String? textContains;
+  String? className;
+  String? contentDescription;
+  String? contentDescriptionStartsWith;
+  String? contentDescriptionContains;
+  String? resourceId;
+  int? instance;
+  bool? enabled;
+  bool? focused;
+  String? pkg;
+}
+
 class GetNativeViewsRequest {
-  late AndroidSelector androidSelector;
-  late IOSSelector iosSelector;
+  Selector? selector;
+  AndroidSelector? androidSelector;
+  IOSSelector? iosSelector;
   late String appId;
 }
 
@@ -102,6 +118,7 @@ class GetNativeUITreeRequest {
 class GetNativeUITreeRespone {
   late List<IOSNativeView> iOSroots;
   late List<AndroidNativeView> androidRoots;
+  late List<NativeView> roots;
 }
 
 class AndroidNativeView {
@@ -153,14 +170,28 @@ class Point2D {
   late double y;
 }
 
+class NativeView {
+  String? className;
+  String? text;
+  String? contentDescription;
+  late bool focused;
+  late bool enabled;
+  int? childCount;
+  String? resourceName;
+  String? applicationPackage;
+  late List<NativeView> children;
+}
+
 class GetNativeViewsResponse {
+  late List<NativeView> nativeViews;
   late List<IOSNativeView> iosNativeViews;
   late List<AndroidNativeView> androidNativeViews;
 }
 
 class TapRequest {
-  late AndroidSelector androidSelector;
-  late IOSSelector iosSelector;
+  Selector? selector;
+  AndroidSelector? androidSelector;
+  IOSSelector? iosSelector;
   late String appId;
   int? timeoutMillis;
 }
@@ -180,6 +211,7 @@ class EnterTextRequest {
   late String data;
   late String appId;
   int? index;
+  Selector? selector;
   AndroidSelector? androidSelector;
   IOSSelector? iosSelector;
   late KeyboardBehavior keyboardBehavior;
@@ -196,8 +228,9 @@ class SwipeRequest {
 }
 
 class WaitUntilVisibleRequest {
-  late AndroidSelector androidSelector;
-  late IOSSelector iosSelector;
+  Selector? selector;
+  AndroidSelector? androidSelector;
+  IOSSelector? iosSelector;
   late String appId;
   int? timeoutMillis;
 }
@@ -221,6 +254,7 @@ class GetNotificationsRequest {}
 
 class TapOnNotificationRequest {
   int? index;
+  Selector? selector;
   AndroidSelector? androidSelector;
   IOSSelector? iosSelector;
   int? timeoutMillis;

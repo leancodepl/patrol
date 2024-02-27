@@ -189,9 +189,25 @@ public struct IOSSelector: Codable {
   public var placeholderValueContains: String?
 }
 
+public struct Selector: Codable {
+  public var text: String?
+  public var textStartsWith: String?
+  public var textContains: String?
+  public var className: String?
+  public var contentDescription: String?
+  public var contentDescriptionStartsWith: String?
+  public var contentDescriptionContains: String?
+  public var resourceId: String?
+  public var instance: Int?
+  public var enabled: Bool?
+  public var focused: Bool?
+  public var pkg: String?
+}
+
 public struct GetNativeViewsRequest: Codable {
-  public var androidSelector: AndroidSelector
-  public var iosSelector: IOSSelector
+  public var selector: Selector?
+  public var androidSelector: AndroidSelector?
+  public var iosSelector: IOSSelector?
   public var appId: String
 }
 
@@ -202,6 +218,7 @@ public struct GetNativeUITreeRequest: Codable {
 public struct GetNativeUITreeRespone: Codable {
   public var iOSroots: [IOSNativeView]
   public var androidRoots: [AndroidNativeView]
+  public var roots: [NativeView]
 }
 
 public struct AndroidNativeView: Codable {
@@ -251,14 +268,28 @@ public struct Point2D: Codable {
   public var y: Double
 }
 
+public struct NativeView: Codable {
+  public var className: String?
+  public var text: String?
+  public var contentDescription: String?
+  public var focused: Bool
+  public var enabled: Bool
+  public var childCount: Int?
+  public var resourceName: String?
+  public var applicationPackage: String?
+  public var children: [NativeView]
+}
+
 public struct GetNativeViewsResponse: Codable {
+  public var nativeViews: [NativeView]
   public var iosNativeViews: [IOSNativeView]
   public var androidNativeViews: [AndroidNativeView]
 }
 
 public struct TapRequest: Codable {
-  public var androidSelector: AndroidSelector
-  public var iosSelector: IOSSelector
+  public var selector: Selector?
+  public var androidSelector: AndroidSelector?
+  public var iosSelector: IOSSelector?
   public var appId: String
   public var timeoutMillis: Int?
 }
@@ -273,6 +304,7 @@ public struct EnterTextRequest: Codable {
   public var data: String
   public var appId: String
   public var index: Int?
+  public var selector: Selector?
   public var androidSelector: AndroidSelector?
   public var iosSelector: IOSSelector?
   public var keyboardBehavior: KeyboardBehavior
@@ -289,8 +321,9 @@ public struct SwipeRequest: Codable {
 }
 
 public struct WaitUntilVisibleRequest: Codable {
-  public var androidSelector: AndroidSelector
-  public var iosSelector: IOSSelector
+  public var selector: Selector?
+  public var androidSelector: AndroidSelector?
+  public var iosSelector: IOSSelector?
   public var appId: String
   public var timeoutMillis: Int?
 }
@@ -316,6 +349,7 @@ public struct GetNotificationsRequest: Codable {
 
 public struct TapOnNotificationRequest: Codable {
   public var index: Int?
+  public var selector: Selector?
   public var androidSelector: AndroidSelector?
   public var iosSelector: IOSSelector?
   public var timeoutMillis: Int?

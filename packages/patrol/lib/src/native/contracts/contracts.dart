@@ -488,24 +488,79 @@ class IOSSelector with EquatableMixin {
 }
 
 @JsonSerializable()
+class Selector with EquatableMixin {
+  Selector({
+    this.text,
+    this.textStartsWith,
+    this.textContains,
+    this.className,
+    this.contentDescription,
+    this.contentDescriptionStartsWith,
+    this.contentDescriptionContains,
+    this.resourceId,
+    this.instance,
+    this.enabled,
+    this.focused,
+    this.pkg,
+  });
+
+  factory Selector.fromJson(Map<String, dynamic> json) =>
+      _$SelectorFromJson(json);
+
+  final String? text;
+  final String? textStartsWith;
+  final String? textContains;
+  final String? className;
+  final String? contentDescription;
+  final String? contentDescriptionStartsWith;
+  final String? contentDescriptionContains;
+  final String? resourceId;
+  final int? instance;
+  final bool? enabled;
+  final bool? focused;
+  final String? pkg;
+
+  Map<String, dynamic> toJson() => _$SelectorToJson(this);
+
+  @override
+  List<Object?> get props => [
+        text,
+        textStartsWith,
+        textContains,
+        className,
+        contentDescription,
+        contentDescriptionStartsWith,
+        contentDescriptionContains,
+        resourceId,
+        instance,
+        enabled,
+        focused,
+        pkg,
+      ];
+}
+
+@JsonSerializable()
 class GetNativeViewsRequest with EquatableMixin {
   GetNativeViewsRequest({
-    required this.androidSelector,
-    required this.iosSelector,
+    this.selector,
+    this.androidSelector,
+    this.iosSelector,
     required this.appId,
   });
 
   factory GetNativeViewsRequest.fromJson(Map<String, dynamic> json) =>
       _$GetNativeViewsRequestFromJson(json);
 
-  final AndroidSelector androidSelector;
-  final IOSSelector iosSelector;
+  final Selector? selector;
+  final AndroidSelector? androidSelector;
+  final IOSSelector? iosSelector;
   final String appId;
 
   Map<String, dynamic> toJson() => _$GetNativeViewsRequestToJson(this);
 
   @override
   List<Object?> get props => [
+        selector,
         androidSelector,
         iosSelector,
         appId,
@@ -536,6 +591,7 @@ class GetNativeUITreeRespone with EquatableMixin {
   GetNativeUITreeRespone({
     required this.iOSroots,
     required this.androidRoots,
+    required this.roots,
   });
 
   factory GetNativeUITreeRespone.fromJson(Map<String, dynamic> json) =>
@@ -543,6 +599,7 @@ class GetNativeUITreeRespone with EquatableMixin {
 
   final List<IOSNativeView> iOSroots;
   final List<AndroidNativeView> androidRoots;
+  final List<NativeView> roots;
 
   Map<String, dynamic> toJson() => _$GetNativeUITreeResponeToJson(this);
 
@@ -550,6 +607,7 @@ class GetNativeUITreeRespone with EquatableMixin {
   List<Object?> get props => [
         iOSroots,
         androidRoots,
+        roots,
       ];
 }
 
@@ -723,8 +781,52 @@ class Point2D with EquatableMixin {
 }
 
 @JsonSerializable()
+class NativeView with EquatableMixin {
+  NativeView({
+    this.className,
+    this.text,
+    this.contentDescription,
+    required this.focused,
+    required this.enabled,
+    this.childCount,
+    this.resourceName,
+    this.applicationPackage,
+    required this.children,
+  });
+
+  factory NativeView.fromJson(Map<String, dynamic> json) =>
+      _$NativeViewFromJson(json);
+
+  final String? className;
+  final String? text;
+  final String? contentDescription;
+  final bool focused;
+  final bool enabled;
+  final int? childCount;
+  final String? resourceName;
+  final String? applicationPackage;
+  final List<NativeView> children;
+
+  Map<String, dynamic> toJson() => _$NativeViewToJson(this);
+
+  @override
+  List<Object?> get props => [
+        className,
+        text,
+        contentDescription,
+        focused,
+        enabled,
+        childCount,
+        resourceName,
+        applicationPackage,
+        children,
+      ];
+}
+
+@JsonSerializable()
 class GetNativeViewsResponse with EquatableMixin {
   GetNativeViewsResponse({
+    required this.nativeViews,
     required this.iosNativeViews,
     required this.androidNativeViews,
   });
@@ -732,6 +834,7 @@ class GetNativeViewsResponse with EquatableMixin {
   factory GetNativeViewsResponse.fromJson(Map<String, dynamic> json) =>
       _$GetNativeViewsResponseFromJson(json);
 
+  final List<NativeView> nativeViews;
   final List<IOSNativeView> iosNativeViews;
   final List<AndroidNativeView> androidNativeViews;
 
@@ -739,6 +842,7 @@ class GetNativeViewsResponse with EquatableMixin {
 
   @override
   List<Object?> get props => [
+        nativeViews,
         iosNativeViews,
         androidNativeViews,
       ];
@@ -747,8 +851,9 @@ class GetNativeViewsResponse with EquatableMixin {
 @JsonSerializable()
 class TapRequest with EquatableMixin {
   TapRequest({
-    required this.androidSelector,
-    required this.iosSelector,
+    this.selector,
+    this.androidSelector,
+    this.iosSelector,
     required this.appId,
     this.timeoutMillis,
   });
@@ -756,8 +861,9 @@ class TapRequest with EquatableMixin {
   factory TapRequest.fromJson(Map<String, dynamic> json) =>
       _$TapRequestFromJson(json);
 
-  final AndroidSelector androidSelector;
-  final IOSSelector iosSelector;
+  final Selector? selector;
+  final AndroidSelector? androidSelector;
+  final IOSSelector? iosSelector;
   final String appId;
   final int? timeoutMillis;
 
@@ -765,6 +871,7 @@ class TapRequest with EquatableMixin {
 
   @override
   List<Object?> get props => [
+        selector,
         androidSelector,
         iosSelector,
         appId,
@@ -803,6 +910,7 @@ class EnterTextRequest with EquatableMixin {
     required this.data,
     required this.appId,
     this.index,
+    this.selector,
     this.androidSelector,
     this.iosSelector,
     required this.keyboardBehavior,
@@ -815,6 +923,7 @@ class EnterTextRequest with EquatableMixin {
   final String data;
   final String appId;
   final int? index;
+  final Selector? selector;
   final AndroidSelector? androidSelector;
   final IOSSelector? iosSelector;
   final KeyboardBehavior keyboardBehavior;
@@ -827,6 +936,7 @@ class EnterTextRequest with EquatableMixin {
         data,
         appId,
         index,
+        selector,
         androidSelector,
         iosSelector,
         keyboardBehavior,
@@ -871,8 +981,9 @@ class SwipeRequest with EquatableMixin {
 @JsonSerializable()
 class WaitUntilVisibleRequest with EquatableMixin {
   WaitUntilVisibleRequest({
-    required this.androidSelector,
-    required this.iosSelector,
+    this.selector,
+    this.androidSelector,
+    this.iosSelector,
     required this.appId,
     this.timeoutMillis,
   });
@@ -880,8 +991,9 @@ class WaitUntilVisibleRequest with EquatableMixin {
   factory WaitUntilVisibleRequest.fromJson(Map<String, dynamic> json) =>
       _$WaitUntilVisibleRequestFromJson(json);
 
-  final AndroidSelector androidSelector;
-  final IOSSelector iosSelector;
+  final Selector? selector;
+  final AndroidSelector? androidSelector;
+  final IOSSelector? iosSelector;
   final String appId;
   final int? timeoutMillis;
 
@@ -889,6 +1001,7 @@ class WaitUntilVisibleRequest with EquatableMixin {
 
   @override
   List<Object?> get props => [
+        selector,
         androidSelector,
         iosSelector,
         appId,
@@ -979,6 +1092,7 @@ class GetNotificationsRequest with EquatableMixin {
 class TapOnNotificationRequest with EquatableMixin {
   TapOnNotificationRequest({
     this.index,
+    this.selector,
     this.androidSelector,
     this.iosSelector,
     this.timeoutMillis,
@@ -988,6 +1102,7 @@ class TapOnNotificationRequest with EquatableMixin {
       _$TapOnNotificationRequestFromJson(json);
 
   final int? index;
+  final Selector? selector;
   final AndroidSelector? androidSelector;
   final IOSSelector? iosSelector;
   final int? timeoutMillis;
@@ -997,6 +1112,7 @@ class TapOnNotificationRequest with EquatableMixin {
   @override
   List<Object?> get props => [
         index,
+        selector,
         androidSelector,
         iosSelector,
         timeoutMillis,
