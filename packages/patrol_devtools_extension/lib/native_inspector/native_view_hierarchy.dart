@@ -26,12 +26,14 @@ class NativeViewHierarchy extends StatelessWidget {
     required this.props,
     required this.onRefreshPressed,
     required this.fullNodeNames,
+    required this.nativeDetails,
   });
 
   final List<Node> roots;
   final NodeProps props;
   final VoidCallback onRefreshPressed;
   final ValueNotifier<bool> fullNodeNames;
+  final ValueNotifier<bool> nativeDetails;
 
   @override
   Widget build(BuildContext context) {
@@ -40,6 +42,7 @@ class NativeViewHierarchy extends StatelessWidget {
         _InspectorTreeControls(
           onRefreshPressed: onRefreshPressed,
           fullNodeNames: fullNodeNames,
+          nativeDetails: nativeDetails,
         ),
         Expanded(
           child: roots.isEmpty
@@ -145,10 +148,12 @@ class _InspectorTreeControls extends StatelessWidget {
   const _InspectorTreeControls({
     required this.onRefreshPressed,
     required this.fullNodeNames,
+    required this.nativeDetails,
   });
 
   final VoidCallback onRefreshPressed;
   final ValueNotifier<bool> fullNodeNames;
+  final ValueNotifier<bool> nativeDetails;
 
   @override
   Widget build(BuildContext context) {
@@ -170,6 +175,13 @@ class _InspectorTreeControls extends StatelessWidget {
             direction: Axis.horizontal,
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
+              _ControlButton(
+                message: 'Native details',
+                onPressed: () {
+                  nativeDetails.value = !nativeDetails.value;
+                },
+                icon: nativeDetails.value ? Icons.raw_on : Icons.raw_off,
+              ),
               _ControlButton(
                 message: 'Full node names',
                 onPressed: () {

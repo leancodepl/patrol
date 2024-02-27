@@ -2,6 +2,7 @@ import 'package:patrol_devtools_extension/api/contracts.dart';
 
 part 'android_node.dart';
 part 'ios_node.dart';
+part 'native_view_node.dart';
 
 sealed class Node {
   List<Node> get children;

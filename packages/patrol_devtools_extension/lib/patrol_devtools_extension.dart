@@ -27,7 +27,9 @@ class _PatrolDevToolsExtensionState extends State<PatrolDevToolsExtension> {
           roots: state.roots,
           currentNode: state.currentNode,
           onNodeChanged: runner.changeNode,
-          onRefreshPressed: runner.getNativeUITree,
+          onRefreshPressed: (nativeDetails) => runner.getNativeUITree(
+            nativeDetails: nativeDetails,
+          ),
         );
       },
     );
@@ -46,7 +48,8 @@ class _Runner extends ValueNotifier<_State> {
     notifyListeners();
   }
 
-  Future<void> getNativeUITree() async {
+  Future<void> getNativeUITree({required bool nativeDetails}) async {
+    final useNativeViewHierarchy = !nativeDetails;
     value
       ..roots = []
       ..currentNode = null;
@@ -57,14 +60,20 @@ class _Runner extends ValueNotifier<_State> {
     );
 
     final result = await api.getNativeUITree(
-      useNativeViewHierarchy: false, // TODO
+      useNativeViewHierarchy: useNativeViewHierarchy,
     );
 
     switch (result) {
       case ApiSuccess(:final data):
-        value.roots = isAndroidApp
-            ? data.androidRoots.map((e) => AndroidNode(view: e)).toList()
-            : data.iOSroots.map((e) => IOSNode(view: e)).toList();
+        if (useNativeViewHierarchy) {
+          value.roots = data.roots
+              .map((e) => NativeViewNode(view: e, androidNode: isAndroidApp))
+              .toList();
+        } else {
+          value.roots = isAndroidApp
+              ? data.androidRoots.map((e) => AndroidNode(view: e)).toList()
+              : data.iOSroots.map((e) => IOSNode(view: e)).toList();
+        }
 
       case ApiFailure<void> _:
       // TODO: Handle failure

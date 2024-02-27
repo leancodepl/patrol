@@ -101,6 +101,16 @@ class _NodeDetails extends HookWidget {
     final hoveredIndex = useState<int?>(null);
 
     final items = switch (node) {
+      final NativeViewNode n => [
+          ('pkg:', n.view.applicationPackage),
+          ('childCount:', n.view.childCount),
+          ('className:', n.view.className),
+          ('contentDescription:', n.view.contentDescription),
+          ('enabled:', n.view.enabled),
+          ('focused:', n.view.focused),
+          ('resourceId:', n.view.resourceName),
+          ('text:', n.view.text),
+        ],
       final AndroidNode n => [
           ('text:', n.view.text),
           ('className:', n.view.className),
