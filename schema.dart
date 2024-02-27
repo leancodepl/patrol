@@ -113,6 +113,7 @@ class GetNativeViewsRequest {
 
 class GetNativeUITreeRequest {
   List<String>? iosInstalledApps;
+  late bool useNativeViewHierarchy;
 }
 
 class GetNativeUITreeRespone {

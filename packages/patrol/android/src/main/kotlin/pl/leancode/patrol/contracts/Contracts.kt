@@ -368,7 +368,8 @@ class Contracts {
   }
 
   data class GetNativeUITreeRequest (
-    val iosInstalledApps: List<String>? = null
+    val iosInstalledApps: List<String>? = null,
+    val useNativeViewHierarchy: Boolean
   ){
     fun hasIosInstalledApps(): Boolean {
       return iosInstalledApps != null

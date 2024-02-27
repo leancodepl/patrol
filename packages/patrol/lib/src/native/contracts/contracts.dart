@@ -571,18 +571,21 @@ class GetNativeViewsRequest with EquatableMixin {
 class GetNativeUITreeRequest with EquatableMixin {
   GetNativeUITreeRequest({
     this.iosInstalledApps,
+    required this.useNativeViewHierarchy,
   });
 
   factory GetNativeUITreeRequest.fromJson(Map<String, dynamic> json) =>
       _$GetNativeUITreeRequestFromJson(json);
 
   final List<String>? iosInstalledApps;
+  final bool useNativeViewHierarchy;
 
   Map<String, dynamic> toJson() => _$GetNativeUITreeRequestToJson(this);
 
   @override
   List<Object?> get props => [
         iosInstalledApps,
+        useNativeViewHierarchy,
       ];
 }
 

@@ -329,12 +329,14 @@ GetNativeUITreeRequest _$GetNativeUITreeRequestFromJson(
       iosInstalledApps: (json['iosInstalledApps'] as List<dynamic>?)
           ?.map((e) => e as String)
           .toList(),
+      useNativeViewHierarchy: json['useNativeViewHierarchy'] as bool,
     );
 
 Map<String, dynamic> _$GetNativeUITreeRequestToJson(
         GetNativeUITreeRequest instance) =>
     <String, dynamic>{
       'iosInstalledApps': instance.iosInstalledApps,
+      'useNativeViewHierarchy': instance.useNativeViewHierarchy,
     };
 
 GetNativeUITreeRespone _$GetNativeUITreeResponeFromJson(

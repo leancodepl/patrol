@@ -213,6 +213,7 @@ public struct GetNativeViewsRequest: Codable {
 
 public struct GetNativeUITreeRequest: Codable {
   public var iosInstalledApps: [String]?
+  public var useNativeViewHierarchy: Bool
 }
 
 public struct GetNativeUITreeRespone: Codable {
