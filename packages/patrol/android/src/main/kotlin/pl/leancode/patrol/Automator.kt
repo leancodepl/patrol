@@ -15,13 +15,13 @@ import androidx.test.uiautomator.UiObject
 import androidx.test.uiautomator.UiObject2
 import androidx.test.uiautomator.UiObjectNotFoundException
 import androidx.test.uiautomator.UiSelector
-import pl.leancode.patrol.contracts.Contracts.KeyboardBehavior
 import pl.leancode.patrol.contracts.Contracts.AndroidNativeView
+import pl.leancode.patrol.contracts.Contracts.AndroidSelector
+import pl.leancode.patrol.contracts.Contracts.KeyboardBehavior
 import pl.leancode.patrol.contracts.Contracts.NativeView
 import pl.leancode.patrol.contracts.Contracts.Notification
-import pl.leancode.patrol.contracts.Contracts.Rectangle
 import pl.leancode.patrol.contracts.Contracts.Point2D
-import pl.leancode.patrol.contracts.Contracts.AndroidSelector
+import pl.leancode.patrol.contracts.Contracts.Rectangle
 import pl.leancode.patrol.contracts.Contracts.Selector
 import kotlin.math.roundToInt
 
@@ -40,8 +40,8 @@ private fun fromUiObject2(obj: UiObject2): NativeView {
 }
 
 private fun fromUiObject2V2(obj: UiObject2): AndroidNativeView {
-    val bounds = obj.visibleBounds;
-    val center = obj.visibleCenter;
+    val bounds = obj.visibleBounds
+    val center = obj.visibleCenter
 
     return AndroidNativeView(
         className = obj.className,
@@ -63,7 +63,7 @@ private fun fromUiObject2V2(obj: UiObject2): AndroidNativeView {
             minX = bounds.left.toDouble(),
             minY = bounds.top.toDouble(),
             maxX = bounds.right.toDouble(),
-            maxY = bounds.top.toDouble(),
+            maxY = bounds.top.toDouble()
         ),
         visibleCenter = Point2D(
             x = center.x.toDouble(),
@@ -187,7 +187,6 @@ class Automator private constructor() {
         val uiObjects2 = uiDevice.findObjects(selector)
         return uiObjects2.map { fromUiObject2(it) }
     }
-
 
     fun getNativeViewsV2(selector: BySelector): List<AndroidNativeView> {
         Logger.d("getNativeViewsV2()")

@@ -134,7 +134,7 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
             return GetNativeViewsResponse(
                 nativeViews = listOf(),
                 androidNativeViews = views,
-                iosNativeViews = listOf(),
+                iosNativeViews = listOf()
             )
         } else {
             throw PatrolException("getNativeViews(): neither selector nor androidSelector are set")

@@ -3,9 +3,9 @@ package pl.leancode.patrol
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.BySelector
 import androidx.test.uiautomator.UiSelector
+import pl.leancode.patrol.contracts.Contracts.AndroidSelector
 import pl.leancode.patrol.contracts.Contracts.DartGroupEntry
 import pl.leancode.patrol.contracts.Contracts.GroupEntryType
-import pl.leancode.patrol.contracts.Contracts.AndroidSelector
 import pl.leancode.patrol.contracts.Contracts.Selector
 
 private fun Selector.isEmpty(): Boolean {
@@ -256,7 +256,7 @@ fun AndroidSelector.toBySelector(): BySelector {
         throw IllegalArgumentException("instance() argument is not supported for BySelector")
     }
 
-    var selector: BySelector? = null;
+    var selector: BySelector? = null
 
     if (hasClassName()) {
         selector = By.clazz(className)

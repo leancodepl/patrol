@@ -7,8 +7,8 @@ import android.view.accessibility.AccessibilityNodeInfo
 import androidx.test.uiautomator.UiDevice
 import pl.leancode.patrol.contracts.Contracts.AndroidNativeView
 import pl.leancode.patrol.contracts.Contracts.NativeView
-import pl.leancode.patrol.contracts.Contracts.Rectangle
 import pl.leancode.patrol.contracts.Contracts.Point2D
+import pl.leancode.patrol.contracts.Contracts.Rectangle
 
 // This function is similar to AccessibilityNodeInfoDumper.dumpWindowHierarchy()
 fun getWindowTrees(uiDevice: UiDevice, uiAutomation: UiAutomation): List<NativeView> {
@@ -115,12 +115,11 @@ private fun fromUiAccessibilityNodeInfoV2(obj: AccessibilityNodeInfo): AndroidNa
         }
     }
 
-
-    var resourceName: String?= null
+    var resourceName: String? = null
 
     try {
         resourceName = obj.viewIdResourceName
-    } catch (e: Exception){
+    } catch (e: Exception) {
         // ignore
     }
 
@@ -136,13 +135,13 @@ private fun fromUiAccessibilityNodeInfoV2(obj: AccessibilityNodeInfo): AndroidNa
         applicationPackage = obj.packageName?.toString(),
         visibleCenter = Point2D(
             x = visibleBounds.centerX().toDouble(),
-            y = visibleBounds.centerY().toDouble(),
+            y = visibleBounds.centerY().toDouble()
         ),
         visibleBounds = Rectangle(
             minX = visibleBounds.left.toDouble(),
             maxX = visibleBounds.right.toDouble(),
             minY = visibleBounds.top.toDouble(),
-            maxY = visibleBounds.bottom.toDouble(),
+            maxY = visibleBounds.bottom.toDouble()
         ),
         isSelected = obj.isSelected,
         isScrollable = obj.isScrollable,
