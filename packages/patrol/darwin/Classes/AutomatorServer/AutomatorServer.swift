@@ -67,65 +67,67 @@
             on: selector,
             inApp: request.appId
           )
-          return GetNativeViewsResponse(nativeViews: nativeViews, iosNativeViews: [], androidNativeViews: [])
+          return GetNativeViewsResponse(
+            nativeViews: nativeViews, iosNativeViews: [], androidNativeViews: [])
         } else if let iosSelector = request.iosSelector {
           let iosNativeViews = try automator.getNativeViews(
             on: iosSelector,
             inApp: request.appId
           )
-          return GetNativeViewsResponse(nativeViews: [], iosNativeViews: iosNativeViews, androidNativeViews: [])
+          return GetNativeViewsResponse(
+            nativeViews: [], iosNativeViews: iosNativeViews, androidNativeViews: [])
         } else {
-            throw PatrolError.internal("getNativeViews(): neither selector nor iosSelector are set")
+          throw PatrolError.internal("getNativeViews(): neither selector nor iosSelector are set")
         }
       }
     }
 
     func getNativeUITree(request: GetNativeUITreeRequest) throws -> GetNativeUITreeRespone {
-        if request.useNativeViewHierarchy {
-            let roots = try automator.getUITreeRoots(installedApps: request.iosInstalledApps ?? [])
-            return GetNativeUITreeRespone(iOSroots: [], androidRoots: [], roots: roots)
-        } else {
-            return try automator.getUITreeRootsV2(installedApps: request.iosInstalledApps ?? [])
-        }
+      if request.useNativeViewHierarchy {
+        let roots = try automator.getUITreeRoots(installedApps: request.iosInstalledApps ?? [])
+        return GetNativeUITreeRespone(iOSroots: [], androidRoots: [], roots: roots)
+      } else {
+        return try automator.getUITreeRootsV2(installedApps: request.iosInstalledApps ?? [])
+      }
     }
 
     func tap(request: TapRequest) throws {
       return try runCatching {
         if let selector = request.selector {
           return try automator.tap(
-              on: selector,
-              inApp: request.appId,
-              withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) }
-            )
+            on: selector,
+            inApp: request.appId,
+            withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) }
+          )
         } else if let iosSelector = request.iosSelector {
-            return try automator.tap(
-                on: iosSelector,
-                inApp: request.appId,
-                withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) }
-              )
+          return try automator.tap(
+            on: iosSelector,
+            inApp: request.appId,
+            withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) }
+          )
         } else {
-            throw PatrolError.internal("tap(): neither selector nor iosSelector are set")
+          throw PatrolError.internal("tap(): neither selector nor iosSelector are set")
         }
       }
     }
 
     func doubleTap(request: TapRequest) throws {
       return try runCatching {
-          if let selector = request.selector {
-            return try automator.doubleTap(
-                on: selector,
-                inApp: request.appId,
-                withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) }
-              )
-          } else if let iosSelector = request.iosSelector {
-            return try automator.doubleTap(
-                on: iosSelector,
-                inApp: request.appId,
-                withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) }
-            )
-          } else {
-              throw PatrolError.internal("doubleTap(): neither selector nor iosSelector are set")
-          }
+        if let selector = request.selector {
+          return try automator.doubleTap(
+            on: selector,
+            inApp: request.appId,
+            withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) }
+          )
+        } else if let iosSelector = request.iosSelector {
+          return try automator.doubleTap(
+            on: iosSelector,
+            inApp: request.appId,
+            withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) }
+          )
+        } else {
+          throw PatrolError.internal("doubleTap(): neither selector nor iosSelector are set")
+        }
       }
     }
 
@@ -149,13 +151,13 @@
             withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) }
           )
         } else if let selector = request.selector {
-            try automator.enterText(
-              request.data,
-              on: selector,
-              inApp: request.appId,
-              dismissKeyboard: request.keyboardBehavior == .showAndDismiss,
-              withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) }
-            )
+          try automator.enterText(
+            request.data,
+            on: selector,
+            inApp: request.appId,
+            dismissKeyboard: request.keyboardBehavior == .showAndDismiss,
+            withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) }
+          )
         } else if let iosSelector = request.iosSelector {
           try automator.enterText(
             request.data,
@@ -182,22 +184,21 @@
 
     func waitUntilVisible(request: WaitUntilVisibleRequest) throws {
       return try runCatching {
-          if let selector = request.selector {
-              return try automator.waitUntilVisible(
-                on: selector,
-                inApp: request.appId,
-                withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) }
-              )
-          } else if let iosSelector = request.iosSelector {
-              return try automator.waitUntilVisible(
-                on: iosSelector,
-                inApp: request.appId,
-                withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) }
-              )
-          }
-          else {
-              throw PatrolError.internal("waitUntilVisible(): neither selector nor iosSelector are set")
-          }
+        if let selector = request.selector {
+          return try automator.waitUntilVisible(
+            on: selector,
+            inApp: request.appId,
+            withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) }
+          )
+        } else if let iosSelector = request.iosSelector {
+          return try automator.waitUntilVisible(
+            on: iosSelector,
+            inApp: request.appId,
+            withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) }
+          )
+        } else {
+          throw PatrolError.internal("waitUntilVisible(): neither selector nor iosSelector are set")
+        }
       }
     }
 

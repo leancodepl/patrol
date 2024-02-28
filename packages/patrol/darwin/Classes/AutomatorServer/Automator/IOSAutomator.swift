@@ -228,7 +228,7 @@
       if dismissKeyboard {
         data = "\(data)\n"
       }
-        
+
       var view = createLogMessage(element: "text field", from: selector)
       view += " in app \(bundleId)"
 
@@ -1003,50 +1003,50 @@
       var logMessage = element
 
       if let instance = selector.instance {
-         logMessage += " with instance '\(instance)'" 
-         }
+        logMessage += " with instance '\(instance)'"
+      }
       if let elementType = selector.elementType {
-         logMessage += " with elementType '\(elementType)'" 
-         }
+        logMessage += " with elementType '\(elementType)'"
+      }
       if let identifier = selector.identifier {
-         logMessage += " with identifier '\(identifier)'" 
-         }
+        logMessage += " with identifier '\(identifier)'"
+      }
       if let label = selector.label {
-         logMessage += " with label '\(label)'" 
-         }
+        logMessage += " with label '\(label)'"
+      }
       if let labelStartsWith = selector.labelStartsWith {
-         logMessage += " with labelStartsWith '\(labelStartsWith)'" 
-         }
+        logMessage += " with labelStartsWith '\(labelStartsWith)'"
+      }
       if let labelContains = selector.labelContains {
-         logMessage += " with labelContains '\(labelContains)'" 
-         }
+        logMessage += " with labelContains '\(labelContains)'"
+      }
       if let title = selector.title {
-         logMessage += " with title '\(title)'" 
-         }
+        logMessage += " with title '\(title)'"
+      }
       if let titleStartsWith = selector.titleStartsWith {
-         logMessage += " with titleStartsWith '\(titleStartsWith)'" 
-         }
+        logMessage += " with titleStartsWith '\(titleStartsWith)'"
+      }
       if let titleContains = selector.titleContains {
-         logMessage += " with titleContains '\(titleContains)'" 
-         }
+        logMessage += " with titleContains '\(titleContains)'"
+      }
       if let hasFocus = selector.hasFocus {
-         logMessage += " with hasFocus '\(hasFocus)'" 
-         }
+        logMessage += " with hasFocus '\(hasFocus)'"
+      }
       if let isEnabled = selector.isEnabled {
-         logMessage += " with isEnabled '\(isEnabled)'" 
-         }
+        logMessage += " with isEnabled '\(isEnabled)'"
+      }
       if let isSelected = selector.isSelected {
-         logMessage += " with isSelected '\(isSelected)'" 
-         }
+        logMessage += " with isSelected '\(isSelected)'"
+      }
       if let placeholderValue = selector.placeholderValue {
-         logMessage += " with placeholderValue '\(placeholderValue)'" 
-         }
+        logMessage += " with placeholderValue '\(placeholderValue)'"
+      }
       if let placeholderValueStartsWith = selector.placeholderValueStartsWith {
-         logMessage += " with placeholderValueStartsWith '\(placeholderValueStartsWith)'" 
-         }
+        logMessage += " with placeholderValueStartsWith '\(placeholderValueStartsWith)'"
+      }
       if let placeholderValueContains = selector.placeholderValueContains {
-         logMessage += " with placeholderValueContains '\(placeholderValueContains)'" 
-         }
+        logMessage += " with placeholderValueContains '\(placeholderValueContains)'"
+      }
 
       return logMessage
     }
@@ -1065,7 +1065,6 @@
       }
     }
   }
-
 
   extension NativeView {
     static func fromXCUIElement(_ xcuielement: XCUIElement, _ bundleId: String) -> NativeView {
@@ -1099,32 +1098,32 @@
     }
   }
 
-extension IOSNativeView {
+  extension IOSNativeView {
     static func fromXCUIElement(_ xcuielement: XCUIElement, _ bundleId: String) -> IOSNativeView {
-        return IOSNativeView(
-            children: xcuielement.children(matching: .any).allElementsBoundByIndex.map { child in
-                return IOSNativeView.fromXCUIElement(child, bundleId)
-            },
-            elementType: getIOSElementType(elementType: xcuielement.elementType),
-            identifier: xcuielement.identifier,
-            label: xcuielement.label,
-            title: xcuielement.title,
-            hasFocus: xcuielement.hasFocus,
-            isEnabled: xcuielement.isEnabled,
-            isSelected: xcuielement.isSelected,
-            frame: Rectangle(
-                minX: xcuielement.frame.minX,
-                minY: xcuielement.frame.minY,
-                maxX: xcuielement.frame.maxX,
-                maxY: xcuielement.frame.maxY
-            ),
-            placeholderValue: xcuielement.placeholderValue,
-            value: xcuielement.value as? String
-        )
+      return IOSNativeView(
+        children: xcuielement.children(matching: .any).allElementsBoundByIndex.map { child in
+          return IOSNativeView.fromXCUIElement(child, bundleId)
+        },
+        elementType: getIOSElementType(elementType: xcuielement.elementType),
+        identifier: xcuielement.identifier,
+        label: xcuielement.label,
+        title: xcuielement.title,
+        hasFocus: xcuielement.hasFocus,
+        isEnabled: xcuielement.isEnabled,
+        isSelected: xcuielement.isSelected,
+        frame: Rectangle(
+          minX: xcuielement.frame.minX,
+          minY: xcuielement.frame.minY,
+          maxX: xcuielement.frame.maxX,
+          maxY: xcuielement.frame.maxY
+        ),
+        placeholderValue: xcuielement.placeholderValue,
+        value: xcuielement.value as? String
+      )
     }
-}
+  }
 
-extension IOSNativeView {
+  extension IOSNativeView {
     static func fromXCUIElementSnapshot(_ xcuielement: XCUIElementSnapshot, _ bundleId: String)
       -> IOSNativeView
     {
@@ -1140,10 +1139,10 @@ extension IOSNativeView {
         isEnabled: xcuielement.isEnabled,
         isSelected: xcuielement.isSelected,
         frame: Rectangle(
-            minX: xcuielement.frame.minX,
-            minY: xcuielement.frame.minY,
-            maxX: xcuielement.frame.maxX,
-            maxY: xcuielement.frame.maxY
+          minX: xcuielement.frame.minX,
+          minY: xcuielement.frame.minY,
+          maxX: xcuielement.frame.maxX,
+          maxY: xcuielement.frame.maxY
         ),
         placeholderValue: xcuielement.placeholderValue,
         value: xcuielement.value as? String

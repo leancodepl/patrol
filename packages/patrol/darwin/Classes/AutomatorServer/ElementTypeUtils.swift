@@ -180,10 +180,10 @@
   ]
 
   func getIOSElementType(elementType: XCUIElement.ElementType) -> IOSElementType {
-      return elementTypeMap[elementType]!
+    return elementTypeMap[elementType]!
   }
 
   func getXCUIElementType(elementType: IOSElementType) -> XCUIElement.ElementType {
-      return elementTypeMap.first(where: {$1 == elementType})!.key
+    return elementTypeMap.first(where: { $1 == elementType })!.key
   }
 #endif

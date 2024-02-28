@@ -66,7 +66,7 @@
       }
     }
 
-   func tap(
+    func tap(
       on selector: IOSSelector,
       inApp bundleId: String,
       withTimeout timeout: TimeInterval?
@@ -230,7 +230,8 @@
       }
     }
 
-    func getNativeViews(on selector: IOSSelector, inApp bundleId: String) throws -> [IOSNativeView] {
+    func getNativeViews(on selector: IOSSelector, inApp bundleId: String) throws -> [IOSNativeView]
+    {
       try runAction("getNativeViews") {
         throw PatrolError.methodNotImplemented("getNativeViews")
       }
