@@ -3,6 +3,7 @@ import 'package:devtools_app_shared/ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:patrol_devtools_extension/api/contracts.dart';
 import 'package:patrol_devtools_extension/native_inspector/nodes/node.dart';
 import 'package:patrol_devtools_extension/native_inspector/widgets/overflowing_flex.dart';
 
@@ -127,6 +128,8 @@ class _NodeDetails extends HookWidget {
           ('isLongClickable:', n.view.isLongClickable),
           ('isScrollable:', n.view.isScrollable),
           ('isSelected:', n.view.isSelected),
+          ('visibleBounds:', n.view.visibleBounds._toDisplayValue()),
+          ('visibleCenter:', n.view.visibleCenter._toDisplayValue()),
         ],
       final IOSNode n => [
           ('elementType:', n.view.elementType.name),
@@ -138,6 +141,7 @@ class _NodeDetails extends HookWidget {
           ('title:', n.view.title),
           ('placeholderValue:', n.view.placeholderValue),
           ('value:', n.view.value),
+          ('frame:', n.view.frame._toDisplayValue()),
         ]
     };
 
@@ -260,6 +264,18 @@ class _NodeDetails extends HookWidget {
         ],
       ),
     );
+  }
+}
+
+extension _RectangleExtension on Rectangle {
+  String _toDisplayValue() {
+    return 'minX: ${minX.toInt()}, minY: ${minY.toInt()}, maxX: ${maxX.toInt()}, maxY: ${maxY.toInt()}';
+  }
+}
+
+extension _Point2DExtension on Point2D {
+  String _toDisplayValue() {
+    return 'x: ${x.toInt()}, y: ${y.toInt()}';
   }
 }
 
