@@ -235,23 +235,7 @@
       try runAction("entering text \(format: data) into \(view)") {
         let app = try self.getApp(withBundleId: bundleId)
 
-        // elementType must be specified as integer
-        // See:
-        // * https://developer.apple.com/documentation/xctest/xcuielementtype/xcuielementtypetextfield
-        // * https://developer.apple.com/documentation/xctest/xcuielementtype/xcuielementtypesecuretextfield
-        
-        let textFieldPredicate = NSPredicate(format: "elementType == 49")
-        let secureTextFieldPredicate = NSPredicate(format: "elementType == 50")
-
-        let finalPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
-          selector.toNSPredicate(),
-          NSCompoundPredicate(orPredicateWithSubpredicates: [
-            textFieldPredicate, secureTextFieldPredicate,
-          ]
-          ),
-        ])
-
-        let query = app.descendants(matching: .any).matching(finalPredicate)
+        let query = app.descendants(matching: .any).matching(selector.toNSPredicate())
         guard
           let element = self.waitFor(
             query: query,
