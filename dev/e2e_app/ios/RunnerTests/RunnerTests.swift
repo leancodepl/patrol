@@ -119,7 +119,7 @@ final class RunnerTests: XCTestCase {
 
   func testIOSSelectorToNSPredicate_hasFocus() {
     var selector = createEmptyIOSSelector()
-      selector.hasFocus = false
+    selector.hasFocus = false
 
     let predicate = selector.toNSPredicate()
 
