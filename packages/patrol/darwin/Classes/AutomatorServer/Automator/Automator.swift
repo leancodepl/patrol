@@ -88,94 +88,93 @@ extension Selector {
   }
 }
 
-
 #if PATROL_ENABLED
   import XCTest
   import os
 
   extension IOSSelector {
-  public func toNSPredicate() -> NSPredicate {
-    var values = [Any]()
-    var conditions = [String]()
+    public func toNSPredicate() -> NSPredicate {
+      var values = [Any]()
+      var conditions = [String]()
 
-    if let iosElementType = elementType {
-      let elementTypeValue = getXCUIElementType(elementType: iosElementType).rawValue
-      conditions.append("elementType == %@")
-      values.append(elementTypeValue)
+      if let iosElementType = elementType {
+        let elementTypeValue = getXCUIElementType(elementType: iosElementType).rawValue
+        conditions.append("elementType == %@")
+        values.append(elementTypeValue)
+      }
+
+      if let identifier = identifier {
+        conditions.append("identifier == %@")
+        values.append(identifier)
+      }
+
+      if let label = label {
+        conditions.append("label == %@")
+        values.append(label)
+      }
+
+      if let labelStartsWith = labelStartsWith {
+        conditions.append("label BEGINSWITH %@")
+        values.append(labelStartsWith)
+      }
+
+      if let labelContains = labelContains {
+        conditions.append("label CONTAINS %@")
+        values.append(labelContains)
+      }
+
+      if let title = title {
+        conditions.append("title == %@")
+        values.append(title)
+      }
+
+      if let titleStartsWith = titleStartsWith {
+        conditions.append("title BEGINSWITH %@")
+        values.append(titleStartsWith)
+      }
+
+      if let titleContains = titleContains {
+        conditions.append("title CONTAINS %@")
+        values.append(titleContains)
+      }
+
+      if let hasFocus = hasFocus {
+        conditions.append("hasFocus == %@")
+        values.append(hasFocus ? "YES" : "NO")
+      }
+
+      if let isEnabled = isEnabled {
+        conditions.append("isEnabled == %@")
+        values.append(isEnabled ? "YES" : "NO")
+      }
+
+      if let isSelected = isSelected {
+        conditions.append("isSelected == %@")
+        values.append(isSelected ? "YES" : "NO")
+      }
+
+      if let placeholderValue = placeholderValue {
+        conditions.append("placeholderValue == %@")
+        values.append(placeholderValue)
+      }
+
+      if let placeholderValueStartsWith = placeholderValueStartsWith {
+        conditions.append("placeholderValue BEGINSWITH %@")
+        values.append(placeholderValueStartsWith)
+      }
+
+      if let placeholderValueContains = placeholderValueContains {
+        conditions.append("placeholderValue CONTAINS %@")
+        values.append(placeholderValueContains)
+      }
+
+      let format = conditions.joined(separator: " AND ")
+
+      let predicate = NSPredicate(format: format, argumentArray: values)
+
+      return predicate
     }
-
-    if let identifier = identifier {
-      conditions.append("identifier == %@")
-      values.append(identifier)
-    }
-
-    if let label = label {
-      conditions.append("label == %@")
-      values.append(label)
-    }
-
-    if let labelStartsWith = labelStartsWith {
-      conditions.append("label BEGINSWITH %@")
-      values.append(labelStartsWith)
-    }
-
-    if let labelContains = labelContains {
-      conditions.append("label CONTAINS %@")
-      values.append(labelContains)
-    }
-
-    if let title = title {
-      conditions.append("title == %@")
-      values.append(title)
-    }
-
-    if let titleStartsWith = titleStartsWith {
-      conditions.append("title BEGINSWITH %@")
-      values.append(titleStartsWith)
-    }
-
-    if let titleContains = titleContains {
-      conditions.append("title CONTAINS %@")
-      values.append(titleContains)
-    }
-
-    if let hasFocus = hasFocus {
-      conditions.append("hasFocus == %@")
-      values.append(hasFocus ? "YES" : "NO")
-    }
-
-    if let isEnabled = isEnabled {
-      conditions.append("isEnabled == %@")
-      values.append(isEnabled ? "YES" : "NO")
-    }
-
-    if let isSelected = isSelected {
-      conditions.append("isSelected == %@")
-      values.append(isSelected ? "YES" : "NO")
-    }
-
-    if let placeholderValue = placeholderValue {
-      conditions.append("placeholderValue == %@")
-      values.append(placeholderValue)
-    }
-
-    if let placeholderValueStartsWith = placeholderValueStartsWith {
-      conditions.append("placeholderValue BEGINSWITH %@")
-      values.append(placeholderValueStartsWith)
-    }
-
-    if let placeholderValueContains = placeholderValueContains {
-      conditions.append("placeholderValue CONTAINS %@")
-      values.append(placeholderValueContains)
-    }
-
-    let format = conditions.joined(separator: " AND ")
-
-    let predicate = NSPredicate(format: format, argumentArray: values)
-
-    return predicate
   }
-}
 
   protocol Automator {
     func configure(timeout: TimeInterval)
