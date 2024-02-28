@@ -88,7 +88,12 @@ extension Selector {
   }
 }
 
-extension IOSSelector {
+
+#if PATROL_ENABLED
+  import XCTest
+  import os
+
+  extension IOSSelector {
   public func toNSPredicate() -> NSPredicate {
     var values = [Any]()
     var conditions = [String]()
@@ -171,10 +176,6 @@ extension IOSSelector {
     return predicate
   }
 }
-
-#if PATROL_ENABLED
-  import XCTest
-  import os
 
   protocol Automator {
     func configure(timeout: TimeInterval)
