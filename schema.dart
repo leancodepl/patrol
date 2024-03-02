@@ -230,7 +230,9 @@ class SwipeRequest {
 }
 
 class ScrollToRequest {
-  late Selector selector;
+  Selector? selector;
+  AndroidSelector? androidSelector;
+  IOSSelector? iosSelector;
   late String appId;
   late int? index;
   late int? maxIterations;
@@ -316,6 +318,7 @@ abstract class NativeAutomator<IOSServer, AndroidServer, DartClient> {
   void tapAt(TapAtRequest request);
   void enterText(EnterTextRequest request);
   void swipe(SwipeRequest request);
+  void scrollTo(ScrollToRequest request);
   void waitUntilVisible(WaitUntilVisibleRequest request);
 
 // services
