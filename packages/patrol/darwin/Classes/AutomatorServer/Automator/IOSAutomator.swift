@@ -327,12 +327,18 @@
     }
       
     func scrollTo(
-      onText text: String, inApp bundleId: String, atIndex index: Int,
+      on selector: Selector, inApp bundleId: String, atIndex index: Int,
       maxIterations: Int
     ) throws {
         throw PatrolError.methodNotImplemented("scrollTo")
     }
 
+    func scrollTo(
+      on selector: IOSSelector, inApp bundleId: String, atIndex index: Int,
+      maxIterations: Int
+    ) throws {
+        throw PatrolError.methodNotImplemented("scrollTo")
+    }
 
     func waitUntilVisible(
       on selector: Selector,
