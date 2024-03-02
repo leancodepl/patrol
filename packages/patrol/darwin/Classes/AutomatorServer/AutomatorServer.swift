@@ -190,12 +190,23 @@
 
     func scrollTo(request: ScrollToRequest) throws {
       return try runCatching {
-        try automator.scrollTo(
-          onText: request.selector.text ?? String(),
-          inApp: request.appId,
-          atIndex: request.index ?? 0,
-          maxIterations: request.maxIterations ?? 10
-        )
+        if let selector = request.selector {
+          return try automator.scrollTo(
+            on: selector,
+            inApp: request.appId,
+            atIndex: request.index ?? 0,
+            maxIterations: request.maxIterations ?? 10
+          )
+        } else if let iosSelector = request.iosSelector {
+          return try automator.scrollTo(
+            on: iosSelector,
+            inApp: request.appId,
+            atIndex: request.index ?? 0,
+            maxIterations: request.maxIterations ?? 10
+          )
+        } else {
+          throw PatrolError.internal("waitUntilVisible(): neither selector nor iosSelector are set")
+        }
       }
     }
 

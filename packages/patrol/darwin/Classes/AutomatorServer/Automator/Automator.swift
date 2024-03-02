@@ -233,7 +233,13 @@ extension Selector {
     ) throws
     func swipe(from start: CGVector, to end: CGVector, inApp bundleId: String) throws
     func scrollTo(
-      onText text: String,
+      on selector: Selector,
+      inApp bundleId: String,
+      atIndex index: Int,
+      maxIterations: Int
+    ) throws
+    func scrollTo(
+      on selector: IOSSelector,
       inApp bundleId: String,
       atIndex index: Int,
       maxIterations: Int

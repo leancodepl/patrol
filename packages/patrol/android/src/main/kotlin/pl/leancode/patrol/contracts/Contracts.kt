@@ -565,11 +565,22 @@ class Contracts {
   )
 
   data class ScrollToRequest (
-    val selector: Selector,
+    val selector: Selector? = null,
+    val androidSelector: AndroidSelector? = null,
+    val iosSelector: IOSSelector? = null,
     val appId: String,
     val index: Long? = null,
     val maxIterations: Long? = null
   ){
+    fun hasSelector(): Boolean {
+      return selector != null
+    }
+    fun hasAndroidSelector(): Boolean {
+      return androidSelector != null
+    }
+    fun hasIosSelector(): Boolean {
+      return iosSelector != null
+    }
     fun hasIndex(): Boolean {
       return index != null
     }

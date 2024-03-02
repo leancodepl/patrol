@@ -328,10 +328,12 @@ public struct SwipeRequest: Codable {
 }
 
 public struct ScrollToRequest: Codable {
-  var selector: Selector
-  var appId: String
-  var index: Int?
-  var maxIterations: Int?
+  public var selector: Selector?
+  public var androidSelector: AndroidSelector?
+  public var iosSelector: IOSSelector?
+  public var appId: String
+  public var index: Int?
+  public var maxIterations: Int?
 }
 
 public struct WaitUntilVisibleRequest: Codable {

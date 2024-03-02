@@ -130,7 +130,7 @@ abstract class NativeAutomatorServer {
         swipe(body)
         Response(OK)
       },
-      "scrollTo" bind POST to{
+      "scrollTo" bind POST to {
         val body = json.fromJson(it.bodyString(), Contracts.ScrollToRequest::class.java)
         scrollTo(body)
         Response(OK)
