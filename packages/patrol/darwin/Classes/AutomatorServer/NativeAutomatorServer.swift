@@ -21,6 +21,7 @@ protocol NativeAutomatorServer {
     func tapAt(request: TapAtRequest) throws
     func enterText(request: EnterTextRequest) throws
     func swipe(request: SwipeRequest) throws
+    func scrollTo(request: ScrollToRequest) throws
     func waitUntilVisible(request: WaitUntilVisibleRequest) throws
     func enableAirplaneMode() throws
     func disableAirplaneMode() throws
@@ -129,6 +130,12 @@ extension NativeAutomatorServer {
     private func swipeHandler(request: HTTPRequest) throws -> HTTPResponse {
         let requestArg = try JSONDecoder().decode(SwipeRequest.self, from: request.body)
         try swipe(request: requestArg)
+        return HTTPResponse(.ok)
+    }
+
+    private func scrollToHandler(request: HTTPRequest) throws -> HTTPResponse {
+        let requestArg = try JSONDecoder().decode(ScrollToRequest.self, from: request.body)
+        try scrollTo(request: requestArg)
         return HTTPResponse(.ok)
     }
 
@@ -324,6 +331,11 @@ extension NativeAutomatorServer {
             request in handleRequest(
                 request: request,
                 handler: swipeHandler)
+        }
+        server.route(.POST, "scrollTo") {
+            request in handleRequest(
+                request: request,
+                handler: scrollToHandler)
         }
         server.route(.POST, "waitUntilVisible") {
             request in handleRequest(
