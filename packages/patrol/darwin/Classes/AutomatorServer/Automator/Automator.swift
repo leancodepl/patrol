@@ -144,18 +144,18 @@ extension Selector {
       }
 
       if let hasFocus = hasFocus {
-        conditions.append("hasFocus == %@")
-        values.append(hasFocus ? "YES" : "NO")
+        conditions.append("hasFocus == " + (hasFocus ? "YES" : "NO"))
+        values.append("dummy value")
       }
 
       if let isEnabled = isEnabled {
-        conditions.append("isEnabled == %@")
-        values.append(isEnabled ? "YES" : "NO")
+        conditions.append("isEnabled == " + (isEnabled ? "YES" : "NO"))
+        values.append("dummy value")
       }
 
       if let isSelected = isSelected {
-        conditions.append("isSelected == %@")
-        values.append(isSelected ? "YES" : "NO")
+        conditions.append("isSelected == " + (isSelected ? "YES" : "NO"))
+        values.append("dummy value")
       }
 
       if let placeholderValue = placeholderValue {
