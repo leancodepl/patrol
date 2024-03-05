@@ -58,6 +58,8 @@ patrol:
     bundle_id: com.example.macos.MyApp
 ```
 
+If you don't know where to get `package_name` and `bundle_id` from, see the [FAQ] section.
+
 ### Install `patrol_cli`
 
 [Patrol CLI] (command-line interface) is a small program that enables running
@@ -362,9 +364,9 @@ Psst... Android is a bit easier to set up, so we recommend starting with it!
       15. **Copy** `DebugProfile.entitlements` and `Release.entitlements` files from `macos/Runner` 
          to `macos/RunnerUITests` directory.
 
-      15. Go to **RunnerUITests** -> **Build Settings** and set **Code Signing Entitlements** to 
-         `DebugProfile.entitlements` for **Debug** and **Profile** configuration and to `Release.entitlements` for 
-         **Release** configuration.
+      16. Go to **RunnerUITests** -> **Build Settings** and set **Code Signing Entitlements** to 
+         `RunnerUITests/DebugProfile.entitlements` for **Debug** and **Profile** configuration and to 
+         `RunnerUITests/Release.entitlements` for **Release** configuration.
 
       ![Xcode RunnerUITests entitlements setup](/assets/macos_ui_entitlements.png)
 
@@ -517,7 +519,8 @@ within the patrol test.">
 #### iOS
 
 <Accordion title="Where do I get `bundle_id` from?">
-  Go to `ios/Runner.xcodeproj/project.pbxproj` and look for `PRODUCT_BUNDLE_IDENTIFIER`.
+  For iOS go to `ios/Runner.xcodeproj/project.pbxproj` and look for `PRODUCT_BUNDLE_IDENTIFIER`.
+  For macOS go to `macos/Runner.xcodeproj/project.pbxproj` and look for `PRODUCT_BUNDLE_IDENTIFIER`.
 </Accordion>
 
 <Accordion title="When I run tests the simulator is getting cloned">
@@ -527,12 +530,16 @@ within the patrol test.">
 
 <Accordion title="Running test stops on 'Wait for com.example.myapp to idle'">
   Open your XCode project, go to **Runner** target -> **Build Settings**, search for `FLUTTER_TARGET`
-  and remove set path to targets for all configurations.  
+  and remove set path to targets for all configurations. 
+  Alternatively, you can search for a `FLUTTER_TARGET` in your project files and remove it (both value and key)
+  from *.xcconfig and *.pbxproj files.
 </Accordion>
 
 <Accordion title="When running a test, real app without test is opened instead">
   Open your XCode project, go to **Runner** target -> **Build Settings**, search for `FLUTTER_TARGET`
-  and remove set path to targets for all configurations.  
+  and remove set path to targets for all configurations. 
+  Alternatively, you can search for a `FLUTTER_TARGET` in your project files and remove it (both value and key)
+  from *.xcconfig and *.pbxproj files.
 </Accordion>
 
 <Accordion title="Build is failing with errors on mismatching iOS deployment versions">
