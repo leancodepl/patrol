@@ -191,7 +191,7 @@ fun AndroidSelector.toUiSelector(): UiSelector {
     var selector = UiSelector()
 
     if (hasClassName()) {
-        selector = selector.className(className)
+        selector = selector.className(className!!)
     }
     if (hasIsCheckable()) {
         selector = selector.checkable(isCheckable!!)
@@ -221,28 +221,28 @@ fun AndroidSelector.toUiSelector(): UiSelector {
         selector = selector.selected(isSelected!!)
     }
     if (hasApplicationPackage()) {
-        selector = selector.packageName(applicationPackage)
+        selector = selector.packageName(applicationPackage!!)
     }
     if (hasContentDescription()) {
-        selector = selector.description(contentDescription)
+        selector = selector.description(contentDescription!!)
     }
     if (hasContentDescriptionStartsWith()) {
-        selector = selector.descriptionStartsWith(contentDescriptionStartsWith)
+        selector = selector.descriptionStartsWith(contentDescriptionStartsWith!!)
     }
     if (hasContentDescriptionContains()) {
-        selector = selector.descriptionContains(contentDescriptionContains)
+        selector = selector.descriptionContains(contentDescriptionContains!!)
     }
     if (hasText()) {
-        selector = selector.text(text)
+        selector = selector.text(text!!)
     }
     if (hasTextStartsWith()) {
-        selector = selector.textStartsWith(textStartsWith)
+        selector = selector.textStartsWith(textStartsWith!!)
     }
     if (hasTextContains()) {
-        selector = selector.textContains(textContains)
+        selector = selector.textContains(textContains!!)
     }
     if (hasResourceName()) {
-        selector = selector.resourceId(resourceName)
+        selector = selector.resourceId(resourceName!!)
     }
     if (hasInstance()) {
         selector = selector.instance(instance!!.toInt())
@@ -259,7 +259,7 @@ fun AndroidSelector.toBySelector(): BySelector {
     var selector: BySelector? = null
 
     if (hasClassName()) {
-        selector = By.clazz(className)
+        selector = By.clazz(className!!)
     }
     if (hasIsCheckable()) {
         selector = selector?.checkable(isCheckable!!) ?: By.checkable(isCheckable!!)
@@ -289,32 +289,32 @@ fun AndroidSelector.toBySelector(): BySelector {
         selector = selector?.selected(isSelected!!) ?: By.selected(isSelected!!)
     }
     if (hasApplicationPackage()) {
-        selector = selector?.pkg(applicationPackage) ?: By.pkg(applicationPackage)
+        selector = selector?.pkg(applicationPackage!!) ?: By.pkg(applicationPackage!!)
     }
     if (hasContentDescription()) {
-        selector = selector?.desc(contentDescription) ?: By.desc(contentDescription)
+        selector = selector?.desc(contentDescription!!) ?: By.desc(contentDescription!!)
     }
     if (hasContentDescriptionStartsWith()) {
-        selector = selector?.descStartsWith(contentDescriptionStartsWith) ?: By.descStartsWith(
-            contentDescriptionStartsWith
+        selector = selector?.descStartsWith(contentDescriptionStartsWith!!) ?: By.descStartsWith(
+            contentDescriptionStartsWith!!
         )
     }
     if (hasContentDescriptionContains()) {
-        selector = selector?.descContains(contentDescriptionContains) ?: By.descContains(
-            contentDescriptionContains
+        selector = selector?.descContains(contentDescriptionContains!!) ?: By.descContains(
+            contentDescriptionContains!!
         )
     }
     if (hasText()) {
-        selector = selector?.text(text) ?: By.text(text)
+        selector = selector?.text(text!!) ?: By.text(text!!)
     }
     if (hasTextStartsWith()) {
-        selector = selector?.textStartsWith(textStartsWith) ?: By.textStartsWith(textStartsWith)
+        selector = selector?.textStartsWith(textStartsWith!!) ?: By.textStartsWith(textStartsWith!!)
     }
     if (hasTextContains()) {
-        selector = selector?.textContains(textContains) ?: By.textContains(textContains)
+        selector = selector?.textContains(textContains!!) ?: By.textContains(textContains!!)
     }
     if (hasResourceName()) {
-        selector = selector?.res(resourceName) ?: By.res(resourceName)
+        selector = selector?.res(resourceName!!) ?: By.res(resourceName!!)
     }
 
     if (selector == null) {
