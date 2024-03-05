@@ -144,6 +144,7 @@ Map<String, dynamic> _$AndroidSelectorToJson(AndroidSelector instance) =>
     };
 
 IOSSelector _$IOSSelectorFromJson(Map<String, dynamic> json) => IOSSelector(
+      value: json['value'] as String?,
       instance: json['instance'] as int?,
       elementType:
           $enumDecodeNullable(_$IOSElementTypeEnumMap, json['elementType']),
@@ -164,6 +165,7 @@ IOSSelector _$IOSSelectorFromJson(Map<String, dynamic> json) => IOSSelector(
 
 Map<String, dynamic> _$IOSSelectorToJson(IOSSelector instance) =>
     <String, dynamic>{
+      'value': instance.value,
       'instance': instance.instance,
       'elementType': _$IOSElementTypeEnumMap[instance.elementType],
       'identifier': instance.identifier,
