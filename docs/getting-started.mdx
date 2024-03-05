@@ -58,6 +58,8 @@ patrol:
     bundle_id: com.example.macos.MyApp
 ```
 
+If you don't know where to get `package_name` and `bundle_id` from, see the [FAQ] section.
+
 ### Install `patrol_cli`
 
 [Patrol CLI] (command-line interface) is a small program that enables running
@@ -517,7 +519,8 @@ within the patrol test.">
 #### iOS
 
 <Accordion title="Where do I get `bundle_id` from?">
-  Go to `ios/Runner.xcodeproj/project.pbxproj` and look for `PRODUCT_BUNDLE_IDENTIFIER`.
+  For iOS go to `ios/Runner.xcodeproj/project.pbxproj` and look for `PRODUCT_BUNDLE_IDENTIFIER`.
+  For macOS go to `macos/Runner.xcodeproj/project.pbxproj` and look for `PRODUCT_BUNDLE_IDENTIFIER`.
 </Accordion>
 
 <Accordion title="When I run tests the simulator is getting cloned">
