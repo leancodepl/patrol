@@ -1021,7 +1021,9 @@ class SwipeRequest with EquatableMixin {
 @JsonSerializable()
 class ScrollToRequest with EquatableMixin {
   ScrollToRequest({
-    required this.selector,
+    this.selector,
+    this.androidSelector,
+    this.iosSelector,
     required this.appId,
     this.index,
     this.maxIterations,
@@ -1030,7 +1032,9 @@ class ScrollToRequest with EquatableMixin {
   factory ScrollToRequest.fromJson(Map<String, dynamic> json) =>
       _$ScrollToRequestFromJson(json);
 
-  final Selector selector;
+  final Selector? selector;
+  final AndroidSelector? androidSelector;
+  final IOSSelector? iosSelector;
   final String appId;
   final int? index;
   final int? maxIterations;
@@ -1040,6 +1044,8 @@ class ScrollToRequest with EquatableMixin {
   @override
   List<Object?> get props => [
         selector,
+        androidSelector,
+        iosSelector,
         appId,
         index,
         maxIterations,
