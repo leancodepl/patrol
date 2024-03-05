@@ -250,10 +250,17 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
     }
 
     override fun scrollTo(request: ScrollToRequest) {
-        automation.scrollTo(
-            bySelector = request.selector.toBySelector(),
-            index = request.selector.instance?.toInt() ?: 0
-        )
+        if (request.selector != null) {
+            automation.scrollTo(
+                    bySelector = request.selector.toBySelector(),
+                    index = request.selector.instance?.toInt() ?: 0
+            )
+        } else if (request.androidSelector != null) {
+            automation.scrollTo(
+                    bySelector = request.androidSelector.toBySelector(),
+                    index = request.androidSelector.instance?.toInt() ?: 0
+            )
+        }
     }
 
     override fun waitUntilVisible(request: WaitUntilVisibleRequest) {
