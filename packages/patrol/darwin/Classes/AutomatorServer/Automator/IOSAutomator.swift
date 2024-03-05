@@ -209,11 +209,16 @@
           throw PatrolError.viewNotExists(view)
         }
 
-        element.forceTap()
-        element.typeText(data)
+        let stringValue = element.value as? String
+        var delete: String = ""
+        if let value = stringValue {
+          delete = String(repeating: XCUIKeyboardKey.delete.rawValue, count: value.count)
+        }
+        element.typeText(delete + data)
       }
 
       // Prevent keyboard dismissal from happening too fast
+      // TODO: remove?
       sleepTask(timeInSeconds: 1)
     }
 
@@ -246,11 +251,16 @@
           throw PatrolError.viewNotExists(view)
         }
 
-        element.forceTap()
-        element.typeText(data)
+        let stringValue = element.value as? String
+        var delete: String = ""
+        if let value = stringValue {
+          delete = String(repeating: XCUIKeyboardKey.delete.rawValue, count: value.count)
+        }
+        element.typeText(delete + data)
       }
 
       // Prevent keyboard dismissal from happening too fast
+      // TODO: remove?
       sleepTask(timeInSeconds: 1)
     }
 
@@ -290,11 +300,16 @@
           throw PatrolError.viewNotExists("text field at index \(index) in app \(bundleId)")
         }
 
-        element.forceTap()
-        element.typeText(data)
+        let stringValue = element.value as? String
+        var delete: String = ""
+        if let value = stringValue {
+          delete = String(repeating: XCUIKeyboardKey.delete.rawValue, count: value.count)
+        }
+        element.typeText(delete + data)
       }
 
       // Prevent keyboard dismissal from happening too fast
+      // TODO: remove?
       sleepTask(timeInSeconds: 1)
     }
 
