@@ -97,6 +97,11 @@ extension Selector {
       var values = [Any]()
       var conditions = [String]()
 
+      if let value = value {
+        conditions.append("value == %@")
+        values.append(value)
+      }
+
       if let iosElementType = elementType {
         let elementTypeValue = getXCUIElementType(elementType: iosElementType).rawValue
         conditions.append("elementType == %@")

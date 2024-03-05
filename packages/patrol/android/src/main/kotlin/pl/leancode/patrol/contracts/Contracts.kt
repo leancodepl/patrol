@@ -235,6 +235,7 @@ class Contracts {
   }
 
   data class IOSSelector (
+    val value: String? = null,
     val instance: Long? = null,
     val elementType: IOSElementType? = null,
     val identifier: String? = null,
@@ -251,6 +252,9 @@ class Contracts {
     val placeholderValueStartsWith: String? = null,
     val placeholderValueContains: String? = null
   ){
+    fun hasValue(): Boolean {
+      return value != null
+    }
     fun hasInstance(): Boolean {
       return instance != null
     }

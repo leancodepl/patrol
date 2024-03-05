@@ -72,6 +72,7 @@ class AndroidSelector {
 }
 
 class IOSSelector {
+  String? value;
   int? instance;
   IOSElementType? elementType;
   String? identifier;

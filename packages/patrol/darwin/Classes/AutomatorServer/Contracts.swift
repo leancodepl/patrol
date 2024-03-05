@@ -172,6 +172,7 @@ public struct AndroidSelector: Codable {
 }
 
 public struct IOSSelector: Codable {
+  public var value: String?
   public var instance: Int?
   public var elementType: IOSElementType?
   public var identifier: String?
