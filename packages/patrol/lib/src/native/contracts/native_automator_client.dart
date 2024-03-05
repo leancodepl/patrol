@@ -170,7 +170,9 @@ class NativeAutomatorClient {
     );
   }
 
-  Future<void> scrollTo(ScrollToRequest request) {
+  Future<void> scrollTo(
+    ScrollToRequest request,
+  ) {
     return _sendRequest(
       'scrollTo',
       request.toJson(),
