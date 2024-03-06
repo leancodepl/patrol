@@ -49,7 +49,7 @@ class _Runner extends ValueNotifier<_State> {
   }
 
   Future<void> getNativeUITree({required bool nativeDetails}) async {
-    final useNativeViewHierarchy = nativeDetails;
+    final useNativeViewHierarchy = !nativeDetails;
     value
       ..roots = []
       ..currentNode = null;
