@@ -145,17 +145,14 @@ extension Selector {
 
       if let hasFocus = hasFocus {
         conditions.append("hasFocus == " + (hasFocus ? "YES" : "NO"))
-        values.append("dummy value")
       }
 
       if let isEnabled = isEnabled {
         conditions.append("isEnabled == " + (isEnabled ? "YES" : "NO"))
-        values.append("dummy value")
       }
 
       if let isSelected = isSelected {
         conditions.append("isSelected == " + (isSelected ? "YES" : "NO"))
-        values.append("dummy value")
       }
 
       if let placeholderValue = placeholderValue {
