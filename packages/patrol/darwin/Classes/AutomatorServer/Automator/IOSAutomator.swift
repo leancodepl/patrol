@@ -160,8 +160,7 @@
           throw PatrolError.viewNotExists(view)
         }
 
-        element.forceTap()
-        element.typeText(data)
+        clearAndEnterText(data: data, element: element)
       }
 
       // Prevent keyboard dismissal from happening too fast
@@ -204,8 +203,7 @@
           throw PatrolError.viewNotExists("text field at index \(index) in app \(bundleId)")
         }
 
-        element.forceTap()
-        element.typeText(data)
+        clearAndEnterText(data: data, element: element)
       }
 
       // Prevent keyboard dismissal from happening too fast
@@ -671,6 +669,15 @@
     }
 
     // MARK: Private stuff
+    private func clearAndEnterText(data: String, element: XCUIElement) {
+      let currentValue = element.value as? String
+      var delete: String = ""
+      if let value = currentValue {
+        delete = String(repeating: XCUIKeyboardKey.delete.rawValue, count: value.count)
+      }
+      element.typeText(delete + data)
+    }
+
     private func isSimulator() -> Bool {
       #if targetEnvironment(simulator)
         return true
