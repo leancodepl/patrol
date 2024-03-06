@@ -670,9 +670,9 @@
 
     // MARK: Private stuff
     private func clearAndEnterText(data: String, element: XCUIElement) {
-      let stringValue = element.value as? String
+      let currentValue = element.value as? String
       var delete: String = ""
-      if let value = stringValue {
+      if let value = currentValue {
         delete = String(repeating: XCUIKeyboardKey.delete.rawValue, count: value.count)
       }
       element.typeText(delete + data)
