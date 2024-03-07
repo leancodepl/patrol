@@ -209,6 +209,9 @@
           throw PatrolError.viewNotExists(view)
         }
 
+        let coordinate = element.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.9))
+        coordinate.tap()
+
         let stringValue = element.value as? String
         var delete: String = ""
         if let value = stringValue {
@@ -250,6 +253,9 @@
         else {
           throw PatrolError.viewNotExists(view)
         }
+
+        let coordinate = element.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.9))
+        coordinate.tap()
 
         let stringValue = element.value as? String
         var delete: String = ""
