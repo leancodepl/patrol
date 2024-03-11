@@ -184,6 +184,7 @@ class FlutterVersion {
   factory FlutterVersion.test() => FlutterVersion('1.2.3', 'stable');
 
   factory FlutterVersion.fromCLI(FlutterCommand flutterCommand) {
+    final stopwatch = Stopwatch()..start();
     final result = io.Process.runSync(
       flutterCommand.executable,
       [
@@ -200,6 +201,8 @@ class FlutterVersion {
         jsonDecode(cleanJsonResult(result)) as Map<String, dynamic>;
     final frameworkVersion = versionData['frameworkVersion'] as String;
     final channel = versionData['channel'] as String;
+    print(
+        'debug: time checking flutter version ${stopwatch.elapsedMilliseconds} ms');
     return FlutterVersion(frameworkVersion, channel);
   }
 
