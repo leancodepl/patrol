@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:io' as p show Platform;
 import 'dart:io' show ProcessSignal, stdin;
+import 'dart:isolate' as isolate;
 
 import 'package:adb/adb.dart';
 import 'package:args/args.dart';
@@ -394,7 +396,10 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
 
     if (_wantsUpdateCheck(commandName)) {
       final preCheckForUpdate = stopwatch.elapsed.inMilliseconds;
-      await _checkForUpdate(commandName);
+      // Keep update check off the critical path (see #1966)
+      unawaited(
+        isolate.Isolate.spawn<void>((_) => _checkForUpdate(commandName), null),
+      );
       final postCheckForUpdate = stopwatch.elapsed.inMilliseconds;
       print(
         'debug: time _checkForUpdate: ${postCheckForUpdate - preCheckForUpdate} ms',
@@ -458,6 +463,9 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
 
   /// Checks if the current version (set by the build runner on the version.dart
   /// file) is the most recent one. If not, shows a prompt to the user.
+  ///
+  /// This method gets data from the network, so it should not block the
+  /// critical path.
   Future<void> _checkForUpdate(String? commandName) async {
     if (commandName == 'update' || commandName == 'doctor') {
       return;
