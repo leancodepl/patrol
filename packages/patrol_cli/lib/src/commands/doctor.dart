@@ -48,8 +48,9 @@ class DoctorCommand extends PatrolCommand {
   void _printFlutterInfo() {
     final cmd = flutterCommand;
     final result = io.Process.runSync(
-      flutterCommand.executable,
-      flutterCommand.arguments,
+      cmd.executable,
+      cmd.arguments,
+      runInShell: true,
     );
 
     final success = result.exitCode == 0;

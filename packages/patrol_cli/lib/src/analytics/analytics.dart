@@ -188,6 +188,7 @@ class FlutterVersion {
         '--version',
         '--machine',
       ],
+      runInShell: true,
     );
 
     final versionData =
