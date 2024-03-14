@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:args/command_runner.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
@@ -185,10 +187,10 @@ abstract class PatrolCommand extends Command<int> {
 
     var cmd = arg;
     if (cmd == null || cmd.isEmpty) {
-      cmd = const String.fromEnvironment('PATROL_FLUTTER_COMMAND');
+      cmd = Platform.environment['PATROL_FLUTTER_COMMAND'];
     }
 
-    if (cmd.isEmpty) {
+    if (cmd == null || cmd.isEmpty) {
       cmd = 'flutter';
     }
 
