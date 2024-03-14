@@ -209,7 +209,7 @@
           throw PatrolError.viewNotExists(view)
         }
 
-        clearAndEnterText(data: data, element: element)
+        self.clearAndEnterText(data: data, element: element)
       }
 
       // Prevent keyboard dismissal from happening too fast
@@ -289,7 +289,7 @@
           throw PatrolError.viewNotExists("text field at index \(index) in app \(bundleId)")
         }
 
-        clearAndEnterText(data: data, element: element)
+        self.clearAndEnterText(data: data, element: element)
       }
 
       // Prevent keyboard dismissal from happening too fast
