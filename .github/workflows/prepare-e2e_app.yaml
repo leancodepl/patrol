@@ -183,7 +183,7 @@ jobs:
             -scheme Runner \
             -only-testing RunnerTests \
             -configuration Debug \
-            -sdk iphoneos -destination 'platform=iOS Simulator,name=iPhone 14' \
+            -sdk iphoneos -destination 'platform=iOS Simulator,name=iPhone 15' \
             -derivedDataPath ../build/ios_unit | xcbeautify --renderer github-actions
 
   prepare-flutter:
