@@ -296,17 +296,17 @@
     func tapOnNotification(request: TapOnNotificationRequest) throws {
       return try runCatching {
         if let index = request.index {
-            try automator.tapOnNotification(
+          try automator.tapOnNotification(
             byIndex: index,
             withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) }
           )
         } else if let selector = request.selector {
-            try automator.tapOnNotification(
+          try automator.tapOnNotification(
             bySubstring: selector.textContains ?? String(),
             withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) }
           )
-          } else if let selector = request.iosSelector {
-            try automator.tapOnNotification(
+        } else if let selector = request.iosSelector {
+          try automator.tapOnNotification(
             bySubstring: selector.titleContains ?? String(),
             withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) }
           )
