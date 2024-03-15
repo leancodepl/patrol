@@ -1,3 +1,7 @@
+## 3.6.0
+
+- Added the NativeAutomator2, which allows to interact with native using selectors designated for a specific platform (AndroidSelector and IOSSelector).
+
 ## 3.5.2
 
 - Fix reporting fail cause to native on ios in release mode (#2114).
