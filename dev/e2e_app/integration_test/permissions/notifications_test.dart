@@ -1,3 +1,5 @@
+import 'dart:io' as io;
+
 import '../common.dart';
 
 void main() {
@@ -49,19 +51,24 @@ void main() {
         await $.native2.grantPermissionWhenInUse();
       }
 
-      // Android 14+ requires additional permission to schedule notifications.
-      // Workaround for conditionally granting permission.
-      final android14PermissionSelector = AndroidSelector(
-        text: 'Allow setting alarms and reminders',
-      );
-      final nativeViews = await $.native2.getNativeViews(
-        NativeSelector(android: android14PermissionSelector),
-      );
-      if (nativeViews.androidViews.isNotEmpty) {
-        await $.native2.tap(
+      // Until we resolve the issue of invoking native methods without a
+      // selector intended for the platform on which we are running the test,
+      // we need to add this check.
+      if (io.Platform.isAndroid) {
+        // Android 14+ requires additional permission to schedule notifications.
+        // Workaround for conditionally granting permission.
+        final android14PermissionSelector = AndroidSelector(
+          text: 'Allow setting alarms and reminders',
+        );
+        final nativeViews = await $.native2.getNativeViews(
           NativeSelector(android: android14PermissionSelector),
         );
-        await $.native2.pressBack();
+        if (nativeViews.androidViews.isNotEmpty) {
+          await $.native2.tap(
+            NativeSelector(android: android14PermissionSelector),
+          );
+          await $.native2.pressBack();
+        }
       }
 
       await $('Show in a few seconds').tap();
@@ -72,7 +79,10 @@ void main() {
       await Future<void>.delayed(const Duration(seconds: 5));
 
       await $.native2.tapOnNotificationBySelector(
-        NativeSelector(android: AndroidSelector(textContains: 'Someone liked')),
+        NativeSelector(
+          android: AndroidSelector(textContains: 'Someone liked'),
+          ios: IOSSelector(titleContains: 'Someone liked'),
+        ),
       );
 
       await $('Tapped notification with ID: 1').waitUntilVisible();
