@@ -50,6 +50,7 @@ class DevelopCommand extends PatrolCommand {
     usesDartDefineOption();
     usesLabelOption();
     usesWaitOption();
+    usesPortOptions();
 
     usesUninstallOption();
 
@@ -187,6 +188,8 @@ class DevelopCommand extends PatrolCommand {
     final androidOpts = AndroidAppOptions(
       flutter: flutterOpts,
       packageName: packageName,
+      appServerPort: super.appServerPort,
+      testServerPort: super.testServerPort,
     );
 
     final iosOpts = IOSAppOptions(

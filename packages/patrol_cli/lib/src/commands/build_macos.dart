@@ -34,6 +34,7 @@ class BuildMacOSCommand extends PatrolCommand {
     usesDartDefineOption();
     usesLabelOption();
     usesWaitOption();
+    usesPortOptions();
 
     usesMacOSOptions();
   }

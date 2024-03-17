@@ -46,6 +46,7 @@ class TestCommand extends PatrolCommand {
     usesDartDefineOption();
     usesLabelOption();
     usesWaitOption();
+    usesPortOptions();
 
     usesUninstallOption();
 
@@ -178,6 +179,8 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
     final androidOpts = AndroidAppOptions(
       flutter: flutterOpts,
       packageName: packageName,
+      appServerPort: super.appServerPort,
+      testServerPort: super.testServerPort,
     );
 
     final iosOpts = IOSAppOptions(
