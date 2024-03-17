@@ -1,7 +1,6 @@
 package pl.leancode.patrol
 
 import android.os.ConditionVariable
-import androidx.test.platform.app.InstrumentationRegistry
 import org.http4k.core.ContentType
 import org.http4k.filter.ServerFilters
 import org.http4k.server.Http4kServer
@@ -26,7 +25,6 @@ class PatrolServer {
                 defaultPort
             }
         }
-
 
     fun start() {
         Logger.i("Starting server...")
