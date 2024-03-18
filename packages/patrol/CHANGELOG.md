@@ -1,3 +1,7 @@
+## 3.5.3
+
+- Add support for --app-server-port and --test-server-port on Android (#2154).
+
 ## 3.5.2
 
 - Fix reporting fail cause to native on ios in release mode (#2114).
