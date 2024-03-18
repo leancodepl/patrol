@@ -66,8 +66,28 @@
       }
     }
 
+    func tap(
+      on selector: IOSSelector,
+      inApp bundleId: String,
+      withTimeout timeout: TimeInterval?
+    ) throws {
+      try runAction("tap") {
+        throw PatrolError.methodNotImplemented("tap")
+      }
+    }
+
     func doubleTap(
       on selector: Selector,
+      inApp bundleId: String,
+      withTimeout timeout: TimeInterval?
+    ) throws {
+      try runAction("doubleTap") {
+        throw PatrolError.methodNotImplemented("doubleTap")
+      }
+    }
+
+    func doubleTap(
+      on selector: IOSSelector,
       inApp bundleId: String,
       withTimeout timeout: TimeInterval?
     ) throws {
@@ -85,6 +105,18 @@
     func enterText(
       _ data: String,
       on selector: Selector,
+      inApp bundleId: String,
+      dismissKeyboard: Bool,
+      withTimeout timeout: TimeInterval?
+    ) throws {
+      try runAction("enterText") {
+        throw PatrolError.methodNotImplemented("enterText")
+      }
+    }
+
+    func enterText(
+      _ data: String,
+      on selector: IOSSelector,
       inApp bundleId: String,
       dismissKeyboard: Bool,
       withTimeout timeout: TimeInterval?
@@ -114,6 +146,16 @@
 
     func waitUntilVisible(
       on selector: Selector,
+      inApp bundleId: String,
+      withTimeout timeout: TimeInterval?
+    ) throws {
+      try runAction("waitUntilVisible") {
+        throw PatrolError.methodNotImplemented("waitUntilVisible")
+      }
+    }
+
+    func waitUntilVisible(
+      on selector: IOSSelector,
       inApp bundleId: String,
       withTimeout timeout: TimeInterval?
     ) throws {
@@ -188,9 +230,22 @@
       }
     }
 
+    func getNativeViews(on selector: IOSSelector, inApp bundleId: String) throws -> [IOSNativeView]
+    {
+      try runAction("getNativeViews") {
+        throw PatrolError.methodNotImplemented("getNativeViews")
+      }
+    }
+
     func getUITreeRoots(installedApps: [String]) throws -> [NativeView] {
       try runAction("getUITreeRoots") {
         throw PatrolError.methodNotImplemented("getUITreeRoots")
+      }
+    }
+
+    func getUITreeRootsV2(installedApps: [String]) throws -> GetNativeUITreeRespone {
+      try runAction("getUITreeRootsV2") {
+        throw PatrolError.methodNotImplemented("getUITreeRootsV2")
       }
     }
 

@@ -40,10 +40,12 @@ class PatrolServiceExtensionApi {
   final VmService _service;
   final ValueListenable<IsolateRef?> _isolate;
 
-  Future<ApiResult<GetNativeUITreeRespone>> getNativeUITree() {
+  Future<ApiResult<GetNativeUITreeRespone>> getNativeUITree({
+    required bool useNativeViewHierarchy,
+  }) {
     return _callServiceExtension(
       'patrol.getNativeUITree',
-      {},
+      {'useNativeViewHierarchy': useNativeViewHierarchy ? 'yes' : 'no'},
       (dynamic json) =>
           GetNativeUITreeRespone.fromJson(json as Map<String, dynamic>),
     );
