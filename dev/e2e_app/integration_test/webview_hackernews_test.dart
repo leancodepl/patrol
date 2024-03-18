@@ -12,9 +12,9 @@ void main() {
       index: 0,
       keyboardBehavior: KeyboardBehavior.showAndDismiss,
     );
-    await $.native.enterText(
-      Selector(className: 'android.widget.EditText'),
-      text: 'ny4ncat',
+    await $.native.enterTextByIndex(
+      'ny4ncat',
+      index: 1,
       keyboardBehavior: KeyboardBehavior.showAndDismiss,
     );
   });
@@ -38,7 +38,7 @@ void main() {
     await $.native2.enterText(
       NativeSelector(
         android: AndroidSelector(className: 'android.widget.EditText'),
-        ios: IOSSelector(elementType: IOSElementType.textField),
+        ios: IOSSelector(elementType: IOSElementType.secureTextField),
       ),
       text: 'ny4ncat',
       keyboardBehavior: KeyboardBehavior.showAndDismiss,

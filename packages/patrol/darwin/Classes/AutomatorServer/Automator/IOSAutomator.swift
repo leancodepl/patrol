@@ -809,6 +809,7 @@
       if let value = currentValue {
         delete = String(repeating: XCUIKeyboardKey.delete.rawValue, count: value.count)
       }
+      element.forceTap()
       element.typeText(delete + data)
     }
 
