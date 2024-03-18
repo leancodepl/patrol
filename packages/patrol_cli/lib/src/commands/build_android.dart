@@ -33,6 +33,7 @@ class BuildAndroidCommand extends PatrolCommand {
     usesDartDefineOption();
     usesLabelOption();
     usesWaitOption();
+    usesPortOptions();
 
     usesAndroidOptions();
   }
@@ -124,6 +125,8 @@ class BuildAndroidCommand extends PatrolCommand {
     final androidOpts = AndroidAppOptions(
       flutter: flutterOpts,
       packageName: packageName,
+      appServerPort: super.appServerPort,
+      testServerPort: super.testServerPort,
     );
 
     try {

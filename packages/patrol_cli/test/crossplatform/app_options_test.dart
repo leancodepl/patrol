@@ -16,7 +16,11 @@ void main() {
           flavor: null,
           dartDefines: {},
         );
-        options = const AndroidAppOptions(flutter: flutterOptions);
+        options = const AndroidAppOptions(
+          flutter: flutterOptions,
+          appServerPort: 1,
+          testServerPort: 2,
+        );
 
         final invocation =
             options.toGradleAssembleTestInvocation(isWindows: true);
@@ -26,6 +30,8 @@ void main() {
             r'.\gradlew.bat',
             ':app:assembleDebugAndroidTest',
             r'-Ptarget=C:\Users\john\app\integration_test\app_test.dart',
+            '-Papp-server-port=1',
+            '-Ptest-server-port=2',
           ]),
         );
       });
@@ -37,7 +43,11 @@ void main() {
           flavor: null,
           dartDefines: {},
         );
-        options = const AndroidAppOptions(flutter: flutterOpts);
+        options = const AndroidAppOptions(
+          flutter: flutterOpts,
+          appServerPort: 1,
+          testServerPort: 2,
+        );
 
         final invocation =
             options.toGradleAssembleTestInvocation(isWindows: false);
@@ -47,6 +57,8 @@ void main() {
             './gradlew',
             ':app:assembleReleaseAndroidTest',
             '-Ptarget=/Users/john/app/integration_test/app_test.dart',
+            '-Papp-server-port=1',
+            '-Ptest-server-port=2',
           ]),
         );
       });
@@ -66,7 +78,11 @@ void main() {
           flavor: 'dev',
           dartDefines: dartDefines,
         );
-        options = const AndroidAppOptions(flutter: flutterOpts);
+        options = const AndroidAppOptions(
+          flutter: flutterOpts,
+          appServerPort: 1,
+          testServerPort: 2,
+        );
 
         final invocation =
             options.toGradleAssembleTestInvocation(isWindows: true);
@@ -77,6 +93,8 @@ void main() {
             ':app:assembleDevReleaseAndroidTest',
             r'-Ptarget=C:\Users\john\app\integration_test\app_test.dart',
             '-Pdart-defines=RU1BSUw9dXNlckBleGFtcGxlLmNvbQ==,UEFTU1dPUkQ9bnk0bmNhdA==,Zm9vPWJhcg==',
+            '-Papp-server-port=1',
+            '-Ptest-server-port=2',
           ]),
         );
       });
@@ -88,7 +106,11 @@ void main() {
           flavor: 'dev',
           dartDefines: dartDefines,
         );
-        options = const AndroidAppOptions(flutter: flutterOpts);
+        options = const AndroidAppOptions(
+          flutter: flutterOpts,
+          appServerPort: 1,
+          testServerPort: 2,
+        );
 
         final invocation =
             options.toGradleAssembleTestInvocation(isWindows: false);
@@ -99,6 +121,8 @@ void main() {
             ':app:assembleDevDebugAndroidTest',
             '-Ptarget=/Users/john/app/integration_test/app_test.dart',
             '-Pdart-defines=RU1BSUw9dXNlckBleGFtcGxlLmNvbQ==,UEFTU1dPUkQ9bnk0bmNhdA==,Zm9vPWJhcg==',
+            '-Papp-server-port=1',
+            '-Ptest-server-port=2',
           ]),
         );
       });

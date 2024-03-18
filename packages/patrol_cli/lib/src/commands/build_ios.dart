@@ -34,6 +34,7 @@ class BuildIOSCommand extends PatrolCommand {
     usesDartDefineOption();
     usesLabelOption();
     usesWaitOption();
+    usesPortOptions();
 
     usesIOSOptions();
     argParser.addFlag(

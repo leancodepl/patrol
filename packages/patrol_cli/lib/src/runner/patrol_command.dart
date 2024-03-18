@@ -104,6 +104,20 @@ abstract class PatrolCommand extends Command<int> {
     );
   }
 
+  void usesPortOptions() {
+    argParser
+      ..addOption(
+        'test-server-port',
+        help: 'Port to use for server running in the test instrumentation app.',
+        defaultsTo: _defaultTestServerPort.toString(),
+      )
+      ..addOption(
+        'app-server-port',
+        help: 'Port to use for server running in the app under test.',
+        defaultsTo: _defaultAppServerPort.toString(),
+      );
+  }
+
   void usesAndroidOptions() {
     argParser.addOption(
       'package-name',
@@ -118,7 +132,6 @@ abstract class PatrolCommand extends Command<int> {
       help: 'Bundle identifier of the iOS app under test.',
       valueHelp: 'pl.leancode.AwesomeApp',
     );
-    _usesIOSPortOptions();
   }
 
   void usesMacOSOptions() {
@@ -127,21 +140,6 @@ abstract class PatrolCommand extends Command<int> {
       help: 'Bundle identifier of the MacOS app under test.',
       valueHelp: 'pl.leancode.macos.AwesomeApp',
     );
-    _usesIOSPortOptions();
-  }
-
-  void _usesIOSPortOptions() {
-    argParser
-      ..addOption(
-        'test-server-port',
-        help: 'Port to use for server running in the test instrumentation app.',
-        defaultsTo: _defaultTestServerPort.toString(),
-      )
-      ..addOption(
-        'app-server-port',
-        help: 'Port to use for server running in the app under test.',
-        defaultsTo: _defaultAppServerPort.toString(),
-      );
   }
 
   // Runtime-only options
