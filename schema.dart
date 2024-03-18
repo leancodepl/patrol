@@ -49,6 +49,47 @@ class OpenAppRequest {
 
 class OpenQuickSettingsRequest {}
 
+class AndroidSelector {
+  String? className;
+  bool? isCheckable;
+  bool? isChecked;
+  bool? isClickable;
+  bool? isEnabled;
+  bool? isFocusable;
+  bool? isFocused;
+  bool? isLongClickable;
+  bool? isScrollable;
+  bool? isSelected;
+  String? applicationPackage;
+  String? contentDescription;
+  String? contentDescriptionStartsWith;
+  String? contentDescriptionContains;
+  String? text;
+  String? textStartsWith;
+  String? textContains;
+  String? resourceName;
+  int? instance;
+}
+
+class IOSSelector {
+  String? value;
+  int? instance;
+  IOSElementType? elementType;
+  String? identifier;
+  String? label;
+  String? labelStartsWith;
+  String? labelContains;
+  String? title;
+  String? titleStartsWith;
+  String? titleContains;
+  bool? hasFocus;
+  bool? isEnabled;
+  bool? isSelected;
+  String? placeholderValue;
+  String? placeholderValueStartsWith;
+  String? placeholderValueContains;
+}
+
 class Selector {
   String? text;
   String? textStartsWith;
@@ -65,16 +106,70 @@ class Selector {
 }
 
 class GetNativeViewsRequest {
-  late Selector selector;
+  Selector? selector;
+  AndroidSelector? androidSelector;
+  IOSSelector? iosSelector;
   late String appId;
 }
 
 class GetNativeUITreeRequest {
   List<String>? iosInstalledApps;
+  late bool useNativeViewHierarchy;
 }
 
 class GetNativeUITreeRespone {
+  late List<IOSNativeView> iOSroots;
+  late List<AndroidNativeView> androidRoots;
   late List<NativeView> roots;
+}
+
+class AndroidNativeView {
+  String? resourceName;
+  String? text;
+  String? className;
+  String? contentDescription;
+  String? applicationPackage;
+  late int childCount;
+  late bool isCheckable;
+  late bool isChecked;
+  late bool isClickable;
+  late bool isEnabled;
+  late bool isFocusable;
+  late bool isFocused;
+  late bool isLongClickable;
+  late bool isScrollable;
+  late bool isSelected;
+  late Rectangle visibleBounds;
+  late Point2D visibleCenter;
+  late List<AndroidNativeView> children;
+}
+
+class IOSNativeView {
+  late List<IOSNativeView> children;
+  late IOSElementType elementType;
+  late String identifier;
+  late String label;
+  late String title;
+  late bool hasFocus;
+  late bool isEnabled;
+  late bool isSelected;
+  late Rectangle frame;
+  String? placeholderValue;
+  String? value;
+  //TODO we can get other properties from XCUIElement in next request
+  // exists, isHittable,normalizedSliderPosition, accessibilityLabel, accessbilityHint, accessibilityValue, isAccessibilityElement etc..;
+}
+
+class Rectangle {
+  late double minX;
+  late double minY;
+  late double maxX;
+  late double maxY;
+}
+
+class Point2D {
+  late double x;
+  late double y;
 }
 
 class NativeView {
@@ -91,10 +186,14 @@ class NativeView {
 
 class GetNativeViewsResponse {
   late List<NativeView> nativeViews;
+  late List<IOSNativeView> iosNativeViews;
+  late List<AndroidNativeView> androidNativeViews;
 }
 
 class TapRequest {
-  late Selector selector;
+  Selector? selector;
+  AndroidSelector? androidSelector;
+  IOSSelector? iosSelector;
   late String appId;
   int? timeoutMillis;
 }
@@ -115,6 +214,8 @@ class EnterTextRequest {
   late String appId;
   int? index;
   Selector? selector;
+  AndroidSelector? androidSelector;
+  IOSSelector? iosSelector;
   late KeyboardBehavior keyboardBehavior;
   int? timeoutMillis;
 }
@@ -129,7 +230,9 @@ class SwipeRequest {
 }
 
 class WaitUntilVisibleRequest {
-  late Selector selector;
+  Selector? selector;
+  AndroidSelector? androidSelector;
+  IOSSelector? iosSelector;
   late String appId;
   int? timeoutMillis;
 }
@@ -154,6 +257,8 @@ class GetNotificationsRequest {}
 class TapOnNotificationRequest {
   int? index;
   Selector? selector;
+  AndroidSelector? androidSelector;
+  IOSSelector? iosSelector;
   int? timeoutMillis;
 }
 
@@ -236,4 +341,90 @@ abstract class NativeAutomator<IOSServer, AndroidServer, DartClient> {
 
 // TODO(bartekpacia): Move this RPC into a new PatrolNativeTestService service because it doesn't fit here
   void markPatrolAppServiceReady();
+}
+
+enum IOSElementType {
+  any,
+  other,
+  application,
+  group,
+  window,
+  sheet,
+  drawer,
+  alert,
+  dialog,
+  button,
+  radioButton,
+  radioGroup,
+  checkBox,
+  disclosureTriangle,
+  popUpButton,
+  comboBox,
+  menuButton,
+  toolbarButton,
+  popover,
+  keyboard,
+  key,
+  navigationBar,
+  tabBar,
+  tabGroup,
+  toolbar,
+  statusBar,
+  table,
+  tableRow,
+  tableColumn,
+  outline,
+  outlineRow,
+  browser,
+  collectionView,
+  slider,
+  pageIndicator,
+  progressIndicator,
+  activityIndicator,
+  segmentedControl,
+  picker,
+  pickerWheel,
+  switch_,
+  toggle,
+  link,
+  image,
+  icon,
+  searchField,
+  scrollView,
+  scrollBar,
+  staticText,
+  textField,
+  secureTextField,
+  datePicker,
+  textView,
+  menu,
+  menuItem,
+  menuBar,
+  menuBarItem,
+  map,
+  webView,
+  incrementArrow,
+  decrementArrow,
+  timeline,
+  ratingIndicator,
+  valueIndicator,
+  splitGroup,
+  splitter,
+  relevanceIndicator,
+  colorWell,
+  helpTag,
+  matte,
+  dockItem,
+  ruler,
+  rulerMarker,
+  grid,
+  levelIndicator,
+  cell,
+  layoutArea,
+  layoutItem,
+  handle,
+  stepper,
+  tab,
+  touchBar,
+  statusItem,
 }

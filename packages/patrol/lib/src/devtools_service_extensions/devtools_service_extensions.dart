@@ -27,7 +27,10 @@ class DevtoolsServiceExtensions {
   Future<Map<String, dynamic>> getNativeUITree(Map<String, String> parameters) {
     return _wrapRequest('getNativeUITree', () async {
       final res = await _client.getNativeUITree(
-        GetNativeUITreeRequest(iosInstalledApps: _iosInstalledApps),
+        GetNativeUITreeRequest(
+          iosInstalledApps: _iosInstalledApps,
+          useNativeViewHierarchy: parameters['useNativeViewHierarchy'] == 'yes',
+        ),
       );
       return res.toJson();
     });

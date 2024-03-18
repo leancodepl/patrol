@@ -4,7 +4,7 @@ import 'package:devtools_extensions/devtools_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:patrol_devtools_extension/api/patrol_service_extension_api.dart';
 import 'package:patrol_devtools_extension/native_inspector/native_inspector.dart';
-import 'package:patrol_devtools_extension/native_inspector/node.dart';
+import 'package:patrol_devtools_extension/native_inspector/nodes/node.dart';
 
 class PatrolDevToolsExtension extends StatefulWidget {
   const PatrolDevToolsExtension({super.key});
@@ -27,7 +27,9 @@ class _PatrolDevToolsExtensionState extends State<PatrolDevToolsExtension> {
           roots: state.roots,
           currentNode: state.currentNode,
           onNodeChanged: runner.changeNode,
-          onRefreshPressed: runner.getNativeUITree,
+          onRefreshPressed: (nativeDetails) => runner.getNativeUITree(
+            nativeDetails: nativeDetails,
+          ),
         );
       },
     );
@@ -46,7 +48,8 @@ class _Runner extends ValueNotifier<_State> {
     notifyListeners();
   }
 
-  Future<void> getNativeUITree() async {
+  Future<void> getNativeUITree({required bool nativeDetails}) async {
+    final useNativeViewHierarchy = !nativeDetails;
     value
       ..roots = []
       ..currentNode = null;
@@ -56,13 +59,22 @@ class _Runner extends ValueNotifier<_State> {
       isolate: serviceManager.isolateManager.mainIsolate,
     );
 
-    final result = await api.getNativeUITree();
+    final result = await api.getNativeUITree(
+      useNativeViewHierarchy: useNativeViewHierarchy,
+    );
 
     switch (result) {
       case ApiSuccess(:final data):
-        value.roots = data.roots
-            .map((e) => Node(e, null, androidNode: isAndroidApp))
-            .toList();
+        if (useNativeViewHierarchy) {
+          value.roots = data.roots
+              .map((e) => NativeViewNode(view: e, androidNode: isAndroidApp))
+              .toList();
+        } else {
+          value.roots = isAndroidApp
+              ? data.androidRoots.map((e) => AndroidNode(view: e)).toList()
+              : data.iOSroots.map((e) => IOSNode(view: e)).toList();
+        }
+
       case ApiFailure<void> _:
       // TODO: Handle failure
     }

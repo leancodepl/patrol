@@ -71,8 +71,13 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
     }
 
     override fun getNativeUITree(request: GetNativeUITreeRequest): GetNativeUITreeRespone {
-        val trees = automation.getNativeUITrees()
-        return GetNativeUITreeRespone(trees)
+        return if (request.useNativeViewHierarchy) {
+            val trees = automation.getNativeUITrees()
+            GetNativeUITreeRespone(roots = trees, androidRoots = listOf(), iOSroots = listOf())
+        } else {
+            val trees = automation.getNativeUITreesV2()
+            GetNativeUITreeRespone(roots = listOf(), androidRoots = trees, iOSroots = listOf())
+        }
     }
 
     override fun enableDarkMode(request: DarkModeRequest) {
@@ -116,10 +121,24 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
     }
 
     override fun getNativeViews(request: GetNativeViewsRequest): GetNativeViewsResponse {
-        val views = automation.getNativeViews(request.selector.toBySelector())
-        return GetNativeViewsResponse(
-            nativeViews = views
-        )
+        if (request.selector != null) {
+            val views = automation.getNativeViews(request.selector.toBySelector())
+            return GetNativeViewsResponse(
+                nativeViews = views,
+                iosNativeViews = listOf(),
+                androidNativeViews = listOf()
+
+            )
+        } else if (request.androidSelector != null) {
+            val views = automation.getNativeViewsV2(request.androidSelector.toBySelector())
+            return GetNativeViewsResponse(
+                nativeViews = listOf(),
+                androidNativeViews = views,
+                iosNativeViews = listOf()
+            )
+        } else {
+            throw PatrolException("getNativeViews(): neither selector nor androidSelector are set")
+        }
     }
 
     override fun getNotifications(request: GetNotificationsRequest): GetNotificationsResponse {
@@ -128,21 +147,43 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
     }
 
     override fun tap(request: TapRequest) {
-        automation.tap(
-            uiSelector = request.selector.toUiSelector(),
-            bySelector = request.selector.toBySelector(),
-            index = request.selector.instance?.toInt() ?: 0,
-            timeout = request.timeoutMillis
-        )
+        if (request.selector != null) {
+            automation.tap(
+                uiSelector = request.selector.toUiSelector(),
+                bySelector = request.selector.toBySelector(),
+                index = request.selector.instance?.toInt() ?: 0,
+                timeout = request.timeoutMillis
+            )
+        } else if (request.androidSelector != null) {
+            automation.tap(
+                uiSelector = request.androidSelector.toUiSelector(),
+                bySelector = request.androidSelector.toBySelector(),
+                index = request.androidSelector.instance?.toInt() ?: 0,
+                timeout = request.timeoutMillis
+            )
+        } else {
+            throw PatrolException("tap(): neither selector nor androidSelector are set")
+        }
     }
 
     override fun doubleTap(request: TapRequest) {
-        automation.doubleTap(
-            uiSelector = request.selector.toUiSelector(),
-            bySelector = request.selector.toBySelector(),
-            index = request.selector.instance?.toInt() ?: 0,
-            timeout = request.timeoutMillis
-        )
+        if (request.selector != null) {
+            automation.doubleTap(
+                uiSelector = request.selector.toUiSelector(),
+                bySelector = request.selector.toBySelector(),
+                index = request.selector.instance?.toInt() ?: 0,
+                timeout = request.timeoutMillis
+            )
+        } else if (request.androidSelector != null) {
+            automation.doubleTap(
+                uiSelector = request.androidSelector.toUiSelector(),
+                bySelector = request.androidSelector.toBySelector(),
+                index = request.androidSelector.instance?.toInt() ?: 0,
+                timeout = request.timeoutMillis
+            )
+        } else {
+            throw PatrolException("doubleTap(): neither selector nor androidSelector are set")
+        }
     }
 
     override fun tapAt(request: Contracts.TapAtRequest) {
@@ -169,6 +210,15 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
                 keyboardBehavior = request.keyboardBehavior,
                 timeout = request.timeoutMillis
             )
+        } else if (request.androidSelector != null) {
+            automation.enterText(
+                text = request.data,
+                uiSelector = request.androidSelector.toUiSelector(),
+                bySelector = request.androidSelector.toBySelector(),
+                index = request.androidSelector.instance?.toInt() ?: 0,
+                keyboardBehavior = request.keyboardBehavior,
+                timeout = request.timeoutMillis
+            )
         } else {
             throw PatrolException("enterText(): neither index nor selector are set")
         }
@@ -185,12 +235,23 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
     }
 
     override fun waitUntilVisible(request: WaitUntilVisibleRequest) {
-        automation.waitUntilVisible(
-            uiSelector = request.selector.toUiSelector(),
-            bySelector = request.selector.toBySelector(),
-            index = request.selector.instance?.toInt() ?: 0,
-            timeout = request.timeoutMillis
-        )
+        if (request.selector != null) {
+            automation.waitUntilVisible(
+                uiSelector = request.selector.toUiSelector(),
+                bySelector = request.selector.toBySelector(),
+                index = request.selector.instance?.toInt() ?: 0,
+                timeout = request.timeoutMillis
+            )
+        } else if (request.androidSelector != null) {
+            automation.waitUntilVisible(
+                uiSelector = request.androidSelector.toUiSelector(),
+                bySelector = request.androidSelector.toBySelector(),
+                index = request.androidSelector.instance?.toInt() ?: 0,
+                timeout = request.timeoutMillis
+            )
+        } else {
+            throw PatrolException("waitUntilVisible(): neither selector nor androidSelector are set")
+        }
     }
 
     override fun isPermissionDialogVisible(request: PermissionDialogVisibleRequest): PermissionDialogVisibleResponse {
@@ -222,6 +283,9 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
             automation.tapOnNotification(request.index.toInt(), timeout = request.timeoutMillis)
         } else if (request.selector != null) {
             val selector = request.selector
+            automation.tapOnNotification(selector.toUiSelector(), selector.toBySelector(), timeout = request.timeoutMillis)
+        } else if (request.androidSelector != null) {
+            val selector = request.androidSelector
             automation.tapOnNotification(selector.toUiSelector(), selector.toBySelector(), timeout = request.timeoutMillis)
         } else {
             throw PatrolException("tapOnNotification(): neither index nor selector are set")
