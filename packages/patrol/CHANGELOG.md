@@ -1,5 +1,6 @@
 ## 3.6.0
 
+- Add clearing textfield before entering text on iOS (#2145).
 - Added the NativeAutomator2, which allows to interact with native using selectors designated for a specific platform (AndroidSelector and IOSSelector) (#2132).
 - Add support for --app-server-port and --test-server-port on Android (#2154).
 
