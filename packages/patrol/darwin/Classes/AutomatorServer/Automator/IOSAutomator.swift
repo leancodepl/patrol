@@ -809,7 +809,12 @@
       if let value = currentValue {
         delete = String(repeating: XCUIKeyboardKey.delete.rawValue, count: value.count)
       }
-      element.forceTap()
+
+      // For non hittable elements, we need to tap at the end of the field (so that the cursor is
+      // at the end) and then type the text
+      let coordinate = element.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.9))
+      coordinate.tap()
+      
       element.typeText(delete + data)
     }
 
