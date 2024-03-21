@@ -9,6 +9,18 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
 
 void main() {
+  patrolTest('flow that fails', ($) async {
+    await $.pumpWidgetAndSettle(const MyApp());
+
+    await $('Go to the quiz').tap();
+
+    await $('Start').tap();
+
+    await $(TextField).enterText('I am going to crash now!');
+
+    expect(1, 2);
+  });
+
   patrolTest('main flow', ($) async {
     await $.pumpWidgetAndSettle(const MyApp());
 

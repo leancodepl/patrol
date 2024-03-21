@@ -52,8 +52,8 @@ import Foundation
       Logger.shared.i("Starting server...")
 
       let provider = AutomatorServer(automator: automator) { appReady in
-        Logger.shared.i("App reported that it is ready")
         self.appReady = appReady
+        Logger.shared.i("App reported its ready status, value: \(self.appReady)")
       }
 
       provider.setupRoutes(server: server)
