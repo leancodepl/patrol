@@ -245,8 +245,7 @@
           throw PatrolError.viewNotExists(view)
         }
 
-        element.forceTap()
-        element.typeText(data)
+        self.clearAndEnterText(data: data, element: element)
       }
 
       // Prevent keyboard dismissal from happening too fast
