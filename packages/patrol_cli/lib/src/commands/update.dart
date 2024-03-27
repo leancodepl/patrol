@@ -37,7 +37,12 @@ class UpdateCommand extends PatrolCommand {
 
   @override
   Future<int> run() async {
-    unawaited(_analytics.sendCommand(name));
+    unawaited(
+      _analytics.sendCommand(
+        FlutterVersion.fromCLI(flutterCommand),
+        name,
+      ),
+    );
 
     await _updatePatrolCliPackage();
 

@@ -35,7 +35,6 @@ void main() {
         fs: fs,
         platform: fakePlatform('/Users/john'),
         httpClient: httpClient,
-        getFlutterVersion: FlutterVersion.test,
         isCI: false,
       );
     });
@@ -45,7 +44,8 @@ void main() {
       _createFakeFileSystem(fs, analyticsEnabled: true);
 
       // when
-      final sent = await analytics.sendCommand('test command');
+      final sent =
+          await analytics.sendCommand(FlutterVersion.test(), 'test command');
 
       // then
       expect(sent, true);
@@ -56,7 +56,8 @@ void main() {
       _createFakeFileSystem(fs, analyticsEnabled: false);
 
       // when
-      final sent = await analytics.sendCommand('test command');
+      final sent =
+          await analytics.sendCommand(FlutterVersion.test(), 'test command');
 
       // then
       expect(sent, false);
