@@ -85,9 +85,16 @@ class DevelopCommand extends PatrolCommand {
 
   @override
   Future<int> run() async {
-    unawaited(_analytics.sendCommand(name));
+    unawaited(
+      _analytics.sendCommand(
+        FlutterVersion.fromCLI(flutterCommand),
+        name,
+      ),
+    );
 
-    await _compatibilityChecker.checkVersionsCompatibility();
+    await _compatibilityChecker.checkVersionsCompatibility(
+      flutterCommand: flutterCommand,
+    );
 
     final targets = stringsArg('target');
     if (targets.isEmpty) {
@@ -119,7 +126,10 @@ class DevelopCommand extends PatrolCommand {
       _logger.detail('Received iOS flavor: $iosFlavor');
     }
 
-    final devices = await _deviceFinder.find(stringsArg('device'));
+    final devices = await _deviceFinder.find(
+      stringsArg('device'),
+      flutterCommand: flutterCommand,
+    );
     final device = devices.single;
 
     // `flutter logs` doesn't work on macOS, so we don't support it for now
@@ -179,6 +189,7 @@ class DevelopCommand extends PatrolCommand {
     }
 
     final flutterOpts = FlutterAppOptions(
+      command: flutterCommand,
       target: entrypoint.path,
       flavor: androidFlavor,
       buildMode: buildMode,
@@ -328,6 +339,7 @@ class DevelopCommand extends PatrolCommand {
     try {
       final future = action();
       await _flutterTool.attachForHotRestart(
+        flutterCommand: flutterCommand,
         deviceId: device.id,
         target: flutterOpts.target,
         appId: appId,

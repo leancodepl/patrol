@@ -5,6 +5,7 @@ import 'package:meta/meta.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
+import 'package:patrol_cli/src/runner/flutter_command.dart';
 import 'package:process/process.dart';
 
 class DeviceFinder {
@@ -22,8 +23,10 @@ class DeviceFinder {
   final DisposeScope _disposeScope;
   final Logger _logger;
 
-  Future<List<Device>> getAttachedDevices() async {
-    final output = await _getCommandOutput();
+  Future<List<Device>> getAttachedDevices({
+    required FlutterCommand flutterCommand,
+  }) async {
+    final output = await _getCommandOutput(flutterCommand: flutterCommand);
     final jsonOutput = jsonDecode(output) as List<dynamic>;
 
     final devices = <Device>[];
@@ -50,8 +53,12 @@ class DeviceFinder {
     return devices;
   }
 
-  Future<List<Device>> find(List<String> devices) async {
-    final attachedDevices = await getAttachedDevices();
+  Future<List<Device>> find(
+    List<String> devices, {
+    required FlutterCommand flutterCommand,
+  }) async {
+    final attachedDevices =
+        await getAttachedDevices(flutterCommand: flutterCommand);
 
     return findDevicesToUse(
       attachedDevices: attachedDevices,
@@ -122,11 +129,14 @@ class DeviceFinder {
     return attachedDevices.where(predicate).toList();
   }
 
-  Future<String> _getCommandOutput() async {
+  Future<String> _getCommandOutput({
+    required FlutterCommand flutterCommand,
+  }) async {
     var flutterKilled = false;
     final process = await _processManager.start(
       [
-        'flutter',
+        flutterCommand.executable,
+        ...flutterCommand.arguments,
         '--no-version-check',
         '--suppress-analytics',
         'devices',
@@ -143,9 +153,9 @@ class DeviceFinder {
     process.listenStdOut((line) => output += line).disposedBy(_disposeScope);
     final exitCode = await process.exitCode;
     if (exitCode != 0) {
-      throwToolExit('`flutter devices` exited with code $exitCode');
+      throwToolExit('`$flutterCommand devices` exited with code $exitCode');
     } else if (flutterKilled) {
-      throwToolInterrupted('`flutter devices` was interrupted');
+      throwToolInterrupted('`$flutterCommand devices` was interrupted');
     } else {
       return output;
     }

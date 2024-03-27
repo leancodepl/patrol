@@ -20,7 +20,8 @@ class DevicesCommand extends PatrolCommand {
 
   @override
   Future<int> run() async {
-    final devices = await _deviceFinder.getAttachedDevices();
+    final devices =
+        await _deviceFinder.getAttachedDevices(flutterCommand: flutterCommand);
 
     if (devices.isEmpty) {
       _logger.err('No devices attached');

@@ -30,7 +30,7 @@ Check out our video version of this tutorial on YouTube!
 ### Add dependency on `patrol`
 
 If you haven't already, add a dependency on the `patrol` package in the
-`dev_dependencies` section of `pubspec.yaml`.  `patrol` package requires 
+`dev_dependencies` section of `pubspec.yaml`.  `patrol` package requires
 Android SDK version 21 or higher.
 
 ```
@@ -76,7 +76,7 @@ Patrol UI tests. It is necessary to run UI tests (`flutter test` won't work! [He
      It's explained how to do it in the [README](https://pub.dev/packages/patrol_cli#installation).
   </Info>
 
-2. Verify that installation was successful and your enviroment is set up properly:
+2. Verify that installation was successful and your environment is set up properly:
 
    ```
    patrol doctor
@@ -84,14 +84,19 @@ Patrol UI tests. It is necessary to run UI tests (`flutter test` won't work! [He
    Example output:
    ```
    Patrol CLI version: 2.3.1+1
-   Android: 
+   Android:
    • Program adb found in /Users/username/Library/Android/sdk/platform-tools/adb
    • Env var $ANDROID_HOME set to /Users/username/Library/Android/sdk
-   iOS / macOS: 
+   iOS / macOS:
    • Program xcodebuild found in /usr/bin/xcodebuild
    • Program ideviceinstaller found in /opt/homebrew/bin/ideviceinstaller
    ```
    Be sure that for the platform you want to run the test on, all the checks are green.
+
+Patrol CLI invokes the Flutter CLI for certain commands. To override the command used,
+pass the `--flutter-command` argument or set the `PATROL_FLUTTER_COMMAND` environment
+variable. This supports FVM (by setting the value to `fvm flutter`), puro (`puro flutter`)
+and potentially other version managers.
 
 ### Integrate with native side
 
@@ -102,7 +107,7 @@ Psst... Android is a bit easier to set up, so we recommend starting with it!
 <Accordion defaultOpen title="Android setup">
 
       1. Go to **android/app/src/androidTest/java/com/example/myapp/** in your project
-         directory. If there are no such folders, create them. **Remember to replace 
+         directory. If there are no such folders, create them. **Remember to replace
          `/com/example/myapp/` with the path created by your app's package name.**
 
       2. Create a file named `MainActivityTest.java` and copy there the code below.
@@ -174,21 +179,21 @@ Psst... Android is a bit easier to set up, so we recommend starting with it!
       
       2. Create a test target if you do not already have one (see the screenshot below
          for the reference). Select `File > New > Target...` and select `UI Testing Bundle`.
-         Change the `Product Name` to `RunnerUITests`. Set the `Organization Identifier` 
-         to be the same as for the `Runner` (no matter if you app has flavors or not). 
-         For our example app, it's `com.example.MyApp` just as in the `pubspec.yaml` file. 
+         Change the `Product Name` to `RunnerUITests`. Set the `Organization Identifier`
+         to be the same as for the `Runner` (no matter if you app has flavors or not).
+         For our example app, it's `com.example.MyApp` just as in the `pubspec.yaml` file.
          Make sure `Target to be Tested` is set to `Runner` and language is set to `Objective-C`.
-         Select `Finish`. 
+         Select `Finish`.
 
       ![Xcode iOS test target](/assets/ios_test_target.png)
 
       3. 2 files are created: `RunnerUITests.m` and `RunnerUITestsLaunchTests.m`.
-         Delete `RunnerUITestsLaunchTests.m` **through Xcode** by clicking on it and 
+         Delete `RunnerUITestsLaunchTests.m` **through Xcode** by clicking on it and
          selecting `Move to Trash`.
 
       4. Make sure that the **iOS Deployment Target** of `RunnerUITests` within the
          **Build Settings** section is the same as `Runner`.
-         The minimum supported **iOS Deployment Target** is `11.0`. For the 
+         The minimum supported **iOS Deployment Target** is `11.0`. For the
          [example app](https://github.com/leancodepl/patrol/tree/master/packages/patrol/example),
          we set it to `13.0` because it's required by the app dependencies.
 
@@ -265,14 +270,14 @@ Psst... Android is a bit easier to set up, so we recommend starting with it!
       <YouTube id="9LdEJR59fW4" />
 
       14. Go to **RunnerUITests** -> **Build Settings**, search for **User Script Sandboxing**
-         and make sure it's set to **No**. 
+         and make sure it's set to **No**.
 
 </Accordion>
 
 <Accordion title="macOS setup">
 
-      1. Open `macos/Runner.xcworkspace` in Xcode. 
-      
+      1. Open `macos/Runner.xcworkspace` in Xcode.
+
       2. Create a test target if you do not already have one via `File > New > Target...`
          and select `UI Testing Bundle`. Change the `Product Name` to `RunnerUITests`. Make
          sure `Target to be Tested` is set to `Runner` and language is set to `Objective-C`.
@@ -353,19 +358,19 @@ Psst... Android is a bit easier to set up, so we recommend starting with it!
       <YouTube id="9LdEJR59fW4" />
 
       13. Go to **RunnerUITests** -> **Build Settings**, search for **User Script Sandboxing**
-         and make sure it's set to **No**. 
-      
-      14. Go to **Runner** -> **Signing & Capabilities**. Make sure that in all **App Sandbox** 
+         and make sure it's set to **No**.
+
+      14. Go to **Runner** -> **Signing & Capabilities**. Make sure that in all **App Sandbox**
          sections, **Incoming Connections (Server)** and **Outgoing Connections (Client)** checkboxes
          are checked.
 
       ![Xcode entitlements setup](/assets/macos_entitlements.png)
 
-      15. **Copy** `DebugProfile.entitlements` and `Release.entitlements` files from `macos/Runner` 
+      15. **Copy** `DebugProfile.entitlements` and `Release.entitlements` files from `macos/Runner`
          to `macos/RunnerUITests` directory.
 
-      16. Go to **RunnerUITests** -> **Build Settings** and set **Code Signing Entitlements** to 
-         `RunnerUITests/DebugProfile.entitlements` for **Debug** and **Profile** configuration and to 
+      16. Go to **RunnerUITests** -> **Build Settings** and set **Code Signing Entitlements** to
+         `RunnerUITests/DebugProfile.entitlements` for **Debug** and **Profile** configuration and to
          `RunnerUITests/Release.entitlements` for **Release** configuration.
 
       ![Xcode RunnerUITests entitlements setup](/assets/macos_ui_entitlements.png)
@@ -421,7 +426,7 @@ up. To run `integration_test/example_test.dart` on a connected Android, iOS or m
       patrol test -t integration_test/example_test.dart
       ```
 
-      If the setup is successful, you should see a **TEST PASSED** message. 
+      If the setup is successful, you should see a **TEST PASSED** message.
       If something went wrong, please proceed to the [FAQ] section which might
       contain an answer to your issue.
 
@@ -472,17 +477,17 @@ up. To run `integration_test/example_test.dart` on a connected Android, iOS or m
   and make sure that the versions of `patrol` and `patrol_cli` you are using are compatible.
 </Accordion>
 
-<Accordion title="'example_test.dart' passed but I can't get my application to run 
+<Accordion title="'example_test.dart' passed but I can't get my application to run
 within the patrol test.">
   To run your application within the patrol test, you need to call `$.pumpWidgetAndSettle()`,
-  and pass your application's main widget to it. Be sure that you registered all the 
+  and pass your application's main widget to it. Be sure that you registered all the
   necessary services before calling `$.pumpWidgetAndSettle()`.
   Here's the example of running an app within the patrol test:
   ```dart
 
   void main() {
     patrolTest('real app test', ($) async {
-    
+
     // Do all the necessary setup here (DI, services, etc.)
 
     await $.pumpWidgetAndSettle(const MyApp()); // Your's app main widget
@@ -506,8 +511,8 @@ within the patrol test.">
 </Accordion>
 
 <Accordion title="Running patrol test fails containing 'Unsupported class file major version' error">
-  It's most likely caused by using incompatible JDK version. 
-  Run `javac -version` to check your JDK version. Patrol officially works on JDK 17, 
+  It's most likely caused by using incompatible JDK version.
+  Run `javac -version` to check your JDK version. Patrol officially works on JDK 17,
   so unexpected errors may occur on other versions.
   If you have AndroidStudio or Intellij IDEA installed, you can find the path to JDK by
   opening your project's android directory in AS/Intellij and going to
@@ -530,14 +535,14 @@ within the patrol test.">
 
 <Accordion title="Running test stops on 'Wait for com.example.myapp to idle'">
   Open your XCode project, go to **Runner** target -> **Build Settings**, search for `FLUTTER_TARGET`
-  and remove set path to targets for all configurations. 
+  and remove set path to targets for all configurations.
   Alternatively, you can search for a `FLUTTER_TARGET` in your project files and remove it (both value and key)
   from *.xcconfig and *.pbxproj files.
 </Accordion>
 
 <Accordion title="When running a test, real app without test is opened instead">
   Open your XCode project, go to **Runner** target -> **Build Settings**, search for `FLUTTER_TARGET`
-  and remove set path to targets for all configurations. 
+  and remove set path to targets for all configurations.
   Alternatively, you can search for a `FLUTTER_TARGET` in your project files and remove it (both value and key)
   from *.xcconfig and *.pbxproj files.
 </Accordion>
@@ -548,11 +553,11 @@ within the patrol test.">
   platform :ios, '11.0'
   ```
   If yes, then check if **iOS deployment version** in Xcode project's **Build Settings**
-  section for all targets (Runner and RunnerUITests) are set to the same value as in Podfile 
+  section for all targets (Runner and RunnerUITests) are set to the same value as in Podfile
   (in case presented in snippet above, all should be set to 11.0).
 </Accordion>
 
-If you couldn't find an answer to your question/problem, feel free to ask on 
+If you couldn't find an answer to your question/problem, feel free to ask on
 [Patrol Discord Server](https://discord.gg/ukBK5t4EZg).
 
 ### Going from here
