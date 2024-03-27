@@ -859,6 +859,7 @@ class TapRequest with EquatableMixin {
     this.iosSelector,
     required this.appId,
     this.timeoutMillis,
+    this.delayBetweenTapsMillis,
   });
 
   factory TapRequest.fromJson(Map<String, dynamic> json) =>
@@ -869,6 +870,7 @@ class TapRequest with EquatableMixin {
   final IOSSelector? iosSelector;
   final String appId;
   final int? timeoutMillis;
+  final int? delayBetweenTapsMillis;
 
   Map<String, dynamic> toJson() => _$TapRequestToJson(this);
 
@@ -879,6 +881,7 @@ class TapRequest with EquatableMixin {
         iosSelector,
         appId,
         timeoutMillis,
+        delayBetweenTapsMillis,
       ];
 }
 

@@ -527,6 +527,7 @@ TapRequest _$TapRequestFromJson(Map<String, dynamic> json) => TapRequest(
           : IOSSelector.fromJson(json['iosSelector'] as Map<String, dynamic>),
       appId: json['appId'] as String,
       timeoutMillis: json['timeoutMillis'] as int?,
+      delayBetweenTapsMillis: json['delayBetweenTapsMillis'] as int?,
     );
 
 Map<String, dynamic> _$TapRequestToJson(TapRequest instance) =>
@@ -536,6 +537,7 @@ Map<String, dynamic> _$TapRequestToJson(TapRequest instance) =>
       'iosSelector': instance.iosSelector,
       'appId': instance.appId,
       'timeoutMillis': instance.timeoutMillis,
+      'delayBetweenTapsMillis': instance.delayBetweenTapsMillis,
     };
 
 TapAtRequest _$TapAtRequestFromJson(Map<String, dynamic> json) => TapAtRequest(

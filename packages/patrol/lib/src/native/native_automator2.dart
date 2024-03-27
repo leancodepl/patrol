@@ -429,6 +429,7 @@ class NativeAutomator2 {
     NativeSelector selector, {
     String? appId,
     Duration? timeout,
+    Duration? delayBetweenTaps,
   }) async {
     await _wrapRequest(
       'doubleTap',
@@ -437,6 +438,7 @@ class NativeAutomator2 {
           androidSelector: selector.android,
           appId: appId ?? resolvedAppId,
           timeoutMillis: timeout?.inMilliseconds,
+          delayBetweenTapsMillis: delayBetweenTaps?.inMilliseconds,
           iosSelector: selector.ios,
         ),
       ),
