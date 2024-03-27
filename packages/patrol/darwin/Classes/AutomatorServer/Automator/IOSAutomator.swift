@@ -245,8 +245,7 @@
           throw PatrolError.viewNotExists(view)
         }
 
-        element.forceTap()
-        element.typeText(data)
+        self.clearAndEnterText(data: data, element: element)
       }
 
       // Prevent keyboard dismissal from happening too fast
@@ -809,7 +808,11 @@
       if let value = currentValue {
         delete = String(repeating: XCUIKeyboardKey.delete.rawValue, count: value.count)
       }
-      element.forceTap()
+
+      // We need to tap at the end of the field to ensure the cursor is at the end
+      let coordinate = element.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.9))
+      coordinate.tap()
+
       element.typeText(delete + data)
     }
 
