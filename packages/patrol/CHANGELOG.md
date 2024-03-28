@@ -1,3 +1,7 @@
+## 3.6.1
+
+- Fix clearing textfield before entering text on iOS (#2158).
+
 ## 3.6.0
 
 - Add clearing textfield before entering text on iOS (#2145).

@@ -1,3 +1,7 @@
+## 2.7.0
+
+- Add support for custom flutter commands (#2124).
+
 ## 2.6.5
 - Add support for --app-server-port and --test-server-port on Android (#2154).
 
