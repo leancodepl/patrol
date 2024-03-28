@@ -1,5 +1,9 @@
+import 'dart:io' show File;
+
+import 'package:analyzer/dart/analysis/utilities.dart';
+import 'package:analyzer/dart/ast/ast.dart';
 import 'package:collection/collection.dart';
-import 'package:file/file.dart';
+import 'package:file/file.dart' hide File;
 import 'package:patrol_cli/src/base/exceptions.dart';
 
 const _kDefaultTestFileSuffix = '_test.dart';
@@ -102,5 +106,36 @@ class TestFinder {
         })
         .map((entity) => entity.absolute.path)
         .toList();
+  }
+
+  /// Recursively searches the `integration_test` directory and returns files
+  /// matching the given tags.
+  List<String> findTestsForTags(List<String> tags) {
+    return findAllTests().where((test) => _matchesTags(test, tags)).toList();
+  }
+
+  bool _matchesTags(String path, List<String> tags) {
+    final parseResult = parseString(
+      content: File(path).readAsStringSync(),
+      throwIfDiagnostics: false,
+    );
+    final firstChild = parseResult.unit.root.childEntities.firstOrNull;
+
+    if (firstChild is ImportDirective) {
+      final tagAnnotation = firstChild.metadata.firstOrNull;
+      if (tagAnnotation != null && tagAnnotation.name.toString() == 'Tags') {
+        final argumentList = tagAnnotation.arguments?.arguments.firstOrNull;
+        if (argumentList is ListLiteral?) {
+          final isMatch = argumentList?.elements
+              .whereType<SimpleStringLiteral>()
+              .map((literal) => literal.value)
+              .any((element) => tags.contains(element));
+
+          return isMatch ?? false;
+        }
+      }
+    }
+
+    return false;
   }
 }

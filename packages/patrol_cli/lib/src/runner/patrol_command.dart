@@ -46,6 +46,14 @@ abstract class PatrolCommand extends Command<int> {
       );
   }
 
+  void usesTagsOption() {
+    argParser.addOption(
+      'tags',
+      help: 'A comma-separated list of tags to use for finding test targets.',
+      valueHelp: 'mobile,integration',
+    );
+  }
+
   /// A command that expects only one device but got more should throw.
   void usesDeviceOption() {
     argParser.addMultiOption(
