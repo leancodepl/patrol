@@ -220,7 +220,7 @@ class Automator private constructor() {
         delay()
     }
 
-    fun doubleTap(uiSelector: UiSelector, bySelector: BySelector, index: Int, timeout: Long? = null) {
+    fun doubleTap(uiSelector: UiSelector, bySelector: BySelector, index: Int, timeout: Long? = null, delayBetweenTaps: Long? = null) {
         Logger.d("doubleTap(): $uiSelector, $bySelector")
 
         val uiObject = uiDevice.findObject(uiSelector)
@@ -229,13 +229,24 @@ class Automator private constructor() {
             throw UiObjectNotFoundException("$uiSelector")
         }
 
-        Logger.d("Double clicking on UIObject with text: ${uiObject.text}")
-        uiObject.click()
+        Logger.d("Performing double tap on UIObject with text: ${uiObject.text}")
+
+        // Get the bounds of the UI element
+        val rect = uiObject.bounds
+        // Calculate the center point
+        val centerX = rect.centerX()
+        val centerY = rect.centerY()
+
+        // Perform double click at the center
         Logger.d("After first click")
-        delay(ms = 300)
-        uiObject.click()
+
+        uiDevice.click(centerX, centerY)
+
+        // Customizable Delay between taps
+        delay(ms = delayBetweenTaps ?: 300)
+
         Logger.d("After second click")
-        delay()
+        uiDevice.click(centerX, centerY)
     }
 
     fun tapAt(x: Float, y: Float) {

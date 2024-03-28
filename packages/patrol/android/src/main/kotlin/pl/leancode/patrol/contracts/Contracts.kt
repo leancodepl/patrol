@@ -498,7 +498,8 @@ class Contracts {
     val androidSelector: AndroidSelector? = null,
     val iosSelector: IOSSelector? = null,
     val appId: String,
-    val timeoutMillis: Long? = null
+    val timeoutMillis: Long? = null,
+    val delayBetweenTapsMillis: Long? = null
   ){
     fun hasSelector(): Boolean {
       return selector != null
@@ -511,6 +512,10 @@ class Contracts {
     }
     fun hasTimeoutMillis(): Boolean {
       return timeoutMillis != null
+    }
+
+    fun hasDelayBetweenTapsMillis(): Boolean {
+      return delayBetweenTapsMillis != null
     }
   }
 

@@ -172,14 +172,16 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
                 uiSelector = request.selector.toUiSelector(),
                 bySelector = request.selector.toBySelector(),
                 index = request.selector.instance?.toInt() ?: 0,
-                timeout = request.timeoutMillis
+                timeout = request.timeoutMillis,
+                delayBetweenTaps = request.delayBetweenTapsMillis
             )
         } else if (request.androidSelector != null) {
             automation.doubleTap(
                 uiSelector = request.androidSelector.toUiSelector(),
                 bySelector = request.androidSelector.toBySelector(),
                 index = request.androidSelector.instance?.toInt() ?: 0,
-                timeout = request.timeoutMillis
+                timeout = request.timeoutMillis,
+                delayBetweenTaps = request.delayBetweenTapsMillis
             )
         } else {
             throw PatrolException("doubleTap(): neither selector nor androidSelector are set")
