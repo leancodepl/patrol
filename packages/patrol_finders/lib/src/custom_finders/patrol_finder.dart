@@ -535,12 +535,12 @@ extension ActionCombiner on Future<PatrolFinder> {
   Future<void> tap({
     SettlePolicy? settlePolicy,
     Duration? visibleTimeout,
-    Duration? settleTimoeut,
+    Duration? settleTimeout,
   }) async {
     await (await this).tap(
       settlePolicy: settlePolicy,
       visibleTimeout: visibleTimeout,
-      settleTimeout: settleTimoeut,
+      settleTimeout: settleTimeout,
     );
   }
 
@@ -550,13 +550,13 @@ extension ActionCombiner on Future<PatrolFinder> {
     String text, {
     SettlePolicy? settlePolicy,
     Duration? visibleTimeout,
-    Duration? settleTimoeut,
+    Duration? settleTimeout,
   }) async {
     await (await this).enterText(
       text,
       settlePolicy: settlePolicy,
       visibleTimeout: visibleTimeout,
-      settleTimeout: settleTimoeut,
+      settleTimeout: settleTimeout,
     );
   }
 }
