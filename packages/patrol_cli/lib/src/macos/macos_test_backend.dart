@@ -91,12 +91,14 @@ class MacOSTestBackend {
       process.listenStdOut((l) => _logger.detail('\t$l')).disposedBy(scope);
       process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
       var exitCode = await process.exitCode;
+      final flutterCommand = options.flutter.command;
       if (exitCode != 0) {
-        final cause = '`flutter build macos` exited with code $exitCode';
+        final cause =
+            '`$flutterCommand build macos` exited with code $exitCode';
         task.fail('Failed to build $subject ($cause)');
         throwToolExit(cause);
       } else if (flutterBuildKilled) {
-        const cause = '`flutter build macos` was interrupted';
+        final cause = '`$flutterCommand build macos` was interrupted';
         task.fail('Failed to build $subject ($cause)');
         throwToolInterrupted(cause);
       }

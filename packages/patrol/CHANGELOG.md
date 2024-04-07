@@ -1,3 +1,22 @@
+## 3.6.1
+
+- Fix clearing textfield before entering text on iOS (#2158).
+
+## 3.6.0
+
+- Add clearing textfield before entering text on iOS (#2145).
+- Added the NativeAutomator2, which allows to interact with native using selectors designated for a specific platform (AndroidSelector and IOSSelector) (#2132).
+- Add support for --app-server-port and --test-server-port on Android (#2154).
+
+## 3.5.2
+
+- Fix reporting fail cause to native on ios in release mode (#2114).
+
+## 3.5.1
+
+- Make more `Selector` properties work on iOS (#2030).
+- Fix handling denying Android permissions when invoked second time (#2112).
+
 ## 3.5.0
 
 - Add optional timeout parameter to native methods (#2042).

@@ -15,9 +15,13 @@ import androidx.test.uiautomator.UiObject
 import androidx.test.uiautomator.UiObject2
 import androidx.test.uiautomator.UiObjectNotFoundException
 import androidx.test.uiautomator.UiSelector
+import pl.leancode.patrol.contracts.Contracts.AndroidNativeView
+import pl.leancode.patrol.contracts.Contracts.AndroidSelector
 import pl.leancode.patrol.contracts.Contracts.KeyboardBehavior
 import pl.leancode.patrol.contracts.Contracts.NativeView
 import pl.leancode.patrol.contracts.Contracts.Notification
+import pl.leancode.patrol.contracts.Contracts.Point2D
+import pl.leancode.patrol.contracts.Contracts.Rectangle
 import pl.leancode.patrol.contracts.Contracts.Selector
 import kotlin.math.roundToInt
 
@@ -32,6 +36,40 @@ private fun fromUiObject2(obj: UiObject2): NativeView {
         resourceName = obj.resourceName,
         applicationPackage = obj.applicationPackage,
         children = obj.children?.map { fromUiObject2(it) } ?: listOf()
+    )
+}
+
+private fun fromUiObject2V2(obj: UiObject2): AndroidNativeView {
+    val bounds = obj.visibleBounds
+    val center = obj.visibleCenter
+
+    return AndroidNativeView(
+        className = obj.className,
+        text = obj.text,
+        contentDescription = obj.contentDescription,
+        isFocused = obj.isFocused,
+        isEnabled = obj.isEnabled,
+        childCount = obj.childCount.toLong(),
+        resourceName = obj.resourceName,
+        applicationPackage = obj.applicationPackage,
+        isCheckable = obj.isCheckable,
+        isChecked = obj.isChecked,
+        isClickable = obj.isClickable,
+        isFocusable = obj.isFocusable,
+        isLongClickable = obj.isLongClickable,
+        isScrollable = obj.isScrollable,
+        isSelected = obj.isSelected,
+        visibleBounds = Rectangle(
+            minX = bounds.left.toDouble(),
+            minY = bounds.top.toDouble(),
+            maxX = bounds.right.toDouble(),
+            maxY = bounds.top.toDouble()
+        ),
+        visibleCenter = Point2D(
+            x = center.x.toDouble(),
+            y = center.y.toDouble()
+        ),
+        children = obj.children?.map { fromUiObject2V2(it) } ?: listOf()
     )
 }
 
@@ -150,10 +188,23 @@ class Automator private constructor() {
         return uiObjects2.map { fromUiObject2(it) }
     }
 
+    fun getNativeViewsV2(selector: BySelector): List<AndroidNativeView> {
+        Logger.d("getNativeViewsV2()")
+
+        val uiObjects2 = uiDevice.findObjects(selector)
+        return uiObjects2.map { fromUiObject2V2(it) }
+    }
+
     fun getNativeUITrees(): List<NativeView> {
         Logger.d("getNativeUITrees()")
 
         return getWindowTrees(uiDevice, uiAutomation)
+    }
+
+    fun getNativeUITreesV2(): List<AndroidNativeView> {
+        Logger.d("getNativeUITreesV2()")
+
+        return getWindowTreesV2(uiDevice, uiAutomation)
     }
 
     fun tap(uiSelector: UiSelector, bySelector: BySelector, index: Int, timeout: Long? = null) {
@@ -409,6 +460,27 @@ class Automator private constructor() {
         delay()
     }
 
+    fun tapOnNotificationV2(index: Int, timeout: Long? = null) {
+        Logger.d("tapOnNotificationV2($index)")
+
+        try {
+            val query = AndroidSelector(
+                resourceName = "android:id/status_bar_latest_event_content",
+                instance = index.toLong()
+            )
+            val selector = query.toBySelector()
+            if (waitForView(selector, index, timeout) == null) {
+                throw UiObjectNotFoundException("$selector")
+            }
+            val obj = uiDevice.findObject(query.toUiSelector())
+            obj.click()
+        } catch (err: UiObjectNotFoundException) {
+            throw UiObjectNotFoundException("notification at index $index")
+        }
+
+        delay()
+    }
+
     fun tapOnNotification(selector: UiSelector, bySelector: BySelector, timeout: Long? = null) {
         Logger.d("tapOnNotification()")
 
@@ -433,7 +505,8 @@ class Automator private constructor() {
             "com.android.permissioncontroller:id/permission_allow_one_time_button",
             // deny
             "com.android.packageinstaller:id/permission_deny_button",
-            "com.android.permissioncontroller:id/permission_deny_button"
+            "com.android.permissioncontroller:id/permission_deny_button",
+            "com.android.permissioncontroller:id/permission_deny_and_dont_ask_again_button"
         )
 
         val uiObject = waitForUiObjectByResourceId(*identifiers, timeout = timeout)
@@ -474,7 +547,8 @@ class Automator private constructor() {
     fun denyPermission() {
         val identifiers = arrayOf(
             "com.android.packageinstaller:id/permission_deny_button", // API <= 28
-            "com.android.permissioncontroller:id/permission_deny_button" // API >= 29
+            "com.android.permissioncontroller:id/permission_deny_button", // API >= 29 (first invocation)
+            "com.android.permissioncontroller:id/permission_deny_and_dont_ask_again_button" // API >= 29 (second invocation)
         )
 
         val uiObject = waitForUiObjectByResourceId(*identifiers, timeout = timeoutMillis)

@@ -57,7 +57,8 @@
     }
 
     func tap(
-      onText text: String, inApp bundleId: String, atIndex index: Int,
+      on selector: Selector,
+      inApp bundleId: String,
       withTimeout timeout: TimeInterval?
     ) throws {
       try runAction("tap") {
@@ -65,9 +66,31 @@
       }
     }
 
-    func doubleTap(onText text: String, inApp bundleId: String, withTimeout timeout: TimeInterval?)
-      throws
-    {
+    func tap(
+      on selector: IOSSelector,
+      inApp bundleId: String,
+      withTimeout timeout: TimeInterval?
+    ) throws {
+      try runAction("tap") {
+        throw PatrolError.methodNotImplemented("tap")
+      }
+    }
+
+    func doubleTap(
+      on selector: Selector,
+      inApp bundleId: String,
+      withTimeout timeout: TimeInterval?
+    ) throws {
+      try runAction("doubleTap") {
+        throw PatrolError.methodNotImplemented("doubleTap")
+      }
+    }
+
+    func doubleTap(
+      on selector: IOSSelector,
+      inApp bundleId: String,
+      withTimeout timeout: TimeInterval?
+    ) throws {
       try runAction("doubleTap") {
         throw PatrolError.methodNotImplemented("doubleTap")
       }
@@ -81,8 +104,19 @@
 
     func enterText(
       _ data: String,
-      byText text: String,
-      atIndex index: Int,
+      on selector: Selector,
+      inApp bundleId: String,
+      dismissKeyboard: Bool,
+      withTimeout timeout: TimeInterval?
+    ) throws {
+      try runAction("enterText") {
+        throw PatrolError.methodNotImplemented("enterText")
+      }
+    }
+
+    func enterText(
+      _ data: String,
+      on selector: IOSSelector,
       inApp bundleId: String,
       dismissKeyboard: Bool,
       withTimeout timeout: TimeInterval?
@@ -111,7 +145,19 @@
     }
 
     func waitUntilVisible(
-      onText text: String, inApp bundleId: String, withTimeout timeout: TimeInterval?
+      on selector: Selector,
+      inApp bundleId: String,
+      withTimeout timeout: TimeInterval?
+    ) throws {
+      try runAction("waitUntilVisible") {
+        throw PatrolError.methodNotImplemented("waitUntilVisible")
+      }
+    }
+
+    func waitUntilVisible(
+      on selector: IOSSelector,
+      inApp bundleId: String,
+      withTimeout timeout: TimeInterval?
     ) throws {
       try runAction("waitUntilVisible") {
         throw PatrolError.methodNotImplemented("waitUntilVisible")
@@ -178,7 +224,14 @@
       }
     }
 
-    func getNativeViews(byText text: String, inApp bundleId: String) throws -> [NativeView] {
+    func getNativeViews(on selector: Selector, inApp bundleId: String) throws -> [NativeView] {
+      try runAction("getNativeViews") {
+        throw PatrolError.methodNotImplemented("getNativeViews")
+      }
+    }
+
+    func getNativeViews(on selector: IOSSelector, inApp bundleId: String) throws -> [IOSNativeView]
+    {
       try runAction("getNativeViews") {
         throw PatrolError.methodNotImplemented("getNativeViews")
       }
@@ -187,6 +240,12 @@
     func getUITreeRoots(installedApps: [String]) throws -> [NativeView] {
       try runAction("getUITreeRoots") {
         throw PatrolError.methodNotImplemented("getUITreeRoots")
+      }
+    }
+
+    func getUITreeRootsV2(installedApps: [String]) throws -> GetNativeUITreeRespone {
+      try runAction("getUITreeRootsV2") {
+        throw PatrolError.methodNotImplemented("getUITreeRootsV2")
       }
     }
 

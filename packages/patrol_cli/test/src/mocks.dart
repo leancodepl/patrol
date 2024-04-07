@@ -39,6 +39,7 @@ class MockAnalytics extends Mock implements Analytics {
 
   @override
   Future<bool> sendCommand(
+    FlutterVersion flutterVersion,
     String name, {
     Map<String, Object?> eventData = const {},
   }) async {
