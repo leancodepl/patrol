@@ -697,7 +697,7 @@
             timeout: self.timeout
           )
         else {
-          throw PatrolError.viewNotExists("button to allow permission only once")
+          throw PatrolError.viewNotExists("button to allow permission while using app")
         }
 
         button.tap()
