@@ -232,12 +232,16 @@ class MacOSAppOptions {
     this.bundleId,
     required this.scheme,
     required this.configuration,
+    required this.appServerPort,
+    required this.testServerPort,
   });
 
   final FlutterAppOptions flutter;
   final String? bundleId;
   final String scheme;
   final String configuration;
+  final int appServerPort;
+  final int testServerPort;
 
   String get description {
     return 'app with entrypoint ${basename(flutter.target)} for macos';
