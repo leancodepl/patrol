@@ -1,3 +1,10 @@
+## 3.7.0-dev.1
+
+- Update UI Automator version to 2.3.0.
+- Implement native scrollTo method for Android. 
+
+To use this version of Patrol, your project have to set targetSdkVersion to at least 34.
+
 ## 3.6.1
 
 - Fix clearing textfield before entering text on iOS (#2158).
