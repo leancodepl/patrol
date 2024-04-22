@@ -611,6 +611,8 @@ class NativeAutomator2 {
     );
   }
 
+  /// Scrolls to the native view specified by [selector].
+  /// Works only on Android.
   Future<void> scrollTo(
     NativeSelector selector, {
     String? appId,
