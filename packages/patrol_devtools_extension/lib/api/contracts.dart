@@ -429,6 +429,7 @@ class AndroidSelector with EquatableMixin {
 @JsonSerializable()
 class IOSSelector with EquatableMixin {
   IOSSelector({
+    this.value,
     this.instance,
     this.elementType,
     this.identifier,
@@ -449,6 +450,7 @@ class IOSSelector with EquatableMixin {
   factory IOSSelector.fromJson(Map<String, dynamic> json) =>
       _$IOSSelectorFromJson(json);
 
+  final String? value;
   final int? instance;
   final IOSElementType? elementType;
   final String? identifier;
@@ -469,6 +471,7 @@ class IOSSelector with EquatableMixin {
 
   @override
   List<Object?> get props => [
+        value,
         instance,
         elementType,
         identifier,
@@ -859,6 +862,7 @@ class TapRequest with EquatableMixin {
     this.iosSelector,
     required this.appId,
     this.timeoutMillis,
+    this.delayBetweenTapsMillis,
   });
 
   factory TapRequest.fromJson(Map<String, dynamic> json) =>
@@ -869,6 +873,7 @@ class TapRequest with EquatableMixin {
   final IOSSelector? iosSelector;
   final String appId;
   final int? timeoutMillis;
+  final int? delayBetweenTapsMillis;
 
   Map<String, dynamic> toJson() => _$TapRequestToJson(this);
 
@@ -879,6 +884,7 @@ class TapRequest with EquatableMixin {
         iosSelector,
         appId,
         timeoutMillis,
+        delayBetweenTapsMillis,
       ];
 }
 

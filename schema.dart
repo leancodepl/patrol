@@ -196,6 +196,7 @@ class TapRequest {
   IOSSelector? iosSelector;
   late String appId;
   int? timeoutMillis;
+  int? delayBetweenTapsMillis;
 }
 
 class TapAtRequest {

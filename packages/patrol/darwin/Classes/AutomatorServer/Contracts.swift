@@ -294,6 +294,7 @@ public struct TapRequest: Codable {
   public var iosSelector: IOSSelector?
   public var appId: String
   public var timeoutMillis: Int?
+  public var delayBetweenTapsMillis: Int?
 }
 
 public struct TapAtRequest: Codable {

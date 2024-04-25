@@ -513,7 +513,6 @@ class Contracts {
     fun hasTimeoutMillis(): Boolean {
       return timeoutMillis != null
     }
-
     fun hasDelayBetweenTapsMillis(): Boolean {
       return delayBetweenTapsMillis != null
     }

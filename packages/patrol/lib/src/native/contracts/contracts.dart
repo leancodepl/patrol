@@ -429,6 +429,7 @@ class AndroidSelector with EquatableMixin {
 @JsonSerializable()
 class IOSSelector with EquatableMixin {
   IOSSelector({
+    this.value,
     this.instance,
     this.elementType,
     this.identifier,
@@ -449,6 +450,7 @@ class IOSSelector with EquatableMixin {
   factory IOSSelector.fromJson(Map<String, dynamic> json) =>
       _$IOSSelectorFromJson(json);
 
+  final String? value;
   final int? instance;
   final IOSElementType? elementType;
   final String? identifier;
@@ -469,6 +471,7 @@ class IOSSelector with EquatableMixin {
 
   @override
   List<Object?> get props => [
+        value,
         instance,
         elementType,
         identifier,
