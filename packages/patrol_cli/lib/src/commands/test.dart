@@ -208,6 +208,8 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       flutter: flutterOpts,
       scheme: buildMode.createScheme(macosFlavor),
       configuration: buildMode.createConfiguration(macosFlavor),
+      appServerPort: super.appServerPort,
+      testServerPort: super.testServerPort,
     );
 
     await _build(androidOpts, iosOpts, macosOpts, device);

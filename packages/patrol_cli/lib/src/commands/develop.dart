@@ -217,6 +217,8 @@ class DevelopCommand extends PatrolCommand {
       flutter: flutterOpts,
       scheme: buildMode.createScheme(iosFlavor),
       configuration: buildMode.createConfiguration(iosFlavor),
+      appServerPort: super.appServerPort,
+      testServerPort: super.testServerPort,
     );
 
     await _build(androidOpts, iosOpts, macosOpts, device);
