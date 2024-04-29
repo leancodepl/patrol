@@ -425,6 +425,15 @@ class NativeAutomator2 {
   /// [timeout] is not specified, it utilizes the
   /// [NativeAutomatorConfig.findTimeout] duration from the configuration.
   /// If the native view is not found, an exception is thrown.
+  ///
+  /// The [delayBetweenTapsMillis] parameter allows you to specify the duration
+  /// between consecutive taps in milliseconds. This can be useful in scenarios
+  /// where the target view requires a certain delay between taps to register
+  /// the action correctly, such as in cases of UI responsiveness or animations.
+  /// The default delay between taps is 300 milliseconds.
+  ///
+  /// Note: The [delayBetweenTapsMillis] parameter is currently respected only
+  /// for Android.
   Future<void> doubleTap(
     NativeSelector selector, {
     String? appId,
