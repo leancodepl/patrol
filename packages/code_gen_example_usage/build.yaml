@@ -1,0 +1,12 @@
+targets:
+  $default:
+    builders:
+      code_generator|keyBuilder:
+        enabled: true
+        generate_for:
+          - lib/features/login/*
+      code_generator|objectModelBuilder:
+        enabled: true
+        options:
+          build_extensions:
+            'lib/{{}}.dart': 'integration_test/models/{{}}.om.dart'

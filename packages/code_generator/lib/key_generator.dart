@@ -4,7 +4,7 @@ import 'package:source_gen/source_gen.dart';
 
 import '../annotations.dart';
 
-class KeyGenerator extends GeneratorForAnnotation<GenerateKeys> {
+class KeyGenerator extends GeneratorForAnnotation<GeneratePomAndKeys> {
   @override
   generateForAnnotatedElement(
     Element element,
@@ -12,17 +12,21 @@ class KeyGenerator extends GeneratorForAnnotation<GenerateKeys> {
     BuildStep buildStep,
   ) {
     if (element is ClassElement) {
-      final className = element.name.replaceAll(RegExp('Object'), '');
+      final List<String?> keys = annotation
+          .read('keys')
+          .listValue
+          .map((e) => e.toStringValue())
+          .toList();
+      final className = element.name;
       final buffer = StringBuffer();
       buffer
-        ..writeln('part of \'${element.source.uri}\';')
+        //..writeln("import 'package:flutter/widgets.dart';")
         ..writeln()
         ..writeln('class ${className}Keys {');
 
-      for (final field in element.fields) {
-        final fieldName = field.name;
+      for (final key in keys) {
         buffer.writeln(
-          "  static const $fieldName = Key('${className}_$fieldName');",
+          "  static const $key = Key('${className}_$key');",
         );
       }
 

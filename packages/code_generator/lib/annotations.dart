@@ -1,7 +1,5 @@
-final class GenerateKeys {
-  const GenerateKeys();
-}
+final class GeneratePomAndKeys {
+  const GeneratePomAndKeys(this.keys);
 
-final class GenerateObjectModel {
-  const GenerateObjectModel();
+  final List<String> keys;
 }

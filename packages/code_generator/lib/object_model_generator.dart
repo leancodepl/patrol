@@ -5,7 +5,7 @@ import 'package:path/path.dart' as p;
 
 import '../annotations.dart';
 
-class ObjectModelGenerator extends GeneratorForAnnotation<GenerateObjectModel> {
+class ObjectModelGenerator extends GeneratorForAnnotation<GeneratePomAndKeys> {
   @override
   generateForAnnotatedElement(
     Element element,
@@ -14,14 +14,13 @@ class ObjectModelGenerator extends GeneratorForAnnotation<GenerateObjectModel> {
   ) {
     if (element is ClassElement) {
       final className = element.name;
-      final objectName = element.name.replaceAll(RegExp('Object'), '');
       final packageName = buildStep.inputId.package;
       final pagePath = buildStep.inputId.path
           .replaceAll(RegExp('_object'), '')
           .replaceAll(RegExp('lib'), '');
 
       String currentFilePath = buildStep.inputId.path;
-      String targetFilePath = 'base_object_model.dart';
+      String targetFilePath = 'base_om.dart';
       String relativePath =
           p.relative(targetFilePath, from: p.dirname(currentFilePath));
 
@@ -30,7 +29,7 @@ class ObjectModelGenerator extends GeneratorForAnnotation<GenerateObjectModel> {
         ..writeln()
         ..writeln("import '$relativePath';")
         ..writeln(
-          'final class ${className}Model extends BaseObjectModel<$objectName> {',
+          'final class ${className}Model extends BaseObjectModel<$className> {',
         )
         ..writeln('  ${className}Model(super.\$);')
         ..writeln('}');

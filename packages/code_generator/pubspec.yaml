@@ -8,12 +8,13 @@ environment:
   flutter: ">=1.17.0"
 
 dependencies:
-  analyzer: ^6.2.0
+  analyzer: ^5.4.0
   flutter:
     sdk: flutter
   build: ^2.4.1
   path: ^1.8.3
   source_gen: ^1.4.0
+  merging_builder: ^0.2.5
 
 dev_dependencies:
   build_runner: ^2.4.6
