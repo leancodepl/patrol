@@ -1,3 +1,7 @@
+## 3.7.0-dev.2
+
+- Bump `test_api` dependency to 0.7.0.
+
 ## 3.6.1
 
 - Fix clearing textfield before entering text on iOS (#2158).
