@@ -1,3 +1,7 @@
+## 2.0.3-dev.1
+
+- Adjust `pumpWidget` to new `flutter_test` API.
+
 ## 2.0.2
 
 - Add registering text input. (#2111)

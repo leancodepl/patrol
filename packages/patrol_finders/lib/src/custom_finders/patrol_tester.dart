@@ -145,7 +145,7 @@ class PatrolTester {
     Duration? duration,
     EnginePhase phase = EnginePhase.sendSemanticsUpdate,
   ]) async {
-    await tester.pumpWidget(widget, duration, phase);
+    await tester.pumpWidget(widget, duration: duration, phase: phase);
   }
 
   /// See [WidgetTester.pump].
@@ -205,7 +205,7 @@ class PatrolTester {
     EnginePhase phase = EnginePhase.sendSemanticsUpdate,
     Duration? timeout,
   }) async {
-    await tester.pumpWidget(widget, duration, phase);
+    await tester.pumpWidget(widget, duration: duration, phase: phase);
     await _performPump(
       settlePolicy: SettlePolicy.settle,
       settleTimeout: timeout,
