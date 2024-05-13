@@ -1,4 +1,4 @@
-## 2.0.3
+## 2.0.3-dev.1
 
 - Adjust `pumpWidget` to new `flutter_test` API. 
 - Support customization of doubleTap delay (Android only). (#2165)
