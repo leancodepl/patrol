@@ -1,6 +1,7 @@
 ## 3.7.0-dev.2
 
 - Bump `test_api` dependency to 0.7.0.
+- Bump `patrol_devtools_extension` dependencies. 
 
 ## 3.6.1
 
