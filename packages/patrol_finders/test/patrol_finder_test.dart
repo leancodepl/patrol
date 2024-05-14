@@ -904,7 +904,7 @@ void main() {
                     ElevatedButton(
                       onPressed: () => setState(() => count += 10),
                       style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all(Colors.red),
+                        backgroundColor: WidgetStateProperty.all(Colors.red),
                       ),
                       child: const Text('Enabled button with color'),
                     ),

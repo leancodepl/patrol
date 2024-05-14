@@ -321,7 +321,7 @@ class _Node extends HookWidget {
                                       .style
                                       .copyWith(
                                         fontSize: iconSize * 0.7,
-                                        color: props.colorScheme.background,
+                                        color: props.colorScheme.surface,
                                       ),
                                 ),
                               ),
