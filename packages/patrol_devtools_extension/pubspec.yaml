@@ -21,10 +21,10 @@ dependencies:
   vm_service: ^14.2.1
 
 dev_dependencies:
-  custom_lint: ^0.5.7
+  custom_lint: ^0.6.4
   flutter_test:
     sdk: flutter
-  leancode_lint: ^7.0.0+1
+  leancode_lint: ^12.1.0
 
 flutter:
   uses-material-design: true

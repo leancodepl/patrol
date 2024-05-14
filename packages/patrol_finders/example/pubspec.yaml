@@ -15,7 +15,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  leancode_lint: ^7.0.0+1
+  leancode_lint: ^12.1.0
   patrol_finders:
     path: ../
 
