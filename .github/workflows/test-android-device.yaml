@@ -19,7 +19,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ['3.16.x']
+        flutter-version: ['3.22.x']
         flutter-channel: ['stable']
         os: ['Android API']
         include:
