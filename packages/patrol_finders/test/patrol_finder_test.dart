@@ -1,3 +1,4 @@
+// ignore_for_file: avoid_single_child_in_multi_child_widgets
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol_finders/src/custom_finders/custom_finders.dart';
