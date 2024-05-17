@@ -231,3 +231,21 @@ problem](https://github.com/flutter/flutter/issues/88762).
 [listview]: https://api.flutter.dev/flutter/widgets/ListView-class.html
 [scrollable]: https://api.flutter.dev/flutter/widgets/Scrollable-class.html
 [pumpAndSettle()]: https://api.flutter.dev/flutter/flutter_test/WidgetTester/pumpAndSettle.html
+
+### `scrollUntilVisible()` example
+
+The `//` text in the example code, makes concrete an alternative possible syntax
+ for those who benefit from concrete examples.
+```
+final targetText = 'text-to-search-for';
+await $
+    .scrollUntilVisible(
+      finder: find.textContaining(targetText, skipOffstage: true),
+      // view: $(const Key('someKey')).$(
+      view: $(#someKey).$(
+        Scrollable,
+      ),
+      maxScrolls: 10,
+    )
+    .tap();
+```
