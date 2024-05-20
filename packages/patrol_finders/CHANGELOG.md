@@ -1,4 +1,4 @@
-## 2.0.3
+## 2.1.0
 
 - Adjust `pumpWidget` to new `flutter_test` API. 
 
