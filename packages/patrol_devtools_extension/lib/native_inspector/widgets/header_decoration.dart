@@ -9,7 +9,7 @@ class HeaderDecoration extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: defaultHeaderHeight(isDense: _isDense()),
+      height: defaultHeaderHeight,
       decoration: BoxDecoration(
         border: Border(
           bottom: defaultBorderSide(Theme.of(context)),
@@ -17,9 +17,5 @@ class HeaderDecoration extends StatelessWidget {
       ),
       child: child,
     );
-  }
-
-  bool _isDense() {
-    return ideTheme.embed;
   }
 }

@@ -1,3 +1,9 @@
+## 3.7.0
+
+- Bump `test_api` dependency to 0.7.0.
+- Bump `patrol_devtools_extension` dependencies. 
+- Support customization of doubleTap delay (Android only). (#2165)
+
 ## 3.6.1
 
 - Fix clearing textfield before entering text on iOS (#2158).

@@ -82,7 +82,7 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
           SizedBox(height: 8),
           Container(
             key: const Key('box1'),
-            color: Theme.of(context).colorScheme.background,
+            color: Theme.of(context).colorScheme.surface,
             padding: const EdgeInsets.all(8),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -112,7 +112,7 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
           const SizedBox(height: 16),
           Container(
             key: const Key('box2'),
-            color: Theme.of(context).colorScheme.background,
+            color: Theme.of(context).colorScheme.surface,
             padding: const EdgeInsets.all(8),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
