@@ -137,8 +137,11 @@ void patrolTest(
       final waitSeconds = const int.fromEnvironment('PATROL_WAIT');
       final waitDuration = Duration(seconds: waitSeconds);
 
-      debugDefaultTargetPlatformOverride =
-          patrolBinding.workaroundDebugDefaultTargetPlatformOverride;
+      if (debugDefaultTargetPlatformOverride !=
+          patrolBinding.workaroundDebugDefaultTargetPlatformOverride) {
+        debugDefaultTargetPlatformOverride =
+            patrolBinding.workaroundDebugDefaultTargetPlatformOverride;
+      }
 
       if (waitDuration > Duration.zero) {
         final stopwatch = Stopwatch()..start();
