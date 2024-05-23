@@ -1,3 +1,8 @@
+## 3.7.1
+
+- Revert: Bump `patrol_devtools_extension` dependencies.
+- Revert: Bump `test_api` dependency to 0.7.0.
+
 ## 3.7.0
 
 - Bump `test_api` dependency to 0.7.0.

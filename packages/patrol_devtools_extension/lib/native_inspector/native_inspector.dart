@@ -24,8 +24,8 @@ class NativeInspector extends HookWidget {
     final fullNodeNames = useState(false);
     final nativeDetails = useState(false);
 
-    final splitAxis = SplitPane.axisFor(context, 0.85);
-    final child = SplitPane(
+    final splitAxis = Split.axisFor(context, 0.85);
+    final child = Split(
       axis: splitAxis,
       initialFractions: const [0.6, 0.4],
       children: [

@@ -43,22 +43,22 @@ class PTElevatedButton extends StatelessWidget {
     );
   }
 
-  WidgetStateProperty<EdgeInsetsGeometry?>? get _padding =>
-      const WidgetStatePropertyAll(EdgeInsets.symmetric(vertical: 12));
+  MaterialStateProperty<EdgeInsetsGeometry?>? get _padding =>
+      const MaterialStatePropertyAll(EdgeInsets.symmetric(vertical: 12));
 
-  WidgetStateProperty<OutlinedBorder?>? get _shape =>
-      const WidgetStatePropertyAll(
+  MaterialStateProperty<OutlinedBorder?>? get _shape =>
+      const MaterialStatePropertyAll(
         RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(8)),
         ),
       );
 
-  WidgetStateProperty<Color?>? get _backgroundColor =>
-      WidgetStateProperty.resolveWith(
+  MaterialStateProperty<Color?>? get _backgroundColor =>
+      MaterialStateProperty.resolveWith(
         (states) {
-          if (states.contains(WidgetState.pressed)) {
+          if (states.contains(MaterialState.pressed)) {
             return PTColors.lcYellowPressed;
-          } else if (states.contains(WidgetState.disabled)) {
+          } else if (states.contains(MaterialState.disabled)) {
             return PTColors.backgroundDisabled;
           }
 
@@ -66,13 +66,13 @@ class PTElevatedButton extends StatelessWidget {
         },
       );
 
-  WidgetStateProperty<TextStyle?>? get _textStyle =>
-      WidgetStateProperty.resolveWith(
+  MaterialStateProperty<TextStyle?>? get _textStyle =>
+      MaterialStateProperty.resolveWith(
         (states) {
-          if (states.contains(WidgetState.pressed)) {
+          if (states.contains(MaterialState.pressed)) {
             return PTTextStyles.bodyMedium
                 .copyWith(foreground: Paint()..color = PTColors.textDark);
-          } else if (states.contains(WidgetState.disabled)) {
+          } else if (states.contains(MaterialState.disabled)) {
             return PTTextStyles.bodyMedium
                 .copyWith(foreground: Paint()..color = PTColors.textDisabled);
           }
