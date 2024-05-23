@@ -1,3 +1,15 @@
+## 3.7.2
+
+- Bump `test_api` dependency to 0.7.0.
+- Bump `patrol_devtools_extension` dependencies.
+- Bump min Flutter SDK to 3.22
+
+
+## 3.7.1
+
+- Revert: Bump `patrol_devtools_extension` dependencies.
+- Revert: Bump `test_api` dependency to 0.7.0.
+
 ## 3.7.0
 
 - Bump `test_api` dependency to 0.7.0.
