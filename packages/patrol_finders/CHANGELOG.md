@@ -1,3 +1,7 @@
+## 2.1.1
+
+- Revert: Adjust `pumpWidget` to new `flutter_test` API. 
+
 ## 2.1.0
 
 - Adjust `pumpWidget` to new `flutter_test` API. 
