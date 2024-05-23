@@ -1,3 +1,8 @@
+## 2.1.2
+
+- Adjust `pumpWidget` to new `flutter_test` API. 
+- Bump min Flutter SDK to 3.22
+
 ## 2.1.1
 
 - Revert: Adjust `pumpWidget` to new `flutter_test` API. 
