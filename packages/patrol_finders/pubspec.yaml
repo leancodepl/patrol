@@ -1,6 +1,6 @@
 name: patrol_finders
 description: Streamlined, high-level API on top of flutter_test.
-version: 2.0.2
+version: 2.1.2
 homepage: https://patrol.leancode.co
 repository: https://github.com/leancodepl/patrol/tree/master/packages/patrol_finders
 issue_tracker: https://github.com/leancodepl/patrol/issues?q=is%3Aopen+is%3Aissue+label%3Apackage%3Apatrol_finders
@@ -12,7 +12,7 @@ screenshots:
 
 environment:
   sdk: '>=3.2.0 <4.0.0'
-  flutter: '>=3.16.0'
+  flutter: '>=3.22.0'
 
 dependencies:
   flutter:
@@ -22,4 +22,4 @@ dependencies:
   meta: ^1.10.0
 
 dev_dependencies:
-  leancode_lint: ^7.0.0+1
+  leancode_lint: ^12.1.0

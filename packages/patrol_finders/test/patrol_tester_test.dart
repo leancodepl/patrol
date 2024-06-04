@@ -1,3 +1,4 @@
+// ignore_for_file: avoid_single_child_in_multi_child_widgets
 import 'dart:async';
 
 import 'package:flutter/material.dart';

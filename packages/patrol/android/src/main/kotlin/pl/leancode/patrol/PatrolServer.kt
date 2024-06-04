@@ -1,7 +1,6 @@
 package pl.leancode.patrol
 
 import android.os.ConditionVariable
-import androidx.test.platform.app.InstrumentationRegistry
 import org.http4k.core.ContentType
 import org.http4k.filter.ServerFilters
 import org.http4k.server.Http4kServer
@@ -11,24 +10,21 @@ import org.http4k.server.asServer
 class PatrolServer {
     private val defaultPort = 8081
 
-    private val envPortKey = "PATROL_PORT"
     private var server: Http4kServer? = null
     private var automatorServer: AutomatorServer? = null
 
     val port: Int
         get() {
-            val portStr = arguments.getString(envPortKey)
+            val portStr = BuildConfig.PATROL_TEST_PORT
             if (portStr == null) {
-                Logger.i("$envPortKey is null, falling back to default ($defaultPort)")
+                Logger.i("PATROL_TEST_PORT is null, falling back to default ($defaultPort)")
                 return defaultPort
             }
             return portStr.toIntOrNull() ?: run {
-                Logger.i("$envPortKey is not a valid integer, falling back to default ($defaultPort)")
+                Logger.i("PATROL_TEST_PORT is not a valid integer, falling back to default ($defaultPort)")
                 defaultPort
             }
         }
-
-    private val arguments get() = InstrumentationRegistry.getArguments()
 
     fun start() {
         Logger.i("Starting server...")

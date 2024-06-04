@@ -13,7 +13,7 @@ void main() {
       // given
       final topLevelGroup = Group.root([
         LocalTest('patrol_test_explorer', Metadata.empty, () {}),
-        LocalTest('some_test', Metadata.empty, () => null),
+        LocalTest('some_test', Metadata.empty, () {}),
         Group('example_test', [
           LocalTest('example_test some example test', Metadata.empty, () {}),
         ]),

@@ -1,3 +1,31 @@
+## 3.7.2
+
+- Bump `test_api` dependency to 0.7.0.
+- Bump `patrol_devtools_extension` dependencies.
+- Bump min Flutter SDK to 3.22
+
+
+## 3.7.1
+
+- Revert: Bump `patrol_devtools_extension` dependencies.
+- Revert: Bump `test_api` dependency to 0.7.0.
+
+## 3.7.0
+
+- Bump `test_api` dependency to 0.7.0.
+- Bump `patrol_devtools_extension` dependencies. 
+- Support customization of doubleTap delay (Android only). (#2165)
+
+## 3.6.1
+
+- Fix clearing textfield before entering text on iOS (#2158).
+
+## 3.6.0
+
+- Add clearing textfield before entering text on iOS (#2145).
+- Added the NativeAutomator2, which allows to interact with native using selectors designated for a specific platform (AndroidSelector and IOSSelector) (#2132).
+- Add support for --app-server-port and --test-server-port on Android (#2154).
+
 ## 3.5.2
 
 - Fix reporting fail cause to native on ios in release mode (#2114).

@@ -119,6 +119,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
 
     final macosTestBackend = MacOSTestBackend(
       processManager: _processManager,
+      platform: _platform,
       fs: _fs,
       parentDisposeScope: _disposeScope,
       logger: _logger,
@@ -220,6 +221,12 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
     );
 
     argParser
+      ..addOption(
+        'flutter-command',
+        help:
+            'Command to use to run the Flutter CLI. Alternatively set the PATROL_FLUTTER_COMMAND environment variable.',
+        valueHelp: 'fvm flutter',
+      )
       ..addFlag(
         'verbose',
         abbr: 'v',

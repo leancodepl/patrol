@@ -80,8 +80,57 @@
       }
     }
 
+    func tap(
+      on selector: IOSSelector,
+      inApp bundleId: String,
+      withTimeout timeout: TimeInterval?
+    ) throws {
+      var view = createLogMessage(element: "view", from: selector)
+      view += " in app \(bundleId)"
+
+      try runAction("tapping on \(view)") {
+        let app = try self.getApp(withBundleId: bundleId)
+
+        let query = app.descendants(matching: .any).matching(selector.toNSPredicate())
+
+        Logger.shared.i("waiting for existence of \(view)")
+        guard
+          let element = self.waitFor(
+            query: query, index: selector.instance ?? 0, timeout: timeout ?? self.timeout)
+        else {
+          throw PatrolError.viewNotExists(view)
+        }
+
+        element.forceTap()
+      }
+    }
+
     func doubleTap(
       on selector: Selector,
+      inApp bundleId: String,
+      withTimeout timeout: TimeInterval?
+    ) throws {
+      var view = createLogMessage(element: "view", from: selector)
+      view += " in app \(bundleId)"
+
+      try runAction("double tapping on \(view)") {
+        let app = try self.getApp(withBundleId: bundleId)
+        let query = app.descendants(matching: .any).matching(selector.toNSPredicate())
+
+        Logger.shared.i("waiting for existence of \(view)")
+        guard
+          let element = self.waitFor(
+            query: query, index: selector.instance ?? 0, timeout: timeout ?? self.timeout)
+        else {
+          throw PatrolError.viewNotExists(view)
+        }
+
+        element.forceTap()
+      }
+    }
+
+    func doubleTap(
+      on selector: IOSSelector,
       inApp bundleId: String,
       withTimeout timeout: TimeInterval?
     ) throws {
@@ -160,8 +209,43 @@
           throw PatrolError.viewNotExists(view)
         }
 
-        element.forceTap()
-        element.typeText(data)
+        self.clearAndEnterText(data: data, element: element)
+      }
+
+      // Prevent keyboard dismissal from happening too fast
+      sleepTask(timeInSeconds: 1)
+    }
+
+    func enterText(
+      _ data: String,
+      on selector: IOSSelector,
+      inApp bundleId: String,
+      dismissKeyboard: Bool,
+      withTimeout timeout: TimeInterval?
+    ) throws {
+      var data = data
+      if dismissKeyboard {
+        data = "\(data)\n"
+      }
+
+      var view = createLogMessage(element: "text field", from: selector)
+      view += " in app \(bundleId)"
+
+      try runAction("entering text \(format: data) into \(view)") {
+        let app = try self.getApp(withBundleId: bundleId)
+
+        let query = app.descendants(matching: .any).matching(selector.toNSPredicate())
+        guard
+          let element = self.waitFor(
+            query: query,
+            index: selector.instance ?? 0,
+            timeout: timeout ?? self.timeout
+          )
+        else {
+          throw PatrolError.viewNotExists(view)
+        }
+
+        self.clearAndEnterText(data: data, element: element)
       }
 
       // Prevent keyboard dismissal from happening too fast
@@ -204,8 +288,7 @@
           throw PatrolError.viewNotExists("text field at index \(index) in app \(bundleId)")
         }
 
-        element.forceTap()
-        element.typeText(data)
+        self.clearAndEnterText(data: data, element: element)
       }
 
       // Prevent keyboard dismissal from happening too fast
@@ -225,6 +308,26 @@
 
     func waitUntilVisible(
       on selector: Selector,
+      inApp bundleId: String,
+      withTimeout timeout: TimeInterval?
+    ) throws {
+      let view = createLogMessage(element: "view", from: selector)
+      try runAction(
+        "waiting until \(view) in app \(bundleId) becomes visible"
+      ) {
+        let app = try self.getApp(withBundleId: bundleId)
+        let query = app.descendants(matching: .any).containing(selector.toNSPredicate())
+        guard
+          let element = self.waitFor(
+            query: query, index: selector.instance ?? 0, timeout: timeout ?? self.timeout)
+        else {
+          throw PatrolError.viewNotExists(view)
+        }
+      }
+    }
+
+    func waitUntilVisible(
+      on selector: IOSSelector,
       inApp bundleId: String,
       withTimeout timeout: TimeInterval?
     ) throws {
@@ -423,11 +526,39 @@
       }
     }
 
+    func getNativeViews(
+      on selector: IOSSelector,
+      inApp bundleId: String
+    ) throws -> [IOSNativeView] {
+      let view = createLogMessage(element: "views", from: selector)
+      return try runAction("getting native \(view)") {
+        let app = try self.getApp(withBundleId: bundleId)
+
+        let query = app.descendants(matching: .any).matching(selector.toNSPredicate())
+        let elements = query.allElementsBoundByIndex
+
+        let views = elements.map { xcuielement in
+          return IOSNativeView.fromXCUIElement(xcuielement, bundleId)
+        }
+
+        return views
+      }
+    }
+
     func getUITreeRoots(installedApps: [String]) throws -> [NativeView] {
       try runAction("getting ui tree roots") {
         let foregroundApp = self.getForegroundApp(installedApps: installedApps)
         let snapshot = try foregroundApp.snapshot()
         return [NativeView.fromXCUIElementSnapshot(snapshot, foregroundApp.identifier)]
+      }
+    }
+
+    func getUITreeRootsV2(installedApps: [String]) throws -> GetNativeUITreeRespone {
+      try runAction("getting ui tree roots") {
+        let foregroundApp = self.getForegroundApp(installedApps: installedApps)
+        let snapshot = try foregroundApp.snapshot()
+        let root = IOSNativeView.fromXCUIElementSnapshot(snapshot, foregroundApp.identifier)
+        return GetNativeUITreeRespone(iOSroots: [root], androidRoots: [], roots: [])
       }
     }
 
@@ -568,7 +699,7 @@
             timeout: self.timeout
           )
         else {
-          throw PatrolError.viewNotExists("button to allow permission only once")
+          throw PatrolError.viewNotExists("button to allow permission while using app")
         }
 
         button.tap()
@@ -673,6 +804,20 @@
     }
 
     // MARK: Private stuff
+    private func clearAndEnterText(data: String, element: XCUIElement) {
+      let currentValue = element.value as? String
+      var delete: String = ""
+      if let value = currentValue {
+        delete = String(repeating: XCUIKeyboardKey.delete.rawValue, count: value.count)
+      }
+
+      // We need to tap at the end of the field to ensure the cursor is at the end
+      let coordinate = element.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.9))
+      coordinate.tap()
+
+      element.typeText(delete + data)
+    }
+
     private func isSimulator() -> Bool {
       #if targetEnvironment(simulator)
         return true
@@ -866,6 +1011,58 @@
 
       return logMessage
     }
+
+    func createLogMessage(element: String, from selector: IOSSelector) -> String {
+      var logMessage = element
+
+      if let instance = selector.instance {
+        logMessage += " with instance '\(instance)'"
+      }
+      if let elementType = selector.elementType {
+        logMessage += " with elementType '\(elementType)'"
+      }
+      if let identifier = selector.identifier {
+        logMessage += " with identifier '\(identifier)'"
+      }
+      if let label = selector.label {
+        logMessage += " with label '\(label)'"
+      }
+      if let labelStartsWith = selector.labelStartsWith {
+        logMessage += " with labelStartsWith '\(labelStartsWith)'"
+      }
+      if let labelContains = selector.labelContains {
+        logMessage += " with labelContains '\(labelContains)'"
+      }
+      if let title = selector.title {
+        logMessage += " with title '\(title)'"
+      }
+      if let titleStartsWith = selector.titleStartsWith {
+        logMessage += " with titleStartsWith '\(titleStartsWith)'"
+      }
+      if let titleContains = selector.titleContains {
+        logMessage += " with titleContains '\(titleContains)'"
+      }
+      if let hasFocus = selector.hasFocus {
+        logMessage += " with hasFocus '\(hasFocus)'"
+      }
+      if let isEnabled = selector.isEnabled {
+        logMessage += " with isEnabled '\(isEnabled)'"
+      }
+      if let isSelected = selector.isSelected {
+        logMessage += " with isSelected '\(isSelected)'"
+      }
+      if let placeholderValue = selector.placeholderValue {
+        logMessage += " with placeholderValue '\(placeholderValue)'"
+      }
+      if let placeholderValueStartsWith = selector.placeholderValueStartsWith {
+        logMessage += " with placeholderValueStartsWith '\(placeholderValueStartsWith)'"
+      }
+      if let placeholderValueContains = selector.placeholderValueContains {
+        logMessage += " with placeholderValueContains '\(placeholderValueContains)'"
+      }
+
+      return logMessage
+    }
   }
 
   // MARK: Utilities
@@ -911,6 +1108,58 @@
         children: xcuielement.children.map { child in
           return NativeView.fromXCUIElementSnapshot(child, bundleId)
         })
+    }
+  }
+
+  extension IOSNativeView {
+    static func fromXCUIElement(_ xcuielement: XCUIElement, _ bundleId: String) -> IOSNativeView {
+      return IOSNativeView(
+        children: xcuielement.children(matching: .any).allElementsBoundByIndex.map { child in
+          return IOSNativeView.fromXCUIElement(child, bundleId)
+        },
+        elementType: getIOSElementType(elementType: xcuielement.elementType),
+        identifier: xcuielement.identifier,
+        label: xcuielement.label,
+        title: xcuielement.title,
+        hasFocus: xcuielement.hasFocus,
+        isEnabled: xcuielement.isEnabled,
+        isSelected: xcuielement.isSelected,
+        frame: Rectangle(
+          minX: xcuielement.frame.minX,
+          minY: xcuielement.frame.minY,
+          maxX: xcuielement.frame.maxX,
+          maxY: xcuielement.frame.maxY
+        ),
+        placeholderValue: xcuielement.placeholderValue,
+        value: xcuielement.value as? String
+      )
+    }
+  }
+
+  extension IOSNativeView {
+    static func fromXCUIElementSnapshot(_ xcuielement: XCUIElementSnapshot, _ bundleId: String)
+      -> IOSNativeView
+    {
+      return IOSNativeView(
+        children: xcuielement.children.map { child in
+          return IOSNativeView.fromXCUIElementSnapshot(child, bundleId)
+        },
+        elementType: getIOSElementType(elementType: xcuielement.elementType),
+        identifier: xcuielement.identifier,
+        label: xcuielement.label,
+        title: xcuielement.title,
+        hasFocus: xcuielement.hasFocus,
+        isEnabled: xcuielement.isEnabled,
+        isSelected: xcuielement.isSelected,
+        frame: Rectangle(
+          minX: xcuielement.frame.minX,
+          minY: xcuielement.frame.minY,
+          maxX: xcuielement.frame.maxX,
+          maxY: xcuielement.frame.maxY
+        ),
+        placeholderValue: xcuielement.placeholderValue,
+        value: xcuielement.value as? String
+      )
     }
   }
 #endif

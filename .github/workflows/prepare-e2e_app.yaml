@@ -17,7 +17,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [windows-latest]
-        flutter-version: ['3.16.x']
+        flutter-version: ['3.22.x']
         flutter-channel: ['stable']
 
     defaults:
@@ -66,7 +66,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        flutter-version: ['3.16.x']
+        flutter-version: ['3.22.x']
         flutter-channel: ['stable']
 
     defaults:
@@ -120,8 +120,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-latest]
-        flutter-version: ['3.16.x']
+        os: [macos-13]
+        flutter-version: ['3.22.x']
         flutter-channel: ['stable']
 
     defaults:
@@ -169,9 +169,9 @@ jobs:
       - name: Start iOS simulator
         uses: futureware-tech/simulator-action@v2
         with:
-          model: iPhone 14
+          model: iPhone 15
           os: iOS
-          os_version: 16.2
+          os_version: 17.2
           erase_before_boot: true
           shutdown_after_job: true
 
@@ -183,7 +183,7 @@ jobs:
             -scheme Runner \
             -only-testing RunnerTests \
             -configuration Debug \
-            -sdk iphoneos -destination 'platform=iOS Simulator,name=iPhone 14' \
+            -sdk iphoneos -destination 'platform=iOS Simulator,name=iPhone 15' \
             -derivedDataPath ../build/ios_unit | xcbeautify --renderer github-actions
 
   prepare-flutter:
@@ -193,7 +193,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ['3.16.x']
+        flutter-version: ['3.22.x']
         flutter-channel: ['stable']
 
     defaults:

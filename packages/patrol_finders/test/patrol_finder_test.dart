@@ -1,3 +1,4 @@
+// ignore_for_file: avoid_single_child_in_multi_child_widgets
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol_finders/src/custom_finders/custom_finders.dart';
@@ -904,7 +905,7 @@ void main() {
                     ElevatedButton(
                       onPressed: () => setState(() => count += 10),
                       style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all(Colors.red),
+                        backgroundColor: WidgetStateProperty.all(Colors.red),
                       ),
                       child: const Text('Enabled button with color'),
                     ),

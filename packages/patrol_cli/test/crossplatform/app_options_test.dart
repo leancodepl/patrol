@@ -1,22 +1,30 @@
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
+import 'package:patrol_cli/src/runner/flutter_command.dart';
 import 'package:test/test.dart';
 
 import '../src/fixtures.dart';
 
 void main() {
+  const flutterCommand = FlutterCommand('flutter');
+
   group('AndroidAppOptions', () {
     late AndroidAppOptions options;
 
     group('correctly encodes default invocation', () {
       test('on Windows', () {
         const flutterOptions = FlutterAppOptions(
+          command: flutterCommand,
           target: r'C:\Users\john\app\integration_test\app_test.dart',
           buildMode: BuildMode.debug,
           flavor: null,
           dartDefines: {},
         );
-        options = const AndroidAppOptions(flutter: flutterOptions);
+        options = const AndroidAppOptions(
+          flutter: flutterOptions,
+          appServerPort: 1,
+          testServerPort: 2,
+        );
 
         final invocation =
             options.toGradleAssembleTestInvocation(isWindows: true);
@@ -26,18 +34,25 @@ void main() {
             r'.\gradlew.bat',
             ':app:assembleDebugAndroidTest',
             r'-Ptarget=C:\Users\john\app\integration_test\app_test.dart',
+            '-Papp-server-port=1',
+            '-Ptest-server-port=2',
           ]),
         );
       });
 
       test('on macOS', () {
         const flutterOpts = FlutterAppOptions(
+          command: flutterCommand,
           target: '/Users/john/app/integration_test/app_test.dart',
           buildMode: BuildMode.release,
           flavor: null,
           dartDefines: {},
         );
-        options = const AndroidAppOptions(flutter: flutterOpts);
+        options = const AndroidAppOptions(
+          flutter: flutterOpts,
+          appServerPort: 1,
+          testServerPort: 2,
+        );
 
         final invocation =
             options.toGradleAssembleTestInvocation(isWindows: false);
@@ -47,6 +62,8 @@ void main() {
             './gradlew',
             ':app:assembleReleaseAndroidTest',
             '-Ptarget=/Users/john/app/integration_test/app_test.dart',
+            '-Papp-server-port=1',
+            '-Ptest-server-port=2',
           ]),
         );
       });
@@ -61,12 +78,17 @@ void main() {
 
       test('on Windows', () {
         const flutterOpts = FlutterAppOptions(
+          command: flutterCommand,
           target: r'C:\Users\john\app\integration_test\app_test.dart',
           buildMode: BuildMode.release,
           flavor: 'dev',
           dartDefines: dartDefines,
         );
-        options = const AndroidAppOptions(flutter: flutterOpts);
+        options = const AndroidAppOptions(
+          flutter: flutterOpts,
+          appServerPort: 1,
+          testServerPort: 2,
+        );
 
         final invocation =
             options.toGradleAssembleTestInvocation(isWindows: true);
@@ -77,18 +99,25 @@ void main() {
             ':app:assembleDevReleaseAndroidTest',
             r'-Ptarget=C:\Users\john\app\integration_test\app_test.dart',
             '-Pdart-defines=RU1BSUw9dXNlckBleGFtcGxlLmNvbQ==,UEFTU1dPUkQ9bnk0bmNhdA==,Zm9vPWJhcg==',
+            '-Papp-server-port=1',
+            '-Ptest-server-port=2',
           ]),
         );
       });
 
       test('on macOS', () {
         const flutterOpts = FlutterAppOptions(
+          command: flutterCommand,
           target: '/Users/john/app/integration_test/app_test.dart',
           buildMode: BuildMode.debug,
           flavor: 'dev',
           dartDefines: dartDefines,
         );
-        options = const AndroidAppOptions(flutter: flutterOpts);
+        options = const AndroidAppOptions(
+          flutter: flutterOpts,
+          appServerPort: 1,
+          testServerPort: 2,
+        );
 
         final invocation =
             options.toGradleAssembleTestInvocation(isWindows: false);
@@ -99,6 +128,8 @@ void main() {
             ':app:assembleDevDebugAndroidTest',
             '-Ptarget=/Users/john/app/integration_test/app_test.dart',
             '-Pdart-defines=RU1BSUw9dXNlckBleGFtcGxlLmNvbQ==,UEFTU1dPUkQ9bnk0bmNhdA==,Zm9vPWJhcg==',
+            '-Papp-server-port=1',
+            '-Ptest-server-port=2',
           ]),
         );
       });
@@ -110,6 +141,7 @@ void main() {
 
     group('correctly encodes default xcodebuild invocation for simulator', () {
       const flutterOpts = FlutterAppOptions(
+        command: flutterCommand,
         target: 'integration_test/app_test.dart',
         buildMode: BuildMode.debug,
         flavor: null,
@@ -189,6 +221,7 @@ void main() {
       'correctly encodes customized xcodebuild invocation for real device',
       () {
         const flutterOpts = FlutterAppOptions(
+          command: flutterCommand,
           target: 'integration_test/app_test.dart',
           buildMode: BuildMode.release,
           flavor: 'prod',

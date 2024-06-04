@@ -4,15 +4,18 @@ import 'package:meta/meta.dart';
 import 'package:path/path.dart' show basename;
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
+import 'package:patrol_cli/src/runner/flutter_command.dart';
 
 class FlutterAppOptions {
   const FlutterAppOptions({
+    required this.command,
     required this.target,
     required this.flavor,
     required this.buildMode,
     required this.dartDefines,
   });
 
+  final FlutterCommand command;
   final String target;
   final String? flavor;
   final BuildMode buildMode;
@@ -22,7 +25,8 @@ class FlutterAppOptions {
   @nonVirtual
   List<String> toFlutterAttachInvocation() {
     final cmd = [
-      ...['flutter', 'attach'],
+      ...[command.executable, ...command.arguments],
+      'attach',
       '--no-version-check',
       '--suppress-analytics',
       '--debug',
@@ -41,10 +45,14 @@ class AndroidAppOptions {
   const AndroidAppOptions({
     required this.flutter,
     this.packageName,
+    required this.appServerPort,
+    required this.testServerPort,
   });
 
   final FlutterAppOptions flutter;
   final String? packageName;
+  final int appServerPort;
+  final int testServerPort;
 
   String get description => 'apk with entrypoint ${basename(flutter.target)}';
 
@@ -116,6 +124,11 @@ class AndroidAppOptions {
       cmd.add('-Pdart-defines=$dartDefinesString');
     }
 
+    // Add app and test server ports
+    cmd
+      ..add('-Papp-server-port=$appServerPort')
+      ..add('-Ptest-server-port=$testServerPort');
+
     return cmd;
   }
 }
@@ -148,7 +161,8 @@ class IOSAppOptions {
   /// runs before xcodebuild and performs configuration.
   List<String> toFlutterBuildInvocation(BuildMode buildMode) {
     final cmd = [
-      ...['flutter', 'build', 'ios'],
+      ...[flutter.command.executable, ...flutter.command.arguments],
+      ...['build', 'ios'],
       '--no-version-check',
       '--suppress-analytics',
       ...[
@@ -218,12 +232,16 @@ class MacOSAppOptions {
     this.bundleId,
     required this.scheme,
     required this.configuration,
+    required this.appServerPort,
+    required this.testServerPort,
   });
 
   final FlutterAppOptions flutter;
   final String? bundleId;
   final String scheme;
   final String configuration;
+  final int appServerPort;
+  final int testServerPort;
 
   String get description {
     return 'app with entrypoint ${basename(flutter.target)} for macos';
@@ -233,7 +251,8 @@ class MacOSAppOptions {
   /// runs before xcodebuild and performs configuration.
   List<String> toFlutterBuildInvocation(BuildMode buildMode) {
     final cmd = [
-      ...['flutter', 'build', 'macos'],
+      ...[flutter.command.executable, ...flutter.command.arguments],
+      ...['build', 'macos'],
       '--no-version-check',
       '--suppress-analytics',
       ...[

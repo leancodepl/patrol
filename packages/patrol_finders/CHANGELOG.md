@@ -1,3 +1,16 @@
+## 2.1.2
+
+- Adjust `pumpWidget` to new `flutter_test` API. 
+- Bump min Flutter SDK to 3.22
+
+## 2.1.1
+
+- Revert: Adjust `pumpWidget` to new `flutter_test` API. 
+
+## 2.1.0
+
+- Adjust `pumpWidget` to new `flutter_test` API. 
+
 ## 2.0.2
 
 - Add registering text input. (#2111)

@@ -15,9 +15,13 @@ import androidx.test.uiautomator.UiObject
 import androidx.test.uiautomator.UiObject2
 import androidx.test.uiautomator.UiObjectNotFoundException
 import androidx.test.uiautomator.UiSelector
+import pl.leancode.patrol.contracts.Contracts.AndroidNativeView
+import pl.leancode.patrol.contracts.Contracts.AndroidSelector
 import pl.leancode.patrol.contracts.Contracts.KeyboardBehavior
 import pl.leancode.patrol.contracts.Contracts.NativeView
 import pl.leancode.patrol.contracts.Contracts.Notification
+import pl.leancode.patrol.contracts.Contracts.Point2D
+import pl.leancode.patrol.contracts.Contracts.Rectangle
 import pl.leancode.patrol.contracts.Contracts.Selector
 import kotlin.math.roundToInt
 
@@ -32,6 +36,40 @@ private fun fromUiObject2(obj: UiObject2): NativeView {
         resourceName = obj.resourceName,
         applicationPackage = obj.applicationPackage,
         children = obj.children?.map { fromUiObject2(it) } ?: listOf()
+    )
+}
+
+private fun fromUiObject2V2(obj: UiObject2): AndroidNativeView {
+    val bounds = obj.visibleBounds
+    val center = obj.visibleCenter
+
+    return AndroidNativeView(
+        className = obj.className,
+        text = obj.text,
+        contentDescription = obj.contentDescription,
+        isFocused = obj.isFocused,
+        isEnabled = obj.isEnabled,
+        childCount = obj.childCount.toLong(),
+        resourceName = obj.resourceName,
+        applicationPackage = obj.applicationPackage,
+        isCheckable = obj.isCheckable,
+        isChecked = obj.isChecked,
+        isClickable = obj.isClickable,
+        isFocusable = obj.isFocusable,
+        isLongClickable = obj.isLongClickable,
+        isScrollable = obj.isScrollable,
+        isSelected = obj.isSelected,
+        visibleBounds = Rectangle(
+            minX = bounds.left.toDouble(),
+            minY = bounds.top.toDouble(),
+            maxX = bounds.right.toDouble(),
+            maxY = bounds.top.toDouble()
+        ),
+        visibleCenter = Point2D(
+            x = center.x.toDouble(),
+            y = center.y.toDouble()
+        ),
+        children = obj.children?.map { fromUiObject2V2(it) } ?: listOf()
     )
 }
 
@@ -150,10 +188,23 @@ class Automator private constructor() {
         return uiObjects2.map { fromUiObject2(it) }
     }
 
+    fun getNativeViewsV2(selector: BySelector): List<AndroidNativeView> {
+        Logger.d("getNativeViewsV2()")
+
+        val uiObjects2 = uiDevice.findObjects(selector)
+        return uiObjects2.map { fromUiObject2V2(it) }
+    }
+
     fun getNativeUITrees(): List<NativeView> {
         Logger.d("getNativeUITrees()")
 
         return getWindowTrees(uiDevice, uiAutomation)
+    }
+
+    fun getNativeUITreesV2(): List<AndroidNativeView> {
+        Logger.d("getNativeUITreesV2()")
+
+        return getWindowTreesV2(uiDevice, uiAutomation)
     }
 
     fun tap(uiSelector: UiSelector, bySelector: BySelector, index: Int, timeout: Long? = null) {
@@ -169,7 +220,7 @@ class Automator private constructor() {
         delay()
     }
 
-    fun doubleTap(uiSelector: UiSelector, bySelector: BySelector, index: Int, timeout: Long? = null) {
+    fun doubleTap(uiSelector: UiSelector, bySelector: BySelector, index: Int, timeout: Long? = null, delayBetweenTaps: Long? = null) {
         Logger.d("doubleTap(): $uiSelector, $bySelector")
 
         val uiObject = uiDevice.findObject(uiSelector)
@@ -178,13 +229,24 @@ class Automator private constructor() {
             throw UiObjectNotFoundException("$uiSelector")
         }
 
-        Logger.d("Double clicking on UIObject with text: ${uiObject.text}")
-        uiObject.click()
+        Logger.d("Performing double tap on UIObject with text: ${uiObject.text}")
+
+        // Get the bounds of the UI element
+        val rect = uiObject.bounds
+        // Calculate the center point
+        val centerX = rect.centerX()
+        val centerY = rect.centerY()
+
+        // Perform double click at the center
         Logger.d("After first click")
-        delay(ms = 300)
-        uiObject.click()
+
+        uiDevice.click(centerX, centerY)
+
+        // Customizable Delay between taps
+        delay(ms = delayBetweenTaps ?: 300)
+
         Logger.d("After second click")
-        delay()
+        uiDevice.click(centerX, centerY)
     }
 
     fun tapAt(x: Float, y: Float) {
@@ -394,6 +456,27 @@ class Automator private constructor() {
         try {
             val query = Selector(
                 resourceId = "android:id/status_bar_latest_event_content",
+                instance = index.toLong()
+            )
+            val selector = query.toBySelector()
+            if (waitForView(selector, index, timeout) == null) {
+                throw UiObjectNotFoundException("$selector")
+            }
+            val obj = uiDevice.findObject(query.toUiSelector())
+            obj.click()
+        } catch (err: UiObjectNotFoundException) {
+            throw UiObjectNotFoundException("notification at index $index")
+        }
+
+        delay()
+    }
+
+    fun tapOnNotificationV2(index: Int, timeout: Long? = null) {
+        Logger.d("tapOnNotificationV2($index)")
+
+        try {
+            val query = AndroidSelector(
+                resourceName = "android:id/status_bar_latest_event_content",
                 instance = index.toLong()
             )
             val selector = query.toBySelector()

@@ -6,6 +6,7 @@ import 'package:meta/meta.dart';
 import 'package:path/path.dart' show basename;
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
+import 'package:patrol_cli/src/runner/flutter_command.dart';
 import 'package:platform/platform.dart';
 import 'package:process/process.dart';
 
@@ -35,6 +36,7 @@ class FlutterTool {
 
   /// Forwards logs and hot restarts the app when "r" is pressed.
   Future<void> attachForHotRestart({
+    required FlutterCommand flutterCommand,
     required String deviceId,
     required String target,
     required String? appId,
@@ -48,9 +50,14 @@ class FlutterTool {
 
     if (attachUsingUrl) {
       final urlCompleter = Completer<String>();
-      await logs(deviceId, observationUrlCompleter: urlCompleter);
+      await logs(
+        deviceId,
+        flutterCommand: flutterCommand,
+        observationUrlCompleter: urlCompleter,
+      );
       final url = await urlCompleter.future;
       await attach(
+        flutterCommand: flutterCommand,
         target: target,
         deviceId: deviceId,
         appId: appId,
@@ -60,8 +67,9 @@ class FlutterTool {
       );
     } else {
       await Future.wait<void>([
-        logs(deviceId),
+        logs(deviceId, flutterCommand: flutterCommand),
         attach(
+          flutterCommand: flutterCommand,
           target: target,
           deviceId: deviceId,
           appId: appId,
@@ -80,6 +88,7 @@ class FlutterTool {
   /// printed by Flutter CLI.
   @visibleForTesting
   Future<void> attach({
+    required FlutterCommand flutterCommand,
     required String deviceId,
     required String target,
     String? debugUrl,
@@ -90,7 +99,8 @@ class FlutterTool {
     await _disposeScope.run((scope) async {
       final process = await _processManager.start(
         [
-          ...['flutter', 'attach'],
+          ...[flutterCommand.executable, ...flutterCommand.arguments],
+          'attach',
           '--no-version-check',
           '--suppress-analytics',
           '--debug',
@@ -172,13 +182,14 @@ class FlutterTool {
   @visibleForTesting
   Future<void> logs(
     String deviceId, {
+    required FlutterCommand flutterCommand,
     Completer<String>? observationUrlCompleter,
   }) async {
     await _disposeScope.run((scope) async {
       _logger.detail('Logs: waiting for them...');
       final process = await _processManager.start(
         [
-          'flutter',
+          ...[flutterCommand.executable, ...flutterCommand.arguments],
           '--no-version-check',
           '--suppress-analytics',
           'logs',

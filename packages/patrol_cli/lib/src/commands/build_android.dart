@@ -33,6 +33,7 @@ class BuildAndroidCommand extends PatrolCommand {
     usesDartDefineOption();
     usesLabelOption();
     usesWaitOption();
+    usesPortOptions();
 
     usesAndroidOptions();
   }
@@ -57,7 +58,12 @@ class BuildAndroidCommand extends PatrolCommand {
 
   @override
   Future<int> run() async {
-    unawaited(_analytics.sendCommand('build_android'));
+    unawaited(
+      _analytics.sendCommand(
+        FlutterVersion.fromCLI(flutterCommand),
+        'build_android',
+      ),
+    );
 
     final config = _pubspecReader.read();
     final testFileSuffix = config.testFileSuffix;
@@ -116,6 +122,7 @@ class BuildAndroidCommand extends PatrolCommand {
     }
 
     final flutterOpts = FlutterAppOptions(
+      command: flutterCommand,
       target: entrypoint.path,
       flavor: flavor,
       buildMode: buildMode,
@@ -124,6 +131,8 @@ class BuildAndroidCommand extends PatrolCommand {
     final androidOpts = AndroidAppOptions(
       flutter: flutterOpts,
       packageName: packageName,
+      appServerPort: super.appServerPort,
+      testServerPort: super.testServerPort,
     );
 
     try {

@@ -89,6 +89,7 @@ void patrolTest(
       LiveTestWidgetsFlutterBindingFramePolicy.fadePointers,
 }) {
   final automator = NativeAutomator(config: nativeAutomatorConfig);
+  final automator2 = NativeAutomator2(config: nativeAutomatorConfig);
   final patrolBinding = PatrolBinding.ensureInitialized(nativeAutomatorConfig)
     ..framePolicy = framePolicy;
 
@@ -121,10 +122,13 @@ void patrolTest(
         };
       }
       await automator.configure();
+      // We don't have to call this line because automator.configure() does the same.
+      // await automator2.configure();
 
       final patrolTester = PatrolIntegrationTester(
         tester: widgetTester,
         nativeAutomator: automator,
+        nativeAutomator2: automator2,
         config: config,
       );
       await callback(patrolTester);
@@ -133,8 +137,11 @@ void patrolTest(
       final waitSeconds = const int.fromEnvironment('PATROL_WAIT');
       final waitDuration = Duration(seconds: waitSeconds);
 
-      debugDefaultTargetPlatformOverride =
-          patrolBinding.workaroundDebugDefaultTargetPlatformOverride;
+      if (debugDefaultTargetPlatformOverride !=
+          patrolBinding.workaroundDebugDefaultTargetPlatformOverride) {
+        debugDefaultTargetPlatformOverride =
+            patrolBinding.workaroundDebugDefaultTargetPlatformOverride;
+      }
 
       if (waitDuration > Duration.zero) {
         final stopwatch = Stopwatch()..start();

@@ -46,6 +46,7 @@ class TestCommand extends PatrolCommand {
     usesDartDefineOption();
     usesLabelOption();
     usesWaitOption();
+    usesPortOptions();
 
     usesUninstallOption();
 
@@ -74,9 +75,16 @@ class TestCommand extends PatrolCommand {
 
   @override
   Future<int> run() async {
-    unawaited(_analytics.sendCommand(name));
+    unawaited(
+      _analytics.sendCommand(
+        FlutterVersion.fromCLI(flutterCommand),
+        name,
+      ),
+    );
 
-    await _compatibilityChecker.checkVersionsCompatibility();
+    await _compatibilityChecker.checkVersionsCompatibility(
+      flutterCommand: flutterCommand,
+    );
 
     final config = _pubspecReader.read();
     final testFileSuffix = config.testFileSuffix;
@@ -112,7 +120,10 @@ class TestCommand extends PatrolCommand {
       _logger.detail('Received macOS flavor: $macosFlavor');
     }
 
-    final devices = await _deviceFinder.find(stringsArg('device'));
+    final devices = await _deviceFinder.find(
+      stringsArg('device'),
+      flutterCommand: flutterCommand,
+    );
     _logger.detail('Received ${devices.length} device(s) to run on');
     for (final device in devices) {
       _logger.detail('Received device: ${device.resolvedName}');
@@ -169,6 +180,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
     }
 
     final flutterOpts = FlutterAppOptions(
+      command: flutterCommand,
       target: entrypoint.path,
       flavor: androidFlavor,
       buildMode: buildMode,
@@ -178,6 +190,8 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
     final androidOpts = AndroidAppOptions(
       flutter: flutterOpts,
       packageName: packageName,
+      appServerPort: super.appServerPort,
+      testServerPort: super.testServerPort,
     );
 
     final iosOpts = IOSAppOptions(
@@ -194,6 +208,8 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       flutter: flutterOpts,
       scheme: buildMode.createScheme(macosFlavor),
       configuration: buildMode.createConfiguration(macosFlavor),
+      appServerPort: super.appServerPort,
+      testServerPort: super.testServerPort,
     );
 
     await _build(androidOpts, iosOpts, macosOpts, device);

@@ -3,7 +3,8 @@ import 'package:devtools_app_shared/ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:patrol_devtools_extension/native_inspector/node.dart';
+import 'package:patrol_devtools_extension/api/contracts.dart';
+import 'package:patrol_devtools_extension/native_inspector/nodes/node.dart';
 import 'package:patrol_devtools_extension/native_inspector/widgets/overflowing_flex.dart';
 
 class NativeViewDetails extends StatelessWidget {
@@ -65,7 +66,7 @@ class _HeaderDecoration extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: defaultHeaderHeight(isDense: _isDense()),
+      height: defaultHeaderHeight,
       decoration: BoxDecoration(
         border: Border(
           bottom: defaultBorderSide(Theme.of(context)),
@@ -73,10 +74,6 @@ class _HeaderDecoration extends StatelessWidget {
       ),
       child: child,
     );
-  }
-
-  bool _isDense() {
-    return ideTheme.embed;
   }
 }
 
@@ -100,17 +97,51 @@ class _NodeDetails extends HookWidget {
   Widget build(BuildContext context) {
     final hoveredIndex = useState<int?>(null);
 
-    final view = node.nativeView;
-    final rows = [
-      _KeyValueItem('pkg:', view.applicationPackage),
-      _KeyValueItem('childCount:', view.childCount),
-      _KeyValueItem('className:', view.className),
-      _KeyValueItem('contentDescription:', view.contentDescription),
-      _KeyValueItem('enabled:', view.enabled),
-      _KeyValueItem('focused:', view.focused),
-      _KeyValueItem('resourceId:', view.resourceName),
-      _KeyValueItem('text:', view.text),
-    ];
+    final items = switch (node) {
+      final NativeViewNode n => [
+          ('pkg:', n.view.applicationPackage),
+          ('childCount:', n.view.childCount),
+          ('className:', n.view.className),
+          ('contentDescription:', n.view.contentDescription),
+          ('enabled:', n.view.enabled),
+          ('focused:', n.view.focused),
+          ('resourceId:', n.view.resourceName),
+          ('text:', n.view.text),
+        ],
+      final AndroidNode n => [
+          ('text:', n.view.text),
+          ('className:', n.view.className),
+          ('resourceName:', n.view.resourceName),
+          ('contentDescription:', n.view.contentDescription),
+          ('applicationPackage:', n.view.applicationPackage),
+          ('childCount:', n.view.childCount),
+          ('isCheckable:', n.view.isCheckable),
+          ('isChecked:', n.view.isChecked),
+          ('isClickable:', n.view.isClickable),
+          ('isEnabled:', n.view.isEnabled),
+          ('isFocusable:', n.view.isFocusable),
+          ('isFocused:', n.view.isFocused),
+          ('isLongClickable:', n.view.isLongClickable),
+          ('isScrollable:', n.view.isScrollable),
+          ('isSelected:', n.view.isSelected),
+          ('visibleBounds:', n.view.visibleBounds._toDisplayValue()),
+          ('visibleCenter:', n.view.visibleCenter._toDisplayValue()),
+        ],
+      final IOSNode n => [
+          ('elementType:', n.view.elementType.name),
+          ('identifier:', n.view.identifier),
+          ('isEnabled:', n.view.isEnabled),
+          ('isSelected:', n.view.isSelected),
+          ('hasFocus:', n.view.hasFocus),
+          ('label:', n.view.label),
+          ('title:', n.view.title),
+          ('placeholderValue:', n.view.placeholderValue),
+          ('value:', n.view.value),
+          ('frame:', n.view.frame._toDisplayValue()),
+        ]
+    };
+
+    final rows = items.map((e) => _KeyValueItem(e.$1, e.$2)).toList();
 
     final unimportantTextStyle = TextStyle(
       color: Theme.of(context).colorScheme.isLight
@@ -229,6 +260,18 @@ class _NodeDetails extends HookWidget {
         ],
       ),
     );
+  }
+}
+
+extension _RectangleExtension on Rectangle {
+  String _toDisplayValue() {
+    return 'minX: ${minX.toInt()}, minY: ${minY.toInt()}, maxX: ${maxX.toInt()}, maxY: ${maxY.toInt()}';
+  }
+}
+
+extension _Point2DExtension on Point2D {
+  String _toDisplayValue() {
+    return 'x: ${x.toInt()}, y: ${y.toInt()}';
   }
 }
 

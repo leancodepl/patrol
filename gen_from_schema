@@ -8,6 +8,7 @@ cd "$(dirname "$0")" || exit
 
 schema="./schema.dart"
 patrol_package="./packages/patrol"
+patrol_devtools_extension_package="./packages/patrol_devtools_extension"
 patrol_dart_out_dir="lib/src/native/contracts"
 
 darwin_out="$patrol_package/darwin/Classes/AutomatorServer"
@@ -18,5 +19,12 @@ android_package="pl.leancode.patrol.contracts"
 
 dart run packages/patrol_gen/bin/main.dart "$schema" "$dart_out" "$darwin_out" "$android_out" "$android_package"
 
-cd "${patrol_package}"
+pushd "${patrol_package}"
+
 dart run build_runner build --delete-conflicting-outputs --build-filter="$patrol_dart_out_dir/*.dart"
+
+popd
+
+# TODO: We should use necessary contracts in extension
+cp "$dart_out/contracts.dart" "$patrol_devtools_extension_package/lib/api/contracts.dart"
+cp "$dart_out/contracts.g.dart" "$patrol_devtools_extension_package/lib/api/contracts.g.dart"

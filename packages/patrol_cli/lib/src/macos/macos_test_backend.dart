@@ -11,6 +11,7 @@ import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/devices.dart';
+import 'package:platform/platform.dart';
 import 'package:process/process.dart';
 
 enum BuildMode {
@@ -51,10 +52,12 @@ enum BuildMode {
 class MacOSTestBackend {
   MacOSTestBackend({
     required ProcessManager processManager,
+    required Platform platform,
     required FileSystem fs,
     required DisposeScope parentDisposeScope,
     required Logger logger,
   })  : _processManager = processManager,
+        _platform = platform,
         _fs = fs,
         _disposeScope = DisposeScope(),
         _logger = logger {
@@ -64,6 +67,7 @@ class MacOSTestBackend {
   static const _xcodebuildInterrupted = -15;
 
   final ProcessManager _processManager;
+  final Platform _platform;
   final FileSystem _fs;
   final DisposeScope _disposeScope;
   final Logger _logger;
@@ -91,12 +95,14 @@ class MacOSTestBackend {
       process.listenStdOut((l) => _logger.detail('\t$l')).disposedBy(scope);
       process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
       var exitCode = await process.exitCode;
+      final flutterCommand = options.flutter.command;
       if (exitCode != 0) {
-        final cause = '`flutter build macos` exited with code $exitCode';
+        final cause =
+            '`$flutterCommand build macos` exited with code $exitCode';
         task.fail('Failed to build $subject ($cause)');
         throwToolExit(cause);
       } else if (flutterBuildKilled) {
-        const cause = '`flutter build macos` was interrupted';
+        final cause = '`$flutterCommand build macos` was interrupted';
         task.fail('Failed to build $subject ($cause)');
         throwToolInterrupted(cause);
       }
@@ -156,6 +162,11 @@ class MacOSTestBackend {
           resultBundlePath: resultsPath,
         ),
         runInShell: true,
+        environment: {
+          ..._platform.environment,
+          'TEST_RUNNER_PATROL_TEST_PORT': options.testServerPort.toString(),
+          'TEST_RUNNER_PATROL_APP_PORT': options.appServerPort.toString(),
+        },
         workingDirectory: _fs.currentDirectory.childDirectory('macos').path,
       )
         ..disposedBy(_disposeScope);
