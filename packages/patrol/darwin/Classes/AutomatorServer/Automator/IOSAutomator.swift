@@ -466,6 +466,8 @@
 
         if toggle.value! as! String == "1" {
           toggle.tap()
+          // Disabling wifi can cause a system alert to appear
+          try self.acceptSystemAlertIfVisible()
         } else {
           Logger.shared.i("wifi is already disabled")
         }
