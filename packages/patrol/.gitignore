@@ -13,3 +13,6 @@ pubspec.lock
 
 .vscode
 /coverage
+
+# FVM Version Cache
+.fvm/

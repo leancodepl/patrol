@@ -1,10 +1,12 @@
 import 'dart:async';
 
+import 'package:file/file.dart';
 import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/compatibility_checker.dart';
+import 'package:patrol_cli/src/coverage/coverage_collector.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/dart_defines_reader.dart';
 import 'package:patrol_cli/src/devices.dart';
@@ -26,6 +28,7 @@ class TestCommand extends PatrolCommand {
     required AndroidTestBackend androidTestBackend,
     required IOSTestBackend iosTestBackend,
     required MacOSTestBackend macOSTestBackend,
+    required Directory packageDirectory,
     required Analytics analytics,
     required Logger logger,
   })  : _deviceFinder = deviceFinder,
@@ -37,6 +40,7 @@ class TestCommand extends PatrolCommand {
         _androidTestBackend = androidTestBackend,
         _iosTestBackend = iosTestBackend,
         _macosTestBackend = macOSTestBackend,
+        _packageDirectory = packageDirectory,
         _analytics = analytics,
         _logger = logger {
     usesTargetOption();
@@ -47,6 +51,7 @@ class TestCommand extends PatrolCommand {
     usesLabelOption();
     usesWaitOption();
     usesPortOptions();
+    _usesCoverageOption();
 
     usesUninstallOption();
 
@@ -63,6 +68,7 @@ class TestCommand extends PatrolCommand {
   final AndroidTestBackend _androidTestBackend;
   final IOSTestBackend _iosTestBackend;
   final MacOSTestBackend _macosTestBackend;
+  final Directory _packageDirectory;
 
   final Analytics _analytics;
   final Logger _logger;
@@ -162,6 +168,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       'PATROL_TEST_LABEL_ENABLED': displayLabel.toString(),
       'PATROL_TEST_SERVER_PORT': super.testServerPort.toString(),
       'PATROL_APP_SERVER_PORT': super.appServerPort.toString(),
+      'COVERAGE_ENABLED': shouldGenerateCoverage.toString(),
     }.withNullsRemoved();
 
     final dartDefines = {...customDartDefines, ...internalDartDefines};
@@ -214,6 +221,17 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
 
     await _build(androidOpts, iosOpts, macosOpts, device);
     await _preExecute(androidOpts, iosOpts, macosOpts, device, uninstall);
+
+    if (shouldGenerateCoverage) {
+      await runCodeCoverage(
+        testCount: targets.length,
+        flutterPackageName: config.flutterPackageName,
+        flutterPackageDirectory: _packageDirectory,
+        platform: device.targetPlatform,
+        logger: _logger,
+      );
+    }
+
     final allPassed = await _execute(
       flutterOpts,
       androidOpts,
@@ -340,4 +358,13 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
 
     return allPassed;
   }
+
+  void _usesCoverageOption() {
+    argParser.addFlag(
+      'coverage',
+      help: 'Generate coverage.',
+    );
+  }
+
+  bool get shouldGenerateCoverage => boolArg('coverage');
 }

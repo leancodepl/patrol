@@ -4,19 +4,22 @@ import 'package:yaml/yaml.dart';
 
 class PatrolPubspecConfig with EquatableMixin {
   PatrolPubspecConfig({
+    required this.flutterPackageName,
     required this.android,
     required this.ios,
     required this.macos,
     this.testFileSuffix = '_test.dart',
   });
 
-  PatrolPubspecConfig.empty()
+  PatrolPubspecConfig.empty({required String flutterPackageName})
       : this(
+          flutterPackageName: flutterPackageName,
           android: AndroidPubspecConfig.empty(),
           ios: IOSPubspecConfig.empty(),
           macos: MacOSPubspecConfig.empty(),
         );
 
+  final String flutterPackageName;
   AndroidPubspecConfig android;
   IOSPubspecConfig ios;
   MacOSPubspecConfig macos;
@@ -105,6 +108,7 @@ class PubspecReader {
     final iosConfig = IOSPubspecConfig();
     final macosConfig = MacOSPubspecConfig();
     final config = PatrolPubspecConfig(
+      flutterPackageName: yaml['name'] as String,
       android: androidConfig,
       ios: iosConfig,
       macos: macosConfig,
