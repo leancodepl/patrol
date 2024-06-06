@@ -1,3 +1,7 @@
+## 3.7.3
+
+- Try closing system dialog when disabling wifi on iOS. (#2123)
+
 ## 3.7.2
 
 - Bump `test_api` dependency to 0.7.0.
