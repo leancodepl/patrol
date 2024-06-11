@@ -96,6 +96,16 @@ Map<String, dynamic> _$OpenQuickSettingsRequestToJson(
         OpenQuickSettingsRequest instance) =>
     <String, dynamic>{};
 
+OpenUrlRequest _$OpenUrlRequestFromJson(Map<String, dynamic> json) =>
+    OpenUrlRequest(
+      url: json['url'] as String,
+    );
+
+Map<String, dynamic> _$OpenUrlRequestToJson(OpenUrlRequest instance) =>
+    <String, dynamic>{
+      'url': instance.url,
+    };
+
 AndroidSelector _$AndroidSelectorFromJson(Map<String, dynamic> json) =>
     AndroidSelector(
       className: json['className'] as String?,

@@ -186,6 +186,7 @@ extension Selector {
     func openApp(_ bundleId: String) throws
     func openAppSwitcher() throws
     func openControlCenter() throws
+    func openUrl(_ url: String)
 
     // MARK: General UI interaction
     func tap(

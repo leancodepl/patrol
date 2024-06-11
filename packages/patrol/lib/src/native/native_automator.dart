@@ -357,6 +357,14 @@ class NativeAutomator {
     );
   }
 
+  /// Opens the URL specified by [url].
+  Future<void> openUrl({required String url}) async {
+    await _wrapRequest(
+      'openUrl',
+      () => _client.openUrl(OpenUrlRequest(url: url)),
+    );
+  }
+
   /// Returns the first, topmost visible notification.
   ///
   /// Notification shade has to be opened with [openNotifications].

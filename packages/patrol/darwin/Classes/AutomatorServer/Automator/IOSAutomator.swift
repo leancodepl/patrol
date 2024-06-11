@@ -16,6 +16,10 @@
       return XCUIApplication(bundleIdentifier: "com.apple.Preferences")
     }()
 
+    private lazy var system: XCUISystem = {
+      return device.system
+    }()
+
     private var timeout: TimeInterval = 10
 
     func configure(timeout: TimeInterval) {
@@ -50,6 +54,18 @@
     func openControlCenter() throws {
       runAction("opening control center") {
         self.swipeToOpenControlCenter()
+      }
+    }
+
+    func openUrl(_ urlString: String) {
+      guard let url = URL(string: urlString) else {
+        Logger.shared.i("Invalid URL string: \(urlString)")
+
+        return
+      }
+
+      runAction("opening url \(url)") {
+        self.system.open(url)
       }
     }
 

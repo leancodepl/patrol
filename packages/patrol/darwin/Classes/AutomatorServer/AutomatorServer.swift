@@ -56,6 +56,12 @@
       }
     }
 
+    func openUrl(request: OpenUrlRequest) throws {
+      return try runCatching {
+        try automator.openUrl(request.url)
+      }
+    }
+
     // MARK: General UI interaction
 
     func getNativeViews(

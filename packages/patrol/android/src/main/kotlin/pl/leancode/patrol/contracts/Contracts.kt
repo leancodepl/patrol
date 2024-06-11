@@ -154,6 +154,10 @@ class Contracts {
 
   )
 
+  data class OpenUrlRequest (
+    val url: String
+  )
+
   data class AndroidSelector (
     val className: String? = null,
     val isCheckable: Boolean? = null,

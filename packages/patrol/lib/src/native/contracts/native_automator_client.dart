@@ -96,6 +96,15 @@ class NativeAutomatorClient {
     );
   }
 
+  Future<void> openUrl(
+    OpenUrlRequest request,
+  ) {
+    return _sendRequest(
+      'openUrl',
+      request.toJson(),
+    );
+  }
+
   Future<GetNativeUITreeRespone> getNativeUITree(
     GetNativeUITreeRequest request,
   ) async {
