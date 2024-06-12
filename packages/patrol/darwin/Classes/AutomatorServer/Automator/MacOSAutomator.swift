@@ -1,8 +1,14 @@
 #if PATROL_ENABLED && os(macOS)
+
   import XCTest
+  import os
 
   class MacOSAutomator: Automator {
     private var timeout: TimeInterval = 10
+    
+    private lazy var device: XCUIDevice = {
+      return XCUIDevice.shared
+    }()
 
     private lazy var controlCenter: XCUIApplication = {
       return XCUIApplication(bundleIdentifier: "com.apple.controlcenter")
@@ -14,6 +20,10 @@
 
     private lazy var systemPreferences: XCUIApplication = {
       return XCUIApplication(bundleIdentifier: "com.apple.systempreferences")
+    }()
+
+    private lazy var system: XCUISystem = {
+      return device.system
     }()
 
     func configure(timeout: TimeInterval) {
@@ -53,6 +63,18 @@
     func openControlCenter() throws {
       try runAction("openControlCenter") {
         throw PatrolError.methodNotImplemented("openControlCenter")
+      }
+    }
+
+    func openUrl(_ urlString: String) {
+      guard let url = URL(string: urlString) else {
+        Logger.shared.i("Invalid URL string: \(urlString)")
+
+        return
+      }
+
+      runAction("opening url \(url)") {
+        self.system.open(url)
       }
     }
 
