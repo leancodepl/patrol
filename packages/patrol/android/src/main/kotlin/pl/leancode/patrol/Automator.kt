@@ -137,7 +137,7 @@ class Automator private constructor() {
     }
 
     fun openUrl(urlString: String) {
-        Logger.d("openUrl($urlString)1")
+        Logger.d("openUrl($urlString)")
         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(urlString))
         intent.addCategory(Intent.CATEGORY_BROWSABLE)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
