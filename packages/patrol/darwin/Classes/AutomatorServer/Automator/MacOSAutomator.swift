@@ -5,7 +5,7 @@
 
   class MacOSAutomator: Automator {
     private var timeout: TimeInterval = 10
-    
+
     private lazy var device: XCUIDevice = {
       return XCUIDevice.shared
     }()
