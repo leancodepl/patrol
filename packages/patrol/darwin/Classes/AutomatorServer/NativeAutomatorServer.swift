@@ -23,6 +23,8 @@ protocol NativeAutomatorServer {
     func enterText(request: EnterTextRequest) throws
     func swipe(request: SwipeRequest) throws
     func waitUntilVisible(request: WaitUntilVisibleRequest) throws
+    func pressVolumeUp() throws
+    func pressVolumeDown() throws
     func enableAirplaneMode() throws
     func disableAirplaneMode() throws
     func enableWiFi() throws
@@ -142,6 +144,16 @@ extension NativeAutomatorServer {
     private func waitUntilVisibleHandler(request: HTTPRequest) throws -> HTTPResponse {
         let requestArg = try JSONDecoder().decode(WaitUntilVisibleRequest.self, from: request.body)
         try waitUntilVisible(request: requestArg)
+        return HTTPResponse(.ok)
+    }
+
+    private func pressVolumeUpHandler(request: HTTPRequest) throws -> HTTPResponse {
+        try pressVolumeUp()
+        return HTTPResponse(.ok)
+    }
+
+    private func pressVolumeDownHandler(request: HTTPRequest) throws -> HTTPResponse {
+        try pressVolumeDown()
         return HTTPResponse(.ok)
     }
 
@@ -341,6 +353,16 @@ extension NativeAutomatorServer {
             request in handleRequest(
                 request: request,
                 handler: waitUntilVisibleHandler)
+        }
+        server.route(.POST, "pressVolumeUp") {
+            request in handleRequest(
+                request: request,
+                handler: pressVolumeUpHandler)
+        }
+        server.route(.POST, "pressVolumeDown") {
+            request in handleRequest(
+                request: request,
+                handler: pressVolumeDownHandler)
         }
         server.route(.POST, "enableAirplaneMode") {
             request in handleRequest(

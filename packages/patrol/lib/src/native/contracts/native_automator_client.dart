@@ -179,6 +179,18 @@ class NativeAutomatorClient {
     );
   }
 
+  Future<void> pressVolumeUp() {
+    return _sendRequest(
+      'pressVolumeUp',
+    );
+  }
+
+  Future<void> pressVolumeDown() {
+    return _sendRequest(
+      'pressVolumeDown',
+    );
+  }
+
   Future<void> enableAirplaneMode() {
     return _sendRequest(
       'enableAirplaneMode',

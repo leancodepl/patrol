@@ -84,6 +84,14 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
         }
     }
 
+    override fun pressVolumeUp() {
+        automation.pressVolumeUp()
+    }
+
+    override fun pressVolumeDown() {
+        automation.pressVolumeDown()
+    }
+
     override fun enableDarkMode(request: DarkModeRequest) {
         automation.enableDarkMode()
     }

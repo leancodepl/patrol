@@ -243,6 +243,10 @@ extension Selector {
       withTimeout timeout: TimeInterval?
     ) throws
 
+    // MARK: Volume settings
+    func pressVolumeUp() throws
+    func pressVolumeDown() throws
+
     // MARK: Services
     func enableDarkMode(_ bundleId: String) throws
     func disableDarkMode(_ bundleId: String) throws

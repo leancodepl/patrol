@@ -360,6 +360,19 @@
       }
     }
 
+    // MARK: Volume settings
+    func pressVolumeUp() throws {
+      runAction("pressing volume up") {
+        self.device.press(XCUIDevice.Button.pressVolumeUp)
+      }
+    }
+
+    func pressVolumeDown() throws {
+      runAction("pressing volume down") {
+        self.device.press(XCUIDevice.Button.pressVolumeDown)
+      }
+    }
+
     // MARK: Services
 
     func enableDarkMode(_ bundleId: String) throws {

@@ -460,6 +460,16 @@ class NativeAutomator {
     );
   }
 
+  /// Press volume up
+  Future<void> pressVolumeUp() async {
+    await _wrapRequest('pressVolumeUp', _client.pressVolumeUp);
+  }
+
+  /// Press volume down
+  Future<void> pressVolumeDown() async {
+    await _wrapRequest('pressVolumeDown', _client.pressVolumeDown);
+  }
+
   /// Enables dark mode.
   Future<void> enableDarkMode({String? appId}) async {
     await _wrapRequest(
