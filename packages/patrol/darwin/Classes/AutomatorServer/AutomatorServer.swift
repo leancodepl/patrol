@@ -58,7 +58,7 @@
 
     func openUrl(request: OpenUrlRequest) throws {
       return try runCatching {
-        try automator.openUrl(request.url)
+        automator.openUrl(request.url)
       }
     }
 
