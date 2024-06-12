@@ -1,3 +1,7 @@
+## 3.8.0
+
+- Add `openUrl({required String url})` method, for testing deeplinks 
+
 ## 3.7.3
 
 - Try closing system dialog when disabling wifi on iOS. (#2123)
