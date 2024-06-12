@@ -393,7 +393,7 @@ class Automator private constructor() {
         }
         delay()
     }
-    
+
     fun pressVolumeDown() {
         Logger.d("pressVolumeDown")
         val success = uiDevice.pressKeyCode(KEYCODE_VOLUME_DOWN)
