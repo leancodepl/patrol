@@ -363,7 +363,7 @@
     // MARK: Volume settings
     func pressVolumeUp() throws {
       #if targetEnvironment(simulator)
-        throw PatrolError.internal("pressing volume up on simulator")
+        throw PatrolError.methodNotAvailable("pressVolumeUp", "simulator")
       #else
         self.device.press(XCUIDevice.Button.volumeUp)
       #endif
@@ -371,7 +371,7 @@
 
     func pressVolumeDown() throws {
       #if targetEnvironment(simulator)
-        throw PatrolError.internal("pressing volume down on simulator")
+        throw PatrolError.methodNotAvailable("pressVolumeDown", "simulator")
       #else
         self.device.press(XCUIDevice.Button.volumeDown)
       #endif
