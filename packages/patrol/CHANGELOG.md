@@ -1,6 +1,6 @@
 ## 3.8.0
 
-- Add `openUrl({required String url})` method, for testing deeplinks 
+- Add `openUrl(String url)` method, for testing deeplinks. (#2219) 
 
 ## 3.7.3
 
