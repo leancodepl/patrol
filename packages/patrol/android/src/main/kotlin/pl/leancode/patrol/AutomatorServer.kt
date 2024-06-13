@@ -70,6 +70,10 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
         automation.openQuickSettings()
     }
 
+    override fun openUrl(request: Contracts.OpenUrlRequest) {
+        automation.openUrl(request.url)
+    }
+
     override fun getNativeUITree(request: GetNativeUITreeRequest): GetNativeUITreeRespone {
         return if (request.useNativeViewHierarchy) {
             val trees = automation.getNativeUITrees()

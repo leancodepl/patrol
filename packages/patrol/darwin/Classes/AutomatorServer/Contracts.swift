@@ -149,6 +149,10 @@ public struct OpenQuickSettingsRequest: Codable {
 
 }
 
+public struct OpenUrlRequest: Codable {
+  public var url: String
+}
+
 public struct AndroidSelector: Codable {
   public var className: String?
   public var isCheckable: Bool?

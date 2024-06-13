@@ -49,6 +49,10 @@ class OpenAppRequest {
 
 class OpenQuickSettingsRequest {}
 
+class OpenUrlRequest {
+  late String url;
+}
+
 class AndroidSelector {
   String? className;
   bool? isCheckable;
@@ -301,6 +305,7 @@ abstract class NativeAutomator<IOSServer, AndroidServer, DartClient> {
   void doublePressRecentApps();
   void openApp(OpenAppRequest request);
   void openQuickSettings(OpenQuickSettingsRequest request);
+  void openUrl(OpenUrlRequest request);
 
 // general UI interaction
   GetNativeUITreeRespone getNativeUITree(GetNativeUITreeRequest request);

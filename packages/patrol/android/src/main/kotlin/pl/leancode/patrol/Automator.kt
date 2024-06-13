@@ -3,6 +3,8 @@ package pl.leancode.patrol
 import android.app.Instrumentation
 import android.app.UiAutomation
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.SystemClock
 import android.widget.EditText
@@ -131,6 +133,15 @@ class Automator private constructor() {
             ?: throw Exception("intent for launching package \"$packageName\" is null. Make sure you have android.permission.QUERY_ALL_PACKAGES in AndroidManifest.xml")
         // intent?.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK) // clear out any previous task, i.e., make sure it starts on the initial screen
         targetContext.startActivity(intent) // starts the app
+        delay()
+    }
+
+    fun openUrl(urlString: String) {
+        Logger.d("openUrl($urlString)")
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(urlString))
+        intent.addCategory(Intent.CATEGORY_BROWSABLE)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        targetContext.startActivity(intent)
         delay()
     }
 

@@ -354,6 +354,25 @@ class OpenQuickSettingsRequest with EquatableMixin {
 }
 
 @JsonSerializable()
+class OpenUrlRequest with EquatableMixin {
+  OpenUrlRequest({
+    required this.url,
+  });
+
+  factory OpenUrlRequest.fromJson(Map<String, dynamic> json) =>
+      _$OpenUrlRequestFromJson(json);
+
+  final String url;
+
+  Map<String, dynamic> toJson() => _$OpenUrlRequestToJson(this);
+
+  @override
+  List<Object?> get props => [
+        url,
+      ];
+}
+
+@JsonSerializable()
 class AndroidSelector with EquatableMixin {
   AndroidSelector({
     this.className,
