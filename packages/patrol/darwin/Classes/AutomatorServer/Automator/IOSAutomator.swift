@@ -362,15 +362,19 @@
 
     // MARK: Volume settings
     func pressVolumeUp() throws {
-      try runVolumeAction("pressing volume up") {
+      #if targetEnvironment(simulator)
+        throw PatrolError.internal("pressing volume up on simulator")
+      #else
         self.device.press(XCUIDevice.Button.volumeUp)
-      }
+      #endif
     }
 
     func pressVolumeDown() throws {
-      try runVolumeAction("pressing volume down") {
+      #if targetEnvironment(simulator)
+        throw PatrolError.internal("pressing volume down on simulator")
+      #else
         self.device.press(XCUIDevice.Button.volumeDown)
-      }
+      #endif
     }
 
     // MARK: Services
@@ -996,16 +1000,6 @@
         // go back to the app under test
         let app = try self.getApp(withBundleId: bundleId)
         app.activate()
-      }
-    }
-
-    private func runVolumeAction(_ log: String, block: @escaping () -> Void) throws {
-      #if targetEnvironment(simulator)
-        throw PatrolError.internal("Volume buttons are not available on Simulator")
-      #endif
-
-      runAction(log) {
-        block()
       }
     }
 
