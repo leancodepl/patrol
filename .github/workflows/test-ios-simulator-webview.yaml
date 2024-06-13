@@ -8,7 +8,7 @@ on:
 jobs:
   run_tests:
     name: Flutter ${{ matrix.flutter-version }} webview on ${{ matrix.device_model }} (${{ matrix.os_version }}) simulator
-    runs-on: macos-latest
+    runs-on: macos-14
     timeout-minutes: 40
     outputs:
       SLACK_MESSAGE_TITLE: Flutter ${{ matrix.flutter-version }} on ${{ matrix.os }} ${{ matrix.os_version }} simulator
@@ -23,7 +23,7 @@ jobs:
         flutter-channel: ['stable']
         device_model: [iPhone 14]
         os: [iOS]
-        os_version: ['16.2']
+        os_version: ['17.2']
 
     defaults:
       run:
