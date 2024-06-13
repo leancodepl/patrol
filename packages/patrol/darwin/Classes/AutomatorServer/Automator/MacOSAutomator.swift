@@ -66,11 +66,9 @@
       }
     }
 
-    func openUrl(_ urlString: String) {
+    func openUrl(_ urlString: String) throws {
       guard let url = URL(string: urlString) else {
-        Logger.shared.i("Invalid URL string: \(urlString)")
-
-        return
+        PatrolError.internal("Invalid URL string: \(urlString)")
       }
 
       runAction("opening url \(url)") {
