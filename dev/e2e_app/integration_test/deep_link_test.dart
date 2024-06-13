@@ -5,7 +5,7 @@ void main() {
     await createApp($);
     await $.native.pressHome();
 
-    await $.native.openUrl(url: 'patrol://check/somepath?query=10');
+    await $.native.openUrl('patrol://check/somepath?query=10');
     await $.pumpAndSettle();
 
     expect($('Applink Screen'), findsOneWidget);

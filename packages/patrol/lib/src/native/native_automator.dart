@@ -358,7 +358,7 @@ class NativeAutomator {
   }
 
   /// Opens the URL specified by [url].
-  Future<void> openUrl({required String url}) async {
+  Future<void> openUrl(String url) async {
     await _wrapRequest(
       'openUrl',
       () => _client.openUrl(OpenUrlRequest(url: url)),
