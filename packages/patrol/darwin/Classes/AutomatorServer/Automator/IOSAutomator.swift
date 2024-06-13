@@ -360,6 +360,19 @@
       }
     }
 
+    // MARK: Volume settings
+    func pressVolumeUp() throws {
+      try runVolumeAction("pressing volume up") {
+        self.device.press(XCUIDevice.Button.volumeUp)
+      }
+    }
+
+    func pressVolumeDown() throws {
+      try runVolumeAction("pressing volume down") {
+        self.device.press(XCUIDevice.Button.volumeDown)
+      }
+    }
+
     // MARK: Services
 
     func enableDarkMode(_ bundleId: String) throws {
@@ -983,6 +996,16 @@
         // go back to the app under test
         let app = try self.getApp(withBundleId: bundleId)
         app.activate()
+      }
+    }
+
+    private func runVolumeAction(_ log: String, block: @escaping () -> Void) throws {
+      #if targetEnvironment(simulator)
+        throw PatrolError.internal("Volume buttons are not available on Simulator")
+      #endif
+
+      runAction(log) {
+        block()
       }
     }
 

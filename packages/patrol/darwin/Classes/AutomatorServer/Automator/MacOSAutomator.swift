@@ -184,6 +184,19 @@
       }
     }
 
+    // MARK: Volume settings
+    func pressVolumeUp() throws {
+      runAction("pressing volume up") {
+        throw PatrolError.methodNotImplemented("pressVolumeUp")
+      }
+    }
+
+    func pressVolumeDown() throws {
+      runAction("pressing volume down") {
+        throw PatrolError.methodNotImplemented("pressVolumeDown")
+      }
+    }
+
     func enableDarkMode(_ bundleId: String) throws {
       try runAction("enableDarkMode") {
         throw PatrolError.methodNotImplemented("enableDarkMode")

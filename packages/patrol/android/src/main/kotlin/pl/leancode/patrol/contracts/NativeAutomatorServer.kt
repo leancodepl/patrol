@@ -30,6 +30,8 @@ abstract class NativeAutomatorServer {
     abstract fun enterText(request: Contracts.EnterTextRequest)
     abstract fun swipe(request: Contracts.SwipeRequest)
     abstract fun waitUntilVisible(request: Contracts.WaitUntilVisibleRequest)
+    abstract fun pressVolumeUp()
+    abstract fun pressVolumeDown()
     abstract fun enableAirplaneMode()
     abstract fun disableAirplaneMode()
     abstract fun enableWiFi()
@@ -130,6 +132,14 @@ abstract class NativeAutomatorServer {
       "waitUntilVisible" bind POST to {
         val body = json.fromJson(it.bodyString(), Contracts.WaitUntilVisibleRequest::class.java)
         waitUntilVisible(body)
+        Response(OK)
+      },
+      "pressVolumeUp" bind POST to {
+        pressVolumeUp()
+        Response(OK)
+      },
+      "pressVolumeDown" bind POST to {
+        pressVolumeDown()
         Response(OK)
       },
       "enableAirplaneMode" bind POST to {

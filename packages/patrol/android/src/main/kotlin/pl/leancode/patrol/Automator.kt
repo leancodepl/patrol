@@ -7,6 +7,8 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.SystemClock
+import android.view.KeyEvent.KEYCODE_VOLUME_DOWN
+import android.view.KeyEvent.KEYCODE_VOLUME_UP
 import android.widget.EditText
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.By
@@ -381,6 +383,24 @@ class Automator private constructor() {
         if (waitForView(bySelector, index, timeout) == null) {
             throw UiObjectNotFoundException("$uiSelector")
         }
+    }
+
+    fun pressVolumeUp() {
+        Logger.d("pressVolumeUp")
+        val success = uiDevice.pressKeyCode(KEYCODE_VOLUME_UP)
+        if (!success) {
+            throw PatrolException("Could not press volume up")
+        }
+        delay()
+    }
+
+    fun pressVolumeDown() {
+        Logger.d("pressVolumeDown")
+        val success = uiDevice.pressKeyCode(KEYCODE_VOLUME_DOWN)
+        if (!success) {
+            throw PatrolException("Could not press volume down")
+        }
+        delay()
     }
 
     fun openNotifications() {

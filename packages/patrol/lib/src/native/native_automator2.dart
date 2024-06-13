@@ -344,6 +344,30 @@ class NativeAutomator2 {
     );
   }
 
+  /// Press volume up
+  ///
+  /// Doesn't work on iOS Simulator because Volume buttons are not available
+  /// there.
+  ///
+  /// See also:
+  ///  * <https://developer.android.com/reference/androidx/test/uiautomator/UiDevice#pressKeyCodes(int[])>,
+  ///    which is used on Android
+  Future<void> pressVolumeUp() async {
+    await _wrapRequest('pressVolumeUp', _client.pressVolumeUp);
+  }
+
+  /// Press volume down
+  ///
+  /// Doesn't work on iOS Simulator because Volume buttons are not available
+  /// there.
+  ///
+  /// See also:
+  ///  * <https://developer.android.com/reference/androidx/test/uiautomator/UiDevice#pressKeyCodes(int[])>,
+  ///    which is used on Android
+  Future<void> pressVolumeDown() async {
+    await _wrapRequest('pressVolumeDown', _client.pressVolumeDown);
+  }
+
   /// Enables dark mode.
   Future<void> enableDarkMode({String? appId}) async {
     await _wrapRequest(

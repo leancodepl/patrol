@@ -208,6 +208,19 @@
       }
     }
 
+    // MARK: Volume settings
+    func pressVolumeUp() throws {
+      return try runCatching {
+        try automator.pressVolumeUp()
+      }
+    }
+
+    func pressVolumeDown() throws {
+      return try runCatching {
+        try automator.pressVolumeDown()
+      }
+    }
+
     // MARK: Services
 
     func enableAirplaneMode() throws {
