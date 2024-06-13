@@ -1,6 +1,7 @@
 ## 3.8.0
 
 - Add `openUrl(String url)` method, for testing deeplinks. (#2219) 
+- Add `pressVolumeUp` and `pressVolumeDown()`. (#2223)
 
 ## 3.7.3
 
