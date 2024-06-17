@@ -17,6 +17,16 @@
       "title": "Join our Discord",
       "icon": "discord",
       "link": "https://discord.gg/ukBK5t4EZg"
+    },
+    {
+      "title": "patrol API reference",
+      "icon": "code",
+      "link": "https://pub.dev/documentation/patrol/latest/index.html"
+    },
+    {
+      "title": "patrol_finders API reference",
+      "icon": "code",
+      "link": "https://pub.dev/documentation/patrol_finders/latest/index.html"
     }
   ],
   "sidebar": [
