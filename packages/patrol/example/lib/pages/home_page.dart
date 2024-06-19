@@ -66,9 +66,6 @@ class _HomePageBody extends StatelessWidget {
                     onPressed: () => Navigator.push(context, notificationRoute),
                   ),
         ),
-        const Text('FIRST_KEY: ${const String.fromEnvironment('FIRST_KEY')}'),
-        const Text('SECOND_KEY: ${const String.fromEnvironment('SECOND_KEY')}'),
-        const Text('THIRD_KEY: ${const String.fromEnvironment('THIRD_KEY')}'),
       ],
     ).horizontallyPadded24;
   }
