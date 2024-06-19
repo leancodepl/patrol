@@ -48,6 +48,7 @@ class DevelopCommand extends PatrolCommand {
     usesBuildModeOption();
     usesFlavorOption();
     usesDartDefineOption();
+    usesDartDefineFromFileOption();
     usesLabelOption();
     usesWaitOption();
     usesPortOptions();
@@ -188,12 +189,32 @@ class DevelopCommand extends PatrolCommand {
       );
     }
 
+    final dartDefineFromFilePaths = stringsArg('dart-define-from-file');
+
+    var dartDefineFromFiles = <String, dynamic>{};
+
+    for (final dartDefineFromFilePath in dartDefineFromFilePaths) {
+      _logger.detail(
+        'Received path for --dart-define-from-file: $dartDefineFromFilePath',
+      );
+      dartDefineFromFiles = mergeKeys(
+        json: dartDefineFromFiles,
+        dartDefines:
+            _dartDefinesReader.fromConfigFile(path: dartDefineFromFilePath),
+      );
+    }
+
+    final dartDefinesMerged =
+        mergeKeys(json: dartDefineFromFiles, dartDefines: dartDefines);
+
     final flutterOpts = FlutterAppOptions(
       command: flutterCommand,
       target: entrypoint.path,
       flavor: androidFlavor,
       buildMode: buildMode,
-      dartDefines: dartDefines,
+      dartDefines: dartDefinesMerged,
+      dartDefineFromFile: {},
+      dartDefineFromFilePaths: dartDefineFromFilePaths,
     );
 
     final androidOpts = AndroidAppOptions(

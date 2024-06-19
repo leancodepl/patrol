@@ -13,6 +13,8 @@ class FlutterAppOptions {
     required this.flavor,
     required this.buildMode,
     required this.dartDefines,
+    required this.dartDefineFromFile,
+    required this.dartDefineFromFilePaths,
   });
 
   final FlutterCommand command;
@@ -20,6 +22,8 @@ class FlutterAppOptions {
   final String? flavor;
   final BuildMode buildMode;
   final Map<String, String> dartDefines;
+  final Map<String, dynamic> dartDefineFromFile;
+  final List<String> dartDefineFromFilePaths;
 
   /// Translates these options into a proper `flutter attach`.
   @nonVirtual
@@ -34,6 +38,10 @@ class FlutterAppOptions {
       for (final dartDefine in dartDefines.entries) ...[
         '--dart-define',
         '${dartDefine.key}=${dartDefine.value}',
+      ],
+      for (final dartDefineFromFilePath in dartDefineFromFilePaths) ...[
+        '--dart-define-from-file',
+        dartDefineFromFilePath,
       ],
     ];
 
@@ -177,6 +185,10 @@ class IOSAppOptions {
         '--dart-define',
         '${dartDefine.key}=${dartDefine.value}',
       ],
+      for (final dartDefineFromFilePath in flutter.dartDefineFromFilePaths) ...[
+        '--dart-define-from-file',
+        dartDefineFromFilePath,
+      ],
     ];
 
     return cmd;
@@ -265,6 +277,10 @@ class MacOSAppOptions {
         '--dart-define',
         '${dartDefine.key}=${dartDefine.value}',
       ],
+      for (final dartDefineFromFilePath in flutter.dartDefineFromFilePaths) ...[
+        '--dart-define-from-file',
+        dartDefineFromFilePath,
+      ],
     ];
 
     return cmd;
@@ -304,4 +320,18 @@ class MacOSAppOptions {
 
     return cmd;
   }
+}
+
+Map<String, String> mergeKeys({
+  required Map<String, dynamic> json,
+  required Map<String, dynamic> dartDefines,
+}) {
+  final modified = Map<String, String>.from(json);
+
+  if (dartDefines.isNotEmpty) {
+    dartDefines.forEach((key, value) {
+      modified[key] = value as String;
+    });
+  }
+  return modified;
 }

@@ -19,6 +19,8 @@ void main() {
           buildMode: BuildMode.debug,
           flavor: null,
           dartDefines: {},
+          dartDefineFromFile: {},
+          dartDefineFromFilePaths: [],
         );
         options = const AndroidAppOptions(
           flutter: flutterOptions,
@@ -47,6 +49,8 @@ void main() {
           buildMode: BuildMode.release,
           flavor: null,
           dartDefines: {},
+          dartDefineFromFile: {},
+          dartDefineFromFilePaths: [],
         );
         options = const AndroidAppOptions(
           flutter: flutterOpts,
@@ -83,6 +87,8 @@ void main() {
           buildMode: BuildMode.release,
           flavor: 'dev',
           dartDefines: dartDefines,
+          dartDefineFromFile: {},
+          dartDefineFromFilePaths: [],
         );
         options = const AndroidAppOptions(
           flutter: flutterOpts,
@@ -112,6 +118,8 @@ void main() {
           buildMode: BuildMode.debug,
           flavor: 'dev',
           dartDefines: dartDefines,
+          dartDefineFromFile: {},
+          dartDefineFromFilePaths: [],
         );
         options = const AndroidAppOptions(
           flutter: flutterOpts,
@@ -146,6 +154,8 @@ void main() {
         buildMode: BuildMode.debug,
         flavor: null,
         dartDefines: {},
+        dartDefineFromFile: {},
+        dartDefineFromFilePaths: [],
       );
 
       setUp(() {
@@ -172,6 +182,7 @@ void main() {
             '--suppress-analytics',
             ...['--config-only', '--no-codesign', '--debug', '--simulator'],
             ...['--target', 'integration_test/app_test.dart'],
+            ...['--dart-define-from-file', ''],
           ]),
         );
 
@@ -230,6 +241,8 @@ void main() {
             'PASSWORD': 'ny4ncat',
             'foo': 'bar',
           },
+          dartDefineFromFile: {},
+          dartDefineFromFilePaths: [],
         );
 
         setUp(() {
@@ -260,6 +273,7 @@ void main() {
               ...['--dart-define', 'EMAIL=user@example.com'],
               ...['--dart-define', 'PASSWORD=ny4ncat'],
               ...['--dart-define', 'foo=bar'],
+              ...['--dart-define-from-file', ''],
             ]),
           );
 
