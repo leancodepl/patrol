@@ -19,7 +19,6 @@ void main() {
           buildMode: BuildMode.debug,
           flavor: null,
           dartDefines: {},
-          dartDefineFromFile: {},
           dartDefineFromFilePaths: [],
         );
         options = const AndroidAppOptions(
@@ -49,7 +48,6 @@ void main() {
           buildMode: BuildMode.release,
           flavor: null,
           dartDefines: {},
-          dartDefineFromFile: {},
           dartDefineFromFilePaths: [],
         );
         options = const AndroidAppOptions(
@@ -87,7 +85,6 @@ void main() {
           buildMode: BuildMode.release,
           flavor: 'dev',
           dartDefines: dartDefines,
-          dartDefineFromFile: {},
           dartDefineFromFilePaths: [],
         );
         options = const AndroidAppOptions(
@@ -118,7 +115,6 @@ void main() {
           buildMode: BuildMode.debug,
           flavor: 'dev',
           dartDefines: dartDefines,
-          dartDefineFromFile: {},
           dartDefineFromFilePaths: [],
         );
         options = const AndroidAppOptions(
@@ -154,7 +150,6 @@ void main() {
         buildMode: BuildMode.debug,
         flavor: null,
         dartDefines: {},
-        dartDefineFromFile: {},
         dartDefineFromFilePaths: [],
       );
 
@@ -241,7 +236,6 @@ void main() {
             'PASSWORD': 'ny4ncat',
             'foo': 'bar',
           },
-          dartDefineFromFile: {},
           dartDefineFromFilePaths: [],
         );
 

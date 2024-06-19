@@ -146,7 +146,6 @@ class BuildAndroidCommand extends PatrolCommand {
       flavor: flavor,
       buildMode: buildMode,
       dartDefines: dartDefinesMerged,
-      dartDefineFromFile: {},
       dartDefineFromFilePaths: dartDefineFromFilePaths,
     );
     final androidOpts = AndroidAppOptions(

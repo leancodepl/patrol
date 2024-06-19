@@ -137,7 +137,6 @@ class BuildIOSCommand extends PatrolCommand {
       flavor: flavor,
       buildMode: buildMode,
       dartDefines: dartDefines,
-      dartDefineFromFile: {},
       dartDefineFromFilePaths: dartDefineFromFilePaths,
     );
 

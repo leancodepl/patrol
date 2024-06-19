@@ -204,7 +204,6 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       flavor: androidFlavor,
       buildMode: buildMode,
       dartDefines: dartDefinesMerged,
-      dartDefineFromFile: {},
       dartDefineFromFilePaths: dartDefineFromFilePaths,
     );
 

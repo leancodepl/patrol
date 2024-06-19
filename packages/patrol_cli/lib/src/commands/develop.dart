@@ -213,7 +213,6 @@ class DevelopCommand extends PatrolCommand {
       flavor: androidFlavor,
       buildMode: buildMode,
       dartDefines: dartDefinesMerged,
-      dartDefineFromFile: {},
       dartDefineFromFilePaths: dartDefineFromFilePaths,
     );
 

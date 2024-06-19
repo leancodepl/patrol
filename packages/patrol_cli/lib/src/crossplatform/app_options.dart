@@ -13,7 +13,6 @@ class FlutterAppOptions {
     required this.flavor,
     required this.buildMode,
     required this.dartDefines,
-    required this.dartDefineFromFile,
     required this.dartDefineFromFilePaths,
   });
 
@@ -22,7 +21,6 @@ class FlutterAppOptions {
   final String? flavor;
   final BuildMode buildMode;
   final Map<String, String> dartDefines;
-  final Map<String, dynamic> dartDefineFromFile;
   final List<String> dartDefineFromFilePaths;
 
   /// Translates these options into a proper `flutter attach`.
