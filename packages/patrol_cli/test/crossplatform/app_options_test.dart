@@ -177,7 +177,6 @@ void main() {
             '--suppress-analytics',
             ...['--config-only', '--no-codesign', '--debug', '--simulator'],
             ...['--target', 'integration_test/app_test.dart'],
-            ...['--dart-define-from-file', ''],
           ]),
         );
 
@@ -267,7 +266,6 @@ void main() {
               ...['--dart-define', 'EMAIL=user@example.com'],
               ...['--dart-define', 'PASSWORD=ny4ncat'],
               ...['--dart-define', 'foo=bar'],
-              ...['--dart-define-from-file', ''],
             ]),
           );
 
