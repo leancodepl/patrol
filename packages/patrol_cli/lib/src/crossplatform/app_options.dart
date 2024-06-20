@@ -319,17 +319,3 @@ class MacOSAppOptions {
     return cmd;
   }
 }
-
-Map<String, String> mergeKeys({
-  required Map<String, dynamic> json,
-  required Map<String, dynamic> dartDefines,
-}) {
-  final modified = Map<String, String>.from(json);
-
-  if (dartDefines.isNotEmpty) {
-    dartDefines.forEach((key, value) {
-      modified[key] = value as String;
-    });
-  }
-  return modified;
-}
