@@ -195,7 +195,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       );
     }
 
-    final dartDefinesMerged =
+    final mergedDartDefines =
         mergeKeys(json: dartDefineFromFiles, dartDefines: dartDefines);
 
     final flutterOpts = FlutterAppOptions(
@@ -203,7 +203,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       target: entrypoint.path,
       flavor: androidFlavor,
       buildMode: buildMode,
-      dartDefines: dartDefinesMerged,
+      dartDefines: mergedDartDefines,
       dartDefineFromFilePaths: dartDefineFromFilePaths,
     );
 

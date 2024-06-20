@@ -204,7 +204,7 @@ class DevelopCommand extends PatrolCommand {
       );
     }
 
-    final dartDefinesMerged =
+    final mergedDartDefines =
         mergeKeys(json: dartDefineFromFiles, dartDefines: dartDefines);
 
     final flutterOpts = FlutterAppOptions(
@@ -212,7 +212,7 @@ class DevelopCommand extends PatrolCommand {
       target: entrypoint.path,
       flavor: androidFlavor,
       buildMode: buildMode,
-      dartDefines: dartDefinesMerged,
+      dartDefines: mergedDartDefines,
       dartDefineFromFilePaths: dartDefineFromFilePaths,
     );
 
