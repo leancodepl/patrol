@@ -68,7 +68,7 @@
 
     func openUrl(_ urlString: String) throws {
       guard let url = URL(string: urlString) else {
-        PatrolError.internal("Invalid URL string: \(urlString)")
+        throw PatrolError.internal("Invalid URL string: \(urlString)")
       }
 
       runAction("opening url \(url)") {
@@ -186,13 +186,13 @@
 
     // MARK: Volume settings
     func pressVolumeUp() throws {
-      runAction("pressing volume up") {
+      try runAction("pressing volume up") {
         throw PatrolError.methodNotImplemented("pressVolumeUp")
       }
     }
 
     func pressVolumeDown() throws {
-      runAction("pressing volume down") {
+      try runAction("pressing volume down") {
         throw PatrolError.methodNotImplemented("pressVolumeDown")
       }
     }
