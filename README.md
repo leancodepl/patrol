@@ -164,7 +164,7 @@ dart pub global deactivate patrol_cli
 then
 
 ```bash
-cd patrol/packages/patrol_cli
+cd packages/patrol_cli
 flutter pub global activate -s path .
 ```
 
