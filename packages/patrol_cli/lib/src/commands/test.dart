@@ -187,7 +187,6 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       dartDefineFromFilePaths,
       dartDefines,
       _dartDefinesReader,
-      _logger,
     );
 
     final flutterOpts = FlutterAppOptions(

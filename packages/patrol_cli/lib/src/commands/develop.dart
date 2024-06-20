@@ -196,7 +196,6 @@ class DevelopCommand extends PatrolCommand {
       dartDefineFromFilePaths,
       dartDefines,
       _dartDefinesReader,
-      _logger,
     );
 
     final flutterOpts = FlutterAppOptions(
