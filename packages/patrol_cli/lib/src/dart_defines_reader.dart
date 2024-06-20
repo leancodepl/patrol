@@ -2,15 +2,19 @@ import 'dart:convert';
 
 import 'package:file/file.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
+import 'package:patrol_cli/src/base/logger.dart';
 
 class DartDefinesReader {
   DartDefinesReader({
     required Directory projectRoot,
+    required Logger logger,
   })  : _projectRoot = projectRoot,
-        _fs = projectRoot.fileSystem;
+        _fs = projectRoot.fileSystem,
+        _logger = logger;
 
   final Directory _projectRoot;
   final FileSystem _fs;
+  final Logger _logger;
 
   Map<String, String> fromCli({required List<String> args}) => _parse(args);
 
@@ -32,12 +36,12 @@ class DartDefinesReader {
     final file = _fs.file(filePath);
 
     if (!file.existsSync()) {
+      _logger.warn('File "$filePath" does not exist');
       return {};
     }
 
     final jsonString = file.readAsStringSync();
-    final json = jsonDecode(jsonString) as Map<String, dynamic>;
-    return json;
+    return jsonDecode(jsonString) as Map<String, dynamic>;
   }
 
   Map<String, String> _parse(List<String> args) {

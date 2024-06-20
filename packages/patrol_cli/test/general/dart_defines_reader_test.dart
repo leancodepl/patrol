@@ -1,11 +1,13 @@
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:patrol_cli/src/base/extensions/platform.dart';
+import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/dart_defines_reader.dart';
 import 'package:platform/platform.dart';
 import 'package:test/test.dart';
 
 import '../src/common.dart';
+import '../src/mocks.dart';
 
 void main() {
   _test(initFakePlatform(Platform.macOS));
@@ -17,13 +19,18 @@ void _test(Platform platform) {
 
   group('DartDefinesReader', () {
     late DartDefinesReader reader;
+    late Logger logger;
 
     setUp(() {
+      logger = MockLogger();
       fs = MemoryFileSystem.test(style: platform.fileSystemStyle);
       final wd = fs.directory(fs.path.join('projects', 'awesome_app'))
         ..createSync(recursive: true);
       fs.currentDirectory = wd;
-      reader = DartDefinesReader(projectRoot: fs.currentDirectory);
+      reader = DartDefinesReader(
+        projectRoot: fs.currentDirectory,
+        logger: logger,
+      );
     });
 
     group('fromCli()', () {

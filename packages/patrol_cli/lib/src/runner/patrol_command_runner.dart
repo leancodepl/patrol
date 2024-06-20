@@ -141,7 +141,10 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
       BuildCommand(
         testFinder: testFinder,
         testBundler: testBundler,
-        dartDefinesReader: DartDefinesReader(projectRoot: _fs.currentDirectory),
+        dartDefinesReader: DartDefinesReader(
+          projectRoot: _fs.currentDirectory,
+          logger: _logger,
+        ),
         pubspecReader: PubspecReader(projectRoot: _fs.currentDirectory),
         androidTestBackend: androidTestBackend,
         iosTestBackend: iosTestBackend,
@@ -156,7 +159,10 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         deviceFinder: deviceFinder,
         testFinder: testFinder,
         testBundler: testBundler,
-        dartDefinesReader: DartDefinesReader(projectRoot: _fs.currentDirectory),
+        dartDefinesReader: DartDefinesReader(
+          projectRoot: _fs.currentDirectory,
+          logger: _logger,
+        ),
         compatibilityChecker: CompatibilityChecker(
           projectRoot: _fs.currentDirectory,
           processManager: _processManager,
@@ -183,7 +189,10 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         deviceFinder: deviceFinder,
         testBundler: testBundler,
         testFinder: testFinder,
-        dartDefinesReader: DartDefinesReader(projectRoot: _fs.currentDirectory),
+        dartDefinesReader: DartDefinesReader(
+          projectRoot: _fs.currentDirectory,
+          logger: _logger,
+        ),
         compatibilityChecker: CompatibilityChecker(
           projectRoot: _fs.currentDirectory,
           processManager: _processManager,
