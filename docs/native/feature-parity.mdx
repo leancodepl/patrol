@@ -10,28 +10,30 @@ implemented. We hope that it will help you evaluate Patrol.
 We strive for high feature parity across iOS and Android, but in some cases it's
 impossible to reach 100%. macOS support is still in alpha, so it has no native features yet.
 
-| **Feature**                 | **Android**    | **iOS**       | **macOS (alpha)** |
-| --------------------------- | -------------- | ------------- | ----------------- |
-| [Press home]                | ✅             | ✅            | ❌                |
-| [Press back]                | ✅             | ❌ (no API)   | ❌                |
-| [Open any app]              | ✅             | ✅            | ✅                |
-| [Open notifications]        | ✅             | ✅            | ❌                |
-| [Tap on notification]       | ✅             | ✅            | ❌                |
-| [Open quick settings]       | ✅             | ✅            | ❌                |
-| [Open url]                  | ✅             | ✅            | ✅                |
-| [Toggle dark mode]          | ✅             | ✅            | ❌                |
-| [Toggle airplane mode]      | ✅ see [#1359] | ✅            | ❌                |
-| [Toggle cellular]           | ✅             | ✅            | ❌                |
-| [Toggle Wi-Fi]              | ✅             | ✅            | ❌                |
-| [Toggle Bluetooth]          | ✅ see [#282]  | ✅            | ❌                |
-| Toggle location             | ✅ see [#283]  | ✅ see [#326] | ❌                |
-| [Tap]                       | ✅             | ✅            | ❌                |
-| [Double tap]                | ✅             | ✅            | ❌                |
-| [Tap at coordinate]         | ✅             | ✅            | ❌                |
-| [Enter text]                | ✅             | ✅            | ❌                |
-| [Swipe]                     | ✅             | ✅            | ❌                |
-| [Handle permission dialogs] | ✅             | ✅            | ❌                |
-| Interact with WebView       | ⚠️ see [#244]  | ✅            | ❌                |
+| **Feature**                 | **Android**    | **iOS**            | **macOS (alpha)** |
+| --------------------------- | -------------- | ------------------ | ----------------- |
+| [Press home]                | ✅             | ✅                 | ❌                |
+| [Press back]                | ✅             | ❌ (no API)        | ❌                |
+| [Open any app]              | ✅             | ✅                 | ✅                |
+| [Open notifications]        | ✅             | ✅                 | ❌                |
+| [Tap on notification]       | ✅             | ✅                 | ❌                |
+| [Open quick settings]       | ✅             | ✅                 | ❌                |
+| [Open url]                  | ✅             | ✅                 | ✅                |
+| [Toggle dark mode]          | ✅             | ✅                 | ❌                |
+| [Toggle airplane mode]      | ✅ see [#1359] | ✅                 | ❌                |
+| [Toggle cellular]           | ✅             | ✅                 | ❌                |
+| [Toggle Wi-Fi]              | ✅             | ✅                 | ❌                |
+| [Toggle Bluetooth]          | ✅ see [#282]  | ✅                 | ❌                |
+| Toggle location             | ✅ see [#283]  | ✅ see [#326]      | ❌                |
+| [Tap]                       | ✅             | ✅                 | ❌                |
+| [Double tap]                | ✅             | ✅                 | ❌                |
+| [Tap at coordinate]         | ✅             | ✅                 | ❌                |
+| [Enter text]                | ✅             | ✅                 | ❌                |
+| [Swipe]                     | ✅             | ✅                 | ❌                |
+| [Handle permission dialogs] | ✅             | ✅                 | ❌                |
+| Interact with WebView       | ⚠️ see [#244]   | ✅                 | ❌                |
+| [Press volume down]         | ✅             | ✅ (simulator ❌)  | ❌                |
+| [Press volume up]           | ✅             | ✅ (simulator ❌)  | ❌                |
 
 
 [#244]: https://github.com/leancodepl/patrol/issues/244
@@ -45,6 +47,7 @@ impossible to reach 100%. macOS support is still in alpha, so it has no native f
 [open notifications]: https://pub.dev/documentation/patrol/latest/patrol/NativeAutomator/openNotifications.html
 [tap on notification]: https://pub.dev/documentation/patrol/latest/patrol/NativeAutomator/tapOnNotificationBySelector.html
 [open quick settings]: https://pub.dev/documentation/patrol/latest/patrol/NativeAutomator/openQuickSettings.html
+[open url]: https://pub.dev/documentation/patrol/latest/patrol/NativeAutomator/openUrl.html
 [toggle dark mode]: https://pub.dev/documentation/patrol/latest/patrol/NativeAutomator/enableDarkMode.html
 [toggle airplane mode]: https://pub.dev/documentation/patrol/latest/patrol/NativeAutomator/enableAirplaneMode.html
 [toggle cellular]: https://pub.dev/documentation/patrol/latest/patrol/NativeAutomator/enableCellular.html
@@ -56,3 +59,5 @@ impossible to reach 100%. macOS support is still in alpha, so it has no native f
 [enter text]: https://pub.dev/documentation/patrol/latest/patrol/NativeAutomator/enterText.html
 [swipe]: https://pub.dev/documentation/patrol/latest/patrol/NativeAutomator/swipe.html
 [handle permission dialogs]: https://pub.dev/documentation/patrol/latest/patrol/NativeAutomator/grantPermissionWhenInUse.html
+[press volume down]: https://pub.dev/documentation/patrol/latest/patrol/NativeAutomator/pressVolumeDown.html
+[press volume up]: https://pub.dev/documentation/patrol/latest/patrol/NativeAutomator/pressVolumeUp.html
