@@ -25,6 +25,7 @@ class FlutterAppOptions {
       ...['flutter', 'attach'],
       '--no-version-check',
       '--debug',
+      '--no-sound-null-safety',
       ...['--target', target],
       for (final dartDefine in dartDefines.entries) ...[
         '--dart-define',
@@ -99,6 +100,10 @@ class AndroidAppOptions {
     // Add Dart test target
     final target = '-Ptarget=${flutter.target}';
     cmd.add(target);
+
+    const noSoundNullSafety =
+        '-Pextra-front-end-options=--no-sound-null-safety';
+    cmd.add(noSoundNullSafety);
 
     // Add Dart defines encoded in base64
     if (flutter.dartDefines.isNotEmpty) {

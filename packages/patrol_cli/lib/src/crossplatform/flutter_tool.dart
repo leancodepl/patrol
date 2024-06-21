@@ -66,6 +66,7 @@ class FlutterTool {
           ...['flutter', 'attach'],
           '--no-version-check',
           '--debug',
+          '--no-sound-null-safety',
           ...['--device-id', deviceId],
           if (appId != null) ...['--app-id', appId],
           ...['--target', target],
