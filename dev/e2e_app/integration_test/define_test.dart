@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
 
 /// Run this test with command:
-/// patrol test -t integration_test/define_test.dart --dart-define-from-file=defines_1.json --dart-define-from-file=defines_2.json --verbose
+/// patrol test -t integration_test/define_test.dart --dart-define-from-file=defines_1.json --dart-define-from-file=defines_2.json --dart-define-from-file=defines_3.env --verbose
 
 void main() {
   patrolTest('check dart-define-from-file', ($) async {
