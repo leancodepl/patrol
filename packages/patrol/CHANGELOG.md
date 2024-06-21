@@ -1,3 +1,7 @@
+## Unreleased
+
+- Add privacy manifest for Apple.
+
 ## 3.8.0
 
 - Add `openUrl(String url)` method, for testing deeplinks. (#2219) 
