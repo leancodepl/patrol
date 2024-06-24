@@ -94,6 +94,12 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
         padding: EdgeInsets.all(8),
         key: const Key('listViewKey'),
         children: [
+          const Text('FIRST_KEY: ${const String.fromEnvironment('FIRST_KEY')}'),
+          const Text(
+            'SECOND_KEY: ${const String.fromEnvironment('SECOND_KEY')}',
+          ),
+          const Text('THIRD_KEY: ${const String.fromEnvironment('THIRD_KEY')}'),
+          const Text('FIFTH_KEY: ${const String.fromEnvironment('FIFTH_KEY')}'),
           const Text(
             'You have pushed the button this many times:',
           ),

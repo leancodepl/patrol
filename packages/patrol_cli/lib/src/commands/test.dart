@@ -4,6 +4,7 @@ import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
 import 'package:patrol_cli/src/base/logger.dart';
+import 'package:patrol_cli/src/commands/dart_define_utils.dart';
 import 'package:patrol_cli/src/compatibility_checker.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/dart_defines_reader.dart';
@@ -44,6 +45,7 @@ class TestCommand extends PatrolCommand {
     usesBuildModeOption();
     usesFlavorOption();
     usesDartDefineOption();
+    usesDartDefineFromFileOption();
     usesLabelOption();
     usesWaitOption();
     usesPortOptions();
@@ -179,12 +181,21 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       );
     }
 
+    final dartDefineFromFilePaths = stringsArg('dart-define-from-file');
+
+    final mergedDartDefines = mergeDartDefines(
+      dartDefineFromFilePaths,
+      dartDefines,
+      _dartDefinesReader,
+    );
+
     final flutterOpts = FlutterAppOptions(
       command: flutterCommand,
       target: entrypoint.path,
       flavor: androidFlavor,
       buildMode: buildMode,
-      dartDefines: dartDefines,
+      dartDefines: mergedDartDefines,
+      dartDefineFromFilePaths: dartDefineFromFilePaths,
     );
 
     final androidOpts = AndroidAppOptions(

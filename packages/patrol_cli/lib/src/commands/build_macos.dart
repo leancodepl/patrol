@@ -32,6 +32,7 @@ class BuildMacOSCommand extends PatrolCommand {
     usesBuildModeOption();
     usesFlavorOption();
     usesDartDefineOption();
+    usesDartDefineFromFileOption();
     usesLabelOption();
     usesWaitOption();
     usesPortOptions();
@@ -124,12 +125,15 @@ class BuildMacOSCommand extends PatrolCommand {
       );
     }
 
+    final dartDefineFromFilePaths = stringsArg('dart-define-from-file');
+
     final flutterOpts = FlutterAppOptions(
       command: flutterCommand,
       target: entrypoint.path,
       flavor: flavor,
       buildMode: buildMode,
       dartDefines: dartDefines,
+      dartDefineFromFilePaths: dartDefineFromFilePaths,
     );
 
     final macosOpts = MacOSAppOptions(
