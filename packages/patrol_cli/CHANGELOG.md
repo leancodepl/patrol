@@ -1,3 +1,7 @@
+## Unreleased
+
+- Add support for --dart-define-from-file (#2232).
+
 ## 2.7.0
 
 - Add support for custom flutter commands (#2124).
