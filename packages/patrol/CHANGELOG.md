@@ -1,4 +1,4 @@
-## Unreleased
+## 3.9.0
 
 - Add privacy manifest for Apple.
 - Disabled use of system proxy in iOS/macOS (could lead to broken tests).
