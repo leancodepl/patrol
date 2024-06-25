@@ -1,4 +1,4 @@
-## Unreleased
+## 2.8.0
 
 - Add support for --dart-define-from-file (#2232).
 
