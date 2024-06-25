@@ -1,3 +1,7 @@
+## 2.8.1
+
+- Fix parsing non string values from --dart-define-from-file (#2243).
+
 ## 2.8.0
 
 - Add support for --dart-define-from-file (#2232).
