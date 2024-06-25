@@ -101,6 +101,9 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
           const Text('THIRD_KEY: ${const String.fromEnvironment('THIRD_KEY')}'),
           const Text('FIFTH_KEY: ${const String.fromEnvironment('FIFTH_KEY')}'),
           const Text(
+            'BOOL_DEFINED: ${const String.fromEnvironment('BOOL_DEFINED')}',
+          ),
+          const Text(
             'You have pushed the button this many times:',
           ),
           Text(
