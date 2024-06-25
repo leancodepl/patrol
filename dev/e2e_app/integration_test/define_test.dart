@@ -13,5 +13,6 @@ void main() {
     expect($('SECOND_KEY: Second key from defines_2.json'), findsOneWidget);
     expect($('THIRD_KEY: Third key from defines_2.json'), findsOneWidget);
     expect($('FIFTH_KEY: Fifth key from defines_3.env'), findsOneWidget);
+    expect($('BOOL_DEFINED: false'), findsOneWidget);
   });
 }

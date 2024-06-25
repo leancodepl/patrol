@@ -5,12 +5,10 @@ Map<String, String> mergeKeys({
   required Map<String, dynamic> json,
   required Map<String, dynamic> dartDefines,
 }) {
-  final modified = Map<String, String>.from(json);
+  final modified = json.map((key, value) => MapEntry(key, value.toString()));
 
   if (dartDefines.isNotEmpty) {
-    dartDefines.forEach((key, value) {
-      modified[key] = value as String;
-    });
+    dartDefines.forEach((key, value) => modified[key] = value.toString());
   }
   return modified;
 }
