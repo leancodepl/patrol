@@ -62,7 +62,7 @@ class TestFinder {
 
         testFiles.addAll(foundTargets);
       } else {
-        throwToolExit('target $target is invalid');
+        throwToolExit('target $target is invalid. Does your test file(s) end with "_test.dart"?');
       }
     }
 
