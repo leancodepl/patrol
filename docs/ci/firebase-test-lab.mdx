@@ -41,6 +41,7 @@ Farm][aws_device_farm].
         --app build/app/outputs/apk/debug/app-debug.apk \
         --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
         --timeout 1m \
+        --environment-variables clearPackageData=true \
         --results-bucket=<RESULTS_BUCKET> \
         --results-dir=<RESULTS_DIRECTORY>
     ```
@@ -48,6 +49,12 @@ Farm][aws_device_farm].
     <Info>
       You must [install the gcloud tool] first. [Here][gcloud_android] you can learn
       more about all available options and flags.
+    </Info>
+
+    <Info>
+      The environment variable `clearPackageData=true` tells orchestartor to clear the
+      package data between test runs. Keep in mind that it clears only the data of your
+      app, not other data on the device, e.g. Chrome.
     </Info>
 
     It's convenient to create a shell script to avoid typing that long command
