@@ -541,11 +541,15 @@ class NativeAutomator {
   }
 
   /// Enables bluetooth.
+  ///
+  /// Doesn't work on Android versions lower than 12.
   Future<void> enableBluetooth() async {
     await _wrapRequest('enableBluetooth', _client.enableBluetooth);
   }
 
   /// Disables bluetooth.
+  ///
+  /// Doesn't work on Android versions lower than 12.
   Future<void> disableBluetooth() async {
     await _wrapRequest('disableBluetooth', _client.disableBluetooth);
   }

@@ -190,9 +190,21 @@ class Automator private constructor() {
 
     fun enableWifi() = executeShellCommand("svc wifi enable")
 
-    fun enableBluetooth(): Unit = throw NotImplementedError("enableBluetooth")
+    fun enableBluetooth() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            executeShellCommand("svc bluetooth enable")
+        } else {
+            throw PatrolException("enableBluetooth method is not available in Android lower than 12")
+        }
+    }
 
-    fun disableBluetooth(): Unit = throw NotImplementedError("disableBluetooth")
+    fun disableBluetooth() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            executeShellCommand("svc bluetooth disable")
+        } else {
+            throw PatrolException("disableBluetooth method is not available in Android lower than 12")
+        }
+    }
 
     fun getNativeViews(selector: BySelector): List<NativeView> {
         Logger.d("getNativeViews()")
