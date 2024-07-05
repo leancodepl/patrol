@@ -94,10 +94,6 @@ class DevelopCommand extends PatrolCommand {
       ),
     );
 
-    await _compatibilityChecker.checkVersionsCompatibility(
-      flutterCommand: flutterCommand,
-    );
-
     final targets = stringsArg('target');
     if (targets.isEmpty) {
       throwToolExit('No target provided with --target');
@@ -133,6 +129,11 @@ class DevelopCommand extends PatrolCommand {
       flutterCommand: flutterCommand,
     );
     final device = devices.single;
+
+    await _compatibilityChecker.checkVersionsCompatibility(
+      flutterCommand: flutterCommand,
+      targetPlatform: device.targetPlatform,
+    );
 
     // `flutter logs` doesn't work on macOS, so we don't support it for now
     // https://github.com/leancodepl/patrol/issues/1974

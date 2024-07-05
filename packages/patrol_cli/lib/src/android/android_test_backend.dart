@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io' show Process;
 
 import 'package:adb/adb.dart';
@@ -37,8 +38,11 @@ class AndroidTestBackend {
   final FileSystem _fs;
   final DisposeScope _disposeScope;
   final Logger _logger;
+  late final String javaPath;
 
   Future<void> build(AndroidAppOptions options) async {
+    await loadJavaPathFromFlutterDoctor();
+
     await _disposeScope.run((scope) async {
       final subject = options.description;
       final task = _logger.task('Building $subject');
@@ -52,6 +56,9 @@ class AndroidTestBackend {
         options.toGradleAssembleInvocation(isWindows: _platform.isWindows),
         runInShell: true,
         workingDirectory: _fs.currentDirectory.childDirectory('android').path,
+        environment: {
+          'JAVA_HOME': javaPath,
+        },
       )
         ..disposedBy(scope);
       process.listenStdOut((l) => _logger.detail('\t: $l')).disposedBy(scope);
@@ -73,6 +80,7 @@ class AndroidTestBackend {
         options.toGradleAssembleTestInvocation(isWindows: _platform.isWindows),
         runInShell: true,
         workingDirectory: _fs.currentDirectory.childDirectory('android').path,
+        environment: {'JAVA_HOME': javaPath},
       )
         ..disposedBy(scope);
       process.listenStdOut((l) => _logger.detail('\t: $l')).disposedBy(scope);
@@ -90,6 +98,33 @@ class AndroidTestBackend {
         throw Exception(cause);
       }
     });
+  }
+
+  Future<void> loadJavaPathFromFlutterDoctor() async {
+    final javaCompleterPath = Completer<String?>();
+
+    await _disposeScope.run((scope) async {
+      final process = await _processManager.start(
+        ['flutter', 'doctor', '--verbose'],
+        runInShell: true,
+      )
+        ..disposedBy(scope);
+
+      process.listenStdOut(
+        (line) async {
+          if (line.contains('• Java binary at:') &&
+              javaCompleterPath.isCompleted == false) {
+            final path = line
+                .replaceAll('• Java binary at:', '')
+                .replaceAll('/bin/java', '')
+                .trim();
+            javaCompleterPath.complete(path);
+          }
+        },
+      ).disposedBy(scope);
+    });
+
+    javaPath = await javaCompleterPath.future ?? '';
   }
 
   /// Executes the tests of the given [options] on the given [device].
@@ -110,7 +145,10 @@ class AndroidTestBackend {
       final process = await _processManager.start(
         options.toGradleConnectedTestInvocation(isWindows: _platform.isWindows),
         runInShell: true,
-        environment: {'ANDROID_SERIAL': device.id},
+        environment: {
+          'ANDROID_SERIAL': device.id,
+          'JAVA_HOME': javaPath,
+        },
         workingDirectory: _fs.currentDirectory.childDirectory('android').path,
       )
         ..disposedBy(scope);

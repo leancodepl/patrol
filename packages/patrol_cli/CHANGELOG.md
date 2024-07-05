@@ -1,3 +1,7 @@
+## 2.9.0
+
+- Use `java` version from `flutter doctor`
+
 ## 2.8.1
 
 - Fix parsing non string values from --dart-define-from-file (#2243).
