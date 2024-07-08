@@ -41,7 +41,7 @@ class AndroidTestBackend {
   late final String javaPath;
 
   Future<void> build(AndroidAppOptions options) async {
-    await loadJavaPathFromFlutterDoctor();
+    await loadJavaPathFromFlutterDoctor(options.flutter.command.executable);
 
     await _disposeScope.run((scope) async {
       final subject = options.description;
@@ -80,7 +80,9 @@ class AndroidTestBackend {
         options.toGradleAssembleTestInvocation(isWindows: _platform.isWindows),
         runInShell: true,
         workingDirectory: _fs.currentDirectory.childDirectory('android').path,
-        environment: {'JAVA_HOME': javaPath},
+        environment: {
+          'JAVA_HOME': javaPath,
+        },
       )
         ..disposedBy(scope);
       process.listenStdOut((l) => _logger.detail('\t: $l')).disposedBy(scope);
@@ -100,12 +102,16 @@ class AndroidTestBackend {
     });
   }
 
-  Future<void> loadJavaPathFromFlutterDoctor() async {
+  Future<void> loadJavaPathFromFlutterDoctor(String commandExecutable) async {
     final javaCompleterPath = Completer<String?>();
 
     await _disposeScope.run((scope) async {
       final process = await _processManager.start(
-        ['flutter', 'doctor', '--verbose'],
+        [
+          commandExecutable,
+          'doctor',
+          '--verbose',
+        ],
         runInShell: true,
       )
         ..disposedBy(scope);
@@ -116,7 +122,10 @@ class AndroidTestBackend {
               javaCompleterPath.isCompleted == false) {
             final path = line
                 .replaceAll('• Java binary at:', '')
-                .replaceAll('/bin/java', '')
+                .replaceAll(
+                  _platform.isWindows ? r'\bin\java' : '/bin/java',
+                  '',
+                )
                 .trim();
             javaCompleterPath.complete(path);
           }

@@ -32,6 +32,7 @@ class CompatibilityChecker {
   }) async {
     if (targetPlatform == TargetPlatform.android) {
       await _checkJavaVersion(
+        flutterCommand.executable,
         DisposeScope(),
         _processManager,
         _projectRoot,
@@ -92,6 +93,7 @@ class CompatibilityChecker {
 }
 
 Future<void> _checkJavaVersion(
+  String flutterExecutable,
   DisposeScope disposeScope,
   ProcessManager processManager,
   Directory projectRoot,
@@ -102,7 +104,7 @@ Future<void> _checkJavaVersion(
 
   await disposeScope.run((scope) async {
     final process = await processManager.start(
-      ['flutter', 'doctor', '--verbose'],
+      [flutterExecutable, 'doctor', '--verbose'],
       workingDirectory: projectRoot.path,
       runInShell: true,
     )
