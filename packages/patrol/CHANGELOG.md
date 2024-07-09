@@ -1,3 +1,8 @@
+## Unreleased
+
+- Implement `enableBluetooth` and `disableBluetooth` methods for Android > 11. (#2254)
+- Implement `enableAirplaneMode` and `disableAirplaneMode` methods for Android. (#2254)
+
 ## 3.9.0
 
 - Add privacy manifest for Apple.
