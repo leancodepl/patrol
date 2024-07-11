@@ -79,9 +79,7 @@ jobs:
       - name: Set tests to exclude
         id: set_excluded_tests
         run: |
-          TESTS_TO_EXCLUDE="service_airplane_mode_test,\
-          service_bluetooth_test,\
-          permissions/notifications_test,\
+          TESTS_TO_EXCLUDE="permissions/notifications_test,\
           webview_hackernews_test,\
           webview_leancode_test,\
           webview_stackoverflow_test"

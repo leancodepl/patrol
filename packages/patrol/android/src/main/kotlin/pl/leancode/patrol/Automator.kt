@@ -181,7 +181,7 @@ class Automator private constructor() {
 
     fun enableAirplaneMode() {
         val enabled = isAirplaneModeOn()
-        if(enabled) {
+        if (enabled) {
             Logger.d("Airplane mode already enabled")
             return
         }
@@ -191,7 +191,7 @@ class Automator private constructor() {
 
     fun disableAirplaneMode() {
         val enabled = isAirplaneModeOn()
-        if(!enabled) {
+        if (!enabled) {
             Logger.d("Airplane mode already disabled")
             return
         }
@@ -690,8 +690,11 @@ class Automator private constructor() {
     }
 
     private fun isAirplaneModeOn(): Boolean {
-        return Settings.System.getInt(targetContext.contentResolver,
-            Settings.Global.AIRPLANE_MODE_ON, 0) != 0;
+        return Settings.System.getInt(
+            targetContext.contentResolver,
+            Settings.Global.AIRPLANE_MODE_ON,
+            0
+        ) != 0
     }
 
     private fun toggleAirplaneMode() {
@@ -702,14 +705,13 @@ class Automator private constructor() {
         var uiSelector = UiSelector()
         uiSelector = uiSelector.text("Airplane mode")
         val uiObject = uiDevice.findObject(uiSelector)
-        if(uiObject != null) {
+        if (uiObject != null) {
             uiObject.click()
             pressBack()
             delay()
         } else {
             throw PatrolException("Could not find airplane mode toggle")
         }
-
     }
 
     companion object {
