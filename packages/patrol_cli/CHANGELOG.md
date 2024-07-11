@@ -1,6 +1,6 @@
-## 2.9.0
+## 3.0.0
 
-- Use `java` version from `flutter doctor`
+- **Breaking:** Use `java` version from `flutter doctor`
 
 ## 2.8.1
 
