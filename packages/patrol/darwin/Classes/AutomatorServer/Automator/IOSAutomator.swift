@@ -415,6 +415,18 @@
       }
     }
 
+    func enableLocation() throws {
+      try runAction("enableLocation") {
+        throw PatrolError.methodNotImplemented("enableLocation")
+      }
+    }
+
+    func disableLocation() throws {
+      try runAction("disableLocation") {
+        throw PatrolError.methodNotImplemented("disableLocation")
+      }
+    }
+
     func enableAirplaneMode() throws {
       try runControlCenterAction("enabling airplane mode") {
         let toggle = self.springboard.switches["airplane-mode-button"]

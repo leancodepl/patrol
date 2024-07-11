@@ -332,6 +332,8 @@ abstract class NativeAutomator<IOSServer, AndroidServer, DartClient> {
   void disableBluetooth();
   void enableDarkMode(DarkModeRequest request);
   void disableDarkMode(DarkModeRequest request);
+  void enableLocation();
+  void disableLocation();
 
   // notifications
   void openNotifications();

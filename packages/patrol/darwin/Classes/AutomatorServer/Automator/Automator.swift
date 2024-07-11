@@ -250,6 +250,8 @@ extension Selector {
     // MARK: Services
     func enableDarkMode(_ bundleId: String) throws
     func disableDarkMode(_ bundleId: String) throws
+    func enableLocation() throws
+    func disableLocation() throws
     func enableAirplaneMode() throws
     func disableAirplaneMode() throws
     func enableCellular() throws

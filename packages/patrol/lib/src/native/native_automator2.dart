@@ -432,6 +432,16 @@ class NativeAutomator2 {
     await _wrapRequest('disableBluetooth', _client.disableBluetooth);
   }
 
+  /// Enables location.
+  Future<void> enableLocation() async {
+    await _wrapRequest('enableLocation', _client.enableLocation);
+  }
+
+  /// Disables location.
+  Future<void> disableLocation() async {
+    await _wrapRequest('disableLocation', _client.disableLocation);
+  }
+
   /// Taps on the native view specified by [selector].
   ///
   /// It waits for the view to become visible for [timeout] duration. If

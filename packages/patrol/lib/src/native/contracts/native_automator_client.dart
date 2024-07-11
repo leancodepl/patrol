@@ -257,6 +257,18 @@ class NativeAutomatorClient {
     );
   }
 
+  Future<void> enableLocation() {
+    return _sendRequest(
+      'enableLocation',
+    );
+  }
+
+  Future<void> disableLocation() {
+    return _sendRequest(
+      'disableLocation',
+    );
+  }
+
   Future<void> openNotifications() {
     return _sendRequest(
       'openNotifications',

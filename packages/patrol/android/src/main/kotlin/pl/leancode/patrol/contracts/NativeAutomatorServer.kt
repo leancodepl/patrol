@@ -42,6 +42,8 @@ abstract class NativeAutomatorServer {
     abstract fun disableBluetooth()
     abstract fun enableDarkMode(request: Contracts.DarkModeRequest)
     abstract fun disableDarkMode(request: Contracts.DarkModeRequest)
+    abstract fun enableLocation()
+    abstract fun disableLocation()
     abstract fun openNotifications()
     abstract fun closeNotifications()
     abstract fun closeHeadsUpNotification()
@@ -182,6 +184,14 @@ abstract class NativeAutomatorServer {
       "disableDarkMode" bind POST to {
         val body = json.fromJson(it.bodyString(), Contracts.DarkModeRequest::class.java)
         disableDarkMode(body)
+        Response(OK)
+      },
+      "enableLocation" bind POST to {
+        enableLocation()
+        Response(OK)
+      },
+      "disableLocation" bind POST to {
+        disableLocation()
         Response(OK)
       },
       "openNotifications" bind POST to {

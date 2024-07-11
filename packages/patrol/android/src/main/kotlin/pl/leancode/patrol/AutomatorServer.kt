@@ -132,6 +132,14 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
         automation.disableBluetooth()
     }
 
+    override fun enableLocation() {
+        automation.enableLocation()
+    }
+
+    override fun disableLocation() {
+        automation.disableLocation()
+    }
+
     override fun getNativeViews(request: GetNativeViewsRequest): GetNativeViewsResponse {
         if (request.selector != null) {
             val views = automation.getNativeViews(request.selector.toBySelector())
