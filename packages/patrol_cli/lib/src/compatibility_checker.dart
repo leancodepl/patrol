@@ -103,20 +103,48 @@ Future<void> _checkJavaVersion(
   final javaCompleterVersion = Completer<Version?>();
 
   await disposeScope.run((scope) async {
-    final process = await processManager.start(
+    final processFlutter = await processManager.start(
       [flutterExecutable, 'doctor', '--verbose'],
       workingDirectory: projectRoot.path,
       runInShell: true,
     )
       ..disposedBy(scope);
 
-    process.listenStdOut(
+    processFlutter.listenStdOut(
       (line) async {
         if (line.contains('• Java version') &&
             javaCompleterVersion.isCompleted == false) {
           final versionString = line.split(' ').last.replaceAll(')', '');
           javaCompleterVersion.complete(Version.parse(versionString));
         }
+      },
+      onDone: () async {
+        if (!javaCompleterVersion.isCompleted) {
+          final processJava = await processManager.start(
+            ['javac', '--version'],
+            workingDirectory: projectRoot.path,
+            runInShell: true,
+          )
+            ..disposedBy(scope);
+
+          processJava.listenStdOut(
+            (line) async {
+              if (line.startsWith('javac')) {
+                javaCompleterVersion
+                    .complete(Version.parse(line.split(' ').last));
+              }
+            },
+            onDone: () {
+              javaCompleterVersion.complete(null);
+            },
+            onError: (error) {
+              javaCompleterVersion.complete(null);
+            },
+          ).disposedBy(scope);
+        }
+      },
+      onError: (error) {
+        javaCompleterVersion.complete(null);
       },
     ).disposedBy(scope);
   });
