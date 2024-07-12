@@ -134,18 +134,12 @@ Future<void> _checkJavaVersion(
                     .complete(Version.parse(line.split(' ').last));
               }
             },
-            onDone: () {
-              javaCompleterVersion.complete(null);
-            },
-            onError: (error) {
-              javaCompleterVersion.complete(null);
-            },
+            onDone: () => javaCompleterVersion.complete(null),
+            onError: (error) => javaCompleterVersion.complete(null),
           ).disposedBy(scope);
         }
       },
-      onError: (error) {
-        javaCompleterVersion.complete(null);
-      },
+      onError: (error) => javaCompleterVersion.complete(null),
     ).disposedBy(scope);
   });
 

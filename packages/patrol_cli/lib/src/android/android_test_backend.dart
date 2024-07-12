@@ -142,9 +142,7 @@ class AndroidTestBackend {
             javaCompleterPath.complete(null);
           }
         },
-        onError: (error) {
-          javaCompleterPath.complete(null);
-        },
+        onError: (error) => javaCompleterPath.complete(null),
       ).disposedBy(scope);
     });
 
