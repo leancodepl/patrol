@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io' as io;
 
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
@@ -7,6 +6,7 @@ import 'package:patrol_cli/src/base/constants.dart' as constants;
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
+import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/runner/flutter_command.dart';
 import 'package:process/process.dart';
 import 'package:version/version.dart';
@@ -28,10 +28,12 @@ class CompatibilityChecker {
 
   Future<void> checkVersionsCompatibility({
     required FlutterCommand flutterCommand,
+    required TargetPlatform targetPlatform,
   }) async {
-    if (io.Platform.isAndroid) {
+    if (targetPlatform == TargetPlatform.android) {
       await _checkJavaVersion(
-        _disposeScope,
+        flutterCommand.executable,
+        DisposeScope(),
         _processManager,
         _projectRoot,
         _logger,
@@ -91,30 +93,36 @@ class CompatibilityChecker {
 }
 
 Future<void> _checkJavaVersion(
+  String flutterExecutable,
   DisposeScope disposeScope,
   ProcessManager processManager,
   Directory projectRoot,
   Logger logger,
 ) async {
   Version? javaVersion;
-  final javaCompleter = Completer<Version?>();
+  final javaCompleterVersion = Completer<Version?>();
 
   await disposeScope.run((scope) async {
     final process = await processManager.start(
-      ['javac', '--version'],
+      [flutterExecutable, 'doctor', '--verbose'],
       workingDirectory: projectRoot.path,
       runInShell: true,
     )
       ..disposedBy(scope);
 
-    process.listenStdOut((line) async {
-      if (line.startsWith('javac')) {
-        javaCompleter.complete(Version.parse(line.split(' ').last));
-      }
-    }).disposedBy(scope);
+    process.listenStdOut(
+      (line) async {
+        if (line.contains('• Java version') &&
+            javaCompleterVersion.isCompleted == false) {
+          final versionString = line.split(' ').last.replaceAll(')', '');
+          javaCompleterVersion.complete(Version.parse(versionString));
+        }
+      },
+    ).disposedBy(scope);
   });
 
-  javaVersion = await javaCompleter.future;
+  javaVersion = await javaCompleterVersion.future;
+
   if (javaVersion == null) {
     throwToolExit(
       'Failed to read Java version. Make sure you have Java installed and added to PATH',
