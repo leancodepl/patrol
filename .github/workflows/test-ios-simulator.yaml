@@ -3,7 +3,8 @@ name: test ios simulator
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 */12 * * *'
+    - cron: "0 */12 * * *"
+  pull_request:
 
 jobs:
   run_tests:
@@ -20,11 +21,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ['3.22.x']
-        flutter-channel: ['stable']
-        device_model: [iPhone SE (3rd generation), iPhone 14, iPad (10th generation)]
+        flutter-version: ["3.22.x"]
+        flutter-channel: ["stable"]
+        device_model:
+          [iPhone SE (3rd generation), iPhone 14, iPad (10th generation)]
         os: [iOS]
-        os_version: ['17.2']
+        os_version: ["17.2"]
 
     defaults:
       run:
