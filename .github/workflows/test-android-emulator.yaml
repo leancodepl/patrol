@@ -6,6 +6,10 @@ on:
     - cron: "0 */12 * * *"
   pull_request:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   run_tests:
     name: Flutter ${{ matrix.flutter-version }} on emulator.wtf
