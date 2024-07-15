@@ -1,3 +1,7 @@
+## 3.0.1
+
+- Fallback to read `java` version from `JAVA_HOME` when `flutter doctor` doesn't print any.
+
 ## 3.0.0
 
 - **Breaking:** Use `java` version from `flutter doctor`

@@ -38,7 +38,7 @@ class AndroidTestBackend {
   final FileSystem _fs;
   final DisposeScope _disposeScope;
   final Logger _logger;
-  late final String javaPath;
+  late final String? javaPath;
 
   Future<void> build(AndroidAppOptions options) async {
     await loadJavaPathFromFlutterDoctor(options.flutter.command.executable);
@@ -56,9 +56,11 @@ class AndroidTestBackend {
         options.toGradleAssembleInvocation(isWindows: _platform.isWindows),
         runInShell: true,
         workingDirectory: _fs.currentDirectory.childDirectory('android').path,
-        environment: {
-          'JAVA_HOME': javaPath,
-        },
+        environment: javaPath != null
+            ? {
+                'JAVA_HOME': javaPath!,
+              }
+            : {},
       )
         ..disposedBy(scope);
       process.listenStdOut((l) => _logger.detail('\t: $l')).disposedBy(scope);
@@ -80,9 +82,11 @@ class AndroidTestBackend {
         options.toGradleAssembleTestInvocation(isWindows: _platform.isWindows),
         runInShell: true,
         workingDirectory: _fs.currentDirectory.childDirectory('android').path,
-        environment: {
-          'JAVA_HOME': javaPath,
-        },
+        environment: javaPath != null
+            ? {
+                'JAVA_HOME': javaPath!,
+              }
+            : {},
       )
         ..disposedBy(scope);
       process.listenStdOut((l) => _logger.detail('\t: $l')).disposedBy(scope);
@@ -102,6 +106,9 @@ class AndroidTestBackend {
     });
   }
 
+  /// Load the Java path from the output of `flutter doctor`.
+  /// If this will be null, then the Java path will not be set and patrol
+  /// tries to use the Java path from the PATH environment variable.
   Future<void> loadJavaPathFromFlutterDoctor(String commandExecutable) async {
     final javaCompleterPath = Completer<String?>();
 
@@ -130,10 +137,16 @@ class AndroidTestBackend {
             javaCompleterPath.complete(path);
           }
         },
+        onDone: () {
+          if (!javaCompleterPath.isCompleted) {
+            javaCompleterPath.complete(null);
+          }
+        },
+        onError: (error) => javaCompleterPath.complete(null),
       ).disposedBy(scope);
     });
 
-    javaPath = await javaCompleterPath.future ?? '';
+    javaPath = await javaCompleterPath.future;
   }
 
   /// Executes the tests of the given [options] on the given [device].
@@ -156,7 +169,11 @@ class AndroidTestBackend {
         runInShell: true,
         environment: {
           'ANDROID_SERIAL': device.id,
-          'JAVA_HOME': javaPath,
+          ...javaPath != null
+              ? {
+                  'JAVA_HOME': javaPath!,
+                }
+              : {},
         },
         workingDirectory: _fs.currentDirectory.childDirectory('android').path,
       )
