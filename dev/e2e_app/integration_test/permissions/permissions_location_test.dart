@@ -64,8 +64,8 @@ void main() {
         await $.native.grantPermissionOnlyThisTime();
       }
       await $.pump();
-      await $.pump(Duration(milliseconds: 500));
-      await $.pump(Duration(milliseconds: 500));
+      await $.pump(Duration(seconds: 5));
+      await $.pump(Duration(seconds: 5));
       await $.pump();
       await $.pump();
 
@@ -92,8 +92,8 @@ void main() {
         await $.native2.grantPermissionOnlyThisTime();
       }
       await $.pump();
-      await $.pump(Duration(milliseconds: 500));
-      await $.pump(Duration(milliseconds: 500));
+      await $.pump(Duration(seconds: 5));
+      await $.pump(Duration(seconds: 5));
       await $.pump();
       await $.pump();
 
