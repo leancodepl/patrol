@@ -5,12 +5,15 @@ void main() {
     await createApp($);
 
     await $('Open webview (LeanCode)').scrollTo().tap();
+    await $.pump(Duration(seconds: 8));
+    await $.pumpAndSettle();
 
     try {
       await $.native.tap(Selector(text: 'Accept cookies'));
     } on PatrolActionException catch (_) {
       // ignore
     }
+    await $.pumpAndSettle();
 
     await $.native.enterTextByIndex(
       'test@leancode.pl',
@@ -24,6 +27,8 @@ void main() {
     await createApp($);
 
     await $('Open webview (LeanCode)').scrollTo().tap();
+    await $.pump(Duration(seconds: 8));
+    await $.pumpAndSettle();
 
     try {
       await $.native2.tap(
@@ -35,6 +40,7 @@ void main() {
     } on PatrolActionException catch (_) {
       // ignore
     }
+    await $.pumpAndSettle();
 
     await $.native2.enterTextByIndex(
       'test@leancode.pl',
