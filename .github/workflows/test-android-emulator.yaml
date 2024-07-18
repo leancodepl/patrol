@@ -3,7 +3,12 @@ name: test android emulator
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 */12 * * *'
+    - cron: "0 */12 * * *"
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
 
 jobs:
   run_tests:
@@ -19,8 +24,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ['3.22.x']
-        flutter-channel: ['stable']
+        flutter-version: ["3.22.x"]
+        flutter-channel: ["stable"]
 
     defaults:
       run:
