@@ -2,9 +2,8 @@ name: test android device
 
 on:
   workflow_dispatch:
-  pull_request:
-  # schedule:
-  #   - cron: '0 */12 * * *'
+  schedule:
+    - cron: '0 */12 * * *'
 
 jobs:
   run_tests:
