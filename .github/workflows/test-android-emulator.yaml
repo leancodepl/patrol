@@ -97,7 +97,7 @@ jobs:
 
       - name: patrol build android
         run: | 
-          patrol build android --exclude ${{ env.EXCLUDED_TESTS }} \ 
+          patrol build android --exclude ${{ env.EXCLUDED_TESTS }} \
           --dart-define-from-file=defines_1.json --dart-define-from-file=defines_2.json --dart-define-from-file=defines_3.env \
           --verbose
 
