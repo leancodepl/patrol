@@ -2,8 +2,9 @@ name: test android device
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '30 21 * * *'
+  pull_request:
+  # schedule:
+  #   - cron: '0 */12 * * *'
 
 jobs:
   run_tests:
@@ -93,7 +94,10 @@ jobs:
           echo "EXCLUDED_TESTS=$target_paths" >> "$GITHUB_ENV"
 
       - name: patrol build android
-        run: patrol build android --exclude ${{ env.EXCLUDED_TESTS }} --verbose
+        run: |
+          patrol build android --exclude ${{ env.EXCLUDED_TESTS }} \
+          --dart-define-from-file=defines_1.json --dart-define-from-file=defines_2.json --dart-define-from-file=defines_3.env \
+          --verbose
 
       - name: Upload APKs to Firebase Test Lab and wait for tests to finish
         id: tests_step
