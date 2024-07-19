@@ -6,7 +6,6 @@ void main() {
 
     await $('Open webview (LeanCode)').scrollTo().tap();
     await $.pump(Duration(seconds: 8));
-    await $.pumpAndSettle();
 
     try {
       await $.native.tap(Selector(text: 'Accept cookies'));
