@@ -1002,7 +1002,8 @@
     ) throws {
       try runAction(log) {
         self.springboard.activate()
-        self.preferences.launch()  // reset to a known state
+        self.preferences.activate() // Needed to make sure that settings will be opened with a clean state
+        self.preferences.launch()
 
         block()
 
