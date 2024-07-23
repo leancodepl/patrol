@@ -7,6 +7,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.SystemClock
+import android.provider.Settings
 import android.view.KeyEvent.KEYCODE_VOLUME_DOWN
 import android.view.KeyEvent.KEYCODE_VOLUME_UP
 import android.widget.EditText
@@ -178,9 +179,25 @@ class Automator private constructor() {
 
     fun disableDarkMode() = executeShellCommand("cmd uimode night no")
 
-    fun enableAirplaneMode(): Unit = throw NotImplementedError("enableAirplaneMode")
+    fun enableAirplaneMode() {
+        val enabled = isAirplaneModeOn()
+        if (enabled) {
+            Logger.d("Airplane mode already enabled")
+            return
+        }
+        Logger.d("Enabling airplane mode")
+        toggleAirplaneMode()
+    }
 
-    fun disableAirplaneMode(): Unit = throw NotImplementedError("disableAirplaneMode")
+    fun disableAirplaneMode() {
+        val enabled = isAirplaneModeOn()
+        if (!enabled) {
+            Logger.d("Airplane mode already disabled")
+            return
+        }
+        Logger.d("Disabling airplane mode")
+        toggleAirplaneMode()
+    }
 
     fun disableCellular() = executeShellCommand("svc data disable")
 
@@ -190,9 +207,21 @@ class Automator private constructor() {
 
     fun enableWifi() = executeShellCommand("svc wifi enable")
 
-    fun enableBluetooth(): Unit = throw NotImplementedError("enableBluetooth")
+    fun enableBluetooth() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            executeShellCommand("svc bluetooth enable")
+        } else {
+            throw PatrolException("enableBluetooth method is not available in Android lower than 12")
+        }
+    }
 
-    fun disableBluetooth(): Unit = throw NotImplementedError("disableBluetooth")
+    fun disableBluetooth() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            executeShellCommand("svc bluetooth disable")
+        } else {
+            throw PatrolException("disableBluetooth method is not available in Android lower than 12")
+        }
+    }
 
     fun getNativeViews(selector: BySelector): List<NativeView> {
         Logger.d("getNativeViews()")
@@ -658,6 +687,31 @@ class Automator private constructor() {
         }
 
         return null
+    }
+
+    private fun isAirplaneModeOn(): Boolean {
+        return Settings.System.getInt(
+            targetContext.contentResolver,
+            Settings.Global.AIRPLANE_MODE_ON,
+            0
+        ) != 0
+    }
+
+    private fun toggleAirplaneMode() {
+        val intent = Intent(Settings.ACTION_AIRPLANE_MODE_SETTINGS)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        targetContext.startActivity(intent)
+
+        var uiSelector = UiSelector()
+        uiSelector = uiSelector.text("Airplane mode")
+        val uiObject = uiDevice.findObject(uiSelector)
+        if (uiObject != null) {
+            uiObject.click()
+            pressBack()
+            delay()
+        } else {
+            throw PatrolException("Could not find airplane mode toggle")
+        }
     }
 
     companion object {
