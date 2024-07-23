@@ -9,6 +9,8 @@ const _timeout = Duration(seconds: 5); // to avoid timeouts on CI
 
 // Firebase Test Lab pops out another dialog we need to handle
 Future<void> tapOkIfGoogleDialogAppears(PatrolIntegrationTester $) async {
+  await $.pump(Duration(seconds: 10));
+
   var listWithOkText = <NativeView>[];
   final inactivityTimer = Timer(Duration(seconds: 10), () {});
 
@@ -63,7 +65,6 @@ void main() {
         await $.native.selectFineLocation();
         await $.native.grantPermissionOnlyThisTime();
       }
-      await $.pump();
 
       await tapOkIfGoogleDialogAppears($);
     }
@@ -87,8 +88,6 @@ void main() {
         await $.native2.selectFineLocation();
         await $.native2.grantPermissionOnlyThisTime();
       }
-      await $.pump();
-
       await tapOkIfGoogleDialogAppearsV2($);
     }
 
