@@ -35,6 +35,8 @@ protocol NativeAutomatorServer {
     func disableBluetooth() throws
     func enableDarkMode(request: DarkModeRequest) throws
     func disableDarkMode(request: DarkModeRequest) throws
+    func enableLocation() throws
+    func disableLocation() throws
     func openNotifications() throws
     func closeNotifications() throws
     func closeHeadsUpNotification() throws
@@ -206,6 +208,16 @@ extension NativeAutomatorServer {
     private func disableDarkModeHandler(request: HTTPRequest) throws -> HTTPResponse {
         let requestArg = try JSONDecoder().decode(DarkModeRequest.self, from: request.body)
         try disableDarkMode(request: requestArg)
+        return HTTPResponse(.ok)
+    }
+
+    private func enableLocationHandler(request: HTTPRequest) throws -> HTTPResponse {
+        try enableLocation()
+        return HTTPResponse(.ok)
+    }
+
+    private func disableLocationHandler(request: HTTPRequest) throws -> HTTPResponse {
+        try disableLocation()
         return HTTPResponse(.ok)
     }
 
@@ -413,6 +425,16 @@ extension NativeAutomatorServer {
             request in handleRequest(
                 request: request,
                 handler: disableDarkModeHandler)
+        }
+        server.route(.POST, "enableLocation") {
+            request in handleRequest(
+                request: request,
+                handler: enableLocationHandler)
+        }
+        server.route(.POST, "disableLocation") {
+            request in handleRequest(
+                request: request,
+                handler: disableLocationHandler)
         }
         server.route(.POST, "openNotifications") {
             request in handleRequest(

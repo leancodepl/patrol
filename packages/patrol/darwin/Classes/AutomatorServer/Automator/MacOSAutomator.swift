@@ -209,6 +209,18 @@
       }
     }
 
+    func enableLocation() throws {
+      try runAction("enableLocation") {
+        throw PatrolError.methodNotImplemented("enableLocation")
+      }
+    }
+
+    func disableLocation() throws {
+      try runAction("disableLocation") {
+        throw PatrolError.methodNotImplemented("disableLocation")
+      }
+    }
+
     func enableAirplaneMode() throws {
       try runAction("enableAirplaneMode") {
         throw PatrolError.methodNotImplemented("enableAirplaneMode")

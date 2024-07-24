@@ -92,6 +92,7 @@ jobs:
           TESTS_TO_EXCLUDE="android_app_test,\
           permissions/permissions_location_test,\
           service_dark_mode_test,\
+          service_location_test,\
           permissions/notifications_test"
 
           target_paths=""

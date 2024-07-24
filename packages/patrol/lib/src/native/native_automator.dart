@@ -554,6 +554,28 @@ class NativeAutomator {
     await _wrapRequest('disableBluetooth', _client.disableBluetooth);
   }
 
+  /// Enables location.
+  ///
+  /// On Android, opens the location settings screen and toggles the location
+  /// switch to enable location.
+  /// If the location already enabled, it does nothing.
+  ///
+  /// Doesn't work for iOS.
+  Future<void> enableLocation() async {
+    await _wrapRequest('enableLocation', _client.enableLocation);
+  }
+
+  /// Disables location.
+  ///
+  /// On Android, opens the location settings screen and toggles the location
+  /// switch to disable location.
+  /// If the location already enabled, it does nothing.
+  ///
+  /// Doesn't work for iOS.
+  Future<void> disableLocation() async {
+    await _wrapRequest('disableLocation', _client.disableLocation);
+  }
+
   /// Taps on the native view specified by [selector].
   ///
   /// It waits for the view to become visible for [timeout] duration. If

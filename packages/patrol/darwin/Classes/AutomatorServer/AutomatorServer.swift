@@ -283,6 +283,18 @@
       }
     }
 
+    func enableBluetooth() throws {
+      return try runCatching {
+        try automator.enableLocation()
+      }
+    }
+
+    func disableBluetooth() throws {
+      return try runCatching {
+        try automator.disableLocation()
+      }
+    }
+
     // MARK: Notifications
 
     func openNotifications() throws {

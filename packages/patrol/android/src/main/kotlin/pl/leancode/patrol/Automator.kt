@@ -4,6 +4,7 @@ import android.app.Instrumentation
 import android.app.UiAutomation
 import android.content.Context
 import android.content.Intent
+import android.location.LocationManager
 import android.net.Uri
 import android.os.Build
 import android.os.SystemClock
@@ -220,6 +221,42 @@ class Automator private constructor() {
             executeShellCommand("svc bluetooth disable")
         } else {
             throw PatrolException("disableBluetooth method is not available in Android lower than 12")
+        }
+    }
+
+    fun enableLocation() {
+        val enabled = isLocationEnabled()
+        if (enabled) {
+            Logger.d("Location already enabled")
+            return
+        } else {
+            toggleLocation()
+        }
+    }
+
+    fun disableLocation() {
+        val enabled = isLocationEnabled()
+        if (!enabled) {
+            Logger.d("Location already disabled")
+            return
+        } else {
+            toggleLocation()
+        }
+    }
+
+    private fun isLocationEnabled(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            // This is a new method provided in API 28
+            val lm = targetContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+            lm.isLocationEnabled
+        } else {
+            // This was deprecated in API 28
+            val mode = Settings.Secure.getInt(
+                targetContext.contentResolver,
+                Settings.Secure.LOCATION_MODE,
+                Settings.Secure.LOCATION_MODE_OFF
+            )
+            mode != Settings.Secure.LOCATION_MODE_OFF
         }
     }
 
@@ -711,6 +748,23 @@ class Automator private constructor() {
             delay()
         } else {
             throw PatrolException("Could not find airplane mode toggle")
+        }
+    }
+
+    private fun toggleLocation() {
+        val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        targetContext.startActivity(intent)
+
+        var uiSelector = UiSelector()
+        uiSelector = uiSelector.text("Use location")
+        val uiObject = uiDevice.findObject(uiSelector)
+        if (uiObject != null) {
+            uiObject.click()
+            pressBack()
+            delay()
+        } else {
+            throw PatrolException("Could not find location toggle")
         }
     }
 
