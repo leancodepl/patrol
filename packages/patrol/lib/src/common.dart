@@ -174,6 +174,7 @@ DartGroupEntry createDartTestGroup(
     name: name,
     type: GroupEntryType.group,
     entries: [],
+    skip: parentGroup.metadata.skip,
   );
 
   for (final entry in parentGroup.entries) {
@@ -191,32 +192,34 @@ DartGroupEntry createDartTestGroup(
       name = deduplicateGroupEntryName(parentGroup.name, name);
     }
 
-    if (entry is Group) {
-      groupDTO.entries.add(
-        createDartTestGroup(
-          entry,
-          name: name,
-          level: level + 1,
-          maxTestCaseLength: maxTestCaseLength,
-        ),
-      );
-    } else if (entry is Test) {
-      if (entry.name == 'patrol_test_explorer') {
-        // Ignore the bogus test that is used to discover the test structure.
-        continue;
-      }
+    switch (entry) {
+      case Test _:
+        if (entry.name == 'patrol_test_explorer') {
+          // Ignore the bogus test that is used to discover the test structure.
+          continue;
+        }
 
-      if (level < 1) {
-        throw StateError('Test is not allowed to be defined at level $level');
-      }
+        if (level < 1) {
+          throw StateError('Test is not allowed to be defined at level $level');
+        }
 
-      groupDTO.entries.add(
-        DartGroupEntry(name: name, type: GroupEntryType.test, entries: []),
-      );
-    } else {
-      // This should really never happen, because Group and Test are the only
-      // subclasses of GroupEntry.
-      throw StateError('invalid state');
+        groupDTO.entries.add(
+          DartGroupEntry(
+            name: name,
+            type: GroupEntryType.test,
+            entries: [],
+            skip: entry.metadata.skip,
+          ),
+        );
+      case Group _:
+        groupDTO.entries.add(
+          createDartTestGroup(
+            entry,
+            name: name,
+            level: level + 1,
+            maxTestCaseLength: maxTestCaseLength,
+          ),
+        );
     }
   }
 

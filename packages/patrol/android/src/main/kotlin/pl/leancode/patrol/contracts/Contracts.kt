@@ -122,7 +122,8 @@ class Contracts {
   data class DartGroupEntry (
     val name: String,
     val type: GroupEntryType,
-    val entries: List<DartGroupEntry>
+    val entries: List<DartGroupEntry>,
+    val skip: Boolean
   )
 
   data class ListDartTestsResponse (

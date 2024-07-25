@@ -16,6 +16,7 @@ import pl.leancode.patrol.contracts.PatrolAppServiceClientException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -102,19 +103,19 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
         Logger.INSTANCE.i(TAG + "PatrolAppService is ready to report Dart tests");
     }
 
-    public Object[] listDartTests() {
+    public Collection<Object[]> listDartTests() {
         final String TAG = "PatrolJUnitRunner.listDartTests(): ";
 
         try {
             final DartGroupEntry dartTestGroup = patrolAppServiceClient.listDartTests();
             List<DartGroupEntry> dartTestCases = ContractsExtensionsKt.listTestsFlat(dartTestGroup, "");
-            List<String> dartTestCaseNamesList = new ArrayList<>();
+            List<Object[]> dartTestCaseNamesList = new ArrayList<>();
             for (DartGroupEntry dartTestCase : dartTestCases) {
-                dartTestCaseNamesList.add(dartTestCase.getName());
+                Object[] dartTestCaseName = {dartTestCase.getName(), dartTestCase.getSkip()};
+                dartTestCaseNamesList.add(dartTestCaseName);
             }
-            Object[] dartTestCaseNames = dartTestCaseNamesList.toArray();
-            Logger.INSTANCE.i(TAG + "Got Dart tests: " + Arrays.toString(dartTestCaseNames));
-            return dartTestCaseNames;
+            Logger.INSTANCE.i(TAG + "Got Dart tests: " + Arrays.deepToString(dartTestCaseNamesList.toArray(new Object[0][])));
+            return dartTestCaseNamesList;
         } catch (PatrolAppServiceClientException e) {
             Logger.INSTANCE.e(TAG + "Failed to list Dart tests: ", e);
             throw new RuntimeException(e);

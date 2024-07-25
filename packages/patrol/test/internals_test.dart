@@ -62,14 +62,17 @@ void main() {
           DartGroupEntry(
             name: '',
             type: GroupEntryType.group,
+            skip: false,
             entries: [
               DartGroupEntry(
                 name: 'example_test',
                 type: GroupEntryType.group,
+                skip: false,
                 entries: [
                   DartGroupEntry(
                     name: 'alpha',
                     type: GroupEntryType.group,
+                    skip: false,
                     entries: [
                       _testEntry('first'),
                       _testEntry('second'),
@@ -78,6 +81,7 @@ void main() {
                   DartGroupEntry(
                     name: 'bravo',
                     type: GroupEntryType.group,
+                    skip: false,
                     entries: [
                       _testEntry('first'),
                       _testEntry('second'),
@@ -88,6 +92,7 @@ void main() {
               DartGroupEntry(
                 name: 'open_app_test',
                 type: GroupEntryType.group,
+                skip: false,
                 entries: [
                   _testEntry('open maps'),
                   _testEntry('open browser'),
@@ -131,15 +136,18 @@ void main() {
           DartGroupEntry(
             name: '',
             type: GroupEntryType.group,
+            skip: false,
             entries: [
               DartGroupEntry(
                 name: 'example_test',
                 type: GroupEntryType.group,
+                skip: false,
                 entries: [
                   _testEntry('alpha'),
                   DartGroupEntry(
                     name: 'bravo',
                     type: GroupEntryType.group,
+                    skip: false,
                     entries: [
                       _testEntry('first'),
                       _testEntry('second'),
@@ -149,6 +157,7 @@ void main() {
                   DartGroupEntry(
                     name: 'delta',
                     type: GroupEntryType.group,
+                    skip: false,
                     entries: [
                       _testEntry('first'),
                       _testEntry('second'),
@@ -189,10 +198,12 @@ void main() {
           DartGroupEntry(
             name: '',
             type: GroupEntryType.group,
+            skip: false,
             entries: [
               DartGroupEntry(
                 name: 'example_test',
                 type: GroupEntryType.group,
+                skip: false,
                 entries: [
                   _testEntry('alpha'),
                   _testEntry('zielony'),
@@ -221,10 +232,76 @@ void main() {
       expect(result, equals('first'));
     });
   });
+
+  group('skip group of tests', () {
+    test('skip test', () {
+      // given
+      final topLevelGroup = Group.root([
+        LocalTest('patrol_test_explorer', Metadata.empty, () {}),
+        Group(
+          'example_test',
+          [
+            _localTest('example_test alpha'),
+          ],
+          metadata: Metadata(skip: true),
+        ),
+        Group(
+          'example2_test',
+          [
+            _localTest('example2_test alpha'),
+            _localTest('example2_test bravo first'),
+            _localTest('example2_test bravo second'),
+          ],
+        ),
+      ]);
+
+      // when
+      final dartTestGroup = createDartTestGroup(
+        topLevelGroup,
+      );
+
+      // then
+      expect(
+        dartTestGroup,
+        equals(
+          DartGroupEntry(
+            name: '',
+            type: GroupEntryType.group,
+            entries: [
+              DartGroupEntry(
+                name: 'example_test',
+                type: GroupEntryType.group,
+                entries: [
+                  _testEntry('alpha'),
+                ],
+                skip: true,
+              ),
+              DartGroupEntry(
+                name: 'example2_test',
+                type: GroupEntryType.group,
+                entries: [
+                  _testEntry('alpha'),
+                  _testEntry('bravo first'),
+                  _testEntry('bravo second'),
+                ],
+                skip: false,
+              ),
+            ],
+            skip: false,
+          ),
+        ),
+      );
+    });
+  });
 }
 
 LocalTest _localTest(String name) => LocalTest(name, Metadata.empty, () {});
 
-DartGroupEntry _testEntry(String name) {
-  return DartGroupEntry(name: name, type: GroupEntryType.test, entries: []);
+DartGroupEntry _testEntry(String name, {bool skip = false}) {
+  return DartGroupEntry(
+    name: name,
+    type: GroupEntryType.test,
+    entries: [],
+    skip: skip,
+  );
 }

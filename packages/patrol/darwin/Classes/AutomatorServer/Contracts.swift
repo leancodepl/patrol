@@ -122,6 +122,7 @@ public struct DartGroupEntry: Codable {
   public var name: String
   public var type: GroupEntryType
   public var entries: [DartGroupEntry]
+  public var skip: Bool
 }
 
 public struct ListDartTestsResponse: Codable {
