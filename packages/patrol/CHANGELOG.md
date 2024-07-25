@@ -3,6 +3,7 @@
 - Implement `enableBluetooth` and `disableBluetooth` methods for Android > 11. (#2254)
 - Implement `enableAirplaneMode` and `disableAirplaneMode` methods for Android. (#2254)
 - Implement `enableLocation` and `disableLocation` methods for Android. (#2259)
+- Fix opening settings app with clean state on iOS. (#2275)
 
 ## 3.9.0
 
