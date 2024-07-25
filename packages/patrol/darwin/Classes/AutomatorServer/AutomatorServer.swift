@@ -283,13 +283,13 @@
       }
     }
 
-    func enableBluetooth() throws {
+    func enableLocation() throws {
       return try runCatching {
         try automator.enableLocation()
       }
     }
 
-    func disableBluetooth() throws {
+    func disableLocation() throws {
       return try runCatching {
         try automator.disableLocation()
       }
