@@ -48,7 +48,7 @@
     NSLog("PatrolAppServiceClient: created, port: \(port)")
   }
 
-  @objc public func listDartTests(completion: @escaping ([String]?, Error?) -> Void) {
+  @objc public func listDartTests(completion: @escaping ([[String: Any]]?, Error?) -> Void) {
     NSLog("PatrolAppServiceClient.listDartTests()")
 
     client.listDartTests { result in
@@ -56,7 +56,7 @@
       case .success(let result):
         NSLog("PatrolAppServiceClient.listDartTests(): succeeded")
         let output = result.group.listTestsFlat(parentGroupName: "").map {
-          $0.name
+          ["name": $0.name, "skip": $0.skip]
         }
         completion(output, nil)
       case .failure(let error):
