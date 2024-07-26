@@ -11,33 +11,33 @@
 // so it is reported as a native XCTest run result.
 #define PATROL_INTEGRATION_TEST_IOS_RUNNER(__test_class)                                                              \
   @interface __test_class : XCTestCase                                                                                \
-  @property(class, strong, nonatomic) NSDictionary *selectedTest;                                                         \
+  @property(class, strong, nonatomic) NSDictionary *selectedTest;                                                     \
   @end                                                                                                                \
                                                                                                                       \
   @implementation __test_class                                                                                        \
                                                                                                                       \
-  static NSDictionary *_selectedTest = nil;                                                                               \
+  static NSDictionary *_selectedTest = nil;                                                                           \
                                                                                                                       \
-  +(NSDictionary *)selectedTest {                                                                                         \
+  +(NSDictionary *)selectedTest {                                                                                     \
     return _selectedTest;                                                                                             \
   }                                                                                                                   \
                                                                                                                       \
-  +(void)setSelectedTest : (NSDictionary *)newSelectedTest {                                                              \
++(void)setSelectedTest : (NSDictionary *)newSelectedTest {                                                            \
     if (newSelectedTest != _selectedTest) {                                                                           \
       _selectedTest = [newSelectedTest copy];                                                                         \
     }                                                                                                                 \
   }                                                                                                                   \
                                                                                                                       \
-  +(BOOL)instancesRespondToSelector : (SEL)aSelector {                                                         \
-    NSString *name = NSStringFromSelector(aSelector);                                                              \
-    BOOL skip = NO;                                                                                                  \
-    NSDictionary *testInfo = @{@"name": name, @"skip": @(skip)};                                                       \
+  +(BOOL)instancesRespondToSelector : (SEL)aSelector {                                                                \
+  NSString *name = NSStringFromSelector(aSelector);                                                                   \
+    BOOL skip = NO;                                                                                                   \
+  NSDictionary *testInfo = @{@"name": name, @"skip": @(skip)};                                                        \
     [self setSelectedTest:testInfo];                                                                                  \
                                                                                                                       \
     [self defaultTestSuite]; /* calls testInvocations */                                                              \
     BOOL result = [super instancesRespondToSelector:aSelector];                                                       \
     return true;                                                                                                      \
-  }                                                                                                                 \
+  }                                                                                                                   \
                                                                                                                       \
   +(NSArray<NSInvocation *> *)testInvocations {                                                                       \
     /* Start native automation server */                                                                              \
@@ -59,7 +59,7 @@
       [systemAlerts.buttons[@"Allow"] tap];                                                                           \
     }                                                                                                                 \
                                                                                                                       \
-    __block NSArray<NSDictionary *> *dartTests = NULL;                                                                 \
+    __block NSArray<NSDictionary *> *dartTests = NULL;                                                                \
     if ([self selectedTest] != nil) {                                                                                 \
       NSLog(@"selectedTest: %@", [self selectedTest]);                                                                \
       dartTests = [NSArray arrayWithObject:[self selectedTest]];                                                      \
@@ -96,21 +96,20 @@
      *  Step 2. Create invocations to the generated methods and return them                                           \
      */                                                                                                               \
                                                                                                                       \
-    for (NSDictionary * dartTest in dartTests) {                                                                          \
+    for (NSDictionary * dartTest in dartTests) {                                                                      \
       /* Step 1 - dynamically create test cases */                                                                    \
-      NSString * dartTestName = dartTest[@"name"];                                                                                \
-      BOOL skip = [dartTest[@"skip"] boolValue];                                                              \
-                                                                                                                   \
+      NSString * dartTestName = dartTest[@"name"];                                                                    \
+      BOOL skip = [dartTest[@"skip"] boolValue];                                                                      \
+                                                                                                                      \
       IMP implementation = imp_implementationWithBlock(^(id _self) {                                                  \
         [[[XCUIApplication alloc] init] launch];                                                                      \
-        if (skip) {                                                                                         \
-          XCTSkip(@"Skip that test \"%@\"", dartTestName);                                                           \
-        }                                                                                                            \
-                                                                                                                  \
+        if (skip) {                                                                                                   \
+          XCTSkip(@"Skip that test \"%@\"", dartTestName);                                                            \
+        }                                                                                                             \
                                                                                                                       \
         __block ObjCRunDartTestResponse *response = NULL;                                                             \
         __block NSError *error;                                                                                       \
-        [appServiceClient runDartTestWithName:dartTestName                                                                \
+    [appServiceClient runDartTestWithName:dartTestName                                                                \
                                    completion:^(ObjCRunDartTestResponse *_Nullable r, NSError *_Nullable err) {       \
                                      NSString *status;                                                                \
                                      if (err != NULL) {                                                               \
@@ -131,7 +130,7 @@
         NSString *details = response ? response.details : @"(no details - app likely crashed)";                       \
         XCTAssertTrue(passed, @"%@", details);                                                                        \
       });                                                                                                             \
-      SEL selector = NSSelectorFromString(dartTestName);                                                                  \
+      SEL selector = NSSelectorFromString(dartTestName);                                                              \
       class_addMethod(self, selector, implementation, "v@:");                                                         \
                                                                                                                       \
       /* Step 2 – create invocations to the dynamically created methods */                                            \
@@ -139,7 +138,7 @@
       NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];                              \
       invocation.selector = selector;                                                                                 \
                                                                                                                       \
-      NSLog(@"RunnerUITests.testInvocations(): selectorName = %@, signature: %@", dartTestName, signature);               \
+      NSLog(@"RunnerUITests.testInvocations(): selectorName = %@, signature: %@", dartTestName, signature);           \
                                                                                                                       \
       [invocations addObject:invocation];                                                                             \
     }                                                                                                                 \
