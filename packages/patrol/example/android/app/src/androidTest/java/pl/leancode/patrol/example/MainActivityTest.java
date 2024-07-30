@@ -1,4 +1,4 @@
-package pl.leancode.patrol.e2e_app;
+package pl.leancode.patrol.example;
 
 import androidx.test.platform.app.InstrumentationRegistry;
 import org.junit.Test;
@@ -17,11 +17,11 @@ public class MainActivityTest {
         return instrumentation.listDartTests();
     }
 
-    public MainActivityTest(String dartTestCaseNamesList) {
+    public MainActivityTest(String dartTestName) {
         this.dartTestName = dartTestName;
     }
 
-    private String dartTestName;
+    private final String dartTestName;
 
     @Test
     public void runDartTest() {
