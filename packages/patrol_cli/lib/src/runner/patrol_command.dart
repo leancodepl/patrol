@@ -131,6 +131,14 @@ abstract class PatrolCommand extends Command<int> {
     );
   }
 
+  void usesTagsOption() {
+    argParser.addMultiOption(
+      'tags',
+      help: 'Tags to filter the tests by.',
+      valueHelp: 'smoke,regression',
+    );
+  }
+
   void usesAndroidOptions() {
     argParser.addOption(
       'package-name',

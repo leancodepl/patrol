@@ -123,7 +123,8 @@ class Contracts {
     val name: String,
     val type: GroupEntryType,
     val entries: List<DartGroupEntry>,
-    val skip: Boolean
+    val skip: Boolean,
+    val tags: List<String>
   )
 
   data class ListDartTestsResponse (

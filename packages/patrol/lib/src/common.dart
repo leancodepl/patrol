@@ -169,12 +169,14 @@ DartGroupEntry createDartTestGroup(
   String name = '',
   int level = 0,
   int maxTestCaseLength = global_state.maxTestLength,
+  List<String> tags = const [],
 }) {
   final groupDTO = DartGroupEntry(
     name: name,
     type: GroupEntryType.group,
     entries: [],
     skip: parentGroup.metadata.skip,
+    tags: parentGroup.metadata.tags.toList(),
   );
 
   for (final entry in parentGroup.entries) {
@@ -203,14 +205,20 @@ DartGroupEntry createDartTestGroup(
           throw StateError('Test is not allowed to be defined at level $level');
         }
 
-        groupDTO.entries.add(
-          DartGroupEntry(
-            name: name,
-            type: GroupEntryType.test,
-            entries: [],
-            skip: entry.metadata.skip,
-          ),
-        );
+        final addTest = tags.isEmpty || tags.any(entry.metadata.tags.contains);
+
+        if (addTest) {
+          groupDTO.entries.add(
+            DartGroupEntry(
+              name: name,
+              type: GroupEntryType.test,
+              entries: [],
+              skip: entry.metadata.skip,
+              tags: entry.metadata.tags.toList(),
+            ),
+          );
+        }
+
       case Group _:
         groupDTO.entries.add(
           createDartTestGroup(
@@ -218,6 +226,7 @@ DartGroupEntry createDartTestGroup(
             name: name,
             level: level + 1,
             maxTestCaseLength: maxTestCaseLength,
+            tags: tags,
           ),
         );
     }

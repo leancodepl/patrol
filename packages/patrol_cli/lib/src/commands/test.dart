@@ -49,6 +49,7 @@ class TestCommand extends PatrolCommand {
     usesLabelOption();
     usesWaitOption();
     usesPortOptions();
+    usesTagsOption();
 
     usesUninstallOption();
 
@@ -100,9 +101,11 @@ class TestCommand extends PatrolCommand {
       _logger.detail('Received test target: $t');
     }
 
+    final tags = stringsArg('tags');
+    _logger.detail('Received ${tags.length} tag(s)');
     final entrypoint = _testBundler.bundledTestFile;
     if (boolArg('generate-bundle')) {
-      _testBundler.createTestBundle(targets);
+      _testBundler.createTestBundle(targets, tags);
     }
 
     final androidFlavor = stringArg('flavor') ?? config.android.flavor;

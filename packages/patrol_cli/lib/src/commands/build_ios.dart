@@ -36,6 +36,7 @@ class BuildIOSCommand extends PatrolCommand {
     usesLabelOption();
     usesWaitOption();
     usesPortOptions();
+    usesTagsOption();
 
     usesIOSOptions();
     argParser.addFlag(
@@ -87,9 +88,10 @@ class BuildIOSCommand extends PatrolCommand {
       _logger.detail('Received test target: $t');
     }
 
+    final tags = stringsArg('tags');
     final entrypoint = _testBundler.bundledTestFile;
     if (boolArg('generate-bundle')) {
-      _testBundler.createTestBundle(targets);
+      _testBundler.createTestBundle(targets, tags);
     }
 
     final flavor = stringArg('flavor') ?? config.ios.flavor;
