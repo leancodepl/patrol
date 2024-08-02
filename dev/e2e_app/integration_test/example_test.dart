@@ -31,7 +31,20 @@ void main() {
   );
 
   patrol(
-    'counter state is the same after going to Home and switching apps with tag',
+    'short test with two tags',
+    tags: ['smoke', 'fume'],
+    ($) async {
+      await createApp($);
+
+      await $(FloatingActionButton).tap();
+      expect($(#counterText).text, '1');
+      await $(FloatingActionButton).tap();
+      expect($(#counterText).text, '2');
+    },
+  );
+
+  patrol(
+    'short test with tag',
     tags: ['smoke'],
     ($) async {
       await createApp($);
@@ -40,15 +53,6 @@ void main() {
       expect($(#counterText).text, '1');
 
       await $(#textField).enterText('Hello, Flutter!');
-      expect($('Hello, Flutter!'), findsOneWidget);
-
-      await $.native.pressHome();
-      await $.native.openApp();
-
-      expect($(#counterText).text, '1');
-      await $(FloatingActionButton).tap();
-
-      expect($(#counterText).text, '2');
       expect($('Hello, Flutter!'), findsOneWidget);
     },
   );

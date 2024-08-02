@@ -1,5 +1,6 @@
 import 'dart:io' as io;
 
+import 'package:boolean_selector/boolean_selector.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:meta/meta.dart';
@@ -169,7 +170,8 @@ DartGroupEntry createDartTestGroup(
   String name = '',
   int level = 0,
   int maxTestCaseLength = global_state.maxTestLength,
-  List<String> tags = const [],
+  String? tags,
+  String? excludeTags,
 }) {
   final groupDTO = DartGroupEntry(
     name: name,
@@ -205,19 +207,33 @@ DartGroupEntry createDartTestGroup(
           throw StateError('Test is not allowed to be defined at level $level');
         }
 
-        final addTest = tags.isEmpty || tags.any(entry.metadata.tags.contains);
+        if (tags != null) {
+          final includeTagsSelector = BooleanSelector.parse(tags);
 
-        if (addTest) {
-          groupDTO.entries.add(
-            DartGroupEntry(
-              name: name,
-              type: GroupEntryType.test,
-              entries: [],
-              skip: entry.metadata.skip,
-              tags: entry.metadata.tags.toList(),
-            ),
-          );
+          // If the user provided tags, skip tests that don't match all of them.
+          if (!includeTagsSelector.evaluate(entry.metadata.tags.contains)) {
+            continue;
+          }
         }
+
+        if (excludeTags != null) {
+          final excludeTagsSelector = BooleanSelector.parse(excludeTags);
+
+          // Skip tests that do match any tags the user wants to exclude.
+          if (excludeTagsSelector.evaluate(entry.metadata.tags.contains)) {
+            continue;
+          }
+        }
+
+        groupDTO.entries.add(
+          DartGroupEntry(
+            name: name,
+            type: GroupEntryType.test,
+            entries: [],
+            skip: entry.metadata.skip,
+            tags: entry.metadata.tags.toList(),
+          ),
+        );
 
       case Group _:
         groupDTO.entries.add(
@@ -227,6 +243,7 @@ DartGroupEntry createDartTestGroup(
             level: level + 1,
             maxTestCaseLength: maxTestCaseLength,
             tags: tags,
+            excludeTags: excludeTags,
           ),
         );
     }

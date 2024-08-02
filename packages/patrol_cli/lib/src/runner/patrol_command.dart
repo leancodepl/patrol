@@ -132,10 +132,18 @@ abstract class PatrolCommand extends Command<int> {
   }
 
   void usesTagsOption() {
-    argParser.addMultiOption(
+    argParser.addOption(
       'tags',
       help: 'Tags to filter the tests by.',
-      valueHelp: 'smoke,regression',
+      valueHelp: '(chrome || firefox) && !slow',
+    );
+  }
+
+  void usesExcludeTagsOption() {
+    argParser.addOption(
+      'exclude-tags',
+      help: 'Tags to exclude the tests by.',
+      valueHelp: 'safari',
     );
   }
 

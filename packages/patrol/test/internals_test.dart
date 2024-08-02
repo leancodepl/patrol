@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/src/common.dart'
     show createDartTestGroup, deduplicateGroupEntryName;
 import 'package:patrol/src/native/contracts/contracts.dart';
+import 'package:test_api/backend.dart';
 import 'package:test_api/src/backend/group.dart';
 import 'package:test_api/src/backend/invoker.dart' show LocalTest;
 import 'package:test_api/src/backend/metadata.dart';
@@ -308,12 +309,231 @@ void main() {
     });
   });
 
-  // group('test with tags', () {
-  //   final topLevelGroup
-  // })
+  group('test with tags', () {
+    test('filter test, when tags are null', () {
+      // given
+      final topLevelGroup = Group.root([
+        LocalTest('patrol_test_explorer', Metadata.empty, () {}),
+        Group(
+          'example_test',
+          [
+            _localTest(
+              'example_test alpha',
+              metadata: Metadata(tags: ['tag1']),
+            ),
+            _localTest(
+              'example_test bravo first',
+              metadata: Metadata(tags: ['tag2']),
+            ),
+            _localTest(
+              'example_test bravo second',
+              metadata: Metadata(tags: ['tag3']),
+            ),
+          ],
+        ),
+      ]);
+
+      // when
+      final dartTestGroup = createDartTestGroup(
+        topLevelGroup,
+      );
+
+      // then
+      expect(
+        dartTestGroup,
+        equals(
+          DartGroupEntry(
+            name: '',
+            type: GroupEntryType.group,
+            skip: false,
+            tags: [],
+            entries: [
+              DartGroupEntry(
+                name: 'example_test',
+                type: GroupEntryType.group,
+                skip: false,
+                tags: [],
+                entries: [
+                  _testEntry('alpha', tags: ['tag1']),
+                  _testEntry('bravo first', tags: ['tag2']),
+                  _testEntry('bravo second', tags: ['tag3']),
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
+    });
+
+    test('filter included tags', () {
+      // given
+      final topLevelGroup = Group.root([
+        LocalTest('patrol_test_explorer', Metadata.empty, () {}),
+        Group(
+          'example_test',
+          [
+            _localTest(
+              'example_test alpha',
+              metadata: Metadata(tags: ['tag1']),
+            ),
+            _localTest(
+              'example_test bravo first',
+              metadata: Metadata(tags: ['tag2']),
+            ),
+            _localTest(
+              'example_test bravo second',
+              metadata: Metadata(tags: ['tag3']),
+            ),
+          ],
+        ),
+      ]);
+
+      // when
+      final dartTestGroup = createDartTestGroup(
+        topLevelGroup,
+        tags: 'tag1',
+      );
+
+      // then
+      expect(
+        dartTestGroup,
+        equals(
+          DartGroupEntry(
+            name: '',
+            type: GroupEntryType.group,
+            skip: false,
+            tags: [],
+            entries: [
+              DartGroupEntry(
+                name: 'example_test',
+                type: GroupEntryType.group,
+                skip: false,
+                tags: [],
+                entries: [
+                  _testEntry('alpha', tags: ['tag1']),
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
+    });
+
+    test('filter excluded tags', () {
+      // given
+      final topLevelGroup = Group.root([
+        LocalTest('patrol_test_explorer', Metadata.empty, () {}),
+        Group(
+          'example_test',
+          [
+            _localTest(
+              'example_test alpha',
+              metadata: Metadata(tags: ['tag1']),
+            ),
+            _localTest(
+              'example_test bravo first',
+              metadata: Metadata(tags: ['tag2']),
+            ),
+            _localTest(
+              'example_test bravo second',
+              metadata: Metadata(tags: ['tag3']),
+            ),
+          ],
+        ),
+      ]);
+
+      // when
+      final dartTestGroup = createDartTestGroup(
+        topLevelGroup,
+        excludeTags: 'tag1',
+      );
+
+      // then
+      expect(
+        dartTestGroup,
+        equals(
+          DartGroupEntry(
+            name: '',
+            type: GroupEntryType.group,
+            skip: false,
+            tags: [],
+            entries: [
+              DartGroupEntry(
+                name: 'example_test',
+                type: GroupEntryType.group,
+                skip: false,
+                tags: [],
+                entries: [
+                  _testEntry('bravo first', tags: ['tag2']),
+                  _testEntry('bravo second', tags: ['tag3']),
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
+    });
+
+    test('filter included and excluded tags', () {
+      // given
+      final topLevelGroup = Group.root([
+        LocalTest('patrol_test_explorer', Metadata.empty, () {}),
+        Group(
+          'example_test',
+          [
+            _localTest(
+              'example_test alpha',
+              metadata: Metadata(tags: ['tag1']),
+            ),
+            _localTest(
+              'example_test bravo first',
+              metadata: Metadata(tags: ['tag1', 'tag2']),
+            ),
+            _localTest(
+              'example_test bravo second',
+              metadata: Metadata(tags: ['tag3']),
+            ),
+          ],
+        ),
+      ]);
+
+      // when
+      final dartTestGroup = createDartTestGroup(
+        topLevelGroup,
+        tags: 'tag1 || tag3',
+        excludeTags: 'tag2',
+      );
+
+      // then
+      expect(
+        dartTestGroup,
+        equals(
+          DartGroupEntry(
+            name: '',
+            type: GroupEntryType.group,
+            skip: false,
+            tags: [],
+            entries: [
+              DartGroupEntry(
+                name: 'example_test',
+                type: GroupEntryType.group,
+                skip: false,
+                tags: [],
+                entries: [
+                  _testEntry('alpha', tags: ['tag1']),
+                  _testEntry('bravo second', tags: ['tag3']),
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
+    });
+  });
 }
 
-LocalTest _localTest(String name) => LocalTest(name, Metadata.empty, () {});
+LocalTest _localTest(String name, {Metadata? metadata}) =>
+    LocalTest(name, metadata ?? Metadata.empty, () {});
 
 DartGroupEntry _testEntry(
   String name, {
