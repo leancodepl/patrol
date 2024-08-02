@@ -1,5 +1,7 @@
-## Unreleased
+## 3.1.0
 - Add `tags` and `exclude-tags`. (#2286)
+
+This version requires version 3.10.0 of `patrol` package.
 
 ## 3.0.1
 

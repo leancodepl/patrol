@@ -1,4 +1,4 @@
-## Unreleased
+## 3.10.0
 
 - Implement `enableBluetooth` and `disableBluetooth` methods for Android > 11. (#2254)
 - Implement `enableAirplaneMode` and `disableAirplaneMode` methods for Android. (#2254)
