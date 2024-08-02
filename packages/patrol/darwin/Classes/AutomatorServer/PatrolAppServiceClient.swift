@@ -69,10 +69,6 @@ class PatrolAppServiceClient {
     urlconfig.timeoutIntervalForRequest = timeout
     urlconfig.timeoutIntervalForResource = timeout
 
-    urlconfig.connectionProxyDictionary = [
-        kCFNetworkProxiesHTTPEnable: false
-    ]
-
     var request = URLRequest(url: url)
     request.httpMethod = "POST"
     request.httpBody = body
