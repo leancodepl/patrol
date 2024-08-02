@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:coverage/coverage.dart';
+import 'package:glob/glob.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:vm_service/vm_service.dart';
@@ -28,15 +29,15 @@ Future<Map<String, HitMap>> collectCoverage(
       logger.err('$err');
     }
 
-    print('Version ${await client.getVersion()}');
-    final scripts = await client.getScripts(isolate.id!);
-
-    for (final script in scripts.scripts!) {
-      final uri = Uri.parse(script.uri!);
-      final scope = uri.path.split('/').first;
-
-      print('$uri, scope = $scope');
-    }
+    // print('Version ${await client.getVersion()}');
+    // final scripts = await client.getScripts(isolate.id!);
+    //
+    // for (final script in scripts.scripts!) {
+    //   final uri = Uri.parse(script.uri!);
+    //   final scope = uri.path.split('/').first;
+    //
+    //   print('$uri, scope = $scope');
+    // }
   }
 
   // the isolates might not be paused yet (see docs of [serviceClient.pause])
@@ -82,11 +83,16 @@ Future<Map<String, HitMap>> collectCoverage(
     logger.err('$err');
   }
 
-  return HitMap.parseJson(coverage['coverage'] as List<Map<String, dynamic>>);
+  final map = await HitMap.parseJson(
+    coverage['coverage'] as List<Map<String, dynamic>>,
+    // TODO: This should probably be passed as a command line arg
+    checkIgnoredLines: true,
+  );
+
+  return map;
 }
 
 Future<void> runCodeCoverage({
-  required int testCount,
   required String flutterPackageName,
   required Directory flutterPackageDirectory,
   required TargetPlatform platform,
@@ -104,14 +110,14 @@ Future<void> runCodeCoverage({
 
   final hitmap = <String, HitMap>{};
   String? collectUri;
+  int? totalTestCount;
   var count = 0;
 
   logsProcess.stdout.transform(utf8.decoder).listen(
     (line) async {
       final vmLink = vmRegex.firstMatch(line)?.group(1);
 
-      if (vmLink == null || ++count == 1) {
-        // We skip first run of the app which patrol makes to >>prepare the list of tests?<<
+      if (vmLink == null) {
         return;
       }
 
@@ -148,7 +154,18 @@ Future<void> runCodeCoverage({
 
         serviceClient.onExtensionEvent.listen(
           (event) async {
+            if (event.extensionKind == 'testCount' && totalTestCount == null) {
+              // This is the initial run that patrol makes to learn the structure of
+              // the tests (workaround for https://github.com/dart-lang/test/issues/1998)
+              totalTestCount = event.extensionData!.data['testCount'] as int;
+              print('Total test count is $totalTestCount');
+            }
+
             if (event.extensionKind == 'waitForCoverageCollection') {
+              if (totalTestCount == null) {
+                // TODO: Handle? this should not happen
+              }
+
               hitmap.merge(
                 await collectCoverage(
                   serviceClient,
@@ -160,9 +177,9 @@ Future<void> runCodeCoverage({
               );
               await serviceClient.dispose();
 
-              logger.info('Collected ${count - 1} / $testCount coverages');
+              logger.info('Collected ${++count} / $totalTestCount coverages');
 
-              if (count - 1 == testCount) {
+              if (count == totalTestCount) {
                 logsProcess.kill();
 
                 logger.info('All coverage gathered, saving');
@@ -170,6 +187,9 @@ Future<void> runCodeCoverage({
                   await Resolver.create(
                     packagePath: flutterPackageDirectory.path,
                   ),
+                  // TODO: allow passing globs through command line args / yaml
+                  // config
+                  ignoreGlobs: {Glob('**/*.g.dart')},
                 );
 
                 final coverageDirectory = Directory('coverage');

@@ -85,7 +85,7 @@ Future<void> main() async {
     final dartTestGroup = createDartTestGroup(topLevelGroup);
     testExplorationCompleter.complete(dartTestGroup);
     print('patrol_test_explorer: obtained Dart-side test hierarchy:');
-    printGroupStructure(dartTestGroup);
+    reportGroupStructure(dartTestGroup);
   });
 
   // START: GENERATED TEST GROUPS

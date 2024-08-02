@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io' as io;
 
 import 'package:flutter/foundation.dart';
@@ -200,6 +201,8 @@ DartGroupEntry createDartTestGroup(
           maxTestCaseLength: maxTestCaseLength,
         ),
       );
+
+      print("Entry $name is a group");
     } else if (entry is Test) {
       if (entry.name == 'patrol_test_explorer') {
         // Ignore the bogus test that is used to discover the test structure.
@@ -213,6 +216,8 @@ DartGroupEntry createDartTestGroup(
       groupDTO.entries.add(
         DartGroupEntry(name: name, type: GroupEntryType.test, entries: []),
       );
+
+      print("Entry $name is a test");
     } else {
       // This should really never happen, because Group and Test are the only
       // subclasses of GroupEntry.
@@ -237,19 +242,35 @@ String deduplicateGroupEntryName(String parentName, String currentName) {
   );
 }
 
-/// Recursively prints the structure of the test suite.
+/// Recursively prints the structure of the test suite and reports test count
+/// of the top-most group
 @internal
-void printGroupStructure(DartGroupEntry group, {int indentation = 0}) {
+int reportGroupStructure(DartGroupEntry group, {int indentation = 0}) {
+  var testCount = group.type == GroupEntryType.test ? 1 : 0;
+
   final indent = ' ' * indentation;
-  debugPrint("$indent-- group: '${group.name}'");
+  final tag = group.type == GroupEntryType.group ? 'group' : 'test';
+  debugPrint("$indent-- $tag: '${group.name}'");
 
   for (final entry in group.entries) {
     if (entry.type == GroupEntryType.test) {
+      ++testCount;
       debugPrint("$indent     -- test: '${entry.name}'");
     } else {
       for (final subgroup in entry.entries) {
-        printGroupStructure(subgroup, indentation: indentation + 5);
+        testCount +=
+            reportGroupStructure(subgroup, indentation: indentation + 5);
       }
     }
   }
+
+  if (indentation == 0) {
+    print('Posting event!');
+    postEvent(
+      'testCount',
+      {'testCount': testCount},
+    );
+  }
+
+  return testCount;
 }
