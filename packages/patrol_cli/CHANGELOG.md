@@ -1,3 +1,6 @@
+## Unreleased
+- Add `tags` and `exclude-tags`. (#2286)
+
 ## 3.0.1
 
 - Fallback to read `java` version from `JAVA_HOME` when `flutter doctor` doesn't print any.

@@ -5,6 +5,7 @@
 - Implement `enableLocation` and `disableLocation` methods for Android. (#2259)
 - Fix opening settings app with clean state on iOS. (#2275)
 - Add native skip. (#2278)
+- Add `tags` and `exclude-tags`. (#2286)
 
 ## 3.9.0
 
