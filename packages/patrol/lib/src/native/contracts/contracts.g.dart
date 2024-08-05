@@ -14,6 +14,7 @@ DartGroupEntry _$DartGroupEntryFromJson(Map<String, dynamic> json) =>
           .map((e) => DartGroupEntry.fromJson(e as Map<String, dynamic>))
           .toList(),
       skip: json['skip'] as bool,
+      tags: (json['tags'] as List<dynamic>).map((e) => e as String).toList(),
     );
 
 Map<String, dynamic> _$DartGroupEntryToJson(DartGroupEntry instance) =>
@@ -22,6 +23,7 @@ Map<String, dynamic> _$DartGroupEntryToJson(DartGroupEntry instance) =>
       'type': _$GroupEntryTypeEnumMap[instance.type]!,
       'entries': instance.entries,
       'skip': instance.skip,
+      'tags': instance.tags,
     };
 
 const _$GroupEntryTypeEnumMap = {

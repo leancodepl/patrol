@@ -9,11 +9,11 @@ fun dartTestGroup(
     name: String,
     entries: List<DartGroupEntry>,
 ): DartGroupEntry {
-    return DartGroupEntry(name, GroupEntryType.group, entries, false)
+    return DartGroupEntry(name, GroupEntryType.group, entries, false, listOf<String>())
 }
 
 fun dartTestCase(name: String): DartGroupEntry {
-    return DartGroupEntry(name, GroupEntryType.test, listOf(), false)
+    return DartGroupEntry(name, GroupEntryType.test, listOf(), false, listOf<String>())
 }
 
 class DartTestGroupExtensionsTest {

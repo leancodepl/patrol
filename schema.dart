@@ -12,6 +12,7 @@ class DartGroupEntry {
   late GroupEntryType type;
   late List<DartGroupEntry> entries;
   late bool skip;
+  late List<String> tags;
 }
 
 enum GroupEntryType { group, test }

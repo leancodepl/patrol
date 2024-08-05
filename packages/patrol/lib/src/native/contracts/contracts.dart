@@ -224,6 +224,7 @@ class DartGroupEntry with EquatableMixin {
     required this.type,
     required this.entries,
     required this.skip,
+    required this.tags,
   });
 
   factory DartGroupEntry.fromJson(Map<String, dynamic> json) =>
@@ -233,6 +234,7 @@ class DartGroupEntry with EquatableMixin {
   final GroupEntryType type;
   final List<DartGroupEntry> entries;
   final bool skip;
+  final List<String> tags;
 
   Map<String, dynamic> toJson() => _$DartGroupEntryToJson(this);
 
@@ -242,6 +244,7 @@ class DartGroupEntry with EquatableMixin {
         type,
         entries,
         skip,
+        tags,
       ];
 }
 

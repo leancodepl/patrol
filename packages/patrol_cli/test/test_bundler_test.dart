@@ -40,7 +40,14 @@ void _test(Platform platform) {
     });
 
     test('throws ArgumentError when no tests are given', () {
-      expect(() => testBundler.createTestBundle([]), throwsArgumentError);
+      expect(
+        () => testBundler.createTestBundle(
+          [],
+          null,
+          null,
+        ),
+        throwsArgumentError,
+      );
     });
 
     test('generates imports from relative paths', () {

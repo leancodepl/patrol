@@ -1,10 +1,11 @@
-## Unreleased
+## 3.10.0
 
 - Implement `enableBluetooth` and `disableBluetooth` methods for Android > 11. (#2254)
 - Implement `enableAirplaneMode` and `disableAirplaneMode` methods for Android. (#2254)
 - Implement `enableLocation` and `disableLocation` methods for Android. (#2259)
 - Fix opening settings app with clean state on iOS. (#2275)
 - Add native skip. (#2278)
+- Add `tags` and `exclude-tags`. (#2286)
 
 ## 3.9.0
 

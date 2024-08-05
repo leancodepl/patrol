@@ -36,6 +36,8 @@ class BuildAndroidCommand extends PatrolCommand {
     usesLabelOption();
     usesWaitOption();
     usesPortOptions();
+    usesTagsOption();
+    usesExcludeTagsOption();
 
     usesAndroidOptions();
   }
@@ -83,9 +85,17 @@ class BuildAndroidCommand extends PatrolCommand {
       _logger.detail('Received test target: $t');
     }
 
+    final tags = stringArg('tags');
+    final excludeTags = stringArg('exclude-tags');
+    if (tags != null) {
+      _logger.detail('Received tag(s): $tags');
+    }
+    if (excludeTags != null) {
+      _logger.detail('Received exclude tag(s): $excludeTags');
+    }
     final entrypoint = _testBundler.bundledTestFile;
     if (boolArg('generate-bundle')) {
-      _testBundler.createTestBundle(targets);
+      _testBundler.createTestBundle(targets, tags, excludeTags);
     }
 
     final flavor = stringArg('flavor') ?? config.android.flavor;
