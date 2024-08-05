@@ -37,6 +37,7 @@ class BuildMacOSCommand extends PatrolCommand {
     usesWaitOption();
     usesPortOptions();
     usesTagsOption();
+    usesExcludeTagsOption();
 
     usesMacOSOptions();
   }

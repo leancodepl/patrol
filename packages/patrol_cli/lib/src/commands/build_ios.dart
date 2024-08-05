@@ -37,6 +37,7 @@ class BuildIOSCommand extends PatrolCommand {
     usesWaitOption();
     usesPortOptions();
     usesTagsOption();
+    usesExcludeTagsOption();
 
     usesIOSOptions();
     argParser.addFlag(
