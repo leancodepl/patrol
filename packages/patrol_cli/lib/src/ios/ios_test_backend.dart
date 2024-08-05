@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io' show Process;
+import 'dart:io' as io;
 
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
@@ -10,9 +11,13 @@ import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
+import 'package:patrol_cli/src/crossplatform/coverage_collector.dart';
+import 'package:patrol_cli/src/crossplatform/coverage_options.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:platform/platform.dart';
 import 'package:process/process.dart';
+
+import 'log_processor.dart';
 
 enum BuildMode {
   debug,
@@ -71,6 +76,9 @@ class IOSTestBackend {
   final FileSystem _fs;
   final DisposeScope _disposeScope;
   final Logger _logger;
+  final CoverageCollector _coverageCollector = CoverageCollector();
+  late CoverageOptions _coverageOptions;
+
 
   Future<void> build(IOSAppOptions options) async {
     await _disposeScope.run((scope) async {
@@ -149,7 +157,38 @@ class IOSTestBackend {
     IOSAppOptions options,
     Device device, {
     bool interruptible = false,
+    CoverageOptions coverageOptions = const CoverageOptions(),
   }) async {
+    
+    String logFilePath;
+    IOSLogProcessor? logProcessor;
+    _coverageOptions = coverageOptions;
+
+    logFilePath = join(
+      io.Directory.systemTemp.path,
+      'patrol_${device.id}_${DateTime.now().millisecondsSinceEpoch}.log',
+    );
+
+    logProcessor = IOSLogProcessor(
+      device.id,
+      logFilePath,
+      (uri) => _handleStartTest(uri, device),
+      _logger,
+    );
+
+    await _coverageCollector.initialize(
+        logger: _logger,
+        processManager: _processManager,
+        options: coverageOptions,
+    );
+
+    await logProcessor.start();
+
+    // exit program
+    
+
+    _logger.detail('Log file: $logFilePath');
+
     await _disposeScope.run((scope) async {
       final subject = '${options.description} on ${device.description}';
       final task = _logger.task('Running $subject');
@@ -182,6 +221,10 @@ class IOSTestBackend {
       process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
 
       final exitCode = await process.exitCode;
+      if (coverageOptions.coverage) {
+        await logProcessor!.stop();
+        await _coverageCollector.stop();
+      }
 
       if (exitCode == 0) {
         task.complete('Completed executing $subject');
@@ -367,5 +410,13 @@ class IOSTestBackend {
         .toList();
 
     return jsonEncode(ids);
+  }
+
+  Future<void> _handleStartTest(String uri, Device device) async {
+    _logger.detail('observatory uri: $uri');
+    if(_coverageOptions.coverage) {
+      _logger.detail('Starting coverage collection');
+      await _coverageCollector.start(uri);
+    }
   }
 }
