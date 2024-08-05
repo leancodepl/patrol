@@ -155,6 +155,42 @@ abstract class PatrolCommand extends Command<int> {
     );
   }
 
+    void useCoverageOption() {
+    argParser.addFlag(
+      'coverage',
+      help: 'Whether to collect coverage information.',
+    );
+  }
+
+  void useFunctionCoverageOption() {
+    argParser.addFlag(
+      'function-coverage',
+      help: 'Collect function coverage info',
+    );
+  }
+
+  void useMergeCoverageOption() {
+    argParser.addFlag(
+      'merge-coverage',
+      help: 'Whether to merge coverage data with "coverage/lcov.base.info',
+      negatable: false,
+    );
+  }
+
+  void useCoveragePathOption() {
+    argParser.addOption(
+      'coverage-path',
+      help: 'Where to store coverage information (if coverage is enabled).',
+    );
+  }
+
+  void useCoveragePackageOption() {
+    argParser.addMultiOption(
+      'coverage-package',
+      help: 'A regular expression matching packages names to include in the coverage report (if coverage is enabled). If unset, matches the current package name',
+    );
+  }
+
   // Runtime-only options
 
   void usesUninstallOption() {
