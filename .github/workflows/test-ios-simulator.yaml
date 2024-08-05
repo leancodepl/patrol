@@ -80,6 +80,10 @@ jobs:
           service_cellular_test,\
           service_wifi_test,\
           service_location_test,\
+          external_link_test,\
+          permissions/notifications_test,\
+          permissions/permissions_location_test,\
+          permissions/permissions_many_test,\
           webview_stackoverflow_test,\
           webview_leancode_test,\
           webview_hackernews_test"
@@ -105,7 +109,9 @@ jobs:
           sleep 10 # See https://github.com/leancodepl/patrol/issues/1282
 
           TESTS_EXIT_CODE=0
-          patrol test --exclude ${{ env.EXCLUDED_TESTS }} --verbose || TESTS_EXIT_CODE=$?
+          patrol test --exclude ${{ env.EXCLUDED_TESTS }} \
+          --dart-define-from-file=defines_1.json --dart-define-from-file=defines_2.json --dart-define-from-file=defines_3.env \
+          --verbose || TESTS_EXIT_CODE=$?
 
           kill -SIGINT $recordingpid
           kill -SIGINT $logpid
@@ -163,7 +169,7 @@ jobs:
     name: Notify on Slack
     uses: ./.github/workflows/send-slack-message.yaml
     needs: run_tests
-    if: always()
+    if: success()
     with:
       TESTS_EXIT_CODE: ${{ needs.run_tests.outputs.TESTS_EXIT_CODE }}
       FAILURE_STATUS: ${{ needs.run_tests.outputs.FAILURE_STATUS }}
