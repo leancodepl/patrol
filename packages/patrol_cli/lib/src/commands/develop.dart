@@ -54,7 +54,6 @@ class DevelopCommand extends PatrolCommand {
     usesWaitOption();
     usesPortOptions();
     usesTagsOption();
-    usesExcludeTagsOption();
 
     usesUninstallOption();
 
