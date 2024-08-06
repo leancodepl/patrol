@@ -13,7 +13,7 @@ concurrency:
 jobs:
   run_tests:
     name: Flutter ${{ matrix.flutter-version }} on ${{ matrix.device_model }} (${{ matrix.os_version }}) simulator
-    runs-on: macos-14-arm64
+    runs-on: macos-13
     timeout-minutes: 40
     outputs:
       SLACK_MESSAGE_TITLE: Flutter ${{ matrix.flutter-version }} on ${{ matrix.os }} ${{ matrix.os_version }} simulator
@@ -30,7 +30,7 @@ jobs:
         device_model:
           [iPhone SE (3rd generation), iPhone 14, iPad (10th generation)]
         os: [iOS]
-        os_version: ["16.4"]
+        os_version: ["16.2"]
 
     defaults:
       run:
@@ -43,7 +43,7 @@ jobs:
       - name: Xcode Select Version
         uses: mobiledevops/xcode-select-version-action@v1
         with:
-          xcode-select-version: 14.3.1
+          xcode-select-version: 14.2
       - run: xcodebuild -version
 
       - name: Set up Flutter
