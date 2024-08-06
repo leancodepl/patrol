@@ -30,7 +30,7 @@ jobs:
         device_model:
           [iPhone SE (3rd generation), iPhone 14, iPad (10th generation)]
         os: [iOS]
-        os_version: ["16.2"]
+        os_version: ["17.0"]
 
     defaults:
       run:
@@ -43,7 +43,7 @@ jobs:
       - name: Xcode Select Version
         uses: mobiledevops/xcode-select-version-action@v1
         with:
-          xcode-select-version: 14.2
+          xcode-select-version: 14.3.1
       - run: xcodebuild -version
 
       - name: Set up Flutter
