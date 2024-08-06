@@ -150,7 +150,7 @@ jobs:
     name: Notify on Slack
     uses: ./.github/workflows/send-slack-message.yaml
     needs: run_tests
-    if: always()
+    if: success()
     with:
       TESTS_EXIT_CODE: ${{ needs.run_tests.outputs.TESTS_EXIT_CODE }}
       FAILURE_STATUS: ${{ needs.run_tests.outputs.FAILURE_STATUS }}
