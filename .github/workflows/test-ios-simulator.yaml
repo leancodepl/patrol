@@ -30,7 +30,7 @@ jobs:
         device_model:
           [iPhone SE (3rd generation), iPhone 14, iPad (10th generation)]
         os: [iOS]
-        os_version: ["17.0"]
+        os_version: ["16.4"]
 
     defaults:
       run:
