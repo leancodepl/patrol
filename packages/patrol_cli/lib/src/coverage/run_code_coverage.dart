@@ -132,9 +132,19 @@ Future<void> runCodeCoverage({
       serviceClient.onIsolateEvent.listen(
         (event) async {
           if (event.kind == EventKind.kIsolateRunnable) {
-            // TODO: Collect coverage from this single isolate before resuming
-            // it
-            await serviceClient.resume(event.isolate!.id!);
+            final isolateCoverage = await collect(
+              serviceUri,
+              true,
+              false,
+              false,
+              {flutterPackageName},
+              isolateIds: {event.isolate!.id!},
+            );
+            hitMap.merge(
+              await HitMap.parseJson(
+                isolateCoverage['coverage'] as List<Map<String, dynamic>>,
+              ),
+            );
           }
         },
       );
