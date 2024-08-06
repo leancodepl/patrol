@@ -201,8 +201,6 @@ DartGroupEntry createDartTestGroup(
           maxTestCaseLength: maxTestCaseLength,
         ),
       );
-
-      print("Entry $name is a group");
     } else if (entry is Test) {
       if (entry.name == 'patrol_test_explorer') {
         // Ignore the bogus test that is used to discover the test structure.
@@ -216,8 +214,6 @@ DartGroupEntry createDartTestGroup(
       groupDTO.entries.add(
         DartGroupEntry(name: name, type: GroupEntryType.test, entries: []),
       );
-
-      print("Entry $name is a test");
     } else {
       // This should really never happen, because Group and Test are the only
       // subclasses of GroupEntry.
@@ -265,7 +261,6 @@ int reportGroupStructure(DartGroupEntry group, {int indentation = 0}) {
   }
 
   if (indentation == 0) {
-    print('Posting event!');
     postEvent(
       'testCount',
       {'testCount': testCount},

@@ -110,6 +110,8 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
           });
 
           while (stopped) {
+            // The loop is needed to keep this isolate alive until the coverage
+            // data is collected.
             await Future<void>.delayed(const Duration(seconds: 1));
           }
         }
