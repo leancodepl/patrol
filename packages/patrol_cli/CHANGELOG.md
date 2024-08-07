@@ -1,5 +1,6 @@
 ## 3.1.0
 - Add `tags` and `exclude-tags`. (#2286)
+- Run `flutter build apk --config-only` during android build.(#2293)
 
 This version requires version 3.10.0 of `patrol` package.
 

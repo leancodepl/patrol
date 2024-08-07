@@ -41,6 +41,7 @@ class AndroidTestBackend {
   late final String? javaPath;
 
   Future<void> build(AndroidAppOptions options) async {
+    await buildApkConfigOnly(options.flutter.command.executable);
     await loadJavaPathFromFlutterDoctor(options.flutter.command.executable);
 
     await _disposeScope.run((scope) async {
@@ -147,6 +148,21 @@ class AndroidTestBackend {
     });
 
     javaPath = await javaCompleterPath.future;
+  }
+
+  /// Execute `flutter build apk --config-only` to generate the gradlew file.
+  ///
+  /// This fix issue: https://github.com/leancodepl/patrol/issues/1668
+  Future<void> buildApkConfigOnly(String commandExecutable) async {
+    await _processManager.start(
+      [
+        commandExecutable,
+        'build',
+        'apk',
+        '--config-only',
+      ],
+      runInShell: true,
+    );
   }
 
   /// Executes the tests of the given [options] on the given [device].
