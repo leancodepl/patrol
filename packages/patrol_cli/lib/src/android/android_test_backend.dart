@@ -160,6 +160,8 @@ class AndroidTestBackend {
         'build',
         'apk',
         '--config-only',
+        '-t',
+        'integration_test/test_bundle.dart',
       ],
       runInShell: true,
     );
