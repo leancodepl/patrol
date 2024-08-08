@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'common.dart';
 
 void main() {
@@ -33,9 +35,13 @@ void main() {
       // ignore
     }
 
-    await $.native.waitUntilVisible(
-      Selector(text: 'Subscribe'),
-      appId: 'com.apple.mobilesafari',
-    );
+    if (Platform.isIOS) {
+      await $.native.waitUntilVisible(
+        Selector(text: 'Subscribe'),
+        appId: 'com.apple.mobilesafari',
+      );
+    } else {
+      await $.native.waitUntilVisible(Selector(text: 'Subscribe'));
+    }
   });
 }
