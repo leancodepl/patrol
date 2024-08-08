@@ -9,28 +9,19 @@ void main() {
     await $.native.openUrl('https://leancode.co');
 
     try {
-      await $.native.tap(
-        Selector(text: 'Contact us'),
-        timeout: Duration(seconds: 5),
-      );
+      await $.native.tap(Selector(text: 'Contact us'));
     } on PatrolActionException catch (_) {
       // ignore
     }
 
     try {
-      await $.native.tap(
-        Selector(text: 'No thanks'),
-        timeout: Duration(seconds: 5),
-      );
+      await $.native.tap(Selector(text: 'No thanks'));
     } on PatrolActionException catch (_) {
       // ignore
     }
 
     try {
-      await $.native.tap(
-        Selector(text: 'Accept all cookies'),
-        timeout: Duration(seconds: 5),
-      );
+      await $.native.tap(Selector(text: 'ACCEPT ALL COOKIES'));
     } on PatrolActionException catch (_) {
       // ignore
     }
