@@ -128,13 +128,14 @@ class AndroidTestBackend {
         (line) async {
           if (line.contains('• Java binary at:') &&
               javaCompleterPath.isCompleted == false) {
-            final path = line
-                .replaceAll('• Java binary at:', '')
-                .replaceAll(
-                  _platform.isWindows ? r'\bin\java' : '/bin/java',
-                  '',
-                )
-                .trim();
+            var path = line.replaceAll('• Java binary at:', '').trim();
+            if (path != '/usr/bin/java') {
+              path = path.replaceAll(
+                _platform.isWindows ? r'\bin\java' : '/bin/java',
+                '',
+              );
+            }
+
             javaCompleterPath.complete(path);
           }
         },
