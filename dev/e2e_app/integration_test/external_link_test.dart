@@ -7,23 +7,35 @@ void main() {
     await $.native.openUrl('https://leancode.co');
 
     try {
-      await $.native.tap(Selector(text: 'Use without an account'));
+      await $.native.tap(
+        Selector(text: 'Contact us'),
+        timeout: Duration(seconds: 5),
+      );
     } on PatrolActionException catch (_) {
       // ignore
     }
 
     try {
-      await $.native.tap(Selector(text: 'No thanks'));
+      await $.native.tap(
+        Selector(text: 'No thanks'),
+        timeout: Duration(seconds: 5),
+      );
     } on PatrolActionException catch (_) {
       // ignore
     }
 
     try {
-      await $.native.tap(Selector(text: 'Accept all cookies'));
+      await $.native.tap(
+        Selector(text: 'Accept all cookies'),
+        timeout: Duration(seconds: 5),
+      );
     } on PatrolActionException catch (_) {
       // ignore
     }
 
-    await $.native.waitUntilVisible(Selector(text: 'Subscribe'));
+    await $.native.waitUntilVisible(
+      Selector(text: 'Subscribe'),
+      appId: 'com.apple.mobilesafari',
+    );
   });
 }
