@@ -3,7 +3,7 @@ name: test ios simulator webview
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 23 * * *"
+    - cron: "0 0 1 * *" #run this workflow once every month
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
