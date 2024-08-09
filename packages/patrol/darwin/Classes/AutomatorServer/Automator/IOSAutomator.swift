@@ -794,6 +794,11 @@
         return
       }
 
+      if (isFineLocationEnabled()) {
+        Logger.shared.i("Fine location is already enabled")
+        return
+      }
+      
       try runAction("selecting fine location") {
         let alerts = self.springboard.alerts
         let button = alerts.buttons["Precise: Off"]
@@ -807,9 +812,27 @@
       }
     }
 
+    func isFineLocationEnabled() -> Bool {
+      if iOS13orOlder() {
+        Logger.shared.i("Ignored call to isFineLocationEnabled() (iOS < 14)")
+        return false
+      }
+
+      let alerts = self.springboard.alerts
+      let button = alerts.buttons["Precise: On"]
+      let exists = button.waitForExistence(timeout: self.timeout)
+
+      return exists
+    }
+
     func selectCoarseLocation() throws {
       if iOS13orOlder() {
         Logger.shared.i("Ignored call to selectCoarseLocation() (iOS < 14)")
+        return
+      }
+
+      if (!isFineLocationEnabled()) {
+        Logger.shared.i("Coarse location is already enabled")
         return
       }
 
