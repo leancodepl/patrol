@@ -9,6 +9,12 @@ void main() {
     await $.native.openUrl('https://leancode.co');
 
     try {
+      await $.native.tap(Selector(text: 'Use without an account'));
+    } on PatrolActionException catch (_) {
+      // ignore
+    }
+
+    try {
       await $.native.tap(Selector(text: 'Contact us'));
     } on PatrolActionException catch (_) {
       // ignore
