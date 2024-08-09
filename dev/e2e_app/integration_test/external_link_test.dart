@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'common.dart';
 
 void main() {
@@ -13,17 +15,30 @@ void main() {
     }
 
     try {
+      await $.native.tap(Selector(text: 'Contact us'));
+    } on PatrolActionException catch (_) {
+      // ignore
+    }
+
+    try {
       await $.native.tap(Selector(text: 'No thanks'));
     } on PatrolActionException catch (_) {
       // ignore
     }
 
     try {
-      await $.native.tap(Selector(text: 'Accept all cookies'));
+      await $.native.tap(Selector(text: 'ACCEPT ALL COOKIES'));
     } on PatrolActionException catch (_) {
       // ignore
     }
 
-    await $.native.waitUntilVisible(Selector(text: 'Subscribe'));
+    if (Platform.isIOS) {
+      await $.native.waitUntilVisible(
+        Selector(text: 'Subscribe'),
+        appId: 'com.apple.mobilesafari',
+      );
+    } else {
+      await $.native.waitUntilVisible(Selector(text: 'Subscribe'));
+    }
   });
 }
