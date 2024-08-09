@@ -55,6 +55,8 @@ void _test(Platform platform) {
       final tests = [
         fs.path.join('integration_test', 'example_test.dart'),
         fs.path.join('integration_test', 'example', 'example_test.dart'),
+        fs.path
+            .join('integration_test', 'example-dash-test', 'example_test.dart'),
       ];
 
       // when
@@ -63,7 +65,8 @@ void _test(Platform platform) {
       /// then
       expect(imports, '''
 import 'example_test.dart' as example_test;
-import 'example/example_test.dart' as example__example_test;''');
+import 'example/example_test.dart' as example__example_test;
+import 'example-dash-test/example_test.dart' as example___dash___test__example_test;''');
     });
 
     test('generates imports from absolute paths', () {
@@ -81,6 +84,12 @@ import 'example/example_test.dart' as example__example_test;''');
           'integration_test',
           'example/example_test.dart',
         ),
+        fs.path.join(
+          platform.home,
+          'awesome_app',
+          'integration_test',
+          'example-dash-test/example_test.dart',
+        ),
       ];
 
       // when
@@ -89,7 +98,8 @@ import 'example/example_test.dart' as example__example_test;''');
       /// then
       expect(imports, '''
 import 'example_test.dart' as example_test;
-import 'example/example_test.dart' as example__example_test;''');
+import 'example/example_test.dart' as example__example_test;
+import 'example-dash-test/example_test.dart' as example___dash___test__example_test;''');
     });
 
     test('generates groups from relative paths', () {
@@ -97,6 +107,7 @@ import 'example/example_test.dart' as example__example_test;''');
       final tests = [
         fs.path.join('integration_test', 'example_test.dart'),
         fs.path.join('integration_test', 'example/example_test.dart'),
+        fs.path.join('integration_test', 'example-dash-test/example_test.dart'),
       ];
 
       // when
@@ -105,7 +116,8 @@ import 'example/example_test.dart' as example__example_test;''');
       /// then
       expect(groupsCode, '''
 group('example_test', example_test.main);
-group('example.example_test', example__example_test.main);''');
+group('example.example_test', example__example_test.main);
+group('example._dash._test.example_test', example___dash___test__example_test.main);''');
     });
 
     test('generates groups from absolute paths', () {
@@ -123,6 +135,12 @@ group('example.example_test', example__example_test.main);''');
           'integration_test',
           'example/example_test.dart',
         ),
+        fs.path.join(
+          platform.home,
+          'awesome_app',
+          'integration_test',
+          'example-dash-test/example_test.dart',
+        ),
       ];
 
       // when
@@ -131,7 +149,8 @@ group('example.example_test', example__example_test.main);''');
       /// then
       expect(groupsCode, '''
 group('example_test', example_test.main);
-group('example.example_test', example__example_test.main);''');
+group('example.example_test', example__example_test.main);
+group('example._dash._test.example_test', example___dash___test__example_test.main);''');
     });
   });
 }
