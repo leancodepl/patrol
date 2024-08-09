@@ -794,11 +794,11 @@
         return
       }
 
-      if (isFineLocationEnabled()) {
+      if isFineLocationEnabled() {
         Logger.shared.i("Fine location is already enabled")
         return
       }
-      
+
       try runAction("selecting fine location") {
         let alerts = self.springboard.alerts
         let button = alerts.buttons["Precise: Off"]
@@ -831,7 +831,7 @@
         return
       }
 
-      if (!isFineLocationEnabled()) {
+      if !isFineLocationEnabled() {
         Logger.shared.i("Coarse location is already enabled")
         return
       }
