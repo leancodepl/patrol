@@ -684,8 +684,8 @@ class NativeAutomator {
           keyboardBehavior:
           (keyboardBehavior ?? _config.keyboardBehavior).toContractsEnum,
           timeoutMillis: timeout?.inMilliseconds,
-          dx: tapLocation?.dx,
-          dy: tapLocation?.dy,
+          dx: tapLocation?.dx ?? 0.9,
+          dy: tapLocation?.dy ?? 0.9,
         ),
       ),
     );
@@ -724,8 +724,8 @@ class NativeAutomator {
           keyboardBehavior:
           (keyboardBehavior ?? _config.keyboardBehavior).toContractsEnum,
           timeoutMillis: timeout?.inMilliseconds,
-          dx: tapLocation?.dx,
-          dy: tapLocation?.dy,
+          dx: tapLocation?.dx ?? 0.9,
+          dy: tapLocation?.dy ?? 0.9,
         ),
       ),
     );
