@@ -949,6 +949,8 @@ class EnterTextRequest with EquatableMixin {
     this.iosSelector,
     required this.keyboardBehavior,
     this.timeoutMillis,
+    this.dx,
+    this.dy,
   });
 
   factory EnterTextRequest.fromJson(Map<String, dynamic> json) =>
@@ -962,20 +964,24 @@ class EnterTextRequest with EquatableMixin {
   final IOSSelector? iosSelector;
   final KeyboardBehavior keyboardBehavior;
   final int? timeoutMillis;
+  final double? dx;
+  final double? dy;
 
   Map<String, dynamic> toJson() => _$EnterTextRequestToJson(this);
 
   @override
   List<Object?> get props => [
-        data,
-        appId,
-        index,
-        selector,
-        androidSelector,
-        iosSelector,
-        keyboardBehavior,
-        timeoutMillis,
-      ];
+    data,
+    appId,
+    index,
+    selector,
+    androidSelector,
+    iosSelector,
+    keyboardBehavior,
+    timeoutMillis,
+    dx,
+    dy,
+  ];
 }
 
 @JsonSerializable()

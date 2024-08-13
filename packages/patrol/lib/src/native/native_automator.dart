@@ -18,7 +18,6 @@ class PatrolActionException implements Exception {
   @override
   String toString() => 'Patrol action failed: $message';
 }
-
 /// Specifies how the OS keyboard should behave when using
 /// [NativeAutomator.enterText] and [NativeAutomator.enterTextByIndex].
 enum KeyboardBehavior {
@@ -668,26 +667,31 @@ class NativeAutomator {
   /// See also:
   ///  * [enterTextByIndex], which is less flexible but also less verbose
   Future<void> enterText(
-    Selector selector, {
-    required String text,
-    String? appId,
-    KeyboardBehavior? keyboardBehavior,
-    Duration? timeout,
-  }) async {
+      Selector selector, {
+        required String text,
+        String? appId,
+        KeyboardBehavior? keyboardBehavior,
+        Duration? timeout,
+        double? dx,
+        double? dy,
+      }) async {
     await _wrapRequest(
       'enterText',
-      () => _client.enterText(
+          () => _client.enterText(
         EnterTextRequest(
           data: text,
           appId: appId ?? resolvedAppId,
           selector: selector,
           keyboardBehavior:
-              (keyboardBehavior ?? _config.keyboardBehavior).toContractsEnum,
+          (keyboardBehavior ?? _config.keyboardBehavior).toContractsEnum,
           timeoutMillis: timeout?.inMilliseconds,
+          dx: dx,
+          dy: dy,
         ),
       ),
     );
   }
+
 
   /// Enters text to the [index]-th visible text field.
   ///
@@ -704,22 +708,26 @@ class NativeAutomator {
   ///  * [enterText], which allows for more precise specification of the text
   ///    field to enter text into
   Future<void> enterTextByIndex(
-    String text, {
-    required int index,
-    String? appId,
-    KeyboardBehavior? keyboardBehavior,
-    Duration? timeout,
-  }) async {
+      String text, {
+        required int index,
+        String? appId,
+        KeyboardBehavior? keyboardBehavior,
+        Duration? timeout,
+        double? dx,
+        double? dy,
+      }) async {
     await _wrapRequest(
       'enterTextByIndex',
-      () => _client.enterText(
+          () => _client.enterText(
         EnterTextRequest(
           data: text,
           appId: appId ?? resolvedAppId,
           index: index,
           keyboardBehavior:
-              (keyboardBehavior ?? _config.keyboardBehavior).toContractsEnum,
+          (keyboardBehavior ?? _config.keyboardBehavior).toContractsEnum,
           timeoutMillis: timeout?.inMilliseconds,
+          dx: dx,
+          dy: dy,
         ),
       ),
     );

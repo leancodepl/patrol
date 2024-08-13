@@ -553,6 +553,8 @@ class NativeAutomator2 {
     String? appId,
     native_automator.KeyboardBehavior? keyboardBehavior,
     Duration? timeout,
+    double? dx,
+    double? dy,
   }) async {
     await _wrapRequest(
       'enterText',
@@ -565,6 +567,8 @@ class NativeAutomator2 {
           keyboardBehavior:
               (keyboardBehavior ?? _config.keyboardBehavior).toContractsEnum,
           timeoutMillis: timeout?.inMilliseconds,
+          dx: dx,
+          dy: dy,
         ),
       ),
     );
@@ -590,6 +594,8 @@ class NativeAutomator2 {
     String? appId,
     native_automator.KeyboardBehavior? keyboardBehavior,
     Duration? timeout,
+    double? dx,
+    double? dy,
   }) async {
     await _wrapRequest(
       'enterTextByIndex',
@@ -601,6 +607,8 @@ class NativeAutomator2 {
           keyboardBehavior:
               (keyboardBehavior ?? _config.keyboardBehavior).toContractsEnum,
           timeoutMillis: timeout?.inMilliseconds,
+          dx: dx,
+          dy: dy,
         ),
       ),
     );

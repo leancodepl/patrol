@@ -146,37 +146,46 @@
       }
     }
 
-    func enterText(request: EnterTextRequest) throws {
-      return try runCatching {
+func enterText(request: EnterTextRequest) throws {
+    return try runCatching {
+        let dx: CGFloat = request.dx ?? 0.9
+        let dy: CGFloat = request.dy ?? 0.9
+
         if let index = request.index {
-          try automator.enterText(
-            request.data,
-            byIndex: Int(index),
-            inApp: request.appId,
-            dismissKeyboard: request.keyboardBehavior == .showAndDismiss,
-            withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) }
-          )
+            try automator.enterText(
+                request.data,
+                byIndex: Int(index),
+                inApp: request.appId,
+                dismissKeyboard: request.keyboardBehavior == .showAndDismiss,
+                withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) },
+                dx: dx,
+                dy: dy
+            )
         } else if let selector = request.selector {
-          try automator.enterText(
-            request.data,
-            on: selector,
-            inApp: request.appId,
-            dismissKeyboard: request.keyboardBehavior == .showAndDismiss,
-            withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) }
-          )
+            try automator.enterText(
+                request.data,
+                on: selector,
+                inApp: request.appId,
+                dismissKeyboard: request.keyboardBehavior == .showAndDismiss,
+                withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) },
+                dx: dx,
+                dy: dy
+            )
         } else if let iosSelector = request.iosSelector {
-          try automator.enterText(
-            request.data,
-            on: iosSelector,
-            inApp: request.appId,
-            dismissKeyboard: request.keyboardBehavior == .showAndDismiss,
-            withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) }
-          )
+            try automator.enterText(
+                request.data,
+                on: iosSelector,
+                inApp: request.appId,
+                dismissKeyboard: request.keyboardBehavior == .showAndDismiss,
+                withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) },
+                dx: dx,
+                dy: dy
+            )
         } else {
-          throw PatrolError.internal("enterText(): neither index nor selector are set")
+            throw PatrolError.internal("enterText(): neither index nor selector are set")
         }
-      }
     }
+}
 
     func swipe(request: SwipeRequest) throws {
       return try runCatching {
