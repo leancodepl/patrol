@@ -318,8 +318,8 @@ public struct EnterTextRequest: Codable {
   public var iosSelector: IOSSelector?
   public var keyboardBehavior: KeyboardBehavior
   public var timeoutMillis: Int?
-  public var dx: Double
-  public var dy: Double
+  public var dx: Double?
+  public var dy: Double?
 }
 
 public struct SwipeRequest: Codable {
