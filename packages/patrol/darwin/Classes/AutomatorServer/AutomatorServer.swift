@@ -148,9 +148,6 @@
 
 func enterText(request: EnterTextRequest) throws {
     return try runCatching {
-        let dx: CGFloat = request.dx ?? 0.9
-        let dy: CGFloat = request.dy ?? 0.9
-
         if let index = request.index {
             try automator.enterText(
                 request.data,
@@ -158,8 +155,8 @@ func enterText(request: EnterTextRequest) throws {
                 inApp: request.appId,
                 dismissKeyboard: request.keyboardBehavior == .showAndDismiss,
                 withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) },
-                dx: dx,
-                dy: dy
+                dx: request.dx,
+                dy: request.dy
             )
         } else if let selector = request.selector {
             try automator.enterText(
@@ -168,8 +165,8 @@ func enterText(request: EnterTextRequest) throws {
                 inApp: request.appId,
                 dismissKeyboard: request.keyboardBehavior == .showAndDismiss,
                 withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) },
-                dx: dx,
-                dy: dy
+                dx: request.dx,
+                dy: request.dy
             )
         } else if let iosSelector = request.iosSelector {
             try automator.enterText(
@@ -178,8 +175,8 @@ func enterText(request: EnterTextRequest) throws {
                 inApp: request.appId,
                 dismissKeyboard: request.keyboardBehavior == .showAndDismiss,
                 withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) },
-                dx: dx,
-                dy: dy
+                dx: request.dx,
+                dy: request.dy
             )
         } else {
             throw PatrolError.internal("enterText(): neither index nor selector are set")
