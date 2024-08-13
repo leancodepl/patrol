@@ -855,7 +855,7 @@
       }
 
       // We need to tap at the end of the field to ensure the cursor is at the end
-      let coordinate = element.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.9))
+      let coordinate = element.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
       coordinate.tap()
 
       element.typeText(delete + data)
