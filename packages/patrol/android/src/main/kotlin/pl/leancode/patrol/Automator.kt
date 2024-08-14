@@ -367,9 +367,8 @@ class Automator private constructor() {
         val uiObject = uiDevice.findObject(uiSelector)
 
         if (keyboardBehavior == KeyboardBehavior.showAndDismiss) {
-            val rect = uiObject.bounds
-            val x = rect.width * dx
-            val y = rect.height * dy
+            val x = uiObject.width * dx
+            val y = uiObject.height * dy
             uiObject.click(x, y)
         }
 
@@ -405,9 +404,8 @@ class Automator private constructor() {
         }
 
         if (keyboardBehavior == KeyboardBehavior.showAndDismiss) {
-            val rect = uiObject.bounds
-            val x = rect.width * dx
-            val y = rect.height * dy
+            val x = uiObject.width * dx
+            val y = uiObject.height * dy
             uiObject.click(x, y)
         }
 
