@@ -540,7 +540,7 @@ class Contracts {
     val keyboardBehavior: KeyboardBehavior,
     val timeoutMillis: Long? = null,
     val dx: Double? = null,
-    val dy: Double? = null,
+    val dy: Double? = null
   ){
     fun hasIndex(): Boolean {
       return index != null
