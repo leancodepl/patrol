@@ -18,6 +18,7 @@ class PatrolActionException implements Exception {
   @override
   String toString() => 'Patrol action failed: $message';
 }
+
 /// Specifies how the OS keyboard should behave when using
 /// [NativeAutomator.enterText] and [NativeAutomator.enterTextByIndex].
 enum KeyboardBehavior {
@@ -65,11 +66,9 @@ class NativeAutomatorConfig {
       defaultValue: '8081',
     ),
     this.packageName = const String.fromEnvironment('PATROL_APP_PACKAGE_NAME'),
-    this.iosInstalledApps =
-        const String.fromEnvironment('PATROL_IOS_INSTALLED_APPS'),
+    this.iosInstalledApps = const String.fromEnvironment('PATROL_IOS_INSTALLED_APPS'),
     this.bundleId = const String.fromEnvironment('PATROL_APP_BUNDLE_ID'),
-    this.androidAppName =
-        const String.fromEnvironment('PATROL_ANDROID_APP_NAME'),
+    this.androidAppName = const String.fromEnvironment('PATROL_ANDROID_APP_NAME'),
     this.iosAppName = const String.fromEnvironment('PATROL_IOS_APP_NAME'),
     this.connectionTimeout = const Duration(seconds: 60),
     this.findTimeout = const Duration(seconds: 10),
@@ -667,30 +666,28 @@ class NativeAutomator {
   /// See also:
   ///  * [enterTextByIndex], which is less flexible but also less verbose
   Future<void> enterText(
-      Selector selector, {
-        required String text,
-        String? appId,
-        KeyboardBehavior? keyboardBehavior,
-        Duration? timeout,
-        Offset? tapLocation,
-      }) async {
+    Selector selector, {
+    required String text,
+    String? appId,
+    KeyboardBehavior? keyboardBehavior,
+    Duration? timeout,
+    Offset tapLocation = const Offset(0.9, 0.9),
+  }) async {
     await _wrapRequest(
       'enterText',
-          () => _client.enterText(
+      () => _client.enterText(
         EnterTextRequest(
           data: text,
           appId: appId ?? resolvedAppId,
           selector: selector,
-          keyboardBehavior:
-          (keyboardBehavior ?? _config.keyboardBehavior).toContractsEnum,
+          keyboardBehavior: (keyboardBehavior ?? _config.keyboardBehavior).toContractsEnum,
           timeoutMillis: timeout?.inMilliseconds,
-          dx: tapLocation?.dx ?? 0.9,
-          dy: tapLocation?.dy ?? 0.9,
+          dx: tapLocation.dx,
+          dy: tapLocation.dy,
         ),
       ),
     );
   }
-
 
   /// Enters text to the [index]-th visible text field.
   ///
@@ -707,25 +704,24 @@ class NativeAutomator {
   ///  * [enterText], which allows for more precise specification of the text
   ///    field to enter text into
   Future<void> enterTextByIndex(
-      String text, {
-        required int index,
-        String? appId,
-        KeyboardBehavior? keyboardBehavior,
-        Duration? timeout,
-        Offset? tapLocation,
-      }) async {
+    String text, {
+    required int index,
+    String? appId,
+    KeyboardBehavior? keyboardBehavior,
+    Duration? timeout,
+    Offset tapLocation = const Offset(0.9, 0.9),
+  }) async {
     await _wrapRequest(
       'enterTextByIndex',
-          () => _client.enterText(
+      () => _client.enterText(
         EnterTextRequest(
           data: text,
           appId: appId ?? resolvedAppId,
           index: index,
-          keyboardBehavior:
-          (keyboardBehavior ?? _config.keyboardBehavior).toContractsEnum,
+          keyboardBehavior: (keyboardBehavior ?? _config.keyboardBehavior).toContractsEnum,
           timeoutMillis: timeout?.inMilliseconds,
-          dx: tapLocation?.dx ?? 0.9,
-          dy: tapLocation?.dy ?? 0.9,
+          dx: tapLocation.dx,
+          dy: tapLocation.dy,
         ),
       ),
     );
