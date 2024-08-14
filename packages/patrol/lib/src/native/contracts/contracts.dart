@@ -971,17 +971,17 @@ class EnterTextRequest with EquatableMixin {
 
   @override
   List<Object?> get props => [
-    data,
-    appId,
-    index,
-    selector,
-    androidSelector,
-    iosSelector,
-    keyboardBehavior,
-    timeoutMillis,
-    dx,
-    dy,
-  ];
+        data,
+        appId,
+        index,
+        selector,
+        androidSelector,
+        iosSelector,
+        keyboardBehavior,
+        timeoutMillis,
+        dx,
+        dy,
+      ];
 }
 
 @JsonSerializable()
