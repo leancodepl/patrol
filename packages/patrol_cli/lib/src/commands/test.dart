@@ -1,13 +1,12 @@
 import 'dart:async';
 
-import 'package:file/file.dart';
 import 'package:glob/glob.dart';
 import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/compatibility_checker.dart';
-import 'package:patrol_cli/src/coverage/run_code_coverage.dart';
+import 'package:patrol_cli/src/coverage/coverage_tool.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/dart_defines_reader.dart';
 import 'package:patrol_cli/src/devices.dart';
@@ -29,7 +28,7 @@ class TestCommand extends PatrolCommand {
     required AndroidTestBackend androidTestBackend,
     required IOSTestBackend iosTestBackend,
     required MacOSTestBackend macOSTestBackend,
-    required Directory packageDirectory,
+    required CoverageTool coverageTool,
     required Analytics analytics,
     required Logger logger,
   })  : _deviceFinder = deviceFinder,
@@ -41,7 +40,7 @@ class TestCommand extends PatrolCommand {
         _androidTestBackend = androidTestBackend,
         _iosTestBackend = iosTestBackend,
         _macosTestBackend = macOSTestBackend,
-        _packageDirectory = packageDirectory,
+        _coverageTool = coverageTool,
         _analytics = analytics,
         _logger = logger {
     usesTargetOption();
@@ -69,7 +68,7 @@ class TestCommand extends PatrolCommand {
   final AndroidTestBackend _androidTestBackend;
   final IOSTestBackend _iosTestBackend;
   final MacOSTestBackend _macosTestBackend;
-  final Directory _packageDirectory;
+  final CoverageTool _coverageTool;
 
   final Analytics _analytics;
   final Logger _logger;
@@ -226,12 +225,13 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
     await _preExecute(androidOpts, iosOpts, macosOpts, device, uninstall);
 
     if (coverageEnabled) {
-      await runCodeCoverage(
-        flutterPackageName: config.flutterPackageName,
-        flutterPackageDirectory: _packageDirectory,
-        platform: device.targetPlatform,
-        logger: _logger,
-        ignoreGlobs: ignoreGlobs,
+      unawaited(
+        _coverageTool.run(
+          flutterPackageName: config.flutterPackageName,
+          platform: device.targetPlatform,
+          logger: _logger,
+          ignoreGlobs: ignoreGlobs,
+        ),
       );
     }
 

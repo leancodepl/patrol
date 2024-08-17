@@ -21,6 +21,7 @@ import 'package:patrol_cli/src/commands/doctor.dart';
 import 'package:patrol_cli/src/commands/test.dart';
 import 'package:patrol_cli/src/commands/update.dart';
 import 'package:patrol_cli/src/compatibility_checker.dart';
+import 'package:patrol_cli/src/coverage/coverage_tool.dart';
 import 'package:patrol_cli/src/crossplatform/flutter_tool.dart';
 import 'package:patrol_cli/src/dart_defines_reader.dart';
 import 'package:patrol_cli/src/devices.dart';
@@ -193,7 +194,11 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         androidTestBackend: androidTestBackend,
         iosTestBackend: iosTestBackend,
         macOSTestBackend: macosTestBackend,
-        packageDirectory: _fs.currentDirectory,
+        coverageTool: CoverageTool(
+          fs: _fs,
+          processManager: _processManager,
+          parentDisposeScope: _disposeScope,
+        ),
         analytics: _analytics,
         logger: _logger,
       ),
