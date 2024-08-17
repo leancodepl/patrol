@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:adb/adb.dart';
 import 'package:coverage/coverage.dart';
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
@@ -29,15 +30,18 @@ class CoverageTool {
   CoverageTool({
     required FileSystem fs,
     required ProcessManager processManager,
+    required Adb adb,
     required DisposeScope parentDisposeScope,
   })  : _fs = fs,
         _processManager = processManager,
+        _adb = adb,
         _disposeScope = DisposeScope() {
     _disposeScope.disposedBy(parentDisposeScope);
   }
 
   final FileSystem _fs;
   final ProcessManager _processManager;
+  final Adb _adb;
   final DisposeScope _disposeScope;
 
   Future<void> run({
@@ -68,6 +72,7 @@ class CoverageTool {
               DeviceToHostPortTransformer(
                 processManager: _processManager,
                 devicePlatform: platform,
+                adb: _adb,
                 logger: logger,
               ),
             )

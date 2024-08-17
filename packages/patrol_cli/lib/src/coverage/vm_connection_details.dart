@@ -4,7 +4,7 @@ class VMConnectionDetails {
     required this.auth,
   });
 
-  final String port;
+  final int port;
   final String auth;
 
   Uri get uri => Uri.parse('http://127.0.0.1:$port/$auth');
@@ -15,13 +15,16 @@ class VMConnectionDetails {
   }
 
   static VMConnectionDetails? tryExtractFromLogs(String logsLine) {
-    final vmLink = RegExp('listening on (http.+)').firstMatch(logsLine)?.group(1);
+    final vmLink =
+        RegExp('listening on (http.+)').firstMatch(logsLine)?.group(1);
 
     if (vmLink == null) {
       return null;
     }
 
-    final port = RegExp(':([0-9]+)/').firstMatch(vmLink)?.group(1);
+    final port = int.tryParse(
+      RegExp(':([0-9]+)/').firstMatch(vmLink)?.group(1) ?? '',
+    );
     final auth = RegExp(':$port/(.+)').firstMatch(vmLink)?.group(1);
 
     if (port == null || auth == null) {

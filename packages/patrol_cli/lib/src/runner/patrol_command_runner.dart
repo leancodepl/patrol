@@ -101,8 +101,10 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
           'patrol',
           'Tool for running Flutter-native UI tests with superpowers',
         ) {
+    final adb = Adb();
+
     final androidTestBackend = AndroidTestBackend(
-      adb: Adb(),
+      adb: adb,
       processManager: _processManager,
       platform: _platform,
       fs: _fs,
@@ -197,6 +199,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         coverageTool: CoverageTool(
           fs: _fs,
           processManager: _processManager,
+          adb: adb,
           parentDisposeScope: _disposeScope,
         ),
         analytics: _analytics,

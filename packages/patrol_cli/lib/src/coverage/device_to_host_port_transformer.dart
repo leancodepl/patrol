@@ -1,7 +1,6 @@
 import 'dart:async';
-import 'dart:io' as io;
 
-import 'package:dispose_scope/dispose_scope.dart';
+import 'package:adb/adb.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/coverage/vm_connection_details.dart';
 import 'package:patrol_cli/src/devices.dart';
@@ -12,13 +11,16 @@ class DeviceToHostPortTransformer
   DeviceToHostPortTransformer({
     required ProcessManager processManager,
     required TargetPlatform devicePlatform,
+    required Adb adb,
     required Logger logger,
   })  : _processManager = processManager,
         _devicePlatform = devicePlatform,
+        _adb = adb,
         _logger = logger;
 
   final ProcessManager _processManager;
   final TargetPlatform _devicePlatform;
+  final Adb _adb;
   final Logger _logger;
 
   @override
@@ -34,31 +36,26 @@ class DeviceToHostPortTransformer
     }
   }
 
-  Future<io.ProcessResult> _forwardAdbPort(String host, String guest) async {
-    return _processManager.run(
-      ['adb', 'forward', 'tcp:$host', 'tcp:$guest'],
-      runInShell: true,
-    );
-  }
-
-  // TODO: Process disposal?
-  Future<String?> _devicePortToHostPort(String devicePort) async {
-    final String? hostPort;
+  Future<int?> _devicePortToHostPort(int devicePort) async {
+    final int? hostPort;
 
     switch (_devicePlatform) {
       case TargetPlatform.android:
-        await _forwardAdbPort('61011', devicePort);
+        await _adb.forwardPorts(fromHost: 61011, toDevice: devicePort);
 
         // It is necessary to grab the port from adb forward --list because
         // if debugger was attached, the port might be different from the one
         // we set
         final forwardList = await _processManager.run(
+          // TODO: Add to wrapper
           ['adb', 'forward', '--list'],
           runInShell: true,
         );
         final output = forwardList.stdout as String;
-        hostPort =
-            RegExp('tcp:([0-9]+) tcp:$devicePort').firstMatch(output)?.group(1);
+        hostPort = int.tryParse(
+          RegExp('tcp:([0-9]+) tcp:$devicePort').firstMatch(output)?.group(1) ??
+              '',
+        );
       case TargetPlatform.iOS || TargetPlatform.macOS:
         hostPort = devicePort;
       default:
