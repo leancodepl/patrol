@@ -139,12 +139,12 @@ class CoverageTool {
       connectionDetails.webSocketUri.toString(),
     );
     _disposeScope.addDispose(serviceClient.dispose);
-    await serviceClient.setFlag('pause_isolates_on_exit', 'true');
 
-    await serviceClient.streamListen(EventStreams.kIsolate);
-    serviceClient.onIsolateEvent.listen(
+    await serviceClient.setFlag('pause_isolates_on_exit', 'true');
+    await serviceClient.streamListen(EventStreams.kDebug);
+    serviceClient.onDebugEvent.listen(
       (event) async {
-        if (event.kind == EventKind.kIsolateRunnable) {
+        if (event.kind == EventKind.kPauseExit) {
           final isolateCoverage = await collect(
             connectionDetails.uri,
             true,
