@@ -101,15 +101,15 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
             {'mainIsolateId': Service.getIsolateId(Isolate.current)},
           );
 
-          var stopped = true;
+          var coverageCollected = false;
 
           registerExtension('ext.patrol.markTestCompleted',
               (method, parameters) async {
-            stopped = false;
+            coverageCollected = true;
             return ServiceExtensionResponse.result(jsonEncode({}));
           });
 
-          while (stopped) {
+          while (!coverageCollected) {
             // The loop is needed to keep this isolate alive until the coverage
             // data is collected.
             await Future<void>.delayed(const Duration(seconds: 1));
