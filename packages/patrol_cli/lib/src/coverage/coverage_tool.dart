@@ -16,16 +16,6 @@ import 'package:rxdart/rxdart.dart';
 import 'package:vm_service/vm_service.dart';
 import 'package:vm_service/vm_service_io.dart';
 
-extension<T> on Completer<T> {
-  void disposedBy(DisposeScope disposeScope, T disposeValue) {
-    disposeScope.addDispose(() {
-      if (!isCompleted) {
-        complete(disposeValue);
-      }
-    });
-  }
-}
-
 class CoverageTool {
   CoverageTool({
     required FileSystem fs,
@@ -80,10 +70,8 @@ class CoverageTool {
             .asBroadcastStream();
 
         final totalTestCount = await vmConnectionDetailsStream
-            .take(1)
             .asyncMap(_collectTotalTestCount)
             .first;
-
         logger.info('Total test count: $totalTestCount');
 
         var count = 0;
@@ -136,7 +124,10 @@ class CoverageTool {
       }
     }).disposedBy(_disposeScope);
 
-    return completer.future;
+    final testCount = await completer.future;
+    await serviceClient.dispose();
+
+    return testCount;
   }
 
   Future<Map<String, HitMap>> _collectFromVM({
@@ -177,9 +168,9 @@ class CoverageTool {
         .first;
     result.merge(
       await _collectAndMarkTestCompleted(
-        connectionDetails,
-        flutterPackageName,
-        event.extensionData!.data['mainIsolateId'] as String,
+        connectionDetails: connectionDetails,
+        packageName: flutterPackageName,
+        mainIsolateId: event.extensionData!.data['mainIsolateId'] as String,
       ),
     );
     await serviceClient.dispose();
@@ -187,11 +178,11 @@ class CoverageTool {
     return result;
   }
 
-  Future<Map<String, HitMap>> _collectAndMarkTestCompleted(
-    VMConnectionDetails connectionDetails,
-    String packageName,
-    String mainIsolateId,
-  ) async {
+  Future<Map<String, HitMap>> _collectAndMarkTestCompleted({
+    required VMConnectionDetails connectionDetails,
+    required String packageName,
+    required String mainIsolateId,
+  }) async {
     final coverage = await collect(
       connectionDetails.uri,
       false,
@@ -230,5 +221,15 @@ class CoverageTool {
     }
 
     await coverageDirectory.childFile('patrol_lcov.info').writeAsString(report);
+  }
+}
+
+extension<T> on Completer<T> {
+  void disposedBy(DisposeScope disposeScope, T disposeValue) {
+    disposeScope.addDispose(() {
+      if (!isCompleted) {
+        complete(disposeValue);
+      }
+    });
   }
 }
