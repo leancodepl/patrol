@@ -66,9 +66,11 @@ class NativeAutomatorConfig {
       defaultValue: '8081',
     ),
     this.packageName = const String.fromEnvironment('PATROL_APP_PACKAGE_NAME'),
-    this.iosInstalledApps = const String.fromEnvironment('PATROL_IOS_INSTALLED_APPS'),
+    this.iosInstalledApps =
+        const String.fromEnvironment('PATROL_IOS_INSTALLED_APPS'),
     this.bundleId = const String.fromEnvironment('PATROL_APP_BUNDLE_ID'),
-    this.androidAppName = const String.fromEnvironment('PATROL_ANDROID_APP_NAME'),
+    this.androidAppName =
+        const String.fromEnvironment('PATROL_ANDROID_APP_NAME'),
     this.iosAppName = const String.fromEnvironment('PATROL_IOS_APP_NAME'),
     this.connectionTimeout = const Duration(seconds: 60),
     this.findTimeout = const Duration(seconds: 10),
@@ -683,7 +685,8 @@ class NativeAutomator {
           data: text,
           appId: appId ?? resolvedAppId,
           selector: selector,
-          keyboardBehavior: (keyboardBehavior ?? _config.keyboardBehavior).toContractsEnum,
+          keyboardBehavior:
+              (keyboardBehavior ?? _config.keyboardBehavior).toContractsEnum,
           timeoutMillis: timeout?.inMilliseconds,
           dx: tapLocation.dx,
           dy: tapLocation.dy,
@@ -724,7 +727,8 @@ class NativeAutomator {
           data: text,
           appId: appId ?? resolvedAppId,
           index: index,
-          keyboardBehavior: (keyboardBehavior ?? _config.keyboardBehavior).toContractsEnum,
+          keyboardBehavior:
+              (keyboardBehavior ?? _config.keyboardBehavior).toContractsEnum,
           timeoutMillis: timeout?.inMilliseconds,
           dx: tapLocation.dx,
           dy: tapLocation.dy,
