@@ -222,8 +222,8 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
                 index = request.index.toInt(),
                 keyboardBehavior = request.keyboardBehavior,
                 timeout = request.timeoutMillis,
-                dx = request.dx?.toFloat() ?? 0.9f,
-                dy = request.dy?.toFloat() ?? 0.9f
+                dx = request.dx?.toFloat() ?: 0.9f,
+                dy = request.dy?.toFloat() ?: 0.9f
             )
         } else if (request.selector != null) {
             automation.enterText(
@@ -233,8 +233,8 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
                 index = request.selector.instance?.toInt() ?: 0,
                 keyboardBehavior = request.keyboardBehavior,
                 timeout = request.timeoutMillis,
-                dx = request.dx?.toFloat() ?? 0.9f,
-                dy = request.dy?.toFloat() ?? 0.9f
+                dx = request.dx?.toFloat() ?: 0.9f,
+                dy = request.dy?.toFloat() ?: 0.9f
             )
         } else if (request.androidSelector != null) {
             automation.enterText(
