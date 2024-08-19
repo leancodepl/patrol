@@ -244,8 +244,8 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
                 index = request.androidSelector.instance?.toInt() ?: 0,
                 keyboardBehavior = request.keyboardBehavior,
                 timeout = request.timeoutMillis,
-                dx = request.dx,
-                dy = request.dy
+                dx = request.dx?.toFloat() ?: 0.9f,
+                dy = request.dy?.toFloat() ?: 0.9f
             )
         } else {
             throw PatrolException("enterText(): neither index nor selector are set")
