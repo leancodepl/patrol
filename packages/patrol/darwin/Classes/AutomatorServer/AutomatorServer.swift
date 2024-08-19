@@ -182,7 +182,7 @@
       return try runCatching {
         try automator.swipe(
           from: CGVector(dx: request.startX, dy: request.startY),
-          to: CGVector(dx: request.startY, dy: request.endY),
+          to: CGVector(dx: request.endX, dy: request.endY),
           inApp: request.appId
         )
       }
