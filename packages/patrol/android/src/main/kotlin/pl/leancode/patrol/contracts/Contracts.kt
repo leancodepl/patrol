@@ -538,7 +538,9 @@ class Contracts {
     val androidSelector: AndroidSelector? = null,
     val iosSelector: IOSSelector? = null,
     val keyboardBehavior: KeyboardBehavior,
-    val timeoutMillis: Long? = null
+    val timeoutMillis: Long? = null,
+    val dx: Double? = null,
+    val dy: Double? = null
   ){
     fun hasIndex(): Boolean {
       return index != null

@@ -1,3 +1,7 @@
+## 3.11.0
+
+- Add Option to select tap Location in enterText and enterTextByIndex (#2312)
+
 ## 3.10.0
 
 - Implement `enableBluetooth` and `disableBluetooth` methods for Android > 11. (#2254)
