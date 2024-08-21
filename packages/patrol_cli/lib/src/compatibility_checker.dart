@@ -32,7 +32,7 @@ class CompatibilityChecker {
   }) async {
     if (targetPlatform == TargetPlatform.android) {
       await _checkJavaVersion(
-        flutterCommand.executable,
+        flutterCommand,
         DisposeScope(),
         _processManager,
         _projectRoot,
@@ -92,8 +92,16 @@ class CompatibilityChecker {
   }
 }
 
+extension<T> on Completer<T> {
+  void maybeComplete([FutureOr<T>? value]) {
+    if (!isCompleted) {
+      complete(value);
+    }
+  }
+}
+
 Future<void> _checkJavaVersion(
-  String flutterExecutable,
+  FlutterCommand flutterCommand,
   DisposeScope disposeScope,
   ProcessManager processManager,
   Directory projectRoot,
@@ -104,7 +112,12 @@ Future<void> _checkJavaVersion(
 
   await disposeScope.run((scope) async {
     final processFlutter = await processManager.start(
-      [flutterExecutable, 'doctor', '--verbose'],
+      [
+        flutterCommand.executable,
+        ...flutterCommand.arguments,
+        'doctor',
+        '--verbose',
+      ],
       workingDirectory: projectRoot.path,
       runInShell: true,
     )
@@ -112,10 +125,9 @@ Future<void> _checkJavaVersion(
 
     processFlutter.listenStdOut(
       (line) async {
-        if (line.contains('• Java version') &&
-            javaCompleterVersion.isCompleted == false) {
+        if (line.contains('• Java version')) {
           final versionString = line.split(' ').last.replaceAll(')', '');
-          javaCompleterVersion.complete(Version.parse(versionString));
+          javaCompleterVersion.maybeComplete(Version.parse(versionString));
         }
       },
       onDone: () async {
@@ -131,15 +143,15 @@ Future<void> _checkJavaVersion(
             (line) async {
               if (line.startsWith('javac')) {
                 javaCompleterVersion
-                    .complete(Version.parse(line.split(' ').last));
+                    .maybeComplete(Version.parse(line.split(' ').last));
               }
             },
-            onDone: () => javaCompleterVersion.complete(null),
-            onError: (error) => javaCompleterVersion.complete(null),
+            onDone: () => javaCompleterVersion.maybeComplete(null),
+            onError: (error) => javaCompleterVersion.maybeComplete(null),
           ).disposedBy(scope);
         }
       },
-      onError: (error) => javaCompleterVersion.complete(null),
+      onError: (error) => javaCompleterVersion.maybeComplete(null),
     ).disposedBy(scope);
   });
 
