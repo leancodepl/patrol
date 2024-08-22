@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:adb/adb.dart';
-import 'package:coverage/coverage.dart';
+import 'package:coverage/coverage.dart' as coverage;
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
 import 'package:glob/glob.dart';
@@ -41,7 +41,7 @@ class CoverageTool {
   }) async {
     final homeDirectory =
         Platform.environment['HOME'] ?? Platform.environment['USERPROFILE'];
-    final hitMap = <String, HitMap>{};
+    final hitMap = <String, coverage.HitMap>{};
 
     await _disposeScope.run(
       (scope) async {
@@ -99,7 +99,9 @@ class CoverageTool {
 
         logger.info('All coverage gathered, saving');
         final report = hitMap.formatLcov(
-          await Resolver.create(packagePath: _fs.currentDirectory.path),
+          await coverage.Resolver.create(
+            packagePath: _fs.currentDirectory.path,
+          ),
           ignoreGlobs: ignoreGlobs,
         );
         await _saveReport(report);
@@ -129,11 +131,11 @@ class CoverageTool {
     return testCount;
   }
 
-  Future<Map<String, HitMap>> _collectFromVM({
+  Future<Map<String, coverage.HitMap>> _collectFromVM({
     required String flutterPackageName,
     required VMConnectionDetails connectionDetails,
   }) async {
-    final result = <String, HitMap>{};
+    final result = <String, coverage.HitMap>{};
     final serviceClient = await vmServiceConnectUri(
       connectionDetails.webSocketUri.toString(),
     );
@@ -154,12 +156,12 @@ class CoverageTool {
     return result;
   }
 
-  Future<Map<String, HitMap>> _collectAndMarkTestCompleted({
+  Future<Map<String, coverage.HitMap>> _collectAndMarkTestCompleted({
     required VMConnectionDetails connectionDetails,
     required String packageName,
     required String mainIsolateId,
   }) async {
-    final coverage = await collect(
+    final data = await coverage.collect(
       connectionDetails.uri,
       false,
       false,
@@ -184,8 +186,8 @@ class CoverageTool {
           );
     await socket.close();
 
-    return HitMap.parseJson(
-      coverage['coverage'] as List<Map<String, dynamic>>,
+    return coverage.HitMap.parseJson(
+      data['coverage'] as List<Map<String, dynamic>>,
     );
   }
 
