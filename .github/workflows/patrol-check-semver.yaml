@@ -38,8 +38,8 @@ jobs:
         run: dart pub global activate dart_apitool
 
       - name: Check API changes
-        run: dart pub global run dart_apitool compare \
-          --old ${{ needs.get_last_released_version.outputs.last_version }} \
+        run: dart-apitool diff \
+          --old pub://patrol/${{ needs.get_last_released_version.outputs.last_version }} \
           --new packages/patrol
 
   report:
