@@ -23,6 +23,9 @@ class DeviceToHostPortTransformer
   final Adb _adb;
   final Logger _logger;
 
+  /// The number was chosen randomly
+  static const _hostPort = 61011;
+
   @override
   Stream<VMConnectionDetails> bind(Stream<VMConnectionDetails> stream) async* {
     await for (final value in stream) {
@@ -41,7 +44,7 @@ class DeviceToHostPortTransformer
 
     switch (_devicePlatform) {
       case TargetPlatform.android:
-        await _adb.forwardPorts(fromHost: 61011, toDevice: devicePort);
+        await _adb.forwardPorts(fromHost: _hostPort, toDevice: devicePort);
 
         // It is necessary to grab the port from adb forward --list because
         // if debugger was attached, the port might be different from the one
