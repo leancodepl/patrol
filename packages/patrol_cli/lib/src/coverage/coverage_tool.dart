@@ -13,7 +13,6 @@ import 'package:patrol_cli/src/coverage/vm_connection_details.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:process/process.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:vm_service/vm_service.dart';
 import 'package:vm_service/vm_service_io.dart';
 
 class CoverageTool {
@@ -139,29 +138,6 @@ class CoverageTool {
       connectionDetails.webSocketUri.toString(),
     );
     _disposeScope.addDispose(serviceClient.dispose);
-
-    await serviceClient.setFlag('pause_isolates_on_exit', 'true');
-    await serviceClient.streamListen(EventStreams.kDebug);
-    serviceClient.onDebugEvent.listen(
-      (event) async {
-        if (event.kind == EventKind.kPauseExit) {
-          final isolateCoverage = await collect(
-            connectionDetails.uri,
-            true,
-            false,
-            false,
-            {flutterPackageName},
-            isolateIds: {event.isolate!.id!},
-          );
-          result.merge(
-            await HitMap.parseJson(
-              isolateCoverage['coverage'] as List<Map<String, dynamic>>,
-            ),
-          );
-        }
-      },
-    ).disposedBy(_disposeScope);
-
     await serviceClient.streamListen('Extension');
     final event = await serviceClient.onExtensionEvent
         .where((event) => event.extensionKind == 'waitForCoverageCollection')
