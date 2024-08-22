@@ -21,7 +21,6 @@ jobs:
         id: get_last_released_version
         run: |
           last_version=$(git tag --list 'patrol-v*' | grep -v '\-dev\.[0-9]\+$' | sort -V | tail -n 1 | sed 's/^patrol-v//')
-          echo $last_version
           echo "last_version=$last_version" >> $GITHUB_ENV
           echo "::set-output name=last_version::$last_version"
 
@@ -42,7 +41,8 @@ jobs:
         run: dart pub global activate dart_apitool
 
       - name: Check API changes
-        run: dart-apitool diff \
+        run: | 
+          dart-apitool diff \
           --old pub://patrol/${{ needs.get_last_released_version.outputs.last_version }} \
           --new packages/patrol
 
