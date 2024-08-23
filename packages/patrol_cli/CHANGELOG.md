@@ -1,3 +1,6 @@
+## Unreleased
+- Fix checking `java` version (#2301)
+
 ## 3.1.0
 - Add `tags` and `exclude-tags`. (#2286)
 - Run `flutter build apk --config-only` during android build.(#2293)
