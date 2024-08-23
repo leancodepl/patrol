@@ -353,7 +353,7 @@ class Automator private constructor() {
         delay()
     }
 
-    fun enterText(text: String, index: Int, keyboardBehavior: KeyboardBehavior, timeout: Long? = null) {
+    fun enterText(text: String, index: Int, keyboardBehavior: KeyboardBehavior, timeout: Long? = null, dx: Float, dy: Float) {
         Logger.d("enterText(text: $text, index: $index)")
 
         val selector = By.clazz(EditText::class.java)
@@ -367,7 +367,10 @@ class Automator private constructor() {
         val uiObject = uiDevice.findObject(uiSelector)
 
         if (keyboardBehavior == KeyboardBehavior.showAndDismiss) {
-            uiObject.click()
+            val rect = uiObject.visibleBounds
+            val x = rect.left + rect.width() * dx
+            val y = rect.top + rect.height() * dy
+            uiDevice.click(x.toInt(), y.toInt())
         }
 
         uiObject.text = text
@@ -383,7 +386,9 @@ class Automator private constructor() {
         bySelector: BySelector,
         index: Int,
         keyboardBehavior: KeyboardBehavior,
-        timeout: Long? = null
+        timeout: Long? = null,
+        dx: Float,
+        dy: Float
     ) {
         Logger.d("enterText($text): $uiSelector, $bySelector")
 
@@ -400,7 +405,10 @@ class Automator private constructor() {
         }
 
         if (keyboardBehavior == KeyboardBehavior.showAndDismiss) {
-            uiObject.click()
+            val rect = uiObject.visibleBounds
+            val x = rect.left + rect.width() * dx
+            val y = rect.top + rect.height() * dy
+            uiDevice.click(x.toInt(), y.toInt())
         }
 
         uiObject.text = text

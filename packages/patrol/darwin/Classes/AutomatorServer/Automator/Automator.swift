@@ -215,21 +215,27 @@ extension Selector {
       on selector: Selector,
       inApp bundleId: String,
       dismissKeyboard: Bool,
-      withTimeout timeout: TimeInterval?
+      withTimeout timeout: TimeInterval?,
+      dx: CGFloat,
+      dy: CGFloat
     ) throws
     func enterText(
       _ data: String,
       on selector: IOSSelector,
       inApp bundleId: String,
       dismissKeyboard: Bool,
-      withTimeout timeout: TimeInterval?
+      withTimeout timeout: TimeInterval?,
+      dx: CGFloat,
+      dy: CGFloat
     ) throws
     func enterText(
       _ data: String,
       byIndex index: Int,
       inApp bundleId: String,
       dismissKeyboard: Bool,
-      withTimeout timeout: TimeInterval?
+      withTimeout timeout: TimeInterval?,
+      dx: CGFloat,
+      dy: CGFloat
     ) throws
     func swipe(from start: CGVector, to end: CGVector, inApp bundleId: String) throws
     func waitUntilVisible(

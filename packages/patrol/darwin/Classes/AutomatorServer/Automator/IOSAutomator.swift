@@ -182,7 +182,9 @@
       on selector: Selector,
       inApp bundleId: String,
       dismissKeyboard: Bool,
-      withTimeout timeout: TimeInterval?
+      withTimeout timeout: TimeInterval?,
+      dx: CGFloat,
+      dy: CGFloat
     ) throws {
       var data = data
       if dismissKeyboard {
@@ -223,7 +225,7 @@
           throw PatrolError.viewNotExists(view)
         }
 
-        self.clearAndEnterText(data: data, element: element)
+        self.clearAndEnterText(data: data, element: element, dx: dx, dy: dy)
       }
 
       // Prevent keyboard dismissal from happening too fast
@@ -235,7 +237,9 @@
       on selector: IOSSelector,
       inApp bundleId: String,
       dismissKeyboard: Bool,
-      withTimeout timeout: TimeInterval?
+      withTimeout timeout: TimeInterval?,
+      dx: CGFloat,
+      dy: CGFloat
     ) throws {
       var data = data
       if dismissKeyboard {
@@ -259,7 +263,7 @@
           throw PatrolError.viewNotExists(view)
         }
 
-        self.clearAndEnterText(data: data, element: element)
+        self.clearAndEnterText(data: data, element: element, dx: dx, dy: dy)
       }
 
       // Prevent keyboard dismissal from happening too fast
@@ -271,7 +275,9 @@
       byIndex index: Int,
       inApp bundleId: String,
       dismissKeyboard: Bool,
-      withTimeout timeout: TimeInterval?
+      withTimeout timeout: TimeInterval?,
+      dx: CGFloat,
+      dy: CGFloat
     ) throws {
       var data = data
       if dismissKeyboard {
@@ -302,7 +308,7 @@
           throw PatrolError.viewNotExists("text field at index \(index) in app \(bundleId)")
         }
 
-        self.clearAndEnterText(data: data, element: element)
+        self.clearAndEnterText(data: data, element: element, dx: dx, dy: dy)
       }
 
       // Prevent keyboard dismissal from happening too fast
@@ -847,7 +853,7 @@
     }
 
     // MARK: Private stuff
-    private func clearAndEnterText(data: String, element: XCUIElement) {
+    private func clearAndEnterText(data: String, element: XCUIElement, dx: CGFloat, dy: CGFloat) {
       let currentValue = element.value as? String
       var delete: String = ""
       if let value = currentValue {
@@ -855,7 +861,7 @@
       }
 
       // We need to tap at the end of the field to ensure the cursor is at the end
-      let coordinate = element.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.9))
+      let coordinate = element.coordinate(withNormalizedOffset: CGVector(dx: dx, dy: dy))
       coordinate.tap()
 
       element.typeText(delete + data)
