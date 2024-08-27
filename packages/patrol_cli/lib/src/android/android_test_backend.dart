@@ -134,6 +134,9 @@ class AndroidTestBackend {
           if (line.contains('• Java binary at:') &&
               javaCompleterPath.isCompleted == false) {
             var path = line.replaceAll('• Java binary at:', '').trim();
+            // If the path is /usr/bin/java, then it's not the real path,
+            // but symlink, so we leave it as it is. Otherwise, we remove the
+            // /bin/java part, to get a proper JAVA_HOME path.
             if (path != '/usr/bin/java') {
               path = path.replaceAll(
                 _platform.isWindows ? r'\bin\java' : '/bin/java',
