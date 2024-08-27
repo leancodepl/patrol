@@ -5,10 +5,12 @@ import 'package:adb/adb.dart';
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
+import 'package:patrol_cli/src/base/extensions/completer.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/devices.dart';
+import 'package:patrol_cli/src/runner/flutter_command.dart';
 import 'package:platform/platform.dart';
 import 'package:process/process.dart';
 
@@ -41,8 +43,8 @@ class AndroidTestBackend {
   late final String? javaPath;
 
   Future<void> build(AndroidAppOptions options) async {
-    await buildApkConfigOnly(options.flutter.command.executable);
-    await loadJavaPathFromFlutterDoctor(options.flutter.command.executable);
+    await buildApkConfigOnly(options.flutter.command);
+    await loadJavaPathFromFlutterDoctor(options.flutter.command);
 
     await _disposeScope.run((scope) async {
       final subject = options.description;
@@ -110,13 +112,16 @@ class AndroidTestBackend {
   /// Load the Java path from the output of `flutter doctor`.
   /// If this will be null, then the Java path will not be set and patrol
   /// tries to use the Java path from the PATH environment variable.
-  Future<void> loadJavaPathFromFlutterDoctor(String commandExecutable) async {
+  Future<void> loadJavaPathFromFlutterDoctor(
+    FlutterCommand flutterCommand,
+  ) async {
     final javaCompleterPath = Completer<String?>();
 
     await _disposeScope.run((scope) async {
       final process = await _processManager.start(
         [
-          commandExecutable,
+          flutterCommand.executable,
+          ...flutterCommand.arguments,
           'doctor',
           '--verbose',
         ],
@@ -139,12 +144,8 @@ class AndroidTestBackend {
             javaCompleterPath.complete(path);
           }
         },
-        onDone: () {
-          if (!javaCompleterPath.isCompleted) {
-            javaCompleterPath.complete(null);
-          }
-        },
-        onError: (error) => javaCompleterPath.complete(null),
+        onDone: () => javaCompleterPath.maybeComplete(null),
+        onError: (error) => javaCompleterPath.maybeComplete(null),
       ).disposedBy(scope);
     });
 
@@ -154,10 +155,13 @@ class AndroidTestBackend {
   /// Execute `flutter build apk --config-only` to generate the gradlew file.
   ///
   /// This fix issue: https://github.com/leancodepl/patrol/issues/1668
-  Future<void> buildApkConfigOnly(String commandExecutable) async {
+  Future<void> buildApkConfigOnly(
+    FlutterCommand flutterCommand,
+  ) async {
     await _processManager.start(
       [
-        commandExecutable,
+        flutterCommand.executable,
+        ...flutterCommand.arguments,
         'build',
         'apk',
         '--config-only',
