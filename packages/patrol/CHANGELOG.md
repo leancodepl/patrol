@@ -1,5 +1,6 @@
-## 3.11.0
+## Unreleased
 
+- No throw error in `selectFineLocation` when it's already selected. (#2302)
 - Add Option to select tap Location in enterText and enterTextByIndex (#2312)
 
 ## 3.10.0
