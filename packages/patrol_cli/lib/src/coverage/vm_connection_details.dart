@@ -22,15 +22,11 @@ class VMConnectionDetails {
       return null;
     }
 
-    final port = int.tryParse(
-      RegExp(':([0-9]+)/').firstMatch(vmLink)?.group(1) ?? '',
+    final uri = Uri.parse(vmLink);
+
+    return VMConnectionDetails(
+      port: uri.port,
+      auth: uri.pathSegments.lastWhere((segment) => segment.isNotEmpty),
     );
-    final auth = RegExp(':$port/(.+)').firstMatch(vmLink)?.group(1);
-
-    if (port == null || auth == null) {
-      throw Exception('Failed to extract VM connection details');
-    }
-
-    return VMConnectionDetails(port: port, auth: auth);
   }
 }

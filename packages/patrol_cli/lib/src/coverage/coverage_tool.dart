@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
+import 'dart:io' as io;
 
 import 'package:adb/adb.dart';
 import 'package:coverage/coverage.dart' as coverage;
@@ -11,6 +11,7 @@ import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/coverage/device_to_host_port_transformer.dart';
 import 'package:patrol_cli/src/coverage/vm_connection_details.dart';
 import 'package:patrol_cli/src/devices.dart';
+import 'package:platform/platform.dart';
 import 'package:process/process.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:vm_service/vm_service_io.dart';
@@ -19,10 +20,12 @@ class CoverageTool {
   CoverageTool({
     required FileSystem fs,
     required ProcessManager processManager,
+    required Platform platform,
     required Adb adb,
     required DisposeScope parentDisposeScope,
   })  : _fs = fs,
         _processManager = processManager,
+        _platform = platform,
         _adb = adb,
         _disposeScope = DisposeScope() {
     _disposeScope.disposedBy(parentDisposeScope);
@@ -30,6 +33,7 @@ class CoverageTool {
 
   final FileSystem _fs;
   final ProcessManager _processManager;
+  final Platform _platform;
   final Adb _adb;
   final DisposeScope _disposeScope;
 
@@ -40,7 +44,7 @@ class CoverageTool {
     required Set<Glob> ignoreGlobs,
   }) async {
     final homeDirectory =
-        Platform.environment['HOME'] ?? Platform.environment['USERPROFILE'];
+        _platform.environment['HOME'] ?? _platform.environment['USERPROFILE'];
     final hitMap = <String, coverage.HitMap>{};
 
     await _disposeScope.run(
@@ -75,10 +79,7 @@ class CoverageTool {
 
         var count = 0;
         final coverageCollectionCompleter = Completer<void>()
-          ..disposedBy(
-            scope,
-            null,
-          );
+          ..disposedBy(scope, null);
         vmConnectionDetailsStream
             .take(totalTestCount)
             .asyncMap(
@@ -170,7 +171,7 @@ class CoverageTool {
     );
 
     final socket =
-        await WebSocket.connect(connectionDetails.webSocketUri.toString())
+        await io.WebSocket.connect(connectionDetails.webSocketUri.toString())
           ..add(
             jsonEncode(
               {

@@ -199,6 +199,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         coverageTool: CoverageTool(
           fs: _fs,
           processManager: _processManager,
+          platform: platform,
           adb: adb,
           parentDisposeScope: _disposeScope,
         ),

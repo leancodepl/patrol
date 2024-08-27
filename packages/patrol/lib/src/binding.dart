@@ -103,11 +103,13 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
 
           var coverageCollected = false;
 
-          registerExtension('ext.patrol.markTestCompleted',
-              (method, parameters) async {
-            coverageCollected = true;
-            return ServiceExtensionResponse.result(jsonEncode({}));
-          });
+          registerExtension(
+            'ext.patrol.markTestCompleted',
+            (method, parameters) async {
+              coverageCollected = true;
+              return ServiceExtensionResponse.result(jsonEncode({}));
+            },
+          );
 
           while (!coverageCollected) {
             // The loop is needed to keep this isolate alive until the coverage
