@@ -13,7 +13,6 @@ import 'package:patrol_cli/src/coverage/vm_connection_details.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:platform/platform.dart';
 import 'package:process/process.dart';
-import 'package:rxdart/rxdart.dart';
 import 'package:vm_service/vm_service_io.dart';
 
 class CoverageTool {
@@ -60,7 +59,8 @@ class CoverageTool {
             .transform(utf8.decoder)
             .transform(const LineSplitter())
             .map(VMConnectionDetails.tryExtractFromLogs)
-            .whereNotNull()
+            .where((details) => details != null)
+            .cast<VMConnectionDetails>()
             .transform(
               DeviceToHostPortTransformer(
                 processManager: _processManager,
@@ -69,7 +69,6 @@ class CoverageTool {
                 logger: logger,
               ),
             )
-            .whereNotNull()
             .asBroadcastStream();
 
         final totalTestCount = await vmConnectionDetailsStream
