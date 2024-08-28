@@ -4,6 +4,7 @@ import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
 import 'package:patrol_cli/src/base/constants.dart' as constants;
 import 'package:patrol_cli/src/base/exceptions.dart';
+import 'package:patrol_cli/src/base/extensions/completer.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/devices.dart';
@@ -88,14 +89,6 @@ class CompatibilityChecker {
         'Patrol version $patrolVersion defined in the project is not compatible with patrol_cli version $cliVersion\n'
         'Please upgrade both "patrol_cli" and "patrol" dependency in project to the latest versions.',
       );
-    }
-  }
-}
-
-extension<T> on Completer<T> {
-  void maybeComplete([FutureOr<T>? value]) {
-    if (!isCompleted) {
-      complete(value);
     }
   }
 }
