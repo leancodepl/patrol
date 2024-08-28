@@ -142,9 +142,10 @@ class AndroidTestBackend {
                 _platform.isWindows ? r'\bin\java' : '/bin/java',
                 '',
               );
+              javaCompleterPath.maybeComplete(path);
+            } else {
+              javaCompleterPath.maybeComplete(null);
             }
-
-            javaCompleterPath.complete(path);
           }
         },
         onDone: () => javaCompleterPath.maybeComplete(null),
