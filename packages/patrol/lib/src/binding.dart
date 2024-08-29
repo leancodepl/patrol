@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io' as io;
@@ -101,21 +102,17 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
             {'mainIsolateId': Service.getIsolateId(Isolate.current)},
           );
 
-          var coverageCollected = false;
+          final testCompleter = Completer<void>();
 
           registerExtension(
             'ext.patrol.markTestCompleted',
             (method, parameters) async {
-              coverageCollected = true;
+              testCompleter.complete();
               return ServiceExtensionResponse.result(jsonEncode({}));
             },
           );
 
-          while (!coverageCollected) {
-            // The loop is needed to keep this isolate alive until the coverage
-            // data is collected.
-            await Future<void>.delayed(const Duration(seconds: 1));
-          }
+          await testCompleter.future;
         }
 
         logger(
