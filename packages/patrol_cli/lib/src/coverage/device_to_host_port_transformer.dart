@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:adb/adb.dart';
 import 'package:patrol_cli/src/base/logger.dart';
+import 'package:patrol_cli/src/coverage/bind_unused_port.dart';
 import 'package:patrol_cli/src/coverage/vm_connection_details.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:process/process.dart';
@@ -22,9 +23,7 @@ class DeviceToHostPortTransformer
   final TargetPlatform _devicePlatform;
   final Adb _adb;
   final Logger _logger;
-
-  /// The number was chosen randomly
-  static const _hostPort = 61011;
+  int? cachedPort;
 
   @override
   Stream<VMConnectionDetails> bind(Stream<VMConnectionDetails> stream) async* {
@@ -44,7 +43,23 @@ class DeviceToHostPortTransformer
 
     switch (_devicePlatform) {
       case TargetPlatform.android:
-        await _adb.forwardPorts(fromHost: _hostPort, toDevice: devicePort);
+        if (cachedPort case final cachedPort?) {
+          await _adb.forwardPorts(fromHost: cachedPort, toDevice: devicePort);
+        } else {
+          cachedPort = await bindUnusedPort<int>(
+            (port) async {
+              try {
+                await _adb.forwardPorts(fromHost: port, toDevice: devicePort);
+                return port;
+              } on Exception {
+                _logger.warn(
+                  'Failed to forward port $port to device port $devicePort',
+                );
+                return null;
+              }
+            },
+          );
+        }
 
         // It is necessary to grab the port from adb forward --list because
         // if debugger was attached, the port might be different from the one
