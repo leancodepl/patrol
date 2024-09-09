@@ -3,7 +3,11 @@ name: test ios simulator
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 */12 * * *'
+    - cron: "0 0 1 * *" #run this workflow once every month
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
 
 jobs:
   run_tests:
@@ -20,11 +24,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ['3.22.x']
-        flutter-channel: ['stable']
-        device_model: [iPhone 8, iPhone 14, iPad (9th generation)]
+        flutter-version: ["3.22.x"]
+        flutter-channel: ["stable"]
+        device_model:
+          [iPhone SE (3rd generation), iPhone 14, iPad (10th generation)]
         os: [iOS]
-        os_version: ['16.2']
+        os_version: ["17.2"]
 
     defaults:
       run:
@@ -73,6 +78,7 @@ jobs:
           service_bluetooth_test,\
           service_cellular_test,\
           service_wifi_test,\
+          service_location_test,\
           webview_stackoverflow_test,\
           webview_leancode_test,\
           webview_hackernews_test"

@@ -5,6 +5,8 @@
 
 package pl.leancode.patrol;
 
+import static org.junit.Assume.*;
+
 import android.app.Instrumentation;
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,7 +18,9 @@ import pl.leancode.patrol.contracts.PatrolAppServiceClientException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import static pl.leancode.patrol.contracts.Contracts.DartGroupEntry;
@@ -29,6 +33,7 @@ import static pl.leancode.patrol.contracts.Contracts.RunDartTestResponse;
  */
 public class PatrolJUnitRunner extends AndroidJUnitRunner {
     public PatrolAppServiceClient patrolAppServiceClient;
+    private Map<String, Boolean> dartTestCaseSkipMap = new HashMap<>();
 
     @Override
     protected boolean shouldWaitForActivitiesToComplete() {
@@ -110,6 +115,7 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
             List<DartGroupEntry> dartTestCases = ContractsExtensionsKt.listTestsFlat(dartTestGroup, "");
             List<String> dartTestCaseNamesList = new ArrayList<>();
             for (DartGroupEntry dartTestCase : dartTestCases) {
+                dartTestCaseSkipMap.put(dartTestCase.getName(), dartTestCase.getSkip());
                 dartTestCaseNamesList.add(dartTestCase.getName());
             }
             Object[] dartTestCaseNames = dartTestCaseNamesList.toArray();
@@ -127,6 +133,12 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
      */
     public RunDartTestResponse runDartTest(String name) {
         final String TAG = "PatrolJUnitRunner.runDartTest(" + name + "): ";
+        
+        final Boolean skip = dartTestCaseSkipMap.get(name);
+        if (skip) {
+            Logger.INSTANCE.i(TAG + "Test skipped");
+            assumeFalse(skip);
+        }
 
         try {
             Logger.INSTANCE.i(TAG + "Requested execution");

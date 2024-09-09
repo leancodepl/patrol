@@ -19,6 +19,7 @@ void main() {
           buildMode: BuildMode.debug,
           flavor: null,
           dartDefines: {},
+          dartDefineFromFilePaths: ['somePath.json', 'someOtherPath.json'],
         );
         options = const AndroidAppOptions(
           flutter: flutterOptions,
@@ -47,6 +48,7 @@ void main() {
           buildMode: BuildMode.release,
           flavor: null,
           dartDefines: {},
+          dartDefineFromFilePaths: ['somePath.json', 'someOtherPath.json'],
         );
         options = const AndroidAppOptions(
           flutter: flutterOpts,
@@ -83,6 +85,7 @@ void main() {
           buildMode: BuildMode.release,
           flavor: 'dev',
           dartDefines: dartDefines,
+          dartDefineFromFilePaths: [],
         );
         options = const AndroidAppOptions(
           flutter: flutterOpts,
@@ -112,6 +115,7 @@ void main() {
           buildMode: BuildMode.debug,
           flavor: 'dev',
           dartDefines: dartDefines,
+          dartDefineFromFilePaths: [],
         );
         options = const AndroidAppOptions(
           flutter: flutterOpts,
@@ -139,13 +143,99 @@ void main() {
   group('IOSAppOptions', () {
     late IOSAppOptions options;
 
-    group('correctly encodes default xcodebuild invocation for simulator', () {
+    group(
+        'correctly encodes default xcodebuild invocation for simulator with dartDefineFromFile path',
+        () {
       const flutterOpts = FlutterAppOptions(
         command: flutterCommand,
         target: 'integration_test/app_test.dart',
         buildMode: BuildMode.debug,
         flavor: null,
         dartDefines: {},
+        dartDefineFromFilePaths: ['somePath.json', 'someOtherPath.json'],
+      );
+
+      setUp(() {
+        options = IOSAppOptions(
+          flutter: flutterOpts,
+          scheme: 'Runner',
+          configuration: 'Debug',
+          simulator: true,
+          testServerPort: 8081,
+          appServerPort: 8082,
+        );
+      });
+
+      test('when building tests', () {
+        final flutterInvocation = options.toFlutterBuildInvocation(
+          flutterOpts.buildMode,
+        );
+
+        expect(
+          flutterInvocation,
+          equals([
+            ...['flutter', 'build', 'ios'],
+            '--no-version-check',
+            '--suppress-analytics',
+            ...['--config-only', '--no-codesign', '--debug', '--simulator'],
+            ...['--target', 'integration_test/app_test.dart'],
+            ...['--dart-define-from-file', 'somePath.json'],
+            ...['--dart-define-from-file', 'someOtherPath.json'],
+          ]),
+        );
+
+        final xcodebuildInvocation = options.buildForTestingInvocation();
+
+        expect(
+          xcodebuildInvocation,
+          equals([
+            ...['xcodebuild', 'build-for-testing'],
+            ...['-workspace', 'Runner.xcworkspace'],
+            ...['-scheme', 'Runner'],
+            ...['-configuration', 'Debug'],
+            ...['-sdk', 'iphonesimulator'],
+            ...['-destination', 'generic/platform=iOS Simulator'],
+            '-quiet',
+            ...['-derivedDataPath', '../build/ios_integ'],
+            r'OTHER_SWIFT_FLAGS=$(inherited) -D PATROL_ENABLED',
+          ]),
+        );
+      });
+
+      test('when executing tests', () {
+        const xcTestRunPath =
+            '/Users/charlie/awesome_app/build/ios_integ/Build/Products/Runner_iphonesimulator16.4-arm64-x86_64.xctestrun';
+
+        final xcodebuildInvocation = options.testWithoutBuildingInvocation(
+          iosDevice,
+          xcTestRunPath: xcTestRunPath,
+          resultBundlePath: '',
+        );
+
+        expect(
+          xcodebuildInvocation,
+          equals([
+            ...['xcodebuild', 'test-without-building'],
+            ...['-xctestrun', xcTestRunPath],
+            ...['-only-testing', 'RunnerUITests/RunnerUITests'],
+            ...['-destination', 'platform=iOS,name=iPhone 13'],
+            ...['-destination-timeout', '1'],
+            ...['-resultBundlePath', ''],
+          ]),
+        );
+      });
+    });
+
+    group(
+        'correctly encodes default xcodebuild invocation for simulator without dartDefineFromFile path',
+        () {
+      const flutterOpts = FlutterAppOptions(
+        command: flutterCommand,
+        target: 'integration_test/app_test.dart',
+        buildMode: BuildMode.debug,
+        flavor: null,
+        dartDefines: {},
+        dartDefineFromFilePaths: [],
       );
 
       setUp(() {
@@ -230,6 +320,7 @@ void main() {
             'PASSWORD': 'ny4ncat',
             'foo': 'bar',
           },
+          dartDefineFromFilePaths: [],
         );
 
         setUp(() {

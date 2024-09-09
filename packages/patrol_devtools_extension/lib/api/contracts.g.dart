@@ -13,6 +13,8 @@ DartGroupEntry _$DartGroupEntryFromJson(Map<String, dynamic> json) =>
       entries: (json['entries'] as List<dynamic>)
           .map((e) => DartGroupEntry.fromJson(e as Map<String, dynamic>))
           .toList(),
+      skip: json['skip'] as bool,
+      tags: (json['tags'] as List<dynamic>).map((e) => e as String).toList(),
     );
 
 Map<String, dynamic> _$DartGroupEntryToJson(DartGroupEntry instance) =>
@@ -20,6 +22,8 @@ Map<String, dynamic> _$DartGroupEntryToJson(DartGroupEntry instance) =>
       'name': instance.name,
       'type': _$GroupEntryTypeEnumMap[instance.type]!,
       'entries': instance.entries,
+      'skip': instance.skip,
+      'tags': instance.tags,
     };
 
 const _$GroupEntryTypeEnumMap = {
@@ -95,6 +99,16 @@ OpenQuickSettingsRequest _$OpenQuickSettingsRequestFromJson(
 Map<String, dynamic> _$OpenQuickSettingsRequestToJson(
         OpenQuickSettingsRequest instance) =>
     <String, dynamic>{};
+
+OpenUrlRequest _$OpenUrlRequestFromJson(Map<String, dynamic> json) =>
+    OpenUrlRequest(
+      url: json['url'] as String,
+    );
+
+Map<String, dynamic> _$OpenUrlRequestToJson(OpenUrlRequest instance) =>
+    <String, dynamic>{
+      'url': instance.url,
+    };
 
 AndroidSelector _$AndroidSelectorFromJson(Map<String, dynamic> json) =>
     AndroidSelector(

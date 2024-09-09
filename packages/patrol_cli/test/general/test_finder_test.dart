@@ -50,7 +50,7 @@ void _test(Platform platform) {
             (exception) => exception.message,
             'message',
             equals(
-              'target integration_test/features/login is invalid',
+              'target integration_test/features/login is invalid. Does your test file(s) end with "_test.dart"?',
             ),
           ),
         ),

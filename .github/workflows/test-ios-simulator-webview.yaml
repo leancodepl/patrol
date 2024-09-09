@@ -3,12 +3,16 @@ name: test ios simulator webview
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 23 * * *'
+    - cron: "0 0 1 * *" #run this workflow once every month
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
 
 jobs:
   run_tests:
     name: Flutter ${{ matrix.flutter-version }} webview on ${{ matrix.device_model }} (${{ matrix.os_version }}) simulator
-    runs-on: macos-latest
+    runs-on: macos-14
     timeout-minutes: 40
     outputs:
       SLACK_MESSAGE_TITLE: Flutter ${{ matrix.flutter-version }} on ${{ matrix.os }} ${{ matrix.os_version }} simulator
@@ -19,11 +23,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ['3.22.x']
-        flutter-channel: ['stable']
+        flutter-version: ["3.22.x"]
+        flutter-channel: ["stable"]
         device_model: [iPhone 14]
         os: [iOS]
-        os_version: ['16.2']
+        os_version: ["17.2"]
 
     defaults:
       run:

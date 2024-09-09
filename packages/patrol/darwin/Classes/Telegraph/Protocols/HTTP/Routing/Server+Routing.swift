@@ -37,33 +37,6 @@ extension Server {
   }
 }
 
-// MARK: Serve static content methods
-
-extension Server {
-  /// Adds a route that serves files from a bundle.
-  public func serveBundle(_ bundle: Bundle, _ uri: String = "/", index: String? = "index.html") {
-    serveDirectory(bundle.resourceURL!, uri, index: index)
-  }
-
-  /// Adds a route that serves files from a directory.
-  public func serveDirectory(_ url: URL, _ uri: String = "/", index: String? = "index.html") {
-    let baseURI = URI(path: uri)
-
-    // Construct the uri, do not match exactly to support subdirectories
-    var routeURI = baseURI.path
-    if !routeURI.hasSuffix("*") {
-      if !routeURI.hasSuffix("/") { routeURI += "/" }
-      routeURI += "*"
-    }
-
-    // Wrap the file handler into a route
-    let handler = HTTPFileHandler(directoryURL: url, baseURI: baseURI, index: index)
-    route(.GET, routeURI) { request in
-      try handler.respond(to: request) { _ in HTTPResponse(.notFound) }
-    }
-  }
-}
-
 // MARK: Response helper methods
 
 extension Server {

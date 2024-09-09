@@ -70,6 +70,10 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
         automation.openQuickSettings()
     }
 
+    override fun openUrl(request: Contracts.OpenUrlRequest) {
+        automation.openUrl(request.url)
+    }
+
     override fun getNativeUITree(request: GetNativeUITreeRequest): GetNativeUITreeRespone {
         return if (request.useNativeViewHierarchy) {
             val trees = automation.getNativeUITrees()
@@ -78,6 +82,14 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
             val trees = automation.getNativeUITreesV2()
             GetNativeUITreeRespone(roots = listOf(), androidRoots = trees, iOSroots = listOf())
         }
+    }
+
+    override fun pressVolumeUp() {
+        automation.pressVolumeUp()
+    }
+
+    override fun pressVolumeDown() {
+        automation.pressVolumeDown()
     }
 
     override fun enableDarkMode(request: DarkModeRequest) {
@@ -118,6 +130,14 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
 
     override fun disableBluetooth() {
         automation.disableBluetooth()
+    }
+
+    override fun enableLocation() {
+        automation.enableLocation()
+    }
+
+    override fun disableLocation() {
+        automation.disableLocation()
     }
 
     override fun getNativeViews(request: GetNativeViewsRequest): GetNativeViewsResponse {
@@ -201,7 +221,9 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
                 text = request.data,
                 index = request.index.toInt(),
                 keyboardBehavior = request.keyboardBehavior,
-                timeout = request.timeoutMillis
+                timeout = request.timeoutMillis,
+                dx = request.dx?.toFloat() ?: 0.9f,
+                dy = request.dy?.toFloat() ?: 0.9f
             )
         } else if (request.selector != null) {
             automation.enterText(
@@ -210,7 +232,9 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
                 bySelector = request.selector.toBySelector(),
                 index = request.selector.instance?.toInt() ?: 0,
                 keyboardBehavior = request.keyboardBehavior,
-                timeout = request.timeoutMillis
+                timeout = request.timeoutMillis,
+                dx = request.dx?.toFloat() ?: 0.9f,
+                dy = request.dy?.toFloat() ?: 0.9f
             )
         } else if (request.androidSelector != null) {
             automation.enterText(
@@ -219,7 +243,9 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
                 bySelector = request.androidSelector.toBySelector(),
                 index = request.androidSelector.instance?.toInt() ?: 0,
                 keyboardBehavior = request.keyboardBehavior,
-                timeout = request.timeoutMillis
+                timeout = request.timeoutMillis,
+                dx = request.dx?.toFloat() ?: 0.9f,
+                dy = request.dy?.toFloat() ?: 0.9f
             )
         } else {
             throw PatrolException("enterText(): neither index nor selector are set")

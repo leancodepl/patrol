@@ -1,13 +1,16 @@
+import 'dart:async';
 import 'dart:io' show Process;
 
 import 'package:adb/adb.dart';
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
+import 'package:patrol_cli/src/base/extensions/completer.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/devices.dart';
+import 'package:patrol_cli/src/runner/flutter_command.dart';
 import 'package:platform/platform.dart';
 import 'package:process/process.dart';
 
@@ -37,8 +40,12 @@ class AndroidTestBackend {
   final FileSystem _fs;
   final DisposeScope _disposeScope;
   final Logger _logger;
+  late final String? javaPath;
 
   Future<void> build(AndroidAppOptions options) async {
+    await buildApkConfigOnly(options.flutter.command);
+    await loadJavaPathFromFlutterDoctor(options.flutter.command);
+
     await _disposeScope.run((scope) async {
       final subject = options.description;
       final task = _logger.task('Building $subject');
@@ -52,6 +59,11 @@ class AndroidTestBackend {
         options.toGradleAssembleInvocation(isWindows: _platform.isWindows),
         runInShell: true,
         workingDirectory: _fs.currentDirectory.childDirectory('android').path,
+        environment: javaPath != null
+            ? {
+                'JAVA_HOME': javaPath!,
+              }
+            : {},
       )
         ..disposedBy(scope);
       process.listenStdOut((l) => _logger.detail('\t: $l')).disposedBy(scope);
@@ -73,6 +85,11 @@ class AndroidTestBackend {
         options.toGradleAssembleTestInvocation(isWindows: _platform.isWindows),
         runInShell: true,
         workingDirectory: _fs.currentDirectory.childDirectory('android').path,
+        environment: javaPath != null
+            ? {
+                'JAVA_HOME': javaPath!,
+              }
+            : {},
       )
         ..disposedBy(scope);
       process.listenStdOut((l) => _logger.detail('\t: $l')).disposedBy(scope);
@@ -90,6 +107,74 @@ class AndroidTestBackend {
         throw Exception(cause);
       }
     });
+  }
+
+  /// Load the Java path from the output of `flutter doctor`.
+  /// If this will be null, then the Java path will not be set and patrol
+  /// tries to use the Java path from the PATH environment variable.
+  Future<void> loadJavaPathFromFlutterDoctor(
+    FlutterCommand flutterCommand,
+  ) async {
+    final javaCompleterPath = Completer<String?>();
+
+    await _disposeScope.run((scope) async {
+      final process = await _processManager.start(
+        [
+          flutterCommand.executable,
+          ...flutterCommand.arguments,
+          'doctor',
+          '--verbose',
+        ],
+        runInShell: true,
+      )
+        ..disposedBy(scope);
+
+      process.listenStdOut(
+        (line) async {
+          if (line.contains('• Java binary at:') &&
+              javaCompleterPath.isCompleted == false) {
+            var path = line.replaceAll('• Java binary at:', '').trim();
+            // If the path is /usr/bin/java, then it's not the real path,
+            // but symlink, so we're not setting JAVA_HOME path.
+            // Otherwise, we remove the `/bin/java` part, to get a proper
+            // JAVA_HOME path.
+            if (path != '/usr/bin/java') {
+              path = path.replaceAll(
+                _platform.isWindows ? r'\bin\java' : '/bin/java',
+                '',
+              );
+              javaCompleterPath.maybeComplete(path);
+            } else {
+              javaCompleterPath.maybeComplete(null);
+            }
+          }
+        },
+        onDone: () => javaCompleterPath.maybeComplete(null),
+        onError: (error) => javaCompleterPath.maybeComplete(null),
+      ).disposedBy(scope);
+    });
+
+    javaPath = await javaCompleterPath.future;
+  }
+
+  /// Execute `flutter build apk --config-only` to generate the gradlew file.
+  ///
+  /// This fix issue: https://github.com/leancodepl/patrol/issues/1668
+  Future<void> buildApkConfigOnly(
+    FlutterCommand flutterCommand,
+  ) async {
+    await _processManager.start(
+      [
+        flutterCommand.executable,
+        ...flutterCommand.arguments,
+        'build',
+        'apk',
+        '--config-only',
+        '-t',
+        'integration_test/test_bundle.dart',
+      ],
+      runInShell: true,
+    );
   }
 
   /// Executes the tests of the given [options] on the given [device].
@@ -110,7 +195,14 @@ class AndroidTestBackend {
       final process = await _processManager.start(
         options.toGradleConnectedTestInvocation(isWindows: _platform.isWindows),
         runInShell: true,
-        environment: {'ANDROID_SERIAL': device.id},
+        environment: {
+          'ANDROID_SERIAL': device.id,
+          ...javaPath != null
+              ? {
+                  'JAVA_HOME': javaPath!,
+                }
+              : {},
+        },
         workingDirectory: _fs.currentDirectory.childDirectory('android').path,
       )
         ..disposedBy(scope);

@@ -186,6 +186,7 @@ extension Selector {
     func openApp(_ bundleId: String) throws
     func openAppSwitcher() throws
     func openControlCenter() throws
+    func openUrl(_ url: String) throws
 
     // MARK: General UI interaction
     func tap(
@@ -214,21 +215,27 @@ extension Selector {
       on selector: Selector,
       inApp bundleId: String,
       dismissKeyboard: Bool,
-      withTimeout timeout: TimeInterval?
+      withTimeout timeout: TimeInterval?,
+      dx: CGFloat,
+      dy: CGFloat
     ) throws
     func enterText(
       _ data: String,
       on selector: IOSSelector,
       inApp bundleId: String,
       dismissKeyboard: Bool,
-      withTimeout timeout: TimeInterval?
+      withTimeout timeout: TimeInterval?,
+      dx: CGFloat,
+      dy: CGFloat
     ) throws
     func enterText(
       _ data: String,
       byIndex index: Int,
       inApp bundleId: String,
       dismissKeyboard: Bool,
-      withTimeout timeout: TimeInterval?
+      withTimeout timeout: TimeInterval?,
+      dx: CGFloat,
+      dy: CGFloat
     ) throws
     func swipe(from start: CGVector, to end: CGVector, inApp bundleId: String) throws
     func waitUntilVisible(
@@ -242,9 +249,15 @@ extension Selector {
       withTimeout timeout: TimeInterval?
     ) throws
 
+    // MARK: Volume settings
+    func pressVolumeUp() throws
+    func pressVolumeDown() throws
+
     // MARK: Services
     func enableDarkMode(_ bundleId: String) throws
     func disableDarkMode(_ bundleId: String) throws
+    func enableLocation() throws
+    func disableLocation() throws
     func enableAirplaneMode() throws
     func disableAirplaneMode() throws
     func enableCellular() throws

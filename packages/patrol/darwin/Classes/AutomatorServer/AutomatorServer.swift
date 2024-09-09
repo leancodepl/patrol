@@ -56,6 +56,12 @@
       }
     }
 
+    func openUrl(request: OpenUrlRequest) throws {
+      return try runCatching {
+        try automator.openUrl(request.url)
+      }
+    }
+
     // MARK: General UI interaction
 
     func getNativeViews(
@@ -148,7 +154,9 @@
             byIndex: Int(index),
             inApp: request.appId,
             dismissKeyboard: request.keyboardBehavior == .showAndDismiss,
-            withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) }
+            withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) },
+            dx: request.dx,
+            dy: request.dy
           )
         } else if let selector = request.selector {
           try automator.enterText(
@@ -156,7 +164,9 @@
             on: selector,
             inApp: request.appId,
             dismissKeyboard: request.keyboardBehavior == .showAndDismiss,
-            withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) }
+            withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) },
+            dx: request.dx,
+            dy: request.dy
           )
         } else if let iosSelector = request.iosSelector {
           try automator.enterText(
@@ -164,7 +174,9 @@
             on: iosSelector,
             inApp: request.appId,
             dismissKeyboard: request.keyboardBehavior == .showAndDismiss,
-            withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) }
+            withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) },
+            dx: request.dx,
+            dy: request.dy
           )
         } else {
           throw PatrolError.internal("enterText(): neither index nor selector are set")
@@ -176,7 +188,7 @@
       return try runCatching {
         try automator.swipe(
           from: CGVector(dx: request.startX, dy: request.startY),
-          to: CGVector(dx: request.startY, dy: request.endY),
+          to: CGVector(dx: request.endX, dy: request.endY),
           inApp: request.appId
         )
       }
@@ -199,6 +211,19 @@
         } else {
           throw PatrolError.internal("waitUntilVisible(): neither selector nor iosSelector are set")
         }
+      }
+    }
+
+    // MARK: Volume settings
+    func pressVolumeUp() throws {
+      return try runCatching {
+        try automator.pressVolumeUp()
+      }
+    }
+
+    func pressVolumeDown() throws {
+      return try runCatching {
+        try automator.pressVolumeDown()
       }
     }
 
@@ -261,6 +286,18 @@
     func disableDarkMode(request: DarkModeRequest) throws {
       return try runCatching {
         try automator.disableDarkMode(request.appId)
+      }
+    }
+
+    func enableLocation() throws {
+      return try runCatching {
+        try automator.enableLocation()
+      }
+    }
+
+    func disableLocation() throws {
+      return try runCatching {
+        try automator.disableLocation()
       }
     }
 

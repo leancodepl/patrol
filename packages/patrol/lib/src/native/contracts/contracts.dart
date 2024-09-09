@@ -223,6 +223,8 @@ class DartGroupEntry with EquatableMixin {
     required this.name,
     required this.type,
     required this.entries,
+    required this.skip,
+    required this.tags,
   });
 
   factory DartGroupEntry.fromJson(Map<String, dynamic> json) =>
@@ -231,6 +233,8 @@ class DartGroupEntry with EquatableMixin {
   final String name;
   final GroupEntryType type;
   final List<DartGroupEntry> entries;
+  final bool skip;
+  final List<String> tags;
 
   Map<String, dynamic> toJson() => _$DartGroupEntryToJson(this);
 
@@ -239,6 +243,8 @@ class DartGroupEntry with EquatableMixin {
         name,
         type,
         entries,
+        skip,
+        tags,
       ];
 }
 
@@ -351,6 +357,25 @@ class OpenQuickSettingsRequest with EquatableMixin {
 
   @override
   List<Object?> get props => const [];
+}
+
+@JsonSerializable()
+class OpenUrlRequest with EquatableMixin {
+  OpenUrlRequest({
+    required this.url,
+  });
+
+  factory OpenUrlRequest.fromJson(Map<String, dynamic> json) =>
+      _$OpenUrlRequestFromJson(json);
+
+  final String url;
+
+  Map<String, dynamic> toJson() => _$OpenUrlRequestToJson(this);
+
+  @override
+  List<Object?> get props => [
+        url,
+      ];
 }
 
 @JsonSerializable()
@@ -924,6 +949,8 @@ class EnterTextRequest with EquatableMixin {
     this.iosSelector,
     required this.keyboardBehavior,
     this.timeoutMillis,
+    this.dx,
+    this.dy,
   });
 
   factory EnterTextRequest.fromJson(Map<String, dynamic> json) =>
@@ -937,6 +964,8 @@ class EnterTextRequest with EquatableMixin {
   final IOSSelector? iosSelector;
   final KeyboardBehavior keyboardBehavior;
   final int? timeoutMillis;
+  final double? dx;
+  final double? dy;
 
   Map<String, dynamic> toJson() => _$EnterTextRequestToJson(this);
 
@@ -950,6 +979,8 @@ class EnterTextRequest with EquatableMixin {
         iosSelector,
         keyboardBehavior,
         timeoutMillis,
+        dx,
+        dy,
       ];
 }
 

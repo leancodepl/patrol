@@ -1,3 +1,5 @@
+import 'package:app_links/app_links.dart';
+import 'package:e2e_app/applink_screen.dart';
 import 'package:e2e_app/loading_screen.dart';
 import 'package:e2e_app/location_screen.dart';
 import 'package:e2e_app/notifications_screen.dart';
@@ -54,6 +56,7 @@ class ExampleHomePage extends StatefulWidget {
 }
 
 class _ExampleHomePageState extends State<ExampleHomePage> {
+  final _appLinks = AppLinks();
   var _counter = 0;
 
   void _incrementCounter([int value = 1]) {
@@ -72,6 +75,16 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    _appLinks.uriLinkStream.listen((uri) {
+      Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          builder: (_) => ApplinkScreen(
+            uri: uri,
+          ),
+        ),
+      );
+    });
+
     return Scaffold(
       key: const Key('scaffold'),
       appBar: AppBar(
@@ -81,6 +94,15 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
         padding: EdgeInsets.all(8),
         key: const Key('listViewKey'),
         children: [
+          const Text('FIRST_KEY: ${const String.fromEnvironment('FIRST_KEY')}'),
+          const Text(
+            'SECOND_KEY: ${const String.fromEnvironment('SECOND_KEY')}',
+          ),
+          const Text('THIRD_KEY: ${const String.fromEnvironment('THIRD_KEY')}'),
+          const Text('FIFTH_KEY: ${const String.fromEnvironment('FIFTH_KEY')}'),
+          const Text(
+            'BOOL_DEFINED: ${const String.fromEnvironment('BOOL_DEFINED')}',
+          ),
           const Text(
             'You have pushed the button this many times:',
           ),

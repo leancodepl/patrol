@@ -5,6 +5,7 @@ import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
 import 'package:patrol_cli/src/base/logger.dart';
+import 'package:patrol_cli/src/commands/dart_define_utils.dart';
 import 'package:patrol_cli/src/compatibility_checker.dart';
 import 'package:patrol_cli/src/coverage/coverage_tool.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
@@ -48,9 +49,12 @@ class TestCommand extends PatrolCommand {
     usesBuildModeOption();
     usesFlavorOption();
     usesDartDefineOption();
+    usesDartDefineFromFileOption();
     usesLabelOption();
     usesWaitOption();
     usesPortOptions();
+    usesTagsOption();
+    usesExcludeTagsOption();
     useCoverageOptions();
 
     usesUninstallOption();
@@ -88,10 +92,6 @@ class TestCommand extends PatrolCommand {
       ),
     );
 
-    await _compatibilityChecker.checkVersionsCompatibility(
-      flutterCommand: flutterCommand,
-    );
-
     final config = _pubspecReader.read();
     final testFileSuffix = config.testFileSuffix;
 
@@ -108,9 +108,17 @@ class TestCommand extends PatrolCommand {
       _logger.detail('Received test target: $t');
     }
 
+    final tags = stringArg('tags');
+    final excludeTags = stringArg('exclude-tags');
+    if (tags != null) {
+      _logger.detail('Received tag(s): $tags');
+    }
+    if (excludeTags != null) {
+      _logger.detail('Received exclude tag(s): $excludeTags');
+    }
     final entrypoint = _testBundler.bundledTestFile;
     if (boolArg('generate-bundle')) {
-      _testBundler.createTestBundle(targets);
+      _testBundler.createTestBundle(targets, tags, excludeTags);
     }
 
     final androidFlavor = stringArg('flavor') ?? config.android.flavor;
@@ -144,6 +152,11 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
     }
 
     final device = devices.single;
+
+    await _compatibilityChecker.checkVersionsCompatibility(
+      flutterCommand: flutterCommand,
+      targetPlatform: device.targetPlatform,
+    );
 
     final packageName = stringArg('package-name') ?? config.android.packageName;
     final bundleId = stringArg('bundle-id') ?? config.ios.bundleId;
@@ -188,12 +201,21 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       );
     }
 
+    final dartDefineFromFilePaths = stringsArg('dart-define-from-file');
+
+    final mergedDartDefines = mergeDartDefines(
+      dartDefineFromFilePaths,
+      dartDefines,
+      _dartDefinesReader,
+    );
+
     final flutterOpts = FlutterAppOptions(
       command: flutterCommand,
       target: entrypoint.path,
       flavor: androidFlavor,
       buildMode: buildMode,
-      dartDefines: dartDefines,
+      dartDefines: mergedDartDefines,
+      dartDefineFromFilePaths: dartDefineFromFilePaths,
     );
 
     final androidOpts = AndroidAppOptions(

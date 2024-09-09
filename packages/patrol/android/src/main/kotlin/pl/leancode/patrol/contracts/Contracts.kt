@@ -122,7 +122,9 @@ class Contracts {
   data class DartGroupEntry (
     val name: String,
     val type: GroupEntryType,
-    val entries: List<DartGroupEntry>
+    val entries: List<DartGroupEntry>,
+    val skip: Boolean,
+    val tags: List<String>
   )
 
   data class ListDartTestsResponse (
@@ -152,6 +154,10 @@ class Contracts {
 
   class OpenQuickSettingsRequest (
 
+  )
+
+  data class OpenUrlRequest (
+    val url: String
   )
 
   data class AndroidSelector (
@@ -532,7 +538,9 @@ class Contracts {
     val androidSelector: AndroidSelector? = null,
     val iosSelector: IOSSelector? = null,
     val keyboardBehavior: KeyboardBehavior,
-    val timeoutMillis: Long? = null
+    val timeoutMillis: Long? = null,
+    val dx: Double? = null,
+    val dy: Double? = null
   ){
     fun hasIndex(): Boolean {
       return index != null

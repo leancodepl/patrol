@@ -3,8 +3,14 @@ package pl.leancode.patrol
 import android.app.Instrumentation
 import android.app.UiAutomation
 import android.content.Context
+import android.content.Intent
+import android.location.LocationManager
+import android.net.Uri
 import android.os.Build
 import android.os.SystemClock
+import android.provider.Settings
+import android.view.KeyEvent.KEYCODE_VOLUME_DOWN
+import android.view.KeyEvent.KEYCODE_VOLUME_UP
 import android.widget.EditText
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.By
@@ -134,6 +140,15 @@ class Automator private constructor() {
         delay()
     }
 
+    fun openUrl(urlString: String) {
+        Logger.d("openUrl($urlString)")
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(urlString))
+        intent.addCategory(Intent.CATEGORY_BROWSABLE)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        targetContext.startActivity(intent)
+        delay()
+    }
+
     fun pressBack() {
         Logger.d("pressBack()")
         uiDevice.pressBack()
@@ -165,9 +180,25 @@ class Automator private constructor() {
 
     fun disableDarkMode() = executeShellCommand("cmd uimode night no")
 
-    fun enableAirplaneMode(): Unit = throw NotImplementedError("enableAirplaneMode")
+    fun enableAirplaneMode() {
+        val enabled = isAirplaneModeOn()
+        if (enabled) {
+            Logger.d("Airplane mode already enabled")
+            return
+        }
+        Logger.d("Enabling airplane mode")
+        toggleAirplaneMode()
+    }
 
-    fun disableAirplaneMode(): Unit = throw NotImplementedError("disableAirplaneMode")
+    fun disableAirplaneMode() {
+        val enabled = isAirplaneModeOn()
+        if (!enabled) {
+            Logger.d("Airplane mode already disabled")
+            return
+        }
+        Logger.d("Disabling airplane mode")
+        toggleAirplaneMode()
+    }
 
     fun disableCellular() = executeShellCommand("svc data disable")
 
@@ -177,9 +208,57 @@ class Automator private constructor() {
 
     fun enableWifi() = executeShellCommand("svc wifi enable")
 
-    fun enableBluetooth(): Unit = throw NotImplementedError("enableBluetooth")
+    fun enableBluetooth() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            executeShellCommand("svc bluetooth enable")
+        } else {
+            throw PatrolException("enableBluetooth method is not available in Android lower than 12")
+        }
+    }
 
-    fun disableBluetooth(): Unit = throw NotImplementedError("disableBluetooth")
+    fun disableBluetooth() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            executeShellCommand("svc bluetooth disable")
+        } else {
+            throw PatrolException("disableBluetooth method is not available in Android lower than 12")
+        }
+    }
+
+    fun enableLocation() {
+        val enabled = isLocationEnabled()
+        if (enabled) {
+            Logger.d("Location already enabled")
+            return
+        } else {
+            toggleLocation()
+        }
+    }
+
+    fun disableLocation() {
+        val enabled = isLocationEnabled()
+        if (!enabled) {
+            Logger.d("Location already disabled")
+            return
+        } else {
+            toggleLocation()
+        }
+    }
+
+    private fun isLocationEnabled(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            // This is a new method provided in API 28
+            val lm = targetContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+            lm.isLocationEnabled
+        } else {
+            // This was deprecated in API 28
+            val mode = Settings.Secure.getInt(
+                targetContext.contentResolver,
+                Settings.Secure.LOCATION_MODE,
+                Settings.Secure.LOCATION_MODE_OFF
+            )
+            mode != Settings.Secure.LOCATION_MODE_OFF
+        }
+    }
 
     fun getNativeViews(selector: BySelector): List<NativeView> {
         Logger.d("getNativeViews()")
@@ -274,7 +353,7 @@ class Automator private constructor() {
         delay()
     }
 
-    fun enterText(text: String, index: Int, keyboardBehavior: KeyboardBehavior, timeout: Long? = null) {
+    fun enterText(text: String, index: Int, keyboardBehavior: KeyboardBehavior, timeout: Long? = null, dx: Float, dy: Float) {
         Logger.d("enterText(text: $text, index: $index)")
 
         val selector = By.clazz(EditText::class.java)
@@ -288,7 +367,10 @@ class Automator private constructor() {
         val uiObject = uiDevice.findObject(uiSelector)
 
         if (keyboardBehavior == KeyboardBehavior.showAndDismiss) {
-            uiObject.click()
+            val rect = uiObject.visibleBounds
+            val x = rect.left + rect.width() * dx
+            val y = rect.top + rect.height() * dy
+            uiDevice.click(x.toInt(), y.toInt())
         }
 
         uiObject.text = text
@@ -304,7 +386,9 @@ class Automator private constructor() {
         bySelector: BySelector,
         index: Int,
         keyboardBehavior: KeyboardBehavior,
-        timeout: Long? = null
+        timeout: Long? = null,
+        dx: Float,
+        dy: Float
     ) {
         Logger.d("enterText($text): $uiSelector, $bySelector")
 
@@ -321,7 +405,10 @@ class Automator private constructor() {
         }
 
         if (keyboardBehavior == KeyboardBehavior.showAndDismiss) {
-            uiObject.click()
+            val rect = uiObject.visibleBounds
+            val x = rect.left + rect.width() * dx
+            val y = rect.top + rect.height() * dy
+            uiDevice.click(x.toInt(), y.toInt())
         }
 
         uiObject.text = text
@@ -370,6 +457,24 @@ class Automator private constructor() {
         if (waitForView(bySelector, index, timeout) == null) {
             throw UiObjectNotFoundException("$uiSelector")
         }
+    }
+
+    fun pressVolumeUp() {
+        Logger.d("pressVolumeUp")
+        val success = uiDevice.pressKeyCode(KEYCODE_VOLUME_UP)
+        if (!success) {
+            throw PatrolException("Could not press volume up")
+        }
+        delay()
+    }
+
+    fun pressVolumeDown() {
+        Logger.d("pressVolumeDown")
+        val success = uiDevice.pressKeyCode(KEYCODE_VOLUME_DOWN)
+        if (!success) {
+            throw PatrolException("Could not press volume down")
+        }
+        delay()
     }
 
     fun openNotifications() {
@@ -627,6 +732,48 @@ class Automator private constructor() {
         }
 
         return null
+    }
+
+    private fun isAirplaneModeOn(): Boolean {
+        return Settings.System.getInt(
+            targetContext.contentResolver,
+            Settings.Global.AIRPLANE_MODE_ON,
+            0
+        ) != 0
+    }
+
+    private fun toggleAirplaneMode() {
+        val intent = Intent(Settings.ACTION_AIRPLANE_MODE_SETTINGS)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        targetContext.startActivity(intent)
+
+        var uiSelector = UiSelector()
+        uiSelector = uiSelector.text("Airplane mode")
+        val uiObject = uiDevice.findObject(uiSelector)
+        if (uiObject != null) {
+            uiObject.click()
+            pressBack()
+            delay()
+        } else {
+            throw PatrolException("Could not find airplane mode toggle")
+        }
+    }
+
+    private fun toggleLocation() {
+        val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        targetContext.startActivity(intent)
+
+        var uiSelector = UiSelector()
+        uiSelector = uiSelector.text("Use location")
+        val uiObject = uiDevice.findObject(uiSelector)
+        if (uiObject != null) {
+            uiObject.click()
+            pressBack()
+            delay()
+        } else {
+            throw PatrolException("Could not find location toggle")
+        }
     }
 
     companion object {

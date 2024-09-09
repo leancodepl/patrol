@@ -4,6 +4,7 @@ import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
 import 'package:patrol_cli/src/base/logger.dart';
+import 'package:patrol_cli/src/commands/dart_define_utils.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/dart_defines_reader.dart';
 import 'package:patrol_cli/src/pubspec_reader.dart';
@@ -31,9 +32,12 @@ class BuildAndroidCommand extends PatrolCommand {
     usesBuildModeOption();
     usesFlavorOption();
     usesDartDefineOption();
+    usesDartDefineFromFileOption();
     usesLabelOption();
     usesWaitOption();
     usesPortOptions();
+    usesTagsOption();
+    usesExcludeTagsOption();
 
     usesAndroidOptions();
   }
@@ -81,9 +85,17 @@ class BuildAndroidCommand extends PatrolCommand {
       _logger.detail('Received test target: $t');
     }
 
+    final tags = stringArg('tags');
+    final excludeTags = stringArg('exclude-tags');
+    if (tags != null) {
+      _logger.detail('Received tag(s): $tags');
+    }
+    if (excludeTags != null) {
+      _logger.detail('Received exclude tag(s): $excludeTags');
+    }
     final entrypoint = _testBundler.bundledTestFile;
     if (boolArg('generate-bundle')) {
-      _testBundler.createTestBundle(targets);
+      _testBundler.createTestBundle(targets, tags, excludeTags);
     }
 
     final flavor = stringArg('flavor') ?? config.android.flavor;
@@ -121,12 +133,21 @@ class BuildAndroidCommand extends PatrolCommand {
       );
     }
 
+    final dartDefineFromFilePaths = stringsArg('dart-define-from-file');
+
+    final mergedDartDefines = mergeDartDefines(
+      dartDefineFromFilePaths,
+      dartDefines,
+      _dartDefinesReader,
+    );
+
     final flutterOpts = FlutterAppOptions(
       command: flutterCommand,
       target: entrypoint.path,
       flavor: flavor,
       buildMode: buildMode,
-      dartDefines: dartDefines,
+      dartDefines: mergedDartDefines,
+      dartDefineFromFilePaths: dartDefineFromFilePaths,
     );
     final androidOpts = AndroidAppOptions(
       flutter: flutterOpts,

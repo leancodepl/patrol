@@ -1,8 +1,14 @@
 #if PATROL_ENABLED && os(macOS)
+
   import XCTest
+  import os
 
   class MacOSAutomator: Automator {
     private var timeout: TimeInterval = 10
+
+    private lazy var device: XCUIDevice = {
+      return XCUIDevice.shared
+    }()
 
     private lazy var controlCenter: XCUIApplication = {
       return XCUIApplication(bundleIdentifier: "com.apple.controlcenter")
@@ -14,6 +20,10 @@
 
     private lazy var systemPreferences: XCUIApplication = {
       return XCUIApplication(bundleIdentifier: "com.apple.systempreferences")
+    }()
+
+    private lazy var system: XCUISystem = {
+      return device.system
     }()
 
     func configure(timeout: TimeInterval) {
@@ -53,6 +63,16 @@
     func openControlCenter() throws {
       try runAction("openControlCenter") {
         throw PatrolError.methodNotImplemented("openControlCenter")
+      }
+    }
+
+    func openUrl(_ urlString: String) throws {
+      guard let url = URL(string: urlString) else {
+        throw PatrolError.internal("Invalid URL string: \(urlString)")
+      }
+
+      runAction("opening url \(url)") {
+        self.system.open(url)
       }
     }
 
@@ -164,6 +184,19 @@
       }
     }
 
+    // MARK: Volume settings
+    func pressVolumeUp() throws {
+      try runAction("pressing volume up") {
+        throw PatrolError.methodNotImplemented("pressVolumeUp")
+      }
+    }
+
+    func pressVolumeDown() throws {
+      try runAction("pressing volume down") {
+        throw PatrolError.methodNotImplemented("pressVolumeDown")
+      }
+    }
+
     func enableDarkMode(_ bundleId: String) throws {
       try runAction("enableDarkMode") {
         throw PatrolError.methodNotImplemented("enableDarkMode")
@@ -173,6 +206,18 @@
     func disableDarkMode(_ bundleId: String) throws {
       try runAction("disableDarkMode") {
         throw PatrolError.methodNotImplemented("disableDarkMode")
+      }
+    }
+
+    func enableLocation() throws {
+      try runAction("enableLocation") {
+        throw PatrolError.methodNotImplemented("enableLocation")
+      }
+    }
+
+    func disableLocation() throws {
+      try runAction("disableLocation") {
+        throw PatrolError.methodNotImplemented("disableLocation")
       }
     }
 

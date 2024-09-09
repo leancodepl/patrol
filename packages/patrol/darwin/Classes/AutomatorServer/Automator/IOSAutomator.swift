@@ -16,6 +16,10 @@
       return XCUIApplication(bundleIdentifier: "com.apple.Preferences")
     }()
 
+    private lazy var system: XCUISystem = {
+      return device.system
+    }()
+
     private var timeout: TimeInterval = 10
 
     func configure(timeout: TimeInterval) {
@@ -50,6 +54,16 @@
     func openControlCenter() throws {
       runAction("opening control center") {
         self.swipeToOpenControlCenter()
+      }
+    }
+
+    func openUrl(_ urlString: String) throws {
+      guard let url = URL(string: urlString) else {
+        throw PatrolError.internal("Invalid URL string: \(urlString)")
+      }
+
+      runAction("opening url \(url)") {
+        self.system.open(url)
       }
     }
 
@@ -168,7 +182,9 @@
       on selector: Selector,
       inApp bundleId: String,
       dismissKeyboard: Bool,
-      withTimeout timeout: TimeInterval?
+      withTimeout timeout: TimeInterval?,
+      dx: CGFloat,
+      dy: CGFloat
     ) throws {
       var data = data
       if dismissKeyboard {
@@ -209,7 +225,7 @@
           throw PatrolError.viewNotExists(view)
         }
 
-        self.clearAndEnterText(data: data, element: element)
+        self.clearAndEnterText(data: data, element: element, dx: dx, dy: dy)
       }
 
       // Prevent keyboard dismissal from happening too fast
@@ -221,7 +237,9 @@
       on selector: IOSSelector,
       inApp bundleId: String,
       dismissKeyboard: Bool,
-      withTimeout timeout: TimeInterval?
+      withTimeout timeout: TimeInterval?,
+      dx: CGFloat,
+      dy: CGFloat
     ) throws {
       var data = data
       if dismissKeyboard {
@@ -245,7 +263,7 @@
           throw PatrolError.viewNotExists(view)
         }
 
-        self.clearAndEnterText(data: data, element: element)
+        self.clearAndEnterText(data: data, element: element, dx: dx, dy: dy)
       }
 
       // Prevent keyboard dismissal from happening too fast
@@ -257,7 +275,9 @@
       byIndex index: Int,
       inApp bundleId: String,
       dismissKeyboard: Bool,
-      withTimeout timeout: TimeInterval?
+      withTimeout timeout: TimeInterval?,
+      dx: CGFloat,
+      dy: CGFloat
     ) throws {
       var data = data
       if dismissKeyboard {
@@ -288,7 +308,7 @@
           throw PatrolError.viewNotExists("text field at index \(index) in app \(bundleId)")
         }
 
-        self.clearAndEnterText(data: data, element: element)
+        self.clearAndEnterText(data: data, element: element, dx: dx, dy: dy)
       }
 
       // Prevent keyboard dismissal from happening too fast
@@ -346,6 +366,23 @@
       }
     }
 
+    // MARK: Volume settings
+    func pressVolumeUp() throws {
+      #if targetEnvironment(simulator)
+        throw PatrolError.methodNotAvailable("pressVolumeUp", "simulator")
+      #else
+        self.device.press(XCUIDevice.Button.volumeUp)
+      #endif
+    }
+
+    func pressVolumeDown() throws {
+      #if targetEnvironment(simulator)
+        throw PatrolError.methodNotAvailable("pressVolumeDown", "simulator")
+      #else
+        self.device.press(XCUIDevice.Button.volumeDown)
+      #endif
+    }
+
     // MARK: Services
 
     func enableDarkMode(_ bundleId: String) throws {
@@ -381,6 +418,18 @@
           self.preferences.descendants(matching: .any)["Display & Brightness"].firstMatch.tap()
           self.preferences.descendants(matching: .any)["Light"].firstMatch.tap()
         #endif
+      }
+    }
+
+    func enableLocation() throws {
+      try runAction("enableLocation") {
+        throw PatrolError.methodNotImplemented("enableLocation")
+      }
+    }
+
+    func disableLocation() throws {
+      try runAction("disableLocation") {
+        throw PatrolError.methodNotImplemented("disableLocation")
       }
     }
 
@@ -745,6 +794,11 @@
         return
       }
 
+      if isFineLocationEnabled() {
+        Logger.shared.i("Fine location is already enabled")
+        return
+      }
+
       try runAction("selecting fine location") {
         let alerts = self.springboard.alerts
         let button = alerts.buttons["Precise: Off"]
@@ -758,9 +812,27 @@
       }
     }
 
+    func isFineLocationEnabled() -> Bool {
+      if iOS13orOlder() {
+        Logger.shared.i("Ignored call to isFineLocationEnabled() (iOS < 14)")
+        return false
+      }
+
+      let alerts = self.springboard.alerts
+      let button = alerts.buttons["Precise: On"]
+      let exists = button.waitForExistence(timeout: self.timeout)
+
+      return exists
+    }
+
     func selectCoarseLocation() throws {
       if iOS13orOlder() {
         Logger.shared.i("Ignored call to selectCoarseLocation() (iOS < 14)")
+        return
+      }
+
+      if !isFineLocationEnabled() {
+        Logger.shared.i("Coarse location is already enabled")
         return
       }
 
@@ -804,7 +876,7 @@
     }
 
     // MARK: Private stuff
-    private func clearAndEnterText(data: String, element: XCUIElement) {
+    private func clearAndEnterText(data: String, element: XCUIElement, dx: CGFloat, dy: CGFloat) {
       let currentValue = element.value as? String
       var delete: String = ""
       if let value = currentValue {
@@ -812,7 +884,7 @@
       }
 
       // We need to tap at the end of the field to ensure the cursor is at the end
-      let coordinate = element.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.9))
+      let coordinate = element.coordinate(withNormalizedOffset: CGVector(dx: dx, dy: dy))
       coordinate.tap()
 
       element.typeText(delete + data)
@@ -959,7 +1031,8 @@
     ) throws {
       try runAction(log) {
         self.springboard.activate()
-        self.preferences.launch()  // reset to a known state
+        self.preferences.activate()  // Needed to make sure that settings will be opened with a clean state
+        self.preferences.launch()
 
         block()
 

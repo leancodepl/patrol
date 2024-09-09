@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:io' as io;
 
+import 'package:boolean_selector/boolean_selector.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:meta/meta.dart';
@@ -170,11 +171,15 @@ DartGroupEntry createDartTestGroup(
   String name = '',
   int level = 0,
   int maxTestCaseLength = global_state.maxTestLength,
+  String? tags,
+  String? excludeTags,
 }) {
   final groupDTO = DartGroupEntry(
     name: name,
     type: GroupEntryType.group,
     entries: [],
+    skip: parentGroup.metadata.skip,
+    tags: parentGroup.metadata.tags.toList(),
   );
 
   for (final entry in parentGroup.entries) {
@@ -192,32 +197,56 @@ DartGroupEntry createDartTestGroup(
       name = deduplicateGroupEntryName(parentGroup.name, name);
     }
 
-    if (entry is Group) {
-      groupDTO.entries.add(
-        createDartTestGroup(
-          entry,
-          name: name,
-          level: level + 1,
-          maxTestCaseLength: maxTestCaseLength,
-        ),
-      );
-    } else if (entry is Test) {
-      if (entry.name == 'patrol_test_explorer') {
-        // Ignore the bogus test that is used to discover the test structure.
-        continue;
-      }
+    switch (entry) {
+      case Test _:
+        if (entry.name == 'patrol_test_explorer') {
+          // Ignore the bogus test that is used to discover the test structure.
+          continue;
+        }
 
-      if (level < 1) {
-        throw StateError('Test is not allowed to be defined at level $level');
-      }
+        if (level < 1) {
+          throw StateError('Test is not allowed to be defined at level $level');
+        }
 
-      groupDTO.entries.add(
-        DartGroupEntry(name: name, type: GroupEntryType.test, entries: []),
-      );
-    } else {
-      // This should really never happen, because Group and Test are the only
-      // subclasses of GroupEntry.
-      throw StateError('invalid state');
+        if (tags != null) {
+          final includeTagsSelector = BooleanSelector.parse(tags);
+
+          // If the user provided tags, skip tests that don't match all of them.
+          if (!includeTagsSelector.evaluate(entry.metadata.tags.contains)) {
+            continue;
+          }
+        }
+
+        if (excludeTags != null) {
+          final excludeTagsSelector = BooleanSelector.parse(excludeTags);
+
+          // Skip tests that do match any tags the user wants to exclude.
+          if (excludeTagsSelector.evaluate(entry.metadata.tags.contains)) {
+            continue;
+          }
+        }
+
+        groupDTO.entries.add(
+          DartGroupEntry(
+            name: name,
+            type: GroupEntryType.test,
+            entries: [],
+            skip: entry.metadata.skip,
+            tags: entry.metadata.tags.toList(),
+          ),
+        );
+
+      case Group _:
+        groupDTO.entries.add(
+          createDartTestGroup(
+            entry,
+            name: name,
+            level: level + 1,
+            maxTestCaseLength: maxTestCaseLength,
+            tags: tags,
+            excludeTags: excludeTags,
+          ),
+        );
     }
   }
 

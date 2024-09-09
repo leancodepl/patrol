@@ -15,7 +15,11 @@ class TestBundler {
   final Logger _logger;
 
   /// Creates an entrypoint for use with `patrol test` and `patrol build`.
-  void createTestBundle(List<String> testFilePaths) {
+  void createTestBundle(
+    List<String> testFilePaths,
+    String? tags,
+    String? excludeTags,
+  ) {
     if (testFilePaths.isEmpty) {
       throw ArgumentError('testFilePaths must not be empty');
     }
@@ -82,7 +86,10 @@ Future<void> main() async {
     // Maybe somewhat counterintuitively, this callback runs *after* the calls
     // to group() below.
     final topLevelGroup = Invoker.current!.liveTest.groups.first;
-    final dartTestGroup = createDartTestGroup(topLevelGroup);
+    final dartTestGroup = createDartTestGroup(topLevelGroup,
+      tags: ${tags != null ? "'$tags'" : null},
+      excludeTags: ${excludeTags != null ? "'$excludeTags'" : null},
+    );
     testExplorationCompleter.complete(dartTestGroup);
     print('patrol_test_explorer: obtained Dart-side test hierarchy:');
     reportGroupStructure(dartTestGroup);

@@ -73,6 +73,18 @@ jobs:
         working-directory: packages/patrol/example/android
 
     steps:
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false
+          
+          android: false
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: true
+          swap-storage: true
+
       - name: Clone repository
         uses: actions/checkout@v4
 

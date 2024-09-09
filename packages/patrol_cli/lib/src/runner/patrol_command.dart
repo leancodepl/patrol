@@ -121,6 +121,32 @@ abstract class PatrolCommand extends Command<int> {
       );
   }
 
+  void usesDartDefineFromFileOption() {
+    argParser.addMultiOption(
+      'dart-define-from-file',
+      help:
+          'Environment configuration from a provided path that will be available'
+          'to the app under test.',
+      valueHelp: 'config/test.json',
+    );
+  }
+
+  void usesTagsOption() {
+    argParser.addOption(
+      'tags',
+      help: 'Tags to filter the tests by.',
+      valueHelp: '(chrome || firefox) && !slow',
+    );
+  }
+
+  void usesExcludeTagsOption() {
+    argParser.addOption(
+      'exclude-tags',
+      help: 'Tags to exclude the tests by.',
+      valueHelp: 'safari',
+    );
+  }
+
   void usesAndroidOptions() {
     argParser.addOption(
       'package-name',

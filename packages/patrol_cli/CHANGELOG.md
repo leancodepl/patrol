@@ -1,3 +1,31 @@
+## 3.1.1
+
+- Fix checking `java` version. (#2301)
+- Change selecting `java` path. (#2300)
+
+## 3.1.0
+
+- Add `tags` and `exclude-tags`. (#2286)
+- Run `flutter build apk --config-only` during android build.(#2293)
+
+This version requires version 3.10.0 of `patrol` package.
+
+## 3.0.1
+
+- Fallback to read `java` version from `JAVA_HOME` when `flutter doctor` doesn't print any.
+
+## 3.0.0
+
+- **Breaking:** Use `java` version from `flutter doctor`
+
+## 2.8.1
+
+- Fix parsing non string values from --dart-define-from-file (#2243).
+
+## 2.8.0
+
+- Add support for --dart-define-from-file (#2232).
+
 ## 2.7.0
 
 - Add support for custom flutter commands (#2124).

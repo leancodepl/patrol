@@ -96,6 +96,15 @@ class NativeAutomatorClient {
     );
   }
 
+  Future<void> openUrl(
+    OpenUrlRequest request,
+  ) {
+    return _sendRequest(
+      'openUrl',
+      request.toJson(),
+    );
+  }
+
   Future<GetNativeUITreeRespone> getNativeUITree(
     GetNativeUITreeRequest request,
   ) async {
@@ -170,6 +179,18 @@ class NativeAutomatorClient {
     );
   }
 
+  Future<void> pressVolumeUp() {
+    return _sendRequest(
+      'pressVolumeUp',
+    );
+  }
+
+  Future<void> pressVolumeDown() {
+    return _sendRequest(
+      'pressVolumeDown',
+    );
+  }
+
   Future<void> enableAirplaneMode() {
     return _sendRequest(
       'enableAirplaneMode',
@@ -233,6 +254,18 @@ class NativeAutomatorClient {
     return _sendRequest(
       'disableDarkMode',
       request.toJson(),
+    );
+  }
+
+  Future<void> enableLocation() {
+    return _sendRequest(
+      'enableLocation',
+    );
+  }
+
+  Future<void> disableLocation() {
+    return _sendRequest(
+      'disableLocation',
     );
   }
 

@@ -122,6 +122,8 @@ public struct DartGroupEntry: Codable {
   public var name: String
   public var type: GroupEntryType
   public var entries: [DartGroupEntry]
+  public var skip: Bool
+  public var tags: [String]
 }
 
 public struct ListDartTestsResponse: Codable {
@@ -147,6 +149,10 @@ public struct OpenAppRequest: Codable {
 
 public struct OpenQuickSettingsRequest: Codable {
 
+}
+
+public struct OpenUrlRequest: Codable {
+  public var url: String
 }
 
 public struct AndroidSelector: Codable {
@@ -312,6 +318,8 @@ public struct EnterTextRequest: Codable {
   public var iosSelector: IOSSelector?
   public var keyboardBehavior: KeyboardBehavior
   public var timeoutMillis: Int?
+  public var dx: Double
+  public var dy: Double
 }
 
 public struct SwipeRequest: Codable {

@@ -347,6 +347,10 @@ class PatrolTester {
         timeout: visibleTimeout,
       );
       await tester.enterText(resolvedFinder.first, text);
+      if (!kIsWeb) {
+        // When registering `testTextInput`, we have to unregister it
+        tester.testTextInput.unregister();
+      }
       await _performPump(
         settlePolicy: settlePolicy,
         settleTimeout: settleTimeout,

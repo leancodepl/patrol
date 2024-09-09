@@ -128,7 +128,8 @@ Psst... Android is a bit easier to set up, so we recommend starting with it!
           public static Object[] testCases() {
               PatrolJUnitRunner instrumentation = (PatrolJUnitRunner) InstrumentationRegistry.getInstrumentation();
               // replace "MainActivity.class" with "io.flutter.embedding.android.FlutterActivity.class" 
-              // if your AndroidManifest is using: android:name="io.flutter.embedding.android.FlutterActivity"
+              // if in AndroidManifest.xml in manifest/application/activity you have
+              //     android:name="io.flutter.embedding.android.FlutterActivity"
               instrumentation.setUp(MainActivity.class);
               instrumentation.waitForPatrolAppService();
               return instrumentation.listDartTests();
@@ -551,16 +552,12 @@ within the patrol test.">
 </Accordion>
 
 <Accordion title="Running test stops on 'Wait for com.example.myapp to idle'">
-  Open your XCode project, go to **Runner** target -> **Build Settings**, search for `FLUTTER_TARGET`
-  and remove set path to targets for all configurations.
-  Alternatively, you can search for a `FLUTTER_TARGET` in your project files and remove it (both value and key)
+  Search for a `FLUTTER_TARGET` in your project files and remove it (both value and key)
   from *.xcconfig and *.pbxproj files.
 </Accordion>
 
 <Accordion title="When running a test, real app without test is opened instead">
-  Open your XCode project, go to **Runner** target -> **Build Settings**, search for `FLUTTER_TARGET`
-  and remove set path to targets for all configurations.
-  Alternatively, you can search for a `FLUTTER_TARGET` in your project files and remove it (both value and key)
+  Search for a `FLUTTER_TARGET` in your project files and remove it (both value and key)
   from *.xcconfig and *.pbxproj files.
 </Accordion>
 

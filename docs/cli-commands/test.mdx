@@ -63,6 +63,53 @@ To delay app uninstallation for 5 seconds after the test finishes:
 patrol test --target integration_test/app_test.dart --wait 5
 ```
 
+#### Tags
+
+You can use tags to run only tests with specific tags. 
+
+First specify tags in your patrol tests:
+
+```dart
+  patrol(
+    'example test with tag',
+    tags: ['android'],
+    ($) async {
+      await createApp($);
+
+      await $(FloatingActionButton).tap();
+      expect($(#counterText).text, '1');
+    },
+  );
+
+  patrol(
+    'example test with two tags',
+    tags: ['android', 'ios'],
+    ($) async {
+      await createApp($);
+
+      await $(FloatingActionButton).tap();
+      expect($(#counterText).text, '1');
+    },
+  );
+```
+
+Then you can run tests with the tags you specified:
+
+```bash
+patrol test --tags android
+patrol test --tags=android
+patrol test --tags='android||ios'
+patrol test --tags='(android || ios)'
+patrol test --tags='(android && tablet)'
+```
+
+You can also use `--exclude-tags` to exclude tests with specific tags:
+
+```bash
+patrol test --exclude-tags android
+patrol test --exclude-tags='(android||ios)'
+```
+
 ### Under the hood
 
 `patrol test` basically calls `patrol build` and then runs the built app

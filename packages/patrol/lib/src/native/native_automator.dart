@@ -357,6 +357,14 @@ class NativeAutomator {
     );
   }
 
+  /// Opens the URL specified by [url].
+  Future<void> openUrl(String url) async {
+    await _wrapRequest(
+      'openUrl',
+      () => _client.openUrl(OpenUrlRequest(url: url)),
+    );
+  }
+
   /// Returns the first, topmost visible notification.
   ///
   /// Notification shade has to be opened with [openNotifications].
@@ -452,6 +460,36 @@ class NativeAutomator {
     );
   }
 
+  /// Press volume up
+  ///
+  /// Doesn't work on iOS Simulator because Volume buttons are not available
+  /// there.
+  ///
+  /// See also:
+  ///  * <https://developer.android.com/reference/androidx/test/uiautomator/UiDevice#pressKeyCodes(int[])>,
+  ///    which is used on Android
+  ///
+  /// * <https://developer.apple.com/documentation/xctest/xcuidevice/button/volumeup>,
+  ///   which is used on iOS
+  Future<void> pressVolumeUp() async {
+    await _wrapRequest('pressVolumeUp', _client.pressVolumeUp);
+  }
+
+  /// Press volume down
+  ///
+  /// Doesn't work on iOS Simulator because Volume buttons are not available
+  /// there.
+  ///
+  /// See also:
+  ///  * <https://developer.android.com/reference/androidx/test/uiautomator/UiDevice#pressKeyCodes(int[])>,
+  ///    which is used on Android
+  ///
+  /// * <https://developer.apple.com/documentation/xctest/xcuidevice/button/volumedown>,
+  ///   which is used on iOS
+  Future<void> pressVolumeDown() async {
+    await _wrapRequest('pressVolumeDown', _client.pressVolumeDown);
+  }
+
   /// Enables dark mode.
   Future<void> enableDarkMode({String? appId}) async {
     await _wrapRequest(
@@ -503,13 +541,39 @@ class NativeAutomator {
   }
 
   /// Enables bluetooth.
+  ///
+  /// Doesn't work on Android versions lower than 12.
   Future<void> enableBluetooth() async {
     await _wrapRequest('enableBluetooth', _client.enableBluetooth);
   }
 
   /// Disables bluetooth.
+  ///
+  /// Doesn't work on Android versions lower than 12.
   Future<void> disableBluetooth() async {
     await _wrapRequest('disableBluetooth', _client.disableBluetooth);
+  }
+
+  /// Enables location.
+  ///
+  /// On Android, opens the location settings screen and toggles the location
+  /// switch to enable location.
+  /// If the location already enabled, it does nothing.
+  ///
+  /// Doesn't work for iOS.
+  Future<void> enableLocation() async {
+    await _wrapRequest('enableLocation', _client.enableLocation);
+  }
+
+  /// Disables location.
+  ///
+  /// On Android, opens the location settings screen and toggles the location
+  /// switch to disable location.
+  /// If the location already enabled, it does nothing.
+  ///
+  /// Doesn't work for iOS.
+  Future<void> disableLocation() async {
+    await _wrapRequest('disableLocation', _client.disableLocation);
   }
 
   /// Taps on the native view specified by [selector].
@@ -609,7 +673,11 @@ class NativeAutomator {
     String? appId,
     KeyboardBehavior? keyboardBehavior,
     Duration? timeout,
+    Offset tapLocation = const Offset(0.9, 0.9),
   }) async {
+    assert(tapLocation.dx >= 0.0 && tapLocation.dx <= 1.0);
+    assert(tapLocation.dy >= 0.0 && tapLocation.dy <= 1.0);
+
     await _wrapRequest(
       'enterText',
       () => _client.enterText(
@@ -620,6 +688,8 @@ class NativeAutomator {
           keyboardBehavior:
               (keyboardBehavior ?? _config.keyboardBehavior).toContractsEnum,
           timeoutMillis: timeout?.inMilliseconds,
+          dx: tapLocation.dx,
+          dy: tapLocation.dy,
         ),
       ),
     );
@@ -645,7 +715,11 @@ class NativeAutomator {
     String? appId,
     KeyboardBehavior? keyboardBehavior,
     Duration? timeout,
+    Offset tapLocation = const Offset(0.9, 0.9),
   }) async {
+    assert(tapLocation.dx >= 0.0 && tapLocation.dx <= 1.0);
+    assert(tapLocation.dy >= 0.0 && tapLocation.dy <= 1.0);
+
     await _wrapRequest(
       'enterTextByIndex',
       () => _client.enterText(
@@ -656,6 +730,8 @@ class NativeAutomator {
           keyboardBehavior:
               (keyboardBehavior ?? _config.keyboardBehavior).toContractsEnum,
           timeoutMillis: timeout?.inMilliseconds,
+          dx: tapLocation.dx,
+          dy: tapLocation.dy,
         ),
       ),
     );

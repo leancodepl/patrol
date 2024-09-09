@@ -240,6 +240,14 @@ class NativeAutomator2 {
     );
   }
 
+  /// Opens the URL specified by [url].
+  Future<void> openUrl(String url) async {
+    await _wrapRequest(
+      'openUrl',
+      () => _client.openUrl(OpenUrlRequest(url: url)),
+    );
+  }
+
   /// Returns the first, topmost visible notification.
   ///
   /// Notification shade has to be opened with [openNotifications].
@@ -336,6 +344,30 @@ class NativeAutomator2 {
     );
   }
 
+  /// Press volume up
+  ///
+  /// Doesn't work on iOS Simulator because Volume buttons are not available
+  /// there.
+  ///
+  /// See also:
+  ///  * <https://developer.android.com/reference/androidx/test/uiautomator/UiDevice#pressKeyCodes(int[])>,
+  ///    which is used on Android
+  Future<void> pressVolumeUp() async {
+    await _wrapRequest('pressVolumeUp', _client.pressVolumeUp);
+  }
+
+  /// Press volume down
+  ///
+  /// Doesn't work on iOS Simulator because Volume buttons are not available
+  /// there.
+  ///
+  /// See also:
+  ///  * <https://developer.android.com/reference/androidx/test/uiautomator/UiDevice#pressKeyCodes(int[])>,
+  ///    which is used on Android
+  Future<void> pressVolumeDown() async {
+    await _wrapRequest('pressVolumeDown', _client.pressVolumeDown);
+  }
+
   /// Enables dark mode.
   Future<void> enableDarkMode({String? appId}) async {
     await _wrapRequest(
@@ -387,13 +419,39 @@ class NativeAutomator2 {
   }
 
   /// Enables bluetooth.
+  ///
+  /// Doesn't work on Android versions lower than 12.
   Future<void> enableBluetooth() async {
     await _wrapRequest('enableBluetooth', _client.enableBluetooth);
   }
 
   /// Disables bluetooth.
+  ///
+  /// Doesn't work on Android versions lower than 12.
   Future<void> disableBluetooth() async {
     await _wrapRequest('disableBluetooth', _client.disableBluetooth);
+  }
+
+  /// Enables location.
+  ///
+  /// On Android, opens the location settings screen and toggles the location
+  /// switch to enable location.
+  /// If the location already enabled, it does nothing.
+  ///
+  /// Doesn't work for iOS.
+  Future<void> enableLocation() async {
+    await _wrapRequest('enableLocation', _client.enableLocation);
+  }
+
+  /// Disables location.
+  ///
+  /// On Android, opens the location settings screen and toggles the location
+  /// switch to disable location.
+  /// If the location already enabled, it does nothing.
+  ///
+  /// Doesn't work for iOS.
+  Future<void> disableLocation() async {
+    await _wrapRequest('disableLocation', _client.disableLocation);
   }
 
   /// Taps on the native view specified by [selector].
@@ -495,6 +553,7 @@ class NativeAutomator2 {
     String? appId,
     native_automator.KeyboardBehavior? keyboardBehavior,
     Duration? timeout,
+    Offset? tapLocation,
   }) async {
     await _wrapRequest(
       'enterText',
@@ -507,6 +566,8 @@ class NativeAutomator2 {
           keyboardBehavior:
               (keyboardBehavior ?? _config.keyboardBehavior).toContractsEnum,
           timeoutMillis: timeout?.inMilliseconds,
+          dx: tapLocation?.dx ?? 0.9,
+          dy: tapLocation?.dy ?? 0.9,
         ),
       ),
     );
@@ -532,6 +593,7 @@ class NativeAutomator2 {
     String? appId,
     native_automator.KeyboardBehavior? keyboardBehavior,
     Duration? timeout,
+    Offset? tapLocation,
   }) async {
     await _wrapRequest(
       'enterTextByIndex',
@@ -543,6 +605,8 @@ class NativeAutomator2 {
           keyboardBehavior:
               (keyboardBehavior ?? _config.keyboardBehavior).toContractsEnum,
           timeoutMillis: timeout?.inMilliseconds,
+          dx: tapLocation?.dx ?? 0.9,
+          dy: tapLocation?.dy ?? 0.9,
         ),
       ),
     );

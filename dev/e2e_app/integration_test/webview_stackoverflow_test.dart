@@ -25,7 +25,7 @@ void main() {
   );
 
   patrol(
-    'interacts with the StackOverflow website in a webview',
+    'interacts with the StackOverflow website in a webview native2',
     ($) async {
       await createApp($);
 

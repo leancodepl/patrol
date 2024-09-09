@@ -3,7 +3,13 @@ name: test android emulator
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 */12 * * *'
+    - cron: "0 */12 * * *"
+  pull_request_target:
+    types: [opened, synchronize]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
 
 jobs:
   run_tests:
@@ -19,16 +25,35 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ['3.22.x']
-        flutter-channel: ['stable']
+        flutter-version: ["3.22.x"]
+        flutter-channel: ["stable"]
 
     defaults:
       run:
         working-directory: dev/e2e_app
 
     steps:
+      - name: Get User Permission
+        id: checkAccess
+        uses: actions-cool/check-user-permission@v2
+        with:
+          require: write
+          username: ${{ github.triggering_actor }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check User Permission
+        if: steps.checkAccess.outputs.require-result == 'false'
+        run: |
+          echo "${{ github.triggering_actor }} does not have permissions on this repo."
+          echo "Current permission level is ${{ steps.checkAccess.outputs.user-permission }}"
+          echo "Job originally triggered by ${{ github.actor }}"
+          exit 1
+
       - name: Clone repository
         uses: actions/checkout@v4
+        with:
+          ref: ${{  github.event.pull_request.head.sha }}
 
       - name: Set up Java
         uses: actions/setup-java@v3
@@ -74,9 +99,7 @@ jobs:
       - name: Set tests to exclude
         id: set_excluded_tests
         run: |
-          TESTS_TO_EXCLUDE="service_airplane_mode_test,\
-          service_bluetooth_test,\
-          permissions/notifications_test,\
+          TESTS_TO_EXCLUDE="permissions/notifications_test,\
           webview_hackernews_test,\
           webview_leancode_test,\
           webview_stackoverflow_test"
@@ -91,7 +114,10 @@ jobs:
           echo "EXCLUDED_TESTS=$target_paths" >> "$GITHUB_ENV"
 
       - name: patrol build android
-        run: patrol build android --exclude ${{ env.EXCLUDED_TESTS }} --verbose
+        run: | 
+          patrol build android --exclude ${{ env.EXCLUDED_TESTS }} \
+          --dart-define-from-file=defines_1.json --dart-define-from-file=defines_2.json --dart-define-from-file=defines_3.env \
+          --verbose
 
       - name: Upload APKs to emulator.wtf and wait for tests to finish
         id: tests_step

@@ -131,6 +131,43 @@ To run widget tests, you can continue to use `flutter test`.
 
 See [packages/patrol][github_patrol].
 
+## Patrol contracts generator
+
+1. (Optionally) add new request type:
+
+```dart
+class OpenAppRequest {
+  late String appId;
+}
+```
+
+2. Add new method to `NativeAutomator`:
+
+```dart
+abstract class NativeAutomator<IOSServer, AndroidServer, DartClient> {
+  ...
+  void openApp(OpenAppRequest request);
+  ...
+}
+```
+
+3. Run `gen_from_schema` script, few files will be updated
+
+## Develop patrol_cli
+
+If you have previously activated patrol_cli run:
+
+```bash
+dart pub global deactivate patrol_cli
+```
+
+then
+
+```bash
+cd packages/patrol_cli
+flutter pub global activate -s path .
+```
+
 [patrol_badge]: https://img.shields.io/pub/v/patrol?label=patrol
 [patrol_finders_badge]: https://img.shields.io/pub/v/patrol_finders?label=patrol_finders
 [patrol_cli_badge]: https://img.shields.io/pub/v/patrol_cli?label=patrol_cli
