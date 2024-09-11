@@ -37,6 +37,7 @@ class CoverageTool {
   final DisposeScope _disposeScope;
 
   Future<void> run({
+    required Device device,
     required String flutterPackageName,
     required TargetPlatform platform,
     required Logger logger,
@@ -49,7 +50,12 @@ class CoverageTool {
     await _disposeScope.run(
       (scope) async {
         final logsProcess = await _processManager.start(
-          ['flutter', 'logs'],
+          [
+            'flutter',
+            'logs',
+            '-d',
+            device.id,
+          ],
           workingDirectory: homeDirectory,
           runInShell: true,
         )
@@ -63,7 +69,7 @@ class CoverageTool {
             .cast<VMConnectionDetails>()
             .transform(
               DeviceToHostPortTransformer(
-                processManager: _processManager,
+                device: device,
                 devicePlatform: platform,
                 adb: _adb,
                 logger: logger,

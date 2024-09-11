@@ -12,10 +12,10 @@ screenshots:
     path: screenshots/logo.png
 
 environment:
-  sdk: '>=3.2.0 <4.0.0'
+  sdk: '>=3.3.0 <4.0.0'
 
 dependencies:
-  adb: ^0.3.0
+  adb: ^0.4.0
   ansi_styles: ^0.3.2+1
   args: ^2.4.2
   ci: ^0.1.0

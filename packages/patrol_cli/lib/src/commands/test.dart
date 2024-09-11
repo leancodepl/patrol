@@ -249,6 +249,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
     if (coverageEnabled) {
       unawaited(
         _coverageTool.run(
+          device: device,
           flutterPackageName: config.flutterPackageName,
           platform: device.targetPlatform,
           logger: _logger,

@@ -5,21 +5,20 @@ import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/coverage/bind_unused_port.dart';
 import 'package:patrol_cli/src/coverage/vm_connection_details.dart';
 import 'package:patrol_cli/src/devices.dart';
-import 'package:process/process.dart';
 
 class DeviceToHostPortTransformer
     implements StreamTransformer<VMConnectionDetails, VMConnectionDetails> {
   DeviceToHostPortTransformer({
-    required ProcessManager processManager,
+    required Device device,
     required TargetPlatform devicePlatform,
     required Adb adb,
     required Logger logger,
-  })  : _processManager = processManager,
+  })  : _device = device,
         _devicePlatform = devicePlatform,
         _adb = adb,
         _logger = logger;
 
-  final ProcessManager _processManager;
+  final Device _device;
   final TargetPlatform _devicePlatform;
   final Adb _adb;
   final Logger _logger;
@@ -44,12 +43,20 @@ class DeviceToHostPortTransformer
     switch (_devicePlatform) {
       case TargetPlatform.android:
         if (cachedPort case final cachedPort?) {
-          await _adb.forwardPorts(fromHost: cachedPort, toDevice: devicePort);
+          await _adb.forwardPorts(
+            fromHost: cachedPort,
+            toDevice: devicePort,
+            device: _device.id,
+          );
         } else {
           cachedPort = await bindUnusedPort<int>(
             (port) async {
               try {
-                await _adb.forwardPorts(fromHost: port, toDevice: devicePort);
+                await _adb.forwardPorts(
+                  fromHost: port,
+                  toDevice: devicePort,
+                  device: _device.id,
+                );
                 return port;
               } on Exception {
                 _logger.warn(
@@ -64,16 +71,13 @@ class DeviceToHostPortTransformer
         // It is necessary to grab the port from adb forward --list because
         // if debugger was attached, the port might be different from the one
         // we set
-        final forwardList = await _processManager.run(
-          // TODO: Add to wrapper
-          ['adb', 'forward', '--list'],
-          runInShell: true,
-        );
-        final output = forwardList.stdout as String;
-        hostPort = int.tryParse(
-          RegExp('tcp:([0-9]+) tcp:$devicePort').firstMatch(output)?.group(1) ??
-              '',
-        );
+        final forwardList = await _adb.getForwardedPorts();
+        hostPort = forwardList
+            .getMappedPortsForDevice(_device.id)
+            .entries
+            .where((entry) => entry.value == devicePort)
+            .firstOrNull
+            ?.key;
       case TargetPlatform.iOS || TargetPlatform.macOS:
         hostPort = devicePort;
       default:
