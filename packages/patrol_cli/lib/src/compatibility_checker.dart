@@ -198,15 +198,79 @@ extension _VersionComparator on Version {
   }
 }
 
-final _cliVersionRange = [
+final _patrolVersionRange = [
+  _VersionRange(
+    min: Version.parse('1.0.9'),
+    max: Version.parse('1.1.11'),
+  ),
+  _VersionRange(
+    min: Version.parse('2.0.0'),
+    max: Version.parse('2.0.0'),
+  ),
+  _VersionRange(
+    min: Version.parse('2.0.1'),
+    max: Version.parse('2.2.5'),
+  ),
   _VersionRange(
     min: Version.parse('2.3.0'),
+    max: Version.parse('2.3.2'),
+  ),
+  _VersionRange(
+    min: Version.parse('3.0.0'),
+    max: Version.parse('3.3.0'),
+  ),
+  _VersionRange(
+    min: Version.parse('3.4.0'),
+    max: Version.parse('3.5.2'),
+  ),
+  _VersionRange(
+    min: Version.parse('3.6.0'),
+    max: Version.parse('3.9.0'),
+  ),
+  _VersionRange(
+    min: Version.parse('3.10.0'),
+    max: Version.parse('3.10.0'),
+  ),
+  _VersionRange(
+    min: Version.parse('3.11.0'),
   ),
 ];
 
-final _patrolVersionRange = [
+final _cliVersionRange = [
   _VersionRange(
-    min: Version.parse('3.0.0'),
+    min: Version.parse('1.1.4'),
+    max: Version.parse('1.1.11'),
+  ),
+  _VersionRange(
+    min: Version.parse('2.0.0'),
+    max: Version.parse('2.0.0'),
+  ),
+  _VersionRange(
+    min: Version.parse('2.0.1'),
+    max: Version.parse('2.1.5'),
+  ),
+  _VersionRange(
+    min: Version.parse('2.2.0'),
+    max: Version.parse('2.2.2'),
+  ),
+  _VersionRange(
+    min: Version.parse('2.3.0'),
+    max: Version.parse('2.5.0'),
+  ),
+  _VersionRange(
+    min: Version.parse('2.6.0'),
+    max: Version.parse('2.6.4'),
+  ),
+  _VersionRange(
+    min: Version.parse('2.6.5'),
+    max: Version.parse('3.0.1'),
+  ),
+  _VersionRange(
+    min: Version.parse('3.1.0'),
+    max: Version.parse('3.1.1'),
+  ),
+  _VersionRange(
+    min: Version.parse('3.2.0'),
   ),
 ];
 
