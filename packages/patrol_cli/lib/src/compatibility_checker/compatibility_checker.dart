@@ -204,7 +204,7 @@ final _patrolVersionRange = [
   VersionRange(
     min: Version.parse('3.11.0'),
   ),
-].reversed.toList();
+];
 
 final _patrolCliVersionRange = [
   VersionRange(
@@ -242,4 +242,4 @@ final _patrolCliVersionRange = [
   VersionRange(
     min: Version.parse('3.2.0'),
   ),
-].reversed.toList();
+];
