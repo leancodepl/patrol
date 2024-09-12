@@ -82,7 +82,7 @@ class CompatibilityChecker {
     final cliVersion = Version.parse(constants.version);
     final patrolVersion = Version.parse(packageVersion!);
     final versionComparator = VersionComparator(
-      cliVersionRange: _cliVersionRange,
+      cliVersionRange: _patrolCliVersionRange,
       packageVersionRange: _patrolVersionRange,
     );
 
@@ -172,39 +172,42 @@ class VersionComparator {
     required List<VersionRange> cliVersionRange,
     required List<VersionRange> packageVersionRange,
   })  : _cliVersionRange = cliVersionRange,
-        _packageVersionRange = packageVersionRange,
         _cliToPackageMap = Map.fromIterables(
           cliVersionRange,
           packageVersionRange,
         );
 
   final List<VersionRange> _cliVersionRange;
-  final List<VersionRange> _packageVersionRange;
   final Map<VersionRange, VersionRange> _cliToPackageMap;
 
-  /// Checks if the current Patrol CLI version is compatible with the given Patrol package version.
+  /// Checks if the current CLI version is compatible with the given package version.
   bool isCompatible(Version cliVersion, Version patrolVersion) {
-    final cliVersionRange = toRange(cliVersion, _cliVersionRange);
-    final versionRange = toRange(patrolVersion, _packageVersionRange);
+    final matchingCliVersionRanges =
+        getMatchingRanges(cliVersion, _cliVersionRange);
 
-    if (versionRange == null || cliVersionRange == null) {
+    if (matchingCliVersionRanges.isEmpty) {
       return false;
     }
 
-    if (_cliToPackageMap[cliVersionRange] == versionRange) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  VersionRange? toRange(Version version, List<VersionRange> versionRangeList) {
-    for (final versionRange in versionRangeList) {
-      if (isInRange(version, versionRange)) {
-        return versionRange;
+    for (final cliVersionRange in matchingCliVersionRanges) {
+      final packageVersionRange = _cliToPackageMap[cliVersionRange];
+      if (packageVersionRange != null &&
+          isInRange(patrolVersion, packageVersionRange)) {
+        return true;
       }
     }
-    return null;
+
+    return false;
+  }
+
+  List<VersionRange> getMatchingRanges(
+    Version version,
+    List<VersionRange> versionRangeList,
+  ) {
+    return [
+      for (final versionRange in versionRangeList)
+        if (isInRange(version, versionRange)) versionRange,
+    ];
   }
 
   bool isInRange(Version version, VersionRange versionRange) {
@@ -255,7 +258,7 @@ final _patrolVersionRange = [
   ),
 ].reversed.toList();
 
-final _cliVersionRange = [
+final _patrolCliVersionRange = [
   VersionRange(
     min: Version.parse('1.1.4'),
     max: Version.parse('1.1.11'),
