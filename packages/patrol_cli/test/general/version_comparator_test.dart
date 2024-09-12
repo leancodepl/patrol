@@ -1,4 +1,4 @@
-import 'package:patrol_cli/src/compatibility_checker.dart';
+import 'package:patrol_cli/src/compatibility_checker/compatibility_checker.dart';
 import 'package:test/test.dart';
 import 'package:version/version.dart';
 

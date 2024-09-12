@@ -7,6 +7,7 @@ import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/extensions/completer.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
+import 'package:patrol_cli/src/compatibility_checker/version_comparator.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/runner/flutter_command.dart';
 import 'package:process/process.dart';
@@ -167,59 +168,6 @@ Future<void> _checkJavaVersion(
   }
 }
 
-class VersionComparator {
-  VersionComparator({
-    required List<VersionRange> cliVersionRange,
-    required List<VersionRange> packageVersionRange,
-  })  : _cliVersionRange = cliVersionRange,
-        _cliToPackageMap = Map.fromIterables(
-          cliVersionRange,
-          packageVersionRange,
-        );
-
-  final List<VersionRange> _cliVersionRange;
-  final Map<VersionRange, VersionRange> _cliToPackageMap;
-
-  /// Checks if the current CLI version is compatible with the given package version.
-  bool isCompatible(Version cliVersion, Version patrolVersion) {
-    final matchingCliVersionRanges =
-        getMatchingRanges(cliVersion, _cliVersionRange);
-
-    if (matchingCliVersionRanges.isEmpty) {
-      return false;
-    }
-
-    for (final cliVersionRange in matchingCliVersionRanges) {
-      final packageVersionRange = _cliToPackageMap[cliVersionRange];
-      if (packageVersionRange != null &&
-          isInRange(patrolVersion, packageVersionRange)) {
-        return true;
-      }
-    }
-
-    return false;
-  }
-
-  List<VersionRange> getMatchingRanges(
-    Version version,
-    List<VersionRange> versionRangeList,
-  ) {
-    return [
-      for (final versionRange in versionRangeList)
-        if (isInRange(version, versionRange)) versionRange,
-    ];
-  }
-
-  bool isInRange(Version version, VersionRange versionRange) {
-    return version >= versionRange.min &&
-        (hasNoUpperBound(versionRange) || version <= versionRange.max);
-  }
-
-  bool hasNoUpperBound(VersionRange versionRange) {
-    return versionRange.max == null;
-  }
-}
-
 final _patrolVersionRange = [
   VersionRange(
     min: Version.parse('1.0.9'),
@@ -295,13 +243,3 @@ final _patrolCliVersionRange = [
     min: Version.parse('3.2.0'),
   ),
 ].reversed.toList();
-
-class VersionRange {
-  VersionRange({
-    required this.min,
-    this.max,
-  });
-
-  final Version min;
-  final Version? max;
-}

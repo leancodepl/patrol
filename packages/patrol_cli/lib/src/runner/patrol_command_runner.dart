@@ -20,7 +20,7 @@ import 'package:patrol_cli/src/commands/devices.dart';
 import 'package:patrol_cli/src/commands/doctor.dart';
 import 'package:patrol_cli/src/commands/test.dart';
 import 'package:patrol_cli/src/commands/update.dart';
-import 'package:patrol_cli/src/compatibility_checker.dart';
+import 'package:patrol_cli/src/compatibility_checker/compatibility_checker.dart';
 import 'package:patrol_cli/src/coverage/coverage_tool.dart';
 import 'package:patrol_cli/src/crossplatform/flutter_tool.dart';
 import 'package:patrol_cli/src/dart_defines_reader.dart';
