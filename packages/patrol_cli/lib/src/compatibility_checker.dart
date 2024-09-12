@@ -81,8 +81,13 @@ class CompatibilityChecker {
 
     final cliVersion = Version.parse(constants.version);
     final patrolVersion = Version.parse(packageVersion!);
+    final versionComparator = VersionComparator(
+      cliVersionRange: _cliVersionRange,
+      packageVersionRange: _patrolVersionRange,
+    );
 
-    final isCompatible = cliVersion.isCompatibleWith(patrolVersion);
+    final isCompatible =
+        versionComparator.isCompatible(cliVersion, patrolVersion);
 
     if (!isCompatible) {
       throwToolExit(
@@ -162,127 +167,135 @@ Future<void> _checkJavaVersion(
   }
 }
 
-extension _VersionComparator on Version {
+class VersionComparator {
+  VersionComparator({
+    required List<VersionRange> cliVersionRange,
+    required List<VersionRange> packageVersionRange,
+  })  : _cliVersionRange = cliVersionRange,
+        _packageVersionRange = packageVersionRange,
+        _cliToPackageMap = Map.fromIterables(
+          cliVersionRange,
+          packageVersionRange,
+        );
+
+  final List<VersionRange> _cliVersionRange;
+  final List<VersionRange> _packageVersionRange;
+  final Map<VersionRange, VersionRange> _cliToPackageMap;
+
   /// Checks if the current Patrol CLI version is compatible with the given Patrol package version.
-  bool isCompatibleWith(Version patrolVersion) {
-    final cliVersionRange = toRange(_cliVersionRange);
-    final versionRange = patrolVersion.toRange(_patrolVersionRange);
+  bool isCompatible(Version cliVersion, Version patrolVersion) {
+    final cliVersionRange = toRange(cliVersion, _cliVersionRange);
+    final versionRange = toRange(patrolVersion, _packageVersionRange);
 
     if (versionRange == null || cliVersionRange == null) {
       return false;
     }
 
-    if (cliToPatrolMap[cliVersionRange] == versionRange) {
+    if (_cliToPackageMap[cliVersionRange] == versionRange) {
       return true;
     } else {
       return false;
     }
   }
 
-  _VersionRange? toRange(List<_VersionRange> versionRangeList) {
+  VersionRange? toRange(Version version, List<VersionRange> versionRangeList) {
     for (final versionRange in versionRangeList) {
-      if (isInRange(versionRange)) {
+      if (isInRange(version, versionRange)) {
         return versionRange;
       }
     }
     return null;
   }
 
-  bool isInRange(_VersionRange versionRange) {
-    return this >= versionRange.min &&
-        (hasNoUpperBound(versionRange) || this <= versionRange.max);
+  bool isInRange(Version version, VersionRange versionRange) {
+    return version >= versionRange.min &&
+        (hasNoUpperBound(versionRange) || version <= versionRange.max);
   }
 
-  bool hasNoUpperBound(_VersionRange versionRange) {
+  bool hasNoUpperBound(VersionRange versionRange) {
     return versionRange.max == null;
   }
 }
 
 final _patrolVersionRange = [
-  _VersionRange(
+  VersionRange(
     min: Version.parse('1.0.9'),
     max: Version.parse('1.1.11'),
   ),
-  _VersionRange(
+  VersionRange(
     min: Version.parse('2.0.0'),
     max: Version.parse('2.0.0'),
   ),
-  _VersionRange(
+  VersionRange(
     min: Version.parse('2.0.1'),
     max: Version.parse('2.2.5'),
   ),
-  _VersionRange(
+  VersionRange(
     min: Version.parse('2.3.0'),
     max: Version.parse('2.3.2'),
   ),
-  _VersionRange(
+  VersionRange(
     min: Version.parse('3.0.0'),
     max: Version.parse('3.3.0'),
   ),
-  _VersionRange(
+  VersionRange(
     min: Version.parse('3.4.0'),
     max: Version.parse('3.5.2'),
   ),
-  _VersionRange(
+  VersionRange(
     min: Version.parse('3.6.0'),
     max: Version.parse('3.10.0'),
   ),
-  _VersionRange(
+  VersionRange(
     min: Version.parse('3.10.0'),
     max: Version.parse('3.10.0'),
   ),
-  _VersionRange(
+  VersionRange(
     min: Version.parse('3.11.0'),
   ),
-];
+].reversed.toList();
 
 final _cliVersionRange = [
-  _VersionRange(
+  VersionRange(
     min: Version.parse('1.1.4'),
     max: Version.parse('1.1.11'),
   ),
-  _VersionRange(
+  VersionRange(
     min: Version.parse('2.0.0'),
     max: Version.parse('2.0.0'),
   ),
-  _VersionRange(
+  VersionRange(
     min: Version.parse('2.0.1'),
     max: Version.parse('2.1.5'),
   ),
-  _VersionRange(
+  VersionRange(
     min: Version.parse('2.2.0'),
     max: Version.parse('2.2.2'),
   ),
-  _VersionRange(
+  VersionRange(
     min: Version.parse('2.3.0'),
     max: Version.parse('2.5.0'),
   ),
-  _VersionRange(
+  VersionRange(
     min: Version.parse('2.6.0'),
     max: Version.parse('2.6.4'),
   ),
-  _VersionRange(
+  VersionRange(
     min: Version.parse('2.6.5'),
     max: Version.parse('3.0.1'),
   ),
-  _VersionRange(
+  VersionRange(
     min: Version.parse('3.1.0'),
     max: Version.parse('3.1.1'),
   ),
-  _VersionRange(
+  VersionRange(
     min: Version.parse('3.2.0'),
   ),
-];
+].reversed.toList();
 
-final cliToPatrolMap = Map.fromIterables(
-  _cliVersionRange,
-  _patrolVersionRange,
-);
-
-class _VersionRange {
-  _VersionRange({
+class VersionRange {
+  VersionRange({
     required this.min,
-    // ignore: unused_element
     this.max,
   });
 
