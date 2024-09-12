@@ -110,6 +110,24 @@ patrol test --exclude-tags android
 patrol test --exclude-tags='(android||ios)'
 ```
 
+#### Coverage
+
+To collect coverage from patrol tests, use `--coverage`.
+
+```
+patrol test --coverage
+```
+
+The LCOV report will be saved to `/coverage/patrol_lcov.info`.
+
+Additionally, you can exclude certain files from the report using glob patterns and `--coverage-ignore` option. For instance,
+
+```
+patrol test --coverage --coverage-ignore="**/*.g.dart"
+```
+
+excludes all files ending with `.g.dart`.
+
 ### Under the hood
 
 `patrol test` basically calls `patrol build` and then runs the built app
