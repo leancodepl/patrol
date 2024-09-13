@@ -1,8 +1,8 @@
 ## 3.11.0
 
-- Add code coverage collection support (#2294)
+- Add code coverage collection support. (#2294)
 - No throw error in `selectFineLocation` when it's already selected. (#2302)
-- Add Option to select tap Location in enterText and enterTextByIndex (#2312)
+- Add option to select tap location in `enterText` and `enterTextByIndex` (#2312)
 
 ## 3.10.0
 
