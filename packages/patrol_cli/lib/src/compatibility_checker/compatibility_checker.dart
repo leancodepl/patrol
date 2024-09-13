@@ -7,6 +7,7 @@ import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/extensions/completer.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
+import 'package:patrol_cli/src/compatibility_checker/version_comparator.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/runner/flutter_command.dart';
 import 'package:process/process.dart';
@@ -81,8 +82,13 @@ class CompatibilityChecker {
 
     final cliVersion = Version.parse(constants.version);
     final patrolVersion = Version.parse(packageVersion!);
+    final versionComparator = VersionComparator(
+      cliVersionRange: _patrolCliVersionRange,
+      packageVersionRange: _patrolVersionRange,
+    );
 
-    final isCompatible = cliVersion.isCompatibleWith(patrolVersion);
+    final isCompatible =
+        versionComparator.isCompatible(cliVersion, patrolVersion);
 
     if (!isCompatible) {
       throwToolExit(
@@ -162,66 +168,78 @@ Future<void> _checkJavaVersion(
   }
 }
 
-extension _VersionComparator on Version {
-  /// Checks if the current Patrol CLI version is compatible with the given Patrol package version.
-  bool isCompatibleWith(Version patrolVersion) {
-    final cliVersionRange = toRange(_cliVersionRange);
-    final versionRange = patrolVersion.toRange(_patrolVersionRange);
-
-    if (versionRange == null || cliVersionRange == null) {
-      return false;
-    }
-
-    if (cliToPatrolMap[cliVersionRange] == versionRange) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  _VersionRange? toRange(List<_VersionRange> versionRangeList) {
-    for (final versionRange in versionRangeList) {
-      if (isInRange(versionRange)) {
-        return versionRange;
-      }
-    }
-    return null;
-  }
-
-  bool isInRange(_VersionRange versionRange) {
-    return this >= versionRange.min &&
-        (hasNoUpperBound(versionRange) || this <= versionRange.max);
-  }
-
-  bool hasNoUpperBound(_VersionRange versionRange) {
-    return versionRange.max == null;
-  }
-}
-
-final _cliVersionRange = [
-  _VersionRange(
-    min: Version.parse('2.3.0'),
-  ),
-];
-
 final _patrolVersionRange = [
-  _VersionRange(
+  VersionRange(
+    min: Version.parse('1.0.9'),
+    max: Version.parse('1.1.11'),
+  ),
+  VersionRange(
+    min: Version.parse('2.0.0'),
+    max: Version.parse('2.0.0'),
+  ),
+  VersionRange(
+    min: Version.parse('2.0.1'),
+    max: Version.parse('2.2.5'),
+  ),
+  VersionRange(
+    min: Version.parse('2.3.0'),
+    max: Version.parse('2.3.2'),
+  ),
+  VersionRange(
     min: Version.parse('3.0.0'),
+    max: Version.parse('3.3.0'),
+  ),
+  VersionRange(
+    min: Version.parse('3.4.0'),
+    max: Version.parse('3.5.2'),
+  ),
+  VersionRange(
+    min: Version.parse('3.6.0'),
+    max: Version.parse('3.10.0'),
+  ),
+  VersionRange(
+    min: Version.parse('3.10.0'),
+    max: Version.parse('3.10.0'),
+  ),
+  VersionRange(
+    min: Version.parse('3.11.0'),
   ),
 ];
 
-final cliToPatrolMap = Map.fromIterables(
-  _cliVersionRange,
-  _patrolVersionRange,
-);
-
-class _VersionRange {
-  _VersionRange({
-    required this.min,
-    // ignore: unused_element
-    this.max,
-  });
-
-  final Version min;
-  final Version? max;
-}
+final _patrolCliVersionRange = [
+  VersionRange(
+    min: Version.parse('1.1.4'),
+    max: Version.parse('1.1.11'),
+  ),
+  VersionRange(
+    min: Version.parse('2.0.0'),
+    max: Version.parse('2.0.0'),
+  ),
+  VersionRange(
+    min: Version.parse('2.0.1'),
+    max: Version.parse('2.1.5'),
+  ),
+  VersionRange(
+    min: Version.parse('2.2.0'),
+    max: Version.parse('2.2.2'),
+  ),
+  VersionRange(
+    min: Version.parse('2.3.0'),
+    max: Version.parse('2.5.0'),
+  ),
+  VersionRange(
+    min: Version.parse('2.6.0'),
+    max: Version.parse('2.6.4'),
+  ),
+  VersionRange(
+    min: Version.parse('2.6.5'),
+    max: Version.parse('3.0.1'),
+  ),
+  VersionRange(
+    min: Version.parse('3.1.0'),
+    max: Version.parse('3.1.1'),
+  ),
+  VersionRange(
+    min: Version.parse('3.2.0'),
+  ),
+];

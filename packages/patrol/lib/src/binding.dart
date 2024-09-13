@@ -1,5 +1,8 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io' as io;
+import 'dart:isolate';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -93,6 +96,25 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
       final nameOfRequestedTest = await patrolAppService.testExecutionRequested;
 
       if (nameOfRequestedTest == _currentDartTest) {
+        if (const bool.fromEnvironment('COVERAGE_ENABLED')) {
+          postEvent(
+            'waitForCoverageCollection',
+            {'mainIsolateId': Service.getIsolateId(Isolate.current)},
+          );
+
+          final testCompleter = Completer<void>();
+
+          registerExtension(
+            'ext.patrol.markTestCompleted',
+            (method, parameters) async {
+              testCompleter.complete();
+              return ServiceExtensionResponse.result(jsonEncode({}));
+            },
+          );
+
+          await testCompleter.future;
+        }
+
         logger(
           'finished test $_currentDartTest. Will report its status back to the native side',
         );
@@ -101,6 +123,7 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
         logger(
           'tearDown(): test "$testName" in group "$_currentDartTest", passed: $passed',
         );
+
         await patrolAppService.markDartTestAsCompleted(
           dartFileName: _currentDartTest!,
           passed: passed,

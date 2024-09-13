@@ -20,7 +20,8 @@ import 'package:patrol_cli/src/commands/devices.dart';
 import 'package:patrol_cli/src/commands/doctor.dart';
 import 'package:patrol_cli/src/commands/test.dart';
 import 'package:patrol_cli/src/commands/update.dart';
-import 'package:patrol_cli/src/compatibility_checker.dart';
+import 'package:patrol_cli/src/compatibility_checker/compatibility_checker.dart';
+import 'package:patrol_cli/src/coverage/coverage_tool.dart';
 import 'package:patrol_cli/src/crossplatform/flutter_tool.dart';
 import 'package:patrol_cli/src/dart_defines_reader.dart';
 import 'package:patrol_cli/src/devices.dart';
@@ -100,8 +101,10 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
           'patrol',
           'Tool for running Flutter-native UI tests with superpowers',
         ) {
+    final adb = Adb();
+
     final androidTestBackend = AndroidTestBackend(
-      adb: Adb(),
+      adb: adb,
       processManager: _processManager,
       platform: _platform,
       fs: _fs,
@@ -193,6 +196,13 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         androidTestBackend: androidTestBackend,
         iosTestBackend: iosTestBackend,
         macOSTestBackend: macosTestBackend,
+        coverageTool: CoverageTool(
+          fs: _fs,
+          processManager: _processManager,
+          platform: platform,
+          adb: adb,
+          parentDisposeScope: _disposeScope,
+        ),
         analytics: _analytics,
         logger: _logger,
       ),

@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io' as io;
 
 import 'package:boolean_selector/boolean_selector.dart';
@@ -266,19 +267,34 @@ String deduplicateGroupEntryName(String parentName, String currentName) {
   );
 }
 
-/// Recursively prints the structure of the test suite.
+/// Recursively prints the structure of the test suite and reports test count
+/// of the top-most group
 @internal
-void printGroupStructure(DartGroupEntry group, {int indentation = 0}) {
+int reportGroupStructure(DartGroupEntry group, {int indentation = 0}) {
+  var testCount = group.type == GroupEntryType.test ? 1 : 0;
+
   final indent = ' ' * indentation;
-  debugPrint("$indent-- group: '${group.name}'");
+  final tag = group.type == GroupEntryType.group ? 'group' : 'test';
+  debugPrint("$indent-- $tag: '${group.name}'");
 
   for (final entry in group.entries) {
     if (entry.type == GroupEntryType.test) {
+      ++testCount;
       debugPrint("$indent     -- test: '${entry.name}'");
     } else {
       for (final subgroup in entry.entries) {
-        printGroupStructure(subgroup, indentation: indentation + 5);
+        testCount +=
+            reportGroupStructure(subgroup, indentation: indentation + 5);
       }
     }
   }
+
+  if (indentation == 0) {
+    postEvent(
+      'testCount',
+      {'testCount': testCount},
+    );
+  }
+
+  return testCount;
 }

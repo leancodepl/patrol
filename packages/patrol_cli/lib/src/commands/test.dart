@@ -1,11 +1,13 @@
 import 'dart:async';
 
+import 'package:glob/glob.dart';
 import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/commands/dart_define_utils.dart';
-import 'package:patrol_cli/src/compatibility_checker.dart';
+import 'package:patrol_cli/src/compatibility_checker/compatibility_checker.dart';
+import 'package:patrol_cli/src/coverage/coverage_tool.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/dart_defines_reader.dart';
 import 'package:patrol_cli/src/devices.dart';
@@ -27,6 +29,7 @@ class TestCommand extends PatrolCommand {
     required AndroidTestBackend androidTestBackend,
     required IOSTestBackend iosTestBackend,
     required MacOSTestBackend macOSTestBackend,
+    required CoverageTool coverageTool,
     required Analytics analytics,
     required Logger logger,
   })  : _deviceFinder = deviceFinder,
@@ -38,6 +41,7 @@ class TestCommand extends PatrolCommand {
         _androidTestBackend = androidTestBackend,
         _iosTestBackend = iosTestBackend,
         _macosTestBackend = macOSTestBackend,
+        _coverageTool = coverageTool,
         _analytics = analytics,
         _logger = logger {
     usesTargetOption();
@@ -51,6 +55,7 @@ class TestCommand extends PatrolCommand {
     usesPortOptions();
     usesTagsOption();
     usesExcludeTagsOption();
+    useCoverageOptions();
 
     usesUninstallOption();
 
@@ -67,6 +72,7 @@ class TestCommand extends PatrolCommand {
   final AndroidTestBackend _androidTestBackend;
   final IOSTestBackend _iosTestBackend;
   final MacOSTestBackend _macosTestBackend;
+  final CoverageTool _coverageTool;
 
   final Analytics _analytics;
   final Logger _logger;
@@ -159,6 +165,8 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
     final wait = intArg('wait') ?? defaultWait;
     final displayLabel = boolArg('label');
     final uninstall = boolArg('uninstall');
+    final coverageEnabled = boolArg('coverage');
+    final ignoreGlobs = stringsArg('coverage-ignore').map(Glob.new).toSet();
 
     final customDartDefines = {
       ..._dartDefinesReader.fromFile(),
@@ -175,6 +183,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       'PATROL_TEST_LABEL_ENABLED': displayLabel.toString(),
       'PATROL_TEST_SERVER_PORT': super.testServerPort.toString(),
       'PATROL_APP_SERVER_PORT': super.appServerPort.toString(),
+      'COVERAGE_ENABLED': coverageEnabled.toString(),
     }.withNullsRemoved();
 
     final dartDefines = {...customDartDefines, ...internalDartDefines};
@@ -236,6 +245,19 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
 
     await _build(androidOpts, iosOpts, macosOpts, device);
     await _preExecute(androidOpts, iosOpts, macosOpts, device, uninstall);
+
+    if (coverageEnabled) {
+      unawaited(
+        _coverageTool.run(
+          device: device,
+          flutterPackageName: config.flutterPackageName,
+          platform: device.targetPlatform,
+          logger: _logger,
+          ignoreGlobs: ignoreGlobs,
+        ),
+      );
+    }
+
     final allPassed = await _execute(
       flutterOpts,
       androidOpts,
@@ -361,5 +383,17 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
     }
 
     return allPassed;
+  }
+
+  void useCoverageOptions() {
+    argParser
+      ..addFlag(
+        'coverage',
+        help: 'Generate coverage.',
+      )
+      ..addMultiOption(
+        'coverage-ignore',
+        help: 'Exclude files from coverage using glob patterns.',
+      );
   }
 }

@@ -1,3 +1,7 @@
+# 3.2.0
+
+- Add code coverage collection support (#2294)
+
 ## 3.1.1
 
 - Fix checking `java` version. (#2301)
