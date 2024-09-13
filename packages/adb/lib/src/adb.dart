@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io' as io;
 
 import 'package:adb/adb.dart';
@@ -161,6 +162,25 @@ class Adb {
     };
   }
 
+  /// Returns a parsed result of `adb forward --list` command.
+  Future<AdbForwardList> getForwardedPorts() async {
+    await _adbInternals.ensureServerRunning();
+
+    final output = await io.Process.run(
+      'adb',
+      ['forward', '--list'],
+      runInShell: true,
+    );
+
+    if (output.stdErr.isNotEmpty) {
+      _handleAdbExceptions(output.stdErr);
+
+      throw Exception(output.stdErr);
+    }
+
+    return AdbForwardList.parse(output.stdout as String);
+  }
+
   /// Runs instrumentation test specified by [packageName] and [intentClass] on
   /// the attached device.
   ///
@@ -241,5 +261,31 @@ class Adb {
     if (stdErr.contains(AdbDeleteFailedInternalError.trigger)) {
       throw AdbDeleteFailedInternalError(message: stdErr);
     }
+  }
+}
+
+/// Represents a parsed result of adb forward --list command.
+extension type AdbForwardList._(Map<String, Map<int, int>> map) {
+  /// Parses the output of `adb forward --list` command into a map.
+  AdbForwardList.parse(String adbForwardOutput) : map = {} {
+    final nonEmptyLines = const LineSplitter()
+        .convert(adbForwardOutput)
+        .where((line) => line.isNotEmpty);
+    for (final line in nonEmptyLines) {
+      final parts = line.split(' ');
+      final device = parts[0];
+      final hostPort = int.parse(parts[1].split(':')[1]);
+      final devicePort = int.parse(parts[2].split(':')[1]);
+      if (map[device] case final deviceMap?) {
+        deviceMap[hostPort] = devicePort;
+      } else {
+        map[device] = {hostPort: devicePort};
+      }
+    }
+  }
+
+  /// Returns port mapping for a device with the specified id.
+  Map<int, int> getMappedPortsForDevice(String deviceId) {
+    return map[deviceId] ?? {};
   }
 }
