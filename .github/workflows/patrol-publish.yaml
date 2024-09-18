@@ -50,12 +50,13 @@ jobs:
 
       - name: Install dart-apitool
         run: dart pub global activate dart_apitool
-  
-      - name: Check API changes
-        run: |
-          dart-apitool diff \
-          --old pub://patrol/${{ steps.get_last_released_version.outputs.last_version }} \
-          --new packages/patrol
+        
+      # Temporary disabled until we will find better way to check latest released version
+      # - name: Check API changes
+      #   run: |
+      #     dart-apitool diff \
+      #     --old pub://patrol/${{ steps.get_last_released_version.outputs.last_version }} \
+      #     --new packages/patrol
 
       - name: Build DevTools extension
         working-directory: packages/patrol_devtools_extension
