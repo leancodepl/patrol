@@ -135,7 +135,7 @@
       SEL selector = NSSelectorFromString(dartTestName);                                                        \
       class_addMethod(self, selector, implementation, "v@:");                                                   \
                                                                                                                 \
-      /* Step 2 – create invocations to the dynamically created methods */                                    \
+      /* Step 2 – create invocations to the dynamically created methods */                                      \
       NSMethodSignature *signature = [self instanceMethodSignatureForSelector:selector];                        \
       NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];                        \
       invocation.selector = selector;                                                                           \
