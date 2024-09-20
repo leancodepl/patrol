@@ -63,7 +63,7 @@ class CompatibilityChecker {
 
       process.listenStdOut(
         (line) async {
-          if (line.startsWith('- patrol ')) {
+          if (line.startsWith('- patrol ') && !packageCompleter.isCompleted) {
             packageCompleter.complete(line.split(' ').last);
           }
         },

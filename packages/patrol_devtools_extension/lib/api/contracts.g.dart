@@ -587,6 +587,8 @@ EnterTextRequest _$EnterTextRequestFromJson(Map<String, dynamic> json) =>
       keyboardBehavior:
           $enumDecode(_$KeyboardBehaviorEnumMap, json['keyboardBehavior']),
       timeoutMillis: (json['timeoutMillis'] as num?)?.toInt(),
+      dx: (json['dx'] as num?)?.toDouble(),
+      dy: (json['dy'] as num?)?.toDouble(),
     );
 
 Map<String, dynamic> _$EnterTextRequestToJson(EnterTextRequest instance) =>
@@ -599,6 +601,8 @@ Map<String, dynamic> _$EnterTextRequestToJson(EnterTextRequest instance) =>
       'iosSelector': instance.iosSelector,
       'keyboardBehavior': _$KeyboardBehaviorEnumMap[instance.keyboardBehavior]!,
       'timeoutMillis': instance.timeoutMillis,
+      'dx': instance.dx,
+      'dy': instance.dy,
     };
 
 const _$KeyboardBehaviorEnumMap = {
@@ -650,6 +654,31 @@ Map<String, dynamic> _$WaitUntilVisibleRequestToJson(
       'iosSelector': instance.iosSelector,
       'appId': instance.appId,
       'timeoutMillis': instance.timeoutMillis,
+    };
+
+ScrollToRequest _$ScrollToRequestFromJson(Map<String, dynamic> json) =>
+    ScrollToRequest(
+      selector: json['selector'] == null
+          ? null
+          : Selector.fromJson(json['selector'] as Map<String, dynamic>),
+      androidSelector: json['androidSelector'] == null
+          ? null
+          : AndroidSelector.fromJson(
+              json['androidSelector'] as Map<String, dynamic>),
+      iosSelector: json['iosSelector'] == null
+          ? null
+          : IOSSelector.fromJson(json['iosSelector'] as Map<String, dynamic>),
+      appId: json['appId'] as String,
+      maxScrolls: (json['maxScrolls'] as num).toInt(),
+    );
+
+Map<String, dynamic> _$ScrollToRequestToJson(ScrollToRequest instance) =>
+    <String, dynamic>{
+      'selector': instance.selector,
+      'androidSelector': instance.androidSelector,
+      'iosSelector': instance.iosSelector,
+      'appId': instance.appId,
+      'maxScrolls': instance.maxScrolls,
     };
 
 DarkModeRequest _$DarkModeRequestFromJson(Map<String, dynamic> json) =>

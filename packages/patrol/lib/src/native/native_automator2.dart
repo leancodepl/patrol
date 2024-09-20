@@ -9,6 +9,9 @@ import 'package:patrol/src/native/contracts/native_automator_client.dart';
 import 'package:patrol/src/native/native_automator.dart';
 import 'package:patrol/src/native/native_automator.dart' as native_automator;
 
+/// Default maximum number of drags during scrolling.
+const _defaultScrollMaxIteration = 15;
+
 /// This class represents the result of [NativeAutomator.getNativeViews].
 class GetNativeViewsResult {
   /// Creates a new [GetNativeViewsResult].
@@ -638,6 +641,31 @@ class NativeAutomator2 {
           endY: to.dy,
           steps: steps,
           appId: appId ?? resolvedAppId,
+        ),
+      ),
+    );
+  }
+
+  /// Scrolls to the native view specified by [selector].
+  ///
+  /// Performs [maxScrolls] number of scrolls before giving up.
+  /// If [maxScrolls] is not specified, it utilizes the
+  /// [_defaultScrollMaxIteration] duration from the configuration.
+  ///
+  /// Works only on iOS.
+  Future<void> scrollTo(
+    NativeSelector selector, {
+    String? appId,
+    int? maxScrolls,
+  }) async {
+    await _wrapRequest(
+      'scrollTo',
+      () => _client.scrollTo(
+        ScrollToRequest(
+          androidSelector: selector.android,
+          iosSelector: selector.ios,
+          appId: appId ?? resolvedAppId,
+          maxScrolls: maxScrolls ?? _defaultScrollMaxIteration,
         ),
       ),
     );

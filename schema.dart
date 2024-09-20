@@ -225,6 +225,8 @@ class EnterTextRequest {
   IOSSelector? iosSelector;
   late KeyboardBehavior keyboardBehavior;
   int? timeoutMillis;
+  double? dx;
+  double? dy;
 }
 
 class SwipeRequest {
@@ -242,6 +244,14 @@ class WaitUntilVisibleRequest {
   IOSSelector? iosSelector;
   late String appId;
   int? timeoutMillis;
+}
+
+class ScrollToRequest {
+  Selector? selector;
+  AndroidSelector? androidSelector;
+  IOSSelector? iosSelector;
+  late String appId;
+  late int maxScrolls;
 }
 
 class DarkModeRequest {
@@ -317,6 +327,7 @@ abstract class NativeAutomator<IOSServer, AndroidServer, DartClient> {
   void tapAt(TapAtRequest request);
   void enterText(EnterTextRequest request);
   void swipe(SwipeRequest request);
+  void scrollTo(ScrollToRequest request);
   void waitUntilVisible(WaitUntilVisibleRequest request);
 
   // volume settings

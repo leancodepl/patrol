@@ -451,6 +451,10 @@ class Automator private constructor() {
         delay()
     }
 
+    fun scrollTo(uiSelector: UiSelector, bySelector: BySelector, index: Int, maxScrolls: Long) {
+        throw PatrolException("scrollTo() is not implemented")
+    }
+
     fun waitUntilVisible(uiSelector: UiSelector, bySelector: BySelector, index: Int, timeout: Long? = null) {
         Logger.d("waitUntilVisible(): $uiSelector, $bySelector")
 
