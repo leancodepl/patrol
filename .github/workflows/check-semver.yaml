@@ -11,6 +11,12 @@ jobs:
     name: Check semver
     runs-on: ubuntu-latest
 
+    strategy:
+      fail-fast: false
+      matrix:
+        flutter-version: ['3.22.x']
+        flutter-channel: ['stable']
+    
     steps:
         - name: Clone repository
           uses: actions/checkout@v4
@@ -24,10 +30,11 @@ jobs:
             echo "last_version=$last_version" >> $GITHUB_ENV
             echo "::set-output name=last_version::$last_version"
 
-        - name: Set up Dart
-          uses: dart-lang/setup-dart@v1
+        - name: Set up Flutter
+          uses: subosito/flutter-action@v2
           with:
-            sdk: stable
+            flutter-version: ${{ matrix.flutter-version }}
+            channel: ${{ matrix.flutter-channel }}
 
         - name: Install dart-apitool
           run: dart pub global activate dart_apitool
