@@ -268,14 +268,14 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
                 uiSelector = request.selector.toUiSelector(),
                 bySelector = request.selector.toBySelector(),
                 index = request.selector.instance?.toInt() ?: 0,
-                maxScrolls = request.maxScrolls,
+                maxScrolls = request.maxScrolls
             )
         } else if (request.androidSelector != null) {
             automation.scrollTo(
                 uiSelector = request.androidSelector.toUiSelector(),
                 bySelector = request.androidSelector.toBySelector(),
                 index = request.androidSelector.instance?.toInt() ?: 0,
-                maxScrolls = request.maxScrolls,
+                maxScrolls = request.maxScrolls
             )
         } else {
             throw PatrolException("scrollTo(): neither selector nor androidSelector are set")
