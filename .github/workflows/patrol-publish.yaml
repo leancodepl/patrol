@@ -29,13 +29,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Get last released version
-        id: get_last_released_version
-        run: |
-          last_version=$(git tag --list 'patrol-v*' | grep -v '\-dev\.[0-9]\+$' | sort -V | tail -n 1 | sed 's/^patrol-v//')
-          echo "last_version=$last_version" >> $GITHUB_ENV
-          echo "::set-output name=last_version::$last_version"
-
       # This step adds the auth token for pub.dev
       - name: Set up Dart
         uses: dart-lang/setup-dart@v1
@@ -47,16 +40,6 @@ jobs:
         with:
           flutter-version: ${{ matrix.flutter-version }}
           channel: ${{ matrix.flutter-channel }}
-
-      - name: Install dart-apitool
-        run: dart pub global activate dart_apitool
-        
-      # Temporary disabled until we will find better way to check latest released version
-      # - name: Check API changes
-      #   run: |
-      #     dart-apitool diff \
-      #     --old pub://patrol/${{ steps.get_last_released_version.outputs.last_version }} \
-      #     --new packages/patrol
 
       - name: Build DevTools extension
         working-directory: packages/patrol_devtools_extension
