@@ -23,7 +23,7 @@ if (flutterVersionName == null) {
 }
 
 android {
-    compileSdk 33
+    compileSdk 34
     namespace "pl.leancode.patrol.e2e_app"
 
     kotlinOptions {
