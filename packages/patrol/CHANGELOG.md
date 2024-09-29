@@ -1,7 +1,7 @@
 ## Unreleased 
 
 - Add native `scrollTo` method. (#2343)
-- Updated Flutter environment: sdk to >=3.5.0 <4.0.0 and Flutter version to >=3.24.0 (#2343)
+- Updated Flutter version to >=3.24.0 (#2343)
 - Bump `compileSdk` to 34. (#2343)
 
 ## 3.11.0
