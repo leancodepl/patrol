@@ -265,17 +265,11 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
     override fun scrollTo(request: Contracts.ScrollToRequest) {
         if (request.selector != null) {
             automation.scrollTo(
-                uiSelector = request.selector.toUiSelector(),
                 bySelector = request.selector.toBySelector(),
-                index = request.selector.instance?.toInt() ?: 0,
-                maxScrolls = request.maxScrolls
             )
         } else if (request.androidSelector != null) {
             automation.scrollTo(
-                uiSelector = request.androidSelector.toUiSelector(),
                 bySelector = request.androidSelector.toBySelector(),
-                index = request.androidSelector.instance?.toInt() ?: 0,
-                maxScrolls = request.maxScrolls
             )
         } else {
             throw PatrolException("scrollTo(): neither selector nor androidSelector are set")

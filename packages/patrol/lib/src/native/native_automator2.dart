@@ -646,13 +646,18 @@ class NativeAutomator2 {
     );
   }
 
-  /// Scrolls to the native view specified by [selector].
+  /// Scrolls down until finds the native view specified by [selector].
   ///
+  /// On iOS:
   /// Performs [maxScrolls] number of scrolls before giving up.
   /// If [maxScrolls] is not specified, it utilizes the
   /// [_defaultScrollMaxIteration] duration from the configuration.
   ///
-  /// Works only on iOS.
+  /// On Android:
+  /// Scrolls to bottom while searching for the view. If the view is not found
+  /// until the end, it throws an exception.
+  ///
+  /// [AndroidSelector.instance] field is ignored.
   Future<void> scrollTo(
     NativeSelector selector, {
     String? appId,
