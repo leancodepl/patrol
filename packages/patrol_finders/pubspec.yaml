@@ -22,4 +22,4 @@ dependencies:
   meta: ^1.10.0
 
 dev_dependencies:
-  leancode_lint: ^14.1.0
+  leancode_lint: ^12.1.0

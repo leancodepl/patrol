@@ -22,7 +22,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  leancode_lint: ^14.1.0
+  leancode_lint: ^12.1.0
   patrol:
     path: ../../packages/patrol
 

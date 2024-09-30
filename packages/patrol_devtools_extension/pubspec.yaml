@@ -24,7 +24,7 @@ dev_dependencies:
   custom_lint: ^0.6.4
   flutter_test:
     sdk: flutter
-  leancode_lint: ^14.1.0
+  leancode_lint: ^12.1.0
 
 flutter:
   uses-material-design: true
