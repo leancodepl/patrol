@@ -12,7 +12,7 @@ dependencies:
   cupertino_icons: ^1.0.6
   flutter:
     sdk: flutter
-  flutter_local_notifications: ^16.1.0
+  flutter_local_notifications: ^17.2.3
   flutter_timezone: ^1.0.8
   geolocator: ^10.1.0
   permission_handler: ^10.4.5
