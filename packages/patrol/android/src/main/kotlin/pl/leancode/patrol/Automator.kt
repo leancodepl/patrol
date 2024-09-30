@@ -23,7 +23,6 @@ import androidx.test.uiautomator.UiObject2
 import androidx.test.uiautomator.UiObjectNotFoundException
 import androidx.test.uiautomator.UiSelector
 import androidx.test.uiautomator.Until
-import io.ktor.util.reflect.instanceOf
 import pl.leancode.patrol.contracts.Contracts.AndroidNativeView
 import pl.leancode.patrol.contracts.Contracts.AndroidSelector
 import pl.leancode.patrol.contracts.Contracts.KeyboardBehavior
@@ -460,7 +459,6 @@ class Automator private constructor() {
         val scrollableSelector = By.scrollable(true)
 
         waitForView(scrollableSelector, 0)
-
 
         val scrollableUiObject = uiDevice.findObject(scrollableSelector)
             ?: throw UiObjectNotFoundException("$scrollableSelector")

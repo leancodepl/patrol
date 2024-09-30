@@ -17,4 +17,4 @@ dependencies:
 
 dev_dependencies:
   custom_lint: ^0.6.4
-  leancode_lint: ^12.1.0
+  leancode_lint: ^14.1.0

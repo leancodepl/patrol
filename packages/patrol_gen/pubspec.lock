@@ -173,10 +173,10 @@ packages:
     dependency: "direct dev"
     description:
       name: leancode_lint
-      sha256: "24c7380d0d46b3927614ca86c82ba8b7373e3906e5227b9aceb748a78fd2c387"
+      sha256: "6e6500dac54ea3d0ad01f6e851a09b815f3d75f7e87bb9ab589d1fd19dd826f1"
       url: "https://pub.dev"
     source: hosted
-    version: "12.1.0"
+    version: "14.1.0"
   logging:
     dependency: transitive
     description:
@@ -346,4 +346,4 @@ packages:
     source: hosted
     version: "3.1.2"
 sdks:
-  dart: ">=3.3.0 <4.0.0"
+  dart: ">=3.5.0 <4.0.0"
