@@ -1,4 +1,4 @@
-## Unreleased 
+## 3.12.0
 
 - Add native `scrollTo` method. (#2343)
 - Updated Flutter version to >=3.24.0 (#2343)
