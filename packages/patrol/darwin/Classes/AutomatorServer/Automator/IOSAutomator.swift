@@ -924,15 +924,16 @@
     }
 
     // MARK: Private stuff
-    private func clearAndEnterText(data: String, element: XCUIElement, dx: CGFloat, dy: CGFloat) {
+    private func clearAndEnterText(data: String, element: XCUIElement, dx: CGFloat?, dy: CGFloat?) {
       let currentValue = element.value as? String
       var delete: String = ""
       if let value = currentValue {
         delete = String(repeating: XCUIKeyboardKey.delete.rawValue, count: value.count)
       }
 
-      // We need to tap at the end of the field to ensure the cursor is at the end
-      let coordinate = element.coordinate(withNormalizedOffset: CGVector(dx: dx, dy: dy))
+      // By default we tap at the end of the field to ensure the cursor is at the end
+      let coordinate = element.coordinate(
+        withNormalizedOffset: CGVector(dx: dx ?? 0.9, dy: dy ?? 0.9))
       coordinate.tap()
 
       element.typeText(delete + data)
