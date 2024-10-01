@@ -24,7 +24,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ["3.22.x"]
+        flutter-version: ["3.24.x"]
         flutter-channel: ["stable"]
 
     defaults:
