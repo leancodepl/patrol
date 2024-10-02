@@ -6,7 +6,7 @@ void main() {
 
     await $('Open webview (Hacker News)').scrollTo().tap();
 
-    await Future<void>.delayed(const Duration(seconds: 3));
+    await $.pump(Duration(seconds: 3));
 
     await $.native.tap(Selector(text: 'login'));
     await $.native.enterTextByIndex(
@@ -26,7 +26,7 @@ void main() {
 
     await $('Open webview (Hacker News)').scrollTo().tap();
 
-    await Future<void>.delayed(const Duration(seconds: 3));
+    await $.pump(Duration(seconds: 3));
 
     await $.native2.tap(
       NativeSelector(
@@ -34,14 +34,23 @@ void main() {
         ios: IOSSelector(label: 'login'),
       ),
     );
-    await $.native2.enterTextByIndex(
-      'test@leancode.pl',
-      index: 0,
+    await $.native2.enterText(
+      NativeSelector(
+        android: AndroidSelector(
+          className: 'android.widget.EditText',
+          instance: 0,
+        ),
+        ios: IOSSelector(elementType: IOSElementType.textField),
+      ),
+      text: 'test@leancode.pl',
       keyboardBehavior: KeyboardBehavior.showAndDismiss,
     );
     await $.native2.enterText(
       NativeSelector(
-        android: AndroidSelector(className: 'android.widget.EditText'),
+        android: AndroidSelector(
+          className: 'android.widget.EditText',
+          instance: 1,
+        ),
         ios: IOSSelector(elementType: IOSElementType.secureTextField),
       ),
       text: 'ny4ncat',

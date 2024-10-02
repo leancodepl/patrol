@@ -175,8 +175,8 @@
             inApp: request.appId,
             dismissKeyboard: request.keyboardBehavior == .showAndDismiss,
             withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) },
-            dx: request.dx ?? 0.9,
-            dy: request.dy ?? 0.9
+            dx: request.dx,
+            dy: request.dy
           )
         } else {
           throw PatrolError.internal("enterText(): neither index nor selector are set")

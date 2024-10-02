@@ -8,6 +8,8 @@ void main() {
 
       await $('Open webview (StackOverflow)').scrollTo().tap();
 
+      await $.pump(Duration(seconds: 2));
+
       try {
         await $.native.tap(Selector(text: 'Accept all cookies'));
       } on PatrolActionException catch (_) {
@@ -18,14 +20,22 @@ void main() {
       await $.pump(Duration(seconds: 2));
 
       // bug: using `Email` and `Password` selectors doesn't work (#1554)
-      await $.native.enterTextByIndex('test@leancode.pl', index: 0);
+      await $.native.enterTextByIndex(
+        'test@leancode.pl',
+        index: 0,
+        keyboardBehavior: KeyboardBehavior.alternative,
+      );
 
       await $.native.swipe(
         from: Offset(0.5, 0.5),
         to: Offset(0.5, 0.1),
       );
 
-      await $.native.enterTextByIndex('ny4ncat', index: 1);
+      await $.native.enterTextByIndex(
+        'ny4ncat',
+        index: 1,
+        keyboardBehavior: KeyboardBehavior.alternative,
+      );
       await $.native.tap(Selector(text: 'Log in'));
     },
   );
@@ -36,6 +46,8 @@ void main() {
       await createApp($);
 
       await $('Open webview (StackOverflow)').scrollTo().tap();
+
+      await $.pump(Duration(seconds: 2));
 
       try {
         await $.native2.tap(
@@ -57,14 +69,22 @@ void main() {
       await $.pump(Duration(seconds: 2));
 
       // bug: using `Email` and `Password` selectors doesn't work (#1554)
-      await $.native2.enterTextByIndex('test@leancode.pl', index: 0);
+      await $.native2.enterTextByIndex(
+        'test@leancode.pl',
+        index: 0,
+        keyboardBehavior: KeyboardBehavior.alternative,
+      );
 
       await $.native.swipe(
         from: Offset(0.5, 0.5),
         to: Offset(0.5, 0.1),
       );
 
-      await $.native2.enterTextByIndex('ny4ncat', index: 1);
+      await $.native2.enterTextByIndex(
+        'ny4ncat',
+        index: 1,
+        keyboardBehavior: KeyboardBehavior.alternative,
+      );
       await $.native2.tap(
         NativeSelector(
           android: AndroidSelector(text: 'Log in'),

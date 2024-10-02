@@ -1,5 +1,3 @@
-import 'dart:io' as io;
-
 import 'common.dart';
 
 void main() {
@@ -22,32 +20,28 @@ void main() {
     }
     await $.pumpAndSettle();
 
-    if (io.Platform.isIOS) {
-      await $.native2.scrollTo(
-        NativeSelector(
-          ios: IOSSelector(placeholderValue: 'Type your email'),
-        ),
-        maxScrolls: 20,
-      );
-    }
+    final emailInputSelector = NativeSelector(
+      android: AndroidSelector(className: 'android.widget.EditText'),
+      ios: IOSSelector(placeholderValue: 'Type your email'),
+    );
 
-    await $.pump(Duration(seconds: 5));
+    await $.native2.scrollTo(emailInputSelector, maxScrolls: 20);
+
+    await $.pump(Duration(seconds: 2));
 
     await $.native2.enterText(
-      NativeSelector(
-        android: AndroidSelector(className: 'android.widget.EditText'),
-        ios: IOSSelector(placeholderValue: 'Type your email'),
-      ),
+      emailInputSelector,
       text: 'test@leancode.pl',
-      keyboardBehavior: KeyboardBehavior.showAndDismiss,
+      keyboardBehavior: KeyboardBehavior.alternative,
       tapLocation: Offset(0.5, 0.5),
     );
 
-    await $.native2.tap(
-      NativeSelector(
-        android: AndroidSelector(text: 'Subscribe'),
-        ios: IOSSelector(label: 'Subscribe'),
-      ),
+    final subscribeButtonSelector = NativeSelector(
+      android: AndroidSelector(text: 'Subscribe'),
+      ios: IOSSelector(label: 'Subscribe'),
     );
+
+    await $.native2.scrollTo(subscribeButtonSelector);
+    await $.native2.tap(subscribeButtonSelector);
   });
 }

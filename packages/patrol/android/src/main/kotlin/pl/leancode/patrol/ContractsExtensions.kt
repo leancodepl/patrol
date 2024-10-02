@@ -252,10 +252,6 @@ fun AndroidSelector.toUiSelector(): UiSelector {
 }
 
 fun AndroidSelector.toBySelector(): BySelector {
-    if (hasInstance()) {
-        throw IllegalArgumentException("instance() argument is not supported for BySelector")
-    }
-
     var selector: BySelector? = null
 
     if (hasClassName()) {

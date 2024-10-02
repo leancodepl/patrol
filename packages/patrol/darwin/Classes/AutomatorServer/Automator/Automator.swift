@@ -216,8 +216,8 @@ extension Selector {
       inApp bundleId: String,
       dismissKeyboard: Bool,
       withTimeout timeout: TimeInterval?,
-      dx: CGFloat,
-      dy: CGFloat
+      dx: Double?,
+      dy: Double?
     ) throws
     func enterText(
       _ data: String,
@@ -225,8 +225,8 @@ extension Selector {
       inApp bundleId: String,
       dismissKeyboard: Bool,
       withTimeout timeout: TimeInterval?,
-      dx: CGFloat,
-      dy: CGFloat
+      dx: Double?,
+      dy: Double?
     ) throws
     func enterText(
       _ data: String,
@@ -234,8 +234,8 @@ extension Selector {
       inApp bundleId: String,
       dismissKeyboard: Bool,
       withTimeout timeout: TimeInterval?,
-      dx: CGFloat,
-      dy: CGFloat
+      dx: Double?,
+      dy: Double?
     ) throws
     func swipe(from start: CGVector, to end: CGVector, inApp bundleId: String) throws
     func scrollTo(

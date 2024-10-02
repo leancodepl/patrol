@@ -183,8 +183,8 @@
       inApp bundleId: String,
       dismissKeyboard: Bool,
       withTimeout timeout: TimeInterval?,
-      dx: CGFloat,
-      dy: CGFloat
+      dx: Double?,
+      dy: Double?
     ) throws {
       var data = data
       if dismissKeyboard {
@@ -238,8 +238,8 @@
       inApp bundleId: String,
       dismissKeyboard: Bool,
       withTimeout timeout: TimeInterval?,
-      dx: CGFloat,
-      dy: CGFloat
+      dx: Double?,
+      dy: Double?
     ) throws {
       var data = data
       if dismissKeyboard {
@@ -276,8 +276,8 @@
       inApp bundleId: String,
       dismissKeyboard: Bool,
       withTimeout timeout: TimeInterval?,
-      dx: CGFloat,
-      dy: CGFloat
+      dx: Double?,
+      dy: Double?
     ) throws {
       var data = data
       if dismissKeyboard {
@@ -924,7 +924,7 @@
     }
 
     // MARK: Private stuff
-    private func clearAndEnterText(data: String, element: XCUIElement, dx: CGFloat?, dy: CGFloat?) {
+    private func clearAndEnterText(data: String, element: XCUIElement, dx: Double?, dy: Double?) {
       let currentValue = element.value as? String
       var delete: String = ""
       if let value = currentValue {
@@ -949,8 +949,8 @@
         }
         let app = try self.getApp(withBundleId: bundleId)
 
-        let startCoordinate = app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.9))
-        let endCoordinate = app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.1))
+        let startCoordinate = app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.7))
+        let endCoordinate = app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.3))
         startCoordinate.press(forDuration: 0.1, thenDragTo: endCoordinate)
 
         attempts += 1  // Increment the scroll count after each scroll
