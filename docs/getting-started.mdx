@@ -184,6 +184,7 @@ Psst... Android is a bit easier to set up, so we recommend starting with it!
             }
             debug {
                 minifyEnabled false
+                shrinkResources false
             }
           }
         ```
@@ -487,32 +488,6 @@ up. To run `integration_test/example_test.dart` on a connected Android, iOS or m
         check out the [example app](https://github.com/leancodepl/patrol/tree/master/packages/patrol/example)
          in the patrol repository.
       </Info>
-
-## Troubleshooting Build Errors
-If you are experiencing following error while building your Android project:
-```
-FAILURE: Build failed with an exception.
-
-        * Where:
-        Build file '/Users/my.user/FlutterProjects/my_project/android/build.gradle' line: 13
-
-        * What went wrong:
-        A problem occurred evaluating root project 'android'.
-        > A problem occurred configuring project ':app'.
-           > Removing unused resources requires unused code shrinking to be turned on. See http://d.android.com/r/tools/shrink-resources.html for more information.
-```
-Try adding this piece of code to your `android/app/build.gradle`:
-```sh
-buildTypes {
-release {
-...
-}
-debug {
-shrinkResources false
-minifyEnabled false
-}
-}
-```
 
 ### FAQ
 
