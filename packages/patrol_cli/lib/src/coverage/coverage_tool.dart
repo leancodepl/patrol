@@ -18,11 +18,13 @@ import 'package:vm_service/vm_service_io.dart';
 class CoverageTool {
   CoverageTool({
     required FileSystem fs,
+    required Directory rootDirectory,
     required ProcessManager processManager,
     required Platform platform,
     required Adb adb,
     required DisposeScope parentDisposeScope,
   })  : _fs = fs,
+        _rootDirectory = rootDirectory,
         _processManager = processManager,
         _platform = platform,
         _adb = adb,
@@ -31,6 +33,7 @@ class CoverageTool {
   }
 
   final FileSystem _fs;
+  final Directory _rootDirectory;
   final ProcessManager _processManager;
   final Platform _platform;
   final Adb _adb;
@@ -106,7 +109,7 @@ class CoverageTool {
         logger.info('All coverage gathered, saving');
         final report = hitMap.formatLcov(
           await coverage.Resolver.create(
-            packagePath: _fs.currentDirectory.path,
+            packagePath: _rootDirectory.path,
           ),
           ignoreGlobs: ignoreGlobs,
         );

@@ -103,11 +103,13 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         ) {
     final adb = Adb();
 
+    final rootDirectory = findRootDirectory(_fs) ?? _fs.currentDirectory;
+
     final androidTestBackend = AndroidTestBackend(
       adb: adb,
       processManager: _processManager,
       platform: _platform,
-      fs: _fs,
+      rootDirectory: rootDirectory,
       parentDisposeScope: _disposeScope,
       logger: _logger,
     );
@@ -116,6 +118,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
       processManager: _processManager,
       platform: _platform,
       fs: _fs,
+      rootDirectory: rootDirectory,
       parentDisposeScope: _disposeScope,
       logger: _logger,
     );
@@ -124,15 +127,19 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
       processManager: _processManager,
       platform: _platform,
       fs: _fs,
+      rootDirectory: rootDirectory,
       parentDisposeScope: _disposeScope,
       logger: _logger,
     );
 
     final testBundler = TestBundler(
-      projectRoot: _fs.currentDirectory,
+      projectRoot: rootDirectory,
       logger: _logger,
     );
-    final testFinder = TestFinder(testDir: _fs.directory('integration_test'));
+
+    final testFinder = TestFinder(
+      testDir: rootDirectory.childDirectory('integration_test'),
+    );
 
     final deviceFinder = DeviceFinder(
       processManager: _processManager,
@@ -144,8 +151,8 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
       BuildCommand(
         testFinder: testFinder,
         testBundler: testBundler,
-        dartDefinesReader: DartDefinesReader(projectRoot: _fs.currentDirectory),
-        pubspecReader: PubspecReader(projectRoot: _fs.currentDirectory),
+        dartDefinesReader: DartDefinesReader(projectRoot: rootDirectory),
+        pubspecReader: PubspecReader(projectRoot: rootDirectory),
         androidTestBackend: androidTestBackend,
         iosTestBackend: iosTestBackend,
         macosTestBackend: macosTestBackend,
@@ -159,13 +166,13 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         deviceFinder: deviceFinder,
         testFinder: testFinder,
         testBundler: testBundler,
-        dartDefinesReader: DartDefinesReader(projectRoot: _fs.currentDirectory),
+        dartDefinesReader: DartDefinesReader(projectRoot: rootDirectory),
         compatibilityChecker: CompatibilityChecker(
-          projectRoot: _fs.currentDirectory,
+          projectRoot: rootDirectory,
           processManager: _processManager,
           logger: _logger,
         ),
-        pubspecReader: PubspecReader(projectRoot: _fs.currentDirectory),
+        pubspecReader: PubspecReader(projectRoot: rootDirectory),
         flutterTool: FlutterTool(
           stdin: stdin,
           processManager: _processManager,
@@ -186,18 +193,19 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         deviceFinder: deviceFinder,
         testBundler: testBundler,
         testFinder: testFinder,
-        dartDefinesReader: DartDefinesReader(projectRoot: _fs.currentDirectory),
+        dartDefinesReader: DartDefinesReader(projectRoot: rootDirectory),
         compatibilityChecker: CompatibilityChecker(
-          projectRoot: _fs.currentDirectory,
+          projectRoot: rootDirectory,
           processManager: _processManager,
           logger: _logger,
         ),
-        pubspecReader: PubspecReader(projectRoot: _fs.currentDirectory),
+        pubspecReader: PubspecReader(projectRoot: rootDirectory),
         androidTestBackend: androidTestBackend,
         iosTestBackend: iosTestBackend,
         macOSTestBackend: macosTestBackend,
         coverageTool: CoverageTool(
           fs: _fs,
+          rootDirectory: rootDirectory,
           processManager: _processManager,
           platform: platform,
           adb: adb,
@@ -435,5 +443,22 @@ ${lightYellow.wrap('Update available!')} ${lightCyan.wrap(constants.version)} \u
 Run ${lightCyan.wrap('patrol update')} to update''',
       )
       ..info('');
+  }
+}
+
+// from: https://github.com/flutter/flutter/blob/285b9b11ec0d888078317445e56d6c1da397f5cd/packages/flutter_tools/lib/src/base/os.dart#L613
+Directory? findRootDirectory(FileSystem fileSystem) {
+  const kProjectRootSentinel = 'pubspec.yaml';
+  final directory = fileSystem.currentDirectory.path;
+  var currentDirectory = fileSystem.directory(directory).absolute;
+  while (true) {
+    if (currentDirectory.childFile(kProjectRootSentinel).existsSync()) {
+      return currentDirectory;
+    }
+    if (!currentDirectory.existsSync() ||
+        currentDirectory.parent.path == currentDirectory.path) {
+      return null;
+    }
+    currentDirectory = currentDirectory.parent;
   }
 }
