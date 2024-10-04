@@ -21,6 +21,12 @@ void main() {
 
       // bug: using `Email` and `Password` selectors doesn't work (#1554)
       await $.native.enterTextByIndex('test@leancode.pl', index: 0);
+
+      await $.native.swipe(
+        from: Offset(0.5, 0.5),
+        to: Offset(0.5, 0.1),
+      );
+
       await $.native.enterTextByIndex('ny4ncat', index: 1);
       await $.native.tap(Selector(text: 'Log in'));
     },
@@ -56,6 +62,12 @@ void main() {
 
       // bug: using `Email` and `Password` selectors doesn't work (#1554)
       await $.native2.enterTextByIndex('test@leancode.pl', index: 0);
+
+      await $.native.swipe(
+        from: Offset(0.5, 0.5),
+        to: Offset(0.5, 0.1),
+      );
+
       await $.native2.enterTextByIndex('ny4ncat', index: 1);
       await $.native2.tap(
         NativeSelector(
