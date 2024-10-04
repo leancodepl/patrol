@@ -29,6 +29,7 @@ abstract class NativeAutomatorServer {
     abstract fun tapAt(request: Contracts.TapAtRequest)
     abstract fun enterText(request: Contracts.EnterTextRequest)
     abstract fun swipe(request: Contracts.SwipeRequest)
+    abstract fun scrollTo(request: Contracts.ScrollToRequest)
     abstract fun waitUntilVisible(request: Contracts.WaitUntilVisibleRequest)
     abstract fun pressVolumeUp()
     abstract fun pressVolumeDown()
@@ -129,6 +130,11 @@ abstract class NativeAutomatorServer {
       "swipe" bind POST to {
         val body = json.fromJson(it.bodyString(), Contracts.SwipeRequest::class.java)
         swipe(body)
+        Response(OK)
+      },
+      "scrollTo" bind POST to {
+        val body = json.fromJson(it.bodyString(), Contracts.ScrollToRequest::class.java)
+        scrollTo(body)
         Response(OK)
       },
       "waitUntilVisible" bind POST to {

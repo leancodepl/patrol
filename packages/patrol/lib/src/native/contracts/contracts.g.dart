@@ -656,6 +656,31 @@ Map<String, dynamic> _$WaitUntilVisibleRequestToJson(
       'timeoutMillis': instance.timeoutMillis,
     };
 
+ScrollToRequest _$ScrollToRequestFromJson(Map<String, dynamic> json) =>
+    ScrollToRequest(
+      selector: json['selector'] == null
+          ? null
+          : Selector.fromJson(json['selector'] as Map<String, dynamic>),
+      androidSelector: json['androidSelector'] == null
+          ? null
+          : AndroidSelector.fromJson(
+              json['androidSelector'] as Map<String, dynamic>),
+      iosSelector: json['iosSelector'] == null
+          ? null
+          : IOSSelector.fromJson(json['iosSelector'] as Map<String, dynamic>),
+      appId: json['appId'] as String,
+      maxScrolls: (json['maxScrolls'] as num).toInt(),
+    );
+
+Map<String, dynamic> _$ScrollToRequestToJson(ScrollToRequest instance) =>
+    <String, dynamic>{
+      'selector': instance.selector,
+      'androidSelector': instance.androidSelector,
+      'iosSelector': instance.iosSelector,
+      'appId': instance.appId,
+      'maxScrolls': instance.maxScrolls,
+    };
+
 DarkModeRequest _$DarkModeRequestFromJson(Map<String, dynamic> json) =>
     DarkModeRequest(
       appId: json['appId'] as String,

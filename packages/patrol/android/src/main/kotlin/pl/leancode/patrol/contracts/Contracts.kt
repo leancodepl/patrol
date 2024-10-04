@@ -557,6 +557,12 @@ class Contracts {
     fun hasTimeoutMillis(): Boolean {
       return timeoutMillis != null
     }
+    fun hasDx(): Boolean {
+      return dx != null
+    }
+    fun hasDy(): Boolean {
+      return dy != null
+    }
   }
 
   data class SwipeRequest (
@@ -586,6 +592,24 @@ class Contracts {
     }
     fun hasTimeoutMillis(): Boolean {
       return timeoutMillis != null
+    }
+  }
+
+  data class ScrollToRequest (
+    val selector: Selector? = null,
+    val androidSelector: AndroidSelector? = null,
+    val iosSelector: IOSSelector? = null,
+    val appId: String,
+    val maxScrolls: Long
+  ){
+    fun hasSelector(): Boolean {
+      return selector != null
+    }
+    fun hasAndroidSelector(): Boolean {
+      return androidSelector != null
+    }
+    fun hasIosSelector(): Boolean {
+      return iosSelector != null
     }
   }
 

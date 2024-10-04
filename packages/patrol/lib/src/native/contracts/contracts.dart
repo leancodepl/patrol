@@ -1050,6 +1050,37 @@ class WaitUntilVisibleRequest with EquatableMixin {
 }
 
 @JsonSerializable()
+class ScrollToRequest with EquatableMixin {
+  ScrollToRequest({
+    this.selector,
+    this.androidSelector,
+    this.iosSelector,
+    required this.appId,
+    required this.maxScrolls,
+  });
+
+  factory ScrollToRequest.fromJson(Map<String, dynamic> json) =>
+      _$ScrollToRequestFromJson(json);
+
+  final Selector? selector;
+  final AndroidSelector? androidSelector;
+  final IOSSelector? iosSelector;
+  final String appId;
+  final int maxScrolls;
+
+  Map<String, dynamic> toJson() => _$ScrollToRequestToJson(this);
+
+  @override
+  List<Object?> get props => [
+        selector,
+        androidSelector,
+        iosSelector,
+        appId,
+        maxScrolls,
+      ];
+}
+
+@JsonSerializable()
 class DarkModeRequest with EquatableMixin {
   DarkModeRequest({
     required this.appId,

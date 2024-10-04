@@ -16,11 +16,13 @@ import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.BySelector
 import androidx.test.uiautomator.Configurator
+import androidx.test.uiautomator.Direction
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiObject
 import androidx.test.uiautomator.UiObject2
 import androidx.test.uiautomator.UiObjectNotFoundException
 import androidx.test.uiautomator.UiSelector
+import androidx.test.uiautomator.Until
 import pl.leancode.patrol.contracts.Contracts.AndroidNativeView
 import pl.leancode.patrol.contracts.Contracts.AndroidSelector
 import pl.leancode.patrol.contracts.Contracts.KeyboardBehavior
@@ -373,7 +375,7 @@ class Automator private constructor() {
             uiDevice.click(x.toInt(), y.toInt())
         }
 
-        uiObject.text = text
+        uiObject.setText(text)
 
         if (keyboardBehavior == KeyboardBehavior.showAndDismiss) {
             pressBack() // Hide keyboard.
@@ -411,7 +413,7 @@ class Automator private constructor() {
             uiDevice.click(x.toInt(), y.toInt())
         }
 
-        uiObject.text = text
+        uiObject.setText(text)
 
         if (keyboardBehavior == KeyboardBehavior.showAndDismiss) {
             pressBack() // Hide keyboard.
@@ -449,6 +451,20 @@ class Automator private constructor() {
         }
 
         delay()
+    }
+
+    fun scrollTo(bySelector: BySelector) {
+        Logger.d("scrollTo(): $bySelector")
+
+        val scrollableSelector = By.scrollable(true)
+
+        waitForView(scrollableSelector, 0)
+
+        val scrollableUiObject = uiDevice.findObject(scrollableSelector)
+            ?: throw UiObjectNotFoundException("$scrollableSelector")
+
+        scrollableUiObject.scrollUntil(Direction.DOWN, Until.findObject(bySelector))
+            ?: throw UiObjectNotFoundException("$bySelector")
     }
 
     fun waitUntilVisible(uiSelector: UiSelector, bySelector: BySelector, index: Int, timeout: Long? = null) {

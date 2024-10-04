@@ -1,27 +1,6 @@
 import 'common.dart';
 
 void main() {
-  patrol('interacts with the LeanCode website in a webview', ($) async {
-    await createApp($);
-
-    await $('Open webview (LeanCode)').scrollTo().tap();
-    await $.pump(Duration(seconds: 8));
-
-    try {
-      await $.native.tap(Selector(text: 'Accept cookies'));
-    } on PatrolActionException catch (_) {
-      // ignore
-    }
-    await $.pumpAndSettle();
-
-    await $.native.enterTextByIndex(
-      'test@leancode.pl',
-      index: 0,
-      keyboardBehavior: KeyboardBehavior.showAndDismiss,
-    );
-    await $.native.tap(Selector(text: 'Subscribe'));
-  });
-
   patrol('interacts with the LeanCode website in a webview native2', ($) async {
     await createApp($);
 
@@ -32,8 +11,8 @@ void main() {
     try {
       await $.native2.tap(
         NativeSelector(
-          android: AndroidSelector(text: 'Accept cookies'),
-          ios: IOSSelector(label: 'Accept cookies'),
+          android: AndroidSelector(text: 'ACCEPT ALL COOKIES'),
+          ios: IOSSelector(label: 'ACCEPT ALL COOKIES'),
         ),
       );
     } on PatrolActionException catch (_) {
@@ -41,16 +20,28 @@ void main() {
     }
     await $.pumpAndSettle();
 
-    await $.native2.enterTextByIndex(
-      'test@leancode.pl',
-      index: 0,
-      keyboardBehavior: KeyboardBehavior.showAndDismiss,
+    final emailInputSelector = NativeSelector(
+      android: AndroidSelector(className: 'android.widget.EditText'),
+      ios: IOSSelector(placeholderValue: 'Type your email'),
     );
-    await $.native2.tap(
-      NativeSelector(
-        android: AndroidSelector(text: 'Subscribe'),
-        ios: IOSSelector(label: 'Subscribe'),
-      ),
+
+    await $.native2.scrollTo(emailInputSelector, maxScrolls: 20);
+
+    await $.pump(Duration(seconds: 2));
+
+    await $.native2.enterText(
+      emailInputSelector,
+      text: 'test@leancode.pl',
+      keyboardBehavior: KeyboardBehavior.alternative,
+      tapLocation: Offset(0.5, 0.5),
     );
+
+    final subscribeButtonSelector = NativeSelector(
+      android: AndroidSelector(text: 'Subscribe'),
+      ios: IOSSelector(label: 'Subscribe'),
+    );
+
+    await $.native2.scrollTo(subscribeButtonSelector);
+    await $.native2.tap(subscribeButtonSelector);
   });
 }

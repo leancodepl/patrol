@@ -183,8 +183,8 @@
       inApp bundleId: String,
       dismissKeyboard: Bool,
       withTimeout timeout: TimeInterval?,
-      dx: CGFloat,
-      dy: CGFloat
+      dx: Double?,
+      dy: Double?
     ) throws {
       var data = data
       if dismissKeyboard {
@@ -238,8 +238,8 @@
       inApp bundleId: String,
       dismissKeyboard: Bool,
       withTimeout timeout: TimeInterval?,
-      dx: CGFloat,
-      dy: CGFloat
+      dx: Double?,
+      dy: Double?
     ) throws {
       var data = data
       if dismissKeyboard {
@@ -276,8 +276,8 @@
       inApp bundleId: String,
       dismissKeyboard: Bool,
       withTimeout timeout: TimeInterval?,
-      dx: CGFloat,
-      dy: CGFloat
+      dx: Double?,
+      dy: Double?
     ) throws {
       var data = data
       if dismissKeyboard {
@@ -323,6 +323,54 @@
           withNormalizedOffset: CGVector(dx: start.dx, dy: start.dy))
         let endCoordinate = app.coordinate(withNormalizedOffset: CGVector(dx: end.dx, dy: end.dy))
         startCoordinate.press(forDuration: 0.1, thenDragTo: endCoordinate)
+      }
+    }
+
+    func scrollTo(
+      on selector: Selector, inApp bundleId: String, atIndex index: Int, maxScrolls scrolls: Int
+    ) throws {
+      var view = createLogMessage(element: "view", from: selector)
+      view += " in app \(bundleId)"
+
+      try runAction("scrolling to \(view)") {
+        let app = try self.getApp(withBundleId: bundleId)
+
+        let query = app.descendants(matching: .any).matching(selector.toNSPredicate())
+
+        Logger.shared.i("waiting for existence of \(view)")
+        guard
+          let element = self.waitFor(
+            query: query, index: selector.instance ?? 0, timeout: self.timeout)
+        else {
+          throw PatrolError.viewNotExists(view)
+        }
+
+        try self.scrollToElement(
+          element: element, bundleId: bundleId, index: index, scrolls: scrolls)
+      }
+    }
+
+    func scrollTo(
+      on selector: IOSSelector, inApp bundleId: String, atIndex index: Int, maxScrolls scrolls: Int
+    ) throws {
+      var view = createLogMessage(element: "view", from: selector)
+      view += " in app \(bundleId)"
+
+      try runAction("scrolling to \(view)") {
+        let app = try self.getApp(withBundleId: bundleId)
+
+        let query = app.descendants(matching: .any).matching(selector.toNSPredicate())
+
+        Logger.shared.i("waiting for existence of \(view)")
+        guard
+          let element = self.waitFor(
+            query: query, index: selector.instance ?? 0, timeout: self.timeout)
+        else {
+          throw PatrolError.viewNotExists(view)
+        }
+
+        try self.scrollToElement(
+          element: element, bundleId: bundleId, index: index, scrolls: scrolls)
       }
     }
 
@@ -876,18 +924,47 @@
     }
 
     // MARK: Private stuff
-    private func clearAndEnterText(data: String, element: XCUIElement, dx: CGFloat, dy: CGFloat) {
+    private func clearAndEnterText(data: String, element: XCUIElement, dx: Double?, dy: Double?) {
       let currentValue = element.value as? String
       var delete: String = ""
       if let value = currentValue {
         delete = String(repeating: XCUIKeyboardKey.delete.rawValue, count: value.count)
       }
 
-      // We need to tap at the end of the field to ensure the cursor is at the end
-      let coordinate = element.coordinate(withNormalizedOffset: CGVector(dx: dx, dy: dy))
+      // By default we tap at the end of the field to ensure the cursor is at the end
+      let coordinate = element.coordinate(
+        withNormalizedOffset: CGVector(dx: dx ?? 0.9, dy: dy ?? 0.9))
       coordinate.tap()
 
       element.typeText(delete + data)
+    }
+
+    private func scrollToElement(element: XCUIElement, bundleId: String, index: Int, scrolls: Int)
+      throws
+    {
+      var attempts = 0  // Track the number of scrolls
+      while try isVisible(element: element, bundleId: bundleId, index: index) == false {
+        if attempts >= scrolls {
+          throw PatrolError.viewNotExists("Element not found after \(scrolls) scrolls.")
+        }
+        let app = try self.getApp(withBundleId: bundleId)
+
+        let startCoordinate = app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.7))
+        let endCoordinate = app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.3))
+        startCoordinate.press(forDuration: 0.1, thenDragTo: endCoordinate)
+
+        attempts += 1  // Increment the scroll count after each scroll
+      }
+    }
+
+    private func isVisible(element: XCUIElement, bundleId: String, index: Int) throws -> Bool {
+      let app = try self.getApp(withBundleId: bundleId)
+
+      guard element.exists && element.isHittable && !CGRectIsEmpty(element.frame) else {
+        return false
+      }
+
+      return CGRectContainsRect(app.windows.element(boundBy: index).frame, element.frame)
     }
 
     private func isSimulator() -> Bool {

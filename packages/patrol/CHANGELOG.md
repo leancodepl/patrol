@@ -1,8 +1,15 @@
+## 3.12.0
+
+- Add native `scrollTo` method. (#2343)
+- Updated Flutter version to >=3.24.0 (#2343)
+- Bump `compileSdk` to 34. (#2343)
+
 ## 3.11.0
 
 - Add code coverage collection support. (#2294)
 - No throw error in `selectFineLocation` when it's already selected. (#2302)
 - Add option to select tap location in `enterText` and `enterTextByIndex` (#2312)
+
 This version requires version 3.2.0 of `patrol/patrol_cli` package.
 
 ## 3.10.0

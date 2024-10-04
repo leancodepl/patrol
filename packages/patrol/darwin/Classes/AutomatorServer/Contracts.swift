@@ -318,8 +318,8 @@ public struct EnterTextRequest: Codable {
   public var iosSelector: IOSSelector?
   public var keyboardBehavior: KeyboardBehavior
   public var timeoutMillis: Int?
-  public var dx: Double
-  public var dy: Double
+  public var dx: Double?
+  public var dy: Double?
 }
 
 public struct SwipeRequest: Codable {
@@ -337,6 +337,14 @@ public struct WaitUntilVisibleRequest: Codable {
   public var iosSelector: IOSSelector?
   public var appId: String
   public var timeoutMillis: Int?
+}
+
+public struct ScrollToRequest: Codable {
+  public var selector: Selector?
+  public var androidSelector: AndroidSelector?
+  public var iosSelector: IOSSelector?
+  public var appId: String
+  public var maxScrolls: Int
 }
 
 public struct DarkModeRequest: Codable {

@@ -262,6 +262,20 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
         )
     }
 
+    override fun scrollTo(request: Contracts.ScrollToRequest) {
+        if (request.selector != null) {
+            automation.scrollTo(
+                bySelector = request.selector.toBySelector()
+            )
+        } else if (request.androidSelector != null) {
+            automation.scrollTo(
+                bySelector = request.androidSelector.toBySelector()
+            )
+        } else {
+            throw PatrolException("scrollTo(): neither selector nor androidSelector are set")
+        }
+    }
+
     override fun waitUntilVisible(request: WaitUntilVisibleRequest) {
         if (request.selector != null) {
             automation.waitUntilVisible(

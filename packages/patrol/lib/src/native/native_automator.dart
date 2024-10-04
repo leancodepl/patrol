@@ -7,6 +7,9 @@ import 'package:patrol/src/native/contracts/contracts.dart' as contracts;
 import 'package:patrol/src/native/contracts/contracts.dart';
 import 'package:patrol/src/native/contracts/native_automator_client.dart';
 
+/// Default maximum number of drags during scrolling.
+const _defaultScrollMaxIteration = 15;
+
 /// Thrown when a native action fails.
 class PatrolActionException implements Exception {
   /// Creates a new [PatrolActionException].
@@ -763,6 +766,35 @@ class NativeAutomator {
           endY: to.dy,
           steps: steps,
           appId: appId ?? resolvedAppId,
+        ),
+      ),
+    );
+  }
+
+  /// Scrolls down until finds the native view specified by [selector].
+  ///
+  /// On iOS:
+  /// Performs [maxScrolls] number of scrolls before giving up.
+  /// If [maxScrolls] is not specified, it utilizes the
+  /// [_defaultScrollMaxIteration] duration from the configuration.
+  ///
+  /// On Android:
+  /// Scrolls to bottom while searching for the view. If the view is not found
+  /// until the end, it throws an exception.
+  ///
+  /// [Selector.instance] field is ignored on Android.
+  Future<void> scrollTo(
+    Selector selector, {
+    String? appId,
+    int? maxScrolls,
+  }) async {
+    await _wrapRequest(
+      'scrollTo',
+      () => _client.scrollTo(
+        ScrollToRequest(
+          selector: selector,
+          appId: appId ?? resolvedAppId,
+          maxScrolls: maxScrolls ?? _defaultScrollMaxIteration,
         ),
       ),
     );

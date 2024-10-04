@@ -194,6 +194,28 @@
       }
     }
 
+    func scrollTo(request: ScrollToRequest) throws {
+      return try runCatching {
+        if let selector = request.selector {
+          return try automator.scrollTo(
+            on: selector,
+            inApp: request.appId,
+            atIndex: request.selector?.instance ?? 0,
+            maxScrolls: request.maxScrolls
+          )
+        } else if let iosSelector = request.iosSelector {
+          return try automator.scrollTo(
+            on: iosSelector,
+            inApp: request.appId,
+            atIndex: request.iosSelector?.instance ?? 0,
+            maxScrolls: request.maxScrolls
+          )
+        } else {
+          throw PatrolError.internal("scrollTo(): neither selector nor iosSelector are set")
+        }
+      }
+    }
+
     func waitUntilVisible(request: WaitUntilVisibleRequest) throws {
       return try runCatching {
         if let selector = request.selector {

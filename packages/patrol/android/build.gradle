@@ -35,7 +35,7 @@ allprojects {
 
 android {
     namespace "pl.leancode.patrol"
-    compileSdk 33
+    compileSdk 34
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -67,7 +67,7 @@ android {
 
         api "androidx.test:runner:1.5.1"
         api "androidx.test.espresso:espresso-core:3.5.0"
-        api "androidx.test.uiautomator:uiautomator:2.2.0"
+        api "androidx.test.uiautomator:uiautomator:2.3.0"
 
         // We need to downgrade http4k-bom to 4.48.0.0 because apps with kotlin version (ext.kotlin_version) lower than 1.8 
         // end up with compile-time errors. We can find more details in a similar problem:
