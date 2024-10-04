@@ -1,7 +1,8 @@
-# 3.2.0
+## 3.2.0
 
 - Add code coverage collection support (#2294)
-This version requires version 3.11.0 of `patrol/patrol` package.
+
+This version requires version 3.11.0 of `patrol` package.
 
 ## 3.1.1
 

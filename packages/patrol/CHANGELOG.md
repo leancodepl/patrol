@@ -3,7 +3,8 @@
 - Add code coverage collection support. (#2294)
 - No throw error in `selectFineLocation` when it's already selected. (#2302)
 - Add option to select tap location in `enterText` and `enterTextByIndex` (#2312)
-This version requires version 3.2.0 of `patrol/patrol_cli` package.
+
+This version requires version 3.2.0 of `patrol_cli` package.
 
 ## 3.10.0
 
