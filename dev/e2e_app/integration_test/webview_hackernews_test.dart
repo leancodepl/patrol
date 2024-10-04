@@ -6,7 +6,7 @@ void main() {
 
     await $('Open webview (Hacker News)').scrollTo().tap();
 
-    await Future<void>.delayed(const Duration(seconds: 3));
+    await $.pump(Duration(seconds: 5));
 
     await $.native.tap(Selector(text: 'login'));
     await $.native.enterTextByIndex(
@@ -26,7 +26,7 @@ void main() {
 
     await $('Open webview (Hacker News)').scrollTo().tap();
 
-    await Future<void>.delayed(const Duration(seconds: 3));
+    await $.pump(Duration(seconds: 5));
 
     await $.native2.tap(
       NativeSelector(

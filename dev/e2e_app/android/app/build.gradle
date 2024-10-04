@@ -23,7 +23,7 @@ if (flutterVersionName == null) {
 }
 
 android {
-    compileSdk 33
+    compileSdk 34
     namespace "pl.leancode.patrol.e2e_app"
 
     kotlinOptions {
@@ -36,7 +36,7 @@ android {
 
     defaultConfig {
         applicationId "pl.leancode.patrol.e2e_app"
-        minSdk 21
+        minSdk 24
         targetSdk 33
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
