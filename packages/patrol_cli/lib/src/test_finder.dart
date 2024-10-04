@@ -8,7 +8,7 @@ const _kDefaultTestFileSuffix = '_test.dart';
 class TestFinder {
   TestFinder({required Directory testDir})
       : _integrationTestDirectory = testDir,
-        _fs = testDir.fileSystem;
+        _fs = testDir.fileSystem..currentDirectory = testDir.parent;
 
   final Directory _integrationTestDirectory;
   final FileSystem _fs;
