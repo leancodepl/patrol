@@ -168,6 +168,32 @@ cd packages/patrol_cli
 flutter pub global activate -s path .
 ```
 
+## Troubleshooting Build Errors
+If you are experiencing following error while building your Android project:
+```
+FAILURE: Build failed with an exception.
+
+        * Where:
+        Build file '/Users/my.user/FlutterProjects/my_project/android/build.gradle' line: 13
+
+        * What went wrong:
+        A problem occurred evaluating root project 'android'.
+        > A problem occurred configuring project ':app'.
+           > Removing unused resources requires unused code shrinking to be turned on. See http://d.android.com/r/tools/shrink-resources.html for more information.
+```
+Try adding this piece of code to your `android/app/build.gradle`:
+```sh
+buildTypes {
+release {
+...
+}
+debug {
+shrinkResources false
+minifyEnabled false
+}
+}
+```
+
 [patrol_badge]: https://img.shields.io/pub/v/patrol?label=patrol
 [patrol_finders_badge]: https://img.shields.io/pub/v/patrol_finders?label=patrol_finders
 [patrol_cli_badge]: https://img.shields.io/pub/v/patrol_cli?label=patrol_cli
