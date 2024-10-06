@@ -30,6 +30,7 @@ void main() {
         'ny4ncat',
         index: 1,
         keyboardBehavior: KeyboardBehavior.alternative,
+        tapLocation: Offset(0.5, 0.5),
       );
       await $.native.tap(Selector(text: 'Log in'));
     },
@@ -74,6 +75,7 @@ void main() {
         'ny4ncat',
         index: 1,
         keyboardBehavior: KeyboardBehavior.alternative,
+        tapLocation: Offset(0.5, 0.5),
       );
       await $.native2.tap(
         NativeSelector(
