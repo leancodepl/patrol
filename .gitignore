@@ -1,6 +1,7 @@
 .DS_Store
 .idea
-.vscode/
+.vscode/*
+!.vscode/launch.json
 
 .flutter-plugins
 .flutter-plugins-dependencies
