@@ -23,7 +23,7 @@ void _test(Platform platform) {
       ..createSync(recursive: true);
     fs.currentDirectory = projectRoot;
 
-    testFinder = TestFinder(testDir: fs.directory('integration_test'));
+    testFinder = TestFinder(testDir: fs.directory('integration_test').absolute);
   });
 
   group('findTests', () {
