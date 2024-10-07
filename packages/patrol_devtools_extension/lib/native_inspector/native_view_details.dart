@@ -279,7 +279,7 @@ class _KeyValueItem {
   _KeyValueItem(this.key, Object? val) : important = val != null {
     value = switch (val) {
       null => 'null',
-      final String v => '"$v"',
+      final String v => "'$v'",
       _ => val.toString(),
     };
 
