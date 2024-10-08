@@ -1,3 +1,7 @@
+## 3.11.1
+
+- Replace whitespace in test case name in `PatrolJUnitRunner.java`. (#2361)
+
 ## 3.11.0
 
 - Add code coverage collection support. (#2294)
