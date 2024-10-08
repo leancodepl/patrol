@@ -115,8 +115,9 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
             List<DartGroupEntry> dartTestCases = ContractsExtensionsKt.listTestsFlat(dartTestGroup, "");
             List<String> dartTestCaseNamesList = new ArrayList<>();
             for (DartGroupEntry dartTestCase : dartTestCases) {
-                dartTestCaseSkipMap.put(dartTestCase.getName(), dartTestCase.getSkip());
-                dartTestCaseNamesList.add(dartTestCase.getName());
+                final String testName = dartTestCase.getName().replace(" ", "__");
+                dartTestCaseSkipMap.put(testName, dartTestCase.getSkip());
+                dartTestCaseNamesList.add(testName);
             }
             Object[] dartTestCaseNames = dartTestCaseNamesList.toArray();
             Logger.INSTANCE.i(TAG + "Got Dart tests: " + Arrays.toString(dartTestCaseNames));
@@ -142,7 +143,7 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
 
         try {
             Logger.INSTANCE.i(TAG + "Requested execution");
-            RunDartTestResponse response = patrolAppServiceClient.runDartTest(name);
+            RunDartTestResponse response = patrolAppServiceClient.runDartTest(name.replace("__", " "));
             if (response.getResult() == Contracts.RunDartTestResponseResult.failure) {
                 throw new AssertionError("Dart test failed: " + name + "\n" + response.getDetails());
             }
