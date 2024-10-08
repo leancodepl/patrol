@@ -1,12 +1,13 @@
 # Contributing
 
 If you're thinking about contributing to Patrol, thank you! We appreciate your help.
-Changes to Patrol CLI can be debugged using the following instructions:
+Changes to Patrol CLI can be debugged using the following configuration:
 
 ### Visual Studio Code
 
-Use our launch.json configuration changing the `cwd` value to the absolute path of the project you
-want to test and relative paths to the target tests in `args`.
+Use our `.vscode/launch.json` configuration changing the `cwd` value to the path of the project you
+want to test (if it's a project outside of `patrol`, use an absolute path). Update relative paths
+to the target tests in `args`.
 
 ```json
 {
@@ -30,9 +31,17 @@ want to test and relative paths to the target tests in `args`.
 
 ### Android Studio
 
-1. Click on `Edit Configurations` and add a `Dart Command Line App` configuration.
-2. Set the `Dart file` to the absolute path of your `patrol_cli/bin/main.dart`.
-3. Set the `Program arguments` to `test -t integration_test/example_test.dart` changing the
-   relative paths to your target tests.
-4. Set the `Working directory` to the absolute path of the project you want to test.
+Use our `.run/patrol_cli.run.xml` configuration changing the `working directory` value to the path of the
+project you want to test (if it's a project outside of `patrol`, use an absolute path). Update relative
+paths to the target tests in `arguments`.
 
+``` xml
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Patrol CLI" type="DartCommandLineRunConfigurationType" factoryName="Dart Command Line Application">
+    <option name="arguments" value="test -t integration_test/example_test.dart" />
+    <option name="filePath" value="$PROJECT_DIR$/packages/patrol_cli/bin/main.dart" />
+    <option name="workingDirectory" value="$PROJECT_DIR$/dev/e2e_app" />
+    <method v="2" />
+  </configuration>
+</component>
+```
