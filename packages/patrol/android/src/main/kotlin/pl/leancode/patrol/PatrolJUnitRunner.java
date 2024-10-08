@@ -35,6 +35,8 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
     public PatrolAppServiceClient patrolAppServiceClient;
     private Map<String, Boolean> dartTestCaseSkipMap = new HashMap<>();
 
+    private String spaceReplacement = "__";
+
     @Override
     protected boolean shouldWaitForActivitiesToComplete() {
         return false;
@@ -115,8 +117,9 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
             List<DartGroupEntry> dartTestCases = ContractsExtensionsKt.listTestsFlat(dartTestGroup, "");
             List<String> dartTestCaseNamesList = new ArrayList<>();
             for (DartGroupEntry dartTestCase : dartTestCases) {
-                dartTestCaseSkipMap.put(dartTestCase.getName(), dartTestCase.getSkip());
-                dartTestCaseNamesList.add(dartTestCase.getName());
+                final String testName = sanitizeTestCaseName(dartTestCase.getName());
+                dartTestCaseSkipMap.put(testName, dartTestCase.getSkip());
+                dartTestCaseNamesList.add(testName);
             }
             Object[] dartTestCaseNames = dartTestCaseNamesList.toArray();
             Logger.INSTANCE.i(TAG + "Got Dart tests: " + Arrays.toString(dartTestCaseNames));
@@ -142,7 +145,7 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
 
         try {
             Logger.INSTANCE.i(TAG + "Requested execution");
-            RunDartTestResponse response = patrolAppServiceClient.runDartTest(name);
+            RunDartTestResponse response = patrolAppServiceClient.runDartTest(originalTestCaseName(name));
             if (response.getResult() == Contracts.RunDartTestResponseResult.failure) {
                 throw new AssertionError("Dart test failed: " + name + "\n" + response.getDetails());
             }
@@ -151,5 +154,20 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
             Logger.INSTANCE.e(TAG + e.getMessage(), e.getCause());
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * We need to remove whitespaces from test case name in order to make in compatible with Orchestrator 1.5.0.
+     * New requirement can be observed (<a href="https://github.com/android/android-test/commit/8383d784e51dd67972f79f7738e19e7e99706d23">here</a>).
+     * */
+    private String sanitizeTestCaseName(String name) {
+        return name.replace(" ", spaceReplacement);
+    }
+
+    /**
+     * When calling test on dart side, we need to bring back original test case name.
+    * */
+    private String originalTestCaseName(String name) {
+        return name.replace(spaceReplacement, " ");
     }
 }
