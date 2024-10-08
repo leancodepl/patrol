@@ -6,11 +6,11 @@
         "request": "launch",
         "type": "dart",
         "program": "patrol/packages/patrol_cli/bin/main.dart",
-        "cwd": "absolute_path_to_my_project",
+        "cwd": "dev/e2e_app",
         "args": [
           "test",
           "-t",
-          "integration_test/overflow_test.dart",
+          "integration_test/example_test.dart",
         ]
       },
     ],
