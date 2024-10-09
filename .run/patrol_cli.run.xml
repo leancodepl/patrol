@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Patrol CLI" type="DartCommandLineRunConfigurationType" factoryName="Dart Command Line Application">
+  <configuration default="false" name="patrol_cli" type="DartCommandLineRunConfigurationType" factoryName="Dart Command Line Application">
     <option name="arguments" value="test -t integration_test/example_test.dart" />
     <option name="filePath" value="$PROJECT_DIR$/packages/patrol_cli/bin/main.dart" />
     <option name="workingDirectory" value="$PROJECT_DIR$/dev/e2e_app" />
