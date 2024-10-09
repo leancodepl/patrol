@@ -1,0 +1,17 @@
+{
+    "version": "0.1.0",
+    "configurations": [
+      {
+        "name": "Patrol CLI",
+        "request": "launch",
+        "type": "dart",
+        "program": "patrol/packages/patrol_cli/bin/main.dart",
+        "cwd": "dev/e2e_app",
+        "args": [
+          "test",
+          "-t",
+          "integration_test/example_test.dart",
+        ]
+      },
+    ],
+}
