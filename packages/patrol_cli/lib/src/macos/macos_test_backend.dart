@@ -54,11 +54,13 @@ class MacOSTestBackend {
     required ProcessManager processManager,
     required Platform platform,
     required FileSystem fs,
+    required Directory rootDirectory,
     required DisposeScope parentDisposeScope,
     required Logger logger,
   })  : _processManager = processManager,
         _platform = platform,
         _fs = fs,
+        _rootDirectory = rootDirectory,
         _disposeScope = DisposeScope(),
         _logger = logger {
     _disposeScope.disposedBy(parentDisposeScope);
@@ -69,6 +71,7 @@ class MacOSTestBackend {
   final ProcessManager _processManager;
   final Platform _platform;
   final FileSystem _fs;
+  final Directory _rootDirectory;
   final DisposeScope _disposeScope;
   final Logger _logger;
 
@@ -112,7 +115,7 @@ class MacOSTestBackend {
       process = await _processManager.start(
         options.buildForTestingInvocation(),
         runInShell: true,
-        workingDirectory: _fs.currentDirectory.childDirectory('macos').path,
+        workingDirectory: _rootDirectory.childDirectory('macos').path,
       )
         ..disposedBy(scope);
       process.listenStdOut((l) => _logger.detail('\t$l')).disposedBy(scope);
@@ -167,7 +170,7 @@ class MacOSTestBackend {
           'TEST_RUNNER_PATROL_TEST_PORT': options.testServerPort.toString(),
           'TEST_RUNNER_PATROL_APP_PORT': options.appServerPort.toString(),
         },
-        workingDirectory: _fs.currentDirectory.childDirectory('macos').path,
+        workingDirectory: _rootDirectory.childDirectory('macos').path,
       )
         ..disposedBy(_disposeScope);
       process.listenStdOut((l) => _logger.detail('\t$l')).disposedBy(scope);
@@ -200,7 +203,7 @@ class MacOSTestBackend {
 
     var root = 'build/macos_integ/Build/Products';
     if (absolutePath) {
-      root = join(_fs.currentDirectory.absolute.path, root);
+      root = join(_rootDirectory.absolute.path, root);
     }
     _logger.detail('Looking for .xctestrun matching ${glob.pattern} at $root');
     final files = await glob.listFileSystem(_fs, root: root).toList();
@@ -227,7 +230,7 @@ class MacOSTestBackend {
     return _fs
         .file(
           join(
-            _fs.currentDirectory.path,
+            _rootDirectory.path,
             'build',
             'macos_results_$timestamp.xcresult',
           ),

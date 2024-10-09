@@ -57,6 +57,7 @@ void main() {
         processManager: FakeProcessManager(),
         platform: FakePlatform(),
         fs: fs,
+        rootDirectory: fs.currentDirectory,
         parentDisposeScope: DisposeScope(),
         logger: FakeLogger(),
       );

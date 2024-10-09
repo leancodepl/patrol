@@ -8,7 +8,7 @@ const _kDefaultTestFileSuffix = '_test.dart';
 class TestFinder {
   TestFinder({required Directory testDir})
       : _integrationTestDirectory = testDir,
-        _fs = testDir.fileSystem;
+        _fs = testDir.fileSystem..currentDirectory = testDir.parent;
 
   final Directory _integrationTestDirectory;
   final FileSystem _fs;
@@ -85,6 +85,9 @@ class TestFinder {
       throwToolExit("Directory ${directory.path} doesn't exist");
     }
 
+    final absoluteExcludes =
+        excludes.map((e) => _fs.file(e).absolute.path).toSet();
+
     return directory
         .listSync(recursive: true, followLinks: false)
         .sorted((a, b) => a.path.compareTo(b.path))
@@ -99,7 +102,7 @@ class TestFinder {
         // Filter out excluded files
         .where((fileSystemEntity) {
           // TODO: Doesn't handle excluded passes as absolute paths
-          final isExcluded = excludes.contains(fileSystemEntity.path);
+          final isExcluded = absoluteExcludes.contains(fileSystemEntity.path);
           return !isExcluded;
         })
         .map((entity) => entity.absolute.path)

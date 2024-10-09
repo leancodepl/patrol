@@ -22,12 +22,12 @@ class AndroidTestBackend {
     required Adb adb,
     required ProcessManager processManager,
     required Platform platform,
-    required FileSystem fs,
+    required Directory rootDirectory,
     required DisposeScope parentDisposeScope,
     required Logger logger,
   })  : _adb = adb,
         _processManager = processManager,
-        _fs = fs,
+        _rootDirectory = rootDirectory,
         _platform = platform,
         _disposeScope = DisposeScope(),
         _logger = logger {
@@ -37,7 +37,7 @@ class AndroidTestBackend {
   final Adb _adb;
   final ProcessManager _processManager;
   final Platform _platform;
-  final FileSystem _fs;
+  final Directory _rootDirectory;
   final DisposeScope _disposeScope;
   final Logger _logger;
   late final String? javaPath;
@@ -58,7 +58,7 @@ class AndroidTestBackend {
       process = await _processManager.start(
         options.toGradleAssembleInvocation(isWindows: _platform.isWindows),
         runInShell: true,
-        workingDirectory: _fs.currentDirectory.childDirectory('android').path,
+        workingDirectory: _rootDirectory.childDirectory('android').path,
         environment: javaPath != null
             ? {
                 'JAVA_HOME': javaPath!,
@@ -84,7 +84,7 @@ class AndroidTestBackend {
       process = await _processManager.start(
         options.toGradleAssembleTestInvocation(isWindows: _platform.isWindows),
         runInShell: true,
-        workingDirectory: _fs.currentDirectory.childDirectory('android').path,
+        workingDirectory: _rootDirectory.childDirectory('android').path,
         environment: javaPath != null
             ? {
                 'JAVA_HOME': javaPath!,
@@ -203,7 +203,7 @@ class AndroidTestBackend {
                 }
               : {},
         },
-        workingDirectory: _fs.currentDirectory.childDirectory('android').path,
+        workingDirectory: _rootDirectory.childDirectory('android').path,
       )
         ..disposedBy(scope);
       process.listenStdOut((l) => _logger.detail('\t: $l')).disposedBy(scope);
