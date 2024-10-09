@@ -103,7 +103,9 @@
       BOOL skip = [dartTest[@"skip"] boolValue];                                                                \
                                                                                                                 \
       IMP implementation = imp_implementationWithBlock(^(id _self) {                                            \
-        [[[XCUIApplication alloc] init] launch];                                                                \
+        XCUIApplication *app = [[XCUIApplication alloc] init];                                                  \
+        [app resetAuthorizationStatusForResource:XCUIProtectedResourceCamera];                                  \
+        [app launch];                                                                                           \
         if (skip) {                                                                                             \
           XCTSkip(@"Skip that test \"%@\"", dartTestName);                                                      \
         }                                                                                                       \
