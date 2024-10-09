@@ -1,3 +1,7 @@
+## Unreleased
+
+- Allow running Patrol tests from any subfolder of the project (#2351)
+
 ## 3.11.0
 
 - Add code coverage collection support. (#2294)
