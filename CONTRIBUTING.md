@@ -6,8 +6,7 @@ Changes to Patrol CLI can be debugged using the following configuration:
 ### Visual Studio Code
 
 Use our `.vscode/launch.json` configuration changing the `cwd` value to the path of the project you
-want to test (if it's a project outside of `patrol`, use an absolute path). Update relative paths
-to the target tests in `args`.
+want to test and updating paths to the target tests in `args`.
 
 ```json
 {
@@ -18,22 +17,22 @@ to the target tests in `args`.
       "request": "launch",
       "type": "dart",
       "program": "patrol/packages/patrol_cli/bin/main.dart",
-      "cwd": "absolute_path_to_my_project",
+      "cwd": "dev/e2e_app",
       "args": [
         "test",
         "-t",
-        "integration_test/example_test.dart"
+        "integration_test/example_test.dart",
       ]
-    }
-  ]
+    },
+  ],
 }
+
 ```
 
 ### Android Studio
 
 Use our `.run/patrol_cli.run.xml` configuration changing the `working directory` value to the path of the
-project you want to test (if it's a project outside of `patrol`, use an absolute path). Update relative
-paths to the target tests in `arguments`.
+project you want to test and updating paths to the target tests in `arguments`.
 
 ``` xml
 <component name="ProjectRunConfigurationManager">
