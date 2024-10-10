@@ -1,3 +1,6 @@
+// Uncomment to test `Multiple exceptions were thrown` issue
+// import 'package:flutter/widgets.dart';
+
 import 'common.dart';
 
 void main() {
@@ -5,5 +8,8 @@ void main() {
     await createApp($);
 
     await $('Open overflow screen').scrollTo().tap();
+
+    // Uncomment to test `Multiple exceptions were thrown` issue
+    // return $(ValueKey('key')).scrollTo().tap();
   });
 }

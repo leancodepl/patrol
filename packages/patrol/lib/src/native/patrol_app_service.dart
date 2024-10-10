@@ -153,17 +153,22 @@ class PatrolAppService extends PatrolAppServiceServer {
 
     final previousOnError = FlutterError.onError;
     FlutterError.onError = (details) {
-      final previousDetails =
-          switch (patrolBinding.testResults[request.name] as Failure?) {
+      final previousDetails = switch (patrolBinding.testResults[request.name]) {
         Failure(:final details?) => FlutterErrorDetails(exception: details),
         _ => null,
       };
+      final detailsAsString = (kReleaseMode && Platform.isIOS)
+          ? '${details.exceptionAsString()} \n ${details.stack}'
+          : details.toString();
 
       patrolBinding.testResults[request.name] = Failure(
         request.name,
-        '$details\n$previousDetails',
+        '$detailsAsString\n$previousDetails',
       );
+
+      previousOnError?.call(details);
     };
+
     final testExecutionResult = await testExecutionCompleted;
     if (!testExecutionResult.passed) {
       _patrolLog.log(

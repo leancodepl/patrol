@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+// Uncomment to test `Multiple exceptions were thrown` issue
+// import 'package:flutter/services.dart';
 
 class OverflowScreen extends StatelessWidget {
   const OverflowScreen({super.key});
@@ -12,12 +14,18 @@ class OverflowScreen extends StatelessWidget {
     // }
     //
     // Future<void> throwPlatformException() async {
-    //   await Future<void>.delayed(const Duration(milliseconds: 150));
+    //   await Future<void>.delayed(const Duration(milliseconds: 110));
     //   throw PlatformException(code: 'code');
+    // }
+    //
+    // Future<void> throwFormatException() async {
+    //   await Future<void>.delayed(const Duration(milliseconds: 120));
+    //   throw FormatException();
     // }
     //
     // throwStackOverflowException();
     // throwPlatformException();
+    // throwFormatException();
 
     return Scaffold(
       appBar: AppBar(

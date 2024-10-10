@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
-import 'dart:io' as io;
 import 'dart:isolate';
 
 import 'package:flutter/foundation.dart';
@@ -44,28 +43,6 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
   /// You most likely don't want to call it yourself.
   PatrolBinding(NativeAutomatorConfig config)
       : _serviceExtensions = DevtoolsServiceExtensions(config) {
-    final oldTestExceptionReporter = reportTestException;
-
-    /// Wraps the default test exception reporter to report the test results to
-    /// the native side of Patrol.
-    reportTestException = (details, testDescription) {
-      if (_currentDartTest case final testName?) {
-        assert(!constants.hotRestartEnabled);
-        // On iOS in release mode, diagnostics are compacted or truncated.
-        // We use the exceptionAsString() and stack to get the information
-        // about the exception. See [DiagnosticLevel].
-        final detailsAsString = (kReleaseMode && io.Platform.isIOS)
-            ? '${details.exceptionAsString()} \n ${details.stack}'
-            : details.toString();
-
-        testResults[testName] = Failure(
-          testDescription,
-          detailsAsString,
-        );
-      }
-      oldTestExceptionReporter(details, testDescription);
-    };
-
     setUp(() {
       if (constants.hotRestartEnabled) {
         return;
