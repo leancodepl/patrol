@@ -49,8 +49,7 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
     /// Wraps the default test exception reporter to report the test results to
     /// the native side of Patrol.
     reportTestException = (details, testDescription) {
-      final currentDartTest = _currentDartTest;
-      if (currentDartTest != null) {
+      if (_currentDartTest case final testName?) {
         assert(!constants.hotRestartEnabled);
         // On iOS in release mode, diagnostics are compacted or truncated.
         // We use the exceptionAsString() and stack to get the information
@@ -58,7 +57,8 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
         final detailsAsString = (kReleaseMode && io.Platform.isIOS)
             ? '${details.exceptionAsString()} \n ${details.stack}'
             : details.toString();
-        _testResults[currentDartTest] = Failure(
+
+        testResults[testName] = Failure(
           testDescription,
           detailsAsString,
         );
@@ -89,7 +89,7 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
         return;
       } else {
         logger(
-          'tearDown(): count: ${_testResults.length}, results: $_testResults',
+          'tearDown(): count: ${testResults.length}, results: $testResults',
         );
       }
 
@@ -127,8 +127,8 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
         await patrolAppService.markDartTestAsCompleted(
           dartFileName: _currentDartTest!,
           passed: passed,
-          details: _testResults[_currentDartTest!] is Failure
-              ? (_testResults[_currentDartTest!] as Failure?)?.details
+          details: testResults[_currentDartTest!] is Failure
+              ? (testResults[_currentDartTest!] as Failure?)?.details
               : null,
         );
       } else {
@@ -178,7 +178,7 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
 
   /// Keys are the test descriptions, and values are either [_success] or a
   /// [Failure].
-  final Map<String, Object> _testResults = <String, Object>{};
+  final Map<String, Object> testResults = <String, Object>{};
 
   final DevtoolsServiceExtensions _serviceExtensions;
 
@@ -235,7 +235,7 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
       invariantTester,
       description: description,
     );
-    _testResults[description] ??= _success;
+    testResults[description] ??= _success;
   }
 
   @override
