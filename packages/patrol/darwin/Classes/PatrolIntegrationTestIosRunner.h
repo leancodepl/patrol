@@ -60,9 +60,6 @@
     if (@available(iOS 15.0, *)) {                                                                              \
       [app resetAuthorizationStatusForResource:XCUIProtectedResourceUserTracking];                              \
       [app resetAuthorizationStatusForResource:XCUIProtectedResourceFocus];                                     \
-      [app resetAuthorizationStatusForResource:XCUIProtectedResourceRemovableVolumes];                          \
-      [app resetAuthorizationStatusForResource:XCUIProtectedResourceNetworkVolumes];                            \
-      [app resetAuthorizationStatusForResource:XCUIProtectedResourceAppleEvents];                               \
     }                                                                                                           \
     if (@available(iOS 15.4, *)) {                                                                              \
       [app resetAuthorizationStatusForResource:XCUIProtectedResourceLocalNetwork];                              \
