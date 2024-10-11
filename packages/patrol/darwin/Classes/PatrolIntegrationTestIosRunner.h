@@ -40,6 +40,7 @@
   }                                                                                                             \
                                                                                                                 \
   +(void)resetPermissions {                                                                                     \
+    XCUIApplication *app = [[XCUIApplication alloc] init];                                                      \
     if (@available(iOS 13.4, *)) {                                                                              \
       [app resetAuthorizationStatusForResource:XCUIProtectedResourceLocation];                                  \
       [app resetAuthorizationStatusForResource:XCUIProtectedResourceContacts];                                  \
