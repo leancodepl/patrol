@@ -20,7 +20,7 @@ class PTScaffold extends StatelessWidget {
     final top = this.top;
 
     return PopScope(
-      onPopInvoked: (didPop) => Future.value(false),
+      onPopInvokedWithResult: (_, __) => Future.value(false),
       child: Scaffold(
         backgroundColor: PTColors.textDark,
         body: DefaultTextStyle(
