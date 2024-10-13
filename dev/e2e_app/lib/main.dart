@@ -79,6 +79,7 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
       if (!context.mounted) {
         return;
       }
+
       Navigator.of(context).push(
         MaterialPageRoute<void>(
           builder: (_) => ApplinkScreen(
