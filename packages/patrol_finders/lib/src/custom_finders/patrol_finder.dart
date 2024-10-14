@@ -383,7 +383,7 @@ class PatrolFinder implements MatchFinder {
   ///
   /// Throws a [WaitUntilVisibleTimeoutException] if no widgets found.
   ///
-  /// Timeout is globally set by [PatrolTester.config.visibleTimeout]. If you
+  /// Timeout is globally set by [PatrolTesterConfig.visibleTimeout] inside [PatrolTester.config]. If you
   /// want to override this global setting, set [timeout].
   Future<PatrolFinder> waitUntilExists({Duration? timeout}) =>
       wrapWithPatrolLog(
@@ -401,7 +401,7 @@ class PatrolFinder implements MatchFinder {
   /// Throws a [WaitUntilVisibleTimeoutException] if more time than specified by
   /// timeout passed and no widgets were found.
   ///
-  /// Timeout is globally set by [PatrolTester.config.visibleTimeout]. If you
+  /// Timeout is globally set by [PatrolTesterConfig.visibleTimeout] inside [PatrolTester.config]. If you
   /// want to override this global setting, set [timeout].
   ///
   /// {@macro patrol_tester.alignment_on_visible_check}
