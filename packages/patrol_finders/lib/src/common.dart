@@ -1,5 +1,3 @@
-// ignore_for_file: invalid_use_of_internal_member, implementation_imports
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:meta/meta.dart';
 import 'package:patrol_finders/src/custom_finders/patrol_tester.dart';

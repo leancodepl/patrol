@@ -185,6 +185,7 @@ class PatrolTester {
         phase,
         timeout ?? config.settleTimeout,
       );
+      // We want to catch pumpAndSettle timeouts, so we can ignore them
       // ignore: avoid_catching_errors
     } on FlutterError catch (err) {
       if (err.message == 'pumpAndSettle timed out') {
