@@ -1,5 +1,3 @@
-// ignore_for_file: public_member_api_docs
-
 import 'dart:convert';
 
 import 'package:flutter/widgets.dart';
@@ -8,7 +6,9 @@ import 'package:patrol/src/native/contracts/contracts.dart';
 import 'package:patrol/src/native/contracts/native_automator_client.dart';
 import 'package:patrol/src/native/native_automator.dart';
 
+/// Devtools extension that fetches the native UI tree.
 class DevtoolsServiceExtensions {
+  /// Creates a new [DevtoolsServiceExtensions] based on the given [config].
   DevtoolsServiceExtensions(NativeAutomatorConfig config) {
     _client = NativeAutomatorClient(
       http.Client(),
@@ -24,6 +24,7 @@ class DevtoolsServiceExtensions {
   late final List<String>? _iosInstalledApps;
   late final NativeAutomatorClient _client;
 
+  /// Fetches the native UI tree based on the given [parameters].
   Future<Map<String, dynamic>> getNativeUITree(Map<String, String> parameters) {
     return _wrapRequest('getNativeUITree', () async {
       final res = await _client.getNativeUITree(
