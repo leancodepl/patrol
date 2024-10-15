@@ -2,7 +2,7 @@
 ///
 /// See also:
 ///  * https://developer.android.com/studio/command-line/adb
-library adb;
+library;
 
 export 'src/adb.dart';
 export 'src/exceptions.dart';
