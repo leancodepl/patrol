@@ -31,7 +31,7 @@ dev_dependencies:
   flutter_native_splash: ^2.3.6
   flutter_test:
     sdk: flutter
-  leancode_lint: ^14.1.0
+  leancode_lint: ^14.2.0
   patrol:
     path: ..
 

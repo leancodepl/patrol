@@ -34,7 +34,7 @@ dev_dependencies:
   build_runner: ^2.4.6
   custom_lint: ^0.6.4
   json_serializable: ^6.7.1
-  leancode_lint: ^14.1.0
+  leancode_lint: ^14.2.0
 
 flutter:
   plugin:
