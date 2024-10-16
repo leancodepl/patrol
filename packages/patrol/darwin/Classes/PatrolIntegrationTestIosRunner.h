@@ -39,6 +39,33 @@
     return true;                                                                                                \
   }                                                                                                             \
                                                                                                                 \
+  +(void)resetPermissions {                                                                                     \
+    XCUIApplication *app = [[XCUIApplication alloc] init];                                                      \
+    if (@available(iOS 13.4, *)) {                                                                              \
+      [app resetAuthorizationStatusForResource:XCUIProtectedResourceLocation];                                  \
+      [app resetAuthorizationStatusForResource:XCUIProtectedResourceContacts];                                  \
+      [app resetAuthorizationStatusForResource:XCUIProtectedResourceCalendar];                                  \
+      [app resetAuthorizationStatusForResource:XCUIProtectedResourceReminders];                                 \
+      [app resetAuthorizationStatusForResource:XCUIProtectedResourcePhotos];                                    \
+      [app resetAuthorizationStatusForResource:XCUIProtectedResourceBluetooth];                                 \
+      [app resetAuthorizationStatusForResource:XCUIProtectedResourceMicrophone];                                \
+      [app resetAuthorizationStatusForResource:XCUIProtectedResourceCamera];                                    \
+      [app resetAuthorizationStatusForResource:XCUIProtectedResourceHomeKit];                                   \
+      [app resetAuthorizationStatusForResource:XCUIProtectedResourceMediaLibrary];                              \
+      [app resetAuthorizationStatusForResource:XCUIProtectedResourceKeyboardNetwork];                           \
+    }                                                                                                           \
+    if (@available(iOS 14.0, *)) {                                                                              \
+      [app resetAuthorizationStatusForResource:XCUIProtectedResourceHealth];                                    \
+    }                                                                                                           \
+    if (@available(iOS 15.0, *)) {                                                                              \
+      [app resetAuthorizationStatusForResource:XCUIProtectedResourceUserTracking];                              \
+      [app resetAuthorizationStatusForResource:XCUIProtectedResourceFocus];                                     \
+    }                                                                                                           \
+    if (@available(iOS 15.4, *)) {                                                                              \
+      [app resetAuthorizationStatusForResource:XCUIProtectedResourceLocalNetwork];                              \
+    }                                                                                                           \
+  }                                                                                                             \
+                                                                                                                \
   +(NSArray<NSInvocation *> *)testInvocations {                                                                 \
     /* Start native automation server */                                                                        \
     PatrolServer *server = [[PatrolServer alloc] init];                                                         \
@@ -103,6 +130,7 @@
       BOOL skip = [dartTest[@"skip"] boolValue];                                                                \
                                                                                                                 \
       IMP implementation = imp_implementationWithBlock(^(id _self) {                                            \
+        [self resetPermissions];                                                                                \
         [[[XCUIApplication alloc] init] launch];                                                                \
         if (skip) {                                                                                             \
           XCTSkip(@"Skip that test \"%@\"", dartTestName);                                                      \
