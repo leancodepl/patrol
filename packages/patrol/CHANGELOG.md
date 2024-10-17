@@ -1,3 +1,7 @@
+## 3.12.0
+
+- Make `PatrolBinding`'s `testResults` public. (#2362)
+
 ## 3.11.1
 
 - Replace whitespace in test case name in `PatrolJUnitRunner.java`. (#2361)
