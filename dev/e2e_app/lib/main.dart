@@ -76,6 +76,9 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
   @override
   Widget build(BuildContext context) {
     _appLinks.uriLinkStream.listen((uri) {
+      if (!context.mounted) {
+        return;
+      }
       Navigator.of(context).push(
         MaterialPageRoute<void>(
           builder: (_) => ApplinkScreen(

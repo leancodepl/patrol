@@ -110,7 +110,7 @@ void main() {
         final result = await commandRunner.run(['--bar']);
         expect(result, equals(1));
         verify(
-          () => logger.err('Could not find an option named "bar".'),
+          () => logger.err('Could not find an option named "--bar".'),
         ).called(1);
         verify(
           () => logger.info(commandRunner.usageWithoutDescription),

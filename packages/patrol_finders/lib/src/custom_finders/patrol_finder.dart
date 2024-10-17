@@ -515,15 +515,18 @@ class PatrolFinder implements MatchFinder {
 
   @override
   Iterable<Element> apply(Iterable<Element> candidates) {
+    // Do we still need to use deprecated method?
     // ignore: deprecated_member_use
     return finder.apply(candidates);
   }
 
   @override
+  // Do we still need to use deprecated field?
   // ignore: deprecated_member_use
   String get description => finder.description;
 
   @override
+  // Do we still need to use deprecated method?
   // ignore: deprecated_member_use
   bool precache() => finder.precache();
 }
