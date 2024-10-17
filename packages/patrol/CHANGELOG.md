@@ -1,3 +1,7 @@
+## 3.11.2
+
+- Bump min Flutter SDK to 3.24.0 and Dart SDK to 3.5.0 (#2371)
+
 ## 3.11.1
 
 - Replace whitespace in test case name in `PatrolJUnitRunner.java`. (#2361)

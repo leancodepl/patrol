@@ -1,6 +1,7 @@
-## Unreleased
+## 3.2.1
 
 - Allow running Patrol tests from any subfolder of the project (#2351)
+- Bump min Flutter SDK to 3.24.0 and Dart SDK to 3.5.0 (#2371)
 
 ## 3.2.0
 
