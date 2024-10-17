@@ -1,3 +1,7 @@
+## 0.4.1
+
+- Bump minimum Dart SDK to version 3.5.0 (#2371)
+
 ## 0.4.0
 
 - Add `getForwardedPorts` method to `Adb` (#2332)
