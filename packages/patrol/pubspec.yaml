@@ -25,10 +25,10 @@ dependencies:
     sdk: flutter
   http: '^1.1.0'
   json_annotation: ^4.8.1
-  meta: ^1.10.0
+  meta: any
   patrol_finders: ^2.1.2
   shelf: ^1.4.1
-  test_api: '^0.7.0'
+  test_api: any
 
 dev_dependencies:
   build_runner: ^2.4.6
