@@ -16,43 +16,43 @@ class NativeViewDetails extends StatelessWidget {
   Widget build(BuildContext context) {
     return ScaffoldMessenger(
       child: Scaffold(
-        body: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const _HeaderDecoration(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: denseSpacing),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'Native view details',
-                      maxLines: 1,
-                    ),
-                  ),
+        body: currentNode == null
+            ? Container(
+                alignment: Alignment.center,
+                padding: const EdgeInsets.all(densePadding),
+                child: const Text(
+                  'Select a node to view its details',
+                  textAlign: TextAlign.center,
+                  maxLines: 4,
                 ),
-              ),
-            ),
-            Expanded(
-              child: currentNode != null
-                  ? Padding(
+              )
+            : SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const _HeaderDecoration(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: denseSpacing),
+                        child: SizedBox(
+                          width: double.infinity,
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              'Native view details',
+                              maxLines: 1,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Padding(
                       padding:
                           const EdgeInsets.symmetric(horizontal: denseSpacing),
                       child: _NodeDetails(node: currentNode!),
-                    )
-                  : Container(
-                      alignment: Alignment.center,
-                      padding: const EdgeInsets.all(densePadding),
-                      child: const Text(
-                        'Select a node to view its details',
-                        textAlign: TextAlign.center,
-                        maxLines: 4,
-                      ),
                     ),
-            ),
-          ],
-        ),
+                  ],
+                ),
+              ),
       ),
     );
   }
@@ -279,7 +279,7 @@ class _KeyValueItem {
   _KeyValueItem(this.key, Object? val) : important = val != null {
     value = switch (val) {
       null => 'null',
-      final String v => '"$v"',
+      final String v => "'$v'",
       _ => val.toString(),
     };
 

@@ -10,7 +10,6 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
 import 'package:patrol/src/devtools_service_extensions/devtools_service_extensions.dart';
-// ignore: implementation_imports, depend_on_referenced_packages
 import 'package:patrol/src/global_state.dart' as global_state;
 
 import 'constants.dart' as constants;
@@ -18,6 +17,7 @@ import 'constants.dart' as constants;
 const _success = 'success';
 
 void _defaultPrintLogger(String message) {
+  // TODO: Use a logger instead of print
   // ignore: avoid_print
   print('PatrolBinding: $message');
 }

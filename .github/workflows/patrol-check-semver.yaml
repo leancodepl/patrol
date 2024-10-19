@@ -1,4 +1,4 @@
-name: check semver
+name: patrol check semver
 
 on:
   workflow_dispatch:
@@ -37,7 +37,7 @@ jobs:
             channel: ${{ matrix.flutter-channel }}
 
         - name: Install dart-apitool
-          run: dart pub global activate dart_apitool
+          run: dart pub global activate dart_apitool 0.19.0
 
         - name: Check API changes
           run: |

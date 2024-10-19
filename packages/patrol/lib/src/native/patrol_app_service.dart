@@ -1,6 +1,5 @@
-// ignore_for_file: avoid_print
-
 // TODO: Use a logger instead of print
+// ignore_for_file: avoid_print
 
 import 'dart:async';
 import 'dart:io';

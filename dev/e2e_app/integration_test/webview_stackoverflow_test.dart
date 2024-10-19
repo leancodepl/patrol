@@ -26,6 +26,8 @@ void main() {
         keyboardBehavior: KeyboardBehavior.alternative,
       );
 
+      await $.native.swipe(from: Offset(0.5, 0.5), to: Offset(0.5, 0.3));
+
       await $.native.enterTextByIndex(
         'ny4ncat',
         index: 1,
@@ -70,6 +72,8 @@ void main() {
         index: 0,
         keyboardBehavior: KeyboardBehavior.alternative,
       );
+
+      await $.native.swipe(from: Offset(0.5, 0.5), to: Offset(0.5, 0.3));
 
       await $.native2.enterTextByIndex(
         'ny4ncat',

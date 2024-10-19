@@ -1,3 +1,4 @@
+// This file wraps the Invoker API, which is internal to package:test.
 // ignore: implementation_imports
 import 'package:test_api/src/backend/invoker.dart';
 
