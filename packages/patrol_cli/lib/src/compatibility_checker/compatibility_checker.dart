@@ -203,6 +203,10 @@ final _patrolVersionRange = [
   ),
   VersionRange(
     min: Version.parse('3.11.0'),
+    max: Version.parse('3.11.1'),
+  ),
+  VersionRange(
+    min: Version.parse('3.11.2'),
   ),
 ];
 
@@ -241,5 +245,9 @@ final _patrolCliVersionRange = [
   ),
   VersionRange(
     min: Version.parse('3.2.0'),
+    max: Version.parse('3.2.0'),
+  ),
+  VersionRange(
+    min: Version.parse('3.2.1'),
   ),
 ];
