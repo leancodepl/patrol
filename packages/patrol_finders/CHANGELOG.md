@@ -1,3 +1,7 @@
+## 2.1.3
+
+- Bump min Flutter SDK to 3.24.0 and Dart SDK to 3.5.0 (#2371)
+
 ## 2.1.2
 
 - Adjust `pumpWidget` to new `flutter_test` API. 
