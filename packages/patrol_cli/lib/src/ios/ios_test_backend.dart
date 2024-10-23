@@ -202,7 +202,7 @@ class IOSTestBackend {
       )
         ..disposedBy(_disposeScope);
       process.listenStdOut((l) => _logger.detail('\t$l')).disposedBy(scope);
-      process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
+      process.listenStdErr((l) => _logger.detail('\t$l')).disposedBy(scope);
 
       final exitCode = await process.exitCode;
       patrolLogReader.stopTimer();
