@@ -8,6 +8,7 @@ import 'dart:io';
 import 'package:patrol/src/common.dart';
 import 'package:patrol/src/native/contracts/contracts.dart';
 import 'package:patrol/src/native/contracts/patrol_app_service_server.dart';
+import 'package:patrol_log/patrol_log.dart';
 import 'package:shelf/shelf.dart' as shelf;
 import 'package:shelf/shelf_io.dart' as shelf_io;
 
@@ -79,6 +80,8 @@ class PatrolAppService extends PatrolAppServiceServer {
     return _testExecutionCompleted.future;
   }
 
+  final PatrolLogWriter _patrolLog = PatrolLogWriter();
+
   /// Marks [dartFileName] as completed with the given [passed] status.
   ///
   /// If an exception was thrown during the test, [details] should contain the
@@ -147,10 +150,29 @@ class PatrolAppService extends PatrolAppServiceServer {
     assert(_testExecutionCompleted.isCompleted == false);
     // patrolTest() always calls this method.
 
+    _patrolLog.log(
+      TestEntry(
+        name: request.name,
+        status: TestEntryStatus.start,
+      ),
+    );
     print('PatrolAppService.runDartTest(${request.name}) called');
     _testExecutionRequested.complete(request.name);
 
     final testExecutionResult = await testExecutionCompleted;
+    if (!testExecutionResult.passed) {
+      _patrolLog.log(
+        TestEntry(name: request.name, status: TestEntryStatus.failure),
+      );
+    } else {
+      _patrolLog.log(
+        TestEntry(
+          name: request.name,
+          status: TestEntryStatus.success,
+        ),
+      );
+    }
+
     return RunDartTestResponse(
       result: testExecutionResult.passed
           ? RunDartTestResponseResult.success
