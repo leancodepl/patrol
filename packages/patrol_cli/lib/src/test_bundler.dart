@@ -34,6 +34,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
 import 'package:patrol/src/native/contracts/contracts.dart';
 import 'package:test_api/src/backend/invoker.dart';
+import 'package:patrol_log/patrol_log.dart';
 
 // START: GENERATED TEST IMPORTS
 ${generateImports(testFilePaths)}
@@ -72,7 +73,11 @@ Future<void> main() async {
   // Dart test (out of which they had been created) and wait for it to complete.
   // The result of running the Dart test is the result of the native test case.
 
-  final nativeAutomator = NativeAutomator(config: NativeAutomatorConfig());
+  final patrolLog = PatrolLogWriter();
+  final nativeAutomator = NativeAutomator(
+    config: NativeAutomatorConfig(),
+    patrolLog: patrolLog,
+  );
   await nativeAutomator.initialize();
   final binding = PatrolBinding.ensureInitialized(NativeAutomatorConfig());
   final testExplorationCompleter = Completer<DartGroupEntry>();

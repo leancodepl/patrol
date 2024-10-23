@@ -10,6 +10,7 @@ import 'package:patrol/src/global_state.dart' as global_state;
 import 'package:patrol/src/native/contracts/contracts.dart';
 import 'package:patrol/src/native/native.dart';
 import 'package:patrol_finders/patrol_finders.dart' as finders;
+import 'package:patrol_log/patrol_log.dart';
 // ignore: implementation_imports
 import 'package:test_api/src/backend/group.dart';
 // ignore: implementation_imports
@@ -90,75 +91,112 @@ void patrolTest(
   LiveTestWidgetsFlutterBindingFramePolicy framePolicy =
       LiveTestWidgetsFlutterBindingFramePolicy.fadePointers,
 }) {
-  final automator = NativeAutomator(config: nativeAutomatorConfig);
+  final patrolLog = PatrolLogWriter();
+  final automator = NativeAutomator(
+    config: nativeAutomatorConfig,
+    patrolLog: patrolLog,
+  );
   final automator2 = NativeAutomator2(config: nativeAutomatorConfig);
   final patrolBinding = PatrolBinding.ensureInitialized(nativeAutomatorConfig)
     ..framePolicy = framePolicy;
 
-  testWidgets(
-    description,
-    skip: skip,
-    timeout: timeout,
-    semanticsEnabled: semanticsEnabled,
-    variant: variant,
-    tags: tags,
-    (widgetTester) async {
-      if (!constants.hotRestartEnabled) {
-        // If Patrol's native automation feature is enabled, then this test will
-        // be executed only if the native side requested it to be executed.
-        // Otherwise, it returns early.
+  if (skip ?? false) {
+    patrolLog.log(TestEntry(name: description, status: TestEntryStatus.skip));
+  }
+  try {
+    testWidgets(
+      description,
+      skip: skip,
+      timeout: timeout,
+      semanticsEnabled: semanticsEnabled,
+      variant: variant,
+      tags: tags,
+      (widgetTester) async {
+        if (!constants.hotRestartEnabled) {
+          // If Patrol's native automation feature is enabled, then this test will
+          // be executed only if the native side requested it to be executed.
+          // Otherwise, it returns early.
 
-        final requestedToExecute = await patrolBinding.patrolAppService
-            .waitForExecutionRequest(global_state.currentTestFullName);
+          final requestedToExecute = await patrolBinding.patrolAppService
+              .waitForExecutionRequest(global_state.currentTestFullName);
 
-        if (!requestedToExecute) {
-          return;
-        }
-      }
-      if (!kIsWeb && io.Platform.isIOS) {
-        widgetTester.binding.platformDispatcher.onSemanticsEnabledChanged = () {
-          // This callback is empty on purpose. It's a workaround for tests
-          // failing on iOS.
-          //
-          // See https://github.com/leancodepl/patrol/issues/1474
-        };
-      }
-      await automator.configure();
-      // We don't have to call this line because automator.configure() does the same.
-      // await automator2.configure();
-
-      final patrolTester = PatrolIntegrationTester(
-        tester: widgetTester,
-        nativeAutomator: automator,
-        nativeAutomator2: automator2,
-        config: config,
-      );
-      await callback(patrolTester);
-
-      // ignore: prefer_const_declarations
-      final waitSeconds = const int.fromEnvironment('PATROL_WAIT');
-      final waitDuration = Duration(seconds: waitSeconds);
-
-      if (debugDefaultTargetPlatformOverride !=
-          patrolBinding.workaroundDebugDefaultTargetPlatformOverride) {
-        debugDefaultTargetPlatformOverride =
-            patrolBinding.workaroundDebugDefaultTargetPlatformOverride;
-      }
-
-      if (waitDuration > Duration.zero) {
-        final stopwatch = Stopwatch()..start();
-        await Future.doWhile(() async {
-          await widgetTester.pump();
-          if (stopwatch.elapsed > waitDuration) {
-            stopwatch.stop();
-            return false;
+          if (!requestedToExecute) {
+            return;
           }
+        }
+        if (!kIsWeb && io.Platform.isIOS) {
+          widgetTester.binding.platformDispatcher.onSemanticsEnabledChanged =
+              () {
+            // This callback is empty on purpose. It's a workaround for tests
+            // failing on iOS.
+            //
+            // See https://github.com/leancodepl/patrol/issues/1474
+          };
+        }
 
-          return true;
-        });
-      }
-    },
-  );
+        patrolLog.log(
+          TestEntry(
+            name: description,
+            status: TestEntryStatus.start,
+          ),
+        );
+
+        await automator.configure();
+        // We don't have to call this line because automator.configure() does the same.
+        // await automator2.configure();
+
+        final patrolTester = PatrolIntegrationTester(
+          tester: widgetTester,
+          nativeAutomator: automator,
+          nativeAutomator2: automator2,
+          config: config,
+          patrolLog: patrolLog,
+        );
+        await callback(patrolTester);
+
+        // ignore: prefer_const_declarations
+        final waitSeconds = const int.fromEnvironment('PATROL_WAIT');
+        final waitDuration = Duration(seconds: waitSeconds);
+
+        if (debugDefaultTargetPlatformOverride !=
+            patrolBinding.workaroundDebugDefaultTargetPlatformOverride) {
+          debugDefaultTargetPlatformOverride =
+              patrolBinding.workaroundDebugDefaultTargetPlatformOverride;
+        }
+
+        if (waitDuration > Duration.zero) {
+          final stopwatch = Stopwatch()..start();
+          await Future.doWhile(() async {
+            await widgetTester.pump();
+            if (stopwatch.elapsed > waitDuration) {
+              stopwatch.stop();
+              return false;
+            }
+
+            return true;
+          });
+        }
+
+        if (!(skip ?? false)) {
+          patrolLog.log(
+            TestEntry(
+              name: description,
+              status: TestEntryStatus.success,
+            ),
+          );
+        }
+      },
+    );
+  } catch (err) {
+    patrolLog.log(
+      TestEntry(
+        name: description,
+        status: TestEntryStatus.failure,
+        error: err.toString(),
+      ),
+    );
+    rethrow;
+  }
 }
 
 /// Creates a DartGroupEntry by visiting the subgroups of [parentGroup].

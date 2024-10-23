@@ -27,6 +27,8 @@ dependencies:
   json_annotation: ^4.8.1
   meta: ^1.10.0
   patrol_finders: ^2.1.2
+  patrol_log:
+    path: ../patrol_log
   shelf: ^1.4.1
   test_api: '^0.7.0'
 
