@@ -174,15 +174,12 @@ class NativeAutomatorConfig {
 // TODO: Rename to NativeAutomatorClient
 class NativeAutomator {
   /// Creates a new [NativeAutomator].
-  NativeAutomator({
-    required NativeAutomatorConfig config,
-    required PatrolLogWriter patrolLog,
-  })  : assert(
+  NativeAutomator({required NativeAutomatorConfig config})
+      : assert(
           config.connectionTimeout > config.findTimeout,
           'find timeout is longer than connection timeout',
         ),
-        _config = config,
-        _patrolLog = patrolLog {
+        _config = config {
     if (_config.packageName.isEmpty && io.Platform.isAndroid) {
       _config.logger("packageName is not set. It's recommended to set it.");
     }
@@ -203,7 +200,7 @@ class NativeAutomator {
     _config.logger('NativeAutomatorClient created, port: ${_config.port}');
   }
 
-  final PatrolLogWriter _patrolLog;
+  final PatrolLogWriter _patrolLog = PatrolLogWriter();
   final NativeAutomatorConfig _config;
 
   late final NativeAutomatorClient _client;
