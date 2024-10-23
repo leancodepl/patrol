@@ -239,7 +239,7 @@ class AndroidTestBackend {
         const prefix = 'There were failing tests. ';
         if (l.contains(prefix)) {
           final msg = l.substring(prefix.length + 2);
-          _logger.err('\t$msg');
+          _logger.detail('\t$msg');
         } else {
           _logger.detail('\t$l');
         }
