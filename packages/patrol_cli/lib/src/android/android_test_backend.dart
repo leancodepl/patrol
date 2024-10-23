@@ -11,6 +11,7 @@ import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/runner/flutter_command.dart';
+import 'package:patrol_log/patrol_log.dart';
 import 'package:platform/platform.dart';
 import 'package:process/process.dart';
 
@@ -94,6 +95,7 @@ class AndroidTestBackend {
         ..disposedBy(scope);
       process.listenStdOut((l) => _logger.detail('\t: $l')).disposedBy(scope);
       process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
+
       exitCode = await process.exitCode;
       if (exitCode == 0) {
         task.complete('Completed building $subject');
@@ -189,6 +191,32 @@ class AndroidTestBackend {
     bool interruptible = false,
   }) async {
     await _disposeScope.run((scope) async {
+      // Read patrol logs from logcat
+      final processLogcat = await _processManager.start(
+        [
+          'adb',
+          'shell',
+          'logcat',
+          '-T',
+          '1',
+          'PatrolServer:I Patrol:I flutter:I *:S',
+        ],
+        runInShell: true,
+      )
+        ..disposedBy(scope);
+
+      final reportPath =
+          'file://${_fs.currentDirectory.path}/build/app/reports/androidTests/connected/index.html';
+
+      final patrolLogReader = PatrolLogReader(
+        listenStdOut: processLogcat.listenStdOut,
+        scope: scope,
+        log: _logger.info,
+        reportPath: reportPath,
+      )
+        ..listen()
+        ..startTimer();
+
       final subject = '${options.description} on ${device.description}';
       final task = _logger.task('Executing tests of $subject');
 
@@ -218,6 +246,11 @@ class AndroidTestBackend {
       }).disposedBy(scope);
 
       final exitCode = await process.exitCode;
+      patrolLogReader.stopTimer();
+      processLogcat.kill();
+
+      _logger.info(patrolLogReader.summary);
+
       if (exitCode == 0) {
         task.complete('Completed executing $subject');
       } else if (exitCode != 0 && interruptible) {

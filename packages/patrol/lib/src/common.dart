@@ -10,6 +10,7 @@ import 'package:patrol/src/global_state.dart' as global_state;
 import 'package:patrol/src/native/contracts/contracts.dart';
 import 'package:patrol/src/native/native.dart';
 import 'package:patrol_finders/patrol_finders.dart' as finders;
+import 'package:patrol_log/patrol_log.dart';
 
 /// We need [Group] to recreate test hierarchy.
 // ignore: implementation_imports
@@ -94,11 +95,15 @@ void patrolTest(
   LiveTestWidgetsFlutterBindingFramePolicy framePolicy =
       LiveTestWidgetsFlutterBindingFramePolicy.fadePointers,
 }) {
+  final patrolLog = PatrolLogWriter();
   final automator = NativeAutomator(config: nativeAutomatorConfig);
   final automator2 = NativeAutomator2(config: nativeAutomatorConfig);
   final patrolBinding = PatrolBinding.ensureInitialized(nativeAutomatorConfig)
     ..framePolicy = framePolicy;
 
+  if (skip ?? false) {
+    patrolLog.log(TestEntry(name: description, status: TestEntryStatus.skip));
+  }
   testWidgets(
     description,
     skip: skip,
@@ -136,6 +141,7 @@ void patrolTest(
         nativeAutomator: automator,
         nativeAutomator2: automator2,
         config: config,
+        patrolLog: patrolLog,
       );
       await callback(patrolTester);
 

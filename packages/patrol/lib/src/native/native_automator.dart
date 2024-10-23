@@ -6,6 +6,7 @@ import 'package:meta/meta.dart';
 import 'package:patrol/src/native/contracts/contracts.dart' as contracts;
 import 'package:patrol/src/native/contracts/contracts.dart';
 import 'package:patrol/src/native/contracts/native_automator_client.dart';
+import 'package:patrol_log/patrol_log.dart';
 
 /// Thrown when a native action fails.
 class PatrolActionException implements Exception {
@@ -173,12 +174,15 @@ class NativeAutomatorConfig {
 // TODO: Rename to NativeAutomatorClient
 class NativeAutomator {
   /// Creates a new [NativeAutomator].
-  NativeAutomator({required NativeAutomatorConfig config})
-      : assert(
+  NativeAutomator({
+    required NativeAutomatorConfig config,
+    required PatrolLogWriter patrolLog,
+  })  : assert(
           config.connectionTimeout > config.findTimeout,
           'find timeout is longer than connection timeout',
         ),
-        _config = config {
+        _config = config,
+        _patrolLog = patrolLog {
     if (_config.packageName.isEmpty && io.Platform.isAndroid) {
       _config.logger("packageName is not set. It's recommended to set it.");
     }
@@ -199,6 +203,7 @@ class NativeAutomator {
     _config.logger('NativeAutomatorClient created, port: ${_config.port}');
   }
 
+  final PatrolLogWriter _patrolLog;
   final NativeAutomatorConfig _config;
 
   late final NativeAutomatorClient _client;
@@ -214,19 +219,52 @@ class NativeAutomator {
     throw StateError('unsupported platform');
   }
 
-  Future<T> _wrapRequest<T>(String name, Future<T> Function() request) async {
+  Future<T> _wrapRequest<T>(
+    String name,
+    Future<T> Function() request, {
+    bool enablePatrolLog = true,
+  }) async {
     _config.logger('$name() started');
+    final text = '\u001b[38;5;87m$name\u001b[0m \u001b[30m(native)\u001b[0m';
+
+    if (enablePatrolLog) {
+      _patrolLog.log(StepEntry(action: text, status: StepEntryStatus.start));
+    }
     try {
       final result = await request();
       _config.logger('$name() succeeded');
+      if (enablePatrolLog) {
+        _patrolLog
+            .log(StepEntry(action: text, status: StepEntryStatus.success));
+      }
       return result;
     } on NativeAutomatorClientException catch (err) {
       _config.logger('$name() failed');
       final log = 'NativeAutomatorClientException: '
           '$name() failed with $err';
+
+      if (enablePatrolLog) {
+        _patrolLog.log(
+          StepEntry(
+            action: text,
+            status: StepEntryStatus.failure,
+            exception: log,
+          ),
+        );
+      }
       throw PatrolActionException(log);
     } catch (err) {
       _config.logger('$name() failed');
+
+      if (enablePatrolLog) {
+        _patrolLog.log(
+          StepEntry(
+            action: text,
+            status: StepEntryStatus.failure,
+            exception: err.toString(),
+          ),
+        );
+      }
       rethrow;
     }
   }
@@ -241,7 +279,11 @@ class NativeAutomator {
   /// See also:
   ///  * https://github.com/flutter/flutter/issues/129231
   Future<void> initialize() async {
-    await _wrapRequest('initialize', _client.initialize);
+    await _wrapRequest(
+      'initialize',
+      _client.initialize,
+      enablePatrolLog: false,
+    );
   }
 
   /// Configures the native automator.
@@ -260,6 +302,7 @@ class NativeAutomator {
               findTimeoutMillis: _config.findTimeout.inMilliseconds,
             ),
           ),
+          enablePatrolLog: false,
         );
         exception = null;
         break;
@@ -940,6 +983,7 @@ class NativeAutomator {
     await _wrapRequest(
       'markPatrolAppServiceReady',
       _client.markPatrolAppServiceReady,
+      enablePatrolLog: false,
     );
   }
 }

@@ -19,6 +19,7 @@ void main() {
       await $(#textField).enterText('Hello, Flutter!');
       expect($('Hello, Flutter!'), findsOneWidget);
 
+      $.log('Tapped the button');
       await $.native.pressHome();
       await $.native.openApp();
 
@@ -32,6 +33,7 @@ void main() {
 
   patrol(
     'short test with two tags',
+    skip: true,
     tags: ['smoke', 'fume'],
     ($) async {
       await createApp($);

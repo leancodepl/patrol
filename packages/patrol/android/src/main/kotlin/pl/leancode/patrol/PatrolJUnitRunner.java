@@ -149,6 +149,7 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
             if (response.getResult() == Contracts.RunDartTestResponseResult.failure) {
                 throw new AssertionError("Dart test failed: " + name + "\n" + response.getDetails());
             }
+            Logger.INSTANCE.i(TAG + "Test execution succeeded");
             return response;
         } catch (PatrolAppServiceClientException e) {
             Logger.INSTANCE.e(TAG + e.getMessage(), e.getCause());
