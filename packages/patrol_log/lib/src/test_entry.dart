@@ -36,8 +36,14 @@ class TestEntry extends Entry {
 
   @override
   String pretty() {
-    return 'Test ${status.name} $name';
+    if (status == TestEntryStatus.skip) {
+      return 'Test ${status.name} $_testName';
+    }
+    return 'Test ${status.name} $_testName \u001b[30m(integration_test/$_filePath.dart)\u001b[0m';
   }
+
+  String get _filePath => name.split(' ').first;
+  String get _testName => name.split(' ').skip(1).join(' ');
 
   @override
   String toString() => 'TestEntry(${toJson()})';
