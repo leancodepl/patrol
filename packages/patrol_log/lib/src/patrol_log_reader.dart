@@ -43,10 +43,14 @@ class PatrolLogReader {
   int get totalTests => _singleEntries.length;
   int get successfulTests =>
       _singleEntries.where((e) => e.status == TestEntryStatus.success).length;
-  int get failedTests =>
-      _singleEntries.where((e) => e.status == TestEntryStatus.failure).length;
+  Iterable<PatrolSingleTestEntry> get failedTests =>
+      _singleEntries.where((e) => e.status == TestEntryStatus.failure);
+  int get failedTestsCount => failedTests.length;
   int get skippedTests =>
       _singleEntries.where((e) => e.status == TestEntryStatus.skip).length;
+
+  String get failedTestsList =>
+      failedTests.map((e) => '  - ${e.nameWithPath}').join('\n');
 
   void parse(String line) {
     if (line.contains('PATROL_LOG')) {
@@ -116,7 +120,8 @@ class PatrolLogReader {
   String get summary => 'Test summary:\n'
       '📝 Total: $totalTests\n'
       '✅ Successful: $successfulTests\n'
-      '❌ Failed: $failedTests\n'
+      '❌ Failed: $failedTestsCount\n'
+      '$failedTestsList\n'
       '⏩ Skipped: $skippedTests\n'
       '📊 Report: $reportPath\n'
       '⏱️  Duration: ${stopwatch.elapsed.inSeconds}s\n';
@@ -137,4 +142,7 @@ class PatrolSingleTestEntry {
 
   TestEntryStatus get status =>
       (entries.lastWhere((t) => t is TestEntry) as TestEntry).status;
+
+  String get nameWithPath =>
+      (entries.lastWhere((t) => t is TestEntry) as TestEntry).nameWithPath;
 }
