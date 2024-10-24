@@ -42,6 +42,9 @@ class TestEntry extends Entry {
     return 'Test ${status.name} $_testName \u001b[30m(integration_test/$_filePath.dart)\u001b[0m';
   }
 
+  String get nameWithPath =>
+      '$_testName \u001b[30m(integration_test/$_filePath.dart)\u001b[0m';
+
   String get _filePath => name.split(' ').first;
   String get _testName => name.split(' ').skip(1).join(' ');
 
