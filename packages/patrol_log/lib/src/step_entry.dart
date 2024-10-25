@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:patrol_log/src/entry.dart';
 
 class StepEntry extends Entry {
@@ -36,9 +38,17 @@ class StepEntry extends Entry {
         'data': data,
       };
 
+  void clearPreviousLine() {
+    // Move the cursor up one line and clear the line
+    stdout.write('\x1B[A\x1B[K');
+  }
+
   @override
   String pretty() {
-    return '  Step ${status.name}: $action';
+    // if (status != StepEntryStatus.start) {
+    //   clearPreviousLine();
+    // }
+    return '        ${status.name}: $action';
   }
 
   @override
@@ -49,4 +59,15 @@ enum StepEntryStatus {
   start,
   success,
   failure;
+
+  String get name {
+    switch (this) {
+      case StepEntryStatus.start:
+        return '⏳';
+      case StepEntryStatus.success:
+        return '✅';
+      case StepEntryStatus.failure:
+        return '❌';
+    }
+  }
 }
