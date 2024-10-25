@@ -45,9 +45,9 @@ class StepEntry extends Entry {
 
   @override
   String pretty() {
-    // if (status != StepEntryStatus.start) {
-    //   clearPreviousLine();
-    // }
+    if (status != StepEntryStatus.start) {
+      clearPreviousLine();
+    }
     return '        ${status.name}: $action';
   }
 
