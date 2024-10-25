@@ -37,15 +37,15 @@ class TestEntry extends Entry {
   @override
   String pretty() {
     if (status == TestEntryStatus.skip) {
-      return 'Test ${status.name} $_testName';
+      return '${status.name} $_testName';
     }
-    return 'Test ${status.name} $_testName \u001b[30m(integration_test/$_filePath.dart)\u001b[0m';
+    return '${status.name} $_testName \u001b[30m(integration_test/$_filePath.dart)\u001b[0m';
   }
 
   String get nameWithPath =>
       '$_testName \u001b[30m(integration_test/$_filePath.dart)\u001b[0m';
 
-  String get _filePath => name.split(' ').first;
+  String get _filePath => name.split(' ').first.replaceAll('.', '/');
   String get _testName => name.split(' ').skip(1).join(' ');
 
   @override
@@ -61,13 +61,13 @@ enum TestEntryStatus {
   String get name {
     switch (this) {
       case TestEntryStatus.start:
-        return 'started ⏳';
+        return '⏳';
       case TestEntryStatus.success:
-        return 'succeeded ✅';
+        return '✅';
       case TestEntryStatus.failure:
-        return 'failed ❌';
+        return '❌';
       case TestEntryStatus.skip:
-        return 'skipped ⏩';
+        return '⏩';
     }
   }
 }
