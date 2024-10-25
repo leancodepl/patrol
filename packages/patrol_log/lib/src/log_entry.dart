@@ -26,7 +26,7 @@ class LogEntry extends Entry {
 
   @override
   String pretty() {
-    return 'Log: $message';
+    return '        📝 $message';
   }
 
   @override
