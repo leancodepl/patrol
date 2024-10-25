@@ -48,7 +48,7 @@ class StepEntry extends Entry {
     if (status != StepEntryStatus.start) {
       clearPreviousLine();
     }
-    return '        ${status.name}: $action';
+    return '        ${status.name} $action';
   }
 
   @override
