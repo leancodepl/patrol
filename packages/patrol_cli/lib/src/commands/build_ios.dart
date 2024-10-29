@@ -157,6 +157,7 @@ class BuildIOSCommand extends PatrolCommand {
       simulator: boolArg('simulator'),
       appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
+      clearPermissions: boolArg('clear-permissions'),
     );
 
     try {

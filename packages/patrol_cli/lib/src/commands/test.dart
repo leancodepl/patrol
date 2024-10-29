@@ -233,6 +233,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       simulator: !device.real,
       appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
+      clearPermissions: boolArg('clear-permissions'),
     );
 
     final macosOpts = MacOSAppOptions(
