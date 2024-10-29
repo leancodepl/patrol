@@ -222,6 +222,12 @@ class FlutterTool {
           completer.complete();
         }
 
+        // Skip the log line that contains "PATROL_LOG" prefix
+        const patrolLogPrefix = 'PATROL_LOG';
+        if (line.contains(patrolLogPrefix)) {
+          return;
+        }
+
         // On iOS, "flutter" is not prefixed
         final flutterPrefix = RegExp('flutter: ');
 

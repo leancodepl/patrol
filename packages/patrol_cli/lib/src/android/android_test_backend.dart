@@ -249,7 +249,10 @@ class AndroidTestBackend {
       patrolLogReader.stopTimer();
       processLogcat.kill();
 
-      _logger.info(patrolLogReader.summary);
+      // Don't print the summary in develop
+      if (!interruptible) {
+        _logger.info(patrolLogReader.summary);
+      }
 
       if (exitCode == 0) {
         task.complete('Completed executing $subject');
