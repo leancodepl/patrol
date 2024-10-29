@@ -50,6 +50,10 @@ class TestEntry extends Entry {
 
   @override
   String toString() => 'TestEntry(${toJson()})';
+
+  /// Returns `true` if the test is finished successfully or with a failure.
+  bool get isFinished =>
+      status == TestEntryStatus.success || status == TestEntryStatus.failure;
 }
 
 enum TestEntryStatus {
@@ -61,7 +65,7 @@ enum TestEntryStatus {
   String get name {
     switch (this) {
       case TestEntryStatus.start:
-        return '⏳';
+        return '🧪';
       case TestEntryStatus.success:
         return '✅';
       case TestEntryStatus.failure:
