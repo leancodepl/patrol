@@ -44,11 +44,25 @@ class StepEntry extends Entry {
   }
 
   @override
-  String pretty() {
+  String pretty({int? number}) {
     if (status != StepEntryStatus.start) {
       clearPreviousLine();
     }
-    return '        ${status.name} $action';
+    return '        ${status.name} ${printNumber(number)} $action';
+  }
+
+  String printNumber(int? number) {
+    if (number != null) {
+      if (number < 10) {
+        return '  $number.';
+      } else if (number < 100) {
+        return ' $number.';
+      } else {
+        return '$number.';
+      }
+    }
+
+    return '';
   }
 
   @override
