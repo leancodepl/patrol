@@ -38,16 +38,8 @@ class StepEntry extends Entry {
         'data': data,
       };
 
-  void clearPreviousLine() {
-    // Move the cursor up one line and clear the line
-    stdout.write('\x1B[A\x1B[K');
-  }
-
   @override
   String pretty({int? number}) {
-    if (status != StepEntryStatus.start) {
-      clearPreviousLine();
-    }
     return '        ${status.name} ${printNumber(number)} $action';
   }
 
