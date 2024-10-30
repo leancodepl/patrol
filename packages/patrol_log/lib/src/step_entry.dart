@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:patrol_log/src/entry.dart';
 
 class StepEntry extends Entry {
