@@ -339,6 +339,7 @@ class DevelopCommand extends PatrolCommand {
               interruptible: true,
               showFlutterLogs: showFlutterLogs,
               showTestSteps: showTestSteps,
+              flavor: flutterOpts.flavor,
             );
         final package = android.packageName;
         if (package != null && uninstall) {

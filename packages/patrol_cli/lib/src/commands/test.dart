@@ -357,6 +357,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
               device,
               showFlutterLogs: showFlutterLogs,
               showTestSteps: showTestSteps,
+              flavor: flutterOpts.flavor,
             );
         final package = android.packageName;
         if (package != null && uninstall) {

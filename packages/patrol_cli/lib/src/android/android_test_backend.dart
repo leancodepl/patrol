@@ -188,6 +188,7 @@ class AndroidTestBackend {
   Future<void> execute(
     AndroidAppOptions options,
     Device device, {
+    String? flavor,
     bool interruptible = false,
     required bool showFlutterLogs,
     required bool showTestSteps,
@@ -207,8 +208,12 @@ class AndroidTestBackend {
       )
         ..disposedBy(scope);
 
+      var flavorPath = '';
+      if (flavor != null) {
+        flavorPath = 'flavors/$flavor/';
+      }
       final reportPath =
-          'file://${_fs.currentDirectory.path}/build/app/reports/androidTests/connected/index.html';
+          'file://${_fs.currentDirectory.path}/build/app/reports/androidTests/connected/${flavorPath}index.html';
 
       final patrolLogReader = PatrolLogReader(
         listenStdOut: processLogcat.listenStdOut,
