@@ -54,6 +54,8 @@ class DevelopCommand extends PatrolCommand {
     usesWaitOption();
     usesPortOptions();
     usesTagsOption();
+    usesShowFlutterLogs();
+    usesShowTestSteps();
 
     usesUninstallOption();
 
@@ -244,6 +246,8 @@ class DevelopCommand extends PatrolCommand {
       uninstall: uninstall,
       device: device,
       openDevtools: boolArg('open-devtools'),
+      showFlutterLogs: boolArg('show-flutter-logs'),
+      showTestSteps: boolArg('show-test-steps'),
     );
 
     return 0; // for now, all exit codes are 0
@@ -319,6 +323,8 @@ class DevelopCommand extends PatrolCommand {
     required bool uninstall,
     required Device device,
     required bool openDevtools,
+    required bool showFlutterLogs,
+    required bool showTestSteps,
   }) async {
     Future<void> Function() action;
     Future<void> Function()? finalizer;
@@ -327,8 +333,13 @@ class DevelopCommand extends PatrolCommand {
     switch (device.targetPlatform) {
       case TargetPlatform.android:
         appId = android.packageName;
-        action = () =>
-            _androidTestBackend.execute(android, device, interruptible: true);
+        action = () => _androidTestBackend.execute(
+              android,
+              device,
+              interruptible: true,
+              showFlutterLogs: showFlutterLogs,
+              showTestSteps: showTestSteps,
+            );
         final package = android.packageName;
         if (package != null && uninstall) {
           finalizer = () => _androidTestBackend.uninstall(package, device);
@@ -339,8 +350,13 @@ class DevelopCommand extends PatrolCommand {
             _macosTestBackend.execute(macos, device, interruptible: true);
       case TargetPlatform.iOS:
         appId = iosOpts.bundleId;
-        action = () async =>
-            _iosTestBackend.execute(iosOpts, device, interruptible: true);
+        action = () async => _iosTestBackend.execute(
+              iosOpts,
+              device,
+              interruptible: true,
+              showFlutterLogs: showFlutterLogs,
+              showTestSteps: showTestSteps,
+            );
         final bundleId = iosOpts.bundleId;
         if (bundleId != null && uninstall) {
           finalizer = () => _iosTestBackend.uninstall(

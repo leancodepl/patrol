@@ -153,6 +153,8 @@ class IOSTestBackend {
     IOSAppOptions options,
     Device device, {
     bool interruptible = false,
+    required bool showFlutterLogs,
+    required bool showTestSteps,
   }) async {
     await _disposeScope.run((scope) async {
       // Read patrol logs from logcat
@@ -174,6 +176,8 @@ class IOSTestBackend {
         scope: scope,
         log: _logger.info,
         reportPath: reportPath,
+        showFlutterLogs: showFlutterLogs,
+        showTestSteps: showTestSteps,
       )
         ..listen()
         ..startTimer();
