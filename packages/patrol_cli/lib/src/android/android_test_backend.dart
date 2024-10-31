@@ -213,7 +213,7 @@ class AndroidTestBackend {
         flavorPath = 'flavors/$flavor/';
       }
       final reportPath =
-          'file://${_fs.currentDirectory.path}/build/app/reports/androidTests/connected/${flavorPath}index.html';
+          'file://${_rootDirectory.childDirectory('android').path}/build/app/reports/androidTests/connected/${flavorPath}index.html';
 
       final patrolLogReader = PatrolLogReader(
         listenStdOut: processLogcat.listenStdOut,
