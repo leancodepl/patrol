@@ -12,7 +12,7 @@ void main() {
 
     await _requestAndGrantCameraPermission($);
     await _requestAndGrantMicrophonePermission($);
-    await _requestAndDenyContactsPermission($);
+    await _requestAndDenyLocationPermission($);
   });
 }
 
@@ -44,11 +44,11 @@ Future<void> _requestAndGrantMicrophonePermission(
   expect($(#microphone).$(#statusText).text, 'Granted');
 }
 
-Future<void> _requestAndDenyContactsPermission(
+Future<void> _requestAndDenyLocationPermission(
   PatrolIntegrationTester $,
 ) async {
-  if (!await Permission.contacts.isGranted) {
-    expect($(#contacts).$(#statusText).text, 'Not granted');
+  if (!await Permission.location.isGranted) {
+    expect($(#location).$(#statusText).text, 'Not granted');
     await $('Request contacts permission').tap();
     if (await $.native.isPermissionDialogVisible(timeout: _timeout)) {
       await $.native.denyPermission();
@@ -56,5 +56,5 @@ Future<void> _requestAndDenyContactsPermission(
     }
   }
 
-  expect($(#contacts).$(#statusText).text, 'Not granted');
+  expect($(#location).$(#statusText).text, 'Not granted');
 }
