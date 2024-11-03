@@ -52,9 +52,9 @@ Future<void> _requestAndDenyMicrophonePermission(
 Future<void> _requestAndDenyLocationPermission(
   PatrolIntegrationTester $,
 ) async {
-  if (!await Permission.contacts.isGranted) {
+  if (!await Permission.location.isGranted) {
     expect($(#location).$(#statusText).text, 'Not granted');
-    await $('Request contacts permission').tap();
+    await $('Request location permission').tap();
     if (await $.native.isPermissionDialogVisible(timeout: _timeout)) {
       await $.native.denyPermission();
       await $.pump();
