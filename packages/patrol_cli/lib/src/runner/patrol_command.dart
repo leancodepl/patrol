@@ -165,7 +165,7 @@ abstract class PatrolCommand extends Command<int> {
       ..addFlag(
         'clear-permissions',
         help:
-            '*Experimental* Clear permissions available through XCUIProtectedResource API before running each test.',
+            'Clear permissions available through XCUIProtectedResource API before running each test.',
         negatable: false,
       );
   }
