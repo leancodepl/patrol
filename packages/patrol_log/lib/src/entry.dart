@@ -22,3 +22,7 @@ enum EntryType {
   test,
   log;
 }
+
+/// The number of spaces used for indentation in the pretty print.
+/// Used in LogEntry and StepEntry.
+const indentation = '        ';

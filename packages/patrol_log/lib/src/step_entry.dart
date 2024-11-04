@@ -38,7 +38,7 @@ class StepEntry extends Entry {
 
   @override
   String pretty({int? number}) {
-    return '        ${status.name} ${printNumber(number)} $action';
+    return '$indentation${status.name} ${printNumber(number)} $action';
   }
 
   String printNumber(int? number) {
