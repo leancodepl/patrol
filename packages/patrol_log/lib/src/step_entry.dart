@@ -64,14 +64,9 @@ enum StepEntryStatus {
   success,
   failure;
 
-  String get name {
-    switch (this) {
-      case StepEntryStatus.start:
-        return '⏳';
-      case StepEntryStatus.success:
-        return '✅';
-      case StepEntryStatus.failure:
-        return '❌';
-    }
-  }
+  String get name => switch (this) {
+        StepEntryStatus.start => '⏳',
+        StepEntryStatus.success => '✅',
+        StepEntryStatus.failure => '❌',
+      };
 }

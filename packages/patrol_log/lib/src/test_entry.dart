@@ -62,16 +62,10 @@ enum TestEntryStatus {
   failure,
   skip;
 
-  String get name {
-    switch (this) {
-      case TestEntryStatus.start:
-        return '🧪';
-      case TestEntryStatus.success:
-        return '✅';
-      case TestEntryStatus.failure:
-        return '❌';
-      case TestEntryStatus.skip:
-        return '⏩';
-    }
-  }
+  String get name => switch (this) {
+        TestEntryStatus.start => '🧪',
+        TestEntryStatus.success => '✅',
+        TestEntryStatus.failure => '❌',
+        TestEntryStatus.skip => '⏩',
+      };
 }
