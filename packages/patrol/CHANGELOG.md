@@ -1,3 +1,7 @@
+## Unreleased
+
+- Add `clear-permissions` flag on ios commands. (#2367)
+
 ## 3.11.2
 
 - Bump min Flutter SDK to 3.24.0 and Dart SDK to 3.5.0 (#2371)

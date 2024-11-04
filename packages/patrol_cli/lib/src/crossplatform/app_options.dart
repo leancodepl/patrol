@@ -148,6 +148,7 @@ class IOSAppOptions {
     required this.simulator,
     required this.appServerPort,
     required this.testServerPort,
+    this.clearPermissions = false,
   });
 
   final FlutterAppOptions flutter;
@@ -157,6 +158,7 @@ class IOSAppOptions {
   final bool simulator;
   final int appServerPort;
   final int testServerPort;
+  final bool clearPermissions;
 
   String get description {
     final platform = simulator ? 'simulator' : 'device';
@@ -208,6 +210,8 @@ class IOSAppOptions {
       '-quiet',
       ...['-derivedDataPath', '../build/ios_integ'],
       r'OTHER_SWIFT_FLAGS=$(inherited) -D PATROL_ENABLED',
+      if (clearPermissions)
+        r'GCC_PREPROCESSOR_DEFINITIONS=$(inherited) CLEAR_PERMISSIONS=1',
     ];
 
     return cmd;

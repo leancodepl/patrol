@@ -13,7 +13,7 @@ class PermissionsScreen extends StatefulWidget {
 class _PermissionsScreenState extends State<PermissionsScreen> {
   bool _cameraPermissionGranted = false;
   bool _microphonePermissionGranted = false;
-  bool _contactsPermissionGranted = false;
+  bool _locationPermissionGranted = false;
 
   Future<void> _requestCameraPermission() async {
     await Future<void>.delayed(Duration(seconds: 1));
@@ -31,10 +31,10 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
     });
   }
 
-  Future<void> _requestContactsPermission() async {
-    final status = await Permission.contacts.request();
+  Future<void> _requestLocationPermission() async {
+    final status = await Permission.location.request();
     setState(() {
-      _contactsPermissionGranted = status == PermissionStatus.granted;
+      _locationPermissionGranted = status == PermissionStatus.granted;
     });
   }
 
@@ -57,6 +57,15 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
         (value) {
           setState(() {
             _microphonePermissionGranted = value == PermissionStatus.granted;
+          });
+        },
+      ),
+    );
+    unawaited(
+      Permission.location.status.then(
+        (value) {
+          setState(() {
+            _locationPermissionGranted = value == PermissionStatus.granted;
           });
         },
       ),
@@ -85,10 +94,10 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
               onTap: _requestMicrophonePermission,
             ),
             _PermissionTile(
-              name: 'Contacts',
-              icon: Icons.people,
-              granted: _contactsPermissionGranted,
-              onTap: _requestContactsPermission,
+              name: 'Location',
+              icon: Icons.pin_drop,
+              granted: _locationPermissionGranted,
+              onTap: _requestLocationPermission,
             ),
           ],
         ),

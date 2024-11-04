@@ -156,11 +156,18 @@ abstract class PatrolCommand extends Command<int> {
   }
 
   void usesIOSOptions() {
-    argParser.addOption(
-      'bundle-id',
-      help: 'Bundle identifier of the iOS app under test.',
-      valueHelp: 'pl.leancode.AwesomeApp',
-    );
+    argParser
+      ..addOption(
+        'bundle-id',
+        help: 'Bundle identifier of the iOS app under test.',
+        valueHelp: 'pl.leancode.AwesomeApp',
+      )
+      ..addFlag(
+        'clear-permissions',
+        help:
+            'Clear permissions available through XCUIProtectedResource API before running each test.',
+        negatable: false,
+      );
   }
 
   void usesMacOSOptions() {
