@@ -141,7 +141,6 @@ void patrolTest(
         nativeAutomator: automator,
         nativeAutomator2: automator2,
         config: config,
-        patrolLog: patrolLog,
       );
       await callback(patrolTester);
 

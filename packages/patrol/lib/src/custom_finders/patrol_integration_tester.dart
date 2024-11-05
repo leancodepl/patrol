@@ -12,8 +12,7 @@ class PatrolIntegrationTester extends finders.PatrolTester {
     required super.config,
     required this.nativeAutomator,
     required this.nativeAutomator2,
-    required PatrolLogWriter patrolLog,
-  }) : _patrolLog = patrolLog;
+  }) : _patrolLog = PatrolLogWriter();
 
   /// The log for the patrol.
   final PatrolLogWriter _patrolLog;
