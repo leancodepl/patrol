@@ -1,6 +1,8 @@
-## Unreleased
+## 3.12.0
 
 - Add `clear-permissions` flag on ios commands. (#2367)
+
+This version requires version 3.3.0 of `patrol_cli` package.
 
 ## 3.11.2
 
