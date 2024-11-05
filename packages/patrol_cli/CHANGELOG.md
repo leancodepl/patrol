@@ -2,6 +2,8 @@
 
 - Add `clear-permissions` flag on ios commands. (#2367)
 
+This version requires version 3.12.0 of `patrol` package.
+
 ## 3.2.1
 
 - Allow running Patrol tests from any subfolder of the project (#2351)

@@ -2,6 +2,8 @@
 
 - Add `clear-permissions` flag on ios commands. (#2367)
 
+This version requires version 3.3.0 of `patrol_cli` package.
+
 ## 3.11.2
 
 - Bump min Flutter SDK to 3.24.0 and Dart SDK to 3.5.0 (#2371)
