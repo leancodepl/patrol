@@ -1,4 +1,4 @@
-## Unreleased
+## 3.3.0
 
 - Add `clear-permissions` flag on ios commands. (#2367)
 
