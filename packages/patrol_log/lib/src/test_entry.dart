@@ -1,6 +1,6 @@
-import 'package:patrol_log/src/emojis.dart';
-import 'package:patrol_log/src/entry.dart';
+part of 'entry.dart';
 
+@JsonSerializable(explicitToJson: true)
 class TestEntry extends Entry {
   TestEntry({
     required this.name,
@@ -13,12 +13,8 @@ class TestEntry extends Entry {
         );
 
   @override
-  factory TestEntry.fromJson(Map<String, dynamic> json) => TestEntry(
-        timestamp: DateTime.parse(json['timestamp'] as String),
-        name: json['name'] as String,
-        status: TestEntryStatus.values[json['status'] as int],
-        error: json['error'] as String?,
-      );
+  factory TestEntry.fromJson(Map<String, dynamic> json) =>
+      _$TestEntryFromJson(json);
 
   final String name;
   final TestEntryStatus status;
@@ -27,13 +23,7 @@ class TestEntry extends Entry {
   Duration executionTime(DateTime start) => timestamp.difference(start);
 
   @override
-  Map<String, dynamic> toJson() => {
-        'name': name,
-        'status': status.index,
-        'type': type.index,
-        'timestamp': timestamp.toIso8601String(),
-        'error': error,
-      };
+  Map<String, dynamic> toJson() => _$TestEntryToJson(this);
 
   @override
   String pretty() {
@@ -51,6 +41,9 @@ class TestEntry extends Entry {
 
   @override
   String toString() => 'TestEntry(${toJson()})';
+
+  @override
+  List<Object?> get props => [name, status, error, timestamp, type];
 
   /// Returns `true` if the test is finished successfully or with a failure.
   bool get isFinished =>

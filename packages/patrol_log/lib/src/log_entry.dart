@@ -1,6 +1,6 @@
-import 'package:patrol_log/src/emojis.dart';
-import 'package:patrol_log/src/entry.dart';
+part of 'entry.dart';
 
+@JsonSerializable(explicitToJson: true)
 class LogEntry extends Entry {
   LogEntry({
     required this.message,
@@ -11,19 +11,13 @@ class LogEntry extends Entry {
         );
 
   @override
-  factory LogEntry.fromJson(Map<String, dynamic> json) => LogEntry(
-        timestamp: DateTime.parse(json['timestamp'] as String),
-        message: json['message'] as String,
-      );
+  factory LogEntry.fromJson(Map<String, dynamic> json) =>
+      _$LogEntryFromJson(json);
 
   final String message;
 
   @override
-  Map<String, dynamic> toJson() => {
-        'message': message,
-        'timestamp': timestamp.toIso8601String(),
-        'type': type.index,
-      };
+  Map<String, dynamic> toJson() => _$LogEntryToJson(this);
 
   @override
   String pretty() {

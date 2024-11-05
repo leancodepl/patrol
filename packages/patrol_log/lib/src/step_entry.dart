@@ -1,6 +1,6 @@
-import 'package:patrol_log/src/emojis.dart';
-import 'package:patrol_log/src/entry.dart';
+part of 'entry.dart';
 
+@JsonSerializable(explicitToJson: true)
 class StepEntry extends Entry {
   StepEntry({
     required this.action,
@@ -13,14 +13,8 @@ class StepEntry extends Entry {
           type: EntryType.step,
         );
 
-  @override
-  factory StepEntry.fromJson(Map<String, dynamic> json) => StepEntry(
-        action: json['action'] as String,
-        timestamp: DateTime.parse(json['timestamp'] as String),
-        status: StepEntryStatus.values[json['status'] as int],
-        exception: json['exception'] as String?,
-        data: json['data'] as Map<String, dynamic>?,
-      );
+  factory StepEntry.fromJson(Map<String, dynamic> json) =>
+      _$StepEntryFromJson(json);
 
   final String action;
   final StepEntryStatus status;
@@ -28,14 +22,7 @@ class StepEntry extends Entry {
   final Map<String, dynamic>? data;
 
   @override
-  Map<String, dynamic> toJson() => {
-        'action': action,
-        'status': status.index,
-        'type': type.index,
-        'timestamp': timestamp.toIso8601String(),
-        'exception': exception,
-        'data': data,
-      };
+  Map<String, dynamic> toJson() => _$StepEntryToJson(this);
 
   @override
   String pretty({int? number}) {
@@ -60,6 +47,9 @@ class StepEntry extends Entry {
 
   @override
   String toString() => 'StepEntry(${toJson()})';
+
+  @override
+  List<Object?> get props => [action, status, exception, data, timestamp, type];
 }
 
 enum StepEntryStatus {
