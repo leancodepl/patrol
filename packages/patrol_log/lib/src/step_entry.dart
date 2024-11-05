@@ -39,10 +39,12 @@ class StepEntry extends Entry {
 
   @override
   String pretty({int? number}) {
-    return '$indentation${status.name} ${printNumber(number)} $action';
+    return '$indentation${status.name} ${printIndex(number)} $action';
   }
 
-  String printNumber(int? number) {
+  /// Returns the index of the step with the correct number of spaces,
+  /// to format the output.
+  String printIndex(int? number) {
     if (number != null) {
       if (number < 10) {
         return '  $number.';
