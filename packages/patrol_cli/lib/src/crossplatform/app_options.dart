@@ -212,6 +212,7 @@ class IOSAppOptions {
       r'OTHER_SWIFT_FLAGS=$(inherited) -D PATROL_ENABLED',
       if (clearPermissions)
         r'GCC_PREPROCESSOR_DEFINITIONS=$(inherited) CLEAR_PERMISSIONS=1',
+      '-allowProvisioningUpdates',
     ];
 
     return cmd;
