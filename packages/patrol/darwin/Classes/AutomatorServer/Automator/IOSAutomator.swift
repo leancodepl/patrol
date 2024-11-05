@@ -628,6 +628,14 @@
 
     // MARK: Notifications
 
+    private let notificationCellIdentifier: String = {
+      if #available(iOS 18, *) {
+        return "ListCell"
+      } else {
+        return "NotificationCell"
+      }
+    }()
+
     func openNotifications() throws {
       // TODO: Check if works on iPhones without notch
 
@@ -667,7 +675,7 @@
     func getNotifications() throws -> [Notification] {
       var notifications = [Notification]()
       runAction("getting notifications") {
-        let cells = self.springboard.buttons.matching(identifier: "NotificationCell")
+        let cells = self.springboard.buttons.matching(identifier: self.notificationCellIdentifier)
           .allElementsBoundByIndex
         for (i, cell) in cells.enumerated() {
           Logger.shared.i("found notification at index \(i) with label \(format: cell.label)")
@@ -681,7 +689,8 @@
 
     func tapOnNotification(byIndex index: Int, withTimeout timeout: TimeInterval?) throws {
       try runAction("tapping on notification at index \(index)") {
-        let cellsQuery = self.springboard.buttons.matching(identifier: "NotificationCell")
+        let cellsQuery = self.springboard.buttons.matching(
+          identifier: self.notificationCellIdentifier)
         guard
           let cell = self.waitFor(query: cellsQuery, index: index, timeout: timeout ?? self.timeout)
         else {
@@ -703,7 +712,8 @@
       try runAction("tapping on notification containing text \(format: substring)") {
         let cellsQuery = self.springboard.buttons.matching(
           NSPredicate(
-            format: "identifier == %@ AND label CONTAINS %@", "NotificationCell", substring)
+            format: "identifier == %@ AND label CONTAINS %@", self.notificationCellIdentifier,
+            substring)
         )
 
         guard let cell = self.waitFor(query: cellsQuery, index: 0, timeout: timeout ?? self.timeout)
