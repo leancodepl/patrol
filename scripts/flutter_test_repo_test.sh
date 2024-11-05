@@ -3,7 +3,7 @@
 set -e
 
 # Array of relative directories
-dirs=("packages/patrol_finders" "packages/patrol" "packages/patrol_cli")
+dirs=("packages/patrol_finders" "packages/patrol_cli")
 
 # Loop through each directory
 for dir in "${dirs[@]}"; do
