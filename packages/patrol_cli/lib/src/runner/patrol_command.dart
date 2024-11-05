@@ -195,10 +195,10 @@ abstract class PatrolCommand extends Command<int> {
     );
   }
 
-  void usesShowTestSteps() {
+  void usesHideTestSteps() {
     argParser.addFlag(
-      'show-test-steps',
-      help: 'Show test steps while running the tests.',
+      'hide-test-steps',
+      help: 'Hide test steps while running the tests.',
     );
   }
 

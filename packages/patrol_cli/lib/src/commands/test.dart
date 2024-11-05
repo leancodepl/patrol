@@ -57,7 +57,7 @@ class TestCommand extends PatrolCommand {
     usesExcludeTagsOption();
     useCoverageOptions();
     usesShowFlutterLogs();
-    usesShowTestSteps();
+    usesHideTestSteps();
 
     usesUninstallOption();
 
@@ -269,7 +269,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       uninstall: uninstall,
       device: device,
       showFlutterLogs: boolArg('show-flutter-logs'),
-      showTestSteps: boolArg('show-test-steps'),
+      hideTestSteps: boolArg('hide-test-steps'),
     );
 
     return allPassed ? 0 : 1;
@@ -345,7 +345,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
     required bool uninstall,
     required Device device,
     required bool showFlutterLogs,
-    required bool showTestSteps,
+    required bool hideTestSteps,
   }) async {
     Future<void> Function() action;
     Future<void> Function()? finalizer;
@@ -356,7 +356,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
               android,
               device,
               showFlutterLogs: showFlutterLogs,
-              showTestSteps: showTestSteps,
+              hideTestSteps: hideTestSteps,
               flavor: flutterOpts.flavor,
             );
         final package = android.packageName;
@@ -370,7 +370,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
               ios,
               device,
               showFlutterLogs: showFlutterLogs,
-              showTestSteps: showTestSteps,
+              hideTestSteps: hideTestSteps,
             );
         final bundleId = ios.bundleId;
         if (bundleId != null && uninstall) {
