@@ -157,7 +157,7 @@ class IOSTestBackend {
     required bool showTestSteps,
   }) async {
     await _disposeScope.run((scope) async {
-      // Read patrol logs from logcat
+      // Read patrol logs from log stream
       final processLogs = await _processManager.start(
         [
           'log',
