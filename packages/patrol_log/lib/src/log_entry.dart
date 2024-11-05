@@ -1,3 +1,4 @@
+import 'package:patrol_log/src/emojis.dart';
 import 'package:patrol_log/src/entry.dart';
 
 class LogEntry extends Entry {
@@ -26,7 +27,7 @@ class LogEntry extends Entry {
 
   @override
   String pretty() {
-    return '$indentation📝 $message';
+    return '$indentation${Emojis.log} $message';
   }
 
   @override

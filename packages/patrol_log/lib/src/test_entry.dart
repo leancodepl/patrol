@@ -1,3 +1,4 @@
+import 'package:patrol_log/src/emojis.dart';
 import 'package:patrol_log/src/entry.dart';
 
 class TestEntry extends Entry {
@@ -63,9 +64,9 @@ enum TestEntryStatus {
   skip;
 
   String get name => switch (this) {
-        TestEntryStatus.start => '🧪',
-        TestEntryStatus.success => '✅',
-        TestEntryStatus.failure => '❌',
-        TestEntryStatus.skip => '⏩',
+        TestEntryStatus.start => Emojis.testStart,
+        TestEntryStatus.success => Emojis.success,
+        TestEntryStatus.failure => Emojis.failure,
+        TestEntryStatus.skip => Emojis.skip,
       };
 }
