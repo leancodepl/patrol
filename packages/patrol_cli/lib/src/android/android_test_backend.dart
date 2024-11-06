@@ -195,16 +195,12 @@ class AndroidTestBackend {
   }) async {
     await _disposeScope.run((scope) async {
       // Read patrol logs from logcat
-      final processLogcat = await _processManager.start(
-        [
-          'adb',
-          'shell',
-          'logcat',
-          '-T',
-          '1',
-          'PatrolServer:I Patrol:I flutter:I *:S',
-        ],
-        runInShell: true,
+      final processLogcat = await _adb.logcat(
+        device: device.id,
+        arguments: {
+          '-T': '1',
+        },
+        filter: 'PatrolServer:I Patrol:I flutter:I *:S',
       )
         ..disposedBy(scope);
 
