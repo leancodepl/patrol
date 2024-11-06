@@ -212,8 +212,10 @@ class AndroidTestBackend {
       if (flavor != null) {
         flavorPath = 'flavors/$flavor/';
       }
-      final reportPath =
+      final path =
           'file://${_rootDirectory.path}/build/app/reports/androidTests/connected/${flavorPath}index.html';
+      final reportPath =
+          _platform.isWindows ? path.replaceAll(r'\', '/') : path;
 
       final patrolLogReader = PatrolLogReader(
         listenStdOut: processLogcat.listenStdOut,
