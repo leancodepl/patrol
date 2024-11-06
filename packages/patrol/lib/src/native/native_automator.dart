@@ -222,7 +222,8 @@ class NativeAutomator {
     bool enablePatrolLog = true,
   }) async {
     _config.logger('$name() started');
-    final text = '\u001b[38;5;87m$name\u001b[0m \u001b[30m(native)\u001b[0m';
+    final text =
+        '${AnsiCodes.lightBlue}$name${AnsiCodes.reset} ${AnsiCodes.gray}(native)${AnsiCodes.reset}';
 
     if (enablePatrolLog) {
       _patrolLog.log(StepEntry(action: text, status: StepEntryStatus.start));

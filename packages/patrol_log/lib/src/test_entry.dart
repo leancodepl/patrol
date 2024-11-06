@@ -30,11 +30,11 @@ class TestEntry extends Entry {
     if (status == TestEntryStatus.skip) {
       return '${status.name} $_testName';
     }
-    return '${status.name} $_testName \u001b[30m(integration_test/$_filePath.dart)\u001b[0m';
+    return '${status.name} $_testName ${AnsiCodes.gray}(integration_test/$_filePath.dart)${AnsiCodes.reset}';
   }
 
   String get nameWithPath =>
-      '$_testName \u001b[30m(integration_test/$_filePath.dart)\u001b[0m';
+      '$_testName ${AnsiCodes.gray}(integration_test/$_filePath.dart)${AnsiCodes.reset}';
 
   String get _filePath => name.split(' ').first.replaceAll('.', '/');
   String get _testName => name.split(' ').skip(1).join(' ');
