@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:patrol_log/patrol_log.dart';
 import 'package:patrol_log/src/emojis.dart';
 
 part 'log_entry.dart';
@@ -31,12 +32,22 @@ sealed class Entry with EquatableMixin {
 }
 
 enum EntryType {
-  @JsonValue('step')
   step,
-  @JsonValue('test')
   test,
-  @JsonValue('log')
   log;
+
+  static EntryType byName(String name) {
+    switch (name) {
+      case 'step':
+        return EntryType.step;
+      case 'test':
+        return EntryType.test;
+      case 'log':
+        return EntryType.log;
+      default:
+        throw ArgumentError('Unknown EntryType: $name');
+    }
+  }
 }
 
 /// The number of spaces used for indentation in the pretty print.

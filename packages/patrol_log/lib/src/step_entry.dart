@@ -1,6 +1,6 @@
 part of 'entry.dart';
 
-@JsonSerializable(explicitToJson: true)
+@JsonSerializable()
 class StepEntry extends Entry {
   StepEntry({
     required this.action,
@@ -8,10 +8,8 @@ class StepEntry extends Entry {
     this.exception,
     this.data,
     DateTime? timestamp,
-  }) : super(
-          timestamp: timestamp ?? DateTime.now(),
-          type: EntryType.step,
-        );
+    super.type = EntryType.step,
+  }) : super(timestamp: timestamp ?? DateTime.now());
 
   factory StepEntry.fromJson(Map<String, dynamic> json) =>
       _$StepEntryFromJson(json);

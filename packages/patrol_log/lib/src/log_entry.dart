@@ -1,14 +1,12 @@
 part of 'entry.dart';
 
-@JsonSerializable(explicitToJson: true)
+@JsonSerializable()
 class LogEntry extends Entry {
   LogEntry({
     required this.message,
     DateTime? timestamp,
-  }) : super(
-          timestamp: timestamp ?? DateTime.now(),
-          type: EntryType.log,
-        );
+    super.type = EntryType.log,
+  }) : super(timestamp: timestamp ?? DateTime.now());
 
   @override
   factory LogEntry.fromJson(Map<String, dynamic> json) =>
@@ -21,9 +19,12 @@ class LogEntry extends Entry {
 
   @override
   String pretty() {
-    return '$indentation${Emojis.log} $message';
+    return '$indentation${Emojis.log}   $message';
   }
 
   @override
   String toString() => 'LogEntry(${toJson()})';
+
+  @override
+  List<Object?> get props => [message, timestamp, type];
 }

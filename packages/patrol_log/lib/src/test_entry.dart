@@ -1,16 +1,14 @@
 part of 'entry.dart';
 
-@JsonSerializable(explicitToJson: true)
+@JsonSerializable()
 class TestEntry extends Entry {
   TestEntry({
     required this.name,
     required this.status,
     DateTime? timestamp,
     this.error,
-  }) : super(
-          timestamp: timestamp ?? DateTime.now(),
-          type: EntryType.test,
-        );
+    super.type = EntryType.test,
+  }) : super(timestamp: timestamp ?? DateTime.now());
 
   @override
   factory TestEntry.fromJson(Map<String, dynamic> json) =>

@@ -11,12 +11,21 @@ LogEntry _$LogEntryFromJson(Map<String, dynamic> json) => LogEntry(
       timestamp: json['timestamp'] == null
           ? null
           : DateTime.parse(json['timestamp'] as String),
+      type: $enumDecodeNullable(_$EntryTypeEnumMap, json['type']) ??
+          EntryType.log,
     );
 
 Map<String, dynamic> _$LogEntryToJson(LogEntry instance) => <String, dynamic>{
       'timestamp': instance.timestamp.toIso8601String(),
+      'type': _$EntryTypeEnumMap[instance.type]!,
       'message': instance.message,
     };
+
+const _$EntryTypeEnumMap = {
+  EntryType.step: 'step',
+  EntryType.test: 'test',
+  EntryType.log: 'log',
+};
 
 StepEntry _$StepEntryFromJson(Map<String, dynamic> json) => StepEntry(
       action: json['action'] as String,
@@ -26,10 +35,13 @@ StepEntry _$StepEntryFromJson(Map<String, dynamic> json) => StepEntry(
       timestamp: json['timestamp'] == null
           ? null
           : DateTime.parse(json['timestamp'] as String),
+      type: $enumDecodeNullable(_$EntryTypeEnumMap, json['type']) ??
+          EntryType.step,
     );
 
 Map<String, dynamic> _$StepEntryToJson(StepEntry instance) => <String, dynamic>{
       'timestamp': instance.timestamp.toIso8601String(),
+      'type': _$EntryTypeEnumMap[instance.type]!,
       'action': instance.action,
       'status': _$StepEntryStatusEnumMap[instance.status]!,
       'exception': instance.exception,
@@ -49,10 +61,13 @@ TestEntry _$TestEntryFromJson(Map<String, dynamic> json) => TestEntry(
           ? null
           : DateTime.parse(json['timestamp'] as String),
       error: json['error'] as String?,
+      type: $enumDecodeNullable(_$EntryTypeEnumMap, json['type']) ??
+          EntryType.test,
     );
 
 Map<String, dynamic> _$TestEntryToJson(TestEntry instance) => <String, dynamic>{
       'timestamp': instance.timestamp.toIso8601String(),
+      'type': _$EntryTypeEnumMap[instance.type]!,
       'name': instance.name,
       'status': _$TestEntryStatusEnumMap[instance.status]!,
       'error': instance.error,
