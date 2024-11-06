@@ -7,8 +7,10 @@ class TestEntry extends Entry {
     required this.status,
     DateTime? timestamp,
     this.error,
-    super.type = EntryType.test,
-  }) : super(timestamp: timestamp ?? DateTime.now());
+  }) : super(
+          timestamp: timestamp ?? DateTime.now(),
+          type: EntryType.test,
+        );
 
   @override
   factory TestEntry.fromJson(Map<String, dynamic> json) =>

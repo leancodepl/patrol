@@ -18,6 +18,8 @@ sealed class Entry with EquatableMixin {
   }
 
   final DateTime timestamp;
+
+  @JsonKey(includeToJson: true)
   final EntryType type;
 
   Map<String, dynamic> toJson();

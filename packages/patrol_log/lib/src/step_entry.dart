@@ -8,8 +8,10 @@ class StepEntry extends Entry {
     this.exception,
     this.data,
     DateTime? timestamp,
-    super.type = EntryType.step,
-  }) : super(timestamp: timestamp ?? DateTime.now());
+  }) : super(
+          timestamp: timestamp ?? DateTime.now(),
+          type: EntryType.step,
+        );
 
   factory StepEntry.fromJson(Map<String, dynamic> json) =>
       _$StepEntryFromJson(json);

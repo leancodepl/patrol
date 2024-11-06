@@ -5,8 +5,10 @@ class LogEntry extends Entry {
   LogEntry({
     required this.message,
     DateTime? timestamp,
-    super.type = EntryType.log,
-  }) : super(timestamp: timestamp ?? DateTime.now());
+  }) : super(
+          timestamp: timestamp ?? DateTime.now(),
+          type: EntryType.log,
+        );
 
   @override
   factory LogEntry.fromJson(Map<String, dynamic> json) =>
