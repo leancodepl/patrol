@@ -36,6 +36,7 @@ class PatrolLogReader {
 
   /// List of tests names that were skipped.
   final List<String> _skippedTests = [];
+
   final StreamController<Entry> _controller =
       StreamController<Entry>.broadcast();
   late final StreamSubscription<Entry> _streamSubscription;
