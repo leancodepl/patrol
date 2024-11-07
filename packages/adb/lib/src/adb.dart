@@ -222,6 +222,32 @@ class Adb {
     return process;
   }
 
+  /// Returns process that listen for adb logs.
+  Future<io.Process> logcat({
+    String? device,
+    Map<String, String> arguments = const {},
+    String? filter,
+  }) async {
+    await _adbInternals.ensureServerRunning();
+
+    final process = await io.Process.start(
+      'adb',
+      [
+        if (device != null) ...['-s', device],
+        'shell',
+        'logcat',
+        for (final arg in arguments.entries) ...[
+          arg.key,
+          arg.value,
+        ],
+        if (filter != null) filter,
+      ],
+      runInShell: true,
+    );
+
+    return process;
+  }
+
   /// Returns the list of currently attached devices.
   ///
   /// See also:
