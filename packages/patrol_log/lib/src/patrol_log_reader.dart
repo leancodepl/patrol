@@ -163,6 +163,10 @@ class PatrolLogReader {
 
             // Print the test entry to the console.
             log(entry.pretty());
+
+            // Reset the counters needed for clearing the lines.
+            stepsCounter = 0;
+            logsCounter = 0;
           case TestEntry():
             // Close the single test entry for the test that is finished.
             _singleEntries.last.closeTest(entry);
@@ -175,10 +179,6 @@ class PatrolLogReader {
             final executionTime = _singleEntries.last.executionTime.inSeconds;
             // Print test entry summary to console.
             log('${entry.pretty()} ${AnsiCodes.gray}(${executionTime}s)${AnsiCodes.reset}');
-
-            // Reset the counters needed for clearing the lines.
-            stepsCounter = 0;
-            logsCounter = 0;
           case StepEntry():
             _singleEntries.last.addEntry(entry);
             if (!hideTestSteps) {
