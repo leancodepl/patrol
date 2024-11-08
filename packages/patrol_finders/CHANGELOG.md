@@ -1,3 +1,7 @@
+## 2.2.0
+
+- Use `patrol_log` in `PatrolTester` methods.
+
 ## 2.1.3
 
 - Bump min Flutter SDK to 3.24.0 and Dart SDK to 3.5.0 (#2371)
