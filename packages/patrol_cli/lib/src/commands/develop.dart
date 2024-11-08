@@ -54,7 +54,6 @@ class DevelopCommand extends PatrolCommand {
     usesWaitOption();
     usesPortOptions();
     usesTagsOption();
-    usesShowFlutterLogs();
     usesHideTestSteps();
 
     usesUninstallOption();
@@ -246,7 +245,7 @@ class DevelopCommand extends PatrolCommand {
       uninstall: uninstall,
       device: device,
       openDevtools: boolArg('open-devtools'),
-      showFlutterLogs: boolArg('show-flutter-logs'),
+      showFlutterLogs: false,
       hideTestSteps: boolArg('hide-test-steps'),
     );
 
