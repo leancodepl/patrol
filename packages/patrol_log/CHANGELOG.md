@@ -1,3 +1,7 @@
+## 0.0.1+2
+
+- Remove flutter from dependencies.
+
 ## 0.0.1+1
 
 - Reset step counter in develop.
