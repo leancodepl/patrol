@@ -1,3 +1,7 @@
+## 2.2.0+1
+
+- Bump `patrol_log` version.
+
 ## 2.2.0
 
 - Use `patrol_log` in `PatrolTester` methods.
