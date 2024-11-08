@@ -136,6 +136,9 @@ void patrolTest(
       // We don't have to call this line because automator.configure() does the same.
       // await automator2.configure();
 
+      patrolLog.log(
+        TestEntry(name: description, status: TestEntryStatus.start),
+      );
       final patrolTester = PatrolIntegrationTester(
         tester: widgetTester,
         nativeAutomator: automator,

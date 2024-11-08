@@ -149,12 +149,6 @@ class PatrolAppService extends PatrolAppServiceServer {
     assert(_testExecutionCompleted.isCompleted == false);
     // patrolTest() always calls this method.
 
-    _patrolLog.log(
-      TestEntry(
-        name: request.name,
-        status: TestEntryStatus.start,
-      ),
-    );
     print('PatrolAppService.runDartTest(${request.name}) called');
     _testExecutionRequested.complete(request.name);
 
