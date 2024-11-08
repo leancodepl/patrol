@@ -1,4 +1,4 @@
-## 2.1.4
+## 2.2.0
 
 - Use `patrol_log` in `PatrolTester` methods.
 

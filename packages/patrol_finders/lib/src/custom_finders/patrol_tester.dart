@@ -287,23 +287,25 @@ class PatrolTester {
     Duration? settleTimeout,
     bool enablePatrolLog = true,
   }) {
-    return wrapWithPatrolLog(
-      action: 'tap',
-      finder: finder,
-      color: AnsiCodes.yellow,
-      enablePatrolLog: enablePatrolLog,
-      function: () => TestAsyncUtils.guard(() async {
-        final resolvedFinder = await waitUntilVisible(
-          finder,
-          timeout: visibleTimeout,
-          enablePatrolLog: false,
-        );
-        await tester.tap(resolvedFinder.first);
-        await _performPump(
-          settlePolicy: settlePolicy,
-          settleTimeout: settleTimeout,
-        );
-      }),
+    return TestAsyncUtils.guard(
+      () => wrapWithPatrolLog(
+        action: 'tap',
+        finder: finder,
+        color: AnsiCodes.yellow,
+        enablePatrolLog: enablePatrolLog,
+        function: () async {
+          final resolvedFinder = await waitUntilVisible(
+            finder,
+            timeout: visibleTimeout,
+            enablePatrolLog: false,
+          );
+          await tester.tap(resolvedFinder.first);
+          await _performPump(
+            settlePolicy: settlePolicy,
+            settleTimeout: settleTimeout,
+          );
+        },
+      ),
     );
   }
 
@@ -339,23 +341,25 @@ class PatrolTester {
     Duration? settleTimeout,
     bool enablePatrolLog = true,
   }) {
-    return wrapWithPatrolLog(
-      action: 'longPress',
-      finder: finder,
-      color: AnsiCodes.yellow,
-      enablePatrolLog: enablePatrolLog,
-      function: () => TestAsyncUtils.guard(() async {
-        final resolvedFinder = await waitUntilVisible(
-          finder,
-          timeout: visibleTimeout,
-          enablePatrolLog: false,
-        );
-        await tester.longPress(resolvedFinder.first);
-        await _performPump(
-          settlePolicy: settlePolicy,
-          settleTimeout: settleTimeout,
-        );
-      }),
+    return TestAsyncUtils.guard(
+      () => wrapWithPatrolLog(
+        action: 'longPress',
+        finder: finder,
+        color: AnsiCodes.yellow,
+        enablePatrolLog: enablePatrolLog,
+        function: () async {
+          final resolvedFinder = await waitUntilVisible(
+            finder,
+            timeout: visibleTimeout,
+            enablePatrolLog: false,
+          );
+          await tester.longPress(resolvedFinder.first);
+          await _performPump(
+            settlePolicy: settlePolicy,
+            settleTimeout: settleTimeout,
+          );
+        },
+      ),
     );
   }
 
@@ -401,28 +405,30 @@ class PatrolTester {
       tester.testTextInput.register();
     }
 
-    return wrapWithPatrolLog(
-      action: 'enterText',
-      value: text,
-      finder: finder,
-      color: AnsiCodes.magenta,
-      enablePatrolLog: enablePatrolLog,
-      function: () => TestAsyncUtils.guard(() async {
-        final resolvedFinder = await waitUntilVisible(
-          finder,
-          timeout: visibleTimeout,
-          enablePatrolLog: false,
-        );
-        await tester.enterText(resolvedFinder.first, text);
-        if (!kIsWeb) {
-          // When registering `testTextInput`, we have to unregister it
-          tester.testTextInput.unregister();
-        }
-        await _performPump(
-          settlePolicy: settlePolicy,
-          settleTimeout: settleTimeout,
-        );
-      }),
+    return TestAsyncUtils.guard(
+      () => wrapWithPatrolLog(
+        action: 'enterText',
+        value: text,
+        finder: finder,
+        color: AnsiCodes.magenta,
+        enablePatrolLog: enablePatrolLog,
+        function: () async {
+          final resolvedFinder = await waitUntilVisible(
+            finder,
+            timeout: visibleTimeout,
+            enablePatrolLog: false,
+          );
+          await tester.enterText(resolvedFinder.first, text);
+          if (!kIsWeb) {
+            // When registering `testTextInput`, we have to unregister it
+            tester.testTextInput.unregister();
+          }
+          await _performPump(
+            settlePolicy: settlePolicy,
+            settleTimeout: settleTimeout,
+          );
+        },
+      ),
     );
   }
 
@@ -437,29 +443,31 @@ class PatrolTester {
     Duration? timeout,
     bool enablePatrolLog = true,
   }) {
-    return wrapWithPatrolLog<PatrolFinder>(
-      action: 'waitUntilExists',
-      finder: finder,
-      color: AnsiCodes.cyan,
-      enablePatrolLog: enablePatrolLog,
-      function: () => TestAsyncUtils.guard(() async {
-        final duration = timeout ?? config.existsTimeout;
-        final end = tester.binding.clock.now().add(duration);
+    return TestAsyncUtils.guard(
+      () => wrapWithPatrolLog<PatrolFinder>(
+        action: 'waitUntilExists',
+        finder: finder,
+        color: AnsiCodes.cyan,
+        enablePatrolLog: enablePatrolLog,
+        function: () async {
+          final duration = timeout ?? config.existsTimeout;
+          final end = tester.binding.clock.now().add(duration);
 
-        while (finder.evaluate().isEmpty) {
-          final now = tester.binding.clock.now();
-          if (now.isAfter(end)) {
-            throw WaitUntilExistsTimeoutException(
-              finder: finder,
-              duration: duration,
-            );
+          while (finder.evaluate().isEmpty) {
+            final now = tester.binding.clock.now();
+            if (now.isAfter(end)) {
+              throw WaitUntilExistsTimeoutException(
+                finder: finder,
+                duration: duration,
+              );
+            }
+
+            await tester.pump(const Duration(milliseconds: 100));
           }
 
-          await tester.pump(const Duration(milliseconds: 100));
-        }
-
-        return finder;
-      }),
+          return finder;
+        },
+      ),
     );
   }
 
@@ -475,29 +483,31 @@ class PatrolTester {
     Duration? timeout,
     bool enablePatrolLog = true,
   }) {
-    return wrapWithPatrolLog(
-      action: 'waitUntilVisible',
-      finder: finder,
-      color: AnsiCodes.cyan,
-      enablePatrolLog: enablePatrolLog,
-      function: () => TestAsyncUtils.guard(() async {
-        final duration = timeout ?? config.visibleTimeout;
-        final end = tester.binding.clock.now().add(duration);
-        final hitTestableFinder = finder.hitTestable();
-        while (hitTestableFinder.evaluate().isEmpty) {
-          final now = tester.binding.clock.now();
-          if (now.isAfter(end)) {
-            throw WaitUntilVisibleTimeoutException(
-              finder: finder,
-              duration: duration,
-            );
+    return TestAsyncUtils.guard(
+      () => wrapWithPatrolLog(
+        action: 'waitUntilVisible',
+        finder: finder,
+        color: AnsiCodes.cyan,
+        enablePatrolLog: enablePatrolLog,
+        function: () async {
+          final duration = timeout ?? config.visibleTimeout;
+          final end = tester.binding.clock.now().add(duration);
+          final hitTestableFinder = finder.hitTestable();
+          while (hitTestableFinder.evaluate().isEmpty) {
+            final now = tester.binding.clock.now();
+            if (now.isAfter(end)) {
+              throw WaitUntilVisibleTimeoutException(
+                finder: finder,
+                duration: duration,
+              );
+            }
+
+            await tester.pump(const Duration(milliseconds: 100));
           }
 
-          await tester.pump(const Duration(milliseconds: 100));
-        }
-
-        return PatrolFinder(finder: hitTestableFinder, tester: this);
-      }),
+          return PatrolFinder(finder: hitTestableFinder, tester: this);
+        },
+      ),
     );
   }
 
@@ -546,42 +556,44 @@ class PatrolTester {
     SettlePolicy? settlePolicy,
     bool enablePatrolLog = true,
   }) {
-    return wrapWithPatrolLog<PatrolFinder>(
-      action: 'dragUntilExists',
-      finder: view,
-      color: AnsiCodes.blue,
-      enablePatrolLog: enablePatrolLog,
-      function: () => TestAsyncUtils.guard(() async {
-        var viewPatrolFinder = PatrolFinder(finder: view, tester: this);
-        await viewPatrolFinder.waitUntilVisible();
-        viewPatrolFinder = viewPatrolFinder.hitTestable().first;
-        dragDuration ??= config.dragDuration;
-        settleBetweenScrollsTimeout ??= config.settleBetweenScrollsTimeout;
+    return TestAsyncUtils.guard(
+      () => wrapWithPatrolLog<PatrolFinder>(
+        action: 'dragUntilExists',
+        finder: view,
+        color: AnsiCodes.blue,
+        enablePatrolLog: enablePatrolLog,
+        function: () async {
+          var viewPatrolFinder = PatrolFinder(finder: view, tester: this);
+          await viewPatrolFinder.waitUntilVisible();
+          viewPatrolFinder = viewPatrolFinder.hitTestable().first;
+          dragDuration ??= config.dragDuration;
+          settleBetweenScrollsTimeout ??= config.settleBetweenScrollsTimeout;
 
-        var iterationsLeft = maxIteration;
-        while (iterationsLeft > 0 && finder.evaluate().isEmpty) {
-          await tester.timedDrag(
-            viewPatrolFinder,
-            moveStep,
-            dragDuration!,
-          );
-          await _performPump(
-            settlePolicy: settlePolicy,
-            settleTimeout: settleBetweenScrollsTimeout,
-          );
-          iterationsLeft -= 1;
-        }
+          var iterationsLeft = maxIteration;
+          while (iterationsLeft > 0 && finder.evaluate().isEmpty) {
+            await tester.timedDrag(
+              viewPatrolFinder,
+              moveStep,
+              dragDuration!,
+            );
+            await _performPump(
+              settlePolicy: settlePolicy,
+              settleTimeout: settleBetweenScrollsTimeout,
+            );
+            iterationsLeft -= 1;
+          }
 
-        if (iterationsLeft <= 0) {
-          throw WaitUntilExistsTimeoutException(
-            finder: finder,
-            // TODO: set reasonable duration or create new exception for this case
-            duration: settleBetweenScrollsTimeout!,
-          );
-        }
+          if (iterationsLeft <= 0) {
+            throw WaitUntilExistsTimeoutException(
+              finder: finder,
+              // TODO: set reasonable duration or create new exception for this case
+              duration: settleBetweenScrollsTimeout!,
+            );
+          }
 
-        return PatrolFinder(finder: finder, tester: this);
-      }),
+          return PatrolFinder(finder: finder, tester: this);
+        },
+      ),
     );
   }
 
@@ -626,42 +638,45 @@ class PatrolTester {
     SettlePolicy? settlePolicy,
     bool enablePatrolLog = true,
   }) {
-    return wrapWithPatrolLog<PatrolFinder>(
-      action: 'dragUntilVisible',
-      finder: view,
-      color: AnsiCodes.blue,
-      enablePatrolLog: enablePatrolLog,
-      function: () => TestAsyncUtils.guard(() async {
-        var viewPatrolFinder = PatrolFinder(finder: view, tester: this);
-        await viewPatrolFinder.waitUntilVisible();
-        viewPatrolFinder = viewPatrolFinder.hitTestable().first;
-        dragDuration ??= config.dragDuration;
-        settleBetweenScrollsTimeout ??= config.settleBetweenScrollsTimeout;
+    return TestAsyncUtils.guard(
+      () => wrapWithPatrolLog<PatrolFinder>(
+        action: 'dragUntilVisible',
+        finder: view,
+        color: AnsiCodes.blue,
+        enablePatrolLog: enablePatrolLog,
+        function: () async {
+          var viewPatrolFinder = PatrolFinder(finder: view, tester: this);
+          await viewPatrolFinder.waitUntilVisible();
+          viewPatrolFinder = viewPatrolFinder.hitTestable().first;
+          dragDuration ??= config.dragDuration;
+          settleBetweenScrollsTimeout ??= config.settleBetweenScrollsTimeout;
 
-        var iterationsLeft = maxIteration;
-        while (iterationsLeft > 0 && finder.hitTestable().evaluate().isEmpty) {
-          await tester.timedDrag(
-            viewPatrolFinder,
-            moveStep,
-            dragDuration!,
-          );
-          await _performPump(
-            settlePolicy: settlePolicy,
-            settleTimeout: settleBetweenScrollsTimeout,
-          );
-          iterationsLeft -= 1;
-        }
+          var iterationsLeft = maxIteration;
+          while (
+              iterationsLeft > 0 && finder.hitTestable().evaluate().isEmpty) {
+            await tester.timedDrag(
+              viewPatrolFinder,
+              moveStep,
+              dragDuration!,
+            );
+            await _performPump(
+              settlePolicy: settlePolicy,
+              settleTimeout: settleBetweenScrollsTimeout,
+            );
+            iterationsLeft -= 1;
+          }
 
-        if (iterationsLeft <= 0) {
-          throw WaitUntilVisibleTimeoutException(
-            finder: finder.hitTestable(),
-            // TODO: set reasonable duration or create new exception for this case
-            duration: settleBetweenScrollsTimeout!,
-          );
-        }
+          if (iterationsLeft <= 0) {
+            throw WaitUntilVisibleTimeoutException(
+              finder: finder.hitTestable(),
+              // TODO: set reasonable duration or create new exception for this case
+              duration: settleBetweenScrollsTimeout!,
+            );
+          }
 
-        return PatrolFinder(finder: finder.hitTestable().first, tester: this);
-      }),
+          return PatrolFinder(finder: finder.hitTestable().first, tester: this);
+        },
+      ),
     );
   }
 
