@@ -32,17 +32,12 @@ class StepEntry extends Entry {
   /// Returns the index of the step with the correct number of spaces,
   /// to format the output.
   String printIndex(int? number) {
-    if (number != null) {
-      if (number < 10) {
-        return '  $number.';
-      } else if (number < 100) {
-        return ' $number.';
-      } else {
-        return '$number.';
-      }
-    }
-
-    return '';
+    return switch (number) {
+      == null => '',
+      < 10 => '  $number.',
+      < 100 => ' $number.',
+      _ => '$number.',
+    };
   }
 
   @override
