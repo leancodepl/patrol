@@ -188,6 +188,20 @@ abstract class PatrolCommand extends Command<int> {
     );
   }
 
+  void usesShowFlutterLogs() {
+    argParser.addFlag(
+      'show-flutter-logs',
+      help: 'Show Flutter logs while running the tests.',
+    );
+  }
+
+  void usesHideTestSteps() {
+    argParser.addFlag(
+      'hide-test-steps',
+      help: 'Hide test steps while running the tests.',
+    );
+  }
+
   /// Gets the parsed command-line flag named [name] as a `bool`.
   ///
   /// If no flag named [name] was added to the `ArgParser`, an [ArgumentError]

@@ -11,6 +11,7 @@ import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/runner/flutter_command.dart';
+import 'package:patrol_log/patrol_log.dart';
 import 'package:platform/platform.dart';
 import 'package:process/process.dart';
 
@@ -94,6 +95,7 @@ class AndroidTestBackend {
         ..disposedBy(scope);
       process.listenStdOut((l) => _logger.detail('\t: $l')).disposedBy(scope);
       process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
+
       exitCode = await process.exitCode;
       if (exitCode == 0) {
         task.complete('Completed building $subject');
@@ -186,9 +188,42 @@ class AndroidTestBackend {
   Future<void> execute(
     AndroidAppOptions options,
     Device device, {
+    String? flavor,
     bool interruptible = false,
+    required bool showFlutterLogs,
+    required bool hideTestSteps,
   }) async {
     await _disposeScope.run((scope) async {
+      // Read patrol logs from logcat
+      final processLogcat = await _adb.logcat(
+        device: device.id,
+        arguments: {
+          '-T': '1',
+        },
+        filter: 'PatrolServer:I Patrol:I flutter:I *:S',
+      )
+        ..disposedBy(scope);
+
+      var flavorPath = '';
+      if (flavor != null) {
+        flavorPath = 'flavors/$flavor/';
+      }
+      final path =
+          'file://${_rootDirectory.path}/build/app/reports/androidTests/connected/${flavorPath}index.html';
+      final reportPath =
+          _platform.isWindows ? path.replaceAll(r'\', '/') : path;
+
+      final patrolLogReader = PatrolLogReader(
+        listenStdOut: processLogcat.listenStdOut,
+        scope: scope,
+        log: _logger.info,
+        reportPath: reportPath,
+        showFlutterLogs: showFlutterLogs,
+        hideTestSteps: hideTestSteps,
+      )
+        ..listen()
+        ..startTimer();
+
       final subject = '${options.description} on ${device.description}';
       final task = _logger.task('Executing tests of $subject');
 
@@ -211,13 +246,21 @@ class AndroidTestBackend {
         const prefix = 'There were failing tests. ';
         if (l.contains(prefix)) {
           final msg = l.substring(prefix.length + 2);
-          _logger.err('\t$msg');
+          _logger.detail('\t$msg');
         } else {
           _logger.detail('\t$l');
         }
       }).disposedBy(scope);
 
       final exitCode = await process.exitCode;
+      patrolLogReader.stopTimer();
+      processLogcat.kill();
+
+      // Don't print the summary in develop
+      if (!interruptible) {
+        _logger.info(patrolLogReader.summary);
+      }
+
       if (exitCode == 0) {
         task.complete('Completed executing $subject');
       } else if (exitCode != 0 && interruptible) {

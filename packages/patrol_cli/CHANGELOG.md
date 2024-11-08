@@ -1,3 +1,7 @@
+## 3.4.0-dev.1
+
+- Add support for the patrol_log package. (#2387)
+
 ## 3.3.0
 
 - Add `clear-permissions` flag on ios commands. (#2367)

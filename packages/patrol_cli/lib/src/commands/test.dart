@@ -56,6 +56,8 @@ class TestCommand extends PatrolCommand {
     usesTagsOption();
     usesExcludeTagsOption();
     useCoverageOptions();
+    usesShowFlutterLogs();
+    usesHideTestSteps();
 
     usesUninstallOption();
 
@@ -266,6 +268,8 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       macosOpts,
       uninstall: uninstall,
       device: device,
+      showFlutterLogs: boolArg('show-flutter-logs'),
+      hideTestSteps: boolArg('hide-test-steps'),
     );
 
     return allPassed ? 0 : 1;
@@ -340,13 +344,21 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
     MacOSAppOptions macos, {
     required bool uninstall,
     required Device device,
+    required bool showFlutterLogs,
+    required bool hideTestSteps,
   }) async {
     Future<void> Function() action;
     Future<void> Function()? finalizer;
 
     switch (device.targetPlatform) {
       case TargetPlatform.android:
-        action = () => _androidTestBackend.execute(android, device);
+        action = () => _androidTestBackend.execute(
+              android,
+              device,
+              showFlutterLogs: showFlutterLogs,
+              hideTestSteps: hideTestSteps,
+              flavor: flutterOpts.flavor,
+            );
         final package = android.packageName;
         if (package != null && uninstall) {
           finalizer = () => _androidTestBackend.uninstall(package, device);
@@ -354,7 +366,12 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       case TargetPlatform.macOS:
         action = () async => _macosTestBackend.execute(macos, device);
       case TargetPlatform.iOS:
-        action = () async => _iosTestBackend.execute(ios, device);
+        action = () async => _iosTestBackend.execute(
+              ios,
+              device,
+              showFlutterLogs: showFlutterLogs,
+              hideTestSteps: hideTestSteps,
+            );
         final bundleId = ios.bundleId;
         if (bundleId != null && uninstall) {
           finalizer = () => _iosTestBackend.uninstall(
