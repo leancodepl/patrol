@@ -111,20 +111,6 @@ class PatrolLogReader {
       } else {
         _controller.add(entry);
       }
-    } else if (showFlutterLogs && line.contains('Runner: (Flutter) flutter:')) {
-      final regExp = RegExp(r'Runner: \(Flutter\) (.*)');
-      final match = regExp.firstMatch(line);
-      if (match != null) {
-        final matchedText = match.group(1)!;
-        log(matchedText);
-      }
-    } else if (showFlutterLogs && line.contains('I flutter :')) {
-      final regExp = RegExp('I (.*)');
-      final match = regExp.firstMatch(line);
-      if (match != null) {
-        final matchedText = match.group(1)!;
-        log(matchedText);
-      }
     }
   }
 
