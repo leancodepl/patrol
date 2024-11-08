@@ -161,8 +161,14 @@ class PatrolAppService extends PatrolAppServiceServer {
     final testExecutionResult = await testExecutionCompleted;
     if (!testExecutionResult.passed) {
       _patrolLog.log(
-        TestEntry(name: request.name, status: TestEntryStatus.failure),
+        TestEntry(
+          name: request.name,
+          status: TestEntryStatus.failure,
+        ),
       );
+      testExecutionResult.details?.split('\n').forEach(
+            (e) => _patrolLog.log(ErrorEntry(message: e)),
+          );
     } else {
       _patrolLog.log(
         TestEntry(
