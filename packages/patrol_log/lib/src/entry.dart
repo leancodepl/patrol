@@ -39,16 +39,12 @@ enum EntryType {
   log;
 
   static EntryType byName(String name) {
-    switch (name) {
-      case 'step':
-        return EntryType.step;
-      case 'test':
-        return EntryType.test;
-      case 'log':
-        return EntryType.log;
-      default:
-        throw ArgumentError('Unknown EntryType: $name');
-    }
+    return switch (name) {
+      'step' => EntryType.step,
+      'test' => EntryType.test,
+      'log' => EntryType.log,
+      _ => throw ArgumentError('Unknown EntryType: $name')
+    };
   }
 }
 
