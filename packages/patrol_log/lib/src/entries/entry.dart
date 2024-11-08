@@ -3,6 +3,7 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:patrol_log/patrol_log.dart';
 import 'package:patrol_log/src/emojis.dart';
 
+part 'error_entry.dart';
 part 'log_entry.dart';
 part 'step_entry.dart';
 part 'test_entry.dart';
@@ -35,12 +36,14 @@ sealed class Entry with EquatableMixin {
 }
 
 enum EntryType {
+  error,
   step,
   test,
   log;
 
   static EntryType byName(String name) {
     return switch (name) {
+      'error' => EntryType.error,
       'step' => EntryType.step,
       'test' => EntryType.test,
       'log' => EntryType.log,

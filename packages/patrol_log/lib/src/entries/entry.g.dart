@@ -6,6 +6,27 @@ part of 'entry.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
+ErrorEntry _$ErrorEntryFromJson(Map<String, dynamic> json) => ErrorEntry(
+      message: json['message'] as String,
+      timestamp: json['timestamp'] == null
+          ? null
+          : DateTime.parse(json['timestamp'] as String),
+    );
+
+Map<String, dynamic> _$ErrorEntryToJson(ErrorEntry instance) =>
+    <String, dynamic>{
+      'timestamp': instance.timestamp.toIso8601String(),
+      'type': _$EntryTypeEnumMap[instance.type]!,
+      'message': instance.message,
+    };
+
+const _$EntryTypeEnumMap = {
+  EntryType.error: 'error',
+  EntryType.step: 'step',
+  EntryType.test: 'test',
+  EntryType.log: 'log',
+};
+
 LogEntry _$LogEntryFromJson(Map<String, dynamic> json) => LogEntry(
       message: json['message'] as String,
       timestamp: json['timestamp'] == null
@@ -18,12 +39,6 @@ Map<String, dynamic> _$LogEntryToJson(LogEntry instance) => <String, dynamic>{
       'type': _$EntryTypeEnumMap[instance.type]!,
       'message': instance.message,
     };
-
-const _$EntryTypeEnumMap = {
-  EntryType.step: 'step',
-  EntryType.test: 'test',
-  EntryType.log: 'log',
-};
 
 StepEntry _$StepEntryFromJson(Map<String, dynamic> json) => StepEntry(
       action: json['action'] as String,

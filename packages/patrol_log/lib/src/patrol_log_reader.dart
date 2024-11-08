@@ -143,6 +143,7 @@ class PatrolLogReader {
       EntryType.step => StepEntry.fromJson(json),
       EntryType.test => TestEntry.fromJson(json),
       EntryType.log => LogEntry.fromJson(json),
+      EntryType.error => ErrorEntry.fromJson(json),
     };
   }
 
@@ -197,6 +198,9 @@ class PatrolLogReader {
             logsCounter++;
 
             // Print the log entry to the console.
+            log(entry.pretty());
+
+          case ErrorEntry():
             log(entry.pretty());
         }
       },
