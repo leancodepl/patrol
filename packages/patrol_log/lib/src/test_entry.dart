@@ -30,7 +30,7 @@ class TestEntry extends Entry {
     if (status == TestEntryStatus.skip) {
       return '${status.name} $_testName';
     }
-    return '${status.name} $_testName ${AnsiCodes.gray}(integration_test/$_filePath.dart)${AnsiCodes.reset}';
+    return '${status.name} $_testName ${AnsiCodes.gray}(integration_test/$_filePath.dart)${AnsiCodes.reset}${error != null ? '\n$error' : ''}';
   }
 
   String get nameWithPath =>
