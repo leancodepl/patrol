@@ -1,3 +1,7 @@
+## Unreleased
+
+- Fix tapping on notification on iOS 18. (#2394)
+
 ## 3.12.0
 
 - Add `clear-permissions` flag on ios commands. (#2367)
