@@ -1,5 +1,6 @@
-## Unreleased
+## 3.13.0-dev.1
 
+- Add support for the patrol_log package. (#2387)
 - Fix tapping on notification on iOS 18. (#2394)
 
 ## 3.12.0
