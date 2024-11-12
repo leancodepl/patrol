@@ -127,7 +127,9 @@
       on selector: Selector,
       inApp bundleId: String,
       dismissKeyboard: Bool,
-      withTimeout timeout: TimeInterval?
+      withTimeout timeout: TimeInterval?,
+      dx: CGFloat,
+      dy: CGFloat
     ) throws {
       try runAction("enterText") {
         throw PatrolError.methodNotImplemented("enterText")
@@ -139,7 +141,9 @@
       on selector: IOSSelector,
       inApp bundleId: String,
       dismissKeyboard: Bool,
-      withTimeout timeout: TimeInterval?
+      withTimeout timeout: TimeInterval?,
+      dx: CGFloat,
+      dy: CGFloat
     ) throws {
       try runAction("enterText") {
         throw PatrolError.methodNotImplemented("enterText")
@@ -151,7 +155,9 @@
       byIndex index: Int,
       inApp bundleId: String,
       dismissKeyboard: Bool,
-      withTimeout timeout: TimeInterval?
+      withTimeout timeout: TimeInterval?,
+      dx: CGFloat,
+      dy: CGFloat
     ) throws {
       try runAction("enterText") {
         throw PatrolError.methodNotImplemented("enterText")
