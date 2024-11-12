@@ -10,6 +10,8 @@ void main() {
 
       await $.pump(Duration(seconds: 3));
 
+      await $.native2.swipe(from: Offset(0.5, 0.7), to: Offset(0.5, 0.3));
+
       try {
         await $.native.tap(Selector(text: 'Accept all cookies'));
       } on PatrolActionException catch (_) {
@@ -46,6 +48,8 @@ void main() {
       await $('Open webview (StackOverflow)').scrollTo().tap();
 
       await $.pump(Duration(seconds: 3));
+
+      await $.native2.swipe(from: Offset(0.5, 0.7), to: Offset(0.5, 0.3));
 
       try {
         await $.native2.tap(
