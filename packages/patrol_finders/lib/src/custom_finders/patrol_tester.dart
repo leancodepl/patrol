@@ -14,6 +14,7 @@ class PatrolTesterConfig {
     this.settlePolicy = SettlePolicy.trySettle,
     this.dragDuration = const Duration(milliseconds: 100),
     this.settleBetweenScrollsTimeout = const Duration(seconds: 5),
+    this.printLogs = false,
   });
 
   /// Time after which [PatrolFinder.waitUntilExists] fails if it doesn't find
@@ -53,6 +54,9 @@ class PatrolTesterConfig {
   /// [settlePolicy]).
   final Duration settleBetweenScrollsTimeout;
 
+  /// If true, patrol finders logs will be printed to the console.
+  final bool printLogs;
+
   /// Creates a copy of this config but with the given fields replaced with the
   /// new values.
   PatrolTesterConfig copyWith({
@@ -61,6 +65,8 @@ class PatrolTesterConfig {
     Duration? settleTimeout,
     SettlePolicy? settlePolicy,
     Duration? dragDuration,
+    Duration? settleBetweenScrollsTimeout,
+    bool? printLogs,
   }) {
     return PatrolTesterConfig(
       existsTimeout: existsTimeout ?? this.existsTimeout,
@@ -68,6 +74,9 @@ class PatrolTesterConfig {
       settleTimeout: settleTimeout ?? this.settleTimeout,
       settlePolicy: settlePolicy ?? this.settlePolicy,
       dragDuration: dragDuration ?? this.dragDuration,
+      settleBetweenScrollsTimeout:
+          settleBetweenScrollsTimeout ?? this.settleBetweenScrollsTimeout,
+      printLogs: printLogs ?? this.printLogs,
     );
   }
 }
@@ -140,7 +149,7 @@ class PatrolTester {
     required Future<T> Function() function,
     bool enablePatrolLog = true,
   }) async {
-    if (!enablePatrolLog) {
+    if (!(config.printLogs && enablePatrolLog)) {
       return function();
     }
 
