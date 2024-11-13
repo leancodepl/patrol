@@ -90,7 +90,9 @@ void patrolTest(
   bool semanticsEnabled = true,
   TestVariant<Object?> variant = const DefaultTestVariant(),
   dynamic tags,
-  finders.PatrolTesterConfig config = const finders.PatrolTesterConfig(),
+  finders.PatrolTesterConfig config = const finders.PatrolTesterConfig(
+    printLogs: true,
+  ),
   NativeAutomatorConfig nativeAutomatorConfig = const NativeAutomatorConfig(),
   LiveTestWidgetsFlutterBindingFramePolicy framePolicy =
       LiveTestWidgetsFlutterBindingFramePolicy.fadePointers,
