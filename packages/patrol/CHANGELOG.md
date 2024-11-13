@@ -1,3 +1,7 @@
+## Unreleased
+
+- Fix macos functionality. (#2408)
+
 ## 3.13.0-dev.2
 
 - Bump `patrol_log` version.
