@@ -1,3 +1,7 @@
+## 2.3.0
+
+- Add option to disable printing patrol logs. Default value is disabled.
+
 ## 2.2.0+1
 
 - Bump `patrol_log` version.
