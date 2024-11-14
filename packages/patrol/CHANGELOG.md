@@ -1,6 +1,7 @@
-## Unreleased
+## 3.13.0-dev.3
 
 - Fix macos functionality. (#2408)
+- Bump `patrol_finders` and enable logging.
 
 ## 3.13.0-dev.2
 
