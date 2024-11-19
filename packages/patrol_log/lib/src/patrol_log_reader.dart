@@ -14,12 +14,14 @@ class PatrolLogReader {
     required this.reportPath,
     required this.showFlutterLogs,
     required this.hideTestSteps,
+    required this.clearTestSteps,
   }) : _scope = scope;
 
   final void Function(String) log;
   final String reportPath;
   final bool showFlutterLogs;
   final bool hideTestSteps;
+  final bool clearTestSteps;
   final StreamSubscription<void> Function(
     void Function(String) onData, {
     Function? onError,
@@ -172,7 +174,9 @@ class PatrolLogReader {
             _singleEntries.last.closeTest(entry);
 
             // Optionally clear all printed [StepEntry] and [LogEntry].
-            if (!showFlutterLogs && entry.status != TestEntryStatus.failure) {
+            if (!showFlutterLogs &&
+                clearTestSteps &&
+                entry.status != TestEntryStatus.failure) {
               _clearLines(stepsCounter + logsCounter + 1);
             }
 
@@ -184,10 +188,10 @@ class PatrolLogReader {
             if (!hideTestSteps) {
               // Clear the previous line it's not the new step, or increment counter
               // for new step
-              if (entry.status != StepEntryStatus.start) {
-                _clearPreviousLine();
-              } else {
+              if (entry.status == StepEntryStatus.start) {
                 stepsCounter++;
+              } else if (clearTestSteps) {
+                _clearPreviousLine();
               }
 
               // Print the step entry to the console.
