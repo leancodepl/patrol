@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:meta/meta.dart';
 import 'package:patrol_finders/patrol_finders.dart';
 import 'package:patrol_finders/src/custom_finders/utils.dart';
+import 'package:patrol_log/patrol_log.dart';
 
 /// Thrown when some [PatrolFinder]'s method fails.
 class PatrolFinderException implements Exception {
@@ -174,6 +175,45 @@ class PatrolFinder implements MatchFinder {
   /// [PatrolTester] that this [PatrolFinder] wraps.
   final PatrolTester tester;
 
+  /// Wraps a function with a log entry for the start and end of the function.
+  Future<T> wrapWithPatrolLog<T>({
+    required String action,
+    String? value,
+    required String color,
+    required Future<T> Function() function,
+    bool enablePatrolLog = true,
+  }) async {
+    if (!(tester.config.printLogs && enablePatrolLog)) {
+      return function();
+    }
+
+    final finderText = finder
+        .toString(describeSelf: true)
+        .replaceAll('A finder that searches for', '')
+        .replaceAll(' (considering only hit-testable ones)', '')
+        .replaceAll(' (ignoring all but first)', '');
+
+    final valueText = value != null ? ' "$value"' : '';
+    final text = '$color$action${AnsiCodes.reset}$valueText$finderText';
+    tester.patrolLog
+        .log(StepEntry(action: text, status: StepEntryStatus.start));
+    try {
+      final result = await function();
+      tester.patrolLog
+          .log(StepEntry(action: text, status: StepEntryStatus.success));
+      return result;
+    } catch (err) {
+      tester.patrolLog.log(
+        StepEntry(
+          action: text,
+          status: StepEntryStatus.failure,
+          exception: err.toString(),
+        ),
+      );
+      rethrow;
+    }
+  }
+
   /// Waits until this finder finds at least 1 visible widget and then taps on
   /// it.
   ///
@@ -203,14 +243,18 @@ class PatrolFinder implements MatchFinder {
     SettlePolicy? settlePolicy,
     Duration? visibleTimeout,
     Duration? settleTimeout,
-  }) async {
-    await tester.tap(
-      this,
-      settlePolicy: settlePolicy,
-      visibleTimeout: visibleTimeout,
-      settleTimeout: settleTimeout,
-    );
-  }
+  }) async =>
+      wrapWithPatrolLog(
+        action: 'tap',
+        color: AnsiCodes.yellow,
+        function: () => tester.tap(
+          this,
+          settlePolicy: settlePolicy,
+          visibleTimeout: visibleTimeout,
+          settleTimeout: settleTimeout,
+          enablePatrolLog: false,
+        ),
+      );
 
   /// Waits until this finder finds at least 1 visible widget and then makes
   /// long press gesture on it.
@@ -241,14 +285,18 @@ class PatrolFinder implements MatchFinder {
     SettlePolicy? settlePolicy,
     Duration? visibleTimeout,
     Duration? settleTimeout,
-  }) async {
-    await tester.longPress(
-      this,
-      settlePolicy: settlePolicy,
-      visibleTimeout: visibleTimeout,
-      settleTimeout: settleTimeout,
-    );
-  }
+  }) async =>
+      wrapWithPatrolLog(
+        action: 'longPress',
+        color: AnsiCodes.yellow,
+        function: () => tester.longPress(
+          this,
+          settlePolicy: settlePolicy,
+          visibleTimeout: visibleTimeout,
+          settleTimeout: settleTimeout,
+          enablePatrolLog: false,
+        ),
+      );
 
   /// Waits until this finder finds at least 1 visible widget and then enters
   /// text into it.
@@ -280,15 +328,19 @@ class PatrolFinder implements MatchFinder {
     SettlePolicy? settlePolicy,
     Duration? visibleTimeout,
     Duration? settleTimeout,
-  }) async {
-    await tester.enterText(
-      this,
-      text,
-      settlePolicy: settlePolicy,
-      visibleTimeout: visibleTimeout,
-      settleTimeout: settleTimeout,
-    );
-  }
+  }) async =>
+      wrapWithPatrolLog(
+        action: 'enterText',
+        color: AnsiCodes.magenta,
+        function: () => tester.enterText(
+          this,
+          text,
+          settlePolicy: settlePolicy,
+          visibleTimeout: visibleTimeout,
+          settleTimeout: settleTimeout,
+          enablePatrolLog: false,
+        ),
+      );
 
   /// Shorthand for [PatrolTester.scrollUntilVisible].
   ///
@@ -309,15 +361,22 @@ class PatrolFinder implements MatchFinder {
     Duration? dragDuration,
     SettlePolicy? settlePolicy,
   }) {
-    return tester.scrollUntilVisible(
-      finder: finder,
-      view: view,
-      delta: step,
-      scrollDirection: scrollDirection,
-      maxScrolls: maxScrolls,
-      settleBetweenScrollsTimeout: settleBetweenScrollsTimeout,
-      settlePolicy: settlePolicy,
-      dragDuration: dragDuration,
+    return wrapWithPatrolLog(
+      action: 'scrollTo',
+      color: AnsiCodes.green,
+      function: () {
+        return tester.scrollUntilVisible(
+          finder: this,
+          view: view,
+          delta: step,
+          scrollDirection: scrollDirection,
+          maxScrolls: maxScrolls,
+          settleBetweenScrollsTimeout: settleBetweenScrollsTimeout,
+          settlePolicy: settlePolicy,
+          dragDuration: dragDuration,
+          enablePatrolLog: false,
+        );
+      },
     );
   }
 
@@ -327,9 +386,12 @@ class PatrolFinder implements MatchFinder {
   ///
   /// Timeout is globally set by [PatrolTester.config.visibleTimeout]. If you
   /// want to override this global setting, set [timeout].
-  Future<PatrolFinder> waitUntilExists({Duration? timeout}) {
-    return tester.waitUntilExists(this, timeout: timeout);
-  }
+  Future<PatrolFinder> waitUntilExists({Duration? timeout}) =>
+      wrapWithPatrolLog(
+        action: 'waitUntilExists',
+        color: AnsiCodes.cyan,
+        function: () => tester.waitUntilExists(this, timeout: timeout),
+      );
 
   /// Waits until this finder finds at least one visible widget.
   ///
@@ -338,9 +400,12 @@ class PatrolFinder implements MatchFinder {
   ///
   /// Timeout is globally set by [PatrolTester.config.visibleTimeout]. If you
   /// want to override this global setting, set [timeout].
-  Future<PatrolFinder> waitUntilVisible({Duration? timeout}) {
-    return tester.waitUntilVisible(this, timeout: timeout);
-  }
+  Future<PatrolFinder> waitUntilVisible({Duration? timeout}) =>
+      wrapWithPatrolLog(
+        action: 'waitUntilVisible',
+        color: AnsiCodes.cyan,
+        function: () => tester.waitUntilVisible(this, timeout: timeout),
+      );
 
   /// Returns a finder matching widget of type [T] which also fulfills
   /// [predicate].

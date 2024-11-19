@@ -129,13 +129,13 @@ class PatrolTester {
   PatrolTester({
     required this.tester,
     required this.config,
-  }) : _patrolLog = PatrolLogWriter();
+  }) : patrolLog = PatrolLogWriter();
 
   /// Global configuration of this tester.
   final PatrolTesterConfig config;
 
   /// Logs a message to the patrol log.
-  final PatrolLogWriter _patrolLog;
+  final PatrolLogWriter patrolLog;
 
   /// Flutter's widget tester that this [PatrolTester] wraps.
   final WidgetTester tester;
@@ -161,13 +161,13 @@ class PatrolTester {
         '';
     final valueText = value != null ? ' "$value"' : '';
     final text = '$color$action${AnsiCodes.reset}$valueText$finderText';
-    _patrolLog.log(StepEntry(action: text, status: StepEntryStatus.start));
+    patrolLog.log(StepEntry(action: text, status: StepEntryStatus.start));
     try {
       final result = await function();
-      _patrolLog.log(StepEntry(action: text, status: StepEntryStatus.success));
+      patrolLog.log(StepEntry(action: text, status: StepEntryStatus.success));
       return result;
     } catch (err) {
-      _patrolLog.log(
+      patrolLog.log(
         StepEntry(
           action: text,
           status: StepEntryStatus.failure,
