@@ -1,3 +1,7 @@
+## 3.13.0-dev.4
+
+- Bump `patrol_finders` and `patrol_log`
+
 ## 3.13.0-dev.3
 
 - Fix macos functionality. (#2408)
