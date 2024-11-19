@@ -55,6 +55,7 @@ class DevelopCommand extends PatrolCommand {
     usesPortOptions();
     usesTagsOption();
     usesHideTestSteps();
+    usesClearTestSteps();
 
     usesUninstallOption();
 
@@ -247,6 +248,7 @@ class DevelopCommand extends PatrolCommand {
       openDevtools: boolArg('open-devtools'),
       showFlutterLogs: false,
       hideTestSteps: boolArg('hide-test-steps'),
+      clearTestSteps: boolArg('clear-test-steps'),
     );
 
     return 0; // for now, all exit codes are 0
@@ -324,6 +326,7 @@ class DevelopCommand extends PatrolCommand {
     required bool openDevtools,
     required bool showFlutterLogs,
     required bool hideTestSteps,
+    required bool clearTestSteps,
   }) async {
     Future<void> Function() action;
     Future<void> Function()? finalizer;
@@ -339,6 +342,7 @@ class DevelopCommand extends PatrolCommand {
               showFlutterLogs: showFlutterLogs,
               hideTestSteps: hideTestSteps,
               flavor: flutterOpts.flavor,
+              clearTestSteps: clearTestSteps,
             );
         final package = android.packageName;
         if (package != null && uninstall) {
@@ -356,6 +360,7 @@ class DevelopCommand extends PatrolCommand {
               interruptible: true,
               showFlutterLogs: showFlutterLogs,
               hideTestSteps: hideTestSteps,
+              clearTestSteps: clearTestSteps,
             );
         final bundleId = iosOpts.bundleId;
         if (bundleId != null && uninstall) {
