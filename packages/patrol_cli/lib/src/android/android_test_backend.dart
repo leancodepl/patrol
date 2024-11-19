@@ -192,6 +192,7 @@ class AndroidTestBackend {
     bool interruptible = false,
     required bool showFlutterLogs,
     required bool hideTestSteps,
+    required bool clearTestSteps,
   }) async {
     await _disposeScope.run((scope) async {
       // Read patrol logs from logcat
@@ -220,6 +221,7 @@ class AndroidTestBackend {
         reportPath: reportPath,
         showFlutterLogs: showFlutterLogs,
         hideTestSteps: hideTestSteps,
+        clearTestSteps: clearTestSteps,
       )
         ..listen()
         ..startTimer();

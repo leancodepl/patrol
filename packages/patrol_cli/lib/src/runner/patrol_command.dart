@@ -202,6 +202,14 @@ abstract class PatrolCommand extends Command<int> {
     );
   }
 
+  void usesClearTestSteps() {
+    argParser.addFlag(
+      'clear-test-steps',
+      help: 'Clear test steps after the test finishes.',
+      defaultsTo: true,
+    );
+  }
+
   /// Gets the parsed command-line flag named [name] as a `bool`.
   ///
   /// If no flag named [name] was added to the `ArgParser`, an [ArgumentError]
