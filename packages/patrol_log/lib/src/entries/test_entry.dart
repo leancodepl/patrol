@@ -27,7 +27,7 @@ class TestEntry extends Entry {
 
   @override
   String pretty() {
-    if (status == TestEntryStatus.skip) {
+    if (!isFinished) {
       return '${status.name} $_testName';
     }
     return '${status.name} $_testName ${AnsiCodes.gray}(integration_test/$_filePath.dart)${AnsiCodes.reset}${error != null ? '\n$error' : ''}';
