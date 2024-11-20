@@ -1,6 +1,10 @@
+## 3.4.0-dev.3
+
+- Add flag `clear-test-steps`. (#2421)
+
 ## 3.4.0-dev.2
 
-- Bump `patrol_log` version.
+- Bump `patrol_log` version. (#2402)
 
 ## 3.4.0-dev.1
 
