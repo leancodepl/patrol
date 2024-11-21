@@ -19,7 +19,7 @@ public class LambdatestPatrolJUnitRunner extends PatrolJUnitRunner {
         try {
             client.listDartTests();
 
-            //TODO verify in a project where we use Browserstack
+            //TODO verify in a project where we use LambdaTest
         } catch (PatrolAppServiceClientException ex) {
             ex.printStackTrace();
             // If the client on localhost:8082 fails, let's apply the wokraround
