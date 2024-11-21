@@ -8,7 +8,7 @@
 
 ![Patrol promotial graphics][promo_graphics]
 
-Simple yet powerful Flutter-first UI testing framework overcoming limitations of
+Simple ye powerful Flutter-first UI testing framework overcoming limitations of
 `flutter_test`, `integration_test`, and `flutter_driver`. Created and supported
 by [LeanCode](https://leancode.co).
 
