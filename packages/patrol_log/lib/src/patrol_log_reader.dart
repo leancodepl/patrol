@@ -146,6 +146,7 @@ class PatrolLogReader {
       EntryType.test => TestEntry.fromJson(json),
       EntryType.log => LogEntry.fromJson(json),
       EntryType.error => ErrorEntry.fromJson(json),
+      EntryType.warning => WarningEntry.fromJson(json),
     };
   }
 
@@ -205,6 +206,7 @@ class PatrolLogReader {
             log(entry.pretty());
 
           case ErrorEntry():
+          case WarningEntry():
             log(entry.pretty());
         }
       },
@@ -226,7 +228,7 @@ class PatrolLogReader {
       '${Emojis.failure} Failed: $failedTestsCount\n'
       '${failedTestsCount > 0 ? '$failedTestsList\n' : ''}'
       '${Emojis.skip} Skipped: $skippedTests\n'
-      '${Emojis.report} Report: $reportPath\n'
+      '${Emojis.report} Report: ${reportPath.replaceAll(' ', '%20')}\n'
       '${Emojis.duration} Duration: ${_stopwatch.elapsed.inSeconds}s\n';
 
   /// Closes the stream subscription and the stream controller.
