@@ -4,8 +4,12 @@ import 'dart:convert';
 import 'package:patrol_log/patrol_log.dart';
 
 class PatrolLogWriter {
-  PatrolLogWriter() : _controller = StreamController<Entry>.broadcast() {
+  PatrolLogWriter({Map<String, dynamic> config = const {}})
+      : _controller = StreamController<Entry>.broadcast() {
     write();
+
+    /// Pass config to the PatrolLogReader
+    log(ConfigEntry(config: config));
   }
 
   final StreamController<Entry> _controller;

@@ -21,7 +21,7 @@ class ErrorEntry extends Entry {
 
   @override
   String pretty() {
-    return message;
+    return '${AnsiCodes.red}$message${AnsiCodes.reset}';
   }
 
   @override
