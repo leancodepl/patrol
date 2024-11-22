@@ -27,7 +27,8 @@ void main() {
           testServerPort: 2,
         );
 
-        final invocation = options.toGradleAssembleTestInvocation(isWindows: true);
+        final invocation =
+            options.toGradleAssembleTestInvocation(isWindows: true);
         expect(
           invocation,
           equals([
@@ -55,7 +56,8 @@ void main() {
           testServerPort: 2,
         );
 
-        final invocation = options.toGradleAssembleTestInvocation(isWindows: false);
+        final invocation =
+            options.toGradleAssembleTestInvocation(isWindows: false);
         expect(
           invocation,
           equals([
@@ -91,7 +93,8 @@ void main() {
           testServerPort: 2,
         );
 
-        final invocation = options.toGradleAssembleTestInvocation(isWindows: true);
+        final invocation =
+            options.toGradleAssembleTestInvocation(isWindows: true);
         expect(
           invocation,
           equals([
@@ -120,7 +123,8 @@ void main() {
           testServerPort: 2,
         );
 
-        final invocation = options.toGradleAssembleTestInvocation(isWindows: false);
+        final invocation =
+            options.toGradleAssembleTestInvocation(isWindows: false);
         expect(
           invocation,
           equals([
@@ -139,7 +143,9 @@ void main() {
   group('IOSAppOptions', () {
     late IOSAppOptions options;
 
-    group('correctly encodes default xcodebuild invocation for simulator with dartDefineFromFile path', () {
+    group(
+        'correctly encodes default xcodebuild invocation for simulator with dartDefineFromFile path',
+        () {
       const flutterOpts = FlutterAppOptions(
         command: flutterCommand,
         target: 'integration_test/app_test.dart',
@@ -220,7 +226,9 @@ void main() {
       });
     });
 
-    group('correctly encodes default xcodebuild invocation for simulator without dartDefineFromFile path', () {
+    group(
+        'correctly encodes default xcodebuild invocation for simulator without dartDefineFromFile path',
+        () {
       const flutterOpts = FlutterAppOptions(
         command: flutterCommand,
         target: 'integration_test/app_test.dart',
