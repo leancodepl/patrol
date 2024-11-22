@@ -1,3 +1,8 @@
+## 0.2.0
+
+- Fix report path when path contain spaces.
+- Fix path to the test file on the failed test list in summary.
+
 ## 0.1.0
 
 - Add option to not clear test steps.
