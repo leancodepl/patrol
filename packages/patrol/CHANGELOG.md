@@ -1,3 +1,7 @@
+## 3.13.0-dev.5
+
+- Pass config to `patrol_log`.
+
 ## 3.13.0-dev.4
 
 - Bump `patrol_finders` and `patrol_log`
