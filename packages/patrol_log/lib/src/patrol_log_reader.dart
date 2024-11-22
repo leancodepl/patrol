@@ -43,6 +43,8 @@ class PatrolLogReader {
       StreamController<Entry>.broadcast();
   late final StreamSubscription<Entry> _streamSubscription;
 
+  final Map<String, dynamic> _config = {};
+
   void listen() {
     // Listen to the entry stream and pretty print the patrol logs.
     readEntries();
@@ -93,11 +95,10 @@ class PatrolLogReader {
 
   /// Take line containg PATROL_LOG tag, parse it to [Entry] and add to stream.
   void _parsePatrolLog(String line) {
-    final regExp = RegExp(r'PATROL_LOG \{(.*?)\}');
+    final regExp = RegExp('PATROL_LOG (.*)');
     final match = regExp.firstMatch(line);
     if (match != null) {
-      final matchedText = match.group(1)!;
-      final json = '{$matchedText}';
+      final json = match.group(1)!;
       final entry = parseEntry(json);
 
       if (entry case TestEntry _) {
@@ -147,6 +148,7 @@ class PatrolLogReader {
       EntryType.log => LogEntry.fromJson(json),
       EntryType.error => ErrorEntry.fromJson(json),
       EntryType.warning => WarningEntry.fromJson(json),
+      EntryType.config => ConfigEntry.fromJson(json),
     };
   }
 
@@ -208,9 +210,29 @@ class PatrolLogReader {
           case ErrorEntry():
           case WarningEntry():
             log(entry.pretty());
+          case ConfigEntry():
+            _readConfig(entry);
         }
       },
     );
+  }
+
+  /// Read the config passed by [PatrolLogWriter].
+  void _readConfig(ConfigEntry entry) {
+    if (_config.isNotEmpty) {
+      return;
+    }
+
+    _config.addAll(entry.config);
+
+    if (_config['printLogs'] == false) {
+      final warningEntry = WarningEntry(
+        message: 'Printing flutter steps is disabled in the config. '
+            'To enable it, set `PatrolTesterConfig(printLogs: true)`.',
+      );
+
+      log(warningEntry.pretty());
+    }
   }
 
   /// Returns a summary of the test results. That contains:

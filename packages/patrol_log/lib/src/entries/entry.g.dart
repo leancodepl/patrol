@@ -26,6 +26,7 @@ const _$EntryTypeEnumMap = {
   EntryType.test: 'test',
   EntryType.log: 'log',
   EntryType.warning: 'warning',
+  EntryType.config: 'config',
 };
 
 LogEntry _$LogEntryFromJson(Map<String, dynamic> json) => LogEntry(
@@ -102,4 +103,18 @@ Map<String, dynamic> _$WarningEntryToJson(WarningEntry instance) =>
       'timestamp': instance.timestamp.toIso8601String(),
       'type': _$EntryTypeEnumMap[instance.type]!,
       'message': instance.message,
+    };
+
+ConfigEntry _$ConfigEntryFromJson(Map<String, dynamic> json) => ConfigEntry(
+      config: json['config'] as Map<String, dynamic>,
+      timestamp: json['timestamp'] == null
+          ? null
+          : DateTime.parse(json['timestamp'] as String),
+    );
+
+Map<String, dynamic> _$ConfigEntryToJson(ConfigEntry instance) =>
+    <String, dynamic>{
+      'timestamp': instance.timestamp.toIso8601String(),
+      'type': _$EntryTypeEnumMap[instance.type]!,
+      'config': instance.config,
     };

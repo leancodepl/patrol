@@ -8,6 +8,7 @@ part 'log_entry.dart';
 part 'step_entry.dart';
 part 'test_entry.dart';
 part 'warning_entry.dart';
+part 'config_entry.dart';
 
 part 'entry.g.dart';
 
@@ -41,7 +42,8 @@ enum EntryType {
   step,
   test,
   log,
-  warning;
+  warning,
+  config;
 
   static EntryType byName(String name) {
     return switch (name) {
@@ -50,6 +52,7 @@ enum EntryType {
       'test' => EntryType.test,
       'log' => EntryType.log,
       'warning' => EntryType.warning,
+      'config' => EntryType.config,
       _ => throw ArgumentError('Unknown EntryType: $name')
     };
   }
