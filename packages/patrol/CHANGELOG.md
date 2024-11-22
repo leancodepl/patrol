@@ -5,6 +5,8 @@
 - Fix macos functionality. (#2408)
 - Bump `patrol_finders` and enable logging.
 
+This version requires version 3.4.0 of `patrol_cli` package.
+
 ## 3.12.0
 
 - Add `clear-permissions` flag on ios commands. (#2367)
