@@ -27,8 +27,7 @@ void main() {
           testServerPort: 2,
         );
 
-        final invocation =
-            options.toGradleAssembleTestInvocation(isWindows: true);
+        final invocation = options.toGradleAssembleTestInvocation(isWindows: true);
         expect(
           invocation,
           equals([
@@ -56,8 +55,7 @@ void main() {
           testServerPort: 2,
         );
 
-        final invocation =
-            options.toGradleAssembleTestInvocation(isWindows: false);
+        final invocation = options.toGradleAssembleTestInvocation(isWindows: false);
         expect(
           invocation,
           equals([
@@ -93,15 +91,14 @@ void main() {
           testServerPort: 2,
         );
 
-        final invocation =
-            options.toGradleAssembleTestInvocation(isWindows: true);
+        final invocation = options.toGradleAssembleTestInvocation(isWindows: true);
         expect(
           invocation,
           equals([
             r'.\gradlew.bat',
             ':app:assembleDevReleaseAndroidTest',
             r'-Ptarget=C:\Users\john\app\integration_test\app_test.dart',
-            '-Pdart-defines=RU1BSUw9dXNlckBleGFtcGxlLmNvbQ==,UEFTU1dPUkQ9bnk0bmNhdA==,Zm9vPWJhcg==',
+            '-Pdart-defines=RU1BSUw9dXNlckBleGFtcGxlLmNvbQ==,UEFTU1dPUkQ9bnk0bmNhdA==,Zm9vPWJhcg==,RkxVVFRFUl9BUFBfRkxBVk9SPWRldg==',
             '-Papp-server-port=1',
             '-Ptest-server-port=2',
           ]),
@@ -123,15 +120,14 @@ void main() {
           testServerPort: 2,
         );
 
-        final invocation =
-            options.toGradleAssembleTestInvocation(isWindows: false);
+        final invocation = options.toGradleAssembleTestInvocation(isWindows: false);
         expect(
           invocation,
           equals([
             './gradlew',
             ':app:assembleDevDebugAndroidTest',
             '-Ptarget=/Users/john/app/integration_test/app_test.dart',
-            '-Pdart-defines=RU1BSUw9dXNlckBleGFtcGxlLmNvbQ==,UEFTU1dPUkQ9bnk0bmNhdA==,Zm9vPWJhcg==',
+            '-Pdart-defines=RU1BSUw9dXNlckBleGFtcGxlLmNvbQ==,UEFTU1dPUkQ9bnk0bmNhdA==,Zm9vPWJhcg==,RkxVVFRFUl9BUFBfRkxBVk9SPWRldg==',
             '-Papp-server-port=1',
             '-Ptest-server-port=2',
           ]),
@@ -143,9 +139,7 @@ void main() {
   group('IOSAppOptions', () {
     late IOSAppOptions options;
 
-    group(
-        'correctly encodes default xcodebuild invocation for simulator with dartDefineFromFile path',
-        () {
+    group('correctly encodes default xcodebuild invocation for simulator with dartDefineFromFile path', () {
       const flutterOpts = FlutterAppOptions(
         command: flutterCommand,
         target: 'integration_test/app_test.dart',
@@ -226,9 +220,7 @@ void main() {
       });
     });
 
-    group(
-        'correctly encodes default xcodebuild invocation for simulator without dartDefineFromFile path',
-        () {
+    group('correctly encodes default xcodebuild invocation for simulator without dartDefineFromFile path', () {
       const flutterOpts = FlutterAppOptions(
         command: flutterCommand,
         target: 'integration_test/app_test.dart',
