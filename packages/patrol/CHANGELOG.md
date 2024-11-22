@@ -1,20 +1,11 @@
-## 3.13.0-dev.4
+## 3.13.0
 
-- Bump `patrol_finders` and `patrol_log`
-
-## 3.13.0-dev.3
-
+- Add support for the `patrol_log` package. (#2387)
+- Fix tapping on notification on iOS 18. (#2394)
 - Fix macos functionality. (#2408)
 - Bump `patrol_finders` and enable logging.
 
-## 3.13.0-dev.2
-
-- Bump `patrol_log` version.
-
-## 3.13.0-dev.1
-
-- Add support for the patrol_log package. (#2387)
-- Fix tapping on notification on iOS 18. (#2394)
+This version requires version 3.4.0 of `patrol_cli` package.
 
 ## 3.12.0
 
