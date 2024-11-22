@@ -1,3 +1,7 @@
+## 2.4.1
+
+- Update `patrol_log`.
+
 ## 2.4.0
 
 - Wrap actions on finders with patrol logs.
