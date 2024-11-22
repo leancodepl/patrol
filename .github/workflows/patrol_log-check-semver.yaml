@@ -26,7 +26,7 @@ jobs:
         - name: Get last released version
           id: get_last_released_version
           run: |
-            last_version=$(git tag --list 'patrol_log-v*' | grep -v '\-dev\.[0-9]\+$' | sort -V | tail -n 1 | sed 's/^patrol_finders-v//')
+            last_version=$(git tag --list 'patrol_log-v*' | grep -v '\-dev\.[0-9]\+$' | sort -V | tail -n 1 | sed 's/^patrol_log-v//')
             echo "last_version=$last_version" >> $GITHUB_ENV
             echo "::set-output name=last_version::$last_version"
 
