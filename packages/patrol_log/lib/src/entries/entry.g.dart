@@ -25,6 +25,7 @@ const _$EntryTypeEnumMap = {
   EntryType.step: 'step',
   EntryType.test: 'test',
   EntryType.log: 'log',
+  EntryType.warning: 'warning',
 };
 
 LogEntry _$LogEntryFromJson(Map<String, dynamic> json) => LogEntry(
@@ -88,3 +89,17 @@ const _$TestEntryStatusEnumMap = {
   TestEntryStatus.failure: 'failure',
   TestEntryStatus.skip: 'skip',
 };
+
+WarningEntry _$WarningEntryFromJson(Map<String, dynamic> json) => WarningEntry(
+      message: json['message'] as String,
+      timestamp: json['timestamp'] == null
+          ? null
+          : DateTime.parse(json['timestamp'] as String),
+    );
+
+Map<String, dynamic> _$WarningEntryToJson(WarningEntry instance) =>
+    <String, dynamic>{
+      'timestamp': instance.timestamp.toIso8601String(),
+      'type': _$EntryTypeEnumMap[instance.type]!,
+      'message': instance.message,
+    };
