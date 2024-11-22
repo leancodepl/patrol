@@ -34,7 +34,9 @@ class PatrolSingleTestEntry {
       closingTestEntry?.status ?? openingTestEntry.status;
 
   /// The name of the test with the path.
-  String get nameWithPath => openingTestEntry.nameWithPath;
+  ///
+  /// If test is not closed yet, the path is unknown, so return only test name.
+  String get nameWithPath => closingTestEntry?.nameWithPath ?? name;
 
   /// The execution time of the test.
   Duration get executionTime {
