@@ -1,3 +1,6 @@
+// TODO: manage immutable classes
+// ignore_for_file: must_be_immutable
+
 import 'package:equatable/equatable.dart';
 import 'package:file/file.dart';
 import 'package:yaml/yaml.dart';
