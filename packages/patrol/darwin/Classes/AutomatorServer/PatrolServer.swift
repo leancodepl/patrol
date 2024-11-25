@@ -4,9 +4,10 @@ import Foundation
   private static let envPortKey = "PATROL_TEST_PORT"
 
   private static let defaultPort = 8081
-
+    
   #if PATROL_ENABLED
-    private let port: Int
+    @objc
+    public var port: Int = 0
     private let automator: Automator
     private let server: Server
   #endif
@@ -58,9 +59,10 @@ import Foundation
 
       provider.setupRoutes(server: server)
 
-      try server.start(port: port)
+      try server.start()
+      self.port = server.port
 
-      Logger.shared.i("Server started on http://0.0.0.0:\(port)")
+      Logger.shared.i("Server started on http://0.0.0.0:\(server.port)")
     #endif
   }
 }
