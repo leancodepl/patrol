@@ -238,7 +238,9 @@
       dartTests = [NSArray arrayWithObject:[self selectedTest]];                                                \
     } else {                                                                                                    \
       /* Run the app for the first time to gather Dart tests */                                                 \
-      [[[XCUIApplication alloc] init] launch];                                                                  \
+      XCUIApplication* app = [[XCUIApplication alloc] init];                                                   \
+      app.launchArguments = @[@"port", [@(server.port) stringValue]];                                         \
+      [app launch];                                                                                             \
       /* Spin the runloop waiting until the app reports that it is ready to report Dart tests */                \
       while (!server.appReady) {                                                                                \
         [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];                      \
