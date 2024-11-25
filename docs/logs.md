@@ -1,0 +1,124 @@
+---
+title: Logs and test results
+---
+
+# Logs and test results
+
+When you already wrote your tests and have them running, you need some way to know if the tests passed or need some attention. 
+Patrol has 2 ways of communicating those results - logs in console and native test report.
+
+## Logging every step
+
+<Warning>
+        This feature is available in versions `3.13.0` and later.
+
+        If you're using this version but you don't see any logs, check if you have your own `PatrolTesterConfig` passed 
+        to `patrolTest()`. If yes, add `printLogs: true` argument to this constructor.
+</Warning>
+
+During the test execution, you can see that every test step, eg. `tap` or `enterText`, is printed to console, 
+together with its status. Also test's name, status and time of execution is printed. 
+
+```
+...
+🧪 various permissions
+        ✅   1. scrollTo widgets with text "Open permissions screen".
+        ✅   2. scrollTo widgets with text "Open permissions screen".
+        ✅   3. tap widgets with text "Open permissions screen".
+        ✅   4. tap widgets with text "Request camera permission".
+        ✅   5. isPermissionDialogVisible (native)
+        ✅   6. tap widgets with text "Request camera permission".
+        ✅   7. isPermissionDialogVisible (native)
+        ⏳   8. denyPermission (native)
+❌ denies various permissions (integration_test/permissions/deny_many_permissions_twice_test.dart) (9s)
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞═════════════════
+The following PlatformException was thrown running a test:
+PlatformException(PermissionHandler.PermissionManager, A request
+for permissions is already running, please wait for it to finish
+before doing another request (note that you can request multiple
+permissions at the same time)., null, null)
+
+When the exception was thrown, this was the stack:
+#0      StandardMethodCodec.decodeEnvelope (package:flutter/src/services/message_codecs.dart:648:7)
+#1      MethodChannel._invokeMethod (package:flutter/src/services/platform_channel.dart:334:18)
+<asynchronous suspension>
+#2      MethodChannelPermissionHandler.requestPermissions (package:permission_handler_platform_interface/src/method_channel/method_channel_permission_handler.dart:79:9)
+<asynchronous suspension>
+#3      PermissionActions.request (package:permission_handler/permission_handler.dart:52:31)
+<asynchronous suspension>
+#4      _PermissionsScreenState._requestCameraPermission (package:e2e_app/permissions_screen.dart:21:20)
+<asynchronous suspension>
+
+The test description was:
+  denies various permissions
+═════════════════════════════════════════════════════════════════
+
+✅ taps on notification (integration_test/permissions/notifications_test.dart) (16s)
+✅ taps on notification native2 (integration_test/permissions/notifications_test.dart) (14s)
+✅ grants various permissions (integration_test/permissions/permissions_many_test.dart) (15s)
+...
+```
+
+After tests have ended, there is a summary printed:
+
+```
+Test summary:
+📝 Total: 8
+✅ Successful: 3
+❌ Failed: 5
+  - taps on notification (integration_test/permissions/notifications_test.dart)
+  - taps on notification native2 (integration_test/permissions/notifications_test.dart)
+  - accepts location permission (integration_test/permissions/permissions_location_test.dart)
+  - accepts location permission native2 (integration_test/permissions/permissions_location_test.dart)
+  - grants various permissions (integration_test/permissions/permissions_many_test.dart)
+⏩ Skipped: 0
+📊 Report: file:///Users/user/patrol/dev/e2e_app/build/app/reports/androidTests/connected/index.html
+⏱️  Duration: 227s
+```
+
+## Disabling logs
+
+You can use following flags to configure, which logs should be printed. Pass them to `patrol test` or `patrol develop` command.
+ - --[no-]show-flutter-logs -> Show Flutter logs while running the tests. (Available only in `patrol test`)
+ - --[no-]hide-test-steps -> Hide test steps while running the tests.
+ - --[no-]clear-test-steps -> Clear test steps after the test finishes.
+
+## Native report
+
+Besides what's printed to the console, you can check the results in native report. Link to file with the report is shown in test summary, eg.
+```
+📊 Report: file:///Users/user/patrol/dev/e2e_app/build/app/reports/androidTests/connected/index.html
+```
+
+## Logs in `patrol_finders`
+
+By default, if you're using `patrol_finders` without `patrol` package, enhanced logs will not be shown. If you'd like to see them, pass `printLogs: true` argument to `PatrolTesterConfig` constructor.
+
+```
+patrolWidgetTest(
+  'throws exception when no widget to tap on is found',
+  config: const PatrolTesterConfig(printLogs: true),
+  (tester) async {
+    await tester.pumpWidget(const MaterialApp());
+
+    await expectLater(
+      () => tester.tap(find.text('some text')),
+      throwsA(isA<WaitUntilVisibleTimeoutException>()),
+    );
+  },
+);
+```
+```
+testWidgets(
+  'description',
+  (widgetTester) async {
+    final $ = PatrolTester(
+      tester: widgetTester,
+      config: PatrolTesterConfig(printLogs: true),
+    );
+
+    // test body
+    // ...
+  },
+);
+```
