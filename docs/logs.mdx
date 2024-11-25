@@ -99,12 +99,8 @@ patrolWidgetTest(
   'throws exception when no widget to tap on is found',
   config: const PatrolTesterConfig(printLogs: true),
   (tester) async {
-    await tester.pumpWidget(const MaterialApp());
-
-    await expectLater(
-      () => tester.tap(find.text('some text')),
-      throwsA(isA<WaitUntilVisibleTimeoutException>()),
-    );
+    // test body
+    // ...
   },
 );
 ```
@@ -116,7 +112,6 @@ testWidgets(
       tester: widgetTester,
       config: PatrolTesterConfig(printLogs: true),
     );
-
     // test body
     // ...
   },
