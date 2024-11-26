@@ -119,8 +119,8 @@ class AndroidAppOptions {
     final effectiveDartDefines = Map<String, String>.of(flutter.dartDefines);
 
     // Add flavor to dart defines
-    if (flutter.flavor != null) {
-      effectiveDartDefines['FLUTTER_APP_FLAVOR'] = flutter.flavor!;
+    if (flutter.flavor case final flavor?) {
+      effectiveDartDefines['FLUTTER_APP_FLAVOR'] = flavor;
     }
 
     // Add Dart defines encoded in base64
