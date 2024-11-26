@@ -12,7 +12,7 @@ Patrol has 2 ways of communicating those results - logs in console and native te
 <Warning>
         This feature is available in versions `3.13.0` and later.
 
-        If you're using this version but you don't see any logs, check if you have your own `PatrolTesterConfig` passed 
+        If you're using this version but you don't see logs with test steps, check if you have your own `PatrolTesterConfig` passed 
         to `patrolTest()`. If yes, add `printLogs: true` argument to this constructor.
 </Warning>
 
@@ -79,9 +79,12 @@ Test summary:
 ## Disabling logs
 
 You can use following flags to configure, which logs should be printed. Pass them to `patrol test` or `patrol develop` command.
- - --[no-]show-flutter-logs -> Show Flutter logs while running the tests. (Available only in `patrol test`)
- - --[no-]hide-test-steps -> Hide test steps while running the tests.
- - --[no-]clear-test-steps -> Clear test steps after the test finishes.
+
+| Flag                      | Description                                | Available in                                       | Default value |
+| ------------------------- | ------------------------------------------ | -------------------------------------------------- | ------------- |
+| --[no-]show-flutter-logs  | Show Flutter logs while running the tests. | `patrol test`, in `patrol develop` it's always on  | `false`       |
+| --[no-]hide-test-steps    | Hide test steps while running the tests.   | `patrol test` and `patrol develop`                 | `false`       |
+| --[no-]clear-test-steps   | Clear test steps after the test finishes.  | `patrol test`                                      | `true`        |
 
 ## Native report
 
