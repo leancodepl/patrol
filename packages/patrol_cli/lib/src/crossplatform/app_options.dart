@@ -115,14 +115,22 @@ class AndroidAppOptions {
     final target = '-Ptarget=${flutter.target}';
     cmd.add(target);
 
+    // Create modifiable Map
+    final effectiveDartDefines = Map<String, String>.of(flutter.dartDefines);
+
+    // Add flavor to dart defines
+    if (flutter.flavor case final flavor?) {
+      effectiveDartDefines['FLUTTER_APP_FLAVOR'] = flavor;
+    }
+
     // Add Dart defines encoded in base64
-    if (flutter.dartDefines.isNotEmpty) {
+    if (effectiveDartDefines.isNotEmpty) {
       final dartDefinesString = StringBuffer();
-      for (var i = 0; i < flutter.dartDefines.length; i++) {
-        final entry = flutter.dartDefines.entries.elementAt(i);
+      for (var i = 0; i < effectiveDartDefines.length; i++) {
+        final entry = effectiveDartDefines.entries.elementAt(i);
         final pair = utf8.encode('${entry.key}=${entry.value}');
         dartDefinesString.write(base64Encode(pair));
-        if (i != flutter.dartDefines.length - 1) {
+        if (i != effectiveDartDefines.length - 1) {
           dartDefinesString.write(',');
         }
       }

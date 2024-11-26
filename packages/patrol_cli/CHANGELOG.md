@@ -1,3 +1,7 @@
+## Unreleased
+
+- Add android product flavor to dart-define. (#2425)
+
 ## 3.4.0
 
 - Add support for the `patrol_log` package. (#2387)
