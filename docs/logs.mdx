@@ -1,14 +1,12 @@
 ---
-title: Logs and Test Results
+title: Logs and test results
 ---
 
-# Logs and Test Results
-
-**Understanding Test Execution**
+# Logs and test results
 
 Once you've written and executed your tests, it's essential to monitor their results. Patrol provides two main methods for reporting test outcomes: **console logs** and **native test reports**.
 
-## Logging Test Steps
+## Logging test steps
 
 <Warning>
 This feature is available starting from version `3.13.0`.
@@ -18,7 +16,7 @@ If you're using this version but don't see logs for test steps, check if you're 
 
 During test execution, every test step (e.g., `tap` or `enterText`) is logged to the console along with its status. Additionally, the test name, status, and execution time are displayed.
 
-**Example Console Output:**
+**Example console output:**
 
 ```
 ...
@@ -60,7 +58,7 @@ The test description was:
 ...
 ```
 
-**Test Summary:**
+## Test summary
 
 Once the tests are complete, a summary is printed:
 
@@ -80,7 +78,7 @@ Test summary:
 ⏱️  Duration: 227s
 ```
 
-**Customizing Log Behavior:**
+## Customizing log behavior
 
 You can customize which logs are displayed by using the following flags. These can be passed to the `patrol test` or `patrol develop` commands:
 
@@ -90,7 +88,7 @@ You can customize which logs are displayed by using the following flags. These c
 | --[no-]hide-test-steps    | Hide test steps while running the tests.   | `patrol test` and `patrol develop`                 | `false`       |
 | --[no-]clear-test-steps   | Clear test steps after the test finishes.  | `patrol test`                                      | `true`        |
 
-## Native Test Reports
+## Native test reports
 
 In addition to console logs, you can review test results in a **native test report**. The report's file path is provided in the test summary, for example:
 

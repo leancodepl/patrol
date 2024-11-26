@@ -30,12 +30,17 @@
     }
   ],
   "sidebar": [
-    ["Logs", "/logs"],
-    ["About", "/"],
-    ["Getting started", "/getting-started"],
-    ["Patrol 3.0 is here!", "/v3"],
-    ["New package - patrol_finders", "/patrol-finders-release"],
-    ["Supported platforms", "/supported-platforms"],
+    
+    ["Patrol by LeanCode", "/"],
+    [
+      "Introduction",
+      [
+        ["Getting started", "/getting-started"],
+        ["Logs and test results", "/logs"],
+        ["Supported platforms", "/supported-platforms"],
+        ["Compatibility table", "/compatibility-table"]
+      ]
+    ],
     [
       "Finders",
       [
@@ -80,10 +85,16 @@
         ["Browserstack", "/integrations/browserstack"]
       ]
     ],
+    [
+      "Announcements",
+      [
+        ["Patrol 3.0 is here!", "/v3"],
+        ["New package - patrol_finders", "/patrol-finders-release"]
+      ]
+    ],
     ["Effective Patrol", "/effective-patrol"],
     ["Tips and tricks", "/tips-and-tricks"],
     ["Debugging Patrol tests", "/debugging-patrol-tests"],
-    ["Compatibility table", "/compatibility-table"],
     ["LeanCode", "https://leancode.co"]
   ]
 }
