@@ -1,3 +1,7 @@
+## 2.5.1
+
+- Disable printing logs in nested `waitUntilVisible` and `waitUntilExists` calls.
+
 ## 2.5.0
 
 - Update `patrol_log`.

@@ -573,7 +573,7 @@ class PatrolTester {
         enablePatrolLog: enablePatrolLog,
         function: () async {
           var viewPatrolFinder = PatrolFinder(finder: view, tester: this);
-          await viewPatrolFinder.waitUntilVisible();
+          await viewPatrolFinder.waitUntilVisible(enablePatrolLog: false);
           viewPatrolFinder = viewPatrolFinder.hitTestable().first;
           dragDuration ??= config.dragDuration;
           settleBetweenScrollsTimeout ??= config.settleBetweenScrollsTimeout;
@@ -655,7 +655,7 @@ class PatrolTester {
         enablePatrolLog: enablePatrolLog,
         function: () async {
           var viewPatrolFinder = PatrolFinder(finder: view, tester: this);
-          await viewPatrolFinder.waitUntilVisible();
+          await viewPatrolFinder.waitUntilVisible(enablePatrolLog: false);
           viewPatrolFinder = viewPatrolFinder.hitTestable().first;
           dragDuration ??= config.dragDuration;
           settleBetweenScrollsTimeout ??= config.settleBetweenScrollsTimeout;
@@ -719,7 +719,7 @@ class PatrolTester {
         final scrollablePatrolFinder = await PatrolFinder(
           finder: finderView,
           tester: this,
-        ).waitUntilVisible();
+        ).waitUntilVisible(enablePatrolLog: false);
 
         AxisDirection direction;
         if (scrollDirection == null) {
@@ -790,7 +790,7 @@ class PatrolTester {
         final scrollablePatrolFinder = await PatrolFinder(
           finder: finderView,
           tester: this,
-        ).waitUntilVisible();
+        ).waitUntilVisible(enablePatrolLog: false);
         AxisDirection direction;
         if (scrollDirection == null) {
           if (finderView.evaluate().first.widget is Scrollable) {
