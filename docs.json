@@ -93,9 +93,14 @@
         ["New package - patrol_finders", "/patrol-finders-release"]
       ]
     ],
-    ["Effective Patrol", "/effective-patrol"],
-    ["Tips and tricks", "/tips-and-tricks"],
-    ["Debugging Patrol tests", "/debugging-patrol-tests"],
-    ["LeanCode", "https://leancode.co"]
+    [
+      "Other",
+      [
+        ["Effective Patrol", "/effective-patrol"],
+        ["Tips and tricks", "/tips-and-tricks"],
+        ["Debugging Patrol tests", "/debugging-patrol-tests"],
+        ["LeanCode", "https://leancode.co"]
+      ]
+    ]
   ]
 }
