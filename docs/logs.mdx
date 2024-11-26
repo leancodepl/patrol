@@ -1,23 +1,24 @@
 ---
-title: Logs and test results
+title: Logs and Test Results
 ---
 
-# Logs and test results
+# Logs and Test Results
 
-When you already wrote your tests and have them running, you need some way to know if the tests passed or need some attention. 
-Patrol has 2 ways of communicating those results - logs in console and native test report.
+**Understanding Test Execution**
 
-## Logging every step
+Once you've written and executed your tests, it's essential to monitor their results. Patrol provides two main methods for reporting test outcomes: **console logs** and **native test reports**.
+
+## Logging Test Steps
 
 <Warning>
-        This feature is available in versions `3.13.0` and later.
+This feature is available starting from version `3.13.0`.
 
-        If you're using this version but you don't see logs with test steps, check if you have your own `PatrolTesterConfig` passed 
-        to `patrolTest()`. If yes, add `printLogs: true` argument to this constructor.
+If you're using this version but don't see logs for test steps, check if you're passing a custom `PatrolTesterConfig` to `patrolTest()`. If so, ensure the `printLogs: true` argument is included in the constructor.
 </Warning>
 
-During the test execution, you can see that every test step, eg. `tap` or `enterText`, is printed to console, 
-together with its status. Also test's name, status and time of execution is printed. 
+During test execution, every test step (e.g., `tap` or `enterText`) is logged to the console along with its status. Additionally, the test name, status, and execution time are displayed.
+
+**Example Console Output:**
 
 ```
 ...
@@ -59,7 +60,10 @@ The test description was:
 ...
 ```
 
-After tests have ended, there is a summary printed:
+**Test Summary:**
+
+Once the tests are complete, a summary is printed:
+
 
 ```
 Test summary:
@@ -76,9 +80,9 @@ Test summary:
 ⏱️  Duration: 227s
 ```
 
-## Disabling logs
+**Customizing Log Behavior:**
 
-You can use following flags to configure, which logs should be printed. Pass them to `patrol test` or `patrol develop` command.
+You can customize which logs are displayed by using the following flags. These can be passed to the `patrol test` or `patrol develop` commands:
 
 | Flag                      | Description                                | Available in                                       | Default value |
 | ------------------------- | ------------------------------------------ | -------------------------------------------------- | ------------- |
@@ -86,16 +90,17 @@ You can use following flags to configure, which logs should be printed. Pass the
 | --[no-]hide-test-steps    | Hide test steps while running the tests.   | `patrol test` and `patrol develop`                 | `false`       |
 | --[no-]clear-test-steps   | Clear test steps after the test finishes.  | `patrol test`                                      | `true`        |
 
-## Native report
+## Native Test Reports
 
-Besides what's printed to the console, you can check the results in native report. Link to file with the report is shown in test summary, eg.
+In addition to console logs, you can review test results in a **native test report**. The report's file path is provided in the test summary, for example:
+
 ```
 📊 Report: file:///Users/user/patrol/dev/e2e_app/build/app/reports/androidTests/connected/index.html
 ```
 
 ## Logs in `patrol_finders`
 
-By default, if you're using `patrol_finders` without `patrol` package, enhanced logs will not be shown. If you'd like to see them, pass `printLogs: true` argument to `PatrolTesterConfig` constructor.
+By default, enhanced logs are disabled when using `patrol_finders` without the `patrol` package. To enable them, pass the `printLogs: true` argument to the `PatrolTesterConfig` constructor:
 
 ```
 patrolWidgetTest(
