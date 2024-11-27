@@ -100,7 +100,7 @@ In addition to console logs, you can review test results in a **native test repo
 
 By default, enhanced logs are disabled when using `patrol_finders` without the `patrol` package. To enable them, pass the `printLogs: true` argument to the `PatrolTesterConfig` constructor:
 
-```
+```dart
 patrolWidgetTest(
   'throws exception when no widget to tap on is found',
   config: const PatrolTesterConfig(printLogs: true),
@@ -110,7 +110,7 @@ patrolWidgetTest(
   },
 );
 ```
-```
+```dart
 testWidgets(
   'description',
   (widgetTester) async {
