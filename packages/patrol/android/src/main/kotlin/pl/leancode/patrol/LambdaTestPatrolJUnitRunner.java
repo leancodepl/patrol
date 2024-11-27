@@ -9,7 +9,7 @@ import java.net.SocketException;
 import java.util.Enumeration;
 import java.util.Objects;
 
-public class LambdatestPatrolJUnitRunner extends PatrolJUnitRunner {
+public class LambdaTestPatrolJUnitRunner extends PatrolJUnitRunner {
     @Override
     public PatrolAppServiceClient createAppServiceClient() {
         // Create client with a default constructor (localhost:8082) by default.
@@ -18,8 +18,6 @@ public class LambdatestPatrolJUnitRunner extends PatrolJUnitRunner {
 
         try {
             client.listDartTests();
-
-            //TODO verify in a project where we use LambdaTest
         } catch (PatrolAppServiceClientException ex) {
             ex.printStackTrace();
             // If the client on localhost:8082 fails, let's apply the wokraround
