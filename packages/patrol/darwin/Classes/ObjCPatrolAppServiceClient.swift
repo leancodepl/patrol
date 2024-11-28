@@ -38,7 +38,7 @@
     return portInt
   }()
 
-  @objc public override init() {
+    @objc public init(port: Int) {
     self.port = passedPort
 
     // https://github.com/leancodepl/patrol/issues/1683

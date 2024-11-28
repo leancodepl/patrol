@@ -147,6 +147,7 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
     if (_instance == null) {
       PatrolBinding(config);
     }
+
     return _instance!;
   }
 

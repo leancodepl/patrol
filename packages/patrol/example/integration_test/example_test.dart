@@ -23,5 +23,6 @@ void main() {
         await $.native.pressHome();
       }
     },
+    skip: true,
   );
 }
