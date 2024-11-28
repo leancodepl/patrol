@@ -382,3 +382,7 @@ public struct SetLocationAccuracyRequest: Codable {
   public var locationAccuracy: SetLocationAccuracyRequestLocationAccuracy
 }
 
+public struct MarkAppAppServiceReadyRequest: Codable {
+  public var port: Int?
+}
+

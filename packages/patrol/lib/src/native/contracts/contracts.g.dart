@@ -791,3 +791,15 @@ const _$SetLocationAccuracyRequestLocationAccuracyEnumMap = {
   SetLocationAccuracyRequestLocationAccuracy.coarse: 'coarse',
   SetLocationAccuracyRequestLocationAccuracy.fine: 'fine',
 };
+
+MarkAppAppServiceReadyRequest _$MarkAppAppServiceReadyRequestFromJson(
+        Map<String, dynamic> json) =>
+    MarkAppAppServiceReadyRequest(
+      port: (json['port'] as num?)?.toInt(),
+    );
+
+Map<String, dynamic> _$MarkAppAppServiceReadyRequestToJson(
+        MarkAppAppServiceReadyRequest instance) =>
+    <String, dynamic>{
+      'port': instance.port,
+    };

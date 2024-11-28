@@ -661,4 +661,12 @@ class Contracts {
     val locationAccuracy: SetLocationAccuracyRequestLocationAccuracy
   )
 
+  data class MarkAppAppServiceReadyRequest (
+    val port: Long? = null
+  ){
+    fun hasPort(): Boolean {
+      return port != null
+    }
+  }
+
 }

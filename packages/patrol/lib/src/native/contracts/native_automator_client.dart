@@ -340,9 +340,12 @@ class NativeAutomatorClient {
     );
   }
 
-  Future<void> markPatrolAppServiceReady() {
+  Future<void> markPatrolAppServiceReady(
+    MarkAppAppServiceReadyRequest request,
+  ) {
     return _sendRequest(
       'markPatrolAppServiceReady',
+      request.toJson(),
     );
   }
 
