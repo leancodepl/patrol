@@ -21,7 +21,7 @@ class _TestExecutionResult {
 }
 
 /// Starts the gRPC server that runs the [PatrolAppService].
-Future<void> runAppService(PatrolAppService service) async {
+Future<int> runAppService(PatrolAppService service) async {
   final pipeline = const shelf.Pipeline()
       .addMiddleware(shelf.logRequests())
       .addHandler(service.handle);
@@ -29,7 +29,7 @@ Future<void> runAppService(PatrolAppService service) async {
   final server = await shelf_io.serve(
     pipeline,
     InternetAddress.anyIPv4,
-    service.port,
+    0,
     poweredByHeader: null,
   );
 
@@ -40,6 +40,8 @@ Future<void> runAppService(PatrolAppService service) async {
   print(
     'PatrolAppService started, address: ${address.address}, host: ${address.host}, port: ${server.port}',
   );
+
+  return server.port;
 }
 
 /// Implements a stateful HTTP service for querying and executing Dart tests.
@@ -48,14 +50,7 @@ Future<void> runAppService(PatrolAppService service) async {
 /// the generated code can access it.
 class PatrolAppService extends PatrolAppServiceServer {
   /// Creates a new [PatrolAppService].
-  PatrolAppService({required this.topLevelDartTestGroup})
-      : port = const int.fromEnvironment(
-          'PATROL_APP_SERVER_PORT',
-          defaultValue: 8082,
-        );
-
-  /// Port the server will use to listen for incoming HTTP traffic.
-  final int port;
+  PatrolAppService({required this.topLevelDartTestGroup});
 
   /// The ambient test group that wraps all the other groups and tests in the
   /// bundled Dart test file.

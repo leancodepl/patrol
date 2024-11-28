@@ -8,6 +8,8 @@ import Foundation
   #if PATROL_ENABLED
     @objc
     public var port: Int = 0
+    @objc
+    public var appServerPort: Int = 0
     private let automator: Automator
     private let server: Server
   #endif
@@ -52,9 +54,10 @@ import Foundation
     #if PATROL_ENABLED
       Logger.shared.i("Starting server...")
 
-      let provider = AutomatorServer(automator: automator) { appReady in
-        Logger.shared.i("App reported that it is ready")
-        self.appReady = appReady
+      let provider = AutomatorServer(automator: automator) { appReady, appServerPort in
+        Logger.shared.i("App reported that it is ready on port \(appServerPort)")
+          self.appReady = appReady
+          self.appServerPort = appServerPort
       }
 
       provider.setupRoutes(server: server)

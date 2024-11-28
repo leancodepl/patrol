@@ -605,8 +605,6 @@ class NativeAutomator2 {
           keyboardBehavior:
               (keyboardBehavior ?? _config.keyboardBehavior).toContractsEnum,
           timeoutMillis: timeout?.inMilliseconds,
-          dx: tapLocation?.dx ?? 0.9,
-          dy: tapLocation?.dy ?? 0.9,
         ),
       ),
     );
@@ -644,8 +642,6 @@ class NativeAutomator2 {
           keyboardBehavior:
               (keyboardBehavior ?? _config.keyboardBehavior).toContractsEnum,
           timeoutMillis: timeout?.inMilliseconds,
-          dx: tapLocation?.dx ?? 0.9,
-          dy: tapLocation?.dy ?? 0.9,
         ),
       ),
     );
@@ -877,10 +873,14 @@ class NativeAutomator2 {
   /// Tells the AndroidJUnitRunner that PatrolAppService is ready to answer
   /// requests about the structure of Dart tests.
   @internal
-  Future<void> markPatrolAppServiceReady() async {
+  Future<void> markPatrolAppServiceReady(int port) async {
     await _wrapRequest(
       'markPatrolAppServiceReady',
-      _client.markPatrolAppServiceReady,
+      () => _client.markPatrolAppServiceReady(
+        MarkAppAppServiceReadyRequest(
+          port: port,
+        ),
+      ),
       enablePatrolLog: false,
     );
   }
