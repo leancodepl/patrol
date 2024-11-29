@@ -1,3 +1,7 @@
+## 3.13.1
+
+- Remove whitespace replacement on Android test name. (#2437)
+
 ## 3.13.0
 
 - Add support for the `patrol_log` package. (#2387)

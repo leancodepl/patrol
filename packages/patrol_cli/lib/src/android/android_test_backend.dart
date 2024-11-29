@@ -46,6 +46,7 @@ class AndroidTestBackend {
   Future<void> build(AndroidAppOptions options) async {
     await buildApkConfigOnly(options.flutter.command);
     await loadJavaPathFromFlutterDoctor(options.flutter.command);
+    await detectOrchestratorVersion(options);
 
     await _disposeScope.run((scope) async {
       final subject = options.description;
@@ -177,6 +178,38 @@ class AndroidTestBackend {
       ],
       runInShell: true,
     );
+  }
+
+  /// Detects the orchestrator version and warns the user if it's 1.5.0.
+  /// Related to this regression: https://github.com/android/android-test/issues/2255
+  Future<void> detectOrchestratorVersion(
+    AndroidAppOptions options,
+  ) async {
+    await _disposeScope.run((scope) async {
+      Process process;
+
+      process = await _processManager.start(
+        options.toGradleAppDependencies(isWindows: _platform.isWindows),
+        runInShell: true,
+        workingDirectory: _rootDirectory.childDirectory('android').path,
+        environment: switch (javaPath) {
+          final javaPath? => {'JAVA_HOME': javaPath},
+          _ => {},
+        },
+      )
+        ..disposedBy(scope);
+      process.listenStdOut((l) {
+        if (l.contains('androidx.test:orchestrator:1.5.0')) {
+          _logger.warn(
+            'Orchestrator version 1.5.0 detected\n'
+            'Orchestrator 1.5.0 does not support whitespace in the test name.\n'
+            'Please update the orchestrator version to 1.5.1 or higher.\n',
+          );
+        }
+      }).disposedBy(scope);
+
+      await process.exitCode;
+    });
   }
 
   /// Executes the tests of the given [options] on the given [device].
