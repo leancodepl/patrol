@@ -30,13 +30,13 @@
     }
   ],
   "sidebar": [
-    
     ["Patrol", "/"],
     ["Improved logging and reporting is here!", "logs-announcement"],
     [
       "Introduction",
       [
         ["Getting started", "/getting-started"],
+        ["Write your first test", "/write-your-first-test"],
         ["Logs and test results", "/logs"],
         ["Supported platforms", "/supported-platforms"],
         ["Compatibility table", "/compatibility-table"]
