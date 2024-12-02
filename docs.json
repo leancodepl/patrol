@@ -36,7 +36,7 @@
       "Introduction",
       [
         ["Getting started", "/getting-started"],
-        ["Write your first test", "/patrol-basics-tutorial"],
+        ["Write your first test", "/write-your-first-test"],
         ["Logs and test results", "/logs"],
         ["Supported platforms", "/supported-platforms"],
         ["Compatibility table", "/compatibility-table"]
