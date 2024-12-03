@@ -41,6 +41,11 @@
       "href": "/documentation"
     },
     {
+      "id": "cli",
+      "title": "CLI commands",
+      "href": "/cli-commands/develop"
+    },
+    {
       "id": "patrol api ref",
       "title": "Patrol API reference",
       "href": "https://pub.dev/documentation/patrol/latest/index.html"
@@ -53,6 +58,14 @@
         {
           "title": "Getting started",
           "href": "/overview/getting-started"
+        },
+        {
+          "title": "Improved logging and reporting is here!",
+          "href": "logs-announcement"
+        },
+        {
+          "title": "LeanCode",
+          "href": "https://leancode.co"
         }
       ]
     },
@@ -66,7 +79,7 @@
         },
         {
           "title": "Write your first test",
-          "href": "google.com"
+          "href": "/documentation/write-your-first-test"
         },
         {
           "title": "Logs and test results",
@@ -79,6 +92,145 @@
         {
           "title": "Compatibility table",
           "href": "/documentation/compatibility-table"
+        }
+      ]
+    },
+    {
+      "group": "Advanced",
+      "tab": "documentation",
+      "pages": [
+        {
+          "group": "Finders",
+          "pages": [
+            {
+              "title": "Overview",
+              "href": "/finders/overview"
+            },
+            {
+              "title": "Usage",
+              "href": "/finders/usage"
+            },
+            {
+              "title": "Advanced",
+              "href": "/finders/advanced"
+            },
+            {
+              "title": "Using Patrol finders in widget tests",
+              "href": "/finders/finders-setup"
+            }
+          ]
+        },
+        {
+          "group": "Native automation",
+          "pages": [
+            {
+              "title": "Overview",
+              "href": "/native/overview"
+            },
+            {
+              "title": "Usage",
+              "href": "/native/usage"
+            },
+            {
+              "title": "Advanced",
+              "href": "/native/advanced"
+            },
+            {
+              "title": "Feature parity",
+              "href": "/native/feature-parity"
+            }
+          ]
+        },
+        {
+          "group": "Patrol and CI",
+          "pages": [
+            {
+              "title": "Overview",
+              "href": "/ci/overview"
+            },
+            {
+              "title": "Platforms",
+              "href": "/ci/platforms"
+            },
+            {
+              "title": "Firebase Test Lab",
+              "href": "/ci/firebase-test-lab"
+            }
+          ]
+        },
+        {
+          "group": "Integrations",
+          "pages": [
+            {
+              "title": "Allure",
+              "href": "/integrations/allure"
+            },
+            {
+              "title": "Browserstack",
+              "href": "/integrations/browserstack"
+            }
+          ]
+        },
+        {
+          "group": "Other",
+          "pages": [
+            {
+              "title": "Effective Patrol",
+              "href": "/effective-patrol"
+            },
+            {
+              "title": "Tips and tricks",
+              "href": "/tips-and-tricks"
+            },
+            {
+              "title": "Debugging Patrol tests",
+              "href": "/debugging-patrol-tests"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "group": "CLI commands",
+      "tab": "cli",
+      "pages": [
+        {
+          "title": "develop",
+          "href": "/cli-commands/develop"
+        },
+        {
+          "title": "test",
+          "href": "/cli-commands/test"
+        },
+        {
+          "title": "build",
+          "href": "/cli-commands/build"
+        },
+        {
+          "title": "doctor",
+          "href": "/cli-commands/doctor"
+        },
+        {
+          "title": "update",
+          "href": "/cli-commands/update"
+        },
+        {
+          "title": "devices",
+          "href": "/cli-commands/devices"
+        }
+      ]
+    },
+    {
+      "group": "Announcements",
+      "tab": "root",
+      "pages": [
+        {
+          "title": "Patrol 3.0 is here!",
+          "href": "/v3"
+        },
+        {
+          "title": "New package - patrol_finders",
+          "href": "/patrol-finders-release"
         }
       ]
     }
