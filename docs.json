@@ -101,6 +101,7 @@
       "pages": [
         {
           "group": "Finders",
+          "tab": "documentation",
           "pages": [
             {
               "title": "Overview",
@@ -122,6 +123,7 @@
         },
         {
           "group": "Native automation",
+          "tab": "documentation",
           "pages": [
             {
               "title": "Overview",
@@ -143,6 +145,7 @@
         },
         {
           "group": "Patrol and CI",
+          "tab": "documentation",
           "pages": [
             {
               "title": "Overview",
@@ -160,6 +163,7 @@
         },
         {
           "group": "Integrations",
+          "tab": "documentation",
           "pages": [
             {
               "title": "Allure",
@@ -173,6 +177,7 @@
         },
         {
           "group": "Other",
+          "tab": "documentation",
           "pages": [
             {
               "title": "Effective Patrol",
