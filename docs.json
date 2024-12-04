@@ -128,19 +128,19 @@
           "pages": [
             {
               "title": "Overview",
-              "href": "/finders/overview"
+              "href": "/documentation/finders/overview"
             },
             {
               "title": "Usage",
-              "href": "/finders/usage"
+              "href": "/documentation/finders/usage"
             },
             {
               "title": "Advanced",
-              "href": "/finders/advanced"
+              "href": "/documentation/finders/advanced"
             },
             {
               "title": "Using Patrol finders in widget tests",
-              "href": "/finders/finders-setup"
+              "href": "/documentation/finders/finders-setup"
             }
           ]
         },
