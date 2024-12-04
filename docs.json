@@ -27,7 +27,8 @@
     }
   },
   "content": {
-    "showPageTitle": false
+    "showPageTitle": false,
+    "zoomImages": true
   },
   "tabs": [
     {
@@ -84,6 +85,10 @@
         {
           "title": "Logs and test results",
           "href": "/documentation/logs"
+        },
+        {
+          "title": "Cheatsheet",
+          "href": "/documentation/cheatsheet"
         },
         {
           "title": "Supported platforms",

@@ -39,9 +39,9 @@ Farm][aws_device_farm].
         --app build/app/outputs/apk/debug/app-debug.apk \
         --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
         --timeout 1m \
-        --environment-variables clearPackageData=true \
-        --results-bucket=<RESULTS_BUCKET> \
-        --results-dir=<RESULTS_DIRECTORY>
+        --device model=MediumPhone.arm,version=34,locale=en,orientation=portrait \
+        --record-video \
+        --environment-variables clearPackageData=true
     ```
 
     <Info>

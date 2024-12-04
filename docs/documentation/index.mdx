@@ -31,14 +31,14 @@ Check out our video version of this tutorial on YouTube!
     ```
       flutter pub global activate patrol_cli
     ```
-    </Step>
+    
     [Patrol CLI] (command-line interface) is a small program that enables running
     Patrol UI tests. It is necessary to run UI tests (`flutter test` won't work! [Here's why]).
       <Info>
         Make sure to add `patrol` to your `PATH` environment variable.
         It's explained in the [README](https://pub.dev/packages/patrol_cli#installation).
       </Info>
-
+    </Step>
 
     <Step>
     Verify that installation was successful and your environment is set up properly:
@@ -166,7 +166,7 @@ Check out our video version of this tutorial on YouTube!
     <Step>
       Add these 2 lines to the `defaultConfig` section:
 
-      ```groovy
+      ```groovy title="android/app/build.gradle"
         testInstrumentationRunner "pl.leancode.patrol.PatrolJUnitRunner"
         testInstrumentationRunnerArguments clearPackageData: "true"
       ```
@@ -175,7 +175,7 @@ Check out our video version of this tutorial on YouTube!
     <Step>
       Add this section to the `android` section:
 
-      ```groovy
+      ```groovy title="android/app/build.gradle"
         testOptions {
           execution "ANDROIDX_TEST_ORCHESTRATOR"
         }
@@ -185,7 +185,7 @@ Check out our video version of this tutorial on YouTube!
     <Step>
       Add this line to `dependencies` section:
 
-      ```groovy
+      ```groovy title="android/app/build.gradle"
         androidTestUtil "androidx.test:orchestrator:1.4.2"
       ```
     </Step>
@@ -194,7 +194,7 @@ Check out our video version of this tutorial on YouTube!
 <Warning>
   Bear in mind that ProGuard can lead to some problems if not well configured, potentially causing issues such as `ClassNotFoundException`s.
   Keep all the Patrol packages or disable ProGuard in `android/app/build.gradle`:
-  ```groovy
+  ```groovy title="android/app/build.gradle"
     ...
     buildTypes {
       release {
