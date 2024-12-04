@@ -34,12 +34,7 @@
     "showName": true,
     "showGitHubCard": true,
     "showThemeToggle": true,
-    "links": [
-      {
-        "title": "Discord",
-        "href": "https://discord.gg/ukBK5t4EZg"
-      }
-    ]
+    "links": []
   },
   "anchors": [
     {
