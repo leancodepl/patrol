@@ -150,19 +150,19 @@
           "pages": [
             {
               "title": "Overview",
-              "href": "/native/overview"
+              "href": "/documentation/native/overview"
             },
             {
               "title": "Usage",
-              "href": "/native/usage"
+              "href": "/documentation/native/usage"
             },
             {
               "title": "Advanced",
-              "href": "/native/advanced"
+              "href": "/documentation/native/advanced"
             },
             {
               "title": "Feature parity",
-              "href": "/native/feature-parity"
+              "href": "/documentation/native/feature-parity"
             }
           ]
         },
@@ -172,15 +172,15 @@
           "pages": [
             {
               "title": "Overview",
-              "href": "/ci/overview"
+              "href": "/documentation/ci/overview"
             },
             {
               "title": "Platforms",
-              "href": "/ci/platforms"
+              "href": "/documentation/ci/platforms"
             },
             {
               "title": "Firebase Test Lab",
-              "href": "/ci/firebase-test-lab"
+              "href": "/documentation/ci/firebase-test-lab"
             }
           ]
         },
@@ -190,11 +190,11 @@
           "pages": [
             {
               "title": "Allure",
-              "href": "/integrations/allure"
+              "href": "/documentation/integrations/allure"
             },
             {
               "title": "Browserstack",
-              "href": "/integrations/browserstack"
+              "href": "/documentation/integrations/browserstack"
             }
           ]
         },
@@ -204,15 +204,15 @@
           "pages": [
             {
               "title": "Effective Patrol",
-              "href": "/effective-patrol"
+              "href": "/documentation/effective-patrol"
             },
             {
               "title": "Tips and tricks",
-              "href": "/tips-and-tricks"
+              "href": "/documentation/tips-and-tricks"
             },
             {
               "title": "Debugging Patrol tests",
-              "href": "/debugging-patrol-tests"
+              "href": "/documentation/debugging-patrol-tests"
             }
           ]
         }
