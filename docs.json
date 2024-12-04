@@ -67,7 +67,7 @@
     {
       "id": "cli",
       "title": "CLI commands",
-      "href": "/cli-commands/develop"
+      "href": "/cli-commands"
     }
   ],
   "sidebar": [
@@ -224,7 +224,7 @@
       "pages": [
         {
           "title": "develop",
-          "href": "/cli-commands/develop"
+          "href": "/cli-commands"
         },
         {
           "title": "test",
