@@ -30,6 +30,34 @@
     "showPageTitle": false,
     "zoomImages": true
   },
+  "header": {
+    "showName": true,
+    "showGitHubCard": true,
+    "showThemeToggle": true,
+    "links": [
+      {
+        "title": "Discord",
+        "href": "https://discord.gg/ukBK5t4EZg"
+      }
+    ]
+  },
+  "anchors": [
+    {
+      "title": "Discord",
+      "href": "https://discord.gg/ukBK5t4EZg",
+      "icon": "discord"
+    },
+    {
+      "title": "patrol API reference",
+      "href": "https://pub.dev/documentation/patrol/latest/index.html",
+      "icon": "code"
+    },
+    {
+      "title": "patrol_finders API reference",
+      "href": "https://pub.dev/documentation/patrol_finders/latest/index.html",
+      "icon": "code"
+    }
+  ],
   "tabs": [
     {
       "id": "root",
@@ -45,11 +73,6 @@
       "id": "cli",
       "title": "CLI commands",
       "href": "/cli-commands/develop"
-    },
-    {
-      "id": "patrol api ref",
-      "title": "Patrol API reference",
-      "href": "https://pub.dev/documentation/patrol/latest/index.html"
     }
   ],
   "sidebar": [
@@ -87,7 +110,7 @@
           "href": "/documentation/logs"
         },
         {
-          "title": "Cheatsheet",
+          "title": "Cheat sheet",
           "href": "/documentation/cheatsheet"
         },
         {
