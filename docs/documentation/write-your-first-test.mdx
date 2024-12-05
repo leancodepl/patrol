@@ -6,14 +6,14 @@ Patrol is a powerful, open-source testing framework created by LeanCode that enh
 
 This tutorial will take you through writing your first substantial Patrol test, interacting both with the Flutter app itself and also with native permission dialogs and notifications.
 
-Before writing any tests, make sure you [install the Patrol CLI](https://patrol.leancode.co/getting-started#install-patrol_cli). Then just clone the following repository from GitHub to follow along. The app we’re going to be testing is fully functional and ready to be tested, with Patrol already configured.
+Before writing any tests, make sure you [install the Patrol CLI]. Then just clone the following repository from GitHub to follow along. The app we’re going to be testing is fully functional and ready to be tested, with Patrol already configured.
 
 <Info>
-To learn how to set up Patrol for your own project, check out the [Patrol Setup Docs](https://patrol.leancode.co/getting-started).
+To learn how to set up Patrol for your own project, check out the [Patrol Setup Docs].
 </Info>
 
 <Info>
-Clone the [STARTER PROJECT](https://github.com/ResoCoder/patrol-basics-tutorial) to follow along.
+Clone the [STARTER PROJECT] to follow along.
 </Info>
 
 <YouTube id="8pG8CheUZOw"/>
@@ -334,7 +334,7 @@ class _HomePageState extends State<HomePage> {
 The first thing the user sees when first navigating to the `HomePage` is a notifications permission dialog. We need to accept it from within the test. Patrol’s native automation makes this as easy as it gets.
 
 <Info>
-Native automation allows you to interact with the OS your Flutter app is running on. Patrol currently supports Android, iOS and macOS native interactions. [Learn more from the docs](https://patrol.leancode.co/native/overview)
+Native automation allows you to interact with the OS your Flutter app is running on. Patrol currently supports Android, iOS and macOS native interactions. [Learn more from the docs]
 </Info>
 
 ```dart
@@ -466,3 +466,8 @@ patrolTest(
 ```
 
 And just like that, we have now tested the whole flow of the app with Patrol! If any part of the logic breaks, this test will notify us about that sooner than our real users do and that’s what we’re all after!
+
+[install the Patrol CLI]: https://pub.dev/packages/patrol_cli#installation
+[Patrol Setup Docs]: /documentation
+[STARTER PROJECT]: https://github.com/ResoCoder/patrol-basics-tutorial
+[Learn more from the docs]: /documentation/native/overview

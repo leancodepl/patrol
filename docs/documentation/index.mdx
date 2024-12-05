@@ -11,20 +11,6 @@ Check out our video version of this tutorial on YouTube!
      tests, go to [Using Patrol finders in widget tests].
 </Info>
 
-<Warning>
-        In this tutorial, we are using example app, which has package name
-        `com.example.myapp` on Android, bundle id `com.example.MyApp` on iOS,
-        `com.example.macos.MyApp` on macOS and `My App` name on all platforms.
-        Replace any occurences of those names with proper values.
-</Warning>
-
-<Warning>
-        Support for macOS is in alpha stage. Please be aware that some features
-        may not work as expected. There is also no native automation support
-        for macOS yet. If you encounter any issues, please report them on
-        GitHub.
-</Warning>
-
 <Steps>
     <Step>
     Install `patrol_cli`:
@@ -36,7 +22,7 @@ Check out our video version of this tutorial on YouTube!
     Patrol UI tests. It is necessary to run UI tests (`flutter test` won't work! [Here's why]).
       <Info>
         Make sure to add `patrol` to your `PATH` environment variable.
-        It's explained in the [README](https://pub.dev/packages/patrol_cli#installation).
+        It's explained in the [README].
       </Info>
     </Step>
 
@@ -57,14 +43,15 @@ Check out our video version of this tutorial on YouTube!
       • Program ideviceinstaller found in /opt/homebrew/bin/ideviceinstaller
       ```
       Be sure that for the platform you want to run the test on, all the checks are green.
-    </Step>
+    
 
-    <Warning>
-    Patrol CLI invokes the Flutter CLI for certain commands. To override the command used,
-    pass the `--flutter-command` argument or set the `PATROL_FLUTTER_COMMAND` environment
-    variable. This supports FVM (by setting the value to `fvm flutter`), puro (`puro flutter`)
-    and potentially other version managers.
-    </Warning>
+      <Warning>
+      Patrol CLI invokes the Flutter CLI for certain commands. To override the command used,
+      pass the `--flutter-command` argument or set the `PATROL_FLUTTER_COMMAND` environment
+      variable. This supports FVM (by setting the value to `fvm flutter`), puro (`puro flutter`)
+      and potentially other version managers.
+      </Warning>
+    </Step>
 
     <Step>
     Add a dependency on the `patrol` package in the
@@ -95,6 +82,13 @@ Check out our video version of this tutorial on YouTube!
       macos:
         bundle_id: com.example.macos.MyApp
     ```
+
+    <Warning>
+        In this tutorial, we are using example app, which has package name
+        `com.example.myapp` on Android, bundle id `com.example.MyApp` on iOS,
+        `com.example.macos.MyApp` on macOS and `My App` name on all platforms.
+        Replace any occurences of those names with proper values.
+    </Warning>
 
     <Info>
     If you don't know where to get `package_name` and `bundle_id` from, see the [FAQ] section.
@@ -238,7 +232,7 @@ Check out our video version of this tutorial on YouTube!
           Make sure that the **iOS Deployment Target** of `RunnerUITests` within the
             **Build Settings** section is the same as `Runner`.
             The minimum supported **iOS Deployment Target** is `11.0`. For the
-            [example app](https://github.com/leancodepl/patrol/tree/master/packages/patrol/example),
+            [example app],
             we set it to `13.0` because it's required by the app dependencies.
 
           ![Xcode iOS deployment target](/assets/ios_deployment_target.png)
@@ -341,6 +335,13 @@ Check out our video version of this tutorial on YouTube!
     </Accordion>
 
     <Accordion title="macOS setup">
+
+    <Warning>
+        Support for macOS is in alpha stage. Please be aware that some features
+        may not work as expected. There is also no native automation support
+        for macOS yet. If you encounter any issues, please report them on
+        GitHub.
+    </Warning>
 
       <Steps>
         <Step>
@@ -555,7 +556,7 @@ Check out our video version of this tutorial on YouTube!
 
       <Info>
         If you are looking for a working example of a Flutter app with Patrol tests,
-        check out the [example app](https://github.com/leancodepl/patrol/tree/master/packages/patrol/example)
+        check out the [example app]
          in the patrol repository.
       </Info>
 
@@ -609,7 +610,7 @@ Check out our video version of this tutorial on YouTube!
 
   ```
   It's a good practice to create a setup wrapper function for your tests, so you don't have to
-  repeat the same code in every test. Look at the [example](https://github.com/leancodepl/patrol/blob/d2c7493f9399a028e39cb94fd204affdb932c5fc/dev/e2e_app/integration_test/common.dart#L17-L33)
+  repeat the same code in every test. Look at the [example]
   of a wrapper function.
 </Accordion>
 
@@ -627,7 +628,7 @@ Check out our video version of this tutorial on YouTube!
   If you have AndroidStudio or Intellij IDEA installed, you can find the path to JDK by
   opening your project's android directory in AS/Intellij and going to
   **Settings** -> **Build, Execution, Deployment** -> **Build Tools** -> **Gradle** -> **Gradle JDK**.
-  [Learn more](https://developer.android.com/build/jdks)
+  [Learn more]
 </Accordion>
 
 
@@ -640,7 +641,7 @@ Check out our video version of this tutorial on YouTube!
 
 <Accordion title="When I run tests the simulator is getting cloned">
   Make sure that you disabled "Paralell execution" for **all schemes** in Xcode.
-  See [this video](https://www.youtube.com/watch?v=9LdEJR59fW4) for details.
+  See [this video] for details.
 </Accordion>
 
 <Accordion title="Running test stops on 'Wait for com.example.myapp to idle'">
@@ -664,16 +665,22 @@ Check out our video version of this tutorial on YouTube!
 </Accordion>
 
 If you couldn't find an answer to your question/problem, feel free to ask on
-[Patrol Discord Server](https://discord.gg/ukBK5t4EZg).
+[Patrol Discord Server].
 
 ### Going from here
 
 To learn how to write Patrol tests, see [finders] and [native automation] sections.
 
-[native automation]: /native/usage
-[finders]: /patrol/finders/usage
-[Using Patrol finders in widget tests]: /patrol/finders/finders-setup
-[Here's why]: /native/advanced#embrace-the-native-tests
+[native automation]: /documentation/native/usage
+[finders]: /documentation/finders/usage
+[Using Patrol finders in widget tests]: /documentation/finders/finders-setup
+[Here's why]: /documentation/native/advanced#embrace-the-native-tests
 [Patrol CLI]: https://pub.dev/packages/patrol_cli
-[FAQ]: /getting-started#faq
-[Compatibility table]: /compatibility-table
+[FAQ]: /documentation#faq
+[Compatibility table]: /documentation/compatibility-table
+[README]: https://pub.dev/packages/patrol_cli#installation
+[example app]: https://github.com/leancodepl/patrol/tree/master/packages/patrol/example
+[example]: https://github.com/leancodepl/patrol/blob/d2c7493f9399a028e39cb94fd204affdb932c5fc/dev/e2e_app/integration_test/common.dart#L17-L33
+[Learn more]: https://developer.android.com/build/jdks
+[this video]: https://www.youtube.com/watch?v=9LdEJR59fW4
+[Patrol Discord Server]: https://discord.gg/ukBK5t4EZg
