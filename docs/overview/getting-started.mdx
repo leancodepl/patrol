@@ -1,0 +1,44 @@
+---
+title: Getting started
+next: /documentation
+nextTitle: Install Patrol
+---
+
+Try out Patrol's capabilities with few clicks! Follow this tutorial and get to know our framework.
+
+## Try it out in IDX
+
+<Steps>
+
+<Step>
+
+export const IDXButton = props => {
+  return <a href="https://idx.google.com/import?url=https%3A%2F%2Fgithub.com%2Fleancodepl%2Fpatrol-idx-demo" target="_blank">
+  <img
+    height="32"
+    alt="Try in IDX"
+    src="https://cdn.idx.dev/btn/try_purple_32.svg"/>
+</a>;
+};
+
+Create new project in IDX with Patrol demo project by clicking button below.
+<IDXButton/>
+
+
+</Step>
+
+<Step>
+Check **`This is a Flutter app`** checkbox when creating a project.
+</Step>
+
+<Step>
+Click **Import**.
+</Step>
+
+Android emulator will open as preview and a test will start in develop mode. It takes a while, you can see logs in terminal 
+(it's called `onStart`, may be hidden by default). After test is finished, you can change test's or app's code and type `r` 
+in terminal to rerun it.
+
+</Steps>
+
+
