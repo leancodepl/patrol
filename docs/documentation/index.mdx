@@ -11,6 +11,8 @@ Check out our video version of this tutorial on YouTube!
      tests, go to [Using Patrol finders in widget tests].
 </Info>
 
+## Setup
+
 <Steps>
     <Step>
     Install `patrol_cli`:
@@ -560,7 +562,7 @@ Check out our video version of this tutorial on YouTube!
          in the patrol repository.
       </Info>
 
-      ### Setup with app flavors
+      ## Flavors
         If your app is using flavors, then you can pass them like so:
 
         ```
@@ -582,7 +584,7 @@ Check out our video version of this tutorial on YouTube!
             bundle_id: com.example.macos.MyApp
         ```
 
-### FAQ
+## FAQ
 
 <Accordion title="Testing fails with error inside 'integration_test/test_bundle.dart'">
   The reason is probably a mismatch of `patrol` and `patrol_cli` versions. Go to [Compatibility table]
@@ -615,7 +617,7 @@ Check out our video version of this tutorial on YouTube!
 </Accordion>
 
 
-#### Android
+### Android
 
 <Accordion title="Where do I get 'package_name' from?">
   Go to `android/app/build.gradle` and look for `applicationId` in `defaultConfig` section.
@@ -632,7 +634,7 @@ Check out our video version of this tutorial on YouTube!
 </Accordion>
 
 
-#### iOS
+### iOS
 
 <Accordion title="Where do I get `bundle_id` from?">
   For iOS go to `ios/Runner.xcodeproj/project.pbxproj` and look for `PRODUCT_BUNDLE_IDENTIFIER`.
@@ -667,7 +669,7 @@ Check out our video version of this tutorial on YouTube!
 If you couldn't find an answer to your question/problem, feel free to ask on
 [Patrol Discord Server].
 
-### Going from here
+## Going from here
 
 To learn how to write Patrol tests, see [finders] and [native automation] sections.
 
