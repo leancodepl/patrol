@@ -64,7 +64,7 @@ class CompatibilityChecker {
       process.listenStdOut(
         (line) async {
           if (line.startsWith('- patrol ')) {
-            packageCompleter.complete(line.split(' ').last);
+            packageCompleter.maybeComplete(line.split(' ').last);
           }
         },
         onDone: () {
@@ -215,6 +215,10 @@ final _patrolVersionRange = [
   ),
   VersionRange(
     min: Version.parse('3.13.0'),
+    max: Version.parse('3.13.0'),
+  ),
+  VersionRange(
+    min: Version.parse('3.13.1'),
   ),
 ];
 
@@ -265,5 +269,9 @@ final _patrolCliVersionRange = [
   ),
   VersionRange(
     min: Version.parse('3.4.0'),
+    max: Version.parse('3.4.0'),
+  ),
+  VersionRange(
+    min: Version.parse('3.4.1'),
   ),
 ];
