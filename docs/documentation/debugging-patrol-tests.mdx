@@ -1,0 +1,38 @@
+---
+title: Debugging Patrol tests
+---
+
+If you want to debug your application during patrol tests, 
+you can do in Visual Studio Code by attaching a debugger to the running process. 
+Here is how you can do it:
+
+1. In your `launch.json` file, add a new configuration for attaching debugger to a process:
+
+```json
+{
+      "name": "attach debugger",
+      "request": "attach",
+      "type": "dart",
+      "cwd": "integration_test",
+      "vmServiceUri": "${command:dart.promptForVmService}"
+}
+```
+
+2. Run your patrol tests using `develop` command with the same arguments as you would normally do.
+
+3. When the tests will start running, at some point you will see a message with the VM service URI.
+   Copy the URI from the message.
+
+`The Dart VM service is listening on http://127.0.0.1:63725/57XmBI_pwSA=/`
+
+4. From "Run and Debug" tab in Visual Studio Code, select the configuration you have created in step 1.
+   You will be prompted to enter the VM service URI. Paste the URI you copied in step 3.
+
+5. Once the debugger is attached, you can set breakpoints and debug your application as you would normally do.
+
+<Info>
+     Intellij/Android Studio does not support attaching a debugger to a running process via Observatory Uri.
+     Therefore you cannot achieve the same behavior in those IDEs (See this [issue]).
+</Info>
+
+[issue]: https://github.com/flutter/flutter-intellij/issues/2250
