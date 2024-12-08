@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# patrol build ios --simulator
+
+cd build/ios_integ/Build/Products/Debug-dev-iphonesimulator
+
+# convert to zip archive in this example
+zip -r sample.zip Runner.app
+zip -r sampleUITests-Runner.zip RunnerUITests-Runner.app
+
+marathon-cloud -api-key "${MARATHON_TOKEN}" -app sample.zip -testapp sampleUITests-Runner.zip -platform iOS
