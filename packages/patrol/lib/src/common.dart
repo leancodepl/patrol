@@ -1,5 +1,7 @@
 import 'dart:developer';
+import 'dart:ffi';
 import 'dart:io' as io;
+import 'dart:io';
 
 import 'package:boolean_selector/boolean_selector.dart';
 import 'package:flutter/foundation.dart';
@@ -97,9 +99,21 @@ void patrolTest(
   LiveTestWidgetsFlutterBindingFramePolicy framePolicy =
       LiveTestWidgetsFlutterBindingFramePolicy.fadePointers,
 }) {
+  final DynamicLibrary nativeLibrary = Platform.isIOS
+      ? DynamicLibrary.process()
+      : throw UnsupportedError('This is only supported on iOS');
+
+  final int Function() getGlobalPort = nativeLibrary
+      .lookup<NativeFunction<Int32 Function()>>('getGlobalPort')
+      .asFunction();
+
+  final globalPort = getGlobalPort();
+
   final patrolLog = PatrolLogWriter(config: {'printLogs': config.printLogs});
-  final automator = NativeAutomator(config: nativeAutomatorConfig);
-  final automator2 = NativeAutomator2(config: nativeAutomatorConfig);
+  final automator =
+      NativeAutomator(config: nativeAutomatorConfig, port: globalPort);
+  final automator2 =
+      NativeAutomator2(config: nativeAutomatorConfig, port: globalPort);
   final patrolBinding = PatrolBinding.ensureInitialized(nativeAutomatorConfig)
     ..framePolicy = framePolicy;
 
