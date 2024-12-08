@@ -174,7 +174,7 @@ class PatrolLogReader {
             logsCounter = 0;
           case TestEntry():
             // Close the single test entry for the test that is finished.
-            _singleEntries.last.closeTest(entry);
+            // _singleEntries.last.closeTest(entry);
 
             // Optionally clear all printed [StepEntry] and [LogEntry].
             if (!showFlutterLogs &&
@@ -183,7 +183,8 @@ class PatrolLogReader {
               _clearLines(stepsCounter + logsCounter + 1);
             }
 
-            final executionTime = _singleEntries.last.executionTime.inSeconds;
+            final executionTime = 0;
+            //_singleEntries.last.executionTime.inSeconds;
             // Print test entry summary to console.
             log('${entry.pretty()} ${AnsiCodes.gray}(${executionTime}s)${AnsiCodes.reset}');
           case StepEntry():
