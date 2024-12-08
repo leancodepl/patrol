@@ -6,7 +6,7 @@ import 'package:patrol/patrol.dart';
 
 void main() {
   patrolTest(
-    'counter',
+    'counter5',
     ($) async {
       // Replace later with your app's main widget
       await $.pumpWidgetAndSettle(

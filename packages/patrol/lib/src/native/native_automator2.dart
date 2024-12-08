@@ -56,7 +56,7 @@ extension on native_automator.KeyboardBehavior {
 // TODO: Rename to NativeAutomatorClient
 class NativeAutomator2 {
   /// Creates a new [NativeAutomator2].
-  NativeAutomator2({required NativeAutomatorConfig config})
+  NativeAutomator2({required NativeAutomatorConfig config, int? port})
       : assert(
           config.connectionTimeout > config.findTimeout,
           'find timeout is longer than connection timeout',
@@ -76,10 +76,12 @@ class NativeAutomator2 {
 
     _client = NativeAutomatorClient(
       http.Client(),
-      Uri.http('${_config.host}:${_config.port}'),
+      Uri.http('${_config.host}:${port ?? _config.port}'),
       timeout: _config.connectionTimeout,
     );
-    _config.logger('NativeAutomatorClient created, port: ${_config.port}');
+    _config.logger(
+      'NativeAutomatorClient created, port: ${port ?? _config.port}',
+    );
   }
 
   final PatrolLogWriter _patrolLog = PatrolLogWriter();

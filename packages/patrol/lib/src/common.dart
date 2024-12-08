@@ -1,4 +1,6 @@
 import 'dart:developer';
+import 'dart:ffi';
+import 'dart:io' as io;
 
 import 'package:boolean_selector/boolean_selector.dart';
 import 'package:flutter/foundation.dart';
@@ -96,9 +98,27 @@ void patrolTest(
   LiveTestWidgetsFlutterBindingFramePolicy framePolicy =
       LiveTestWidgetsFlutterBindingFramePolicy.fadePointers,
 }) {
+  final DynamicLibrary nativeLibrary =
+      io.Platform.isIOS
+          ? DynamicLibrary.process()
+          : throw UnsupportedError('This is only supported on iOS');
+
+  final int Function() getGlobalPort =
+      nativeLibrary
+          .lookup<NativeFunction<Int32 Function()>>('getGlobalPort')
+          .asFunction();
+
+  final globalPort = getGlobalPort();
+
   final patrolLog = PatrolLogWriter(config: {'printLogs': config.printLogs});
-  final automator = NativeAutomator(config: nativeAutomatorConfig);
-  final automator2 = NativeAutomator2(config: nativeAutomatorConfig);
+  final automator = NativeAutomator(
+    config: nativeAutomatorConfig,
+    port: globalPort,
+  );
+  final automator2 = NativeAutomator2(
+    config: nativeAutomatorConfig,
+    port: globalPort,
+  );
   final patrolBinding = PatrolBinding.ensureInitialized(nativeAutomatorConfig)
     ..framePolicy = framePolicy;
 
@@ -276,10 +296,7 @@ DartGroupEntry createDartTestGroup(
 /// should return 'myTest'
 @internal
 String deduplicateGroupEntryName(String parentName, String currentName) {
-  return currentName.substring(
-    parentName.length + 1,
-    currentName.length,
-  );
+  return currentName.substring(parentName.length + 1, currentName.length);
 }
 
 /// Recursively prints the structure of the test suite and reports test count
@@ -298,17 +315,16 @@ int reportGroupStructure(DartGroupEntry group, {int indentation = 0}) {
       debugPrint("$indent     -- test: '${entry.name}'");
     } else {
       for (final subgroup in entry.entries) {
-        testCount +=
-            reportGroupStructure(subgroup, indentation: indentation + 5);
+        testCount += reportGroupStructure(
+          subgroup,
+          indentation: indentation + 5,
+        );
       }
     }
   }
 
   if (indentation == 0) {
-    postEvent(
-      'testCount',
-      {'testCount': testCount},
-    );
+    postEvent('testCount', {'testCount': testCount});
   }
 
   return testCount;
