@@ -427,6 +427,11 @@ class PatrolTester {
             timeout: visibleTimeout,
             enablePatrolLog: false,
           );
+          if (!kIsWeb) {
+            tester.testTextInput.unregister();
+            tester.testTextInput.register();
+          }
+          await tester.tap(resolvedFinder.first);
           await tester.enterText(resolvedFinder.first, text);
           if (!kIsWeb) {
             // When registering `testTextInput`, we have to unregister it

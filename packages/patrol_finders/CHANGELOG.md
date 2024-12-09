@@ -1,3 +1,7 @@
+## 2.5.2
+
+- Fix bug with `enterText` that block entering text into one field, more than once.
+
 ## 2.5.1
 
 - Disable printing logs in nested `waitUntilVisible` and `waitUntilExists` calls.
