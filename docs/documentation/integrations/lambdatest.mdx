@@ -1,0 +1,62 @@
+---
+title: Integrations - LambdaTest
+---
+
+# LambdaTest overview
+
+[LambdaTest App Test Automation] is a popular cloud device farm.
+
+<Warning>This integration is currently Android-only.</Warning>
+
+### Change runner
+
+Modify the **app-level build.gradle**:
+
+```groovy title="android/app/build.gradle"
+android {
+  // ...
+  defaultConfig {
+    //...
+    testInstrumentationRunner "pl.leancode.patrol.LambdaTestPatrolJUnitRunner"
+  }
+  // ...
+}
+
+// ...
+```
+
+### Upload to LambdaTest
+
+To run Android UI tests on LambdaTest:
+
+1. Upload the app under test APK to LambdaTest ([see docs][LT_app_docs])
+2. Upload the instrumentation app APK to LambdaTest ([see docs][LT_test_docs])
+3. Start test execution on LambdaTest ([see docs][LT_execute_docs])
+
+```
+$ export LAMBDATEST_PROJECT=AwesomeApp # optional
+$ export LAMBDATEST_DEVICES="[\"Pixel 7 Pro-13\"]" # optional
+• Building apk with entrypoint test_bundle.dart...
+✓ Completed building apk with entrypoint test_bundle.dart (11.0s)
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100 82.4M  100   255  100 82.4M      7  2897k  0:00:31  0:00:36  0:00:02 2051k
+Uploaded app, "app_id": "lt://APP1016047291733313441063634",
+Uploaded testsuite, "app_id": "lt://APP1016047291733312896265135",
+{
+    "status": [
+        "Success"
+    ],
+    "buildId": [
+        "5875687"
+    ],
+    "message": [
+        ""
+    ]
+}
+```
+
+[LT_app_docs]: https://www.lambdatest.com/support/docs/getting-started-with-flutter-dart-android-automation/#step-2-upload-your-application
+[LT_test_docs]: https://www.lambdatest.com/support/docs/getting-started-with-flutter-dart-android-automation/#step-3-uploading-test-suite
+[LT_execute_docs]: https://www.lambdatest.com/support/docs/getting-started-with-flutter-dart-android-automation/#step-4-executing-the-test
+[LambdaTest App Test Automation]: https://www.lambdatest.com/app-test-automation

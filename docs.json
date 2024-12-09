@@ -195,6 +195,10 @@
             {
               "title": "Browserstack",
               "href": "/documentation/integrations/browserstack"
+            },
+            {
+              "title": "LambdaTest",
+              "href": "/documentation/integrations/lambdatest"
             }
           ]
         },
