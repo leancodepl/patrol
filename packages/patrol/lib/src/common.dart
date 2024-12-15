@@ -99,15 +99,16 @@ void patrolTest(
   LiveTestWidgetsFlutterBindingFramePolicy framePolicy =
       LiveTestWidgetsFlutterBindingFramePolicy.fadePointers,
 }) {
-  final DynamicLibrary nativeLibrary = Platform.isIOS
+/*   final DynamicLibrary nativeLibrary = Platform.isIOS
       ? DynamicLibrary.process()
       : throw UnsupportedError('This is only supported on iOS');
 
   final int Function() getGlobalPort = nativeLibrary
       .lookup<NativeFunction<Int32 Function()>>('getGlobalPort')
-      .asFunction();
+      .asFunction(); */
 
-  final globalPort = getGlobalPort();
+  const globalPort = 8081;
+  // getGlobalPort();
 
   final patrolLog = PatrolLogWriter(config: {'printLogs': config.printLogs});
   final automator =
