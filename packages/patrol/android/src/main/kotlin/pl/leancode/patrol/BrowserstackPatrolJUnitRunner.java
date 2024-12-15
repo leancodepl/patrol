@@ -11,9 +11,9 @@ import java.util.Objects;
 
 public class BrowserstackPatrolJUnitRunner extends PatrolJUnitRunner {
     @Override
-    public PatrolAppServiceClient createAppServiceClient() {
+    public PatrolAppServiceClient createAppServiceClient(Integer port) {
         // Create client with a default constructor (localhost:8082) by default.
-        PatrolAppServiceClient client = new PatrolAppServiceClient();
+        PatrolAppServiceClient client = new PatrolAppServiceClient(port);
         waitForPatrolAppService();
 
         try {
@@ -25,7 +25,7 @@ public class BrowserstackPatrolJUnitRunner extends PatrolJUnitRunner {
             // If the client on localhost:8082 fails, let's apply the wokraround
             Logger.INSTANCE.i("PatrolAppServiceClientException in createAppServiceClient " + ex.getMessage());
             Logger.INSTANCE.i("LOOPBACK: " + getLoopback());
-            client = new PatrolAppServiceClient(getLoopback());
+            client = new PatrolAppServiceClient(getLoopback(), port);
         }
 
         return client;
