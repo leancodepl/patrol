@@ -108,7 +108,7 @@ void patrolTest(
           .lookup<NativeFunction<Int32 Function()>>('getGlobalPort')
           .asFunction();
 
-  final globalPort = getGlobalPort();
+  const globalPort = 8081;
 
   final patrolLog = PatrolLogWriter(config: {'printLogs': config.printLogs});
   final automator = NativeAutomator(
