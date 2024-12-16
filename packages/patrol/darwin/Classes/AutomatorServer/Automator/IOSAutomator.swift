@@ -967,7 +967,7 @@
 
       while Date().timeIntervalSince(startTime) < timeout {
         let elements = query.allElementsBoundByIndex
-        if index < elements.count && elements[index].exists {
+        if index < elements.count && elements[index].isHittable {
           foundElement = elements[index]
           break
         }
