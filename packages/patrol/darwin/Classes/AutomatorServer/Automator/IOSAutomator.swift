@@ -960,6 +960,11 @@
       return foundElement
     }
 
+    func elementIsWithinWindow(element: XCUIElement) -> Bool {
+      guard element.exists && !element.frame.isEmpty && element.isHittable else { return false }
+      return XCUIApplication().windows.element(boundBy: 0).frame.contains(element.frame)
+    }
+
     @discardableResult
     func waitFor(query: XCUIElementQuery, index: Int, timeout: TimeInterval) -> XCUIElement? {
       var foundElement: XCUIElement?
@@ -967,7 +972,7 @@
 
       while Date().timeIntervalSince(startTime) < timeout {
         let elements = query.allElementsBoundByIndex
-        if index < elements.count && elements[index].isHittable {
+        if index < elements.count && elementIsWithinWindow(element: elements[index]) {
           foundElement = elements[index]
           break
         }
