@@ -339,7 +339,7 @@
         let query = app.descendants(matching: .any).containing(selector.toNSPredicate())
         guard
           let element = self.waitFor(
-            query: query, index: selector.instance ?? 0, timeout: timeout ?? self.timeout)
+            query: query, index: selector.instance ?? 0, timeout: timeout ?? self.timeout, bundleId: bundleId)
         else {
           throw PatrolError.viewNotExists(view)
         }
@@ -359,7 +359,7 @@
         let query = app.descendants(matching: .any).containing(selector.toNSPredicate())
         guard
           let element = self.waitFor(
-            query: query, index: selector.instance ?? 0, timeout: timeout ?? self.timeout)
+            query: query, index: selector.instance ?? 0, timeout: timeout ?? self.timeout, bundleId: bundleId)
         else {
           throw PatrolError.viewNotExists(view)
         }
@@ -960,20 +960,21 @@
       return foundElement
     }
 
-    func elementIsWithinWindow(element: XCUIElement) -> Bool {
+    func elementIsWithinWindow(element: XCUIElement, bundleId: String) -> Bool {
       guard element.exists && !element.frame.isEmpty && element.isHittable else { return false }
-      return XCUIApplication().windows.element(boundBy: 0).frame.contains(element.frame)
+      let app = try self.getApp(withBundleId: bundleId)
+      return app.windows.element(boundBy: 0).frame.contains(element.frame)
     }
 
     @discardableResult
-    func waitFor(query: XCUIElementQuery, index: Int, timeout: TimeInterval) -> XCUIElement? {
+      func waitFor(query: XCUIElementQuery, index: Int, timeout: TimeInterval, bundleId: String) -> XCUIElement? {
       var foundElement: XCUIElement?
       let startTime = Date()
 
       while Date().timeIntervalSince(startTime) < timeout {
         let elements = query.allElementsBoundByIndex
-        if index < elements.count && elementIsWithinWindow(element: elements[index]) {
-          foundElement = elements[index]
+          if index < elements.count && elementIsWithinWindow(element: elements[index], bundleId: bundleId) {
+            foundElement = elements[index]
           break
         }
         sleep(1)
