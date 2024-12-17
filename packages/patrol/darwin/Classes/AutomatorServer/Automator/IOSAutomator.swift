@@ -85,7 +85,7 @@
         Logger.shared.i("waiting for existence of \(view)")
         guard
           let element = self.waitFor(
-            query: query, index: selector.instance ?? 0, timeout: timeout ?? self.timeout)
+            query: query, index: selector.instance ?? 0, timeout: timeout ?? self.timeout, bundleId: bundleId)
         else {
           throw PatrolError.viewNotExists(view)
         }
@@ -110,7 +110,7 @@
         Logger.shared.i("waiting for existence of \(view)")
         guard
           let element = self.waitFor(
-            query: query, index: selector.instance ?? 0, timeout: timeout ?? self.timeout)
+            query: query, index: selector.instance ?? 0, timeout: timeout ?? self.timeout, bundleId: bundleId)
         else {
           throw PatrolError.viewNotExists(view)
         }
@@ -134,7 +134,7 @@
         Logger.shared.i("waiting for existence of \(view)")
         guard
           let element = self.waitFor(
-            query: query, index: selector.instance ?? 0, timeout: timeout ?? self.timeout)
+            query: query, index: selector.instance ?? 0, timeout: timeout ?? self.timeout, bundleId: bundleId)
         else {
           throw PatrolError.viewNotExists(view)
         }
@@ -158,7 +158,7 @@
         Logger.shared.i("waiting for existence of \(view)")
         guard
           let element = self.waitFor(
-            query: query, index: selector.instance ?? 0, timeout: timeout ?? self.timeout)
+            query: query, index: selector.instance ?? 0, timeout: timeout ?? self.timeout, bundleId: bundleId)
         else {
           throw PatrolError.viewNotExists(view)
         }
@@ -219,7 +219,8 @@
           let element = self.waitFor(
             query: query,
             index: selector.instance ?? 0,
-            timeout: timeout ?? self.timeout
+            timeout: timeout ?? self.timeout,
+            bundleId: bundleId
           )
         else {
           throw PatrolError.viewNotExists(view)
@@ -257,7 +258,8 @@
           let element = self.waitFor(
             query: query,
             index: selector.instance ?? 0,
-            timeout: timeout ?? self.timeout
+            timeout: timeout ?? self.timeout,
+            bundleId: bundleId
           )
         else {
           throw PatrolError.viewNotExists(view)
@@ -302,7 +304,8 @@
           let element = self.waitFor(
             query: textFieldsQuery,
             index: index,
-            timeout: timeout ?? self.timeout
+            timeout: timeout ?? self.timeout,
+            bundleId: bundleId
           )
         else {
           throw PatrolError.viewNotExists("text field at index \(index) in app \(bundleId)")
@@ -692,7 +695,7 @@
         let cellsQuery = self.springboard.buttons.matching(
           identifier: self.notificationCellIdentifier)
         guard
-          let cell = self.waitFor(query: cellsQuery, index: index, timeout: timeout ?? self.timeout)
+          let cell = self.waitFor(query: cellsQuery, index: index, timeout: timeout ?? self.timeout, bundleId: "com.apple.springboard")
         else {
           throw PatrolError.viewNotExists("notification at index \(index)")
         }
@@ -716,7 +719,7 @@
             substring)
         )
 
-        guard let cell = self.waitFor(query: cellsQuery, index: 0, timeout: timeout ?? self.timeout)
+        guard let cell = self.waitFor(query: cellsQuery, index: 0, timeout: timeout ?? self.timeout, bundleId: "com.apple.springboard")
         else {
           throw PatrolError.viewNotExists("notification containing text \(format: substring)")
         }
@@ -962,7 +965,7 @@
 
     func elementIsWithinWindow(element: XCUIElement, bundleId: String) -> Bool {
       guard element.exists && !element.frame.isEmpty && element.isHittable else { return false }
-      let app = try self.getApp(withBundleId: bundleId)
+      let app = self.getApp(withBundleId: bundleId)
       return app.windows.element(boundBy: 0).frame.contains(element.frame)
     }
 
@@ -983,7 +986,7 @@
       return foundElement
     }
 
-    private func getApp(withBundleId bundleId: String) throws -> XCUIApplication {
+    private func getApp(withBundleId bundleId: String) -> XCUIApplication {
       let app = XCUIApplication(bundleIdentifier: bundleId)
       // TODO: Doesn't work
       // See https://stackoverflow.com/questions/73976961/how-to-check-if-any-app-is-installed-during-xctest
