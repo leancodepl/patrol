@@ -6,6 +6,7 @@ import 'package:e2e_app/notifications_screen.dart';
 import 'package:e2e_app/overlay_screen.dart';
 import 'package:e2e_app/permissions_screen.dart';
 import 'package:e2e_app/scrolling_screen.dart';
+import 'package:e2e_app/text_fields_screen.dart';
 import 'package:e2e_app/webview_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
@@ -266,6 +267,14 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
               ),
             ),
             child: const Text('Open permissions screen'),
+          ),
+          TextButton(
+            onPressed: () async => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => const TextFieldsScreen(),
+              ),
+            ),
+            child: const Text('Open text fields screen'),
           ),
           Text('EXAMPLE_KEY: ${const String.fromEnvironment('EXAMPLE_KEY')}'),
         ],
