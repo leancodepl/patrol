@@ -139,7 +139,7 @@ class PatrolTester {
   final PatrolLogWriter patrolLog;
 
   /// Flutter's widget tester that this [PatrolTester] wraps.
-  final PatrolWidgetTester tester;
+  final WidgetTester tester;
 
   /// Wraps a function with a log entry for the start and end of the function.
   Future<T> wrapWithPatrolLog<T>({
