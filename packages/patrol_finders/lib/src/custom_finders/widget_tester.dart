@@ -448,7 +448,10 @@ class PatrolWidgetTester extends _PWT with _ShowKeyboardPatch {
     Future<T> Function() callback, {
     Duration additionalTime = const Duration(milliseconds: 1000),
   }) {
-    return _tester.runAsync(callback);
+    // The deprecated member use is necessary for compatibility with older
+    // versions of the Flutter framework.
+    // ignore: deprecated_member_use
+    return _tester.runAsync(callback, additionalTime: additionalTime);
   }
 
   @override
