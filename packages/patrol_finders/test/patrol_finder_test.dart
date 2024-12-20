@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol_finders/src/custom_finders/custom_finders.dart';
 
+import 'utils/text_fields_screen.dart';
+
 // See how finders are tested in `package:flutter_test`:
 // https://github.com/flutter/flutter/blob/master/packages/flutter_test/test/finders_test.dart
 
@@ -1104,6 +1106,48 @@ void main() {
           );
         },
       );
+    });
+
+    patrolWidgetTest(
+        'can enter text into the same field, after focusing on button',
+        ($) async {
+      await $.pumpWidgetAndSettle(const TextFieldsScreen());
+
+      await $(const Key('textField1')).enterText('User');
+      await $(const Key('buttonFocus')).tap();
+      expect($('User'), findsOneWidget);
+
+      await $(const Key('textField1')).enterText('User2');
+      expect($('User'), findsNothing);
+      expect($('User2'), findsOneWidget);
+    });
+
+    patrolWidgetTest('can enter text into same field, after unfocusing',
+        ($) async {
+      await $.pumpWidgetAndSettle(const TextFieldsScreen());
+
+      await $(const Key('textField1')).enterText('User2');
+      await $(const Key('buttonUnfocus')).tap();
+      expect($('User2'), findsOneWidget);
+
+      await $(const Key('textField1')).enterText('User3');
+      expect($('User2'), findsNothing);
+      expect($('User3'), findsOneWidget);
+    });
+
+    patrolWidgetTest(
+        'can enter text into same field, after entering text in another field',
+        ($) async {
+      await $.pumpWidgetAndSettle(const TextFieldsScreen());
+
+      await $(const Key('textField1')).enterText('User3');
+      expect($('User3'), findsOneWidget);
+
+      await $(const Key('textField2')).enterText('User4');
+      await $(const Key('textField1')).enterText('User5');
+      expect($('User3'), findsNothing);
+      expect($('User4'), findsOneWidget);
+      expect($('User5'), findsOneWidget);
     });
   });
 }
