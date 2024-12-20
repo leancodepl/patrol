@@ -448,7 +448,7 @@ class PatrolWidgetTester extends _PWT with _ShowKeyboardPatch {
     Future<T> Function() callback, {
     Duration additionalTime = const Duration(milliseconds: 1000),
   }) {
-    return _tester.runAsync(callback, additionalTime: additionalTime);
+    return _tester.runAsync(callback);
   }
 
   @override
