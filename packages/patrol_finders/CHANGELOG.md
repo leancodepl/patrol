@@ -1,3 +1,7 @@
+## Unreleased
+
+- Patch `enterText` into same field twice. (#2461)
+
 ## 2.5.1
 
 - Disable printing logs in nested `waitUntilVisible` and `waitUntilExists` calls.
