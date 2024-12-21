@@ -153,7 +153,9 @@ class AndroidAppOptions {
     }
 
     // Add test server ports
-    cmd.add('-Ptest-server-port=$testServerPort');
+    if (testServerPort != 0) {
+      cmd.add('-Ptest-server-port=$testServerPort');
+    }
 
     return cmd;
   }
