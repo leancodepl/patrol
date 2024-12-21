@@ -52,7 +52,6 @@ android {
 
     defaultConfig {
         minSdk 21
-        buildConfigField("String", "PATROL_APP_PORT", project.hasProperty('app-server-port') ? '"' + project.getProperty('app-server-port') + '"' : '""')
         buildConfigField("String", "PATROL_TEST_PORT", project.hasProperty('test-server-port') ? '"' + project.getProperty('test-server-port') + '"' : '""')
     }
 
