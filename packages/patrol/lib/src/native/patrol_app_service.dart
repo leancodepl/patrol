@@ -4,7 +4,7 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:patrol/src/common.dart';
+import 'package:patrol/patrol.dart';
 import 'package:patrol/src/native/contracts/contracts.dart';
 import 'package:patrol/src/native/contracts/patrol_app_service_server.dart';
 import 'package:patrol_log/patrol_log.dart';
@@ -29,7 +29,7 @@ Future<int> runAppService(PatrolAppService service) async {
   final server = await shelf_io.serve(
     pipeline,
     InternetAddress.anyIPv4,
-    0,
+    getAppServerPort(),
     poweredByHeader: null,
   );
 
