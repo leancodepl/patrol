@@ -152,10 +152,8 @@ class AndroidAppOptions {
       cmd.add('-Pdart-defines=$dartDefinesString');
     }
 
-    // Add app and test server ports
-    cmd
-      ..add('-Papp-server-port=$appServerPort')
-      ..add('-Ptest-server-port=$testServerPort');
+    // Add test server ports
+    cmd.add('-Ptest-server-port=$testServerPort');
 
     return cmd;
   }
