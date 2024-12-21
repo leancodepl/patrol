@@ -489,10 +489,14 @@ class PatrolTester {
   ///
   /// Timeout is globally set by [PatrolTester.config.visibleTimeout]. If you
   /// want to override this global setting, set [timeout].
+  ///
+  /// Provide [alignment] to check if the widget is visible in a specific area
+  /// of the screen. It defaults to [Alignment.center].
   Future<PatrolFinder> waitUntilVisible(
     Finder finder, {
     Duration? timeout,
     bool enablePatrolLog = true,
+    Alignment alignment = Alignment.center,
   }) {
     return TestAsyncUtils.guard(
       () => wrapWithPatrolLog(
@@ -503,7 +507,7 @@ class PatrolTester {
         function: () async {
           final duration = timeout ?? config.visibleTimeout;
           final end = tester.binding.clock.now().add(duration);
-          final hitTestableFinder = finder.hitTestable();
+          final hitTestableFinder = finder.hitTestable(at: alignment);
           while (hitTestableFinder.evaluate().isEmpty) {
             final now = tester.binding.clock.now();
             if (now.isAfter(end)) {
