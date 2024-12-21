@@ -404,13 +404,9 @@ class PatrolFinder implements MatchFinder {
   ///
   /// Timeout is globally set by [PatrolTester.config.visibleTimeout]. If you
   /// want to override this global setting, set [timeout].
-  ///
-  /// Provide [alignment] to check if the widget is visible in a specific area
-  /// of the screen. It defaults to [Alignment.center].
   Future<PatrolFinder> waitUntilVisible({
     Duration? timeout,
     bool enablePatrolLog = true,
-    Alignment alignment = Alignment.center,
   }) =>
       wrapWithPatrolLog(
         action: 'waitUntilVisible',
@@ -419,7 +415,6 @@ class PatrolFinder implements MatchFinder {
           this,
           timeout: timeout,
           enablePatrolLog: false,
-          alignment: alignment,
         ),
         enablePatrolLog: enablePatrolLog,
       );
@@ -515,11 +510,8 @@ class PatrolFinder implements MatchFinder {
   String describeMatch(Plurality plurality) => finder.describeMatch(plurality);
 
   /// Returns true if this finder finds at least 1 visible widget.
-  ///
-  /// Provide [alignment] to check if the widget is visible in a specific area
-  /// of the screen. It defaults to [Alignment.center].
-  bool visible({Alignment alignment = Alignment.center}) {
-    final isVisible = hitTestable(at: alignment).evaluate().isNotEmpty;
+  bool get visible {
+    final isVisible = alignments.any((alignment) => hitTestable(at: alignment).evaluate().isNotEmpty);
     if (isVisible == true) {
       assert(
         exists == true,
