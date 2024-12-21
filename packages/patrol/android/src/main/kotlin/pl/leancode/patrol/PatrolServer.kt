@@ -1,12 +1,13 @@
 package pl.leancode.patrol
 
 import android.os.ConditionVariable
-import androidx.test.uiautomator.v18.BuildConfig
+import io.ktor.server.engine.ApplicationEngineEnvironment
 import org.http4k.core.ContentType
 import org.http4k.filter.ServerFilters
 import org.http4k.server.Http4kServer
 import org.http4k.server.KtorCIO
 import org.http4k.server.asServer
+import java.net.ServerSocket
 
 class PatrolServer {
     private var server: Http4kServer? = null
@@ -16,20 +17,18 @@ class PatrolServer {
     fun start() {
         Logger.i("Starting server...")
 
-        val passedPort = BuildConfig.PATROL_TEST_PORT
+        port = BuildConfig.PATROL_TEST_PORT.toIntOrNull() ?: getFreePort()
 
         automatorServer = AutomatorServer(Automator.instance)
+
         server = automatorServer!!.router
             .withFilter(catcher)
             .withFilter(printer)
             .withFilter(ServerFilters.SetContentType(ContentType.TEXT_PLAIN))
-            .asServer(KtorCIO(passedPort))
+            .asServer(KtorCIO(port!!))
             .start()
 
-
-        port = server!!.port()
-
-        Logger.i("Created and started PatrolServer, port: ${server!!.port()}")
+        Logger.i("Created and started PatrolServer, port: $port")
 
         Runtime.getRuntime().addShutdownHook(
             Thread {
@@ -44,6 +43,8 @@ class PatrolServer {
         val appReady: ConditionVariable = ConditionVariable()
         var appServerPort: Int? = null
     }
+
+    private fun getFreePort() = ServerSocket(0).use { it.localPort }
 
 }
 

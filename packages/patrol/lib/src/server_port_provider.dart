@@ -23,7 +23,7 @@ int getAppServerPort() {
   return int.parse(
     const String.fromEnvironment(
       'PATROL_TEST_SERVER_PORT',
-      defaultValue: '8081',
+      defaultValue: '0',
     ),
   );
 }

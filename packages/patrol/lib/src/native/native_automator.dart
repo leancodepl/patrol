@@ -65,7 +65,7 @@ class NativeAutomatorConfig {
     ),
     this.port = const String.fromEnvironment(
       'PATROL_TEST_SERVER_PORT',
-      defaultValue: '8081',
+      defaultValue: '0',
     ),
     this.packageName = const String.fromEnvironment('PATROL_APP_PACKAGE_NAME'),
     this.iosInstalledApps =
