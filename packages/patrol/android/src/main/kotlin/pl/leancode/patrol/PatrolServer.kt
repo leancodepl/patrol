@@ -1,7 +1,7 @@
 package pl.leancode.patrol
 
 import android.os.ConditionVariable
-import kotlinx.coroutines.runBlocking
+import androidx.test.uiautomator.v18.BuildConfig
 import org.http4k.core.ContentType
 import org.http4k.filter.ServerFilters
 import org.http4k.server.Http4kServer
@@ -16,12 +16,14 @@ class PatrolServer {
     fun start() {
         Logger.i("Starting server...")
 
+        val passedPort = BuildConfig.PATROL_TEST_PORT
+
         automatorServer = AutomatorServer(Automator.instance)
         server = automatorServer!!.router
             .withFilter(catcher)
             .withFilter(printer)
             .withFilter(ServerFilters.SetContentType(ContentType.TEXT_PLAIN))
-            .asServer(KtorCIO(8081))
+            .asServer(KtorCIO(passedPort))
             .start()
 
 

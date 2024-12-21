@@ -27,9 +27,8 @@ class PatrolPlugin : FlutterPlugin, MethodCallHandler, ActivityAware {
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
         val intent: Intent = binding.activity.intent
-        println("Printing the port from PatrolPlugin")
-        val serverPort = intent.getIntExtra("patrol_server_port", 8000)
-        println("$serverPort")
+        val serverPort = intent.getIntExtra("patrol_server_port", 0)
+        AndroidServerPortProvider.setPort(serverPort)
     }
 
     override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
