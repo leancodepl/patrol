@@ -1,6 +1,7 @@
-## Unreleased
+## 2.6.0
 
 - Patch `enterText` into same field twice. (#2461)
+- Bump `patrol_log` version.
 
 ## 2.5.1
 
