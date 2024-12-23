@@ -1,3 +1,7 @@
+## 3.13.2
+
+- Bump `patrol_finders` and `patrol_log` - use version with patched enterText.
+
 ## 3.13.1
 
 - Remove whitespace replacement on Android test name. (#2437)
