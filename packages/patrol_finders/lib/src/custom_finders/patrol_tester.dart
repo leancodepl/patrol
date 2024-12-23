@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol_finders/patrol_finders.dart';
+import 'package:patrol_finders/src/custom_finders/utils.dart';
 import 'package:patrol_log/patrol_log.dart';
 
 /// Common configuration for [PatrolTester] and [PatrolFinder].
@@ -486,9 +487,6 @@ class PatrolTester {
   ///
   /// Throws a [WaitUntilVisibleTimeoutException] if more time than specified by
   /// the timeout passed and no widgets were found.
-  ///
-  /// Timeout is globally set by [PatrolTester.config.visibleTimeout]. If you
-  /// want to override this global setting, set [timeout].
   Future<PatrolFinder> waitUntilVisible(
     Finder finder, {
     Duration? timeout,
@@ -503,20 +501,22 @@ class PatrolTester {
         function: () async {
           final duration = timeout ?? config.visibleTimeout;
           final end = tester.binding.clock.now().add(duration);
-          final hitTestableFinder = finder.hitTestable();
-          while (hitTestableFinder.evaluate().isEmpty) {
+          final hitTestableFinders = alignments.map((alignment) => finder.hitTestable(at: alignment));
+          final hitTestableEvaluations = hitTestableFinders.map((finder) => finder.evaluate());
+          while (hitTestableEvaluations.map((result) => result.isNotEmpty).firstOrNull == null) {
             final now = tester.binding.clock.now();
             if (now.isAfter(end)) {
               throw WaitUntilVisibleTimeoutException(
                 finder: finder,
                 duration: duration,
               );
-            }
-
+            }            
             await tester.pump(const Duration(milliseconds: 100));
           }
-
-          return PatrolFinder(finder: hitTestableFinder, tester: this);
+          return PatrolFinder(
+            finder: hitTestableFinders.firstWhere((finder) => finder.evaluate().isNotEmpty),
+            tester: this,
+          );
         },
       ),
     );

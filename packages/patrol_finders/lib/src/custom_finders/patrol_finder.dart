@@ -511,7 +511,7 @@ class PatrolFinder implements MatchFinder {
 
   /// Returns true if this finder finds at least 1 visible widget.
   bool get visible {
-    final isVisible = hitTestable().evaluate().isNotEmpty;
+    final isVisible = alignments.any((alignment) => hitTestable(at: alignment).evaluate().isNotEmpty);
     if (isVisible == true) {
       assert(
         exists == true,
