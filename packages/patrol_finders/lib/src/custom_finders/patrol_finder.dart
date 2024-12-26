@@ -390,7 +390,11 @@ class PatrolFinder implements MatchFinder {
       wrapWithPatrolLog(
         action: 'waitUntilExists',
         color: AnsiCodes.cyan,
-        function: () => tester.waitUntilExists(this, timeout: timeout),
+        function: () => tester.waitUntilExists(
+          this,
+          timeout: timeout,
+          enablePatrolLog: false,
+        ),
       );
 
   /// Waits until this finder finds at least one visible widget.
@@ -400,11 +404,19 @@ class PatrolFinder implements MatchFinder {
   ///
   /// Timeout is globally set by [PatrolTester.config.visibleTimeout]. If you
   /// want to override this global setting, set [timeout].
-  Future<PatrolFinder> waitUntilVisible({Duration? timeout}) =>
+  Future<PatrolFinder> waitUntilVisible({
+    Duration? timeout,
+    bool enablePatrolLog = true,
+  }) =>
       wrapWithPatrolLog(
         action: 'waitUntilVisible',
         color: AnsiCodes.cyan,
-        function: () => tester.waitUntilVisible(this, timeout: timeout),
+        function: () => tester.waitUntilVisible(
+          this,
+          timeout: timeout,
+          enablePatrolLog: false,
+        ),
+        enablePatrolLog: enablePatrolLog,
       );
 
   /// Returns a finder matching widget of type [T] which also fulfills

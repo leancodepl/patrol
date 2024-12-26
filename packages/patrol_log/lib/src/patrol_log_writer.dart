@@ -9,7 +9,9 @@ class PatrolLogWriter {
     write();
 
     /// Pass config to the PatrolLogReader
-    log(ConfigEntry(config: config));
+    if (config.isNotEmpty) {
+      log(ConfigEntry(config: config));
+    }
   }
 
   final StreamController<Entry> _controller;

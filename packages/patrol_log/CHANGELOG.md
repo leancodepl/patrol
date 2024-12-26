@@ -1,3 +1,11 @@
+## 0.2.2
+
+- Don't pass `ConfigEntry` on start, if it's empty.
+
+## 0.2.1
+
+- Fix skipping first word in started TestEntry.
+
 ## 0.2.0
 
 - Fix report path when path contain spaces.

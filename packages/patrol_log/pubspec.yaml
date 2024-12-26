@@ -1,7 +1,7 @@
 name: patrol_log
 description: >
   Log package for Patrol, a powerful Flutter-native UI testing framework.
-version: 0.2.0
+version: 0.2.2
 homepage: https://patrol.leancode.co
 repository: https://github.com/leancodepl/patrol/tree/master/packages/patrol_log
 issue_tracker: https://github.com/leancodepl/patrol/issues

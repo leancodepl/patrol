@@ -34,6 +34,8 @@ dev_dependencies:
   leancode_lint: ^14.2.0
   patrol:
     path: ..
+  patrol_cli:
+    path: ../../patrol_cli
 
 flutter_launcher_icons:
   android: 'launcher_icon'

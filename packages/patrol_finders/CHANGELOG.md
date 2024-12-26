@@ -1,3 +1,12 @@
+## 2.6.0
+
+- Patch `enterText` into same field twice. (#2461)
+- Bump `patrol_log` version.
+
+## 2.5.1
+
+- Disable printing logs in nested `waitUntilVisible` and `waitUntilExists` calls.
+
 ## 2.5.0
 
 - Update `patrol_log`.

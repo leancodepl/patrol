@@ -1,88 +1,270 @@
 {
+  "$schema": "https://docs.page/schema.json",
   "name": "Patrol",
-  "twitter": "leancodepl",
-  "theme": "#FFA03F",
+  "description": "Flutter-first UI testing framework",
+  "theme": {
+    "primary": "#FFA03F"
+  },
   "favicon": "/assets/favicon-dark.png",
-  "logo": "/assets/favicon-light.png",
-  "logoDark": "/assets/favicon-dark.png",
+  "logo": {
+    "light": "/assets/favicon-light.png",
+    "dark": "/assets/favicon-dark.png"
+  },
   "socialPreview": "https://raw.githubusercontent.com/leancodepl/patrol/master/docs/assets/preview.jpg",
-  "googleAnalytics": "G-2REFSQEXJZ",
-  "docsearch": {
-    "appId": "HFSGK31MT8",
-    "apiKey": "4d41430f0f5928c58db0acfdace04a8b",
-    "indexName": "patrol-leancode"
+  "scripts": {
+    "googleAnalytics": "G-2REFSQEXJZ"
+  },
+  "social": {
+    "x": "leancodepl",
+    "github": "leancodepl/patrol",
+    "discord": "ukBK5t4EZg"
+  },
+  "search": {
+    "docsearch": {
+      "appId": "HFSGK31MT8",
+      "apiKey": "4d41430f0f5928c58db0acfdace04a8b",
+      "indexName": "patrol-leancode"
+    }
+  },
+  "content": {
+    "showPageTitle": false,
+    "zoomImages": true
+  },
+  "header": {
+    "showName": true,
+    "showGitHubCard": true,
+    "showThemeToggle": true,
+    "links": []
   },
   "anchors": [
     {
-      "title": "Join our Discord",
-      "icon": "discord",
-      "link": "https://discord.gg/ukBK5t4EZg"
+      "title": "Discord",
+      "href": "https://discord.gg/ukBK5t4EZg",
+      "icon": "discord"
     },
     {
       "title": "patrol API reference",
-      "icon": "code",
-      "link": "https://pub.dev/documentation/patrol/latest/index.html"
+      "href": "https://pub.dev/documentation/patrol/latest/index.html",
+      "icon": "code"
     },
     {
       "title": "patrol_finders API reference",
-      "icon": "code",
-      "link": "https://pub.dev/documentation/patrol_finders/latest/index.html"
+      "href": "https://pub.dev/documentation/patrol_finders/latest/index.html",
+      "icon": "code"
+    }
+  ],
+  "tabs": [
+    {
+      "id": "root",
+      "title": "Overview",
+      "href": "/"
+    },
+    {
+      "id": "documentation",
+      "title": "Documentation",
+      "href": "/documentation"
+    },
+    {
+      "id": "cli",
+      "title": "CLI commands",
+      "href": "/cli-commands"
     }
   ],
   "sidebar": [
-    ["About", "/"],
-    ["Getting started", "/getting-started"],
-    ["Patrol 3.0 is here!", "/v3"],
-    ["New package - patrol_finders", "/patrol-finders-release"],
-    ["Supported platforms", "/supported-platforms"],
-    [
-      "Finders",
-      [
-        ["Overview", "/finders/overview"],
-        ["Usage", "/finders/usage"],
-        ["Advanced", "/finders/advanced"],
-        ["Using Patrol finders in widget tests", "/finders/finders-setup"]
+    {
+      "tab": "root",
+      "pages": [
+        {
+          "title": "Getting started",
+          "href": "/overview/getting-started"
+        },
+        {
+          "title": "Improved logging and reporting is here!",
+          "href": "logs-announcement"
+        },
+        {
+          "title": "LeanCode",
+          "href": "https://leancode.co"
+        }
       ]
-    ],
-    [
-      "Native automation",
-      [
-        ["Overview", "/native/overview"],
-        ["Usage", "/native/usage"],
-        ["Advanced", "/native/advanced"],
-        ["Feature parity", "/native/feature-parity"]
+    },
+    {
+      "group": "Introduction",
+      "tab": "documentation",
+      "pages": [
+        {
+          "title": "Install",
+          "href": "/documentation"
+        },
+        {
+          "title": "Write your first test",
+          "href": "/documentation/write-your-first-test"
+        },
+        {
+          "title": "Logs and test results",
+          "href": "/documentation/logs"
+        },
+        {
+          "title": "Cheat sheet",
+          "href": "/documentation/cheatsheet"
+        },
+        {
+          "title": "Supported platforms",
+          "href": "/documentation/supported-platforms"
+        },
+        {
+          "title": "Compatibility table",
+          "href": "/documentation/compatibility-table"
+        }
       ]
-    ],
-    [
-      "CLI commands",
-      [
-        ["build", "/cli-commands/build"],
-        ["develop", "/cli-commands/develop"],
-        ["devices", "/cli-commands/devices"],
-        ["doctor", "/cli-commands/doctor"],
-        ["test", "/cli-commands/test"],
-        ["update", "/cli-commands/update"]
+    },
+    {
+      "group": "Advanced",
+      "tab": "documentation",
+      "pages": [
+        {
+          "group": "Finders",
+          "tab": "documentation",
+          "pages": [
+            {
+              "title": "Overview",
+              "href": "/documentation/finders/overview"
+            },
+            {
+              "title": "Usage",
+              "href": "/documentation/finders/usage"
+            },
+            {
+              "title": "Advanced",
+              "href": "/documentation/finders/advanced"
+            },
+            {
+              "title": "Using Patrol finders in widget tests",
+              "href": "/documentation/finders/finders-setup"
+            }
+          ]
+        },
+        {
+          "group": "Native automation",
+          "tab": "documentation",
+          "pages": [
+            {
+              "title": "Overview",
+              "href": "/documentation/native/overview"
+            },
+            {
+              "title": "Usage",
+              "href": "/documentation/native/usage"
+            },
+            {
+              "title": "Advanced",
+              "href": "/documentation/native/advanced"
+            },
+            {
+              "title": "Feature parity",
+              "href": "/documentation/native/feature-parity"
+            }
+          ]
+        },
+        {
+          "group": "Patrol and CI",
+          "tab": "documentation",
+          "pages": [
+            {
+              "title": "Overview",
+              "href": "/documentation/ci/overview"
+            },
+            {
+              "title": "Platforms",
+              "href": "/documentation/ci/platforms"
+            },
+            {
+              "title": "Firebase Test Lab",
+              "href": "/documentation/ci/firebase-test-lab"
+            }
+          ]
+        },
+        {
+          "group": "Integrations",
+          "tab": "documentation",
+          "pages": [
+            {
+              "title": "Allure",
+              "href": "/documentation/integrations/allure"
+            },
+            {
+              "title": "Browserstack",
+              "href": "/documentation/integrations/browserstack"
+            },
+            {
+              "title": "LambdaTest",
+              "href": "/documentation/integrations/lambdatest"
+            }
+          ]
+        },
+        {
+          "group": "Other",
+          "tab": "documentation",
+          "pages": [
+            {
+              "title": "Effective Patrol",
+              "href": "/documentation/effective-patrol"
+            },
+            {
+              "title": "Tips and tricks",
+              "href": "/documentation/tips-and-tricks"
+            },
+            {
+              "title": "Debugging Patrol tests",
+              "href": "/documentation/debugging-patrol-tests"
+            }
+          ]
+        }
       ]
-    ],
-    [
-      "Patrol and CI",
-      [
-        ["Overview", "/ci/overview"],
-        ["Platforms", "/ci/platforms"],
-        ["Firebase Test Lab", "/ci/firebase-test-lab"]
+    },
+    {
+      "group": "CLI commands",
+      "tab": "cli",
+      "pages": [
+        {
+          "title": "develop",
+          "href": "/cli-commands"
+        },
+        {
+          "title": "test",
+          "href": "/cli-commands/test"
+        },
+        {
+          "title": "build",
+          "href": "/cli-commands/build"
+        },
+        {
+          "title": "doctor",
+          "href": "/cli-commands/doctor"
+        },
+        {
+          "title": "update",
+          "href": "/cli-commands/update"
+        },
+        {
+          "title": "devices",
+          "href": "/cli-commands/devices"
+        }
       ]
-    ],
-    [
-      "Integrations",
-      [
-        ["Allure", "/integrations/allure"],
-        ["Browserstack", "/integrations/browserstack"]
+    },
+    {
+      "group": "Announcements",
+      "tab": "root",
+      "pages": [
+        {
+          "title": "Patrol 3.0 is here!",
+          "href": "/v3"
+        },
+        {
+          "title": "New package - patrol_finders",
+          "href": "/patrol-finders-release"
+        }
       ]
-    ],
-    ["Effective Patrol", "/effective-patrol"],
-    ["Tips and tricks", "/tips-and-tricks"],
-    ["Debugging Patrol tests", "/debugging-patrol-tests"],
-    ["Compatibility table", "/compatibility-table"],
-    ["LeanCode", "https://leancode.co"]
+    }
   ]
 }

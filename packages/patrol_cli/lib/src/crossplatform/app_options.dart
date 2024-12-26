@@ -86,6 +86,20 @@ class AndroidAppOptions {
     );
   }
 
+  List<String> toGradleAppDependencies({required bool isWindows}) {
+    final List<String> cmd;
+    if (isWindows) {
+      cmd = <String>[r'.\gradlew.bat'];
+    } else {
+      cmd = <String>['./gradlew'];
+    }
+
+    // Add Gradle task
+    cmd.add(':app:dependencies');
+
+    return cmd;
+  }
+
   String get _buildMode => flutter.buildMode.androidName;
 
   String get _effectiveFlavor {

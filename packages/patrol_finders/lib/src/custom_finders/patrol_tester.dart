@@ -127,9 +127,10 @@ const defaultScrollMaxIteration = 15;
 class PatrolTester {
   /// Creates a new [PatrolTester] which wraps [tester].
   PatrolTester({
-    required this.tester,
+    required WidgetTester tester,
     required this.config,
-  }) : patrolLog = PatrolLogWriter();
+  })  : patrolLog = PatrolLogWriter(),
+        tester = PatrolWidgetTester(tester);
 
   /// Global configuration of this tester.
   final PatrolTesterConfig config;
@@ -427,6 +428,7 @@ class PatrolTester {
             timeout: visibleTimeout,
             enablePatrolLog: false,
           );
+          await tester.tap(resolvedFinder.first);
           await tester.enterText(resolvedFinder.first, text);
           if (!kIsWeb) {
             // When registering `testTextInput`, we have to unregister it
@@ -573,7 +575,7 @@ class PatrolTester {
         enablePatrolLog: enablePatrolLog,
         function: () async {
           var viewPatrolFinder = PatrolFinder(finder: view, tester: this);
-          await viewPatrolFinder.waitUntilVisible();
+          await viewPatrolFinder.waitUntilVisible(enablePatrolLog: false);
           viewPatrolFinder = viewPatrolFinder.hitTestable().first;
           dragDuration ??= config.dragDuration;
           settleBetweenScrollsTimeout ??= config.settleBetweenScrollsTimeout;
@@ -655,7 +657,7 @@ class PatrolTester {
         enablePatrolLog: enablePatrolLog,
         function: () async {
           var viewPatrolFinder = PatrolFinder(finder: view, tester: this);
-          await viewPatrolFinder.waitUntilVisible();
+          await viewPatrolFinder.waitUntilVisible(enablePatrolLog: false);
           viewPatrolFinder = viewPatrolFinder.hitTestable().first;
           dragDuration ??= config.dragDuration;
           settleBetweenScrollsTimeout ??= config.settleBetweenScrollsTimeout;
@@ -719,7 +721,7 @@ class PatrolTester {
         final scrollablePatrolFinder = await PatrolFinder(
           finder: finderView,
           tester: this,
-        ).waitUntilVisible();
+        ).waitUntilVisible(enablePatrolLog: false);
 
         AxisDirection direction;
         if (scrollDirection == null) {
@@ -790,7 +792,7 @@ class PatrolTester {
         final scrollablePatrolFinder = await PatrolFinder(
           finder: finderView,
           tester: this,
-        ).waitUntilVisible();
+        ).waitUntilVisible(enablePatrolLog: false);
         AxisDirection direction;
         if (scrollDirection == null) {
           if (finderView.evaluate().first.widget is Scrollable) {

@@ -1,0 +1,473 @@
+---
+title: Write your first test
+---
+
+Patrol is a powerful, open-source testing framework created by LeanCode that enhances Flutter's testing capabilities by enabling interaction with native platform features directly in Dart. It allows to handle permission dialogs, notifications, WebViews, and device settings—features previously unavailable in standard Flutter tests, making it truly possible to test the whole app.
+
+This tutorial will take you through writing your first substantial Patrol test, interacting both with the Flutter app itself and also with native permission dialogs and notifications.
+
+Before writing any tests, make sure you [install the Patrol CLI]. Then just clone the following repository from GitHub to follow along. The app we’re going to be testing is fully functional and ready to be tested, with Patrol already configured.
+
+<Info>
+To learn how to set up Patrol for your own project, check out the [Patrol Setup Docs].
+</Info>
+
+<Info>
+Clone the [STARTER PROJECT] to follow along.
+</Info>
+
+<YouTube id="8pG8CheUZOw"/>
+
+### App Walkthrough
+
+Before we can start writing automated Patrol tests, we need to know what the app does and to test it manually. Please, check out the video tutorial for a visual walkthrough.
+
+The first screen of our app is for signing in. It’s not using any actual sign-in provider but it only validates the email address and password. In order to successfully “sign in” and get to the home screen, we need to input a valid email and a password that’s at least 8 characters long.
+
+<Info>
+You can test any real authentication providers that use WebView for signing in with the powerful Patrol native automation.
+</Info>
+
+On the second screen, we’re greeted with a notifications permission dialog. Once we allow them, we can tap on the notification button in the app bar to manually trigger a local notification which will be displayed after 3 seconds both when the app is running in the foreground or in the background.
+
+Once we open the native notification bar and tap on the notification from our app, we’re gonna see a snackbar on the bottom saying _"Notification was tapped!”_
+
+### Testing the “Happy Path”
+
+You’ve just seen the full walkthrough of the app, including errors that can show up if you input an invalid email or password. UI tests (integration tests), like the ones we’re going to write with Patrol, should only be testing the “happy path” of a UI flow. We only want them to fail if the app suddenly stops the user from doing what the app is for - in this case, that’s displaying a notification. Validation error messages are not “what the app is for”, they exist only to allow the user to successfully sign in with a proper email and password. That’s why we won’t be checking for them in the tests.
+
+### Writing the Test
+
+We have only one UI flow in this app, that is signing in, showing the notification and then tapping on that notification. This means, we’re going to have only a single test. Let’s create it in `/integration_test/app_test.dart`.
+
+Like any other test, we need to have a `main()` top-level function. Inside it we’re going to have our single `patrolTest` with a description properly describing what we’re about to test. An optional step is to set the frame policy to “fully live” to make sure all frames are shown, even those which are not pumped by our test code. Without it, we would see that our app stutters and animations are not played properly.
+
+```dart
+import 'package:flutter_test/flutter_test.dart';
+import 'package:patrol/patrol.dart';
+
+void main() {
+  patrolTest(
+    'signs in, triggers a notification, and taps on it',
+    framePolicy: LiveTestWidgetsFlutterBindingFramePolicy.fullyLive,
+    ($) async {
+      // Test code will go here
+    },
+  );
+}
+```
+
+We could start writing the test right now and then re-run it from scratch every time we add a new line of test code by calling `patrol test --target integration_test/app_test.dart` but since we’re writing a Patrol test that runs on an Android or iOS device, constantly building the whole Flutter app is not time effective. Thankfully, Patrol offers a different approach - hot restarting the tests! We can run the command `patrol develop --target integration_test/app_test.dart` right now and anytime we add a new line of test code, we can just type “r” in the terminal to re-run the tests without the time-costly app building. Just make sure that you have an emulator running first - Patrol will select it automatically.
+
+First, we need to perform any initializations that need to happen before the app is run and pump the top-level widget of our app. We’re effectively doing what the `main` function inside `main.dart` does - this time not for just running the app as usual but for running an automated Patrol test.
+
+```dart
+patrolTest(
+  'signs in, triggers a notification, and taps on it',
+  framePolicy: LiveTestWidgetsFlutterBindingFramePolicy.fullyLive,
+  ($) async {
+	  initApp();
+    await $.pumpWidgetAndSettle(const MainApp());
+  },
+);
+```
+
+Hot-restarting the test by typing “r” into the terminal won’t really do much since we’re not yet performing any user-like actions but you will at least see the sign in page for a brief moment before the test finishes.
+
+Let’s now perform some action! We know we have to sign in if we want to continue to the home screen. First, we have to type in both email and password. There are multiple ways to find widgets on the screen - by widget type, by text and lastly by key.
+
+Although it’s not the best practice, we’re first going to find the fields by type. Both are of type `TextFormField` but there are two of them on the screen so the following won’t work.
+
+```dart
+patrolTest(
+  'signs in, triggers a notification, and taps on it',
+  framePolicy: LiveTestWidgetsFlutterBindingFramePolicy.fullyLive,
+  ($) async {
+	  initApp();
+    await $.pumpWidgetAndSettle(const MainApp());
+    await $(TextFormField).enterText('test@email.com');
+    await $(TextFormField).enterText('password');
+  },
+);
+```
+
+That’s because finders always find the first matching widget so both the email address and password are entered into the same field - in this case, the email field.
+
+If multiple widgets on a screen match the finder, we can tell Patrol which one we want by specifying its index in the list of all found widgets from top to bottom like this:
+
+```dart
+patrolTest(
+  'signs in, triggers a notification, and taps on it',
+  framePolicy: LiveTestWidgetsFlutterBindingFramePolicy.fullyLive,
+  ($) async {
+	  initApp();
+    await $.pumpWidgetAndSettle(const MainApp());
+    await $(TextFormField).enterText('test@email.com');
+    await $(TextFormField).at(1).enterText('password');
+  },
+);
+```
+
+We can use a text finder to tap on the “Sign in” button.
+
+```dart
+patrolTest(
+  'signs in, triggers a notification, and taps on it',
+  framePolicy: LiveTestWidgetsFlutterBindingFramePolicy.fullyLive,
+  ($) async {
+	  initApp();
+    await $.pumpWidgetAndSettle(const MainApp());
+    await $(TextFormField).enterText('test@email.com');
+    await $(TextFormField).at(1).enterText('password');
+    await $('Sign in').tap();
+  },
+);
+```
+
+Hot-restarting the test will now take you all the way to the home page from which we will want to trigger the notification.
+
+As you can imagine though, using type and text finders in any app that’s just a bit more complex will result in a huge mess. The recommended approach is to always find your widgets by their `Key`. There are currently no keys specified for these widgets so let’s change that. In `sign_in_page.dart` pass in the following into the `TextFormFields` and `ElevatedButton`:
+
+```dart
+class SignInPage extends StatelessWidget {
+  const SignInPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      ...
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Form(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              TextFormField(
+                key: const Key('emailTextField'),
+                decoration: const InputDecoration(
+                  labelText: 'Email',
+                ),
+                ...
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                key: const Key('passwordTextField'),
+                decoration: const InputDecoration(
+                  labelText: 'Password',
+                ),
+                ...
+              ),
+              const SizedBox(height: 16),
+              Builder(builder: (context) {
+                return ElevatedButton(
+                  key: const Key('signInButton'),
+                  ...
+                  child: const Text('Sign in'),
+                );
+              }),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+```
+
+With the keys in place, we can now rewrite our test code to use `Key` finders. The simplest approach is to prefix the key’s value with a hash symbol. For this approach to work, your keys mustn’t contain any invalid characters such as spaces.
+
+```dart
+patrolTest(
+  'signs in, triggers a notification, and taps on it',
+  framePolicy: LiveTestWidgetsFlutterBindingFramePolicy.fullyLive,
+  ($) async {
+	  initApp();
+    await $.pumpWidgetAndSettle(const MainApp());
+    await $(#emailTextField).enterText('test@email.com');
+    await $(#passwordTextField).enterText('password');
+    await $(#signInButton).tap();
+  },
+);
+```
+
+Looking at this test code again, it’s certain we can do better. Why? We’ve just added code duplication to our codebase! The key values in `sign_in_page.dart` and in `app_test.dart` are fully duplicated and if we change one, the other won’t be automatically updated, thus breaking our tests.
+
+That’s why production-grade apps should have a single source for all the `Keys` exposed as a global final variable inside `integration_test_keys.dart`. That’s going to look as follows if we already take into account the home page which we want to test next.
+
+```dart
+import 'package:flutter/foundation.dart';
+
+class SignInPageKeys {
+  final emailTextField = const Key('emailTextField');
+  final passwordTextField = const Key('passwordTextField');
+  final signInButton = const Key('signInButton');
+}
+
+class HomePageKeys {
+  final notificationIcon = const Key('notificationIcon');
+  final successSnackbar = const Key('successSnackbar');
+}
+
+class Keys {
+  final signInPage = SignInPageKeys();
+  final homePage = HomePageKeys();
+}
+
+final keys = Keys();
+```
+
+<Info>
+Feel free to put your page-specific key classes (e.g. `SignInPageKeys`) into separate files in more complex apps.
+</Info>
+
+The updated `sign_in_page.dart` code will now look like this:
+
+```dart
+class SignInPage extends StatelessWidget {
+  const SignInPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      ...
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Form(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              TextFormField(
+                key: keys.signInPage.emailTextField,
+                decoration: const InputDecoration(
+                  labelText: 'Email',
+                ),
+                ...
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                key: keys.signInPage.passwordTextField,
+                decoration: const InputDecoration(
+                  labelText: 'Password',
+                ),
+                ...
+              ),
+              const SizedBox(height: 16),
+              Builder(builder: (context) {
+                return ElevatedButton(
+                  key: keys.signInPage.signInButton,
+                  ...
+                  child: const Text('Sign in'),
+                );
+              }),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+```
+
+The test code will now also use the `keys` global final variable instead of the hash symbol notation:
+
+```dart
+patrolTest(
+  'signs in, triggers a notification, and taps on it',
+  framePolicy: LiveTestWidgetsFlutterBindingFramePolicy.fullyLive,
+  ($) async {
+	  initApp();
+    await $.pumpWidgetAndSettle(const MainApp());
+    await $(keys.signInPage.emailTextField).enterText('test@email.com');
+    await $(keys.signInPage.passwordTextField).enterText('password');
+    await $(keys.signInPage.signInButton).tap();
+  },
+);
+```
+
+Hot-restarting the test won’t show any change in its functionality but it sure is more maintainable and easier to work with.
+
+### Home Page
+
+First, let’s add the keys we’ve already created to the `IconButton` and the `SnackBar` shown when the notification has been tapped.
+
+```dart
+class HomePage extends StatefulWidget {
+  ...
+}
+
+class _HomePageState extends State<HomePage> {
+  ...
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Home'),
+        actions: [
+          IconButton(
+            key: keys.homePage.notificationIcon,
+            icon: const Icon(Icons.notification_add),
+            onPressed: () {
+              triggerLocalNotification(
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      key: keys.homePage.successSnackbar,
+                      content: const Text('Notification was tapped!'),
+                    ),
+                  );
+                },
+                onError: () {
+                  ...
+                },
+              );
+            },
+          ),
+        ],
+      ),
+      ...
+    );
+  }
+}
+```
+
+The first thing the user sees when first navigating to the `HomePage` is a notifications permission dialog. We need to accept it from within the test. Patrol’s native automation makes this as easy as it gets.
+
+<Info>
+Native automation allows you to interact with the OS your Flutter app is running on. Patrol currently supports Android, iOS and macOS native interactions. [Learn more from the docs]
+</Info>
+
+```dart
+patrolTest(
+  'signs in, triggers a notification, and taps on it',
+  framePolicy: LiveTestWidgetsFlutterBindingFramePolicy.fullyLive,
+  ($) async {
+	  initApp();
+    await $.pumpWidgetAndSettle(const MainApp());
+    await $(keys.signInPage.emailTextField).enterText('test@email.com');
+    await $(keys.signInPage.passwordTextField).enterText('password');
+    await $(keys.signInPage.signInButton).tap();
+    await $.native.grantPermissionWhenInUse();
+  },
+);
+```
+
+Hot-restarting the test will work wonderfully the first time, however, once the permission has already been granted, calling `grantPermissionWhenInUse()` will fail. This is not going to be an issue if you use Patrol as a part of your CI/CD process since everytime you test with Patrol there, the app will be built from scratch and no permission will be granted yet. But when we’re writing the test locally with `patrol develop` command, we need to make sure that the permission dialog is visible before trying to accept it.
+
+```dart
+patrolTest(
+  'signs in, triggers a notification, and taps on it',
+  framePolicy: LiveTestWidgetsFlutterBindingFramePolicy.fullyLive,
+  ($) async {
+	  initApp();
+    await $.pumpWidgetAndSettle(const MainApp());
+    await $(keys.signInPage.emailTextField).enterText('test@email.com');
+    await $(keys.signInPage.passwordTextField).enterText('password');
+    await $(keys.signInPage.signInButton).tap();
+    if (await $.native.isPermissionDialogVisible()) {
+      await $.native.grantPermissionWhenInUse();
+    }
+  },
+);
+```
+
+<Warning>
+It’s generally a bad practice to add any branching logic within your tests and you should be 100% certain that it cannot introduce any test flakiness before doing so. Checking if a permission dialog is visible is an example of a proper use of branching logic.
+</Warning>
+
+Next up, we want to tap on the notification icon button and then go to the device home screen to test the notification while the app is running in the background.
+
+```dart
+patrolTest(
+  'signs in, triggers a notification, and taps on it',
+  framePolicy: LiveTestWidgetsFlutterBindingFramePolicy.fullyLive,
+  ($) async {
+	  initApp();
+    await $.pumpWidgetAndSettle(const MainApp());
+    await $(keys.signInPage.emailTextField).enterText('test@email.com');
+    await $(keys.signInPage.passwordTextField).enterText('password');
+    await $(keys.signInPage.signInButton).tap();
+    if (await $.native.isPermissionDialogVisible()) {
+      await $.native.grantPermissionWhenInUse();
+    }
+    await $(keys.homePage.notificationIcon).tap();
+    await $.native.pressHome();
+  },
+);
+```
+
+Once we’re on the home screen, we want to open the notification shade and tap on the notification we get from our app. You can either tap on a notification by index or by finding a text. We know that the title of our notification is “Patrol says hello!” so let’s do the latter.
+
+```dart
+patrolTest(
+  'signs in, triggers a notification, and taps on it',
+  framePolicy: LiveTestWidgetsFlutterBindingFramePolicy.fullyLive,
+  ($) async {
+    initApp();
+    await $.pumpWidgetAndSettle(const MainApp());
+    await $(keys.signInPage.emailTextField).enterText('test@email.com');
+    await $(keys.signInPage.passwordTextField).enterText('password');
+    await $(keys.signInPage.signInButton).tap();
+    if (await $.native.isPermissionDialogVisible()) {
+      await $.native.grantPermissionWhenInUse();
+    }
+    await $(keys.homePage.notificationIcon).tap();
+    await $.native.pressHome();
+    await $.native.openNotifications();
+    await $.native.tapOnNotificationBySelector(
+      Selector(textContains: 'Patrol says hello!'),
+    );
+  },
+);
+```
+
+Since the notification is delayed by 3 seconds, we have to provide a timeout that’s at least as long in order to wait for the notification to appear - 5 seconds should do the trick here.
+
+```dart
+patrolTest(
+  'signs in, triggers a notification, and taps on it',
+  framePolicy: LiveTestWidgetsFlutterBindingFramePolicy.fullyLive,
+  ($) async {
+    ...
+    await $.native.openNotifications();
+    await $.native.tapOnNotificationBySelector(
+      Selector(textContains: 'Patrol says hello!'),
+      timeout: const Duration(seconds: 5),
+    );
+  },
+);
+```
+
+Lastly, we want to check if the snackbar has been shown after tapping on a notification. We can call `waitUntilVisible()` after selecting it with its key.
+
+```dart
+patrolTest(
+  'signs in, triggers a notification, and taps on it',
+  framePolicy: LiveTestWidgetsFlutterBindingFramePolicy.fullyLive,
+  ($) async {
+    initApp();
+    await $.pumpWidgetAndSettle(const MainApp());
+    await $(keys.signInPage.emailTextField).enterText('test@email.com');
+    await $(keys.signInPage.passwordTextField).enterText('password');
+    await $(keys.signInPage.signInButton).tap();
+    if (await $.native.isPermissionDialogVisible()) {
+      await $.native.grantPermissionWhenInUse();
+    }
+    await $(keys.homePage.notificationIcon).tap();
+    await $.native.pressHome();
+    await $.native.openNotifications();
+    await $.native.tapOnNotificationBySelector(
+      Selector(textContains: 'Patrol says hello!'),
+      timeout: const Duration(seconds: 5),
+    );
+    $(keys.homePage.successSnackbar).waitUntilVisible();
+  },
+);
+```
+
+And just like that, we have now tested the whole flow of the app with Patrol! If any part of the logic breaks, this test will notify us about that sooner than our real users do and that’s what we’re all after!
+
+[install the Patrol CLI]: https://pub.dev/packages/patrol_cli#installation
+[Patrol Setup Docs]: /documentation
+[STARTER PROJECT]: https://github.com/ResoCoder/patrol-basics-tutorial
+[Learn more from the docs]: /documentation/native/overview
