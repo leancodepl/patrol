@@ -666,6 +666,16 @@ Check out our video version of this tutorial on YouTube!
   (in case presented in snippet above, all should be set to 11.0).
 </Accordion>
 
+<Accordion title="How to generate FLUTTER_TARGET after removing it from *.xcconfig">
+  After removing `FLUTTER_TARGET` from `*.xcconfig`, you need to run the following command to generate it:
+
+  ```
+  flutter build ios --config-only integration_test/example_test.dart
+  ```
+
+  Make sure to replace `integration_test/example_test.dart` with the path to your test file.
+</Accordion>
+
 If you couldn't find an answer to your question/problem, feel free to ask on
 [Patrol Discord Server].
 
