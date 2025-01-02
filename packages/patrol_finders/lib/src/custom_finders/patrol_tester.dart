@@ -490,8 +490,33 @@ class PatrolTester {
   /// Timeout is globally set by [PatrolTester.config.visibleTimeout]. If you
   /// want to override this global setting, set [timeout].
   ///
-  /// Provide [alignment] to check if the widget is visible in a specific area
-  /// of the screen. It defaults to [Alignment.center].
+  /// {@template patrol_tester.alignment_on_visible_check}
+  /// Provide [alignment] to fine tune the visibility check by calling [Finder.hitTestable] at this [alignment]
+  /// of the [Widget]. This might be helpful in case the tested [Widget] 
+  /// is or contains a [Row] or a [Column]. The default [Alignment.center] might always be the best choice as the following example demonstrates:
+  /// 
+  /// ```dart
+  /// 
+  /// /// This [Widget] will only be found when calling await $(Foo).waitUntilVisible(alignment: Alignment.topCenter)
+  /// class Foo extends StatelessWidget {
+  /// Foo({Key? key}) : super(key: key);
+  ///  @override
+  ///  Widget build(BuildContext context) {
+  ///    return const Column( 
+  ///        children: [
+  ///          Text(
+  ///            'Foo',
+  ///          ),
+  ///          SizedBox(height: 48),
+  ///          Text('Bar'),
+  ///        ],
+  ///      )
+  ///  }
+  /// }
+  /// ```
+  /// As there is an empty [SizedBox] in the center of the [Column], calling ``await $(Foo).waitUntilVisible()`` will fail as the underlying [Finder.hitTestable] will not find any hit-testable widget.
+  /// Changing the ``alignment`` parameter to ``Alignment.topCenter`` and calling ``await $(Foo).waitUntilVisible(alignment: Alignment.topCenter)`` will make the test pass as the underlying [Finder.hitTestable] will find the [Text] widget at the top of the [Column].
+  /// {@endtemplate}
   Future<PatrolFinder> waitUntilVisible(
     Finder finder, {
     Duration? timeout,
