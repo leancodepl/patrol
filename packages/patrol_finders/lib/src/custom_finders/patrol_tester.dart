@@ -522,6 +522,7 @@ class PatrolTester {
     Finder finder, {
     Duration? timeout,
     bool enablePatrolLog = true,
+    Alignment alignment = Alignment.center,
   }) {
     return TestAsyncUtils.guard(
       () => wrapWithPatrolLog(
@@ -532,22 +533,20 @@ class PatrolTester {
         function: () async {
           final duration = timeout ?? config.visibleTimeout;
           final end = tester.binding.clock.now().add(duration);
-          final hitTestableFinders = alignments.map((alignment) => finder.hitTestable(at: alignment));
-          final hitTestableEvaluations = hitTestableFinders.map((finder) => finder.evaluate());
-          while (hitTestableEvaluations.map((result) => result.isNotEmpty).firstOrNull == null) {
+           final hitTestableFinder = finder.hitTestable(at: alignment);
+          while (hitTestableFinder.evaluate().isEmpty) {
             final now = tester.binding.clock.now();
             if (now.isAfter(end)) {
               throw WaitUntilVisibleTimeoutException(
                 finder: finder,
                 duration: duration,
               );
-            }            
+            }
+
             await tester.pump(const Duration(milliseconds: 100));
           }
-          return PatrolFinder(
-            finder: hitTestableFinders.firstWhere((finder) => finder.evaluate().isNotEmpty),
-            tester: this,
-          );
+
+          return PatrolFinder(finder: hitTestableFinder, tester: this);
         },
       ),
     );

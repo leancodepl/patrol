@@ -409,6 +409,7 @@ class PatrolFinder implements MatchFinder {
   Future<PatrolFinder> waitUntilVisible({
     Duration? timeout,
     bool enablePatrolLog = true,
+    Alignment alignment = Alignment.center,
   }) =>
       wrapWithPatrolLog(
         action: 'waitUntilVisible',
@@ -417,6 +418,7 @@ class PatrolFinder implements MatchFinder {
           this,
           timeout: timeout,
           enablePatrolLog: false,
+          alignment: alignment,
         ),
         enablePatrolLog: enablePatrolLog,
       );
@@ -511,10 +513,10 @@ class PatrolFinder implements MatchFinder {
   @override
   String describeMatch(Plurality plurality) => finder.describeMatch(plurality);
 
-  /// Returns true if this finder finds at least 1 visible widget.
+  /// Returns true if this finder finds at least 1 visible widget at the given [alignment].
   ///
   /// {@macro patrol_tester.alignment_on_visible_check}
-  bool visible({Alignment alignment = Alignment.center}) {
+  bool isVisibleAt({Alignment alignment = Alignment.center}) {
     final isVisible = hitTestable(at: alignment).evaluate().isNotEmpty;
     if (isVisible == true) {
       assert(
@@ -525,6 +527,14 @@ class PatrolFinder implements MatchFinder {
 
     return isVisible;
   }
+
+  /// Returns true if this finder finds at least 1 visible widget.
+  /// 
+  /// will call [isVisibleAt] with [Alignment.center]
+  /// 
+  /// In case this returns false and you are sure that the widget is visible,
+  /// try calling [isVisibleAt] with a different [Alignment] parameter.
+  bool get visible => isVisibleAt();
 
   @override
   FinderResult<Element> evaluate() => finder.evaluate();
