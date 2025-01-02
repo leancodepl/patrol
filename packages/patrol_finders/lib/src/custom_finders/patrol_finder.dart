@@ -409,7 +409,6 @@ class PatrolFinder implements MatchFinder {
   Future<PatrolFinder> waitUntilVisible({
     Duration? timeout,
     bool enablePatrolLog = true,
-    Alignment alignment = Alignment.center,
   }) =>
       wrapWithPatrolLog(
         action: 'waitUntilVisible',
@@ -418,7 +417,6 @@ class PatrolFinder implements MatchFinder {
           this,
           timeout: timeout,
           enablePatrolLog: false,
-          alignment: alignment,
         ),
         enablePatrolLog: enablePatrolLog,
       );
