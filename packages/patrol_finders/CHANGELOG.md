@@ -1,3 +1,8 @@
+## Unreleased
+
+- Add `alignment` parameter to `waitUntilVisible` in order to improve visibility check on Row and Column widgets.
+- Add `isVisibleAt` method to check if a widget is visible at a given alignment in case `visible` fails.
+
 ## 2.6.0
 
 - Patch `enterText` into same field twice. (#2461)

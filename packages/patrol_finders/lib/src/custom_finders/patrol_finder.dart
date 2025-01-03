@@ -513,7 +513,8 @@ class PatrolFinder implements MatchFinder {
   @override
   String describeMatch(Plurality plurality) => finder.describeMatch(plurality);
 
-  /// Returns true if this finder finds at least 1 visible widget at the given [alignment].
+  /// Returns true if this finder finds at least 1 visible widget 
+  /// at the given [alignment].
   ///
   /// {@macro patrol_tester.alignment_on_visible_check}
   bool isVisibleAt({Alignment alignment = Alignment.center}) {
@@ -529,9 +530,9 @@ class PatrolFinder implements MatchFinder {
   }
 
   /// Returns true if this finder finds at least 1 visible widget.
-  /// 
+  ///
   /// will call [isVisibleAt] with [Alignment.center]
-  /// 
+  ///
   /// In case this returns false and you are sure that the widget is visible,
   /// try calling [isVisibleAt] with a different [Alignment] parameter.
   bool get visible => isVisibleAt();
