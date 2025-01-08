@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol_finders/patrol_finders.dart';
-import 'package:patrol_finders/src/custom_finders/utils.dart';
 import 'package:patrol_log/patrol_log.dart';
 
 /// Common configuration for [PatrolTester] and [PatrolFinder].
