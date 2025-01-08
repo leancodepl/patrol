@@ -207,7 +207,6 @@ class PatrolFinder implements MatchFinder {
         StepEntry(
           action: text,
           status: StepEntryStatus.failure,
-          exception: err.toString(),
         ),
       );
       rethrow;
