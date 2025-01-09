@@ -513,7 +513,7 @@ class PatrolFinder implements MatchFinder {
   @override
   String describeMatch(Plurality plurality) => finder.describeMatch(plurality);
 
-  /// Returns true if this finder finds at least 1 visible widget 
+  /// Returns true if this finder finds at least 1 visible widget
   /// at the given [alignment].
   ///
   /// {@macro patrol_tester.alignment_on_visible_check}
