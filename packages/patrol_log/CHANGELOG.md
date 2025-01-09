@@ -1,3 +1,7 @@
+## Unreleased
+
+- Remove `exception` from `StepEntry`. When it was too long, it caused crash because of badly formed JSON
+
 ## 0.2.2
 
 - Don't pass `ConfigEntry` on start, if it's empty.

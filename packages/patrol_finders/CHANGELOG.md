@@ -1,3 +1,8 @@
+## Unreleased
+
+- Remove `exception` from `StepEntry`. When it was too long, it caused crash because of badly formed JSON
+- Bump `patrol_log` version.
+
 ## 2.6.0
 
 - Patch `enterText` into same field twice. (#2461)
