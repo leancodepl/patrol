@@ -246,7 +246,6 @@ class NativeAutomator {
           StepEntry(
             action: text,
             status: StepEntryStatus.failure,
-            exception: log,
           ),
         );
       }
@@ -259,7 +258,6 @@ class NativeAutomator {
           StepEntry(
             action: text,
             status: StepEntryStatus.failure,
-            exception: err.toString(),
           ),
         );
       }

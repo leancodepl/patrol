@@ -172,7 +172,6 @@ class PatrolTester {
         StepEntry(
           action: text,
           status: StepEntryStatus.failure,
-          exception: err.toString(),
         ),
       );
       rethrow;

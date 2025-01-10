@@ -1,3 +1,8 @@
+## Unreleased
+
+- Remove `exception` from `StepEntry`. When it was too long, it caused crash because of badly formed JSON
+- Bump `patrol_finders` and `patrol_log` versions
+ 
 ## 3.13.2
 
 - Bump `patrol_finders` and `patrol_log` - use version with patched enterText.
