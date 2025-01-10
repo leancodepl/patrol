@@ -72,8 +72,14 @@ Farm][aws_device_farm].
 
     First, build your Flutter app, choosing the integration test file as target:
 
+    For simulations:
     ```
-    patrol build ios --target integration_test/example_test.dart
+    patrol build ios --target integration_test/example_test.dart --debug --simulator
+    ```
+
+    For physical devices:
+    ```
+    patrol build ios --target integration_test/example_test.dart --release
     ```
 
     `patrol build ios` outputs paths to the built app binaries, for example:

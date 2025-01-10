@@ -5,7 +5,6 @@ class StepEntry extends Entry {
   StepEntry({
     required this.action,
     required this.status,
-    this.exception,
     this.data,
     DateTime? timestamp,
   }) : super(
@@ -18,7 +17,6 @@ class StepEntry extends Entry {
 
   final String action;
   final StepEntryStatus status;
-  final String? exception;
   final Map<String, dynamic>? data;
 
   @override
@@ -44,7 +42,7 @@ class StepEntry extends Entry {
   String toString() => 'StepEntry(${toJson()})';
 
   @override
-  List<Object?> get props => [action, status, exception, data, timestamp, type];
+  List<Object?> get props => [action, status, data, timestamp, type];
 }
 
 enum StepEntryStatus {
