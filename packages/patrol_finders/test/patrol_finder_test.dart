@@ -566,20 +566,22 @@ void main() {
         expect($('done').visible, true);
       });
 
-    
-
-      patrolWidgetTest('waits until widget is only visible at the topCenter alignment', ($) async {
+      patrolWidgetTest(
+          'waits until widget is only visible at the topCenter alignment',
+          ($) async {
         await $.pumpWidget(
           MaterialApp(
             home: FutureBuilder(
               future: Future<void>.delayed(const Duration(seconds: 3)),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
-                  return const Column(children: [
-                    Text('some text'),
-                    SizedBox(height: 60),
-                    Text('some other text'),
-                  ],);
+                  return const Column(
+                    children: [
+                      Text('some text'),
+                      SizedBox(height: 60),
+                      Text('some other text'),
+                    ],
+                  );
                 } else {
                   return const Text('in progress');
                 }
@@ -591,9 +593,9 @@ void main() {
         expect($(Column).visible, false);
         expect($(Column).isVisibleAt(alignment: Alignment.topCenter), true);
         await expectLater(
-            $(Column).waitUntilVisible,
-            throwsA(isA<WaitUntilVisibleTimeoutException>()),
-          );
+          $(Column).waitUntilVisible,
+          throwsA(isA<WaitUntilVisibleTimeoutException>()),
+        );
       });
     });
 

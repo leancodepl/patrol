@@ -498,7 +498,7 @@ class PatrolTester {
   ///
   /// ```dart
   ///
-  /// /// This [Widget] will only be found when calling 
+  /// /// This [Widget] will only be found when calling
   /// ///await $(Foo).waitUntilVisible(alignment: Alignment.topCenter)
   /// class Foo extends StatelessWidget {
   /// Foo({Key? key}) : super(key: key);
@@ -517,12 +517,12 @@ class PatrolTester {
   /// }
   /// ```
   /// As there is an empty [SizedBox] in the center of the [Column],
-  /// calling ``await $(Foo).waitUntilVisible()`` will fail 
-  /// as the underlying [Finder.hitTestable] will not find any 
+  /// calling ``await $(Foo).waitUntilVisible()`` will fail
+  /// as the underlying [Finder.hitTestable] will not find any
   /// hit-testable widget. Changing the ``alignment`` parameter
-  /// to ``Alignment.topCenter`` and calling 
+  /// to ``Alignment.topCenter`` and calling
   /// ``await $(Foo).waitUntilVisible(alignment: Alignment.topCenter)``
-  /// will make the test pass as the underlying [Finder.hitTestable] 
+  /// will make the test pass as the underlying [Finder.hitTestable]
   /// will find the [Text] widget at the top of the [Column].
   /// {@endtemplate}
   Future<PatrolFinder> waitUntilVisible(
