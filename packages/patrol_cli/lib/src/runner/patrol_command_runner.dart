@@ -42,7 +42,7 @@ Future<int> patrolCommandRunner(List<String> args) async {
   const platform = LocalPlatform();
   final processManager = LoggingLocalProcessManager(logger: logger);
   final isCI = ci.isCI;
-  final analyticsEnv = p.Platform.environment['PATROL_ANALYTICS_ENABLED'];
+  final analyticsEnv = p.Platform.environment[_patrolAnalyticsEnvName];
   final analyticsEnabled = bool.tryParse(analyticsEnv ?? '');
 
   final runner = PatrolCommandRunner(
@@ -83,6 +83,7 @@ Future<int> patrolCommandRunner(List<String> args) async {
 
 const _gaTrackingId = 'G-W8XN8GS5BC';
 const _gaApiSecret = 'CUIwI1nCQWGJQAK8E0AIfg';
+const _patrolAnalyticsEnvName = 'PATROL_ANALYTICS_ENABLED';
 const _helloPatrol = '''
 +---------------------------------------------------+
 |             Patrol - Ready for action!            |
@@ -403,7 +404,7 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
     /// use it to determine if the command should be sent.
     /// If not, analytics will be enabled by default.
     final patrolAnalyticsEnabled =
-        p.Platform.environment['PATROL_ANALYTICS_ENABLED'];
+        p.Platform.environment[_patrolAnalyticsEnvName];
     _analytics.enabled =
         bool.tryParse(patrolAnalyticsEnabled ?? 'true') ?? true;
     if (_analytics.enabled) {
