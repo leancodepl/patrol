@@ -1,7 +1,7 @@
 ## Unreleased
 
-- Add `PATROL_ANALYTICS_ENABLED` environment variable to disable analytics.
-- Enable analytics by default.
+- Add `PATROL_ANALYTICS_ENABLED` environment variable to disable analytics. (#2483)
+- Enable analytics by default. (#2483)
 
 ## 3.4.1
 
