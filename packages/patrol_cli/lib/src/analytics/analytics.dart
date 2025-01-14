@@ -73,14 +73,10 @@ class Analytics {
     /// If the environment variable `PATROL_ANALYTICS_ENABLED` is set,
     /// use it to determine if the command should be sent.
     /// If not set, use the value from the config file.
-    final enabled = _config?.enabled ?? true;
-    if (_envAnalyticsEnabled != null) {
-      if (!_envAnalyticsEnabled) {
-        return false;
-      }
-    } else if (!enabled) {
-      return false;
-    }
+final enabled = _envAnalyticsEnabled ?? _config?.enabled ?? true;
+if (!enabled) {
+  return false;
+}
 
     await _httpClient.post(
       Uri.parse(_postUrl),
