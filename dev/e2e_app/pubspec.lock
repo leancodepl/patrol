@@ -305,10 +305,10 @@ packages:
     dependency: "direct main"
     description:
       name: geolocator
-      sha256: f4efb8d3c4cdcad2e226af9661eb1a0dd38c71a9494b22526f9da80ab79520e5
+      sha256: d2ec66329cab29cb297d51d96c067d457ca519dca8589665fa0b82ebacb7dbe4
       url: "https://pub.dev"
     source: hosted
-    version: "10.1.1"
+    version: "13.0.2"
   geolocator_android:
     dependency: transitive
     description:
@@ -321,10 +321,10 @@ packages:
     dependency: transitive
     description:
       name: geolocator_apple
-      sha256: bc2aca02423ad429cb0556121f56e60360a2b7d694c8570301d06ea0c00732fd
+      sha256: "6154ea2682563f69fc0125762ed7e91e7ed85d0b9776595653be33918e064807"
       url: "https://pub.dev"
     source: hosted
-    version: "2.3.7"
+    version: "2.3.8+1"
   geolocator_platform_interface:
     dependency: transitive
     description:
@@ -337,10 +337,10 @@ packages:
     dependency: transitive
     description:
       name: geolocator_web
-      sha256: "102e7da05b48ca6bf0a5bda0010f886b171d1a08059f01bfe02addd0175ebece"
+      sha256: "2ed69328e05cd94e7eb48bb0535f5fc0c0c44d1c4fa1e9737267484d05c29b5e"
       url: "https://pub.dev"
     source: hosted
-    version: "2.2.1"
+    version: "4.1.1"
   geolocator_windows:
     dependency: transitive
     description:
@@ -499,21 +499,23 @@ packages:
       path: "../../packages/patrol"
       relative: true
     source: path
-    version: "3.11.2"
+    version: "3.13.2"
   patrol_finders:
     dependency: transitive
     description:
-      path: "../../packages/patrol_finders"
-      relative: true
-    source: path
-    version: "2.1.2"
+      name: patrol_finders
+      sha256: "5a1e2b4c6636e89645fc596d68224cfe6cca28e11c855b98dd0df9bed0d80405"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.6.0"
   patrol_log:
     dependency: transitive
     description:
-      path: "../../packages/patrol_log"
-      relative: true
-    source: path
-    version: "0.0.1"
+      name: patrol_log
+      sha256: ad5d7b759d16071ca16aa9b27eb4f106ce23079792d4312941874dbc33e795cb
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.2"
   permission_handler:
     dependency: "direct main"
     description:
