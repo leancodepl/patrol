@@ -10,7 +10,7 @@ buildscript {
     }
 
     dependencies {
-        classpath "com.android.tools.build:gradle:8.7.0"
+        classpath "com.android.tools.build:gradle:8.2.2"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jlleitschuh.gradle:ktlint-gradle:11.5.0"
     }
@@ -40,7 +40,6 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
-        coreLibraryDesugaringEnabled true
     }
 
     kotlinOptions {
@@ -80,8 +79,6 @@ android {
         implementation "com.google.code.gson:gson:2.10.1"
 
         testImplementation "org.jetbrains.kotlin:kotlin-test"
-
-        coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.3'
     }
 }
 
