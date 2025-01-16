@@ -3,7 +3,8 @@
 - Remove `exception` from `StepEntry`. When it was too long, it caused crash because of badly formed JSON.
 - Bump `patrol_finders` and `patrol_log` versions. 
 - Bump compileSdk to 35.
-- Bump gradle to 8.7.0.
+- Bump gradle to 8.9.0.
+- Make Patrol works with Java 21.
  
 ## 3.13.2
 
