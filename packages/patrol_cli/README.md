@@ -34,6 +34,11 @@ directories to PATH:
 - on Unix-like systems, add `$HOME/.pub-cache/bin`
 - on Windows, add `%USERPROFILE%\AppData\Local\Pub\Cache\bin`
 
+### Disabling analytics
+
+To disable analytics, set the `PATROL_ANALYTICS_ENABLED` environment variable to
+`false`.
+
 ### Shell completion
 
 Patrol CLI supports shell completion for bash, zsh and fish, thanks to the

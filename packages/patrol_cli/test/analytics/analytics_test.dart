@@ -11,7 +11,7 @@ import '../src/fakes.dart';
 import '../src/mocks.dart';
 
 void main() {
-  group('Analytics', () {
+  group('Analytics with no env variable', () {
     late Analytics analytics;
     late FileSystem fs;
 
@@ -36,6 +36,7 @@ void main() {
         platform: fakePlatform('/Users/john'),
         httpClient: httpClient,
         isCI: false,
+        envAnalyticsEnabled: null,
       );
     });
 
@@ -49,6 +50,114 @@ void main() {
 
       // then
       expect(sent, true);
+    });
+
+    test('does not send data when disabled', () async {
+      // given
+      _createFakeFileSystem(fs, analyticsEnabled: false);
+
+      // when
+      final sent =
+          await analytics.sendCommand(FlutterVersion.test(), 'test command');
+
+      // then
+      expect(sent, false);
+    });
+  });
+
+  group('Analytics with env variable enabled', () {
+    late Analytics analytics;
+    late FileSystem fs;
+
+    setUp(() {
+      setUpFakes();
+
+      fs = MemoryFileSystem.test();
+
+      final httpClient = MockHttpClient();
+      when(
+        () => httpClient.post(
+          any(),
+          body: any(named: 'body'),
+          headers: any(named: 'headers'),
+        ),
+      ).thenAnswer((_) async => http.Response('', 200));
+
+      analytics = Analytics(
+        measurementId: 'measurementId',
+        apiSecret: 'apiSecret',
+        fs: fs,
+        platform: fakePlatform('/Users/john'),
+        httpClient: httpClient,
+        isCI: false,
+        envAnalyticsEnabled: true,
+      );
+    });
+
+    test('sends data when enabled', () async {
+      // given
+      _createFakeFileSystem(fs, analyticsEnabled: true);
+
+      // when
+      final sent =
+          await analytics.sendCommand(FlutterVersion.test(), 'test command');
+
+      // then
+      expect(sent, true);
+    });
+
+    test('does not send data when disabled', () async {
+      // given
+      _createFakeFileSystem(fs, analyticsEnabled: false);
+
+      // when
+      final sent =
+          await analytics.sendCommand(FlutterVersion.test(), 'test command');
+
+      // then
+      expect(sent, true);
+    });
+  });
+
+  group('Analytics with env variable disabled', () {
+    late Analytics analytics;
+    late FileSystem fs;
+
+    setUp(() {
+      setUpFakes();
+
+      fs = MemoryFileSystem.test();
+
+      final httpClient = MockHttpClient();
+      when(
+        () => httpClient.post(
+          any(),
+          body: any(named: 'body'),
+          headers: any(named: 'headers'),
+        ),
+      ).thenAnswer((_) async => http.Response('', 200));
+
+      analytics = Analytics(
+        measurementId: 'measurementId',
+        apiSecret: 'apiSecret',
+        fs: fs,
+        platform: fakePlatform('/Users/john'),
+        httpClient: httpClient,
+        isCI: false,
+        envAnalyticsEnabled: false,
+      );
+    });
+
+    test('sends data when enabled', () async {
+      // given
+      _createFakeFileSystem(fs, analyticsEnabled: true);
+
+      // when
+      final sent =
+          await analytics.sendCommand(FlutterVersion.test(), 'test command');
+
+      // then
+      expect(sent, false);
     });
 
     test('does not send data when disabled', () async {

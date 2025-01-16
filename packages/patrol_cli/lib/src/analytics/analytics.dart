@@ -40,11 +40,13 @@ class Analytics {
     required Platform platform,
     http.Client? httpClient,
     required bool isCI,
+    required bool? envAnalyticsEnabled,
   })  : _fs = fs,
         _platform = platform,
         _httpClient = httpClient ?? http.Client(),
         _postUrl = _getAnalyticsUrl(measurementId, apiSecret),
-        _isCI = isCI;
+        _isCI = isCI,
+        _envAnalyticsEnabled = envAnalyticsEnabled;
 
   final FileSystem _fs;
   final Platform _platform;
@@ -53,6 +55,7 @@ class Analytics {
   final String _postUrl;
 
   final bool _isCI;
+  final bool? _envAnalyticsEnabled;
 
   /// Sends an event to Google Analytics that command [name] run.
   ///
@@ -67,7 +70,10 @@ class Analytics {
       return false;
     }
 
-    final enabled = _config?.enabled ?? false;
+    /// If the environment variable `PATROL_ANALYTICS_ENABLED` is set,
+    /// use it to determine if the command should be sent.
+    /// If not set, use the value from the config file.
+    final enabled = _envAnalyticsEnabled ?? _config?.enabled ?? true;
     if (!enabled) {
       return false;
     }

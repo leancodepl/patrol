@@ -1,3 +1,8 @@
+## Unreleased
+
+- Add `PATROL_ANALYTICS_ENABLED` environment variable to disable analytics. (#2483)
+- Enable analytics by default. (#2483)
+
 ## 3.4.1
 
 - Add android product flavor to dart-define. (#2425)

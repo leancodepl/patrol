@@ -1,4 +1,5 @@
 import 'dart:io' show ProcessSignal, stdin;
+import 'dart:io' as p show Platform;
 
 import 'package:adb/adb.dart';
 import 'package:args/args.dart';
@@ -41,6 +42,8 @@ Future<int> patrolCommandRunner(List<String> args) async {
   const platform = LocalPlatform();
   final processManager = LoggingLocalProcessManager(logger: logger);
   final isCI = ci.isCI;
+  final analyticsEnv = p.Platform.environment[_patrolAnalyticsEnvName];
+  final analyticsEnabled = bool.tryParse(analyticsEnv ?? '');
 
   final runner = PatrolCommandRunner(
     pubUpdater: pubUpdater,
@@ -53,6 +56,7 @@ Future<int> patrolCommandRunner(List<String> args) async {
       fs: fs,
       platform: platform,
       isCI: isCI,
+      envAnalyticsEnabled: analyticsEnabled,
     ),
     processManager: processManager,
     isCI: isCI,
@@ -79,6 +83,20 @@ Future<int> patrolCommandRunner(List<String> args) async {
 
 const _gaTrackingId = 'G-W8XN8GS5BC';
 const _gaApiSecret = 'CUIwI1nCQWGJQAK8E0AIfg';
+const _patrolAnalyticsEnvName = 'PATROL_ANALYTICS_ENABLED';
+const _helloPatrol = '''
++---------------------------------------------------+
+|             Patrol - Ready for action!            |
++---------------------------------------------------+
+| We would like to collect anonymous usage data     |
+| to improve Patrol CLI. No sensitive or private    |
+| information will ever leave your machine.         |
+|                                                   |
+| By default, analytics is enabled. If you want to  |
+| disable it, please set the environment variable:  |
+| `PATROL_ANALYTICS_ENABLED=false`                  |
++---------------------------------------------------+
+''';
 
 class PatrolCommandRunner extends CompletionCommandRunner<int> {
   PatrolCommandRunner({
@@ -380,24 +398,16 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
   }
 
   void _handleAnalytics() {
-    _logger.info(
-      '''
-\n
-+---------------------------------------------------+
-|             Patrol - Ready for action!            |
-+---------------------------------------------------+
-| We would like to collect anonymous usage data     |
-| to improve Patrol CLI. No sensitive or private    |
-| information will ever leave your machine.         |
-+---------------------------------------------------+
-\n''',
-    );
-    final analyticsEnabled = _logger.confirm(
-      'Enable analytics?',
-      defaultValue: true,
-    );
-    _analytics.enabled = analyticsEnabled;
-    if (analyticsEnabled) {
+    _logger.info(_helloPatrol);
+
+    /// If the environment variable `PATROL_ANALYTICS_ENABLED` is set,
+    /// use it to determine if the command should be sent.
+    /// If not, analytics will be enabled by default.
+    final patrolAnalyticsEnabled =
+        p.Platform.environment[_patrolAnalyticsEnvName];
+    _analytics.enabled =
+        bool.tryParse(patrolAnalyticsEnabled ?? 'true') ?? true;
+    if (_analytics.enabled) {
       _logger.info('Analytics enabled. Thank you!');
     } else {
       _logger.info('Analytics disabled.');

@@ -238,7 +238,7 @@ abstract class PatrolCommand extends Command<int> {
   }
 
   FlutterCommand get flutterCommand {
-    final arg = globalResults!['flutter-command'] as String?;
+    final arg = globalResults?['flutter-command'] as String?;
 
     var cmd = arg;
     if (cmd == null || cmd.isEmpty) {
