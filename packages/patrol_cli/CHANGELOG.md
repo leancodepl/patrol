@@ -1,7 +1,8 @@
-## Unreleased
+## 3.5.0
 
 - Add `PATROL_ANALYTICS_ENABLED` environment variable to disable analytics. (#2483)
 - Enable analytics by default. (#2483)
+- Bump `patrol_log` to 0.3.0.
 
 ## 3.4.1
 
