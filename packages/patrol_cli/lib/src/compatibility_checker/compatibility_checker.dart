@@ -160,10 +160,10 @@ Future<void> _checkJavaVersion(
     throwToolExit(
       'Failed to read Java version. Make sure you have Java installed and added to PATH',
     );
-  } else if (javaVersion.major != 17) {
+  } else if (javaVersion.major != 17 && javaVersion.major != 21) {
     logger.warn(
       'You are using Java $javaVersion which can cause issues on Android.\n'
-      'If you encounter any issues, try changing your Java version to 17.',
+      'If you encounter any issues, try changing your Java version to 17 or 21.',
     );
   }
 }
