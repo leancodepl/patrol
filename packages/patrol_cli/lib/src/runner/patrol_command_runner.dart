@@ -35,6 +35,8 @@ import 'package:platform/platform.dart';
 import 'package:process/process.dart';
 import 'package:pub_updater/pub_updater.dart';
 
+import '../commands/test_only.dart';
+
 Future<int> patrolCommandRunner(List<String> args) async {
   final pubUpdater = PubUpdater();
   final logger = Logger();
@@ -235,6 +237,27 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
     );
 
     addCommand(
+      TestOnlyCommand(
+        deviceFinder: deviceFinder,
+        testBundler: testBundler,
+        testFinder: testFinder,
+        dartDefinesReader: DartDefinesReader(projectRoot: _fs.currentDirectory),
+        compatibilityChecker: CompatibilityChecker(
+          projectRoot: _fs.currentDirectory,
+          processManager: _processManager,
+          logger: _logger,
+        ),
+        pubspecReader: PubspecReader(projectRoot: _fs.currentDirectory),
+        androidTestBackend: androidTestBackend,
+        iosTestBackend: iosTestBackend,
+        macOSTestBackend: macosTestBackend,
+        analytics: _analytics,
+        logger: _logger,
+      ),
+    );
+
+
+    addCommand(
       DevicesCommand(
         deviceFinder: deviceFinder,
         logger: _logger,
@@ -254,6 +277,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         analytics: _analytics,
         logger: _logger,
       ),
+
     );
 
     argParser
