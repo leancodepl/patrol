@@ -219,7 +219,7 @@ final _patrolVersionRange = [
   ),
   VersionRange(
     min: Version.parse('3.13.1'),
-    max: Version.parse('3.13.2'),
+    max: Version.parse('3.13.1'),
   ),
   VersionRange(
     min: Version.parse('3.14.0'),
