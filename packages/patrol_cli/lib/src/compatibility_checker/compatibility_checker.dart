@@ -277,7 +277,7 @@ final _patrolCliVersionRange = [
   ),
   VersionRange(
     min: Version.parse('3.4.1'),
-    max: Version.parse('3.4.2'),
+    max: Version.parse('3.4.1'),
   ),
   VersionRange(
     min: Version.parse('3.5.0'),
