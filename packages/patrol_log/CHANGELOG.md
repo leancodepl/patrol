@@ -1,20 +1,20 @@
-## Unreleased
+## 0.3.0
 
-- Remove `exception` from `StepEntry`. When it was too long, it caused crash because of badly formed JSON
+- Remove `exception` from `StepEntry`. When it was too long, it caused crash because of badly formed JSON. (#2481)
 
 ## 0.2.2
 
-- Don't pass `ConfigEntry` on start, if it's empty.
+- Don't pass `ConfigEntry` on start, if it's empty. (#2466)
 
 ## 0.2.1
 
-- Fix skipping first word in started TestEntry.
+- Fix skipping first word in started TestEntry. (#2433)
 
 ## 0.2.0
 
-- Fix report path when path contain spaces.
-- Fix path to the test file on the failed test list in summary.
-- Add `ConfigEntry`.
+- Fix report path when path contain spaces. (#2426)
+- Fix path to the test file on the failed test list in summary. (#2426)
+- Add `ConfigEntry`. (#2426)
 
 ## 0.1.0
 
