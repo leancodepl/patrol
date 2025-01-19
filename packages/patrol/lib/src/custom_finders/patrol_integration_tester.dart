@@ -1,7 +1,6 @@
 import 'package:patrol/src/native/native_automator.dart';
 import 'package:patrol/src/native/native_automator2.dart';
 import 'package:patrol_finders/patrol_finders.dart' as finders;
-import 'package:patrol_log/patrol_log.dart';
 
 /// PatrolIntegrationTester extends the capabilities of [finders.PatrolTester]
 /// with the ability to interact with native platform features via [native].
@@ -12,10 +11,9 @@ class PatrolIntegrationTester extends finders.PatrolTester {
     required super.config,
     required this.nativeAutomator,
     required this.nativeAutomator2,
-  }) : _patrolLog = PatrolLogWriter();
+  });
 
   /// The log for the patrol.
-  final PatrolLogWriter _patrolLog;
 
   /// Native automator that allows for interaction with OS the app is running
   /// on.
@@ -34,7 +32,4 @@ class PatrolIntegrationTester extends finders.PatrolTester {
   NativeAutomator2 get native2 => nativeAutomator2;
 
   /// Logs a message to the patrol log.
-  void log(String message) {
-    _patrolLog.log(LogEntry(message: message));
-  }
 }
