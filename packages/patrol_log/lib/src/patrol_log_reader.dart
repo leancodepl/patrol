@@ -159,7 +159,8 @@ class PatrolLogReader {
 
     _streamSubscription = _controller.stream.listen(
       (entry) {
-        switch (entry) {
+        try {
+          switch (entry) {
           case TestEntry()
               when entry.status == TestEntryStatus.skip ||
                   entry.status == TestEntryStatus.start:
@@ -213,7 +214,15 @@ class PatrolLogReader {
           case ConfigEntry():
             _readConfig(entry);
         }
+        } catch (e, stackTrace) {
+          print("ERROR TEST ENTRY $e");
+          print("ERROR STACKTRACE $stackTrace");
+        }
       },
+      onError: (onError) {
+        print("Stream Error");
+      },
+      cancelOnError: false,
     );
   }
 

@@ -97,14 +97,14 @@ void patrolTest(
   LiveTestWidgetsFlutterBindingFramePolicy framePolicy =
       LiveTestWidgetsFlutterBindingFramePolicy.fadePointers,
 }) {
-  // final patrolLog = PatrolLogWriter(config: {'printLogs': config.printLogs});
+  final patrolLog = PatrolLogWriter(config: {'printLogs': config.printLogs});
   final automator = NativeAutomator(config: nativeAutomatorConfig);
   final automator2 = NativeAutomator2(config: nativeAutomatorConfig);
   final patrolBinding = PatrolBinding.ensureInitialized(nativeAutomatorConfig)
     ..framePolicy = framePolicy;
 
   if (skip ?? false) {
-    // patrolLog.log(TestEntry(name: description, status: TestEntryStatus.skip));
+    patrolLog.log(TestEntry(name: description, status: TestEntryStatus.skip));
   }
   testWidgets(
     description,
@@ -138,9 +138,9 @@ void patrolTest(
       // We don't have to call this line because automator.configure() does the same.
       // await automator2.configure();
 
-      // patrolLog.log(
-      //   TestEntry(name: description, status: TestEntryStatus.start),
-      // );
+      patrolLog.log(
+        TestEntry(name: description, status: TestEntryStatus.start),
+      );
       final patrolTester = PatrolIntegrationTester(
         tester: widgetTester,
         nativeAutomator: automator,

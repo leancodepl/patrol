@@ -24,11 +24,23 @@ class PatrolLogWriter {
 
   /// Writes the entries to the console.
   void write() {
-    _streamSubscription = _controller.stream.listen((entry) {
-      // Print to standard output, so it can be read by the CLI.
-      // ignore: avoid_print
-      print('PATROL_LOG ${jsonEncode(entry.toJson())}');
-    });
+    _streamSubscription = _controller.stream.listen(
+      (entry) {
+        // Print to standard output, so it can be read by the CLI.
+        // ignore: avoid_print
+        try {
+          final jsonString = jsonEncode(entry.toJson());
+          print('PATROL_LOG $jsonString');
+        } catch (e, stackTrace) {
+          print('PATROL_LOG_ERROR: Error encoding log entry: $e');
+          print('PATROL_LOG_ERROR: Stack trace: $stackTrace');
+        }
+      },
+      onError: (onError) {
+        print('Stream Error: $onError');
+      },
+      cancelOnError: false,
+    );
   }
 
   void close() {
