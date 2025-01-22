@@ -168,7 +168,7 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
 
     override fun tap(request: TapRequest) {
         if (request.selector != null) {
-            /// Remove instance before creating bySelector
+            // Remove instance before creating bySelector, as it's not supported
             var selector2 = request.selector.copy(instance = null)
             val bySelector = selector2.toBySelector()
 
@@ -179,7 +179,7 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
                 timeout = request.timeoutMillis
             )
         } else if (request.androidSelector != null) {
-            /// Remove instance before creating bySelector
+            // Remove instance before creating bySelector, as it's not supported
             var androidSelector2 = request.androidSelector.copy(instance = null)
             val bySelector = androidSelector2.toBySelector()
 
