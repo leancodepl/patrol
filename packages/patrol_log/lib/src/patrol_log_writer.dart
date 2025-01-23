@@ -19,7 +19,33 @@ class PatrolLogWriter {
 
   /// Logs an [entry] to the stream.
   void log(Entry entry) {
-    _controller.add(entry);
+    try {
+      // Validate entry before adding to stream
+      // ignore: unnecessary_null_comparison
+      if (entry == null) {
+        print('Error: Null entry cannot be logged');
+        return;
+      }
+
+      // Convert to JSON safely
+      Map<String, dynamic> jsonEntry;
+      try {
+        jsonEntry = entry.toJson();
+      } catch (e) {
+        print('Error converting entry to JSON: $e');
+        return;
+      }
+
+      // Add to stream with null check on controller
+      // ignore: unnecessary_null_comparison
+      if (_controller != null && !_controller.isClosed) {
+        _controller.add(entry);
+      } else {
+        print('Error: Stream controller is unavailable');
+      }
+    } catch (e) {
+      print('Unexpected error in log method: $e');
+    }
   }
 
   /// Writes the entries to the console.
@@ -29,14 +55,16 @@ class PatrolLogWriter {
         // Print to standard output, so it can be read by the CLI.
         // ignore: avoid_print
         try {
-        final jsonEntry = entry.toJson();
-        final encodedEntry = jsonEncode(jsonEntry);
-        print('PATROL_LOG $encodedEntry');
-      } on FormatException catch (e) {
-        print('PATROL_LOG {\"timestamp\":\"\",\"type\":\"error\",\"name\":\"${e.toString()}\",\"status\":\"false\",\"error\":\"format error\"}');
-      } catch (e) {
-        print('PATROL_LOG {\"timestamp\":\"\",\"type\":\"error\",\"name\":\"${e.toString()}\",\"status\":\"false\",\"error\":\"format error\"}');
-      }
+          final jsonEntry = entry.toJson();
+          final encodedEntry = jsonEncode(jsonEntry);
+          print('PATROL_LOG $encodedEntry');
+        } on FormatException catch (e) {
+          print(
+              'PATROL_LOG {\"timestamp\":\"\",\"type\":\"error\",\"name\":\"${e.toString()}\",\"status\":\"false\",\"error\":\"format error\"}');
+        } catch (e) {
+          print(
+              'PATROL_LOG {\"timestamp\":\"\",\"type\":\"error\",\"name\":\"${e.toString()}\",\"status\":\"false\",\"error\":\"format error\"}');
+        }
       },
       onError: (onError) {
         print('Stream Error: $onError');
