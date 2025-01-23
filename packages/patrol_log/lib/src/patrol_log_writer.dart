@@ -57,13 +57,12 @@ class PatrolLogWriter {
         try {
           final jsonEntry = entry.toJson();
           final encodedEntry = jsonEncode(jsonEntry);
+
           print('PATROL_LOG $encodedEntry');
         } on FormatException catch (e) {
-          print(
-              'PATROL_LOG {\"timestamp\":\"\",\"type\":\"error\",\"name\":\"${e.toString()}\",\"status\":\"false\",\"error\":\"format error\"}');
+          
         } catch (e) {
-          print(
-              'PATROL_LOG {\"timestamp\":\"\",\"type\":\"error\",\"name\":\"${e.toString()}\",\"status\":\"false\",\"error\":\"format error\"}');
+          
         }
       },
       onError: (onError) {

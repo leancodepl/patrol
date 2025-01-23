@@ -97,27 +97,49 @@ class PatrolLogReader {
   void _parsePatrolLog(String line) {
     final regExp = RegExp('PATROL_LOG (.*)');
     final match = regExp.firstMatch(line);
-    if (match != null) {
-      try {
-        final json = match.group(1)!;
-        final entry = parseEntry(json);
 
-        if (entry case TestEntry _) {
-          final testEntry = entry;
-          // Skip info test is returned multiple times, so we need to filter it
-          if (testEntry.status == TestEntryStatus.skip &&
-              !_skippedTests.contains(testEntry.name)) {
-            _skippedTests.add(testEntry.name);
-            _controller.add(entry);
-          } else if (testEntry.status != TestEntryStatus.skip) {
+    if (match == null) return;
+
+    try {
+      final json = match.group(1)!;
+      final entry = parseEntry(json);
+
+      if (entry is TestEntry) {
+        final bool shouldAdd = entry.status != TestEntryStatus.skip ||
+            !_skippedTests.contains(entry.name);
+
+        if (shouldAdd) {
+          if (entry.status == TestEntryStatus.skip) {
+            _skippedTests.add(entry.name);
+          }
+          
+          Map<String, dynamic> jsonEntry;
+          try {
+            jsonEntry = entry.toJson();
+          } catch (e) {
+            print('Error converting entry to JSON: $e');
+            return;
+          } 
+          if(jsonEntry.isNotEmpty) {
             _controller.add(entry);
           }
-        } else {
-          _controller.add(entry);
+          
         }
-      } catch (e) {
-        print(e.toString());
+      } else {
+        Map<String, dynamic> jsonEntry;
+          try {
+            jsonEntry = entry.toJson();
+          } catch (e) {
+            print('Error converting entry to JSON: $e');
+            return;
+          } 
+          if(jsonEntry.isNotEmpty) {
+            _controller.add(entry);
+          }
       }
+    } catch (e) {
+      print('Patrol log parsing error: $e');
+      // Consider logging or additional error handling
     }
   }
 
