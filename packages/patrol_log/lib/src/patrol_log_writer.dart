@@ -60,7 +60,7 @@ class PatrolLogWriter {
             final jsonEntry = entry.toJson();
             final encodedEntry = jsonEncode(jsonEntry);
 
-            print('PATROL_LOG $encodedEntry');
+            print('AUTOMATION $encodedEntry');
           }
           
         } on FormatException catch (e) {
