@@ -38,8 +38,8 @@ class PatrolLogWriter {
 
       // Add to stream with null check on controller
       // ignore: unnecessary_null_comparison
-      if (_controller != null && !_controller.isClosed) {
-        _controller.add(entry);
+      if (_controller != null && !_controller.isClosed && jsonEntry != null) {
+        _controller.add(Entry.fromJson(jsonEntry));
       } else {
         print('Error: Stream controller is unavailable');
       }
