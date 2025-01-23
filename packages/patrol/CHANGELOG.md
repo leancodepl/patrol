@@ -1,3 +1,7 @@
+## Unreleased
+
+- Fix `$.native.tap()` not working with `Selector` having `instance` set.
+
 ## 3.14.0
 
 - Remove `exception` from `StepEntry`. When it was too long, it caused crash because of badly formed JSON. (#2481)
