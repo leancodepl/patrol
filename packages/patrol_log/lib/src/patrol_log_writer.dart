@@ -56,7 +56,7 @@ class PatrolLogWriter {
         // ignore: avoid_print
         try {
           
-          if(entry == EntryType.log) {
+          if(entry.type == EntryType.log) {
             final jsonEntry = entry.toJson();
             final encodedEntry = jsonEncode(jsonEntry);
 
