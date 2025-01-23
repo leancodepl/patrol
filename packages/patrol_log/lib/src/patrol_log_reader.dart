@@ -50,7 +50,8 @@ class PatrolLogReader {
     readEntries();
 
     // Parse the output from the process.
-    listenStdOut(parse).disposedBy(_scope);
+    listenStdOut(parse, cancelOnError: false,onError: (err, stack) {
+    },).disposedBy(_scope);
   }
 
   /// Starts the timer measuring whole tests duration.
@@ -93,7 +94,6 @@ class PatrolLogReader {
     }
   }
 
-  /// Take line containg PATROL_LOG tag, parse it to [Entry] and add to stream.
   void _parsePatrolLog(String line) {
     final regExp = RegExp('PATROL_LOG (.*)');
     final match = regExp.firstMatch(line);
@@ -102,7 +102,11 @@ class PatrolLogReader {
 
     try {
       final json = match.group(1)!;
-      final entry = parseEntry(json);
+
+      // Sanitize JSON string before parsing
+      final sanitizedJson = _sanitizeJson(json);
+
+      final entry = parseEntry(sanitizedJson);
 
       if (entry is TestEntry) {
         final bool shouldAdd = entry.status != TestEntryStatus.skip ||
@@ -112,34 +116,35 @@ class PatrolLogReader {
           if (entry.status == TestEntryStatus.skip) {
             _skippedTests.add(entry.name);
           }
-          
-          Map<String, dynamic> jsonEntry;
-          try {
-            jsonEntry = entry.toJson();
-          } catch (e) {
-            print('Error converting entry to JSON: $e');
-            return;
-          } 
-          if(jsonEntry.isNotEmpty) {
+
+          // Additional safety checks before adding to controller
+          if (_isValidEntry(entry)) {
             _controller.add(entry);
           }
-          
         }
       } else {
-        Map<String, dynamic> jsonEntry;
-          try {
-            jsonEntry = entry.toJson();
-          } catch (e) {
-            print('Error converting entry to JSON: $e');
-            return;
-          } 
-          if(jsonEntry.isNotEmpty) {
-            _controller.add(entry);
-          }
+        if (_isValidEntry(entry)) {
+          _controller.add(entry);
+        }
       }
     } catch (e) {
       print('Patrol log parsing error: $e');
-      // Consider logging or additional error handling
+    }
+  }
+
+// Sanitize JSON by removing invalid UTF-8 characters
+  String _sanitizeJson(String json) {
+    return json.replaceAll(RegExp(r'[^\x00-\x7F]+'), '');
+  }
+
+// Validate entry before adding to stream
+  bool _isValidEntry(Entry entry) {
+    try {
+      final jsonEntry = entry.toJson();
+      return jsonEntry.isNotEmpty;
+    } catch (e) {
+      print('Invalid entry: $e');
+      return false;
     }
   }
 

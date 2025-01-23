@@ -160,9 +160,9 @@ class PatrolAppService extends PatrolAppServiceServer {
           status: TestEntryStatus.failure,
         ),
       );
-      // testExecutionResult.details?.split('\n').forEach(
-      //       (e) => _patrolLog.log(ErrorEntry(message: e)),
-      //     );
+      testExecutionResult.details?.split('\n').forEach(
+            (e) => _patrolLog.log(ErrorEntry(message: e)),
+          );
     } else {
       _patrolLog.log(
         TestEntry(
