@@ -55,10 +55,14 @@ class PatrolLogWriter {
         // Print to standard output, so it can be read by the CLI.
         // ignore: avoid_print
         try {
-          final jsonEntry = entry.toJson();
-          final encodedEntry = jsonEncode(jsonEntry);
+          
+          if(entry == EntryType.log) {
+            final jsonEntry = entry.toJson();
+            final encodedEntry = jsonEncode(jsonEntry);
 
-          print('PATROL_LOG $encodedEntry');
+            print('PATROL_LOG $encodedEntry');
+          }
+          
         } on FormatException catch (e) {
           
         } catch (e) {
