@@ -1,3 +1,8 @@
+## Unreleased
+
+- Bump Gradle version in the example app so it's possible to build them on the
+  latest JDK 23 (#2503)
+
 ## 3.14.0
 
 - Remove `exception` from `StepEntry`. When it was too long, it caused crash because of badly formed JSON. (#2481)
