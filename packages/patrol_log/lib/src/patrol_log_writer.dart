@@ -31,7 +31,7 @@ class PatrolLogWriter {
         try {
           final jsonString = jsonEncode(entry.toJson());
           // ignore: avoid_print
-          print('PATROL_LOG ==> $jsonString');
+          print('PATROL_LOG $jsonString');
         } catch (e, stackTrace) {
           print('PATROL_LOG_ERROR: Error encoding log entry: $e');
           print('PATROL_LOG_ERROR: Stack trace: $stackTrace');

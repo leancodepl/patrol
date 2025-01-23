@@ -98,21 +98,25 @@ class PatrolLogReader {
     final regExp = RegExp('PATROL_LOG (.*)');
     final match = regExp.firstMatch(line);
     if (match != null) {
-      final json = match.group(1)!;
-      final entry = parseEntry(json);
+      try {
+        final json = match.group(1)!;
+        final entry = parseEntry(json);
 
-      if (entry case TestEntry _) {
-        final testEntry = entry;
-        // Skip info test is returned multiple times, so we need to filter it
-        if (testEntry.status == TestEntryStatus.skip &&
-            !_skippedTests.contains(testEntry.name)) {
-          _skippedTests.add(testEntry.name);
-          _controller.add(entry);
-        } else if (testEntry.status != TestEntryStatus.skip) {
+        if (entry case TestEntry _) {
+          final testEntry = entry;
+          // Skip info test is returned multiple times, so we need to filter it
+          if (testEntry.status == TestEntryStatus.skip &&
+              !_skippedTests.contains(testEntry.name)) {
+            _skippedTests.add(testEntry.name);
+            _controller.add(entry);
+          } else if (testEntry.status != TestEntryStatus.skip) {
+            _controller.add(entry);
+          }
+        } else {
           _controller.add(entry);
         }
-      } else {
-        _controller.add(entry);
+      } catch (e) {
+        print(e.toString());
       }
     }
   }
@@ -161,59 +165,59 @@ class PatrolLogReader {
       (entry) {
         try {
           switch (entry) {
-          case TestEntry()
-              when entry.status == TestEntryStatus.skip ||
-                  entry.status == TestEntryStatus.start:
-            // Create a new single test entry for the test that is starting or is skipped.
-            _singleEntries.add(PatrolSingleTestEntry(entry));
+            case TestEntry()
+                when entry.status == TestEntryStatus.skip ||
+                    entry.status == TestEntryStatus.start:
+              // Create a new single test entry for the test that is starting or is skipped.
+              _singleEntries.add(PatrolSingleTestEntry(entry));
 
-            // Print the test entry to the console.
-            log(entry.pretty());
+              // Print the test entry to the console.
+              log(entry.pretty());
 
-            // Reset the counters needed for clearing the lines.
-            stepsCounter = 0;
-            logsCounter = 0;
-          case TestEntry():
-            // Close the single test entry for the test that is finished.
-            _singleEntries.last.closeTest(entry);
+              // Reset the counters needed for clearing the lines.
+              stepsCounter = 0;
+              logsCounter = 0;
+            case TestEntry():
+              // Close the single test entry for the test that is finished.
+              _singleEntries.last.closeTest(entry);
 
-            // Optionally clear all printed [StepEntry] and [LogEntry].
-            if (!showFlutterLogs &&
-                clearTestSteps &&
-                entry.status != TestEntryStatus.failure) {
-              _clearLines(stepsCounter + logsCounter + 1);
-            }
-
-            final executionTime = _singleEntries.last.executionTime.inSeconds;
-            // Print test entry summary to console.
-            log('${entry.pretty()} ${AnsiCodes.gray}(${executionTime}s)${AnsiCodes.reset}');
-          case StepEntry():
-            _singleEntries.last.addEntry(entry);
-            if (!hideTestSteps) {
-              // Clear the previous line it's not the new step, or increment counter
-              // for new step
-              if (entry.status == StepEntryStatus.start) {
-                stepsCounter++;
-              } else if (clearTestSteps) {
-                _clearPreviousLine();
+              // Optionally clear all printed [StepEntry] and [LogEntry].
+              if (!showFlutterLogs &&
+                  clearTestSteps &&
+                  entry.status != TestEntryStatus.failure) {
+                _clearLines(stepsCounter + logsCounter + 1);
               }
 
-              // Print the step entry to the console.
-              log(entry.pretty(number: stepsCounter));
-            }
-          case LogEntry():
-            _singleEntries.last.addEntry(entry);
-            logsCounter++;
+              final executionTime = _singleEntries.last.executionTime.inSeconds;
+              // Print test entry summary to console.
+              log('${entry.pretty()} ${AnsiCodes.gray}(${executionTime}s)${AnsiCodes.reset}');
+            case StepEntry():
+              _singleEntries.last.addEntry(entry);
+              if (!hideTestSteps) {
+                // Clear the previous line it's not the new step, or increment counter
+                // for new step
+                if (entry.status == StepEntryStatus.start) {
+                  stepsCounter++;
+                } else if (clearTestSteps) {
+                  _clearPreviousLine();
+                }
 
-            // Print the log entry to the console.
-            log(entry.pretty());
+                // Print the step entry to the console.
+                log(entry.pretty(number: stepsCounter));
+              }
+            case LogEntry():
+              _singleEntries.last.addEntry(entry);
+              logsCounter++;
 
-          case ErrorEntry():
-          case WarningEntry():
-            log(entry.pretty());
-          case ConfigEntry():
-            _readConfig(entry);
-        }
+              // Print the log entry to the console.
+              log(entry.pretty());
+
+            case ErrorEntry():
+            case WarningEntry():
+              log(entry.pretty());
+            case ConfigEntry():
+              _readConfig(entry);
+          }
         } catch (e, stackTrace) {
           print("ERROR TEST ENTRY $e");
           print("ERROR STACKTRACE $stackTrace");
