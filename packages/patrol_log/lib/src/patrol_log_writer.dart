@@ -29,13 +29,14 @@ class PatrolLogWriter {
         // Print to standard output, so it can be read by the CLI.
         // ignore: avoid_print
         try {
-          final jsonString = jsonEncode(entry.toJson());
-          // ignore: avoid_print
-          print('PATROL_LOG {\"timestamp\":\"${entry.timestamp}\",\"type\":\"${entry.type.name}\",\"name\":\"${entry.props.toString()}\",\"status\":\"start\",\"error\":null}');
-        } catch (e, stackTrace) {
-          print('PATROL_LOG_ERROR: Error encoding log entry: $e');
-          print('PATROL_LOG_ERROR: Stack trace: $stackTrace');
-        }
+        final jsonEntry = entry.toJson();
+        final encodedEntry = jsonEncode(jsonEntry);
+        print('PATROL_LOG $encodedEntry');
+      } on FormatException catch (e) {
+        print('PATROL_LOG {\"timestamp\":\"\",\"type\":\"error\",\"name\":\"${e.toString()}\",\"status\":\"false\",\"error\":\"format error\"}');
+      } catch (e) {
+        print('PATROL_LOG {\"timestamp\":\"\",\"type\":\"error\",\"name\":\"${e.toString()}\",\"status\":\"false\",\"error\":\"format error\"}');
+      }
       },
       onError: (onError) {
         print('Stream Error: $onError');
