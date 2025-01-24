@@ -56,15 +56,13 @@ class PatrolLogWriter {
         // ignore: avoid_print
         try {
           
-          if(entry.type == EntryType.log) {
             final jsonEntry = entry.toJson();
             final encodedEntry = jsonEncode(jsonEntry);
 
-            print('AUTOMATION $encodedEntry');
-          }
-          
+            print('PATROL_LOG $encodedEntry');
+        
         } on FormatException catch (e) {
-          
+          print('FORMAT EXCEPTION: $e');
         } catch (e) {
           
         }
