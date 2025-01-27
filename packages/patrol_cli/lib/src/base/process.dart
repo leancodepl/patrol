@@ -74,8 +74,9 @@ extension ProcessListeners on Process {
           (line) {
             try {
               onData(line);
-            } catch (e) {
-              print(e.toString());
+            } catch (e, stackTrace) {
+              print('Error: $e');
+              print('Stack trace: $stackTrace');
             }
           },
           onError: onError,
@@ -97,8 +98,9 @@ extension ProcessListeners on Process {
           (line) {
             try {
               onData(line);
-            } catch (e) {
-              print(e.toString());
+            } catch (e, stackTrace) {
+              print('Error: $e');
+              print('Stack trace: $stackTrace');
             }
           },
           onError: onError,
