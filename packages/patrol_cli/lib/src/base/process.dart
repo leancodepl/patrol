@@ -71,21 +71,17 @@ extension ProcessListeners on Process {
         .transform(utf8.decoder)
         .transform(const LineSplitter())
         .listen(
-      (line) {
-        try {
-          onData(line);
-        } catch (e) {
-          if (onError != null) {
-            onError(e);
-          } else {
-            rethrow;
-          }
-        }
-      },
-      onError: onError,
-      onDone: onDone,
-      cancelOnError: cancelOnError,
-    );
+          (line) {
+            try {
+              onData(line);
+            } catch (e) {
+              print(e.toString());
+            }
+          },
+          onError: onError,
+          onDone: onDone,
+          cancelOnError: cancelOnError,
+        );
   }
 
   StreamSubscription<void> listenStdErr(
@@ -98,21 +94,17 @@ extension ProcessListeners on Process {
         .transform(utf8.decoder)
         .transform(const LineSplitter())
         .listen(
-      (line) {
-        try {
-          onData(line);
-        } catch (e) {
-          if (onError != null) {
-            onError(e);
-          } else {
-            rethrow;
-          }
-        }
-      },
-      onError: onError,
-      onDone: onDone,
-      cancelOnError: cancelOnError,
-    );
+          (line) {
+            try {
+              onData(line);
+            } catch (e) {
+              print(e.toString());
+            }
+          },
+          onError: onError,
+          onDone: onDone,
+          cancelOnError: cancelOnError,
+        );
   }
 }
 
