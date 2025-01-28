@@ -499,23 +499,23 @@ packages:
       path: "../../packages/patrol"
       relative: true
     source: path
-    version: "3.13.2"
+    version: "3.14.0"
   patrol_finders:
     dependency: transitive
     description:
       name: patrol_finders
-      sha256: "5a1e2b4c6636e89645fc596d68224cfe6cca28e11c855b98dd0df9bed0d80405"
+      sha256: "4c6d78e00362fd15d7c21cfac110e501d08ada7d77000bad139b0c3c2e27ccaf"
       url: "https://pub.dev"
     source: hosted
-    version: "2.6.0"
+    version: "2.7.0"
   patrol_log:
     dependency: transitive
     description:
       name: patrol_log
-      sha256: ad5d7b759d16071ca16aa9b27eb4f106ce23079792d4312941874dbc33e795cb
+      sha256: "98b2701400c7a00b11533ab942bdeb44c3c714746e7cdb12e6cb93b6d06361da"
       url: "https://pub.dev"
     source: hosted
-    version: "0.2.2"
+    version: "0.3.0"
   permission_handler:
     dependency: "direct main"
     description:
