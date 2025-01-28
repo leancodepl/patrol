@@ -1,3 +1,7 @@
+## Unreleased
+
+- Gracefully handle when analytics fail to send (#2460)
+
 ## 3.5.0
 
 - Add `PATROL_ANALYTICS_ENABLED` environment variable to disable analytics. (#2483)

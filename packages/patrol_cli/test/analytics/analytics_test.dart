@@ -37,6 +37,7 @@ void main() {
         httpClient: httpClient,
         isCI: false,
         envAnalyticsEnabled: null,
+        logger: MockLogger(),
       );
     });
 
@@ -91,6 +92,7 @@ void main() {
         httpClient: httpClient,
         isCI: false,
         envAnalyticsEnabled: true,
+        logger: MockLogger(),
       );
     });
 
@@ -145,6 +147,7 @@ void main() {
         httpClient: httpClient,
         isCI: false,
         envAnalyticsEnabled: false,
+        logger: MockLogger(),
       );
     });
 
@@ -171,6 +174,47 @@ void main() {
       // then
       expect(sent, false);
     });
+  });
+
+  test('does not throw when failing to send data', () async {
+    setUpFakes();
+
+    final fs = MemoryFileSystem.test();
+
+    final httpClient = MockHttpClient();
+    when(
+      () => httpClient.post(
+        any(),
+        body: any(named: 'body'),
+        headers: any(named: 'headers'),
+      ),
+    ).thenThrow(
+      http.ClientException(
+        'Failed host lookup',
+        Uri(scheme: 'https', host: 'google-analytics.com'),
+      ),
+    );
+
+    final analytics = Analytics(
+      measurementId: 'measurementId',
+      apiSecret: 'apiSecret',
+      fs: fs,
+      platform: fakePlatform('/Users/john'),
+      httpClient: httpClient,
+      isCI: false,
+      envAnalyticsEnabled: false,
+      logger: MockLogger(),
+    );
+
+    // given
+    _createFakeFileSystem(fs, analyticsEnabled: true);
+
+    // when
+    final sent =
+        await analytics.sendCommand(FlutterVersion.test(), 'test command');
+
+    // then
+    expect(sent, false);
   });
 }
 
