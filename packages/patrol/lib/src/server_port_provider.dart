@@ -1,7 +1,7 @@
-import 'dart:ffi';
 import 'dart:io';
 
 import 'package:patrol/src/server_port/android_server_port_provider_bindings.dart';
+import 'package:patrol/src/server_port/ios_server_port_provider_bindings.dart';
 
 /// Provides a port for the of native server. Gets the port from the native side
 /// using ffi.
@@ -9,11 +9,13 @@ int getTestServerPort() {
   if (Platform.isAndroid) {
     return AndroidServerPortProvider.getPort();
   } else {
-    final nativeLibrary = DynamicLibrary.process();
-    final getGlobalPort = nativeLibrary
-        .lookup<NativeFunction<Int32 Function()>>('getGlobalPort')
-        .asFunction;
-    return getGlobalPort();
+    try {
+      final port = IOSServerPortProvider123.getGlobalPort();
+      return port;
+    } catch (e) {
+      print("Error getting port: $e");
+      return 0;
+    }
   }
 }
 
