@@ -2,6 +2,7 @@
 
 - Bump Gradle version in the example app so it's possible to build them on the
   latest JDK 23 (#2503)
+- Fix `$.native.tap()` not working with `Selector` having `instance` set. (#2501)
 
 ## 3.14.0
 
