@@ -1,3 +1,8 @@
+## Unreleased
+
+- Bump Gradle version in the example app so it's possible to build them on the
+  latest JDK 23 (#2503)
+
 ## 2.7.0
 
 - Add `alignment` parameter to `waitUntilVisible` in order to improve visibility check on Row and Column widgets. (#2464)
