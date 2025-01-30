@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Bump patrol plugin iOS and macOS deployment targets to 12.0. (#2514)
 - Bump Gradle version in the example app so it's possible to build them on the
   latest JDK 23 (#2503)
 - Fix `$.native.tap()` not working with `Selector` having `instance` set. (#2501)

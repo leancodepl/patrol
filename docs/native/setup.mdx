@@ -659,11 +659,11 @@ Check out our video version of this tutorial on YouTube!
 <Accordion title="Build is failing with errors on mismatching iOS deployment versions">
   Check if this line in `Podfile` is present and uncommented.
   ```
-  platform :ios, '11.0'
+  platform :ios, '12.0'
   ```
   If yes, then check if **iOS deployment version** in Xcode project's **Build Settings**
   section for all targets (Runner and RunnerUITests) are set to the same value as in Podfile
-  (in case presented in snippet above, all should be set to 11.0).
+  (in case presented in snippet above, all should be set to 12.0).
 </Accordion>
 
 If you couldn't find an answer to your question/problem, feel free to ask on
