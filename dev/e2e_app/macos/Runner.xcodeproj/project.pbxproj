@@ -239,11 +239,9 @@
 			buildConfigurationList = 941724AC2A7BC66700F668BB /* Build configuration list for PBXNativeTarget "RunnerUITests" */;
 			buildPhases = (
 				3A083E9A6705B923206387D0 /* [CP] Check Pods Manifest.lock */,
-				94AA3E052A7BC91200E8815C /* macos_assemble build */,
 				9417249D2A7BC66700F668BB /* Sources */,
 				9417249E2A7BC66700F668BB /* Frameworks */,
 				9417249F2A7BC66700F668BB /* Resources */,
-				94AA3E072A7BC98400E8815C /* macos_assemble embed */,
 				4AB953C79502BD21EC05D5DB /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
@@ -425,42 +423,6 @@
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
-		};
-		94AA3E052A7BC91200E8815C /* macos_assemble build */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = "macos_assemble build";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "echo \"Runner macos_assemble build\"\n/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/macos_assemble.sh\" build\n";
-		};
-		94AA3E072A7BC98400E8815C /* macos_assemble embed */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = "macos_assemble embed";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "echo \"Runner macos_assemble embed\"\n/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/macos_assemble.sh\" embed\n";
 		};
 		94AA3E082A7BD03700E8815C /* macos_assemble build */ = {
 			isa = PBXShellScriptBuildPhase;
