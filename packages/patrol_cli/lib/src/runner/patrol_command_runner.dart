@@ -57,6 +57,7 @@ Future<int> patrolCommandRunner(List<String> args) async {
       platform: platform,
       isCI: isCI,
       envAnalyticsEnabled: analyticsEnabled,
+      logger: logger,
     ),
     processManager: processManager,
     isCI: isCI,

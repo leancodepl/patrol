@@ -5,6 +5,7 @@ import 'package:file/file.dart';
 import 'package:http/http.dart' as http;
 import 'package:patrol_cli/src/base/constants.dart' as constants;
 import 'package:patrol_cli/src/base/extensions/platform.dart';
+import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/runner/flutter_command.dart';
 import 'package:platform/platform.dart';
@@ -41,12 +42,14 @@ class Analytics {
     http.Client? httpClient,
     required bool isCI,
     required bool? envAnalyticsEnabled,
+    required Logger logger,
   })  : _fs = fs,
         _platform = platform,
         _httpClient = httpClient ?? http.Client(),
         _postUrl = _getAnalyticsUrl(measurementId, apiSecret),
         _isCI = isCI,
-        _envAnalyticsEnabled = envAnalyticsEnabled;
+        _envAnalyticsEnabled = envAnalyticsEnabled,
+        _logger = logger;
 
   final FileSystem _fs;
   final Platform _platform;
@@ -56,6 +59,8 @@ class Analytics {
 
   final bool _isCI;
   final bool? _envAnalyticsEnabled;
+
+  final Logger _logger;
 
   /// Sends an event to Google Analytics that command [name] run.
   ///
@@ -78,19 +83,26 @@ class Analytics {
       return false;
     }
 
-    await _httpClient.post(
-      Uri.parse(_postUrl),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: _generateRequestBody(
-        flutterVersion: flutterVersion,
-        clientId: uuid,
-        eventName: name,
-        additionalEventData: eventData,
-      ),
-    );
-    return true;
+    try {
+      await _httpClient.post(
+        Uri.parse(_postUrl),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: _generateRequestBody(
+          flutterVersion: flutterVersion,
+          clientId: uuid,
+          eventName: name,
+          additionalEventData: eventData,
+        ),
+      );
+      return true;
+    } on Exception catch (e) {
+      _logger
+        ..info('Failed to post analytics')
+        ..detail(e.toString());
+      return false;
+    }
   }
 
   bool get firstRun => _config == null;
