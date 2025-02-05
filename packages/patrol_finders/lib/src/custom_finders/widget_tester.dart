@@ -117,6 +117,7 @@ class PatrolWidgetTester extends _PWT with _ShowKeyboardPatch {
     Offset moveStep, {
     int maxIteration = 50,
     Duration duration = const Duration(milliseconds: 50),
+    bool continuous = false,
   }) {
     return _tester.dragUntilVisible(
       finder,
@@ -124,6 +125,7 @@ class PatrolWidgetTester extends _PWT with _ShowKeyboardPatch {
       moveStep,
       maxIteration: maxIteration,
       duration: duration,
+      continuous: continuous,
     );
   }
 
@@ -461,6 +463,7 @@ class PatrolWidgetTester extends _PWT with _ShowKeyboardPatch {
     FinderBase<Element>? scrollable,
     int maxScrolls = 50,
     Duration duration = const Duration(milliseconds: 50),
+    bool continuous = false,
   }) {
     return _tester.scrollUntilVisible(
       finder,
@@ -468,6 +471,7 @@ class PatrolWidgetTester extends _PWT with _ShowKeyboardPatch {
       scrollable: scrollable,
       maxScrolls: maxScrolls,
       duration: duration,
+      continuous: continuous,
     );
   }
 
