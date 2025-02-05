@@ -225,6 +225,8 @@ class EnterTextRequest {
   IOSSelector? iosSelector;
   late KeyboardBehavior keyboardBehavior;
   int? timeoutMillis;
+  double? dx;
+  double? dy;
 }
 
 class SwipeRequest {
