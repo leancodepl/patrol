@@ -557,6 +557,12 @@ class Contracts {
     fun hasTimeoutMillis(): Boolean {
       return timeoutMillis != null
     }
+    fun hasDx(): Boolean {
+      return dx != null
+    }
+    fun hasDy(): Boolean {
+      return dy != null
+    }
   }
 
   data class SwipeRequest (
