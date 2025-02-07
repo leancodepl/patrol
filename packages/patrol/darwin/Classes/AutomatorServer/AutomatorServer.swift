@@ -155,8 +155,8 @@
             inApp: request.appId,
             dismissKeyboard: request.keyboardBehavior == .showAndDismiss,
             withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) },
-            dx: request.dx,
-            dy: request.dy
+            dx: request.dx ?? 0.9,
+            dy: request.dy ?? 0.9
           )
         } else if let selector = request.selector {
           try automator.enterText(
@@ -165,8 +165,8 @@
             inApp: request.appId,
             dismissKeyboard: request.keyboardBehavior == .showAndDismiss,
             withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) },
-            dx: request.dx,
-            dy: request.dy
+            dx: request.dx ?? 0.9,
+            dy: request.dy ?? 0.9
           )
         } else if let iosSelector = request.iosSelector {
           try automator.enterText(
@@ -175,8 +175,8 @@
             inApp: request.appId,
             dismissKeyboard: request.keyboardBehavior == .showAndDismiss,
             withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) },
-            dx: request.dx,
-            dy: request.dy
+            dx: request.dx ?? 0.9,
+            dy: request.dy ?? 0.9
           )
         } else {
           throw PatrolError.internal("enterText(): neither index nor selector are set")
