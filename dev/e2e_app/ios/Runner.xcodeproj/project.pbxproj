@@ -223,10 +223,12 @@
 			buildConfigurationList = 983964E12978A956007EB76F /* Build configuration list for PBXNativeTarget "RunnerUITests" */;
 			buildPhases = (
 				57A729EC2F3211B458286925 /* [CP] Check Pods Manifest.lock */,
+				AB6016A22D565AEA0041A30D /* xcode_backend build */,
 				983964D52978A956007EB76F /* Sources */,
 				983964D62978A956007EB76F /* Frameworks */,
 				983964D72978A956007EB76F /* Resources */,
 				B778A6D350303A188769B23C /* [CP] Embed Pods Frameworks */,
+				AB6016A32D565AEC0041A30D /* xcode_backend embed_and_thin */,
 			);
 			buildRules = (
 			);
@@ -418,6 +420,42 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "echo \"Runner xcode_backend build\"\n/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" build\n";
+		};
+		AB6016A22D565AEA0041A30D /* xcode_backend build */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "xcode_backend build";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" build\n";
+		};
+		AB6016A32D565AEC0041A30D /* xcode_backend embed_and_thin */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "xcode_backend embed_and_thin";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" embed_and_thin\n";
 		};
 		B778A6D350303A188769B23C /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
