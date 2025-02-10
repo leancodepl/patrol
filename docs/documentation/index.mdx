@@ -293,6 +293,35 @@ Check out our video version of this tutorial on YouTube!
         </Step>
 
         <Step>
+          Go to **RunnerUITests** -> **Build Phases** and add 2 new "Run Script Phase" Build Phases.
+            Name them `xcode_backend build` and `xcode_backend embed_and_thin`.
+
+          ![Xcode config setup](/assets/ios_runner_build_phases_create.png)
+        </Step>
+
+        <Step>
+          Arrange the newly created Build Phases in the order shown in the screenshot below.
+
+          ![Xcode config setup](/assets/ios_runner_build_phases.png)
+        </Step>
+
+        <Step>
+          Paste this code into the `xcode_backend build` Build Phase:
+
+          ```
+          /bin/sh "$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh" build
+          ```
+        </Step>
+
+        <Step>
+          Paste this code into the `xcode_backend embed_and_thin` Build Phase:
+
+          ```
+          /bin/sh "$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh" embed_and_thin
+          ```
+        </Step>
+
+        <Step>
           Xcode by default also enables a "parallel execution" setting, which
             breaks Patrol. Disable it **for all schemes** (if you have more than one):
 
@@ -382,6 +411,36 @@ Check out our video version of this tutorial on YouTube!
 
           ```
           $ pod install --repo-update
+          ```
+        </Step>
+
+        <Step>
+          Go to **RunnerUITests** -> **Build Phases** and add 2 new "Run Script Phase" Build Phases.
+            Rename them to `xcode_backend build` and `xcode_backend embed_and_thin` by double clicking
+            on their names.
+
+          ![Xcode config setup](/assets/macos_runner_build_phases_create.png)
+        </Step>
+
+        <Step>
+          Arrange the newly created Build Phases in the order shown in the screenshot below.
+
+          ![Xcode config setup](/assets/macos_runner_build_phases.png)
+        </Step>
+
+        <Step>
+          Paste this code into the first `macos_assemble build` Build Phase:
+
+          ```
+          /bin/sh "$FLUTTER_ROOT/packages/flutter_tools/bin/macos_assemble.sh" build
+          ```
+        </Step>
+
+        <Step>
+          Paste this code into the second `macos_assemble embed` Build Phase:
+
+          ```
+          /bin/sh "$FLUTTER_ROOT/packages/flutter_tools/bin/macos_assemble.sh" embed
           ```
         </Step>
 
