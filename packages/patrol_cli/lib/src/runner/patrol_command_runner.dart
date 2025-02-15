@@ -1,5 +1,7 @@
-import 'dart:io' show ProcessSignal, stdin;
+import 'dart:async';
 import 'dart:io' as p show Platform;
+import 'dart:io' show ProcessSignal, stdin;
+import 'dart:isolate' as isolate;
 
 import 'package:adb/adb.dart';
 import 'package:args/args.dart';
@@ -35,7 +37,11 @@ import 'package:platform/platform.dart';
 import 'package:process/process.dart';
 import 'package:pub_updater/pub_updater.dart';
 
+final stopwatch = Stopwatch();
+
 Future<int> patrolCommandRunner(List<String> args) async {
+  stopwatch.start();
+  final preSetup = stopwatch.elapsed.inMilliseconds;
   final pubUpdater = PubUpdater();
   final logger = Logger();
   const fs = LocalFileSystem();
@@ -62,6 +68,8 @@ Future<int> patrolCommandRunner(List<String> args) async {
     processManager: processManager,
     isCI: isCI,
   );
+  final postSetup = stopwatch.elapsed.inMilliseconds;
+  print('debug: time setting up: ${postSetup - preSetup} ms');
 
   ProcessSignal.sigint.watch().listen((signal) async {
     logger.detail('Caught SIGINT, exiting...');
@@ -73,12 +81,19 @@ Future<int> patrolCommandRunner(List<String> args) async {
     });
   });
 
+  final preRun = stopwatch.elapsed.inMilliseconds;
   final exitCode = await runner.run(args) ?? 0;
+  final postRun = stopwatch.elapsed.inMilliseconds;
+  print('debug: time running: ${postRun - preRun} ms');
 
   if (!runner._disposeScope.disposed) {
+    final preDisposal = stopwatch.elapsed.inMilliseconds;
     await runner.dispose();
+    final postDisposal = stopwatch.elapsed.inMilliseconds;
+    print('debug: time disposing: ${postDisposal - preDisposal} ms');
   }
 
+  print('debug: total time: ${stopwatch.elapsed.inMilliseconds} ms');
   return exitCode;
 }
 
@@ -124,6 +139,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
 
     final rootDirectory = findRootDirectory(_fs) ?? _fs.currentDirectory;
 
+    final preConstruct = stopwatch.elapsed.inMilliseconds;
     final androidTestBackend = AndroidTestBackend(
       adb: adb,
       processManager: _processManager,
@@ -276,6 +292,9 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         help: 'Print version of this program.',
         negatable: false,
       );
+
+    final postConstruct = stopwatch.elapsed.inMilliseconds;
+    print('debug: time constructing: ${postConstruct - preConstruct} ms');
   }
 
   final PubUpdater _pubUpdater;
@@ -316,7 +335,10 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
 
     var exitCode = 1;
     try {
+      final preFirstRun = stopwatch.elapsed.inMilliseconds;
       _handleFirstRun();
+      final postFirstRun = stopwatch.elapsed.inMilliseconds;
+      print('debug: time _handleFirstRun: ${postFirstRun - preFirstRun} ms');
 
       final topLevelResults = parse(args);
       verbose = topLevelResults['verbose'] == true;
@@ -374,7 +396,15 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
     final commandName = topLevelResults.command?.name;
 
     if (_wantsUpdateCheck(commandName)) {
-      await _checkForUpdate(commandName);
+      final preCheckForUpdate = stopwatch.elapsed.inMilliseconds;
+      // Keep update check off the critical path (see #1966)
+      unawaited(
+        isolate.Isolate.spawn<void>((_) => _checkForUpdate(commandName), null),
+      );
+      final postCheckForUpdate = stopwatch.elapsed.inMilliseconds;
+      print(
+        'debug: time _checkForUpdate: ${postCheckForUpdate - preCheckForUpdate} ms',
+      );
     }
 
     final int? exitCode;
@@ -434,6 +464,9 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
 
   /// Checks if the current version (set by the build runner on the version.dart
   /// file) is the most recent one. If not, shows a prompt to the user.
+  ///
+  /// This method gets data from the network, so it should not block the
+  /// critical path.
   Future<void> _checkForUpdate(String? commandName) async {
     if (commandName == 'update' || commandName == 'doctor') {
       return;
