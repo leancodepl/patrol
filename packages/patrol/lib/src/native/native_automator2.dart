@@ -56,7 +56,7 @@ extension on native_automator.KeyboardBehavior {
 // TODO: Rename to NativeAutomatorClient
 class NativeAutomator2 {
   /// Creates a new [NativeAutomator2].
-  NativeAutomator2({required NativeAutomatorConfig config})
+  NativeAutomator2({required NativeAutomatorConfig config, int? port})
       : assert(
           config.connectionTimeout > config.findTimeout,
           'find timeout is longer than connection timeout',
@@ -76,10 +76,12 @@ class NativeAutomator2 {
 
     _client = NativeAutomatorClient(
       http.Client(),
-      Uri.http('${_config.host}:${_config.port}'),
+      Uri.http('${_config.host}:${port ?? _config.port}'),
       timeout: _config.connectionTimeout,
     );
-    _config.logger('NativeAutomatorClient created, port: ${_config.port}');
+    _config.logger(
+      'NativeAutomatorClient created, port: ${port ?? _config.port}',
+    );
   }
 
   final PatrolLogWriter _patrolLog = PatrolLogWriter();
@@ -605,8 +607,6 @@ class NativeAutomator2 {
           keyboardBehavior:
               (keyboardBehavior ?? _config.keyboardBehavior).toContractsEnum,
           timeoutMillis: timeout?.inMilliseconds,
-          dx: tapLocation?.dx ?? 0.9,
-          dy: tapLocation?.dy ?? 0.9,
         ),
       ),
     );
@@ -644,8 +644,6 @@ class NativeAutomator2 {
           keyboardBehavior:
               (keyboardBehavior ?? _config.keyboardBehavior).toContractsEnum,
           timeoutMillis: timeout?.inMilliseconds,
-          dx: tapLocation?.dx ?? 0.9,
-          dy: tapLocation?.dy ?? 0.9,
         ),
       ),
     );
@@ -854,10 +852,14 @@ class NativeAutomator2 {
   /// Tells the AndroidJUnitRunner that PatrolAppService is ready to answer
   /// requests about the structure of Dart tests.
   @internal
-  Future<void> markPatrolAppServiceReady() async {
+  Future<void> markPatrolAppServiceReady(int port) async {
     await _wrapRequest(
       'markPatrolAppServiceReady',
-      _client.markPatrolAppServiceReady,
+      () => _client.markPatrolAppServiceReady(
+        MarkAppAppServiceReadyRequest(
+          port: port,
+        ),
+      ),
       enablePatrolLog: false,
     );
   }

@@ -10,3 +10,4 @@ export 'src/binding.dart';
 export 'src/common.dart';
 export 'src/custom_finders/patrol_integration_tester.dart';
 export 'src/native/native.dart';
+export 'src/server_port_provider.dart';
