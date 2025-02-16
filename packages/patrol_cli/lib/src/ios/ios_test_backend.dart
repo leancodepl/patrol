@@ -124,6 +124,11 @@ class IOSTestBackend {
         options.buildForTestingInvocation(),
         runInShell: true,
         workingDirectory: _rootDirectory.childDirectory('ios').path,
+        environment: {
+          ..._platform.environment,
+          'TEST_RUNNER_PATROL_TEST_SERVER_PORT':
+              options.testServerPort.toString(),
+        },
       )
         ..disposedBy(scope);
       process.listenStdOut((l) => _logger.detail('\t$l')).disposedBy(scope);
@@ -198,12 +203,12 @@ class IOSTestBackend {
           ),
           resultBundlePath: reportPath,
         ),
-        runInShell: true,
         environment: {
           ..._platform.environment,
-          'TEST_RUNNER_PATROL_TEST_PORT': options.testServerPort.toString(),
-          'TEST_RUNNER_PATROL_APP_PORT': options.appServerPort.toString(),
+          'TEST_RUNNER_PATROL_TEST_SERVER_PORT':
+              options.testServerPort.toString(),
         },
+        runInShell: true,
         workingDirectory: _rootDirectory.childDirectory('ios').path,
       )
         ..disposedBy(_disposeScope);

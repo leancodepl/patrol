@@ -34,7 +34,7 @@ int _getIosServerPort() {
 int getAppServerPort() {
   return int.parse(
     const String.fromEnvironment(
-      'PATROL_TEST_SERVER_PORT',
+      'PATROL_APP_SERVER_PORT',
       defaultValue: '0',
     ),
   );

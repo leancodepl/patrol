@@ -68,7 +68,7 @@ flutter:
           weight: 600
 
 patrol:
-  flavor: dev
+  flavor: prod
   android:
     package_name: pl.leancode.patrol.example
   ios:

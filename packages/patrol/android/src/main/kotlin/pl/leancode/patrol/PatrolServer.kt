@@ -17,7 +17,7 @@ class PatrolServer {
     fun start() {
         Logger.i("Starting server...")
 
-        port = BuildConfig.PATROL_TEST_PORT.toIntOrNull() ?: getFreePort()
+        port = BuildConfig.PATROL_TEST_SERVER_PORT.toIntOrNull() ?: getFreePort()
 
         automatorServer = AutomatorServer(Automator.instance)
 

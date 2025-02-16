@@ -1,10 +1,9 @@
 import Foundation
 
-@objc public class PatrolServer: NSObject {
-  private static let envPortKey = "PATROL_TEST_PORT"
 
-  private static let defaultPort = 8081
-    
+@objc public class PatrolServer: NSObject {
+  private static let envPortKey = "PATROL_TEST_SERVER_PORT"
+
   #if PATROL_ENABLED
     @objc
     public var port: Int = 0
@@ -18,16 +17,17 @@ import Foundation
   public private(set) var appReady = false
 
   private var passedPort: Int = {
+    // FIXME: Test server port is not null when not set in running tests command ('test-without-building')
     guard let portStr = ProcessInfo.processInfo.environment[envPortKey] else {
-      Logger.shared.i("\(envPortKey) is null, falling back to default (\(defaultPort))")
-      return defaultPort
+      Logger.shared.i("\(envPortKey) is null, will use random free port")
+      return 0
     }
 
     guard let portInt = Int(portStr) else {
       Logger.shared.i(
-        "\(envPortKey) with value \(portStr) is not valid, falling back to default (\(defaultPort))"
+        "\(envPortKey) with value \(portStr) is not valid, will use random free port instead"
       )
-      return defaultPort
+      return 0
     }
 
     return portInt
@@ -62,7 +62,7 @@ import Foundation
 
       provider.setupRoutes(server: server)
 
-      try server.start()
+      try server.start(port: Endpoint.Port(UInt16(passedPort)))
       self.port = server.port
 
       Logger.shared.i("Server started on http://0.0.0.0:\(server.port)")
