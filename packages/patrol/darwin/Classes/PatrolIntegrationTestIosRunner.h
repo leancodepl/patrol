@@ -154,7 +154,7 @@
                                                                                                                 \
         __block ObjCRunDartTestResponse *response = NULL;                                                       \
         __block NSError *error;                                                                                 \
-        /* Spin the runloop waiting until the app reports that it is ready to report Dart tests */              \
+        /* Spin the runloop waiting until the app reports that it is ready to perform Dart tests */             \
         while (!server.appReady) {                                                                              \
           [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];                    \
         }                                                                                                       \
@@ -316,14 +316,14 @@
                                                                                                                 \
         __block ObjCRunDartTestResponse *response = NULL;                                                       \
         __block NSError *error;                                                                                 \
-      /* Spin the runloop waiting until the app reports that it is ready to report Dart tests */                \
-      while (!server.appReady) {                                                                                \
-        [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];                      \
-      }                                                                                                         \
-      NSInteger appServerPort = server.appServerPort;                                                           \
+        /* Spin the runloop waiting until the app reports that it is ready to perform Dart tests */             \
+        while (!server.appReady) {                                                                              \
+          [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];                    \
+        }                                                                                                       \
+        NSInteger appServerPort = server.appServerPort;                                                         \
                                                                                                                 \
-      /* Create a client for PatrolAppService, which lets us list and run Dart tests */                         \
-      appServiceClient = [[ObjCPatrolAppServiceClient alloc] initWithPort:appServerPort];                       \
+        /* Create a client for PatrolAppService, which lets us list and run Dart tests */                       \
+        appServiceClient = [[ObjCPatrolAppServiceClient alloc] initWithPort:appServerPort];                     \
         [appServiceClient                                                                                       \
             runDartTestWithName:dartTestName                                                                    \
                      completion:^(ObjCRunDartTestResponse *_Nullable r, NSError *_Nullable err) {               \
