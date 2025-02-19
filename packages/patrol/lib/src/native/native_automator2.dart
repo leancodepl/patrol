@@ -666,6 +666,8 @@ class NativeAutomator2 {
   }) async {
     assert(from.dx >= 0 && from.dx <= 1);
     assert(from.dy >= 0 && from.dy <= 1);
+    assert(to.dx >= 0 && to.dx <= 1);
+    assert(to.dy >= 0 && to.dy <= 1);
 
     await _wrapRequest(
       'swipe',
