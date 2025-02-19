@@ -68,6 +68,11 @@
       "id": "cli",
       "title": "CLI commands",
       "href": "/cli-commands"
+    },
+    {
+      "id": "articles",
+      "title": "Articles & Resources",
+      "href": "/articles"
     }
   ],
   "sidebar": [
