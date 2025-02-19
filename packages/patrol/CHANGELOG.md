@@ -6,6 +6,7 @@
 - Bump Gradle version in the example app so it's possible to build them on the
   latest JDK 23 (#2503)
 - Fix `$.native.tap()` not working with `Selector` having `instance` set. (#2501)
+- Fix not disposed semantics issue in Flutter 3.29.0 (#2530)
 
 ## 3.14.0
 
