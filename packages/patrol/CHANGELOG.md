@@ -1,11 +1,10 @@
 ## Unreleased
 
-- Remove adding build phases from iOS and macOS setup. (#2510)
-- Remove build phases from the example app. (#2510)
 - Bump patrol plugin iOS and macOS deployment targets to 12.0. (#2514)
 - Bump Gradle version in the example app so it's possible to build them on the
   latest JDK 23 (#2503)
 - Fix `$.native.tap()` not working with `Selector` having `instance` set. (#2501)
+- Fix not disposed semantics issue in Flutter 3.29.0 (#2530)
 
 ## 3.14.0
 
