@@ -37,9 +37,9 @@ Future<void> runAppService(PatrolAppService service) async {
 
   final address = server.address;
 
-  print(
-    'PatrolAppService started, address: ${address.address}, host: ${address.host}, port: ${server.port}',
-  );
+  // print(
+  //   'PatrolAppService started, address: ${address.address}, host: ${address.host}, port: ${server.port}',
+  // );
 }
 
 /// Implements a stateful HTTP service for querying and executing Dart tests.
@@ -90,7 +90,7 @@ class PatrolAppService extends PatrolAppServiceServer {
     required bool passed,
     required String? details,
   }) async {
-    print('PatrolAppService.markDartTestAsCompleted(): $dartFileName');
+    // print('PatrolAppService.markDartTestAsCompleted(): $dartFileName');
     assert(
       _testExecutionRequested.isCompleted,
       'Tried to mark a test as completed, but no tests were requested to run',
@@ -118,7 +118,7 @@ class PatrolAppService extends PatrolAppServiceServer {
   /// The native side requests execution by RPC-ing [runDartTest] and providing
   /// name of a Dart test that it wants to currently execute [dartTest].
   Future<bool> waitForExecutionRequest(String dartTest) async {
-    print('PatrolAppService: registered "$dartTest"');
+    // print('PatrolAppService: registered "$dartTest"');
 
     final requestedDartTest = await testExecutionRequested;
     if (requestedDartTest != dartTest) {
@@ -126,21 +126,21 @@ class PatrolAppService extends PatrolAppServiceServer {
       // means that dartTest was already executed. Return false so that callers
       // can skip the already executed test.
 
-      print(
-        'PatrolAppService: registered test "$dartTest" was not matched by requested test "$requestedDartTest"',
-      );
+      // print(
+      //   'PatrolAppService: registered test "$dartTest" was not matched by requested test "$requestedDartTest"',
+      // );
 
       return false;
     }
 
-    print('PatrolAppService: requested execution of test "$dartTest"');
+    // print('PatrolAppService: requested execution of test "$dartTest"');
 
     return true;
   }
 
   @override
   Future<ListDartTestsResponse> listDartTests() async {
-    print('PatrolAppService.listDartTests() called');
+    // print('PatrolAppService.listDartTests() called');
     return ListDartTestsResponse(group: topLevelDartTestGroup);
   }
 
@@ -149,7 +149,7 @@ class PatrolAppService extends PatrolAppServiceServer {
     assert(_testExecutionCompleted.isCompleted == false);
     // patrolTest() always calls this method.
 
-    print('PatrolAppService.runDartTest(${request.name}) called');
+    // print('PatrolAppService.runDartTest(${request.name}) called');
     _testExecutionRequested.complete(request.name);
 
     final testExecutionResult = await testExecutionCompleted;
