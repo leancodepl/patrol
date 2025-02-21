@@ -16,6 +16,7 @@ import pl.leancode.patrol.contracts.Contracts.OpenAppRequest
 import pl.leancode.patrol.contracts.Contracts.OpenQuickSettingsRequest
 import pl.leancode.patrol.contracts.Contracts.PermissionDialogVisibleRequest
 import pl.leancode.patrol.contracts.Contracts.PermissionDialogVisibleResponse
+import pl.leancode.patrol.contracts.Contracts.SetMockLocationRequest
 import pl.leancode.patrol.contracts.Contracts.SetLocationAccuracyRequest
 import pl.leancode.patrol.contracts.Contracts.SetLocationAccuracyRequestLocationAccuracy
 import pl.leancode.patrol.contracts.Contracts.SwipeRequest
@@ -308,6 +309,10 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
             SetLocationAccuracyRequestLocationAccuracy.coarse -> automation.selectCoarseLocation()
             SetLocationAccuracyRequestLocationAccuracy.fine -> automation.selectFineLocation()
         }
+    }
+
+    override fun setMockLocation(request: SetMockLocationRequest) {
+        automation.setMockLocation(request.latitude, request.longitude)
     }
 
     override fun debug() {

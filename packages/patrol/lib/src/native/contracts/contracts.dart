@@ -1235,3 +1235,25 @@ class SetLocationAccuracyRequest with EquatableMixin {
         locationAccuracy,
       ];
 }
+
+@JsonSerializable()
+class SetMockLocationRequest with EquatableMixin {
+  SetMockLocationRequest({
+    required this.latitude,
+    required this.longitude,
+  });
+
+  factory SetMockLocationRequest.fromJson(Map<String, dynamic> json) =>
+      _$SetMockLocationRequestFromJson(json);
+
+  final double latitude;
+  final double longitude;
+
+  Map<String, dynamic> toJson() => _$SetMockLocationRequestToJson(this);
+
+  @override
+  List<Object?> get props => [
+        latitude,
+        longitude,
+      ];
+}
