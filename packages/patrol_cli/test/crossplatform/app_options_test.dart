@@ -35,7 +35,6 @@ void main() {
             r'.\gradlew.bat',
             ':app:assembleDebugAndroidTest',
             r'-Ptarget=C:\Users\john\app\integration_test\app_test.dart',
-            '-Papp-server-port=1',
             '-Ptest-server-port=2',
           ]),
         );

@@ -4,10 +4,9 @@ import 'package:boolean_selector/boolean_selector.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:meta/meta.dart';
-import 'package:patrol/src/binding.dart';
+import 'package:patrol/patrol.dart';
 import 'package:patrol/src/global_state.dart' as global_state;
 import 'package:patrol/src/native/contracts/contracts.dart';
-import 'package:patrol/src/native/native.dart';
 import 'package:patrol_finders/patrol_finders.dart' as finders;
 import 'package:patrol_log/patrol_log.dart';
 
@@ -20,7 +19,6 @@ import 'package:test_api/src/backend/group.dart';
 import 'package:test_api/src/backend/test.dart';
 
 import 'constants.dart' as constants;
-import 'custom_finders/patrol_integration_tester.dart';
 
 /// Signature for callback to [patrolTest].
 typedef PatrolTesterCallback = Future<void> Function(PatrolIntegrationTester $);
@@ -96,9 +94,17 @@ void patrolTest(
   LiveTestWidgetsFlutterBindingFramePolicy framePolicy =
       LiveTestWidgetsFlutterBindingFramePolicy.fadePointers,
 }) {
+  final testServerPort = getTestServerPort();
+
   final patrolLog = PatrolLogWriter(config: {'printLogs': config.printLogs});
-  final automator = NativeAutomator(config: nativeAutomatorConfig);
-  final automator2 = NativeAutomator2(config: nativeAutomatorConfig);
+  final automator = NativeAutomator(
+    config: nativeAutomatorConfig,
+    port: testServerPort,
+  );
+  final automator2 = NativeAutomator2(
+    config: nativeAutomatorConfig,
+    port: testServerPort,
+  );
   final patrolBinding = PatrolBinding.ensureInitialized(nativeAutomatorConfig)
     ..framePolicy = framePolicy;
 

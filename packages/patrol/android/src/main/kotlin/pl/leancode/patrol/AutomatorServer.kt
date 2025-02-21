@@ -1,6 +1,8 @@
 package pl.leancode.patrol
 
-import pl.leancode.patrol.contracts.Contracts
+import pl.leancode.patrol.contracts.Contracts.MarkAppAppServiceReadyRequest
+import pl.leancode.patrol.contracts.Contracts.TapAtRequest
+import pl.leancode.patrol.contracts.Contracts.OpenUrlRequest
 import pl.leancode.patrol.contracts.Contracts.ConfigureRequest
 import pl.leancode.patrol.contracts.Contracts.DarkModeRequest
 import pl.leancode.patrol.contracts.Contracts.EnterTextRequest
@@ -70,7 +72,7 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
         automation.openQuickSettings()
     }
 
-    override fun openUrl(request: Contracts.OpenUrlRequest) {
+    override fun openUrl(request: OpenUrlRequest) {
         automation.openUrl(request.url)
     }
 
@@ -216,7 +218,7 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
         }
     }
 
-    override fun tapAt(request: Contracts.TapAtRequest) {
+    override fun tapAt(request: TapAtRequest) {
         automation.tapAt(
             x = request.x.toFloat(),
             y = request.y.toFloat()
@@ -328,7 +330,8 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
         }
     }
 
-    override fun markPatrolAppServiceReady() {
+    override fun markPatrolAppServiceReady(request: MarkAppAppServiceReadyRequest) {
+        PatrolServer.appServerPort = request.port?.toInt()
         PatrolServer.appReady.open()
     }
 }

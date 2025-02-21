@@ -65,7 +65,7 @@ class NativeAutomatorConfig {
     ),
     this.port = const String.fromEnvironment(
       'PATROL_TEST_SERVER_PORT',
-      defaultValue: '8081',
+      defaultValue: '0',
     ),
     this.packageName = const String.fromEnvironment('PATROL_APP_PACKAGE_NAME'),
     this.iosInstalledApps =
@@ -174,7 +174,7 @@ class NativeAutomatorConfig {
 // TODO: Rename to NativeAutomatorClient
 class NativeAutomator {
   /// Creates a new [NativeAutomator].
-  NativeAutomator({required NativeAutomatorConfig config})
+  NativeAutomator({required NativeAutomatorConfig config, int? port})
       : assert(
           config.connectionTimeout > config.findTimeout,
           'find timeout is longer than connection timeout',
@@ -194,10 +194,11 @@ class NativeAutomator {
 
     _client = NativeAutomatorClient(
       http.Client(),
-      Uri.http('${_config.host}:${_config.port}'),
+      Uri.http('${_config.host}:${port ?? _config.port}'),
       timeout: _config.connectionTimeout,
     );
-    _config.logger('NativeAutomatorClient created, port: ${_config.port}');
+    _config
+        .logger('NativeAutomatorClient created, port: ${port ?? _config.port}');
   }
 
   final PatrolLogWriter _patrolLog = PatrolLogWriter();
@@ -977,10 +978,12 @@ class NativeAutomator {
   /// Tells the AndroidJUnitRunner that PatrolAppService is ready to answer
   /// requests about the structure of Dart tests.
   @internal
-  Future<void> markPatrolAppServiceReady() async {
+  Future<void> markPatrolAppServiceReady(int port) async {
     await _wrapRequest(
       'markPatrolAppServiceReady',
-      _client.markPatrolAppServiceReady,
+      () => _client.markPatrolAppServiceReady(
+        MarkAppAppServiceReadyRequest(port: port),
+      ),
       enablePatrolLog: false,
     );
   }
