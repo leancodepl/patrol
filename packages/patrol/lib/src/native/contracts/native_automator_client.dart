@@ -340,6 +340,15 @@ class NativeAutomatorClient {
     );
   }
 
+  Future<void> setMockLocation(
+    SetMockLocationRequest request,
+  ) {
+    return _sendRequest(
+      'setMockLocation',
+      request.toJson(),
+    );
+  }
+
   Future<void> markPatrolAppServiceReady() {
     return _sendRequest(
       'markPatrolAppServiceReady',
