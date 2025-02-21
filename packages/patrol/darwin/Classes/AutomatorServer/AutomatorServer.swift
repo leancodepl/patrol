@@ -392,6 +392,12 @@
       }
     }
 
+    func setMockLocation(request: SetMockLocationRequest) throws {
+      return try runCatching {
+        try automator.setMockLocation(latitude: request.latitude, longitude: request.longitude)
+      }
+    }
+
     func debug() throws {
       return try runCatching {
         try automator.debug()
