@@ -7,6 +7,7 @@ import 'package:coverage/coverage.dart' as coverage;
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
 import 'package:glob/glob.dart';
+import 'package:package_config/package_config.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/coverage/device_to_host_port_transformer.dart';
 import 'package:patrol_cli/src/coverage/vm_connection_details.dart';
@@ -41,7 +42,7 @@ class CoverageTool {
 
   Future<void> run({
     required Device device,
-    required String flutterPackageName,
+    required Set<RegExp> packagesRegExps,
     required TargetPlatform platform,
     required Logger logger,
     required Set<Glob> ignoreGlobs,
@@ -92,7 +93,7 @@ class CoverageTool {
             .take(totalTestCount)
             .asyncMap(
               (details) => _collectFromVM(
-                flutterPackageName: flutterPackageName,
+                packagesRegExps: packagesRegExps,
                 connectionDetails: details,
               ),
             )
@@ -141,7 +142,7 @@ class CoverageTool {
   }
 
   Future<Map<String, coverage.HitMap>> _collectFromVM({
-    required String flutterPackageName,
+    required Set<RegExp> packagesRegExps,
     required VMConnectionDetails connectionDetails,
   }) async {
     final result = <String, coverage.HitMap>{};
@@ -156,7 +157,7 @@ class CoverageTool {
     result.merge(
       await _collectAndMarkTestCompleted(
         connectionDetails: connectionDetails,
-        packageName: flutterPackageName,
+        packagesRegExps: packagesRegExps,
         mainIsolateId: event.extensionData!.data['mainIsolateId'] as String,
       ),
     );
@@ -167,15 +168,17 @@ class CoverageTool {
 
   Future<Map<String, coverage.HitMap>> _collectAndMarkTestCompleted({
     required VMConnectionDetails connectionDetails,
-    required String packageName,
+    required Set<RegExp> packagesRegExps,
     required String mainIsolateId,
   }) async {
+    final packages = await _getCoveragePackages(packagesRegExps);
+
     final data = await coverage.collect(
       connectionDetails.uri,
       false,
       false,
       false,
-      {packageName},
+      packages,
     );
 
     final socket =
@@ -208,6 +211,29 @@ class CoverageTool {
     }
 
     await coverageDirectory.childFile('patrol_lcov.info').writeAsString(report);
+  }
+
+  // Inspired by https://github.com/flutter/flutter/blob/master/packages/flutter_tools/lib/src/commands/test.dart
+  Future<Set<String>> _getCoveragePackages(Set<RegExp> packagesRegExps) async {
+    // TODO: Fix path
+    final packageConfig = await loadPackageConfig(
+      _fs.file('${_rootDirectory.path}/.dart_tool/package_config.json'),
+    );
+
+    final packagesToInclude = <String>{};
+
+    try {
+      for (final regExp in packagesRegExps) {
+        packagesToInclude.addAll(
+          packageConfig.packages.map((e) => e.name).where(regExp.hasMatch),
+        );
+      }
+    } on FormatException catch (e) {
+      // TODO: Throw
+      // throwToolExit('Regular expression syntax is invalid. $e');
+    }
+
+    return packagesToInclude;
   }
 }
 
