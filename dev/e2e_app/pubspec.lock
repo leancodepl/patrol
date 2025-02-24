@@ -525,13 +525,13 @@ packages:
     source: hosted
     version: "12.1.0"
   permission_handler_apple:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
       name: permission_handler_apple
-      sha256: f84a188e79a35c687c132a0a0556c254747a08561e99ab933f12f6ca71ef3c98
+      sha256: e6f6d73b12438ef13e648c4ae56bd106ec60d17e90a59c4545db6781229082a0
       url: "https://pub.dev"
     source: hosted
-    version: "9.4.6"
+    version: "9.4.5"
   permission_handler_html:
     dependency: transitive
     description:

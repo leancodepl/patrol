@@ -121,7 +121,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [macos-latest]
-        flutter-version: ['3.27.x']
+        flutter-version: ['3.24.x']
         flutter-channel: ['stable']
 
     defaults:
