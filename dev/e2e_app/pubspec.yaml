@@ -15,7 +15,7 @@ dependencies:
   flutter_local_notifications: ^17.2.3
   flutter_timezone: ^4.1.0
   geolocator: ^13.0.0
-  permission_handler: ^10.4.5
+  permission_handler: ^11.4.0
   timezone: ^0.9.2
   webview_flutter: ^4.4.2
 
