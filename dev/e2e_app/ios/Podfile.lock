@@ -13,7 +13,7 @@ PODS:
     - CocoaAsyncSocket (~> 7.6)
     - Flutter
     - FlutterMacOS
-  - permission_handler_apple (9.3.0):
+  - permission_handler_apple (9.1.1):
     - Flutter
   - webview_flutter_wkwebview (0.0.1):
     - Flutter
@@ -56,10 +56,10 @@ SPEC CHECKSUMS:
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   flutter_local_notifications: 4cde75091f6327eb8517fa068a0a5950212d2086
-  flutter_timezone: ac3da59ac941ff1c98a2e1f0293420e020120282
+  flutter_timezone: ffb07bdad3c6276af8dada0f11978d8a1f8a20bb
   geolocator_apple: 9bcea1918ff7f0062d98345d238ae12718acfbc1
-  patrol: cf2cd48c7f3e5171610111994f7b466cd76d1f57
-  permission_handler_apple: 9878588469a2b0d0fc1e048d9f43605f92e6cec2
+  patrol: 0564cee315ff6c86fb802b3647db05cc2d3d0624
+  permission_handler_apple: e76247795d700c14ea09e3a2d8855d41ee80a2e6
   webview_flutter_wkwebview: 0982481e3d9c78fd5c6f62a002fcd24fc791f1e4
 
 PODFILE CHECKSUM: 5424a237bba16bfe751b9ef19da1cf80e4941454

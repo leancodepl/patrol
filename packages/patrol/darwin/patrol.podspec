@@ -16,7 +16,7 @@ Runs tests that use flutter_test and patrol APIs as native macOS / iOS integrati
   s.source_files = 'Classes/**/*'
   s.ios.dependency 'Flutter'
   s.osx.dependency 'FlutterMacOS'
-  s.ios.deployment_target = '13.0'
+  s.ios.deployment_target = '12.0'
   s.osx.deployment_target = '10.14'
   s.weak_framework = 'XCTest'
   s.ios.framework  = 'UIKit'
