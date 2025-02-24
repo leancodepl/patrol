@@ -24,11 +24,13 @@ class CoverageTool {
     required Platform platform,
     required Adb adb,
     required DisposeScope parentDisposeScope,
+    required Logger logger,
   })  : _fs = fs,
         _rootDirectory = rootDirectory,
         _processManager = processManager,
         _platform = platform,
         _adb = adb,
+        _logger = logger,
         _disposeScope = DisposeScope() {
     _disposeScope.disposedBy(parentDisposeScope);
   }
@@ -38,6 +40,7 @@ class CoverageTool {
   final ProcessManager _processManager;
   final Platform _platform;
   final Adb _adb;
+  final Logger _logger;
   final DisposeScope _disposeScope;
 
   Future<void> run({
@@ -213,25 +216,22 @@ class CoverageTool {
     await coverageDirectory.childFile('patrol_lcov.info').writeAsString(report);
   }
 
-  // Inspired by https://github.com/flutter/flutter/blob/master/packages/flutter_tools/lib/src/commands/test.dart
   Future<Set<String>> _getCoveragePackages(Set<RegExp> packagesRegExps) async {
-    // TODO: Fix path
     final packageConfig = await loadPackageConfig(
-      _fs.file('${_rootDirectory.path}/.dart_tool/package_config.json'),
+      _rootDirectory
+          .childDirectory('.dart_tool')
+          .childFile('package_config.json'),
     );
 
     final packagesToInclude = <String>{};
 
-    try {
-      for (final regExp in packagesRegExps) {
-        packagesToInclude.addAll(
-          packageConfig.packages.map((e) => e.name).where(regExp.hasMatch),
-        );
-      }
-    } on FormatException catch (e) {
-      // TODO: Throw
-      // throwToolExit('Regular expression syntax is invalid. $e');
+    for (final regExp in packagesRegExps) {
+      packagesToInclude.addAll(
+        packageConfig.packages.map((e) => e.name).where(regExp.hasMatch),
+      );
     }
+
+    _logger.detail('Packages included in coverage: $packagesToInclude');
 
     return packagesToInclude;
   }
