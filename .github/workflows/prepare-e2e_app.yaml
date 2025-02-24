@@ -120,7 +120,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-15]
+        os: [macos-latest]
         flutter-version: ['3.24.x']
         flutter-channel: ['stable']
 
