@@ -223,13 +223,10 @@ class CoverageTool {
           .childFile('package_config.json'),
     );
 
-    final packagesToInclude = <String>{};
-
-    for (final regExp in packagesRegExps) {
-      packagesToInclude.addAll(
-        packageConfig.packages.map((e) => e.name).where(regExp.hasMatch),
-      );
-    }
+    final packagesToInclude = {
+      for (final regExp in packagesRegExps)
+        ...packageConfig.packages.map((e) => e.name).where(regExp.hasMatch),
+    };
 
     _logger.detail('Packages included in coverage: $packagesToInclude');
 
