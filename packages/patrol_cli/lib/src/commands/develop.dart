@@ -216,6 +216,7 @@ class DevelopCommand extends PatrolCommand {
       packageName: packageName,
       appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
+      uninstall: uninstall,
     );
 
     final iosOpts = IOSAppOptions(

@@ -53,12 +53,14 @@ class AndroidAppOptions {
     this.packageName,
     required this.appServerPort,
     required this.testServerPort,
+    required this.uninstall,
   });
 
   final FlutterAppOptions flutter;
   final String? packageName;
   final int appServerPort;
   final int testServerPort;
+  final bool uninstall;
 
   String get description => 'apk with entrypoint ${basename(flutter.target)}';
 
@@ -83,6 +85,7 @@ class AndroidAppOptions {
     return _toGradleInvocation(
       isWindows: isWindows,
       task: 'connected$_effectiveFlavor${_buildMode}AndroidTest',
+      noUninstallAfterTests: !uninstall,
     );
   }
 
@@ -114,6 +117,7 @@ class AndroidAppOptions {
   List<String> _toGradleInvocation({
     required bool isWindows,
     required String task,
+    bool noUninstallAfterTests = false,
   }) {
     final List<String> cmd;
     if (isWindows) {
@@ -150,6 +154,11 @@ class AndroidAppOptions {
       }
 
       cmd.add('-Pdart-defines=$dartDefinesString');
+    }
+
+    // Add keep apk installed after running tests
+    if (noUninstallAfterTests) {
+      cmd.add('-Pandroid.injected.androidTest.leaveApksInstalledAfterRun=true');
     }
 
     // Add app and test server ports

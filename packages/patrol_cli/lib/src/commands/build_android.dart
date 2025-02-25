@@ -154,6 +154,7 @@ class BuildAndroidCommand extends PatrolCommand {
       packageName: packageName,
       appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
+      uninstall: false,
     );
 
     try {
