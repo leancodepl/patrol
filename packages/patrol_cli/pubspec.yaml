@@ -29,6 +29,7 @@ dependencies:
   http: ^1.1.0
   mason_logger: ^0.2.10
   meta: ^1.10.0
+  package_config: ^2.1.1
   path: ^1.8.3
   patrol_log: ^0.3.0
   platform: ^3.1.3
