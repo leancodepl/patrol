@@ -109,7 +109,6 @@ class CoverageTool {
         )
           ..onDone(coverageCollectionCompleter.complete)
           ..disposedBy(scope);
-
         await coverageCollectionCompleter.future;
 
         logger.info('All coverage gathered, saving');
@@ -151,29 +150,27 @@ class CoverageTool {
     required VMConnectionDetails connectionDetails,
   }) async {
     final result = <String, coverage.HitMap>{};
-    final eventCompleter = Completer<Event?>();
-
-    void cancel() {
-      if (!eventCompleter.isCompleted) {
-        // For skipped tests
-        eventCompleter.complete(null);
-      }
-    }
-
+    final coverageReadyForCollection = Completer<Event?>();
     final serviceClient = await vmServiceConnectUri(
       connectionDetails.webSocketUri.toString(),
     );
-    unawaited(serviceClient.onDone.then((_) => cancel()));
     _disposeScope.addDispose(serviceClient.dispose);
 
     await serviceClient.streamListen('Extension');
     unawaited(
+      serviceClient.onDone.then((_) {
+        if (!coverageReadyForCollection.isCompleted) {
+          coverageReadyForCollection.complete(null);
+        }
+      }),
+    );
+    unawaited(
       serviceClient.onExtensionEvent
           .where((event) => event.extensionKind == 'waitForCoverageCollection')
           .first
-          .then(eventCompleter.complete),
+          .then(coverageReadyForCollection.complete),
     );
-    final event = await eventCompleter.future;
+    final event = await coverageReadyForCollection.future;
     if (event == null) {
       // For skipped tests
       return {};
