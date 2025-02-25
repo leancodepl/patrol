@@ -156,7 +156,19 @@ class AndroidAppOptions {
       cmd.add('-Pdart-defines=$dartDefinesString');
     }
 
-    // Add keep apk installed after running tests
+    /// In Android Gradle Plugin 8.1.0 default behaviour has been changed
+    /// and the application is uninstalled after integration tests.
+    /// An issue has been reported:
+    /// AGP 8.1.0 uninstalls app after running instrumented tests - 7.4.2 does not:
+    /// https://issuetracker.google.com/issues/295039976
+    /// New solution to change this behaviour has been introduced in AGP 8.2.0:
+    /// https://developer.android.com/build/releases/past-releases/agp-8-2-0-release-notes
+    ///
+    /// To keep the app installed after the test finishes on Android
+    /// with AGP 8.2 or higher, add in `gradle.properties`:
+    /// ```
+    /// android.injected.androidTest.leaveApksInstalledAfterRun=true
+    /// ```
     if (noUninstallAfterTests) {
       cmd.add('-Pandroid.injected.androidTest.leaveApksInstalledAfterRun=true');
     }

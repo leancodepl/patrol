@@ -183,9 +183,7 @@ abstract class PatrolCommand extends Command<int> {
   void usesUninstallOption() {
     argParser.addFlag(
       'uninstall',
-      help: 'Uninstall the app after the test finishes.'
-          '[WARNING] This flag is valid only for iOS and DEPRECATED for Android since AGP 8.1.'
-          'Read more at https://patrol.leancode.co/cli-commands/test#uninstall',
+      help: 'Uninstall the app before and after the test finishes.',
       defaultsTo: true,
     );
   }
