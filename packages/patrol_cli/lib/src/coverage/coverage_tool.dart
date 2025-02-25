@@ -14,6 +14,7 @@ import 'package:patrol_cli/src/coverage/vm_connection_details.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:platform/platform.dart';
 import 'package:process/process.dart';
+import 'package:vm_service/vm_service.dart';
 import 'package:vm_service/vm_service_io.dart';
 
 class CoverageTool {
@@ -108,6 +109,7 @@ class CoverageTool {
         )
           ..onDone(coverageCollectionCompleter.complete)
           ..disposedBy(scope);
+
         await coverageCollectionCompleter.future;
 
         logger.info('All coverage gathered, saving');
@@ -149,14 +151,55 @@ class CoverageTool {
     required VMConnectionDetails connectionDetails,
   }) async {
     final result = <String, coverage.HitMap>{};
-    final serviceClient = await vmServiceConnectUri(
+    final eventCompleter = Completer<Event?>();
+
+    void cancel() {
+      if (!eventCompleter.isCompleted) {
+        // For skipped tests
+        eventCompleter.complete(null);
+      }
+    }
+
+    VmService vmServiceFactory({
+      required Stream<dynamic> inStream,
+      required void Function(String message) writeMessage,
+      Log? log,
+      DisposeHandler? disposeHandler,
+      Future<dynamic>? streamClosed,
+      String? wsUri,
+    }) {
+      return VmService(
+        inStream,
+        writeMessage,
+        log: log,
+        streamClosed: streamClosed,
+        wsUri: wsUri,
+        disposeHandler: () async {
+          cancel();
+          return disposeHandler;
+        },
+      );
+    }
+
+    final serviceClient = await vmServiceConnectUriWithFactory(
       connectionDetails.webSocketUri.toString(),
+      vmServiceFactory: vmServiceFactory,
     );
     _disposeScope.addDispose(serviceClient.dispose);
+
     await serviceClient.streamListen('Extension');
-    final event = await serviceClient.onExtensionEvent
-        .where((event) => event.extensionKind == 'waitForCoverageCollection')
-        .first;
+    unawaited(
+      serviceClient.onExtensionEvent
+          .where((event) => event.extensionKind == 'waitForCoverageCollection')
+          .first
+          .then(eventCompleter.complete),
+    );
+    final event = await eventCompleter.future;
+    if (event == null) {
+      // For skipped tests
+      return {};
+    }
+
     result.merge(
       await _collectAndMarkTestCompleted(
         connectionDetails: connectionDetails,
