@@ -130,25 +130,6 @@ patrol test --coverage --coverage-ignore="**/*.g.dart"
 
 excludes all files ending with `.g.dart`.
 
-### Uninstall
-
-Patrol, by default, uninstalls the app after the test finishes. This behavior can be disabled using flag: `--no-uninstall`.
-
-<Warning>
-        Flag `--no-uninstall` doesn't work on Android since AGP 8.1.
-</Warning>
-
-This flag works only for iOS and is DEPRECATED for Android since AGP 8.1. 
-In Android Gradle Plugin 8.1.0 behaviour has been changed and the application is uninstalled after integration tests. 
-An issue has been reported: [AGP 8.1.0 uninstalls app after running instrumented tests - 7.4.2 does not](https://issuetracker.google.com/issues/295039976) and the solution has been introduced in AGP 8.2.0.
-[AGP 8.2.0 release notes (search: Issue #295039976)](https://developer.android.com/build/releases/past-releases/agp-8-2-0-release-notes)
-
-To keep the app installed after the test finishes on Android with AGP 8.2 or higher, add in `gradle.properties`:
-
-```
-android.injected.androidTest.leaveApksInstalledAfterRun=true
-```
-
 ### Under the hood
 
 `patrol test` basically calls `patrol build` and then runs the built app
