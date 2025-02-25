@@ -160,31 +160,10 @@ class CoverageTool {
       }
     }
 
-    VmService vmServiceFactory({
-      required Stream<dynamic> inStream,
-      required void Function(String message) writeMessage,
-      Log? log,
-      DisposeHandler? disposeHandler,
-      Future<dynamic>? streamClosed,
-      String? wsUri,
-    }) {
-      return VmService(
-        inStream,
-        writeMessage,
-        log: log,
-        streamClosed: streamClosed,
-        wsUri: wsUri,
-        disposeHandler: () async {
-          cancel();
-          return disposeHandler;
-        },
-      );
-    }
-
-    final serviceClient = await vmServiceConnectUriWithFactory(
+    final serviceClient = await vmServiceConnectUri(
       connectionDetails.webSocketUri.toString(),
-      vmServiceFactory: vmServiceFactory,
     );
+    unawaited(serviceClient.onDone.then((_) => cancel()));
     _disposeScope.addDispose(serviceClient.dispose);
 
     await serviceClient.streamListen('Extension');
