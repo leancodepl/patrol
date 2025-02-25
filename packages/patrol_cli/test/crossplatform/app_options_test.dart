@@ -25,6 +25,7 @@ void main() {
           flutter: flutterOptions,
           appServerPort: 1,
           testServerPort: 2,
+          uninstall: false,
         );
 
         final invocation =
@@ -54,6 +55,7 @@ void main() {
           flutter: flutterOpts,
           appServerPort: 1,
           testServerPort: 2,
+          uninstall: false,
         );
 
         final invocation =
@@ -91,6 +93,7 @@ void main() {
           flutter: flutterOpts,
           appServerPort: 1,
           testServerPort: 2,
+          uninstall: false,
         );
 
         final invocation =
@@ -121,6 +124,7 @@ void main() {
           flutter: flutterOpts,
           appServerPort: 1,
           testServerPort: 2,
+          uninstall: false,
         );
 
         final invocation =
@@ -132,6 +136,38 @@ void main() {
             ':app:assembleDevDebugAndroidTest',
             '-Ptarget=/Users/john/app/integration_test/app_test.dart',
             '-Pdart-defines=RU1BSUw9dXNlckBleGFtcGxlLmNvbQ==,UEFTU1dPUkQ9bnk0bmNhdA==,Zm9vPWJhcg==,RkxVVFRFUl9BUFBfRkxBVk9SPWRldg==',
+            '-Papp-server-port=1',
+            '-Ptest-server-port=2',
+          ]),
+        );
+      });
+
+      test('on macOS with no uninstall', () {
+        const flutterOpts = FlutterAppOptions(
+          command: flutterCommand,
+          target: '/Users/john/app/integration_test/app_test.dart',
+          buildMode: BuildMode.debug,
+          flavor: 'dev',
+          dartDefines: dartDefines,
+          dartDefineFromFilePaths: [],
+        );
+        options = const AndroidAppOptions(
+          flutter: flutterOpts,
+          appServerPort: 1,
+          testServerPort: 2,
+          uninstall: false,
+        );
+
+        final invocation =
+            options.toGradleConnectedTestInvocation(isWindows: false);
+        expect(
+          invocation,
+          equals([
+            './gradlew',
+            ':app:connectedDevDebugAndroidTest',
+            '-Ptarget=/Users/john/app/integration_test/app_test.dart',
+            '-Pdart-defines=RU1BSUw9dXNlckBleGFtcGxlLmNvbQ==,UEFTU1dPUkQ9bnk0bmNhdA==,Zm9vPWJhcg==,RkxVVFRFUl9BUFBfRkxBVk9SPWRldg==',
+            '-Pandroid.injected.androidTest.leaveApksInstalledAfterRun=true',
             '-Papp-server-port=1',
             '-Ptest-server-port=2',
           ]),
