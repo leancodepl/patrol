@@ -2,7 +2,7 @@
 
 - Gracefully handle when analytics fail to send. (#2460)
 - Handle uninstallation of the app after tests finish when using AGP 8.2+. (#2535)
-- Add `--coverage-packages` flag to `patrol test` which specifies which packages should be included 
+- Add `--coverage-packages` flag to `patrol test` that specifies which packages should be included 
 in the coverage report. (#2536)
 
 ## 3.5.0
