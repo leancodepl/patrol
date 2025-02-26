@@ -77,6 +77,7 @@ class AndroidAppOptions {
     return _toGradleInvocation(
       isWindows: isWindows,
       task: 'assemble$_effectiveFlavor${_buildMode}AndroidTest',
+      noUninstallAfterTests: !uninstall,
     );
   }
 

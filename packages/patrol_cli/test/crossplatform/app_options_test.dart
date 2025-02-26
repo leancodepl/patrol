@@ -36,6 +36,7 @@ void main() {
             r'.\gradlew.bat',
             ':app:assembleDebugAndroidTest',
             r'-Ptarget=C:\Users\john\app\integration_test\app_test.dart',
+            '-Pandroid.injected.androidTest.leaveApksInstalledAfterRun=true',
             '-Papp-server-port=1',
             '-Ptest-server-port=2',
           ]),
@@ -66,6 +67,7 @@ void main() {
             './gradlew',
             ':app:assembleReleaseAndroidTest',
             '-Ptarget=/Users/john/app/integration_test/app_test.dart',
+            '-Pandroid.injected.androidTest.leaveApksInstalledAfterRun=true',
             '-Papp-server-port=1',
             '-Ptest-server-port=2',
           ]),
@@ -93,7 +95,7 @@ void main() {
           flutter: flutterOpts,
           appServerPort: 1,
           testServerPort: 2,
-          uninstall: false,
+          uninstall: true,
         );
 
         final invocation =
@@ -124,7 +126,7 @@ void main() {
           flutter: flutterOpts,
           appServerPort: 1,
           testServerPort: 2,
-          uninstall: false,
+          uninstall: true,
         );
 
         final invocation =
