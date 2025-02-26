@@ -1,6 +1,7 @@
-## Unreleased
+## 3.5.1
 
-- Gracefully handle when analytics fail to send (#2460)
+- Gracefully handle when analytics fail to send. (#2460)
+- Handle uninstallation of the app after tests finish when using AGP 8.2+. (#2535)
 
 ## 3.5.0
 

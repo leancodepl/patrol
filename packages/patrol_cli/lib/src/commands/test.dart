@@ -226,6 +226,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       packageName: packageName,
       appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
+      uninstall: uninstall,
     );
 
     final iosOpts = IOSAppOptions(
