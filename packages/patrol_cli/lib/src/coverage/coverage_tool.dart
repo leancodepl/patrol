@@ -172,7 +172,9 @@ class CoverageTool {
     );
     final event = await coverageReadyForCollection.future;
     if (event == null) {
-      // For skipped tests
+      // If the event is null, then the VM service terminated without sending
+      // the waitForCoverageCollection event. This means that the test was
+      // skipped, so we don't need to collect coverage.
       return {};
     }
 
