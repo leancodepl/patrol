@@ -170,6 +170,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
     final uninstall = boolArg('uninstall');
     final coverageEnabled = boolArg('coverage');
     final ignoreGlobs = stringsArg('coverage-ignore').map(Glob.new).toSet();
+    final coveragePackagesRegExps = stringsArg('coverage-package');
 
     final customDartDefines = {
       ..._dartDefinesReader.fromFile(),
@@ -255,10 +256,13 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       unawaited(
         _coverageTool.run(
           device: device,
-          flutterPackageName: config.flutterPackageName,
           platform: device.targetPlatform,
           logger: _logger,
           ignoreGlobs: ignoreGlobs,
+          packagesRegExps: switch (coveragePackagesRegExps.length) {
+            0 => {RegExp(config.flutterPackageName)},
+            _ => coveragePackagesRegExps.map(RegExp.new).toSet(),
+          },
         ),
       );
     }
@@ -418,6 +422,14 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       ..addMultiOption(
         'coverage-ignore',
         help: 'Exclude files from coverage using glob patterns.',
+      )
+      ..addMultiOption(
+        'coverage-package',
+        help: 'A regular expression matching packages names '
+            'to include in the coverage report (if coverage is enabled). '
+            'If unset, matches the current package name.',
+        valueHelp: 'package-name-regexp',
+        splitCommas: false,
       );
   }
 }
