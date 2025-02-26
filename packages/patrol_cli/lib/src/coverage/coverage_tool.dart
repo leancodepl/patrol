@@ -14,6 +14,7 @@ import 'package:patrol_cli/src/coverage/vm_connection_details.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:platform/platform.dart';
 import 'package:process/process.dart';
+import 'package:vm_service/vm_service.dart';
 import 'package:vm_service/vm_service_io.dart';
 
 class CoverageTool {
@@ -149,14 +150,34 @@ class CoverageTool {
     required VMConnectionDetails connectionDetails,
   }) async {
     final result = <String, coverage.HitMap>{};
+    final coverageReadyForCollection = Completer<Event?>();
     final serviceClient = await vmServiceConnectUri(
       connectionDetails.webSocketUri.toString(),
     );
     _disposeScope.addDispose(serviceClient.dispose);
+
     await serviceClient.streamListen('Extension');
-    final event = await serviceClient.onExtensionEvent
-        .where((event) => event.extensionKind == 'waitForCoverageCollection')
-        .first;
+    unawaited(
+      serviceClient.onDone.then((_) {
+        if (!coverageReadyForCollection.isCompleted) {
+          coverageReadyForCollection.complete(null);
+        }
+      }),
+    );
+    unawaited(
+      serviceClient.onExtensionEvent
+          .where((event) => event.extensionKind == 'waitForCoverageCollection')
+          .first
+          .then(coverageReadyForCollection.complete),
+    );
+    final event = await coverageReadyForCollection.future;
+    if (event == null) {
+      // If the event is null, then the VM service terminated without sending
+      // the waitForCoverageCollection event. This means that the test was
+      // skipped, so we don't need to collect coverage.
+      return {};
+    }
+
     result.merge(
       await _collectAndMarkTestCompleted(
         connectionDetails: connectionDetails,
