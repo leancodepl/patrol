@@ -868,7 +868,7 @@
         for i in 0...150 {
           let element = self.springboard.descendants(matching: .any).element(boundBy: i)
           if !element.exists {
-    
+
             break
           }
 
@@ -890,7 +890,8 @@
     func setMockLocation(latitude: Double, longitude: Double) throws {
       if #available(iOS 16.4, *) {
         DispatchQueue.main.async {
-          XCUIDevice.shared.location = XCUILocation(location: CLLocation(latitude: latitude, longitude: longitude))
+          XCUIDevice.shared.location = XCUILocation(
+            location: CLLocation(latitude: latitude, longitude: longitude))
         }
       }
     }
