@@ -1,3 +1,7 @@
+## 3.15.0
+
+- Add `setMockLocation` method. (#2547)
+
 ## 3.14.1
 
 - Bump patrol plugin iOS and macOS deployment targets to 12.0. (#2514)
