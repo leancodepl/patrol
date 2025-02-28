@@ -975,13 +975,18 @@ class NativeAutomator {
   }
 
   /// Set mock location
-  Future<void> setMockLocation(double latitude, double longitude) async {
+  Future<void> setMockLocation(
+    double latitude,
+    double longitude, {
+    String? packageName,
+  }) async {
     await _wrapRequest(
-      'setMockLocation',
+      'setMockLocation latitude: $latitude, longitude: $longitude',
       () => _client.setMockLocation(
         SetMockLocationRequest(
           latitude: latitude,
           longitude: longitude,
+          packageName: packageName ?? _config.packageName,
         ),
       ),
     );

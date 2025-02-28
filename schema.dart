@@ -301,6 +301,7 @@ class SetLocationAccuracyRequest {
 class SetMockLocationRequest {
   late double latitude;
   late double longitude;
+  late String packageName;
 }
 
 abstract class NativeAutomator<IOSServer, AndroidServer, DartClient> {
