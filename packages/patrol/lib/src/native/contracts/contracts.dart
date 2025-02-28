@@ -1241,6 +1241,7 @@ class SetMockLocationRequest with EquatableMixin {
   SetMockLocationRequest({
     required this.latitude,
     required this.longitude,
+    required this.packageName,
   });
 
   factory SetMockLocationRequest.fromJson(Map<String, dynamic> json) =>
@@ -1248,6 +1249,7 @@ class SetMockLocationRequest with EquatableMixin {
 
   final double latitude;
   final double longitude;
+  final String packageName;
 
   Map<String, dynamic> toJson() => _$SetMockLocationRequestToJson(this);
 
@@ -1255,5 +1257,6 @@ class SetMockLocationRequest with EquatableMixin {
   List<Object?> get props => [
         latitude,
         longitude,
+        packageName,
       ];
 }

@@ -663,7 +663,8 @@ class Contracts {
 
   data class SetMockLocationRequest (
     val latitude: Double,
-    val longitude: Double
+    val longitude: Double,
+    val packageName: String
   )
 
 }
