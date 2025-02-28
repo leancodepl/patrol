@@ -3,8 +3,11 @@ package pl.leancode.patrol
 import android.app.Instrumentation
 import android.app.UiAutomation
 import android.content.Context
+import android.content.Context.LOCATION_SERVICE
 import android.content.Intent
+import android.location.Location
 import android.location.LocationManager
+import android.location.provider.ProviderProperties
 import android.net.Uri
 import android.os.Build
 import android.os.SystemClock
@@ -699,6 +702,34 @@ class Automator private constructor() {
             ?: throw UiObjectNotFoundException("button to select coarse location")
 
         uiObject.click()
+    }
+
+    fun setMockLocation(latitude: Double, longitude: Double, packageName: String) {
+        executeShellCommand("appops set $packageName android:mock_location allow")
+        val locationManager = targetContext.getSystemService(LOCATION_SERVICE) as LocationManager
+
+        val mockLocationProvider = LocationManager.GPS_PROVIDER
+        locationManager.addTestProvider(mockLocationProvider,
+            false,
+            false,
+            false,
+            false,
+            true,
+            true,
+            true,
+            ProviderProperties.POWER_USAGE_LOW,
+            ProviderProperties.ACCURACY_FINE
+        )
+        
+        locationManager.setTestProviderEnabled(mockLocationProvider, true)
+        val mockLocation = Location(mockLocationProvider)
+        mockLocation.latitude = latitude
+        mockLocation.longitude = longitude
+        mockLocation.altitude = 0.0
+        mockLocation.accuracy = 1.0f
+        mockLocation.time = System.currentTimeMillis()
+        mockLocation.elapsedRealtimeNanos = System.nanoTime()
+        locationManager.setTestProviderLocation(mockLocationProvider, mockLocation)
     }
 
     /**

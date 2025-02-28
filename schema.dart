@@ -298,6 +298,12 @@ class SetLocationAccuracyRequest {
   late SetLocationAccuracyRequestLocationAccuracy locationAccuracy;
 }
 
+class SetMockLocationRequest {
+  late double latitude;
+  late double longitude;
+  late String packageName;
+}
+
 abstract class NativeAutomator<IOSServer, AndroidServer, DartClient> {
   void initialize();
   void configure(ConfigureRequest request);
@@ -354,6 +360,7 @@ abstract class NativeAutomator<IOSServer, AndroidServer, DartClient> {
 
   // other
   void debug();
+  void setMockLocation(SetMockLocationRequest request);
 
   // TODO(bartekpacia): Move this RPC into a new PatrolNativeTestService service because it doesn't fit here
   void markPatrolAppServiceReady();
