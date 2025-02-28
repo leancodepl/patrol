@@ -797,6 +797,7 @@ SetMockLocationRequest _$SetMockLocationRequestFromJson(
     SetMockLocationRequest(
       latitude: (json['latitude'] as num).toDouble(),
       longitude: (json['longitude'] as num).toDouble(),
+      packageName: json['packageName'] as String,
     );
 
 Map<String, dynamic> _$SetMockLocationRequestToJson(
@@ -804,4 +805,5 @@ Map<String, dynamic> _$SetMockLocationRequestToJson(
     <String, dynamic>{
       'latitude': instance.latitude,
       'longitude': instance.longitude,
+      'packageName': instance.packageName,
     };
