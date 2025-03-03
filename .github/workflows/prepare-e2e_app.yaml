@@ -108,6 +108,8 @@ jobs:
         run: ./gradlew :patrol:ktlintFormat
 
       - name: Build app with Gradle
+        env:
+          MAPS_API_KEY: ${{ secrets.MAPS_API_KEY }}
         run: ./gradlew :app:assembleDebug
 
       - name: Build app with Flutter tool
