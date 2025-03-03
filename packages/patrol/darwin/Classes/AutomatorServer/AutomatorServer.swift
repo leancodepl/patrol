@@ -418,7 +418,7 @@
     }
 
     func markPatrolAppServiceReady(request: MarkAppAppServiceReadyRequest) throws {
-        onAppReady(true, request.port!)
+      onAppReady(true, request.port!)
     }
   }
 

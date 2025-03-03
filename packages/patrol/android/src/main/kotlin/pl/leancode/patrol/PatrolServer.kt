@@ -1,7 +1,6 @@
 package pl.leancode.patrol
 
 import android.os.ConditionVariable
-import io.ktor.server.engine.ApplicationEngineEnvironment
 import org.http4k.core.ContentType
 import org.http4k.filter.ServerFilters
 import org.http4k.server.Http4kServer
@@ -45,7 +44,6 @@ class PatrolServer {
     }
 
     private fun getFreePort() = ServerSocket(0).use { it.localPort }
-
 }
 
 typealias DartTestResults = Map<String, String>

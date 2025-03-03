@@ -1,6 +1,5 @@
 import Foundation
 
-
 @objc public class PatrolServer: NSObject {
   private static let envPortKey = "PATROL_TEST_SERVER_PORT"
 
@@ -56,8 +55,8 @@ import Foundation
 
       let provider = AutomatorServer(automator: automator) { appReady, appServerPort in
         Logger.shared.i("App reported that it is ready on port \(appServerPort)")
-          self.appReady = appReady
-          self.appServerPort = appServerPort
+        self.appReady = appReady
+        self.appServerPort = appServerPort
       }
 
       provider.setupRoutes(server: server)

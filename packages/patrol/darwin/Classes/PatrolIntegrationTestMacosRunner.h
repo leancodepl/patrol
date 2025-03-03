@@ -32,8 +32,8 @@
     NSLog(@"Run the app for the first time");                                                               \
                                                                                                             \
     /* Run the app for the first time to gather Dart tests */                                               \
-    XCUIApplication* app = [[XCUIApplication alloc] init];                                                  \
-    app.launchArguments = @[@"port", [@(server.port) stringValue]];                                         \
+    XCUIApplication *app = [[XCUIApplication alloc] init];                                                  \
+    app.launchArguments = @[ @"port", [@(server.port) stringValue] ];                                       \
     [app launch];                                                                                           \
                                                                                                             \
     NSLog(@"Waiting until the app reports that it is ready");                                               \
@@ -84,10 +84,10 @@
       BOOL skip = [dartTest[@"skip"] boolValue];                                                            \
                                                                                                             \
       IMP implementation = imp_implementationWithBlock(^(id _self) {                                        \
-        XCUIApplication* app = [[XCUIApplication alloc] init];                                              \
-        NSString *portValue = @[@"port", [@(server.port) stringValue]];                                     \
+        XCUIApplication *app = [[XCUIApplication alloc] init];                                              \
+        NSString *portValue = @[ @"port", [@(server.port) stringValue] ];                                   \
         NSLog(@"Port value: %@", portValue);                                                                \
-        app.launchArguments = @[@"port", [@(server.port) stringValue]];                                     \
+        app.launchArguments = @[ @"port", [@(server.port) stringValue] ];                                   \
         [app launch];                                                                                       \
         if (skip) {                                                                                         \
           XCTSkip(@"Skip that test \"%@\"", dartTestName);                                                  \
