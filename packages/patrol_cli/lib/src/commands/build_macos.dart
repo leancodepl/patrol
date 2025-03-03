@@ -150,7 +150,6 @@ class BuildMacOSCommand extends PatrolCommand {
       flutter: flutterOpts,
       scheme: flutterOpts.buildMode.createScheme(flavor),
       configuration: flutterOpts.buildMode.createConfiguration(flavor),
-      appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
     );
 
