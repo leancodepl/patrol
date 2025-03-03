@@ -224,6 +224,7 @@ jobs:
 
       - name: Check if files are regenerated from schema
         if: success() || failure()
+        working-directory: .
         run: |
           git add .
           ./gen_from_schema
