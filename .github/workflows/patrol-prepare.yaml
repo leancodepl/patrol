@@ -230,4 +230,4 @@ jobs:
           ./gen_from_schema
           echo "test" >> docs.json
           git update-index --refresh
-          git diff --exit-code
+          git diff --exit-code || (echo "Files are not regenerated from schema. Please run ./gen_from_schema locally and push changes" && exit 1)
