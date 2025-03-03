@@ -228,5 +228,5 @@ jobs:
         run: |
           git add .
           ./gen_from_schema
-          git update-index --refresh
+          echo "test" >> docs.json
           git diff --exit-code || (echo "Files are not regenerated from schema. Please run ./gen_from_schema locally and push changes" && exit 1)
