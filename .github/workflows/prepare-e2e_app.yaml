@@ -113,6 +113,8 @@ jobs:
         run: ./gradlew :app:assembleDebug
 
       - name: Build app with Flutter tool
+        env:
+          MAPS_API_KEY: ${{ secrets.MAPS_API_KEY }}
         run: flutter build apk --debug
 
   prepare-ios:
