@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-set -euo pipefail
-
-git diff --quiet master -- schema.dart || {
-    echo "schema.dart has changed. Please run gen_from_schema to update the generated files."
-    exit 1
-}
