@@ -11,7 +11,7 @@ int getTestServerPort() {
   } else {
     try {
       return _getIosServerPort();
-    } catch (e) {
+    } catch (err) {
       return 0;
     }
   }
@@ -22,10 +22,9 @@ int _getIosServerPort() {
 
   // Without this, the analyzer complains about the type of the function.
   // ignore: omit_local_variable_types
-  final int Function() getGlobalPort =
-      nativeLibrary
-          .lookup<NativeFunction<Int32 Function()>>('getGlobalPort')
-          .asFunction();
+  final int Function() getGlobalPort = nativeLibrary
+      .lookup<NativeFunction<Int32 Function()>>('getGlobalPort')
+      .asFunction();
 
   return getGlobalPort();
 }
