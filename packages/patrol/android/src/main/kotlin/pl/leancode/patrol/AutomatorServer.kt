@@ -1,8 +1,5 @@
 package pl.leancode.patrol
 
-import pl.leancode.patrol.contracts.Contracts.MarkAppAppServiceReadyRequest
-import pl.leancode.patrol.contracts.Contracts.TapAtRequest
-import pl.leancode.patrol.contracts.Contracts.OpenUrlRequest
 import pl.leancode.patrol.contracts.Contracts.ConfigureRequest
 import pl.leancode.patrol.contracts.Contracts.DarkModeRequest
 import pl.leancode.patrol.contracts.Contracts.EnterTextRequest
@@ -14,14 +11,17 @@ import pl.leancode.patrol.contracts.Contracts.GetNotificationsRequest
 import pl.leancode.patrol.contracts.Contracts.GetNotificationsResponse
 import pl.leancode.patrol.contracts.Contracts.HandlePermissionRequest
 import pl.leancode.patrol.contracts.Contracts.HandlePermissionRequestCode
+import pl.leancode.patrol.contracts.Contracts.MarkAppAppServiceReadyRequest
 import pl.leancode.patrol.contracts.Contracts.OpenAppRequest
 import pl.leancode.patrol.contracts.Contracts.OpenQuickSettingsRequest
+import pl.leancode.patrol.contracts.Contracts.OpenUrlRequest
 import pl.leancode.patrol.contracts.Contracts.PermissionDialogVisibleRequest
 import pl.leancode.patrol.contracts.Contracts.PermissionDialogVisibleResponse
 import pl.leancode.patrol.contracts.Contracts.SetLocationAccuracyRequest
 import pl.leancode.patrol.contracts.Contracts.SetLocationAccuracyRequestLocationAccuracy
 import pl.leancode.patrol.contracts.Contracts.SetMockLocationRequest
 import pl.leancode.patrol.contracts.Contracts.SwipeRequest
+import pl.leancode.patrol.contracts.Contracts.TapAtRequest
 import pl.leancode.patrol.contracts.Contracts.TapOnNotificationRequest
 import pl.leancode.patrol.contracts.Contracts.TapRequest
 import pl.leancode.patrol.contracts.Contracts.WaitUntilVisibleRequest

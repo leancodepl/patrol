@@ -20,7 +20,7 @@
 
   private let client: PatrolAppServiceClient
 
-    @objc public init(port: Int) {
+  @objc public init(port: Int) {
     self.port = port
 
     // https://github.com/leancodepl/patrol/issues/1683
