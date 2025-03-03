@@ -228,5 +228,6 @@ jobs:
         run: |
           git add .
           ./gen_from_schema
+          echo "test" >> docs.json
           git update-index --refresh
           git diff --exit-code
