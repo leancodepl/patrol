@@ -104,6 +104,8 @@ jobs:
           echo "INCLUDED_TESTS=$target_paths" >> "$GITHUB_ENV"
 
       - name: patrol build android
+        env:
+          MAPS_API_KEY: ${{ secrets.MAPS_API_KEY }}
         run: patrol build android --target ${{ env.INCLUDED_TESTS }} --verbose
 
       - name: Upload APKs to emulator.wtf and wait for tests to finish

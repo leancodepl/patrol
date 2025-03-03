@@ -114,6 +114,8 @@ jobs:
           echo "EXCLUDED_TESTS=$target_paths" >> "$GITHUB_ENV"
 
       - name: patrol build android
+        env:
+          MAPS_API_KEY: ${{ secrets.MAPS_API_KEY }}
         run: | 
           patrol build android --exclude ${{ env.EXCLUDED_TESTS }} \
           --dart-define-from-file=defines_1.json --dart-define-from-file=defines_2.json --dart-define-from-file=defines_3.env \
