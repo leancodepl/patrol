@@ -302,7 +302,13 @@ class Automator private constructor() {
         delay()
     }
 
-    fun doubleTap(uiSelector: UiSelector, bySelector: BySelector, index: Int, timeout: Long? = null, delayBetweenTaps: Long? = null) {
+    fun doubleTap(
+        uiSelector: UiSelector,
+        bySelector: BySelector,
+        index: Int,
+        timeout: Long? = null,
+        delayBetweenTaps: Long? = null
+    ) {
         Logger.d("doubleTap(): $uiSelector, $bySelector")
 
         val uiObject = uiDevice.findObject(uiSelector)
@@ -356,7 +362,14 @@ class Automator private constructor() {
         delay()
     }
 
-    fun enterText(text: String, index: Int, keyboardBehavior: KeyboardBehavior, timeout: Long? = null, dx: Float, dy: Float) {
+    fun enterText(
+        text: String,
+        index: Int,
+        keyboardBehavior: KeyboardBehavior,
+        timeout: Long? = null,
+        dx: Float,
+        dy: Float
+    ) {
         Logger.d("enterText(text: $text, index: $index)")
 
         val selector = By.clazz(EditText::class.java)
@@ -454,7 +467,12 @@ class Automator private constructor() {
         delay()
     }
 
-    fun waitUntilVisible(uiSelector: UiSelector, bySelector: BySelector, index: Int, timeout: Long? = null) {
+    fun waitUntilVisible(
+        uiSelector: UiSelector,
+        bySelector: BySelector,
+        index: Int,
+        timeout: Long? = null
+    ) {
         Logger.d("waitUntilVisible(): $uiSelector, $bySelector")
 
         if (waitForView(bySelector, index, timeout) == null) {
@@ -682,7 +700,8 @@ class Automator private constructor() {
             return
         }
 
-        val resourceId = "com.android.permissioncontroller:id/permission_location_accuracy_radio_fine"
+        val resourceId =
+            "com.android.permissioncontroller:id/permission_location_accuracy_radio_fine"
 
         val uiObject = waitForUiObjectByResourceId(resourceId, timeout = timeoutMillis)
             ?: throw UiObjectNotFoundException("button to select fine location")
@@ -696,7 +715,8 @@ class Automator private constructor() {
             return
         }
 
-        val resourceId = "com.android.permissioncontroller:id/permission_location_accuracy_radio_coarse"
+        val resourceId =
+            "com.android.permissioncontroller:id/permission_location_accuracy_radio_coarse"
 
         val uiObject = waitForUiObjectByResourceId(resourceId, timeout = timeoutMillis)
             ?: throw UiObjectNotFoundException("button to select coarse location")
@@ -709,7 +729,8 @@ class Automator private constructor() {
         val locationManager = targetContext.getSystemService(LOCATION_SERVICE) as LocationManager
 
         val mockLocationProvider = LocationManager.GPS_PROVIDER
-        locationManager.addTestProvider(mockLocationProvider,
+        locationManager.addTestProvider(
+            mockLocationProvider,
             false,
             false,
             false,
@@ -720,7 +741,7 @@ class Automator private constructor() {
             ProviderProperties.POWER_USAGE_LOW,
             ProviderProperties.ACCURACY_FINE
         )
-        
+
         locationManager.setTestProviderEnabled(mockLocationProvider, true)
         val mockLocation = Location(mockLocationProvider)
         mockLocation.latitude = latitude
