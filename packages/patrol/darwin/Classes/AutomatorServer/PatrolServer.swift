@@ -3,11 +3,11 @@ import Foundation
 @objc public class PatrolServer: NSObject {
   private static let envPortKey = "PATROL_TEST_SERVER_PORT"
 
-  #if PATROL_ENABLED
     @objc
     public var port: Int = 0
     @objc
     public var appServerPort: Int = 0
+  #if PATROL_ENABLED
     private let automator: Automator
     private let server: Server
   #endif
