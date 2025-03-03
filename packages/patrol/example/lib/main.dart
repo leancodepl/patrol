@@ -82,7 +82,7 @@ class MyApp extends StatelessWidget {
             primaryColor: PTColors.lcBlack,
             canvasColor: PTColors.textDark,
             textSelectionTheme: TextSelectionThemeData(
-              selectionColor: PTColors.lcYellow.withOpacity(0.5),
+              selectionColor: PTColors.lcYellow.withValues(alpha: 0.5),
               cursorColor: PTColors.textWhite,
               selectionHandleColor: PTColors.lcYellow,
             ),
