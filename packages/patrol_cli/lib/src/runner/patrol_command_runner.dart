@@ -1,5 +1,5 @@
-import 'dart:io' show ProcessSignal, stdin;
 import 'dart:io' as p show Platform;
+import 'dart:io' show ProcessSignal, stdin;
 
 import 'package:adb/adb.dart';
 import 'package:args/args.dart';
@@ -228,6 +228,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
           processManager: _processManager,
           platform: platform,
           adb: adb,
+          logger: _logger,
           parentDisposeScope: _disposeScope,
         ),
         analytics: _analytics,

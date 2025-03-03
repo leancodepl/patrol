@@ -39,6 +39,8 @@ class BuildAndroidCommand extends PatrolCommand {
     usesTagsOption();
     usesExcludeTagsOption();
 
+    usesUninstallOption();
+
     usesAndroidOptions();
   }
 
@@ -106,6 +108,7 @@ class BuildAndroidCommand extends PatrolCommand {
     final packageName = stringArg('package-name') ?? config.android.packageName;
 
     final displayLabel = boolArg('label');
+    final uninstall = boolArg('uninstall');
 
     final customDartDefines = {
       ..._dartDefinesReader.fromFile(),
@@ -149,11 +152,13 @@ class BuildAndroidCommand extends PatrolCommand {
       dartDefines: mergedDartDefines,
       dartDefineFromFilePaths: dartDefineFromFilePaths,
     );
+
     final androidOpts = AndroidAppOptions(
       flutter: flutterOpts,
       packageName: packageName,
       appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
+      uninstall: uninstall,
     );
 
     try {

@@ -183,7 +183,7 @@ abstract class PatrolCommand extends Command<int> {
   void usesUninstallOption() {
     argParser.addFlag(
       'uninstall',
-      help: 'Uninstall the app after the test finishes.',
+      help: 'Uninstall the app before and after the test finishes.',
       defaultsTo: true,
     );
   }

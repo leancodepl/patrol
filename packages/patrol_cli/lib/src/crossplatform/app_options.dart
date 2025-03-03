@@ -53,12 +53,14 @@ class AndroidAppOptions {
     this.packageName,
     required this.appServerPort,
     required this.testServerPort,
+    required this.uninstall,
   });
 
   final FlutterAppOptions flutter;
   final String? packageName;
   final int appServerPort;
   final int testServerPort;
+  final bool uninstall;
 
   String get description => 'apk with entrypoint ${basename(flutter.target)}';
 
@@ -75,6 +77,7 @@ class AndroidAppOptions {
     return _toGradleInvocation(
       isWindows: isWindows,
       task: 'assemble$_effectiveFlavor${_buildMode}AndroidTest',
+      noUninstallAfterTests: !uninstall,
     );
   }
 
@@ -83,6 +86,7 @@ class AndroidAppOptions {
     return _toGradleInvocation(
       isWindows: isWindows,
       task: 'connected$_effectiveFlavor${_buildMode}AndroidTest',
+      noUninstallAfterTests: !uninstall,
     );
   }
 
@@ -114,6 +118,7 @@ class AndroidAppOptions {
   List<String> _toGradleInvocation({
     required bool isWindows,
     required String task,
+    bool noUninstallAfterTests = false,
   }) {
     final List<String> cmd;
     if (isWindows) {
@@ -150,6 +155,23 @@ class AndroidAppOptions {
       }
 
       cmd.add('-Pdart-defines=$dartDefinesString');
+    }
+
+    /// In Android Gradle Plugin 8.1.0 default behaviour has been changed
+    /// and the application is uninstalled after integration tests.
+    /// An issue has been reported:
+    /// AGP 8.1.0 uninstalls app after running instrumented tests - 7.4.2 does not:
+    /// https://issuetracker.google.com/issues/295039976
+    /// New solution to change this behaviour has been introduced in AGP 8.2.0:
+    /// https://developer.android.com/build/releases/past-releases/agp-8-2-0-release-notes
+    ///
+    /// To keep the app installed after the test finishes on Android
+    /// with AGP 8.2 or higher, add in `gradle.properties`:
+    /// ```
+    /// android.injected.androidTest.leaveApksInstalledAfterRun=true
+    /// ```
+    if (noUninstallAfterTests) {
+      cmd.add('-Pandroid.injected.androidTest.leaveApksInstalledAfterRun=true');
     }
 
     // Add app and test server ports
