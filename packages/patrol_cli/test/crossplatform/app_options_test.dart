@@ -23,7 +23,6 @@ void main() {
         );
         options = const AndroidAppOptions(
           flutter: flutterOptions,
-          appServerPort: 1,
           testServerPort: 2,
           uninstall: false,
         );
@@ -54,7 +53,6 @@ void main() {
         );
         options = const AndroidAppOptions(
           flutter: flutterOpts,
-          appServerPort: 1,
           testServerPort: 2,
           uninstall: false,
         );
@@ -69,7 +67,6 @@ void main() {
             ':app:assembleReleaseAndroidTest',
             '-Ptarget=/Users/john/app/integration_test/app_test.dart',
             '-Pandroid.injected.androidTest.leaveApksInstalledAfterRun=true',
-            '-Papp-server-port=1',
             '-Ptest-server-port=2',
           ]),
         );
@@ -94,7 +91,6 @@ void main() {
         );
         options = const AndroidAppOptions(
           flutter: flutterOpts,
-          appServerPort: 1,
           testServerPort: 2,
           uninstall: true,
         );
@@ -109,7 +105,6 @@ void main() {
             ':app:assembleDevReleaseAndroidTest',
             r'-Ptarget=C:\Users\john\app\integration_test\app_test.dart',
             '-Pdart-defines=RU1BSUw9dXNlckBleGFtcGxlLmNvbQ==,UEFTU1dPUkQ9bnk0bmNhdA==,Zm9vPWJhcg==,RkxVVFRFUl9BUFBfRkxBVk9SPWRldg==',
-            '-Papp-server-port=1',
             '-Ptest-server-port=2',
           ]),
         );
@@ -126,7 +121,6 @@ void main() {
         );
         options = const AndroidAppOptions(
           flutter: flutterOpts,
-          appServerPort: 1,
           testServerPort: 2,
           uninstall: true,
         );
@@ -141,7 +135,6 @@ void main() {
             ':app:assembleDevDebugAndroidTest',
             '-Ptarget=/Users/john/app/integration_test/app_test.dart',
             '-Pdart-defines=RU1BSUw9dXNlckBleGFtcGxlLmNvbQ==,UEFTU1dPUkQ9bnk0bmNhdA==,Zm9vPWJhcg==,RkxVVFRFUl9BUFBfRkxBVk9SPWRldg==',
-            '-Papp-server-port=1',
             '-Ptest-server-port=2',
           ]),
         );
@@ -158,7 +151,6 @@ void main() {
         );
         options = const AndroidAppOptions(
           flutter: flutterOpts,
-          appServerPort: 1,
           testServerPort: 2,
           uninstall: false,
         );
@@ -174,7 +166,6 @@ void main() {
             '-Ptarget=/Users/john/app/integration_test/app_test.dart',
             '-Pdart-defines=RU1BSUw9dXNlckBleGFtcGxlLmNvbQ==,UEFTU1dPUkQ9bnk0bmNhdA==,Zm9vPWJhcg==,RkxVVFRFUl9BUFBfRkxBVk9SPWRldg==',
             '-Pandroid.injected.androidTest.leaveApksInstalledAfterRun=true',
-            '-Papp-server-port=1',
             '-Ptest-server-port=2',
           ]),
         );
@@ -205,7 +196,6 @@ void main() {
             simulator: true,
             osVersion: '17.5',
             testServerPort: 8081,
-            appServerPort: 8082,
           );
         });
 
@@ -290,7 +280,6 @@ void main() {
             simulator: true,
             osVersion: '17.5',
             testServerPort: 8081,
-            appServerPort: 8082,
           );
         });
 
@@ -377,7 +366,6 @@ void main() {
             simulator: false,
             osVersion: 'latest',
             testServerPort: 8081,
-            appServerPort: 8082,
           );
         });
 
