@@ -97,7 +97,10 @@ void patrolTest(
   final testServerPort = getTestServerPort();
 
   final patrolLog = PatrolLogWriter(config: {'printLogs': config.printLogs});
-  final automator = NativeAutomator(config: nativeAutomatorConfig);
+  final automator = NativeAutomator(
+    config: nativeAutomatorConfig,
+    port: testServerPort,
+  );
   final automator2 = NativeAutomator2(
     config: nativeAutomatorConfig,
     port: testServerPort,
