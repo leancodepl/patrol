@@ -12,7 +12,6 @@ int getTestServerPort() {
     try {
       return _getIosServerPort();
     } catch (e) {
-      print("Error getting port: $e");
       return 0;
     }
   }
@@ -21,10 +20,12 @@ int getTestServerPort() {
 int _getIosServerPort() {
   final nativeLibrary = DynamicLibrary.process();
 
+  // Without this, the analyzer complains about the type of the function.
   // ignore: omit_local_variable_types
-  final int Function() getGlobalPort = nativeLibrary
-      .lookup<NativeFunction<Int32 Function()>>('getGlobalPort')
-      .asFunction();
+  final int Function() getGlobalPort =
+      nativeLibrary
+          .lookup<NativeFunction<Int32 Function()>>('getGlobalPort')
+          .asFunction();
 
   return getGlobalPort();
 }
@@ -33,9 +34,6 @@ int _getIosServerPort() {
 /// This port is set while building the app under test.
 int getAppServerPort() {
   return int.parse(
-    const String.fromEnvironment(
-      'PATROL_APP_SERVER_PORT',
-      defaultValue: '0',
-    ),
+    const String.fromEnvironment('PATROL_APP_SERVER_PORT', defaultValue: '0'),
   );
 }
