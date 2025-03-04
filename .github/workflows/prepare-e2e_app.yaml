@@ -53,9 +53,13 @@ jobs:
         run: .\gradlew.bat :patrol:ktlintFormat
 
       - name: Build app with Gradle
+        env:
+          MAPS_API_KEY: ${{ secrets.MAPS_API_KEY }}
         run: .\gradlew.bat :app:assembleDebug
 
       - name: Build app with Flutter tool
+        env:
+          MAPS_API_KEY: ${{ secrets.MAPS_API_KEY }}
         run: flutter build apk --debug
 
   prepare-android-on-linux:
