@@ -1,3 +1,7 @@
+## Unreleased
+
+- Add `--ios` flag to `patrol test` that specifies the iOS version to use. (#2540)
+
 ## 3.5.1
 
 - Gracefully handle when analytics fail to send. (#2460)

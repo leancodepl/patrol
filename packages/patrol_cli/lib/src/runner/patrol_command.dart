@@ -167,6 +167,11 @@ abstract class PatrolCommand extends Command<int> {
         help:
             'Clear permissions available through XCUIProtectedResource API before running each test.',
         negatable: false,
+      )
+      ..addOption(
+        'ios',
+        help: 'Pass iOS version. If empty, `latest` will be used.',
+        valueHelp: '17.5',
       );
   }
 

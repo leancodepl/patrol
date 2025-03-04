@@ -225,6 +225,7 @@ class DevelopCommand extends PatrolCommand {
       scheme: buildMode.createScheme(iosFlavor),
       configuration: buildMode.createConfiguration(iosFlavor),
       simulator: !device.real,
+      osVersion: stringArg('ios') ?? 'latest',
       appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
     );

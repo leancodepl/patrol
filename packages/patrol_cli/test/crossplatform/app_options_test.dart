@@ -199,6 +199,7 @@ void main() {
           scheme: 'Runner',
           configuration: 'Debug',
           simulator: true,
+          osVersion: 'latest',
           testServerPort: 8081,
           appServerPort: 8082,
         );
@@ -256,7 +257,7 @@ void main() {
             ...['xcodebuild', 'test-without-building'],
             ...['-xctestrun', xcTestRunPath],
             ...['-only-testing', 'RunnerUITests/RunnerUITests'],
-            ...['-destination', 'platform=iOS,name=iPhone 13'],
+            ...['-destination', 'platform=iOS,name=iPhone 13,OS=latest'],
             ...['-destination-timeout', '1'],
             ...['-resultBundlePath', ''],
           ]),
@@ -282,6 +283,7 @@ void main() {
           scheme: 'Runner',
           configuration: 'Debug',
           simulator: true,
+          osVersion: '17.5',
           testServerPort: 8081,
           appServerPort: 8082,
         );
@@ -337,7 +339,7 @@ void main() {
             ...['xcodebuild', 'test-without-building'],
             ...['-xctestrun', xcTestRunPath],
             ...['-only-testing', 'RunnerUITests/RunnerUITests'],
-            ...['-destination', 'platform=iOS,name=iPhone 13'],
+            ...['-destination', 'platform=iOS,name=iPhone 13,OS=17.5'],
             ...['-destination-timeout', '1'],
             ...['-resultBundlePath', ''],
           ]),
@@ -367,6 +369,7 @@ void main() {
             scheme: 'prod',
             configuration: 'Release-prod',
             simulator: false,
+            osVersion: '18.0',
             testServerPort: 8081,
             appServerPort: 8082,
           );
