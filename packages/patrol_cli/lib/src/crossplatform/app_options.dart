@@ -190,6 +190,7 @@ class IOSAppOptions {
     required this.scheme,
     required this.configuration,
     required this.simulator,
+    required this.osVersion,
     required this.appServerPort,
     required this.testServerPort,
     this.clearPermissions = false,
@@ -199,6 +200,7 @@ class IOSAppOptions {
   final String? bundleId;
   final String scheme;
   final String configuration;
+  final String osVersion;
   final bool simulator;
   final int appServerPort;
   final int testServerPort;
@@ -274,7 +276,7 @@ class IOSAppOptions {
       ...['-only-testing', 'RunnerUITests/RunnerUITests'],
       ...[
         '-destination',
-        'platform=${device.real ? 'iOS' : 'iOS Simulator'},name=${device.name}',
+        'platform=${device.real ? 'iOS' : 'iOS Simulator'},name=${device.name},OS=$osVersion',
       ],
       ...['-destination-timeout', '1'],
       ...['-resultBundlePath', resultBundlePath],

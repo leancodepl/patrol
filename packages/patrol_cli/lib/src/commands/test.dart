@@ -236,6 +236,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       scheme: buildMode.createScheme(iosFlavor),
       configuration: buildMode.createConfiguration(iosFlavor),
       simulator: !device.real,
+      osVersion: stringArg('ios') ?? 'latest',
       appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
       clearPermissions: boolArg('clear-permissions'),

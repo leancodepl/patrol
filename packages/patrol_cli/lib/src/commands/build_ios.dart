@@ -155,6 +155,7 @@ class BuildIOSCommand extends PatrolCommand {
       scheme: flutterOpts.buildMode.createScheme(flavor),
       configuration: flutterOpts.buildMode.createConfiguration(flavor),
       simulator: boolArg('simulator'),
+      osVersion: stringArg('ios') ?? 'latest',
       appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
       clearPermissions: boolArg('clear-permissions'),
