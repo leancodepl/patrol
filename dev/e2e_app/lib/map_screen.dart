@@ -47,8 +47,7 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   Future<void> manageLocation(GoogleMapController controller) async {
-    LocationPermission permission;
-    permission = await Geolocator.requestPermission();
+    final permission = await Geolocator.requestPermission();
 
     if (permission == LocationPermission.denied) {
       return Future.error('Location permissions are denied');
