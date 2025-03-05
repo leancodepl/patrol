@@ -889,7 +889,7 @@
 
     func setMockLocation(latitude: Double, longitude: Double) throws {
       if #available(iOS 16.4, *) {
-        DispatchQueue.main.async {
+        runAction("setting mock location to \(latitude), \(longitude)") {
           XCUIDevice.shared.location = XCUILocation(
             location: CLLocation(latitude: latitude, longitude: longitude))
         }
