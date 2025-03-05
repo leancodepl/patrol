@@ -27,12 +27,15 @@ dependency_overrides:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  gpx: ^2.3.0
   leancode_lint: ^14.2.0
   patrol:
     path: ../../packages/patrol
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/gpx.gpx
 
 patrol:
   app_name: Patrol example
