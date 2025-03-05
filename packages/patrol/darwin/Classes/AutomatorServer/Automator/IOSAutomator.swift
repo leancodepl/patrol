@@ -1,5 +1,6 @@
 #if PATROL_ENABLED && os(iOS)
 
+  import CoreLocation
   import XCTest
   import os
 
@@ -867,6 +868,7 @@
         for i in 0...150 {
           let element = self.springboard.descendants(matching: .any).element(boundBy: i)
           if !element.exists {
+
             break
           }
 
@@ -881,6 +883,15 @@
           Logger.shared.i(
             "index: \(i), label: \(label), accLabel: \(String(describing: accLabel)), ident: \(ident)"
           )
+        }
+      }
+    }
+
+    func setMockLocation(latitude: Double, longitude: Double) throws {
+      if #available(iOS 16.4, *) {
+        runAction("setting mock location to \(latitude), \(longitude)") {
+          XCUIDevice.shared.location = XCUILocation(
+            location: CLLocation(latitude: latitude, longitude: longitude))
         }
       }
     }

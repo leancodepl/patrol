@@ -382,3 +382,9 @@ public struct SetLocationAccuracyRequest: Codable {
   public var locationAccuracy: SetLocationAccuracyRequestLocationAccuracy
 }
 
+public struct SetMockLocationRequest: Codable {
+  public var latitude: Double
+  public var longitude: Double
+  public var packageName: String
+}
+

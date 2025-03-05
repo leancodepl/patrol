@@ -661,4 +661,10 @@ class Contracts {
     val locationAccuracy: SetLocationAccuracyRequestLocationAccuracy
   )
 
+  data class SetMockLocationRequest (
+    val latitude: Double,
+    val longitude: Double,
+    val packageName: String
+  )
+
 }

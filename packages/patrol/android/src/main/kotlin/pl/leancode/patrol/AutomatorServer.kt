@@ -18,6 +18,7 @@ import pl.leancode.patrol.contracts.Contracts.PermissionDialogVisibleRequest
 import pl.leancode.patrol.contracts.Contracts.PermissionDialogVisibleResponse
 import pl.leancode.patrol.contracts.Contracts.SetLocationAccuracyRequest
 import pl.leancode.patrol.contracts.Contracts.SetLocationAccuracyRequestLocationAccuracy
+import pl.leancode.patrol.contracts.Contracts.SetMockLocationRequest
 import pl.leancode.patrol.contracts.Contracts.SwipeRequest
 import pl.leancode.patrol.contracts.Contracts.TapOnNotificationRequest
 import pl.leancode.patrol.contracts.Contracts.TapRequest
@@ -310,6 +311,10 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
         }
     }
 
+    override fun setMockLocation(request: SetMockLocationRequest) {
+        automation.setMockLocation(request.latitude, request.longitude, request.packageName)
+    }
+
     override fun debug() {
         // iOS only
     }
@@ -319,10 +324,18 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
             automation.tapOnNotification(request.index.toInt(), timeout = request.timeoutMillis)
         } else if (request.selector != null) {
             val selector = request.selector
-            automation.tapOnNotification(selector.toUiSelector(), selector.toBySelector(), timeout = request.timeoutMillis)
+            automation.tapOnNotification(
+                selector.toUiSelector(),
+                selector.toBySelector(),
+                timeout = request.timeoutMillis
+            )
         } else if (request.androidSelector != null) {
             val selector = request.androidSelector
-            automation.tapOnNotification(selector.toUiSelector(), selector.toBySelector(), timeout = request.timeoutMillis)
+            automation.tapOnNotification(
+                selector.toUiSelector(),
+                selector.toBySelector(),
+                timeout = request.timeoutMillis
+            )
         } else {
             throw PatrolException("tapOnNotification(): neither index nor selector are set")
         }

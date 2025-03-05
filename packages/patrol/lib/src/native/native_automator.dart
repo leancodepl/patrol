@@ -974,6 +974,27 @@ class NativeAutomator {
     );
   }
 
+  /// Set mock location
+  ///
+  /// Works on Android emulator, iOS simulator and iOS real device. Doesn't
+  /// work on Android real device.
+  Future<void> setMockLocation(
+    double latitude,
+    double longitude, {
+    String? packageName,
+  }) async {
+    await _wrapRequest(
+      'setMockLocation latitude: $latitude, longitude: $longitude',
+      () => _client.setMockLocation(
+        SetMockLocationRequest(
+          latitude: latitude,
+          longitude: longitude,
+          packageName: packageName ?? _config.packageName,
+        ),
+      ),
+    );
+  }
+
   /// Tells the AndroidJUnitRunner that PatrolAppService is ready to answer
   /// requests about the structure of Dart tests.
   @internal
