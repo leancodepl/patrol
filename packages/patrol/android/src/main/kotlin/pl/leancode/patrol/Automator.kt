@@ -743,13 +743,14 @@ class Automator private constructor() {
         )
 
         locationManager.setTestProviderEnabled(mockLocationProvider, true)
-        val mockLocation = Location(mockLocationProvider)
-        mockLocation.latitude = latitude
-        mockLocation.longitude = longitude
-        mockLocation.altitude = 0.0
-        mockLocation.accuracy = 1.0f
-        mockLocation.time = System.currentTimeMillis()
-        mockLocation.elapsedRealtimeNanos = System.nanoTime()
+        val mockLocation = Location(mockLocationProvider).apply {
+            latitude = latitude
+            longitude = longitude
+            altitude = 0.0
+            accuracy = 1.0f
+            time = System.currentTimeMillis()
+            elapsedRealtimeNanos = System.nanoTime()
+        }
         locationManager.setTestProviderLocation(mockLocationProvider, mockLocation)
     }
 
