@@ -276,7 +276,7 @@ class IOSAppOptions {
       ...['-only-testing', 'RunnerUITests/RunnerUITests'],
       ...[
         '-destination',
-        'platform=${device.real ? 'iOS' : 'iOS Simulator'},name=${device.name},OS=$osVersion',
+        'platform=${device.real ? 'iOS' : 'iOS Simulator,OS=$osVersion'},name=${device.name}',
       ],
       ...['-destination-timeout', '1'],
       ...['-resultBundlePath', resultBundlePath],
