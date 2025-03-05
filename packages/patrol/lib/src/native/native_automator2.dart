@@ -854,6 +854,9 @@ class NativeAutomator2 {
   }
 
   /// Set mock location
+  ///
+  /// Works on Android emulator, iOS simulator and iOS real device. Doesn't
+  /// work on Android real device.
   Future<void> setMockLocation(
     double latitude,
     double longitude, {
