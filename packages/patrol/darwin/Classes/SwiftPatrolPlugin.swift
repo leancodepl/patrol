@@ -33,9 +33,9 @@ public class SwiftPatrolPlugin: NSObject, FlutterPlugin {
 
     let instance = SwiftPatrolPlugin()
     #if PATROL_ENABLED
-    Logger.shared.i("Printing the port from ProcessInfo")
-    globalPort = Int32(Int(ProcessInfo.processInfo.arguments[2])!)
-    Logger.shared.i("port: \(globalPort)")
+      Logger.shared.i("Printing the port from ProcessInfo")
+      globalPort = Int32(Int(ProcessInfo.processInfo.arguments[2])!)
+      Logger.shared.i("port: \(globalPort)")
     #endif
     registrar.addMethodCallDelegate(instance, channel: channel)
   }
