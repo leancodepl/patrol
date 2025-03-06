@@ -6,35 +6,25 @@ import org.http4k.filter.ServerFilters
 import org.http4k.server.Http4kServer
 import org.http4k.server.KtorCIO
 import org.http4k.server.asServer
+import java.net.ServerSocket
 
 class PatrolServer {
-    private val defaultPort = 8081
-
     private var server: Http4kServer? = null
     private var automatorServer: AutomatorServer? = null
-
-    val port: Int
-        get() {
-            val portStr = BuildConfig.PATROL_TEST_PORT
-            if (portStr == null) {
-                Logger.i("PATROL_TEST_PORT is null, falling back to default ($defaultPort)")
-                return defaultPort
-            }
-            return portStr.toIntOrNull() ?: run {
-                Logger.i("PATROL_TEST_PORT is not a valid integer, falling back to default ($defaultPort)")
-                defaultPort
-            }
-        }
+    var port: Int? = null
 
     fun start() {
         Logger.i("Starting server...")
 
+        port = BuildConfig.PATROL_TEST_SERVER_PORT.toIntOrNull() ?: getFreePort()
+
         automatorServer = AutomatorServer(Automator.instance)
+
         server = automatorServer!!.router
             .withFilter(catcher)
             .withFilter(printer)
             .withFilter(ServerFilters.SetContentType(ContentType.TEXT_PLAIN))
-            .asServer(KtorCIO(port))
+            .asServer(KtorCIO(port!!))
             .start()
 
         Logger.i("Created and started PatrolServer, port: $port")
@@ -50,7 +40,10 @@ class PatrolServer {
 
     companion object {
         val appReady: ConditionVariable = ConditionVariable()
+        var appServerPort: Int? = null
     }
+
+    private fun getFreePort() = ServerSocket(0).use { it.localPort }
 }
 
 typealias DartTestResults = Map<String, String>

@@ -304,6 +304,10 @@ class SetMockLocationRequest {
   late String packageName;
 }
 
+class MarkAppAppServiceReadyRequest {
+  int? port;
+}
+
 abstract class NativeAutomator<IOSServer, AndroidServer, DartClient> {
   void initialize();
   void configure(ConfigureRequest request);
@@ -363,7 +367,7 @@ abstract class NativeAutomator<IOSServer, AndroidServer, DartClient> {
   void setMockLocation(SetMockLocationRequest request);
 
   // TODO(bartekpacia): Move this RPC into a new PatrolNativeTestService service because it doesn't fit here
-  void markPatrolAppServiceReady();
+  void markPatrolAppServiceReady(MarkAppAppServiceReadyRequest request);
 }
 
 enum IOSElementType {
