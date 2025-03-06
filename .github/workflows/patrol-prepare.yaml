@@ -221,3 +221,11 @@ jobs:
         if: success() || failure()
         working-directory: ./packages/patrol/example
         run: flutter pub get
+
+      - name: Check if files are regenerated from schema
+        if: success() || failure()
+        working-directory: .
+        run: |
+          git add .
+          ./gen_from_schema
+          git diff --exit-code || (echo "Files are not regenerated from schema. Please run ./gen_from_schema locally and push changes" && exit 1)
