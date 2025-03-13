@@ -85,12 +85,19 @@ class PatrolLogReader {
 
   /// Parse the line from the process output.
   void parse(String line) {
-    if (line.contains('PATROL_LOG')) {
-      _parsePatrolLog(line);
-    } else if (showFlutterLogs && line.contains('Runner: (Flutter) flutter:')) {
-      _parseFlutterIOsLog(line);
-    } else if (showFlutterLogs && line.contains('I flutter :')) {
-      _parseFlutterAndroidLog(line);
+    try {
+      if (line.contains('PATROL_LOG')) {
+        _parsePatrolLog(line);
+      } else if (showFlutterLogs &&
+          line.contains('Runner: (Flutter) flutter:')) {
+        _parseFlutterIOsLog(line);
+      } else if (showFlutterLogs && line.contains('I flutter :')) {
+        _parseFlutterAndroidLog(line);
+      } else if (showFlutterLogs && line.contains('<Notice>: flutter:')) {
+        _parseFlutterIOsReleaseLog(line);
+      }
+    } catch (e) {
+      log('Error parsing line: $line');
     }
   }
 
@@ -98,23 +105,29 @@ class PatrolLogReader {
   void _parsePatrolLog(String line) {
     final regExp = RegExp('PATROL_LOG (.*)');
     final match = regExp.firstMatch(line);
-    if (match != null) {
-      final json = match.group(1)!;
-      final entry = parseEntry(json);
+    try {
+      if (match != null) {
+        // \134 is the octal representation of backslash
+        const octalBackslash = r'\134';
+        final json = match.group(1)!.replaceAll(octalBackslash, r'\');
+        final entry = parseEntry(json);
 
-      if (entry case TestEntry _) {
-        final testEntry = entry;
-        // Skip info test is returned multiple times, so we need to filter it
-        if (testEntry.status == TestEntryStatus.skip &&
-            !_skippedTests.contains(testEntry.name)) {
-          _skippedTests.add(testEntry.name);
-          _controller.add(entry);
-        } else if (testEntry.status != TestEntryStatus.skip) {
+        if (entry case TestEntry _) {
+          final testEntry = entry;
+          // Skip info test is returned multiple times, so we need to filter it
+          if (testEntry.status == TestEntryStatus.skip &&
+              !_skippedTests.contains(testEntry.name)) {
+            _skippedTests.add(testEntry.name);
+            _controller.add(entry);
+          } else if (testEntry.status != TestEntryStatus.skip) {
+            _controller.add(entry);
+          }
+        } else {
           _controller.add(entry);
         }
-      } else {
-        _controller.add(entry);
       }
+    } catch (e) {
+      log('Error parsing line: $line');
     }
   }
 
@@ -131,6 +144,16 @@ class PatrolLogReader {
   /// Parse the line containing Flutter logs on Android and print them.
   void _parseFlutterAndroidLog(String line) {
     final regExp = RegExp('I (.*)');
+    final match = regExp.firstMatch(line);
+    if (match != null) {
+      final matchedText = match.group(1)!;
+      log(matchedText);
+    }
+  }
+
+  /// Parse the line containing Flutter logs on iOS in release mode and print them.
+  void _parseFlutterIOsReleaseLog(String line) {
+    final regExp = RegExp(r'\<Notice\>: flutter: (.*)');
     final match = regExp.firstMatch(line);
     if (match != null) {
       final matchedText = match.group(1)!;
