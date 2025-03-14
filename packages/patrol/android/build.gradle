@@ -69,10 +69,7 @@ android {
         api "androidx.test.espresso:espresso-core:3.5.0"
         api "androidx.test.uiautomator:uiautomator:2.2.0"
 
-        // We need to downgrade http4k-bom to 4.48.0.0 because apps with kotlin version (ext.kotlin_version) lower than 1.8 
-        // end up with compile-time errors. We can find more details in a similar problem:
-        // https://stackoverflow.com/questions/67699823/module-was-compiled-with-an-incompatible-version-of-kotlin-the-binary-version-o
-        implementation platform("org.http4k:http4k-bom:4.48.0.0")
+        implementation platform("org.http4k:http4k-bom:5.47.0.0")
         implementation "org.http4k:http4k-core"
         implementation "com.squareup.okhttp:okhttp:2.7.5" // See https://github.com/square/okhttp/issues/8031
         implementation "org.http4k:http4k-server-ktorcio"
