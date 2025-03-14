@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol_finders/patrol_finders.dart';
@@ -405,15 +404,6 @@ class PatrolTester {
     Duration? settleTimeout,
     bool enablePatrolLog = true,
   }) {
-    if (!kIsWeb) {
-      // Fix for enterText() not working in release mode on real iOS devices.
-      // See https://github.com/flutter/flutter/pull/89703
-      // Also a fix for enterText() not being able to interact with the same
-      // textfield 2 times in the same test.
-      // See https://github.com/flutter/flutter/issues/134604
-      tester.testTextInput.register();
-    }
-
     return TestAsyncUtils.guard(
       () => wrapWithPatrolLog(
         action: 'enterText',
@@ -427,12 +417,7 @@ class PatrolTester {
             timeout: visibleTimeout,
             enablePatrolLog: false,
           );
-          await tester.tap(resolvedFinder.first);
-          await tester.enterText(resolvedFinder.first, text);
-          if (!kIsWeb) {
-            // When registering `testTextInput`, we have to unregister it
-            tester.testTextInput.unregister();
-          }
+          await tester.enterText(resolvedFinder, text);
           await _performPump(
             settlePolicy: settlePolicy,
             settleTimeout: settleTimeout,
