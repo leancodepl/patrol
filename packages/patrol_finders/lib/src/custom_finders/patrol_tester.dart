@@ -404,7 +404,7 @@ class PatrolTester {
     Duration? visibleTimeout,
     Duration? settleTimeout,
     bool enablePatrolLog = true,
-    bool useRegisterWorkaround = false,
+    bool useRegisterWorkaround = true,
   }) {
     return TestAsyncUtils.guard(
       () => wrapWithPatrolLog(
@@ -428,10 +428,13 @@ class PatrolTester {
             timeout: visibleTimeout,
             enablePatrolLog: false,
           );
+          /* if (useRegisterWorkaround) {
+            await tester.tap(resolvedFinder.first);
+          } */
           await tester.enterText(resolvedFinder, text);
           if (!kIsWeb && useRegisterWorkaround) {
             // When registering `testTextInput`, we have to unregister it
-            tester.testTextInput.unregister();
+            tester.testTextInput.reset();
           }
           await _performPump(
             settlePolicy: settlePolicy,

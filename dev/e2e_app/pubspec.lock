@@ -583,10 +583,9 @@ packages:
   patrol_finders:
     dependency: transitive
     description:
-      name: patrol_finders
-      sha256: "4c6d78e00362fd15d7c21cfac110e501d08ada7d77000bad139b0c3c2e27ccaf"
-      url: "https://pub.dev"
-    source: hosted
+      path: "../../packages/patrol_finders"
+      relative: true
+    source: path
     version: "2.7.0"
   patrol_log:
     dependency: transitive
