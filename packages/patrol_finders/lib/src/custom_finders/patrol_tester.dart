@@ -1,4 +1,7 @@
+import 'dart:io' as io;
+
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol_finders/patrol_finders.dart';
@@ -404,7 +407,6 @@ class PatrolTester {
     Duration? visibleTimeout,
     Duration? settleTimeout,
     bool enablePatrolLog = true,
-    bool useRegisterWorkaround = true,
   }) {
     return TestAsyncUtils.guard(
       () => wrapWithPatrolLog(
@@ -414,7 +416,7 @@ class PatrolTester {
         color: AnsiCodes.magenta,
         enablePatrolLog: enablePatrolLog,
         function: () async {
-          if (!kIsWeb && useRegisterWorkaround) {
+          if (!kIsWeb) {
             // Fix for enterText() not working in release mode on real iOS devices.
             // See https://github.com/flutter/flutter/pull/89703
             // Also a fix for enterText() not being able to interact with the same
@@ -428,12 +430,33 @@ class PatrolTester {
             timeout: visibleTimeout,
             enablePatrolLog: false,
           );
-          /* if (useRegisterWorkaround) {
-            await tester.tap(resolvedFinder.first);
-          } */
+
+          // Workaround for enterText() not working in release mode on real iOS devices.
+          // [EditableTextState._openInputConnection] is not called when the text field is focused.
+          // So we need to attach text input connection manually.
+          if (!kIsWeb && io.Platform.isIOS && kReleaseMode) {
+            final editableTextState = tester.state<EditableTextState>(
+              find.descendant(
+                of: resolvedFinder,
+                matching: find.byType(EditableText),
+                matchRoot: true,
+              ),
+            );
+            final effectiveAutofillClient =
+                editableTextState.widget.autofillClient;
+
+            TextInput.attach(
+              editableTextState,
+              effectiveAutofillClient?.textInputConfiguration ??
+                  const TextInputConfiguration(),
+            );
+          }
+
           await tester.enterText(resolvedFinder, text);
-          if (!kIsWeb && useRegisterWorkaround) {
-            // When registering `testTextInput`, we have to unregister it
+
+          if (!kIsWeb) {
+            // After interaction is done, we need to reset the testTextInput
+            // to not interfere with consecutive interactions in the same test.
             tester.testTextInput.reset();
           }
           await _performPump(
