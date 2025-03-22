@@ -1,3 +1,7 @@
+## NEXT
+
+- Upgrade `http4k` to 5.47.0.0.
+
 ## 3.15.0
 
 - Add `setMockLocation` method. (#2547)
