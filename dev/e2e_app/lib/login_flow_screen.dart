@@ -32,6 +32,7 @@ class _UsernamePageState extends State<UsernamePage> {
                 labelText: 'Username',
                 border: OutlineInputBorder(),
               ),
+              autofocus: true,
             ),
             const SizedBox(height: 16),
             ElevatedButton(
