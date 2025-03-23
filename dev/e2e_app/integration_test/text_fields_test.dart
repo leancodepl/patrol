@@ -16,10 +16,7 @@ void main() {
       expect($('User'), findsOneWidget);
 
       // Enter text into the first text field again. After focusing on the button.
-      await $.enterText(
-        find.byKey(const Key('textField1')),
-        'User2',
-      );
+      await $(const Key('textField1')).enterText('User2');
       await $(const Key('buttonUnfocus')).tap();
       expect($('User'), findsNothing);
       expect($('User2'), findsOneWidget);
