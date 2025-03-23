@@ -1,3 +1,7 @@
+## 3.15.1-dev.1
+
+- Fix `$.enterText()` issues (#2570)
+
 ## 3.15.0
 
 - Add `setMockLocation` method. (#2547)
