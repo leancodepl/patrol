@@ -1,8 +1,9 @@
-## Unreleased
+## 2.7.1-dev.1
 
 - Bump Gradle version in the example app so it's possible to build them on the
   latest JDK 23 (#2503)
 - Bump `custom_lint` to `0.7.0` and `leancode_lint` to `14.3.0`. (#2574)
+- Fix `$.enterText()` issues (#2570)
 
 ## 2.7.0
 
