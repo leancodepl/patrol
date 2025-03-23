@@ -1,6 +1,6 @@
 name: patrol_finders
 description: Streamlined, high-level API on top of flutter_test.
-version: 2.7.0
+version: 2.7.1-dev.1
 homepage: https://patrol.leancode.co
 repository: https://github.com/leancodepl/patrol/tree/master/packages/patrol_finders
 issue_tracker: https://github.com/leancodepl/patrol/issues?q=is%3Aopen+is%3Aissue+label%3Apackage%3Apatrol_finders
