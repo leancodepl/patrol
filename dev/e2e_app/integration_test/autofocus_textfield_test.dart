@@ -4,7 +4,7 @@ import 'common.dart';
 
 void main() {
   patrolTest(
-    'enterText test. Using PatrolTester',
+    'enterText() on autofocused text fields',
     framePolicy: LiveTestWidgetsFlutterBindingFramePolicy.fullyLive,
     ($) async {
       // Start the app
