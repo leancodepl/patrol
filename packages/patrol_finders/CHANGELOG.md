@@ -1,7 +1,8 @@
-## Unreleased
+## 2.7.1-dev.1
 
 - Bump Gradle version in the example app so it's possible to build them on the
   latest JDK 23 (#2503)
+- Fix `$.enterText()` issues (#2570)
 
 ## 2.7.0
 
