@@ -347,7 +347,10 @@ Check out our video version of this tutorial on YouTube!
           In [Apple Developer Portal](https://developer.apple.com) create new Identifier (App ID) with your app's bundle ID and with `.RunnerUITests.xctrunner` ending. It should look like e.g.: `com.example.myapp.RunnerUITests.xctrunner` (Remember to swap `com.example.myapp` with your app's one).
         </Step>
         <Step>
-          In [Apple Developer Portal](https://developer.apple.com) create new provisioning Development profile that are linked to the new App ID, e.g.:`com.example.myapp.RunnerUITests.xctrunner`.
+          In [Apple Developer Portal](https://developer.apple.com) create new Development Certificate with your app's bundle ID and with `.RunnerUITests.xctrunner` ending. It should look like e.g.: `com.example.myapp.RunnerUITests.xctrunner` (Remember to swap `com.example.myapp` with your app's one).
+        </Step>
+        <Step>
+          In [Apple Developer Portal](https://developer.apple.com) create new Development Provisioning Profile that are linked to the new Identifier and include the new Certificate.
         </Step>
         <Step>
           In Xcode disable automatic signing in `RunnerUITests` Target.
@@ -357,7 +360,7 @@ Check out our video version of this tutorial on YouTube!
           Go to `ios/Runner.xcodeproj/project.pbxproj` and search for all occurrences of `PRODUCT_BUNDLE_IDENTIFIER = com.example.myapp.RunnerUITests;`. Then set the `PROVISIONING_PROFILE_SPECIFIER` to your specifier of newly created profile.
         </Step>
         <Step>
-          Import profile and certificate for RunnerUITests manually in Xcode.
+          Import the new profile for RunnerUITests manually in Xcode.
         <Warning>
           You might see error or warning in Xcode about not matching bundle IDs. Don't worry about it, `RunnerUITests.xctrunner` bundle is generated while building tests and this is the bundle ID that we need to sign.
         </Warning>
