@@ -61,11 +61,6 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      - name: Gradle cache
-        uses: gradle/gradle-build-action@v2
-        with:
-          generate-job-summary: false
-
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
@@ -113,7 +108,7 @@ jobs:
       - name: patrol build android
         env:
           MAPS_API_KEY: ${{ secrets.MAPS_API_KEY }}
-        run: | 
+        run: |
           patrol build android --exclude ${{ env.EXCLUDED_TESTS }} \
           --dart-define-from-file=defines_1.json --dart-define-from-file=defines_2.json --dart-define-from-file=defines_3.env \
           --verbose
