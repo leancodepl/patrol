@@ -85,11 +85,6 @@ jobs:
         working-directory: packages/patrol_cli
         run: dart pub global activate --source path . && patrol
 
-      - name: Generate Gradle wrapper
-        env:
-          MAPS_API_KEY: ${{ secrets.MAPS_API_KEY }}
-        run: flutter build apk --config-only
-
       - name: Install ew-cli
         run: |
           mkdir -p "$HOME/bin"
