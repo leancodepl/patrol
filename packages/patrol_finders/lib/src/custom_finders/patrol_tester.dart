@@ -446,8 +446,9 @@ class PatrolTester {
   ///
   /// Throws a [WaitUntilVisibleTimeoutException] if no widgets  found.
   ///
-  /// Timeout is globally set by [PatrolTester.config.visibleTimeout]. If you
-  /// want to override this global setting, set [timeout].
+  /// Timeout is globally set by [PatrolTesterConfig.visibleTimeout] inside
+  /// [PatrolTester.config]. If you want to override this global setting, set
+  /// [timeout].
   Future<PatrolFinder> waitUntilExists(
     PatrolFinder finder, {
     Duration? timeout,
@@ -486,8 +487,9 @@ class PatrolTester {
   /// Throws a [WaitUntilVisibleTimeoutException] if more time than specified by
   /// the timeout passed and no widgets were found.
   ///
-  /// Timeout is globally set by [PatrolTester.config.visibleTimeout]. If you
-  /// want to override this global setting, set [timeout].
+  /// Timeout is globally set by [PatrolTesterConfig.visibleTimeout] inside
+  /// [PatrolTester.config]. If you want to override this global setting, set
+  /// [timeout].
   ///
   /// {@template patrol_tester.alignment_on_visible_check}
   /// Provide [alignment] to fine tune the visibility check by calling
@@ -590,7 +592,7 @@ class PatrolTester {
   ///    [PatrolTester.config].
   ///
   /// See also:
-  ///  * [PatrolTester.config.settlePolicy], which controls the default settle
+  ///  * [PatrolTesterConfig.settlePolicy], which controls the default settle
   ///     behavior
   ///  * [PatrolTester.dragUntilVisible], which scrolls to visible widget,
   ///    not only existing one.
