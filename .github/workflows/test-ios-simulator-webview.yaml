@@ -23,7 +23,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ["3.24.x"]
+        flutter-version: ["3.29.x"]
         flutter-channel: ["stable"]
         device_model: [iPhone 14]
         os: [iOS]

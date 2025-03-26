@@ -23,4 +23,4 @@ dependencies:
   patrol_log: ^0.3.0
 
 dev_dependencies:
-  leancode_lint: ^14.2.0
+  leancode_lint: ^14.3.0

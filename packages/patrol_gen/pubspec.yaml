@@ -16,5 +16,5 @@ dependencies:
   path: ^1.8.3
 
 dev_dependencies:
-  custom_lint: ^0.6.4
-  leancode_lint: ^14.2.0
+  custom_lint: ^0.7.0
+  leancode_lint: ^14.3.0

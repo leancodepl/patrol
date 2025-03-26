@@ -80,8 +80,6 @@ class DeviceToHostPortTransformer
             ?.key;
       case TargetPlatform.iOS || TargetPlatform.macOS:
         hostPort = devicePort;
-      default:
-        hostPort = null;
     }
 
     if (hostPort == null) {

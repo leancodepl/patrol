@@ -28,7 +28,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   gpx: ^2.3.0
-  leancode_lint: ^14.2.0
+  leancode_lint: ^14.3.0
   patrol:
     path: ../../packages/patrol
 
