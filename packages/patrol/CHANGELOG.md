@@ -1,9 +1,6 @@
-## 3.15.1-dev.1
+## 3.15.1
 
 - Fix `$.enterText()` issues (#2570)
-
-## 3.15.0
-
 - Add `setMockLocation` method. (#2547)
 - Bump `custom_lint` to `0.7.0` and `leancode_lint` to `14.3.0`. (#2574)
 
