@@ -16,7 +16,7 @@ dependencies:
   firebase_messaging: ^15.2.1
   flutter:
     sdk: flutter
-  flutter_bloc: ^9.1.0
+  flutter_bloc: ^8.1.3
   flutter_holo_date_picker: ^1.1.3
   flutter_local_notifications: ^17.2.2
   flutter_svg: ^2.0.9
@@ -26,6 +26,11 @@ dependencies:
   http: ^1.1.0
   permission_handler: ^11.4.0
   provider: ^6.1.1
+
+# Due to: https://github.com/rrousselGit/provider/issues/907
+dependency_overrides:
+  provider: ">=6.0.0 <6.1.3"
+
 dev_dependencies:
   flutter_launcher_icons: ^0.13.1
   flutter_native_splash: ^2.3.6
