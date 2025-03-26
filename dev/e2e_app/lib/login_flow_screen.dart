@@ -1,3 +1,4 @@
+import 'package:e2e_app/keys.dart';
 import 'package:flutter/material.dart';
 
 class UsernamePage extends StatefulWidget {
@@ -26,7 +27,7 @@ class _UsernamePageState extends State<UsernamePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             TextField(
-              key: const Key('username_text_field'),
+              key: K.usernameTextField,
               controller: _usernameController,
               decoration: const InputDecoration(
                 labelText: 'Username',
@@ -36,7 +37,7 @@ class _UsernamePageState extends State<UsernamePage> {
             ),
             const SizedBox(height: 16),
             ElevatedButton(
-              key: const Key('username_next_button'),
+              key: K.usernameNextButton,
               onPressed: () {
                 Navigator.push(
                   context,
@@ -78,11 +79,6 @@ class _PasswordPageState extends State<PasswordPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Enter Password'),
-        leading: IconButton(
-          key: const Key('password_back_button'),
-          onPressed: () => Navigator.pop(context),
-          icon: const Icon(Icons.arrow_back),
-        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -90,7 +86,7 @@ class _PasswordPageState extends State<PasswordPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             TextField(
-              key: const Key('password_text_field'),
+              key: K.passwordTextField,
               controller: _passwordController,
               autofocus: true,
               obscureText: true,
@@ -101,7 +97,7 @@ class _PasswordPageState extends State<PasswordPage> {
             ),
             const SizedBox(height: 16),
             ElevatedButton(
-              key: const Key('password_next_button'),
+              key: K.passwordNextButton,
               onPressed: () {
                 if (_passwordController.text.isNotEmpty) {
                   Navigator.pushReplacement(
@@ -134,7 +130,7 @@ class WelcomePage extends StatelessWidget {
       body: Center(
         child: Text(
           username,
-          key: const Key('welcome_text'),
+          key: K.welcomeText,
           style: Theme.of(context).textTheme.headlineLarge,
         ),
       ),
