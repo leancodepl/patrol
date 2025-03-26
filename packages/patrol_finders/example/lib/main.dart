@@ -140,7 +140,7 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
             ),
           ),
           TextButton(
-            onPressed: () async => Navigator.of(context).push(
+            onPressed: () => Navigator.of(context).push(
               MaterialPageRoute<void>(
                 builder: (_) => const LoadingScreen(),
               ),
@@ -148,7 +148,7 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
             child: const Text('Open loading screen'),
           ),
           TextButton(
-            onPressed: () async => Navigator.of(context).push(
+            onPressed: () => Navigator.of(context).push(
               MaterialPageRoute<void>(
                 builder: (_) => const OverlayScreen(),
               ),
@@ -156,7 +156,7 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
             child: const Text('Open overlay screen'),
           ),
           TextButton(
-            onPressed: () async => Navigator.of(context).push(
+            onPressed: () => Navigator.of(context).push(
               MaterialPageRoute<void>(
                 builder: (_) => const ScrollingScreen(),
               ),

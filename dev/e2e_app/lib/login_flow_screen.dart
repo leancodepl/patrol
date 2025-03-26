@@ -59,6 +59,7 @@ class _UsernamePageState extends State<UsernamePage> {
 
 class PasswordPage extends StatefulWidget {
   const PasswordPage({super.key, required this.username});
+
   final String username;
 
   @override
@@ -121,6 +122,7 @@ class _PasswordPageState extends State<PasswordPage> {
 
 class WelcomePage extends StatelessWidget {
   const WelcomePage({super.key, required this.username});
+
   final String username;
 
   @override
