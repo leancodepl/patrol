@@ -408,6 +408,14 @@ class PatrolTester {
     Duration? settleTimeout,
     bool enablePatrolLog = true,
   }) {
+    if (!kIsWeb) {
+      // Fix for enterText() not working in release mode on real iOS devices.
+      // See https://github.com/flutter/flutter/pull/89703
+      // Also the fix for enterText() is not able to interact with the same
+      // textfield 2 times in the same test.
+      // See https://github.com/flutter/flutter/issues/134604
+      tester.testTextInput.register();
+    }
     return TestAsyncUtils.guard(
       () => wrapWithPatrolLog(
         action: 'enterText',
@@ -416,15 +424,6 @@ class PatrolTester {
         color: AnsiCodes.magenta,
         enablePatrolLog: enablePatrolLog,
         function: () async {
-          if (!kIsWeb) {
-            // Fix for enterText() not working in release mode on real iOS devices.
-            // See https://github.com/flutter/flutter/pull/89703
-            // Also the fix for enterText() is not able to interact with the same
-            // textfield 2 times in the same test.
-            // See https://github.com/flutter/flutter/issues/134604
-            tester.testTextInput.register();
-          }
-
           final resolvedFinder = await waitUntilVisible(
             finder,
             timeout: visibleTimeout,
@@ -437,7 +436,7 @@ class PatrolTester {
           if (!kIsWeb && io.Platform.isIOS && kReleaseMode) {
             final editableTextState = tester.state<EditableTextState>(
               find.descendant(
-                of: resolvedFinder,
+                of: resolvedFinder.first,
                 matching: find.byType(EditableText),
                 matchRoot: true,
               ),
@@ -452,7 +451,7 @@ class PatrolTester {
             );
           }
 
-          await tester.enterText(resolvedFinder, text);
+          await tester.enterText(resolvedFinder.first, text);
 
           if (!kIsWeb) {
             // After interaction is done, we need to reset the testTextInput
