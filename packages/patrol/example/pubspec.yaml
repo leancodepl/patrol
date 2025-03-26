@@ -16,7 +16,7 @@ dependencies:
   firebase_messaging: ^15.2.1
   flutter:
     sdk: flutter
-  flutter_bloc: ^8.1.3
+  flutter_bloc: ^9.1.0
   flutter_holo_date_picker: ^1.1.3
   flutter_local_notifications: ^17.2.2
   flutter_svg: ^2.0.9
