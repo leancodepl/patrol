@@ -791,3 +791,19 @@ const _$SetLocationAccuracyRequestLocationAccuracyEnumMap = {
   SetLocationAccuracyRequestLocationAccuracy.coarse: 'coarse',
   SetLocationAccuracyRequestLocationAccuracy.fine: 'fine',
 };
+
+SetMockLocationRequest _$SetMockLocationRequestFromJson(
+        Map<String, dynamic> json) =>
+    SetMockLocationRequest(
+      latitude: (json['latitude'] as num).toDouble(),
+      longitude: (json['longitude'] as num).toDouble(),
+      packageName: json['packageName'] as String,
+    );
+
+Map<String, dynamic> _$SetMockLocationRequestToJson(
+        SetMockLocationRequest instance) =>
+    <String, dynamic>{
+      'latitude': instance.latitude,
+      'longitude': instance.longitude,
+      'packageName': instance.packageName,
+    };
