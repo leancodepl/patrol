@@ -130,10 +130,9 @@ const defaultScrollMaxIteration = 15;
 class PatrolTester {
   /// Creates a new [PatrolTester] which wraps [tester].
   PatrolTester({
-    required WidgetTester tester,
+    required this.tester,
     required this.config,
-  })  : patrolLog = PatrolLogWriter(),
-        tester = PatrolWidgetTester(tester);
+  }) : patrolLog = PatrolLogWriter();
 
   /// Global configuration of this tester.
   final PatrolTesterConfig config;

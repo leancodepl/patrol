@@ -26,10 +26,11 @@ void main() {
       await $(const Key('textField1')).enterText('User3');
       await $(const Key('textField2')).enterText('User4');
       await $(const Key('textField1')).enterText('User5');
+      await $(const Key('textField1')).enterText('User6');
       expect($('User2'), findsNothing);
       expect($('User3'), findsNothing);
       expect($('User4'), findsOneWidget);
-      expect($('User5'), findsOneWidget);
+      expect($('User6'), findsOneWidget);
     },
     tags: ['enterText'],
   );
