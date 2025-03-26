@@ -1,3 +1,7 @@
+## Unreleased
+
+- Bump `custom_lint` to `0.7.0` and `leancode_lint` to `14.3.0`. (#2574)
+
 ## 0.3.0
 
 - Remove `exception` from `StepEntry`. When it was too long, it caused crash because of badly formed JSON. (#2481)

@@ -1,6 +1,7 @@
 ## 3.15.0
 
 - Add `setMockLocation` method. (#2547)
+- Bump `custom_lint` to `0.7.0` and `leancode_lint` to `14.3.0`. (#2574)
 
 ## 3.14.1
 
