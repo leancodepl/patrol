@@ -1,3 +1,7 @@
+## 2.7.2
+
+- Remove `PatrolWidgetTester` class. (#2570)
+
 ## 2.7.1
 
 - Bump Gradle version in the example app so it's possible to build them on the
