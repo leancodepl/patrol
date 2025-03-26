@@ -579,15 +579,15 @@ packages:
       path: "../../packages/patrol"
       relative: true
     source: path
-    version: "3.15.0"
+    version: "3.15.1"
   patrol_finders:
     dependency: transitive
     description:
       name: patrol_finders
-      sha256: "4c6d78e00362fd15d7c21cfac110e501d08ada7d77000bad139b0c3c2e27ccaf"
+      sha256: "412ef6267ac2e1b19d8b54d94351956346318acd2ace95a286e9ac4ff1a106a1"
       url: "https://pub.dev"
     source: hosted
-    version: "2.7.0"
+    version: "2.7.1"
   patrol_log:
     dependency: transitive
     description:

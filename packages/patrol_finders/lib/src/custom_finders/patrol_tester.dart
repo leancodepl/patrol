@@ -1,4 +1,7 @@
+import 'dart:io' as io;
+
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol_finders/patrol_finders.dart';
@@ -127,10 +130,9 @@ const defaultScrollMaxIteration = 15;
 class PatrolTester {
   /// Creates a new [PatrolTester] which wraps [tester].
   PatrolTester({
-    required WidgetTester tester,
+    required this.tester,
     required this.config,
-  })  : patrolLog = PatrolLogWriter(),
-        tester = PatrolWidgetTester(tester);
+  }) : patrolLog = PatrolLogWriter();
 
   /// Global configuration of this tester.
   final PatrolTesterConfig config;
@@ -408,12 +410,11 @@ class PatrolTester {
     if (!kIsWeb) {
       // Fix for enterText() not working in release mode on real iOS devices.
       // See https://github.com/flutter/flutter/pull/89703
-      // Also a fix for enterText() not being able to interact with the same
+      // Also the fix for enterText() is not able to interact with the same
       // textfield 2 times in the same test.
       // See https://github.com/flutter/flutter/issues/134604
       tester.testTextInput.register();
     }
-
     return TestAsyncUtils.guard(
       () => wrapWithPatrolLog(
         action: 'enterText',
@@ -427,11 +428,34 @@ class PatrolTester {
             timeout: visibleTimeout,
             enablePatrolLog: false,
           );
-          await tester.tap(resolvedFinder.first);
+
+          // Workaround for enterText() not working in release mode on real iOS devices.
+          // [EditableTextState._openInputConnection] is not called when the text field is focused.
+          // So we need to attach text input connection manually.
+          if (!kIsWeb && io.Platform.isIOS && kReleaseMode) {
+            final editableTextState = tester.state<EditableTextState>(
+              find.descendant(
+                of: resolvedFinder.first,
+                matching: find.byType(EditableText),
+                matchRoot: true,
+              ),
+            );
+            final effectiveAutofillClient =
+                editableTextState.widget.autofillClient;
+
+            TextInput.attach(
+              editableTextState,
+              effectiveAutofillClient?.textInputConfiguration ??
+                  const TextInputConfiguration(),
+            );
+          }
+
           await tester.enterText(resolvedFinder.first, text);
+
           if (!kIsWeb) {
-            // When registering `testTextInput`, we have to unregister it
-            tester.testTextInput.unregister();
+            // After interaction is done, we need to reset the testTextInput
+            // to not interfere with consecutive interactions in the same test.
+            tester.testTextInput.reset();
           }
           await _performPump(
             settlePolicy: settlePolicy,
