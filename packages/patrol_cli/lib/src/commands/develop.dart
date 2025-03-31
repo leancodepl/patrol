@@ -384,6 +384,7 @@ class DevelopCommand extends PatrolCommand {
         dartDefines: flutterOpts.dartDefines,
         openDevtools: openDevtools,
         attachUsingUrl: device.targetPlatform == TargetPlatform.macOS,
+        onQuit: finalizer,
       );
 
       await future;

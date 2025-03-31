@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io' as io;
+import 'dart:io' show exit;
 
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:meta/meta.dart';
@@ -17,6 +18,7 @@ class FlutterTool {
     required Platform platform,
     required DisposeScope parentDisposeScope,
     required Logger logger,
+    this.onQuit,
   })  : _stdin = stdin,
         _processManager = processManager,
         _platform = platform,
@@ -30,6 +32,7 @@ class FlutterTool {
   final Platform _platform;
   final DisposeScope _disposeScope;
   final Logger _logger;
+  final Future<void> Function()? onQuit;
 
   bool _hotRestartActive = false;
   bool _logsActive = false;
@@ -43,6 +46,7 @@ class FlutterTool {
     required Map<String, String> dartDefines,
     required bool openDevtools,
     bool attachUsingUrl = false,
+    Future<void> Function()? onQuit,
   }) async {
     if (io.stdin.hasTerminal) {
       _enableInteractiveMode();
@@ -64,6 +68,7 @@ class FlutterTool {
         debugUrl: url,
         dartDefines: dartDefines,
         openBrowser: openDevtools,
+        onQuit: onQuit,
       );
     } else {
       await Future.wait<void>([
@@ -75,6 +80,7 @@ class FlutterTool {
           appId: appId,
           dartDefines: dartDefines,
           openBrowser: openDevtools,
+          onQuit: onQuit,
         ),
       ]);
     }
@@ -95,6 +101,7 @@ class FlutterTool {
     required String? appId,
     required Map<String, String> dartDefines,
     required bool openBrowser,
+    Future<void> Function()? onQuit,
   }) async {
     await _disposeScope.run((scope) async {
       final process = await _processManager.start(
@@ -116,7 +123,15 @@ class FlutterTool {
       )
         ..disposedBy(scope);
 
-      _stdin.listen((event) {
+      final completer = Completer<void>();
+      scope.addDispose(() async {
+        if (!completer.isCompleted) {
+          _logger.detail('Killed before attached to the app');
+          completer.complete();
+        }
+      });
+
+      _stdin.listen((event) async {
         final char = String.fromCharCode(event.first);
         if (char == 'r' || char == 'R') {
           if (!_hotRestartActive) {
@@ -126,22 +141,34 @@ class FlutterTool {
 
           _logger.success('Hot Restart for entrypoint ${basename(target)}...');
           process.stdin.add('R'.codeUnits);
+        } else if (char == 'q' || char == 'Q') {
+          _logger.success('Quitting process...');
+          process.kill();
+          if (!completer.isCompleted) {
+            completer.complete();
+          }
+
+          // Call the uninstall function if provided
+          if (onQuit != null) {
+            try {
+              await onQuit();
+            } catch (err) {
+              _logger.err('Failed to clean up app: $err');
+            }
+          }
+
+          exit(0);
         }
       }).disposedBy(scope);
-
-      final completer = Completer<void>();
-      scope.addDispose(() async {
-        if (!completer.isCompleted) {
-          _logger.detail('Killed before attached to the app');
-          completer.complete();
-        }
-      });
 
       _logger.detail('Hot Restart: waiting for attach to the app...');
       process.listenStdOut((line) {
         if (line == 'Flutter run key commands.' && !completer.isCompleted) {
           _logger.success(
-            'Hot Restart: attached to the app (press "r" to restart)',
+            'Hot Restart: attached to the app\n'
+            'Patrol develop key commands:\n'
+            'r Hot restart.\n'
+            'q Quit (terminate the process and application on the device).',
           );
           _hotRestartActive = true;
 
