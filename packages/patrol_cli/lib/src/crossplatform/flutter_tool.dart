@@ -165,7 +165,10 @@ class FlutterTool {
       process.listenStdOut((line) {
         if (line == 'Flutter run key commands.' && !completer.isCompleted) {
           _logger.success(
-            'Hot Restart: attached to the app (press "r" to restart)',
+            'Hot Restart: attached to the app\n'
+            'Patrol develop key commands:\n'
+            'r Hot restart.\n'
+            'q Quit (terminate the process and application on the device).',
           );
           _hotRestartActive = true;
 
@@ -237,9 +240,7 @@ class FlutterTool {
           observationUrlCompleter?.complete(url);
         }
         if (line.startsWith('Showing ') && line.endsWith('logs:')) {
-          _logger
-            ..success('Hot Restart: logs connected')
-            ..info('Press "q" to quit at any time');
+          _logger.success('Hot Restart: logs connected');
           _logsActive = true;
 
           if (!_hotRestartActive) {
