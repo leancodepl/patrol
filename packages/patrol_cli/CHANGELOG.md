@@ -1,7 +1,6 @@
 ## Unreleased
 
 - Add ability to quit the `patrol develop` process by pressing q on the keyboard (#2577)
-- Add proper cleanup of app and develop process when quitting with 'q'. (#2575)
 - Add `--ios` flag to `patrol test` that specifies the iOS version to use. (#2540)
 - Bump `custom_lint` to `0.7.0` and `leancode_lint` to `14.3.0`. (#2574)
 
