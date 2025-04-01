@@ -1,5 +1,5 @@
-import 'package:patrol_cli/src/compatibility_checker/version_compatibility.dart';
 import 'package:patrol_cli/src/base/constants.dart' as constants;
+import 'package:patrol_cli/src/compatibility_checker/version_compatibility.dart';
 import 'package:test/test.dart';
 import 'package:version/version.dart';
 
@@ -35,9 +35,12 @@ void main() {
                 cliRange.max!.compareTo(currentCliVersion) >= 0);
       });
 
-      expect(hasEntry, isTrue,
-          reason:
-              'Current patrol_cli version ${currentCliVersion} is not listed in compatibility file');
+      expect(
+        hasEntry,
+        isTrue,
+        reason:
+            'Current patrol_cli version $currentCliVersion is not listed in compatibility file',
+      );
     });
 
     test('current patrol_cli is compatible with listed patrol versions', () {
@@ -54,25 +57,34 @@ void main() {
           .expand((compat) => _expandVersionRange(compat.patrolVersion))
           .toList();
 
-      expect(compatiblePatrolVersions, isNotEmpty,
-          reason:
-              'No compatible patrol versions found for current patrol_cli ${currentCliVersion}');
+      expect(
+        compatiblePatrolVersions,
+        isNotEmpty,
+        reason:
+            'No compatible patrol versions found for current patrol_cli $currentCliVersion',
+      );
 
       // Verify each version is actually compatible
       for (final patrolVersion in compatiblePatrolVersions) {
-        expect(areVersionsCompatible(currentCliVersion, patrolVersion), isTrue,
-            reason:
-                'Current patrol_cli ${currentCliVersion} is not compatible with patrol ${patrolVersion}');
+        expect(
+          areVersionsCompatible(currentCliVersion, patrolVersion),
+          isTrue,
+          reason:
+              'Current patrol_cli $currentCliVersion is not compatible with patrol $patrolVersion',
+        );
       }
     });
   });
 }
 
 class VersionRange {
+  VersionRange({
+    required this.min,
+    this.max,
+  });
+
   final Version min;
   final Version? max;
-
-  VersionRange({required this.min, this.max});
 }
 
 VersionRange _parseVersionRange(String versionStr) {

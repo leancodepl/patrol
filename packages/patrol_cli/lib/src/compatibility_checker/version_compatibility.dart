@@ -1,6 +1,6 @@
-import 'package:version/version.dart';
 import 'package:patrol_cli/src/compatibility_checker/version_comparator.dart'
     as vc;
+import 'package:version/version.dart';
 
 /// Represents a mapping between patrol and patrol_cli compatible versions
 class VersionCompatibility {
@@ -14,21 +14,13 @@ class VersionCompatibility {
   final String patrolCliVersion;
   final String minFlutterVersion;
 
-  /// Creates a VersionComparator for this compatibility entry
-  vc.VersionComparator _createComparator() {
-    return vc.VersionComparator(
-      cliVersionRange: _parseVersionRange(patrolCliVersion),
-      packageVersionRange: _parseVersionRange(patrolVersion),
-    );
-  }
-
   /// Checks if the given versions are compatible with this entry
   bool isCompatible(Version cliVersion, Version patrolVersion) {
     final cliRanges = _parseVersionRange(patrolCliVersion);
     final patrolRanges = _parseVersionRange(this.patrolVersion);
 
     // Check if CLI version matches any of its ranges
-    bool cliMatches = false;
+    var cliMatches = false;
     for (final range in cliRanges) {
       if (range.min <= cliVersion &&
           (range.max == null || cliVersion <= range.max)) {
@@ -37,7 +29,9 @@ class VersionCompatibility {
       }
     }
 
-    if (!cliMatches) return false;
+    if (!cliMatches) {
+      return false;
+    }
 
     // Check if patrol version matches any of its ranges
     for (final range in patrolRanges) {
@@ -54,7 +48,7 @@ class VersionCompatibility {
   Version? getHighestCompatiblePatrolVersion(Version cliVersion) {
     // Check if CLI version is in the compatible range
     final cliRanges = _parseVersionRange(patrolCliVersion);
-    bool isCliCompatible = false;
+    var isCliCompatible = false;
     for (final range in cliRanges) {
       if (range.min <= cliVersion &&
           (range.max == null || cliVersion <= range.max)) {
