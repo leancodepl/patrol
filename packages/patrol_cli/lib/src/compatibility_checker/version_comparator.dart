@@ -1,5 +1,7 @@
 import 'package:version/version.dart';
 
+export 'version_comparator.dart' show VersionRange;
+
 class VersionComparator {
   VersionComparator({
     required List<VersionRange> cliVersionRange,

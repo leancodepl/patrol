@@ -452,6 +452,8 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
       ..info(
         '''
 ${lightYellow.wrap('Update available!')} ${lightCyan.wrap(constants.version)} \u2192 ${lightCyan.wrap(latestVersion)}
+⚠️  Before updating, please ensure your patrol package version is compatible with patrol_cli ${latestVersion}
+Check the compatibility table at: ${lightCyan.wrap('https://patrol.leancode.co/documentation/compatibility-table')}
 Run ${lightCyan.wrap('patrol update')} to update''',
       )
       ..info('');
