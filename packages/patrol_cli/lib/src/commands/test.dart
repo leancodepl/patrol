@@ -64,6 +64,14 @@ class TestCommand extends PatrolCommand {
 
     usesAndroidOptions();
     usesIOSOptions();
+    argParser.addOption(
+      'build-number',
+      help: 'A build number to be used as --build-number in Flutter build.',
+    );
+    argParser.addOption(
+      'build-name',
+      help: 'A build name to be used as --build-name in Flutter build.',
+    );
   }
 
   final DeviceFinder _deviceFinder;
@@ -74,7 +82,7 @@ class TestCommand extends PatrolCommand {
   final PubspecReader _pubspecReader;
   final AndroidTestBackend _androidTestBackend;
   final IOSTestBackend _iosTestBackend;
-  final MacOSTestBackend _macosTestBackend;
+  final MacOSTestBackend _macOSTestBackend;
   final CoverageTool _coverageTool;
 
   final Analytics _analytics;
@@ -210,6 +218,9 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       _dartDefinesReader,
     );
 
+    final buildNumber = stringArg('build-number');
+    final buildName = stringArg('build-name');
+
     final flutterOpts = FlutterAppOptions(
       command: flutterCommand,
       target: entrypoint.path,
@@ -217,6 +228,8 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       buildMode: buildMode,
       dartDefines: mergedDartDefines,
       dartDefineFromFilePaths: dartDefineFromFilePaths,
+      buildNumber: buildNumber,
+      buildName: buildName,
     );
 
     final androidOpts = AndroidAppOptions(

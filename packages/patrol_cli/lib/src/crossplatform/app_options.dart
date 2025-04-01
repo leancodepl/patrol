@@ -14,6 +14,8 @@ class FlutterAppOptions {
     required this.buildMode,
     required this.dartDefines,
     required this.dartDefineFromFilePaths,
+    this.buildNumber,
+    this.buildName,
   });
 
   final FlutterCommand command;
@@ -22,6 +24,8 @@ class FlutterAppOptions {
   final BuildMode buildMode;
   final Map<String, String> dartDefines;
   final List<String> dartDefineFromFilePaths;
+  final String? buildNumber;
+  final String? buildName;
 
   /// Translates these options into a proper `flutter attach`.
   @nonVirtual
@@ -137,6 +141,14 @@ class AndroidAppOptions {
     // Create modifiable Map
     final effectiveDartDefines = Map<String, String>.of(flutter.dartDefines);
 
+    // Add build number and build name to dart defines
+    if (flutter.buildNumber != null) {
+      effectiveDartDefines['FLUTTER_BUILD_NUMBER'] = flutter.buildNumber!;
+    }
+    if (flutter.buildName != null) {
+      effectiveDartDefines['FLUTTER_BUILD_NAME'] = flutter.buildName!;
+    }
+
     // Add Dart defines encoded in base64
     if (effectiveDartDefines.isNotEmpty) {
       final dartDefinesString = StringBuffer();
@@ -221,6 +233,8 @@ class IOSAppOptions {
         if (simulator) '--simulator',
       ],
       if (flutter.flavor != null) ...['--flavor', flutter.flavor!],
+      if (flutter.buildNumber != null) ...['--build-number', flutter.buildNumber!],
+      if (flutter.buildName != null) ...['--build-name', flutter.buildName!],
       ...['--target', flutter.target],
       for (final dartDefine in flutter.dartDefines.entries) ...[
         '--dart-define',
@@ -315,6 +329,8 @@ class MacOSAppOptions {
         '--${buildMode.name}', // for example '--debug',
       ],
       if (flutter.flavor != null) ...['--flavor', flutter.flavor!],
+      if (flutter.buildNumber != null) ...['--build-number', flutter.buildNumber!],
+      if (flutter.buildName != null) ...['--build-name', flutter.buildName!],
       ...['--target', flutter.target],
       for (final dartDefine in flutter.dartDefines.entries) ...[
         '--dart-define',
