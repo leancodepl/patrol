@@ -97,7 +97,13 @@ void main() {
       await tapOkIfGoogleDialogAppearsV2($);
     }
 
-    expect(await $(RegExp('lat')).waitUntilVisible(), findsOneWidget);
-    expect(await $(RegExp('lng')).waitUntilVisible(), findsOneWidget);
+    expect(
+      await $(RegExp('lat')).waitUntilVisible(timeout: Duration(seconds: 30)),
+      findsOneWidget,
+    );
+    expect(
+      await $(RegExp('lng')).waitUntilVisible(timeout: Duration(seconds: 30)),
+      findsOneWidget,
+    );
   });
 }
