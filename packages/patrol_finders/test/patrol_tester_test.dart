@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol_finders/src/custom_finders/custom_finders.dart';
 
+import 'utils/long_screen_with_long_button.dart';
+import 'utils/screen_with_long_button.dart';
 import 'utils/set_physical_size.dart';
 
 void main() {
@@ -94,25 +96,11 @@ void main() {
           setPhysicalSize(tester.tester, width);
 
           await tester.pumpWidget(
-            MaterialApp(
-              home: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Container(
-                  color: Colors.blue,
-                  width: 2 * width,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        width: width,
-                        child: ElevatedButton(
-                          onPressed: () {},
-                          child: const Text('some text'),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+            ScreenWithLongButton(
+              width: width,
+              testedWidget: ElevatedButton(
+                onPressed: () {},
+                child: const Text('some text'),
               ),
             ),
           );
@@ -133,27 +121,13 @@ void main() {
           var counter = 0;
 
           await tester.pumpWidget(
-            MaterialApp(
-              home: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Container(
-                  color: Colors.blue,
-                  width: 2 * width,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        width: width,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            counter++;
-                          },
-                          child: const Text('some text'),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+            ScreenWithLongButton(
+              width: width,
+              testedWidget: ElevatedButton(
+                onPressed: () {
+                  counter++;
+                },
+                child: const Text('some text'),
               ),
             ),
           );
@@ -299,25 +273,9 @@ void main() {
           setPhysicalSize(tester.tester, width);
 
           await tester.pumpWidget(
-            MaterialApp(
-              home: Scaffold(
-                body: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Container(
-                    color: Colors.blue,
-                    width: 2 * width,
-                    child: const Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          width: width,
-                          child: TextField(),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
+            const ScreenWithLongButton(
+              width: width,
+              testedWidget: TextField(),
             ),
           );
 
@@ -338,26 +296,10 @@ void main() {
           final controller = TextEditingController();
 
           await tester.pumpWidget(
-            MaterialApp(
-              home: Scaffold(
-                body: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Container(
-                    color: Colors.blue,
-                    width: 2 * width,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          width: width,
-                          child: TextField(
-                            controller: controller,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+            ScreenWithLongButton(
+              width: width,
+              testedWidget: TextField(
+                controller: controller,
               ),
             ),
           );
@@ -805,31 +747,11 @@ void main() {
           setPhysicalSize(tester.tester, width);
 
           await tester.pumpWidget(
-            MaterialApp(
-              home: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Container(
-                        color: Colors.blue,
-                        width: 2 * width,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SizedBox(
-                              width: width,
-                              child: ElevatedButton(
-                                onPressed: () {},
-                                child: const Text('some text'),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+            ScreenWithLongButton(
+              width: width,
+              testedWidget: ElevatedButton(
+                onPressed: () {},
+                child: const Text('some text'),
               ),
             ),
           );
@@ -850,34 +772,11 @@ void main() {
           setPhysicalSize(tester.tester, width);
 
           await tester.pumpWidget(
-            MaterialApp(
-              home: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    const SizedBox(
-                      height: 2000,
-                    ),
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Container(
-                        color: Colors.blue,
-                        width: 2 * width,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SizedBox(
-                              width: width,
-                              child: ElevatedButton(
-                                onPressed: () {},
-                                child: const Text('some text'),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+            LongScreenWithLongButton(
+              width: width,
+              testedWidget: ElevatedButton(
+                onPressed: () {},
+                child: const Text('some text'),
               ),
             ),
           );
