@@ -34,16 +34,32 @@ Future<void> generateCompatibilityTable() async {
 
   // Sort list by patrol_cli version in descending order
   final sortedList = [...versionCompatibilityList]..sort((a, b) {
-      final aVersion =
-          Version.parse(a.patrolCliVersion.split(' - ')[0].replaceAll('+', ''));
-      final bVersion =
-          Version.parse(b.patrolCliVersion.split(' - ')[0].replaceAll('+', ''));
+      final aVersion = Version.parse(a.patrolCliBottomRangeVersion);
+      final bVersion = Version.parse(b.patrolCliBottomRangeVersion);
       return bVersion.compareTo(aVersion);
     });
 
   // Build table rows
-  final tableRows = sortedList.map((entry) =>
-      '| ${entry.patrolCliVersion} | ${entry.patrolVersion} | ${entry.minFlutterVersion} |');
+  final tableRows = sortedList.map((entry) {
+    String formatVersion(String bottom, String? top) {
+      if (top == null) {
+        return '$bottom+';
+      }
+      return bottom == top ? bottom : '$bottom - $top';
+    }
+
+    final cliVersion = formatVersion(
+      entry.patrolCliBottomRangeVersion,
+      entry.patrolCliTopRangeVersion,
+    );
+
+    final patrolVersion = formatVersion(
+      entry.patrolBottomRangeVersion,
+      entry.patrolTopRangeVersion,
+    );
+
+    return '| $cliVersion | $patrolVersion | ${entry.minFlutterVersion} |';
+  });
 
   // Add table rows and notes section
   buffer
@@ -71,21 +87,21 @@ Future<void> generateCompatibilityTable() async {
   final tableContent = buffer.toString();
 
   // Create and write to docs/documentation/compatibility-table.mdx
-  final docsDir = Directory(path.join(rootDir, 'docs', 'documentation'));
-  docsDir.createSync(recursive: true);
-  final docsDirFile = File(path.join(docsDir.path, 'compatibility-table.mdx'));
-  docsDirFile.writeAsStringSync(tableContent);
+  final docsDir = Directory(path.join(rootDir, 'docs', 'documentation'))
+  ..createSync(recursive: true);
+  final docsDirFile = File(path.join(docsDir.path, 'compatibility-table.mdx'))
+  ..writeAsStringSync(tableContent);
 
   // Create and write to docs/compatibility-table.mdx
-  final docsRootDir = Directory(path.join(rootDir, 'docs'));
-  docsRootDir.createSync(recursive: true);
+  final docsRootDir = Directory(path.join(rootDir, 'docs'))
+  ..createSync(recursive: true);
   final docsRootFile =
-      File(path.join(docsRootDir.path, 'compatibility-table.mdx'));
-  docsRootFile.writeAsStringSync(tableContent);
+      File(path.join(docsRootDir.path, 'compatibility-table.mdx'))
+  ..writeAsStringSync(tableContent);
 
-  _logger.info('Generated compatibility table in:');
-  _logger.info('- ${docsDirFile.path}');
-  _logger.info('- ${docsRootFile.path}');
+  _logger..info('Generated compatibility table in:')
+  ..info('- ${docsDirFile.path}')
+  ..info('- ${docsRootFile.path}');
 }
 
 void main() {

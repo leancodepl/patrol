@@ -29,10 +29,12 @@ void main() {
 
       // Check if the current CLI version has an entry in the compatibility list
       final hasEntry = versionCompatibilityList.any((compat) {
-        final cliRange = _parseVersionRange(compat.patrolCliVersion);
-        return cliRange.min.compareTo(currentCliVersion) <= 0 &&
-            (cliRange.max == null ||
-                cliRange.max!.compareTo(currentCliVersion) >= 0);
+        final cliMin = Version.parse(compat.patrolCliBottomRangeVersion);
+        final cliMax = compat.patrolCliTopRangeVersion != null
+            ? Version.parse(compat.patrolCliTopRangeVersion!)
+            : null;
+        return currentCliVersion >= cliMin &&
+            (cliMax == null || currentCliVersion <= cliMax);
       });
 
       expect(
@@ -49,12 +51,18 @@ void main() {
       // Get all patrol versions that should be compatible with current CLI
       final compatiblePatrolVersions = versionCompatibilityList
           .where((compat) {
-            final cliRange = _parseVersionRange(compat.patrolCliVersion);
-            return cliRange.min.compareTo(currentCliVersion) <= 0 &&
-                (cliRange.max == null ||
-                    cliRange.max!.compareTo(currentCliVersion) >= 0);
+            final cliMin = Version.parse(compat.patrolCliBottomRangeVersion);
+            final cliMax = compat.patrolCliTopRangeVersion != null
+                ? Version.parse(compat.patrolCliTopRangeVersion!)
+                : null;
+            return currentCliVersion >= cliMin &&
+                (cliMax == null || currentCliVersion <= cliMax);
           })
-          .expand((compat) => _expandVersionRange(compat.patrolVersion))
+          .expand((compat) => [
+                Version.parse(compat.patrolBottomRangeVersion),
+                if (compat.patrolTopRangeVersion != null)
+                  Version.parse(compat.patrolTopRangeVersion!),
+              ])
           .toList();
 
       expect(
