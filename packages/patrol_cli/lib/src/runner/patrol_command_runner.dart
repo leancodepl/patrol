@@ -459,27 +459,36 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
         patrolVersion = pubspecReader.getPatrolVersion();
       }
 
-      String compatibilityMessage = '';
+      final buffer = StringBuffer();
+      buffer.writeln(
+          '${lightYellow.wrap('Update available!')} ${lightCyan.wrap(constants.version)} \u2192 ${lightCyan.wrap(latestVersion)}');
+      buffer.writeln();
+
+      // Only show compatibility messages if we found a patrol version
       if (patrolVersion != null) {
         final patrolVer = Version.parse(patrolVersion);
         final maxCliVersion = getMaxCompatibleCliVersion(patrolVer);
-        if (maxCliVersion != null) {
-          if (latestVersionParsed > maxCliVersion) {
-            compatibilityMessage =
-                '\n⚠️  Warning: Your patrol version $patrolVersion is only compatible up to patrol_cli ${maxCliVersion}';
-          }
+
+        if (maxCliVersion != null && latestVersionParsed > maxCliVersion) {
+          // Show warning only when incompatible
+          buffer.writeln(
+              '⚠️  Before updating, please ensure your patrol package version is compatible with patrol_cli $latestVersion');
+          buffer.writeln(
+              '⚠️  Warning: Your patrol version $patrolVersion is only compatible up to patrol_cli ${maxCliVersion}');
+          buffer.writeln('To update to the latest compatible version, run:');
+          buffer.writeln(lightCyan
+              .wrap('dart pub global activate patrol_cli ${maxCliVersion}'));
+          buffer.writeln(
+              'Check the compatibility table at: ${lightCyan.wrap('https://patrol.leancode.co/documentation/compatibility-table')}');
         }
       }
 
+      buffer.writeln(
+          'Run ${lightCyan.wrap('patrol update')} to update to the latest version');
+
       _logger
         ..info('')
-        ..info(
-          '''
-${lightYellow.wrap('Update available!')} ${lightCyan.wrap(constants.version)} \u2192 ${lightCyan.wrap(latestVersion)}
-⚠️  Before updating, please ensure your patrol package version is compatible with patrol_cli $latestVersion$compatibilityMessage
-Check the compatibility table at: ${lightCyan.wrap('https://patrol.leancode.co/documentation/compatibility-table')}
-Run ${lightCyan.wrap('patrol update')} to update''',
-        )
+        ..info(buffer.toString())
         ..info('');
     }
   }
