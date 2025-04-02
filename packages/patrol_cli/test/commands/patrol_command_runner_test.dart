@@ -1,4 +1,5 @@
 import 'package:args/command_runner.dart';
+import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:patrol_cli/src/base/constants.dart' as constants;
@@ -12,11 +13,12 @@ import 'package:test/test.dart';
 import '../ios/ios_test_backend_test.dart';
 import '../src/mocks.dart';
 
-const latestVersion = '0.0.0';
+const latestVersion = '999.0.0';
 
 final updatePrompt = '''
 ${lightYellow.wrap('Update available!')} ${lightCyan.wrap(constants.version)} \u2192 ${lightCyan.wrap(latestVersion)}
 ⚠️  Before updating, please ensure your patrol package version is compatible with patrol_cli $latestVersion
+⚠️  Warning: Your patrol version 3.0.0 is only compatible up to patrol_cli 2.5.0
 Check the compatibility table at: ${lightCyan.wrap('https://patrol.leancode.co/documentation/compatibility-table')}
 Run ${lightCyan.wrap('patrol update')} to update''';
 
@@ -24,12 +26,25 @@ void main() {
   group('PatrolCommandRunner', () {
     late Logger logger;
     late PubUpdater pubUpdater;
+    late FileSystem fs;
 
     late PatrolCommandRunner commandRunner;
 
     setUp(() {
       logger = MockLogger();
       pubUpdater = MockPubUpdater();
+      fs = MemoryFileSystem.test();
+
+      // Set up a fake pubspec.yaml file with patrol dependency
+      final dir = fs.directory('/project')..createSync();
+      dir.childFile('pubspec.yaml')
+        ..createSync()
+        ..writeAsStringSync('''
+name: test_project
+dependencies:
+  patrol: ^3.0.0
+''');
+      fs.currentDirectory = dir;
 
       when(
         () => pubUpdater.getLatestVersion(any()),
@@ -39,7 +54,7 @@ void main() {
         platform: FakePlatform(environment: {}),
         processManager: FakeProcessManager(),
         pubUpdater: pubUpdater,
-        fs: MemoryFileSystem.test(),
+        fs: fs,
         analytics: MockAnalytics(),
         logger: logger,
         isCI: false,
@@ -51,9 +66,16 @@ void main() {
         () => pubUpdater.getLatestVersion(any()),
       ).thenAnswer((_) async => latestVersion);
 
+      // Add a callback to print logged messages
+      when(() => logger.info(any())).thenAnswer((invocation) {
+        print('Logged message: ${invocation.positionalArguments[0]}');
+      });
+
       final result = await commandRunner.run(['--version']);
       expect(result, equals(0));
+      verify(() => logger.info('')).called(2);
       verify(() => logger.info(updatePrompt)).called(1);
+      verify(() => logger.info('patrol_cli v${constants.version}')).called(1);
     });
 
     test('handles FormatException', () async {

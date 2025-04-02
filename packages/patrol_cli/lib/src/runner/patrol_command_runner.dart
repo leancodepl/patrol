@@ -453,7 +453,7 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
     if (latestVersionParsed > currentVersion) {
       // Try to find the current patrol version in the project
       String? patrolVersion;
-      final rootDir = findRootDirectory(const LocalFileSystem());
+      final rootDir = findRootDirectory(_fs);
       if (rootDir != null) {
         final pubspecReader = PubspecReader(projectRoot: rootDir);
         patrolVersion = pubspecReader.getPatrolVersion();
