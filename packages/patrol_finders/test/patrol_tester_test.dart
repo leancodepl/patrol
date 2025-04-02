@@ -85,6 +85,93 @@ void main() {
           throwsAssertionError,
         );
       });
+
+      group('with alignment', () {
+        patrolWidgetTest('finds no widgets', (tester) async {
+          const width = 300.0;
+          tester.tester.view.devicePixelRatio = 1.0;
+          tester.tester.view.physicalSize = const Size(width, 600);
+
+          // resets the screen to its original size after the test end
+          addTearDown(tester.tester.view.resetPhysicalSize);
+
+          await tester.pumpWidget(
+            MaterialApp(
+              home: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Container(
+                  color: Colors.blue,
+                  width: 2 * width,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        width: width,
+                        child: ElevatedButton(
+                          onPressed: () {},
+                          child: const Text('some text'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          );
+
+          await expectLater(
+            () => tester.tap(
+              find.byType(ElevatedButton),
+              alignment: Alignment.centerRight,
+            ),
+            throwsA(isA<WaitUntilVisibleTimeoutException>()),
+          );
+        });
+
+        patrolWidgetTest('finds widgets', (tester) async {
+          const width = 300.0;
+          tester.tester.view.devicePixelRatio = 1.0;
+          tester.tester.view.physicalSize = const Size(width, 600);
+
+          // resets the screen to its original size after the test end
+          addTearDown(tester.tester.view.resetPhysicalSize);
+
+          var counter = 0;
+
+          await tester.pumpWidget(
+            MaterialApp(
+              home: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Container(
+                  color: Colors.blue,
+                  width: 2 * width,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        width: width,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            counter++;
+                          },
+                          child: const Text('some text'),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          );
+
+          await tester.tap(
+            find.byType(ElevatedButton),
+            alignment: Alignment.centerLeft,
+          );
+
+          expect(counter, 1);
+        });
+      });
     });
 
     group('enterText()', () {
@@ -210,6 +297,95 @@ void main() {
           },
           throwsAssertionError,
         );
+      });
+
+      group('with alignment', () {
+        patrolWidgetTest('finds no widgets', (tester) async {
+          const width = 300.0;
+          tester.tester.view.devicePixelRatio = 1.0;
+          tester.tester.view.physicalSize = const Size(width, 600);
+
+          // resets the screen to its original size after the test end
+          addTearDown(tester.tester.view.resetPhysicalSize);
+
+          await tester.pumpWidget(
+            MaterialApp(
+              home: Scaffold(
+                body: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Container(
+                    color: Colors.blue,
+                    width: 2 * width,
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          width: width,
+                          child: TextField(),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+
+          await expectLater(
+            () => tester.enterText(
+              find.byType(TextField),
+              'text',
+              alignment: Alignment.centerRight,
+            ),
+            throwsA(isA<WaitUntilVisibleTimeoutException>()),
+          );
+        });
+
+        patrolWidgetTest('finds widgets', (tester) async {
+          const width = 300.0;
+          tester.tester.view.devicePixelRatio = 1.0;
+          tester.tester.view.physicalSize = const Size(width, 600);
+
+          // resets the screen to its original size after the test end
+          addTearDown(tester.tester.view.resetPhysicalSize);
+
+          final controller = TextEditingController();
+
+          await tester.pumpWidget(
+            MaterialApp(
+              home: Scaffold(
+                body: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Container(
+                    color: Colors.blue,
+                    width: 2 * width,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          width: width,
+                          child: TextField(
+                            controller: controller,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+
+          const input = 'text';
+
+          await tester.enterText(
+            find.byType(TextField),
+            input,
+            alignment: Alignment.centerLeft,
+          );
+
+          expect(controller.text, input);
+        });
       });
     });
 
@@ -636,6 +812,116 @@ void main() {
           expect(find.text('text 2').hitTestable(), findsOneWidget);
         },
       );
+
+      group('with alignment', () {
+        patrolWidgetTest('finds no widgets', (tester) async {
+          const width = 300.0;
+          tester.tester.view.devicePixelRatio = 1.0;
+          tester.tester.view.physicalSize = const Size(width, 600);
+
+          // resets the screen to its original size after the test end
+          addTearDown(tester.tester.view.resetPhysicalSize);
+
+          await tester.pumpWidget(
+            MaterialApp(
+              home: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Container(
+                        color: Colors.blue,
+                        width: 2 * width,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              width: width,
+                              child: ElevatedButton(
+                                onPressed: () {},
+                                child: const Text('some text'),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+
+          await expectLater(
+            () => tester.dragUntilVisible(
+              finder: find.byType(ElevatedButton),
+              view: find.byType(Scrollable),
+              moveStep: const Offset(0, -defaultScrollDelta),
+              alignment: Alignment.centerRight,
+            ),
+            throwsA(isA<WaitUntilVisibleTimeoutException>()),
+          );
+        });
+
+        patrolWidgetTest('finds widgets', (tester) async {
+          const width = 300.0;
+          tester.tester.view.devicePixelRatio = 1.0;
+          tester.tester.view.physicalSize = const Size(width, 600);
+
+          // resets the screen to its original size after the test end
+          addTearDown(tester.tester.view.resetPhysicalSize);
+
+          await tester.pumpWidget(
+            MaterialApp(
+              home: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    const SizedBox(
+                      height: 2000,
+                    ),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Container(
+                        color: Colors.blue,
+                        width: 2 * width,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              width: width,
+                              child: ElevatedButton(
+                                onPressed: () {},
+                                child: const Text('some text'),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+
+          expect(
+            find.byType(ElevatedButton).hitTestable(at: Alignment.centerLeft),
+            findsNothing,
+          );
+
+          await tester.dragUntilVisible(
+            finder: find.byType(ElevatedButton),
+            view: find.byType(Scrollable),
+            moveStep: const Offset(0, -defaultScrollDelta),
+            alignment: Alignment.centerLeft,
+          );
+
+          expect(
+            find.byType(ElevatedButton).hitTestable(at: Alignment.centerLeft),
+            findsOneWidget,
+          );
+        });
+      });
     });
 
     patrolWidgetTest(
