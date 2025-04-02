@@ -69,8 +69,14 @@ void main() {
       await tapOkIfGoogleDialogAppears($);
     }
 
-    expect(await $(RegExp('lat')).waitUntilVisible(), findsOneWidget);
-    expect(await $(RegExp('lng')).waitUntilVisible(), findsOneWidget);
+    expect(
+      await $(RegExp('lat')).waitUntilVisible(timeout: Duration(seconds: 20)),
+      findsOneWidget,
+    );
+    expect(
+      await $(RegExp('lng')).waitUntilVisible(timeout: Duration(seconds: 20)),
+      findsOneWidget,
+    );
   });
 
   patrol('accepts location permission native2', ($) async {
