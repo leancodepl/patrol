@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol_finders/src/custom_finders/custom_finders.dart';
 
+import 'utils/set_physical_size.dart';
+
 void main() {
   group('PatrolTester', () {
     group('tap()', () {
@@ -89,11 +91,7 @@ void main() {
       group('with alignment', () {
         patrolWidgetTest('finds no widgets', (tester) async {
           const width = 300.0;
-          tester.tester.view.devicePixelRatio = 1.0;
-          tester.tester.view.physicalSize = const Size(width, 600);
-
-          // resets the screen to its original size after the test end
-          addTearDown(tester.tester.view.resetPhysicalSize);
+          setPhysicalSize(tester.tester, width);
 
           await tester.pumpWidget(
             MaterialApp(
@@ -130,11 +128,7 @@ void main() {
 
         patrolWidgetTest('finds widgets', (tester) async {
           const width = 300.0;
-          tester.tester.view.devicePixelRatio = 1.0;
-          tester.tester.view.physicalSize = const Size(width, 600);
-
-          // resets the screen to its original size after the test end
-          addTearDown(tester.tester.view.resetPhysicalSize);
+          setPhysicalSize(tester.tester, width);
 
           var counter = 0;
 
@@ -166,7 +160,7 @@ void main() {
 
           await tester.tap(
             find.byType(ElevatedButton),
-            alignment: Alignment.centerLeft,
+            alignment: Alignment.topLeft,
           );
 
           expect(counter, 1);
@@ -302,11 +296,7 @@ void main() {
       group('with alignment', () {
         patrolWidgetTest('finds no widgets', (tester) async {
           const width = 300.0;
-          tester.tester.view.devicePixelRatio = 1.0;
-          tester.tester.view.physicalSize = const Size(width, 600);
-
-          // resets the screen to its original size after the test end
-          addTearDown(tester.tester.view.resetPhysicalSize);
+          setPhysicalSize(tester.tester, width);
 
           await tester.pumpWidget(
             MaterialApp(
@@ -343,11 +333,7 @@ void main() {
 
         patrolWidgetTest('finds widgets', (tester) async {
           const width = 300.0;
-          tester.tester.view.devicePixelRatio = 1.0;
-          tester.tester.view.physicalSize = const Size(width, 600);
-
-          // resets the screen to its original size after the test end
-          addTearDown(tester.tester.view.resetPhysicalSize);
+          setPhysicalSize(tester.tester, width);
 
           final controller = TextEditingController();
 
@@ -816,11 +802,7 @@ void main() {
       group('with alignment', () {
         patrolWidgetTest('finds no widgets', (tester) async {
           const width = 300.0;
-          tester.tester.view.devicePixelRatio = 1.0;
-          tester.tester.view.physicalSize = const Size(width, 600);
-
-          // resets the screen to its original size after the test end
-          addTearDown(tester.tester.view.resetPhysicalSize);
+          setPhysicalSize(tester.tester, width);
 
           await tester.pumpWidget(
             MaterialApp(
@@ -865,11 +847,7 @@ void main() {
 
         patrolWidgetTest('finds widgets', (tester) async {
           const width = 300.0;
-          tester.tester.view.devicePixelRatio = 1.0;
-          tester.tester.view.physicalSize = const Size(width, 600);
-
-          // resets the screen to its original size after the test end
-          addTearDown(tester.tester.view.resetPhysicalSize);
+          setPhysicalSize(tester.tester, width);
 
           await tester.pumpWidget(
             MaterialApp(
