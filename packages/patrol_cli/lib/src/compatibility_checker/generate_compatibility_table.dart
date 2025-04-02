@@ -1,14 +1,14 @@
 import 'dart:io';
-import 'package:logging/logging.dart';
 import 'package:path/path.dart' as path;
+import 'package:patrol_cli/src/base/logger.dart';
 import 'package:version/version.dart';
 import 'version_compatibility.dart';
-
-final _logger = Logger('compatibility_table');
 
 /// Generates a compatibility table in MDX format and saves it to both
 /// docs/documentation/compatibility-table.mdx and docs/compatibility-table.mdx
 Future<void> generateCompatibilityTable() async {
+  final logger = Logger();
+
   final buffer = StringBuffer()
     ..writeln('---')
     ..writeln('title: Compatibility table')
@@ -88,20 +88,21 @@ Future<void> generateCompatibilityTable() async {
 
   // Create and write to docs/documentation/compatibility-table.mdx
   final docsDir = Directory(path.join(rootDir, 'docs', 'documentation'))
-  ..createSync(recursive: true);
+    ..createSync(recursive: true);
   final docsDirFile = File(path.join(docsDir.path, 'compatibility-table.mdx'))
-  ..writeAsStringSync(tableContent);
+    ..writeAsStringSync(tableContent);
 
   // Create and write to docs/compatibility-table.mdx
   final docsRootDir = Directory(path.join(rootDir, 'docs'))
-  ..createSync(recursive: true);
+    ..createSync(recursive: true);
   final docsRootFile =
       File(path.join(docsRootDir.path, 'compatibility-table.mdx'))
-  ..writeAsStringSync(tableContent);
+        ..writeAsStringSync(tableContent);
 
-  _logger..info('Generated compatibility table in:')
-  ..info('- ${docsDirFile.path}')
-  ..info('- ${docsRootFile.path}');
+  logger
+    ..info('Generated compatibility table in:')
+    ..info('- ${docsDirFile.path}')
+    ..info('- ${docsRootFile.path}');
 }
 
 void main() {
