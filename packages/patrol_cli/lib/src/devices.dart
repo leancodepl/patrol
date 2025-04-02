@@ -95,7 +95,7 @@ class DeviceFinder {
     if (wantDevices.isEmpty) {
       final firstDevice = attachedDevices.first;
       _logger.info(
-        'No device specified, using the first one (${firstDevice.resolvedName})',
+        'No device specified, using the first one (${firstDevice.name})',
       );
       return [firstDevice];
     }
@@ -174,23 +174,6 @@ class Device {
   final String id;
   final TargetPlatform targetPlatform;
   final bool real;
-
-  /// Returns the name that Patrol is usually interested with.
-  ///
-  /// On Android, this is the ID of the device, e.g "emulator-5554".
-  ///
-  /// On iOS, this is the name of the device, e.g "iPhone 13" or
-  /// "Barteks-iPhone".
-  String get resolvedName {
-    switch (targetPlatform) {
-      case TargetPlatform.android:
-        return id;
-      case TargetPlatform.iOS:
-        return name;
-      case TargetPlatform.macOS:
-        return name;
-    }
-  }
 
   String get description {
     switch (targetPlatform) {
