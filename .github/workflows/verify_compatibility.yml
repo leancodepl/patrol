@@ -2,12 +2,12 @@ name: Verify Version Compatibility
 
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]
     paths:
       - 'packages/patrol_cli/lib/src/compatibility_checker/version_compatibility.dart'
       - 'packages/patrol_cli/test/src/compatibility_checker/version_compatibility_test.dart'
   pull_request:
-    branches: [ main ]
+    branches: [ master ]
     paths:
       - 'packages/patrol_cli/lib/src/compatibility_checker/version_compatibility.dart'
       - 'packages/patrol_cli/test/src/compatibility_checker/version_compatibility_test.dart'
