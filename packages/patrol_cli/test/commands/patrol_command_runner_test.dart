@@ -28,8 +28,9 @@ void main() {
 
     tearDown(() {
       // Restore the original list after each test
-      versionCompatibilityList..clear()
-      ..addAll(originalList);
+      versionCompatibilityList
+        ..clear()
+        ..addAll(originalList);
     });
 
     setUp(() {
@@ -57,14 +58,15 @@ void main() {
     test('shows update message with compatibility warning when needed',
         () async {
       // Set up a compatibility list where patrol 3.0.0 is compatible only up to patrol_cli 2.5.0
-      versionCompatibilityList..clear()
-      ..add(
-        VersionCompatibility.fromRangeString(
-          patrolCliVersion: '2.3.0 - 2.5.0',
-          patrolVersion: '3.0.0 - 3.3.0',
-          minFlutterVersion: '3.16.0',
-        ),
-      );
+      versionCompatibilityList
+        ..clear()
+        ..add(
+          VersionCompatibility.fromRangeString(
+            patrolCliVersion: '2.3.0 - 2.5.0',
+            patrolVersion: '3.0.0 - 3.3.0',
+            minFlutterVersion: '3.16.0',
+          ),
+        );
 
       // Set up a fake pubspec.yaml file with patrol dependency that is known to be incompatible
       final dir = fs.directory('/project')..createSync();
@@ -94,29 +96,36 @@ dependencies:
 
       expect(capturedMessage, contains('Update available!'));
       expect(
-          capturedMessage,
-          contains(
-              '⚠️  Before updating, please ensure your patrol package version is compatible with patrol_cli $latestVersion',),);
+        capturedMessage,
+        contains(
+          '⚠️  Before updating, please ensure your patrol package version is compatible with patrol_cli $latestVersion',
+        ),
+      );
       expect(
-          capturedMessage,
-          contains(
-              '⚠️  Warning: Your patrol version 3.0.0 is only compatible up to patrol_cli 2.5.0',),);
-      expect(capturedMessage,
-          contains('To update to the latest compatible version, run:'),);
+        capturedMessage,
+        contains(
+          '⚠️  Warning: Your patrol version 3.0.0 is only compatible up to patrol_cli 2.5.0',
+        ),
+      );
+      expect(
+        capturedMessage,
+        contains('To update to the latest compatible version, run:'),
+      );
       expect(capturedMessage, contains('Check the compatibility table at:'));
     });
 
     test('shows simple update message when no compatibility warning is needed',
         () async {
       // Set up a compatibility list where patrol 3.14.0 is compatible up to patrol_cli 4.0.0 (higher than test version)
-      versionCompatibilityList..clear()
-      ..add(
-        VersionCompatibility.fromRangeString(
-          patrolCliVersion: '3.5.0 - 4.0.0',
-          patrolVersion: '3.14.0 - 3.15.0',
-          minFlutterVersion: '3.24.0',
-        ),
-      );
+      versionCompatibilityList
+        ..clear()
+        ..add(
+          VersionCompatibility.fromRangeString(
+            patrolCliVersion: '3.5.0 - 4.0.0',
+            patrolVersion: '3.14.0 - 3.15.0',
+            minFlutterVersion: '3.24.0',
+          ),
+        );
 
       // Set up a fake pubspec.yaml file with patrol dependency that should be compatible
       final dir = fs.directory('/project')..createSync();
@@ -146,15 +155,25 @@ dependencies:
 
       expect(capturedMessage, contains('Update available!'));
       expect(
-          capturedMessage,
-          isNot(contains(
-              '⚠️  Before updating, please ensure your patrol package version is compatible with patrol_cli 3.5.5',),),);
+        capturedMessage,
+        isNot(
+          contains(
+            '⚠️  Before updating, please ensure your patrol package version is compatible with patrol_cli 3.5.5',
+          ),
+        ),
+      );
       expect(
-          capturedMessage, isNot(contains('⚠️  Warning: Your patrol version')),);
-      expect(capturedMessage,
-          isNot(contains('To update to the latest compatible version, run:')),);
-      expect(capturedMessage,
-          isNot(contains('Check the compatibility table at:')),);
+        capturedMessage,
+        isNot(contains('⚠️  Warning: Your patrol version')),
+      );
+      expect(
+        capturedMessage,
+        isNot(contains('To update to the latest compatible version, run:')),
+      );
+      expect(
+        capturedMessage,
+        isNot(contains('Check the compatibility table at:')),
+      );
       expect(capturedMessage, contains('Run'));
       expect(capturedMessage, contains('patrol update'));
     });
