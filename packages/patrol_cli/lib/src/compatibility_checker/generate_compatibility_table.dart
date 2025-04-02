@@ -6,7 +6,8 @@ import 'version_compatibility.dart';
 
 final _logger = Logger('compatibility_table');
 
-/// Generates a compatibility table in MDX format and saves it to docs/documentation/compatibility-table.mdx
+/// Generates a compatibility table in MDX format and saves it to both
+/// docs/documentation/compatibility-table.mdx and docs/compatibility-table.mdx
 Future<void> generateCompatibilityTable() async {
   final buffer = StringBuffer()
     ..writeln('---')
@@ -17,7 +18,7 @@ Future<void> generateCompatibilityTable() async {
     ..writeln('and `patrol_cli` are compatible with each other.')
     ..writeln('The simplest way to ensure that both packages are compatible')
     ..writeln('is by always using the latest version. However,')
-    ..writeln('if for some reason that isn"t possible, you can refer to')
+    ..writeln('if for some reason that isn\'t possible, you can refer to')
     ..writeln('the table below to assess which version you should use.')
     ..writeln()
     ..writeln(
@@ -41,10 +42,8 @@ Future<void> generateCompatibilityTable() async {
     });
 
   // Build table rows
-  final tableRows = sortedList.map(
-    (entry) =>
-        '| ${entry.patrolCliVersion} | ${entry.patrolVersion} | ${entry.minFlutterVersion} |',
-  );
+  final tableRows = sortedList.map((entry) =>
+      '| ${entry.patrolCliVersion} | ${entry.patrolVersion} | ${entry.minFlutterVersion} |');
 
   // Add table rows and notes section
   buffer
@@ -69,16 +68,26 @@ Future<void> generateCompatibilityTable() async {
       ? path.dirname(path.dirname(currentDir.path))
       : currentDir.path;
 
-  // Create docs/documentation directory if it doesn't exist
-  final docsDir = Directory(path.join(rootDir, 'docs', 'documentation'))
-    ..createSync(recursive: true);
+  final tableContent = buffer.toString();
 
-  // Save to docs/documentation/compatibility-table.mdx
-  File(path.join(docsDir.path, 'compatibility-table.mdx'))
-      .writeAsStringSync(buffer.toString());
+  // Create and write to docs/documentation/compatibility-table.mdx
+  final docsDir = Directory(path.join(rootDir, 'docs', 'documentation'));
+  docsDir.createSync(recursive: true);
+  final docsDirFile = File(path.join(docsDir.path, 'compatibility-table.mdx'));
+  docsDirFile.writeAsStringSync(tableContent);
+
+  // Create and write to docs/compatibility-table.mdx
+  final docsRootDir = Directory(path.join(rootDir, 'docs'));
+  docsRootDir.createSync(recursive: true);
+  final docsRootFile =
+      File(path.join(docsRootDir.path, 'compatibility-table.mdx'));
+  docsRootFile.writeAsStringSync(tableContent);
+
+  _logger.info('Generated compatibility table in:');
+  _logger.info('- ${docsDirFile.path}');
+  _logger.info('- ${docsRootFile.path}');
 }
 
 void main() {
   generateCompatibilityTable();
-  _logger.info('Compatibility table generated successfully!');
 }

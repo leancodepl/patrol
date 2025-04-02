@@ -37,9 +37,12 @@ jobs:
         cd packages/patrol_cli
         dart run lib/src/compatibility_checker/generate_compatibility_table.dart
     
-    - name: Verify table is up to date
+    - name: Verify tables are up to date
       run: |
-        if [[ -n $(git status --porcelain docs/documentation/compatibility-table.mdx) ]]; then
-          echo "Compatibility table is not up to date. Please run 'dart run lib/src/compatibility_checker/generate_compatibility_table.dart' and commit the changes."
+        MODIFIED_TABLES=$(git status --porcelain "docs/**/compatibility-table.mdx")
+        if [[ -n "$MODIFIED_TABLES" ]]; then
+          echo "The following compatibility tables are not up to date:"
+          echo "$MODIFIED_TABLES"
+          echo "Please run 'dart run lib/src/compatibility_checker/generate_compatibility_table.dart' and commit the changes."
           exit 1
         fi 
