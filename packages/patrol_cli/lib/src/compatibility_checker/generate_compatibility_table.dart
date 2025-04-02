@@ -18,7 +18,7 @@ Future<void> generateCompatibilityTable() async {
     ..writeln('and `patrol_cli` are compatible with each other.')
     ..writeln('The simplest way to ensure that both packages are compatible')
     ..writeln('is by always using the latest version. However,')
-    ..writeln('if for some reason that isn\'t possible, you can refer to')
+    ..writeln("if for some reason that isn't possible, you can refer to")
     ..writeln('the table below to assess which version you should use.')
     ..writeln()
     ..writeln(

@@ -58,11 +58,13 @@ void main() {
             return currentCliVersion >= cliMin &&
                 (cliMax == null || currentCliVersion <= cliMax);
           })
-          .expand((compat) => [
-                Version.parse(compat.patrolBottomRangeVersion),
-                if (compat.patrolTopRangeVersion != null)
-                  Version.parse(compat.patrolTopRangeVersion!),
-              ])
+          .expand(
+            (compat) => [
+              Version.parse(compat.patrolBottomRangeVersion),
+              if (compat.patrolTopRangeVersion != null)
+                Version.parse(compat.patrolTopRangeVersion!),
+            ],
+          )
           .toList();
 
       expect(
@@ -93,36 +95,4 @@ class VersionRange {
 
   final Version min;
   final Version? max;
-}
-
-VersionRange _parseVersionRange(String versionStr) {
-  final min = _getMinVersion(versionStr);
-  final max = _getMaxVersion(versionStr);
-  return VersionRange(min: min, max: max);
-}
-
-Version _getMinVersion(String versionStr) {
-  if (versionStr.endsWith('+')) {
-    return Version.parse(versionStr.substring(0, versionStr.length - 1));
-  }
-  return Version.parse(versionStr.split(' - ')[0]);
-}
-
-Version? _getMaxVersion(String versionStr) {
-  if (versionStr.endsWith('+')) {
-    return null;
-  }
-  final parts = versionStr.split(' - ');
-  return parts.length > 1 ? Version.parse(parts[1]) : Version.parse(parts[0]);
-}
-
-List<Version> _expandVersionRange(String versionStr) {
-  final min = _getMinVersion(versionStr);
-  final max = _getMaxVersion(versionStr);
-
-  if (max == null) {
-    return [min];
-  }
-
-  return [min, max];
 }

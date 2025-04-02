@@ -1,5 +1,3 @@
-import 'package:patrol_cli/src/compatibility_checker/version_comparator.dart'
-    as vc;
 import 'package:version/version.dart';
 
 /// Represents a mapping between patrol and patrol_cli compatible versions
@@ -11,6 +9,36 @@ class VersionCompatibility {
     this.patrolCliTopRangeVersion,
     required this.minFlutterVersion,
   });
+
+  /// Creates a VersionCompatibility from a version range string format
+  factory VersionCompatibility.fromRangeString({
+    required String patrolVersion,
+    required String patrolCliVersion,
+    required String minFlutterVersion,
+  }) {
+    String parseBottom(String version) {
+      if (version.endsWith('+')) {
+        return version.substring(0, version.length - 1);
+      }
+      return version.split(' - ')[0];
+    }
+
+    String? parseTop(String version) {
+      if (version.endsWith('+')) {
+        return null;
+      }
+      final parts = version.split(' - ');
+      return parts.length > 1 ? parts[1] : parts[0];
+    }
+
+    return VersionCompatibility(
+      patrolBottomRangeVersion: parseBottom(patrolVersion),
+      patrolTopRangeVersion: parseTop(patrolVersion),
+      patrolCliBottomRangeVersion: parseBottom(patrolCliVersion),
+      patrolCliTopRangeVersion: parseTop(patrolCliVersion),
+      minFlutterVersion: minFlutterVersion,
+    );
+  }
 
   /// The minimum version of patrol that is compatible
   final String patrolBottomRangeVersion;
@@ -65,36 +93,6 @@ class VersionCompatibility {
     return patrolTopRangeVersion != null
         ? Version.parse(patrolTopRangeVersion!)
         : Version.parse(patrolBottomRangeVersion);
-  }
-
-  /// Creates a VersionCompatibility from a version range string format
-  static VersionCompatibility fromRangeString({
-    required String patrolVersion,
-    required String patrolCliVersion,
-    required String minFlutterVersion,
-  }) {
-    String parseBottom(String version) {
-      if (version.endsWith('+')) {
-        return version.substring(0, version.length - 1);
-      }
-      return version.split(' - ')[0];
-    }
-
-    String? parseTop(String version) {
-      if (version.endsWith('+')) {
-        return null;
-      }
-      final parts = version.split(' - ');
-      return parts.length > 1 ? parts[1] : parts[0];
-    }
-
-    return VersionCompatibility(
-      patrolBottomRangeVersion: parseBottom(patrolVersion),
-      patrolTopRangeVersion: parseTop(patrolVersion),
-      patrolCliBottomRangeVersion: parseBottom(patrolCliVersion),
-      patrolCliTopRangeVersion: parseTop(patrolCliVersion),
-      minFlutterVersion: minFlutterVersion,
-    );
   }
 }
 

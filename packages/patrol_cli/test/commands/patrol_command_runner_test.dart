@@ -10,8 +10,6 @@ import 'package:patrol_cli/src/runner/patrol_command_runner.dart';
 import 'package:platform/platform.dart';
 import 'package:pub_updater/pub_updater.dart';
 import 'package:test/test.dart';
-import 'package:version/version.dart';
-
 import '../ios/ios_test_backend_test.dart';
 import '../src/mocks.dart';
 
@@ -30,8 +28,8 @@ void main() {
 
     tearDown(() {
       // Restore the original list after each test
-      versionCompatibilityList.clear();
-      versionCompatibilityList.addAll(originalList);
+      versionCompatibilityList..clear()
+      ..addAll(originalList);
     });
 
     setUp(() {
@@ -59,8 +57,8 @@ void main() {
     test('shows update message with compatibility warning when needed',
         () async {
       // Set up a compatibility list where patrol 3.0.0 is compatible only up to patrol_cli 2.5.0
-      versionCompatibilityList.clear();
-      versionCompatibilityList.add(
+      versionCompatibilityList..clear()
+      ..add(
         VersionCompatibility.fromRangeString(
           patrolCliVersion: '2.3.0 - 2.5.0',
           patrolVersion: '3.0.0 - 3.3.0',
@@ -89,7 +87,6 @@ dependencies:
         if (message.contains('Update available!')) {
           capturedMessage = message;
         }
-        print('Logged message: $message');
       });
 
       final result = await commandRunner.run(['--version']);
@@ -99,21 +96,21 @@ dependencies:
       expect(
           capturedMessage,
           contains(
-              '⚠️  Before updating, please ensure your patrol package version is compatible with patrol_cli $latestVersion'));
+              '⚠️  Before updating, please ensure your patrol package version is compatible with patrol_cli $latestVersion',),);
       expect(
           capturedMessage,
           contains(
-              '⚠️  Warning: Your patrol version 3.0.0 is only compatible up to patrol_cli 2.5.0'));
+              '⚠️  Warning: Your patrol version 3.0.0 is only compatible up to patrol_cli 2.5.0',),);
       expect(capturedMessage,
-          contains('To update to the latest compatible version, run:'));
+          contains('To update to the latest compatible version, run:'),);
       expect(capturedMessage, contains('Check the compatibility table at:'));
     });
 
     test('shows simple update message when no compatibility warning is needed',
         () async {
       // Set up a compatibility list where patrol 3.14.0 is compatible up to patrol_cli 4.0.0 (higher than test version)
-      versionCompatibilityList.clear();
-      versionCompatibilityList.add(
+      versionCompatibilityList..clear()
+      ..add(
         VersionCompatibility.fromRangeString(
           patrolCliVersion: '3.5.0 - 4.0.0',
           patrolVersion: '3.14.0 - 3.15.0',
@@ -142,7 +139,6 @@ dependencies:
         if (message.contains('Update available!')) {
           capturedMessage = message;
         }
-        print('Logged message: $message');
       });
 
       final result = await commandRunner.run(['--version']);
@@ -152,13 +148,13 @@ dependencies:
       expect(
           capturedMessage,
           isNot(contains(
-              '⚠️  Before updating, please ensure your patrol package version is compatible with patrol_cli 3.5.5')));
+              '⚠️  Before updating, please ensure your patrol package version is compatible with patrol_cli 3.5.5',),),);
       expect(
-          capturedMessage, isNot(contains('⚠️  Warning: Your patrol version')));
+          capturedMessage, isNot(contains('⚠️  Warning: Your patrol version')),);
       expect(capturedMessage,
-          isNot(contains('To update to the latest compatible version, run:')));
+          isNot(contains('To update to the latest compatible version, run:')),);
       expect(capturedMessage,
-          isNot(contains('Check the compatibility table at:')));
+          isNot(contains('Check the compatibility table at:')),);
       expect(capturedMessage, contains('Run'));
       expect(capturedMessage, contains('patrol update'));
     });
