@@ -17,14 +17,11 @@ class ScreenWithLongButton extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         child: SizedBox(
           width: 2 * width,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SizedBox(
-                width: width,
-                child: testedWidget,
-              ),
-            ],
+          child: Center(
+            child: SizedBox(
+              width: width,
+              child: testedWidget,
+            ),
           ),
         ),
       ),
