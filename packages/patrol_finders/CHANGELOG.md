@@ -1,3 +1,7 @@
+## Unreleased
+
+- Add `alignment` argument to `tap()`, `longPress()`, `enterText()`, `scrollTo()`, `dragUntilVisible()` and `scrollUntilVisible()` methods. (#2584)
+
 ## 2.7.2
 
 - Remove `PatrolWidgetTester` class. (#2570)
