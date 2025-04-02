@@ -2,33 +2,17 @@ plugins {
     id("com.android.application")
     id("kotlin-android")
     id("dev.flutter.flutter-gradle-plugin")
-    id("com.google.gms.google-services")
 }
 
 android {
     compileSdk = 35
     ndkVersion = flutter.ndkVersion
 
-    namespace = "pl.leancode.patrol.example"
-
-    flavorDimensions += "env"
-    productFlavors {
-        create("prod") {
-            dimension = "env"
-            resValue("string", "app_name", "Challange")
-        }
-        create("dev") {
-            dimension = "env"
-            applicationIdSuffix = ".dev"
-            versionNameSuffix = ".dev"
-            resValue("string", "app_name", "DEV Challange")
-        }
-    }
+    namespace = "pl.leancode.patrol.e2e_app"
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11.toString()
-        targetCompatibility = JavaVersion.VERSION_11.toString()
-        isCoreLibraryDesugaringEnabled = true
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
 
     kotlinOptions {
@@ -36,13 +20,15 @@ android {
     }
 
     defaultConfig {
-        applicationId = "pl.leancode.patrol.example"
-        minSdk = 23
+        applicationId = "pl.leancode.patrol.e2e_app"
+        minSdk = 24
         targetSdk = 35
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        manifestPlaceholders["mapsApiKey"] = System.getenv("MAPS_API_KEY") ?: ""
         testInstrumentationRunner = "pl.leancode.patrol.PatrolJUnitRunner"
         testInstrumentationRunnerArguments["clearPackageData"] = "true"
+
     }
 
     testOptions {
