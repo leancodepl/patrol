@@ -199,3 +199,27 @@ Version? getLatestCompatiblePatrolVersion(Version cliVersion) {
   }
   return latest;
 }
+
+/// Helper function to get the maximum compatible CLI version for a given patrol version
+Version? getMaxCompatibleCliVersion(Version patrolVersion) {
+  Version? maxCli;
+  for (final compatibility in versionCompatibilityList) {
+    // Check if patrol version is in range
+    final patrolMin = Version.parse(compatibility.patrolBottomRangeVersion);
+    final patrolMax = compatibility.patrolTopRangeVersion != null
+        ? Version.parse(compatibility.patrolTopRangeVersion!)
+        : null;
+
+    if (patrolVersion >= patrolMin &&
+        (patrolMax == null || patrolVersion <= patrolMax)) {
+      // If patrol version is compatible, consider this CLI version
+      final cliMax = compatibility.patrolCliTopRangeVersion != null
+          ? Version.parse(compatibility.patrolCliTopRangeVersion!)
+          : Version.parse(compatibility.patrolCliBottomRangeVersion);
+      if (maxCli == null || cliMax > maxCli) {
+        maxCli = cliMax;
+      }
+    }
+  }
+  return maxCli;
+}

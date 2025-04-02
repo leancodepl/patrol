@@ -96,6 +96,43 @@ class PubspecReader {
   final Directory _projectRoot;
   final FileSystem _fs;
 
+  /// Gets the patrol package version from pubspec.yaml dependencies
+  String? getPatrolVersion() {
+    final filePath = _fs.path.join(_projectRoot.path, 'pubspec.yaml');
+    final file = _fs.file(filePath);
+
+    if (!file.existsSync()) {
+      return null;
+    }
+
+    final contents = file.readAsStringSync();
+    final yaml = loadYaml(contents) as Map;
+
+    final dependencies = yaml['dependencies'] as Map?;
+    if (dependencies == null) {
+      return null;
+    }
+
+    final patrol = dependencies['patrol'];
+    if (patrol == null) {
+      return null;
+    }
+
+    // Handle different dependency formats
+    if (patrol is String) {
+      // Direct version (e.g., patrol: ^1.0.0)
+      return patrol.replaceAll('^', '').replaceAll('~', '');
+    } else if (patrol is Map) {
+      // Hosted dependency (e.g., patrol: {version: ^1.0.0})
+      return patrol['version']
+          ?.toString()
+          .replaceAll('^', '')
+          .replaceAll('~', '');
+    }
+
+    return null;
+  }
+
   PatrolPubspecConfig read() {
     final filePath = _fs.path.join(_projectRoot.path, 'pubspec.yaml');
     final file = _fs.file(filePath);
