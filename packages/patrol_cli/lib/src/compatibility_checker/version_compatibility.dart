@@ -96,7 +96,7 @@ class VersionCompatibility {
   }
 }
 
-/// List of compatible version combinations between 
+/// List of compatible version combinations between
 /// patrol_cli, patrol, and min Flutter version
 /// This is the single source of truth for version compatibility
 final List<VersionCompatibility> versionCompatibilityList = [
