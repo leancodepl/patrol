@@ -5,12 +5,12 @@ on:
     branches: [ master ]
     paths:
       - 'packages/patrol_cli/lib/src/compatibility_checker/version_compatibility.dart'
-      - 'packages/patrol_cli/test/src/compatibility_checker/version_compatibility_test.dart'
+      - 'packages/patrol_cli/test/compatibility_checker/version_compatibility_test.dart'
   pull_request:
     branches: [ master ]
     paths:
       - 'packages/patrol_cli/lib/src/compatibility_checker/version_compatibility.dart'
-      - 'packages/patrol_cli/test/src/compatibility_checker/version_compatibility_test.dart'
+      - 'packages/patrol_cli/test/compatibility_checker/version_compatibility_test.dart'
 
 jobs:
   verify:
@@ -30,7 +30,7 @@ jobs:
     - name: Run compatibility tests
       run: |
         cd packages/patrol_cli
-        dart test test/src/compatibility_checker/version_compatibility_test.dart
+        dart test test/compatibility_checker/version_compatibility_test.dart
     
     - name: Generate compatibility table
       run: |
