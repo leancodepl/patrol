@@ -105,7 +105,108 @@ Check out our video version of this tutorial on YouTube!
 
     Psst... Android is a bit easier to set up, so we recommend starting with it!
 
-<Accordion defaultOpen title="Android setup">
+<Accordion defaultOpen title="Android setup (for projects using Kotlin DSL)">
+  <Steps>
+    <Step>
+      Go to **android/app/src/androidTest/java/com/example/myapp/** in your project
+         directory. If there are no such folders, create them. **Remember to replace
+         `/com/example/myapp/` with the path created by your app's package name.**
+    </Step>
+    
+    <Step>
+      Create a file named `MainActivityTest.java` and copy there the code below.
+
+      ```java title="MainActivityTest.java"
+      package com.example.myapp; // replace "com.example.myapp" with your app's package
+
+      import androidx.test.platform.app.InstrumentationRegistry;
+      import org.junit.Test;
+      import org.junit.runner.RunWith;
+      import org.junit.runners.Parameterized;
+      import org.junit.runners.Parameterized.Parameters;
+      import pl.leancode.patrol.PatrolJUnitRunner;
+
+      @RunWith(Parameterized.class)
+      public class MainActivityTest {
+          @Parameters(name = "{0}")
+          public static Object[] testCases() {
+              PatrolJUnitRunner instrumentation = (PatrolJUnitRunner) InstrumentationRegistry.getInstrumentation();
+              // replace "MainActivity.class" with "io.flutter.embedding.android.FlutterActivity.class" 
+              // if in AndroidManifest.xml in manifest/application/activity you have
+              //     android:name="io.flutter.embedding.android.FlutterActivity"
+              instrumentation.setUp(MainActivity.class);
+              instrumentation.waitForPatrolAppService();
+              return instrumentation.listDartTests();
+          }
+
+          public MainActivityTest(String dartTestName) {
+              this.dartTestName = dartTestName;
+          }
+
+          private final String dartTestName;
+
+          @Test
+          public void runDartTest() {
+              PatrolJUnitRunner instrumentation = (PatrolJUnitRunner) InstrumentationRegistry.getInstrumentation();
+              instrumentation.runDartTest(dartTestName);
+          }
+      }
+      ```
+    </Step>
+
+    <Step>
+      Go to the **build.gradle.kts** file, located in **android/app** folder in your
+         project directory.
+    </Step>
+
+    <Step>
+      Add these 2 lines to the `defaultConfig` section:
+
+      ```kotlin title="android/app/build.gradle.kts"
+        testInstrumentationRunner = "pl.leancode.patrol.PatrolJUnitRunner"
+        testInstrumentationRunnerArguments["clearPackageData"] = "true"
+      ```
+    </Step>
+
+    <Step>
+      Add this section to the `android` section:
+
+      ```kotlin title="android/app/build.gradle.kts"
+        testOptions {
+          execution = "ANDROIDX_TEST_ORCHESTRATOR"
+        }
+      ```
+    </Step>
+
+    <Step>
+      Add this line to `dependencies` section:
+
+      ```kotlin title="android/app/build.gradle.kts"
+        androidTestUtil("androidx.test:orchestrator:1.5.1")
+      ```
+    </Step>
+  </Steps>
+
+<Warning>
+  Bear in mind that ProGuard can lead to some problems if not well configured, potentially causing issues such as `ClassNotFoundException`s.
+  Keep all the Patrol packages or disable ProGuard in `android/app/build.gradle.kts`:
+  ```kotlin title="android/app/build.gradle.kts"
+    ...
+    buildTypes {
+      getByName("release") {
+          ...
+      }
+      getByName("debug") {
+          isMinifyEnabled = false
+          isShrinkResources = false
+      }
+    }
+  ```
+</Warning>
+
+</Accordion>
+
+<Accordion title="Old Android setup (for projects using Groovy build configuration files)">
   <Steps>
     <Step>
       Go to **android/app/src/androidTest/java/com/example/myapp/** in your project
