@@ -27,8 +27,7 @@ class VersionCompatibility {
       if (version.endsWith('+')) {
         return null;
       }
-      final parts = version.split(' - ');
-      return parts.length > 1 ? parts[1] : parts[0];
+      return version.split(' - ').last;
     }
 
     return VersionCompatibility(
