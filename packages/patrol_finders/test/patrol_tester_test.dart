@@ -6,6 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol_finders/src/custom_finders/custom_finders.dart';
 
+import 'utils/long_screen_with_partially_visible_widget.dart';
+import 'utils/screen_with_partially_visible_widget.dart';
+import 'utils/set_physical_size.dart';
+
 void main() {
   group('PatrolTester', () {
     group('tap()', () {
@@ -84,6 +88,57 @@ void main() {
           },
           throwsAssertionError,
         );
+      });
+
+      group('with alignment', () {
+        patrolWidgetTest('finds no widgets', (tester) async {
+          const width = 300.0;
+          setPhysicalSize(tester.tester, width);
+
+          await tester.pumpWidget(
+            ScreenWithPartiallyVisibleWidget(
+              width: width,
+              testedWidget: ElevatedButton(
+                onPressed: () {},
+                child: const Text('some text'),
+              ),
+            ),
+          );
+
+          await expectLater(
+            () => tester.tap(
+              find.byType(ElevatedButton),
+              alignment: Alignment.centerRight,
+            ),
+            throwsA(isA<WaitUntilVisibleTimeoutException>()),
+          );
+        });
+
+        patrolWidgetTest('finds widgets', (tester) async {
+          const width = 300.0;
+          setPhysicalSize(tester.tester, width);
+
+          var counter = 0;
+
+          await tester.pumpWidget(
+            ScreenWithPartiallyVisibleWidget(
+              width: width,
+              testedWidget: ElevatedButton(
+                onPressed: () {
+                  counter++;
+                },
+                child: const Text('some text'),
+              ),
+            ),
+          );
+
+          await tester.tap(
+            find.byType(ElevatedButton),
+            alignment: Alignment.topLeft,
+          );
+
+          expect(counter, 1);
+        });
       });
     });
 
@@ -210,6 +265,55 @@ void main() {
           },
           throwsAssertionError,
         );
+      });
+
+      group('with alignment', () {
+        patrolWidgetTest('finds no widgets', (tester) async {
+          const width = 300.0;
+          setPhysicalSize(tester.tester, width);
+
+          await tester.pumpWidget(
+            const ScreenWithPartiallyVisibleWidget(
+              width: width,
+              testedWidget: TextField(),
+            ),
+          );
+
+          await expectLater(
+            () => tester.enterText(
+              find.byType(TextField),
+              'text',
+              alignment: Alignment.centerRight,
+            ),
+            throwsA(isA<WaitUntilVisibleTimeoutException>()),
+          );
+        });
+
+        patrolWidgetTest('finds widgets', (tester) async {
+          const width = 300.0;
+          setPhysicalSize(tester.tester, width);
+
+          final controller = TextEditingController();
+
+          await tester.pumpWidget(
+            ScreenWithPartiallyVisibleWidget(
+              width: width,
+              testedWidget: TextField(
+                controller: controller,
+              ),
+            ),
+          );
+
+          const input = 'text';
+
+          await tester.enterText(
+            find.byType(TextField),
+            input,
+            alignment: Alignment.centerLeft,
+          );
+
+          expect(controller.text, input);
+        });
       });
     });
 
@@ -636,6 +740,65 @@ void main() {
           expect(find.text('text 2').hitTestable(), findsOneWidget);
         },
       );
+
+      group('with alignment', () {
+        patrolWidgetTest('finds no widgets', (tester) async {
+          const width = 300.0;
+          setPhysicalSize(tester.tester, width);
+
+          await tester.pumpWidget(
+            ScreenWithPartiallyVisibleWidget(
+              width: width,
+              testedWidget: ElevatedButton(
+                onPressed: () {},
+                child: const Text('some text'),
+              ),
+            ),
+          );
+
+          await expectLater(
+            () => tester.dragUntilVisible(
+              finder: find.byType(ElevatedButton),
+              view: find.byType(Scrollable),
+              moveStep: const Offset(0, -defaultScrollDelta),
+              alignment: Alignment.centerRight,
+            ),
+            throwsA(isA<WaitUntilVisibleTimeoutException>()),
+          );
+        });
+
+        patrolWidgetTest('finds widgets', (tester) async {
+          const width = 300.0;
+          setPhysicalSize(tester.tester, width);
+
+          await tester.pumpWidget(
+            LongScreenWithPartiallyVisibleWidget(
+              width: width,
+              testedWidget: ElevatedButton(
+                onPressed: () {},
+                child: const Text('some text'),
+              ),
+            ),
+          );
+
+          expect(
+            find.byType(ElevatedButton).hitTestable(at: Alignment.centerLeft),
+            findsNothing,
+          );
+
+          await tester.dragUntilVisible(
+            finder: find.byType(ElevatedButton),
+            view: find.byType(Scrollable),
+            moveStep: const Offset(0, -defaultScrollDelta),
+            alignment: Alignment.centerLeft,
+          );
+
+          expect(
+            find.byType(ElevatedButton).hitTestable(at: Alignment.centerLeft),
+            findsOneWidget,
+          );
+        });
+      });
     });
 
     patrolWidgetTest(

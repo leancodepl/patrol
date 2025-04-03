@@ -242,6 +242,7 @@ class PatrolFinder implements MatchFinder {
     SettlePolicy? settlePolicy,
     Duration? visibleTimeout,
     Duration? settleTimeout,
+    Alignment alignment = Alignment.center,
   }) async =>
       wrapWithPatrolLog(
         action: 'tap',
@@ -251,6 +252,7 @@ class PatrolFinder implements MatchFinder {
           settlePolicy: settlePolicy,
           visibleTimeout: visibleTimeout,
           settleTimeout: settleTimeout,
+          alignment: alignment,
           enablePatrolLog: false,
         ),
       );
@@ -284,6 +286,7 @@ class PatrolFinder implements MatchFinder {
     SettlePolicy? settlePolicy,
     Duration? visibleTimeout,
     Duration? settleTimeout,
+    Alignment alignment = Alignment.center,
   }) async =>
       wrapWithPatrolLog(
         action: 'longPress',
@@ -293,6 +296,7 @@ class PatrolFinder implements MatchFinder {
           settlePolicy: settlePolicy,
           visibleTimeout: visibleTimeout,
           settleTimeout: settleTimeout,
+          alignment: alignment,
           enablePatrolLog: false,
         ),
       );
@@ -327,6 +331,7 @@ class PatrolFinder implements MatchFinder {
     SettlePolicy? settlePolicy,
     Duration? visibleTimeout,
     Duration? settleTimeout,
+    Alignment alignment = Alignment.center,
   }) async =>
       wrapWithPatrolLog(
         action: 'enterText',
@@ -337,6 +342,7 @@ class PatrolFinder implements MatchFinder {
           settlePolicy: settlePolicy,
           visibleTimeout: visibleTimeout,
           settleTimeout: settleTimeout,
+          alignment: alignment,
           enablePatrolLog: false,
         ),
       );
@@ -359,6 +365,7 @@ class PatrolFinder implements MatchFinder {
     Duration? settleBetweenScrollsTimeout,
     Duration? dragDuration,
     SettlePolicy? settlePolicy,
+    Alignment alignment = Alignment.center,
   }) {
     return wrapWithPatrolLog(
       action: 'scrollTo',
@@ -373,6 +380,7 @@ class PatrolFinder implements MatchFinder {
           settleBetweenScrollsTimeout: settleBetweenScrollsTimeout,
           settlePolicy: settlePolicy,
           dragDuration: dragDuration,
+          alignment: alignment,
           enablePatrolLog: false,
         );
       },
@@ -418,8 +426,8 @@ class PatrolFinder implements MatchFinder {
         function: () => tester.waitUntilVisible(
           this,
           timeout: timeout,
-          enablePatrolLog: false,
           alignment: alignment,
+          enablePatrolLog: false,
         ),
         enablePatrolLog: enablePatrolLog,
       );
@@ -532,7 +540,7 @@ class PatrolFinder implements MatchFinder {
 
   /// Returns true if this finder finds at least 1 visible widget.
   ///
-  /// will call [isVisibleAt] with [Alignment.center]
+  /// Will call [isVisibleAt] with [Alignment.center]
   ///
   /// In case this returns false and you are sure that the widget is visible,
   /// try calling [isVisibleAt] with a different [Alignment] parameter.
@@ -632,11 +640,13 @@ extension ActionCombiner on Future<PatrolFinder> {
     SettlePolicy? settlePolicy,
     Duration? visibleTimeout,
     Duration? settleTimeout,
+    Alignment alignment = Alignment.center,
   }) async {
     await (await this).tap(
       settlePolicy: settlePolicy,
       visibleTimeout: visibleTimeout,
       settleTimeout: settleTimeout,
+      alignment: alignment,
     );
   }
 
@@ -647,12 +657,14 @@ extension ActionCombiner on Future<PatrolFinder> {
     SettlePolicy? settlePolicy,
     Duration? visibleTimeout,
     Duration? settleTimeout,
+    Alignment alignment = Alignment.center,
   }) async {
     await (await this).enterText(
       text,
       settlePolicy: settlePolicy,
       visibleTimeout: visibleTimeout,
       settleTimeout: settleTimeout,
+      alignment: alignment,
     );
   }
 }
