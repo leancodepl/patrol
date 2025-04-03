@@ -13,14 +13,16 @@ class ScreenWithLongButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: SizedBox(
-          width: 2 * width,
-          child: Center(
-            child: SizedBox(
-              width: width,
-              child: testedWidget,
+      home: Scaffold(
+        body: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: SizedBox(
+            width: 2 * width,
+            child: Center(
+              child: SizedBox(
+                width: width,
+                child: testedWidget,
+              ),
             ),
           ),
         ),
