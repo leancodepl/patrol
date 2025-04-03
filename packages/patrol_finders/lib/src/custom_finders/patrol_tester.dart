@@ -296,6 +296,7 @@ class PatrolTester {
     SettlePolicy? settlePolicy,
     Duration? visibleTimeout,
     Duration? settleTimeout,
+    Alignment alignment = Alignment.center,
     bool enablePatrolLog = true,
   }) {
     return TestAsyncUtils.guard(
@@ -308,9 +309,11 @@ class PatrolTester {
           final resolvedFinder = await waitUntilVisible(
             finder,
             timeout: visibleTimeout,
+            alignment: alignment,
             enablePatrolLog: false,
           );
-          await tester.tap(resolvedFinder.first);
+          final rect = tester.getRect(resolvedFinder.first);
+          await tester.tapAt(alignment.withinRect(rect));
           await _performPump(
             settlePolicy: settlePolicy,
             settleTimeout: settleTimeout,
@@ -350,6 +353,7 @@ class PatrolTester {
     SettlePolicy? settlePolicy,
     Duration? visibleTimeout,
     Duration? settleTimeout,
+    Alignment alignment = Alignment.center,
     bool enablePatrolLog = true,
   }) {
     return TestAsyncUtils.guard(
@@ -362,9 +366,11 @@ class PatrolTester {
           final resolvedFinder = await waitUntilVisible(
             finder,
             timeout: visibleTimeout,
+            alignment: alignment,
             enablePatrolLog: false,
           );
-          await tester.longPress(resolvedFinder.first);
+          final rect = tester.getRect(resolvedFinder.first);
+          await tester.longPressAt(alignment.withinRect(rect));
           await _performPump(
             settlePolicy: settlePolicy,
             settleTimeout: settleTimeout,
@@ -405,6 +411,7 @@ class PatrolTester {
     SettlePolicy? settlePolicy,
     Duration? visibleTimeout,
     Duration? settleTimeout,
+    Alignment alignment = Alignment.center,
     bool enablePatrolLog = true,
   }) {
     if (!kIsWeb) {
@@ -426,6 +433,7 @@ class PatrolTester {
           final resolvedFinder = await waitUntilVisible(
             finder,
             timeout: visibleTimeout,
+            alignment: alignment,
             enablePatrolLog: false,
           );
 
@@ -554,8 +562,8 @@ class PatrolTester {
   Future<PatrolFinder> waitUntilVisible(
     Finder finder, {
     Duration? timeout,
-    bool enablePatrolLog = true,
     Alignment alignment = Alignment.center,
+    bool enablePatrolLog = true,
   }) {
     return TestAsyncUtils.guard(
       () => wrapWithPatrolLog(
@@ -710,6 +718,7 @@ class PatrolTester {
     Duration? settleBetweenScrollsTimeout,
     Duration? dragDuration,
     SettlePolicy? settlePolicy,
+    Alignment alignment = Alignment.center,
     bool enablePatrolLog = true,
   }) {
     return TestAsyncUtils.guard(
@@ -719,15 +728,18 @@ class PatrolTester {
         color: AnsiCodes.blue,
         enablePatrolLog: enablePatrolLog,
         function: () async {
-          var viewPatrolFinder = PatrolFinder(finder: view, tester: this);
-          await viewPatrolFinder.waitUntilVisible(enablePatrolLog: false);
-          viewPatrolFinder = viewPatrolFinder.hitTestable().first;
+          final viewPatrolFinder = (await waitUntilVisible(
+            PatrolFinder(finder: view, tester: this),
+            enablePatrolLog: false,
+          ))
+              .first;
+
           dragDuration ??= config.dragDuration;
           settleBetweenScrollsTimeout ??= config.settleBetweenScrollsTimeout;
 
+          final hitTestableFinder = finder.hitTestable(at: alignment);
           var iterationsLeft = maxIteration;
-          while (
-              iterationsLeft > 0 && finder.hitTestable().evaluate().isEmpty) {
+          while (iterationsLeft > 0 && hitTestableFinder.evaluate().isEmpty) {
             await tester.timedDrag(
               viewPatrolFinder,
               moveStep,
@@ -742,13 +754,13 @@ class PatrolTester {
 
           if (iterationsLeft <= 0) {
             throw WaitUntilVisibleTimeoutException(
-              finder: finder.hitTestable(),
+              finder: hitTestableFinder,
               // TODO: set reasonable duration or create new exception for this case
               duration: settleBetweenScrollsTimeout!,
             );
           }
 
-          return PatrolFinder(finder: finder.hitTestable().first, tester: this);
+          return PatrolFinder(finder: hitTestableFinder.first, tester: this);
         },
       ),
     );
@@ -842,6 +854,7 @@ class PatrolTester {
     Duration? settleBetweenScrollsTimeout,
     Duration? dragDuration,
     SettlePolicy? settlePolicy,
+    Alignment alignment = Alignment.center,
     bool enablePatrolLog = true,
   }) async {
     assert(maxScrolls > 0, 'maxScrolls must be positive number');
@@ -889,6 +902,7 @@ class PatrolTester {
             settleBetweenScrollsTimeout: settleBetweenScrollsTimeout,
             dragDuration: dragDuration,
             settlePolicy: settlePolicy,
+            alignment: alignment,
             enablePatrolLog: false,
           );
 
