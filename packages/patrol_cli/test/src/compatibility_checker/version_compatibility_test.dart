@@ -217,13 +217,3 @@ void main() {
     });
   });
 }
-
-class VersionRange {
-  VersionRange({
-    required this.min,
-    this.max,
-  });
-
-  final Version min;
-  final Version? max;
-}
