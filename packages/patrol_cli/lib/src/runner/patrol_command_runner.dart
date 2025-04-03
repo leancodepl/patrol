@@ -459,11 +459,7 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
         patrolVersion = pubspecReader.getPatrolVersion();
       }
 
-      final buffer = StringBuffer()
-        ..writeln(
-          '${lightYellow.wrap('Update available!')} ${lightCyan.wrap(constants.version)} \u2192 ${lightCyan.wrap(latestVersion)}',
-        )
-        ..writeln();
+      final buffer = StringBuffer();
 
       // Only show compatibility messages if we found a patrol version
       if (patrolVersion != null) {
@@ -471,28 +467,54 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
         final maxCliVersion = getMaxCompatibleCliVersion(patrolVer);
 
         if (maxCliVersion != null && latestVersionParsed > maxCliVersion) {
-          // Show warning only when incompatible
+          // Show warning when incompatible
           buffer
             ..writeln(
-              '⚠️  Before updating, please ensure your patrol package version is compatible with patrol_cli $latestVersion',
+              '${lightYellow.wrap('Update available!')} ${lightCyan.wrap(constants.version)} \u2192 ${lightCyan.wrap(maxCliVersion.toString())}. (Newest patrol_cli $latestVersion is not compatible with project patrol version.)',
             )
-            ..writeln(
-              '⚠️  Warning: Your patrol version $patrolVersion is only compatible up to patrol_cli $maxCliVersion',
-            )
+            ..writeln()
             ..writeln('To update to the latest compatible version, run:')
             ..writeln(
               lightCyan
                   .wrap('dart pub global activate patrol_cli $maxCliVersion'),
             )
+            ..writeln()
+            ..writeln(
+              '⚠️  Before updating, please ensure your patrol package version is compatible with patrol_cli $latestVersion',
+            )
+            ..writeln(
+              'Check the compatibility table at: ${lightCyan.wrap('https://patrol.leancode.co/documentation/compatibility-table')}',
+            );
+        } else {
+          // Show simple update message when compatible
+          buffer
+            ..writeln(
+              '${lightYellow.wrap('Update available!')} ${lightCyan.wrap(constants.version)} \u2192 ${lightCyan.wrap(latestVersion)}',
+            )
+            ..writeln()
+            ..writeln(
+              'Run ${lightCyan.wrap('patrol update')} to update to the latest version.',
+            )
+            ..writeln()
             ..writeln(
               'Check the compatibility table at: ${lightCyan.wrap('https://patrol.leancode.co/documentation/compatibility-table')}',
             );
         }
+      } else {
+        // Show simple update message when no patrol version found
+        buffer
+          ..writeln(
+            '${lightYellow.wrap('Update available!')} ${lightCyan.wrap(constants.version)} \u2192 ${lightCyan.wrap(latestVersion)}',
+          )
+          ..writeln()
+          ..writeln(
+            'Run ${lightCyan.wrap('patrol update')} to update to the latest version.',
+          )
+          ..writeln()
+          ..writeln(
+            'Check the compatibility table at: ${lightCyan.wrap('https://patrol.leancode.co/documentation/compatibility-table')}',
+          );
       }
-
-      buffer.writeln(
-        'Run ${lightCyan.wrap('patrol update')} to update to the latest version',
-      );
 
       _logger
         ..info('')

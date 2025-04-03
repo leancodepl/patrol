@@ -15,6 +15,11 @@ import '../src/mocks.dart';
 
 const latestVersion = '999.0.0';
 
+/// Strips ANSI color codes from a string
+String stripAnsi(String str) {
+  return str.replaceAll(RegExp(r'\x1B\[[0-9;]*[a-zA-Z]'), '');
+}
+
 void main() {
   group('PatrolCommandRunner', () {
     late Logger logger;
@@ -87,7 +92,7 @@ dependencies:
       when(() => logger.info(any())).thenAnswer((invocation) {
         final message = invocation.positionalArguments[0] as String;
         if (message.contains('Update available!')) {
-          capturedMessage = message;
+          capturedMessage = stripAnsi(message);
         }
       });
 
@@ -97,21 +102,31 @@ dependencies:
       expect(capturedMessage, contains('Update available!'));
       expect(
         capturedMessage,
-        contains(
-          '⚠️  Before updating, please ensure your patrol package version is compatible with patrol_cli $latestVersion',
-        ),
+        contains('${constants.version} → 2.5.0'),
       );
       expect(
         capturedMessage,
         contains(
-          '⚠️  Warning: Your patrol version 3.0.0 is only compatible up to patrol_cli 2.5.0',
-        ),
+            '(Newest patrol_cli $latestVersion is not compatible with project patrol version.)'),
       );
       expect(
         capturedMessage,
         contains('To update to the latest compatible version, run:'),
       );
-      expect(capturedMessage, contains('Check the compatibility table at:'));
+      expect(
+        capturedMessage,
+        contains('dart pub global activate patrol_cli 2.5.0'),
+      );
+      expect(
+        capturedMessage,
+        contains(
+            '⚠️  Before updating, please ensure your patrol package version is compatible with patrol_cli $latestVersion'),
+      );
+      expect(
+        capturedMessage,
+        contains(
+            'Check the compatibility table at: https://patrol.leancode.co/documentation/compatibility-table'),
+      );
     });
 
     test('shows simple update message when no compatibility warning is needed',
@@ -146,7 +161,7 @@ dependencies:
       when(() => logger.info(any())).thenAnswer((invocation) {
         final message = invocation.positionalArguments[0] as String;
         if (message.contains('Update available!')) {
-          capturedMessage = message;
+          capturedMessage = stripAnsi(message);
         }
       });
 
@@ -156,26 +171,17 @@ dependencies:
       expect(capturedMessage, contains('Update available!'));
       expect(
         capturedMessage,
-        isNot(
-          contains(
-            '⚠️  Before updating, please ensure your patrol package version is compatible with patrol_cli 3.5.5',
-          ),
-        ),
+        contains('${constants.version} → 3.5.5'),
       );
       expect(
         capturedMessage,
-        isNot(contains('⚠️  Warning: Your patrol version')),
+        contains('Run patrol update to update to the latest version.'),
       );
       expect(
         capturedMessage,
-        isNot(contains('To update to the latest compatible version, run:')),
+        contains(
+            'Check the compatibility table at: https://patrol.leancode.co/documentation/compatibility-table'),
       );
-      expect(
-        capturedMessage,
-        isNot(contains('Check the compatibility table at:')),
-      );
-      expect(capturedMessage, contains('Run'));
-      expect(capturedMessage, contains('patrol update'));
     });
 
     test('handles FormatException', () async {
