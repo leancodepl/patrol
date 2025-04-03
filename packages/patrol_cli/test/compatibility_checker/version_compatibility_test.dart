@@ -37,7 +37,9 @@ void main() {
       expect(openEndedRange.patrolBottomRangeVersion, Version.parse('3.14.0'));
       expect(openEndedRange.patrolTopRangeVersion, isNull);
       expect(
-          openEndedRange.patrolCliBottomRangeVersion, Version.parse('3.5.0'));
+        openEndedRange.patrolCliBottomRangeVersion,
+        Version.parse('3.5.0'),
+      );
       expect(openEndedRange.patrolCliTopRangeVersion, isNull);
 
       // Mixed formats

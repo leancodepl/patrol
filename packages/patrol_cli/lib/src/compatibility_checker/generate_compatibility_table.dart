@@ -42,11 +42,9 @@ Future<void> generateCompatibilityTable() async {
   final tableRows = sortedList.map((entry) {
     String formatVersion(Version bottom, Version? top) {
       if (top == null) {
-        return '${bottom.toString()}+';
+        return '$bottom+';
       }
-      return bottom == top
-          ? bottom.toString()
-          : '${bottom.toString()} - ${top.toString()}';
+      return bottom == top ? bottom.toString() : '$bottom - $top';
     }
 
     final cliVersion = formatVersion(

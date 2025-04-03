@@ -1,6 +1,5 @@
 import 'dart:io' as p show Platform;
 import 'dart:io' show ProcessSignal, stdin;
-
 import 'package:adb/adb.dart';
 import 'package:args/args.dart';
 import 'package:args/command_runner.dart';
@@ -9,6 +8,7 @@ import 'package:cli_completion/cli_completion.dart';
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
 import 'package:file/local.dart';
+import 'package:meta/meta.dart';
 import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
 import 'package:patrol_cli/src/base/constants.dart' as constants;
@@ -36,7 +36,6 @@ import 'package:platform/platform.dart';
 import 'package:process/process.dart';
 import 'package:pub_updater/pub_updater.dart';
 import 'package:version/version.dart';
-import 'package:meta/meta.dart';
 
 Future<int> patrolCommandRunner(List<String> args) async {
   final pubUpdater = PubUpdater();
@@ -379,9 +378,9 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
 
     if (_wantsUpdateCheck(commandName)) {
       final latestVersion = await _pubUpdater.getLatestVersion('patrol_cli');
-      final currentVersion = constants.version;
+      const currentVersion = constants.version;
       final maxCompatibleCliVersion =
-          await getMaxCompatibleCliVersion(Version.parse(latestVersion));
+          getMaxCompatibleCliVersion(Version.parse(latestVersion));
 
       await _checkForUpdates(
         currentVersion: currentVersion,

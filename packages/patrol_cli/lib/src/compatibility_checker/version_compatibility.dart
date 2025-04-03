@@ -59,14 +59,14 @@ class VersionCompatibility {
     // Check if CLI version is in range
     if (cliVersion < patrolCliBottomRangeVersion ||
         (patrolCliTopRangeVersion != null &&
-            cliVersion > patrolCliTopRangeVersion!)) {
+            cliVersion > patrolCliTopRangeVersion)) {
       return false;
     }
 
     // Check if patrol version is in range
     return patrolVersion >= patrolBottomRangeVersion &&
         (patrolTopRangeVersion == null ||
-            patrolVersion <= patrolTopRangeVersion!);
+            patrolVersion <= patrolTopRangeVersion);
   }
 
   /// Gets the highest patrol version that is compatible with this entry
@@ -74,7 +74,7 @@ class VersionCompatibility {
     // Check if CLI version is in range
     if (cliVersion < patrolCliBottomRangeVersion ||
         (patrolCliTopRangeVersion != null &&
-            cliVersion > patrolCliTopRangeVersion!)) {
+            cliVersion > patrolCliTopRangeVersion)) {
       return null;
     }
 
@@ -193,7 +193,7 @@ Version? getMaxCompatibleCliVersion(Version patrolVersion) {
     // Check if patrol version is in range
     if (patrolVersion >= compatibility.patrolBottomRangeVersion &&
         (compatibility.patrolTopRangeVersion == null ||
-            patrolVersion <= compatibility.patrolTopRangeVersion!)) {
+            patrolVersion <= compatibility.patrolTopRangeVersion)) {
       // If patrol version is compatible, consider this CLI version
       final cliMax = compatibility.patrolCliTopRangeVersion ??
           compatibility.patrolCliBottomRangeVersion;

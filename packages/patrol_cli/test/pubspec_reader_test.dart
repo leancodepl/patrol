@@ -8,8 +8,7 @@ void main() {
 
   setUp(() {
     fs = MemoryFileSystem();
-    final projectRoot = fs.directory('/project');
-    projectRoot.createSync();
+    final projectRoot = fs.directory('/project')..createSync();
     reader = PubspecReader(projectRoot: projectRoot);
   });
 
@@ -19,16 +18,14 @@ void main() {
     });
 
     test('returns null when dependencies section is missing', () {
-      final pubspec = fs.file('/project/pubspec.yaml');
-      pubspec.writeAsStringSync('''
+      fs.file('/project/pubspec.yaml').writeAsStringSync('''
 name: test_project
 ''');
       expect(reader.getPatrolVersion(), isNull);
     });
 
     test('returns null when patrol dependency is missing', () {
-      final pubspec = fs.file('/project/pubspec.yaml');
-      pubspec.writeAsStringSync('''
+      fs.file('/project/pubspec.yaml').writeAsStringSync('''
 name: test_project
 dependencies:
   flutter:
@@ -38,8 +35,7 @@ dependencies:
     });
 
     test('handles direct version string with caret', () {
-      final pubspec = fs.file('/project/pubspec.yaml');
-      pubspec.writeAsStringSync('''
+      fs.file('/project/pubspec.yaml').writeAsStringSync('''
 name: test_project
 dependencies:
   patrol: ^3.15.0
@@ -48,8 +44,7 @@ dependencies:
     });
 
     test('handles direct version string with tilde', () {
-      final pubspec = fs.file('/project/pubspec.yaml');
-      pubspec.writeAsStringSync('''
+      fs.file('/project/pubspec.yaml').writeAsStringSync('''
 name: test_project
 dependencies:
   patrol: ~3.15.0
@@ -58,8 +53,7 @@ dependencies:
     });
 
     test('handles direct version string with dev version', () {
-      final pubspec = fs.file('/project/pubspec.yaml');
-      pubspec.writeAsStringSync('''
+      fs.file('/project/pubspec.yaml').writeAsStringSync('''
 name: test_project
 dependencies:
   patrol: 3.15.1-dev.1
@@ -68,8 +62,7 @@ dependencies:
     });
 
     test('handles direct version string with build number', () {
-      final pubspec = fs.file('/project/pubspec.yaml');
-      pubspec.writeAsStringSync('''
+      fs.file('/project/pubspec.yaml').writeAsStringSync('''
 name: test_project
 dependencies:
   patrol: 3.15.1+1
@@ -78,8 +71,7 @@ dependencies:
     });
 
     test('handles hosted dependency with version', () {
-      final pubspec = fs.file('/project/pubspec.yaml');
-      pubspec.writeAsStringSync('''
+      fs.file('/project/pubspec.yaml').writeAsStringSync('''
 name: test_project
 dependencies:
   patrol:
@@ -89,8 +81,7 @@ dependencies:
     });
 
     test('handles git dependency with ref', () {
-      final pubspec = fs.file('/project/pubspec.yaml');
-      pubspec.writeAsStringSync('''
+      fs.file('/project/pubspec.yaml').writeAsStringSync('''
 name: test_project
 dependencies:
   patrol:
@@ -102,8 +93,7 @@ dependencies:
     });
 
     test('handles git dependency with dev ref', () {
-      final pubspec = fs.file('/project/pubspec.yaml');
-      pubspec.writeAsStringSync('''
+      fs.file('/project/pubspec.yaml').writeAsStringSync('''
 name: test_project
 dependencies:
   patrol:
@@ -115,8 +105,7 @@ dependencies:
     });
 
     test('handles git dependency with path', () {
-      final pubspec = fs.file('/project/pubspec.yaml');
-      pubspec.writeAsStringSync('''
+      fs.file('/project/pubspec.yaml').writeAsStringSync('''
 name: test_project
 dependencies:
   patrol:
@@ -128,8 +117,7 @@ dependencies:
     });
 
     test('handles git dependency with branch', () {
-      final pubspec = fs.file('/project/pubspec.yaml');
-      pubspec.writeAsStringSync('''
+      fs.file('/project/pubspec.yaml').writeAsStringSync('''
 name: test_project
 dependencies:
   patrol:
@@ -141,8 +129,7 @@ dependencies:
     });
 
     test('handles hosted dependency with any', () {
-      final pubspec = fs.file('/project/pubspec.yaml');
-      pubspec.writeAsStringSync('''
+      fs.file('/project/pubspec.yaml').writeAsStringSync('''
 name: test_project
 dependencies:
   patrol: any
@@ -151,8 +138,7 @@ dependencies:
     });
 
     test('handles hosted dependency with empty version', () {
-      final pubspec = fs.file('/project/pubspec.yaml');
-      pubspec.writeAsStringSync('''
+      fs.file('/project/pubspec.yaml').writeAsStringSync('''
 name: test_project
 dependencies:
   patrol:
@@ -162,8 +148,7 @@ dependencies:
     });
 
     test('handles malformed yaml', () {
-      final pubspec = fs.file('/project/pubspec.yaml');
-      pubspec.writeAsStringSync('''
+      fs.file('/project/pubspec.yaml').writeAsStringSync('''
 name: test_project
 dependencies:
   patrol: invalid: yaml
@@ -172,14 +157,12 @@ dependencies:
     });
 
     test('handles empty pubspec.yaml', () {
-      final pubspec = fs.file('/project/pubspec.yaml');
-      pubspec.writeAsStringSync('');
+      fs.file('/project/pubspec.yaml').writeAsStringSync('');
       expect(reader.getPatrolVersion(), isNull);
     });
 
     test('handles patrol in dev_dependencies', () {
-      final pubspec = fs.file('/project/pubspec.yaml');
-      pubspec.writeAsStringSync('''
+      fs.file('/project/pubspec.yaml').writeAsStringSync('''
 name: test_project
 dev_dependencies:
   patrol: ^3.15.0
@@ -188,8 +171,7 @@ dev_dependencies:
     });
 
     test('handles patrol in both dependencies and dev_dependencies', () {
-      final pubspec = fs.file('/project/pubspec.yaml');
-      pubspec.writeAsStringSync('''
+      fs.file('/project/pubspec.yaml').writeAsStringSync('''
 name: test_project
 dependencies:
   patrol: ^3.14.0
@@ -200,8 +182,7 @@ dev_dependencies:
     });
 
     test('handles git dependency with commit hash', () {
-      final pubspec = fs.file('/project/pubspec.yaml');
-      pubspec.writeAsStringSync('''
+      fs.file('/project/pubspec.yaml').writeAsStringSync('''
 name: test_project
 dependencies:
   patrol:
@@ -213,8 +194,7 @@ dependencies:
     });
 
     test('handles path dependency', () {
-      final pubspec = fs.file('/project/pubspec.yaml');
-      pubspec.writeAsStringSync('''
+      fs.file('/project/pubspec.yaml').writeAsStringSync('''
 name: test_project
 dependencies:
   patrol:
@@ -224,8 +204,7 @@ dependencies:
     });
 
     test('handles hosted dependency with complex version constraint', () {
-      final pubspec = fs.file('/project/pubspec.yaml');
-      pubspec.writeAsStringSync('''
+      fs.file('/project/pubspec.yaml').writeAsStringSync('''
 name: test_project
 dependencies:
   patrol: ">=3.15.0 <4.0.0"
@@ -234,8 +213,7 @@ dependencies:
     });
 
     test('handles hosted dependency with exact version', () {
-      final pubspec = fs.file('/project/pubspec.yaml');
-      pubspec.writeAsStringSync('''
+      fs.file('/project/pubspec.yaml').writeAsStringSync('''
 name: test_project
 dependencies:
   patrol: "3.15.0"
@@ -244,8 +222,7 @@ dependencies:
     });
 
     test('handles git dependency with tag', () {
-      final pubspec = fs.file('/project/pubspec.yaml');
-      pubspec.writeAsStringSync('''
+      fs.file('/project/pubspec.yaml').writeAsStringSync('''
 name: test_project
 dependencies:
   patrol:
@@ -257,8 +234,7 @@ dependencies:
     });
 
     test('handles hosted dependency with sdk constraint', () {
-      final pubspec = fs.file('/project/pubspec.yaml');
-      pubspec.writeAsStringSync('''
+      fs.file('/project/pubspec.yaml').writeAsStringSync('''
 name: test_project
 dependencies:
   patrol:
@@ -268,8 +244,7 @@ dependencies:
     });
 
     test('handles non-string yaml values', () {
-      final pubspec = fs.file('/project/pubspec.yaml');
-      pubspec.writeAsStringSync('''
+      fs.file('/project/pubspec.yaml').writeAsStringSync('''
 name: test_project
 dependencies:
   patrol: 123

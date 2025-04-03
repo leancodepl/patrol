@@ -107,7 +107,8 @@ dependencies:
       expect(
         capturedMessage,
         contains(
-            '(Newest patrol_cli $latestVersion is not compatible with project patrol version.)'),
+          '(Newest patrol_cli $latestVersion is not compatible with project patrol version.)',
+        ),
       );
       expect(
         capturedMessage,
@@ -120,12 +121,14 @@ dependencies:
       expect(
         capturedMessage,
         contains(
-            '⚠️  Before updating, please ensure your patrol package version is compatible with patrol_cli $latestVersion'),
+          '⚠️  Before updating, please ensure your patrol package version is compatible with patrol_cli $latestVersion',
+        ),
       );
       expect(
         capturedMessage,
         contains(
-            'Check the compatibility table at: https://patrol.leancode.co/documentation/compatibility-table'),
+          'Check the compatibility table at: https://patrol.leancode.co/documentation/compatibility-table',
+        ),
       );
     });
 
@@ -180,7 +183,8 @@ dependencies:
       expect(
         capturedMessage,
         contains(
-            'Check the compatibility table at: https://patrol.leancode.co/documentation/compatibility-table'),
+          'Check the compatibility table at: https://patrol.leancode.co/documentation/compatibility-table',
+        ),
       );
     });
 
