@@ -16,18 +16,18 @@ class VersionCompatibility {
     required String patrolCliVersion,
     required String minFlutterVersion,
   }) {
-    String parseBottom(String version) {
+    Version parseBottom(String version) {
       if (version.endsWith('+')) {
-        return version.substring(0, version.length - 1);
+        return Version.parse(version.substring(0, version.length - 1));
       }
-      return version.split(' - ')[0];
+      return Version.parse(version.split(' - ')[0]);
     }
 
-    String? parseTop(String version) {
+    Version? parseTop(String version) {
       if (version.endsWith('+')) {
         return null;
       }
-      return version.split(' - ').last;
+      return Version.parse(version.split(' - ').last);
     }
 
     return VersionCompatibility(
@@ -35,63 +35,51 @@ class VersionCompatibility {
       patrolTopRangeVersion: parseTop(patrolVersion),
       patrolCliBottomRangeVersion: parseBottom(patrolCliVersion),
       patrolCliTopRangeVersion: parseTop(patrolCliVersion),
-      minFlutterVersion: minFlutterVersion,
+      minFlutterVersion: Version.parse(minFlutterVersion),
     );
   }
 
   /// The minimum version of patrol that is compatible
-  final String patrolBottomRangeVersion;
+  final Version patrolBottomRangeVersion;
 
   /// The maximum version of patrol that is compatible (null means no upper bound)
-  final String? patrolTopRangeVersion;
+  final Version? patrolTopRangeVersion;
 
   /// The minimum version of patrol_cli that is compatible
-  final String patrolCliBottomRangeVersion;
+  final Version patrolCliBottomRangeVersion;
 
   /// The maximum version of patrol_cli that is compatible (null means no upper bound)
-  final String? patrolCliTopRangeVersion;
+  final Version? patrolCliTopRangeVersion;
 
   /// The minimum Flutter version required
-  final String minFlutterVersion;
+  final Version minFlutterVersion;
 
   /// Checks if the given versions are compatible with this entry
   bool isCompatible(Version cliVersion, Version patrolVersion) {
     // Check if CLI version is in range
-    final cliMin = Version.parse(patrolCliBottomRangeVersion);
-    final cliMax = patrolCliTopRangeVersion != null
-        ? Version.parse(patrolCliTopRangeVersion!)
-        : null;
-
-    if (cliVersion < cliMin || (cliMax != null && cliVersion > cliMax)) {
+    if (cliVersion < patrolCliBottomRangeVersion ||
+        (patrolCliTopRangeVersion != null &&
+            cliVersion > patrolCliTopRangeVersion!)) {
       return false;
     }
 
     // Check if patrol version is in range
-    final patrolMin = Version.parse(patrolBottomRangeVersion);
-    final patrolMax = patrolTopRangeVersion != null
-        ? Version.parse(patrolTopRangeVersion!)
-        : null;
-
-    return patrolVersion >= patrolMin &&
-        (patrolMax == null || patrolVersion <= patrolMax);
+    return patrolVersion >= patrolBottomRangeVersion &&
+        (patrolTopRangeVersion == null ||
+            patrolVersion <= patrolTopRangeVersion!);
   }
 
   /// Gets the highest patrol version that is compatible with this entry
   Version? getHighestCompatiblePatrolVersion(Version cliVersion) {
     // Check if CLI version is in range
-    final cliMin = Version.parse(patrolCliBottomRangeVersion);
-    final cliMax = patrolCliTopRangeVersion != null
-        ? Version.parse(patrolCliTopRangeVersion!)
-        : null;
-
-    if (cliVersion < cliMin || (cliMax != null && cliVersion > cliMax)) {
+    if (cliVersion < patrolCliBottomRangeVersion ||
+        (patrolCliTopRangeVersion != null &&
+            cliVersion > patrolCliTopRangeVersion!)) {
       return null;
     }
 
     // Return the highest compatible patrol version
-    return patrolTopRangeVersion != null
-        ? Version.parse(patrolTopRangeVersion!)
-        : Version.parse(patrolBottomRangeVersion);
+    return patrolTopRangeVersion ?? patrolBottomRangeVersion;
   }
 }
 
@@ -172,7 +160,7 @@ final List<VersionCompatibility> versionCompatibilityList = [
 ]..sort((a, b) {
     final aVersion = a.patrolTopRangeVersion ?? a.patrolBottomRangeVersion;
     final bVersion = b.patrolTopRangeVersion ?? b.patrolBottomRangeVersion;
-    return Version.parse(bVersion).compareTo(Version.parse(aVersion));
+    return bVersion.compareTo(aVersion);
   });
 
 /// Helper function to check if versions are compatible
@@ -203,17 +191,12 @@ Version? getMaxCompatibleCliVersion(Version patrolVersion) {
   Version? maxCli;
   for (final compatibility in versionCompatibilityList) {
     // Check if patrol version is in range
-    final patrolMin = Version.parse(compatibility.patrolBottomRangeVersion);
-    final patrolMax = compatibility.patrolTopRangeVersion != null
-        ? Version.parse(compatibility.patrolTopRangeVersion!)
-        : null;
-
-    if (patrolVersion >= patrolMin &&
-        (patrolMax == null || patrolVersion <= patrolMax)) {
+    if (patrolVersion >= compatibility.patrolBottomRangeVersion &&
+        (compatibility.patrolTopRangeVersion == null ||
+            patrolVersion <= compatibility.patrolTopRangeVersion!)) {
       // If patrol version is compatible, consider this CLI version
-      final cliMax = compatibility.patrolCliTopRangeVersion != null
-          ? Version.parse(compatibility.patrolCliTopRangeVersion!)
-          : Version.parse(compatibility.patrolCliBottomRangeVersion);
+      final cliMax = compatibility.patrolCliTopRangeVersion ??
+          compatibility.patrolCliBottomRangeVersion;
       if (maxCli == null || cliMax > maxCli) {
         maxCli = cliMax;
       }

@@ -4,6 +4,97 @@ import 'package:test/test.dart';
 import 'package:version/version.dart';
 
 void main() {
+  group('VersionCompatibility', () {
+    test('should parse version ranges correctly', () {
+      final compat = VersionCompatibility.fromRangeString(
+        patrolVersion: '1.0.0 - 2.0.0',
+        patrolCliVersion: '3.0.0 - 4.0.0',
+        minFlutterVersion: '3.0.0',
+      );
+
+      expect(compat.patrolBottomRangeVersion, Version.parse('1.0.0'));
+      expect(compat.patrolTopRangeVersion, Version.parse('2.0.0'));
+      expect(compat.patrolCliBottomRangeVersion, Version.parse('3.0.0'));
+      expect(compat.patrolCliTopRangeVersion, Version.parse('4.0.0'));
+      expect(compat.minFlutterVersion, Version.parse('3.0.0'));
+    });
+
+    test('should handle open-ended ranges', () {
+      final compat = VersionCompatibility.fromRangeString(
+        patrolVersion: '1.0.0+',
+        patrolCliVersion: '3.0.0+',
+        minFlutterVersion: '3.0.0',
+      );
+
+      expect(compat.patrolBottomRangeVersion, Version.parse('1.0.0'));
+      expect(compat.patrolTopRangeVersion, isNull);
+      expect(compat.patrolCliBottomRangeVersion, Version.parse('3.0.0'));
+      expect(compat.patrolCliTopRangeVersion, isNull);
+      expect(compat.minFlutterVersion, Version.parse('3.0.0'));
+    });
+
+    test('should check compatibility correctly', () {
+      final compat = VersionCompatibility.fromRangeString(
+        patrolVersion: '1.0.0 - 2.0.0',
+        patrolCliVersion: '3.0.0 - 4.0.0',
+        minFlutterVersion: '3.0.0',
+      );
+
+      // Test within range
+      expect(
+        compat.isCompatible(
+          Version.parse('3.5.0'),
+          Version.parse('1.5.0'),
+        ),
+        isTrue,
+      );
+
+      // Test below range
+      expect(
+        compat.isCompatible(
+          Version.parse('2.0.0'),
+          Version.parse('0.5.0'),
+        ),
+        isFalse,
+      );
+
+      // Test above range
+      expect(
+        compat.isCompatible(
+          Version.parse('5.0.0'),
+          Version.parse('2.5.0'),
+        ),
+        isFalse,
+      );
+    });
+
+    test('should get highest compatible patrol version correctly', () {
+      final compat = VersionCompatibility.fromRangeString(
+        patrolVersion: '1.0.0 - 2.0.0',
+        patrolCliVersion: '3.0.0 - 4.0.0',
+        minFlutterVersion: '3.0.0',
+      );
+
+      // Test within range
+      expect(
+        compat.getHighestCompatiblePatrolVersion(Version.parse('3.5.0')),
+        Version.parse('2.0.0'),
+      );
+
+      // Test below range
+      expect(
+        compat.getHighestCompatiblePatrolVersion(Version.parse('2.0.0')),
+        isNull,
+      );
+
+      // Test above range
+      expect(
+        compat.getHighestCompatiblePatrolVersion(Version.parse('5.0.0')),
+        isNull,
+      );
+    });
+  });
+
   group('Version compatibility', () {
     test('areVersionsCompatible returns true for compatible versions', () {
       final cliVersion = Version.parse('3.5.0');
@@ -28,14 +119,10 @@ void main() {
       final currentCliVersion = Version.parse(constants.version);
 
       // Check if the current CLI version has an entry in the compatibility list
-      final hasEntry = versionCompatibilityList.any((compat) {
-        final cliMin = Version.parse(compat.patrolCliBottomRangeVersion);
-        final cliMax = compat.patrolCliTopRangeVersion != null
-            ? Version.parse(compat.patrolCliTopRangeVersion!)
-            : null;
-        return currentCliVersion >= cliMin &&
-            (cliMax == null || currentCliVersion <= cliMax);
-      });
+      final hasEntry = versionCompatibilityList.any((compat) =>
+          currentCliVersion >= compat.patrolCliBottomRangeVersion &&
+          (compat.patrolCliTopRangeVersion == null ||
+              currentCliVersion <= compat.patrolCliTopRangeVersion!));
 
       expect(
         hasEntry,
@@ -50,19 +137,15 @@ void main() {
 
       // Get all patrol versions that should be compatible with current CLI
       final compatiblePatrolVersions = versionCompatibilityList
-          .where((compat) {
-            final cliMin = Version.parse(compat.patrolCliBottomRangeVersion);
-            final cliMax = compat.patrolCliTopRangeVersion != null
-                ? Version.parse(compat.patrolCliTopRangeVersion!)
-                : null;
-            return currentCliVersion >= cliMin &&
-                (cliMax == null || currentCliVersion <= cliMax);
-          })
+          .where((compat) =>
+              currentCliVersion >= compat.patrolCliBottomRangeVersion &&
+              (compat.patrolCliTopRangeVersion == null ||
+                  currentCliVersion <= compat.patrolCliTopRangeVersion!))
           .expand(
             (compat) => [
-              Version.parse(compat.patrolBottomRangeVersion),
+              compat.patrolBottomRangeVersion,
               if (compat.patrolTopRangeVersion != null)
-                Version.parse(compat.patrolTopRangeVersion!),
+                compat.patrolTopRangeVersion!,
             ],
           )
           .toList();
