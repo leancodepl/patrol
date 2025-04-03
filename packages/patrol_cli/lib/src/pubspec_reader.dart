@@ -106,36 +106,48 @@ class PubspecReader {
     }
 
     final contents = file.readAsStringSync();
-    final yaml = loadYaml(contents) as Map;
-
-    final dependencies = yaml['dependencies'] as Map?;
-    if (dependencies == null) {
+    if (contents.isEmpty) {
       return null;
     }
 
-    final patrol = dependencies['patrol'];
-    if (patrol == null) {
-      return null;
-    }
+    try {
+      final yaml = loadYaml(contents) as Map?;
+      if (yaml == null) {
+        return null;
+      }
 
-    // Handle different dependency formats
-    if (patrol is String) {
-      // Direct version (e.g., patrol: ^1.0.0, patrol: 3.15.1-dev.1, patrol: 3.15.1+1)
-      return patrol.replaceAll(RegExp(r'[\^~]'), '');
-    } else if (patrol is Map) {
-      // Hosted dependency (e.g., patrol: {version: ^1.0.0})
-      // Git dependency (e.g., patrol: {git: {url: ..., ref: ...}})
-      if (patrol['version'] != null) {
-        return patrol['version'].toString().replaceAll(RegExp(r'[\^~]'), '');
-      } else if (patrol['git'] != null && patrol['git'] is Map) {
-        final git = patrol['git'] as Map;
-        if (git['ref'] != null) {
-          return git['ref'].toString();
+      // Check both dependencies and dev_dependencies
+      final dependencies = yaml['dependencies'] as Map?;
+      final devDependencies = yaml['dev_dependencies'] as Map?;
+
+      // Try to find patrol in dependencies first
+      final patrol = dependencies?['patrol'] ?? devDependencies?['patrol'];
+      if (patrol == null) {
+        return null;
+      }
+
+      // Handle different dependency formats
+      if (patrol is String) {
+        // Direct version (e.g., patrol: ^1.0.0, patrol: 3.15.1-dev.1, patrol: 3.15.1+1)
+        return patrol.replaceAll(RegExp(r'[\^~]'), '');
+      } else if (patrol is Map) {
+        // Hosted dependency (e.g., patrol: {version: ^1.0.0})
+        // Git dependency (e.g., patrol: {git: {url: ..., ref: ...}})
+        if (patrol['version'] != null) {
+          return patrol['version'].toString().replaceAll(RegExp(r'[\^~]'), '');
+        } else if (patrol['git'] != null && patrol['git'] is Map) {
+          final git = patrol['git'] as Map;
+          if (git['ref'] != null) {
+            return git['ref'].toString();
+          }
         }
       }
-    }
 
-    return null;
+      return null;
+    } catch (e) {
+      // Handle YAML parsing errors
+      return null;
+    }
   }
 
   PatrolPubspecConfig read() {

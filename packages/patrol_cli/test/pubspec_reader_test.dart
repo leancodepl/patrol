@@ -113,5 +113,168 @@ dependencies:
 ''');
       expect(reader.getPatrolVersion(), equals('3.15.1-dev.1'));
     });
+
+    test('handles git dependency with path', () {
+      final pubspec = fs.file('/project/pubspec.yaml');
+      pubspec.writeAsStringSync('''
+name: test_project
+dependencies:
+  patrol:
+    git:
+      url: https://github.com/leancodepl/patrol.git
+      path: packages/patrol
+''');
+      expect(reader.getPatrolVersion(), isNull);
+    });
+
+    test('handles git dependency with branch', () {
+      final pubspec = fs.file('/project/pubspec.yaml');
+      pubspec.writeAsStringSync('''
+name: test_project
+dependencies:
+  patrol:
+    git:
+      url: https://github.com/leancodepl/patrol.git
+      branch: main
+''');
+      expect(reader.getPatrolVersion(), isNull);
+    });
+
+    test('handles hosted dependency with any', () {
+      final pubspec = fs.file('/project/pubspec.yaml');
+      pubspec.writeAsStringSync('''
+name: test_project
+dependencies:
+  patrol: any
+''');
+      expect(reader.getPatrolVersion(), equals('any'));
+    });
+
+    test('handles hosted dependency with empty version', () {
+      final pubspec = fs.file('/project/pubspec.yaml');
+      pubspec.writeAsStringSync('''
+name: test_project
+dependencies:
+  patrol:
+    version: ''
+''');
+      expect(reader.getPatrolVersion(), equals(''));
+    });
+
+    test('handles malformed yaml', () {
+      final pubspec = fs.file('/project/pubspec.yaml');
+      pubspec.writeAsStringSync('''
+name: test_project
+dependencies:
+  patrol: invalid: yaml
+''');
+      expect(reader.getPatrolVersion(), isNull);
+    });
+
+    test('handles empty pubspec.yaml', () {
+      final pubspec = fs.file('/project/pubspec.yaml');
+      pubspec.writeAsStringSync('');
+      expect(reader.getPatrolVersion(), isNull);
+    });
+
+    test('handles patrol in dev_dependencies', () {
+      final pubspec = fs.file('/project/pubspec.yaml');
+      pubspec.writeAsStringSync('''
+name: test_project
+dev_dependencies:
+  patrol: ^3.15.0
+''');
+      expect(reader.getPatrolVersion(), equals('3.15.0'));
+    });
+
+    test('handles patrol in both dependencies and dev_dependencies', () {
+      final pubspec = fs.file('/project/pubspec.yaml');
+      pubspec.writeAsStringSync('''
+name: test_project
+dependencies:
+  patrol: ^3.14.0
+dev_dependencies:
+  patrol: ^3.15.0
+''');
+      expect(reader.getPatrolVersion(), equals('3.14.0'));
+    });
+
+    test('handles git dependency with commit hash', () {
+      final pubspec = fs.file('/project/pubspec.yaml');
+      pubspec.writeAsStringSync('''
+name: test_project
+dependencies:
+  patrol:
+    git:
+      url: https://github.com/leancodepl/patrol.git
+      ref: a1b2c3d4
+''');
+      expect(reader.getPatrolVersion(), equals('a1b2c3d4'));
+    });
+
+    test('handles path dependency', () {
+      final pubspec = fs.file('/project/pubspec.yaml');
+      pubspec.writeAsStringSync('''
+name: test_project
+dependencies:
+  patrol:
+    path: ../patrol
+''');
+      expect(reader.getPatrolVersion(), isNull);
+    });
+
+    test('handles hosted dependency with complex version constraint', () {
+      final pubspec = fs.file('/project/pubspec.yaml');
+      pubspec.writeAsStringSync('''
+name: test_project
+dependencies:
+  patrol: ">=3.15.0 <4.0.0"
+''');
+      expect(reader.getPatrolVersion(), equals('>=3.15.0 <4.0.0'));
+    });
+
+    test('handles hosted dependency with exact version', () {
+      final pubspec = fs.file('/project/pubspec.yaml');
+      pubspec.writeAsStringSync('''
+name: test_project
+dependencies:
+  patrol: "3.15.0"
+''');
+      expect(reader.getPatrolVersion(), equals('3.15.0'));
+    });
+
+    test('handles git dependency with tag', () {
+      final pubspec = fs.file('/project/pubspec.yaml');
+      pubspec.writeAsStringSync('''
+name: test_project
+dependencies:
+  patrol:
+    git:
+      url: https://github.com/leancodepl/patrol.git
+      ref: v3.15.0
+''');
+      expect(reader.getPatrolVersion(), equals('v3.15.0'));
+    });
+
+    test('handles hosted dependency with sdk constraint', () {
+      final pubspec = fs.file('/project/pubspec.yaml');
+      pubspec.writeAsStringSync('''
+name: test_project
+dependencies:
+  patrol:
+    sdk: ">=2.12.0 <3.0.0"
+''');
+      expect(reader.getPatrolVersion(), isNull);
+    });
+
+    test('handles non-string yaml values', () {
+      final pubspec = fs.file('/project/pubspec.yaml');
+      pubspec.writeAsStringSync('''
+name: test_project
+dependencies:
+  patrol: 123
+''');
+      expect(reader.getPatrolVersion(), equals('123'));
+    });
   });
 }
