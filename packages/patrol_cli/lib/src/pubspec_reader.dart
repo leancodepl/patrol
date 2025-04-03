@@ -127,9 +127,9 @@ class PubspecReader {
       }
 
       // Handle different dependency formats
-      if (patrol is String) {
+      if (patrol is String || patrol is num) {
         // Direct version (e.g., patrol: ^1.0.0, patrol: 3.15.1-dev.1, patrol: 3.15.1+1)
-        return patrol.replaceAll(RegExp(r'[\^~]'), '');
+        return patrol.toString().replaceAll(RegExp(r'[\^~]'), '');
       } else if (patrol is Map) {
         // Hosted dependency (e.g., patrol: {version: ^1.0.0})
         // Git dependency (e.g., patrol: {git: {url: ..., ref: ...}})
