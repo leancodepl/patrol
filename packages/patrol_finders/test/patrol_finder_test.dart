@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol_finders/src/custom_finders/custom_finders.dart';
 
-import 'utils/long_screen_with_long_button.dart';
-import 'utils/screen_with_long_button.dart';
+import 'utils/long_screen_with_partially_visible_widget.dart';
+import 'utils/screen_with_partially_visible_widget.dart';
 import 'utils/set_physical_size.dart';
 import 'utils/text_fields_screen.dart';
 
@@ -322,7 +322,7 @@ void main() {
           setPhysicalSize($.tester, width);
 
           await $.pumpWidget(
-            ScreenWithLongButton(
+            ScreenWithPartiallyVisibleWidget(
               width: width,
               testedWidget: ElevatedButton(
                 onPressed: () {},
@@ -344,7 +344,7 @@ void main() {
           var counter = 0;
 
           await $.pumpWidget(
-            ScreenWithLongButton(
+            ScreenWithPartiallyVisibleWidget(
               width: width,
               testedWidget: ElevatedButton(
                 onPressed: () {
@@ -432,7 +432,7 @@ void main() {
           setPhysicalSize($.tester, width);
 
           await $.pumpWidget(
-            ScreenWithLongButton(
+            ScreenWithPartiallyVisibleWidget(
               width: width,
               testedWidget: ElevatedButton(
                 onPressed: () {},
@@ -454,7 +454,7 @@ void main() {
           var counter = 0;
 
           await $.pumpWidget(
-            ScreenWithLongButton(
+            ScreenWithPartiallyVisibleWidget(
               width: width,
               testedWidget: ElevatedButton(
                 onLongPress: () {
@@ -594,7 +594,7 @@ void main() {
           setPhysicalSize($.tester, width);
 
           await $.pumpWidget(
-            const ScreenWithLongButton(
+            const ScreenWithPartiallyVisibleWidget(
               width: width,
               testedWidget: TextField(),
             ),
@@ -616,7 +616,7 @@ void main() {
           final controller = TextEditingController();
 
           await $.pumpWidget(
-            ScreenWithLongButton(
+            ScreenWithPartiallyVisibleWidget(
               width: width,
               testedWidget: TextField(
                 controller: controller,
@@ -1049,7 +1049,7 @@ void main() {
           setPhysicalSize($.tester, width);
 
           await $.pumpWidget(
-            ScreenWithLongButton(
+            ScreenWithPartiallyVisibleWidget(
               width: width,
               testedWidget: ElevatedButton(
                 onPressed: () {},
@@ -1071,7 +1071,7 @@ void main() {
           setPhysicalSize($.tester, width);
 
           await $.pumpWidget(
-            LongScreenWithLongButton(
+            LongScreenWithPartiallyVisibleWidget(
               width: width,
               testedWidget: ElevatedButton(
                 onPressed: () {},

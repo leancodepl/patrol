@@ -6,8 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol_finders/src/custom_finders/custom_finders.dart';
 
-import 'utils/long_screen_with_long_button.dart';
-import 'utils/screen_with_long_button.dart';
+import 'utils/long_screen_with_partially_visible_widget.dart';
+import 'utils/screen_with_partially_visible_widget.dart';
 import 'utils/set_physical_size.dart';
 
 void main() {
@@ -96,7 +96,7 @@ void main() {
           setPhysicalSize(tester.tester, width);
 
           await tester.pumpWidget(
-            ScreenWithLongButton(
+            ScreenWithPartiallyVisibleWidget(
               width: width,
               testedWidget: ElevatedButton(
                 onPressed: () {},
@@ -121,7 +121,7 @@ void main() {
           var counter = 0;
 
           await tester.pumpWidget(
-            ScreenWithLongButton(
+            ScreenWithPartiallyVisibleWidget(
               width: width,
               testedWidget: ElevatedButton(
                 onPressed: () {
@@ -273,7 +273,7 @@ void main() {
           setPhysicalSize(tester.tester, width);
 
           await tester.pumpWidget(
-            const ScreenWithLongButton(
+            const ScreenWithPartiallyVisibleWidget(
               width: width,
               testedWidget: TextField(),
             ),
@@ -296,7 +296,7 @@ void main() {
           final controller = TextEditingController();
 
           await tester.pumpWidget(
-            ScreenWithLongButton(
+            ScreenWithPartiallyVisibleWidget(
               width: width,
               testedWidget: TextField(
                 controller: controller,
@@ -747,7 +747,7 @@ void main() {
           setPhysicalSize(tester.tester, width);
 
           await tester.pumpWidget(
-            ScreenWithLongButton(
+            ScreenWithPartiallyVisibleWidget(
               width: width,
               testedWidget: ElevatedButton(
                 onPressed: () {},
@@ -772,7 +772,7 @@ void main() {
           setPhysicalSize(tester.tester, width);
 
           await tester.pumpWidget(
-            LongScreenWithLongButton(
+            LongScreenWithPartiallyVisibleWidget(
               width: width,
               testedWidget: ElevatedButton(
                 onPressed: () {},

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class LongScreenWithLongButton extends StatelessWidget {
-  const LongScreenWithLongButton({
+class LongScreenWithPartiallyVisibleWidget extends StatelessWidget {
+  const LongScreenWithPartiallyVisibleWidget({
     super.key,
     required this.width,
     required this.testedWidget,
@@ -12,6 +12,12 @@ class LongScreenWithLongButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // The idea here is to have a scrollable view with a widget,
+    // which only a part is visible on the screen by default.
+    // Whole view is 2*width wide, and testedWidget is in the center.
+    // Useful in testing interactions with `alignment` argument
+    // The difference between this widget and `ScreenWithPartiallyVisibleWidget`
+    // is that this one is for testing scrolling vertically
     return MaterialApp(
       home: SingleChildScrollView(
         child: Column(
