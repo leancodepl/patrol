@@ -120,14 +120,19 @@ class PubspecReader {
 
     // Handle different dependency formats
     if (patrol is String) {
-      // Direct version (e.g., patrol: ^1.0.0)
-      return patrol.replaceAll('^', '').replaceAll('~', '');
+      // Direct version (e.g., patrol: ^1.0.0, patrol: 3.15.1-dev.1, patrol: 3.15.1+1)
+      return patrol.replaceAll(RegExp(r'[\^~]'), '');
     } else if (patrol is Map) {
       // Hosted dependency (e.g., patrol: {version: ^1.0.0})
-      return patrol['version']
-          ?.toString()
-          .replaceAll('^', '')
-          .replaceAll('~', '');
+      // Git dependency (e.g., patrol: {git: {url: ..., ref: ...}})
+      if (patrol['version'] != null) {
+        return patrol['version'].toString().replaceAll(RegExp(r'[\^~]'), '');
+      } else if (patrol['git'] != null && patrol['git'] is Map) {
+        final git = patrol['git'] as Map;
+        if (git['ref'] != null) {
+          return git['ref'].toString();
+        }
+      }
     }
 
     return null;

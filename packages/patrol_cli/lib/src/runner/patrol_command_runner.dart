@@ -377,7 +377,7 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
     final commandName = topLevelResults.command?.name;
 
     if (_wantsUpdateCheck(commandName)) {
-      await _checkForUpdate(commandName);
+      await _checkForUpdates();
     }
 
     final int? exitCode;
@@ -433,16 +433,6 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
     }
 
     return true;
-  }
-
-  /// Checks if the current version (set by the build runner on the version.dart
-  /// file) is the most recent one. If not, shows a prompt to the user.
-  Future<void> _checkForUpdate(String? commandName) async {
-    if (commandName == 'update' || commandName == 'doctor') {
-      return;
-    }
-
-    await _checkForUpdates();
   }
 
   Future<void> _checkForUpdates() async {
