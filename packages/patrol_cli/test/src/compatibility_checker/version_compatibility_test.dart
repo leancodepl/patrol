@@ -5,6 +5,54 @@ import 'package:version/version.dart';
 
 void main() {
   group('VersionCompatibility', () {
+    test('should parse all version string variations correctly', () {
+      // Single version
+      final singleVersion = VersionCompatibility.fromRangeString(
+        patrolVersion: '2.0.0',
+        patrolCliVersion: '3.0.0',
+        minFlutterVersion: '3.3.0',
+      );
+      expect(singleVersion.patrolBottomRangeVersion, Version.parse('2.0.0'));
+      expect(singleVersion.patrolTopRangeVersion, Version.parse('2.0.0'));
+      expect(singleVersion.patrolCliBottomRangeVersion, Version.parse('3.0.0'));
+      expect(singleVersion.patrolCliTopRangeVersion, Version.parse('3.0.0'));
+
+      // Version range
+      final versionRange = VersionCompatibility.fromRangeString(
+        patrolVersion: '2.0.1 - 2.2.5',
+        patrolCliVersion: '3.1.0 - 3.1.1',
+        minFlutterVersion: '3.3.0',
+      );
+      expect(versionRange.patrolBottomRangeVersion, Version.parse('2.0.1'));
+      expect(versionRange.patrolTopRangeVersion, Version.parse('2.2.5'));
+      expect(versionRange.patrolCliBottomRangeVersion, Version.parse('3.1.0'));
+      expect(versionRange.patrolCliTopRangeVersion, Version.parse('3.1.1'));
+
+      // Open-ended range
+      final openEndedRange = VersionCompatibility.fromRangeString(
+        patrolVersion: '3.14.0+',
+        patrolCliVersion: '3.5.0+',
+        minFlutterVersion: '3.24.0',
+      );
+      expect(openEndedRange.patrolBottomRangeVersion, Version.parse('3.14.0'));
+      expect(openEndedRange.patrolTopRangeVersion, isNull);
+      expect(
+          openEndedRange.patrolCliBottomRangeVersion, Version.parse('3.5.0'));
+      expect(openEndedRange.patrolCliTopRangeVersion, isNull);
+
+      // Mixed formats
+      final mixedFormats = VersionCompatibility.fromRangeString(
+        patrolVersion: '3.6.0 - 3.10.0', // range
+        patrolCliVersion: '3.0.1+', // open-ended
+        minFlutterVersion: '3.16.0', // single
+      );
+      expect(mixedFormats.patrolBottomRangeVersion, Version.parse('3.6.0'));
+      expect(mixedFormats.patrolTopRangeVersion, Version.parse('3.10.0'));
+      expect(mixedFormats.patrolCliBottomRangeVersion, Version.parse('3.0.1'));
+      expect(mixedFormats.patrolCliTopRangeVersion, isNull);
+      expect(mixedFormats.minFlutterVersion, Version.parse('3.16.0'));
+    });
+
     test('should parse version ranges correctly', () {
       final compat = VersionCompatibility.fromRangeString(
         patrolVersion: '1.0.0 - 2.0.0',
