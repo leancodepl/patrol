@@ -36,6 +36,7 @@ import 'package:platform/platform.dart';
 import 'package:process/process.dart';
 import 'package:pub_updater/pub_updater.dart';
 import 'package:version/version.dart';
+import 'package:meta/meta.dart';
 
 Future<int> patrolCommandRunner(List<String> args) async {
   final pubUpdater = PubUpdater();
@@ -377,7 +378,16 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
     final commandName = topLevelResults.command?.name;
 
     if (_wantsUpdateCheck(commandName)) {
-      await _checkForUpdates();
+      final latestVersion = await _pubUpdater.getLatestVersion('patrol_cli');
+      final currentVersion = constants.version;
+      final maxCompatibleCliVersion =
+          await getMaxCompatibleCliVersion(Version.parse(latestVersion));
+
+      await _checkForUpdates(
+        currentVersion: currentVersion,
+        latestVersion: latestVersion,
+        maxCompatibleCliVersion: maxCompatibleCliVersion.toString(),
+      );
     }
 
     final int? exitCode;
@@ -422,6 +432,24 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
     DoctorCommand(logger: _logger, platform: _platform).run();
   }
 
+  /// For testing purposes only
+  @visibleForTesting
+  bool testWantsUpdateCheck(String? commandName) =>
+      _wantsUpdateCheck(commandName);
+
+  /// For testing purposes only
+  @visibleForTesting
+  Future<void> testCheckForUpdates({
+    required String currentVersion,
+    required String latestVersion,
+    required String maxCompatibleCliVersion,
+  }) =>
+      _checkForUpdates(
+        currentVersion: currentVersion,
+        latestVersion: latestVersion,
+        maxCompatibleCliVersion: maxCompatibleCliVersion,
+      );
+
   bool _wantsUpdateCheck(String? commandName) {
     if (_isCI) {
       // We don't want to check for updates on CI because of #1282
@@ -435,12 +463,14 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
     return true;
   }
 
-  Future<void> _checkForUpdates() async {
-    final latestVersion = await _pubUpdater.getLatestVersion('patrol_cli');
-    final currentVersion = Version.parse(constants.version);
+  Future<void> _checkForUpdates({
+    required String currentVersion,
+    required String latestVersion,
+    required String maxCompatibleCliVersion,
+  }) async {
     final latestVersionParsed = Version.parse(latestVersion);
 
-    if (latestVersionParsed > currentVersion) {
+    if (latestVersionParsed > Version.parse(currentVersion)) {
       // Try to find the current patrol version in the project
       String? patrolVersion;
       final rootDir = findRootDirectory(_fs);
@@ -460,7 +490,7 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
           // Show warning when incompatible
           buffer
             ..writeln(
-              '${lightYellow.wrap('Update available!')} ${lightCyan.wrap(constants.version)} \u2192 ${lightCyan.wrap(maxCliVersion.toString())}. (Newest patrol_cli $latestVersion is not compatible with project patrol version.)',
+              '${lightYellow.wrap('Update available!')} ${lightCyan.wrap(currentVersion)} \u2192 ${lightCyan.wrap(maxCliVersion.toString())}. (Newest patrol_cli $latestVersion is not compatible with project patrol version.)',
             )
             ..writeln()
             ..writeln('To update to the latest compatible version, run:')
@@ -479,7 +509,7 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
           // Show simple update message when compatible
           buffer
             ..writeln(
-              '${lightYellow.wrap('Update available!')} ${lightCyan.wrap(constants.version)} \u2192 ${lightCyan.wrap(latestVersion)}',
+              '${lightYellow.wrap('Update available!')} ${lightCyan.wrap(currentVersion)} \u2192 ${lightCyan.wrap(latestVersion)}',
             )
             ..writeln()
             ..writeln(
@@ -494,7 +524,7 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
         // Show simple update message when no patrol version found
         buffer
           ..writeln(
-            '${lightYellow.wrap('Update available!')} ${lightCyan.wrap(constants.version)} \u2192 ${lightCyan.wrap(latestVersion)}',
+            '${lightYellow.wrap('Update available!')} ${lightCyan.wrap(currentVersion)} \u2192 ${lightCyan.wrap(latestVersion)}',
           )
           ..writeln()
           ..writeln(
