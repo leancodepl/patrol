@@ -34,18 +34,19 @@ Future<void> generateCompatibilityTable() async {
 
   // Sort list by patrol_cli version in descending order
   final sortedList = [...versionCompatibilityList]..sort((a, b) {
-      final aVersion = Version.parse(a.patrolCliBottomRangeVersion);
-      final bVersion = Version.parse(b.patrolCliBottomRangeVersion);
-      return bVersion.compareTo(aVersion);
+      return b.patrolCliBottomRangeVersion
+          .compareTo(a.patrolCliBottomRangeVersion);
     });
 
   // Build table rows
   final tableRows = sortedList.map((entry) {
-    String formatVersion(String bottom, String? top) {
+    String formatVersion(Version bottom, Version? top) {
       if (top == null) {
-        return '$bottom+';
+        return '${bottom.toString()}+';
       }
-      return bottom == top ? bottom : '$bottom - $top';
+      return bottom == top
+          ? bottom.toString()
+          : '${bottom.toString()} - ${top.toString()}';
     }
 
     final cliVersion = formatVersion(
