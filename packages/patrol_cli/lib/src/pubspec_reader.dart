@@ -144,7 +144,7 @@ class PubspecReader {
       }
 
       return null;
-    } catch (e) {
+    } catch (err) {
       // Handle YAML parsing errors
       return null;
     }

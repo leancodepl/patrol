@@ -78,11 +78,8 @@ void main() {
 
       // Check if the current CLI version has an entry in the compatibility list
       final hasEntry = versionCompatibilityList.any((compat) {
-        final cliMin =
-            Version.parse(compat.patrolCliBottomRangeVersion.toString());
-        final cliMax = compat.patrolCliTopRangeVersion != null
-            ? Version.parse(compat.patrolCliTopRangeVersion!.toString())
-            : null;
+        final cliMin = compat.patrolCliBottomRangeVersion;
+        final cliMax = compat.patrolCliTopRangeVersion;
         return currentCliVersion >= cliMin &&
             (cliMax == null || currentCliVersion <= cliMax);
       });
@@ -101,19 +98,16 @@ void main() {
       // Get all patrol versions that should be compatible with current CLI
       final compatiblePatrolVersions = versionCompatibilityList
           .where((compat) {
-            final cliMin =
-                Version.parse(compat.patrolCliBottomRangeVersion.toString());
-            final cliMax = compat.patrolCliTopRangeVersion != null
-                ? Version.parse(compat.patrolCliTopRangeVersion!.toString())
-                : null;
+            final cliMin = compat.patrolCliBottomRangeVersion;
+            final cliMax = compat.patrolCliTopRangeVersion;
             return currentCliVersion >= cliMin &&
                 (cliMax == null || currentCliVersion <= cliMax);
           })
           .expand(
             (compat) => [
-              Version.parse(compat.patrolBottomRangeVersion.toString()),
+              compat.patrolBottomRangeVersion,
               if (compat.patrolTopRangeVersion != null)
-                Version.parse(compat.patrolTopRangeVersion!.toString()),
+                compat.patrolTopRangeVersion!,
             ],
           )
           .toList();
