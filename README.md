@@ -1,3 +1,6 @@
+> [!IMPORTANT] 
+> ## This branch is for running customer tests in the [flutter/tests](https://github.com/flutter/tests) repository. It should be regularly rebased onto the latest `master` to include the newest changes from the package.
+
 # Patrol
 
 [![patrol on pub.dev][patrol_badge]][patrol_link]
