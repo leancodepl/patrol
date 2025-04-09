@@ -17,6 +17,9 @@ Going further, we need to sign the app and tests. Let's assume that your team jo
   <Step>
     In [Apple Developer Portal](https://developer.apple.com) create new Development Provisioning Profile that are linked to the new Identifier and include the new Certificate.
   </Step>
+    <Warning>
+      Next three steps are needed if you use [fastlane for codesigning](https://docs.fastlane.tools/codesigning/getting-started/).
+    </Warning>
   <Step>
     In Xcode disable automatic signing in `RunnerUITests` Target.
     ![Xcode disable automatic signing in XCUITests Target](/assets/ios_runneruitests_disable_automatic_signing.png)
