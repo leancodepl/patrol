@@ -1,3 +1,7 @@
+## Unreleased
+
+- Bump `custom_lint` to `0.7.0` and `leancode_lint` to `14.3.0`. (#2574)
+
 ## 0.5.0
 
 - Add `logcat` method to `Adb` (#2387)

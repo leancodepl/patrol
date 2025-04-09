@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol_finders/src/custom_finders/custom_finders.dart';
 
+import 'utils/long_screen_with_partially_visible_widget.dart';
+import 'utils/screen_with_partially_visible_widget.dart';
+import 'utils/set_physical_size.dart';
 import 'utils/text_fields_screen.dart';
 
 // See how finders are tested in `package:flutter_test`:
@@ -312,6 +315,51 @@ void main() {
         await $('Tap').tap();
         expect($('count: 1'), findsOneWidget);
       });
+
+      group('with alignment', () {
+        patrolWidgetTest('finds no widgets', ($) async {
+          const width = 300.0;
+          setPhysicalSize($.tester, width);
+
+          await $.pumpWidget(
+            ScreenWithPartiallyVisibleWidget(
+              width: width,
+              testedWidget: ElevatedButton(
+                onPressed: () {},
+                child: const Text('some text'),
+              ),
+            ),
+          );
+
+          await expectLater(
+            () => $(ElevatedButton).tap(alignment: Alignment.centerRight),
+            throwsA(isA<WaitUntilVisibleTimeoutException>()),
+          );
+        });
+
+        patrolWidgetTest('finds widgets', ($) async {
+          const width = 300.0;
+          setPhysicalSize($.tester, width);
+
+          var counter = 0;
+
+          await $.pumpWidget(
+            ScreenWithPartiallyVisibleWidget(
+              width: width,
+              testedWidget: ElevatedButton(
+                onPressed: () {
+                  counter++;
+                },
+                child: const Text('some text'),
+              ),
+            ),
+          );
+
+          await $(ElevatedButton).tap(alignment: Alignment.centerLeft);
+
+          expect(counter, 1);
+        });
+      });
     });
 
     group('longPress()', () {
@@ -376,6 +424,52 @@ void main() {
 
         await $('Long press').longPress();
         expect($('count: 1'), findsOneWidget);
+      });
+
+      group('with alignment', () {
+        patrolWidgetTest('finds no widgets', ($) async {
+          const width = 300.0;
+          setPhysicalSize($.tester, width);
+
+          await $.pumpWidget(
+            ScreenWithPartiallyVisibleWidget(
+              width: width,
+              testedWidget: ElevatedButton(
+                onPressed: () {},
+                child: const Text('some text'),
+              ),
+            ),
+          );
+
+          await expectLater(
+            () => $(ElevatedButton).longPress(alignment: Alignment.centerRight),
+            throwsA(isA<WaitUntilVisibleTimeoutException>()),
+          );
+        });
+
+        patrolWidgetTest('finds widgets', ($) async {
+          const width = 300.0;
+          setPhysicalSize($.tester, width);
+
+          var counter = 0;
+
+          await $.pumpWidget(
+            ScreenWithPartiallyVisibleWidget(
+              width: width,
+              testedWidget: ElevatedButton(
+                onLongPress: () {
+                  counter++;
+                },
+                onPressed: () {},
+                child: const Text('some text'),
+              ),
+            ),
+          );
+
+          await $(ElevatedButton).longPress(alignment: Alignment.centerLeft);
+
+          expect(counter, 1);
+        });
       });
     });
 
@@ -493,6 +587,53 @@ void main() {
           expect($('You entered: some text'), findsOneWidget);
         },
       );
+
+      group('with alignment', () {
+        patrolWidgetTest('finds no widgets', ($) async {
+          const width = 300.0;
+          setPhysicalSize($.tester, width);
+
+          await $.pumpWidget(
+            const ScreenWithPartiallyVisibleWidget(
+              width: width,
+              testedWidget: TextField(),
+            ),
+          );
+
+          await expectLater(
+            () => $(TextField).enterText(
+              'text',
+              alignment: Alignment.centerRight,
+            ),
+            throwsA(isA<WaitUntilVisibleTimeoutException>()),
+          );
+        });
+
+        patrolWidgetTest('finds widgets', ($) async {
+          const width = 300.0;
+          setPhysicalSize($.tester, width);
+
+          final controller = TextEditingController();
+
+          await $.pumpWidget(
+            ScreenWithPartiallyVisibleWidget(
+              width: width,
+              testedWidget: TextField(
+                controller: controller,
+              ),
+            ),
+          );
+
+          const input = 'text';
+
+          await $(TextField).enterText(
+            input,
+            alignment: Alignment.centerLeft,
+          );
+
+          expect(controller.text, input);
+        });
+      });
     });
 
     group('waitUntilExists()', () {
@@ -901,6 +1042,59 @@ void main() {
           expect($('index: 100').hitTestable(), findsOneWidget);
         },
       );
+
+      group('with alignment', () {
+        patrolWidgetTest('finds no widgets', ($) async {
+          const width = 300.0;
+          setPhysicalSize($.tester, width);
+
+          await $.pumpWidget(
+            ScreenWithPartiallyVisibleWidget(
+              width: width,
+              testedWidget: ElevatedButton(
+                onPressed: () {},
+                child: const Text('some text'),
+              ),
+            ),
+          );
+
+          await expectLater(
+            () => $(ElevatedButton).scrollTo(
+              alignment: Alignment.centerRight,
+            ),
+            throwsA(isA<WaitUntilVisibleTimeoutException>()),
+          );
+        });
+
+        patrolWidgetTest('finds widgets', ($) async {
+          const width = 300.0;
+          setPhysicalSize($.tester, width);
+
+          await $.pumpWidget(
+            LongScreenWithPartiallyVisibleWidget(
+              width: width,
+              testedWidget: ElevatedButton(
+                onPressed: () {},
+                child: const Text('some text'),
+              ),
+            ),
+          );
+
+          expect(
+            $(ElevatedButton).hitTestable(at: Alignment.centerLeft),
+            findsNothing,
+          );
+
+          await $(ElevatedButton).scrollTo(
+            alignment: Alignment.centerLeft,
+          );
+
+          expect(
+            $(ElevatedButton).hitTestable(at: Alignment.centerLeft),
+            findsOneWidget,
+          );
+        });
+      });
     });
 
     group('which()', () {
