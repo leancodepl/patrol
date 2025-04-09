@@ -20,7 +20,7 @@ dependencies:
   args: ^2.4.2
   ci: ^0.1.0
   cli_completion: ^0.4.0
-  collection: ^1.18.0
+  collection: any
   coverage: ^1.9.0
   dispose_scope: ^2.1.0
   equatable: ^2.0.5
@@ -28,7 +28,7 @@ dependencies:
   glob: ^2.1.2
   http: ^1.1.0
   mason_logger: ^0.2.10
-  meta: ^1.10.0
+  meta: any
   package_config: ^2.1.1
   path: ^1.8.3
   patrol_log: ^0.7.1
