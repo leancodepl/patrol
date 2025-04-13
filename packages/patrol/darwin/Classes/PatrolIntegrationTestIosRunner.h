@@ -144,7 +144,7 @@
         [self resetPermissions];                                                                                \
         XCUIApplication *app = [[XCUIApplication alloc] init];                                                  \
         NSString *portValue = @[ @"port", [@(server.port) stringValue] ];                                       \
-        NSLog(@"Port value: %@", portValue);                                                                    \
+        NSLog(@"Received PatrolServer port: %@", portValue);                                                    \
         app.launchArguments = @[ @"port", [@(server.port) stringValue] ];                                       \
         [app launch];                                                                                           \
         if (skip) {                                                                                             \
@@ -304,7 +304,7 @@
       IMP implementation = imp_implementationWithBlock(^(id _self) {                                            \
         XCUIApplication *app = [[XCUIApplication alloc] init];                                                  \
         NSString *portValue = @[ @"port", [@(server.port) stringValue] ];                                       \
-        NSLog(@"Port value: %@", portValue);                                                                    \
+        NSLog(@"Received PatrolServer port: %@", portValue);                                                    \
         app.launchArguments = @[ @"port", [@(server.port) stringValue] ];                                       \
         [app launch];                                                                                           \
         if (skip) {                                                                                             \

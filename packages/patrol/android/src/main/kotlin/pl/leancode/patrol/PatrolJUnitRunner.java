@@ -21,7 +21,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 import static pl.leancode.patrol.contracts.Contracts.DartGroupEntry;
 import static pl.leancode.patrol.contracts.Contracts.RunDartTestResponse;
@@ -88,9 +87,8 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
 
     }
 
-    public PatrolAppServiceClient createAppServiceClient(Integer port) {
+    private void createAppServiceClient(Integer port) {
         patrolAppServiceClient = new PatrolAppServiceClient(port);
-        return patrolAppServiceClient;
     }
 
     /**
@@ -111,6 +109,8 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
         PatrolServer.Companion.getAppReady().block();
 
         Logger.INSTANCE.i(TAG + "PatrolAppService is ready to report Dart tests");
+        // TODO: Move calling [createAppServiceClient] to MainActivityTest.java when breaking change in setup can be introduced.
+        createAppServiceClient(PatrolServer.Companion.getAppServerPort());
     }
 
     public Object[] listDartTests() {

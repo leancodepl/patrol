@@ -6,7 +6,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import pl.leancode.patrol.PatrolJUnitRunner;
-import pl.leancode.patrol.PatrolServer;
 
 @RunWith(Parameterized.class)
 public class MainActivityTest {
@@ -15,7 +14,6 @@ public class MainActivityTest {
         PatrolJUnitRunner instrumentation = (PatrolJUnitRunner) InstrumentationRegistry.getInstrumentation();
         instrumentation.setUp(MainActivity.class);
         instrumentation.waitForPatrolAppService();
-        instrumentation.createAppServiceClient(PatrolServer.Companion.getAppServerPort());
         return instrumentation.listDartTests();
     }
 
