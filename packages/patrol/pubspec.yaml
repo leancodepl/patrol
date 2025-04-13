@@ -41,7 +41,6 @@ dev_dependencies:
   jnigen: ^0.13.0
   json_serializable: ^6.7.1
   leancode_lint: ^14.3.0
-  patrol_cli: ^3.5.0
 
 flutter:
   plugin:
