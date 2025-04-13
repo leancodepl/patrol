@@ -388,7 +388,7 @@ public struct SetMockLocationRequest: Codable {
   public var packageName: String
 }
 
-public struct MarkAppAppServiceReadyRequest: Codable {
+public struct MarkAppServiceReadyRequest: Codable {
   public var port: Int?
 }
 

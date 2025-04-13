@@ -417,7 +417,7 @@
       }
     }
 
-    func markPatrolAppServiceReady(request: MarkAppAppServiceReadyRequest) throws {
+    func markPatrolAppServiceReady(request: MarkAppServiceReadyRequest) throws {
       onAppReady(true, request.port!)
     }
   }

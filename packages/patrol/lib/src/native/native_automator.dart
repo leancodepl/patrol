@@ -1003,7 +1003,7 @@ class NativeAutomator {
     await _wrapRequest(
       'markPatrolAppServiceReady',
       () => _client.markPatrolAppServiceReady(
-        MarkAppAppServiceReadyRequest(port: port),
+        MarkAppServiceReadyRequest(port: port),
       ),
       enablePatrolLog: false,
     );

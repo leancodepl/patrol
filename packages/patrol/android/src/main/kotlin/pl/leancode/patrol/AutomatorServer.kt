@@ -11,7 +11,7 @@ import pl.leancode.patrol.contracts.Contracts.GetNotificationsRequest
 import pl.leancode.patrol.contracts.Contracts.GetNotificationsResponse
 import pl.leancode.patrol.contracts.Contracts.HandlePermissionRequest
 import pl.leancode.patrol.contracts.Contracts.HandlePermissionRequestCode
-import pl.leancode.patrol.contracts.Contracts.MarkAppAppServiceReadyRequest
+import pl.leancode.patrol.contracts.Contracts.MarkAppServiceReadyRequest
 import pl.leancode.patrol.contracts.Contracts.OpenAppRequest
 import pl.leancode.patrol.contracts.Contracts.OpenQuickSettingsRequest
 import pl.leancode.patrol.contracts.Contracts.OpenUrlRequest
@@ -343,7 +343,7 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
         }
     }
 
-    override fun markPatrolAppServiceReady(request: MarkAppAppServiceReadyRequest) {
+    override fun markPatrolAppServiceReady(request: MarkAppServiceReadyRequest) {
         PatrolServer.appServerPort = request.port?.toInt()
         PatrolServer.appReady.open()
     }
