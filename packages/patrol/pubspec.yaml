@@ -28,8 +28,8 @@ dependencies:
   jni: ^0.13.0
   json_annotation: ^4.8.1
   meta: ^1.10.0
+  objective_c: ^7.1.0
   patrol_finders: ^2.7.2
-  objective_c: ^4.1.0
   patrol_log: ^0.3.0
   shelf: ^1.4.1
   test_api: '^0.7.0'
@@ -37,10 +37,10 @@ dependencies:
 dev_dependencies:
   build_runner: ^2.4.6
   custom_lint: ^0.7.0
+  ffigen: ^16.1.0
   jnigen: ^0.13.0
   json_serializable: ^6.7.1
   leancode_lint: ^14.3.0
-  ffigen: ^16.1.0
   patrol_cli: ^3.5.0
 
 flutter:

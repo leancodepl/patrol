@@ -350,7 +350,7 @@ class NativeAutomatorClient {
   }
 
   Future<void> markPatrolAppServiceReady(
-    MarkAppAppServiceReadyRequest request,
+    MarkAppServiceReadyRequest request,
   ) {
     return _sendRequest(
       'markPatrolAppServiceReady',

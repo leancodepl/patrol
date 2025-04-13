@@ -808,14 +808,14 @@ Map<String, dynamic> _$SetMockLocationRequestToJson(
       'packageName': instance.packageName,
     };
 
-MarkAppAppServiceReadyRequest _$MarkAppAppServiceReadyRequestFromJson(
+MarkAppServiceReadyRequest _$MarkAppServiceReadyRequestFromJson(
         Map<String, dynamic> json) =>
-    MarkAppAppServiceReadyRequest(
+    MarkAppServiceReadyRequest(
       port: (json['port'] as num?)?.toInt(),
     );
 
-Map<String, dynamic> _$MarkAppAppServiceReadyRequestToJson(
-        MarkAppAppServiceReadyRequest instance) =>
+Map<String, dynamic> _$MarkAppServiceReadyRequestToJson(
+        MarkAppServiceReadyRequest instance) =>
     <String, dynamic>{
       'port': instance.port,
     };

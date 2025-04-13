@@ -3,8 +3,7 @@ import 'dart:io';
 
 import 'package:patrol/src/server_port/android_server_port_provider_bindings.dart';
 
-/// Provides a port for the of native server. Gets the port from the native side
-/// using ffi.
+/// Gets the port from the native side using ffi
 int getTestServerPort() {
   if (Platform.isAndroid) {
     return AndroidServerPortProvider.getPort();
