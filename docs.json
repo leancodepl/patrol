@@ -128,8 +128,8 @@
       "tab": "documentation",
       "pages": [
         {
-          "title": "Physical iOS devices",
-          "href": "/documentation/physical-ios-devices"
+          "title": "Setup for physical iOS devices",
+          "href": "/documentation/physical-ios-devices-setup"
         },
         {
           "group": "Finders",
