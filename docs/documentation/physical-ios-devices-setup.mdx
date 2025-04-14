@@ -1,0 +1,39 @@
+---
+title: Physical iOS devices
+---
+
+Because of restrictions on JIT, "in iOS 14+, debug mode Flutter apps can only be launched from Flutter tooling,IDEs..." we need to build and run tests in release mode.
+Going further, we need to sign the app and tests. Let's assume that your team joined Apple Developer Program and have already an App ID, profile and certificate for your app. We need to do the same for `RunnerUITests`.
+<Warning>
+  If you have multiple flavors, you might need to create a new App ID, certificate and profile for each flavor.
+</Warning>
+<Steps>
+  <Step>
+    In [Apple Developer Portal](https://developer.apple.com) create new Identifier (App ID) with your app's bundle ID and with `.RunnerUITests.xctrunner` ending. It should look like e.g.: `com.example.myapp.RunnerUITests.xctrunner` (Remember to swap `com.example.myapp` with your app's one).
+  </Step>
+  <Step>
+    In [Apple Developer Portal](https://developer.apple.com) create new Development Certificate with your app's bundle ID and with `.RunnerUITests.xctrunner` ending. It should look like e.g.: `com.example.myapp.RunnerUITests.xctrunner` (Remember to swap `com.example.myapp` with your app's one).
+  </Step>
+  <Step>
+    In [Apple Developer Portal](https://developer.apple.com) create new Development Provisioning Profile that are linked to the new Identifier and include the new Certificate.
+  </Step>
+    <Warning>
+      Next three steps are needed if you use [fastlane for codesigning](https://docs.fastlane.tools/codesigning/getting-started/).
+    </Warning>
+  <Step>
+    In Xcode disable automatic signing in `RunnerUITests` Target.
+    ![Xcode disable automatic signing in XCUITests Target](/assets/ios_runneruitests_disable_automatic_signing.png)
+  </Step>
+  <Step>
+    Go to `ios/Runner.xcodeproj/project.pbxproj` and search for all occurrences of `PRODUCT_BUNDLE_IDENTIFIER = com.example.myapp.RunnerUITests;`. Then set the `PROVISIONING_PROFILE_SPECIFIER` to your specifier of newly created profile.
+  </Step>
+  <Step>
+    Import the new profile for RunnerUITests manually in Xcode.
+  <Warning>
+    You might see error or warning in Xcode about not matching bundle IDs. Don't worry about it, `RunnerUITests.xctrunner` bundle is generated while building tests and this is the bundle ID that we need to sign.
+  </Warning>
+  </Step>
+  <Step>
+    Go to your IDE and try it out by running `patrol build ios --release`. If tests have been built successfully you're ready for action!
+  </Step>
+</Steps>
