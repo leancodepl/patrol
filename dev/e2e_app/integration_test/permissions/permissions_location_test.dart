@@ -69,8 +69,18 @@ void main() {
       await tapOkIfGoogleDialogAppears($);
     }
 
-    expect(await $(RegExp('lat')).waitUntilVisible(), findsOneWidget);
-    expect(await $(RegExp('lng')).waitUntilVisible(), findsOneWidget);
+    expect(
+      // timeout duration is increased here as the location service on CI
+      // needs more time to start up
+      await $(RegExp('lat')).waitUntilVisible(timeout: Duration(seconds: 20)),
+      findsOneWidget,
+    );
+    expect(
+      // timeout duration is increased here as the location service on CI
+      // needs more time to start up
+      await $(RegExp('lng')).waitUntilVisible(timeout: Duration(seconds: 20)),
+      findsOneWidget,
+    );
   });
 
   patrol('accepts location permission native2', ($) async {
@@ -91,7 +101,17 @@ void main() {
       await tapOkIfGoogleDialogAppearsV2($);
     }
 
-    expect(await $(RegExp('lat')).waitUntilVisible(), findsOneWidget);
-    expect(await $(RegExp('lng')).waitUntilVisible(), findsOneWidget);
+    expect(
+      // timeout duration is increased here as the location service on CI
+      // needs more time to start up
+      await $(RegExp('lat')).waitUntilVisible(timeout: Duration(seconds: 30)),
+      findsOneWidget,
+    );
+    expect(
+      // timeout duration is increased here as the location service on CI
+      // needs more time to start up
+      await $(RegExp('lng')).waitUntilVisible(timeout: Duration(seconds: 30)),
+      findsOneWidget,
+    );
   });
 }

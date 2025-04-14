@@ -144,7 +144,7 @@ class DevelopCommand extends PatrolCommand {
       throwToolExit('macOS is not supported with develop');
     }
 
-    _logger.detail('Received device: ${device.resolvedName}');
+    _logger.detail('Received device: ${device.name} (${device.id})');
 
     final packageName = stringArg('package-name') ?? config.android.packageName;
     final bundleId = stringArg('bundle-id') ?? config.ios.bundleId;
@@ -384,6 +384,7 @@ class DevelopCommand extends PatrolCommand {
         dartDefines: flutterOpts.dartDefines,
         openDevtools: openDevtools,
         attachUsingUrl: device.targetPlatform == TargetPlatform.macOS,
+        onQuit: finalizer,
       );
 
       await future;

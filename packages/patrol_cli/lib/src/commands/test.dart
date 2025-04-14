@@ -143,7 +143,7 @@ class TestCommand extends PatrolCommand {
     );
     _logger.detail('Received ${devices.length} device(s) to run on');
     for (final device in devices) {
-      _logger.detail('Received device: ${device.resolvedName}');
+      _logger.detail('Received device: ${device.name} (${device.id})');
     }
 
     if (devices.length > 1) {
