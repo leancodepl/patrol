@@ -4,6 +4,7 @@ import 'package:path/path.dart' show join;
 import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
 import 'package:patrol_cli/src/base/logger.dart';
+import 'package:patrol_cli/src/compatibility_checker/compatibility_checker.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/dart_defines_reader.dart';
 import 'package:patrol_cli/src/macos/macos_test_backend.dart';
@@ -21,13 +22,15 @@ class BuildMacOSCommand extends PatrolCommand {
     required MacOSTestBackend macosTestBackend,
     required Analytics analytics,
     required Logger logger,
+    required CompatibilityChecker compatibilityChecker,
   })  : _testFinder = testFinder,
         _testBundler = testBundler,
         _dartDefinesReader = dartDefinesReader,
         _pubspecReader = pubspecReader,
         _macosTestBackend = macosTestBackend,
         _analytics = analytics,
-        _logger = logger {
+        _logger = logger,
+        _compatibilityChecker = compatibilityChecker {
     usesTargetOption();
     usesBuildModeOption();
     usesFlavorOption();
@@ -47,6 +50,7 @@ class BuildMacOSCommand extends PatrolCommand {
   final DartDefinesReader _dartDefinesReader;
   final PubspecReader _pubspecReader;
   final MacOSTestBackend _macosTestBackend;
+  final CompatibilityChecker _compatibilityChecker;
 
   final Analytics _analytics;
   final Logger _logger;
@@ -71,6 +75,12 @@ class BuildMacOSCommand extends PatrolCommand {
 
     final config = _pubspecReader.read();
     final testFileSuffix = config.testFileSuffix;
+
+    // Check compatibility between CLI and package versions
+    final patrolVersion = _pubspecReader.getPatrolVersion();
+    await _compatibilityChecker.checkVersionsCompatibilityWithWarning(
+      patrolVersion: patrolVersion,
+    );
 
     final target = stringsArg('target');
     final targets = target.isNotEmpty
@@ -98,12 +108,12 @@ class BuildMacOSCommand extends PatrolCommand {
       _testBundler.createTestBundle(targets, tags, excludeTags);
     }
 
-    final flavor = stringArg('flavor') ?? config.ios.flavor;
+    final flavor = stringArg('flavor') ?? config.macos.flavor;
     if (flavor != null) {
-      _logger.detail('Received iOS flavor: $flavor');
+      _logger.detail('Received macOS flavor: $flavor');
     }
 
-    final bundleId = stringArg('bundle-id') ?? config.ios.bundleId;
+    final bundleId = stringArg('bundle-id') ?? config.macos.bundleId;
 
     final displayLabel = boolArg('label');
 
@@ -113,8 +123,8 @@ class BuildMacOSCommand extends PatrolCommand {
     };
     final internalDartDefines = {
       'PATROL_WAIT': defaultWait.toString(),
-      'PATROL_APP_BUNDLE_ID': bundleId,
-      'PATROL_IOS_APP_NAME': config.ios.appName,
+      'PATROL_MACOS_APP_BUNDLE_ID': bundleId,
+      'PATROL_MACOS_APP_NAME': config.macos.appName,
       'PATROL_TEST_LABEL_ENABLED': displayLabel.toString(),
       'INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE': 'false',
       'PATROL_TEST_SERVER_PORT': super.testServerPort.toString(),
