@@ -311,7 +311,14 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
   String? get usageFooter => '''
 Read documentation at https://patrol.leancode.pl
 Report bugs, request features at https://github.com/leancodepl/patrol/issues
-Ask questions, get support at https://github.com/leancodepl/patrol/discussions''';
+Ask questions, get support at https://github.com/leancodepl/patrol/discussions
+
+To deactivate Patrol CLI, run:
+  dart pub global deactivate patrol_cli
+
+To install a specific version of Patrol CLI, run:
+  dart pub global activate patrol_cli <version>
+  Example: dart pub global activate patrol_cli 3.5.0''';
 
   @override
   Future<int?> run(Iterable<String> args) async {
