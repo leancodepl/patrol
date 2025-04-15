@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Improve patrol test error messaging when compatibility check fails, added same compatibility check and error messaging to patrol build command (#2597)
 - Improve patrol update messaging by showing incompatibility warning when applicable, sharing compatibility table (#2579)
 - Add ability to quit the `patrol develop` process by pressing q on the keyboard (#2577)
 - Add `--ios` flag to `patrol test` that specifies the iOS version to use. (#2540)

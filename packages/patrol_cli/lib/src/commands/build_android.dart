@@ -80,7 +80,7 @@ class BuildAndroidCommand extends PatrolCommand {
 
     // Check compatibility between CLI and package versions
     final patrolVersion = _pubspecReader.getPatrolVersion();
-    await _compatibilityChecker.checkVersionsCompatibilityWithWarning(
+    await _compatibilityChecker.checkVersionsCompatibilityForBuild(
       patrolVersion: patrolVersion,
     );
 
