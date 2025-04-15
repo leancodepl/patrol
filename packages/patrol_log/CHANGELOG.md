@@ -1,6 +1,7 @@
 ## Unreleased
 
 - Bump `custom_lint` to `0.7.0` and `leancode_lint` to `14.3.0`. (#2574)
+- Format the test duration to show it in minutes and hours instead of seconds.
 
 ## 0.3.0
 
