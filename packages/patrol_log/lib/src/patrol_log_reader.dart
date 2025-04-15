@@ -251,9 +251,9 @@ class PatrolLogReader {
       '${failedTestsCount > 0 ? '$failedTestsList\n' : ''}'
       '${Emojis.skip} Skipped: $skippedTests\n'
       '${Emojis.report} Report: ${reportPath.replaceAll(' ', '%20')}\n'
-      '${Emojis.duration} Duration: ${_formatDuration(_stopwatch.elapsed)}\n';
+      '${Emojis.duration} Duration: ${formatDuration(_stopwatch.elapsed)}\n';
 
-  String _formatDuration(Duration duration) {
+  String formatDuration(Duration duration) {
     final hours = duration.inHours;
     final minutes = duration.inMinutes % 60;
     final seconds = duration.inSeconds % 60;
