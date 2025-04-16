@@ -1,42 +1,21 @@
-import 'package:dispose_scope/dispose_scope.dart';
-import 'package:patrol_log/src/patrol_log_reader.dart';
+import 'package:patrol_log/src/duration_extension.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('PatrolLogReader', () {
-    test('formatDuration formats duration correctly', () {
-      final reader = PatrolLogReader(
-        scope: DisposeScope(),
-        listenStdOut: (_, {onError, onDone, cancelOnError}) =>
-            const Stream<void>.empty().listen((_) {}),
-        log: (_) {},
-        reportPath: '',
-        showFlutterLogs: false,
-        hideTestSteps: false,
-        clearTestSteps: false,
-      );
-
-      expect(reader.formatDuration(const Duration(seconds: 5)), '5s');
+  group('DurationExtension', () {
+    test('toFormattedString formats duration correctly', () {
+      expect(const Duration(seconds: 5).toFormattedString(), '5s');
       expect(
-        reader.formatDuration(const Duration(minutes: 1, seconds: 5)),
+        const Duration(minutes: 1, seconds: 5).toFormattedString(),
         '1m 5s',
       );
       expect(
-        reader.formatDuration(const Duration(hours: 1, minutes: 1, seconds: 5)),
+        const Duration(hours: 1, minutes: 1, seconds: 5).toFormattedString(),
         '1h 1m 5s',
       );
-      expect(
-        reader.formatDuration(const Duration(hours: 2)),
-        '2h 0m 0s',
-      );
-      expect(
-        reader.formatDuration(Duration.zero),
-        '0s',
-      );
-      expect(
-        reader.formatDuration(const Duration(seconds: 60)),
-        '1m 0s',
-      );
+      expect(const Duration(hours: 2).toFormattedString(), '2h 0m 0s');
+      expect(Duration.zero.toFormattedString(), '0s');
+      expect(const Duration(seconds: 60).toFormattedString(), '1m 0s');
     });
   });
 }
