@@ -70,6 +70,11 @@
       "href": "/cli-commands"
     },
     {
+      "id": "feature-guide",
+      "title": "Patrol Feature Guide",
+      "href": "/feature-guide"
+    },
+    {
       "id": "articles",
       "title": "Articles & Resources",
       "href": "/articles"
@@ -272,6 +277,25 @@
         {
           "title": "New package - patrol_finders",
           "href": "/patrol-finders-release"
+        }
+      ]
+    },
+    {
+      "tab": "feature-guide",
+      "pages": [
+        {
+          "title": "Introduction",
+          "href": "/feature-guide/introduction"
+        }
+      ]
+    },
+    {
+      "group": "Features",
+      "tab": "feature-guide",
+      "pages": [
+        {
+          "title": "Disabling/enabling Bluetooth",
+          "href": "/feature-guide/bluetooth"
         }
       ]
     }
