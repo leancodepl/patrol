@@ -1,0 +1,30 @@
+---
+title: Disabling/enabling Bluetooth
+---
+
+In this video we show you how to toggle Bluetooth using Patrol framework.
+
+<YouTube id="zbjMmfdX6GE" />
+
+Here you can find the code of this test and try it out by yourself.
+
+```dart title="integration_test/bluetooth_test.dart"
+import 'package:example/main.dart';
+import 'package:patrol/patrol.dart';
+
+void main() {
+  patrolTest(
+    'disable and enable bluetooth',
+    ($) async {
+      await $.pumpWidgetAndSettle(const MyApp());
+
+      await Future<void>.delayed(const Duration(seconds: 2));
+      await $.native.openQuickSettings();
+      await $.native.disableBluetooth();
+      await Future<void>.delayed(const Duration(seconds: 4));
+      await $.native.enableBluetooth();
+      await Future<void>.delayed(const Duration(seconds: 4));
+    },
+  );
+}
+```
