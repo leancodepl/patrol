@@ -285,6 +285,10 @@
       "tab": "feature-guide",
       "pages": [
         {
+          "title": "Introduction",
+          "href": "/feature-guide/introduction"
+        },
+        {
           "title": "Disabling/enabling Bluetooth",
           "href": "/feature-guide/bluetooth"
         }
