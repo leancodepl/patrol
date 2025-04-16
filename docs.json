@@ -281,13 +281,18 @@
       ]
     },
     {
-      "group": "Features",
       "tab": "feature-guide",
       "pages": [
         {
           "title": "Introduction",
           "href": "/feature-guide/introduction"
-        },
+        }
+      ]
+    },
+    {
+      "group": "Features",
+      "tab": "feature-guide",
+      "pages": [
         {
           "title": "Disabling/enabling Bluetooth",
           "href": "/feature-guide/bluetooth"
