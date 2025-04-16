@@ -28,6 +28,33 @@ class CompatibilityChecker {
   final DisposeScope _disposeScope;
   final Logger _logger;
 
+  /// Generates incompatibility error message with appropriate resolution steps
+  String _incompatibilityMessage({
+    required Version packageVersion,
+    required Version cliVersion,
+    required String additionalInfo,
+    Version? maxCliVersion,
+  }) {
+    final resolveSteps = maxCliVersion != null
+        ? '''
+1. Downgrade patrol_cli to a compatible version by running: 
+   dart pub global activate patrol_cli $maxCliVersion
+   
+2. Or upgrade both "patrol_cli" and "patrol" dependencies to the latest versions.'''
+        : 'Please upgrade both "patrol_cli" and "patrol" dependencies to the latest versions.';
+
+    return '''
+Patrol version $packageVersion defined in your project is not compatible with patrol_cli version $cliVersion.
+$additionalInfo
+
+To resolve this issue:
+$resolveSteps
+
+Check the compatibility table at: https://patrol.leancode.co/documentation/compatibility-table
+''';
+  }
+
+  /// Checks if the version compatibility and throws an error if incompatible
   Future<void> checkVersionsCompatibility({
     required FlutterCommand flutterCommand,
     required TargetPlatform targetPlatform,
@@ -86,9 +113,45 @@ class CompatibilityChecker {
     final isCompatible = areVersionsCompatible(cliVersion, patrolVersion);
 
     if (!isCompatible) {
+      // Find the maximum compatible CLI version for this patrol version
+      final maxCliVersion = getMaxCompatibleCliVersion(patrolVersion);
+
       throwToolExit(
-        'Patrol version $patrolVersion defined in the project is not compatible with patrol_cli version $cliVersion\n'
-        'Please upgrade both "patrol_cli" and "patrol" dependency in project to the latest versions.',
+        _incompatibilityMessage(
+          packageVersion: patrolVersion,
+          cliVersion: cliVersion,
+          additionalInfo:
+              'This will prevent your tests from running correctly.',
+          maxCliVersion: maxCliVersion,
+        ),
+      );
+    }
+  }
+
+  /// Checks version compatibility and fails the build process if incompatible
+  Future<void> checkVersionsCompatibilityForBuild({
+    required String? patrolVersion,
+  }) async {
+    if (patrolVersion == null) {
+      return;
+    }
+
+    final cliVersion = Version.parse(constants.version);
+    final packageVersion = Version.parse(patrolVersion);
+
+    final isCompatible = areVersionsCompatible(cliVersion, packageVersion);
+    if (!isCompatible) {
+      // Find the maximum compatible CLI version for this patrol version
+      final maxCliVersion = getMaxCompatibleCliVersion(packageVersion);
+
+      throwToolExit(
+        _incompatibilityMessage(
+          packageVersion: packageVersion,
+          cliVersion: cliVersion,
+          additionalInfo:
+              'This will prevent your tests from running correctly.',
+          maxCliVersion: maxCliVersion,
+        ),
       );
     }
   }
