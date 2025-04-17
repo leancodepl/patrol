@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:patrol_log/patrol_log.dart';
+import 'package:patrol_log/src/duration_extension.dart';
 import 'package:patrol_log/src/emojis.dart';
 
 class PatrolLogReader {
@@ -251,7 +252,7 @@ class PatrolLogReader {
       '${failedTestsCount > 0 ? '$failedTestsList\n' : ''}'
       '${Emojis.skip} Skipped: $skippedTests\n'
       '${Emojis.report} Report: ${reportPath.replaceAll(' ', '%20')}\n'
-      '${Emojis.duration} Duration: ${_stopwatch.elapsed.inSeconds}s\n';
+      '${Emojis.duration} Duration: ${_stopwatch.elapsed.toFormattedString()}\n';
 
   /// Closes the stream subscription and the stream controller.
   void close() {
