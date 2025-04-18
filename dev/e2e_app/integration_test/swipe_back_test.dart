@@ -6,9 +6,13 @@ void main() {
     ($) async {
       await createApp($);
 
-      await $(find.text('Open loading screen')).scrollTo().tap();
+      final openLoadingScreenButton = $(find.text('Open loading screen'));
+
+      await openLoadingScreenButton.scrollTo().tap();
 
       await $.native.swipeBack(height: 0.2);
+
+      await openLoadingScreenButton.waitUntilExists();
     },
   );
 }
