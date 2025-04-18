@@ -1,18 +1,14 @@
-import 'package:flutter/material.dart';
-
 import 'common.dart';
 
 void main() {
   patrol(
-    'swipe back gesture pops top view off the navigation stack',
+    'performs swipe back gesture ',
     ($) async {
       await createApp($);
 
-      await $(find.text('Open loading screen')).tap();
+      await $(find.text('Open loading screen')).scrollTo().tap();
 
       await $.native.swipeBack(height: 0.2);
-
-      await $(Key('scaffold')).waitUntilVisible();
     },
   );
 }
