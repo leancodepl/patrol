@@ -166,7 +166,6 @@ class BuildAndroidCommand extends PatrolCommand {
     final androidOpts = AndroidAppOptions(
       flutter: flutterOpts,
       packageName: packageName,
-      appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
       uninstall: uninstall,
     );

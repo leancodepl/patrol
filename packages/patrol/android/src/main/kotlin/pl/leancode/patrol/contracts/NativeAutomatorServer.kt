@@ -54,7 +54,7 @@ abstract class NativeAutomatorServer {
     abstract fun setLocationAccuracy(request: Contracts.SetLocationAccuracyRequest)
     abstract fun debug()
     abstract fun setMockLocation(request: Contracts.SetMockLocationRequest)
-    abstract fun markPatrolAppServiceReady()
+    abstract fun markPatrolAppServiceReady(request: Contracts.MarkAppServiceReadyRequest)
 
     val router = routes(
       "initialize" bind POST to {
@@ -242,7 +242,8 @@ abstract class NativeAutomatorServer {
         Response(OK)
       },
       "markPatrolAppServiceReady" bind POST to {
-        markPatrolAppServiceReady()
+        val body = json.fromJson(it.bodyString(), Contracts.MarkAppServiceReadyRequest::class.java)
+        markPatrolAppServiceReady(body)
         Response(OK)
       }
     )

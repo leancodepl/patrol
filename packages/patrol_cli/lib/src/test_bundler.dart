@@ -72,9 +72,11 @@ Future<void> main() async {
   // Dart test (out of which they had been created) and wait for it to complete.
   // The result of running the Dart test is the result of the native test case.
 
-  final nativeAutomator = NativeAutomator(config: NativeAutomatorConfig());
+  // Gets the port from the native side using ffi.
+  final config = NativeAutomatorConfig(port: getTestServerPort().toString());
+  final nativeAutomator = NativeAutomator(config: config);
   await nativeAutomator.initialize();
-  final binding = PatrolBinding.ensureInitialized(NativeAutomatorConfig());
+  final binding = PatrolBinding.ensureInitialized(config);
   final testExplorationCompleter = Completer<DartGroupEntry>();
 
   // A special test to explore the hierarchy of groups and tests. This is a hack
@@ -102,12 +104,12 @@ ${generateGroupsCode(testFilePaths).split('\n').map((e) => '  $e').join('\n')}
   final dartTestGroup = await testExplorationCompleter.future;
   final appService = PatrolAppService(topLevelDartTestGroup: dartTestGroup);
   binding.patrolAppService = appService;
-  await runAppService(appService);
+  final appPort = await runAppService(appService);
 
   // Until now, the native test runner was waiting for us, the Dart side, to
   // come alive. Now that we did, let's tell it that we're ready to be asked
   // about Dart tests.
-  await nativeAutomator.markPatrolAppServiceReady();
+  await nativeAutomator.markPatrolAppServiceReady(appPort);
 
   await appService.testExecutionCompleted;
 }
@@ -144,9 +146,11 @@ ${generateImports([testFilePath])}
 // END: GENERATED TEST IMPORTS
 
 Future<void> main() async {
-  final nativeAutomator = NativeAutomator(config: NativeAutomatorConfig());
+  // Gets the port from the native side using ffi.
+  final config = NativeAutomatorConfig(port: getTestServerPort().toString());
+  final nativeAutomator = NativeAutomator(config: config);
   await nativeAutomator.initialize();
-  PatrolBinding.ensureInitialized(NativeAutomatorConfig())
+  PatrolBinding.ensureInitialized(config)
     ..workaroundDebugDefaultTargetPlatformOverride =
         debugDefaultTargetPlatformOverride;
 

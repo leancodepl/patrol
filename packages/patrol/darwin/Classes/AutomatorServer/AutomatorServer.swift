@@ -5,9 +5,9 @@
   final class AutomatorServer: NativeAutomatorServer {
     private let automator: Automator
 
-    private let onAppReady: (Bool) -> Void
+    private let onAppReady: (Bool, Int) -> Void
 
-    init(automator: Automator, onAppReady: @escaping (Bool) -> Void) {
+    init(automator: Automator, onAppReady: @escaping (Bool, Int) -> Void) {
       self.automator = automator
       self.onAppReady = onAppReady
     }
@@ -417,8 +417,8 @@
       }
     }
 
-    func markPatrolAppServiceReady() throws {
-      onAppReady(true)
+    func markPatrolAppServiceReady(request: MarkAppServiceReadyRequest) throws {
+      onAppReady(true, request.port!)
     }
   }
 

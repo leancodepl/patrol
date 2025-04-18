@@ -1260,3 +1260,22 @@ class SetMockLocationRequest with EquatableMixin {
         packageName,
       ];
 }
+
+@JsonSerializable()
+class MarkAppServiceReadyRequest with EquatableMixin {
+  MarkAppServiceReadyRequest({
+    this.port,
+  });
+
+  factory MarkAppServiceReadyRequest.fromJson(Map<String, dynamic> json) =>
+      _$MarkAppServiceReadyRequestFromJson(json);
+
+  final int? port;
+
+  Map<String, dynamic> toJson() => _$MarkAppServiceReadyRequestToJson(this);
+
+  @override
+  List<Object?> get props => [
+        port,
+      ];
+}
