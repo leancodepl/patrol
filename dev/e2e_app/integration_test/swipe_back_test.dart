@@ -10,7 +10,7 @@ void main() {
 
       await openLoadingScreenButton.scrollTo().tap();
 
-      await $.native.swipeBack(height: 0.2);
+      await $.native.swipeBack(dy: 0.6);
 
       await openLoadingScreenButton.waitUntilExists();
     },

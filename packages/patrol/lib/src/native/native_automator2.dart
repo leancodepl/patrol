@@ -686,17 +686,15 @@ class NativeAutomator2 {
 
   /// Mimics the swipe back (left to right) gesture.
   ///
-  /// [height] determines the vertical position of the swipe, as a fraction
-  /// of the screen height (0.0 is the bottom, 1.0 is the top). It must be
-  /// in the inclusive range of 0.0 to 1.0. Defaults to 0.5 (center of the screen).
+  /// [dy] determines the vertical offset of the swipe. It must be in the inclusive 0-1 range.
   ///
   /// [appId] optionally specifies the application ID to target.
   ///
   /// This is equivalent to:
   /// $.native.swipe(
-  ///   from: Offset(0, 1 - height),
-  ///   to: Offset(1, 1 - height),
-  ///   appId: appId,
+  ///    from: Offset(0, dy),
+  ///    to: Offset(1, dy),
+  ///    appId: appId,
   ///  );
   ///
   /// On Android, navigation with gestures might have to be turned on in devices settings.
@@ -707,16 +705,16 @@ class NativeAutomator2 {
   /// await tester.swipeBack(); // Swipe back at the center of the screen
   /// ```
   Future<void> swipeBack({
-    double height = 0.5,
+    double dy = 0.5,
     String? appId,
   }) {
     assert(
-      height >= 0.0 && height <= 1.0,
-      'height must be between 0.0 and 1.0',
+      dy >= 0.0 && dy <= 1.0,
+      'dy must be between 0.0 and 1.0',
     );
     return swipe(
-      from: Offset(0, 1 - height),
-      to: Offset(1, 1 - height),
+      from: Offset(0, dy),
+      to: Offset(1, dy),
       appId: appId,
     );
   }
