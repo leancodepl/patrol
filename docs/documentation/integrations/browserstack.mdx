@@ -62,6 +62,9 @@ title: Integrations - Browserstack
   </Steps>
 </Accordion>
 
+You can choose between running tests in a recommended way using scripts or manually:
+
+<Accordion title="Running tests using scripts (recommended)">
 ## Schedule tests using scripts
 
 We recommend using the [bs_android] and [bs_ios] scripts to schedule test runs.
@@ -111,18 +114,29 @@ Uploaded test, url: bs://a715b1231d41ac627bd683f1b16c28476babd72e
 Scheduled test execution
 ```
 
-Full list of available devices and OS versions can be found in the [BrowserStack Browsers & Devices][bs_devices] page.
+That's all! "Success" means that the test execution was scheduled successfully.
 
-### To run tests manually you can follow BrowserStack's docs and/or follow the code of `bs_android` and `bs_ios` scripts.
+</Accordion>
+
+<Accordion title="Running tests manually">
+
+You can follow BrowserStack's docs and/or follow the code of `bs_android` and `bs_ios` scripts:
 
 1. Build the app under test and the instrumentation app ([see docs][patrol build])
 1. Upload the app under test APK to Browserstack ([see Android docs][bs_android_app_docs]) ([see iOS docs][bs_ios_app_docs])
 1. Upload the instrumentation app APK to Browserstack ([see Android docs][bs_android_test_docs]) ([see iOS docs][bs_ios_test_docs])
 1. Start test execution on Browserstack ([see Android docs][bs_execute_android_docs]) ([see iOS docs][bs_execute_ios_docs])
 
+</Accordion>
+
+After scheduling the test execution, you can check the status of the test execution in the [App Automate dashboard][bs_app_automate_dashboard].
+
+If you need to change the test configuration, check out full list of available devices and OS versions in the [BrowserStack Browsers & Devices][bs_devices].
+
 [Browserstack App Automate]: https://www.browserstack.com/app-automate
 [mobile-tools]: https://github.com/leancodepl/mobile-tools
 [bs_account]: https://www.browserstack.com/accounts/profile
+[bs_app_automate_dashboard]: https://app-automate.browserstack.com/dashboard/v2
 [Setup for physical iOS devices]: /documentation/physical-ios-devices-setup
 [Xcode test plans]: https://developer.apple.com/documentation/xcode/organizing-tests-to-improve-feedback
 [bs_android]: https://github.com/leancodepl/mobile-tools/blob/master/bin/bs_android
