@@ -88,28 +88,29 @@ class PatrolLogReader {
     try {
       if (line.contains('PATROL_LOG')) {
         _parsePatrolLog(line);
-      } else if (showFlutterLogs &&
-          line.contains('Runner: (Flutter) flutter:')) {
-        _parseFlutterIOsLog(line);
-      } else if (showFlutterLogs && line.contains('I flutter :')) {
-        _parseFlutterAndroidLog(line);
-      } else if (showFlutterLogs && line.contains('<Notice>: flutter:')) {
-        _parseFlutterIOsReleaseLog(line);
+      } else if (showFlutterLogs) {
+        return switch (line) {
+          _ when line.contains('(Flutter) flutter:') =>
+            _parseFlutterIOsLog(line),
+          _ when line.contains('I flutter :') => _parseFlutterAndroidLog(line),
+          _ when line.contains('flutter:') => _parseFlutterIOsReleaseLog(line),
+          _ => null,
+        };
       }
     } catch (e) {
       log('Error parsing line: $line');
     }
   }
 
-  /// Take line containg PATROL_LOG tag, parse it to [Entry] and add to stream.
+  /// Take line containing PATROL_LOG tag, parse it to [Entry] and add to stream.
   void _parsePatrolLog(String line) {
     final regExp = RegExp('PATROL_LOG (.*)');
     final match = regExp.firstMatch(line);
     try {
-      if (match != null) {
+      if (match?.group(1) case final firstMatch?) {
         // \134 is the octal representation of backslash
         const octalBackslash = r'\134';
-        final json = match.group(1)!.replaceAll(octalBackslash, r'\');
+        final json = firstMatch.replaceAll(octalBackslash, r'\');
         final entry = parseEntry(json);
 
         if (entry case TestEntry _) {
@@ -133,31 +134,28 @@ class PatrolLogReader {
 
   /// Parse the line containing Flutter logs on iOS and print them.
   void _parseFlutterIOsLog(String line) {
-    final regExp = RegExp(r'Runner: \(Flutter\) (.*)');
+    final regExp = RegExp(r'\(Flutter\) (.*)');
     final match = regExp.firstMatch(line);
-    if (match != null) {
-      final matchedText = match.group(1)!;
-      log(matchedText);
+    if (match?.group(1) case final firstMatch?) {
+      log(firstMatch);
     }
   }
 
   /// Parse the line containing Flutter logs on Android and print them.
   void _parseFlutterAndroidLog(String line) {
-    final regExp = RegExp('I (.*)');
+    final regExp = RegExp('I flutter (.*)');
     final match = regExp.firstMatch(line);
-    if (match != null) {
-      final matchedText = match.group(1)!;
-      log(matchedText);
+    if (match?.group(1) case final firstMatch?) {
+      log(firstMatch);
     }
   }
 
   /// Parse the line containing Flutter logs on iOS in release mode and print them.
   void _parseFlutterIOsReleaseLog(String line) {
-    final regExp = RegExp(r'\<Notice\>: flutter: (.*)');
+    final regExp = RegExp('flutter: (.*)');
     final match = regExp.firstMatch(line);
-    if (match != null) {
-      final matchedText = match.group(1)!;
-      log(matchedText);
+    if (match?.group(1) case final firstMatch?) {
+      log(firstMatch);
     }
   }
 
