@@ -3,6 +3,7 @@
 - Improve patrol test error messaging when compatibility check fails, added same compatibility check and error messaging to patrol build command (#2597)
 - Improve patrol update messaging by showing incompatibility warning when applicable, sharing compatibility table (#2579)
 - Add ability to quit the `patrol develop` process by pressing q on the keyboard (#2577)
+- Fix issue with reading logs on iOS devices in release. (#2569)
 - Add `--ios` flag to `patrol test` that specifies the iOS version to use. (#2540)
 - Bump `custom_lint` to `0.7.0` and `leancode_lint` to `14.3.0`. (#2574)
 - Display the name of the default device instead of its ID. (#2581)
