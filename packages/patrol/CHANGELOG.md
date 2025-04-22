@@ -1,6 +1,7 @@
 ## 3.16.0-dev.1
 
 - Dynamically select port on all platforms. (#2527)
+- Update test reports to show all exceptions thrown in Flutter. (#2362)
 
 ## 3.15.1
 
@@ -8,7 +9,6 @@
 - Add `setMockLocation` method. (#2547)
 - Bump `custom_lint` to `0.7.0` and `leancode_lint` to `14.3.0`. (#2574)
 - Upgrade `http4k` to 5.47.0.0. (#2559)
-- Make `PatrolBinding`'s `testResults` public. (#2362)
 
 ## 3.14.1
 

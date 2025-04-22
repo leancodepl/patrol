@@ -170,6 +170,9 @@ class PatrolAppService extends PatrolAppServiceServer {
     };
 
     final testExecutionResult = await testExecutionCompleted;
+
+    FlutterError.onError = previousOnError;
+
     if (!testExecutionResult.passed) {
       _patrolLog.log(
         TestEntry(
@@ -188,7 +191,6 @@ class PatrolAppService extends PatrolAppServiceServer {
         ),
       );
     }
-    FlutterError.onError = previousOnError;
 
     return RunDartTestResponse(
       result: testExecutionResult.passed
