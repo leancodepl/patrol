@@ -32,7 +32,7 @@ import static pl.leancode.patrol.contracts.Contracts.RunDartTestResponse;
  */
 public class PatrolJUnitRunner extends AndroidJUnitRunner {
     public PatrolAppServiceClient patrolAppServiceClient;
-    private Map<String, Boolean> dartTestCaseSkipMap = new HashMap<>();
+    private final Map<String, Boolean> dartTestCaseSkipMap = new HashMap<>();
 
     @Override
     protected boolean shouldWaitForActivitiesToComplete() {
@@ -87,7 +87,7 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
 
     }
 
-    private void createAppServiceClient(Integer port) {
+    void createAppServiceClient(Integer port) {
         patrolAppServiceClient = new PatrolAppServiceClient(port);
     }
 
