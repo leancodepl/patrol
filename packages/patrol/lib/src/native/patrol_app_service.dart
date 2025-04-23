@@ -4,7 +4,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:patrol/patrol.dart';
 import 'package:patrol/src/native/contracts/contracts.dart';
 import 'package:patrol/src/native/contracts/patrol_app_service_server.dart';
@@ -148,30 +147,7 @@ class PatrolAppService extends PatrolAppServiceServer {
     print('PatrolAppService.runDartTest(${request.name}) called');
     _testExecutionRequested.complete(request.name);
 
-    final patrolBinding =
-        PatrolBinding.ensureInitialized(const NativeAutomatorConfig());
-
-    final previousOnError = FlutterError.onError;
-    FlutterError.onError = (details) {
-      final previousDetails = switch (patrolBinding.testResults[request.name]) {
-        Failure(:final details?) => FlutterErrorDetails(exception: details),
-        _ => null,
-      };
-      final detailsAsString = (kReleaseMode && Platform.isIOS)
-          ? '${details.exceptionAsString()} \n ${details.stack}'
-          : details.toString();
-
-      patrolBinding.testResults[request.name] = Failure(
-        request.name,
-        '$detailsAsString\n$previousDetails',
-      );
-
-      previousOnError?.call(details);
-    };
-
     final testExecutionResult = await testExecutionCompleted;
-
-    FlutterError.onError = previousOnError;
 
     if (!testExecutionResult.passed) {
       _patrolLog.log(

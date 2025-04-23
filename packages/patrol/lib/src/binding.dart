@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 import 'dart:isolate';
 
 import 'package:flutter/foundation.dart';
@@ -66,7 +67,7 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
         return;
       } else {
         logger(
-          'tearDown(): count: ${testResults.length}, results: $testResults',
+          'tearDown(): count: ${_testResults.length}, results: $_testResults',
         );
       }
 
@@ -104,8 +105,8 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
         await patrolAppService.markDartTestAsCompleted(
           dartFileName: _currentDartTest!,
           passed: passed,
-          details: testResults[_currentDartTest!] is Failure
-              ? (testResults[_currentDartTest!] as Failure?)?.details
+          details: _testResults[_currentDartTest!] is Failure
+              ? (_testResults[_currentDartTest!] as Failure?)?.details
               : null,
         );
       } else {
@@ -156,7 +157,7 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
 
   /// Keys are the test descriptions, and values are either [_success] or a
   /// [Failure].
-  final Map<String, Object> testResults = <String, Object>{};
+  final Map<String, Object> _testResults = <String, Object>{};
 
   final DevtoolsServiceExtensions _serviceExtensions;
 
@@ -209,11 +210,36 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
     Duration? timeout,
   }) async {
     await super.runTest(
-      testBody,
+      () async {
+        final previousOnError = FlutterError.onError;
+        FlutterError.onError = (details) {
+          if (_currentDartTest case final testName?) {
+            final previousDetails = switch (_testResults[testName]) {
+              Failure(:final details?) =>
+                FlutterErrorDetails(exception: details),
+              _ => null,
+            };
+            final detailsAsString = (kReleaseMode && Platform.isIOS)
+                ? '${details.exceptionAsString()}\n${details.stack}'
+                : details.toString();
+
+            _testResults[testName] = Failure(
+              testName,
+              '$detailsAsString${previousDetails != null ? '\n$previousDetails' : ''}',
+            );
+
+            previousOnError?.call(details);
+          }
+        };
+
+        await testBody();
+
+        FlutterError.onError = previousOnError;
+      },
       invariantTester,
       description: description,
     );
-    testResults[description] ??= _success;
+    _testResults[description] ??= _success;
   }
 
   @override
