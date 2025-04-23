@@ -164,7 +164,10 @@ class BuildMacOSCommand extends PatrolCommand {
     );
 
     try {
-      await _macosTestBackend.build(macosOpts);
+      await _macosTestBackend.build(
+        macosOpts,
+        isPatrolBuildCommand: true,
+      );
 
       _printBinaryPaths(buildMode: flutterOpts.buildMode.xcodeName);
 
