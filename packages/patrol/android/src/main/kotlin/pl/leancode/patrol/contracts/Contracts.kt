@@ -667,4 +667,12 @@ class Contracts {
     val packageName: String
   )
 
+  data class MarkAppServiceReadyRequest (
+    val port: Long? = null
+  ){
+    fun hasPort(): Boolean {
+      return port != null
+    }
+  }
+
 }

@@ -807,3 +807,15 @@ Map<String, dynamic> _$SetMockLocationRequestToJson(
       'longitude': instance.longitude,
       'packageName': instance.packageName,
     };
+
+MarkAppServiceReadyRequest _$MarkAppServiceReadyRequestFromJson(
+        Map<String, dynamic> json) =>
+    MarkAppServiceReadyRequest(
+      port: (json['port'] as num?)?.toInt(),
+    );
+
+Map<String, dynamic> _$MarkAppServiceReadyRequestToJson(
+        MarkAppServiceReadyRequest instance) =>
+    <String, dynamic>{
+      'port': instance.port,
+    };

@@ -16,26 +16,12 @@ class PatrolAppServiceClient {
     private val timeout = 2L
     private val timeUnit = TimeUnit.HOURS
 
-    private val defaultPort = 8082
-    val port: Int
-        get() {
-            val portStr = BuildConfig.PATROL_APP_PORT
-            if (portStr == null) {
-                Logger.i("PATROL_APP_PORT is null, falling back to default ($defaultPort)")
-                return defaultPort
-            }
-            return portStr.toIntOrNull() ?: run {
-                Logger.i("PATROL_APP_PORT is not a valid integer, falling back to default ($defaultPort)")
-                defaultPort
-            }
-        }
-
-    constructor() {
+    constructor(port: Int) {
         client = Client(address = "localhost", port = port, timeout = timeout, timeUnit = timeUnit)
         Logger.i("Created PatrolAppServiceClient: ${client.serverUrl}")
     }
 
-    constructor(address: String) {
+    constructor(address: String, port: Int) {
         client = Client(address = address, port = port, timeout = timeout, timeUnit = timeUnit)
         Logger.i("Created PatrolAppServiceClient: ${client.serverUrl}")
     }

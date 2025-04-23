@@ -21,7 +21,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 import static pl.leancode.patrol.contracts.Contracts.DartGroupEntry;
 import static pl.leancode.patrol.contracts.Contracts.RunDartTestResponse;
@@ -33,7 +32,7 @@ import static pl.leancode.patrol.contracts.Contracts.RunDartTestResponse;
  */
 public class PatrolJUnitRunner extends AndroidJUnitRunner {
     public PatrolAppServiceClient patrolAppServiceClient;
-    private Map<String, Boolean> dartTestCaseSkipMap = new HashMap<>();
+    private final Map<String, Boolean> dartTestCaseSkipMap = new HashMap<>();
 
     @Override
     protected boolean shouldWaitForActivitiesToComplete() {
@@ -73,19 +72,23 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
         // It's simpler because we don't have the need for that much synchronization.
         // Currently, the only synchronization point we're interested in is when the app under test returns the list of tests.
         Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
-        Intent intent = new Intent(Intent.ACTION_MAIN);
-        intent.setClassName(instrumentation.getTargetContext(), activityClass.getCanonicalName());
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        instrumentation.getTargetContext().startActivity(intent);
+
 
         PatrolServer patrolServer = new PatrolServer();
         patrolServer.start(); // Gets killed when the instrumentation process dies. We're okay with this.
+        Integer port = patrolServer.getPort();
 
-        patrolAppServiceClient = createAppServiceClient();
+
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.setClassName(instrumentation.getTargetContext(), activityClass.getCanonicalName());
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.putExtra("patrol_server_port", port);
+        instrumentation.getTargetContext().startActivity(intent);
+
     }
 
-    public PatrolAppServiceClient createAppServiceClient() {
-        return new PatrolAppServiceClient();
+    void createAppServiceClient(Integer port) {
+        patrolAppServiceClient = new PatrolAppServiceClient(port);
     }
 
     /**
@@ -102,9 +105,12 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
         final String TAG = "PatrolJUnitRunner.setUp(): ";
 
         Logger.INSTANCE.i(TAG + "Waiting for PatrolAppService to report its readiness...");
+        PatrolServer.Companion.setAppServerPort(null);
         PatrolServer.Companion.getAppReady().block();
 
         Logger.INSTANCE.i(TAG + "PatrolAppService is ready to report Dart tests");
+        // TODO: Move calling [createAppServiceClient] to MainActivityTest.java when breaking change in setup can be introduced.
+        createAppServiceClient(PatrolServer.Companion.getAppServerPort());
     }
 
     public Object[] listDartTests() {

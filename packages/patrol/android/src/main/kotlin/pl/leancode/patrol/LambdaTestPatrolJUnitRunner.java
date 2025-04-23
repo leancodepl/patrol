@@ -10,23 +10,23 @@ import java.util.Enumeration;
 import java.util.Objects;
 
 public class LambdaTestPatrolJUnitRunner extends PatrolJUnitRunner {
+    public PatrolAppServiceClient patrolAppServiceClient;
+
     @Override
-    public PatrolAppServiceClient createAppServiceClient() {
-        // Create client with a default constructor (localhost:8082) by default.
-        PatrolAppServiceClient client = new PatrolAppServiceClient();
+    void createAppServiceClient(Integer port) {
+        // Create client with a default constructor (localhost:port) by default.
+        patrolAppServiceClient = new PatrolAppServiceClient(port);
         waitForPatrolAppService();
 
         try {
-            client.listDartTests();
+            patrolAppServiceClient.listDartTests();
         } catch (PatrolAppServiceClientException ex) {
             ex.printStackTrace();
-            // If the client on localhost:8082 fails, let's apply the wokraround
+            // If the client on localhost:port fails, let's apply the workaround
             Logger.INSTANCE.i("PatrolAppServiceClientException in createAppServiceClient " + ex.getMessage());
             Logger.INSTANCE.i("LOOPBACK: " + getLoopback());
-            client = new PatrolAppServiceClient(getLoopback());
+            patrolAppServiceClient = new PatrolAppServiceClient(getLoopback(), port);
         }
-
-        return client;
     }
 
     public String getLoopback() {
@@ -44,7 +44,7 @@ public class LambdaTestPatrolJUnitRunner extends PatrolJUnitRunner {
                 }
 
             }
-        } catch (SocketException e) {
+        } catch (SocketException ignored) {
         }
 
         return null;

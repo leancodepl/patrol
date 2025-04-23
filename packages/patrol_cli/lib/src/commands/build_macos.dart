@@ -160,12 +160,14 @@ class BuildMacOSCommand extends PatrolCommand {
       flutter: flutterOpts,
       scheme: flutterOpts.buildMode.createScheme(flavor),
       configuration: flutterOpts.buildMode.createConfiguration(flavor),
-      appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
     );
 
     try {
-      await _macosTestBackend.build(macosOpts);
+      await _macosTestBackend.build(
+        macosOpts,
+        isPatrolBuildCommand: true,
+      );
 
       _printBinaryPaths(buildMode: flutterOpts.buildMode.xcodeName);
 

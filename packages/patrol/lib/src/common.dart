@@ -4,10 +4,9 @@ import 'package:boolean_selector/boolean_selector.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:meta/meta.dart';
-import 'package:patrol/src/binding.dart';
+import 'package:patrol/patrol.dart';
 import 'package:patrol/src/global_state.dart' as global_state;
 import 'package:patrol/src/native/contracts/contracts.dart';
-import 'package:patrol/src/native/native.dart';
 import 'package:patrol_finders/patrol_finders.dart' as finders;
 import 'package:patrol_log/patrol_log.dart';
 
@@ -20,7 +19,6 @@ import 'package:test_api/src/backend/group.dart';
 import 'package:test_api/src/backend/test.dart';
 
 import 'constants.dart' as constants;
-import 'custom_finders/patrol_integration_tester.dart';
 
 /// Signature for callback to [patrolTest].
 typedef PatrolTesterCallback = Future<void> Function(PatrolIntegrationTester $);
@@ -96,9 +94,15 @@ void patrolTest(
   LiveTestWidgetsFlutterBindingFramePolicy framePolicy =
       LiveTestWidgetsFlutterBindingFramePolicy.fadePointers,
 }) {
+  final testServerPort = getTestServerPort();
+
   final patrolLog = PatrolLogWriter(config: {'printLogs': config.printLogs});
-  final automator = NativeAutomator(config: nativeAutomatorConfig);
-  final automator2 = NativeAutomator2(config: nativeAutomatorConfig);
+  final automator = NativeAutomator(
+    config: nativeAutomatorConfig.copyWith(port: testServerPort.toString()),
+  );
+  final automator2 = NativeAutomator2(
+    config: nativeAutomatorConfig.copyWith(port: testServerPort.toString()),
+  );
   final patrolBinding = PatrolBinding.ensureInitialized(nativeAutomatorConfig)
     ..framePolicy = framePolicy;
 
@@ -276,10 +280,7 @@ DartGroupEntry createDartTestGroup(
 /// should return 'myTest'
 @internal
 String deduplicateGroupEntryName(String parentName, String currentName) {
-  return currentName.substring(
-    parentName.length + 1,
-    currentName.length,
-  );
+  return currentName.substring(parentName.length + 1, currentName.length);
 }
 
 /// Recursively prints the structure of the test suite and reports test count
@@ -298,17 +299,16 @@ int reportGroupStructure(DartGroupEntry group, {int indentation = 0}) {
       debugPrint("$indent     -- test: '${entry.name}'");
     } else {
       for (final subgroup in entry.entries) {
-        testCount +=
-            reportGroupStructure(subgroup, indentation: indentation + 5);
+        testCount += reportGroupStructure(
+          subgroup,
+          indentation: indentation + 5,
+        );
       }
     }
   }
 
   if (indentation == 0) {
-    postEvent(
-      'testCount',
-      {'testCount': testCount},
-    );
+    postEvent('testCount', {'testCount': testCount});
   }
 
   return testCount;

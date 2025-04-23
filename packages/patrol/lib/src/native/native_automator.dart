@@ -65,7 +65,7 @@ class NativeAutomatorConfig {
     ),
     this.port = const String.fromEnvironment(
       'PATROL_TEST_SERVER_PORT',
-      defaultValue: '8081',
+      defaultValue: '0',
     ),
     this.packageName = const String.fromEnvironment('PATROL_APP_PACKAGE_NAME'),
     this.iosInstalledApps =
@@ -998,10 +998,12 @@ class NativeAutomator {
   /// Tells the AndroidJUnitRunner that PatrolAppService is ready to answer
   /// requests about the structure of Dart tests.
   @internal
-  Future<void> markPatrolAppServiceReady() async {
+  Future<void> markPatrolAppServiceReady(int port) async {
     await _wrapRequest(
       'markPatrolAppServiceReady',
-      _client.markPatrolAppServiceReady,
+      () => _client.markPatrolAppServiceReady(
+        MarkAppServiceReadyRequest(port: port),
+      ),
       enablePatrolLog: false,
     );
   }

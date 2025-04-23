@@ -1,0 +1,13 @@
+output:
+  dart:
+    path: lib/src/server_port/android_server_port_provider_bindings.dart
+    structure: single_file
+
+source_path:
+  - 'android/src/main/kotlin/pl/leancode/patrol/'
+
+log_level: all
+
+
+classes:
+  - 'AndroidServerPortProvider'
