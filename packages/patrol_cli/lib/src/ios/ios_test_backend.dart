@@ -76,7 +76,10 @@ class IOSTestBackend {
   final DisposeScope _disposeScope;
   final Logger _logger;
 
-  Future<void> build(IOSAppOptions options) async {
+  Future<void> build(
+    IOSAppOptions options, {
+    bool isPatrolBuildCommand = false,
+  }) async {
     await _disposeScope.run((scope) async {
       final subject = options.description;
       final task = _logger.task(
@@ -119,6 +122,18 @@ class IOSTestBackend {
       }
 
       // xcodebuild build-for-testing
+
+      // Tests build with `patrol build` command are not executed with the same
+      // command invocation as the one used for tests execution.
+      //
+      // This means that the environment variable is not automatically set.
+      if (isPatrolBuildCommand && options.testServerPort != 0) {
+        _logger.warn(
+          'Setting --test-server-port for `build` command '
+          'requires setting TEST_RUNNER_PATROL_TEST_SERVER_PORT environment variable '
+          'on the environment where tests will be executed.',
+        );
+      }
 
       process = await _processManager.start(
         options.buildForTestingInvocation(),

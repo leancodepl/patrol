@@ -171,7 +171,7 @@ class BuildIOSCommand extends PatrolCommand {
     );
 
     try {
-      await _iosTestBackend.build(iosOpts);
+      await _iosTestBackend.build(iosOpts, isPatrolBuildCommand: true);
       _printBinaryPaths(
         simulator: iosOpts.simulator,
         buildMode: flutterOpts.buildMode.xcodeName,
