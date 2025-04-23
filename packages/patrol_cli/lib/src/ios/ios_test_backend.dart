@@ -130,7 +130,7 @@ class IOSTestBackend {
       if (isPatrolBuildCommand && options.testServerPort != 0) {
         _logger.warn(
           'Setting --test-server-port for `build` command '
-          'requires setting TEST_RUNNER_PATROL_TEST_SERVER_PORT environment variable '
+          'requires setting PATROL_TEST_SERVER_PORT environment variable '
           'on the environment where tests will be executed.',
         );
       }
