@@ -1,6 +1,7 @@
 ## Unreleased
 
 - Bump `custom_lint` to `0.7.0` and `leancode_lint` to `14.3.0`. (#2574)
+- Dynamically select port on all platforms. (#2527)
 
 ## 0.2.1
 

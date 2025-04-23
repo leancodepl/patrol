@@ -1,3 +1,7 @@
+## 3.16.0-dev.1
+
+- Dynamically select port on all platforms. (#2527)
+
 ## 3.15.1
 
 - Fix `$.enterText()` issues (#2570)
