@@ -98,12 +98,10 @@ void patrolTest(
 
   final patrolLog = PatrolLogWriter(config: {'printLogs': config.printLogs});
   final automator = NativeAutomator(
-    config: nativeAutomatorConfig,
-    port: testServerPort,
+    config: nativeAutomatorConfig.copyWith(port: testServerPort.toString()),
   );
   final automator2 = NativeAutomator2(
-    config: nativeAutomatorConfig,
-    port: testServerPort,
+    config: nativeAutomatorConfig.copyWith(port: testServerPort.toString()),
   );
   final patrolBinding = PatrolBinding.ensureInitialized(nativeAutomatorConfig)
     ..framePolicy = framePolicy;
