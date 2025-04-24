@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
-import 'dart:io' as io;
+import 'dart:io';
 import 'dart:isolate';
 
 import 'package:flutter/foundation.dart';
@@ -44,28 +44,6 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
   /// You most likely don't want to call it yourself.
   PatrolBinding(NativeAutomatorConfig config)
       : _serviceExtensions = DevtoolsServiceExtensions(config) {
-    final oldTestExceptionReporter = reportTestException;
-
-    /// Wraps the default test exception reporter to report the test results to
-    /// the native side of Patrol.
-    reportTestException = (details, testDescription) {
-      final currentDartTest = _currentDartTest;
-      if (currentDartTest != null) {
-        assert(!constants.hotRestartEnabled);
-        // On iOS in release mode, diagnostics are compacted or truncated.
-        // We use the exceptionAsString() and stack to get the information
-        // about the exception. See [DiagnosticLevel].
-        final detailsAsString = (kReleaseMode && io.Platform.isIOS)
-            ? '${details.exceptionAsString()} \n ${details.stack}'
-            : details.toString();
-        _testResults[currentDartTest] = Failure(
-          testDescription,
-          detailsAsString,
-        );
-      }
-      oldTestExceptionReporter(details, testDescription);
-    };
-
     setUp(() {
       if (constants.hotRestartEnabled) {
         return;
@@ -232,7 +210,32 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
     Duration? timeout,
   }) async {
     await super.runTest(
-      testBody,
+      () async {
+        final previousOnError = FlutterError.onError;
+        FlutterError.onError = (details) {
+          if (_currentDartTest case final testName?) {
+            final previousDetails = switch (_testResults[testName]) {
+              Failure(:final details?) =>
+                FlutterErrorDetails(exception: details),
+              _ => null,
+            };
+            final detailsAsString = (kReleaseMode && Platform.isIOS)
+                ? '${details.exceptionAsString()}\n${details.stack}'
+                : details.toString();
+
+            _testResults[testName] = Failure(
+              testName,
+              '$detailsAsString${previousDetails != null ? '\n$previousDetails' : ''}',
+            );
+
+            previousOnError?.call(details);
+          }
+        };
+
+        await testBody();
+
+        FlutterError.onError = previousOnError;
+      },
       invariantTester,
       description: description,
     );

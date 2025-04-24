@@ -1,6 +1,7 @@
 ## 3.16.0-dev.1
 
 - Dynamically select port on all platforms. (#2527)
+- Update test reports to show all exceptions thrown in Flutter. (#2362)
 
 ## 3.15.1
 
