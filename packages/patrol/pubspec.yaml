@@ -24,6 +24,8 @@ dependencies:
   flutter_test:
     sdk: flutter
   http: '^1.1.0'
+  http_multi_server: ^3.2.2
+  jni: ^0.13.0
   json_annotation: ^4.8.1
   meta: ^1.10.0
   patrol_finders: ^2.8.2
