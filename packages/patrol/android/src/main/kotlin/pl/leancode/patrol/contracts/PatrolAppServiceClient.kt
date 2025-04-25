@@ -1,18 +1,31 @@
-///
-//  Generated code. Do not modify.
-//  source: schema.dart
-//
-
-package pl.leancode.patrol.contracts;
+package pl.leancode.patrol.contracts
 
 import com.google.gson.Gson
-import com.squareup.okhttp.MediaType
-import com.squareup.okhttp.OkHttpClient
-import com.squareup.okhttp.Request
-import com.squareup.okhttp.RequestBody
+import io.ktor.client.*
+import io.ktor.client.engine.cio.*
+import io.ktor.client.plugins.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
+import kotlinx.coroutines.runBlocking
 import java.util.concurrent.TimeUnit
 
-class PatrolAppServiceClient(address: String, port: Int, private val timeout: Long, private val timeUnit: TimeUnit) {
+class PatrolAppServiceClient(
+    private val address: String,
+    private val port: Int,
+    private val timeout: Long,
+    private val timeUnit: TimeUnit
+) {
+    private val client = HttpClient(CIO) {
+        install(HttpTimeout) {
+            connectTimeoutMillis = timeUnit.toMillis(timeout)
+            requestTimeoutMillis = timeUnit.toMillis(timeout)
+            socketTimeoutMillis = timeUnit.toMillis(timeout)
+        }
+    }
+
+    private val json = Gson()
+    val serverUrl = "http://$address:$port/"
 
     fun listDartTests(): Contracts.ListDartTestsResponse {
         val response = performRequest("listDartTests")
@@ -24,37 +37,25 @@ class PatrolAppServiceClient(address: String, port: Int, private val timeout: Lo
         return json.fromJson(response, Contracts.RunDartTestResponse::class.java)
     }
 
-    private fun performRequest(path: String, requestBody: String? = null): String {
+    private fun performRequest(path: String, requestBody: String? = null): String = runBlocking {
         val endpoint = "$serverUrl$path"
 
-        val client = OkHttpClient().apply {
-            setConnectTimeout(timeout, timeUnit)
-            setReadTimeout(timeout, timeUnit)
-            setWriteTimeout(timeout, timeUnit)
-        }
-
-        val request = Request.Builder()
-            .url(endpoint)
-            .also {
-                if (requestBody != null) {
-                    it.post(RequestBody.create(jsonMediaType, requestBody))
-                }
+        val response = client.request(endpoint) {
+            method = if (requestBody != null) HttpMethod.Post else HttpMethod.Get
+            if (requestBody != null) {
+                contentType(ContentType.Application.Json)
+                setBody(requestBody)
             }
-            .build()
-
-        val response = client.newCall(request).execute()
-        if (response.code() != 200) {
-            throw PatrolAppServiceClientException("Invalid response ${response.code()}, ${response?.body()?.string()}")
         }
 
-        return response.body().string()
+        if (response.status.value != 200) {
+            throw PatrolAppServiceClientException(
+                "Invalid response ${response.status.value}, ${response.bodyAsText()}"
+            )
+        }
+
+        response.bodyAsText()
     }
-
-    val serverUrl = "http://$address:$port/"
-
-    private val json = Gson()
-
-    private val jsonMediaType = MediaType.parse("application/json; charset=utf-8")
 }
 
 class PatrolAppServiceClientException(message: String) : Exception(message)
