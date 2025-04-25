@@ -4,9 +4,11 @@ import com.google.gson.Gson
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.*
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import io.ktor.serialization.gson.gson
 import kotlinx.coroutines.runBlocking
 import java.util.concurrent.TimeUnit
 
@@ -21,6 +23,9 @@ class PatrolAppServiceClient(
             connectTimeoutMillis = timeUnit.toMillis(timeout)
             requestTimeoutMillis = timeUnit.toMillis(timeout)
             socketTimeoutMillis = timeUnit.toMillis(timeout)
+        }
+        install(ContentNegotiation) {
+            gson()
         }
     }
 
