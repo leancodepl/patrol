@@ -2,7 +2,6 @@
 // ignore_for_file: avoid_print
 
 import 'dart:async';
-import 'dart:io';
 
 import 'package:http_multi_server/http_multi_server.dart';
 import 'package:patrol/src/common.dart';
@@ -23,6 +22,7 @@ class _TestExecutionResult {
 
 /// Starts the gRPC server that runs the [PatrolAppService].
 Future<void> runAppService(PatrolAppService service) async {
+  print('PatrolAppService runAppService starting...');
   final pipeline = const shelf.Pipeline()
       .addMiddleware(shelf.logRequests())
       .addHandler(service.handle);
@@ -31,6 +31,7 @@ Future<void> runAppService(PatrolAppService service) async {
   server.idleTimeout = _idleTimeout;
 
   shelf_io.serveRequests(server, pipeline);
+  print('PatrolAppService serving requests using HttpMultiServer...');
 
   final address = server.address;
 
