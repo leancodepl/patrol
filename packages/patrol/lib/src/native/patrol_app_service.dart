@@ -2,7 +2,6 @@
 // ignore_for_file: avoid_print
 
 import 'dart:async';
-import 'dart:io';
 
 <<<<<<< HEAD
 import 'package:patrol/patrol.dart';
@@ -35,6 +34,7 @@ Future<int> runAppService(PatrolAppService service) async {
   server.idleTimeout = _idleTimeout;
 
   shelf_io.serveRequests(server, pipeline);
+  print('PatrolAppService serving requests using HttpMultiServer...');
 
   final address = server.address;
 
