@@ -16,6 +16,8 @@ import 'constants.dart' as constants;
 
 const _success = 'success';
 
+bool get _isDevelopMode => constants.hotRestartEnabled;
+
 void _defaultPrintLogger(String message) {
   // TODO: Use a logger instead of print
   // ignore: avoid_print
@@ -45,7 +47,7 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
   PatrolBinding(NativeAutomatorConfig config)
       : _serviceExtensions = DevtoolsServiceExtensions(config) {
     setUp(() {
-      if (constants.hotRestartEnabled) {
+      if (_isDevelopMode) {
         return;
       }
 
@@ -57,7 +59,7 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
     });
 
     tearDown(() async {
-      if (constants.hotRestartEnabled) {
+      if (_isDevelopMode) {
         // Sending results ends the test, which we don't want for Hot Restart
         return;
       }
@@ -210,36 +212,45 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
     Duration? timeout,
   }) async {
     await super.runTest(
-      () async {
-        final previousOnError = FlutterError.onError;
-        FlutterError.onError = (details) {
-          if (_currentDartTest case final testName?) {
-            final previousDetails = switch (_testResults[testName]) {
-              Failure(:final details?) =>
-                FlutterErrorDetails(exception: details),
-              _ => null,
-            };
-            final detailsAsString = (kReleaseMode && Platform.isIOS)
-                ? '${details.exceptionAsString()}\n${details.stack}'
-                : details.toString();
-
-            _testResults[testName] = Failure(
-              testName,
-              '$detailsAsString${previousDetails != null ? '\n$previousDetails' : ''}',
-            );
-
-            previousOnError?.call(details);
-          }
-        };
-
-        await testBody();
-
-        FlutterError.onError = previousOnError;
-      },
+      // If we're in develop mode, we cannot overwrite FlutterError.onError
+      // will get "A test overrode FlutterError.onError" exception.
+      _isDevelopMode
+          ? testBody
+          : () async => _wrapTestBodyWithExceptionGatherer(testBody),
       invariantTester,
       description: description,
     );
     _testResults[description] ??= _success;
+  }
+
+  /// Wraps the test body with a function that gathers exceptions and reports
+  /// them to the native side of Patrol.
+  Future<void> _wrapTestBodyWithExceptionGatherer(
+    Future<void> Function() testBody,
+  ) async {
+    final previousOnError = FlutterError.onError;
+    FlutterError.onError = (details) {
+      if (_currentDartTest case final testName?) {
+        final previousDetails = switch (_testResults[testName]) {
+          Failure(:final details?) => FlutterErrorDetails(exception: details),
+          _ => null,
+        };
+        final detailsAsString = (kReleaseMode && Platform.isIOS)
+            ? '${details.exceptionAsString()}\n${details.stack}'
+            : details.toString();
+
+        _testResults[testName] = Failure(
+          testName,
+          '$detailsAsString${previousDetails != null ? '\n$previousDetails' : ''}',
+        );
+
+        previousOnError?.call(details);
+      }
+    };
+
+    await testBody();
+
+    FlutterError.onError = previousOnError;
   }
 
   @override
@@ -254,12 +265,12 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
   @override
   Widget wrapWithDefaultView(Widget rootWidget) {
     assert(
-      (_currentDartTest != null) != (constants.hotRestartEnabled),
+      (_currentDartTest != null) != _isDevelopMode,
       '_currentDartTest can be null if and only if Hot Restart is enabled',
     );
 
     const testLabelEnabled = bool.fromEnvironment('PATROL_TEST_LABEL_ENABLED');
-    if (!testLabelEnabled || constants.hotRestartEnabled) {
+    if (!testLabelEnabled || _isDevelopMode) {
       return super.wrapWithDefaultView(RepaintBoundary(child: rootWidget));
     } else {
       return super.wrapWithDefaultView(
