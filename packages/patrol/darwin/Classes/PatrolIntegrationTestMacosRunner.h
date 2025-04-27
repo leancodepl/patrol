@@ -87,6 +87,7 @@
         XCUIApplication *app = [[XCUIApplication alloc] init];                                              \
         NSString *portValue = @[ @"port", [@(server.port) stringValue] ];                                   \
         NSLog(@"Received PatrolServer port: %@", portValue);                                                \
+        server.appReady = NO;                                                                               \
         app.launchArguments = @[ @"port", [@(server.port) stringValue] ];                                   \
         [app launch];                                                                                       \
         if (skip) {                                                                                         \
