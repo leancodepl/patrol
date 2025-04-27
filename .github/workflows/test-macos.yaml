@@ -2,9 +2,10 @@ name: test macos
 
 on:
   workflow_dispatch:
-  # temporary to test workflow before merging to master
   pull_request:
     branches: [ master ]
+    paths:
+      - 'packages/patrol/darwin/**'
   schedule:
     - cron: '0 */12 * * *'
 
