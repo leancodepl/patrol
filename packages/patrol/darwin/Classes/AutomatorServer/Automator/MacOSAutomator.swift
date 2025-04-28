@@ -4,6 +4,7 @@
   import os
 
   class MacOSAutomator: Automator {
+
     private var timeout: TimeInterval = 10
 
     private lazy var device: XCUIDevice = {
@@ -376,6 +377,12 @@
     func selectCoarseLocation() throws {
       try runAction("selectCoarseLocation") {
         throw PatrolError.methodNotImplemented("selectCoarseLocation")
+      }
+    }
+
+    func setMockLocation(latitude: Double, longitude: Double) throws {
+      try runAction("setMockLocation") {
+        throw PatrolError.methodNotImplemented("setMockLocation")
       }
     }
 

@@ -13,7 +13,7 @@ import Foundation
   #endif
 
   @objc
-  public private(set) var appReady = false
+  public var appReady = false
 
   private var passedPort: Int = {
     // FIXME: Test server port is not null when not set in running tests command ('test-without-building')
