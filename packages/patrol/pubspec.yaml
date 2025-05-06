@@ -29,8 +29,8 @@ dependencies:
   json_annotation: ^4.8.1
   meta: ^1.10.0
   objective_c: ^7.1.0
-  patrol_finders: ^2.7.2
-  patrol_log: ^0.3.0
+  patrol_finders: ^2.8.2
+  patrol_log: ^0.4.0
   shelf: ^1.4.1
   test_api: '^0.7.0'
 
