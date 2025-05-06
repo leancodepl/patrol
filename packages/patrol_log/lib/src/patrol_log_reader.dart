@@ -97,7 +97,7 @@ class PatrolLogReader {
           _ => null,
         };
       }
-    } catch (e) {
+    } catch (err) {
       log('Error parsing line: $line');
     }
   }
@@ -127,7 +127,7 @@ class PatrolLogReader {
           _controller.add(entry);
         }
       }
-    } catch (e) {
+    } catch (err) {
       log('Error parsing line: $line');
     }
   }
