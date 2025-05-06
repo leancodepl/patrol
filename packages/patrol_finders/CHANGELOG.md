@@ -1,4 +1,4 @@
-## Unreleased
+## 2.8.2
 
 - Add `alignment` argument to `tap()`, `longPress()`, `enterText()`, `scrollTo()`, `dragUntilVisible()` and `scrollUntilVisible()` methods. (#2584)
 
