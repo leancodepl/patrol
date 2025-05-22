@@ -1,3 +1,7 @@
+## 3.15.2
+
+- Bump `vm_service` dependency to `15.0.0` (#2636)
+
 ## 3.15.1
 
 - Fix `$.enterText()` issues (#2570)
