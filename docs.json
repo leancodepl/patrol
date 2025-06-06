@@ -191,10 +191,6 @@
             {
               "title": "Platforms",
               "href": "/documentation/ci/platforms"
-            },
-            {
-              "title": "Firebase Test Lab",
-              "href": "/documentation/ci/firebase-test-lab"
             }
           ]
         },
@@ -213,6 +209,10 @@
             {
               "title": "LambdaTest",
               "href": "/documentation/integrations/lambdatest"
+            },
+            {
+              "title": "Firebase Test Lab",
+              "href": "/documentation/integrations/firebase-test-lab"
             }
           ]
         },
