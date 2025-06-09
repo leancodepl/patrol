@@ -1,3 +1,6 @@
+## 3.16.0-dev.2
+- Make activity aliases work in PatrolJUnitRunner
+
 ## 3.16.0-dev.1
 
 - Dynamically select port on all platforms. (#2527)
