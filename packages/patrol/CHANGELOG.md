@@ -1,3 +1,6 @@
+## 3.14.2
+- Make activity aliases work in PatrolJUnitRunner
+
 ## 3.14.1
 
 - Bump patrol plugin iOS and macOS deployment targets to 12.0. (#2514)
