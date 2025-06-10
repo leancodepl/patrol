@@ -833,10 +833,24 @@ class NativeAutomator {
 
   /// Returns a list of currently visible native UI controls, specified by
   /// [selector], which are currently visible on screen.
+  ///
+  /// If [selector] is null, returns the whole native UI tree.
   Future<List<NativeView>> getNativeViews(
-    Selector selector, {
+    Selector? selector, {
     String? appId,
   }) async {
+    if (selector == null) {
+      final treeResponse = await _wrapRequest(
+        'getNativeUITree',
+        () => _client.getNativeUITree(
+          GetNativeUITreeRequest(
+            useNativeViewHierarchy: true,
+          ),
+        ),
+      );
+      return treeResponse.roots;
+    }
+
     final response = await _wrapRequest(
       'getNativeViews',
       () => _client.getNativeViews(

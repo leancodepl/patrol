@@ -6,7 +6,15 @@ void main() {
 
     await $(#cameraFeaturesButton).scrollTo().tap();
     await $(#takePhotoButton).tap();
-    await $.native.grantPermissionWhenInUse();
+    if (await $.native2.isPermissionDialogVisible(
+      timeout: const Duration(seconds: 4),
+    )) {
+      await $.native2.grantPermissionWhenInUse();
+    }
+    final nativeTree = await $.native.getNativeViews(null);
+    print('PATROL NATIVE TREE:');
+    $.log(nativeTree.toString());
+    print(nativeTree.map((e) => e.toString()).toList());
 
     await $.native.takeCameraPhoto();
     await $.pumpAndSettle();
