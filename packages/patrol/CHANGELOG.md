@@ -1,3 +1,6 @@
+## 3.16.0-dev.2
+- Make activity aliases work in PatrolJUnitRunner
+
 ## 3.16.0-dev.1
 
 - Dynamically select port on all platforms. (#2527)
@@ -9,6 +12,9 @@
 - Add `setMockLocation` method. (#2547)
 - Bump `custom_lint` to `0.7.0` and `leancode_lint` to `14.3.0`. (#2574)
 - Upgrade `http4k` to 5.47.0.0. (#2559)
+
+## 3.14.2
+- Make activity aliases work in PatrolJUnitRunner
 
 ## 3.14.1
 
