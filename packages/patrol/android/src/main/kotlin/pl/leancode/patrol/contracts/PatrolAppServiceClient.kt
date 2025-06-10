@@ -1,4 +1,9 @@
-package pl.leancode.patrol.contracts
+///
+//  Generated code. Do not modify.
+//  source: schema.dart
+//
+
+package pl.leancode.patrol.contracts;
 
 import com.google.gson.Gson
 import io.ktor.client.*
@@ -54,9 +59,7 @@ class PatrolAppServiceClient(
         }
 
         if (response.status.value != 200) {
-            throw PatrolAppServiceClientException(
-                "Invalid response ${response.status.value}, ${response.bodyAsText()}"
-            )
+            throw PatrolAppServiceClientException("Invalid response ${response.status.value}, ${response.bodyAsText()}")
         }
 
         response.bodyAsText()

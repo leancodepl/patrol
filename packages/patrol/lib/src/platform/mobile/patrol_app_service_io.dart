@@ -3,8 +3,8 @@
 
 import 'dart:async';
 
-import 'package:patrol/patrol.dart';
 import 'package:http_multi_server/http_multi_server.dart';
+import 'package:patrol/patrol.dart';
 import 'package:patrol/src/common.dart';
 import 'package:patrol/src/platform/contracts/contracts.dart';
 import 'package:patrol/src/platform/contracts/patrol_app_service_server.dart';

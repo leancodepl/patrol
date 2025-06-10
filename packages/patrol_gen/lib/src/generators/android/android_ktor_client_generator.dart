@@ -2,7 +2,7 @@ import 'package:patrol_gen/src/generators/android/android_config.dart';
 import 'package:patrol_gen/src/generators/output_file.dart';
 import 'package:patrol_gen/src/schema.dart';
 
-class AndroidHttp4kClientGenerator {
+class AndroidKtorClientGenerator {
   OutputFile generate(Service service, AndroidConfig config) {
     final buffer = StringBuffer()
       ..write(_contentPrefix(config))
@@ -99,9 +99,8 @@ $endpoints
         ? ': Contracts.${endpoint.response!.name}'
         : '';
 
-    final serializeParameter = endpoint.request != null
-        ? ', json.toJson(request)'
-        : '';
+    final serializeParameter =
+        endpoint.request != null ? ', json.toJson(request)' : '';
 
     final body = endpoint.response != null
         ? '''
