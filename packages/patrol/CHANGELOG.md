@@ -1,5 +1,8 @@
+## 3.16.0-dev.3
+- Use HttpMultiServer and Ktor for handling raw HTTP requests. (#2645)
+
 ## 3.16.0-dev.2
-- Make activity aliases work in PatrolJUnitRunner
+- Make activity aliases work in PatrolJUnitRunner. (#2644)
 
 ## 3.16.0-dev.1
 
