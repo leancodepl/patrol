@@ -45,6 +45,14 @@ class BuildAndroidCommand extends PatrolCommand {
     usesUninstallOption();
 
     usesAndroidOptions();
+    argParser.addOption(
+      'build-number',
+      help: 'A build number to be used as --build-number in Flutter build.',
+    );
+    argParser.addOption(
+      'build-name',
+      help: 'A build name to be used as --build-name in Flutter build.',
+    );
   }
 
   final TestFinder _testFinder;
@@ -120,6 +128,9 @@ class BuildAndroidCommand extends PatrolCommand {
     final displayLabel = boolArg('label');
     final uninstall = boolArg('uninstall');
 
+    final buildNumber = stringArg('build-number');
+    final buildName = stringArg('build-name');
+
     final customDartDefines = {
       ..._dartDefinesReader.fromFile(),
       ..._dartDefinesReader.fromCli(args: stringsArg('dart-define')),
@@ -161,6 +172,8 @@ class BuildAndroidCommand extends PatrolCommand {
       buildMode: buildMode,
       dartDefines: mergedDartDefines,
       dartDefineFromFilePaths: dartDefineFromFilePaths,
+      buildNumber: buildNumber,
+      buildName: buildName,
     );
 
     final androidOpts = AndroidAppOptions(
