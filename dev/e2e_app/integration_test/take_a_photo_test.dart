@@ -11,10 +11,6 @@ void main() {
     )) {
       await $.native2.grantPermissionWhenInUse();
     }
-    final nativeTree = await $.native.getNativeViews(null);
-    print('PATROL NATIVE TREE:');
-    $.log(nativeTree.toString());
-    print(nativeTree.map((e) => e.toString()).toList());
 
     await $.native.takeCameraPhoto();
     await $.pumpAndSettle();
