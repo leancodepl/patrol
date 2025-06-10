@@ -3,14 +3,11 @@
 
 import 'dart:async';
 
-<<<<<<< HEAD
-import 'package:patrol/patrol.dart';
-=======
 import 'package:http_multi_server/http_multi_server.dart';
 import 'package:patrol/src/common.dart';
->>>>>>> 6e1b4d91 (Use http_multi_server to gather all network traffic on the loopback)
 import 'package:patrol/src/native/contracts/contracts.dart';
 import 'package:patrol/src/native/contracts/patrol_app_service_server.dart';
+import 'package:patrol/src/server_port_provider.dart';
 import 'package:patrol_log/patrol_log.dart';
 import 'package:shelf/shelf.dart' as shelf;
 import 'package:shelf/shelf_io.dart' as shelf_io;
