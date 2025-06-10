@@ -1,3 +1,24 @@
+## Unreleased
+
+- Add `takeCameraPhoto` method. (#2660)
+- Add `pickImageFromGallery` method (#2660)
+- Add `pickMultipleImagesFromGallery` (#2660)
+- Add `isVirtualDevice` method (#2660)
+- Add `getOsVersion` method (#2660)
+- Allow passing null to `$.native.getNativeViews()` (#2660)
+- Add `$.native.swipeBack()` method (#2608)
+- Use HttpMultiServer and Ktor for handling raw HTTP requests. (#2645)
+
+## 3.16.0
+
+- Make activity aliases work in PatrolJUnitRunner
+- Update test reports to show all exceptions thrown in Flutter. (#2362)
+- Bump min Flutter SDK to 3.32.0 (#2649)
+
+## 3.15.2
+
+- Bump `vm_service` dependency to `15.0.0` (#2636)
+
 ## 3.15.1
 
 - Fix `$.enterText()` issues (#2570)
