@@ -1,0 +1,39 @@
+---
+title: Take photo using camera
+---
+
+In this video we show you how to take a photo using the Android and iOS camera with Patrol framework.
+
+Here you can find the code of this test and try it out by yourself.
+
+```dart title="integration_test/take_a_photo_test.dart"
+import 'package:example/main.dart';
+import 'package:patrol/patrol.dart';
+
+void main() {
+  patrolTest(
+    'Take a photo using android or iOS camera',
+    ($) async {
+      await $.pumpWidgetAndSettle(const MyApp());
+
+      await $.native2.tap(
+        NativeSelector(
+          android: AndroidSelector(
+            resourceName: 'com.android.camera2:id/shutter_button',
+          ),
+          ios: IOSSelector(label: 'Take Picture'),
+        ),
+      );
+      await $.native2.tap(
+        NativeSelector(
+          android: AndroidSelector(
+            resourceName: 'com.android.camera2:id/done_button',
+          ),
+          ios: IOSSelector(label: 'Use Photo'),
+        ),
+      );
+      await $.pumpAndSettle();
+    },
+  );
+}
+```
