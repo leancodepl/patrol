@@ -49,10 +49,9 @@ class _CameraScreenState extends State<CameraScreen> {
     }
   }
 
-  void _clearCapturedImage() {
-    setState(() {
-      _capturedImage = null;
-    });
+  void _usePhoto() {
+    // Navigate back to the main app screen
+    Navigator.of(context).popUntil((route) => route.isFirst);
   }
 
   @override
@@ -68,85 +67,121 @@ class _CameraScreenState extends State<CameraScreen> {
   }
 
   Widget _buildBody() {
-    if (_capturedImage != null) {
-      return _buildImagePreview();
-    }
+    return Column(
+      children: [
+        if (_capturedImage != null) _buildSmallImagePreview(),
+        Expanded(
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton.icon(
+                  key: const Key('takePhotoButton'),
+                  onPressed: () => _onAddPhotoTap(ImageSource.camera),
+                  icon: const Icon(Icons.camera_alt),
+                  label: const Text('Take a photo'),
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 32,
+                      vertical: 16,
+                    ),
+                    textStyle: const TextStyle(fontSize: 18),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton.icon(
+                  key: const Key('chooseFromGalleryButton'),
+                  onPressed: () => _onAddPhotoTap(ImageSource.gallery),
+                  icon: const Icon(Icons.photo_library),
+                  label: const Text('Choose from Gallery'),
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 32,
+                      vertical: 16,
+                    ),
+                    textStyle: const TextStyle(fontSize: 18),
+                  ),
+                ),
 
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          ElevatedButton.icon(
-            key: const Key('takePhotoButton'),
-            onPressed: () => _onAddPhotoTap(ImageSource.camera),
-            icon: const Icon(Icons.camera_alt),
-            label: const Text('Take a photo'),
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-              textStyle: const TextStyle(fontSize: 18),
+                // Action buttons when image is captured
+                if (_capturedImage != null) ...[
+                  const SizedBox(height: 30),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      ElevatedButton.icon(
+                        key: const Key('usePhotoButton'),
+                        onPressed: _usePhoto,
+                        icon: const Icon(Icons.check),
+                        label: const Text('Use Photo'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green,
+                          foregroundColor: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ],
             ),
           ),
-          const SizedBox(height: 20),
-          ElevatedButton.icon(
-            key: const Key('chooseFromGalleryButton'),
-            onPressed: () => _onAddPhotoTap(ImageSource.gallery),
-            icon: const Icon(Icons.photo_library),
-            label: const Text('Choose from Gallery'),
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-              textStyle: const TextStyle(fontSize: 18),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSmallImagePreview() {
+    return Container(
+      key: const Key('smallImagePreview'),
+      margin: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey[300]!),
+        borderRadius: BorderRadius.circular(8),
+        color: Colors.grey[50],
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 80,
+            height: 80,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(4),
+              border: Border.all(color: Colors.grey[400]!),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(4),
+              child: Image.file(
+                _capturedImage!,
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Captured Image',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Ready to use',
+                  style: TextStyle(
+                    color: Colors.grey[600],
+                    fontSize: 14,
+                  ),
+                ),
+              ],
             ),
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildImagePreview() {
-    return Column(
-      children: [
-        Expanded(
-          child: Container(
-            width: double.infinity,
-            color: Colors.white,
-            child: Image.file(
-              _capturedImage!,
-              fit: BoxFit.contain,
-            ),
-          ),
-        ),
-        Container(
-          color: Colors.white,
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              ElevatedButton.icon(
-                key: const Key('takeAnotherPhotoButton'),
-                onPressed: _clearCapturedImage,
-                icon: const Icon(Icons.refresh),
-                label: const Text('Take Another'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.grey[600],
-                  foregroundColor: Colors.white,
-                ),
-              ),
-              ElevatedButton.icon(
-                key: const Key('usePhotoButton'),
-                onPressed: () {
-                  Navigator.of(context).pop(_capturedImage!.path);
-                },
-                icon: const Icon(Icons.check),
-                label: const Text('Use Photo'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
-                  foregroundColor: Colors.white,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
     );
   }
 }
