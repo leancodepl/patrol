@@ -890,4 +890,43 @@ class NativeAutomator2 {
       enablePatrolLog: false,
     );
   }
+
+  /// Take a photo and confirm the photo
+  ///
+  /// On Android, the shutter button is `com.android.camera2:id/shutter_button`
+  /// and the done button is `com.android.camera2:id/done_button`.
+  ///
+  /// On iOS, the shutter button is `Take Picture` and the done button is `Use Photo`.
+  Future<void> takeCameraPhoto({
+    NativeSelector? shutterButtonSelector,
+    NativeSelector? doneButtonSelector,
+    Duration? timeout,
+  }) async {
+    await _wrapRequest(
+      'takeCameraPhoto',
+      () async {
+        final shutterSelector = shutterButtonSelector ??
+            NativeSelector(
+              android: AndroidSelector(
+                resourceName: 'com.android.camera2:id/shutter_button',
+              ),
+              ios: IOSSelector(title: 'Take Picture'),
+            );
+        final doneSelector = doneButtonSelector ??
+            NativeSelector(
+              android: AndroidSelector(
+                resourceName: 'com.android.camera2:id/done_button',
+              ),
+              ios: IOSSelector(title: 'Use Photo'),
+            );
+        if (io.Platform.isAndroid) {
+          await tap(shutterSelector, timeout: timeout);
+          await tap(doneSelector, timeout: timeout);
+        } else {
+          await tap(shutterSelector, timeout: timeout);
+          await tap(doneSelector, timeout: timeout);
+        }
+      },
+    );
+  }
 }
