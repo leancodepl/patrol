@@ -49,11 +49,6 @@ class _CameraScreenState extends State<CameraScreen> {
     }
   }
 
-  void _usePhoto() {
-    // Navigate back to the main app screen
-    Navigator.of(context).popUntil((route) => route.isFirst);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -102,26 +97,6 @@ class _CameraScreenState extends State<CameraScreen> {
                     textStyle: const TextStyle(fontSize: 18),
                   ),
                 ),
-
-                // Action buttons when image is captured
-                if (_capturedImage != null) ...[
-                  const SizedBox(height: 30),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      ElevatedButton.icon(
-                        key: const Key('usePhotoButton'),
-                        onPressed: _usePhoto,
-                        icon: const Icon(Icons.check),
-                        label: const Text('Use Photo'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green,
-                          foregroundColor: Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
               ],
             ),
           ),
