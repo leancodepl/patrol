@@ -929,4 +929,53 @@ class NativeAutomator2 {
       },
     );
   }
+
+  /// Pick a photo from the gallery
+  ///
+  /// [photoSelector] is the selector for the photo.
+  /// [instance] is the instance of the photo.
+  ///
+  /// On Android, the photo selector is `com.google.android.providers.media.module:id/icon_thumbnail`.
+  /// On iOS, the photo selector is `Image`.
+  Future<void> pickPhotoFromGallery({
+    NativeSelector? photoSelector,
+    int? instance,
+  }) async {
+    await _wrapRequest(
+      'pickPhotoFromGallery',
+      () async {
+        final nativePhotoSelector = photoSelector ??
+            NativeSelector(
+              android: AndroidSelector(
+                resourceName:
+                    'com.google.android.providers.media.module:id/icon_thumbnail',
+                instance: instance ?? 0,
+              ),
+              ios: IOSSelector(
+                // First photo on physical iOS device is at index 1
+                // This will not fail on simulator, but also not work
+                elementType: IOSElementType.image,
+                instance: instance ?? 1,
+              ),
+            );
+        await tap(nativePhotoSelector);
+
+        if (io.Platform.isIOS) {
+          // This is for simulators
+          try {
+            await tap(
+              NativeSelector(
+                ios: IOSSelector(
+                  identifier: 'PXGGridLayout-Info',
+                  instance: instance ?? 0,
+                ),
+              ),
+            );
+          } on Exception {
+            /*ignore*/
+          }
+        }
+      },
+    );
+  }
 }
