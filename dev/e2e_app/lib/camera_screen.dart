@@ -155,7 +155,7 @@ class _CameraScreenState extends State<CameraScreen> {
 
   Widget _buildImagePreview() {
     return Container(
-      key: const Key('imagePreview'),
+      key: const Key('smallImagePreview'),
       margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
@@ -171,6 +171,7 @@ class _CameraScreenState extends State<CameraScreen> {
               const Icon(Icons.photo_library, color: Colors.grey),
               const SizedBox(width: 8),
               Text(
+                key: const Key('selectedPhotosCount'),
                 '${_capturedImages.length} photo${_capturedImages.length == 1 ? '' : 's'} selected',
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
