@@ -11,7 +11,7 @@ class CameraScreen extends StatefulWidget {
 }
 
 class _CameraScreenState extends State<CameraScreen> {
-  File? _capturedImage;
+  final List<File> _capturedImages = [];
   final ImagePicker _picker = ImagePicker();
 
   Future<void> _onAddPhotoTap(ImageSource source) async {
@@ -25,7 +25,7 @@ class _CameraScreenState extends State<CameraScreen> {
 
       if (xFile != null) {
         setState(() {
-          _capturedImage = File(xFile.path);
+          _capturedImages.add(File(xFile.path));
         });
 
         if (mounted) {
@@ -49,6 +49,40 @@ class _CameraScreenState extends State<CameraScreen> {
     }
   }
 
+  Future<void> _onPickMultiplePhotos() async {
+    try {
+      final xFiles = await _picker.pickMultiImage(
+        imageQuality: 90,
+        maxWidth: 1920,
+        maxHeight: 1080,
+      );
+
+      if (xFiles.isNotEmpty) {
+        setState(() {
+          _capturedImages.addAll(xFiles.map((xFile) => File(xFile.path)));
+        });
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('${xFiles.length} photos selected'),
+              duration: const Duration(seconds: 2),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error selecting photos: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -64,7 +98,7 @@ class _CameraScreenState extends State<CameraScreen> {
   Widget _buildBody() {
     return Column(
       children: [
-        if (_capturedImage != null) _buildSmallImagePreview(),
+        if (_capturedImages.isNotEmpty) _buildImagePreview(),
         Expanded(
           child: Center(
             child: Column(
@@ -97,6 +131,20 @@ class _CameraScreenState extends State<CameraScreen> {
                     textStyle: const TextStyle(fontSize: 18),
                   ),
                 ),
+                const SizedBox(height: 20),
+                ElevatedButton.icon(
+                  key: const Key('pickMultiplePhotosButton'),
+                  onPressed: _onPickMultiplePhotos,
+                  icon: const Icon(Icons.photo_library_outlined),
+                  label: const Text('Pick Multiple Photos'),
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 32,
+                      vertical: 16,
+                    ),
+                    textStyle: const TextStyle(fontSize: 18),
+                  ),
+                ),
               ],
             ),
           ),
@@ -105,9 +153,9 @@ class _CameraScreenState extends State<CameraScreen> {
     );
   }
 
-  Widget _buildSmallImagePreview() {
+  Widget _buildImagePreview() {
     return Container(
-      key: const Key('smallImagePreview'),
+      key: const Key('imagePreview'),
       margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
@@ -115,44 +163,46 @@ class _CameraScreenState extends State<CameraScreen> {
         borderRadius: BorderRadius.circular(8),
         color: Colors.grey[50],
       ),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            width: 80,
-            height: 80,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(4),
-              border: Border.all(color: Colors.grey[400]!),
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(4),
-              child: Image.file(
-                _capturedImage!,
-                fit: BoxFit.cover,
+          Row(
+            children: [
+              const Icon(Icons.photo_library, color: Colors.grey),
+              const SizedBox(width: 8),
+              Text(
+                '${_capturedImages.length} photo${_capturedImages.length == 1 ? '' : 's'} selected',
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
               ),
-            ),
+            ],
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Captured Image',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
+          const SizedBox(height: 12),
+          SizedBox(
+            height: 80,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: _capturedImages.length,
+              itemBuilder: (context, index) {
+                return Container(
+                  margin: const EdgeInsets.only(right: 8),
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(4),
+                    border: Border.all(color: Colors.grey[400]!),
                   ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'Ready to use',
-                  style: TextStyle(
-                    color: Colors.grey[600],
-                    fontSize: 14,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(4),
+                    child: Image.file(
+                      _capturedImages[index],
+                      fit: BoxFit.cover,
+                    ),
                   ),
-                ),
-              ],
+                );
+              },
             ),
           ),
         ],
