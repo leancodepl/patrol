@@ -1046,9 +1046,9 @@ class NativeAutomator {
           await tap(doneSelector);
         } else {
           final shutterSelector =
-              iosShutterButtonSelector ?? Selector(text: 'Take Picture');
+              iosShutterButtonSelector ?? Selector(resourceId: 'PhotoCapture');
           final doneSelector =
-              iosDoneButtonSelector ?? Selector(text: 'Use Photo');
+              iosDoneButtonSelector ?? Selector(resourceId: 'Done');
           await tap(shutterSelector);
           await tap(doneSelector);
         }
