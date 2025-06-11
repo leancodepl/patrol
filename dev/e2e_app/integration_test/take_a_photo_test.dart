@@ -12,7 +12,7 @@ void main() {
       await $.native2.grantPermissionWhenInUse();
     }
 
-    await $.native.takeCameraPhoto();
+    await $.native2.takeCameraPhoto();
     await $.pumpAndSettle();
     await $(#smallImagePreview).waitUntilVisible();
   });
