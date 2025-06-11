@@ -910,14 +910,14 @@ class NativeAutomator2 {
               android: AndroidSelector(
                 resourceName: 'com.android.camera2:id/shutter_button',
               ),
-              ios: IOSSelector(title: 'Take Picture'),
+              ios: IOSSelector(identifier: 'PhotoCapture'),
             );
         final doneSelector = doneButtonSelector ??
             NativeSelector(
               android: AndroidSelector(
                 resourceName: 'com.android.camera2:id/done_button',
               ),
-              ios: IOSSelector(title: 'Use Photo'),
+              ios: IOSSelector(identifier: 'Done'),
             );
         if (io.Platform.isAndroid) {
           await tap(shutterSelector, timeout: timeout);
