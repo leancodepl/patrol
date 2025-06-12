@@ -930,22 +930,22 @@ class NativeAutomator2 {
     );
   }
 
-  /// Pick a photo from the gallery
+  /// Pick an image from the gallery
   ///
-  /// [photoSelector] is the selector for the photo.
-  /// [instance] is the instance of the photo.
-  /// If you specify [photoSelector], instance is not used.
+  /// [imageSelector] is the selector for the image.
+  /// [instance] is the instance of the image.
+  /// If you specify [imageSelector], instance is not used.
   ///
-  /// On Android, the photo selector is `com.google.android.providers.media.module:id/icon_thumbnail`.
-  /// On iOS, the photo selector is `Image`.
-  Future<void> pickPhotoFromGallery({
-    NativeSelector? photoSelector,
+  /// On Android, the image selector is `com.google.android.providers.media.module:id/icon_thumbnail`.
+  /// On iOS, the image selector is `Image`.
+  Future<void> pickImageFromGallery({
+    NativeSelector? imageSelector,
     int? instance,
   }) async {
     await _wrapRequest(
-      'pickPhotoFromGallery',
+      'pickImageFromGallery',
       () async {
-        final nativePhotoSelector = photoSelector ??
+        final nativeImageSelector = imageSelector ??
             NativeSelector(
               android: AndroidSelector(
                 resourceName:
@@ -953,7 +953,7 @@ class NativeAutomator2 {
                 instance: instance ?? 0,
               ),
               ios: IOSSelector(
-                // First photo on physical iOS device is at index 1
+                // First image on physical iOS device is at index 1
                 // This will not fail on simulator, but also not work
                 elementType: IOSElementType.image,
                 instance: io.Platform.isIOS && await isSimulator()
@@ -962,21 +962,21 @@ class NativeAutomator2 {
               ),
             );
 
-        await tap(nativePhotoSelector);
+        await tap(nativeImageSelector);
       },
     );
   }
 
-  /// Pick multiple photos from the gallery
+  /// Pick multiple images from the gallery
   ///
-  /// On Android, the photo selector is `com.google.android.providers.media.module:id/icon_thumbnail`.
-  /// On iOS, the photo selector is `Image`.
-  Future<void> pickMultiplePhotosFromGallery(
-    int photoCount, {
-    NativeSelector? photoSelector,
+  /// On Android, the image selector is `com.google.android.providers.media.module:id/icon_thumbnail`.
+  /// On iOS, the image selector is `Image`.
+  Future<void> pickMultipleImagesFromGallery(
+    int imageCount, {
+    NativeSelector? imageSelector,
   }) async {
     await _wrapRequest(
-      'pickMultiplePhotosFromGallery',
+      'pickMultipleImagesFromGallery',
       () async {
         // Helper function to create AndroidSelector with overridden instance
         AndroidSelector? copyAndroidSelectorWithInstance(
@@ -1038,7 +1038,7 @@ class NativeAutomator2 {
         }
 
         // Create selector with overridden instance or use default
-        Future<NativeSelector> nativePhotoSelector(int i) async {
+        Future<NativeSelector> nativeImageSelector(int i) async {
           int iosInstance;
           if (io.Platform.isIOS && await isSimulator()) {
             iosInstance = i + 2; // Simulator uses +2
@@ -1046,12 +1046,12 @@ class NativeAutomator2 {
             iosInstance = i + 1; // Physical device uses +1
           }
 
-          return photoSelector != null
+          return imageSelector != null
               ? NativeSelector(
                   android:
-                      copyAndroidSelectorWithInstance(photoSelector.android, i),
+                      copyAndroidSelectorWithInstance(imageSelector.android, i),
                   ios: copyIOSSelectorWithInstance(
-                    photoSelector.ios,
+                    imageSelector.ios,
                     iosInstance,
                   ),
                 )
@@ -1068,8 +1068,8 @@ class NativeAutomator2 {
                 );
         }
 
-        for (var i = 0; i < photoCount; i++) {
-          await tap(await nativePhotoSelector(i));
+        for (var i = 0; i < imageCount; i++) {
+          await tap(await nativeImageSelector(i));
         }
 
         await tap(
