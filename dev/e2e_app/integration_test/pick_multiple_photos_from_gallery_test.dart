@@ -11,7 +11,7 @@ void main() {
     )) {
       await $.native2.grantPermissionWhenInUse();
     }
-    // await $.native2.pickMultiplePhotosFromGallery(2);
+    await $.native2.pickMultiplePhotosFromGallery(2);
 
     await $.pumpAndSettle();
     await $(#selectedPhotosCount).$('2 photos selected').waitUntilVisible();
