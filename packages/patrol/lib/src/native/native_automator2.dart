@@ -975,6 +975,127 @@ class NativeAutomator2 {
     );
   }
 
+  /// Pick multiple photos from the gallery
+  ///
+  /// On Android, the photo selector is `com.google.android.providers.media.module:id/icon_thumbnail`.
+  /// On iOS, the photo selector is `Image`.
+  Future<void> pickMultiplePhotosFromGallery(
+    int photoCount, {
+    NativeSelector? photoSelector,
+  }) async {
+    await _wrapRequest(
+      'pickMultiplePhotosFromGallery',
+      () async {
+        // Helper function to create AndroidSelector with overridden instance
+        AndroidSelector? copyAndroidSelectorWithInstance(
+          AndroidSelector? selector,
+          int instance,
+        ) {
+          if (selector == null) {
+            return null;
+          }
+          return AndroidSelector(
+            className: selector.className,
+            isCheckable: selector.isCheckable,
+            isChecked: selector.isChecked,
+            isClickable: selector.isClickable,
+            isEnabled: selector.isEnabled,
+            isFocusable: selector.isFocusable,
+            isFocused: selector.isFocused,
+            isLongClickable: selector.isLongClickable,
+            isScrollable: selector.isScrollable,
+            isSelected: selector.isSelected,
+            applicationPackage: selector.applicationPackage,
+            contentDescription: selector.contentDescription,
+            contentDescriptionStartsWith: selector.contentDescriptionStartsWith,
+            contentDescriptionContains: selector.contentDescriptionContains,
+            text: selector.text,
+            textStartsWith: selector.textStartsWith,
+            textContains: selector.textContains,
+            resourceName: selector.resourceName,
+            instance: instance, // Override instance
+          );
+        }
+
+        // Helper function to create IOSSelector with overridden instance
+        IOSSelector? copyIOSSelectorWithInstance(
+          IOSSelector? selector,
+          int instance,
+        ) {
+          if (selector == null) {
+            return null;
+          }
+          return IOSSelector(
+            value: selector.value,
+            elementType: selector.elementType,
+            identifier: selector.identifier,
+            label: selector.label,
+            labelStartsWith: selector.labelStartsWith,
+            labelContains: selector.labelContains,
+            title: selector.title,
+            titleStartsWith: selector.titleStartsWith,
+            titleContains: selector.titleContains,
+            hasFocus: selector.hasFocus,
+            isEnabled: selector.isEnabled,
+            isSelected: selector.isSelected,
+            placeholderValue: selector.placeholderValue,
+            placeholderValueStartsWith: selector.placeholderValueStartsWith,
+            placeholderValueContains: selector.placeholderValueContains,
+            instance: instance, // Override instance
+          );
+        }
+
+        // Create selector with overridden instance or use default
+        Future<NativeSelector> nativePhotoSelector(int i) async {
+          int iosInstance;
+          if (io.Platform.isIOS && await isSimulator()) {
+            iosInstance = i + 2; // Simulator uses +2
+          } else {
+            iosInstance = i + 1; // Physical device uses +1
+          }
+
+          return photoSelector != null
+              ? NativeSelector(
+                  android:
+                      copyAndroidSelectorWithInstance(photoSelector.android, i),
+                  ios: copyIOSSelectorWithInstance(
+                    photoSelector.ios,
+                    iosInstance,
+                  ),
+                )
+              : NativeSelector(
+                  android: AndroidSelector(
+                    resourceName:
+                        'com.google.android.providers.media.module:id/icon_thumbnail',
+                    instance: i,
+                  ),
+                  ios: IOSSelector(
+                    elementType: IOSElementType.image,
+                    instance: iosInstance,
+                  ),
+                );
+        }
+
+        for (var i = 0; i < photoCount; i++) {
+          await tap(await nativePhotoSelector(i));
+        }
+
+        await tap(
+          NativeSelector(
+            android: AndroidSelector(
+              resourceName:
+                  'com.google.android.providers.media.module:id/button_add',
+            ),
+            ios: IOSSelector(
+              elementType: IOSElementType.button,
+              label: 'Add',
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   /// Checks if the app is running on an iOS simulator.
   ///
   /// Returns `true` if running on iOS simulator, `false` otherwise.
