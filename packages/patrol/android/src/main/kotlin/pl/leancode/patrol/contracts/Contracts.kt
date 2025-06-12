@@ -675,4 +675,8 @@ class Contracts {
     }
   }
 
+  data class IsSimulatorResponse (
+    val isSimulator: Boolean
+  )
+
 }

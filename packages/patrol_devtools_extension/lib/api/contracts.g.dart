@@ -819,3 +819,14 @@ Map<String, dynamic> _$MarkAppServiceReadyRequestToJson(
     <String, dynamic>{
       'port': instance.port,
     };
+
+IsSimulatorResponse _$IsSimulatorResponseFromJson(Map<String, dynamic> json) =>
+    IsSimulatorResponse(
+      isSimulator: json['isSimulator'] as bool,
+    );
+
+Map<String, dynamic> _$IsSimulatorResponseToJson(
+        IsSimulatorResponse instance) =>
+    <String, dynamic>{
+      'isSimulator': instance.isSimulator,
+    };

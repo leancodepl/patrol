@@ -911,7 +911,7 @@
       element.typeText(delete + data)
     }
 
-    private func isSimulator() -> Bool {
+    func isSimulator() -> Bool {
       #if targetEnvironment(simulator)
         return true
       #else
