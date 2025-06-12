@@ -94,8 +94,8 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
         instrumentation.getTargetContext().startActivity(intent);
     }
 
-    void createAppServiceClient(Integer port) {
-        patrolAppServiceClient = new PatrolAppServiceClient(port);
+    PatrolAppServiceClient createAppServiceClient(Integer port) {
+        return new PatrolAppServiceClient(port);
     }
 
     /**
@@ -117,7 +117,8 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
 
         Logger.INSTANCE.i(TAG + "PatrolAppService is ready to report Dart tests");
         // TODO: Move calling [createAppServiceClient] to MainActivityTest.java when breaking change in setup can be introduced.
-        createAppServiceClient(PatrolServer.Companion.getAppServerPort());
+        Logger.INSTANCE.i(TAG + "Creating PatrolAppServiceClient with port: " + PatrolServer.Companion.getAppServerPort());
+        patrolAppServiceClient = createAppServiceClient(PatrolServer.Companion.getAppServerPort());
     }
 
     public Object[] listDartTests() {
