@@ -956,21 +956,13 @@ class NativeAutomator2 {
                 // First photo on physical iOS device is at index 1
                 // This will not fail on simulator, but also not work
                 elementType: IOSElementType.image,
-                instance: instance ?? 1,
+                instance: io.Platform.isIOS && await isSimulator()
+                    ? (instance ?? 0) + 2
+                    : (instance ?? 0) + 1,
               ),
             );
-        if (io.Platform.isIOS && await isSimulator()) {
-          await tap(
-            NativeSelector(
-              ios: IOSSelector(
-                identifier: 'PXGGridLayout-Info',
-                instance: instance ?? 0,
-              ),
-            ),
-          );
-        } else {
-          await tap(nativePhotoSelector);
-        }
+
+        await tap(nativePhotoSelector);
       },
     );
   }
