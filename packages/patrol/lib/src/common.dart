@@ -94,15 +94,9 @@ void patrolTest(
   LiveTestWidgetsFlutterBindingFramePolicy framePolicy =
       LiveTestWidgetsFlutterBindingFramePolicy.fadePointers,
 }) {
-  final testServerPort = getTestServerPort();
-
   final patrolLog = PatrolLogWriter(config: {'printLogs': config.printLogs});
-  final automator = NativeAutomator(
-    config: nativeAutomatorConfig.copyWith(port: testServerPort.toString()),
-  );
-  final automator2 = NativeAutomator2(
-    config: nativeAutomatorConfig.copyWith(port: testServerPort.toString()),
-  );
+  final automator = NativeAutomator(config: nativeAutomatorConfig);
+  final automator2 = NativeAutomator2(config: nativeAutomatorConfig);
   final patrolBinding = PatrolBinding.ensureInitialized(nativeAutomatorConfig)
     ..framePolicy = framePolicy;
 
