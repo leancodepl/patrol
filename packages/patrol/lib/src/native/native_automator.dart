@@ -157,7 +157,6 @@ class NativeAutomatorConfig {
   }) {
     return NativeAutomatorConfig(
       host: host ?? this.host,
-      port: port ?? this.port,
       packageName: packageName ?? this.packageName,
       bundleId: bundleId ?? this.bundleId,
       androidAppName: androidAppName ?? this.androidAppName,
