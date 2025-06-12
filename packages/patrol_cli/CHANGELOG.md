@@ -1,4 +1,4 @@
-## 3.6.0-dev.2
+## 3.6.1-dev.1
 
 - Execute `flutter build --config-only` with `--debug` mode (#2636)
 
