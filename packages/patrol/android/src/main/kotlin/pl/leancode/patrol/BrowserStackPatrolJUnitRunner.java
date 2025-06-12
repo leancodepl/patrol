@@ -14,10 +14,9 @@ public class BrowserStackPatrolJUnitRunner extends PatrolJUnitRunner {
     public PatrolAppServiceClient patrolAppServiceClient;
 
     @Override
-    void createAppServiceClient(Integer port) {
+    PatrolAppServiceClient createAppServiceClient(Integer port) {
         // Create client with a default constructor (localhost:port) by default.
         patrolAppServiceClient = new PatrolAppServiceClient(port);
-        waitForPatrolAppService();
 
         try {
             patrolAppServiceClient.listDartTests();
@@ -30,6 +29,7 @@ public class BrowserStackPatrolJUnitRunner extends PatrolJUnitRunner {
             Logger.INSTANCE.i("LOOPBACK: " + getLoopback());
             patrolAppServiceClient = new PatrolAppServiceClient(getLoopback(), port);
         }
+        return patrolAppServiceClient;
     }
 
     public String getLoopback() {

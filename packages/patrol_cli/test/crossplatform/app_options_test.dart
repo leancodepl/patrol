@@ -104,7 +104,7 @@ void main() {
             r'.\gradlew.bat',
             ':app:assembleDevReleaseAndroidTest',
             r'-Ptarget=C:\Users\john\app\integration_test\app_test.dart',
-            '-Pdart-defines=RU1BSUw9dXNlckBleGFtcGxlLmNvbQ==,UEFTU1dPUkQ9bnk0bmNhdA==,Zm9vPWJhcg==,RkxVVFRFUl9BUFBfRkxBVk9SPWRldg==',
+            '-Pdart-defines=RU1BSUw9dXNlckBleGFtcGxlLmNvbQ==,UEFTU1dPUkQ9bnk0bmNhdA==,Zm9vPWJhcg==',
             '-Ptest-server-port=2',
           ]),
         );
@@ -134,7 +134,7 @@ void main() {
             './gradlew',
             ':app:assembleDevDebugAndroidTest',
             '-Ptarget=/Users/john/app/integration_test/app_test.dart',
-            '-Pdart-defines=RU1BSUw9dXNlckBleGFtcGxlLmNvbQ==,UEFTU1dPUkQ9bnk0bmNhdA==,Zm9vPWJhcg==,RkxVVFRFUl9BUFBfRkxBVk9SPWRldg==',
+            '-Pdart-defines=RU1BSUw9dXNlckBleGFtcGxlLmNvbQ==,UEFTU1dPUkQ9bnk0bmNhdA==,Zm9vPWJhcg==',
             '-Ptest-server-port=2',
           ]),
         );
@@ -164,7 +164,7 @@ void main() {
             './gradlew',
             ':app:connectedDevDebugAndroidTest',
             '-Ptarget=/Users/john/app/integration_test/app_test.dart',
-            '-Pdart-defines=RU1BSUw9dXNlckBleGFtcGxlLmNvbQ==,UEFTU1dPUkQ9bnk0bmNhdA==,Zm9vPWJhcg==,RkxVVFRFUl9BUFBfRkxBVk9SPWRldg==',
+            '-Pdart-defines=RU1BSUw9dXNlckBleGFtcGxlLmNvbQ==,UEFTU1dPUkQ9bnk0bmNhdA==,Zm9vPWJhcg==',
             '-Pandroid.injected.androidTest.leaveApksInstalledAfterRun=true',
             '-Ptest-server-port=2',
           ]),

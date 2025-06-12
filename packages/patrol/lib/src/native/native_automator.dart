@@ -6,6 +6,7 @@ import 'package:meta/meta.dart';
 import 'package:patrol/src/native/contracts/contracts.dart' as contracts;
 import 'package:patrol/src/native/contracts/contracts.dart';
 import 'package:patrol/src/native/contracts/native_automator_client.dart';
+import 'package:patrol/src/server_port_provider.dart';
 import 'package:patrol_log/patrol_log.dart';
 
 /// Thrown when a native action fails.
@@ -63,6 +64,7 @@ class NativeAutomatorConfig {
       'PATROL_HOST',
       defaultValue: 'localhost',
     ),
+    @Deprecated('Use test-server-port argument of patrol_cli instead')
     this.port = const String.fromEnvironment(
       'PATROL_TEST_SERVER_PORT',
       defaultValue: '0',
@@ -90,6 +92,7 @@ class NativeAutomatorConfig {
   final String host;
 
   /// Port on [host] on which Patrol server instrumentation is running.
+  @Deprecated('Use test-server-port argument of patrol_cli instead')
   final String port;
 
   /// Time after which the connection with the native automator will fail.
@@ -141,6 +144,7 @@ class NativeAutomatorConfig {
   /// new values.
   NativeAutomatorConfig copyWith({
     String? host,
+    @Deprecated('Use test-server-port argument of patrol_cli instead')
     String? port,
     String? packageName,
     String? bundleId,
@@ -153,7 +157,6 @@ class NativeAutomatorConfig {
   }) {
     return NativeAutomatorConfig(
       host: host ?? this.host,
-      port: port ?? this.port,
       packageName: packageName ?? this.packageName,
       bundleId: bundleId ?? this.bundleId,
       androidAppName: androidAppName ?? this.androidAppName,
@@ -186,6 +189,8 @@ class NativeAutomator {
     if (_config.bundleId.isEmpty && io.Platform.isIOS) {
       _config.logger("bundleId is not set. It's recommended to set it.");
     }
+    // Gets the port from the native side using ffi.
+    final port = getTestServerPort();
 
     // _config.logger('Android app name: ${_config.androidAppName}');
     // _config.logger('iOS app name: ${_config.iosAppName}');
@@ -194,10 +199,10 @@ class NativeAutomator {
 
     _client = NativeAutomatorClient(
       http.Client(),
-      Uri.http('${_config.host}:${_config.port}'),
+      Uri.http('${_config.host}:$port'),
       timeout: _config.connectionTimeout,
     );
-    _config.logger('NativeAutomatorClient created, port: ${_config.port}');
+    _config.logger('NativeAutomatorClient created, port: $port');
   }
 
   final PatrolLogWriter _patrolLog = PatrolLogWriter();

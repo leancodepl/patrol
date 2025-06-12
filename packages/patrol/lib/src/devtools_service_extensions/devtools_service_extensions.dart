@@ -5,14 +5,16 @@ import 'package:http/http.dart' as http;
 import 'package:patrol/src/native/contracts/contracts.dart';
 import 'package:patrol/src/native/contracts/native_automator_client.dart';
 import 'package:patrol/src/native/native_automator.dart';
+import 'package:patrol/src/server_port_provider.dart';
 
 /// Devtools extension that fetches the native UI tree.
 class DevtoolsServiceExtensions {
   /// Creates a new [DevtoolsServiceExtensions] based on the given [config].
   DevtoolsServiceExtensions(NativeAutomatorConfig config) {
+    final port = getAppServerPort();
     _client = NativeAutomatorClient(
       http.Client(),
-      Uri.http('${config.host}:${config.port}'),
+      Uri.http('${config.host}:$port'),
       timeout: config.connectionTimeout,
     );
 

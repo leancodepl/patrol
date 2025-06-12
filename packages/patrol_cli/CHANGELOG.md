@@ -1,4 +1,12 @@
+## 3.6.1-dev.1
+
+- Execute `flutter build --config-only` with `--debug` mode (#2636)
+
 ## 3.6.0-dev.1
+
+- Dynamically select port on all platforms. (#2527)
+
+## 3.6.0
 
 - Improve patrol test error messaging when compatibility check fails, added same compatibility check and error messaging to patrol build command (#2597)
 - Improve patrol update messaging by showing incompatibility warning when applicable, sharing compatibility table (#2579)
@@ -7,7 +15,8 @@
 - Add `--ios` flag to `patrol test` that specifies the iOS version to use. (#2540)
 - Bump `custom_lint` to `0.7.0` and `leancode_lint` to `14.3.0`. (#2574)
 - Display the name of the default device instead of its ID. (#2581)
-- Dynamically select port on all platforms. (#2527)
+- Do not pass flavor as dart-define when building. (#2636)
+- Bump `vm_service` dependency to `15.0.0` (#2636)
 
 ## 3.5.1
 

@@ -8,6 +8,7 @@ import 'package:patrol/src/native/contracts/contracts.dart' as contracts;
 import 'package:patrol/src/native/contracts/native_automator_client.dart';
 import 'package:patrol/src/native/native_automator.dart';
 import 'package:patrol/src/native/native_automator.dart' as native_automator;
+import 'package:patrol/src/server_port_provider.dart';
 import 'package:patrol_log/patrol_log.dart';
 
 /// This class represents the result of [NativeAutomator.getNativeViews].
@@ -68,6 +69,8 @@ class NativeAutomator2 {
     if (_config.bundleId.isEmpty && io.Platform.isIOS) {
       _config.logger("bundleId is not set. It's recommended to set it.");
     }
+    // Gets the port from the native side using ffi.
+    final port = getTestServerPort();
 
     // _config.logger('Android app name: ${_config.androidAppName}');
     // _config.logger('iOS app name: ${_config.iosAppName}');
@@ -76,11 +79,11 @@ class NativeAutomator2 {
 
     _client = NativeAutomatorClient(
       http.Client(),
-      Uri.http('${_config.host}:${_config.port}'),
+      Uri.http('${_config.host}:$port'),
       timeout: _config.connectionTimeout,
     );
     _config.logger(
-      'NativeAutomatorClient created, port: ${_config.port}',
+      'NativeAutomatorClient created, port: $port',
     );
   }
 
