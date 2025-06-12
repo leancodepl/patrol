@@ -1,4 +1,4 @@
-import 'common.dart';
+import '../common.dart';
 
 void main() {
   patrol('pick multiple images from gallery', ($) async {
