@@ -1,3 +1,7 @@
+## 3.16.0-dev.3
+
+- Get dynamically set port inside `NativeAutomator` constructor. (#2636)
+
 ## 3.16.0-dev.2
 
 - Make activity aliases work in PatrolJUnitRunner

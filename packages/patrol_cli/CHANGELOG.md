@@ -1,3 +1,7 @@
+## 3.6.0-dev.2
+
+- Execute `flutter build --config-only` with `--debug` mode (#2636)
+
 ## 3.6.0-dev.1
 
 - Dynamically select port on all platforms. (#2527)
