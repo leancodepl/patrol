@@ -392,6 +392,10 @@
       }
     }
 
+    func isSimulator() -> Bool {
+      return false  // macOS doesn't have simulators like iOS
+    }
+
     private func runAction<T>(_ log: String, block: @escaping () throws -> T) rethrows -> T {
       return try DispatchQueue.main.sync {
         Logger.shared.i("\(log)...")

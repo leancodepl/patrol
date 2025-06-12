@@ -420,6 +420,13 @@
     func markPatrolAppServiceReady(request: MarkAppServiceReadyRequest) throws {
       onAppReady(true, request.port!)
     }
+
+    func isSimulator() throws -> IsSimulatorResponse {
+      return try runCatching {
+        let isSimulator = automator.isSimulator()
+        return IsSimulatorResponse(isSimulator: isSimulator)
+      }
+    }
   }
 
 #endif

@@ -55,6 +55,7 @@ abstract class NativeAutomatorServer {
     abstract fun debug()
     abstract fun setMockLocation(request: Contracts.SetMockLocationRequest)
     abstract fun markPatrolAppServiceReady(request: Contracts.MarkAppServiceReadyRequest)
+    abstract fun isSimulator(): Contracts.IsSimulatorResponse
 
     val router = routes(
       "initialize" bind POST to {
@@ -245,6 +246,10 @@ abstract class NativeAutomatorServer {
         val body = json.fromJson(it.bodyString(), Contracts.MarkAppServiceReadyRequest::class.java)
         markPatrolAppServiceReady(body)
         Response(OK)
+      },
+      "isSimulator" bind POST to {
+        val response = isSimulator()
+        Response(OK).body(json.toJson(response))
       }
     )
 

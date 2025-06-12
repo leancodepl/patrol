@@ -358,6 +358,13 @@ class NativeAutomatorClient {
     );
   }
 
+  Future<IsSimulatorResponse> isSimulator() async {
+    final json = await _sendRequest(
+      'isSimulator',
+    );
+    return IsSimulatorResponse.fromJson(json);
+  }
+
   Future<Map<String, dynamic>> _sendRequest(
     String requestName, [
     Map<String, dynamic>? request,

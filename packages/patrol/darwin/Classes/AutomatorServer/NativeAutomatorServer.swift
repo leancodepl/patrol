@@ -48,6 +48,7 @@ protocol NativeAutomatorServer {
     func debug() throws
     func setMockLocation(request: SetMockLocationRequest) throws
     func markPatrolAppServiceReady(request: MarkAppServiceReadyRequest) throws
+    func isSimulator() throws -> IsSimulatorResponse
 }
 
 extension NativeAutomatorServer {
@@ -285,6 +286,12 @@ extension NativeAutomatorServer {
         try markPatrolAppServiceReady(request: requestArg)
         return HTTPResponse(.ok)
     }
+
+    private func isSimulatorHandler(request: HTTPRequest) throws -> HTTPResponse {
+        let response = try isSimulator()
+        let body = try JSONEncoder().encode(response)
+        return HTTPResponse(.ok, body: body)
+    }
 }
 
 extension NativeAutomatorServer {
@@ -498,6 +505,11 @@ extension NativeAutomatorServer {
             request in handleRequest(
                 request: request,
                 handler: markPatrolAppServiceReadyHandler)
+        }
+        server.route(.POST, "isSimulator") {
+            request in handleRequest(
+                request: request,
+                handler: isSimulatorHandler)
         }
     }
 }
