@@ -388,7 +388,8 @@ To install a specific version of Patrol CLI, run:
   Future<int?> runCommand(ArgResults topLevelResults) async {
     final commandName = topLevelResults.command?.name;
 
-    if (_wantsUpdateCheck(commandName)) {
+    // FIXME: Temporary disapled to test patrol from branch
+/*     if (_wantsUpdateCheck(commandName)) {
       final latestVersion = await _pubUpdater.getLatestVersion('patrol_cli');
       const currentVersion = constants.version;
       final maxCompatibleCliVersion =
@@ -399,7 +400,7 @@ To install a specific version of Patrol CLI, run:
         latestVersion: latestVersion,
         maxCompatibleCliVersion: maxCompatibleCliVersion.toString(),
       );
-    }
+    } */
 
     final int? exitCode;
     if (topLevelResults['version'] == true) {
