@@ -1,5 +1,6 @@
 package pl.leancode.patrol
 
+import android.os.Build
 import pl.leancode.patrol.contracts.Contracts.ConfigureRequest
 import pl.leancode.patrol.contracts.Contracts.DarkModeRequest
 import pl.leancode.patrol.contracts.Contracts.EnterTextRequest
@@ -11,6 +12,7 @@ import pl.leancode.patrol.contracts.Contracts.GetNotificationsRequest
 import pl.leancode.patrol.contracts.Contracts.GetNotificationsResponse
 import pl.leancode.patrol.contracts.Contracts.HandlePermissionRequest
 import pl.leancode.patrol.contracts.Contracts.HandlePermissionRequestCode
+import pl.leancode.patrol.contracts.Contracts.IsSimulatorResponse
 import pl.leancode.patrol.contracts.Contracts.MarkAppServiceReadyRequest
 import pl.leancode.patrol.contracts.Contracts.OpenAppRequest
 import pl.leancode.patrol.contracts.Contracts.OpenQuickSettingsRequest
@@ -346,5 +348,18 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
     override fun markPatrolAppServiceReady(request: MarkAppServiceReadyRequest) {
         PatrolServer.appServerPort = request.port?.toInt()
         PatrolServer.appReady.open()
+    }
+
+    override fun isSimulator(): IsSimulatorResponse {
+        val isEmulator = Build.FINGERPRINT.startsWith("generic")
+                || Build.FINGERPRINT.startsWith("unknown")
+                || Build.MODEL.contains("google_sdk")
+                || Build.MODEL.contains("Emulator")
+                || Build.MODEL.contains("Android SDK built for x86")
+                || Build.MANUFACTURER.contains("Genymotion")
+                || (Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic"))
+                || "google_sdk" == Build.PRODUCT
+        
+        return IsSimulatorResponse(isEmulator)
     }
 }
