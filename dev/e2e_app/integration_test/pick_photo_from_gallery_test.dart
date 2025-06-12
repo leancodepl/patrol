@@ -1,7 +1,7 @@
 import 'common.dart';
 
 void main() {
-  patrol('pick photo from gallery', ($) async {
+  patrol('pick image from gallery', ($) async {
     await createApp($);
 
     await $(#cameraFeaturesButton).scrollTo().tap();
@@ -11,7 +11,7 @@ void main() {
     )) {
       await $.native2.grantPermissionWhenInUse();
     }
-    await $.native2.pickPhotoFromGallery();
+    await $.native2.pickImageFromGallery();
     await $.pumpAndSettle();
 
     await $(#smallImagePreview).waitUntilVisible();

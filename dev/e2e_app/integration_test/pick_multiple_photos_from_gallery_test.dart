@@ -1,7 +1,7 @@
 import 'common.dart';
 
 void main() {
-  patrol('pick multiple photos from gallery', ($) async {
+  patrol('pick multiple images from gallery', ($) async {
     await createApp($);
 
     await $(#cameraFeaturesButton).scrollTo().tap();
@@ -11,7 +11,7 @@ void main() {
     )) {
       await $.native2.grantPermissionWhenInUse();
     }
-    await $.native2.pickMultiplePhotosFromGallery(2);
+    await $.native2.pickMultipleImagesFromGallery(2);
 
     await $.pumpAndSettle();
     await $(#selectedPhotosCount).$('2 photos selected').waitUntilVisible();
