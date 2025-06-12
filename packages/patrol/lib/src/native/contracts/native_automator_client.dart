@@ -358,16 +358,6 @@ class NativeAutomatorClient {
     );
   }
 
-  Future<GetDeviceInfoResponse> getDeviceInfo(
-    GetDeviceInfoRequest request,
-  ) async {
-    final json = await _sendRequest(
-      'getDeviceInfo',
-      request.toJson(),
-    );
-    return GetDeviceInfoResponse.fromJson(json);
-  }
-
   Future<Map<String, dynamic>> _sendRequest(
     String requestName, [
     Map<String, dynamic>? request,
