@@ -934,6 +934,7 @@ class NativeAutomator2 {
   ///
   /// [photoSelector] is the selector for the photo.
   /// [instance] is the instance of the photo.
+  /// If you specify [photoSelector], instance is not used.
   ///
   /// On Android, the photo selector is `com.google.android.providers.media.module:id/icon_thumbnail`.
   /// On iOS, the photo selector is `Image`.
@@ -958,24 +959,35 @@ class NativeAutomator2 {
                 instance: instance ?? 1,
               ),
             );
-        await tap(nativePhotoSelector);
-
-        if (io.Platform.isIOS) {
-          // This is for simulators
-          try {
-            await tap(
-              NativeSelector(
-                ios: IOSSelector(
-                  identifier: 'PXGGridLayout-Info',
-                  instance: instance ?? 0,
-                ),
+        if (io.Platform.isIOS && await isSimulator()) {
+          await tap(
+            NativeSelector(
+              ios: IOSSelector(
+                identifier: 'PXGGridLayout-Info',
+                instance: instance ?? 0,
               ),
-            );
-          } on Exception {
-            /*ignore*/
-          }
+            ),
+          );
+        } else {
+          await tap(nativePhotoSelector);
         }
       },
     );
+  }
+
+  /// Checks if the app is running on an iOS simulator.
+  ///
+  /// Returns `true` if running on iOS simulator, `false` otherwise.
+  /// This method is iOS-specific and will return `false` on Android.
+  ///
+  /// This can be useful for conditional logic in tests that need to behave
+  /// differently on physical devices vs simulators.
+  Future<bool> isSimulator() async {
+    final response = await _wrapRequest(
+      'isSimulator',
+      () => _client.isSimulator(),
+    );
+
+    return response.isSimulator;
   }
 }
