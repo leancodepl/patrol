@@ -891,20 +891,6 @@ class NativeAutomator2 {
     );
   }
 
-  /// Returns true if running on simulator/emulator, false if running on physical device.
-  ///
-  /// This can be useful for conditional test logic based on device type.
-  /// For example, some features might work differently on simulators vs real devices.
-  Future<bool> isSimulator() async {
-    final response = await _wrapRequest(
-      'isSimulator',
-      () => _client.getDeviceInfo(
-        GetDeviceInfoRequest(),
-      ),
-    );
-    return response.isSimulator;
-  }
-
   /// Take a photo and confirm the photo
   ///
   /// On Android, the shutter button is `com.android.camera2:id/shutter_button`

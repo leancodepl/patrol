@@ -1279,35 +1279,3 @@ class MarkAppServiceReadyRequest with EquatableMixin {
         port,
       ];
 }
-
-@JsonSerializable()
-class GetDeviceInfoRequest with EquatableMixin {
-  GetDeviceInfoRequest();
-
-  factory GetDeviceInfoRequest.fromJson(Map<String, dynamic> json) =>
-      _$GetDeviceInfoRequestFromJson(json);
-
-  Map<String, dynamic> toJson() => _$GetDeviceInfoRequestToJson(this);
-
-  @override
-  List<Object?> get props => const [];
-}
-
-@JsonSerializable()
-class GetDeviceInfoResponse with EquatableMixin {
-  GetDeviceInfoResponse({
-    required this.isSimulator,
-  });
-
-  factory GetDeviceInfoResponse.fromJson(Map<String, dynamic> json) =>
-      _$GetDeviceInfoResponseFromJson(json);
-
-  final bool isSimulator;
-
-  Map<String, dynamic> toJson() => _$GetDeviceInfoResponseToJson(this);
-
-  @override
-  List<Object?> get props => [
-        isSimulator,
-      ];
-}
