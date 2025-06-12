@@ -819,3 +819,23 @@ Map<String, dynamic> _$MarkAppServiceReadyRequestToJson(
     <String, dynamic>{
       'port': instance.port,
     };
+
+GetDeviceInfoRequest _$GetDeviceInfoRequestFromJson(
+        Map<String, dynamic> json) =>
+    GetDeviceInfoRequest();
+
+Map<String, dynamic> _$GetDeviceInfoRequestToJson(
+        GetDeviceInfoRequest instance) =>
+    <String, dynamic>{};
+
+GetDeviceInfoResponse _$GetDeviceInfoResponseFromJson(
+        Map<String, dynamic> json) =>
+    GetDeviceInfoResponse(
+      isSimulator: json['isSimulator'] as bool,
+    );
+
+Map<String, dynamic> _$GetDeviceInfoResponseToJson(
+        GetDeviceInfoResponse instance) =>
+    <String, dynamic>{
+      'isSimulator': instance.isSimulator,
+    };
