@@ -175,6 +175,7 @@ class AndroidTestBackend {
         '--config-only',
         '-t',
         'integration_test/test_bundle.dart',
+        '--debug',
       ],
       runInShell: true,
     );

@@ -16,8 +16,6 @@ dependencies:
   flutter_timezone: ^4.1.0
   geolocator: ^13.0.0
   google_maps_flutter: ^2.10.0
-  patrol:
-    path: ../../packages/patrol
   permission_handler: ^11.4.0
   timezone: ^0.9.2
   webview_flutter: ^4.4.2
@@ -31,6 +29,10 @@ dev_dependencies:
     sdk: flutter
   gpx: ^2.3.0
   leancode_lint: ^14.3.0
+  patrol:
+    path: ../../packages/patrol
+  patrol_cli:
+    path: ../../packages/patrol_cli
 
 flutter:
   uses-material-design: true
