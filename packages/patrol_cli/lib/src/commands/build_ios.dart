@@ -41,6 +41,7 @@ class BuildIOSCommand extends PatrolCommand {
     usesPortOptions();
     usesTagsOption();
     usesExcludeTagsOption();
+    usesCheckCompatibilityOption();
 
     usesIOSOptions();
     argParser.addFlag(
@@ -81,10 +82,12 @@ class BuildIOSCommand extends PatrolCommand {
     final testFileSuffix = config.testFileSuffix;
 
     // Check compatibility between CLI and package versions
-    final patrolVersion = _pubspecReader.getPatrolVersion();
-    await _compatibilityChecker.checkVersionsCompatibilityForBuild(
-      patrolVersion: patrolVersion,
-    );
+    if (boolArg('check-compatibility')) {
+      final patrolVersion = _pubspecReader.getPatrolVersion();
+      await _compatibilityChecker.checkVersionsCompatibilityForBuild(
+        patrolVersion: patrolVersion,
+      );
+    }
 
     final target = stringsArg('target');
     final targets = target.isNotEmpty
