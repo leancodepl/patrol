@@ -961,8 +961,9 @@ class NativeAutomator2 {
         final nativeImageSelector = imageSelector ??
             NativeSelector(
               android: AndroidSelector(
-                resourceName:
-                    'com.google.android.providers.media.module:id/icon_thumbnail',
+                resourceName: await getAndroidApiLevel() >= 34
+                    ? 'com.google.android.providers.media.module:id/icon_thumbnail'
+                    : 'com.google.android.documentsui:id/icon',
                 instance: instance ?? 0,
               ),
               ios: IOSSelector(
@@ -982,7 +983,8 @@ class NativeAutomator2 {
 
   /// Pick multiple images from the gallery
   ///
-  /// On Android, the image selector is `com.google.android.providers.media.module:id/icon_thumbnail`.
+  /// On Android, the image selector is `com.google.android.providers.media.module:id/icon_thumbnail` for API level 34 and above,
+  /// and `com.google.android.documentsui:id/icon_thumb` for API level 33 and below.
   /// On iOS, the image selector is `Image`.
   Future<void> pickMultipleImagesFromGallery(
     int imageCount, {
@@ -1070,8 +1072,9 @@ class NativeAutomator2 {
                 )
               : NativeSelector(
                   android: AndroidSelector(
-                    resourceName:
-                        'com.google.android.providers.media.module:id/icon_thumbnail',
+                    resourceName: await getAndroidApiLevel() >= 34
+                        ? 'com.google.android.providers.media.module:id/icon_thumbnail'
+                        : 'com.google.android.documentsui:id/icon',
                     instance: i,
                   ),
                   ios: IOSSelector(
@@ -1081,6 +1084,17 @@ class NativeAutomator2 {
                 );
         }
 
+        if (io.Platform.isAndroid && await getAndroidApiLevel() < 34) {
+          // On API level 33 and below, we need to change type of the list
+          // to be able to select multiple images with taps instead of long press
+          await tap(
+            NativeSelector(
+              android: AndroidSelector(
+                resourceName: 'com.google.android.documentsui:id/sub_menu_list',
+              ),
+            ),
+          );
+        }
         for (var i = 0; i < imageCount; i++) {
           await tap(await nativeImageSelector(i));
         }
@@ -1088,8 +1102,9 @@ class NativeAutomator2 {
         await tap(
           NativeSelector(
             android: AndroidSelector(
-              resourceName:
-                  'com.google.android.providers.media.module:id/button_add',
+              resourceName: await getAndroidApiLevel() >= 34
+                  ? 'com.google.android.providers.media.module:id/button_add'
+                  : 'com.google.android.documentsui:id/action_menu_select',
             ),
             ios: IOSSelector(
               elementType: IOSElementType.button,
