@@ -7,7 +7,7 @@ repository: https://github.com/leancodepl/patrol/tree/master/packages/patrol_gen
 issue_tracker: https://github.com/leancodepl/patrol/issues?q=is%3Aopen+is%3Aissue+label%3A%22package%3A+patrol_gen%22
 
 environment:
-  sdk: '>=3.5.0 <4.0.0'
+  sdk: '>=3.8.0 <4.0.0'
 
 dependencies:
   analyzer: ^6.4.1
