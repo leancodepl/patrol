@@ -420,6 +420,20 @@
     func markPatrolAppServiceReady(request: MarkAppServiceReadyRequest) throws {
       onAppReady(true, request.port!)
     }
+
+    func isSimulator() throws -> IsSimulatorResponse {
+      return try runCatching {
+        let isSimulator = automator.isSimulator()
+        return IsSimulatorResponse(isSimulator: isSimulator)
+      }
+    }
+
+    func getAndroidApiLevel() throws -> GetAndroidApiLevelResponse {
+      return try runCatching {
+        // iOS doesn't have Android API levels, so return 0
+        return GetAndroidApiLevelResponse(apiLevel: 0)
+      }
+    }
   }
 
 #endif

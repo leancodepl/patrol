@@ -710,6 +710,8 @@ class NativeAutomator2 {
 
   /// Returns a list of currently visible native UI controls, specified by
   /// [selector], which are currently visible on screen.
+  ///
+  /// If [selector] is null, returns the whole native UI tree.
   Future<GetNativeViewsResult> getNativeViews(
     NativeSelector selector, {
     String? appId,
@@ -889,5 +891,280 @@ class NativeAutomator2 {
       ),
       enablePatrolLog: false,
     );
+  }
+
+  /// Take a photo and confirm the photo
+  ///
+  /// On Android, this method works with:
+  /// - Pixel simulators and physical devices (using Google Camera app)
+  /// - Other devices require custom shutter and done button selectors
+  ///
+  /// On iOS, the shutter button is `PhotoCapture` and the done button is `Done`.
+  ///
+  /// For non-Pixel Android devices, you need to provide custom [shutterButtonSelector]
+  /// and [doneButtonSelector] with the correct resource IDs for your device's camera app.
+  Future<void> takeCameraPhoto({
+    NativeSelector? shutterButtonSelector,
+    NativeSelector? doneButtonSelector,
+    Duration? timeout,
+  }) async {
+    await _wrapRequest(
+      'takeCameraPhoto',
+      () async {
+        final shutterSelector = shutterButtonSelector ??
+            NativeSelector(
+              android: await isSimulator()
+                  ? AndroidSelector(
+                      resourceName: 'com.android.camera2:id/shutter_button',
+                    )
+                  : AndroidSelector(
+                      resourceName:
+                          'com.google.android.GoogleCamera:id/shutter_button',
+                    ),
+              ios: IOSSelector(identifier: 'PhotoCapture'),
+            );
+        final doneSelector = doneButtonSelector ??
+            NativeSelector(
+              android: await isSimulator()
+                  ? AndroidSelector(
+                      resourceName: 'com.android.camera2:id/done_button',
+                    )
+                  : AndroidSelector(
+                      resourceName:
+                          'com.google.android.GoogleCamera:id/shutter_button',
+                    ),
+              ios: IOSSelector(identifier: 'Done'),
+            );
+
+        await tap(shutterSelector, timeout: timeout);
+        await tap(doneSelector, timeout: timeout);
+      },
+    );
+  }
+
+  /// Pick an image from the gallery
+  ///
+  /// [imageSelector] is the selector for the image.
+  /// [instance] is the instance of the image.
+  /// If you specify [imageSelector], instance is not used.
+  ///
+  /// On Android, the image selector is `com.google.android.providers.media.module:id/icon_thumbnail`.
+  /// It should cover pixels with API lvl 34 and above.
+  /// On iOS, the image selector is `Image`.
+  Future<void> pickImageFromGallery({
+    NativeSelector? imageSelector,
+    int? instance,
+  }) async {
+    final apiLevel = await getAndroidApiLevel();
+    await _wrapRequest(
+      'pickImageFromGallery',
+      () async {
+        final nativeImageSelector = imageSelector ??
+            NativeSelector(
+              android: AndroidSelector(
+                resourceName: apiLevel >= 34
+                    ? 'com.google.android.providers.media.module:id/icon_thumbnail'
+                    : 'com.google.android.documentsui:id/icon',
+                instance: instance ?? 0,
+              ),
+              ios: IOSSelector(
+                // First image on physical iOS device is at index 1
+                // This will not fail on simulator, but also not work
+                elementType: IOSElementType.image,
+                instance: io.Platform.isIOS && await isSimulator()
+                    ? (instance ?? 0) + 2
+                    : (instance ?? 0) + 1,
+              ),
+            );
+
+        if (io.Platform.isAndroid && apiLevel < 34) {
+          // On API level 33 and below, we need to change type of the list
+          // to be able to select multiple images with taps instead of long press
+          await tap(
+            NativeSelector(
+              android: AndroidSelector(
+                resourceName: 'com.google.android.documentsui:id/sub_menu_list',
+              ),
+            ),
+          );
+        }
+        await tap(nativeImageSelector);
+      },
+    );
+  }
+
+  /// Pick multiple images from the gallery
+  ///
+  /// On Android, the image selector is `com.google.android.providers.media.module:id/icon_thumbnail` for API level 34 and above,
+  /// and `com.google.android.documentsui:id/icon_thumb` for API level 33 and below.
+  /// On iOS, the image selector is `Image`.
+  Future<void> pickMultipleImagesFromGallery(
+    int imageCount, {
+    NativeSelector? imageSelector,
+  }) async {
+    await _wrapRequest(
+      'pickMultipleImagesFromGallery',
+      () async {
+        final apiLevel = await getAndroidApiLevel();
+        // Helper function to create AndroidSelector with overridden instance
+        AndroidSelector? copyAndroidSelectorWithInstance(
+          AndroidSelector? selector,
+          int instance,
+        ) {
+          if (selector == null) {
+            return null;
+          }
+          return AndroidSelector(
+            className: selector.className,
+            isCheckable: selector.isCheckable,
+            isChecked: selector.isChecked,
+            isClickable: selector.isClickable,
+            isEnabled: selector.isEnabled,
+            isFocusable: selector.isFocusable,
+            isFocused: selector.isFocused,
+            isLongClickable: selector.isLongClickable,
+            isScrollable: selector.isScrollable,
+            isSelected: selector.isSelected,
+            applicationPackage: selector.applicationPackage,
+            contentDescription: selector.contentDescription,
+            contentDescriptionStartsWith: selector.contentDescriptionStartsWith,
+            contentDescriptionContains: selector.contentDescriptionContains,
+            text: selector.text,
+            textStartsWith: selector.textStartsWith,
+            textContains: selector.textContains,
+            resourceName: selector.resourceName,
+            instance: instance, // Override instance
+          );
+        }
+
+        // Helper function to create IOSSelector with overridden instance
+        IOSSelector? copyIOSSelectorWithInstance(
+          IOSSelector? selector,
+          int instance,
+        ) {
+          if (selector == null) {
+            return null;
+          }
+          return IOSSelector(
+            value: selector.value,
+            elementType: selector.elementType,
+            identifier: selector.identifier,
+            label: selector.label,
+            labelStartsWith: selector.labelStartsWith,
+            labelContains: selector.labelContains,
+            title: selector.title,
+            titleStartsWith: selector.titleStartsWith,
+            titleContains: selector.titleContains,
+            hasFocus: selector.hasFocus,
+            isEnabled: selector.isEnabled,
+            isSelected: selector.isSelected,
+            placeholderValue: selector.placeholderValue,
+            placeholderValueStartsWith: selector.placeholderValueStartsWith,
+            placeholderValueContains: selector.placeholderValueContains,
+            instance: instance, // Override instance
+          );
+        }
+
+        // Create selector with overridden instance or use default
+        Future<NativeSelector> nativeImageSelector(int i) async {
+          int iosInstance;
+          if (io.Platform.isIOS && await isSimulator()) {
+            iosInstance = i + 2; // Simulator uses +2
+          } else {
+            iosInstance = i + 1; // Physical device uses +1
+          }
+          return imageSelector != null
+              ? NativeSelector(
+                  android:
+                      copyAndroidSelectorWithInstance(imageSelector.android, i),
+                  ios: copyIOSSelectorWithInstance(
+                    imageSelector.ios,
+                    iosInstance,
+                  ),
+                )
+              : NativeSelector(
+                  android: AndroidSelector(
+                    resourceName: apiLevel >= 34
+                        ? 'com.google.android.providers.media.module:id/icon_thumbnail'
+                        : 'com.google.android.documentsui:id/icon',
+                    instance: i,
+                  ),
+                  ios: IOSSelector(
+                    elementType: IOSElementType.image,
+                    instance: iosInstance,
+                  ),
+                );
+        }
+
+        if (io.Platform.isAndroid && apiLevel < 34) {
+          // On API level 33 and below, we need to change type of the list
+          // to be able to select multiple images with taps instead of long press
+          await tap(
+            NativeSelector(
+              android: AndroidSelector(
+                resourceName: 'com.google.android.documentsui:id/sub_menu_list',
+              ),
+            ),
+          );
+        }
+        for (var i = 0; i < imageCount; i++) {
+          await tap(await nativeImageSelector(i));
+        }
+
+        await tap(
+          NativeSelector(
+            android: AndroidSelector(
+              resourceName: apiLevel >= 34
+                  ? 'com.google.android.providers.media.module:id/button_add'
+                  : 'com.google.android.documentsui:id/action_menu_select',
+            ),
+            ios: IOSSelector(
+              elementType: IOSElementType.button,
+              label: 'Add',
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  /// Checks if the app is running on an iOS simulator.
+  ///
+  /// Returns `true` if running on iOS simulator, `false` otherwise.
+  /// This method is iOS-specific and will return `false` on Android.
+  ///
+  /// This can be useful for conditional logic in tests that need to behave
+  /// differently on physical devices vs simulators.
+  Future<bool> isSimulator() async {
+    final response = await _wrapRequest(
+      'isSimulator',
+      () => _client.isSimulator(),
+    );
+
+    return response.isSimulator;
+  }
+
+  /// Gets the Android API level.
+  ///
+  /// Returns the Android API level as an integer (e.g., 30 for Android 11).
+  /// On iOS, this will return 0 as it's Android-specific.
+  ///
+  /// This can be useful for conditional logic in tests that need to behave
+  /// differently based on the Android version.
+  ///
+  /// Example:
+  /// ```dart
+  /// final apiLevel = await $.native.getAndroidApiLevel();
+  /// if (apiLevel >= 30) {
+  ///   // Android 11+ specific behavior
+  /// }
+  /// ```
+  Future<int> getAndroidApiLevel() async {
+    final response = await _wrapRequest(
+      'getAndroidApiLevel',
+      () => _client.getAndroidApiLevel(),
+    );
+
+    return response.apiLevel;
   }
 }

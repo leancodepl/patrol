@@ -1279,3 +1279,41 @@ class MarkAppServiceReadyRequest with EquatableMixin {
         port,
       ];
 }
+
+@JsonSerializable()
+class IsSimulatorResponse with EquatableMixin {
+  IsSimulatorResponse({
+    required this.isSimulator,
+  });
+
+  factory IsSimulatorResponse.fromJson(Map<String, dynamic> json) =>
+      _$IsSimulatorResponseFromJson(json);
+
+  final bool isSimulator;
+
+  Map<String, dynamic> toJson() => _$IsSimulatorResponseToJson(this);
+
+  @override
+  List<Object?> get props => [
+        isSimulator,
+      ];
+}
+
+@JsonSerializable()
+class GetAndroidApiLevelResponse with EquatableMixin {
+  GetAndroidApiLevelResponse({
+    required this.apiLevel,
+  });
+
+  factory GetAndroidApiLevelResponse.fromJson(Map<String, dynamic> json) =>
+      _$GetAndroidApiLevelResponseFromJson(json);
+
+  final int apiLevel;
+
+  Map<String, dynamic> toJson() => _$GetAndroidApiLevelResponseToJson(this);
+
+  @override
+  List<Object?> get props => [
+        apiLevel,
+      ];
+}

@@ -833,10 +833,24 @@ class NativeAutomator {
 
   /// Returns a list of currently visible native UI controls, specified by
   /// [selector], which are currently visible on screen.
+  ///
+  /// If [selector] is null, returns the whole native UI tree.
   Future<List<NativeView>> getNativeViews(
-    Selector selector, {
+    Selector? selector, {
     String? appId,
   }) async {
+    if (selector == null) {
+      final treeResponse = await _wrapRequest(
+        'getNativeUITree',
+        () => _client.getNativeUITree(
+          GetNativeUITreeRequest(
+            useNativeViewHierarchy: true,
+          ),
+        ),
+      );
+      return treeResponse.roots;
+    }
+
     final response = await _wrapRequest(
       'getNativeViews',
       () => _client.getNativeViews(
@@ -1005,6 +1019,40 @@ class NativeAutomator {
         MarkAppServiceReadyRequest(port: port),
       ),
       enablePatrolLog: false,
+    );
+  }
+
+  /// Take a photo and confirm the photo
+  ///
+  /// On Android, the shutter button is `com.android.camera2:id/shutter_button`
+  /// and the done button is `com.android.camera2:id/done_button`.
+  ///
+  /// On iOS, the shutter button is `Take Picture` and the done button is `Use Photo`.
+  Future<void> takeCameraPhoto({
+    Selector? androidShutterButtonSelector,
+    Selector? androidDoneButtonSelector,
+    Selector? iosShutterButtonSelector,
+    Selector? iosDoneButtonSelector,
+  }) async {
+    await _wrapRequest(
+      'takeCameraPhoto',
+      () async {
+        if (io.Platform.isAndroid) {
+          final shutterSelector = androidShutterButtonSelector ??
+              Selector(resourceId: 'com.android.camera2:id/shutter_button');
+          final doneSelector = androidDoneButtonSelector ??
+              Selector(resourceId: 'com.android.camera2:id/done_button');
+          await tap(shutterSelector);
+          await tap(doneSelector);
+        } else {
+          final shutterSelector =
+              iosShutterButtonSelector ?? Selector(resourceId: 'PhotoCapture');
+          final doneSelector =
+              iosDoneButtonSelector ?? Selector(resourceId: 'Done');
+          await tap(shutterSelector);
+          await tap(doneSelector);
+        }
+      },
     );
   }
 }

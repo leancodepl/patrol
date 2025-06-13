@@ -675,4 +675,12 @@ class Contracts {
     }
   }
 
+  data class IsSimulatorResponse (
+    val isSimulator: Boolean
+  )
+
+  data class GetAndroidApiLevelResponse (
+    val apiLevel: Long
+  )
+
 }
