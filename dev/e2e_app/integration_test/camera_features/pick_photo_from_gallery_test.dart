@@ -5,7 +5,7 @@ void main() {
     await createApp($);
     if (await $.native2.isSimulator()) {
       await $.native.openApp(appId: 'com.android.camera2');
-      await $.native.tap(Selector(text: "NEXT"));
+      await $.native.tap(Selector(text: 'NEXT'));
       if (await $.native2.isPermissionDialogVisible(
         timeout: const Duration(seconds: 4),
       )) {
@@ -14,7 +14,7 @@ void main() {
       await $.native
           .tap(Selector(resourceId: 'com.android.camera2:id/shutter_button'));
 
-      await Future.delayed(const Duration(seconds: 8));
+      await Future.delayed(const Duration(seconds: 4), () {});
 
       await $.native.openApp(appId: 'pl.leancode.patrol.e2e_app');
     } else {
@@ -24,10 +24,13 @@ void main() {
       )) {
         await $.native2.grantPermissionWhenInUse();
       }
-      await $.native.tap(Selector(text: "Done"));
-      await $.native.tap(Selector(
-          resourceId: 'com.google.android.GoogleCamera:id/shutter_button'));
-      await Future.delayed(const Duration(seconds: 4));
+      await $.native.tap(Selector(text: 'Done'));
+      await $.native.tap(
+        Selector(
+          resourceId: 'com.google.android.GoogleCamera:id/shutter_button',
+        ),
+      );
+      await Future.delayed(const Duration(seconds: 4), () {});
       await $.native.openApp(appId: 'pl.leancode.patrol.e2e_app');
     }
     await $(#cameraFeaturesButton).scrollTo().tap();
