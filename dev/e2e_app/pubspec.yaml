@@ -31,6 +31,8 @@ dev_dependencies:
   leancode_lint: ^14.3.0
   patrol:
     path: ../../packages/patrol
+  patrol_cli:
+    path: ../../packages/patrol_cli
 
 flutter:
   uses-material-design: true
