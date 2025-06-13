@@ -356,7 +356,14 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
             Build.MODEL.contains("google_sdk") ||
             Build.MODEL.contains("Emulator") ||
             Build.MODEL.contains("Android SDK built for x86") ||
+            Build.MODEL.contains("Android SDK built for arm64") ||
+            Build.MODEL.contains("sdk_gphone") ||
             Build.MANUFACTURER.contains("Genymotion") ||
+            Build.HARDWARE.contains("ranchu") ||
+            Build.HARDWARE.contains("goldfish") ||
+            Build.PRODUCT.contains("sdk_gphone") ||
+            Build.PRODUCT.contains("google_sdk") ||
+            Build.PRODUCT.contains("sdk") ||
             (Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic")) ||
             "google_sdk" == Build.PRODUCT
 
