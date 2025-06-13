@@ -396,3 +396,7 @@ public struct IsSimulatorResponse: Codable {
   public var isSimulator: Bool
 }
 
+public struct GetAndroidApiLevelResponse: Codable {
+  public var apiLevel: Int
+}
+

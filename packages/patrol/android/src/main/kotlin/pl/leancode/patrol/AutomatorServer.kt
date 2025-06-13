@@ -13,6 +13,7 @@ import pl.leancode.patrol.contracts.Contracts.GetNotificationsResponse
 import pl.leancode.patrol.contracts.Contracts.HandlePermissionRequest
 import pl.leancode.patrol.contracts.Contracts.HandlePermissionRequestCode
 import pl.leancode.patrol.contracts.Contracts.IsSimulatorResponse
+import pl.leancode.patrol.contracts.Contracts.GetAndroidApiLevelResponse
 import pl.leancode.patrol.contracts.Contracts.MarkAppServiceReadyRequest
 import pl.leancode.patrol.contracts.Contracts.OpenAppRequest
 import pl.leancode.patrol.contracts.Contracts.OpenQuickSettingsRequest
@@ -368,5 +369,9 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
             "google_sdk" == Build.PRODUCT
 
         return IsSimulatorResponse(isEmulator)
+    }
+
+    override fun getAndroidApiLevel(): GetAndroidApiLevelResponse {
+        return GetAndroidApiLevelResponse(Build.VERSION.SDK_INT)
     }
 }

@@ -1116,4 +1116,28 @@ class NativeAutomator2 {
 
     return response.isSimulator;
   }
+
+  /// Gets the Android API level.
+  ///
+  /// Returns the Android API level as an integer (e.g., 30 for Android 11).
+  /// On iOS, this will return 0 as it's Android-specific.
+  ///
+  /// This can be useful for conditional logic in tests that need to behave
+  /// differently based on the Android version.
+  ///
+  /// Example:
+  /// ```dart
+  /// final apiLevel = await $.native.getAndroidApiLevel();
+  /// if (apiLevel >= 30) {
+  ///   // Android 11+ specific behavior
+  /// }
+  /// ```
+  Future<int> getAndroidApiLevel() async {
+    final response = await _wrapRequest(
+      'getAndroidApiLevel',
+      () => _client.getAndroidApiLevel(),
+    );
+
+    return response.apiLevel;
+  }
 }
