@@ -49,6 +49,7 @@ protocol NativeAutomatorServer {
     func setMockLocation(request: SetMockLocationRequest) throws
     func markPatrolAppServiceReady(request: MarkAppServiceReadyRequest) throws
     func isSimulator() throws -> IsSimulatorResponse
+    func getAndroidApiLevel() throws -> GetAndroidApiLevelResponse
 }
 
 extension NativeAutomatorServer {
@@ -292,6 +293,12 @@ extension NativeAutomatorServer {
         let body = try JSONEncoder().encode(response)
         return HTTPResponse(.ok, body: body)
     }
+    
+    private func getAndroidApiLevelHandler(request: HTTPRequest) throws -> HTTPResponse {
+        let response = try getAndroidApiLevel()
+        let body = try JSONEncoder().encode(response)
+        return HTTPResponse(.ok, body: body)
+    }
 }
 
 extension NativeAutomatorServer {
@@ -510,6 +517,11 @@ extension NativeAutomatorServer {
             request in handleRequest(
                 request: request,
                 handler: isSimulatorHandler)
+        }
+        server.route(.POST, "getAndroidApiLevel") {
+            request in handleRequest(
+                request: request,
+                handler: getAndroidApiLevelHandler)
         }
     }
 }

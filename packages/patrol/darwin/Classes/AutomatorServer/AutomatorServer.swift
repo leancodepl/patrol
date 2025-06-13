@@ -427,6 +427,13 @@
         return IsSimulatorResponse(isSimulator: isSimulator)
       }
     }
+
+    func getAndroidApiLevel() throws -> GetAndroidApiLevelResponse {
+      return try runCatching {
+        // iOS doesn't have Android API levels, so return 0
+        return GetAndroidApiLevelResponse(apiLevel: 0)
+      }
+    }
   }
 
 #endif

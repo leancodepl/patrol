@@ -679,4 +679,8 @@ class Contracts {
     val isSimulator: Boolean
   )
 
+  data class GetAndroidApiLevelResponse (
+    val apiLevel: Int
+  )
+
 }

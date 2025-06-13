@@ -56,6 +56,7 @@ abstract class NativeAutomatorServer {
     abstract fun setMockLocation(request: Contracts.SetMockLocationRequest)
     abstract fun markPatrolAppServiceReady(request: Contracts.MarkAppServiceReadyRequest)
     abstract fun isSimulator(): Contracts.IsSimulatorResponse
+    abstract fun getAndroidApiLevel(): Contracts.GetAndroidApiLevelResponse
 
     val router = routes(
       "initialize" bind POST to {
@@ -249,6 +250,10 @@ abstract class NativeAutomatorServer {
       },
       "isSimulator" bind POST to {
         val response = isSimulator()
+        Response(OK).body(json.toJson(response))
+      },
+      "getAndroidApiLevel" bind POST to {
+        val response = getAndroidApiLevel()
         Response(OK).body(json.toJson(response))
       }
     )
