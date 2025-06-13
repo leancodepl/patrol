@@ -2,6 +2,7 @@
 
 - Make activity aliases work in PatrolJUnitRunner
 - Update test reports to show all exceptions thrown in Flutter. (#2362)
+- Bump min Flutter SDK to 3.32.0 and Dart SDK to 3.8.0 (#2649)
 
 ## 3.15.2
 

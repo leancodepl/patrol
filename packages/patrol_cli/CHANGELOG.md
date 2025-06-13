@@ -1,3 +1,7 @@
+## Unreleased
+
+- Bump min Flutter SDK to 3.32.0 and Dart SDK to 3.8.0 (#2649)
+
 ## 3.6.0
 
 - Improve patrol test error messaging when compatibility check fails, added same compatibility check and error messaging to patrol build command (#2597)
