@@ -20,7 +20,7 @@ jobs:
 
     strategy:
       matrix:
-        flutter-version: ['3.29.x']
+        flutter-version: ['3.32.x']
         flutter-channel: ['stable']
 
     steps:
