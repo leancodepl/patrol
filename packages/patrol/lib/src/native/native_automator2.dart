@@ -955,13 +955,14 @@ class NativeAutomator2 {
     NativeSelector? imageSelector,
     int? instance,
   }) async {
+    final apiLevel = await getAndroidApiLevel();
     await _wrapRequest(
       'pickImageFromGallery',
       () async {
         final nativeImageSelector = imageSelector ??
             NativeSelector(
               android: AndroidSelector(
-                resourceName: await getAndroidApiLevel() >= 34
+                resourceName: apiLevel >= 34
                     ? 'com.google.android.providers.media.module:id/icon_thumbnail'
                     : 'com.google.android.documentsui:id/icon',
                 instance: instance ?? 0,
@@ -993,6 +994,7 @@ class NativeAutomator2 {
     await _wrapRequest(
       'pickMultipleImagesFromGallery',
       () async {
+        final apiLevel = await getAndroidApiLevel();
         // Helper function to create AndroidSelector with overridden instance
         AndroidSelector? copyAndroidSelectorWithInstance(
           AndroidSelector? selector,
@@ -1060,7 +1062,6 @@ class NativeAutomator2 {
           } else {
             iosInstance = i + 1; // Physical device uses +1
           }
-
           return imageSelector != null
               ? NativeSelector(
                   android:
@@ -1072,7 +1073,7 @@ class NativeAutomator2 {
                 )
               : NativeSelector(
                   android: AndroidSelector(
-                    resourceName: await getAndroidApiLevel() >= 34
+                    resourceName: apiLevel >= 34
                         ? 'com.google.android.providers.media.module:id/icon_thumbnail'
                         : 'com.google.android.documentsui:id/icon',
                     instance: i,
@@ -1084,7 +1085,7 @@ class NativeAutomator2 {
                 );
         }
 
-        if (io.Platform.isAndroid && await getAndroidApiLevel() < 34) {
+        if (io.Platform.isAndroid && apiLevel < 34) {
           // On API level 33 and below, we need to change type of the list
           // to be able to select multiple images with taps instead of long press
           await tap(
@@ -1102,7 +1103,7 @@ class NativeAutomator2 {
         await tap(
           NativeSelector(
             android: AndroidSelector(
-              resourceName: await getAndroidApiLevel() >= 34
+              resourceName: apiLevel >= 34
                   ? 'com.google.android.providers.media.module:id/button_add'
                   : 'com.google.android.documentsui:id/action_menu_select',
             ),
