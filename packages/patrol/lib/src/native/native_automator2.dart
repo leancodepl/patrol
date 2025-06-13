@@ -10,21 +10,6 @@ import 'package:patrol/src/native/native_automator.dart';
 import 'package:patrol/src/native/native_automator.dart' as native_automator;
 import 'package:patrol_log/patrol_log.dart';
 
-/// This class represents the result of [NativeAutomator.getNativeViews].
-class GetNativeViewsResult {
-  /// Creates a new [GetNativeViewsResult].
-  const GetNativeViewsResult({
-    required this.androidViews,
-    required this.iosViews,
-  });
-
-  /// List of Android native views.
-  final List<AndroidNativeView> androidViews;
-
-  /// List of iOS native views.
-  final List<IOSNativeView> iosViews;
-}
-
 /// This class aggregates native selectors.
 class NativeSelector {
   /// Creates a new [NativeSelector]
@@ -710,10 +695,24 @@ class NativeAutomator2 {
 
   /// Returns a list of currently visible native UI controls, specified by
   /// [selector], which are currently visible on screen.
-  Future<GetNativeViewsResult> getNativeViews(
-    NativeSelector selector, {
+  ///
+  /// If [selector] is null, returns the whole native UI tree.
+  Future<List<NativeView>> getNativeViews(
+    NativeSelector? selector, {
     String? appId,
   }) async {
+    if (selector == null) {
+      final treeResponse = await _wrapRequest(
+        'getNativeUITree',
+        () => _client.getNativeUITree(
+          GetNativeUITreeRequest(
+            useNativeViewHierarchy: true,
+          ),
+        ),
+      );
+      return treeResponse.roots;
+    }
+
     final response = await _wrapRequest(
       'getNativeViews',
       () => _client.getNativeViews(
@@ -725,10 +724,7 @@ class NativeAutomator2 {
       ),
     );
 
-    return GetNativeViewsResult(
-      androidViews: response.androidNativeViews,
-      iosViews: response.iosNativeViews,
-    );
+    return response.nativeViews;
   }
 
   /// Waits until a native permission request dialog becomes visible within
@@ -893,10 +889,14 @@ class NativeAutomator2 {
 
   /// Take a photo and confirm the photo
   ///
-  /// On Android, the shutter button is `com.android.camera2:id/shutter_button`
-  /// and the done button is `com.android.camera2:id/done_button`.
+  /// On Android, this method works with:
+  /// - Pixel simulators and physical devices (using Google Camera app)
+  /// - Other devices require custom shutter and done button selectors
   ///
-  /// On iOS, the shutter button is `Take Picture` and the done button is `Use Photo`.
+  /// On iOS, the shutter button is `PhotoCapture` and the done button is `Done`.
+  ///
+  /// For non-Pixel Android devices, you need to provide custom [shutterButtonSelector]
+  /// and [doneButtonSelector] with the correct resource IDs for your device's camera app.
   Future<void> takeCameraPhoto({
     NativeSelector? shutterButtonSelector,
     NativeSelector? doneButtonSelector,
@@ -907,25 +907,31 @@ class NativeAutomator2 {
       () async {
         final shutterSelector = shutterButtonSelector ??
             NativeSelector(
-              android: AndroidSelector(
-                resourceName: 'com.android.camera2:id/shutter_button',
-              ),
+              android: await isSimulator()
+                  ? AndroidSelector(
+                      resourceName: 'com.android.camera2:id/shutter_button',
+                    )
+                  : AndroidSelector(
+                      resourceName:
+                          'com.google.android.GoogleCamera:id/shutter_button',
+                    ),
               ios: IOSSelector(identifier: 'PhotoCapture'),
             );
         final doneSelector = doneButtonSelector ??
             NativeSelector(
-              android: AndroidSelector(
-                resourceName: 'com.android.camera2:id/done_button',
-              ),
+              android: await isSimulator()
+                  ? AndroidSelector(
+                      resourceName: 'com.android.camera2:id/done_button',
+                    )
+                  : AndroidSelector(
+                      resourceName:
+                          'com.google.android.GoogleCamera:id/shutter_button',
+                    ),
               ios: IOSSelector(identifier: 'Done'),
             );
-        if (io.Platform.isAndroid) {
-          await tap(shutterSelector, timeout: timeout);
-          await tap(doneSelector, timeout: timeout);
-        } else {
-          await tap(shutterSelector, timeout: timeout);
-          await tap(doneSelector, timeout: timeout);
-        }
+
+        await tap(shutterSelector, timeout: timeout);
+        await tap(doneSelector, timeout: timeout);
       },
     );
   }
