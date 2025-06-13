@@ -10,6 +10,21 @@ import 'package:patrol/src/native/native_automator.dart';
 import 'package:patrol/src/native/native_automator.dart' as native_automator;
 import 'package:patrol_log/patrol_log.dart';
 
+/// This class represents the result of [NativeAutomator.getNativeViews].
+class GetNativeViewsResult {
+  /// Creates a new [GetNativeViewsResult].
+  const GetNativeViewsResult({
+    required this.androidViews,
+    required this.iosViews,
+  });
+
+  /// List of Android native views.
+  final List<AndroidNativeView> androidViews;
+
+  /// List of iOS native views.
+  final List<IOSNativeView> iosViews;
+}
+
 /// This class aggregates native selectors.
 class NativeSelector {
   /// Creates a new [NativeSelector]
@@ -697,22 +712,10 @@ class NativeAutomator2 {
   /// [selector], which are currently visible on screen.
   ///
   /// If [selector] is null, returns the whole native UI tree.
-  Future<List<NativeView>> getNativeViews(
-    NativeSelector? selector, {
+  Future<GetNativeViewsResult> getNativeViews(
+    NativeSelector selector, {
     String? appId,
   }) async {
-    if (selector == null) {
-      final treeResponse = await _wrapRequest(
-        'getNativeUITree',
-        () => _client.getNativeUITree(
-          GetNativeUITreeRequest(
-            useNativeViewHierarchy: true,
-          ),
-        ),
-      );
-      return treeResponse.roots;
-    }
-
     final response = await _wrapRequest(
       'getNativeViews',
       () => _client.getNativeViews(
@@ -724,7 +727,10 @@ class NativeAutomator2 {
       ),
     );
 
-    return response.nativeViews;
+    return GetNativeViewsResult(
+      androidViews: response.androidNativeViews,
+      iosViews: response.iosNativeViews,
+    );
   }
 
   /// Waits until a native permission request dialog becomes visible within
