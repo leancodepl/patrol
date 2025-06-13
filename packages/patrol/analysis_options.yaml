@@ -5,4 +5,3 @@ analyzer:
     - custom_lint
   exclude:
     - lib/**/*.g.dart
-    - lib/src/server_port/android_server_port_provider_bindings.dart
