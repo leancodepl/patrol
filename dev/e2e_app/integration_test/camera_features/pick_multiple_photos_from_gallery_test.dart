@@ -7,12 +7,17 @@ void main() {
     await createApp($);
     if (await $.native2.isSimulator()) {
       await $.native.openApp(appId: 'com.android.camera2');
-      await $.native.tap(Selector(text: 'NEXT'));
+      try {
+        await $.native.tap(Selector(text: 'NEXT'));
+      } on Exception {/* ignore */}
       if (await $.native2.isPermissionDialogVisible(
         timeout: const Duration(seconds: 4),
       )) {
         await $.native2.grantPermissionWhenInUse();
       }
+      try {
+        await $.native.tap(Selector(text: 'NEXT'));
+      } on Exception {/* ignore */}
       await $.native
           .tap(Selector(resourceId: 'com.android.camera2:id/shutter_button'));
       await $.native
