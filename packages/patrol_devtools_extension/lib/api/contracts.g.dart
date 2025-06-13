@@ -830,3 +830,15 @@ Map<String, dynamic> _$IsSimulatorResponseToJson(
     <String, dynamic>{
       'isSimulator': instance.isSimulator,
     };
+
+GetAndroidApiLevelResponse _$GetAndroidApiLevelResponseFromJson(
+        Map<String, dynamic> json) =>
+    GetAndroidApiLevelResponse(
+      apiLevel: (json['apiLevel'] as num).toInt(),
+    );
+
+Map<String, dynamic> _$GetAndroidApiLevelResponseToJson(
+        GetAndroidApiLevelResponse instance) =>
+    <String, dynamic>{
+      'apiLevel': instance.apiLevel,
+    };
