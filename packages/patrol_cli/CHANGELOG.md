@@ -1,6 +1,6 @@
 ## Unreleased
 
-- Bump min Flutter SDK to 3.32.0 and Dart SDK to 3.8.0 (#2649)
+- Bump min Flutter SDK to 3.32.0 (#2649)
 
 ## 3.6.0
 
