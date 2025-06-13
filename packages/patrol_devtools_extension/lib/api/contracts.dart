@@ -1298,3 +1298,22 @@ class IsSimulatorResponse with EquatableMixin {
         isSimulator,
       ];
 }
+
+@JsonSerializable()
+class GetAndroidApiLevelResponse with EquatableMixin {
+  GetAndroidApiLevelResponse({
+    required this.apiLevel,
+  });
+
+  factory GetAndroidApiLevelResponse.fromJson(Map<String, dynamic> json) =>
+      _$GetAndroidApiLevelResponseFromJson(json);
+
+  final int apiLevel;
+
+  Map<String, dynamic> toJson() => _$GetAndroidApiLevelResponseToJson(this);
+
+  @override
+  List<Object?> get props => [
+        apiLevel,
+      ];
+}
