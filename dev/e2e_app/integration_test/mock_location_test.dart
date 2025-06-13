@@ -18,7 +18,7 @@ void main() {
     await $.pumpAndSettle();
 
     await $.native.setMockLocation(55.2297, 21.0122);
-    await Future<void>.delayed(const Duration(milliseconds: 100));
+    await Future<void>.delayed(const Duration(milliseconds: 3000));
     await $.pumpAndSettle();
     expect(await $('Location').waitUntilVisible(), findsOneWidget);
     expect(await $('Latitude: 55.2297').waitUntilVisible(), findsOneWidget);
@@ -26,7 +26,7 @@ void main() {
     await Future<void>.delayed(const Duration(milliseconds: 1500));
 
     await $.native.setMockLocation(55.5297, 21.0122);
-    await Future<void>.delayed(const Duration(milliseconds: 100));
+    await Future<void>.delayed(const Duration(milliseconds: 3000));
     await $.pumpAndSettle();
     expect(await $('Location').waitUntilVisible(), findsOneWidget);
     expect(await $('Latitude: 55.5297').waitUntilVisible(), findsOneWidget);
@@ -34,7 +34,7 @@ void main() {
     await Future<void>.delayed(const Duration(milliseconds: 1500));
 
     await $.native.setMockLocation(55.7297, 21.0122);
-    await Future<void>.delayed(const Duration(milliseconds: 100));
+    await Future<void>.delayed(const Duration(milliseconds: 3000));
     await $.pumpAndSettle();
     expect(await $('Location').waitUntilVisible(), findsOneWidget);
     expect(await $('Latitude: 55.7297').waitUntilVisible(), findsOneWidget);
