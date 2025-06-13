@@ -977,6 +977,17 @@ class NativeAutomator2 {
               ),
             );
 
+        if (io.Platform.isAndroid && apiLevel < 34) {
+          // On API level 33 and below, we need to change type of the list
+          // to be able to select multiple images with taps instead of long press
+          await tap(
+            NativeSelector(
+              android: AndroidSelector(
+                resourceName: 'com.google.android.documentsui:id/sub_menu_list',
+              ),
+            ),
+          );
+        }
         await tap(nativeImageSelector);
       },
     );
