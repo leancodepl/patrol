@@ -166,12 +166,13 @@ class BuildIOSCommand extends PatrolCommand {
       configuration: flutterOpts.buildMode.createConfiguration(flavor),
       simulator: boolArg('simulator'),
       osVersion: stringArg('ios') ?? 'latest',
+      appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
       clearPermissions: boolArg('clear-permissions'),
     );
 
     try {
-      await _iosTestBackend.build(iosOpts, isPatrolBuildCommand: true);
+      await _iosTestBackend.build(iosOpts);
       _printBinaryPaths(
         simulator: iosOpts.simulator,
         buildMode: flutterOpts.buildMode.xcodeName,

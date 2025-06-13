@@ -32,8 +32,6 @@
             reference = "container:TestPlan.xctestplan"
             default = "YES">
          </TestPlanReference>
-         <AutocreatedTestPlanReference>
-         </AutocreatedTestPlanReference>
       </TestPlans>
    </TestAction>
    <LaunchAction
