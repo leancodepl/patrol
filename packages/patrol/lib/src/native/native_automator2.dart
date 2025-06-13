@@ -943,6 +943,7 @@ class NativeAutomator2 {
   /// If you specify [imageSelector], instance is not used.
   ///
   /// On Android, the image selector is `com.google.android.providers.media.module:id/icon_thumbnail`.
+  /// It should cover pixels with API lvl 34 and above.
   /// On iOS, the image selector is `Image`.
   Future<void> pickImageFromGallery({
     NativeSelector? imageSelector,
