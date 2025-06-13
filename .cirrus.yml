@@ -66,7 +66,7 @@ test_macos_task:
     image: ghcr.io/cirruslabs/macos-sonoma-xcode:latest
   env:
     PATH: $HOME/.pub-cache/bin:$HOME/fvm/default/bin:${PATH}
-    FLUTTER_VERSION: "3.29.0"
+    FLUTTER_VERSION: "3.32.0"
   timeout_in: 30m
 
   set_up_fvm_script: |

@@ -59,6 +59,7 @@ class TestCommand extends PatrolCommand {
     usesShowFlutterLogs();
     usesHideTestSteps();
     usesClearTestSteps();
+    usesCheckCompatibilityOption();
 
     usesUninstallOption();
 
@@ -156,10 +157,12 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
 
     final device = devices.single;
 
-    await _compatibilityChecker.checkVersionsCompatibility(
-      flutterCommand: flutterCommand,
-      targetPlatform: device.targetPlatform,
-    );
+    if (boolArg('check-compatibility')) {
+      await _compatibilityChecker.checkVersionsCompatibility(
+        flutterCommand: flutterCommand,
+        targetPlatform: device.targetPlatform,
+      );
+    }
 
     final packageName = stringArg('package-name') ?? config.android.packageName;
     final bundleId = stringArg('bundle-id') ?? config.ios.bundleId;
