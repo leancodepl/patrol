@@ -41,6 +41,7 @@ class BuildMacOSCommand extends PatrolCommand {
     usesPortOptions();
     usesTagsOption();
     usesExcludeTagsOption();
+    usesCheckCompatibilityOption();
 
     usesMacOSOptions();
   }
@@ -77,10 +78,12 @@ class BuildMacOSCommand extends PatrolCommand {
     final testFileSuffix = config.testFileSuffix;
 
     // Check compatibility between CLI and package versions
-    final patrolVersion = _pubspecReader.getPatrolVersion();
-    await _compatibilityChecker.checkVersionsCompatibilityForBuild(
-      patrolVersion: patrolVersion,
-    );
+    if (boolArg('check-compatibility')) {
+      final patrolVersion = _pubspecReader.getPatrolVersion();
+      await _compatibilityChecker.checkVersionsCompatibilityForBuild(
+        patrolVersion: patrolVersion,
+      );
+    }
 
     final target = stringsArg('target');
     final targets = target.isNotEmpty
@@ -160,14 +163,12 @@ class BuildMacOSCommand extends PatrolCommand {
       flutter: flutterOpts,
       scheme: flutterOpts.buildMode.createScheme(flavor),
       configuration: flutterOpts.buildMode.createConfiguration(flavor),
+      appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
     );
 
     try {
-      await _macosTestBackend.build(
-        macosOpts,
-        isPatrolBuildCommand: true,
-      );
+      await _macosTestBackend.build(macosOpts);
 
       _printBinaryPaths(buildMode: flutterOpts.buildMode.xcodeName);
 

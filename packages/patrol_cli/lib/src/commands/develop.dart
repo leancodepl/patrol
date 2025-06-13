@@ -56,6 +56,7 @@ class DevelopCommand extends PatrolCommand {
     usesTagsOption();
     usesHideTestSteps();
     usesClearTestSteps();
+    usesCheckCompatibilityOption();
 
     usesUninstallOption();
 
@@ -133,10 +134,12 @@ class DevelopCommand extends PatrolCommand {
     );
     final device = devices.single;
 
-    await _compatibilityChecker.checkVersionsCompatibility(
-      flutterCommand: flutterCommand,
-      targetPlatform: device.targetPlatform,
-    );
+    if (boolArg('check-compatibility')) {
+      await _compatibilityChecker.checkVersionsCompatibility(
+        flutterCommand: flutterCommand,
+        targetPlatform: device.targetPlatform,
+      );
+    }
 
     // `flutter logs` doesn't work on macOS, so we don't support it for now
     // https://github.com/leancodepl/patrol/issues/1974
@@ -214,6 +217,7 @@ class DevelopCommand extends PatrolCommand {
     final androidOpts = AndroidAppOptions(
       flutter: flutterOpts,
       packageName: packageName,
+      appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
       uninstall: uninstall,
     );
@@ -225,6 +229,7 @@ class DevelopCommand extends PatrolCommand {
       configuration: buildMode.createConfiguration(iosFlavor),
       simulator: !device.real,
       osVersion: stringArg('ios') ?? 'latest',
+      appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
     );
 
@@ -232,6 +237,7 @@ class DevelopCommand extends PatrolCommand {
       flutter: flutterOpts,
       scheme: buildMode.createScheme(iosFlavor),
       configuration: buildMode.createConfiguration(iosFlavor),
+      appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
     );
 

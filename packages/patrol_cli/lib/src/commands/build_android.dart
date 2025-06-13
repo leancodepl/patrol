@@ -41,6 +41,7 @@ class BuildAndroidCommand extends PatrolCommand {
     usesPortOptions();
     usesTagsOption();
     usesExcludeTagsOption();
+    usesCheckCompatibilityOption();
 
     usesUninstallOption();
 
@@ -79,10 +80,12 @@ class BuildAndroidCommand extends PatrolCommand {
     final testFileSuffix = config.testFileSuffix;
 
     // Check compatibility between CLI and package versions
-    final patrolVersion = _pubspecReader.getPatrolVersion();
-    await _compatibilityChecker.checkVersionsCompatibilityForBuild(
-      patrolVersion: patrolVersion,
-    );
+    if (boolArg('check-compatibility')) {
+      final patrolVersion = _pubspecReader.getPatrolVersion();
+      await _compatibilityChecker.checkVersionsCompatibilityForBuild(
+        patrolVersion: patrolVersion,
+      );
+    }
 
     final target = stringsArg('target');
     final targets = target.isNotEmpty
@@ -166,6 +169,7 @@ class BuildAndroidCommand extends PatrolCommand {
     final androidOpts = AndroidAppOptions(
       flutter: flutterOpts,
       packageName: packageName,
+      appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
       uninstall: uninstall,
     );

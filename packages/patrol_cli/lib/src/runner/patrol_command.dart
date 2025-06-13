@@ -11,6 +11,9 @@ abstract class PatrolCommand extends Command<int> {
 
   var _usesBuildOption = false;
 
+  final _defaultTestServerPort = 8081;
+  final _defaultAppServerPort = 8082;
+
   final defaultFailureMessage =
       'See the logs above to learn what happened. Also consider running with '
       "--verbose. If the logs still aren't useful, then it's a bug - please "
@@ -109,12 +112,12 @@ abstract class PatrolCommand extends Command<int> {
       ..addOption(
         'test-server-port',
         help: 'Port to use for server running in the test instrumentation app.',
-        defaultsTo: '0',
+        defaultsTo: _defaultTestServerPort.toString(),
       )
       ..addOption(
         'app-server-port',
         help: 'Port to use for server running in the app under test.',
-        defaultsTo: '0',
+        defaultsTo: _defaultAppServerPort.toString(),
       );
   }
 
@@ -210,6 +213,14 @@ abstract class PatrolCommand extends Command<int> {
       'clear-test-steps',
       help: 'Clear test steps after the test finishes.',
       defaultsTo: true,
+    );
+  }
+
+  void usesCheckCompatibilityOption() {
+    argParser.addFlag(
+      'check-compatibility',
+      defaultsTo: true,
+      help: 'Verify if the dependencies are compatible between each other.',
     );
   }
 
