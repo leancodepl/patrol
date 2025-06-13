@@ -372,6 +372,6 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
     }
 
     override fun getAndroidApiLevel(): GetAndroidApiLevelResponse {
-        return GetAndroidApiLevelResponse(Build.VERSION.SDK_INT)
+        return GetAndroidApiLevelResponse(Build.VERSION.SDK_INT.toLong())
     }
 }

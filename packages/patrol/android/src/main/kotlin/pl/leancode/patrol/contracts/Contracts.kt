@@ -680,7 +680,7 @@ class Contracts {
   )
 
   data class GetAndroidApiLevelResponse (
-    val apiLevel: Int
+    val apiLevel: Long
   )
 
 }

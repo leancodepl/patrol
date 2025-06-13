@@ -293,7 +293,7 @@ extension NativeAutomatorServer {
         let body = try JSONEncoder().encode(response)
         return HTTPResponse(.ok, body: body)
     }
-    
+
     private func getAndroidApiLevelHandler(request: HTTPRequest) throws -> HTTPResponse {
         let response = try getAndroidApiLevel()
         let body = try JSONEncoder().encode(response)
