@@ -72,8 +72,7 @@ Future<void> main() async {
   // Dart test (out of which they had been created) and wait for it to complete.
   // The result of running the Dart test is the result of the native test case.
 
-  // Gets the port from the native side using ffi.
-  final config = NativeAutomatorConfig(port: getTestServerPort().toString());
+  final config = NativeAutomatorConfig();
   final nativeAutomator = NativeAutomator(config: config);
   await nativeAutomator.initialize();
   final binding = PatrolBinding.ensureInitialized(config);
@@ -146,8 +145,7 @@ ${generateImports([testFilePath])}
 // END: GENERATED TEST IMPORTS
 
 Future<void> main() async {
-  // Gets the port from the native side using ffi.
-  final config = NativeAutomatorConfig(port: getTestServerPort().toString());
+  final config = NativeAutomatorConfig();
   final nativeAutomator = NativeAutomator(config: config);
   await nativeAutomator.initialize();
   PatrolBinding.ensureInitialized(config)
