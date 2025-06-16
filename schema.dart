@@ -21,11 +21,7 @@ class ListDartTestsResponse {
   late DartGroupEntry group;
 }
 
-enum RunDartTestResponseResult {
-  success,
-  skipped,
-  failure,
-}
+enum RunDartTestResponseResult { success, skipped, failure }
 
 class RunDartTestRequest {
   late String name;
@@ -211,10 +207,7 @@ class TapAtRequest {
   late String appId;
 }
 
-enum KeyboardBehavior {
-  showAndDismiss,
-  alternative,
-}
+enum KeyboardBehavior { showAndDismiss, alternative }
 
 class EnterTextRequest {
   late String data;
@@ -279,20 +272,13 @@ class PermissionDialogVisibleRequest {
   late int timeoutMillis;
 }
 
-enum HandlePermissionRequestCode {
-  whileUsing,
-  onlyThisTime,
-  denied,
-}
+enum HandlePermissionRequestCode { whileUsing, onlyThisTime, denied }
 
 class HandlePermissionRequest {
   late HandlePermissionRequestCode code;
 }
 
-enum SetLocationAccuracyRequestLocationAccuracy {
-  coarse,
-  fine,
-}
+enum SetLocationAccuracyRequestLocationAccuracy { coarse, fine }
 
 class SetLocationAccuracyRequest {
   late SetLocationAccuracyRequestLocationAccuracy locationAccuracy;
@@ -306,6 +292,14 @@ class SetMockLocationRequest {
 
 class MarkAppServiceReadyRequest {
   int? port;
+}
+
+class IsSimulatorResponse {
+  late bool isSimulator;
+}
+
+class GetAndroidApiLevelResponse {
+  late int apiLevel;
 }
 
 abstract class NativeAutomator<IOSServer, AndroidServer, DartClient> {
@@ -358,7 +352,8 @@ abstract class NativeAutomator<IOSServer, AndroidServer, DartClient> {
 
   // permissions
   PermissionDialogVisibleResponse isPermissionDialogVisible(
-      PermissionDialogVisibleRequest request);
+    PermissionDialogVisibleRequest request,
+  );
   void handlePermissionDialog(HandlePermissionRequest request);
   void setLocationAccuracy(SetLocationAccuracyRequest request);
 
@@ -367,6 +362,10 @@ abstract class NativeAutomator<IOSServer, AndroidServer, DartClient> {
   void setMockLocation(SetMockLocationRequest request);
 
   void markPatrolAppServiceReady(MarkAppServiceReadyRequest request);
+
+  IsSimulatorResponse isSimulator();
+
+  GetAndroidApiLevelResponse getAndroidApiLevel();
 }
 
 enum IOSElementType {
