@@ -4,6 +4,7 @@ import android.os.Build
 import pl.leancode.patrol.contracts.Contracts.ConfigureRequest
 import pl.leancode.patrol.contracts.Contracts.DarkModeRequest
 import pl.leancode.patrol.contracts.Contracts.EnterTextRequest
+import pl.leancode.patrol.contracts.Contracts.GetAndroidApiLevelResponse
 import pl.leancode.patrol.contracts.Contracts.GetNativeUITreeRequest
 import pl.leancode.patrol.contracts.Contracts.GetNativeUITreeRespone
 import pl.leancode.patrol.contracts.Contracts.GetNativeViewsRequest
@@ -13,7 +14,6 @@ import pl.leancode.patrol.contracts.Contracts.GetNotificationsResponse
 import pl.leancode.patrol.contracts.Contracts.HandlePermissionRequest
 import pl.leancode.patrol.contracts.Contracts.HandlePermissionRequestCode
 import pl.leancode.patrol.contracts.Contracts.IsSimulatorResponse
-import pl.leancode.patrol.contracts.Contracts.GetAndroidApiLevelResponse
 import pl.leancode.patrol.contracts.Contracts.MarkAppServiceReadyRequest
 import pl.leancode.patrol.contracts.Contracts.OpenAppRequest
 import pl.leancode.patrol.contracts.Contracts.OpenQuickSettingsRequest
