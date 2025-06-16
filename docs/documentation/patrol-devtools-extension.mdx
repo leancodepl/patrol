@@ -1,0 +1,145 @@
+---
+title: "Patrol DevTools Extension"
+description: "Complete guide to using the Patrol DevTools Extension for native UI inspection and testing"
+---
+
+# Patrol DevTools Extension
+
+A powerful Flutter DevTools extension that allows you to **inspect native UI elements** on Android and iOS devices while developing your Patrol tests. This extension provides a visual tree view of native UI components, making it easier to write accurate selectors for your integration tests.
+
+## 🚀 Features
+
+- **Native UI Tree Inspection**: Browse the complete hierarchy of native UI elements on your device
+- **Element Details**: View detailed information about each native element (bounds, text, accessibility properties, etc.)
+- **Cross-platform Support**: Works with both Android and iOS applications
+- **Live Updates**: Refresh the UI tree to see real-time changes
+- **Test Integration**: Copy element selectors directly for use in your Patrol tests
+
+## 📦 Installation
+
+The Patrol DevTools Extension is automatically available when you have Patrol installed in your project. No additional installation steps are required.
+
+## 🛠️ Quick Start
+
+### 1. Launch Your App in Development Mode
+
+To use the DevTools extension, start your app in Patrol development mode:
+
+```bash
+patrol develop -t
+```
+
+This command will:
+- Launch your test on the connected device/simulator in develop mode
+- Start the Flutter DevTools server
+- Print a clickable link to the DevTools interface in your terminal
+
+### 2. Open the DevTools Extension
+
+When `patrol develop -t` is running, look for output similar to this in your terminal:
+
+```
+The Flutter DevTools debugger and profiler is available at:
+http://127.0.0.1:9100?uri=ws://127.0.0.1:59394/abc123def456/ws
+```
+
+**Click on this link** to open Flutter DevTools in your browser.
+
+### 3. Navigate to the Patrol Extension
+
+Once DevTools opens:
+1. Look for the **"Patrol"** tab in the top navigation bar
+2. Click on it to open the Patrol DevTools Extension
+
+### 4. Load the UI Tree
+
+1. Make sure your app is visible on your device/simulator
+2. Click the **Refresh** button (🔄) in the Patrol extension
+3. You should see the native UI tree populate in the left panel
+
+## 🧪 Using Discovered Elements in Tests
+
+### Cross-Platform Native Selectors
+
+When you find elements in the inspector, you can create cross-platform selectors that work on both Android and iOS:
+
+```dart
+// Cross-platform button using unique identifiers
+await $.native2.tap(NativeSelector(
+  android: AndroidSelector(resourceId: 'com.example:id/login_btn'),
+  ios: IOSSelector(identifier: 'loginButton'),
+));
+
+// Using class name (Android) and element type (iOS)
+await $.native2.tap(NativeSelector(
+  android: AndroidSelector(className: 'android.widget.Button'),
+  ios: IOSSelector(elementType: 'XCUIElementTypeButton'),
+));
+
+```
+
+### Key Properties Reference
+
+| Android Property | iOS Property | Description | Example |
+|------------------|--------------|-------------|---------|
+| `resourceId` | `identifier` | Unique ID (most reliable) | `com.app:id/btn` / `loginButton` |
+| `text` | `label` | Visible text content | `"Sign In"` |
+| `contentDescription` | `label` | Accessibility description | `"Login button"` |
+| `className` | `elementType` | UI element type | `android.widget.Button` / `XCUIElementTypeButton` |
+| `enabled` | `enabled` | Interactive state | `true`/`false` |
+
+
+## 📝 Tips
+
+ Use Stable Selectors
+- Prefer `resourceId` (Android) or `identifier` (iOS) when available
+- Avoid using coordinates or index-based selectors when possible
+
+## 🔍 Troubleshooting
+
+### Extension Not Visible
+- Ensure you're running `patrol develop -t` (not just `flutter run`)
+- Make sure you're using a compatible version of Flutter DevTools
+- Try refreshing the DevTools browser page
+
+### Empty Tree View
+- Click the refresh button to load the native UI tree
+- Ensure your app is running and visible on the device
+- Check that your device/simulator is properly connected
+
+### Elements Not Found in Tests
+- Verify the element properties match exactly what's shown in the inspector
+- Check if the element is currently visible on screen
+- Consider using `waitUntilVisible()` for elements that appear after async operations
+
+### DevTools Interface
+
+#### Tree View Controls
+- **🔄 Refresh**: Load current UI tree
+- **📱 Native View Hierarchy**: Shows actual native views
+- **🔍 Native Details**: Shows native tree detailed information
+
+### Common Issues
+- **Empty tree**: Click refresh, ensure app is visible
+- **Element not found**: Check spelling, case sensitivity
+- **Timeouts**: Use `waitUntilVisible` with longer timeout
+
+## 🤝 Contributing
+
+This extension is part of the Patrol project. If you encounter issues or have suggestions:
+
+1. Check the [Patrol GitHub repository](https://github.com/leancodepl/patrol) for existing issues
+2. Create a new issue with detailed reproduction steps
+3. Consider contributing improvements via pull requests
+
+## 📖 Related Documentation
+
+- [Patrol Documentation](https://patrol.leancode.co)
+- [Native Selectors Guide](https://patrol.leancode.co/native/selectors)
+- [Flutter DevTools Extensions](https://docs.flutter.dev/tools/devtools/extensions)
+
+---
+
+**Happy Testing! 🚀**
+
+Use the Patrol DevTools Extension to discover native elements and write more reliable integration tests for your Flutter applications. 
