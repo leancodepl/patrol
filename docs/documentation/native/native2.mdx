@@ -90,87 +90,6 @@ class NativeSelector {
 }
 ```
 
-### AndroidSelector
-
-`AndroidSelector` provides Android-specific element selection capabilities:
-
-```dart
-AndroidSelector({
-  String? className,
-  String? text,
-  String? textStartsWith,
-  String? textContains,
-  String? contentDescription,
-  String? contentDescriptionStartsWith,
-  String? contentDescriptionContains,
-  String? resourceName,
-  String? applicationPackage,
-  bool? isEnabled,
-  bool? isClickable,
-  bool? isCheckable,
-  bool? isChecked,
-  bool? isFocused,
-  bool? isScrollable,
-  bool? isSelected,
-  int? instance,
-})
-```
-
-### IOSSelector
-
-`IOSSelector` provides iOS-specific element selection with rich element type support:
-
-```dart
-IOSSelector({
-  String? value,
-  String? identifier,
-  String? label,
-  String? labelStartsWith,
-  String? labelContains,
-  String? title,
-  String? titleStartsWith,
-  String? titleContains,
-  String? placeholderValue,
-  String? placeholderValueStartsWith,
-  String? placeholderValueContains,
-  IOSElementType? elementType,
-  bool? hasFocus,
-  bool? isEnabled,
-  bool? isSelected,
-  int? instance,
-})
-```
-
-## Practical Examples
-
-### Finding and Tapping Elements
-
-```dart
-// Tap a login button
-await $.native2.tap(
-  NativeSelector(
-    android: AndroidSelector(
-      resourceName: 'loginButton',
-    ),
-    ios: IOSSelector(
-      identifier: 'loginButton',
-    ),
-  ),
-);
-
-// Tap using partial text matching
-await $.native2.tap(
-  NativeSelector(
-    android: AndroidSelector(
-      textContains: 'Sign In',
-    ),
-    ios: IOSSelector(
-      labelContains: 'Sign In',
-    ),
-  ),
-);
-```
-
 ### Text Input Operations
 
 ```dart
@@ -236,9 +155,10 @@ await $.native2.waitUntilVisible(
 
 When migrating from the legacy native API to native2:
 
-1. **Replace platform checks** with unified `NativeSelector`
-2. **Use `$.native2`** instead of `$.native`  
-3. **Combine selectors** using both `android` and `ios` properties
-5. **Update method calls** to use the new unified method signatures
+1. **Remove platform checks, and use `$.native2`** instead of `$.native`
+2. **Use `NativeSelector`** with both `android` and `ios` properties
+3. **Update method calls** to use the new unified method signatures
 
-Native2 simplifies cross-platform testing while providing more powerful and flexible element selection capabilities, making your Patrol tests more maintainable and reliable across both iOS and Android platforms.
+Native2 provides a unified API for cross-platform testing, making your Patrol tests more maintainable and reliable across both iOS and Android platforms. You can see an example of the migration [here](#before-native2-separate-methods).
+
+
