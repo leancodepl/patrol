@@ -90,26 +90,21 @@ In the original native automation API, you needed separate methods for iOS and A
 ```dart
 // Before: Separate methods for each platform
 if (Platform.isAndroid) {
-  await $.native.tap(
-    text: 'Login',
-  );
+  await $.native.tap(Selector(text: 'Login'));
 } else if (Platform.isIOS) {
-  await $.native.tap(
-    label: 'Login',
-    elementType: IOSElementType.button,
-  );
+  await $.native.tap(Selector(label: 'Login'));
 }
 
 // Text input also required platform-specific calls
 if (Platform.isAndroid) {
-  await native.enterTextAndroid(
-    'john@example.com',
-    contentDescription: 'Email field',
+  await $.native.enterText(
+    Selector(contentDescription: 'Email field'),
+    text: 'john@example.com',
   );
 } else if (Platform.isIOS) {
-  await native.enterTextIOS(
-    'john@example.com',
-    identifier: 'emailField',
+  await $.native.enterText(
+    Selector(identifier: 'emailField'),
+    text: 'john@example.com',
   );
 }
 ```
@@ -206,15 +201,13 @@ IOSElementType.keyboard
 
 ```dart
 // Tap a login button
-await $.native.tap(
+await $.native2.tap(
   NativeSelector(
     android: AndroidSelector(
       resourceName: 'loginButton',
-      className: 'android.widget.Button',
     ),
     ios: IOSSelector(
       identifier: 'loginButton',
-      elementType: IOSElementType.button,
     ),
   ),
 );
@@ -240,11 +233,9 @@ await $.native2.enterText(
   NativeSelector(
     android: AndroidSelector(
       resourceName: 'username',
-      className: 'android.widget.EditText',
     ),
     ios: IOSSelector(
       identifier: 'usernameField',
-      elementType: IOSElementType.textField,
     ),
   ),
   text: 'testuser@example.com',
@@ -255,11 +246,9 @@ await $.native2.enterText(
   NativeSelector(
     android: AndroidSelector(
       contentDescription: 'Password',
-      className: 'android.widget.EditText',
     ),
     ios: IOSSelector(
       elementType: IOSElementType.secureTextField,
-      placeholderValueContains: 'Password',
     ),
   ),
   text: 'secretpassword',
@@ -284,15 +273,13 @@ await $.native2.tap(
 );
 
 // Wait for element to become visible
-await native.waitUntilVisible(
+await $.native2.waitUntilVisible(
   NativeSelector(
     android: AndroidSelector(
       textStartsWith: 'Welcome',
-      isEnabled: true,
     ),
     ios: IOSSelector(
       labelStartsWith: 'Welcome',
-      isEnabled: true,
     ),
   ),
   timeout: Duration(seconds: 10),
