@@ -12,6 +12,68 @@ Native2 is available starting from Patrol version `3.6.0`.
 
 Native2 provides a **unified API** for both iOS and Android platforms, eliminating the need to write separate platform-specific code. Instead of maintaining different methods for each platform, you can now use a single method with platform-specific selectors.
 
+
+## Unified Methods vs. Separate Platform Methods
+
+### Before native2 (Separate Methods)
+
+In the original native automation API, you needed separate methods for iOS and Android:
+
+```dart
+// Before: Separate methods for each platform
+if (Platform.isAndroid) {
+  await $.native.tap(Selector(text: 'Login'));
+} else if (Platform.isIOS) {
+  await $.native.tap(Selector(label: 'Login'));
+}
+
+// Text input also required platform-specific calls
+if (Platform.isAndroid) {
+  await $.native.enterText(
+    Selector(contentDescription: 'Email field'),
+    text: 'john@example.com',
+  );
+} else if (Platform.isIOS) {
+  await $.native.enterText(
+    Selector(identifier: 'emailField'),
+    text: 'john@example.com',
+  );
+}
+```
+
+### With native2 (Unified Methods)
+
+Native2 provides a single method that works across both platforms:
+
+```dart
+// After: Single unified method with platform-specific selectors
+await $.native2.tap(
+  NativeSelector(
+    android: AndroidSelector(
+      text: 'Login',
+      className: 'android.widget.Button',
+    ),
+    ios: IOSSelector(
+      label: 'Login',
+      elementType: IOSElementType.button,
+    ),
+  ),
+);
+
+// Text input with unified method
+await $.native2.enterText(
+  NativeSelector(
+    android: AndroidSelector(
+      contentDescription: 'Email field',
+    ),
+    ios: IOSSelector(
+      identifier: 'emailField',
+    ),
+  ),
+  text: 'john@example.com',
+);
+```
+
 ## Core Components
 
 ### NativeSelector
@@ -79,67 +141,6 @@ IOSSelector({
   bool? isSelected,
   int? instance,
 })
-```
-
-## Unified Methods vs. Separate Platform Methods
-
-### Before native2 (Separate Methods)
-
-In the original native automation API, you needed separate methods for iOS and Android:
-
-```dart
-// Before: Separate methods for each platform
-if (Platform.isAndroid) {
-  await $.native.tap(Selector(text: 'Login'));
-} else if (Platform.isIOS) {
-  await $.native.tap(Selector(label: 'Login'));
-}
-
-// Text input also required platform-specific calls
-if (Platform.isAndroid) {
-  await $.native.enterText(
-    Selector(contentDescription: 'Email field'),
-    text: 'john@example.com',
-  );
-} else if (Platform.isIOS) {
-  await $.native.enterText(
-    Selector(identifier: 'emailField'),
-    text: 'john@example.com',
-  );
-}
-```
-
-### With native2 (Unified Methods)
-
-Native2 provides a single method that works across both platforms:
-
-```dart
-// After: Single unified method with platform-specific selectors
-await $.native2.tap(
-  NativeSelector(
-    android: AndroidSelector(
-      text: 'Login',
-      className: 'android.widget.Button',
-    ),
-    ios: IOSSelector(
-      label: 'Login',
-      elementType: IOSElementType.button,
-    ),
-  ),
-);
-
-// Text input with unified method
-await $.native2.enterText(
-  NativeSelector(
-    android: AndroidSelector(
-      contentDescription: 'Email field',
-    ),
-    ios: IOSSelector(
-      identifier: 'emailField',
-    ),
-  ),
-  text: 'john@example.com',
-);
 ```
 
 ## Enhanced iOS Element Types
