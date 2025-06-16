@@ -1,0 +1,311 @@
+---
+title: Native Automation 2.0 (native2)
+---
+
+Patrol's **native2** introduces a unified approach to native mobile automation, providing cross-platform selectors and methods that work seamlessly across both iOS and Android platforms. This evolution from the original native automation API simplifies test writing while providing more powerful selector capabilities.
+
+## What is native2?
+
+<Info>
+Native2 is available starting from Patrol version `3.6.0`.
+</Info>
+
+Native2 provides a **unified API** for both iOS and Android platforms, eliminating the need to write separate platform-specific code. Instead of maintaining different methods for each platform, you can now use a single method with platform-specific selectors.
+
+## Core Components
+
+### NativeSelector
+
+The `NativeSelector` is the central component that aggregates platform-specific selectors:
+
+```dart
+class NativeSelector {
+  const NativeSelector({this.android, this.ios});
+
+  /// Android selector
+  final AndroidSelector? android;
+  
+  /// iOS selector  
+  final IOSSelector? ios;
+}
+```
+
+### AndroidSelector
+
+`AndroidSelector` provides Android-specific element selection capabilities:
+
+```dart
+AndroidSelector({
+  String? className,
+  String? text,
+  String? textStartsWith,
+  String? textContains,
+  String? contentDescription,
+  String? contentDescriptionStartsWith,
+  String? contentDescriptionContains,
+  String? resourceName,
+  String? applicationPackage,
+  bool? isEnabled,
+  bool? isClickable,
+  bool? isCheckable,
+  bool? isChecked,
+  bool? isFocused,
+  bool? isScrollable,
+  bool? isSelected,
+  int? instance,
+})
+```
+
+### IOSSelector
+
+`IOSSelector` provides iOS-specific element selection with rich element type support:
+
+```dart
+IOSSelector({
+  String? value,
+  String? identifier,
+  String? label,
+  String? labelStartsWith,
+  String? labelContains,
+  String? title,
+  String? titleStartsWith,
+  String? titleContains,
+  String? placeholderValue,
+  String? placeholderValueStartsWith,
+  String? placeholderValueContains,
+  IOSElementType? elementType,
+  bool? hasFocus,
+  bool? isEnabled,
+  bool? isSelected,
+  int? instance,
+})
+```
+
+## Unified Methods vs. Separate Platform Methods
+
+### Before native2 (Separate Methods)
+
+In the original native automation API, you needed separate methods for iOS and Android:
+
+```dart
+// Before: Separate methods for each platform
+if (Platform.isAndroid) {
+  await $.native.tap(
+    text: 'Login',
+  );
+} else if (Platform.isIOS) {
+  await $.native.tap(
+    label: 'Login',
+    elementType: IOSElementType.button,
+  );
+}
+
+// Text input also required platform-specific calls
+if (Platform.isAndroid) {
+  await native.enterTextAndroid(
+    'john@example.com',
+    contentDescription: 'Email field',
+  );
+} else if (Platform.isIOS) {
+  await native.enterTextIOS(
+    'john@example.com',
+    identifier: 'emailField',
+  );
+}
+```
+
+### With native2 (Unified Methods)
+
+Native2 provides a single method that works across both platforms:
+
+```dart
+// After: Single unified method with platform-specific selectors
+await $.native2.tap(
+  NativeSelector(
+    android: AndroidSelector(
+      text: 'Login',
+      className: 'android.widget.Button',
+    ),
+    ios: IOSSelector(
+      label: 'Login',
+      elementType: IOSElementType.button,
+    ),
+  ),
+);
+
+// Text input with unified method
+await $.native2.enterText(
+  NativeSelector(
+    android: AndroidSelector(
+      contentDescription: 'Email field',
+    ),
+    ios: IOSSelector(
+      identifier: 'emailField',
+    ),
+  ),
+  text: 'john@example.com',
+);
+```
+
+## Enhanced iOS Element Types
+
+Native2 introduces comprehensive iOS element type support through the `IOSElementType` enum, providing precise element targeting:
+
+### Common Element Types
+
+```dart
+// Basic UI elements
+IOSElementType.button
+IOSElementType.textField
+IOSElementType.secureTextField
+IOSElementType.staticText
+IOSElementType.image
+
+// Navigation elements  
+IOSElementType.navigationBar
+IOSElementType.tabBar
+IOSElementType.toolbar
+
+// Interactive elements
+IOSElementType.slider
+IOSElementType.switch_
+IOSElementType.picker
+IOSElementType.segmentedControl
+
+// Container elements
+IOSElementType.scrollView
+IOSElementType.table
+IOSElementType.collectionView
+IOSElementType.group
+```
+
+### Advanced Element Types
+
+```dart
+// Specialized controls
+IOSElementType.datePicker
+IOSElementType.progressIndicator
+IOSElementType.activityIndicator
+IOSElementType.pageIndicator
+
+// Layout elements
+IOSElementType.cell
+IOSElementType.layoutArea
+IOSElementType.layoutItem
+
+// System elements
+IOSElementType.alert
+IOSElementType.dialog
+IOSElementType.popover
+IOSElementType.keyboard
+```
+
+## Practical Examples
+
+### Finding and Tapping Elements
+
+```dart
+// Tap a login button
+await $.native.tap(
+  NativeSelector(
+    android: AndroidSelector(
+      resourceName: 'loginButton',
+      className: 'android.widget.Button',
+    ),
+    ios: IOSSelector(
+      identifier: 'loginButton',
+      elementType: IOSElementType.button,
+    ),
+  ),
+);
+
+// Tap using partial text matching
+await $.native2.tap(
+  NativeSelector(
+    android: AndroidSelector(
+      textContains: 'Sign In',
+    ),
+    ios: IOSSelector(
+      labelContains: 'Sign In',
+    ),
+  ),
+);
+```
+
+### Text Input Operations
+
+```dart
+// Enter text in username field
+await $.native2.enterText(
+  NativeSelector(
+    android: AndroidSelector(
+      resourceName: 'username',
+      className: 'android.widget.EditText',
+    ),
+    ios: IOSSelector(
+      identifier: 'usernameField',
+      elementType: IOSElementType.textField,
+    ),
+  ),
+  text: 'testuser@example.com',
+);
+
+// Enter password in secure field
+await $.native2.enterText(
+  NativeSelector(
+    android: AndroidSelector(
+      contentDescription: 'Password',
+      className: 'android.widget.EditText',
+    ),
+    ios: IOSSelector(
+      elementType: IOSElementType.secureTextField,
+      placeholderValueContains: 'Password',
+    ),
+  ),
+  text: 'secretpassword',
+);
+```
+
+### Advanced Selector Usage
+
+```dart
+// Find elements by instance (when multiple elements match)
+await $.native2.tap(
+  NativeSelector(
+    android: AndroidSelector(
+      className: 'android.widget.Button',
+      instance: 2, // Third button (0-indexed)
+    ),
+    ios: IOSSelector(
+      elementType: IOSElementType.button,
+      instance: 2, // Third button (0-indexed)
+    ),
+  ),
+);
+
+// Wait for element to become visible
+await native.waitUntilVisible(
+  NativeSelector(
+    android: AndroidSelector(
+      textStartsWith: 'Welcome',
+      isEnabled: true,
+    ),
+    ios: IOSSelector(
+      labelStartsWith: 'Welcome',
+      isEnabled: true,
+    ),
+  ),
+  timeout: Duration(seconds: 10),
+);
+```
+
+## Migration from Legacy Native API
+
+When migrating from the legacy native API to native2:
+
+1. **Replace platform checks** with unified `NativeSelector`
+2. **Use `$.native2`** instead of `$.native`  
+3. **Combine selectors** using both `android` and `ios` properties
+5. **Update method calls** to use the new unified method signatures
+
+Native2 simplifies cross-platform testing while providing more powerful and flexible element selection capabilities, making your Patrol tests more maintainable and reliable across both iOS and Android platforms.
