@@ -895,14 +895,15 @@ class NativeAutomator2 {
 
   /// Take a photo and confirm the photo
   ///
-  /// On Android, this method works with:
-  /// - Pixel simulators and physical devices (using Google Camera app)
-  /// - Other devices require custom shutter and done button selectors
+  /// This method taps on the camera shutter button to take a photo, then taps
+  /// on the confirmation button to accept it.
   ///
-  /// On iOS, the shutter button is `PhotoCapture` and the done button is `Done`.
+  /// You can provide custom selectors for both the shutter and confirmation buttons
+  /// using [shutterButtonSelector] and [doneButtonSelector] parameters.
+  /// If no custom selectors are provided, default selectors will be used.
   ///
-  /// For non-Pixel Android devices, you need to provide custom [shutterButtonSelector]
-  /// and [doneButtonSelector] with the correct resource IDs for your device's camera app.
+  /// For different camera apps or device manufacturers, you may need to provide
+  /// custom selectors with the appropriate resource identifiers for your specific app.
   Future<void> takeCameraPhoto({
     NativeSelector? shutterButtonSelector,
     NativeSelector? doneButtonSelector,
@@ -944,13 +945,14 @@ class NativeAutomator2 {
 
   /// Pick an image from the gallery
   ///
-  /// [imageSelector] is the selector for the image.
-  /// [instance] is the instance of the image.
-  /// If you specify [imageSelector], instance is not used.
+  /// This method opens the gallery and selects a single image.
   ///
-  /// On Android, the image selector is `com.google.android.providers.media.module:id/icon_thumbnail`.
-  /// It should cover pixels with API lvl 34 and above.
-  /// On iOS, the image selector is `Image`.
+  /// You can provide a custom selector for the image using [imageSelector].
+  /// If no custom selector is provided, default selectors will be used.
+  /// Alternatively, you can specify an [instance] to select the nth image
+  /// when using default selectors.
+  ///
+  /// Note: If you provide [imageSelector], the [instance] parameter will be overwritten.
   Future<void> pickImageFromGallery({
     NativeSelector? imageSelector,
     int? instance,
@@ -995,9 +997,11 @@ class NativeAutomator2 {
 
   /// Pick multiple images from the gallery
   ///
-  /// On Android, the image selector is `com.google.android.providers.media.module:id/icon_thumbnail` for API level 34 and above,
-  /// and `com.google.android.documentsui:id/icon_thumb` for API level 33 and below.
-  /// On iOS, the image selector is `Image`.
+  /// This method opens the gallery and selects multiple images based on [imageCount].
+  ///
+  /// You can provide a custom selector for the images using [imageSelector].
+  /// If no custom selector is provided, default selectors will be used.
+  /// The method will automatically handle the selection confirmation process.
   Future<void> pickMultipleImagesFromGallery(
     int imageCount, {
     NativeSelector? imageSelector,
@@ -1128,13 +1132,13 @@ class NativeAutomator2 {
     );
   }
 
-  /// Checks if the app is running on an iOS simulator.
+  /// Checks if the app is running on a simulator or emulator.
   ///
-  /// Returns `true` if running on iOS simulator, `false` otherwise.
-  /// This method is iOS-specific and will return `false` on Android.
+  /// Returns `true` if running on iOS simulator or Android emulator, `false` otherwise.
+  /// On Android devices this method cannot be 100% accurate.
   ///
   /// This can be useful for conditional logic in tests that need to behave
-  /// differently on physical devices vs simulators.
+  /// differently on physical devices vs simulators/emulators.
   Future<bool> isSimulator() async {
     final response = await _wrapRequest(
       'isSimulator',
