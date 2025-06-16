@@ -2,11 +2,12 @@
 // ignore_for_file: avoid_print
 
 import 'dart:async';
-import 'dart:io';
 
-import 'package:patrol/patrol.dart';
+import 'package:http_multi_server/http_multi_server.dart';
+import 'package:patrol/src/common.dart';
 import 'package:patrol/src/native/contracts/contracts.dart';
 import 'package:patrol/src/native/contracts/patrol_app_service_server.dart';
+import 'package:patrol/src/server_port_provider.dart';
 import 'package:patrol_log/patrol_log.dart';
 import 'package:shelf/shelf.dart' as shelf;
 import 'package:shelf/shelf_io.dart' as shelf_io;
@@ -26,14 +27,11 @@ Future<int> runAppService(PatrolAppService service) async {
       .addMiddleware(shelf.logRequests())
       .addHandler(service.handle);
 
-  final server = await shelf_io.serve(
-    pipeline,
-    InternetAddress.anyIPv4,
-    getAppServerPort(),
-    poweredByHeader: null,
-  );
-
+  final server = await HttpMultiServer.loopback(getAppServerPort());
   server.idleTimeout = _idleTimeout;
+
+  shelf_io.serveRequests(server, pipeline);
+  print('PatrolAppService serving requests using HttpMultiServer...');
 
   final address = server.address;
 
