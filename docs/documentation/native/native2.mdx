@@ -2,59 +2,45 @@
 title: Native Automation 2.0 (native2)
 ---
 
-Patrol's **native2** introduces a unified approach to native mobile automation, providing cross-platform selectors and methods that work seamlessly across both iOS and Android platforms. This evolution from the original native automation API simplifies test writing while providing more powerful selector capabilities.
-
 ## What is native2?
 
 <Info>
 Native2 is available starting from Patrol version `3.6.0`.
 </Info>
 
-Native2 provides a **unified API** for both iOS and Android platforms, eliminating the need to write separate platform-specific code. Instead of maintaining different methods for each platform, you can now use a single method with platform-specific selectors.
+Native2 was created to address fundamental limitations in the original native automation approach. The original native API was primarily designed for Android, and attempts to make a single `Selector` work across both platforms proved problematic because:
 
+- **Platform-specific identifiers**: iOS and Android use different identifier systems (Android's `resourceName` vs iOS's `identifier`)
+- **Flaky text selectors**: Text-based selectors can be unreliable as they may change with localization or UI updates
+- **Platform incompatibility**: A single selector approach couldn't effectively handle the fundamental differences between iOS and Android element identification
 
-## Unified Methods vs. Separate Platform Methods
+Native2 provides a **single command** that can work with both Android and iOS selectors, eliminating the need to write separate platform-specific code. Instead of maintaining different methods for each platform, you can now use one method that accepts platform-specific selectors that acknowledge the inherent differences between platforms.
+
 
 ### Before native2 (Separate Methods)
 
 In the original native automation API, you needed separate methods for iOS and Android:
 
 ```dart
-// Before: Separate methods for each platform
-if (Platform.isAndroid) {
-  await $.native.tap(Selector(text: 'Login'));
-} else if (Platform.isIOS) {
-  await $.native.tap(Selector(label: 'Login'));
-}
-
-// Text input also required platform-specific calls
-if (Platform.isAndroid) {
-  await $.native.enterText(
-    Selector(contentDescription: 'Email field'),
-    text: 'john@example.com',
-  );
-} else if (Platform.isIOS) {
-  await $.native.enterText(
-    Selector(identifier: 'emailField'),
-    text: 'john@example.com',
-  );
-}
+// Before: Sometimes you needed to use platform-specific if statements in your test code.
+ if(Platform.Android){
+  await $.native.tap(resourceId:'com.android.camera2:id/shutter_button')
+ }else{
+  await $.native.tap(label:'Take Picture')
+ }
 ```
-
-### With native2 (Unified Methods)
+### With native2
 
 Native2 provides a single method that works across both platforms:
 
 ```dart
-// After: Single unified method with platform-specific selectors
+// After: Single method with *platform-specific* selectors
 await $.native2.tap(
   NativeSelector(
     android: AndroidSelector(
-      text: 'Login',
+      resourceName: 'com.android.camera2:id/shutter_button',
     ),
-    ios: IOSSelector(
-      label: 'Login',
-    ),
+    ios: IOSSelector(label: 'Take Picture'),
   ),
 );
 
@@ -70,24 +56,6 @@ await $.native2.enterText(
   ),
   text: 'john@example.com',
 );
-```
-
-## Core Components
-
-### NativeSelector
-
-The `NativeSelector` is the central component that aggregates platform-specific selectors:
-
-```dart
-class NativeSelector {
-  const NativeSelector({this.android, this.ios});
-
-  /// Android selector
-  final AndroidSelector? android;
-  
-  /// iOS selector  
-  final IOSSelector? ios;
-}
 ```
 
 ### Text Input Operations
@@ -120,7 +88,7 @@ await $.native2.enterText(
 );
 ```
 
-### Advanced Selector Usage
+### Native 2 supports platform specific attributes like elementType for iOS or className for Android
 
 ```dart
 // Find elements by instance (when multiple elements match)
@@ -137,28 +105,4 @@ await $.native2.tap(
   ),
 );
 
-// Wait for element to become visible
-await $.native2.waitUntilVisible(
-  NativeSelector(
-    android: AndroidSelector(
-      textStartsWith: 'Welcome',
-    ),
-    ios: IOSSelector(
-      labelStartsWith: 'Welcome',
-    ),
-  ),
-  timeout: Duration(seconds: 10),
-);
 ```
-
-## Migration from Legacy Native API
-
-When migrating from the legacy native API to native2:
-
-1. **Remove platform checks, and use `$.native2`** instead of `$.native`
-2. **Use `NativeSelector`** with both `android` and `ios` properties
-3. **Update method calls** to use the new unified method signatures
-
-Native2 provides a unified API for cross-platform testing, making your Patrol tests more maintainable and reliable across both iOS and Android platforms. You can see an example of the migration [here](#before-native2-separate-methods).
-
-
