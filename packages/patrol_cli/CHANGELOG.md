@@ -1,4 +1,4 @@
-## Unreleased
+## 3.7.0
 
 - Bump min Flutter SDK to 3.32.0 (#2649)
 - Introduce `check-compatibility` flag to allow disabling the compatibility check. (#2649) 
