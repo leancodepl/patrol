@@ -1,10 +1,10 @@
 ---
-title: Integrations - Browserstack
+title: Integrations - BrowserStack
 ---
 
 ## Overview
 
-[Browserstack App Automate] is a popular cloud device farm.
+[BrowserStack App Automate] is a popular cloud device farm.
 
 <Warning>This integration is currently Android-only.</Warning>
 
@@ -27,14 +27,14 @@ android {
 
 That's all!
 
-### Upload to Browserstack
+### Upload to BrowserStack
 
 To run Android UI tests on BrowserStack:
 
 1. Build the app under test and the instrumentation app ([see docs][patrol build])
-1. Upload the app under test APK to Browserstack ([see docs][bs_app_docs])
-1. Upload the instrumentation app APK to Browserstack ([see docs][bs_test_docs])
-1. Start test execution on Browserstack ([see docs][bs_execute_docs])
+1. Upload the app under test APK to BrowserStack ([see docs][bs_app_docs])
+1. Upload the instrumentation app APK to BrowserStack ([see docs][bs_test_docs])
+1. Start test execution on BrowserStack ([see docs][bs_execute_docs])
 
 You can do it all manually, but we recommend using the [bs_android] script to
 speed up this process. `bs_android` is part of LeanCode's [mobile-tools]. If
@@ -46,13 +46,13 @@ brew install mobile-tools
 ```
 
 The `bs_android` script requires the `BS_CREDENTIALS` environment variable
-to be set so it can authenticate with Browserstack:
+to be set so it can authenticate with BrowserStack:
 
 ```bash
 export BS_CREDENTIALS="YOUR_USERNAME:YOUR_ACCESS_KEY"
 ```
 
-Get your username and access on [Browserstack's account page][bs_account].
+Get your username and access on [BrowserStack's account page][bs_account].
 
 Now reload your shell (e.g. `exec zsh`) and run `bs_android`:
 
@@ -80,7 +80,7 @@ bs_android \
   --dart-define 'KEY_EXAMPLE=VALUE_EXAMPLE'
 ```
 
-[Browserstack App Automate]: https://www.browserstack.com/app-automate
+[BrowserStack App Automate]: https://www.browserstack.com/app-automate
 [patrol build]: /cli-commands/build
 [bs_android]: https://github.com/leancodepl/mobile-tools/blob/master/bin/bs_android
 [bs_app_docs]: https://www.browserstack.com/docs/app-automate/api-reference/espresso/apps
