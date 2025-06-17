@@ -59,8 +59,6 @@ Once DevTools opens:
 
 ## 🧪 Using Discovered Elements in Tests
 
-### Cross-Platform Native Selectors
-
 When you find elements in the inspector, you can create cross-platform selectors that work on both Android and iOS:
 
 ```dart
@@ -88,8 +86,9 @@ await $.native2.tap(NativeSelector(
 | `className` | `elementType` | UI element type | `android.widget.Button` / `XCUIElementTypeButton` |
 | `enabled` | `enabled` | Interactive state | `true`/`false` |
 
-
-## 📝 Tips
+## Flutter devtools
+After opening patrol devtools link you can also use a Flutter inspector to see widgets and their
+properties in your flutter app. 
 
  Use Stable Selectors
 - Prefer `resourceId` (Android) or `identifier` (iOS) when available
@@ -97,32 +96,18 @@ await $.native2.tap(NativeSelector(
 
 ## 🔍 Troubleshooting
 
-### Extension Not Visible
-- Ensure you're running `patrol develop -t` (not just `flutter run`)
-- Make sure you're using a compatible version of Flutter DevTools
+- Ensure you're running `patrol develop -t`
 - Try refreshing the DevTools browser page
-
-### Empty Tree View
 - Click the refresh button to load the native UI tree
-- Ensure your app is running and visible on the device
+- Ensure your app with proper screen is running and visible on the device
 - Check that your device/simulator is properly connected
-
-### Elements Not Found in Tests
-- Verify the element properties match exactly what's shown in the inspector
-- Check if the element is currently visible on screen
-- Consider using `waitUntilVisible()` for elements that appear after async operations
 
 ### DevTools Interface
 
 #### Tree View Controls
-- **🔄 Refresh**: Load current UI tree
+- ** RAW button**: Shows native tree detailed information (You need to refresh native tree after tooggle)
 - **📱 Native View Hierarchy**: Shows actual native views
-- **🔍 Native Details**: Shows native tree detailed information
-
-### Common Issues
-- **Empty tree**: Click refresh, ensure app is visible
-- **Element not found**: Check spelling, case sensitivity
-- **Timeouts**: Use `waitUntilVisible` with longer timeout
+- **🔄 Refresh**: Load current UI tree
 
 ## 🤝 Contributing
 
