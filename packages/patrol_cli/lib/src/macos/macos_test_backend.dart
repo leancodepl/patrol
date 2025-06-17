@@ -75,10 +75,7 @@ class MacOSTestBackend {
   final DisposeScope _disposeScope;
   final Logger _logger;
 
-  Future<void> build(
-    MacOSAppOptions options, {
-    bool isPatrolBuildCommand = false,
-  }) async {
+  Future<void> build(MacOSAppOptions options) async {
     await _disposeScope.run((scope) async {
       final subject = options.description;
       final task = _logger.task(
@@ -115,27 +112,10 @@ class MacOSTestBackend {
 
       // xcodebuild build-for-testing
 
-      // Tests build with `patrol build` command are not executed with the same
-      // command invocation as the one used for tests execution.
-      //
-      // This means that the environment variable is not automatically set.
-      if (isPatrolBuildCommand && options.testServerPort != 0) {
-        _logger.warn(
-          'Setting --test-server-port for `build` command '
-          'requires setting PATROL_TEST_SERVER_PORT environment variable '
-          'on the environment where tests will be executed.',
-        );
-      }
-
       process = await _processManager.start(
         options.buildForTestingInvocation(),
         runInShell: true,
         workingDirectory: _rootDirectory.childDirectory('macos').path,
-        environment: {
-          ..._platform.environment,
-          'TEST_RUNNER_PATROL_TEST_SERVER_PORT':
-              options.testServerPort.toString(),
-        },
       )
         ..disposedBy(scope);
       process.listenStdOut((l) => _logger.detail('\t$l')).disposedBy(scope);
@@ -187,8 +167,8 @@ class MacOSTestBackend {
         runInShell: true,
         environment: {
           ..._platform.environment,
-          'TEST_RUNNER_PATROL_TEST_SERVER_PORT':
-              options.testServerPort.toString(),
+          'TEST_RUNNER_PATROL_TEST_PORT': options.testServerPort.toString(),
+          'TEST_RUNNER_PATROL_APP_PORT': options.appServerPort.toString(),
         },
         workingDirectory: _rootDirectory.childDirectory('macos').path,
       )

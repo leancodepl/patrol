@@ -59,6 +59,7 @@ class TestCommand extends PatrolCommand {
     usesShowFlutterLogs();
     usesHideTestSteps();
     usesClearTestSteps();
+    usesCheckCompatibilityOption();
 
     usesUninstallOption();
 
@@ -156,10 +157,12 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
 
     final device = devices.single;
 
-    await _compatibilityChecker.checkVersionsCompatibility(
-      flutterCommand: flutterCommand,
-      targetPlatform: device.targetPlatform,
-    );
+    if (boolArg('check-compatibility')) {
+      await _compatibilityChecker.checkVersionsCompatibility(
+        flutterCommand: flutterCommand,
+        targetPlatform: device.targetPlatform,
+      );
+    }
 
     final packageName = stringArg('package-name') ?? config.android.packageName;
     final bundleId = stringArg('bundle-id') ?? config.ios.bundleId;
@@ -225,6 +228,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
     final androidOpts = AndroidAppOptions(
       flutter: flutterOpts,
       packageName: packageName,
+      appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
       uninstall: uninstall,
     );
@@ -236,6 +240,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       configuration: buildMode.createConfiguration(iosFlavor),
       simulator: !device.real,
       osVersion: stringArg('ios') ?? 'latest',
+      appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
       clearPermissions: boolArg('clear-permissions'),
     );
@@ -244,6 +249,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       flutter: flutterOpts,
       scheme: buildMode.createScheme(macosFlavor),
       configuration: buildMode.createConfiguration(macosFlavor),
+      appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
     );
 

@@ -51,12 +51,14 @@ class AndroidAppOptions {
   const AndroidAppOptions({
     required this.flutter,
     this.packageName,
+    required this.appServerPort,
     required this.testServerPort,
     required this.uninstall,
   });
 
   final FlutterAppOptions flutter;
   final String? packageName;
+  final int appServerPort;
   final int testServerPort;
   final bool uninstall;
 
@@ -172,10 +174,10 @@ class AndroidAppOptions {
       cmd.add('-Pandroid.injected.androidTest.leaveApksInstalledAfterRun=true');
     }
 
-    // Add test server ports
-    if (testServerPort != 0) {
-      cmd.add('-Ptest-server-port=$testServerPort');
-    }
+    // Add app and test server ports
+    cmd
+      ..add('-Papp-server-port=$appServerPort')
+      ..add('-Ptest-server-port=$testServerPort');
 
     return cmd;
   }
@@ -189,6 +191,7 @@ class IOSAppOptions {
     required this.configuration,
     required this.simulator,
     required this.osVersion,
+    required this.appServerPort,
     required this.testServerPort,
     this.clearPermissions = false,
   });
@@ -199,6 +202,7 @@ class IOSAppOptions {
   final String configuration;
   final String osVersion;
   final bool simulator;
+  final int appServerPort;
   final int testServerPort;
   final bool clearPermissions;
 
@@ -288,6 +292,7 @@ class MacOSAppOptions {
     this.bundleId,
     required this.scheme,
     required this.configuration,
+    required this.appServerPort,
     required this.testServerPort,
   });
 
@@ -295,6 +300,7 @@ class MacOSAppOptions {
   final String? bundleId;
   final String scheme;
   final String configuration;
+  final int appServerPort;
   final int testServerPort;
 
   String get description {

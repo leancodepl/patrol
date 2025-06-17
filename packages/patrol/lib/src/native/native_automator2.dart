@@ -79,9 +79,7 @@ class NativeAutomator2 {
       Uri.http('${_config.host}:${_config.port}'),
       timeout: _config.connectionTimeout,
     );
-    _config.logger(
-      'NativeAutomatorClient created, port: ${_config.port}',
-    );
+    _config.logger('NativeAutomatorClient created, port: ${_config.port}');
   }
 
   final PatrolLogWriter _patrolLog = PatrolLogWriter();
@@ -879,14 +877,10 @@ class NativeAutomator2 {
   /// Tells the AndroidJUnitRunner that PatrolAppService is ready to answer
   /// requests about the structure of Dart tests.
   @internal
-  Future<void> markPatrolAppServiceReady(int port) async {
+  Future<void> markPatrolAppServiceReady() async {
     await _wrapRequest(
       'markPatrolAppServiceReady',
-      () => _client.markPatrolAppServiceReady(
-        MarkAppServiceReadyRequest(
-          port: port,
-        ),
-      ),
+      _client.markPatrolAppServiceReady,
       enablePatrolLog: false,
     );
   }
