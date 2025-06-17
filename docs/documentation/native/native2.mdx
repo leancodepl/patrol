@@ -19,16 +19,20 @@ Native2 provides a **single command** that can work with both Android and iOS se
 
 ### Before native2 (Separate Methods)
 
-In the original native automation API, you needed separate methods for iOS and Android:
+```dart
+// You were forced to use flaky text-based selectors that work on both platforms
+await $.native.tap(Selector(textContains: 'Login'));
+```
 
 ```dart
 // Before: Sometimes you needed to use platform-specific if statements in your test code.
- if(Platform.Android){
-  await $.native.tap(resourceId:'com.android.camera2:id/shutter_button')
- }else{
-  await $.native.tap(label:'Take Picture')
- }
+if (Platform.isAndroid) {
+  await $.native.tap(Selector(resourceId: 'com.android.camera2:id/shutter_button'));
+} else {
+  await $.native.tap(Selector(label: 'Take Picture'));
+}
 ```
+
 ### With native2
 
 Native2 provides a single method that works across both platforms:
@@ -61,19 +65,6 @@ await $.native2.enterText(
 ### Text Input Operations
 
 ```dart
-// Enter text in username field
-await $.native2.enterText(
-  NativeSelector(
-    android: AndroidSelector(
-      resourceName: 'username',
-    ),
-    ios: IOSSelector(
-      identifier: 'usernameField',
-    ),
-  ),
-  text: 'testuser@example.com',
-);
-
 // Enter password in secure field
 await $.native2.enterText(
   NativeSelector(
@@ -88,7 +79,7 @@ await $.native2.enterText(
 );
 ```
 
-### Native 2 supports platform specific attributes like elementType for iOS or className for Android
+### More platform-specific attributes like elementType for iOS
 
 ```dart
 // Find elements by instance (when multiple elements match)
@@ -104,5 +95,21 @@ await $.native2.tap(
     ),
   ),
 );
+```
 
+### Specifying App ID (iOS)
+
+When working with iOS, you may need to specify the `appId` parameter to interact with elements in specific applications. This is particularly useful when your test needs to interact with system apps like Safari, Settings, or other third-party applications.
+
+<Info>
+The `appId` parameter is primarily needed for iOS. On Android, the app context is usually handled automatically.
+</Info>
+
+```dart
+await $.native2.tap(
+  appId: 'com.apple.mobilesafari',
+  NativeSelector(
+    ios: IOSSelector(elementType: IOSElementType.button, label: 'Open'),
+  ),
+);
 ```
