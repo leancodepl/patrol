@@ -88,8 +88,13 @@ class VersionCompatibility {
 /// This is the single source of truth for version compatibility
 final List<VersionCompatibility> versionCompatibilityList = [
   VersionCompatibility.fromRangeString(
-    patrolCliVersion: '3.5.0+',
-    patrolVersion: '3.14.0+',
+    patrolCliVersion: '3.7.0+',
+    patrolVersion: '3.16.0+',
+    minFlutterVersion: '3.32.0',
+  ),
+  VersionCompatibility.fromRangeString(
+    patrolCliVersion: '3.5.0 - 3.6.0',
+    patrolVersion: '3.14.0 - 3.15.2',
     minFlutterVersion: '3.24.0',
   ),
   VersionCompatibility.fromRangeString(

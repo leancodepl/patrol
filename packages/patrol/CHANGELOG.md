@@ -1,4 +1,4 @@
-## Unreleased
+## 3.16.0
 
 - Make activity aliases work in PatrolJUnitRunner
 - Update test reports to show all exceptions thrown in Flutter. (#2362)
