@@ -22,7 +22,10 @@ class DartDefinesReader {
     }
 
     final lines = file.readAsLinesSync()
-      ..removeWhere((line) => line.trim().isEmpty);
+      .map((line) => line.split('#').first.trim()) // Remove any characters in a line that are after # symbol.
+      .where((line) => line.isNotEmpty)
+      .toList();
+
     return _parse(lines);
   }
 
