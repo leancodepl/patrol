@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:e2e_app/keys.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -86,7 +87,7 @@ class _CameraScreenState extends State<CameraScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: const Key('cameraScaffold'),
+      key: K.cameraScaffold,
       appBar: AppBar(
         title: const Text('Camera'),
       ),
@@ -105,7 +106,7 @@ class _CameraScreenState extends State<CameraScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ElevatedButton.icon(
-                  key: const Key('takePhotoButton'),
+                  key: K.takePhotoButton,
                   onPressed: () => _onAddPhotoTap(ImageSource.camera),
                   icon: const Icon(Icons.camera_alt),
                   label: const Text('Take a photo'),
@@ -119,7 +120,7 @@ class _CameraScreenState extends State<CameraScreen> {
                 ),
                 const SizedBox(height: 20),
                 ElevatedButton.icon(
-                  key: const Key('chooseFromGalleryButton'),
+                  key: K.chooseFromGalleryButton,
                   onPressed: () => _onAddPhotoTap(ImageSource.gallery),
                   icon: const Icon(Icons.photo_library),
                   label: const Text('Choose from Gallery'),
@@ -133,7 +134,7 @@ class _CameraScreenState extends State<CameraScreen> {
                 ),
                 const SizedBox(height: 20),
                 ElevatedButton.icon(
-                  key: const Key('pickMultiplePhotosButton'),
+                  key: K.pickMultiplePhotosButton,
                   onPressed: _onPickMultiplePhotos,
                   icon: const Icon(Icons.photo_library_outlined),
                   label: const Text('Pick Multiple Photos'),
@@ -155,7 +156,7 @@ class _CameraScreenState extends State<CameraScreen> {
 
   Widget _buildImagePreview() {
     return Container(
-      key: const Key('smallImagePreview'),
+      key: K.smallImagePreview,
       margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
@@ -171,7 +172,7 @@ class _CameraScreenState extends State<CameraScreen> {
               const Icon(Icons.photo_library, color: Colors.grey),
               const SizedBox(width: 8),
               Text(
-                key: const Key('selectedPhotosCount'),
+                key: K.selectedPhotosCount,
                 '${_capturedImages.length} photo${_capturedImages.length == 1 ? '' : 's'} selected',
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
