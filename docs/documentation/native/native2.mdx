@@ -3,14 +3,14 @@ title: Native Automation 2.0 (Native2)
 ---
 
 <Info>
-Native2 is available starting from Patrol version `3.6.0`.
+`Native2` is available starting from Patrol version `3.6.0`.
 </Info>
 
 ## What is `native2`?
 
-Native2 was created to address fundamental limitations in the original native automation approach. The original native API was primarily designed for Android, and attempts to make a single `Selector` work across both
-platforms proved problematic because **iOS and Android use different selector arguments** (Android's `resourceName` vs iOS's `label`) and a single selector approach couldn't effectively handle the fundamental differences
-between iOS and Android element identification. Native2 provides **platform-specific selectors** that work with both Android and iOS, giving you more accurate platform-specific selectors instead of one shared selector.
+`Native2` was created to address fundamental limitations in the original native automation approach. The original native API was primarily designed for Android, and attempts to make a single `Selector` work across both
+platforms proved problematic because **iOS and Android use different selector arguments** (Android's `resourceName` vs iOS's `identifier`) and a single selector approach couldn't effectively handle the fundamental differences
+between iOS and Android element identification. **`Native2` provides platform-specific selectors that work with both Android and iOS, giving you more accurate platform-specific selectors instead of one shared selector.**
 
 
 ### Before `native2` (Separate Methods)
