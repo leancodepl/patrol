@@ -1055,7 +1055,7 @@ class NativeAutomator {
               );
           await tap(shutterSelector);
           await tap(doneSelector);
-        } else {
+        } else if (io.Platform.isIOS) {
           final shutterSelector =
               iosShutterButtonSelector ?? Selector(resourceId: 'PhotoCapture');
           final doneSelector =
