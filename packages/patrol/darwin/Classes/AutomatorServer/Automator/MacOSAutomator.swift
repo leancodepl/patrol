@@ -391,9 +391,9 @@
         throw PatrolError.methodNotImplemented("debug")
       }
     }
-
+    /// macOS doesn't have simulators like iOS
     func isSimulator() -> Bool {
-      return false  // macOS doesn't have simulators like iOS
+      return false  
     }
 
     private func runAction<T>(_ log: String, block: @escaping () throws -> T) rethrows -> T {
