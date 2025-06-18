@@ -10,11 +10,9 @@ Native2 is available starting from Patrol version `3.6.0`.
 
 Native2 was created to address fundamental limitations in the original native automation approach. The original native API was primarily designed for Android, and attempts to make a single `Selector` work across both platforms proved problematic because:
 
-- **Platform-specific identifiers**: iOS and Android use different identifier systems (Android's `resourceName` vs iOS's `identifier`)
-- **Flaky text selectors**: Text-based selectors can be unreliable as they may change with localization or UI updates
-- **Platform incompatibility**: A single selector approach couldn't effectively handle the fundamental differences between iOS and Android element identification
+- **Platform-specific identifiers**: iOS and Android use different identifier systems (Android's `resourceName` vs iOS's `identifier`) and a single selector approach couldn't effectively handle the fundamental differences between iOS and Android element identification
 
-Native2 provides a **single command** that can work with both Android and iOS selectors, eliminating the need to write separate platform-specific code. Instead of maintaining different methods for each platform, you can now use one method that accepts platform-specific selectors that acknowledge the inherent differences between platforms.
+Native2 provides **platform-specific selectors** that work with both Android and iOS, giving you more accurate platform-specific selectors instead of one shared selector.
 
 
 ### Before `native2` (Separate Methods)
@@ -35,10 +33,10 @@ if (Platform.isAndroid) {
 
 ### With `native2`
 
-Native2 provides a single method that works across both platforms:
+Native2 provides a single method call that works across both platforms:
 
 ```dart
-// After: Single method with platform-specific selectors
+// After: Single method call with platform-specific selectors
 await $.native2.tap(
   NativeSelector(
     android: AndroidSelector(
@@ -46,19 +44,6 @@ await $.native2.tap(
     ),
     ios: IOSSelector(label: 'Take Picture'),
   ),
-);
-
-// Text input with unified method
-await $.native2.enterText(
-  NativeSelector(
-    android: AndroidSelector(
-      contentDescription: 'Email field',
-    ),
-    ios: IOSSelector(
-      identifier: 'emailField',
-    ),
-  ),
-  text: 'john@example.com',
 );
 ```
 
@@ -102,7 +87,7 @@ await $.native2.tap(
 When working with iOS, you may need to specify the `appId` parameter to interact with elements in specific applications. This is particularly useful when your test needs to interact with system apps like Safari, Settings, or other third-party applications.
 
 <Info>
-The `appId` parameter is primarily needed for iOS. On Android, the app context is usually handled automatically.
+The `appId` parameter is required for iOS. On Android, it will be ignored.
 </Info>
 
 ```dart
