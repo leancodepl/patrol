@@ -80,7 +80,7 @@ await $.native2.tap(NativeSelector(
 
 | Android Property | iOS Property | Description | Example |
 |------------------|--------------|-------------|---------|
-| `resourceId` | `identifier` | Unique ID (most reliable) | `com.app:id/btn` / `loginButton` |
+| `resourceName` | `identifier` | Unique ID (most reliable) | `com.app:id/btn` / `loginButton` |
 | `text` | `label` | Visible text content | `"Sign In"` |
 | `contentDescription` | `label` | Accessibility description | `"Login button"` |
 | `className` | `elementType` | UI element type | `android.widget.Button` / `XCUIElementTypeButton` |
@@ -91,7 +91,7 @@ After opening patrol devtools link you can also use a Flutter inspector to see w
 properties in your flutter app. 
 
  Use Stable Selectors
-- Prefer `resourceId` (Android) or `identifier` (iOS) when available
+- Prefer `resourceName` (Android) or `identifier` (iOS) when available
 - Avoid using coordinates or index-based selectors when possible
 
 ## 🔍 Troubleshooting
@@ -105,9 +105,9 @@ properties in your flutter app.
 ### DevTools Interface
 
 #### Tree View Controls
-- ** RAW button**: Shows native tree detailed information (You need to refresh native tree after tooggle)
-- **📱 Native View Hierarchy**: Shows actual native views
-- **🔄 Refresh**: Load current UI tree
+- **RAW button**: Shows native tree detailed information (You need to refresh native tree after toggle)
+- **📱 Full node names**: Shows full node names
+- **🔄 Refresh tree**: Load current UI tree
 
 ## 🤝 Contributing
 
