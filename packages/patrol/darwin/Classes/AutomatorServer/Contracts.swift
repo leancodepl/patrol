@@ -400,3 +400,7 @@ public struct GetAndroidApiLevelResponse: Codable {
   public var apiLevel: Int
 }
 
+public struct GetIosVersionResponse: Codable {
+  public var version: String
+}
+

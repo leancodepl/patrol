@@ -372,6 +372,13 @@ class NativeAutomatorClient {
     return GetAndroidApiLevelResponse.fromJson(json);
   }
 
+  Future<GetIosVersionResponse> getIosVersion() async {
+    final json = await _sendRequest(
+      'getIosVersion',
+    );
+    return GetIosVersionResponse.fromJson(json);
+  }
+
   Future<Map<String, dynamic>> _sendRequest(
     String requestName, [
     Map<String, dynamic>? request,

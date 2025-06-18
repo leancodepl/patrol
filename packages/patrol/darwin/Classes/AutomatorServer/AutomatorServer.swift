@@ -428,6 +428,13 @@
       }
     }
 
+    func getIosVersion() throws -> GetIosVersionResponse {
+      return try runCatching {
+        let version = automator.getIosVersion()
+        return GetIosVersionResponse(version: version)
+      }
+    }
+
     func getAndroidApiLevel() throws -> GetAndroidApiLevelResponse {
       return try runCatching {
         // iOS doesn't have Android API levels, so return 0

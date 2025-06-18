@@ -396,6 +396,11 @@
       return false  
     }
 
+    func getIosVersion() -> String {
+      // macOS doesn't have iOS version, so return empty string
+      return ""
+    }
+
     private func runAction<T>(_ log: String, block: @escaping () throws -> T) rethrows -> T {
       return try DispatchQueue.main.sync {
         Logger.shared.i("\(log)...")

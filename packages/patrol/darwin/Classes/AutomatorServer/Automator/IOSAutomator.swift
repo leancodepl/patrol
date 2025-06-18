@@ -919,6 +919,10 @@
       #endif
     }
 
+    func getIosVersion() -> String {
+      return UIDevice.current.systemVersion
+    }
+
     private func isPhone() -> Bool {
       return UIDevice.current.userInterfaceIdiom == .phone
     }

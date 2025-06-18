@@ -50,6 +50,7 @@ protocol NativeAutomatorServer {
     func markPatrolAppServiceReady(request: MarkAppServiceReadyRequest) throws
     func isSimulator() throws -> IsSimulatorResponse
     func getAndroidApiLevel() throws -> GetAndroidApiLevelResponse
+    func getIosVersion() throws -> GetIosVersionResponse
 }
 
 extension NativeAutomatorServer {
@@ -299,6 +300,12 @@ extension NativeAutomatorServer {
         let body = try JSONEncoder().encode(response)
         return HTTPResponse(.ok, body: body)
     }
+
+    private func getIosVersionHandler(request: HTTPRequest) throws -> HTTPResponse {
+        let response = try getIosVersion()
+        let body = try JSONEncoder().encode(response)
+        return HTTPResponse(.ok, body: body)
+    }
 }
 
 extension NativeAutomatorServer {
@@ -522,6 +529,11 @@ extension NativeAutomatorServer {
             request in handleRequest(
                 request: request,
                 handler: getAndroidApiLevelHandler)
+        }
+        server.route(.POST, "getIosVersion") {
+            request in handleRequest(
+                request: request,
+                handler: getIosVersionHandler)
         }
     }
 }

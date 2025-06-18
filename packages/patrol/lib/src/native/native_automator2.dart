@@ -1171,4 +1171,28 @@ class NativeAutomator2 {
 
     return response.apiLevel;
   }
+
+  /// Gets the iOS version.
+  ///
+  /// Returns the iOS version as a string (e.g., "17.0" for iOS 17).
+  /// On Android, this will return an empty string as it's iOS-specific.
+  ///
+  /// This can be useful for conditional logic in tests that need to behave
+  /// differently based on the iOS version.
+  ///
+  /// Example:
+  /// ```dart
+  /// final iosVersion = await $.native.getIosVersion();
+  /// if (iosVersion.startsWith("17")) {
+  ///   // iOS 17+ specific behavior
+  /// }
+  /// ```
+  Future<String> getIosVersion() async {
+    final response = await _wrapRequest(
+      'getIosVersion',
+      () => _client.getIosVersion(),
+    );
+
+    return response.version;
+  }
 }

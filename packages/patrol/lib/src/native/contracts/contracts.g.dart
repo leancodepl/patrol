@@ -842,3 +842,15 @@ Map<String, dynamic> _$GetAndroidApiLevelResponseToJson(
     <String, dynamic>{
       'apiLevel': instance.apiLevel,
     };
+
+GetIosVersionResponse _$GetIosVersionResponseFromJson(
+        Map<String, dynamic> json) =>
+    GetIosVersionResponse(
+      version: json['version'] as String,
+    );
+
+Map<String, dynamic> _$GetIosVersionResponseToJson(
+        GetIosVersionResponse instance) =>
+    <String, dynamic>{
+      'version': instance.version,
+    };

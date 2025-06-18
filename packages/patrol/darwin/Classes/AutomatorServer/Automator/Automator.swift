@@ -297,6 +297,7 @@ extension Selector {
     func debug() throws
     func setMockLocation(latitude: Double, longitude: Double) throws
 
+    func getIosVersion() -> String
     func isSimulator() -> Bool
   }
 

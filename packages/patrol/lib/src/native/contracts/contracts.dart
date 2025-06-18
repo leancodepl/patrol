@@ -1317,3 +1317,22 @@ class GetAndroidApiLevelResponse with EquatableMixin {
         apiLevel,
       ];
 }
+
+@JsonSerializable()
+class GetIosVersionResponse with EquatableMixin {
+  GetIosVersionResponse({
+    required this.version,
+  });
+
+  factory GetIosVersionResponse.fromJson(Map<String, dynamic> json) =>
+      _$GetIosVersionResponseFromJson(json);
+
+  final String version;
+
+  Map<String, dynamic> toJson() => _$GetIosVersionResponseToJson(this);
+
+  @override
+  List<Object?> get props => [
+        version,
+      ];
+}
