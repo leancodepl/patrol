@@ -25,7 +25,7 @@ await $.native.tap(Selector(textContains: 'Login'));
 if (Platform.isAndroid) {
   await $.native.tap(Selector(resourceId: 'com.android.camera2:id/shutter_button'));
 } else {
-  await $.native.tap(Selector(label: 'Take Picture'));
+  await $.native.tap(Selector(text: 'Take Picture'));
 }
 ```
 
