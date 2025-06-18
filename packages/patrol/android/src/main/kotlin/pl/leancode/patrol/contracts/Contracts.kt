@@ -683,4 +683,8 @@ class Contracts {
     val apiLevel: Long
   )
 
+  data class GetIosVersionResponse (
+    val version: String
+  )
+
 }

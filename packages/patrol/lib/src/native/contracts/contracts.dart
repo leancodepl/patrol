@@ -246,6 +246,22 @@ class DartGroupEntry with EquatableMixin {
         skip,
         tags,
       ];
+
+  DartGroupEntry copyWith({
+    String? name,
+    GroupEntryType? type,
+    List<DartGroupEntry>? entries,
+    bool? skip,
+    List<String>? tags,
+  }) {
+    return DartGroupEntry(
+      name: name ?? this.name,
+      type: type ?? this.type,
+      entries: entries ?? this.entries,
+      skip: skip ?? this.skip,
+      tags: tags ?? this.tags,
+    );
+  }
 }
 
 @JsonSerializable()
@@ -265,6 +281,14 @@ class ListDartTestsResponse with EquatableMixin {
   List<Object?> get props => [
         group,
       ];
+
+  ListDartTestsResponse copyWith({
+    DartGroupEntry? group,
+  }) {
+    return ListDartTestsResponse(
+      group: group ?? this.group,
+    );
+  }
 }
 
 @JsonSerializable()
@@ -284,6 +308,14 @@ class RunDartTestRequest with EquatableMixin {
   List<Object?> get props => [
         name,
       ];
+
+  RunDartTestRequest copyWith({
+    String? name,
+  }) {
+    return RunDartTestRequest(
+      name: name ?? this.name,
+    );
+  }
 }
 
 @JsonSerializable()
@@ -306,6 +338,16 @@ class RunDartTestResponse with EquatableMixin {
         result,
         details,
       ];
+
+  RunDartTestResponse copyWith({
+    RunDartTestResponseResult? result,
+    String? details,
+  }) {
+    return RunDartTestResponse(
+      result: result ?? this.result,
+      details: details ?? this.details,
+    );
+  }
 }
 
 @JsonSerializable()
@@ -325,6 +367,14 @@ class ConfigureRequest with EquatableMixin {
   List<Object?> get props => [
         findTimeoutMillis,
       ];
+
+  ConfigureRequest copyWith({
+    int? findTimeoutMillis,
+  }) {
+    return ConfigureRequest(
+      findTimeoutMillis: findTimeoutMillis ?? this.findTimeoutMillis,
+    );
+  }
 }
 
 @JsonSerializable()
@@ -344,6 +394,14 @@ class OpenAppRequest with EquatableMixin {
   List<Object?> get props => [
         appId,
       ];
+
+  OpenAppRequest copyWith({
+    String? appId,
+  }) {
+    return OpenAppRequest(
+      appId: appId ?? this.appId,
+    );
+  }
 }
 
 @JsonSerializable()
@@ -357,6 +415,10 @@ class OpenQuickSettingsRequest with EquatableMixin {
 
   @override
   List<Object?> get props => const [];
+
+  OpenQuickSettingsRequest copyWith() {
+    return OpenQuickSettingsRequest();
+  }
 }
 
 @JsonSerializable()
@@ -376,6 +438,14 @@ class OpenUrlRequest with EquatableMixin {
   List<Object?> get props => [
         url,
       ];
+
+  OpenUrlRequest copyWith({
+    String? url,
+  }) {
+    return OpenUrlRequest(
+      url: url ?? this.url,
+    );
+  }
 }
 
 @JsonSerializable()
@@ -449,6 +519,52 @@ class AndroidSelector with EquatableMixin {
         resourceName,
         instance,
       ];
+
+  AndroidSelector copyWith({
+    String? className,
+    bool? isCheckable,
+    bool? isChecked,
+    bool? isClickable,
+    bool? isEnabled,
+    bool? isFocusable,
+    bool? isFocused,
+    bool? isLongClickable,
+    bool? isScrollable,
+    bool? isSelected,
+    String? applicationPackage,
+    String? contentDescription,
+    String? contentDescriptionStartsWith,
+    String? contentDescriptionContains,
+    String? text,
+    String? textStartsWith,
+    String? textContains,
+    String? resourceName,
+    int? instance,
+  }) {
+    return AndroidSelector(
+      className: className ?? this.className,
+      isCheckable: isCheckable ?? this.isCheckable,
+      isChecked: isChecked ?? this.isChecked,
+      isClickable: isClickable ?? this.isClickable,
+      isEnabled: isEnabled ?? this.isEnabled,
+      isFocusable: isFocusable ?? this.isFocusable,
+      isFocused: isFocused ?? this.isFocused,
+      isLongClickable: isLongClickable ?? this.isLongClickable,
+      isScrollable: isScrollable ?? this.isScrollable,
+      isSelected: isSelected ?? this.isSelected,
+      applicationPackage: applicationPackage ?? this.applicationPackage,
+      contentDescription: contentDescription ?? this.contentDescription,
+      contentDescriptionStartsWith:
+          contentDescriptionStartsWith ?? this.contentDescriptionStartsWith,
+      contentDescriptionContains:
+          contentDescriptionContains ?? this.contentDescriptionContains,
+      text: text ?? this.text,
+      textStartsWith: textStartsWith ?? this.textStartsWith,
+      textContains: textContains ?? this.textContains,
+      resourceName: resourceName ?? this.resourceName,
+      instance: instance ?? this.instance,
+    );
+  }
 }
 
 @JsonSerializable()
@@ -513,6 +629,46 @@ class IOSSelector with EquatableMixin {
         placeholderValueStartsWith,
         placeholderValueContains,
       ];
+
+  IOSSelector copyWith({
+    String? value,
+    int? instance,
+    IOSElementType? elementType,
+    String? identifier,
+    String? label,
+    String? labelStartsWith,
+    String? labelContains,
+    String? title,
+    String? titleStartsWith,
+    String? titleContains,
+    bool? hasFocus,
+    bool? isEnabled,
+    bool? isSelected,
+    String? placeholderValue,
+    String? placeholderValueStartsWith,
+    String? placeholderValueContains,
+  }) {
+    return IOSSelector(
+      value: value ?? this.value,
+      instance: instance ?? this.instance,
+      elementType: elementType ?? this.elementType,
+      identifier: identifier ?? this.identifier,
+      label: label ?? this.label,
+      labelStartsWith: labelStartsWith ?? this.labelStartsWith,
+      labelContains: labelContains ?? this.labelContains,
+      title: title ?? this.title,
+      titleStartsWith: titleStartsWith ?? this.titleStartsWith,
+      titleContains: titleContains ?? this.titleContains,
+      hasFocus: hasFocus ?? this.hasFocus,
+      isEnabled: isEnabled ?? this.isEnabled,
+      isSelected: isSelected ?? this.isSelected,
+      placeholderValue: placeholderValue ?? this.placeholderValue,
+      placeholderValueStartsWith:
+          placeholderValueStartsWith ?? this.placeholderValueStartsWith,
+      placeholderValueContains:
+          placeholderValueContains ?? this.placeholderValueContains,
+    );
+  }
 }
 
 @JsonSerializable()
@@ -565,6 +721,38 @@ class Selector with EquatableMixin {
         focused,
         pkg,
       ];
+
+  Selector copyWith({
+    String? text,
+    String? textStartsWith,
+    String? textContains,
+    String? className,
+    String? contentDescription,
+    String? contentDescriptionStartsWith,
+    String? contentDescriptionContains,
+    String? resourceId,
+    int? instance,
+    bool? enabled,
+    bool? focused,
+    String? pkg,
+  }) {
+    return Selector(
+      text: text ?? this.text,
+      textStartsWith: textStartsWith ?? this.textStartsWith,
+      textContains: textContains ?? this.textContains,
+      className: className ?? this.className,
+      contentDescription: contentDescription ?? this.contentDescription,
+      contentDescriptionStartsWith:
+          contentDescriptionStartsWith ?? this.contentDescriptionStartsWith,
+      contentDescriptionContains:
+          contentDescriptionContains ?? this.contentDescriptionContains,
+      resourceId: resourceId ?? this.resourceId,
+      instance: instance ?? this.instance,
+      enabled: enabled ?? this.enabled,
+      focused: focused ?? this.focused,
+      pkg: pkg ?? this.pkg,
+    );
+  }
 }
 
 @JsonSerializable()
@@ -593,6 +781,20 @@ class GetNativeViewsRequest with EquatableMixin {
         iosSelector,
         appId,
       ];
+
+  GetNativeViewsRequest copyWith({
+    Selector? selector,
+    AndroidSelector? androidSelector,
+    IOSSelector? iosSelector,
+    String? appId,
+  }) {
+    return GetNativeViewsRequest(
+      selector: selector ?? this.selector,
+      androidSelector: androidSelector ?? this.androidSelector,
+      iosSelector: iosSelector ?? this.iosSelector,
+      appId: appId ?? this.appId,
+    );
+  }
 }
 
 @JsonSerializable()
@@ -615,6 +817,17 @@ class GetNativeUITreeRequest with EquatableMixin {
         iosInstalledApps,
         useNativeViewHierarchy,
       ];
+
+  GetNativeUITreeRequest copyWith({
+    List<String>? iosInstalledApps,
+    bool? useNativeViewHierarchy,
+  }) {
+    return GetNativeUITreeRequest(
+      iosInstalledApps: iosInstalledApps ?? this.iosInstalledApps,
+      useNativeViewHierarchy:
+          useNativeViewHierarchy ?? this.useNativeViewHierarchy,
+    );
+  }
 }
 
 @JsonSerializable()
@@ -640,6 +853,18 @@ class GetNativeUITreeRespone with EquatableMixin {
         androidRoots,
         roots,
       ];
+
+  GetNativeUITreeRespone copyWith({
+    List<IOSNativeView>? iOSroots,
+    List<AndroidNativeView>? androidRoots,
+    List<NativeView>? roots,
+  }) {
+    return GetNativeUITreeRespone(
+      iOSroots: iOSroots ?? this.iOSroots,
+      androidRoots: androidRoots ?? this.androidRoots,
+      roots: roots ?? this.roots,
+    );
+  }
 }
 
 @JsonSerializable()
@@ -710,6 +935,48 @@ class AndroidNativeView with EquatableMixin {
         visibleCenter,
         children,
       ];
+
+  AndroidNativeView copyWith({
+    String? resourceName,
+    String? text,
+    String? className,
+    String? contentDescription,
+    String? applicationPackage,
+    int? childCount,
+    bool? isCheckable,
+    bool? isChecked,
+    bool? isClickable,
+    bool? isEnabled,
+    bool? isFocusable,
+    bool? isFocused,
+    bool? isLongClickable,
+    bool? isScrollable,
+    bool? isSelected,
+    Rectangle? visibleBounds,
+    Point2D? visibleCenter,
+    List<AndroidNativeView>? children,
+  }) {
+    return AndroidNativeView(
+      resourceName: resourceName ?? this.resourceName,
+      text: text ?? this.text,
+      className: className ?? this.className,
+      contentDescription: contentDescription ?? this.contentDescription,
+      applicationPackage: applicationPackage ?? this.applicationPackage,
+      childCount: childCount ?? this.childCount,
+      isCheckable: isCheckable ?? this.isCheckable,
+      isChecked: isChecked ?? this.isChecked,
+      isClickable: isClickable ?? this.isClickable,
+      isEnabled: isEnabled ?? this.isEnabled,
+      isFocusable: isFocusable ?? this.isFocusable,
+      isFocused: isFocused ?? this.isFocused,
+      isLongClickable: isLongClickable ?? this.isLongClickable,
+      isScrollable: isScrollable ?? this.isScrollable,
+      isSelected: isSelected ?? this.isSelected,
+      visibleBounds: visibleBounds ?? this.visibleBounds,
+      visibleCenter: visibleCenter ?? this.visibleCenter,
+      children: children ?? this.children,
+    );
+  }
 }
 
 @JsonSerializable()
@@ -759,6 +1026,34 @@ class IOSNativeView with EquatableMixin {
         placeholderValue,
         value,
       ];
+
+  IOSNativeView copyWith({
+    List<IOSNativeView>? children,
+    IOSElementType? elementType,
+    String? identifier,
+    String? label,
+    String? title,
+    bool? hasFocus,
+    bool? isEnabled,
+    bool? isSelected,
+    Rectangle? frame,
+    String? placeholderValue,
+    String? value,
+  }) {
+    return IOSNativeView(
+      children: children ?? this.children,
+      elementType: elementType ?? this.elementType,
+      identifier: identifier ?? this.identifier,
+      label: label ?? this.label,
+      title: title ?? this.title,
+      hasFocus: hasFocus ?? this.hasFocus,
+      isEnabled: isEnabled ?? this.isEnabled,
+      isSelected: isSelected ?? this.isSelected,
+      frame: frame ?? this.frame,
+      placeholderValue: placeholderValue ?? this.placeholderValue,
+      value: value ?? this.value,
+    );
+  }
 }
 
 @JsonSerializable()
@@ -787,6 +1082,20 @@ class Rectangle with EquatableMixin {
         maxX,
         maxY,
       ];
+
+  Rectangle copyWith({
+    double? minX,
+    double? minY,
+    double? maxX,
+    double? maxY,
+  }) {
+    return Rectangle(
+      minX: minX ?? this.minX,
+      minY: minY ?? this.minY,
+      maxX: maxX ?? this.maxX,
+      maxY: maxY ?? this.maxY,
+    );
+  }
 }
 
 @JsonSerializable()
@@ -809,6 +1118,16 @@ class Point2D with EquatableMixin {
         x,
         y,
       ];
+
+  Point2D copyWith({
+    double? x,
+    double? y,
+  }) {
+    return Point2D(
+      x: x ?? this.x,
+      y: y ?? this.y,
+    );
+  }
 }
 
 @JsonSerializable()
@@ -852,6 +1171,30 @@ class NativeView with EquatableMixin {
         applicationPackage,
         children,
       ];
+
+  NativeView copyWith({
+    String? className,
+    String? text,
+    String? contentDescription,
+    bool? focused,
+    bool? enabled,
+    int? childCount,
+    String? resourceName,
+    String? applicationPackage,
+    List<NativeView>? children,
+  }) {
+    return NativeView(
+      className: className ?? this.className,
+      text: text ?? this.text,
+      contentDescription: contentDescription ?? this.contentDescription,
+      focused: focused ?? this.focused,
+      enabled: enabled ?? this.enabled,
+      childCount: childCount ?? this.childCount,
+      resourceName: resourceName ?? this.resourceName,
+      applicationPackage: applicationPackage ?? this.applicationPackage,
+      children: children ?? this.children,
+    );
+  }
 }
 
 @JsonSerializable()
@@ -877,6 +1220,18 @@ class GetNativeViewsResponse with EquatableMixin {
         iosNativeViews,
         androidNativeViews,
       ];
+
+  GetNativeViewsResponse copyWith({
+    List<NativeView>? nativeViews,
+    List<IOSNativeView>? iosNativeViews,
+    List<AndroidNativeView>? androidNativeViews,
+  }) {
+    return GetNativeViewsResponse(
+      nativeViews: nativeViews ?? this.nativeViews,
+      iosNativeViews: iosNativeViews ?? this.iosNativeViews,
+      androidNativeViews: androidNativeViews ?? this.androidNativeViews,
+    );
+  }
 }
 
 @JsonSerializable()
@@ -911,6 +1266,25 @@ class TapRequest with EquatableMixin {
         timeoutMillis,
         delayBetweenTapsMillis,
       ];
+
+  TapRequest copyWith({
+    Selector? selector,
+    AndroidSelector? androidSelector,
+    IOSSelector? iosSelector,
+    String? appId,
+    int? timeoutMillis,
+    int? delayBetweenTapsMillis,
+  }) {
+    return TapRequest(
+      selector: selector ?? this.selector,
+      androidSelector: androidSelector ?? this.androidSelector,
+      iosSelector: iosSelector ?? this.iosSelector,
+      appId: appId ?? this.appId,
+      timeoutMillis: timeoutMillis ?? this.timeoutMillis,
+      delayBetweenTapsMillis:
+          delayBetweenTapsMillis ?? this.delayBetweenTapsMillis,
+    );
+  }
 }
 
 @JsonSerializable()
@@ -936,6 +1310,18 @@ class TapAtRequest with EquatableMixin {
         y,
         appId,
       ];
+
+  TapAtRequest copyWith({
+    double? x,
+    double? y,
+    String? appId,
+  }) {
+    return TapAtRequest(
+      x: x ?? this.x,
+      y: y ?? this.y,
+      appId: appId ?? this.appId,
+    );
+  }
 }
 
 @JsonSerializable()
@@ -982,6 +1368,32 @@ class EnterTextRequest with EquatableMixin {
         dx,
         dy,
       ];
+
+  EnterTextRequest copyWith({
+    String? data,
+    String? appId,
+    int? index,
+    Selector? selector,
+    AndroidSelector? androidSelector,
+    IOSSelector? iosSelector,
+    KeyboardBehavior? keyboardBehavior,
+    int? timeoutMillis,
+    double? dx,
+    double? dy,
+  }) {
+    return EnterTextRequest(
+      data: data ?? this.data,
+      appId: appId ?? this.appId,
+      index: index ?? this.index,
+      selector: selector ?? this.selector,
+      androidSelector: androidSelector ?? this.androidSelector,
+      iosSelector: iosSelector ?? this.iosSelector,
+      keyboardBehavior: keyboardBehavior ?? this.keyboardBehavior,
+      timeoutMillis: timeoutMillis ?? this.timeoutMillis,
+      dx: dx ?? this.dx,
+      dy: dy ?? this.dy,
+    );
+  }
 }
 
 @JsonSerializable()
@@ -1016,6 +1428,24 @@ class SwipeRequest with EquatableMixin {
         endY,
         steps,
       ];
+
+  SwipeRequest copyWith({
+    String? appId,
+    double? startX,
+    double? startY,
+    double? endX,
+    double? endY,
+    int? steps,
+  }) {
+    return SwipeRequest(
+      appId: appId ?? this.appId,
+      startX: startX ?? this.startX,
+      startY: startY ?? this.startY,
+      endX: endX ?? this.endX,
+      endY: endY ?? this.endY,
+      steps: steps ?? this.steps,
+    );
+  }
 }
 
 @JsonSerializable()
@@ -1047,6 +1477,22 @@ class WaitUntilVisibleRequest with EquatableMixin {
         appId,
         timeoutMillis,
       ];
+
+  WaitUntilVisibleRequest copyWith({
+    Selector? selector,
+    AndroidSelector? androidSelector,
+    IOSSelector? iosSelector,
+    String? appId,
+    int? timeoutMillis,
+  }) {
+    return WaitUntilVisibleRequest(
+      selector: selector ?? this.selector,
+      androidSelector: androidSelector ?? this.androidSelector,
+      iosSelector: iosSelector ?? this.iosSelector,
+      appId: appId ?? this.appId,
+      timeoutMillis: timeoutMillis ?? this.timeoutMillis,
+    );
+  }
 }
 
 @JsonSerializable()
@@ -1066,6 +1512,14 @@ class DarkModeRequest with EquatableMixin {
   List<Object?> get props => [
         appId,
       ];
+
+  DarkModeRequest copyWith({
+    String? appId,
+  }) {
+    return DarkModeRequest(
+      appId: appId ?? this.appId,
+    );
+  }
 }
 
 @JsonSerializable()
@@ -1094,6 +1548,20 @@ class Notification with EquatableMixin {
         content,
         raw,
       ];
+
+  Notification copyWith({
+    String? appName,
+    String? title,
+    String? content,
+    String? raw,
+  }) {
+    return Notification(
+      appName: appName ?? this.appName,
+      title: title ?? this.title,
+      content: content ?? this.content,
+      raw: raw ?? this.raw,
+    );
+  }
 }
 
 @JsonSerializable()
@@ -1113,6 +1581,14 @@ class GetNotificationsResponse with EquatableMixin {
   List<Object?> get props => [
         notifications,
       ];
+
+  GetNotificationsResponse copyWith({
+    List<Notification>? notifications,
+  }) {
+    return GetNotificationsResponse(
+      notifications: notifications ?? this.notifications,
+    );
+  }
 }
 
 @JsonSerializable()
@@ -1126,6 +1602,10 @@ class GetNotificationsRequest with EquatableMixin {
 
   @override
   List<Object?> get props => const [];
+
+  GetNotificationsRequest copyWith() {
+    return GetNotificationsRequest();
+  }
 }
 
 @JsonSerializable()
@@ -1157,6 +1637,22 @@ class TapOnNotificationRequest with EquatableMixin {
         iosSelector,
         timeoutMillis,
       ];
+
+  TapOnNotificationRequest copyWith({
+    int? index,
+    Selector? selector,
+    AndroidSelector? androidSelector,
+    IOSSelector? iosSelector,
+    int? timeoutMillis,
+  }) {
+    return TapOnNotificationRequest(
+      index: index ?? this.index,
+      selector: selector ?? this.selector,
+      androidSelector: androidSelector ?? this.androidSelector,
+      iosSelector: iosSelector ?? this.iosSelector,
+      timeoutMillis: timeoutMillis ?? this.timeoutMillis,
+    );
+  }
 }
 
 @JsonSerializable()
@@ -1177,6 +1673,14 @@ class PermissionDialogVisibleResponse with EquatableMixin {
   List<Object?> get props => [
         visible,
       ];
+
+  PermissionDialogVisibleResponse copyWith({
+    bool? visible,
+  }) {
+    return PermissionDialogVisibleResponse(
+      visible: visible ?? this.visible,
+    );
+  }
 }
 
 @JsonSerializable()
@@ -1196,6 +1700,14 @@ class PermissionDialogVisibleRequest with EquatableMixin {
   List<Object?> get props => [
         timeoutMillis,
       ];
+
+  PermissionDialogVisibleRequest copyWith({
+    int? timeoutMillis,
+  }) {
+    return PermissionDialogVisibleRequest(
+      timeoutMillis: timeoutMillis ?? this.timeoutMillis,
+    );
+  }
 }
 
 @JsonSerializable()
@@ -1215,6 +1727,14 @@ class HandlePermissionRequest with EquatableMixin {
   List<Object?> get props => [
         code,
       ];
+
+  HandlePermissionRequest copyWith({
+    HandlePermissionRequestCode? code,
+  }) {
+    return HandlePermissionRequest(
+      code: code ?? this.code,
+    );
+  }
 }
 
 @JsonSerializable()
@@ -1234,6 +1754,14 @@ class SetLocationAccuracyRequest with EquatableMixin {
   List<Object?> get props => [
         locationAccuracy,
       ];
+
+  SetLocationAccuracyRequest copyWith({
+    SetLocationAccuracyRequestLocationAccuracy? locationAccuracy,
+  }) {
+    return SetLocationAccuracyRequest(
+      locationAccuracy: locationAccuracy ?? this.locationAccuracy,
+    );
+  }
 }
 
 @JsonSerializable()
@@ -1259,6 +1787,18 @@ class SetMockLocationRequest with EquatableMixin {
         longitude,
         packageName,
       ];
+
+  SetMockLocationRequest copyWith({
+    double? latitude,
+    double? longitude,
+    String? packageName,
+  }) {
+    return SetMockLocationRequest(
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
+      packageName: packageName ?? this.packageName,
+    );
+  }
 }
 
 @JsonSerializable()
@@ -1278,6 +1818,14 @@ class MarkAppServiceReadyRequest with EquatableMixin {
   List<Object?> get props => [
         port,
       ];
+
+  MarkAppServiceReadyRequest copyWith({
+    int? port,
+  }) {
+    return MarkAppServiceReadyRequest(
+      port: port ?? this.port,
+    );
+  }
 }
 
 @JsonSerializable()
@@ -1297,6 +1845,14 @@ class IsSimulatorResponse with EquatableMixin {
   List<Object?> get props => [
         isSimulator,
       ];
+
+  IsSimulatorResponse copyWith({
+    bool? isSimulator,
+  }) {
+    return IsSimulatorResponse(
+      isSimulator: isSimulator ?? this.isSimulator,
+    );
+  }
 }
 
 @JsonSerializable()
@@ -1316,6 +1872,14 @@ class GetAndroidApiLevelResponse with EquatableMixin {
   List<Object?> get props => [
         apiLevel,
       ];
+
+  GetAndroidApiLevelResponse copyWith({
+    int? apiLevel,
+  }) {
+    return GetAndroidApiLevelResponse(
+      apiLevel: apiLevel ?? this.apiLevel,
+    );
+  }
 }
 
 @JsonSerializable()
@@ -1335,4 +1899,12 @@ class GetIosVersionResponse with EquatableMixin {
   List<Object?> get props => [
         version,
       ];
+
+  GetIosVersionResponse copyWith({
+    String? version,
+  }) {
+    return GetIosVersionResponse(
+      version: version ?? this.version,
+    );
+  }
 }

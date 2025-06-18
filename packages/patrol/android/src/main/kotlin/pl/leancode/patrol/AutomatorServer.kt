@@ -5,6 +5,7 @@ import pl.leancode.patrol.contracts.Contracts.ConfigureRequest
 import pl.leancode.patrol.contracts.Contracts.DarkModeRequest
 import pl.leancode.patrol.contracts.Contracts.EnterTextRequest
 import pl.leancode.patrol.contracts.Contracts.GetAndroidApiLevelResponse
+import pl.leancode.patrol.contracts.Contracts.GetIosVersionResponse
 import pl.leancode.patrol.contracts.Contracts.GetNativeUITreeRequest
 import pl.leancode.patrol.contracts.Contracts.GetNativeUITreeRespone
 import pl.leancode.patrol.contracts.Contracts.GetNativeViewsRequest
@@ -373,5 +374,9 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
 
     override fun getAndroidApiLevel(): GetAndroidApiLevelResponse {
         return GetAndroidApiLevelResponse(Build.VERSION.SDK_INT.toLong())
+    }
+
+    override fun getIosVersion(): GetIosVersionResponse {
+        throw PatrolException("getIosVersion() is not supported on Android")
     }
 }

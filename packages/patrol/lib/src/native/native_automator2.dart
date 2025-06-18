@@ -1010,64 +1010,6 @@ class NativeAutomator2 {
       'pickMultipleImagesFromGallery',
       () async {
         final apiLevel = await getAndroidApiLevel();
-        // Helper function to create AndroidSelector with overridden instance
-        AndroidSelector? copyAndroidSelectorWithInstance(
-          AndroidSelector? selector,
-          int instance,
-        ) {
-          if (selector == null) {
-            return null;
-          }
-          return AndroidSelector(
-            className: selector.className,
-            isCheckable: selector.isCheckable,
-            isChecked: selector.isChecked,
-            isClickable: selector.isClickable,
-            isEnabled: selector.isEnabled,
-            isFocusable: selector.isFocusable,
-            isFocused: selector.isFocused,
-            isLongClickable: selector.isLongClickable,
-            isScrollable: selector.isScrollable,
-            isSelected: selector.isSelected,
-            applicationPackage: selector.applicationPackage,
-            contentDescription: selector.contentDescription,
-            contentDescriptionStartsWith: selector.contentDescriptionStartsWith,
-            contentDescriptionContains: selector.contentDescriptionContains,
-            text: selector.text,
-            textStartsWith: selector.textStartsWith,
-            textContains: selector.textContains,
-            resourceName: selector.resourceName,
-            instance: instance, // Override instance
-          );
-        }
-
-        // Helper function to create IOSSelector with overridden instance
-        IOSSelector? copyIOSSelectorWithInstance(
-          IOSSelector? selector,
-          int instance,
-        ) {
-          if (selector == null) {
-            return null;
-          }
-          return IOSSelector(
-            value: selector.value,
-            elementType: selector.elementType,
-            identifier: selector.identifier,
-            label: selector.label,
-            labelStartsWith: selector.labelStartsWith,
-            labelContains: selector.labelContains,
-            title: selector.title,
-            titleStartsWith: selector.titleStartsWith,
-            titleContains: selector.titleContains,
-            hasFocus: selector.hasFocus,
-            isEnabled: selector.isEnabled,
-            isSelected: selector.isSelected,
-            placeholderValue: selector.placeholderValue,
-            placeholderValueStartsWith: selector.placeholderValueStartsWith,
-            placeholderValueContains: selector.placeholderValueContains,
-            instance: instance, // Override instance
-          );
-        }
 
         // Create selector with overridden instance or use default
         Future<NativeSelector> nativeImageSelector(int i) async {
@@ -1079,12 +1021,8 @@ class NativeAutomator2 {
           }
           return imageSelector != null
               ? NativeSelector(
-                  android:
-                      copyAndroidSelectorWithInstance(imageSelector.android, i),
-                  ios: copyIOSSelectorWithInstance(
-                    imageSelector.ios,
-                    iosInstance,
-                  ),
+                  android: imageSelector.android?.copyWith(instance: i),
+                  ios: imageSelector.ios?.copyWith(instance: iosInstance),
                 )
               : NativeSelector(
                   android: AndroidSelector(

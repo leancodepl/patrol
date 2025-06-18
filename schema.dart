@@ -302,6 +302,10 @@ class GetAndroidApiLevelResponse {
   late int apiLevel;
 }
 
+class GetIosVersionResponse {
+  late String version;
+}
+
 abstract class NativeAutomator<IOSServer, AndroidServer, DartClient> {
   void initialize();
   void configure(ConfigureRequest request);
@@ -366,6 +370,8 @@ abstract class NativeAutomator<IOSServer, AndroidServer, DartClient> {
   IsSimulatorResponse isSimulator();
 
   GetAndroidApiLevelResponse getAndroidApiLevel();
+
+  GetIosVersionResponse getIosVersion();
 }
 
 enum IOSElementType {

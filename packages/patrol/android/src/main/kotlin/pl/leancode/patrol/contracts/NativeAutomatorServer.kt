@@ -57,6 +57,7 @@ abstract class NativeAutomatorServer {
     abstract fun markPatrolAppServiceReady(request: Contracts.MarkAppServiceReadyRequest)
     abstract fun isSimulator(): Contracts.IsSimulatorResponse
     abstract fun getAndroidApiLevel(): Contracts.GetAndroidApiLevelResponse
+    abstract fun getIosVersion(): Contracts.GetIosVersionResponse
 
     val router = routes(
       "initialize" bind POST to {
@@ -254,6 +255,10 @@ abstract class NativeAutomatorServer {
       },
       "getAndroidApiLevel" bind POST to {
         val response = getAndroidApiLevel()
+        Response(OK).body(json.toJson(response))
+      },
+      "getIosVersion" bind POST to {
+        val response = getIosVersion()
         Response(OK).body(json.toJson(response))
       }
     )
