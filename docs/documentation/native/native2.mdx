@@ -1,16 +1,16 @@
 ---
-title: Native Automation 2.0 (Native2)
+title: Native Automation 2.0 (native2)
 ---
 
 <Info>
-`Native2` is available starting from Patrol version `3.6.0`.
+`native2` is available starting from Patrol version `3.6.0`.
 </Info>
 
 ## What is `native2`?
 
-`Native2` was created to address fundamental limitations in the original native automation approach. The original native API was primarily designed for Android, and attempts to make a single `Selector` work across both
-platforms proved problematic because **iOS and Android use different selector arguments** (Android's `resourceName` vs iOS's `identifier`) and a single selector approach couldn't effectively handle the fundamental differences
-between iOS and Android element identification. **`Native2` provides platform-specific selectors that work with both Android and iOS, giving you more accurate platform-specific selectors instead of one shared selector.**
+`native2` was created to address fundamental limitations in the original native automation approach. The original native API was primarily designed for Android, and attempts to make a single `Selector` work across both
+platforms proved problematic because **iOS and Android use different selector arguments** (eg. Android's `resourceName` vs iOS's `identifier`) and a single selector approach couldn't effectively handle the fundamental differences
+between iOS and Android element identification. **`native2` provides platform-specific selectors that work with both Android and iOS, giving you more accurate selectors instead of one shared selector.**
 
 
 ### Before `native2`
@@ -31,7 +31,7 @@ if (Platform.isAndroid) {
 
 ### With `native2`
 
-`Native2` provides a single method call that works across both platforms:
+`native2` provides a single method call that works across both platforms:
 
 ```dart
 // After: Single method call with platform-specific selectors
@@ -98,5 +98,5 @@ await $.native2.tap(
 ```
 
 <Info>
-Remember that if you don't provide a platform-specific selector (iOS or Android) and run the command on that platform, the command will fail
+Remember that if you don't provide a platform-specific selector (iOS or Android) and run the command on that platform, the command will fail.
 </Info>
