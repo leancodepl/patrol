@@ -1022,7 +1022,7 @@ class NativeAutomator {
     );
   }
 
-  /// Take a photo and confirm the photo
+  /// Take and confirm the photo
   ///
   /// This method taps on the camera shutter button to take a photo, then taps
   /// on the confirmation button to accept it.
