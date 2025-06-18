@@ -6,7 +6,7 @@ title: Native Automation 2.0 (Native2)
 Native2 is available starting from Patrol version `3.6.0`.
 </Info>
 
-## What is native2?
+## What is `native2`?
 
 Native2 was created to address fundamental limitations in the original native automation approach. The original native API was primarily designed for Android, and attempts to make a single `Selector` work across both platforms proved problematic because:
 
@@ -17,7 +17,7 @@ Native2 was created to address fundamental limitations in the original native au
 Native2 provides a **single command** that can work with both Android and iOS selectors, eliminating the need to write separate platform-specific code. Instead of maintaining different methods for each platform, you can now use one method that accepts platform-specific selectors that acknowledge the inherent differences between platforms.
 
 
-### Before native2 (Separate Methods)
+### Before `native2` (Separate Methods)
 
 ```dart
 // You were forced to use flaky text-based selectors that work on both platforms
@@ -33,7 +33,7 @@ if (Platform.isAndroid) {
 }
 ```
 
-### With native2
+### With `native2`
 
 Native2 provides a single method that works across both platforms:
 
