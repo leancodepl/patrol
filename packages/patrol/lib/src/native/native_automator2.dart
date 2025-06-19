@@ -684,6 +684,31 @@ class NativeAutomator2 {
     );
   }
 
+  /// Mimics the swipe back (left to right) gesture.
+  ///
+  /// [dy] determines the vertical offset of the swipe. It must be in the inclusive 0-1 range.
+  ///
+  /// [appId] optionally specifies the application ID to target.
+  ///
+  /// This is equivalent to:
+  /// $.native.swipe(
+  ///    from: Offset(0, dy),
+  ///    to: Offset(1, dy),
+  ///    appId: appId,
+  ///  );
+  ///
+  /// On Android, navigation with gestures might have to be turned on in devices settings.
+  ///
+  /// Example usage:
+  /// ```dart
+  /// await tester.swipeBack(height: 0.2); // Swipe back at 1/5 height of the screen
+  /// await tester.swipeBack(); // Swipe back at the center of the screen
+  /// ```
+  Future<void> swipeBack({double dy = 0.5, String? appId}) {
+    assert(dy >= 0.0 && dy <= 1.0, 'dy must be between 0.0 and 1.0');
+    return swipe(from: Offset(0, dy), to: Offset(1, dy), appId: appId);
+  }
+
   /// Waits until the native view specified by [selector] becomes visible.
   /// It waits for the view to become visible for [timeout] duration. If
   /// [timeout] is not specified, it utilizes the
