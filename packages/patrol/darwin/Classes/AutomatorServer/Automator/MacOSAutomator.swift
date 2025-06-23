@@ -393,7 +393,7 @@
     }
     /// macOS doesn't have simulators like iOS
     func isSimulator() -> Bool {
-      return false  
+      return false
     }
 
     func getIosVersion() -> String {
