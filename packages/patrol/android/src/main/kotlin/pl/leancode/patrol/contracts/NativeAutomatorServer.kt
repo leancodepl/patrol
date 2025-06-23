@@ -54,7 +54,7 @@ abstract class NativeAutomatorServer {
     abstract fun setLocationAccuracy(request: Contracts.SetLocationAccuracyRequest)
     abstract fun debug()
     abstract fun setMockLocation(request: Contracts.SetMockLocationRequest)
-    abstract fun markPatrolAppServiceReady(request: Contracts.MarkAppServiceReadyRequest)
+    abstract fun markPatrolAppServiceReady()
     abstract fun isSimulator(): Contracts.IsSimulatorResponse
     abstract fun getAndroidApiLevel(): Contracts.GetAndroidApiLevelResponse
     abstract fun getIosVersion(): Contracts.GetIosVersionResponse
@@ -245,8 +245,7 @@ abstract class NativeAutomatorServer {
         Response(OK)
       },
       "markPatrolAppServiceReady" bind POST to {
-        val body = json.fromJson(it.bodyString(), Contracts.MarkAppServiceReadyRequest::class.java)
-        markPatrolAppServiceReady(body)
+        markPatrolAppServiceReady()
         Response(OK)
       },
       "isSimulator" bind POST to {

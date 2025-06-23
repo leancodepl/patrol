@@ -56,7 +56,6 @@
       [app resetAuthorizationStatusForResource:XCUIProtectedResourceMediaLibrary];                              \
       [app resetAuthorizationStatusForResource:XCUIProtectedResourceKeyboardNetwork];                           \
     }                                                                                                           \
-                                                                                                                \
     if (@available(iOS 14.0, *)) {                                                                              \
       [app resetAuthorizationStatusForResource:XCUIProtectedResourceHealth];                                    \
     }                                                                                                           \
@@ -81,7 +80,7 @@
     }                                                                                                           \
                                                                                                                 \
     /* Create a client for PatrolAppService, which lets us list and run Dart tests */                           \
-    __block ObjCPatrolAppServiceClient *appServiceClient = nil;                                                 \
+    __block ObjCPatrolAppServiceClient *appServiceClient = [[ObjCPatrolAppServiceClient alloc] init];           \
                                                                                                                 \
     /* Allow the Local Network permission required by Dart Observatory */                                       \
     XCUIApplication *springboard = [[XCUIApplication alloc] initWithBundleIdentifier:@"com.apple.springboard"]; \
@@ -96,18 +95,11 @@
       dartTests = [NSArray arrayWithObject:[self selectedTest]];                                                \
     } else {                                                                                                    \
       /* Run the app for the first time to gather Dart tests */                                                 \
-      XCUIApplication *app = [[XCUIApplication alloc] init];                                                    \
-      app.launchArguments = @[ @"port", [@(server.port) stringValue] ];                                         \
-      [app launch];                                                                                             \
+      [[[XCUIApplication alloc] init] launch];                                                                  \
       /* Spin the runloop waiting until the app reports that it is ready to report Dart tests */                \
       while (!server.appReady) {                                                                                \
         [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];                      \
       }                                                                                                         \
-      NSInteger appServerPort = server.appServerPort;                                                           \
-                                                                                                                \
-      /* Create a client for PatrolAppService, which lets us list and run Dart tests */                         \
-      appServiceClient = [[ObjCPatrolAppServiceClient alloc] initWithPort:appServerPort];                       \
-                                                                                                                \
       [appServiceClient                                                                                         \
           listDartTestsWithCompletion:^(NSArray<NSDictionary *> *_Nullable tests, NSError *_Nullable err) {     \
             if (err != NULL) {                                                                                  \
@@ -142,26 +134,13 @@
                                                                                                                 \
       IMP implementation = imp_implementationWithBlock(^(id _self) {                                            \
         [self resetPermissions];                                                                                \
-        XCUIApplication *app = [[XCUIApplication alloc] init];                                                  \
-        NSString *portValue = @[ @"port", [@(server.port) stringValue] ];                                       \
-        NSLog(@"Received PatrolServer port: %@", portValue);                                                    \
-        server.appReady = NO;                                                                                   \
-        app.launchArguments = @[ @"port", [@(server.port) stringValue] ];                                       \
-        [app launch];                                                                                           \
+        [[[XCUIApplication alloc] init] launch];                                                                \
         if (skip) {                                                                                             \
           XCTSkip(@"Skip that test \"%@\"", dartTestName);                                                      \
         }                                                                                                       \
                                                                                                                 \
         __block ObjCRunDartTestResponse *response = NULL;                                                       \
         __block NSError *error;                                                                                 \
-        /* Spin the runloop waiting until the app reports that it is ready to perform Dart tests */             \
-        while (!server.appReady) {                                                                              \
-          [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];                    \
-        }                                                                                                       \
-        NSInteger appServerPort = server.appServerPort;                                                         \
-                                                                                                                \
-        /* Create a client for PatrolAppService, which lets us list and run Dart tests */                       \
-        appServiceClient = [[ObjCPatrolAppServiceClient alloc] initWithPort:appServerPort];                     \
         [appServiceClient                                                                                       \
             runDartTestWithName:dartTestName                                                                    \
                      completion:^(ObjCRunDartTestResponse *_Nullable r, NSError *_Nullable err) {               \
@@ -243,7 +222,8 @@
       NSLog(@"patrolServer.start(): failed, err: %@", err);                                                     \
     }                                                                                                           \
                                                                                                                 \
-    __block ObjCPatrolAppServiceClient *appServiceClient = nil;                                                 \
+    /* Create a client for PatrolAppService, which lets us list and run Dart tests */                           \
+    __block ObjCPatrolAppServiceClient *appServiceClient = [[ObjCPatrolAppServiceClient alloc] init];           \
                                                                                                                 \
     /* Allow the Local Network permission required by Dart Observatory */                                       \
     XCUIApplication *springboard = [[XCUIApplication alloc] initWithBundleIdentifier:@"com.apple.springboard"]; \
@@ -258,18 +238,11 @@
       dartTests = [NSArray arrayWithObject:[self selectedTest]];                                                \
     } else {                                                                                                    \
       /* Run the app for the first time to gather Dart tests */                                                 \
-      XCUIApplication *app = [[XCUIApplication alloc] init];                                                    \
-      app.launchArguments = @[ @"port", [@(server.port) stringValue] ];                                         \
-      [app launch];                                                                                             \
+      [[[XCUIApplication alloc] init] launch];                                                                  \
       /* Spin the runloop waiting until the app reports that it is ready to report Dart tests */                \
       while (!server.appReady) {                                                                                \
         [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];                      \
       }                                                                                                         \
-      NSInteger appServerPort = server.appServerPort;                                                           \
-                                                                                                                \
-      /* Create a client for PatrolAppService, which lets us list and run Dart tests */                         \
-      appServiceClient = [[ObjCPatrolAppServiceClient alloc] initWithPort:appServerPort];                       \
-                                                                                                                \
       [appServiceClient                                                                                         \
           listDartTestsWithCompletion:^(NSArray<NSDictionary *> *_Nullable tests, NSError *_Nullable err) {     \
             if (err != NULL) {                                                                                  \
@@ -303,26 +276,13 @@
       BOOL skip = [dartTest[@"skip"] boolValue];                                                                \
                                                                                                                 \
       IMP implementation = imp_implementationWithBlock(^(id _self) {                                            \
-        XCUIApplication *app = [[XCUIApplication alloc] init];                                                  \
-        NSString *portValue = @[ @"port", [@(server.port) stringValue] ];                                       \
-        NSLog(@"Received PatrolServer port: %@", portValue);                                                    \
-        server.appReady = NO;                                                                                   \
-        app.launchArguments = @[ @"port", [@(server.port) stringValue] ];                                       \
-        [app launch];                                                                                           \
+        [[[XCUIApplication alloc] init] launch];                                                                \
         if (skip) {                                                                                             \
           XCTSkip(@"Skip that test \"%@\"", dartTestName);                                                      \
         }                                                                                                       \
                                                                                                                 \
         __block ObjCRunDartTestResponse *response = NULL;                                                       \
         __block NSError *error;                                                                                 \
-        /* Spin the runloop waiting until the app reports that it is ready to perform Dart tests */             \
-        while (!server.appReady) {                                                                              \
-          [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];                    \
-        }                                                                                                       \
-        NSInteger appServerPort = server.appServerPort;                                                         \
-                                                                                                                \
-        /* Create a client for PatrolAppService, which lets us list and run Dart tests */                       \
-        appServiceClient = [[ObjCPatrolAppServiceClient alloc] initWithPort:appServerPort];                     \
         [appServiceClient                                                                                       \
             runDartTestWithName:dartTestName                                                                    \
                      completion:^(ObjCRunDartTestResponse *_Nullable r, NSError *_Nullable err) {               \

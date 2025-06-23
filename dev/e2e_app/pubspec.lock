@@ -145,11 +145,11 @@ packages:
   cross_file:
     dependency: transitive
     description:
-      name: cross_file
-      sha256: "7caf6a750a0c04effbb52a676dce9a4a592e10ad35c34d6d2d0e4811160d5670"
+      name: coverage
+      sha256: "802bd084fb82e55df091ec8ad1553a7331b61c08251eef19a508b6f3f3a9858d"
       url: "https://pub.dev"
     source: hosted
-    version: "0.3.4+2"
+    version: "1.13.1"
   crypto:
     dependency: transitive
     description:
@@ -707,7 +707,14 @@ packages:
       path: "../../packages/patrol"
       relative: true
     source: path
-    version: "3.16.0-dev.2"
+    version: "3.15.2"
+  patrol_cli:
+    dependency: "direct dev"
+    description:
+      path: "../../packages/patrol_cli"
+      relative: true
+    source: path
+    version: "3.6.0"
   patrol_finders:
     dependency: transitive
     description:
@@ -788,6 +795,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.8"
+  process:
+    dependency: transitive
+    description:
+      name: process
+      sha256: "44b4226c0afd4bc3b7c7e67d44c4801abd97103cf0c84609e2654b664ca2798c"
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.0.4"
   pub_semver:
     dependency: transitive
     description:
@@ -993,6 +1008,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.16.0"
+  win32:
+    dependency: transitive
+    description:
+      name: win32
+      sha256: "329edf97fdd893e0f1e3b9e88d6a0e627128cc17cc316a8d67fda8f1451178ba"
+      url: "https://pub.dev"
+    source: hosted
+    version: "5.13.0"
   xdg_directories:
     dependency: transitive
     description:
@@ -1018,5 +1041,5 @@ packages:
     source: hosted
     version: "3.1.2"
 sdks:
-  dart: ">=3.7.0-0 <4.0.0"
-  flutter: ">=3.27.0"
+  dart: ">=3.8.0 <4.0.0"
+  flutter: ">=3.32.0"

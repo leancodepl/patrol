@@ -1,10 +1,12 @@
-## 3.16.0-dev.2
+## 3.16.0
+
 - Make activity aliases work in PatrolJUnitRunner
-
-## 3.16.0-dev.1
-
-- Dynamically select port on all platforms. (#2527)
 - Update test reports to show all exceptions thrown in Flutter. (#2362)
+- Bump min Flutter SDK to 3.32.0 (#2649)
+
+## 3.15.2
+
+- Bump `vm_service` dependency to `15.0.0` (#2636)
 
 ## 3.15.1
 

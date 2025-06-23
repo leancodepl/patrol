@@ -1,6 +1,7 @@
 package pl.leancode.patrol
 
 import android.os.Build
+import pl.leancode.patrol.contracts.Contracts
 import pl.leancode.patrol.contracts.Contracts.ConfigureRequest
 import pl.leancode.patrol.contracts.Contracts.DarkModeRequest
 import pl.leancode.patrol.contracts.Contracts.EnterTextRequest
@@ -18,14 +19,12 @@ import pl.leancode.patrol.contracts.Contracts.IsSimulatorResponse
 import pl.leancode.patrol.contracts.Contracts.MarkAppServiceReadyRequest
 import pl.leancode.patrol.contracts.Contracts.OpenAppRequest
 import pl.leancode.patrol.contracts.Contracts.OpenQuickSettingsRequest
-import pl.leancode.patrol.contracts.Contracts.OpenUrlRequest
 import pl.leancode.patrol.contracts.Contracts.PermissionDialogVisibleRequest
 import pl.leancode.patrol.contracts.Contracts.PermissionDialogVisibleResponse
 import pl.leancode.patrol.contracts.Contracts.SetLocationAccuracyRequest
 import pl.leancode.patrol.contracts.Contracts.SetLocationAccuracyRequestLocationAccuracy
 import pl.leancode.patrol.contracts.Contracts.SetMockLocationRequest
 import pl.leancode.patrol.contracts.Contracts.SwipeRequest
-import pl.leancode.patrol.contracts.Contracts.TapAtRequest
 import pl.leancode.patrol.contracts.Contracts.TapOnNotificationRequest
 import pl.leancode.patrol.contracts.Contracts.TapRequest
 import pl.leancode.patrol.contracts.Contracts.WaitUntilVisibleRequest
@@ -77,7 +76,7 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
         automation.openQuickSettings()
     }
 
-    override fun openUrl(request: OpenUrlRequest) {
+    override fun openUrl(request: Contracts.OpenUrlRequest) {
         automation.openUrl(request.url)
     }
 
@@ -223,7 +222,7 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
         }
     }
 
-    override fun tapAt(request: TapAtRequest) {
+    override fun tapAt(request: Contracts.TapAtRequest) {
         automation.tapAt(
             x = request.x.toFloat(),
             y = request.y.toFloat()
@@ -347,8 +346,7 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
         }
     }
 
-    override fun markPatrolAppServiceReady(request: MarkAppServiceReadyRequest) {
-        PatrolServer.appServerPort = request.port?.toInt()
+    override fun markPatrolAppServiceReady() {
         PatrolServer.appReady.open()
     }
 

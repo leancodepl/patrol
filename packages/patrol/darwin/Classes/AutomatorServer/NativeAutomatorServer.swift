@@ -47,7 +47,7 @@ protocol NativeAutomatorServer {
     func setLocationAccuracy(request: SetLocationAccuracyRequest) throws
     func debug() throws
     func setMockLocation(request: SetMockLocationRequest) throws
-    func markPatrolAppServiceReady(request: MarkAppServiceReadyRequest) throws
+    func markPatrolAppServiceReady() throws
     func isSimulator() throws -> IsSimulatorResponse
     func getAndroidApiLevel() throws -> GetAndroidApiLevelResponse
     func getIosVersion() throws -> GetIosVersionResponse
@@ -284,8 +284,7 @@ extension NativeAutomatorServer {
     }
 
     private func markPatrolAppServiceReadyHandler(request: HTTPRequest) throws -> HTTPResponse {
-        let requestArg = try JSONDecoder().decode(MarkAppServiceReadyRequest.self, from: request.body)
-        try markPatrolAppServiceReady(request: requestArg)
+        try markPatrolAppServiceReady()
         return HTTPResponse(.ok)
     }
 
