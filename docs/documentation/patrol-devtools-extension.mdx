@@ -85,13 +85,43 @@ await $.native2.tap(NativeSelector(
 
 ### Key Properties Reference
 
-| Android Property | iOS Property | Description | Example |
-|------------------|--------------|-------------|---------|
-| `resourceName` | `identifier` | Unique ID (most reliable) | `com.app:id/btn` / `loginButton` |
-| `text` | `label` | Visible text content | `"Sign In"` |
-| `contentDescription` | `label` | Accessibility description | `"Login button"` |
-| `className` | `elementType` | UI element type | `android.widget.Button` / `XCUIElementTypeButton` |
-| `enabled` | `enabled` | Interactive state | `true`/`false` |
+#### Android Properties
+
+| Property | Description | Example |
+|----------|-------------|---------|
+| `resourceName` | Unique resource ID (most reliable) | `com.app:id/login_btn` |
+| `text` | Visible text content | `"Sign In"` |
+| `className` | UI element type | `android.widget.Button` |
+| `contentDescription` | Accessibility description | `"Login button"` |
+| `applicationPackage` | App package name | `com.example.app` |
+| `childCount` | Number of child elements | `3` |
+| `isEnabled` | Whether element is interactive | `true`/`false` |
+| `isClickable` | Whether element is clickable | `true`/`false` |
+| `isFocusable` | Whether element can receive focus | `true`/`false` |
+| `isFocused` | Whether element currently has focus | `true`/`false` |
+| `isSelected` | Whether element is selected | `true`/`false` |
+| `isCheckable` | Whether element can be checked | `true`/`false` |
+| `isChecked` | Whether element is currently checked | `true`/`false` |
+| `isLongClickable` | Whether element supports long press | `true`/`false` |
+| `isScrollable` | Whether element is scrollable | `true`/`false` |
+| `visibleBounds` | Element's visible bounds | `minX: 100, minY: 200, maxX: 300, maxY: 250` |
+| `visibleCenter` | Element's center point | `x: 200, y: 225` |
+
+#### iOS Properties
+
+| Property | Description | Example |
+|----------|-------------|---------|
+| `identifier` | Unique identifier (most reliable) | `loginButton` |
+| `elementType` | UI element type | `XCUIElementTypeButton` |
+| `label` | Accessibility label | `"Sign In"` |
+| `title` | Element title | `"Login"` |
+| `isEnabled` | Whether element is interactive | `true`/`false` |
+| `isSelected` | Whether element is selected | `true`/`false` |
+| `hasFocus` | Whether element has focus | `true`/`false` |
+| `placeholderValue` | Placeholder text | `"Enter email"` |
+| `value` | Element value | `"user@example.com"` |
+| `frame` | Element's frame | `minX: 100, minY: 200, maxX: 300, maxY: 250` |
+
 
 ## Flutter devtools
 After opening patrol devtools link you can also use a Flutter inspector to see widgets and their
