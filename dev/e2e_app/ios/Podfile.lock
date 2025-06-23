@@ -24,9 +24,6 @@ PODS:
     - Flutter
   - objective_c (0.0.1):
     - Flutter
-  - path_provider_foundation (0.0.1):
-    - Flutter
-    - FlutterMacOS
   - patrol (0.0.1):
     - CocoaAsyncSocket (~> 7.6)
     - Flutter
@@ -46,7 +43,6 @@ DEPENDENCIES:
   - google_maps_flutter_ios (from `.symlinks/plugins/google_maps_flutter_ios/ios`)
   - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
   - objective_c (from `.symlinks/plugins/objective_c/ios`)
-  - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
   - patrol (from `.symlinks/plugins/patrol/darwin`)
   - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
   - webview_flutter_wkwebview (from `.symlinks/plugins/webview_flutter_wkwebview/darwin`)
@@ -74,8 +70,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/image_picker_ios/ios"
   objective_c:
     :path: ".symlinks/plugins/objective_c/ios"
-  path_provider_foundation:
-    :path: ".symlinks/plugins/path_provider_foundation/darwin"
   patrol:
     :path: ".symlinks/plugins/patrol/darwin"
   permission_handler_apple:
@@ -95,7 +89,6 @@ SPEC CHECKSUMS:
   GoogleMaps: 8939898920281c649150e0af74aa291c60f2e77d
   image_picker_ios: 7fe1ff8e34c1790d6fff70a32484959f563a928a
   objective_c: 89e720c30d716b036faf9c9684022048eee1eee2
-  path_provider_foundation: 080d55be775b7414fd5a5ef3ac137b97b097e564
   patrol: 51b76cc7c11a2933ee3e72482d930c75b9d4ec73
   permission_handler_apple: 4ed2196e43d0651e8ff7ca3483a069d469701f2d
   webview_flutter_wkwebview: 44d4dee7d7056d5ad185d25b38404436d56c547c
