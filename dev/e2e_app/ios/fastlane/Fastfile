@@ -18,6 +18,7 @@ platform :ios do
     )
 
     match(
+      readonly: false,
       type: "development",
       git_basic_authorization: Base64.strict_encode64(git_authorization),
       app_identifier: ["pl.leancode.patrol.*"]
