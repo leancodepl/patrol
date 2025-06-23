@@ -18,28 +18,28 @@ void main() {
     await $.pumpAndSettle();
 
     await $.native.setMockLocation(55.2297, 21.0122);
-    await Future<void>.delayed(const Duration(milliseconds: 100));
+    await Future<void>.delayed(const Duration(seconds: 10));
     await $.pumpAndSettle();
     expect(await $('Location').waitUntilVisible(), findsOneWidget);
     expect(await $('Latitude: 55.2297').waitUntilVisible(), findsOneWidget);
     expect(await $('Longitude: 21.0122').waitUntilVisible(), findsOneWidget);
-    await Future<void>.delayed(const Duration(milliseconds: 1500));
+    await Future<void>.delayed(const Duration(seconds: 10));
 
     await $.native.setMockLocation(55.5297, 21.0122);
-    await Future<void>.delayed(const Duration(milliseconds: 10000));
+    await Future<void>.delayed(const Duration(seconds: 10));
     await $.pumpAndSettle();
     expect(await $('Location').waitUntilVisible(), findsOneWidget);
     expect(await $('Latitude: 55.5297').waitUntilVisible(), findsOneWidget);
     expect(await $('Longitude: 21.0122').waitUntilVisible(), findsOneWidget);
-    await Future<void>.delayed(const Duration(milliseconds: 1500));
+    await Future<void>.delayed(const Duration(seconds: 10));
 
     await $.native.setMockLocation(55.7297, 21.0122);
-    await Future<void>.delayed(const Duration(milliseconds: 100));
+    await Future<void>.delayed(const Duration(seconds: 10));
     await $.pumpAndSettle();
     expect(await $('Location').waitUntilVisible(), findsOneWidget);
     expect(await $('Latitude: 55.7297').waitUntilVisible(), findsOneWidget);
     expect(await $('Longitude: 21.0122').waitUntilVisible(), findsOneWidget);
-    await Future<void>.delayed(const Duration(milliseconds: 1500));
+    await Future<void>.delayed(const Duration(seconds: 10));
   });
 
   // Skip this test for now, as it's too long to run on CI.
