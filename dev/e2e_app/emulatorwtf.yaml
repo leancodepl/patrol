@@ -29,13 +29,13 @@ all_devices:
 ci_devices:
   device:
     - model: Pixel7
-      version: 34
+      version: 31
       gpu: auto
     - model: NexusLowRes
-      version: 32
+      version: 31
       gpu: auto
     - model: Tablet10
-      version: 33
+      version: 31
       gpu: auto
     # Unstable, see https://github.com/leancodepl/patrol/issues/1445
     # - model: Pixel2
