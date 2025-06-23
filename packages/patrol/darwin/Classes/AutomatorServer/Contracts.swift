@@ -388,10 +388,6 @@ public struct SetMockLocationRequest: Codable {
   public var packageName: String
 }
 
-public struct MarkAppServiceReadyRequest: Codable {
-  public var port: Int?
-}
-
 public struct IsSimulatorResponse: Codable {
   public var isSimulator: Bool
 }

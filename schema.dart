@@ -290,10 +290,6 @@ class SetMockLocationRequest {
   late String packageName;
 }
 
-class MarkAppServiceReadyRequest {
-  int? port;
-}
-
 class IsSimulatorResponse {
   late bool isSimulator;
 }
@@ -365,7 +361,8 @@ abstract class NativeAutomator<IOSServer, AndroidServer, DartClient> {
   void debug();
   void setMockLocation(SetMockLocationRequest request);
 
-  void markPatrolAppServiceReady(MarkAppServiceReadyRequest request);
+  // TODO(bartekpacia): Move this RPC into a new PatrolNativeTestService service because it doesn't fit here
+  void markPatrolAppServiceReady();
 
   IsSimulatorResponse isSimulator();
 

@@ -808,18 +808,6 @@ Map<String, dynamic> _$SetMockLocationRequestToJson(
       'packageName': instance.packageName,
     };
 
-MarkAppServiceReadyRequest _$MarkAppServiceReadyRequestFromJson(
-        Map<String, dynamic> json) =>
-    MarkAppServiceReadyRequest(
-      port: (json['port'] as num?)?.toInt(),
-    );
-
-Map<String, dynamic> _$MarkAppServiceReadyRequestToJson(
-        MarkAppServiceReadyRequest instance) =>
-    <String, dynamic>{
-      'port': instance.port,
-    };
-
 IsSimulatorResponse _$IsSimulatorResponseFromJson(Map<String, dynamic> json) =>
     IsSimulatorResponse(
       isSimulator: json['isSimulator'] as bool,
