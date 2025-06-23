@@ -1,3 +1,11 @@
+## 3.17.0
+
+- Add `takeCameraPhoto` method. (#2660)
+- Add `pickImageFromGallery` method to `NativeAutomator2`. (#2660)
+- Add `pickMultipleImagesFromGallery` method to `NativeAutomator2`. (#2660)
+- Add `isSimulator` method to `NativeAutomator2`. (#2660)
+- Add `getAndroidApiLevel` and `getIosVersion` properties to `NativeAutomator2`. (#2660)
+
 ## 3.16.0
 
 - Make activity aliases work in PatrolJUnitRunner
@@ -16,6 +24,7 @@
 - Upgrade `http4k` to 5.47.0.0. (#2559)
 
 ## 3.14.2
+
 - Make activity aliases work in PatrolJUnitRunner
 
 ## 3.14.1
@@ -29,11 +38,11 @@
 ## 3.14.0
 
 - Remove `exception` from `StepEntry`. When it was too long, it caused crash because of badly formed JSON. (#2481)
-- Bump `patrol_finders` and `patrol_log` versions. 
+- Bump `patrol_finders` and `patrol_log` versions.
 - Bump compileSdk to 35. (#2488)
 - Bump Gradle to 8.9.0. (#2488)
 - Make Patrol works with Java 21. (#2488)
- 
+
 ## 3.13.2
 
 - Bump `patrol_finders` and `patrol_log` - use version with patched enterText. (#2468)
@@ -90,7 +99,7 @@ This version requires version 3.2.0 of `patrol_cli` package.
 
 ## 3.8.0
 
-- Add `openUrl(String url)` method, for testing deeplinks. (#2219) 
+- Add `openUrl(String url)` method, for testing deeplinks. (#2219)
 - Add `pressVolumeUp` and `pressVolumeDown()`. (#2223)
 
 ## 3.7.3
@@ -103,7 +112,6 @@ This version requires version 3.2.0 of `patrol_cli` package.
 - Bump `patrol_devtools_extension` dependencies.
 - Bump min Flutter SDK to 3.22
 
-
 ## 3.7.1
 
 - Revert: Bump `patrol_devtools_extension` dependencies.
@@ -112,7 +120,7 @@ This version requires version 3.2.0 of `patrol_cli` package.
 ## 3.7.0
 
 - Bump `test_api` dependency to 0.7.0.
-- Bump `patrol_devtools_extension` dependencies. 
+- Bump `patrol_devtools_extension` dependencies.
 - Support customization of doubleTap delay (Android only). (#2165)
 
 ## 3.6.1
