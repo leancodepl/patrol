@@ -53,6 +53,7 @@ config:
   clear-package-data: true
   record-video: true
   timeout: 10m
+  other-files: /data/local/tmp/test_image.jpg=test_image.jpg
 
 config_ci:
   num-shards: 3

@@ -747,7 +747,7 @@ packages:
       path: "../../packages/patrol"
       relative: true
     source: path
-    version: "3.16.0"
+    version: "3.17.0"
   patrol_cli:
     dependency: "direct dev"
     description:
