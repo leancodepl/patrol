@@ -16,7 +16,6 @@ import pl.leancode.patrol.contracts.Contracts.GetNotificationsResponse
 import pl.leancode.patrol.contracts.Contracts.HandlePermissionRequest
 import pl.leancode.patrol.contracts.Contracts.HandlePermissionRequestCode
 import pl.leancode.patrol.contracts.Contracts.IsSimulatorResponse
-import pl.leancode.patrol.contracts.Contracts.MarkAppServiceReadyRequest
 import pl.leancode.patrol.contracts.Contracts.OpenAppRequest
 import pl.leancode.patrol.contracts.Contracts.OpenQuickSettingsRequest
 import pl.leancode.patrol.contracts.Contracts.PermissionDialogVisibleRequest
