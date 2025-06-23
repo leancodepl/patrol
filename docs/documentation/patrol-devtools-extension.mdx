@@ -3,9 +3,8 @@ title: "Patrol DevTools Extension"
 description: "Complete guide to using the Patrol DevTools Extension for native UI inspection and testing"
 ---
 
-# Patrol DevTools Extension
 
-A powerful Flutter DevTools extension that allows you to **inspect native UI elements** on Android and iOS devices while developing your Patrol tests. This extension provides a visual tree view of native UI components, making it easier to write accurate selectors for your integration tests.
+A powerful Flutter DevTools extension that allows you to **inspect native UI elements** on Android and iOS devices while developing your Patrol tests. This extension provides a tree view of native UI components, making it easier to write accurate selectors for your integration tests.
 
 ## 🚀 Features
 
@@ -15,10 +14,6 @@ A powerful Flutter DevTools extension that allows you to **inspect native UI ele
 - **Live Updates**: Refresh the UI tree to see real-time changes
 - **Test Integration**: Copy element selectors directly for use in your Patrol tests
 
-## 📦 Installation
-
-The Patrol DevTools Extension is automatically available when you have Patrol installed in your project. No additional installation steps are required.
-
 ## 🛠️ Quick Start
 
 ### 1. Launch Your app with test in Development Mode
@@ -26,7 +21,7 @@ The Patrol DevTools Extension is automatically available when you have Patrol in
 To use the DevTools extension, start your app in Patrol development mode:
 
 ```bash
-patrol develop -t
+patrol develop -t integration_test/example_test.dart
 ```
 
 This command will:
@@ -45,6 +40,11 @@ http://127.0.0.1:9102/patrol_ext?uri=http://127.0.0.1:58463/MOAGppLU9BU=/
 
 **Click on this link** to open Flutter DevTools in your browser.
 
+> **💡 Tip**: If logs are cluttering your terminal and making it hard to find the DevTools link, you can use the `--open-devtools` flag to automatically open DevTools:
+> ```bash
+> patrol develop -t integration_test/example_test.dart  --open-devtools
+> ```
+
 ### 3. Navigate to the Patrol Extension
 
 Once DevTools opens:
@@ -53,9 +53,16 @@ Once DevTools opens:
 
 ### 4. Load the UI Tree
 
-1. Make sure your app is visible on your device/simulator
+1. Make sure that your wanted native view is visible on your device/simulator
 2. Click the **Refresh** button (🔄) in the Patrol extension
 3. You should see the native UI tree populate in the left panel
+
+### DevTools Interface
+
+#### Tree View Controls
+- **RAW button**: Shows native tree detailed information (You need to refresh native tree after toggle)
+- **📱 Full node names**: Shows full node names
+- **🔄 Refresh tree**: Load current UI tree
 
 ## 🧪 Using Discovered Elements in Tests
 
@@ -90,10 +97,6 @@ await $.native2.tap(NativeSelector(
 After opening patrol devtools link you can also use a Flutter inspector to see widgets and their
 properties in your flutter app. 
 
- Use Stable Selectors
-- Prefer `resourceName` (Android) or `identifier` (iOS) when available
-- Avoid using coordinates or index-based selectors when possible
-
 ## 🔍 Troubleshooting
 
 - Ensure you're running `patrol develop -t`
@@ -101,30 +104,3 @@ properties in your flutter app.
 - Click the refresh button to load the native UI tree
 - Ensure your app with proper screen is running and visible on the device
 - Check that your device/simulator is properly connected
-
-### DevTools Interface
-
-#### Tree View Controls
-- **RAW button**: Shows native tree detailed information (You need to refresh native tree after toggle)
-- **📱 Full node names**: Shows full node names
-- **🔄 Refresh tree**: Load current UI tree
-
-## 🤝 Contributing
-
-This extension is part of the Patrol project. If you encounter issues or have suggestions:
-
-1. Check the [Patrol GitHub repository](https://github.com/leancodepl/patrol) for existing issues
-2. Create a new issue with detailed reproduction steps
-3. Consider contributing improvements via pull requests
-
-## 📖 Related Documentation
-
-- [Patrol Documentation](https://patrol.leancode.co)
-- [Native Selectors Guide](https://patrol.leancode.co/native/selectors)
-- [Flutter DevTools Extensions](https://docs.flutter.dev/tools/devtools/extensions)
-
----
-
-**Happy Testing! 🚀**
-
-Use the Patrol DevTools Extension to discover native elements and write more reliable integration tests for your Flutter applications. 
