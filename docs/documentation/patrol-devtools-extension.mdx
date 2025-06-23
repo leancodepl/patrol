@@ -15,47 +15,57 @@ A powerful Flutter DevTools extension that allows you to **inspect native UI ele
 
 ## 🛠️ Quick Start
 
-### 1. Launch Your app with test in Development Mode
+<Steps>
+    <Step>
+    Launch Your app with test in Development Mode
 
-To use the DevTools extension, start your app in Patrol development mode:
+    To use the DevTools extension, start your app in Patrol development mode:
 
-```bash
-patrol develop -t integration_test/example_test.dart
-```
+    ```bash
+    patrol develop -t integration_test/example_test.dart
+    ```
 
-This command will:
-- Launch your test on the connected device/simulator in develop mode
-- Start the Flutter DevTools server
-- Print a clickable link to the DevTools interface in your terminal
+    This command will:
+    - Launch your test on the connected device/simulator in develop mode
+    - Start the Flutter DevTools server
+    - Print a clickable link to the DevTools interface in your terminal
+    </Step>
 
-### 2. Open the DevTools Extension
+    <Step>
+    Open the DevTools Extension
 
-When `patrol develop -t` is running, look for output similar to this in your terminal:
+    When `patrol develop -t` is running, look for output similar to this in your terminal:
 
-```
-Patrol DevTools extension is available at:
-http://127.0.0.1:9102/patrol_ext?uri=http://127.0.0.1:58463/MOAGppLU9BU=/
-```
+    ```
+    Patrol DevTools extension is available at:
+    http://127.0.0.1:9102/patrol_ext?uri=http://127.0.0.1:58463/MOAGppLU9BU=/
+    ```
 
-**Click on this link** to open Flutter DevTools in your browser.
+    **Click on this link** to open Flutter DevTools in your browser.
 
-**💡 Tip**: If logs are cluttering your terminal and making it hard to find the DevTools link, you can use the `--open-devtools` flag to automatically open DevTools:
+    **💡 Tip**: If logs are cluttering your terminal and making it hard to find the DevTools link, you can use the `--open-devtools` flag to automatically open DevTools:
 
-> ```bash
-> patrol develop -t integration_test/example_test.dart  --open-devtools
-> ```
+    > ```bash
+    > patrol develop -t integration_test/example_test.dart  --open-devtools
+    > ```
+    </Step>
 
-### 3. Navigate to the Patrol Extension
+    <Step>
+    Navigate to the Patrol Extension
 
-Once DevTools opens:
-1. Look for the **"Patrol"** tab in the top navigation bar
-2. Click on it to open the Patrol DevTools Extension
+    Once DevTools opens:
+    1. Look for the **"Patrol"** tab in the top navigation bar
+    2. Click on it to open the Patrol DevTools Extension
+    </Step>
 
-### 4. Load the UI Tree
+    <Step>
+    Load the UI Tree
 
-1. Make sure that your wanted native view is visible on your device/simulator
-2. Click the **Refresh** button (🔄) in the Patrol extension
-3. You should see the native UI tree populate in the left panel
+    1. Make sure that your wanted native view is visible on your device/simulator
+    2. Click the **Refresh** button (🔄) in the Patrol extension
+    3. You should see the native UI tree populate in the left panel
+    </Step>
+</Steps>
 
 ### DevTools Interface
 
