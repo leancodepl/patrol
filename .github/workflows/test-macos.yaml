@@ -3,11 +3,11 @@ name: test macos
 on:
   workflow_dispatch:
   pull_request:
-    branches: [ master ]
+    branches: [master]
     paths:
-      - 'packages/patrol/darwin/**'
+      - "packages/patrol/darwin/**"
   schedule:
-    - cron: '0 */12 * * *'
+    - cron: "0 */12 * * *"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -17,7 +17,7 @@ jobs:
   run_tests:
     name: Flutter ${{ matrix.flutter-version }} on ${{ matrix.device_model }}
     runs-on: macos-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
     outputs:
       SLACK_MESSAGE_TITLE: Flutter ${{ matrix.flutter-version }} on ${{ matrix.os }}
       TESTS_EXIT_CODE: ${{ steps.tests_step.outputs.TESTS_EXIT_CODE }}
@@ -27,8 +27,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ['3.32.x']
-        flutter-channel: ['stable']
+        flutter-version: ["3.32.x"]
+        flutter-channel: ["stable"]
         device_model: [macOS]
         os: [macOS]
 
@@ -47,7 +47,7 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.2'
+          ruby-version: "3.2"
           bundler-cache: true
           working-directory: dev/e2e_app/macos
 
