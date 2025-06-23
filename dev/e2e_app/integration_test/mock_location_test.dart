@@ -26,7 +26,7 @@ void main() {
     await Future<void>.delayed(const Duration(milliseconds: 1500));
 
     await $.native.setMockLocation(55.5297, 21.0122);
-    await Future<void>.delayed(const Duration(milliseconds: 100));
+    await Future<void>.delayed(const Duration(milliseconds: 10000));
     await $.pumpAndSettle();
     expect(await $('Location').waitUntilVisible(), findsOneWidget);
     expect(await $('Latitude: 55.5297').waitUntilVisible(), findsOneWidget);
