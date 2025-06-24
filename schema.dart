@@ -324,6 +324,16 @@ class PickImageFromGalleryRequest {
   late bool isNative2;
 }
 
+class PickMultipleImagesFromGalleryRequest {
+  late Selector? imageSelector;
+  late AndroidSelector? androidImageSelector;
+  late IOSSelector? iosImageSelector;
+  late int imageCount;
+  late int? timeoutMillis;
+  late String appId;
+  late bool isNative2;
+}
+
 abstract class NativeAutomator<IOSServer, AndroidServer, DartClient> {
   void initialize();
   void configure(ConfigureRequest request);
@@ -382,6 +392,9 @@ abstract class NativeAutomator<IOSServer, AndroidServer, DartClient> {
   // camera
   void takeCameraPhoto(TakeCameraPhotoRequest request);
   void pickImageFromGallery(PickImageFromGalleryRequest request);
+  void pickMultipleImagesFromGallery(
+    PickMultipleImagesFromGalleryRequest request,
+  );
 
   // other
   void debug();

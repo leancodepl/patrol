@@ -422,3 +422,13 @@ public struct PickImageFromGalleryRequest: Codable {
   public var isNative2: Bool
 }
 
+public struct PickMultipleImagesFromGalleryRequest: Codable {
+  public var imageSelector: Selector?
+  public var androidImageSelector: AndroidSelector?
+  public var iosImageSelector: IOSSelector?
+  public var imageCount: Int
+  public var timeoutMillis: Int?
+  public var appId: String
+  public var isNative2: Bool
+}
+

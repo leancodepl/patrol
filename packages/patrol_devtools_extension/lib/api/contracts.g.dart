@@ -920,3 +920,36 @@ Map<String, dynamic> _$PickImageFromGalleryRequestToJson(
       'appId': instance.appId,
       'isNative2': instance.isNative2,
     };
+
+PickMultipleImagesFromGalleryRequest
+    _$PickMultipleImagesFromGalleryRequestFromJson(Map<String, dynamic> json) =>
+        PickMultipleImagesFromGalleryRequest(
+          imageSelector: json['imageSelector'] == null
+              ? null
+              : Selector.fromJson(
+                  json['imageSelector'] as Map<String, dynamic>),
+          androidImageSelector: json['androidImageSelector'] == null
+              ? null
+              : AndroidSelector.fromJson(
+                  json['androidImageSelector'] as Map<String, dynamic>),
+          iosImageSelector: json['iosImageSelector'] == null
+              ? null
+              : IOSSelector.fromJson(
+                  json['iosImageSelector'] as Map<String, dynamic>),
+          imageCount: (json['imageCount'] as num).toInt(),
+          timeoutMillis: (json['timeoutMillis'] as num?)?.toInt(),
+          appId: json['appId'] as String,
+          isNative2: json['isNative2'] as bool,
+        );
+
+Map<String, dynamic> _$PickMultipleImagesFromGalleryRequestToJson(
+        PickMultipleImagesFromGalleryRequest instance) =>
+    <String, dynamic>{
+      'imageSelector': instance.imageSelector,
+      'androidImageSelector': instance.androidImageSelector,
+      'iosImageSelector': instance.iosImageSelector,
+      'imageCount': instance.imageCount,
+      'timeoutMillis': instance.timeoutMillis,
+      'appId': instance.appId,
+      'isNative2': instance.isNative2,
+    };

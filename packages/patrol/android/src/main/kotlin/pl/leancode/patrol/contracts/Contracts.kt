@@ -739,4 +739,27 @@ class Contracts {
     }
   }
 
+  data class PickMultipleImagesFromGalleryRequest (
+    val imageSelector: Selector? = null,
+    val androidImageSelector: AndroidSelector? = null,
+    val iosImageSelector: IOSSelector? = null,
+    val imageCount: Long,
+    val timeoutMillis: Long? = null,
+    val appId: String,
+    val isNative2: Boolean
+  ){
+    fun hasImageSelector(): Boolean {
+      return imageSelector != null
+    }
+    fun hasAndroidImageSelector(): Boolean {
+      return androidImageSelector != null
+    }
+    fun hasIosImageSelector(): Boolean {
+      return iosImageSelector != null
+    }
+    fun hasTimeoutMillis(): Boolean {
+      return timeoutMillis != null
+    }
+  }
+
 }

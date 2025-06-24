@@ -352,6 +352,15 @@ class NativeAutomatorClient {
     );
   }
 
+  Future<void> pickMultipleImagesFromGallery(
+    PickMultipleImagesFromGalleryRequest request,
+  ) {
+    return _sendRequest(
+      'pickMultipleImagesFromGallery',
+      request.toJson(),
+    );
+  }
+
   Future<void> debug() {
     return _sendRequest(
       'debug',

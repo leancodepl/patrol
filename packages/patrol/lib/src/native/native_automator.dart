@@ -1080,6 +1080,34 @@ class NativeAutomator {
     );
   }
 
+  /// Pick multiple images from the gallery
+  ///
+  /// This method opens the gallery and selects multiple images based on [imageCount].
+  ///
+  /// You can provide a custom selector for the images using [imageSelector].
+  /// If no custom selector is provided, default selectors will be used.
+  /// The method will automatically handle the selection confirmation process.
+  Future<void> pickMultipleImagesFromGallery({
+    required int imageCount,
+    Selector? imageSelector,
+    Duration? timeout,
+  }) async {
+    await _wrapRequest(
+      'pickMultipleImagesFromGallery',
+      () async {
+        await _client.pickMultipleImagesFromGallery(
+          PickMultipleImagesFromGalleryRequest(
+            imageSelector: imageSelector,
+            appId: resolvedAppId,
+            isNative2: false,
+            imageCount: imageCount,
+            timeoutMillis: timeout?.inMilliseconds,
+          ),
+        );
+      },
+    );
+  }
+
   /// Checks if the app is running on a simulator or emulator.
   ///
   /// Returns `true` if running on iOS simulator or Android emulator, `false` otherwise.

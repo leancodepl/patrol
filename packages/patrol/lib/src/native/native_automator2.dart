@@ -960,68 +960,22 @@ class NativeAutomator2 {
   /// You can provide a custom selector for the images using [imageSelector].
   /// If no custom selector is provided, default selectors will be used.
   /// The method will automatically handle the selection confirmation process.
-  Future<void> pickMultipleImagesFromGallery(
-    int imageCount, {
+  Future<void> pickMultipleImagesFromGallery({
+    required int imageCount,
     NativeSelector? imageSelector,
+    Duration? timeout,
   }) async {
     await _wrapRequest(
       'pickMultipleImagesFromGallery',
       () async {
-        final apiLevel = await getAndroidApiLevel();
-
-        // Create selector with overridden instance or use default
-        Future<NativeSelector> nativeImageSelector(int i) async {
-          int iosInstance;
-          if (io.Platform.isIOS && await isSimulator()) {
-            iosInstance = i + 2; // Simulator uses +2
-          } else {
-            iosInstance = i + 1; // Physical device uses +1
-          }
-          return imageSelector != null
-              ? NativeSelector(
-                  android: imageSelector.android?.copyWith(instance: i),
-                  ios: imageSelector.ios?.copyWith(instance: iosInstance),
-                )
-              : NativeSelector(
-                  android: AndroidSelector(
-                    resourceName: apiLevel >= 34
-                        ? 'com.google.android.providers.media.module:id/icon_thumbnail'
-                        : 'com.google.android.documentsui:id/icon',
-                    instance: i,
-                  ),
-                  ios: IOSSelector(
-                    elementType: IOSElementType.image,
-                    instance: iosInstance,
-                  ),
-                );
-        }
-
-        if (io.Platform.isAndroid && apiLevel < 34) {
-          // On API level 33 and below, we need to change type of the list
-          // to be able to select multiple images with taps instead of long press
-          await tap(
-            NativeSelector(
-              android: AndroidSelector(
-                resourceName: 'com.google.android.documentsui:id/sub_menu_list',
-              ),
-            ),
-          );
-        }
-        for (var i = 0; i < imageCount; i++) {
-          await tap(await nativeImageSelector(i));
-        }
-
-        await tap(
-          NativeSelector(
-            android: AndroidSelector(
-              resourceName: apiLevel >= 34
-                  ? 'com.google.android.providers.media.module:id/button_add'
-                  : 'com.google.android.documentsui:id/action_menu_select',
-            ),
-            ios: IOSSelector(
-              elementType: IOSElementType.button,
-              label: 'Add',
-            ),
+        await _client.pickMultipleImagesFromGallery(
+          PickMultipleImagesFromGalleryRequest(
+            androidImageSelector: imageSelector?.android,
+            iosImageSelector: imageSelector?.ios,
+            appId: resolvedAppId,
+            isNative2: true,
+            imageCount: imageCount,
+            timeoutMillis: timeout?.inMilliseconds,
           ),
         );
       },

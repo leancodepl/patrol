@@ -427,6 +427,72 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
         }
     }
 
+    override fun pickMultipleImagesFromGallery(request: Contracts.PickMultipleImagesFromGalleryRequest) {
+        val apiLvl = getAndroidApiLevel().apiLevel
+        Logger.i("apiLvl:$apiLvl")
+        if (request.isNative2) {
+            val androidImageSelector = request.androidImageSelector ?: Contracts.AndroidSelector(
+                resourceName = if (apiLvl >= 34) "com.google.android.providers.media.module:id/icon_thumbnail" else "com.google.android.documentsui:id/icon",
+                instance = 0
+            )
+//            com.google.android.providers.media.module:id/icon_thumbnail
+            val androidSubMenuSelector = if (apiLvl < 34) Contracts.AndroidSelector(
+                resourceName = "com.google.android.documentsui:id/sub_menu_list",
+                instance = 0,
+            ) else null
+            val androidActionMenuSelector = Selector(
+                resourceId = if (apiLvl >= 34) "com.google.android.providers.media.module:id/button_add" else "com.google.android.documentsui:id/action_menu_select",
+                instance = 0,
+            )
+
+            // Remove instance before creating bySelector, as it's not supported
+            val androidImageSelector2 = androidImageSelector.copy(instance = null)
+            val androidSubMenuSelector2 = androidSubMenuSelector?.copy(instance = null)
+            val androidActionMenuSelector2 = androidActionMenuSelector.copy(instance = null)
+
+            automation.pickMultipleImagesFromGallery(
+                androidImageSelector.toUiSelector(),
+                androidImageSelector2.toBySelector(),
+                androidSubMenuSelector?.toUiSelector(),
+                androidSubMenuSelector2?.toBySelector(),
+                androidActionMenuSelector.toUiSelector(),
+                androidActionMenuSelector2.toBySelector(),
+                request.imageCount.toInt(),
+                request.timeoutMillis
+            )
+        } else {
+            val androidImageSelector = request.imageSelector ?: Selector(
+                resourceId = if (apiLvl >= 34) "com.google.android.providers.media.module:id/icon_thumbnail" else "com.google.android.documentsui:id/icon_thumb",
+                instance = 0
+            )
+
+            val androidSubMenuSelector = if (apiLvl < 34) Selector(
+                resourceId = "com.google.android.documentsui:id/sub_menu_list",
+                instance = 0,
+            ) else null
+            val androidActionMenuSelector = Selector(
+                resourceId = if (apiLvl >= 34) "com.google.android.providers.media.module:id/button_add" else "com.google.android.documentsui:id/action_menu_select",
+                instance = 0,
+            )
+
+            // Remove instance before creating bySelector, as it's not supported
+            val androidImageSelector2 = androidImageSelector.copy(instance = null)
+            val androidSubMenuSelector2 = androidSubMenuSelector?.copy(instance = null)
+            val androidActionMenuSelector2 = androidActionMenuSelector.copy(instance = null)
+
+            automation.pickMultipleImagesFromGallery(
+                androidImageSelector.toUiSelector(),
+                androidImageSelector2.toBySelector(),
+                androidSubMenuSelector?.toUiSelector(),
+                androidSubMenuSelector2?.toBySelector(),
+                androidActionMenuSelector.toUiSelector(),
+                androidActionMenuSelector2.toBySelector(),
+                request.imageCount.toInt(),
+                request.timeoutMillis
+            )
+        }
+    }
+
     override fun setMockLocation(request: SetMockLocationRequest) {
         automation.setMockLocation(request.latitude, request.longitude, request.packageName)
     }

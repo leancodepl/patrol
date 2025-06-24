@@ -2010,3 +2010,62 @@ class PickImageFromGalleryRequest with EquatableMixin {
     );
   }
 }
+
+@JsonSerializable()
+class PickMultipleImagesFromGalleryRequest with EquatableMixin {
+  PickMultipleImagesFromGalleryRequest({
+    this.imageSelector,
+    this.androidImageSelector,
+    this.iosImageSelector,
+    required this.imageCount,
+    this.timeoutMillis,
+    required this.appId,
+    required this.isNative2,
+  });
+
+  factory PickMultipleImagesFromGalleryRequest.fromJson(
+          Map<String, dynamic> json) =>
+      _$PickMultipleImagesFromGalleryRequestFromJson(json);
+
+  final Selector? imageSelector;
+  final AndroidSelector? androidImageSelector;
+  final IOSSelector? iosImageSelector;
+  final int imageCount;
+  final int? timeoutMillis;
+  final String appId;
+  final bool isNative2;
+
+  Map<String, dynamic> toJson() =>
+      _$PickMultipleImagesFromGalleryRequestToJson(this);
+
+  @override
+  List<Object?> get props => [
+        imageSelector,
+        androidImageSelector,
+        iosImageSelector,
+        imageCount,
+        timeoutMillis,
+        appId,
+        isNative2,
+      ];
+
+  PickMultipleImagesFromGalleryRequest copyWith({
+    Selector? imageSelector,
+    AndroidSelector? androidImageSelector,
+    IOSSelector? iosImageSelector,
+    int? imageCount,
+    int? timeoutMillis,
+    String? appId,
+    bool? isNative2,
+  }) {
+    return PickMultipleImagesFromGalleryRequest(
+      imageSelector: imageSelector ?? this.imageSelector,
+      androidImageSelector: androidImageSelector ?? this.androidImageSelector,
+      iosImageSelector: iosImageSelector ?? this.iosImageSelector,
+      imageCount: imageCount ?? this.imageCount,
+      timeoutMillis: timeoutMillis ?? this.timeoutMillis,
+      appId: appId ?? this.appId,
+      isNative2: isNative2 ?? this.isNative2,
+    );
+  }
+}
