@@ -1,7 +1,7 @@
 import '../common.dart';
 
 void main() {
-  patrol('pick image from gallery', ($) async {
+  patrol('pick image from gallery - native', ($) async {
     await createApp($);
     if (await $.native2.isSimulator()) {
       await $.native.openApp(appId: 'com.android.camera2');
@@ -50,7 +50,7 @@ void main() {
     )) {
       await $.native2.grantPermissionWhenInUse();
     }
-    await $.native2.pickImageFromGallery();
+    await $.native.pickImageFromGallery(instance: 1);
     await $.pumpAndSettle();
 
     await $(#smallImagePreview).waitUntilVisible();
