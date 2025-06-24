@@ -343,6 +343,15 @@ class NativeAutomatorClient {
     );
   }
 
+  Future<void> pickImageFromGallery(
+    PickImageFromGalleryRequest request,
+  ) {
+    return _sendRequest(
+      'pickImageFromGallery',
+      request.toJson(),
+    );
+  }
+
   Future<void> debug() {
     return _sendRequest(
       'debug',

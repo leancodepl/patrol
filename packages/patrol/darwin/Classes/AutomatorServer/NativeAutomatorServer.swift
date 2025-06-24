@@ -46,6 +46,7 @@ protocol NativeAutomatorServer {
     func handlePermissionDialog(request: HandlePermissionRequest) throws
     func setLocationAccuracy(request: SetLocationAccuracyRequest) throws
     func takeCameraPhoto(request: TakeCameraPhotoRequest) throws
+    func pickImageFromGallery(request: PickImageFromGalleryRequest) throws
     func debug() throws
     func setMockLocation(request: SetMockLocationRequest) throws
     func markPatrolAppServiceReady() throws
@@ -276,6 +277,12 @@ extension NativeAutomatorServer {
     private func takeCameraPhotoHandler(request: HTTPRequest) throws -> HTTPResponse {
         let requestArg = try JSONDecoder().decode(TakeCameraPhotoRequest.self, from: request.body)
         try takeCameraPhoto(request: requestArg)
+        return HTTPResponse(.ok)
+    }
+
+    private func pickImageFromGalleryHandler(request: HTTPRequest) throws -> HTTPResponse {
+        let requestArg = try JSONDecoder().decode(PickImageFromGalleryRequest.self, from: request.body)
+        try pickImageFromGallery(request: requestArg)
         return HTTPResponse(.ok)
     }
 
@@ -515,6 +522,11 @@ extension NativeAutomatorServer {
             request in handleRequest(
                 request: request,
                 handler: takeCameraPhotoHandler)
+        }
+        server.route(.POST, "pickImageFromGallery") {
+            request in handleRequest(
+                request: request,
+                handler: pickImageFromGalleryHandler)
         }
         server.route(.POST, "debug") {
             request in handleRequest(

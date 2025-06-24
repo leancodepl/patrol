@@ -1049,6 +1049,37 @@ class NativeAutomator {
     );
   }
 
+  /// Pick an image from the gallery
+  ///
+  /// This method opens the gallery and selects a single image.
+  ///
+  /// You can provide a custom selector for the image using [imageSelector].
+  /// If no custom selector is provided, default selectors will be used.
+  /// Alternatively, you can specify an [instance] to select the nth image
+  /// when using default selectors.
+  ///
+  /// Note: If you provide [imageSelector], the [instance] parameter will be overwritten.
+  Future<void> pickImageFromGallery({
+    Selector? imageSelector,
+    int? instance,
+    Duration? timeout,
+  }) async {
+    await _wrapRequest(
+      'pickImageFromGallery',
+      () async {
+        await _client.pickImageFromGallery(
+          PickImageFromGalleryRequest(
+            imageSelector: imageSelector,
+            appId: resolvedAppId,
+            isNative2: false,
+            timeoutMillis: timeout?.inMilliseconds,
+            instance: instance,
+          ),
+        );
+      },
+    );
+  }
+
   /// Checks if the app is running on a simulator or emulator.
   ///
   /// Returns `true` if running on iOS simulator or Android emulator, `false` otherwise.

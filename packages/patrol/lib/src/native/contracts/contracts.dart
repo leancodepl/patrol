@@ -1953,3 +1953,60 @@ class TakeCameraPhotoRequest with EquatableMixin {
     );
   }
 }
+
+@JsonSerializable()
+class PickImageFromGalleryRequest with EquatableMixin {
+  PickImageFromGalleryRequest({
+    this.imageSelector,
+    this.androidImageSelector,
+    this.iosImageSelector,
+    this.instance,
+    this.timeoutMillis,
+    required this.appId,
+    required this.isNative2,
+  });
+
+  factory PickImageFromGalleryRequest.fromJson(Map<String, dynamic> json) =>
+      _$PickImageFromGalleryRequestFromJson(json);
+
+  final Selector? imageSelector;
+  final AndroidSelector? androidImageSelector;
+  final IOSSelector? iosImageSelector;
+  final int? instance;
+  final int? timeoutMillis;
+  final String appId;
+  final bool isNative2;
+
+  Map<String, dynamic> toJson() => _$PickImageFromGalleryRequestToJson(this);
+
+  @override
+  List<Object?> get props => [
+        imageSelector,
+        androidImageSelector,
+        iosImageSelector,
+        instance,
+        timeoutMillis,
+        appId,
+        isNative2,
+      ];
+
+  PickImageFromGalleryRequest copyWith({
+    Selector? imageSelector,
+    AndroidSelector? androidImageSelector,
+    IOSSelector? iosImageSelector,
+    int? instance,
+    int? timeoutMillis,
+    String? appId,
+    bool? isNative2,
+  }) {
+    return PickImageFromGalleryRequest(
+      imageSelector: imageSelector ?? this.imageSelector,
+      androidImageSelector: androidImageSelector ?? this.androidImageSelector,
+      iosImageSelector: iosImageSelector ?? this.iosImageSelector,
+      instance: instance ?? this.instance,
+      timeoutMillis: timeoutMillis ?? this.timeoutMillis,
+      appId: appId ?? this.appId,
+      isNative2: isNative2 ?? this.isNative2,
+    );
+  }
+}

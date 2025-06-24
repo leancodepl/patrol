@@ -713,4 +713,30 @@ class Contracts {
     }
   }
 
+  data class PickImageFromGalleryRequest (
+    val imageSelector: Selector? = null,
+    val androidImageSelector: AndroidSelector? = null,
+    val iosImageSelector: IOSSelector? = null,
+    val instance: Long? = null,
+    val timeoutMillis: Long? = null,
+    val appId: String,
+    val isNative2: Boolean
+  ){
+    fun hasImageSelector(): Boolean {
+      return imageSelector != null
+    }
+    fun hasAndroidImageSelector(): Boolean {
+      return androidImageSelector != null
+    }
+    fun hasIosImageSelector(): Boolean {
+      return iosImageSelector != null
+    }
+    fun hasInstance(): Boolean {
+      return instance != null
+    }
+    fun hasTimeoutMillis(): Boolean {
+      return timeoutMillis != null
+    }
+  }
+
 }

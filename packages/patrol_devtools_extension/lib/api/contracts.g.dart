@@ -888,3 +888,35 @@ Map<String, dynamic> _$TakeCameraPhotoRequestToJson(
       'appId': instance.appId,
       'isNative2': instance.isNative2,
     };
+
+PickImageFromGalleryRequest _$PickImageFromGalleryRequestFromJson(
+        Map<String, dynamic> json) =>
+    PickImageFromGalleryRequest(
+      imageSelector: json['imageSelector'] == null
+          ? null
+          : Selector.fromJson(json['imageSelector'] as Map<String, dynamic>),
+      androidImageSelector: json['androidImageSelector'] == null
+          ? null
+          : AndroidSelector.fromJson(
+              json['androidImageSelector'] as Map<String, dynamic>),
+      iosImageSelector: json['iosImageSelector'] == null
+          ? null
+          : IOSSelector.fromJson(
+              json['iosImageSelector'] as Map<String, dynamic>),
+      instance: (json['instance'] as num?)?.toInt(),
+      timeoutMillis: (json['timeoutMillis'] as num?)?.toInt(),
+      appId: json['appId'] as String,
+      isNative2: json['isNative2'] as bool,
+    );
+
+Map<String, dynamic> _$PickImageFromGalleryRequestToJson(
+        PickImageFromGalleryRequest instance) =>
+    <String, dynamic>{
+      'imageSelector': instance.imageSelector,
+      'androidImageSelector': instance.androidImageSelector,
+      'iosImageSelector': instance.iosImageSelector,
+      'instance': instance.instance,
+      'timeoutMillis': instance.timeoutMillis,
+      'appId': instance.appId,
+      'isNative2': instance.isNative2,
+    };

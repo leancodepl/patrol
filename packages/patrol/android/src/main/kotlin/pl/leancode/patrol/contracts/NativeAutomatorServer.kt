@@ -53,6 +53,7 @@ abstract class NativeAutomatorServer {
     abstract fun handlePermissionDialog(request: Contracts.HandlePermissionRequest)
     abstract fun setLocationAccuracy(request: Contracts.SetLocationAccuracyRequest)
     abstract fun takeCameraPhoto(request: Contracts.TakeCameraPhotoRequest)
+    abstract fun pickImageFromGallery(request: Contracts.PickImageFromGalleryRequest)
     abstract fun debug()
     abstract fun setMockLocation(request: Contracts.SetMockLocationRequest)
     abstract fun markPatrolAppServiceReady()
@@ -239,6 +240,11 @@ abstract class NativeAutomatorServer {
       "takeCameraPhoto" bind POST to {
         val body = json.fromJson(it.bodyString(), Contracts.TakeCameraPhotoRequest::class.java)
         takeCameraPhoto(body)
+        Response(OK)
+      },
+      "pickImageFromGallery" bind POST to {
+        val body = json.fromJson(it.bodyString(), Contracts.PickImageFromGalleryRequest::class.java)
+        pickImageFromGallery(body)
         Response(OK)
       },
       "debug" bind POST to {

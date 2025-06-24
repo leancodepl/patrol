@@ -934,52 +934,21 @@ class NativeAutomator2 {
   Future<void> pickImageFromGallery({
     NativeSelector? imageSelector,
     int? instance,
+    Duration? timeout,
   }) async {
-    final apiLevel = await getAndroidApiLevel();
     await _wrapRequest(
       'pickImageFromGallery',
       () async {
-        final nativeImageSelector = imageSelector ??
-            NativeSelector(
-              android: AndroidSelector(
-                resourceName: apiLevel >= 34
-                    ? 'com.google.android.providers.media.module:id/icon_thumbnail'
-                    : 'com.google.android.documentsui:id/icon_thumb',
-                instance: instance ?? 0,
-              ),
-              ios: IOSSelector(
-                // First image on physical iOS device is at index 1
-                // This will not fail on simulator, but also not work
-                elementType: IOSElementType.image,
-                instance: io.Platform.isIOS && await isSimulator()
-                    ? (instance ?? 0) + 2
-                    : (instance ?? 0) + 1,
-              ),
-            );
-
-        if (io.Platform.isAndroid && apiLevel < 34) {
-          // On API level 33 and below, we need to change type of the list
-          // to be able to select multiple images with taps instead of long press
-          await tap(
-            NativeSelector(
-              android: AndroidSelector(
-                resourceName: 'com.google.android.documentsui:id/sub_menu_list',
-              ),
-            ),
-          );
-        }
-        await tap(nativeImageSelector);
-
-        if (io.Platform.isAndroid && apiLevel < 34) {
-          await tap(
-            NativeSelector(
-              android: AndroidSelector(
-                resourceName:
-                    'com.google.android.documentsui:id/action_menu_select',
-              ),
-            ),
-          );
-        }
+        await _client.pickImageFromGallery(
+          PickImageFromGalleryRequest(
+            androidImageSelector: imageSelector?.android,
+            iosImageSelector: imageSelector?.ios,
+            appId: resolvedAppId,
+            isNative2: true,
+            timeoutMillis: timeout?.inMilliseconds,
+            instance: instance,
+          ),
+        );
       },
     );
   }

@@ -754,9 +754,20 @@ class Automator private constructor() {
     }
 
     fun takeCameraPhoto(shutterButtonUiSelector: UiSelector,shutterButtonBySelector: BySelector, doneButtonUiSelector: UiSelector,doneButtonBySelector: BySelector, timeout: Long? = null) {
-    tap(shutterButtonUiSelector, shutterButtonBySelector,0)
-    tap(doneButtonUiSelector, doneButtonBySelector,0)
+    tap(shutterButtonUiSelector, shutterButtonBySelector,0,timeout)
+    tap(doneButtonUiSelector, doneButtonBySelector,0,timeout)
     }
+
+    fun pickImageFromGallery(imageUiSelector: UiSelector,imageBySelector: BySelector,subMenuUiSelector:UiSelector?,subMenuBySelector:BySelector?,actionMenuUiSelector:UiSelector?,actionMenuBySelector:BySelector?,instance: Int, timeout: Long? = null){
+    if(subMenuBySelector != null && subMenuUiSelector !=null){
+    tap(subMenuUiSelector,subMenuBySelector,0)
+    }
+    tap(imageUiSelector,imageBySelector,instance.toInt())
+    if(actionMenuBySelector != null && actionMenuUiSelector !=null){
+    tap(actionMenuUiSelector,actionMenuBySelector,0)
+    }
+    }
+
     /**
      * Returns true if [bySelector] found a view at [index] within [timeoutMillis], false otherwise.
      */
