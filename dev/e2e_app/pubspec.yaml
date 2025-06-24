@@ -39,7 +39,6 @@ flutter:
   uses-material-design: true
   assets:
     - assets/gpx.gpx
-    - assets/patrol_logo.png
 
 patrol:
   app_name: Patrol example

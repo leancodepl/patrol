@@ -53,7 +53,6 @@ config:
   clear-package-data: true
   record-video: true
   timeout: 10m
-  other-files: /data/local/tmp/patrol_logo.png=assets/patrol_logo.png
 
 config_ci:
   num-shards: 3
