@@ -19,6 +19,10 @@ void main() {
       } on Exception {/* ignore */}
       await $.native
           .tap(Selector(resourceId: 'com.android.camera2:id/shutter_button'));
+      await $.native
+          .tap(Selector(resourceId: 'com.android.camera2:id/shutter_button'));
+      await $.native
+          .tap(Selector(resourceId: 'com.android.camera2:id/shutter_button'));
 
       await Future.delayed(const Duration(seconds: 4), () {});
 
