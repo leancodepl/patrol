@@ -302,6 +302,18 @@ class GetIosVersionResponse {
   late String version;
 }
 
+class TakeCameraPhotoRequest {
+  late Selector? shutterButtonSelector;
+  late AndroidSelector? androidShutterButtonSelector;
+  late IOSSelector? iosShutterButtonSelector;
+  late Selector? doneButtonSelector;
+  late AndroidSelector? androidDoneButtonSelector;
+  late int? timeoutMillis;
+  late IOSSelector? iosDoneButtonSelector;
+  late String appId;
+  late bool isNative2;
+}
+
 abstract class NativeAutomator<IOSServer, AndroidServer, DartClient> {
   void initialize();
   void configure(ConfigureRequest request);
@@ -356,6 +368,9 @@ abstract class NativeAutomator<IOSServer, AndroidServer, DartClient> {
   );
   void handlePermissionDialog(HandlePermissionRequest request);
   void setLocationAccuracy(SetLocationAccuracyRequest request);
+
+  // camera
+  void takeCameraPhoto(TakeCameraPhotoRequest request);
 
   // other
   void debug();

@@ -906,33 +906,17 @@ class NativeAutomator2 {
     await _wrapRequest(
       'takeCameraPhoto',
       () async {
-        final shutterSelector = shutterButtonSelector ??
-            NativeSelector(
-              android: await isSimulator()
-                  ? AndroidSelector(
-                      resourceName: 'com.android.camera2:id/shutter_button',
-                    )
-                  : AndroidSelector(
-                      resourceName:
-                          'com.google.android.GoogleCamera:id/shutter_button',
-                    ),
-              ios: IOSSelector(identifier: 'PhotoCapture'),
-            );
-        final doneSelector = doneButtonSelector ??
-            NativeSelector(
-              android: await isSimulator()
-                  ? AndroidSelector(
-                      resourceName: 'com.android.camera2:id/done_button',
-                    )
-                  : AndroidSelector(
-                      resourceName:
-                          'com.google.android.GoogleCamera:id/shutter_button',
-                    ),
-              ios: IOSSelector(identifier: 'Done'),
-            );
-
-        await tap(shutterSelector, timeout: timeout);
-        await tap(doneSelector, timeout: timeout);
+        await _client.takeCameraPhoto(
+          TakeCameraPhotoRequest(
+            androidShutterButtonSelector: shutterButtonSelector?.android,
+            androidDoneButtonSelector: doneButtonSelector?.android,
+            iosShutterButtonSelector: shutterButtonSelector?.ios,
+            iosDoneButtonSelector: doneButtonSelector?.ios,
+            appId: resolvedAppId,
+            isNative2: true,
+            timeoutMillis: timeout?.inMilliseconds,
+          ),
+        );
       },
     );
   }

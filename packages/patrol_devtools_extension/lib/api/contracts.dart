@@ -1881,3 +1881,75 @@ class GetIosVersionResponse with EquatableMixin {
     );
   }
 }
+
+@JsonSerializable()
+class TakeCameraPhotoRequest with EquatableMixin {
+  TakeCameraPhotoRequest({
+    this.shutterButtonSelector,
+    this.androidShutterButtonSelector,
+    this.iosShutterButtonSelector,
+    this.doneButtonSelector,
+    this.androidDoneButtonSelector,
+    this.timeoutMillis,
+    this.iosDoneButtonSelector,
+    required this.appId,
+    required this.isNative2,
+  });
+
+  factory TakeCameraPhotoRequest.fromJson(Map<String, dynamic> json) =>
+      _$TakeCameraPhotoRequestFromJson(json);
+
+  final Selector? shutterButtonSelector;
+  final AndroidSelector? androidShutterButtonSelector;
+  final IOSSelector? iosShutterButtonSelector;
+  final Selector? doneButtonSelector;
+  final AndroidSelector? androidDoneButtonSelector;
+  final int? timeoutMillis;
+  final IOSSelector? iosDoneButtonSelector;
+  final String appId;
+  final bool isNative2;
+
+  Map<String, dynamic> toJson() => _$TakeCameraPhotoRequestToJson(this);
+
+  @override
+  List<Object?> get props => [
+        shutterButtonSelector,
+        androidShutterButtonSelector,
+        iosShutterButtonSelector,
+        doneButtonSelector,
+        androidDoneButtonSelector,
+        timeoutMillis,
+        iosDoneButtonSelector,
+        appId,
+        isNative2,
+      ];
+
+  TakeCameraPhotoRequest copyWith({
+    Selector? shutterButtonSelector,
+    AndroidSelector? androidShutterButtonSelector,
+    IOSSelector? iosShutterButtonSelector,
+    Selector? doneButtonSelector,
+    AndroidSelector? androidDoneButtonSelector,
+    int? timeoutMillis,
+    IOSSelector? iosDoneButtonSelector,
+    String? appId,
+    bool? isNative2,
+  }) {
+    return TakeCameraPhotoRequest(
+      shutterButtonSelector:
+          shutterButtonSelector ?? this.shutterButtonSelector,
+      androidShutterButtonSelector:
+          androidShutterButtonSelector ?? this.androidShutterButtonSelector,
+      iosShutterButtonSelector:
+          iosShutterButtonSelector ?? this.iosShutterButtonSelector,
+      doneButtonSelector: doneButtonSelector ?? this.doneButtonSelector,
+      androidDoneButtonSelector:
+          androidDoneButtonSelector ?? this.androidDoneButtonSelector,
+      timeoutMillis: timeoutMillis ?? this.timeoutMillis,
+      iosDoneButtonSelector:
+          iosDoneButtonSelector ?? this.iosDoneButtonSelector,
+      appId: appId ?? this.appId,
+      isNative2: isNative2 ?? this.isNative2,
+    );
+  }
+}

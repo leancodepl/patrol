@@ -1026,41 +1026,25 @@ class NativeAutomator {
   /// on the confirmation button to accept it.
   ///
   /// You can provide custom selectors for both the shutter and confirmation buttons
-  /// using [androidShutterButtonSelector], [androidDoneButtonSelector],
-  /// [iosShutterButtonSelector], and [iosDoneButtonSelector] parameters.
+  /// using [shutterButtonSelector] and [doneButtonSelector] parameters.
   /// If no custom selectors are provided, default selectors will be used.
   Future<void> takeCameraPhoto({
-    Selector? androidShutterButtonSelector,
-    Selector? androidDoneButtonSelector,
-    Selector? iosShutterButtonSelector,
-    Selector? iosDoneButtonSelector,
+    Selector? shutterButtonSelector,
+    Selector? doneButtonSelector,
+    Duration? timeout,
   }) async {
     await _wrapRequest(
       'takeCameraPhoto',
       () async {
-        if (io.Platform.isAndroid) {
-          final shutterSelector = androidShutterButtonSelector ??
-              Selector(
-                resourceId: await isSimulator()
-                    ? 'com.android.camera2:id/shutter_button'
-                    : 'com.google.android.GoogleCamera:id/shutter_button',
-              );
-          final doneSelector = androidDoneButtonSelector ??
-              Selector(
-                resourceId: await isSimulator()
-                    ? 'com.android.camera2:id/done_button'
-                    : 'com.google.android.GoogleCamera:id/shutter_button',
-              );
-          await tap(shutterSelector);
-          await tap(doneSelector);
-        } else if (io.Platform.isIOS) {
-          final shutterSelector =
-              iosShutterButtonSelector ?? Selector(resourceId: 'PhotoCapture');
-          final doneSelector =
-              iosDoneButtonSelector ?? Selector(resourceId: 'Done');
-          await tap(shutterSelector);
-          await tap(doneSelector);
-        }
+        await _client.takeCameraPhoto(
+          TakeCameraPhotoRequest(
+            shutterButtonSelector: shutterButtonSelector,
+            doneButtonSelector: doneButtonSelector,
+            appId: resolvedAppId,
+            isNative2: false,
+            timeoutMillis: timeout?.inMilliseconds,
+          ),
+        );
       },
     );
   }

@@ -842,3 +842,49 @@ Map<String, dynamic> _$GetIosVersionResponseToJson(
     <String, dynamic>{
       'version': instance.version,
     };
+
+TakeCameraPhotoRequest _$TakeCameraPhotoRequestFromJson(
+        Map<String, dynamic> json) =>
+    TakeCameraPhotoRequest(
+      shutterButtonSelector: json['shutterButtonSelector'] == null
+          ? null
+          : Selector.fromJson(
+              json['shutterButtonSelector'] as Map<String, dynamic>),
+      androidShutterButtonSelector: json['androidShutterButtonSelector'] == null
+          ? null
+          : AndroidSelector.fromJson(
+              json['androidShutterButtonSelector'] as Map<String, dynamic>),
+      iosShutterButtonSelector: json['iosShutterButtonSelector'] == null
+          ? null
+          : IOSSelector.fromJson(
+              json['iosShutterButtonSelector'] as Map<String, dynamic>),
+      doneButtonSelector: json['doneButtonSelector'] == null
+          ? null
+          : Selector.fromJson(
+              json['doneButtonSelector'] as Map<String, dynamic>),
+      androidDoneButtonSelector: json['androidDoneButtonSelector'] == null
+          ? null
+          : AndroidSelector.fromJson(
+              json['androidDoneButtonSelector'] as Map<String, dynamic>),
+      timeoutMillis: (json['timeoutMillis'] as num?)?.toInt(),
+      iosDoneButtonSelector: json['iosDoneButtonSelector'] == null
+          ? null
+          : IOSSelector.fromJson(
+              json['iosDoneButtonSelector'] as Map<String, dynamic>),
+      appId: json['appId'] as String,
+      isNative2: json['isNative2'] as bool,
+    );
+
+Map<String, dynamic> _$TakeCameraPhotoRequestToJson(
+        TakeCameraPhotoRequest instance) =>
+    <String, dynamic>{
+      'shutterButtonSelector': instance.shutterButtonSelector,
+      'androidShutterButtonSelector': instance.androidShutterButtonSelector,
+      'iosShutterButtonSelector': instance.iosShutterButtonSelector,
+      'doneButtonSelector': instance.doneButtonSelector,
+      'androidDoneButtonSelector': instance.androidDoneButtonSelector,
+      'timeoutMillis': instance.timeoutMillis,
+      'iosDoneButtonSelector': instance.iosDoneButtonSelector,
+      'appId': instance.appId,
+      'isNative2': instance.isNative2,
+    };

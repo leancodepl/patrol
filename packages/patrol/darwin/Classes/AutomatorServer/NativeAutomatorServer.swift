@@ -45,6 +45,7 @@ protocol NativeAutomatorServer {
     func isPermissionDialogVisible(request: PermissionDialogVisibleRequest) throws -> PermissionDialogVisibleResponse
     func handlePermissionDialog(request: HandlePermissionRequest) throws
     func setLocationAccuracy(request: SetLocationAccuracyRequest) throws
+    func takeCameraPhoto(request: TakeCameraPhotoRequest) throws
     func debug() throws
     func setMockLocation(request: SetMockLocationRequest) throws
     func markPatrolAppServiceReady() throws
@@ -269,6 +270,12 @@ extension NativeAutomatorServer {
     private func setLocationAccuracyHandler(request: HTTPRequest) throws -> HTTPResponse {
         let requestArg = try JSONDecoder().decode(SetLocationAccuracyRequest.self, from: request.body)
         try setLocationAccuracy(request: requestArg)
+        return HTTPResponse(.ok)
+    }
+
+    private func takeCameraPhotoHandler(request: HTTPRequest) throws -> HTTPResponse {
+        let requestArg = try JSONDecoder().decode(TakeCameraPhotoRequest.self, from: request.body)
+        try takeCameraPhoto(request: requestArg)
         return HTTPResponse(.ok)
     }
 
@@ -503,6 +510,11 @@ extension NativeAutomatorServer {
             request in handleRequest(
                 request: request,
                 handler: setLocationAccuracyHandler)
+        }
+        server.route(.POST, "takeCameraPhoto") {
+            request in handleRequest(
+                request: request,
+                handler: takeCameraPhotoHandler)
         }
         server.route(.POST, "debug") {
             request in handleRequest(

@@ -1,6 +1,8 @@
 package pl.leancode.patrol
 
 import android.os.Build
+import androidx.test.uiautomator.BySelector
+import androidx.test.uiautomator.UiSelector
 import pl.leancode.patrol.contracts.Contracts
 import pl.leancode.patrol.contracts.Contracts.ConfigureRequest
 import pl.leancode.patrol.contracts.Contracts.DarkModeRequest
@@ -20,6 +22,7 @@ import pl.leancode.patrol.contracts.Contracts.OpenAppRequest
 import pl.leancode.patrol.contracts.Contracts.OpenQuickSettingsRequest
 import pl.leancode.patrol.contracts.Contracts.PermissionDialogVisibleRequest
 import pl.leancode.patrol.contracts.Contracts.PermissionDialogVisibleResponse
+import pl.leancode.patrol.contracts.Contracts.Selector
 import pl.leancode.patrol.contracts.Contracts.SetLocationAccuracyRequest
 import pl.leancode.patrol.contracts.Contracts.SetLocationAccuracyRequestLocationAccuracy
 import pl.leancode.patrol.contracts.Contracts.SetMockLocationRequest
@@ -322,6 +325,42 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
         }
     }
 
+    override fun takeCameraPhoto(request: Contracts.TakeCameraPhotoRequest) {
+        val isSimulator = isSimulator().isSimulator
+        if(request.isNative2) {
+            val shutterButtonSelector = request.androidShutterButtonSelector ?: Contracts.AndroidSelector(
+                resourceName = if(isSimulator) "com.android.camera2:id/shutter_button" else "com.google.android.GoogleCamera:id/shutter_button",
+                instance = 0
+            )
+            val doneButtonSelector = request.androidDoneButtonSelector ?:Contracts.AndroidSelector(
+                resourceName = if(isSimulator) "com.android.camera2:id/done_button" else "com.google.android.GoogleCamera:id/done_button",
+                instance = 0
+            )
+            automation.takeCameraPhoto(
+                shutterButtonSelector.toUiSelector(),
+                shutterButtonSelector.toBySelector(),
+                doneButtonSelector.toUiSelector(),
+                doneButtonSelector.toBySelector(),
+                request.timeoutMillis,
+            )
+        }else{
+            val shutterButtonSelector = request.shutterButtonSelector ?: Selector(
+                resourceId = if(isSimulator) "com.android.camera2:id/shutter_button" else "com.google.android.GoogleCamera:id/shutter_button",
+                instance = 0
+            )
+            val doneButtonSelector = request.doneButtonSelector ?:Selector(
+                resourceId = if(isSimulator) "com.android.camera2:id/done_button" else "com.google.android.GoogleCamera:id/done_button",
+                instance = 0
+            )
+            automation.takeCameraPhoto(
+                shutterButtonSelector.toUiSelector(),
+                shutterButtonSelector.toBySelector(),
+                doneButtonSelector.toUiSelector(),
+                doneButtonSelector.toBySelector(),
+            )
+        }
+
+    }
     override fun setMockLocation(request: SetMockLocationRequest) {
         automation.setMockLocation(request.latitude, request.longitude, request.packageName)
     }

@@ -400,3 +400,15 @@ public struct GetIosVersionResponse: Codable {
   public var version: String
 }
 
+public struct TakeCameraPhotoRequest: Codable {
+  public var shutterButtonSelector: Selector?
+  public var androidShutterButtonSelector: AndroidSelector?
+  public var iosShutterButtonSelector: IOSSelector?
+  public var doneButtonSelector: Selector?
+  public var androidDoneButtonSelector: AndroidSelector?
+  public var timeoutMillis: Int?
+  public var iosDoneButtonSelector: IOSSelector?
+  public var appId: String
+  public var isNative2: Bool
+}
+

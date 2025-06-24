@@ -334,6 +334,15 @@ class NativeAutomatorClient {
     );
   }
 
+  Future<void> takeCameraPhoto(
+    TakeCameraPhotoRequest request,
+  ) {
+    return _sendRequest(
+      'takeCameraPhoto',
+      request.toJson(),
+    );
+  }
+
   Future<void> debug() {
     return _sendRequest(
       'debug',

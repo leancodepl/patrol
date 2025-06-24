@@ -753,6 +753,10 @@ class Automator private constructor() {
         locationManager.setTestProviderLocation(mockLocationProvider, mockLocation)
     }
 
+    fun takeCameraPhoto(shutterButtonUiSelector: UiSelector,shutterButtonBySelector: BySelector, doneButtonUiSelector: UiSelector,doneButtonBySelector: BySelector, timeout: Long? = null) {
+    tap(shutterButtonUiSelector, shutterButtonBySelector,0)
+    tap(doneButtonUiSelector, doneButtonBySelector,0)
+    }
     /**
      * Returns true if [bySelector] found a view at [index] within [timeoutMillis], false otherwise.
      */

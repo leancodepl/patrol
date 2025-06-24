@@ -679,4 +679,38 @@ class Contracts {
     val version: String
   )
 
+  data class TakeCameraPhotoRequest (
+    val shutterButtonSelector: Selector? = null,
+    val androidShutterButtonSelector: AndroidSelector? = null,
+    val iosShutterButtonSelector: IOSSelector? = null,
+    val doneButtonSelector: Selector? = null,
+    val androidDoneButtonSelector: AndroidSelector? = null,
+    val timeoutMillis: Long? = null,
+    val iosDoneButtonSelector: IOSSelector? = null,
+    val appId: String,
+    val isNative2: Boolean
+  ){
+    fun hasShutterButtonSelector(): Boolean {
+      return shutterButtonSelector != null
+    }
+    fun hasAndroidShutterButtonSelector(): Boolean {
+      return androidShutterButtonSelector != null
+    }
+    fun hasIosShutterButtonSelector(): Boolean {
+      return iosShutterButtonSelector != null
+    }
+    fun hasDoneButtonSelector(): Boolean {
+      return doneButtonSelector != null
+    }
+    fun hasAndroidDoneButtonSelector(): Boolean {
+      return androidDoneButtonSelector != null
+    }
+    fun hasTimeoutMillis(): Boolean {
+      return timeoutMillis != null
+    }
+    fun hasIosDoneButtonSelector(): Boolean {
+      return iosDoneButtonSelector != null
+    }
+  }
+
 }
