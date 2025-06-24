@@ -425,6 +425,31 @@
             )
         }
     }
+    
+    func pickImageFromGallery(request: PickImageFromGalleryRequest) throws {
+        let isSimulator =  try isSimulator().isSimulator;
+        if request.isNative2 {
+            try automator.tap(
+                on: request.iosImageSelector ?? IOSSelector(instance: isSimulator ? (request.instance ?? 0) + 2 : (request.instance ?? 0) + 1, elementType:IOSElementType.image),
+                inApp: request.appId,
+                withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
+            )
+        } else {
+            if(request.imageSelector != nil){
+                try automator.tap(
+                    on: request.imageSelector!,
+                    inApp: request.appId,
+                    withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
+                )
+            }else{
+                try automator.tap(
+                    on: request.iosImageSelector ?? IOSSelector(instance: isSimulator ? (request.instance ?? 0) + 2 : (request.instance ?? 0) + 1, elementType:IOSElementType.image),
+                    inApp: request.appId,
+                    withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
+                )
+            }
+        }
+    }
 
     func debug() throws {
       return try runCatching {
