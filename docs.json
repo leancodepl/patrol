@@ -78,6 +78,11 @@
       "id": "articles",
       "title": "Articles & Resources",
       "href": "/articles"
+    },
+    {
+      "id": "contact",
+      "title": "Contact us",
+      "href": "/contact"
     }
   ],
   "sidebar": [
