@@ -711,15 +711,15 @@ class NativeAutomator2 {
   ///
   /// If [selector] is null, returns the whole native UI tree.
   Future<GetNativeViewsResult> getNativeViews(
-    NativeSelector selector, {
+    NativeSelector? selector, {
     String? appId,
   }) async {
     final response = await _wrapRequest(
       'getNativeViews',
       () => _client.getNativeViews(
         GetNativeViewsRequest(
-          androidSelector: selector.android,
-          iosSelector: selector.ios,
+          androidSelector: selector?.android,
+          iosSelector: selector?.ios,
           appId: appId ?? resolvedAppId,
         ),
       ),
@@ -960,7 +960,7 @@ class NativeAutomator2 {
               android: AndroidSelector(
                 resourceName: apiLevel >= 34
                     ? 'com.google.android.providers.media.module:id/icon_thumbnail'
-                    : 'com.google.android.documentsui:id/icon',
+                    : 'com.google.android.documentsui:id/icon_thumb',
                 instance: instance ?? 0,
               ),
               ios: IOSSelector(
@@ -985,6 +985,17 @@ class NativeAutomator2 {
           );
         }
         await tap(nativeImageSelector);
+
+        if (io.Platform.isAndroid && apiLevel < 34) {
+          await tap(
+            NativeSelector(
+              android: AndroidSelector(
+                resourceName:
+                    'com.google.android.documentsui:id/action_menu_select',
+              ),
+            ),
+          );
+        }
       },
     );
   }

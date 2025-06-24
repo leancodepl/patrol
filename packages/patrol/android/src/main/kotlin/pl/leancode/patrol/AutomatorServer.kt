@@ -162,7 +162,14 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
                 iosNativeViews = listOf()
             )
         } else {
-            throw PatrolException("getNativeViews(): neither selector nor androidSelector are set")
+            // When both selectors are null, return the full native tree
+            val trees = automation.getNativeUITrees()
+            val treesV2 = automation.getNativeUITreesV2()
+            return GetNativeViewsResponse(
+                nativeViews = trees,
+                androidNativeViews = treesV2,
+                iosNativeViews = listOf()
+            )
         }
     }
 
