@@ -1,7 +1,9 @@
+import 'package:flutter/material.dart';
+
 import '../common.dart';
 
 void main() {
-  patrol('pick multiple images from gallery', ($) async {
+  patrol('pick multiple images from gallery - native2', ($) async {
     await createApp($);
     if (await $.native2.isSimulator()) {
       await $.native.openApp(appId: 'com.android.camera2');
@@ -57,7 +59,10 @@ void main() {
     )) {
       await $.native2.grantPermissionWhenInUse();
     }
-    await $.native.pickMultipleImagesFromGallery(imageCount: 2);
+    final nativeViews = await $.native.getNativeViews(null);
+    debugPrint('nativeViews: $nativeViews', wrapWidth: 1000);
+    // Works on API LVL 33
+    await $.native2.pickMultipleImagesFromGallery(imageCount: 2);
 
     await $.pumpAndSettle();
     await $(#selectedPhotosCount).$('2 photos selected').waitUntilVisible();
