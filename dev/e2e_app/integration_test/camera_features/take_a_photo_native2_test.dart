@@ -14,7 +14,7 @@ void main() {
       await $.native.tap(Selector(text: 'NEXT'));
     } on Exception {/* ignore */}
 
-    await $.native.takeCameraPhoto();
+    await $.native2.takeCameraPhoto();
     await $.pumpAndSettle();
     await $(#smallImagePreview).waitUntilVisible();
   });
