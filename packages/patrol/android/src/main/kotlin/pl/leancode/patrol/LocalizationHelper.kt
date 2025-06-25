@@ -28,7 +28,7 @@ object LocalizationHelper {
      */
     fun getLocalizedString(context: Context, resourceName: String): String {
         val locale = getDeviceLocale(context)
-        
+        Logger.d("Device locale: $locale")
         // Try to get the string from the appropriate resource file
         val resourceId = context.resources.getIdentifier(
             resourceName,
