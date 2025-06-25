@@ -5,7 +5,7 @@ import '../common.dart';
 void main() {
   patrol('pick image from gallery - native', ($) async {
     await createApp($);
-    if (await $.native2.isSimulator() && Platform.isAndroid) {
+    if (await $.native2.isVirtualDevice() && Platform.isAndroid) {
       await $.native.openApp(appId: 'com.android.camera2');
       try {
         await $.native.tap(Selector(text: 'NEXT'));

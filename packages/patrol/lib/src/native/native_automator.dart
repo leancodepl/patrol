@@ -1108,14 +1108,14 @@ class NativeAutomator {
     );
   }
 
-  /// Checks if the app is running on a simulator or emulator.
+  /// Checks if the app is running on a virtual device (simulator or emulator).
   ///
   /// Returns `true` if running on iOS simulator or Android emulator, `false` otherwise.
   /// On Android devices this method cannot be 100% accurate.
   ///
   /// This can be useful for conditional logic in tests that need to behave
   /// differently on physical devices vs simulators/emulators.
-  Future<bool> isSimulator() async {
+  Future<bool> isVirtualDevice() async {
     final response = await _wrapRequest(
       'isSimulator',
       () => _client.isSimulator(),
