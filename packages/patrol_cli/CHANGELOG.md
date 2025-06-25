@@ -1,3 +1,7 @@
+## Unreleased
+
+- Skip update check when the `patrol_cli` binary is triggered for shell completion only (#2512)
+
 ## 3.7.0
 
 - Bump min Flutter SDK to 3.32.0 (#2649)
