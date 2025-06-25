@@ -11,7 +11,7 @@ object LocalizationHelper {
     /**
      * Gets the current device locale
      */
-    fun getDeviceLocale(context: Context): String {
+    private fun getDeviceLocale(context: Context): String {
         val locale = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             context.resources.configuration.locales[0]
         } else {
