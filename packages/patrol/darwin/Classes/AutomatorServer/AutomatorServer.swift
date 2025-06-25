@@ -450,6 +450,53 @@
             }
         }
     }
+    
+    func pickMultipleImagesFromGallery(request: PickMultipleImagesFromGalleryRequest) throws {
+        return try runCatching {
+            let isSimulator = try isSimulator().isSimulator
+            
+            // Select multiple images
+            for i in 0..<request.imageCount {
+                if request.isNative2 {
+                    try automator.tap(
+                        on: request.iosImageSelector ?? IOSSelector(
+                            instance: isSimulator ? i + 2 : i + 1,
+                            elementType: IOSElementType.image
+                        ),
+                        inApp: request.appId,
+                        withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
+                    )
+                } else {
+                    if let imageSelector = request.imageSelector {
+                        try automator.tap(
+                            on: imageSelector,
+                            inApp: request.appId,
+                            withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
+                        )
+                    } else {
+                        try automator.tap(
+                            on: request.iosImageSelector ?? IOSSelector(
+                                instance: isSimulator ? i + 2 : i + 1,
+                                elementType: IOSElementType.image
+                            ),
+                            inApp: request.appId,
+                            withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
+                        )
+                    }
+                }
+            }
+            
+            // Tap the "Add" button to confirm selection
+            try automator.tap(
+                on: IOSSelector(
+                    elementType: IOSElementType.button,
+                    label: "Add"
+                ),
+                inApp: request.appId,
+                withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
+            )
+        }
+    }
 
     func debug() throws {
       return try runCatching {
