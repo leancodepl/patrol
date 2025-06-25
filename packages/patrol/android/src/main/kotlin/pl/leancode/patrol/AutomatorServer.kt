@@ -323,7 +323,7 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
         val languageCode = locale.language
         val regionCode = locale.country
         val localeIdentifier = locale.toString()
-        
+
         return GetLocaleResponse(
             languageCode = languageCode,
             regionCode = regionCode,

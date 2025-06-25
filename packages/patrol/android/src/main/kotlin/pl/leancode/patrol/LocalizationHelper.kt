@@ -1,13 +1,10 @@
 package pl.leancode.patrol
 
 import android.content.Context
-import android.content.res.Configuration
-import android.content.res.Resources
 import android.os.Build
-import java.util.Locale
 
 object LocalizationHelper {
-    
+
     /**
      * Gets the current device locale
      */
@@ -18,10 +15,10 @@ object LocalizationHelper {
             @Suppress("DEPRECATION")
             context.resources.configuration.locale
         }
-        
+
         return locale.language
     }
-    
+
     /**
      * Gets localized string based on device locale
      * Supports English (en) and Polish (pl) locales
@@ -35,12 +32,11 @@ object LocalizationHelper {
             "string",
             context.packageName
         )
-        
+
         return if (resourceId != 0) {
             context.resources.getString(resourceId)
         } else {
             throw IllegalStateException("Resource not found: $resourceName for locale: $locale")
         }
     }
-
-} 
+}
