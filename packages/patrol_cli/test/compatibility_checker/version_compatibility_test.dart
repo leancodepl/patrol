@@ -70,7 +70,7 @@ void main() {
       final cliVersion = Version.parse('3.5.0');
       final latestCompatible = getLatestCompatiblePatrolVersion(cliVersion);
       expect(latestCompatible, isNotNull);
-      expect(latestCompatible.toString(), equals('3.15.1'));
+      expect(latestCompatible.toString(), equals('3.15.2'));
     });
 
     test('current patrol_cli version is listed in compatibility file', () {

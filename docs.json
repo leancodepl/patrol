@@ -78,6 +78,11 @@
       "id": "articles",
       "title": "Articles & Resources",
       "href": "/articles"
+    },
+    {
+      "id": "contact",
+      "title": "Contact us",
+      "href": "/contact"
     }
   ],
   "sidebar": [
@@ -177,6 +182,10 @@
             {
               "title": "Feature parity",
               "href": "/documentation/native/feature-parity"
+            },
+            {
+              "title": "Native2",
+              "href": "/documentation/native/native2"
             }
           ]
         },
