@@ -388,3 +388,13 @@ public struct SetMockLocationRequest: Codable {
   public var packageName: String
 }
 
+public struct GetLocaleResponse: Codable {
+  public var languageCode: String
+  public var regionCode: String
+  public var localeIdentifier: String
+}
+
+public struct GetLocaleRequest: Codable {
+
+}
+

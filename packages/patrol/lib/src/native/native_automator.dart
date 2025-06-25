@@ -1005,4 +1005,15 @@ class NativeAutomator {
       enablePatrolLog: false,
     );
   }
+
+  /// Returns the current device locale information.
+  ///
+  /// Returns a [GetLocaleResponse] containing the language code, region code,
+  /// and full locale identifier of the device.
+  Future<GetLocaleResponse> getLocale() async {
+    return _wrapRequest(
+      'getLocale',
+      () => _client.getLocale(GetLocaleRequest()),
+    );
+  }
 }

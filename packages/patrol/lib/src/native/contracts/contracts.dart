@@ -1260,3 +1260,41 @@ class SetMockLocationRequest with EquatableMixin {
         packageName,
       ];
 }
+
+@JsonSerializable()
+class GetLocaleResponse with EquatableMixin {
+  GetLocaleResponse({
+    required this.languageCode,
+    required this.regionCode,
+    required this.localeIdentifier,
+  });
+
+  factory GetLocaleResponse.fromJson(Map<String, dynamic> json) =>
+      _$GetLocaleResponseFromJson(json);
+
+  final String languageCode;
+  final String regionCode;
+  final String localeIdentifier;
+
+  Map<String, dynamic> toJson() => _$GetLocaleResponseToJson(this);
+
+  @override
+  List<Object?> get props => [
+        languageCode,
+        regionCode,
+        localeIdentifier,
+      ];
+}
+
+@JsonSerializable()
+class GetLocaleRequest with EquatableMixin {
+  GetLocaleRequest();
+
+  factory GetLocaleRequest.fromJson(Map<String, dynamic> json) =>
+      _$GetLocaleRequestFromJson(json);
+
+  Map<String, dynamic> toJson() => _$GetLocaleRequestToJson(this);
+
+  @override
+  List<Object?> get props => const [];
+}

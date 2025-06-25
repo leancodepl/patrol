@@ -737,7 +737,7 @@
     func isPermissionDialogVisible(timeout: TimeInterval) throws -> Bool {
       return runAction("checking if permission dialog is visible") {
         let systemAlerts = self.springboard.alerts
-        let labels = ["OK", "Allow", "Allow once", "Allow While Using App", "Don’t Allow"]
+        let labels = ["OK", "Allow", "Allow once", "Allow While Using App", "Don't Allow"]
 
         let button = self.waitForAnyElement(
           elements: labels.map { systemAlerts.buttons[$0] },
@@ -786,7 +786,7 @@
 
     func denyPermission() throws {
       try runAction("denying permission") {
-        let label = "Don’t Allow"  // not "Don't Allow"!
+        let label = "Don't Allow"  // not "Don't Allow"!
         let systemAlerts = self.springboard.alerts
         let button = systemAlerts.buttons[label]
 
@@ -893,6 +893,23 @@
           XCUIDevice.shared.location = XCUILocation(
             location: CLLocation(latitude: latitude, longitude: longitude))
         }
+      }
+    }
+
+    func getLocale() throws -> GetLocaleResponse {
+      return runAction("getting device locale") {
+        let locale = Locale.current
+        let languageCode = locale.languageCode ?? "en"
+        let regionCode = locale.regionCode ?? "US"
+        let localeIdentifier = locale.identifier
+        
+        Logger.shared.i("Device locale: \(localeIdentifier) (language: \(languageCode), region: \(regionCode))")
+        
+        return GetLocaleResponse(
+          languageCode: languageCode,
+          regionCode: regionCode,
+          localeIdentifier: localeIdentifier
+        )
       }
     }
 
