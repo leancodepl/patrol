@@ -397,105 +397,113 @@
         try automator.setMockLocation(latitude: request.latitude, longitude: request.longitude)
       }
     }
-    
+
     // MARK: Camera
-    
+
     func takeCameraPhoto(request: TakeCameraPhotoRequest) throws {
-        if request.isNative2 {
-            try automator.tap(
-                on: request.iosShutterButtonSelector ?? IOSSelector(identifier:"PhotoCapture"),
-                inApp: request.appId,
-                withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
-            )
-            try automator.tap(
-              on:  request.iosDoneButtonSelector ?? IOSSelector(identifier:"Done"),
-              inApp: request.appId,
-              withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
-            )
-        } else {
-            try automator.tap(
-              on: request.shutterButtonSelector ?? Selector(resourceId:"PhotoCapture"),
-              inApp: request.appId,
-              withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
-            )
-            try automator.tap(
-              on: request.doneButtonSelector ?? Selector(resourceId:"Done"),
-              inApp: request.appId,
-              withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
-            )
-        }
+      if request.isNative2 {
+        try automator.tap(
+          on: request.iosShutterButtonSelector ?? IOSSelector(identifier: "PhotoCapture"),
+          inApp: request.appId,
+          withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
+        )
+        try automator.tap(
+          on: request.iosDoneButtonSelector ?? IOSSelector(identifier: "Done"),
+          inApp: request.appId,
+          withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
+        )
+      } else {
+        try automator.tap(
+          on: request.shutterButtonSelector ?? Selector(resourceId: "PhotoCapture"),
+          inApp: request.appId,
+          withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
+        )
+        try automator.tap(
+          on: request.doneButtonSelector ?? Selector(resourceId: "Done"),
+          inApp: request.appId,
+          withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
+        )
+      }
     }
-    
+
     func pickImageFromGallery(request: PickImageFromGalleryRequest) throws {
-        let isSimulator =  try isSimulator().isSimulator;
-        if request.isNative2 {
-            try automator.tap(
-                on: request.iosImageSelector ?? IOSSelector(instance: isSimulator ? (request.instance ?? 0) + 2 : (request.instance ?? 0) + 1, elementType:IOSElementType.image),
-                inApp: request.appId,
-                withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
-            )
+      let isSimulator = try isSimulator().isSimulator
+      if request.isNative2 {
+        try automator.tap(
+          on: request.iosImageSelector
+            ?? IOSSelector(
+              instance: isSimulator ? (request.instance ?? 0) + 2 : (request.instance ?? 0) + 1,
+              elementType: IOSElementType.image),
+          inApp: request.appId,
+          withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
+        )
+      } else {
+        if request.imageSelector != nil {
+          try automator.tap(
+            on: request.imageSelector!,
+            inApp: request.appId,
+            withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
+          )
         } else {
-            if(request.imageSelector != nil){
-                try automator.tap(
-                    on: request.imageSelector!,
-                    inApp: request.appId,
-                    withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
-                )
-            }else{
-                try automator.tap(
-                    on: request.iosImageSelector ?? IOSSelector(instance: isSimulator ? (request.instance ?? 0) + 2 : (request.instance ?? 0) + 1, elementType:IOSElementType.image),
-                    inApp: request.appId,
-                    withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
-                )
-            }
+          try automator.tap(
+            on: request.iosImageSelector
+              ?? IOSSelector(
+                instance: isSimulator ? (request.instance ?? 0) + 2 : (request.instance ?? 0) + 1,
+                elementType: IOSElementType.image),
+            inApp: request.appId,
+            withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
+          )
         }
+      }
     }
-    
+
     func pickMultipleImagesFromGallery(request: PickMultipleImagesFromGalleryRequest) throws {
-        return try runCatching {
-            let isSimulator = try isSimulator().isSimulator
-            
-            // Select multiple images
-            for i in 0..<request.imageCount {
-                if request.isNative2 {
-                    try automator.tap(
-                        on: request.iosImageSelector ?? IOSSelector(
-                            instance: isSimulator ? i + 2 : i + 1,
-                            elementType: IOSElementType.image
-                        ),
-                        inApp: request.appId,
-                        withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
-                    )
-                } else {
-                    if let imageSelector = request.imageSelector {
-                        try automator.tap(
-                            on: imageSelector,
-                            inApp: request.appId,
-                            withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
-                        )
-                    } else {
-                        try automator.tap(
-                            on: request.iosImageSelector ?? IOSSelector(
-                                instance: isSimulator ? i + 2 : i + 1,
-                                elementType: IOSElementType.image
-                            ),
-                            inApp: request.appId,
-                            withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
-                        )
-                    }
-                }
-            }
-            
-            // Tap the "Add" button to confirm selection
+      return try runCatching {
+        let isSimulator = try isSimulator().isSimulator
+
+        // Select multiple images
+        for i in 0..<request.imageCount {
+          if request.isNative2 {
             try automator.tap(
-                on: IOSSelector(
-                    elementType: IOSElementType.button,
-                    label: "Add"
+              on: request.iosImageSelector
+                ?? IOSSelector(
+                  instance: isSimulator ? i + 2 : i + 1,
+                  elementType: IOSElementType.image
                 ),
+              inApp: request.appId,
+              withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
+            )
+          } else {
+            if let imageSelector = request.imageSelector {
+              try automator.tap(
+                on: imageSelector,
                 inApp: request.appId,
                 withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
-            )
+              )
+            } else {
+              try automator.tap(
+                on: request.iosImageSelector
+                  ?? IOSSelector(
+                    instance: isSimulator ? i + 2 : i + 1,
+                    elementType: IOSElementType.image
+                  ),
+                inApp: request.appId,
+                withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
+              )
+            }
+          }
         }
+
+        // Tap the "Add" button to confirm selection
+        try automator.tap(
+          on: IOSSelector(
+            elementType: IOSElementType.button,
+            label: "Add"
+          ),
+          inApp: request.appId,
+          withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
+        )
+      }
     }
 
     func debug() throws {
