@@ -1,5 +1,6 @@
 ## Unreleased
-- Added support for comments in .patrol.env files. Lines starting with #, as well as any content following a # on the same line as a variable, are now ignored. This allows for both full-line and inline comments to improve file readability and documentation.
+
+- Add support for comments in .patrol.env files.  (#2653)
 
 ## 3.6.0-dev.1
 
