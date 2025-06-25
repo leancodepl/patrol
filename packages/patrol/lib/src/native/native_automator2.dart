@@ -701,7 +701,7 @@ class NativeAutomator2 {
   ///
   /// Example usage:
   /// ```dart
-  /// await tester.swipeBack(height: 0.2); // Swipe back at 1/5 height of the screen
+  /// await tester.swipeBack(dy: 0.8); // Swipe back at 1/5 height of the screen
   /// await tester.swipeBack(); // Swipe back at the center of the screen
   /// ```
   Future<void> swipeBack({double dy = 0.5, String? appId}) {
