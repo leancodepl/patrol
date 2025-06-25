@@ -325,13 +325,13 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
 
     override fun takeCameraPhoto(request: Contracts.TakeCameraPhotoRequest) {
         val isSimulator = isSimulator().isSimulator
-        if(request.isNative2) {
+        if (request.isNative2) {
             val shutterButtonSelector = request.androidShutterButtonSelector ?: Contracts.AndroidSelector(
-                resourceName = if(isSimulator) "com.android.camera2:id/shutter_button" else "com.google.android.GoogleCamera:id/shutter_button",
+                resourceName = if (isSimulator) "com.android.camera2:id/shutter_button" else "com.google.android.GoogleCamera:id/shutter_button",
                 instance = 0
             )
-            val doneButtonSelector = request.androidDoneButtonSelector ?:Contracts.AndroidSelector(
-                resourceName = if(isSimulator) "com.android.camera2:id/done_button" else "com.google.android.GoogleCamera:id/done_button",
+            val doneButtonSelector = request.androidDoneButtonSelector ?: Contracts.AndroidSelector(
+                resourceName = if (isSimulator) "com.android.camera2:id/done_button" else "com.google.android.GoogleCamera:id/done_button",
                 instance = 0
             )
             automation.takeCameraPhoto(
@@ -339,15 +339,15 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
                 shutterButtonSelector.toBySelector(),
                 doneButtonSelector.toUiSelector(),
                 doneButtonSelector.toBySelector(),
-                request.timeoutMillis,
+                request.timeoutMillis
             )
-        }else{
+        } else {
             val shutterButtonSelector = request.shutterButtonSelector ?: Selector(
-                resourceId = if(isSimulator) "com.android.camera2:id/shutter_button" else "com.google.android.GoogleCamera:id/shutter_button",
+                resourceId = if (isSimulator) "com.android.camera2:id/shutter_button" else "com.google.android.GoogleCamera:id/shutter_button",
                 instance = 0
             )
-            val doneButtonSelector = request.doneButtonSelector ?:Selector(
-                resourceId = if(isSimulator) "com.android.camera2:id/done_button" else "com.google.android.GoogleCamera:id/done_button",
+            val doneButtonSelector = request.doneButtonSelector ?: Selector(
+                resourceId = if (isSimulator) "com.android.camera2:id/done_button" else "com.google.android.GoogleCamera:id/done_button",
                 instance = 0
             )
             automation.takeCameraPhoto(
@@ -355,28 +355,35 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
                 shutterButtonSelector.toBySelector(),
                 doneButtonSelector.toUiSelector(),
                 doneButtonSelector.toBySelector(),
-                request.timeoutMillis,
+                request.timeoutMillis
             )
         }
-
     }
 
     override fun pickImageFromGallery(request: Contracts.PickImageFromGalleryRequest) {
-         val apiLvl = getAndroidApiLevel().apiLevel;
-        if(request.isNative2) {
+        val apiLvl = getAndroidApiLevel().apiLevel
+        if (request.isNative2) {
             val androidImageSelector = request.androidImageSelector ?: Contracts.AndroidSelector(
-                resourceName =  if(apiLvl >= 34) "com.google.android.providers.media.module:id/icon_thumbnail" else "com.google.android.documentsui:id/icon_thumb",
+                resourceName = if (apiLvl >= 34) "com.google.android.providers.media.module:id/icon_thumbnail" else "com.google.android.documentsui:id/icon_thumb",
                 instance = request.instance ?: 0
             )
 
-            val androidSubMenuSelector = if(apiLvl < 34)  Contracts.AndroidSelector(
-                resourceName =  "com.google.android.documentsui:id/sub_menu_list",
-                instance = 0,
-            ) else null
-            val androidActionMenuSelector = if(apiLvl < 34)  Contracts.AndroidSelector(
-                resourceName =  "com.google.android.documentsui:id/action_menu_select",
-                instance = 0,
-            ) else null
+            val androidSubMenuSelector = if (apiLvl < 34) {
+                Contracts.AndroidSelector(
+                    resourceName = "com.google.android.documentsui:id/sub_menu_list",
+                    instance = 0
+                )
+            } else {
+                null
+            }
+            val androidActionMenuSelector = if (apiLvl < 34) {
+                Contracts.AndroidSelector(
+                    resourceName = "com.google.android.documentsui:id/action_menu_select",
+                    instance = 0
+                )
+            } else {
+                null
+            }
 
             // Remove instance before creating bySelector, as it's not supported
             val androidImageSelector2 = androidImageSelector.copy(instance = null)
@@ -391,39 +398,46 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
                 androidActionMenuSelector2?.toUiSelector(),
                 androidActionMenuSelector2?.toBySelector(),
                 androidImageSelector.instance!!.toInt(),
-                request.timeoutMillis,
+                request.timeoutMillis
             )
         } else {
-                val androidImageSelector = request.imageSelector ?: Selector(
-                    resourceId =  if(apiLvl >= 34) "com.google.android.providers.media.module:id/icon_thumbnail" else "com.google.android.documentsui:id/icon_thumb",
-                    instance = request.instance ?: 0
+            val androidImageSelector = request.imageSelector ?: Selector(
+                resourceId = if (apiLvl >= 34) "com.google.android.providers.media.module:id/icon_thumbnail" else "com.google.android.documentsui:id/icon_thumb",
+                instance = request.instance ?: 0
+            )
+
+            val androidSubMenuSelector = if (apiLvl < 34) {
+                Selector(
+                    resourceId = "com.google.android.documentsui:id/sub_menu_list",
+                    instance = 0
                 )
-
-                val androidSubMenuSelector = if(apiLvl < 34)  Selector(
-                    resourceId =  "com.google.android.documentsui:id/sub_menu_list",
-                    instance = 0,
-                ) else null
-                val androidActionMenuSelector = if(apiLvl < 34)  Selector(
-                    resourceId =  "com.google.android.documentsui:id/action_menu_select",
-                    instance = 0,
-                ) else null
-
-                // Remove instance before creating bySelector, as it's not supported
-                val androidImageSelector2 = androidImageSelector.copy(instance = null)
-                val androidSubMenuSelector2 = androidSubMenuSelector?.copy(instance = null)
-                val androidActionMenuSelector2 = androidActionMenuSelector?.copy(instance = null)
-
-                automation.pickImageFromGallery(
-                    androidImageSelector.toUiSelector(),
-                    androidImageSelector2.toBySelector(),
-                    androidSubMenuSelector2?.toUiSelector(),
-                    androidSubMenuSelector2?.toBySelector(),
-                    androidActionMenuSelector2?.toUiSelector(),
-                    androidActionMenuSelector2?.toBySelector(),
-                    androidImageSelector.instance!!.toInt(),
-                    request.timeoutMillis,
+            } else {
+                null
+            }
+            val androidActionMenuSelector = if (apiLvl < 34) {
+                Selector(
+                    resourceId = "com.google.android.documentsui:id/action_menu_select",
+                    instance = 0
                 )
+            } else {
+                null
+            }
 
+            // Remove instance before creating bySelector, as it's not supported
+            val androidImageSelector2 = androidImageSelector.copy(instance = null)
+            val androidSubMenuSelector2 = androidSubMenuSelector?.copy(instance = null)
+            val androidActionMenuSelector2 = androidActionMenuSelector?.copy(instance = null)
+
+            automation.pickImageFromGallery(
+                androidImageSelector.toUiSelector(),
+                androidImageSelector2.toBySelector(),
+                androidSubMenuSelector2?.toUiSelector(),
+                androidSubMenuSelector2?.toBySelector(),
+                androidActionMenuSelector2?.toUiSelector(),
+                androidActionMenuSelector2?.toBySelector(),
+                androidImageSelector.instance!!.toInt(),
+                request.timeoutMillis
+            )
         }
     }
 
@@ -436,13 +450,17 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
                 instance = 0
             )
 //            com.google.android.providers.media.module:id/icon_thumbnail
-            val androidSubMenuSelector = if (apiLvl < 34) Contracts.AndroidSelector(
-                resourceName = "com.google.android.documentsui:id/sub_menu_list",
-                instance = 0,
-            ) else null
+            val androidSubMenuSelector = if (apiLvl < 34) {
+                Contracts.AndroidSelector(
+                    resourceName = "com.google.android.documentsui:id/sub_menu_list",
+                    instance = 0
+                )
+            } else {
+                null
+            }
             val androidActionMenuSelector = Selector(
                 resourceId = if (apiLvl >= 34) "com.google.android.providers.media.module:id/button_add" else "com.google.android.documentsui:id/action_menu_select",
-                instance = 0,
+                instance = 0
             )
 
             // Remove instance before creating bySelector, as it's not supported
@@ -466,13 +484,17 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
                 instance = 0
             )
 
-            val androidSubMenuSelector = if (apiLvl < 34) Selector(
-                resourceId = "com.google.android.documentsui:id/sub_menu_list",
-                instance = 0,
-            ) else null
+            val androidSubMenuSelector = if (apiLvl < 34) {
+                Selector(
+                    resourceId = "com.google.android.documentsui:id/sub_menu_list",
+                    instance = 0
+                )
+            } else {
+                null
+            }
             val androidActionMenuSelector = Selector(
                 resourceId = if (apiLvl >= 34) "com.google.android.providers.media.module:id/button_add" else "com.google.android.documentsui:id/action_menu_select",
-                instance = 0,
+                instance = 0
             )
 
             // Remove instance before creating bySelector, as it's not supported

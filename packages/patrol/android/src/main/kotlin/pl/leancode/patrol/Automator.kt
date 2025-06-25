@@ -753,19 +753,19 @@ class Automator private constructor() {
         locationManager.setTestProviderLocation(mockLocationProvider, mockLocation)
     }
 
-    fun takeCameraPhoto(shutterButtonUiSelector: UiSelector,shutterButtonBySelector: BySelector, doneButtonUiSelector: UiSelector,doneButtonBySelector: BySelector, timeout: Long? = null) {
-    tap(shutterButtonUiSelector, shutterButtonBySelector,0,timeout)
-    tap(doneButtonUiSelector, doneButtonBySelector,0,timeout)
+    fun takeCameraPhoto(shutterButtonUiSelector: UiSelector, shutterButtonBySelector: BySelector, doneButtonUiSelector: UiSelector, doneButtonBySelector: BySelector, timeout: Long? = null) {
+        tap(shutterButtonUiSelector, shutterButtonBySelector, 0, timeout)
+        tap(doneButtonUiSelector, doneButtonBySelector, 0, timeout)
     }
 
-    fun pickImageFromGallery(imageUiSelector: UiSelector,imageBySelector: BySelector,subMenuUiSelector:UiSelector?,subMenuBySelector:BySelector?,actionMenuUiSelector:UiSelector?,actionMenuBySelector:BySelector?,instance: Int, timeout: Long? = null){
-    if(subMenuBySelector != null && subMenuUiSelector !=null){
-    tap(subMenuUiSelector,subMenuBySelector,0)
-    }
-    tap(imageUiSelector,imageBySelector,instance.toInt())
-    if(actionMenuBySelector != null && actionMenuUiSelector !=null){
-    tap(actionMenuUiSelector,actionMenuBySelector,0)
-    }
+    fun pickImageFromGallery(imageUiSelector: UiSelector, imageBySelector: BySelector, subMenuUiSelector: UiSelector?, subMenuBySelector: BySelector?, actionMenuUiSelector: UiSelector?, actionMenuBySelector: BySelector?, instance: Int, timeout: Long? = null) {
+        if (subMenuBySelector != null && subMenuUiSelector != null) {
+            tap(subMenuUiSelector, subMenuBySelector, 0)
+        }
+        tap(imageUiSelector, imageBySelector, instance.toInt())
+        if (actionMenuBySelector != null && actionMenuUiSelector != null) {
+            tap(actionMenuUiSelector, actionMenuBySelector, 0)
+        }
     }
 
     fun pickMultipleImagesFromGallery(imageUiSelector: UiSelector, imageBySelector: BySelector, subMenuUiSelector: UiSelector?, subMenuBySelector: BySelector?, actionMenuUiSelector: UiSelector, actionMenuBySelector: BySelector, imageCount: Int, timeout: Long? = null) {
@@ -774,14 +774,14 @@ class Automator private constructor() {
         if (subMenuBySelector != null && subMenuUiSelector != null) {
             tap(subMenuUiSelector, subMenuBySelector, 0, timeout)
         }
-        
+
         // Tap on multiple images
         for (i in 0 until imageCount) {
             val imageUiSelectorWithInstance = imageUiSelector.instance(i)
             tap(imageUiSelectorWithInstance, imageBySelector, i, timeout)
         }
 
-            tap(actionMenuUiSelector, actionMenuBySelector, 0, timeout)
+        tap(actionMenuUiSelector, actionMenuBySelector, 0, timeout)
     }
 
     /**
