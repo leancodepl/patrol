@@ -2024,7 +2024,7 @@ class PickMultipleImagesFromGalleryRequest with EquatableMixin {
   });
 
   factory PickMultipleImagesFromGalleryRequest.fromJson(
-          Map<String, dynamic> json) =>
+          Map<String, dynamic> json,) =>
       _$PickMultipleImagesFromGalleryRequestFromJson(json);
 
   final Selector? imageSelector;
