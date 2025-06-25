@@ -22,6 +22,7 @@ dart run packages/patrol_gen/bin/main.dart "$schema" "$dart_out" "$darwin_out" "
 pushd "${patrol_package}"
 
 dart fix --apply "$patrol_dart_out_dir"
+dart format "$patrol_dart_out_dir"
 
 dart run build_runner build --delete-conflicting-outputs --build-filter="$patrol_dart_out_dir/*.dart"
 
@@ -30,5 +31,3 @@ popd
 # TODO: We should use necessary contracts in extension
 cp "$dart_out/contracts.dart" "$patrol_devtools_extension_package/lib/api/contracts.dart"
 cp "$dart_out/contracts.g.dart" "$patrol_devtools_extension_package/lib/api/contracts.g.dart"
-
-dart fix --apply "$patrol_devtools_extension_package"
