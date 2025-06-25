@@ -1,3 +1,7 @@
+## Unreleased
+
+- Add `$.native.swipeBack()` method (#2608)
+
 ## 3.16.0
 
 - Make activity aliases work in PatrolJUnitRunner
