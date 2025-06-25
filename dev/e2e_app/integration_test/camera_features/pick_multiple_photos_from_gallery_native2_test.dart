@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 import '../common.dart';
@@ -5,7 +7,7 @@ import '../common.dart';
 void main() {
   patrol('pick multiple images from gallery - native2', ($) async {
     await createApp($);
-    if (await $.native2.isSimulator()) {
+    if (await $.native2.isSimulator() && Platform.isAndroid) {
       await $.native.openApp(appId: 'com.android.camera2');
       try {
         await $.native.tap(Selector(text: 'NEXT'));
@@ -26,7 +28,7 @@ void main() {
       await Future.delayed(const Duration(seconds: 4), () {});
 
       await $.native.openApp(appId: 'pl.leancode.patrol.e2e_app');
-    } else {
+    } else if (Platform.isAndroid) {
       await $.native.openApp(appId: 'com.google.android.GoogleCamera');
       if (await $.native2.isPermissionDialogVisible(
         timeout: const Duration(seconds: 4),
