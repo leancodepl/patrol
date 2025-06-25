@@ -2,7 +2,12 @@
 
 - Add support for comments in .patrol.env files.  (#2653)
 
-## 3.6.0-dev.1
+## 3.7.0
+
+- Bump min Flutter SDK to 3.32.0 (#2649)
+- Introduce `check-compatibility` flag to allow disabling the compatibility check. (#2649) 
+
+## 3.6.0
 
 - Improve patrol test error messaging when compatibility check fails, added same compatibility check and error messaging to patrol build command (#2597)
 - Improve patrol update messaging by showing incompatibility warning when applicable, sharing compatibility table (#2579)
