@@ -71,6 +71,8 @@ Native methods API is generated from a schema. If you wish to modify any of thes
 2. Find a method or a request/response class that you wish to modify, apply your changes. You can also modify or add new methods.
 3. Run `./gen_from_schema` script to regenerate the contracts.
 4. After running `gen_from_schema`, you need to open `patrol/example/android` or `patrol/example/ios` in Android Studio or Xcode respectively.
+5. After step 4 IDE (Android Studio or Xcode) will generate a signature of the new method that you generate, than you need to implement it.
+6. On iOS, for development time you should remove `#if PATROL_ENABLED` from `AutomatorServer.swift` and `Automator.swift` to make code completion work.
 
 ## Working with patrol_devtools_extension
 
