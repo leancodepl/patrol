@@ -1,5 +1,6 @@
 import 'dart:io' as p show Platform;
 import 'dart:io' show ProcessSignal, stdin;
+
 import 'package:adb/adb.dart';
 import 'package:args/args.dart';
 import 'package:args/command_runner.dart';
@@ -467,7 +468,9 @@ To install a specific version of Patrol CLI, run:
       return false;
     }
 
-    if (commandName == 'update' || commandName == 'doctor') {
+    if (commandName == 'update' ||
+        commandName == 'doctor' ||
+        commandName == HandleCompletionRequestCommand.commandName) {
       return false;
     }
 
