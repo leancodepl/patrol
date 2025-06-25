@@ -1,6 +1,7 @@
 ## Unreleased
 
 - Add support for comments in .patrol.env files.  (#2653)
+- Skip update check when the `patrol_cli` binary is triggered for shell completion only (#2512)
 
 ## 3.7.0
 
