@@ -443,13 +443,11 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
 
     override fun pickMultipleImagesFromGallery(request: Contracts.PickMultipleImagesFromGalleryRequest) {
         val apiLvl = getAndroidApiLevel().apiLevel
-        Logger.i("apiLvl:$apiLvl")
         if (request.isNative2) {
             val androidImageSelector = request.androidImageSelector ?: Contracts.AndroidSelector(
                 resourceName = if (apiLvl >= 34) "com.google.android.providers.media.module:id/icon_thumbnail" else "com.google.android.documentsui:id/icon",
                 instance = 0
             )
-//            com.google.android.providers.media.module:id/icon_thumbnail
             val androidSubMenuSelector = if (apiLvl < 34) {
                 Contracts.AndroidSelector(
                     resourceName = "com.google.android.documentsui:id/sub_menu_list",
@@ -549,7 +547,7 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
         PatrolServer.appReady.open()
     }
 
-    override fun isSimulator(): IsSimulatorResponse {
+    override fun isVirtualDevice(): IsSimulatorResponse {
         val isEmulator = Build.FINGERPRINT.startsWith("generic") ||
             Build.FINGERPRINT.startsWith("unknown") ||
             Build.MODEL.contains("google_sdk") ||
@@ -566,7 +564,7 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
             (Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic")) ||
             "google_sdk" == Build.PRODUCT
 
-        return IsSimulatorResponse(isEmulator)
+        return isVirtualDevice(isEmulator)
     }
 
     override fun getAndroidApiLevel(): GetAndroidApiLevelResponse {
