@@ -331,11 +331,13 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
                 resourceName = if (isEmulator) "com.android.camera2:id/done_button" else "com.google.android.GoogleCamera:id/done_button",
                 instance = 0
             )
+            val shutterButtonSelector2 = shutterButtonSelector.copy(instance = null)
+            val doneButtonSelector2 = doneButtonSelector.copy(instance = null)
             automation.takeCameraPhoto(
                 shutterButtonSelector.toUiSelector(),
-                shutterButtonSelector.toBySelector(),
+                shutterButtonSelector2.toBySelector(),
                 doneButtonSelector.toUiSelector(),
-                doneButtonSelector.toBySelector(),
+                doneButtonSelector2.toBySelector(),
                 request.timeoutMillis
             )
         } else {
@@ -347,11 +349,13 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
                 resourceId = if (isEmulator) "com.android.camera2:id/done_button" else "com.google.android.GoogleCamera:id/done_button",
                 instance = 0
             )
+            val shutterButtonSelector2 = shutterButtonSelector.copy(instance = null)
+            val doneButtonSelector2 = doneButtonSelector.copy(instance = null)
             automation.takeCameraPhoto(
                 shutterButtonSelector.toUiSelector(),
-                shutterButtonSelector.toBySelector(),
+                shutterButtonSelector2.toBySelector(),
                 doneButtonSelector.toUiSelector(),
-                doneButtonSelector.toBySelector(),
+                doneButtonSelector2.toBySelector(),
                 request.timeoutMillis
             )
         }
