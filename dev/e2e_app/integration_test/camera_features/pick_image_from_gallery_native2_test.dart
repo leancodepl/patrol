@@ -15,11 +15,7 @@ void main() {
     }
     await $(#cameraFeaturesButton).scrollTo().tap();
     await $(#chooseFromGalleryButton).tap();
-    if (await $.native2.isPermissionDialogVisible(
-      timeout: const Duration(seconds: 4),
-    )) {
-      await $.native2.grantPermissionWhenInUse();
-    }
+    await cameraHelpers.maybeAcceptPermissionDialog();
     await $.native2.pickImageFromGallery(index: 1);
     await $.pumpAndSettle();
 

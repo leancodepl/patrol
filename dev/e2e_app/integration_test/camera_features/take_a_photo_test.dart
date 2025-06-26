@@ -12,11 +12,7 @@ void main() {
       throw Exception('Camera is not supported on iOS simulator');
     }
     await $(#takePhotoButton).tap();
-    if (await $.native.isPermissionDialogVisible(
-      timeout: const Duration(seconds: 4),
-    )) {
-      await $.native.grantPermissionWhenInUse();
-    }
+    await cameraHelpers.maybeAcceptPermissionDialog();
     await cameraHelpers.maybeAcceptDialogAndroid();
 
     await $.native.takeCameraPhoto();

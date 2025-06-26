@@ -15,12 +15,7 @@ void main() {
     }
     await $(#cameraFeaturesButton).scrollTo().tap();
     await $(#pickMultiplePhotosButton).tap();
-    if (await $.native2.isPermissionDialogVisible(
-      timeout: const Duration(seconds: 4),
-    )) {
-      await $.native2.grantPermissionWhenInUse();
-    }
-    // Works on API LVL 33
+    await cameraHelpers.maybeAcceptPermissionDialog();
     await $.native2.pickMultipleImagesFromGallery(imageIndexes: [0, 1]);
 
     await $.pumpAndSettle();
