@@ -68,10 +68,10 @@ project you want to test and updating paths to the target tests in `arguments`.
 Native methods API is generated from a schema. If you wish to modify any of these methods, follow steps from below:
 
 1. Go to `schema.dart` in the root directory of the repository.
-2. Find a method or a request/response class that you wish to modify, apply your changes. You can also modify or add new methods.
+2. If You want to add a new method, add it.
 3. Run `./gen_from_schema` script to regenerate the contracts.
 4. After running `gen_from_schema`, you need to open `patrol/example/android` or `patrol/example/ios` in Android Studio or Xcode respectively.
-5. After step 4 IDE (Android Studio or Xcode) will generate a signature of the new method that you generate, than you need to implement it.
+5. After step 4, when you open the IDE (Android Studio or Xcode), it will detect the missing method implementation and may offer to generate a method signature for you. You can accept this suggestion or manually implement the method.
 6. On iOS, for development time you should remove `#if PATROL_ENABLED` from `AutomatorServer.swift` and `Automator.swift` to make code completion work.
 
 ## Working with patrol_devtools_extension
