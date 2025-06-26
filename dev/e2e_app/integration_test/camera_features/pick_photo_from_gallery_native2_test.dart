@@ -20,7 +20,7 @@ void main() {
     )) {
       await $.native2.grantPermissionWhenInUse();
     }
-    await $.native2.pickImageFromGallery(instance: 1);
+    await $.native2.pickImageFromGallery(index: 1);
     await $.pumpAndSettle();
 
     await $(#smallImagePreview).waitUntilVisible();

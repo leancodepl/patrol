@@ -1055,13 +1055,13 @@ class NativeAutomator {
   ///
   /// You can provide a custom selector for the image using [imageSelector].
   /// If no custom selector is provided, default selectors will be used.
-  /// Alternatively, you can specify an [instance] to select the nth image
+  /// Alternatively, you can specify an [index] to select the nth image
   /// when using default selectors.
   ///
-  /// Note: If you provide [imageSelector], the [instance] parameter will be overwritten.
+  /// Note: If you provide [imageSelector], the [index] parameter will be overwritten.
   Future<void> pickImageFromGallery({
     Selector? imageSelector,
-    int? instance,
+    int? index,
     Duration? timeout,
   }) async {
     await _wrapRequest(
@@ -1073,7 +1073,7 @@ class NativeAutomator {
             appId: resolvedAppId,
             isNative2: false,
             timeoutMillis: timeout?.inMilliseconds,
-            instance: instance,
+            instance: index,
           ),
         );
       },
