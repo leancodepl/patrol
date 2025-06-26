@@ -24,6 +24,7 @@ class CameraHelpers {
       ),
     );
 
+    await Future.delayed(const Duration(seconds: 4), () {});
     await $.native2.openApp();
   }
 
@@ -52,7 +53,8 @@ class CameraHelpers {
         ),
       ),
     );
-    await $.native2.openApp();
+    await Future.delayed(const Duration(seconds: 4), () {});
+    await $.native2.openApp(appId: 'pl.leancode.patrol.e2e_app');
   }
 
   /// Try to accept NEXT modal, if modal not found, do nothing
