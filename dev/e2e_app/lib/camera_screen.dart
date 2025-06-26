@@ -99,7 +99,7 @@ class _CameraScreenState extends State<CameraScreen> {
   Widget _buildBody() {
     return Column(
       children: [
-        if (_capturedImages.isNotEmpty) _buildImagePreview(),
+        if (_capturedImages.isNotEmpty) _ImagePreview(images: _capturedImages),
         Expanded(
           child: Center(
             child: Column(
@@ -153,8 +153,15 @@ class _CameraScreenState extends State<CameraScreen> {
       ],
     );
   }
+}
 
-  Widget _buildImagePreview() {
+class _ImagePreview extends StatelessWidget {
+  const _ImagePreview({required this.images});
+
+  final List<File> images;
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       key: K.smallImagePreview,
       margin: const EdgeInsets.all(16),
@@ -173,7 +180,7 @@ class _CameraScreenState extends State<CameraScreen> {
               const SizedBox(width: 8),
               Text(
                 key: K.selectedPhotosCount,
-                '${_capturedImages.length} photo${_capturedImages.length == 1 ? '' : 's'} selected',
+                '${images.length} photo${images.length == 1 ? '' : 's'} selected',
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
@@ -186,7 +193,7 @@ class _CameraScreenState extends State<CameraScreen> {
             height: 80,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              itemCount: _capturedImages.length,
+              itemCount: images.length,
               itemBuilder: (context, index) {
                 return Container(
                   margin: const EdgeInsets.only(right: 8),
@@ -199,7 +206,7 @@ class _CameraScreenState extends State<CameraScreen> {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(4),
                     child: Image.file(
-                      _capturedImages[index],
+                      images[index],
                       fit: BoxFit.cover,
                     ),
                   ),
