@@ -892,7 +892,7 @@ PickImageFromGalleryRequest _$PickImageFromGalleryRequestFromJson(
           ? null
           : IOSSelector.fromJson(
               json['iosImageSelector'] as Map<String, dynamic>),
-      instance: (json['instance'] as num?)?.toInt(),
+      imageIndex: (json['imageIndex'] as num?)?.toInt(),
       timeoutMillis: (json['timeoutMillis'] as num?)?.toInt(),
       appId: json['appId'] as String,
       isNative2: json['isNative2'] as bool,
@@ -904,7 +904,7 @@ Map<String, dynamic> _$PickImageFromGalleryRequestToJson(
       'imageSelector': instance.imageSelector,
       'androidImageSelector': instance.androidImageSelector,
       'iosImageSelector': instance.iosImageSelector,
-      'instance': instance.instance,
+      'imageIndex': instance.imageIndex,
       'timeoutMillis': instance.timeoutMillis,
       'appId': instance.appId,
       'isNative2': instance.isNative2,
@@ -925,7 +925,9 @@ PickMultipleImagesFromGalleryRequest
               ? null
               : IOSSelector.fromJson(
                   json['iosImageSelector'] as Map<String, dynamic>),
-          imageCount: (json['imageCount'] as num).toInt(),
+          imageIndexes: (json['imageIndexes'] as List<dynamic>)
+              .map((e) => (e as num).toInt())
+              .toList(),
           timeoutMillis: (json['timeoutMillis'] as num?)?.toInt(),
           appId: json['appId'] as String,
           isNative2: json['isNative2'] as bool,
@@ -937,7 +939,7 @@ Map<String, dynamic> _$PickMultipleImagesFromGalleryRequestToJson(
       'imageSelector': instance.imageSelector,
       'androidImageSelector': instance.androidImageSelector,
       'iosImageSelector': instance.iosImageSelector,
-      'imageCount': instance.imageCount,
+      'imageIndexes': instance.imageIndexes,
       'timeoutMillis': instance.timeoutMillis,
       'appId': instance.appId,
       'isNative2': instance.isNative2,

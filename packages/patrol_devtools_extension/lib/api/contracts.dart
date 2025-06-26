@@ -1933,7 +1933,7 @@ class PickImageFromGalleryRequest with EquatableMixin {
     this.imageSelector,
     this.androidImageSelector,
     this.iosImageSelector,
-    this.instance,
+    this.imageIndex,
     this.timeoutMillis,
     required this.appId,
     required this.isNative2,
@@ -1945,7 +1945,7 @@ class PickImageFromGalleryRequest with EquatableMixin {
   final Selector? imageSelector;
   final AndroidSelector? androidImageSelector;
   final IOSSelector? iosImageSelector;
-  final int? instance;
+  final int? imageIndex;
   final int? timeoutMillis;
   final String appId;
   final bool isNative2;
@@ -1957,7 +1957,7 @@ class PickImageFromGalleryRequest with EquatableMixin {
         imageSelector,
         androidImageSelector,
         iosImageSelector,
-        instance,
+        imageIndex,
         timeoutMillis,
         appId,
         isNative2,
@@ -1967,7 +1967,7 @@ class PickImageFromGalleryRequest with EquatableMixin {
     Selector? imageSelector,
     AndroidSelector? androidImageSelector,
     IOSSelector? iosImageSelector,
-    int? instance,
+    int? imageIndex,
     int? timeoutMillis,
     String? appId,
     bool? isNative2,
@@ -1976,7 +1976,7 @@ class PickImageFromGalleryRequest with EquatableMixin {
       imageSelector: imageSelector ?? this.imageSelector,
       androidImageSelector: androidImageSelector ?? this.androidImageSelector,
       iosImageSelector: iosImageSelector ?? this.iosImageSelector,
-      instance: instance ?? this.instance,
+      imageIndex: imageIndex ?? this.imageIndex,
       timeoutMillis: timeoutMillis ?? this.timeoutMillis,
       appId: appId ?? this.appId,
       isNative2: isNative2 ?? this.isNative2,
@@ -1990,7 +1990,7 @@ class PickMultipleImagesFromGalleryRequest with EquatableMixin {
     this.imageSelector,
     this.androidImageSelector,
     this.iosImageSelector,
-    required this.imageCount,
+    required this.imageIndexes,
     this.timeoutMillis,
     required this.appId,
     required this.isNative2,
@@ -2004,7 +2004,7 @@ class PickMultipleImagesFromGalleryRequest with EquatableMixin {
   final Selector? imageSelector;
   final AndroidSelector? androidImageSelector;
   final IOSSelector? iosImageSelector;
-  final int imageCount;
+  final List<int> imageIndexes;
   final int? timeoutMillis;
   final String appId;
   final bool isNative2;
@@ -2017,7 +2017,7 @@ class PickMultipleImagesFromGalleryRequest with EquatableMixin {
         imageSelector,
         androidImageSelector,
         iosImageSelector,
-        imageCount,
+        imageIndexes,
         timeoutMillis,
         appId,
         isNative2,
@@ -2027,7 +2027,7 @@ class PickMultipleImagesFromGalleryRequest with EquatableMixin {
     Selector? imageSelector,
     AndroidSelector? androidImageSelector,
     IOSSelector? iosImageSelector,
-    int? imageCount,
+    List<int>? imageIndexes,
     int? timeoutMillis,
     String? appId,
     bool? isNative2,
@@ -2036,7 +2036,7 @@ class PickMultipleImagesFromGalleryRequest with EquatableMixin {
       imageSelector: imageSelector ?? this.imageSelector,
       androidImageSelector: androidImageSelector ?? this.androidImageSelector,
       iosImageSelector: iosImageSelector ?? this.iosImageSelector,
-      imageCount: imageCount ?? this.imageCount,
+      imageIndexes: imageIndexes ?? this.imageIndexes,
       timeoutMillis: timeoutMillis ?? this.timeoutMillis,
       appId: appId ?? this.appId,
       isNative2: isNative2 ?? this.isNative2,

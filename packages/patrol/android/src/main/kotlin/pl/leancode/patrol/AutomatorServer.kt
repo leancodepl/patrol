@@ -362,7 +362,7 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
         if (request.isNative2) {
             val androidImageSelector = request.androidImageSelector ?: Contracts.AndroidSelector(
                 resourceName = if (apiLvl >= 34) "com.google.android.providers.media.module:id/icon_thumbnail" else "com.google.android.documentsui:id/icon_thumb",
-                instance = request.instance ?: 0
+                instance = request.imageIndex ?: 0
             )
 
             val androidSubMenuSelector = if (apiLvl < 34) {
@@ -400,7 +400,7 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
         } else {
             val androidImageSelector = request.imageSelector ?: Selector(
                 resourceId = if (apiLvl >= 34) "com.google.android.providers.media.module:id/icon_thumbnail" else "com.google.android.documentsui:id/icon_thumb",
-                instance = request.instance ?: 0
+                instance = request.imageIndex ?: 0
             )
 
             val androidSubMenuSelector = if (apiLvl < 34) {
@@ -470,7 +470,7 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
                 androidSubMenuSelector2?.toBySelector(),
                 androidActionMenuSelector.toUiSelector(),
                 androidActionMenuSelector2.toBySelector(),
-                request.imageCount.toInt(),
+                request.imageIndexes,
                 request.timeoutMillis
             )
         } else {
@@ -504,7 +504,7 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
                 androidSubMenuSelector2?.toBySelector(),
                 androidActionMenuSelector.toUiSelector(),
                 androidActionMenuSelector2.toBySelector(),
-                request.imageCount.toInt(),
+                request.imageIndexes,
                 request.timeoutMillis
             )
         }

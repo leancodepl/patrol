@@ -314,7 +314,7 @@ class PickImageFromGalleryRequest {
   late Selector? imageSelector;
   late AndroidSelector? androidImageSelector;
   late IOSSelector? iosImageSelector;
-  late int? instance;
+  late int? imageIndex;
   late int? timeoutMillis;
   late String appId;
   late bool isNative2;
@@ -324,7 +324,7 @@ class PickMultipleImagesFromGalleryRequest {
   late Selector? imageSelector;
   late AndroidSelector? androidImageSelector;
   late IOSSelector? iosImageSelector;
-  late int imageCount;
+  late List<int> imageIndexes;
   late int? timeoutMillis;
   late String appId;
   late bool isNative2;

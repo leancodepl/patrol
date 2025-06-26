@@ -25,7 +25,7 @@ void main() {
     final nativeViews = await $.native.getNativeViews(null);
     debugPrint('nativeViews: $nativeViews', wrapWidth: 1000);
     // Works on API LVL 33
-    await $.native2.pickMultipleImagesFromGallery(imageCount: 2);
+    await $.native2.pickMultipleImagesFromGallery(imageIndexes: [0, 1]);
 
     await $.pumpAndSettle();
     await $(#selectedPhotosCount).$('2 photos selected').waitUntilVisible();

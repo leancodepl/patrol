@@ -1073,7 +1073,7 @@ class NativeAutomator {
             appId: resolvedAppId,
             isNative2: false,
             timeoutMillis: timeout?.inMilliseconds,
-            instance: index,
+            imageIndex: index,
           ),
         );
       },
@@ -1082,13 +1082,13 @@ class NativeAutomator {
 
   /// Pick multiple images from the gallery
   ///
-  /// This method opens the gallery and selects multiple images based on [imageCount].
+  /// This method opens the gallery and selects multiple images based on [imageIndexes].
   ///
   /// You can provide a custom selector for the images using [imageSelector].
   /// If no custom selector is provided, default selectors will be used.
   /// The method will automatically handle the selection confirmation process.
   Future<void> pickMultipleImagesFromGallery({
-    required int imageCount,
+    required List<int> imageIndexes,
     Selector? imageSelector,
     Duration? timeout,
   }) async {
@@ -1100,7 +1100,7 @@ class NativeAutomator {
             imageSelector: imageSelector,
             appId: resolvedAppId,
             isNative2: false,
-            imageCount: imageCount,
+            imageIndexes: imageIndexes,
             timeoutMillis: timeout?.inMilliseconds,
           ),
         );

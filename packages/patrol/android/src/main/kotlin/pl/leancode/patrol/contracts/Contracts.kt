@@ -713,7 +713,7 @@ class Contracts {
     val imageSelector: Selector? = null,
     val androidImageSelector: AndroidSelector? = null,
     val iosImageSelector: IOSSelector? = null,
-    val instance: Long? = null,
+    val imageIndex: Long? = null,
     val timeoutMillis: Long? = null,
     val appId: String,
     val isNative2: Boolean
@@ -727,8 +727,8 @@ class Contracts {
     fun hasIosImageSelector(): Boolean {
       return iosImageSelector != null
     }
-    fun hasInstance(): Boolean {
-      return instance != null
+    fun hasImageIndex(): Boolean {
+      return imageIndex != null
     }
     fun hasTimeoutMillis(): Boolean {
       return timeoutMillis != null
@@ -739,7 +739,7 @@ class Contracts {
     val imageSelector: Selector? = null,
     val androidImageSelector: AndroidSelector? = null,
     val iosImageSelector: IOSSelector? = null,
-    val imageCount: Long,
+    val imageIndexes: List<Long>,
     val timeoutMillis: Long? = null,
     val appId: String,
     val isNative2: Boolean
