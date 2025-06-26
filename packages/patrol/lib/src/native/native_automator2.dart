@@ -711,15 +711,15 @@ class NativeAutomator2 {
   ///
   /// If [selector] is null, returns the whole native UI tree.
   Future<GetNativeViewsResult> getNativeViews(
-    NativeSelector? selector, {
+    NativeSelector selector, {
     String? appId,
   }) async {
     final response = await _wrapRequest(
       'getNativeViews',
       () => _client.getNativeViews(
         GetNativeViewsRequest(
-          androidSelector: selector?.android,
-          iosSelector: selector?.ios,
+          androidSelector: selector.android,
+          iosSelector: selector.ios,
           appId: appId ?? resolvedAppId,
         ),
       ),
