@@ -4,7 +4,7 @@ import '../common.dart';
 import 'camera_helpers.dart';
 
 void main() {
-  patrol('take a photo', ($) async {
+  patrol('take a photo - native2', ($) async {
     await createApp($);
     final cameraHelpers = CameraHelpers($);
     await $(#cameraFeaturesButton).scrollTo().tap();

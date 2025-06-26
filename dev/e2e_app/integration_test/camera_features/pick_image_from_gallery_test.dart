@@ -7,7 +7,7 @@ void main() {
   patrol('pick image from gallery - native', ($) async {
     await createApp($);
     final cameraHelpers = CameraHelpers($);
-    if (await $.native2.isVirtualDevice() && Platform.isAndroid) {
+    if (await $.native.isVirtualDevice() && Platform.isAndroid) {
       await cameraHelpers.takePhotosAcceptDialogsAndOpenAppOnEmulator();
     } else if (Platform.isAndroid) {
       await cameraHelpers
@@ -15,10 +15,10 @@ void main() {
     }
     await $(#cameraFeaturesButton).scrollTo().tap();
     await $(#chooseFromGalleryButton).tap();
-    if (await $.native2.isPermissionDialogVisible(
+    if (await $.native.isPermissionDialogVisible(
       timeout: const Duration(seconds: 4),
     )) {
-      await $.native2.grantPermissionWhenInUse();
+      await $.native.grantPermissionWhenInUse();
     }
     await $.native.pickImageFromGallery(index: 1);
     await $.pumpAndSettle();

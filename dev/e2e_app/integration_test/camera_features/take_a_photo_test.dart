@@ -8,15 +8,14 @@ void main() {
     await createApp($);
     final cameraHelpers = CameraHelpers($);
     await $(#cameraFeaturesButton).scrollTo().tap();
-    if (await $.native2.isVirtualDevice() && Platform.isIOS) {
+    if (await $.native.isVirtualDevice() && Platform.isIOS) {
       throw Exception('Camera is not supported on iOS simulator');
     }
     await $(#takePhotoButton).tap();
-    print('isSimulator: ${await $.native2.isVirtualDevice()}');
-    if (await $.native2.isPermissionDialogVisible(
+    if (await $.native.isPermissionDialogVisible(
       timeout: const Duration(seconds: 4),
     )) {
-      await $.native2.grantPermissionWhenInUse();
+      await $.native.grantPermissionWhenInUse();
     }
     await cameraHelpers.maybeAcceptDialogAndroid();
 

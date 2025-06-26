@@ -1,7 +1,5 @@
 import 'dart:io';
 
-import 'package:flutter/material.dart';
-
 import '../common.dart';
 import 'camera_helpers.dart';
 
@@ -22,8 +20,6 @@ void main() {
     )) {
       await $.native2.grantPermissionWhenInUse();
     }
-    final nativeViews = await $.native.getNativeViews(null);
-    debugPrint('nativeViews: $nativeViews', wrapWidth: 1000);
     // Works on API LVL 33
     await $.native2.pickMultipleImagesFromGallery(imageIndexes: [0, 1]);
 
