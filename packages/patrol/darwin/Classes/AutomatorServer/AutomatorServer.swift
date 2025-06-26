@@ -434,11 +434,9 @@
           on: request.iosImageSelector
             ?? IOSSelector(
               // Images start from index 1 on real device and index 2 on simulator
-                instance: isSimulator ? (request.imageIndex ?? 0) + 2 : (
-                    request.imageIndex ?? 0
-                ) + 1,
+              instance: isSimulator ? (request.imageIndex ?? 0) + 2 : (request.imageIndex ?? 0) + 1,
               elementType: IOSElementType.image
-),
+            ),
           inApp: request.appId,
           withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
         )
@@ -454,11 +452,10 @@
             on: request.iosImageSelector
               ?? IOSSelector(
                 // Images start from index 1 on real device and index 2 on simulator
-                instance: isSimulator ? (request.imageIndex ?? 0) + 2 : (
-                    request.imageIndex ?? 0
-                ) + 1,
+                instance: isSimulator
+                  ? (request.imageIndex ?? 0) + 2 : (request.imageIndex ?? 0) + 1,
                 elementType: IOSElementType.image
-),
+              ),
             inApp: request.appId,
             withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
           )
@@ -471,7 +468,7 @@
         let isSimulator = try isVirtualDevice().isVirtualDevice
 
         // Select multiple images
-          for i in request.imageIndexes {
+        for i in request.imageIndexes {
           if request.isNative2 {
             try automator.tap(
               on: request.iosImageSelector
