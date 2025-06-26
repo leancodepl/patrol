@@ -2,7 +2,9 @@
 
   import Foundation
 
-  final class AutomatorServer: NativeAutomatorServer {
+final class AutomatorServer: NativeAutomatorServer {
+
+
     private let automator: Automator
 
     private let onAppReady: (Bool) -> Void
@@ -427,7 +429,7 @@
     }
 
     func pickImageFromGallery(request: PickImageFromGalleryRequest) throws {
-      let isSimulator = try isSimulator().isSimulator
+      let isSimulator = try isVirtualDevice().isVirtualDevice
       if request.isNative2 {
         try automator.tap(
           on: request.iosImageSelector
@@ -459,7 +461,7 @@
 
     func pickMultipleImagesFromGallery(request: PickMultipleImagesFromGalleryRequest) throws {
       return try runCatching {
-        let isSimulator = try isSimulator().isSimulator
+          let isSimulator = try isVirtualDevice().isVirtualDevice
 
         // Select multiple images
         for i in 0..<request.imageCount {
@@ -528,27 +530,22 @@
     func markPatrolAppServiceReady() throws {
       onAppReady(true)
     }
-
-    func isSimulator() throws -> IsSimulatorResponse {
-      return try runCatching {
-        let isSimulator = automator.isSimulator()
-        return IsSimulatorResponse(isSimulator: isSimulator)
-      }
+    
+    func isVirtualDevice() throws -> IsVirtualDeviceResponse {
+        return try runCatching {
+            let isSimulator = automator.isVirtualDevice()
+            return IsVirtualDeviceResponse(isVirtualDevice: isSimulator)
+        }
     }
 
-    func getIosVersion() throws -> GetIosVersionResponse {
-      return try runCatching {
-        let version = automator.getIosVersion()
-        return GetIosVersionResponse(version: version)
-      }
+    func getOsVersion() throws -> GetOsVersionResponse {
+        return try runCatching {
+            let version = automator.getOsVersion()
+            let components = version.split(separator: ".")
+            let majorVersionInt = components.first.flatMap { Int($0) }
+            return GetOsVersionResponse(osVersion: majorVersionInt!)
+        }
     }
 
-    func getAndroidApiLevel() throws -> GetAndroidApiLevelResponse {
-      return try runCatching {
-        // iOS doesn't have Android API levels, so return 0
-        return GetAndroidApiLevelResponse(apiLevel: 0)
-      }
-    }
   }
-
-#endif
+  #endif
