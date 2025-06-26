@@ -667,16 +667,12 @@ class Contracts {
     val packageName: String
   )
 
-  data class IsSimulatorResponse (
-    val isSimulator: Boolean
+  data class IsVirtualDeviceResponse (
+    val isVirtualDevice: Boolean
   )
 
-  data class GetAndroidApiLevelResponse (
-    val apiLevel: Long
-  )
-
-  data class GetIosVersionResponse (
-    val version: String
+  data class GetOsVersionResponse (
+    val osVersion: Long
   )
 
   data class TakeCameraPhotoRequest (

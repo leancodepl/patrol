@@ -58,9 +58,8 @@ abstract class NativeAutomatorServer {
     abstract fun debug()
     abstract fun setMockLocation(request: Contracts.SetMockLocationRequest)
     abstract fun markPatrolAppServiceReady()
-    abstract fun isSimulator(): Contracts.IsSimulatorResponse
-    abstract fun getAndroidApiLevel(): Contracts.GetAndroidApiLevelResponse
-    abstract fun getIosVersion(): Contracts.GetIosVersionResponse
+    abstract fun isVirtualDevice(): Contracts.IsVirtualDeviceResponse
+    abstract fun getOsVersion(): Contracts.GetOsVersionResponse
 
     val router = routes(
       "initialize" bind POST to {
@@ -266,16 +265,12 @@ abstract class NativeAutomatorServer {
         markPatrolAppServiceReady()
         Response(OK)
       },
-      "isSimulator" bind POST to {
-        val response = isSimulator()
+      "isVirtualDevice" bind POST to {
+        val response = isVirtualDevice()
         Response(OK).body(json.toJson(response))
       },
-      "getAndroidApiLevel" bind POST to {
-        val response = getAndroidApiLevel()
-        Response(OK).body(json.toJson(response))
-      },
-      "getIosVersion" bind POST to {
-        val response = getIosVersion()
+      "getOsVersion" bind POST to {
+        val response = getOsVersion()
         Response(OK).body(json.toJson(response))
       }
     )

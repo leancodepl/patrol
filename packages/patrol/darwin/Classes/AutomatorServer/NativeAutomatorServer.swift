@@ -51,9 +51,8 @@ protocol NativeAutomatorServer {
     func debug() throws
     func setMockLocation(request: SetMockLocationRequest) throws
     func markPatrolAppServiceReady() throws
-    func isSimulator() throws -> IsSimulatorResponse
-    func getAndroidApiLevel() throws -> GetAndroidApiLevelResponse
-    func getIosVersion() throws -> GetIosVersionResponse
+    func isVirtualDevice() throws -> IsVirtualDeviceResponse
+    func getOsVersion() throws -> GetOsVersionResponse
 }
 
 extension NativeAutomatorServer {
@@ -309,20 +308,14 @@ extension NativeAutomatorServer {
         return HTTPResponse(.ok)
     }
 
-    private func isSimulatorHandler(request: HTTPRequest) throws -> HTTPResponse {
-        let response = try isSimulator()
+    private func isVirtualDeviceHandler(request: HTTPRequest) throws -> HTTPResponse {
+        let response = try isVirtualDevice()
         let body = try JSONEncoder().encode(response)
         return HTTPResponse(.ok, body: body)
     }
 
-    private func getAndroidApiLevelHandler(request: HTTPRequest) throws -> HTTPResponse {
-        let response = try getAndroidApiLevel()
-        let body = try JSONEncoder().encode(response)
-        return HTTPResponse(.ok, body: body)
-    }
-
-    private func getIosVersionHandler(request: HTTPRequest) throws -> HTTPResponse {
-        let response = try getIosVersion()
+    private func getOsVersionHandler(request: HTTPRequest) throws -> HTTPResponse {
+        let response = try getOsVersion()
         let body = try JSONEncoder().encode(response)
         return HTTPResponse(.ok, body: body)
     }
@@ -555,20 +548,15 @@ extension NativeAutomatorServer {
                 request: request,
                 handler: markPatrolAppServiceReadyHandler)
         }
-        server.route(.POST, "isSimulator") {
+        server.route(.POST, "isVirtualDevice") {
             request in handleRequest(
                 request: request,
-                handler: isSimulatorHandler)
+                handler: isVirtualDeviceHandler)
         }
-        server.route(.POST, "getAndroidApiLevel") {
+        server.route(.POST, "getOsVersion") {
             request in handleRequest(
                 request: request,
-                handler: getAndroidApiLevelHandler)
-        }
-        server.route(.POST, "getIosVersion") {
-            request in handleRequest(
-                request: request,
-                handler: getIosVersionHandler)
+                handler: getOsVersionHandler)
         }
     }
 }

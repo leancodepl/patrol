@@ -382,25 +382,18 @@ class NativeAutomatorClient {
     );
   }
 
-  Future<IsSimulatorResponse> isSimulator() async {
+  Future<IsVirtualDeviceResponse> isVirtualDevice() async {
     final json = await _sendRequest(
-      'isSimulator',
+      'isVirtualDevice',
     );
-    return IsSimulatorResponse.fromJson(json);
+    return IsVirtualDeviceResponse.fromJson(json);
   }
 
-  Future<GetAndroidApiLevelResponse> getAndroidApiLevel() async {
+  Future<GetOsVersionResponse> getOsVersion() async {
     final json = await _sendRequest(
-      'getAndroidApiLevel',
+      'getOsVersion',
     );
-    return GetAndroidApiLevelResponse.fromJson(json);
-  }
-
-  Future<GetIosVersionResponse> getIosVersion() async {
-    final json = await _sendRequest(
-      'getIosVersion',
-    );
-    return GetIosVersionResponse.fromJson(json);
+    return GetOsVersionResponse.fromJson(json);
   }
 
   Future<Map<String, dynamic>> _sendRequest(

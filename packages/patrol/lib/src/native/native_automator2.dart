@@ -991,58 +991,33 @@ class NativeAutomator2 {
   /// differently on physical devices vs simulators/emulators.
   Future<bool> isVirtualDevice() async {
     final response = await _wrapRequest(
-      'isSimulator',
-      () => _client.isSimulator(),
+      'isVirtualDevice',
+      () => _client.isVirtualDevice(),
     );
 
-    return response.isSimulator;
+    return response.isVirtualDevice;
   }
 
-  /// Gets the Android API level.
+  /// Gets the OS version.
   ///
-  /// Returns the Android API level as an integer (e.g., 30 for Android 11).
-  /// On iOS, this will return 0 as it's Android-specific.
+  /// Returns the OS version as an integer (e.g., 30 for Android 11).
   ///
   /// This can be useful for conditional logic in tests that need to behave
-  /// differently based on the Android version.
+  /// differently based on the OS version.
   ///
   /// Example:
   /// ```dart
-  /// final apiLevel = await $.native.getAndroidApiLevel();
-  /// if (apiLevel >= 30) {
+  /// final osVersion = await $.native.getOsVersion();
+  /// if (osVersion >= 30) {
   ///   // Android 11+ specific behavior
   /// }
   /// ```
-  Future<int> getAndroidApiLevel() async {
+  Future<int> getOsVersion() async {
     final response = await _wrapRequest(
-      'getAndroidApiLevel',
-      () => _client.getAndroidApiLevel(),
+      'getOsVersion',
+      () => _client.getOsVersion(),
     );
 
-    return response.apiLevel;
-  }
-
-  /// Gets the iOS version.
-  ///
-  /// Returns the iOS version as a string (e.g., "17.0" for iOS 17).
-  /// On Android, this will return an empty string as it's iOS-specific.
-  ///
-  /// This can be useful for conditional logic in tests that need to behave
-  /// differently based on the iOS version.
-  ///
-  /// Example:
-  /// ```dart
-  /// final iosVersion = await $.native.getIosVersion();
-  /// if (iosVersion.startsWith("17")) {
-  ///   // iOS 17+ specific behavior
-  /// }
-  /// ```
-  Future<String> getIosVersion() async {
-    final response = await _wrapRequest(
-      'getIosVersion',
-      () => _client.getIosVersion(),
-    );
-
-    return response.version;
+    return response.osVersion;
   }
 }

@@ -388,16 +388,12 @@ public struct SetMockLocationRequest: Codable {
   public var packageName: String
 }
 
-public struct IsSimulatorResponse: Codable {
-  public var isSimulator: Bool
+public struct IsVirtualDeviceResponse: Codable {
+  public var isVirtualDevice: Bool
 }
 
-public struct GetAndroidApiLevelResponse: Codable {
-  public var apiLevel: Int
-}
-
-public struct GetIosVersionResponse: Codable {
-  public var version: String
+public struct GetOsVersionResponse: Codable {
+  public var osVersion: Int
 }
 
 public struct TakeCameraPhotoRequest: Codable {

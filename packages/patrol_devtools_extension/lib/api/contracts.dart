@@ -1802,82 +1802,55 @@ class SetMockLocationRequest with EquatableMixin {
 }
 
 @JsonSerializable()
-class IsSimulatorResponse with EquatableMixin {
-  IsSimulatorResponse({
-    required this.isSimulator,
+class IsVirtualDeviceResponse with EquatableMixin {
+  IsVirtualDeviceResponse({
+    required this.isVirtualDevice,
   });
 
-  factory IsSimulatorResponse.fromJson(Map<String, dynamic> json) =>
-      _$IsSimulatorResponseFromJson(json);
+  factory IsVirtualDeviceResponse.fromJson(Map<String, dynamic> json) =>
+      _$IsVirtualDeviceResponseFromJson(json);
 
-  final bool isSimulator;
+  final bool isVirtualDevice;
 
-  Map<String, dynamic> toJson() => _$IsSimulatorResponseToJson(this);
+  Map<String, dynamic> toJson() => _$IsVirtualDeviceResponseToJson(this);
 
   @override
   List<Object?> get props => [
-        isSimulator,
+        isVirtualDevice,
       ];
 
-  IsSimulatorResponse copyWith({
-    bool? isSimulator,
+  IsVirtualDeviceResponse copyWith({
+    bool? isVirtualDevice,
   }) {
-    return IsSimulatorResponse(
-      isSimulator: isSimulator ?? this.isSimulator,
+    return IsVirtualDeviceResponse(
+      isVirtualDevice: isVirtualDevice ?? this.isVirtualDevice,
     );
   }
 }
 
 @JsonSerializable()
-class GetAndroidApiLevelResponse with EquatableMixin {
-  GetAndroidApiLevelResponse({
-    required this.apiLevel,
+class GetOsVersionResponse with EquatableMixin {
+  GetOsVersionResponse({
+    required this.osVersion,
   });
 
-  factory GetAndroidApiLevelResponse.fromJson(Map<String, dynamic> json) =>
-      _$GetAndroidApiLevelResponseFromJson(json);
+  factory GetOsVersionResponse.fromJson(Map<String, dynamic> json) =>
+      _$GetOsVersionResponseFromJson(json);
 
-  final int apiLevel;
+  final int osVersion;
 
-  Map<String, dynamic> toJson() => _$GetAndroidApiLevelResponseToJson(this);
+  Map<String, dynamic> toJson() => _$GetOsVersionResponseToJson(this);
 
   @override
   List<Object?> get props => [
-        apiLevel,
+        osVersion,
       ];
 
-  GetAndroidApiLevelResponse copyWith({
-    int? apiLevel,
+  GetOsVersionResponse copyWith({
+    int? osVersion,
   }) {
-    return GetAndroidApiLevelResponse(
-      apiLevel: apiLevel ?? this.apiLevel,
-    );
-  }
-}
-
-@JsonSerializable()
-class GetIosVersionResponse with EquatableMixin {
-  GetIosVersionResponse({
-    required this.version,
-  });
-
-  factory GetIosVersionResponse.fromJson(Map<String, dynamic> json) =>
-      _$GetIosVersionResponseFromJson(json);
-
-  final String version;
-
-  Map<String, dynamic> toJson() => _$GetIosVersionResponseToJson(this);
-
-  @override
-  List<Object?> get props => [
-        version,
-      ];
-
-  GetIosVersionResponse copyWith({
-    String? version,
-  }) {
-    return GetIosVersionResponse(
-      version: version ?? this.version,
+    return GetOsVersionResponse(
+      osVersion: osVersion ?? this.osVersion,
     );
   }
 }

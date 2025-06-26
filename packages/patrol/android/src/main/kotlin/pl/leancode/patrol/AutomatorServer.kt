@@ -5,8 +5,6 @@ import pl.leancode.patrol.contracts.Contracts
 import pl.leancode.patrol.contracts.Contracts.ConfigureRequest
 import pl.leancode.patrol.contracts.Contracts.DarkModeRequest
 import pl.leancode.patrol.contracts.Contracts.EnterTextRequest
-import pl.leancode.patrol.contracts.Contracts.GetAndroidApiLevelResponse
-import pl.leancode.patrol.contracts.Contracts.GetIosVersionResponse
 import pl.leancode.patrol.contracts.Contracts.GetNativeUITreeRequest
 import pl.leancode.patrol.contracts.Contracts.GetNativeUITreeRespone
 import pl.leancode.patrol.contracts.Contracts.GetNativeViewsRequest
@@ -15,7 +13,6 @@ import pl.leancode.patrol.contracts.Contracts.GetNotificationsRequest
 import pl.leancode.patrol.contracts.Contracts.GetNotificationsResponse
 import pl.leancode.patrol.contracts.Contracts.HandlePermissionRequest
 import pl.leancode.patrol.contracts.Contracts.HandlePermissionRequestCode
-import pl.leancode.patrol.contracts.Contracts.IsSimulatorResponse
 import pl.leancode.patrol.contracts.Contracts.OpenAppRequest
 import pl.leancode.patrol.contracts.Contracts.OpenQuickSettingsRequest
 import pl.leancode.patrol.contracts.Contracts.PermissionDialogVisibleRequest
@@ -324,14 +321,14 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
     }
 
     override fun takeCameraPhoto(request: Contracts.TakeCameraPhotoRequest) {
-        val isSimulator = isSimulator().isSimulator
+        val isEmulator = isVirtualDevice().isVirtualDevice
         if (request.isNative2) {
             val shutterButtonSelector = request.androidShutterButtonSelector ?: Contracts.AndroidSelector(
-                resourceName = if (isSimulator) "com.android.camera2:id/shutter_button" else "com.google.android.GoogleCamera:id/shutter_button",
+                resourceName = if (isEmulator) "com.android.camera2:id/shutter_button" else "com.google.android.GoogleCamera:id/shutter_button",
                 instance = 0
             )
             val doneButtonSelector = request.androidDoneButtonSelector ?: Contracts.AndroidSelector(
-                resourceName = if (isSimulator) "com.android.camera2:id/done_button" else "com.google.android.GoogleCamera:id/done_button",
+                resourceName = if (isEmulator) "com.android.camera2:id/done_button" else "com.google.android.GoogleCamera:id/done_button",
                 instance = 0
             )
             automation.takeCameraPhoto(
@@ -343,11 +340,11 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
             )
         } else {
             val shutterButtonSelector = request.shutterButtonSelector ?: Selector(
-                resourceId = if (isSimulator) "com.android.camera2:id/shutter_button" else "com.google.android.GoogleCamera:id/shutter_button",
+                resourceId = if (isEmulator) "com.android.camera2:id/shutter_button" else "com.google.android.GoogleCamera:id/shutter_button",
                 instance = 0
             )
             val doneButtonSelector = request.doneButtonSelector ?: Selector(
-                resourceId = if (isSimulator) "com.android.camera2:id/done_button" else "com.google.android.GoogleCamera:id/done_button",
+                resourceId = if (isEmulator) "com.android.camera2:id/done_button" else "com.google.android.GoogleCamera:id/done_button",
                 instance = 0
             )
             automation.takeCameraPhoto(
@@ -361,7 +358,7 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
     }
 
     override fun pickImageFromGallery(request: Contracts.PickImageFromGalleryRequest) {
-        val apiLvl = getAndroidApiLevel().apiLevel
+        val apiLvl = getOsVersion().osVersion
         if (request.isNative2) {
             val androidImageSelector = request.androidImageSelector ?: Contracts.AndroidSelector(
                 resourceName = if (apiLvl >= 34) "com.google.android.providers.media.module:id/icon_thumbnail" else "com.google.android.documentsui:id/icon_thumb",
@@ -442,7 +439,7 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
     }
 
     override fun pickMultipleImagesFromGallery(request: Contracts.PickMultipleImagesFromGalleryRequest) {
-        val apiLvl = getAndroidApiLevel().apiLevel
+        val apiLvl = getOsVersion().osVersion
         if (request.isNative2) {
             val androidImageSelector = request.androidImageSelector ?: Contracts.AndroidSelector(
                 resourceName = if (apiLvl >= 34) "com.google.android.providers.media.module:id/icon_thumbnail" else "com.google.android.documentsui:id/icon",
@@ -547,7 +544,7 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
         PatrolServer.appReady.open()
     }
 
-    override fun isVirtualDevice(): IsSimulatorResponse {
+    override fun isVirtualDevice(): Contracts.IsVirtualDeviceResponse {
         val isEmulator = Build.FINGERPRINT.startsWith("generic") ||
             Build.FINGERPRINT.startsWith("unknown") ||
             Build.MODEL.contains("google_sdk") ||
@@ -564,14 +561,10 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
             (Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic")) ||
             "google_sdk" == Build.PRODUCT
 
-        return isVirtualDevice(isEmulator)
+        return Contracts.IsVirtualDeviceResponse(isEmulator)
     }
 
-    override fun getAndroidApiLevel(): GetAndroidApiLevelResponse {
-        return GetAndroidApiLevelResponse(Build.VERSION.SDK_INT.toLong())
-    }
-
-    override fun getIosVersion(): GetIosVersionResponse {
-        throw PatrolException("getIosVersion() is not supported on Android")
+    override fun getOsVersion(): Contracts.GetOsVersionResponse {
+        return Contracts.GetOsVersionResponse(Build.VERSION.SDK_INT.toLong())
     }
 }

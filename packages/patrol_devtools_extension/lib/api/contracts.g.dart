@@ -808,39 +808,28 @@ Map<String, dynamic> _$SetMockLocationRequestToJson(
       'packageName': instance.packageName,
     };
 
-IsSimulatorResponse _$IsSimulatorResponseFromJson(Map<String, dynamic> json) =>
-    IsSimulatorResponse(
-      isSimulator: json['isSimulator'] as bool,
+IsVirtualDeviceResponse _$IsVirtualDeviceResponseFromJson(
+        Map<String, dynamic> json) =>
+    IsVirtualDeviceResponse(
+      isVirtualDevice: json['isVirtualDevice'] as bool,
     );
 
-Map<String, dynamic> _$IsSimulatorResponseToJson(
-        IsSimulatorResponse instance) =>
+Map<String, dynamic> _$IsVirtualDeviceResponseToJson(
+        IsVirtualDeviceResponse instance) =>
     <String, dynamic>{
-      'isSimulator': instance.isSimulator,
+      'isVirtualDevice': instance.isVirtualDevice,
     };
 
-GetAndroidApiLevelResponse _$GetAndroidApiLevelResponseFromJson(
+GetOsVersionResponse _$GetOsVersionResponseFromJson(
         Map<String, dynamic> json) =>
-    GetAndroidApiLevelResponse(
-      apiLevel: (json['apiLevel'] as num).toInt(),
+    GetOsVersionResponse(
+      osVersion: (json['osVersion'] as num).toInt(),
     );
 
-Map<String, dynamic> _$GetAndroidApiLevelResponseToJson(
-        GetAndroidApiLevelResponse instance) =>
+Map<String, dynamic> _$GetOsVersionResponseToJson(
+        GetOsVersionResponse instance) =>
     <String, dynamic>{
-      'apiLevel': instance.apiLevel,
-    };
-
-GetIosVersionResponse _$GetIosVersionResponseFromJson(
-        Map<String, dynamic> json) =>
-    GetIosVersionResponse(
-      version: json['version'] as String,
-    );
-
-Map<String, dynamic> _$GetIosVersionResponseToJson(
-        GetIosVersionResponse instance) =>
-    <String, dynamic>{
-      'version': instance.version,
+      'osVersion': instance.osVersion,
     };
 
 TakeCameraPhotoRequest _$TakeCameraPhotoRequestFromJson(

@@ -290,16 +290,12 @@ class SetMockLocationRequest {
   late String packageName;
 }
 
-class IsSimulatorResponse {
-  late bool isSimulator;
+class IsVirtualDeviceResponse {
+  late bool isVirtualDevice;
 }
 
-class GetAndroidApiLevelResponse {
-  late int apiLevel;
-}
-
-class GetIosVersionResponse {
-  late String version;
+class GetOsVersionResponse {
+  late int osVersion;
 }
 
 class TakeCameraPhotoRequest {
@@ -403,11 +399,9 @@ abstract class NativeAutomator<IOSServer, AndroidServer, DartClient> {
   // TODO(bartekpacia): Move this RPC into a new PatrolNativeTestService service because it doesn't fit here
   void markPatrolAppServiceReady();
 
-  IsSimulatorResponse isSimulator();
+  IsVirtualDeviceResponse isVirtualDevice();
 
-  GetAndroidApiLevelResponse getAndroidApiLevel();
-
-  GetIosVersionResponse getIosVersion();
+  GetOsVersionResponse getOsVersion();
 }
 
 enum IOSElementType {

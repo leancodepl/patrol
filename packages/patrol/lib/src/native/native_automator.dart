@@ -1117,10 +1117,33 @@ class NativeAutomator {
   /// differently on physical devices vs simulators/emulators.
   Future<bool> isVirtualDevice() async {
     final response = await _wrapRequest(
-      'isSimulator',
-      () => _client.isSimulator(),
+      'isVirtualDevice',
+      () => _client.isVirtualDevice(),
     );
 
-    return response.isSimulator;
+    return response.isVirtualDevice;
+  }
+
+  /// Gets the OS version.
+  ///
+  /// Returns the OS version as an integer (e.g., 30 for Android 11).
+  ///
+  /// This can be useful for conditional logic in tests that need to behave
+  /// differently based on the OS version.
+  ///
+  /// Example:
+  /// ```dart
+  /// final osVersion = await $.native.getOsVersion();
+  /// if (osVersion >= 30) {
+  ///   // Android 11+ specific behavior
+  /// }
+  /// ```
+  Future<int> getOsVersion() async {
+    final response = await _wrapRequest(
+      'getOsVersion',
+      () => _client.getOsVersion(),
+    );
+
+    return response.osVersion;
   }
 }
