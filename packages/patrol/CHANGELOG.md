@@ -4,7 +4,8 @@
 - Add `pickImageFromGallery` method (#2660)
 - Add `pickMultipleImagesFromGallery` (#2660)
 - Add `isVirtualDevice` method (#2660)
-- Add `getAndroidApiLevel` and `getIosVersion` methods (#2660)
+- Add `getOsVersion` method (#2660)
+- Allow passing null to `$.native.getNativeViews()` (#2660)
 
 ## 3.16.0
 
