@@ -391,14 +391,15 @@
         throw PatrolError.methodNotImplemented("debug")
       }
     }
-    /// macOS doesn't have simulators like iOS
-    func isSimulator() -> Bool {
-      return false
+
+    /// macOS doesn't have iOS version, so return empty string
+    func getOsVersion() -> String {
+      return ""
     }
 
-    func getIosVersion() -> String {
-      // macOS doesn't have iOS version, so return empty string
-      return ""
+    /// macOS doesn't have simulators like iOS
+    func isVirtualDevice() -> Bool {
+      return false
     }
 
     private func runAction<T>(_ log: String, block: @escaping () throws -> T) rethrows -> T {
