@@ -433,6 +433,7 @@
         try automator.tap(
           on: request.iosImageSelector
             ?? IOSSelector(
+              // Images start from index 1 on real device and index 2 on simulator
               instance: isSimulator ? (request.instance ?? 0) + 2 : (request.instance ?? 0) + 1,
               elementType: IOSElementType.image),
           inApp: request.appId,
@@ -449,6 +450,7 @@
           try automator.tap(
             on: request.iosImageSelector
               ?? IOSSelector(
+                // Images start from index 1 on real device and index 2 on simulator
                 instance: isSimulator ? (request.instance ?? 0) + 2 : (request.instance ?? 0) + 1,
                 elementType: IOSElementType.image),
             inApp: request.appId,
@@ -468,6 +470,7 @@
             try automator.tap(
               on: request.iosImageSelector
                 ?? IOSSelector(
+                  /// Images start from index 1 on real device and index 2 on simulator
                   instance: isSimulator ? i + 2 : i + 1,
                   elementType: IOSElementType.image
                 ),
@@ -485,6 +488,7 @@
               try automator.tap(
                 on: request.iosImageSelector
                   ?? IOSSelector(
+                    // Images start from index 1 on real device and index 2 on simulator
                     instance: isSimulator ? i + 2 : i + 1,
                     elementType: IOSElementType.image
                   ),
