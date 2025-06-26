@@ -29,11 +29,7 @@ class CameraHelpers {
 
   Future<void> takePhotosAcceptDialogsAndOpenAppOnRealDeviceAndroid() async {
     await $.native2.openApp(appId: 'com.google.android.GoogleCamera');
-    if (await $.native2.isPermissionDialogVisible(
-      timeout: const Duration(seconds: 4),
-    )) {
-      await $.native2.grantPermissionWhenInUse();
-    }
+    await maybeAcceptPermissionDialog();
     await $.native2.tap(NativeSelector(android: AndroidSelector(text: 'Done')));
     await $.native2.tap(
       NativeSelector(
@@ -56,7 +52,7 @@ class CameraHelpers {
         ),
       ),
     );
-    await $.native2.openApp(appId: 'pl.leancode.patrol.e2e_app');
+    await $.native2.openApp();
   }
 
   /// Try to accept NEXT modal, if modal not found, do nothing
