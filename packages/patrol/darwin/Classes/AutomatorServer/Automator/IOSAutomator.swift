@@ -1,4 +1,4 @@
-#if PATROL_ENABLED
+#if PATROL_ENABLED  && os(iOS)
 
   import CoreLocation
   import XCTest
