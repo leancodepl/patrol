@@ -153,6 +153,7 @@ class PatrolAppService extends PatrolAppServiceServer {
     _testExecutionRequested.complete(request.name);
 
     final testExecutionResult = await testExecutionCompleted;
+
     if (!testExecutionResult.passed) {
       _patrolLog.log(
         TestEntry(

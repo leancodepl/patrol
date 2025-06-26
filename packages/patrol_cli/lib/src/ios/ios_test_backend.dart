@@ -158,12 +158,12 @@ class IOSTestBackend {
     required bool clearTestSteps,
   }) async {
     await _disposeScope.run((scope) async {
+      final patrolLogCommand =
+          device.real ? ['idevicesyslog'] : ['log', 'stream'];
+
       // Read patrol logs from log stream
       final processLogs = await _processManager.start(
-        [
-          'log',
-          'stream',
-        ],
+        patrolLogCommand,
         runInShell: true,
       )
         ..disposedBy(scope);

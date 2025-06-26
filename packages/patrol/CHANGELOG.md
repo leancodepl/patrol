@@ -1,9 +1,26 @@
+## Unreleased
+
+- Add `$.native.swipeBack()` method (#2608)
+
+## 3.16.0
+
+- Make activity aliases work in PatrolJUnitRunner
+- Update test reports to show all exceptions thrown in Flutter. (#2362)
+- Bump min Flutter SDK to 3.32.0 (#2649)
+
+## 3.15.2
+
+- Bump `vm_service` dependency to `15.0.0` (#2636)
+
 ## 3.15.1
 
 - Fix `$.enterText()` issues (#2570)
 - Add `setMockLocation` method. (#2547)
 - Bump `custom_lint` to `0.7.0` and `leancode_lint` to `14.3.0`. (#2574)
 - Upgrade `http4k` to 5.47.0.0. (#2559)
+
+## 3.14.2
+- Make activity aliases work in PatrolJUnitRunner
 
 ## 3.14.1
 
