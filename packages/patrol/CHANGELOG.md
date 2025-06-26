@@ -1,4 +1,4 @@
-## 3.17.0
+## Unreleased
 
 - Add `takeCameraPhoto` method. (#2660)
 - Add `pickImageFromGallery` method (#2660)
@@ -6,6 +6,7 @@
 - Add `isVirtualDevice` method (#2660)
 - Add `getOsVersion` method (#2660)
 - Allow passing null to `$.native.getNativeViews()` (#2660)
+- Add `$.native.swipeBack()` method (#2608)
 
 ## 3.16.0
 
