@@ -4,8 +4,7 @@
   import XCTest
   import os
 
-class IOSAutomator: Automator {
-
+  class IOSAutomator: Automator {
 
     private lazy var device: XCUIDevice = {
       return XCUIDevice.shared
@@ -922,7 +921,7 @@ class IOSAutomator: Automator {
     }
 
     func getOsVersion() -> String {
-        return UIDevice.current.systemVersion
+      return UIDevice.current.systemVersion
     }
 
     private func isPhone() -> Bool {
@@ -1262,4 +1261,4 @@ class IOSAutomator: Automator {
       )
     }
   }
-  #endif
+#endif

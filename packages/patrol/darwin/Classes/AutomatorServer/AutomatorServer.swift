@@ -2,8 +2,7 @@
 
   import Foundation
 
-final class AutomatorServer: NativeAutomatorServer {
-
+  final class AutomatorServer: NativeAutomatorServer {
 
     private let automator: Automator
 
@@ -461,7 +460,7 @@ final class AutomatorServer: NativeAutomatorServer {
 
     func pickMultipleImagesFromGallery(request: PickMultipleImagesFromGalleryRequest) throws {
       return try runCatching {
-          let isSimulator = try isVirtualDevice().isVirtualDevice
+        let isSimulator = try isVirtualDevice().isVirtualDevice
 
         // Select multiple images
         for i in 0..<request.imageCount {
@@ -530,22 +529,22 @@ final class AutomatorServer: NativeAutomatorServer {
     func markPatrolAppServiceReady() throws {
       onAppReady(true)
     }
-    
+
     func isVirtualDevice() throws -> IsVirtualDeviceResponse {
-        return try runCatching {
-            let isSimulator = automator.isVirtualDevice()
-            return IsVirtualDeviceResponse(isVirtualDevice: isSimulator)
-        }
+      return try runCatching {
+        let isSimulator = automator.isVirtualDevice()
+        return IsVirtualDeviceResponse(isVirtualDevice: isSimulator)
+      }
     }
 
     func getOsVersion() throws -> GetOsVersionResponse {
-        return try runCatching {
-            let version = automator.getOsVersion()
-            let components = version.split(separator: ".")
-            let majorVersionInt = components.first.flatMap { Int($0) }
-            return GetOsVersionResponse(osVersion: majorVersionInt!)
-        }
+      return try runCatching {
+        let version = automator.getOsVersion()
+        let components = version.split(separator: ".")
+        let majorVersionInt = components.first.flatMap { Int($0) }
+        return GetOsVersionResponse(osVersion: majorVersionInt!)
+      }
     }
 
   }
-  #endif
+#endif
