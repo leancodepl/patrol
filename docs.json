@@ -230,6 +230,10 @@
           "tab": "documentation",
           "pages": [
             {
+              "title": "Patrol DevTools Extension",
+              "href": "/documentation/patrol-devtools-extension"
+            },
+            {
               "title": "Effective Patrol",
               "href": "/documentation/effective-patrol"
             },
