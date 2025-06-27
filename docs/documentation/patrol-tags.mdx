@@ -1,0 +1,156 @@
+---
+title: Patrol tags
+---
+
+Patrol tags allow you to organize and selectively run your integration tests. You can assign tags to individual tests and then use those tags to filter which tests to run or exclude.
+
+## Defining tags in tests
+
+You can assign tags to your Patrol tests using the `tags` parameter. Tags are defined as a list of strings:
+
+```dart title="integration_test/example_test.dart"
+import 'package:flutter/material.dart';
+import 'package:patrol/patrol.dart';
+
+void main() {
+  patrolTest(
+    'counter state is the same after going to Home and switching apps',
+    ($) async {
+      await createApp($);
+
+      await $(FloatingActionButton).tap();
+      expect($(#counterText).text, '1');
+
+      await $(#textField).enterText('Hello, Flutter!');
+      expect($('Hello, Flutter!'), findsOneWidget);
+
+      $.log('Tapped the button');
+      await $.native.pressHome();
+      await $.native.openApp();
+
+      expect($(#counterText).text, '1');
+      await $(FloatingActionButton).tap();
+
+      expect($(#counterText).text, '2');
+      expect($('Hello, Flutter!'), findsOneWidget);
+    },
+  );
+
+  patrolTest(
+    'short test with two tags',
+    tags: ['smoke', 'regression'],
+    ($) async {
+      await createApp($);
+
+      await $(FloatingActionButton).tap();
+      expect($(#counterText).text, '1');
+      await $(FloatingActionButton).tap();
+      expect($(#counterText).text, '2');
+    },
+  );
+
+  patrolTest(
+    'short test with tag',
+    tags: ['smoke'],
+    ($) async {
+      await createApp($);
+
+      await $(FloatingActionButton).tap();
+      expect($(#counterText).text, '1');
+
+      await $(#textField).enterText('Hello, Flutter!');
+      expect($('Hello, Flutter!'), findsOneWidget);
+    },
+  );
+}
+```
+
+## Running tests with tags
+
+Use the `--tags` option to run only tests that have specific tags:
+
+```bash
+# Run tests with the 'smoke' tag
+patrol test --tags smoke
+
+# Run tests with the 'regression' tag
+patrol test --tags regression
+
+# Run tests with either 'smoke' or 'regression' tag
+patrol test --tags='smoke||regression'
+
+# Run tests with both 'login' and 'smoke' tags
+patrol test --tags='(login && smoke)'
+```
+
+## Excluding tests with tags
+
+Use the `--exclude-tags` option to exclude tests that have specific tags:
+
+```bash
+# Exclude tests with the 'regression' tag
+patrol test --exclude-tags regression
+
+# Exclude tests with either 'smoke' or 'regression' tag
+patrol test --exclude-tags='(smoke||regression)'
+
+# Exclude login tests
+patrol test --exclude-tags login
+```
+
+## Tag expression syntax
+
+Patrol supports complex tag expressions using logical operators:
+
+### Basic operators
+
+- `||` - OR operator (run tests with either tag)
+- `&&` - AND operator (run tests with both tags)
+- `!` - NOT operator (exclude tests with this tag)
+
+### Examples
+
+```bash
+# Run tests that have either 'smoke' OR 'regression' tag
+patrol test --tags='smoke||regression'
+
+# Run tests that have BOTH 'login' AND 'smoke' tags
+patrol test --tags='(login && smoke)'
+
+# Run tests with 'payment' OR 'navigation' tag, but NOT 'regression'
+patrol test --tags='(payment || navigation) && !regression'
+
+# Complex expression: (login OR payment) AND (smoke OR regression)
+patrol test --tags='((login || payment) && (smoke || regression))'
+```
+
+## Common tag naming conventions
+
+Here are some common tag categories you might want to use:
+
+### Test type tags
+- `smoke` - Quick smoke tests
+- `regression` - Regression tests
+
+### Feature tags
+- `login` - Login-related tests
+- `payment` - Payment-related tests
+- `navigation` - Navigation-related tests
+
+## Combining with other options
+
+You can combine tag filtering with other Patrol CLI options:
+
+```bash
+# Run smoke tests on a specific device
+patrol test --tags smoke --device "iPhone 14"
+
+# Run regression tests with debug build
+patrol test --tags regression --debug
+
+# Run login tests and wait 5 seconds after completion
+patrol test --tags login --wait 5
+
+# Run specific test file with tag filtering
+patrol test --target integration_test/login_test.dart --tags smoke
+```
