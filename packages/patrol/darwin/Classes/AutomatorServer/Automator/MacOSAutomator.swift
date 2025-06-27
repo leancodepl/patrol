@@ -304,7 +304,7 @@
     func openNotifications() throws {
       try runAction("opening notifications") {
         let clockItem = self.controlCenter.statusItems["com.apple.menuextra.clock"]
-        var exists = clockItem.waitForExistence(timeout: self.timeout)
+        let exists = clockItem.waitForExistence(timeout: self.timeout)
         guard exists else {
           throw PatrolError.viewNotExists("com.apple.menuextra.clock")
         }
@@ -390,6 +390,16 @@
       try runAction("debug") {
         throw PatrolError.methodNotImplemented("debug")
       }
+    }
+
+    /// macOS doesn't have iOS version, so return empty string
+    func getOsVersion() -> String {
+      return ""
+    }
+
+    /// macOS doesn't have simulators like iOS
+    func isVirtualDevice() -> Bool {
+      return false
     }
 
     private func runAction<T>(_ log: String, block: @escaping () throws -> T) rethrows -> T {

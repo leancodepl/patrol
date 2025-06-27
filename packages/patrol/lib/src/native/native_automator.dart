@@ -858,10 +858,24 @@ class NativeAutomator {
 
   /// Returns a list of currently visible native UI controls, specified by
   /// [selector], which are currently visible on screen.
+  ///
+  /// If [selector] is null, returns the whole native UI tree.
   Future<List<NativeView>> getNativeViews(
-    Selector selector, {
+    Selector? selector, {
     String? appId,
   }) async {
+    if (selector == null) {
+      final treeResponse = await _wrapRequest(
+        'getNativeUITree',
+        () => _client.getNativeUITree(
+          GetNativeUITreeRequest(
+            useNativeViewHierarchy: true,
+          ),
+        ),
+      );
+      return treeResponse.roots;
+    }
+
     final response = await _wrapRequest(
       'getNativeViews',
       () => _client.getNativeViews(
@@ -1029,5 +1043,132 @@ class NativeAutomator {
       _client.markPatrolAppServiceReady,
       enablePatrolLog: false,
     );
+  }
+
+  /// Take and confirm the photo
+  ///
+  /// This method taps on the camera shutter button to take a photo, then taps
+  /// on the confirmation button to accept it.
+  ///
+  /// You can provide custom selectors for both the shutter and confirmation buttons
+  /// using [shutterButtonSelector] and [doneButtonSelector] parameters.
+  /// If no custom selectors are provided, default selectors will be used.
+  Future<void> takeCameraPhoto({
+    Selector? shutterButtonSelector,
+    Selector? doneButtonSelector,
+    Duration? timeout,
+  }) async {
+    await _wrapRequest(
+      'takeCameraPhoto',
+      () async {
+        await _client.takeCameraPhoto(
+          TakeCameraPhotoRequest(
+            shutterButtonSelector: shutterButtonSelector,
+            doneButtonSelector: doneButtonSelector,
+            appId: resolvedAppId,
+            isNative2: false,
+            timeoutMillis: timeout?.inMilliseconds,
+          ),
+        );
+      },
+    );
+  }
+
+  /// Pick an image from the gallery
+  ///
+  /// This method opens the gallery and selects a single image.
+  ///
+  /// You can provide a custom selector for the image using [imageSelector].
+  /// If no custom selector is provided, default selectors will be used.
+  /// Alternatively, you can specify an [index] to select the nth image
+  /// when using default selectors.
+  ///
+  /// Note: If you provide [imageSelector], the [index] parameter will be overwritten.
+  Future<void> pickImageFromGallery({
+    Selector? imageSelector,
+    int? index,
+    Duration? timeout,
+  }) async {
+    await _wrapRequest(
+      'pickImageFromGallery',
+      () async {
+        await _client.pickImageFromGallery(
+          PickImageFromGalleryRequest(
+            imageSelector: imageSelector,
+            appId: resolvedAppId,
+            isNative2: false,
+            timeoutMillis: timeout?.inMilliseconds,
+            imageIndex: index,
+          ),
+        );
+      },
+    );
+  }
+
+  /// Pick multiple images from the gallery
+  ///
+  /// This method opens the gallery and selects multiple images based on [imageIndexes].
+  ///
+  /// You can provide a custom selector for the images using [imageSelector].
+  /// If no custom selector is provided, default selectors will be used.
+  /// The method will automatically handle the selection confirmation process.
+  Future<void> pickMultipleImagesFromGallery({
+    required List<int> imageIndexes,
+    Selector? imageSelector,
+    Duration? timeout,
+  }) async {
+    await _wrapRequest(
+      'pickMultipleImagesFromGallery',
+      () async {
+        await _client.pickMultipleImagesFromGallery(
+          PickMultipleImagesFromGalleryRequest(
+            imageSelector: imageSelector,
+            appId: resolvedAppId,
+            isNative2: false,
+            imageIndexes: imageIndexes,
+            timeoutMillis: timeout?.inMilliseconds,
+          ),
+        );
+      },
+    );
+  }
+
+  /// Checks if the app is running on a virtual device (simulator or emulator).
+  ///
+  /// Returns `true` if running on iOS simulator or Android emulator, `false` otherwise.
+  /// On Android devices this method cannot be 100% accurate.
+  ///
+  /// This can be useful for conditional logic in tests that need to behave
+  /// differently on physical devices vs simulators/emulators.
+  Future<bool> isVirtualDevice() async {
+    final response = await _wrapRequest(
+      'isVirtualDevice',
+      () => _client.isVirtualDevice(),
+    );
+
+    return response.isVirtualDevice;
+  }
+
+  /// Gets the OS version.
+  ///
+  /// Returns the OS version as an integer (e.g., 30 for Android 11).
+  ///
+  /// This can be useful for conditional logic in tests that need to behave
+  /// differently based on the OS version.
+  ///
+  /// Example:
+  /// ```dart
+  /// final osVersion = await $.native.getOsVersion();
+  /// if (osVersion >= 30) {
+  ///   // Android 11+ specific behavior
+  /// }
+  /// ```
+  Future<int> getOsVersion() async {
+    final response = await _wrapRequest(
+      'getOsVersion',
+      () => _client.getOsVersion(),
+    );
+
+    return response.osVersion;
   }
 }
