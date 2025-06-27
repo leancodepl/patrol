@@ -5,7 +5,7 @@ apps:
 # Useful during debugging, when you want to run tests on all supported versions
 all_devices:
   device:
-    - model: Pixel7
+    - model: Pixel2
       version: 33
       gpu: auto
     - model: Pixel7
