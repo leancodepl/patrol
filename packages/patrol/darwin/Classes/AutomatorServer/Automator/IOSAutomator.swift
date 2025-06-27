@@ -706,6 +706,9 @@
 
     func tapOnNotification(byIndex index: Int, withTimeout timeout: TimeInterval?) throws {
       try runAction("tapping on notification at index \(index)") {
+        // Use system locale directly instead of calling getLocale()
+        let locale = Locale.current.languageCode ?? "en"
+        let localizedStrings = self.getLocalizedStrings(for: locale)
         let cellsQuery = self.springboard.buttons.matching(
           identifier: self.notificationCellIdentifier)
         guard
@@ -717,7 +720,7 @@
         if self.isSimulator() && self.isPhone() {
           // For some weird reason, this works differently on Simulator
           cell.doubleTap()
-          self.springboard.buttons.matching(identifier: "Open").firstMatch.tap()
+          self.springboard.buttons.matching(identifier: localizedStrings["open"] ?? "Open").firstMatch.tap()
         } else {
           cell.tap()
         }
@@ -727,6 +730,10 @@
     func tapOnNotification(bySubstring substring: String, withTimeout timeout: TimeInterval?) throws
     {
       try runAction("tapping on notification containing text \(format: substring)") {
+        // Use system locale directly instead of calling getLocale()
+        let locale = Locale.current.languageCode ?? "en"
+        let localizedStrings = self.getLocalizedStrings(for: locale)
+
         let cellsQuery = self.springboard.buttons.matching(
           NSPredicate(
             format: "identifier == %@ AND label CONTAINS %@", self.notificationCellIdentifier,
@@ -741,7 +748,7 @@
         if self.isSimulator() && self.isPhone() {
           // For some weird reason, this works differently on Simulator
           cell.doubleTap()
-          self.springboard.buttons.matching(identifier: "Open").firstMatch.tap()
+          self.springboard.buttons.matching(identifier: localizedStrings["open"] ?? "Open").firstMatch.tap()
         } else {
           cell.tap()
         }

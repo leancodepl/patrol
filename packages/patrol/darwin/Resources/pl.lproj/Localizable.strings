@@ -1,6 +1,6 @@
 /* Permission dialog buttons */
 "ok" = "OK";
-"allow" = "Pozwól";
+"allow" = "Pozwalaj";
 "allow_once" = "Zezwalaj raz";
 "allow_while_using_app" = "Zezwalaj podczas korzystania z aplikacji";
 "dont_allow" = "Nie pozwalaj";
