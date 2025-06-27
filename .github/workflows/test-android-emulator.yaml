@@ -23,7 +23,6 @@ jobs:
       URL_TO_DETAILS: ${{ steps.tests_step.outputs.URL_TO_DETAILS }}
 
     strategy:
-      max-parallel: 1
       fail-fast: false
       matrix:
         flutter-version: ["3.32.x"]
