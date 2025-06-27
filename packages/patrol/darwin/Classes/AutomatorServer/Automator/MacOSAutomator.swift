@@ -304,7 +304,7 @@
     func openNotifications() throws {
       try runAction("opening notifications") {
         let clockItem = self.controlCenter.statusItems["com.apple.menuextra.clock"]
-        var exists = clockItem.waitForExistence(timeout: self.timeout)
+        let exists = clockItem.waitForExistence(timeout: self.timeout)
         guard exists else {
           throw PatrolError.viewNotExists("com.apple.menuextra.clock")
         }
