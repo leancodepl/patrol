@@ -130,8 +130,7 @@ jobs:
           set +e
           output="$(ew-cli \
             emulatorwtf.yaml:ci --json \
-            --display-name "Patrol example app (${GITHUB_SHA::7})")" \
-            --device model=Pixel7,version=${{ matrix.api-level }}
+            --display-name "Patrol example app (${GITHUB_SHA::7})")"
           TESTS_EXIT_CODE=$?
           set -e
 
