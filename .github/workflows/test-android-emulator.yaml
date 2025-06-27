@@ -28,6 +28,18 @@ jobs:
         flutter-version: ["3.32.x"]
         flutter-channel: ["stable"]
         api-level: [35, 34, 33, 32, 31]
+        # Add a small delay between matrix jobs to avoid rate limiting
+        include:
+          - api-level: 35
+            delay: 0
+          - api-level: 34
+            delay: 30
+          - api-level: 33
+            delay: 60
+          - api-level: 32
+            delay: 90
+          - api-level: 31
+            delay: 120
 
     defaults:
       run:
@@ -125,15 +137,28 @@ jobs:
           --dart-define-from-file=defines_1.json --dart-define-from-file=defines_2.json --dart-define-from-file=defines_3.env \
           --verbose
 
+      - name: Wait for staggered start
+        run: |
+          echo "Waiting ${{ matrix.delay }} seconds before starting API ${{ matrix.api-level }} tests..."
+          sleep ${{ matrix.delay }}
+
       - name: Upload APKs to emulator.wtf and wait for tests to finish
         id: tests_step
+        env:
+          EW_API_TOKEN: ${{ secrets.EW_API_TOKEN }}
         run: |
+          # Debug: Check if token is available (without exposing it)
+          if [ -z "$EW_API_TOKEN" ]; then
+            echo "ERROR: EW_API_TOKEN is not set"
+            exit 1
+          fi
+          echo "EW_API_TOKEN is set"
+          
           set +e
           output="$(ew-cli \
             emulatorwtf.yaml:ci --json \
             --device model=Pixel7,version=${{ matrix.api-level }} \
             --display-name "Patrol example app API ${{ matrix.api-level }} (${GITHUB_SHA::7})" \
-            --token ${{ secrets.EW_API_TOKEN }} \
             --verbose)"
           TESTS_EXIT_CODE=$?
           set -e
