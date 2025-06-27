@@ -131,9 +131,8 @@ jobs:
           set +e
           output="$(ew-cli \
             emulatorwtf.yaml:multi_api --json \
-            --device model=Pixel7,version=${{ matrix.api-level }} \
-            --display-name "Patrol example app API ${{ matrix.api-level }} (${GITHUB_SHA::7})")" \
-            --token ${{ secrets.EW_API_TOKEN }}
+            --display-name "Patrol example app API ${{ matrix.api-level }} (${GITHUB_SHA::7})")" 
+            --verbose
           TESTS_EXIT_CODE=$?
           set -e
 

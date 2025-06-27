@@ -5,7 +5,7 @@ apps:
 # Useful during debugging, when you want to run tests on all supported versions
 all_devices:
   device:
-    - model: Pixel7
+    - model: Pixel2
       version: 33
       gpu: auto
     - model: Pixel7
@@ -51,20 +51,20 @@ ci_webview_devices:
 # Multi-API testing configuration for GitHub Actions
 multi_api_devices:
   device:
-    - model: Pixel7
+    - model: Pixel2
       version: 35
       gpu: auto
     - model: Pixel7
       version: 34
       gpu: auto
-    - model: Pixel7
+    - model: NexusLowRes
       version: 33
+      gpu: auto
+    - model: Tablet10
+      version: 31
       gpu: auto
     - model: Pixel7
       version: 32
-      gpu: auto
-    - model: Pixel7
-      version: 31
       gpu: auto
 
 config:
