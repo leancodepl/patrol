@@ -3,7 +3,7 @@
 "allow" = "Allow";
 "allow_once" = "Allow Once";
 "allow_while_using_app" = "Allow While Using App";
-"dont_allow" = "Don't Allow";
+"dont_allow" = "Don’t Allow";
 
 /* System settings */
 "airplane_mode" = "Airplane mode";

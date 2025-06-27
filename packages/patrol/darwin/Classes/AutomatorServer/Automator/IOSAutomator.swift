@@ -784,7 +784,7 @@
         "allow": "Allow",
         "allow_once": "Allow Once",
         "allow_while_using_app": "Allow While Using App",
-        "dont_allow": "Don't Allow",
+        "dont_allow": "Don’t Allow", // not Don't Allow!
         "developer": "Developer",
         "dark_appearance": "Dark Appearance",
         "display_brightness": "Display & Brightness",
@@ -808,7 +808,7 @@
           localizedStrings["allow"] ?? "Allow",
           localizedStrings["allow_once"] ?? "Allow Once",
           localizedStrings["allow_while_using_app"] ?? "Allow While Using App",
-          localizedStrings["dont_allow"] ?? "Don't Allow",
+          localizedStrings["dont_allow"] ?? "Don’t Allow",
         ]
 
         let button = self.waitForAnyElement(
@@ -880,7 +880,7 @@
         let locale = Locale.current.languageCode ?? "en"
         let localizedStrings = self.getLocalizedStrings(for: locale)
 
-        let label = localizedStrings["dont_allow"] ?? "Don't Allow"
+        let label = localizedStrings["dont_allow"] ?? "Don’t Allow"
         let systemAlerts = self.springboard.alerts
         let button = systemAlerts.buttons[label]
 
