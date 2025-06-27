@@ -772,34 +772,17 @@
       else {
         Logger.shared.i(
           "Could not find Localizable.strings for \(targetLanguage), using English strings")
-        return getDefaultEnglishStrings()
+          return [:]
       }
 
       guard let dictionary = NSDictionary(contentsOfFile: path) as? [String: String] else {
         Logger.shared.i(
           "Could not parse Localizable.strings for \(targetLanguage), using English strings")
-        return getDefaultEnglishStrings()
+          return [:]
       }
 
       Logger.shared.i("Loaded localized strings for language: \(targetLanguage)")
       return dictionary
-    }
-
-    private func getDefaultEnglishStrings() -> [String: String] {
-      return [
-        "ok": "OK",
-        "allow": "Allow",
-        "allow_once": "Allow Once",
-        "allow_while_using_app": "Allow While Using App",
-        "dont_allow": "Don’t Allow", // not Don't Allow!
-        "developer": "Developer",
-        "dark_appearance": "Dark Appearance",
-        "display_brightness": "Display & Brightness",
-        "dark": "Dark",
-        "light": "Light",
-        "precise_off": "Precise: Off",
-        "precise_on": "Precise: On",
-      ]
     }
 
     func isPermissionDialogVisible(timeout: TimeInterval) throws -> Bool {
@@ -808,7 +791,7 @@
 
         // Use system locale directly instead of calling getLocale()
         let locale = Locale.current.languageCode ?? "en"
-        let localizedStrings = self.getLocalizedStrings(for: locale)
+          let localizedStrings = self.getLocalizedStrings(for: locale)
 
         let labels = [
           localizedStrings["ok"] ?? "OK",
