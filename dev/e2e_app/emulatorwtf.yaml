@@ -72,5 +72,9 @@ ci:
 ci_webview:
   include: [apps, ci_webview_devices, config, config_ci]
 
+# Multi-API testing configuration
+multi_api:
+  include: [apps, multi_api_devices, config, config_ci]
+
 debug:
   include: [apps, all_devices, config]
