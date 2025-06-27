@@ -13,11 +13,11 @@ concurrency:
 
 jobs:
   run_tests:
-    name: Flutter ${{ matrix.flutter-version }} on emulator.wtf
+    name: Flutter ${{ matrix.flutter-version }} on API ${{ matrix.api-level }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     outputs:
-      SLACK_MESSAGE_TITLE: Flutter ${{ matrix.flutter-version }} on emulator.wtf
+      SLACK_MESSAGE_TITLE: Flutter ${{ matrix.flutter-version }} on API ${{ matrix.api-level }}
       TESTS_EXIT_CODE: ${{ steps.tests_step.outputs.TESTS_EXIT_CODE }}
       EXCLUDED_TESTS: ${{ steps.set_excluded_tests.outputs.EXCLUDED_TESTS }}
       URL_TO_DETAILS: ${{ steps.tests_step.outputs.URL_TO_DETAILS }}
@@ -27,6 +27,7 @@ jobs:
       matrix:
         flutter-version: ["3.32.x"]
         flutter-channel: ["stable"]
+        api-level: [35, 34, 33, 32, 31]
 
     defaults:
       run:
@@ -129,12 +130,21 @@ jobs:
         run: |
           set +e
           output="$(ew-cli \
-            emulatorwtf.yaml:ci --json \
-            --display-name "Patrol example app (${GITHUB_SHA::7})")"
+            --app build/app/outputs/apk/debug/app-debug.apk \
+            --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
+            --device model=Pixel7,version=${{ matrix.api-level }} \
+            --use-orchestrator \
+            --clear-package-data \
+            --record-video \
+            --timeout 10m \
+            --num-shards 3 \
+            --outputs-dir ew-test_outputs \
+            --json \
+            --display-name "Patrol example app API ${{ matrix.api-level }} (${GITHUB_SHA::7})")"
           TESTS_EXIT_CODE=$?
           set -e
 
-          # Extract the results URL and write it to Github Summmary
+          # Extract the results URL and write it to Github Summary
           link="$(echo "$output" | jq -r ".resultsUrl")"
           echo "[Test details on emulator.wtf]($link) (LeanCode members only)" >> "$GITHUB_STEP_SUMMARY"
 

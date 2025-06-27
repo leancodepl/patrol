@@ -48,6 +48,25 @@ ci_webview_devices:
       version: 31
       gpu: auto
 
+# Multi-API testing configuration for GitHub Actions
+multi_api_devices:
+  device:
+    - model: Pixel7
+      version: 35
+      gpu: auto
+    - model: Pixel7
+      version: 34
+      gpu: auto
+    - model: Pixel7
+      version: 33
+      gpu: auto
+    - model: Pixel7
+      version: 32
+      gpu: auto
+    - model: Pixel7
+      version: 31
+      gpu: auto
+
 config:
   use-orchestrator: true
   clear-package-data: true
@@ -71,6 +90,10 @@ ci:
 
 ci_webview:
   include: [apps, ci_webview_devices, config, config_ci]
+
+# Multi-API testing configuration
+multi_api:
+  include: [apps, multi_api_devices, config, config_ci]
 
 debug:
   include: [apps, all_devices, config]
