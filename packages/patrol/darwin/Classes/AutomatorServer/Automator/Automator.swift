@@ -296,6 +296,7 @@ extension Selector {
     // MARK: Other
     func debug() throws
     func setMockLocation(latitude: Double, longitude: Double) throws
+    func getLocale() throws -> GetLocaleResponse
   }
 
 #endif

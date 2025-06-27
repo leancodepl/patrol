@@ -667,4 +667,14 @@ class Contracts {
     val packageName: String
   )
 
+  data class GetLocaleResponse (
+    val languageCode: String,
+    val regionCode: String,
+    val localeIdentifier: String
+  )
+
+  class GetLocaleRequest (
+
+  )
+
 }

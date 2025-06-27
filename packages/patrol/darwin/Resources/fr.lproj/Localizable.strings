@@ -1,0 +1,32 @@
+/* Permission dialog buttons */
+"ok" = "OK";
+"allow" = "Autoriser";
+"allow_once" = "Autoriser une fois";
+"allow_while_using_app" = "Autoriser pendant l'utilisation de l'app";
+"dont_allow" = "Ne pas autoriser";
+
+/* System settings */
+"airplane_mode" = "Mode avion";
+"use_location" = "Utiliser la localisation";
+
+/* Control center buttons */
+"airplane_mode_button" = "airplane-mode-button";
+"cellular_data_button" = "cellular-data-button";
+"wifi_button" = "wifi-button";
+"bluetooth_button" = "bluetooth-button";
+
+/* Notification identifiers */
+"notification_cell" = "NotificationCell";
+"list_cell" = "ListCell";
+"open" = "Ouvrir";
+
+/* Settings navigation */
+"developer" = "Développeur";
+"dark_appearance" = "Apparence sombre";
+"display_brightness" = "Affichage et luminosité";
+"dark" = "Sombre";
+"light" = "Clair";
+
+/* Location precision */
+"precise_off" = "Précis : Désactivé";
+"precise_on" = "Précis : Activé"; 

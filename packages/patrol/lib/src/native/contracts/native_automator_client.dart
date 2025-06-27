@@ -349,6 +349,16 @@ class NativeAutomatorClient {
     );
   }
 
+  Future<GetLocaleResponse> getLocale(
+    GetLocaleRequest request,
+  ) async {
+    final json = await _sendRequest(
+      'getLocale',
+      request.toJson(),
+    );
+    return GetLocaleResponse.fromJson(json);
+  }
+
   Future<void> markPatrolAppServiceReady() {
     return _sendRequest(
       'markPatrolAppServiceReady',
