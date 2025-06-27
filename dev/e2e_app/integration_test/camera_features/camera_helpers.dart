@@ -23,6 +23,13 @@ class CameraHelpers {
         ),
       ),
     );
+    await $.native2.tap(
+      NativeSelector(
+        android: AndroidSelector(
+          resourceName: 'com.android.camera2:id/shutter_button',
+        ),
+      ),
+    );
 
     await Future.delayed(const Duration(seconds: 4), () {});
     await $.native2.openApp();
