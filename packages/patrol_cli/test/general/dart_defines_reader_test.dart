@@ -83,7 +83,8 @@ void _test(Platform platform) {
       });
       test('reads correct simple input with comment on own line', () {
         file.writeAsString(
-            'EMAIL=email@example.com\n#The password for the API\nPASSWORD=ny4ncat\n');
+          'EMAIL=email@example.com\n#The password for the API\nPASSWORD=ny4ncat\n',
+        );
 
         expect(
           reader.fromFile(),
@@ -93,7 +94,8 @@ void _test(Platform platform) {
       test('reads correct simple input with comment on same line as variable',
           () {
         file.writeAsString(
-            ' EMAIL=email@example.com  \nPASSWORD=ny4ncat # The password for the API\n');
+          ' EMAIL=email@example.com  \nPASSWORD=ny4ncat # The password for the API\n',
+        );
 
         expect(
           reader.fromFile(),
@@ -102,7 +104,8 @@ void _test(Platform platform) {
       });
       test('reads correct simple input with commented out variable', () {
         file.writeAsString(
-            ' EMAIL=email@example.com  \n#PASSWORD=ny4ncat # The password for the API\n');
+          ' EMAIL=email@example.com  \n#PASSWORD=ny4ncat # The password for the API\n',
+        );
 
         expect(
           reader.fromFile(),

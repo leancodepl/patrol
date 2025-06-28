@@ -9,22 +9,18 @@ class TextFieldsScreen extends StatefulWidget {
 }
 
 class _TextFieldsScreenState extends State<TextFieldsScreen> {
-  FocusNode focusNode = FocusNode();
+  final focusNode = FocusNode();
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Text Fields'),
-        ),
+        appBar: AppBar(title: const Text('Text Fields')),
         body: Center(
           child: SingleChildScrollView(
             child: Column(
               children: [
-                const TextField(
-                  key: K.textField1,
-                ),
+                const TextField(key: K.textField1),
                 ElevatedButton.icon(
                   key: K.buttonFocus,
                   onPressed: () =>
@@ -32,9 +28,7 @@ class _TextFieldsScreenState extends State<TextFieldsScreen> {
                   label: const Icon(Icons.search),
                   focusNode: focusNode,
                 ),
-                const TextField(
-                  key: K.textField2,
-                ),
+                const TextField(key: K.textField2),
                 ElevatedButton.icon(
                   key: K.buttonUnfocus,
                   onPressed: () => FocusScope.of(context).unfocus(),

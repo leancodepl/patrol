@@ -24,46 +24,39 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   void initState() {
     super.initState();
 
-    unawaited(
-      () async {
-        await _notificationsPlugin.initialize(
-          const InitializationSettings(
-            android: AndroidInitializationSettings('@mipmap/ic_launcher'),
-            iOS: DarwinInitializationSettings(
-              defaultPresentAlert: false,
-            ),
-            macOS: DarwinInitializationSettings(
-              defaultPresentAlert: false,
-            ),
-          ),
-          onDidReceiveNotificationResponse: (notificationResponse) {
-            setState(() {
-              _notificationId = notificationResponse.id;
-            });
-          },
-        );
+    unawaited(() async {
+      await _notificationsPlugin.initialize(
+        const InitializationSettings(
+          android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+          iOS: DarwinInitializationSettings(defaultPresentAlert: false),
+          macOS: DarwinInitializationSettings(defaultPresentAlert: false),
+        ),
+        onDidReceiveNotificationResponse: (notificationResponse) {
+          setState(() {
+            _notificationId = notificationResponse.id;
+          });
+        },
+      );
 
-        if (io.Platform.isAndroid) {
-          await _notificationsPlugin
-              .resolvePlatformSpecificImplementation<
-                  AndroidFlutterLocalNotificationsPlugin>()
-              ?.requestNotificationsPermission();
-          await _notificationsPlugin
-              .resolvePlatformSpecificImplementation<
-                  AndroidFlutterLocalNotificationsPlugin>()
-              ?.requestExactAlarmsPermission();
-        } else if (io.Platform.isMacOS) {
-          await _notificationsPlugin
-              .resolvePlatformSpecificImplementation<
-                  MacOSFlutterLocalNotificationsPlugin>()
-              ?.requestPermissions(
-                alert: true,
-                badge: true,
-                sound: true,
-              );
-        }
-      }(),
-    );
+      if (io.Platform.isAndroid) {
+        await _notificationsPlugin
+            .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin
+            >()
+            ?.requestNotificationsPermission();
+        await _notificationsPlugin
+            .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin
+            >()
+            ?.requestExactAlarmsPermission();
+      } else if (io.Platform.isMacOS) {
+        await _notificationsPlugin
+            .resolvePlatformSpecificImplementation<
+              MacOSFlutterLocalNotificationsPlugin
+            >()
+            ?.requestPermissions(alert: true, badge: true, sound: true);
+      }
+    }());
   }
 
   Future<void> _showNotificationNow({
@@ -108,17 +101,13 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         ),
       ),
       androidScheduleMode: AndroidScheduleMode.exact,
-      uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.wallClockTime,
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Notifications'),
-      ),
+      appBar: AppBar(title: const Text('Notifications')),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -144,17 +133,13 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               spacing: 8,
               children: [
                 ElevatedButton(
-                  onPressed: () async => _showNotificationNow(
-                    id: 1,
-                    title: _firstTitle,
-                  ),
+                  onPressed: () =>
+                      _showNotificationNow(id: 1, title: _firstTitle),
                   child: const Text('Show now'),
                 ),
                 ElevatedButton(
-                  onPressed: () async => _showNotificationLater(
-                    id: 1,
-                    title: _firstTitle,
-                  ),
+                  onPressed: () =>
+                      _showNotificationLater(id: 1, title: _firstTitle),
                   child: const Text('Show in a few seconds'),
                 ),
               ],
@@ -169,17 +154,13 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               spacing: 8,
               children: [
                 ElevatedButton(
-                  onPressed: () async => _showNotificationNow(
-                    id: 2,
-                    title: _secondTitle,
-                  ),
+                  onPressed: () =>
+                      _showNotificationNow(id: 2, title: _secondTitle),
                   child: const Text('Show now'),
                 ),
                 ElevatedButton(
-                  onPressed: () async => _showNotificationLater(
-                    id: 2,
-                    title: _secondTitle,
-                  ),
+                  onPressed: () =>
+                      _showNotificationLater(id: 2, title: _secondTitle),
                   child: const Text('Show in a few seconds'),
                 ),
               ],
