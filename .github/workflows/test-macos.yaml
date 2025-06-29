@@ -16,7 +16,7 @@ concurrency:
 jobs:
   run_tests:
     name: Flutter ${{ matrix.flutter-version }} on ${{ matrix.device_model }}
-    runs-on: macos-latest
+    runs-on: macos-latest-large
     timeout-minutes: 25
     outputs:
       SLACK_MESSAGE_TITLE: Flutter ${{ matrix.flutter-version }} on ${{ matrix.os }}
