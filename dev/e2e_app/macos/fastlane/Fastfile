@@ -8,6 +8,7 @@ key_content = ENV.fetch("APP_STORE_KEY")
 platform :mac do
   desc "Signs app on CI"
   lane :certificates do
+    setup_ci if is_ci
 
     app_store_connect_api_key(
       key_id: key_id,

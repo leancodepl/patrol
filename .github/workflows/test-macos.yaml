@@ -16,7 +16,7 @@ concurrency:
 jobs:
   run_tests:
     name: Flutter ${{ matrix.flutter-version }} on ${{ matrix.device_model }}
-    runs-on: macos-latest-large
+    runs-on: macos-latest
     timeout-minutes: 25
     outputs:
       SLACK_MESSAGE_TITLE: Flutter ${{ matrix.flutter-version }} on ${{ matrix.os }}
@@ -89,7 +89,15 @@ jobs:
         id: tests_step
         run: |
           TESTS_EXIT_CODE=0
-          patrol test -t integration_test/macos --verbose -d macos || TESTS_EXIT_CODE=$?
+          patrol test -t integration_test/macos --verbose -d macos & TEST_PID=$!
+
+          sleep 90
+
+          kill $TEST_PID
+
+          date
+
+          log show --last 10m > logs.txt
 
           echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> "$GITHUB_OUTPUT"
           exit $TESTS_EXIT_CODE
@@ -125,6 +133,13 @@ jobs:
         with:
           name: Test result from ${{ matrix.device_model }}.xcresult
           path: ${{ env.XCRESULT_PATH }}
+
+      - name: Upload logs to artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: System logs from ${{ matrix.device_model }}
+          path: dev/e2e_app/logs.txt
 
   call_send_slack_message:
     name: Notify on Slack
