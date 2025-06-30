@@ -2,7 +2,7 @@
 title: Patrol tags
 ---
 
-Patrol tags allow you to organize and selectively run your integration tests. You can assign tags to individual tests and then use those tags to filter which tests to run or exclude.
+Patrol tags allow you to organize and selectively run your patrol tests. You can assign tags to individual tests and then use those tags to filter which tests to run or exclude.
 
 ## Defining tags in tests
 
@@ -13,28 +13,6 @@ import 'package:flutter/material.dart';
 import 'package:patrol/patrol.dart';
 
 void main() {
-  patrolTest(
-    'counter state is the same after going to Home and switching apps',
-    ($) async {
-      await createApp($);
-
-      await $(FloatingActionButton).tap();
-      expect($(#counterText).text, '1');
-
-      await $(#textField).enterText('Hello, Flutter!');
-      expect($('Hello, Flutter!'), findsOneWidget);
-
-      $.log('Tapped the button');
-      await $.native.pressHome();
-      await $.native.openApp();
-
-      expect($(#counterText).text, '1');
-      await $(FloatingActionButton).tap();
-
-      expect($(#counterText).text, '2');
-      expect($('Hello, Flutter!'), findsOneWidget);
-    },
-  );
 
   patrolTest(
     'short test with two tags',
@@ -123,19 +101,6 @@ patrol test --tags='(payment || navigation) && !regression'
 # Complex expression: (login OR payment) AND (smoke OR regression)
 patrol test --tags='((login || payment) && (smoke || regression))'
 ```
-
-## Common tag naming conventions
-
-Here are some common tag categories you might want to use:
-
-### Test type tags
-- `smoke` - Quick smoke tests
-- `regression` - Regression tests
-
-### Feature tags
-- `login` - Login-related tests
-- `payment` - Payment-related tests
-- `navigation` - Navigation-related tests
 
 ## Combining with other options
 
