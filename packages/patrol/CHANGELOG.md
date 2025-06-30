@@ -1,5 +1,11 @@
 ## Unreleased
 
+- Add `takeCameraPhoto` method. (#2660)
+- Add `pickImageFromGallery` method (#2660)
+- Add `pickMultipleImagesFromGallery` (#2660)
+- Add `isVirtualDevice` method (#2660)
+- Add `getOsVersion` method (#2660)
+- Allow passing null to `$.native.getNativeViews()` (#2660)
 - Add `$.native.swipeBack()` method (#2608)
 
 ## 3.16.0
@@ -20,6 +26,7 @@
 - Upgrade `http4k` to 5.47.0.0. (#2559)
 
 ## 3.14.2
+
 - Make activity aliases work in PatrolJUnitRunner
 
 ## 3.14.1
@@ -33,11 +40,11 @@
 ## 3.14.0
 
 - Remove `exception` from `StepEntry`. When it was too long, it caused crash because of badly formed JSON. (#2481)
-- Bump `patrol_finders` and `patrol_log` versions. 
+- Bump `patrol_finders` and `patrol_log` versions.
 - Bump compileSdk to 35. (#2488)
 - Bump Gradle to 8.9.0. (#2488)
 - Make Patrol works with Java 21. (#2488)
- 
+
 ## 3.13.2
 
 - Bump `patrol_finders` and `patrol_log` - use version with patched enterText. (#2468)
@@ -94,7 +101,7 @@ This version requires version 3.2.0 of `patrol_cli` package.
 
 ## 3.8.0
 
-- Add `openUrl(String url)` method, for testing deeplinks. (#2219) 
+- Add `openUrl(String url)` method, for testing deeplinks. (#2219)
 - Add `pressVolumeUp` and `pressVolumeDown()`. (#2223)
 
 ## 3.7.3
@@ -107,7 +114,6 @@ This version requires version 3.2.0 of `patrol_cli` package.
 - Bump `patrol_devtools_extension` dependencies.
 - Bump min Flutter SDK to 3.22
 
-
 ## 3.7.1
 
 - Revert: Bump `patrol_devtools_extension` dependencies.
@@ -116,7 +122,7 @@ This version requires version 3.2.0 of `patrol_cli` package.
 ## 3.7.0
 
 - Bump `test_api` dependency to 0.7.0.
-- Bump `patrol_devtools_extension` dependencies. 
+- Bump `patrol_devtools_extension` dependencies.
 - Support customization of doubleTap delay (Android only). (#2165)
 
 ## 3.6.1
@@ -200,7 +206,7 @@ Give a warm welcome to the new **Patrol DevTools Extension**!
 Patrol DevTools extension allows you to explore the native view hierarchy when
 developing tests with `patrol develop`. Now you can easily see what Android /
 iOS views are currently visible and discover their properties so that they can
-be used in native selectors like `$.native.tap()`. You don’t have to use any
+be used in native selectors like `$.native.tap()`. You don't have to use any
 external tools for that. This is just the beginning, and we plan to add more
 features to our extension in the future.
 
