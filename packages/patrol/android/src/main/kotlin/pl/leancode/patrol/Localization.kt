@@ -3,7 +3,7 @@ package pl.leancode.patrol
 import android.content.Context
 import android.os.Build
 
-object LocalizationHelper {
+object Localization {
 
     /**
      * Gets the current device locale
