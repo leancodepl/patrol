@@ -51,9 +51,6 @@ Use the `--tags` option to run only tests that have specific tags:
 # Run tests with the 'smoke' tag
 patrol test --tags smoke
 
-# Run tests with the 'regression' tag
-patrol test --tags regression
-
 # Run tests with either 'smoke' or 'regression' tag
 patrol test --tags='smoke||regression'
 
@@ -71,9 +68,6 @@ patrol test --exclude-tags regression
 
 # Exclude tests with either 'smoke' or 'regression' tag
 patrol test --exclude-tags='(smoke||regression)'
-
-# Exclude login tests
-patrol test --exclude-tags login
 ```
 
 ## Tag expression syntax
@@ -85,6 +79,8 @@ Patrol supports complex tag expressions using logical operators:
 - `||` - OR operator (run tests with either tag)
 - `&&` - AND operator (run tests with both tags)
 - `!` - NOT operator (exclude tests with this tag)
+
+For more information about tag rules, see: https://pub.dev/packages/test#tagging-tests
 
 ### Examples
 
