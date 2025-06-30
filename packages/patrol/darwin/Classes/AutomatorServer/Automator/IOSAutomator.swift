@@ -5,6 +5,7 @@
   import os
 
   class IOSAutomator: Automator {
+
     private lazy var device: XCUIDevice = {
       return XCUIDevice.shared
     }()
@@ -717,7 +718,7 @@
           throw PatrolError.viewNotExists("notification at index \(index)")
         }
 
-        if self.isSimulator() && self.isPhone() {
+        if self.isVirtualDevice() && self.isPhone() {
           // For some weird reason, this works differently on Simulator
           cell.doubleTap()
           self.springboard.buttons.matching(identifier: localizedStrings["open"] ?? "Open").firstMatch.tap()
@@ -745,7 +746,7 @@
           throw PatrolError.viewNotExists("notification containing text \(format: substring)")
         }
         Logger.shared.i("tapping on notification which contains text \(substring)")
-        if self.isSimulator() && self.isPhone() {
+        if self.isVirtualDevice() && self.isPhone() {
           // For some weird reason, this works differently on Simulator
           cell.doubleTap()
           self.springboard.buttons.matching(identifier: localizedStrings["open"] ?? "Open").firstMatch.tap()
@@ -1028,12 +1029,16 @@
       element.typeText(delete + data)
     }
 
-    private func isSimulator() -> Bool {
+    func isVirtualDevice() -> Bool {
       #if targetEnvironment(simulator)
         return true
       #else
         return false
       #endif
+    }
+
+    func getOsVersion() -> String {
+      return UIDevice.current.systemVersion
     }
 
     private func isPhone() -> Bool {

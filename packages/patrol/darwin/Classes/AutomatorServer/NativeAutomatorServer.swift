@@ -45,10 +45,15 @@ protocol NativeAutomatorServer {
     func isPermissionDialogVisible(request: PermissionDialogVisibleRequest) throws -> PermissionDialogVisibleResponse
     func handlePermissionDialog(request: HandlePermissionRequest) throws
     func setLocationAccuracy(request: SetLocationAccuracyRequest) throws
+    func takeCameraPhoto(request: TakeCameraPhotoRequest) throws
+    func pickImageFromGallery(request: PickImageFromGalleryRequest) throws
+    func pickMultipleImagesFromGallery(request: PickMultipleImagesFromGalleryRequest) throws
     func debug() throws
     func setMockLocation(request: SetMockLocationRequest) throws
     func getLocale(request: GetLocaleRequest) throws -> GetLocaleResponse
     func markPatrolAppServiceReady() throws
+    func isVirtualDevice() throws -> IsVirtualDeviceResponse
+    func getOsVersion() throws -> GetOsVersionResponse
 }
 
 extension NativeAutomatorServer {
@@ -270,6 +275,24 @@ extension NativeAutomatorServer {
         return HTTPResponse(.ok)
     }
 
+    private func takeCameraPhotoHandler(request: HTTPRequest) throws -> HTTPResponse {
+        let requestArg = try JSONDecoder().decode(TakeCameraPhotoRequest.self, from: request.body)
+        try takeCameraPhoto(request: requestArg)
+        return HTTPResponse(.ok)
+    }
+
+    private func pickImageFromGalleryHandler(request: HTTPRequest) throws -> HTTPResponse {
+        let requestArg = try JSONDecoder().decode(PickImageFromGalleryRequest.self, from: request.body)
+        try pickImageFromGallery(request: requestArg)
+        return HTTPResponse(.ok)
+    }
+
+    private func pickMultipleImagesFromGalleryHandler(request: HTTPRequest) throws -> HTTPResponse {
+        let requestArg = try JSONDecoder().decode(PickMultipleImagesFromGalleryRequest.self, from: request.body)
+        try pickMultipleImagesFromGallery(request: requestArg)
+        return HTTPResponse(.ok)
+    }
+
     private func debugHandler(request: HTTPRequest) throws -> HTTPResponse {
         try debug()
         return HTTPResponse(.ok)
@@ -291,6 +314,18 @@ extension NativeAutomatorServer {
     private func markPatrolAppServiceReadyHandler(request: HTTPRequest) throws -> HTTPResponse {
         try markPatrolAppServiceReady()
         return HTTPResponse(.ok)
+    }
+
+    private func isVirtualDeviceHandler(request: HTTPRequest) throws -> HTTPResponse {
+        let response = try isVirtualDevice()
+        let body = try JSONEncoder().encode(response)
+        return HTTPResponse(.ok, body: body)
+    }
+
+    private func getOsVersionHandler(request: HTTPRequest) throws -> HTTPResponse {
+        let response = try getOsVersion()
+        let body = try JSONEncoder().encode(response)
+        return HTTPResponse(.ok, body: body)
     }
 }
 
@@ -491,6 +526,21 @@ extension NativeAutomatorServer {
                 request: request,
                 handler: setLocationAccuracyHandler)
         }
+        server.route(.POST, "takeCameraPhoto") {
+            request in handleRequest(
+                request: request,
+                handler: takeCameraPhotoHandler)
+        }
+        server.route(.POST, "pickImageFromGallery") {
+            request in handleRequest(
+                request: request,
+                handler: pickImageFromGalleryHandler)
+        }
+        server.route(.POST, "pickMultipleImagesFromGallery") {
+            request in handleRequest(
+                request: request,
+                handler: pickMultipleImagesFromGalleryHandler)
+        }
         server.route(.POST, "debug") {
             request in handleRequest(
                 request: request,
@@ -510,6 +560,16 @@ extension NativeAutomatorServer {
             request in handleRequest(
                 request: request,
                 handler: markPatrolAppServiceReadyHandler)
+        }
+        server.route(.POST, "isVirtualDevice") {
+            request in handleRequest(
+                request: request,
+                handler: isVirtualDeviceHandler)
+        }
+        server.route(.POST, "getOsVersion") {
+            request in handleRequest(
+                request: request,
+                handler: getOsVersionHandler)
         }
     }
 }

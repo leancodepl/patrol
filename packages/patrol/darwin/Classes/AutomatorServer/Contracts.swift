@@ -388,6 +388,46 @@ public struct SetMockLocationRequest: Codable {
   public var packageName: String
 }
 
+public struct IsVirtualDeviceResponse: Codable {
+  public var isVirtualDevice: Bool
+}
+
+public struct GetOsVersionResponse: Codable {
+  public var osVersion: Int
+}
+
+public struct TakeCameraPhotoRequest: Codable {
+  public var shutterButtonSelector: Selector?
+  public var androidShutterButtonSelector: AndroidSelector?
+  public var iosShutterButtonSelector: IOSSelector?
+  public var doneButtonSelector: Selector?
+  public var androidDoneButtonSelector: AndroidSelector?
+  public var timeoutMillis: Int?
+  public var iosDoneButtonSelector: IOSSelector?
+  public var appId: String
+  public var isNative2: Bool
+}
+
+public struct PickImageFromGalleryRequest: Codable {
+  public var imageSelector: Selector?
+  public var androidImageSelector: AndroidSelector?
+  public var iosImageSelector: IOSSelector?
+  public var imageIndex: Int?
+  public var timeoutMillis: Int?
+  public var appId: String
+  public var isNative2: Bool
+}
+
+public struct PickMultipleImagesFromGalleryRequest: Codable {
+  public var imageSelector: Selector?
+  public var androidImageSelector: AndroidSelector?
+  public var iosImageSelector: IOSSelector?
+  public var imageIndexes: [Int]
+  public var timeoutMillis: Int?
+  public var appId: String
+  public var isNative2: Bool
+}
+
 public struct GetLocaleResponse: Codable {
   public var languageCode: String
   public var regionCode: String

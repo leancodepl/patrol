@@ -21,11 +21,7 @@ class ListDartTestsResponse {
   late DartGroupEntry group;
 }
 
-enum RunDartTestResponseResult {
-  success,
-  skipped,
-  failure,
-}
+enum RunDartTestResponseResult { success, skipped, failure }
 
 class RunDartTestRequest {
   late String name;
@@ -211,10 +207,7 @@ class TapAtRequest {
   late String appId;
 }
 
-enum KeyboardBehavior {
-  showAndDismiss,
-  alternative,
-}
+enum KeyboardBehavior { showAndDismiss, alternative }
 
 class EnterTextRequest {
   late String data;
@@ -279,20 +272,13 @@ class PermissionDialogVisibleRequest {
   late int timeoutMillis;
 }
 
-enum HandlePermissionRequestCode {
-  whileUsing,
-  onlyThisTime,
-  denied,
-}
+enum HandlePermissionRequestCode { whileUsing, onlyThisTime, denied }
 
 class HandlePermissionRequest {
   late HandlePermissionRequestCode code;
 }
 
-enum SetLocationAccuracyRequestLocationAccuracy {
-  coarse,
-  fine,
-}
+enum SetLocationAccuracyRequestLocationAccuracy { coarse, fine }
 
 class SetLocationAccuracyRequest {
   late SetLocationAccuracyRequestLocationAccuracy locationAccuracy;
@@ -302,6 +288,46 @@ class SetMockLocationRequest {
   late double latitude;
   late double longitude;
   late String packageName;
+}
+
+class IsVirtualDeviceResponse {
+  late bool isVirtualDevice;
+}
+
+class GetOsVersionResponse {
+  late int osVersion;
+}
+
+class TakeCameraPhotoRequest {
+  late Selector? shutterButtonSelector;
+  late AndroidSelector? androidShutterButtonSelector;
+  late IOSSelector? iosShutterButtonSelector;
+  late Selector? doneButtonSelector;
+  late AndroidSelector? androidDoneButtonSelector;
+  late int? timeoutMillis;
+  late IOSSelector? iosDoneButtonSelector;
+  late String appId;
+  late bool isNative2;
+}
+
+class PickImageFromGalleryRequest {
+  late Selector? imageSelector;
+  late AndroidSelector? androidImageSelector;
+  late IOSSelector? iosImageSelector;
+  late int? imageIndex;
+  late int? timeoutMillis;
+  late String appId;
+  late bool isNative2;
+}
+
+class PickMultipleImagesFromGalleryRequest {
+  late Selector? imageSelector;
+  late AndroidSelector? androidImageSelector;
+  late IOSSelector? iosImageSelector;
+  late List<int> imageIndexes;
+  late int? timeoutMillis;
+  late String appId;
+  late bool isNative2;
 }
 
 class GetLocaleResponse {
@@ -362,9 +388,17 @@ abstract class NativeAutomator<IOSServer, AndroidServer, DartClient> {
 
   // permissions
   PermissionDialogVisibleResponse isPermissionDialogVisible(
-      PermissionDialogVisibleRequest request);
+    PermissionDialogVisibleRequest request,
+  );
   void handlePermissionDialog(HandlePermissionRequest request);
   void setLocationAccuracy(SetLocationAccuracyRequest request);
+
+  // camera
+  void takeCameraPhoto(TakeCameraPhotoRequest request);
+  void pickImageFromGallery(PickImageFromGalleryRequest request);
+  void pickMultipleImagesFromGallery(
+    PickMultipleImagesFromGalleryRequest request,
+  );
 
   // other
   void debug();
@@ -373,6 +407,10 @@ abstract class NativeAutomator<IOSServer, AndroidServer, DartClient> {
 
   // TODO(bartekpacia): Move this RPC into a new PatrolNativeTestService service because it doesn't fit here
   void markPatrolAppServiceReady();
+
+  IsVirtualDeviceResponse isVirtualDevice();
+
+  GetOsVersionResponse getOsVersion();
 }
 
 enum IOSElementType {

@@ -78,6 +78,11 @@
       "id": "articles",
       "title": "Articles & Resources",
       "href": "/articles"
+    },
+    {
+      "id": "contact",
+      "title": "Contact us",
+      "href": "/contact"
     }
   ],
   "sidebar": [
@@ -224,6 +229,10 @@
           "group": "Other",
           "tab": "documentation",
           "pages": [
+            {
+              "title": "Patrol DevTools Extension",
+              "href": "/documentation/patrol-devtools-extension"
+            },
             {
               "title": "Effective Patrol",
               "href": "/documentation/effective-patrol"

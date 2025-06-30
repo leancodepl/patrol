@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:e2e_app/keys.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -145,7 +146,7 @@ class _PermissionTile extends StatelessWidget {
               ],
             ),
             Text(
-              key: const Key('statusText'),
+              key: K.statusText,
               granted ? 'Granted' : 'Not granted',
             ),
             TextButton(

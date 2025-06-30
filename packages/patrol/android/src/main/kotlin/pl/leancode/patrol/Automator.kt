@@ -753,6 +753,38 @@ class Automator private constructor() {
         locationManager.setTestProviderLocation(mockLocationProvider, mockLocation)
     }
 
+    fun takeCameraPhoto(shutterButtonUiSelector: UiSelector, shutterButtonBySelector: BySelector, doneButtonUiSelector: UiSelector, doneButtonBySelector: BySelector, timeout: Long? = null) {
+        tap(shutterButtonUiSelector, shutterButtonBySelector, 0, timeout)
+        tap(doneButtonUiSelector, doneButtonBySelector, 0, timeout)
+    }
+
+    fun pickImageFromGallery(imageUiSelector: UiSelector, imageBySelector: BySelector, subMenuUiSelector: UiSelector?, subMenuBySelector: BySelector?, actionMenuUiSelector: UiSelector?, actionMenuBySelector: BySelector?, instance: Int, timeout: Long? = null) {
+        if (subMenuBySelector != null && subMenuUiSelector != null) {
+            tap(subMenuUiSelector, subMenuBySelector, 0)
+        }
+        tap(imageUiSelector, imageBySelector, instance.toInt())
+        if (actionMenuBySelector != null && actionMenuUiSelector != null) {
+            tap(actionMenuUiSelector, actionMenuBySelector, 0)
+        }
+    }
+
+    fun pickMultipleImagesFromGallery(imageUiSelector: UiSelector, imageBySelector: BySelector, subMenuUiSelector: UiSelector?, subMenuBySelector: BySelector?, actionMenuUiSelector: UiSelector, actionMenuBySelector: BySelector, imageIndexes: List<Long>, timeout: Long? = null) {
+        // For API level 33 and below, we need to change type of the list
+        // to be able to select multiple images with taps instead of long press
+        if (subMenuBySelector != null && subMenuUiSelector != null) {
+            tap(subMenuUiSelector, subMenuBySelector, 0, timeout)
+        }
+
+        // Tap on multiple images
+        for (i in imageIndexes) {
+            val image = i.toInt()
+            val imageUiSelectorWithInstance = imageUiSelector.instance(image)
+            tap(imageUiSelectorWithInstance, imageBySelector, image, timeout)
+        }
+
+        tap(actionMenuUiSelector, actionMenuBySelector, 0, timeout)
+    }
+
     /**
      * Returns true if [bySelector] found a view at [index] within [timeoutMillis], false otherwise.
      */
