@@ -142,6 +142,10 @@
           "href": "/documentation/physical-ios-devices-setup"
         },
         {
+          "title": "Patrol tags",
+          "href": "/documentation/patrol-tags"
+        },
+        {
           "group": "Finders",
           "tab": "documentation",
           "pages": [
@@ -232,10 +236,6 @@
             {
               "title": "Patrol DevTools Extension",
               "href": "/documentation/patrol-devtools-extension"
-            },
-            {
-              "title": "Patrol tags",
-              "href": "/documentation/patrol-tags"
             },
             {
               "title": "Effective Patrol",
