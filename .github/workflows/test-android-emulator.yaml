@@ -129,17 +129,8 @@ jobs:
         id: tests_step
         run: |
           set +e
-          output="$(ew-cli \
-            --app build/app/outputs/apk/debug/app-debug.apk \
-            --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
+          output="$(ew-cli emulatorwtf.yaml:multi_api \
             --device model=Pixel7,version=${{ matrix.api-level }} \
-            --use-orchestrator \
-            --clear-package-data \
-            --record-video \
-            --timeout 10m \
-            --num-shards 3 \
-            --outputs-dir ew-test_outputs \
-            --json \
             --display-name "Patrol example app API ${{ matrix.api-level }} (${GITHUB_SHA::7})")"
           TESTS_EXIT_CODE=$?
           set -e
