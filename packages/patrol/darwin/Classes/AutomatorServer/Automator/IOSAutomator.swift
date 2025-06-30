@@ -758,34 +758,6 @@
 
     // MARK: Permissions
 
-    private func getLocalizedStrings(for languageCode: String) -> [String: String] {
-      // Default to English if the language is not supported
-      let supportedLanguages = ["en", "de", "fr", "pl"]
-      let targetLanguage = supportedLanguages.contains(languageCode) ? languageCode : "en"
-
-      // Get the bundle containing the Localizable.strings files
-      let bundle = Bundle(for: type(of: self))
-
-      // Try to load the localized strings file
-      guard
-        let path = bundle.path(
-          forResource: "Localizable", ofType: "strings", inDirectory: "\(targetLanguage).lproj")
-      else {
-        Logger.shared.i(
-          "Could not find Localizable.strings for \(targetLanguage), using English strings")
-          return [:]
-      }
-
-      guard let dictionary = NSDictionary(contentsOfFile: path) as? [String: String] else {
-        Logger.shared.i(
-          "Could not parse Localizable.strings for \(targetLanguage), using English strings")
-          return [:]
-      }
-
-      Logger.shared.i("Loaded localized strings for language: \(targetLanguage)")
-      return dictionary
-    }
-
     func isPermissionDialogVisible(timeout: TimeInterval) throws -> Bool {
       return runAction("checking if permission dialog is visible") {
         let systemAlerts = self.springboard.alerts
@@ -1027,6 +999,34 @@
       coordinate.tap()
 
       element.typeText(delete + data)
+    }
+
+    private func getLocalizedStrings(for languageCode: String) -> [String: String] {
+      // Default to English if the language is not supported
+      let supportedLanguages = ["en", "de", "fr", "pl"]
+      let targetLanguage = supportedLanguages.contains(languageCode) ? languageCode : "en"
+
+      // Get the bundle containing the Localizable.strings files
+      let bundle = Bundle(for: type(of: self))
+
+      // Try to load the localized strings file
+      guard
+        let path = bundle.path(
+          forResource: "Localizable", ofType: "strings", inDirectory: "\(targetLanguage).lproj")
+      else {
+        Logger.shared.i(
+          "Could not find Localizable.strings for \(targetLanguage), using English strings")
+          return [:]
+      }
+
+      guard let dictionary = NSDictionary(contentsOfFile: path) as? [String: String] else {
+        Logger.shared.i(
+          "Could not parse Localizable.strings for \(targetLanguage), using English strings")
+          return [:]
+      }
+
+      Logger.shared.i("Loaded localized strings for language: \(targetLanguage)")
+      return dictionary
     }
 
     func isVirtualDevice() -> Bool {
