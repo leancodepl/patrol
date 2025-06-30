@@ -55,6 +55,8 @@
 	<string>Need location when in use</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>microphone</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app needs access to photo library to select images</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
