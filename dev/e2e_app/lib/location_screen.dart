@@ -1,3 +1,4 @@
+import 'package:e2e_app/keys.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -78,6 +79,7 @@ class _LocationScreenState extends State<LocationScreen> {
                   ),
                   SizedBox(height: 24),
                   ElevatedButton(
+                    key: K.grantLocationPermissionButton,
                     onPressed: _requestPermission,
                     child: Text(
                       'Grant permission',

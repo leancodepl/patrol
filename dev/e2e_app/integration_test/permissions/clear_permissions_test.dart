@@ -1,3 +1,5 @@
+import 'package:e2e_app/keys.dart';
+
 import '../common.dart';
 
 const _timeout = Duration(seconds: 5); // to avoid timeouts on CI
@@ -25,7 +27,7 @@ void main() {
 
 Future<void> _requestAndGrantCameraPermission(PatrolIntegrationTester $) async {
   expect($(#camera).$(#statusText).text, 'Not granted');
-  await $('Request camera permission').tap();
+  await $(K.requestCameraPermissionButton).tap();
   if (await $.native.isPermissionDialogVisible(timeout: _timeout)) {
     await $.native.grantPermissionWhenInUse();
     await $.pump();
@@ -36,7 +38,7 @@ Future<void> _requestAndGrantMicrophonePermission(
   PatrolIntegrationTester $,
 ) async {
   expect($(#microphone).$(#statusText).text, 'Not granted');
-  await $('Request microphone permission').tap();
+  await $(K.requestMicrophonePermissionButton).tap();
   if (await $.native.isPermissionDialogVisible(timeout: _timeout)) {
     await $.native.grantPermissionOnlyThisTime();
     await $.pump();
@@ -47,7 +49,7 @@ Future<void> _requestAndGrantLocationPermission(
   PatrolIntegrationTester $,
 ) async {
   expect($(#location).$(#statusText).text, 'Not granted');
-  await $('Request location permission').tap();
+  await $(K.requestLocationPermissionButton).tap();
   if (await $.native.isPermissionDialogVisible(timeout: _timeout)) {
     await $.native.grantPermissionOnlyThisTime();
     await $.pump();

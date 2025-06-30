@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io' as io;
 
+import 'package:e2e_app/keys.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
@@ -144,6 +145,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               spacing: 8,
               children: [
                 ElevatedButton(
+                  key: K.showNotificationNowButton,
                   onPressed: () async => _showNotificationNow(
                     id: 1,
                     title: _firstTitle,
@@ -151,6 +153,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                   child: const Text('Show now'),
                 ),
                 ElevatedButton(
+                  key: K.showNotificationLaterButton,
                   onPressed: () async => _showNotificationLater(
                     id: 1,
                     title: _firstTitle,
@@ -169,6 +172,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               spacing: 8,
               children: [
                 ElevatedButton(
+                  key: K.showNotificationNowButton2,
                   onPressed: () async => _showNotificationNow(
                     id: 2,
                     title: _secondTitle,
@@ -176,6 +180,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                   child: const Text('Show now'),
                 ),
                 ElevatedButton(
+                  key: K.showNotificationLaterButton2,
                   onPressed: () async => _showNotificationLater(
                     id: 2,
                     title: _secondTitle,

@@ -1,3 +1,4 @@
+import 'package:e2e_app/keys.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../common.dart';
@@ -24,7 +25,7 @@ void main() {
 Future<void> _requestAndDenyCameraPermission(PatrolIntegrationTester $) async {
   if (!await Permission.camera.isGranted) {
     expect($(#camera).$(#statusText).text, 'Not granted');
-    await $('Request camera permission').tap();
+    await $(K.requestCameraPermissionButton).tap();
     if (await $.native.isPermissionDialogVisible(timeout: _timeout)) {
       await $.native.denyPermission();
       await $.pump();
@@ -39,7 +40,7 @@ Future<void> _requestAndDenyMicrophonePermission(
 ) async {
   if (!await Permission.microphone.isGranted) {
     expect($(#microphone).$(#statusText).text, 'Not granted');
-    await $('Request microphone permission').tap();
+    await $(K.requestMicrophonePermissionButton).tap();
     if (await $.native.isPermissionDialogVisible(timeout: _timeout)) {
       await $.native.denyPermission();
       await $.pump();
@@ -54,7 +55,7 @@ Future<void> _requestAndDenyLocationPermission(
 ) async {
   if (!await Permission.location.isGranted) {
     expect($(#location).$(#statusText).text, 'Not granted');
-    await $('Request location permission').tap();
+    await $(K.requestLocationPermissionButton).tap();
     if (await $.native.isPermissionDialogVisible(timeout: _timeout)) {
       await $.native.denyPermission();
       await $.pump();

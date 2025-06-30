@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io' as io;
 
+import 'package:e2e_app/keys.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../common.dart';
@@ -57,7 +58,7 @@ void main() {
 
     if (!await Permission.location.isGranted) {
       expect($('Permission not granted'), findsOneWidget);
-      await $('Grant permission').tap();
+      await $(K.grantLocationPermissionButton).tap();
       if (await $.native.isPermissionDialogVisible(timeout: _timeout)) {
         await $.native.selectCoarseLocation();
         await $.native.selectFineLocation();
@@ -90,7 +91,7 @@ void main() {
 
     if (!await Permission.location.isGranted) {
       expect($('Permission not granted'), findsOneWidget);
-      await $('Grant permission').tap();
+      await $(K.grantLocationPermissionButton).tap();
       if (await $.native2.isPermissionDialogVisible(timeout: _timeout)) {
         await $.native2.selectCoarseLocation();
         await $.native2.selectFineLocation();
