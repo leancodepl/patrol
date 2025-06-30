@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:e2e_app/keys.dart';
 
 import '../common.dart';
@@ -15,11 +13,7 @@ void main() {
     await _requestAndGrantCameraPermission($);
     await _requestAndGrantMicrophonePermission($);
     await _requestAndGrantLocationPermission($);
-    if (await $.native2.isVirtualDevice() == true && Platform.isIOS) {
-      $.log('Skipping gallery permission request for virtual device on iOS');
-    } else {
-      await _requestAndGrantGalleryPermission($);
-    }
+    await _requestAndGrantGalleryPermission($);
   });
 
   patrol('grants various permissions 2', ($) async {
