@@ -19,12 +19,15 @@ void main() {
 
     await _requestAndDenyLocationPermission($);
     await _requestAndDenyLocationPermission($);
+
+    await _requestAndDenyGalleryPermission($);
+    await _requestAndDenyGalleryPermission($);
   });
 }
 
 Future<void> _requestAndDenyCameraPermission(PatrolIntegrationTester $) async {
   if (!await Permission.camera.isGranted) {
-    expect($(#camera).$(#statusText).text, 'Not granted');
+    expect($(K.cameraPermissionTile).$(#statusText).text, 'Not granted');
     await $(K.requestCameraPermissionButton).tap();
     if (await $.native.isPermissionDialogVisible(timeout: _timeout)) {
       await $.native.denyPermission();
@@ -32,14 +35,14 @@ Future<void> _requestAndDenyCameraPermission(PatrolIntegrationTester $) async {
     }
   }
 
-  expect($(#camera).$(#statusText).text, 'Not granted');
+  expect($(K.cameraPermissionTile).$(#statusText).text, 'Not granted');
 }
 
 Future<void> _requestAndDenyMicrophonePermission(
   PatrolIntegrationTester $,
 ) async {
   if (!await Permission.microphone.isGranted) {
-    expect($(#microphone).$(#statusText).text, 'Not granted');
+    expect($(K.microphonePermissionTile).$(#statusText).text, 'Not granted');
     await $(K.requestMicrophonePermissionButton).tap();
     if (await $.native.isPermissionDialogVisible(timeout: _timeout)) {
       await $.native.denyPermission();
@@ -47,14 +50,14 @@ Future<void> _requestAndDenyMicrophonePermission(
     }
   }
 
-  expect($(#microphone).$(#statusText).text, 'Not granted');
+  expect($(K.microphonePermissionTile).$(#statusText).text, 'Not granted');
 }
 
 Future<void> _requestAndDenyLocationPermission(
   PatrolIntegrationTester $,
 ) async {
   if (!await Permission.location.isGranted) {
-    expect($(#location).$(#statusText).text, 'Not granted');
+    expect($(K.locationPermissionTile).$(#statusText).text, 'Not granted');
     await $(K.requestLocationPermissionButton).tap();
     if (await $.native.isPermissionDialogVisible(timeout: _timeout)) {
       await $.native.denyPermission();
@@ -62,5 +65,20 @@ Future<void> _requestAndDenyLocationPermission(
     }
   }
 
-  expect($(#location).$(#statusText).text, 'Not granted');
+  expect($(K.locationPermissionTile).$(#statusText).text, 'Not granted');
+}
+
+Future<void> _requestAndDenyGalleryPermission(
+  PatrolIntegrationTester $,
+) async {
+  if (!await Permission.storage.isGranted) {
+    expect($(K.galleryPermissionTile).$(#statusText).text, 'Not granted');
+    await $(K.requestGalleryPermissionButton).tap();
+    if (await $.native.isPermissionDialogVisible(timeout: _timeout)) {
+      await $.native.denyPermission();
+      await $.pump();
+    }
+  }
+
+  expect($(K.galleryPermissionTile).$(#statusText).text, 'Not granted');
 }

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:e2e_app/keys.dart';
 
 import '../common.dart';
@@ -13,7 +15,13 @@ void main() {
     await _requestAndGrantCameraPermission($);
     await _requestAndGrantMicrophonePermission($);
     await _requestAndGrantLocationPermission($);
+    if (await $.native2.isVirtualDevice() == true && Platform.isIOS) {
+      $.log('Skipping gallery permission request for virtual device on iOS');
+    } else {
+      await _requestAndGrantGalleryPermission($);
+    }
   });
+
   patrol('grants various permissions 2', ($) async {
     await createApp($);
 
@@ -22,11 +30,12 @@ void main() {
     await _requestAndGrantCameraPermission($);
     await _requestAndGrantMicrophonePermission($);
     await _requestAndGrantLocationPermission($);
+    await _requestAndGrantGalleryPermission($);
   });
 }
 
 Future<void> _requestAndGrantCameraPermission(PatrolIntegrationTester $) async {
-  expect($(#camera).$(#statusText).text, 'Not granted');
+  expect($(K.cameraPermissionTile).$(K.statusText).text, 'Not granted');
   await $(K.requestCameraPermissionButton).tap();
   if (await $.native.isPermissionDialogVisible(timeout: _timeout)) {
     await $.native.grantPermissionWhenInUse();
@@ -37,7 +46,7 @@ Future<void> _requestAndGrantCameraPermission(PatrolIntegrationTester $) async {
 Future<void> _requestAndGrantMicrophonePermission(
   PatrolIntegrationTester $,
 ) async {
-  expect($(#microphone).$(#statusText).text, 'Not granted');
+  expect($(K.microphonePermissionTile).$(K.statusText).text, 'Not granted');
   await $(K.requestMicrophonePermissionButton).tap();
   if (await $.native.isPermissionDialogVisible(timeout: _timeout)) {
     await $.native.grantPermissionOnlyThisTime();
@@ -48,8 +57,19 @@ Future<void> _requestAndGrantMicrophonePermission(
 Future<void> _requestAndGrantLocationPermission(
   PatrolIntegrationTester $,
 ) async {
-  expect($(#location).$(#statusText).text, 'Not granted');
+  expect($(K.locationPermissionTile).$(K.statusText).text, 'Not granted');
   await $(K.requestLocationPermissionButton).tap();
+  if (await $.native.isPermissionDialogVisible(timeout: _timeout)) {
+    await $.native.grantPermissionOnlyThisTime();
+    await $.pump();
+  }
+}
+
+Future<void> _requestAndGrantGalleryPermission(
+  PatrolIntegrationTester $,
+) async {
+  expect($(K.galleryPermissionTile).$(K.statusText).text, 'Not granted');
+  await $(K.requestGalleryPermissionButton).tap();
   if (await $.native.isPermissionDialogVisible(timeout: _timeout)) {
     await $.native.grantPermissionOnlyThisTime();
     await $.pump();

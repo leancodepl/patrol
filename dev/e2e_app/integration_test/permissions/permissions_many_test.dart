@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:e2e_app/keys.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -14,12 +16,13 @@ void main() {
     await _requestAndGrantCameraPermission($);
     await _requestAndGrantMicrophonePermission($);
     await _requestAndDenyLocationPermission($);
+    await _requestAndDenyGalleryPermission($);
   });
 }
 
 Future<void> _requestAndGrantCameraPermission(PatrolIntegrationTester $) async {
   if (!await Permission.camera.isGranted) {
-    expect($(#camera).$(#statusText).text, 'Not granted');
+    expect($(K.cameraPermissionTile).$(#statusText).text, 'Not granted');
     await $(K.requestCameraPermissionButton).tap();
     if (await $.native.isPermissionDialogVisible(timeout: _timeout)) {
       await $.native.grantPermissionWhenInUse();
@@ -27,14 +30,14 @@ Future<void> _requestAndGrantCameraPermission(PatrolIntegrationTester $) async {
     }
   }
 
-  expect($(#camera).$(#statusText).text, 'Granted');
+  expect($(K.cameraPermissionTile).$(#statusText).text, 'Granted');
 }
 
 Future<void> _requestAndGrantMicrophonePermission(
   PatrolIntegrationTester $,
 ) async {
   if (!await Permission.microphone.isGranted) {
-    expect($(#microphone).$(#statusText).text, 'Not granted');
+    expect($(K.microphonePermissionTile).$(#statusText).text, 'Not granted');
     await $(K.requestMicrophonePermissionButton).tap();
     if (await $.native.isPermissionDialogVisible(timeout: _timeout)) {
       await $.native.grantPermissionOnlyThisTime();
@@ -42,14 +45,14 @@ Future<void> _requestAndGrantMicrophonePermission(
     }
   }
 
-  expect($(#microphone).$(#statusText).text, 'Granted');
+  expect($(K.microphonePermissionTile).$(#statusText).text, 'Granted');
 }
 
 Future<void> _requestAndDenyLocationPermission(
   PatrolIntegrationTester $,
 ) async {
   if (!await Permission.location.isGranted) {
-    expect($(#location).$(#statusText).text, 'Not granted');
+    expect($(K.locationPermissionTile).$(#statusText).text, 'Not granted');
     await $(K.requestLocationPermissionButton).tap();
     if (await $.native.isPermissionDialogVisible(timeout: _timeout)) {
       await $.native.denyPermission();
@@ -57,5 +60,21 @@ Future<void> _requestAndDenyLocationPermission(
     }
   }
 
-  expect($(#location).$(#statusText).text, 'Not granted');
+  expect($(K.locationPermissionTile).$(#statusText).text, 'Not granted');
+}
+
+Future<void> _requestAndDenyGalleryPermission(
+  PatrolIntegrationTester $,
+) async {
+  if (Platform.isIOS) {
+    if (!await Permission.photos.isGranted) {
+      expect($(K.galleryPermissionTile).$(#statusText).text, 'Not granted');
+      await $(K.requestGalleryPermissionButton).tap();
+    }
+  } else {
+    if (!await Permission.storage.isGranted) {
+      expect($(K.galleryPermissionTile).$(#statusText).text, 'Not granted');
+      await $(K.requestGalleryPermissionButton).tap();
+    }
+  }
 }
