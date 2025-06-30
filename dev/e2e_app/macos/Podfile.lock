@@ -2,12 +2,15 @@ PODS:
   - app_links (1.0.0):
     - FlutterMacOS
   - CocoaAsyncSocket (7.6.5)
+  - file_selector_macos (0.0.1):
+    - FlutterMacOS
   - flutter_local_notifications (0.0.1):
     - FlutterMacOS
   - flutter_timezone (0.1.0):
     - FlutterMacOS
   - FlutterMacOS (1.0.0)
   - geolocator_apple (1.2.0):
+    - Flutter
     - FlutterMacOS
   - patrol (0.0.1):
     - CocoaAsyncSocket (~> 7.6)
@@ -19,10 +22,11 @@ PODS:
 
 DEPENDENCIES:
   - app_links (from `Flutter/ephemeral/.symlinks/plugins/app_links/macos`)
+  - file_selector_macos (from `Flutter/ephemeral/.symlinks/plugins/file_selector_macos/macos`)
   - flutter_local_notifications (from `Flutter/ephemeral/.symlinks/plugins/flutter_local_notifications/macos`)
   - flutter_timezone (from `Flutter/ephemeral/.symlinks/plugins/flutter_timezone/macos`)
   - FlutterMacOS (from `Flutter/ephemeral`)
-  - geolocator_apple (from `Flutter/ephemeral/.symlinks/plugins/geolocator_apple/macos`)
+  - geolocator_apple (from `Flutter/ephemeral/.symlinks/plugins/geolocator_apple/darwin`)
   - patrol (from `Flutter/ephemeral/.symlinks/plugins/patrol/darwin`)
   - webview_flutter_wkwebview (from `Flutter/ephemeral/.symlinks/plugins/webview_flutter_wkwebview/darwin`)
 
@@ -33,6 +37,8 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   app_links:
     :path: Flutter/ephemeral/.symlinks/plugins/app_links/macos
+  file_selector_macos:
+    :path: Flutter/ephemeral/.symlinks/plugins/file_selector_macos/macos
   flutter_local_notifications:
     :path: Flutter/ephemeral/.symlinks/plugins/flutter_local_notifications/macos
   flutter_timezone:
@@ -40,21 +46,22 @@ EXTERNAL SOURCES:
   FlutterMacOS:
     :path: Flutter/ephemeral
   geolocator_apple:
-    :path: Flutter/ephemeral/.symlinks/plugins/geolocator_apple/macos
+    :path: Flutter/ephemeral/.symlinks/plugins/geolocator_apple/darwin
   patrol:
     :path: Flutter/ephemeral/.symlinks/plugins/patrol/darwin
   webview_flutter_wkwebview:
     :path: Flutter/ephemeral/.symlinks/plugins/webview_flutter_wkwebview/darwin
 
 SPEC CHECKSUMS:
-  app_links: 10e0a0ab602ffaf34d142cd4862f29d34b303b2a
+  app_links: afe860c55c7ef176cea7fb630a2b7d7736de591d
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
-  flutter_local_notifications: 3805ca215b2fb7f397d78b66db91f6a747af52e4
-  flutter_timezone: 6b906d1740654acb16e50b639835628fea851037
+  file_selector_macos: 6280b52b459ae6c590af5d78fc35c7267a3c4b31
+  flutter_local_notifications: 7e5a17a1dbc00d83dc10d43c2c4c05f2ceed233c
+  flutter_timezone: d59eea86178cbd7943cd2431cc2eaa9850f935d8
   FlutterMacOS: 8f6f14fa908a6fb3fba0cd85dbd81ec4b251fb24
-  geolocator_apple: 72a78ae3f3e4ec0db62117bd93e34523f5011d58
-  patrol: cf2cd48c7f3e5171610111994f7b466cd76d1f57
-  webview_flutter_wkwebview: 0982481e3d9c78fd5c6f62a002fcd24fc791f1e4
+  geolocator_apple: ab36aa0e8b7d7a2d7639b3b4e48308394e8cef5e
+  patrol: 51b76cc7c11a2933ee3e72482d930c75b9d4ec73
+  webview_flutter_wkwebview: 1821ceac936eba6f7984d89a9f3bcb4dea99ebb2
 
 PODFILE CHECKSUM: 4dcdd5fa8959bf7a21c4e3da36b083ff9ad52d38
 

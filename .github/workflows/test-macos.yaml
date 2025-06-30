@@ -17,7 +17,7 @@ jobs:
   run_tests:
     name: Flutter ${{ matrix.flutter-version }} on ${{ matrix.device_model }}
     runs-on: macos-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
     outputs:
       SLACK_MESSAGE_TITLE: Flutter ${{ matrix.flutter-version }} on ${{ matrix.os }}
       TESTS_EXIT_CODE: ${{ steps.tests_step.outputs.TESTS_EXIT_CODE }}
@@ -89,7 +89,7 @@ jobs:
         id: tests_step
         run: |
           TESTS_EXIT_CODE=0
-          patrol test -t integration_test/macos --verbose || TESTS_EXIT_CODE=$?
+          patrol test -t integration_test/macos --verbose -d macos || TESTS_EXIT_CODE=$?
 
           echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> "$GITHUB_OUTPUT"
           exit $TESTS_EXIT_CODE
