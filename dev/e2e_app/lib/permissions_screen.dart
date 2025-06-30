@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:e2e_app/keys.dart';
 import 'package:flutter/material.dart';
@@ -41,10 +42,17 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
   }
 
   Future<void> _requestGalleryPermission() async {
-    final status = await Permission.storage.request();
-    setState(() {
-      _galleryPermissionGranted = status == PermissionStatus.granted;
-    });
+    if (Platform.isIOS) {
+      final status = await Permission.photos.request();
+      setState(() {
+        _galleryPermissionGranted = status == PermissionStatus.granted;
+      });
+    } else {
+      final status = await Permission.storage.request();
+      setState(() {
+        _galleryPermissionGranted = status == PermissionStatus.granted;
+      });
+    }
   }
 
   @override
@@ -79,15 +87,27 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
         },
       ),
     );
-    unawaited(
-      Permission.storage.status.then(
-        (value) {
-          setState(() {
-            _galleryPermissionGranted = value == PermissionStatus.granted;
-          });
-        },
-      ),
-    );
+    if (Platform.isIOS) {
+      unawaited(
+        Permission.photos.status.then(
+          (value) {
+            setState(() {
+              _galleryPermissionGranted = value == PermissionStatus.granted;
+            });
+          },
+        ),
+      );
+    } else {
+      unawaited(
+        Permission.storage.status.then(
+          (value) {
+            setState(() {
+              _galleryPermissionGranted = value == PermissionStatus.granted;
+            });
+          },
+        ),
+      );
+    }
   }
 
   @override
