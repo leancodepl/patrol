@@ -131,6 +131,8 @@ jobs:
           set +e
           output="$(ew-cli emulatorwtf.yaml:multi_api \
             --device model=Pixel7,version=${{ matrix.api-level }} \
+            --device model=Tablet10,version=${{ matrix.api-level }} \
+            --device model=NexusLowRes,version=${{ matrix.api-level }} \
             --display-name "Patrol example app API ${{ matrix.api-level }} (${GITHUB_SHA::7})")"
           TESTS_EXIT_CODE=$?
           set -e
