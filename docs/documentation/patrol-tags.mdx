@@ -109,9 +109,6 @@ patrol test --tags smoke --device "iPhone 14"
 # Run regression tests with debug build
 patrol test --tags regression --debug
 
-# Run login tests and wait 5 seconds after completion
-patrol test --tags login --wait 5
-
 # Run specific test file with tag filtering
 patrol test --target integration_test/login_test.dart --tags smoke
 ```
