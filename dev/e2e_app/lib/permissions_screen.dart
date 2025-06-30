@@ -93,6 +93,7 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: K.permissionsScreen,
       appBar: AppBar(
         title: const Text('Permissions'),
       ),
@@ -104,24 +105,28 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
               icon: Icons.camera,
               granted: _cameraPermissionGranted,
               onTap: _requestCameraPermission,
+              key: K.cameraPermissionTile,
             ),
             _PermissionTile(
               name: 'Microphone',
               icon: Icons.mic,
               granted: _microphonePermissionGranted,
               onTap: _requestMicrophonePermission,
+              key: K.microphonePermissionTile,
             ),
             _PermissionTile(
               name: 'Location',
               icon: Icons.pin_drop,
               granted: _locationPermissionGranted,
               onTap: _requestLocationPermission,
+              key: K.locationPermissionTile,
             ),
             _PermissionTile(
               name: 'Gallery',
               icon: Icons.photo_library,
               granted: _galleryPermissionGranted,
               onTap: _requestGalleryPermission,
+              key: K.galleryPermissionTile,
             ),
           ],
         ),
@@ -132,6 +137,7 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
 
 class _PermissionTile extends StatelessWidget {
   const _PermissionTile({
+    super.key,
     required this.name,
     required this.icon,
     required this.granted,
@@ -146,7 +152,7 @@ class _PermissionTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      key: Key(name.toLowerCase()),
+      key: key,
       padding: const EdgeInsets.all(8),
       child: Container(
         padding: const EdgeInsets.all(8),

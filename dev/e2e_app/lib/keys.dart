@@ -37,6 +37,11 @@ class Keys {
 
   // permissions screen
   static const statusText = Key('statusText');
+  static const cameraPermissionTile = Key('camera');
+  static const microphonePermissionTile = Key('microphone');
+  static const locationPermissionTile = Key('location');
+  static const galleryPermissionTile = Key('gallery');
+  static const permissionsScreen = Key('permissionsScreen');
 
   // camera screen
   static const cameraScaffold = Key('cameraScaffold');
