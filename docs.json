@@ -190,6 +190,10 @@
           ]
         },
         {
+          "title": "Patrol tags",
+          "href": "/documentation/patrol-tags"
+        },
+        {
           "group": "Patrol and CI",
           "tab": "documentation",
           "pages": [
