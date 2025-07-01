@@ -4,6 +4,8 @@
 "allow_once" = "Zezwalaj raz";
 "allow_while_using_app" = "Zezwalaj podczas korzystania z aplikacji";
 "dont_allow" = "Nie pozwalaj";
+"limit_access" = "Ogranicz dostęp…";  // … is a Unicode ellipsis
+"allow_full_access" = "Pełny dostęp";
 
 /* System settings */
 "airplane_mode" = "Tryb samolotowy";

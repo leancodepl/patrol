@@ -795,6 +795,7 @@
           localizedStrings["ok"] ?? "OK",
           localizedStrings["allow"] ?? "Allow",
           localizedStrings["allow_while_using_app"] ?? "Allow While Using App",
+          localizedStrings["limit_access"] ?? "Limit Access…"
         ]
 
         guard
@@ -822,6 +823,7 @@
           localizedStrings["ok"] ?? "OK",
           localizedStrings["allow"] ?? "Allow",
           localizedStrings["allow_once"] ?? "Allow Once",
+          localizedStrings["allow_full_access"] ?? "Allow Full Access",
         ]
 
         guard

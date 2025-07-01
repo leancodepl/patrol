@@ -4,6 +4,8 @@
 "allow_once" = "Allow Once";
 "allow_while_using_app" = "Allow While Using App";
 "dont_allow" = "Don’t Allow";
+"limit_access" = "Limit Access…";  // … is a Unicode ellipsis
+"allow_full_access" = "Allow Full Access";
 
 /* System settings */
 "airplane_mode" = "Airplane mode";
