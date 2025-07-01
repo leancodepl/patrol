@@ -808,14 +808,139 @@ Map<String, dynamic> _$SetMockLocationRequestToJson(
       'packageName': instance.packageName,
     };
 
-MarkAppServiceReadyRequest _$MarkAppServiceReadyRequestFromJson(
+IsVirtualDeviceResponse _$IsVirtualDeviceResponseFromJson(
         Map<String, dynamic> json) =>
-    MarkAppServiceReadyRequest(
-      port: (json['port'] as num?)?.toInt(),
+    IsVirtualDeviceResponse(
+      isVirtualDevice: json['isVirtualDevice'] as bool,
     );
 
-Map<String, dynamic> _$MarkAppServiceReadyRequestToJson(
-        MarkAppServiceReadyRequest instance) =>
+Map<String, dynamic> _$IsVirtualDeviceResponseToJson(
+        IsVirtualDeviceResponse instance) =>
     <String, dynamic>{
-      'port': instance.port,
+      'isVirtualDevice': instance.isVirtualDevice,
+    };
+
+GetOsVersionResponse _$GetOsVersionResponseFromJson(
+        Map<String, dynamic> json) =>
+    GetOsVersionResponse(
+      osVersion: (json['osVersion'] as num).toInt(),
+    );
+
+Map<String, dynamic> _$GetOsVersionResponseToJson(
+        GetOsVersionResponse instance) =>
+    <String, dynamic>{
+      'osVersion': instance.osVersion,
+    };
+
+TakeCameraPhotoRequest _$TakeCameraPhotoRequestFromJson(
+        Map<String, dynamic> json) =>
+    TakeCameraPhotoRequest(
+      shutterButtonSelector: json['shutterButtonSelector'] == null
+          ? null
+          : Selector.fromJson(
+              json['shutterButtonSelector'] as Map<String, dynamic>),
+      androidShutterButtonSelector: json['androidShutterButtonSelector'] == null
+          ? null
+          : AndroidSelector.fromJson(
+              json['androidShutterButtonSelector'] as Map<String, dynamic>),
+      iosShutterButtonSelector: json['iosShutterButtonSelector'] == null
+          ? null
+          : IOSSelector.fromJson(
+              json['iosShutterButtonSelector'] as Map<String, dynamic>),
+      doneButtonSelector: json['doneButtonSelector'] == null
+          ? null
+          : Selector.fromJson(
+              json['doneButtonSelector'] as Map<String, dynamic>),
+      androidDoneButtonSelector: json['androidDoneButtonSelector'] == null
+          ? null
+          : AndroidSelector.fromJson(
+              json['androidDoneButtonSelector'] as Map<String, dynamic>),
+      timeoutMillis: (json['timeoutMillis'] as num?)?.toInt(),
+      iosDoneButtonSelector: json['iosDoneButtonSelector'] == null
+          ? null
+          : IOSSelector.fromJson(
+              json['iosDoneButtonSelector'] as Map<String, dynamic>),
+      appId: json['appId'] as String,
+      isNative2: json['isNative2'] as bool,
+    );
+
+Map<String, dynamic> _$TakeCameraPhotoRequestToJson(
+        TakeCameraPhotoRequest instance) =>
+    <String, dynamic>{
+      'shutterButtonSelector': instance.shutterButtonSelector,
+      'androidShutterButtonSelector': instance.androidShutterButtonSelector,
+      'iosShutterButtonSelector': instance.iosShutterButtonSelector,
+      'doneButtonSelector': instance.doneButtonSelector,
+      'androidDoneButtonSelector': instance.androidDoneButtonSelector,
+      'timeoutMillis': instance.timeoutMillis,
+      'iosDoneButtonSelector': instance.iosDoneButtonSelector,
+      'appId': instance.appId,
+      'isNative2': instance.isNative2,
+    };
+
+PickImageFromGalleryRequest _$PickImageFromGalleryRequestFromJson(
+        Map<String, dynamic> json) =>
+    PickImageFromGalleryRequest(
+      imageSelector: json['imageSelector'] == null
+          ? null
+          : Selector.fromJson(json['imageSelector'] as Map<String, dynamic>),
+      androidImageSelector: json['androidImageSelector'] == null
+          ? null
+          : AndroidSelector.fromJson(
+              json['androidImageSelector'] as Map<String, dynamic>),
+      iosImageSelector: json['iosImageSelector'] == null
+          ? null
+          : IOSSelector.fromJson(
+              json['iosImageSelector'] as Map<String, dynamic>),
+      imageIndex: (json['imageIndex'] as num?)?.toInt(),
+      timeoutMillis: (json['timeoutMillis'] as num?)?.toInt(),
+      appId: json['appId'] as String,
+      isNative2: json['isNative2'] as bool,
+    );
+
+Map<String, dynamic> _$PickImageFromGalleryRequestToJson(
+        PickImageFromGalleryRequest instance) =>
+    <String, dynamic>{
+      'imageSelector': instance.imageSelector,
+      'androidImageSelector': instance.androidImageSelector,
+      'iosImageSelector': instance.iosImageSelector,
+      'imageIndex': instance.imageIndex,
+      'timeoutMillis': instance.timeoutMillis,
+      'appId': instance.appId,
+      'isNative2': instance.isNative2,
+    };
+
+PickMultipleImagesFromGalleryRequest
+    _$PickMultipleImagesFromGalleryRequestFromJson(Map<String, dynamic> json) =>
+        PickMultipleImagesFromGalleryRequest(
+          imageSelector: json['imageSelector'] == null
+              ? null
+              : Selector.fromJson(
+                  json['imageSelector'] as Map<String, dynamic>),
+          androidImageSelector: json['androidImageSelector'] == null
+              ? null
+              : AndroidSelector.fromJson(
+                  json['androidImageSelector'] as Map<String, dynamic>),
+          iosImageSelector: json['iosImageSelector'] == null
+              ? null
+              : IOSSelector.fromJson(
+                  json['iosImageSelector'] as Map<String, dynamic>),
+          imageIndexes: (json['imageIndexes'] as List<dynamic>)
+              .map((e) => (e as num).toInt())
+              .toList(),
+          timeoutMillis: (json['timeoutMillis'] as num?)?.toInt(),
+          appId: json['appId'] as String,
+          isNative2: json['isNative2'] as bool,
+        );
+
+Map<String, dynamic> _$PickMultipleImagesFromGalleryRequestToJson(
+        PickMultipleImagesFromGalleryRequest instance) =>
+    <String, dynamic>{
+      'imageSelector': instance.imageSelector,
+      'androidImageSelector': instance.androidImageSelector,
+      'iosImageSelector': instance.iosImageSelector,
+      'imageIndexes': instance.imageIndexes,
+      'timeoutMillis': instance.timeoutMillis,
+      'appId': instance.appId,
+      'isNative2': instance.isNative2,
     };

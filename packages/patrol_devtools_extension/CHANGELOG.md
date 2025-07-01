@@ -1,7 +1,8 @@
-## Unreleased
+## 0.3.0
 
 - Bump `custom_lint` to `0.7.0` and `leancode_lint` to `14.3.0`. (#2574)
-- Dynamically select port on all platforms. (#2527)
+- Bump `vm_service` dependency to `15.0.0` (#2649)
+- Bump min Flutter SDK to 3.32.0 (#2649)
 
 ## 0.2.1
 

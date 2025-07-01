@@ -52,9 +52,14 @@ abstract class NativeAutomatorServer {
     abstract fun isPermissionDialogVisible(request: Contracts.PermissionDialogVisibleRequest): Contracts.PermissionDialogVisibleResponse
     abstract fun handlePermissionDialog(request: Contracts.HandlePermissionRequest)
     abstract fun setLocationAccuracy(request: Contracts.SetLocationAccuracyRequest)
+    abstract fun takeCameraPhoto(request: Contracts.TakeCameraPhotoRequest)
+    abstract fun pickImageFromGallery(request: Contracts.PickImageFromGalleryRequest)
+    abstract fun pickMultipleImagesFromGallery(request: Contracts.PickMultipleImagesFromGalleryRequest)
     abstract fun debug()
     abstract fun setMockLocation(request: Contracts.SetMockLocationRequest)
-    abstract fun markPatrolAppServiceReady(request: Contracts.MarkAppServiceReadyRequest)
+    abstract fun markPatrolAppServiceReady()
+    abstract fun isVirtualDevice(): Contracts.IsVirtualDeviceResponse
+    abstract fun getOsVersion(): Contracts.GetOsVersionResponse
 
     val router = routes(
       "initialize" bind POST to {
@@ -232,6 +237,21 @@ abstract class NativeAutomatorServer {
         setLocationAccuracy(body)
         Response(OK)
       },
+      "takeCameraPhoto" bind POST to {
+        val body = json.fromJson(it.bodyString(), Contracts.TakeCameraPhotoRequest::class.java)
+        takeCameraPhoto(body)
+        Response(OK)
+      },
+      "pickImageFromGallery" bind POST to {
+        val body = json.fromJson(it.bodyString(), Contracts.PickImageFromGalleryRequest::class.java)
+        pickImageFromGallery(body)
+        Response(OK)
+      },
+      "pickMultipleImagesFromGallery" bind POST to {
+        val body = json.fromJson(it.bodyString(), Contracts.PickMultipleImagesFromGalleryRequest::class.java)
+        pickMultipleImagesFromGallery(body)
+        Response(OK)
+      },
       "debug" bind POST to {
         debug()
         Response(OK)
@@ -242,9 +262,16 @@ abstract class NativeAutomatorServer {
         Response(OK)
       },
       "markPatrolAppServiceReady" bind POST to {
-        val body = json.fromJson(it.bodyString(), Contracts.MarkAppServiceReadyRequest::class.java)
-        markPatrolAppServiceReady(body)
+        markPatrolAppServiceReady()
         Response(OK)
+      },
+      "isVirtualDevice" bind POST to {
+        val response = isVirtualDevice()
+        Response(OK).body(json.toJson(response))
+      },
+      "getOsVersion" bind POST to {
+        val response = getOsVersion()
+        Response(OK).body(json.toJson(response))
       }
     )
 

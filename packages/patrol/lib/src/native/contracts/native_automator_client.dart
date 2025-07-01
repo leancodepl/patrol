@@ -334,6 +334,33 @@ class NativeAutomatorClient {
     );
   }
 
+  Future<void> takeCameraPhoto(
+    TakeCameraPhotoRequest request,
+  ) {
+    return _sendRequest(
+      'takeCameraPhoto',
+      request.toJson(),
+    );
+  }
+
+  Future<void> pickImageFromGallery(
+    PickImageFromGalleryRequest request,
+  ) {
+    return _sendRequest(
+      'pickImageFromGallery',
+      request.toJson(),
+    );
+  }
+
+  Future<void> pickMultipleImagesFromGallery(
+    PickMultipleImagesFromGalleryRequest request,
+  ) {
+    return _sendRequest(
+      'pickMultipleImagesFromGallery',
+      request.toJson(),
+    );
+  }
+
   Future<void> debug() {
     return _sendRequest(
       'debug',
@@ -349,13 +376,24 @@ class NativeAutomatorClient {
     );
   }
 
-  Future<void> markPatrolAppServiceReady(
-    MarkAppServiceReadyRequest request,
-  ) {
+  Future<void> markPatrolAppServiceReady() {
     return _sendRequest(
       'markPatrolAppServiceReady',
-      request.toJson(),
     );
+  }
+
+  Future<IsVirtualDeviceResponse> isVirtualDevice() async {
+    final json = await _sendRequest(
+      'isVirtualDevice',
+    );
+    return IsVirtualDeviceResponse.fromJson(json);
+  }
+
+  Future<GetOsVersionResponse> getOsVersion() async {
+    final json = await _sendRequest(
+      'getOsVersion',
+    );
+    return GetOsVersionResponse.fromJson(json);
   }
 
   Future<Map<String, dynamic>> _sendRequest(

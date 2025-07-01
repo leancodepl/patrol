@@ -3,11 +3,12 @@
   import Foundation
 
   final class AutomatorServer: NativeAutomatorServer {
+
     private let automator: Automator
 
-    private let onAppReady: (Bool, Int) -> Void
+    private let onAppReady: (Bool) -> Void
 
-    init(automator: Automator, onAppReady: @escaping (Bool, Int) -> Void) {
+    init(automator: Automator, onAppReady: @escaping (Bool) -> Void) {
       self.automator = automator
       self.onAppReady = onAppReady
     }
@@ -398,6 +399,121 @@
       }
     }
 
+    // MARK: Camera
+
+    func takeCameraPhoto(request: TakeCameraPhotoRequest) throws {
+      if request.isNative2 {
+        try automator.tap(
+          on: request.iosShutterButtonSelector ?? IOSSelector(identifier: "PhotoCapture"),
+          inApp: request.appId,
+          withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
+        )
+        try automator.tap(
+          on: request.iosDoneButtonSelector ?? IOSSelector(identifier: "Done"),
+          inApp: request.appId,
+          withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
+        )
+      } else {
+        try automator.tap(
+          on: request.shutterButtonSelector ?? Selector(resourceId: "PhotoCapture"),
+          inApp: request.appId,
+          withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
+        )
+        try automator.tap(
+          on: request.doneButtonSelector ?? Selector(resourceId: "Done"),
+          inApp: request.appId,
+          withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
+        )
+      }
+    }
+
+    func pickImageFromGallery(request: PickImageFromGalleryRequest) throws {
+      let isSimulator = try isVirtualDevice().isVirtualDevice
+      if request.isNative2 {
+        try automator.tap(
+          on: request.iosImageSelector
+            ?? IOSSelector(
+              // Images start from index 1 on real device and index 2 on simulator
+              instance: isSimulator ? (request.imageIndex ?? 0) + 2 : (request.imageIndex ?? 0) + 1,
+              elementType: IOSElementType.image
+            ),
+          inApp: request.appId,
+          withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
+        )
+      } else {
+        if request.imageSelector != nil {
+          try automator.tap(
+            on: request.imageSelector!,
+            inApp: request.appId,
+            withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
+          )
+        } else {
+          try automator.tap(
+            on: request.iosImageSelector
+              ?? IOSSelector(
+                // Images start from index 1 on real device and index 2 on simulator
+                instance: isSimulator
+                  ? (request.imageIndex ?? 0) + 2 : (request.imageIndex ?? 0) + 1,
+                elementType: IOSElementType.image
+              ),
+            inApp: request.appId,
+            withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
+          )
+        }
+      }
+    }
+
+    func pickMultipleImagesFromGallery(request: PickMultipleImagesFromGalleryRequest) throws {
+      return try runCatching {
+        let isSimulator = try isVirtualDevice().isVirtualDevice
+
+        // Select multiple images
+        for i in request.imageIndexes {
+          if request.isNative2 {
+            try automator.tap(
+              on: request.iosImageSelector
+                ?? IOSSelector(
+                  /// Images start from index 1 on real device and index 2 on simulator
+                  instance: isSimulator ? i + 2 : i + 1,
+                  elementType: IOSElementType.image
+                ),
+              inApp: request.appId,
+              withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
+            )
+          } else {
+            if let imageSelector = request.imageSelector {
+              try automator.tap(
+                on: imageSelector,
+                inApp: request.appId,
+                withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
+              )
+            } else {
+              try automator.tap(
+                on: request.iosImageSelector
+                  ?? IOSSelector(
+                    // Images start from index 1 on real device and index 2 on simulator
+                    instance: isSimulator ? i + 2 : i + 1,
+                    elementType: IOSElementType.image
+                  ),
+                inApp: request.appId,
+                withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
+              )
+            }
+          }
+        }
+
+        // Tap the "Add" button to confirm selection
+        try automator.tap(
+          on: IOSSelector(
+            elementType: IOSElementType.button,
+            label: "Add"
+          ),
+          inApp: request.appId,
+          withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
+        )
+      }
+    }
+
     func debug() throws {
       return try runCatching {
         try automator.debug()
@@ -417,9 +533,25 @@
       }
     }
 
-    func markPatrolAppServiceReady(request: MarkAppServiceReadyRequest) throws {
-      onAppReady(true, request.port!)
+    func markPatrolAppServiceReady() throws {
+      onAppReady(true)
     }
-  }
 
+    func isVirtualDevice() throws -> IsVirtualDeviceResponse {
+      return try runCatching {
+        let isSimulator = automator.isVirtualDevice()
+        return IsVirtualDeviceResponse(isVirtualDevice: isSimulator)
+      }
+    }
+
+    func getOsVersion() throws -> GetOsVersionResponse {
+      return try runCatching {
+        let version = automator.getOsVersion()
+        let components = version.split(separator: ".")
+        let majorVersionInt = components.first.flatMap { Int($0) }
+        return GetOsVersionResponse(osVersion: majorVersionInt!)
+      }
+    }
+
+  }
 #endif

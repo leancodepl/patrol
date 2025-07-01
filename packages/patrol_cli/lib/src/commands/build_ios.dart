@@ -41,6 +41,7 @@ class BuildIOSCommand extends PatrolCommand {
     usesPortOptions();
     usesTagsOption();
     usesExcludeTagsOption();
+    usesCheckCompatibilityOption();
 
     usesIOSOptions();
     argParser.addFlag(
@@ -81,10 +82,12 @@ class BuildIOSCommand extends PatrolCommand {
     final testFileSuffix = config.testFileSuffix;
 
     // Check compatibility between CLI and package versions
-    final patrolVersion = _pubspecReader.getPatrolVersion();
-    await _compatibilityChecker.checkVersionsCompatibilityForBuild(
-      patrolVersion: patrolVersion,
-    );
+    if (boolArg('check-compatibility')) {
+      final patrolVersion = _pubspecReader.getPatrolVersion();
+      await _compatibilityChecker.checkVersionsCompatibilityForBuild(
+        patrolVersion: patrolVersion,
+      );
+    }
 
     final target = stringsArg('target');
     final targets = target.isNotEmpty
@@ -166,12 +169,13 @@ class BuildIOSCommand extends PatrolCommand {
       configuration: flutterOpts.buildMode.createConfiguration(flavor),
       simulator: boolArg('simulator'),
       osVersion: stringArg('ios') ?? 'latest',
+      appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
       clearPermissions: boolArg('clear-permissions'),
     );
 
     try {
-      await _iosTestBackend.build(iosOpts, isPatrolBuildCommand: true);
+      await _iosTestBackend.build(iosOpts);
       _printBinaryPaths(
         simulator: iosOpts.simulator,
         buildMode: flutterOpts.buildMode.xcodeName,

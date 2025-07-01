@@ -78,6 +78,11 @@
       "id": "articles",
       "title": "Articles & Resources",
       "href": "/articles"
+    },
+    {
+      "id": "contact",
+      "title": "Contact us",
+      "href": "/contact"
     }
   ],
   "sidebar": [
@@ -177,8 +182,16 @@
             {
               "title": "Feature parity",
               "href": "/documentation/native/feature-parity"
+            },
+            {
+              "title": "Native2",
+              "href": "/documentation/native/native2"
             }
           ]
+        },
+        {
+          "title": "Patrol tags",
+          "href": "/documentation/patrol-tags"
         },
         {
           "group": "Patrol and CI",
@@ -191,10 +204,6 @@
             {
               "title": "Platforms",
               "href": "/documentation/ci/platforms"
-            },
-            {
-              "title": "Firebase Test Lab",
-              "href": "/documentation/ci/firebase-test-lab"
             }
           ]
         },
@@ -213,6 +222,10 @@
             {
               "title": "LambdaTest",
               "href": "/documentation/integrations/lambdatest"
+            },
+            {
+              "title": "Firebase Test Lab",
+              "href": "/documentation/integrations/firebase-test-lab"
             }
           ]
         },
@@ -220,6 +233,10 @@
           "group": "Other",
           "tab": "documentation",
           "pages": [
+            {
+              "title": "Patrol DevTools Extension",
+              "href": "/documentation/patrol-devtools-extension"
+            },
             {
               "title": "Effective Patrol",
               "href": "/documentation/effective-patrol"

@@ -667,11 +667,94 @@ class Contracts {
     val packageName: String
   )
 
-  data class MarkAppServiceReadyRequest (
-    val port: Long? = null
+  data class IsVirtualDeviceResponse (
+    val isVirtualDevice: Boolean
+  )
+
+  data class GetOsVersionResponse (
+    val osVersion: Long
+  )
+
+  data class TakeCameraPhotoRequest (
+    val shutterButtonSelector: Selector? = null,
+    val androidShutterButtonSelector: AndroidSelector? = null,
+    val iosShutterButtonSelector: IOSSelector? = null,
+    val doneButtonSelector: Selector? = null,
+    val androidDoneButtonSelector: AndroidSelector? = null,
+    val timeoutMillis: Long? = null,
+    val iosDoneButtonSelector: IOSSelector? = null,
+    val appId: String,
+    val isNative2: Boolean
   ){
-    fun hasPort(): Boolean {
-      return port != null
+    fun hasShutterButtonSelector(): Boolean {
+      return shutterButtonSelector != null
+    }
+    fun hasAndroidShutterButtonSelector(): Boolean {
+      return androidShutterButtonSelector != null
+    }
+    fun hasIosShutterButtonSelector(): Boolean {
+      return iosShutterButtonSelector != null
+    }
+    fun hasDoneButtonSelector(): Boolean {
+      return doneButtonSelector != null
+    }
+    fun hasAndroidDoneButtonSelector(): Boolean {
+      return androidDoneButtonSelector != null
+    }
+    fun hasTimeoutMillis(): Boolean {
+      return timeoutMillis != null
+    }
+    fun hasIosDoneButtonSelector(): Boolean {
+      return iosDoneButtonSelector != null
+    }
+  }
+
+  data class PickImageFromGalleryRequest (
+    val imageSelector: Selector? = null,
+    val androidImageSelector: AndroidSelector? = null,
+    val iosImageSelector: IOSSelector? = null,
+    val imageIndex: Long? = null,
+    val timeoutMillis: Long? = null,
+    val appId: String,
+    val isNative2: Boolean
+  ){
+    fun hasImageSelector(): Boolean {
+      return imageSelector != null
+    }
+    fun hasAndroidImageSelector(): Boolean {
+      return androidImageSelector != null
+    }
+    fun hasIosImageSelector(): Boolean {
+      return iosImageSelector != null
+    }
+    fun hasImageIndex(): Boolean {
+      return imageIndex != null
+    }
+    fun hasTimeoutMillis(): Boolean {
+      return timeoutMillis != null
+    }
+  }
+
+  data class PickMultipleImagesFromGalleryRequest (
+    val imageSelector: Selector? = null,
+    val androidImageSelector: AndroidSelector? = null,
+    val iosImageSelector: IOSSelector? = null,
+    val imageIndexes: List<Long>,
+    val timeoutMillis: Long? = null,
+    val appId: String,
+    val isNative2: Boolean
+  ){
+    fun hasImageSelector(): Boolean {
+      return imageSelector != null
+    }
+    fun hasAndroidImageSelector(): Boolean {
+      return androidImageSelector != null
+    }
+    fun hasIosImageSelector(): Boolean {
+      return iosImageSelector != null
+    }
+    fun hasTimeoutMillis(): Boolean {
+      return timeoutMillis != null
     }
   }
 
