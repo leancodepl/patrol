@@ -32,3 +32,6 @@
 /* Location precision */
 "precise_off" = "Precise: Off";
 "precise_on" = "Precise: On"; 
+
+/* Gallery */
+"add" = "Add";

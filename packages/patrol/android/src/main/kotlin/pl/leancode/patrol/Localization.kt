@@ -21,7 +21,7 @@ object Localization {
 
     /**
      * Gets localized string based on device locale
-     * Supports English (en) and Polish (pl) locales
+     * Supports English (en), German (de), French (fr) and Polish (pl) locales
      */
     fun getLocalizedString(context: Context, resourceName: String): String {
         val locale = getDeviceLocale(context)
