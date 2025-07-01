@@ -2,12 +2,12 @@
 title: Take photo using camera
 ---
 
-We have added a new feature to take a photo using the Android and iOS camera with Patrol. Due to many differences between devices method will not work on 100% devices but should work on most of them.
-If device that you are testing on is not working with this command, you can provide your Selectors. To get Native Selectors you can use [Patrol DevTools Extension](https://patrol.leancode.co/documentation/patrol-devtools-extension).
+We have added a new feature to take a photo using the Android and iOS camera with Patrol. Due to many differences between devices, this method will not work on 100% of devices but should work on most of them.
+If the device that you are testing on is not working with this command, you can provide your own selectors. To get native selectors, you can use [Patrol DevTools Extension](https://patrol.leancode.co/documentation/patrol-devtools-extension).
 
 
 ## How it works
-This method do two actions:
+This method does two actions:
 1. Tap on shutter button
 2. Tap on confirm button
 
@@ -20,12 +20,12 @@ The table below shows the native selectors that the `takeCameraPhoto()` method u
 | Simulator and Physical iOS | `PhotoCapture` | `Done` |
 
 <Info>
-Method should work without custom selectors on iOS devices. For Android it should work with most of emulators and Pixels Physical devices.
+This method should work without custom selectors on iOS devices. For Android, it should work with most emulators and Pixel physical devices.
 </Info>
 
 ## Examples
 
-When you using supported devices you can use this method without any additional arguments:
+When you are using supported devices, you can use this method without any additional arguments:
 
 ```dart
 import 'package:example/main.dart';
@@ -44,7 +44,7 @@ void main() {
 }
 ```
 
-When you using not supported devices you can provide your own selectors:
+When you are using unsupported devices, you can provide your own selectors:
 
 ```dart
 import 'package:example/main.dart';
