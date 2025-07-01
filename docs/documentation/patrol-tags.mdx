@@ -3,6 +3,7 @@ title: Patrol tags
 ---
 
 Patrol tags allow you to organize and selectively run your patrol tests. You can assign tags to individual tests and then use those tags to filter which tests to run or exclude.
+By design, patrol tags should work the same as flutter test tags.
 
 ## Defining tags in tests
 
@@ -94,6 +95,9 @@ patrol test --tags='(login && smoke)'
 # Run tests with 'payment' OR 'navigation' tag, but NOT 'regression'
 patrol test --tags='(payment || navigation) && !regression'
 
+# Combine --tags with --exclude-tags
+patrol test --tags='smoke||regression' --exclude-tags='slow'
+
 # Complex expression: (login OR payment) AND (smoke OR regression)
 patrol test --tags='((login || payment) && (smoke || regression))'
 ```
@@ -101,13 +105,6 @@ patrol test --tags='((login || payment) && (smoke || regression))'
 ## Combining with other options
 
 You can combine tag filtering with other Patrol CLI options:
-
-```bash
-# Run smoke tests on a specific device
-patrol test --tags smoke --device "iPhone 14"
-
-# Run regression tests with debug build
-patrol test --tags regression --debug
 
 # Run specific test file with tag filtering
 patrol test --target integration_test/login_test.dart --tags smoke
