@@ -92,3 +92,4 @@ If you plan to use the local version of Patrol to test/modify the Patrol DevTool
 
 1. Go to `packages/patrol/android/src/main/res/values-<language>/` folder.
 2. Add a new `strings.xml` with language folder name or add strings to the existing file.
+3. If you added new string, you need to add it to proper function in Automator.kt, for example look on toggleAirplaneMode() function.
