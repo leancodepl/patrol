@@ -77,3 +77,18 @@ Note: On iOS, during development you should remove `#if PATROL_ENABLED` from `Au
 ## Working with patrol_devtools_extension
 
 If you plan to use the local version of Patrol to test/modify the Patrol DevTools extension, you need to deploy it first. To do this, navigate to the `patrol_devtools_extension` folder and run the `./publish_to_patrol_extension` script.
+
+## Adding a new language or new strings to existing language
+
+### iOS
+
+1. Go to `packages/patrol/darwin/Resources/` folder.
+2. Add a new language folder with the name of the language or use existing one.
+3. Add a new `Localizable.strings` or add strings to the existing file.
+4. Add the new language to the `getLocalizedStrings` function in `IOSAutomator.swift` file.
+5. If you added new strings, you need to find all functions where these strings are used and add them to the function. for example "labels" in allowPermissionOnce() in IOSAutomator.swift file.
+
+### Android
+
+1. Go to `packages/patrol/android/src/main/res/values-<language>/` folder.
+2. Add a new `strings.xml` with language folder name or add strings to the existing file.
