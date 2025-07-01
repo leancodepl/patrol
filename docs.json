@@ -142,10 +142,6 @@
           "href": "/documentation/physical-ios-devices-setup"
         },
         {
-          "title": "Patrol tags",
-          "href": "/documentation/patrol-tags"
-        },
-        {
           "group": "Finders",
           "tab": "documentation",
           "pages": [
@@ -192,6 +188,10 @@
               "href": "/documentation/native/native2"
             }
           ]
+        },
+        {
+          "title": "Patrol tags",
+          "href": "/documentation/patrol-tags"
         },
         {
           "group": "Patrol and CI",
