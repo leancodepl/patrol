@@ -6,6 +6,7 @@ class Keys {
   const Keys();
 
   static const topText = Key('topText');
+  static const refreshText = Key('refreshText');
   static const bottomText = Key('bottomText');
   static const backButton = Key('backButton');
 
