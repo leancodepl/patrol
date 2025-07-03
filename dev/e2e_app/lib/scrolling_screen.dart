@@ -9,14 +9,14 @@ class ScrollingScreen extends StatefulWidget {
 }
 
 class _ScrollingScreenState extends State<ScrollingScreen> {
-  int _refreshCount = 0;
+  bool _showRefreshText = false;
 
   Future<void> _onRefresh() async {
     // Simulate some async work
     await Future<void>.delayed(const Duration(milliseconds: 500));
 
     setState(() {
-      _refreshCount++;
+      _showRefreshText = true;
     });
   }
 
@@ -25,7 +25,7 @@ class _ScrollingScreenState extends State<ScrollingScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: BackButton(key: K.backButton),
-        title: const Text('Pull to refresh'),
+        title: const Text('Scrolling'),
       ),
       body: RefreshIndicator(
         onRefresh: _onRefresh,
@@ -34,25 +34,17 @@ class _ScrollingScreenState extends State<ScrollingScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              ListTile(
-                key: K.tile1,
-                title: const Text('Item 1'),
-                tileColor: Colors.blue[100],
+              const Text(
+                'Some text at the top',
+                key: K.topText,
+                textAlign: TextAlign.center,
               ),
-              const Divider(height: 1),
-              ListTile(
-                key: K.tile2,
-                title: const Text('Item 2'),
-                tileColor: Colors.blue[100],
-              ),
-              if (_refreshCount >= 2) ...[
-                const Divider(height: 1),
-                ListTile(
-                  key: const Key('tile3'),
-                  title: const Text('Awaited item 3'),
-                  tileColor: Colors.green[100],
+              if (_showRefreshText)
+                const Text(
+                  key: K.refreshText,
+                  'Some text that appeared after refresh',
+                  textAlign: TextAlign.center,
                 ),
-              ],
               SizedBox(height: MediaQuery.of(context).size.height),
               const Text('Some text in the middle'),
               SizedBox(height: MediaQuery.of(context).size.height),
