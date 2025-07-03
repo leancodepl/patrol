@@ -5,7 +5,7 @@ apps:
 # Useful during debugging, when you want to run tests on all supported versions
 all_devices:
   device:
-    - model: Pixel7
+    - model: Pixel2
       version: 33
       gpu: auto
     - model: Pixel7
@@ -71,6 +71,10 @@ ci:
 
 ci_webview:
   include: [apps, ci_webview_devices, config, config_ci]
+
+# Multi-API testing configuration
+multi_api:
+  include: [apps, config, config_ci]
 
 debug:
   include: [apps, all_devices, config]
