@@ -1,0 +1,44 @@
+---
+title: Pull to refresh
+---
+
+Patrol provides a function for pull-to-refresh gesture (`pullToRefresh`), allowing you to test refresh functionality in your Flutter apps.
+
+## Basic usage
+
+The `pullToRefresh` method is available through the native automator:
+
+```dart
+await $.native.pullToRefresh();
+```
+
+By default, this performs a pull-to-refresh gesture from the center of the screen (0.5, 0.5) to the bottom center (0.5, 0.9).
+
+## Simulating real scenarios
+
+Sometimes you need to pull to refresh multiple times until a specific element appears. Here's how you can do it:
+
+```dart
+const maxAttempts = 5;
+for (var attempt = 0; attempt < maxAttempts; attempt++) {
+  // Perform pull to refresh
+  await $.native.pullToRefresh();
+
+  // Wait for the refresh to complete
+  await $.pumpAndSettle();
+
+  // Check if the target element is visible
+  if ($(K.awaitedElement).exists) {
+    break;
+  }
+}
+// Verify if the element is visible
+await $(K.awaitedElement).waitUntilVisible();
+```
+
+## Tips
+
+- Increase the `steps` for slower, more reliable gestures
+- Adjust coordinates based on your app's layout (e.g. center of the screen is not part of scrollable area or even horizontal pull-to-refresh)
+- Since this function is native, it does not benefit from default `pumpAndSettle` being performed automatically.
+- Consider using `pullToRefresh` in a loop to wait for a specific element to appear

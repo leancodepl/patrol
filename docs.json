@@ -313,6 +313,10 @@
         {
           "title": "Disabling/enabling Bluetooth",
           "href": "/feature-guide/bluetooth"
+        },
+        {
+          "title": "Pull to refresh",
+          "href": "/feature-guide/pull-to-refresh"
         }
       ]
     }
