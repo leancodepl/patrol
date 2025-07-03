@@ -735,18 +735,10 @@ class NativeAutomator2 {
     assert(to.dx >= 0 && to.dx <= 1);
     assert(to.dy >= 0 && to.dy <= 1);
 
-    await _wrapRequest(
-      'swipe',
-      () => _client.swipe(
-        SwipeRequest(
-          startX: from.dx,
-          startY: from.dy,
-          endX: to.dx,
-          endY: to.dy,
-          steps: steps,
-          appId: appId ?? resolvedAppId,
-        ),
-      ),
+    return swipe(
+      from: Offset(from.dx, from.dy),
+      to: Offset(to.dx, to.dy),
+      steps: steps,
     );
   }
 
