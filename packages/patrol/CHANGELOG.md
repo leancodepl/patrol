@@ -7,6 +7,7 @@
 - Add `getOsVersion` method (#2660)
 - Allow passing null to `$.native.getNativeViews()` (#2660)
 - Add `$.native.swipeBack()` method (#2608)
+- Add `$.native.pullToRefresh()` method (#)
 
 ## 3.16.0
 

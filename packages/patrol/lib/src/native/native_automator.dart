@@ -835,6 +835,47 @@ class NativeAutomator {
     return swipe(from: Offset(0, dy), to: Offset(1, dy), appId: appId);
   }
 
+  /// Simulates pull-to-refresh gesture.
+  ///
+  /// It swipes from [from] to [to] with the specified number of [steps].
+  ///
+  /// [from] and [to] must be in the inclusive 0-1 range.
+  ///
+  /// [steps] controls the speed and smoothness of the swipe. More steps equals
+  /// slower gesture.
+  ///
+  /// The default values simulate a typical pull-to-refresh gesture:
+  /// * [from]: Center of the screen (0.5, 0.5)
+  /// * [to]: Bottom center of the screen (0.5, 0.9)
+  /// * [steps]: 50
+  /// You can override these if scrollable content is not at the center of the
+  /// screen or if the direction of the gesture is different.
+  Future<void> pullToRefresh({
+    Offset from = const Offset(0.5, 0.5),
+    Offset to = const Offset(0.5, 0.9),
+    int steps = 50,
+    String? appId,
+  }) async {
+    assert(from.dx >= 0 && from.dx <= 1);
+    assert(from.dy >= 0 && from.dy <= 1);
+    assert(to.dx >= 0 && to.dx <= 1);
+    assert(to.dy >= 0 && to.dy <= 1);
+
+    await _wrapRequest(
+      'swipe',
+      () => _client.swipe(
+        SwipeRequest(
+          startX: from.dx,
+          startY: from.dy,
+          endX: to.dx,
+          endY: to.dy,
+          steps: steps,
+          appId: appId ?? resolvedAppId,
+        ),
+      ),
+    );
+  }
+
   /// Waits until the native view specified by [selector] becomes visible.
   /// It waits for the view to become visible for [timeout] duration. If
   /// [timeout] is not specified, it utilizes the
