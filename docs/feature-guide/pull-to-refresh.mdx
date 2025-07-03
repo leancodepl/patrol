@@ -38,7 +38,7 @@ await $(K.awaitedElement).waitUntilVisible();
 
 ## Tips
 
-- Increase the `steps` value for slower gesture
+- Increase the `steps` value for a slower gesture
 - Adjust coordinates based on your app's layout (e.g., when the center of the screen is not part of the scrollable area, or when testing horizontal lists that implement pull-to-refresh)
-- Since this function is native, it does not benefit from default `pumpAndSettle` being performed automatically.
+- Since this function is native, it does not benefit from the default `pumpAndSettle` being performed automatically.
 - Consider using `pullToRefresh` in a loop to wait for a specific element to appear
