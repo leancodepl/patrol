@@ -1,5 +1,7 @@
 import 'dart:io' as io;
 
+import 'package:e2e_app/keys.dart';
+
 import '../common.dart';
 
 void main() {
@@ -26,7 +28,7 @@ void main() {
         await $.native.pressBack();
       }
 
-      await $('Show in a few seconds').tap();
+      await $(K.showNotificationLaterButton).tap();
       await $.native.pressHome();
       await $.native.openNotifications();
 
@@ -71,7 +73,7 @@ void main() {
         }
       }
 
-      await $('Show in a few seconds').tap();
+      await $(K.showNotificationLaterButton).tap();
       await $.native2.pressHome();
       await $.native2.openNotifications();
 
