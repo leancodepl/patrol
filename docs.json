@@ -315,6 +315,10 @@
           "href": "/feature-guide/bluetooth"
         },
         {
+          "title": "Granting camera permission",
+          "href": "/feature-guide/granting-camera-permission"
+        },
+        {
           "title": "Pull to refresh",
           "href": "/feature-guide/pull-to-refresh"
         }
