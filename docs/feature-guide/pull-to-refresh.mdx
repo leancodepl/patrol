@@ -36,9 +36,18 @@ for (var attempt = 0; attempt < maxAttempts; attempt++) {
 await $(K.awaitedElement).waitUntilVisible();
 ```
 
+![Refresh until visible](/assets/pull_to_refresh.gif)
+
 ## Tips
 
 - Increase the `steps` value for a slower gesture
-- Adjust coordinates based on your app's layout (e.g., when the center of the screen is not part of the scrollable area, or when testing horizontal lists that implement pull-to-refresh)
 - Since this function is native, it does not benefit from the default `pumpAndSettle` being performed automatically.
 - Consider using `pullToRefresh` in a loop to wait for a specific element to appear
+- Adjust coordinates based on your app's layout (e.g., when the center of the screen is not part of the scrollable area, or when testing horizontal lists that implement pull-to-refresh)
+```dart
+// Pull to refresh horizontally (swipe left)
+await $.native.pullToRefresh(
+  start: Offset(0.5, 0.5),
+  end: Offset(0.1, 0.5),
+);
+```
