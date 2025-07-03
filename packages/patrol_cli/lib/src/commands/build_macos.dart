@@ -44,6 +44,14 @@ class BuildMacOSCommand extends PatrolCommand {
     usesCheckCompatibilityOption();
 
     usesMacOSOptions();
+    argParser.addOption(
+      'build-number',
+      help: 'A build number to be used as --build-number in Flutter build.',
+    );
+    argParser.addOption(
+      'build-name',
+      help: 'A build name to be used as --build-name in Flutter build.',
+    );
   }
 
   final TestFinder _testFinder;
@@ -120,6 +128,9 @@ class BuildMacOSCommand extends PatrolCommand {
 
     final displayLabel = boolArg('label');
 
+    final buildNumber = stringArg('build-number');
+    final buildName = stringArg('build-name');
+
     final customDartDefines = {
       ..._dartDefinesReader.fromFile(),
       ..._dartDefinesReader.fromCli(args: stringsArg('dart-define')),
@@ -157,6 +168,8 @@ class BuildMacOSCommand extends PatrolCommand {
       buildMode: buildMode,
       dartDefines: dartDefines,
       dartDefineFromFilePaths: dartDefineFromFilePaths,
+      buildNumber: buildNumber,
+      buildName: buildName,
     );
 
     final macosOpts = MacOSAppOptions(
