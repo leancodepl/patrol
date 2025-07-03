@@ -854,7 +854,6 @@ class NativeAutomator {
     Offset from = const Offset(0.5, 0.5),
     Offset to = const Offset(0.5, 0.9),
     int steps = 50,
-    String? appId,
   }) async {
     assert(from.dx >= 0 && from.dx <= 1);
     assert(from.dy >= 0 && from.dy <= 1);
