@@ -313,6 +313,10 @@
         {
           "title": "Disabling/enabling Bluetooth",
           "href": "/feature-guide/bluetooth"
+        },
+        {
+          "title": "Pick image from gallery",
+          "href": "/feature-guide/pick-images-from-gallery"
         }
       ]
     }
