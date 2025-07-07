@@ -1,4 +1,4 @@
-## Unreleased
+## 3.17.0
 
 - Add `takeCameraPhoto` method. (#2660)
 - Add `pickImageFromGallery` method (#2660)
