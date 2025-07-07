@@ -319,6 +319,10 @@
           "href": "/feature-guide/granting-camera-permission"
         },
         {
+          "title": "Take a photo using camera",
+          "href": "/feature-guide/take-a-photo"
+        },
+        {
           "title": "Pull to refresh",
           "href": "/feature-guide/pull-to-refresh"
         }
