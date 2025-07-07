@@ -21,16 +21,21 @@ class DartDefinesReader {
       return {};
     }
 
-    final lines = file
-        .readAsLinesSync()
-        .map((line) => line
-            .split('#')
-            .first
-            .trim()) // Remove any characters in a line that are after # symbol.
+    final configRaw = file.readAsStringSync();
+    final lines = configRaw
+        .split('\n')
+        .map((line) => line.trim())
         .where((line) => line.isNotEmpty)
+        .where((line) => !line.startsWith('#')) // Remove comment lines.
         .toList();
 
-    return _parse(lines);
+    final propertyMap = <String, String>{};
+    for (final line in lines) {
+      final property = _parseProperty(line);
+      propertyMap[property.key] = property.value;
+    }
+
+    return propertyMap;
   }
 
   Map<String, String> _parse(List<String> args) {
