@@ -325,11 +325,11 @@
         {
           "title": "Pick image from gallery",
           "href": "/feature-guide/pick-image-from-gallery"
-        }
+        },
         {
           "title": "Pull to refresh",
           "href": "/feature-guide/pull-to-refresh"
-        },
+        }
       ]
     }
   ]
