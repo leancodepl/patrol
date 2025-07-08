@@ -23,7 +23,7 @@ The table below shows the default native selectors that the `pickImageFromGaller
 | Platform                   | Image Selector (default)                                      |
 | -------------------------- | ------------------------------------------------------------ |
 | Physical/Emulator Android  | `com.google.android.documentsui:id/icon_thumb` (API < 34) or `com.google.android.providers.media.module:id/icon_thumbnail` (API 34+) |
-| Simulator and Physical iOS | `IOSElementType.image` (instance: 1+)                        |
+| Simulator and Physical iOS | `IOSElementType.image` (we already add +2 on simulator and +1 on physical devices to the index)                        |
 
 <Info>
   This method should work without custom selectors on iOS devices. For Android, it should work with most emulators and Pixel physical devices.
