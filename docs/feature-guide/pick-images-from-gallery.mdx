@@ -41,7 +41,7 @@ void main() {
     'Pick an image from gallery on Android or iOS',
     ($) async {
       await $.pumpWidgetAndSettle(const MyApp());
-      await $.tap(#addPhotoButton); // Opens the gallery picker in your app
+      await $.tap(#addPhotoFromGalleryButton); // Opens the gallery picker in your app
       await $.native2.grantPermissionWhenInUse(); // Some devices require permission to be granted before picking an image
       await $.native2.pickImageFromGallery(index: 0); // Picks the first image from the gallery
     },
