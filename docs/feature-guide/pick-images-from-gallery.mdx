@@ -63,6 +63,7 @@ void main() {
       await $.tap(#addPhotoFromGalleryButton); // Opens the gallery picker in your app
       await $.native2.grantPermissionWhenInUse(); // Some devices require permission to be granted before picking an image
       await $.native2.pickImageFromGallery(
+        index: 1,
         imageSelector: NativeSelector(
           android: AndroidSelector(
             resourceName: 'com.oplus.gallery:id/image',
@@ -131,6 +132,7 @@ void main() {
       await $.tap(#addMultiplePhotosFromGalleryButton); // Opens the gallery picker in your app
       await $.native2.grantPermissionWhenInUse(); // Some devices require permission to be granted before picking an image
       await $.native2.pickMultipleImagesFromGallery(
+        imageIndexes: [0, 1],
         imageSelector: NativeSelector(
           android: AndroidSelector(
             resourceName: 'com.oplus.gallery:id/image',
