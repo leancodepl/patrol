@@ -16,8 +16,8 @@ images with `pickMultipleImagesFromGallery` method from the native automator.
 
 This method performs the following actions:
 
-1. Opens the gallery.
-2. Selects an image (by default, the first image or the one at the provided index).
+1. Selects an image (by default, the first image or the one at the provided index).
+2. Confirm the selection if needed. (some android devices require this step)
 
 You can provide a custom selector for the image using the `imageSelector` parameter. If no custom selector is provided, default selectors will be used. Alternatively, you can specify an `index` to select the nth image.
 
@@ -83,9 +83,8 @@ void main() {
 
 This method performs the following actions:
 
-1. Opens the gallery.
-2. Selects multiple images (user needs to specify indexes of images to select).
-3. Confirms the selection.
+1. Selects multiple images (user needs to specify indexes of images to select).
+2. Confirm the selection. 
 
 You can provide a custom selector for the image using the `imageSelector` parameter. If no custom selector is provided, default selectors will be used.
 
