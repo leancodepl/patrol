@@ -106,6 +106,32 @@ void main() {
 }
 ```
 
+When you are using unsupported devices, you can provide your own selectors:
+
+```dart
+import 'package:example/main.dart';
+import 'package:patrol/patrol.dart';
+
+void main() {
+  patrolTest(
+    'Pick multiple images from gallery with custom selectors',
+    ($) async {
+      await $.pumpWidgetAndSettle(const MyApp());
+      await $.tap(#addMultiplePhotosFromGalleryButton); // Opens the gallery picker in your app
+      await $.native2.grantPermissionWhenInUse(); // Some devices require permission to be granted before picking an image
+      await $.native2.pickMultipleImagesFromGallery(
+        imageSelector: NativeSelector(
+          android: AndroidSelector(
+            resourceName: 'com.oplus.gallery:id/image',
+          ),
+          ios: IOSSelector(label: 'Photo'),
+        ),
+      );
+    },
+  );
+}
+```
+
 The table below shows the default native selectors that the `pickMultipleImagesFromGallery()` method uses internally for each platform:
 
 | Platform                   | Selector (default)                                      |
