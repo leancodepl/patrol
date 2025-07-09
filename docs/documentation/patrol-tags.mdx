@@ -81,6 +81,7 @@ Patrol supports complex tag expressions using logical operators:
 - `&&` - AND operator (run tests with both tags)
 - `!` - NOT operator (exclude tests with this tag)
 
+<Warning>Note that tags must be valid Dart identifiers, although they may also contain hyphens.</Warning>
 For more information about tag rules, see: https://pub.dev/packages/test#tagging-tests
 
 ### Examples
@@ -106,6 +107,6 @@ patrol test --tags='((login || payment) && (smoke || regression))'
 
 You can combine tag filtering with other Patrol CLI options:
 
-# Run specific test file with tag filtering
+```
 patrol test --target integration_test/login_test.dart --tags smoke
 ```
