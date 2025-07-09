@@ -1,26 +1,29 @@
 ---
-title: Pick image from gallery
+title: Pick images from gallery
 ---
 
-Patrol provides functionality to pick an image from the Android and iOS gallery using the `pickImageFromGallery` method from the native automator.
+Patrol provides functionality to pick an image from the Android and iOS gallery using the `pickImageFromGallery` or pick multiple
+images with `pickMultipleImagesFromGallery` method from the native automator.
 
 <Info>
-  Due to differences between devices and gallery apps, this method may not work on 100% of devices, but it should work on most. If the device you are testing on is not working with the default selectors, you can provide your own selectors. To get native selectors, you can use the [Patrol DevTools Extension](https://patrol.leancode.co/documentation/patrol-devtools-extension).
+  Due to differences between devices and gallery apps, this method may not work on 100% of devices, but it should work on most. If the device you are testing on is not working with the default selectors, you can provide your own selectors.
+  To get native selectors, you can use the [Patrol DevTools Extension](https://patrol.leancode.co/documentation/patrol-devtools-extension).
 </Info>
 
 ## How it works
+
+### Pick an image from gallery
 
 This method performs the following actions:
 
 1. Opens the gallery.
 2. Selects an image (by default, the first image or the one at the provided index).
-3. Confirms the selection.
 
 You can provide a custom selector for the image using the `imageSelector` parameter. If no custom selector is provided, default selectors will be used. Alternatively, you can specify an `index` to select the nth image.
 
 The table below shows the default native selectors that the `pickImageFromGallery()` method uses internally for each platform:
 
-| Platform                   | Image Selector (default)                                      |
+| Platform                   |  Selector (default)                                      |
 | -------------------------- | ------------------------------------------------------------ |
 | Physical/Emulator Android  | `com.google.android.documentsui:id/icon_thumb` (API < 34) or `com.google.android.providers.media.module:id/icon_thumbnail` (API 34+) |
 | Simulator and Physical iOS | `IOSElementType.image` (we already add +2 on simulator and +1 on physical devices to the index)                        |
@@ -61,7 +64,7 @@ void main() {
     'Pick an image from gallery with custom selectors',
     ($) async {
       await $.pumpWidgetAndSettle(const MyApp());
-      await $.tap(#addPhotoButton); // Opens the gallery picker in your app
+      await $.tap(#addPhotoFromGalleryButton); // Opens the gallery picker in your app
       await $.native2.grantPermissionWhenInUse(); // Some devices require permission to be granted before picking an image
       await $.native2.pickImageFromGallery(
         imageSelector: NativeSelector(
@@ -76,6 +79,42 @@ void main() {
 }
 ```
 
+### Pick multiple images from gallery
+
+This method performs the following actions:
+
+1. Opens the gallery.
+2. Selects multiple images (user needs to specify indexes of images to select).
+3. Confirms the selection.
+
+You can provide a custom selector for the image using the `imageSelector` parameter. If no custom selector is provided, default selectors will be used.
+
+```dart
+import 'package:example/main.dart';
+import 'package:patrol/patrol.dart';
+
+void main() {
+  patrolTest(
+    'Pick multiple images from gallery',
+    ($) async {
+      await $.pumpWidgetAndSettle(const MyApp());
+      await $.tap(#addMultiplePhotosFromGalleryButton); // Opens the gallery picker in your app
+      await $.native2.grantPermissionWhenInUse(); // Some devices require permission to be granted before picking an image
+      await $.native2.pickMultipleImagesFromGallery(imageIndexes: [0, 1]); // Picks the first and second images from the gallery
+    },
+  );
+}
+```
+
+The table below shows the default native selectors that the `pickMultipleImagesFromGallery()` method uses internally for each platform:
+
+| Platform                   | Selector (default)                                      |
+| -------------------------- | ------------------------------------------------------------ |
+| Physical/Emulator Android images | `com.google.android.documentsui:id/icon_thumb` (API < 34) or `com.google.android.providers.media.module:id/icon_thumbnail` (API 34+) |
+| Simulator and Physical iOS images | `IOSElementType.image`  |
+| iOS Confirm button         | `IOSElementType.button` with label "Add" |
+| Android Confirm button     | `com.google.android.providers.media.module:id/button_add` (API 34+) or `com.google.android.documentsui:id/action_menu_select` (API < 34) |
+
 <Info>
-  You can also use `pickMultipleImagesFromGallery` to select more than one image. See the API reference for details.
-</Info> 
+  This method should work without custom selectors on iOS devices. For Android, it should work with most emulators and Pixel physical devices.
+</Info>
