@@ -2,9 +2,7 @@
 title: Pick images from gallery
 ---
 
-Patrol provides functionality to pick an image from the Android and iOS gallery using the `pickImageFromGallery` or pick multiple
-images with `pickMultipleImagesFromGallery` method from the native automator.
-
+Patrol provides functionality to pick one or many images from the Android and iOS gallery using the `pickImageFromGallery` or `pickMultipleImagesFromGallery` methods from the native automator.
 <Info>
   Due to differences between devices and gallery apps, this method may not work on 100% of devices, but it should work on most. If the device you are testing on is not working with the default selectors, you can provide your own selectors.
   To get native selectors, you can use the [Patrol DevTools Extension](https://patrol.leancode.co/documentation/patrol-devtools-extension).
@@ -15,9 +13,7 @@ images with `pickMultipleImagesFromGallery` method from the native automator.
 This method performs the following actions:
 
 1. Selects an image (by default, the first image or the one at the provided index).
-2. Confirm the selection if needed. (some android devices require this step)
-
-The table below shows the default native selectors that the `pickImageFromGallery()` method uses internally for each platform:
+2. Confirm the selection if needed (some android devices require this step).
 
 | Platform                   |  Selector (default)                                      |
 | -------------------------- | ------------------------------------------------------------ |
