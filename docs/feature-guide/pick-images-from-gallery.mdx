@@ -18,7 +18,7 @@ This method performs the following actions:
 | Platform                   |  Selector (default)                                      |
 | -------------------------- | ------------------------------------------------------------ |
 | Physical/Emulator Android  | `com.google.android.documentsui:id/icon_thumb` (API < 34) or `com.google.android.providers.media.module:id/icon_thumbnail` (API 34+) |
-| Simulator and Physical iOS | `IOSElementType.image` (we already add +2 on simulator and +1 on physical devices to the index)                        |
+| Simulator and Physical iOS | `IOSElementType.image` (we add +2 for simulators and +1 for physical devices to the index, as image finders start from index 1 or 2 depending on the device)                        |
 
 <Info>
   This method should work without custom selectors on iOS devices. For Android, it should work with most emulators and Pixel physical devices.
