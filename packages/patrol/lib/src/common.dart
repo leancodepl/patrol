@@ -160,7 +160,17 @@ void patrolTest(
             patrolBinding.workaroundDebugDefaultTargetPlatformOverride;
       }
 
-      if (waitDuration > Duration.zero) {
+      // In develop mode (hot restart enabled), wait indefinitely to allow user interaction
+      // and avoid the "Test Completed" screen, but only after the last test in the group
+
+      if (constants.hotRestartEnabled &&
+          global_state.isCurrentTestLastInGroup) {
+        await Future.doWhile(() async {
+          await widgetTester.pump();
+          // Wait indefinitely in develop mode after the last test
+          return true;
+        });
+      } else if (waitDuration > Duration.zero) {
         final stopwatch = Stopwatch()..start();
         await Future.doWhile(() async {
           await widgetTester.pump();
