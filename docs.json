@@ -323,6 +323,10 @@
           "href": "/feature-guide/take-a-photo"
         },
         {
+          "title": "Pick images from gallery",
+          "href": "/feature-guide/pick-images-from-gallery"
+        },
+        {
           "title": "Pull to refresh",
           "href": "/feature-guide/pull-to-refresh"
         }
