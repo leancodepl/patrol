@@ -1,16 +1,21 @@
 # patrol_devtools_extension
 
-A new Flutter project.
+A DevTools extension for Patrol - Flutter integration testing framework.
+
+## Local Development
+
+If you want to use this extension locally, you need to run the `publish_to_patrol_extension` script:
+
+```bash
+./publish_to_patrol_extension
+```
+
+This script will:
+
+- Build the extension
+- Copy it to the appropriate location in the main Patrol package
+- Set up the extension for local development with DevTools
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+This project is a DevTools extension for Patrol. For more information about Patrol and integration testing, visit the main Patrol documentation.

@@ -216,6 +216,14 @@ abstract class PatrolCommand extends Command<int> {
     );
   }
 
+  void usesCheckCompatibilityOption() {
+    argParser.addFlag(
+      'check-compatibility',
+      defaultsTo: true,
+      help: 'Verify if the dependencies are compatible between each other.',
+    );
+  }
+
   /// Gets the parsed command-line flag named [name] as a `bool`.
   ///
   /// If no flag named [name] was added to the `ArgParser`, an [ArgumentError]

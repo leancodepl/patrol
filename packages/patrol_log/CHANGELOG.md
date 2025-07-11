@@ -1,6 +1,9 @@
-## Unreleased
+## 0.4.0
 
 - Bump `custom_lint` to `0.7.0` and `leancode_lint` to `14.3.0`. (#2574)
+- Format the test duration to show it in minutes and hours instead of seconds. (#2599)
+- Fix gray text color in the terminal. (#2606)
+- Add support for reading logs on iOS devices in release. (#2569)
 
 ## 0.3.0
 

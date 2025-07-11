@@ -1,0 +1,55 @@
+---
+title: Pull to refresh
+---
+
+Patrol provides a function for pull-to-refresh gesture (`pullToRefresh`), allowing you to use refresh functionality in your tests.
+
+## Basic usage
+
+The `pullToRefresh` method is available through the native automator:
+
+```dart
+await $.native.pullToRefresh();
+```
+
+By default, this performs a pull-to-refresh gesture from the center of the screen (0.5, 0.5) to the bottom center (0.5, 0.9).
+
+## Simulating real scenarios
+
+Sometimes you need to pull to refresh multiple times until a specific element appears. Here's how you can do it:
+
+```dart
+const maxAttempts = 5;
+var attempt = 0;
+while (attempt < maxAttempts) {
+  // Perform pull to refresh
+  await $.native.pullToRefresh();
+
+  // Wait for the refresh to complete
+  await $.pumpAndSettle();
+
+  // Check if the target element exists
+  if ($(K.awaitedElement).exists) {
+    break;
+  }
+  
+  attempt++;
+}
+// Verify if the element is visible
+await $(K.awaitedElement).waitUntilVisible();
+```
+
+![Refresh until visible](/assets/pull_to_refresh.gif)
+
+## Tips
+
+- Increase the `steps` value for a slower gesture
+- Since this function is native, it does not benefit from the default `pumpAndSettle` being performed automatically.
+- Adjust coordinates based on your app's layout (e.g., when the center of the screen is not part of the scrollable area, or when testing horizontal lists that implement pull-to-refresh)
+```dart
+// Pull to refresh horizontally (swipe left)
+await $.native.pullToRefresh(
+  start: Offset(0.5, 0.5),
+  end: Offset(0.1, 0.5),
+);
+```

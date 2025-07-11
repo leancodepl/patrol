@@ -1,5 +1,6 @@
 import 'dart:io' as p show Platform;
 import 'dart:io' show ProcessSignal, stdin;
+
 import 'package:adb/adb.dart';
 import 'package:args/args.dart';
 import 'package:args/command_runner.dart';
@@ -177,6 +178,11 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         androidTestBackend: androidTestBackend,
         iosTestBackend: iosTestBackend,
         macosTestBackend: macosTestBackend,
+        compatibilityChecker: CompatibilityChecker(
+          projectRoot: rootDirectory,
+          processManager: _processManager,
+          logger: _logger,
+        ),
         analytics: _analytics,
         logger: _logger,
       ),
@@ -311,7 +317,14 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
   String? get usageFooter => '''
 Read documentation at https://patrol.leancode.pl
 Report bugs, request features at https://github.com/leancodepl/patrol/issues
-Ask questions, get support at https://github.com/leancodepl/patrol/discussions''';
+Ask questions, get support at https://github.com/leancodepl/patrol/discussions
+
+To deactivate Patrol CLI, run:
+  dart pub global deactivate patrol_cli
+
+To install a specific version of Patrol CLI, run:
+  dart pub global activate patrol_cli <version>
+  Example: dart pub global activate patrol_cli 3.5.0''';
 
   @override
   Future<int?> run(Iterable<String> args) async {
@@ -455,7 +468,9 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
       return false;
     }
 
-    if (commandName == 'update' || commandName == 'doctor') {
+    if (commandName == 'update' ||
+        commandName == 'doctor' ||
+        commandName == HandleCompletionRequestCommand.commandName) {
       return false;
     }
 

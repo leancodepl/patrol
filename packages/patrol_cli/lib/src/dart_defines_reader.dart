@@ -21,9 +21,21 @@ class DartDefinesReader {
       return {};
     }
 
-    final lines = file.readAsLinesSync()
-      ..removeWhere((line) => line.trim().isEmpty);
-    return _parse(lines);
+    final configRaw = file.readAsStringSync();
+    final lines = configRaw
+        .split('\n')
+        .map((line) => line.trim())
+        .where((line) => line.isNotEmpty)
+        .where((line) => !line.startsWith('#')) // Remove comment lines.
+        .toList();
+
+    final propertyMap = <String, String>{};
+    for (final line in lines) {
+      final property = _parseProperty(line);
+      propertyMap[property.key] = property.value;
+    }
+
+    return propertyMap;
   }
 
   Map<String, String> _parse(List<String> args) {

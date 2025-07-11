@@ -10,12 +10,12 @@ class AnsiCodes {
 
   static String color(String color) => '$escape[${color}m';
 
-  static String gray = color('30');
+  static String gray = color('90');
   static String red = color('31');
   static String green = color('32');
   static String yellow = color('33');
   static String blue = color('34');
-  static String lightBlue = color('38;5;87');
+  static String lightBlue = color('94');
   static String magenta = color('35');
   static String cyan = color('36');
   static String orange = color('38;5;208');

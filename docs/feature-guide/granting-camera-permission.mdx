@@ -1,0 +1,35 @@
+---
+title: Granting camera permission
+---
+
+In this video we show you how to grant camera permission using Patrol framework.
+
+<YouTube id="IRdkFccjYRg" />
+
+Here you can find the code of this test and try it out by yourself.
+
+```dart title="integration_test/grant_camera_permission_test.dart"
+import 'package:permission_handler/permission_handler.dart';
+import './common.dart';
+
+void main() {
+  patrolTest('grants camera permission', ($) async {
+    await createApp($);
+
+    await $('Open permissions screen').scrollTo().tap();
+
+    if (!await Permission.camera.isGranted) {
+      await $('Request camera permission').tap();
+
+      if (await $.native.isPermissionDialogVisible()) {
+        await Future<void>.delayed(const Duration(seconds: 1));
+        await $.native.grantPermissionWhenInUse();
+        await $.pump();
+      }
+    }
+
+    await Future<void>.delayed(const Duration(seconds: 4));
+  });
+}
+
+```

@@ -9,7 +9,7 @@ test_linux_task:
     kvm: "true"
   env:
     PATH: $HOME/.pub-cache/bin:$HOME/fvm/default/bin:$CIRRUS_WORKING_DIR/fvm:${PATH}
-    FLUTTER_VERSION: "3.29.0"
+    FLUTTER_VERSION: "3.32.0"
     EMULATOR_API_LEVEL: "34"
     EMULATOR_ABI: google_apis_playstore;x86_64
     EMULATOR_IMAGE: system-images;android-${EMULATOR_API_LEVEL};${EMULATOR_ABI}
@@ -66,7 +66,7 @@ test_macos_task:
     image: ghcr.io/cirruslabs/macos-sonoma-xcode:latest
   env:
     PATH: $HOME/.pub-cache/bin:$HOME/fvm/default/bin:${PATH}
-    FLUTTER_VERSION: "3.29.0"
+    FLUTTER_VERSION: "3.32.0"
   timeout_in: 30m
 
   set_up_fvm_script: |
