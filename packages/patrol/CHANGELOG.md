@@ -1,3 +1,7 @@
+## 3.18.0
+
+- Bump `leancode_lint` to `17.0.0`. (#2683)
+
 ## 3.17.0
 
 - Add `takeCameraPhoto` method. (#2660)
