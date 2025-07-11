@@ -4,13 +4,13 @@
 
 ## 3.8.0
 
-- Add support for comments in .patrol.env files. (#2653)
+- Add support for comments in .patrol.env files.  (#2653)
 - Skip update check when the `patrol_cli` binary is triggered for shell completion only (#2512)
 
 ## 3.7.0
 
 - Bump min Flutter SDK to 3.32.0 (#2649)
-- Introduce `check-compatibility` flag to allow disabling the compatibility check. (#2649)
+- Introduce `check-compatibility` flag to allow disabling the compatibility check. (#2649) 
 
 ## 3.6.0
 
@@ -28,8 +28,8 @@
 
 - Gracefully handle when analytics fail to send. (#2460)
 - Handle uninstallation of the app after tests finish when using AGP 8.2+. (#2535)
-- Add `--coverage-packages` flag to `patrol test` that specifies which packages should be included
-  in the coverage report. (#2536)
+- Add `--coverage-packages` flag to `patrol test` that specifies which packages should be included 
+in the coverage report. (#2536)
 - Fix skipping tests with coverage collection enabled. (#2539)
 
 ## 3.5.0
@@ -40,7 +40,7 @@
 ## 3.4.1
 
 - Add android product flavor to dart-define. (#2425)
-- Detect and warn about Orchestrator 1.5.0. (#2437)
+- Detect and warn about Orchestrator 1.5.0. (#2437) 
 
 ## 3.4.0
 
@@ -98,7 +98,6 @@ This version requires version 3.10.0 of `patrol` package.
 - Add support for custom flutter commands (#2124).
 
 ## 2.6.5
-
 - Add support for --app-server-port and --test-server-port on Android (#2154).
 
 ## 2.6.4
@@ -115,7 +114,7 @@ This version requires version 3.10.0 of `patrol` package.
 
 ## 2.6.1
 
-- Fix passing port on iOS when `patrol build` is executed (#2061).
+- Fix passing port on iOS when `patrol build` is executed (#2061). 
 
 ## 2.6.0
 
