@@ -1,6 +1,6 @@
 ## Unreleased
 
-- Wait for generating gradlew - fix race condition (#1668)
+- Wait for generating gradlew - fix race condition (#2678)
 
 ## 3.8.0
 
