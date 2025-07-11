@@ -1,7 +1,6 @@
 ## 0.5.0
 
-- Bump `leancode_lint` to `17.0.0`.
-
+- Bump `leancode_lint` to `17.0.0`. (#2680)
 
 ## 0.4.0
 
