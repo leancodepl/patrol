@@ -514,6 +514,12 @@
       }
     }
 
+    func getLocale(request: GetLocaleRequest) throws -> GetLocaleResponse {
+      return try runCatching {
+        try automator.getLocale()
+      }
+    }
+
     func debug() throws {
       return try runCatching {
         try automator.debug()

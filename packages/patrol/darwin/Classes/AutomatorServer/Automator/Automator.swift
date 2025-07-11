@@ -299,5 +299,6 @@ extension Selector {
 
     func getOsVersion() -> String
     func isVirtualDevice() -> Bool
+    func getLocale() throws -> GetLocaleResponse
   }
 #endif
