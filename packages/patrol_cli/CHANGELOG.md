@@ -1,3 +1,7 @@
+## Unreleased
+
+- Wait for generating gradlew - fix race condition (#2678)
+
 ## 3.8.0
 
 - Add support for comments in .patrol.env files.  (#2653)
