@@ -1,3 +1,7 @@
+## 3.9.0
+
+- Bump `leancode_lint` to `17.0.0`. (#2682)
+
 ## 3.8.0
 
 - Add support for comments in .patrol.env files.  (#2653)
