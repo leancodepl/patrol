@@ -90,13 +90,13 @@ This is not possible on device labs.
 
 ### Codemagic
 
-[Codemagic] is a popular CI/CD platform that integrates with Azure DevOps, GitHub, GitLab, Bitbucket, and
+[Codemagic] is a popular mobile-focused CI/CD platform that integrates with Azure DevOps, GitHub, GitLab, Bitbucket, and
 other self-hosted or cloud-based Git repositories.
 
-It's also possible to run integration tests on Android directly on a Codemagic machine.
+You can setup your whole mobile CI/CD workflow, including building and running Patrol tests, on Codemagic.
 Here's a blog post about it: [Running Android integration tests on Codemagic].
 
-However, this is generally not the recommended way to run your patrol tests. We recommend using device farms like [firebase test lab], [emulator.wtf] or others.
+However, running patrol tests directly on Codemagic machines is generally not recommended due to issues with flakiness and performance compared to dedicated device farms. We recommend using device farms like [firebase test lab], [emulator.wtf] or others.
 Codemagic will be great for preparing .apk files that you can upload to the device farms. To see documentation about using patrol in Codemagic workflows, please visit [codemagic/patrol documentation].
 The full app example with all files is available in [codemagic/patrol-example-repository].
 
