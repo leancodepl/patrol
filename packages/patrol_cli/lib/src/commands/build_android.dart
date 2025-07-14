@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:path/path.dart' show join;
 import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
@@ -176,6 +177,10 @@ class BuildAndroidCommand extends PatrolCommand {
 
     try {
       await _androidTestBackend.build(androidOpts);
+      _printApkPaths(
+        flavor: flavor,
+        buildMode: buildMode.androidName,
+      );
     } catch (err, st) {
       _logger
         ..err('$err')
@@ -185,5 +190,35 @@ class BuildAndroidCommand extends PatrolCommand {
     }
 
     return 0;
+  }
+
+  void _printApkPaths({String? flavor, required String buildMode}) {
+    // Standard Android APK output paths (relative to project root)
+    final baseApkPath = join('build', 'app', 'outputs', 'apk');
+
+    final String flavorPath;
+    final String apkPrefix;
+
+    if (flavor != null) {
+      flavorPath = join(baseApkPath, flavor, buildMode.toLowerCase());
+      apkPrefix = 'app-$flavor-${buildMode.toLowerCase()}';
+    } else {
+      flavorPath = join(baseApkPath, buildMode.toLowerCase());
+      apkPrefix = 'app-${buildMode.toLowerCase()}';
+    }
+
+    final appApkPath = join(flavorPath, '$apkPrefix.apk');
+
+    // Test APK path
+    final testApkPath = join(
+      baseApkPath,
+      'androidTest',
+      buildMode.toLowerCase(),
+      '$apkPrefix-androidTest.apk',
+    );
+
+    _logger
+      ..info('$appApkPath (app under test)')
+      ..info('$testApkPath (test instrumentation app)');
   }
 }
