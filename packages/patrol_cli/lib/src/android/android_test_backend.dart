@@ -130,7 +130,7 @@ class AndroidTestBackend {
 
       process
           .listenStdOut(
-            (line) async {
+            (line) {
               if (line.contains('• Java binary at:') &&
                   javaCompleterPath.isCompleted == false) {
                 var path = line.replaceAll('• Java binary at:', '').trim();

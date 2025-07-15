@@ -124,7 +124,7 @@ class CoverageTool {
     await serviceClient.streamListen('Extension');
     final completer = Completer<int>()..disposedBy(_disposeScope, 0);
     serviceClient.onExtensionEvent
-        .listen((event) async {
+        .listen((event) {
           if (event.extensionKind == 'testCount') {
             completer.complete(event.extensionData!.data['testCount'] as int);
           }

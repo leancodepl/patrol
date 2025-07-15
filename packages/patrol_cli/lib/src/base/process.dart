@@ -98,7 +98,7 @@ extension ProcessListeners on Process {
 
 extension ProcessDisposers on Process {
   void disposed(DisposeScope disposeScope) {
-    disposeScope.addDispose(() async => kill());
+    disposeScope.addDispose(kill);
   }
 }
 

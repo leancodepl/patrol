@@ -91,7 +91,7 @@ Check the compatibility table at: https://patrol.leancode.co/documentation/compa
 
       process
           .listenStdOut(
-            (line) async {
+            (line) {
               if (line.startsWith('- patrol ')) {
                 packageCompleter.maybeComplete(line.split(' ').last);
               }
@@ -186,7 +186,7 @@ Future<void> _checkJavaVersion(
 
     processFlutter
         .listenStdOut(
-          (line) async {
+          (line) {
             if (line.contains('• Java version')) {
               final versionString = line.split(' ').last.replaceAll(')', '');
               javaCompleterVersion.maybeComplete(Version.parse(versionString));
@@ -204,7 +204,7 @@ Future<void> _checkJavaVersion(
 
               processJava
                   .listenStdOut(
-                    (line) async {
+                    (line) {
                       if (line.startsWith('javac')) {
                         javaCompleterVersion.maybeComplete(
                           Version.parse(line.split(' ').last),

@@ -142,7 +142,7 @@ class DeviceFinder {
       'devices',
       '--machine',
     ], runInShell: true);
-    _disposeScope.addDispose(() async {
+    _disposeScope.addDispose(() {
       process.kill();
       flutterKilled = true; // `flutter` has exit code 0 on SIGINT
     });
