@@ -371,9 +371,9 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
           finalizer = () => _androidTestBackend.uninstall(package, device);
         }
       case TargetPlatform.macOS:
-        action = () async => _macosTestBackend.execute(macos, device);
+        action = () => _macosTestBackend.execute(macos, device);
       case TargetPlatform.iOS:
-        action = () async => _iosTestBackend.execute(
+        action = () => _iosTestBackend.execute(
           ios,
           device,
           showFlutterLogs: showFlutterLogs,

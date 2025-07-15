@@ -123,7 +123,7 @@ class FlutterTool {
             ..disposedBy(scope);
 
       final completer = Completer<void>();
-      scope.addDispose(() async {
+      scope.addDispose(() {
         if (!completer.isCompleted) {
           _logger.detail('Killed before attached to the app');
           completer.complete();
@@ -233,7 +233,7 @@ class FlutterTool {
             ..disposedBy(scope);
 
       final completer = Completer<void>();
-      scope.addDispose(() async {
+      scope.addDispose(() {
         if (!completer.isCompleted) {
           completer.complete();
         }

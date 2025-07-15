@@ -350,11 +350,11 @@ class DevelopCommand extends PatrolCommand {
         }
       case TargetPlatform.macOS:
         appId = macos.bundleId;
-        action = () async =>
+        action = () =>
             _macosTestBackend.execute(macos, device, interruptible: true);
       case TargetPlatform.iOS:
         appId = iosOpts.bundleId;
-        action = () async => _iosTestBackend.execute(
+        action = () => _iosTestBackend.execute(
           iosOpts,
           device,
           interruptible: true,

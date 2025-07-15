@@ -91,7 +91,7 @@ class MacOSTestBackend {
         options.toFlutterBuildInvocation(options.flutter.buildMode),
         runInShell: true,
       );
-      scope.addDispose(() async {
+      scope.addDispose(() {
         process.kill();
         flutterBuildKilled = true; // `flutter build` has exit code 0 on SIGINT
       });
