@@ -15,12 +15,12 @@ class PatrolPubspecConfig with EquatableMixin {
   });
 
   PatrolPubspecConfig.empty({required String flutterPackageName})
-      : this(
-          flutterPackageName: flutterPackageName,
-          android: AndroidPubspecConfig.empty(),
-          ios: IOSPubspecConfig.empty(),
-          macos: MacOSPubspecConfig.empty(),
-        );
+    : this(
+        flutterPackageName: flutterPackageName,
+        android: AndroidPubspecConfig.empty(),
+        ios: IOSPubspecConfig.empty(),
+        macos: MacOSPubspecConfig.empty(),
+      );
 
   final String flutterPackageName;
   AndroidPubspecConfig android;
@@ -36,11 +36,7 @@ class AndroidPubspecConfig with EquatableMixin {
   AndroidPubspecConfig({this.packageName, this.appName, this.flavor});
 
   AndroidPubspecConfig.empty()
-      : this(
-          packageName: null,
-          appName: null,
-          flavor: null,
-        );
+    : this(packageName: null, appName: null, flavor: null);
 
   String? packageName;
   String? appName;
@@ -53,12 +49,7 @@ class AndroidPubspecConfig with EquatableMixin {
 class IOSPubspecConfig with EquatableMixin {
   IOSPubspecConfig({this.bundleId, this.appName, this.flavor});
 
-  IOSPubspecConfig.empty()
-      : this(
-          bundleId: null,
-          appName: null,
-          flavor: null,
-        );
+  IOSPubspecConfig.empty() : this(bundleId: null, appName: null, flavor: null);
 
   String? bundleId;
   String? appName;
@@ -72,11 +63,7 @@ class MacOSPubspecConfig with EquatableMixin {
   MacOSPubspecConfig({this.bundleId, this.appName, this.flavor});
 
   MacOSPubspecConfig.empty()
-      : this(
-          bundleId: null,
-          appName: null,
-          flavor: null,
-        );
+    : this(bundleId: null, appName: null, flavor: null);
 
   String? bundleId;
   String? appName;
@@ -88,10 +75,9 @@ class MacOSPubspecConfig with EquatableMixin {
 
 /// Reads Patrol CLI configuration block from pubspec.yaml.
 class PubspecReader {
-  PubspecReader({
-    required Directory projectRoot,
-  })  : _projectRoot = projectRoot,
-        _fs = projectRoot.fileSystem;
+  PubspecReader({required Directory projectRoot})
+    : _projectRoot = projectRoot,
+      _fs = projectRoot.fileSystem;
 
   final Directory _projectRoot;
   final FileSystem _fs;

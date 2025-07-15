@@ -23,14 +23,14 @@ class BuildAndroidCommand extends PatrolCommand {
     required Analytics analytics,
     required Logger logger,
     required CompatibilityChecker compatibilityChecker,
-  })  : _testFinder = testFinder,
-        _testBundler = testBundler,
-        _dartDefinesReader = dartDefinesReader,
-        _pubspecReader = pubspecReader,
-        _androidTestBackend = androidTestBackend,
-        _analytics = analytics,
-        _logger = logger,
-        _compatibilityChecker = compatibilityChecker {
+  }) : _testFinder = testFinder,
+       _testBundler = testBundler,
+       _dartDefinesReader = dartDefinesReader,
+       _pubspecReader = pubspecReader,
+       _androidTestBackend = androidTestBackend,
+       _analytics = analytics,
+       _logger = logger,
+       _compatibilityChecker = compatibilityChecker {
     usesTargetOption();
     usesBuildModeOption();
     usesFlavorOption();

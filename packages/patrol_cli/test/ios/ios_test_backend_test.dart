@@ -92,16 +92,11 @@ void main() {
             sdkVersion: '16.2',
           );
 
-          expect(
-            found,
-            '/example_app/build/ios_integ/Build/Products/$name',
-          );
+          expect(found, '/example_app/build/ios_integ/Build/Products/$name');
         });
       }
 
-      testXcTestRunPath(
-        'finds xctestrun with no arch on iphoneos',
-      );
+      testXcTestRunPath('finds xctestrun with no arch on iphoneos');
 
       testXcTestRunPath(
         'finds xctestrun with single arch on iphoneos',

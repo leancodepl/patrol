@@ -57,12 +57,12 @@ class MacOSTestBackend {
     required Directory rootDirectory,
     required DisposeScope parentDisposeScope,
     required Logger logger,
-  })  : _processManager = processManager,
-        _platform = platform,
-        _fs = fs,
-        _rootDirectory = rootDirectory,
-        _disposeScope = DisposeScope(),
-        _logger = logger {
+  }) : _processManager = processManager,
+       _platform = platform,
+       _fs = fs,
+       _rootDirectory = rootDirectory,
+       _disposeScope = DisposeScope(),
+       _logger = logger {
     _disposeScope.disposedBy(parentDisposeScope);
   }
 
@@ -112,12 +112,13 @@ class MacOSTestBackend {
 
       // xcodebuild build-for-testing
 
-      process = await _processManager.start(
-        options.buildForTestingInvocation(),
-        runInShell: true,
-        workingDirectory: _rootDirectory.childDirectory('macos').path,
-      )
-        ..disposedBy(scope);
+      process =
+          await _processManager.start(
+              options.buildForTestingInvocation(),
+              runInShell: true,
+              workingDirectory: _rootDirectory.childDirectory('macos').path,
+            )
+            ..disposedBy(scope);
       process.listenStdOut((l) => _logger.detail('\t$l')).disposedBy(scope);
       process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
       exitCode = await process.exitCode;
@@ -155,24 +156,26 @@ class MacOSTestBackend {
       );
 
       final sdkVersion = await getSdkVersion();
-      final process = await _processManager.start(
-        options.testWithoutBuildingInvocation(
-          device,
-          xcTestRunPath: await xcTestRunPath(
-            scheme: options.scheme,
-            sdkVersion: sdkVersion,
-          ),
-          resultBundlePath: resultsPath,
-        ),
-        runInShell: true,
-        environment: {
-          ..._platform.environment,
-          'TEST_RUNNER_PATROL_TEST_PORT': options.testServerPort.toString(),
-          'TEST_RUNNER_PATROL_APP_PORT': options.appServerPort.toString(),
-        },
-        workingDirectory: _rootDirectory.childDirectory('macos').path,
-      )
-        ..disposedBy(_disposeScope);
+      final process =
+          await _processManager.start(
+              options.testWithoutBuildingInvocation(
+                device,
+                xcTestRunPath: await xcTestRunPath(
+                  scheme: options.scheme,
+                  sdkVersion: sdkVersion,
+                ),
+                resultBundlePath: resultsPath,
+              ),
+              runInShell: true,
+              environment: {
+                ..._platform.environment,
+                'TEST_RUNNER_PATROL_TEST_PORT': options.testServerPort
+                    .toString(),
+                'TEST_RUNNER_PATROL_APP_PORT': options.appServerPort.toString(),
+              },
+              workingDirectory: _rootDirectory.childDirectory('macos').path,
+            )
+            ..disposedBy(_disposeScope);
       process.listenStdOut((l) => _logger.detail('\t$l')).disposedBy(scope);
       process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
 
@@ -212,8 +215,9 @@ class MacOSTestBackend {
       throwToolExit(cause);
     }
 
-    _logger
-        .detail('Found ${files.length} match(es), the first one will be used');
+    _logger.detail(
+      'Found ${files.length} match(es), the first one will be used',
+    );
     for (final file in files) {
       _logger.detail('Found ${file.absolute.path}');
     }
@@ -240,10 +244,11 @@ class MacOSTestBackend {
   }
 
   Future<String> getSdkVersion() async {
-    final processResult = await _processManager.run(
-      ['xcodebuild', '-showsdks', '-json'],
-      runInShell: true,
-    );
+    final processResult = await _processManager.run([
+      'xcodebuild',
+      '-showsdks',
+      '-json',
+    ], runInShell: true);
 
     String? sdkVersion;
     String? platform;

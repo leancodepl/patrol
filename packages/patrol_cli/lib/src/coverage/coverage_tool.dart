@@ -26,13 +26,13 @@ class CoverageTool {
     required Adb adb,
     required DisposeScope parentDisposeScope,
     required Logger logger,
-  })  : _fs = fs,
-        _rootDirectory = rootDirectory,
-        _processManager = processManager,
-        _platform = platform,
-        _adb = adb,
-        _logger = logger,
-        _disposeScope = DisposeScope() {
+  }) : _fs = fs,
+       _rootDirectory = rootDirectory,
+       _processManager = processManager,
+       _platform = platform,
+       _adb = adb,
+       _logger = logger,
+       _disposeScope = DisposeScope() {
     _disposeScope.disposedBy(parentDisposeScope);
   }
 
@@ -55,72 +55,62 @@ class CoverageTool {
         _platform.environment['HOME'] ?? _platform.environment['USERPROFILE'];
     final hitMap = <String, coverage.HitMap>{};
 
-    await _disposeScope.run(
-      (scope) async {
-        final logsProcess = await _processManager.start(
-          [
-            'flutter',
-            'logs',
-            '-d',
-            device.id,
-          ],
-          workingDirectory: homeDirectory,
-          runInShell: true,
-        )
-          ..disposedBy(scope);
-
-        final vmConnectionDetailsStream = logsProcess.stdout
-            .transform(utf8.decoder)
-            .transform(const LineSplitter())
-            .map(VMConnectionDetails.tryExtractFromLogs)
-            .where((details) => details != null)
-            .cast<VMConnectionDetails>()
-            .transform(
-              DeviceToHostPortTransformer(
-                device: device,
-                devicePlatform: platform,
-                adb: _adb,
-                logger: logger,
-              ),
+    await _disposeScope.run((scope) async {
+      final logsProcess =
+          await _processManager.start(
+              ['flutter', 'logs', '-d', device.id],
+              workingDirectory: homeDirectory,
+              runInShell: true,
             )
-            .asBroadcastStream();
+            ..disposedBy(scope);
 
-        final totalTestCount = await vmConnectionDetailsStream
-            .asyncMap(_collectTotalTestCount)
-            .first;
-        logger.info('Total test count: $totalTestCount');
+      final vmConnectionDetailsStream = logsProcess.stdout
+          .transform(utf8.decoder)
+          .transform(const LineSplitter())
+          .map(VMConnectionDetails.tryExtractFromLogs)
+          .where((details) => details != null)
+          .cast<VMConnectionDetails>()
+          .transform(
+            DeviceToHostPortTransformer(
+              device: device,
+              devicePlatform: platform,
+              adb: _adb,
+              logger: logger,
+            ),
+          )
+          .asBroadcastStream();
 
-        var count = 0;
-        final coverageCollectionCompleter = Completer<void>()
-          ..disposedBy(scope, null);
-        vmConnectionDetailsStream
-            .take(totalTestCount)
-            .asyncMap(
-              (details) => _collectFromVM(
-                packagesRegExps: packagesRegExps,
-                connectionDetails: details,
-              ),
-            )
-            .listen(
-          (coverage) {
+      final totalTestCount = await vmConnectionDetailsStream
+          .asyncMap(_collectTotalTestCount)
+          .first;
+      logger.info('Total test count: $totalTestCount');
+
+      var count = 0;
+      final coverageCollectionCompleter = Completer<void>()
+        ..disposedBy(scope, null);
+      vmConnectionDetailsStream
+          .take(totalTestCount)
+          .asyncMap(
+            (details) => _collectFromVM(
+              packagesRegExps: packagesRegExps,
+              connectionDetails: details,
+            ),
+          )
+          .listen((coverage) {
             hitMap.merge(coverage);
             logger.info('Collected ${++count} / $totalTestCount coverages');
-          },
-        )
-          ..onDone(coverageCollectionCompleter.complete)
-          ..disposedBy(scope);
-        await coverageCollectionCompleter.future;
+          })
+        ..onDone(coverageCollectionCompleter.complete)
+        ..disposedBy(scope);
+      await coverageCollectionCompleter.future;
 
-        logger.info('All coverage gathered, saving');
-        final report = hitMap.formatLcov(
-          await coverage.Resolver.create(
-            packagePath: _rootDirectory.path,
-          ),
-          ignoreGlobs: ignoreGlobs,
-        );
-        await _saveReport(report);
-      },
-    );
+      logger.info('All coverage gathered, saving');
+      final report = hitMap.formatLcov(
+        await coverage.Resolver.create(packagePath: _rootDirectory.path),
+        ignoreGlobs: ignoreGlobs,
+      );
+      await _saveReport(report);
+    });
   }
 
   Future<int> _collectTotalTestCount(
@@ -133,11 +123,13 @@ class CoverageTool {
 
     await serviceClient.streamListen('Extension');
     final completer = Completer<int>()..disposedBy(_disposeScope, 0);
-    serviceClient.onExtensionEvent.listen((event) async {
-      if (event.extensionKind == 'testCount') {
-        completer.complete(event.extensionData!.data['testCount'] as int);
-      }
-    }).disposedBy(_disposeScope);
+    serviceClient.onExtensionEvent
+        .listen((event) async {
+          if (event.extensionKind == 'testCount') {
+            completer.complete(event.extensionData!.data['testCount'] as int);
+          }
+        })
+        .disposedBy(_disposeScope);
 
     final testCount = await completer.future;
     await serviceClient.dispose();
@@ -208,17 +200,15 @@ class CoverageTool {
     final socket =
         await io.WebSocket.connect(connectionDetails.webSocketUri.toString())
           ..add(
-            jsonEncode(
-              {
-                'jsonrpc': '2.0',
-                'id': 21,
-                'method': 'ext.patrol.markTestCompleted',
-                'params': {
-                  'isolateId': mainIsolateId,
-                  'command': 'markTestCompleted',
-                },
+            jsonEncode({
+              'jsonrpc': '2.0',
+              'id': 21,
+              'method': 'ext.patrol.markTestCompleted',
+              'params': {
+                'isolateId': mainIsolateId,
+                'command': 'markTestCompleted',
               },
-            ),
+            }),
           );
     await socket.close();
 

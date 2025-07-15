@@ -13,10 +13,10 @@ class DeviceToHostPortTransformer
     required TargetPlatform devicePlatform,
     required Adb adb,
     required Logger logger,
-  })  : _device = device,
-        _devicePlatform = devicePlatform,
-        _adb = adb,
-        _logger = logger;
+  }) : _device = device,
+       _devicePlatform = devicePlatform,
+       _adb = adb,
+       _logger = logger;
 
   final Device _device;
   final TargetPlatform _devicePlatform;
@@ -29,10 +29,7 @@ class DeviceToHostPortTransformer
     await for (final value in stream) {
       final hostPort = await _devicePortToHostPort(value.port);
       if (hostPort != null) {
-        yield VMConnectionDetails(
-          port: hostPort,
-          auth: value.auth,
-        );
+        yield VMConnectionDetails(port: hostPort, auth: value.auth);
       }
     }
   }
@@ -49,23 +46,21 @@ class DeviceToHostPortTransformer
             device: _device.id,
           );
         } else {
-          cachedPort = await bindUnusedPort<int>(
-            (port) async {
-              try {
-                await _adb.forwardPorts(
-                  fromHost: port,
-                  toDevice: devicePort,
-                  device: _device.id,
-                );
-                return port;
-              } on Exception {
-                _logger.warn(
-                  'Failed to forward port $port to device port $devicePort',
-                );
-                return null;
-              }
-            },
-          );
+          cachedPort = await bindUnusedPort<int>((port) async {
+            try {
+              await _adb.forwardPorts(
+                fromHost: port,
+                toDevice: devicePort,
+                device: _device.id,
+              );
+              return port;
+            } on Exception {
+              _logger.warn(
+                'Failed to forward port $port to device port $devicePort',
+              );
+              return null;
+            }
+          });
         }
 
         // It is necessary to grab the port from adb forward --list because
