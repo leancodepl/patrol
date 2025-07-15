@@ -83,7 +83,8 @@ void _test(Platform platform) {
       });
       test('reads correct simple input with comment on own line', () {
         file.writeAsString(
-            'EMAIL=email@example.com\n#The password for the API\nPASSWORD=ny4ncat\n');
+          'EMAIL=email@example.com\n#The password for the API\nPASSWORD=ny4ncat\n',
+        );
 
         expect(
           reader.fromFile(),
@@ -93,7 +94,8 @@ void _test(Platform platform) {
       test('reads correct simple input with comment on same line as variable',
           () {
         file.writeAsString(
-            ' EMAIL=email@example.com  \nPASSWORD=ny4ncat # The password for the API\n');
+          ' EMAIL=email@example.com  \nPASSWORD=ny4ncat # The password for the API\n',
+        );
 
         expect(
           reader.fromFile(),
@@ -102,11 +104,40 @@ void _test(Platform platform) {
       });
       test('reads correct simple input with commented out variable', () {
         file.writeAsString(
-            ' EMAIL=email@example.com  \n#PASSWORD=ny4ncat # The password for the API\n');
+          ' EMAIL=email@example.com  \n#PASSWORD=ny4ncat # The password for the API\n',
+        );
 
         expect(
           reader.fromFile(),
           equals({'EMAIL': 'email@example.com'}),
+        );
+      });
+
+      test('reads correct input containing # characters in values', () {
+        file.writeAsString(
+          'URL="https://example.com/#section"\nFRAGMENT="value#with#hashes"\n',
+        );
+
+        expect(
+          reader.fromFile(),
+          equals({
+            'URL': 'https://example.com/#section',
+            'FRAGMENT': 'value#with#hashes',
+          }),
+        );
+      });
+
+      test('treats # as comment delimiter in unquoted values', () {
+        file.writeAsString(
+          'URL=https://example.com/ # This is a comment\nFRAGMENT=value # Another comment\n',
+        );
+
+        expect(
+          reader.fromFile(),
+          equals({
+            'URL': 'https://example.com/',
+            'FRAGMENT': 'value',
+          }),
         );
       });
     });

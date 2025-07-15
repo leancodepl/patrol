@@ -35,6 +35,24 @@ class CameraHelpers {
     await $.native2.openApp();
   }
 
+  Future<void> takePhotosAcceptDialogsAndOpenAppOnRealDeviceIOS() async {
+    await $.native2.openApp(appId: 'com.apple.camera');
+    await maybeAcceptPermissionDialog();
+    await $.native2.tap(
+      appId: 'com.apple.camera',
+      NativeSelector(ios: IOSSelector(identifier: 'PhotoCapture')),
+    );
+    await $.native2.tap(
+      appId: 'com.apple.camera',
+      NativeSelector(ios: IOSSelector(identifier: 'PhotoCapture')),
+    );
+    await $.native2.tap(
+      appId: 'com.apple.camera',
+      NativeSelector(ios: IOSSelector(identifier: 'PhotoCapture')),
+    );
+    await $.native2.openApp(appId: 'pl.leancode.patrol.e2eApp');
+  }
+
   Future<void> takePhotosAcceptDialogsAndOpenAppOnRealDeviceAndroid() async {
     await $.native2.openApp(appId: 'com.google.android.GoogleCamera');
     await maybeAcceptPermissionDialog();

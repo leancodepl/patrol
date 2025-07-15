@@ -1,0 +1,143 @@
+---
+title: Pick images from gallery
+---
+
+Patrol provides functionality to pick one or many images from the Android and iOS gallery using the `pickImageFromGallery` or `pickMultipleImagesFromGallery` methods from the native automator.
+<Info>
+  Due to differences between devices and gallery apps, this method may not work on 100% of devices, but it should work on most. If the device you are testing on is not working with the default selectors, you can provide your own selectors.
+  To get native selectors, you can use the [Patrol DevTools Extension](https://patrol.leancode.co/documentation/patrol-devtools-extension).
+</Info>
+
+## Pick an image from gallery
+
+This method performs the following actions:
+
+1. Selects an image (by default, the first image or the one at the provided index).
+2. Confirm the selection if needed (some android devices require this step).
+
+| Platform                   |  Selector (default)                                      |
+| -------------------------- | ------------------------------------------------------------ |
+| Physical/Emulator Android  | `com.google.android.documentsui:id/icon_thumb` (API < 34) or `com.google.android.providers.media.module:id/icon_thumbnail` (API 34+) |
+| Simulator and Physical iOS | `IOSElementType.image` (we add +2 for simulators and +1 for physical devices to the index, as image finders start from index 1 or 2 depending on the device)                        |
+
+<Info>
+  This method should work without custom selectors on iOS devices. For Android, it should work with most emulators and Pixel physical devices.
+</Info>
+
+### Examples
+
+When you are using supported devices, you can use this method without any additional arguments:
+
+```dart
+import 'package:example/main.dart';
+import 'package:patrol/patrol.dart';
+
+void main() {
+  patrolTest(
+    'Pick an image from gallery on Android or iOS',
+    ($) async {
+      await $.pumpWidgetAndSettle(const MyApp());
+      await $.tap(#addPhotoFromGalleryButton); // Opens the gallery picker in your app
+      await $.native2.grantPermissionWhenInUse(); // Some devices require permission to be granted before picking an image
+      await $.native2.pickImageFromGallery(index: 0); // Picks the first image from the gallery
+    },
+  );
+}
+```
+
+When you are using unsupported devices, you can provide your own selectors:
+
+```dart
+import 'package:example/main.dart';
+import 'package:patrol/patrol.dart';
+
+void main() {
+  patrolTest(
+    'Pick an image from gallery with custom selectors',
+    ($) async {
+      await $.pumpWidgetAndSettle(const MyApp());
+      await $.tap(#addPhotoFromGalleryButton); // Opens the gallery picker in your app
+      await $.native2.grantPermissionWhenInUse(); // Some devices require permission to be granted before picking an image
+      await $.native2.pickImageFromGallery(
+        index: 1,
+        imageSelector: NativeSelector(
+          android: AndroidSelector(
+            resourceName: 'com.oplus.gallery:id/image',
+          ),
+          ios: IOSSelector(label: 'Photo'),
+        ),
+      );
+    },
+  );
+}
+```
+
+## Pick multiple images from gallery
+
+This method performs the following actions:
+
+1. Selects multiple images (user needs to specify indexes of images to select).
+2. Confirm the selection. 
+
+The table below shows the default native selectors that the `pickMultipleImagesFromGallery()` method uses internally for each platform:
+
+| Platform                   | Selector (default)                                      |
+| -------------------------- | ------------------------------------------------------------ |
+| Physical/Emulator Android images | `com.google.android.documentsui:id/icon_thumb` (API < 34) or `com.google.android.providers.media.module:id/icon_thumbnail` (API 34+) |
+| Simulator and Physical iOS images | `IOSElementType.image`  |
+| iOS Confirm button         | `IOSElementType.button` with label `"Add"` |
+| Android Confirm button     | `com.google.android.providers.media.module:id/button_add` (API 34+) or `com.google.android.documentsui:id/action_menu_select` (API < 34) |
+
+<Info>
+  This method should work without custom selectors on iOS devices. For Android, it should work with most emulators and Pixel physical devices.
+</Info>
+
+
+### Examples
+
+When you are using supported devices, you can use this method without any additional arguments:
+
+```dart
+import 'package:example/main.dart';
+import 'package:patrol/patrol.dart';
+
+void main() {
+  patrolTest(
+    'Pick multiple images from gallery',
+    ($) async {
+      await $.pumpWidgetAndSettle(const MyApp());
+      await $.tap(#addMultiplePhotosFromGalleryButton); // Opens the gallery picker in your app
+      await $.native2.grantPermissionWhenInUse(); // Some devices require permission to be granted before picking an image
+      await $.native2.pickMultipleImagesFromGallery(imageIndexes: [0, 1]); // Picks the first and second images from the gallery
+    },
+  );
+}
+```
+
+When you are using unsupported devices, you can provide your own selectors:
+
+```dart
+import 'package:example/main.dart';
+import 'package:patrol/patrol.dart';
+
+void main() {
+  patrolTest(
+    'Pick multiple images from gallery with custom selectors',
+    ($) async {
+      await $.pumpWidgetAndSettle(const MyApp());
+      await $.tap(#addMultiplePhotosFromGalleryButton); // Opens the gallery picker in your app
+      await $.native2.grantPermissionWhenInUse(); // Some devices require permission to be granted before picking an image
+      await $.native2.pickMultipleImagesFromGallery(
+        imageIndexes: [0, 1],
+        imageSelector: NativeSelector(
+          android: AndroidSelector(
+            resourceName: 'com.oplus.gallery:id/image',
+          ),
+          ios: IOSSelector(label: 'Photo'),
+        ),
+      );
+    },
+  );
+}
+```
+

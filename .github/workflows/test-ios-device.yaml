@@ -57,6 +57,7 @@ jobs:
           APP_STORE_KEY_ID: ${{ secrets.APP_STORE_KEY_ID }}
           APP_STORE_ISSUER_ID: ${{ secrets.APP_STORE_ISSUER_ID }}
           APP_STORE_KEY: ${{ secrets.APP_STORE_KEY }}
+          MATCH_GIT_PRIVATE_KEY: ${{ secrets.MATCH_GIT_PRIVATE_KEY }}
         run: bundle exec fastlane ios certificates
 
       - name: Authenticate to Google Cloud
@@ -93,7 +94,11 @@ jobs:
           permissions/permissions_location_test,\
           service_dark_mode_test,\
           service_location_test,\
-          permissions/notifications_test"
+          permissions/notifications_test,\
+          overflow_test", \
+          webview_hackernews_test,\
+          webview_leancode_test,\
+          webview_stackoverflow_test"
 
           target_paths=""
           for target in $(echo $TESTS_TO_EXCLUDE | tr ',' '\n'); do
@@ -105,7 +110,7 @@ jobs:
           echo "EXCLUDED_TESTS=$target_paths" >> "$GITHUB_ENV"
 
       - name: Build tests
-        run: patrol build ios --release --exclude ${{ env.EXCLUDED_TESTS }} --verbose
+        run: patrol build ios  --dart-define-from-file=defines_1.json --dart-define-from-file=defines_2.json --dart-define-from-file=defines_3.env --release --exclude ${{ env.EXCLUDED_TESTS }} --verbose
 
       - name: Upload APKs to Firebase Test Lab and wait for tests to finish
         id: tests_step

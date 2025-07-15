@@ -37,7 +37,6 @@ class BuildAndroidCommand extends PatrolCommand {
     usesDartDefineOption();
     usesDartDefineFromFileOption();
     usesLabelOption();
-    usesWaitOption();
     usesPortOptions();
     usesTagsOption();
     usesExcludeTagsOption();
