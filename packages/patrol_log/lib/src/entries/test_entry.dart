@@ -7,10 +7,7 @@ class TestEntry extends Entry {
     required this.status,
     DateTime? timestamp,
     this.error,
-  }) : super(
-          timestamp: timestamp ?? DateTime.now(),
-          type: EntryType.test,
-        );
+  }) : super(timestamp: timestamp ?? DateTime.now(), type: EntryType.test);
 
   @override
   factory TestEntry.fromJson(Map<String, dynamic> json) =>
@@ -67,9 +64,9 @@ enum TestEntryStatus {
   skip;
 
   String get name => switch (this) {
-        TestEntryStatus.start => Emojis.testStart,
-        TestEntryStatus.success => Emojis.success,
-        TestEntryStatus.failure => Emojis.failure,
-        TestEntryStatus.skip => Emojis.skip,
-      };
+    TestEntryStatus.start => Emojis.testStart,
+    TestEntryStatus.success => Emojis.success,
+    TestEntryStatus.failure => Emojis.failure,
+    TestEntryStatus.skip => Emojis.skip,
+  };
 }
