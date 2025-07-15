@@ -1,7 +1,3 @@
-## 3.9.0
-
-- Bump `leancode_lint` to `17.0.0`. (#2682)
-
 ## 3.8.0
 
 - Remove `--wait` argument from patrol develop command
