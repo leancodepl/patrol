@@ -9,7 +9,7 @@ documentation: https://patrol.leancode.co
 topics: [test, log, patrol]
 
 environment:
-  sdk: '>=3.5.0 <4.0.0'
+  sdk: '>=3.8.0 <4.0.0'
 
 dependencies:
   dispose_scope: ^2.1.0
