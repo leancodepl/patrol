@@ -3,11 +3,9 @@ import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/runner/patrol_command.dart';
 
 class DevicesCommand extends PatrolCommand {
-  DevicesCommand({
-    required DeviceFinder deviceFinder,
-    required Logger logger,
-  })  : _deviceFinder = deviceFinder,
-        _logger = logger;
+  DevicesCommand({required DeviceFinder deviceFinder, required Logger logger})
+    : _deviceFinder = deviceFinder,
+      _logger = logger;
 
   final DeviceFinder _deviceFinder;
   final Logger _logger;
@@ -20,8 +18,9 @@ class DevicesCommand extends PatrolCommand {
 
   @override
   Future<int> run() async {
-    final devices =
-        await _deviceFinder.getAttachedDevices(flutterCommand: flutterCommand);
+    final devices = await _deviceFinder.getAttachedDevices(
+      flutterCommand: flutterCommand,
+    );
 
     if (devices.isEmpty) {
       _logger.err('No devices attached');

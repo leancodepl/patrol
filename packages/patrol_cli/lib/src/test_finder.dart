@@ -7,8 +7,8 @@ const _kDefaultTestFileSuffix = '_test.dart';
 /// Discovers integration tests.
 class TestFinder {
   TestFinder({required Directory testDir})
-      : _integrationTestDirectory = testDir,
-        _fs = testDir.fileSystem..currentDirectory = testDir.parent;
+    : _integrationTestDirectory = testDir,
+      _fs = testDir.fileSystem..currentDirectory = testDir.parent;
 
   final Directory _integrationTestDirectory;
   final FileSystem _fs;
@@ -55,9 +55,7 @@ class TestFinder {
           testFileSuffix: testFileSuffix,
         );
         if (foundTargets.isEmpty) {
-          throwToolExit(
-            'target directory $target does not contain any tests',
-          );
+          throwToolExit('target directory $target does not contain any tests');
         }
 
         testFiles.addAll(foundTargets);
@@ -85,20 +83,19 @@ class TestFinder {
       throwToolExit("Directory ${directory.path} doesn't exist");
     }
 
-    final absoluteExcludes =
-        excludes.map((e) => _fs.file(e).absolute.path).toSet();
+    final absoluteExcludes = excludes
+        .map((e) => _fs.file(e).absolute.path)
+        .toSet();
 
     return directory
         .listSync(recursive: true, followLinks: false)
         .sorted((a, b) => a.path.compareTo(b.path))
         // Find only test files
-        .where(
-          (fileSystemEntity) {
-            final hasSuffix = fileSystemEntity.path.endsWith(testFileSuffix);
-            final isFile = _fs.isFileSync(fileSystemEntity.path);
-            return hasSuffix && isFile;
-          },
-        )
+        .where((fileSystemEntity) {
+          final hasSuffix = fileSystemEntity.path.endsWith(testFileSuffix);
+          final isFile = _fs.isFileSync(fileSystemEntity.path);
+          return hasSuffix && isFile;
+        })
         // Filter out excluded files
         .where((fileSystemEntity) {
           // TODO: Doesn't handle excluded passes as absolute paths

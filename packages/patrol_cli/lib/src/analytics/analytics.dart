@@ -12,20 +12,14 @@ import 'package:platform/platform.dart';
 import 'package:uuid/uuid.dart';
 
 class AnalyticsConfig {
-  AnalyticsConfig({
-    required this.clientId,
-    required this.enabled,
-  });
+  AnalyticsConfig({required this.clientId, required this.enabled});
 
   AnalyticsConfig.fromJson(Map<String, dynamic> json)
-      : clientId = json['clientId'] as String,
-        enabled = json['enabled'] as bool;
+    : clientId = json['clientId'] as String,
+      enabled = json['enabled'] as bool;
 
   Map<String, dynamic> toJson() {
-    return <String, dynamic>{
-      'clientId': clientId,
-      'enabled': enabled,
-    };
+    return <String, dynamic>{'clientId': clientId, 'enabled': enabled};
   }
 
   /// UUID v4 unique for this client.
@@ -43,13 +37,13 @@ class Analytics {
     required bool isCI,
     required bool? envAnalyticsEnabled,
     required Logger logger,
-  })  : _fs = fs,
-        _platform = platform,
-        _httpClient = httpClient ?? http.Client(),
-        _postUrl = _getAnalyticsUrl(measurementId, apiSecret),
-        _isCI = isCI,
-        _envAnalyticsEnabled = envAnalyticsEnabled,
-        _logger = logger;
+  }) : _fs = fs,
+       _platform = platform,
+       _httpClient = httpClient ?? http.Client(),
+       _postUrl = _getAnalyticsUrl(measurementId, apiSecret),
+       _isCI = isCI,
+       _envAnalyticsEnabled = envAnalyticsEnabled,
+       _logger = logger;
 
   final FileSystem _fs;
   final Platform _platform;
@@ -108,10 +102,7 @@ class Analytics {
   bool get firstRun => _config == null;
 
   set enabled(bool newValue) {
-    _config = AnalyticsConfig(
-      clientId: const Uuid().v4(),
-      enabled: newValue,
-    );
+    _config = AnalyticsConfig(clientId: const Uuid().v4(), enabled: newValue);
   }
 
   bool get enabled {
@@ -196,17 +187,13 @@ class FlutterVersion {
   factory FlutterVersion.test() => FlutterVersion('1.2.3', 'stable');
 
   factory FlutterVersion.fromCLI(FlutterCommand flutterCommand) {
-    final result = io.Process.runSync(
-      flutterCommand.executable,
-      [
-        ...flutterCommand.arguments,
-        '--no-version-check',
-        '--suppress-analytics',
-        '--version',
-        '--machine',
-      ],
-      runInShell: true,
-    );
+    final result = io.Process.runSync(flutterCommand.executable, [
+      ...flutterCommand.arguments,
+      '--no-version-check',
+      '--suppress-analytics',
+      '--version',
+      '--machine',
+    ], runInShell: true);
 
     final versionData =
         jsonDecode(cleanJsonResult(result)) as Map<String, dynamic>;

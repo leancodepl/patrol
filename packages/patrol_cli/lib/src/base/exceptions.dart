@@ -35,7 +35,7 @@ class ToolExit implements Exception {
 class ToolInterrupted implements Exception {
   const ToolInterrupted(this.details);
 
-  final String message = 'Interrupted';
+  final message = 'Interrupted';
   final String details;
   final exitCode = exitCodeInterrupted;
 
