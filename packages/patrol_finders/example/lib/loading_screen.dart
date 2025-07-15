@@ -10,7 +10,7 @@ class LoadingScreen extends StatefulWidget {
 }
 
 class _LoadingScreenState extends State<LoadingScreen> {
-  bool _visible = false;
+  var _visible = false;
 
   @override
   void initState() {

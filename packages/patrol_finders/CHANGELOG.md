@@ -1,6 +1,7 @@
 ## 2.9.0
 
 - Bump `leancode_lint` to `17.0.0`. (#2681)
+- Bump minimum Dart SDK to version 3.8.0 (#2681)
 
 ## 2.8.2
 
