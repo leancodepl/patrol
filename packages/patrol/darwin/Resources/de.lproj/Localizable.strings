@@ -18,8 +18,6 @@
 "bluetooth_button" = "bluetooth-button";
 
 /* Notification identifiers */
-"notification_cell" = "NotificationCell";
-"list_cell" = "ListCell";
 "open" = "Öffnen";
 
 /* Settings navigation */
