@@ -8,16 +8,20 @@ import '../common.dart';
 const _timeout = Duration(seconds: 5); // to avoid timeouts on CI
 
 void main() {
-  patrol('grants various permissions', ($) async {
-    await createApp($);
+  patrol(
+    'grants various permissions',
+    ($) async {
+      await createApp($);
 
-    await $('Open permissions screen').scrollTo().tap();
+      await $('Open permissions screen').scrollTo().tap();
 
-    await _requestAndGrantCameraPermission($);
-    await _requestAndGrantMicrophonePermission($);
-    await _requestAndDenyLocationPermission($);
-    await _requestAndDenyGalleryPermission($);
-  });
+      await _requestAndGrantCameraPermission($);
+      await _requestAndGrantMicrophonePermission($);
+      await _requestAndDenyLocationPermission($);
+      await _requestAndDenyGalleryPermission($);
+    },
+    tags: ['locale_testing_ios'],
+  );
 }
 
 Future<void> _requestAndGrantCameraPermission(PatrolIntegrationTester $) async {

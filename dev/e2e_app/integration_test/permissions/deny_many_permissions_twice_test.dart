@@ -6,23 +6,27 @@ import '../common.dart';
 const _timeout = Duration(seconds: 5); // to avoid timeouts on CI
 
 void main() {
-  patrol('denies various permissions', ($) async {
-    await createApp($);
+  patrol(
+    'denies various permissions',
+    ($) async {
+      await createApp($);
 
-    await $('Open permissions screen').scrollTo().tap();
+      await $('Open permissions screen').scrollTo().tap();
 
-    await _requestAndDenyCameraPermission($);
-    await _requestAndDenyCameraPermission($);
+      await _requestAndDenyCameraPermission($);
+      await _requestAndDenyCameraPermission($);
 
-    await _requestAndDenyMicrophonePermission($);
-    await _requestAndDenyMicrophonePermission($);
+      await _requestAndDenyMicrophonePermission($);
+      await _requestAndDenyMicrophonePermission($);
 
-    await _requestAndDenyLocationPermission($);
-    await _requestAndDenyLocationPermission($);
+      await _requestAndDenyLocationPermission($);
+      await _requestAndDenyLocationPermission($);
 
-    await _requestAndDenyGalleryPermission($);
-    await _requestAndDenyGalleryPermission($);
-  });
+      await _requestAndDenyGalleryPermission($);
+      await _requestAndDenyGalleryPermission($);
+    },
+    tags: ['locale_testing_ios'],
+  );
 }
 
 Future<void> _requestAndDenyCameraPermission(PatrolIntegrationTester $) async {

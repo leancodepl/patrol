@@ -89,5 +89,6 @@ void main() {
 
       await $('Tapped notification with ID: 1').waitUntilVisible();
     },
+    tags: ['locale_testing_ios'],
   );
 }
