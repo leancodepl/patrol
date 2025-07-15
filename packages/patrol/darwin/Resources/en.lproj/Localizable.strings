@@ -7,16 +7,6 @@
 "limit_access" = "Limit Access…";  // … is a Unicode ellipsis
 "allow_full_access" = "Allow Full Access";
 
-/* System settings */
-"airplane_mode" = "Airplane mode";
-"use_location" = "Use location";
-
-/* Control center buttons */
-"airplane_mode_button" = "airplane-mode-button";
-"cellular_data_button" = "cellular-data-button";
-"wifi_button" = "wifi-button";
-"bluetooth_button" = "bluetooth-button";
-
 /* Notification identifiers */
 "open" = "Open";
 
