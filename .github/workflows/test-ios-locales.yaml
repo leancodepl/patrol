@@ -24,7 +24,7 @@ jobs:
         flutter-version: ['3.32.x']
         flutter-channel: ['stable']
         device_model: ['iphone14pro']
-        locale: ['en', 'fr', 'de', 'pl'] 
+        locale: ['en', 'fr', 'de_DE', 'pl'] 
         os_version: ['16.6']
         os: [iOS]
 
