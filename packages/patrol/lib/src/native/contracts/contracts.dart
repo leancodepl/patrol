@@ -2067,6 +2067,18 @@ class GetLocaleResponse with EquatableMixin {
         regionCode,
         localeIdentifier,
       ];
+
+  GetLocaleResponse copyWith({
+    String? languageCode,
+    String? regionCode,
+    String? localeIdentifier,
+  }) {
+    return GetLocaleResponse(
+      languageCode: languageCode ?? this.languageCode,
+      regionCode: regionCode ?? this.regionCode,
+      localeIdentifier: localeIdentifier ?? this.localeIdentifier,
+    );
+  }
 }
 
 @JsonSerializable()
@@ -2080,4 +2092,8 @@ class GetLocaleRequest with EquatableMixin {
 
   @override
   List<Object?> get props => const [];
+
+  GetLocaleRequest copyWith() {
+    return GetLocaleRequest();
+  }
 }
