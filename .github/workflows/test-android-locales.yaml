@@ -1,4 +1,4 @@
-name: test android device
+name: test locales on android device
 
 on:
   workflow_dispatch:
