@@ -91,20 +91,8 @@ jobs:
         working-directory: packages/patrol_cli
         run: dart pub global activate --source path . && patrol
 
-      - name: Set tests to exclude
-        id: set_excluded_tests
-        run: |
-          target_paths=""
-          for target in $(echo $TESTS_TO_EXCLUDE | tr ',' '\n'); do
-              target_paths+="integration_test/${target}.dart,"
-          done
-          target_paths="${target_paths%,}"
-
-          echo "EXCLUDED_TESTS=$TESTS_TO_EXCLUDE" >> "$GITHUB_OUTPUT"
-          echo "EXCLUDED_TESTS=$target_paths" >> "$GITHUB_ENV"
-
       - name: Build tests
-        run: patrol build ios --tags locale_testing_ios --verbose
+        run: patrol build ios --tags locale_testing_ios --release --verbose
 
       - name: Upload APKs to Firebase Test Lab and wait for tests to finish
         id: tests_step
