@@ -1,0 +1,115 @@
+name: test android device
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 */12 * * *'
+
+jobs:
+  run_tests:
+    name: Flutter ${{ matrix.flutter-version }} on ${{ matrix.os }} ${{ matrix.os_version }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    outputs:
+      SLACK_MESSAGE_TITLE: Flutter ${{ matrix.flutter-version }} on ${{ matrix.os }} ${{ matrix.os_version }}
+      TESTS_EXIT_CODE: ${{ steps.tests_step.outputs.TESTS_EXIT_CODE }}
+      EXCLUDED_TESTS: ${{ steps.set_excluded_tests.outputs.EXCLUDED_TESTS }}
+      URL_TO_DETAILS: ${{ steps.tests_step.outputs.URL_TO_DETAILS }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        flutter-version: ['3.32.x']
+        flutter-channel: ['stable']
+        locale: ['en', 'fr', 'de', 'pl'] 
+        os: ['Android API']
+        include:
+          - device_model: 'MediumPhone.arm'
+            os_version: '34'
+
+    defaults:
+      run:
+        working-directory: dev/e2e_app
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: '${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY_JSON }}'
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+
+      - name: Gradle cache
+        uses: gradle/gradle-build-action@v2
+        with:
+          generate-job-summary: false
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+          channel: ${{ matrix.flutter-channel }}
+
+      - name: Preload Flutter artifacts
+        run: flutter precache --android
+
+      - name: Set up Melos and activate workspace
+        working-directory: .
+        run: |
+          dart pub global activate melos
+          melos bootstrap
+
+      - name: Set up Patrol CLI
+        working-directory: packages/patrol_cli
+        run: dart pub global activate --source path . && patrol
+
+      - name: Generate Gradle wrapper
+        run: flutter build apk --config-only
+
+      - name: patrol build android
+        run: |
+          patrol build android --tags locale_testing_android --verbose
+
+      - name: Upload APKs to Firebase Test Lab and wait for tests to finish
+        id: tests_step
+        env:
+          ANDROID_DEVICE_MODEL: ${{ matrix.device_model }}
+          ANDROID_DEVICE_VERSION: ${{ matrix.os_version }}
+          ANDROID_DEVICE_LOCALE: ${{ matrix.locale }}
+        run: |
+          set +e
+          output="$(./run_android_testlab 2>&1)"
+          TESTS_EXIT_CODE=$?
+          set -e
+
+          echo "$output"
+
+          # Extract the last link using grep, tail, and sed, and write it to Github Summmary
+          link="$(echo "$output" | grep -o 'https://[^ ]*' | tail -1 | sed 's/\[//;s/\]//')"
+          echo "[Test details on Firebase Test Lab]($link) (LeanCode members only)" >> "$GITHUB_STEP_SUMMARY"
+
+          echo "URL_TO_DETAILS=$link" >> "$GITHUB_OUTPUT"
+          echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> "$GITHUB_OUTPUT"
+          exit $TESTS_EXIT_CODE
+
+  call_send_slack_message:
+    name: Notify on Slack
+    uses: ./.github/workflows/send-slack-message.yaml
+    needs: run_tests
+    if: always()
+    with:
+      TESTS_EXIT_CODE: ${{ needs.run_tests.outputs.TESTS_EXIT_CODE }}
+      SLACK_MESSAGE_TITLE: ${{ needs.run_tests.outputs.SLACK_MESSAGE_TITLE }}
+      EXCLUDED_TESTS: ${{ needs.run_tests.outputs.EXCLUDED_TESTS }}
+      URL_TO_DETAILS: ${{ needs.run_tests.outputs.URL_TO_DETAILS }}
+    secrets: inherit
