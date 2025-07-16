@@ -1,3 +1,7 @@
+## Unreleased
+
+- Wait for generating gradlew - fix race condition (#2678)
+
 ## 3.8.0
 
 - Remove `--wait` argument from patrol develop command
