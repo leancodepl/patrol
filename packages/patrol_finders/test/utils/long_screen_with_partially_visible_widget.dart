@@ -22,18 +22,13 @@ class LongScreenWithPartiallyVisibleWidget extends StatelessWidget {
       home: SingleChildScrollView(
         child: Column(
           children: [
-            const SizedBox(
-              height: 2000,
-            ),
+            const SizedBox(height: 2000),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: SizedBox(
                 width: 2 * width,
                 child: Center(
-                  child: SizedBox(
-                    width: width,
-                    child: testedWidget,
-                  ),
+                  child: SizedBox(width: width, child: testedWidget),
                 ),
               ),
             ),

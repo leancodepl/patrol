@@ -51,7 +51,6 @@ class TestCommand extends PatrolCommand {
     usesDartDefineOption();
     usesDartDefineFromFileOption();
     usesLabelOption();
-    usesWaitOption();
     usesPortOptions();
     usesTagsOption();
     usesExcludeTagsOption();
@@ -168,7 +167,6 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
     final bundleId = stringArg('bundle-id') ?? config.ios.bundleId;
     final macosBundleId = stringArg('bundle-id') ?? config.macos.bundleId;
 
-    final wait = intArg('wait') ?? defaultWait;
     final displayLabel = boolArg('label');
     final uninstall = boolArg('uninstall');
     final coverageEnabled = boolArg('coverage');
@@ -180,7 +178,6 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       ..._dartDefinesReader.fromCli(args: stringsArg('dart-define')),
     };
     final internalDartDefines = {
-      'PATROL_WAIT': wait.toString(),
       'PATROL_APP_PACKAGE_NAME': packageName,
       'PATROL_APP_BUNDLE_ID': bundleId,
       'PATROL_MACOS_APP_BUNDLE_ID': macosBundleId,

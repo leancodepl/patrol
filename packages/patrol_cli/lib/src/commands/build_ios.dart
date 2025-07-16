@@ -37,7 +37,6 @@ class BuildIOSCommand extends PatrolCommand {
     usesDartDefineOption();
     usesDartDefineFromFileOption();
     usesLabelOption();
-    usesWaitOption();
     usesPortOptions();
     usesTagsOption();
     usesExcludeTagsOption();

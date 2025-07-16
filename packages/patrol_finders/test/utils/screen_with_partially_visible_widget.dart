@@ -23,10 +23,7 @@ class ScreenWithPartiallyVisibleWidget extends StatelessWidget {
           child: SizedBox(
             width: 2 * width,
             child: Center(
-              child: SizedBox(
-                width: width,
-                child: testedWidget,
-              ),
+              child: SizedBox(width: width, child: testedWidget),
             ),
           ),
         ),

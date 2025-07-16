@@ -156,17 +156,11 @@ class PatrolFinder implements MatchFinder {
     if (parentFinder != null) {
       return PatrolFinder(
         tester: tester,
-        finder: find.descendant(
-          of: parentFinder,
-          matching: finder,
-        ),
+        finder: find.descendant(of: parentFinder, matching: finder),
       );
     }
 
-    return PatrolFinder(
-      tester: tester,
-      finder: finder,
-    );
+    return PatrolFinder(tester: tester, finder: finder);
   }
 
   /// Finder that this [PatrolFinder] wraps.
@@ -195,19 +189,18 @@ class PatrolFinder implements MatchFinder {
 
     final valueText = value != null ? ' "$value"' : '';
     final text = '$color$action${AnsiCodes.reset}$valueText$finderText';
-    tester.patrolLog
-        .log(StepEntry(action: text, status: StepEntryStatus.start));
+    tester.patrolLog.log(
+      StepEntry(action: text, status: StepEntryStatus.start),
+    );
     try {
       final result = await function();
-      tester.patrolLog
-          .log(StepEntry(action: text, status: StepEntryStatus.success));
+      tester.patrolLog.log(
+        StepEntry(action: text, status: StepEntryStatus.success),
+      );
       return result;
     } catch (err) {
       tester.patrolLog.log(
-        StepEntry(
-          action: text,
-          status: StepEntryStatus.failure,
-        ),
+        StepEntry(action: text, status: StepEntryStatus.failure),
       );
       rethrow;
     }
@@ -243,19 +236,18 @@ class PatrolFinder implements MatchFinder {
     Duration? visibleTimeout,
     Duration? settleTimeout,
     Alignment alignment = Alignment.center,
-  }) async =>
-      wrapWithPatrolLog(
-        action: 'tap',
-        color: AnsiCodes.yellow,
-        function: () => tester.tap(
-          this,
-          settlePolicy: settlePolicy,
-          visibleTimeout: visibleTimeout,
-          settleTimeout: settleTimeout,
-          alignment: alignment,
-          enablePatrolLog: false,
-        ),
-      );
+  }) => wrapWithPatrolLog(
+    action: 'tap',
+    color: AnsiCodes.yellow,
+    function: () => tester.tap(
+      this,
+      settlePolicy: settlePolicy,
+      visibleTimeout: visibleTimeout,
+      settleTimeout: settleTimeout,
+      alignment: alignment,
+      enablePatrolLog: false,
+    ),
+  );
 
   /// Waits until this finder finds at least 1 visible widget and then makes
   /// long press gesture on it.
@@ -287,19 +279,18 @@ class PatrolFinder implements MatchFinder {
     Duration? visibleTimeout,
     Duration? settleTimeout,
     Alignment alignment = Alignment.center,
-  }) async =>
-      wrapWithPatrolLog(
-        action: 'longPress',
-        color: AnsiCodes.yellow,
-        function: () => tester.longPress(
-          this,
-          settlePolicy: settlePolicy,
-          visibleTimeout: visibleTimeout,
-          settleTimeout: settleTimeout,
-          alignment: alignment,
-          enablePatrolLog: false,
-        ),
-      );
+  }) => wrapWithPatrolLog(
+    action: 'longPress',
+    color: AnsiCodes.yellow,
+    function: () => tester.longPress(
+      this,
+      settlePolicy: settlePolicy,
+      visibleTimeout: visibleTimeout,
+      settleTimeout: settleTimeout,
+      alignment: alignment,
+      enablePatrolLog: false,
+    ),
+  );
 
   /// Waits until this finder finds at least 1 visible widget and then enters
   /// text into it.
@@ -332,20 +323,19 @@ class PatrolFinder implements MatchFinder {
     Duration? visibleTimeout,
     Duration? settleTimeout,
     Alignment alignment = Alignment.center,
-  }) async =>
-      wrapWithPatrolLog(
-        action: 'enterText',
-        color: AnsiCodes.magenta,
-        function: () => tester.enterText(
-          this,
-          text,
-          settlePolicy: settlePolicy,
-          visibleTimeout: visibleTimeout,
-          settleTimeout: settleTimeout,
-          alignment: alignment,
-          enablePatrolLog: false,
-        ),
-      );
+  }) => wrapWithPatrolLog(
+    action: 'enterText',
+    color: AnsiCodes.magenta,
+    function: () => tester.enterText(
+      this,
+      text,
+      settlePolicy: settlePolicy,
+      visibleTimeout: visibleTimeout,
+      settleTimeout: settleTimeout,
+      alignment: alignment,
+      enablePatrolLog: false,
+    ),
+  );
 
   /// Shorthand for [PatrolTester.scrollUntilVisible].
   ///
@@ -419,18 +409,17 @@ class PatrolFinder implements MatchFinder {
     Duration? timeout,
     bool enablePatrolLog = true,
     Alignment alignment = Alignment.center,
-  }) =>
-      wrapWithPatrolLog(
-        action: 'waitUntilVisible',
-        color: AnsiCodes.cyan,
-        function: () => tester.waitUntilVisible(
-          this,
-          timeout: timeout,
-          alignment: alignment,
-          enablePatrolLog: false,
-        ),
-        enablePatrolLog: enablePatrolLog,
-      );
+  }) => wrapWithPatrolLog(
+    action: 'waitUntilVisible',
+    color: AnsiCodes.cyan,
+    function: () => tester.waitUntilVisible(
+      this,
+      timeout: timeout,
+      alignment: alignment,
+      enablePatrolLog: false,
+    ),
+    enablePatrolLog: enablePatrolLog,
+  );
 
   /// Returns a finder matching widget of type [T] which also fulfills
   /// [predicate].
@@ -446,9 +435,7 @@ class PatrolFinder implements MatchFinder {
           if (widget is! T) {
             return false;
           }
-          final foundWidgets = evaluate().map(
-            (e) => e.widget,
-          );
+          final foundWidgets = evaluate().map((e) => e.widget);
           if (!foundWidgets.contains(widget)) {
             return false;
           }
@@ -474,9 +461,7 @@ class PatrolFinder implements MatchFinder {
     final elements = finder.evaluate();
 
     if (elements.isEmpty) {
-      throw PatrolFinderException(
-        'Finder "${toString()}" found no widgets',
-      );
+      throw PatrolFinderException('Finder "${toString()}" found no widgets');
     }
 
     final firstWidget = elements.first.widget;
@@ -509,10 +494,7 @@ class PatrolFinder implements MatchFinder {
   PatrolFinder containing(dynamic matching) {
     return PatrolFinder(
       tester: tester,
-      finder: find.ancestor(
-        of: createFinder(matching),
-        matching: finder,
-      ),
+      finder: find.ancestor(of: createFinder(matching), matching: finder),
     );
   }
 
@@ -566,19 +548,13 @@ class PatrolFinder implements MatchFinder {
   @override
   PatrolFinder get last {
     // TODO: Throw a better error (https://github.com/leancodepl/patrol/issues/548)
-    return PatrolFinder(
-      tester: tester,
-      finder: finder.last,
-    );
+    return PatrolFinder(tester: tester, finder: finder.last);
   }
 
   @override
   PatrolFinder at(int index) {
     // TODO: Throw a better error (https://github.com/leancodepl/patrol/issues/548)
-    return PatrolFinder(
-      tester: tester,
-      finder: finder.at(index),
-    );
+    return PatrolFinder(tester: tester, finder: finder.at(index));
   }
 
   @override
@@ -591,7 +567,10 @@ class PatrolFinder implements MatchFinder {
 
   @override
   PatrolFinder hitTestable({Alignment at = Alignment.center}) {
-    return PatrolFinder(finder: finder.hitTestable(at: at), tester: tester);
+    return PatrolFinder(
+      finder: finder.hitTestable(at: at),
+      tester: tester,
+    );
   }
 
   @override

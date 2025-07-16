@@ -5,7 +5,7 @@ import 'package:patrol_log/patrol_log.dart';
 
 class PatrolLogWriter {
   PatrolLogWriter({Map<String, dynamic> config = const {}})
-      : _controller = StreamController<Entry>.broadcast() {
+    : _controller = StreamController<Entry>.broadcast() {
     write();
 
     /// Pass config to the PatrolLogReader

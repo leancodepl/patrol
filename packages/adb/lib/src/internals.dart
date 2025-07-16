@@ -13,11 +13,7 @@ class AdbInternals {
 
   /// Calls `adb devices` and returns its stdout.
   Future<String> devices() async {
-    final result = await io.Process.run(
-      'adb',
-      ['devices'],
-      runInShell: true,
-    );
+    final result = await io.Process.run('adb', ['devices'], runInShell: true);
 
     if (result.stdErr.isNotEmpty) {
       if (result.stdErr.contains(AdbDaemonNotRunning.trigger)) {
@@ -38,11 +34,9 @@ class AdbInternals {
       throw AdbExecutableNotFound(message: err.message);
     }
     while (true) {
-      final result = await io.Process.run(
-        'adb',
-        ['start-server'],
-        runInShell: true,
-      );
+      final result = await io.Process.run('adb', [
+        'start-server',
+      ], runInShell: true);
       if (result.stdErr.contains(AdbDaemonNotRunning.trigger)) {
         await Future<void>.delayed(_interval);
       } else {
@@ -54,16 +48,12 @@ class AdbInternals {
   /// Ensures that the `activity` service is running on the device.
   Future<void> ensureActivityServiceRunning({required String? device}) async {
     while (true) {
-      final result = await io.Process.run(
-        'adb',
-        [
-          if (device != null) ...['-s', device],
-          'shell',
-          'service',
-          'list',
-        ],
-        runInShell: true,
-      );
+      final result = await io.Process.run('adb', [
+        if (device != null) ...['-s', device],
+        'shell',
+        'service',
+        'list',
+      ], runInShell: true);
 
       const trigger = 'activity: [android.app.IActivityManager]';
       if (result.stdOut.contains(trigger)) {
@@ -77,16 +67,12 @@ class AdbInternals {
   /// Ensures that the `package` service is running on the device.
   Future<void> ensurePackageServiceRunning({required String? device}) async {
     while (true) {
-      final result = await io.Process.run(
-        'adb',
-        [
-          if (device != null) ...['-s', device],
-          'shell',
-          'service',
-          'list',
-        ],
-        runInShell: true,
-      );
+      final result = await io.Process.run('adb', [
+        if (device != null) ...['-s', device],
+        'shell',
+        'service',
+        'list',
+      ], runInShell: true);
 
       const trigger = 'package: [android.content.pm.IPackageManager]';
       if (result.stdOut.contains(trigger)) {

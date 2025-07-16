@@ -14,7 +14,7 @@ import 'package:adb/src/internals.dart';
 class Adb {
   /// Creates a new [Adb] instance.
   Adb({AdbInternals adbInternals = const AdbInternals()})
-      : _adbInternals = adbInternals;
+    : _adbInternals = adbInternals;
 
   /// Initializes this [Adb] instance.
   ///
@@ -34,26 +34,16 @@ class Adb {
   /// installation.
   ///
   /// Throws if there are no devices attached.
-  Future<io.ProcessResult> install(
-    String path, {
-    String? device,
-  }) async {
+  Future<io.ProcessResult> install(String path, {String? device}) async {
     await _adbInternals.ensureServerRunning();
     await _adbInternals.ensurePackageServiceRunning(device: device);
     await _adbInternals.ensureActivityServiceRunning(device: device);
 
-    final result = await io.Process.run(
-      'adb',
-      [
-        if (device != null) ...[
-          '-s',
-          device,
-        ],
-        'install',
-        path,
-      ],
-      runInShell: true,
-    );
+    final result = await io.Process.run('adb', [
+      if (device != null) ...['-s', device],
+      'install',
+      path,
+    ], runInShell: true);
 
     if (result.stdErr.isNotEmpty) {
       _handleAdbExceptions(result.stdErr);
@@ -79,18 +69,11 @@ class Adb {
     await _adbInternals.ensurePackageServiceRunning(device: device);
     await _adbInternals.ensureActivityServiceRunning(device: device);
 
-    final result = await io.Process.run(
-      'adb',
-      [
-        if (device != null) ...[
-          '-s',
-          device,
-        ],
-        'uninstall',
-        packageName,
-      ],
-      runInShell: true,
-    );
+    final result = await io.Process.run('adb', [
+      if (device != null) ...['-s', device],
+      'uninstall',
+      packageName,
+    ], runInShell: true);
 
     if (result.stdErr.isNotEmpty) {
       _handleAdbExceptions(result.stdErr);
@@ -119,19 +102,12 @@ class Adb {
   }) async {
     await _adbInternals.ensureServerRunning();
 
-    final result = await io.Process.run(
-      'adb',
-      [
-        if (device != null) ...[
-          '-s',
-          device,
-        ],
-        'forward',
-        '$protocol:$fromHost',
-        '$protocol:$toDevice',
-      ],
-      runInShell: true,
-    );
+    final result = await io.Process.run('adb', [
+      if (device != null) ...['-s', device],
+      'forward',
+      '$protocol:$fromHost',
+      '$protocol:$toDevice',
+    ], runInShell: true);
 
     if (result.stdErr.isNotEmpty) {
       _handleAdbExceptions(result.stdErr);
@@ -140,19 +116,12 @@ class Adb {
     }
 
     return () async {
-      final result = await io.Process.run(
-        'adb',
-        [
-          if (device != null) ...[
-            '-s',
-            device,
-          ],
-          'forward',
-          '--remove',
-          '$protocol:$fromHost',
-        ],
-        runInShell: true,
-      );
+      final result = await io.Process.run('adb', [
+        if (device != null) ...['-s', device],
+        'forward',
+        '--remove',
+        '$protocol:$fromHost',
+      ], runInShell: true);
 
       if (result.stdErr.isNotEmpty) {
         _handleAdbExceptions(result.stdErr);
@@ -166,11 +135,10 @@ class Adb {
   Future<AdbForwardList> getForwardedPorts() async {
     await _adbInternals.ensureServerRunning();
 
-    final output = await io.Process.run(
-      'adb',
-      ['forward', '--list'],
-      runInShell: true,
-    );
+    final output = await io.Process.run('adb', [
+      'forward',
+      '--list',
+    ], runInShell: true);
 
     if (output.stdErr.isNotEmpty) {
       _handleAdbExceptions(output.stdErr);
@@ -201,23 +169,15 @@ class Adb {
     await _adbInternals.ensurePackageServiceRunning(device: device);
     await _adbInternals.ensureActivityServiceRunning(device: device);
 
-    final process = await io.Process.start(
-      'adb',
-      [
-        if (device != null) ...['-s', device],
-        'shell',
-        'am',
-        'instrument',
-        '-w',
-        for (final arg in arguments.entries) ...[
-          '-e',
-          arg.key,
-          arg.value,
-        ],
-        '$packageName/$intentClass',
-      ],
-      runInShell: true,
-    );
+    final process = await io.Process.start('adb', [
+      if (device != null) ...['-s', device],
+      'shell',
+      'am',
+      'instrument',
+      '-w',
+      for (final arg in arguments.entries) ...['-e', arg.key, arg.value],
+      '$packageName/$intentClass',
+    ], runInShell: true);
 
     return process;
   }
@@ -230,20 +190,13 @@ class Adb {
   }) async {
     await _adbInternals.ensureServerRunning();
 
-    final process = await io.Process.start(
-      'adb',
-      [
-        if (device != null) ...['-s', device],
-        'shell',
-        'logcat',
-        for (final arg in arguments.entries) ...[
-          arg.key,
-          arg.value,
-        ],
-        if (filter != null) filter,
-      ],
-      runInShell: true,
-    );
+    final process = await io.Process.start('adb', [
+      if (device != null) ...['-s', device],
+      'shell',
+      'logcat',
+      for (final arg in arguments.entries) ...[arg.key, arg.value],
+      ?filter,
+    ], runInShell: true);
 
     return process;
   }
