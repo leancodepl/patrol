@@ -2,6 +2,9 @@ name: test locales on ios device
 
 on:
   workflow_dispatch:
+  pull_request:
+    paths:
+      - 'packages/patrol/darwin/Resources/**'
 
 
 jobs:
