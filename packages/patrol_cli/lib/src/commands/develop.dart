@@ -165,7 +165,6 @@ class DevelopCommand extends PatrolCommand {
       ..._dartDefinesReader.fromCli(args: stringsArg('dart-define')),
     };
     final internalDartDefines = {
-      'PATROL_WAIT': defaultWait.toString(),
       'PATROL_APP_PACKAGE_NAME': packageName,
       'PATROL_APP_BUNDLE_ID': bundleId,
       'PATROL_MACOS_APP_BUNDLE_ID': config.macos.bundleId,
