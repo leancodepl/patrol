@@ -402,8 +402,8 @@
             self.preferences.descendants(matching: .any)[darkAppearance].firstMatch.tap()
           }
         #else
-          let displayBrightness = try Localization.getLocalizedString(key: "display_brightness")
-          let dark = try Localization.getLocalizedString(key: "dark")
+          let displayBrightness = Localization.getLocalizedString(key: "display_brightness")
+          let dark = Localization.getLocalizedString(key: "dark")
 
           self.preferences.descendants(matching: .any)[displayBrightness].firstMatch.tap()
           self.preferences.descendants(matching: .any)[dark].firstMatch.tap()
@@ -426,8 +426,8 @@
             self.preferences.descendants(matching: .any)[darkAppearance].firstMatch.tap()
           }
         #else
-          let displayBrightness = try Localization.getLocalizedString(key: "display_brightness")
-          let light = try Localization.getLocalizedString(key: "light")
+          let displayBrightness = Localization.getLocalizedString(key: "display_brightness")
+          let light = Localization.getLocalizedString(key: "light")
 
           self.preferences.descendants(matching: .any)[displayBrightness].firstMatch.tap()
           self.preferences.descendants(matching: .any)[light].firstMatch.tap()
