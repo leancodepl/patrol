@@ -111,18 +111,18 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
     required Analytics analytics,
     required Logger logger,
     required bool isCI,
-  })  : _platform = platform,
-        _pubUpdater = pubUpdater,
-        _fs = fs,
-        _analytics = analytics,
-        _processManager = processManager,
-        _disposeScope = DisposeScope(),
-        _logger = logger,
-        _isCI = isCI,
-        super(
-          'patrol',
-          'Tool for running Flutter-native UI tests with superpowers',
-        ) {
+  }) : _platform = platform,
+       _pubUpdater = pubUpdater,
+       _fs = fs,
+       _analytics = analytics,
+       _processManager = processManager,
+       _disposeScope = DisposeScope(),
+       _logger = logger,
+       _isCI = isCI,
+       super(
+         'patrol',
+         'Tool for running Flutter-native UI tests with superpowers',
+       ) {
     final adb = Adb();
 
     final rootDirectory = findRootDirectory(_fs) ?? _fs.currentDirectory;
@@ -244,19 +244,9 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
       ),
     );
 
-    addCommand(
-      DevicesCommand(
-        deviceFinder: deviceFinder,
-        logger: _logger,
-      ),
-    );
+    addCommand(DevicesCommand(deviceFinder: deviceFinder, logger: _logger));
 
-    addCommand(
-      DoctorCommand(
-        logger: _logger,
-        platform: _platform,
-      ),
-    );
+    addCommand(DoctorCommand(logger: _logger, platform: _platform));
 
     addCommand(
       UpdateCommand(
@@ -392,8 +382,9 @@ To install a specific version of Patrol CLI, run:
     if (_wantsUpdateCheck(commandName)) {
       final latestVersion = await _pubUpdater.getLatestVersion('patrol_cli');
       const currentVersion = constants.version;
-      final maxCompatibleCliVersion =
-          getMaxCompatibleCliVersion(Version.parse(latestVersion));
+      final maxCompatibleCliVersion = getMaxCompatibleCliVersion(
+        Version.parse(latestVersion),
+      );
 
       await _checkForUpdates(
         currentVersion: currentVersion,
@@ -455,12 +446,11 @@ To install a specific version of Patrol CLI, run:
     required String currentVersion,
     required String latestVersion,
     required String maxCompatibleCliVersion,
-  }) =>
-      _checkForUpdates(
-        currentVersion: currentVersion,
-        latestVersion: latestVersion,
-        maxCompatibleCliVersion: maxCompatibleCliVersion,
-      );
+  }) => _checkForUpdates(
+    currentVersion: currentVersion,
+    latestVersion: latestVersion,
+    maxCompatibleCliVersion: maxCompatibleCliVersion,
+  );
 
   bool _wantsUpdateCheck(String? commandName) {
     if (_isCI) {
@@ -509,8 +499,9 @@ To install a specific version of Patrol CLI, run:
             ..writeln()
             ..writeln('To update to the latest compatible version, run:')
             ..writeln(
-              lightCyan
-                  .wrap('dart pub global activate patrol_cli $maxCliVersion'),
+              lightCyan.wrap(
+                'dart pub global activate patrol_cli $maxCliVersion',
+              ),
             )
             ..writeln()
             ..writeln(

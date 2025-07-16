@@ -33,9 +33,11 @@ Future<void> generateCompatibilityTable() async {
     );
 
   // Sort list by patrol_cli version in descending order
-  final sortedList = [...versionCompatibilityList]..sort((a, b) {
-      return b.patrolCliBottomRangeVersion
-          .compareTo(a.patrolCliBottomRangeVersion);
+  final sortedList = [...versionCompatibilityList]
+    ..sort((a, b) {
+      return b.patrolCliBottomRangeVersion.compareTo(
+        a.patrolCliBottomRangeVersion,
+      );
     });
 
   // Build table rows
@@ -94,9 +96,9 @@ Future<void> generateCompatibilityTable() async {
   // Create and write to docs/compatibility-table.mdx
   final docsRootDir = Directory(path.join(rootDir, 'docs'))
     ..createSync(recursive: true);
-  final docsRootFile =
-      File(path.join(docsRootDir.path, 'compatibility-table.mdx'))
-        ..writeAsStringSync(tableContent);
+  final docsRootFile = File(
+    path.join(docsRootDir.path, 'compatibility-table.mdx'),
+  )..writeAsStringSync(tableContent);
 
   logger
     ..info('Generated compatibility table in:')

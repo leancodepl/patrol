@@ -13,8 +13,9 @@ Directory _initFakeFs(FileSystem fs, Platform platform) {
   fs.directory(fs.path.join(platform.home)).createSync(recursive: true);
   fs.currentDirectory = platform.home;
 
-  final projectRootDir =
-      fs.directory(fs.path.join(platform.home, 'awesome_app'))..createSync();
+  final projectRootDir = fs.directory(
+    fs.path.join(platform.home, 'awesome_app'),
+  )..createSync();
   fs.currentDirectory = projectRootDir;
   fs.directory('integration_test').createSync();
   return projectRootDir;
@@ -41,11 +42,7 @@ void _test(Platform platform) {
 
     test('throws ArgumentError when no tests are given', () {
       expect(
-        () => testBundler.createTestBundle(
-          [],
-          null,
-          null,
-        ),
+        () => testBundler.createTestBundle([], null, null),
         throwsArgumentError,
       );
     });

@@ -1,3 +1,9 @@
+## 3.9.0
+
+- Bump `leancode_lint` to `17.0.0`.
+- Bump `patrol_log` to `0.5.0`.
+- Bump minimum Dart SDK to version 3.8.0.
+
 ## 3.8.0
 
 - Remove `--wait` argument from patrol develop command

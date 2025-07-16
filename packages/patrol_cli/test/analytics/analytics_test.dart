@@ -46,8 +46,10 @@ void main() {
       _createFakeFileSystem(fs, analyticsEnabled: true);
 
       // when
-      final sent =
-          await analytics.sendCommand(FlutterVersion.test(), 'test command');
+      final sent = await analytics.sendCommand(
+        FlutterVersion.test(),
+        'test command',
+      );
 
       // then
       expect(sent, true);
@@ -58,8 +60,10 @@ void main() {
       _createFakeFileSystem(fs, analyticsEnabled: false);
 
       // when
-      final sent =
-          await analytics.sendCommand(FlutterVersion.test(), 'test command');
+      final sent = await analytics.sendCommand(
+        FlutterVersion.test(),
+        'test command',
+      );
 
       // then
       expect(sent, false);
@@ -101,8 +105,10 @@ void main() {
       _createFakeFileSystem(fs, analyticsEnabled: true);
 
       // when
-      final sent =
-          await analytics.sendCommand(FlutterVersion.test(), 'test command');
+      final sent = await analytics.sendCommand(
+        FlutterVersion.test(),
+        'test command',
+      );
 
       // then
       expect(sent, true);
@@ -113,8 +119,10 @@ void main() {
       _createFakeFileSystem(fs, analyticsEnabled: false);
 
       // when
-      final sent =
-          await analytics.sendCommand(FlutterVersion.test(), 'test command');
+      final sent = await analytics.sendCommand(
+        FlutterVersion.test(),
+        'test command',
+      );
 
       // then
       expect(sent, true);
@@ -156,8 +164,10 @@ void main() {
       _createFakeFileSystem(fs, analyticsEnabled: true);
 
       // when
-      final sent =
-          await analytics.sendCommand(FlutterVersion.test(), 'test command');
+      final sent = await analytics.sendCommand(
+        FlutterVersion.test(),
+        'test command',
+      );
 
       // then
       expect(sent, false);
@@ -168,8 +178,10 @@ void main() {
       _createFakeFileSystem(fs, analyticsEnabled: false);
 
       // when
-      final sent =
-          await analytics.sendCommand(FlutterVersion.test(), 'test command');
+      final sent = await analytics.sendCommand(
+        FlutterVersion.test(),
+        'test command',
+      );
 
       // then
       expect(sent, false);
@@ -210,8 +222,10 @@ void main() {
     _createFakeFileSystem(fs, analyticsEnabled: true);
 
     // when
-    final sent =
-        await analytics.sendCommand(FlutterVersion.test(), 'test command');
+    final sent = await analytics.sendCommand(
+      FlutterVersion.test(),
+      'test command',
+    );
 
     // then
     expect(sent, false);
@@ -223,7 +237,9 @@ void _createFakeFileSystem(FileSystem fs, {required bool analyticsEnabled}) {
   fs.directory(configDirPath).createSync(recursive: true);
 
   const configFilePath = '$configDirPath/analytics.json';
-  fs.file(configFilePath).writeAsStringSync(
+  fs
+      .file(configFilePath)
+      .writeAsStringSync(
         jsonEncode({
           'clientId': 'd528c6d1-b621-4a2b-9fcb-b23325c34a23',
           'enabled': analyticsEnabled,
