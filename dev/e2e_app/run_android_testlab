@@ -4,13 +4,22 @@ set -euo pipefail
 # This script requires following environment variables to be set:
 # * ANDROID_DEVICE_MODEL (for example: "oriole")
 # * ANDROID_DEVICE_VERSION (for example: "33")
+# * ANDROID_DEVICE_LOCALE (optional, defaults to "en" if not set)
+
+# Handle locale variable with default
+if [ -z "${ANDROID_DEVICE_LOCALE:-}" ]; then
+    ANDROID_DEVICE_LOCALE="en"
+    echo "No ANDROID_DEVICE_LOCALE provided, using default: $ANDROID_DEVICE_LOCALE"
+else
+    echo "Using locale: $ANDROID_DEVICE_LOCALE"
+fi
 
 gcloud firebase test android run \
 	--type instrumentation \
 	--app build/app/outputs/apk/debug/app-debug.apk \
 	--test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
-	--device model="$ANDROID_DEVICE_MODEL",version="$ANDROID_DEVICE_VERSION",locale=en,orientation=portrait \
-	--timeout 10m \
+	--device model="$ANDROID_DEVICE_MODEL",version="$ANDROID_DEVICE_VERSION",locale="$ANDROID_DEVICE_LOCALE",orientation=portrait \
+	--timeout 15m \
 	--results-bucket="patrol_runs" \
 	--use-orchestrator \
 	--environment-variables clearPackageData=true

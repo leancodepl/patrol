@@ -506,11 +506,17 @@
         try automator.tap(
           on: IOSSelector(
             elementType: IOSElementType.button,
-            label: "Add"
+            identifier: "Add"
           ),
           inApp: request.appId,
           withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
         )
+      }
+    }
+
+    func getLocale(request: GetLocaleRequest) throws -> GetLocaleResponse {
+      return try runCatching {
+        try automator.getLocale()
       }
     }
 

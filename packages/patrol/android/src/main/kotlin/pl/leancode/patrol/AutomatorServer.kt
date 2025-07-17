@@ -5,6 +5,8 @@ import pl.leancode.patrol.contracts.Contracts
 import pl.leancode.patrol.contracts.Contracts.ConfigureRequest
 import pl.leancode.patrol.contracts.Contracts.DarkModeRequest
 import pl.leancode.patrol.contracts.Contracts.EnterTextRequest
+import pl.leancode.patrol.contracts.Contracts.GetLocaleRequest
+import pl.leancode.patrol.contracts.Contracts.GetLocaleResponse
 import pl.leancode.patrol.contracts.Contracts.GetNativeUITreeRequest
 import pl.leancode.patrol.contracts.Contracts.GetNativeUITreeRespone
 import pl.leancode.patrol.contracts.Contracts.GetNativeViewsRequest
@@ -26,6 +28,7 @@ import pl.leancode.patrol.contracts.Contracts.TapOnNotificationRequest
 import pl.leancode.patrol.contracts.Contracts.TapRequest
 import pl.leancode.patrol.contracts.Contracts.WaitUntilVisibleRequest
 import pl.leancode.patrol.contracts.NativeAutomatorServer
+import java.util.Locale
 
 class AutomatorServer(private val automation: Automator) : NativeAutomatorServer() {
 
@@ -516,6 +519,19 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
 
     override fun setMockLocation(request: SetMockLocationRequest) {
         automation.setMockLocation(request.latitude, request.longitude, request.packageName)
+    }
+
+    override fun getLocale(request: GetLocaleRequest): GetLocaleResponse {
+        val locale = Locale.getDefault()
+        val languageCode = locale.language
+        val regionCode = locale.country
+        val localeIdentifier = locale.toString()
+
+        return GetLocaleResponse(
+            languageCode = languageCode,
+            regionCode = regionCode,
+            localeIdentifier = localeIdentifier
+        )
     }
 
     override fun debug() {

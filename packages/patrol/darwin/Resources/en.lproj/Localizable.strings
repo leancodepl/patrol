@@ -1,0 +1,25 @@
+/* Permission dialog buttons */
+"ok" = "OK";
+"allow" = "Allow";
+"allow_once" = "Allow Once";
+"allow_while_using_app" = "Allow While Using App";
+"dont_allow" = "Don’t Allow";
+"limit_access" = "Limit Access…";  // … is a Unicode ellipsis
+"allow_full_access" = "Allow Full Access";
+
+/* Notification identifiers */
+"open" = "Open";
+
+/* Settings navigation */
+"developer" = "Developer";
+"dark_appearance" = "Dark Appearance";
+"display_brightness" = "Display & Brightness";
+"dark" = "Dark";
+"light" = "Light";
+
+/* Location precision */
+"precise_off" = "Precise: Off";
+"precise_on" = "Precise: On"; 
+
+/* Gallery */
+"add" = "Add";

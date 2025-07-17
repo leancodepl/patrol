@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Airplane mode toggle -->
+    <string name="airplane_mode">Tryb samolotowy</string>
+    
+    <!-- Location settings -->
+    <string name="use_location">Włącz lokalizację</string>
+</resources> 
