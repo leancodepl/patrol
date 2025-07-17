@@ -159,6 +159,11 @@ void patrolTest(
 
       if (constants.hotRestartEnabled &&
           global_state.isCurrentTestLastInGroup) {
+        // Patrol log that test is finished
+        // If test fails this code will not be executed
+        patrolLog.log(
+          LogEntry(message: 'Test finished'),
+        );
         await Future.doWhile(() async {
           await widgetTester.pump();
           // Wait indefinitely in develop mode after the last test
