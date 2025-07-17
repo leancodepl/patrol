@@ -19,9 +19,7 @@ import 'package:test_api/src/backend/invoker.dart';
 // ignore: implementation_imports
 import 'package:test_api/src/backend/live_test.dart';
 
-/// We need [Test] to check test hierarchy.
-// ignore: implementation_imports
-import 'package:test_api/src/backend/test.dart';
+import 'common.dart';
 
 /// Maximum test case length for ATO, after transformations.
 ///
@@ -118,12 +116,8 @@ bool _isLastTestInGroup(LiveTest currentTest, Group group) {
   // Get ALL entries (both tests and groups) in the group
   for (final entry in group.entries) {
     if (!isInternalTestExplorerEntry(entry)) {
-      // Extract individual entry name by removing the group prefix
-      final fullName = entry.name;
-      final groupPrefix = '${group.name} ';
-      final individualEntryName = fullName.startsWith(groupPrefix)
-          ? fullName.substring(groupPrefix.length)
-          : fullName;
+      final individualEntryName =
+          deduplicateGroupEntryName(group.name, entry.name);
       allEntriesInGroup.add(individualEntryName);
     }
   }
@@ -148,12 +142,8 @@ bool _isLastEntryInGroup(Group entry, Group parentGroup) {
   // Get all entries (both tests and groups) in the parent group
   for (final parentEntry in parentGroup.entries) {
     if (!isInternalTestExplorerEntry(parentEntry)) {
-      // For entries, we need to extract the name relative to the parent group
-      final fullName = parentEntry.name;
-      final parentPrefix = '${parentGroup.name} ';
-      final relativeName = fullName.startsWith(parentPrefix)
-          ? fullName.substring(parentPrefix.length)
-          : fullName;
+      final relativeName =
+          deduplicateGroupEntryName(parentGroup.name, parentEntry.name);
       entriesInGroup.add(relativeName);
     }
   }
@@ -163,11 +153,8 @@ bool _isLastEntryInGroup(Group entry, Group parentGroup) {
   }
 
   // Get the relative name of our entry
-  final entryFullName = entry.name;
-  final parentPrefix = '${parentGroup.name} ';
-  final entryRelativeName = entryFullName.startsWith(parentPrefix)
-      ? entryFullName.substring(parentPrefix.length)
-      : entryFullName;
+  final entryRelativeName =
+      deduplicateGroupEntryName(parentGroup.name, entry.name);
 
   final lastEntryName = entriesInGroup.last;
 
