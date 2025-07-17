@@ -148,27 +148,28 @@ void patrolTest(
       );
       await callback(patrolTester);
 
-      // We need to silent this warning to avoid false positive
-      // avoid_redundant_argument_values
-      // ignore: prefer_const_declarations
-      final waitSeconds = const int.fromEnvironment('PATROL_WAIT');
-      final waitDuration = Duration(seconds: waitSeconds);
-
       if (debugDefaultTargetPlatformOverride !=
           patrolBinding.workaroundDebugDefaultTargetPlatformOverride) {
         debugDefaultTargetPlatformOverride =
             patrolBinding.workaroundDebugDefaultTargetPlatformOverride;
       }
 
-      if (waitDuration > Duration.zero) {
-        final stopwatch = Stopwatch()..start();
+      // In develop mode (hot restart enabled), wait indefinitely to allow user interaction
+      // and avoid the "Test Completed" screen, but only after the last test in the group
+
+      if (constants.hotRestartEnabled &&
+          global_state.isCurrentTestLastInGroup) {
+        // Patrol log that test is finished
+        // If test fails this code will not be executed
+        patrolLog.log(
+          LogEntry(
+            message:
+                'All tests were executed. Press "r" to start again or "q" to quit',
+          ),
+        );
+        // Wait indefinitely in develop mode after the last test
         await Future.doWhile(() async {
           await widgetTester.pump();
-          if (stopwatch.elapsed > waitDuration) {
-            stopwatch.stop();
-            return false;
-          }
-
           return true;
         });
       }
