@@ -148,12 +148,6 @@ void patrolTest(
       );
       await callback(patrolTester);
 
-      // We need to silent this warning to avoid false positive
-      // avoid_redundant_argument_values
-      // ignore: prefer_const_declarations
-      final waitSeconds = const int.fromEnvironment('PATROL_WAIT');
-      final waitDuration = Duration(seconds: waitSeconds);
-
       if (debugDefaultTargetPlatformOverride !=
           patrolBinding.workaroundDebugDefaultTargetPlatformOverride) {
         debugDefaultTargetPlatformOverride =
@@ -168,17 +162,6 @@ void patrolTest(
         await Future.doWhile(() async {
           await widgetTester.pump();
           // Wait indefinitely in develop mode after the last test
-          return true;
-        });
-      } else if (waitDuration > Duration.zero) {
-        final stopwatch = Stopwatch()..start();
-        await Future.doWhile(() async {
-          await widgetTester.pump();
-          if (stopwatch.elapsed > waitDuration) {
-            stopwatch.stop();
-            return false;
-          }
-
           return true;
         });
       }
