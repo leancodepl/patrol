@@ -57,16 +57,12 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: const Key('scaffold'),
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
+      appBar: AppBar(title: Text(widget.title)),
       body: ListView(
         padding: EdgeInsets.all(8),
         key: const Key('listViewKey'),
         children: [
-          const Text(
-            'You have pushed the button this many times:',
-          ),
+          const Text('You have pushed the button this many times:'),
           Text(
             '$_counter',
             key: const Key('counterText'),
@@ -141,25 +137,19 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
           ),
           TextButton(
             onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute<void>(
-                builder: (_) => const LoadingScreen(),
-              ),
+              MaterialPageRoute<void>(builder: (_) => const LoadingScreen()),
             ),
             child: const Text('Open loading screen'),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute<void>(
-                builder: (_) => const OverlayScreen(),
-              ),
+              MaterialPageRoute<void>(builder: (_) => const OverlayScreen()),
             ),
             child: const Text('Open overlay screen'),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute<void>(
-                builder: (_) => const ScrollingScreen(),
-              ),
+              MaterialPageRoute<void>(builder: (_) => const ScrollingScreen()),
             ),
             child: const Text('Open scrolling screen'),
           ),

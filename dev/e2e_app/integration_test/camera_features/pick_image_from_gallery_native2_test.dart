@@ -7,11 +7,14 @@ void main() {
   patrol('pick image from gallery - native2', ($) async {
     await createApp($);
     final cameraHelpers = CameraHelpers($);
-    if (await $.native2.isVirtualDevice() && Platform.isAndroid) {
+    final isVirtualDevice = await $.native2.isVirtualDevice();
+    if (isVirtualDevice && Platform.isAndroid) {
       await cameraHelpers.takePhotosAcceptDialogsAndOpenAppOnEmulator();
     } else if (Platform.isAndroid) {
       await cameraHelpers
           .takePhotosAcceptDialogsAndOpenAppOnRealDeviceAndroid();
+    } else if (Platform.isIOS && !isVirtualDevice) {
+      await cameraHelpers.takePhotosAcceptDialogsAndOpenAppOnRealDeviceIOS();
     }
     await $(#cameraFeaturesButton).scrollTo().tap();
     await $(#chooseFromGalleryButton).tap();

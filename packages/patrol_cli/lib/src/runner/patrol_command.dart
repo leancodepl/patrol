@@ -89,14 +89,6 @@ abstract class PatrolCommand extends Command<int> {
     );
   }
 
-  void usesWaitOption() {
-    argParser.addOption(
-      'wait',
-      help: 'Seconds to wait after the test finishes.',
-      defaultsTo: '0',
-    );
-  }
-
   void usesDartDefineOption() {
     argParser.addMultiOption(
       'dart-define',
