@@ -4,5 +4,5 @@
     <string name="airplane_mode">Tryb samolotowy</string>
     
     <!-- Location settings -->
-    <string name="use_location">Użyj lokalizacji</string>
+    <string name="use_location">Włącz lokalizację</string>
 </resources> 
