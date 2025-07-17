@@ -1,6 +1,19 @@
 // This file wraps the Invoker API, which is internal to package:test.
 // ignore: implementation_imports
+
+// Ignoring this because causes conflicts between linter and analyzer
+// ignore: dangling_library_doc_comments
+/// We need [Group] to check test hierarchy.
+// ignore: implementation_imports
+import 'package:test_api/src/backend/group.dart';
+
+/// We need [Invoker] to get the current test.
+// ignore: implementation_imports
 import 'package:test_api/src/backend/invoker.dart';
+
+/// We need [LiveTest] to check test hierarchy.
+// ignore: implementation_imports
+import 'package:test_api/src/backend/live_test.dart';
 
 /// We need [Test] to check test hierarchy.
 // ignore: implementation_imports
@@ -44,57 +57,113 @@ bool get isCurrentTestLastInGroup {
   final invoker = Invoker.current!;
   final currentTest = invoker.liveTest;
 
-  print('=== DEBUG isCurrentTestLastInGroup ===');
-  print('Current test name: ${currentTest.individualName}');
-  print('Groups count: ${currentTest.groups.length}');
-
-  for (int i = 0; i < currentTest.groups.length; i++) {
-    print('Group $i: ${currentTest.groups[i].name}');
+  // If no groups, check if this test is the last entry at root level
+  if (currentTest.groups.isEmpty) {
+    return _isLastTestAtRootLevel(currentTest);
   }
 
-  // Get the immediate parent group
-  final parentGroup =
-      currentTest.groups.isNotEmpty ? currentTest.groups.last : null;
+  // Check if current test is last in the entire hierarchy
+  return _isLastInHierarchy(currentTest);
+}
 
-  if (parentGroup == null) {
-    print('No parent group found - returning true');
-    return true;
+/// Checks if a root-level test is the last entry in the entire test file
+bool _isLastTestAtRootLevel(LiveTest currentTest) {
+  try {
+    // A root-level test should generally not stop the execution
+    // unless there's evidence it's truly the last test
+    // This is a conservative approach
+    return false;
+  } catch (err) {
+    return false;
   }
+}
 
-  print('Parent group name: ${parentGroup.name}');
-  print('Parent group entries count: ${parentGroup.entries.length}');
+/// Recursively checks if the current test is the last entry in the hierarchy
+bool _isLastInHierarchy(LiveTest currentTest) {
+  // Start from the most immediate group (last in the groups list)
+  for (var groupIndex = currentTest.groups.length - 1;
+      groupIndex >= 0;
+      groupIndex--) {
+    final currentGroup = currentTest.groups[groupIndex];
 
-  // Get all tests in the parent group (excluding nested groups)
-  final testsInGroup = <String>[];
-  for (final entry in parentGroup.entries) {
-    print('Entry: ${entry.name}, type: ${entry.runtimeType}');
-    if (entry is Test && entry.name != 'patrol_test_explorer') {
-      // Extract individual test name by removing the group prefix
-      final fullName = entry.name;
-      final groupPrefix = '${parentGroup.name} ';
-      final individualTestName = fullName.startsWith(groupPrefix)
-          ? fullName.substring(groupPrefix.length)
-          : fullName;
-      testsInGroup.add(individualTestName);
-      print('Added test: $fullName -> individual: $individualTestName');
+    if (groupIndex == currentTest.groups.length - 1) {
+      // This is the immediate parent group - check if current test is last test
+      if (!_isLastTestInGroup(currentTest, currentGroup)) {
+        return false;
+      }
+    } else {
+      // This is a higher-level group - check if the child group is last entry
+      final childGroup = currentTest.groups[groupIndex + 1];
+      if (!_isLastEntryInGroup(childGroup, currentGroup)) {
+        return false;
+      }
     }
   }
 
-  print('Tests in group: $testsInGroup');
+  // If we get here, the test is last at every level of the hierarchy
 
-  // Check if current test is the last one in the list
-  if (testsInGroup.isEmpty) {
-    print('No tests in group - returning true');
-    return true;
+  return true;
+}
+
+/// Checks if the current test is the last test in the given group
+bool _isLastTestInGroup(LiveTest currentTest, Group group) {
+  final allEntriesInGroup = <String>[];
+
+  // Get ALL entries (both tests and groups) in the group
+  for (final entry in group.entries) {
+    if (entry.name != 'patrol_test_explorer') {
+      // Extract individual entry name by removing the group prefix
+      final fullName = entry.name;
+      final groupPrefix = '${group.name} ';
+      final individualEntryName = fullName.startsWith(groupPrefix)
+          ? fullName.substring(groupPrefix.length)
+          : fullName;
+      allEntriesInGroup.add(individualEntryName);
+    }
+  }
+
+  if (allEntriesInGroup.isEmpty) {
+    return false;
   }
 
   final currentTestName = currentTest.individualName;
-  final lastTestName = testsInGroup.last;
+  final lastEntryName = allEntriesInGroup.last;
 
-  print('Current test: $currentTestName');
-  print('Last test in group: $lastTestName');
-  print('Is last: ${currentTestName == lastTestName}');
-  print('=== END DEBUG ===');
+  // The current test is last only if it's the very last entry (not just last test)
+  final isLast = currentTestName == lastEntryName;
 
-  return currentTestName == lastTestName;
+  return isLast;
+}
+
+/// Checks if the given entry (group or test) is the last entry in the parent group
+bool _isLastEntryInGroup(Group entry, Group parentGroup) {
+  final entriesInGroup = <String>[];
+
+  // Get all entries (both tests and groups) in the parent group
+  for (final parentEntry in parentGroup.entries) {
+    if (parentEntry.name != 'patrol_test_explorer') {
+      // For entries, we need to extract the name relative to the parent group
+      final fullName = parentEntry.name;
+      final parentPrefix = '${parentGroup.name} ';
+      final relativeName = fullName.startsWith(parentPrefix)
+          ? fullName.substring(parentPrefix.length)
+          : fullName;
+      entriesInGroup.add(relativeName);
+    }
+  }
+
+  if (entriesInGroup.isEmpty) {
+    return false;
+  }
+
+  // Get the relative name of our entry
+  final entryFullName = entry.name;
+  final parentPrefix = '${parentGroup.name} ';
+  final entryRelativeName = entryFullName.startsWith(parentPrefix)
+      ? entryFullName.substring(parentPrefix.length)
+      : entryFullName;
+
+  final lastEntryName = entriesInGroup.last;
+
+  return entryRelativeName == lastEntryName;
 }
