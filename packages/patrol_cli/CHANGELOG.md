@@ -1,3 +1,7 @@
+## Unreleased
+
+- Re-land: Do not pass flavor as dart-define when building. (#2636)
+
 ## 3.8.0
 
 - Remove `--wait` argument from patrol develop command
