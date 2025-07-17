@@ -1,12 +1,12 @@
 class AnsiCodes {
   /// This is the Unicode escape sequence for the ASCII escape character (ESC).
-  static const String escape = '\u001b';
+  static const escape = '\u001b';
 
   /// `[0m` - Reset all styles.
-  static const String reset = '$escape[0m';
+  static const reset = '$escape[0m';
 
   /// `[1m` - Set text to bold.
-  static const String bold = '$escape[1m';
+  static const bold = '$escape[1m';
 
   static String color(String color) => '$escape[${color}m';
 
