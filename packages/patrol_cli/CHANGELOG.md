@@ -1,3 +1,7 @@
+## Unreleased
+
+- Fix `patrol build` not printing the  paths to the APKs. (#2684)
+
 ## 3.8.0
 
 - Remove `--wait` argument from patrol develop command
