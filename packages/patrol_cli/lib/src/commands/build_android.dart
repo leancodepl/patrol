@@ -208,13 +208,24 @@ class BuildAndroidCommand extends PatrolCommand {
 
     final appApkPath = join(flavorPath, '$apkPrefix.apk');
 
-    // Test APK path
-    final testApkPath = join(
-      baseApkPath,
-      'androidTest',
-      buildMode.toLowerCase(),
-      '$apkPrefix-androidTest.apk',
-    );
+    // Test APK path - include flavor if present
+    final String testApkPath;
+    if (flavor != null) {
+      testApkPath = join(
+        baseApkPath,
+        'androidTest',
+        flavor,
+        buildMode.toLowerCase(),
+        '$apkPrefix-androidTest.apk',
+      );
+    } else {
+      testApkPath = join(
+        baseApkPath,
+        'androidTest',
+        buildMode.toLowerCase(),
+        '$apkPrefix-androidTest.apk',
+      );
+    }
 
     _logger
       ..info('$appApkPath (app under test)')
