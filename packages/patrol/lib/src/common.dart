@@ -162,11 +162,14 @@ void patrolTest(
         // Patrol log that test is finished
         // If test fails this code will not be executed
         patrolLog.log(
-          LogEntry(message: 'Test finished'),
+          LogEntry(
+            message:
+                'All tests were executed. Press "r" to start again or "q" to quit',
+          ),
         );
+        // Wait indefinitely in develop mode after the last test
         await Future.doWhile(() async {
           await widgetTester.pump();
-          // Wait indefinitely in develop mode after the last test
           return true;
         });
       }
