@@ -7,6 +7,10 @@
 // ignore: implementation_imports
 import 'package:test_api/src/backend/group.dart';
 
+/// We need [GroupEntry] to check test hierarchy.
+// ignore: implementation_imports
+import 'package:test_api/src/backend/group_entry.dart';
+
 /// We need [Invoker] to get the current test.
 // ignore: implementation_imports
 import 'package:test_api/src/backend/invoker.dart';
@@ -23,6 +27,20 @@ import 'package:test_api/src/backend/test.dart';
 ///
 /// See https://github.com/leancodepl/patrol/issues/1725
 const maxTestLength = 190;
+
+/// The name of the special internal test used to explore the test hierarchy.
+/// This is a hack around https://github.com/dart-lang/test/issues/1998.
+const _patrolTestExplorerName = 'patrol_test_explorer';
+
+/// Returns true if the given test/entry name is the internal patrol test explorer.
+bool isInternalTestExplorer(String name) {
+  return name == _patrolTestExplorerName;
+}
+
+/// Returns true if the given entry is the internal patrol test explorer.
+bool isInternalTestExplorerEntry(GroupEntry entry) {
+  return entry.name == _patrolTestExplorerName;
+}
 
 /// This file wraps the [Invoker] API, which is internal to package:test. We
 /// want to minimize the usage of internal APIs to a minimum.
@@ -57,25 +75,13 @@ bool get isCurrentTestLastInGroup {
   final invoker = Invoker.current!;
   final currentTest = invoker.liveTest;
 
-  // If no groups, check if this test is the last entry at root level
+  // If no groups, this test is not considered "last" for our purposes
   if (currentTest.groups.isEmpty) {
-    return _isLastTestAtRootLevel(currentTest);
+    return false;
   }
 
   // Check if current test is last in the entire hierarchy
   return _isLastInHierarchy(currentTest);
-}
-
-/// Checks if a root-level test is the last entry in the entire test file
-bool _isLastTestAtRootLevel(LiveTest currentTest) {
-  try {
-    // A root-level test should generally not stop the execution
-    // unless there's evidence it's truly the last test
-    // This is a conservative approach
-    return false;
-  } catch (err) {
-    return false;
-  }
 }
 
 /// Recursively checks if the current test is the last entry in the hierarchy
@@ -111,7 +117,7 @@ bool _isLastTestInGroup(LiveTest currentTest, Group group) {
 
   // Get ALL entries (both tests and groups) in the group
   for (final entry in group.entries) {
-    if (entry.name != 'patrol_test_explorer') {
+    if (!isInternalTestExplorerEntry(entry)) {
       // Extract individual entry name by removing the group prefix
       final fullName = entry.name;
       final groupPrefix = '${group.name} ';
@@ -141,7 +147,7 @@ bool _isLastEntryInGroup(Group entry, Group parentGroup) {
 
   // Get all entries (both tests and groups) in the parent group
   for (final parentEntry in parentGroup.entries) {
-    if (parentEntry.name != 'patrol_test_explorer') {
+    if (!isInternalTestExplorerEntry(parentEntry)) {
       // For entries, we need to extract the name relative to the parent group
       final fullName = parentEntry.name;
       final parentPrefix = '${parentGroup.name} ';
