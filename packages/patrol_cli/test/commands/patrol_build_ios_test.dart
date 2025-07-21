@@ -1,4 +1,5 @@
 import 'package:mocktail/mocktail.dart';
+import 'package:path/path.dart' show join;
 import 'package:patrol_cli/src/commands/build_ios.dart';
 import 'package:patrol_cli/src/compatibility_checker/compatibility_checker.dart';
 import 'package:patrol_cli/src/dart_defines_reader.dart';
@@ -36,12 +37,12 @@ void main() {
 
         verify(
           () => mockLogger.info(
-            'build/ios_integ/Build/Products/debug-iphonesimulator/Runner.app (app under test)',
+            '${join('build', 'ios_integ', 'Build', 'Products', 'debug-iphonesimulator', 'Runner.app')} (app under test)',
           ),
         ).called(1);
         verify(
           () => mockLogger.info(
-            'build/ios_integ/Build/Products/debug-iphonesimulator/RunnerUITests-Runner.app (test instrumentation app)',
+            '${join('build', 'ios_integ', 'Build', 'Products', 'debug-iphonesimulator', 'RunnerUITests-Runner.app')} (test instrumentation app)',
           ),
         ).called(1);
       });
@@ -51,12 +52,12 @@ void main() {
 
         verify(
           () => mockLogger.info(
-            'build/ios_integ/Build/Products/release-iphoneos/Runner.app (app under test)',
+            '${join('build', 'ios_integ', 'Build', 'Products', 'release-iphoneos', 'Runner.app')} (app under test)',
           ),
         ).called(1);
         verify(
           () => mockLogger.info(
-            'build/ios_integ/Build/Products/release-iphoneos/RunnerUITests-Runner.app (test instrumentation app)',
+            '${join('build', 'ios_integ', 'Build', 'Products', 'release-iphoneos', 'RunnerUITests-Runner.app')} (test instrumentation app)',
           ),
         ).called(1);
       });
