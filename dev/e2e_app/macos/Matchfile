@@ -1,5 +1,4 @@
 git_url("git@github.com:leancodepl/certificates.git")
 storage_mode("git")
 type("development")
-platform("macos")
 app_identifier(["pl.leancode.patrol.*"])
