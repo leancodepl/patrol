@@ -45,7 +45,7 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
   ///
   /// You most likely don't want to call it yourself.
   PatrolBinding(NativeAutomatorConfig config)
-      : _serviceExtensions = DevtoolsServiceExtensions(config) {
+    : _serviceExtensions = DevtoolsServiceExtensions(config) {
     setUp(() {
       if (_isDevelopMode) {
         return;
@@ -77,20 +77,19 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
 
       if (nameOfRequestedTest == _currentDartTest) {
         if (const bool.fromEnvironment('COVERAGE_ENABLED')) {
-          postEvent(
-            'waitForCoverageCollection',
-            {'mainIsolateId': Service.getIsolateId(Isolate.current)},
-          );
+          postEvent('waitForCoverageCollection', {
+            'mainIsolateId': Service.getIsolateId(Isolate.current),
+          });
 
           final testCompleter = Completer<void>();
 
-          registerExtension(
-            'ext.patrol.markTestCompleted',
-            (method, parameters) async {
-              testCompleter.complete();
-              return ServiceExtensionResponse.result(jsonEncode({}));
-            },
-          );
+          registerExtension('ext.patrol.markTestCompleted', (
+            method,
+            parameters,
+          ) async {
+            testCompleter.complete();
+            return ServiceExtensionResponse.result(jsonEncode({}));
+          });
 
           await testCompleter.future;
         }
@@ -206,8 +205,9 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
     VoidCallback invariantTester, {
     String description = '',
     @Deprecated(
-        'This parameter has no effect. Use the `timeout` parameter on `testWidgets` instead. '
-        'This feature was deprecated after v2.6.0-1.0.pre.')
+      'This parameter has no effect. Use the `timeout` parameter on `testWidgets` instead. '
+      'This feature was deprecated after v2.6.0-1.0.pre.',
+    )
     Duration? timeout,
   }) async {
     await super.runTest(
@@ -215,7 +215,7 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
       // will get "A test overrode FlutterError.onError" exception.
       _isDevelopMode
           ? testBody
-          : () async => _wrapTestBodyWithExceptionGatherer(testBody),
+          : () => _wrapTestBodyWithExceptionGatherer(testBody),
       invariantTester,
       description: description,
     );

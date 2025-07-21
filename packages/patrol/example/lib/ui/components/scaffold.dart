@@ -4,12 +4,7 @@ import 'package:example/ui/style/test_style.dart';
 import 'package:flutter/material.dart';
 
 class PTScaffold extends StatelessWidget {
-  const PTScaffold({
-    super.key,
-    this.top,
-    required this.body,
-    this.bodyKey,
-  });
+  const PTScaffold({super.key, this.top, required this.body, this.bodyKey});
 
   final Widget? top;
   final Widget body;
@@ -20,7 +15,7 @@ class PTScaffold extends StatelessWidget {
     final top = this.top;
 
     return PopScope(
-      onPopInvokedWithResult: (_, __) => Future.value(false),
+      onPopInvokedWithResult: (_, _) => Future.value(false),
       child: Scaffold(
         backgroundColor: PTColors.textDark,
         body: DefaultTextStyle(
