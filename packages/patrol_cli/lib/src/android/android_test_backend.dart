@@ -166,7 +166,7 @@ class AndroidTestBackend {
   Future<void> buildApkConfigOnly(
     FlutterCommand flutterCommand,
   ) async {
-    await _processManager.start(
+    final process = await _processManager.start(
       [
         flutterCommand.executable,
         ...flutterCommand.arguments,
@@ -178,6 +178,11 @@ class AndroidTestBackend {
       ],
       runInShell: true,
     );
+
+    final exitCode = await process.exitCode;
+    if (exitCode != 0) {
+      throw Exception('Failed to build APK config with exit code $exitCode');
+    }
   }
 
   /// Detects the orchestrator version and warns the user if it's 1.5.0.
