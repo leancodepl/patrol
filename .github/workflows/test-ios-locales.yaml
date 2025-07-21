@@ -2,9 +2,10 @@ name: test locales on ios device
 
 on:
   workflow_dispatch:
-  pull_request:
-    paths:
-      - 'packages/patrol/darwin/Resources/**'
+  # TODO: Locales does not work on FTL physical devices, so we need to disable this for now
+  # pull_request:
+  #   paths:
+  #     - 'packages/patrol/darwin/Resources/**'
 
 
 jobs:
