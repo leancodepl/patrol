@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:meta/meta.dart';
 import 'package:path/path.dart' show join;
 import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
@@ -176,7 +177,7 @@ class BuildAndroidCommand extends PatrolCommand {
 
     try {
       await _androidTestBackend.build(androidOpts);
-      _printApkPaths(
+      printApkPaths(
         flavor: flavor,
         buildMode: buildMode.androidName,
       );
@@ -191,7 +192,8 @@ class BuildAndroidCommand extends PatrolCommand {
     return 0;
   }
 
-  void _printApkPaths({String? flavor, required String buildMode}) {
+  @visibleForTesting
+  void printApkPaths({String? flavor, required String buildMode}) {
     // Standard Android APK output paths (relative to project root)
     final baseApkPath = join('build', 'app', 'outputs', 'apk');
 
