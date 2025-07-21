@@ -49,7 +49,7 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions android = FirebaseOptions(
+  static const android = FirebaseOptions(
     apiKey: '',
     appId: '',
     messagingSenderId: '',
@@ -57,7 +57,7 @@ class DefaultFirebaseOptions {
     storageBucket: '',
   );
 
-  static const FirebaseOptions ios = FirebaseOptions(
+  static const ios = FirebaseOptions(
     apiKey: '',
     appId: '',
     messagingSenderId: '',

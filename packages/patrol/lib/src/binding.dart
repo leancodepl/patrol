@@ -158,7 +158,7 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
 
   /// Keys are the test descriptions, and values are either [_success] or a
   /// [Failure].
-  final Map<String, Object> _testResults = <String, Object>{};
+  final _testResults = <String, Object>{};
 
   final DevtoolsServiceExtensions _serviceExtensions;
 

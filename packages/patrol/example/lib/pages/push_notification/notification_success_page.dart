@@ -21,7 +21,7 @@ class _NotificationSuccessPage extends StatefulWidget {
 class _NotificationSuccessPageState extends State<_NotificationSuccessPage> {
   late ConfettiController _confettiController;
   late final StreamSubscription<Position> _locationStream;
-  String _location = '';
+  var _location = '';
 
   @override
   void initState() {

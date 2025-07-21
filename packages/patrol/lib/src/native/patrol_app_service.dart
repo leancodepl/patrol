@@ -79,7 +79,7 @@ class PatrolAppService extends PatrolAppServiceServer {
     return _testExecutionCompleted.future;
   }
 
-  final PatrolLogWriter _patrolLog = PatrolLogWriter();
+  final _patrolLog = PatrolLogWriter();
 
   /// Marks [dartFileName] as completed with the given [passed] status.
   ///

@@ -82,7 +82,7 @@ class NativeAutomator2 {
     _config.logger('NativeAutomatorClient created, port: ${_config.port}');
   }
 
-  final PatrolLogWriter _patrolLog = PatrolLogWriter();
+  final _patrolLog = PatrolLogWriter();
   final NativeAutomatorConfig _config;
 
   late final NativeAutomatorClient _client;

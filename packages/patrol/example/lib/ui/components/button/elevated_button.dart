@@ -36,7 +36,7 @@ class PTElevatedButton extends StatelessWidget {
               : MainAxisAlignment.center,
           children: [
             if (caption != null) Text(caption),
-            if (trailing != null) trailing,
+            ?trailing,
           ],
         ).horizontallyPadded24,
       ),

@@ -41,7 +41,7 @@ class PTScaffold extends StatelessWidget {
               child: Column(
                 key: bodyKey,
                 children: [
-                  if (top != null) top,
+                  ?top,
                   Expanded(child: body),
                 ],
               ),

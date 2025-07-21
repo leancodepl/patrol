@@ -22,7 +22,7 @@ class _QuestionsPage extends StatefulWidget {
 class _QuestionsPageState extends State<_QuestionsPage> {
   var _taskIndex = 0;
   late final List<Widget> _answers;
-  final List<String> _tasks = [
+  final _tasks = <String>[
     "Click on elevated button with centered 'Fluttercon' text",
     'Click on an elevated button, which is placed in a list tile with a dash icon',
     'Click on the third button that is enabled',

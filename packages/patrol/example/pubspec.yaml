@@ -42,6 +42,7 @@ dev_dependencies:
   patrol_cli:
     path: ../../patrol_cli
 
+  test_api: any
 flutter_launcher_icons:
   android: 'launcher_icon'
   ios: true
