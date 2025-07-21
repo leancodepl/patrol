@@ -935,24 +935,6 @@
       }
     }
 
-    func getLocale() throws -> GetLocaleResponse {
-      return runAction("getting device locale") {
-        let locale = Locale.current
-        let languageCode = locale.languageCode ?? "en"
-        let regionCode = locale.regionCode ?? "US"
-        let localeIdentifier = locale.identifier
-
-        Logger.shared.i(
-          "Device locale: \(localeIdentifier) (language: \(languageCode), region: \(regionCode))")
-
-        return GetLocaleResponse(
-          languageCode: languageCode,
-          regionCode: regionCode,
-          localeIdentifier: localeIdentifier
-        )
-      }
-    }
-
     // MARK: Private stuff
     private func clearAndEnterText(data: String, element: XCUIElement, dx: CGFloat, dy: CGFloat) {
       let currentValue = element.value as? String
