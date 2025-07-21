@@ -944,23 +944,3 @@ Map<String, dynamic> _$PickMultipleImagesFromGalleryRequestToJson(
       'appId': instance.appId,
       'isNative2': instance.isNative2,
     };
-
-GetLocaleResponse _$GetLocaleResponseFromJson(Map<String, dynamic> json) =>
-    GetLocaleResponse(
-      languageCode: json['languageCode'] as String,
-      regionCode: json['regionCode'] as String,
-      localeIdentifier: json['localeIdentifier'] as String,
-    );
-
-Map<String, dynamic> _$GetLocaleResponseToJson(GetLocaleResponse instance) =>
-    <String, dynamic>{
-      'languageCode': instance.languageCode,
-      'regionCode': instance.regionCode,
-      'localeIdentifier': instance.localeIdentifier,
-    };
-
-GetLocaleRequest _$GetLocaleRequestFromJson(Map<String, dynamic> json) =>
-    GetLocaleRequest();
-
-Map<String, dynamic> _$GetLocaleRequestToJson(GetLocaleRequest instance) =>
-    <String, dynamic>{};

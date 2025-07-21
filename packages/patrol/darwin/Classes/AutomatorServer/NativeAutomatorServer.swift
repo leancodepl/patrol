@@ -50,7 +50,6 @@ protocol NativeAutomatorServer {
     func pickMultipleImagesFromGallery(request: PickMultipleImagesFromGalleryRequest) throws
     func debug() throws
     func setMockLocation(request: SetMockLocationRequest) throws
-    func getLocale(request: GetLocaleRequest) throws -> GetLocaleResponse
     func markPatrolAppServiceReady() throws
     func isVirtualDevice() throws -> IsVirtualDeviceResponse
     func getOsVersion() throws -> GetOsVersionResponse
@@ -304,13 +303,6 @@ extension NativeAutomatorServer {
         return HTTPResponse(.ok)
     }
 
-    private func getLocaleHandler(request: HTTPRequest) throws -> HTTPResponse {
-        let requestArg = try JSONDecoder().decode(GetLocaleRequest.self, from: request.body)
-        let response = try getLocale(request: requestArg)
-        let body = try JSONEncoder().encode(response)
-        return HTTPResponse(.ok, body: body)
-    }
-
     private func markPatrolAppServiceReadyHandler(request: HTTPRequest) throws -> HTTPResponse {
         try markPatrolAppServiceReady()
         return HTTPResponse(.ok)
@@ -550,11 +542,6 @@ extension NativeAutomatorServer {
             request in handleRequest(
                 request: request,
                 handler: setMockLocationHandler)
-        }
-        server.route(.POST, "getLocale") {
-            request in handleRequest(
-                request: request,
-                handler: getLocaleHandler)
         }
         server.route(.POST, "markPatrolAppServiceReady") {
             request in handleRequest(

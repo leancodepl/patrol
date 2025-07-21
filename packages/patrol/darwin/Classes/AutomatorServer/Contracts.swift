@@ -428,13 +428,3 @@ public struct PickMultipleImagesFromGalleryRequest: Codable {
   public var isNative2: Bool
 }
 
-public struct GetLocaleResponse: Codable {
-  public var languageCode: String
-  public var regionCode: String
-  public var localeIdentifier: String
-}
-
-public struct GetLocaleRequest: Codable {
-
-}
-

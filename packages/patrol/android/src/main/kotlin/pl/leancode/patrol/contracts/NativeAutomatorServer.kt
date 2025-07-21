@@ -57,7 +57,6 @@ abstract class NativeAutomatorServer {
     abstract fun pickMultipleImagesFromGallery(request: Contracts.PickMultipleImagesFromGalleryRequest)
     abstract fun debug()
     abstract fun setMockLocation(request: Contracts.SetMockLocationRequest)
-    abstract fun getLocale(request: Contracts.GetLocaleRequest): Contracts.GetLocaleResponse
     abstract fun markPatrolAppServiceReady()
     abstract fun isVirtualDevice(): Contracts.IsVirtualDeviceResponse
     abstract fun getOsVersion(): Contracts.GetOsVersionResponse
@@ -261,11 +260,6 @@ abstract class NativeAutomatorServer {
         val body = json.fromJson(it.bodyString(), Contracts.SetMockLocationRequest::class.java)
         setMockLocation(body)
         Response(OK)
-      },
-      "getLocale" bind POST to {
-        val body = json.fromJson(it.bodyString(), Contracts.GetLocaleRequest::class.java)
-        val response = getLocale(body)
-        Response(OK).body(json.toJson(response))
       },
       "markPatrolAppServiceReady" bind POST to {
         markPatrolAppServiceReady()

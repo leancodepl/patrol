@@ -330,14 +330,6 @@ class PickMultipleImagesFromGalleryRequest {
   late bool isNative2;
 }
 
-class GetLocaleResponse {
-  late String languageCode;
-  late String regionCode;
-  late String localeIdentifier;
-}
-
-class GetLocaleRequest {}
-
 abstract class NativeAutomator<IOSServer, AndroidServer, DartClient> {
   void initialize();
   void configure(ConfigureRequest request);
@@ -403,7 +395,6 @@ abstract class NativeAutomator<IOSServer, AndroidServer, DartClient> {
   // other
   void debug();
   void setMockLocation(SetMockLocationRequest request);
-  GetLocaleResponse getLocale(GetLocaleRequest request);
 
   // TODO(bartekpacia): Move this RPC into a new PatrolNativeTestService service because it doesn't fit here
   void markPatrolAppServiceReady();
