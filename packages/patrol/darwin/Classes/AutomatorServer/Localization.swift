@@ -6,57 +6,49 @@ class Localization {
   /**
    * Gets the current device locale
    */
-  private static func getDeviceLocale() -> String {
-    return Locale.current.languageCode ?? "en"
+  private static func getDeviceLocale() -> String? {
+    return Locale.current.languageCode
   }
 
   /**
    * Gets localized string based on device locale
    * Supports English (en), German (de), French (fr) and Polish (pl) locales
    */
-  static func getLocalizedString(key: String) -> String {
+  static func getLocalizedString(key: String) throws -> String {  // Mark as throws
     let locale = getDeviceLocale()
-    Logger.shared.i("Device locale: \(locale)")
-
-    // Default to English if the language is not supported
-    let supportedLanguages = ["en", "de", "fr", "pl"]
-    let targetLanguage = supportedLanguages.contains(locale) ? locale : "en"
+    if let unwrappedLocale = locale {
+      Logger.shared.i("Device locale: \(unwrappedLocale)")
+    } else {
+      Logger.shared.i("Device locale not found, fallback to English")
+    }
+    let targetLanguage = locale ?? "en"
 
     // Get the bundle containing the Localizable.strings files
     let bundle = Bundle(for: Localization.self)
 
-    do {
-      // Try to load the localized strings file for the target language
-      if let path = bundle.path(
-        forResource: "Localizable", ofType: "strings", inDirectory: "\(targetLanguage).lproj")
-      {
-        return try getLocalizedStringForLanguage(
-          key: key, language: targetLanguage, bundle: bundle, path: path)
+    // The do-catch block is now outside, so we directly throw from here
+    // Try to load the localized strings file for the target language
+    if let path = bundle.path(
+      forResource: "Localizable", ofType: "strings", inDirectory: "\(targetLanguage).lproj")
+    {
+      return try getLocalizedStringForLanguage(
+        key: key, language: targetLanguage, bundle: bundle, path: path)
+    } else {
+      Logger.shared.i(
+        "Could not find Localizable.strings for \(targetLanguage), trying English strings as fallback"
+      )
+      // Fallback to English if target language specific file is not found
+      if targetLanguage != "en" {
+        return try getLocalizedStringForLanguage(key: key, language: "en", bundle: bundle)
       } else {
-        Logger.shared.i(
-          "Could not find Localizable.strings for \(targetLanguage), trying English strings as fallback"
+        // If even English is not found or this is already 'en', throw an error
+        Logger.shared.e(
+          "Localizable.strings file not found for language: \(targetLanguage) and no English fallback."
         )
-        // Fallback to English if target language specific file is not found
-        if targetLanguage != "en" {
-          return try getLocalizedStringForLanguage(key: key, language: "en", bundle: bundle)
-        } else {
-          // If even English is not found or this is already 'en', we return the key itself
-          Logger.shared.e(
-            "Localizable.strings file not found for language: \(targetLanguage) and no English fallback."
-          )
-          return key  // Fallback: return the key itself
-        }
+        // Throwing the specific error when no fallback is possible
+        throw LocalizationError.resourceNotFound(
+          "No Localizable.strings file found for \(targetLanguage) and no English fallback.")
       }
-    } catch let error as LocalizationError {
-      Logger.shared.e(
-        "Localization error for key '\(key)' in language '\(targetLanguage)': \(error.localizedDescription)"
-      )
-      return key  // Fallback: return the key itself on error
-    } catch {
-      Logger.shared.e(
-        "An unexpected error occurred during localization for key '\(key)': \(error.localizedDescription)"
-      )
-      return key  // Fallback: return the key itself on unexpected error
     }
   }
 
