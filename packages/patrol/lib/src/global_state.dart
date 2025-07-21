@@ -37,7 +37,7 @@ bool isInternalTestExplorer(String name) {
 
 /// Returns true if the given entry is the internal patrol test explorer.
 bool isInternalTestExplorerEntry(GroupEntry entry) {
-  return entry.name == _patrolTestExplorerName;
+  return isInternalTestExplorer(entry.name);
 }
 
 /// This file wraps the [Invoker] API, which is internal to package:test. We
