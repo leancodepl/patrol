@@ -1,3 +1,6 @@
+## Unreleased
+- Extend `$.native.enterText()` on Android to support `AutoCompleteTextView`. (#1162)
+
 ## 3.17.0
 
 - Add `takeCameraPhoto` method. (#2660)
