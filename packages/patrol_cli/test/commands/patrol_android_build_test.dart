@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:mocktail/mocktail.dart';
 import 'package:patrol_cli/src/commands/build_android.dart';
 import 'package:patrol_cli/src/compatibility_checker/compatibility_checker.dart';
@@ -34,18 +36,38 @@ void main() {
       );
     });
 
+    // Helper function to create platform-appropriate paths
+    String buildPath(List<String> parts) {
+      return parts.join(Platform.pathSeparator);
+    }
+
     group('printApkPaths', () {
       test('prints correct paths for debug build without flavor', () {
         command.printApkPaths(buildMode: 'debug');
 
         verify(
           () => mockLogger.info(
-            'build/app/outputs/apk/debug/app-debug.apk (app under test)',
+            '${buildPath([
+                  'build',
+                  'app',
+                  'outputs',
+                  'apk',
+                  'debug',
+                  'app-debug.apk',
+                ])} (app under test)',
           ),
         ).called(1);
         verify(
           () => mockLogger.info(
-            'build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk (test instrumentation app)',
+            '${buildPath([
+                  'build',
+                  'app',
+                  'outputs',
+                  'apk',
+                  'androidTest',
+                  'debug',
+                  'app-debug-androidTest.apk',
+                ])} (test instrumentation app)',
           ),
         ).called(1);
       });
@@ -55,12 +77,27 @@ void main() {
 
         verify(
           () => mockLogger.info(
-            'build/app/outputs/apk/release/app-release.apk (app under test)',
+            '${buildPath([
+                  'build',
+                  'app',
+                  'outputs',
+                  'apk',
+                  'release',
+                  'app-release.apk',
+                ])} (app under test)',
           ),
         ).called(1);
         verify(
           () => mockLogger.info(
-            'build/app/outputs/apk/androidTest/release/app-release-androidTest.apk (test instrumentation app)',
+            '${buildPath([
+                  'build',
+                  'app',
+                  'outputs',
+                  'apk',
+                  'androidTest',
+                  'release',
+                  'app-release-androidTest.apk',
+                ])} (test instrumentation app)',
           ),
         ).called(1);
       });
@@ -70,12 +107,29 @@ void main() {
 
         verify(
           () => mockLogger.info(
-            'build/app/outputs/apk/dev/debug/app-dev-debug.apk (app under test)',
+            '${buildPath([
+                  'build',
+                  'app',
+                  'outputs',
+                  'apk',
+                  'dev',
+                  'debug',
+                  'app-dev-debug.apk',
+                ])} (app under test)',
           ),
         ).called(1);
         verify(
           () => mockLogger.info(
-            'build/app/outputs/apk/androidTest/dev/debug/app-dev-debug-androidTest.apk (test instrumentation app)',
+            '${buildPath([
+                  'build',
+                  'app',
+                  'outputs',
+                  'apk',
+                  'androidTest',
+                  'dev',
+                  'debug',
+                  'app-dev-debug-androidTest.apk',
+                ])} (test instrumentation app)',
           ),
         ).called(1);
       });
@@ -85,12 +139,29 @@ void main() {
 
         verify(
           () => mockLogger.info(
-            'build/app/outputs/apk/prod/release/app-prod-release.apk (app under test)',
+            '${buildPath([
+                  'build',
+                  'app',
+                  'outputs',
+                  'apk',
+                  'prod',
+                  'release',
+                  'app-prod-release.apk',
+                ])} (app under test)',
           ),
         ).called(1);
         verify(
           () => mockLogger.info(
-            'build/app/outputs/apk/androidTest/prod/release/app-prod-release-androidTest.apk (test instrumentation app)',
+            '${buildPath([
+                  'build',
+                  'app',
+                  'outputs',
+                  'apk',
+                  'androidTest',
+                  'prod',
+                  'release',
+                  'app-prod-release-androidTest.apk',
+                ])} (test instrumentation app)',
           ),
         ).called(1);
       });
@@ -100,12 +171,27 @@ void main() {
 
         verify(
           () => mockLogger.info(
-            'build/app/outputs/apk/profile/app-profile.apk (app under test)',
+            '${buildPath([
+                  'build',
+                  'app',
+                  'outputs',
+                  'apk',
+                  'profile',
+                  'app-profile.apk',
+                ])} (app under test)',
           ),
         ).called(1);
         verify(
           () => mockLogger.info(
-            'build/app/outputs/apk/androidTest/profile/app-profile-androidTest.apk (test instrumentation app)',
+            '${buildPath([
+                  'build',
+                  'app',
+                  'outputs',
+                  'apk',
+                  'androidTest',
+                  'profile',
+                  'app-profile-androidTest.apk',
+                ])} (test instrumentation app)',
           ),
         ).called(1);
       });
@@ -115,12 +201,29 @@ void main() {
 
         verify(
           () => mockLogger.info(
-            'build/app/outputs/apk/staging/profile/app-staging-profile.apk (app under test)',
+            '${buildPath([
+                  'build',
+                  'app',
+                  'outputs',
+                  'apk',
+                  'staging',
+                  'profile',
+                  'app-staging-profile.apk',
+                ])} (app under test)',
           ),
         ).called(1);
         verify(
           () => mockLogger.info(
-            'build/app/outputs/apk/androidTest/staging/profile/app-staging-profile-androidTest.apk (test instrumentation app)',
+            '${buildPath([
+                  'build',
+                  'app',
+                  'outputs',
+                  'apk',
+                  'androidTest',
+                  'staging',
+                  'profile',
+                  'app-staging-profile-androidTest.apk',
+                ])} (test instrumentation app)',
           ),
         ).called(1);
       });
@@ -130,12 +233,27 @@ void main() {
 
         verify(
           () => mockLogger.info(
-            'build/app/outputs/apk/debug/app-debug.apk (app under test)',
+            '${buildPath([
+                  'build',
+                  'app',
+                  'outputs',
+                  'apk',
+                  'debug',
+                  'app-debug.apk',
+                ])} (app under test)',
           ),
         ).called(1);
         verify(
           () => mockLogger.info(
-            'build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk (test instrumentation app)',
+            '${buildPath([
+                  'build',
+                  'app',
+                  'outputs',
+                  'apk',
+                  'androidTest',
+                  'debug',
+                  'app-debug-androidTest.apk',
+                ])} (test instrumentation app)',
           ),
         ).called(1);
       });
@@ -145,12 +263,29 @@ void main() {
 
         verify(
           () => mockLogger.info(
-            'build/app/outputs/apk/Dev/release/app-Dev-release.apk (app under test)',
+            '${buildPath([
+                  'build',
+                  'app',
+                  'outputs',
+                  'apk',
+                  'Dev',
+                  'release',
+                  'app-Dev-release.apk',
+                ])} (app under test)',
           ),
         ).called(1);
         verify(
           () => mockLogger.info(
-            'build/app/outputs/apk/androidTest/Dev/release/app-Dev-release-androidTest.apk (test instrumentation app)',
+            '${buildPath([
+                  'build',
+                  'app',
+                  'outputs',
+                  'apk',
+                  'androidTest',
+                  'Dev',
+                  'release',
+                  'app-Dev-release-androidTest.apk',
+                ])} (test instrumentation app)',
           ),
         ).called(1);
       });
@@ -160,12 +295,29 @@ void main() {
 
         verify(
           () => mockLogger.info(
-            'build/app/outputs/apk/staging-prod/release/app-staging-prod-release.apk (app under test)',
+            '${buildPath([
+                  'build',
+                  'app',
+                  'outputs',
+                  'apk',
+                  'staging-prod',
+                  'release',
+                  'app-staging-prod-release.apk',
+                ])} (app under test)',
           ),
         ).called(1);
         verify(
           () => mockLogger.info(
-            'build/app/outputs/apk/androidTest/staging-prod/release/app-staging-prod-release-androidTest.apk (test instrumentation app)',
+            '${buildPath([
+                  'build',
+                  'app',
+                  'outputs',
+                  'apk',
+                  'androidTest',
+                  'staging-prod',
+                  'release',
+                  'app-staging-prod-release-androidTest.apk',
+                ])} (test instrumentation app)',
           ),
         ).called(1);
       });
@@ -175,12 +327,27 @@ void main() {
 
         verify(
           () => mockLogger.info(
-            'build/app/outputs/apk/debug/app-debug.apk (app under test)',
+            '${buildPath([
+                  'build',
+                  'app',
+                  'outputs',
+                  'apk',
+                  'debug',
+                  'app-debug.apk',
+                ])} (app under test)',
           ),
         ).called(1);
         verify(
           () => mockLogger.info(
-            'build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk (test instrumentation app)',
+            '${buildPath([
+                  'build',
+                  'app',
+                  'outputs',
+                  'apk',
+                  'androidTest',
+                  'debug',
+                  'app-debug-androidTest.apk',
+                ])} (test instrumentation app)',
           ),
         ).called(1);
       });
@@ -204,10 +371,25 @@ void main() {
         command.printApkPaths(flavor: 'dev', buildMode: 'debug');
 
         final captured = verify(() => mockLogger.info(captureAny())).captured;
-        expect(captured[0], contains('build/app/outputs/apk/dev/debug/'));
+        expect(
+          captured[0],
+          contains(
+            buildPath(['build', 'app', 'outputs', 'apk', 'dev', 'debug']),
+          ),
+        );
         expect(
           captured[1],
-          contains('build/app/outputs/apk/androidTest/dev/debug/'),
+          contains(
+            buildPath([
+              'build',
+              'app',
+              'outputs',
+              'apk',
+              'androidTest',
+              'dev',
+              'debug',
+            ]),
+          ),
         );
       });
 
@@ -242,13 +424,28 @@ void main() {
         expect(
           nullFlavorOutput[0],
           equals(
-            'build/app/outputs/apk/debug/app-debug.apk (app under test)',
+            '${buildPath([
+                  'build',
+                  'app',
+                  'outputs',
+                  'apk',
+                  'debug',
+                  'app-debug.apk',
+                ])} (app under test)',
           ),
         );
         expect(
           nullFlavorOutput[1],
           equals(
-            'build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk (test instrumentation app)',
+            '${buildPath([
+                  'build',
+                  'app',
+                  'outputs',
+                  'apk',
+                  'androidTest',
+                  'debug',
+                  'app-debug-androidTest.apk',
+                ])} (test instrumentation app)',
           ),
         );
       });
