@@ -1,6 +1,7 @@
 ## Unreleased
 
 - Re-land: Do not pass flavor as dart-define when building. (#2636)
+- Wait for generating gradlew - fix race condition (#2678)
 - Fix `patrol build` not printing the  paths to the APKs. (#2684)
 
 ## 3.8.0
