@@ -102,13 +102,13 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
         padding: EdgeInsets.all(8),
         key: K.listViewKey,
         children: [
-          const Text('FIRST_KEY: ${String.fromEnvironment('FIRST_KEY')}'),
-          const Text(
+          Text('FIRST_KEY: ${String.fromEnvironment('FIRST_KEY')}'),
+          Text(
             'SECOND_KEY: ${String.fromEnvironment('SECOND_KEY')}',
           ),
-          const Text('THIRD_KEY: ${String.fromEnvironment('THIRD_KEY')}'),
-          const Text('FIFTH_KEY: ${String.fromEnvironment('FIFTH_KEY')}'),
-          const Text(
+          Text('THIRD_KEY: ${String.fromEnvironment('THIRD_KEY')}'),
+          Text('FIFTH_KEY: ${String.fromEnvironment('FIFTH_KEY')}'),
+          Text(
             'BOOL_DEFINED: ${String.fromEnvironment('BOOL_DEFINED')}',
           ),
           const Text(
