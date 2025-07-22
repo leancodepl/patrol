@@ -2,16 +2,14 @@ part of 'node.dart';
 
 final class AndroidNode extends Node {
   AndroidNode({required this.view, this.parent}) {
-    children = view.children
-        .map((view) => AndroidNode(view: view, parent: this))
-        .toList();
+    children =
+        view.children
+            .map((view) => AndroidNode(view: view, parent: this))
+            .toList();
 
     fullNodeName = createNodeName(view.className, view.resourceName);
 
-    shortNodeName = _shortNodeName(
-      view.className,
-      view.resourceName,
-    );
+    shortNodeName = _shortNodeName(view.className, view.resourceName);
 
     initialCharacter = createInitialCharacter(shortNodeName);
   }
@@ -33,10 +31,7 @@ final class AndroidNode extends Node {
   @override
   late final String shortNodeName;
 
-  static final List<String> _ignoreTypePrefixes = [
-    'android.widget.',
-    'android.view.',
-  ];
+  static const _ignoreTypePrefixes = ['android.widget.', 'android.view.'];
 
   String _shortNodeName(String? type, String? resourceName) {
     var typeName = type ?? '';
