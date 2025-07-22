@@ -49,10 +49,10 @@ Future<void> runAppService(PatrolAppService service) async {
 class PatrolAppService extends PatrolAppServiceServer {
   /// Creates a new [PatrolAppService].
   PatrolAppService({required this.topLevelDartTestGroup})
-      : port = const int.fromEnvironment(
-          'PATROL_APP_SERVER_PORT',
-          defaultValue: 8082,
-        );
+    : port = const int.fromEnvironment(
+        'PATROL_APP_SERVER_PORT',
+        defaultValue: 8082,
+      );
 
   /// Port the server will use to listen for incoming HTTP traffic.
   final int port;
@@ -156,20 +156,14 @@ class PatrolAppService extends PatrolAppServiceServer {
 
     if (!testExecutionResult.passed) {
       _patrolLog.log(
-        TestEntry(
-          name: request.name,
-          status: TestEntryStatus.failure,
-        ),
+        TestEntry(name: request.name, status: TestEntryStatus.failure),
       );
-      testExecutionResult.details?.split('\n').forEach(
-            (e) => _patrolLog.log(ErrorEntry(message: e)),
-          );
+      testExecutionResult.details
+          ?.split('\n')
+          .forEach((e) => _patrolLog.log(ErrorEntry(message: e)));
     } else {
       _patrolLog.log(
-        TestEntry(
-          name: request.name,
-          status: TestEntryStatus.success,
-        ),
+        TestEntry(name: request.name, status: TestEntryStatus.success),
       );
     }
 

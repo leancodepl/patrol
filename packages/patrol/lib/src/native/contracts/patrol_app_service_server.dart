@@ -21,8 +21,9 @@ abstract class PatrolAppServiceServer {
     } else if ('runDartTest' == request.url.path) {
       final stringContent = await request.readAsString(utf8);
       final json = jsonDecode(stringContent);
-      final requestObj =
-          RunDartTestRequest.fromJson(json as Map<String, dynamic>);
+      final requestObj = RunDartTestRequest.fromJson(
+        json as Map<String, dynamic>,
+      );
 
       final result = await runDartTest(requestObj);
 

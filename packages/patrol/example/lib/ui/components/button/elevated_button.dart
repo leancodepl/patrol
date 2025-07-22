@@ -34,10 +34,7 @@ class PTElevatedButton extends StatelessWidget {
           mainAxisAlignment: trailing != null
               ? MainAxisAlignment.spaceBetween
               : MainAxisAlignment.center,
-          children: [
-            if (caption != null) Text(caption),
-            ?trailing,
-          ],
+          children: [if (caption != null) Text(caption), ?trailing],
         ).horizontallyPadded24,
       ),
     );
@@ -54,31 +51,30 @@ class PTElevatedButton extends StatelessWidget {
       );
 
   WidgetStateProperty<Color?>? get _backgroundColor =>
-      WidgetStateProperty.resolveWith(
-        (states) {
-          if (states.contains(WidgetState.pressed)) {
-            return PTColors.lcYellowPressed;
-          } else if (states.contains(WidgetState.disabled)) {
-            return PTColors.backgroundDisabled;
-          }
+      WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.pressed)) {
+          return PTColors.lcYellowPressed;
+        } else if (states.contains(WidgetState.disabled)) {
+          return PTColors.backgroundDisabled;
+        }
 
-          return PTColors.lcYellow;
-        },
-      );
+        return PTColors.lcYellow;
+      });
 
   WidgetStateProperty<TextStyle?>? get _textStyle =>
-      WidgetStateProperty.resolveWith(
-        (states) {
-          if (states.contains(WidgetState.pressed)) {
-            return PTTextStyles.bodyMedium
-                .copyWith(foreground: Paint()..color = PTColors.textDark);
-          } else if (states.contains(WidgetState.disabled)) {
-            return PTTextStyles.bodyMedium
-                .copyWith(foreground: Paint()..color = PTColors.textDisabled);
-          }
+      WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.pressed)) {
+          return PTTextStyles.bodyMedium.copyWith(
+            foreground: Paint()..color = PTColors.textDark,
+          );
+        } else if (states.contains(WidgetState.disabled)) {
+          return PTTextStyles.bodyMedium.copyWith(
+            foreground: Paint()..color = PTColors.textDisabled,
+          );
+        }
 
-          return PTTextStyles.bodyBold
-              .copyWith(foreground: Paint()..color = PTColors.textDark);
-        },
-      );
+        return PTTextStyles.bodyBold.copyWith(
+          foreground: Paint()..color = PTColors.textDark,
+        );
+      });
 }

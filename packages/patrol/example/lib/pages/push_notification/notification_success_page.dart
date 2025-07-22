@@ -40,9 +40,8 @@ class _NotificationSuccessPageState extends State<_NotificationSuccessPage> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: PTColors.lcWhite),
-          onPressed: () => Navigator.of(context).popUntil(
-            (route) => route.isFirst,
-          ),
+          onPressed: () =>
+              Navigator.of(context).popUntil((route) => route.isFirst),
         ),
       ),
       body: Column(
@@ -78,8 +77,10 @@ class _NotificationSuccessPageState extends State<_NotificationSuccessPage> {
   }
 
   Future<void> _onPositionUpdated(Position pos) async {
-    final placemarks =
-        await placemarkFromCoordinates(pos.latitude, pos.longitude);
+    final placemarks = await placemarkFromCoordinates(
+      pos.latitude,
+      pos.longitude,
+    );
     setState(() {
       _location = 'Your location: ${placemarks.firstOrNull?.street ?? ''}';
     });

@@ -76,19 +76,13 @@ class _QuestionsPageState extends State<_QuestionsPage> {
 
   List<Widget> get firstTaskAnswers {
     return [
-      PTTextButton(
-        onPressed: _showError,
-        text: 'Fluttercon',
-      ),
+      PTTextButton(onPressed: _showError, text: 'Fluttercon'),
       PTElevatedButton(
         onPressed: _showError,
         caption: '',
         trailing: const Text('Fluttercon'),
       ),
-      PTElevatedButton(
-        onPressed: _showNextQuestion,
-        caption: 'Fluttercon',
-      ),
+      PTElevatedButton(onPressed: _showNextQuestion, caption: 'Fluttercon'),
     ]..shuffle();
   }
 
@@ -102,10 +96,7 @@ class _QuestionsPageState extends State<_QuestionsPage> {
       Center(
         child: SizedBox(
           width: 128,
-          child: _EnabledButton(
-            onPressed: _showError,
-            showTrailing: true,
-          ),
+          child: _EnabledButton(onPressed: _showError, showTrailing: true),
         ),
       ),
     ]..shuffle();
@@ -136,9 +127,7 @@ class _QuestionsPageState extends State<_QuestionsPage> {
 }
 
 class _Answers extends StatelessWidget {
-  const _Answers({
-    required this.answers,
-  });
+  const _Answers({required this.answers});
 
   final List<Widget> answers;
 
@@ -167,10 +156,7 @@ class _Answers extends StatelessWidget {
 }
 
 class _Answer extends StatelessWidget {
-  const _Answer({
-    required this.letter,
-    required this.answer,
-  });
+  const _Answer({required this.letter, required this.answer});
 
   final String letter;
   final Widget answer;
@@ -182,10 +168,7 @@ class _Answer extends StatelessWidget {
         SizedBox(
           width: 14,
           height: 19,
-          child: Text(
-            letter,
-            style: PTTextStyles.bodyBold,
-          ),
+          child: Text(letter, style: PTTextStyles.bodyBold),
         ),
         const SizedBox(width: 16),
         Expanded(child: answer),
@@ -195,10 +178,7 @@ class _Answer extends StatelessWidget {
 }
 
 class _EnabledButton extends StatelessWidget {
-  const _EnabledButton({
-    required this.onPressed,
-    this.showTrailing = false,
-  });
+  const _EnabledButton({required this.onPressed, this.showTrailing = false});
 
   final VoidCallback onPressed;
   final bool showTrailing;
@@ -218,35 +198,23 @@ class _DisabledButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const PTElevatedButton(
-      caption: 'click',
-      onPressed: null,
-    );
+    return const PTElevatedButton(caption: 'click', onPressed: null);
   }
 }
 
 class _Dash extends StatelessWidget {
-  const _Dash({
-    required this.color,
-  });
+  const _Dash({required this.color});
 
   final Color color;
 
   @override
   Widget build(BuildContext context) {
-    return Icon(
-      Icons.flutter_dash,
-      color: color,
-      size: 24,
-    );
+    return Icon(Icons.flutter_dash, color: color, size: 24);
   }
 }
 
 class _Tile extends StatelessWidget {
-  const _Tile({
-    required this.leading,
-    this.trailing,
-  });
+  const _Tile({required this.leading, this.trailing});
 
   final Widget leading;
   final Widget? trailing;
@@ -260,14 +228,8 @@ class _Tile extends StatelessWidget {
         color: PTColors.backgroundGrey,
       ),
       child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 8,
-          vertical: 6,
-        ),
-        leading: SizedBox(
-          width: 128,
-          child: leading,
-        ),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+        leading: SizedBox(width: 128, child: leading),
         trailing: Padding(
           padding: const EdgeInsets.only(right: 8),
           child: trailing,

@@ -276,10 +276,7 @@ DartGroupEntry createDartTestGroup(
 /// should return 'myTest'
 @internal
 String deduplicateGroupEntryName(String parentName, String currentName) {
-  return currentName.substring(
-    parentName.length + 1,
-    currentName.length,
-  );
+  return currentName.substring(parentName.length + 1, currentName.length);
 }
 
 /// Recursively prints the structure of the test suite and reports test count
@@ -298,17 +295,16 @@ int reportGroupStructure(DartGroupEntry group, {int indentation = 0}) {
       debugPrint("$indent     -- test: '${entry.name}'");
     } else {
       for (final subgroup in entry.entries) {
-        testCount +=
-            reportGroupStructure(subgroup, indentation: indentation + 5);
+        testCount += reportGroupStructure(
+          subgroup,
+          indentation: indentation + 5,
+        );
       }
     }
   }
 
   if (indentation == 0) {
-    postEvent(
-      'testCount',
-      {'testCount': testCount},
-    );
+    postEvent('testCount', {'testCount': testCount});
   }
 
   return testCount;
