@@ -48,15 +48,9 @@ class DevtoolsServiceExtensions {
 
       debugPrint('End $name');
 
-      return <String, dynamic>{
-        'result': res,
-        'success': true,
-      };
+      return <String, dynamic>{'result': res, 'success': true};
     } catch (err, st) {
-      return <String, dynamic>{
-        'result': '$err $st',
-        'success': false,
-      };
+      return <String, dynamic>{'result': '$err $st', 'success': false};
     }
   }
 }

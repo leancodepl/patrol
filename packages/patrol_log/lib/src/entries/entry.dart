@@ -53,7 +53,7 @@ enum EntryType {
       'log' => EntryType.log,
       'warning' => EntryType.warning,
       'config' => EntryType.config,
-      _ => throw ArgumentError('Unknown EntryType: $name')
+      _ => throw ArgumentError('Unknown EntryType: $name'),
     };
   }
 }

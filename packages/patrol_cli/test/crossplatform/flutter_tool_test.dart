@@ -31,34 +31,27 @@ void main() {
     );
   });
 
-  group(
-    'FlutterTool',
-    () {
-      test(
-        'attach passes deviceId correctly',
-        () {
-          final process = MockProcess();
-          when(() => process.stdout)
-              .thenAnswer((_) => Stream<List<int>>.fromIterable([]));
-          when(() => process.stderr)
-              .thenAnswer((_) => Stream<List<int>>.fromIterable([]));
-          when(() => processManager.start(any()))
-              .thenAnswer((_) async => process);
+  group('FlutterTool', () {
+    test('attach passes deviceId correctly', () {
+      final process = MockProcess();
+      when(
+        () => process.stdout,
+      ).thenAnswer((_) => Stream<List<int>>.fromIterable([]));
+      when(
+        () => process.stderr,
+      ).thenAnswer((_) => Stream<List<int>>.fromIterable([]));
+      when(() => processManager.start(any())).thenAnswer((_) async => process);
 
-          flutterTool.attach(
-            flutterCommand: flutterCommand,
-            deviceId: 'testDeviceId',
-            target: 'target',
-            appId: 'appId',
-            dartDefines: {},
-            openBrowser: false,
-          );
-
-          verify(
-            () => processManager.start(any(that: contains('testDeviceId'))),
-          );
-        },
+      flutterTool.attach(
+        flutterCommand: flutterCommand,
+        deviceId: 'testDeviceId',
+        target: 'target',
+        appId: 'appId',
+        dartDefines: {},
+        openBrowser: false,
       );
-    },
-  );
+
+      verify(() => processManager.start(any(that: contains('testDeviceId'))));
+    });
+  });
 }

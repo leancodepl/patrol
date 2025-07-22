@@ -18,5 +18,5 @@ gcloud firebase test ios run \
 	--type xctest \
 	--test "build/ios_integ/Build/Products/ios_tests.zip" \
 	--device model="$IOS_DEVICE_MODEL",version="$IOS_DEVICE_VERSION",locale=en_US,orientation=portrait \
-	--timeout 10m \
+	--timeout 30m \
 	--results-bucket="patrol_runs"

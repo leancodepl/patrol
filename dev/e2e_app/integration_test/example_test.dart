@@ -8,54 +8,46 @@ void main() {
     expect(2 + 2, equals(4));
   });
 
-  patrol(
-    'counter state is the same after going to Home and switching apps',
-    ($) async {
-      await createApp($);
+  patrol('counter state is the same after going to Home and switching apps', (
+    $,
+  ) async {
+    await createApp($);
 
-      await $(FloatingActionButton).tap();
-      expect($(#counterText).text, '1');
+    await $(FloatingActionButton).tap();
+    expect($(#counterText).text, '1');
 
-      await $(#textField).enterText('Hello, Flutter!');
-      expect($('Hello, Flutter!'), findsOneWidget);
+    await $(#textField).enterText('Hello, Flutter!');
+    expect($('Hello, Flutter!'), findsOneWidget);
 
-      $.log('Tapped the button');
-      await $.native.pressHome();
-      await $.native.openApp();
+    $.log('Tapped the button');
+    await $.native.pressHome();
+    await $.native.openApp();
 
-      expect($(#counterText).text, '1');
-      await $(FloatingActionButton).tap();
+    expect($(#counterText).text, '1');
+    await $(FloatingActionButton).tap();
 
-      expect($(#counterText).text, '2');
-      expect($('Hello, Flutter!'), findsOneWidget);
-    },
-  );
+    expect($(#counterText).text, '2');
+    expect($('Hello, Flutter!'), findsOneWidget);
+  });
 
-  patrol(
-    'short test with two tags',
-    skip: true,
-    tags: ['smoke', 'fume'],
-    ($) async {
-      await createApp($);
+  patrol('short test with two tags', skip: true, tags: ['smoke', 'fume'], (
+    $,
+  ) async {
+    await createApp($);
 
-      await $(FloatingActionButton).tap();
-      expect($(#counterText).text, '1');
-      await $(FloatingActionButton).tap();
-      expect($(#counterText).text, '2');
-    },
-  );
+    await $(FloatingActionButton).tap();
+    expect($(#counterText).text, '1');
+    await $(FloatingActionButton).tap();
+    expect($(#counterText).text, '2');
+  });
 
-  patrol(
-    'short test with tag',
-    tags: ['smoke'],
-    ($) async {
-      await createApp($);
+  patrol('short test with tag', tags: ['smoke'], ($) async {
+    await createApp($);
 
-      await $(FloatingActionButton).tap();
-      expect($(#counterText).text, '1');
+    await $(FloatingActionButton).tap();
+    expect($(#counterText).text, '1');
 
-      await $(#textField).enterText('Hello, Flutter!');
-      expect($('Hello, Flutter!'), findsOneWidget);
-    },
-  );
+    await $(#textField).enterText('Hello, Flutter!');
+    expect($('Hello, Flutter!'), findsOneWidget);
+  });
 }

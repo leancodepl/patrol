@@ -25,10 +25,10 @@ class TargetRunResult with EquatableMixin {
   bool get allRunsPassed => runs.every((run) => run == TargetRunStatus.passed);
 
   bool get allRunsFailed => runs.every(
-        (run) =>
-            run == TargetRunStatus.failedToBuild ||
-            run == TargetRunStatus.failedToExecute,
-      );
+    (run) =>
+        run == TargetRunStatus.failedToBuild ||
+        run == TargetRunStatus.failedToExecute,
+  );
 
   /// True if at least 1 test run was canceled.
   bool get canceled => runs.any((run) => run == TargetRunStatus.canceled);
@@ -132,9 +132,9 @@ class RunResults with EquatableMixin {
 class _NativeTestRunner implements TestRunner, Disposable {
   final Map<String, Device> _devices = {};
   final Set<String> _targets = {};
-  bool _running = false;
-  bool _disposed = false;
-  int _repeats = 1;
+  var _running = false;
+  var _disposed = false;
+  var _repeats = 1;
 
   @override
   set repeats(int newValue) {

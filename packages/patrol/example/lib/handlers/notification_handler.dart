@@ -101,10 +101,7 @@ class NotificationHandler {
     });
   }
 
-  Future<void> _showNotification({
-    required String title,
-    String? body,
-  }) async {
+  Future<void> _showNotification({required String title, String? body}) {
     const details = NotificationDetails(
       android: AndroidNotificationDetails(
         'patrolChallengeChannelId',

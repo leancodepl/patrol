@@ -5,8 +5,8 @@ import 'package:patrol_cli/src/base/extensions/core.dart';
 
 class DartDefinesReader {
   DartDefinesReader({required Directory projectRoot})
-      : _projectRoot = projectRoot,
-        _fs = projectRoot.fileSystem;
+    : _projectRoot = projectRoot,
+      _fs = projectRoot.fileSystem;
 
   final Directory _projectRoot;
   final FileSystem _fs;
@@ -21,9 +21,21 @@ class DartDefinesReader {
       return {};
     }
 
-    final lines = file.readAsLinesSync()
-      ..removeWhere((line) => line.trim().isEmpty);
-    return _parse(lines);
+    final configRaw = file.readAsStringSync();
+    final lines = configRaw
+        .split('\n')
+        .map((line) => line.trim())
+        .where((line) => line.isNotEmpty)
+        .where((line) => !line.startsWith('#')) // Remove comment lines.
+        .toList();
+
+    final propertyMap = <String, String>{};
+    for (final line in lines) {
+      final property = _parseProperty(line);
+      propertyMap[property.key] = property.value;
+    }
+
+    return propertyMap;
   }
 
   Map<String, String> _parse(List<String> args) {
@@ -101,15 +113,18 @@ class DartDefinesReader {
 
       try {
         // Fix json convert Object value :type '_InternalLinkedHashMap<String, dynamic>' is not a subtype of type 'Map<String, Object>' in type cast
-        (json.decode(configJsonRaw) as Map<String, dynamic>)
-            .forEach((key, value) {
+        (json.decode(configJsonRaw) as Map<String, dynamic>).forEach((
+          key,
+          value,
+        ) {
           dartDefineConfigJsonMap[key] = value;
         });
       } on FormatException catch (err) {
         throw Exception(
-            'Unable to parse the file at path "$path" due to a formatting error. '
-            'Ensure that the file contains valid JSON.\n'
-            'Error details: $err');
+          'Unable to parse the file at path "$path" due to a formatting error. '
+          'Ensure that the file contains valid JSON.\n'
+          'Error details: $err',
+        );
       }
     }
 
@@ -160,35 +175,39 @@ class DartDefinesReader {
 
     final Match? keyValueMatch = DotEnvRegex.keyValue.firstMatch(line);
     if (keyValueMatch == null) {
-      throw Exception('Unable to parse file provided for '
-          '--dart-define-from-file.\n'
-          'Invalid property line: $line');
+      throw Exception(
+        'Unable to parse file provided for '
+        '--dart-define-from-file.\n'
+        'Invalid property line: $line',
+      );
     }
 
     final key = keyValueMatch.group(1)!;
     final value = keyValueMatch.group(2) ?? '';
 
     // Remove wrapping quotes and trailing line comment.
-    final Match? doubleQuotedValueMatch =
-        DotEnvRegex.doubleQuotedValue.firstMatch(value);
+    final Match? doubleQuotedValueMatch = DotEnvRegex.doubleQuotedValue
+        .firstMatch(value);
     if (doubleQuotedValueMatch != null) {
       return MapEntry<String, String>(key, doubleQuotedValueMatch.group(1)!);
     }
 
-    final Match? singleQuotedValueMatch =
-        DotEnvRegex.singleQuotedValue.firstMatch(value);
+    final Match? singleQuotedValueMatch = DotEnvRegex.singleQuotedValue
+        .firstMatch(value);
     if (singleQuotedValueMatch != null) {
       return MapEntry<String, String>(key, singleQuotedValueMatch.group(1)!);
     }
 
-    final Match? backQuotedValueMatch =
-        DotEnvRegex.backQuotedValue.firstMatch(value);
+    final Match? backQuotedValueMatch = DotEnvRegex.backQuotedValue.firstMatch(
+      value,
+    );
     if (backQuotedValueMatch != null) {
       return MapEntry<String, String>(key, backQuotedValueMatch.group(1)!);
     }
 
-    final Match? unquotedValueMatch =
-        DotEnvRegex.unquotedValue.firstMatch(value);
+    final Match? unquotedValueMatch = DotEnvRegex.unquotedValue.firstMatch(
+      value,
+    );
     if (unquotedValueMatch != null) {
       return MapEntry<String, String>(key, unquotedValueMatch.group(1)!);
     }
@@ -199,28 +218,27 @@ class DartDefinesReader {
 
 abstract class DotEnvRegex {
   // Dot env multi-line block value regex
-  static final RegExp multiLineBlock =
-      RegExp(r'^\s*([a-zA-Z_]+[a-zA-Z0-9_]*)\s*=\s*"""\s*(.*)$');
+  static final multiLineBlock = RegExp(
+    r'^\s*([a-zA-Z_]+[a-zA-Z0-9_]*)\s*=\s*"""\s*(.*)$',
+  );
 
   // Dot env full line value regex (eg FOO=bar)
   // Entire line will be matched including key and value
-  static final RegExp keyValue =
-      RegExp(r'^\s*([a-zA-Z_]+[a-zA-Z0-9_]*)\s*=\s*(.*)?$');
+  static final keyValue = RegExp(r'^\s*([a-zA-Z_]+[a-zA-Z0-9_]*)\s*=\s*(.*)?$');
 
   // Dot env value wrapped in double quotes regex (eg FOO="bar")
   // Value between double quotes will be matched (eg only bar in "bar")
-  static final RegExp doubleQuotedValue = RegExp(r'^"(.*)"\s*(\#\s*.*)?$');
+  static final doubleQuotedValue = RegExp(r'^"(.*)"\s*(\#\s*.*)?$');
 
   // Dot env value wrapped in single quotes regex (eg FOO='bar')
   // Value between single quotes will be matched (eg only bar in 'bar')
-  static final RegExp singleQuotedValue = RegExp(r"^'(.*)'\s*(\#\s*.*)?$");
+  static final singleQuotedValue = RegExp(r"^'(.*)'\s*(\#\s*.*)?$");
 
   // Dot env value wrapped in back quotes regex (eg FOO=`bar`)
   // Value between back quotes will be matched (eg only bar in `bar`)
-  static final RegExp backQuotedValue = RegExp(r'^`(.*)`\s*(\#\s*.*)?$');
+  static final backQuotedValue = RegExp(r'^`(.*)`\s*(\#\s*.*)?$');
 
   // Dot env value without quotes regex (eg FOO=bar)
   // Value without quotes will be matched (eg full value after the equals sign)
-  static final RegExp unquotedValue =
-      RegExp(r'^([^#\n\s]*)\s*(?:\s*#\s*(.*))?$');
+  static final unquotedValue = RegExp(r'^([^#\n\s]*)\s*(?:\s*#\s*(.*))?$');
 }

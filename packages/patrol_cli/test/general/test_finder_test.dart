@@ -34,9 +34,7 @@ void _test(Platform platform) {
           isA<ToolExit>().having(
             (exception) => exception.message,
             'message',
-            equals(
-              'target file integration_test/app_test.dart does not exist',
-            ),
+            equals('target file integration_test/app_test.dart does not exist'),
           ),
         ),
       );
@@ -69,9 +67,7 @@ void _test(Platform platform) {
             isA<ToolExit>().having(
               (exception) => exception.message,
               'message',
-              equals(
-                'target directory $target does not contain any tests',
-              ),
+              equals('target directory $target does not contain any tests'),
             ),
           ),
         );
@@ -92,9 +88,9 @@ void _test(Platform platform) {
 
     test('finds tests when target is a directory', () {
       // given
-      final dir = fs
-          .directory(fs.path.join('integration_test', 'features', 'auth'))
-        ..createSync(recursive: true);
+      final dir = fs.directory(
+        fs.path.join('integration_test', 'features', 'auth'),
+      )..createSync(recursive: true);
       dir.childFile('login_test.dart').createSync();
       dir.childFile('register_test.dart').createSync();
       fs
@@ -119,9 +115,9 @@ void _test(Platform platform) {
       'finds tests when target is a directory containing another directory',
       () {
         // given
-        final dir = fs
-            .directory(fs.path.join('integration_test', 'features', 'auth'))
-          ..createSync(recursive: true);
+        final dir = fs.directory(
+          fs.path.join('integration_test', 'features', 'auth'),
+        )..createSync(recursive: true);
         dir.childFile('login_test.dart').createSync();
         dir.childFile('register_test.dart').createSync();
         fs
@@ -165,9 +161,9 @@ void _test(Platform platform) {
       );
 
       expect(
-        testFinder.findTests(
-          [fs.path.join('integration_test', 'auth${fs.path.separator}')],
-        ),
+        testFinder.findTests([
+          fs.path.join('integration_test', 'auth${fs.path.separator}'),
+        ]),
         equals([
           fs.path.join(wd, 'integration_test', 'auth', 'login_test.dart'),
           fs.path.join(wd, 'integration_test', 'auth', 'register_test.dart'),
@@ -216,12 +212,9 @@ void _test(Platform platform) {
   });
 
   group('findAllTests', () {
-    test(
-      'throws ToolExit when integration_test directory does not exist',
-      () {
-        expect(testFinder.findAllTests, throwsToolExit);
-      },
-    );
+    test('throws ToolExit when integration_test directory does not exist', () {
+      expect(testFinder.findAllTests, throwsToolExit);
+    });
 
     test('finds all tests when no target is specified', () {
       // given
@@ -236,12 +229,10 @@ void _test(Platform platform) {
       final wd = fs.currentDirectory.path;
       expect(
         found,
-        equals(
-          [
-            fs.path.join(wd, 'integration_test', 'app_test.dart'),
-            fs.path.join(wd, 'integration_test', 'permission_test.dart'),
-          ],
-        ),
+        equals([
+          fs.path.join(wd, 'integration_test', 'app_test.dart'),
+          fs.path.join(wd, 'integration_test', 'permission_test.dart'),
+        ]),
       );
     });
 

@@ -27,9 +27,8 @@ class _PatrolDevToolsExtensionState extends State<PatrolDevToolsExtension> {
           roots: state.roots,
           currentNode: state.currentNode,
           onNodeChanged: runner.changeNode,
-          onRefreshPressed: (nativeDetails) => runner.getNativeUITree(
-            nativeDetails: nativeDetails,
-          ),
+          onRefreshPressed: (nativeDetails) =>
+              runner.getNativeUITree(nativeDetails: nativeDetails),
         );
       },
     );

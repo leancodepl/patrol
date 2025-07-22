@@ -28,9 +28,9 @@ void main() {
     expect($(SizedBox).containing(Text), findsOneWidget);
     expect($(Column).containing('Hello 2'), findsOneWidget);
 
-    final columnFinder = $(Column).containing(
-      $(Container).containing('Hello 1'),
-    );
+    final columnFinder = $(
+      Column,
+    ).containing($(Container).containing('Hello 1'));
     expect(columnFinder, findsOneWidget);
     expect(columnFinder.finder.evaluate().first.widget.runtimeType, Column);
 
@@ -78,16 +78,18 @@ void main() {
     expect($('Some textSome more text\uFFFC\uFFFC'), findsOneWidget);
   });
 
-  patrolWidgetTest('text returns the nearest visible Text widget (1)',
-      ($) async {
+  patrolWidgetTest('text returns the nearest visible Text widget (1)', (
+    $,
+  ) async {
     await smallPump($);
 
     expect($(#helloText), findsOneWidget);
     expect($(#helloText).text, 'Hello');
   });
 
-  patrolWidgetTest('text returns the nearest visible Text widget (2)',
-      ($) async {
+  patrolWidgetTest('text returns the nearest visible Text widget (2)', (
+    $,
+  ) async {
     await pumpWithOverlays($);
 
     expect($(#visibleText), findsOneWidget);
@@ -110,7 +112,7 @@ void main() {
     'never settles when an invisible child of InexedStack is requesting frames',
     ($) async {
       await expectLater(
-        () async => $.pumpWidgetAndSettle(
+        () => $.pumpWidgetAndSettle(
           const MaterialApp(
             home: Scaffold(
               body: IndexedStack(
@@ -219,11 +221,7 @@ Future<void> pumpWithOverlays(PatrolTester $) async {
               child: Text('non-visible text', key: Key('hiddenText')),
             ),
             Center(
-              child: Container(
-                width: 150,
-                height: 150,
-                color: Colors.blue,
-              ),
+              child: Container(width: 150, height: 150, color: Colors.blue),
             ),
             const Text('visible text', key: Key('visibleText')),
           ],

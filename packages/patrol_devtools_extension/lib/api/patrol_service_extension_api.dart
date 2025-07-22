@@ -34,8 +34,8 @@ class PatrolServiceExtensionApi {
   const PatrolServiceExtensionApi({
     required VmService service,
     required ValueListenable<IsolateRef?> isolate,
-  })  : _isolate = isolate,
-        _service = service;
+  }) : _isolate = isolate,
+       _service = service;
 
   final VmService _service;
   final ValueListenable<IsolateRef?> _isolate;

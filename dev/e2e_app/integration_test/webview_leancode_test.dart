@@ -1,6 +1,7 @@
 import 'common.dart';
 
 void main() {
+  const acceptCookiesButtonText = 'ACCEPT ALL COOKIES';
   patrol('interacts with the LeanCode website in a webview', ($) async {
     await createApp($);
 
@@ -8,12 +9,12 @@ void main() {
     await $.pump(Duration(seconds: 8));
 
     try {
-      await $.native.tap(Selector(text: 'Accept cookies'));
+      await $.native.tap(Selector(text: acceptCookiesButtonText));
     } on PatrolActionException catch (_) {
       // ignore
     }
     await $.pumpAndSettle();
-
+    // TODO: Does not work need to investigate.
     await $.native.enterTextByIndex(
       'test@leancode.pl',
       index: 0,
@@ -32,8 +33,8 @@ void main() {
     try {
       await $.native2.tap(
         NativeSelector(
-          android: AndroidSelector(text: 'Accept cookies'),
-          ios: IOSSelector(label: 'Accept cookies'),
+          android: AndroidSelector(text: acceptCookiesButtonText),
+          ios: IOSSelector(label: acceptCookiesButtonText),
         ),
       );
     } on PatrolActionException catch (_) {

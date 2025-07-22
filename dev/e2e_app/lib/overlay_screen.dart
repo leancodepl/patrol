@@ -6,9 +6,7 @@ class OverlayScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Overlay'),
-      ),
+      appBar: AppBar(title: const Text('Overlay')),
       body: Stack(
         children: [
           const Center(child: Text('non-visible text')),

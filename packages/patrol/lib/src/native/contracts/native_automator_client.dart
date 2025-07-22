@@ -28,11 +28,11 @@ class NativeAutomatorClient {
     this._client,
     this._apiUri, {
     Duration timeout = const Duration(seconds: 30),
-  })  : _timeout = timeout,
-        _headers = {
-          'Connection': 'keep-alive',
-          'Keep-Alive': 'timeout=${timeout.inSeconds}',
-        };
+  }) : _timeout = timeout,
+       _headers = {
+         'Connection': 'keep-alive',
+         'Keep-Alive': 'timeout=${timeout.inSeconds}',
+       };
 
   final Duration _timeout;
   final http.Client _client;
@@ -40,270 +40,156 @@ class NativeAutomatorClient {
   final Map<String, String> _headers;
 
   Future<void> initialize() {
-    return _sendRequest(
-      'initialize',
-    );
+    return _sendRequest('initialize');
   }
 
-  Future<void> configure(
-    ConfigureRequest request,
-  ) {
-    return _sendRequest(
-      'configure',
-      request.toJson(),
-    );
+  Future<void> configure(ConfigureRequest request) {
+    return _sendRequest('configure', request.toJson());
   }
 
   Future<void> pressHome() {
-    return _sendRequest(
-      'pressHome',
-    );
+    return _sendRequest('pressHome');
   }
 
   Future<void> pressBack() {
-    return _sendRequest(
-      'pressBack',
-    );
+    return _sendRequest('pressBack');
   }
 
   Future<void> pressRecentApps() {
-    return _sendRequest(
-      'pressRecentApps',
-    );
+    return _sendRequest('pressRecentApps');
   }
 
   Future<void> doublePressRecentApps() {
-    return _sendRequest(
-      'doublePressRecentApps',
-    );
+    return _sendRequest('doublePressRecentApps');
   }
 
-  Future<void> openApp(
-    OpenAppRequest request,
-  ) {
-    return _sendRequest(
-      'openApp',
-      request.toJson(),
-    );
+  Future<void> openApp(OpenAppRequest request) {
+    return _sendRequest('openApp', request.toJson());
   }
 
-  Future<void> openQuickSettings(
-    OpenQuickSettingsRequest request,
-  ) {
-    return _sendRequest(
-      'openQuickSettings',
-      request.toJson(),
-    );
+  Future<void> openQuickSettings(OpenQuickSettingsRequest request) {
+    return _sendRequest('openQuickSettings', request.toJson());
   }
 
-  Future<void> openUrl(
-    OpenUrlRequest request,
-  ) {
-    return _sendRequest(
-      'openUrl',
-      request.toJson(),
-    );
+  Future<void> openUrl(OpenUrlRequest request) {
+    return _sendRequest('openUrl', request.toJson());
   }
 
   Future<GetNativeUITreeRespone> getNativeUITree(
     GetNativeUITreeRequest request,
   ) async {
-    final json = await _sendRequest(
-      'getNativeUITree',
-      request.toJson(),
-    );
+    final json = await _sendRequest('getNativeUITree', request.toJson());
     return GetNativeUITreeRespone.fromJson(json);
   }
 
   Future<GetNativeViewsResponse> getNativeViews(
     GetNativeViewsRequest request,
   ) async {
-    final json = await _sendRequest(
-      'getNativeViews',
-      request.toJson(),
-    );
+    final json = await _sendRequest('getNativeViews', request.toJson());
     return GetNativeViewsResponse.fromJson(json);
   }
 
-  Future<void> tap(
-    TapRequest request,
-  ) {
-    return _sendRequest(
-      'tap',
-      request.toJson(),
-    );
+  Future<void> tap(TapRequest request) {
+    return _sendRequest('tap', request.toJson());
   }
 
-  Future<void> doubleTap(
-    TapRequest request,
-  ) {
-    return _sendRequest(
-      'doubleTap',
-      request.toJson(),
-    );
+  Future<void> doubleTap(TapRequest request) {
+    return _sendRequest('doubleTap', request.toJson());
   }
 
-  Future<void> tapAt(
-    TapAtRequest request,
-  ) {
-    return _sendRequest(
-      'tapAt',
-      request.toJson(),
-    );
+  Future<void> tapAt(TapAtRequest request) {
+    return _sendRequest('tapAt', request.toJson());
   }
 
-  Future<void> enterText(
-    EnterTextRequest request,
-  ) {
-    return _sendRequest(
-      'enterText',
-      request.toJson(),
-    );
+  Future<void> enterText(EnterTextRequest request) {
+    return _sendRequest('enterText', request.toJson());
   }
 
-  Future<void> swipe(
-    SwipeRequest request,
-  ) {
-    return _sendRequest(
-      'swipe',
-      request.toJson(),
-    );
+  Future<void> swipe(SwipeRequest request) {
+    return _sendRequest('swipe', request.toJson());
   }
 
-  Future<void> waitUntilVisible(
-    WaitUntilVisibleRequest request,
-  ) {
-    return _sendRequest(
-      'waitUntilVisible',
-      request.toJson(),
-    );
+  Future<void> waitUntilVisible(WaitUntilVisibleRequest request) {
+    return _sendRequest('waitUntilVisible', request.toJson());
   }
 
   Future<void> pressVolumeUp() {
-    return _sendRequest(
-      'pressVolumeUp',
-    );
+    return _sendRequest('pressVolumeUp');
   }
 
   Future<void> pressVolumeDown() {
-    return _sendRequest(
-      'pressVolumeDown',
-    );
+    return _sendRequest('pressVolumeDown');
   }
 
   Future<void> enableAirplaneMode() {
-    return _sendRequest(
-      'enableAirplaneMode',
-    );
+    return _sendRequest('enableAirplaneMode');
   }
 
   Future<void> disableAirplaneMode() {
-    return _sendRequest(
-      'disableAirplaneMode',
-    );
+    return _sendRequest('disableAirplaneMode');
   }
 
   Future<void> enableWiFi() {
-    return _sendRequest(
-      'enableWiFi',
-    );
+    return _sendRequest('enableWiFi');
   }
 
   Future<void> disableWiFi() {
-    return _sendRequest(
-      'disableWiFi',
-    );
+    return _sendRequest('disableWiFi');
   }
 
   Future<void> enableCellular() {
-    return _sendRequest(
-      'enableCellular',
-    );
+    return _sendRequest('enableCellular');
   }
 
   Future<void> disableCellular() {
-    return _sendRequest(
-      'disableCellular',
-    );
+    return _sendRequest('disableCellular');
   }
 
   Future<void> enableBluetooth() {
-    return _sendRequest(
-      'enableBluetooth',
-    );
+    return _sendRequest('enableBluetooth');
   }
 
   Future<void> disableBluetooth() {
-    return _sendRequest(
-      'disableBluetooth',
-    );
+    return _sendRequest('disableBluetooth');
   }
 
-  Future<void> enableDarkMode(
-    DarkModeRequest request,
-  ) {
-    return _sendRequest(
-      'enableDarkMode',
-      request.toJson(),
-    );
+  Future<void> enableDarkMode(DarkModeRequest request) {
+    return _sendRequest('enableDarkMode', request.toJson());
   }
 
-  Future<void> disableDarkMode(
-    DarkModeRequest request,
-  ) {
-    return _sendRequest(
-      'disableDarkMode',
-      request.toJson(),
-    );
+  Future<void> disableDarkMode(DarkModeRequest request) {
+    return _sendRequest('disableDarkMode', request.toJson());
   }
 
   Future<void> enableLocation() {
-    return _sendRequest(
-      'enableLocation',
-    );
+    return _sendRequest('enableLocation');
   }
 
   Future<void> disableLocation() {
-    return _sendRequest(
-      'disableLocation',
-    );
+    return _sendRequest('disableLocation');
   }
 
   Future<void> openNotifications() {
-    return _sendRequest(
-      'openNotifications',
-    );
+    return _sendRequest('openNotifications');
   }
 
   Future<void> closeNotifications() {
-    return _sendRequest(
-      'closeNotifications',
-    );
+    return _sendRequest('closeNotifications');
   }
 
   Future<void> closeHeadsUpNotification() {
-    return _sendRequest(
-      'closeHeadsUpNotification',
-    );
+    return _sendRequest('closeHeadsUpNotification');
   }
 
   Future<GetNotificationsResponse> getNotifications(
     GetNotificationsRequest request,
   ) async {
-    final json = await _sendRequest(
-      'getNotifications',
-      request.toJson(),
-    );
+    final json = await _sendRequest('getNotifications', request.toJson());
     return GetNotificationsResponse.fromJson(json);
   }
 
-  Future<void> tapOnNotification(
-    TapOnNotificationRequest request,
-  ) {
-    return _sendRequest(
-      'tapOnNotification',
-      request.toJson(),
-    );
+  Future<void> tapOnNotification(TapOnNotificationRequest request) {
+    return _sendRequest('tapOnNotification', request.toJson());
   }
 
   Future<PermissionDialogVisibleResponse> isPermissionDialogVisible(
@@ -316,43 +202,48 @@ class NativeAutomatorClient {
     return PermissionDialogVisibleResponse.fromJson(json);
   }
 
-  Future<void> handlePermissionDialog(
-    HandlePermissionRequest request,
-  ) {
-    return _sendRequest(
-      'handlePermissionDialog',
-      request.toJson(),
-    );
+  Future<void> handlePermissionDialog(HandlePermissionRequest request) {
+    return _sendRequest('handlePermissionDialog', request.toJson());
   }
 
-  Future<void> setLocationAccuracy(
-    SetLocationAccuracyRequest request,
+  Future<void> setLocationAccuracy(SetLocationAccuracyRequest request) {
+    return _sendRequest('setLocationAccuracy', request.toJson());
+  }
+
+  Future<void> takeCameraPhoto(TakeCameraPhotoRequest request) {
+    return _sendRequest('takeCameraPhoto', request.toJson());
+  }
+
+  Future<void> pickImageFromGallery(PickImageFromGalleryRequest request) {
+    return _sendRequest('pickImageFromGallery', request.toJson());
+  }
+
+  Future<void> pickMultipleImagesFromGallery(
+    PickMultipleImagesFromGalleryRequest request,
   ) {
-    return _sendRequest(
-      'setLocationAccuracy',
-      request.toJson(),
-    );
+    return _sendRequest('pickMultipleImagesFromGallery', request.toJson());
   }
 
   Future<void> debug() {
-    return _sendRequest(
-      'debug',
-    );
+    return _sendRequest('debug');
   }
 
-  Future<void> setMockLocation(
-    SetMockLocationRequest request,
-  ) {
-    return _sendRequest(
-      'setMockLocation',
-      request.toJson(),
-    );
+  Future<void> setMockLocation(SetMockLocationRequest request) {
+    return _sendRequest('setMockLocation', request.toJson());
   }
 
   Future<void> markPatrolAppServiceReady() {
-    return _sendRequest(
-      'markPatrolAppServiceReady',
-    );
+    return _sendRequest('markPatrolAppServiceReady');
+  }
+
+  Future<IsVirtualDeviceResponse> isVirtualDevice() async {
+    final json = await _sendRequest('isVirtualDevice');
+    return IsVirtualDeviceResponse.fromJson(json);
+  }
+
+  Future<GetOsVersionResponse> getOsVersion() async {
+    final json = await _sendRequest('getOsVersion');
+    return GetOsVersionResponse.fromJson(json);
   }
 
   Future<Map<String, dynamic>> _sendRequest(

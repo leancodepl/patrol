@@ -129,10 +129,8 @@ const defaultScrollMaxIteration = 15;
 /// <https://dart.dev/guides/language/language-tour#callable-classes>
 class PatrolTester {
   /// Creates a new [PatrolTester] which wraps [tester].
-  PatrolTester({
-    required this.tester,
-    required this.config,
-  }) : patrolLog = PatrolLogWriter();
+  PatrolTester({required this.tester, required this.config})
+    : patrolLog = PatrolLogWriter();
 
   /// Global configuration of this tester.
   final PatrolTesterConfig config;
@@ -156,7 +154,8 @@ class PatrolTester {
       return function();
     }
 
-    final finderText = finder
+    final finderText =
+        finder
             ?.toString(describeSelf: true)
             .replaceAll('A finder that searches for', '')
             .replaceAll(' (considering only hit-testable ones)', '')
@@ -170,12 +169,7 @@ class PatrolTester {
       patrolLog.log(StepEntry(action: text, status: StepEntryStatus.success));
       return result;
     } catch (err) {
-      patrolLog.log(
-        StepEntry(
-          action: text,
-          status: StepEntryStatus.failure,
-        ),
-      );
+      patrolLog.log(StepEntry(action: text, status: StepEntryStatus.failure));
       rethrow;
     }
   }
@@ -653,11 +647,7 @@ class PatrolTester {
 
           var iterationsLeft = maxIteration;
           while (iterationsLeft > 0 && finder.evaluate().isEmpty) {
-            await tester.timedDrag(
-              viewPatrolFinder,
-              moveStep,
-              dragDuration!,
-            );
+            await tester.timedDrag(viewPatrolFinder, moveStep, dragDuration!);
             await _performPump(
               settlePolicy: settlePolicy,
               settleTimeout: settleBetweenScrollsTimeout,
@@ -731,8 +721,7 @@ class PatrolTester {
           final viewPatrolFinder = (await waitUntilVisible(
             PatrolFinder(finder: view, tester: this),
             enablePatrolLog: false,
-          ))
-              .first;
+          )).first;
 
           dragDuration ??= config.dragDuration;
           settleBetweenScrollsTimeout ??= config.settleBetweenScrollsTimeout;
@@ -740,11 +729,7 @@ class PatrolTester {
           final hitTestableFinder = finder.hitTestable(at: alignment);
           var iterationsLeft = maxIteration;
           while (iterationsLeft > 0 && hitTestableFinder.evaluate().isEmpty) {
-            await tester.timedDrag(
-              viewPatrolFinder,
-              moveStep,
-              dragDuration!,
-            );
+            await tester.timedDrag(viewPatrolFinder, moveStep, dragDuration!);
             await _performPump(
               settlePolicy: settlePolicy,
               settleTimeout: settleBetweenScrollsTimeout,
@@ -783,7 +768,7 @@ class PatrolTester {
     Duration? dragDuration,
     SettlePolicy? settlePolicy,
     bool enablePatrolLog = true,
-  }) async {
+  }) {
     assert(maxScrolls > 0, 'maxScrolls must be positive number');
     return wrapWithPatrolLog<PatrolFinder>(
       action: 'scrollUntilExists',
@@ -801,8 +786,9 @@ class PatrolTester {
         AxisDirection direction;
         if (scrollDirection == null) {
           if (finderView.evaluate().first.widget is Scrollable) {
-            direction =
-                tester.firstWidget<Scrollable>(finderView).axisDirection;
+            direction = tester
+                .firstWidget<Scrollable>(finderView)
+                .axisDirection;
           } else {
             direction = AxisDirection.down;
           }
@@ -856,7 +842,7 @@ class PatrolTester {
     SettlePolicy? settlePolicy,
     Alignment alignment = Alignment.center,
     bool enablePatrolLog = true,
-  }) async {
+  }) {
     assert(maxScrolls > 0, 'maxScrolls must be positive number');
     return wrapWithPatrolLog(
       action: 'scrollUntilVisible',
@@ -872,8 +858,9 @@ class PatrolTester {
         AxisDirection direction;
         if (scrollDirection == null) {
           if (finderView.evaluate().first.widget is Scrollable) {
-            direction =
-                tester.firstWidget<Scrollable>(finderView).axisDirection;
+            direction = tester
+                .firstWidget<Scrollable>(finderView)
+                .axisDirection;
           } else {
             direction = AxisDirection.down;
           }
@@ -919,13 +906,9 @@ class PatrolTester {
     final settle = settlePolicy ?? config.settlePolicy;
     final timeout = settleTimeout ?? config.settleTimeout;
     if (settle == SettlePolicy.trySettle) {
-      await pumpAndTrySettle(
-        timeout: timeout,
-      );
+      await pumpAndTrySettle(timeout: timeout);
     } else if (settle == SettlePolicy.settle) {
-      await pumpAndSettle(
-        timeout: timeout,
-      );
+      await pumpAndSettle(timeout: timeout);
     } else {
       await tester.pump();
     }

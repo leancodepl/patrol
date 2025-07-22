@@ -26,12 +26,12 @@ class AndroidTestBackend {
     required Directory rootDirectory,
     required DisposeScope parentDisposeScope,
     required Logger logger,
-  })  : _adb = adb,
-        _processManager = processManager,
-        _rootDirectory = rootDirectory,
-        _platform = platform,
-        _disposeScope = DisposeScope(),
-        _logger = logger {
+  }) : _adb = adb,
+       _processManager = processManager,
+       _rootDirectory = rootDirectory,
+       _platform = platform,
+       _disposeScope = DisposeScope(),
+       _logger = logger {
     _disposeScope.disposedBy(parentDisposeScope);
   }
 
@@ -57,17 +57,16 @@ class AndroidTestBackend {
 
       // :app:assembleDebug
 
-      process = await _processManager.start(
-        options.toGradleAssembleInvocation(isWindows: _platform.isWindows),
-        runInShell: true,
-        workingDirectory: _rootDirectory.childDirectory('android').path,
-        environment: javaPath != null
-            ? {
-                'JAVA_HOME': javaPath!,
-              }
-            : {},
-      )
-        ..disposedBy(scope);
+      process =
+          await _processManager.start(
+              options.toGradleAssembleInvocation(
+                isWindows: _platform.isWindows,
+              ),
+              runInShell: true,
+              workingDirectory: _rootDirectory.childDirectory('android').path,
+              environment: javaPath != null ? {'JAVA_HOME': javaPath!} : {},
+            )
+            ..disposedBy(scope);
       process.listenStdOut((l) => _logger.detail('\t: $l')).disposedBy(scope);
       process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
       exitCode = await process.exitCode;
@@ -83,17 +82,16 @@ class AndroidTestBackend {
 
       // :app:assembleDebugAndroidTest
 
-      process = await _processManager.start(
-        options.toGradleAssembleTestInvocation(isWindows: _platform.isWindows),
-        runInShell: true,
-        workingDirectory: _rootDirectory.childDirectory('android').path,
-        environment: javaPath != null
-            ? {
-                'JAVA_HOME': javaPath!,
-              }
-            : {},
-      )
-        ..disposedBy(scope);
+      process =
+          await _processManager.start(
+              options.toGradleAssembleTestInvocation(
+                isWindows: _platform.isWindows,
+              ),
+              runInShell: true,
+              workingDirectory: _rootDirectory.childDirectory('android').path,
+              environment: javaPath != null ? {'JAVA_HOME': javaPath!} : {},
+            )
+            ..disposedBy(scope);
       process.listenStdOut((l) => _logger.detail('\t: $l')).disposedBy(scope);
       process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
 
@@ -121,40 +119,40 @@ class AndroidTestBackend {
     final javaCompleterPath = Completer<String?>();
 
     await _disposeScope.run((scope) async {
-      final process = await _processManager.start(
-        [
-          flutterCommand.executable,
-          ...flutterCommand.arguments,
-          'doctor',
-          '--verbose',
-        ],
-        runInShell: true,
-      )
-        ..disposedBy(scope);
+      final process =
+          await _processManager.start([
+              flutterCommand.executable,
+              ...flutterCommand.arguments,
+              'doctor',
+              '--verbose',
+            ], runInShell: true)
+            ..disposedBy(scope);
 
-      process.listenStdOut(
-        (line) async {
-          if (line.contains('• Java binary at:') &&
-              javaCompleterPath.isCompleted == false) {
-            var path = line.replaceAll('• Java binary at:', '').trim();
-            // If the path is /usr/bin/java, then it's not the real path,
-            // but symlink, so we're not setting JAVA_HOME path.
-            // Otherwise, we remove the `/bin/java` part, to get a proper
-            // JAVA_HOME path.
-            if (path != '/usr/bin/java') {
-              path = path.replaceAll(
-                _platform.isWindows ? r'\bin\java' : '/bin/java',
-                '',
-              );
-              javaCompleterPath.maybeComplete(path);
-            } else {
-              javaCompleterPath.maybeComplete(null);
-            }
-          }
-        },
-        onDone: () => javaCompleterPath.maybeComplete(null),
-        onError: (error) => javaCompleterPath.maybeComplete(null),
-      ).disposedBy(scope);
+      process
+          .listenStdOut(
+            (line) {
+              if (line.contains('• Java binary at:') &&
+                  javaCompleterPath.isCompleted == false) {
+                var path = line.replaceAll('• Java binary at:', '').trim();
+                // If the path is /usr/bin/java, then it's not the real path,
+                // but symlink, so we're not setting JAVA_HOME path.
+                // Otherwise, we remove the `/bin/java` part, to get a proper
+                // JAVA_HOME path.
+                if (path != '/usr/bin/java') {
+                  path = path.replaceAll(
+                    _platform.isWindows ? r'\bin\java' : '/bin/java',
+                    '',
+                  );
+                  javaCompleterPath.maybeComplete(path);
+                } else {
+                  javaCompleterPath.maybeComplete(null);
+                }
+              }
+            },
+            onDone: () => javaCompleterPath.maybeComplete(null),
+            onError: (error) => javaCompleterPath.maybeComplete(null),
+          )
+          .disposedBy(scope);
     });
 
     javaPath = await javaCompleterPath.future;
@@ -163,50 +161,51 @@ class AndroidTestBackend {
   /// Execute `flutter build apk --config-only` to generate the gradlew file.
   ///
   /// This fix issue: https://github.com/leancodepl/patrol/issues/1668
-  Future<void> buildApkConfigOnly(
-    FlutterCommand flutterCommand,
-  ) async {
-    await _processManager.start(
-      [
-        flutterCommand.executable,
-        ...flutterCommand.arguments,
-        'build',
-        'apk',
-        '--config-only',
-        '-t',
-        'integration_test/test_bundle.dart',
-      ],
-      runInShell: true,
-    );
+  Future<void> buildApkConfigOnly(FlutterCommand flutterCommand) async {
+    final process = await _processManager.start([
+      flutterCommand.executable,
+      ...flutterCommand.arguments,
+      'build',
+      'apk',
+      '--config-only',
+      '-t',
+      'integration_test/test_bundle.dart',
+    ], runInShell: true);
+
+    final exitCode = await process.exitCode;
+    if (exitCode != 0) {
+      throw Exception('Failed to build APK config with exit code $exitCode');
+    }
   }
 
   /// Detects the orchestrator version and warns the user if it's 1.5.0.
   /// Related to this regression: https://github.com/android/android-test/issues/2255
-  Future<void> detectOrchestratorVersion(
-    AndroidAppOptions options,
-  ) async {
+  Future<void> detectOrchestratorVersion(AndroidAppOptions options) async {
     await _disposeScope.run((scope) async {
       Process process;
 
-      process = await _processManager.start(
-        options.toGradleAppDependencies(isWindows: _platform.isWindows),
-        runInShell: true,
-        workingDirectory: _rootDirectory.childDirectory('android').path,
-        environment: switch (javaPath) {
-          final javaPath? => {'JAVA_HOME': javaPath},
-          _ => {},
-        },
-      )
-        ..disposedBy(scope);
-      process.listenStdOut((l) {
-        if (l.contains('androidx.test:orchestrator:1.5.0')) {
-          _logger.warn(
-            'Orchestrator version 1.5.0 detected\n'
-            'Orchestrator 1.5.0 does not support whitespace in the test name.\n'
-            'Please update the orchestrator version to 1.5.1 or higher.\n',
-          );
-        }
-      }).disposedBy(scope);
+      process =
+          await _processManager.start(
+              options.toGradleAppDependencies(isWindows: _platform.isWindows),
+              runInShell: true,
+              workingDirectory: _rootDirectory.childDirectory('android').path,
+              environment: switch (javaPath) {
+                final javaPath? => {'JAVA_HOME': javaPath},
+                _ => {},
+              },
+            )
+            ..disposedBy(scope);
+      process
+          .listenStdOut((l) {
+            if (l.contains('androidx.test:orchestrator:1.5.0')) {
+              _logger.warn(
+                'Orchestrator version 1.5.0 detected\n'
+                'Orchestrator 1.5.0 does not support whitespace in the test name.\n'
+                'Please update the orchestrator version to 1.5.1 or higher.\n',
+              );
+            }
+          })
+          .disposedBy(scope);
 
       await process.exitCode;
     });
@@ -229,14 +228,13 @@ class AndroidTestBackend {
   }) async {
     await _disposeScope.run((scope) async {
       // Read patrol logs from logcat
-      final processLogcat = await _adb.logcat(
-        device: device.id,
-        arguments: {
-          '-T': '1',
-        },
-        filter: 'PatrolServer:I Patrol:I flutter:I *:S',
-      )
-        ..disposedBy(scope);
+      final processLogcat =
+          await _adb.logcat(
+              device: device.id,
+              arguments: {'-T': '1'},
+              filter: 'PatrolServer:I Patrol:I flutter:I *:S',
+            )
+            ..disposedBy(scope);
 
       var flavorPath = '';
       if (flavor != null) {
@@ -244,48 +242,51 @@ class AndroidTestBackend {
       }
       final path =
           'file://${_rootDirectory.path}/build/app/reports/androidTests/connected/${flavorPath}index.html';
-      final reportPath =
-          _platform.isWindows ? path.replaceAll(r'\', '/') : path;
+      final reportPath = _platform.isWindows
+          ? path.replaceAll(r'\', '/')
+          : path;
 
-      final patrolLogReader = PatrolLogReader(
-        listenStdOut: processLogcat.listenStdOut,
-        scope: scope,
-        log: _logger.info,
-        reportPath: reportPath,
-        showFlutterLogs: showFlutterLogs,
-        hideTestSteps: hideTestSteps,
-        clearTestSteps: clearTestSteps,
-      )
-        ..listen()
-        ..startTimer();
+      final patrolLogReader =
+          PatrolLogReader(
+              listenStdOut: processLogcat.listenStdOut,
+              scope: scope,
+              log: _logger.info,
+              reportPath: reportPath,
+              showFlutterLogs: showFlutterLogs,
+              hideTestSteps: hideTestSteps,
+              clearTestSteps: clearTestSteps,
+            )
+            ..listen()
+            ..startTimer();
 
       final subject = '${options.description} on ${device.description}';
       final task = _logger.task('Executing tests of $subject');
 
-      final process = await _processManager.start(
-        options.toGradleConnectedTestInvocation(isWindows: _platform.isWindows),
-        runInShell: true,
-        environment: {
-          'ANDROID_SERIAL': device.id,
-          ...javaPath != null
-              ? {
-                  'JAVA_HOME': javaPath!,
-                }
-              : {},
-        },
-        workingDirectory: _rootDirectory.childDirectory('android').path,
-      )
-        ..disposedBy(scope);
+      final process =
+          await _processManager.start(
+              options.toGradleConnectedTestInvocation(
+                isWindows: _platform.isWindows,
+              ),
+              runInShell: true,
+              environment: {
+                'ANDROID_SERIAL': device.id,
+                ...javaPath != null ? {'JAVA_HOME': javaPath!} : {},
+              },
+              workingDirectory: _rootDirectory.childDirectory('android').path,
+            )
+            ..disposedBy(scope);
       process.listenStdOut((l) => _logger.detail('\t: $l')).disposedBy(scope);
-      process.listenStdErr((l) {
-        const prefix = 'There were failing tests. ';
-        if (l.contains(prefix)) {
-          final msg = l.substring(prefix.length + 2);
-          _logger.detail('\t$msg');
-        } else {
-          _logger.detail('\t$l');
-        }
-      }).disposedBy(scope);
+      process
+          .listenStdErr((l) {
+            const prefix = 'There were failing tests. ';
+            if (l.contains(prefix)) {
+              final msg = l.substring(prefix.length + 2);
+              _logger.detail('\t$msg');
+            } else {
+              _logger.detail('\t$l');
+            }
+          })
+          .disposedBy(scope);
 
       final exitCode = await process.exitCode;
       patrolLogReader.stopTimer();

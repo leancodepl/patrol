@@ -1,0 +1,78 @@
+---
+title: Take photo using camera
+---
+
+Patrol provides functionality to take a photo using the Android and iOS camera.
+
+<Info>
+Due to many differences between devices, this method will not work on 100% of devices but should work on most of them. If the device that you are testing on is not working with this command, you can provide your own selectors. To get native selectors, you can use [Patrol DevTools Extension](https://patrol.leancode.co/documentation/patrol-devtools-extension).
+</Info>
+
+## How it works
+This method does two actions:
+1. Tap on shutter button
+2. Tap on confirm button
+
+The table below shows the native selectors that the `takeCameraPhoto()` method uses internally for each platform:
+
+| Platform | Shutter Button | Confirm Button |
+|----------|----------------|----------------|
+| Physical Android | `com.google.android.GoogleCamera:id/shutter_button` | `com.google.android.GoogleCamera:id/done_button` |
+| Emulator Android | `com.android.camera2:id/shutter_button` | `com.android.camera2:id/done_button` |
+| Simulator and Physical iOS | `PhotoCapture` | `Done` |
+
+<Info>
+This method should work without custom selectors on iOS devices. For Android, it should work with most emulators and Pixel physical devices.
+</Info>
+
+## Examples
+
+When you are using supported devices, you can use this method without any additional arguments:
+
+```dart
+import 'package:example/main.dart';
+import 'package:patrol/patrol.dart';
+
+void main() {
+  patrolTest(
+    'Take a photo using android or iOS camera',
+    ($) async {
+      await $.pumpWidgetAndSettle(const MyApp());
+      await $.tap(#addPhotoButton); // Clicks a photo button inside your app to open camera
+      await $.native2.grantPermissionWhenInUse(); // Some devices require permission to be granted before taking a photo
+      await $.native2.takeCameraPhoto(); // Takes a photo using the camera
+    },
+  );
+}
+```
+
+When you are using unsupported devices, you can provide your own selectors:
+
+```dart
+import 'package:example/main.dart';
+import 'package:patrol/patrol.dart';
+
+void main() {
+  patrolTest(
+    'Take a photo using android or iOS camera with custom selectors',
+    ($) async {
+      await $.pumpWidgetAndSettle(const MyApp());
+      await $.tap(#addPhotoButton); // Clicks a photo button inside your app to open camera
+      await $.native2.grantPermissionWhenInUse(); // Some devices require permission to be granted before taking a photo
+      await $.native2.takeCameraPhoto(shutterButtonSelector: NativeSelector(
+        android: AndroidSelector(
+          resourceName: 'com.oplus.camera:id/shutter_button',
+        ),
+        ios: IOSSelector(label: 'Take Picture'),
+      ),
+      doneButtonSelector: NativeSelector(
+        android: AndroidSelector(
+          resourceName: 'com.oplus.camera:id/done_button',
+        ),
+        ios: IOSSelector(label: 'Done'),
+      ),
+      );
+    },
+  );
+}
+```

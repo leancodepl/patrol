@@ -7,11 +7,11 @@ part of 'entry.dart';
 // **************************************************************************
 
 ErrorEntry _$ErrorEntryFromJson(Map<String, dynamic> json) => ErrorEntry(
-      message: json['message'] as String,
-      timestamp: json['timestamp'] == null
-          ? null
-          : DateTime.parse(json['timestamp'] as String),
-    );
+  message: json['message'] as String,
+  timestamp: json['timestamp'] == null
+      ? null
+      : DateTime.parse(json['timestamp'] as String),
+);
 
 Map<String, dynamic> _$ErrorEntryToJson(ErrorEntry instance) =>
     <String, dynamic>{
@@ -30,34 +30,34 @@ const _$EntryTypeEnumMap = {
 };
 
 LogEntry _$LogEntryFromJson(Map<String, dynamic> json) => LogEntry(
-      message: json['message'] as String,
-      timestamp: json['timestamp'] == null
-          ? null
-          : DateTime.parse(json['timestamp'] as String),
-    );
+  message: json['message'] as String,
+  timestamp: json['timestamp'] == null
+      ? null
+      : DateTime.parse(json['timestamp'] as String),
+);
 
 Map<String, dynamic> _$LogEntryToJson(LogEntry instance) => <String, dynamic>{
-      'timestamp': instance.timestamp.toIso8601String(),
-      'type': _$EntryTypeEnumMap[instance.type]!,
-      'message': instance.message,
-    };
+  'timestamp': instance.timestamp.toIso8601String(),
+  'type': _$EntryTypeEnumMap[instance.type]!,
+  'message': instance.message,
+};
 
 StepEntry _$StepEntryFromJson(Map<String, dynamic> json) => StepEntry(
-      action: json['action'] as String,
-      status: $enumDecode(_$StepEntryStatusEnumMap, json['status']),
-      data: json['data'] as Map<String, dynamic>?,
-      timestamp: json['timestamp'] == null
-          ? null
-          : DateTime.parse(json['timestamp'] as String),
-    );
+  action: json['action'] as String,
+  status: $enumDecode(_$StepEntryStatusEnumMap, json['status']),
+  data: json['data'] as Map<String, dynamic>?,
+  timestamp: json['timestamp'] == null
+      ? null
+      : DateTime.parse(json['timestamp'] as String),
+);
 
 Map<String, dynamic> _$StepEntryToJson(StepEntry instance) => <String, dynamic>{
-      'timestamp': instance.timestamp.toIso8601String(),
-      'type': _$EntryTypeEnumMap[instance.type]!,
-      'action': instance.action,
-      'status': _$StepEntryStatusEnumMap[instance.status]!,
-      'data': instance.data,
-    };
+  'timestamp': instance.timestamp.toIso8601String(),
+  'type': _$EntryTypeEnumMap[instance.type]!,
+  'action': instance.action,
+  'status': _$StepEntryStatusEnumMap[instance.status]!,
+  'data': instance.data,
+};
 
 const _$StepEntryStatusEnumMap = {
   StepEntryStatus.start: 'start',
@@ -66,21 +66,21 @@ const _$StepEntryStatusEnumMap = {
 };
 
 TestEntry _$TestEntryFromJson(Map<String, dynamic> json) => TestEntry(
-      name: json['name'] as String,
-      status: $enumDecode(_$TestEntryStatusEnumMap, json['status']),
-      timestamp: json['timestamp'] == null
-          ? null
-          : DateTime.parse(json['timestamp'] as String),
-      error: json['error'] as String?,
-    );
+  name: json['name'] as String,
+  status: $enumDecode(_$TestEntryStatusEnumMap, json['status']),
+  timestamp: json['timestamp'] == null
+      ? null
+      : DateTime.parse(json['timestamp'] as String),
+  error: json['error'] as String?,
+);
 
 Map<String, dynamic> _$TestEntryToJson(TestEntry instance) => <String, dynamic>{
-      'timestamp': instance.timestamp.toIso8601String(),
-      'type': _$EntryTypeEnumMap[instance.type]!,
-      'name': instance.name,
-      'status': _$TestEntryStatusEnumMap[instance.status]!,
-      'error': instance.error,
-    };
+  'timestamp': instance.timestamp.toIso8601String(),
+  'type': _$EntryTypeEnumMap[instance.type]!,
+  'name': instance.name,
+  'status': _$TestEntryStatusEnumMap[instance.status]!,
+  'error': instance.error,
+};
 
 const _$TestEntryStatusEnumMap = {
   TestEntryStatus.start: 'start',
@@ -90,11 +90,11 @@ const _$TestEntryStatusEnumMap = {
 };
 
 WarningEntry _$WarningEntryFromJson(Map<String, dynamic> json) => WarningEntry(
-      message: json['message'] as String,
-      timestamp: json['timestamp'] == null
-          ? null
-          : DateTime.parse(json['timestamp'] as String),
-    );
+  message: json['message'] as String,
+  timestamp: json['timestamp'] == null
+      ? null
+      : DateTime.parse(json['timestamp'] as String),
+);
 
 Map<String, dynamic> _$WarningEntryToJson(WarningEntry instance) =>
     <String, dynamic>{
@@ -104,11 +104,11 @@ Map<String, dynamic> _$WarningEntryToJson(WarningEntry instance) =>
     };
 
 ConfigEntry _$ConfigEntryFromJson(Map<String, dynamic> json) => ConfigEntry(
-      config: json['config'] as Map<String, dynamic>,
-      timestamp: json['timestamp'] == null
-          ? null
-          : DateTime.parse(json['timestamp'] as String),
-    );
+  config: json['config'] as Map<String, dynamic>,
+  timestamp: json['timestamp'] == null
+      ? null
+      : DateTime.parse(json['timestamp'] as String),
+);
 
 Map<String, dynamic> _$ConfigEntryToJson(ConfigEntry instance) =>
     <String, dynamic>{

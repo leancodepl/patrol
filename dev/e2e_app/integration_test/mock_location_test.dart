@@ -84,10 +84,7 @@ void main() {
       // }
       // previousTime = waypoint.time;
 
-      await $.native.setMockLocation(
-        waypoint.lat!,
-        waypoint.lon!,
-      );
+      await $.native.setMockLocation(waypoint.lat!, waypoint.lon!);
 
       await $.pumpAndSettle();
       await Future<void>.delayed(const Duration(milliseconds: 1500));

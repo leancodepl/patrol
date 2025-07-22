@@ -37,17 +37,15 @@ class NativeViewDetails extends StatelessWidget {
                           width: double.infinity,
                           child: Align(
                             alignment: Alignment.centerLeft,
-                            child: Text(
-                              'Native view details',
-                              maxLines: 1,
-                            ),
+                            child: Text('Native view details', maxLines: 1),
                           ),
                         ),
                       ),
                     ),
                     Padding(
-                      padding:
-                          const EdgeInsets.symmetric(horizontal: denseSpacing),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: denseSpacing,
+                      ),
                       child: _NodeDetails(node: currentNode!),
                     ),
                   ],
@@ -68,9 +66,7 @@ class _HeaderDecoration extends StatelessWidget {
     return Container(
       height: defaultHeaderHeight,
       decoration: BoxDecoration(
-        border: Border(
-          bottom: defaultBorderSide(Theme.of(context)),
-        ),
+        border: Border(bottom: defaultBorderSide(Theme.of(context))),
       ),
       child: child,
     );
@@ -87,9 +83,7 @@ class _NodeDetails extends HookWidget {
 
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Copied ${kvItem.copyValue}', maxLines: 1),
-      ),
+      SnackBar(content: Text('Copied ${kvItem.copyValue}', maxLines: 1)),
     );
   }
 
@@ -99,46 +93,46 @@ class _NodeDetails extends HookWidget {
 
     final items = switch (node) {
       final NativeViewNode n => [
-          ('pkg:', n.view.applicationPackage),
-          ('childCount:', n.view.childCount),
-          ('className:', n.view.className),
-          ('contentDescription:', n.view.contentDescription),
-          ('enabled:', n.view.enabled),
-          ('focused:', n.view.focused),
-          ('resourceId:', n.view.resourceName),
-          ('text:', n.view.text),
-        ],
+        ('pkg:', n.view.applicationPackage),
+        ('childCount:', n.view.childCount),
+        ('className:', n.view.className),
+        ('contentDescription:', n.view.contentDescription),
+        ('enabled:', n.view.enabled),
+        ('focused:', n.view.focused),
+        ('resourceId:', n.view.resourceName),
+        ('text:', n.view.text),
+      ],
       final AndroidNode n => [
-          ('text:', n.view.text),
-          ('className:', n.view.className),
-          ('resourceName:', n.view.resourceName),
-          ('contentDescription:', n.view.contentDescription),
-          ('applicationPackage:', n.view.applicationPackage),
-          ('childCount:', n.view.childCount),
-          ('isCheckable:', n.view.isCheckable),
-          ('isChecked:', n.view.isChecked),
-          ('isClickable:', n.view.isClickable),
-          ('isEnabled:', n.view.isEnabled),
-          ('isFocusable:', n.view.isFocusable),
-          ('isFocused:', n.view.isFocused),
-          ('isLongClickable:', n.view.isLongClickable),
-          ('isScrollable:', n.view.isScrollable),
-          ('isSelected:', n.view.isSelected),
-          ('visibleBounds:', n.view.visibleBounds._toDisplayValue()),
-          ('visibleCenter:', n.view.visibleCenter._toDisplayValue()),
-        ],
+        ('text:', n.view.text),
+        ('className:', n.view.className),
+        ('resourceName:', n.view.resourceName),
+        ('contentDescription:', n.view.contentDescription),
+        ('applicationPackage:', n.view.applicationPackage),
+        ('childCount:', n.view.childCount),
+        ('isCheckable:', n.view.isCheckable),
+        ('isChecked:', n.view.isChecked),
+        ('isClickable:', n.view.isClickable),
+        ('isEnabled:', n.view.isEnabled),
+        ('isFocusable:', n.view.isFocusable),
+        ('isFocused:', n.view.isFocused),
+        ('isLongClickable:', n.view.isLongClickable),
+        ('isScrollable:', n.view.isScrollable),
+        ('isSelected:', n.view.isSelected),
+        ('visibleBounds:', n.view.visibleBounds._toDisplayValue()),
+        ('visibleCenter:', n.view.visibleCenter._toDisplayValue()),
+      ],
       final IOSNode n => [
-          ('elementType:', n.view.elementType.name),
-          ('identifier:', n.view.identifier),
-          ('isEnabled:', n.view.isEnabled),
-          ('isSelected:', n.view.isSelected),
-          ('hasFocus:', n.view.hasFocus),
-          ('label:', n.view.label),
-          ('title:', n.view.title),
-          ('placeholderValue:', n.view.placeholderValue),
-          ('value:', n.view.value),
-          ('frame:', n.view.frame._toDisplayValue()),
-        ]
+        ('elementType:', n.view.elementType.name),
+        ('identifier:', n.view.identifier),
+        ('isEnabled:', n.view.isEnabled),
+        ('isSelected:', n.view.isSelected),
+        ('hasFocus:', n.view.hasFocus),
+        ('label:', n.view.label),
+        ('title:', n.view.title),
+        ('placeholderValue:', n.view.placeholderValue),
+        ('value:', n.view.value),
+        ('frame:', n.view.frame._toDisplayValue()),
+      ],
     };
 
     final rows = items.map((e) => _KeyValueItem(e.$1, e.$2)).toList();
@@ -177,9 +171,9 @@ class _NodeDetails extends HookWidget {
                                 left: Radius.circular(8),
                               ),
                               color: hovered
-                                  ? Theme.of(context)
-                                      .colorScheme
-                                      .primaryContainer
+                                  ? Theme.of(
+                                      context,
+                                    ).colorScheme.primaryContainer
                                   : null,
                             ),
                             child: Text(

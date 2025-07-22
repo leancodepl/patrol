@@ -2,13 +2,8 @@ part of 'entry.dart';
 
 @JsonSerializable()
 class LogEntry extends Entry {
-  LogEntry({
-    required this.message,
-    DateTime? timestamp,
-  }) : super(
-          timestamp: timestamp ?? DateTime.now(),
-          type: EntryType.log,
-        );
+  LogEntry({required this.message, DateTime? timestamp})
+    : super(timestamp: timestamp ?? DateTime.now(), type: EntryType.log);
 
   @override
   factory LogEntry.fromJson(Map<String, dynamic> json) =>
