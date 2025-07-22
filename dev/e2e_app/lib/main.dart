@@ -96,11 +96,15 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
         padding: EdgeInsets.all(8),
         key: K.listViewKey,
         children: [
-          Text('FIRST_KEY: ${String.fromEnvironment('FIRST_KEY')}'),
-          Text('SECOND_KEY: ${String.fromEnvironment('SECOND_KEY')}'),
-          Text('THIRD_KEY: ${String.fromEnvironment('THIRD_KEY')}'),
-          Text('FIFTH_KEY: ${String.fromEnvironment('FIFTH_KEY')}'),
-          Text('BOOL_DEFINED: ${String.fromEnvironment('BOOL_DEFINED')}'),
+          const Text('FIRST_KEY: ${const String.fromEnvironment('FIRST_KEY')}'),
+          const Text(
+            'SECOND_KEY: ${const String.fromEnvironment('SECOND_KEY')}',
+          ),
+          const Text('THIRD_KEY: ${const String.fromEnvironment('THIRD_KEY')}'),
+          const Text('FIFTH_KEY: ${const String.fromEnvironment('FIFTH_KEY')}'),
+          const Text(
+            'BOOL_DEFINED: ${const String.fromEnvironment('BOOL_DEFINED')}',
+          ),
           const Text('You have pushed the button this many times:'),
           Text(
             '$_counter',
@@ -180,101 +184,127 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
             ),
           ),
           TextButton(
-            onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute<void>(builder: (_) => const LoadingScreen()),
-            ),
+            onPressed:
+                () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => const LoadingScreen(),
+                  ),
+                ),
             child: const Text('Open loading screen'),
           ),
           TextButton(
-            onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute<void>(builder: (_) => const LocationScreen()),
-            ),
+            onPressed:
+                () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => const LocationScreen(),
+                  ),
+                ),
             child: const Text('Open location screen'),
           ),
           TextButton(
-            onPressed: () => Navigator.of(
-              context,
-            ).push(MaterialPageRoute<void>(builder: (_) => const MapScreen())),
+            onPressed:
+                () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(builder: (_) => const MapScreen()),
+                ),
             child: const Text('Open map screen'),
           ),
           TextButton(
-            onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute<void>(
-                builder: (_) => const NotificationsScreen(),
-              ),
-            ),
+            onPressed:
+                () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => const NotificationsScreen(),
+                  ),
+                ),
             child: const Text('Open notifications screen'),
           ),
           TextButton(
-            onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute<void>(builder: (_) => const OverlayScreen()),
-            ),
+            onPressed:
+                () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => const OverlayScreen(),
+                  ),
+                ),
             child: const Text('Open overlay screen'),
           ),
           TextButton(
-            onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute<void>(builder: (_) => const ScrollingScreen()),
-            ),
+            onPressed:
+                () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => const ScrollingScreen(),
+                  ),
+                ),
             child: const Text('Open scrolling screen'),
           ),
           TextButton(
-            onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute<void>(
-                builder: (_) => const WebViewScreen(
-                  title: 'WebView (LeanCode)',
-                  url: 'https://leancode.co',
+            onPressed:
+                () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder:
+                        (_) => const WebViewScreen(
+                          title: 'WebView (LeanCode)',
+                          url: 'https://leancode.co',
+                        ),
+                  ),
                 ),
-              ),
-            ),
             child: const Text('Open webview (LeanCode)'),
           ),
           TextButton(
-            onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute<void>(
-                builder: (_) => const WebViewScreen(
-                  title: 'WebView (Hacker News)',
-                  url: 'https://news.ycombinator.com',
+            onPressed:
+                () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder:
+                        (_) => const WebViewScreen(
+                          title: 'WebView (Hacker News)',
+                          url: 'https://news.ycombinator.com',
+                        ),
+                  ),
                 ),
-              ),
-            ),
             child: const Text('Open webview (Hacker News)'),
           ),
           TextButton(
-            onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute<void>(
-                builder: (_) => const WebViewScreen(
-                  title: 'WebView (StackOverflow)',
-                  url: 'https://stackoverflow.com',
+            onPressed:
+                () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder:
+                        (_) => const WebViewScreen(
+                          title: 'WebView (StackOverflow)',
+                          url: 'https://stackoverflow.com',
+                        ),
+                  ),
                 ),
-              ),
-            ),
             child: const Text('Open webview (StackOverflow)'),
           ),
           TextButton(
-            onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute<void>(
-                builder: (_) => const PermissionsScreen(),
-              ),
-            ),
+            onPressed:
+                () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => const PermissionsScreen(),
+                  ),
+                ),
             child: const Text('Open permissions screen'),
           ),
           TextButton(
-            onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute<void>(builder: (_) => const UsernamePage()),
-            ),
+            onPressed:
+                () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(builder: (_) => const UsernamePage()),
+                ),
             child: const Text('Open login flow screen'),
           ),
           TextButton(
-            onPressed: () async => Navigator.of(context).push(
-              MaterialPageRoute<void>(builder: (_) => const OverflowScreen()),
-            ),
+            onPressed:
+                () async => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => const OverflowScreen(),
+                  ),
+                ),
             child: const Text('Open overflow screen'),
           ),
           TextButton(
             key: K.cameraFeaturesButton,
-            onPressed: () async => Navigator.of(context).push(
-              MaterialPageRoute<void>(builder: (_) => const CameraScreen()),
-            ),
+            onPressed:
+                () async => Navigator.of(context).push(
+                  MaterialPageRoute<void>(builder: (_) => const CameraScreen()),
+                ),
             child: const Text('Open camera related features'),
           ),
           Text('EXAMPLE_KEY: ${const String.fromEnvironment('EXAMPLE_KEY')}'),
