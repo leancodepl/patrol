@@ -180,127 +180,101 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
             ),
           ),
           TextButton(
-            onPressed:
-                () => Navigator.of(context).push(
-                  MaterialPageRoute<void>(
-                    builder: (_) => const LoadingScreen(),
-                  ),
-                ),
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(builder: (_) => const LoadingScreen()),
+            ),
             child: const Text('Open loading screen'),
           ),
           TextButton(
-            onPressed:
-                () => Navigator.of(context).push(
-                  MaterialPageRoute<void>(
-                    builder: (_) => const LocationScreen(),
-                  ),
-                ),
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(builder: (_) => const LocationScreen()),
+            ),
             child: const Text('Open location screen'),
           ),
           TextButton(
-            onPressed:
-                () => Navigator.of(context).push(
-                  MaterialPageRoute<void>(builder: (_) => const MapScreen()),
-                ),
+            onPressed: () => Navigator.of(
+              context,
+            ).push(MaterialPageRoute<void>(builder: (_) => const MapScreen())),
             child: const Text('Open map screen'),
           ),
           TextButton(
-            onPressed:
-                () => Navigator.of(context).push(
-                  MaterialPageRoute<void>(
-                    builder: (_) => const NotificationsScreen(),
-                  ),
-                ),
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => const NotificationsScreen(),
+              ),
+            ),
             child: const Text('Open notifications screen'),
           ),
           TextButton(
-            onPressed:
-                () => Navigator.of(context).push(
-                  MaterialPageRoute<void>(
-                    builder: (_) => const OverlayScreen(),
-                  ),
-                ),
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(builder: (_) => const OverlayScreen()),
+            ),
             child: const Text('Open overlay screen'),
           ),
           TextButton(
-            onPressed:
-                () => Navigator.of(context).push(
-                  MaterialPageRoute<void>(
-                    builder: (_) => const ScrollingScreen(),
-                  ),
-                ),
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(builder: (_) => const ScrollingScreen()),
+            ),
             child: const Text('Open scrolling screen'),
           ),
           TextButton(
-            onPressed:
-                () => Navigator.of(context).push(
-                  MaterialPageRoute<void>(
-                    builder:
-                        (_) => const WebViewScreen(
-                          title: 'WebView (LeanCode)',
-                          url: 'https://leancode.co',
-                        ),
-                  ),
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => const WebViewScreen(
+                  title: 'WebView (LeanCode)',
+                  url: 'https://leancode.co',
                 ),
+              ),
+            ),
             child: const Text('Open webview (LeanCode)'),
           ),
           TextButton(
-            onPressed:
-                () => Navigator.of(context).push(
-                  MaterialPageRoute<void>(
-                    builder:
-                        (_) => const WebViewScreen(
-                          title: 'WebView (Hacker News)',
-                          url: 'https://news.ycombinator.com',
-                        ),
-                  ),
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => const WebViewScreen(
+                  title: 'WebView (Hacker News)',
+                  url: 'https://news.ycombinator.com',
                 ),
+              ),
+            ),
             child: const Text('Open webview (Hacker News)'),
           ),
           TextButton(
-            onPressed:
-                () => Navigator.of(context).push(
-                  MaterialPageRoute<void>(
-                    builder:
-                        (_) => const WebViewScreen(
-                          title: 'WebView (StackOverflow)',
-                          url: 'https://stackoverflow.com',
-                        ),
-                  ),
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => const WebViewScreen(
+                  title: 'WebView (StackOverflow)',
+                  url: 'https://stackoverflow.com',
                 ),
+              ),
+            ),
             child: const Text('Open webview (StackOverflow)'),
           ),
           TextButton(
-            onPressed:
-                () => Navigator.of(context).push(
-                  MaterialPageRoute<void>(
-                    builder: (_) => const PermissionsScreen(),
-                  ),
-                ),
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => const PermissionsScreen(),
+              ),
+            ),
             child: const Text('Open permissions screen'),
           ),
           TextButton(
-            onPressed:
-                () => Navigator.of(context).push(
-                  MaterialPageRoute<void>(builder: (_) => const UsernamePage()),
-                ),
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(builder: (_) => const UsernamePage()),
+            ),
             child: const Text('Open login flow screen'),
           ),
           TextButton(
-            onPressed:
-                () async => Navigator.of(context).push(
-                  MaterialPageRoute<void>(
-                    builder: (_) => const OverflowScreen(),
-                  ),
-                ),
+            onPressed: () async => Navigator.of(context).push(
+              MaterialPageRoute<void>(builder: (_) => const OverflowScreen()),
+            ),
             child: const Text('Open overflow screen'),
           ),
           TextButton(
             key: K.cameraFeaturesButton,
-            onPressed:
-                () async => Navigator.of(context).push(
-                  MaterialPageRoute<void>(builder: (_) => const CameraScreen()),
-                ),
+            onPressed: () async => Navigator.of(context).push(
+              MaterialPageRoute<void>(builder: (_) => const CameraScreen()),
+            ),
             child: const Text('Open camera related features'),
           ),
           Text('EXAMPLE_KEY: ${const String.fromEnvironment('EXAMPLE_KEY')}'),
