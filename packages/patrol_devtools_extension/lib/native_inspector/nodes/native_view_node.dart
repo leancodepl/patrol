@@ -2,16 +2,12 @@ part of 'node.dart';
 
 final class NativeViewNode extends Node {
   NativeViewNode({required this.view, this.parent, required this.androidNode}) {
-    children =
-        view.children
-            .map(
-              (e) => NativeViewNode(
-                view: e,
-                parent: this,
-                androidNode: androidNode,
-              ),
-            )
-            .toList();
+    children = view.children
+        .map(
+          (e) =>
+              NativeViewNode(view: e, parent: this, androidNode: androidNode),
+        )
+        .toList();
 
     fullNodeName = createNodeName(view.className, view.resourceName);
 

@@ -11,9 +11,7 @@ class HeaderDecoration extends StatelessWidget {
     return Container(
       height: defaultHeaderHeight,
       decoration: BoxDecoration(
-        border: Border(
-          bottom: defaultBorderSide(Theme.of(context)),
-        ),
+        border: Border(bottom: defaultBorderSide(Theme.of(context))),
       ),
       child: child,
     );

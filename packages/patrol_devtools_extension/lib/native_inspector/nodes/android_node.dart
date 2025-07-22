@@ -2,10 +2,9 @@ part of 'node.dart';
 
 final class AndroidNode extends Node {
   AndroidNode({required this.view, this.parent}) {
-    children =
-        view.children
-            .map((view) => AndroidNode(view: view, parent: this))
-            .toList();
+    children = view.children
+        .map((view) => AndroidNode(view: view, parent: this))
+        .toList();
 
     fullNodeName = createNodeName(view.className, view.resourceName);
 
