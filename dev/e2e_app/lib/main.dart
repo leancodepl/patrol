@@ -84,36 +84,24 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
       if (!context.mounted) {
         return;
       }
-      Navigator.of(context).push(
-        MaterialPageRoute<void>(
-          builder: (_) => ApplinkScreen(
-            uri: uri,
-          ),
-        ),
-      );
+      Navigator.of(
+        context,
+      ).push(MaterialPageRoute<void>(builder: (_) => ApplinkScreen(uri: uri)));
     });
 
     return Scaffold(
       key: K.scaffold,
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
+      appBar: AppBar(title: Text(widget.title)),
       body: ListView(
         padding: EdgeInsets.all(8),
         key: K.listViewKey,
         children: [
           const Text('FIRST_KEY: ${String.fromEnvironment('FIRST_KEY')}'),
-          const Text(
-            'SECOND_KEY: ${String.fromEnvironment('SECOND_KEY')}',
-          ),
+          const Text('SECOND_KEY: ${String.fromEnvironment('SECOND_KEY')}'),
           const Text('THIRD_KEY: ${String.fromEnvironment('THIRD_KEY')}'),
           const Text('FIFTH_KEY: ${String.fromEnvironment('FIFTH_KEY')}'),
-          const Text(
-            'BOOL_DEFINED: ${String.fromEnvironment('BOOL_DEFINED')}',
-          ),
-          const Text(
-            'You have pushed the button this many times:',
-          ),
+          const Text('BOOL_DEFINED: ${String.fromEnvironment('BOOL_DEFINED')}'),
+          const Text('You have pushed the button this many times:'),
           Text(
             '$_counter',
             semanticsLabel: 'Counter: $_counter',
@@ -193,26 +181,20 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
           ),
           TextButton(
             onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute<void>(
-                builder: (_) => const LoadingScreen(),
-              ),
+              MaterialPageRoute<void>(builder: (_) => const LoadingScreen()),
             ),
             child: const Text('Open loading screen'),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute<void>(
-                builder: (_) => const LocationScreen(),
-              ),
+              MaterialPageRoute<void>(builder: (_) => const LocationScreen()),
             ),
             child: const Text('Open location screen'),
           ),
           TextButton(
-            onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute<void>(
-                builder: (_) => const MapScreen(),
-              ),
-            ),
+            onPressed: () => Navigator.of(
+              context,
+            ).push(MaterialPageRoute<void>(builder: (_) => const MapScreen())),
             child: const Text('Open map screen'),
           ),
           TextButton(
@@ -225,17 +207,13 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
           ),
           TextButton(
             onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute<void>(
-                builder: (_) => const OverlayScreen(),
-              ),
+              MaterialPageRoute<void>(builder: (_) => const OverlayScreen()),
             ),
             child: const Text('Open overlay screen'),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute<void>(
-                builder: (_) => const ScrollingScreen(),
-              ),
+              MaterialPageRoute<void>(builder: (_) => const ScrollingScreen()),
             ),
             child: const Text('Open scrolling screen'),
           ),
@@ -282,26 +260,20 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
           ),
           TextButton(
             onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute<void>(
-                builder: (_) => const UsernamePage(),
-              ),
+              MaterialPageRoute<void>(builder: (_) => const UsernamePage()),
             ),
             child: const Text('Open login flow screen'),
           ),
           TextButton(
             onPressed: () async => Navigator.of(context).push(
-              MaterialPageRoute<void>(
-                builder: (_) => const OverflowScreen(),
-              ),
+              MaterialPageRoute<void>(builder: (_) => const OverflowScreen()),
             ),
             child: const Text('Open overflow screen'),
           ),
           TextButton(
             key: K.cameraFeaturesButton,
             onPressed: () async => Navigator.of(context).push(
-              MaterialPageRoute<void>(
-                builder: (_) => const CameraScreen(),
-              ),
+              MaterialPageRoute<void>(builder: (_) => const CameraScreen()),
             ),
             child: const Text('Open camera related features'),
           ),

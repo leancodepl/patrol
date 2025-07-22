@@ -1,7 +1,10 @@
-## Unreleased
+## 3.9.0
 
 - Re-land: Do not pass flavor as dart-define when building. (#2636)
 - Wait for generating gradlew - fix race condition (#2678)
+- Bump `leancode_lint` to `17.0.0`.
+- Bump `patrol_log` to `0.5.0`.
+- Bump minimum Dart SDK to version 3.8.0.
 
 ## 3.8.0
 

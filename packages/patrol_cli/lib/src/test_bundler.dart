@@ -3,12 +3,10 @@ import 'package:meta/meta.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 
 class TestBundler {
-  TestBundler({
-    required Directory projectRoot,
-    required Logger logger,
-  })  : _projectRoot = projectRoot,
-        _fs = projectRoot.fileSystem,
-        _logger = logger;
+  TestBundler({required Directory projectRoot, required Logger logger})
+    : _projectRoot = projectRoot,
+      _fs = projectRoot.fileSystem,
+      _logger = logger;
 
   final Directory _projectRoot;
   final FileSystem _fs;
@@ -24,7 +22,8 @@ class TestBundler {
       throw ArgumentError('testFilePaths must not be empty');
     }
 
-    final contents = '''
+    final contents =
+        '''
 // GENERATED CODE - DO NOT MODIFY BY HAND AND DO NOT COMMIT TO VERSION CONTROL
 // ignore_for_file: type=lint, invalid_use_of_internal_member
 
@@ -132,7 +131,8 @@ ${generateGroupsCode(testFilePaths).split('\n').map((e) => '  $e').join('\n')}
 
   /// Creates an entrypoint for use with `patrol develop`.
   void createDevelopTestBundle(String testFilePath) {
-    final contents = '''
+    final contents =
+        '''
 // ignore_for_file: type=lint, invalid_use_of_internal_member
 
 import 'package:flutter/foundation.dart';
@@ -160,8 +160,9 @@ ${generateGroupsCode([testFilePath]).split('\n').map((e) => '  $e').join('\n')}
       ..createSync(recursive: true)
       ..writeAsStringSync(contents);
 
-    _logger
-        .detail('Generated entrypoint ${bundledTestFile.path} for development');
+    _logger.detail(
+      'Generated entrypoint ${bundledTestFile.path} for development',
+    );
   }
 
   /// Input:

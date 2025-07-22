@@ -8,11 +8,9 @@ import 'package:patrol_cli/src/runner/patrol_command.dart';
 import 'package:platform/platform.dart';
 
 class DoctorCommand extends PatrolCommand {
-  DoctorCommand({
-    required Logger logger,
-    required Platform platform,
-  })  : _logger = logger,
-        _platform = platform;
+  DoctorCommand({required Logger logger, required Platform platform})
+    : _logger = logger,
+      _platform = platform;
 
   final Logger _logger;
   final Platform _platform;
@@ -80,8 +78,7 @@ class DoctorCommand extends PatrolCommand {
     } else {
       final linkHint = switch (_platform.operatingSystem) {
         Platform.linux ||
-        Platform.macOS =>
-          'https://developer.android.com/tools/variables#set',
+        Platform.macOS => 'https://developer.android.com/tools/variables#set',
         Platform.windows =>
           'https://www.ibm.com/docs/en/rtw/11.0.0?topic=prwut-setting-changing-android-home-path-in-windows-operating-systems',
         _ => '',
@@ -110,9 +107,7 @@ class DoctorCommand extends PatrolCommand {
     if (result.exitCode == 0) {
       _logger.success('• Program $tool found in ${result.stdOut.trim()}');
     } else {
-      _logger.err(
-        '• Program $tool not found ${hint != null ? "($hint)" : ""}',
-      );
+      _logger.err('• Program $tool not found ${hint != null ? "($hint)" : ""}');
     }
   }
 }

@@ -36,16 +36,15 @@ Future<void> initApp() async {
 }
 
 void _setUpTheme() {
-  final mySystemTheme = SystemUiOverlayStyle.light
-      .copyWith(systemNavigationBarColor: PTColors.lcBlack);
+  final mySystemTheme = SystemUiOverlayStyle.light.copyWith(
+    systemNavigationBarColor: PTColors.lcBlack,
+  );
 
   SystemChrome.setSystemUIOverlayStyle(mySystemTheme);
 }
 
 Future<void> _initFirebase() async {
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 }
 
 Future<void> _askForLocationPermission() => Geolocator.requestPermission();
