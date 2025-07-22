@@ -15,8 +15,9 @@ Future<void> tapOkIfGoogleDialogAppears(PatrolIntegrationTester $) async {
   final inactivityTimer = Timer(Duration(seconds: 10), () {});
 
   while (listWithOkText.isEmpty && io.Platform.isAndroid) {
-    listWithOkText =
-        await $.native.getNativeViews(Selector(textContains: 'OK'));
+    listWithOkText = await $.native.getNativeViews(
+      Selector(textContains: 'OK'),
+    );
     final timeoutReached = !inactivityTimer.isActive;
     if (timeoutReached) {
       inactivityTimer.cancel();

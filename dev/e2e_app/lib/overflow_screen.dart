@@ -6,9 +6,7 @@ class OverflowScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Overflow'),
-      ),
+      appBar: AppBar(title: const Text('Overflow')),
       body: Column(
         children: const [
           Row(
