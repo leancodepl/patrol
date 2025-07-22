@@ -449,26 +449,26 @@ class AndroidSelector with EquatableMixin {
 
   @override
   List<Object?> get props => [
-    className,
-    isCheckable,
-    isChecked,
-    isClickable,
-    isEnabled,
-    isFocusable,
-    isFocused,
-    isLongClickable,
-    isScrollable,
-    isSelected,
-    applicationPackage,
-    contentDescription,
-    contentDescriptionStartsWith,
-    contentDescriptionContains,
-    text,
-    textStartsWith,
-    textContains,
-    resourceName,
-    instance,
-  ];
+        className,
+        isCheckable,
+        isChecked,
+        isClickable,
+        isEnabled,
+        isFocusable,
+        isFocused,
+        isLongClickable,
+        isScrollable,
+        isSelected,
+        applicationPackage,
+        contentDescription,
+        contentDescriptionStartsWith,
+        contentDescriptionContains,
+        text,
+        textStartsWith,
+        textContains,
+        resourceName,
+        instance,
+      ];
 
   AndroidSelector copyWith({
     String? className,
@@ -562,23 +562,23 @@ class IOSSelector with EquatableMixin {
 
   @override
   List<Object?> get props => [
-    value,
-    instance,
-    elementType,
-    identifier,
-    label,
-    labelStartsWith,
-    labelContains,
-    title,
-    titleStartsWith,
-    titleContains,
-    hasFocus,
-    isEnabled,
-    isSelected,
-    placeholderValue,
-    placeholderValueStartsWith,
-    placeholderValueContains,
-  ];
+        value,
+        instance,
+        elementType,
+        identifier,
+        label,
+        labelStartsWith,
+        labelContains,
+        title,
+        titleStartsWith,
+        titleContains,
+        hasFocus,
+        isEnabled,
+        isSelected,
+        placeholderValue,
+        placeholderValueStartsWith,
+        placeholderValueContains,
+      ];
 
   IOSSelector copyWith({
     String? value,
@@ -658,19 +658,19 @@ class Selector with EquatableMixin {
 
   @override
   List<Object?> get props => [
-    text,
-    textStartsWith,
-    textContains,
-    className,
-    contentDescription,
-    contentDescriptionStartsWith,
-    contentDescriptionContains,
-    resourceId,
-    instance,
-    enabled,
-    focused,
-    pkg,
-  ];
+        text,
+        textStartsWith,
+        textContains,
+        className,
+        contentDescription,
+        contentDescriptionStartsWith,
+        contentDescriptionContains,
+        resourceId,
+        instance,
+        enabled,
+        focused,
+        pkg,
+      ];
 
   Selector copyWith({
     String? text,
@@ -854,25 +854,25 @@ class AndroidNativeView with EquatableMixin {
 
   @override
   List<Object?> get props => [
-    resourceName,
-    text,
-    className,
-    contentDescription,
-    applicationPackage,
-    childCount,
-    isCheckable,
-    isChecked,
-    isClickable,
-    isEnabled,
-    isFocusable,
-    isFocused,
-    isLongClickable,
-    isScrollable,
-    isSelected,
-    visibleBounds,
-    visibleCenter,
-    children,
-  ];
+        resourceName,
+        text,
+        className,
+        contentDescription,
+        applicationPackage,
+        childCount,
+        isCheckable,
+        isChecked,
+        isClickable,
+        isEnabled,
+        isFocusable,
+        isFocused,
+        isLongClickable,
+        isScrollable,
+        isSelected,
+        visibleBounds,
+        visibleCenter,
+        children,
+      ];
 
   AndroidNativeView copyWith({
     String? resourceName,
@@ -952,18 +952,18 @@ class IOSNativeView with EquatableMixin {
 
   @override
   List<Object?> get props => [
-    children,
-    elementType,
-    identifier,
-    label,
-    title,
-    hasFocus,
-    isEnabled,
-    isSelected,
-    frame,
-    placeholderValue,
-    value,
-  ];
+        children,
+        elementType,
+        identifier,
+        label,
+        title,
+        hasFocus,
+        isEnabled,
+        isSelected,
+        frame,
+        placeholderValue,
+        value,
+      ];
 
   IOSNativeView copyWith({
     List<IOSNativeView>? children,
@@ -1077,16 +1077,16 @@ class NativeView with EquatableMixin {
 
   @override
   List<Object?> get props => [
-    className,
-    text,
-    contentDescription,
-    focused,
-    enabled,
-    childCount,
-    resourceName,
-    applicationPackage,
-    children,
-  ];
+        className,
+        text,
+        contentDescription,
+        focused,
+        enabled,
+        childCount,
+        resourceName,
+        applicationPackage,
+        children,
+      ];
 
   NativeView copyWith({
     String? className,
@@ -1171,13 +1171,13 @@ class TapRequest with EquatableMixin {
 
   @override
   List<Object?> get props => [
-    selector,
-    androidSelector,
-    iosSelector,
-    appId,
-    timeoutMillis,
-    delayBetweenTapsMillis,
-  ];
+        selector,
+        androidSelector,
+        iosSelector,
+        appId,
+        timeoutMillis,
+        delayBetweenTapsMillis,
+      ];
 
   TapRequest copyWith({
     Selector? selector,
@@ -1257,17 +1257,17 @@ class EnterTextRequest with EquatableMixin {
 
   @override
   List<Object?> get props => [
-    data,
-    appId,
-    index,
-    selector,
-    androidSelector,
-    iosSelector,
-    keyboardBehavior,
-    timeoutMillis,
-    dx,
-    dy,
-  ];
+        data,
+        appId,
+        index,
+        selector,
+        androidSelector,
+        iosSelector,
+        keyboardBehavior,
+        timeoutMillis,
+        dx,
+        dy,
+      ];
 
   EnterTextRequest copyWith({
     String? data,
@@ -1364,12 +1364,12 @@ class WaitUntilVisibleRequest with EquatableMixin {
 
   @override
   List<Object?> get props => [
-    selector,
-    androidSelector,
-    iosSelector,
-    appId,
-    timeoutMillis,
-  ];
+        selector,
+        androidSelector,
+        iosSelector,
+        appId,
+        timeoutMillis,
+      ];
 
   WaitUntilVisibleRequest copyWith({
     Selector? selector,
@@ -1505,12 +1505,12 @@ class TapOnNotificationRequest with EquatableMixin {
 
   @override
   List<Object?> get props => [
-    index,
-    selector,
-    androidSelector,
-    iosSelector,
-    timeoutMillis,
-  ];
+        index,
+        selector,
+        androidSelector,
+        iosSelector,
+        timeoutMillis,
+      ];
 
   TapOnNotificationRequest copyWith({
     int? index,
@@ -1716,16 +1716,16 @@ class TakeCameraPhotoRequest with EquatableMixin {
 
   @override
   List<Object?> get props => [
-    shutterButtonSelector,
-    androidShutterButtonSelector,
-    iosShutterButtonSelector,
-    doneButtonSelector,
-    androidDoneButtonSelector,
-    timeoutMillis,
-    iosDoneButtonSelector,
-    appId,
-    isNative2,
-  ];
+        shutterButtonSelector,
+        androidShutterButtonSelector,
+        iosShutterButtonSelector,
+        doneButtonSelector,
+        androidDoneButtonSelector,
+        timeoutMillis,
+        iosDoneButtonSelector,
+        appId,
+        isNative2,
+      ];
 
   TakeCameraPhotoRequest copyWith({
     Selector? shutterButtonSelector,
@@ -1784,14 +1784,14 @@ class PickImageFromGalleryRequest with EquatableMixin {
 
   @override
   List<Object?> get props => [
-    imageSelector,
-    androidImageSelector,
-    iosImageSelector,
-    imageIndex,
-    timeoutMillis,
-    appId,
-    isNative2,
-  ];
+        imageSelector,
+        androidImageSelector,
+        iosImageSelector,
+        imageIndex,
+        timeoutMillis,
+        appId,
+        isNative2,
+      ];
 
   PickImageFromGalleryRequest copyWith({
     Selector? imageSelector,
@@ -1828,7 +1828,8 @@ class PickMultipleImagesFromGalleryRequest with EquatableMixin {
 
   factory PickMultipleImagesFromGalleryRequest.fromJson(
     Map<String, dynamic> json,
-  ) => _$PickMultipleImagesFromGalleryRequestFromJson(json);
+  ) =>
+      _$PickMultipleImagesFromGalleryRequestFromJson(json);
 
   final Selector? imageSelector;
   final AndroidSelector? androidImageSelector;
@@ -1843,14 +1844,14 @@ class PickMultipleImagesFromGalleryRequest with EquatableMixin {
 
   @override
   List<Object?> get props => [
-    imageSelector,
-    androidImageSelector,
-    iosImageSelector,
-    imageIndexes,
-    timeoutMillis,
-    appId,
-    isNative2,
-  ];
+        imageSelector,
+        androidImageSelector,
+        iosImageSelector,
+        imageIndexes,
+        timeoutMillis,
+        appId,
+        isNative2,
+      ];
 
   PickMultipleImagesFromGalleryRequest copyWith({
     Selector? imageSelector,
