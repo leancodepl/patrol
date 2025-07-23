@@ -11,6 +11,7 @@ void main() {
         $.log(
           'Test will be skipped because of iOS simulator limitations',
         );
+        return;
       } else {
         await $.native.disableAirplaneMode();
         await $.native.enableAirplaneMode();
