@@ -26,7 +26,6 @@ import pl.leancode.patrol.contracts.Contracts.TapOnNotificationRequest
 import pl.leancode.patrol.contracts.Contracts.TapRequest
 import pl.leancode.patrol.contracts.Contracts.WaitUntilVisibleRequest
 import pl.leancode.patrol.contracts.NativeAutomatorServer
-import java.util.Locale
 
 class AutomatorServer(private val automation: Automator) : NativeAutomatorServer() {
 

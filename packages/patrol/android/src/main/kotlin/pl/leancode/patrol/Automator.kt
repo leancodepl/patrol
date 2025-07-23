@@ -32,8 +32,8 @@ import pl.leancode.patrol.contracts.Contracts.Notification
 import pl.leancode.patrol.contracts.Contracts.Point2D
 import pl.leancode.patrol.contracts.Contracts.Rectangle
 import pl.leancode.patrol.contracts.Contracts.Selector
-import pl.leancode.patrol.R.string as s
 import kotlin.math.roundToInt
+import pl.leancode.patrol.R.string as s
 
 private fun fromUiObject2(obj: UiObject2): NativeView {
     return NativeView(
@@ -834,7 +834,7 @@ class Automator private constructor() {
         targetContext.startActivity(intent)
 
         var uiSelector = UiSelector()
-        uiSelector = uiSelector.text(Localization.getLocalizedString(targetContext,  targetContext.getString(s.airplane_mode) ))
+        uiSelector = uiSelector.text(Localization.getLocalizedString(targetContext, targetContext.getString(s.airplane_mode)))
         val uiObject = uiDevice.findObject(uiSelector)
         if (uiObject != null) {
             uiObject.click()
@@ -851,9 +851,12 @@ class Automator private constructor() {
         targetContext.startActivity(intent)
 
         var uiSelector = UiSelector()
-        uiSelector = uiSelector.text(Localization.getLocalizedString(targetContext,
-            targetContext.getString(s.use_location)
-        ))
+        uiSelector = uiSelector.text(
+            Localization.getLocalizedString(
+                targetContext,
+                targetContext.getString(s.use_location)
+            )
+        )
         val uiObject = uiDevice.findObject(uiSelector)
         if (uiObject != null) {
             uiObject.click()
