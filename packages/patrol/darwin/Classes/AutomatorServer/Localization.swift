@@ -77,7 +77,7 @@ class Localization {
         "Key '\(key)' not found in Localizable.strings for language: \(language)")
     }
 
-    Logger.shared.i("Loaded localized string for key '\(key)' in language: \(language)")
+    Logger.shared.d("Loaded localized string for key '\(key)' in language: \(language)")
     return localizedString
   }
 }
