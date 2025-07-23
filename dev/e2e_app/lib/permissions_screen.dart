@@ -151,20 +151,14 @@ class _PermissionTile extends StatelessWidget {
   final bool granted;
   final VoidCallback onTap;
 
-  Key _getRequestButtonKey(String permissionName) {
-    switch (permissionName.toLowerCase()) {
-      case 'camera':
-        return K.requestCameraPermissionButton;
-      case 'microphone':
-        return K.requestMicrophonePermissionButton;
-      case 'location':
-        return K.requestLocationPermissionButton;
-      case 'gallery':
-        return K.requestGalleryPermissionButton;
-      default:
-        return Key('request${permissionName}PermissionButton');
-    }
-  }
+  Key _getRequestButtonKey(String permissionName) =>
+      switch (permissionName.toLowerCase()) {
+        'camera' => K.requestCameraPermissionButton,
+        'microphone' => K.requestMicrophonePermissionButton,
+        'location' => K.requestLocationPermissionButton,
+        'gallery' => K.requestGalleryPermissionButton,
+        _ => Key('request${permissionName}PermissionButton'),
+      };
 
   @override
   Widget build(BuildContext context) {
