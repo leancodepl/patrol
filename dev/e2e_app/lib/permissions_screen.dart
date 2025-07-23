@@ -43,7 +43,8 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
   Future<void> _requestGalleryPermission() async {
     final status = await Permission.photos.request();
     setState(() {
-      _galleryPermissionGranted = status == PermissionStatus.granted ||
+      _galleryPermissionGranted =
+          status == PermissionStatus.granted ||
           status == PermissionStatus.limited;
     });
   }
@@ -68,23 +69,19 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
       }),
     );
     unawaited(
-      Permission.location.status.then(
-        (value) {
-          setState(() {
-            _locationPermissionGranted = value == PermissionStatus.granted;
-          });
-        },
-      ),
+      Permission.location.status.then((value) {
+        setState(() {
+          _locationPermissionGranted = value == PermissionStatus.granted;
+        });
+      }),
     );
 
     unawaited(
-      Permission.photos.status.then(
-        (value) {
-          setState(() {
-            _galleryPermissionGranted = value == PermissionStatus.granted;
-          });
-        },
-      ),
+      Permission.photos.status.then((value) {
+        setState(() {
+          _galleryPermissionGranted = value == PermissionStatus.granted;
+        });
+      }),
     );
   }
 
@@ -92,9 +89,7 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: K.permissionsScreen,
-      appBar: AppBar(
-        title: const Text('Permissions'),
-      ),
+      appBar: AppBar(title: const Text('Permissions')),
       body: Center(
         child: Column(
           children: [

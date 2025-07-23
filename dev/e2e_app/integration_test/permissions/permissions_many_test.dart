@@ -8,20 +8,16 @@ import '../common.dart';
 const _timeout = Duration(seconds: 5); // to avoid timeouts on CI
 
 void main() {
-  patrol(
-    'grants various permissions',
-    ($) async {
-      await createApp($);
+  patrol('grants various permissions', ($) async {
+    await createApp($);
 
-      await $('Open permissions screen').scrollTo().tap();
+    await $('Open permissions screen').scrollTo().tap();
 
-      await _requestAndGrantCameraPermission($);
-      await _requestAndGrantMicrophonePermission($);
-      await _requestAndDenyLocationPermission($);
-      await _requestAndDenyGalleryPermission($);
-    },
-    tags: ['locale_testing_ios'],
-  );
+    await _requestAndGrantCameraPermission($);
+    await _requestAndGrantMicrophonePermission($);
+    await _requestAndDenyLocationPermission($);
+    await _requestAndDenyGalleryPermission($);
+  }, tags: ['locale_testing_ios']);
 }
 
 Future<void> _requestAndGrantCameraPermission(PatrolIntegrationTester $) async {
@@ -67,9 +63,7 @@ Future<void> _requestAndDenyLocationPermission(
   expect($(K.locationPermissionTile).$(#statusText).text, 'Not granted');
 }
 
-Future<void> _requestAndDenyGalleryPermission(
-  PatrolIntegrationTester $,
-) async {
+Future<void> _requestAndDenyGalleryPermission(PatrolIntegrationTester $) async {
   if (Platform.isIOS) {
     if (!await Permission.photos.isGranted) {
       expect($(K.galleryPermissionTile).$(#statusText).text, 'Not granted');
@@ -81,4 +75,9 @@ Future<void> _requestAndDenyGalleryPermission(
       await $(K.requestGalleryPermissionButton).tap();
     }
   }
+  if (await $.native.isPermissionDialogVisible(timeout: _timeout)) {
+    await $.native.denyPermission();
+    await $.pump();
+  }
+  expect($(K.galleryPermissionTile).$(#statusText).text, 'Not granted');
 }

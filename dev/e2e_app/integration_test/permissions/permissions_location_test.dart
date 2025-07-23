@@ -85,39 +85,35 @@ void main() {
     );
   });
 
-  patrol(
-    'accepts location permission native2',
-    ($) async {
-      await createApp($);
+  patrol('accepts location permission native2', ($) async {
+    await createApp($);
 
-      await $('Open location screen').scrollTo().tap();
+    await $('Open location screen').scrollTo().tap();
 
-      if (!await Permission.location.isGranted) {
-        expect($('Permission not granted'), findsOneWidget);
-        await $(K.grantLocationPermissionButton).tap();
-        if (await $.native2.isPermissionDialogVisible(timeout: _timeout)) {
-          await $.native2.selectCoarseLocation();
-          await $.native2.selectFineLocation();
-          await $.native2.selectCoarseLocation();
-          await $.native2.selectFineLocation();
-          await $.native2.grantPermissionOnlyThisTime();
-        }
-        await tapOkIfGoogleDialogAppearsV2($);
+    if (!await Permission.location.isGranted) {
+      expect($('Permission not granted'), findsOneWidget);
+      await $(K.grantLocationPermissionButton).tap();
+      if (await $.native2.isPermissionDialogVisible(timeout: _timeout)) {
+        await $.native2.selectCoarseLocation();
+        await $.native2.selectFineLocation();
+        await $.native2.selectCoarseLocation();
+        await $.native2.selectFineLocation();
+        await $.native2.grantPermissionOnlyThisTime();
       }
+      await tapOkIfGoogleDialogAppearsV2($);
+    }
 
-      expect(
-        // timeout duration is increased here as the location service on CI
-        // needs more time to start up
-        await $(RegExp('lat')).waitUntilVisible(timeout: Duration(seconds: 30)),
-        findsOneWidget,
-      );
-      expect(
-        // timeout duration is increased here as the location service on CI
-        // needs more time to start up
-        await $(RegExp('lng')).waitUntilVisible(timeout: Duration(seconds: 30)),
-        findsOneWidget,
-      );
-    },
-    tags: ['locale_testing_ios'],
-  );
+    expect(
+      // timeout duration is increased here as the location service on CI
+      // needs more time to start up
+      await $(RegExp('lat')).waitUntilVisible(timeout: Duration(seconds: 30)),
+      findsOneWidget,
+    );
+    expect(
+      // timeout duration is increased here as the location service on CI
+      // needs more time to start up
+      await $(RegExp('lng')).waitUntilVisible(timeout: Duration(seconds: 30)),
+      findsOneWidget,
+    );
+  }, tags: ['locale_testing_ios']);
 }

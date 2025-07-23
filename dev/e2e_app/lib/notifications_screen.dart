@@ -42,16 +42,19 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       if (io.Platform.isAndroid) {
         await _notificationsPlugin
             .resolvePlatformSpecificImplementation<
-                AndroidFlutterLocalNotificationsPlugin>()
+              AndroidFlutterLocalNotificationsPlugin
+            >()
             ?.requestNotificationsPermission();
         await _notificationsPlugin
             .resolvePlatformSpecificImplementation<
-                AndroidFlutterLocalNotificationsPlugin>()
+              AndroidFlutterLocalNotificationsPlugin
+            >()
             ?.requestExactAlarmsPermission();
       } else if (io.Platform.isMacOS) {
         await _notificationsPlugin
             .resolvePlatformSpecificImplementation<
-                MacOSFlutterLocalNotificationsPlugin>()
+              MacOSFlutterLocalNotificationsPlugin
+            >()
             ?.requestPermissions(alert: true, badge: true, sound: true);
       }
     }());
@@ -134,18 +137,14 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               children: [
                 ElevatedButton(
                   key: K.showNotificationNowButton,
-                  onPressed: () async => _showNotificationNow(
-                    id: 1,
-                    title: _firstTitle,
-                  ),
+                  onPressed: () async =>
+                      _showNotificationNow(id: 1, title: _firstTitle),
                   child: const Text('Show now'),
                 ),
                 ElevatedButton(
                   key: K.showNotificationLaterButton,
-                  onPressed: () async => _showNotificationLater(
-                    id: 1,
-                    title: _firstTitle,
-                  ),
+                  onPressed: () async =>
+                      _showNotificationLater(id: 1, title: _firstTitle),
                   child: const Text('Show in a few seconds'),
                 ),
               ],
@@ -161,18 +160,14 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               children: [
                 ElevatedButton(
                   key: K.showNotificationNowButton2,
-                  onPressed: () async => _showNotificationNow(
-                    id: 2,
-                    title: _secondTitle,
-                  ),
+                  onPressed: () async =>
+                      _showNotificationNow(id: 2, title: _secondTitle),
                   child: const Text('Show now'),
                 ),
                 ElevatedButton(
                   key: K.showNotificationLaterButton2,
-                  onPressed: () async => _showNotificationLater(
-                    id: 2,
-                    title: _secondTitle,
-                  ),
+                  onPressed: () async =>
+                      _showNotificationLater(id: 2, title: _secondTitle),
                   child: const Text('Show in a few seconds'),
                 ),
               ],
