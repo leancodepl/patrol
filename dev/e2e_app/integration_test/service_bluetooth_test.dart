@@ -5,7 +5,7 @@ import 'common.dart';
 void main() {
   patrol('disables and enables bluetooth twice', ($) async {
     await createApp($);
-    if (!await $.native.isVirtualDevice() && Platform.isIOS) {
+    if (await $.native.isVirtualDevice() && Platform.isIOS) {
       $.log(
         'Test will be skipped because of iOS simulator limitations',
       );
