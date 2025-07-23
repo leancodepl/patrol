@@ -27,12 +27,6 @@
       return device.system
     }()
 
-    func getLocale() throws -> GetLocaleResponse {
-      try runAction("getLocale") {
-        throw PatrolError.methodNotImplemented("getLocale")
-      }
-    }
-
     func configure(timeout: TimeInterval) {
       self.timeout = timeout
     }
