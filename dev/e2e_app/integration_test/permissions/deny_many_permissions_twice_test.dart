@@ -13,6 +13,7 @@ void main() {
 
       await $('Open permissions screen').scrollTo().tap();
 
+      // Duplicated methods because we want to be sure that permission is denied
       await _requestAndDenyCameraPermission($);
       await _requestAndDenyCameraPermission($);
 
