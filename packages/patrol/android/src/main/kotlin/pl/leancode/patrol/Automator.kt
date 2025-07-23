@@ -834,7 +834,7 @@ class Automator private constructor() {
         targetContext.startActivity(intent)
 
         var uiSelector = UiSelector()
-        uiSelector = uiSelector.text(Localization.getLocalizedString(targetContext, s.airplane_mode))
+        uiSelector = uiSelector.text(Localization.getLocalizedString(targetContext,  targetContext.getString(s.airplane_mode) ))
         val uiObject = uiDevice.findObject(uiSelector)
         if (uiObject != null) {
             uiObject.click()
@@ -851,7 +851,9 @@ class Automator private constructor() {
         targetContext.startActivity(intent)
 
         var uiSelector = UiSelector()
-        uiSelector = uiSelector.text(Localization.getLocalizedString(targetContext, s.use_location))
+        uiSelector = uiSelector.text(Localization.getLocalizedString(targetContext,
+            targetContext.getString(s.use_location)
+        ))
         val uiObject = uiDevice.findObject(uiSelector)
         if (uiObject != null) {
             uiObject.click()
