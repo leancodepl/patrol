@@ -1,38 +1,47 @@
 package pl.leancode.patrol
 
 import android.content.Context
+import android.content.res.Resources
+import android.os.LocaleList
 import android.os.Build
 
 object Localization {
 
     /**
-     * Gets the current device locale
+     * Gets the current device language (system language, not app locale)
+     * This ensures we operate on the actual language used by the system UI
      */
-    private fun getDeviceLocale(context: Context): String {
-        val locale = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            context.resources.configuration.locales[0]
+    private fun getDeviceLanguage(context: Context): String {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            // Use LocaleList to get the actual system default language
+            // This is more direct than using configuration.locales
+            LocaleList.getDefault().get(0).language
         } else {
             @Suppress("DEPRECATION")
-            context.resources.configuration.locale
+            Resources.getSystem().configuration.locale.language
         }
-
-        return locale.language
     }
 
     /**
-     * Gets localized string based on device locale
-     * Supports English (en), German (de), French (fr) and Polish (pl) locales
+     * Gets localized string based on device language
+     * Supports English (en), German (de), French (fr) and Polish (pl) languages
      */
     fun getLocalizedString(context: Context, resourceId: Int): String {
-        val locale = getDeviceLocale(context)
-        Logger.d("Device locale: $locale")
-        // Try to get the string from the appropriate resource file
+        val language = getDeviceLanguage(context)
+        Logger.d("Device language: $language")
+        
+        // Check if the detected language is supported
+        val supportedLanguages = setOf("en", "de", "fr", "pl")
+        if (language !in supportedLanguages) {
+            throw UnsupportedOperationException(
+                "Language '$language' is not supported. Supported languages: ${supportedLanguages.joinToString(", ")}"
+            )
+        }
 
         return if (resourceId != 0) {
             context.resources.getString(resourceId)
         } else {
-            val resourceName = context.resources.getString(resourceId)
-            throw IllegalStateException("Resource not found: $resourceName for locale: $locale")
+            throw IllegalStateException("Invalid resource ID: $context.resources.getString(resourceId) for language: $language")
         }
     }
 }
