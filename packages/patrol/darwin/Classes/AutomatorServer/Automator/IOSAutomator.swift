@@ -873,7 +873,6 @@
       let button = alerts.buttons[preciseOn]
       let exists = button.waitForExistence(timeout: self.timeout)
       return exists
-
     }
 
     func selectCoarseLocation() throws {
@@ -1073,7 +1072,6 @@
       ) {
         button.tap()
       }
-
     }
 
     private func runControlCenterAction(_ log: String, block: @escaping () throws -> Void) throws {
