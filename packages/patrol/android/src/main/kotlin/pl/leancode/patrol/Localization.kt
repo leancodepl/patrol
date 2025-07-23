@@ -23,19 +23,15 @@ object Localization {
      * Gets localized string based on device locale
      * Supports English (en), German (de), French (fr) and Polish (pl) locales
      */
-    fun getLocalizedString(context: Context, resourceName: String): String {
+    fun getLocalizedString(context: Context, resourceId: Int): String {
         val locale = getDeviceLocale(context)
         Logger.d("Device locale: $locale")
         // Try to get the string from the appropriate resource file
-        val resourceId = context.resources.getIdentifier(
-            resourceName,
-            "string",
-            context.packageName
-        )
 
         return if (resourceId != 0) {
             context.resources.getString(resourceId)
         } else {
+            val resourceName = context.resources.getString(resourceId)
             throw IllegalStateException("Resource not found: $resourceName for locale: $locale")
         }
     }
