@@ -36,9 +36,9 @@ class Localization {
     } else {
       // Fallback to English if target language specific file is not found
       if targetLanguage != "en" {
-              Logger.shared.i(
-        "Could not find Localizable.strings for \(targetLanguage), trying English strings as fallback"
-      )
+        Logger.shared.i(
+          "Could not find Localizable.strings for \(targetLanguage), trying English strings as fallback"
+        )
         return try getLocalizedStringForLanguage(key: key, language: "en", bundle: bundle)
       } else {
         // If even English is not found or this is already 'en', throw an error
