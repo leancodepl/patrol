@@ -2,8 +2,8 @@ package pl.leancode.patrol
 
 import android.content.Context
 import android.content.res.Resources
-import android.os.LocaleList
 import android.os.Build
+import android.os.LocaleList
 
 object Localization {
 
@@ -29,7 +29,7 @@ object Localization {
     fun getLocalizedString(context: Context, resourceId: Int): String {
         val language = getDeviceLanguage(context)
         Logger.d("Device language: $language")
-        
+
         // Check if the detected language is supported
         val supportedLanguages = setOf("en", "de", "fr", "pl")
         if (language !in supportedLanguages) {

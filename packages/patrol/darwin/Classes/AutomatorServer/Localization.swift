@@ -22,35 +22,37 @@ class Localization {
   static func getLocalizedString(key: String) throws -> String {  // Mark as throws
     let language = getDeviceLanguage()
     let targetLanguage = language ?? "en"
-    
+
     // Define supported languages
     let supportedLanguages = ["en", "de", "fr", "pl"]
-    
+
     if let unwrappedLanguage = language {
       Logger.shared.i("Device language: \(unwrappedLanguage)")
     } else {
       Logger.shared.i("Device language not found, defaulting to English")
     }
-    
+
     // Check if the target language is supported
     guard supportedLanguages.contains(targetLanguage) else {
       Logger.shared.e("Language '\(targetLanguage)' is not supported")
       throw LocalizationError.languageNotSupported(
-        "Language '\(targetLanguage)' is not supported. Supported languages are: \(supportedLanguages.joined(separator: ", "))")
+        "Language '\(targetLanguage)' is not supported. Supported languages are: \(supportedLanguages.joined(separator: ", "))"
+      )
     }
 
     // Get the bundle containing the Localizable.strings files
     let bundle = Bundle(for: Localization.self)
 
     // Try to load the localized strings file for the target language
-    guard let path = bundle.path(
-      forResource: "Localizable", ofType: "strings", inDirectory: "\(targetLanguage).lproj")
+    guard
+      let path = bundle.path(
+        forResource: "Localizable", ofType: "strings", inDirectory: "\(targetLanguage).lproj")
     else {
       Logger.shared.e("Localizable.strings file not found for language: \(targetLanguage)")
       throw LocalizationError.resourceNotFound(
         "Localizable.strings file not found for language: \(targetLanguage)")
     }
-    
+
     return try getLocalizedStringForLanguage(
       key: key, language: targetLanguage, bundle: bundle, path: path)
   }
