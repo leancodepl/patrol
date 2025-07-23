@@ -4,52 +4,55 @@ import os
 class Localization {
 
   /**
-   * Gets the current device locale
+   * Gets the current device language
    */
-  private static func getDeviceLocale() -> String? {
-    return Locale.current.languageCode
+  private static func getDeviceLanguage() -> String? {
+    // Get the user's preferred language instead of system locale
+    if let preferredLanguage = Locale.preferredLanguages.first {
+      // Extract language code from language identifier (e.g., "en-US" -> "en")
+      return String(preferredLanguage.prefix(2))
+    }
+    return nil
   }
 
   /**
-   * Gets localized string based on device locale
-   * Supports English (en), German (de), French (fr) and Polish (pl) locales
+   * Gets localized string based on device language
+   * Supports English (en), German (de), French (fr) and Polish (pl) languages
    */
   static func getLocalizedString(key: String) throws -> String {  // Mark as throws
-    let locale = getDeviceLocale()
-    if let unwrappedLocale = locale {
-      Logger.shared.i("Device locale: \(unwrappedLocale)")
+    let language = getDeviceLanguage()
+    let targetLanguage = language ?? "en"
+    
+    // Define supported languages
+    let supportedLanguages = ["en", "de", "fr", "pl"]
+    
+    if let unwrappedLanguage = language {
+      Logger.shared.i("Device language: \(unwrappedLanguage)")
     } else {
-      Logger.shared.i("Device locale not found, fallback to English")
+      Logger.shared.i("Device language not found, defaulting to English")
     }
-    let targetLanguage = locale ?? "en"
+    
+    // Check if the target language is supported
+    guard supportedLanguages.contains(targetLanguage) else {
+      Logger.shared.e("Language '\(targetLanguage)' is not supported")
+      throw LocalizationError.languageNotSupported(
+        "Language '\(targetLanguage)' is not supported. Supported languages are: \(supportedLanguages.joined(separator: ", "))")
+    }
 
     // Get the bundle containing the Localizable.strings files
     let bundle = Bundle(for: Localization.self)
 
-    // The do-catch block is now outside, so we directly throw from here
     // Try to load the localized strings file for the target language
-    if let path = bundle.path(
+    guard let path = bundle.path(
       forResource: "Localizable", ofType: "strings", inDirectory: "\(targetLanguage).lproj")
-    {
-      return try getLocalizedStringForLanguage(
-        key: key, language: targetLanguage, bundle: bundle, path: path)
-    } else {
-      // Fallback to English if target language specific file is not found
-      if targetLanguage != "en" {
-        Logger.shared.i(
-          "Could not find Localizable.strings for \(targetLanguage), trying English strings as fallback"
-        )
-        return try getLocalizedStringForLanguage(key: key, language: "en", bundle: bundle)
-      } else {
-        // If even English is not found or this is already 'en', throw an error
-        Logger.shared.e(
-          "Localizable.strings file not found for language: \(targetLanguage) and no English fallback."
-        )
-        // Throwing the specific error when no fallback is possible
-        throw LocalizationError.resourceNotFound(
-          "No Localizable.strings file found for \(targetLanguage) and no English fallback.")
-      }
+    else {
+      Logger.shared.e("Localizable.strings file not found for language: \(targetLanguage)")
+      throw LocalizationError.resourceNotFound(
+        "Localizable.strings file not found for language: \(targetLanguage)")
     }
+    
+    return try getLocalizedStringForLanguage(
+      key: key, language: targetLanguage, bundle: bundle, path: path)
   }
 
   // This function remains 'throws' because it's a lower-level utility
@@ -86,6 +89,7 @@ enum LocalizationError: LocalizedError {
   case resourceNotFound(String)
   case parsingFailed(String)
   case keyNotFound(String)
+  case languageNotSupported(String)
 
   var errorDescription: String? {
     switch self {
@@ -95,6 +99,8 @@ enum LocalizationError: LocalizedError {
       return "Parsing Failed: \(message)"
     case .keyNotFound(let message):
       return "Key Not Found: \(message)"
+    case .languageNotSupported(let message):
+      return "Language Not Supported: \(message)"
     }
   }
 }

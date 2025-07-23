@@ -528,6 +528,10 @@
       } catch let err as PatrolError {
         Logger.shared.e(err.description)
         throw err
+      } catch let err as LocalizationError {
+        let message = err.errorDescription ?? "Localization error"
+        Logger.shared.e(message)
+        throw PatrolError.localizationError(message)
       } catch let err {
         throw PatrolError.unknown(err)
       }
