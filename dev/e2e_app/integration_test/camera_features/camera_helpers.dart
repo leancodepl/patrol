@@ -85,9 +85,12 @@ class CameraHelpers {
   /// Try to accept NEXT modal, if modal not found, do nothing
   Future<void> maybeAcceptDialogAndroid() async {
     try {
-      await $.native2
-          .tap(NativeSelector(android: AndroidSelector(text: 'NEXT')));
-    } on Exception {/* ignore */}
+      await $.native2.tap(
+        NativeSelector(android: AndroidSelector(text: 'NEXT')),
+      );
+    } on Exception {
+      /* ignore */
+    }
   }
 
   /// Try to accept Camera or Gallery permission dialog, if dialog not found, do nothing

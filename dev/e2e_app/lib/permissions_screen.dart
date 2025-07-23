@@ -53,23 +53,19 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
     super.initState();
 
     unawaited(
-      Permission.camera.status.then(
-        (value) {
-          setState(() {
-            _cameraPermissionGranted = value == PermissionStatus.granted;
-          });
-        },
-      ),
+      Permission.camera.status.then((value) {
+        setState(() {
+          _cameraPermissionGranted = value == PermissionStatus.granted;
+        });
+      }),
     );
 
     unawaited(
-      Permission.microphone.status.then(
-        (value) {
-          setState(() {
-            _microphonePermissionGranted = value == PermissionStatus.granted;
-          });
-        },
-      ),
+      Permission.microphone.status.then((value) {
+        setState(() {
+          _microphonePermissionGranted = value == PermissionStatus.granted;
+        });
+      }),
     );
     unawaited(
       Permission.location.status.then(
@@ -179,25 +175,18 @@ class _PermissionTile extends StatelessWidget {
               children: [
                 Icon(icon),
                 const SizedBox(width: 8),
-                Text(
-                  name,
-                  style: Theme.of(context).textTheme.headlineSmall,
-                ),
+                Text(name, style: Theme.of(context).textTheme.headlineSmall),
               ],
             ),
-            Text(
-              key: K.statusText,
-              granted ? 'Granted' : 'Not granted',
-            ),
+            Text(key: K.statusText, granted ? 'Granted' : 'Not granted'),
             TextButton(
               key: _getRequestButtonKey(name),
               onPressed: onTap,
               child: Text(
                 'Request ${name.toLowerCase()} permission',
-                style: Theme.of(context)
-                    .textTheme
-                    .labelLarge
-                    ?.copyWith(color: Colors.white),
+                style: Theme.of(
+                  context,
+                ).textTheme.labelLarge?.copyWith(color: Colors.white),
               ),
             ),
           ],

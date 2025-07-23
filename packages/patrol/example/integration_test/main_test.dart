@@ -21,10 +21,9 @@ void main() {
     final colors = [PTColors.lcYellow, PTColors.lcBlack, PTColors.lcWhite];
 
     for (final color in colors) {
-      await $(SelectableBox)
-          .which<SelectableBox>((box) => box.color == color)
-          .scrollTo()
-          .tap();
+      await $(
+        SelectableBox,
+      ).which<SelectableBox>((box) => box.color == color).scrollTo().tap();
     }
 
     await $('Ready!').tap();
@@ -32,18 +31,16 @@ void main() {
     // Why doesn't it work?
     // await $(ElevatedButton).$(Center).$('Fluttercon').tap();
 
-    await $(PTElevatedButton)
-        .which<PTElevatedButton>((widget) => widget.caption == 'Fluttercon')
-        .tap();
+    await $(
+      PTElevatedButton,
+    ).which<PTElevatedButton>((widget) => widget.caption == 'Fluttercon').tap();
 
     await $(ListTile).containing($(Icons.flutter_dash)).$('click').tap();
 
     // For macOS we don't want to continue the test as we don't have support for native interactions
     if (!Platform.isMacOS) {
       await $(ElevatedButton)
-          .which<ElevatedButton>(
-            (widget) => widget.enabled,
-          )
+          .which<ElevatedButton>((widget) => widget.enabled)
           .at(2)
           .scrollTo()
           .tap();

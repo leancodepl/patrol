@@ -2,10 +2,10 @@ name: patrol_devtools_extension
 description: A new Flutter project.
 publish_to: none
 
-version: 0.3.0
+version: 0.4.0
 
 environment:
-  sdk: '>=3.6.0 <4.0.0'
+  sdk: '>=3.8.0 <4.0.0'
   flutter: '>=3.32.0'
 
 dependencies:
@@ -24,7 +24,7 @@ dev_dependencies:
   custom_lint: ^0.7.0
   flutter_test:
     sdk: flutter
-  leancode_lint: ^14.3.0
+  leancode_lint: ^17.0.0
 
 flutter:
   uses-material-design: true

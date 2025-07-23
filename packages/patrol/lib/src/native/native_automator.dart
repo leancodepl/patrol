@@ -68,11 +68,13 @@ class NativeAutomatorConfig {
       defaultValue: '8081',
     ),
     this.packageName = const String.fromEnvironment('PATROL_APP_PACKAGE_NAME'),
-    this.iosInstalledApps =
-        const String.fromEnvironment('PATROL_IOS_INSTALLED_APPS'),
+    this.iosInstalledApps = const String.fromEnvironment(
+      'PATROL_IOS_INSTALLED_APPS',
+    ),
     this.bundleId = const String.fromEnvironment('PATROL_APP_BUNDLE_ID'),
-    this.androidAppName =
-        const String.fromEnvironment('PATROL_ANDROID_APP_NAME'),
+    this.androidAppName = const String.fromEnvironment(
+      'PATROL_ANDROID_APP_NAME',
+    ),
     this.iosAppName = const String.fromEnvironment('PATROL_IOS_APP_NAME'),
     this.connectionTimeout = const Duration(seconds: 60),
     this.findTimeout = const Duration(seconds: 10),
@@ -175,11 +177,11 @@ class NativeAutomatorConfig {
 class NativeAutomator {
   /// Creates a new [NativeAutomator].
   NativeAutomator({required NativeAutomatorConfig config})
-      : assert(
-          config.connectionTimeout > config.findTimeout,
-          'find timeout is longer than connection timeout',
-        ),
-        _config = config {
+    : assert(
+        config.connectionTimeout > config.findTimeout,
+        'find timeout is longer than connection timeout',
+      ),
+      _config = config {
     if (_config.packageName.isEmpty && io.Platform.isAndroid) {
       _config.logger("packageName is not set. It's recommended to set it.");
     }
@@ -200,7 +202,7 @@ class NativeAutomator {
     _config.logger('NativeAutomatorClient created, port: ${_config.port}');
   }
 
-  final PatrolLogWriter _patrolLog = PatrolLogWriter();
+  final _patrolLog = PatrolLogWriter();
   final NativeAutomatorConfig _config;
 
   late final NativeAutomatorClient _client;
@@ -232,21 +234,20 @@ class NativeAutomator {
       final result = await request();
       _config.logger('$name() succeeded');
       if (enablePatrolLog) {
-        _patrolLog
-            .log(StepEntry(action: text, status: StepEntryStatus.success));
+        _patrolLog.log(
+          StepEntry(action: text, status: StepEntryStatus.success),
+        );
       }
       return result;
     } on NativeAutomatorClientException catch (err) {
       _config.logger('$name() failed');
-      final log = 'NativeAutomatorClientException: '
+      final log =
+          'NativeAutomatorClientException: '
           '$name() failed with $err';
 
       if (enablePatrolLog) {
         _patrolLog.log(
-          StepEntry(
-            action: text,
-            status: StepEntryStatus.failure,
-          ),
+          StepEntry(action: text, status: StepEntryStatus.failure),
         );
       }
       throw PatrolActionException(log);
@@ -255,10 +256,7 @@ class NativeAutomator {
 
       if (enablePatrolLog) {
         _patrolLog.log(
-          StepEntry(
-            action: text,
-            status: StepEntryStatus.failure,
-          ),
+          StepEntry(action: text, status: StepEntryStatus.failure),
         );
       }
       rethrow;
@@ -411,9 +409,7 @@ class NativeAutomator {
   Future<Notification> getFirstNotification() async {
     final response = await _wrapRequest(
       'getFirstNotification',
-      () => _client.getNotifications(
-        GetNotificationsRequest(),
-      ),
+      () => _client.getNotifications(GetNotificationsRequest()),
     );
 
     return response.notifications.first;
@@ -425,9 +421,7 @@ class NativeAutomator {
   Future<List<Notification>> getNotifications() async {
     final response = await _wrapRequest(
       'getNotifications',
-      () => _client.getNotifications(
-        GetNotificationsRequest(),
-      ),
+      () => _client.getNotifications(GetNotificationsRequest()),
     );
 
     return response.notifications;
@@ -456,10 +450,7 @@ class NativeAutomator {
   ///
   ///  * [tapOnNotificationBySelector], which allows for more precise
   ///    specification of the notification to tap on
-  Future<void> tapOnNotificationByIndex(
-    int index, {
-    Duration? timeout,
-  }) async {
+  Future<void> tapOnNotificationByIndex(int index, {Duration? timeout}) async {
     await _wrapRequest(
       'tapOnNotificationByIndex',
       () => _client.tapOnNotification(
@@ -854,7 +845,7 @@ class NativeAutomator {
     Offset from = const Offset(0.5, 0.5),
     Offset to = const Offset(0.5, 0.9),
     int steps = 50,
-  }) async {
+  }) {
     assert(from.dx >= 0 && from.dx <= 1);
     assert(from.dy >= 0 && from.dy <= 1);
     assert(to.dx >= 0 && to.dx <= 1);
@@ -900,9 +891,7 @@ class NativeAutomator {
       final treeResponse = await _wrapRequest(
         'getNativeUITree',
         () => _client.getNativeUITree(
-          GetNativeUITreeRequest(
-            useNativeViewHierarchy: true,
-          ),
+          GetNativeUITreeRequest(useNativeViewHierarchy: true),
         ),
       );
       return treeResponse.roots;
@@ -931,9 +920,7 @@ class NativeAutomator {
     final response = await _wrapRequest(
       'isPermissionDialogVisible',
       () => _client.isPermissionDialogVisible(
-        PermissionDialogVisibleRequest(
-          timeoutMillis: timeout.inMilliseconds,
-        ),
+        PermissionDialogVisibleRequest(timeoutMillis: timeout.inMilliseconds),
       ),
     );
 
@@ -986,9 +973,7 @@ class NativeAutomator {
     await _wrapRequest(
       'grantPermissionOnlyThisTime',
       () => _client.handlePermissionDialog(
-        HandlePermissionRequest(
-          code: HandlePermissionRequestCode.onlyThisTime,
-        ),
+        HandlePermissionRequest(code: HandlePermissionRequestCode.onlyThisTime),
       ),
     );
   }
@@ -1090,20 +1075,17 @@ class NativeAutomator {
     Selector? doneButtonSelector,
     Duration? timeout,
   }) async {
-    await _wrapRequest(
-      'takeCameraPhoto',
-      () async {
-        await _client.takeCameraPhoto(
-          TakeCameraPhotoRequest(
-            shutterButtonSelector: shutterButtonSelector,
-            doneButtonSelector: doneButtonSelector,
-            appId: resolvedAppId,
-            isNative2: false,
-            timeoutMillis: timeout?.inMilliseconds,
-          ),
-        );
-      },
-    );
+    await _wrapRequest('takeCameraPhoto', () async {
+      await _client.takeCameraPhoto(
+        TakeCameraPhotoRequest(
+          shutterButtonSelector: shutterButtonSelector,
+          doneButtonSelector: doneButtonSelector,
+          appId: resolvedAppId,
+          isNative2: false,
+          timeoutMillis: timeout?.inMilliseconds,
+        ),
+      );
+    });
   }
 
   /// Pick an image from the gallery
@@ -1121,20 +1103,17 @@ class NativeAutomator {
     int? index,
     Duration? timeout,
   }) async {
-    await _wrapRequest(
-      'pickImageFromGallery',
-      () async {
-        await _client.pickImageFromGallery(
-          PickImageFromGalleryRequest(
-            imageSelector: imageSelector,
-            appId: resolvedAppId,
-            isNative2: false,
-            timeoutMillis: timeout?.inMilliseconds,
-            imageIndex: index,
-          ),
-        );
-      },
-    );
+    await _wrapRequest('pickImageFromGallery', () async {
+      await _client.pickImageFromGallery(
+        PickImageFromGalleryRequest(
+          imageSelector: imageSelector,
+          appId: resolvedAppId,
+          isNative2: false,
+          timeoutMillis: timeout?.inMilliseconds,
+          imageIndex: index,
+        ),
+      );
+    });
   }
 
   /// Pick multiple images from the gallery
@@ -1149,20 +1128,17 @@ class NativeAutomator {
     Selector? imageSelector,
     Duration? timeout,
   }) async {
-    await _wrapRequest(
-      'pickMultipleImagesFromGallery',
-      () async {
-        await _client.pickMultipleImagesFromGallery(
-          PickMultipleImagesFromGalleryRequest(
-            imageSelector: imageSelector,
-            appId: resolvedAppId,
-            isNative2: false,
-            imageIndexes: imageIndexes,
-            timeoutMillis: timeout?.inMilliseconds,
-          ),
-        );
-      },
-    );
+    await _wrapRequest('pickMultipleImagesFromGallery', () async {
+      await _client.pickMultipleImagesFromGallery(
+        PickMultipleImagesFromGalleryRequest(
+          imageSelector: imageSelector,
+          appId: resolvedAppId,
+          isNative2: false,
+          imageIndexes: imageIndexes,
+          timeoutMillis: timeout?.inMilliseconds,
+        ),
+      );
+    });
   }
 
   /// Checks if the app is running on a virtual device (simulator or emulator).

@@ -1,8 +1,17 @@
+## 3.9.0
+
+- Re-land: Do not pass flavor as dart-define when building. (#2636)
+- Wait for generating gradlew - fix race condition (#2678)
+- Bump `leancode_lint` to `17.0.0`.
+- Bump `patrol_log` to `0.5.0`.
+- Bump minimum Dart SDK to version 3.8.0.
+
 ## 3.8.0
 
 - Remove `--wait` argument from patrol develop command
 - Add support for comments in .patrol.env files. (#2653)
 - Skip update check when the `patrol_cli` binary is triggered for shell completion only (#2512)
+- Revert: Do not pass flavor as dart-define when building. (#2636)
 
 ## 3.7.0
 
