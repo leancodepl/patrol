@@ -1,6 +1,6 @@
 ## Unreleased
 
-- Add help command `h` to `patrol develop`. (#)
+- Add help command `h` to `patrol develop`. (#2701)
 
 ## 3.9.0
 
