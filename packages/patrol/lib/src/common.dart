@@ -167,7 +167,7 @@ void patrolTest(
         // Wait indefinitely in develop mode after the last test
         while (true) {
           await widgetTester.pump();
-          await Future.delayed(const Duration(milliseconds: 10), () {});
+          await Future<void>.delayed(const Duration(milliseconds: 10));
         }
       }
     },
