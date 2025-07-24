@@ -1,3 +1,7 @@
+## Unreleased
+
+- Support `--no-tree-shake-icons` flag in cli commands. (#)
+
 ## 3.9.0
 
 - Re-land: Do not pass flavor as dart-define when building. (#2636)

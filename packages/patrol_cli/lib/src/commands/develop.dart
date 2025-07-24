@@ -150,6 +150,7 @@ class DevelopCommand extends PatrolCommand {
 
     final displayLabel = boolArg('label');
     final uninstall = boolArg('uninstall');
+    final noTreeShakeIcons = boolArg('no-tree-shake-icons');
 
     String? iOSInstalledAppsEnvVariable;
     if (device.targetPlatform == TargetPlatform.iOS) {
@@ -215,6 +216,7 @@ class DevelopCommand extends PatrolCommand {
       appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
       uninstall: uninstall,
+      noTreeShakeIcons: noTreeShakeIcons,
     );
 
     final iosOpts = IOSAppOptions(
@@ -226,6 +228,7 @@ class DevelopCommand extends PatrolCommand {
       osVersion: stringArg('ios') ?? 'latest',
       appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
+      noTreeShakeIcons: noTreeShakeIcons,
     );
 
     final macosOpts = MacOSAppOptions(
