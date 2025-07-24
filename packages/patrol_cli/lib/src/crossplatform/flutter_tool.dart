@@ -180,7 +180,7 @@ class FlutterTool {
                 'Patrol develop key commands:\n'
                 'r Hot restart\n'
                 'h Help\n'
-                'q Quit (terminate the process and application on the device).',
+                'q Quit (terminate the process and application on the device)',
               );
               _hotRestartActive = true;
 
