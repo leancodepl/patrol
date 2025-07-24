@@ -1,8 +1,8 @@
 /* Permission dialog buttons */
 "ok" = "OK";
-"allow" = "Pozwól";
-"allow_once" = "Zezwalaj raz";
-"allow_while_using_app" = "Zezwalaj podczas korzystania z aplikacji";
+"allow" = "Pozwalaj";
+"allow_once" = "Pozwól raz";
+"allow_while_using_app" = "Pozwalaj, gdy używam aplikacji";
 "dont_allow" = "Nie pozwalaj";
 "limit_access" = "Ogranicz dostęp…";  // … is a Unicode ellipsis
 "allow_full_access" = "Pełny dostęp";
