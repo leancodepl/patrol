@@ -105,7 +105,6 @@ bool _isLastInHierarchy(LiveTest currentTest) {
   }
 
   // If we get here, the test is last at every level of the hierarchy
-
   return true;
 }
 
