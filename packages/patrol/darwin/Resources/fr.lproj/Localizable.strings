@@ -11,11 +11,11 @@
 "open" = "Ouvrir";
 
 /* Settings navigation */
-"developer" = "Développeur";
+"developer" = "Développement";
 "dark_appearance" = "Apparence sombre";
-"display_brightness" = "Affichage et luminosité";
+"display_brightness" = "Luminosité et affichage";
 "dark" = "Sombre";
-"light" = "Clair";
+"light" = "Claire";
 
 /* Location precision */
 "precise_off" = "Précis : Désactivé";
