@@ -9,8 +9,8 @@ class Localization {
   private static func getDeviceLanguage() -> String? {
     // Get the user's preferred language instead of system locale
     if let preferredLanguage = Locale.preferredLanguages.first {
-      // Extract language code from language identifier (e.g., "en-US" -> "en")
-      return String(preferredLanguage.prefix(2))
+      // Extract language code using proper locale parsing (e.g., "en-US" -> "en")
+      return Locale(identifier: preferredLanguage).languageCode
     }
     return nil
   }
