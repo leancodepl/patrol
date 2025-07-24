@@ -86,7 +86,7 @@ void main() {
 
       await $('Tapped notification with ID: 1').waitUntilVisible();
     },
-    // Test fails on physical device and does not throw an error cause of timeout
+    // Uncomment after fix https://github.com/leancodepl/patrol/issues/2703
     // tags: ['locale_testing_ios'],
   );
 }
