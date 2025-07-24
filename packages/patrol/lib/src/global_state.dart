@@ -70,8 +70,7 @@ bool get isCurrentTestPassing {
 
 /// Returns whether the current test is the last test in its immediate group.
 bool get isCurrentTestLastInGroup {
-  final invoker = Invoker.current!;
-  final currentTest = invoker.liveTest;
+  final currentTest = Invoker.current!.liveTest;
 
   // If no groups, this test is not considered "last" for our purposes
   if (currentTest.groups.isEmpty) {

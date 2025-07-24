@@ -154,9 +154,6 @@ void patrolTest(
             patrolBinding.workaroundDebugDefaultTargetPlatformOverride;
       }
 
-      // In develop mode (hot restart enabled), wait indefinitely to allow user interaction
-      // and avoid the "Test Completed" screen, but only after the last test in the group
-
       if (constants.hotRestartEnabled &&
           global_state.isCurrentTestLastInGroup) {
         // Patrol log that test is finished
@@ -168,10 +165,10 @@ void patrolTest(
           ),
         );
         // Wait indefinitely in develop mode after the last test
-        await Future.doWhile(() async {
+        while (true) {
           await widgetTester.pump();
-          return true;
-        });
+          await Future.delayed(const Duration(milliseconds: 10), () {});
+        }
       }
     },
   );
