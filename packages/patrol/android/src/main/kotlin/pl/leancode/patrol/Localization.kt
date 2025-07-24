@@ -37,11 +37,6 @@ object Localization {
                 "Language '$language' is not supported. Supported languages: ${supportedLanguages.joinToString(", ")}"
             )
         }
-
-        return if (resourceId != 0) {
-            context.resources.getString(resourceId)
-        } else {
-            throw IllegalStateException("Invalid resource ID: 0 (zero) for language: $language. Please check if the resource exists in the strings.xml file.")
-        }
+        return context.resources.getString(resourceId)
     }
 }
