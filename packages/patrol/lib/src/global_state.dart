@@ -130,9 +130,7 @@ bool _isLastTestInGroup(LiveTest currentTest, Group group) {
   final lastEntryName = allEntriesInGroup.last;
 
   // The current test is last only if it's the very last entry (not just last test)
-  final isLast = currentTestName == lastEntryName;
-
-  return isLast;
+  return currentTestName == lastEntryName;
 }
 
 /// Checks if the given entry (group or test) is the last entry in the parent group
