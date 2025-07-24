@@ -154,7 +154,6 @@ class _PermissionTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      key: key,
       padding: const EdgeInsets.all(8),
       child: Container(
         padding: const EdgeInsets.all(8),
