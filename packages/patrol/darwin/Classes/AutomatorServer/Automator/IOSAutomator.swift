@@ -390,6 +390,9 @@
     func enableDarkMode(_ bundleId: String) throws {
       try runSettingsAction("enabling dark mode", bundleId) {
         #if targetEnvironment(simulator)
+          let start = self.preferences.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.9))
+          let end = self.preferences.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.3))
+          start.press(forDuration: 0.1, thenDragTo: end)
           self.preferences.descendants(matching: .any)["Developer"].firstMatch.tap()
 
           let value =
@@ -408,6 +411,9 @@
     func disableDarkMode(_ bundleId: String) throws {
       try runSettingsAction("disabling dark mode", bundleId) {
         #if targetEnvironment(simulator)
+          let start = self.preferences.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.9))
+          let end = self.preferences.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.3))
+          start.press(forDuration: 0.1, thenDragTo: end)
           self.preferences.descendants(matching: .any)["Developer"].firstMatch.tap()
 
           let value =
