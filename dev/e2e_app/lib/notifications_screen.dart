@@ -42,19 +42,16 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       if (io.Platform.isAndroid) {
         await _notificationsPlugin
             .resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin
-            >()
+                AndroidFlutterLocalNotificationsPlugin>()
             ?.requestNotificationsPermission();
         await _notificationsPlugin
             .resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin
-            >()
+                AndroidFlutterLocalNotificationsPlugin>()
             ?.requestExactAlarmsPermission();
       } else if (io.Platform.isMacOS) {
         await _notificationsPlugin
             .resolvePlatformSpecificImplementation<
-              MacOSFlutterLocalNotificationsPlugin
-            >()
+                MacOSFlutterLocalNotificationsPlugin>()
             ?.requestPermissions(alert: true, badge: true, sound: true);
       }
     }());

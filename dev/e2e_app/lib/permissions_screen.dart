@@ -43,8 +43,7 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
   Future<void> _requestGalleryPermission() async {
     final status = await Permission.photos.request();
     setState(() {
-      _galleryPermissionGranted =
-          status == PermissionStatus.granted ||
+      _galleryPermissionGranted = status == PermissionStatus.granted ||
           status == PermissionStatus.limited;
     });
   }

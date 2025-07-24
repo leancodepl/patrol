@@ -66,8 +66,8 @@ class _LocationScreenState extends State<LocationScreen> {
                   Text(
                     'No location',
                     style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                      color: Theme.of(context).colorScheme.error,
-                    ),
+                          color: Theme.of(context).colorScheme.error,
+                        ),
                   ),
                   Text(
                     'Permission not granted',
@@ -80,8 +80,8 @@ class _LocationScreenState extends State<LocationScreen> {
                     child: Text(
                       'Grant permission',
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        color: Theme.of(context).colorScheme.onPrimary,
-                      ),
+                            color: Theme.of(context).colorScheme.onPrimary,
+                          ),
                     ),
                   ),
                 ],
@@ -123,8 +123,8 @@ class _LocationScreenState extends State<LocationScreen> {
                     Text(
                       'Your location',
                       style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
                     ),
                     Text(
                       'lat: $lat',
