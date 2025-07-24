@@ -41,7 +41,7 @@ object Localization {
         return if (resourceId != 0) {
             context.resources.getString(resourceId)
         } else {
-            throw IllegalStateException("Invalid resource ID: $context.resources.getString(resourceId) for language: $language")
+            throw IllegalStateException("Invalid resource ID: 0 (zero) for language: $language. Please check if the resource exists in the strings.xml file.")
         }
     }
 }
