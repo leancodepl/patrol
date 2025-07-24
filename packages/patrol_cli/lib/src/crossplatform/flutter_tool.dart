@@ -36,6 +36,7 @@ class FlutterTool {
 
   var _hotRestartActive = false;
   var _logsActive = false;
+  var _devtoolsUrl = '';
 
   /// Forwards logs and hot restarts the app when "r" is pressed.
   Future<void> attachForHotRestart({
@@ -144,12 +145,20 @@ class FlutterTool {
               );
               process.stdin.add('R'.codeUnits);
             } else if (char == 'h' || char == 'H') {
-              _logger.success(
+              final helpText = StringBuffer(
                 'Patrol develop key commands:\n'
                 'r Hot restart\n'
                 'h Help\n'
                 'q Quit (terminate the process and application on the device)',
               );
+
+              if (_devtoolsUrl.isNotEmpty) {
+                helpText.writeln('\nDevTools: $_devtoolsUrl');
+              } else {
+                helpText.writeln('\nDevTools: not available yet');
+              }
+
+              _logger.success(helpText.toString());
             } else if (char == 'q' || char == 'Q') {
               _logger.success('Quitting process...');
               process.kill();
@@ -191,13 +200,13 @@ class FlutterTool {
             }
 
             if (line.startsWith('The Flutter DevTools debugger and profiler')) {
-              final devtoolsUrl = _getDevtoolsUrl(line);
+              _devtoolsUrl = _getDevtoolsUrl(line);
               _logger.success(
-                'Patrol DevTools extension is available at $devtoolsUrl',
+                'Patrol DevTools extension is available at $_devtoolsUrl',
               );
 
               if (openBrowser) {
-                unawaited(_openDevtoolsPage(devtoolsUrl));
+                unawaited(_openDevtoolsPage(_devtoolsUrl));
               }
             }
 
