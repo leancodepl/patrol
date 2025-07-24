@@ -78,7 +78,7 @@ Note: On iOS, during development you should remove `#if PATROL_ENABLED` from `Au
 
 If you plan to use the local version of Patrol to test/modify the Patrol DevTools extension, you need to deploy it first. To do this, navigate to the `patrol_devtools_extension` folder and run the `./publish_to_patrol_extension` script.
 
-## Adding a new language or new strings to existing language
+## Adding a new language or new strings to existing language for native OS interactions
 
 ### iOS
 
