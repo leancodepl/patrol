@@ -143,6 +143,14 @@ class FlutterTool {
                 'Hot Restart for entrypoint ${basename(target)}...',
               );
               process.stdin.add('R'.codeUnits);
+            }
+            else if (char == 'h' || char == 'H') {
+            _logger.success(
+              'Patrol develop key commands:\n'
+              'r Hot restart\n'
+              'h Help\n'
+              'q Quit (terminate the process and application on the device)',
+            );
             } else if (char == 'q' || char == 'Q') {
               _logger.success('Quitting process...');
               process.kill();
@@ -171,7 +179,8 @@ class FlutterTool {
               _logger.success(
                 'Hot Restart: attached to the app\n'
                 'Patrol develop key commands:\n'
-                'r Hot restart.\n'
+                'r Hot restart\n'
+                'h Help\n'
                 'q Quit (terminate the process and application on the device).',
               );
               _hotRestartActive = true;

@@ -1,3 +1,7 @@
+## Unreleased
+
+- Add help command `h` to `patrol develop`. (#)
+
 ## 3.9.0
 
 - Re-land: Do not pass flavor as dart-define when building. (#2636)
