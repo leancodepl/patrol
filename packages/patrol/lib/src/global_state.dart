@@ -1,5 +1,4 @@
 // This file wraps the Invoker API, which is internal to package:test.
-// ignore: implementation_imports
 
 // Ignoring this because causes conflicts between linter and analyzer
 // ignore: dangling_library_doc_comments
