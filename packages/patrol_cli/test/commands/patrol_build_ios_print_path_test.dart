@@ -1,11 +1,6 @@
 import 'package:mocktail/mocktail.dart';
 import 'package:path/path.dart' show join;
 import 'package:patrol_cli/src/commands/build_ios.dart';
-import 'package:patrol_cli/src/compatibility_checker/compatibility_checker.dart';
-import 'package:patrol_cli/src/dart_defines_reader.dart';
-import 'package:patrol_cli/src/pubspec_reader.dart';
-import 'package:patrol_cli/src/test_bundler.dart';
-import 'package:patrol_cli/src/test_finder.dart';
 import 'package:test/test.dart';
 
 import '../src/mocks.dart';
@@ -89,14 +84,3 @@ void main() {
     });
   });
 }
-
-// Mock classes for dependencies
-class MockTestFinder extends Mock implements TestFinder {}
-
-class MockTestBundler extends Mock implements TestBundler {}
-
-class MockDartDefinesReader extends Mock implements DartDefinesReader {}
-
-class MockPubspecReader extends Mock implements PubspecReader {}
-
-class MockCompatibilityChecker extends Mock implements CompatibilityChecker {}
