@@ -1,6 +1,7 @@
 ## Unreleased 
 
 - Add support for de, fr and pl locales for native methods that operates on strings (#2659)
+- Add support for gallery permission dialog on iOS 17 (#2659)
 
 ## 3.9.0
 
