@@ -1,6 +1,6 @@
 ## Unreleased
 
-- Fix logging for `$.native.pullToRefresh()` (#2707) 
+- Fix logging for `$.native.pullToRefresh()` and `$.native.swipeBack()` (#2707) 
 
 ## 3.18.0
 
