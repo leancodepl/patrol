@@ -1,3 +1,7 @@
+## Unreleased 
+
+- Add support for de,fr and pl locales for native methods that operates on strings (#2659)
+
 ## 3.9.0
 
 - Re-land: Do not pass flavor as dart-define when building. (#2636)
