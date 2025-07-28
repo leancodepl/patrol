@@ -652,6 +652,7 @@ class NativeAutomator2 {
     required Offset to,
     int steps = 12,
     String? appId,
+    bool enablePatrolLog = true,
   }) async {
     assert(from.dx >= 0 && from.dx <= 1);
     assert(from.dy >= 0 && from.dy <= 1);
@@ -660,6 +661,7 @@ class NativeAutomator2 {
 
     await _wrapRequest(
       'swipe',
+      enablePatrolLog: enablePatrolLog,
       () => _client.swipe(
         SwipeRequest(
           startX: from.dx,
@@ -723,10 +725,14 @@ class NativeAutomator2 {
     assert(to.dx >= 0 && to.dx <= 1);
     assert(to.dy >= 0 && to.dy <= 1);
 
-    return swipe(
-      from: Offset(from.dx, from.dy),
-      to: Offset(to.dx, to.dy),
-      steps: steps,
+    return _wrapRequest(
+      'pullToRefresh',
+      () => swipe(
+        from: Offset(from.dx, from.dy),
+        to: Offset(to.dx, to.dy),
+        steps: steps,
+        enablePatrolLog: false,
+      ),
     );
   }
 
