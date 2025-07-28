@@ -1,3 +1,7 @@
+## Unreleased
+
+- Fix logging for `$.native.pullToRefresh()` (#2707) 
+
 ## 3.18.0
 
 - Bump `leancode_lint` to `17.0.0`.
