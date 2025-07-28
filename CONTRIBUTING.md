@@ -86,7 +86,7 @@ If you plan to use the local version of Patrol to test/modify the Patrol DevTool
 2. Add a new language folder with the name of the language or use existing one.
 3. Add a new `Localizable.strings` or add strings to the existing file.
 4. Add the new language to the `getLocalizedStrings` function in `IOSAutomator.swift` file.
-5. If you added new strings, you need to find all functions where these strings are used and add them to the function. for example "labels" in `allowPermissionOnce()` in IOSAutomator.swift file.
+5. If you added new strings, you need to find all functions where these strings are used and add them to the function. For example "labels" in `allowPermissionOnce()` in IOSAutomator.swift file.
 6. Add the new language to the `supportedLanguages` array in `Localization.swift` file.
 
 ### Android
