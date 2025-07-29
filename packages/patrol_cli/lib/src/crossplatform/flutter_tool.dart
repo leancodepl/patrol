@@ -148,7 +148,7 @@ class FlutterTool {
               final helpText = StringBuffer(
                 'Patrol develop key commands:\n'
                 'r Hot restart\n'
-                'h Help\n'
+                'h Print this help message\n'
                 'q Quit (terminate the process and application on the device)',
               );
 
@@ -188,7 +188,7 @@ class FlutterTool {
                 'Hot Restart: attached to the app\n'
                 'Patrol develop key commands:\n'
                 'r Hot restart\n'
-                'h Help\n'
+                'h Print this help message\n'
                 'q Quit (terminate the process and application on the device)',
               );
               _hotRestartActive = true;
