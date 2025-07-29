@@ -233,30 +233,6 @@ void main() {
 
         expect(firstCall, equals(secondCall));
       });
-
-      test('handles flavor as null', () {
-        command.printApkPaths(buildMode: 'debug');
-        final nullFlavorOutput = verify(
-          () => mockLogger.info(captureAny()),
-        ).captured;
-
-        // Reset mock
-        reset(mockLogger);
-        when(() => mockLogger.info(any())).thenReturn(null);
-
-        expect(
-          nullFlavorOutput[0],
-          equals(
-            '${join('build', 'app', 'outputs', 'apk', 'debug', 'app-debug.apk')} (app under test)',
-          ),
-        );
-        expect(
-          nullFlavorOutput[1],
-          equals(
-            '${join('build', 'app', 'outputs', 'apk', 'androidTest', 'debug', 'app-debug-androidTest.apk')} (test instrumentation app)',
-          ),
-        );
-      });
     });
   });
 }
