@@ -23,10 +23,8 @@ void main() {
   group('findDevicesToUse()', () {
     test('throws when no devices are attached', () {
       expect(
-        () => deviceFinder.findDevicesToUse(
-          attachedDevices: [],
-          wantDevices: [],
-        ),
+        () =>
+            deviceFinder.findDevicesToUse(attachedDevices: [], wantDevices: []),
         throwsA(
           isA<ToolExit>().having(
             (err) => err.message,

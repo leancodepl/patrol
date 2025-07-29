@@ -1,6 +1,15 @@
-## Unreleased
+## Unreleased 
+
+- Add support for de, fr and pl locales for native methods that operates on strings (#2659)
+- Add support for gallery permission dialog on iOS 17 (#2659)
+
+## 3.9.0
 
 - Re-land: Do not pass flavor as dart-define when building. (#2636)
+- Wait for generating gradlew - fix race condition (#2678)
+- Bump `leancode_lint` to `17.0.0`.
+- Bump `patrol_log` to `0.5.0`.
+- Bump minimum Dart SDK to version 3.8.0.
 
 ## 3.8.0
 

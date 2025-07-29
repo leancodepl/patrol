@@ -88,9 +88,7 @@ class _CameraScreenState extends State<CameraScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: K.cameraScaffold,
-      appBar: AppBar(
-        title: const Text('Camera'),
-      ),
+      appBar: AppBar(title: const Text('Camera')),
       backgroundColor: Colors.white,
       body: _buildBody(),
     );
@@ -205,10 +203,7 @@ class _ImagePreview extends StatelessWidget {
                   ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(4),
-                    child: Image.file(
-                      images[index],
-                      fit: BoxFit.cover,
-                    ),
+                    child: Image.file(images[index], fit: BoxFit.cover),
                   ),
                 );
               },
