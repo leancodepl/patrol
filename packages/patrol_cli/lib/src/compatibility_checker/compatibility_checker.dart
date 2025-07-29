@@ -18,10 +18,10 @@ class CompatibilityChecker {
     required Directory projectRoot,
     required ProcessManager processManager,
     required Logger logger,
-  })  : _projectRoot = projectRoot,
-        _processManager = processManager,
-        _disposeScope = DisposeScope(),
-        _logger = logger;
+  }) : _projectRoot = projectRoot,
+       _processManager = processManager,
+       _disposeScope = DisposeScope(),
+       _logger = logger;
 
   final Directory _projectRoot;
   final ProcessManager _processManager;
@@ -73,36 +73,39 @@ Check the compatibility table at: https://patrol.leancode.co/documentation/compa
     final packageCompleter = Completer<String?>();
 
     await _disposeScope.run((scope) async {
-      final process = await _processManager.start(
-        [
-          flutterCommand.executable,
-          ...flutterCommand.arguments,
-          '--suppress-analytics',
-          '--no-version-check',
-          'pub',
-          'deps',
-          '--style=list',
-        ],
-        workingDirectory: _projectRoot.path,
-        runInShell: true,
-      )
-        ..disposedBy(scope);
+      final process =
+          await _processManager.start(
+              [
+                flutterCommand.executable,
+                ...flutterCommand.arguments,
+                '--suppress-analytics',
+                '--no-version-check',
+                'pub',
+                'deps',
+                '--style=list',
+              ],
+              workingDirectory: _projectRoot.path,
+              runInShell: true,
+            )
+            ..disposedBy(scope);
 
-      process.listenStdOut(
-        (line) async {
-          if (line.startsWith('- patrol ')) {
-            packageCompleter.maybeComplete(line.split(' ').last);
-          }
-        },
-        onDone: () {
-          if (!packageCompleter.isCompleted) {
-            throwToolExit(
-              'Failed to read patrol version. Make sure you have patrol '
-              'dependency in your pubspec.yaml file',
-            );
-          }
-        },
-      ).disposedBy(scope);
+      process
+          .listenStdOut(
+            (line) {
+              if (line.startsWith('- patrol ')) {
+                packageCompleter.maybeComplete(line.split(' ').last);
+              }
+            },
+            onDone: () {
+              if (!packageCompleter.isCompleted) {
+                throwToolExit(
+                  'Failed to read patrol version. Make sure you have patrol '
+                  'dependency in your pubspec.yaml file',
+                );
+              }
+            },
+          )
+          .disposedBy(scope);
     });
 
     packageVersion = await packageCompleter.future;
@@ -168,48 +171,56 @@ Future<void> _checkJavaVersion(
   final javaCompleterVersion = Completer<Version?>();
 
   await disposeScope.run((scope) async {
-    final processFlutter = await processManager.start(
-      [
-        flutterCommand.executable,
-        ...flutterCommand.arguments,
-        'doctor',
-        '--verbose',
-      ],
-      workingDirectory: projectRoot.path,
-      runInShell: true,
-    )
-      ..disposedBy(scope);
-
-    processFlutter.listenStdOut(
-      (line) async {
-        if (line.contains('• Java version')) {
-          final versionString = line.split(' ').last.replaceAll(')', '');
-          javaCompleterVersion.maybeComplete(Version.parse(versionString));
-        }
-      },
-      onDone: () async {
-        if (!javaCompleterVersion.isCompleted) {
-          final processJava = await processManager.start(
-            ['javac', '--version'],
+    final processFlutter =
+        await processManager.start(
+            [
+              flutterCommand.executable,
+              ...flutterCommand.arguments,
+              'doctor',
+              '--verbose',
+            ],
             workingDirectory: projectRoot.path,
             runInShell: true,
           )
-            ..disposedBy(scope);
+          ..disposedBy(scope);
 
-          processJava.listenStdOut(
-            (line) async {
-              if (line.startsWith('javac')) {
-                javaCompleterVersion
-                    .maybeComplete(Version.parse(line.split(' ').last));
-              }
-            },
-            onDone: () => javaCompleterVersion.maybeComplete(null),
-            onError: (error) => javaCompleterVersion.maybeComplete(null),
-          ).disposedBy(scope);
-        }
-      },
-      onError: (error) => javaCompleterVersion.maybeComplete(null),
-    ).disposedBy(scope);
+    processFlutter
+        .listenStdOut(
+          (line) {
+            if (line.contains('• Java version')) {
+              final versionString = line.split(' ').last.replaceAll(')', '');
+              javaCompleterVersion.maybeComplete(Version.parse(versionString));
+            }
+          },
+          onDone: () async {
+            if (!javaCompleterVersion.isCompleted) {
+              final processJava =
+                  await processManager.start(
+                      ['javac', '--version'],
+                      workingDirectory: projectRoot.path,
+                      runInShell: true,
+                    )
+                    ..disposedBy(scope);
+
+              processJava
+                  .listenStdOut(
+                    (line) {
+                      if (line.startsWith('javac')) {
+                        javaCompleterVersion.maybeComplete(
+                          Version.parse(line.split(' ').last),
+                        );
+                      }
+                    },
+                    onDone: () => javaCompleterVersion.maybeComplete(null),
+                    onError: (error) =>
+                        javaCompleterVersion.maybeComplete(null),
+                  )
+                  .disposedBy(scope);
+            }
+          },
+          onError: (error) => javaCompleterVersion.maybeComplete(null),
+        )
+        .disposedBy(scope);
   });
 
   javaVersion = await javaCompleterVersion.future;

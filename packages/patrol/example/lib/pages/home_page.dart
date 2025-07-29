@@ -22,17 +22,17 @@ class HomePage extends StatelessWidget {
             await Navigator.push(context, profileRoute);
           } else if (state case AuthStateUnauthenticated()) {
             if (state.showError) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Login failed')),
-              );
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(const SnackBar(content: Text('Login failed')));
             }
           }
         },
         builder: (context, state) {
           return switch (state) {
             AuthStateLoading() => const Center(
-                child: CircularProgressIndicator(),
-              ),
+              child: CircularProgressIndicator(),
+            ),
             _ => const _HomePageBody(),
           };
         },
@@ -63,8 +63,8 @@ class _HomePageBody extends StatelessWidget {
           caption: 'Send notification',
           onPressed: () =>
               context.read<NotificationHandler>().triggerPushNotification(
-                    onPressed: () => Navigator.push(context, notificationRoute),
-                  ),
+                onPressed: () => Navigator.push(context, notificationRoute),
+              ),
         ),
       ],
     ).horizontallyPadded24;
@@ -78,10 +78,7 @@ class _TextSeparator extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 45),
-      child: Text(
-        'or',
-        style: PTTextStyles.h4,
-      ),
+      child: Text('or', style: PTTextStyles.h4),
     );
   }
 }

@@ -1,18 +1,15 @@
 import 'common.dart';
 
 void main() {
-  patrol(
-    'performs swipe back gesture ',
-    ($) async {
-      await createApp($);
+  patrol('performs swipe back gesture ', ($) async {
+    await createApp($);
 
-      final openLoadingScreenButton = $(find.text('Open loading screen'));
+    final openLoadingScreenButton = $(find.text('Open loading screen'));
 
-      await openLoadingScreenButton.scrollTo().tap();
+    await openLoadingScreenButton.scrollTo().tap();
 
-      await $.native.swipeBack(dy: 0.6);
+    await $.native.swipeBack(dy: 0.6);
 
-      await openLoadingScreenButton.waitUntilExists();
-    },
-  );
+    await openLoadingScreenButton.waitUntilExists();
+  });
 }

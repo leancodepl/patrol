@@ -45,8 +45,9 @@ class _FormPageState extends State<_FormPage> {
       child: PTScaffold(
         bodyKey: ValueKey(_submitted),
         top: const TopBar(),
-        body:
-            _submitted ? const _CountdownTimer() : _Form(onSubmit: _showTimer),
+        body: _submitted
+            ? const _CountdownTimer()
+            : _Form(onSubmit: _showTimer),
       ),
     );
   }
@@ -97,30 +98,26 @@ class _FormState extends State<_Form> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const SizedBox(height: 24),
-          Text(
-            'Choose a nickname to sign up',
-            style: PTTextStyles.h4,
-          ),
+          Text('Choose a nickname to sign up', style: PTTextStyles.h4),
           const SizedBox(height: 32),
           PTTextField(
             controller: _textController,
             label: 'Your nickname',
-            errorText:
-                _showErrors && !_nickValid ? 'Nick must not be empty' : null,
+            errorText: _showErrors && !_nickValid
+                ? 'Nick must not be empty'
+                : null,
           ),
           const SizedBox(height: 32),
           _ColorPicker(
             selectedColors: _selectedColors,
             colorsToDisplay: _colorsToDisplay,
             onSelected: _onColorSelected,
-            errorText:
-                _showErrors && !_colorsValid ? 'Colors must be picked' : null,
+            errorText: _showErrors && !_colorsValid
+                ? 'Colors must be picked'
+                : null,
           ),
           const SizedBox(height: 24),
-          PTElevatedButton(
-            caption: 'Ready!',
-            onPressed: _onSubmit,
-          ),
+          PTElevatedButton(caption: 'Ready!', onPressed: _onSubmit),
         ],
       ).horizontallyPadded24,
     );
@@ -200,13 +197,11 @@ class _AnimatedTimerState extends State<_AnimatedTimer>
     super.initState();
     _animationController =
         AnimationController(vsync: this, duration: const Duration(seconds: 3))
-          ..addStatusListener(
-            (status) {
-              if (status == AnimationStatus.completed) {
-                Navigator.of(context).push(questionRoute);
-              }
-            },
-          );
+          ..addStatusListener((status) {
+            if (status == AnimationStatus.completed) {
+              Navigator.of(context).push(questionRoute);
+            }
+          });
 
     Future.delayed(const Duration(milliseconds: 200), () {
       _animationController.animateTo(1);
@@ -308,10 +303,7 @@ class _ColorPicker extends StatelessWidget {
           style: PTTextStyles.h4,
         ),
         const SizedBox(height: 16),
-        Text(
-          '${selectedColors.length}/3 selected',
-          style: PTTextStyles.label,
-        ),
+        Text('${selectedColors.length}/3 selected', style: PTTextStyles.label),
         const SizedBox(height: 8),
         Wrap(
           runSpacing: 8,
@@ -350,11 +342,7 @@ class _ColorPicker extends StatelessWidget {
 }
 
 class SelectableBox extends StatelessWidget {
-  const SelectableBox({
-    super.key,
-    required this.color,
-    required this.selected,
-  });
+  const SelectableBox({super.key, required this.color, required this.selected});
 
   final Color color;
   final bool selected;

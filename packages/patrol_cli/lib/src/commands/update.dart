@@ -12,9 +12,9 @@ class UpdateCommand extends PatrolCommand {
     required PubUpdater pubUpdater,
     required Analytics analytics,
     required Logger logger,
-  })  : _pubUpdater = pubUpdater,
-        _analytics = analytics,
-        _logger = logger {
+  }) : _pubUpdater = pubUpdater,
+       _analytics = analytics,
+       _logger = logger {
     argParser.addFlag(
       'pub-upgrade',
       defaultsTo: true,
@@ -38,10 +38,7 @@ class UpdateCommand extends PatrolCommand {
   @override
   Future<int> run() async {
     unawaited(
-      _analytics.sendCommand(
-        FlutterVersion.fromCLI(flutterCommand),
-        name,
-      ),
+      _analytics.sendCommand(FlutterVersion.fromCLI(flutterCommand), name),
     );
 
     await _updatePatrolCliPackage();
