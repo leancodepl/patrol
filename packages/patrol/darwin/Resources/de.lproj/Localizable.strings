@@ -1,0 +1,23 @@
+/* Permission dialog buttons */
+"ok" = "OK";
+"allow" = "Erlauben";
+"allow_once" = "Einmal erlauben";
+"allow_while_using_app" = "Beim Verwenden der App erlauben";
+"dont_allow" = "Nicht erlauben";
+"limit_access" = "Zugriff begrenzen …";  // … is a Unicode ellipsis
+"allow_full_access" = "Vollen Zugriff erlauben";
+
+
+/* Notification identifiers */
+"open" = "Öffnen";
+
+/* Settings navigation */
+"developer" = "Entwickler";
+"dark_appearance" = "Dunkles Erscheinungsbild";
+"display_brightness" = "Anzeige & Helligkeit";
+"dark" = "Dunkel";
+"light" = "Hell";
+
+/* Location precision */
+"precise_off" = "Genau: Aus";
+"precise_on" = "Genau: Ein"; 

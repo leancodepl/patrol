@@ -2,8 +2,9 @@
 set -euo pipefail
 
 # This script requires following environment variables to be set:
-# * DEVICE_MODEL (for example: "iphone11pro")
-# * DEVICE_VERSION (for example: "16.3")
+# * IOS_DEVICE_MODEL (for example: "iphone11pro")
+# * IOS_DEVICE_VERSION (for example: "16.3")
+# * IOS_DEVICE_LOCALE (optional, defaults to "en_US" if not set)
 
 # patrol build ios must be called before this script
 
@@ -14,9 +15,17 @@ zip -r ios_tests.zip Release-iphoneos/*.app *.xctestrun
 
 cd -
 
+# Handle locale variable with default and validation
+if [ -z "${IOS_DEVICE_LOCALE:-}" ]; then
+    IOS_DEVICE_LOCALE="en_US"
+    echo "No IOS_DEVICE_LOCALE provided, using default: $IOS_DEVICE_LOCALE"
+else
+    echo "Using locale: $IOS_DEVICE_LOCALE"
+fi
+
 gcloud firebase test ios run \
 	--type xctest \
 	--test "build/ios_integ/Build/Products/ios_tests.zip" \
-	--device model="$IOS_DEVICE_MODEL",version="$IOS_DEVICE_VERSION",locale=en_US,orientation=portrait \
-	--timeout 30m \
+	--device model="$IOS_DEVICE_MODEL",version="$IOS_DEVICE_VERSION",locale="$IOS_DEVICE_LOCALE",orientation=portrait \
+	--timeout 20m \
 	--results-bucket="patrol_runs"

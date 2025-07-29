@@ -8,5 +8,5 @@ void main() {
     await $.native.enableLocation();
     await $.native.disableLocation();
     await $.native.enableLocation();
-  });
+  }, tags: ['locale_testing_android']);
 }

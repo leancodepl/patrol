@@ -4,11 +4,12 @@ enum PatrolError: Error {
   case methodNotImplemented(_ methodName: String)
   case methodNotAvailable(_ methodName: String, _ deviceType: String)
   case `internal`(_ message: String)
+  case localizationError(_ message: String)
   case unknown(_ error: Error)
 }
 
-extension PatrolError: CustomStringConvertible {
-  var description: String {
+extension PatrolError: LocalizedError {
+  var errorDescription: String? {
     switch self {
     case .viewNotExists(let elementDescription):
       return "\(elementDescription) doesn't exist"
@@ -20,9 +21,17 @@ extension PatrolError: CustomStringConvertible {
       return "method \(methodName)() is not available on \(deviceType)"
     case .internal(let message):
       return message
+    case .localizationError(let message):
+      return message
     case .unknown(let err):
       return "\(err)"
     }
+  }
+}
+
+extension PatrolError: CustomStringConvertible {
+  var description: String {
+    return errorDescription ?? "Unknown PatrolError"
   }
 }
 
