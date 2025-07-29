@@ -21,7 +21,14 @@ Runs tests that use flutter_test and patrol APIs as native macOS / iOS integrati
   s.weak_framework = 'XCTest'
   s.ios.framework  = 'UIKit'
   s.osx.framework  = 'AppKit'
-  s.resource_bundles = {'patrol_privacy' => ['Resources/PrivacyInfo.xcprivacy']}
+  s.resource_bundles = {
+    'patrol_privacy' => ['Resources/PrivacyInfo.xcprivacy']
+  }
+  
+  # Include localization resources
+  s.resources = [
+    'Resources/*.lproj'
+  ]
 
   # Flutter.framework does not contain a i386 slice.
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386' }

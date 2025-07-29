@@ -15,6 +15,7 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
   bool _cameraPermissionGranted = false;
   bool _microphonePermissionGranted = false;
   bool _locationPermissionGranted = false;
+  bool _galleryPermissionGranted = false;
 
   Future<void> _requestCameraPermission() async {
     await Future<void>.delayed(Duration(seconds: 1));
@@ -36,6 +37,15 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
     final status = await Permission.location.request();
     setState(() {
       _locationPermissionGranted = status == PermissionStatus.granted;
+    });
+  }
+
+  Future<void> _requestGalleryPermission() async {
+    final status = await Permission.photos.request();
+    setState(() {
+      _galleryPermissionGranted =
+          status == PermissionStatus.granted ||
+          status == PermissionStatus.limited;
     });
   }
 
@@ -65,11 +75,20 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
         });
       }),
     );
+
+    unawaited(
+      Permission.photos.status.then((value) {
+        setState(() {
+          _galleryPermissionGranted = value == PermissionStatus.granted;
+        });
+      }),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: K.permissionsScreen,
       appBar: AppBar(title: const Text('Permissions')),
       body: Center(
         child: Column(
@@ -79,18 +98,28 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
               icon: Icons.camera,
               granted: _cameraPermissionGranted,
               onTap: _requestCameraPermission,
+              key: K.cameraPermissionTile,
             ),
             _PermissionTile(
               name: 'Microphone',
               icon: Icons.mic,
               granted: _microphonePermissionGranted,
               onTap: _requestMicrophonePermission,
+              key: K.microphonePermissionTile,
             ),
             _PermissionTile(
               name: 'Location',
               icon: Icons.pin_drop,
               granted: _locationPermissionGranted,
               onTap: _requestLocationPermission,
+              key: K.locationPermissionTile,
+            ),
+            _PermissionTile(
+              name: 'Gallery',
+              icon: Icons.photo_library,
+              granted: _galleryPermissionGranted,
+              onTap: _requestGalleryPermission,
+              key: K.galleryPermissionTile,
             ),
           ],
         ),
@@ -101,6 +130,7 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
 
 class _PermissionTile extends StatelessWidget {
   const _PermissionTile({
+    super.key,
     required this.name,
     required this.icon,
     required this.granted,
@@ -112,10 +142,18 @@ class _PermissionTile extends StatelessWidget {
   final bool granted;
   final VoidCallback onTap;
 
+  Key _getRequestButtonKey(String permissionName) =>
+      switch (permissionName.toLowerCase()) {
+        'camera' => K.requestCameraPermissionButton,
+        'microphone' => K.requestMicrophonePermissionButton,
+        'location' => K.requestLocationPermissionButton,
+        'gallery' => K.requestGalleryPermissionButton,
+        _ => Key('request${permissionName}PermissionButton'),
+      };
+
   @override
   Widget build(BuildContext context) {
     return Padding(
-      key: Key(name.toLowerCase()),
       padding: const EdgeInsets.all(8),
       child: Container(
         padding: const EdgeInsets.all(8),
@@ -136,6 +174,7 @@ class _PermissionTile extends StatelessWidget {
             ),
             Text(key: K.statusText, granted ? 'Granted' : 'Not granted'),
             TextButton(
+              key: _getRequestButtonKey(name),
               onPressed: onTap,
               child: Text(
                 'Request ${name.toLowerCase()} permission',
