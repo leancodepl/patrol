@@ -396,6 +396,7 @@
           if let osVersionString = self.getOsVersion().split(separator: ".").first,
             let osVersion = Int(osVersionString)
           {
+            // For iOS 18 and above, we need to swipe to the developer option because it's is moved to the bottom of the list
             if osVersion >= 18 {
               let start = self.preferences.coordinate(
                 withNormalizedOffset: CGVector(dx: 0.5, dy: 0.9))
