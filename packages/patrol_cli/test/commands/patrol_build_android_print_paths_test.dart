@@ -196,7 +196,7 @@ void main() {
         verify(() => mockLogger.info(any())).called(2);
       });
 
-      test('uses proper path separators for different platforms', () {
+      test('checks proper paths for flavor and build mode', () {
         command.printApkPaths(flavor: 'dev', buildMode: 'debug');
 
         final captured = verify(() => mockLogger.info(captureAny())).captured;
@@ -234,10 +234,7 @@ void main() {
         expect(firstCall, equals(secondCall));
       });
 
-      test('handles empty string flavor as null', () {
-        // Note: This test would need to be updated if the method is changed to handle empty strings differently
-        // Currently testing that null and empty string behaviors are documented through tests
-
+      test('handles flavor as null', () {
         command.printApkPaths(buildMode: 'debug');
         final nullFlavorOutput = verify(
           () => mockLogger.info(captureAny()),
@@ -247,8 +244,6 @@ void main() {
         reset(mockLogger);
         when(() => mockLogger.info(any())).thenReturn(null);
 
-        // We can't test empty string directly since the parameter is nullable String?
-        // But we can document the expected behavior for null
         expect(
           nullFlavorOutput[0],
           equals(
