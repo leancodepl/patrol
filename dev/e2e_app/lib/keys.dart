@@ -38,6 +38,36 @@ class Keys {
 
   // permissions screen
   static const statusText = Key('statusText');
+  static const cameraPermissionTile = Key('camera');
+  static const microphonePermissionTile = Key('microphone');
+  static const locationPermissionTile = Key('location');
+  static const galleryPermissionTile = Key('gallery');
+  static const permissionsScreen = Key('permissionsScreen');
+  static const requestCameraPermissionButton = Key(
+    'requestCameraPermissionButton',
+  );
+  static const requestMicrophonePermissionButton = Key(
+    'requestMicrophonePermissionButton',
+  );
+  static const requestLocationPermissionButton = Key(
+    'requestLocationPermissionButton',
+  );
+  static const requestGalleryPermissionButton = Key(
+    'requestGalleryPermissionButton',
+  );
+
+  // location screen
+  static const grantLocationPermissionButton = Key(
+    'grantLocationPermissionButton',
+  );
+
+  // notifications screen
+  static const showNotificationNowButton = Key('showNotificationNowButton');
+  static const showNotificationLaterButton = Key('showNotificationLaterButton');
+  static const showNotificationNowButton2 = Key('showNotificationNowButton2');
+  static const showNotificationLaterButton2 = Key(
+    'showNotificationLaterButton2',
+  );
 
   // camera screen
   static const cameraScaffold = Key('cameraScaffold');
