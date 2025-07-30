@@ -1,3 +1,7 @@
+## Unreleased
+
+- Fix `$.native.enableDarkMode()` and `$.native.disableDarkMode()` on iOS 18. (#2705)
+
 ## 3.18.0
 
 - Bump `leancode_lint` to `17.0.0`.

@@ -393,6 +393,18 @@
           let developer = try Localization.getLocalizedString(key: "developer")
           let darkAppearance = try Localization.getLocalizedString(key: "dark_appearance")
 
+          if let osVersionString = self.getOsVersion().split(separator: ".").first,
+            let osVersion = Int(osVersionString)
+          {
+            // For iOS 18 and above, we need to swipe to the developer option because it's is moved to the bottom of the list
+            if osVersion >= 18 {
+              let start = self.preferences.coordinate(
+                withNormalizedOffset: CGVector(dx: 0.5, dy: 0.9))
+              let end = self.preferences.coordinate(
+                withNormalizedOffset: CGVector(dx: 0.5, dy: 0.3))
+              start.press(forDuration: 0.1, thenDragTo: end)
+            }
+          }
           self.preferences.descendants(matching: .any)[developer].firstMatch.tap()
 
           let value =
@@ -418,6 +430,17 @@
           let developer = try Localization.getLocalizedString(key: "developer")
           let darkAppearance = try Localization.getLocalizedString(key: "dark_appearance")
 
+          if let osVersionString = self.getOsVersion().split(separator: ".").first,
+            let osVersion = Int(osVersionString)
+          {
+            if osVersion >= 18 {
+              let start = self.preferences.coordinate(
+                withNormalizedOffset: CGVector(dx: 0.5, dy: 0.9))
+              let end = self.preferences.coordinate(
+                withNormalizedOffset: CGVector(dx: 0.5, dy: 0.3))
+              start.press(forDuration: 0.1, thenDragTo: end)
+            }
+          }
           self.preferences.descendants(matching: .any)[developer].firstMatch.tap()
 
           let value =
