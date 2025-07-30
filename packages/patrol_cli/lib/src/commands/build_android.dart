@@ -177,10 +177,7 @@ class BuildAndroidCommand extends PatrolCommand {
 
     try {
       await _androidTestBackend.build(androidOpts);
-      printApkPaths(
-        flavor: flavor,
-        buildMode: buildMode.androidName,
-      );
+      printApkPaths(flavor: flavor, buildMode: buildMode.androidName);
     } catch (err, st) {
       _logger
         ..err('$err')
