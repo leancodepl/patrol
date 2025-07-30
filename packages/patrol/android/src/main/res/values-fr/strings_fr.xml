@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Airplane mode toggle -->
+    <string name="airplane_mode">Mode Avion</string>
+    
+    <!-- Location settings -->
+    <string name="use_location">Utiliser la localisation</string>
+</resources> 
