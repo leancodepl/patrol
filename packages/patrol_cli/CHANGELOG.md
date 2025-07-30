@@ -2,7 +2,7 @@
 
 - Add support for de, fr and pl locales for native methods that operates on strings (#2659)
 - Add support for gallery permission dialog on iOS 17 (#2659)
-- Fix `patrol build` not printing the  paths to the APKs. (#2685)
+- Add printing paths to the APKs after `patrol build` command. (#2685)
 
 ## 3.9.0
 
