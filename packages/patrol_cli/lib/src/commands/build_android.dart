@@ -190,6 +190,10 @@ class BuildAndroidCommand extends PatrolCommand {
   }
 
   @visibleForTesting
+  /// Prints the paths to the APKs for the app under test and the test instrumentation app.
+  ///
+  /// [flavor] is the flavor of the app under test.
+  /// [buildMode] is the build mode of the app under test.
   void printApkPaths({String? flavor, required String buildMode}) {
     // Standard Android APK output paths (relative to project root)
     final baseApkPath = join('build', 'app', 'outputs', 'apk');
