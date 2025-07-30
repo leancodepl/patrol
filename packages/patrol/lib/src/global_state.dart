@@ -83,9 +83,11 @@ bool get isCurrentTestLastInGroup {
 /// Recursively checks if the current test is the last entry in the hierarchy
 bool _isLastInHierarchy(LiveTest currentTest) {
   // Start from the most immediate group (last in the groups list)
-  for (var groupIndex = currentTest.groups.length - 1;
-      groupIndex >= 0;
-      groupIndex--) {
+  for (
+    var groupIndex = currentTest.groups.length - 1;
+    groupIndex >= 0;
+    groupIndex--
+  ) {
     final currentGroup = currentTest.groups[groupIndex];
 
     if (groupIndex == currentTest.groups.length - 1) {
@@ -113,8 +115,10 @@ bool _isLastTestInGroup(LiveTest currentTest, Group group) {
   // Get ALL entries (both tests and groups) in the group
   for (final entry in group.entries) {
     if (!isInternalTestExplorerEntry(entry)) {
-      final individualEntryName =
-          deduplicateGroupEntryName(group.name, entry.name);
+      final individualEntryName = deduplicateGroupEntryName(
+        group.name,
+        entry.name,
+      );
       allEntriesInGroup.add(individualEntryName);
     }
   }
@@ -137,8 +141,10 @@ bool _isLastEntryInGroup(Group entry, Group parentGroup) {
   // Get all entries (both tests and groups) in the parent group
   for (final parentEntry in parentGroup.entries) {
     if (!isInternalTestExplorerEntry(parentEntry)) {
-      final relativeName =
-          deduplicateGroupEntryName(parentGroup.name, parentEntry.name);
+      final relativeName = deduplicateGroupEntryName(
+        parentGroup.name,
+        parentEntry.name,
+      );
       entriesInGroup.add(relativeName);
     }
   }
@@ -148,8 +154,10 @@ bool _isLastEntryInGroup(Group entry, Group parentGroup) {
   }
 
   // Get the relative name of our entry
-  final entryRelativeName =
-      deduplicateGroupEntryName(parentGroup.name, entry.name);
+  final entryRelativeName = deduplicateGroupEntryName(
+    parentGroup.name,
+    entry.name,
+  );
 
   final lastEntryName = entriesInGroup.last;
 
