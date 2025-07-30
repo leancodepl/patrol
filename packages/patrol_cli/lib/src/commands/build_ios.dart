@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:meta/meta.dart';
 import 'package:path/path.dart' show join;
 import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
@@ -175,7 +176,7 @@ class BuildIOSCommand extends PatrolCommand {
 
     try {
       await _iosTestBackend.build(iosOpts);
-      _printBinaryPaths(
+      printBinaryPaths(
         simulator: iosOpts.simulator,
         buildMode: flutterOpts.buildMode.xcodeName,
       );
@@ -194,7 +195,12 @@ class BuildIOSCommand extends PatrolCommand {
     return 0;
   }
 
-  void _printBinaryPaths({required bool simulator, required String buildMode}) {
+  @visibleForTesting
+  /// Prints the paths to the binary files for the app under test and the test instrumentation app.
+  ///
+  /// [simulator] is a boolean indicating whether the build is for a simulator.
+  /// [buildMode] is the build mode of the app under test.
+  void printBinaryPaths({required bool simulator, required String buildMode}) {
     // print path for 2 apps that live in build/ios_integ/Build/Products
 
     final testRoot = join('build', 'ios_integ', 'Build', 'Products');
