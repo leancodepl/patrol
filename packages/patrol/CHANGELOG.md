@@ -1,6 +1,7 @@
 ## Unreleased
 
-- Fix `$.native.enableDarkMode()` and `$.native.disableDarkMode()` on iOS 18. (#2705)
+- Fix logging for `$.native.pullToRefresh()` and `$.native.swipeBack()` (#2707) 
+- Fix `$.native.enableDarkMode()` and `$.native.disableDarkMode()` on iOS 18 simulators. (#2705)
 
 ## 3.18.0
 
