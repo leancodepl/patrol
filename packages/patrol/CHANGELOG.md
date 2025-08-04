@@ -1,6 +1,9 @@
 ## Unreleased
 
 - Fix logging for `$.native.pullToRefresh()` and `$.native.swipeBack()` (#2707) 
+- Fix `$.native.enableDarkMode()` and `$.native.disableDarkMode()` on iOS 18 simulators. (#2705)
+- Add support for de, fr and pl locales for native methods that operates on strings (#2659)
+- Add support for gallery permission dialog on iOS 17 (#2659)
 
 ## 3.18.0
 
