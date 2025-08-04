@@ -70,9 +70,19 @@
       "href": "/cli-commands"
     },
     {
+      "id": "feature-guide",
+      "title": "Patrol Feature Guide",
+      "href": "/feature-guide"
+    },
+    {
       "id": "articles",
       "title": "Articles & Resources",
       "href": "/articles"
+    },
+    {
+      "id": "contact",
+      "title": "Contact us",
+      "href": "/contact"
     }
   ],
   "sidebar": [
@@ -128,6 +138,10 @@
       "tab": "documentation",
       "pages": [
         {
+          "title": "Setup for physical iOS devices",
+          "href": "/documentation/physical-ios-devices-setup"
+        },
+        {
           "group": "Finders",
           "tab": "documentation",
           "pages": [
@@ -168,8 +182,16 @@
             {
               "title": "Feature parity",
               "href": "/documentation/native/feature-parity"
+            },
+            {
+              "title": "Native2",
+              "href": "/documentation/native/native2"
             }
           ]
+        },
+        {
+          "title": "Patrol tags",
+          "href": "/documentation/patrol-tags"
         },
         {
           "group": "Patrol and CI",
@@ -182,10 +204,6 @@
             {
               "title": "Platforms",
               "href": "/documentation/ci/platforms"
-            },
-            {
-              "title": "Firebase Test Lab",
-              "href": "/documentation/ci/firebase-test-lab"
             }
           ]
         },
@@ -204,6 +222,10 @@
             {
               "title": "LambdaTest",
               "href": "/documentation/integrations/lambdatest"
+            },
+            {
+              "title": "Firebase Test Lab",
+              "href": "/documentation/integrations/firebase-test-lab"
             }
           ]
         },
@@ -211,6 +233,10 @@
           "group": "Other",
           "tab": "documentation",
           "pages": [
+            {
+              "title": "Patrol DevTools Extension",
+              "href": "/documentation/patrol-devtools-extension"
+            },
             {
               "title": "Effective Patrol",
               "href": "/documentation/effective-patrol"
@@ -268,6 +294,41 @@
         {
           "title": "New package - patrol_finders",
           "href": "/patrol-finders-release"
+        }
+      ]
+    },
+    {
+      "tab": "feature-guide",
+      "pages": [
+        {
+          "title": "Introduction",
+          "href": "/feature-guide/introduction"
+        }
+      ]
+    },
+    {
+      "group": "Features",
+      "tab": "feature-guide",
+      "pages": [
+        {
+          "title": "Disabling/enabling Bluetooth",
+          "href": "/feature-guide/bluetooth"
+        },
+        {
+          "title": "Granting camera permission",
+          "href": "/feature-guide/granting-camera-permission"
+        },
+        {
+          "title": "Take a photo using camera",
+          "href": "/feature-guide/take-a-photo"
+        },
+        {
+          "title": "Pick images from gallery",
+          "href": "/feature-guide/pick-images-from-gallery"
+        },
+        {
+          "title": "Pull to refresh",
+          "href": "/feature-guide/pull-to-refresh"
         }
       ]
     }

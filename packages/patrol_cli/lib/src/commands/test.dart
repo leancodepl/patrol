@@ -32,18 +32,18 @@ class TestCommand extends PatrolCommand {
     required CoverageTool coverageTool,
     required Analytics analytics,
     required Logger logger,
-  })  : _deviceFinder = deviceFinder,
-        _testBundler = testBundler,
-        _testFinder = testFinder,
-        _dartDefinesReader = dartDefinesReader,
-        _compatibilityChecker = compatibilityChecker,
-        _pubspecReader = pubspecReader,
-        _androidTestBackend = androidTestBackend,
-        _iosTestBackend = iosTestBackend,
-        _macosTestBackend = macOSTestBackend,
-        _coverageTool = coverageTool,
-        _analytics = analytics,
-        _logger = logger {
+  }) : _deviceFinder = deviceFinder,
+       _testBundler = testBundler,
+       _testFinder = testFinder,
+       _dartDefinesReader = dartDefinesReader,
+       _compatibilityChecker = compatibilityChecker,
+       _pubspecReader = pubspecReader,
+       _androidTestBackend = androidTestBackend,
+       _iosTestBackend = iosTestBackend,
+       _macosTestBackend = macOSTestBackend,
+       _coverageTool = coverageTool,
+       _analytics = analytics,
+       _logger = logger {
     usesTargetOption();
     usesDeviceOption();
     usesBuildModeOption();
@@ -51,7 +51,6 @@ class TestCommand extends PatrolCommand {
     usesDartDefineOption();
     usesDartDefineFromFileOption();
     usesLabelOption();
-    usesWaitOption();
     usesPortOptions();
     usesTagsOption();
     usesExcludeTagsOption();
@@ -59,6 +58,7 @@ class TestCommand extends PatrolCommand {
     usesShowFlutterLogs();
     usesHideTestSteps();
     usesClearTestSteps();
+    usesCheckCompatibilityOption();
 
     usesUninstallOption();
 
@@ -89,10 +89,7 @@ class TestCommand extends PatrolCommand {
   @override
   Future<int> run() async {
     unawaited(
-      _analytics.sendCommand(
-        FlutterVersion.fromCLI(flutterCommand),
-        name,
-      ),
+      _analytics.sendCommand(FlutterVersion.fromCLI(flutterCommand), name),
     );
 
     final config = _pubspecReader.read();
@@ -156,16 +153,17 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
 
     final device = devices.single;
 
-    await _compatibilityChecker.checkVersionsCompatibility(
-      flutterCommand: flutterCommand,
-      targetPlatform: device.targetPlatform,
-    );
+    if (boolArg('check-compatibility')) {
+      await _compatibilityChecker.checkVersionsCompatibility(
+        flutterCommand: flutterCommand,
+        targetPlatform: device.targetPlatform,
+      );
+    }
 
     final packageName = stringArg('package-name') ?? config.android.packageName;
     final bundleId = stringArg('bundle-id') ?? config.ios.bundleId;
     final macosBundleId = stringArg('bundle-id') ?? config.macos.bundleId;
 
-    final wait = intArg('wait') ?? defaultWait;
     final displayLabel = boolArg('label');
     final uninstall = boolArg('uninstall');
     final coverageEnabled = boolArg('coverage');
@@ -177,7 +175,6 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       ..._dartDefinesReader.fromCli(args: stringsArg('dart-define')),
     };
     final internalDartDefines = {
-      'PATROL_WAIT': wait.toString(),
       'PATROL_APP_PACKAGE_NAME': packageName,
       'PATROL_APP_BUNDLE_ID': bundleId,
       'PATROL_MACOS_APP_BUNDLE_ID': macosBundleId,
@@ -307,10 +304,10 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
         final bundleId = iosOpts.bundleId;
         if (bundleId != null) {
           action = () => _iosTestBackend.uninstall(
-                appId: bundleId,
-                flavor: iosOpts.flutter.flavor,
-                device: device,
-              );
+            appId: bundleId,
+            flavor: iosOpts.flutter.flavor,
+            device: device,
+          );
         }
       case TargetPlatform.macOS:
     }
@@ -362,34 +359,34 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
     switch (device.targetPlatform) {
       case TargetPlatform.android:
         action = () => _androidTestBackend.execute(
-              android,
-              device,
-              showFlutterLogs: showFlutterLogs,
-              hideTestSteps: hideTestSteps,
-              flavor: flutterOpts.flavor,
-              clearTestSteps: clearTestSteps,
-            );
+          android,
+          device,
+          showFlutterLogs: showFlutterLogs,
+          hideTestSteps: hideTestSteps,
+          flavor: flutterOpts.flavor,
+          clearTestSteps: clearTestSteps,
+        );
         final package = android.packageName;
         if (package != null && uninstall) {
           finalizer = () => _androidTestBackend.uninstall(package, device);
         }
       case TargetPlatform.macOS:
-        action = () async => _macosTestBackend.execute(macos, device);
+        action = () => _macosTestBackend.execute(macos, device);
       case TargetPlatform.iOS:
-        action = () async => _iosTestBackend.execute(
-              ios,
-              device,
-              showFlutterLogs: showFlutterLogs,
-              hideTestSteps: hideTestSteps,
-              clearTestSteps: clearTestSteps,
-            );
+        action = () => _iosTestBackend.execute(
+          ios,
+          device,
+          showFlutterLogs: showFlutterLogs,
+          hideTestSteps: hideTestSteps,
+          clearTestSteps: clearTestSteps,
+        );
         final bundleId = ios.bundleId;
         if (bundleId != null && uninstall) {
           finalizer = () => _iosTestBackend.uninstall(
-                appId: bundleId,
-                flavor: ios.flutter.flavor,
-                device: device,
-              );
+            appId: bundleId,
+            flavor: ios.flutter.flavor,
+            device: device,
+          );
         }
     }
 
@@ -416,17 +413,15 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
 
   void useCoverageOptions() {
     argParser
-      ..addFlag(
-        'coverage',
-        help: 'Generate coverage.',
-      )
+      ..addFlag('coverage', help: 'Generate coverage.')
       ..addMultiOption(
         'coverage-ignore',
         help: 'Exclude files from coverage using glob patterns.',
       )
       ..addMultiOption(
         'coverage-package',
-        help: 'A regular expression matching packages names '
+        help:
+            'A regular expression matching packages names '
             'to include in the coverage report (if coverage is enabled). '
             'If unset, matches the current package name.',
         valueHelp: 'package-name-regexp',

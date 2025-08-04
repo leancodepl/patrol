@@ -2,14 +2,22 @@ name: test macos
 
 on:
   workflow_dispatch:
+  pull_request:
+    branches: [ master ]
+    paths:
+      - 'packages/patrol/darwin/**'
   schedule:
     - cron: '0 */12 * * *'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
 
 jobs:
   run_tests:
     name: Flutter ${{ matrix.flutter-version }} on ${{ matrix.device_model }}
     runs-on: macos-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
     outputs:
       SLACK_MESSAGE_TITLE: Flutter ${{ matrix.flutter-version }} on ${{ matrix.os }}
       TESTS_EXIT_CODE: ${{ steps.tests_step.outputs.TESTS_EXIT_CODE }}
@@ -19,7 +27,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ['3.29.x']
+        flutter-version: ['3.32.x']
         flutter-channel: ['stable']
         device_model: [macOS]
         os: [macOS]
@@ -56,6 +64,7 @@ jobs:
           APP_STORE_KEY_ID: ${{ secrets.APP_STORE_KEY_ID }}
           APP_STORE_ISSUER_ID: ${{ secrets.APP_STORE_ISSUER_ID }}
           APP_STORE_KEY: ${{ secrets.APP_STORE_KEY }}
+          MATCH_GIT_PRIVATE_KEY: ${{ secrets.MATCH_GIT_PRIVATE_KEY }}
         run: bundle exec fastlane mac certificates
 
       - name: Set up Flutter
@@ -81,7 +90,7 @@ jobs:
         id: tests_step
         run: |
           TESTS_EXIT_CODE=0
-          patrol test -t integration_test/macos --verbose || TESTS_EXIT_CODE=$?
+          patrol test -t integration_test/macos --verbose -d macos || TESTS_EXIT_CODE=$?
 
           echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> "$GITHUB_OUTPUT"
           exit $TESTS_EXIT_CODE
@@ -113,8 +122,19 @@ jobs:
 
       - name: Upload XCRESULT test result to artifacts
         if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Test result from ${{ matrix.device_model }}.xcresult
           path: ${{ env.XCRESULT_PATH }}
-          
+
+  call_send_slack_message:
+    name: Notify on Slack
+    uses: ./.github/workflows/send-slack-message.yaml
+    needs: run_tests
+    if: always()
+    with:
+      TESTS_EXIT_CODE: ${{ needs.run_tests.outputs.TESTS_EXIT_CODE }}
+      FAILURE_STATUS: ${{ needs.run_tests.outputs.FAILURE_STATUS }}
+      ERROR_STATUS: ${{ needs.run_tests.outputs.ERROR_STATUS }}
+      SLACK_MESSAGE_TITLE: ${{ needs.run_tests.outputs.SLACK_MESSAGE_TITLE }}
+    secrets: inherit

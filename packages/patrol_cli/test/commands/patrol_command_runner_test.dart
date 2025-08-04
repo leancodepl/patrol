@@ -28,8 +28,9 @@ void main() {
     late PatrolCommandRunner commandRunner;
 
     // Save original compatibility list to restore after tests
-    final originalList =
-        List<VersionCompatibility>.from(versionCompatibilityList);
+    final originalList = List<VersionCompatibility>.from(
+      versionCompatibilityList,
+    );
 
     tearDown(() {
       // Restore the original list after each test
@@ -60,8 +61,7 @@ void main() {
       );
     });
 
-    test('shows update message with compatibility warning when needed',
-        () async {
+    test('shows update message with compatibility warning when needed', () async {
       // Set up a compatibility list where patrol 3.0.0 is compatible only up to patrol_cli 2.5.0
       versionCompatibilityList
         ..clear()
@@ -100,10 +100,7 @@ dependencies:
       expect(result, equals(0));
 
       expect(capturedMessage, contains('Update available!'));
-      expect(
-        capturedMessage,
-        contains('${constants.version} → 2.5.0'),
-      );
+      expect(capturedMessage, contains('${constants.version} → 2.5.0'));
       expect(
         capturedMessage,
         contains(
@@ -132,61 +129,62 @@ dependencies:
       );
     });
 
-    test('shows simple update message when no compatibility warning is needed',
-        () async {
-      // Set up a compatibility list where patrol 3.14.0 is compatible up to patrol_cli 4.0.0 (higher than test version)
-      versionCompatibilityList
-        ..clear()
-        ..add(
-          VersionCompatibility.fromRangeString(
-            patrolCliVersion: '3.5.0 - 4.0.0',
-            patrolVersion: '3.14.0 - 3.15.0',
-            minFlutterVersion: '3.24.0',
-          ),
-        );
+    test(
+      'shows simple update message when no compatibility warning is needed',
+      () async {
+        // Set up a compatibility list where patrol 113.14.0 is compatible up to patrol_cli 114.0.0 (higher than test version)
+        versionCompatibilityList
+          ..clear()
+          ..add(
+            VersionCompatibility.fromRangeString(
+              // We set ridiculously high version numbers to make sure that this
+              // entry will always the highest versions in the compatibility list.
+              patrolCliVersion: '113.5.0 - 114.0.0',
+              patrolVersion: '113.14.0 - 113.15.0',
+              minFlutterVersion: '113.24.0',
+            ),
+          );
 
-      // Set up a fake pubspec.yaml file with patrol dependency that should be compatible
-      final dir = fs.directory('/project')..createSync();
-      dir.childFile('pubspec.yaml')
-        ..createSync()
-        ..writeAsStringSync('''
+        // Set up a fake pubspec.yaml file with patrol dependency that should be compatible
+        final dir = fs.directory('/project')..createSync();
+        dir.childFile('pubspec.yaml')
+          ..createSync()
+          ..writeAsStringSync('''
 name: test_project
 dependencies:
-  patrol: ^3.14.0
+  patrol: ^113.14.0
 ''');
-      fs.currentDirectory = dir;
+        fs.currentDirectory = dir;
 
-      when(
-        () => pubUpdater.getLatestVersion(any()),
-      ).thenAnswer((_) async => '3.5.5');
+        when(
+          () => pubUpdater.getLatestVersion(any()),
+        ).thenAnswer((_) async => '113.5.5');
 
-      String? capturedMessage;
-      when(() => logger.info(any())).thenAnswer((invocation) {
-        final message = invocation.positionalArguments[0] as String;
-        if (message.contains('Update available!')) {
-          capturedMessage = stripAnsi(message);
-        }
-      });
+        String? capturedMessage;
+        when(() => logger.info(any())).thenAnswer((invocation) {
+          final message = invocation.positionalArguments[0] as String;
+          if (message.contains('Update available!')) {
+            capturedMessage = stripAnsi(message);
+          }
+        });
 
-      final result = await commandRunner.run(['--version']);
-      expect(result, equals(0));
+        final result = await commandRunner.run(['--version']);
+        expect(result, equals(0));
 
-      expect(capturedMessage, contains('Update available!'));
-      expect(
-        capturedMessage,
-        contains('${constants.version} → 3.5.5'),
-      );
-      expect(
-        capturedMessage,
-        contains('Run patrol update to update to the latest version.'),
-      );
-      expect(
-        capturedMessage,
-        contains(
-          'Check the compatibility table at: https://patrol.leancode.co/documentation/compatibility-table',
-        ),
-      );
-    });
+        expect(capturedMessage, contains('Update available!'));
+        expect(capturedMessage, contains('${constants.version} → 113.5.5'));
+        expect(
+          capturedMessage,
+          contains('Run patrol update to update to the latest version.'),
+        );
+        expect(
+          capturedMessage,
+          contains(
+            'Check the compatibility table at: https://patrol.leancode.co/documentation/compatibility-table',
+          ),
+        );
+      },
+    );
 
     test('handles FormatException', () async {
       const exception = FormatException('bad format');

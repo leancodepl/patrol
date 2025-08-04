@@ -12,7 +12,7 @@ import Foundation
   #endif
 
   @objc
-  public private(set) var appReady = false
+  public var appReady = false
 
   private var passedPort: Int = {
     guard let portStr = ProcessInfo.processInfo.environment[envPortKey] else {

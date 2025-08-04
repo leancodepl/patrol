@@ -4,6 +4,7 @@ import 'package:path/path.dart' show join;
 import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
 import 'package:patrol_cli/src/base/logger.dart';
+import 'package:patrol_cli/src/compatibility_checker/compatibility_checker.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/dart_defines_reader.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
@@ -21,23 +22,25 @@ class BuildIOSCommand extends PatrolCommand {
     required IOSTestBackend iosTestBackend,
     required Analytics analytics,
     required Logger logger,
-  })  : _testFinder = testFinder,
-        _testBundler = testBundler,
-        _dartDefinesReader = dartDefinesReader,
-        _pubspecReader = pubspecReader,
-        _iosTestBackend = iosTestBackend,
-        _analytics = analytics,
-        _logger = logger {
+    required CompatibilityChecker compatibilityChecker,
+  }) : _testFinder = testFinder,
+       _testBundler = testBundler,
+       _dartDefinesReader = dartDefinesReader,
+       _pubspecReader = pubspecReader,
+       _iosTestBackend = iosTestBackend,
+       _analytics = analytics,
+       _logger = logger,
+       _compatibilityChecker = compatibilityChecker {
     usesTargetOption();
     usesBuildModeOption();
     usesFlavorOption();
     usesDartDefineOption();
     usesDartDefineFromFileOption();
     usesLabelOption();
-    usesWaitOption();
     usesPortOptions();
     usesTagsOption();
     usesExcludeTagsOption();
+    usesCheckCompatibilityOption();
 
     usesIOSOptions();
     argParser.addFlag(
@@ -51,6 +54,7 @@ class BuildIOSCommand extends PatrolCommand {
   final DartDefinesReader _dartDefinesReader;
   final PubspecReader _pubspecReader;
   final IOSTestBackend _iosTestBackend;
+  final CompatibilityChecker _compatibilityChecker;
 
   final Analytics _analytics;
   final Logger _logger;
@@ -75,6 +79,14 @@ class BuildIOSCommand extends PatrolCommand {
 
     final config = _pubspecReader.read();
     final testFileSuffix = config.testFileSuffix;
+
+    // Check compatibility between CLI and package versions
+    if (boolArg('check-compatibility')) {
+      final patrolVersion = _pubspecReader.getPatrolVersion();
+      await _compatibilityChecker.checkVersionsCompatibilityForBuild(
+        patrolVersion: patrolVersion,
+      );
+    }
 
     final target = stringsArg('target');
     final targets = target.isNotEmpty

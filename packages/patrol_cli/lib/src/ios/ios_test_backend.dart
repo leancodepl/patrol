@@ -58,12 +58,12 @@ class IOSTestBackend {
     required Directory rootDirectory,
     required DisposeScope parentDisposeScope,
     required Logger logger,
-  })  : _processManager = processManager,
-        _platform = platform,
-        _fs = fs,
-        _rootDirectory = rootDirectory,
-        _disposeScope = DisposeScope(),
-        _logger = logger {
+  }) : _processManager = processManager,
+       _platform = platform,
+       _fs = fs,
+       _rootDirectory = rootDirectory,
+       _disposeScope = DisposeScope(),
+       _logger = logger {
     _disposeScope.disposedBy(parentDisposeScope);
   }
 
@@ -100,7 +100,7 @@ class IOSTestBackend {
         options.toFlutterBuildInvocation(options.flutter.buildMode),
         runInShell: true,
       );
-      scope.addDispose(() async {
+      scope.addDispose(() {
         process.kill();
         flutterBuildKilled = true; // `flutter build` has exit code 0 on SIGINT
       });
@@ -120,12 +120,13 @@ class IOSTestBackend {
 
       // xcodebuild build-for-testing
 
-      process = await _processManager.start(
-        options.buildForTestingInvocation(),
-        runInShell: true,
-        workingDirectory: _rootDirectory.childDirectory('ios').path,
-      )
-        ..disposedBy(scope);
+      process =
+          await _processManager.start(
+              options.buildForTestingInvocation(),
+              runInShell: true,
+              workingDirectory: _rootDirectory.childDirectory('ios').path,
+            )
+            ..disposedBy(scope);
       process.listenStdOut((l) => _logger.detail('\t$l')).disposedBy(scope);
       process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
       exitCode = await process.exitCode;
@@ -158,55 +159,57 @@ class IOSTestBackend {
     required bool clearTestSteps,
   }) async {
     await _disposeScope.run((scope) async {
+      final patrolLogCommand = device.real
+          ? ['idevicesyslog']
+          : ['log', 'stream'];
+
       // Read patrol logs from log stream
-      final processLogs = await _processManager.start(
-        [
-          'log',
-          'stream',
-        ],
-        runInShell: true,
-      )
-        ..disposedBy(scope);
+      final processLogs =
+          await _processManager.start(patrolLogCommand, runInShell: true)
+            ..disposedBy(scope);
 
       final reportPath = resultBundlePath(
         timestamp: DateTime.now().millisecondsSinceEpoch,
       );
 
-      final patrolLogReader = PatrolLogReader(
-        listenStdOut: processLogs.listenStdOut,
-        scope: scope,
-        log: _logger.info,
-        reportPath: reportPath,
-        showFlutterLogs: showFlutterLogs,
-        hideTestSteps: hideTestSteps,
-        clearTestSteps: clearTestSteps,
-      )
-        ..listen()
-        ..startTimer();
+      final patrolLogReader =
+          PatrolLogReader(
+              listenStdOut: processLogs.listenStdOut,
+              scope: scope,
+              log: _logger.info,
+              reportPath: reportPath,
+              showFlutterLogs: showFlutterLogs,
+              hideTestSteps: hideTestSteps,
+              clearTestSteps: clearTestSteps,
+            )
+            ..listen()
+            ..startTimer();
 
       final subject = '${options.description} on ${device.description}';
       final task = _logger.task('Running $subject');
 
       final sdkVersion = await getSdkVersion(real: device.real);
-      final process = await _processManager.start(
-        options.testWithoutBuildingInvocation(
-          device,
-          xcTestRunPath: await xcTestRunPath(
-            real: device.real,
-            scheme: options.scheme,
-            sdkVersion: sdkVersion,
-          ),
-          resultBundlePath: reportPath,
-        ),
-        runInShell: true,
-        environment: {
-          ..._platform.environment,
-          'TEST_RUNNER_PATROL_TEST_PORT': options.testServerPort.toString(),
-          'TEST_RUNNER_PATROL_APP_PORT': options.appServerPort.toString(),
-        },
-        workingDirectory: _rootDirectory.childDirectory('ios').path,
-      )
-        ..disposedBy(_disposeScope);
+      final process =
+          await _processManager.start(
+              options.testWithoutBuildingInvocation(
+                device,
+                xcTestRunPath: await xcTestRunPath(
+                  real: device.real,
+                  scheme: options.scheme,
+                  sdkVersion: sdkVersion,
+                ),
+                resultBundlePath: reportPath,
+              ),
+              runInShell: true,
+              environment: {
+                ..._platform.environment,
+                'TEST_RUNNER_PATROL_TEST_PORT': options.testServerPort
+                    .toString(),
+                'TEST_RUNNER_PATROL_APP_PORT': options.appServerPort.toString(),
+              },
+              workingDirectory: _rootDirectory.childDirectory('ios').path,
+            )
+            ..disposedBy(_disposeScope);
       process.listenStdOut((l) => _logger.detail('\t$l')).disposedBy(scope);
       process.listenStdErr((l) => _logger.detail('\t$l')).disposedBy(scope);
 
@@ -245,20 +248,20 @@ class IOSTestBackend {
   }) async {
     if (device.real) {
       // uninstall from iOS device
-      await _processManager.run(
-        [
-          'ideviceinstaller',
-          ...['--udid', device.id],
-          ...['--uninstall', appId],
-        ],
-        runInShell: true,
-      );
+      await _processManager.run([
+        'ideviceinstaller',
+        ...['--udid', device.id],
+        ...['--uninstall', appId],
+      ], runInShell: true);
     } else {
       // uninstall from iOS simulator
-      await _processManager.run(
-        ['xcrun', 'simctl', 'uninstall', device.id, appId],
-        runInShell: true,
-      );
+      await _processManager.run([
+        'xcrun',
+        'simctl',
+        'uninstall',
+        device.id,
+        appId,
+      ], runInShell: true);
     }
 
     // See rationale: https://github.com/leancodepl/patrol/issues/1094
@@ -267,20 +270,20 @@ class IOSTestBackend {
 
     if (device.real) {
       // uninstall from iOS device
-      await _processManager.run(
-        [
-          'ideviceinstaller',
-          ...['--udid', device.id],
-          ...['--uninstall', testApp],
-        ],
-        runInShell: true,
-      );
+      await _processManager.run([
+        'ideviceinstaller',
+        ...['--udid', device.id],
+        ...['--uninstall', testApp],
+      ], runInShell: true);
     } else {
       // uninstall from iOS simulator
-      await _processManager.run(
-        ['xcrun', 'simctl', 'uninstall', device.id, testApp],
-        runInShell: true,
-      );
+      await _processManager.run([
+        'xcrun',
+        'simctl',
+        'uninstall',
+        device.id,
+        testApp,
+      ], runInShell: true);
     }
   }
 
@@ -324,8 +327,9 @@ class IOSTestBackend {
       throwToolExit(cause);
     }
 
-    _logger
-        .detail('Found ${files.length} match(es), the first one will be used');
+    _logger.detail(
+      'Found ${files.length} match(es), the first one will be used',
+    );
     for (final file in files) {
       _logger.detail('Found ${file.absolute.path}');
     }
@@ -341,11 +345,7 @@ class IOSTestBackend {
   String resultBundlePath({required int timestamp}) {
     return _fs
         .file(
-          join(
-            _rootDirectory.path,
-            'build',
-            'ios_results_$timestamp.xcresult',
-          ),
+          join(_rootDirectory.path, 'build', 'ios_results_$timestamp.xcresult'),
         )
         .absolute
         .path;
@@ -357,10 +357,11 @@ class IOSTestBackend {
     // $ xcodebuild -showsdks -json | jq '.[] | {sdkVersion, platform} | select(.platform=="iphoneos")'
     // $ xcodebuild -showsdks -json | jq '.[] | {sdkVersion, platform} | select(.platform=="iphonesimulator")'
 
-    final processResult = await _processManager.run(
-      ['xcodebuild', '-showsdks', '-json'],
-      runInShell: true,
-    );
+    final processResult = await _processManager.run([
+      'xcodebuild',
+      '-showsdks',
+      '-json',
+    ], runInShell: true);
 
     String? sdkVersion;
     String? platform;
@@ -389,10 +390,12 @@ class IOSTestBackend {
   }
 
   Future<String> getInstalledAppsEnvVariable(String deviceId) async {
-    final processResult = await _processManager.run(
-      ['xcrun', 'simctl', 'listapps', deviceId],
-      runInShell: true,
-    );
+    final processResult = await _processManager.run([
+      'xcrun',
+      'simctl',
+      'listapps',
+      deviceId,
+    ], runInShell: true);
 
     const lineSplitter = LineSplitter();
     final ids = lineSplitter

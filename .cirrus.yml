@@ -9,7 +9,7 @@ test_linux_task:
     kvm: "true"
   env:
     PATH: $HOME/.pub-cache/bin:$HOME/fvm/default/bin:$CIRRUS_WORKING_DIR/fvm:${PATH}
-    FLUTTER_VERSION: "3.29.0"
+    FLUTTER_VERSION: "3.32.0"
     EMULATOR_API_LEVEL: "34"
     EMULATOR_ABI: google_apis_playstore;x86_64
     EMULATOR_IMAGE: system-images;android-${EMULATOR_API_LEVEL};${EMULATOR_ABI}
@@ -49,10 +49,6 @@ test_linux_task:
     - $ANDROID_HOME/emulator/emulator @MyAVD -verbose -no-snapshot-save -no-window -noaudio -no-boot-anim -accel on
   wait_for_emulator_script:
     - android-wait-for-emulator
-  generate_gradle_wrapper_script: |
-    cd dev/e2e_app/lib
-    flutter pub get
-    flutter build apk --config-only
   patrol_develop_script: |
     cd dev/cli_tests
     dart pub get
@@ -66,7 +62,7 @@ test_macos_task:
     image: ghcr.io/cirruslabs/macos-sonoma-xcode:latest
   env:
     PATH: $HOME/.pub-cache/bin:$HOME/fvm/default/bin:${PATH}
-    FLUTTER_VERSION: "3.29.0"
+    FLUTTER_VERSION: "3.32.0"
   timeout_in: 30m
 
   set_up_fvm_script: |

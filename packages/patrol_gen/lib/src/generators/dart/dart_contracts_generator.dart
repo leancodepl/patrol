@@ -62,16 +62,17 @@ enum ${enumDefinition.name} {
               'final $type${f.isOptional ? '?' : ''} ${f.name};'
           },
         )
-        .join('\n');
+        .join('\n  ');
 
     final propsGetter = _createPropsGetter(message);
+    final copyWith = _createCopyWith(message);
 
     var constructorParameters = message.fields
         .map((e) => '${e.isOptional ? '' : 'required'} this.${e.name},')
-        .join();
+        .join('\n    ');
 
     constructorParameters =
-        message.fields.isEmpty ? '' : '{$constructorParameters}';
+        message.fields.isEmpty ? '' : '{\n    $constructorParameters\n  }';
 
     return '''
 @JsonSerializable()
@@ -85,8 +86,9 @@ class ${message.name} with EquatableMixin {
   Map<String, dynamic> toJson() => _\$${message.name}ToJson(this);
 
   $propsGetter
-}
-''';
+
+  $copyWith
+}''';
   }
 
   String _createPropsGetter(Message message) {
@@ -98,5 +100,36 @@ class ${message.name} with EquatableMixin {
   @override
   List<Object?> get props => $propertiesContent;
 ''';
+  }
+
+  String _createCopyWith(Message message) {
+    if (message.fields.isEmpty) {
+      return '''
+  ${message.name} copyWith() {
+    return ${message.name}();
+  }''';
+    }
+    final parameters = message.fields
+        .map((e) => '${e.name}: ${e.name} ?? this.${e.name},')
+        .join('\n      ');
+    final copyWithParams = message.fields
+        .map(
+          (e) => switch (e.type) {
+            ListFieldType(type: final type) => 'List<$type>? ${e.name},',
+            MapFieldType(keyType: final keyType, valueType: final valueType) =>
+              'Map<$keyType,$valueType>? ${e.name},',
+            OrdinaryFieldType(type: final type) => '$type? ${e.name},'
+          },
+        )
+        .join('\n    ');
+
+    return '''
+  ${message.name} copyWith({
+    $copyWithParams
+  }) {
+    return ${message.name}(
+      $parameters
+    );
+  }''';
   }
 }

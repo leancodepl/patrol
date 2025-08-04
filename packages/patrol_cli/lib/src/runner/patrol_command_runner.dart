@@ -1,5 +1,6 @@
 import 'dart:io' as p show Platform;
 import 'dart:io' show ProcessSignal, stdin;
+
 import 'package:adb/adb.dart';
 import 'package:args/args.dart';
 import 'package:args/command_runner.dart';
@@ -110,18 +111,18 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
     required Analytics analytics,
     required Logger logger,
     required bool isCI,
-  })  : _platform = platform,
-        _pubUpdater = pubUpdater,
-        _fs = fs,
-        _analytics = analytics,
-        _processManager = processManager,
-        _disposeScope = DisposeScope(),
-        _logger = logger,
-        _isCI = isCI,
-        super(
-          'patrol',
-          'Tool for running Flutter-native UI tests with superpowers',
-        ) {
+  }) : _platform = platform,
+       _pubUpdater = pubUpdater,
+       _fs = fs,
+       _analytics = analytics,
+       _processManager = processManager,
+       _disposeScope = DisposeScope(),
+       _logger = logger,
+       _isCI = isCI,
+       super(
+         'patrol',
+         'Tool for running Flutter-native UI tests with superpowers',
+       ) {
     final adb = Adb();
 
     final rootDirectory = findRootDirectory(_fs) ?? _fs.currentDirectory;
@@ -177,6 +178,11 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         androidTestBackend: androidTestBackend,
         iosTestBackend: iosTestBackend,
         macosTestBackend: macosTestBackend,
+        compatibilityChecker: CompatibilityChecker(
+          projectRoot: rootDirectory,
+          processManager: _processManager,
+          logger: _logger,
+        ),
         analytics: _analytics,
         logger: _logger,
       ),
@@ -238,19 +244,9 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
       ),
     );
 
-    addCommand(
-      DevicesCommand(
-        deviceFinder: deviceFinder,
-        logger: _logger,
-      ),
-    );
+    addCommand(DevicesCommand(deviceFinder: deviceFinder, logger: _logger));
 
-    addCommand(
-      DoctorCommand(
-        logger: _logger,
-        platform: _platform,
-      ),
-    );
+    addCommand(DoctorCommand(logger: _logger, platform: _platform));
 
     addCommand(
       UpdateCommand(
@@ -311,7 +307,14 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
   String? get usageFooter => '''
 Read documentation at https://patrol.leancode.pl
 Report bugs, request features at https://github.com/leancodepl/patrol/issues
-Ask questions, get support at https://github.com/leancodepl/patrol/discussions''';
+Ask questions, get support at https://github.com/leancodepl/patrol/discussions
+
+To deactivate Patrol CLI, run:
+  dart pub global deactivate patrol_cli
+
+To install a specific version of Patrol CLI, run:
+  dart pub global activate patrol_cli <version>
+  Example: dart pub global activate patrol_cli 3.5.0''';
 
   @override
   Future<int?> run(Iterable<String> args) async {
@@ -379,8 +382,9 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
     if (_wantsUpdateCheck(commandName)) {
       final latestVersion = await _pubUpdater.getLatestVersion('patrol_cli');
       const currentVersion = constants.version;
-      final maxCompatibleCliVersion =
-          getMaxCompatibleCliVersion(Version.parse(latestVersion));
+      final maxCompatibleCliVersion = getMaxCompatibleCliVersion(
+        Version.parse(latestVersion),
+      );
 
       await _checkForUpdates(
         currentVersion: currentVersion,
@@ -442,12 +446,11 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
     required String currentVersion,
     required String latestVersion,
     required String maxCompatibleCliVersion,
-  }) =>
-      _checkForUpdates(
-        currentVersion: currentVersion,
-        latestVersion: latestVersion,
-        maxCompatibleCliVersion: maxCompatibleCliVersion,
-      );
+  }) => _checkForUpdates(
+    currentVersion: currentVersion,
+    latestVersion: latestVersion,
+    maxCompatibleCliVersion: maxCompatibleCliVersion,
+  );
 
   bool _wantsUpdateCheck(String? commandName) {
     if (_isCI) {
@@ -455,7 +458,9 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
       return false;
     }
 
-    if (commandName == 'update' || commandName == 'doctor') {
+    if (commandName == 'update' ||
+        commandName == 'doctor' ||
+        commandName == HandleCompletionRequestCommand.commandName) {
       return false;
     }
 
@@ -494,8 +499,9 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
             ..writeln()
             ..writeln('To update to the latest compatible version, run:')
             ..writeln(
-              lightCyan
-                  .wrap('dart pub global activate patrol_cli $maxCliVersion'),
+              lightCyan.wrap(
+                'dart pub global activate patrol_cli $maxCliVersion',
+              ),
             )
             ..writeln()
             ..writeln(
