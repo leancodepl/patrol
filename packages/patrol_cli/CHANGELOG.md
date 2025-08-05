@@ -1,5 +1,6 @@
 ## Unreleased 
 
+- Add help command `h` to `patrol develop` (#2701)
 - Add printing paths to the APKs after `patrol build` command. (#2685)
 
 ## 3.9.0
