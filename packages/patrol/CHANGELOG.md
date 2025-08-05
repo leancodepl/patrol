@@ -1,9 +1,10 @@
-## Unreleased
+## 3.19.0
 
-- Fix logging for `$.native.pullToRefresh()` and `$.native.swipeBack()` (#2707) 
+- Fix logging for `$.native.pullToRefresh()` and `$.native.swipeBack()`. (#2707) 
 - Fix `$.native.enableDarkMode()` and `$.native.disableDarkMode()` on iOS 18 simulators. (#2705)
-- Add support for de, fr and pl locales for native methods that operates on strings (#2659)
-- Add support for gallery permission dialog on iOS 17 (#2659)
+- Add support for de, fr and pl languages for native methods that operates on strings. (#2659)
+- Add support for gallery permission dialog on iOS 17. (#2659)
+- Keep the app running after last step in patrol develop. (#2693)
 
 ## 3.18.0
 
