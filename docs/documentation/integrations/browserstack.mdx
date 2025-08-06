@@ -35,6 +35,9 @@ title: Integrations - BrowserStack
   </Warning>
 
   We need to convert your tests to use [Xcode test plans].
+  <Warning>
+    Make sure that the project name is "Runner" and the scheme is named "Runner" - this is the default name for the Flutter project.
+  </Warning>
 
   <Steps>
     <Step>
@@ -56,6 +59,9 @@ title: Integrations - BrowserStack
     <Step>
       Rename to "TestPlan" and save:
       ![Rename to test plan](/assets/rename_to_testplan.png)
+      <Warning>
+        It has to be named "TestPlan" to work with the `bs_ios` script.
+      </Warning>
     </Step>
 
       Now, you can schedule a test run using the `bs_ios` script.
