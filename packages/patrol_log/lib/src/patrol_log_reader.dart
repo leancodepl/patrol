@@ -28,7 +28,8 @@ class PatrolLogReader {
     Function? onError,
     void Function()? onDone,
     bool? cancelOnError,
-  }) listenStdOut;
+  })
+  listenStdOut;
   final DisposeScope _scope;
 
   /// Stopwatch measuring the whole tests duration.
@@ -40,8 +41,7 @@ class PatrolLogReader {
   /// List of tests names that were skipped.
   final List<String> _skippedTests = [];
 
-  final StreamController<Entry> _controller =
-      StreamController<Entry>.broadcast();
+  final _controller = StreamController<Entry>.broadcast();
   late final StreamSubscription<Entry> _streamSubscription;
 
   final Map<String, dynamic> _config = {};
@@ -90,8 +90,9 @@ class PatrolLogReader {
         _parsePatrolLog(line);
       } else if (showFlutterLogs) {
         return switch (line) {
-          _ when line.contains('(Flutter) flutter:') =>
-            _parseFlutterIOsLog(line),
+          _ when line.contains('(Flutter) flutter:') => _parseFlutterIOsLog(
+            line,
+          ),
           _ when line.contains('I flutter :') => _parseFlutterAndroidLog(line),
           _ when line.contains('flutter:') => _parseFlutterIOsReleaseLog(line),
           _ => null,
@@ -179,64 +180,64 @@ class PatrolLogReader {
     var stepsCounter = 0;
     var logsCounter = 0;
 
-    _streamSubscription = _controller.stream.listen(
-      (entry) {
-        switch (entry) {
-          case TestEntry()
-              when entry.status == TestEntryStatus.skip ||
-                  entry.status == TestEntryStatus.start:
-            // Create a new single test entry for the test that is starting or is skipped.
-            _singleEntries.add(PatrolSingleTestEntry(entry));
+    _streamSubscription = _controller.stream.listen((entry) {
+      switch (entry) {
+        case TestEntry()
+            when entry.status == TestEntryStatus.skip ||
+                entry.status == TestEntryStatus.start:
+          // Create a new single test entry for the test that is starting or is skipped.
+          _singleEntries.add(PatrolSingleTestEntry(entry));
 
-            // Print the test entry to the console.
-            log(entry.pretty());
+          // Print the test entry to the console.
+          log(entry.pretty());
 
-            // Reset the counters needed for clearing the lines.
-            stepsCounter = 0;
-            logsCounter = 0;
-          case TestEntry():
-            // Close the single test entry for the test that is finished.
-            _singleEntries.last.closeTest(entry);
+          // Reset the counters needed for clearing the lines.
+          stepsCounter = 0;
+          logsCounter = 0;
+        case TestEntry():
+          // Close the single test entry for the test that is finished.
+          _singleEntries.last.closeTest(entry);
 
-            // Optionally clear all printed [StepEntry] and [LogEntry].
-            if (!showFlutterLogs &&
-                clearTestSteps &&
-                entry.status != TestEntryStatus.failure) {
-              _clearLines(stepsCounter + logsCounter + 1);
+          // Optionally clear all printed [StepEntry] and [LogEntry].
+          if (!showFlutterLogs &&
+              clearTestSteps &&
+              entry.status != TestEntryStatus.failure) {
+            _clearLines(stepsCounter + logsCounter + 1);
+          }
+
+          final executionTime = _singleEntries.last.executionTime.inSeconds;
+          // Print test entry summary to console.
+          log(
+            '${entry.pretty()} ${AnsiCodes.gray}(${executionTime}s)${AnsiCodes.reset}',
+          );
+        case StepEntry():
+          _singleEntries.last.addEntry(entry);
+          if (!hideTestSteps) {
+            // Clear the previous line it's not the new step, or increment counter
+            // for new step
+            if (entry.status == StepEntryStatus.start) {
+              stepsCounter++;
+            } else if (clearTestSteps) {
+              _clearPreviousLine();
             }
 
-            final executionTime = _singleEntries.last.executionTime.inSeconds;
-            // Print test entry summary to console.
-            log('${entry.pretty()} ${AnsiCodes.gray}(${executionTime}s)${AnsiCodes.reset}');
-          case StepEntry():
-            _singleEntries.last.addEntry(entry);
-            if (!hideTestSteps) {
-              // Clear the previous line it's not the new step, or increment counter
-              // for new step
-              if (entry.status == StepEntryStatus.start) {
-                stepsCounter++;
-              } else if (clearTestSteps) {
-                _clearPreviousLine();
-              }
+            // Print the step entry to the console.
+            log(entry.pretty(number: stepsCounter));
+          }
+        case LogEntry():
+          _singleEntries.last.addEntry(entry);
+          logsCounter++;
 
-              // Print the step entry to the console.
-              log(entry.pretty(number: stepsCounter));
-            }
-          case LogEntry():
-            _singleEntries.last.addEntry(entry);
-            logsCounter++;
+          // Print the log entry to the console.
+          log(entry.pretty());
 
-            // Print the log entry to the console.
-            log(entry.pretty());
-
-          case ErrorEntry():
-          case WarningEntry():
-            log(entry.pretty());
-          case ConfigEntry():
-            _readConfig(entry);
-        }
-      },
-    );
+        case ErrorEntry():
+        case WarningEntry():
+          log(entry.pretty());
+        case ConfigEntry():
+          _readConfig(entry);
+      }
+    });
   }
 
   /// Read the config passed by [PatrolLogWriter].
@@ -249,7 +250,8 @@ class PatrolLogReader {
 
     if (_config['printLogs'] == false) {
       final warningEntry = WarningEntry(
-        message: 'Printing flutter steps is disabled in the config. '
+        message:
+            'Printing flutter steps is disabled in the config. '
             'To enable it, set `PatrolTesterConfig(printLogs: true)`.',
       );
 
@@ -266,7 +268,8 @@ class PatrolLogReader {
   /// - Number of skipped tests
   /// - Path to the report file
   /// - Duration of the tests
-  String get summary => '\n${AnsiCodes.bold}Test summary:${AnsiCodes.reset}\n'
+  String get summary =>
+      '\n${AnsiCodes.bold}Test summary:${AnsiCodes.reset}\n'
       '${Emojis.total} Total: $totalTests\n'
       '${Emojis.success} Successful: $successfulTests\n'
       '${Emojis.failure} Failed: $failedTestsCount\n'

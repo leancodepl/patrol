@@ -10,10 +10,7 @@ class LogoHero extends StatelessWidget {
       tag: 'logoHero',
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          PTImages.patrolLogo,
-          PTImages.leancodeLogo,
-        ],
+        children: [PTImages.patrolLogo, PTImages.leancodeLogo],
       ),
     );
   }

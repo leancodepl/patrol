@@ -52,10 +52,7 @@ class NativeViewHierarchy extends StatelessWidget {
                     onPressed: onRefreshPressed,
                   ),
                 )
-              : _NativeViewHierarchyTree(
-                  roots: roots,
-                  props: props,
-                ),
+              : _NativeViewHierarchyTree(roots: roots, props: props),
         ),
       ],
     );
@@ -63,10 +60,7 @@ class NativeViewHierarchy extends StatelessWidget {
 }
 
 class _NativeViewHierarchyTree extends StatefulWidget {
-  const _NativeViewHierarchyTree({
-    required this.roots,
-    required this.props,
-  });
+  const _NativeViewHierarchyTree({required this.roots, required this.props});
 
   final List<Node> roots;
   final NodeProps props;
@@ -121,9 +115,9 @@ class _NativeViewHierarchyTreeState extends State<_NativeViewHierarchyTree> {
                     child: Directionality(
                       textDirection: TextDirection.ltr,
                       child: ScrollConfiguration(
-                        behavior: ScrollConfiguration.of(context).copyWith(
-                          scrollbars: false,
-                        ),
+                        behavior: ScrollConfiguration.of(
+                          context,
+                        ).copyWith(scrollbars: false),
                         child: ListView(
                           controller: verticalScrollController,
                           children: [
@@ -236,10 +230,7 @@ class _ControlButton extends StatelessWidget {
 }
 
 class _Node extends HookWidget {
-  const _Node({
-    required this.node,
-    required this.props,
-  });
+  const _Node({required this.node, required this.props});
 
   final NodeProps props;
   final Node node;
@@ -290,17 +281,11 @@ class _Node extends HookWidget {
                           child: AnimatedRotation(
                             turns: isExpanded.value ? 1 : 6 / 8,
                             duration: const Duration(milliseconds: 150),
-                            child: Icon(
-                              Icons.expand_more,
-                              size: iconSize,
-                            ),
+                            child: Icon(Icons.expand_more, size: iconSize),
                           ),
                         )
                       else
-                        SizedBox(
-                          width: iconSize,
-                          height: iconSize,
-                        ),
+                        SizedBox(width: iconSize, height: iconSize),
                       GestureDetector(
                         behavior: HitTestBehavior.opaque,
                         onTap: () => props.onNodeTap(node),
@@ -317,8 +302,7 @@ class _Node extends HookWidget {
                               child: Center(
                                 child: Text(
                                   node.initialCharacter,
-                                  style: DefaultTextStyle.of(context)
-                                      .style
+                                  style: DefaultTextStyle.of(context).style
                                       .copyWith(
                                         fontSize: iconSize * 0.7,
                                         color: props.colorScheme.surface,
@@ -332,12 +316,12 @@ class _Node extends HookWidget {
                                   ? node.fullNodeName
                                   : node.shortNodeName,
                               overflow: TextOverflow.ellipsis,
-                              style:
-                                  DefaultTextStyle.of(context).style.copyWith(
-                                        fontWeight: isSelected
-                                            ? FontWeight.bold
-                                            : FontWeight.normal,
-                                      ),
+                              style: DefaultTextStyle.of(context).style
+                                  .copyWith(
+                                    fontWeight: isSelected
+                                        ? FontWeight.bold
+                                        : FontWeight.normal,
+                                  ),
                             ),
                             const SizedBox(width: 8),
                           ],
@@ -352,12 +336,7 @@ class _Node extends HookWidget {
           if (isExpanded.value)
             Column(
               children: node.children
-                  .map(
-                    (e) => _Node(
-                      props: props,
-                      node: e,
-                    ),
-                  )
+                  .map((e) => _Node(props: props, node: e))
                   .toList(),
             ),
         ],
@@ -399,11 +378,7 @@ class _LinesPainter extends CustomPainter {
     final yEnd = lastChildren ? halfOfIconSize : size.height;
 
     canvas
-      ..drawLine(
-        Offset(halfOfIconSize, 0),
-        Offset(halfOfIconSize, yEnd),
-        paint,
-      )
+      ..drawLine(Offset(halfOfIconSize, 0), Offset(halfOfIconSize, yEnd), paint)
       ..drawLine(
         Offset(halfOfIconSize, halfOfIconSize),
         Offset(

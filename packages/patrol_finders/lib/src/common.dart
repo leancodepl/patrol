@@ -42,10 +42,7 @@ void patrolWidgetTest(
     variant: variant,
     tags: tags,
     (widgetTester) async {
-      final patrolTester = PatrolTester(
-        tester: widgetTester,
-        config: config,
-      );
+      final patrolTester = PatrolTester(tester: widgetTester, config: config);
 
       await callback(patrolTester);
     },

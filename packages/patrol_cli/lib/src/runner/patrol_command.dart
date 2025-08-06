@@ -68,17 +68,11 @@ abstract class PatrolCommand extends Command<int> {
         'profile',
         help: 'Build a version of your app for performance profiling.',
       )
-      ..addFlag(
-        'release',
-        help: 'Build a release version of your app',
-      );
+      ..addFlag('release', help: 'Build a release version of your app');
   }
 
   void usesFlavorOption() {
-    argParser.addOption(
-      'flavor',
-      help: 'Flavor of the app to run.',
-    );
+    argParser.addOption('flavor', help: 'Flavor of the app to run.');
   }
 
   void usesLabelOption() {
@@ -89,19 +83,12 @@ abstract class PatrolCommand extends Command<int> {
     );
   }
 
-  void usesWaitOption() {
-    argParser.addOption(
-      'wait',
-      help: 'Seconds to wait after the test finishes.',
-      defaultsTo: '0',
-    );
-  }
-
   void usesDartDefineOption() {
     argParser.addMultiOption(
       'dart-define',
       aliases: ['dart-defines'],
-      help: 'Additional key-value pairs that will be available to the app '
+      help:
+          'Additional key-value pairs that will be available to the app '
           'under test.',
       valueHelp: 'KEY=VALUE',
     );

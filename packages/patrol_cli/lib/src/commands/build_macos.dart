@@ -23,21 +23,20 @@ class BuildMacOSCommand extends PatrolCommand {
     required Analytics analytics,
     required Logger logger,
     required CompatibilityChecker compatibilityChecker,
-  })  : _testFinder = testFinder,
-        _testBundler = testBundler,
-        _dartDefinesReader = dartDefinesReader,
-        _pubspecReader = pubspecReader,
-        _macosTestBackend = macosTestBackend,
-        _analytics = analytics,
-        _logger = logger,
-        _compatibilityChecker = compatibilityChecker {
+  }) : _testFinder = testFinder,
+       _testBundler = testBundler,
+       _dartDefinesReader = dartDefinesReader,
+       _pubspecReader = pubspecReader,
+       _macosTestBackend = macosTestBackend,
+       _analytics = analytics,
+       _logger = logger,
+       _compatibilityChecker = compatibilityChecker {
     usesTargetOption();
     usesBuildModeOption();
     usesFlavorOption();
     usesDartDefineOption();
     usesDartDefineFromFileOption();
     usesLabelOption();
-    usesWaitOption();
     usesPortOptions();
     usesTagsOption();
     usesExcludeTagsOption();
@@ -187,8 +186,13 @@ class BuildMacOSCommand extends PatrolCommand {
   void _printBinaryPaths({required String buildMode}) {
     // print path for 2 apps that live in build/macos_integ/Build/Products
 
-    final buildDir =
-        join('build', 'macos_integ', 'Build', 'Products', buildMode);
+    final buildDir = join(
+      'build',
+      'macos_integ',
+      'Build',
+      'Products',
+      buildMode,
+    );
 
     final appPath = join(buildDir, 'Runner.app');
     final testAppPath = join(buildDir, 'RunnerUITests-Runner.app');
@@ -198,9 +202,7 @@ class BuildMacOSCommand extends PatrolCommand {
       ..info('$testAppPath (test instrumentation app)');
   }
 
-  Future<void> _printXcTestRunPath({
-    required String scheme,
-  }) async {
+  Future<void> _printXcTestRunPath({required String scheme}) async {
     final sdkVersion = await _macosTestBackend.getSdkVersion();
     final xcTestRunPath = await _macosTestBackend.xcTestRunPath(
       scheme: scheme,

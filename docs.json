@@ -190,6 +190,10 @@
           ]
         },
         {
+          "title": "Patrol tags",
+          "href": "/documentation/patrol-tags"
+        },
+        {
           "group": "Patrol and CI",
           "tab": "documentation",
           "pages": [
@@ -229,6 +233,10 @@
           "group": "Other",
           "tab": "documentation",
           "pages": [
+            {
+              "title": "Patrol DevTools Extension",
+              "href": "/documentation/patrol-devtools-extension"
+            },
             {
               "title": "Effective Patrol",
               "href": "/documentation/effective-patrol"
@@ -305,6 +313,22 @@
         {
           "title": "Disabling/enabling Bluetooth",
           "href": "/feature-guide/bluetooth"
+        },
+        {
+          "title": "Granting camera permission",
+          "href": "/feature-guide/granting-camera-permission"
+        },
+        {
+          "title": "Take a photo using camera",
+          "href": "/feature-guide/take-a-photo"
+        },
+        {
+          "title": "Pick images from gallery",
+          "href": "/feature-guide/pick-images-from-gallery"
+        },
+        {
+          "title": "Pull to refresh",
+          "href": "/feature-guide/pull-to-refresh"
         }
       ]
     }

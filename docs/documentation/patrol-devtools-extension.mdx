@@ -1,0 +1,126 @@
+---
+title: "Patrol DevTools Extension"
+---
+
+
+A powerful Flutter DevTools extension that allows you to **inspect native UI elements** on Android and iOS devices while developing your Patrol tests. This extension provides a tree view of native UI components, making it easier to write accurate selectors for your integration tests.
+
+## Features
+
+- **Native UI Tree Inspection**: Browse the complete hierarchy of native UI elements on your device
+- **Element Details**: View detailed information about each native element (bounds, text, accessibility properties, etc.)
+- **Cross-platform Support**: Works with both Android and iOS applications
+- **Live Updates**: Refresh the UI tree to see real-time changes
+- **Test Integration**: Copy element selectors directly for use in your Patrol tests
+
+## Quick Start
+
+<Steps>
+    <Step>
+    Launch Your app with test in Development Mode
+
+    To use the DevTools extension, start your app in Patrol development mode:
+
+    ```bash
+    patrol develop -t integration_test/example_test.dart
+    ```
+
+    This command will:
+    - Launch your test on the connected device/simulator in develop mode
+    - Start the Flutter DevTools server
+    - Print a clickable link to the DevTools interface in your terminal
+    </Step>
+
+    <Step>
+    Open the DevTools Extension
+
+    When `patrol develop -t` is running, look for output similar to this in your terminal:
+
+    ```
+    Patrol DevTools extension is available at:
+    http://127.0.0.1:9102/patrol_ext?uri=http://127.0.0.1:58463/MOAGppLU9BU=/
+    ```
+
+    **Click on this link** to open Flutter DevTools in your browser.
+    <Info>
+    If logs are cluttering your terminal and making it hard to find the DevTools link, you can use the `--open-devtools` flag to automatically open DevTools:
+    </Info>
+    > ```bash
+    > patrol develop -t integration_test/example_test.dart  --open-devtools
+    > ```
+    </Step>
+
+    <Step>
+    Navigate to the Patrol Extension
+
+    Once DevTools opens:
+    • By first time you need to Enable extension, just click the button that will shows up
+    • Look for the **"Patrol"** tab in the top navigation bar
+    • Click on it to open the Patrol DevTools Extension
+    </Step>
+
+    <Step>
+    Load the UI Tree
+
+    • Make sure that your wanted native view is visible on your device/simulator
+    • Click the **Refresh** button (🔄) in the Patrol extension
+    • You should see the native UI tree populate in the left panel
+    </Step>
+</Steps>
+
+### Flutter DevTools
+After opening the Patrol DevTools link, you can also use the Flutter Inspector to see widgets and their
+properties in your Flutter app. To make it work, you need to add the path to your app's lib folder (e.g., user/my_example_app/lib) under settings (⚙️) on the DevTools page.
+
+### DevTools Interface
+
+#### Tree View Controls
+- **RAW button**: Shows native tree detailed information (You need to refresh native tree after toggle)
+- **📱 Full node names**: Shows full node names
+- **🔄 Refresh tree**: Load current UI tree
+
+## Using Discovered Elements in Tests
+
+When you find elements in the inspector, you can create cross-platform selectors that work on both Android and iOS:
+
+```dart
+// Cross-platform button using unique identifiers
+await $.native2.tap(NativeSelector(
+  android: AndroidSelector(resourceId: 'com.example:id/login_btn'),
+  ios: IOSSelector(identifier: 'loginButton'),
+));
+
+// Using class name (Android) and element type (iOS)
+await $.native2.tap(NativeSelector(
+  android: AndroidSelector(className: 'android.widget.Button'),
+  ios: IOSSelector(elementType: 'XCUIElementTypeButton'),
+));
+
+```
+
+### Key Properties Reference
+
+#### Android Properties
+
+| Property | Description | Example |
+|----------|-------------|---------|
+| `resourceName` | Unique resource ID (most reliable) | `com.app:id/login_btn` |
+| `text` | Visible text content | `"Sign In"` |
+| `className` | UI element type | `android.widget.Button` |
+| `contentDescription` | Accessibility description | `"Login button"` |
+| `applicationPackage` | App package name | `com.example.app` |
+
+Full list of Android properties can be found:
+https://pub.dev/documentation/patrol/latest/patrol/AndroidSelector-class.html
+
+#### iOS Properties
+
+| Property | Description | Example |
+|----------|-------------|---------|
+| `identifier` | Unique identifier (most reliable) | `loginButton` |
+| `elementType` | UI element type | `XCUIElementTypeButton` |
+| `label` | Accessibility label | `"Sign In"` |
+| `title` | Element title | `"Login"` |
+
+Full list of iOS properties can be found:
+https://pub.dev/documentation/patrol/latest/patrol/IOSSelector-class.html
