@@ -1,8 +1,11 @@
 import 'dart:convert';
+import 'dart:io' as io;
 
+import 'package:ci/ci.dart' as ci;
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:meta/meta.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
+import 'package:patrol_cli/src/base/interactive_prompts.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/runner/flutter_command.dart';
@@ -73,7 +76,11 @@ class DeviceFinder {
   ///
   /// * Throws if no devices are attached.
   ///
-  /// * Returns the first attached device if [wantDevices] is empty.
+  /// * Shows interactive device selection if multiple devices are attached,
+  ///   [wantDevices] is empty, and running in an interactive terminal.
+  ///
+  /// * Returns the first attached device if [wantDevices] is empty and not
+  ///   in an interactive environment.
   ///
   /// * Returns all attached devices if [wantDevices] contains a single element
   ///   `'all'`.
@@ -94,6 +101,16 @@ class DeviceFinder {
     }
 
     if (wantDevices.isEmpty) {
+      // Check if we should show interactive device selection
+      if (attachedDevices.length > 1 && _shouldShowInteractiveSelection()) {
+        final selectedDevice = _promptForDeviceSelection(attachedDevices);
+        if (selectedDevice == null) {
+          throwToolExit('Device selection was cancelled');
+        }
+        return [selectedDevice];
+      }
+
+      // Default behavior: use first device
       final firstDevice = attachedDevices.first;
       _logger.info(
         'No device specified, using the first one (${firstDevice.name})',
@@ -156,6 +173,49 @@ class DeviceFinder {
       throwToolInterrupted('`$flutterCommand devices` was interrupted');
     } else {
       return output;
+    }
+  }
+
+  /// Determines if interactive device selection should be shown.
+  ///
+  /// Returns true if:
+  /// - We have a terminal (stdin.hasTerminal)
+  /// - Not running in CI environment
+  /// - Not running in test environment
+  bool _shouldShowInteractiveSelection() {
+    // Check if we're in a test environment
+    // PATROL_CLI_TEST: Set to 'true' when running Patrol CLI tests
+    final testEnv = io.Platform.environment['PATROL_CLI_TEST'] == 'true';
+
+    return io.stdin.hasTerminal && !ci.isCI && !testEnv;
+  }
+
+  /// Prompts the user to select a device from the list of attached devices.
+  ///
+  /// Returns the selected device or null if the user cancels.
+  Device? _promptForDeviceSelection(List<Device> attachedDevices) {
+    try {
+      final prompts = InteractivePrompts(logger: _logger);
+
+      final selectedIndex = prompts.selectFromList<Device>(
+        prompt: 'Multiple devices found. Please choose one:',
+        options: attachedDevices,
+        displayFunction: (device) => '${device.name} (${device.id})',
+        cancelMessage: 'Cancel and exit',
+      );
+
+      if (selectedIndex == null) {
+        return null;
+      }
+
+      final selectedDevice = attachedDevices[selectedIndex];
+      _logger.info(
+        'Selected device: ${selectedDevice.name} (${selectedDevice.id})',
+      );
+      return selectedDevice;
+    } catch (err) {
+      _logger.detail('Interactive device selection failed: $err');
+      return null;
     }
   }
 }
