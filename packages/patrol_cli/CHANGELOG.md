@@ -3,6 +3,7 @@
 - Add `--build-name` and `--build-number` flags to `patrol test`, `patrol develop`, and `patrol build` commands.
 - Fix report path generation for Android (#2724)
 - Fix issue that sometimes logs causes test crashes (#2742)
+- Add support for interactive device selection when running patrol. (#2722)
 
 ## 3.10.0
 
