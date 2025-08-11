@@ -31,6 +31,11 @@ Using Patrol finder, you'd write the above as:
 $('Subscribe');
 ```
 
+If you want to use semantics finders to locate widgets by their semantics properties, you can use flutter_test finders inside Patrol finders.
+```dart
+await $(find.bySemanticsLabel('Edit profile')).tap(); 
+```
+
 Worth mentioning is also `Key`. The below lines are equivalent:
 
 ```dart
