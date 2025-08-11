@@ -1,3 +1,7 @@
+## Unreleased
+
+- Add support for interactive device selection when running in an interactive terminal. (#2722)
+
 ## 3.10.0
 
 - Add help command `h` to `patrol develop`. (#2701)
