@@ -529,34 +529,77 @@
 
     func enableWiFi() throws {
       try runControlCenterAction("enabling wifi") {
-        let toggle = self.springboard.switches["wifi-button"]
-        let exists = toggle.waitForExistence(timeout: self.timeout)
-        guard exists else {
-          throw PatrolError.viewNotExists("wifi-button")
-        }
+        if let osVersionString = self.getOsVersion().split(separator: ".").first,
+          let osVersion = Int(osVersionString)
+        {
+          let toggle: XCUIElement
 
-        if toggle.value! as! String == "0" {
-          toggle.tap()
-        } else {
-          Logger.shared.i("wifi is already enabled")
+          if osVersion >= 18 {
+            let wifiOff = self.springboard.images["wifi.slash"].firstMatch
+            let wifiOn = self.springboard.images["wifi"].firstMatch
+            if wifiOn.exists {
+              Logger.shared.i("wifi is already enabled")
+              return
+            }
+            if !wifiOn.exists && !wifiOff.exists {
+              throw PatrolError.viewNotExists("wifi-button")
+            }
+            wifiOn.tap()
+            return
+          } else {
+            toggle = self.springboard.switches["wifi-button"]
+          }
+
+          let exists = toggle.waitForExistence(timeout: self.timeout)
+          guard exists else {
+            throw PatrolError.viewNotExists("wifi-button")
+          }
+
+          if toggle.value! as! String == "0" {
+            toggle.tap()
+            // Disabling wifi can cause a system alert to appear
+            try self.acceptSystemAlertIfVisible()
+          } else {
+            Logger.shared.i("wifi is already disabled")
+          }
         }
       }
     }
 
     func disableWiFi() throws {
       try runControlCenterAction("disabling wifi") {
-        let toggle = self.springboard.switches["wifi-button"]
-        let exists = toggle.waitForExistence(timeout: self.timeout)
-        guard exists else {
-          throw PatrolError.viewNotExists("wifi-button")
-        }
+        if let osVersionString = self.getOsVersion().split(separator: ".").first,
+          let osVersion = Int(osVersionString)
+        {
+          let toggle: XCUIElement
 
-        if toggle.value! as! String == "1" {
-          toggle.tap()
-          // Disabling wifi can cause a system alert to appear
-          try self.acceptSystemAlertIfVisible()
-        } else {
-          Logger.shared.i("wifi is already disabled")
+          if osVersion >= 18 {
+            let wifiOn = self.springboard.images["wifi"].firstMatch
+            let wifiOff = self.springboard.images["wifi.slash"].firstMatch
+            if wifiOn.exists {
+              Logger.shared.i("wifi is already disabled")
+              return
+            }
+            if !wifiOn.exists && !wifiOff.exists {
+              throw PatrolError.viewNotExists("wifi-button")
+            }
+            wifiOff.tap()
+            return
+          } else {
+            toggle = self.springboard.switches["wifi-button"]
+          }
+
+          let exists = toggle.waitForExistence(timeout: self.timeout)
+          guard exists else {
+            throw PatrolError.viewNotExists("wifi-button")
+          }
+          if toggle.value! as! String == "1" {
+            toggle.tap()
+            // Disabling wifi can cause a system alert to appear
+            try self.acceptSystemAlertIfVisible()
+          } else {
+            Logger.shared.i("wifi is already disabled")
+          }
         }
       }
     }
