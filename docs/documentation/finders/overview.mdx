@@ -56,3 +56,9 @@ patrolWidgetTest('signs up', (PatrolTester $) async {
   await $('Welcome, Charlie!').waitUntilVisible();
 });
 ```
+
+## Semantics finders
+You can use semantics finders to find widgets by their semantics properties by using flutter_test finders inside patrol finders.
+```dart
+await $(find.bySemanticsLabel('Edit profile')).tap(); 
+```
