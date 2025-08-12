@@ -1,158 +1,65 @@
-import 'package:patrol_cli/src/crossplatform/app_options.dart';
+import 'package:patrol_cli/src/android/android_test_backend.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
-import 'package:patrol_cli/src/runner/flutter_command.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('AndroidTestBackend report path generation', () {
-    test('generates correct report path with build mode and no flavor', () {
-      const flutterOptions = FlutterAppOptions(
-        command: FlutterCommand('flutter'),
-        target: 'integration_test/test_bundle.dart',
-        buildMode: BuildMode.debug,
-        flavor: null,
-        dartDefines: {},
-        dartDefineFromFilePaths: [],
-      );
+  group('AndroidTestBackend.generateTestReportPath()', () {
+    const rootPath = '/example/project';
+    const flavor = 'dev';
 
-      const androidOptions = AndroidAppOptions(
-        flutter: flutterOptions,
-        appServerPort: 8081,
-        testServerPort: 8082,
-        uninstall: false,
-      );
-
-      // Test the internal path generation logic by simulating what happens
-      // in the execute method
-      const rootPath = '/example/project';
-      var buildModeAndFlavorPath = '';
-      final buildMode = androidOptions.flutter.buildMode.androidName
-          .toLowerCase();
-
-      // This mirrors the logic in android_test_backend.dart
-      if (flutterOptions.flavor != null) {
-        buildModeAndFlavorPath = '$buildMode/flavors/${flutterOptions.flavor}/';
-      } else {
-        buildModeAndFlavorPath = '$buildMode/';
+    /// Helper function to build expected path
+    String buildExpectedPath(String buildMode, {String? flavor}) {
+      const baseUrl =
+          'file://$rootPath/build/app/reports/androidTests/connected';
+      if (flavor != null) {
+        return '$baseUrl/$buildMode/flavors/$flavor/index.html';
       }
+      return '$baseUrl/$buildMode/index.html';
+    }
 
-      final expectedPath =
-          'file://$rootPath/build/app/reports/androidTests/connected/${buildModeAndFlavorPath}index.html';
-      const actualPath =
-          'file://$rootPath/build/app/reports/androidTests/connected/debug/index.html';
+    /// Helper function to test path generation
+    void testPathGeneration({
+      required String testName,
+      required BuildMode buildMode,
+      String? flavor,
+    }) {
+      test(testName, () {
+        final actualPath = AndroidTestBackend.generateTestReportPath(
+          rootPath: rootPath,
+          buildMode: buildMode,
+          flavor: flavor,
+        );
 
-      expect(expectedPath, equals(actualPath));
-    });
+        final expectedPath = buildExpectedPath(
+          buildMode.androidName.toLowerCase(),
+          flavor: flavor,
+        );
 
-    test('generates correct report path with build mode and flavor', () {
-      const flutterOptions = FlutterAppOptions(
-        command: FlutterCommand('flutter'),
-        target: 'integration_test/test_bundle.dart',
-        buildMode: BuildMode.release,
-        flavor: 'prod',
-        dartDefines: {},
-        dartDefineFromFilePaths: [],
-      );
+        expect(actualPath, equals(expectedPath));
+      });
+    }
 
-      const androidOptions = AndroidAppOptions(
-        flutter: flutterOptions,
-        appServerPort: 8081,
-        testServerPort: 8082,
-        uninstall: false,
-      );
+    testPathGeneration(
+      testName: 'build mode only (no flavor) - debug',
+      buildMode: BuildMode.debug,
+    );
 
-      // Test the internal path generation logic
-      const rootPath = '/example/project';
-      var buildModeAndFlavorPath = '';
-      final buildMode = androidOptions.flutter.buildMode.androidName
-          .toLowerCase();
+    testPathGeneration(
+      testName: 'with flavor - debug build mode',
+      buildMode: BuildMode.debug,
+      flavor: flavor,
+    );
 
-      if (flutterOptions.flavor != null) {
-        buildModeAndFlavorPath = '$buildMode/flavors/${flutterOptions.flavor}/';
-      } else {
-        buildModeAndFlavorPath = '$buildMode/';
-      }
+    testPathGeneration(
+      testName: 'with flavor - release build mode',
+      buildMode: BuildMode.release,
+      flavor: flavor,
+    );
 
-      final expectedPath =
-          'file://$rootPath/build/app/reports/androidTests/connected/${buildModeAndFlavorPath}index.html';
-      const actualPath =
-          'file://$rootPath/build/app/reports/androidTests/connected/release/flavors/prod/index.html';
-
-      expect(expectedPath, equals(actualPath));
-    });
-
-    test('generates correct report path for profile build mode', () {
-      const flutterOptions = FlutterAppOptions(
-        command: FlutterCommand('flutter'),
-        target: 'integration_test/test_bundle.dart',
-        buildMode: BuildMode.profile,
-        flavor: null,
-        dartDefines: {},
-        dartDefineFromFilePaths: [],
-      );
-
-      const androidOptions = AndroidAppOptions(
-        flutter: flutterOptions,
-        appServerPort: 8081,
-        testServerPort: 8082,
-        uninstall: false,
-      );
-
-      // Test the internal path generation logic
-      const rootPath = '/example/project';
-      var buildModeAndFlavorPath = '';
-      final buildMode = androidOptions.flutter.buildMode.androidName
-          .toLowerCase();
-
-      if (flutterOptions.flavor != null) {
-        buildModeAndFlavorPath = '$buildMode/flavors/${flutterOptions.flavor}/';
-      } else {
-        buildModeAndFlavorPath = '$buildMode/';
-      }
-
-      final expectedPath =
-          'file://$rootPath/build/app/reports/androidTests/connected/${buildModeAndFlavorPath}index.html';
-      const actualPath =
-          'file://$rootPath/build/app/reports/androidTests/connected/profile/index.html';
-
-      expect(expectedPath, equals(actualPath));
-    });
-
-    test('generates correct report path for flavor with profile build mode', () {
-      const flutterOptions = FlutterAppOptions(
-        command: FlutterCommand('flutter'),
-        target: 'integration_test/test_bundle.dart',
-        buildMode: BuildMode.profile,
-        flavor: 'staging',
-        dartDefines: {},
-        dartDefineFromFilePaths: [],
-      );
-
-      const androidOptions = AndroidAppOptions(
-        flutter: flutterOptions,
-        appServerPort: 8081,
-        testServerPort: 8082,
-        uninstall: false,
-      );
-
-      // Test the internal path generation logic
-      const rootPath = '/example/project';
-      var buildModeAndFlavorPath = '';
-      final buildMode = androidOptions.flutter.buildMode.androidName
-          .toLowerCase();
-
-      if (flutterOptions.flavor != null) {
-        buildModeAndFlavorPath = '$buildMode/flavors/${flutterOptions.flavor}/';
-      } else {
-        buildModeAndFlavorPath = '$buildMode/';
-      }
-
-      final expectedPath =
-          'file://$rootPath/build/app/reports/androidTests/connected/${buildModeAndFlavorPath}index.html';
-      const actualPath =
-          'file://$rootPath/build/app/reports/androidTests/connected/profile/flavors/staging/index.html';
-
-      expect(expectedPath, equals(actualPath));
-    });
+    testPathGeneration(
+      testName: 'with flavor - profile build mode',
+      buildMode: BuildMode.profile,
+      flavor: flavor,
+    );
   });
 }
