@@ -236,12 +236,17 @@ class AndroidTestBackend {
             )
             ..disposedBy(scope);
 
-      var flavorPath = '';
+      var buildModeAndFlavorPath = '';
+      final buildMode = options.flutter.buildMode.androidName.toLowerCase();
+
       if (flavor != null) {
-        flavorPath = 'flavors/$flavor/';
+        buildModeAndFlavorPath = '$buildMode/flavors/$flavor/';
+      } else {
+        buildModeAndFlavorPath = '$buildMode/';
       }
+
       final path =
-          'file://${_rootDirectory.path}/build/app/reports/androidTests/connected/${flavorPath}index.html';
+          'file://${_rootDirectory.path}/build/app/reports/androidTests/connected/${buildModeAndFlavorPath}index.html';
       final reportPath = _platform.isWindows
           ? path.replaceAll(r'\', '/')
           : path;
