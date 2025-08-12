@@ -1,3 +1,7 @@
+## Unreleased
+
+- Fix report path generation for Android (#2724)
+
 ## 3.10.0
 
 - Add help command `h` to `patrol develop`. (#2701)
