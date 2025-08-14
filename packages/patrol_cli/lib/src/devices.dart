@@ -181,13 +181,8 @@ class DeviceFinder {
   /// Returns true if:
   /// - We have a terminal (stdin.hasTerminal)
   /// - Not running in CI environment
-  /// - Not running in test environment
   bool _shouldShowInteractiveSelection() {
-    // Check if we're in a test environment
-    // PATROL_CLI_TEST: Set to 'true' when running Patrol CLI tests
-    final testEnv = io.Platform.environment['PATROL_CLI_TEST'] == 'true';
-
-    return io.stdin.hasTerminal && !ci.isCI && !testEnv;
+    return io.stdin.hasTerminal && !ci.isCI;
   }
 
   /// Prompts the user to select a device from the list of attached devices.
