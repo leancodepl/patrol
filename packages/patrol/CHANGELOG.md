@@ -1,3 +1,7 @@
+## Unreleased
+
+- Add support for enabling/disabling wifi on iOS 18. (#2719)
+
 ## 3.19.0
 
 - Fix logging for `$.native.pullToRefresh()` and `$.native.swipeBack()`. (#2707) 
