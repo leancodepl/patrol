@@ -473,8 +473,9 @@ To install a specific version of Patrol CLI, run:
     required String maxCompatibleCliVersion,
   }) async {
     final latestVersionParsed = Version.parse(latestVersion);
+    final currentVersionParsed = Version.parse(currentVersion);
 
-    if (latestVersionParsed > Version.parse(currentVersion)) {
+    if (latestVersionParsed > currentVersionParsed) {
       // Try to find the current patrol version in the project
       String? patrolVersion;
       final rootDir = findRootDirectory(_fs);
@@ -489,6 +490,13 @@ To install a specific version of Patrol CLI, run:
       if (patrolVersion != null) {
         final patrolVer = Version.parse(patrolVersion);
         final maxCliVersion = getMaxCompatibleCliVersion(patrolVer);
+
+        // Check if current CLI version is already the maximum compatible version
+        if (maxCliVersion != null && currentVersionParsed >= maxCliVersion) {
+          // Current CLI version is already the maximum compatible version for this patrol version
+          // Don't show any update notification
+          return;
+        }
 
         if (maxCliVersion != null && latestVersionParsed > maxCliVersion) {
           // Show warning when incompatible
