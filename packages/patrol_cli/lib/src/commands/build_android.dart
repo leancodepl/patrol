@@ -123,6 +123,7 @@ class BuildAndroidCommand extends PatrolCommand {
 
     final displayLabel = boolArg('label');
     final uninstall = boolArg('uninstall');
+    final noTreeShakeIcons = boolArg('no-tree-shake-icons');
 
     final customDartDefines = {
       ..._dartDefinesReader.fromFile(),
@@ -173,6 +174,7 @@ class BuildAndroidCommand extends PatrolCommand {
       appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
       uninstall: uninstall,
+      noTreeShakeIcons: noTreeShakeIcons,
     );
 
     try {
