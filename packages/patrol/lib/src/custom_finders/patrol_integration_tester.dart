@@ -1,5 +1,4 @@
-import 'package:patrol/src/native/native_automator.dart';
-import 'package:patrol/src/native/native_automator2.dart';
+import 'package:patrol/src/native/native.dart';
 import 'package:patrol_finders/patrol_finders.dart' as finders;
 import 'package:patrol_log/patrol_log.dart';
 
