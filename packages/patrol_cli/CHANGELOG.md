@@ -1,7 +1,6 @@
-## Unreleased 
+## 3.10.0
 
-- Add support for de, fr and pl locales for native methods that operates on strings (#2659)
-- Add support for gallery permission dialog on iOS 17 (#2659)
+- Add help command `h` to `patrol develop`. (#2701)
 - Add printing paths to the APKs after `patrol build` command. (#2685)
 - Add support for `--no-tree-shake-icons` flag in cli commands (#2704)
 
@@ -15,7 +14,7 @@
 
 ## 3.8.0
 
-- Remove `--wait` argument from patrol develop command
+- Remove `--wait` argument from patrol develop command (#2671 & #2691)
 - Add support for comments in .patrol.env files. (#2653)
 - Skip update check when the `patrol_cli` binary is triggered for shell completion only (#2512)
 - Revert: Do not pass flavor as dart-define when building. (#2636)
