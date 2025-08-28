@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
@@ -16,10 +14,10 @@ void main() {
             builder: (context) {
               return Column(
                 children: [
-                  Center(child: TextField(key: Key('text_field'))),
+                  const Center(child: TextField(key: Key('text_field'))),
                   Center(
                     child: ElevatedButton(
-                      key: Key('button'),
+                      key: const Key('button'),
                       onPressed: () {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text('Button pressed')),
@@ -38,7 +36,11 @@ void main() {
 
     await $(#text_field).enterText('Test 1');
 
+    await Future<void>.delayed(const Duration(seconds: 2));
+
     await $(#button).tap();
+
+    await Future<void>.delayed(const Duration(seconds: 2));
 
     expect($('App Test 2'), findsOneWidget);
   });
