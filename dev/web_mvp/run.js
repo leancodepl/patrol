@@ -5,10 +5,38 @@ const { chromium } = require('playwright');
   const browser = await chromium.launch({ 
     headless: false,
     slowMo: 1000, // 1 second delay between actions
-    devtools: true // Open DevTools
   });
   const context = await browser.newContext();
   const page = await context.newPage();
+
+  // Expose patrolNative binding for Dart->Playwright communication
+  await page.exposeBinding('patrolNative', async ({ page }, requestJson) => {
+    try {
+      const request = JSON.parse(requestJson);
+      const { action, params } = request;
+      
+      console.log(`[patrolNative] Action: ${action}`, params);
+      
+      switch (action) {
+        case 'grantPermissions': {
+          const origin = params.origin || new URL(page.url()).origin;
+          await page.context().grantPermissions(params.permissions || [], { origin });
+          console.log(`[patrolNative] Granted permissions: ${params.permissions?.join(', ')} for ${origin}`);
+          return JSON.stringify({ ok: true });
+        }
+        
+        default:
+          const error = `Unknown action: ${action}`;
+          console.error(`[patrolNative] ${error}`);
+          return JSON.stringify({ ok: false, error });
+      }
+    } catch (e) {
+      const error = `Failed to execute: ${e.message}`;
+      console.error(`[patrolNative] ${error}`);
+      return JSON.stringify({ ok: false, error });
+    }
+  });
+
   console.log(`Opening ${baseUrl}`);
   await page.goto(baseUrl, { waitUntil: 'load' });
 
