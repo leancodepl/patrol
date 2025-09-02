@@ -1,3 +1,7 @@
+## Unreleased
+
+- Update `TestEntry.nameWithPath` to use actual test directory from environment variable instead of hardcoded `patrol_test`. (#2637, #2592, #2298)
+
 ## 0.5.0
 
 - Bump `leancode_lint` to `17.0.0`. (#2680)
