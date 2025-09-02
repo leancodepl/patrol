@@ -38,7 +38,7 @@ You’ve just seen the full walkthrough of the app, including errors that can sh
 
 ### Writing the Test
 
-We have only one UI flow in this app, that is signing in, showing the notification and then tapping on that notification. This means, we’re going to have only a single test. Let’s create it in `/integration_test/app_test.dart`.
+We have only one UI flow in this app, that is signing in, showing the notification and then tapping on that notification. This means, we’re going to have only a single test. Let’s create it in `/patrol_test/app_test.dart`.
 
 Like any other test, we need to have a `main()` top-level function. Inside it we’re going to have our single `patrolTest` with a description properly describing what we’re about to test. An optional step is to set the frame policy to “fully live” to make sure all frames are shown, even those which are not pumped by our test code. Without it, we would see that our app stutters and animations are not played properly.
 
@@ -56,7 +56,7 @@ void main() {
 }
 ```
 
-We could start writing the test right now and then re-run it from scratch every time we add a new line of test code by calling `patrol test --target integration_test/app_test.dart` but since we’re writing a Patrol test that runs on an Android or iOS device, constantly building the whole Flutter app is not time effective. Thankfully, Patrol offers a different approach - hot restarting the tests! We can run the command `patrol develop --target integration_test/app_test.dart` right now and anytime we add a new line of test code, we can just type “r” in the terminal to re-run the tests without the time-costly app building. Just make sure that you have an emulator running first - Patrol will select it automatically.
+We could start writing the test right now and then re-run it from scratch every time we add a new line of test code by calling `patrol test --target patrol_test/app_test.dart` but since we’re writing a Patrol test that runs on an Android or iOS device, constantly building the whole Flutter app is not time effective. Thankfully, Patrol offers a different approach - hot restarting the tests! We can run the command `patrol develop --target patrol_test/app_test.dart` right now and anytime we add a new line of test code, we can just type “r” in the terminal to re-run the tests without the time-costly app building. Just make sure that you have an emulator running first - Patrol will select it automatically.
 
 First, we need to perform any initializations that need to happen before the app is run and pump the top-level widget of our app. We’re effectively doing what the `main` function inside `main.dart` does - this time not for just running the app as usual but for running an automated Patrol test.
 

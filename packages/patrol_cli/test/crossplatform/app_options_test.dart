@@ -15,7 +15,7 @@ void main() {
       test('on Windows', () {
         const flutterOptions = FlutterAppOptions(
           command: flutterCommand,
-          target: r'C:\Users\john\app\integration_test\app_test.dart',
+          target: r'C:\Users\john\app\patrol_test\app_test.dart',
           buildMode: BuildMode.debug,
           flavor: null,
           buildName: null,
@@ -38,7 +38,7 @@ void main() {
           equals([
             r'.\gradlew.bat',
             ':app:assembleDebugAndroidTest',
-            r'-Ptarget=C:\Users\john\app\integration_test\app_test.dart',
+            r'-Ptarget=C:\Users\john\app\patrol_test\app_test.dart',
             '-Pandroid.injected.androidTest.leaveApksInstalledAfterRun=true',
             '-Papp-server-port=1',
             '-Ptest-server-port=2',
@@ -49,7 +49,7 @@ void main() {
       test('on macOS', () {
         const flutterOpts = FlutterAppOptions(
           command: flutterCommand,
-          target: '/Users/john/app/integration_test/app_test.dart',
+          target: '/Users/john/app/patrol_test/app_test.dart',
           buildMode: BuildMode.release,
           flavor: null,
           buildName: null,
@@ -72,7 +72,7 @@ void main() {
           equals([
             './gradlew',
             ':app:assembleReleaseAndroidTest',
-            '-Ptarget=/Users/john/app/integration_test/app_test.dart',
+            '-Ptarget=/Users/john/app/patrol_test/app_test.dart',
             '-Pandroid.injected.androidTest.leaveApksInstalledAfterRun=true',
             '-Papp-server-port=1',
             '-Ptest-server-port=2',
@@ -91,7 +91,7 @@ void main() {
       test('on Windows', () {
         const flutterOpts = FlutterAppOptions(
           command: flutterCommand,
-          target: r'C:\Users\john\app\integration_test\app_test.dart',
+          target: r'C:\Users\john\app\patrol_test\app_test.dart',
           buildMode: BuildMode.release,
           flavor: 'dev',
           buildName: null,
@@ -114,7 +114,7 @@ void main() {
           equals([
             r'.\gradlew.bat',
             ':app:assembleDevReleaseAndroidTest',
-            r'-Ptarget=C:\Users\john\app\integration_test\app_test.dart',
+            r'-Ptarget=C:\Users\john\app\patrol_test\app_test.dart',
             '-Pdart-defines=RU1BSUw9dXNlckBleGFtcGxlLmNvbQ==,UEFTU1dPUkQ9bnk0bmNhdA==,Zm9vPWJhcg==',
             '-Papp-server-port=1',
             '-Ptest-server-port=2',
@@ -125,7 +125,7 @@ void main() {
       test('on macOS', () {
         const flutterOpts = FlutterAppOptions(
           command: flutterCommand,
-          target: '/Users/john/app/integration_test/app_test.dart',
+          target: '/Users/john/app/patrol_test/app_test.dart',
           buildMode: BuildMode.debug,
           flavor: 'dev',
           buildName: null,
@@ -148,7 +148,7 @@ void main() {
           equals([
             './gradlew',
             ':app:assembleDevDebugAndroidTest',
-            '-Ptarget=/Users/john/app/integration_test/app_test.dart',
+            '-Ptarget=/Users/john/app/patrol_test/app_test.dart',
             '-Pdart-defines=RU1BSUw9dXNlckBleGFtcGxlLmNvbQ==,UEFTU1dPUkQ9bnk0bmNhdA==,Zm9vPWJhcg==',
             '-Papp-server-port=1',
             '-Ptest-server-port=2',
@@ -159,7 +159,7 @@ void main() {
       test('on macOS with no uninstall', () {
         const flutterOpts = FlutterAppOptions(
           command: flutterCommand,
-          target: '/Users/john/app/integration_test/app_test.dart',
+          target: '/Users/john/app/patrol_test/app_test.dart',
           buildMode: BuildMode.debug,
           flavor: 'dev',
           buildName: null,
@@ -182,7 +182,7 @@ void main() {
           equals([
             './gradlew',
             ':app:connectedDevDebugAndroidTest',
-            '-Ptarget=/Users/john/app/integration_test/app_test.dart',
+            '-Ptarget=/Users/john/app/patrol_test/app_test.dart',
             '-Pdart-defines=RU1BSUw9dXNlckBleGFtcGxlLmNvbQ==,UEFTU1dPUkQ9bnk0bmNhdA==,Zm9vPWJhcg==',
             '-Pandroid.injected.androidTest.leaveApksInstalledAfterRun=true',
             '-Papp-server-port=1',
@@ -201,7 +201,7 @@ void main() {
       () {
         const flutterOpts = FlutterAppOptions(
           command: flutterCommand,
-          target: 'integration_test/app_test.dart',
+          target: 'patrol_test/app_test.dart',
           buildMode: BuildMode.debug,
           flavor: null,
           buildName: null,
@@ -234,7 +234,7 @@ void main() {
               '--no-version-check',
               '--suppress-analytics',
               ...['--config-only', '--no-codesign', '--debug', '--simulator'],
-              ...['--target', 'integration_test/app_test.dart'],
+              ...['--target', 'patrol_test/app_test.dart'],
               ...['--dart-define-from-file', 'somePath.json'],
               ...['--dart-define-from-file', 'someOtherPath.json'],
             ]),
@@ -288,7 +288,7 @@ void main() {
       () {
         const flutterOpts = FlutterAppOptions(
           command: flutterCommand,
-          target: 'integration_test/app_test.dart',
+          target: 'patrol_test/app_test.dart',
           buildMode: BuildMode.debug,
           flavor: null,
           buildName: null,
@@ -321,7 +321,7 @@ void main() {
               '--no-version-check',
               '--suppress-analytics',
               ...['--config-only', '--no-codesign', '--debug', '--simulator'],
-              ...['--target', 'integration_test/app_test.dart'],
+              ...['--target', 'patrol_test/app_test.dart'],
             ]),
           );
 
@@ -373,7 +373,7 @@ void main() {
       () {
         const flutterOpts = FlutterAppOptions(
           command: flutterCommand,
-          target: 'integration_test/app_test.dart',
+          target: 'patrol_test/app_test.dart',
           buildMode: BuildMode.release,
           flavor: 'prod',
           buildName: '1.2.3',
@@ -413,7 +413,7 @@ void main() {
               ...['--flavor', 'prod'],
               ...['--build-name', '1.2.3'],
               ...['--build-number', '123'],
-              ...['--target', 'integration_test/app_test.dart'],
+              ...['--target', 'patrol_test/app_test.dart'],
               ...['--dart-define', 'EMAIL=user@example.com'],
               ...['--dart-define', 'PASSWORD=ny4ncat'],
               ...['--dart-define', 'foo=bar'],
@@ -448,7 +448,7 @@ void main() {
       test('with build name and number', () {
         const flutterOpts = FlutterAppOptions(
           command: flutterCommand,
-          target: 'integration_test/app_test.dart',
+          target: 'patrol_test/app_test.dart',
           buildMode: BuildMode.release,
           flavor: 'prod',
           buildName: '2.1.0',
@@ -479,7 +479,7 @@ void main() {
             ...['--flavor', 'prod'],
             ...['--build-name', '2.1.0'],
             ...['--build-number', '210'],
-            ...['--target', 'integration_test/app_test.dart'],
+            ...['--target', 'patrol_test/app_test.dart'],
             ...['--dart-define', 'ENV=production'],
           ]),
         );
@@ -488,7 +488,7 @@ void main() {
       test('without build name and number', () {
         const flutterOpts = FlutterAppOptions(
           command: flutterCommand,
-          target: 'integration_test/app_test.dart',
+          target: 'patrol_test/app_test.dart',
           buildMode: BuildMode.debug,
           flavor: null,
           buildName: null,
@@ -516,7 +516,7 @@ void main() {
             '--no-version-check',
             '--suppress-analytics',
             ...['--config-only', '--debug'],
-            ...['--target', 'integration_test/app_test.dart'],
+            ...['--target', 'patrol_test/app_test.dart'],
           ]),
         );
       });

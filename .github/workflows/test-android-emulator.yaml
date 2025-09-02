@@ -111,7 +111,7 @@ jobs:
 
           target_paths=""
           for target in $(echo $TESTS_TO_EXCLUDE | tr ',' '\n'); do
-              target_paths+="integration_test/${target}.dart,"
+              target_paths+="patrol_test/${target}.dart,"
           done
           target_paths="${target_paths%,}"
 
