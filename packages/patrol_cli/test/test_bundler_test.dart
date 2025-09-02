@@ -17,7 +17,7 @@ Directory _initFakeFs(FileSystem fs, Platform platform) {
     fs.path.join(platform.home, 'awesome_app'),
   )..createSync();
   fs.currentDirectory = projectRootDir;
-  fs.directory('integration_test').createSync();
+  fs.directory('patrol_test').createSync();
   return projectRootDir;
 }
 
@@ -37,6 +37,7 @@ void _test(Platform platform) {
       testBundler = TestBundler(
         projectRoot: projectRootDir,
         logger: MockLogger(),
+        testDirectory: 'patrol_test',
       );
     });
 
@@ -50,8 +51,8 @@ void _test(Platform platform) {
     test('generates imports from relative paths', () {
       // given
       final tests = [
-        fs.path.join('integration_test', 'example_test.dart'),
-        fs.path.join('integration_test', 'example', 'example_test.dart'),
+        fs.path.join('patrol_test', 'example_test.dart'),
+        fs.path.join('patrol_test', 'example', 'example_test.dart'),
       ];
 
       // when
@@ -69,13 +70,13 @@ import 'example/example_test.dart' as example__example_test;''');
         fs.path.join(
           platform.home,
           'awesome_app',
-          'integration_test',
+          'patrol_test',
           'example_test.dart',
         ),
         fs.path.join(
           platform.home,
           'awesome_app',
-          'integration_test',
+          'patrol_test',
           'example/example_test.dart',
         ),
       ];
@@ -92,8 +93,8 @@ import 'example/example_test.dart' as example__example_test;''');
     test('generates groups from relative paths', () {
       // given
       final tests = [
-        fs.path.join('integration_test', 'example_test.dart'),
-        fs.path.join('integration_test', 'example/example_test.dart'),
+        fs.path.join('patrol_test', 'example_test.dart'),
+        fs.path.join('patrol_test', 'example/example_test.dart'),
       ];
 
       // when
@@ -111,13 +112,13 @@ group('example.example_test', example__example_test.main);''');
         fs.path.join(
           platform.home,
           'awesome_app',
-          'integration_test',
+          'patrol_test',
           'example_test.dart',
         ),
         fs.path.join(
           platform.home,
           'awesome_app',
-          'integration_test',
+          'patrol_test',
           'example/example_test.dart',
         ),
       ];
@@ -129,6 +130,35 @@ group('example.example_test', example__example_test.main);''');
       expect(groupsCode, '''
 group('example_test', example_test.main);
 group('example.example_test', example__example_test.main);''');
+    });
+
+    test('uses default patrol_test directory when not specified', () {
+      // given
+      final defaultTestBundler = TestBundler(
+        projectRoot: fs.directory(fs.path.join(platform.home, 'awesome_app')),
+        logger: MockLogger(),
+      );
+
+      // then
+      expect(
+        defaultTestBundler.bundledTestFile.path,
+        contains('patrol_test${fs.path.separator}test_bundle.dart'),
+      );
+    });
+
+    test('uses custom test directory when specified', () {
+      // given
+      final customTestBundler = TestBundler(
+        projectRoot: fs.directory(fs.path.join(platform.home, 'awesome_app')),
+        logger: MockLogger(),
+        testDirectory: 'custom_test_dir',
+      );
+
+      // then
+      expect(
+        customTestBundler.bundledTestFile.path,
+        contains('custom_test_dir${fs.path.separator}test_bundle.dart'),
+      );
     });
   });
 }
