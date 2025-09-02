@@ -1,3 +1,4 @@
+import 'package:patrol_log/patrol_log.dart';
 import 'package:patrol_log/src/duration_extension.dart';
 import 'package:test/test.dart';
 
@@ -17,5 +18,23 @@ void main() {
       expect(Duration.zero.toFormattedString(), '0s');
       expect(const Duration(seconds: 60).toFormattedString(), '1m 0s');
     });
+  });
+
+  group('TestEntry', () {
+    test('nameWithPath uses default patrol_test directory when no environment variable is set', () {
+      final testEntry = TestEntry(
+        name: 'example.login_test test name',
+        status: TestEntryStatus.success,
+      );
+
+      expect(
+        testEntry.nameWithPath,
+        contains('(patrol_test/example/login_test.dart)'),
+      );
+    });
+
+    // Note: Testing with different environment variables would require
+    // running tests with --dart-define, which is not easily testable here.
+    // The actual functionality is tested end-to-end when running patrol commands.
   });
 }

@@ -3,14 +3,19 @@ import 'package:meta/meta.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 
 class TestBundler {
-  TestBundler({required Directory projectRoot, required Logger logger})
-    : _projectRoot = projectRoot,
-      _fs = projectRoot.fileSystem,
-      _logger = logger;
+  TestBundler({
+    required Directory projectRoot,
+    required Logger logger,
+    String testDirectory = 'patrol_test',
+  })  : _projectRoot = projectRoot,
+        _fs = projectRoot.fileSystem,
+        _logger = logger,
+        _testDirectory = testDirectory;
 
   final Directory _projectRoot;
   final FileSystem _fs;
   final Logger _logger;
+  final String _testDirectory;
 
   /// Creates an entrypoint for use with `patrol test` and `patrol build`.
   void createTestBundle(
@@ -126,7 +131,7 @@ ${generateGroupsCode(testFilePaths).split('\n').map((e) => '  $e').join('\n')}
   // This file must not end with "_test.dart", otherwise it'll be picked up
   // when finding tests to bundle.
   File get bundledTestFile => _projectRoot
-      .childDirectory('integration_test')
+      .childDirectory(_testDirectory)
       .childFile('test_bundle.dart');
 
   /// Creates an entrypoint for use with `patrol develop`.
@@ -169,9 +174,9 @@ ${generateGroupsCode([testFilePath]).split('\n').map((e) => '  $e').join('\n')}
   ///
   /// ```dart
   /// [
-  ///   'integration_test/example_test.dart',
-  ///   'integration_test/permissions/permissions_location_test.dart',
-  ///   '/Users/charlie/awesome_app/integration_test/app_test.dart',
+  ///   'patrol_test/example_test.dart',
+  ///   'patrol_test/permissions/permissions_location_test.dart',
+  ///   '/Users/charlie/awesome_app/patrol_test/app_test.dart',
   /// ]
   /// ```
   /// Output:
@@ -179,7 +184,7 @@ ${generateGroupsCode([testFilePath]).split('\n').map((e) => '  $e').join('\n')}
   /// '''
   /// import 'example_test.dart' as example_test;
   /// import 'permissions/permissions_location_test.dart' as permissions__permissions_location_test;
-  /// import 'integration_test/app_test.dart' as app_test;
+  /// import 'patrol_test/app_test.dart' as app_test;
   /// '''
   /// ```
   @visibleForTesting
@@ -201,8 +206,8 @@ ${generateGroupsCode([testFilePath]).split('\n').map((e) => '  $e').join('\n')}
   ///
   /// ```dart
   /// [
-  ///   'integration_test/permissions/permissions_location_test.dart',
-  ///   'integration_test/example_test.dart',
+  ///   'patrol_test/permissions/permissions_location_test.dart',
+  ///   'patrol_test/example_test.dart',
   /// ]
   /// ```
   ///
@@ -228,16 +233,16 @@ ${generateGroupsCode([testFilePath]).split('\n').map((e) => '  $e').join('\n')}
   }
 
   /// Normalizes [testFilePath] so that it always starts with
-  /// 'integration_test'.
+  /// the configured test directory.
   String _normalizeTestPath(String testFilePath) {
     var relativeTestFilePath = testFilePath.replaceAll(
-      _projectRoot.childDirectory('integration_test').absolute.path,
+      _projectRoot.childDirectory(_testDirectory).absolute.path,
       '',
     );
 
-    if (relativeTestFilePath.startsWith('integration_test')) {
+    if (relativeTestFilePath.startsWith(_testDirectory)) {
       relativeTestFilePath = relativeTestFilePath.replaceFirst(
-        'integration_test',
+        _testDirectory,
         '',
       );
     }
@@ -252,7 +257,7 @@ ${generateGroupsCode([testFilePath]).split('\n').map((e) => '  $e').join('\n')}
 
   String _createTestName(String relativeTestFilePath) {
     var testName = relativeTestFilePath
-        .replaceFirst('integration_test${_fs.path.separator}', '')
+        .replaceFirst('$_testDirectory${_fs.path.separator}', '')
         .replaceAll('/', '__');
 
     testName = testName.substring(0, testName.length - 5);

@@ -31,8 +31,10 @@ class TestEntry extends Entry {
     return '${status.name} $nameWithPath${error != null ? '\n$error' : ''}';
   }
 
-  String get nameWithPath =>
-      '$_testName ${AnsiCodes.gray}(integration_test/$_filePath.dart)${AnsiCodes.reset}';
+  String get nameWithPath {
+    const testDirectory = String.fromEnvironment('PATROL_TEST_DIRECTORY', defaultValue: 'patrol_test');
+    return '$_testName ${AnsiCodes.gray}($testDirectory/$_filePath.dart)${AnsiCodes.reset}';
+  }
 
   /// Returns the file path of the test.
   ///

@@ -141,6 +141,7 @@ class BuildMacOSCommand extends PatrolCommand {
       'PATROL_MACOS_APP_BUNDLE_ID': bundleId,
       'PATROL_MACOS_APP_NAME': config.macos.appName,
       'PATROL_TEST_LABEL_ENABLED': displayLabel.toString(),
+      'PATROL_TEST_DIRECTORY': config.testDirectory,
       'INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE': 'false',
       'PATROL_TEST_SERVER_PORT': super.testServerPort.toString(),
       'PATROL_APP_SERVER_PORT': super.appServerPort.toString(),
