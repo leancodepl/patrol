@@ -85,6 +85,23 @@ Check out our video version of this tutorial on YouTube!
         bundle_id: com.example.macos.MyApp
     ```
 
+    <Info>
+        **Test Directory Configuration**: By default, Patrol looks for tests in the `patrol_test/` directory. 
+        You can customize this by adding `test_directory: your_custom_directory` to your `patrol` section in `pubspec.yaml`.
+        
+        ```yaml title="pubspec.yaml (optional customization)"
+        patrol:
+          app_name: My App
+          test_directory: integration_test  # Use custom directory
+          android:
+            package_name: com.example.myapp
+          ios:
+            bundle_id: com.example.MyApp
+          macos:
+            bundle_id: com.example.macos.MyApp
+        ```
+    </Info>
+
     <Warning>
         In this tutorial, we are using example app, which has package name
         `com.example.myapp` on Android, bundle id `com.example.MyApp` on iOS,
