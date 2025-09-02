@@ -69,7 +69,7 @@ class TestFinder {
     return testFiles;
   }
 
-  /// Recursively searches the `integration_test` directory and returns files
+  /// Recursively searches the test directory and returns files
   /// ending with defined [testFileSuffix]. If [testFileSuffix] is not defined,
   /// the default suffix `_test.dart` is used.
   List<String> findAllTests({

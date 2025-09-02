@@ -26,7 +26,7 @@ Farm][aws_device_farm].
     To build these apps, run:
 
     ```
-    patrol build android --target integration_test/example_test.dart
+    patrol build android --target patrol_test/example_test.dart
     ```
 
     Once you have built the apks, use the [gcloud] tool to run them on Firebase
@@ -73,13 +73,13 @@ Farm][aws_device_farm].
     First, build your Flutter app, choosing the integration test file as target:
 
     ```
-    patrol build ios --target integration_test/example_test.dart
+    patrol build ios --target patrol_test/example_test.dart
     ```
 
     `patrol build ios` outputs paths to the built app binaries, for example:
 
     ```
-    $ patrol build ios -t integration_test/example_test.dart --release
+    $ patrol build ios -t patrol_test/example_test.dart --release
     • Building app with entrypoint example_test.dart for iOS device (release)...
     ✓ Completed building app with entrypoint example_test.dart for iOS device (31.5s)
     build/ios_integ/Build/Products/Release-iphoneos/Runner.app (app under test)

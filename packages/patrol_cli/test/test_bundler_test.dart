@@ -37,7 +37,6 @@ void _test(Platform platform) {
       testBundler = TestBundler(
         projectRoot: projectRootDir,
         logger: MockLogger(),
-        testDirectory: 'patrol_test',
       );
     });
 

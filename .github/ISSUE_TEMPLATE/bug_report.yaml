@@ -50,7 +50,7 @@ body:
         1. Clone https://github.com/your_username/your_repo_with_bug and `cd` into it
         2. Start Android emulator (Pixel 4, API 31, Google Play)
         3. Verify that the app builds fine: `flutter build apk --debug`
-        4. Run the integration test: `patrol test --target integration_test/buggy_test.dart`
+        4. Run the integration test: `patrol test --target patrol_test/buggy_test.dart`
     validations:
       required: true
   - type: textarea
