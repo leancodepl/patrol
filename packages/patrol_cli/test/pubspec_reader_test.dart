@@ -309,5 +309,63 @@ patrol:
       final config = reader.read();
       expect(config.testDirectory, equals('patrol_test'));
     });
+
+    test('uses default test file suffix when not specified', () {
+      fs.file('/project/pubspec.yaml').writeAsStringSync('''
+name: test_project
+dependencies:
+  flutter:
+    sdk: flutter
+patrol:
+  app_name: MyApp
+''');
+      
+      final config = reader.read();
+      expect(config.testFileSuffix, equals('_test.dart'));
+    });
+
+    test('uses custom test file suffix from pubspec', () {
+      fs.file('/project/pubspec.yaml').writeAsStringSync('''
+name: test_project
+dependencies:
+  flutter:
+    sdk: flutter
+patrol:
+  test_file_suffix: _integration_test.dart
+''');
+      
+      final config = reader.read();
+      expect(config.testFileSuffix, equals('_integration_test.dart'));
+    });
+
+    test('ignores non-string test_file_suffix values', () {
+      fs.file('/project/pubspec.yaml').writeAsStringSync('''
+name: test_project
+dependencies:
+  flutter:
+    sdk: flutter
+patrol:
+  test_file_suffix: 123
+''');
+      
+      final config = reader.read();
+      expect(config.testFileSuffix, equals('_test.dart'));
+    });
+
+    test('handles both custom test_directory and test_file_suffix', () {
+      fs.file('/project/pubspec.yaml').writeAsStringSync('''
+name: test_project
+dependencies:
+  flutter:
+    sdk: flutter
+patrol:
+  test_directory: custom_tests
+  test_file_suffix: _patrol_test.dart
+''');
+      
+      final config = reader.read();
+      expect(config.testDirectory, equals('custom_tests'));
+      expect(config.testFileSuffix, equals('_patrol_test.dart'));
+    });
   });
 }
