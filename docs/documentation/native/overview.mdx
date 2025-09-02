@@ -18,7 +18,7 @@ to test many critical business features:
 Patrol's _native automation_ feature finally solves these problems. Here's a
 tiny snippet to spice things up:
 
-```dart title="integration_test/demo_test.dart"
+```dart title="patrol_test/demo_test.dart"
 void main() {
   patrolTest('demo', (PatrolIntegrationTester $) async {
     await $.pumpWidgetAndSettle(AwesomeApp());

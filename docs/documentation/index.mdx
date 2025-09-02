@@ -370,11 +370,11 @@ Check out our video version of this tutorial on YouTube!
         </Step>
 
         <Step>
-          Create an empty file `integration_test/example_test.dart` in the root of your Flutter project. From the command line, run
+          Create an empty file `patrol_test/example_test.dart` in the root of your Flutter project. From the command line, run
             the following command and make sure it completes with no errors:
 
           ```
-          $ flutter build ios --config-only integration_test/example_test.dart
+          $ flutter build ios --config-only patrol_test/example_test.dart
           ```
         </Step>
 
@@ -503,10 +503,10 @@ Check out our video version of this tutorial on YouTube!
         </Step>
 
         <Step>
-          Create an empty file `integration_test/example_test.dart` in the root of your Flutter project. From the command line, run:
+          Create an empty file `patrol_test/example_test.dart` in the root of your Flutter project. From the command line, run:
 
           ```
-          $ flutter build macos --config-only integration_test/example_test.dart
+          $ flutter build macos --config-only patrol_test/example_test.dart
           ```
         </Step>
 
@@ -590,9 +590,9 @@ Check out our video version of this tutorial on YouTube!
     Let's create a dummy Flutter integration test that you'll use to verify
     that Patrol is correctly set up.
 
-    Paste the following code into `integration_test/example_test.dart`:
+    Paste the following code into `patrol_test/example_test.dart`:
 
-        ```dart title="integration_test/example_test.dart"
+        ```dart title="patrol_test/example_test.dart"
         import 'dart:io';
 
         import 'package:flutter/material.dart';
@@ -628,10 +628,10 @@ Check out our video version of this tutorial on YouTube!
     - then (on mobile platforms), it exits to home screen
 
     It's a very simple test, but it's enough to verify that Patrol is correctly set
-    up. To run `integration_test/example_test.dart` on a connected Android, iOS or macOS device:
+    up. To run `patrol_test/example_test.dart` on a connected Android, iOS or macOS device:
 
         ```
-        patrol test -t integration_test/example_test.dart
+        patrol test -t patrol_test/example_test.dart
         ```
 
     If the setup is successful, you should see a summary like one below.
@@ -670,7 +670,7 @@ Check out our video version of this tutorial on YouTube!
         If your app is using flavors, then you can pass them like so:
 
         ```
-        patrol test --target integration_test/example_test.dart --flavor development
+        patrol test --target patrol_test/example_test.dart --flavor development
         ```
 
         or you can specify them in `pubspec.yaml` (recommended):
@@ -690,7 +690,7 @@ Check out our video version of this tutorial on YouTube!
 
 ## FAQ
 
-<Accordion title="Testing fails with error inside 'integration_test/test_bundle.dart'">
+<Accordion title="Testing fails with error inside 'patrol_test/test_bundle.dart'">
   The reason is probably a mismatch of `patrol` and `patrol_cli` versions. Go to [Compatibility table]
   and make sure that the versions of `patrol` and `patrol_cli` you are using are compatible.
 </Accordion>
@@ -774,10 +774,10 @@ Check out our video version of this tutorial on YouTube!
   After removing `FLUTTER_TARGET` from `*.xcconfig`, you need to run the following command to generate it:
 
   ```
-  flutter build ios --config-only integration_test/example_test.dart
+  flutter build ios --config-only patrol_test/example_test.dart
   ```
 
-  Make sure to replace `integration_test/example_test.dart` with the path to your test file.
+  Make sure to replace `patrol_test/example_test.dart` with the path to your test file.
 </Accordion>
 
 If you couldn't find an answer to your question/problem, feel free to ask on
@@ -797,7 +797,7 @@ To learn how to write Patrol tests, see [finders] and [native automation] sectio
 [Compatibility table]: /documentation/compatibility-table
 [README]: https://pub.dev/packages/patrol_cli#installation
 [example app]: https://github.com/leancodepl/patrol/tree/master/packages/patrol/example
-[example]: https://github.com/leancodepl/patrol/blob/d2c7493f9399a028e39cb94fd204affdb932c5fc/dev/e2e_app/integration_test/common.dart#L17-L33
+[example]: https://github.com/leancodepl/patrol/blob/d2c7493f9399a028e39cb94fd204affdb932c5fc/dev/e2e_app/patrol_test/common.dart#L17-L33
 [Learn more]: https://developer.android.com/build/jdks
 [this video]: https://www.youtube.com/watch?v=9LdEJR59fW4
 [Patrol Discord Server]: https://discord.gg/ukBK5t4EZg
