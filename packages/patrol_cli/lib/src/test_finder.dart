@@ -69,9 +69,10 @@ class TestFinder {
     return testFiles;
   }
 
-  /// Recursively searches the test directory and returns files
-  /// ending with defined [testFileSuffix]. If [testFileSuffix] is not defined,
-  /// the default suffix `_test.dart` is used.
+  /// Recursively searches the `patrol_test` directory (or custom directory via
+  /// `test_directory` in `pubspec.yaml`) and returns files ending with defined
+  /// [testFileSuffix]. If [testFileSuffix] is not defined, the default suffix
+  /// `_test.dart` is used.
   List<String> findAllTests({
     Directory? directory,
     Set<String> excludes = const {},
