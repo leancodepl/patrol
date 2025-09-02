@@ -181,6 +181,7 @@ class DevelopCommand extends PatrolCommand {
       'PATROL_IOS_APP_NAME': config.ios.appName,
       'INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE': 'false',
       'PATROL_TEST_LABEL_ENABLED': displayLabel.toString(),
+      'PATROL_TEST_DIRECTORY': config.testDirectory,
       // develop-specific
       ...{
         'PATROL_HOT_RESTART': 'true',

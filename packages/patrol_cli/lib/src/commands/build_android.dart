@@ -145,6 +145,7 @@ class BuildAndroidCommand extends PatrolCommand {
       'PATROL_APP_PACKAGE_NAME': packageName,
       'PATROL_ANDROID_APP_NAME': config.android.appName,
       'PATROL_TEST_LABEL_ENABLED': displayLabel.toString(),
+      'PATROL_TEST_DIRECTORY': config.testDirectory,
       'INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE': 'false',
     }.withNullsRemoved();
 

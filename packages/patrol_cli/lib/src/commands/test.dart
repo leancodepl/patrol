@@ -196,6 +196,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       'PATROL_TEST_LABEL_ENABLED': displayLabel.toString(),
       'PATROL_TEST_SERVER_PORT': super.testServerPort.toString(),
       'PATROL_APP_SERVER_PORT': super.appServerPort.toString(),
+      'PATROL_TEST_DIRECTORY': config.testDirectory,
       'COVERAGE_ENABLED': coverageEnabled.toString(),
     }.withNullsRemoved();
 

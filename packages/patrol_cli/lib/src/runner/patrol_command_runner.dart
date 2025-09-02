@@ -127,6 +127,15 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
 
     final rootDirectory = findRootDirectory(_fs) ?? _fs.currentDirectory;
 
+    final config = PubspecReader(projectRoot: rootDirectory).read();
+    final testDirectory = config.testDirectory;
+
+    final testBundler = TestBundler(
+      projectRoot: rootDirectory,
+      logger: _logger,
+      testDirectory: testDirectory,
+    );
+
     final androidTestBackend = AndroidTestBackend(
       adb: adb,
       processManager: _processManager,
@@ -134,6 +143,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
       rootDirectory: rootDirectory,
       parentDisposeScope: _disposeScope,
       logger: _logger,
+      testDirectory: testDirectory,
     );
 
     final iosTestBackend = IOSTestBackend(
@@ -154,13 +164,8 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
       logger: _logger,
     );
 
-    final testBundler = TestBundler(
-      projectRoot: rootDirectory,
-      logger: _logger,
-    );
-
     final testFinder = TestFinder(
-      testDir: rootDirectory.childDirectory('integration_test'),
+      testDir: rootDirectory.childDirectory(testDirectory),
     );
 
     final deviceFinder = DeviceFinder(
