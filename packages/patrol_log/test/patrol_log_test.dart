@@ -32,9 +32,5 @@ void main() {
         contains('(patrol_test/example/login_test.dart)'),
       );
     });
-
-    // Note: Testing with different environment variables would require
-    // running tests with --dart-define, which is not easily testable here.
-    // The actual functionality is tested end-to-end when running patrol commands.
   });
 }
