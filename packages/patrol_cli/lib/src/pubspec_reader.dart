@@ -31,7 +31,13 @@ class PatrolPubspecConfig with EquatableMixin {
   String testFileSuffix;
 
   @override
-  List<Object?> get props => [android, ios, macos, testDirectory, testFileSuffix];
+  List<Object?> get props => [
+    android,
+    ios,
+    macos,
+    testDirectory,
+    testFileSuffix,
+  ];
 }
 
 class AndroidPubspecConfig with EquatableMixin {
