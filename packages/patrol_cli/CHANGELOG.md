@@ -4,6 +4,7 @@
 - Add support for configurable test directory via `test_directory` option in `pubspec.yaml`. (#2637, #2592, #2298)
 - Update CLI help examples to reflect new default test directory.
 - Add `PATROL_TEST_DIRECTORY` dart define to pass test directory configuration to running tests.
+- Bump `patrol_log` to `0.6.0`.
 
 ## 3.10.0
 

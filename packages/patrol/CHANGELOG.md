@@ -1,3 +1,7 @@
+## Unreleased
+
+- Bump `patrol_log` to `0.6.0`.
+
 ## 3.19.0
 
 - Fix logging for `$.native.pullToRefresh()` and `$.native.swipeBack()`. (#2707) 
