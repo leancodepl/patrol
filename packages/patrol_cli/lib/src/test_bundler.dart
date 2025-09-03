@@ -184,7 +184,10 @@ ${generateGroupsCode(testDirectory, [testFilePath]).split('\n').map((e) => '  $e
   String generateImports(String testDirectory, List<String> testFilePaths) {
     final imports = <String>[];
     for (final testFilePath in testFilePaths) {
-      final relativeTestFilePath = _normalizeTestPath(testDirectory, testFilePath);
+      final relativeTestFilePath = _normalizeTestPath(
+        testDirectory,
+        testFilePath,
+      );
       final testName = _createTestName(testDirectory, relativeTestFilePath);
       final relativeTestFilePathWithoutSlash = relativeTestFilePath[0] == '/'
           ? relativeTestFilePath.replaceFirst('/', '')
@@ -216,7 +219,10 @@ ${generateGroupsCode(testDirectory, [testFilePath]).split('\n').map((e) => '  $e
   String generateGroupsCode(String testDirectory, List<String> testFilePaths) {
     final groups = <String>[];
     for (final testFilePath in testFilePaths) {
-      final relativeTestFilePath = _normalizeTestPath(testDirectory, testFilePath);
+      final relativeTestFilePath = _normalizeTestPath(
+        testDirectory,
+        testFilePath,
+      );
       final testName = _createTestName(testDirectory, relativeTestFilePath);
       final groupName = testName.replaceAll('__', '.');
       final testEntrypoint = '$testName.main';

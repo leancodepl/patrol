@@ -88,9 +88,8 @@ void _test(Platform platform) {
 
     test('finds tests when target is a directory', () {
       // given
-      final dir = fs.directory(
-        fs.path.join('patrol_test', 'features', 'auth'),
-      )..createSync(recursive: true);
+      final dir = fs.directory(fs.path.join('patrol_test', 'features', 'auth'))
+        ..createSync(recursive: true);
       dir.childFile('login_test.dart').createSync();
       dir.childFile('register_test.dart').createSync();
       fs

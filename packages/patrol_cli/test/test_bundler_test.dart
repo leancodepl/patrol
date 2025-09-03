@@ -141,7 +141,9 @@ group('example.example_test', example__example_test.main);''');
       );
 
       // when
-      final bundledTestFilePath = defaultTestBundler.getBundledTestFile(testDirectory);
+      final bundledTestFilePath = defaultTestBundler.getBundledTestFile(
+        testDirectory,
+      );
 
       // then
       expect(
