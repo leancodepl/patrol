@@ -121,9 +121,9 @@ class TestCommand extends PatrolCommand {
     if (excludeTags != null) {
       _logger.detail('Received exclude tag(s): $excludeTags');
     }
-    final entrypoint = _testBundler.bundledTestFile;
+    final entrypoint = _testBundler.getBundledTestFile(testDirectory);
     if (boolArg('generate-bundle')) {
-      _testBundler.createTestBundle(targets, tags, excludeTags);
+      _testBundler.createTestBundle(testDirectory, targets, tags, excludeTags);
     }
 
     final androidFlavor = stringArg('flavor') ?? config.android.flavor;
