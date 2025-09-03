@@ -27,6 +27,8 @@ void main() {
 }
 
 void _test(Platform platform) {
+  const testDirectory = 'patrol_test';
+
   group('(${platform.operatingSystem}) TestBundler', () {
     late FileSystem fs;
     late TestBundler testBundler;
@@ -42,7 +44,7 @@ void _test(Platform platform) {
 
     test('throws ArgumentError when no tests are given', () {
       expect(
-        () => testBundler.createTestBundle([], null, null),
+        () => testBundler.createTestBundle(testDirectory, [], null, null),
         throwsArgumentError,
       );
     });
@@ -55,7 +57,7 @@ void _test(Platform platform) {
       ];
 
       // when
-      final imports = testBundler.generateImports(tests);
+      final imports = testBundler.generateImports(testDirectory, tests);
 
       /// then
       expect(imports, '''
@@ -81,7 +83,7 @@ import 'example/example_test.dart' as example__example_test;''');
       ];
 
       // when
-      final imports = testBundler.generateImports(tests);
+      final imports = testBundler.generateImports(testDirectory, tests);
 
       /// then
       expect(imports, '''
@@ -97,7 +99,7 @@ import 'example/example_test.dart' as example__example_test;''');
       ];
 
       // when
-      final groupsCode = testBundler.generateGroupsCode(tests);
+      final groupsCode = testBundler.generateGroupsCode(testDirectory, tests);
 
       /// then
       expect(groupsCode, '''
@@ -123,7 +125,7 @@ group('example.example_test', example__example_test.main);''');
       ];
 
       // when
-      final groupsCode = testBundler.generateGroupsCode(tests);
+      final groupsCode = testBundler.generateGroupsCode(testDirectory, tests);
 
       /// then
       expect(groupsCode, '''
@@ -131,32 +133,20 @@ group('example_test', example_test.main);
 group('example.example_test', example__example_test.main);''');
     });
 
-    test('uses default patrol_test directory when not specified', () {
+    test('uses correct test directory', () {
       // given
       final defaultTestBundler = TestBundler(
         projectRoot: fs.directory(fs.path.join(platform.home, 'awesome_app')),
         logger: MockLogger(),
       );
 
-      // then
-      expect(
-        defaultTestBundler.bundledTestFile.path,
-        contains('patrol_test${fs.path.separator}test_bundle.dart'),
-      );
-    });
-
-    test('uses custom test directory when specified', () {
-      // given
-      final customTestBundler = TestBundler(
-        projectRoot: fs.directory(fs.path.join(platform.home, 'awesome_app')),
-        logger: MockLogger(),
-        testDirectory: 'custom_test_dir',
-      );
+      // when
+      final bundledTestFilePath = defaultTestBundler.getBundledTestFile(testDirectory);
 
       // then
       expect(
-        customTestBundler.bundledTestFile.path,
-        contains('custom_test_dir${fs.path.separator}test_bundle.dart'),
+        bundledTestFilePath.path,
+        contains('$testDirectory${fs.path.separator}test_bundle.dart'),
       );
     });
   });

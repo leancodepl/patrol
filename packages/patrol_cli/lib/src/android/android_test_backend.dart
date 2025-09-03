@@ -161,7 +161,10 @@ class AndroidTestBackend {
   /// Execute `flutter build apk --config-only` to generate the gradlew file.
   ///
   /// This fix issue: https://github.com/leancodepl/patrol/issues/1668
-  Future<void> buildApkConfigOnly(String testDirectory, FlutterCommand flutterCommand) async {
+  Future<void> buildApkConfigOnly(
+    String bundledTestFilePath,
+    FlutterCommand flutterCommand,
+  ) async {
     final process = await _processManager.start([
       flutterCommand.executable,
       ...flutterCommand.arguments,
@@ -169,7 +172,7 @@ class AndroidTestBackend {
       'apk',
       '--config-only',
       '-t',
-      '$testDirectory/test_bundle.dart',
+      bundledTestFilePath,
     ], runInShell: true);
 
     final exitCode = await process.exitCode;

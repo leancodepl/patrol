@@ -3,22 +3,18 @@ import 'package:meta/meta.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 
 class TestBundler {
-  TestBundler({
-    required Directory projectRoot,
-    required Logger logger,
-    String testDirectory = 'patrol_test',
-  })  : _projectRoot = projectRoot,
-        _fs = projectRoot.fileSystem,
-        _logger = logger,
-        _testDirectory = testDirectory;
+  TestBundler({required Directory projectRoot, required Logger logger})
+    : _projectRoot = projectRoot,
+      _fs = projectRoot.fileSystem,
+      _logger = logger;
 
   final Directory _projectRoot;
   final FileSystem _fs;
   final Logger _logger;
-  final String _testDirectory;
 
   /// Creates an entrypoint for use with `patrol test` and `patrol build`.
   void createTestBundle(
+    String testDirectory,
     List<String> testFilePaths,
     String? tags,
     String? excludeTags,
@@ -40,7 +36,7 @@ import 'package:patrol/src/native/contracts/contracts.dart';
 import 'package:test_api/src/backend/invoker.dart';
 
 // START: GENERATED TEST IMPORTS
-${generateImports(testFilePaths)}
+${generateImports(testDirectory, testFilePaths)}
 // END: GENERATED TEST IMPORTS
 
 Future<void> main() async {
@@ -100,7 +96,7 @@ Future<void> main() async {
   });
 
   // START: GENERATED TEST GROUPS
-${generateGroupsCode(testFilePaths).split('\n').map((e) => '  $e').join('\n')}
+${generateGroupsCode(testDirectory, testFilePaths).split('\n').map((e) => '  $e').join('\n')}
   // END: GENERATED TEST GROUPS
 
   final dartTestGroup = await testExplorationCompleter.future;
@@ -119,23 +115,22 @@ ${generateGroupsCode(testFilePaths).split('\n').map((e) => '  $e').join('\n')}
 
     // This file must not end with "_test.dart", otherwise it'll be picked up
     // when finding tests to bundle.
-    bundledTestFile
+    final bundle = getBundledTestFile(testDirectory)
       ..createSync(recursive: true)
       ..writeAsStringSync(contents);
 
     _logger.detail(
-      'Generated entrypoint ${bundledTestFile.path} with ${testFilePaths.length} bundled test(s)',
+      'Generated entrypoint ${bundle.path} with ${testFilePaths.length} bundled test(s)',
     );
   }
 
   // This file must not end with "_test.dart", otherwise it'll be picked up
   // when finding tests to bundle.
-  File get bundledTestFile => _projectRoot
-      .childDirectory(_testDirectory)
-      .childFile('test_bundle.dart');
+  File getBundledTestFile(String testDirectory) =>
+      _projectRoot.childDirectory(testDirectory).childFile('test_bundle.dart');
 
   /// Creates an entrypoint for use with `patrol develop`.
-  void createDevelopTestBundle(String testFilePath) {
+  void createDevelopTestBundle(String testDirectory, String testFilePath) {
     final contents =
         '''
 // ignore_for_file: type=lint, invalid_use_of_internal_member
@@ -145,7 +140,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
 
 // START: GENERATED TEST IMPORTS
-${generateImports([testFilePath])}
+${generateImports(testDirectory, [testFilePath])}
 // END: GENERATED TEST IMPORTS
 
 Future<void> main() async {
@@ -156,18 +151,16 @@ Future<void> main() async {
         debugDefaultTargetPlatformOverride;
 
   // START: GENERATED TEST GROUPS
-${generateGroupsCode([testFilePath]).split('\n').map((e) => '  $e').join('\n')}
+${generateGroupsCode(testDirectory, [testFilePath]).split('\n').map((e) => '  $e').join('\n')}
   // END: GENERATED TEST GROUPS
 }
 ''';
 
-    bundledTestFile
+    final bundle = getBundledTestFile(testDirectory)
       ..createSync(recursive: true)
       ..writeAsStringSync(contents);
 
-    _logger.detail(
-      'Generated entrypoint ${bundledTestFile.path} for development',
-    );
+    _logger.detail('Generated entrypoint ${bundle.path} for development');
   }
 
   /// Input:
@@ -188,11 +181,11 @@ ${generateGroupsCode([testFilePath]).split('\n').map((e) => '  $e').join('\n')}
   /// '''
   /// ```
   @visibleForTesting
-  String generateImports(List<String> testFilePaths) {
+  String generateImports(String testDirectory, List<String> testFilePaths) {
     final imports = <String>[];
     for (final testFilePath in testFilePaths) {
-      final relativeTestFilePath = _normalizeTestPath(testFilePath);
-      final testName = _createTestName(relativeTestFilePath);
+      final relativeTestFilePath = _normalizeTestPath(testDirectory, testFilePath);
+      final testName = _createTestName(testDirectory, relativeTestFilePath);
       final relativeTestFilePathWithoutSlash = relativeTestFilePath[0] == '/'
           ? relativeTestFilePath.replaceFirst('/', '')
           : relativeTestFilePath;
@@ -220,11 +213,11 @@ ${generateGroupsCode([testFilePath]).split('\n').map((e) => '  $e').join('\n')}
   /// '''
   /// ```
   @visibleForTesting
-  String generateGroupsCode(List<String> testFilePaths) {
+  String generateGroupsCode(String testDirectory, List<String> testFilePaths) {
     final groups = <String>[];
     for (final testFilePath in testFilePaths) {
-      final relativeTestFilePath = _normalizeTestPath(testFilePath);
-      final testName = _createTestName(relativeTestFilePath);
+      final relativeTestFilePath = _normalizeTestPath(testDirectory, testFilePath);
+      final testName = _createTestName(testDirectory, relativeTestFilePath);
       final groupName = testName.replaceAll('__', '.');
       final testEntrypoint = '$testName.main';
       groups.add("group('$groupName', $testEntrypoint);");
@@ -234,15 +227,15 @@ ${generateGroupsCode([testFilePath]).split('\n').map((e) => '  $e').join('\n')}
 
   /// Normalizes [testFilePath] so that it always starts with
   /// the configured test directory.
-  String _normalizeTestPath(String testFilePath) {
+  String _normalizeTestPath(String testDirectory, String testFilePath) {
     var relativeTestFilePath = testFilePath.replaceAll(
-      _projectRoot.childDirectory(_testDirectory).absolute.path,
+      _projectRoot.childDirectory(testDirectory).absolute.path,
       '',
     );
 
-    if (relativeTestFilePath.startsWith(_testDirectory)) {
+    if (relativeTestFilePath.startsWith(testDirectory)) {
       relativeTestFilePath = relativeTestFilePath.replaceFirst(
-        _testDirectory,
+        testDirectory,
         '',
       );
     }
@@ -255,9 +248,9 @@ ${generateGroupsCode([testFilePath]).split('\n').map((e) => '  $e').join('\n')}
     return relativeTestFilePath.replaceAll(_fs.path.separator, '/');
   }
 
-  String _createTestName(String relativeTestFilePath) {
+  String _createTestName(String testDirectory, String relativeTestFilePath) {
     var testName = relativeTestFilePath
-        .replaceFirst('$_testDirectory${_fs.path.separator}', '')
+        .replaceFirst('$testDirectory${_fs.path.separator}', '')
         .replaceAll('/', '__');
 
     testName = testName.substring(0, testName.length - 5);

@@ -2,7 +2,7 @@
 
 - **Breaking**: Change default test directory from `integration_test` to `patrol_test`. (#2637, #2592, #2298)
 - Add support for configurable test directory via `test_directory` option in `pubspec.yaml`. (#2637, #2592, #2298)
-- Bump `patrol_log` to `0.6.0`.
+- Bump `patrol_log` to UNRELEASED.
 
 ## 3.19.0
 

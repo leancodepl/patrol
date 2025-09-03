@@ -32,7 +32,7 @@ class TestEntry extends Entry {
   }
 
   String get nameWithPath {
-    const testDirectory = String.fromEnvironment('PATROL_TEST_DIRECTORY', defaultValue: 'patrol_test');
+    const testDirectory = String.fromEnvironment('PATROL_TEST_DIRECTORY');
     return '$_testName ${AnsiCodes.gray}($testDirectory/$_filePath.dart)${AnsiCodes.reset}';
   }
 
