@@ -127,13 +127,9 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
 
     final rootDirectory = findRootDirectory(_fs) ?? _fs.currentDirectory;
 
-    final config = PubspecReader(projectRoot: rootDirectory).read();
-    final testDirectory = config.testDirectory;
-
     final testBundler = TestBundler(
       projectRoot: rootDirectory,
       logger: _logger,
-      testDirectory: testDirectory,
     );
 
     final androidTestBackend = AndroidTestBackend(
@@ -143,7 +139,6 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
       rootDirectory: rootDirectory,
       parentDisposeScope: _disposeScope,
       logger: _logger,
-      testDirectory: testDirectory,
     );
 
     final iosTestBackend = IOSTestBackend(
@@ -164,9 +159,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
       logger: _logger,
     );
 
-    final testFinder = TestFinder(
-      testDir: rootDirectory.childDirectory(testDirectory),
-    );
+    final testFinderFactory = TestFinderFactory(rootDirectory: rootDirectory);
 
     final deviceFinder = DeviceFinder(
       processManager: _processManager,
@@ -176,7 +169,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
 
     addCommand(
       BuildCommand(
-        testFinder: testFinder,
+        testFinderFactory: testFinderFactory,
         testBundler: testBundler,
         dartDefinesReader: DartDefinesReader(projectRoot: rootDirectory),
         pubspecReader: PubspecReader(projectRoot: rootDirectory),
@@ -196,7 +189,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
     addCommand(
       DevelopCommand(
         deviceFinder: deviceFinder,
-        testFinder: testFinder,
+        testFinderFactory: testFinderFactory,
         testBundler: testBundler,
         dartDefinesReader: DartDefinesReader(projectRoot: rootDirectory),
         compatibilityChecker: CompatibilityChecker(
@@ -224,7 +217,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
       TestCommand(
         deviceFinder: deviceFinder,
         testBundler: testBundler,
-        testFinder: testFinder,
+        testFinderFactory: testFinderFactory,
         dartDefinesReader: DartDefinesReader(projectRoot: rootDirectory),
         compatibilityChecker: CompatibilityChecker(
           projectRoot: rootDirectory,

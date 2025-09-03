@@ -21,7 +21,7 @@ import 'package:patrol_cli/src/test_finder.dart';
 class TestCommand extends PatrolCommand {
   TestCommand({
     required DeviceFinder deviceFinder,
-    required TestFinder testFinder,
+    required TestFinderFactory testFinderFactory,
     required TestBundler testBundler,
     required DartDefinesReader dartDefinesReader,
     required CompatibilityChecker compatibilityChecker,
@@ -34,7 +34,7 @@ class TestCommand extends PatrolCommand {
     required Logger logger,
   }) : _deviceFinder = deviceFinder,
        _testBundler = testBundler,
-       _testFinder = testFinder,
+       _testFinderFactory = testFinderFactory,
        _dartDefinesReader = dartDefinesReader,
        _compatibilityChecker = compatibilityChecker,
        _pubspecReader = pubspecReader,
@@ -69,7 +69,7 @@ class TestCommand extends PatrolCommand {
   }
 
   final DeviceFinder _deviceFinder;
-  final TestFinder _testFinder;
+  final TestFinderFactory _testFinderFactory;
   final TestBundler _testBundler;
   final DartDefinesReader _dartDefinesReader;
   final CompatibilityChecker _compatibilityChecker;
@@ -95,12 +95,15 @@ class TestCommand extends PatrolCommand {
     );
 
     final config = _pubspecReader.read();
+    final testDirectory = config.testDirectory;
     final testFileSuffix = config.testFileSuffix;
+
+    final testFinder = _testFinderFactory.create(testDirectory);
 
     final target = stringsArg('target');
     final targets = target.isNotEmpty
-        ? _testFinder.findTests(target, testFileSuffix)
-        : _testFinder.findAllTests(
+        ? testFinder.findTests(target, testFileSuffix)
+        : testFinder.findAllTests(
             excludes: stringsArg('exclude').toSet(),
             testFileSuffix: testFileSuffix,
           );

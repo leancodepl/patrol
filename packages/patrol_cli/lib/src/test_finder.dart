@@ -107,3 +107,12 @@ class TestFinder {
         .toList();
   }
 }
+
+class TestFinderFactory {
+  const TestFinderFactory({required this.rootDirectory});
+
+  final Directory rootDirectory;
+
+  TestFinder create(String testDirectory) =>
+      TestFinder(testDir: rootDirectory.childDirectory(testDirectory));
+}
