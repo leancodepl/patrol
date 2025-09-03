@@ -27,14 +27,12 @@ class AndroidTestBackend {
     required Directory rootDirectory,
     required DisposeScope parentDisposeScope,
     required Logger logger,
-    required String testDirectory,
   }) : _adb = adb,
        _processManager = processManager,
        _rootDirectory = rootDirectory,
        _platform = platform,
        _disposeScope = DisposeScope(),
-       _logger = logger,
-       _testDirectory = testDirectory {
+       _logger = logger {
     _disposeScope.disposedBy(parentDisposeScope);
   }
 
@@ -44,7 +42,6 @@ class AndroidTestBackend {
   final Directory _rootDirectory;
   final DisposeScope _disposeScope;
   final Logger _logger;
-  final String _testDirectory;
   late final String? javaPath;
 
   Future<void> build(AndroidAppOptions options) async {
@@ -187,7 +184,7 @@ class AndroidTestBackend {
         buildNumber,
       ],
       '-t',
-      '$_testDirectory/test_bundle.dart',
+      options.target,
     ], runInShell: true);
 
     final exitCode = await process.exitCode;

@@ -16,7 +16,7 @@ import 'package:patrol_cli/src/test_finder.dart';
 
 class BuildIOSCommand extends PatrolCommand {
   BuildIOSCommand({
-    required TestFinder testFinder,
+    required TestFinderFactory testFinderFactory,
     required TestBundler testBundler,
     required DartDefinesReader dartDefinesReader,
     required PubspecReader pubspecReader,
@@ -24,7 +24,7 @@ class BuildIOSCommand extends PatrolCommand {
     required Analytics analytics,
     required Logger logger,
     required CompatibilityChecker compatibilityChecker,
-  }) : _testFinder = testFinder,
+  }) : _testFinderFactory = testFinderFactory,
        _testBundler = testBundler,
        _dartDefinesReader = dartDefinesReader,
        _pubspecReader = pubspecReader,
@@ -52,7 +52,7 @@ class BuildIOSCommand extends PatrolCommand {
     );
   }
 
-  final TestFinder _testFinder;
+  final TestFinderFactory _testFinderFactory;
   final TestBundler _testBundler;
   final DartDefinesReader _dartDefinesReader;
   final PubspecReader _pubspecReader;
@@ -81,6 +81,7 @@ class BuildIOSCommand extends PatrolCommand {
     );
 
     final config = _pubspecReader.read();
+    final testDirectory = config.testDirectory;
     final testFileSuffix = config.testFileSuffix;
 
     // Check compatibility between CLI and package versions
@@ -91,10 +92,12 @@ class BuildIOSCommand extends PatrolCommand {
       );
     }
 
+    final testFinder = _testFinderFactory.create(testDirectory);
+
     final target = stringsArg('target');
     final targets = target.isNotEmpty
-        ? _testFinder.findTests(target, testFileSuffix)
-        : _testFinder.findAllTests(
+        ? testFinder.findTests(target, testFileSuffix)
+        : testFinder.findAllTests(
             excludes: stringsArg('exclude').toSet(),
             testFileSuffix: testFileSuffix,
           );

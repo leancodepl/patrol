@@ -21,7 +21,7 @@ import 'package:patrol_cli/src/test_finder.dart';
 class DevelopCommand extends PatrolCommand {
   DevelopCommand({
     required DeviceFinder deviceFinder,
-    required TestFinder testFinder,
+    required TestFinderFactory testFinderFactory,
     required TestBundler testBundler,
     required DartDefinesReader dartDefinesReader,
     required CompatibilityChecker compatibilityChecker,
@@ -33,7 +33,7 @@ class DevelopCommand extends PatrolCommand {
     required Analytics analytics,
     required Logger logger,
   }) : _deviceFinder = deviceFinder,
-       _testFinder = testFinder,
+       _testFinderFactory = testFinderFactory,
        _testBundler = testBundler,
        _dartDefinesReader = dartDefinesReader,
        _compatibilityChecker = compatibilityChecker,
@@ -71,7 +71,7 @@ class DevelopCommand extends PatrolCommand {
   }
 
   final DeviceFinder _deviceFinder;
-  final TestFinder _testFinder;
+  final TestFinderFactory _testFinderFactory;
   final TestBundler _testBundler;
   final DartDefinesReader _dartDefinesReader;
   final CompatibilityChecker _compatibilityChecker;
@@ -104,8 +104,11 @@ class DevelopCommand extends PatrolCommand {
     }
 
     final config = _pubspecReader.read();
+    final testDirectory = config.testDirectory;
 
-    final target = _testFinder.findTest(targets.first, config.testFileSuffix);
+    final testFinder = _testFinderFactory.create(testDirectory);
+
+    final target = testFinder.findTest(targets.first, config.testFileSuffix);
     _logger.detail('Received test target: $target');
 
     if (boolArg('release')) {
