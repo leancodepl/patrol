@@ -26,14 +26,12 @@ class AndroidTestBackend {
     required Directory rootDirectory,
     required DisposeScope parentDisposeScope,
     required Logger logger,
-    required String testDirectory,
   }) : _adb = adb,
        _processManager = processManager,
        _rootDirectory = rootDirectory,
        _platform = platform,
        _disposeScope = DisposeScope(),
-       _logger = logger,
-       _testDirectory = testDirectory {
+       _logger = logger {
     _disposeScope.disposedBy(parentDisposeScope);
   }
 
@@ -43,11 +41,10 @@ class AndroidTestBackend {
   final Directory _rootDirectory;
   final DisposeScope _disposeScope;
   final Logger _logger;
-  final String _testDirectory;
   late final String? javaPath;
 
   Future<void> build(AndroidAppOptions options) async {
-    await buildApkConfigOnly(options.flutter.command);
+    await buildApkConfigOnly(options.flutter.target, options.flutter.command);
     await loadJavaPathFromFlutterDoctor(options.flutter.command);
     await detectOrchestratorVersion(options);
 
@@ -164,7 +161,7 @@ class AndroidTestBackend {
   /// Execute `flutter build apk --config-only` to generate the gradlew file.
   ///
   /// This fix issue: https://github.com/leancodepl/patrol/issues/1668
-  Future<void> buildApkConfigOnly(FlutterCommand flutterCommand) async {
+  Future<void> buildApkConfigOnly(String testDirectory, FlutterCommand flutterCommand) async {
     final process = await _processManager.start([
       flutterCommand.executable,
       ...flutterCommand.arguments,
@@ -172,7 +169,7 @@ class AndroidTestBackend {
       'apk',
       '--config-only',
       '-t',
-      '$_testDirectory/test_bundle.dart',
+      '$testDirectory/test_bundle.dart',
     ], runInShell: true);
 
     final exitCode = await process.exitCode;

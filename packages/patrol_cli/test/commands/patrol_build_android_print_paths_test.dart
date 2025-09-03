@@ -19,7 +19,7 @@ void main() {
       // Create command with minimal required dependencies
       // We only need to test printApkPaths, so we can use minimal mocks
       command = BuildAndroidCommand(
-        testFinder: MockTestFinder(),
+        testFinderFactory: MockTestFinderFactory(),
         testBundler: MockTestBundler(),
         dartDefinesReader: MockDartDefinesReader(),
         pubspecReader: MockPubspecReader(),
