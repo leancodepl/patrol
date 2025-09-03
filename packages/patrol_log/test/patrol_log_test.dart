@@ -21,16 +21,19 @@ void main() {
   });
 
   group('TestEntry', () {
-    test('nameWithPath uses default patrol_test directory when no environment variable is set', () {
-      final testEntry = TestEntry(
-        name: 'example.login_test test name',
-        status: TestEntryStatus.success,
-      );
+    test(
+      'nameWithPath uses default patrol_test directory when no environment variable is set',
+      () {
+        final testEntry = TestEntry(
+          name: 'example.login_test test name',
+          status: TestEntryStatus.success,
+        );
 
-      expect(
-        testEntry.nameWithPath,
-        contains('(patrol_test/example/login_test.dart)'),
-      );
-    });
+        expect(
+          testEntry.nameWithPath,
+          contains('(patrol_test/example/login_test.dart)'),
+        );
+      },
+    );
   });
 }
