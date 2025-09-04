@@ -14,8 +14,8 @@ class FlutterAppOptions {
     required this.buildMode,
     required this.dartDefines,
     required this.dartDefineFromFilePaths,
-    this.buildName,
-    this.buildNumber,
+    required this.buildName,
+    required this.buildNumber,
   });
 
   final FlutterCommand command;

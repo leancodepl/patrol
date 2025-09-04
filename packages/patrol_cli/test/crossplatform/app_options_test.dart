@@ -18,6 +18,8 @@ void main() {
           target: r'C:\Users\john\app\integration_test\app_test.dart',
           buildMode: BuildMode.debug,
           flavor: null,
+          buildName: null,
+          buildNumber: null,
           dartDefines: {},
           dartDefineFromFilePaths: ['somePath.json', 'someOtherPath.json'],
         );
@@ -50,6 +52,8 @@ void main() {
           target: '/Users/john/app/integration_test/app_test.dart',
           buildMode: BuildMode.release,
           flavor: null,
+          buildName: null,
+          buildNumber: null,
           dartDefines: {},
           dartDefineFromFilePaths: ['somePath.json', 'someOtherPath.json'],
         );
@@ -90,6 +94,8 @@ void main() {
           target: r'C:\Users\john\app\integration_test\app_test.dart',
           buildMode: BuildMode.release,
           flavor: 'dev',
+          buildName: null,
+          buildNumber: null,
           dartDefines: dartDefines,
           dartDefineFromFilePaths: [],
         );
@@ -122,6 +128,8 @@ void main() {
           target: '/Users/john/app/integration_test/app_test.dart',
           buildMode: BuildMode.debug,
           flavor: 'dev',
+          buildName: null,
+          buildNumber: null,
           dartDefines: dartDefines,
           dartDefineFromFilePaths: [],
         );
@@ -154,6 +162,8 @@ void main() {
           target: '/Users/john/app/integration_test/app_test.dart',
           buildMode: BuildMode.debug,
           flavor: 'dev',
+          buildName: null,
+          buildNumber: null,
           dartDefines: dartDefines,
           dartDefineFromFilePaths: [],
         );
@@ -194,6 +204,8 @@ void main() {
           target: 'integration_test/app_test.dart',
           buildMode: BuildMode.debug,
           flavor: null,
+          buildName: null,
+          buildNumber: null,
           dartDefines: {},
           dartDefineFromFilePaths: ['somePath.json', 'someOtherPath.json'],
         );
@@ -279,6 +291,8 @@ void main() {
           target: 'integration_test/app_test.dart',
           buildMode: BuildMode.debug,
           flavor: null,
+          buildName: null,
+          buildNumber: null,
           dartDefines: {},
           dartDefineFromFilePaths: [],
         );
@@ -362,6 +376,8 @@ void main() {
           target: 'integration_test/app_test.dart',
           buildMode: BuildMode.release,
           flavor: 'prod',
+          buildName: '1.2.3',
+          buildNumber: '123',
           dartDefines: {
             'EMAIL': 'user@example.com',
             'PASSWORD': 'ny4ncat',
@@ -395,6 +411,8 @@ void main() {
               '--suppress-analytics',
               ...['--config-only', '--no-codesign', '--release'],
               ...['--flavor', 'prod'],
+              ...['--build-name', '1.2.3'],
+              ...['--build-number', '123'],
               ...['--target', 'integration_test/app_test.dart'],
               ...['--dart-define', 'EMAIL=user@example.com'],
               ...['--dart-define', 'PASSWORD=ny4ncat'],
