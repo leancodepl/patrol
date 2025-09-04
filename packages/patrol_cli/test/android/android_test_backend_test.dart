@@ -36,13 +36,17 @@ void main() {
         logger: logger,
       );
 
-      // Mock process streams
       when(
         () => process.stdout,
       ).thenAnswer((_) => const Stream<List<int>>.empty());
       when(
         () => process.stderr,
       ).thenAnswer((_) => const Stream<List<int>>.empty());
+      when(() => process.exitCode).thenAnswer((_) async => 0);
+
+      when(
+        () => processManager.start(any(), runInShell: any(named: 'runInShell')),
+      ).thenAnswer((_) async => process);
     });
 
     group('buildApkConfigOnly', () {
@@ -57,12 +61,6 @@ void main() {
           dartDefines: {},
           dartDefineFromFilePaths: [],
         );
-
-        when(() => process.exitCode).thenAnswer((_) async => 0);
-        when(
-          () =>
-              processManager.start(any(), runInShell: any(named: 'runInShell')),
-        ).thenAnswer((_) async => process);
 
         await androidTestBackend.buildApkConfigOnly(flutterOptions);
 
@@ -94,12 +92,6 @@ void main() {
           dartDefineFromFilePaths: [],
         );
 
-        when(() => process.exitCode).thenAnswer((_) async => 0);
-        when(
-          () =>
-              processManager.start(any(), runInShell: any(named: 'runInShell')),
-        ).thenAnswer((_) async => process);
-
         await androidTestBackend.buildApkConfigOnly(flutterOptions);
 
         verify(
@@ -125,12 +117,6 @@ void main() {
           dartDefines: {},
           dartDefineFromFilePaths: [],
         );
-
-        when(() => process.exitCode).thenAnswer((_) async => 0);
-        when(
-          () =>
-              processManager.start(any(), runInShell: any(named: 'runInShell')),
-        ).thenAnswer((_) async => process);
 
         await androidTestBackend.buildApkConfigOnly(flutterOptions);
 
@@ -159,12 +145,6 @@ void main() {
           dartDefines: {},
           dartDefineFromFilePaths: [],
         );
-
-        when(() => process.exitCode).thenAnswer((_) async => 0);
-        when(
-          () =>
-              processManager.start(any(), runInShell: any(named: 'runInShell')),
-        ).thenAnswer((_) async => process);
 
         await androidTestBackend.buildApkConfigOnly(flutterOptions);
 
@@ -199,10 +179,6 @@ void main() {
         );
 
         when(() => process.exitCode).thenAnswer((_) async => exitCode);
-        when(
-          () =>
-              processManager.start(any(), runInShell: any(named: 'runInShell')),
-        ).thenAnswer((_) async => process);
 
         expect(
           () => androidTestBackend.buildApkConfigOnly(flutterOptions),
