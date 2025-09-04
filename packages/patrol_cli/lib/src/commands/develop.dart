@@ -58,6 +58,8 @@ class DevelopCommand extends PatrolCommand {
     usesCheckCompatibilityOption();
 
     usesUninstallOption();
+    usesBuildNameOption();
+    usesBuildNumberOption();
 
     usesAndroidOptions();
     usesIOSOptions();
@@ -65,14 +67,6 @@ class DevelopCommand extends PatrolCommand {
     argParser.addFlag(
       'open-devtools',
       help: 'Automatically open Patrol extension in DevTools when ready.',
-    );
-    argParser.addOption(
-      'build-number',
-      help: 'A build number to be used as --build-number in Flutter build.',
-    );
-    argParser.addOption(
-      'build-name',
-      help: 'A build name to be used as --build-name in Flutter build.',
     );
   }
 
@@ -208,8 +202,8 @@ class DevelopCommand extends PatrolCommand {
       _dartDefinesReader,
     );
 
-    final buildNumber = stringArg('build-number');
     final buildName = stringArg('build-name');
+    final buildNumber = stringArg('build-number');
 
     final flutterOpts = FlutterAppOptions(
       command: flutterCommand,
@@ -218,8 +212,8 @@ class DevelopCommand extends PatrolCommand {
       buildMode: buildMode,
       dartDefines: mergedDartDefines,
       dartDefineFromFilePaths: dartDefineFromFilePaths,
-      buildNumber: buildNumber,
       buildName: buildName,
+      buildNumber: buildNumber,
     );
 
     final androidOpts = AndroidAppOptions(

@@ -42,19 +42,13 @@ class BuildIOSCommand extends PatrolCommand {
     usesTagsOption();
     usesExcludeTagsOption();
     usesCheckCompatibilityOption();
+    usesBuildNameOption();
+    usesBuildNumberOption();
 
     usesIOSOptions();
     argParser.addFlag(
       'simulator',
       help: 'Build for simulator instead of real device.',
-    );
-    argParser.addOption(
-      'build-number',
-      help: 'A build number to be used as --build-number in Flutter build.',
-    );
-    argParser.addOption(
-      'build-name',
-      help: 'A build name to be used as --build-name in Flutter build.',
     );
   }
 
@@ -132,9 +126,6 @@ class BuildIOSCommand extends PatrolCommand {
 
     final displayLabel = boolArg('label');
 
-    final buildNumber = stringArg('build-number');
-    final buildName = stringArg('build-name');
-
     final customDartDefines = {
       ..._dartDefinesReader.fromFile(),
       ..._dartDefinesReader.fromCli(args: stringsArg('dart-define')),
@@ -165,6 +156,9 @@ class BuildIOSCommand extends PatrolCommand {
 
     final dartDefineFromFilePaths = stringsArg('dart-define-from-file');
 
+    final buildName = stringArg('build-name');
+    final buildNumber = stringArg('build-number');
+
     final flutterOpts = FlutterAppOptions(
       command: flutterCommand,
       target: entrypoint.path,
@@ -172,8 +166,8 @@ class BuildIOSCommand extends PatrolCommand {
       buildMode: buildMode,
       dartDefines: dartDefines,
       dartDefineFromFilePaths: dartDefineFromFilePaths,
-      buildNumber: buildNumber,
       buildName: buildName,
+      buildNumber: buildNumber,
     );
 
     final iosOpts = IOSAppOptions(
