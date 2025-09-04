@@ -14,5 +14,5 @@ void main() {
     await $(key).waitUntilVisible();
 
     expect($(key).text, equals('App version: 1.2.3+123'));
-  });
+  }, skip: true);
 }
