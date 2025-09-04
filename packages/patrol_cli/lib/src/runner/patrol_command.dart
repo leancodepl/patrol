@@ -214,7 +214,7 @@ abstract class PatrolCommand extends Command<int> {
   void usesBuildNameOption() {
     argParser.addOption(
       'build-name',
-      help: 'The version name of the app.',
+      help: 'Version name of the app.',
       valueHelp: '1.2.3',
     );
   }
@@ -222,7 +222,7 @@ abstract class PatrolCommand extends Command<int> {
   void usesBuildNumberOption() {
     argParser.addOption(
       'build-number',
-      help: 'The version code of the app.',
+      help: 'Version code of the app.',
       valueHelp: '123',
     );
   }
