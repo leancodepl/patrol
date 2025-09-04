@@ -150,9 +150,8 @@ abstract class PatrolCommand extends Command<int> {
         valueHelp: 'pl.leancode.AwesomeApp',
       )
       ..addFlag(
-        'clear-permissions',
-        help:
-            'Clear permissions available through XCUIProtectedResource API before running each test.',
+        'uninstall-app',
+        help: 'Uninstall the app before running each test.',
         negatable: false,
       )
       ..addOption(
