@@ -121,6 +121,16 @@ class BuildAndroidCommand extends PatrolCommand {
       _logger.detail('Received Android flavor: $flavor');
     }
 
+    final buildName = stringArg('build-name');
+    if (buildName != null) {
+      _logger.detail('Received build name: $buildName');
+    }
+
+    final buildNumber = stringArg('build-number');
+    if (buildName != null) {
+      _logger.detail('Received build number: $buildNumber');
+    }
+
     final packageName = stringArg('package-name') ?? config.android.packageName;
 
     final displayLabel = boolArg('label');
@@ -159,9 +169,6 @@ class BuildAndroidCommand extends PatrolCommand {
       dartDefines,
       _dartDefinesReader,
     );
-
-    final buildName = stringArg('build-name');
-    final buildNumber = stringArg('build-number');
 
     final flutterOpts = FlutterAppOptions(
       command: flutterCommand,

@@ -136,6 +136,16 @@ class TestCommand extends PatrolCommand {
       _logger.detail('Received macOS flavor: $macosFlavor');
     }
 
+    final buildName = stringArg('build-name');
+    if (buildName != null) {
+      _logger.detail('Received build name: $buildName');
+    }
+
+    final buildNumber = stringArg('build-number');
+    if (buildName != null) {
+      _logger.detail('Received build number: $buildNumber');
+    }
+
     final devices = await _deviceFinder.find(
       stringsArg('device'),
       flutterCommand: flutterCommand,
@@ -211,9 +221,6 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       dartDefines,
       _dartDefinesReader,
     );
-
-    final buildName = stringArg('build-name');
-    final buildNumber = stringArg('build-number');
 
     final flutterOpts = FlutterAppOptions(
       command: flutterCommand,

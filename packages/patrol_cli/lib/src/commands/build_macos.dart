@@ -117,6 +117,16 @@ class BuildMacOSCommand extends PatrolCommand {
       _logger.detail('Received macOS flavor: $flavor');
     }
 
+    final buildName = stringArg('build-name');
+    if (buildName != null) {
+      _logger.detail('Received build name: $buildName');
+    }
+
+    final buildNumber = stringArg('build-number');
+    if (buildName != null) {
+      _logger.detail('Received build number: $buildNumber');
+    }
+
     final bundleId = stringArg('bundle-id') ?? config.macos.bundleId;
 
     final displayLabel = boolArg('label');
@@ -150,9 +160,6 @@ class BuildMacOSCommand extends PatrolCommand {
     }
 
     final dartDefineFromFilePaths = stringsArg('dart-define-from-file');
-
-    final buildName = stringArg('build-name');
-    final buildNumber = stringArg('build-number');
 
     final flutterOpts = FlutterAppOptions(
       command: flutterCommand,

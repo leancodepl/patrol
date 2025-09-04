@@ -126,6 +126,16 @@ class DevelopCommand extends PatrolCommand {
       _logger.detail('Received iOS flavor: $iosFlavor');
     }
 
+    final buildName = stringArg('build-name');
+    if (buildName != null) {
+      _logger.detail('Received build name: $buildName');
+    }
+
+    final buildNumber = stringArg('build-number');
+    if (buildName != null) {
+      _logger.detail('Received build number: $buildNumber');
+    }
+
     final devices = await _deviceFinder.find(
       stringsArg('device'),
       flutterCommand: flutterCommand,
@@ -201,9 +211,6 @@ class DevelopCommand extends PatrolCommand {
       dartDefines,
       _dartDefinesReader,
     );
-
-    final buildName = stringArg('build-name');
-    final buildNumber = stringArg('build-number');
 
     final flutterOpts = FlutterAppOptions(
       command: flutterCommand,
