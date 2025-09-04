@@ -1,5 +1,6 @@
 import 'dart:io' as io;
 
+import 'package:adb/adb.dart';
 import 'package:http/http.dart' as http;
 import 'package:mocktail/mocktail.dart';
 import 'package:patrol_cli/src/analytics/analytics.dart';
@@ -44,6 +45,8 @@ class MockDartDefinesReader extends Mock implements DartDefinesReader {}
 class MockPubspecReader extends Mock implements PubspecReader {}
 
 class MockCompatibilityChecker extends Mock implements CompatibilityChecker {}
+
+class MockAdb extends Mock implements Adb {}
 
 class MockAnalytics extends Mock implements Analytics {
   @override

@@ -440,4 +440,86 @@ void main() {
       },
     );
   });
+
+  group('MacOSAppOptions', () {
+    late MacOSAppOptions options;
+
+    group('correctly encodes Flutter build invocation with build flags', () {
+      test('with build name and number', () {
+        const flutterOpts = FlutterAppOptions(
+          command: flutterCommand,
+          target: 'integration_test/app_test.dart',
+          buildMode: BuildMode.release,
+          flavor: 'prod',
+          buildName: '2.1.0',
+          buildNumber: '210',
+          dartDefines: {'ENV': 'production'},
+          dartDefineFromFilePaths: [],
+        );
+
+        options = MacOSAppOptions(
+          flutter: flutterOpts,
+          scheme: 'prod',
+          configuration: 'Release-prod',
+          appServerPort: 8082,
+          testServerPort: 8081,
+        );
+
+        final flutterInvocation = options.toFlutterBuildInvocation(
+          flutterOpts.buildMode,
+        );
+
+        expect(
+          flutterInvocation,
+          equals([
+            ...['flutter', 'build', 'macos'],
+            '--no-version-check',
+            '--suppress-analytics',
+            ...['--config-only', '--release'],
+            ...['--flavor', 'prod'],
+            ...['--build-name', '2.1.0'],
+            ...['--build-number', '210'],
+            ...['--target', 'integration_test/app_test.dart'],
+            ...['--dart-define', 'ENV=production'],
+          ]),
+        );
+      });
+
+      test('without build name and number', () {
+        const flutterOpts = FlutterAppOptions(
+          command: flutterCommand,
+          target: 'integration_test/app_test.dart',
+          buildMode: BuildMode.debug,
+          flavor: null,
+          buildName: null,
+          buildNumber: null,
+          dartDefines: {},
+          dartDefineFromFilePaths: [],
+        );
+
+        options = MacOSAppOptions(
+          flutter: flutterOpts,
+          scheme: 'Runner',
+          configuration: 'Debug',
+          appServerPort: 8082,
+          testServerPort: 8081,
+        );
+
+        final flutterInvocation = options.toFlutterBuildInvocation(
+          flutterOpts.buildMode,
+        );
+
+        expect(
+          flutterInvocation,
+          equals([
+            ...['flutter', 'build', 'macos'],
+            '--no-version-check',
+            '--suppress-analytics',
+            ...['--config-only', '--debug'],
+            ...['--target', 'integration_test/app_test.dart'],
+          ]),
+        );
+      });
+    });
+  });
 }
