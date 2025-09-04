@@ -27,20 +27,15 @@ Minimal Playwright harness that:
 
 ### Basic Test Run
 ```bash
+# 0) Go to `packages/patrol/example` and bundle all the tests. To do so, run `patrol test` command. Bundling tests into `test_bundle.dart` is always a first step so once you'll see that app is being build, stop the execution.
+patrol test
+
 # 1) In app repo root, build and serve Flutter web app:
-flutter run -d web-server --dart-define=PATROL_APP_SERVER_PORT=8082 --target integration_test/<your_test>.dart
+flutter run -d web-server --target integration_test/test_bundle.dart
 # Take note of the served URL printed by Flutter (e.g., http://localhost:8080)
 
 # 2) In another terminal, run the harness:
-node dev/web_mvp/run.js http://localhost:8080
-```
-
-### Testing Native Actions (POC)
-Try the POC test that demonstrates Dart→Playwright communication:
-```bash
-# Run the POC test that grants geolocation permissions
-flutter run -d web-server --dart-define=PATROL_APP_SERVER_PORT=8082 --target integration_test/patrol_native_poc_test.dart
-node dev/web_mvp/run.js http://localhost:8080
+node dev/web_mvp/run.js http://localhost:{port}
 ```
 
 ### Using Native Actions in Tests
