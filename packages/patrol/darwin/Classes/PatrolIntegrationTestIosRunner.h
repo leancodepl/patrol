@@ -9,7 +9,7 @@
 
 // For every Flutter dart test, dynamically generate an Objective-C method mirroring the test results
 // so it is reported as a native XCTest run result.
-#ifdef CLEAR_PERMISSIONS
+#ifdef UNINSTALL_APP
 #define PATROL_INTEGRATION_TEST_IOS_RUNNER(__test_class)                                                        \
   @interface __test_class : XCTestCase                                                                          \
   @property(class, strong, nonatomic) NSDictionary *selectedTest;                                               \
@@ -40,36 +40,49 @@
     return true;                                                                                                \
   }                                                                                                             \
                                                                                                                 \
-  +(void)resetPermissions {                                                                                     \
-    NSLog(@"Clearing permissions");                                                                             \
+  +(void)uninstallApp {                                                                                         \
+    NSLog(@"Uninstalling app");                                                                                 \
     XCUIApplication *app = [[XCUIApplication alloc] init];                                                      \
-    if (@available(iOS 13.4, *)) {                                                                              \
-      [app resetAuthorizationStatusForResource:XCUIProtectedResourceLocation];                                  \
-      [app resetAuthorizationStatusForResource:XCUIProtectedResourceContacts];                                  \
-      [app resetAuthorizationStatusForResource:XCUIProtectedResourceCalendar];                                  \
-      [app resetAuthorizationStatusForResource:XCUIProtectedResourceReminders];                                 \
-      [app resetAuthorizationStatusForResource:XCUIProtectedResourcePhotos];                                    \
-      [app resetAuthorizationStatusForResource:XCUIProtectedResourceBluetooth];                                 \
-      [app resetAuthorizationStatusForResource:XCUIProtectedResourceMicrophone];                                \
-      [app resetAuthorizationStatusForResource:XCUIProtectedResourceCamera];                                    \
-      [app resetAuthorizationStatusForResource:XCUIProtectedResourceHomeKit];                                   \
-      [app resetAuthorizationStatusForResource:XCUIProtectedResourceMediaLibrary];                              \
-      [app resetAuthorizationStatusForResource:XCUIProtectedResourceKeyboardNetwork];                           \
-    }                                                                                                           \
-    if (@available(iOS 14.0, *)) {                                                                              \
-      [app resetAuthorizationStatusForResource:XCUIProtectedResourceHealth];                                    \
-    }                                                                                                           \
-    if (@available(iOS 15.0, *)) {                                                                              \
-      [app resetAuthorizationStatusForResource:XCUIProtectedResourceUserTracking];                              \
-      [app resetAuthorizationStatusForResource:XCUIProtectedResourceFocus];                                     \
-    }                                                                                                           \
-    if (@available(iOS 15.4, *)) {                                                                              \
-      [app resetAuthorizationStatusForResource:XCUIProtectedResourceLocalNetwork];                              \
+    [app terminate];                                                                                            \
+                                                                                                                \
+    XCUIApplication *springboard = [[XCUIApplication alloc] initWithBundleIdentifier:@"com.apple.springboard"]; \
+    NSString *bundleIdentifier = [[NSBundle mainBundle] bundleIdentifier];                                      \
+    XCUIElement *appIcon = springboard.icons[bundleIdentifier];                                                  \
+                                                                                                                \
+    if ([appIcon exists]) {                                                                                     \
+      CGRect iconFrame = [appIcon frame];                                                                       \
+      CGRect springboardFrame = [springboard frame];                                                            \
+      [appIcon pressForDuration:1.3];                                                                           \
+                                                                                                                \
+      if (@available(iOS 13.0, *)) {                                                                            \
+        XCUIElement *removeButton = springboard.buttons[@"Remove App"];                                         \
+        if ([removeButton exists]) {                                                                            \
+          [removeButton tap];                                                                                   \
+          XCUIElement *deleteAppButton = springboard.alerts.buttons[@"Delete App"];                             \
+          if ([deleteAppButton exists]) {                                                                       \
+            [deleteAppButton tap];                                                                              \
+          }                                                                                                     \
+          XCUIElement *deleteButton = springboard.alerts.buttons[@"Delete"];                                    \
+          if ([deleteButton exists]) {                                                                          \
+            [deleteButton tap];                                                                                 \
+          }                                                                                                     \
+        }                                                                                                       \
+      } else {                                                                                                  \
+        CGFloat deleteButtonX = (iconFrame.origin.x + 3) / springboardFrame.size.width;                        \
+        CGFloat deleteButtonY = (iconFrame.origin.y + 3) / springboardFrame.size.height;                       \
+        CGVector deleteButtonVector = CGVectorMake(deleteButtonX, deleteButtonY);                               \
+        XCUICoordinate *deleteButtonCoordinate = [springboard coordinateWithNormalizedOffset:deleteButtonVector]; \
+        [deleteButtonCoordinate tap];                                                                           \
+        XCUIElement *deleteButton = springboard.alerts.buttons[@"Delete"];                                      \
+        if ([deleteButton exists]) {                                                                            \
+          [deleteButton tap];                                                                                   \
+        }                                                                                                       \
+      }                                                                                                         \
     }                                                                                                           \
   }                                                                                                             \
                                                                                                                 \
   +(NSArray<NSInvocation *> *)testInvocations {                                                                 \
-    NSLog(@"Running tests with clearing permissions");                                                          \
+    NSLog(@"Running tests with app uninstall");                                                          \
     /* Start native automation server */                                                                        \
     PatrolServer *server = [[PatrolServer alloc] init];                                                         \
                                                                                                                 \
@@ -133,7 +146,7 @@
       BOOL skip = [dartTest[@"skip"] boolValue];                                                                \
                                                                                                                 \
       IMP implementation = imp_implementationWithBlock(^(id _self) {                                            \
-        [self resetPermissions];                                                                                \
+        [self uninstallApp];                                                                                \
         [[[XCUIApplication alloc] init] launch];                                                                \
         if (skip) {                                                                                             \
           XCTSkip(@"Skip that test \"%@\"", dartTestName);                                                      \
@@ -212,7 +225,7 @@
   }                                                                                                             \
                                                                                                                 \
   +(NSArray<NSInvocation *> *)testInvocations {                                                                 \
-    NSLog(@"Running tests without clearing permissions");                                                       \
+    NSLog(@"Running tests without uninstalling the app");                                                       \
     /* Start native automation server */                                                                        \
     PatrolServer *server = [[PatrolServer alloc] init];                                                         \
                                                                                                                 \
