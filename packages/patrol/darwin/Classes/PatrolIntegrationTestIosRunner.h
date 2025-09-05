@@ -41,44 +41,65 @@
   }                                                                                                             \
                                                                                                                 \
   +(void)uninstallApp {                                                                                         \
-    NSLog(@"Uninstalling app");                                                                                 \
-    XCUIApplication *app = [[XCUIApplication alloc] init];                                                      \
-    [app terminate];                                                                                            \
+    XCUIApplication *app = [[XCUIApplication alloc] init];                                                     \
+    NSString *appName = app.label;                                                                             \
+    NSLog(@"[PATROL] Uninstalling app: %@", appName);                                                         \
                                                                                                                 \
+    /* Terminate the current app */                                                                            \
+    [app terminate];                                                                                           \
+                                                                                                                \
+    /* Access Springboard */                                                                                   \
     XCUIApplication *springboard = [[XCUIApplication alloc] initWithBundleIdentifier:@"com.apple.springboard"]; \
-    NSString *bundleIdentifier = [[NSBundle mainBundle] bundleIdentifier];                                      \
-    XCUIElement *appIcon = springboard.icons[bundleIdentifier];                                                  \
                                                                                                                 \
-    if ([appIcon exists]) {                                                                                     \
-      CGRect iconFrame = [appIcon frame];                                                                       \
-      CGRect springboardFrame = [springboard frame];                                                            \
-      [appIcon pressForDuration:1.3];                                                                           \
+    /* Find the app icon by name */                                                                            \
+    XCUIElement *icon = springboard.icons[appName];                                                            \
+    if (icon.exists) {                                                                                         \
+      CGRect iconFrame = icon.frame;                                                                           \
+      CGRect springboardFrame = springboard.frame;                                                             \
                                                                                                                 \
-      if (@available(iOS 13.0, *)) {                                                                            \
-        XCUIElement *removeButton = springboard.buttons[@"Remove App"];                                         \
-        if ([removeButton exists]) {                                                                            \
-          [removeButton tap];                                                                                   \
-          XCUIElement *deleteAppButton = springboard.alerts.buttons[@"Delete App"];                             \
-          if ([deleteAppButton exists]) {                                                                       \
-            [deleteAppButton tap];                                                                              \
-          }                                                                                                     \
-          XCUIElement *deleteButton = springboard.alerts.buttons[@"Delete"];                                    \
-          if ([deleteButton exists]) {                                                                          \
-            [deleteButton tap];                                                                                 \
-          }                                                                                                     \
-        }                                                                                                       \
-      } else {                                                                                                  \
-        CGFloat deleteButtonX = (iconFrame.origin.x + 3) / springboardFrame.size.width;                        \
-        CGFloat deleteButtonY = (iconFrame.origin.y + 3) / springboardFrame.size.height;                       \
-        CGVector deleteButtonVector = CGVectorMake(deleteButtonX, deleteButtonY);                               \
+      /* Long press on the app icon */                                                                         \
+      [icon pressForDuration:1.3];                                                                             \
+                                                                                                                \
+      /* Handle different iOS versions */                                                                      \
+      if (@available(iOS 13.0, *)) {                                                                          \
+        /* iOS 13+ flow */                                                                                     \
+        XCUIElement *removeAppButton = springboard.buttons[@"Remove App"];                                     \
+        XCUIElement *deleteAppButton = springboard.buttons[@"Delete App"];                                     \
+                                                                                                                \
+        if (removeAppButton.exists) {                                                                          \
+          [removeAppButton tap];                                                                               \
+        } else if (deleteAppButton.exists) {                                                                  \
+          [deleteAppButton tap];                                                                               \
+        }                                                                                                      \
+                                                                                                                \
+        /* Confirm deletion in alerts */                                                                       \
+        XCUIElement *deleteAppAlert = springboard.alerts.buttons[@"Delete App"];                              \
+        if (deleteAppAlert.exists) {                                                                           \
+          [deleteAppAlert tap];                                                                                \
+        }                                                                                                      \
+                                                                                                                \
+        XCUIElement *deleteAlert = springboard.alerts.buttons[@"Delete"];                                     \
+        if (deleteAlert.exists) {                                                                              \
+          [deleteAlert tap];                                                                                   \
+        }                                                                                                      \
+      } else {                                                                                                 \
+        /* iOS 12 and earlier - tap the X button */                                                            \
+        CGVector deleteButtonVector = CGVectorMake((iconFrame.origin.x + 3) / springboardFrame.size.width,    \
+                                                   (iconFrame.origin.y + 3) / springboardFrame.size.height);   \
         XCUICoordinate *deleteButtonCoordinate = [springboard coordinateWithNormalizedOffset:deleteButtonVector]; \
-        [deleteButtonCoordinate tap];                                                                           \
-        XCUIElement *deleteButton = springboard.alerts.buttons[@"Delete"];                                      \
-        if ([deleteButton exists]) {                                                                            \
-          [deleteButton tap];                                                                                   \
-        }                                                                                                       \
-      }                                                                                                         \
-    }                                                                                                           \
+        [deleteButtonCoordinate tap];                                                                          \
+                                                                                                                \
+        /* Confirm deletion */                                                                                  \
+        XCUIElement *deleteButton = springboard.alerts.buttons[@"Delete"];                                     \
+        if (deleteButton.exists) {                                                                             \
+          [deleteButton tap];                                                                                  \
+        }                                                                                                      \
+      }                                                                                                        \
+                                                                                                                \
+      NSLog(@"[PATROL] App uninstallation completed");                                                        \
+    } else {                                                                                                   \
+      NSLog(@"[PATROL] App icon not found on Springboard: %@", appName);                                      \
+    }                                                                                                          \
   }                                                                                                             \
                                                                                                                 \
   +(NSArray<NSInvocation *> *)testInvocations {                                                                 \
@@ -146,7 +167,9 @@
       BOOL skip = [dartTest[@"skip"] boolValue];                                                                \
                                                                                                                 \
       IMP implementation = imp_implementationWithBlock(^(id _self) {                                            \
+        NSLog(@"[PATROL] Test '%@' starting - calling uninstallApp", dartTestName);                          \
         [self uninstallApp];                                                                                \
+        NSLog(@"[PATROL] uninstallApp completed, launching fresh app instance");                             \
         [[[XCUIApplication alloc] init] launch];                                                                \
         if (skip) {                                                                                             \
           XCTSkip(@"Skip that test \"%@\"", dartTestName);                                                      \
