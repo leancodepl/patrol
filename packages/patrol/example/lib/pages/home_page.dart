@@ -9,7 +9,6 @@ import 'package:example/ui/style/test_style.dart';
 import 'package:example/ui/widgets/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -66,20 +65,6 @@ class _HomePageBody extends StatelessWidget {
               context.read<NotificationHandler>().triggerPushNotification(
                 onPressed: () => Navigator.push(context, notificationRoute),
               ),
-        ),
-        const SizedBox(height: 24),
-        FutureBuilder(
-          future: PackageInfo.fromPlatform(),
-          builder: (context, snapshot) {
-            if (snapshot.data case final packageInfo?) {
-              return Text(
-                key: const Key('homePage_appVersion'),
-                'App version: ${packageInfo.version}+${packageInfo.buildNumber}',
-              );
-            }
-
-            return const LinearProgressIndicator();
-          },
         ),
       ],
     ).horizontallyPadded24;
