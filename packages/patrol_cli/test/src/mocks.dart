@@ -10,6 +10,7 @@ import 'package:patrol_cli/src/compatibility_checker/compatibility_checker.dart'
 import 'package:patrol_cli/src/dart_defines_reader.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
+import 'package:patrol_cli/src/macos/macos_test_backend.dart';
 import 'package:patrol_cli/src/pubspec_reader.dart';
 import 'package:patrol_cli/src/test_bundler.dart';
 import 'package:patrol_cli/src/test_finder.dart';
@@ -35,6 +36,8 @@ class MockDeviceFinder extends Mock implements DeviceFinder {}
 class MockAndroidTestBackend extends Mock implements AndroidTestBackend {}
 
 class MockIOSTestBackend extends Mock implements IOSTestBackend {}
+
+class MockMacOSTestBackend extends Mock implements MacOSTestBackend {}
 
 class MockTestFinder extends Mock implements TestFinder {}
 
