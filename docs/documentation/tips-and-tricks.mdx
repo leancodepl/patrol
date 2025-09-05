@@ -55,16 +55,7 @@ patrol:
 
 If you have existing Patrol tests in the `integration_test/` directory, you have two options:
 
-**Option 1: Move tests to patrol_test/ (recommended)**
-```bash
-# Create the new directory
-mkdir patrol_test
-
-# Move your test files
-mv integration_test/*_test.dart patrol_test/
-
-# Update any import statements in your tests if needed
-```
+**Option 1: Create patrol_test directory and move all patrol tests/ (recommended)**
 
 **Option 2: Configure Patrol to use integration_test**
 ```yaml title="pubspec.yaml"
