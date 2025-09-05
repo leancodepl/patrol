@@ -15,7 +15,7 @@ void main() {
       when(() => mockLogger.info(any())).thenReturn(null);
 
       command = BuildIOSCommand(
-        testFinder: MockTestFinder(),
+        testFinderFactory: MockTestFinderFactory(),
         testBundler: MockTestBundler(),
         dartDefinesReader: MockDartDefinesReader(),
         pubspecReader: MockPubspecReader(),

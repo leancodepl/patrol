@@ -29,7 +29,7 @@ Patrol has 2 main features – [native automation] and [custom finders].
 ### Accessing native platform features
 
 ```dart
-// example/integration_test/example_test.dart
+// example/patrol_test/example_test.dart
 import 'package:example/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';

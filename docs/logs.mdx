@@ -27,7 +27,7 @@ During test execution, every test step (e.g., `tap` or `enterText`) is logged to
         ✅   6. tap widgets with text "Request camera permission".
         ✅   7. isPermissionDialogVisible (native)
         ⏳   8. denyPermission (native)
-❌ denies various permissions (integration_test/permissions/deny_many_permissions_twice_test.dart) (9s)
+❌ denies various permissions (patrol_test/permissions/deny_many_permissions_twice_test.dart) (9s)
 ══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞═════════════════
 The following PlatformException was thrown running a test:
 PlatformException(PermissionHandler.PermissionManager, A request
@@ -50,9 +50,9 @@ The test description was:
   denies various permissions
 ═════════════════════════════════════════════════════════════════
 
-✅ taps on notification (integration_test/permissions/notifications_test.dart) (16s)
-✅ taps on notification native2 (integration_test/permissions/notifications_test.dart) (14s)
-✅ grants various permissions (integration_test/permissions/permissions_many_test.dart) (15s)
+✅ taps on notification (patrol_test/permissions/notifications_test.dart) (16s)
+✅ taps on notification native2 (patrol_test/permissions/notifications_test.dart) (14s)
+✅ grants various permissions (patrol_test/permissions/permissions_many_test.dart) (15s)
 ...
 ```
 
@@ -66,11 +66,11 @@ Test summary:
 📝 Total: 8
 ✅ Successful: 3
 ❌ Failed: 5
-  - taps on notification (integration_test/permissions/notifications_test.dart)
-  - taps on notification native2 (integration_test/permissions/notifications_test.dart)
-  - accepts location permission (integration_test/permissions/permissions_location_test.dart)
-  - accepts location permission native2 (integration_test/permissions/permissions_location_test.dart)
-  - grants various permissions (integration_test/permissions/permissions_many_test.dart)
+  - taps on notification (patrol_test/permissions/notifications_test.dart)
+  - taps on notification native2 (patrol_test/permissions/notifications_test.dart)
+  - accepts location permission (patrol_test/permissions/permissions_location_test.dart)
+  - accepts location permission native2 (patrol_test/permissions/permissions_location_test.dart)
+  - grants various permissions (patrol_test/permissions/permissions_many_test.dart)
 ⏩ Skipped: 0
 📊 Report: file:///Users/user/patrol/dev/e2e_app/build/app/reports/androidTests/connected/index.html
 ⏱️  Duration: 227s

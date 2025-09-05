@@ -31,13 +31,13 @@ abstract class PatrolCommand extends Command<int> {
         aliases: ['targets'],
         abbr: 't',
         help: 'Integration test target to use as entrypoint.',
-        valueHelp: 'integration_test/app_test.dart',
+        valueHelp: 'patrol_test/app_test.dart',
       )
       ..addMultiOption(
         'exclude',
         aliases: ['excludes'],
         help: 'Integration test targets to exclude.',
-        valueHelp: 'integration_test/flaky_test.dart',
+        valueHelp: 'patrol_test/flaky_test.dart',
       )
       ..addFlag(
         'generate-bundle',

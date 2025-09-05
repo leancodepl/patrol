@@ -1,3 +1,7 @@
+## Unreleased
+
+- Bump `patrol_log` to `0.6.0`.
+
 ## 2.9.0
 
 - Bump `leancode_lint` to `17.0.0`. (#2681)

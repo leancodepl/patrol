@@ -35,6 +35,8 @@ class MockAndroidTestBackend extends Mock implements AndroidTestBackend {}
 
 class MockIOSTestBackend extends Mock implements IOSTestBackend {}
 
+class MockTestFinderFactory extends Mock implements TestFinderFactory {}
+
 class MockTestFinder extends Mock implements TestFinder {}
 
 class MockTestBundler extends Mock implements TestBundler {}

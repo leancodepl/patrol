@@ -747,14 +747,14 @@ packages:
       path: "../../packages/patrol"
       relative: true
     source: path
-    version: "3.18.0"
+    version: "3.19.0"
   patrol_cli:
     dependency: "direct dev"
     description:
       path: "../../packages/patrol_cli"
       relative: true
     source: path
-    version: "3.9.0"
+    version: "3.10.0"
   patrol_finders:
     dependency: transitive
     description:

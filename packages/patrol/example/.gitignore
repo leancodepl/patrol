@@ -47,4 +47,4 @@ app.*.map.json
 /android/app/release
 
 # Patrol related
-integration_test/test_bundle.dart
+patrol_test/test_bundle.dart
