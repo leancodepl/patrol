@@ -161,15 +161,18 @@
      *  Step 2. Create invocations to the generated methods and return them                                     \
      */                                                                                                         \
                                                                                                                 \
-    for (NSDictionary * dartTest in dartTests) {                                                                \
+    for (NSUInteger i = 0; i < dartTests.count; i++) {                                                          \
+      NSDictionary *dartTest = dartTests[i];                                                                    \
       /* Step 1 - dynamically create test cases */                                                              \
       NSString *dartTestName = dartTest[@"name"];                                                               \
       BOOL skip = [dartTest[@"skip"] boolValue];                                                                \
                                                                                                                 \
       IMP implementation = imp_implementationWithBlock(^(id _self) {                                            \
-        NSLog(@"Test '%@' starting - uninstalling app", dartTestName);                                          \
-        [self uninstallApp];                                                                                    \
-        NSLog(@"app uninstallation completed, launching fresh app instance");                                   \
+        if (i > 0) {                                                                                            \
+          NSLog(@"Test '%@' starting - uninstalling app", dartTestName);                                        \
+          [self uninstallApp];                                                                                  \
+          NSLog(@"app uninstallation completed, launching fresh app instance");                                 \
+        }                                                                                                       \
         [[[XCUIApplication alloc] init] launch];                                                                \
         if (skip) {                                                                                             \
           XCTSkip(@"Skip that test \"%@\"", dartTestName);                                                      \
