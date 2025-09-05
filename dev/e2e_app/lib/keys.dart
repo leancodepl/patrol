@@ -20,6 +20,7 @@ class Keys {
   // main screen
   static const scaffold = Key('scaffold');
   static const listViewKey = Key('listViewKey');
+  static const appVersion = Key('appVersion');
   static const counterText = Key('counterText');
   static const textField = Key('textField');
   static const box1 = Key('box1');

@@ -128,6 +128,18 @@ patrol test --coverage --coverage-ignore="**/*.g.dart"
 
 excludes all files ending with `.g.dart`.
 
+### Build versioning
+
+You can specify custom build number and build name using the `--build-name` and `--build-number` flags. These work the same as in Flutter CLI:
+
+- `--build-name`: Version name of the app. (e.g. `1.2.3`)
+- `--build-number`: Version code of the app. (e.g. `123`)
+
+```
+patrol test --build-name=1.2.3 --build-number=123
+patrol test --target integration_test/login_test.dart --build-name=1.2.3 --build-number=123
+```
+
 ### Under the hood
 
 `patrol test` basically calls `patrol build` and then runs the built app

@@ -62,6 +62,13 @@ patrol build ios --target integration_test/example_test.dart --release
 patrol build ios --target integration_test/example_test.dart --debug
 ```
 
+**To build with custom build name and number**
+
+```
+patrol build android --build-name=1.2.3 --build-number=123
+patrol build ios --build-name=1.2.3 --build-number=123  --release
+```
+
 ### Under the hood
 
 The `patrol build` command walks through hierarchy of the `integration_test`

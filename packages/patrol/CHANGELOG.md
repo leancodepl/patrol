@@ -1,3 +1,7 @@
+## Unreleased
+
+- Add `--build-name` and `--build-number` flags to `patrol test`, `patrol develop`, and `patrol build` commands.
+
 ## 3.19.0
 
 - Fix logging for `$.native.pullToRefresh()` and `$.native.swipeBack()`. (#2707) 
