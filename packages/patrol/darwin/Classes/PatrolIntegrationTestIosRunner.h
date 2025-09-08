@@ -9,7 +9,7 @@
 
 // For every Flutter dart test, dynamically generate an Objective-C method mirroring the test results
 // so it is reported as a native XCTest run result.
-#ifdef UNINSTALL_APP
+#ifdef CLEAR_PACKAGE_DATA
 #define PATROL_INTEGRATION_TEST_IOS_RUNNER(__test_class)                                                        \
   @interface __test_class : XCTestCase                                                                          \
   @property(class, strong, nonatomic) NSDictionary *selectedTest;                                               \

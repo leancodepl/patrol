@@ -189,7 +189,7 @@ class BuildIOSCommand extends PatrolCommand {
       osVersion: stringArg('ios') ?? 'latest',
       appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
-      uninstallApp: boolArg('uninstall-app'),
+      clearPackageData: boolArg('clear-package-data'),
     );
 
     try {
