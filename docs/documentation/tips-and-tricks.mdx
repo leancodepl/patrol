@@ -57,7 +57,7 @@ patrol:
 
 If you have existing Patrol tests in the `integration_test/` directory, you have two options:
 
-**Option 1: Create patrol_test directory and move all patrol tests/ (recommended)**
+**Option 1: Rename integration_test directory to patrol_test**
 
 **Option 2: Configure Patrol to use integration_test**
 ```yaml title="pubspec.yaml"
@@ -71,7 +71,7 @@ patrol:
 ```
 
 <Info>
-If you're using both Flutter's integration_test plugin and Patrol in the same project, we recommend using separate directories to avoid conflicts.
+    Non-patrol integration tests should remain in the integration_test directory.
 </Info>
 
 ### Avoiding hardcoding credentials in tests
