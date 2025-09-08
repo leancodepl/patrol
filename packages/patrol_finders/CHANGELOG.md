@@ -1,4 +1,4 @@
-## Unreleased
+## 2.10.0
 
 - Bump `patrol_log` to `0.6.0`.
 
