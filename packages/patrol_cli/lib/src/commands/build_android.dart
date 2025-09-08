@@ -127,7 +127,7 @@ class BuildAndroidCommand extends PatrolCommand {
     }
 
     final buildNumber = stringArg('build-number');
-    if (buildName != null) {
+    if (buildNumber != null) {
       _logger.detail('Received build number: $buildNumber');
     }
 
