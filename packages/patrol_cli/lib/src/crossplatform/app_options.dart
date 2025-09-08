@@ -192,7 +192,7 @@ class IOSAppOptions {
     required this.osVersion,
     required this.appServerPort,
     required this.testServerPort,
-    this.uninstallApp = false,
+    this.clearPackageData = false,
   });
 
   final FlutterAppOptions flutter;
@@ -203,7 +203,7 @@ class IOSAppOptions {
   final bool simulator;
   final int appServerPort;
   final int testServerPort;
-  final bool uninstallApp;
+  final bool clearPackageData;
 
   String get description {
     final platform = simulator ? 'simulator' : 'device';
@@ -263,8 +263,8 @@ class IOSAppOptions {
       '-quiet',
       ...['-derivedDataPath', '../build/ios_integ'],
       r'OTHER_SWIFT_FLAGS=$(inherited) -D PATROL_ENABLED',
-      if (uninstallApp)
-        r'GCC_PREPROCESSOR_DEFINITIONS=$(inherited) UNINSTALL_APP=1',
+      if (clearPackageData)
+        r'GCC_PREPROCESSOR_DEFINITIONS=$(inherited) CLEAR_PACKAGE_DATA=1',
     ];
 
     return cmd;

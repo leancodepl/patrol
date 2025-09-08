@@ -254,7 +254,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       osVersion: stringArg('ios') ?? 'latest',
       appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
-      uninstallApp: boolArg('uninstall-app'),
+      clearPackageData: boolArg('clear-package-data'),
     );
 
     final macosOpts = MacOSAppOptions(

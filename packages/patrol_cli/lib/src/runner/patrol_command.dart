@@ -150,8 +150,8 @@ abstract class PatrolCommand extends Command<int> {
         valueHelp: 'pl.leancode.AwesomeApp',
       )
       ..addFlag(
-        'uninstall-app',
-        help: 'Uninstall the app before running each test.',
+        'clear-package-data',
+        help: 'Clear package data before running each test.',
         negatable: false,
       )
       ..addOption(
