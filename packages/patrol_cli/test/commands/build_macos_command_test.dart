@@ -99,8 +99,9 @@ void main() {
       );
 
       when(() => mockMacosTestBackend.build(any())).thenAnswer((_) async {});
-      when(() => mockMacosTestBackend.getSdkVersion())
-          .thenAnswer((_) async => '14.0');
+      when(
+        () => mockMacosTestBackend.getSdkVersion(),
+      ).thenAnswer((_) async => '14.0');
       when(
         () => mockMacosTestBackend.xcTestRunPath(
           scheme: any(named: 'scheme'),
