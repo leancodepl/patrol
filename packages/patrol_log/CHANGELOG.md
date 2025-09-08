@@ -1,6 +1,6 @@
-## Unreleased
+## 0.6.0
 
-- Update `TestEntry.nameWithPath` to use actual test directory from environment variable instead of hardcoded `patrol_test`. (#2637, #2592, #2298)
+- Update `TestEntry.nameWithPath` to use actual test directory. (#2728)
 
 ## 0.5.0
 
