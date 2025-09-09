@@ -106,3 +106,29 @@ enum LocalizationError: LocalizedError {
     }
   }
 }
+
+// MARK: Objective-C Bridge
+/// Objective-C compatible wrapper for Localization functionality
+@objc public class ObjCLocalization: NSObject {
+  
+  /// Gets a localized string for the given key, returning the English fallback if localization fails
+  @objc public static func getLocalizedString(key: String) -> String {
+    do {
+      return try Localization.getLocalizedString(key: key)
+    } catch {
+      Logger.shared.e("Failed to get localized string for key '\(key)': \(error)")
+      // Fallback to English hardcoded strings to ensure function doesn't break
+      switch key {
+      case "remove_app": return "Remove App"
+      case "delete_app": return "Delete App" 
+      case "delete": return "Delete"
+      case "ok": return "OK"
+      case "allow": return "Allow"
+      case "allow_once": return "Allow Once"
+      case "allow_while_using_app": return "Allow While Using App"
+      case "dont_allow": return "Don't Allow"
+      default: return key // Return the key itself as fallback
+      }
+    }
+  }
+}
