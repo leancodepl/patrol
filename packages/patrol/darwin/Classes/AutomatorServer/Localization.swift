@@ -122,11 +122,6 @@ enum LocalizationError: LocalizedError {
       case "remove_app": return "Remove App"
       case "delete_app": return "Delete App" 
       case "delete": return "Delete"
-      case "ok": return "OK"
-      case "allow": return "Allow"
-      case "allow_once": return "Allow Once"
-      case "allow_while_using_app": return "Allow While Using App"
-      case "dont_allow": return "Don't Allow"
       default: return key // Return the key itself as fallback
       }
     }
