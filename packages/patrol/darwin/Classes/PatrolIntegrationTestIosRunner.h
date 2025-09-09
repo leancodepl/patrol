@@ -40,28 +40,6 @@
     return true;                                                                                                       \
   }                                                                                                                    \
                                                                                                                        \
-  +(void)logVisibleElements : (XCUIElement *)element indent : (NSInteger)level {                                       \
-    if (!element.exists) return;                                                                                       \
-                                                                                                                       \
-    CGRect screenRect = [UIScreen mainScreen].bounds;                                                                  \
-    CGRect elementFrame = element.frame;                                                                               \
-                                                                                                                       \
-    if (CGRectIsEmpty(elementFrame) || !CGRectIntersectsRect(screenRect, elementFrame)) {                              \
-      return;                                                                                                          \
-    }                                                                                                                  \
-                                                                                                                       \
-    NSString *indentStr = [@"" stringByPaddingToLength:level * 2 withString:@" " startingAtIndex:0];                   \
-                                                                                                                       \
-    NSLog(@"%@Element: %@ | Type: %ld | Label: %@ | Identifier: %@ | Value: %@ | Hittable: %@ | Frame: %@", indentStr, \
-          element, (long)element.elementType, element.label, element.identifier, element.value,                        \
-          element.isHittable ? @"YES" : @"NO", NSStringFromCGRect(elementFrame));                                      \
-                                                                                                                       \
-    XCUIElementQuery *childrenQuery = [element childrenMatchingType:XCUIElementTypeAny];                               \
-    for (XCUIElement * child in [childrenQuery allElementsBoundByIndex]) {                                             \
-      [self logVisibleElements:child indent:level + 1];                                                                \
-    }                                                                                                                  \
-  }                                                                                                                    \
-                                                                                                                       \
   +(void)uninstallApp {                                                                                                \
     XCUIApplication *app = [[XCUIApplication alloc] init];                                                             \
     NSString *appName = app.label;                                                                                     \
