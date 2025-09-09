@@ -140,6 +140,21 @@ patrol test --build-name=1.2.3 --build-number=123
 patrol test --target patrol_test/login_test.dart --build-name=1.2.3 --build-number=123
 ```
 
+### iOS-specific options
+
+#### Clear package data
+
+<Warning>
+    This functionality is experimental on iOS.
+</Warning>
+
+For iOS testing, you can use the `--clear-package-data` flag to uninstall the app before running each test (except of the first one).
+This helps ensure test isolation and reproducibility:
+
+```
+patrol test --clear-package-data
+```
+
 ### Under the hood
 
 `patrol test` basically calls `patrol build` and then runs the built app

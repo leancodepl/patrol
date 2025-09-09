@@ -28,7 +28,11 @@ version on CI systems to avoid unexpected breakages.
 
 ### Isolation of test runs
 
-To achieve full isolation between test runs, enable the `clearPackageOption`:
+To achieve full isolation between test runs, you can use different approaches depending on your platform:
+
+#### Android
+
+Enable the `clearPackageOption` in your Android configuration:
 
 ```groovy title="android/app/build.gradle"
 defaultConfig {
@@ -39,7 +43,21 @@ defaultConfig {
 ```
 
 This will clear the app's data and permissions before each test run.
-Unfortunately, no equivalent feature is available on iOS.
+
+#### iOS
+
+<Warning>
+    This functionality is experimental on iOS.
+</Warning>
+
+For iOS testing, use the `--clear-package-data` CLI flag to uninstall the app before running each test:
+
+```bash
+patrol test --clear-package-data
+```
+
+This flag uninstall the app before each test run (except of the first one), providing similar isolation benefits to
+the Android approach.
 
 ### Embrace the native tests
 
