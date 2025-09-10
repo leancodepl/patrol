@@ -1,4 +1,3 @@
-import 'package:patrol_log/patrol_log.dart';
 import 'package:patrol_log/src/duration_extension.dart';
 import 'package:test/test.dart';
 
