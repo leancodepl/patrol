@@ -1,3 +1,7 @@
+## Unreleased
+
+- Add `--build-name` and `--build-number` flags to `patrol test`, `patrol develop`, and `patrol build` commands.
+
 ## 3.10.0
 
 - Add help command `h` to `patrol develop`. (#2701)

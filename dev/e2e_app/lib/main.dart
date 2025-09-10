@@ -14,6 +14,7 @@ import 'package:e2e_app/scrolling_screen.dart';
 import 'package:e2e_app/webview_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:timezone/data/latest.dart' as tz_data;
 import 'package:timezone/timezone.dart' as tz;
 
@@ -101,6 +102,16 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
           const Text('THIRD_KEY: ${String.fromEnvironment('THIRD_KEY')}'),
           const Text('FIFTH_KEY: ${String.fromEnvironment('FIFTH_KEY')}'),
           const Text('BOOL_DEFINED: ${String.fromEnvironment('BOOL_DEFINED')}'),
+          FutureBuilder(
+            future: PackageInfo.fromPlatform(),
+            builder: (context, snapshot) {
+              final appVersion = switch (snapshot.data) {
+                final PackageInfo info => '${info.version}+${info.buildNumber}',
+                _ => '-',
+              };
+              return Text(key: K.appVersion, 'App version: $appVersion');
+            },
+          ),
           const Text('You have pushed the button this many times:'),
           Text(
             '$_counter',

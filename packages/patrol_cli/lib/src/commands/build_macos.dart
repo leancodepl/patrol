@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:meta/meta.dart';
 import 'package:path/path.dart' show join;
 import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
@@ -41,6 +42,8 @@ class BuildMacOSCommand extends PatrolCommand {
     usesTagsOption();
     usesExcludeTagsOption();
     usesCheckCompatibilityOption();
+    usesBuildNameOption();
+    usesBuildNumberOption();
 
     usesMacOSOptions();
   }
@@ -115,6 +118,16 @@ class BuildMacOSCommand extends PatrolCommand {
       _logger.detail('Received macOS flavor: $flavor');
     }
 
+    final buildName = stringArg('build-name');
+    if (buildName != null) {
+      _logger.detail('Received build name: $buildName');
+    }
+
+    final buildNumber = stringArg('build-number');
+    if (buildNumber != null) {
+      _logger.detail('Received build number: $buildNumber');
+    }
+
     final bundleId = stringArg('bundle-id') ?? config.macos.bundleId;
 
     final displayLabel = boolArg('label');
@@ -156,6 +169,8 @@ class BuildMacOSCommand extends PatrolCommand {
       buildMode: buildMode,
       dartDefines: dartDefines,
       dartDefineFromFilePaths: dartDefineFromFilePaths,
+      buildName: buildName,
+      buildNumber: buildNumber,
     );
 
     final macosOpts = MacOSAppOptions(
@@ -169,9 +184,9 @@ class BuildMacOSCommand extends PatrolCommand {
     try {
       await _macosTestBackend.build(macosOpts);
 
-      _printBinaryPaths(buildMode: flutterOpts.buildMode.xcodeName);
+      printBinaryPaths(buildMode: flutterOpts.buildMode.xcodeName);
 
-      await _printXcTestRunPath(scheme: macosOpts.scheme);
+      await printXcTestRunPath(scheme: macosOpts.scheme);
     } catch (err, st) {
       _logger
         ..err('$err')
@@ -183,7 +198,8 @@ class BuildMacOSCommand extends PatrolCommand {
     return 0;
   }
 
-  void _printBinaryPaths({required String buildMode}) {
+  @visibleForTesting
+  void printBinaryPaths({required String buildMode}) {
     // print path for 2 apps that live in build/macos_integ/Build/Products
 
     final buildDir = join(
@@ -202,7 +218,8 @@ class BuildMacOSCommand extends PatrolCommand {
       ..info('$testAppPath (test instrumentation app)');
   }
 
-  Future<void> _printXcTestRunPath({required String scheme}) async {
+  @visibleForTesting
+  Future<void> printXcTestRunPath({required String scheme}) async {
     final sdkVersion = await _macosTestBackend.getSdkVersion();
     final xcTestRunPath = await _macosTestBackend.xcTestRunPath(
       scheme: scheme,

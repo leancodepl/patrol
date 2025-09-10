@@ -45,6 +45,8 @@ class BuildAndroidCommand extends PatrolCommand {
     usesCheckCompatibilityOption();
 
     usesUninstallOption();
+    usesBuildNameOption();
+    usesBuildNumberOption();
 
     usesAndroidOptions();
   }
@@ -119,6 +121,16 @@ class BuildAndroidCommand extends PatrolCommand {
       _logger.detail('Received Android flavor: $flavor');
     }
 
+    final buildName = stringArg('build-name');
+    if (buildName != null) {
+      _logger.detail('Received build name: $buildName');
+    }
+
+    final buildNumber = stringArg('build-number');
+    if (buildNumber != null) {
+      _logger.detail('Received build number: $buildNumber');
+    }
+
     final packageName = stringArg('package-name') ?? config.android.packageName;
 
     final displayLabel = boolArg('label');
@@ -165,6 +177,8 @@ class BuildAndroidCommand extends PatrolCommand {
       buildMode: buildMode,
       dartDefines: mergedDartDefines,
       dartDefineFromFilePaths: dartDefineFromFilePaths,
+      buildName: buildName,
+      buildNumber: buildNumber,
     );
 
     final androidOpts = AndroidAppOptions(
