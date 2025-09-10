@@ -162,7 +162,7 @@ void main() {
         expect(opts.flutter.flavor, isNull);
         expect(opts.bundleId, isNull);
         expect(opts.simulator, equals(false));
-        expect(opts.clearPermissions, equals(false));
+        expect(opts.clearPackageData, equals(false));
       });
 
       test('builds iOS app with release build mode', () async {
@@ -248,8 +248,8 @@ void main() {
         expect(opts.simulator, equals(true));
       });
 
-      test('builds iOS app with clear permissions', () async {
-        final result = await runCommand(['--clear-permissions']);
+      test('builds iOS app with clear package data', () async {
+        final result = await runCommand(['--clear-package-data']);
 
         expect(result, equals(0));
 
@@ -258,7 +258,7 @@ void main() {
         ).captured;
         final opts = captured.first as IOSAppOptions;
 
-        expect(opts.clearPermissions, equals(true));
+        expect(opts.clearPackageData, equals(true));
       });
 
       test('builds iOS app with custom iOS version', () async {
