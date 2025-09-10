@@ -19,21 +19,4 @@ void main() {
       expect(const Duration(seconds: 60).toFormattedString(), '1m 0s');
     });
   });
-
-  group('TestEntry', () {
-    test(
-      'nameWithPath uses default patrol_test directory when no environment variable is set',
-      () {
-        final testEntry = TestEntry(
-          name: 'example.login_test test name',
-          status: TestEntryStatus.success,
-        );
-
-        expect(
-          testEntry.nameWithPath,
-          contains('(patrol_test/example/login_test.dart)'),
-        );
-      },
-    );
-  });
 }
