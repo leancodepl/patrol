@@ -42,6 +42,8 @@ class BuildIOSCommand extends PatrolCommand {
     usesTagsOption();
     usesExcludeTagsOption();
     usesCheckCompatibilityOption();
+    usesBuildNameOption();
+    usesBuildNumberOption();
 
     usesIOSOptions();
     argParser.addFlag(
@@ -120,6 +122,16 @@ class BuildIOSCommand extends PatrolCommand {
       _logger.detail('Received iOS flavor: $flavor');
     }
 
+    final buildName = stringArg('build-name');
+    if (buildName != null) {
+      _logger.detail('Received build name: $buildName');
+    }
+
+    final buildNumber = stringArg('build-number');
+    if (buildNumber != null) {
+      _logger.detail('Received build number: $buildNumber');
+    }
+
     final bundleId = stringArg('bundle-id') ?? config.ios.bundleId;
 
     final displayLabel = boolArg('label');
@@ -161,6 +173,8 @@ class BuildIOSCommand extends PatrolCommand {
       buildMode: buildMode,
       dartDefines: dartDefines,
       dartDefineFromFilePaths: dartDefineFromFilePaths,
+      buildName: buildName,
+      buildNumber: buildNumber,
     );
 
     final iosOpts = IOSAppOptions(

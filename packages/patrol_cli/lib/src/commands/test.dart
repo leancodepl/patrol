@@ -59,6 +59,8 @@ class TestCommand extends PatrolCommand {
     usesHideTestSteps();
     usesClearTestSteps();
     usesCheckCompatibilityOption();
+    usesBuildNameOption();
+    usesBuildNumberOption();
 
     usesUninstallOption();
 
@@ -132,6 +134,16 @@ class TestCommand extends PatrolCommand {
     }
     if (macosFlavor != null) {
       _logger.detail('Received macOS flavor: $macosFlavor');
+    }
+
+    final buildName = stringArg('build-name');
+    if (buildName != null) {
+      _logger.detail('Received build name: $buildName');
+    }
+
+    final buildNumber = stringArg('build-number');
+    if (buildNumber != null) {
+      _logger.detail('Received build number: $buildNumber');
     }
 
     final devices = await _deviceFinder.find(
@@ -217,6 +229,8 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       buildMode: buildMode,
       dartDefines: mergedDartDefines,
       dartDefineFromFilePaths: dartDefineFromFilePaths,
+      buildName: buildName,
+      buildNumber: buildNumber,
     );
 
     final androidOpts = AndroidAppOptions(
