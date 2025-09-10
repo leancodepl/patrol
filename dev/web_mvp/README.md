@@ -35,7 +35,7 @@ flutter run -d web-server --target integration_test/test_bundle.dart
 # Take note of the served URL printed by Flutter (e.g., http://localhost:8080)
 
 # 2) In another terminal, run the harness:
-node dev/web_mvp/run.js http://localhost:{port}
+BASE_URL="url returned from flutter run" npx playwright test
 ```
 
 ### Using Native Actions in Tests
