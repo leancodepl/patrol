@@ -21,7 +21,7 @@ import 'package:patrol_cli/src/test_finder.dart';
 class DevelopCommand extends PatrolCommand {
   DevelopCommand({
     required DeviceFinder deviceFinder,
-    required TestFinder testFinder,
+    required TestFinderFactory testFinderFactory,
     required TestBundler testBundler,
     required DartDefinesReader dartDefinesReader,
     required CompatibilityChecker compatibilityChecker,
@@ -33,7 +33,7 @@ class DevelopCommand extends PatrolCommand {
     required Analytics analytics,
     required Logger logger,
   }) : _deviceFinder = deviceFinder,
-       _testFinder = testFinder,
+       _testFinderFactory = testFinderFactory,
        _testBundler = testBundler,
        _dartDefinesReader = dartDefinesReader,
        _compatibilityChecker = compatibilityChecker,
@@ -71,7 +71,7 @@ class DevelopCommand extends PatrolCommand {
   }
 
   final DeviceFinder _deviceFinder;
-  final TestFinder _testFinder;
+  final TestFinderFactory _testFinderFactory;
   final TestBundler _testBundler;
   final DartDefinesReader _dartDefinesReader;
   final CompatibilityChecker _compatibilityChecker;
@@ -104,17 +104,20 @@ class DevelopCommand extends PatrolCommand {
     }
 
     final config = _pubspecReader.read();
+    final testDirectory = config.testDirectory;
 
-    final target = _testFinder.findTest(targets.first, config.testFileSuffix);
+    final testFinder = _testFinderFactory.create(testDirectory);
+
+    final target = testFinder.findTest(targets.first, config.testFileSuffix);
     _logger.detail('Received test target: $target');
 
     if (boolArg('release')) {
       throwToolExit('Cannot use release build mode with develop');
     }
 
-    final entrypoint = _testBundler.bundledTestFile;
+    final entrypoint = _testBundler.getBundledTestFile(testDirectory);
     if (boolArg('generate-bundle')) {
-      _testBundler.createDevelopTestBundle(target);
+      _testBundler.createDevelopTestBundle(testDirectory, target);
     }
 
     final androidFlavor = stringArg('flavor') ?? config.android.flavor;
@@ -181,6 +184,7 @@ class DevelopCommand extends PatrolCommand {
       'PATROL_IOS_APP_NAME': config.ios.appName,
       'INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE': 'false',
       'PATROL_TEST_LABEL_ENABLED': displayLabel.toString(),
+      'PATROL_TEST_DIRECTORY': config.testDirectory,
       // develop-specific
       ...{
         'PATROL_HOT_RESTART': 'true',

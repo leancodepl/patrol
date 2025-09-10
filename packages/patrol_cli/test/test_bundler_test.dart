@@ -17,7 +17,7 @@ Directory _initFakeFs(FileSystem fs, Platform platform) {
     fs.path.join(platform.home, 'awesome_app'),
   )..createSync();
   fs.currentDirectory = projectRootDir;
-  fs.directory('integration_test').createSync();
+  fs.directory('patrol_test').createSync();
   return projectRootDir;
 }
 
@@ -27,6 +27,8 @@ void main() {
 }
 
 void _test(Platform platform) {
+  const testDirectory = 'patrol_test';
+
   group('(${platform.operatingSystem}) TestBundler', () {
     late FileSystem fs;
     late TestBundler testBundler;
@@ -42,7 +44,7 @@ void _test(Platform platform) {
 
     test('throws ArgumentError when no tests are given', () {
       expect(
-        () => testBundler.createTestBundle([], null, null),
+        () => testBundler.createTestBundle(testDirectory, [], null, null),
         throwsArgumentError,
       );
     });
@@ -50,12 +52,12 @@ void _test(Platform platform) {
     test('generates imports from relative paths', () {
       // given
       final tests = [
-        fs.path.join('integration_test', 'example_test.dart'),
-        fs.path.join('integration_test', 'example', 'example_test.dart'),
+        fs.path.join('patrol_test', 'example_test.dart'),
+        fs.path.join('patrol_test', 'example', 'example_test.dart'),
       ];
 
       // when
-      final imports = testBundler.generateImports(tests);
+      final imports = testBundler.generateImports(testDirectory, tests);
 
       /// then
       expect(imports, '''
@@ -69,19 +71,19 @@ import 'example/example_test.dart' as example__example_test;''');
         fs.path.join(
           platform.home,
           'awesome_app',
-          'integration_test',
+          'patrol_test',
           'example_test.dart',
         ),
         fs.path.join(
           platform.home,
           'awesome_app',
-          'integration_test',
+          'patrol_test',
           'example/example_test.dart',
         ),
       ];
 
       // when
-      final imports = testBundler.generateImports(tests);
+      final imports = testBundler.generateImports(testDirectory, tests);
 
       /// then
       expect(imports, '''
@@ -92,12 +94,12 @@ import 'example/example_test.dart' as example__example_test;''');
     test('generates groups from relative paths', () {
       // given
       final tests = [
-        fs.path.join('integration_test', 'example_test.dart'),
-        fs.path.join('integration_test', 'example/example_test.dart'),
+        fs.path.join('patrol_test', 'example_test.dart'),
+        fs.path.join('patrol_test', 'example/example_test.dart'),
       ];
 
       // when
-      final groupsCode = testBundler.generateGroupsCode(tests);
+      final groupsCode = testBundler.generateGroupsCode(testDirectory, tests);
 
       /// then
       expect(groupsCode, '''
@@ -111,24 +113,43 @@ group('example.example_test', example__example_test.main);''');
         fs.path.join(
           platform.home,
           'awesome_app',
-          'integration_test',
+          'patrol_test',
           'example_test.dart',
         ),
         fs.path.join(
           platform.home,
           'awesome_app',
-          'integration_test',
+          'patrol_test',
           'example/example_test.dart',
         ),
       ];
 
       // when
-      final groupsCode = testBundler.generateGroupsCode(tests);
+      final groupsCode = testBundler.generateGroupsCode(testDirectory, tests);
 
       /// then
       expect(groupsCode, '''
 group('example_test', example_test.main);
 group('example.example_test', example__example_test.main);''');
+    });
+
+    test('uses correct test directory', () {
+      // given
+      final defaultTestBundler = TestBundler(
+        projectRoot: fs.directory(fs.path.join(platform.home, 'awesome_app')),
+        logger: MockLogger(),
+      );
+
+      // when
+      final bundledTestFilePath = defaultTestBundler.getBundledTestFile(
+        testDirectory,
+      );
+
+      // then
+      expect(
+        bundledTestFilePath.path,
+        contains('$testDirectory${fs.path.separator}test_bundle.dart'),
+      );
     });
   });
 }

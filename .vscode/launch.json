@@ -10,7 +10,7 @@
         "args": [
           "test",
           "-t",
-          "integration_test/example_test.dart",
+          "patrol_test/example_test.dart",
         ]
       },
     ],

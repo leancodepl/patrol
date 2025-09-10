@@ -41,7 +41,7 @@ want to test and updating paths to the target tests in `args`.
       "type": "dart",
       "program": "patrol/packages/patrol_cli/bin/main.dart",
       "cwd": "dev/e2e_app",
-      "args": ["test", "-t", "integration_test/example_test.dart"]
+      "args": ["test", "-t", "patrol_test/example_test.dart"]
     }
   ]
 }
@@ -55,7 +55,7 @@ project you want to test and updating paths to the target tests in `arguments`.
 ```xml
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="patrol_cli" type="DartCommandLineRunConfigurationType" factoryName="Dart Command Line Application">
-    <option name="arguments" value="test -t integration_test/example_test.dart" />
+    <option name="arguments" value="test -t patrol_test/example_test.dart" />
     <option name="filePath" value="$PROJECT_DIR$/packages/patrol_cli/bin/main.dart" />
     <option name="workingDirectory" value="$PROJECT_DIR$/dev/e2e_app" />
     <method v="2" />

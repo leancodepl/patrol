@@ -28,26 +28,26 @@ testing on iOS).
 ### Discussion
 
 By default, `patrol test` runs all integration tests (files ending with
-`_test.dart` located in the `integration_test` directory).
+`_test.dart` located in the `patrol_test` directory). You can customize the test directory by setting `test_directory` in your `pubspec.yaml` under the `patrol` section.
 
 To run a single test, use `--target`:
 
 ```
-patrol test --target integration_test/login_test.dart
+patrol test --target patrol_test/login_test.dart
 ```
 
 You can use `--target` more than once to run multiple tests:
 
 ```
 patrol test \
-  --target integration_test/login_test.dart \
-  --target integration_test/app_test.dart
+  --target patrol_test/login_test.dart \
+  --target patrol_test/app_test.dart
 ```
 
 Or alternatively:
 
 ```
-patrol test --targets integration_test/login_test.dart,integration_test/app_test.dart
+patrol test --targets patrol_test/login_test.dart,patrol_test/app_test.dart
 ```
 
 Test files must end with `_test.dart`. Otherwise the file is not considered a
@@ -137,7 +137,7 @@ You can specify custom build number and build name using the `--build-name` and 
 
 ```
 patrol test --build-name=1.2.3 --build-number=123
-patrol test --target integration_test/login_test.dart --build-name=1.2.3 --build-number=123
+patrol test --target patrol_test/login_test.dart --build-name=1.2.3 --build-number=123
 ```
 
 ### Under the hood

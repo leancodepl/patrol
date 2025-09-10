@@ -183,7 +183,7 @@ class AndroidTestBackend {
         buildNumber,
       ],
       '-t',
-      'integration_test/test_bundle.dart',
+      options.target,
     ], runInShell: true);
 
     final exitCode = await process.exitCode;

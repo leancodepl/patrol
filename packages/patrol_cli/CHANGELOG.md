@@ -1,6 +1,9 @@
-## Unreleased
+## 4.0.0
 
-- Add `--build-name` and `--build-number` flags to `patrol test`, `patrol develop`, and `patrol build` commands.
+- **Breaking**: Change default test directory from `integration_test` to `patrol_test`. (#2728)
+- Add support for configurable test directory via `test_directory` option in `pubspec.yaml`. (#2728)
+- Add `--build-name` and `--build-number` flags to `patrol test`, `patrol develop`, and `patrol build` commands. (#2590)
+- Bump `patrol_log` to `0.6.0`.
 
 ## 3.10.0
 

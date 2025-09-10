@@ -8,7 +8,7 @@ void main() {
   // build-name (1.2.3) and build-number (123) flags.
   // You can change `skip` to `true` and run it with:
   // dart run ../../packages/patrol_cli/bin/main.dart test \
-  // --target integration_test/app_version_test.dart \
+  // --target patrol_test/app_version_test.dart \
   // --build-name=1.2.3 --build-number=123
   patrolTest(
     'shows correct app version',
