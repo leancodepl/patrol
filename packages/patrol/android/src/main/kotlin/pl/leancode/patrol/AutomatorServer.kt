@@ -142,23 +142,28 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
     }
 
     override fun getNativeViews(request: GetNativeViewsRequest): GetNativeViewsResponse {
-        if (request.selector != null) {
+        return if (request.selector != null) {
             val views = automation.getNativeViews(request.selector.toBySelector())
-            return GetNativeViewsResponse(
+            GetNativeViewsResponse(
                 nativeViews = views,
                 iosNativeViews = listOf(),
                 androidNativeViews = listOf()
-
             )
         } else if (request.androidSelector != null) {
             val views = automation.getNativeViewsV2(request.androidSelector.toBySelector())
-            return GetNativeViewsResponse(
+            GetNativeViewsResponse(
                 nativeViews = listOf(),
-                androidNativeViews = views,
-                iosNativeViews = listOf()
+                iosNativeViews = listOf(),
+                androidNativeViews = views
             )
         } else {
-            throw PatrolException("getNativeViews(): neither selector nor androidSelector are set")
+            // No selector provided, return all elements using legacy format
+            val views = automation.getNativeViews(null)
+            GetNativeViewsResponse(
+                nativeViews = views,
+                iosNativeViews = listOf(),
+                androidNativeViews = listOf()
+            )
         }
     }
 

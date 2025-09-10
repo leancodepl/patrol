@@ -108,18 +108,18 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
     required Analytics analytics,
     required Logger logger,
     required bool isCI,
-  })  : _platform = platform,
-        _pubUpdater = pubUpdater,
-        _fs = fs,
-        _analytics = analytics,
-        _processManager = processManager,
-        _disposeScope = DisposeScope(),
-        _logger = logger,
-        _isCI = isCI,
-        super(
-          'patrol',
-          'Tool for running Flutter-native UI tests with superpowers',
-        ) {
+  }) : _platform = platform,
+       _pubUpdater = pubUpdater,
+       _fs = fs,
+       _analytics = analytics,
+       _processManager = processManager,
+       _disposeScope = DisposeScope(),
+       _logger = logger,
+       _isCI = isCI,
+       super(
+         'patrol',
+         'Tool for running Flutter-native UI tests with superpowers',
+       ) {
     final adb = Adb();
 
     final rootDirectory = findRootDirectory(_fs) ?? _fs.currentDirectory;
@@ -236,19 +236,9 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
       ),
     );
 
-    addCommand(
-      DevicesCommand(
-        deviceFinder: deviceFinder,
-        logger: _logger,
-      ),
-    );
+    addCommand(DevicesCommand(deviceFinder: deviceFinder, logger: _logger));
 
-    addCommand(
-      DoctorCommand(
-        logger: _logger,
-        platform: _platform,
-      ),
-    );
+    addCommand(DoctorCommand(logger: _logger, platform: _platform));
 
     addCommand(
       UpdateCommand(
@@ -374,9 +364,9 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
   Future<int?> runCommand(ArgResults topLevelResults) async {
     final commandName = topLevelResults.command?.name;
 
-    if (_wantsUpdateCheck(commandName)) {
+    /* if (_wantsUpdateCheck(commandName)) {
       await _checkForUpdate(commandName);
-    }
+    } */
 
     final int? exitCode;
     if (topLevelResults['version'] == true) {
@@ -449,11 +439,9 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
 
     _logger
       ..info('')
-      ..info(
-        '''
+      ..info('''
 ${lightYellow.wrap('Update available!')} ${lightCyan.wrap(constants.version)} \u2192 ${lightCyan.wrap(latestVersion)}
-Run ${lightCyan.wrap('patrol update')} to update''',
-      )
+Run ${lightCyan.wrap('patrol update')} to update''')
       ..info('');
   }
 }

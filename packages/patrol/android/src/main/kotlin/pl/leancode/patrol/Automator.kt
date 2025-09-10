@@ -263,18 +263,28 @@ class Automator private constructor() {
         }
     }
 
-    fun getNativeViews(selector: BySelector): List<NativeView> {
+    fun getNativeViews(selector: BySelector?): List<NativeView> {
         Logger.d("getNativeViews()")
 
-        val uiObjects2 = uiDevice.findObjects(selector)
-        return uiObjects2.map { fromUiObject2(it) }
+        return if (selector != null) {
+            val uiObjects2 = uiDevice.findObjects(selector)
+            uiObjects2.map { fromUiObject2(it) }
+        } else {
+            // Return all elements by getting the UI tree
+            getNativeUITrees()
+        }
     }
 
-    fun getNativeViewsV2(selector: BySelector): List<AndroidNativeView> {
+    fun getNativeViewsV2(selector: BySelector?): List<AndroidNativeView> {
         Logger.d("getNativeViewsV2()")
 
-        val uiObjects2 = uiDevice.findObjects(selector)
-        return uiObjects2.map { fromUiObject2V2(it) }
+        return if (selector != null) {
+            val uiObjects2 = uiDevice.findObjects(selector)
+            uiObjects2.map { fromUiObject2V2(it) }
+        } else {
+            // Return all elements by getting the UI tree
+            getNativeUITreesV2()
+        }
     }
 
     fun getNativeUITrees(): List<NativeView> {
