@@ -45,6 +45,7 @@ class TestCommand extends PatrolCommand {
        _analytics = analytics,
        _logger = logger {
     usesTargetOption();
+    usesGenerateBundleOption();
     usesDeviceOption();
     usesBuildModeOption();
     usesFlavorOption();

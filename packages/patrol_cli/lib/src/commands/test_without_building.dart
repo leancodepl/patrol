@@ -1,15 +1,12 @@
 import 'dart:async';
 
+import 'package:glob/glob.dart';
 import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
-import 'package:patrol_cli/src/base/exceptions.dart';
-import 'package:patrol_cli/src/base/extensions/core.dart';
 import 'package:patrol_cli/src/base/logger.dart';
-import 'package:patrol_cli/src/commands/dart_define_utils.dart';
 import 'package:patrol_cli/src/compatibility_checker/compatibility_checker.dart';
+import 'package:patrol_cli/src/coverage/coverage_tool.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
-import 'package:patrol_cli/src/crossplatform/flutter_tool.dart';
-import 'package:patrol_cli/src/dart_defines_reader.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:patrol_cli/src/macos/macos_test_backend.dart';
@@ -18,78 +15,65 @@ import 'package:patrol_cli/src/runner/patrol_command.dart';
 import 'package:patrol_cli/src/test_bundler.dart';
 import 'package:patrol_cli/src/test_finder.dart';
 
-class DevelopCommand extends PatrolCommand {
-  DevelopCommand({
+class TestWithoutBuildingCommand extends PatrolCommand {
+  TestWithoutBuildingCommand({
     required DeviceFinder deviceFinder,
     required TestFinder testFinder,
     required TestBundler testBundler,
-    required DartDefinesReader dartDefinesReader,
     required CompatibilityChecker compatibilityChecker,
     required PubspecReader pubspecReader,
     required AndroidTestBackend androidTestBackend,
     required IOSTestBackend iosTestBackend,
-    required MacOSTestBackend macosTestBackend,
-    required FlutterTool flutterTool,
+    required MacOSTestBackend macOSTestBackend,
+    required CoverageTool coverageTool,
     required Analytics analytics,
     required Logger logger,
   }) : _deviceFinder = deviceFinder,
-       _testFinder = testFinder,
        _testBundler = testBundler,
-       _dartDefinesReader = dartDefinesReader,
+       _testFinder = testFinder,
        _compatibilityChecker = compatibilityChecker,
        _pubspecReader = pubspecReader,
        _androidTestBackend = androidTestBackend,
        _iosTestBackend = iosTestBackend,
-       _macosTestBackend = macosTestBackend,
-       _flutterTool = flutterTool,
+       _macosTestBackend = macOSTestBackend,
+       _coverageTool = coverageTool,
        _analytics = analytics,
        _logger = logger {
-    usesTargetOption();
     usesGenerateBundleOption();
     usesDeviceOption();
     usesBuildModeOption();
     usesFlavorOption();
-    usesDartDefineOption();
-    usesDartDefineFromFileOption();
-    usesLabelOption();
     usesPortOptions();
-    usesTagsOption();
+    useCoverageOptions();
+    usesShowFlutterLogs();
     usesHideTestSteps();
     usesClearTestSteps();
     usesCheckCompatibilityOption();
 
     usesUninstallOption();
-    usesBuildNameOption();
-    usesBuildNumberOption();
 
     usesAndroidOptions();
     usesIOSOptions();
-
-    argParser.addFlag(
-      'open-devtools',
-      help: 'Automatically open Patrol extension in DevTools when ready.',
-    );
   }
 
   final DeviceFinder _deviceFinder;
   final TestFinder _testFinder;
   final TestBundler _testBundler;
-  final DartDefinesReader _dartDefinesReader;
   final CompatibilityChecker _compatibilityChecker;
   final PubspecReader _pubspecReader;
   final AndroidTestBackend _androidTestBackend;
   final IOSTestBackend _iosTestBackend;
   final MacOSTestBackend _macosTestBackend;
-  final FlutterTool _flutterTool;
+  final CoverageTool _coverageTool;
 
   final Analytics _analytics;
   final Logger _logger;
 
   @override
-  String get name => 'develop';
+  String get name => 'test-without-building';
 
   @override
-  String get description => 'Develop integration tests with Hot Restart.';
+  String get description => 'Run integration tests without building the app.';
 
   @override
   Future<int> run() async {
@@ -97,50 +81,49 @@ class DevelopCommand extends PatrolCommand {
       _analytics.sendCommand(FlutterVersion.fromCLI(flutterCommand), name),
     );
 
-    final targets = stringsArg('target');
-    if (targets.isEmpty) {
-      throwToolExit('No target provided with --target');
-    } else if (targets.length > 1) {
-      throwToolExit('Only one target can be provided with --target');
-    }
-
     final config = _pubspecReader.read();
+    final testFileSuffix = config.testFileSuffix;
 
-    final target = _testFinder.findTest(targets.first, config.testFileSuffix);
-    _logger.detail('Received test target: $target');
-
-    if (boolArg('release')) {
-      throwToolExit('Cannot use release build mode with develop');
-    }
+    final targets = _testFinder.findAllTests(
+      excludes: {},
+      testFileSuffix: testFileSuffix,
+    );
 
     final entrypoint = _testBundler.bundledTestFile;
     if (boolArg('generate-bundle')) {
-      _testBundler.createDevelopTestBundle(target);
+      _testBundler.createTestBundle(targets, null, null);
     }
 
     final androidFlavor = stringArg('flavor') ?? config.android.flavor;
     final iosFlavor = stringArg('flavor') ?? config.ios.flavor;
+    final macosFlavor = stringArg('flavor') ?? config.macos.flavor;
     if (androidFlavor != null) {
       _logger.detail('Received Android flavor: $androidFlavor');
     }
     if (iosFlavor != null) {
       _logger.detail('Received iOS flavor: $iosFlavor');
     }
-
-    final buildName = stringArg('build-name');
-    if (buildName != null) {
-      _logger.detail('Received build name: $buildName');
-    }
-
-    final buildNumber = stringArg('build-number');
-    if (buildNumber != null) {
-      _logger.detail('Received build number: $buildNumber');
+    if (macosFlavor != null) {
+      _logger.detail('Received macOS flavor: $macosFlavor');
     }
 
     final devices = await _deviceFinder.find(
       stringsArg('device'),
       flutterCommand: flutterCommand,
     );
+    _logger.detail('Received ${devices.length} device(s) to run on');
+    for (final device in devices) {
+      _logger.detail('Received device: ${device.name} (${device.id})');
+    }
+
+    if (devices.length > 1) {
+      // TODO: Throw an error when running on more than 1 device
+      _logger.warn('''
+Running on multiple devices is deprecated and will be removed in the future.
+See https://github.com/leancodepl/patrol/issues/1316 to learn more.
+''');
+    }
+
     final device = devices.single;
 
     if (boolArg('check-compatibility')) {
@@ -150,78 +133,23 @@ class DevelopCommand extends PatrolCommand {
       );
     }
 
-    // `flutter logs` doesn't work on macOS, so we don't support it for now
-    // https://github.com/leancodepl/patrol/issues/1974
-    if (device.targetPlatform == TargetPlatform.macOS) {
-      throwToolExit('macOS is not supported with develop');
-    }
-
-    _logger.detail('Received device: ${device.name} (${device.id})');
-
     final packageName = stringArg('package-name') ?? config.android.packageName;
     final bundleId = stringArg('bundle-id') ?? config.ios.bundleId;
 
-    final displayLabel = boolArg('label');
     final uninstall = boolArg('uninstall');
-
-    String? iOSInstalledAppsEnvVariable;
-    if (device.targetPlatform == TargetPlatform.iOS) {
-      iOSInstalledAppsEnvVariable = await _iosTestBackend
-          .getInstalledAppsEnvVariable(device.id);
-    }
-
-    final customDartDefines = {
-      ..._dartDefinesReader.fromFile(),
-      ..._dartDefinesReader.fromCli(args: stringsArg('dart-define')),
-    };
-    final internalDartDefines = {
-      'PATROL_APP_PACKAGE_NAME': packageName,
-      'PATROL_APP_BUNDLE_ID': bundleId,
-      'PATROL_MACOS_APP_BUNDLE_ID': config.macos.bundleId,
-      'PATROL_ANDROID_APP_NAME': config.android.appName,
-      'PATROL_IOS_APP_NAME': config.ios.appName,
-      'INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE': 'false',
-      'PATROL_TEST_LABEL_ENABLED': displayLabel.toString(),
-      // develop-specific
-      ...{
-        'PATROL_HOT_RESTART': 'true',
-        'PATROL_IOS_INSTALLED_APPS': iOSInstalledAppsEnvVariable,
-      },
-      'PATROL_TEST_SERVER_PORT': super.testServerPort.toString(),
-      'PATROL_APP_SERVER_PORT': super.appServerPort.toString(),
-    }.withNullsRemoved();
-
-    final dartDefines = {...customDartDefines, ...internalDartDefines};
-    _logger.detail(
-      'Received ${dartDefines.length} --dart-define(s) '
-      '(${customDartDefines.length} custom, ${internalDartDefines.length} internal)',
-    );
-    for (final dartDefine in customDartDefines.entries) {
-      _logger.detail('Received custom --dart-define: ${dartDefine.key}');
-    }
-    for (final dartDefine in internalDartDefines.entries) {
-      _logger.detail(
-        'Received internal --dart-define: ${dartDefine.key}=${dartDefine.value}',
-      );
-    }
-
-    final dartDefineFromFilePaths = stringsArg('dart-define-from-file');
-
-    final mergedDartDefines = mergeDartDefines(
-      dartDefineFromFilePaths,
-      dartDefines,
-      _dartDefinesReader,
-    );
+    final coverageEnabled = boolArg('coverage');
+    final ignoreGlobs = stringsArg('coverage-ignore').map(Glob.new).toSet();
+    final coveragePackagesRegExps = stringsArg('coverage-package');
 
     final flutterOpts = FlutterAppOptions(
       command: flutterCommand,
       target: entrypoint.path,
       flavor: androidFlavor,
       buildMode: buildMode,
-      dartDefines: mergedDartDefines,
-      dartDefineFromFilePaths: dartDefineFromFilePaths,
-      buildName: buildName,
-      buildNumber: buildNumber,
+      dartDefines: {},
+      dartDefineFromFilePaths: [],
+      buildName: null,
+      buildNumber: null,
     );
 
     final androidOpts = AndroidAppOptions(
@@ -229,7 +157,7 @@ class DevelopCommand extends PatrolCommand {
       packageName: packageName,
       appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
-      uninstall: uninstall,
+      uninstall: false, // no-op
     );
 
     final iosOpts = IOSAppOptions(
@@ -245,58 +173,49 @@ class DevelopCommand extends PatrolCommand {
 
     final macosOpts = MacOSAppOptions(
       flutter: flutterOpts,
-      scheme: buildMode.createScheme(iosFlavor),
-      configuration: buildMode.createConfiguration(iosFlavor),
+      scheme: buildMode.createScheme(macosFlavor),
+      configuration: buildMode.createConfiguration(macosFlavor),
       appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
     );
 
-    await _build(androidOpts, iosOpts, macosOpts, device);
-    await _preExecute(androidOpts, iosOpts, device, uninstall);
-    await _execute(
+    await _preExecute(androidOpts, iosOpts, macosOpts, device, uninstall);
+
+    if (coverageEnabled) {
+      unawaited(
+        _coverageTool.run(
+          device: device,
+          platform: device.targetPlatform,
+          logger: _logger,
+          ignoreGlobs: ignoreGlobs,
+          packagesRegExps: switch (coveragePackagesRegExps.length) {
+            0 => {RegExp(config.flutterPackageName)},
+            _ => coveragePackagesRegExps.map(RegExp.new).toSet(),
+          },
+        ),
+      );
+    }
+
+    final allPassed = await _execute(
       flutterOpts,
       androidOpts,
       iosOpts,
       macosOpts,
       uninstall: uninstall,
       device: device,
-      openDevtools: boolArg('open-devtools'),
-      showFlutterLogs: false,
+      showFlutterLogs: boolArg('show-flutter-logs'),
       hideTestSteps: boolArg('hide-test-steps'),
       clearTestSteps: boolArg('clear-test-steps'),
     );
 
-    return 0; // for now, all exit codes are 0
-  }
-
-  Future<void> _build(
-    AndroidAppOptions androidOpts,
-    IOSAppOptions iosOpts,
-    MacOSAppOptions macosOpts,
-    Device device,
-  ) async {
-    Future<void> Function() buildAction;
-    buildAction = switch (device.targetPlatform) {
-      TargetPlatform.android => () => _androidTestBackend.build(androidOpts),
-      TargetPlatform.iOS => () => _iosTestBackend.build(iosOpts),
-      TargetPlatform.macOS => () => _macosTestBackend.build(macosOpts),
-    };
-
-    try {
-      await buildAction();
-    } catch (err, st) {
-      _logger
-        ..err('$err')
-        ..detail('$st')
-        ..err(defaultFailureMessage);
-      rethrow;
-    }
+    return allPassed ? 0 : 1;
   }
 
   /// Uninstall the apps before running the tests.
   Future<void> _preExecute(
     AndroidAppOptions androidOpts,
     IOSAppOptions iosOpts,
+    MacOSAppOptions macosOpts,
     Device device,
     bool uninstall,
   ) async {
@@ -331,82 +250,68 @@ class DevelopCommand extends PatrolCommand {
     }
   }
 
-  Future<void> _execute(
+  Future<bool> _execute(
     FlutterAppOptions flutterOpts,
     AndroidAppOptions android,
-    IOSAppOptions iosOpts,
+    IOSAppOptions ios,
     MacOSAppOptions macos, {
     required bool uninstall,
     required Device device,
-    required bool openDevtools,
     required bool showFlutterLogs,
     required bool hideTestSteps,
     required bool clearTestSteps,
   }) async {
     Future<void> Function() action;
     Future<void> Function()? finalizer;
-    String? appId;
 
     switch (device.targetPlatform) {
       case TargetPlatform.android:
-        appId = android.packageName;
-        action = () => _androidTestBackend.execute(
-          android,
-          device,
-          interruptible: true,
-          showFlutterLogs: showFlutterLogs,
-          hideTestSteps: hideTestSteps,
-          flavor: flutterOpts.flavor,
-          clearTestSteps: clearTestSteps,
-        );
+        action = () async {
+          await _androidTestBackend.loadJavaPathFromFlutterDoctor(
+            flutterCommand,
+          );
+          await _androidTestBackend.execute(
+            android,
+            device,
+            showFlutterLogs: showFlutterLogs,
+            hideTestSteps: hideTestSteps,
+            flavor: flutterOpts.flavor,
+            clearTestSteps: clearTestSteps,
+          );
+        };
         final package = android.packageName;
         if (package != null && uninstall) {
           finalizer = () => _androidTestBackend.uninstall(package, device);
         }
       case TargetPlatform.macOS:
-        appId = macos.bundleId;
-        action = () =>
-            _macosTestBackend.execute(macos, device, interruptible: true);
+        action = () => _macosTestBackend.execute(macos, device);
       case TargetPlatform.iOS:
-        appId = iosOpts.bundleId;
         action = () => _iosTestBackend.execute(
-          iosOpts,
+          ios,
           device,
-          interruptible: true,
           showFlutterLogs: showFlutterLogs,
           hideTestSteps: hideTestSteps,
           clearTestSteps: clearTestSteps,
         );
-        final bundleId = iosOpts.bundleId;
+        final bundleId = ios.bundleId;
         if (bundleId != null && uninstall) {
           finalizer = () => _iosTestBackend.uninstall(
             appId: bundleId,
-            flavor: iosOpts.flutter.flavor,
+            flavor: ios.flutter.flavor,
             device: device,
           );
         }
     }
 
+    var allPassed = true;
     try {
-      final future = action();
-      await _flutterTool.attachForHotRestart(
-        flutterCommand: flutterCommand,
-        deviceId: device.id,
-        target: flutterOpts.target,
-        appId: appId,
-        dartDefines: flutterOpts.dartDefines,
-        openDevtools: openDevtools,
-        attachUsingUrl: device.targetPlatform == TargetPlatform.macOS,
-        onQuit: finalizer,
-      );
-
-      await future;
+      await action();
     } catch (err, st) {
       _logger
         ..err('$err')
         ..detail('$st')
         ..err(defaultFailureMessage);
-      rethrow;
+      allPassed = false;
     } finally {
       try {
         await finalizer?.call();
@@ -415,5 +320,25 @@ class DevelopCommand extends PatrolCommand {
         rethrow;
       }
     }
+
+    return allPassed;
+  }
+
+  void useCoverageOptions() {
+    argParser
+      ..addFlag('coverage', help: 'Generate coverage.')
+      ..addMultiOption(
+        'coverage-ignore',
+        help: 'Exclude files from coverage using glob patterns.',
+      )
+      ..addMultiOption(
+        'coverage-package',
+        help:
+            'A regular expression matching packages names '
+            'to include in the coverage report (if coverage is enabled). '
+            'If unset, matches the current package name.',
+        valueHelp: 'package-name-regexp',
+        splitCommas: false,
+      );
   }
 }

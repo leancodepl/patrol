@@ -38,12 +38,15 @@ abstract class PatrolCommand extends Command<int> {
         aliases: ['excludes'],
         help: 'Integration test targets to exclude.',
         valueHelp: 'integration_test/flaky_test.dart',
-      )
-      ..addFlag(
-        'generate-bundle',
-        defaultsTo: true,
-        help: 'Whether to generate a bundled Dart test file.',
       );
+  }
+
+  void usesGenerateBundleOption() {
+    argParser.addFlag(
+      'generate-bundle',
+      defaultsTo: true,
+      help: 'Whether to generate a bundled Dart test file.',
+    );
   }
 
   /// A command that expects only one device but got more should throw.

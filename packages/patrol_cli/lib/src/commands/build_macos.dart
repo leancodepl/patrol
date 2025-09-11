@@ -33,6 +33,7 @@ class BuildMacOSCommand extends PatrolCommand {
        _logger = logger,
        _compatibilityChecker = compatibilityChecker {
     usesTargetOption();
+    usesGenerateBundleOption();
     usesBuildModeOption();
     usesFlavorOption();
     usesDartDefineOption();
