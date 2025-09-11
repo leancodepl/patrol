@@ -87,6 +87,16 @@ class Localization {
   }
 }
 
+@objc public class ObjCLocalization: NSObject {
+  @objc public static func getLocalizedString(key: String) -> String {
+    do {
+      return try Localization.getLocalizedString(key: key)
+    } catch {
+      return key // Return the key itself as fallback
+    }
+  }
+}
+
 enum LocalizationError: LocalizedError {
   case resourceNotFound(String)
   case parsingFailed(String)
@@ -103,27 +113,6 @@ enum LocalizationError: LocalizedError {
       return "Key Not Found: \(message)"
     case .languageNotSupported(let message):
       return "Language Not Supported: \(message)"
-    }
-  }
-}
-
-// MARK: Objective-C Bridge
-/// Objective-C compatible wrapper for Localization functionality
-@objc public class ObjCLocalization: NSObject {
-  
-  /// Gets a localized string for the given key, returning the English fallback if localization fails
-  @objc public static func getLocalizedString(key: String) -> String {
-    do {
-      return try Localization.getLocalizedString(key: key)
-    } catch {
-      Logger.shared.e("Failed to get localized string for key '\(key)': \(error)")
-      // Fallback to English hardcoded strings to ensure function doesn't break
-      switch key {
-      case "remove_app": return "Remove App"
-      case "delete_app": return "Delete App" 
-      case "delete": return "Delete"
-      default: return key // Return the key itself as fallback
-      }
     }
   }
 }
