@@ -44,7 +44,15 @@ class AndroidTestBackend {
   late final String? javaPath;
 
   Future<void> build(AndroidAppOptions options) async {
+    // Measure Flutter build step
+    final flutterBuildStopwatch = Stopwatch()..start();
+    _logger.detail('Starting Flutter build step...');
+    
     await buildApkConfigOnly(options.flutter);
+    
+    flutterBuildStopwatch.stop();
+    _logger.info('  ✓ Flutter build step completed in ${flutterBuildStopwatch.elapsedMilliseconds}ms');
+    
     await loadJavaPathFromFlutterDoctor(options.flutter.command);
     await detectOrchestratorVersion(options);
 
@@ -56,6 +64,9 @@ class AndroidTestBackend {
       int exitCode;
 
       // :app:assembleDebug
+      
+      final gradleAppBuildStopwatch = Stopwatch()..start();
+      _logger.detail('Starting Gradle app build step...');
 
       process =
           await _processManager.start(
@@ -82,8 +93,14 @@ class AndroidTestBackend {
         task.fail('Failed to build $subject ($cause)');
         throw Exception(cause);
       }
+      
+      gradleAppBuildStopwatch.stop();
+      _logger.info('  ✓ Gradle app build step completed in ${gradleAppBuildStopwatch.elapsedMilliseconds}ms');
 
       // :app:assembleDebugAndroidTest
+      
+      final gradleTestBuildStopwatch = Stopwatch()..start();
+      _logger.detail('Starting Gradle test build step...');
 
       process =
           await _processManager.start(
@@ -102,7 +119,10 @@ class AndroidTestBackend {
       process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
 
       exitCode = await process.exitCode;
+      
+      gradleTestBuildStopwatch.stop();
       if (exitCode == 0) {
+        _logger.info('  ✓ Gradle test build step completed in ${gradleTestBuildStopwatch.elapsedMilliseconds}ms');
         task.complete('Completed building $subject');
       } else if (exitCode == exitCodeInterrupted) {
         const cause = 'Gradle build interrupted';

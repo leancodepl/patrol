@@ -85,6 +85,9 @@ class MacOSTestBackend {
       Process process;
 
       // flutter build macos --config-only
+      
+      final flutterBuildStopwatch = Stopwatch()..start();
+      _logger.detail('Starting Flutter build step...');
 
       var flutterBuildKilled = false;
       process = await _processManager.start(
@@ -109,8 +112,14 @@ class MacOSTestBackend {
         task.fail('Failed to build $subject ($cause)');
         throwToolInterrupted(cause);
       }
+      
+      flutterBuildStopwatch.stop();
+      _logger.info('  ✓ Flutter build step completed in ${flutterBuildStopwatch.elapsedMilliseconds}ms');
 
       // xcodebuild build-for-testing
+      
+      final xcodeBuildStopwatch = Stopwatch()..start();
+      _logger.detail('Starting Xcode build step...');
 
       process =
           await _processManager.start(
@@ -122,7 +131,10 @@ class MacOSTestBackend {
       process.listenStdOut((l) => _logger.detail('\t$l')).disposedBy(scope);
       process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
       exitCode = await process.exitCode;
+      
+      xcodeBuildStopwatch.stop();
       if (exitCode == 0) {
+        _logger.info('  ✓ Xcode build step completed in ${xcodeBuildStopwatch.elapsedMilliseconds}ms');
         task.complete('Completed building $subject');
       } else if (exitCode == _xcodebuildInterrupted) {
         const cause = 'xcodebuild was interrupted';

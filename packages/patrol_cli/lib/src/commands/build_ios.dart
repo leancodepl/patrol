@@ -73,6 +73,9 @@ class BuildIOSCommand extends PatrolCommand {
 
   @override
   Future<int> run() async {
+    // Measure total build time
+    final totalBuildStopwatch = Stopwatch()..start();
+    
     unawaited(
       _analytics.sendCommand(
         FlutterVersion.fromCLI(flutterCommand),
@@ -91,6 +94,9 @@ class BuildIOSCommand extends PatrolCommand {
       );
     }
 
+    // Measure test discovery time
+    final testDiscoveryStopwatch = Stopwatch()..start();
+    
     final target = stringsArg('target');
     final targets = target.isNotEmpty
         ? _testFinder.findTests(target, testFileSuffix)
@@ -98,6 +104,9 @@ class BuildIOSCommand extends PatrolCommand {
             excludes: stringsArg('exclude').toSet(),
             testFileSuffix: testFileSuffix,
           );
+    
+    testDiscoveryStopwatch.stop();
+    _logger.info('✓ Test discovery completed in ${testDiscoveryStopwatch.elapsedMilliseconds}ms');
 
     _logger.detail('Received ${targets.length} test target(s)');
     for (final t in targets) {
@@ -114,7 +123,13 @@ class BuildIOSCommand extends PatrolCommand {
     }
     final entrypoint = _testBundler.bundledTestFile;
     if (boolArg('generate-bundle')) {
+      // Measure test bundle generation time
+      final bundleGenerationStopwatch = Stopwatch()..start();
+      
       _testBundler.createTestBundle(targets, tags, excludeTags);
+      
+      bundleGenerationStopwatch.stop();
+      _logger.info('✓ Test bundle generation completed in ${bundleGenerationStopwatch.elapsedMilliseconds}ms');
     }
 
     final flavor = stringArg('flavor') ?? config.ios.flavor;
@@ -189,7 +204,14 @@ class BuildIOSCommand extends PatrolCommand {
     );
 
     try {
+      // Measure iOS build time
+      final iosBuildStopwatch = Stopwatch()..start();
+      
       await _iosTestBackend.build(iosOpts);
+      
+      iosBuildStopwatch.stop();
+      _logger.info('✓ iOS build completed in ${iosBuildStopwatch.elapsedMilliseconds}ms');
+      
       printBinaryPaths(
         simulator: iosOpts.simulator,
         buildMode: flutterOpts.buildMode.xcodeName,
@@ -205,6 +227,9 @@ class BuildIOSCommand extends PatrolCommand {
         ..err(defaultFailureMessage);
       rethrow;
     }
+    
+    totalBuildStopwatch.stop();
+    _logger.info('🎉 Total build process completed in ${totalBuildStopwatch.elapsedMilliseconds}ms');
 
     return 0;
   }

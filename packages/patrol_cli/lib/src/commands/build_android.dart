@@ -72,6 +72,9 @@ class BuildAndroidCommand extends PatrolCommand {
 
   @override
   Future<int> run() async {
+    // Measure total build time
+    final totalBuildStopwatch = Stopwatch()..start();
+    
     unawaited(
       _analytics.sendCommand(
         FlutterVersion.fromCLI(flutterCommand),
@@ -90,6 +93,9 @@ class BuildAndroidCommand extends PatrolCommand {
       );
     }
 
+    // Measure test discovery time
+    final testDiscoveryStopwatch = Stopwatch()..start();
+    
     final target = stringsArg('target');
     final targets = target.isNotEmpty
         ? _testFinder.findTests(target, testFileSuffix)
@@ -97,6 +103,9 @@ class BuildAndroidCommand extends PatrolCommand {
             excludes: stringsArg('exclude').toSet(),
             testFileSuffix: testFileSuffix,
           );
+    
+    testDiscoveryStopwatch.stop();
+    _logger.info('✓ Test discovery completed in ${testDiscoveryStopwatch.elapsedMilliseconds}ms');
 
     _logger.detail('Received ${targets.length} test target(s)');
     for (final t in targets) {
@@ -113,7 +122,13 @@ class BuildAndroidCommand extends PatrolCommand {
     }
     final entrypoint = _testBundler.bundledTestFile;
     if (boolArg('generate-bundle')) {
+      // Measure test bundle generation time
+      final bundleGenerationStopwatch = Stopwatch()..start();
+      
       _testBundler.createTestBundle(targets, tags, excludeTags);
+      
+      bundleGenerationStopwatch.stop();
+      _logger.info('✓ Test bundle generation completed in ${bundleGenerationStopwatch.elapsedMilliseconds}ms');
     }
 
     final flavor = stringArg('flavor') ?? config.android.flavor;
@@ -190,7 +205,14 @@ class BuildAndroidCommand extends PatrolCommand {
     );
 
     try {
+      // Measure Android build time
+      final androidBuildStopwatch = Stopwatch()..start();
+      
       await _androidTestBackend.build(androidOpts);
+      
+      androidBuildStopwatch.stop();
+      _logger.info('✓ Android build completed in ${androidBuildStopwatch.elapsedMilliseconds}ms');
+      
       printApkPaths(flavor: flavor, buildMode: buildMode.androidName);
     } catch (err, st) {
       _logger
@@ -199,6 +221,9 @@ class BuildAndroidCommand extends PatrolCommand {
         ..err(defaultFailureMessage);
       rethrow;
     }
+    
+    totalBuildStopwatch.stop();
+    _logger.info('🎉 Total build process completed in ${totalBuildStopwatch.elapsedMilliseconds}ms');
 
     return 0;
   }

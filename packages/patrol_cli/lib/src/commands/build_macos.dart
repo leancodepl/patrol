@@ -69,6 +69,9 @@ class BuildMacOSCommand extends PatrolCommand {
 
   @override
   Future<int> run() async {
+    // Measure total build time
+    final totalBuildStopwatch = Stopwatch()..start();
+    
     unawaited(
       _analytics.sendCommand(
         FlutterVersion.fromCLI(flutterCommand),
@@ -87,6 +90,9 @@ class BuildMacOSCommand extends PatrolCommand {
       );
     }
 
+    // Measure test discovery time
+    final testDiscoveryStopwatch = Stopwatch()..start();
+    
     final target = stringsArg('target');
     final targets = target.isNotEmpty
         ? _testFinder.findTests(target, testFileSuffix)
@@ -94,6 +100,9 @@ class BuildMacOSCommand extends PatrolCommand {
             excludes: stringsArg('exclude').toSet(),
             testFileSuffix: testFileSuffix,
           );
+    
+    testDiscoveryStopwatch.stop();
+    _logger.info('✓ Test discovery completed in ${testDiscoveryStopwatch.elapsedMilliseconds}ms');
 
     _logger.detail('Received ${targets.length} test target(s)');
     for (final t in targets) {
@@ -110,7 +119,13 @@ class BuildMacOSCommand extends PatrolCommand {
     }
     final entrypoint = _testBundler.bundledTestFile;
     if (boolArg('generate-bundle')) {
+      // Measure test bundle generation time
+      final bundleGenerationStopwatch = Stopwatch()..start();
+      
       _testBundler.createTestBundle(targets, tags, excludeTags);
+      
+      bundleGenerationStopwatch.stop();
+      _logger.info('✓ Test bundle generation completed in ${bundleGenerationStopwatch.elapsedMilliseconds}ms');
     }
 
     final flavor = stringArg('flavor') ?? config.macos.flavor;
@@ -182,7 +197,13 @@ class BuildMacOSCommand extends PatrolCommand {
     );
 
     try {
+      // Measure macOS build time
+      final macosBuildStopwatch = Stopwatch()..start();
+      
       await _macosTestBackend.build(macosOpts);
+      
+      macosBuildStopwatch.stop();
+      _logger.info('✓ macOS build completed in ${macosBuildStopwatch.elapsedMilliseconds}ms');
 
       printBinaryPaths(buildMode: flutterOpts.buildMode.xcodeName);
 
@@ -194,6 +215,9 @@ class BuildMacOSCommand extends PatrolCommand {
         ..err(defaultFailureMessage);
       rethrow;
     }
+    
+    totalBuildStopwatch.stop();
+    _logger.info('🎉 Total build process completed in ${totalBuildStopwatch.elapsedMilliseconds}ms');
 
     return 0;
   }

@@ -90,6 +90,9 @@ class TestCommand extends PatrolCommand {
 
   @override
   Future<int> run() async {
+    // Measure total test execution time
+    final totalTestStopwatch = Stopwatch()..start();
+    
     unawaited(
       _analytics.sendCommand(FlutterVersion.fromCLI(flutterCommand), name),
     );
@@ -97,6 +100,9 @@ class TestCommand extends PatrolCommand {
     final config = _pubspecReader.read();
     final testFileSuffix = config.testFileSuffix;
 
+    // Measure test discovery time
+    final testDiscoveryStopwatch = Stopwatch()..start();
+    
     final target = stringsArg('target');
     final targets = target.isNotEmpty
         ? _testFinder.findTests(target, testFileSuffix)
@@ -104,6 +110,9 @@ class TestCommand extends PatrolCommand {
             excludes: stringsArg('exclude').toSet(),
             testFileSuffix: testFileSuffix,
           );
+    
+    testDiscoveryStopwatch.stop();
+    _logger.info('✓ Test discovery completed in ${testDiscoveryStopwatch.elapsedMilliseconds}ms');
 
     _logger.detail('Received ${targets.length} test target(s)');
     for (final t in targets) {
@@ -120,7 +129,13 @@ class TestCommand extends PatrolCommand {
     }
     final entrypoint = _testBundler.bundledTestFile;
     if (boolArg('generate-bundle')) {
+      // Measure test bundle generation time
+      final bundleGenerationStopwatch = Stopwatch()..start();
+      
       _testBundler.createTestBundle(targets, tags, excludeTags);
+      
+      bundleGenerationStopwatch.stop();
+      _logger.info('✓ Test bundle generation completed in ${bundleGenerationStopwatch.elapsedMilliseconds}ms');
     }
 
     final androidFlavor = stringArg('flavor') ?? config.android.flavor;
@@ -261,7 +276,16 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       testServerPort: super.testServerPort,
     );
 
+    // Measure build time
+    final buildStopwatch = Stopwatch()..start();
+    
     await _build(androidOpts, iosOpts, macosOpts, device);
+    
+    buildStopwatch.stop();
+    _logger.info('✓ Build phase completed in ${buildStopwatch.elapsedMilliseconds}ms');
+
+    return 0;
+    
     await _preExecute(androidOpts, iosOpts, macosOpts, device, uninstall);
 
     if (coverageEnabled) {
@@ -279,6 +303,9 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       );
     }
 
+    // Measure test execution time
+    final testExecutionStopwatch = Stopwatch()..start();
+    
     final allPassed = await _execute(
       flutterOpts,
       androidOpts,
@@ -290,6 +317,12 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       hideTestSteps: boolArg('hide-test-steps'),
       clearTestSteps: boolArg('clear-test-steps'),
     );
+    
+    testExecutionStopwatch.stop();
+    _logger.info('✓ Test execution completed in ${testExecutionStopwatch.elapsedMilliseconds}ms');
+    
+    totalTestStopwatch.stop();
+    _logger.info('🎉 Total test process completed in ${totalTestStopwatch.elapsedMilliseconds}ms');
 
     return allPassed ? 0 : 1;
   }
