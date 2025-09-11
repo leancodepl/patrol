@@ -263,8 +263,7 @@ class IOSAppOptions {
       '-quiet',
       ...['-derivedDataPath', '../build/ios_integ'],
       r'OTHER_SWIFT_FLAGS=$(inherited) -D PATROL_ENABLED',
-      if (clearPackageData)
-        r'GCC_PREPROCESSOR_DEFINITIONS=$(inherited) CLEAR_PACKAGE_DATA=1',
+      'OTHER_CFLAGS=\$(inherited) -D CLEAR_PACKAGE_DATA=${clearPackageData ? 1 : 0}',
     ];
 
     return cmd;
