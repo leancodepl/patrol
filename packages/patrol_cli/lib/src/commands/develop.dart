@@ -64,6 +64,7 @@ class DevelopCommand extends PatrolCommand {
 
     usesAndroidOptions();
     usesIOSOptions();
+    usesIOSClearPermissionsOption();
 
     argParser.addFlag(
       'open-devtools',

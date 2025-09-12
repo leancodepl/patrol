@@ -1,11 +1,9 @@
 import 'dart:async';
 
-import 'package:glob/glob.dart';
 import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/compatibility_checker/compatibility_checker.dart';
-import 'package:patrol_cli/src/coverage/coverage_tool.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
@@ -25,7 +23,6 @@ class TestWithoutBuildingCommand extends PatrolCommand {
     required AndroidTestBackend androidTestBackend,
     required IOSTestBackend iosTestBackend,
     required MacOSTestBackend macOSTestBackend,
-    required CoverageTool coverageTool,
     required Analytics analytics,
     required Logger logger,
   }) : _deviceFinder = deviceFinder,
@@ -36,7 +33,6 @@ class TestWithoutBuildingCommand extends PatrolCommand {
        _androidTestBackend = androidTestBackend,
        _iosTestBackend = iosTestBackend,
        _macosTestBackend = macOSTestBackend,
-       _coverageTool = coverageTool,
        _analytics = analytics,
        _logger = logger {
     usesGenerateBundleOption();
@@ -44,7 +40,6 @@ class TestWithoutBuildingCommand extends PatrolCommand {
     usesBuildModeOption();
     usesFlavorOption();
     usesPortOptions();
-    useCoverageOptions();
     usesShowFlutterLogs();
     usesHideTestSteps();
     usesClearTestSteps();
@@ -64,7 +59,6 @@ class TestWithoutBuildingCommand extends PatrolCommand {
   final AndroidTestBackend _androidTestBackend;
   final IOSTestBackend _iosTestBackend;
   final MacOSTestBackend _macosTestBackend;
-  final CoverageTool _coverageTool;
 
   final Analytics _analytics;
   final Logger _logger;
@@ -137,9 +131,6 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
     final bundleId = stringArg('bundle-id') ?? config.ios.bundleId;
 
     final uninstall = boolArg('uninstall');
-    final coverageEnabled = boolArg('coverage');
-    final ignoreGlobs = stringsArg('coverage-ignore').map(Glob.new).toSet();
-    final coveragePackagesRegExps = stringsArg('coverage-package');
 
     final flutterOpts = FlutterAppOptions(
       command: flutterCommand,
@@ -180,21 +171,6 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
     );
 
     await _preExecute(androidOpts, iosOpts, macosOpts, device, uninstall);
-
-    if (coverageEnabled) {
-      unawaited(
-        _coverageTool.run(
-          device: device,
-          platform: device.targetPlatform,
-          logger: _logger,
-          ignoreGlobs: ignoreGlobs,
-          packagesRegExps: switch (coveragePackagesRegExps.length) {
-            0 => {RegExp(config.flutterPackageName)},
-            _ => coveragePackagesRegExps.map(RegExp.new).toSet(),
-          },
-        ),
-      );
-    }
 
     final allPassed = await _execute(
       flutterOpts,

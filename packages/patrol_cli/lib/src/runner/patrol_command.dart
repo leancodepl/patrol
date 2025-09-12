@@ -152,18 +152,21 @@ abstract class PatrolCommand extends Command<int> {
         help: 'Bundle identifier of the iOS app under test.',
         valueHelp: 'pl.leancode.AwesomeApp',
       )
-      ..addFlag(
-        'clear-permissions',
-        help:
-            'Clear permissions available through XCUIProtectedResource API before running each test.',
-        negatable: false,
-      )
       ..addOption(
         'ios',
         help:
             'Pass iOS version. If empty, `latest` will be used. This flag only works with iOS simulator.',
         valueHelp: '17.5',
       );
+  }
+
+  void usesIOSClearPermissionsOption() {
+    argParser.addFlag(
+      'clear-permissions',
+      help:
+          'Clear permissions available through XCUIProtectedResource API before running each test.',
+      negatable: false,
+    );
   }
 
   void usesMacOSOptions() {

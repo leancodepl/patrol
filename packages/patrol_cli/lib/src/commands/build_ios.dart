@@ -47,6 +47,7 @@ class BuildIOSCommand extends PatrolCommand {
     usesBuildNumberOption();
 
     usesIOSOptions();
+    usesIOSClearPermissionsOption();
     argParser.addFlag(
       'simulator',
       help: 'Build for simulator instead of real device.',

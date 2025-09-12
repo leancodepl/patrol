@@ -67,6 +67,7 @@ class TestCommand extends PatrolCommand {
 
     usesAndroidOptions();
     usesIOSOptions();
+    usesIOSClearPermissionsOption();
   }
 
   final DeviceFinder _deviceFinder;
