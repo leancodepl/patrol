@@ -125,7 +125,6 @@
   }                                                                                                             \
                                                                                                                 \
   +(NSArray<NSInvocation *> *)testInvocations {                                                                 \
-    NSLog(@"Running tests with app uninstall");                                                                 \
     /* Start native automation server */                                                                        \
     PatrolServer *server = [[PatrolServer alloc] init];                                                         \
                                                                                                                 \
@@ -192,10 +191,10 @@
       IMP implementation = imp_implementationWithBlock(^(id _self) {                                            \
         NSLog(@"RunnerUITests running Dart test: %@", dartTestName);                                            \
                                                                                                                 \
-        if (CLEAR_PACKAGE_DATA && i > 0) {                                                                      \
-            NSLog(@"Test '%@' starting - uninstalling app", dartTestName);                                      \
+        if (FULL_ISOLATION && i > 0) {                                                                          \
+            NSLog(@"Uninstalling app");                                                                         \
             [self uninstallApp];                                                                                \
-            NSLog(@"app uninstallation completed, launching fresh app instance");                               \
+            NSLog(@"App uninstallation completed, launching fresh app instance");                               \
         }                                                                                                       \
                                                                                                                 \
         [[[XCUIApplication alloc] init] launch];                                                                \

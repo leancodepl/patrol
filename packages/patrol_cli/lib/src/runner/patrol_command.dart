@@ -134,12 +134,20 @@ abstract class PatrolCommand extends Command<int> {
     );
   }
 
+  void usesFullIsolationOption() {
+    argParser.addFlag(
+    'full-isolation',
+    help: 'Enable full isolation between test runs by clearing package data.',
+    negatable: false,
+    );
+  }
+
   void usesAndroidOptions() {
     argParser.addOption(
-      'package-name',
-      help: 'Package name of the Android app under test.',
-      valueHelp: 'pl.leancode.awesomeapp',
-    );
+        'package-name',
+        help: 'Package name of the Android app under test.',
+        valueHelp: 'pl.leancode.awesomeapp',
+      );
   }
 
   void usesIOSOptions() {
@@ -148,11 +156,6 @@ abstract class PatrolCommand extends Command<int> {
         'bundle-id',
         help: 'Bundle identifier of the iOS app under test.',
         valueHelp: 'pl.leancode.AwesomeApp',
-      )
-      ..addFlag(
-        'clear-package-data',
-        help: 'Clear package data before running each test.',
-        negatable: false,
       )
       ..addOption(
         'ios',
