@@ -266,6 +266,10 @@
           "href": "/cli-commands/test"
         },
         {
+          "title": "test-without-building",
+          "href": "/cli-commands/test-without-building"
+        },
+        {
           "title": "build",
           "href": "/cli-commands/build"
         },
