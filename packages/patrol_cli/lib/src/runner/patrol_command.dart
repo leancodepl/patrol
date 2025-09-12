@@ -230,6 +230,24 @@ abstract class PatrolCommand extends Command<int> {
     );
   }
 
+  void useCoverageOptions() {
+    argParser
+      ..addFlag('coverage', help: 'Generate coverage.')
+      ..addMultiOption(
+        'coverage-ignore',
+        help: 'Exclude files from coverage using glob patterns.',
+      )
+      ..addMultiOption(
+        'coverage-package',
+        help:
+            'A regular expression matching packages names '
+            'to include in the coverage report (if coverage is enabled). '
+            'If unset, matches the current package name.',
+        valueHelp: 'package-name-regexp',
+        splitCommas: false,
+      );
+  }
+
   /// Gets the parsed command-line flag named [name] as a `bool`.
   ///
   /// If no flag named [name] was added to the `ArgParser`, an [ArgumentError]

@@ -425,22 +425,4 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
 
     return allPassed;
   }
-
-  void useCoverageOptions() {
-    argParser
-      ..addFlag('coverage', help: 'Generate coverage.')
-      ..addMultiOption(
-        'coverage-ignore',
-        help: 'Exclude files from coverage using glob patterns.',
-      )
-      ..addMultiOption(
-        'coverage-package',
-        help:
-            'A regular expression matching packages names '
-            'to include in the coverage report (if coverage is enabled). '
-            'If unset, matches the current package name.',
-        valueHelp: 'package-name-regexp',
-        splitCommas: false,
-      );
-  }
 }
