@@ -28,7 +28,7 @@ android {
         versionName = flutter.versionName
         manifestPlaceholders["mapsApiKey"] = System.getenv("MAPS_API_KEY") ?: ""
         testInstrumentationRunner = "pl.leancode.patrol.PatrolJUnitRunner"
-//        testInstrumentationRunnerArguments["clearPackageData"] = "true"
+        testInstrumentationRunnerArguments["clearPackageData"] = "true"
 
     }
 
