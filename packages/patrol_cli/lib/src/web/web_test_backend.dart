@@ -59,9 +59,6 @@ class WebTestBackend {
   }) async {
     _logger.detail('Starting web test execution...');
 
-    // Ensure Playwright is available globally
-    await _ensurePlaywrightInstalled();
-
     // Start Flutter web server
     final flutterProcess = await _startFlutterWebServer(options);
 
@@ -274,24 +271,6 @@ class WebTestBackend {
         throw Exception('Missing required file: web_runner/$file\n'
             'Please follow the web testing setup guide.');
       }
-    }
-  }
-
-  Future<void> _ensurePlaywrightInstalled() async {
-    if (!await _isPlaywrightInstalled()) {
-      throw Exception('Playwright is not installed globally.\n'
-          'Please install it by running:\n'
-          '  npm install -g playwright\n'
-          '  playwright install chromium');
-    }
-  }
-
-  Future<bool> _isPlaywrightInstalled() async {
-    try {
-      final result = await _processManager.run(['playwright', '--version']);
-      return result.exitCode == 0;
-    } catch (e) {
-      return false;
     }
   }
 
