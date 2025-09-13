@@ -13,9 +13,9 @@ class DeviceFinder {
     required ProcessManager processManager,
     required DisposeScope parentDisposeScope,
     required Logger logger,
-  }) : _processManager = processManager,
-       _disposeScope = DisposeScope(),
-       _logger = logger {
+  })  : _processManager = processManager,
+        _disposeScope = DisposeScope(),
+        _logger = logger {
     _disposeScope.disposedBy(parentDisposeScope);
   }
 
@@ -36,7 +36,8 @@ class DeviceFinder {
       final targetPlatform = deviceJson['targetPlatform'] as String;
       if (!targetPlatform.startsWith('android-') &&
           targetPlatform != 'ios' &&
-          targetPlatform != 'darwin') {
+          targetPlatform != 'darwin' &&
+          targetPlatform != 'web-javascript') {
         continue;
       }
 
@@ -134,14 +135,17 @@ class DeviceFinder {
     required FlutterCommand flutterCommand,
   }) async {
     var flutterKilled = false;
-    final process = await _processManager.start([
-      flutterCommand.executable,
-      ...flutterCommand.arguments,
-      '--no-version-check',
-      '--suppress-analytics',
-      'devices',
-      '--machine',
-    ], runInShell: true);
+    final process = await _processManager.start(
+      [
+        flutterCommand.executable,
+        ...flutterCommand.arguments,
+        '--no-version-check',
+        '--suppress-analytics',
+        'devices',
+        '--machine',
+      ],
+      runInShell: true,
+    );
     _disposeScope.addDispose(() {
       process.kill();
       flutterKilled = true; // `flutter` has exit code 0 on SIGINT
@@ -185,6 +189,8 @@ class Device {
         return '$platformDescription $name';
       case TargetPlatform.macOS:
         return '$platformDescription $name';
+      case TargetPlatform.web:
+        return '$platformDescription $name';
     }
   }
 
@@ -196,11 +202,13 @@ class Device {
         return real ? 'device' : 'simulator';
       case TargetPlatform.macOS:
         return 'desktop';
+      case TargetPlatform.web:
+        return 'browser';
     }
   }
 }
 
-enum TargetPlatform { iOS, android, macOS }
+enum TargetPlatform { iOS, android, macOS, web }
 
 extension TargetPlatformX on TargetPlatform {
   static TargetPlatform fromString(String platform) {
@@ -210,6 +218,8 @@ extension TargetPlatformX on TargetPlatform {
       return TargetPlatform.android;
     } else if (platform == 'darwin') {
       return TargetPlatform.macOS;
+    } else if (platform == 'web-javascript') {
+      return TargetPlatform.web;
     } else {
       throw Exception('Unsupported platform $platform');
     }

@@ -364,3 +364,11 @@ class MacOSAppOptions {
     return cmd;
   }
 }
+
+class WebAppOptions {
+  const WebAppOptions({
+    required this.flutter,
+  });
+
+  final FlutterAppOptions flutter;
+}
