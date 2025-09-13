@@ -283,6 +283,10 @@ class DevelopCommand extends PatrolCommand {
       TargetPlatform.android => () => _androidTestBackend.build(androidOpts),
       TargetPlatform.iOS => () => _iosTestBackend.build(iosOpts),
       TargetPlatform.macOS => () => _macosTestBackend.build(macosOpts),
+      // TODO: Implement develop for web
+      TargetPlatform.web => () => throw UnimplementedError(
+        'Web platform is not supported for develop',
+      ),
     };
 
     try {
@@ -325,6 +329,9 @@ class DevelopCommand extends PatrolCommand {
           );
         }
       case TargetPlatform.macOS:
+      // TODO: Implement develop for web
+      case TargetPlatform.web:
+        throw UnimplementedError('Web platform is not supported for develop');
     }
 
     try {
@@ -388,6 +395,9 @@ class DevelopCommand extends PatrolCommand {
             device: device,
           );
         }
+      case TargetPlatform.web:
+        // TODO: Implement develop for web
+        throw UnimplementedError('Web platform is not supported for develop');
     }
 
     try {
