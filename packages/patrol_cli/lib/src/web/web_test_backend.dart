@@ -220,6 +220,7 @@ class WebTestBackend {
       ['npx', 'playwright', 'test', '--reporter=html'],
       workingDirectory: webRunnerPath,
       environment: {
+        'PLAYWRIGHT_HTML_OPEN': 'never',
         'BASE_URL': baseUrl,
         ...Platform.environment,
       },
