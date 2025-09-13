@@ -17,6 +17,7 @@ import 'package:patrol_cli/src/pubspec_reader.dart';
 import 'package:patrol_cli/src/runner/patrol_command.dart';
 import 'package:patrol_cli/src/test_bundler.dart';
 import 'package:patrol_cli/src/test_finder.dart';
+import 'package:patrol_cli/src/web/web_test_backend.dart';
 
 class TestCommand extends PatrolCommand {
   TestCommand({
@@ -29,21 +30,23 @@ class TestCommand extends PatrolCommand {
     required AndroidTestBackend androidTestBackend,
     required IOSTestBackend iosTestBackend,
     required MacOSTestBackend macOSTestBackend,
+    required WebTestBackend webTestBackend,
     required CoverageTool coverageTool,
     required Analytics analytics,
     required Logger logger,
-  }) : _deviceFinder = deviceFinder,
-       _testBundler = testBundler,
-       _testFinder = testFinder,
-       _dartDefinesReader = dartDefinesReader,
-       _compatibilityChecker = compatibilityChecker,
-       _pubspecReader = pubspecReader,
-       _androidTestBackend = androidTestBackend,
-       _iosTestBackend = iosTestBackend,
-       _macosTestBackend = macOSTestBackend,
-       _coverageTool = coverageTool,
-       _analytics = analytics,
-       _logger = logger {
+  })  : _deviceFinder = deviceFinder,
+        _testBundler = testBundler,
+        _testFinder = testFinder,
+        _dartDefinesReader = dartDefinesReader,
+        _compatibilityChecker = compatibilityChecker,
+        _pubspecReader = pubspecReader,
+        _androidTestBackend = androidTestBackend,
+        _iosTestBackend = iosTestBackend,
+        _macosTestBackend = macOSTestBackend,
+        _webTestBackend = webTestBackend,
+        _coverageTool = coverageTool,
+        _analytics = analytics,
+        _logger = logger {
     usesTargetOption();
     usesDeviceOption();
     usesBuildModeOption();
@@ -77,6 +80,7 @@ class TestCommand extends PatrolCommand {
   final AndroidTestBackend _androidTestBackend;
   final IOSTestBackend _iosTestBackend;
   final MacOSTestBackend _macosTestBackend;
+  final WebTestBackend _webTestBackend;
   final CoverageTool _coverageTool;
 
   final Analytics _analytics;
@@ -164,6 +168,14 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
     }
 
     final device = devices.single;
+
+    // Validate that flavors are not used with web platform
+    if (device.targetPlatform == TargetPlatform.web &&
+        stringArg('flavor') != null) {
+      _logger.err(
+          'Flavors are not supported for web platform. Please remove the --flavor flag.');
+      return 1;
+    }
 
     if (boolArg('check-compatibility')) {
       await _compatibilityChecker.checkVersionsCompatibility(
@@ -261,7 +273,11 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       testServerPort: super.testServerPort,
     );
 
-    await _build(androidOpts, iosOpts, macosOpts, device);
+    final webOpts = WebAppOptions(
+      flutter: flutterOpts,
+    );
+
+    await _build(androidOpts, iosOpts, macosOpts, webOpts, device);
     await _preExecute(androidOpts, iosOpts, macosOpts, device, uninstall);
 
     if (coverageEnabled) {
@@ -285,6 +301,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       androidOpts,
       iosOpts,
       macosOpts,
+      webOpts,
       uninstall: uninstall,
       device: device,
       showFlutterLogs: boolArg('show-flutter-logs'),
@@ -319,12 +336,14 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
         final bundleId = iosOpts.bundleId;
         if (bundleId != null) {
           action = () => _iosTestBackend.uninstall(
-            appId: bundleId,
-            flavor: iosOpts.flutter.flavor,
-            device: device,
-          );
+                appId: bundleId,
+                flavor: iosOpts.flutter.flavor,
+                device: device,
+              );
         }
       case TargetPlatform.macOS:
+      case TargetPlatform.web:
+      // No uninstall needed for macOS and web
     }
 
     try {
@@ -338,12 +357,14 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
     AndroidAppOptions androidOpts,
     IOSAppOptions iosOpts,
     MacOSAppOptions macosOpts,
+    WebAppOptions webOpts,
     Device device,
   ) async {
     final buildAction = switch (device.targetPlatform) {
       TargetPlatform.android => () => _androidTestBackend.build(androidOpts),
       TargetPlatform.macOS => () => _macosTestBackend.build(macosOpts),
       TargetPlatform.iOS => () => _iosTestBackend.build(iosOpts),
+      TargetPlatform.web => () => _webTestBackend.build(webOpts),
     };
 
     try {
@@ -361,7 +382,8 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
     FlutterAppOptions flutterOpts,
     AndroidAppOptions android,
     IOSAppOptions ios,
-    MacOSAppOptions macos, {
+    MacOSAppOptions macos,
+    WebAppOptions web, {
     required bool uninstall,
     required Device device,
     required bool showFlutterLogs,
@@ -374,13 +396,13 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
     switch (device.targetPlatform) {
       case TargetPlatform.android:
         action = () => _androidTestBackend.execute(
-          android,
-          device,
-          showFlutterLogs: showFlutterLogs,
-          hideTestSteps: hideTestSteps,
-          flavor: flutterOpts.flavor,
-          clearTestSteps: clearTestSteps,
-        );
+              android,
+              device,
+              showFlutterLogs: showFlutterLogs,
+              hideTestSteps: hideTestSteps,
+              flavor: flutterOpts.flavor,
+              clearTestSteps: clearTestSteps,
+            );
         final package = android.packageName;
         if (package != null && uninstall) {
           finalizer = () => _androidTestBackend.uninstall(package, device);
@@ -389,20 +411,29 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
         action = () => _macosTestBackend.execute(macos, device);
       case TargetPlatform.iOS:
         action = () => _iosTestBackend.execute(
-          ios,
-          device,
-          showFlutterLogs: showFlutterLogs,
-          hideTestSteps: hideTestSteps,
-          clearTestSteps: clearTestSteps,
-        );
+              ios,
+              device,
+              showFlutterLogs: showFlutterLogs,
+              hideTestSteps: hideTestSteps,
+              clearTestSteps: clearTestSteps,
+            );
         final bundleId = ios.bundleId;
         if (bundleId != null && uninstall) {
           finalizer = () => _iosTestBackend.uninstall(
-            appId: bundleId,
-            flavor: ios.flutter.flavor,
-            device: device,
-          );
+                appId: bundleId,
+                flavor: ios.flutter.flavor,
+                device: device,
+              );
         }
+      case TargetPlatform.web:
+        action = () => _webTestBackend.execute(
+              web,
+              device,
+              showFlutterLogs: showFlutterLogs,
+              hideTestSteps: hideTestSteps,
+              clearTestSteps: clearTestSteps,
+            );
+      // No uninstall needed for web
     }
 
     var allPassed = true;
@@ -435,8 +466,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       )
       ..addMultiOption(
         'coverage-package',
-        help:
-            'A regular expression matching packages names '
+        help: 'A regular expression matching packages names '
             'to include in the coverage report (if coverage is enabled). '
             'If unset, matches the current package name.',
         valueHelp: 'package-name-regexp',

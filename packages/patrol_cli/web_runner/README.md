@@ -1,11 +1,11 @@
-# Patrol Web MVP Harness
+# Patrol Web Runner
 
-Minimal Playwright harness that:
+Playwright-based harness integrated into patrol_cli that:
 - Launches Chromium
 - Opens the Flutter web app URL
-- Calls `window.__patrol_listDartTests()` and `window.__patrol_runDartTest(name)`
-- **NEW**: Exposes `patrolNative` binding for Dart→Playwright communication
-- Prints results to stdout (MVP)
+- Calls `window.__patrol_listDartTests()` and `window.__patrol_runDartTestWithCallback(name, callback)`
+- Exposes `patrolNative` binding for Dart→Playwright communication
+- Integrates with patrol test command for web platform
 
 ## Features
 
@@ -25,17 +25,25 @@ Minimal Playwright harness that:
 
 ## Usage
 
-### Basic Test Run
+### Usage with patrol_cli
+
+The web runner is automatically used when running tests on web platform:
+
 ```bash
-# 0) Go to `packages/patrol/example` and bundle all the tests. To do so, run `patrol test` command. Bundling tests into `test_bundle.dart` is always a first step so once you'll see that app is being build, stop the execution.
-patrol test
+# Run tests on web (automatically detected)
+patrol test --device web-server
 
-# 1) In app repo root, build and serve Flutter web app:
+# Or specify web explicitly
+patrol test --device chrome
+```
+
+### Manual Usage (for development)
+```bash
+# 1) Bundle tests and serve Flutter web app:
 flutter run -d web-server --target integration_test/test_bundle.dart
-# Take note of the served URL printed by Flutter (e.g., http://localhost:8080)
 
-# 2) In another terminal, run the harness:
-BASE_URL="url returned from flutter run" npx playwright test
+# 2) Run the harness directly:
+BASE_URL="http://localhost:8080" npx playwright test
 ```
 
 ### Using Native Actions in Tests
