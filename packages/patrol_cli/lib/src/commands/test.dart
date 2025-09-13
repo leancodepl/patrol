@@ -263,7 +263,11 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       flutter: flutterOpts,
     );
 
-    await _build(androidOpts, iosOpts, macosOpts, webOpts, device);
+    // No need to build web app for testing. It's done in the execute method.
+    if (device.targetPlatform != TargetPlatform.web) {
+      await _build(androidOpts, iosOpts, macosOpts, webOpts, device);
+    }
+
     await _preExecute(androidOpts, iosOpts, macosOpts, device, uninstall);
 
     if (coverageEnabled) {
