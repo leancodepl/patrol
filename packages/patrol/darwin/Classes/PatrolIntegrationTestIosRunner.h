@@ -192,9 +192,9 @@
         NSLog(@"RunnerUITests running Dart test: %@", dartTestName);                                            \
                                                                                                                 \
         if (FULL_ISOLATION && i > 0) {                                                                          \
-            NSLog(@"Uninstalling app");                                                                         \
-            [self uninstallApp];                                                                                \
-            NSLog(@"App uninstallation completed, launching fresh app instance");                               \
+          NSLog(@"Uninstalling app");                                                                           \
+          [self uninstallApp];                                                                                  \
+          NSLog(@"App uninstallation completed, launching fresh app instance");                                 \
         }                                                                                                       \
                                                                                                                 \
         [[[XCUIApplication alloc] init] launch];                                                                \
