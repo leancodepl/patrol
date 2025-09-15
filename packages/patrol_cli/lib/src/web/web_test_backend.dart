@@ -215,11 +215,20 @@ class WebTestBackend {
     // Install Node.js dependencies if needed
     await _ensureNodeDependencies(webRunnerPath);
 
+    final testResultsDir = '${Directory.current.path}/test-results';
+    final testReportDir = '${Directory.current.path}/playwright-report';
+
+    _logger
+      ..detail('Test results will be saved to: $testResultsDir')
+      ..detail('Test report will be saved to: $testReportDir');
+
     final result = await _processManager.run(
       ['npx', 'playwright', 'test'],
       workingDirectory: webRunnerPath,
       environment: {
         'BASE_URL': baseUrl,
+        'PATROL_TEST_RESULTS_DIR': testResultsDir,
+        'PATROL_TEST_REPORT_DIR': testReportDir,
         ...Platform.environment,
       },
       runInShell: true,
