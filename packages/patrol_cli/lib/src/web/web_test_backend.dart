@@ -214,10 +214,10 @@ class WebTestBackend {
 
     // Use globally installed playwright
     final result = await _processManager.run(
-      ['npx', 'playwright', 'test', '--reporter=html'],
+      ['npx', 'playwright', 'test', '--reporter=json'],
       workingDirectory: webRunnerPath,
       environment: {
-        'PLAYWRIGHT_HTML_OPEN': 'never',
+        'PLAYWRIGHT_JSON_OUTPUT_NAME': 'results.json',
         'BASE_URL': baseUrl,
         ...Platform.environment,
       },
