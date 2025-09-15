@@ -136,18 +136,18 @@ abstract class PatrolCommand extends Command<int> {
 
   void usesFullIsolationOption() {
     argParser.addFlag(
-    'full-isolation',
-    help: 'Enable full isolation between test runs by clearing package data.',
-    negatable: false,
+      'full-isolation',
+      help: 'Enable full isolation between test runs by clearing package data.',
+      negatable: false,
     );
   }
 
   void usesAndroidOptions() {
     argParser.addOption(
-        'package-name',
-        help: 'Package name of the Android app under test.',
-        valueHelp: 'pl.leancode.awesomeapp',
-      );
+      'package-name',
+      help: 'Package name of the Android app under test.',
+      valueHelp: 'pl.leancode.awesomeapp',
+    );
   }
 
   void usesIOSOptions() {

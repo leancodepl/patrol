@@ -159,7 +159,9 @@ class AndroidAppOptions {
     }
 
     if (fullIsolation) {
-      cmd.add('-Pandroid.testInstrumentationRunnerArguments.clearPackageData=true');
+      cmd.add(
+        '-Pandroid.testInstrumentationRunnerArguments.clearPackageData=true',
+      );
     }
 
     /// In Android Gradle Plugin 8.1.0 default behaviour has been changed

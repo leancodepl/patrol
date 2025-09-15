@@ -92,7 +92,7 @@ class Localization {
     do {
       return try Localization.getLocalizedString(key: key)
     } catch {
-      return key // Return the key itself as fallback
+      return key  // Return the key itself as fallback
     }
   }
 }
