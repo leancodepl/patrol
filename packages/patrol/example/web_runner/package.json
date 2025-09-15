@@ -2,7 +2,9 @@
   "name": "patrol_web",
   "version": "1.0.0",
   "main": "run.js",
-  "scripts": {},
+  "scripts": {
+    "develop": "npx tsx tests/patrol.develop.ts"
+  },
   "author": "",
   "license": "ISC",
   "dependencies": {
@@ -10,6 +12,7 @@
     "playwright": "1.55.0"
   },
   "devDependencies": {
-    "@types/node": "24.3.1"
+    "@types/node": "24.3.1",
+    "tsx": "^4.19.0"
   }
 }

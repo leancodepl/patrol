@@ -42,9 +42,20 @@ patrol test --device chrome
 # 1) Bundle tests and serve Flutter web app:
 flutter run -d web-server --target integration_test/test_bundle.dart
 
-# 2) Run the harness directly:
+# 2) Run all tests:
 BASE_URL="http://localhost:8080" npx playwright test
+
+# 3) Run in develop mode (like 'patrol develop'):
+BASE_URL="http://localhost:8080" npm run develop
 ```
+
+### Develop Mode
+The develop mode (`npm run develop`) provides an interactive development experience similar to `patrol develop`:
+- Runs a single test execution with hot reload capability
+- Press 'R' to restart the test execution
+- Press 'Ctrl+C' to exit
+- Automatically exposes patrolNative bindings
+- Uses BASE_URL environment variable (defaults to http://localhost:3000)
 
 ### Using Native Actions in Tests
 In your Dart test files, you can now call:
