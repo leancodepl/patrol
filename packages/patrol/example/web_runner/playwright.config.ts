@@ -8,4 +8,9 @@ export default defineConfig({
   },
   globalSetup: require.resolve("./tests/setup"),
   globalTeardown: require.resolve("./tests/teardown"),
+  reporter: [
+    ['json', {  outputFile: 'results.json' }],
+    ['junit', {  outputFile: 'results.xml' }],
+    ['html', {  outputFile: 'results.html' }]
+  ],
 });
