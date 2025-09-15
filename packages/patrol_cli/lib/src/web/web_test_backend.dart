@@ -275,10 +275,10 @@ class WebTestBackend {
           jsonDecode(packageConfigContent) as Map<String, dynamic>;
       final packages = packageConfig['packages'] as List<dynamic>;
 
-      // Find patrol_cli package
+      // Find patrol package
       for (final package in packages) {
         final packageMap = package as Map<String, dynamic>;
-        if (packageMap['name'] == 'patrol_cli') {
+        if (packageMap['name'] == 'patrol') {
           final packageUri = packageMap['rootUri'] as String;
           // Convert relative URI to absolute path
           String packagePath;
@@ -303,8 +303,8 @@ class WebTestBackend {
     }
 
     throw Exception(
-      'patrol_cli package not found in package configuration.\n'
-      'Please ensure patrol_cli is added as a dependency and run "dart pub get".',
+      'patrol package not found in package configuration.\n'
+      'Please ensure patrol is added as a dependency and run "dart pub get".',
     );
   }
 
@@ -314,8 +314,8 @@ class WebTestBackend {
 
     if (!webRunnerDir.existsSync()) {
       throw Exception('web_runner directory not found at: $webRunnerPath\n'
-          'This should be automatically resolved from the patrol_cli package.\n'
-          'Please ensure patrol_cli is properly installed and try running "dart pub get".');
+          'This should be automatically resolved from the patrol package.\n'
+          'Please ensure patrol is properly installed and try running "dart pub get".');
     }
 
     // Verify required files exist
@@ -328,8 +328,8 @@ class WebTestBackend {
     for (final file in requiredFiles) {
       if (!File('$webRunnerPath/$file').existsSync()) {
         throw Exception('Missing required file: $webRunnerPath/$file\n'
-            'This file should be present in the patrol_cli package.\n'
-            'Please ensure patrol_cli is properly installed.');
+            'This file should be present in the patrol package.\n'
+            'Please ensure patrol is properly installed.');
       }
     }
   }
