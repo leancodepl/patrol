@@ -212,7 +212,9 @@ class WebTestBackend {
 
     final webRunnerPath = _getWebRunnerPath();
 
-    // Use globally installed playwright
+    // Install Node.js dependencies if needed
+    await _ensureNodeDependencies(webRunnerPath);
+
     final result = await _processManager.run(
       ['npx', 'playwright', 'test'],
       workingDirectory: webRunnerPath,
@@ -245,8 +247,56 @@ class WebTestBackend {
   }
 
   String _getWebRunnerPath() {
-    // Simple: current directory + web_runner (patrol test is run from project root)
-    return '${Directory.current.path}/web_runner';
+    // Use web_runner from patrol_cli package instead of project root
+    // Get the path to patrol_cli package
+    final packageConfigPath =
+        '${Directory.current.path}/.dart_tool/package_config.json';
+    final packageConfigFile = File(packageConfigPath);
+
+    if (!packageConfigFile.existsSync()) {
+      throw Exception(
+        'Package configuration file not found at: $packageConfigPath\n'
+        'Please run "dart pub get" to generate the package configuration.',
+      );
+    }
+
+    try {
+      final packageConfigContent = packageConfigFile.readAsStringSync();
+      final packageConfig =
+          jsonDecode(packageConfigContent) as Map<String, dynamic>;
+      final packages = packageConfig['packages'] as List<dynamic>;
+
+      // Find patrol_cli package
+      for (final package in packages) {
+        final packageMap = package as Map<String, dynamic>;
+        if (packageMap['name'] == 'patrol_cli') {
+          final packageUri = packageMap['rootUri'] as String;
+          // Convert relative URI to absolute path
+          String packagePath;
+          if (packageUri.startsWith('../')) {
+            // Relative path from .dart_tool/package_config.json
+            packagePath =
+                Directory('${Directory.current.path}/.dart_tool/$packageUri')
+                    .resolveSymbolicLinksSync();
+          } else if (packageUri.startsWith('file://')) {
+            packagePath = Uri.parse(packageUri).toFilePath();
+          } else {
+            packagePath = packageUri;
+          }
+          return '$packagePath/web_runner';
+        }
+      }
+    } catch (e) {
+      throw Exception(
+        'Failed to parse package_config.json: $e\n'
+        'Please ensure your project dependencies are properly resolved by running "dart pub get".',
+      );
+    }
+
+    throw Exception(
+      'patrol_cli package not found in package configuration.\n'
+      'Please ensure patrol_cli is added as a dependency and run "dart pub get".',
+    );
   }
 
   Future<void> _ensureWebRunnerExists() async {
@@ -254,8 +304,9 @@ class WebTestBackend {
     final webRunnerDir = Directory(webRunnerPath);
 
     if (!webRunnerDir.existsSync()) {
-      throw Exception('web_runner directory not found in project root.\n'
-          'Please create it following the web testing setup guide.');
+      throw Exception('web_runner directory not found at: $webRunnerPath\n'
+          'This should be automatically resolved from the patrol_cli package.\n'
+          'Please ensure patrol_cli is properly installed and try running "dart pub get".');
     }
 
     // Verify required files exist
@@ -267,8 +318,9 @@ class WebTestBackend {
 
     for (final file in requiredFiles) {
       if (!File('$webRunnerPath/$file').existsSync()) {
-        throw Exception('Missing required file: web_runner/$file\n'
-            'Please follow the web testing setup guide.');
+        throw Exception('Missing required file: $webRunnerPath/$file\n'
+            'This file should be present in the patrol_cli package.\n'
+            'Please ensure patrol_cli is properly installed.');
       }
     }
   }
@@ -288,12 +340,50 @@ class WebTestBackend {
 
       final isReady = response.statusCode == 200;
       _logger.detail(
-          'Server verification: ${isReady ? 'SUCCESS' : 'FAILED'} (status: ${response.statusCode})');
+        'Server verification: ${isReady ? 'SUCCESS' : 'FAILED'} (status: ${response.statusCode})',
+      );
 
       return isReady;
     } catch (e) {
       _logger.detail('Server verification failed: $e');
       return false;
+    }
+  }
+
+  Future<void> _ensureNodeDependencies(String webRunnerPath) async {
+    _logger.detail('Checking Node.js dependencies in web_runner...');
+
+    final nodeModulesDir = Directory('$webRunnerPath/node_modules');
+    final packageLockFile = File('$webRunnerPath/package-lock.json');
+
+    // Check if node_modules exists and has content
+    final needsInstall = !nodeModulesDir.existsSync() ||
+        nodeModulesDir.listSync().isEmpty ||
+        !packageLockFile.existsSync();
+
+    if (needsInstall) {
+      _logger.info('Installing Node.js dependencies...');
+
+      final result = await _processManager.run(
+        ['npm', 'install'],
+        workingDirectory: webRunnerPath,
+        runInShell: true,
+      );
+
+      if (result.exitCode != 0) {
+        throw ProcessException(
+          'npm',
+          ['install'],
+          'Failed to install Node.js dependencies:\n'
+              'STDOUT: ${result.stdout}\n'
+              'STDERR: ${result.stderr}',
+          result.exitCode,
+        );
+      }
+
+      _logger.info('Node.js dependencies installed successfully.');
+    } else {
+      _logger.detail('Node.js dependencies are already installed.');
     }
   }
 }

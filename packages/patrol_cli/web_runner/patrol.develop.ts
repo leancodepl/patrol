@@ -1,5 +1,5 @@
 import { chromium, Browser, Page, BrowserContext } from "playwright";
-import { exposePatrolNativeRequestHandlers } from "./patrolNativeRequests";
+import { exposePatrolNativeRequestHandlers } from "./tests/patrolNativeRequests";
 
 type PatrolTestResult = {
   result: "success" | "failure";
