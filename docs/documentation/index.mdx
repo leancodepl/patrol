@@ -662,8 +662,8 @@ Check out our video version of this tutorial on YouTube!
   Here's what to remove when running app inside a patrol test:
   1. DO NOT call `WidgetsFlutterBinding.ensureInitialized()`.
   2. DO NOT use `runApp()`. Instead, use `$.pumpWidget()` (or `$.pumpWidgetAndSettle()` to wait until the UI is rendered). Pass the same argument which was passed to `runApp()`.
-  3. DO NOT modify `FlutterError.onError`. Sometimes it is done by some monitoring tools (like Crashlytics). Those tools rely on intercepting errors by modifying `FlutterError.onError` callback and it causes that the test engine can't see any exceptions, thus can't end a test if it fails.
-  One way is to move the code that would be common for both the test and the app into a method and leave the rest in main function of the app, or move whole app initialization to a function and define some arguments to enable or diable parts needed in a specific place.
+  3. DO NOT modify `FlutterError.onError`. Sometimes it is done by some monitoring tools (like Crashlytics). Those tools rely on intercepting errors by modifying `FlutterError.onError` callback and it causes that the test engine can't see any exceptions, thus can't end a test if it fails. One way is to move the code that would be common for both the test and the app into a method and leave the rest in main function of the app, or move whole app initialization to a function and define some arguments to enable or diable parts needed in a specific place.
+  For an example, look at `createApp` in `dev/e2e_app/integration_test/common.dart` in Patrol repository on GitHub.
 
 ## Flavors
   If your app is using flavors, then you can pass them like so:
