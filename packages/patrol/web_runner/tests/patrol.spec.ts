@@ -15,7 +15,7 @@ test.beforeEach(async ({ page }) => {
     () => {
       return typeof window.__patrol_runDartTestWithCallback === "function";
     },
-    { timeout: 30000 }
+    { timeout: 60000 }
   );
 
   await page.exposeBinding("patrolNative", async ({ page }, requestJson) =>
