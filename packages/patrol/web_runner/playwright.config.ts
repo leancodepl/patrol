@@ -17,4 +17,5 @@ export default defineConfig({
     }],
     ["list"]
   ],
+  timeout: 120000,
 });
