@@ -44,6 +44,7 @@ class BuildIOSCommand extends PatrolCommand {
     usesCheckCompatibilityOption();
     usesBuildNameOption();
     usesBuildNumberOption();
+    usesFullIsolationOption();
 
     usesIOSOptions();
     argParser.addFlag(
@@ -189,7 +190,7 @@ class BuildIOSCommand extends PatrolCommand {
       osVersion: stringArg('ios') ?? 'latest',
       appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
-      clearPermissions: boolArg('clear-permissions'),
+      fullIsolation: boolArg('full-isolation'),
     );
 
     try {

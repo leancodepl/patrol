@@ -66,6 +66,8 @@ class TestCommand extends PatrolCommand {
 
     usesAndroidOptions();
     usesIOSOptions();
+
+    usesFullIsolationOption();
   }
 
   final DeviceFinder _deviceFinder;
@@ -243,6 +245,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
       uninstall: uninstall,
+      fullIsolation: boolArg('full-isolation'),
     );
 
     final iosOpts = IOSAppOptions(
@@ -254,7 +257,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       osVersion: stringArg('ios') ?? 'latest',
       appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
-      clearPermissions: boolArg('clear-permissions'),
+      fullIsolation: boolArg('full-isolation'),
     );
 
     final macosOpts = MacOSAppOptions(
