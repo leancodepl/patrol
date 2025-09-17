@@ -15,6 +15,7 @@ export default defineConfig({
       outputFolder: process.env.PATROL_TEST_REPORT_DIR || "./playwright-report",
       open: "never"
     }],
+    ["json"],
     ["list"]
   ],
   timeout: 120000,
