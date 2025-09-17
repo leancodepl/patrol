@@ -229,6 +229,8 @@ class WebTestBackend {
         'BASE_URL': baseUrl,
         'PATROL_TEST_RESULTS_DIR': testResultsDir,
         'PATROL_TEST_REPORT_DIR': testReportDir,
+        'PLAYWRIGHT_JSON_OUTPUT_NAME': 'results.json',
+        'PLAYWRIGHT_JSON_OUTPUT_DIR': testReportDir,
         ...Platform.environment,
       },
       runInShell: true,
