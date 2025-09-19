@@ -140,6 +140,11 @@ patrol test --build-name=1.2.3 --build-number=123
 patrol test --target integration_test/login_test.dart --build-name=1.2.3 --build-number=123
 ```
 
+### Performance optimization
+
+If you have an existing build and want to run tests without rebuilding the app, you can use
+[`patrol test-without-building`](/cli-commands/test-without-building).
+
 ### Under the hood
 
 `patrol test` basically calls `patrol build` and then runs the built app

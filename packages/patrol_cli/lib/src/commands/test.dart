@@ -45,6 +45,7 @@ class TestCommand extends PatrolCommand {
        _analytics = analytics,
        _logger = logger {
     usesTargetOption();
+    usesGenerateBundleOption();
     usesDeviceOption();
     usesBuildModeOption();
     usesFlavorOption();
@@ -66,6 +67,9 @@ class TestCommand extends PatrolCommand {
 
     usesAndroidOptions();
     usesIOSOptions();
+    usesIOSClearPermissionsOption();
+
+    usesCacheOption();
   }
 
   final DeviceFinder _deviceFinder;
@@ -98,10 +102,11 @@ class TestCommand extends PatrolCommand {
     final testFileSuffix = config.testFileSuffix;
 
     final target = stringsArg('target');
+    final exclude = stringsArg('exclude');
     final targets = target.isNotEmpty
         ? _testFinder.findTests(target, testFileSuffix)
         : _testFinder.findAllTests(
-            excludes: stringsArg('exclude').toSet(),
+            excludes: exclude.toSet(),
             testFileSuffix: testFileSuffix,
           );
 
@@ -231,37 +236,38 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       dartDefineFromFilePaths: dartDefineFromFilePaths,
       buildName: buildName,
       buildNumber: buildNumber,
+      uninstall: uninstall,
     );
 
     final androidOpts = AndroidAppOptions(
       flutter: flutterOpts,
-      packageName: packageName,
       appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
-      uninstall: uninstall,
+      packageName: packageName,
     );
 
     final iosOpts = IOSAppOptions(
       flutter: flutterOpts,
+      appServerPort: super.appServerPort,
+      testServerPort: super.testServerPort,
       bundleId: bundleId,
       scheme: buildMode.createScheme(iosFlavor),
       configuration: buildMode.createConfiguration(iosFlavor),
       simulator: !device.real,
       osVersion: stringArg('ios') ?? 'latest',
-      appServerPort: super.appServerPort,
-      testServerPort: super.testServerPort,
       clearPermissions: boolArg('clear-permissions'),
     );
 
     final macosOpts = MacOSAppOptions(
       flutter: flutterOpts,
-      scheme: buildMode.createScheme(macosFlavor),
-      configuration: buildMode.createConfiguration(macosFlavor),
       appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
+      scheme: buildMode.createScheme(macosFlavor),
+      configuration: buildMode.createConfiguration(macosFlavor),
     );
 
-    await _build(androidOpts, iosOpts, macosOpts, device);
+    // await _build(androidOpts, iosOpts, macosOpts, device);
+    await _androidTestBackend.loadJavaPathFromFlutterDoctor(flutterCommand);
     await _preExecute(androidOpts, iosOpts, macosOpts, device, uninstall);
 
     if (coverageEnabled) {
@@ -423,23 +429,5 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
     }
 
     return allPassed;
-  }
-
-  void useCoverageOptions() {
-    argParser
-      ..addFlag('coverage', help: 'Generate coverage.')
-      ..addMultiOption(
-        'coverage-ignore',
-        help: 'Exclude files from coverage using glob patterns.',
-      )
-      ..addMultiOption(
-        'coverage-package',
-        help:
-            'A regular expression matching packages names '
-            'to include in the coverage report (if coverage is enabled). '
-            'If unset, matches the current package name.',
-        valueHelp: 'package-name-regexp',
-        splitCommas: false,
-      );
   }
 }

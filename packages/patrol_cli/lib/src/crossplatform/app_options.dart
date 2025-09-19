@@ -16,7 +16,28 @@ class FlutterAppOptions {
     required this.dartDefineFromFilePaths,
     required this.buildName,
     required this.buildNumber,
+    // TODO: KrzysztofMamak - server ports
+    // TODO: KrzysztofMamak - Consider moving it to android and ios options
+    required this.uninstall,
   });
+
+  factory FlutterAppOptions.fromJson(Map<String, dynamic> json) {
+    return FlutterAppOptions(
+      command: FlutterCommand.fromJson(json['command'] as Map<String, dynamic>),
+      target: json['target'] as String,
+      flavor: json['flavor'] as String?,
+      buildMode: BuildMode.values.firstWhere(
+        (mode) => mode.name == json['buildMode'],
+      ),
+      dartDefines: Map<String, String>.from(json['dartDefines'] as Map),
+      dartDefineFromFilePaths: List<String>.from(
+        json['dartDefineFromFilePaths'] as List,
+      ),
+      buildName: json['buildName'] as String?,
+      buildNumber: json['buildNumber'] as String?,
+      uninstall: json['uninstall'] as bool,
+    );
+  }
 
   final FlutterCommand command;
   final String target;
@@ -26,6 +47,21 @@ class FlutterAppOptions {
   final List<String> dartDefineFromFilePaths;
   final String? buildName;
   final String? buildNumber;
+  final bool uninstall;
+
+  Map<String, dynamic> toJson() {
+    return {
+      'command': command.toJson(),
+      'target': target,
+      'flavor': flavor,
+      'buildMode': buildMode.name,
+      'dartDefines': dartDefines,
+      'dartDefineFromFilePaths': dartDefineFromFilePaths,
+      'buildName': buildName,
+      'buildNumber': buildNumber,
+      'uninstall': uninstall,
+    };
+  }
 
   /// Translates these options into a proper `flutter attach`.
   @nonVirtual
@@ -52,19 +88,17 @@ class FlutterAppOptions {
 }
 
 class AndroidAppOptions {
-  const AndroidAppOptions({
+  AndroidAppOptions({
     required this.flutter,
-    this.packageName,
     required this.appServerPort,
     required this.testServerPort,
-    required this.uninstall,
+    this.packageName,
   });
 
   final FlutterAppOptions flutter;
-  final String? packageName;
   final int appServerPort;
   final int testServerPort;
-  final bool uninstall;
+  final String? packageName;
 
   String get description => 'apk with entrypoint ${basename(flutter.target)}';
 
@@ -81,17 +115,19 @@ class AndroidAppOptions {
     return _toGradleInvocation(
       isWindows: isWindows,
       task: 'assemble$_effectiveFlavor${_buildMode}AndroidTest',
-      noUninstallAfterTests: !uninstall,
+      noUninstallAfterTests: !flutter.uninstall,
     );
   }
 
   List<String> toGradleConnectedTestInvocation({required bool isWindows}) {
     // for example: connectedDevDebugAndroidTest, connectedReleaseAndroidTest
-    return _toGradleInvocation(
+    final cmd = _toGradleInvocation(
       isWindows: isWindows,
       task: 'connected$_effectiveFlavor${_buildMode}AndroidTest',
-      noUninstallAfterTests: !uninstall,
+      noUninstallAfterTests: !flutter.uninstall,
     );
+
+    return cmd;
   }
 
   List<String> toGradleAppDependencies({required bool isWindows}) {
@@ -185,24 +221,25 @@ class AndroidAppOptions {
 class IOSAppOptions {
   IOSAppOptions({
     required this.flutter,
+    required this.appServerPort,
+    required this.testServerPort,
     this.bundleId,
     required this.scheme,
     required this.configuration,
     required this.simulator,
     required this.osVersion,
-    required this.appServerPort,
-    required this.testServerPort,
     this.clearPermissions = false,
   });
 
   final FlutterAppOptions flutter;
+  final int appServerPort;
+  final int testServerPort;
+
   final String? bundleId;
   final String scheme;
   final String configuration;
   final String osVersion;
   final bool simulator;
-  final int appServerPort;
-  final int testServerPort;
   final bool clearPermissions;
 
   String get description {
@@ -277,38 +314,31 @@ class IOSAppOptions {
     required String xcTestRunPath,
     required String resultBundlePath,
   }) {
-    final cmd = [
-      ...['xcodebuild', 'test-without-building'],
-      ...['-xctestrun', xcTestRunPath],
-      ...['-only-testing', 'RunnerUITests/RunnerUITests'],
-      ...[
-        '-destination',
-        'platform=${device.real ? 'iOS' : 'iOS Simulator,OS=$osVersion'},name=${device.name}',
-      ],
-      ...['-destination-timeout', '1'],
-      ...['-resultBundlePath', resultBundlePath],
-    ];
-
-    return cmd;
+    return buildIOSTestWithoutBuildingInvocation(
+      device: device,
+      osVersion: osVersion,
+      xcTestRunPath: xcTestRunPath,
+      resultBundlePath: resultBundlePath,
+    );
   }
 }
 
 class MacOSAppOptions {
   MacOSAppOptions({
     required this.flutter,
+    required this.appServerPort,
+    required this.testServerPort,
     this.bundleId,
     required this.scheme,
     required this.configuration,
-    required this.appServerPort,
-    required this.testServerPort,
   });
 
   final FlutterAppOptions flutter;
+  final int appServerPort;
+  final int testServerPort;
   final String? bundleId;
   final String scheme;
   final String configuration;
-  final int appServerPort;
-  final int testServerPort;
 
   String get description {
     return 'app with entrypoint ${basename(flutter.target)} for macos';
@@ -372,15 +402,46 @@ class MacOSAppOptions {
     required String xcTestRunPath,
     required String resultBundlePath,
   }) {
-    final cmd = [
-      ...['xcodebuild', 'test-without-building'],
-      ...['-xctestrun', xcTestRunPath],
-      ...['-only-testing', 'RunnerUITests/RunnerUITests'],
-      ...['-destination', 'platform=macOS'],
-      ...['-resultBundlePath', resultBundlePath],
-      '-verbose',
-    ];
-
-    return cmd;
+    return buildMacOSTestWithoutBuildingInvocation(
+      device,
+      xcTestRunPath: xcTestRunPath,
+      resultBundlePath: resultBundlePath,
+    );
   }
+}
+
+List<String> buildIOSTestWithoutBuildingInvocation({
+  required Device device,
+  required String osVersion,
+  required String xcTestRunPath,
+  required String resultBundlePath,
+}) {
+  return [
+    ...['xcodebuild', 'test-without-building'],
+    ...['-xctestrun', xcTestRunPath],
+    ...['-only-testing', 'RunnerUITests/RunnerUITests'],
+    ...[
+      '-destination',
+      'platform=${device.real ? 'iOS' : 'iOS Simulator,OS=$osVersion'},name=${device.name}',
+    ],
+    ...['-destination-timeout', '1'],
+    ...['-resultBundlePath', resultBundlePath],
+  ];
+}
+
+List<String> buildMacOSTestWithoutBuildingInvocation(
+  Device device, {
+  required String xcTestRunPath,
+  required String resultBundlePath,
+}) {
+  final cmd = [
+    ...['xcodebuild', 'test-without-building'],
+    ...['-xctestrun', xcTestRunPath],
+    ...['-only-testing', 'RunnerUITests/RunnerUITests'],
+    ...['-destination', 'platform=macOS'],
+    ...['-resultBundlePath', resultBundlePath],
+    '-verbose',
+  ];
+
+  return cmd;
 }

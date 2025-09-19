@@ -38,12 +38,15 @@ abstract class PatrolCommand extends Command<int> {
         aliases: ['excludes'],
         help: 'Integration test targets to exclude.',
         valueHelp: 'integration_test/flaky_test.dart',
-      )
-      ..addFlag(
-        'generate-bundle',
-        defaultsTo: true,
-        help: 'Whether to generate a bundled Dart test file.',
       );
+  }
+
+  void usesGenerateBundleOption() {
+    argParser.addFlag(
+      'generate-bundle',
+      defaultsTo: true,
+      help: 'Whether to generate a bundled Dart test file.',
+    );
   }
 
   /// A command that expects only one device but got more should throw.
@@ -149,18 +152,21 @@ abstract class PatrolCommand extends Command<int> {
         help: 'Bundle identifier of the iOS app under test.',
         valueHelp: 'pl.leancode.AwesomeApp',
       )
-      ..addFlag(
-        'clear-permissions',
-        help:
-            'Clear permissions available through XCUIProtectedResource API before running each test.',
-        negatable: false,
-      )
       ..addOption(
         'ios',
         help:
             'Pass iOS version. If empty, `latest` will be used. This flag only works with iOS simulator.',
         valueHelp: '17.5',
       );
+  }
+
+  void usesIOSClearPermissionsOption() {
+    argParser.addFlag(
+      'clear-permissions',
+      help:
+          'Clear permissions available through XCUIProtectedResource API before running each test.',
+      negatable: false,
+    );
   }
 
   void usesMacOSOptions() {
@@ -224,6 +230,32 @@ abstract class PatrolCommand extends Command<int> {
       'build-number',
       help: 'Version code of the app.',
       valueHelp: '123',
+    );
+  }
+
+  void useCoverageOptions() {
+    argParser
+      ..addFlag('coverage', help: 'Generate coverage.')
+      ..addMultiOption(
+        'coverage-ignore',
+        help: 'Exclude files from coverage using glob patterns.',
+      )
+      ..addMultiOption(
+        'coverage-package',
+        help:
+            'A regular expression matching packages names '
+            'to include in the coverage report (if coverage is enabled). '
+            'If unset, matches the current package name.',
+        valueHelp: 'package-name-regexp',
+        splitCommas: false,
+      );
+  }
+
+  void usesCacheOption() {
+    argParser.addFlag(
+      'cache',
+      help: 'Enable caching of build options.',
+      negatable: false,
     );
   }
 

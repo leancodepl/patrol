@@ -6,6 +6,7 @@ import 'package:adb/adb.dart';
 import 'package:adb/src/exceptions.dart';
 import 'package:adb/src/extensions.dart';
 import 'package:adb/src/internals.dart';
+import 'package:path/path.dart' as path;
 
 /// Provides Dart interface for common Android Debug Bridge features.
 ///
@@ -34,7 +35,11 @@ class Adb {
   /// installation.
   ///
   /// Throws if there are no devices attached.
-  Future<io.ProcessResult> install(String path, {String? device}) async {
+  Future<io.ProcessResult> install(
+    String path, {
+    String? device,
+    List<String>? options,
+  }) async {
     await _adbInternals.ensureServerRunning();
     await _adbInternals.ensurePackageServiceRunning(device: device);
     await _adbInternals.ensureActivityServiceRunning(device: device);
@@ -42,6 +47,7 @@ class Adb {
     final result = await io.Process.run('adb', [
       if (device != null) ...['-s', device],
       'install',
+      ...?options,
       path,
     ], runInShell: true);
 
@@ -60,7 +66,7 @@ class Adb {
   /// If there is more than 1 device attached, decide which one to use by
   /// passing [device].
   ///
-  /// Thorws if there are no devices attached.
+  /// Throws if there are no devices attached.
   Future<io.ProcessResult> uninstall(
     String packageName, {
     String? device,
@@ -178,6 +184,100 @@ class Adb {
       for (final arg in arguments.entries) ...['-e', arg.key, arg.value],
       '$packageName/$intentClass',
     ], runInShell: true);
+
+    return process;
+  }
+
+  /// Returns the API level of the attached device.
+  Future<int> getDeviceApiLevel(String device) async {
+    final result = await io.Process.run('adb', [
+      '-s',
+      device,
+      'shell',
+      'getprop',
+      'ro.build.version.sdk',
+    ], runInShell: true);
+
+    if (result.exitCode != 0) {
+      throw Exception('Failed to get device API level: ${result.stderr}');
+    }
+
+    final apiLevelStr = result.stdout.toString().trim();
+    final apiLevel = int.tryParse(apiLevelStr);
+
+    if (apiLevel == null) {
+      throw Exception('Could not parse API level: $apiLevelStr');
+    }
+
+    return apiLevel;
+  }
+
+  /// Installs AndroidX Test Orchestrator and Test Services.
+  ///
+  /// More information available in the [Android documentation](https://developer.android.com/training/testing/instrumented-tests/androidx-test-libraries/runner#enable-command)
+  ///
+  /// Throws if installation fails or required APKs cannot be found.
+  Future<void> installOrchestrator({
+    required String device,
+    required String orchestratorPath,
+    required String testServicesPath,
+  }) async {
+    await _adbInternals.ensureServerRunning();
+    await _adbInternals.ensurePackageServiceRunning(device: device);
+    await _adbInternals.ensureActivityServiceRunning(device: device);
+
+    final apiLevel = await getDeviceApiLevel(device);
+    final installOptions = [if (apiLevel >= 30) '--force-queryable', '-r'];
+
+    try {
+      await uninstall('androidx.test.services', device: device);
+    } catch (_) {
+      // Ignore if package is not installed
+    }
+
+    try {
+      await uninstall('androidx.test.orchestrator');
+    } catch (_) {
+      // Ignore if package is not installed
+    }
+
+    if (!io.File(orchestratorPath).existsSync()) {
+      throw Exception('Orchestrator APK not found at: $orchestratorPath');
+    }
+
+    if (!io.File(testServicesPath).existsSync()) {
+      throw Exception('Test services APK not found at: $testServicesPath');
+    }
+
+    try {
+      await install(orchestratorPath, device: device, options: installOptions);
+    } catch (err) {
+      throw Exception('Failed to install orchestrator: $err');
+    }
+
+    try {
+      await install(testServicesPath, device: device, options: installOptions);
+    } catch (err) {
+      throw Exception('Failed to install test services: $err');
+    }
+  }
+
+  /// Runs tests using AndroidX Test Orchestrator on the attached device.
+  /// Requires `androidx.test.services` and `androidx.test.orchestrator` to be
+  /// installed on the device.
+  ///
+  /// Returns the process running the tests.
+  Future<io.Process> orchestrate(String device, String packageName) async {
+    await _adbInternals.ensureServerRunning();
+    await _adbInternals.ensurePackageServiceRunning(device: device);
+    await _adbInternals.ensureActivityServiceRunning(device: device);
+
+    final process = await io.Process.start('adb', [
+      '-s',
+      device,
+      'shell',
+      'CLASSPATH=\$(pm path androidx.test.services) app_process / androidx.test.services.shellexecutor.ShellMain am instrument -w -e targetInstrumentation $packageName.test/pl.leancode.patrol.PatrolJUnitRunner androidx.test.orchestrator/androidx.test.orchestrator.AndroidTestOrchestrator',
+    ]);
 
     return process;
   }

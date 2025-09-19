@@ -17,11 +17,10 @@ packages:
   adb:
     dependency: transitive
     description:
-      name: adb
-      sha256: "1be1de29cdf3877d6ecd8f1fa6e1182edd40672578eaa14b505fb71f01b5a571"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.5.0"
+      path: "../../packages/adb"
+      relative: true
+    source: path
+    version: "0.6.0"
   analyzer:
     dependency: transitive
     description:

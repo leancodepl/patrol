@@ -33,6 +33,7 @@ class BuildIOSCommand extends PatrolCommand {
        _logger = logger,
        _compatibilityChecker = compatibilityChecker {
     usesTargetOption();
+    usesGenerateBundleOption();
     usesBuildModeOption();
     usesFlavorOption();
     usesDartDefineOption();
@@ -46,10 +47,13 @@ class BuildIOSCommand extends PatrolCommand {
     usesBuildNumberOption();
 
     usesIOSOptions();
+    usesIOSClearPermissionsOption();
     argParser.addFlag(
       'simulator',
       help: 'Build for simulator instead of real device.',
     );
+
+    usesCacheOption();
   }
 
   final TestFinder _testFinder;
@@ -92,10 +96,11 @@ class BuildIOSCommand extends PatrolCommand {
     }
 
     final target = stringsArg('target');
+    final exclude = stringsArg('exclude');
     final targets = target.isNotEmpty
         ? _testFinder.findTests(target, testFileSuffix)
         : _testFinder.findAllTests(
-            excludes: stringsArg('exclude').toSet(),
+            excludes: exclude.toSet(),
             testFileSuffix: testFileSuffix,
           );
 
@@ -175,16 +180,17 @@ class BuildIOSCommand extends PatrolCommand {
       dartDefineFromFilePaths: dartDefineFromFilePaths,
       buildName: buildName,
       buildNumber: buildNumber,
+      uninstall: false,
     );
 
     final iosOpts = IOSAppOptions(
       flutter: flutterOpts,
+      appServerPort: super.appServerPort,
+      testServerPort: super.testServerPort,
       scheme: flutterOpts.buildMode.createScheme(flavor),
       configuration: flutterOpts.buildMode.createConfiguration(flavor),
       simulator: boolArg('simulator'),
       osVersion: stringArg('ios') ?? 'latest',
-      appServerPort: super.appServerPort,
-      testServerPort: super.testServerPort,
       clearPermissions: boolArg('clear-permissions'),
     );
 

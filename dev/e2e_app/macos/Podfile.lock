@@ -12,6 +12,8 @@ PODS:
   - geolocator_apple (1.2.0):
     - Flutter
     - FlutterMacOS
+  - package_info_plus (0.0.1):
+    - FlutterMacOS
   - patrol (0.0.1):
     - CocoaAsyncSocket (~> 7.6)
     - Flutter
@@ -27,6 +29,7 @@ DEPENDENCIES:
   - flutter_timezone (from `Flutter/ephemeral/.symlinks/plugins/flutter_timezone/macos`)
   - FlutterMacOS (from `Flutter/ephemeral`)
   - geolocator_apple (from `Flutter/ephemeral/.symlinks/plugins/geolocator_apple/darwin`)
+  - package_info_plus (from `Flutter/ephemeral/.symlinks/plugins/package_info_plus/macos`)
   - patrol (from `Flutter/ephemeral/.symlinks/plugins/patrol/darwin`)
   - webview_flutter_wkwebview (from `Flutter/ephemeral/.symlinks/plugins/webview_flutter_wkwebview/darwin`)
 
@@ -47,21 +50,24 @@ EXTERNAL SOURCES:
     :path: Flutter/ephemeral
   geolocator_apple:
     :path: Flutter/ephemeral/.symlinks/plugins/geolocator_apple/darwin
+  package_info_plus:
+    :path: Flutter/ephemeral/.symlinks/plugins/package_info_plus/macos
   patrol:
     :path: Flutter/ephemeral/.symlinks/plugins/patrol/darwin
   webview_flutter_wkwebview:
     :path: Flutter/ephemeral/.symlinks/plugins/webview_flutter_wkwebview/darwin
 
 SPEC CHECKSUMS:
-  app_links: afe860c55c7ef176cea7fb630a2b7d7736de591d
+  app_links: 86a57d95d4dec830373b8c85c21d1c59a4a5dc21
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
-  file_selector_macos: 6280b52b459ae6c590af5d78fc35c7267a3c4b31
-  flutter_local_notifications: 7e5a17a1dbc00d83dc10d43c2c4c05f2ceed233c
-  flutter_timezone: d59eea86178cbd7943cd2431cc2eaa9850f935d8
+  file_selector_macos: cc3858c981fe6889f364731200d6232dac1d812d
+  flutter_local_notifications: 4b427ffabf278fc6ea9484c97505e231166927a5
+  flutter_timezone: 62400baa441155f2a4144188648f2ff861649747
   FlutterMacOS: 8f6f14fa908a6fb3fba0cd85dbd81ec4b251fb24
-  geolocator_apple: ab36aa0e8b7d7a2d7639b3b4e48308394e8cef5e
-  patrol: 51b76cc7c11a2933ee3e72482d930c75b9d4ec73
-  webview_flutter_wkwebview: 1821ceac936eba6f7984d89a9f3bcb4dea99ebb2
+  geolocator_apple: 66b711889fd333205763b83c9dcf0a57a28c7afd
+  package_info_plus: 12f1c5c2cfe8727ca46cbd0b26677728972d9a5b
+  patrol: 5a504c6012be7a84369231475ede1fce6e777268
+  webview_flutter_wkwebview: a4af96a051138e28e29f60101d094683b9f82188
 
 PODFILE CHECKSUM: 4dcdd5fa8959bf7a21c4e3da36b083ff9ad52d38
 
