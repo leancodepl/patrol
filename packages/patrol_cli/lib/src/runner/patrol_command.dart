@@ -251,6 +251,14 @@ abstract class PatrolCommand extends Command<int> {
       );
   }
 
+  void usesCacheOption() {
+    argParser.addFlag(
+      'cache',
+      help: 'Enable caching of build options.',
+      negatable: false,
+    );
+  }
+
   /// Gets the parsed command-line flag named [name] as a `bool`.
   ///
   /// If no flag named [name] was added to the `ArgParser`, an [ArgumentError]

@@ -53,7 +53,6 @@ class DevelopCommand extends PatrolCommand {
     usesDartDefineFromFileOption();
     usesLabelOption();
     usesPortOptions();
-    usesTagsOption();
     usesHideTestSteps();
     usesClearTestSteps();
     usesCheckCompatibilityOption();
@@ -223,33 +222,33 @@ class DevelopCommand extends PatrolCommand {
       dartDefineFromFilePaths: dartDefineFromFilePaths,
       buildName: buildName,
       buildNumber: buildNumber,
+      uninstall: uninstall,
     );
 
     final androidOpts = AndroidAppOptions(
       flutter: flutterOpts,
-      packageName: packageName,
       appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
-      uninstall: uninstall,
+      packageName: packageName,
     );
 
     final iosOpts = IOSAppOptions(
       flutter: flutterOpts,
+      appServerPort: super.appServerPort,
+      testServerPort: super.testServerPort,
       bundleId: bundleId,
       scheme: buildMode.createScheme(iosFlavor),
       configuration: buildMode.createConfiguration(iosFlavor),
       simulator: !device.real,
       osVersion: stringArg('ios') ?? 'latest',
-      appServerPort: super.appServerPort,
-      testServerPort: super.testServerPort,
     );
 
     final macosOpts = MacOSAppOptions(
       flutter: flutterOpts,
-      scheme: buildMode.createScheme(iosFlavor),
-      configuration: buildMode.createConfiguration(iosFlavor),
       appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
+      scheme: buildMode.createScheme(iosFlavor),
+      configuration: buildMode.createConfiguration(iosFlavor),
     );
 
     await _build(androidOpts, iosOpts, macosOpts, device);

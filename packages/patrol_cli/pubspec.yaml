@@ -15,7 +15,8 @@ environment:
   sdk: '>=3.8.0 <4.0.0'
 
 dependencies:
-  adb: ^0.5.0
+  adb:
+    path: ../adb
   ansi_styles: ^0.3.2+1
   args: ^2.4.2
   ci: ^0.1.0

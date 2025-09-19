@@ -50,6 +50,8 @@ class BuildAndroidCommand extends PatrolCommand {
     usesBuildNumberOption();
 
     usesAndroidOptions();
+
+    usesCacheOption();
   }
 
   final TestFinder _testFinder;
@@ -92,10 +94,11 @@ class BuildAndroidCommand extends PatrolCommand {
     }
 
     final target = stringsArg('target');
+    final exclude = stringsArg('exclude');
     final targets = target.isNotEmpty
         ? _testFinder.findTests(target, testFileSuffix)
         : _testFinder.findAllTests(
-            excludes: stringsArg('exclude').toSet(),
+            excludes: exclude.toSet(),
             testFileSuffix: testFileSuffix,
           );
 
@@ -180,14 +183,14 @@ class BuildAndroidCommand extends PatrolCommand {
       dartDefineFromFilePaths: dartDefineFromFilePaths,
       buildName: buildName,
       buildNumber: buildNumber,
+      uninstall: uninstall,
     );
 
     final androidOpts = AndroidAppOptions(
       flutter: flutterOpts,
-      packageName: packageName,
       appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
-      uninstall: uninstall,
+      packageName: packageName,
     );
 
     try {

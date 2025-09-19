@@ -47,6 +47,8 @@ class BuildMacOSCommand extends PatrolCommand {
     usesBuildNumberOption();
 
     usesMacOSOptions();
+
+    usesCacheOption();
   }
 
   final TestFinder _testFinder;
@@ -89,10 +91,11 @@ class BuildMacOSCommand extends PatrolCommand {
     }
 
     final target = stringsArg('target');
+    final exclude = stringsArg('exclude');
     final targets = target.isNotEmpty
         ? _testFinder.findTests(target, testFileSuffix)
         : _testFinder.findAllTests(
-            excludes: stringsArg('exclude').toSet(),
+            excludes: exclude.toSet(),
             testFileSuffix: testFileSuffix,
           );
 
@@ -172,14 +175,15 @@ class BuildMacOSCommand extends PatrolCommand {
       dartDefineFromFilePaths: dartDefineFromFilePaths,
       buildName: buildName,
       buildNumber: buildNumber,
+      uninstall: false,
     );
 
     final macosOpts = MacOSAppOptions(
       flutter: flutterOpts,
-      scheme: flutterOpts.buildMode.createScheme(flavor),
-      configuration: flutterOpts.buildMode.createConfiguration(flavor),
       appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
+      scheme: flutterOpts.buildMode.createScheme(flavor),
+      configuration: flutterOpts.buildMode.createConfiguration(flavor),
     );
 
     try {
