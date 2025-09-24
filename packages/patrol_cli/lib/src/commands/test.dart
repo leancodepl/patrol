@@ -178,6 +178,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
 
     final displayLabel = boolArg('label');
     final uninstall = boolArg('uninstall');
+    final noTreeShakeIcons = boolArg('no-tree-shake-icons');
     final coverageEnabled = boolArg('coverage');
     final ignoreGlobs = stringsArg('coverage-ignore').map(Glob.new).toSet();
     final coveragePackagesRegExps = stringsArg('coverage-package');
@@ -239,6 +240,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
       uninstall: uninstall,
+      noTreeShakeIcons: noTreeShakeIcons,
     );
 
     final iosOpts = IOSAppOptions(
@@ -251,6 +253,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
       clearPermissions: boolArg('clear-permissions'),
+      noTreeShakeIcons: noTreeShakeIcons,
     );
 
     final macosOpts = MacOSAppOptions(
