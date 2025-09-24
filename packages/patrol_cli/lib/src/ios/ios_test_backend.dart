@@ -9,7 +9,9 @@ import 'package:path/path.dart' show join;
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
+import 'package:patrol_cli/src/build_path_cache_manager.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
+import 'package:patrol_cli/src/crossplatform/build_path_cache.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_log/patrol_log.dart';
 import 'package:platform/platform.dart';
@@ -56,12 +58,14 @@ class IOSTestBackend {
     required Platform platform,
     required FileSystem fs,
     required Directory rootDirectory,
+    required BuildPathCacheManager buildPathCacheManager,
     required DisposeScope parentDisposeScope,
     required Logger logger,
   }) : _processManager = processManager,
        _platform = platform,
        _fs = fs,
        _rootDirectory = rootDirectory,
+       _buildPathCacheManager = buildPathCacheManager,
        _disposeScope = DisposeScope(),
        _logger = logger {
     _disposeScope.disposedBy(parentDisposeScope);
@@ -73,6 +77,7 @@ class IOSTestBackend {
   final Platform _platform;
   final FileSystem _fs;
   final Directory _rootDirectory;
+  final BuildPathCacheManager _buildPathCacheManager;
   final DisposeScope _disposeScope;
   final Logger _logger;
 
@@ -142,6 +147,17 @@ class IOSTestBackend {
         throwToolExit(cause);
       }
     });
+
+    // TODO: KrzysztofMamak - introduce optional cache parameter in build and test commands
+    final sdkVersion = await getSdkVersion(real: !options.simulator);
+    final path = await xcTestRunPath(
+      real: !options.simulator,
+      scheme: options.scheme,
+      sdkVersion: sdkVersion,
+    );
+    _buildPathCacheManager.updateBuildPathCache(
+      IOSPathCache(xctestrunPath: path),
+    );
   }
 
   /// Executes the tests of the given [options] on the given [device].
@@ -157,6 +173,82 @@ class IOSTestBackend {
     required bool showFlutterLogs,
     required bool hideTestSteps,
     required bool clearTestSteps,
+  }) async {
+    final sdkVersion = await getSdkVersion(real: device.real);
+
+    final reportPath = resultBundlePath(
+      timestamp: DateTime.now().millisecondsSinceEpoch,
+    );
+
+    final command = options.testWithoutBuildingInvocation(
+      device,
+      xcTestRunPath: await xcTestRunPath(
+        real: device.real,
+        scheme: options.scheme,
+        sdkVersion: sdkVersion,
+      ),
+      resultBundlePath: reportPath,
+    );
+
+    return _execute(
+      command: command,
+      device: device,
+      description: options.description,
+      appServerPort: options.appServerPort,
+      testServerPort: options.testServerPort,
+      showFlutterLogs: showFlutterLogs,
+      hideTestSteps: hideTestSteps,
+      clearTestSteps: clearTestSteps,
+      interruptible: interruptible,
+    );
+  }
+
+  Future<void> executeByPath({
+    required Device device,
+    required String xcTestRunPath,
+    required String osVersion,
+    required bool showFlutterLogs,
+    required bool hideTestSteps,
+    required bool clearTestSteps,
+    required String description,
+    required int appServerPort,
+    required int testServerPort,
+    bool interruptible = false,
+  }) {
+    final reportPath = resultBundlePath(
+      timestamp: DateTime.now().millisecondsSinceEpoch,
+    );
+
+    final command = buildIOSTestWithoutBuildingInvocation(
+      device: device,
+      osVersion: osVersion,
+      xcTestRunPath: xcTestRunPath,
+      resultBundlePath: reportPath,
+    );
+
+    return _execute(
+      command: command,
+      device: device,
+      description: description,
+      appServerPort: appServerPort,
+      testServerPort: testServerPort,
+      showFlutterLogs: showFlutterLogs,
+      hideTestSteps: hideTestSteps,
+      clearTestSteps: clearTestSteps,
+      interruptible: interruptible,
+    );
+  }
+
+  Future<void> _execute({
+    required List<Object> command,
+    required Device device,
+    required String description,
+    required int appServerPort,
+    required int testServerPort,
+    required bool showFlutterLogs,
+    required bool hideTestSteps,
+    required bool clearTestSteps,
+    bool interruptible = false,
   }) async {
     await _disposeScope.run((scope) async {
       final patrolLogCommand = device.real
@@ -185,27 +277,17 @@ class IOSTestBackend {
             ..listen()
             ..startTimer();
 
-      final subject = '${options.description} on ${device.description}';
+      final subject = '$description on ${device.description}';
       final task = _logger.task('Running $subject');
 
-      final sdkVersion = await getSdkVersion(real: device.real);
       final process =
           await _processManager.start(
-              options.testWithoutBuildingInvocation(
-                device,
-                xcTestRunPath: await xcTestRunPath(
-                  real: device.real,
-                  scheme: options.scheme,
-                  sdkVersion: sdkVersion,
-                ),
-                resultBundlePath: reportPath,
-              ),
+              command,
               runInShell: true,
               environment: {
                 ..._platform.environment,
-                'TEST_RUNNER_PATROL_TEST_PORT': options.testServerPort
-                    .toString(),
-                'TEST_RUNNER_PATROL_APP_PORT': options.appServerPort.toString(),
+                'TEST_RUNNER_PATROL_TEST_PORT': testServerPort.toString(),
+                'TEST_RUNNER_PATROL_APP_PORT': appServerPort.toString(),
               },
               workingDirectory: _rootDirectory.childDirectory('ios').path,
             )

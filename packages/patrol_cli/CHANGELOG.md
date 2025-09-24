@@ -1,7 +1,8 @@
-## Unreleased
+## 3.11.0
 
 - Add `--build-name` and `--build-number` flags to `patrol test`, `patrol develop`, and `patrol build` commands.
 - Fix report path generation for Android (#2724)
+- Add `test-without-building` command (#2734)
 
 ## 3.10.0
 

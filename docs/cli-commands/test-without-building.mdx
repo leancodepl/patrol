@@ -1,0 +1,58 @@
+---
+title: Commands - test-without-building
+---
+
+### Synopsis
+
+Run integration tests without building the app.
+
+```bash
+patrol test-without-building
+```
+
+To see all available options and flags, run `patrol test-without-building --help`.
+
+### Description
+
+This command executes Patrol tests without performing the application build process.
+It is designed for scenarios where you need to efficiently re-run tests using an existing build,
+thereby significantly reducing test execution time. The command supports all options available in patrol test,
+including build mode, flavor and device.
+
+<Warning>
+    This command requires a valid build to exist in the build directory.
+    `patrol test-without-building` executes all available tests, and the test application must be built for
+    all test cases. The application must be built using the same entrypoint file (`test_bundle.dart`).
+    You also have to run `patrol test-without-building` command with the same build mode, flavor and port options.
+</Warning>
+
+### Prerequisites
+
+Before using `patrol test-without-building`, ensure that:
+
+1. **Existing build**: A valid build must already exist in your project's build directory
+2. **Complete test build**: The build includes all test cases intended for execution - if new tests have been added
+since the last build, a new build must be created first
+3. **Source code consistency**: The build must correspond to the current state of your source code - any modifications
+to test files or application code since the build was created may result in unexpected behavior or test failures
+
+### Under the hood
+
+- Test results and reporting functionality are identical to those provided by `patrol test`
+- The app installation and test execution processes follow the same procedures as `patrol test`
+
+### Creating the required build
+
+To create a build that can be used with `test-without-building`, use:
+
+```bash
+patrol build android  # for Android
+patrol build ios      # for iOS
+patrol build macos    # for macOS
+```
+
+Or simply run `patrol test` once, which will create the build and then run tests.
+
+<Info>
+    **Important Note:** `patrol test` or `patrol build` must be run without additional target, exclude or tags flags.
+</Info>

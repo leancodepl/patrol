@@ -16,11 +16,13 @@ import 'package:patrol_cli/src/base/constants.dart' as constants;
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
+import 'package:patrol_cli/src/build_path_cache_manager.dart';
 import 'package:patrol_cli/src/commands/build.dart';
 import 'package:patrol_cli/src/commands/develop.dart';
 import 'package:patrol_cli/src/commands/devices.dart';
 import 'package:patrol_cli/src/commands/doctor.dart';
 import 'package:patrol_cli/src/commands/test.dart';
+import 'package:patrol_cli/src/commands/test_without_building.dart';
 import 'package:patrol_cli/src/commands/update.dart';
 import 'package:patrol_cli/src/compatibility_checker/compatibility_checker.dart';
 import 'package:patrol_cli/src/compatibility_checker/version_compatibility.dart';
@@ -127,11 +129,17 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
 
     final rootDirectory = findRootDirectory(_fs) ?? _fs.currentDirectory;
 
+    final buildPathCacheManager = BuildPathCacheManager(
+      projectRoot: rootDirectory,
+      logger: _logger,
+    );
+
     final androidTestBackend = AndroidTestBackend(
       adb: adb,
       processManager: _processManager,
       platform: _platform,
       rootDirectory: rootDirectory,
+      buildPathCacheManager: buildPathCacheManager,
       parentDisposeScope: _disposeScope,
       logger: _logger,
     );
@@ -141,6 +149,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
       platform: _platform,
       fs: _fs,
       rootDirectory: rootDirectory,
+      buildPathCacheManager: buildPathCacheManager,
       parentDisposeScope: _disposeScope,
       logger: _logger,
     );
@@ -150,6 +159,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
       platform: _platform,
       fs: _fs,
       rootDirectory: rootDirectory,
+      buildPathCacheManager: buildPathCacheManager,
       parentDisposeScope: _disposeScope,
       logger: _logger,
     );
@@ -239,6 +249,24 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
           logger: _logger,
           parentDisposeScope: _disposeScope,
         ),
+        analytics: _analytics,
+        logger: _logger,
+      ),
+    );
+
+    addCommand(
+      TestWithoutBuildingCommand(
+        deviceFinder: deviceFinder,
+        compatibilityChecker: CompatibilityChecker(
+          projectRoot: rootDirectory,
+          processManager: _processManager,
+          logger: _logger,
+        ),
+        pubspecReader: PubspecReader(projectRoot: rootDirectory),
+        androidTestBackend: androidTestBackend,
+        iosTestBackend: iosTestBackend,
+        macOSTestBackend: macosTestBackend,
+        buildPathCacheManager: buildPathCacheManager,
         analytics: _analytics,
         logger: _logger,
       ),
