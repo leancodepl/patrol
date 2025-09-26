@@ -2,7 +2,6 @@
 //  Generated code. Do not modify.
 //  source: schema.dart
 //
-// ignore_for_file: public_member_api_docs
 
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
@@ -13,7 +12,7 @@ enum GroupEntryType {
   @JsonValue('group')
   group,
   @JsonValue('test')
-  test
+  test,
 }
 
 enum RunDartTestResponseResult {
@@ -22,14 +21,14 @@ enum RunDartTestResponseResult {
   @JsonValue('skipped')
   skipped,
   @JsonValue('failure')
-  failure
+  failure,
 }
 
 enum KeyboardBehavior {
   @JsonValue('showAndDismiss')
   showAndDismiss,
   @JsonValue('alternative')
-  alternative
+  alternative,
 }
 
 enum HandlePermissionRequestCode {
@@ -38,14 +37,14 @@ enum HandlePermissionRequestCode {
   @JsonValue('onlyThisTime')
   onlyThisTime,
   @JsonValue('denied')
-  denied
+  denied,
 }
 
 enum SetLocationAccuracyRequestLocationAccuracy {
   @JsonValue('coarse')
   coarse,
   @JsonValue('fine')
-  fine
+  fine,
 }
 
 enum IOSElementType {
@@ -214,7 +213,7 @@ enum IOSElementType {
   @JsonValue('touchBar')
   touchBar,
   @JsonValue('statusItem')
-  statusItem
+  statusItem,
 }
 
 @JsonSerializable()
@@ -239,13 +238,7 @@ class DartGroupEntry with EquatableMixin {
   Map<String, dynamic> toJson() => _$DartGroupEntryToJson(this);
 
   @override
-  List<Object?> get props => [
-        name,
-        type,
-        entries,
-        skip,
-        tags,
-      ];
+  List<Object?> get props => [name, type, entries, skip, tags];
 
   DartGroupEntry copyWith({
     String? name,
@@ -266,9 +259,7 @@ class DartGroupEntry with EquatableMixin {
 
 @JsonSerializable()
 class ListDartTestsResponse with EquatableMixin {
-  ListDartTestsResponse({
-    required this.group,
-  });
+  ListDartTestsResponse({required this.group});
 
   factory ListDartTestsResponse.fromJson(Map<String, dynamic> json) =>
       _$ListDartTestsResponseFromJson(json);
@@ -278,24 +269,16 @@ class ListDartTestsResponse with EquatableMixin {
   Map<String, dynamic> toJson() => _$ListDartTestsResponseToJson(this);
 
   @override
-  List<Object?> get props => [
-        group,
-      ];
+  List<Object?> get props => [group];
 
-  ListDartTestsResponse copyWith({
-    DartGroupEntry? group,
-  }) {
-    return ListDartTestsResponse(
-      group: group ?? this.group,
-    );
+  ListDartTestsResponse copyWith({DartGroupEntry? group}) {
+    return ListDartTestsResponse(group: group ?? this.group);
   }
 }
 
 @JsonSerializable()
 class RunDartTestRequest with EquatableMixin {
-  RunDartTestRequest({
-    required this.name,
-  });
+  RunDartTestRequest({required this.name});
 
   factory RunDartTestRequest.fromJson(Map<String, dynamic> json) =>
       _$RunDartTestRequestFromJson(json);
@@ -305,25 +288,16 @@ class RunDartTestRequest with EquatableMixin {
   Map<String, dynamic> toJson() => _$RunDartTestRequestToJson(this);
 
   @override
-  List<Object?> get props => [
-        name,
-      ];
+  List<Object?> get props => [name];
 
-  RunDartTestRequest copyWith({
-    String? name,
-  }) {
-    return RunDartTestRequest(
-      name: name ?? this.name,
-    );
+  RunDartTestRequest copyWith({String? name}) {
+    return RunDartTestRequest(name: name ?? this.name);
   }
 }
 
 @JsonSerializable()
 class RunDartTestResponse with EquatableMixin {
-  RunDartTestResponse({
-    required this.result,
-    this.details,
-  });
+  RunDartTestResponse({required this.result, this.details});
 
   factory RunDartTestResponse.fromJson(Map<String, dynamic> json) =>
       _$RunDartTestResponseFromJson(json);
@@ -334,10 +308,7 @@ class RunDartTestResponse with EquatableMixin {
   Map<String, dynamic> toJson() => _$RunDartTestResponseToJson(this);
 
   @override
-  List<Object?> get props => [
-        result,
-        details,
-      ];
+  List<Object?> get props => [result, details];
 
   RunDartTestResponse copyWith({
     RunDartTestResponseResult? result,
@@ -352,9 +323,7 @@ class RunDartTestResponse with EquatableMixin {
 
 @JsonSerializable()
 class ConfigureRequest with EquatableMixin {
-  ConfigureRequest({
-    required this.findTimeoutMillis,
-  });
+  ConfigureRequest({required this.findTimeoutMillis});
 
   factory ConfigureRequest.fromJson(Map<String, dynamic> json) =>
       _$ConfigureRequestFromJson(json);
@@ -364,13 +333,9 @@ class ConfigureRequest with EquatableMixin {
   Map<String, dynamic> toJson() => _$ConfigureRequestToJson(this);
 
   @override
-  List<Object?> get props => [
-        findTimeoutMillis,
-      ];
+  List<Object?> get props => [findTimeoutMillis];
 
-  ConfigureRequest copyWith({
-    int? findTimeoutMillis,
-  }) {
+  ConfigureRequest copyWith({int? findTimeoutMillis}) {
     return ConfigureRequest(
       findTimeoutMillis: findTimeoutMillis ?? this.findTimeoutMillis,
     );
@@ -379,9 +344,7 @@ class ConfigureRequest with EquatableMixin {
 
 @JsonSerializable()
 class OpenAppRequest with EquatableMixin {
-  OpenAppRequest({
-    required this.appId,
-  });
+  OpenAppRequest({required this.appId});
 
   factory OpenAppRequest.fromJson(Map<String, dynamic> json) =>
       _$OpenAppRequestFromJson(json);
@@ -391,16 +354,10 @@ class OpenAppRequest with EquatableMixin {
   Map<String, dynamic> toJson() => _$OpenAppRequestToJson(this);
 
   @override
-  List<Object?> get props => [
-        appId,
-      ];
+  List<Object?> get props => [appId];
 
-  OpenAppRequest copyWith({
-    String? appId,
-  }) {
-    return OpenAppRequest(
-      appId: appId ?? this.appId,
-    );
+  OpenAppRequest copyWith({String? appId}) {
+    return OpenAppRequest(appId: appId ?? this.appId);
   }
 }
 
@@ -423,9 +380,7 @@ class OpenQuickSettingsRequest with EquatableMixin {
 
 @JsonSerializable()
 class OpenUrlRequest with EquatableMixin {
-  OpenUrlRequest({
-    required this.url,
-  });
+  OpenUrlRequest({required this.url});
 
   factory OpenUrlRequest.fromJson(Map<String, dynamic> json) =>
       _$OpenUrlRequestFromJson(json);
@@ -435,16 +390,10 @@ class OpenUrlRequest with EquatableMixin {
   Map<String, dynamic> toJson() => _$OpenUrlRequestToJson(this);
 
   @override
-  List<Object?> get props => [
-        url,
-      ];
+  List<Object?> get props => [url];
 
-  OpenUrlRequest copyWith({
-    String? url,
-  }) {
-    return OpenUrlRequest(
-      url: url ?? this.url,
-    );
+  OpenUrlRequest copyWith({String? url}) {
+    return OpenUrlRequest(url: url ?? this.url);
   }
 }
 
@@ -499,26 +448,26 @@ class AndroidSelector with EquatableMixin {
 
   @override
   List<Object?> get props => [
-        className,
-        isCheckable,
-        isChecked,
-        isClickable,
-        isEnabled,
-        isFocusable,
-        isFocused,
-        isLongClickable,
-        isScrollable,
-        isSelected,
-        applicationPackage,
-        contentDescription,
-        contentDescriptionStartsWith,
-        contentDescriptionContains,
-        text,
-        textStartsWith,
-        textContains,
-        resourceName,
-        instance,
-      ];
+    className,
+    isCheckable,
+    isChecked,
+    isClickable,
+    isEnabled,
+    isFocusable,
+    isFocused,
+    isLongClickable,
+    isScrollable,
+    isSelected,
+    applicationPackage,
+    contentDescription,
+    contentDescriptionStartsWith,
+    contentDescriptionContains,
+    text,
+    textStartsWith,
+    textContains,
+    resourceName,
+    instance,
+  ];
 
   AndroidSelector copyWith({
     String? className,
@@ -612,23 +561,23 @@ class IOSSelector with EquatableMixin {
 
   @override
   List<Object?> get props => [
-        value,
-        instance,
-        elementType,
-        identifier,
-        label,
-        labelStartsWith,
-        labelContains,
-        title,
-        titleStartsWith,
-        titleContains,
-        hasFocus,
-        isEnabled,
-        isSelected,
-        placeholderValue,
-        placeholderValueStartsWith,
-        placeholderValueContains,
-      ];
+    value,
+    instance,
+    elementType,
+    identifier,
+    label,
+    labelStartsWith,
+    labelContains,
+    title,
+    titleStartsWith,
+    titleContains,
+    hasFocus,
+    isEnabled,
+    isSelected,
+    placeholderValue,
+    placeholderValueStartsWith,
+    placeholderValueContains,
+  ];
 
   IOSSelector copyWith({
     String? value,
@@ -708,19 +657,19 @@ class Selector with EquatableMixin {
 
   @override
   List<Object?> get props => [
-        text,
-        textStartsWith,
-        textContains,
-        className,
-        contentDescription,
-        contentDescriptionStartsWith,
-        contentDescriptionContains,
-        resourceId,
-        instance,
-        enabled,
-        focused,
-        pkg,
-      ];
+    text,
+    textStartsWith,
+    textContains,
+    className,
+    contentDescription,
+    contentDescriptionStartsWith,
+    contentDescriptionContains,
+    resourceId,
+    instance,
+    enabled,
+    focused,
+    pkg,
+  ];
 
   Selector copyWith({
     String? text,
@@ -775,12 +724,7 @@ class GetNativeViewsRequest with EquatableMixin {
   Map<String, dynamic> toJson() => _$GetNativeViewsRequestToJson(this);
 
   @override
-  List<Object?> get props => [
-        selector,
-        androidSelector,
-        iosSelector,
-        appId,
-      ];
+  List<Object?> get props => [selector, androidSelector, iosSelector, appId];
 
   GetNativeViewsRequest copyWith({
     Selector? selector,
@@ -813,10 +757,7 @@ class GetNativeUITreeRequest with EquatableMixin {
   Map<String, dynamic> toJson() => _$GetNativeUITreeRequestToJson(this);
 
   @override
-  List<Object?> get props => [
-        iosInstalledApps,
-        useNativeViewHierarchy,
-      ];
+  List<Object?> get props => [iosInstalledApps, useNativeViewHierarchy];
 
   GetNativeUITreeRequest copyWith({
     List<String>? iosInstalledApps,
@@ -848,11 +789,7 @@ class GetNativeUITreeRespone with EquatableMixin {
   Map<String, dynamic> toJson() => _$GetNativeUITreeResponeToJson(this);
 
   @override
-  List<Object?> get props => [
-        iOSroots,
-        androidRoots,
-        roots,
-      ];
+  List<Object?> get props => [iOSroots, androidRoots, roots];
 
   GetNativeUITreeRespone copyWith({
     List<IOSNativeView>? iOSroots,
@@ -916,25 +853,25 @@ class AndroidNativeView with EquatableMixin {
 
   @override
   List<Object?> get props => [
-        resourceName,
-        text,
-        className,
-        contentDescription,
-        applicationPackage,
-        childCount,
-        isCheckable,
-        isChecked,
-        isClickable,
-        isEnabled,
-        isFocusable,
-        isFocused,
-        isLongClickable,
-        isScrollable,
-        isSelected,
-        visibleBounds,
-        visibleCenter,
-        children,
-      ];
+    resourceName,
+    text,
+    className,
+    contentDescription,
+    applicationPackage,
+    childCount,
+    isCheckable,
+    isChecked,
+    isClickable,
+    isEnabled,
+    isFocusable,
+    isFocused,
+    isLongClickable,
+    isScrollable,
+    isSelected,
+    visibleBounds,
+    visibleCenter,
+    children,
+  ];
 
   AndroidNativeView copyWith({
     String? resourceName,
@@ -1014,18 +951,18 @@ class IOSNativeView with EquatableMixin {
 
   @override
   List<Object?> get props => [
-        children,
-        elementType,
-        identifier,
-        label,
-        title,
-        hasFocus,
-        isEnabled,
-        isSelected,
-        frame,
-        placeholderValue,
-        value,
-      ];
+    children,
+    elementType,
+    identifier,
+    label,
+    title,
+    hasFocus,
+    isEnabled,
+    isSelected,
+    frame,
+    placeholderValue,
+    value,
+  ];
 
   IOSNativeView copyWith({
     List<IOSNativeView>? children,
@@ -1076,19 +1013,9 @@ class Rectangle with EquatableMixin {
   Map<String, dynamic> toJson() => _$RectangleToJson(this);
 
   @override
-  List<Object?> get props => [
-        minX,
-        minY,
-        maxX,
-        maxY,
-      ];
+  List<Object?> get props => [minX, minY, maxX, maxY];
 
-  Rectangle copyWith({
-    double? minX,
-    double? minY,
-    double? maxX,
-    double? maxY,
-  }) {
+  Rectangle copyWith({double? minX, double? minY, double? maxX, double? maxY}) {
     return Rectangle(
       minX: minX ?? this.minX,
       minY: minY ?? this.minY,
@@ -1100,10 +1027,7 @@ class Rectangle with EquatableMixin {
 
 @JsonSerializable()
 class Point2D with EquatableMixin {
-  Point2D({
-    required this.x,
-    required this.y,
-  });
+  Point2D({required this.x, required this.y});
 
   factory Point2D.fromJson(Map<String, dynamic> json) =>
       _$Point2DFromJson(json);
@@ -1114,19 +1038,10 @@ class Point2D with EquatableMixin {
   Map<String, dynamic> toJson() => _$Point2DToJson(this);
 
   @override
-  List<Object?> get props => [
-        x,
-        y,
-      ];
+  List<Object?> get props => [x, y];
 
-  Point2D copyWith({
-    double? x,
-    double? y,
-  }) {
-    return Point2D(
-      x: x ?? this.x,
-      y: y ?? this.y,
-    );
+  Point2D copyWith({double? x, double? y}) {
+    return Point2D(x: x ?? this.x, y: y ?? this.y);
   }
 }
 
@@ -1161,16 +1076,16 @@ class NativeView with EquatableMixin {
 
   @override
   List<Object?> get props => [
-        className,
-        text,
-        contentDescription,
-        focused,
-        enabled,
-        childCount,
-        resourceName,
-        applicationPackage,
-        children,
-      ];
+    className,
+    text,
+    contentDescription,
+    focused,
+    enabled,
+    childCount,
+    resourceName,
+    applicationPackage,
+    children,
+  ];
 
   NativeView copyWith({
     String? className,
@@ -1215,11 +1130,7 @@ class GetNativeViewsResponse with EquatableMixin {
   Map<String, dynamic> toJson() => _$GetNativeViewsResponseToJson(this);
 
   @override
-  List<Object?> get props => [
-        nativeViews,
-        iosNativeViews,
-        androidNativeViews,
-      ];
+  List<Object?> get props => [nativeViews, iosNativeViews, androidNativeViews];
 
   GetNativeViewsResponse copyWith({
     List<NativeView>? nativeViews,
@@ -1259,13 +1170,13 @@ class TapRequest with EquatableMixin {
 
   @override
   List<Object?> get props => [
-        selector,
-        androidSelector,
-        iosSelector,
-        appId,
-        timeoutMillis,
-        delayBetweenTapsMillis,
-      ];
+    selector,
+    androidSelector,
+    iosSelector,
+    appId,
+    timeoutMillis,
+    delayBetweenTapsMillis,
+  ];
 
   TapRequest copyWith({
     Selector? selector,
@@ -1289,11 +1200,7 @@ class TapRequest with EquatableMixin {
 
 @JsonSerializable()
 class TapAtRequest with EquatableMixin {
-  TapAtRequest({
-    required this.x,
-    required this.y,
-    required this.appId,
-  });
+  TapAtRequest({required this.x, required this.y, required this.appId});
 
   factory TapAtRequest.fromJson(Map<String, dynamic> json) =>
       _$TapAtRequestFromJson(json);
@@ -1305,17 +1212,9 @@ class TapAtRequest with EquatableMixin {
   Map<String, dynamic> toJson() => _$TapAtRequestToJson(this);
 
   @override
-  List<Object?> get props => [
-        x,
-        y,
-        appId,
-      ];
+  List<Object?> get props => [x, y, appId];
 
-  TapAtRequest copyWith({
-    double? x,
-    double? y,
-    String? appId,
-  }) {
+  TapAtRequest copyWith({double? x, double? y, String? appId}) {
     return TapAtRequest(
       x: x ?? this.x,
       y: y ?? this.y,
@@ -1357,17 +1256,17 @@ class EnterTextRequest with EquatableMixin {
 
   @override
   List<Object?> get props => [
-        data,
-        appId,
-        index,
-        selector,
-        androidSelector,
-        iosSelector,
-        keyboardBehavior,
-        timeoutMillis,
-        dx,
-        dy,
-      ];
+    data,
+    appId,
+    index,
+    selector,
+    androidSelector,
+    iosSelector,
+    keyboardBehavior,
+    timeoutMillis,
+    dx,
+    dy,
+  ];
 
   EnterTextRequest copyWith({
     String? data,
@@ -1420,14 +1319,7 @@ class SwipeRequest with EquatableMixin {
   Map<String, dynamic> toJson() => _$SwipeRequestToJson(this);
 
   @override
-  List<Object?> get props => [
-        appId,
-        startX,
-        startY,
-        endX,
-        endY,
-        steps,
-      ];
+  List<Object?> get props => [appId, startX, startY, endX, endY, steps];
 
   SwipeRequest copyWith({
     String? appId,
@@ -1471,12 +1363,12 @@ class WaitUntilVisibleRequest with EquatableMixin {
 
   @override
   List<Object?> get props => [
-        selector,
-        androidSelector,
-        iosSelector,
-        appId,
-        timeoutMillis,
-      ];
+    selector,
+    androidSelector,
+    iosSelector,
+    appId,
+    timeoutMillis,
+  ];
 
   WaitUntilVisibleRequest copyWith({
     Selector? selector,
@@ -1497,9 +1389,7 @@ class WaitUntilVisibleRequest with EquatableMixin {
 
 @JsonSerializable()
 class DarkModeRequest with EquatableMixin {
-  DarkModeRequest({
-    required this.appId,
-  });
+  DarkModeRequest({required this.appId});
 
   factory DarkModeRequest.fromJson(Map<String, dynamic> json) =>
       _$DarkModeRequestFromJson(json);
@@ -1509,16 +1399,10 @@ class DarkModeRequest with EquatableMixin {
   Map<String, dynamic> toJson() => _$DarkModeRequestToJson(this);
 
   @override
-  List<Object?> get props => [
-        appId,
-      ];
+  List<Object?> get props => [appId];
 
-  DarkModeRequest copyWith({
-    String? appId,
-  }) {
-    return DarkModeRequest(
-      appId: appId ?? this.appId,
-    );
+  DarkModeRequest copyWith({String? appId}) {
+    return DarkModeRequest(appId: appId ?? this.appId);
   }
 }
 
@@ -1542,12 +1426,7 @@ class Notification with EquatableMixin {
   Map<String, dynamic> toJson() => _$NotificationToJson(this);
 
   @override
-  List<Object?> get props => [
-        appName,
-        title,
-        content,
-        raw,
-      ];
+  List<Object?> get props => [appName, title, content, raw];
 
   Notification copyWith({
     String? appName,
@@ -1566,9 +1445,7 @@ class Notification with EquatableMixin {
 
 @JsonSerializable()
 class GetNotificationsResponse with EquatableMixin {
-  GetNotificationsResponse({
-    required this.notifications,
-  });
+  GetNotificationsResponse({required this.notifications});
 
   factory GetNotificationsResponse.fromJson(Map<String, dynamic> json) =>
       _$GetNotificationsResponseFromJson(json);
@@ -1578,13 +1455,9 @@ class GetNotificationsResponse with EquatableMixin {
   Map<String, dynamic> toJson() => _$GetNotificationsResponseToJson(this);
 
   @override
-  List<Object?> get props => [
-        notifications,
-      ];
+  List<Object?> get props => [notifications];
 
-  GetNotificationsResponse copyWith({
-    List<Notification>? notifications,
-  }) {
+  GetNotificationsResponse copyWith({List<Notification>? notifications}) {
     return GetNotificationsResponse(
       notifications: notifications ?? this.notifications,
     );
@@ -1631,12 +1504,12 @@ class TapOnNotificationRequest with EquatableMixin {
 
   @override
   List<Object?> get props => [
-        index,
-        selector,
-        androidSelector,
-        iosSelector,
-        timeoutMillis,
-      ];
+    index,
+    selector,
+    androidSelector,
+    iosSelector,
+    timeoutMillis,
+  ];
 
   TapOnNotificationRequest copyWith({
     int? index,
@@ -1657,9 +1530,7 @@ class TapOnNotificationRequest with EquatableMixin {
 
 @JsonSerializable()
 class PermissionDialogVisibleResponse with EquatableMixin {
-  PermissionDialogVisibleResponse({
-    required this.visible,
-  });
+  PermissionDialogVisibleResponse({required this.visible});
 
   factory PermissionDialogVisibleResponse.fromJson(Map<String, dynamic> json) =>
       _$PermissionDialogVisibleResponseFromJson(json);
@@ -1670,24 +1541,16 @@ class PermissionDialogVisibleResponse with EquatableMixin {
       _$PermissionDialogVisibleResponseToJson(this);
 
   @override
-  List<Object?> get props => [
-        visible,
-      ];
+  List<Object?> get props => [visible];
 
-  PermissionDialogVisibleResponse copyWith({
-    bool? visible,
-  }) {
-    return PermissionDialogVisibleResponse(
-      visible: visible ?? this.visible,
-    );
+  PermissionDialogVisibleResponse copyWith({bool? visible}) {
+    return PermissionDialogVisibleResponse(visible: visible ?? this.visible);
   }
 }
 
 @JsonSerializable()
 class PermissionDialogVisibleRequest with EquatableMixin {
-  PermissionDialogVisibleRequest({
-    required this.timeoutMillis,
-  });
+  PermissionDialogVisibleRequest({required this.timeoutMillis});
 
   factory PermissionDialogVisibleRequest.fromJson(Map<String, dynamic> json) =>
       _$PermissionDialogVisibleRequestFromJson(json);
@@ -1697,13 +1560,9 @@ class PermissionDialogVisibleRequest with EquatableMixin {
   Map<String, dynamic> toJson() => _$PermissionDialogVisibleRequestToJson(this);
 
   @override
-  List<Object?> get props => [
-        timeoutMillis,
-      ];
+  List<Object?> get props => [timeoutMillis];
 
-  PermissionDialogVisibleRequest copyWith({
-    int? timeoutMillis,
-  }) {
+  PermissionDialogVisibleRequest copyWith({int? timeoutMillis}) {
     return PermissionDialogVisibleRequest(
       timeoutMillis: timeoutMillis ?? this.timeoutMillis,
     );
@@ -1712,9 +1571,7 @@ class PermissionDialogVisibleRequest with EquatableMixin {
 
 @JsonSerializable()
 class HandlePermissionRequest with EquatableMixin {
-  HandlePermissionRequest({
-    required this.code,
-  });
+  HandlePermissionRequest({required this.code});
 
   factory HandlePermissionRequest.fromJson(Map<String, dynamic> json) =>
       _$HandlePermissionRequestFromJson(json);
@@ -1724,24 +1581,16 @@ class HandlePermissionRequest with EquatableMixin {
   Map<String, dynamic> toJson() => _$HandlePermissionRequestToJson(this);
 
   @override
-  List<Object?> get props => [
-        code,
-      ];
+  List<Object?> get props => [code];
 
-  HandlePermissionRequest copyWith({
-    HandlePermissionRequestCode? code,
-  }) {
-    return HandlePermissionRequest(
-      code: code ?? this.code,
-    );
+  HandlePermissionRequest copyWith({HandlePermissionRequestCode? code}) {
+    return HandlePermissionRequest(code: code ?? this.code);
   }
 }
 
 @JsonSerializable()
 class SetLocationAccuracyRequest with EquatableMixin {
-  SetLocationAccuracyRequest({
-    required this.locationAccuracy,
-  });
+  SetLocationAccuracyRequest({required this.locationAccuracy});
 
   factory SetLocationAccuracyRequest.fromJson(Map<String, dynamic> json) =>
       _$SetLocationAccuracyRequestFromJson(json);
@@ -1751,9 +1600,7 @@ class SetLocationAccuracyRequest with EquatableMixin {
   Map<String, dynamic> toJson() => _$SetLocationAccuracyRequestToJson(this);
 
   @override
-  List<Object?> get props => [
-        locationAccuracy,
-      ];
+  List<Object?> get props => [locationAccuracy];
 
   SetLocationAccuracyRequest copyWith({
     SetLocationAccuracyRequestLocationAccuracy? locationAccuracy,
@@ -1782,11 +1629,7 @@ class SetMockLocationRequest with EquatableMixin {
   Map<String, dynamic> toJson() => _$SetMockLocationRequestToJson(this);
 
   @override
-  List<Object?> get props => [
-        latitude,
-        longitude,
-        packageName,
-      ];
+  List<Object?> get props => [latitude, longitude, packageName];
 
   SetMockLocationRequest copyWith({
     double? latitude,
@@ -1803,9 +1646,7 @@ class SetMockLocationRequest with EquatableMixin {
 
 @JsonSerializable()
 class IsVirtualDeviceResponse with EquatableMixin {
-  IsVirtualDeviceResponse({
-    required this.isVirtualDevice,
-  });
+  IsVirtualDeviceResponse({required this.isVirtualDevice});
 
   factory IsVirtualDeviceResponse.fromJson(Map<String, dynamic> json) =>
       _$IsVirtualDeviceResponseFromJson(json);
@@ -1815,13 +1656,9 @@ class IsVirtualDeviceResponse with EquatableMixin {
   Map<String, dynamic> toJson() => _$IsVirtualDeviceResponseToJson(this);
 
   @override
-  List<Object?> get props => [
-        isVirtualDevice,
-      ];
+  List<Object?> get props => [isVirtualDevice];
 
-  IsVirtualDeviceResponse copyWith({
-    bool? isVirtualDevice,
-  }) {
+  IsVirtualDeviceResponse copyWith({bool? isVirtualDevice}) {
     return IsVirtualDeviceResponse(
       isVirtualDevice: isVirtualDevice ?? this.isVirtualDevice,
     );
@@ -1830,9 +1667,7 @@ class IsVirtualDeviceResponse with EquatableMixin {
 
 @JsonSerializable()
 class GetOsVersionResponse with EquatableMixin {
-  GetOsVersionResponse({
-    required this.osVersion,
-  });
+  GetOsVersionResponse({required this.osVersion});
 
   factory GetOsVersionResponse.fromJson(Map<String, dynamic> json) =>
       _$GetOsVersionResponseFromJson(json);
@@ -1842,16 +1677,10 @@ class GetOsVersionResponse with EquatableMixin {
   Map<String, dynamic> toJson() => _$GetOsVersionResponseToJson(this);
 
   @override
-  List<Object?> get props => [
-        osVersion,
-      ];
+  List<Object?> get props => [osVersion];
 
-  GetOsVersionResponse copyWith({
-    int? osVersion,
-  }) {
-    return GetOsVersionResponse(
-      osVersion: osVersion ?? this.osVersion,
-    );
+  GetOsVersionResponse copyWith({int? osVersion}) {
+    return GetOsVersionResponse(osVersion: osVersion ?? this.osVersion);
   }
 }
 
@@ -1886,16 +1715,16 @@ class TakeCameraPhotoRequest with EquatableMixin {
 
   @override
   List<Object?> get props => [
-        shutterButtonSelector,
-        androidShutterButtonSelector,
-        iosShutterButtonSelector,
-        doneButtonSelector,
-        androidDoneButtonSelector,
-        timeoutMillis,
-        iosDoneButtonSelector,
-        appId,
-        isNative2,
-      ];
+    shutterButtonSelector,
+    androidShutterButtonSelector,
+    iosShutterButtonSelector,
+    doneButtonSelector,
+    androidDoneButtonSelector,
+    timeoutMillis,
+    iosDoneButtonSelector,
+    appId,
+    isNative2,
+  ];
 
   TakeCameraPhotoRequest copyWith({
     Selector? shutterButtonSelector,
@@ -1954,14 +1783,14 @@ class PickImageFromGalleryRequest with EquatableMixin {
 
   @override
   List<Object?> get props => [
-        imageSelector,
-        androidImageSelector,
-        iosImageSelector,
-        imageIndex,
-        timeoutMillis,
-        appId,
-        isNative2,
-      ];
+    imageSelector,
+    androidImageSelector,
+    iosImageSelector,
+    imageIndex,
+    timeoutMillis,
+    appId,
+    isNative2,
+  ];
 
   PickImageFromGalleryRequest copyWith({
     Selector? imageSelector,
@@ -1998,8 +1827,7 @@ class PickMultipleImagesFromGalleryRequest with EquatableMixin {
 
   factory PickMultipleImagesFromGalleryRequest.fromJson(
     Map<String, dynamic> json,
-  ) =>
-      _$PickMultipleImagesFromGalleryRequestFromJson(json);
+  ) => _$PickMultipleImagesFromGalleryRequestFromJson(json);
 
   final Selector? imageSelector;
   final AndroidSelector? androidImageSelector;
@@ -2014,14 +1842,14 @@ class PickMultipleImagesFromGalleryRequest with EquatableMixin {
 
   @override
   List<Object?> get props => [
-        imageSelector,
-        androidImageSelector,
-        iosImageSelector,
-        imageIndexes,
-        timeoutMillis,
-        appId,
-        isNative2,
-      ];
+    imageSelector,
+    androidImageSelector,
+    iosImageSelector,
+    imageIndexes,
+    timeoutMillis,
+    appId,
+    isNative2,
+  ];
 
   PickMultipleImagesFromGalleryRequest copyWith({
     Selector? imageSelector,

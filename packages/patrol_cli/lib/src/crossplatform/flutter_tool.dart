@@ -19,11 +19,11 @@ class FlutterTool {
     required DisposeScope parentDisposeScope,
     required Logger logger,
     this.onQuit,
-  })  : _stdin = stdin,
-        _processManager = processManager,
-        _platform = platform,
-        _disposeScope = DisposeScope(),
-        _logger = logger {
+  }) : _stdin = stdin,
+       _processManager = processManager,
+       _platform = platform,
+       _disposeScope = DisposeScope(),
+       _logger = logger {
     _disposeScope.disposedBy(parentDisposeScope);
   }
 
@@ -34,8 +34,9 @@ class FlutterTool {
   final Logger _logger;
   final Future<void> Function()? onQuit;
 
-  bool _hotRestartActive = false;
-  bool _logsActive = false;
+  var _hotRestartActive = false;
+  var _logsActive = false;
+  var _devtoolsUrl = '';
 
   /// Forwards logs and hot restarts the app when "r" is pressed.
   Future<void> attachForHotRestart({
@@ -104,101 +105,124 @@ class FlutterTool {
     Future<void> Function()? onQuit,
   }) async {
     await _disposeScope.run((scope) async {
-      final process = await _processManager.start(
-        [
-          ...[flutterCommand.executable, ...flutterCommand.arguments],
-          'attach',
-          '--no-version-check',
-          '--suppress-analytics',
-          '--debug',
-          ...['--device-id', deviceId],
-          if (debugUrl != null) ...['--debug-url', debugUrl],
-          if (appId != null) ...['--app-id', appId],
-          ...['--target', target],
-          for (final dartDefine in dartDefines.entries) ...[
-            '--dart-define',
-            '${dartDefine.key}=${dartDefine.value}',
-          ],
-        ],
-      )
-        ..disposedBy(scope);
+      final process =
+          await _processManager.start([
+              ...[flutterCommand.executable, ...flutterCommand.arguments],
+              'attach',
+              '--no-version-check',
+              '--suppress-analytics',
+              '--debug',
+              ...['--device-id', deviceId],
+              if (debugUrl != null) ...['--debug-url', debugUrl],
+              if (appId != null) ...['--app-id', appId],
+              ...['--target', target],
+              for (final dartDefine in dartDefines.entries) ...[
+                '--dart-define',
+                '${dartDefine.key}=${dartDefine.value}',
+              ],
+            ])
+            ..disposedBy(scope);
 
       final completer = Completer<void>();
-      scope.addDispose(() async {
+      scope.addDispose(() {
         if (!completer.isCompleted) {
           _logger.detail('Killed before attached to the app');
           completer.complete();
         }
       });
 
-      _stdin.listen((event) async {
-        final char = String.fromCharCode(event.first);
-        if (char == 'r' || char == 'R') {
-          if (!_hotRestartActive) {
-            _logger.warn('Hot Restart: not attached to the app yet!');
-            return;
-          }
+      _stdin
+          .listen((event) async {
+            final char = String.fromCharCode(event.first);
+            if (char == 'r' || char == 'R') {
+              if (!_hotRestartActive) {
+                _logger.warn('Hot Restart: not attached to the app yet!');
+                return;
+              }
 
-          _logger.success('Hot Restart for entrypoint ${basename(target)}...');
-          process.stdin.add('R'.codeUnits);
-        } else if (char == 'q' || char == 'Q') {
-          _logger.success('Quitting process...');
-          process.kill();
-          if (!completer.isCompleted) {
-            completer.complete();
-          }
+              _logger.success(
+                'Hot Restart for entrypoint ${basename(target)}...',
+              );
+              process.stdin.add('R'.codeUnits);
+            } else if (char == 'h' || char == 'H') {
+              final helpText = StringBuffer(
+                'Patrol develop key commands:\n'
+                'r Hot restart\n'
+                'h Print this help message\n'
+                'q Quit (terminate the process and application on the device)',
+              );
 
-          // Call the uninstall function if provided
-          if (onQuit != null) {
-            try {
-              await onQuit();
-            } catch (err) {
-              _logger.err('Failed to clean up app: $err');
+              if (_devtoolsUrl.isNotEmpty) {
+                helpText.writeln('\nDevTools: $_devtoolsUrl');
+              } else {
+                helpText.writeln('\nDevTools: not available yet');
+              }
+
+              _logger.success(helpText.toString());
+            } else if (char == 'q' || char == 'Q') {
+              _logger.success('Quitting process...');
+              process.kill();
+              if (!completer.isCompleted) {
+                completer.complete();
+              }
+
+              // Call the uninstall function if provided
+              if (onQuit != null) {
+                try {
+                  await onQuit();
+                } catch (err) {
+                  _logger.err('Failed to clean up app: $err');
+                }
+              }
+
+              exit(0);
             }
-          }
-
-          exit(0);
-        }
-      }).disposedBy(scope);
+          })
+          .disposedBy(scope);
 
       _logger.detail('Hot Restart: waiting for attach to the app...');
-      process.listenStdOut((line) {
-        if (line == 'Flutter run key commands.' && !completer.isCompleted) {
-          _logger.success(
-            'Hot Restart: attached to the app\n'
-            'Patrol develop key commands:\n'
-            'r Hot restart.\n'
-            'q Quit (terminate the process and application on the device).',
-          );
-          _hotRestartActive = true;
+      process
+          .listenStdOut((line) {
+            if (line == 'Flutter run key commands.' && !completer.isCompleted) {
+              _logger.success(
+                'Hot Restart: attached to the app\n'
+                'Patrol develop key commands:\n'
+                'r Hot restart\n'
+                'h Print this help message\n'
+                'q Quit (terminate the process and application on the device)',
+              );
+              _hotRestartActive = true;
 
-          if (!_logsActive) {
-            _logger.warn('Hot Restart: logs are not connected yet');
-          }
-          completer.complete();
-        }
+              if (!_logsActive) {
+                _logger.warn('Hot Restart: logs are not connected yet');
+              }
+              completer.complete();
+            }
 
-        if (line.startsWith('The Flutter DevTools debugger and profiler')) {
-          final devtoolsUrl = _getDevtoolsUrl(line);
-          _logger.success(
-            'Patrol DevTools extension is available at $devtoolsUrl',
-          );
+            if (line.startsWith('The Flutter DevTools debugger and profiler')) {
+              _devtoolsUrl = _getDevtoolsUrl(line);
+              _logger.success(
+                'Patrol DevTools extension is available at $_devtoolsUrl',
+              );
 
-          if (openBrowser) {
-            unawaited(_openDevtoolsPage(devtoolsUrl));
-          }
-        }
+              if (openBrowser) {
+                unawaited(_openDevtoolsPage(_devtoolsUrl));
+              }
+            }
 
-        _logger.detail('\t: $line');
-      }).disposedBy(scope);
+            _logger.detail('\t: $line');
+          })
+          .disposedBy(scope);
 
-      process.listenStdErr((line) {
-        if (line.startsWith('Waiting for another flutter command')) {
-          // This is a warning that we can ignore
-          return;
-        }
-        _logger.err('\t$line');
-      }).disposedBy(scope);
+      process
+          .listenStdErr((line) {
+            if (line.startsWith('Waiting for another flutter command')) {
+              // This is a warning that we can ignore
+              return;
+            }
+            _logger.err('\t$line');
+          })
+          .disposedBy(scope);
 
       await completer.future;
     });
@@ -214,60 +238,60 @@ class FlutterTool {
   }) async {
     await _disposeScope.run((scope) async {
       _logger.detail('Logs: waiting for them...');
-      final process = await _processManager.start(
-        [
-          ...[flutterCommand.executable, ...flutterCommand.arguments],
-          '--no-version-check',
-          '--suppress-analytics',
-          'logs',
-          '--device-id',
-          deviceId,
-        ],
-        runInShell: true,
-      )
-        ..disposedBy(scope);
+      final process =
+          await _processManager.start([
+              ...[flutterCommand.executable, ...flutterCommand.arguments],
+              '--no-version-check',
+              '--suppress-analytics',
+              'logs',
+              '--device-id',
+              deviceId,
+            ], runInShell: true)
+            ..disposedBy(scope);
 
       final completer = Completer<void>();
-      scope.addDispose(() async {
+      scope.addDispose(() {
         if (!completer.isCompleted) {
           completer.complete();
         }
       });
 
-      process.listenStdOut((line) {
-        if (line.contains('Dart VM service')) {
-          final url = _getObservationUrl(line);
-          observationUrlCompleter?.complete(url);
-        }
-        if (line.startsWith('Showing ') && line.endsWith('logs:')) {
-          _logger.success('Hot Restart: logs connected');
-          _logsActive = true;
+      process
+          .listenStdOut((line) {
+            if (line.contains('Dart VM service')) {
+              final url = _getObservationUrl(line);
+              observationUrlCompleter?.complete(url);
+            }
+            if (line.startsWith('Showing ') && line.endsWith('logs:')) {
+              _logger.success('Hot Restart: logs connected');
+              _logsActive = true;
 
-          if (!_hotRestartActive) {
-            _logger.warn('Hot Restart: not attached to the app yet');
-          }
-          completer.complete();
-        }
+              if (!_hotRestartActive) {
+                _logger.warn('Hot Restart: not attached to the app yet');
+              }
+              completer.complete();
+            }
 
-        // Skip the log line that contains "PATROL_LOG" prefix
-        const patrolLogPrefix = 'PATROL_LOG';
-        if (line.contains(patrolLogPrefix)) {
-          return;
-        }
+            // Skip the log line that contains "PATROL_LOG" prefix
+            const patrolLogPrefix = 'PATROL_LOG';
+            if (line.contains(patrolLogPrefix)) {
+              return;
+            }
 
-        // On iOS, "flutter" is not prefixed
-        final flutterPrefix = RegExp('flutter: ');
+            // On iOS, "flutter" is not prefixed
+            final flutterPrefix = RegExp('flutter: ');
 
-        // On Android, "flutter" is prefixed with "I\"
-        final flutterWithPortPrefix = RegExp(r'I\/flutter \(\s*[0-9]+\): ');
-        if (line.startsWith(flutterWithPortPrefix)) {
-          _logger.info('\t${line.replaceFirst(flutterWithPortPrefix, '')}');
-        } else if (line.startsWith(flutterPrefix)) {
-          _logger.info('\t${line.replaceFirst(flutterPrefix, '')}');
-        } else {
-          _logger.detail('\t$line');
-        }
-      }).disposedBy(scope);
+            // On Android, "flutter" is prefixed with "I\"
+            final flutterWithPortPrefix = RegExp(r'I\/flutter \(\s*[0-9]+\): ');
+            if (line.startsWith(flutterWithPortPrefix)) {
+              _logger.info('\t${line.replaceFirst(flutterWithPortPrefix, '')}');
+            } else if (line.startsWith(flutterPrefix)) {
+              _logger.info('\t${line.replaceFirst(flutterPrefix, '')}');
+            } else {
+              _logger.detail('\t$line');
+            }
+          })
+          .disposedBy(scope);
 
       process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
 

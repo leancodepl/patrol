@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:meta/meta.dart';
 import 'package:path/path.dart' show join;
 import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
@@ -23,14 +24,14 @@ class BuildIOSCommand extends PatrolCommand {
     required Analytics analytics,
     required Logger logger,
     required CompatibilityChecker compatibilityChecker,
-  })  : _testFinder = testFinder,
-        _testBundler = testBundler,
-        _dartDefinesReader = dartDefinesReader,
-        _pubspecReader = pubspecReader,
-        _iosTestBackend = iosTestBackend,
-        _analytics = analytics,
-        _logger = logger,
-        _compatibilityChecker = compatibilityChecker {
+  }) : _testFinder = testFinder,
+       _testBundler = testBundler,
+       _dartDefinesReader = dartDefinesReader,
+       _pubspecReader = pubspecReader,
+       _iosTestBackend = iosTestBackend,
+       _analytics = analytics,
+       _logger = logger,
+       _compatibilityChecker = compatibilityChecker {
     usesTargetOption();
     usesBuildModeOption();
     usesFlavorOption();
@@ -41,6 +42,8 @@ class BuildIOSCommand extends PatrolCommand {
     usesTagsOption();
     usesExcludeTagsOption();
     usesCheckCompatibilityOption();
+    usesBuildNameOption();
+    usesBuildNumberOption();
 
     usesIOSOptions();
     argParser.addFlag(
@@ -119,6 +122,16 @@ class BuildIOSCommand extends PatrolCommand {
       _logger.detail('Received iOS flavor: $flavor');
     }
 
+    final buildName = stringArg('build-name');
+    if (buildName != null) {
+      _logger.detail('Received build name: $buildName');
+    }
+
+    final buildNumber = stringArg('build-number');
+    if (buildNumber != null) {
+      _logger.detail('Received build number: $buildNumber');
+    }
+
     final bundleId = stringArg('bundle-id') ?? config.ios.bundleId;
 
     final displayLabel = boolArg('label');
@@ -160,6 +173,8 @@ class BuildIOSCommand extends PatrolCommand {
       buildMode: buildMode,
       dartDefines: dartDefines,
       dartDefineFromFilePaths: dartDefineFromFilePaths,
+      buildName: buildName,
+      buildNumber: buildNumber,
     );
 
     final iosOpts = IOSAppOptions(
@@ -175,7 +190,7 @@ class BuildIOSCommand extends PatrolCommand {
 
     try {
       await _iosTestBackend.build(iosOpts);
-      _printBinaryPaths(
+      printBinaryPaths(
         simulator: iosOpts.simulator,
         buildMode: flutterOpts.buildMode.xcodeName,
       );
@@ -194,7 +209,12 @@ class BuildIOSCommand extends PatrolCommand {
     return 0;
   }
 
-  void _printBinaryPaths({required bool simulator, required String buildMode}) {
+  @visibleForTesting
+  /// Prints the paths to the binary files for the app under test and the test instrumentation app.
+  ///
+  /// [simulator] is a boolean indicating whether the build is for a simulator.
+  /// [buildMode] is the build mode of the app under test.
+  void printBinaryPaths({required bool simulator, required String buildMode}) {
     // print path for 2 apps that live in build/ios_integ/Build/Products
 
     final testRoot = join('build', 'ios_integ', 'Build', 'Products');

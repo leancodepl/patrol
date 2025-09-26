@@ -18,6 +18,8 @@ void main() {
           target: r'C:\Users\john\app\integration_test\app_test.dart',
           buildMode: BuildMode.debug,
           flavor: null,
+          buildName: null,
+          buildNumber: null,
           dartDefines: {},
           dartDefineFromFilePaths: ['somePath.json', 'someOtherPath.json'],
         );
@@ -28,8 +30,9 @@ void main() {
           uninstall: false,
         );
 
-        final invocation =
-            options.toGradleAssembleTestInvocation(isWindows: true);
+        final invocation = options.toGradleAssembleTestInvocation(
+          isWindows: true,
+        );
         expect(
           invocation,
           equals([
@@ -49,6 +52,8 @@ void main() {
           target: '/Users/john/app/integration_test/app_test.dart',
           buildMode: BuildMode.release,
           flavor: null,
+          buildName: null,
+          buildNumber: null,
           dartDefines: {},
           dartDefineFromFilePaths: ['somePath.json', 'someOtherPath.json'],
         );
@@ -59,8 +64,9 @@ void main() {
           uninstall: false,
         );
 
-        final invocation =
-            options.toGradleAssembleTestInvocation(isWindows: false);
+        final invocation = options.toGradleAssembleTestInvocation(
+          isWindows: false,
+        );
         expect(
           invocation,
           equals([
@@ -88,6 +94,8 @@ void main() {
           target: r'C:\Users\john\app\integration_test\app_test.dart',
           buildMode: BuildMode.release,
           flavor: 'dev',
+          buildName: null,
+          buildNumber: null,
           dartDefines: dartDefines,
           dartDefineFromFilePaths: [],
         );
@@ -98,8 +106,9 @@ void main() {
           uninstall: true,
         );
 
-        final invocation =
-            options.toGradleAssembleTestInvocation(isWindows: true);
+        final invocation = options.toGradleAssembleTestInvocation(
+          isWindows: true,
+        );
         expect(
           invocation,
           equals([
@@ -119,6 +128,8 @@ void main() {
           target: '/Users/john/app/integration_test/app_test.dart',
           buildMode: BuildMode.debug,
           flavor: 'dev',
+          buildName: null,
+          buildNumber: null,
           dartDefines: dartDefines,
           dartDefineFromFilePaths: [],
         );
@@ -129,8 +140,9 @@ void main() {
           uninstall: true,
         );
 
-        final invocation =
-            options.toGradleAssembleTestInvocation(isWindows: false);
+        final invocation = options.toGradleAssembleTestInvocation(
+          isWindows: false,
+        );
         expect(
           invocation,
           equals([
@@ -150,6 +162,8 @@ void main() {
           target: '/Users/john/app/integration_test/app_test.dart',
           buildMode: BuildMode.debug,
           flavor: 'dev',
+          buildName: null,
+          buildNumber: null,
           dartDefines: dartDefines,
           dartDefineFromFilePaths: [],
         );
@@ -160,8 +174,9 @@ void main() {
           uninstall: false,
         );
 
-        final invocation =
-            options.toGradleConnectedTestInvocation(isWindows: false);
+        final invocation = options.toGradleConnectedTestInvocation(
+          isWindows: false,
+        );
         expect(
           invocation,
           equals([
@@ -182,170 +197,176 @@ void main() {
     late IOSAppOptions options;
 
     group(
-        'correctly encodes default xcodebuild invocation for simulator with dartDefineFromFile path',
-        () {
-      const flutterOpts = FlutterAppOptions(
-        command: flutterCommand,
-        target: 'integration_test/app_test.dart',
-        buildMode: BuildMode.debug,
-        flavor: null,
-        dartDefines: {},
-        dartDefineFromFilePaths: ['somePath.json', 'someOtherPath.json'],
-      );
-
-      setUp(() {
-        options = IOSAppOptions(
-          flutter: flutterOpts,
-          scheme: 'Runner',
-          configuration: 'Debug',
-          simulator: true,
-          osVersion: 'latest',
-          testServerPort: 8081,
-          appServerPort: 8082,
-        );
-      });
-
-      test('when building tests', () {
-        final flutterInvocation = options.toFlutterBuildInvocation(
-          flutterOpts.buildMode,
+      'correctly encodes default xcodebuild invocation for simulator with dartDefineFromFile path',
+      () {
+        const flutterOpts = FlutterAppOptions(
+          command: flutterCommand,
+          target: 'integration_test/app_test.dart',
+          buildMode: BuildMode.debug,
+          flavor: null,
+          buildName: null,
+          buildNumber: null,
+          dartDefines: {},
+          dartDefineFromFilePaths: ['somePath.json', 'someOtherPath.json'],
         );
 
-        expect(
-          flutterInvocation,
-          equals([
-            ...['flutter', 'build', 'ios'],
-            '--no-version-check',
-            '--suppress-analytics',
-            ...['--config-only', '--no-codesign', '--debug', '--simulator'],
-            ...['--target', 'integration_test/app_test.dart'],
-            ...['--dart-define-from-file', 'somePath.json'],
-            ...['--dart-define-from-file', 'someOtherPath.json'],
-          ]),
-        );
+        setUp(() {
+          options = IOSAppOptions(
+            flutter: flutterOpts,
+            scheme: 'Runner',
+            configuration: 'Debug',
+            simulator: true,
+            osVersion: 'latest',
+            testServerPort: 8081,
+            appServerPort: 8082,
+          );
+        });
 
-        final xcodebuildInvocation = options.buildForTestingInvocation();
+        test('when building tests', () {
+          final flutterInvocation = options.toFlutterBuildInvocation(
+            flutterOpts.buildMode,
+          );
 
-        expect(
-          xcodebuildInvocation,
-          equals([
-            ...['xcodebuild', 'build-for-testing'],
-            ...['-workspace', 'Runner.xcworkspace'],
-            ...['-scheme', 'Runner'],
-            ...['-configuration', 'Debug'],
-            ...['-sdk', 'iphonesimulator'],
-            ...['-destination', 'generic/platform=iOS Simulator'],
-            '-quiet',
-            ...['-derivedDataPath', '../build/ios_integ'],
-            r'OTHER_SWIFT_FLAGS=$(inherited) -D PATROL_ENABLED',
-          ]),
-        );
-      });
+          expect(
+            flutterInvocation,
+            equals([
+              ...['flutter', 'build', 'ios'],
+              '--no-version-check',
+              '--suppress-analytics',
+              ...['--config-only', '--no-codesign', '--debug', '--simulator'],
+              ...['--target', 'integration_test/app_test.dart'],
+              ...['--dart-define-from-file', 'somePath.json'],
+              ...['--dart-define-from-file', 'someOtherPath.json'],
+            ]),
+          );
 
-      test('when executing tests', () {
-        const xcTestRunPath =
-            '/Users/charlie/awesome_app/build/ios_integ/Build/Products/Runner_iphonesimulator16.4-arm64-x86_64.xctestrun';
+          final xcodebuildInvocation = options.buildForTestingInvocation();
 
-        final xcodebuildInvocation = options.testWithoutBuildingInvocation(
-          iosDevice,
-          xcTestRunPath: xcTestRunPath,
-          resultBundlePath: '',
-        );
+          expect(
+            xcodebuildInvocation,
+            equals([
+              ...['xcodebuild', 'build-for-testing'],
+              ...['-workspace', 'Runner.xcworkspace'],
+              ...['-scheme', 'Runner'],
+              ...['-configuration', 'Debug'],
+              ...['-sdk', 'iphonesimulator'],
+              ...['-destination', 'generic/platform=iOS Simulator'],
+              '-quiet',
+              ...['-derivedDataPath', '../build/ios_integ'],
+              r'OTHER_SWIFT_FLAGS=$(inherited) -D PATROL_ENABLED',
+            ]),
+          );
+        });
 
-        expect(
-          xcodebuildInvocation,
-          equals([
-            ...['xcodebuild', 'test-without-building'],
-            ...['-xctestrun', xcTestRunPath],
-            ...['-only-testing', 'RunnerUITests/RunnerUITests'],
-            ...['-destination', 'platform=iOS,name=iPhone 13'],
-            ...['-destination-timeout', '1'],
-            ...['-resultBundlePath', ''],
-          ]),
-        );
-      });
-    });
+        test('when executing tests', () {
+          const xcTestRunPath =
+              '/Users/charlie/awesome_app/build/ios_integ/Build/Products/Runner_iphonesimulator16.4-arm64-x86_64.xctestrun';
+
+          final xcodebuildInvocation = options.testWithoutBuildingInvocation(
+            iosDevice,
+            xcTestRunPath: xcTestRunPath,
+            resultBundlePath: '',
+          );
+
+          expect(
+            xcodebuildInvocation,
+            equals([
+              ...['xcodebuild', 'test-without-building'],
+              ...['-xctestrun', xcTestRunPath],
+              ...['-only-testing', 'RunnerUITests/RunnerUITests'],
+              ...['-destination', 'platform=iOS,name=iPhone 13'],
+              ...['-destination-timeout', '1'],
+              ...['-resultBundlePath', ''],
+            ]),
+          );
+        });
+      },
+    );
 
     group(
-        'correctly encodes default xcodebuild invocation for simulator without dartDefineFromFile path',
-        () {
-      const flutterOpts = FlutterAppOptions(
-        command: flutterCommand,
-        target: 'integration_test/app_test.dart',
-        buildMode: BuildMode.debug,
-        flavor: null,
-        dartDefines: {},
-        dartDefineFromFilePaths: [],
-      );
-
-      setUp(() {
-        options = IOSAppOptions(
-          flutter: flutterOpts,
-          scheme: 'Runner',
-          configuration: 'Debug',
-          simulator: true,
-          osVersion: '17.5',
-          testServerPort: 8081,
-          appServerPort: 8082,
-        );
-      });
-
-      test('when building tests', () {
-        final flutterInvocation = options.toFlutterBuildInvocation(
-          flutterOpts.buildMode,
+      'correctly encodes default xcodebuild invocation for simulator without dartDefineFromFile path',
+      () {
+        const flutterOpts = FlutterAppOptions(
+          command: flutterCommand,
+          target: 'integration_test/app_test.dart',
+          buildMode: BuildMode.debug,
+          flavor: null,
+          buildName: null,
+          buildNumber: null,
+          dartDefines: {},
+          dartDefineFromFilePaths: [],
         );
 
-        expect(
-          flutterInvocation,
-          equals([
-            ...['flutter', 'build', 'ios'],
-            '--no-version-check',
-            '--suppress-analytics',
-            ...['--config-only', '--no-codesign', '--debug', '--simulator'],
-            ...['--target', 'integration_test/app_test.dart'],
-          ]),
-        );
+        setUp(() {
+          options = IOSAppOptions(
+            flutter: flutterOpts,
+            scheme: 'Runner',
+            configuration: 'Debug',
+            simulator: true,
+            osVersion: '17.5',
+            testServerPort: 8081,
+            appServerPort: 8082,
+          );
+        });
 
-        final xcodebuildInvocation = options.buildForTestingInvocation();
+        test('when building tests', () {
+          final flutterInvocation = options.toFlutterBuildInvocation(
+            flutterOpts.buildMode,
+          );
 
-        expect(
-          xcodebuildInvocation,
-          equals([
-            ...['xcodebuild', 'build-for-testing'],
-            ...['-workspace', 'Runner.xcworkspace'],
-            ...['-scheme', 'Runner'],
-            ...['-configuration', 'Debug'],
-            ...['-sdk', 'iphonesimulator'],
-            ...['-destination', 'generic/platform=iOS Simulator'],
-            '-quiet',
-            ...['-derivedDataPath', '../build/ios_integ'],
-            r'OTHER_SWIFT_FLAGS=$(inherited) -D PATROL_ENABLED',
-          ]),
-        );
-      });
+          expect(
+            flutterInvocation,
+            equals([
+              ...['flutter', 'build', 'ios'],
+              '--no-version-check',
+              '--suppress-analytics',
+              ...['--config-only', '--no-codesign', '--debug', '--simulator'],
+              ...['--target', 'integration_test/app_test.dart'],
+            ]),
+          );
 
-      test('when executing tests', () {
-        const xcTestRunPath =
-            '/Users/charlie/awesome_app/build/ios_integ/Build/Products/Runner_iphonesimulator16.4-arm64-x86_64.xctestrun';
+          final xcodebuildInvocation = options.buildForTestingInvocation();
 
-        final xcodebuildInvocation = options.testWithoutBuildingInvocation(
-          iosDevice,
-          xcTestRunPath: xcTestRunPath,
-          resultBundlePath: '',
-        );
+          expect(
+            xcodebuildInvocation,
+            equals([
+              ...['xcodebuild', 'build-for-testing'],
+              ...['-workspace', 'Runner.xcworkspace'],
+              ...['-scheme', 'Runner'],
+              ...['-configuration', 'Debug'],
+              ...['-sdk', 'iphonesimulator'],
+              ...['-destination', 'generic/platform=iOS Simulator'],
+              '-quiet',
+              ...['-derivedDataPath', '../build/ios_integ'],
+              r'OTHER_SWIFT_FLAGS=$(inherited) -D PATROL_ENABLED',
+            ]),
+          );
+        });
 
-        expect(
-          xcodebuildInvocation,
-          equals([
-            ...['xcodebuild', 'test-without-building'],
-            ...['-xctestrun', xcTestRunPath],
-            ...['-only-testing', 'RunnerUITests/RunnerUITests'],
-            ...['-destination', 'platform=iOS,name=iPhone 13'],
-            ...['-destination-timeout', '1'],
-            ...['-resultBundlePath', ''],
-          ]),
-        );
-      });
-    });
+        test('when executing tests', () {
+          const xcTestRunPath =
+              '/Users/charlie/awesome_app/build/ios_integ/Build/Products/Runner_iphonesimulator16.4-arm64-x86_64.xctestrun';
+
+          final xcodebuildInvocation = options.testWithoutBuildingInvocation(
+            iosDevice,
+            xcTestRunPath: xcTestRunPath,
+            resultBundlePath: '',
+          );
+
+          expect(
+            xcodebuildInvocation,
+            equals([
+              ...['xcodebuild', 'test-without-building'],
+              ...['-xctestrun', xcTestRunPath],
+              ...['-only-testing', 'RunnerUITests/RunnerUITests'],
+              ...['-destination', 'platform=iOS,name=iPhone 13'],
+              ...['-destination-timeout', '1'],
+              ...['-resultBundlePath', ''],
+            ]),
+          );
+        });
+      },
+    );
 
     group(
       'correctly encodes customized xcodebuild invocation for real device',
@@ -355,6 +376,8 @@ void main() {
           target: 'integration_test/app_test.dart',
           buildMode: BuildMode.release,
           flavor: 'prod',
+          buildName: '1.2.3',
+          buildNumber: '123',
           dartDefines: {
             'EMAIL': 'user@example.com',
             'PASSWORD': 'ny4ncat',
@@ -388,6 +411,8 @@ void main() {
               '--suppress-analytics',
               ...['--config-only', '--no-codesign', '--release'],
               ...['--flavor', 'prod'],
+              ...['--build-name', '1.2.3'],
+              ...['--build-number', '123'],
               ...['--target', 'integration_test/app_test.dart'],
               ...['--dart-define', 'EMAIL=user@example.com'],
               ...['--dart-define', 'PASSWORD=ny4ncat'],
@@ -414,5 +439,87 @@ void main() {
         });
       },
     );
+  });
+
+  group('MacOSAppOptions', () {
+    late MacOSAppOptions options;
+
+    group('correctly encodes Flutter build invocation with build flags', () {
+      test('with build name and number', () {
+        const flutterOpts = FlutterAppOptions(
+          command: flutterCommand,
+          target: 'integration_test/app_test.dart',
+          buildMode: BuildMode.release,
+          flavor: 'prod',
+          buildName: '2.1.0',
+          buildNumber: '210',
+          dartDefines: {'ENV': 'production'},
+          dartDefineFromFilePaths: [],
+        );
+
+        options = MacOSAppOptions(
+          flutter: flutterOpts,
+          scheme: 'prod',
+          configuration: 'Release-prod',
+          appServerPort: 8082,
+          testServerPort: 8081,
+        );
+
+        final flutterInvocation = options.toFlutterBuildInvocation(
+          flutterOpts.buildMode,
+        );
+
+        expect(
+          flutterInvocation,
+          equals([
+            ...['flutter', 'build', 'macos'],
+            '--no-version-check',
+            '--suppress-analytics',
+            ...['--config-only', '--release'],
+            ...['--flavor', 'prod'],
+            ...['--build-name', '2.1.0'],
+            ...['--build-number', '210'],
+            ...['--target', 'integration_test/app_test.dart'],
+            ...['--dart-define', 'ENV=production'],
+          ]),
+        );
+      });
+
+      test('without build name and number', () {
+        const flutterOpts = FlutterAppOptions(
+          command: flutterCommand,
+          target: 'integration_test/app_test.dart',
+          buildMode: BuildMode.debug,
+          flavor: null,
+          buildName: null,
+          buildNumber: null,
+          dartDefines: {},
+          dartDefineFromFilePaths: [],
+        );
+
+        options = MacOSAppOptions(
+          flutter: flutterOpts,
+          scheme: 'Runner',
+          configuration: 'Debug',
+          appServerPort: 8082,
+          testServerPort: 8081,
+        );
+
+        final flutterInvocation = options.toFlutterBuildInvocation(
+          flutterOpts.buildMode,
+        );
+
+        expect(
+          flutterInvocation,
+          equals([
+            ...['flutter', 'build', 'macos'],
+            '--no-version-check',
+            '--suppress-analytics',
+            ...['--config-only', '--debug'],
+            ...['--target', 'integration_test/app_test.dart'],
+          ]),
+        );
+      });
+    });
   });
 }

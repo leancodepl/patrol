@@ -148,29 +148,27 @@ void patrolTest(
       );
       await callback(patrolTester);
 
-      // We need to silent this warning to avoid false positive
-      // avoid_redundant_argument_values
-      // ignore: prefer_const_declarations
-      final waitSeconds = const int.fromEnvironment('PATROL_WAIT');
-      final waitDuration = Duration(seconds: waitSeconds);
-
       if (debugDefaultTargetPlatformOverride !=
           patrolBinding.workaroundDebugDefaultTargetPlatformOverride) {
         debugDefaultTargetPlatformOverride =
             patrolBinding.workaroundDebugDefaultTargetPlatformOverride;
       }
 
-      if (waitDuration > Duration.zero) {
-        final stopwatch = Stopwatch()..start();
-        await Future.doWhile(() async {
+      if (constants.hotRestartEnabled &&
+          global_state.isCurrentTestLastInGroup) {
+        // Patrol log that test is finished
+        // If test fails this code will not be executed
+        patrolLog.log(
+          LogEntry(
+            message:
+                'All tests were executed. Press "r" to start again or "q" to quit',
+          ),
+        );
+        // Wait indefinitely in develop mode after the last test
+        while (true) {
           await widgetTester.pump();
-          if (stopwatch.elapsed > waitDuration) {
-            stopwatch.stop();
-            return false;
-          }
-
-          return true;
-        });
+          await Future<void>.delayed(const Duration(milliseconds: 10));
+        }
       }
     },
   );
@@ -276,10 +274,7 @@ DartGroupEntry createDartTestGroup(
 /// should return 'myTest'
 @internal
 String deduplicateGroupEntryName(String parentName, String currentName) {
-  return currentName.substring(
-    parentName.length + 1,
-    currentName.length,
-  );
+  return currentName.substring(parentName.length + 1, currentName.length);
 }
 
 /// Recursively prints the structure of the test suite and reports test count
@@ -298,17 +293,16 @@ int reportGroupStructure(DartGroupEntry group, {int indentation = 0}) {
       debugPrint("$indent     -- test: '${entry.name}'");
     } else {
       for (final subgroup in entry.entries) {
-        testCount +=
-            reportGroupStructure(subgroup, indentation: indentation + 5);
+        testCount += reportGroupStructure(
+          subgroup,
+          indentation: indentation + 5,
+        );
       }
     }
   }
 
   if (indentation == 0) {
-    postEvent(
-      'testCount',
-      {'testCount': testCount},
-    );
+    postEvent('testCount', {'testCount': testCount});
   }
 
   return testCount;

@@ -34,6 +34,7 @@ import pl.leancode.patrol.contracts.Contracts.Point2D
 import pl.leancode.patrol.contracts.Contracts.Rectangle
 import pl.leancode.patrol.contracts.Contracts.Selector
 import kotlin.math.roundToInt
+import pl.leancode.patrol.R.string as s
 
 private fun fromUiObject2(obj: UiObject2): NativeView {
     return NativeView(
@@ -690,7 +691,8 @@ class Automator private constructor() {
         }
 
         val identifiers = arrayOf(
-            "com.android.permissioncontroller:id/permission_allow_one_time_button" // API >= 30
+            "com.android.permissioncontroller:id/permission_allow_one_time_button", // API >= 30
+            "com.android.permissioncontroller:id/permission_allow_button" // only for files & gallery permission
         )
 
         val uiObject = waitForUiObjectByResourceId(*identifiers, timeout = timeoutMillis)
@@ -850,7 +852,7 @@ class Automator private constructor() {
         targetContext.startActivity(intent)
 
         var uiSelector = UiSelector()
-        uiSelector = uiSelector.text("Airplane mode")
+        uiSelector = uiSelector.text(Localization.getLocalizedString(targetContext, s.airplane_mode))
         val uiObject = uiDevice.findObject(uiSelector)
         if (uiObject != null) {
             uiObject.click()
@@ -867,7 +869,12 @@ class Automator private constructor() {
         targetContext.startActivity(intent)
 
         var uiSelector = UiSelector()
-        uiSelector = uiSelector.text("Use location")
+        uiSelector = uiSelector.text(
+            Localization.getLocalizedString(
+                targetContext,
+                s.use_location
+            )
+        )
         val uiObject = uiDevice.findObject(uiSelector)
         if (uiObject != null) {
             uiObject.click()

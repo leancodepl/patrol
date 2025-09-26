@@ -1,0 +1,22 @@
+/* Permission dialog buttons */
+"ok" = "OK";
+"allow" = "Pozwalaj";
+"allow_once" = "Pozwól raz";
+"allow_while_using_app" = "Pozwalaj, gdy używam aplikacji";
+"dont_allow" = "Nie pozwalaj";
+"limit_access" = "Ogranicz dostęp…";  // … is a Unicode ellipsis
+"allow_full_access" = "Pełny dostęp";
+
+/* Notification identifiers */
+"open" = "Otwórz";
+
+/* Settings navigation */
+"developer" = "Deweloper";
+"dark_appearance" = "Ciemny wygląd";
+"display_brightness" = "Ekran i jasność";
+"dark" = "Ciemny";
+"light" = "Jasny";
+
+/* Location precision */
+"precise_off" = "Dokładne: Wył.";
+"precise_on" = "Dokładne: Wł."; 

@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:meta/meta.dart';
+import 'package:path/path.dart' show join;
 import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
@@ -23,14 +25,14 @@ class BuildAndroidCommand extends PatrolCommand {
     required Analytics analytics,
     required Logger logger,
     required CompatibilityChecker compatibilityChecker,
-  })  : _testFinder = testFinder,
-        _testBundler = testBundler,
-        _dartDefinesReader = dartDefinesReader,
-        _pubspecReader = pubspecReader,
-        _androidTestBackend = androidTestBackend,
-        _analytics = analytics,
-        _logger = logger,
-        _compatibilityChecker = compatibilityChecker {
+  }) : _testFinder = testFinder,
+       _testBundler = testBundler,
+       _dartDefinesReader = dartDefinesReader,
+       _pubspecReader = pubspecReader,
+       _androidTestBackend = androidTestBackend,
+       _analytics = analytics,
+       _logger = logger,
+       _compatibilityChecker = compatibilityChecker {
     usesTargetOption();
     usesBuildModeOption();
     usesFlavorOption();
@@ -43,6 +45,8 @@ class BuildAndroidCommand extends PatrolCommand {
     usesCheckCompatibilityOption();
 
     usesUninstallOption();
+    usesBuildNameOption();
+    usesBuildNumberOption();
 
     usesAndroidOptions();
   }
@@ -117,6 +121,16 @@ class BuildAndroidCommand extends PatrolCommand {
       _logger.detail('Received Android flavor: $flavor');
     }
 
+    final buildName = stringArg('build-name');
+    if (buildName != null) {
+      _logger.detail('Received build name: $buildName');
+    }
+
+    final buildNumber = stringArg('build-number');
+    if (buildNumber != null) {
+      _logger.detail('Received build number: $buildNumber');
+    }
+
     final packageName = stringArg('package-name') ?? config.android.packageName;
 
     final displayLabel = boolArg('label');
@@ -163,6 +177,8 @@ class BuildAndroidCommand extends PatrolCommand {
       buildMode: buildMode,
       dartDefines: mergedDartDefines,
       dartDefineFromFilePaths: dartDefineFromFilePaths,
+      buildName: buildName,
+      buildNumber: buildNumber,
     );
 
     final androidOpts = AndroidAppOptions(
@@ -175,6 +191,7 @@ class BuildAndroidCommand extends PatrolCommand {
 
     try {
       await _androidTestBackend.build(androidOpts);
+      printApkPaths(flavor: flavor, buildMode: buildMode.androidName);
     } catch (err, st) {
       _logger
         ..err('$err')
@@ -184,5 +201,51 @@ class BuildAndroidCommand extends PatrolCommand {
     }
 
     return 0;
+  }
+
+  @visibleForTesting
+  /// Prints the paths to the APKs for the app under test and the test instrumentation app.
+  ///
+  /// [flavor] is the flavor of the app under test.
+  /// [buildMode] is the build mode of the app under test.
+  void printApkPaths({String? flavor, required String buildMode}) {
+    // Standard Android APK output paths (relative to project root)
+    final baseApkPath = join('build', 'app', 'outputs', 'apk');
+
+    final String flavorPath;
+    final String apkPrefix;
+
+    if (flavor != null) {
+      flavorPath = join(baseApkPath, flavor, buildMode.toLowerCase());
+      apkPrefix = 'app-$flavor-${buildMode.toLowerCase()}';
+    } else {
+      flavorPath = join(baseApkPath, buildMode.toLowerCase());
+      apkPrefix = 'app-${buildMode.toLowerCase()}';
+    }
+
+    final appApkPath = join(flavorPath, '$apkPrefix.apk');
+
+    // Test APK path - include flavor if present
+    final String testApkPath;
+    if (flavor != null) {
+      testApkPath = join(
+        baseApkPath,
+        'androidTest',
+        flavor,
+        buildMode.toLowerCase(),
+        '$apkPrefix-androidTest.apk',
+      );
+    } else {
+      testApkPath = join(
+        baseApkPath,
+        'androidTest',
+        buildMode.toLowerCase(),
+        '$apkPrefix-androidTest.apk',
+      );
+    }
+
+    _logger
+      ..info('$appApkPath (app under test)')
+      ..info('$testApkPath (test instrumentation app)');
   }
 }

@@ -14,6 +14,8 @@ class FlutterAppOptions {
     required this.buildMode,
     required this.dartDefines,
     required this.dartDefineFromFilePaths,
+    required this.buildName,
+    required this.buildNumber,
   });
 
   final FlutterCommand command;
@@ -22,6 +24,8 @@ class FlutterAppOptions {
   final BuildMode buildMode;
   final Map<String, String> dartDefines;
   final List<String> dartDefineFromFilePaths;
+  final String? buildName;
+  final String? buildNumber;
 
   /// Translates these options into a proper `flutter attach`.
   @nonVirtual
@@ -220,7 +224,15 @@ class IOSAppOptions {
         '--${buildMode.name}', // for example '--debug',
         if (simulator) '--simulator',
       ],
-      if (flutter.flavor != null) ...['--flavor', flutter.flavor!],
+      if (flutter.flavor case final flavor?) ...['--flavor', flavor],
+      if (flutter.buildName case final buildName?) ...[
+        '--build-name',
+        buildName,
+      ],
+      if (flutter.buildNumber case final buildNumber?) ...[
+        '--build-number',
+        buildNumber,
+      ],
       ...['--target', flutter.target],
       for (final dartDefine in flutter.dartDefines.entries) ...[
         '--dart-define',
@@ -314,7 +326,15 @@ class MacOSAppOptions {
         '--config-only',
         '--${buildMode.name}', // for example '--debug',
       ],
-      if (flutter.flavor != null) ...['--flavor', flutter.flavor!],
+      if (flutter.flavor case final flavor?) ...['--flavor', flavor],
+      if (flutter.buildName case final buildName?) ...[
+        '--build-name',
+        buildName,
+      ],
+      if (flutter.buildNumber case final buildNumber?) ...[
+        '--build-number',
+        buildNumber,
+      ],
       ...['--target', flutter.target],
       for (final dartDefine in flutter.dartDefines.entries) ...[
         '--dart-define',

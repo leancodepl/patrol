@@ -28,10 +28,7 @@ void _test(Platform platform) {
 
     group('fromCli()', () {
       test('reads correct simple input', () {
-        final args = [
-          'EMAIL=email@example.com',
-          'PASSWORD=ny4ncat',
-        ];
+        final args = ['EMAIL=email@example.com', 'PASSWORD=ny4ncat'];
 
         expect(
           reader.fromCli(args: args),
@@ -91,26 +88,25 @@ void _test(Platform platform) {
           equals({'EMAIL': 'email@example.com', 'PASSWORD': 'ny4ncat'}),
         );
       });
-      test('reads correct simple input with comment on same line as variable',
-          () {
-        file.writeAsString(
-          ' EMAIL=email@example.com  \nPASSWORD=ny4ncat # The password for the API\n',
-        );
+      test(
+        'reads correct simple input with comment on same line as variable',
+        () {
+          file.writeAsString(
+            ' EMAIL=email@example.com  \nPASSWORD=ny4ncat # The password for the API\n',
+          );
 
-        expect(
-          reader.fromFile(),
-          equals({'EMAIL': 'email@example.com', 'PASSWORD': 'ny4ncat'}),
-        );
-      });
+          expect(
+            reader.fromFile(),
+            equals({'EMAIL': 'email@example.com', 'PASSWORD': 'ny4ncat'}),
+          );
+        },
+      );
       test('reads correct simple input with commented out variable', () {
         file.writeAsString(
           ' EMAIL=email@example.com  \n#PASSWORD=ny4ncat # The password for the API\n',
         );
 
-        expect(
-          reader.fromFile(),
-          equals({'EMAIL': 'email@example.com'}),
-        );
+        expect(reader.fromFile(), equals({'EMAIL': 'email@example.com'}));
       });
 
       test('reads correct input containing # characters in values', () {
@@ -134,10 +130,7 @@ void _test(Platform platform) {
 
         expect(
           reader.fromFile(),
-          equals({
-            'URL': 'https://example.com/',
-            'FRAGMENT': 'value',
-          }),
+          equals({'URL': 'https://example.com/', 'FRAGMENT': 'value'}),
         );
       });
     });

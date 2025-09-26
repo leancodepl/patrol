@@ -42,9 +42,8 @@ class _UsernamePageState extends State<UsernamePage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute<void>(
-                    builder: (context) => PasswordPage(
-                      username: _usernameController.text,
-                    ),
+                    builder: (context) =>
+                        PasswordPage(username: _usernameController.text),
                   ),
                 );
               },
@@ -78,9 +77,7 @@ class _PasswordPageState extends State<PasswordPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Enter Password'),
-      ),
+      appBar: AppBar(title: const Text('Enter Password')),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -104,9 +101,8 @@ class _PasswordPageState extends State<PasswordPage> {
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute<void>(
-                      builder: (context) => WelcomePage(
-                        username: widget.username,
-                      ),
+                      builder: (context) =>
+                          WelcomePage(username: widget.username),
                     ),
                   );
                 }

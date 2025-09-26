@@ -19,7 +19,7 @@ platform :ios do
 
     match(
       type: "development",
-      git_private_key: ENV["MATCH_GIT_PRIVATE_KEY"],
+      git_private_key: git_private_key,
       app_identifier: ["pl.leancode.patrol.*"]
     )
 

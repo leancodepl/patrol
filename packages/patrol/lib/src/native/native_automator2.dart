@@ -57,11 +57,11 @@ extension on native_automator.KeyboardBehavior {
 class NativeAutomator2 {
   /// Creates a new [NativeAutomator2].
   NativeAutomator2({required NativeAutomatorConfig config})
-      : assert(
-          config.connectionTimeout > config.findTimeout,
-          'find timeout is longer than connection timeout',
-        ),
-        _config = config {
+    : assert(
+        config.connectionTimeout > config.findTimeout,
+        'find timeout is longer than connection timeout',
+      ),
+      _config = config {
     if (_config.packageName.isEmpty && io.Platform.isAndroid) {
       _config.logger("packageName is not set. It's recommended to set it.");
     }
@@ -82,7 +82,7 @@ class NativeAutomator2 {
     _config.logger('NativeAutomatorClient created, port: ${_config.port}');
   }
 
-  final PatrolLogWriter _patrolLog = PatrolLogWriter();
+  final _patrolLog = PatrolLogWriter();
   final NativeAutomatorConfig _config;
 
   late final NativeAutomatorClient _client;
@@ -114,21 +114,20 @@ class NativeAutomator2 {
       final result = await request();
       _config.logger('$name() succeeded');
       if (enablePatrolLog) {
-        _patrolLog
-            .log(StepEntry(action: text, status: StepEntryStatus.success));
+        _patrolLog.log(
+          StepEntry(action: text, status: StepEntryStatus.success),
+        );
       }
       return result;
     } on NativeAutomatorClientException catch (err) {
       _config.logger('$name() failed');
-      final log = 'NativeAutomatorClientException: '
+      final log =
+          'NativeAutomatorClientException: '
           '$name() failed with $err';
 
       if (enablePatrolLog) {
         _patrolLog.log(
-          StepEntry(
-            action: text,
-            status: StepEntryStatus.failure,
-          ),
+          StepEntry(action: text, status: StepEntryStatus.failure),
         );
       }
       throw PatrolActionException(log);
@@ -137,10 +136,7 @@ class NativeAutomator2 {
 
       if (enablePatrolLog) {
         _patrolLog.log(
-          StepEntry(
-            action: text,
-            status: StepEntryStatus.failure,
-          ),
+          StepEntry(action: text, status: StepEntryStatus.failure),
         );
       }
       rethrow;
@@ -293,9 +289,7 @@ class NativeAutomator2 {
   Future<Notification> getFirstNotification() async {
     final response = await _wrapRequest(
       'getFirstNotification',
-      () => _client.getNotifications(
-        GetNotificationsRequest(),
-      ),
+      () => _client.getNotifications(GetNotificationsRequest()),
     );
 
     return response.notifications.first;
@@ -307,9 +301,7 @@ class NativeAutomator2 {
   Future<List<Notification>> getNotifications() async {
     final response = await _wrapRequest(
       'getNotifications',
-      () => _client.getNotifications(
-        GetNotificationsRequest(),
-      ),
+      () => _client.getNotifications(GetNotificationsRequest()),
     );
 
     return response.notifications;
@@ -338,10 +330,7 @@ class NativeAutomator2 {
   ///
   ///  * [tapOnNotificationBySelector], which allows for more precise
   ///    specification of the notification to tap on
-  Future<void> tapOnNotificationByIndex(
-    int index, {
-    Duration? timeout,
-  }) async {
+  Future<void> tapOnNotificationByIndex(int index, {Duration? timeout}) async {
     await _wrapRequest(
       'tapOnNotificationByIndex',
       () => _client.tapOnNotification(
@@ -663,6 +652,7 @@ class NativeAutomator2 {
     required Offset to,
     int steps = 12,
     String? appId,
+    bool enablePatrolLog = true,
   }) async {
     assert(from.dx >= 0 && from.dx <= 1);
     assert(from.dy >= 0 && from.dy <= 1);
@@ -671,6 +661,7 @@ class NativeAutomator2 {
 
     await _wrapRequest(
       'swipe',
+      enablePatrolLog: enablePatrolLog,
       () => _client.swipe(
         SwipeRequest(
           startX: from.dx,
@@ -704,9 +695,17 @@ class NativeAutomator2 {
   /// await tester.swipeBack(dy: 0.8); // Swipe back at 1/5 height of the screen
   /// await tester.swipeBack(); // Swipe back at the center of the screen
   /// ```
-  Future<void> swipeBack({double dy = 0.5, String? appId}) {
+  Future<void> swipeBack({double dy = 0.5, String? appId}) async {
     assert(dy >= 0.0 && dy <= 1.0, 'dy must be between 0.0 and 1.0');
-    return swipe(from: Offset(0, dy), to: Offset(1, dy), appId: appId);
+    await _wrapRequest(
+      'swipeBack',
+      () => swipe(
+        from: Offset(0, dy),
+        to: Offset(1, dy),
+        appId: appId,
+        enablePatrolLog: false,
+      ),
+    );
   }
 
   /// Simulates pull-to-refresh gesture.
@@ -734,10 +733,14 @@ class NativeAutomator2 {
     assert(to.dx >= 0 && to.dx <= 1);
     assert(to.dy >= 0 && to.dy <= 1);
 
-    return swipe(
-      from: Offset(from.dx, from.dy),
-      to: Offset(to.dx, to.dy),
-      steps: steps,
+    await _wrapRequest(
+      'pullToRefresh',
+      () => swipe(
+        from: Offset(from.dx, from.dy),
+        to: Offset(to.dx, to.dy),
+        steps: steps,
+        enablePatrolLog: false,
+      ),
     );
   }
 
@@ -798,9 +801,7 @@ class NativeAutomator2 {
     final response = await _wrapRequest(
       'isPermissionDialogVisible',
       () => _client.isPermissionDialogVisible(
-        PermissionDialogVisibleRequest(
-          timeoutMillis: timeout.inMilliseconds,
-        ),
+        PermissionDialogVisibleRequest(timeoutMillis: timeout.inMilliseconds),
       ),
     );
 
@@ -853,9 +854,7 @@ class NativeAutomator2 {
     await _wrapRequest(
       'grantPermissionOnlyThisTime',
       () => _client.handlePermissionDialog(
-        HandlePermissionRequest(
-          code: HandlePermissionRequestCode.onlyThisTime,
-        ),
+        HandlePermissionRequest(code: HandlePermissionRequestCode.onlyThisTime),
       ),
     );
   }
@@ -960,22 +959,19 @@ class NativeAutomator2 {
     NativeSelector? doneButtonSelector,
     Duration? timeout,
   }) async {
-    await _wrapRequest(
-      'takeCameraPhoto',
-      () async {
-        await _client.takeCameraPhoto(
-          TakeCameraPhotoRequest(
-            androidShutterButtonSelector: shutterButtonSelector?.android,
-            androidDoneButtonSelector: doneButtonSelector?.android,
-            iosShutterButtonSelector: shutterButtonSelector?.ios,
-            iosDoneButtonSelector: doneButtonSelector?.ios,
-            appId: resolvedAppId,
-            isNative2: true,
-            timeoutMillis: timeout?.inMilliseconds,
-          ),
-        );
-      },
-    );
+    await _wrapRequest('takeCameraPhoto', () async {
+      await _client.takeCameraPhoto(
+        TakeCameraPhotoRequest(
+          androidShutterButtonSelector: shutterButtonSelector?.android,
+          androidDoneButtonSelector: doneButtonSelector?.android,
+          iosShutterButtonSelector: shutterButtonSelector?.ios,
+          iosDoneButtonSelector: doneButtonSelector?.ios,
+          appId: resolvedAppId,
+          isNative2: true,
+          timeoutMillis: timeout?.inMilliseconds,
+        ),
+      );
+    });
   }
 
   /// Pick an image from the gallery
@@ -993,21 +989,18 @@ class NativeAutomator2 {
     int? index,
     Duration? timeout,
   }) async {
-    await _wrapRequest(
-      'pickImageFromGallery',
-      () async {
-        await _client.pickImageFromGallery(
-          PickImageFromGalleryRequest(
-            androidImageSelector: imageSelector?.android,
-            iosImageSelector: imageSelector?.ios,
-            appId: resolvedAppId,
-            isNative2: true,
-            timeoutMillis: timeout?.inMilliseconds,
-            imageIndex: index,
-          ),
-        );
-      },
-    );
+    await _wrapRequest('pickImageFromGallery', () async {
+      await _client.pickImageFromGallery(
+        PickImageFromGalleryRequest(
+          androidImageSelector: imageSelector?.android,
+          iosImageSelector: imageSelector?.ios,
+          appId: resolvedAppId,
+          isNative2: true,
+          timeoutMillis: timeout?.inMilliseconds,
+          imageIndex: index,
+        ),
+      );
+    });
   }
 
   /// Pick multiple images from the gallery
@@ -1022,21 +1015,18 @@ class NativeAutomator2 {
     NativeSelector? imageSelector,
     Duration? timeout,
   }) async {
-    await _wrapRequest(
-      'pickMultipleImagesFromGallery',
-      () async {
-        await _client.pickMultipleImagesFromGallery(
-          PickMultipleImagesFromGalleryRequest(
-            androidImageSelector: imageSelector?.android,
-            iosImageSelector: imageSelector?.ios,
-            appId: resolvedAppId,
-            isNative2: true,
-            imageIndexes: imageIndexes,
-            timeoutMillis: timeout?.inMilliseconds,
-          ),
-        );
-      },
-    );
+    await _wrapRequest('pickMultipleImagesFromGallery', () async {
+      await _client.pickMultipleImagesFromGallery(
+        PickMultipleImagesFromGalleryRequest(
+          androidImageSelector: imageSelector?.android,
+          iosImageSelector: imageSelector?.ios,
+          appId: resolvedAppId,
+          isNative2: true,
+          imageIndexes: imageIndexes,
+          timeoutMillis: timeout?.inMilliseconds,
+        ),
+      );
+    });
   }
 
   /// Checks if the app is running on a virtual device (simulator or emulator).
