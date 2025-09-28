@@ -534,7 +534,7 @@
         {
           let toggle: XCUIElement
 
-          if osVersion >= 18 {
+          if #available(iOS 18, *) {
             let wifiOff = self.springboard.images["wifi.slash"].firstMatch
             let wifiOn = self.springboard.images["wifi"].firstMatch
             if wifiOn.exists {
@@ -544,7 +544,7 @@
             if !wifiOn.exists && !wifiOff.exists {
               throw PatrolError.viewNotExists("wifi-button")
             }
-            wifiOn.tap()
+            wifiOff.tap()
             return
           } else {
             toggle = self.springboard.switches["wifi-button"]
@@ -576,14 +576,14 @@
           if osVersion >= 18 {
             let wifiOn = self.springboard.images["wifi"].firstMatch
             let wifiOff = self.springboard.images["wifi.slash"].firstMatch
-            if wifiOn.exists {
+            if wifiOff.exists {
               Logger.shared.i("wifi is already disabled")
               return
             }
             if !wifiOn.exists && !wifiOff.exists {
               throw PatrolError.viewNotExists("wifi-button")
             }
-            wifiOff.tap()
+            wifiOn.tap()
             return
           } else {
             toggle = self.springboard.switches["wifi-button"]
