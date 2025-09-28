@@ -460,6 +460,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
           showFlutterLogs: showFlutterLogs,
           hideTestSteps: hideTestSteps,
           clearTestSteps: clearTestSteps,
+          videoConfig: videoConfig,
         );
         final bundleId = ios.bundleId;
         if (bundleId != null && uninstall) {

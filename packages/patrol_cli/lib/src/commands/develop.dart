@@ -411,6 +411,7 @@ class DevelopCommand extends PatrolCommand {
           showFlutterLogs: showFlutterLogs,
           hideTestSteps: hideTestSteps,
           clearTestSteps: clearTestSteps,
+          videoConfig: videoConfig,
         );
         final bundleId = iosOpts.bundleId;
         if (bundleId != null && uninstall) {
