@@ -332,6 +332,30 @@ abstract class PatrolCommand extends Command<int> {
       );
   }
 
+  void usesVideoRecordingOptions() {
+    argParser
+      ..addFlag(
+        'record-video',
+        help: 'Record video of the test execution (Android only).',
+      )
+      ..addOption(
+        'video-output-dir',
+        help: 'Directory to save recorded videos.',
+        defaultsTo: 'integration_test/videos',
+        valueHelp: 'path/to/videos',
+      )
+      ..addOption(
+        'video-size',
+        help: 'Video recording size (e.g., 1280x720).',
+        valueHelp: '1280x720',
+      )
+      ..addOption(
+        'video-bit-rate',
+        help: 'Video recording bit rate in bits per second.',
+        valueHelp: '4000000',
+      );
+  }
+
   /// Gets the parsed command-line flag named [name] as a `bool`.
   ///
   /// If no flag named [name] was added to the `ArgParser`, an [ArgumentError]

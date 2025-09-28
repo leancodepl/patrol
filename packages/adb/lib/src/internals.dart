@@ -1,7 +1,7 @@
 import 'dart:io' as io;
 
-import 'package:adb/src/exceptions.dart';
-import 'package:adb/src/extensions.dart';
+import 'exceptions.dart';
+import 'extensions.dart';
 
 const _interval = Duration(milliseconds: 100);
 
