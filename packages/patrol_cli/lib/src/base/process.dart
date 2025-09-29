@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:convert' show Encoding, LineSplitter, utf8;
+import 'dart:convert' show Encoding, LineSplitter, Utf8Decoder;
 import 'dart:io' show Process, ProcessResult, ProcessStartMode, systemEncoding;
 
 import 'package:dispose_scope/dispose_scope.dart';
@@ -68,7 +68,7 @@ extension ProcessListeners on Process {
     bool? cancelOnError,
   }) {
     return stdout
-        .transform(utf8.decoder)
+        .transform(const Utf8Decoder(allowMalformed: true))
         .transform(const LineSplitter())
         .listen(
           onData,
@@ -85,7 +85,7 @@ extension ProcessListeners on Process {
     bool? cancelOnError,
   }) {
     return stderr
-        .transform(utf8.decoder)
+        .transform(const Utf8Decoder(allowMalformed: true))
         .transform(const LineSplitter())
         .listen(
           onData,
