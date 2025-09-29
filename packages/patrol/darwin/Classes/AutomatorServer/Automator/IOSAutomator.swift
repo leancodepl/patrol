@@ -548,9 +548,7 @@
             return
           } else {
             toggle = self.springboard.switches["wifi-button"]
-          }
-
-          let exists = toggle.waitForExistence(timeout: self.timeout)
+            let exists = toggle.waitForExistence(timeout: self.timeout)
           guard exists else {
             throw PatrolError.viewNotExists("wifi-button")
           }
@@ -562,8 +560,9 @@
           } else {
             Logger.shared.i("wifi is already disabled")
           }
+          }
         }
-      }
+      }   
     }
 
     func disableWiFi() throws {
@@ -587,9 +586,7 @@
             return
           } else {
             toggle = self.springboard.switches["wifi-button"]
-          }
-
-          let exists = toggle.waitForExistence(timeout: self.timeout)
+            let exists = toggle.waitForExistence(timeout: self.timeout)
           guard exists else {
             throw PatrolError.viewNotExists("wifi-button")
           }
@@ -599,6 +596,7 @@
             try self.acceptSystemAlertIfVisible()
           } else {
             Logger.shared.i("wifi is already disabled")
+          }
           }
         }
       }
