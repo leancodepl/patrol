@@ -549,20 +549,20 @@
           } else {
             toggle = self.springboard.switches["wifi-button"]
             let exists = toggle.waitForExistence(timeout: self.timeout)
-          guard exists else {
-            throw PatrolError.viewNotExists("wifi-button")
-          }
+            guard exists else {
+              throw PatrolError.viewNotExists("wifi-button")
+            }
 
-          if toggle.value! as! String == "0" {
-            toggle.tap()
-            // Disabling wifi can cause a system alert to appear
-            try self.acceptSystemAlertIfVisible()
-          } else {
-            Logger.shared.i("wifi is already disabled")
-          }
+            if toggle.value! as! String == "0" {
+              toggle.tap()
+              // Disabling wifi can cause a system alert to appear
+              try self.acceptSystemAlertIfVisible()
+            } else {
+              Logger.shared.i("wifi is already disabled")
+            }
           }
         }
-      }   
+      }
     }
 
     func disableWiFi() throws {
@@ -587,16 +587,16 @@
           } else {
             toggle = self.springboard.switches["wifi-button"]
             let exists = toggle.waitForExistence(timeout: self.timeout)
-          guard exists else {
-            throw PatrolError.viewNotExists("wifi-button")
-          }
-          if toggle.value! as! String == "1" {
-            toggle.tap()
-            // Disabling wifi can cause a system alert to appear
-            try self.acceptSystemAlertIfVisible()
-          } else {
-            Logger.shared.i("wifi is already disabled")
-          }
+            guard exists else {
+              throw PatrolError.viewNotExists("wifi-button")
+            }
+            if toggle.value! as! String == "1" {
+              toggle.tap()
+              // Disabling wifi can cause a system alert to appear
+              try self.acceptSystemAlertIfVisible()
+            } else {
+              Logger.shared.i("wifi is already disabled")
+            }
           }
         }
       }
