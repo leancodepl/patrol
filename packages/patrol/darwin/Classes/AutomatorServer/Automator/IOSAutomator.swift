@@ -529,9 +529,6 @@
 
     func enableWiFi() throws {
       try runControlCenterAction("enabling wifi") {
-        if let osVersionString = self.getOsVersion().split(separator: ".").first,
-          let osVersion = Int(osVersionString)
-        {
           let toggle: XCUIElement
 
           if #available(iOS 18, *) {
@@ -560,19 +557,25 @@
             } else {
               Logger.shared.i("wifi is already disabled")
             }
-          }
         }
       }
     }
 
     func disableWiFi() throws {
       try runControlCenterAction("disabling wifi") {
-        if let osVersionString = self.getOsVersion().split(separator: ".").first,
-          let osVersion = Int(osVersionString)
-        {
           let toggle: XCUIElement
 
-          if osVersion >= 18 {
+         if #available(iOS 18, *) {
+          if #available(iOS 26, *) {
+            let wifiOn = self.springboard.images["wifi"].firstMatch
+           
+            if !wifiOn.exists {
+              throw PatrolError.viewNotExists("wifi-button")
+            }
+            wifiOn.tap()
+            try self.acceptSystemAlertIfVisible()
+            return
+          } else {
             let wifiOn = self.springboard.images["wifi"].firstMatch
             let wifiOff = self.springboard.images["wifi.slash"].firstMatch
             if wifiOff.exists {
@@ -583,8 +586,11 @@
               throw PatrolError.viewNotExists("wifi-button")
             }
             wifiOn.tap()
+            try self.acceptSystemAlertIfVisible()
             return
-          } else {
+          }
+        }
+        else {
             toggle = self.springboard.switches["wifi-button"]
             let exists = toggle.waitForExistence(timeout: self.timeout)
             guard exists else {
@@ -597,9 +603,8 @@
             } else {
               Logger.shared.i("wifi is already disabled")
             }
-          }
-        }
       }
+      } 
     }
 
     func enableBluetooth() throws {
