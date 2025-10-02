@@ -23,6 +23,17 @@ export const patrolTest = base.extend({
       { timeout: 60000 }
     );
 
+    await page.waitForFunction(
+      () => {
+        if (typeof window.__patrol_setInitialised !== "function") return false;
+
+        window.__patrol_setInitialised();
+
+        return true;
+      },
+      { timeout: 60000 }
+    );
+
     await use(page);
   },
 });
