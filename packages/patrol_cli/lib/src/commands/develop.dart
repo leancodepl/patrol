@@ -17,6 +17,7 @@ import 'package:patrol_cli/src/pubspec_reader.dart';
 import 'package:patrol_cli/src/runner/patrol_command.dart';
 import 'package:patrol_cli/src/test_bundler.dart';
 import 'package:patrol_cli/src/test_finder.dart';
+import 'package:patrol_cli/src/web/web_test_backend.dart';
 
 class DevelopCommand extends PatrolCommand {
   DevelopCommand({
@@ -29,21 +30,25 @@ class DevelopCommand extends PatrolCommand {
     required AndroidTestBackend androidTestBackend,
     required IOSTestBackend iosTestBackend,
     required MacOSTestBackend macosTestBackend,
+    required WebTestBackend webTestBackend,
     required FlutterTool flutterTool,
     required Analytics analytics,
     required Logger logger,
-  })  : _deviceFinder = deviceFinder,
-        _testFinder = testFinder,
-        _testBundler = testBundler,
-        _dartDefinesReader = dartDefinesReader,
-        _compatibilityChecker = compatibilityChecker,
-        _pubspecReader = pubspecReader,
-        _androidTestBackend = androidTestBackend,
-        _iosTestBackend = iosTestBackend,
-        _macosTestBackend = macosTestBackend,
-        _flutterTool = flutterTool,
-        _analytics = analytics,
-        _logger = logger {
+    required Stream<List<int>> stdin,
+  }) : _deviceFinder = deviceFinder,
+       _testFinder = testFinder,
+       _testBundler = testBundler,
+       _dartDefinesReader = dartDefinesReader,
+       _compatibilityChecker = compatibilityChecker,
+       _pubspecReader = pubspecReader,
+       _androidTestBackend = androidTestBackend,
+       _iosTestBackend = iosTestBackend,
+       _macosTestBackend = macosTestBackend,
+       _webTestBackend = webTestBackend,
+       _flutterTool = flutterTool,
+       _analytics = analytics,
+       _logger = logger,
+       _stdin = stdin {
     usesTargetOption();
     usesDeviceOption();
     usesBuildModeOption();
@@ -77,10 +82,12 @@ class DevelopCommand extends PatrolCommand {
   final AndroidTestBackend _androidTestBackend;
   final IOSTestBackend _iosTestBackend;
   final MacOSTestBackend _macosTestBackend;
+  final WebTestBackend _webTestBackend;
   final FlutterTool _flutterTool;
 
   final Analytics _analytics;
   final Logger _logger;
+  final Stream<List<int>> _stdin;
 
   @override
   String get name => 'develop';
@@ -153,8 +160,8 @@ class DevelopCommand extends PatrolCommand {
 
     String? iOSInstalledAppsEnvVariable;
     if (device.targetPlatform == TargetPlatform.iOS) {
-      iOSInstalledAppsEnvVariable =
-          await _iosTestBackend.getInstalledAppsEnvVariable(device.id);
+      iOSInstalledAppsEnvVariable = await _iosTestBackend
+          .getInstalledAppsEnvVariable(device.id);
     }
 
     final customDartDefines = {
@@ -236,13 +243,16 @@ class DevelopCommand extends PatrolCommand {
       testServerPort: super.testServerPort,
     );
 
-    await _build(androidOpts, iosOpts, macosOpts, device);
+    final webOpts = WebAppOptions(flutter: flutterOpts);
+
+    await _build(androidOpts, iosOpts, macosOpts, webOpts, device);
     await _preExecute(androidOpts, iosOpts, device, uninstall);
     await _execute(
       flutterOpts,
       androidOpts,
       iosOpts,
       macosOpts,
+      webOpts,
       uninstall: uninstall,
       device: device,
       openDevtools: boolArg('open-devtools'),
@@ -258,6 +268,7 @@ class DevelopCommand extends PatrolCommand {
     AndroidAppOptions androidOpts,
     IOSAppOptions iosOpts,
     MacOSAppOptions macosOpts,
+    WebAppOptions webOpts,
     Device device,
   ) async {
     Future<void> Function() buildAction;
@@ -265,9 +276,7 @@ class DevelopCommand extends PatrolCommand {
       TargetPlatform.android => () => _androidTestBackend.build(androidOpts),
       TargetPlatform.iOS => () => _iosTestBackend.build(iosOpts),
       TargetPlatform.macOS => () => _macosTestBackend.build(macosOpts),
-      // TODO: Implement develop for web
-      TargetPlatform.web => () =>
-          throw UnimplementedError('Web platform is not supported for develop'),
+      TargetPlatform.web => () => _webTestBackend.buildForDevelop(webOpts),
     };
 
     try {
@@ -304,15 +313,13 @@ class DevelopCommand extends PatrolCommand {
         final bundleId = iosOpts.bundleId;
         if (bundleId != null) {
           action = () => _iosTestBackend.uninstall(
-                appId: bundleId,
-                flavor: iosOpts.flutter.flavor,
-                device: device,
-              );
+            appId: bundleId,
+            flavor: iosOpts.flutter.flavor,
+            device: device,
+          );
         }
       case TargetPlatform.macOS:
-      // TODO: Implement develop for web
       case TargetPlatform.web:
-        throw UnimplementedError('Web platform is not supported for develop');
     }
 
     try {
@@ -326,7 +333,8 @@ class DevelopCommand extends PatrolCommand {
     FlutterAppOptions flutterOpts,
     AndroidAppOptions android,
     IOSAppOptions iosOpts,
-    MacOSAppOptions macos, {
+    MacOSAppOptions macos,
+    WebAppOptions web, {
     required bool uninstall,
     required Device device,
     required bool openDevtools,
@@ -342,57 +350,66 @@ class DevelopCommand extends PatrolCommand {
       case TargetPlatform.android:
         appId = android.packageName;
         action = () => _androidTestBackend.execute(
-              android,
-              device,
-              interruptible: true,
-              showFlutterLogs: showFlutterLogs,
-              hideTestSteps: hideTestSteps,
-              flavor: flutterOpts.flavor,
-              clearTestSteps: clearTestSteps,
-            );
+          android,
+          device,
+          interruptible: true,
+          showFlutterLogs: showFlutterLogs,
+          hideTestSteps: hideTestSteps,
+          flavor: flutterOpts.flavor,
+          clearTestSteps: clearTestSteps,
+        );
         final package = android.packageName;
         if (package != null && uninstall) {
           finalizer = () => _androidTestBackend.uninstall(package, device);
         }
       case TargetPlatform.macOS:
         appId = macos.bundleId;
-        action =
-            () => _macosTestBackend.execute(macos, device, interruptible: true);
+        action = () =>
+            _macosTestBackend.execute(macos, device, interruptible: true);
       case TargetPlatform.iOS:
         appId = iosOpts.bundleId;
         action = () => _iosTestBackend.execute(
-              iosOpts,
-              device,
-              interruptible: true,
-              showFlutterLogs: showFlutterLogs,
-              hideTestSteps: hideTestSteps,
-              clearTestSteps: clearTestSteps,
-            );
+          iosOpts,
+          device,
+          interruptible: true,
+          showFlutterLogs: showFlutterLogs,
+          hideTestSteps: hideTestSteps,
+          clearTestSteps: clearTestSteps,
+        );
         final bundleId = iosOpts.bundleId;
         if (bundleId != null && uninstall) {
           finalizer = () => _iosTestBackend.uninstall(
-                appId: bundleId,
-                flavor: iosOpts.flutter.flavor,
-                device: device,
-              );
+            appId: bundleId,
+            flavor: iosOpts.flutter.flavor,
+            device: device,
+          );
         }
       case TargetPlatform.web:
-        // TODO: Implement develop for web
-        throw UnimplementedError('Web platform is not supported for develop');
+        action = () => _webTestBackend.develop(
+          web,
+          device,
+          showFlutterLogs: showFlutterLogs,
+          hideTestSteps: hideTestSteps,
+          clearTestSteps: clearTestSteps,
+          stdin: _stdin,
+        );
     }
 
     try {
       final future = action();
-      await _flutterTool.attachForHotRestart(
-        flutterCommand: flutterCommand,
-        deviceId: device.id,
-        target: flutterOpts.target,
-        appId: appId,
-        dartDefines: flutterOpts.dartDefines,
-        openDevtools: openDevtools,
-        attachUsingUrl: device.targetPlatform == TargetPlatform.macOS,
-        onQuit: finalizer,
-      );
+
+      if (device.targetPlatform != TargetPlatform.web) {
+        await _flutterTool.attachForHotRestart(
+          flutterCommand: flutterCommand,
+          deviceId: device.id,
+          target: flutterOpts.target,
+          appId: appId,
+          dartDefines: flutterOpts.dartDefines,
+          openDevtools: openDevtools,
+          attachUsingUrl: device.targetPlatform == TargetPlatform.macOS,
+          onQuit: finalizer,
+        );
+      }
 
       await future;
     } catch (err, st) {
