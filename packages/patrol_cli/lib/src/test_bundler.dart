@@ -39,6 +39,7 @@ ${generateImports(testFilePaths)}
 // END: GENERATED TEST IMPORTS
 
 Future<void> main() async {
+  await initAppService();
   // This is the entrypoint of the bundled Dart test.
   //
   // Its responsibilities are:
