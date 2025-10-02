@@ -173,6 +173,9 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
       logger: _logger,
     );
 
+    stdin.echoMode = false;
+    stdin.lineMode = false;
+
     addCommand(
       BuildCommand(
         testFinderFactory: testFinderFactory,
@@ -214,8 +217,10 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         androidTestBackend: androidTestBackend,
         iosTestBackend: iosTestBackend,
         macosTestBackend: macosTestBackend,
+        webTestBackend: webTestBackend,
         analytics: _analytics,
         logger: _logger,
+        stdin: stdin,
       ),
     );
 

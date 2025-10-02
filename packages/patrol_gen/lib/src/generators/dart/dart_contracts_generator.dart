@@ -15,7 +15,9 @@ class DartContractsGenerator {
       buffer.writeln(_createMessage(messageDefintion));
     }
 
-    final content = DartFormatter().format(buffer.toString());
+    final content =
+        DartFormatter(languageVersion: DartFormatter.latestLanguageVersion)
+            .format(buffer.toString());
 
     return OutputFile(filename: config.contractsFilename, content: content);
   }

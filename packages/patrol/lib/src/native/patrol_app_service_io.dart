@@ -20,6 +20,10 @@ class _TestExecutionResult {
   final String? details;
 }
 
+Future<void> initAppService() async {
+  // No-op for IO.
+}
+
 /// Starts the gRPC server that runs the [PatrolAppService].
 Future<void> runAppService(PatrolAppService service) async {
   final pipeline = const shelf.Pipeline()
