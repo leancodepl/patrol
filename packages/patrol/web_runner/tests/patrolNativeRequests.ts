@@ -12,12 +12,28 @@ type GrantPermissionsRequest = PatrolNativeRequestBase<
     origin?: string;
   }
 >;
+type EnableDarkModeRequest = PatrolNativeRequestBase<
+  "enableDarkMode",
+  {
+    appId?: string;
+  }
+>;
+type DisableDarkModeRequest = PatrolNativeRequestBase<
+  "disableDarkMode",
+  {
+    appId?: string;
+  }
+>;
 type UnknownRequest = PatrolNativeRequestBase<
   `unkown-placeholder-${string}`,
   unknown
 >;
 
-type PatrolNativeRequest = GrantPermissionsRequest | UnknownRequest;
+type PatrolNativeRequest =
+  | GrantPermissionsRequest
+  | EnableDarkModeRequest
+  | DisableDarkModeRequest
+  | UnknownRequest;
 
 export async function exposePatrolNativeRequestHandlers(
   page: Page,
@@ -42,6 +58,14 @@ export async function exposePatrolNativeRequestHandlers(
         );
         return JSON.stringify({ ok: true });
       }
+
+      case "enableDarkMode":
+        await page.emulateMedia({ colorScheme: "dark" });
+        return JSON.stringify({ ok: true });
+
+      case "disableDarkMode":
+        await page.emulateMedia({ colorScheme: "no-preference" });
+        return JSON.stringify({ ok: true });
 
       default:
         const error = `Unknown action: ${action}`;

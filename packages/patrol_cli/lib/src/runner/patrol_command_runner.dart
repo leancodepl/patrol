@@ -112,18 +112,18 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
     required Analytics analytics,
     required Logger logger,
     required bool isCI,
-  })  : _platform = platform,
-        _pubUpdater = pubUpdater,
-        _fs = fs,
-        _analytics = analytics,
-        _processManager = processManager,
-        _disposeScope = DisposeScope(),
-        _logger = logger,
-        _isCI = isCI,
-        super(
-          'patrol',
-          'Tool for running Flutter-native UI tests with superpowers',
-        ) {
+  }) : _platform = platform,
+       _pubUpdater = pubUpdater,
+       _fs = fs,
+       _analytics = analytics,
+       _processManager = processManager,
+       _disposeScope = DisposeScope(),
+       _logger = logger,
+       _isCI = isCI,
+       super(
+         'patrol',
+         'Tool for running Flutter-native UI tests with superpowers',
+       ) {
     final adb = Adb();
 
     final rootDirectory = findRootDirectory(_fs) ?? _fs.currentDirectory;
@@ -175,6 +175,9 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
       logger: _logger,
     );
 
+    stdin.echoMode = false;
+    stdin.lineMode = false;
+
     addCommand(
       BuildCommand(
         testFinder: testFinder,
@@ -216,8 +219,10 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         androidTestBackend: androidTestBackend,
         iosTestBackend: iosTestBackend,
         macosTestBackend: macosTestBackend,
+        webTestBackend: webTestBackend,
         analytics: _analytics,
         logger: _logger,
+        stdin: stdin,
       ),
     );
 
@@ -453,12 +458,11 @@ To install a specific version of Patrol CLI, run:
     required String currentVersion,
     required String latestVersion,
     required String maxCompatibleCliVersion,
-  }) =>
-      _checkForUpdates(
-        currentVersion: currentVersion,
-        latestVersion: latestVersion,
-        maxCompatibleCliVersion: maxCompatibleCliVersion,
-      );
+  }) => _checkForUpdates(
+    currentVersion: currentVersion,
+    latestVersion: latestVersion,
+    maxCompatibleCliVersion: maxCompatibleCliVersion,
+  );
 
   bool _wantsUpdateCheck(String? commandName) {
     if (_isCI) {

@@ -11,8 +11,8 @@ class WebTestBackend {
   WebTestBackend({
     required ProcessManager processManager,
     required Logger logger,
-  })  : _processManager = processManager,
-        _logger = logger;
+  }) : _processManager = processManager,
+       _logger = logger;
 
   final ProcessManager _processManager;
   final Logger _logger;
@@ -34,10 +34,12 @@ class WebTestBackend {
       '--target=${options.flutter.target}',
       '--${options.flutter.buildMode.name}',
       // Note: --flavor is not supported for web, so we don't include it
-      ...options.flutter.dartDefines.entries
-          .map((e) => '--dart-define=${e.key}=${e.value}'),
-      ...options.flutter.dartDefineFromFilePaths
-          .map((e) => '--dart-define-from-file=$e'),
+      ...options.flutter.dartDefines.entries.map(
+        (e) => '--dart-define=${e.key}=${e.value}',
+      ),
+      ...options.flutter.dartDefineFromFilePaths.map(
+        (e) => '--dart-define-from-file=$e',
+      ),
     ]);
 
     if (result.exitCode != 0) {
@@ -50,6 +52,10 @@ class WebTestBackend {
     }
   }
 
+  Future<void> buildForDevelop(WebAppOptions options) async {
+    // this is just noop, because `flutter run` already builds the web app
+  }
+
   Future<void> execute(
     WebAppOptions options,
     Device device, {
@@ -60,7 +66,10 @@ class WebTestBackend {
     _logger.detail('Starting web test execution...');
 
     // Start Flutter web server
-    final flutterProcess = await _startFlutterWebServer(options);
+    final flutterProcess = await _startFlutterWebServer(
+      options,
+      develop: false,
+    );
 
     try {
       // Wait for server to be ready and get the URL
@@ -77,9 +86,7 @@ class WebTestBackend {
 
       // Wait a bit for graceful shutdown
       try {
-        await flutterProcess.exitCode.timeout(
-          const Duration(seconds: 5),
-        );
+        await flutterProcess.exitCode.timeout(const Duration(seconds: 5));
       } on TimeoutException {
         // Timeout occurred, force kill
         _logger.detail(
@@ -91,7 +98,52 @@ class WebTestBackend {
     }
   }
 
-  Future<Process> _startFlutterWebServer(WebAppOptions options) async {
+  Future<void> develop(
+    WebAppOptions options,
+    Device device, {
+    bool showFlutterLogs = false,
+    bool hideTestSteps = false,
+    bool clearTestSteps = false,
+    required Stream<List<int>> stdin,
+  }) async {
+    _logger.detail('Starting web develop execution...');
+
+    // Start Flutter web server
+    final flutterProcess = await _startFlutterWebServer(options, develop: true);
+
+    try {
+      // Wait for server to be ready and get the URL
+      final port = await _waitForWebDebugger(flutterProcess);
+
+      _attachForHotRestart(flutterProcess, stdin: stdin);
+
+      // Run Playwright tests
+      await _runPlaywrightDevelop(port, options);
+    } finally {
+      // Clean up Flutter process gracefully
+      _logger.detail('Stopping Flutter web server...');
+
+      // Try graceful shutdown first
+      flutterProcess.kill();
+
+      // Wait a bit for graceful shutdown
+      try {
+        await flutterProcess.exitCode.timeout(const Duration(seconds: 5));
+      } on TimeoutException {
+        // Timeout occurred, force kill
+        _logger.detail(
+          'Graceful shutdown timed out, force killing Flutter process...',
+        );
+        flutterProcess.kill(ProcessSignal.sigkill);
+        await flutterProcess.exitCode;
+      }
+    }
+  }
+
+  Future<Process> _startFlutterWebServer(
+    WebAppOptions options, {
+    required bool develop,
+  }) async {
     _logger.detail('Starting Flutter web server...');
 
     // Warn if flavor is specified for web (not supported)
@@ -105,20 +157,23 @@ class WebTestBackend {
       options.flutter.command.executable,
       'run',
       '-d',
-      'web-server',
+      if (develop) 'chrome' else 'web-server',
+      ...develop ? ['--verbose'] : [],
       '--target=${options.flutter.target}',
       '--${options.flutter.buildMode.name}',
       // Note: --flavor is not supported for web, so we don't include it
-      ...options.flutter.dartDefines.entries
-          .map((e) => '--dart-define=${e.key}=${e.value}'),
-      ...options.flutter.dartDefineFromFilePaths
-          .map((e) => '--dart-define-from-file=$e'),
+      ...options.flutter.dartDefines.entries.map(
+        (e) => '--dart-define=${e.key}=${e.value}',
+      ),
+      ...options.flutter.dartDefineFromFilePaths.map(
+        (e) => '--dart-define-from-file=$e',
+      ),
     ]);
 
     return process;
   }
 
-  Future<String> _waitForWebServer(Process flutterProcess) async {
+  Future<String> _waitForWebServer(Process flutterProcess) {
     _logger.detail('Waiting for web server to start...');
 
     final completer = Completer<String>();
@@ -129,51 +184,57 @@ class WebTestBackend {
         .transform(const SystemEncoding().decoder)
         .transform(const LineSplitter())
         .listen((line) {
-      _logger.detail('Flutter: $line');
+          _logger.detail('Flutter: $line');
 
-      // Look for the server URL in Flutter output
-      final urlMatch = RegExp(r'http://[^/]+:\d+').firstMatch(line);
-      if (urlMatch != null && !completer.isCompleted) {
-        final url = urlMatch.group(0)!;
-        _logger.info('Web server started at: $url');
+          // Look for the server URL in Flutter output
+          final urlMatch = RegExp(r'http://[^/]+:\d+').firstMatch(line);
 
-        // Verify server is actually responding before completing
-        _verifyServerReady(url).then((isReady) {
-          if (!completer.isCompleted && isReady) {
-            stdoutSubscription.cancel();
-            stderrSubscription.cancel();
-            completer.complete(url);
-          }
-        }).catchError((Object error) {
-          _logger.detail('Server verification failed: $error');
-          // Still complete with URL, let Playwright handle retries
-          if (!completer.isCompleted) {
-            stdoutSubscription.cancel();
-            stderrSubscription.cancel();
-            completer.complete(url);
+          // [CHROME]: DevTools listening on ws://127.0.0.1:38861/devtools/browser/431953d3-ef67-428f-9321-9317256022d0
+          if (urlMatch != null && !completer.isCompleted) {
+            final url = urlMatch.group(0)!;
+            _logger.info('Web server started at: $url');
+
+            // Verify server is actually responding before completing
+            _verifyServerReady(url)
+                .then((isReady) {
+                  if (!completer.isCompleted && isReady) {
+                    stdoutSubscription.cancel();
+                    stderrSubscription.cancel();
+                    completer.complete(url);
+                  }
+                })
+                .catchError((Object error) {
+                  _logger.detail('Server verification failed: $error');
+                  // Still complete with URL, let Playwright handle retries
+                  if (!completer.isCompleted) {
+                    stdoutSubscription.cancel();
+                    stderrSubscription.cancel();
+                    completer.complete(url);
+                  }
+                });
           }
         });
-      }
-    });
 
     // Listen to stderr for errors
     stderrSubscription = flutterProcess.stderr
         .transform(const SystemEncoding().decoder)
         .transform(const LineSplitter())
         .listen((line) {
-      _logger.detail('Flutter stderr: $line');
+          _logger.detail('Flutter stderr: $line');
 
-      // Check for critical errors that would prevent server startup
-      if (line.contains('FATAL') ||
-          line.contains('Failed to bind') ||
-          line.contains('Address already in use')) {
-        if (!completer.isCompleted) {
-          stdoutSubscription.cancel();
-          stderrSubscription.cancel();
-          completer.completeError('Flutter web server failed to start: $line');
-        }
-      }
-    });
+          // Check for critical errors that would prevent server startup
+          if (line.contains('FATAL') ||
+              line.contains('Failed to bind') ||
+              line.contains('Address already in use')) {
+            if (!completer.isCompleted) {
+              stdoutSubscription.cancel();
+              stderrSubscription.cancel();
+              completer.completeError(
+                'Flutter web server failed to start: $line',
+              );
+            }
+          }
+        });
 
     // Check if process exits unexpectedly
     flutterProcess.exitCode.then((exitCode) {
@@ -187,18 +248,125 @@ class WebTestBackend {
     }).ignore();
 
     // Timeout after 2 minutes
-    Timer(
-      const Duration(minutes: 2),
-      () {
-        if (!completer.isCompleted) {
-          stdoutSubscription.cancel();
-          stderrSubscription.cancel();
-          completer.completeError('Timeout waiting for web server to start');
-        }
-      },
-    );
+    Timer(const Duration(minutes: 2), () {
+      if (!completer.isCompleted) {
+        stdoutSubscription.cancel();
+        stderrSubscription.cancel();
+        completer.completeError('Timeout waiting for web server to start');
+      }
+    });
 
     return completer.future;
+  }
+
+  Future<String> _waitForWebDebugger(Process flutterProcess) {
+    _logger.detail('Waiting for debugger to start...');
+
+    final completer = Completer<String>();
+    late StreamSubscription<String> stdoutSubscription;
+    late StreamSubscription<String> stderrSubscription;
+
+    stdoutSubscription = flutterProcess.stdout
+        .transform(const SystemEncoding().decoder)
+        .transform(const LineSplitter())
+        .listen((line) {
+          _logger.detail('Flutter: $line');
+
+          // [CHROME]: DevTools listening on ws://127.0.0.1:38861/devtools/browser/431953d3-ef67-428f-9321-9317256022d0
+          final urlMatch = RegExp(
+            r'DevTools listening on ws://[^/]+:(\d+)',
+          ).firstMatch(line);
+
+          if (urlMatch != null && !completer.isCompleted) {
+            final port = urlMatch.group(1)!;
+            _logger.info('Debugger started at port: $port');
+            completer.complete(port);
+          }
+        });
+
+    // Listen to stderr for errors
+    stderrSubscription = flutterProcess.stderr
+        .transform(const SystemEncoding().decoder)
+        .transform(const LineSplitter())
+        .listen((line) {
+          _logger.detail('Flutter stderr: $line');
+        });
+
+    // Check if process exits unexpectedly
+    flutterProcess.exitCode.then((exitCode) {
+      if (!completer.isCompleted && exitCode != 0) {
+        stdoutSubscription.cancel();
+        stderrSubscription.cancel();
+        completer.completeError(
+          'Flutter process exited unexpectedly with code $exitCode',
+        );
+      }
+    }).ignore();
+
+    // Timeout after 2 minutes
+    Timer(const Duration(minutes: 2), () {
+      if (!completer.isCompleted) {
+        stdoutSubscription.cancel();
+        stderrSubscription.cancel();
+        completer.completeError('Timeout waiting for web server to start');
+      }
+    });
+
+    return completer.future;
+  }
+
+  void _attachForHotRestart(
+    Process flutterProcess, {
+    required Stream<List<int>> stdin,
+  }) {
+    final streamSubscription = stdin.listen((event) {
+      final char = String.fromCharCode(event.first);
+
+      _logger.detail('Flutter stdin: $char');
+
+      if (char == 'r' || char == 'R') {
+        // if (!_hotRestartActive) {
+        //   _logger.warn('Hot Restart: not attached to the app yet!');
+        //   return;
+        // }
+
+        // _logger.success(
+        //   'Hot Restart for entrypoint ${basename(target)}...',
+        // );
+        flutterProcess.stdin.add('R'.codeUnits);
+      } else if (char == 'h' || char == 'H') {
+        final helpText = StringBuffer(
+          'Patrol develop key commands:\n'
+          'r Hot restart\n'
+          'h Print this help message\n'
+          'q Quit (terminate the process and application on the device)',
+        );
+
+        // if (_devtoolsUrl.isNotEmpty) {
+        //   helpText.writeln('\nDevTools: $_devtoolsUrl');
+        // } else {
+        //   helpText.writeln('\nDevTools: not available yet');
+        // }
+
+        _logger.success(helpText.toString());
+      } else if (char == 'q' || char == 'Q') {
+        _logger.success('Quitting process...');
+        flutterProcess.kill();
+
+        // Call the uninstall function if provided
+        // if (onQuit != null) {
+        //   try {
+        //     await onQuit();
+        //   } catch (err) {
+        //     _logger.err('Failed to clean up app: $err');
+        //   }
+        // }
+
+        exit(0);
+      }
+    });
+
+    Timer(const Duration(minutes: 2), streamSubscription.cancel);
   }
 
   Future<void> _runPlaywrightTests(
@@ -222,8 +390,8 @@ class WebTestBackend {
       ..detail('Test results will be saved to: $testResultsDir')
       ..detail('Test report will be saved to: $testReportDir');
 
-    final result = await _processManager.run(
-      ['npx', 'playwright', 'test'],
+    final playwrightProcess = await _processManager.start(
+      ['npx', 'playwright', 'test', 'tests/test.spec.ts'],
       workingDirectory: webRunnerPath,
       environment: {
         'BASE_URL': baseUrl,
@@ -236,25 +404,120 @@ class WebTestBackend {
       runInShell: true,
     );
 
-    if (result.exitCode != 0) {
-      _logger.err('Playwright test execution failed:');
-      final stdout = result.stdout.toString();
-      final stderr = result.stderr.toString();
+    final completer = Completer<void>();
+    late StreamSubscription<String> stdoutSubscription;
+    late StreamSubscription<String> stderrSubscription;
 
-      if (stdout.isNotEmpty) {
-        _logger.err('STDOUT: $stdout');
-      }
-      if (stderr.isNotEmpty) {
-        _logger.err('STDERR: $stderr');
-      }
+    stdoutSubscription = playwrightProcess.stdout
+        .transform(const SystemEncoding().decoder)
+        .transform(const LineSplitter())
+        .listen((line) {
+          _logger.detail('Playwright: $line');
+        });
 
-      throw ProcessException(
-        'playwright',
-        ['test'],
-        'Playwright tests failed with exit code ${result.exitCode}',
-        result.exitCode,
-      );
-    }
+    // Listen to stderr for errors
+    stderrSubscription = playwrightProcess.stderr
+        .transform(const SystemEncoding().decoder)
+        .transform(const LineSplitter())
+        .listen((line) {
+          _logger.detail('Playwright stderr: $line');
+        });
+
+    // Check if process exits unexpectedly
+    playwrightProcess.exitCode.then((exitCode) {
+      if (!completer.isCompleted) {
+        stdoutSubscription.cancel();
+        stderrSubscription.cancel();
+        if (exitCode != 0) {
+          completer.completeError(
+            'Playwright process exited unexpectedly with code $exitCode',
+          );
+        } else {
+          completer.complete();
+        }
+      }
+    }).ignore();
+
+    // Timeout after 2 minutes
+    Timer(const Duration(minutes: 2), () {
+      if (!completer.isCompleted) {
+        stdoutSubscription.cancel();
+        stderrSubscription.cancel();
+        completer.completeError(
+          'Timeout waiting for playwright tests to finish',
+        );
+      }
+    });
+
+    return completer.future;
+  }
+
+  Future<void> _runPlaywrightDevelop(String port, WebAppOptions options) async {
+    _logger.info('Running Playwright tests using debugger on port: $port');
+
+    // Ensure web_runner directory exists and is properly set up
+    await _ensureWebRunnerExists();
+
+    final webRunnerPath = _getWebRunnerPath();
+
+    await _ensureNodeDependencies(webRunnerPath);
+
+    final testResultsDir = '${Directory.current.path}/test-results';
+    final testReportDir = '${Directory.current.path}/playwright-report';
+
+    _logger
+      ..detail('Test results will be saved to: $testResultsDir')
+      ..detail('Test report will be saved to: $testReportDir');
+
+    final playwrightProcess = await _processManager.start(
+      ['npx', 'ts-node', 'tests/develop.spec.ts'],
+      workingDirectory: webRunnerPath,
+      environment: {
+        'DEBUGGER_PORT': port,
+        'PATROL_TEST_RESULTS_DIR': testResultsDir,
+        'PATROL_TEST_REPORT_DIR': testReportDir,
+        'PLAYWRIGHT_JSON_OUTPUT_NAME': 'results.json',
+        'PLAYWRIGHT_JSON_OUTPUT_DIR': testReportDir,
+        ...Platform.environment,
+      },
+      runInShell: true,
+    );
+
+    final completer = Completer<void>();
+    late StreamSubscription<String> stdoutSubscription;
+    late StreamSubscription<String> stderrSubscription;
+
+    stdoutSubscription = playwrightProcess.stdout
+        .transform(const SystemEncoding().decoder)
+        .transform(const LineSplitter())
+        .listen((line) {
+          _logger.detail('Playwright: $line');
+        });
+
+    // Listen to stderr for errors
+    stderrSubscription = playwrightProcess.stderr
+        .transform(const SystemEncoding().decoder)
+        .transform(const LineSplitter())
+        .listen((line) {
+          _logger.detail('Playwright stderr: $line');
+        });
+
+    // Check if process exits unexpectedly
+    playwrightProcess.exitCode.then((exitCode) {
+      if (!completer.isCompleted) {
+        stdoutSubscription.cancel();
+        stderrSubscription.cancel();
+        if (exitCode != 0) {
+          completer.completeError(
+            'Playwright process exited unexpectedly with code $exitCode',
+          );
+        } else {
+          completer.complete();
+        }
+      }
+    }).ignore();
+
+    return completer.future;
   }
 
   String _getWebRunnerPath() {
@@ -286,9 +549,9 @@ class WebTestBackend {
           String packagePath;
           if (packageUri.startsWith('../')) {
             // Relative path from .dart_tool/package_config.json
-            packagePath =
-                Directory('${Directory.current.path}/.dart_tool/$packageUri')
-                    .resolveSymbolicLinksSync();
+            packagePath = Directory(
+              '${Directory.current.path}/.dart_tool/$packageUri',
+            ).resolveSymbolicLinksSync();
           } else if (packageUri.startsWith('file://')) {
             packagePath = Uri.parse(packageUri).toFilePath();
           } else {
@@ -315,23 +578,28 @@ class WebTestBackend {
     final webRunnerDir = Directory(webRunnerPath);
 
     if (!webRunnerDir.existsSync()) {
-      throw Exception('web_runner directory not found at: $webRunnerPath\n'
-          'This should be automatically resolved from the patrol package.\n'
-          'Please ensure patrol is properly installed and try running "dart pub get".');
+      throw Exception(
+        'web_runner directory not found at: $webRunnerPath\n'
+        'This should be automatically resolved from the patrol package.\n'
+        'Please ensure patrol is properly installed and try running "dart pub get".',
+      );
     }
 
     // Verify required files exist
     final requiredFiles = [
       'package.json',
       'playwright.config.ts',
-      'tests/patrol.spec.ts',
+      'tests/test.spec.ts',
+      'tests/develop.spec.ts',
     ];
 
     for (final file in requiredFiles) {
       if (!File('$webRunnerPath/$file').existsSync()) {
-        throw Exception('Missing required file: $webRunnerPath/$file\n'
-            'This file should be present in the patrol package.\n'
-            'Please ensure patrol is properly installed.');
+        throw Exception(
+          'Missing required file: $webRunnerPath/$file\n'
+          'This file should be present in the patrol package.\n'
+          'Please ensure patrol is properly installed.',
+        );
       }
     }
   }
@@ -368,7 +636,8 @@ class WebTestBackend {
     final packageLockFile = File('$webRunnerPath/package-lock.json');
 
     // Check if node_modules exists and has content
-    final needsInstall = !nodeModulesDir.existsSync() ||
+    final needsInstall =
+        !nodeModulesDir.existsSync() ||
         nodeModulesDir.listSync().isEmpty ||
         !packageLockFile.existsSync();
 
