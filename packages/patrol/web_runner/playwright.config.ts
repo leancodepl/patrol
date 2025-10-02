@@ -1,22 +1,20 @@
 import { defineConfig } from "@playwright/test";
 
+const outputDir = process.env.PATROL_TEST_RESULTS_DIR || "./test-results";
+const outputFolder =
+  process.env.PATROL_TEST_REPORT_DIR || "./playwright-report";
+const baseURL = process.env.BASE_URL;
+
 export default defineConfig({
   use: {
     // This needs to be dynamically injected with env variables
-    baseURL: process.env.BASE_URL,
+    baseURL,
     headless: false,
   },
   globalSetup: require.resolve("./tests/setup"),
   globalTeardown: require.resolve("./tests/teardown"),
   // Output test results to the tested app directory
-  outputDir: process.env.PATROL_TEST_RESULTS_DIR || "./test-results",
-  reporter: [
-    ["html", { 
-      outputFolder: process.env.PATROL_TEST_REPORT_DIR || "./playwright-report",
-      open: "never"
-    }],
-    ["json"],
-    ["list"]
-  ],
+  outputDir,
+  reporter: [["html", { outputFolder, open: "never" }], ["json"], ["list"]],
   timeout: 120000,
 });

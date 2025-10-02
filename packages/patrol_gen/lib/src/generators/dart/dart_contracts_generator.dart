@@ -101,5 +101,4 @@ class ${message.name} with EquatableMixin {
   List<Object?> get props => $propertiesContent;
 ''';
   }
-
 }
