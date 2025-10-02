@@ -15,6 +15,17 @@ async function globalSetup(config: FullConfig) {
   await page.goto(baseURL);
 
   await page.waitForFunction(
+    () => {
+      if (typeof window.__patrol_setInitialised !== "function") return false;
+
+      window.__patrol_setInitialised();
+
+      return true;
+    },
+    { timeout: 60000 }
+  );
+
+  await page.waitForFunction(
     () => typeof window.__patrol_listDartTests === "function",
     { timeout: 120000 }
   );
