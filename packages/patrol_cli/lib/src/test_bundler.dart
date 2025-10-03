@@ -39,7 +39,6 @@ ${generateImports(testFilePaths)}
 // END: GENERATED TEST IMPORTS
 
 Future<void> main() async {
-  await initAppService();
   // This is the entrypoint of the bundled Dart test.
   //
   // Its responsibilities are:
@@ -147,8 +146,6 @@ ${generateImports([testFilePath])}
 // END: GENERATED TEST IMPORTS
 
 Future<void> main() async {
-  await initAppService();
-
   final nativeAutomator = NativeAutomator(config: NativeAutomatorConfig());
   await nativeAutomator.initialize();
   final nativeAutomator2 = NativeAutomator2(config: NativeAutomatorConfig());
