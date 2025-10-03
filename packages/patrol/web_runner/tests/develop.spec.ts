@@ -1,6 +1,7 @@
 import { chromium } from "playwright";
 import { exposePatrolNativeRequestHandlers } from "./patrolNativeRequests";
 import "./types";
+import { initialise } from "./initialise";
 
 async function develop() {
   const browser = await chromium.connectOverCDP(
@@ -15,16 +16,7 @@ async function develop() {
     exposePatrolNativeRequestHandlers(page, requestJson)
   );
 
-  await page.waitForFunction(
-    () => {
-      if (typeof window.__patrol_setInitialised !== "function") return false;
-
-      window.__patrol_setInitialised();
-
-      return true;
-    },
-    { timeout: 60000 }
-  );
+  await initialise(page);
 }
 
 process.on("SIGINT", () => {
