@@ -1,12 +1,16 @@
 import { test as base } from "@playwright/test";
 import { initialise } from "./initialise";
 import { exposePatrolPlatformHandler } from "./patrolPlatformHandler";
-import { PatrolTestEntry, PatrolTestResult } from "./types";
+import { PatrolTestEntry } from "./types";
 
 const tests: PatrolTestEntry[] = JSON.parse(process.env.PATROL_TESTS!);
 
 export const patrolTest = base.extend({
   page: async ({ page }, use) => {
+    page.on("console", (message) => {
+      console.log(message.text());
+    });
+
     await page.goto("/", { waitUntil: "load" });
 
     await exposePatrolPlatformHandler(page);

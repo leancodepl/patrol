@@ -60,7 +60,7 @@ enum KeyboardBehavior { showAndDismiss, alternative }
 
 void _defaultPrintLogger(String message) {
   // ignore: avoid_print
-  print('Patrol (native web stub): $message');
+  print('Patrol: $message');
 }
 
 /// Web stub for NativeAutomator – all methods are no-ops.
