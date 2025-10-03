@@ -9,13 +9,15 @@ void main() {
     await createApp($);
 
     await $.native2.enableDarkMode();
-
+    await $.pumpAndSettle();
     await Future.delayed(const Duration(seconds: 2));
+
     await $.native2.disableDarkMode();
-
+    await $.pumpAndSettle();
     await Future.delayed(const Duration(seconds: 2));
-    await $.native2.enableDarkMode();
 
-    await Future.delayed(const Duration(seconds: 30));
+    await $.native2.enableDarkMode();
+    await $.pumpAndSettle();
+    await Future.delayed(const Duration(seconds: 2));
   });
 }
