@@ -2,20 +2,28 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:dispose_scope/dispose_scope.dart';
 import 'package:patrol_cli/src/base/logger.dart';
+import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/devices.dart';
+import 'package:patrol_log/patrol_log.dart';
 import 'package:process/process.dart';
 
 class WebTestBackend {
   WebTestBackend({
     required ProcessManager processManager,
+    required DisposeScope parentDisposeScope,
     required Logger logger,
   }) : _processManager = processManager,
-       _logger = logger;
+       _logger = logger,
+       _disposeScope = DisposeScope() {
+    _disposeScope.disposedBy(parentDisposeScope);
+  }
 
   final ProcessManager _processManager;
   final Logger _logger;
+  final DisposeScope _disposeScope;
 
   Future<void> build(WebAppOptions options) async {
     _logger.detail('Building web app for testing...');
@@ -76,7 +84,13 @@ class WebTestBackend {
       final baseUrl = await _waitForWebServer(flutterProcess);
 
       // Run Playwright tests
-      await _runPlaywrightTests(baseUrl, options);
+      await _runPlaywrightTests(
+        baseUrl,
+        options,
+        showFlutterLogs: showFlutterLogs,
+        hideTestSteps: hideTestSteps,
+        clearTestSteps: clearTestSteps,
+      );
     } finally {
       // Clean up Flutter process gracefully
       _logger.detail('Stopping Flutter web server...');
@@ -371,82 +385,98 @@ class WebTestBackend {
 
   Future<void> _runPlaywrightTests(
     String baseUrl,
-    WebAppOptions options,
-  ) async {
+    WebAppOptions options, {
+    required bool showFlutterLogs,
+    required bool hideTestSteps,
+    required bool clearTestSteps,
+  }) async {
     _logger.info('Running Playwright tests against: $baseUrl');
-
-    // Ensure web_runner directory exists and is properly set up
-    await _ensureWebRunnerExists();
-
-    final webRunnerPath = _getWebRunnerPath();
-
-    // Install Node.js dependencies if needed
-    await _ensureNodeDependencies(webRunnerPath);
-
-    final testResultsDir = '${Directory.current.path}/test-results';
-    final testReportDir = '${Directory.current.path}/playwright-report';
-
-    _logger
-      ..detail('Test results will be saved to: $testResultsDir')
-      ..detail('Test report will be saved to: $testReportDir');
-
-    final playwrightProcess = await _processManager.start(
-      ['npx', 'playwright', 'test', 'tests/test.spec.ts'],
-      workingDirectory: webRunnerPath,
-      environment: {
-        'BASE_URL': baseUrl,
-        'PATROL_TEST_RESULTS_DIR': testResultsDir,
-        'PATROL_TEST_REPORT_DIR': testReportDir,
-        'PLAYWRIGHT_JSON_OUTPUT_NAME': 'results.json',
-        'PLAYWRIGHT_JSON_OUTPUT_DIR': testReportDir,
-        ...Platform.environment,
-      },
-      runInShell: true,
-    );
-
     final completer = Completer<void>();
-    late StreamSubscription<String> stdoutSubscription;
-    late StreamSubscription<String> stderrSubscription;
 
-    stdoutSubscription = playwrightProcess.stdout
-        .transform(const SystemEncoding().decoder)
-        .transform(const LineSplitter())
-        .listen((line) {
-          _logger.detail('Playwright: $line');
-        });
+    await _disposeScope.run((scope) async {
+      // Ensure web_runner directory exists and is properly set up
+      await _ensureWebRunnerExists();
 
-    // Listen to stderr for errors
-    stderrSubscription = playwrightProcess.stderr
-        .transform(const SystemEncoding().decoder)
-        .transform(const LineSplitter())
-        .listen((line) {
-          _logger.detail('Playwright stderr: $line');
-        });
+      final webRunnerPath = _getWebRunnerPath();
 
-    // Check if process exits unexpectedly
-    playwrightProcess.exitCode.then((exitCode) {
-      if (!completer.isCompleted) {
-        stdoutSubscription.cancel();
-        stderrSubscription.cancel();
-        if (exitCode != 0) {
-          completer.completeError(
-            'Playwright process exited unexpectedly with code $exitCode',
-          );
-        } else {
-          completer.complete();
+      // Install Node.js dependencies if needed
+      await _ensureNodeDependencies(webRunnerPath);
+
+      final testResultsDir = '${Directory.current.path}/test-results';
+      final testReportDir = '${Directory.current.path}/playwright-report';
+
+      _logger
+        ..detail('Test results will be saved to: $testResultsDir')
+        ..detail('Test report will be saved to: $testReportDir');
+
+      final playwrightProcess =
+          await _processManager.start(
+              ['npx', 'playwright', 'test', 'tests/test.spec.ts'],
+              workingDirectory: webRunnerPath,
+              environment: {
+                'BASE_URL': baseUrl,
+                'PATROL_TEST_RESULTS_DIR': testResultsDir,
+                'PATROL_TEST_REPORT_DIR': testReportDir,
+                'PLAYWRIGHT_JSON_OUTPUT_NAME': 'results.json',
+                'PLAYWRIGHT_JSON_OUTPUT_DIR': testReportDir,
+                ...Platform.environment,
+              },
+              runInShell: true,
+            )
+            ..disposedBy(scope);
+
+      final patrolLogReader =
+          PatrolLogReader(
+              listenStdOut: playwrightProcess.listenStdOut,
+              scope: scope,
+              log: _logger.info,
+              reportPath: "",
+              showFlutterLogs: showFlutterLogs,
+              hideTestSteps: hideTestSteps,
+              clearTestSteps: clearTestSteps,
+            )
+            ..listen()
+            ..startTimer();
+
+      // Listen to stderr for errors
+      final stderrSubscription =
+          playwrightProcess.stderr
+              .transform(const SystemEncoding().decoder)
+              .transform(const LineSplitter())
+              .listen((line) {
+                _logger.detail('Playwright stderr: $line');
+              })
+            ..disposedBy(scope);
+
+      // Check if process exits unexpectedly
+      playwrightProcess.exitCode.then((exitCode) {
+        if (!completer.isCompleted) {
+          stderrSubscription.cancel();
+          if (exitCode != 0) {
+            completer.completeError(
+              'Playwright process exited unexpectedly with code $exitCode',
+            );
+          } else {
+            patrolLogReader.stopTimer();
+
+            // TODO: Don't print the summary in develop
+            _logger.info(patrolLogReader.summary);
+
+            completer.complete();
+          }
         }
-      }
-    }).ignore();
+      }).ignore();
 
-    // Timeout after 2 minutes
-    Timer(const Duration(minutes: 2), () {
-      if (!completer.isCompleted) {
-        stdoutSubscription.cancel();
-        stderrSubscription.cancel();
-        completer.completeError(
-          'Timeout waiting for playwright tests to finish',
-        );
-      }
+      // Timeout after 2 minutes
+      Timer(const Duration(minutes: 2), () {
+        if (!completer.isCompleted) {
+          // stdoutSubscription.cancel();
+          stderrSubscription.cancel();
+          completer.completeError(
+            'Timeout waiting for playwright tests to finish',
+          );
+        }
+      });
     });
 
     return completer.future;
