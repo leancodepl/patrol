@@ -1,21 +1,15 @@
-import fs from "fs";
-import path from "path";
-import { PatrolTestEntry, PatrolTestResult } from "./types";
 import { test as base } from "@playwright/test";
-import { exposePatrolNativeRequestHandlers } from "./patrolNativeRequests";
 import { initialise } from "./initialise";
+import { exposePatrolPlatformHandler } from "./patrolPlatformHandler";
+import { PatrolTestEntry, PatrolTestResult } from "./types";
 
-const tests: PatrolTestEntry[] = JSON.parse(
-  fs.readFileSync(path.join(__dirname, "tests.json"), "utf-8")
-);
+const tests: PatrolTestEntry[] = JSON.parse(process.env.PATROL_TESTS!);
 
 export const patrolTest = base.extend({
   page: async ({ page }, use) => {
     await page.goto("/", { waitUntil: "load" });
 
-    await page.exposeBinding("patrolNative", async ({ page }, requestJson) =>
-      exposePatrolNativeRequestHandlers(page, requestJson)
-    );
+    await exposePatrolPlatformHandler(page);
 
     await initialise(page);
 
@@ -27,19 +21,14 @@ for (const { name, skip, tags } of tests) {
   patrolTest(name, { tag: tags }, async ({ page }) => {
     patrolTest.skip(skip);
 
-    console.log("Running test: ", name);
+    await page.waitForFunction(() => window.__patrol__runTest, {
+      timeout: 120000,
+    });
 
-    const testResult = await page.evaluate<PatrolTestResult, string>(
-      (name) =>
-        new Promise((resolve) => {
-          window.__patrol_runDartTestWithCallback?.(name, (result) => {
-            resolve(JSON.parse(result));
-          });
-        }),
+    const testResult = await page.evaluate(
+      async (name) => await window.__patrol__runTest!(name),
       name
     );
-
-    console.log("Test result: ", testResult);
 
     patrolTest
       .expect(testResult.result, testResult.details ?? undefined)
