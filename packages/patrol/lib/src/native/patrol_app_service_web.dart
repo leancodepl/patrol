@@ -6,14 +6,10 @@
 
 // Identifier name is for JS interop only; its value is not significant in Dart.
 // ignore_for_file: non_constant_identifier_names
-
 library;
 
 import 'dart:async';
-import 'dart:convert';
 import 'dart:js_interop';
-// No unsafe APIs needed with export setters; keep to pure dart:js_interop
-
 import 'package:patrol/src/native/contracts/contracts.dart';
 import 'package:patrol/src/native/contracts/patrol_app_service_server.dart';
 import 'package:patrol_log/patrol_log.dart';
@@ -26,26 +22,19 @@ class _TestExecutionResult {
 }
 
 @JS()
-external set __patrol_listDartTests(JSFunction value);
+external set __patrol__getTests(JSFunction value);
 
 @JS()
-external set __patrol_runDartTestWithCallback(JSFunction value);
+external set __patrol__runTest(JSFunction value);
 
 @JS()
-external JSBoolean get __patrol__isInitialised;
+external JSBoolean? get __patrol__isInitialised;
 
 @JS()
 external set __patrol__onInitialised(JSFunction value);
 
-/// Completer that completes when Patrol is initialised on the JS side.
-///
-/// Used to keep track of whether the JS environment has called the Dart initialisation
-/// callback (e.g., via `__patrol_setInitialised`). This allows Dart code to await
-/// initialisation before proceeding with actions that require the JS side to be ready.
-
-// Playwright native bridge: exposed by Playwright via page.exposeBinding('patrolNative', ...)
-@JS('patrolNative')
-external JSPromise<JSString> _patrolNative(JSString requestJson);
+@JS()
+external JSPromise<JSAny?> __patrol__platformHandler(JSAny? request);
 
 /// Calls a native action via Playwright's exposed patrolNative binding.
 ///
@@ -54,7 +43,7 @@ external JSPromise<JSString> _patrolNative(JSString requestJson);
 /// [logger] - optional logger function for logging
 /// [patrolLog] - optional PatrolLogWriter for step logging
 /// Returns a Map with 'ok' boolean and optional 'data' or 'error' fields.
-Future<Map<String, dynamic>> callPlaywright(
+Future<void> callPlaywright(
   String action,
   Map<String, dynamic> params, {
   void Function(String)? logger,
@@ -70,66 +59,56 @@ Future<Map<String, dynamic>> callPlaywright(
 
   try {
     final request = {'action': action, 'params': params};
-    final requestJson = jsonEncode(request).toJS;
-    final responseJson = await _patrolNative(requestJson).toDart;
-    final response = jsonDecode(responseJson.toDart) as Map<String, dynamic>;
+    await __patrol__platformHandler(request.jsify()).toDart;
 
-    // TODO: check if this was actually successful
     logger?.call('$action() succeeded');
     if (patrolLog != null) {
       patrolLog.log(StepEntry(action: text, status: StepEntryStatus.success));
     }
-    return response;
   } catch (err) {
     logger?.call('$action() failed');
-    final log = 'Failed to call Playwright: $err';
 
     if (patrolLog != null) {
       patrolLog.log(StepEntry(action: text, status: StepEntryStatus.failure));
     }
-    return {'ok': false, 'error': log};
+
+    throw Exception(err);
   }
 }
 
-/// Starts the web-exposed service by wiring Dart methods to JS functions.
 Future<void> initAppService() {
   final isInitialised = Completer<void>();
 
-  // This cannot be a tearoff (e.g. `isInitialised.complete.toJS`) because
-  // that would change the type of the function and it cannot be casted to JS via `toJS`.
-  // We must use a lambda to preserve the correct signature for JS interop.
-  // ignore: unnecessary_lambdas
-  __patrol__onInitialised = () {
+  JSVoid onInitialised() {
     isInitialised.complete();
-  }.toJS;
+  }
 
-  if (__patrol__isInitialised.toDart) {
+  __patrol__onInitialised = onInitialised.toJS;
+
+  if (__patrol__isInitialised?.toDart ?? false) {
     return Future.value();
   }
+
   return isInitialised.future;
 }
 
 Future<void> runAppService(PatrolAppService service) async {
-  // Synchronous version - return JSON string directly
-  __patrol_listDartTests = (() {
-    return jsonEncode(
-      ListDartTestsResponse(group: service.topLevelDartTestGroup).toJson(),
-    );
-  }).toJS;
+  JSAny? getTests() {
+    return ListDartTestsResponse(
+      group: service.topLevelDartTestGroup,
+    ).toJson().jsify();
+  }
 
-  // Callback-based approach for async operations
-  __patrol_runDartTestWithCallback = ((JSAny? name, JSFunction callback) {
-    final dartName = (name! as JSString).toDart;
-    service
+  JSPromise<JSAny?> runTest(JSString name) {
+    final dartName = name.toDart;
+    return service
         .runDartTest(RunDartTestRequest(name: dartName))
-        .then((resp) {
-          final result = jsonEncode(resp.toJson());
-          callback.callAsFunction(null, result.toJS);
-        })
-        .catchError((error) {
-          callback.callAsFunction(null, 'ERROR: $error'.toJS);
-        });
-  }).toJS;
+        .then((result) => result.toJson().jsify())
+        .toJS;
+  }
+
+  __patrol__getTests = getTests.toJS;
+  __patrol__runTest = runTest.toJS;
 }
 
 class PatrolAppService extends PatrolAppServiceServer {

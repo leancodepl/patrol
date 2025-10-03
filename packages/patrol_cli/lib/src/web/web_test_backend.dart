@@ -470,7 +470,7 @@ class WebTestBackend {
       ..detail('Test report will be saved to: $testReportDir');
 
     final playwrightProcess = await _processManager.start(
-      ['npx', 'ts-node', 'tests/develop.spec.ts'],
+      ['npx', 'ts-node', 'tests/develop.ts'],
       workingDirectory: webRunnerPath,
       environment: {
         'DEBUGGER_PORT': port,
@@ -590,7 +590,7 @@ class WebTestBackend {
       'package.json',
       'playwright.config.ts',
       'tests/test.spec.ts',
-      'tests/develop.spec.ts',
+      'tests/develop.ts',
     ];
 
     for (final file in requiredFiles) {

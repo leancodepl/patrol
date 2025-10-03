@@ -35,16 +35,20 @@ type PatrolNativeRequest =
   | DisableDarkModeRequest
   | UnknownRequest;
 
-export async function exposePatrolNativeRequestHandlers(
+export async function exposePatrolPlatformHandler(page: Page) {
+  await page.exposeBinding(
+    "__patrol__platformHandler",
+    async ({ page }, request) => handlePatrolPlatformAction(page, request)
+  );
+}
+
+async function handlePatrolPlatformAction(
   page: Page,
-  requestJson: string
+  { action, params }: PatrolNativeRequest
 ) {
+  console.log(`Received action: ${action}`, params);
+
   try {
-    const request: PatrolNativeRequest = JSON.parse(requestJson);
-    const { action, params } = request;
-
-    console.log(`[patrolNative] Action: ${action}`, params);
-
     switch (action) {
       case "grantPermissions": {
         const origin = params.origin ?? new URL(page.url()).origin;
@@ -52,31 +56,25 @@ export async function exposePatrolNativeRequestHandlers(
           .context()
           .grantPermissions(params.permissions ?? [], { origin });
         console.log(
-          `[patrolNative] Granted permissions: ${params.permissions?.join(
-            ", "
-          )} for ${origin}`
+          `Granted permissions: ${params.permissions?.join(", ")} for ${origin}`
         );
-        return JSON.stringify({ ok: true });
+        break;
       }
 
       case "enableDarkMode":
         await page.emulateMedia({ colorScheme: "dark" });
-        return JSON.stringify({ ok: true });
+        break;
 
       case "disableDarkMode":
         await page.emulateMedia({ colorScheme: "no-preference" });
-        return JSON.stringify({ ok: true });
+        break;
 
       default:
-        const error = `Unknown action: ${action}`;
-        console.error(`[patrolNative] ${error}`);
-        return JSON.stringify({ ok: false, error });
+        console.error(`Unknown action received: ${action}`);
+        throw new Error(`Unknown action received: ${action}`);
     }
   } catch (e) {
-    const error = `Failed to execute: ${
-      e instanceof Error ? e.message : String(e)
-    }`;
-    console.error(`[patrolNative]`, e);
-    return JSON.stringify({ ok: false, error });
+    console.error("Failed to handle patrol platform request", e);
+    throw e;
   }
 }

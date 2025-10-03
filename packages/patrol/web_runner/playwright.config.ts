@@ -12,7 +12,6 @@ export default defineConfig({
     headless: false,
   },
   globalSetup: require.resolve("./tests/setup"),
-  globalTeardown: require.resolve("./tests/teardown"),
   // Output test results to the tested app directory
   outputDir,
   reporter: [["html", { outputFolder, open: "never" }], ["json"], ["list"]],
