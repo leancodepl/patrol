@@ -2,6 +2,7 @@ import { chromium, type FullConfig } from "@playwright/test";
 import fs from "fs/promises";
 import path from "path";
 import { PatrolTestEntry } from "./types";
+import { initialise } from "./initialise";
 
 async function globalSetup(config: FullConfig) {
   const { baseURL } = config.projects[0].use;
@@ -14,16 +15,7 @@ async function globalSetup(config: FullConfig) {
 
   await page.goto(baseURL);
 
-  await page.waitForFunction(
-    () => {
-      if (typeof window.__patrol_setInitialised !== "function") return false;
-
-      window.__patrol_setInitialised();
-
-      return true;
-    },
-    { timeout: 60000 }
-  );
+  await initialise(page);
 
   await page.waitForFunction(
     () => typeof window.__patrol_listDartTests === "function",
@@ -31,7 +23,7 @@ async function globalSetup(config: FullConfig) {
   );
 
   const { group: testEntries } = await page.evaluate<{ group: DartTestEntry }>(
-    () => JSON.parse(window.__patrol_listDartTests())
+    () => JSON.parse(window.__patrol_listDartTests!())
   );
 
   function mapEntry(

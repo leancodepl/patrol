@@ -4,18 +4,13 @@ import 'package:patrol/src/native/patrol_app_service_web.dart';
 import 'package:patrol_log/patrol_log.dart';
 
 class NativeAutomator2 {
-  NativeAutomator2({required NativeAutomatorConfig config})
-    : assert(
-        config.connectionTimeout > config.findTimeout,
-        'find timeout is longer than connection timeout',
-      ),
-      _config = config;
+  NativeAutomator2({required NativeAutomatorConfig config}) : _config = config;
 
   final _patrolLog = PatrolLogWriter();
   final NativeAutomatorConfig _config;
 
   Future<void> initialize() {
-    return isInitialised.future;
+    return initAppService();
   }
 
   Future<void> enableDarkMode() async {
