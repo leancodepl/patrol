@@ -21,7 +21,7 @@ Map<String, dynamic> _$DartGroupEntryToJson(DartGroupEntry instance) =>
     <String, dynamic>{
       'name': instance.name,
       'type': _$GroupEntryTypeEnumMap[instance.type]!,
-      'entries': instance.entries,
+      'entries': instance.entries.map((e) => e.toJson()).toList(),
       'skip': instance.skip,
       'tags': instance.tags,
     };
@@ -39,7 +39,7 @@ ListDartTestsResponse _$ListDartTestsResponseFromJson(
 
 Map<String, dynamic> _$ListDartTestsResponseToJson(
   ListDartTestsResponse instance,
-) => <String, dynamic>{'group': instance.group};
+) => <String, dynamic>{'group': instance.group.toJson()};
 
 RunDartTestRequest _$RunDartTestRequestFromJson(Map<String, dynamic> json) =>
     RunDartTestRequest(name: json['name'] as String);
@@ -333,9 +333,9 @@ GetNativeViewsRequest _$GetNativeViewsRequestFromJson(
 Map<String, dynamic> _$GetNativeViewsRequestToJson(
   GetNativeViewsRequest instance,
 ) => <String, dynamic>{
-  'selector': instance.selector,
-  'androidSelector': instance.androidSelector,
-  'iosSelector': instance.iosSelector,
+  'selector': instance.selector?.toJson(),
+  'androidSelector': instance.androidSelector?.toJson(),
+  'iosSelector': instance.iosSelector?.toJson(),
   'appId': instance.appId,
 };
 
@@ -372,9 +372,9 @@ GetNativeUITreeRespone _$GetNativeUITreeResponeFromJson(
 Map<String, dynamic> _$GetNativeUITreeResponeToJson(
   GetNativeUITreeRespone instance,
 ) => <String, dynamic>{
-  'iOSroots': instance.iOSroots,
-  'androidRoots': instance.androidRoots,
-  'roots': instance.roots,
+  'iOSroots': instance.iOSroots.map((e) => e.toJson()).toList(),
+  'androidRoots': instance.androidRoots.map((e) => e.toJson()).toList(),
+  'roots': instance.roots.map((e) => e.toJson()).toList(),
 };
 
 AndroidNativeView _$AndroidNativeViewFromJson(Map<String, dynamic> json) =>
@@ -422,9 +422,9 @@ Map<String, dynamic> _$AndroidNativeViewToJson(AndroidNativeView instance) =>
       'isLongClickable': instance.isLongClickable,
       'isScrollable': instance.isScrollable,
       'isSelected': instance.isSelected,
-      'visibleBounds': instance.visibleBounds,
-      'visibleCenter': instance.visibleCenter,
-      'children': instance.children,
+      'visibleBounds': instance.visibleBounds.toJson(),
+      'visibleCenter': instance.visibleCenter.toJson(),
+      'children': instance.children.map((e) => e.toJson()).toList(),
     };
 
 IOSNativeView _$IOSNativeViewFromJson(Map<String, dynamic> json) =>
@@ -446,7 +446,7 @@ IOSNativeView _$IOSNativeViewFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$IOSNativeViewToJson(IOSNativeView instance) =>
     <String, dynamic>{
-      'children': instance.children,
+      'children': instance.children.map((e) => e.toJson()).toList(),
       'elementType': _$IOSElementTypeEnumMap[instance.elementType]!,
       'identifier': instance.identifier,
       'label': instance.label,
@@ -454,7 +454,7 @@ Map<String, dynamic> _$IOSNativeViewToJson(IOSNativeView instance) =>
       'hasFocus': instance.hasFocus,
       'isEnabled': instance.isEnabled,
       'isSelected': instance.isSelected,
-      'frame': instance.frame,
+      'frame': instance.frame.toJson(),
       'placeholderValue': instance.placeholderValue,
       'value': instance.value,
     };
@@ -505,7 +505,7 @@ Map<String, dynamic> _$NativeViewToJson(NativeView instance) =>
       'childCount': instance.childCount,
       'resourceName': instance.resourceName,
       'applicationPackage': instance.applicationPackage,
-      'children': instance.children,
+      'children': instance.children.map((e) => e.toJson()).toList(),
     };
 
 GetNativeViewsResponse _$GetNativeViewsResponseFromJson(
@@ -525,9 +525,11 @@ GetNativeViewsResponse _$GetNativeViewsResponseFromJson(
 Map<String, dynamic> _$GetNativeViewsResponseToJson(
   GetNativeViewsResponse instance,
 ) => <String, dynamic>{
-  'nativeViews': instance.nativeViews,
-  'iosNativeViews': instance.iosNativeViews,
-  'androidNativeViews': instance.androidNativeViews,
+  'nativeViews': instance.nativeViews.map((e) => e.toJson()).toList(),
+  'iosNativeViews': instance.iosNativeViews.map((e) => e.toJson()).toList(),
+  'androidNativeViews': instance.androidNativeViews
+      .map((e) => e.toJson())
+      .toList(),
 };
 
 TapRequest _$TapRequestFromJson(Map<String, dynamic> json) => TapRequest(
@@ -549,9 +551,9 @@ TapRequest _$TapRequestFromJson(Map<String, dynamic> json) => TapRequest(
 
 Map<String, dynamic> _$TapRequestToJson(TapRequest instance) =>
     <String, dynamic>{
-      'selector': instance.selector,
-      'androidSelector': instance.androidSelector,
-      'iosSelector': instance.iosSelector,
+      'selector': instance.selector?.toJson(),
+      'androidSelector': instance.androidSelector?.toJson(),
+      'iosSelector': instance.iosSelector?.toJson(),
       'appId': instance.appId,
       'timeoutMillis': instance.timeoutMillis,
       'delayBetweenTapsMillis': instance.delayBetweenTapsMillis,
@@ -600,9 +602,9 @@ Map<String, dynamic> _$EnterTextRequestToJson(EnterTextRequest instance) =>
       'data': instance.data,
       'appId': instance.appId,
       'index': instance.index,
-      'selector': instance.selector,
-      'androidSelector': instance.androidSelector,
-      'iosSelector': instance.iosSelector,
+      'selector': instance.selector?.toJson(),
+      'androidSelector': instance.androidSelector?.toJson(),
+      'iosSelector': instance.iosSelector?.toJson(),
       'keyboardBehavior': _$KeyboardBehaviorEnumMap[instance.keyboardBehavior]!,
       'timeoutMillis': instance.timeoutMillis,
       'dx': instance.dx,
@@ -654,9 +656,9 @@ WaitUntilVisibleRequest _$WaitUntilVisibleRequestFromJson(
 Map<String, dynamic> _$WaitUntilVisibleRequestToJson(
   WaitUntilVisibleRequest instance,
 ) => <String, dynamic>{
-  'selector': instance.selector,
-  'androidSelector': instance.androidSelector,
-  'iosSelector': instance.iosSelector,
+  'selector': instance.selector?.toJson(),
+  'androidSelector': instance.androidSelector?.toJson(),
+  'iosSelector': instance.iosSelector?.toJson(),
   'appId': instance.appId,
   'timeoutMillis': instance.timeoutMillis,
 };
@@ -692,7 +694,9 @@ GetNotificationsResponse _$GetNotificationsResponseFromJson(
 
 Map<String, dynamic> _$GetNotificationsResponseToJson(
   GetNotificationsResponse instance,
-) => <String, dynamic>{'notifications': instance.notifications};
+) => <String, dynamic>{
+  'notifications': instance.notifications.map((e) => e.toJson()).toList(),
+};
 
 GetNotificationsRequest _$GetNotificationsRequestFromJson(
   Map<String, dynamic> json,
@@ -724,9 +728,9 @@ Map<String, dynamic> _$TapOnNotificationRequestToJson(
   TapOnNotificationRequest instance,
 ) => <String, dynamic>{
   'index': instance.index,
-  'selector': instance.selector,
-  'androidSelector': instance.androidSelector,
-  'iosSelector': instance.iosSelector,
+  'selector': instance.selector?.toJson(),
+  'androidSelector': instance.androidSelector?.toJson(),
+  'iosSelector': instance.iosSelector?.toJson(),
   'timeoutMillis': instance.timeoutMillis,
 };
 
@@ -859,13 +863,14 @@ TakeCameraPhotoRequest _$TakeCameraPhotoRequestFromJson(
 Map<String, dynamic> _$TakeCameraPhotoRequestToJson(
   TakeCameraPhotoRequest instance,
 ) => <String, dynamic>{
-  'shutterButtonSelector': instance.shutterButtonSelector,
-  'androidShutterButtonSelector': instance.androidShutterButtonSelector,
-  'iosShutterButtonSelector': instance.iosShutterButtonSelector,
-  'doneButtonSelector': instance.doneButtonSelector,
-  'androidDoneButtonSelector': instance.androidDoneButtonSelector,
+  'shutterButtonSelector': instance.shutterButtonSelector?.toJson(),
+  'androidShutterButtonSelector': instance.androidShutterButtonSelector
+      ?.toJson(),
+  'iosShutterButtonSelector': instance.iosShutterButtonSelector?.toJson(),
+  'doneButtonSelector': instance.doneButtonSelector?.toJson(),
+  'androidDoneButtonSelector': instance.androidDoneButtonSelector?.toJson(),
   'timeoutMillis': instance.timeoutMillis,
-  'iosDoneButtonSelector': instance.iosDoneButtonSelector,
+  'iosDoneButtonSelector': instance.iosDoneButtonSelector?.toJson(),
   'appId': instance.appId,
   'isNative2': instance.isNative2,
 };
@@ -893,9 +898,9 @@ PickImageFromGalleryRequest _$PickImageFromGalleryRequestFromJson(
 Map<String, dynamic> _$PickImageFromGalleryRequestToJson(
   PickImageFromGalleryRequest instance,
 ) => <String, dynamic>{
-  'imageSelector': instance.imageSelector,
-  'androidImageSelector': instance.androidImageSelector,
-  'iosImageSelector': instance.iosImageSelector,
+  'imageSelector': instance.imageSelector?.toJson(),
+  'androidImageSelector': instance.androidImageSelector?.toJson(),
+  'iosImageSelector': instance.iosImageSelector?.toJson(),
   'imageIndex': instance.imageIndex,
   'timeoutMillis': instance.timeoutMillis,
   'appId': instance.appId,
@@ -929,9 +934,9 @@ _$PickMultipleImagesFromGalleryRequestFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$PickMultipleImagesFromGalleryRequestToJson(
   PickMultipleImagesFromGalleryRequest instance,
 ) => <String, dynamic>{
-  'imageSelector': instance.imageSelector,
-  'androidImageSelector': instance.androidImageSelector,
-  'iosImageSelector': instance.iosImageSelector,
+  'imageSelector': instance.imageSelector?.toJson(),
+  'androidImageSelector': instance.androidImageSelector?.toJson(),
+  'iosImageSelector': instance.iosImageSelector?.toJson(),
   'imageIndexes': instance.imageIndexes,
   'timeoutMillis': instance.timeoutMillis,
   'appId': instance.appId,

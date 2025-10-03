@@ -7,7 +7,7 @@ export async function initialise(page: Page) {
 
   await page.waitForFunction(
     () => {
-      if (typeof window.__patrol__onInitialised !== "function") return false;
+      if (!window.__patrol__onInitialised) return false;
 
       window.__patrol__onInitialised();
 
