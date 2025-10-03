@@ -444,7 +444,6 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
           hideTestSteps: hideTestSteps,
           clearTestSteps: clearTestSteps,
         );
-      // No uninstall needed for web
     }
 
     var allPassed = true;
