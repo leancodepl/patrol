@@ -32,14 +32,16 @@ external set __patrol_listDartTests(JSFunction value);
 external set __patrol_runDartTestWithCallback(JSFunction value);
 
 @JS()
-external set __patrol_setInitialised(JSFunction value);
+external JSBoolean get __patrol__isInitialised;
+
+@JS()
+external set __patrol__onInitialised(JSFunction value);
 
 /// Completer that completes when Patrol is initialised on the JS side.
 ///
 /// Used to keep track of whether the JS environment has called the Dart initialisation
 /// callback (e.g., via `__patrol_setInitialised`). This allows Dart code to await
 /// initialisation before proceeding with actions that require the JS side to be ready.
-final isInitialised = Completer<void>();
 
 // Playwright native bridge: exposed by Playwright via page.exposeBinding('patrolNative', ...)
 @JS('patrolNative')
@@ -90,17 +92,23 @@ Future<Map<String, dynamic>> callPlaywright(
 }
 
 /// Starts the web-exposed service by wiring Dart methods to JS functions.
-Future<void> initAppService() async {
+Future<void> initAppService() {
+  final isInitialised = Completer<void>();
+
   // This cannot be a tearoff (e.g. `isInitialised.complete.toJS`) because
   // that would change the type of the function and it cannot be casted to JS via `toJS`.
   // We must use a lambda to preserve the correct signature for JS interop.
   // ignore: unnecessary_lambdas
-  __patrol_setInitialised = () {
+  __patrol__onInitialised = () {
     isInitialised.complete();
   }.toJS;
+
+  if (__patrol__isInitialised.toDart) {
+    return Future.value();
+  }
+  return isInitialised.future;
 }
 
-/// Starts the web-exposed service by wiring Dart methods to JS functions.
 Future<void> runAppService(PatrolAppService service) async {
   // Synchronous version - return JSON string directly
   __patrol_listDartTests = (() {

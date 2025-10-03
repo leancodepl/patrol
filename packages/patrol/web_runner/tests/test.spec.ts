@@ -3,6 +3,7 @@ import path from "path";
 import { PatrolTestEntry, PatrolTestResult } from "./types";
 import { test as base } from "@playwright/test";
 import { exposePatrolNativeRequestHandlers } from "./patrolNativeRequests";
+import { initialise } from "./initialise";
 
 const tests: PatrolTestEntry[] = JSON.parse(
   fs.readFileSync(path.join(__dirname, "tests.json"), "utf-8")
@@ -16,23 +17,7 @@ export const patrolTest = base.extend({
       exposePatrolNativeRequestHandlers(page, requestJson)
     );
 
-    await page.waitForFunction(
-      () => {
-        return typeof window.__patrol_runDartTestWithCallback === "function";
-      },
-      { timeout: 60000 }
-    );
-
-    await page.waitForFunction(
-      () => {
-        if (typeof window.__patrol_setInitialised !== "function") return false;
-
-        window.__patrol_setInitialised();
-
-        return true;
-      },
-      { timeout: 60000 }
-    );
+    await initialise(page);
 
     await use(page);
   },
@@ -47,7 +32,7 @@ for (const { name, skip, tags } of tests) {
     const testResult = await page.evaluate<PatrolTestResult, string>(
       (name) =>
         new Promise((resolve) => {
-          window.__patrol_runDartTestWithCallback(name, (result) => {
+          window.__patrol_runDartTestWithCallback?.(name, (result) => {
             resolve(JSON.parse(result));
           });
         }),
