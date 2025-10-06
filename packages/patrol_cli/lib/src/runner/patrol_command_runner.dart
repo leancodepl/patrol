@@ -174,7 +174,6 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
       logger: _logger,
     );
 
-    stdin.echoMode = false;
     stdin.lineMode = false;
 
     addCommand(
