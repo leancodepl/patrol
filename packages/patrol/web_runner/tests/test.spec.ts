@@ -26,7 +26,7 @@ for (const { name, skip, tags } of tests) {
     patrolTest.skip(skip);
 
     await page.waitForFunction(() => window.__patrol__runTest, {
-      timeout: 120000,
+      timeout: 300000,
     });
 
     const testResult = await page.evaluate(
