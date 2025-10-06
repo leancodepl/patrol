@@ -176,8 +176,6 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
       logger: _logger,
     );
 
-    stdin.lineMode = false;
-
     addCommand(
       BuildCommand(
         testFinder: testFinder,

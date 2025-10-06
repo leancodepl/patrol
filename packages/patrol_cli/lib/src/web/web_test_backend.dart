@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:io' as io;
 
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:patrol_cli/src/base/logger.dart';
@@ -392,6 +393,13 @@ class WebTestBackend {
   }) async {
     _logger.info('Running Playwright tests against: $baseUrl');
     final completer = Completer<void>();
+
+    if (io.stdin.hasTerminal) {
+      io.stdin.echoMode = false;
+      io.stdin.lineMode = false;
+
+      _logger.detail('Interactive shell mode enabled.');
+    }
 
     await _disposeScope.run((scope) async {
       // Ensure web_runner directory exists and is properly set up
