@@ -1,6 +1,7 @@
 ## Unreleased
 
 - Add `--build-name` and `--build-number` flags to `patrol test`, `patrol develop`, and `patrol build` commands.
+- Add support for enabling/disabling wifi on iOS 18. (#2719)
 
 ## 3.19.0
 
