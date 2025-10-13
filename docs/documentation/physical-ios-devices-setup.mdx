@@ -4,9 +4,7 @@ title: Physical iOS devices
 
 Because of restrictions on JIT, "in iOS 14+, debug mode Flutter apps can only be launched from Flutter tooling,IDEs..." we need to build and run tests in release mode.
 Going further, we need to sign the app and tests. Let's assume that your team joined Apple Developer Program and have already an App ID, profile and certificate for your app. We need to do the same for `RunnerUITests`.
-<Warning>
-  If you have multiple flavors, you might need to create a new App ID, certificate and profile for each flavor.
-</Warning>
+
 <Steps>
   <Step>
     In [Apple Developer Portal](https://developer.apple.com) create new Identifier (App ID) with your app's bundle ID and with `.RunnerUITests.xctrunner` ending. It should look like e.g.: `com.example.myapp.RunnerUITests.xctrunner` (Remember to swap `com.example.myapp` with your app's one).
