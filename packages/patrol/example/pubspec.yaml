@@ -24,7 +24,7 @@ dependencies:
   geolocator: ^10.1.0
   google_sign_in: ^6.1.6
   http: ^1.1.0
-  permission_handler: ^11.4.0
+#  permission_handler: ^12.0.1
   provider: ^6.1.1
 
 # Due to: https://github.com/rrousselGit/provider/issues/907

@@ -1,13 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:example/handlers/permission_handler.dart';
 import 'package:example/ui/style/colors.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:http/http.dart' as http;
-import 'package:permission_handler/permission_handler.dart';
+// import 'package:permission_handler/permission_handler.dart';
 
 class NotificationHandler {
   NotificationHandler(
@@ -46,23 +45,24 @@ class NotificationHandler {
     );
   }
 
-  Future<bool> _requestPermission() async {
-    final permissionStatus = await PermissionHandler.requestPermissions();
-    return switch (permissionStatus) {
-      PermissionStatus.granted => true,
-      _ => false,
-    };
-  }
+  // Future<bool> _requestPermission() async {
+  //   final permissionStatus = await PermissionHandler.requestPermissions();
+  //   return switch (permissionStatus) {
+  //     PermissionStatus.granted => true,
+  //     _ => false,
+  //   };
+  // }
 
   Future<void> triggerLocalNotification({
     required VoidCallback onPressed,
     required VoidCallback onError,
   }) async {
-    final hasPermission = await _requestPermission();
-    if (!hasPermission) {
-      onError();
-      return;
-    }
+    // TODO: Re-enable permission request when fixed on iOS for SPM
+    // final hasPermission = await _requestPermission();
+    // if (!hasPermission) {
+    //   onError();
+    //   return;
+    // }
     await _init(onPressed);
     await _showNotification(title: 'Tap me to finish the quiz!');
   }
@@ -70,10 +70,11 @@ class NotificationHandler {
   Future<void> triggerPushNotification({
     required VoidCallback onPressed,
   }) async {
-    final hasPermission = await _requestPermission();
-    if (!hasPermission) {
-      return;
-    }
+    // TODO: Re-enable permission request when fixed on iOS for SPM
+    // final hasPermission = await _requestPermission();
+    // if (!hasPermission) {
+    //   return;
+    // }
     await _init(onPressed);
     final fcmToken = await _firebaseMessaging?.getToken();
     await http.post(
