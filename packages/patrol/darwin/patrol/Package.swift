@@ -22,6 +22,7 @@ let package = Package(
         .target(
             name: "PatrolObjC",
             path: "Sources/patrol/ObjC",
+            exclude: ["Sources/patrol/ObjC/PatrolPlugin.m"],
             publicHeadersPath: "include"
         ),
         .target(

@@ -2,6 +2,5 @@ module PatrolObjC {
     header "http_parser.h"
     header "PatrolIntegrationTestIosRunner.h"
     header "PatrolIntegrationTestMacosRunner.h"
-    header "PatrolPlugin.h"
     export *
 }
