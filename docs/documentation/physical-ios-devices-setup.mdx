@@ -7,13 +7,13 @@ Going further, we need to sign the app and tests. Let's assume that your team jo
 
 <Steps>
   <Step>
-    In [Apple Developer Portal](https://developer.apple.com) create new Identifier (App ID) with your app's bundle ID and with `.RunnerUITests.xctrunner` ending. It should look like e.g.: `com.example.myapp.RunnerUITests.xctrunner` (Remember to swap `com.example.myapp` with your app's one).
+    In [Apple Developer Portal](https://developer.apple.com) create a new Identifier (App ID) with your app's bundle ID and with `.RunnerUITests.xctrunner` ending. It should look like e.g.: `com.example.myapp.RunnerUITests.xctrunner` (Remember to swap `com.example.myapp` with your app's one).
   </Step>
   <Step>
-    In [Apple Developer Portal](https://developer.apple.com) create new Development Certificate. (You can also use an existing one if you prefer.)
+    In [Apple Developer Portal](https://developer.apple.com) make sure that you have a Development Certificate. If not, create one.
   </Step>
   <Step>
-    In [Apple Developer Portal](https://developer.apple.com) create new Development Provisioning Profile that are linked to the new Identifier and include the certificate.
+    In [Apple Developer Portal](https://developer.apple.com) create a new Development Provisioning Profile that is linked to the new Identifier and includes the certificate.
   </Step>
     <Warning>
       Next three steps are needed only if you use [fastlane for codesigning](https://docs.fastlane.tools/codesigning/getting-started/).
