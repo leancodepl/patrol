@@ -15,6 +15,7 @@ export default defineConfig({
     headless,
     video: video ? 'retain-on-failure' : 'off',
   },
+  workers: process.env.PARALLEL ? 4 : undefined,
   fullyParallel: parallel,
   globalSetup: require.resolve("./tests/setup"),
   // Output test results to the tested app directory
