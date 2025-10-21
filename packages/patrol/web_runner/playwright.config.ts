@@ -5,6 +5,7 @@ const outputFolder =
   process.env.PATROL_TEST_REPORT_DIR || "./playwright-report";
 const baseURL = process.env.BASE_URL;
 const headless = process.env.HEADLESS === "true";
+const parallel = process.env.PARALLEL === "true";
 
 export default defineConfig({
   use: {
@@ -12,6 +13,7 @@ export default defineConfig({
     baseURL,
     headless,
   },
+  fullyParallel: parallel,
   globalSetup: require.resolve("./tests/setup"),
   // Output test results to the tested app directory
   outputDir,
