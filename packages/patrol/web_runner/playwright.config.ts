@@ -6,12 +6,14 @@ const outputFolder =
 const baseURL = process.env.BASE_URL;
 const headless = process.env.HEADLESS === "true";
 const parallel = process.env.PARALLEL === "true";
+const video = process.env.VIDEO === "true";
 
 export default defineConfig({
   use: {
     // This needs to be dynamically injected with env variables
     baseURL,
     headless,
+    video: video ? 'retain-on-failure' : 'off',
   },
   fullyParallel: parallel,
   globalSetup: require.resolve("./tests/setup"),
