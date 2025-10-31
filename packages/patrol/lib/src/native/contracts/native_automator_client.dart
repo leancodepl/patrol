@@ -67,6 +67,10 @@ class NativeAutomatorClient {
     return _sendRequest('openApp', request.toJson());
   }
 
+  Future<void> openPlatformApp(OpenPlatformAppRequest request) {
+    return _sendRequest('openPlatformApp', request.toJson());
+  }
+
   Future<void> openQuickSettings(OpenQuickSettingsRequest request) {
     return _sendRequest('openQuickSettings', request.toJson());
   }

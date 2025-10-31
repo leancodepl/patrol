@@ -15,7 +15,9 @@ class DartContractsGenerator {
       buffer.writeln(_createMessage(messageDefintion));
     }
 
-    final content = DartFormatter().format(buffer.toString());
+    final content = DartFormatter(
+      languageVersion: DartFormatter.latestLanguageVersion,
+    ).format(buffer.toString());
 
     return OutputFile(filename: config.contractsFilename, content: content);
   }
@@ -38,14 +40,15 @@ part '${path.basenameWithoutExtension(config.contractsFilename)}.g.dart';
 
   String _createEnum(Enum enumDefinition) {
     final fieldsContent = enumDefinition.fields.map((e) {
-      return '''
-@JsonValue('$e')
-$e''';
-    }).join(',\n');
+      return "${e.name}('${e.value}')";
+    }).join(',\n  ');
 
     return '''
 enum ${enumDefinition.name} {
-  $fieldsContent
+  $fieldsContent;
+
+  const ${enumDefinition.name}(this.value);
+  final String value;
 }
 ''';
   }
