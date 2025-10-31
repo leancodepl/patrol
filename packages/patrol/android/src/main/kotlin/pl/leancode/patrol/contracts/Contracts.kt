@@ -119,6 +119,77 @@ class Contracts {
     statusItem,
   }
 
+  enum class GoogleApp {
+    calculator,
+    calendar,
+    chrome,
+    drive,
+    gmail,
+    maps,
+    photos,
+    playStore,
+    settings,
+    youtube,
+  }
+
+  enum class AppleApp {
+    appStore,
+    appleStore,
+    barcodeScanner,
+    books,
+    calculator,
+    calendar,
+    camera,
+    clips,
+    clock,
+    compass,
+    contacts,
+    developer,
+    faceTime,
+    files,
+    findMy,
+    fitness,
+    freeform,
+    garageBand,
+    health,
+    home,
+    iCloudDrive,
+    imagePlayground,
+    iMovie,
+    invites,
+    iTunesStore,
+    journal,
+    keynote,
+    magnifier,
+    mail,
+    maps,
+    measure,
+    messages,
+    music,
+    news,
+    notes,
+    numbers,
+    pages,
+    passwords,
+    phone,
+    photoBooth,
+    photos,
+    podcasts,
+    reminders,
+    safari,
+    settings,
+    shortcuts,
+    stocks,
+    swiftPlaygrounds,
+    tips,
+    translate,
+    tv,
+    voiceMemos,
+    wallet,
+    watch,
+    weather,
+  }
+
   data class DartGroupEntry (
     val name: String,
     val type: GroupEntryType,
@@ -151,6 +222,18 @@ class Contracts {
   data class OpenAppRequest (
     val appId: String
   )
+
+  data class OpenPlatformAppRequest (
+    val androidAppId: String? = null,
+    val iosAppId: String? = null
+  ){
+    fun hasAndroidAppId(): Boolean {
+      return androidAppId != null
+    }
+    fun hasIosAppId(): Boolean {
+      return iosAppId != null
+    }
+  }
 
   class OpenQuickSettingsRequest (
 

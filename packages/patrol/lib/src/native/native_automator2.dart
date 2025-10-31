@@ -230,6 +230,55 @@ class NativeAutomator2 {
     );
   }
 
+  /// Opens a platform-specific app.
+  ///
+  /// On Android, opens the app specified by [androidAppId] (package name).
+  /// On iOS, opens the app specified by [iosAppId] (bundle identifier).
+  ///
+  /// You can pass a [GoogleApp] enum for common Android apps, an [AppleApp]
+  /// enum for common iOS apps, or a custom app ID string.
+  ///
+  /// Example with enums:
+  /// ```dart
+  /// await $.native.openPlatformApp(
+  ///   androidAppId: GoogleApp.chrome,
+  ///   iosAppId: AppleApp.safari,
+  /// );
+  /// ```
+  ///
+  /// Example with custom app IDs:
+  /// ```dart
+  /// await $.native.openPlatformApp(
+  ///   androidAppId: 'com.mycompany.myapp',
+  ///   iosAppId: 'com.mycompany.myapp',
+  /// );
+  /// ```
+  Future<void> openPlatformApp({Object? androidAppId, Object? iosAppId}) async {
+    // Extract the actual app ID string from enum or string
+    final androidId = switch (androidAppId) {
+      final GoogleApp app => app.value,
+      final String id => id,
+      null => null,
+      _ => throw ArgumentError(
+        'androidAppId must be a GoogleApp enum or a String',
+      ),
+    };
+
+    final iosId = switch (iosAppId) {
+      final AppleApp app => app.value,
+      final String id => id,
+      null => null,
+      _ => throw ArgumentError('iosAppId must be an AppleApp enum or a String'),
+    };
+
+    await _wrapRequest(
+      'openPlatformApp',
+      () => _client.openPlatformApp(
+        OpenPlatformAppRequest(androidAppId: androidId, iosAppId: iosId),
+      ),
+    );
+  }
+
   /// Presses the recent apps button.
   ///
   /// See also:

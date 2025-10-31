@@ -55,7 +55,9 @@ $fields
   }
 
   String _createEnum(Enum enumDefinition) {
-    final cases = enumDefinition.fields.map((e) => '  case $e').join('\n');
+    final cases = enumDefinition.fields
+        .map((e) => '  case ${e.name} = "${e.value}"')
+        .join('\n');
 
     return '''
 public enum ${enumDefinition.name}: String, Codable {

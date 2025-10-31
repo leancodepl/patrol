@@ -15,9 +15,9 @@ class DartContractsGenerator {
       buffer.writeln(_createMessage(messageDefintion));
     }
 
-    final content =
-        DartFormatter(languageVersion: DartFormatter.latestLanguageVersion)
-            .format(buffer.toString());
+    final content = DartFormatter(
+      languageVersion: DartFormatter.latestLanguageVersion,
+    ).format(buffer.toString());
 
     return OutputFile(filename: config.contractsFilename, content: content);
   }
@@ -39,15 +39,18 @@ part '${path.basenameWithoutExtension(config.contractsFilename)}.g.dart';
   }
 
   String _createEnum(Enum enumDefinition) {
-    final fieldsContent = enumDefinition.fields.map((e) {
-      return '''
-@JsonValue('$e')
-$e''';
-    }).join(',\n');
+    final fieldsContent = enumDefinition.fields
+        .map((e) {
+          return "${e.name}('${e.value}')";
+        })
+        .join(',\n  ');
 
     return '''
 enum ${enumDefinition.name} {
-  $fieldsContent
+  $fieldsContent;
+
+  const ${enumDefinition.name}(this.value);
+  final String value;
 }
 ''';
   }
@@ -61,7 +64,7 @@ enum ${enumDefinition.name} {
             MapFieldType(keyType: final keyType, valueType: final valueType) =>
               'final Map<$keyType,$valueType>${f.isOptional ? '?' : ''} ${f.name};',
             OrdinaryFieldType(type: final type) =>
-              'final $type${f.isOptional ? '?' : ''} ${f.name};'
+              'final $type${f.isOptional ? '?' : ''} ${f.name};',
           },
         )
         .join('\n  ');
@@ -73,8 +76,9 @@ enum ${enumDefinition.name} {
         .map((e) => '${e.isOptional ? '' : 'required'} this.${e.name},')
         .join('\n    ');
 
-    constructorParameters =
-        message.fields.isEmpty ? '' : '{\n    $constructorParameters\n  }';
+    constructorParameters = message.fields.isEmpty
+        ? ''
+        : '{\n    $constructorParameters\n  }';
 
     return '''
 @JsonSerializable()
@@ -95,8 +99,9 @@ class ${message.name} with EquatableMixin {
 
   String _createPropsGetter(Message message) {
     final properties = message.fields.map((e) => e.name).join(',');
-    final propertiesContent =
-        properties.isEmpty ? 'const []' : '[$properties,]';
+    final propertiesContent = properties.isEmpty
+        ? 'const []'
+        : '[$properties,]';
 
     return '''
   @override
@@ -120,7 +125,7 @@ class ${message.name} with EquatableMixin {
             ListFieldType(type: final type) => 'List<$type>? ${e.name},',
             MapFieldType(keyType: final keyType, valueType: final valueType) =>
               'Map<$keyType,$valueType>? ${e.name},',
-            OrdinaryFieldType(type: final type) => '$type? ${e.name},'
+            OrdinaryFieldType(type: final type) => '$type? ${e.name},',
           },
         )
         .join('\n    ');

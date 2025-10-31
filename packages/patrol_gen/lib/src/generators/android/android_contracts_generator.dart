@@ -76,7 +76,7 @@ $fields
   }
 
   String _createEnum(Enum enumDefinition) {
-    final cases = enumDefinition.fields.map((e) => '    $e,').join('\n');
+    final cases = enumDefinition.fields.map((e) => '    ${e.name},').join('\n');
 
     return '''
   enum class ${enumDefinition.name} {

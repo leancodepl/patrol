@@ -9,211 +9,211 @@ import 'package:json_annotation/json_annotation.dart';
 part 'contracts.g.dart';
 
 enum GroupEntryType {
-  @JsonValue('group')
-  group,
-  @JsonValue('test')
-  test,
+  group('group'),
+  test('test');
+
+  const GroupEntryType(this.value);
+  final String value;
 }
 
 enum RunDartTestResponseResult {
-  @JsonValue('success')
-  success,
-  @JsonValue('skipped')
-  skipped,
-  @JsonValue('failure')
-  failure,
+  success('success'),
+  skipped('skipped'),
+  failure('failure');
+
+  const RunDartTestResponseResult(this.value);
+  final String value;
 }
 
 enum KeyboardBehavior {
-  @JsonValue('showAndDismiss')
-  showAndDismiss,
-  @JsonValue('alternative')
-  alternative,
+  showAndDismiss('showAndDismiss'),
+  alternative('alternative');
+
+  const KeyboardBehavior(this.value);
+  final String value;
 }
 
 enum HandlePermissionRequestCode {
-  @JsonValue('whileUsing')
-  whileUsing,
-  @JsonValue('onlyThisTime')
-  onlyThisTime,
-  @JsonValue('denied')
-  denied,
+  whileUsing('whileUsing'),
+  onlyThisTime('onlyThisTime'),
+  denied('denied');
+
+  const HandlePermissionRequestCode(this.value);
+  final String value;
 }
 
 enum SetLocationAccuracyRequestLocationAccuracy {
-  @JsonValue('coarse')
-  coarse,
-  @JsonValue('fine')
-  fine,
+  coarse('coarse'),
+  fine('fine');
+
+  const SetLocationAccuracyRequestLocationAccuracy(this.value);
+  final String value;
 }
 
 enum IOSElementType {
-  @JsonValue('any')
-  any,
-  @JsonValue('other')
-  other,
-  @JsonValue('application')
-  application,
-  @JsonValue('group')
-  group,
-  @JsonValue('window')
-  window,
-  @JsonValue('sheet')
-  sheet,
-  @JsonValue('drawer')
-  drawer,
-  @JsonValue('alert')
-  alert,
-  @JsonValue('dialog')
-  dialog,
-  @JsonValue('button')
-  button,
-  @JsonValue('radioButton')
-  radioButton,
-  @JsonValue('radioGroup')
-  radioGroup,
-  @JsonValue('checkBox')
-  checkBox,
-  @JsonValue('disclosureTriangle')
-  disclosureTriangle,
-  @JsonValue('popUpButton')
-  popUpButton,
-  @JsonValue('comboBox')
-  comboBox,
-  @JsonValue('menuButton')
-  menuButton,
-  @JsonValue('toolbarButton')
-  toolbarButton,
-  @JsonValue('popover')
-  popover,
-  @JsonValue('keyboard')
-  keyboard,
-  @JsonValue('key')
-  key,
-  @JsonValue('navigationBar')
-  navigationBar,
-  @JsonValue('tabBar')
-  tabBar,
-  @JsonValue('tabGroup')
-  tabGroup,
-  @JsonValue('toolbar')
-  toolbar,
-  @JsonValue('statusBar')
-  statusBar,
-  @JsonValue('table')
-  table,
-  @JsonValue('tableRow')
-  tableRow,
-  @JsonValue('tableColumn')
-  tableColumn,
-  @JsonValue('outline')
-  outline,
-  @JsonValue('outlineRow')
-  outlineRow,
-  @JsonValue('browser')
-  browser,
-  @JsonValue('collectionView')
-  collectionView,
-  @JsonValue('slider')
-  slider,
-  @JsonValue('pageIndicator')
-  pageIndicator,
-  @JsonValue('progressIndicator')
-  progressIndicator,
-  @JsonValue('activityIndicator')
-  activityIndicator,
-  @JsonValue('segmentedControl')
-  segmentedControl,
-  @JsonValue('picker')
-  picker,
-  @JsonValue('pickerWheel')
-  pickerWheel,
-  @JsonValue('switch_')
-  switch_,
-  @JsonValue('toggle')
-  toggle,
-  @JsonValue('link')
-  link,
-  @JsonValue('image')
-  image,
-  @JsonValue('icon')
-  icon,
-  @JsonValue('searchField')
-  searchField,
-  @JsonValue('scrollView')
-  scrollView,
-  @JsonValue('scrollBar')
-  scrollBar,
-  @JsonValue('staticText')
-  staticText,
-  @JsonValue('textField')
-  textField,
-  @JsonValue('secureTextField')
-  secureTextField,
-  @JsonValue('datePicker')
-  datePicker,
-  @JsonValue('textView')
-  textView,
-  @JsonValue('menu')
-  menu,
-  @JsonValue('menuItem')
-  menuItem,
-  @JsonValue('menuBar')
-  menuBar,
-  @JsonValue('menuBarItem')
-  menuBarItem,
-  @JsonValue('map')
-  map,
-  @JsonValue('webView')
-  webView,
-  @JsonValue('incrementArrow')
-  incrementArrow,
-  @JsonValue('decrementArrow')
-  decrementArrow,
-  @JsonValue('timeline')
-  timeline,
-  @JsonValue('ratingIndicator')
-  ratingIndicator,
-  @JsonValue('valueIndicator')
-  valueIndicator,
-  @JsonValue('splitGroup')
-  splitGroup,
-  @JsonValue('splitter')
-  splitter,
-  @JsonValue('relevanceIndicator')
-  relevanceIndicator,
-  @JsonValue('colorWell')
-  colorWell,
-  @JsonValue('helpTag')
-  helpTag,
-  @JsonValue('matte')
-  matte,
-  @JsonValue('dockItem')
-  dockItem,
-  @JsonValue('ruler')
-  ruler,
-  @JsonValue('rulerMarker')
-  rulerMarker,
-  @JsonValue('grid')
-  grid,
-  @JsonValue('levelIndicator')
-  levelIndicator,
-  @JsonValue('cell')
-  cell,
-  @JsonValue('layoutArea')
-  layoutArea,
-  @JsonValue('layoutItem')
-  layoutItem,
-  @JsonValue('handle')
-  handle,
-  @JsonValue('stepper')
-  stepper,
-  @JsonValue('tab')
-  tab,
-  @JsonValue('touchBar')
-  touchBar,
-  @JsonValue('statusItem')
-  statusItem,
+  any('any'),
+  other('other'),
+  application('application'),
+  group('group'),
+  window('window'),
+  sheet('sheet'),
+  drawer('drawer'),
+  alert('alert'),
+  dialog('dialog'),
+  button('button'),
+  radioButton('radioButton'),
+  radioGroup('radioGroup'),
+  checkBox('checkBox'),
+  disclosureTriangle('disclosureTriangle'),
+  popUpButton('popUpButton'),
+  comboBox('comboBox'),
+  menuButton('menuButton'),
+  toolbarButton('toolbarButton'),
+  popover('popover'),
+  keyboard('keyboard'),
+  key('key'),
+  navigationBar('navigationBar'),
+  tabBar('tabBar'),
+  tabGroup('tabGroup'),
+  toolbar('toolbar'),
+  statusBar('statusBar'),
+  table('table'),
+  tableRow('tableRow'),
+  tableColumn('tableColumn'),
+  outline('outline'),
+  outlineRow('outlineRow'),
+  browser('browser'),
+  collectionView('collectionView'),
+  slider('slider'),
+  pageIndicator('pageIndicator'),
+  progressIndicator('progressIndicator'),
+  activityIndicator('activityIndicator'),
+  segmentedControl('segmentedControl'),
+  picker('picker'),
+  pickerWheel('pickerWheel'),
+  switch_('switch_'),
+  toggle('toggle'),
+  link('link'),
+  image('image'),
+  icon('icon'),
+  searchField('searchField'),
+  scrollView('scrollView'),
+  scrollBar('scrollBar'),
+  staticText('staticText'),
+  textField('textField'),
+  secureTextField('secureTextField'),
+  datePicker('datePicker'),
+  textView('textView'),
+  menu('menu'),
+  menuItem('menuItem'),
+  menuBar('menuBar'),
+  menuBarItem('menuBarItem'),
+  map('map'),
+  webView('webView'),
+  incrementArrow('incrementArrow'),
+  decrementArrow('decrementArrow'),
+  timeline('timeline'),
+  ratingIndicator('ratingIndicator'),
+  valueIndicator('valueIndicator'),
+  splitGroup('splitGroup'),
+  splitter('splitter'),
+  relevanceIndicator('relevanceIndicator'),
+  colorWell('colorWell'),
+  helpTag('helpTag'),
+  matte('matte'),
+  dockItem('dockItem'),
+  ruler('ruler'),
+  rulerMarker('rulerMarker'),
+  grid('grid'),
+  levelIndicator('levelIndicator'),
+  cell('cell'),
+  layoutArea('layoutArea'),
+  layoutItem('layoutItem'),
+  handle('handle'),
+  stepper('stepper'),
+  tab('tab'),
+  touchBar('touchBar'),
+  statusItem('statusItem');
+
+  const IOSElementType(this.value);
+  final String value;
+}
+
+enum GoogleApp {
+  calculator('com.google.android.calculator'),
+  calendar('com.google.android.calendar'),
+  chrome('com.android.chrome'),
+  drive('com.google.android.apps.docs'),
+  gmail('com.google.android.gm'),
+  maps('com.google.android.apps.maps'),
+  photos('com.google.android.apps.photos'),
+  playStore('com.android.vending'),
+  settings('com.android.settings'),
+  youtube('com.google.android.youtube');
+
+  const GoogleApp(this.value);
+  final String value;
+}
+
+enum AppleApp {
+  appStore('com.apple.AppStore'),
+  appleStore('com.apple.store.Jolly'),
+  barcodeScanner('com.apple.BarcodeScanner'),
+  books('com.apple.iBooks'),
+  calculator('com.apple.calculator'),
+  calendar('com.apple.mobilecal'),
+  camera('com.apple.camera'),
+  clips('com.apple.clips'),
+  clock('com.apple.mobiletimer'),
+  compass('com.apple.compass'),
+  contacts('com.apple.MobileAddressBook'),
+  developer('developer.apple.wwdc-Release'),
+  faceTime('com.apple.facetime'),
+  files('com.apple.DocumentsApp'),
+  findMy('com.apple.findmy'),
+  fitness('com.apple.Fitness'),
+  freeform('com.apple.freeform'),
+  garageBand('com.apple.mobilegarageband'),
+  health('com.apple.Health'),
+  home('com.apple.Home'),
+  iCloudDrive('com.apple.iCloudDriveApp'),
+  imagePlayground('com.apple.GenerativePlaygroundApp'),
+  iMovie('com.apple.iMovie'),
+  invites('com.apple.rsvp'),
+  iTunesStore('com.apple.MobileStore'),
+  journal('com.apple.journal'),
+  keynote('com.apple.Keynote'),
+  magnifier('com.apple.Magnifier'),
+  mail('com.apple.mobilemail'),
+  maps('com.apple.Maps'),
+  measure('com.apple.measure'),
+  messages('com.apple.MobileSMS'),
+  music('com.apple.Music'),
+  news('com.apple.news'),
+  notes('com.apple.mobilenotes'),
+  numbers('com.apple.Numbers'),
+  pages('com.apple.Pages'),
+  passwords('com.apple.Passwords'),
+  phone('com.apple.mobilephone'),
+  photoBooth('com.apple.Photo-Booth'),
+  photos('com.apple.mobileslideshow'),
+  podcasts('com.apple.podcasts'),
+  reminders('com.apple.reminders'),
+  safari('com.apple.mobilesafari'),
+  settings('com.apple.Preferences'),
+  shortcuts('com.apple.shortcuts'),
+  stocks('com.apple.stocks'),
+  swiftPlaygrounds('com.apple.Playgrounds'),
+  tips('com.apple.tips'),
+  translate('com.apple.Translate'),
+  tv('com.apple.tv'),
+  voiceMemos('com.apple.VoiceMemos'),
+  wallet('com.apple.Passbook'),
+  watch('com.apple.Bridge'),
+  weather('com.apple.weather');
+
+  const AppleApp(this.value);
+  final String value;
 }
 
 @JsonSerializable()
@@ -358,6 +358,29 @@ class OpenAppRequest with EquatableMixin {
 
   OpenAppRequest copyWith({String? appId}) {
     return OpenAppRequest(appId: appId ?? this.appId);
+  }
+}
+
+@JsonSerializable()
+class OpenPlatformAppRequest with EquatableMixin {
+  OpenPlatformAppRequest({this.androidAppId, this.iosAppId});
+
+  factory OpenPlatformAppRequest.fromJson(Map<String, dynamic> json) =>
+      _$OpenPlatformAppRequestFromJson(json);
+
+  final String? androidAppId;
+  final String? iosAppId;
+
+  Map<String, dynamic> toJson() => _$OpenPlatformAppRequestToJson(this);
+
+  @override
+  List<Object?> get props => [androidAppId, iosAppId];
+
+  OpenPlatformAppRequest copyWith({String? androidAppId, String? iosAppId}) {
+    return OpenPlatformAppRequest(
+      androidAppId: androidAppId ?? this.androidAppId,
+      iosAppId: iosAppId ?? this.iosAppId,
+    );
   }
 }
 

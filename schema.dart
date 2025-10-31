@@ -45,6 +45,11 @@ class OpenAppRequest {
   late String appId;
 }
 
+class OpenPlatformAppRequest {
+  String? androidAppId;
+  String? iosAppId;
+}
+
 class OpenQuickSettingsRequest {}
 
 class OpenUrlRequest {
@@ -340,6 +345,7 @@ abstract class NativeAutomator<IOSServer, AndroidServer, DartClient> {
   void pressRecentApps();
   void doublePressRecentApps();
   void openApp(OpenAppRequest request);
+  void openPlatformApp(OpenPlatformAppRequest request);
   void openQuickSettings(OpenQuickSettingsRequest request);
   void openUrl(OpenUrlRequest request);
 
@@ -488,4 +494,81 @@ enum IOSElementType {
   tab,
   touchBar,
   statusItem,
+}
+
+enum GoogleApp {
+  calculator('com.google.android.calculator'),
+  calendar('com.google.android.calendar'),
+  chrome('com.android.chrome'),
+  drive('com.google.android.apps.docs'),
+  gmail('com.google.android.gm'),
+  maps('com.google.android.apps.maps'),
+  photos('com.google.android.apps.photos'),
+  playStore('com.android.vending'),
+  settings('com.android.settings'),
+  youtube('com.google.android.youtube');
+
+  const GoogleApp(this.value);
+  final String value;
+}
+
+enum AppleApp {
+  appStore('com.apple.AppStore'),
+  appleStore('com.apple.store.Jolly'),
+  barcodeScanner('com.apple.BarcodeScanner'),
+  books('com.apple.iBooks'),
+  calculator('com.apple.calculator'),
+  calendar('com.apple.mobilecal'),
+  camera('com.apple.camera'),
+  clips('com.apple.clips'),
+  clock('com.apple.mobiletimer'),
+  compass('com.apple.compass'),
+  contacts('com.apple.MobileAddressBook'),
+  developer('developer.apple.wwdc-Release'),
+  faceTime('com.apple.facetime'),
+  files('com.apple.DocumentsApp'),
+  findMy('com.apple.findmy'),
+  fitness('com.apple.Fitness'),
+  freeform('com.apple.freeform'),
+  garageBand('com.apple.mobilegarageband'),
+  health('com.apple.Health'),
+  home('com.apple.Home'),
+  iCloudDrive('com.apple.iCloudDriveApp'),
+  imagePlayground('com.apple.GenerativePlaygroundApp'),
+  iMovie('com.apple.iMovie'),
+  invites('com.apple.rsvp'),
+  iTunesStore('com.apple.MobileStore'),
+  journal('com.apple.journal'),
+  keynote('com.apple.Keynote'),
+  magnifier('com.apple.Magnifier'),
+  mail('com.apple.mobilemail'),
+  maps('com.apple.Maps'),
+  measure('com.apple.measure'),
+  messages('com.apple.MobileSMS'),
+  music('com.apple.Music'),
+  news('com.apple.news'),
+  notes('com.apple.mobilenotes'),
+  numbers('com.apple.Numbers'),
+  pages('com.apple.Pages'),
+  passwords('com.apple.Passwords'),
+  phone('com.apple.mobilephone'),
+  photoBooth('com.apple.Photo-Booth'),
+  photos('com.apple.mobileslideshow'),
+  podcasts('com.apple.podcasts'),
+  reminders('com.apple.reminders'),
+  safari('com.apple.mobilesafari'),
+  settings('com.apple.Preferences'),
+  shortcuts('com.apple.shortcuts'),
+  stocks('com.apple.stocks'),
+  swiftPlaygrounds('com.apple.Playgrounds'),
+  tips('com.apple.tips'),
+  translate('com.apple.Translate'),
+  tv('com.apple.tv'),
+  voiceMemos('com.apple.VoiceMemos'),
+  wallet('com.apple.Passbook'),
+  watch('com.apple.Bridge'),
+  weather('com.apple.weather');
+
+  const AppleApp(this.value);
+  final String value;
 }

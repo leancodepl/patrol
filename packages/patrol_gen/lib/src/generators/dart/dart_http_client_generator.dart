@@ -13,9 +13,9 @@ class DartHttpClientGenerator {
 
     return OutputFile(
       filename: config.clientFileName(service.name),
-      content:
-          DartFormatter(languageVersion: DartFormatter.latestLanguageVersion)
-              .format(buffer.toString()),
+      content: DartFormatter(
+        languageVersion: DartFormatter.latestLanguageVersion,
+      ).format(buffer.toString()),
     );
   }
 
@@ -82,8 +82,9 @@ $endpoints
 
   String _createEndpoint(Endpoint endpoint) {
     final returnType = endpoint.response?.name ?? 'void';
-    final parameter =
-        endpoint.request != null ? '${endpoint.request!.name} request,' : '';
+    final parameter = endpoint.request != null
+        ? '${endpoint.request!.name} request,'
+        : '';
     final jsonRequest = endpoint.request != null ? 'request.toJson(),' : '';
     final asyncKeyword = endpoint.response != null ? ' async ' : '';
 
