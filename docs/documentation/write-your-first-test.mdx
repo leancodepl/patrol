@@ -49,7 +49,6 @@ import 'package:patrol/patrol.dart';
 void main() {
   patrolTest(
     'signs in, triggers a notification, and taps on it',
-    framePolicy: LiveTestWidgetsFlutterBindingFramePolicy.fullyLive,
     ($) async {
       // Test code will go here
     },
@@ -64,7 +63,6 @@ First, we need to perform any initializations that need to happen before the app
 ```dart
 patrolTest(
   'signs in, triggers a notification, and taps on it',
-  framePolicy: LiveTestWidgetsFlutterBindingFramePolicy.fullyLive,
   ($) async {
 	  initApp();
     await $.pumpWidgetAndSettle(const MainApp());
@@ -81,7 +79,6 @@ Although it’s not the best practice, we’re first going to find the fields by
 ```dart
 patrolTest(
   'signs in, triggers a notification, and taps on it',
-  framePolicy: LiveTestWidgetsFlutterBindingFramePolicy.fullyLive,
   ($) async {
 	  initApp();
     await $.pumpWidgetAndSettle(const MainApp());
@@ -98,7 +95,6 @@ If multiple widgets on a screen match the finder, we can tell Patrol which one w
 ```dart
 patrolTest(
   'signs in, triggers a notification, and taps on it',
-  framePolicy: LiveTestWidgetsFlutterBindingFramePolicy.fullyLive,
   ($) async {
 	  initApp();
     await $.pumpWidgetAndSettle(const MainApp());
@@ -113,7 +109,6 @@ We can use a text finder to tap on the “Sign in” button.
 ```dart
 patrolTest(
   'signs in, triggers a notification, and taps on it',
-  framePolicy: LiveTestWidgetsFlutterBindingFramePolicy.fullyLive,
   ($) async {
 	  initApp();
     await $.pumpWidgetAndSettle(const MainApp());
@@ -179,7 +174,6 @@ With the keys in place, we can now rewrite our test code to use `Key` finders. T
 ```dart
 patrolTest(
   'signs in, triggers a notification, and taps on it',
-  framePolicy: LiveTestWidgetsFlutterBindingFramePolicy.fullyLive,
   ($) async {
 	  initApp();
     await $.pumpWidgetAndSettle(const MainApp());
@@ -273,7 +267,6 @@ The test code will now also use the `keys` global final variable instead of the 
 ```dart
 patrolTest(
   'signs in, triggers a notification, and taps on it',
-  framePolicy: LiveTestWidgetsFlutterBindingFramePolicy.fullyLive,
   ($) async {
 	  initApp();
     await $.pumpWidgetAndSettle(const MainApp());
@@ -340,7 +333,6 @@ Native automation allows you to interact with the OS your Flutter app is running
 ```dart
 patrolTest(
   'signs in, triggers a notification, and taps on it',
-  framePolicy: LiveTestWidgetsFlutterBindingFramePolicy.fullyLive,
   ($) async {
 	  initApp();
     await $.pumpWidgetAndSettle(const MainApp());
@@ -357,7 +349,6 @@ Hot-restarting the test will work wonderfully the first time, however, once the 
 ```dart
 patrolTest(
   'signs in, triggers a notification, and taps on it',
-  framePolicy: LiveTestWidgetsFlutterBindingFramePolicy.fullyLive,
   ($) async {
 	  initApp();
     await $.pumpWidgetAndSettle(const MainApp());
@@ -380,7 +371,6 @@ Next up, we want to tap on the notification icon button and then go to the devic
 ```dart
 patrolTest(
   'signs in, triggers a notification, and taps on it',
-  framePolicy: LiveTestWidgetsFlutterBindingFramePolicy.fullyLive,
   ($) async {
 	  initApp();
     await $.pumpWidgetAndSettle(const MainApp());
@@ -401,7 +391,6 @@ Once we’re on the home screen, we want to open the notification shade and tap 
 ```dart
 patrolTest(
   'signs in, triggers a notification, and taps on it',
-  framePolicy: LiveTestWidgetsFlutterBindingFramePolicy.fullyLive,
   ($) async {
     initApp();
     await $.pumpWidgetAndSettle(const MainApp());
@@ -426,7 +415,6 @@ Since the notification is delayed by 3 seconds, we have to provide a timeout tha
 ```dart
 patrolTest(
   'signs in, triggers a notification, and taps on it',
-  framePolicy: LiveTestWidgetsFlutterBindingFramePolicy.fullyLive,
   ($) async {
     ...
     await $.native.openNotifications();
@@ -443,7 +431,6 @@ Lastly, we want to check if the snackbar has been shown after tapping on a notif
 ```dart
 patrolTest(
   'signs in, triggers a notification, and taps on it',
-  framePolicy: LiveTestWidgetsFlutterBindingFramePolicy.fullyLive,
   ($) async {
     initApp();
     await $.pumpWidgetAndSettle(const MainApp());
