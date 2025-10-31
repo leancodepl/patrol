@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Change default frame policy to `LiveTestWidgetsFlutterBindingFramePolicy.fullyLive`. (#2763)
 - Add `--build-name` and `--build-number` flags to `patrol test`, `patrol develop`, and `patrol build` commands.
 - Extend `$.native.enterText()` on Android to support `AutoCompleteTextView`. (#1162)
 
