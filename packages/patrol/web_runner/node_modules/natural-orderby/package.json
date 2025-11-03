@@ -1,0 +1,119 @@
+{
+  "name": "natural-orderby",
+  "version": "5.0.0",
+  "description": "Lightweight and performant natural sorting of arrays and collections by differentiating between unicode characters, numbers, dates, etc.",
+  "sideEffects": false,
+  "main": "./dist/main.js",
+  "types": "./dist/index.d.ts",
+  "module": "./dist/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yobacca/natural-orderby.git"
+  },
+  "scripts": {
+    "build": "tsc && rollup -c",
+    "clean": "git clean -fdX .",
+    "docs": "docsify serve docs",
+    "format": "prettier --ignore-path .eslintignore --write src",
+    "lint": "eslint src",
+    "test": "cross-env TZ=UTC jest src",
+    "typecheck": "tsc --noEmit --emitDeclarationOnly false",
+    "size": "filesize",
+    "prepublishOnly": "yarn build",
+    "prepare": "husky"
+  },
+  "files": [
+    "dist/",
+    "LICENSE.md",
+    "CHANGELOG.md",
+    "README.md"
+  ],
+  "keywords": [
+    "sort",
+    "order",
+    "string",
+    "natsort",
+    "natcmp",
+    "compare",
+    "alphanum",
+    "unicode",
+    "date",
+    "number",
+    "float",
+    "numeric",
+    "natural",
+    "human",
+    "javascript",
+    "array",
+    "collection",
+    "list",
+    "sorting",
+    "case sensitive",
+    "case insensitive",
+    "ascending",
+    "descending",
+    "browser",
+    "node.js",
+    "node"
+  ],
+  "author": "Olaf Ennen <olaf.ennen@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/yobacca/natural-orderby/issues"
+  },
+  "homepage": "https://yobacca.github.io/natural-orderby",
+  "dependencies": {},
+  "devDependencies": {
+    "@ampproject/filesize": "^4.3.0",
+    "@babel/core": "^7.18.2",
+    "@babel/preset-env": "^7.18.2",
+    "@babel/preset-modules": "^0.1.5",
+    "@babel/preset-typescript": "^7.17.12",
+    "@changesets/cli": "^2.25.2",
+    "@commitlint/cli": "^19.4.0",
+    "@commitlint/config-conventional": "^19.2.2",
+    "@commitlint/types": "^19.0.3",
+    "@rollup/plugin-babel": "^6.0.0",
+    "@rollup/plugin-node-resolve": "^15.0.1",
+    "@rollup/plugin-terser": "^0.4.4",
+    "@types/jest": "29.5.13",
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
+    "cross-env": "^7.0.3",
+    "docsify-cli": "^4.3.0",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-jest": "^28.8.0",
+    "eslint-plugin-n": "^17.10.2",
+    "eslint-plugin-prettier": "^5.2.1",
+    "husky": "^9.1.5",
+    "jest": "^29.3.1",
+    "lint-staged": "^15.2.9",
+    "prettier": "^3.3.3",
+    "rollup": "^4.21.1",
+    "rollup-plugin-delete": "^2.0.0",
+    "rollup-plugin-dts": "^6.1.1",
+    "ts-jest": "^29.0.3",
+    "typescript": "^5.5.4"
+  },
+  "lint-staged": {
+    "*.{ts,md,json}": [
+      "prettier --write"
+    ],
+    "*.{ts,json}": [
+      "eslint --rule \"@typescript-eslint/no-unused-vars: error\""
+    ]
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "filesize": {
+    "./dist/umd/natural-orderby.production.min.js": {
+      "none": "5.5 kB"
+    },
+    "./dist/natural-orderby.production.min.js": {
+      "none": "4.6 kB"
+    }
+  }
+}

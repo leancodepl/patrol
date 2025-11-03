@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "$id": "NxTypescriptInit",
+  "cli": "nx",
+  "title": "Init nx/js",
+  "description": "Init generator placeholder for nx/js.",
+  "properties": {
+    "formatter": {
+      "description": "The tool to use for code formatting.",
+      "type": "string",
+      "enum": ["none", "prettier"],
+      "default": "none"
+    },
+    "js": {
+      "type": "boolean",
+      "default": false,
+      "description": "Use JavaScript instead of TypeScript"
+    },
+    "skipFormat": {
+      "type": "boolean",
+      "aliases": ["skip-format"],
+      "description": "Skip formatting files.",
+      "x-priority": "internal"
+    },
+    "skipPackageJson": {
+      "type": "boolean",
+      "description": "Skip adding package.json dependencies",
+      "x-priority": "internal"
+    },
+    "keepExistingVersions": {
+      "type": "boolean",
+      "x-priority": "internal",
+      "description": "Keep existing dependencies versions",
+      "default": false
+    },
+    "addTsConfigBase": {
+      "type": "boolean",
+      "description": "Add a base tsconfig file to the workspace.",
+      "x-priority": "internal",
+      "default": false
+    },
+    "tsConfigName": {
+      "type": "string",
+      "description": "Customize the generated base tsconfig file name.",
+      "x-priority": "internal"
+    }
+  }
+}

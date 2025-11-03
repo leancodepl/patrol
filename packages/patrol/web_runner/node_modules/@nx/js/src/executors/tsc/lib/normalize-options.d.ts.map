@@ -1,0 +1,1 @@
+{"version":3,"file":"normalize-options.d.ts","sourceRoot":"","sources":["../../../../../../../packages/js/src/executors/tsc/lib/normalize-options.ts"],"names":[],"mappings":"AACA,OAAO,KAAK,EACV,eAAe,EACf,yBAAyB,EAC1B,MAAM,uBAAuB,CAAC;AAM/B,wBAAgB,gBAAgB,CAC9B,OAAO,EAAE,eAAe,EACxB,WAAW,EAAE,MAAM,EACnB,UAAU,EAAE,MAAM,EAClB,WAAW,EAAE,MAAM,GAClB,yBAAyB,CAgC3B"}

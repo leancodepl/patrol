@@ -1,0 +1,1 @@
+{"version":3,"file":"get-import-path.d.ts","sourceRoot":"","sources":["../../../../../packages/workspace/src/utilities/get-import-path.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,IAAI,EAAE,MAAM,wBAAwB,CAAC;AAG9C,wBAAgB,aAAa,CAAC,IAAI,EAAE,IAAI,EAAE,gBAAgB,EAAE,MAAM,GAAG,MAAM,CAK1E;AAED,wBAAgB,WAAW,CAAC,IAAI,EAAE,IAAI,UAQrC"}

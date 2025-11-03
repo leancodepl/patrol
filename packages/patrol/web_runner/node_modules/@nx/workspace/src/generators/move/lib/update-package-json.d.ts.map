@@ -1,0 +1,1 @@
+{"version":3,"file":"update-package-json.d.ts","sourceRoot":"","sources":["../../../../../../../packages/workspace/src/generators/move/lib/update-package-json.ts"],"names":[],"mappings":"AAAA,OAAO,EAAY,IAAI,EAAE,MAAM,YAAY,CAAC;AAE5C,OAAO,EAAE,gBAAgB,EAAE,MAAM,WAAW,CAAC;AAM7C;;;;GAIG;AACH,wBAAgB,iBAAiB,CAAC,IAAI,EAAE,IAAI,EAAE,MAAM,EAAE,gBAAgB,QAkBrE"}

@@ -1,0 +1,1 @@
+{"version":3,"file":"convert-to-monorepo.d.ts","sourceRoot":"","sources":["../../../../../../packages/workspace/src/generators/convert-to-monorepo/convert-to-monorepo.ts"],"names":[],"mappings":"AAAA,OAAO,EAKL,IAAI,EAIL,MAAM,YAAY,CAAC;AAIpB,wBAAsB,iBAAiB,CAAC,IAAI,EAAE,IAAI,EAAE,OAAO,EAAE,EAAE,iBA2D9D;AAED,eAAe,iBAAiB,CAAC"}

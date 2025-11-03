@@ -1,0 +1,1 @@
+{"version":3,"file":"update-build-targets.d.ts","sourceRoot":"","sources":["../../../../../../../packages/workspace/src/generators/move/lib/update-build-targets.ts"],"names":[],"mappings":"AAAA,OAAO,EAGL,IAAI,EAEL,MAAM,YAAY,CAAC;AACpB,OAAO,EAAE,gBAAgB,EAAE,MAAM,WAAW,CAAC;AAE7C;;GAEG;AACH,wBAAgB,kBAAkB,CAAC,IAAI,EAAE,IAAI,EAAE,MAAM,EAAE,gBAAgB,QAoBtE"}

@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "$id": "NxWorkspaceNpmPackage",
+  "title": "Add a minimal npm package",
+  "description": "Add a minimal npm package.",
+  "cli": "nx",
+  "type": "object",
+  "properties": {
+    "directory": {
+      "type": "string",
+      "description": "A directory where the package is placed.",
+      "alias": "dir",
+      "$default": {
+        "$source": "argv",
+        "index": 0
+      },
+      "x-prompt": "Which directory do you want to create the package in?"
+    },
+    "name": {
+      "type": "string",
+      "description": "Package name."
+    }
+  },
+  "required": ["directory"]
+}

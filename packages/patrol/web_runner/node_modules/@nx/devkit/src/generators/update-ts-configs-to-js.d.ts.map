@@ -1,0 +1,1 @@
+{"version":3,"file":"update-ts-configs-to-js.d.ts","sourceRoot":"","sources":["../../../../../packages/devkit/src/generators/update-ts-configs-to-js.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,IAAI,EAAc,MAAM,uBAAuB,CAAC;AAEzD,wBAAgB,mBAAmB,CACjC,IAAI,EAAE,IAAI,EACV,OAAO,EAAE;IAAE,WAAW,EAAE,MAAM,CAAA;CAAE,GAC/B,IAAI,CA0CN"}

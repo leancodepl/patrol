@@ -1,0 +1,1 @@
+{"version":3,"file":"get-task-options.d.ts","sourceRoot":"","sources":["../../../../../../../packages/js/src/executors/tsc/lib/get-task-options.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EACV,eAAe,EAGhB,MAAM,YAAY,CAAC;AACpB,OAAO,KAAK,EAEV,yBAAyB,EAC1B,MAAM,uBAAuB,CAAC;AAI/B,wBAAgB,cAAc,CAC5B,QAAQ,EAAE,MAAM,EAChB,OAAO,EAAE,eAAe,GACvB,yBAAyB,GAAG,IAAI,CAyBlC"}

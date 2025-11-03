@@ -1,0 +1,78 @@
+{
+  "name": "babel-plugin-transform-typescript-metadata",
+  "version": "0.3.2",
+  "description": "Babel plugin to emit decorator metadata like typescript compiler",
+  "main": "lib/plugin.js",
+  "repository": "https://github.com/leonardfactory/babel-plugin-transform-typescript-metadata.git",
+  "author": "Leonardo Ascione <leonardo.ascione@gmail.com>",
+  "license": "MIT",
+  "files": [
+    "lib/"
+  ],
+  "keywords": [
+    "babel",
+    "babel-plugin",
+    "babel-typescript",
+    "decorators",
+    "reflect-metadata"
+  ],
+  "scripts": {
+    "dev": "babel src -w -d lib -x '.ts,.tsx'",
+    "build": "yarn build:lib && yarn build:types",
+    "prebuild:lib": "rm -rf lib",
+    "build:lib": "babel src -d lib -x '.ts,.tsx'",
+    "build:types": "tsc --emitDeclarationOnly",
+    "check-types": "tsc --noEmit",
+    "release": "yarn test && yarn build && release-it",
+    "test": "jest",
+    "test:dev": "jest --watch",
+    "test:ci": "jest --ci --runInBand --coverage"
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "emoji-commit-lint"
+    }
+  },
+  "release-it": {
+    "git": {
+      "tagName": "v${version}",
+      "commitMessage": "🔖 v${version}"
+    },
+    "github": {
+      "release": true
+    },
+    "plugins": {
+      "@release-it/conventional-changelog": {
+        "preset": "@favoloso/emoji",
+        "infile": "CHANGELOG.md"
+      }
+    }
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.6.4",
+    "@babel/core": "^7.6.4",
+    "@babel/plugin-proposal-class-properties": "^7.5.5",
+    "@babel/plugin-proposal-decorators": "^7.6.0",
+    "@babel/plugin-transform-modules-commonjs": "^7.10.4",
+    "@babel/preset-env": "^7.6.3",
+    "@babel/preset-typescript": "^7.6.0",
+    "@babel/template": "^7.6.0",
+    "@babel/types": "^7.6.3",
+    "@favoloso/conventional-changelog-emoji": "^0.10.0",
+    "@release-it/conventional-changelog": "^1.1.0",
+    "@types/jest": "^24.0.19",
+    "babel-test": "^0.2.3",
+    "conventional-changelog-cli": "^2.0.25",
+    "husky": "^4.2.3",
+    "jest": "^24.9.0",
+    "jest-file-snapshot": "^0.3.7",
+    "release-it": "13.7.1",
+    "typescript": "^3.6.4"
+  },
+  "dependencies": {
+    "@babel/helper-plugin-utils": "^7.0.0"
+  }
+}

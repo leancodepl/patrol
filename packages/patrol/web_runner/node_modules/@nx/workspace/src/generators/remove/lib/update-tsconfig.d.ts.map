@@ -1,0 +1,1 @@
+{"version":3,"file":"update-tsconfig.d.ts","sourceRoot":"","sources":["../../../../../../../packages/workspace/src/generators/remove/lib/update-tsconfig.ts"],"names":[],"mappings":"AAAA,OAAO,EAKL,IAAI,EAEL,MAAM,YAAY,CAAC;AAEpB,OAAO,EAAE,MAAM,EAAE,MAAM,WAAW,CAAC;AAQnC;;;;GAIG;AACH,wBAAsB,cAAc,CAAC,IAAI,EAAE,IAAI,EAAE,MAAM,EAAE,MAAM,iBAsC9D"}

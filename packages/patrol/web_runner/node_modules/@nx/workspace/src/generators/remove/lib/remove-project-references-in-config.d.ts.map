@@ -1,0 +1,1 @@
+{"version":3,"file":"remove-project-references-in-config.d.ts","sourceRoot":"","sources":["../../../../../../../packages/workspace/src/generators/remove/lib/remove-project-references-in-config.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,MAAM,EAAE,MAAM,WAAW,CAAC;AACnC,OAAO,EAGL,IAAI,EAGL,MAAM,YAAY,CAAC;AAEpB,wBAAgB,+BAA+B,CAAC,IAAI,EAAE,IAAI,EAAE,MAAM,EAAE,MAAM,QAsBzE"}

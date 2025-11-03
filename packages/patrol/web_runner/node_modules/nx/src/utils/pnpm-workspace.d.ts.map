@@ -1,0 +1,1 @@
+{"version":3,"file":"pnpm-workspace.d.ts","sourceRoot":"","sources":["../../../../../packages/nx/src/utils/pnpm-workspace.ts"],"names":[],"mappings":"AAAA,MAAM,WAAW,gBAAgB;IAC/B,CAAC,WAAW,EAAE,MAAM,GAAG,MAAM,CAAC;CAC/B;AAED,MAAM,WAAW,iBAAiB;IAChC,QAAQ,CAAC,EAAE,MAAM,EAAE,CAAC;IACpB,OAAO,CAAC,EAAE,gBAAgB,CAAC;IAC3B,QAAQ,CAAC,EAAE,MAAM,CAAC,MAAM,EAAE,gBAAgB,CAAC,CAAC;CAC7C"}

@@ -9,8 +9,8 @@ class DarwinContractsGenerator {
     for (final enumDefinition in schema.enums) {
       buffer.writeln(_createEnum(enumDefinition));
     }
-    for (final messageDefintion in schema.messages) {
-      buffer.writeln(_createMessage(messageDefintion));
+    for (final messageDefinition in schema.messages) {
+      buffer.writeln(_createMessage(messageDefinition));
     }
 
     return OutputFile(

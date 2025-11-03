@@ -1,0 +1,1 @@
+{"version":3,"file":"npm-package.d.ts","sourceRoot":"","sources":["../../../../../../packages/workspace/src/generators/npm-package/npm-package.ts"],"names":[],"mappings":"AAAA,OAAO,EAIL,IAAI,EAEL,MAAM,YAAY,CAAC;AAOpB,MAAM,WAAW,cAAc;IAC7B,SAAS,EAAE,MAAM,CAAC;IAClB,IAAI,CAAC,EAAE,MAAM,CAAC;CACf;AAgDD,wBAAsB,mBAAmB,CACvC,IAAI,EAAE,IAAI,EACV,QAAQ,EAAE,cAAc,iBAmBzB"}

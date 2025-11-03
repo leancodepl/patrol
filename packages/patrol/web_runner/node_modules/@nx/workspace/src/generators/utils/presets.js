@@ -1,0 +1,27 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Preset = void 0;
+var Preset;
+(function (Preset) {
+    Preset["Apps"] = "apps";
+    Preset["NPM"] = "npm";
+    Preset["TS"] = "ts";
+    Preset["WebComponents"] = "web-components";
+    Preset["AngularMonorepo"] = "angular-monorepo";
+    Preset["AngularStandalone"] = "angular-standalone";
+    Preset["ReactMonorepo"] = "react-monorepo";
+    Preset["ReactStandalone"] = "react-standalone";
+    Preset["NextJsStandalone"] = "nextjs-standalone";
+    Preset["ReactNative"] = "react-native";
+    Preset["VueMonorepo"] = "vue-monorepo";
+    Preset["VueStandalone"] = "vue-standalone";
+    Preset["Nuxt"] = "nuxt";
+    Preset["NuxtStandalone"] = "nuxt-standalone";
+    Preset["Expo"] = "expo";
+    Preset["NextJs"] = "next";
+    Preset["Nest"] = "nest";
+    Preset["Express"] = "express";
+    Preset["NodeStandalone"] = "node-standalone";
+    Preset["NodeMonorepo"] = "node-monorepo";
+    Preset["TsStandalone"] = "ts-standalone";
+})(Preset || (exports.Preset = Preset = {}));

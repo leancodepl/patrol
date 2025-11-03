@@ -1,0 +1,2 @@
+export declare function watchForSingleFileChanges(projectName: string, projectRoot: string, relativeFilePath: string, callback: () => void): Promise<() => void>;
+//# sourceMappingURL=watch-for-single-file-changes.d.ts.map

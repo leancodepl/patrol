@@ -1,0 +1,2 @@
+export declare function mapAsyncIterable<T = any, I = any, O = any>(data: AsyncIterable<T> | AsyncIterableIterator<T>, transform: (input: I, index?: number, data?: AsyncIterable<T> | AsyncIterableIterator<T>) => O): AsyncIterable<O> | AsyncIterableIterator<O>;
+//# sourceMappingURL=map-async-iteratable.d.ts.map
