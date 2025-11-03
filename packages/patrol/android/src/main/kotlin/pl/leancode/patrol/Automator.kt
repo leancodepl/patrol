@@ -391,7 +391,7 @@ class Automator private constructor() {
             uiDevice.click(x.toInt(), y.toInt())
         }
 
-        uiObject.text = text
+        uiObject.setText(text)
 
         if (keyboardBehavior == KeyboardBehavior.showAndDismiss) {
             pressBack() // Hide keyboard.
@@ -446,7 +446,7 @@ class Automator private constructor() {
             uiDevice.click(x.toInt(), y.toInt())
         }
 
-        uiObject.text = text
+        uiObject.setText(text)
 
         if (keyboardBehavior == KeyboardBehavior.showAndDismiss) {
             pressBack() // Hide keyboard.
