@@ -512,6 +512,7 @@ enum GoogleApp {
   final String value;
 }
 
+// from https://support.apple.com/en-gb/guide/deployment/depece748c41/web
 enum AppleApp {
   appStore('com.apple.AppStore'),
   appleStore('com.apple.store.Jolly'),
