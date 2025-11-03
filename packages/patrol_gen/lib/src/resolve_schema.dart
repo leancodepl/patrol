@@ -17,14 +17,12 @@ Future<Schema> resolveSchema(String schemaPath) async {
       if (declaration is EnumDeclaration) {
         final enumFields = declaration.constants.map((e) {
           final name = e.name.lexeme;
-          // Extract the value from the enum constant arguments
-          final arguments = e.arguments?.argumentList.arguments;
-          final value = arguments != null && arguments.isNotEmpty
-              ? arguments.first
-                  .toString()
-                  .replaceAll("'", '')
-                  .replaceAll('"', '')
-              : name;
+          final value =
+              switch (e.arguments?.argumentList.arguments.firstOrNull) {
+            final expression? =>
+              expression.toString().replaceAll("'", '').replaceAll('"', ''),
+            _ => name,
+          };
           return EnumField(name, value);
         }).toList();
 
