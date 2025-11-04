@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 import 'common.dart';
 
 void main() {
@@ -10,14 +8,14 @@ void main() {
 
     await $.native2.enableDarkMode();
     await $.pumpAndSettle();
-    await Future.delayed(const Duration(seconds: 2));
+    await Future<void>.delayed(const Duration(seconds: 2));
 
     await $.native2.disableDarkMode();
     await $.pumpAndSettle();
-    await Future.delayed(const Duration(seconds: 2));
+    await Future<void>.delayed(const Duration(seconds: 2));
 
     await $.native2.enableDarkMode();
     await $.pumpAndSettle();
-    await Future.delayed(const Duration(seconds: 2));
+    await Future<void>.delayed(const Duration(seconds: 2));
   });
 }
