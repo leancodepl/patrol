@@ -22,7 +22,7 @@ extension WebSocketClientError: CustomStringConvertible {
     case .invalidScheme:
       return "The provided URL does not have a WebSocket scheme (http, https, ws or wss)"
     case .invalidHost: return "The provided URL should have a host"
-    case let .handshakeFailed(response):
+    case .handshakeFailed(let response):
       return "The handshake request failed with status \(response.status)"
     }
   }

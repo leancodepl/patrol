@@ -28,18 +28,41 @@ version on CI systems to avoid unexpected breakages.
 
 ### Isolation of test runs
 
-To achieve full isolation between test runs, enable the `clearPackageOption`:
+To achieve full isolation between test runs, you can use the `--full-isolation` flag or configure it directly in
+your build configuration.
+
+#### Using the --full-isolation flag
+
+<Warning>
+    This functionality is experimental on iOS.
+</Warning>
+
+The `--full-isolation` flag is supported on both Android and iOS:
+
+```bash
+patrol test --full-isolation
+```
+
+This flag:
+- **Android**: Clears package data before running each test
+- **iOS**: Uninstalls the app before running each test (except for the first one)
+
+#### Android gradle configuration
+
+For Android, you can also set a default value by configuring `clearPackageData` in your app's `build.gradle` file:
 
 ```groovy title="android/app/build.gradle"
 defaultConfig {
     //...
     testInstrumentationRunner "pl.leancode.patrol.PatrolJUnitRunner"
-    testInstrumentationRunnerArguments clearPackageData: "true"
+    testInstrumentationRunnerArguments["clearPackageData"] = "true"
 }
 ```
 
-This will clear the app's data and permissions before each test run.
-Unfortunately, no equivalent feature is available on iOS.
+When both gradle configuration and `--full-isolation` flag are used:
+- If `clearPackageData` is **not set** in gradle (default `false`): `--full-isolation` sets it to `true`
+- If `clearPackageData` is **set to `true`** in gradle: `--full-isolation` has no effect (already `true`)
+- If `clearPackageData` is **set to `false`** in gradle: `--full-isolation` overrides it to `true`
 
 ### Embrace the native tests
 
@@ -75,7 +98,7 @@ does at well, but at a bit smaller scale).
 
 Take a look at this simple Flutter integration tests using Patrol:
 
-```dart title="integration_test/example_test.dart"
+```dart title="patrol_test/example_test.dart"
 void main() {
   patrolTest(
     'counter state is the same after going to Home and switching apps',

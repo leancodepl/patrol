@@ -21,7 +21,7 @@ import 'package:patrol_cli/src/test_finder.dart';
 class TestCommand extends PatrolCommand {
   TestCommand({
     required DeviceFinder deviceFinder,
-    required TestFinder testFinder,
+    required TestFinderFactory testFinderFactory,
     required TestBundler testBundler,
     required DartDefinesReader dartDefinesReader,
     required CompatibilityChecker compatibilityChecker,
@@ -34,7 +34,7 @@ class TestCommand extends PatrolCommand {
     required Logger logger,
   }) : _deviceFinder = deviceFinder,
        _testBundler = testBundler,
-       _testFinder = testFinder,
+       _testFinderFactory = testFinderFactory,
        _dartDefinesReader = dartDefinesReader,
        _compatibilityChecker = compatibilityChecker,
        _pubspecReader = pubspecReader,
@@ -66,10 +66,12 @@ class TestCommand extends PatrolCommand {
 
     usesAndroidOptions();
     usesIOSOptions();
+
+    usesFullIsolationOption();
   }
 
   final DeviceFinder _deviceFinder;
-  final TestFinder _testFinder;
+  final TestFinderFactory _testFinderFactory;
   final TestBundler _testBundler;
   final DartDefinesReader _dartDefinesReader;
   final CompatibilityChecker _compatibilityChecker;
@@ -95,12 +97,15 @@ class TestCommand extends PatrolCommand {
     );
 
     final config = _pubspecReader.read();
+    final testDirectory = config.testDirectory;
     final testFileSuffix = config.testFileSuffix;
+
+    final testFinder = _testFinderFactory.create(testDirectory);
 
     final target = stringsArg('target');
     final targets = target.isNotEmpty
-        ? _testFinder.findTests(target, testFileSuffix)
-        : _testFinder.findAllTests(
+        ? testFinder.findTests(target, testFileSuffix)
+        : testFinder.findAllTests(
             excludes: stringsArg('exclude').toSet(),
             testFileSuffix: testFileSuffix,
           );
@@ -118,9 +123,9 @@ class TestCommand extends PatrolCommand {
     if (excludeTags != null) {
       _logger.detail('Received exclude tag(s): $excludeTags');
     }
-    final entrypoint = _testBundler.bundledTestFile;
+    final entrypoint = _testBundler.getBundledTestFile(testDirectory);
     if (boolArg('generate-bundle')) {
-      _testBundler.createTestBundle(targets, tags, excludeTags);
+      _testBundler.createTestBundle(testDirectory, targets, tags, excludeTags);
     }
 
     final androidFlavor = stringArg('flavor') ?? config.android.flavor;
@@ -196,6 +201,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       'PATROL_TEST_LABEL_ENABLED': displayLabel.toString(),
       'PATROL_TEST_SERVER_PORT': super.testServerPort.toString(),
       'PATROL_APP_SERVER_PORT': super.appServerPort.toString(),
+      'PATROL_TEST_DIRECTORY': config.testDirectory,
       'COVERAGE_ENABLED': coverageEnabled.toString(),
     }.withNullsRemoved();
 
@@ -239,6 +245,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
       uninstall: uninstall,
+      fullIsolation: boolArg('full-isolation'),
     );
 
     final iosOpts = IOSAppOptions(
@@ -250,7 +257,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       osVersion: stringArg('ios') ?? 'latest',
       appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
-      clearPermissions: boolArg('clear-permissions'),
+      fullIsolation: boolArg('full-isolation'),
     );
 
     final macosOpts = MacOSAppOptions(

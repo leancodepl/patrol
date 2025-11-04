@@ -19,7 +19,7 @@ void main() {
       IOSAppOptions(
         flutter: const FlutterAppOptions(
           command: FlutterCommand('flutter'),
-          target: 'integration_test/test_bundle.dart',
+          target: 'patrol_test/test_bundle.dart',
           flavor: null,
           buildMode: BuildMode.debug,
           dartDefines: <String, String>{},
@@ -46,6 +46,7 @@ void main() {
   group('BuildIOSCommand', () {
     late BuildIOSCommand command;
     late MockLogger mockLogger;
+    late MockTestFinderFactory mockTestFinderFactory;
     late MockTestFinder mockTestFinder;
     late MockTestBundler mockTestBundler;
     late MockDartDefinesReader mockDartDefinesReader;
@@ -57,6 +58,7 @@ void main() {
 
     setUp(() {
       mockLogger = MockLogger();
+      mockTestFinderFactory = MockTestFinderFactory();
       mockTestFinder = MockTestFinder();
       mockTestBundler = MockTestBundler();
       mockDartDefinesReader = MockDartDefinesReader();
@@ -70,15 +72,19 @@ void main() {
       when(() => mockLogger.err(any())).thenReturn(null);
 
       when(
+        () => mockTestFinderFactory.create(any()),
+      ).thenReturn(mockTestFinder);
+
+      when(
         () => mockTestFinder.findAllTests(
           excludes: any(named: 'excludes'),
           testFileSuffix: any(named: 'testFileSuffix'),
         ),
-      ).thenReturn(['integration_test/app_test.dart']);
+      ).thenReturn(['patrol_test/app_test.dart']);
 
-      when(() => mockTestBundler.bundledTestFile).thenReturn(
-        MemoryFileSystem().file('integration_test/test_bundle.dart'),
-      );
+      when(
+        () => mockTestBundler.getBundledTestFile(any()),
+      ).thenReturn(MemoryFileSystem().file('patrol_test/test_bundle.dart'));
 
       when(() => mockDartDefinesReader.fromFile()).thenReturn({});
       when(
@@ -120,7 +126,7 @@ void main() {
       ).thenAnswer((_) async {});
 
       command = BuildIOSCommand(
-        testFinder: mockTestFinder,
+        testFinderFactory: mockTestFinderFactory,
         testBundler: mockTestBundler,
         dartDefinesReader: mockDartDefinesReader,
         pubspecReader: mockPubspecReader,
@@ -156,7 +162,7 @@ void main() {
         expect(opts.flutter.flavor, isNull);
         expect(opts.bundleId, isNull);
         expect(opts.simulator, equals(false));
-        expect(opts.clearPermissions, equals(false));
+        expect(opts.fullIsolation, equals(false));
       });
 
       test('builds iOS app with release build mode', () async {
@@ -242,8 +248,8 @@ void main() {
         expect(opts.simulator, equals(true));
       });
 
-      test('builds iOS app with clear permissions', () async {
-        final result = await runCommand(['--clear-permissions']);
+      test('builds iOS app with full isolation', () async {
+        final result = await runCommand(['--full-isolation']);
 
         expect(result, equals(0));
 
@@ -252,7 +258,7 @@ void main() {
         ).captured;
         final opts = captured.first as IOSAppOptions;
 
-        expect(opts.clearPermissions, equals(true));
+        expect(opts.fullIsolation, equals(true));
       });
 
       test('builds iOS app with custom iOS version', () async {
@@ -339,23 +345,23 @@ void main() {
 
       test('builds iOS app with specific test targets', () async {
         when(() => mockTestFinder.findTests(any(), any())).thenReturn([
-          'integration_test/specific_test.dart',
-          'integration_test/another_test.dart',
+          'patrol_test/specific_test.dart',
+          'patrol_test/another_test.dart',
         ]);
 
         final result = await runCommand([
           '--target',
-          'integration_test/specific_test.dart',
+          'patrol_test/specific_test.dart',
           '--target',
-          'integration_test/another_test.dart',
+          'patrol_test/another_test.dart',
         ]);
 
         expect(result, equals(0));
 
         verify(
           () => mockTestFinder.findTests([
-            'integration_test/specific_test.dart',
-            'integration_test/another_test.dart',
+            'patrol_test/specific_test.dart',
+            'patrol_test/another_test.dart',
           ]),
         ).called(1);
 
@@ -369,7 +375,8 @@ void main() {
 
         verify(
           () => mockTestBundler.createTestBundle(
-            ['integration_test/app_test.dart'],
+            'patrol_test',
+            ['patrol_test/app_test.dart'],
             null,
             null,
           ),
@@ -391,7 +398,8 @@ void main() {
 
         verify(
           () => mockTestBundler.createTestBundle(
-            ['integration_test/app_test.dart'],
+            'patrol_test',
+            ['patrol_test/app_test.dart'],
             'smoke',
             'flaky',
           ),

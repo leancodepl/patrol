@@ -87,6 +87,16 @@ class Localization {
   }
 }
 
+@objc public class ObjCLocalization: NSObject {
+  @objc public static func getLocalizedString(key: String) -> String {
+    do {
+      return try Localization.getLocalizedString(key: key)
+    } catch {
+      return key  // Return the key itself as fallback
+    }
+  }
+}
+
 enum LocalizationError: LocalizedError {
   case resourceNotFound(String)
   case parsingFailed(String)
