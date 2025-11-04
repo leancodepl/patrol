@@ -2,7 +2,12 @@
   "name": "patrol_web",
   "version": "1.0.0",
   "main": "run.js",
-  "scripts": {},
+  "scripts": {
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "lint:fix": "eslint . --fix",
+    "format:fix": "prettier --write . --fix"
+  },
   "author": "",
   "license": "ISC",
   "dependencies": {
@@ -10,6 +15,9 @@
     "playwright": "1.56.0"
   },
   "devDependencies": {
+    "@leancodepl/eslint-config": "9.6.5",
+    "@leancodepl/prettier-config": "9.6.5",
+    "@leancodepl/resolve-eslint-flat-config": "9.6.5",
     "@types/node": "24.3.1"
   }
 }
