@@ -8,6 +8,7 @@ import 'package:patrol/src/binding.dart';
 import 'package:patrol/src/global_state.dart' as global_state;
 import 'package:patrol/src/native/contracts/contracts.dart';
 import 'package:patrol/src/native/native.dart';
+import 'package:patrol/src/platform/platform_automator.dart';
 import 'package:patrol_finders/patrol_finders.dart' as finders;
 import 'package:patrol_log/patrol_log.dart';
 
@@ -92,14 +93,12 @@ void patrolTest(
   finders.PatrolTesterConfig config = const finders.PatrolTesterConfig(
     printLogs: true,
   ),
-  NativeAutomatorConfig nativeAutomatorConfig = const NativeAutomatorConfig(),
   LiveTestWidgetsFlutterBindingFramePolicy framePolicy =
       LiveTestWidgetsFlutterBindingFramePolicy.fullyLive,
 }) {
   final patrolLog = PatrolLogWriter(config: {'printLogs': config.printLogs});
-  final automator = NativeAutomator(config: nativeAutomatorConfig);
-  final automator2 = NativeAutomator2(config: nativeAutomatorConfig);
-  final patrolBinding = PatrolBinding.ensureInitialized(nativeAutomatorConfig)
+  final platformAutomator = PlatformAutomator();
+  final patrolBinding = PatrolBinding.ensureInitialized(platformAutomator)
     ..framePolicy = framePolicy;
 
   if (skip ?? false) {
@@ -133,18 +132,15 @@ void patrolTest(
         }
       }
 
-      await automator2.configure();
-      // We don't have to call this line because automator2.configure() does the same.
-      // await automator.configure();
+      await platformAutomator.configure();
 
       patrolLog.log(
         TestEntry(name: description, status: TestEntryStatus.start),
       );
       final patrolTester = PatrolIntegrationTester(
         tester: widgetTester,
-        nativeAutomator: automator,
-        nativeAutomator2: automator2,
         config: config,
+        platformAutomator: platformAutomator,
       );
       await callback(patrolTester);
 

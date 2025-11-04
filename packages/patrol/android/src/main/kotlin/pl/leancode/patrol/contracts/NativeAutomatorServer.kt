@@ -20,7 +20,6 @@ abstract class NativeAutomatorServer {
     abstract fun pressRecentApps()
     abstract fun doublePressRecentApps()
     abstract fun openApp(request: Contracts.OpenAppRequest)
-    abstract fun openPlatformApp(request: Contracts.OpenPlatformAppRequest)
     abstract fun openQuickSettings(request: Contracts.OpenQuickSettingsRequest)
     abstract fun openUrl(request: Contracts.OpenUrlRequest)
     abstract fun getNativeUITree(request: Contracts.GetNativeUITreeRequest): Contracts.GetNativeUITreeRespone
@@ -47,7 +46,6 @@ abstract class NativeAutomatorServer {
     abstract fun disableLocation()
     abstract fun openNotifications()
     abstract fun closeNotifications()
-    abstract fun closeHeadsUpNotification()
     abstract fun getNotifications(request: Contracts.GetNotificationsRequest): Contracts.GetNotificationsResponse
     abstract fun tapOnNotification(request: Contracts.TapOnNotificationRequest)
     abstract fun isPermissionDialogVisible(request: Contracts.PermissionDialogVisibleRequest): Contracts.PermissionDialogVisibleResponse
@@ -56,7 +54,6 @@ abstract class NativeAutomatorServer {
     abstract fun takeCameraPhoto(request: Contracts.TakeCameraPhotoRequest)
     abstract fun pickImageFromGallery(request: Contracts.PickImageFromGalleryRequest)
     abstract fun pickMultipleImagesFromGallery(request: Contracts.PickMultipleImagesFromGalleryRequest)
-    abstract fun debug()
     abstract fun setMockLocation(request: Contracts.SetMockLocationRequest)
     abstract fun markPatrolAppServiceReady()
     abstract fun isVirtualDevice(): Contracts.IsVirtualDeviceResponse
@@ -91,11 +88,6 @@ abstract class NativeAutomatorServer {
       "openApp" bind POST to {
         val body = json.fromJson(it.bodyString(), Contracts.OpenAppRequest::class.java)
         openApp(body)
-        Response(OK)
-      },
-      "openPlatformApp" bind POST to {
-        val body = json.fromJson(it.bodyString(), Contracts.OpenPlatformAppRequest::class.java)
-        openPlatformApp(body)
         Response(OK)
       },
       "openQuickSettings" bind POST to {
@@ -214,10 +206,6 @@ abstract class NativeAutomatorServer {
         closeNotifications()
         Response(OK)
       },
-      "closeHeadsUpNotification" bind POST to {
-        closeHeadsUpNotification()
-        Response(OK)
-      },
       "getNotifications" bind POST to {
         val body = json.fromJson(it.bodyString(), Contracts.GetNotificationsRequest::class.java)
         val response = getNotifications(body)
@@ -256,10 +244,6 @@ abstract class NativeAutomatorServer {
       "pickMultipleImagesFromGallery" bind POST to {
         val body = json.fromJson(it.bodyString(), Contracts.PickMultipleImagesFromGalleryRequest::class.java)
         pickMultipleImagesFromGallery(body)
-        Response(OK)
-      },
-      "debug" bind POST to {
-        debug()
         Response(OK)
       },
       "setMockLocation" bind POST to {

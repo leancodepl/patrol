@@ -6,30 +6,39 @@ set -euo pipefail
 
 cd "$(dirname "$0")" || exit
 
-schema="./schema.dart"
+# schema="./schema.dart"
 patrol_package="./packages/patrol"
-patrol_devtools_extension_package="./packages/patrol_devtools_extension"
-patrol_dart_out_dir="lib/src/native/contracts"
+# patrol_devtools_extension_package="./packages/patrol_devtools_extension"
+# patrol_dart_out_dir="lib/src/native/contracts"
 
-darwin_out="$patrol_package/darwin/Classes/AutomatorServer"
-dart_out="$patrol_package/$patrol_dart_out_dir"
+# darwin_root="$patrol_package/darwin"
+# darwin_schema="$darwin_root/schema.dart"
+# darwin_dart_out="$darwin_root/contracts"
+# darwin_out="$patrol_package/darwin/Classes/AutomatorServer"
+# dart_out="$patrol_package/$patrol_dart_out_dir"
 
+android_root="lib/src/platform/android"
+android_schema="$patrol_package/$android_root/schema.dart"
 android_out="$patrol_package/android/src/main/kotlin/pl/leancode/patrol/contracts"
+android_dart_out_dir="$android_root/contracts"
+android_dart_out="$patrol_package/$android_dart_out_dir"
 android_package="pl.leancode.patrol.contracts"
 
-dart run packages/patrol_gen/bin/main.dart "$schema" "$dart_out" "$darwin_out" "$android_out" "$android_package"
+# schemaFilename dartConfig darwingConfig androidConfig androidPackage
+dart run packages/patrol_gen/bin/main.dart "$android_schema" "$android_dart_out" "unused" "$android_out" "$android_package"
+# dart run packages/patrol_gen/bin/main.dart "$android_schema" "$android_dart_out" "unused" "$android_out" "$android_package"
 
 pushd "${patrol_package}"
 
-dart fix --apply "$patrol_dart_out_dir"
-dart format "$patrol_dart_out_dir"
+dart fix --apply "$android_dart_out_dir"
+dart format "$android_dart_out_dir"
 
-dart run build_runner build --delete-conflicting-outputs --build-filter="$patrol_dart_out_dir/*.dart"
+dart run build_runner build --delete-conflicting-outputs --build-filter="$android_dart_out_dir/*.dart"
 
-popd
+# popd
 
-# TODO: We should use necessary contracts in extension
-cp "$dart_out/contracts.dart" "$patrol_devtools_extension_package/lib/api/contracts.dart"
-cp "$dart_out/contracts.g.dart" "$patrol_devtools_extension_package/lib/api/contracts.g.dart"
+# # TODO: We should use necessary contracts in extension
+# cp "$dart_out/contracts.dart" "$patrol_devtools_extension_package/lib/api/contracts.dart"
+# cp "$dart_out/contracts.g.dart" "$patrol_devtools_extension_package/lib/api/contracts.g.dart"
 
-dart fix --apply "$patrol_devtools_extension_package"
+# dart fix --apply "$patrol_devtools_extension_package"
