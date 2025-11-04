@@ -14,6 +14,7 @@ import android.os.SystemClock
 import android.provider.Settings
 import android.view.KeyEvent.KEYCODE_VOLUME_DOWN
 import android.view.KeyEvent.KEYCODE_VOLUME_UP
+import android.widget.AutoCompleteTextView
 import android.widget.EditText
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.By
@@ -414,11 +415,28 @@ class Automator private constructor() {
         }
 
         var uiObject = uiDevice.findObject(uiSelector)
+        val uiObjectClassName = uiObject.getClassName()
 
-        val uiObjectClassname = uiObject.getClassName()
+        val supportedClassNames = setOf(
+            EditText::class.java.name,
+            AutoCompleteTextView::class.java.name
+        )
 
-        if (uiObjectClassname != EditText::class.java.name) {
-            uiObject = uiObject.getChild(UiSelector().className(EditText::class.java))
+        if (uiObjectClassName !in supportedClassNames) {
+            var hasSupportedChild = false
+            for (supportedClassName in supportedClassNames) {
+                try {
+                    uiObject = uiObject.getChild(UiSelector().className(supportedClassName))
+                    hasSupportedChild = true
+                    break
+                } catch (e: UiObjectNotFoundException) {
+                    // skip and try next
+                }
+            }
+
+            if (!hasSupportedChild) {
+                throw UiObjectNotFoundException("Could not find any supported child for $uiSelector")
+            }
         }
 
         if (keyboardBehavior == KeyboardBehavior.showAndDismiss) {

@@ -647,44 +647,44 @@ Check out our video version of this tutorial on YouTube!
     </Step>
 </Steps>
 
-      <Error>
-        To prevent issues during Patrol tests, please follow these guidelines:
+<Info>
+  If you are looking for a working example of a Flutter app with Patrol tests,
+  check out the [example app]
+    in the patrol repository.
+</Info>
 
-        1. Do not call `IntegrationTestWidgetsFlutterBinding.ensureInitialized`.
-           Patrol automatically initializes its own test binding.
-        2. Do not modify the global `FlutterError.onError` callback. Patrol's
-           internals depend on it. Keep in mind that this callback can also
-           be modified by popular packages such as Sentry or Crashlytics.
-           In such cases, you can disable them for Patrol tests.
-      </Error>
+## Initializing app inside a test
+  To be able to test your app, you need to initialize it and pump the app's root widget, so it appears on the screen.
+  It's very similar to what is done in main function of your app, but it has some key differences, that can break your tests.
+  Easy way to implement it is to copy main function of your app and then adjust it, so it works with Patrol.
+  Here's what to remove when running app inside a patrol test:
+  1. DO NOT call `WidgetsFlutterBinding.ensureInitialized()`.
+  2. DO NOT use `runApp()`. Instead, use `$.pumpWidget()` (or `$.pumpWidgetAndSettle()` to wait until the UI is rendered). Pass the same argument which was passed to `runApp()`.
+  3. DO NOT modify `FlutterError.onError`. Sometimes it is done by some monitoring tools (like Crashlytics). Those tools rely on intercepting errors by modifying `FlutterError.onError` callback and it causes that the test engine can't see any exceptions, thus can't end a test if it fails. One way is to move the code that would be common for both the test and the app into a method and leave the rest in main function of the app, or move whole app initialization to a function and define some arguments to enable or diable parts needed in a specific place.
+  
+  For an example, look at `createApp` in [`common.dart`] in Patrol repository on GitHub.
 
-      <Info>
-        If you are looking for a working example of a Flutter app with Patrol tests,
-        check out the [example app]
-         in the patrol repository.
-      </Info>
-
-      ## Flavors
-        If your app is using flavors, then you can pass them like so:
+## Flavors
+  If your app is using flavors, then you can pass them like so:
 
         ```
         patrol test --target patrol_test/example_test.dart --flavor development
         ```
 
-        or you can specify them in `pubspec.yaml` (recommended):
+  or you can specify them in `pubspec.yaml` (recommended):
 
-        ```yaml title="pubspec.yaml"
-        patrol:
-          app_name: My App
-          flavor: development
-          android:
-            package_name: com.example.myapp
-          ios:
-            bundle_id: com.example.MyApp
-            app_name: The Awesome App
-          macos:
-            bundle_id: com.example.macos.MyApp
-        ```
+  ```yaml title="pubspec.yaml"
+  patrol:
+    app_name: My App
+    flavor: development
+    android:
+      package_name: com.example.myapp
+    ios:
+      bundle_id: com.example.MyApp
+      app_name: The Awesome App
+    macos:
+      bundle_id: com.example.macos.MyApp
+  ```
 
 ## FAQ
 
@@ -715,7 +715,7 @@ Check out our video version of this tutorial on YouTube!
   ```
   It's a good practice to create a setup wrapper function for your tests, so you don't have to
   repeat the same code in every test. Look at the [example]
-  of a wrapper function.
+  of a wrapper function. Find out more in [Initializing app inside a test] section above.
 </Accordion>
 
 
@@ -799,3 +799,5 @@ To learn how to write Patrol tests, see [finders] and [native automation] sectio
 [Learn more]: https://developer.android.com/build/jdks
 [this video]: https://www.youtube.com/watch?v=9LdEJR59fW4
 [Patrol Discord Server]: https://discord.gg/ukBK5t4EZg
+[Initializing app inside a test]: /documentation#initializing-app-inside-a-test
+[`common.dart`]: https://github.com/leancodepl/patrol/blob/master/dev/e2e_app/integration_test/common.dart

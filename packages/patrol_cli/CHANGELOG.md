@@ -5,6 +5,9 @@
 - Add `--build-name` and `--build-number` flags to `patrol test`, `patrol develop`, and `patrol build` commands. (#2590)
 - Replace `clear-permissions` flag with `full-isolation` flag and replace clearing permissions functionality with uninstalling app on iOS. (#2730)
 - Bump `patrol_log` to `0.6.0`.
+- Fix report path generation for Android (#2724)
+- Fix issue that sometimes logs causes test crashes (#2742)
+- Add support for interactive device selection when running patrol. (#2722)
 
 ## 3.10.0
 

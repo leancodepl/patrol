@@ -5,6 +5,8 @@
 - Add `--build-name` and `--build-number` flags to `patrol test`, `patrol develop`, and `patrol build` commands. (#2590)
 - Replace clearing permissions functionality with uninstalling app on iOS. (#2730)
 - Bump `patrol_log` to `0.6.0`.
+- Change default frame policy to `LiveTestWidgetsFlutterBindingFramePolicy.fullyLive`. (#2763)
+- Extend `$.native.enterText()` on Android to support `AutoCompleteTextView`. (#1162)
 
 ## 3.19.0
 

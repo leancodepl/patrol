@@ -1,4 +1,4 @@
-import 'package:e2e_app/main.dart' as app_main;
+import 'package:e2e_app/main.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
 
@@ -11,8 +11,8 @@ final _nativeAutomatorConfig = NativeAutomatorConfig(
 );
 
 Future<void> createApp(PatrolIntegrationTester $) async {
-  await app_main.main();
-  await $.pumpAndSettle();
+  await setUpTimezone();
+  await $.pumpWidgetAndSettle(const ExampleApp());
 }
 
 void patrol(
@@ -21,14 +21,11 @@ void patrol(
   bool? skip,
   List<String> tags = const [],
   NativeAutomatorConfig? nativeAutomatorConfig,
-  LiveTestWidgetsFlutterBindingFramePolicy framePolicy =
-      LiveTestWidgetsFlutterBindingFramePolicy.fadePointers,
 }) {
   patrolTest(
     description,
     config: _patrolTesterConfig,
     nativeAutomatorConfig: nativeAutomatorConfig ?? _nativeAutomatorConfig,
-    framePolicy: framePolicy,
     skip: skip,
     callback,
     tags: tags,
