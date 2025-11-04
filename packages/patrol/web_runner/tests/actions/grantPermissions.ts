@@ -1,4 +1,5 @@
 import { Page } from "playwright";
+import { GrantPermissionsRequest } from "../contracts";
 
 export async function grantPermissions(
   page: Page,

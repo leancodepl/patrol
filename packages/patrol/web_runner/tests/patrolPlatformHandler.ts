@@ -2,6 +2,7 @@ import { Page } from "playwright";
 import { grantPermissions } from "./actions/grantPermissions";
 import { enableDarkMode } from "./actions/enableDarkMode";
 import { disableDarkMode } from "./actions/disableDarkMode";
+import { PatrolNativeRequest } from "./contracts";
 
 export async function exposePatrolPlatformHandler(page: Page) {
   await page.exposeBinding(
