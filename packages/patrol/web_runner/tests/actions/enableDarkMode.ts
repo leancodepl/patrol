@@ -1,6 +1,7 @@
-import { Page } from "playwright";
+import { Page } from "playwright"
+import { logger } from "../logger"
 
 export async function enableDarkMode(page: Page) {
-  await page.emulateMedia({ colorScheme: "dark" });
-  console.log("Dark mode enabled");
+  await page.emulateMedia({ colorScheme: "dark" })
+  logger.info("Dark mode enabled")
 }

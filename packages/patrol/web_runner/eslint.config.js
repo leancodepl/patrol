@@ -1,17 +1,17 @@
-const tseslint = require("typescript-eslint")
-const { base, baseReact, imports, a11y } = require("@leancodepl/eslint-config")
-const { resolveFlatConfig } = require("@leancodepl/resolve-eslint-flat-config")
+const nx = require("@nx/eslint-plugin")
+const { base, imports, a11y } = require("@leancodepl/eslint-config")
 
-module.exports = resolveFlatConfig([
-  {
-    plugins: { "@typescript-eslint": tseslint.plugin },
-    languageOptions: {
-      parser: tseslint.parser,
-      ecmaVersion: "latest",
-    },
-  },
+const importsConfig = imports
+const importsRules = imports[0].rules
+delete importsRules["react/jsx-uses-react"]
+delete importsRules["react/jsx-uses-vars"]
+importsConfig[0].rules = importsRules
+
+module.exports = [
+  ...nx.configs["flat/base"],
+  ...nx.configs["flat/typescript"],
+  ...nx.configs["flat/javascript"],
   ...base,
-  ...baseReact,
-  ...imports,
+  ...importsConfig,
   ...a11y,
-])
+]

@@ -1,41 +1,39 @@
-import { test as base } from "@playwright/test";
-import { initialise } from "./initialise";
-import { exposePatrolPlatformHandler } from "./patrolPlatformHandler";
-import { PatrolTestEntry } from "./types";
+import { test as base } from "@playwright/test"
+import { initialise } from "./initialise"
+import { logger } from "./logger"
+import { exposePatrolPlatformHandler } from "./patrolPlatformHandler"
+import { PatrolTestEntry } from "./types"
 
-const tests: PatrolTestEntry[] = JSON.parse(process.env.PATROL_TESTS!);
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+const tests: PatrolTestEntry[] = JSON.parse(process.env.PATROL_TESTS!)
 
 export const patrolTest = base.extend({
   page: async ({ page }, use) => {
-    page.on("console", (message) => {
-      console.log(message.text());
-    });
+    page.on("console", message => {
+      logger.info(message.text())
+    })
 
-    await page.goto("/", { waitUntil: "load" });
+    await page.goto("/", { waitUntil: "load" })
 
-    await exposePatrolPlatformHandler(page);
+    await exposePatrolPlatformHandler(page)
 
-    await initialise(page);
+    await initialise(page)
 
-    await use(page);
+    await use(page)
   },
-});
+})
 
 for (const { name, skip, tags } of tests) {
   patrolTest(name, { tag: tags }, async ({ page }) => {
-    patrolTest.skip(skip);
+    patrolTest.skip(skip)
 
     await page.waitForFunction(() => window.__patrol__runTest, {
       timeout: 300000,
-    });
+    })
 
-    const testResult = await page.evaluate(
-      async (name) => await window.__patrol__runTest!(name),
-      name
-    );
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const testResult = await page.evaluate(async name => await window.__patrol__runTest!(name), name)
 
-    patrolTest
-      .expect(testResult.result, testResult.details ?? undefined)
-      .toBe("success");
-  });
+    patrolTest.expect(testResult.result, testResult.details ?? undefined).toBe("success")
+  })
 }

@@ -1,21 +1,18 @@
-import { Page } from "@playwright/test";
-
-const originalLog = console.log;
-console.log = (...args) => originalLog("Playwright:", ...args);
+import { Page } from "@playwright/test"
 
 export async function initialise(page: Page) {
   await page.evaluate(() => {
-    window.__patrol__isInitialised = true;
-  });
+    window.__patrol__isInitialised = true
+  })
 
   await page.waitForFunction(
     () => {
-      if (!window.__patrol__onInitialised) return false;
+      if (!window.__patrol__onInitialised) return false
 
-      window.__patrol__onInitialised();
+      window.__patrol__onInitialised()
 
-      return true;
+      return true
     },
-    { timeout: 60000 }
-  );
+    { timeout: 60000 },
+  )
 }
