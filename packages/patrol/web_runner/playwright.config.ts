@@ -1,9 +1,8 @@
-import { defineConfig } from "@playwright/test";
+import { defineConfig } from "@playwright/test"
 
-const outputDir = process.env.PATROL_TEST_RESULTS_DIR || "./test-results";
-const outputFolder =
-  process.env.PATROL_TEST_REPORT_DIR || "./playwright-report";
-const baseURL = process.env.BASE_URL;
+const outputDir = process.env.PATROL_TEST_RESULTS_DIR || "./test-results"
+const outputFolder = process.env.PATROL_TEST_REPORT_DIR || "./playwright-report"
+const baseURL = process.env.BASE_URL
 
 export default defineConfig({
   use: {
@@ -16,4 +15,4 @@ export default defineConfig({
   outputDir,
   reporter: [["html", { outputFolder, open: "never" }], ["json"], ["list"]],
   timeout: 300000,
-});
+})
