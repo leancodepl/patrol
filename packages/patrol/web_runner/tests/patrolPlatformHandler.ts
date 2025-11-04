@@ -1,39 +1,7 @@
 import { Page } from "playwright";
-
-type PatrolNativeRequestBase<TAction extends string, TParams> = {
-  action: TAction;
-  params: TParams;
-};
-
-type GrantPermissionsRequest = PatrolNativeRequestBase<
-  "grantPermissions",
-  {
-    permissions?: string[];
-    origin?: string;
-  }
->;
-type EnableDarkModeRequest = PatrolNativeRequestBase<
-  "enableDarkMode",
-  {
-    appId?: string;
-  }
->;
-type DisableDarkModeRequest = PatrolNativeRequestBase<
-  "disableDarkMode",
-  {
-    appId?: string;
-  }
->;
-type UnknownRequest = PatrolNativeRequestBase<
-  `unkown-placeholder-${string}`,
-  unknown
->;
-
-type PatrolNativeRequest =
-  | GrantPermissionsRequest
-  | EnableDarkModeRequest
-  | DisableDarkModeRequest
-  | UnknownRequest;
+import { grantPermissions } from "./actions/grantPermissions";
+import { enableDarkMode } from "./actions/enableDarkMode";
+import { disableDarkMode } from "./actions/disableDarkMode";
 
 export async function exposePatrolPlatformHandler(page: Page) {
   await page.exposeBinding(
@@ -50,25 +18,15 @@ async function handlePatrolPlatformAction(
 
   try {
     switch (action) {
-      case "grantPermissions": {
-        const origin = params.origin ?? new URL(page.url()).origin;
-        await page
-          .context()
-          .grantPermissions(params.permissions ?? [], { origin });
-        console.log(
-          `Granted permissions: ${params.permissions?.join(", ")} for ${origin}`
-        );
+      case "grantPermissions":
+        await grantPermissions(page, params);
         break;
-      }
-
       case "enableDarkMode":
-        await page.emulateMedia({ colorScheme: "dark" });
+        await enableDarkMode(page);
         break;
-
       case "disableDarkMode":
-        await page.emulateMedia({ colorScheme: "no-preference" });
+        await disableDarkMode(page);
         break;
-
       default:
         console.error(`Unknown action received: ${action}`);
         throw new Error(`Unknown action received: ${action}`);
