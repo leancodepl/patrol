@@ -496,6 +496,7 @@ enum IOSElementType {
   statusItem,
 }
 
+// retrieved manually with https://play.google.com/store/apps/details?id=com.csdroid.pkg&pcampaignid=web_share
 enum GoogleApp {
   calculator('com.google.android.calculator'),
   calendar('com.google.android.calendar'),
