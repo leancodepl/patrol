@@ -32,7 +32,7 @@ import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
-import 'package:patrol/src/native/contracts/contracts.dart';
+import 'package:patrol/src/platform/platform_automator.dart';
 import 'package:test_api/src/backend/invoker.dart';
 
 // START: GENERATED TEST IMPORTS
@@ -72,11 +72,8 @@ Future<void> main() async {
   // Dart test (out of which they had been created) and wait for it to complete.
   // The result of running the Dart test is the result of the native test case.
 
-  final nativeAutomator = NativeAutomator(config: NativeAutomatorConfig());
-  await nativeAutomator.initialize();
-  final nativeAutomator2 = NativeAutomator2(config: NativeAutomatorConfig());
-  await nativeAutomator2.initialize();
-  final binding = PatrolBinding.ensureInitialized(NativeAutomatorConfig());
+  final platformAutomator = PlatformAutomator();
+  final binding = PatrolBinding.ensureInitialized(platformAutomator);
   final testExplorationCompleter = Completer<DartGroupEntry>();
 
   // A special test to explore the hierarchy of groups and tests. This is a hack
@@ -109,7 +106,7 @@ ${generateGroupsCode(testDirectory, testFilePaths).split('\n').map((e) => '  $e'
   // Until now, the native test runner was waiting for us, the Dart side, to
   // come alive. Now that we did, let's tell it that we're ready to be asked
   // about Dart tests.
-  await nativeAutomator.markPatrolAppServiceReady();
+  await platformAutomator.markPatrolAppServiceReady();
 
   await appService.testExecutionCompleted;
 }
@@ -140,17 +137,15 @@ ${generateGroupsCode(testDirectory, testFilePaths).split('\n').map((e) => '  $e'
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
+import 'package:patrol/src/platform/platform_automator.dart';
 
 // START: GENERATED TEST IMPORTS
 ${generateImports(testDirectory, [testFilePath])}
 // END: GENERATED TEST IMPORTS
 
 Future<void> main() async {
-  final nativeAutomator = NativeAutomator(config: NativeAutomatorConfig());
-  await nativeAutomator.initialize();
-  final nativeAutomator2 = NativeAutomator2(config: NativeAutomatorConfig());
-  await nativeAutomator2.initialize();
-  PatrolBinding.ensureInitialized(NativeAutomatorConfig())
+  final platformAutomator = PlatformAutomator();
+  PatrolBinding.ensureInitialized(platformAutomator)
     ..workaroundDebugDefaultTargetPlatformOverride =
         debugDefaultTargetPlatformOverride;
 
