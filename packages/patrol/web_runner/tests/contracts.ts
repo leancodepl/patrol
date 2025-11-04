@@ -3,21 +3,27 @@ type PatrolNativeRequestBase<TAction extends string, TParams> = {
   params: TParams;
 };
 
-type GrantPermissionsRequest = PatrolNativeRequestBase<
+export type GrantPermissionsRequest = PatrolNativeRequestBase<
   "grantPermissions",
   {
     permissions?: string[];
     origin?: string;
   }
 >;
-type EnableDarkModeRequest = PatrolNativeRequestBase<"enableDarkMode", {}>;
-type DisableDarkModeRequest = PatrolNativeRequestBase<"disableDarkMode", {}>;
+export type EnableDarkModeRequest = PatrolNativeRequestBase<
+  "enableDarkMode",
+  {}
+>;
+export type DisableDarkModeRequest = PatrolNativeRequestBase<
+  "disableDarkMode",
+  {}
+>;
 type UnknownRequest = PatrolNativeRequestBase<
   `unknown-placeholder-${string}`,
   unknown
 >;
 
-type PatrolNativeRequest =
+export type PatrolNativeRequest =
   | GrantPermissionsRequest
   | EnableDarkModeRequest
   | DisableDarkModeRequest

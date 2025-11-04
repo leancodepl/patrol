@@ -34,6 +34,7 @@ class DevelopCommand extends PatrolCommand {
     required FlutterTool flutterTool,
     required Analytics analytics,
     required Logger logger,
+    required Stream<List<int>> stdin,
   }) : _deviceFinder = deviceFinder,
        _testFinderFactory = testFinderFactory,
        _testBundler = testBundler,
