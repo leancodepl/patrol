@@ -500,6 +500,68 @@ class IOSSelector with EquatableMixin {
 }
 
 @JsonSerializable()
+class WebSelector with EquatableMixin {
+  WebSelector({
+    this.role,
+    this.label,
+    this.placeholder,
+    this.text,
+    this.altText,
+    this.title,
+    this.testId,
+    this.cssOrXpath,
+  });
+
+  factory WebSelector.fromJson(Map<String, dynamic> json) =>
+      _$WebSelectorFromJson(json);
+
+  final String? role;
+  final String? label;
+  final String? placeholder;
+  final String? text;
+  final String? altText;
+  final String? title;
+  final String? testId;
+  final String? cssOrXpath;
+
+  Map<String, dynamic> toJson() => _$WebSelectorToJson(this);
+
+  @override
+  List<Object?> get props => [
+    role,
+    label,
+    placeholder,
+    text,
+    altText,
+    title,
+    testId,
+    cssOrXpath,
+  ];
+
+  WebSelector copyWith({
+    String? role,
+    String? label,
+    String? placeholder,
+    String? text,
+    String? altText,
+    String? title,
+    String? testId,
+    String? cssOrXpath,
+  }) {
+    return WebSelector(
+      role: role ?? this.role,
+      label: label ?? this.label,
+      placeholder: placeholder ?? this.placeholder,
+      text: text ?? this.text,
+      altText: altText ?? this.altText,
+      title: title ?? this.title,
+      testId: testId ?? this.testId,
+      cssOrXpath: cssOrXpath ?? this.cssOrXpath,
+    );
+  }
+}
+
+@JsonSerializable()
 class Selector with EquatableMixin {
   Selector({
     this.text,
