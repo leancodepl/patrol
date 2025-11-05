@@ -216,6 +216,22 @@ abstract class PatrolCommand extends Command<int> {
     );
   }
 
+  void usesBuildNameOption() {
+    argParser.addOption(
+      'build-name',
+      help: 'Version name of the app.',
+      valueHelp: '1.2.3',
+    );
+  }
+
+  void usesBuildNumberOption() {
+    argParser.addOption(
+      'build-number',
+      help: 'Version code of the app.',
+      valueHelp: '123',
+    );
+  }
+
   /// Gets the parsed command-line flag named [name] as a `bool`.
   ///
   /// If no flag named [name] was added to the `ArgParser`, an [ArgumentError]

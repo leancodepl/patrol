@@ -58,6 +58,8 @@ class DevelopCommand extends PatrolCommand {
     usesCheckCompatibilityOption();
 
     usesUninstallOption();
+    usesBuildNameOption();
+    usesBuildNumberOption();
 
     usesAndroidOptions();
     usesIOSOptions();
@@ -122,6 +124,16 @@ class DevelopCommand extends PatrolCommand {
     }
     if (iosFlavor != null) {
       _logger.detail('Received iOS flavor: $iosFlavor');
+    }
+
+    final buildName = stringArg('build-name');
+    if (buildName != null) {
+      _logger.detail('Received build name: $buildName');
+    }
+
+    final buildNumber = stringArg('build-number');
+    if (buildNumber != null) {
+      _logger.detail('Received build number: $buildNumber');
     }
 
     final devices = await _deviceFinder.find(
@@ -208,6 +220,8 @@ class DevelopCommand extends PatrolCommand {
       buildMode: buildMode,
       dartDefines: mergedDartDefines,
       dartDefineFromFilePaths: dartDefineFromFilePaths,
+      buildName: buildName,
+      buildNumber: buildNumber,
     );
 
     final androidOpts = AndroidAppOptions(

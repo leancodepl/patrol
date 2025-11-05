@@ -570,7 +570,7 @@ class NativeAutomator2 {
   /// [NativeAutomatorConfig.findTimeout] duration from the configuration.
   ///
   /// The native view specified by [selector] must be:
-  ///  * EditText on Android
+  ///  * EditText or AutoCompleteTextView on Android
   ///  * TextField or SecureTextField on iOS
   ///
   /// See also:
