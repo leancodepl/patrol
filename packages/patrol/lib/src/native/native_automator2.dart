@@ -3,11 +3,11 @@ import 'dart:io' as io;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:meta/meta.dart';
-import 'package:patrol/src/native/contracts/contracts.dart';
 import 'package:patrol/src/native/contracts/contracts.dart' as contracts;
+import 'package:patrol/src/native/contracts/contracts.dart';
 import 'package:patrol/src/native/contracts/native_automator_client.dart';
-import 'package:patrol/src/native/native_automator.dart';
 import 'package:patrol/src/native/native_automator.dart' as native_automator;
+import 'package:patrol/src/native/native_automator.dart';
 import 'package:patrol_log/patrol_log.dart';
 
 /// This class represents the result of [NativeAutomator.getNativeViews].
@@ -1066,5 +1066,97 @@ class NativeAutomator2 {
     );
 
     return response.osVersion;
+  }
+
+  // WEB:
+
+  Future<void> tapWeb({required WebSelector selector}) async {
+    throw UnimplementedError('tap is not implemented for web');
+  }
+
+  Future<void> enterTextWeb({
+    required WebSelector selector,
+    required String text,
+  }) async {
+    throw UnimplementedError('enterText is not implemented for web');
+  }
+
+  Future<void> grantPermissions({required List<String> permissions}) async {
+    throw UnimplementedError('grantPermissions is not implemented for web');
+  }
+
+  Future<void> clearPermissions() async {
+    throw UnimplementedError('clearPermissions is not implemented for web');
+  }
+
+  Future<void> acceptDialog() async {
+    throw UnimplementedError('acceptDialog is not implemented for web');
+  }
+
+  Future<void> dismissDialog() async {
+    throw UnimplementedError('dismissDialog is not implemented for web');
+  }
+
+  Future<String> getDialogMessage() async {
+    throw UnimplementedError('getDialogMessage is not implemented for web');
+  }
+
+  Future<void> goBack() async {
+    throw UnimplementedError('goBack is not implemented for web');
+  }
+
+  Future<void> goForward() async {
+    throw UnimplementedError('goForward is not implemented for web');
+  }
+
+  Future<void> pressKey({required String key}) async {
+    throw UnimplementedError('pressKey is not implemented for web');
+  }
+
+  Future<void> pressKeyCombo({required List<String> keys}) async {
+    throw UnimplementedError('pressKeyCombo is not implemented for web');
+  }
+
+  Future<void> scrollToWeb({required WebSelector selector}) async {
+    throw UnimplementedError('scrollTo is not implemented for web');
+  }
+
+  Future<void> setClipboard({required String text}) async {
+    throw UnimplementedError('setClipboard is not implemented for web');
+  }
+
+  Future<String> getClipboard() async {
+    throw UnimplementedError('getClipboard is not implemented for web');
+  }
+
+  Future<void> addCookie({
+    required String name,
+    required String value,
+    String? domain,
+    String? path,
+    bool? secure,
+    bool? httpOnly,
+    int? expirationDate,
+  }) async {
+    throw UnimplementedError('addCookie is not implemented for web');
+  }
+
+  Future<List<Map<String, dynamic>>> getCookies() async {
+    throw UnimplementedError('getCookies is not implemented for web');
+  }
+
+  Future<void> clearCookies() async {
+    throw UnimplementedError('clearCookies is not implemented for web');
+  }
+
+  Future<void> uploadFile({
+    required WebSelector selector,
+    required String filePath,
+  }) async {
+    throw UnimplementedError('uploadFile is not implemented for web');
+  }
+
+  Future<String> waitForDownload({Duration? timeout}) async {
+    throw UnimplementedError('waitForDownload is not implemented for web');
   }
 }

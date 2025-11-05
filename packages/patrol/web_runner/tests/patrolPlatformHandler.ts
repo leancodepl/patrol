@@ -1,9 +1,9 @@
 import { Page } from "playwright"
-import { disableDarkMode } from "./actions/disableDarkMode"
-import { enableDarkMode } from "./actions/enableDarkMode"
-import { grantPermissions } from "./actions/grantPermissions"
+import { actions } from "./actions"
 import { PatrolNativeRequest } from "./contracts"
 import { logger } from "./logger"
+
+
 
 export async function exposePatrolPlatformHandler(page: Page) {
   await page.exposeBinding("__patrol__platformHandler", async ({ page }, request) =>
@@ -14,23 +14,17 @@ export async function exposePatrolPlatformHandler(page: Page) {
 async function handlePatrolPlatformAction(page: Page, { action, params }: PatrolNativeRequest) {
   logger.info(params, `Received action: ${action}`)
 
+  const actionFn = actions[action as keyof typeof actions]
+
+  if(!actionFn) {
+    throw new Error(`Action ${action} not found`)
+  }
+  
   try {
-    switch (action) {
-      case "grantPermissions":
-        await grantPermissions(page, params)
-        break
-      case "enableDarkMode":
-        await enableDarkMode(page)
-        break
-      case "disableDarkMode":
-        await disableDarkMode(page)
-        break
-      default:
-        logger.error(`Unknown action received: ${action}`)
-        throw new Error(`Unknown action received: ${action}`)
-    }
+     await actionFn(page, params as any)
   } catch (e) {
     logger.error(e, "Failed to handle patrol platform request")
-    throw e
   }
 }
+
+

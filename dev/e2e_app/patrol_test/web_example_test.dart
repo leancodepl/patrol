@@ -18,4 +18,28 @@ void main() {
     await $.pumpAndSettle();
     await Future<void>.delayed(const Duration(seconds: 2));
   });
+
+  patrol('grant permissions', ($) async {
+    await createApp($);
+
+    await $('Open permissions screen').scrollTo().tap();
+    await $.pumpAndSettle();
+    await Future<void>.delayed(const Duration(seconds: 2));
+
+    await $.native2.grantPermissions(permissions: ['geolocation']);
+    await $.pumpAndSettle();
+    await Future<void>.delayed(const Duration(seconds: 2));
+
+    await $('Request location permission').tap();
+    await $.pumpAndSettle();
+    await Future<void>.delayed(const Duration(seconds: 2));
+
+    await $.native2.clearPermissions();
+    await $.pumpAndSettle();
+    await Future<void>.delayed(const Duration(seconds: 2));
+
+    await $('Request location permission').tap();
+    await $.pumpAndSettle();
+    await Future<void>.delayed(const Duration(seconds: 2));
+  });
 }

@@ -2,7 +2,7 @@ import { chromium, type FullConfig } from "@playwright/test"
 import { initialise } from "./initialise"
 import { DartTestEntry, PatrolTestEntry } from "./types"
 
- async function setup (config: FullConfig) {
+async function setup(config: FullConfig) {
   const { baseURL } = config.projects[0].use
   const browser = await chromium.launch()
   const page = await browser.newPage()
