@@ -51,6 +51,8 @@ void main() {
     await $.pumpAndSettle();
     await Future<void>.delayed(const Duration(seconds: 2));
 
+    expect(await $.native2.getClipboard(), null);
+
     await $.native2.grantPermissions(
       permissions: ['clipboard-read', 'clipboard-write'],
     );
@@ -58,7 +60,7 @@ void main() {
     await Future<void>.delayed(const Duration(seconds: 2));
 
     expect(await $.native2.getClipboard(), 'abab');
-    await $.native2.setClipboard(text: 'test');
+    expect(await $.native2.setClipboard(text: 'test'), true);
     await $.pumpAndSettle();
     await Future<void>.delayed(const Duration(seconds: 2));
 
@@ -67,16 +69,6 @@ void main() {
     await Future<void>.delayed(const Duration(seconds: 2));
 
     await $.native2.clearPermissions();
-    await $.pumpAndSettle();
-    await Future<void>.delayed(const Duration(seconds: 2));
-
-    expect(
-      await $.native2.getClipboard().timeout(
-        const Duration(seconds: 3),
-        onTimeout: () => 'error',
-      ),
-      'error',
-    );
     await $.pumpAndSettle();
     await Future<void>.delayed(const Duration(seconds: 2));
   });

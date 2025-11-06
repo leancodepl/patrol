@@ -1129,11 +1129,11 @@ class NativeAutomator2 {
     throw UnimplementedError('scrollTo is not implemented for web');
   }
 
-  Future<void> setClipboard({required String text}) async {
+  Future<bool?> setClipboard({required String text}) async {
     throw UnimplementedError('setClipboard is not implemented for web');
   }
 
-  Future<String> getClipboard() async {
+  Future<String?> getClipboard() async {
     throw UnimplementedError('getClipboard is not implemented for web');
   }
 
