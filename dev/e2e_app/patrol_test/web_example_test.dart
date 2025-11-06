@@ -1,7 +1,9 @@
 import 'dart:collection';
+import 'dart:ui_web' as ui_web;
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:patrol/src/native/contracts/contracts.dart';
 import 'package:web/web.dart' as web;
 
 import 'common.dart';
@@ -182,6 +184,42 @@ void main() {
     await $.pumpAndSettle();
     await Future<void>.delayed(const Duration(seconds: 1));
   });
+
+  patrol('iframe interactions - scroll, enter text, and tap', ($) async {
+    await $.pumpWidgetAndSettle(const ExampleApp());
+
+    await $('Go to Iframe Test').scrollTo().tap();
+    await $.pumpAndSettle();
+    await Future<void>.delayed(const Duration(seconds: 2));
+
+    expect($('Iframe Test'), findsOneWidget);
+
+    final iframeSelector = WebSelector(cssOrXpath: 'iframe');
+    final inputSelector = WebSelector(cssOrXpath: '#test-input');
+    final buttonSelector = WebSelector(cssOrXpath: '#submit-button');
+
+    await $.native2.scrollToWeb(
+      selector: inputSelector,
+      iframeSelector: iframeSelector,
+    );
+    await $.pumpAndSettle();
+    await Future<void>.delayed(const Duration(seconds: 1));
+
+    await $.native2.enterTextWeb(
+      selector: inputSelector,
+      text: 'Hello from Patrol!',
+      iframeSelector: iframeSelector,
+    );
+    await $.pumpAndSettle();
+    await Future<void>.delayed(const Duration(seconds: 1));
+
+    await $.native2.tapWeb(
+      selector: buttonSelector,
+      iframeSelector: iframeSelector,
+    );
+    await $.pumpAndSettle();
+    await Future<void>.delayed(const Duration(seconds: 2));
+  });
 }
 
 class ExampleApp extends StatefulWidget {
@@ -214,6 +252,10 @@ class _ExampleAppState extends State<ExampleApp> {
           ),
         ),
         GoRoute(path: '/page1', builder: (context, state) => const _Page1()),
+        GoRoute(
+          path: '/iframe',
+          builder: (context, state) => const _IframePage(),
+        ),
       ],
       refreshListenable: _routerRefreshNotifier,
     );
@@ -240,13 +282,11 @@ class _ExampleAppState extends State<ExampleApp> {
 
   void _handleShowConfirm() {
     final confirmed = web.window.confirm('Do you confirm?');
-    print('DEBUG: confirmed = $confirmed');
     setState(() {
       _dialogResult = confirmed
           ? 'Confirm was accepted'
           : 'Confirm was dismissed';
     });
-    print('DEBUG: _dialogResult = $_dialogResult');
     _notifyRouterRefresh();
   }
 
@@ -357,6 +397,11 @@ class _HomePage extends StatelessWidget {
                 icon: const Icon(Icons.arrow_forward),
                 label: const Text('Go to Page 1'),
               ),
+              ElevatedButton.icon(
+                onPressed: () => context.go('/iframe'),
+                icon: const Icon(Icons.web),
+                label: const Text('Go to Iframe Test'),
+              ),
             ],
           ),
         ),
@@ -381,6 +426,74 @@ class _Page1 extends StatelessWidget {
             Text(
               'This is Page 1',
               style: Theme.of(context).textTheme.headlineMedium,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _IframePage extends StatefulWidget {
+  const _IframePage();
+
+  @override
+  State<_IframePage> createState() => _IframePageState();
+}
+
+class _IframePageState extends State<_IframePage> {
+  static const _iframeViewType = 'iframe-test-view';
+  static var _isRegistered = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (!_isRegistered) {
+      ui_web.platformViewRegistry.registerViewFactory(_iframeViewType, (
+        int viewId,
+      ) {
+        final iframe = web.HTMLIFrameElement()
+          ..src = 'assets/assets/iframe_content.html'
+          ..style.border = 'none'
+          ..style.width = '100%'
+          ..style.height = '100%';
+        return iframe;
+      });
+      _isRegistered = true;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Iframe Test'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.go('/'),
+        ),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              'Iframe with scrollable content',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            const SizedBox(height: 16),
+            Expanded(
+              child: Container(
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: const HtmlElementView(viewType: _iframeViewType),
+                ),
+              ),
             ),
           ],
         ),

@@ -1,23 +1,23 @@
-import { Locator, Page } from "playwright"
+import { FrameLocator, Locator, Page } from "playwright"
 import { WebSelector } from "./contracts"
 
 /**
  * Parses a WebSelector and returns a Playwright Locator.
  * Combines all provided selector properties using .and() method.
  */
-export function parseWebSelector(page: Page, selector: WebSelector): Locator {
+export function parseWebSelector(context: FrameLocator | Page, selector: WebSelector): Locator {
   const selectorMappings: Array<{
     value: string | null
     getter: (value: string) => Locator
   }> = [
-    { value: selector.testId, getter: val => page.getByTestId(val) },
-    { value: selector.role, getter: val => page.getByRole(val as any) },
-    { value: selector.label, getter: val => page.getByLabel(val) },
-    { value: selector.placeholder, getter: val => page.getByPlaceholder(val) },
-    { value: selector.text, getter: val => page.getByText(val) },
-    { value: selector.altText, getter: val => page.getByAltText(val) },
-    { value: selector.title, getter: val => page.getByTitle(val) },
-    { value: selector.cssOrXpath, getter: val => page.locator(val) },
+    { value: selector.testId, getter: val => context.getByTestId(val) },
+    { value: selector.role, getter: val => context.getByRole(val as any) },
+    { value: selector.label, getter: val => context.getByLabel(val) },
+    { value: selector.placeholder, getter: val => context.getByPlaceholder(val) },
+    { value: selector.text, getter: val => context.getByText(val) },
+    { value: selector.altText, getter: val => context.getByAltText(val) },
+    { value: selector.title, getter: val => context.getByTitle(val) },
+    { value: selector.cssOrXpath, getter: val => context.locator(val) },
   ]
 
   const locators = selectorMappings
