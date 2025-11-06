@@ -1207,10 +1207,7 @@ class NativeAutomator2 {
     throw UnimplementedError('clearCookies is not implemented for web');
   }
 
-  Future<void> uploadFile({
-    required WebSelector selector,
-    required String filePath,
-  }) async {
+  Future<void> uploadFile({required List<Object> files}) async {
     throw UnimplementedError('uploadFile is not implemented for web');
   }
 

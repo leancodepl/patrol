@@ -10,6 +10,7 @@ environment:
 dependencies:
   app_links: ^6.1.1
   cupertino_icons: ^1.0.6
+  file_picker: ^10.3.3
   flutter:
     sdk: flutter
   flutter_local_notifications: ^17.2.3

@@ -1,9 +1,10 @@
 import 'dart:collection';
+import 'dart:convert';
 import 'dart:ui_web' as ui_web;
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:patrol/src/native/contracts/contracts.dart';
 import 'package:web/web.dart' as web;
 
 import 'common.dart';
@@ -116,7 +117,6 @@ void main() {
     await Future<void>.delayed(const Duration(seconds: 1));
 
     var cookies = await $.native2.getCookies();
-    print('=============$cookies');
     var testCookie = cookies.firstWhere(
       (c) => c['name'] == 'test_cookie',
       orElse: LinkedHashMap<Object?, Object?>.new,
@@ -139,20 +139,36 @@ void main() {
     await Future<void>.delayed(const Duration(seconds: 1));
   });
 
-  // patrol('file upload', ($) async {
-  //   await $.pumpWidgetAndSettle(const ExampleApp());
+  patrol('file upload', ($) async {
+    await $.pumpWidgetAndSettle(const ExampleApp());
 
-  //   expect($(#uploaded_file_name), findsNothing);
+    expect($(#uploaded_file_name), findsNothing);
 
-  //   await $('Upload File').scrollTo().tap();
-  //   await $.pumpAndSettle();
-  //   await Future<void>.delayed(const Duration(seconds: 1));
+    final fileContent = utf8.encode('Hello from Patrol file upload test!');
+    final file = UploadFileData(
+      name: 'example_file.txt',
+      content: fileContent,
+      mimeType: 'text/plain',
+    );
 
-  //   expect($(#uploaded_file_name), findsOneWidget);
-  //   expect($('Uploaded: example_file.txt'), findsOneWidget);
-  //   await $.pumpAndSettle();
-  //   await Future<void>.delayed(const Duration(seconds: 2));
-  // });
+    final uploadFuture = $.native2.uploadFile(files: [file]);
+    await $.pumpAndSettle();
+    await Future<void>.delayed(const Duration(seconds: 1));
+
+    await $('Upload File').scrollTo().tap();
+
+    await $.pumpAndSettle();
+    await Future<void>.delayed(const Duration(seconds: 1));
+
+    await uploadFuture;
+    await $.pumpAndSettle();
+    await Future<void>.delayed(const Duration(seconds: 1));
+
+    expect($(#uploaded_file_name), findsOneWidget);
+    expect($('Uploaded: example_file.txt'), findsOneWidget);
+    await $.pumpAndSettle();
+    await Future<void>.delayed(const Duration(seconds: 2));
+  });
 
   patrol('get dialog message and accept', ($) async {
     await $.pumpWidgetAndSettle(const ExampleApp());
@@ -230,7 +246,6 @@ class ExampleApp extends StatefulWidget {
 }
 
 class _ExampleAppState extends State<ExampleApp> {
-  String? _uploadedFileName;
   String? _dialogResult;
   late final GoRouter _router;
   final _routerRefreshNotifier = ValueNotifier<int>(0);
@@ -238,15 +253,14 @@ class _ExampleAppState extends State<ExampleApp> {
   @override
   void initState() {
     super.initState();
+
     _router = GoRouter(
       initialLocation: '/',
       routes: [
         GoRoute(
           path: '/',
           builder: (context, state) => _HomePage(
-            uploadedFileName: _uploadedFileName,
             dialogResult: _dialogResult,
-            onUpload: _handleFileUpload,
             onShowAlert: _handleShowAlert,
             onShowConfirm: _handleShowConfirm,
           ),
@@ -263,13 +277,6 @@ class _ExampleAppState extends State<ExampleApp> {
 
   void _notifyRouterRefresh() {
     _routerRefreshNotifier.value++;
-  }
-
-  void _handleFileUpload() {
-    setState(() {
-      _uploadedFileName = 'example_file.txt';
-    });
-    _notifyRouterRefresh();
   }
 
   void _handleShowAlert() {
@@ -317,16 +324,12 @@ class _ExampleAppState extends State<ExampleApp> {
 
 class _HomePage extends StatelessWidget {
   const _HomePage({
-    required this.uploadedFileName,
     required this.dialogResult,
-    required this.onUpload,
     required this.onShowAlert,
     required this.onShowConfirm,
   });
 
-  final String? uploadedFileName;
   final String? dialogResult;
-  final VoidCallback onUpload;
   final VoidCallback onShowAlert;
   final VoidCallback onShowConfirm;
 
@@ -360,21 +363,8 @@ class _HomePage extends StatelessWidget {
                   border: OutlineInputBorder(),
                 ),
               ),
-              ElevatedButton.icon(
-                onPressed: onUpload,
-                icon: const Icon(Icons.upload_file),
-                label: const Text('Upload File'),
-              ),
-              if (uploadedFileName != null)
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8),
-                    child: Text(
-                      'Uploaded: $uploadedFileName',
-                      key: const Key('uploaded_file_name'),
-                    ),
-                  ),
-                ),
+              const Divider(),
+              const _FileUploadWidget(),
               const Divider(),
               Text('Dialogs', style: Theme.of(context).textTheme.titleMedium),
               ElevatedButton.icon(
@@ -406,6 +396,55 @@ class _HomePage extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _FileUploadWidget extends StatefulWidget {
+  const _FileUploadWidget();
+
+  @override
+  State<_FileUploadWidget> createState() => _FileUploadWidgetState();
+}
+
+class _FileUploadWidgetState extends State<_FileUploadWidget> {
+  String? _uploadedFileName;
+
+  Future<void> _handleFileUpload() async {
+    // Use file_picker to show the browser's file chooser
+    // Playwright will intercept this and provide the file
+    final result = await FilePicker.platform.pickFiles();
+
+    if (result != null) {
+      setState(() {
+        _uploadedFileName = result.files.first.name;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      spacing: 12,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text('File Upload', style: Theme.of(context).textTheme.titleMedium),
+        ElevatedButton.icon(
+          onPressed: _handleFileUpload,
+          icon: const Icon(Icons.upload_file),
+          label: const Text('Upload File'),
+        ),
+        if (_uploadedFileName != null)
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(8),
+              child: Text(
+                'Uploaded: $_uploadedFileName',
+                key: const Key('uploaded_file_name'),
+              ),
+            ),
+          ),
+      ],
     );
   }
 }

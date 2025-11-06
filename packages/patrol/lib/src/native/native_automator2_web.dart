@@ -1,4 +1,5 @@
 import 'dart:collection';
+import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/src/native/contracts/contracts.dart';
@@ -148,13 +149,10 @@ class NativeAutomator2 {
     );
   }
 
-  Future<void> uploadFile({
-    required WebSelector selector,
-    required List<String> filePaths,
-  }) async {
+  Future<void> uploadFile({required List<UploadFileData> files}) async {
     await callPlaywright(
       'uploadFile',
-      {'selector': selector.toJson(), 'filePaths': filePaths},
+      {'files': files.map((f) => f.toJson()).toList()},
       logger: _config.logger,
       patrolLog: _patrolLog,
     );
@@ -251,5 +249,31 @@ class NativeAutomator2 {
       logger: _config.logger,
       patrolLog: _patrolLog,
     );
+  }
+}
+
+/// Represents a file to be uploaded in web tests.
+class UploadFileData {
+  UploadFileData({
+    required this.name,
+    required this.content,
+    this.mimeType = 'application/octet-stream',
+  });
+
+  /// The name of the file (e.g., 'example.txt')
+  final String name;
+
+  /// The file content as bytes
+  final List<int> content;
+
+  /// The MIME type of the file (e.g., 'text/plain', 'image/png')
+  final String mimeType;
+
+  Map<String, dynamic> toJson() {
+    return {
+      'name': name,
+      'mimeType': mimeType,
+      'base64Data': base64Encode(content),
+    };
   }
 }
