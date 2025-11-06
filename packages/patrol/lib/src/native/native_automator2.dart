@@ -1120,13 +1120,17 @@ class NativeAutomator2 {
 
   // WEB:
 
-  Future<void> tapWeb({required WebSelector selector}) async {
+  Future<void> tapWeb({
+    required WebSelector selector,
+    WebSelector? iframeSelector,
+  }) async {
     throw UnimplementedError('tap is not implemented for web');
   }
 
   Future<void> enterTextWeb({
     required WebSelector selector,
     required String text,
+    WebSelector? iframeSelector,
   }) async {
     throw UnimplementedError('enterText is not implemented for web');
   }
@@ -1167,7 +1171,10 @@ class NativeAutomator2 {
     throw UnimplementedError('pressKeyCombo is not implemented for web');
   }
 
-  Future<void> scrollToWeb({required WebSelector selector}) async {
+  Future<void> scrollToWeb({
+    required WebSelector selector,
+    WebSelector? iframeSelector,
+  }) async {
     throw UnimplementedError('scrollTo is not implemented for web');
   }
 

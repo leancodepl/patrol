@@ -23,15 +23,28 @@ export type GrantPermissionsRequest = PatrolNativeRequestBase<
 >
 export type EnableDarkModeRequest = PatrolNativeRequestBase<"enableDarkMode", {}>
 export type DisableDarkModeRequest = PatrolNativeRequestBase<"disableDarkMode", {}>
-export type TapRequest = PatrolNativeRequestBase<"tap", WebSelector>
+export type TapRequest = PatrolNativeRequestBase<
+  "tap",
+  {
+    selector: WebSelector
+    iframeSelector: WebSelector | null
+  }
+>
 export type EnterTextRequest = PatrolNativeRequestBase<
   "enterText",
   {
     selector: WebSelector
     text: string
+    iframeSelector: WebSelector | null
   }
 >
-export type ScrollToRequest = PatrolNativeRequestBase<"scrollTo", WebSelector>
+export type ScrollToRequest = PatrolNativeRequestBase<
+  "scrollTo",
+  {
+    selector: WebSelector
+    iframeSelector: WebSelector | null
+  }
+>
 export type ClearPermissionsRequest = PatrolNativeRequestBase<"clearPermissions", {}>
 export type AddCookieRequest = PatrolNativeRequestBase<
   "addCookie",

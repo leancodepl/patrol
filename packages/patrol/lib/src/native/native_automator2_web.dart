@@ -34,10 +34,16 @@ class NativeAutomator2 {
     );
   }
 
-  Future<void> tapWeb({required WebSelector selector}) async {
+  Future<void> tapWeb({
+    required WebSelector selector,
+    WebSelector? iframeSelector,
+  }) async {
     await callPlaywright(
       'tap',
-      selector.toJson(),
+      {
+        'selector': selector.toJson(),
+        'iframeSelector': iframeSelector?.toJson(),
+      },
       logger: _config.logger,
       patrolLog: _patrolLog,
     );
@@ -46,19 +52,30 @@ class NativeAutomator2 {
   Future<void> enterTextWeb({
     required WebSelector selector,
     required String text,
+    WebSelector? iframeSelector,
   }) async {
     await callPlaywright(
       'enterText',
-      {'selector': selector.toJson(), 'text': text},
+      {
+        'selector': selector.toJson(),
+        'text': text,
+        'iframeSelector': iframeSelector?.toJson(),
+      },
       logger: _config.logger,
       patrolLog: _patrolLog,
     );
   }
 
-  Future<void> scrollTo({required WebSelector selector}) async {
+  Future<void> scrollToWeb({
+    required WebSelector selector,
+    WebSelector? iframeSelector,
+  }) async {
     await callPlaywright(
       'scrollTo',
-      selector.toJson(),
+      {
+        'selector': selector.toJson(),
+        'iframeSelector': iframeSelector?.toJson(),
+      },
       logger: _config.logger,
       patrolLog: _patrolLog,
     );
