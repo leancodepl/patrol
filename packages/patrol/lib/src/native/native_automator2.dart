@@ -1165,4 +1165,8 @@ class NativeAutomator2 {
   Future<String> waitForDownload({Duration? timeout}) async {
     throw UnimplementedError('waitForDownload is not implemented for web');
   }
+
+  Future<void> resizeWindow({required int width, required int height}) async {
+    throw UnimplementedError('resizeWindow is not implemented for web');
+  }
 }
