@@ -1,5 +1,5 @@
 import { Page } from "playwright"
-import { PressKeyComboRequest } from "../../contracts"
+import { PressKeyComboRequest } from "../contracts"
 
 export async function pressKeyCombo(page: Page, params: PressKeyComboRequest["params"]) {
   const combo = params.keys.join("+")
