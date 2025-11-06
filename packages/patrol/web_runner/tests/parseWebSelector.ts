@@ -7,7 +7,7 @@ import { WebSelector } from "./contracts"
  */
 export function parseWebSelector(page: Page, selector: WebSelector): Locator {
   const selectorMappings: Array<{
-    value: string | undefined
+    value: string | null
     getter: (value: string) => Locator
   }> = [
     { value: selector.testId, getter: val => page.getByTestId(val) },
@@ -21,7 +21,7 @@ export function parseWebSelector(page: Page, selector: WebSelector): Locator {
   ]
 
   const locators = selectorMappings
-    .filter(mapping => mapping.value !== undefined)
+    .filter(mapping => mapping.value !== null)
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     .map(mapping => mapping.getter(mapping.value!))
 
