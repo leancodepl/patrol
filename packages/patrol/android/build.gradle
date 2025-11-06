@@ -58,7 +58,7 @@ android {
 
     packaging {
         resources {
-            excludes += ["META-INF/INDEX.LIST", "META-INF/DEPENDENCIES", "META-INF/*.kotlin_module"]
+            excludes += ["META-INF/INDEX.LIST", "META-INF/*.properties"]
         }
     }
 
