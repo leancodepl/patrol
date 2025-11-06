@@ -1,5 +1,3 @@
-// ignore_for_file: type=lint
-
 /// Schema supports:
 // - enum definition
 // - late type name - required field definition
@@ -34,7 +32,7 @@ class RunDartTestResponse {
   String? details;
 }
 
-abstract class PatrolAppService<AndroidClient, DartServer> {
+abstract class PatrolAppService<IOSClient, AndroidClient, DartServer> {
   ListDartTestsResponse listDartTests();
   RunDartTestResponse runDartTest(RunDartTestRequest request);
 }
@@ -53,7 +51,7 @@ class OpenUrlRequest {
   late String url;
 }
 
-class Selector {
+class AndroidSelector {
   String? className;
   bool? isCheckable;
   bool? isChecked;
@@ -75,20 +73,62 @@ class Selector {
   int? instance;
 }
 
+class IOSSelector {
+  String? value;
+  int? instance;
+  IOSElementType? elementType;
+  String? identifier;
+  String? text;
+  String? textStartsWith;
+  String? textContains;
+  String? label;
+  String? labelStartsWith;
+  String? labelContains;
+  String? title;
+  String? titleStartsWith;
+  String? titleContains;
+  bool? hasFocus;
+  bool? isEnabled;
+  bool? isSelected;
+  String? placeholderValue;
+  String? placeholderValueStartsWith;
+  String? placeholderValueContains;
+}
+
+class Selector {
+  String? text;
+  String? textStartsWith;
+  String? textContains;
+  String? className;
+  String? contentDescription;
+  String? contentDescriptionStartsWith;
+  String? contentDescriptionContains;
+  String? resourceId; // identifier on ios
+  int? instance;
+  bool? enabled;
+  bool? focused;
+  String? pkg;
+}
+
 class GetNativeViewsRequest {
-  late Selector selector;
+  Selector? selector;
+  AndroidSelector? androidSelector;
+  IOSSelector? iosSelector;
   late String appId;
 }
 
 class GetNativeUITreeRequest {
+  List<String>? iosInstalledApps;
   late bool useNativeViewHierarchy;
 }
 
 class GetNativeUITreeRespone {
+  late List<IOSNativeView> iOSroots;
+  late List<AndroidNativeView> androidRoots;
   late List<NativeView> roots;
 }
 
-class NativeView {
+class AndroidNativeView {
   String? resourceName;
   String? text;
   String? className;
@@ -106,7 +146,24 @@ class NativeView {
   late bool isSelected;
   late Rectangle visibleBounds;
   late Point2D visibleCenter;
-  late List<NativeView> children;
+  late List<AndroidNativeView> children;
+}
+
+class IOSNativeView {
+  late List<IOSNativeView> children;
+  late IOSElementType elementType;
+  late String identifier;
+  late String label;
+  late String title;
+  late bool hasFocus;
+  late bool isEnabled;
+  late bool isSelected;
+  late Rectangle frame;
+  late String? accessibilityLabel;
+  String? placeholderValue;
+  String? value;
+  //TODO we can get other properties from XCUIElement in next request
+  // exists, isHittable,normalizedSliderPosition, accessibilityLabel, accessbilityHint, accessibilityValue, isAccessibilityElement etc..;
 }
 
 class Rectangle {
@@ -121,12 +178,29 @@ class Point2D {
   late double y;
 }
 
+class NativeView {
+  String? className; // element type on ios, but requires some mapping
+  String? text; // label on ios,
+  String? contentDescription; // accessibilityLabel on ios
+  late bool focused; // hasFocus on ios
+  late bool enabled; // isEnabled on ios
+  int? childCount; // always empty on ios
+  String? resourceName; // identifier on ios
+  String?
+  applicationPackage; // bundleId on ios, but not returned from the automator currently
+  late List<NativeView> children;
+}
+
 class GetNativeViewsResponse {
   late List<NativeView> nativeViews;
+  late List<IOSNativeView> iosNativeViews;
+  late List<AndroidNativeView> androidNativeViews;
 }
 
 class TapRequest {
-  late Selector selector;
+  Selector? selector;
+  AndroidSelector? androidSelector;
+  IOSSelector? iosSelector;
   late String appId;
   int? timeoutMillis;
   int? delayBetweenTapsMillis;
@@ -145,6 +219,8 @@ class EnterTextRequest {
   late String appId;
   int? index;
   Selector? selector;
+  AndroidSelector? androidSelector;
+  IOSSelector? iosSelector;
   late KeyboardBehavior keyboardBehavior;
   int? timeoutMillis;
   double? dx;
@@ -161,7 +237,9 @@ class SwipeRequest {
 }
 
 class WaitUntilVisibleRequest {
-  late Selector selector;
+  Selector? selector;
+  AndroidSelector? androidSelector;
+  IOSSelector? iosSelector;
   late String appId;
   int? timeoutMillis;
 }
@@ -186,6 +264,8 @@ class GetNotificationsRequest {}
 class TapOnNotificationRequest {
   int? index;
   Selector? selector;
+  AndroidSelector? androidSelector;
+  IOSSelector? iosSelector;
   int? timeoutMillis;
 }
 
@@ -225,26 +305,37 @@ class GetOsVersionResponse {
 
 class TakeCameraPhotoRequest {
   late Selector? shutterButtonSelector;
+  late AndroidSelector? androidShutterButtonSelector;
+  late IOSSelector? iosShutterButtonSelector;
   late Selector? doneButtonSelector;
+  late AndroidSelector? androidDoneButtonSelector;
   late int? timeoutMillis;
+  late IOSSelector? iosDoneButtonSelector;
   late String appId;
+  late bool isNative2;
 }
 
 class PickImageFromGalleryRequest {
   late Selector? imageSelector;
+  late AndroidSelector? androidImageSelector;
+  late IOSSelector? iosImageSelector;
   late int? imageIndex;
   late int? timeoutMillis;
   late String appId;
+  late bool isNative2;
 }
 
 class PickMultipleImagesFromGalleryRequest {
   late Selector? imageSelector;
+  late AndroidSelector? androidImageSelector;
+  late IOSSelector? iosImageSelector;
   late List<int> imageIndexes;
   late int? timeoutMillis;
   late String appId;
+  late bool isNative2;
 }
 
-abstract class NativeAutomator<AndroidServer, DartClient> {
+abstract class NativeAutomator<IOSServer, AndroidServer, DartClient> {
   void initialize();
   void configure(ConfigureRequest request);
 
@@ -288,6 +379,7 @@ abstract class NativeAutomator<AndroidServer, DartClient> {
   // notifications
   void openNotifications();
   void closeNotifications();
+  void closeHeadsUpNotification();
   GetNotificationsResponse getNotifications(GetNotificationsRequest request);
   void tapOnNotification(TapOnNotificationRequest request);
 
@@ -306,6 +398,7 @@ abstract class NativeAutomator<AndroidServer, DartClient> {
   );
 
   // other
+  void debug();
   void setMockLocation(SetMockLocationRequest request);
 
   // TODO(bartekpacia): Move this RPC into a new PatrolNativeTestService service because it doesn't fit here
@@ -314,4 +407,90 @@ abstract class NativeAutomator<AndroidServer, DartClient> {
   IsVirtualDeviceResponse isVirtualDevice();
 
   GetOsVersionResponse getOsVersion();
+}
+
+enum IOSElementType {
+  any,
+  other,
+  application,
+  group,
+  window,
+  sheet,
+  drawer,
+  alert,
+  dialog,
+  button,
+  radioButton,
+  radioGroup,
+  checkBox,
+  disclosureTriangle,
+  popUpButton,
+  comboBox,
+  menuButton,
+  toolbarButton,
+  popover,
+  keyboard,
+  key,
+  navigationBar,
+  tabBar,
+  tabGroup,
+  toolbar,
+  statusBar,
+  table,
+  tableRow,
+  tableColumn,
+  outline,
+  outlineRow,
+  browser,
+  collectionView,
+  slider,
+  pageIndicator,
+  progressIndicator,
+  activityIndicator,
+  segmentedControl,
+  picker,
+  pickerWheel,
+  switch_,
+  toggle,
+  link,
+  image,
+  icon,
+  searchField,
+  scrollView,
+  scrollBar,
+  staticText,
+  textField,
+  secureTextField,
+  datePicker,
+  textView,
+  menu,
+  menuItem,
+  menuBar,
+  menuBarItem,
+  map,
+  webView,
+  incrementArrow,
+  decrementArrow,
+  timeline,
+  ratingIndicator,
+  valueIndicator,
+  splitGroup,
+  splitter,
+  relevanceIndicator,
+  colorWell,
+  helpTag,
+  matte,
+  dockItem,
+  ruler,
+  rulerMarker,
+  grid,
+  levelIndicator,
+  cell,
+  layoutArea,
+  layoutItem,
+  handle,
+  stepper,
+  tab,
+  touchBar,
+  statusItem,
 }

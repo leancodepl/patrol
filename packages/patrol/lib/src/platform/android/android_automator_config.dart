@@ -1,45 +1,25 @@
 import 'package:patrol/src/platform/android/android_automator.dart';
-import 'package:patrol/src/platform/android/contracts/contracts.dart';
-
-void _defaultPrintLogger(String message) {
-  // TODO: Use a logger instead of print
-  // ignore: avoid_print
-  print('Patrol (native): $message');
-}
+import 'package:patrol/src/platform/contracts/contracts.dart';
+import 'package:patrol/src/platform/mobile/mobile_automator_config.dart';
 
 /// Configuration for [AndroidAutomator].
-class AndroidAutomatorConfig {
+class AndroidAutomatorConfig extends MobileAutomatorConfig {
   /// Creates a new [AndroidAutomatorConfig].
   const AndroidAutomatorConfig({
-    this.host = const String.fromEnvironment(
-      'PATROL_HOST',
-      defaultValue: 'localhost',
-    ),
-    this.port = const String.fromEnvironment(
-      'PATROL_TEST_SERVER_PORT',
-      defaultValue: '8081',
-    ),
-    this.packageName = const String.fromEnvironment('PATROL_APP_PACKAGE_NAME'),
-    this.appName = const String.fromEnvironment('PATROL_ANDROID_APP_NAME'),
-    this.connectionTimeout = const Duration(seconds: 60),
-    this.findTimeout = const Duration(seconds: 10),
-    this.keyboardBehavior = KeyboardBehavior.showAndDismiss,
-    this.logger = _defaultPrintLogger,
-  });
-
-  /// Host on which Patrol server instrumentation is running.
-  final String host;
-
-  /// Port on [host] on which Patrol server instrumentation is running.
-  final String port;
-
-  /// Time after which the connection with the native automator will fail.
-  ///
-  /// It must be longer than [findTimeout].
-  final Duration connectionTimeout;
-
-  /// Time to wait for native views to appear.
-  final Duration findTimeout;
+    String? packageName,
+    String? appName,
+    KeyboardBehavior? keyboardBehavior,
+    super.host,
+    super.port,
+    super.connectionTimeout,
+    super.findTimeout,
+    super.logger,
+  }) : packageName =
+           packageName ??
+           const String.fromEnvironment('PATROL_APP_PACKAGE_NAME'),
+       appName =
+           appName ?? const String.fromEnvironment('PATROL_ANDROID_APP_NAME'),
+       keyboardBehavior = keyboardBehavior ?? KeyboardBehavior.showAndDismiss;
 
   /// How the keyboard should behave when entering text.
   ///
@@ -53,9 +33,6 @@ class AndroidAutomatorConfig {
 
   /// Name of the application under test on Android.
   final String appName;
-
-  /// Called when a native action is performed.
-  final void Function(String) logger;
 
   /// Creates a copy of this config but with the given fields replaced with the
   /// new values.

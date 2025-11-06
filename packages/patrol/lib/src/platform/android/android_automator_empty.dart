@@ -7,7 +7,7 @@ import 'package:patrol/src/platform/android/android_automator_config.dart';
 /// This class provides a default implementation for platforms where the native Android automator
 /// is not available or not supported. Any attempt to call its methods will result in an
 /// [UnimplementedError].
-class AndroidAutomator extends android_automator.AndroidAutomator {
+class AndroidAutomator implements android_automator.AndroidAutomator {
   /// Creates a new [AndroidAutomator] stub.
   /// [config] is required but not used for any real operations,
   /// we need to stay consistant with native_android_automator.dart

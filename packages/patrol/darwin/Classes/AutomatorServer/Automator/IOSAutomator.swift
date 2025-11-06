@@ -81,32 +81,6 @@
       try runAction("tapping on \(view)") {
         let app = try self.getApp(withBundleId: bundleId)
 
-        // TODO: We should consider more view properties. See #1554
-        let query = app.descendants(matching: .any).matching(selector.toNSPredicate())
-
-        Logger.shared.i("waiting for existence of \(view)")
-        guard
-          let element = self.waitFor(
-            query: query, index: selector.instance ?? 0, timeout: timeout ?? self.timeout)
-        else {
-          throw PatrolError.viewNotExists(view)
-        }
-
-        element.forceTap()
-      }
-    }
-
-    func tap(
-      on selector: IOSSelector,
-      inApp bundleId: String,
-      withTimeout timeout: TimeInterval?
-    ) throws {
-      var view = createLogMessage(element: "view", from: selector)
-      view += " in app \(bundleId)"
-
-      try runAction("tapping on \(view)") {
-        let app = try self.getApp(withBundleId: bundleId)
-
         let query = app.descendants(matching: .any).matching(selector.toNSPredicate())
 
         Logger.shared.i("waiting for existence of \(view)")
@@ -123,30 +97,6 @@
 
     func doubleTap(
       on selector: Selector,
-      inApp bundleId: String,
-      withTimeout timeout: TimeInterval?
-    ) throws {
-      var view = createLogMessage(element: "view", from: selector)
-      view += " in app \(bundleId)"
-
-      try runAction("double tapping on \(view)") {
-        let app = try self.getApp(withBundleId: bundleId)
-        let query = app.descendants(matching: .any).matching(selector.toNSPredicate())
-
-        Logger.shared.i("waiting for existence of \(view)")
-        guard
-          let element = self.waitFor(
-            query: query, index: selector.instance ?? 0, timeout: timeout ?? self.timeout)
-        else {
-          throw PatrolError.viewNotExists(view)
-        }
-
-        element.forceTap()
-      }
-    }
-
-    func doubleTap(
-      on selector: IOSSelector,
       inApp bundleId: String,
       withTimeout timeout: TimeInterval?
     ) throws {
@@ -203,7 +153,6 @@
         // See:
         // * https://developer.apple.com/documentation/xctest/xcuielementtype/xcuielementtypetextfield
         // * https://developer.apple.com/documentation/xctest/xcuielementtype/xcuielementtypesecuretextfield
-        // TODO: We should consider more view properties. See #1554
         let contentPredicate = selector.toTextFieldNSPredicate()
         let textFieldPredicate = NSPredicate(format: "elementType == 49")
         let secureTextFieldPredicate = NSPredicate(format: "elementType == 50")
@@ -348,26 +297,6 @@
       }
     }
 
-    func waitUntilVisible(
-      on selector: IOSSelector,
-      inApp bundleId: String,
-      withTimeout timeout: TimeInterval?
-    ) throws {
-      let view = createLogMessage(element: "view", from: selector)
-      try runAction(
-        "waiting until \(view) in app \(bundleId) becomes visible"
-      ) {
-        let app = try self.getApp(withBundleId: bundleId)
-        let query = app.descendants(matching: .any).containing(selector.toNSPredicate())
-        guard
-          let element = self.waitFor(
-            query: query, index: selector.instance ?? 0, timeout: timeout ?? self.timeout)
-        else {
-          throw PatrolError.viewNotExists(view)
-        }
-      }
-    }
-
     // MARK: Volume settings
     func pressVolumeUp() throws {
       #if targetEnvironment(simulator)
@@ -456,18 +385,6 @@
           self.preferences.descendants(matching: .any)[displayBrightness].firstMatch.tap()
           self.preferences.descendants(matching: .any)[light].firstMatch.tap()
         #endif
-      }
-    }
-
-    func enableLocation() throws {
-      try runAction("enableLocation") {
-        throw PatrolError.methodNotImplemented("enableLocation")
-      }
-    }
-
-    func disableLocation() throws {
-      try runAction("disableLocation") {
-        throw PatrolError.methodNotImplemented("disableLocation")
       }
     }
 
@@ -613,39 +530,11 @@
       }
     }
 
-    func getNativeViews(
-      on selector: IOSSelector,
-      inApp bundleId: String
-    ) throws -> [IOSNativeView] {
-      let view = createLogMessage(element: "views", from: selector)
-      return try runAction("getting native \(view)") {
-        let app = try self.getApp(withBundleId: bundleId)
-
-        let query = app.descendants(matching: .any).matching(selector.toNSPredicate())
-        let elements = query.allElementsBoundByIndex
-
-        let views = elements.map { xcuielement in
-          return IOSNativeView.fromXCUIElement(xcuielement, bundleId)
-        }
-
-        return views
-      }
-    }
-
     func getUITreeRoots(installedApps: [String]) throws -> [NativeView] {
       try runAction("getting ui tree roots") {
         let foregroundApp = self.getForegroundApp(installedApps: installedApps)
         let snapshot = try foregroundApp.snapshot()
         return [NativeView.fromXCUIElementSnapshot(snapshot, foregroundApp.identifier)]
-      }
-    }
-
-    func getUITreeRootsV2(installedApps: [String]) throws -> GetNativeUITreeRespone {
-      try runAction("getting ui tree roots") {
-        let foregroundApp = self.getForegroundApp(installedApps: installedApps)
-        let snapshot = try foregroundApp.snapshot()
-        let root = IOSNativeView.fromXCUIElementSnapshot(snapshot, foregroundApp.identifier)
-        return GetNativeUITreeRespone(iOSroots: [root], androidRoots: [], roots: [])
       }
     }
 
@@ -1245,43 +1134,12 @@
   extension NativeView {
     static func fromXCUIElement(_ xcuielement: XCUIElement, _ bundleId: String) -> NativeView {
       return NativeView(
-        className: getElementTypeName(elementType: xcuielement.elementType),
-        text: xcuielement.label,
-        contentDescription: xcuielement.accessibilityLabel,
-        focused: xcuielement.hasFocus,
-        enabled: xcuielement.isEnabled,
-        resourceName: xcuielement.identifier,
-        applicationPackage: bundleId,
         children: xcuielement.children(matching: .any).allElementsBoundByIndex.map { child in
           return NativeView.fromXCUIElement(child, bundleId)
-        })
-    }
-
-    static func fromXCUIElementSnapshot(_ xcuielement: XCUIElementSnapshot, _ bundleId: String)
-      -> NativeView
-    {
-      return NativeView(
-        className: getElementTypeName(elementType: xcuielement.elementType),
-        text: xcuielement.label,
-        contentDescription: "",  // TODO: Separate request
-        focused: xcuielement.hasFocus,
-        enabled: xcuielement.isEnabled,
-        resourceName: xcuielement.identifier,
-        applicationPackage: bundleId,
-        children: xcuielement.children.map { child in
-          return NativeView.fromXCUIElementSnapshot(child, bundleId)
-        })
-    }
-  }
-
-  extension IOSNativeView {
-    static func fromXCUIElement(_ xcuielement: XCUIElement, _ bundleId: String) -> IOSNativeView {
-      return IOSNativeView(
-        children: xcuielement.children(matching: .any).allElementsBoundByIndex.map { child in
-          return IOSNativeView.fromXCUIElement(child, bundleId)
         },
         elementType: getIOSElementType(elementType: xcuielement.elementType),
         identifier: xcuielement.identifier,
+        accessibilityLabel: xcuielement.accessibilityLabel,
         label: xcuielement.label,
         title: xcuielement.title,
         hasFocus: xcuielement.hasFocus,
@@ -1297,18 +1155,17 @@
         value: xcuielement.value as? String
       )
     }
-  }
 
-  extension IOSNativeView {
     static func fromXCUIElementSnapshot(_ xcuielement: XCUIElementSnapshot, _ bundleId: String)
-      -> IOSNativeView
+      -> NativeView
     {
-      return IOSNativeView(
+      return NativeView(
         children: xcuielement.children.map { child in
-          return IOSNativeView.fromXCUIElementSnapshot(child, bundleId)
+          return NativeView.fromXCUIElementSnapshot(child, bundleId)
         },
         elementType: getIOSElementType(elementType: xcuielement.elementType),
         identifier: xcuielement.identifier,
+        accessibilityLabel: xcuielement.accessibilityLabel,
         label: xcuielement.label,
         title: xcuielement.title,
         hasFocus: xcuielement.hasFocus,

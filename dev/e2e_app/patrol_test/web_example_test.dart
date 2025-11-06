@@ -15,19 +15,19 @@ void main() {
   patrol('dark mode', ($) async {
     await $.pumpWidgetAndSettle(const ExampleApp());
 
-    await $.native2.enableDarkMode();
+    await $.platform.web.enableDarkMode();
     await $.pumpAndSettle();
     await Future<void>.delayed(const Duration(seconds: 1));
 
     expect($('Dark Mode Active'), findsOneWidget);
 
-    await $.native2.disableDarkMode();
+    await $.platform.web.disableDarkMode();
     await $.pumpAndSettle();
     await Future<void>.delayed(const Duration(seconds: 1));
 
     expect($('Light Mode Active'), findsOneWidget);
 
-    await $.native2.enableDarkMode();
+    await $.platform.web.enableDarkMode();
     await $.pumpAndSettle();
     await Future<void>.delayed(const Duration(seconds: 1));
 
@@ -41,34 +41,34 @@ void main() {
     await $.pumpAndSettle();
     await Future<void>.delayed(const Duration(seconds: 1));
 
-    await $.native2.pressKey(key: 'a');
-    await $.native2.pressKey(key: 'b');
-    await $.native2.pressKeyCombo(keys: ['Control', 'a']);
-    await $.native2.pressKeyCombo(keys: ['Control', 'c']);
-    await $.native2.pressKeyCombo(keys: ['Control', 'v']); // ab
-    await $.native2.pressKeyCombo(keys: ['Control', 'v']); // abab
-    await $.native2.pressKeyCombo(keys: ['Control', 'a']);
-    await $.native2.pressKeyCombo(keys: ['Control', 'c']);
+    await $.platform.web.pressKey(key: 'a');
+    await $.platform.web.pressKey(key: 'b');
+    await $.platform.web.pressKeyCombo(keys: ['Control', 'a']);
+    await $.platform.web.pressKeyCombo(keys: ['Control', 'c']);
+    await $.platform.web.pressKeyCombo(keys: ['Control', 'v']); // ab
+    await $.platform.web.pressKeyCombo(keys: ['Control', 'v']); // abab
+    await $.platform.web.pressKeyCombo(keys: ['Control', 'a']);
+    await $.platform.web.pressKeyCombo(keys: ['Control', 'c']);
 
     await $.pumpAndSettle();
     await Future<void>.delayed(const Duration(seconds: 1));
 
-    await $.native2.grantPermissions(
+    await $.platform.web.grantPermissions(
       permissions: ['clipboard-read', 'clipboard-write'],
     );
     await $.pumpAndSettle();
     await Future<void>.delayed(const Duration(seconds: 1));
 
-    expect(await $.native2.getClipboard(), 'abab');
-    await $.native2.setClipboard(text: 'test');
+    expect(await $.platform.web.getClipboard(), 'abab');
+    await $.platform.web.setClipboard(text: 'test');
     await $.pumpAndSettle();
     await Future<void>.delayed(const Duration(seconds: 1));
 
-    expect(await $.native2.getClipboard(), 'test');
+    expect(await $.platform.web.getClipboard(), 'test');
     await $.pumpAndSettle();
     await Future<void>.delayed(const Duration(seconds: 1));
 
-    await $.native2.clearPermissions();
+    await $.platform.web.clearPermissions();
     await $.pumpAndSettle();
     await Future<void>.delayed(const Duration(seconds: 1));
   });
@@ -84,13 +84,13 @@ void main() {
 
     expect($('This is Page 1'), findsOneWidget);
 
-    await $.native2.goBack();
+    await $.platform.web.goBack();
     await $.pumpAndSettle();
     await Future<void>.delayed(const Duration(seconds: 2));
 
     expect($('This is the home page'), findsOneWidget);
 
-    await $.native2.goForward();
+    await $.platform.web.goForward();
     await $.pumpAndSettle();
     await Future<void>.delayed(const Duration(seconds: 2));
 
@@ -100,7 +100,7 @@ void main() {
   patrol('cookies', ($) async {
     await $.pumpWidgetAndSettle(const ExampleApp());
 
-    await $.native2.addCookie(
+    await $.platform.web.addCookie(
       name: 'test_cookie',
       value: 'cookie_value',
       url: 'http://localhost:8080',
@@ -108,7 +108,7 @@ void main() {
     await $.pumpAndSettle();
     await Future<void>.delayed(const Duration(seconds: 1));
 
-    var cookies = await $.native2.getCookies();
+    var cookies = await $.platform.web.getCookies();
     var testCookie = cookies.firstWhere(
       (c) => c['name'] == 'test_cookie',
       orElse: LinkedHashMap<Object?, Object?>.new,
@@ -117,11 +117,11 @@ void main() {
     await $.pumpAndSettle();
     await Future<void>.delayed(const Duration(seconds: 1));
 
-    await $.native2.clearCookies();
+    await $.platform.web.clearCookies();
     await $.pumpAndSettle();
     await Future<void>.delayed(const Duration(seconds: 1));
 
-    cookies = await $.native2.getCookies();
+    cookies = await $.platform.web.getCookies();
     testCookie = cookies.firstWhere(
       (c) => c['name'] == 'test_cookie',
       orElse: LinkedHashMap<Object?, Object?>.new,
@@ -143,7 +143,7 @@ void main() {
       mimeType: 'text/plain',
     );
 
-    final uploadFuture = $.native2.uploadFile(files: [file]);
+    final uploadFuture = $.platform.web.uploadFile(files: [file]);
     await $.pumpAndSettle();
     await Future<void>.delayed(const Duration(seconds: 1));
 
@@ -165,7 +165,7 @@ void main() {
   patrol('accept alert dialog', ($) async {
     await $.pumpWidgetAndSettle(const ExampleApp());
 
-    final message = $.native2.acceptNextDialog();
+    final message = $.platform.web.acceptNextDialog();
     await $('Show Alert').scrollTo().tap();
     await $.pumpAndSettle();
     await Future<void>.delayed(const Duration(seconds: 1));
@@ -180,7 +180,7 @@ void main() {
   patrol('accept confirm dialog', ($) async {
     await $.pumpWidgetAndSettle(const ExampleApp());
 
-    final message = $.native2.acceptNextDialog();
+    final message = $.platform.web.acceptNextDialog();
     await $('Show Confirm').scrollTo().tap();
     await $.pumpAndSettle();
     await Future<void>.delayed(const Duration(seconds: 1));
@@ -195,7 +195,7 @@ void main() {
   patrol('dismiss confirm dialog', ($) async {
     await $.pumpWidgetAndSettle(const ExampleApp());
 
-    final message = $.native2.dismissNextDialog();
+    final message = $.platform.web.dismissNextDialog();
     await $('Show Confirm').scrollTo().tap();
     await $.pumpAndSettle();
     await Future<void>.delayed(const Duration(seconds: 1));
@@ -220,25 +220,22 @@ void main() {
     final inputSelector = WebSelector(cssOrXpath: '#test-input');
     final buttonSelector = WebSelector(cssOrXpath: '#submit-button');
 
-    await $.native2.scrollToWeb(
-      selector: inputSelector,
+    await $.platform.web.scrollTo(
+      inputSelector,
       iframeSelector: iframeSelector,
     );
     await $.pumpAndSettle();
     await Future<void>.delayed(const Duration(seconds: 1));
 
-    await $.native2.enterTextWeb(
-      selector: inputSelector,
+    await $.platform.web.enterText(
+      inputSelector,
       text: 'Hello from Patrol!',
       iframeSelector: iframeSelector,
     );
     await $.pumpAndSettle();
     await Future<void>.delayed(const Duration(seconds: 1));
 
-    await $.native2.tapWeb(
-      selector: buttonSelector,
-      iframeSelector: iframeSelector,
-    );
+    await $.platform.web.tap(buttonSelector, iframeSelector: iframeSelector);
     await $.pumpAndSettle();
     await Future<void>.delayed(const Duration(seconds: 2));
   });
@@ -246,15 +243,15 @@ void main() {
   patrol('resize window', ($) async {
     await $.pumpWidgetAndSettle(const ExampleApp());
 
-    await $.native2.resizeWindow(width: 800, height: 600);
+    await $.platform.web.resizeWindow(width: 800, height: 600);
     await $.pumpAndSettle();
     await Future<void>.delayed(const Duration(seconds: 2));
 
-    await $.native2.resizeWindow(width: 1920, height: 1080);
+    await $.platform.web.resizeWindow(width: 1920, height: 1080);
     await $.pumpAndSettle();
     await Future<void>.delayed(const Duration(seconds: 2));
 
-    await $.native2.resizeWindow(width: 1280, height: 720);
+    await $.platform.web.resizeWindow(width: 1280, height: 720);
     await $.pumpAndSettle();
     await Future<void>.delayed(const Duration(seconds: 1));
   });
@@ -262,7 +259,7 @@ void main() {
   patrol('verify file downloads', ($) async {
     await $.pumpWidgetAndSettle(const ExampleApp());
 
-    var downloads = await $.native2.verifyFileDownloads();
+    var downloads = await $.platform.web.verifyFileDownloads();
     expect(downloads, isEmpty);
 
     await $('Download File').tap();
@@ -270,7 +267,7 @@ void main() {
 
     await Future<void>.delayed(const Duration(seconds: 1));
 
-    downloads = await $.native2.verifyFileDownloads();
+    downloads = await $.platform.web.verifyFileDownloads();
     expect(downloads, hasLength(1));
     expect(downloads.first, 'example.txt');
 
@@ -281,7 +278,7 @@ void main() {
   patrol('verify file downloads - check if list is empty', ($) async {
     await $.pumpWidgetAndSettle(const ExampleApp());
 
-    final downloads = await $.native2.verifyFileDownloads();
+    final downloads = await $.platform.web.verifyFileDownloads();
     expect(downloads, isEmpty);
   });
 }

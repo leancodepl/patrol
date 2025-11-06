@@ -2,7 +2,7 @@
 
   import Foundation
 
-  final class AutomatorServer: NativeAutomatorServer {
+  final class AutomatorServer: MobileAutomatorServer, IosAutomatorServer {
 
     private let automator: Automator
 
@@ -12,8 +12,6 @@
       self.automator = automator
       self.onAppReady = onAppReady
     }
-
-    func initialize() throws {}
 
     func configure(request: ConfigureRequest) throws {
       automator.configure(timeout: TimeInterval(request.findTimeoutMillis / 1000))
@@ -27,21 +25,9 @@
       }
     }
 
-    func pressBack() throws {
-      return try runCatching {
-        throw PatrolError.methodNotImplemented("pressBack")
-      }
-    }
-
     func pressRecentApps() throws {
       return try runCatching {
         try automator.openAppSwitcher()
-      }
-    }
-
-    func doublePressRecentApps() throws {
-      return try runCatching {
-        throw PatrolError.methodNotImplemented("doublePressRecentApps")
       }
     }
 
@@ -73,41 +59,24 @@
     }
 
     // MARK: General UI interaction
-
     func getNativeViews(
-      request: GetNativeViewsRequest
-    ) throws -> GetNativeViewsResponse {
+      request: IOSGetNativeViewsRequest
+    ) throws -> IOSGetNativeViewsResponse {
       return try runCatching {
         if let selector = request.selector {
-          let nativeViews = try automator.getNativeViews(
+          let roots = try automator.getNativeViews(
             on: selector,
             inApp: request.appId
           )
-          return GetNativeViewsResponse(
-            nativeViews: nativeViews, iosNativeViews: [], androidNativeViews: [])
-        } else if let iosSelector = request.iosSelector {
-          let iosNativeViews = try automator.getNativeViews(
-            on: iosSelector,
-            inApp: request.appId
-          )
-          return GetNativeViewsResponse(
-            nativeViews: [], iosNativeViews: iosNativeViews, androidNativeViews: [])
+          return IOSGetNativeViewsResponse(roots: roots)
         } else {
-          throw PatrolError.internal("getNativeViews(): neither selector nor iosSelector are set")
+          let roots = try automator.getUITreeRoots(installedApps: request.iosInstalledApps ?? [])
+          return IOSGetNativeViewsResponse(roots: roots)
         }
       }
     }
 
-    func getNativeUITree(request: GetNativeUITreeRequest) throws -> GetNativeUITreeRespone {
-      if request.useNativeViewHierarchy {
-        let roots = try automator.getUITreeRoots(installedApps: request.iosInstalledApps ?? [])
-        return GetNativeUITreeRespone(iOSroots: [], androidRoots: [], roots: roots)
-      } else {
-        return try automator.getUITreeRootsV2(installedApps: request.iosInstalledApps ?? [])
-      }
-    }
-
-    func tap(request: TapRequest) throws {
+    func tap(request: IOSTapRequest) throws {
       return try runCatching {
         if let selector = request.selector {
           return try automator.tap(
@@ -127,7 +96,7 @@
       }
     }
 
-    func doubleTap(request: TapRequest) throws {
+    func doubleTap(request: IOSTapRequest) throws {
       return try runCatching {
         if let selector = request.selector {
           return try automator.doubleTap(
@@ -147,7 +116,7 @@
       }
     }
 
-    func tapAt(request: TapAtRequest) throws {
+    func tapAt(request: IOSTapAtRequest) throws {
       return try runCatching {
         try automator.tapAt(
           coordinate: CGVector(dx: request.x, dy: request.y),
@@ -156,7 +125,7 @@
       }
     }
 
-    func enterText(request: EnterTextRequest) throws {
+    func enterText(request: IOSEnterTextRequest) throws {
       return try runCatching {
         if let index = request.index {
           try automator.enterText(
@@ -178,23 +147,13 @@
             dx: request.dx ?? 0.9,
             dy: request.dy ?? 0.9
           )
-        } else if let iosSelector = request.iosSelector {
-          try automator.enterText(
-            request.data,
-            on: iosSelector,
-            inApp: request.appId,
-            dismissKeyboard: request.keyboardBehavior == .showAndDismiss,
-            withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) },
-            dx: request.dx ?? 0.9,
-            dy: request.dy ?? 0.9
-          )
         } else {
           throw PatrolError.internal("enterText(): neither index nor selector are set")
         }
       }
     }
 
-    func swipe(request: SwipeRequest) throws {
+    func swipe(request: IOSSwipeRequest) throws {
       return try runCatching {
         try automator.swipe(
           from: CGVector(dx: request.startX, dy: request.startY),
@@ -340,7 +299,7 @@
       }
     }
 
-    func tapOnNotification(request: TapOnNotificationRequest) throws {
+    func tapOnNotification(request: IOSTapOnNotificationRequest) throws {
       return try runCatching {
         if let index = request.index {
           try automator.tapOnNotification(
@@ -350,11 +309,6 @@
         } else if let selector = request.selector {
           try automator.tapOnNotification(
             bySubstring: selector.textContains ?? String(),
-            withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) }
-          )
-        } else if let selector = request.iosSelector {
-          try automator.tapOnNotification(
-            bySubstring: selector.titleContains ?? String(),
             withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) }
           )
         } else {
@@ -410,33 +364,20 @@
 
     // MARK: Camera
 
-    func takeCameraPhoto(request: TakeCameraPhotoRequest) throws {
-      if request.isNative2 {
-        try automator.tap(
-          on: request.iosShutterButtonSelector ?? IOSSelector(identifier: "PhotoCapture"),
-          inApp: request.appId,
-          withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
-        )
-        try automator.tap(
-          on: request.iosDoneButtonSelector ?? IOSSelector(identifier: "Done"),
-          inApp: request.appId,
-          withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
-        )
-      } else {
-        try automator.tap(
-          on: request.shutterButtonSelector ?? Selector(resourceId: "PhotoCapture"),
-          inApp: request.appId,
-          withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
-        )
-        try automator.tap(
-          on: request.doneButtonSelector ?? Selector(resourceId: "Done"),
-          inApp: request.appId,
-          withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
-        )
-      }
+    func takeCameraPhoto(request: IOSTakeCameraPhotoRequest) throws {
+      try automator.tap(
+        on: request.shutterButtonSelector ?? Selector(resourceId: "PhotoCapture"),
+        inApp: request.appId,
+        withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
+      )
+      try automator.tap(
+        on: request.doneButtonSelector ?? Selector(resourceId: "Done"),
+        inApp: request.appId,
+        withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
+      )
     }
 
-    func pickImageFromGallery(request: PickImageFromGalleryRequest) throws {
+    func pickImageFromGallery(request: IOSPickImageFromGalleryRequest) throws {
       let isSimulator = try isVirtualDevice().isVirtualDevice
       if request.isNative2 {
         try automator.tap(
@@ -472,7 +413,7 @@
       }
     }
 
-    func pickMultipleImagesFromGallery(request: PickMultipleImagesFromGalleryRequest) throws {
+    func pickMultipleImagesFromGallery(request: IOSPickMultipleImagesFromGalleryRequest) throws {
       return try runCatching {
         let isSimulator = try isVirtualDevice().isVirtualDevice
 

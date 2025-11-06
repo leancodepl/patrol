@@ -16,8 +16,8 @@ class PatrolIntegrationTester extends finders.PatrolTester {
     required super.config,
     required this.platformAutomator,
   }) : _patrolLog = PatrolLogWriter() {
-    nativeAutomator = NativeAutomator(platformAutomator);
-    nativeAutomator2 = NativeAutomator2(platformAutomator);
+    nativeAutomator = NativeAutomator(platformAutomator: platformAutomator);
+    nativeAutomator2 = NativeAutomator2(platformAutomator: platformAutomator);
   }
 
   /// The log for the patrol.

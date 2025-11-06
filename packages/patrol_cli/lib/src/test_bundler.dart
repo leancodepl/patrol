@@ -33,6 +33,7 @@ import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
 import 'package:patrol/src/platform/platform_automator.dart';
+import 'package:patrol/src/platform/contracts/contracts.dart';
 import 'package:test_api/src/backend/invoker.dart';
 
 // START: GENERATED TEST IMPORTS
@@ -72,7 +73,8 @@ Future<void> main() async {
   // Dart test (out of which they had been created) and wait for it to complete.
   // The result of running the Dart test is the result of the native test case.
 
-  final platformAutomator = PlatformAutomator();
+  final platformAutomator = PlatformAutomator(config: PlatformAutomatorConfig.forTestSetup());
+  await platformAutomator.initialize();
   final binding = PatrolBinding.ensureInitialized(platformAutomator);
   final testExplorationCompleter = Completer<DartGroupEntry>();
 
@@ -137,6 +139,7 @@ ${generateGroupsCode(testDirectory, testFilePaths).split('\n').map((e) => '  $e'
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
+import 'package:patrol/src/platform/contracts/contracts.dart';
 import 'package:patrol/src/platform/platform_automator.dart';
 
 // START: GENERATED TEST IMPORTS
@@ -144,7 +147,9 @@ ${generateImports(testDirectory, [testFilePath])}
 // END: GENERATED TEST IMPORTS
 
 Future<void> main() async {
-  final platformAutomator = PlatformAutomator();
+  final platformAutomator = PlatformAutomator(config: PlatformAutomatorConfig.forTestSetup());
+  await platformAutomator.initialize();
+  
   PatrolBinding.ensureInitialized(platformAutomator)
     ..workaroundDebugDefaultTargetPlatformOverride =
         debugDefaultTargetPlatformOverride;

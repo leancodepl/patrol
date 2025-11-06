@@ -1,22 +1,25 @@
 import 'dart:collection';
-import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:patrol/src/native/contracts/contracts.dart';
-import 'package:patrol/src/native/native_automator_web.dart';
-import 'package:patrol/src/native/patrol_app_services/patrol_app_service_web.dart';
+import 'package:patrol/src/platform/web/patrol_app_service_web.dart';
+import 'package:patrol/src/platform/web/upload_file_data.dart';
+import 'package:patrol/src/platform/web/web_automator.dart' as web_automator;
+import 'package:patrol/src/platform/web/web_automator_config.dart';
+import 'package:patrol/src/platform/web/web_selector.dart';
 import 'package:patrol_log/patrol_log.dart';
 
-class NativeAutomator2 {
-  NativeAutomator2({required NativeAutomatorConfig config}) : _config = config;
+class WebAutomator implements web_automator.WebAutomator {
+  WebAutomator({required WebAutomatorConfig config}) : _config = config;
 
   final _patrolLog = PatrolLogWriter();
-  final NativeAutomatorConfig _config;
+  final WebAutomatorConfig _config;
 
+  @override
   Future<void> configure() async {
     await _startTest();
   }
 
+  @override
   Future<void> initialize() {
     return initAppService();
   }
@@ -25,6 +28,7 @@ class NativeAutomator2 {
     await callPlaywright('startTest', {}, logger: _config.logger);
   }
 
+  @override
   Future<void> enableDarkMode() async {
     await callPlaywright(
       'enableDarkMode',
@@ -34,6 +38,7 @@ class NativeAutomator2 {
     );
   }
 
+  @override
   Future<void> disableDarkMode() async {
     await callPlaywright(
       'disableDarkMode',
@@ -43,10 +48,8 @@ class NativeAutomator2 {
     );
   }
 
-  Future<void> tapWeb({
-    required WebSelector selector,
-    WebSelector? iframeSelector,
-  }) async {
+  @override
+  Future<void> tap(WebSelector selector, {WebSelector? iframeSelector}) async {
     await callPlaywright(
       'tap',
       {
@@ -58,8 +61,9 @@ class NativeAutomator2 {
     );
   }
 
-  Future<void> enterTextWeb({
-    required WebSelector selector,
+  @override
+  Future<void> enterText(
+    WebSelector selector, {
     required String text,
     WebSelector? iframeSelector,
   }) async {
@@ -75,8 +79,9 @@ class NativeAutomator2 {
     );
   }
 
-  Future<void> scrollToWeb({
-    required WebSelector selector,
+  @override
+  Future<void> scrollTo(
+    WebSelector selector, {
     WebSelector? iframeSelector,
   }) async {
     await callPlaywright(
@@ -90,6 +95,7 @@ class NativeAutomator2 {
     );
   }
 
+  @override
   Future<void> grantPermissions({required List<String> permissions}) async {
     await callPlaywright(
       'grantPermissions',
@@ -99,6 +105,7 @@ class NativeAutomator2 {
     );
   }
 
+  @override
   Future<void> clearPermissions() async {
     await callPlaywright(
       'clearPermissions',
@@ -108,6 +115,7 @@ class NativeAutomator2 {
     );
   }
 
+  @override
   Future<void> addCookie({
     required String name,
     required String value,
@@ -137,6 +145,7 @@ class NativeAutomator2 {
     );
   }
 
+  @override
   Future<List<LinkedHashMap<Object?, Object?>>> getCookies() async {
     final result = await callPlaywright(
       'getCookies',
@@ -148,6 +157,7 @@ class NativeAutomator2 {
     return (result as List).cast<LinkedHashMap<Object?, Object?>>();
   }
 
+  @override
   Future<void> clearCookies() async {
     await callPlaywright(
       'clearCookies',
@@ -157,6 +167,7 @@ class NativeAutomator2 {
     );
   }
 
+  @override
   Future<void> uploadFile({required List<UploadFileData> files}) async {
     await callPlaywright(
       'uploadFile',
@@ -166,6 +177,7 @@ class NativeAutomator2 {
     );
   }
 
+  @override
   Future<String> acceptNextDialog() async {
     final result = await callPlaywright(
       'acceptNextDialog',
@@ -176,6 +188,7 @@ class NativeAutomator2 {
     return result as String;
   }
 
+  @override
   Future<String> dismissNextDialog() async {
     final result = await callPlaywright(
       'dismissNextDialog',
@@ -186,6 +199,7 @@ class NativeAutomator2 {
     return result as String;
   }
 
+  @override
   Future<void> pressKey({required String key}) async {
     await callPlaywright(
       'pressKey',
@@ -195,6 +209,7 @@ class NativeAutomator2 {
     );
   }
 
+  @override
   Future<void> pressKeyCombo({required List<String> keys}) async {
     await callPlaywright(
       'pressKeyCombo',
@@ -204,6 +219,7 @@ class NativeAutomator2 {
     );
   }
 
+  @override
   Future<void> goBack() async {
     await callPlaywright(
       'goBack',
@@ -213,6 +229,7 @@ class NativeAutomator2 {
     );
   }
 
+  @override
   Future<void> goForward() async {
     await callPlaywright(
       'goForward',
@@ -222,6 +239,7 @@ class NativeAutomator2 {
     );
   }
 
+  @override
   Future<String> getClipboard() async {
     final result = await callPlaywright(
       'getClipboard',
@@ -232,6 +250,7 @@ class NativeAutomator2 {
     return result as String;
   }
 
+  @override
   Future<void> setClipboard({required String text}) async {
     await callPlaywright(
       'setClipboard',
@@ -241,6 +260,7 @@ class NativeAutomator2 {
     );
   }
 
+  @override
   Future<void> resizeWindow({required int width, required int height}) async {
     await callPlaywright(
       'resizeWindow',
@@ -250,6 +270,7 @@ class NativeAutomator2 {
     );
   }
 
+  @override
   Future<List<String>> verifyFileDownloads() async {
     final result = await callPlaywright(
       'verifyFileDownloads',
@@ -258,31 +279,5 @@ class NativeAutomator2 {
       patrolLog: _patrolLog,
     );
     return (result as List<dynamic>).cast<String>();
-  }
-}
-
-/// Represents a file to be uploaded in web tests.
-class UploadFileData {
-  UploadFileData({
-    required this.name,
-    required this.content,
-    this.mimeType = 'application/octet-stream',
-  });
-
-  /// The name of the file (e.g., 'example.txt')
-  final String name;
-
-  /// The file content as bytes
-  final List<int> content;
-
-  /// The MIME type of the file (e.g., 'text/plain', 'image/png')
-  final String mimeType;
-
-  Map<String, dynamic> toJson() {
-    return {
-      'name': name,
-      'mimeType': mimeType,
-      'base64Data': base64Encode(content),
-    };
   }
 }

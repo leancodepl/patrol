@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
-import 'dart:io';
 import 'dart:isolate';
 
 import 'package:flutter/foundation.dart';
@@ -11,6 +10,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
 import 'package:patrol/src/devtools_service_extensions/devtools_service_extensions.dart';
 import 'package:patrol/src/global_state.dart' as global_state;
+import 'package:patrol/src/platform/current_io.dart' as current_platform;
 import 'package:patrol/src/platform/platform_automator.dart';
 
 import 'constants.dart' as constants;
@@ -238,7 +238,7 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
           Failure(:final details?) => FlutterErrorDetails(exception: details),
           _ => null,
         };
-        final detailsAsString = (kReleaseMode && Platform.isIOS)
+        final detailsAsString = (kReleaseMode && current_platform.isIOS)
             ? '${details.exceptionAsString()}\n${details.stack}'
             : details.toString();
 

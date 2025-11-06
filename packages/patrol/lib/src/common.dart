@@ -6,8 +6,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:meta/meta.dart';
 import 'package:patrol/src/binding.dart';
 import 'package:patrol/src/global_state.dart' as global_state;
-import 'package:patrol/src/native/contracts/contracts.dart';
-import 'package:patrol/src/native/native.dart';
+import 'package:patrol/src/native/native_automator_config.dart';
+import 'package:patrol/src/platform/contracts/contracts.dart';
 import 'package:patrol/src/platform/platform_automator.dart';
 import 'package:patrol_finders/patrol_finders.dart' as finders;
 import 'package:patrol_log/patrol_log.dart';
@@ -93,11 +93,26 @@ void patrolTest(
   finders.PatrolTesterConfig config = const finders.PatrolTesterConfig(
     printLogs: true,
   ),
+  @Deprecated(
+    'nativeAutomatorConfig is deprecated and will be removed in a future release. '
+    'Please use platformAutomatorConfig instead.',
+  )
+  NativeAutomatorConfig? nativeAutomatorConfig,
+  PlatformAutomatorConfig? platformAutomatorConfig,
   LiveTestWidgetsFlutterBindingFramePolicy framePolicy =
       LiveTestWidgetsFlutterBindingFramePolicy.fullyLive,
 }) {
   final patrolLog = PatrolLogWriter(config: {'printLogs': config.printLogs});
-  final platformAutomator = PlatformAutomator();
+  if (nativeAutomatorConfig != null && platformAutomatorConfig != null) {
+    throw StateError(
+      'Cannot use both nativeAutomatorConfig and platformAutomatorConfig',
+    );
+  }
+  final platformAutomator = PlatformAutomator(
+    config:
+        nativeAutomatorConfig?.toPlatformAutomatorConfig() ??
+        platformAutomatorConfig,
+  );
   final patrolBinding = PatrolBinding.ensureInitialized(platformAutomator)
     ..framePolicy = framePolicy;
 
@@ -132,7 +147,11 @@ void patrolTest(
         }
       }
 
-      await platformAutomator.configure();
+      await platformAutomator.action.maybe(
+        android: platformAutomator.android.configure,
+        ios: platformAutomator.ios.configure,
+        web: platformAutomator.web.configure,
+      );
 
       patrolLog.log(
         TestEntry(name: description, status: TestEntryStatus.start),

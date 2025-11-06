@@ -442,6 +442,9 @@ class IOSSelector with EquatableMixin {
     this.instance,
     this.elementType,
     this.identifier,
+    this.text,
+    this.textStartsWith,
+    this.textContains,
     this.label,
     this.labelStartsWith,
     this.labelContains,
@@ -463,6 +466,9 @@ class IOSSelector with EquatableMixin {
   final int? instance;
   final IOSElementType? elementType;
   final String? identifier;
+  final String? text;
+  final String? textStartsWith;
+  final String? textContains;
   final String? label;
   final String? labelStartsWith;
   final String? labelContains;
@@ -484,6 +490,9 @@ class IOSSelector with EquatableMixin {
     instance,
     elementType,
     identifier,
+    text,
+    textStartsWith,
+    textContains,
     label,
     labelStartsWith,
     labelContains,
@@ -500,180 +509,39 @@ class IOSSelector with EquatableMixin {
 }
 
 @JsonSerializable()
-class WebSelector with EquatableMixin {
-  WebSelector({
-    this.role,
-    this.label,
-    this.placeholder,
-    this.text,
-    this.altText,
-    this.title,
-    this.testId,
-    this.cssOrXpath,
-  });
+class AndroidGetNativeViewsRequest with EquatableMixin {
+  AndroidGetNativeViewsRequest({this.selector});
 
-  factory WebSelector.fromJson(Map<String, dynamic> json) =>
-      _$WebSelectorFromJson(json);
+  factory AndroidGetNativeViewsRequest.fromJson(Map<String, dynamic> json) =>
+      _$AndroidGetNativeViewsRequestFromJson(json);
 
-  final String? role;
-  final String? label;
-  final String? placeholder;
-  final String? text;
-  final String? altText;
-  final String? title;
-  final String? testId;
-  final String? cssOrXpath;
+  final AndroidSelector? selector;
 
-  Map<String, dynamic> toJson() => _$WebSelectorToJson(this);
+  Map<String, dynamic> toJson() => _$AndroidGetNativeViewsRequestToJson(this);
 
   @override
-  List<Object?> get props => [
-    role,
-    label,
-    placeholder,
-    text,
-    altText,
-    title,
-    testId,
-    cssOrXpath,
-  ];
-
-  WebSelector copyWith({
-    String? role,
-    String? label,
-    String? placeholder,
-    String? text,
-    String? altText,
-    String? title,
-    String? testId,
-    String? cssOrXpath,
-  }) {
-    return WebSelector(
-      role: role ?? this.role,
-      label: label ?? this.label,
-      placeholder: placeholder ?? this.placeholder,
-      text: text ?? this.text,
-      altText: altText ?? this.altText,
-      title: title ?? this.title,
-      testId: testId ?? this.testId,
-      cssOrXpath: cssOrXpath ?? this.cssOrXpath,
-    );
-  }
+  List<Object?> get props => [selector];
 }
 
 @JsonSerializable()
-class Selector with EquatableMixin {
-  Selector({
-    this.text,
-    this.textStartsWith,
-    this.textContains,
-    this.className,
-    this.contentDescription,
-    this.contentDescriptionStartsWith,
-    this.contentDescriptionContains,
-    this.resourceId,
-    this.instance,
-    this.enabled,
-    this.focused,
-    this.pkg,
-  });
-
-  factory Selector.fromJson(Map<String, dynamic> json) =>
-      _$SelectorFromJson(json);
-
-  final String? text;
-  final String? textStartsWith;
-  final String? textContains;
-  final String? className;
-  final String? contentDescription;
-  final String? contentDescriptionStartsWith;
-  final String? contentDescriptionContains;
-  final String? resourceId;
-  final int? instance;
-  final bool? enabled;
-  final bool? focused;
-  final String? pkg;
-
-  Map<String, dynamic> toJson() => _$SelectorToJson(this);
-
-  @override
-  List<Object?> get props => [
-    text,
-    textStartsWith,
-    textContains,
-    className,
-    contentDescription,
-    contentDescriptionStartsWith,
-    contentDescriptionContains,
-    resourceId,
-    instance,
-    enabled,
-    focused,
-    pkg,
-  ];
-}
-
-@JsonSerializable()
-class GetNativeViewsRequest with EquatableMixin {
-  GetNativeViewsRequest({
+class IOSGetNativeViewsRequest with EquatableMixin {
+  IOSGetNativeViewsRequest({
     this.selector,
-    this.androidSelector,
-    this.iosSelector,
+    this.iosInstalledApps,
     required this.appId,
   });
 
-  factory GetNativeViewsRequest.fromJson(Map<String, dynamic> json) =>
-      _$GetNativeViewsRequestFromJson(json);
+  factory IOSGetNativeViewsRequest.fromJson(Map<String, dynamic> json) =>
+      _$IOSGetNativeViewsRequestFromJson(json);
 
-  final Selector? selector;
-  final AndroidSelector? androidSelector;
-  final IOSSelector? iosSelector;
+  final IOSSelector? selector;
+  final List<String>? iosInstalledApps;
   final String appId;
 
-  Map<String, dynamic> toJson() => _$GetNativeViewsRequestToJson(this);
+  Map<String, dynamic> toJson() => _$IOSGetNativeViewsRequestToJson(this);
 
   @override
-  List<Object?> get props => [selector, androidSelector, iosSelector, appId];
-}
-
-@JsonSerializable()
-class GetNativeUITreeRequest with EquatableMixin {
-  GetNativeUITreeRequest({
-    this.iosInstalledApps,
-    required this.useNativeViewHierarchy,
-  });
-
-  factory GetNativeUITreeRequest.fromJson(Map<String, dynamic> json) =>
-      _$GetNativeUITreeRequestFromJson(json);
-
-  final List<String>? iosInstalledApps;
-  final bool useNativeViewHierarchy;
-
-  Map<String, dynamic> toJson() => _$GetNativeUITreeRequestToJson(this);
-
-  @override
-  List<Object?> get props => [iosInstalledApps, useNativeViewHierarchy];
-}
-
-@JsonSerializable()
-class GetNativeUITreeRespone with EquatableMixin {
-  GetNativeUITreeRespone({
-    required this.iOSroots,
-    required this.androidRoots,
-    required this.roots,
-  });
-
-  factory GetNativeUITreeRespone.fromJson(Map<String, dynamic> json) =>
-      _$GetNativeUITreeResponeFromJson(json);
-
-  final List<IOSNativeView> iOSroots;
-  final List<AndroidNativeView> androidRoots;
-  final List<NativeView> roots;
-
-  Map<String, dynamic> toJson() => _$GetNativeUITreeResponeToJson(this);
-
-  @override
-  List<Object?> get props => [iOSroots, androidRoots, roots];
+  List<Object?> get props => [selector, iosInstalledApps, appId];
 }
 
 @JsonSerializable()
@@ -758,8 +626,10 @@ class IOSNativeView with EquatableMixin {
     required this.isEnabled,
     required this.isSelected,
     required this.frame,
+    this.accessibilityLabel,
     this.placeholderValue,
     this.value,
+    this.bundleId,
   });
 
   factory IOSNativeView.fromJson(Map<String, dynamic> json) =>
@@ -774,8 +644,10 @@ class IOSNativeView with EquatableMixin {
   final bool isEnabled;
   final bool isSelected;
   final Rectangle frame;
+  final String? accessibilityLabel;
   final String? placeholderValue;
   final String? value;
+  final String? bundleId;
 
   Map<String, dynamic> toJson() => _$IOSNativeViewToJson(this);
 
@@ -790,9 +662,41 @@ class IOSNativeView with EquatableMixin {
     isEnabled,
     isSelected,
     frame,
+    accessibilityLabel,
     placeholderValue,
     value,
+    bundleId,
   ];
+}
+
+@JsonSerializable()
+class AndroidGetNativeViewsResponse with EquatableMixin {
+  AndroidGetNativeViewsResponse({required this.roots});
+
+  factory AndroidGetNativeViewsResponse.fromJson(Map<String, dynamic> json) =>
+      _$AndroidGetNativeViewsResponseFromJson(json);
+
+  final List<AndroidNativeView> roots;
+
+  Map<String, dynamic> toJson() => _$AndroidGetNativeViewsResponseToJson(this);
+
+  @override
+  List<Object?> get props => [roots];
+}
+
+@JsonSerializable()
+class IOSGetNativeViewsResponse with EquatableMixin {
+  IOSGetNativeViewsResponse({required this.roots});
+
+  factory IOSGetNativeViewsResponse.fromJson(Map<String, dynamic> json) =>
+      _$IOSGetNativeViewsResponseFromJson(json);
+
+  final List<IOSNativeView> roots;
+
+  Map<String, dynamic> toJson() => _$IOSGetNativeViewsResponseToJson(this);
+
+  @override
+  List<Object?> get props => [roots];
 }
 
 @JsonSerializable()
@@ -835,159 +739,110 @@ class Point2D with EquatableMixin {
 }
 
 @JsonSerializable()
-class NativeView with EquatableMixin {
-  NativeView({
-    this.className,
-    this.text,
-    this.contentDescription,
-    required this.focused,
-    required this.enabled,
-    this.childCount,
-    this.resourceName,
-    this.applicationPackage,
-    required this.children,
-  });
-
-  factory NativeView.fromJson(Map<String, dynamic> json) =>
-      _$NativeViewFromJson(json);
-
-  final String? className;
-  final String? text;
-  final String? contentDescription;
-  final bool focused;
-  final bool enabled;
-  final int? childCount;
-  final String? resourceName;
-  final String? applicationPackage;
-  final List<NativeView> children;
-
-  Map<String, dynamic> toJson() => _$NativeViewToJson(this);
-
-  @override
-  List<Object?> get props => [
-    className,
-    text,
-    contentDescription,
-    focused,
-    enabled,
-    childCount,
-    resourceName,
-    applicationPackage,
-    children,
-  ];
-}
-
-@JsonSerializable()
-class GetNativeViewsResponse with EquatableMixin {
-  GetNativeViewsResponse({
-    required this.nativeViews,
-    required this.iosNativeViews,
-    required this.androidNativeViews,
-  });
-
-  factory GetNativeViewsResponse.fromJson(Map<String, dynamic> json) =>
-      _$GetNativeViewsResponseFromJson(json);
-
-  final List<NativeView> nativeViews;
-  final List<IOSNativeView> iosNativeViews;
-  final List<AndroidNativeView> androidNativeViews;
-
-  Map<String, dynamic> toJson() => _$GetNativeViewsResponseToJson(this);
-
-  @override
-  List<Object?> get props => [nativeViews, iosNativeViews, androidNativeViews];
-}
-
-@JsonSerializable()
-class TapRequest with EquatableMixin {
-  TapRequest({
+class AndroidTapRequest with EquatableMixin {
+  AndroidTapRequest({
     this.selector,
-    this.androidSelector,
-    this.iosSelector,
-    required this.appId,
     this.timeoutMillis,
     this.delayBetweenTapsMillis,
   });
 
-  factory TapRequest.fromJson(Map<String, dynamic> json) =>
-      _$TapRequestFromJson(json);
+  factory AndroidTapRequest.fromJson(Map<String, dynamic> json) =>
+      _$AndroidTapRequestFromJson(json);
 
-  final Selector? selector;
-  final AndroidSelector? androidSelector;
-  final IOSSelector? iosSelector;
-  final String appId;
+  final AndroidSelector? selector;
   final int? timeoutMillis;
   final int? delayBetweenTapsMillis;
 
-  Map<String, dynamic> toJson() => _$TapRequestToJson(this);
+  Map<String, dynamic> toJson() => _$AndroidTapRequestToJson(this);
 
   @override
-  List<Object?> get props => [
-    selector,
-    androidSelector,
-    iosSelector,
-    appId,
-    timeoutMillis,
-    delayBetweenTapsMillis,
-  ];
+  List<Object?> get props => [selector, timeoutMillis, delayBetweenTapsMillis];
 }
 
 @JsonSerializable()
-class TapAtRequest with EquatableMixin {
-  TapAtRequest({required this.x, required this.y, required this.appId});
+class IOSTapRequest with EquatableMixin {
+  IOSTapRequest({
+    required this.selector,
+    required this.appId,
+    this.timeoutMillis,
+  });
 
-  factory TapAtRequest.fromJson(Map<String, dynamic> json) =>
-      _$TapAtRequestFromJson(json);
+  factory IOSTapRequest.fromJson(Map<String, dynamic> json) =>
+      _$IOSTapRequestFromJson(json);
+
+  final IOSSelector selector;
+  final String appId;
+  final int? timeoutMillis;
+
+  Map<String, dynamic> toJson() => _$IOSTapRequestToJson(this);
+
+  @override
+  List<Object?> get props => [selector, appId, timeoutMillis];
+}
+
+@JsonSerializable()
+class AndroidTapAtRequest with EquatableMixin {
+  AndroidTapAtRequest({required this.x, required this.y});
+
+  factory AndroidTapAtRequest.fromJson(Map<String, dynamic> json) =>
+      _$AndroidTapAtRequestFromJson(json);
+
+  final double x;
+  final double y;
+
+  Map<String, dynamic> toJson() => _$AndroidTapAtRequestToJson(this);
+
+  @override
+  List<Object?> get props => [x, y];
+}
+
+@JsonSerializable()
+class IOSTapAtRequest with EquatableMixin {
+  IOSTapAtRequest({required this.x, required this.y, required this.appId});
+
+  factory IOSTapAtRequest.fromJson(Map<String, dynamic> json) =>
+      _$IOSTapAtRequestFromJson(json);
 
   final double x;
   final double y;
   final String appId;
 
-  Map<String, dynamic> toJson() => _$TapAtRequestToJson(this);
+  Map<String, dynamic> toJson() => _$IOSTapAtRequestToJson(this);
 
   @override
   List<Object?> get props => [x, y, appId];
 }
 
 @JsonSerializable()
-class EnterTextRequest with EquatableMixin {
-  EnterTextRequest({
+class AndroidEnterTextRequest with EquatableMixin {
+  AndroidEnterTextRequest({
     required this.data,
-    required this.appId,
     this.index,
     this.selector,
-    this.androidSelector,
-    this.iosSelector,
     required this.keyboardBehavior,
     this.timeoutMillis,
     this.dx,
     this.dy,
   });
 
-  factory EnterTextRequest.fromJson(Map<String, dynamic> json) =>
-      _$EnterTextRequestFromJson(json);
+  factory AndroidEnterTextRequest.fromJson(Map<String, dynamic> json) =>
+      _$AndroidEnterTextRequestFromJson(json);
 
   final String data;
-  final String appId;
   final int? index;
-  final Selector? selector;
-  final AndroidSelector? androidSelector;
-  final IOSSelector? iosSelector;
+  final AndroidSelector? selector;
   final KeyboardBehavior keyboardBehavior;
   final int? timeoutMillis;
   final double? dx;
   final double? dy;
 
-  Map<String, dynamic> toJson() => _$EnterTextRequestToJson(this);
+  Map<String, dynamic> toJson() => _$AndroidEnterTextRequestToJson(this);
 
   @override
   List<Object?> get props => [
     data,
-    appId,
     index,
     selector,
-    androidSelector,
-    iosSelector,
     keyboardBehavior,
     timeoutMillis,
     dx,
@@ -996,9 +851,48 @@ class EnterTextRequest with EquatableMixin {
 }
 
 @JsonSerializable()
-class SwipeRequest with EquatableMixin {
-  SwipeRequest({
+class IOSEnterTextRequest with EquatableMixin {
+  IOSEnterTextRequest({
+    required this.data,
     required this.appId,
+    this.index,
+    this.selector,
+    required this.keyboardBehavior,
+    this.timeoutMillis,
+    this.dx,
+    this.dy,
+  });
+
+  factory IOSEnterTextRequest.fromJson(Map<String, dynamic> json) =>
+      _$IOSEnterTextRequestFromJson(json);
+
+  final String data;
+  final String appId;
+  final int? index;
+  final IOSSelector? selector;
+  final KeyboardBehavior keyboardBehavior;
+  final int? timeoutMillis;
+  final double? dx;
+  final double? dy;
+
+  Map<String, dynamic> toJson() => _$IOSEnterTextRequestToJson(this);
+
+  @override
+  List<Object?> get props => [
+    data,
+    appId,
+    index,
+    selector,
+    keyboardBehavior,
+    timeoutMillis,
+    dx,
+    dy,
+  ];
+}
+
+@JsonSerializable()
+class AndroidSwipeRequest with EquatableMixin {
+  AndroidSwipeRequest({
     required this.startX,
     required this.startY,
     required this.endX,
@@ -1006,51 +900,81 @@ class SwipeRequest with EquatableMixin {
     required this.steps,
   });
 
-  factory SwipeRequest.fromJson(Map<String, dynamic> json) =>
-      _$SwipeRequestFromJson(json);
+  factory AndroidSwipeRequest.fromJson(Map<String, dynamic> json) =>
+      _$AndroidSwipeRequestFromJson(json);
 
-  final String appId;
   final double startX;
   final double startY;
   final double endX;
   final double endY;
   final int steps;
 
-  Map<String, dynamic> toJson() => _$SwipeRequestToJson(this);
+  Map<String, dynamic> toJson() => _$AndroidSwipeRequestToJson(this);
 
   @override
-  List<Object?> get props => [appId, startX, startY, endX, endY, steps];
+  List<Object?> get props => [startX, startY, endX, endY, steps];
 }
 
 @JsonSerializable()
-class WaitUntilVisibleRequest with EquatableMixin {
-  WaitUntilVisibleRequest({
-    this.selector,
-    this.androidSelector,
-    this.iosSelector,
+class IOSSwipeRequest with EquatableMixin {
+  IOSSwipeRequest({
+    required this.appId,
+    required this.startX,
+    required this.startY,
+    required this.endX,
+    required this.endY,
+  });
+
+  factory IOSSwipeRequest.fromJson(Map<String, dynamic> json) =>
+      _$IOSSwipeRequestFromJson(json);
+
+  final String appId;
+  final double startX;
+  final double startY;
+  final double endX;
+  final double endY;
+
+  Map<String, dynamic> toJson() => _$IOSSwipeRequestToJson(this);
+
+  @override
+  List<Object?> get props => [appId, startX, startY, endX, endY];
+}
+
+@JsonSerializable()
+class AndroidWaitUntilVisibleRequest with EquatableMixin {
+  AndroidWaitUntilVisibleRequest({required this.selector, this.timeoutMillis});
+
+  factory AndroidWaitUntilVisibleRequest.fromJson(Map<String, dynamic> json) =>
+      _$AndroidWaitUntilVisibleRequestFromJson(json);
+
+  final AndroidSelector selector;
+  final int? timeoutMillis;
+
+  Map<String, dynamic> toJson() => _$AndroidWaitUntilVisibleRequestToJson(this);
+
+  @override
+  List<Object?> get props => [selector, timeoutMillis];
+}
+
+@JsonSerializable()
+class IOSTwaitUntilVisibleRequest with EquatableMixin {
+  IOSTwaitUntilVisibleRequest({
+    required this.selector,
     required this.appId,
     this.timeoutMillis,
   });
 
-  factory WaitUntilVisibleRequest.fromJson(Map<String, dynamic> json) =>
-      _$WaitUntilVisibleRequestFromJson(json);
+  factory IOSTwaitUntilVisibleRequest.fromJson(Map<String, dynamic> json) =>
+      _$IOSTwaitUntilVisibleRequestFromJson(json);
 
-  final Selector? selector;
-  final AndroidSelector? androidSelector;
-  final IOSSelector? iosSelector;
+  final IOSSelector selector;
   final String appId;
   final int? timeoutMillis;
 
-  Map<String, dynamic> toJson() => _$WaitUntilVisibleRequestToJson(this);
+  Map<String, dynamic> toJson() => _$IOSTwaitUntilVisibleRequestToJson(this);
 
   @override
-  List<Object?> get props => [
-    selector,
-    androidSelector,
-    iosSelector,
-    appId,
-    timeoutMillis,
-  ];
+  List<Object?> get props => [selector, appId, timeoutMillis];
 }
 
 @JsonSerializable()
@@ -1120,34 +1044,42 @@ class GetNotificationsRequest with EquatableMixin {
 }
 
 @JsonSerializable()
-class TapOnNotificationRequest with EquatableMixin {
-  TapOnNotificationRequest({
+class AndroidTapOnNotificationRequest with EquatableMixin {
+  AndroidTapOnNotificationRequest({
     this.index,
     this.selector,
-    this.androidSelector,
-    this.iosSelector,
     this.timeoutMillis,
   });
 
-  factory TapOnNotificationRequest.fromJson(Map<String, dynamic> json) =>
-      _$TapOnNotificationRequestFromJson(json);
+  factory AndroidTapOnNotificationRequest.fromJson(Map<String, dynamic> json) =>
+      _$AndroidTapOnNotificationRequestFromJson(json);
 
   final int? index;
-  final Selector? selector;
-  final AndroidSelector? androidSelector;
-  final IOSSelector? iosSelector;
+  final AndroidSelector? selector;
   final int? timeoutMillis;
 
-  Map<String, dynamic> toJson() => _$TapOnNotificationRequestToJson(this);
+  Map<String, dynamic> toJson() =>
+      _$AndroidTapOnNotificationRequestToJson(this);
 
   @override
-  List<Object?> get props => [
-    index,
-    selector,
-    androidSelector,
-    iosSelector,
-    timeoutMillis,
-  ];
+  List<Object?> get props => [index, selector, timeoutMillis];
+}
+
+@JsonSerializable()
+class IOSTapOnNotificationRequest with EquatableMixin {
+  IOSTapOnNotificationRequest({this.index, this.selector, this.timeoutMillis});
+
+  factory IOSTapOnNotificationRequest.fromJson(Map<String, dynamic> json) =>
+      _$IOSTapOnNotificationRequestFromJson(json);
+
+  final int? index;
+  final IOSSelector? selector;
+  final int? timeoutMillis;
+
+  Map<String, dynamic> toJson() => _$IOSTapOnNotificationRequestToJson(this);
+
+  @override
+  List<Object?> get props => [index, selector, timeoutMillis];
 }
 
 @JsonSerializable()
@@ -1263,120 +1195,153 @@ class GetOsVersionResponse with EquatableMixin {
 }
 
 @JsonSerializable()
-class TakeCameraPhotoRequest with EquatableMixin {
-  TakeCameraPhotoRequest({
+class AndroidTakeCameraPhotoRequest with EquatableMixin {
+  AndroidTakeCameraPhotoRequest({
     this.shutterButtonSelector,
-    this.androidShutterButtonSelector,
-    this.iosShutterButtonSelector,
     this.doneButtonSelector,
-    this.androidDoneButtonSelector,
     this.timeoutMillis,
-    this.iosDoneButtonSelector,
-    required this.appId,
-    required this.isNative2,
   });
 
-  factory TakeCameraPhotoRequest.fromJson(Map<String, dynamic> json) =>
-      _$TakeCameraPhotoRequestFromJson(json);
+  factory AndroidTakeCameraPhotoRequest.fromJson(Map<String, dynamic> json) =>
+      _$AndroidTakeCameraPhotoRequestFromJson(json);
 
-  final Selector? shutterButtonSelector;
-  final AndroidSelector? androidShutterButtonSelector;
-  final IOSSelector? iosShutterButtonSelector;
-  final Selector? doneButtonSelector;
-  final AndroidSelector? androidDoneButtonSelector;
+  final AndroidSelector? shutterButtonSelector;
+  final AndroidSelector? doneButtonSelector;
   final int? timeoutMillis;
-  final IOSSelector? iosDoneButtonSelector;
-  final String appId;
-  final bool isNative2;
 
-  Map<String, dynamic> toJson() => _$TakeCameraPhotoRequestToJson(this);
+  Map<String, dynamic> toJson() => _$AndroidTakeCameraPhotoRequestToJson(this);
 
   @override
   List<Object?> get props => [
     shutterButtonSelector,
-    androidShutterButtonSelector,
-    iosShutterButtonSelector,
     doneButtonSelector,
-    androidDoneButtonSelector,
     timeoutMillis,
-    iosDoneButtonSelector,
-    appId,
-    isNative2,
   ];
 }
 
 @JsonSerializable()
-class PickImageFromGalleryRequest with EquatableMixin {
-  PickImageFromGalleryRequest({
+class IOSTakeCameraPhotoRequest with EquatableMixin {
+  IOSTakeCameraPhotoRequest({
+    this.shutterButtonSelector,
+    this.doneButtonSelector,
+    this.timeoutMillis,
+    required this.appId,
+  });
+
+  factory IOSTakeCameraPhotoRequest.fromJson(Map<String, dynamic> json) =>
+      _$IOSTakeCameraPhotoRequestFromJson(json);
+
+  final IOSSelector? shutterButtonSelector;
+  final IOSSelector? doneButtonSelector;
+  final int? timeoutMillis;
+  final String appId;
+
+  Map<String, dynamic> toJson() => _$IOSTakeCameraPhotoRequestToJson(this);
+
+  @override
+  List<Object?> get props => [
+    shutterButtonSelector,
+    doneButtonSelector,
+    timeoutMillis,
+    appId,
+  ];
+}
+
+@JsonSerializable()
+class AndroidPickImageFromGalleryRequest with EquatableMixin {
+  AndroidPickImageFromGalleryRequest({
     this.imageSelector,
-    this.androidImageSelector,
-    this.iosImageSelector,
+    this.imageIndex,
+    this.timeoutMillis,
+  });
+
+  factory AndroidPickImageFromGalleryRequest.fromJson(
+    Map<String, dynamic> json,
+  ) => _$AndroidPickImageFromGalleryRequestFromJson(json);
+
+  final AndroidSelector? imageSelector;
+  final int? imageIndex;
+  final int? timeoutMillis;
+
+  Map<String, dynamic> toJson() =>
+      _$AndroidPickImageFromGalleryRequestToJson(this);
+
+  @override
+  List<Object?> get props => [imageSelector, imageIndex, timeoutMillis];
+}
+
+@JsonSerializable()
+class IOSPickImageFromGalleryRequest with EquatableMixin {
+  IOSPickImageFromGalleryRequest({
+    this.imageSelector,
     this.imageIndex,
     this.timeoutMillis,
     required this.appId,
-    required this.isNative2,
   });
 
-  factory PickImageFromGalleryRequest.fromJson(Map<String, dynamic> json) =>
-      _$PickImageFromGalleryRequestFromJson(json);
+  factory IOSPickImageFromGalleryRequest.fromJson(Map<String, dynamic> json) =>
+      _$IOSPickImageFromGalleryRequestFromJson(json);
 
-  final Selector? imageSelector;
-  final AndroidSelector? androidImageSelector;
-  final IOSSelector? iosImageSelector;
+  final IOSSelector? imageSelector;
   final int? imageIndex;
   final int? timeoutMillis;
   final String appId;
-  final bool isNative2;
 
-  Map<String, dynamic> toJson() => _$PickImageFromGalleryRequestToJson(this);
+  Map<String, dynamic> toJson() => _$IOSPickImageFromGalleryRequestToJson(this);
 
   @override
-  List<Object?> get props => [
-    imageSelector,
-    androidImageSelector,
-    iosImageSelector,
-    imageIndex,
-    timeoutMillis,
-    appId,
-    isNative2,
-  ];
+  List<Object?> get props => [imageSelector, imageIndex, timeoutMillis, appId];
 }
 
 @JsonSerializable()
-class PickMultipleImagesFromGalleryRequest with EquatableMixin {
-  PickMultipleImagesFromGalleryRequest({
+class AndroidPickMultipleImagesFromGalleryRequest with EquatableMixin {
+  AndroidPickMultipleImagesFromGalleryRequest({
     this.imageSelector,
-    this.androidImageSelector,
-    this.iosImageSelector,
+    required this.imageIndexes,
+    this.timeoutMillis,
+  });
+
+  factory AndroidPickMultipleImagesFromGalleryRequest.fromJson(
+    Map<String, dynamic> json,
+  ) => _$AndroidPickMultipleImagesFromGalleryRequestFromJson(json);
+
+  final AndroidSelector? imageSelector;
+  final List<int> imageIndexes;
+  final int? timeoutMillis;
+
+  Map<String, dynamic> toJson() =>
+      _$AndroidPickMultipleImagesFromGalleryRequestToJson(this);
+
+  @override
+  List<Object?> get props => [imageSelector, imageIndexes, timeoutMillis];
+}
+
+@JsonSerializable()
+class IOSPickMultipleImagesFromGalleryRequest with EquatableMixin {
+  IOSPickMultipleImagesFromGalleryRequest({
+    this.imageSelector,
     required this.imageIndexes,
     this.timeoutMillis,
     required this.appId,
-    required this.isNative2,
   });
 
-  factory PickMultipleImagesFromGalleryRequest.fromJson(
+  factory IOSPickMultipleImagesFromGalleryRequest.fromJson(
     Map<String, dynamic> json,
-  ) => _$PickMultipleImagesFromGalleryRequestFromJson(json);
+  ) => _$IOSPickMultipleImagesFromGalleryRequestFromJson(json);
 
-  final Selector? imageSelector;
-  final AndroidSelector? androidImageSelector;
-  final IOSSelector? iosImageSelector;
+  final IOSSelector? imageSelector;
   final List<int> imageIndexes;
   final int? timeoutMillis;
   final String appId;
-  final bool isNative2;
 
   Map<String, dynamic> toJson() =>
-      _$PickMultipleImagesFromGalleryRequestToJson(this);
+      _$IOSPickMultipleImagesFromGalleryRequestToJson(this);
 
   @override
   List<Object?> get props => [
     imageSelector,
-    androidImageSelector,
-    iosImageSelector,
     imageIndexes,
     timeoutMillis,
     appId,
-    isNative2,
   ];
 }

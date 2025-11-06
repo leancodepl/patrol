@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
-import 'package:patrol_devtools_extension/api/contracts.dart';
+import 'package:patrol_devtools_extension/api/native_views.dart';
 import 'package:vm_service/vm_service.dart';
 
 sealed class ApiResult<T> extends Equatable {
@@ -40,14 +40,12 @@ class PatrolServiceExtensionApi {
   final VmService _service;
   final ValueListenable<IsolateRef?> _isolate;
 
-  Future<ApiResult<GetNativeUITreeRespone>> getNativeUITree({
-    required bool useNativeViewHierarchy,
-  }) {
+  Future<ApiResult<GetNativeUITreeResponse>> getNativeUITree() {
     return _callServiceExtension(
       'patrol.getNativeUITree',
-      {'useNativeViewHierarchy': useNativeViewHierarchy ? 'yes' : 'no'},
+      {},
       (dynamic json) =>
-          GetNativeUITreeRespone.fromJson(json as Map<String, dynamic>),
+          GetNativeUITreeResponse.fromJson(json as Map<String, dynamic>),
     );
   }
 

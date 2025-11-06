@@ -12,24 +12,14 @@ import org.http4k.routing.bind
 import org.http4k.core.Status.Companion.OK
 import org.http4k.routing.routes
 
-abstract class NativeAutomatorServer {
-    abstract fun initialize()
+abstract class MobileAutomatorServer {
     abstract fun configure(request: Contracts.ConfigureRequest)
     abstract fun pressHome()
-    abstract fun pressBack()
     abstract fun pressRecentApps()
-    abstract fun doublePressRecentApps()
     abstract fun openApp(request: Contracts.OpenAppRequest)
+    abstract fun openPlatformApp(request: Contracts.OpenPlatformAppRequest)
     abstract fun openQuickSettings(request: Contracts.OpenQuickSettingsRequest)
     abstract fun openUrl(request: Contracts.OpenUrlRequest)
-    abstract fun getNativeUITree(request: Contracts.GetNativeUITreeRequest): Contracts.GetNativeUITreeRespone
-    abstract fun getNativeViews(request: Contracts.GetNativeViewsRequest): Contracts.GetNativeViewsResponse
-    abstract fun tap(request: Contracts.TapRequest)
-    abstract fun doubleTap(request: Contracts.TapRequest)
-    abstract fun tapAt(request: Contracts.TapAtRequest)
-    abstract fun enterText(request: Contracts.EnterTextRequest)
-    abstract fun swipe(request: Contracts.SwipeRequest)
-    abstract fun waitUntilVisible(request: Contracts.WaitUntilVisibleRequest)
     abstract fun pressVolumeUp()
     abstract fun pressVolumeDown()
     abstract fun enableAirplaneMode()
@@ -42,28 +32,18 @@ abstract class NativeAutomatorServer {
     abstract fun disableBluetooth()
     abstract fun enableDarkMode(request: Contracts.DarkModeRequest)
     abstract fun disableDarkMode(request: Contracts.DarkModeRequest)
-    abstract fun enableLocation()
-    abstract fun disableLocation()
     abstract fun openNotifications()
     abstract fun closeNotifications()
     abstract fun getNotifications(request: Contracts.GetNotificationsRequest): Contracts.GetNotificationsResponse
-    abstract fun tapOnNotification(request: Contracts.TapOnNotificationRequest)
     abstract fun isPermissionDialogVisible(request: Contracts.PermissionDialogVisibleRequest): Contracts.PermissionDialogVisibleResponse
     abstract fun handlePermissionDialog(request: Contracts.HandlePermissionRequest)
     abstract fun setLocationAccuracy(request: Contracts.SetLocationAccuracyRequest)
-    abstract fun takeCameraPhoto(request: Contracts.TakeCameraPhotoRequest)
-    abstract fun pickImageFromGallery(request: Contracts.PickImageFromGalleryRequest)
-    abstract fun pickMultipleImagesFromGallery(request: Contracts.PickMultipleImagesFromGalleryRequest)
     abstract fun setMockLocation(request: Contracts.SetMockLocationRequest)
     abstract fun markPatrolAppServiceReady()
     abstract fun isVirtualDevice(): Contracts.IsVirtualDeviceResponse
     abstract fun getOsVersion(): Contracts.GetOsVersionResponse
 
     val router = routes(
-      "initialize" bind POST to {
-        initialize()
-        Response(OK)
-      },
       "configure" bind POST to {
         val body = json.fromJson(it.bodyString(), Contracts.ConfigureRequest::class.java)
         configure(body)
@@ -73,21 +53,18 @@ abstract class NativeAutomatorServer {
         pressHome()
         Response(OK)
       },
-      "pressBack" bind POST to {
-        pressBack()
-        Response(OK)
-      },
       "pressRecentApps" bind POST to {
         pressRecentApps()
-        Response(OK)
-      },
-      "doublePressRecentApps" bind POST to {
-        doublePressRecentApps()
         Response(OK)
       },
       "openApp" bind POST to {
         val body = json.fromJson(it.bodyString(), Contracts.OpenAppRequest::class.java)
         openApp(body)
+        Response(OK)
+      },
+      "openPlatformApp" bind POST to {
+        val body = json.fromJson(it.bodyString(), Contracts.OpenPlatformAppRequest::class.java)
+        openPlatformApp(body)
         Response(OK)
       },
       "openQuickSettings" bind POST to {
@@ -98,46 +75,6 @@ abstract class NativeAutomatorServer {
       "openUrl" bind POST to {
         val body = json.fromJson(it.bodyString(), Contracts.OpenUrlRequest::class.java)
         openUrl(body)
-        Response(OK)
-      },
-      "getNativeUITree" bind POST to {
-        val body = json.fromJson(it.bodyString(), Contracts.GetNativeUITreeRequest::class.java)
-        val response = getNativeUITree(body)
-        Response(OK).body(json.toJson(response))
-      },
-      "getNativeViews" bind POST to {
-        val body = json.fromJson(it.bodyString(), Contracts.GetNativeViewsRequest::class.java)
-        val response = getNativeViews(body)
-        Response(OK).body(json.toJson(response))
-      },
-      "tap" bind POST to {
-        val body = json.fromJson(it.bodyString(), Contracts.TapRequest::class.java)
-        tap(body)
-        Response(OK)
-      },
-      "doubleTap" bind POST to {
-        val body = json.fromJson(it.bodyString(), Contracts.TapRequest::class.java)
-        doubleTap(body)
-        Response(OK)
-      },
-      "tapAt" bind POST to {
-        val body = json.fromJson(it.bodyString(), Contracts.TapAtRequest::class.java)
-        tapAt(body)
-        Response(OK)
-      },
-      "enterText" bind POST to {
-        val body = json.fromJson(it.bodyString(), Contracts.EnterTextRequest::class.java)
-        enterText(body)
-        Response(OK)
-      },
-      "swipe" bind POST to {
-        val body = json.fromJson(it.bodyString(), Contracts.SwipeRequest::class.java)
-        swipe(body)
-        Response(OK)
-      },
-      "waitUntilVisible" bind POST to {
-        val body = json.fromJson(it.bodyString(), Contracts.WaitUntilVisibleRequest::class.java)
-        waitUntilVisible(body)
         Response(OK)
       },
       "pressVolumeUp" bind POST to {
@@ -190,14 +127,6 @@ abstract class NativeAutomatorServer {
         disableDarkMode(body)
         Response(OK)
       },
-      "enableLocation" bind POST to {
-        enableLocation()
-        Response(OK)
-      },
-      "disableLocation" bind POST to {
-        disableLocation()
-        Response(OK)
-      },
       "openNotifications" bind POST to {
         openNotifications()
         Response(OK)
@@ -210,11 +139,6 @@ abstract class NativeAutomatorServer {
         val body = json.fromJson(it.bodyString(), Contracts.GetNotificationsRequest::class.java)
         val response = getNotifications(body)
         Response(OK).body(json.toJson(response))
-      },
-      "tapOnNotification" bind POST to {
-        val body = json.fromJson(it.bodyString(), Contracts.TapOnNotificationRequest::class.java)
-        tapOnNotification(body)
-        Response(OK)
       },
       "isPermissionDialogVisible" bind POST to {
         val body = json.fromJson(it.bodyString(), Contracts.PermissionDialogVisibleRequest::class.java)
@@ -229,21 +153,6 @@ abstract class NativeAutomatorServer {
       "setLocationAccuracy" bind POST to {
         val body = json.fromJson(it.bodyString(), Contracts.SetLocationAccuracyRequest::class.java)
         setLocationAccuracy(body)
-        Response(OK)
-      },
-      "takeCameraPhoto" bind POST to {
-        val body = json.fromJson(it.bodyString(), Contracts.TakeCameraPhotoRequest::class.java)
-        takeCameraPhoto(body)
-        Response(OK)
-      },
-      "pickImageFromGallery" bind POST to {
-        val body = json.fromJson(it.bodyString(), Contracts.PickImageFromGalleryRequest::class.java)
-        pickImageFromGallery(body)
-        Response(OK)
-      },
-      "pickMultipleImagesFromGallery" bind POST to {
-        val body = json.fromJson(it.bodyString(), Contracts.PickMultipleImagesFromGalleryRequest::class.java)
-        pickMultipleImagesFromGallery(body)
         Response(OK)
       },
       "setMockLocation" bind POST to {

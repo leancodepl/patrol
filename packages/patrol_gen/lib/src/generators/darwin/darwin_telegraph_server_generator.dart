@@ -12,7 +12,7 @@ class DarwinTelegraphServerGenerator {
       ..writeln()
       ..write(_generateSetupRoutes(service))
       ..writeln()
-      ..write(_generateUtils());
+      ..write(_generateUtils(service));
 
     return OutputFile(
       filename: config.serverFileName(service.name),
@@ -101,11 +101,11 @@ $routes
         }''';
   }
 
-  String _generateUtils() {
+  String _generateUtils(Service service) {
     // https://forums.swift.org/t/using-async-functions-from-synchronous-functions-and-breaking-all-the-rules/59782
     return '''
 
-extension NativeAutomatorServer {
+extension ${service.name}Server {
     private func handleRequest(request: HTTPRequest, handler: @escaping (HTTPRequest) throws -> HTTPResponse) -> HTTPResponse {
         do {
             return try handler(request)

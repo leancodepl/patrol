@@ -1,45 +1,65 @@
-import 'dart:io' as io;
+import 'dart:collection';
+import 'package:patrol/src/platform/web/upload_file_data.dart';
+import 'package:patrol/src/platform/web/web_selector.dart';
 
-import 'package:flutter_test/flutter_test.dart';
-import 'package:http/http.dart' as http;
-import 'package:meta/meta.dart';
-import 'package:patrol/patrol.dart' show PatrolActionException;
-import 'package:patrol/src/platform/android/contracts/contracts.dart';
-import 'package:patrol/src/platform/android/contracts/native_automator_client.dart';
-import 'package:patrol/src/platform/web/patrol_app_service_web.dart';
-import 'package:patrol_log/patrol_log.dart';
+abstract interface class WebAutomator {
+  Future<void> initialize();
 
-class WebAutomatorConfig {
-  const WebAutomatorConfig({this.logger = _defaultPrintLogger});
+  Future<void> configure();
 
-  final void Function(String) logger;
-}
+  Future<void> enableDarkMode();
 
-class WebAutomator {
-  WebAutomator({required WebAutomatorConfig config}) : _config = config;
+  Future<void> disableDarkMode();
 
-  final _patrolLog = PatrolLogWriter();
-  final WebAutomatorConfig _config;
+  Future<void> tap(WebSelector selector, {WebSelector? iframeSelector});
 
-  Future<void> initialize() {
-    return initAppService();
-  }
+  Future<void> enterText(
+    WebSelector selector, {
+    required String text,
+    WebSelector? iframeSelector,
+  });
 
-  Future<void> enableDarkMode() async {
-    await callPlaywright(
-      'enableDarkMode',
-      {},
-      logger: _config.logger,
-      patrolLog: _patrolLog,
-    );
-  }
+  Future<void> scrollTo(WebSelector selector, {WebSelector? iframeSelector});
 
-  Future<void> disableDarkMode() async {
-    await callPlaywright(
-      'disableDarkMode',
-      {},
-      logger: _config.logger,
-      patrolLog: _patrolLog,
-    );
-  }
+  Future<void> grantPermissions({required List<String> permissions});
+
+  Future<void> clearPermissions();
+
+  Future<void> addCookie({
+    required String name,
+    required String value,
+    String? url,
+    String? domain,
+    String? path,
+    int? expires,
+    bool? httpOnly,
+    bool? secure,
+    String? sameSite,
+  });
+
+  Future<List<LinkedHashMap<Object?, Object?>>> getCookies();
+
+  Future<void> clearCookies();
+
+  Future<void> uploadFile({required List<UploadFileData> files});
+
+  Future<String> acceptNextDialog();
+
+  Future<String> dismissNextDialog();
+
+  Future<void> pressKey({required String key});
+
+  Future<void> pressKeyCombo({required List<String> keys});
+
+  Future<void> goBack();
+
+  Future<void> goForward();
+
+  Future<String> getClipboard();
+
+  Future<void> setClipboard({required String text});
+
+  Future<void> resizeWindow({required int width, required int height});
+
+  Future<List<String>> verifyFileDownloads();
 }

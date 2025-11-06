@@ -163,6 +163,9 @@ IOSSelector _$IOSSelectorFromJson(Map<String, dynamic> json) => IOSSelector(
     json['elementType'],
   ),
   identifier: json['identifier'] as String?,
+  text: json['text'] as String?,
+  textStartsWith: json['textStartsWith'] as String?,
+  textContains: json['textContains'] as String?,
   label: json['label'] as String?,
   labelStartsWith: json['labelStartsWith'] as String?,
   labelContains: json['labelContains'] as String?,
@@ -183,6 +186,9 @@ Map<String, dynamic> _$IOSSelectorToJson(IOSSelector instance) =>
       'instance': instance.instance,
       'elementType': _$IOSElementTypeEnumMap[instance.elementType],
       'identifier': instance.identifier,
+      'text': instance.text,
+      'textStartsWith': instance.textStartsWith,
+      'textContains': instance.textContains,
       'label': instance.label,
       'labelStartsWith': instance.labelStartsWith,
       'labelContains': instance.labelContains,
@@ -283,121 +289,36 @@ const _$IOSElementTypeEnumMap = {
   IOSElementType.statusItem: 'statusItem',
 };
 
-WebSelector _$WebSelectorFromJson(Map<String, dynamic> json) => WebSelector(
-  role: json['role'] as String?,
-  label: json['label'] as String?,
-  placeholder: json['placeholder'] as String?,
-  text: json['text'] as String?,
-  altText: json['altText'] as String?,
-  title: json['title'] as String?,
-  testId: json['testId'] as String?,
-  cssOrXpath: json['cssOrXpath'] as String?,
-);
-
-Map<String, dynamic> _$WebSelectorToJson(WebSelector instance) =>
-    <String, dynamic>{
-      'role': instance.role,
-      'label': instance.label,
-      'placeholder': instance.placeholder,
-      'text': instance.text,
-      'altText': instance.altText,
-      'title': instance.title,
-      'testId': instance.testId,
-      'cssOrXpath': instance.cssOrXpath,
-    };
-
-Selector _$SelectorFromJson(Map<String, dynamic> json) => Selector(
-  text: json['text'] as String?,
-  textStartsWith: json['textStartsWith'] as String?,
-  textContains: json['textContains'] as String?,
-  className: json['className'] as String?,
-  contentDescription: json['contentDescription'] as String?,
-  contentDescriptionStartsWith: json['contentDescriptionStartsWith'] as String?,
-  contentDescriptionContains: json['contentDescriptionContains'] as String?,
-  resourceId: json['resourceId'] as String?,
-  instance: (json['instance'] as num?)?.toInt(),
-  enabled: json['enabled'] as bool?,
-  focused: json['focused'] as bool?,
-  pkg: json['pkg'] as String?,
-);
-
-Map<String, dynamic> _$SelectorToJson(Selector instance) => <String, dynamic>{
-  'text': instance.text,
-  'textStartsWith': instance.textStartsWith,
-  'textContains': instance.textContains,
-  'className': instance.className,
-  'contentDescription': instance.contentDescription,
-  'contentDescriptionStartsWith': instance.contentDescriptionStartsWith,
-  'contentDescriptionContains': instance.contentDescriptionContains,
-  'resourceId': instance.resourceId,
-  'instance': instance.instance,
-  'enabled': instance.enabled,
-  'focused': instance.focused,
-  'pkg': instance.pkg,
-};
-
-GetNativeViewsRequest _$GetNativeViewsRequestFromJson(
+AndroidGetNativeViewsRequest _$AndroidGetNativeViewsRequestFromJson(
   Map<String, dynamic> json,
-) => GetNativeViewsRequest(
+) => AndroidGetNativeViewsRequest(
   selector: json['selector'] == null
       ? null
-      : Selector.fromJson(json['selector'] as Map<String, dynamic>),
-  androidSelector: json['androidSelector'] == null
-      ? null
-      : AndroidSelector.fromJson(
-          json['androidSelector'] as Map<String, dynamic>,
-        ),
-  iosSelector: json['iosSelector'] == null
-      ? null
-      : IOSSelector.fromJson(json['iosSelector'] as Map<String, dynamic>),
-  appId: json['appId'] as String,
+      : AndroidSelector.fromJson(json['selector'] as Map<String, dynamic>),
 );
 
-Map<String, dynamic> _$GetNativeViewsRequestToJson(
-  GetNativeViewsRequest instance,
-) => <String, dynamic>{
-  'selector': instance.selector?.toJson(),
-  'androidSelector': instance.androidSelector?.toJson(),
-  'iosSelector': instance.iosSelector?.toJson(),
-  'appId': instance.appId,
-};
+Map<String, dynamic> _$AndroidGetNativeViewsRequestToJson(
+  AndroidGetNativeViewsRequest instance,
+) => <String, dynamic>{'selector': instance.selector?.toJson()};
 
-GetNativeUITreeRequest _$GetNativeUITreeRequestFromJson(
+IOSGetNativeViewsRequest _$IOSGetNativeViewsRequestFromJson(
   Map<String, dynamic> json,
-) => GetNativeUITreeRequest(
+) => IOSGetNativeViewsRequest(
+  selector: json['selector'] == null
+      ? null
+      : IOSSelector.fromJson(json['selector'] as Map<String, dynamic>),
   iosInstalledApps: (json['iosInstalledApps'] as List<dynamic>?)
       ?.map((e) => e as String)
       .toList(),
-  useNativeViewHierarchy: json['useNativeViewHierarchy'] as bool,
+  appId: json['appId'] as String,
 );
 
-Map<String, dynamic> _$GetNativeUITreeRequestToJson(
-  GetNativeUITreeRequest instance,
+Map<String, dynamic> _$IOSGetNativeViewsRequestToJson(
+  IOSGetNativeViewsRequest instance,
 ) => <String, dynamic>{
+  'selector': instance.selector?.toJson(),
   'iosInstalledApps': instance.iosInstalledApps,
-  'useNativeViewHierarchy': instance.useNativeViewHierarchy,
-};
-
-GetNativeUITreeRespone _$GetNativeUITreeResponeFromJson(
-  Map<String, dynamic> json,
-) => GetNativeUITreeRespone(
-  iOSroots: (json['iOSroots'] as List<dynamic>)
-      .map((e) => IOSNativeView.fromJson(e as Map<String, dynamic>))
-      .toList(),
-  androidRoots: (json['androidRoots'] as List<dynamic>)
-      .map((e) => AndroidNativeView.fromJson(e as Map<String, dynamic>))
-      .toList(),
-  roots: (json['roots'] as List<dynamic>)
-      .map((e) => NativeView.fromJson(e as Map<String, dynamic>))
-      .toList(),
-);
-
-Map<String, dynamic> _$GetNativeUITreeResponeToJson(
-  GetNativeUITreeRespone instance,
-) => <String, dynamic>{
-  'iOSroots': instance.iOSroots.map((e) => e.toJson()).toList(),
-  'androidRoots': instance.androidRoots.map((e) => e.toJson()).toList(),
-  'roots': instance.roots.map((e) => e.toJson()).toList(),
+  'appId': instance.appId,
 };
 
 AndroidNativeView _$AndroidNativeViewFromJson(Map<String, dynamic> json) =>
@@ -463,8 +384,10 @@ IOSNativeView _$IOSNativeViewFromJson(Map<String, dynamic> json) =>
       isEnabled: json['isEnabled'] as bool,
       isSelected: json['isSelected'] as bool,
       frame: Rectangle.fromJson(json['frame'] as Map<String, dynamic>),
+      accessibilityLabel: json['accessibilityLabel'] as String?,
       placeholderValue: json['placeholderValue'] as String?,
       value: json['value'] as String?,
+      bundleId: json['bundleId'] as String?,
     );
 
 Map<String, dynamic> _$IOSNativeViewToJson(IOSNativeView instance) =>
@@ -478,9 +401,35 @@ Map<String, dynamic> _$IOSNativeViewToJson(IOSNativeView instance) =>
       'isEnabled': instance.isEnabled,
       'isSelected': instance.isSelected,
       'frame': instance.frame.toJson(),
+      'accessibilityLabel': instance.accessibilityLabel,
       'placeholderValue': instance.placeholderValue,
       'value': instance.value,
+      'bundleId': instance.bundleId,
     };
+
+AndroidGetNativeViewsResponse _$AndroidGetNativeViewsResponseFromJson(
+  Map<String, dynamic> json,
+) => AndroidGetNativeViewsResponse(
+  roots: (json['roots'] as List<dynamic>)
+      .map((e) => AndroidNativeView.fromJson(e as Map<String, dynamic>))
+      .toList(),
+);
+
+Map<String, dynamic> _$AndroidGetNativeViewsResponseToJson(
+  AndroidGetNativeViewsResponse instance,
+) => <String, dynamic>{'roots': instance.roots.map((e) => e.toJson()).toList()};
+
+IOSGetNativeViewsResponse _$IOSGetNativeViewsResponseFromJson(
+  Map<String, dynamic> json,
+) => IOSGetNativeViewsResponse(
+  roots: (json['roots'] as List<dynamic>)
+      .map((e) => IOSNativeView.fromJson(e as Map<String, dynamic>))
+      .toList(),
+);
+
+Map<String, dynamic> _$IOSGetNativeViewsResponseToJson(
+  IOSGetNativeViewsResponse instance,
+) => <String, dynamic>{'roots': instance.roots.map((e) => e.toJson()).toList()};
 
 Rectangle _$RectangleFromJson(Map<String, dynamic> json) => Rectangle(
   minX: (json['minX'] as num).toDouble(),
@@ -504,113 +453,102 @@ Map<String, dynamic> _$Point2DToJson(Point2D instance) => <String, dynamic>{
   'y': instance.y,
 };
 
-NativeView _$NativeViewFromJson(Map<String, dynamic> json) => NativeView(
-  className: json['className'] as String?,
-  text: json['text'] as String?,
-  contentDescription: json['contentDescription'] as String?,
-  focused: json['focused'] as bool,
-  enabled: json['enabled'] as bool,
-  childCount: (json['childCount'] as num?)?.toInt(),
-  resourceName: json['resourceName'] as String?,
-  applicationPackage: json['applicationPackage'] as String?,
-  children: (json['children'] as List<dynamic>)
-      .map((e) => NativeView.fromJson(e as Map<String, dynamic>))
-      .toList(),
-);
+AndroidTapRequest _$AndroidTapRequestFromJson(Map<String, dynamic> json) =>
+    AndroidTapRequest(
+      selector: json['selector'] == null
+          ? null
+          : AndroidSelector.fromJson(json['selector'] as Map<String, dynamic>),
+      timeoutMillis: (json['timeoutMillis'] as num?)?.toInt(),
+      delayBetweenTapsMillis: (json['delayBetweenTapsMillis'] as num?)?.toInt(),
+    );
 
-Map<String, dynamic> _$NativeViewToJson(NativeView instance) =>
-    <String, dynamic>{
-      'className': instance.className,
-      'text': instance.text,
-      'contentDescription': instance.contentDescription,
-      'focused': instance.focused,
-      'enabled': instance.enabled,
-      'childCount': instance.childCount,
-      'resourceName': instance.resourceName,
-      'applicationPackage': instance.applicationPackage,
-      'children': instance.children.map((e) => e.toJson()).toList(),
-    };
-
-GetNativeViewsResponse _$GetNativeViewsResponseFromJson(
-  Map<String, dynamic> json,
-) => GetNativeViewsResponse(
-  nativeViews: (json['nativeViews'] as List<dynamic>)
-      .map((e) => NativeView.fromJson(e as Map<String, dynamic>))
-      .toList(),
-  iosNativeViews: (json['iosNativeViews'] as List<dynamic>)
-      .map((e) => IOSNativeView.fromJson(e as Map<String, dynamic>))
-      .toList(),
-  androidNativeViews: (json['androidNativeViews'] as List<dynamic>)
-      .map((e) => AndroidNativeView.fromJson(e as Map<String, dynamic>))
-      .toList(),
-);
-
-Map<String, dynamic> _$GetNativeViewsResponseToJson(
-  GetNativeViewsResponse instance,
-) => <String, dynamic>{
-  'nativeViews': instance.nativeViews.map((e) => e.toJson()).toList(),
-  'iosNativeViews': instance.iosNativeViews.map((e) => e.toJson()).toList(),
-  'androidNativeViews': instance.androidNativeViews
-      .map((e) => e.toJson())
-      .toList(),
-};
-
-TapRequest _$TapRequestFromJson(Map<String, dynamic> json) => TapRequest(
-  selector: json['selector'] == null
-      ? null
-      : Selector.fromJson(json['selector'] as Map<String, dynamic>),
-  androidSelector: json['androidSelector'] == null
-      ? null
-      : AndroidSelector.fromJson(
-          json['androidSelector'] as Map<String, dynamic>,
-        ),
-  iosSelector: json['iosSelector'] == null
-      ? null
-      : IOSSelector.fromJson(json['iosSelector'] as Map<String, dynamic>),
-  appId: json['appId'] as String,
-  timeoutMillis: (json['timeoutMillis'] as num?)?.toInt(),
-  delayBetweenTapsMillis: (json['delayBetweenTapsMillis'] as num?)?.toInt(),
-);
-
-Map<String, dynamic> _$TapRequestToJson(TapRequest instance) =>
+Map<String, dynamic> _$AndroidTapRequestToJson(AndroidTapRequest instance) =>
     <String, dynamic>{
       'selector': instance.selector?.toJson(),
-      'androidSelector': instance.androidSelector?.toJson(),
-      'iosSelector': instance.iosSelector?.toJson(),
-      'appId': instance.appId,
       'timeoutMillis': instance.timeoutMillis,
       'delayBetweenTapsMillis': instance.delayBetweenTapsMillis,
     };
 
-TapAtRequest _$TapAtRequestFromJson(Map<String, dynamic> json) => TapAtRequest(
-  x: (json['x'] as num).toDouble(),
-  y: (json['y'] as num).toDouble(),
-  appId: json['appId'] as String,
-);
+IOSTapRequest _$IOSTapRequestFromJson(Map<String, dynamic> json) =>
+    IOSTapRequest(
+      selector: IOSSelector.fromJson(json['selector'] as Map<String, dynamic>),
+      appId: json['appId'] as String,
+      timeoutMillis: (json['timeoutMillis'] as num?)?.toInt(),
+    );
 
-Map<String, dynamic> _$TapAtRequestToJson(TapAtRequest instance) =>
+Map<String, dynamic> _$IOSTapRequestToJson(IOSTapRequest instance) =>
+    <String, dynamic>{
+      'selector': instance.selector.toJson(),
+      'appId': instance.appId,
+      'timeoutMillis': instance.timeoutMillis,
+    };
+
+AndroidTapAtRequest _$AndroidTapAtRequestFromJson(Map<String, dynamic> json) =>
+    AndroidTapAtRequest(
+      x: (json['x'] as num).toDouble(),
+      y: (json['y'] as num).toDouble(),
+    );
+
+Map<String, dynamic> _$AndroidTapAtRequestToJson(
+  AndroidTapAtRequest instance,
+) => <String, dynamic>{'x': instance.x, 'y': instance.y};
+
+IOSTapAtRequest _$IOSTapAtRequestFromJson(Map<String, dynamic> json) =>
+    IOSTapAtRequest(
+      x: (json['x'] as num).toDouble(),
+      y: (json['y'] as num).toDouble(),
+      appId: json['appId'] as String,
+    );
+
+Map<String, dynamic> _$IOSTapAtRequestToJson(IOSTapAtRequest instance) =>
     <String, dynamic>{
       'x': instance.x,
       'y': instance.y,
       'appId': instance.appId,
     };
 
-EnterTextRequest _$EnterTextRequestFromJson(Map<String, dynamic> json) =>
-    EnterTextRequest(
+AndroidEnterTextRequest _$AndroidEnterTextRequestFromJson(
+  Map<String, dynamic> json,
+) => AndroidEnterTextRequest(
+  data: json['data'] as String,
+  index: (json['index'] as num?)?.toInt(),
+  selector: json['selector'] == null
+      ? null
+      : AndroidSelector.fromJson(json['selector'] as Map<String, dynamic>),
+  keyboardBehavior: $enumDecode(
+    _$KeyboardBehaviorEnumMap,
+    json['keyboardBehavior'],
+  ),
+  timeoutMillis: (json['timeoutMillis'] as num?)?.toInt(),
+  dx: (json['dx'] as num?)?.toDouble(),
+  dy: (json['dy'] as num?)?.toDouble(),
+);
+
+Map<String, dynamic> _$AndroidEnterTextRequestToJson(
+  AndroidEnterTextRequest instance,
+) => <String, dynamic>{
+  'data': instance.data,
+  'index': instance.index,
+  'selector': instance.selector?.toJson(),
+  'keyboardBehavior': _$KeyboardBehaviorEnumMap[instance.keyboardBehavior]!,
+  'timeoutMillis': instance.timeoutMillis,
+  'dx': instance.dx,
+  'dy': instance.dy,
+};
+
+const _$KeyboardBehaviorEnumMap = {
+  KeyboardBehavior.showAndDismiss: 'showAndDismiss',
+  KeyboardBehavior.alternative: 'alternative',
+};
+
+IOSEnterTextRequest _$IOSEnterTextRequestFromJson(Map<String, dynamic> json) =>
+    IOSEnterTextRequest(
       data: json['data'] as String,
       appId: json['appId'] as String,
       index: (json['index'] as num?)?.toInt(),
       selector: json['selector'] == null
           ? null
-          : Selector.fromJson(json['selector'] as Map<String, dynamic>),
-      androidSelector: json['androidSelector'] == null
-          ? null
-          : AndroidSelector.fromJson(
-              json['androidSelector'] as Map<String, dynamic>,
-            ),
-      iosSelector: json['iosSelector'] == null
-          ? null
-          : IOSSelector.fromJson(json['iosSelector'] as Map<String, dynamic>),
+          : IOSSelector.fromJson(json['selector'] as Map<String, dynamic>),
       keyboardBehavior: $enumDecode(
         _$KeyboardBehaviorEnumMap,
         json['keyboardBehavior'],
@@ -620,68 +558,82 @@ EnterTextRequest _$EnterTextRequestFromJson(Map<String, dynamic> json) =>
       dy: (json['dy'] as num?)?.toDouble(),
     );
 
-Map<String, dynamic> _$EnterTextRequestToJson(EnterTextRequest instance) =>
-    <String, dynamic>{
-      'data': instance.data,
-      'appId': instance.appId,
-      'index': instance.index,
-      'selector': instance.selector?.toJson(),
-      'androidSelector': instance.androidSelector?.toJson(),
-      'iosSelector': instance.iosSelector?.toJson(),
-      'keyboardBehavior': _$KeyboardBehaviorEnumMap[instance.keyboardBehavior]!,
-      'timeoutMillis': instance.timeoutMillis,
-      'dx': instance.dx,
-      'dy': instance.dy,
-    };
-
-const _$KeyboardBehaviorEnumMap = {
-  KeyboardBehavior.showAndDismiss: 'showAndDismiss',
-  KeyboardBehavior.alternative: 'alternative',
+Map<String, dynamic> _$IOSEnterTextRequestToJson(
+  IOSEnterTextRequest instance,
+) => <String, dynamic>{
+  'data': instance.data,
+  'appId': instance.appId,
+  'index': instance.index,
+  'selector': instance.selector?.toJson(),
+  'keyboardBehavior': _$KeyboardBehaviorEnumMap[instance.keyboardBehavior]!,
+  'timeoutMillis': instance.timeoutMillis,
+  'dx': instance.dx,
+  'dy': instance.dy,
 };
 
-SwipeRequest _$SwipeRequestFromJson(Map<String, dynamic> json) => SwipeRequest(
-  appId: json['appId'] as String,
-  startX: (json['startX'] as num).toDouble(),
-  startY: (json['startY'] as num).toDouble(),
-  endX: (json['endX'] as num).toDouble(),
-  endY: (json['endY'] as num).toDouble(),
-  steps: (json['steps'] as num).toInt(),
-);
+AndroidSwipeRequest _$AndroidSwipeRequestFromJson(Map<String, dynamic> json) =>
+    AndroidSwipeRequest(
+      startX: (json['startX'] as num).toDouble(),
+      startY: (json['startY'] as num).toDouble(),
+      endX: (json['endX'] as num).toDouble(),
+      endY: (json['endY'] as num).toDouble(),
+      steps: (json['steps'] as num).toInt(),
+    );
 
-Map<String, dynamic> _$SwipeRequestToJson(SwipeRequest instance) =>
+Map<String, dynamic> _$AndroidSwipeRequestToJson(
+  AndroidSwipeRequest instance,
+) => <String, dynamic>{
+  'startX': instance.startX,
+  'startY': instance.startY,
+  'endX': instance.endX,
+  'endY': instance.endY,
+  'steps': instance.steps,
+};
+
+IOSSwipeRequest _$IOSSwipeRequestFromJson(Map<String, dynamic> json) =>
+    IOSSwipeRequest(
+      appId: json['appId'] as String,
+      startX: (json['startX'] as num).toDouble(),
+      startY: (json['startY'] as num).toDouble(),
+      endX: (json['endX'] as num).toDouble(),
+      endY: (json['endY'] as num).toDouble(),
+    );
+
+Map<String, dynamic> _$IOSSwipeRequestToJson(IOSSwipeRequest instance) =>
     <String, dynamic>{
       'appId': instance.appId,
       'startX': instance.startX,
       'startY': instance.startY,
       'endX': instance.endX,
       'endY': instance.endY,
-      'steps': instance.steps,
     };
 
-WaitUntilVisibleRequest _$WaitUntilVisibleRequestFromJson(
+AndroidWaitUntilVisibleRequest _$AndroidWaitUntilVisibleRequestFromJson(
   Map<String, dynamic> json,
-) => WaitUntilVisibleRequest(
-  selector: json['selector'] == null
-      ? null
-      : Selector.fromJson(json['selector'] as Map<String, dynamic>),
-  androidSelector: json['androidSelector'] == null
-      ? null
-      : AndroidSelector.fromJson(
-          json['androidSelector'] as Map<String, dynamic>,
-        ),
-  iosSelector: json['iosSelector'] == null
-      ? null
-      : IOSSelector.fromJson(json['iosSelector'] as Map<String, dynamic>),
+) => AndroidWaitUntilVisibleRequest(
+  selector: AndroidSelector.fromJson(json['selector'] as Map<String, dynamic>),
+  timeoutMillis: (json['timeoutMillis'] as num?)?.toInt(),
+);
+
+Map<String, dynamic> _$AndroidWaitUntilVisibleRequestToJson(
+  AndroidWaitUntilVisibleRequest instance,
+) => <String, dynamic>{
+  'selector': instance.selector.toJson(),
+  'timeoutMillis': instance.timeoutMillis,
+};
+
+IOSTwaitUntilVisibleRequest _$IOSTwaitUntilVisibleRequestFromJson(
+  Map<String, dynamic> json,
+) => IOSTwaitUntilVisibleRequest(
+  selector: IOSSelector.fromJson(json['selector'] as Map<String, dynamic>),
   appId: json['appId'] as String,
   timeoutMillis: (json['timeoutMillis'] as num?)?.toInt(),
 );
 
-Map<String, dynamic> _$WaitUntilVisibleRequestToJson(
-  WaitUntilVisibleRequest instance,
+Map<String, dynamic> _$IOSTwaitUntilVisibleRequestToJson(
+  IOSTwaitUntilVisibleRequest instance,
 ) => <String, dynamic>{
-  'selector': instance.selector?.toJson(),
-  'androidSelector': instance.androidSelector?.toJson(),
-  'iosSelector': instance.iosSelector?.toJson(),
+  'selector': instance.selector.toJson(),
   'appId': instance.appId,
   'timeoutMillis': instance.timeoutMillis,
 };
@@ -729,31 +681,39 @@ Map<String, dynamic> _$GetNotificationsRequestToJson(
   GetNotificationsRequest instance,
 ) => <String, dynamic>{};
 
-TapOnNotificationRequest _$TapOnNotificationRequestFromJson(
+AndroidTapOnNotificationRequest _$AndroidTapOnNotificationRequestFromJson(
   Map<String, dynamic> json,
-) => TapOnNotificationRequest(
+) => AndroidTapOnNotificationRequest(
   index: (json['index'] as num?)?.toInt(),
   selector: json['selector'] == null
       ? null
-      : Selector.fromJson(json['selector'] as Map<String, dynamic>),
-  androidSelector: json['androidSelector'] == null
-      ? null
-      : AndroidSelector.fromJson(
-          json['androidSelector'] as Map<String, dynamic>,
-        ),
-  iosSelector: json['iosSelector'] == null
-      ? null
-      : IOSSelector.fromJson(json['iosSelector'] as Map<String, dynamic>),
+      : AndroidSelector.fromJson(json['selector'] as Map<String, dynamic>),
   timeoutMillis: (json['timeoutMillis'] as num?)?.toInt(),
 );
 
-Map<String, dynamic> _$TapOnNotificationRequestToJson(
-  TapOnNotificationRequest instance,
+Map<String, dynamic> _$AndroidTapOnNotificationRequestToJson(
+  AndroidTapOnNotificationRequest instance,
 ) => <String, dynamic>{
   'index': instance.index,
   'selector': instance.selector?.toJson(),
-  'androidSelector': instance.androidSelector?.toJson(),
-  'iosSelector': instance.iosSelector?.toJson(),
+  'timeoutMillis': instance.timeoutMillis,
+};
+
+IOSTapOnNotificationRequest _$IOSTapOnNotificationRequestFromJson(
+  Map<String, dynamic> json,
+) => IOSTapOnNotificationRequest(
+  index: (json['index'] as num?)?.toInt(),
+  selector: json['selector'] == null
+      ? null
+      : IOSSelector.fromJson(json['selector'] as Map<String, dynamic>),
+  timeoutMillis: (json['timeoutMillis'] as num?)?.toInt(),
+);
+
+Map<String, dynamic> _$IOSTapOnNotificationRequestToJson(
+  IOSTapOnNotificationRequest instance,
+) => <String, dynamic>{
+  'index': instance.index,
+  'selector': instance.selector?.toJson(),
   'timeoutMillis': instance.timeoutMillis,
 };
 
@@ -847,121 +807,133 @@ Map<String, dynamic> _$GetOsVersionResponseToJson(
   GetOsVersionResponse instance,
 ) => <String, dynamic>{'osVersion': instance.osVersion};
 
-TakeCameraPhotoRequest _$TakeCameraPhotoRequestFromJson(
+AndroidTakeCameraPhotoRequest _$AndroidTakeCameraPhotoRequestFromJson(
   Map<String, dynamic> json,
-) => TakeCameraPhotoRequest(
+) => AndroidTakeCameraPhotoRequest(
   shutterButtonSelector: json['shutterButtonSelector'] == null
       ? null
-      : Selector.fromJson(
-          json['shutterButtonSelector'] as Map<String, dynamic>,
-        ),
-  androidShutterButtonSelector: json['androidShutterButtonSelector'] == null
-      ? null
       : AndroidSelector.fromJson(
-          json['androidShutterButtonSelector'] as Map<String, dynamic>,
-        ),
-  iosShutterButtonSelector: json['iosShutterButtonSelector'] == null
-      ? null
-      : IOSSelector.fromJson(
-          json['iosShutterButtonSelector'] as Map<String, dynamic>,
+          json['shutterButtonSelector'] as Map<String, dynamic>,
         ),
   doneButtonSelector: json['doneButtonSelector'] == null
       ? null
-      : Selector.fromJson(json['doneButtonSelector'] as Map<String, dynamic>),
-  androidDoneButtonSelector: json['androidDoneButtonSelector'] == null
-      ? null
       : AndroidSelector.fromJson(
-          json['androidDoneButtonSelector'] as Map<String, dynamic>,
+          json['doneButtonSelector'] as Map<String, dynamic>,
         ),
   timeoutMillis: (json['timeoutMillis'] as num?)?.toInt(),
-  iosDoneButtonSelector: json['iosDoneButtonSelector'] == null
-      ? null
-      : IOSSelector.fromJson(
-          json['iosDoneButtonSelector'] as Map<String, dynamic>,
-        ),
-  appId: json['appId'] as String,
-  isNative2: json['isNative2'] as bool,
 );
 
-Map<String, dynamic> _$TakeCameraPhotoRequestToJson(
-  TakeCameraPhotoRequest instance,
+Map<String, dynamic> _$AndroidTakeCameraPhotoRequestToJson(
+  AndroidTakeCameraPhotoRequest instance,
 ) => <String, dynamic>{
   'shutterButtonSelector': instance.shutterButtonSelector?.toJson(),
-  'androidShutterButtonSelector': instance.androidShutterButtonSelector
-      ?.toJson(),
-  'iosShutterButtonSelector': instance.iosShutterButtonSelector?.toJson(),
   'doneButtonSelector': instance.doneButtonSelector?.toJson(),
-  'androidDoneButtonSelector': instance.androidDoneButtonSelector?.toJson(),
   'timeoutMillis': instance.timeoutMillis,
-  'iosDoneButtonSelector': instance.iosDoneButtonSelector?.toJson(),
-  'appId': instance.appId,
-  'isNative2': instance.isNative2,
 };
 
-PickImageFromGalleryRequest _$PickImageFromGalleryRequestFromJson(
+IOSTakeCameraPhotoRequest _$IOSTakeCameraPhotoRequestFromJson(
   Map<String, dynamic> json,
-) => PickImageFromGalleryRequest(
+) => IOSTakeCameraPhotoRequest(
+  shutterButtonSelector: json['shutterButtonSelector'] == null
+      ? null
+      : IOSSelector.fromJson(
+          json['shutterButtonSelector'] as Map<String, dynamic>,
+        ),
+  doneButtonSelector: json['doneButtonSelector'] == null
+      ? null
+      : IOSSelector.fromJson(
+          json['doneButtonSelector'] as Map<String, dynamic>,
+        ),
+  timeoutMillis: (json['timeoutMillis'] as num?)?.toInt(),
+  appId: json['appId'] as String,
+);
+
+Map<String, dynamic> _$IOSTakeCameraPhotoRequestToJson(
+  IOSTakeCameraPhotoRequest instance,
+) => <String, dynamic>{
+  'shutterButtonSelector': instance.shutterButtonSelector?.toJson(),
+  'doneButtonSelector': instance.doneButtonSelector?.toJson(),
+  'timeoutMillis': instance.timeoutMillis,
+  'appId': instance.appId,
+};
+
+AndroidPickImageFromGalleryRequest _$AndroidPickImageFromGalleryRequestFromJson(
+  Map<String, dynamic> json,
+) => AndroidPickImageFromGalleryRequest(
   imageSelector: json['imageSelector'] == null
       ? null
-      : Selector.fromJson(json['imageSelector'] as Map<String, dynamic>),
-  androidImageSelector: json['androidImageSelector'] == null
+      : AndroidSelector.fromJson(json['imageSelector'] as Map<String, dynamic>),
+  imageIndex: (json['imageIndex'] as num?)?.toInt(),
+  timeoutMillis: (json['timeoutMillis'] as num?)?.toInt(),
+);
+
+Map<String, dynamic> _$AndroidPickImageFromGalleryRequestToJson(
+  AndroidPickImageFromGalleryRequest instance,
+) => <String, dynamic>{
+  'imageSelector': instance.imageSelector?.toJson(),
+  'imageIndex': instance.imageIndex,
+  'timeoutMillis': instance.timeoutMillis,
+};
+
+IOSPickImageFromGalleryRequest _$IOSPickImageFromGalleryRequestFromJson(
+  Map<String, dynamic> json,
+) => IOSPickImageFromGalleryRequest(
+  imageSelector: json['imageSelector'] == null
       ? null
-      : AndroidSelector.fromJson(
-          json['androidImageSelector'] as Map<String, dynamic>,
-        ),
-  iosImageSelector: json['iosImageSelector'] == null
-      ? null
-      : IOSSelector.fromJson(json['iosImageSelector'] as Map<String, dynamic>),
+      : IOSSelector.fromJson(json['imageSelector'] as Map<String, dynamic>),
   imageIndex: (json['imageIndex'] as num?)?.toInt(),
   timeoutMillis: (json['timeoutMillis'] as num?)?.toInt(),
   appId: json['appId'] as String,
-  isNative2: json['isNative2'] as bool,
 );
 
-Map<String, dynamic> _$PickImageFromGalleryRequestToJson(
-  PickImageFromGalleryRequest instance,
+Map<String, dynamic> _$IOSPickImageFromGalleryRequestToJson(
+  IOSPickImageFromGalleryRequest instance,
 ) => <String, dynamic>{
   'imageSelector': instance.imageSelector?.toJson(),
-  'androidImageSelector': instance.androidImageSelector?.toJson(),
-  'iosImageSelector': instance.iosImageSelector?.toJson(),
   'imageIndex': instance.imageIndex,
   'timeoutMillis': instance.timeoutMillis,
   'appId': instance.appId,
-  'isNative2': instance.isNative2,
 };
 
-PickMultipleImagesFromGalleryRequest
-_$PickMultipleImagesFromGalleryRequestFromJson(Map<String, dynamic> json) =>
-    PickMultipleImagesFromGalleryRequest(
+AndroidPickMultipleImagesFromGalleryRequest
+_$AndroidPickMultipleImagesFromGalleryRequestFromJson(
+  Map<String, dynamic> json,
+) => AndroidPickMultipleImagesFromGalleryRequest(
+  imageSelector: json['imageSelector'] == null
+      ? null
+      : AndroidSelector.fromJson(json['imageSelector'] as Map<String, dynamic>),
+  imageIndexes: (json['imageIndexes'] as List<dynamic>)
+      .map((e) => (e as num).toInt())
+      .toList(),
+  timeoutMillis: (json['timeoutMillis'] as num?)?.toInt(),
+);
+
+Map<String, dynamic> _$AndroidPickMultipleImagesFromGalleryRequestToJson(
+  AndroidPickMultipleImagesFromGalleryRequest instance,
+) => <String, dynamic>{
+  'imageSelector': instance.imageSelector?.toJson(),
+  'imageIndexes': instance.imageIndexes,
+  'timeoutMillis': instance.timeoutMillis,
+};
+
+IOSPickMultipleImagesFromGalleryRequest
+_$IOSPickMultipleImagesFromGalleryRequestFromJson(Map<String, dynamic> json) =>
+    IOSPickMultipleImagesFromGalleryRequest(
       imageSelector: json['imageSelector'] == null
           ? null
-          : Selector.fromJson(json['imageSelector'] as Map<String, dynamic>),
-      androidImageSelector: json['androidImageSelector'] == null
-          ? null
-          : AndroidSelector.fromJson(
-              json['androidImageSelector'] as Map<String, dynamic>,
-            ),
-      iosImageSelector: json['iosImageSelector'] == null
-          ? null
-          : IOSSelector.fromJson(
-              json['iosImageSelector'] as Map<String, dynamic>,
-            ),
+          : IOSSelector.fromJson(json['imageSelector'] as Map<String, dynamic>),
       imageIndexes: (json['imageIndexes'] as List<dynamic>)
           .map((e) => (e as num).toInt())
           .toList(),
       timeoutMillis: (json['timeoutMillis'] as num?)?.toInt(),
       appId: json['appId'] as String,
-      isNative2: json['isNative2'] as bool,
     );
 
-Map<String, dynamic> _$PickMultipleImagesFromGalleryRequestToJson(
-  PickMultipleImagesFromGalleryRequest instance,
+Map<String, dynamic> _$IOSPickMultipleImagesFromGalleryRequestToJson(
+  IOSPickMultipleImagesFromGalleryRequest instance,
 ) => <String, dynamic>{
   'imageSelector': instance.imageSelector?.toJson(),
-  'androidImageSelector': instance.androidImageSelector?.toJson(),
-  'iosImageSelector': instance.iosImageSelector?.toJson(),
   'imageIndexes': instance.imageIndexes,
   'timeoutMillis': instance.timeoutMillis,
   'appId': instance.appId,
-  'isNative2': instance.isNative2,
 };

@@ -1,4 +1,5 @@
 import 'package:patrol_devtools_extension/api/contracts.dart';
+import 'package:patrol_devtools_extension/api/native_views.dart';
 
 part 'android_node.dart';
 part 'ios_node.dart';

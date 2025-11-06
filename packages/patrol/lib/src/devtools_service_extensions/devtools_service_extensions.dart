@@ -10,19 +10,10 @@ class DevtoolsServiceExtensions {
 
   /// Fetches the native UI tree based on the given [parameters].
   Future<Map<String, dynamic>> getNativeUITree(Map<String, String> parameters) {
-    final useNativeViewHierarchy =
-        parameters['useNativeViewHierarchy'] == 'yes';
-
-    return platform.actionSafe(
-      android: (android) => android.getNativeUITree(
-        useNativeViewHierarchy: useNativeViewHierarchy,
-      ),
-      ios: (ios) =>
-          ios.getNativeUITree(useNativeViewHierarchy: useNativeViewHierarchy),
-      web: (web) =>
-          web.getNativeUITree(useNativeViewHierarchy: useNativeViewHierarchy),
-      macos: (macos) =>
-          macos.getNativeUITree(useNativeViewHierarchy: useNativeViewHierarchy),
+    return platform.action(
+      android: () async =>
+          (await platform.android.getNativeViews(null)).toJson(),
+      ios: () async => (await platform.ios.getNativeViews(null)).toJson(),
     );
   }
 }
