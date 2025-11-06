@@ -2,6 +2,7 @@ import 'dart:collection';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:web/web.dart' as web;
 
 import 'common.dart';
 
@@ -150,6 +151,37 @@ void main() {
   //   await $.pumpAndSettle();
   //   await Future<void>.delayed(const Duration(seconds: 2));
   // });
+
+  patrol('get dialog message and accept', ($) async {
+    await $.pumpWidgetAndSettle(const ExampleApp());
+
+    final messageFuture = $.native2.getDialogMessage();
+    await $('Show Alert').scrollTo().tap();
+
+    final message = await messageFuture;
+    expect(message, 'This is an alert!');
+
+    await $.pumpAndSettle();
+    await Future<void>.delayed(const Duration(seconds: 1));
+  });
+
+  patrol('dismiss confirm dialog', ($) async {
+    await $.pumpWidgetAndSettle(const ExampleApp());
+
+    await $.native2.dismissDialog();
+    await $('Show Confirm').scrollTo().tap();
+    await $.pumpAndSettle();
+    await Future<void>.delayed(const Duration(seconds: 1));
+  });
+
+  patrol('accept confirm dialog', ($) async {
+    await $.pumpWidgetAndSettle(const ExampleApp());
+
+    await $.native2.acceptDialog();
+    await $('Show Confirm').scrollTo().tap();
+    await $.pumpAndSettle();
+    await Future<void>.delayed(const Duration(seconds: 1));
+  });
 }
 
 class ExampleApp extends StatefulWidget {
@@ -161,7 +193,9 @@ class ExampleApp extends StatefulWidget {
 
 class _ExampleAppState extends State<ExampleApp> {
   String? _uploadedFileName;
+  String? _dialogResult;
   late final GoRouter _router;
+  final _routerRefreshNotifier = ValueNotifier<int>(0);
 
   @override
   void initState() {
@@ -173,18 +207,53 @@ class _ExampleAppState extends State<ExampleApp> {
           path: '/',
           builder: (context, state) => _HomePage(
             uploadedFileName: _uploadedFileName,
+            dialogResult: _dialogResult,
             onUpload: _handleFileUpload,
+            onShowAlert: _handleShowAlert,
+            onShowConfirm: _handleShowConfirm,
           ),
         ),
         GoRoute(path: '/page1', builder: (context, state) => const _Page1()),
       ],
+      refreshListenable: _routerRefreshNotifier,
     );
+  }
+
+  void _notifyRouterRefresh() {
+    _routerRefreshNotifier.value++;
   }
 
   void _handleFileUpload() {
     setState(() {
       _uploadedFileName = 'example_file.txt';
     });
+    _notifyRouterRefresh();
+  }
+
+  void _handleShowAlert() {
+    web.window.alert('This is an alert!');
+    setState(() {
+      _dialogResult = 'Alert was accepted';
+    });
+    _notifyRouterRefresh();
+  }
+
+  void _handleShowConfirm() {
+    final confirmed = web.window.confirm('Do you confirm?');
+    print('DEBUG: confirmed = $confirmed');
+    setState(() {
+      _dialogResult = confirmed
+          ? 'Confirm was accepted'
+          : 'Confirm was dismissed';
+    });
+    print('DEBUG: _dialogResult = $_dialogResult');
+    _notifyRouterRefresh();
+  }
+
+  @override
+  void dispose() {
+    _routerRefreshNotifier.dispose();
+    super.dispose();
   }
 
   @override
@@ -207,10 +276,19 @@ class _ExampleAppState extends State<ExampleApp> {
 }
 
 class _HomePage extends StatelessWidget {
-  const _HomePage({required this.uploadedFileName, required this.onUpload});
+  const _HomePage({
+    required this.uploadedFileName,
+    required this.dialogResult,
+    required this.onUpload,
+    required this.onShowAlert,
+    required this.onShowConfirm,
+  });
 
   final String? uploadedFileName;
+  final String? dialogResult;
   final VoidCallback onUpload;
+  final VoidCallback onShowAlert;
+  final VoidCallback onShowConfirm;
 
   @override
   Widget build(BuildContext context) {
@@ -257,6 +335,18 @@ class _HomePage extends StatelessWidget {
                     ),
                   ),
                 ),
+              const Divider(),
+              Text('Dialogs', style: Theme.of(context).textTheme.titleMedium),
+              ElevatedButton.icon(
+                onPressed: onShowAlert,
+                icon: const Icon(Icons.info),
+                label: const Text('Show Alert'),
+              ),
+              ElevatedButton.icon(
+                onPressed: onShowConfirm,
+                icon: const Icon(Icons.help),
+                label: const Text('Show Confirm'),
+              ),
               const Divider(),
               Text(
                 'Navigation',
