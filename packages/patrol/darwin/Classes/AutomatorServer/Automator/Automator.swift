@@ -1,101 +1,35 @@
-extension Selector {
-  public func toTextFieldNSPredicate() -> NSPredicate {
-    var format = ""
-    var begun = false
-    var values = [String]()
-
-    if text != nil {
-      begun = true
-      format += "(label == %@ OR title == %@ OR value == %@ OR placeholderValue == %@)"
-      values.append(text!)
-      values.append(text!)
-      values.append(text!)
-      values.append(text!)
-    }
-
-    if textStartsWith != nil {
-      if begun { format += " AND " }
-      begun = true
-      format +=
-        "(label BEGINSWITH %@ OR title BEGINSWITH %@ OR value BEGINSWITH %@ OR placeholderValue BEGINSWITH %@)"
-      values.append(textStartsWith!)
-      values.append(textStartsWith!)
-      values.append(textStartsWith!)
-      values.append(textStartsWith!)
-    }
-
-    if textContains != nil {
-      if begun { format += " AND " }
-      begun = true
-      format +=
-        "(label CONTAINS %@ OR title CONTAINS %@ OR value CONTAINS %@ OR placeholderValue CONTAINS %@)"
-      values.append(textContains!)
-      values.append(textContains!)
-      values.append(textContains!)
-      values.append(textContains!)
-    }
-
-    if resourceId != nil {
-      if begun { format += " AND " }
-      begun = true
-      format += "(identifier == %@)"
-      values.append(resourceId!)
-    }
-
-    let predicate = NSPredicate(format: format, argumentArray: values)
-
-    return predicate
-  }
-
-  public func toNSPredicate() -> NSPredicate {
-    var format = ""
-    var begun = false
-    var values = [String]()
-
-    if text != nil {
-      begun = true
-      format += "(label == %@ OR title == %@)"
-      values.append(text!)
-      values.append(text!)
-    }
-
-    if textStartsWith != nil {
-      if begun { format += " AND " }
-      begun = true
-      format += "(label BEGINSWITH %@ OR title BEGINSWITH %@)"
-      values.append(textStartsWith!)
-      values.append(textStartsWith!)
-    }
-
-    if textContains != nil {
-      if begun { format += " AND " }
-      begun = true
-      format += "(label CONTAINS %@ OR title CONTAINS %@)"
-      values.append(textContains!)
-      values.append(textContains!)
-    }
-
-    if resourceId != nil {
-      if begun { format += " AND " }
-      begun = true
-      format += "(identifier == %@)"
-      values.append(resourceId!)
-    }
-
-    let predicate = NSPredicate(format: format, argumentArray: values)
-
-    return predicate
-  }
-}
-
 #if PATROL_ENABLED
   import XCTest
   import os
 
-  extension IOSSelector {
+  extension Selector {
     public func toNSPredicate() -> NSPredicate {
       var values = [Any]()
       var conditions = [String]()
+
+      if let text = text {
+        conditions.append("(label == %@ OR title == %@ OR value == %@ OR placeholderValue == %@)")
+        values.append(text)
+        values.append(text)
+        values.append(text)
+        values.append(text)
+      }
+
+      if let textStartsWith = textStartsWith {
+        conditions.append("(label BEGINSWITH %@ OR title BEGINSWITH %@ OR value BEGINSWITH %@ OR placeholderValue BEGINSWITH %@)")
+        values.append(textStartsWith)
+        values.append(textStartsWith)
+        values.append(textStartsWith)
+        values.append(textStartsWith)
+      }
+
+      if let textContains = textContains {
+        conditions.append("(label CONTAINS %@ OR title CONTAINS %@ OR value CONTAINS %@ OR placeholderValue CONTAINS %@)")
+        values.append(textContains)
+        values.append(textContains)
+        values.append(textContains)
+        values.append(textContains)
+      }
 
       if let value = value {
         conditions.append("value == %@")
@@ -194,18 +128,8 @@ extension Selector {
       inApp bundleId: String,
       withTimeout timeout: TimeInterval?
     ) throws
-    func tap(
-      on selector: IOSSelector,
-      inApp bundleId: String,
-      withTimeout timeout: TimeInterval?
-    ) throws
     func doubleTap(
       on selector: Selector,
-      inApp bundleId: String,
-      withTimeout timeout: TimeInterval?
-    ) throws
-    func doubleTap(
-      on selector: IOSSelector,
       inApp bundleId: String,
       withTimeout timeout: TimeInterval?
     ) throws
@@ -213,15 +137,6 @@ extension Selector {
     func enterText(
       _ data: String,
       on selector: Selector,
-      inApp bundleId: String,
-      dismissKeyboard: Bool,
-      withTimeout timeout: TimeInterval?,
-      dx: CGFloat,
-      dy: CGFloat
-    ) throws
-    func enterText(
-      _ data: String,
-      on selector: IOSSelector,
       inApp bundleId: String,
       dismissKeyboard: Bool,
       withTimeout timeout: TimeInterval?,
@@ -240,11 +155,6 @@ extension Selector {
     func swipe(from start: CGVector, to end: CGVector, inApp bundleId: String) throws
     func waitUntilVisible(
       on selector: Selector,
-      inApp bundleId: String,
-      withTimeout timeout: TimeInterval?
-    ) throws
-    func waitUntilVisible(
-      on selector: IOSSelector,
       inApp bundleId: String,
       withTimeout timeout: TimeInterval?
     ) throws
@@ -270,12 +180,7 @@ extension Selector {
       on selector: Selector,
       inApp bundleId: String
     ) throws -> [NativeView]
-    func getNativeViews(
-      on selector: IOSSelector,
-      inApp bundleId: String
-    ) throws -> [IOSNativeView]
     func getUITreeRoots(installedApps: [String]) throws -> [NativeView]
-    func getUITreeRootsV2(installedApps: [String]) throws -> GetNativeUITreeRespone
 
     // MARK: Notifications
     func openNotifications() throws

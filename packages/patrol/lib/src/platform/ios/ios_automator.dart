@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:patrol/src/platform/android/contracts/contracts.dart';
+import 'package:patrol/src/platform/ios/contracts/contracts.dart';
 import 'package:patrol/src/platform/mobile/mobile_automator.dart';
 
 /// Provides functionality to interact with the OS that the app under test is
@@ -7,18 +7,11 @@ import 'package:patrol/src/platform/mobile/mobile_automator.dart';
 ///
 /// Communicates over http with the native automation server running on the
 /// target device.
-abstract class AndroidAutomator extends MobileAutomator {
-  /// Presses the back button.
+abstract class IOSAutomator extends MobileAutomator {
+  /// Closes the currently visible heads up notification (iOS only).
   ///
-  /// This method throws on iOS, because there's no back button.
-  ///
-  /// See also:
-  ///  * <https://developer.android.com/reference/androidx/test/uiautomator/UiDevice#pressback>,
-  ///    which is used on Android.
-  Future<void> pressBack();
-
-  /// Double presses the recent apps button.
-  Future<void> pressDoubleRecentApps();
+  /// If no heads up notification is visible, the behavior is undefined.
+  Future<void> closeHeadsUpNotification();
 
   /// Taps on the visible notification using [selector].
   ///
@@ -38,20 +31,6 @@ abstract class AndroidAutomator extends MobileAutomator {
     Selector selector, {
     Duration? timeout,
   });
-
-  /// Enables location.
-  ///
-  /// On Android, opens the location settings screen and toggles the location
-  /// switch to enable location.
-  /// If the location already enabled, it does nothing.
-  Future<void> enableLocation();
-
-  /// Disables location.
-  ///
-  /// On Android, opens the location settings screen and toggles the location
-  /// switch to disable location.
-  /// If the location already enabled, it does nothing.
-  Future<void> disableLocation();
 
   /// Taps on the native view specified by [selector].
   ///
@@ -91,7 +70,7 @@ abstract class AndroidAutomator extends MobileAutomator {
   /// [NativeAutomatorConfig.findTimeout] duration from the configuration.
   ///
   /// The native view specified by [selector] must be:
-  ///  * EditText on Android
+  ///  * EditText or AutoCompleteTextView on Android
   ///  * TextField or SecureTextField on iOS
   ///
   /// See also:
@@ -108,14 +87,9 @@ abstract class AndroidAutomator extends MobileAutomator {
   /// Swipes from [from] to [to].
   ///
   /// [from] and [to] must be in the inclusive 0-1 range.
-  ///
-  /// On Android, [steps] controls speed and smoothness. One unit of [steps] is
-  /// equivalent to 5 ms. If you want to slow down the swipe time, increase
-  /// [steps]. If [swipe] doesn't work, try increasing [steps].
   Future<void> swipe({
     required Offset from,
     required Offset to,
-    int steps = 12,
     String? appId,
     bool enablePatrolLog = true,
   });
@@ -129,6 +103,12 @@ abstract class AndroidAutomator extends MobileAutomator {
     String? appId,
     Duration? timeout,
   });
+
+  /// Returns a list of currently visible native UI controls, specified by
+  /// [selector], which are currently visible on screen.
+  ///
+  /// If [selector] is null, returns the whole native UI tree.
+  Future<List<NativeView>> getNativeViews(Selector selector, {String? appId});
 
   /// Take and confirm the photo
   ///

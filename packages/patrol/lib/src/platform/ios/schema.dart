@@ -34,7 +34,7 @@ class RunDartTestResponse {
   String? details;
 }
 
-abstract class PatrolAppService<AndroidClient, DartServer> {
+abstract class PatrolAppService<IOSClient, DartServer> {
   ListDartTestsResponse listDartTests();
   RunDartTestResponse runDartTest(RunDartTestRequest request);
 }
@@ -54,33 +54,34 @@ class OpenUrlRequest {
 }
 
 class Selector {
-  String? className;
-  bool? isCheckable;
-  bool? isChecked;
-  bool? isClickable;
-  bool? isEnabled;
-  bool? isFocusable;
-  bool? isFocused;
-  bool? isLongClickable;
-  bool? isScrollable;
-  bool? isSelected;
-  String? applicationPackage;
-  String? contentDescription;
-  String? contentDescriptionStartsWith;
-  String? contentDescriptionContains;
+  String? value;
+  int? instance;
+  IOSElementType? elementType;
+  String? identifier;
   String? text;
   String? textStartsWith;
   String? textContains;
-  String? resourceName;
-  int? instance;
+  String? label;
+  String? labelStartsWith;
+  String? labelContains;
+  String? title;
+  String? titleStartsWith;
+  String? titleContains;
+  bool? hasFocus;
+  bool? isEnabled;
+  bool? isSelected;
+  String? placeholderValue;
+  String? placeholderValueStartsWith;
+  String? placeholderValueContains;
 }
 
 class GetNativeViewsRequest {
-  late Selector selector;
+  Selector? selector;
   late String appId;
 }
 
 class GetNativeUITreeRequest {
+  List<String>? iosInstalledApps;
   late bool useNativeViewHierarchy;
 }
 
@@ -89,24 +90,19 @@ class GetNativeUITreeRespone {
 }
 
 class NativeView {
-  String? resourceName;
-  String? text;
-  String? className;
-  String? contentDescription;
-  String? applicationPackage;
-  late int childCount;
-  late bool isCheckable;
-  late bool isChecked;
-  late bool isClickable;
-  late bool isEnabled;
-  late bool isFocusable;
-  late bool isFocused;
-  late bool isLongClickable;
-  late bool isScrollable;
-  late bool isSelected;
-  late Rectangle visibleBounds;
-  late Point2D visibleCenter;
   late List<NativeView> children;
+  late IOSElementType elementType;
+  late String identifier;
+  late String label;
+  late String title;
+  late bool hasFocus;
+  late bool isEnabled;
+  late bool isSelected;
+  late Rectangle frame;
+  String? placeholderValue;
+  String? value;
+  //TODO we can get other properties from XCUIElement in next request
+  // exists, isHittable,normalizedSliderPosition, accessibilityLabel, accessbilityHint, accessibilityValue, isAccessibilityElement etc..;
 }
 
 class Rectangle {
@@ -161,7 +157,7 @@ class SwipeRequest {
 }
 
 class WaitUntilVisibleRequest {
-  late Selector selector;
+  Selector? selector;
   late String appId;
   int? timeoutMillis;
 }
@@ -244,15 +240,13 @@ class PickMultipleImagesFromGalleryRequest {
   late String appId;
 }
 
-abstract class NativeAutomator<AndroidServer, DartClient> {
+abstract class NativeAutomator<IOSServer, DartClient> {
   void initialize();
   void configure(ConfigureRequest request);
 
   // general
   void pressHome();
-  void pressBack();
   void pressRecentApps();
-  void doublePressRecentApps();
   void openApp(OpenAppRequest request);
   void openQuickSettings(OpenQuickSettingsRequest request);
   void openUrl(OpenUrlRequest request);
@@ -282,10 +276,13 @@ abstract class NativeAutomator<AndroidServer, DartClient> {
   void disableBluetooth();
   void enableDarkMode(DarkModeRequest request);
   void disableDarkMode(DarkModeRequest request);
+  void enableLocation();
+  void disableLocation();
 
   // notifications
   void openNotifications();
   void closeNotifications();
+  void closeHeadsUpNotification();
   GetNotificationsResponse getNotifications(GetNotificationsRequest request);
   void tapOnNotification(TapOnNotificationRequest request);
 
@@ -304,6 +301,7 @@ abstract class NativeAutomator<AndroidServer, DartClient> {
   );
 
   // other
+  void debug();
   void setMockLocation(SetMockLocationRequest request);
 
   // TODO(bartekpacia): Move this RPC into a new PatrolNativeTestService service because it doesn't fit here
@@ -314,72 +312,88 @@ abstract class NativeAutomator<AndroidServer, DartClient> {
   GetOsVersionResponse getOsVersion();
 }
 
-abstract class AndroidAutomator<AndroidServer, DartClient> {
-  void initialize();
-  void configure(ConfigureRequest request);
-
-  // general
-  void pressHome();
-  void pressBack();
-  void pressRecentApps();
-  void doublePressRecentApps();
-  void openApp(OpenAppRequest request);
-  void openQuickSettings(OpenQuickSettingsRequest request);
-  void openUrl(OpenUrlRequest request);
-
-  // general UI interaction
-  GetNativeUITreeRespone getNativeUITree(GetNativeUITreeRequest request);
-  GetNativeViewsResponse getNativeViews(GetNativeViewsRequest request);
-  void tap(TapRequest request);
-  void doubleTap(TapRequest request);
-  void tapAt(TapAtRequest request);
-  void enterText(EnterTextRequest request);
-  void swipe(SwipeRequest request);
-  void waitUntilVisible(WaitUntilVisibleRequest request);
-
-  // volume settings
-  void pressVolumeUp();
-  void pressVolumeDown();
-
-  // services
-  void enableAirplaneMode();
-  void disableAirplaneMode();
-  void enableWiFi();
-  void disableWiFi();
-  void enableCellular();
-  void disableCellular();
-  void enableBluetooth();
-  void disableBluetooth();
-  void enableDarkMode(DarkModeRequest request);
-  void disableDarkMode(DarkModeRequest request);
-
-  // notifications
-  void openNotifications();
-  void closeNotifications();
-  GetNotificationsResponse getNotifications(GetNotificationsRequest request);
-  void tapOnNotification(TapOnNotificationRequest request);
-
-  // permissions
-  PermissionDialogVisibleResponse isPermissionDialogVisible(
-    PermissionDialogVisibleRequest request,
-  );
-  void handlePermissionDialog(HandlePermissionRequest request);
-  void setLocationAccuracy(SetLocationAccuracyRequest request);
-
-  // camera
-  void takeCameraPhoto(TakeCameraPhotoRequest request);
-  void pickImageFromGallery(PickImageFromGalleryRequest request);
-  void pickMultipleImagesFromGallery(
-    PickMultipleImagesFromGalleryRequest request,
-  );
-
-  // other
-  void setMockLocation(SetMockLocationRequest request);
-
-  // TODO(bartekpacia): Move this RPC into a new PatrolNativeTestService service because it doesn't fit here
-  void markPatrolAppServiceReady();
-
-  IsVirtualDeviceResponse isVirtualDevice();
-
-  GetOsVersionResponse getOsVersion();
+enum IOSElementType {
+  any,
+  other,
+  application,
+  group,
+  window,
+  sheet,
+  drawer,
+  alert,
+  dialog,
+  button,
+  radioButton,
+  radioGroup,
+  checkBox,
+  disclosureTriangle,
+  popUpButton,
+  comboBox,
+  menuButton,
+  toolbarButton,
+  popover,
+  keyboard,
+  key,
+  navigationBar,
+  tabBar,
+  tabGroup,
+  toolbar,
+  statusBar,
+  table,
+  tableRow,
+  tableColumn,
+  outline,
+  outlineRow,
+  browser,
+  collectionView,
+  slider,
+  pageIndicator,
+  progressIndicator,
+  activityIndicator,
+  segmentedControl,
+  picker,
+  pickerWheel,
+  switch_,
+  toggle,
+  link,
+  image,
+  icon,
+  searchField,
+  scrollView,
+  scrollBar,
+  staticText,
+  textField,
+  secureTextField,
+  datePicker,
+  textView,
+  menu,
+  menuItem,
+  menuBar,
+  menuBarItem,
+  map,
+  webView,
+  incrementArrow,
+  decrementArrow,
+  timeline,
+  ratingIndicator,
+  valueIndicator,
+  splitGroup,
+  splitter,
+  relevanceIndicator,
+  colorWell,
+  helpTag,
+  matte,
+  dockItem,
+  ruler,
+  rulerMarker,
+  grid,
+  levelIndicator,
+  cell,
+  layoutArea,
+  layoutItem,
+  handle,
+  stepper,
+  tab,
+  touchBar,
+  statusItem,
 }

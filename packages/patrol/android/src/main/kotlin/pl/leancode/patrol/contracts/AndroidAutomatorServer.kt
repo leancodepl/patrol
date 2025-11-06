@@ -12,7 +12,7 @@ import org.http4k.routing.bind
 import org.http4k.core.Status.Companion.OK
 import org.http4k.routing.routes
 
-abstract class NativeAutomatorServer {
+abstract class AndroidAutomatorServer {
     abstract fun initialize()
     abstract fun configure(request: Contracts.ConfigureRequest)
     abstract fun pressHome()

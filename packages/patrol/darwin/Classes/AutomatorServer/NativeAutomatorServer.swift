@@ -9,9 +9,7 @@ protocol NativeAutomatorServer {
     func initialize() throws
     func configure(request: ConfigureRequest) throws
     func pressHome() throws
-    func pressBack() throws
     func pressRecentApps() throws
-    func doublePressRecentApps() throws
     func openApp(request: OpenAppRequest) throws
     func openQuickSettings(request: OpenQuickSettingsRequest) throws
     func openUrl(request: OpenUrlRequest) throws
@@ -72,18 +70,8 @@ extension NativeAutomatorServer {
         return HTTPResponse(.ok)
     }
 
-    private func pressBackHandler(request: HTTPRequest) throws -> HTTPResponse {
-        try pressBack()
-        return HTTPResponse(.ok)
-    }
-
     private func pressRecentAppsHandler(request: HTTPRequest) throws -> HTTPResponse {
         try pressRecentApps()
-        return HTTPResponse(.ok)
-    }
-
-    private func doublePressRecentAppsHandler(request: HTTPRequest) throws -> HTTPResponse {
-        try doublePressRecentApps()
         return HTTPResponse(.ok)
     }
 
@@ -338,20 +326,10 @@ extension NativeAutomatorServer {
                 request: request,
                 handler: pressHomeHandler)
         }
-        server.route(.POST, "pressBack") {
-            request in handleRequest(
-                request: request,
-                handler: pressBackHandler)
-        }
         server.route(.POST, "pressRecentApps") {
             request in handleRequest(
                 request: request,
                 handler: pressRecentAppsHandler)
-        }
-        server.route(.POST, "doublePressRecentApps") {
-            request in handleRequest(
-                request: request,
-                handler: doublePressRecentAppsHandler)
         }
         server.route(.POST, "openApp") {
             request in handleRequest(

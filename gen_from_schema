@@ -24,16 +24,26 @@ android_dart_out_dir="$android_root/contracts"
 android_dart_out="$patrol_package/$android_dart_out_dir"
 android_package="pl.leancode.patrol.contracts"
 
-# schemaFilename dartConfig darwingConfig androidConfig androidPackage
+ios_root="lib/src/platform/ios"
+ios_schema="$patrol_package/$ios_root/schema.dart"
+ios_out="$patrol_package/darwin/Classes/AutomatorServer"
+ios_dart_out_dir="$ios_root/contracts"
+ios_dart_out="$patrol_package/$ios_dart_out_dir"
+
+# schemaFilename dartConfig darwinConfig androidConfig androidPackage
 dart run packages/patrol_gen/bin/main.dart "$android_schema" "$android_dart_out" "unused" "$android_out" "$android_package"
-# dart run packages/patrol_gen/bin/main.dart "$android_schema" "$android_dart_out" "unused" "$android_out" "$android_package"
+dart run packages/patrol_gen/bin/main.dart "$ios_schema" "$ios_dart_out" "$ios_out" "unused" "unused"
 
 pushd "${patrol_package}"
 
 dart fix --apply "$android_dart_out_dir"
+dart fix --apply "$ios_dart_out_dir"
+
 dart format "$android_dart_out_dir"
+dart format "$ios_dart_out_dir"
 
 dart run build_runner build --delete-conflicting-outputs --build-filter="$android_dart_out_dir/*.dart"
+dart run build_runner build --delete-conflicting-outputs --build-filter="$ios_dart_out_dir/*.dart"
 
 # popd
 

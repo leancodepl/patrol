@@ -78,6 +78,9 @@ class IOSSelector {
   int? instance;
   IOSElementType? elementType;
   String? identifier;
+  String? text;
+  String? textStartsWith;
+  String? textContains;
   String? label;
   String? labelStartsWith;
   String? labelContains;
@@ -92,37 +95,18 @@ class IOSSelector {
   String? placeholderValueContains;
 }
 
-class Selector {
-  String? text;
-  String? textStartsWith;
-  String? textContains;
-  String? className;
-  String? contentDescription;
-  String? contentDescriptionStartsWith;
-  String? contentDescriptionContains;
-  String? resourceId;
-  int? instance;
-  bool? enabled;
-  bool? focused;
-  String? pkg;
-}
-
-class GetNativeViewsRequest {
-  Selector? selector;
-  AndroidSelector? androidSelector;
-  IOSSelector? iosSelector;
+class AndroidGetNativeViewsRequest {
+  AndroidSelector? selector;
   late String appId;
 }
 
-class GetNativeUITreeRequest {
-  List<String>? iosInstalledApps;
-  late bool useNativeViewHierarchy;
+class IOSGetNativeViewsRequest {
+  IOSSelector? selector;
+  late String appId;
 }
 
-class GetNativeUITreeRespone {
-  late List<IOSNativeView> iOSroots;
-  late List<AndroidNativeView> androidRoots;
-  late List<NativeView> roots;
+class IOSGetNativeUITreeRequest {
+  List<String>? iosInstalledApps;
 }
 
 class AndroidNativeView {
@@ -156,6 +140,7 @@ class IOSNativeView {
   late bool isEnabled;
   late bool isSelected;
   late Rectangle frame;
+  late String? accessibilityLabel;
   String? placeholderValue;
   String? value;
   //TODO we can get other properties from XCUIElement in next request
@@ -174,28 +159,15 @@ class Point2D {
   late double y;
 }
 
-class NativeView {
-  String? className;
-  String? text;
-  String? contentDescription;
-  late bool focused;
-  late bool enabled;
-  int? childCount;
-  String? resourceName;
-  String? applicationPackage;
-  late List<NativeView> children;
+class AndroidTapRequest {
+  late AndroidSelector selector;
+  late String appId;
+  int? timeoutMillis;
+  int? delayBetweenTapsMillis;
 }
 
-class GetNativeViewsResponse {
-  late List<NativeView> nativeViews;
-  late List<IOSNativeView> iosNativeViews;
-  late List<AndroidNativeView> androidNativeViews;
-}
-
-class TapRequest {
-  Selector? selector;
-  AndroidSelector? androidSelector;
-  IOSSelector? iosSelector;
+class IOSTapRequest {
+  late IOSSelector selector;
   late String appId;
   int? timeoutMillis;
   int? delayBetweenTapsMillis;
@@ -209,20 +181,29 @@ class TapAtRequest {
 
 enum KeyboardBehavior { showAndDismiss, alternative }
 
-class EnterTextRequest {
+class AndroidEnterTextRequest {
   late String data;
   late String appId;
   int? index;
-  Selector? selector;
-  AndroidSelector? androidSelector;
-  IOSSelector? iosSelector;
+  late AndroidSelector selector;
   late KeyboardBehavior keyboardBehavior;
   int? timeoutMillis;
   double? dx;
   double? dy;
 }
 
-class SwipeRequest {
+class IOSEnterTextRequest {
+  late String data;
+  late String appId;
+  int? index;
+  late IOSSelector selector;
+  late KeyboardBehavior keyboardBehavior;
+  int? timeoutMillis;
+  double? dx;
+  double? dy;
+}
+
+class AndroidSwipeRequest {
   late String appId;
   late double startX;
   late double startY;
@@ -231,10 +212,22 @@ class SwipeRequest {
   late int steps;
 }
 
-class WaitUntilVisibleRequest {
-  Selector? selector;
-  AndroidSelector? androidSelector;
-  IOSSelector? iosSelector;
+class IOSSwipeRequest {
+  late String appId;
+  late double startX;
+  late double startY;
+  late double endX;
+  late double endY;
+}
+
+class AndroidWaitUntilVisibleRequest {
+  late AndroidSelector selector;
+  late String appId;
+  int? timeoutMillis;
+}
+
+class IOSTwaitUntilVisibleRequest {
+  late IOSSelector selector;
   late String appId;
   int? timeoutMillis;
 }
@@ -256,11 +249,17 @@ class GetNotificationsResponse {
 
 class GetNotificationsRequest {}
 
-class TapOnNotificationRequest {
+class AndroidTapOnNotificationRequest {
   int? index;
-  Selector? selector;
-  AndroidSelector? androidSelector;
-  IOSSelector? iosSelector;
+  late AndroidSelector selector;
+  late String appId;
+  int? timeoutMillis;
+}
+
+class IOSTapOnNotificationRequest {
+  int? index;
+  late IOSSelector selector;
+  late String appId;
   int? timeoutMillis;
 }
 
@@ -298,60 +297,61 @@ class GetOsVersionResponse {
   late int osVersion;
 }
 
-class TakeCameraPhotoRequest {
-  late Selector? shutterButtonSelector;
-  late AndroidSelector? androidShutterButtonSelector;
-  late IOSSelector? iosShutterButtonSelector;
-  late Selector? doneButtonSelector;
-  late AndroidSelector? androidDoneButtonSelector;
+class AndroidTakeCameraPhotoRequest {
+  late AndroidSelector shutterButtonSelector;
+  late AndroidSelector doneButtonSelector;
   late int? timeoutMillis;
-  late IOSSelector? iosDoneButtonSelector;
   late String appId;
-  late bool isNative2;
 }
 
-class PickImageFromGalleryRequest {
-  late Selector? imageSelector;
-  late AndroidSelector? androidImageSelector;
-  late IOSSelector? iosImageSelector;
+class IOSTakeCameraPhotoRequest {
+  late IOSSelector shutterButtonSelector;
+  late IOSSelector doneButtonSelector;
+  late int? timeoutMillis;
+  late String appId;
+}
+
+class AndroidPickImageFromGalleryRequest {
+  late AndroidSelector imageSelector;
   late int? imageIndex;
   late int? timeoutMillis;
   late String appId;
-  late bool isNative2;
 }
 
-class PickMultipleImagesFromGalleryRequest {
-  late Selector? imageSelector;
-  late AndroidSelector? androidImageSelector;
-  late IOSSelector? iosImageSelector;
+class IOSPickImageFromGalleryRequest {
+  late IOSSelector imageSelector;
+  late int? imageIndex;
+  late int? timeoutMillis;
+  late String appId;
+}
+
+class AndroidPickMultipleImagesFromGalleryRequest {
+  late AndroidSelector imageSelector;
   late List<int> imageIndexes;
   late int? timeoutMillis;
   late String appId;
-  late bool isNative2;
 }
 
-abstract class NativeAutomator<IOSServer, AndroidServer, DartClient> {
+class IOSPickMultipleImagesFromGalleryRequest {
+  late IOSSelector imageSelector;
+  late List<int> imageIndexes;
+  late int? timeoutMillis;
+  late String appId;
+}
+
+abstract class MobileAutomator<IOSServer, AndroidServer, DartClient> {
   void initialize();
   void configure(ConfigureRequest request);
 
   // general
   void pressHome();
-  void pressBack();
   void pressRecentApps();
-  void doublePressRecentApps();
   void openApp(OpenAppRequest request);
   void openQuickSettings(OpenQuickSettingsRequest request);
   void openUrl(OpenUrlRequest request);
 
   // general UI interaction
-  GetNativeUITreeRespone getNativeUITree(GetNativeUITreeRequest request);
-  GetNativeViewsResponse getNativeViews(GetNativeViewsRequest request);
-  void tap(TapRequest request);
-  void doubleTap(TapRequest request);
   void tapAt(TapAtRequest request);
-  void enterText(EnterTextRequest request);
-  void swipe(SwipeRequest request);
-  void waitUntilVisible(WaitUntilVisibleRequest request);
 
   // volume settings
   void pressVolumeUp();
@@ -374,9 +374,7 @@ abstract class NativeAutomator<IOSServer, AndroidServer, DartClient> {
   // notifications
   void openNotifications();
   void closeNotifications();
-  void closeHeadsUpNotification();
   GetNotificationsResponse getNotifications(GetNotificationsRequest request);
-  void tapOnNotification(TapOnNotificationRequest request);
 
   // permissions
   PermissionDialogVisibleResponse isPermissionDialogVisible(
@@ -384,13 +382,6 @@ abstract class NativeAutomator<IOSServer, AndroidServer, DartClient> {
   );
   void handlePermissionDialog(HandlePermissionRequest request);
   void setLocationAccuracy(SetLocationAccuracyRequest request);
-
-  // camera
-  void takeCameraPhoto(TakeCameraPhotoRequest request);
-  void pickImageFromGallery(PickImageFromGalleryRequest request);
-  void pickMultipleImagesFromGallery(
-    PickMultipleImagesFromGalleryRequest request,
-  );
 
   // other
   void debug();
@@ -402,6 +393,63 @@ abstract class NativeAutomator<IOSServer, AndroidServer, DartClient> {
   IsVirtualDeviceResponse isVirtualDevice();
 
   GetOsVersionResponse getOsVersion();
+}
+
+abstract class AndroidAutomator<AndroidServer, DartClient> {
+  void pressBack();
+  void doublePressRecentApps();
+
+  // general UI interaction
+  List<AndroidNativeView> getNativeUITree();
+  List<AndroidNativeView> getNativeViews(AndroidGetNativeViewsRequest request);
+  void tap(AndroidTapRequest request);
+  void doubleTap(AndroidTapRequest request);
+  void enterText(AndroidEnterTextRequest request);
+  void waitUntilVisible(AndroidWaitUntilVisibleRequest request);
+  void swipe(AndroidSwipeRequest request);
+
+  // services
+  void enableLocation();
+  void disableLocation();
+
+  // notifications
+  void tapOnNotification(AndroidTapOnNotificationRequest request);
+
+  // camera
+  void takeCameraPhoto(AndroidTakeCameraPhotoRequest request);
+  void pickImageFromGallery(AndroidPickImageFromGalleryRequest request);
+  void pickMultipleImagesFromGallery(
+    AndroidPickMultipleImagesFromGalleryRequest request,
+  );
+}
+
+abstract class IOSAutomator<IOSServer, DartClient> {
+  // general UI interaction
+  List<IOSNativeView> getNativeUITree(IOSGetNativeUITreeRequest request);
+  List<IOSNativeView> getNativeViews(IOSGetNativeViewsRequest request);
+  void tap(IOSTapRequest request);
+  void doubleTap(IOSTapRequest request);
+  void enterText(IOSEnterTextRequest request);
+  void waitUntilVisible(IOSTwaitUntilVisibleRequest request);
+  void swipe(IOSSwipeRequest request);
+
+  // notifications
+  void closeHeadsUpNotification();
+  void tapOnNotification(IOSTapOnNotificationRequest request);
+
+  // permissions
+  PermissionDialogVisibleResponse isPermissionDialogVisible(
+    PermissionDialogVisibleRequest request,
+  );
+  void handlePermissionDialog(HandlePermissionRequest request);
+  void setLocationAccuracy(SetLocationAccuracyRequest request);
+
+  // camera
+  void takeCameraPhoto(IOSTakeCameraPhotoRequest request);
+  void pickImageFromGallery(IOSPickImageFromGalleryRequest request);
+  void pickMultipleImagesFromGallery(
+    IOSPickMultipleImagesFromGalleryRequest request,
+  );
 }
 
 enum IOSElementType {

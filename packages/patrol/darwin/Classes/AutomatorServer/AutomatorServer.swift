@@ -27,21 +27,9 @@
       }
     }
 
-    func pressBack() throws {
-      return try runCatching {
-        throw PatrolError.methodNotImplemented("pressBack")
-      }
-    }
-
     func pressRecentApps() throws {
       return try runCatching {
         try automator.openAppSwitcher()
-      }
-    }
-
-    func doublePressRecentApps() throws {
-      return try runCatching {
-        throw PatrolError.methodNotImplemented("doublePressRecentApps")
       }
     }
 
