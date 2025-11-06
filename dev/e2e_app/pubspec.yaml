@@ -15,6 +15,7 @@ dependencies:
   flutter_local_notifications: ^17.2.3
   flutter_timezone: ^4.1.0
   geolocator: ^13.0.0
+  go_router: ^16.0.0
   google_maps_flutter: ^2.10.0
   image_picker: ^1.1.2
   package_info_plus: ^8.3.1

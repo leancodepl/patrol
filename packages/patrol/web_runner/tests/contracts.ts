@@ -4,14 +4,14 @@ type PatrolNativeRequestBase<TAction extends string, TParams> = {
 }
 
 export type WebSelector = {
-  role?: string
-  label?: string
-  placeholder?: string
-  text?: string
-  altText?: string
-  title?: string
-  testId?: string
-  cssOrXpath?: string
+  role: string | null
+  label: string | null
+  placeholder: string | null
+  text: string | null
+  altText: string | null
+  title: string | null
+  testId: string | null
+  cssOrXpath: string | null
 }
 
 export type GrantPermissionsRequest = PatrolNativeRequestBase<
@@ -38,12 +38,13 @@ export type AddCookieRequest = PatrolNativeRequestBase<
   {
     name: string
     value: string
-    domain?: string
-    path?: string
-    expires?: number
-    httpOnly?: boolean
-    secure?: boolean
-    sameSite?: "Lax" | "None" | "Strict"
+    url: string | null
+    domain: string | null
+    path: string | null
+    expires: number | null
+    httpOnly: boolean | null
+    secure: boolean | null
+    sameSite: "Lax" | "None" | "Strict" | null
   }
 >
 export type GetCookiesRequest = PatrolNativeRequestBase<"getCookies", {}>

@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:io' as io;
 
 import 'package:flutter_test/flutter_test.dart';
@@ -1181,6 +1182,7 @@ class NativeAutomator2 {
   Future<void> addCookie({
     required String name,
     required String value,
+    String? url,
     String? domain,
     String? path,
     bool? secure,
@@ -1190,7 +1192,7 @@ class NativeAutomator2 {
     throw UnimplementedError('addCookie is not implemented for web');
   }
 
-  Future<List<Map<String, dynamic>>> getCookies() async {
+  Future<List<LinkedHashMap<Object?, Object?>>> getCookies() async {
     throw UnimplementedError('getCookies is not implemented for web');
   }
 

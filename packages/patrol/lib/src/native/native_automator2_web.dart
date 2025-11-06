@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/src/native/contracts/contracts.dart';
 import 'package:patrol/src/native/native_automator_web.dart';
@@ -83,6 +85,7 @@ class NativeAutomator2 {
   Future<void> addCookie({
     required String name,
     required String value,
+    String? url,
     String? domain,
     String? path,
     int? expires,
@@ -95,6 +98,7 @@ class NativeAutomator2 {
       {
         'name': name,
         'value': value,
+        'url': url,
         'domain': domain,
         'path': path,
         'expires': expires,
@@ -107,14 +111,15 @@ class NativeAutomator2 {
     );
   }
 
-  Future<List<Map<String, dynamic>>> getCookies() async {
+  Future<List<LinkedHashMap<Object?, Object?>>> getCookies() async {
     final result = await callPlaywright(
       'getCookies',
       {},
       logger: _config.logger,
       patrolLog: _patrolLog,
     );
-    return (result as List).cast<Map<String, dynamic>>();
+
+    return (result as List).cast<LinkedHashMap<Object?, Object?>>();
   }
 
   Future<void> clearCookies() async {
