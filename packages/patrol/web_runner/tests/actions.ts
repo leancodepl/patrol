@@ -17,8 +17,8 @@ import { pressKeyCombo } from "./actions/pressKeyCombo"
 import { scrollTo } from "./actions/scrollTo"
 import { setClipboard } from "./actions/setClipboard"
 import { tap } from "./actions/tap"
-import { uploadFile } from "./actions/todo/uploadFile"
 import { waitForDownload } from "./actions/todo/waitForDownload"
+import { uploadFile } from "./actions/uploadFile"
 
 export const actions = {
   grantPermissions,

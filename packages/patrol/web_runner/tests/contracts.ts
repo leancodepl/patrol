@@ -65,8 +65,11 @@ export type ClearCookiesRequest = PatrolNativeRequestBase<"clearCookies", {}>
 export type UploadFileRequest = PatrolNativeRequestBase<
   "uploadFile",
   {
-    selector: WebSelector
-    filePaths: string[]
+    files: Array<{
+      name: string
+      mimeType: string
+      base64Data: string
+    }>
   }
 >
 export type AcceptDialogRequest = PatrolNativeRequestBase<"acceptDialog", {}>
