@@ -232,23 +232,24 @@ class NativeAutomator2 {
     );
   }
 
-  Future<String> getClipboard() async {
+  Future<String?> getClipboard() async {
     final result = await callPlaywright(
       'getClipboard',
       {},
       logger: _config.logger,
       patrolLog: _patrolLog,
     );
-    return result as String;
+    return result as String?;
   }
 
-  Future<void> setClipboard({required String text}) async {
-    await callPlaywright(
+  Future<bool?> setClipboard({required String text}) async {
+    final result = await callPlaywright(
       'setClipboard',
       {'text': text},
       logger: _config.logger,
       patrolLog: _patrolLog,
     );
+    return result as bool?;
   }
 
   Future<void> resizeWindow({required int width, required int height}) async {
