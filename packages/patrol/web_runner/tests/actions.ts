@@ -14,6 +14,7 @@ import { goForward } from "./actions/goForward"
 import { grantPermissions } from "./actions/grantPermissions"
 import { pressKey } from "./actions/pressKey"
 import { pressKeyCombo } from "./actions/pressKeyCombo"
+import { resizeWindow } from "./actions/resizeWindow"
 import { scrollTo } from "./actions/scrollTo"
 import { setClipboard } from "./actions/setClipboard"
 import { tap } from "./actions/tap"
@@ -42,4 +43,5 @@ export const actions = {
   goForward,
   getClipboard,
   setClipboard,
+  resizeWindow,
 } as const

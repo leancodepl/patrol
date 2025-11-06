@@ -102,6 +102,13 @@ export type SetClipboardRequest = PatrolNativeRequestBase<
     text: string
   }
 >
+export type ResizeWindowRequest = PatrolNativeRequestBase<
+  "resizeWindow",
+  {
+    width: number
+    height: number
+  }
+>
 type UnknownRequest = PatrolNativeRequestBase<`unknown-placeholder-${string}`, unknown>
 
 export type PatrolNativeRequest =
@@ -121,6 +128,7 @@ export type PatrolNativeRequest =
   | GrantPermissionsRequest
   | PressKeyComboRequest
   | PressKeyRequest
+  | ResizeWindowRequest
   | ScrollToRequest
   | SetClipboardRequest
   | TapRequest

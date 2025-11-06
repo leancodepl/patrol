@@ -236,6 +236,22 @@ void main() {
     await $.pumpAndSettle();
     await Future<void>.delayed(const Duration(seconds: 2));
   });
+
+  patrol('resize window', ($) async {
+    await $.pumpWidgetAndSettle(const ExampleApp());
+
+    await $.native2.resizeWindow(width: 800, height: 600);
+    await $.pumpAndSettle();
+    await Future<void>.delayed(const Duration(seconds: 2));
+
+    await $.native2.resizeWindow(width: 1920, height: 1080);
+    await $.pumpAndSettle();
+    await Future<void>.delayed(const Duration(seconds: 2));
+
+    await $.native2.resizeWindow(width: 1280, height: 720);
+    await $.pumpAndSettle();
+    await Future<void>.delayed(const Duration(seconds: 1));
+  });
 }
 
 class ExampleApp extends StatefulWidget {

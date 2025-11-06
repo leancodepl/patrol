@@ -250,6 +250,15 @@ class NativeAutomator2 {
       patrolLog: _patrolLog,
     );
   }
+
+  Future<void> resizeWindow({required int width, required int height}) async {
+    await callPlaywright(
+      'resizeWindow',
+      {'width': width, 'height': height},
+      logger: _config.logger,
+      patrolLog: _patrolLog,
+    );
+  }
 }
 
 /// Represents a file to be uploaded in web tests.
