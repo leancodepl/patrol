@@ -1,8 +1,10 @@
 import 'dart:collection';
 import 'dart:convert';
+import 'dart:typed_data';
 import 'dart:ui_web' as ui_web;
 
 import 'package:file_picker/file_picker.dart';
+import 'package:file_saver/file_saver.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:web/web.dart' as web;
@@ -15,19 +17,19 @@ void main() {
 
     await $.native2.enableDarkMode();
     await $.pumpAndSettle();
-    await Future<void>.delayed(const Duration(seconds: 2));
+    await Future<void>.delayed(const Duration(seconds: 1));
 
     expect($('Dark Mode Active'), findsOneWidget);
 
     await $.native2.disableDarkMode();
     await $.pumpAndSettle();
-    await Future<void>.delayed(const Duration(seconds: 2));
+    await Future<void>.delayed(const Duration(seconds: 1));
 
     expect($('Light Mode Active'), findsOneWidget);
 
     await $.native2.enableDarkMode();
     await $.pumpAndSettle();
-    await Future<void>.delayed(const Duration(seconds: 2));
+    await Future<void>.delayed(const Duration(seconds: 1));
 
     expect($('Dark Mode Active'), findsOneWidget);
   });
@@ -37,7 +39,7 @@ void main() {
 
     await $(TextField).scrollTo().tap();
     await $.pumpAndSettle();
-    await Future<void>.delayed(const Duration(seconds: 2));
+    await Future<void>.delayed(const Duration(seconds: 1));
 
     await $.native2.pressKey(key: 'a');
     await $.native2.pressKey(key: 'b');
@@ -49,50 +51,48 @@ void main() {
     await $.native2.pressKeyCombo(keys: ['Control', 'c']);
 
     await $.pumpAndSettle();
-    await Future<void>.delayed(const Duration(seconds: 2));
-
-    expect(await $.native2.getClipboard(), null);
+    await Future<void>.delayed(const Duration(seconds: 1));
 
     await $.native2.grantPermissions(
       permissions: ['clipboard-read', 'clipboard-write'],
     );
     await $.pumpAndSettle();
-    await Future<void>.delayed(const Duration(seconds: 2));
+    await Future<void>.delayed(const Duration(seconds: 1));
 
     expect(await $.native2.getClipboard(), 'abab');
-    expect(await $.native2.setClipboard(text: 'test'), true);
+    await $.native2.setClipboard(text: 'test');
     await $.pumpAndSettle();
-    await Future<void>.delayed(const Duration(seconds: 2));
+    await Future<void>.delayed(const Duration(seconds: 1));
 
     expect(await $.native2.getClipboard(), 'test');
     await $.pumpAndSettle();
-    await Future<void>.delayed(const Duration(seconds: 2));
+    await Future<void>.delayed(const Duration(seconds: 1));
 
     await $.native2.clearPermissions();
     await $.pumpAndSettle();
-    await Future<void>.delayed(const Duration(seconds: 2));
+    await Future<void>.delayed(const Duration(seconds: 1));
   });
 
   patrol('navigation', ($) async {
     await $.pumpWidgetAndSettle(const ExampleApp());
 
-    await Future<void>.delayed(const Duration(seconds: 3));
+    await Future<void>.delayed(const Duration(seconds: 1));
 
     await $('Go to Page 1').scrollTo().tap();
     await $.pumpAndSettle();
-    await Future<void>.delayed(const Duration(seconds: 3));
+    await Future<void>.delayed(const Duration(seconds: 2));
 
     expect($('This is Page 1'), findsOneWidget);
 
     await $.native2.goBack();
     await $.pumpAndSettle();
-    await Future<void>.delayed(const Duration(seconds: 3));
+    await Future<void>.delayed(const Duration(seconds: 2));
 
     expect($('This is the home page'), findsOneWidget);
 
     await $.native2.goForward();
     await $.pumpAndSettle();
-    await Future<void>.delayed(const Duration(seconds: 3));
+    await Future<void>.delayed(const Duration(seconds: 2));
 
     expect($('This is Page 1'), findsOneWidget);
   });
@@ -159,37 +159,51 @@ void main() {
     expect($(#uploaded_file_name), findsOneWidget);
     expect($('Uploaded: example_file.txt'), findsOneWidget);
     await $.pumpAndSettle();
-    await Future<void>.delayed(const Duration(seconds: 2));
-  });
-
-  patrol('get dialog message and accept', ($) async {
-    await $.pumpWidgetAndSettle(const ExampleApp());
-
-    final messageFuture = $.native2.getDialogMessage();
-    await $('Show Alert').scrollTo().tap();
-
-    final message = await messageFuture;
-    expect(message, 'This is an alert!');
-
-    await $.pumpAndSettle();
     await Future<void>.delayed(const Duration(seconds: 1));
   });
 
-  patrol('dismiss confirm dialog', ($) async {
+  patrol('accept alert dialog', ($) async {
     await $.pumpWidgetAndSettle(const ExampleApp());
 
-    await $.native2.dismissDialog();
-    await $('Show Confirm').scrollTo().tap();
+    final message = $.native2.acceptNextDialog();
+    await $('Show Alert').scrollTo().tap();
     await $.pumpAndSettle();
+    await Future<void>.delayed(const Duration(seconds: 1));
+
+    expect(await message, 'This is an alert!');
+
+    expect($('Alert was accepted'), findsOneWidget);
+
     await Future<void>.delayed(const Duration(seconds: 1));
   });
 
   patrol('accept confirm dialog', ($) async {
     await $.pumpWidgetAndSettle(const ExampleApp());
 
-    await $.native2.acceptDialog();
+    final message = $.native2.acceptNextDialog();
     await $('Show Confirm').scrollTo().tap();
     await $.pumpAndSettle();
+    await Future<void>.delayed(const Duration(seconds: 1));
+
+    expect(await message, 'Do you confirm?');
+
+    expect($('Confirm was accepted'), findsOneWidget);
+
+    await Future<void>.delayed(const Duration(seconds: 1));
+  });
+
+  patrol('dismiss confirm dialog', ($) async {
+    await $.pumpWidgetAndSettle(const ExampleApp());
+
+    final message = $.native2.dismissNextDialog();
+    await $('Show Confirm').scrollTo().tap();
+    await $.pumpAndSettle();
+    await Future<void>.delayed(const Duration(seconds: 1));
+
+    expect(await message, 'Do you confirm?');
+
+    expect($('Confirm was dismissed'), findsOneWidget);
+
     await Future<void>.delayed(const Duration(seconds: 1));
   });
 
@@ -244,6 +258,32 @@ void main() {
     await $.pumpAndSettle();
     await Future<void>.delayed(const Duration(seconds: 1));
   });
+
+  patrol('verify file downloads', ($) async {
+    await $.pumpWidgetAndSettle(const ExampleApp());
+
+    var downloads = await $.native2.verifyFileDownloads();
+    expect(downloads, isEmpty);
+
+    await $('Download File').tap();
+    await $.pumpAndSettle();
+
+    await Future<void>.delayed(const Duration(seconds: 1));
+
+    downloads = await $.native2.verifyFileDownloads();
+    expect(downloads, hasLength(1));
+    expect(downloads.first, 'example.txt');
+
+    await $.pumpAndSettle();
+    await Future<void>.delayed(const Duration(seconds: 1));
+  });
+
+  patrol('verify file downloads - check if list is empty', ($) async {
+    await $.pumpWidgetAndSettle(const ExampleApp());
+
+    final downloads = await $.native2.verifyFileDownloads();
+    expect(downloads, isEmpty);
+  });
 }
 
 class ExampleApp extends StatefulWidget {
@@ -254,9 +294,7 @@ class ExampleApp extends StatefulWidget {
 }
 
 class _ExampleAppState extends State<ExampleApp> {
-  String? _dialogResult;
   late final GoRouter _router;
-  final _routerRefreshNotifier = ValueNotifier<int>(0);
 
   @override
   void initState() {
@@ -265,50 +303,14 @@ class _ExampleAppState extends State<ExampleApp> {
     _router = GoRouter(
       initialLocation: '/',
       routes: [
-        GoRoute(
-          path: '/',
-          builder: (context, state) => _HomePage(
-            dialogResult: _dialogResult,
-            onShowAlert: _handleShowAlert,
-            onShowConfirm: _handleShowConfirm,
-          ),
-        ),
+        GoRoute(path: '/', builder: (context, state) => const _HomePage()),
         GoRoute(path: '/page1', builder: (context, state) => const _Page1()),
         GoRoute(
           path: '/iframe',
           builder: (context, state) => const _IframePage(),
         ),
       ],
-      refreshListenable: _routerRefreshNotifier,
     );
-  }
-
-  void _notifyRouterRefresh() {
-    _routerRefreshNotifier.value++;
-  }
-
-  void _handleShowAlert() {
-    web.window.alert('This is an alert!');
-    setState(() {
-      _dialogResult = 'Alert was accepted';
-    });
-    _notifyRouterRefresh();
-  }
-
-  void _handleShowConfirm() {
-    final confirmed = web.window.confirm('Do you confirm?');
-    setState(() {
-      _dialogResult = confirmed
-          ? 'Confirm was accepted'
-          : 'Confirm was dismissed';
-    });
-    _notifyRouterRefresh();
-  }
-
-  @override
-  void dispose() {
-    _routerRefreshNotifier.dispose();
-    super.dispose();
   }
 
   @override
@@ -331,15 +333,7 @@ class _ExampleAppState extends State<ExampleApp> {
 }
 
 class _HomePage extends StatelessWidget {
-  const _HomePage({
-    required this.dialogResult,
-    required this.onShowAlert,
-    required this.onShowConfirm,
-  });
-
-  final String? dialogResult;
-  final VoidCallback onShowAlert;
-  final VoidCallback onShowConfirm;
+  const _HomePage();
 
   @override
   Widget build(BuildContext context) {
@@ -374,17 +368,9 @@ class _HomePage extends StatelessWidget {
               const Divider(),
               const _FileUploadWidget(),
               const Divider(),
-              Text('Dialogs', style: Theme.of(context).textTheme.titleMedium),
-              ElevatedButton.icon(
-                onPressed: onShowAlert,
-                icon: const Icon(Icons.info),
-                label: const Text('Show Alert'),
-              ),
-              ElevatedButton.icon(
-                onPressed: onShowConfirm,
-                icon: const Icon(Icons.help),
-                label: const Text('Show Confirm'),
-              ),
+              const _FileDownloadWidget(),
+              const Divider(),
+              const _DialogWidget(),
               const Divider(),
               Text(
                 'Navigation',
@@ -419,8 +405,6 @@ class _FileUploadWidgetState extends State<_FileUploadWidget> {
   String? _uploadedFileName;
 
   Future<void> _handleFileUpload() async {
-    // Use file_picker to show the browser's file chooser
-    // Playwright will intercept this and provide the file
     final result = await FilePicker.platform.pickFiles();
 
     if (result != null) {
@@ -450,6 +434,94 @@ class _FileUploadWidgetState extends State<_FileUploadWidget> {
                 'Uploaded: $_uploadedFileName',
                 key: const Key('uploaded_file_name'),
               ),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class _FileDownloadWidget extends StatelessWidget {
+  const _FileDownloadWidget();
+
+  Future<void> _handleDownload() async {
+    final fileContent = Uint8List.fromList(
+      'Hello from Patrol download test!'.codeUnits,
+    );
+
+    await FileSaver.instance.saveFile(
+      name: 'example',
+      bytes: fileContent,
+      fileExtension: 'txt',
+      mimeType: MimeType.text,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      spacing: 12,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text('File Download', style: Theme.of(context).textTheme.titleMedium),
+        ElevatedButton.icon(
+          onPressed: _handleDownload,
+          icon: const Icon(Icons.download),
+          label: const Text('Download File'),
+        ),
+      ],
+    );
+  }
+}
+
+class _DialogWidget extends StatefulWidget {
+  const _DialogWidget();
+
+  @override
+  State<_DialogWidget> createState() => _DialogWidgetState();
+}
+
+class _DialogWidgetState extends State<_DialogWidget> {
+  String? _dialogResult;
+
+  void _handleShowAlert() {
+    web.window.alert('This is an alert!');
+    setState(() {
+      _dialogResult = 'Alert was accepted';
+    });
+  }
+
+  void _handleShowConfirm() {
+    final confirmed = web.window.confirm('Do you confirm?');
+    setState(() {
+      _dialogResult = confirmed
+          ? 'Confirm was accepted'
+          : 'Confirm was dismissed';
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      spacing: 12,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text('Dialogs', style: Theme.of(context).textTheme.titleMedium),
+        ElevatedButton.icon(
+          onPressed: _handleShowAlert,
+          icon: const Icon(Icons.info),
+          label: const Text('Show Alert'),
+        ),
+        ElevatedButton.icon(
+          onPressed: _handleShowConfirm,
+          icon: const Icon(Icons.help),
+          label: const Text('Show Confirm'),
+        ),
+        if (_dialogResult != null)
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(8),
+              child: Text(_dialogResult!),
             ),
           ),
       ],

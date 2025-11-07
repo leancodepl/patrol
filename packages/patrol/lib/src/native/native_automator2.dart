@@ -1094,16 +1094,12 @@ class NativeAutomator2 {
     throw UnimplementedError('clearPermissions is not implemented for web');
   }
 
-  Future<void> acceptDialog() async {
+  Future<String> acceptNextDialog() async {
     throw UnimplementedError('acceptDialog is not implemented for web');
   }
 
-  Future<void> dismissDialog() async {
+  Future<String> dismissNextDialog() async {
     throw UnimplementedError('dismissDialog is not implemented for web');
-  }
-
-  Future<String> getDialogMessage() async {
-    throw UnimplementedError('getDialogMessage is not implemented for web');
   }
 
   Future<void> goBack() async {
@@ -1162,8 +1158,8 @@ class NativeAutomator2 {
     throw UnimplementedError('uploadFile is not implemented for web');
   }
 
-  Future<String> waitForDownload({Duration? timeout}) async {
-    throw UnimplementedError('waitForDownload is not implemented for web');
+  Future<List<String>> verifyFileDownloads() async {
+    throw UnimplementedError('verifyFileDownloads is not implemented for web');
   }
 
   Future<void> resizeWindow({required int width, required int height}) async {

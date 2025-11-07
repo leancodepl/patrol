@@ -10,9 +10,13 @@ export async function setClipboard(page: Page, params: SetClipboardRequest["para
       return true
     }
 
-    return await Promise.race([write(), sleep(1)])
+    const result = await Promise.race([write(), sleep(1)])
+
+    if (!result) {
+      throw new Error("Timeout")
+    }
   } catch (error) {
     logger.error(error, "Clipboard is not available")
-    return null
+    throw error
   }
 }
