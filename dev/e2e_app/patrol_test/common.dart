@@ -1,5 +1,6 @@
 import 'package:e2e_app/main.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:meta/meta.dart';
 import 'package:patrol/patrol.dart';
 
 export 'package:flutter_test/flutter_test.dart';
@@ -15,6 +16,7 @@ Future<void> createApp(PatrolIntegrationTester $) async {
   await $.pumpWidgetAndSettle(const ExampleApp());
 }
 
+@isTest
 void patrol(
   String description,
   Future<void> Function(PatrolIntegrationTester) callback, {

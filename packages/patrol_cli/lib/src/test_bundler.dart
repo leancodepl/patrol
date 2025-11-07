@@ -74,6 +74,8 @@ Future<void> main() async {
 
   final nativeAutomator = NativeAutomator(config: NativeAutomatorConfig());
   await nativeAutomator.initialize();
+  final nativeAutomator2 = NativeAutomator2(config: NativeAutomatorConfig());
+  await nativeAutomator2.initialize();
   final binding = PatrolBinding.ensureInitialized(NativeAutomatorConfig());
   final testExplorationCompleter = Completer<DartGroupEntry>();
 
@@ -146,6 +148,8 @@ ${generateImports(testDirectory, [testFilePath])}
 Future<void> main() async {
   final nativeAutomator = NativeAutomator(config: NativeAutomatorConfig());
   await nativeAutomator.initialize();
+  final nativeAutomator2 = NativeAutomator2(config: NativeAutomatorConfig());
+  await nativeAutomator2.initialize();
   PatrolBinding.ensureInitialized(NativeAutomatorConfig())
     ..workaroundDebugDefaultTargetPlatformOverride =
         debugDefaultTargetPlatformOverride;

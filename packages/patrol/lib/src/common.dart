@@ -133,9 +133,9 @@ void patrolTest(
         }
       }
 
-      await automator.configure();
-      // We don't have to call this line because automator.configure() does the same.
-      // await automator2.configure();
+      await automator2.configure();
+      // We don't have to call this line because automator2.configure() does the same.
+      // await automator.configure();
 
       patrolLog.log(
         TestEntry(name: description, status: TestEntryStatus.start),

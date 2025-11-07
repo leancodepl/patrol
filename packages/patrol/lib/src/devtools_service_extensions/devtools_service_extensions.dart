@@ -4,7 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:patrol/src/native/contracts/contracts.dart';
 import 'package:patrol/src/native/contracts/native_automator_client.dart';
-import 'package:patrol/src/native/native_automator.dart';
+import 'package:patrol/src/native/native.dart';
 
 /// Devtools extension that fetches the native UI tree.
 class DevtoolsServiceExtensions {
