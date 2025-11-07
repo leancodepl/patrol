@@ -13,8 +13,21 @@ class NativeAutomator2 {
   final _patrolLog = PatrolLogWriter();
   final NativeAutomatorConfig _config;
 
+  Future<void> configure() async {
+    await _startTest();
+  }
+
   Future<void> initialize() {
     return initAppService();
+  }
+
+  Future<void> _startTest() async {
+    await callPlaywright(
+      'startTest',
+      {},
+      logger: _config.logger,
+      patrolLog: _patrolLog,
+    );
   }
 
   Future<void> enableDarkMode() async {
@@ -158,27 +171,19 @@ class NativeAutomator2 {
     );
   }
 
-  Future<void> acceptDialog() async {
-    await callPlaywright(
-      'acceptDialog',
-      {},
-      logger: _config.logger,
-      patrolLog: _patrolLog,
-    );
-  }
-
-  Future<void> dismissDialog() async {
-    await callPlaywright(
-      'dismissDialog',
-      {},
-      logger: _config.logger,
-      patrolLog: _patrolLog,
-    );
-  }
-
-  Future<String> getDialogMessage() async {
+  Future<String> acceptNextDialog() async {
     final result = await callPlaywright(
-      'getDialogMessage',
+      'acceptNextDialog',
+      {},
+      logger: _config.logger,
+      patrolLog: _patrolLog,
+    );
+    return result as String;
+  }
+
+  Future<String> dismissNextDialog() async {
+    final result = await callPlaywright(
+      'dismissNextDialog',
       {},
       logger: _config.logger,
       patrolLog: _patrolLog,
@@ -204,16 +209,6 @@ class NativeAutomator2 {
     );
   }
 
-  Future<String> waitForDownload({int? timeoutMs}) async {
-    final result = await callPlaywright(
-      'waitForDownload',
-      {'timeoutMs': timeoutMs},
-      logger: _config.logger,
-      patrolLog: _patrolLog,
-    );
-    return result as String;
-  }
-
   Future<void> goBack() async {
     await callPlaywright(
       'goBack',
@@ -232,24 +227,23 @@ class NativeAutomator2 {
     );
   }
 
-  Future<String?> getClipboard() async {
+  Future<String> getClipboard() async {
     final result = await callPlaywright(
       'getClipboard',
       {},
       logger: _config.logger,
       patrolLog: _patrolLog,
     );
-    return result as String?;
+    return result as String;
   }
 
-  Future<bool?> setClipboard({required String text}) async {
-    final result = await callPlaywright(
+  Future<void> setClipboard({required String text}) async {
+    await callPlaywright(
       'setClipboard',
       {'text': text},
       logger: _config.logger,
       patrolLog: _patrolLog,
     );
-    return result as bool?;
   }
 
   Future<void> resizeWindow({required int width, required int height}) async {
@@ -259,6 +253,16 @@ class NativeAutomator2 {
       logger: _config.logger,
       patrolLog: _patrolLog,
     );
+  }
+
+  Future<List<String>> verifyFileDownloads() async {
+    final result = await callPlaywright(
+      'verifyFileDownloads',
+      {},
+      logger: _config.logger,
+      patrolLog: _patrolLog,
+    );
+    return (result as List<dynamic>).cast<String>();
   }
 }
 

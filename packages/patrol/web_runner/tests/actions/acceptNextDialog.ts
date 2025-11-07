@@ -1,6 +1,6 @@
 import { Page } from "playwright"
 
-export async function getDialogMessage(page: Page): Promise<string> {
+export async function acceptNextDialog(page: Page) {
   return new Promise(resolve => {
     page.once("dialog", async dialog => {
       const message = dialog.message()

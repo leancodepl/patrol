@@ -22,5 +22,6 @@ async function handlePatrolPlatformAction(page: Page, { action, params }: Patrol
     return await actionFn(page, params as any)
   } catch (e) {
     logger.error(e, "Failed to handle patrol platform request")
+    throw e
   }
 }

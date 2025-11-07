@@ -4,8 +4,10 @@ import { logger } from "./logger"
 import { exposePatrolPlatformHandler } from "./patrolPlatformHandler"
 import { PatrolTestEntry } from "./types"
 
-// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-const tests: PatrolTestEntry[] = JSON.parse(process.env.PATROL_TESTS!)
+const tests: PatrolTestEntry[] = process.env.PATROL_TESTS ? JSON.parse(process.env.PATROL_TESTS) : []
+if (tests.length === 0) {
+  logger.error("PATROL_TESTS env is empty")
+}
 
 export const patrolTest = base.extend({
   page: async ({ page }, use) => {

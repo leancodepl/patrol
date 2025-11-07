@@ -21,6 +21,8 @@ export type GrantPermissionsRequest = PatrolNativeRequestBase<
     origin?: string
   }
 >
+
+export type StartTestRequest = PatrolNativeRequestBase<"startTest", {}>
 export type EnableDarkModeRequest = PatrolNativeRequestBase<"enableDarkMode", {}>
 export type DisableDarkModeRequest = PatrolNativeRequestBase<"disableDarkMode", {}>
 export type TapRequest = PatrolNativeRequestBase<
@@ -72,9 +74,8 @@ export type UploadFileRequest = PatrolNativeRequestBase<
     }>
   }
 >
-export type AcceptDialogRequest = PatrolNativeRequestBase<"acceptDialog", {}>
-export type DismissDialogRequest = PatrolNativeRequestBase<"dismissDialog", {}>
-export type GetDialogMessageRequest = PatrolNativeRequestBase<"getDialogMessage", {}>
+export type AcceptNextDialogRequest = PatrolNativeRequestBase<"acceptNextDialog", {}>
+export type DismissNextDialogRequest = PatrolNativeRequestBase<"dismissNextDialog", {}>
 export type PressKeyRequest = PatrolNativeRequestBase<
   "pressKey",
   {
@@ -87,12 +88,7 @@ export type PressKeyComboRequest = PatrolNativeRequestBase<
     keys: string[]
   }
 >
-export type WaitForDownloadRequest = PatrolNativeRequestBase<
-  "waitForDownload",
-  {
-    timeoutMs?: number
-  }
->
+export type VerifyFileDownloadsRequest = PatrolNativeRequestBase<"verifyFileDownloads", {}>
 export type GoBackRequest = PatrolNativeRequestBase<"goBack", {}>
 export type GoForwardRequest = PatrolNativeRequestBase<"goForward", {}>
 export type GetClipboardRequest = PatrolNativeRequestBase<"getClipboard", {}>
@@ -112,17 +108,16 @@ export type ResizeWindowRequest = PatrolNativeRequestBase<
 type UnknownRequest = PatrolNativeRequestBase<`unknown-placeholder-${string}`, unknown>
 
 export type PatrolNativeRequest =
-  | AcceptDialogRequest
+  | AcceptNextDialogRequest
   | AddCookieRequest
   | ClearCookiesRequest
   | ClearPermissionsRequest
   | DisableDarkModeRequest
-  | DismissDialogRequest
+  | DismissNextDialogRequest
   | EnableDarkModeRequest
   | EnterTextRequest
   | GetClipboardRequest
   | GetCookiesRequest
-  | GetDialogMessageRequest
   | GoBackRequest
   | GoForwardRequest
   | GrantPermissionsRequest
@@ -131,7 +126,8 @@ export type PatrolNativeRequest =
   | ResizeWindowRequest
   | ScrollToRequest
   | SetClipboardRequest
+  | StartTestRequest
   | TapRequest
   | UnknownRequest
   | UploadFileRequest
-  | WaitForDownloadRequest
+  | VerifyFileDownloadsRequest
