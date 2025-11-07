@@ -106,7 +106,7 @@
       }
     }
 
-    func doubleTap(request: TapRequest) throws {
+    func doubleTap(request: IOSTapRequest) throws {
       return try runCatching {
         if let selector = request.selector {
           return try automator.doubleTap(
@@ -135,7 +135,7 @@
       }
     }
 
-    func enterText(request: EnterTextRequest) throws {
+    func enterText(request: IOSEnterTextRequest) throws {
       return try runCatching {
         if let index = request.index {
           try automator.enterText(
@@ -151,16 +151,6 @@
           try automator.enterText(
             request.data,
             on: selector,
-            inApp: request.appId,
-            dismissKeyboard: request.keyboardBehavior == .showAndDismiss,
-            withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) },
-            dx: request.dx ?? 0.9,
-            dy: request.dy ?? 0.9
-          )
-        } else if let iosSelector = request.iosSelector {
-          try automator.enterText(
-            request.data,
-            on: iosSelector,
             inApp: request.appId,
             dismissKeyboard: request.keyboardBehavior == .showAndDismiss,
             withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) },
@@ -331,11 +321,6 @@
             bySubstring: selector.textContains ?? String(),
             withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) }
           )
-        } else if let selector = request.iosSelector {
-          try automator.tapOnNotification(
-            bySubstring: selector.titleContains ?? String(),
-            withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) }
-          )
         } else {
           throw PatrolError.internal("tapOnNotification(): neither index nor selector are set")
         }
@@ -390,29 +375,16 @@
     // MARK: Camera
 
     func takeCameraPhoto(request: TakeCameraPhotoRequest) throws {
-      if request.isNative2 {
-        try automator.tap(
-          on: request.iosShutterButtonSelector ?? IOSSelector(identifier: "PhotoCapture"),
-          inApp: request.appId,
-          withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
-        )
-        try automator.tap(
-          on: request.iosDoneButtonSelector ?? IOSSelector(identifier: "Done"),
-          inApp: request.appId,
-          withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
-        )
-      } else {
-        try automator.tap(
-          on: request.shutterButtonSelector ?? Selector(resourceId: "PhotoCapture"),
-          inApp: request.appId,
-          withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
-        )
-        try automator.tap(
-          on: request.doneButtonSelector ?? Selector(resourceId: "Done"),
-          inApp: request.appId,
-          withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
-        )
-      }
+      try automator.tap(
+        on: request.shutterButtonSelector ?? Selector(resourceId: "PhotoCapture"),
+        inApp: request.appId,
+        withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
+      )
+      try automator.tap(
+        on: request.doneButtonSelector ?? Selector(resourceId: "Done"),
+        inApp: request.appId,
+        withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
+      )
     }
 
     func pickImageFromGallery(request: PickImageFromGalleryRequest) throws {

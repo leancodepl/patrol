@@ -5,7 +5,7 @@ import 'package:patrol/src/platform/ios/ios_automator_config.dart';
 ///
 /// This class provides a default implementation for platforms where the native iOS automator
 /// is not available or supported. Any attempt to use its methods will throw an [UnimplementedError].
-class IOSAutomator extends ios_automator.IOSAutomator {
+class IOSAutomator implements ios_automator.IOSAutomator {
   /// Creates a new [IOSAutomator] stub.
   /// [config] is required but not used for any real operations,
   /// we need to stay consistant with native_ios_automator.dart

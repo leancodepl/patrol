@@ -1,12 +1,13 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:meta/meta.dart';
+import 'package:patrol/src/platform/contracts/contracts.dart';
 
 /// Provides functionality to interact with the OS that the app under test is
 /// running on.
 ///
 /// Communicates over http with the native automation server running on the
 /// target device.
-abstract class MobileAutomator {
+abstract interface class MobileAutomator {
   /// Returns the platform-dependent unique identifier of the app under test.
   String get resolvedAppId;
 
@@ -84,21 +85,6 @@ abstract class MobileAutomator {
   /// Notification shade has to be opened with [openNotifications].
   Future<List<Notification>> getNotifications();
 
-  /// Searches for the [index]-th visible notification and taps on it.
-  ///
-  /// If the notification is not visible immediately, this method waits for the
-  /// notification to become visible for [timeout] duration. If [timeout] is not
-  /// specified, it utilizes the [NativeAutomatorConfig.findTimeout] duration
-  /// from the configuration.
-  ///
-  /// Notification shade has to be opened first with [openNotifications].
-  ///
-  /// See also:
-  ///
-  ///  * [tapOnNotificationBySelector], which allows for more precise
-  ///    specification of the notification to tap on
-  Future<void> tapOnNotificationByIndex(int index, {Duration? timeout});
-
   /// Press volume up
   ///
   /// Doesn't work on iOS Simulator because Volume buttons are not available
@@ -152,55 +138,6 @@ abstract class MobileAutomator {
   ///
   /// Doesn't work on Android versions lower than 12.
   Future<void> disableBluetooth();
-
-  /// Taps at a given [location].
-  ///
-  /// [location] must be in the inclusive 0-1 range.
-  Future<void> tapAt(Offset location, {String? appId});
-
-  /// Enters text to the [index]-th visible text field.
-  ///
-  /// If the text field at [index] isn't visible immediately, this method waits
-  /// for the view to become visible. It prioritizes the [timeout] duration
-  /// provided in the method call. If [timeout] is not specified, it utilizes
-  /// the [NativeAutomatorConfig.findTimeout] duration from the configuration.
-  ///
-  /// Native views considered to be texts fields are:
-  ///  * EditText on Android
-  ///  * TextField or SecureTextField on iOS
-  ///
-  /// See also:
-  ///  * [enterText], which allows for more precise specification of the text
-  ///    field to enter text into
-  Future<void> enterTextByIndex(
-    String text, {
-    required int index,
-    String? appId,
-    KeyboardBehavior? keyboardBehavior,
-    Duration? timeout,
-    Offset? tapLocation,
-  });
-
-  /// Simulates pull-to-refresh gesture.
-  ///
-  /// It swipes from [from] to [to] with the specified number of [steps].
-  ///
-  /// [from] and [to] must be in the inclusive 0-1 range.
-  ///
-  /// [steps] controls the speed and smoothness of the swipe. More steps equals
-  /// slower gesture.
-  ///
-  /// The default values simulate a typical pull-to-refresh gesture:
-  /// * [from]: Center of the screen (0.5, 0.5)
-  /// * [to]: Bottom center of the screen (0.5, 0.9)
-  /// * [steps]: 50
-  /// You can override these if scrollable content is not at the center of the
-  /// screen or if the direction of the gesture is different.
-  Future<void> pullToRefresh({
-    Offset from = const Offset(0.5, 0.5),
-    Offset to = const Offset(0.5, 0.9),
-    int steps = 50,
-  });
 
   /// Waits until a native permission request dialog becomes visible within
   /// [timeout].

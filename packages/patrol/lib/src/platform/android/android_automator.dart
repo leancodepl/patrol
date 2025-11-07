@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:patrol/src/platform/android/contracts/contracts.dart';
+import 'package:patrol/src/platform/android/android_automator_config.dart';
+import 'package:patrol/src/platform/contracts/contracts.dart';
 import 'package:patrol/src/platform/mobile/mobile_automator.dart';
 
 /// Provides functionality to interact with the OS that the app under test is
@@ -7,7 +8,7 @@ import 'package:patrol/src/platform/mobile/mobile_automator.dart';
 ///
 /// Communicates over http with the native automation server running on the
 /// target device.
-abstract class AndroidAutomator extends MobileAutomator {
+abstract interface class AndroidAutomator implements MobileAutomator {
   /// Presses the back button.
   ///
   /// This method throws on iOS, because there's no back button.
@@ -24,7 +25,7 @@ abstract class AndroidAutomator extends MobileAutomator {
   ///
   /// If the notification is not visible immediately, this method waits for the
   /// notification to become visible for [timeout] duration. If [timeout] is not
-  /// specified, it utilizes the [NativeAutomatorConfig.findTimeout] duration
+  /// specified, it utilizes the [AndroidAutomatorConfig.findTimeout] duration
   /// from the configuration.
   ///
   /// Notification shade has to be opened first with [openNotifications].
@@ -35,9 +36,24 @@ abstract class AndroidAutomator extends MobileAutomator {
   ///
   /// * [tapOnNotificationByIndex], which is less flexible but also less verbose
   Future<void> tapOnNotificationBySelector(
-    Selector selector, {
+    AndroidSelector selector, {
     Duration? timeout,
   });
+
+  /// Searches for the [index]-th visible notification and taps on it.
+  ///
+  /// If the notification is not visible immediately, this method waits for the
+  /// notification to become visible for [timeout] duration. If [timeout] is not
+  /// specified, it utilizes the [AndroidAutomatorConfig.findTimeout] duration
+  /// from the configuration.
+  ///
+  /// Notification shade has to be opened first with [openNotifications].
+  ///
+  /// See also:
+  ///
+  ///  * [tapOnNotificationBySelector], which allows for more precise
+  ///    specification of the notification to tap on
+  Future<void> tapOnNotificationByIndex(int index, {Duration? timeout});
 
   /// Enables location.
   ///
@@ -57,15 +73,15 @@ abstract class AndroidAutomator extends MobileAutomator {
   ///
   /// It waits for the view to become visible for [timeout] duration. If
   /// [timeout] is not specified, it utilizes the
-  /// [NativeAutomatorConfig.findTimeout] duration from the configuration.
+  /// [AndroidAutomatorConfig.findTimeout] duration from the configuration.
   /// If the native view is not found, an exception is thrown.
-  Future<void> tap(Selector selector, {String? appId, Duration? timeout});
+  Future<void> tap(AndroidSelector selector, {Duration? timeout});
 
   /// Double taps on the native view specified by [selector].
   ///
   /// It waits for the view to become visible for [timeout] duration. If
   /// [timeout] is not specified, it utilizes the
-  /// [NativeAutomatorConfig.findTimeout] duration from the configuration.
+  /// [AndroidAutomatorConfig.findTimeout] duration from the configuration.
   /// If the native view is not found, an exception is thrown.
   ///
   /// The [delayBetweenTaps] parameter allows you to specify the duration
@@ -77,18 +93,22 @@ abstract class AndroidAutomator extends MobileAutomator {
   /// Note: The [delayBetweenTaps] parameter is currently respected only
   /// for Android.
   Future<void> doubleTap(
-    Selector selector, {
-    String? appId,
+    AndroidSelector selector, {
     Duration? timeout,
     Duration? delayBetweenTaps,
   });
+
+  /// Taps at a given [location].
+  ///
+  /// [location] must be in the inclusive 0-1 range.
+  Future<void> tapAt(Offset location);
 
   /// Enters text to the native view specified by [selector].
   ///
   /// If the text field isn't immediately visible, this method waits for the
   /// view to become visible. It prioritizes the [timeout] duration provided
   /// in the method call. If [timeout] is not specified, it utilizes the
-  /// [NativeAutomatorConfig.findTimeout] duration from the configuration.
+  /// [AndroidAutomatorConfig.findTimeout] duration from the configuration.
   ///
   /// The native view specified by [selector] must be:
   ///  * EditText on Android
@@ -97,9 +117,30 @@ abstract class AndroidAutomator extends MobileAutomator {
   /// See also:
   ///  * [enterTextByIndex], which is less flexible but also less verbose
   Future<void> enterText(
-    Selector selector, {
+    AndroidSelector selector, {
     required String text,
-    String? appId,
+    KeyboardBehavior? keyboardBehavior,
+    Duration? timeout,
+    Offset? tapLocation,
+  });
+
+  /// Enters text to the [index]-th visible text field.
+  ///
+  /// If the text field at [index] isn't visible immediately, this method waits
+  /// for the view to become visible. It prioritizes the [timeout] duration
+  /// provided in the method call. If [timeout] is not specified, it utilizes
+  /// the [AndroidAutomatorConfig.findTimeout] duration from the configuration.
+  ///
+  /// Native views considered to be texts fields are:
+  ///  * EditText on Android
+  ///  * TextField or SecureTextField on iOS
+  ///
+  /// See also:
+  ///  * [enterText], which allows for more precise specification of the text
+  ///    field to enter text into
+  Future<void> enterTextByIndex(
+    String text, {
+    required int index,
     KeyboardBehavior? keyboardBehavior,
     Duration? timeout,
     Offset? tapLocation,
@@ -116,19 +157,51 @@ abstract class AndroidAutomator extends MobileAutomator {
     required Offset from,
     required Offset to,
     int steps = 12,
-    String? appId,
     bool enablePatrolLog = true,
+  });
+
+  /// Mimics the swipe back (left to right) gesture.
+  ///
+  /// [dy] determines the vertical offset of the swipe. It must be in the inclusive 0-1 range.
+  ///
+  /// This is equivalent to:
+  /// $.native.swipe(
+  ///    from: Offset(0, dy),
+  ///    to: Offset(1, dy),
+  ///  );
+  ///
+  /// Example usage:
+  /// ```dart
+  /// await tester.swipeBack(dy: 0.8); // Swipe back at 1/5 height of the screen
+  /// await tester.swipeBack(); // Swipe back at the center of the screen
+  /// ```
+  Future<void> swipeBack({double dy = 0.5});
+
+  /// Simulates pull-to-refresh gesture.
+  ///
+  /// It swipes from [from] to [to].
+  ///
+  /// [steps] controls the speed and smoothness of the swipe. More steps equals
+  /// slower gesture.
+  ///
+  /// [from] and [to] must be in the inclusive 0-1 range.
+  ///
+  /// The default values simulate a typical pull-to-refresh gesture:
+  /// * [from]: Center of the screen (0.5, 0.5)
+  /// * [to]: Bottom center of the screen (0.5, 0.9)
+  /// You can override these if scrollable content is not at the center of the
+  /// screen or if the direction of the gesture is different.
+  Future<void> pullToRefresh({
+    Offset from = const Offset(0.5, 0.5),
+    Offset to = const Offset(0.5, 0.9),
+    int steps = 50,
   });
 
   /// Waits until the native view specified by [selector] becomes visible.
   /// It waits for the view to become visible for [timeout] duration. If
   /// [timeout] is not specified, it utilizes the
-  /// [NativeAutomatorConfig.findTimeout].
-  Future<void> waitUntilVisible(
-    Selector selector, {
-    String? appId,
-    Duration? timeout,
-  });
+  /// [AndroidAutomatorConfig.findTimeout].
+  Future<void> waitUntilVisible(AndroidSelector selector, {Duration? timeout});
 
   /// Take and confirm the photo
   ///
@@ -142,8 +215,8 @@ abstract class AndroidAutomator extends MobileAutomator {
   /// For different camera apps or device manufacturers, you may need to provide
   /// custom selectors with the appropriate resource identifiers for your specific app.
   Future<void> takeCameraPhoto({
-    Selector? shutterButtonSelector,
-    Selector? doneButtonSelector,
+    AndroidSelector? shutterButtonSelector,
+    AndroidSelector? doneButtonSelector,
     Duration? timeout,
   });
 
@@ -158,7 +231,7 @@ abstract class AndroidAutomator extends MobileAutomator {
   ///
   /// Note: If you provide [imageSelector], the [index] parameter will be overwritten.
   Future<void> pickImageFromGallery({
-    Selector? imageSelector,
+    AndroidSelector? imageSelector,
     int? index,
     Duration? timeout,
   });
@@ -172,7 +245,7 @@ abstract class AndroidAutomator extends MobileAutomator {
   /// The method will automatically handle the selection confirmation process.
   Future<void> pickMultipleImagesFromGallery({
     required List<int> imageIndexes,
-    Selector? imageSelector,
+    AndroidSelector? imageSelector,
     Duration? timeout,
   });
 }

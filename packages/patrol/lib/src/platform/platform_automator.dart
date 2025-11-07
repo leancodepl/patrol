@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:patrol/src/platform/android/android_automator.dart';
 import 'package:patrol/src/platform/android/android_automator_config.dart';
 import 'package:patrol/src/platform/android/android_automator_empty.dart'
@@ -6,8 +5,8 @@ import 'package:patrol/src/platform/android/android_automator_empty.dart'
 import 'package:patrol/src/platform/android/android_automator_empty.dart'
     if (dart.library.io) 'package:patrol/src/platform/android/android_automator_native.dart'
     as native_android_automator;
-import 'package:patrol/src/platform/android/contracts/contracts.dart'
-    hide Selector;
+import 'package:patrol/src/platform/contracts/contracts.dart';
+import 'package:patrol/src/platform/current.dart';
 import 'package:patrol/src/platform/ios/ios_automator.dart';
 import 'package:patrol/src/platform/ios/ios_automator_config.dart';
 import 'package:patrol/src/platform/ios/ios_automator_empty.dart'
@@ -52,19 +51,26 @@ class PlatformAutomator {
   late final AndroidAutomator android;
   late final WebAutomator web;
   late final IOSAutomator ios;
-  late final MacOSAutomator macos;
   late final MobileAutomator mobile;
 
   final action = PlatformAction();
 
-  Future<void> tap(Selector selector, {String? appId, Duration? timeout}) {
+  Future<void> tap(
+    CompoundSelector selector, {
+    String? appId,
+    Duration? timeout,
+  }) {
     return action.safe(
-      android: () =>
-          android.tap(selector.android, appId: appId, timeout: timeout),
+      android: () => android.tap(selector.android, timeout: timeout),
       ios: () => ios.tap(selector.ios, appId: appId, timeout: timeout),
       web: () => web.tap(selector.web, appId: appId, timeout: timeout),
-      macos: () => macos.tap(selector.macos, appId: appId, timeout: timeout),
+      macos: _throwOnMacOS,
     );
+  }
+
+  /// None of the native actions are supported on MacOS, so we will just always throw.
+  static T _throwOnMacOS<T>() {
+    throw UnsupportedError('MacOS native actions are not supported');
   }
 }
 
@@ -73,36 +79,25 @@ class MobileAutomator {
 
   final PlatformAutomator platform;
 
-  Future<void> tap(Selector selector, {String? appId, Duration? timeout}) {
+  String get resolvedAppId {
     return platform.action.mobile(
-      android: () => platform.android.tap(
-        selector.android,
-        appId: appId,
-        timeout: timeout,
-      ),
-      ios: () => platform.ios.tap(selector.ios, appId: appId, timeout: timeout),
+      android: () => platform.android.resolvedAppId,
+      ios: () => platform.ios.resolvedAppId,
     );
   }
 
-  Future<void> doubleTap(
-    Selector selector, {
-    String? appId,
-    Duration? timeout,
-    Duration? delayBetweenTaps,
-  }) {
+  Future<void> tap(CompoundSelector selector, {Duration? timeout}) {
     return platform.action.mobile(
-      android: () => platform.android.doubleTap(
-        selector.android,
-        appId: appId,
-        timeout: timeout,
-        delayBetweenTaps: delayBetweenTaps,
-      ),
-      ios: () => platform.ios.doubleTap(
-        selector.ios,
-        appId: appId,
-        timeout: timeout,
-        delayBetweenTaps: delayBetweenTaps,
-      ),
+      android: () => platform.android.tap(selector.android, timeout: timeout),
+      ios: () => platform.ios.tap(selector.ios, timeout: timeout),
+    );
+  }
+
+  Future<void> doubleTap(CompoundSelector selector, {Duration? timeout}) {
+    return platform.action.mobile(
+      android: () =>
+          platform.android.doubleTap(selector.android, timeout: timeout),
+      ios: () => platform.ios.doubleTap(selector.ios, timeout: timeout),
     );
   }
 
@@ -110,6 +105,154 @@ class MobileAutomator {
     return platform.action.mobile(
       android: platform.android.pressHome,
       ios: platform.ios.pressHome,
+    );
+  }
+
+  Future<void> openApp({String? appId}) {
+    return platform.action.mobile(
+      android: () => platform.android.openApp(appId: appId),
+      ios: () => platform.ios.openApp(appId: appId),
+    );
+  }
+
+  Future<void> pressRecentApps() {
+    return platform.action.mobile(
+      android: platform.android.pressRecentApps,
+      ios: platform.ios.pressRecentApps,
+    );
+  }
+
+  Future<void> openNotifications() {
+    return platform.action.mobile(
+      android: platform.android.openNotifications,
+      ios: platform.ios.openNotifications,
+    );
+  }
+
+  Future<void> closeNotifications() {
+    return platform.action.mobile(
+      android: platform.android.closeNotifications,
+      ios: platform.ios.closeNotifications,
+    );
+  }
+
+  Future<void> openQuickSettings() {
+    return platform.action.mobile(
+      android: platform.android.openQuickSettings,
+      ios: platform.ios.openQuickSettings,
+    );
+  }
+
+  Future<void> openUrl(String url) {
+    return platform.action.mobile(
+      android: () => platform.android.openUrl(url),
+      ios: () => platform.ios.openUrl(url),
+    );
+  }
+
+  Future<Notification> getFirstNotification() {
+    return platform.action.mobile(
+      android: platform.android.getFirstNotification,
+      ios: platform.ios.getFirstNotification,
+    );
+  }
+
+  Future<List<Notification>> getNotifications() {
+    return platform.action.mobile(
+      android: platform.android.getNotifications,
+      ios: platform.ios.getNotifications,
+    );
+  }
+
+  Future<void> tapOnNotificationByIndex(int index, {Duration? timeout}) {
+    return platform.action.mobile(
+      android: () =>
+          platform.android.tapOnNotificationByIndex(index, timeout: timeout),
+      ios: () => platform.ios.tapOnNotificationByIndex(index, timeout: timeout),
+    );
+  }
+
+  Future<void> pressVolumeUp() {
+    return platform.action.mobile(
+      android: platform.android.pressVolumeUp,
+      ios: platform.ios.pressVolumeUp,
+    );
+  }
+
+  Future<void> pressVolumeDown() {
+    return platform.action.mobile(
+      android: platform.android.pressVolumeDown,
+      ios: platform.ios.pressVolumeDown,
+    );
+  }
+
+  Future<void> enableDarkMode({String? appId}) {
+    return platform.action.mobile(
+      android: () => platform.android.enableDarkMode(appId: appId),
+      ios: () => platform.ios.enableDarkMode(appId: appId),
+    );
+  }
+
+  Future<void> disableDarkMode({String? appId}) {
+    return platform.action.mobile(
+      android: () => platform.android.disableDarkMode(appId: appId),
+      ios: () => platform.ios.disableDarkMode(appId: appId),
+    );
+  }
+
+  Future<void> enableAirplaneMode() {
+    return platform.action.mobile(
+      android: platform.android.enableAirplaneMode,
+      ios: platform.ios.enableAirplaneMode,
+    );
+  }
+
+  Future<void> disableAirplaneMode() {
+    return platform.action.mobile(
+      android: platform.android.disableAirplaneMode,
+      ios: platform.ios.disableAirplaneMode,
+    );
+  }
+
+  Future<void> enableCellular() {
+    return platform.action.mobile(
+      android: platform.android.enableCellular,
+      ios: platform.ios.enableCellular,
+    );
+  }
+
+  Future<void> disableCellular() {
+    return platform.action.mobile(
+      android: platform.android.disableCellular,
+      ios: platform.ios.disableCellular,
+    );
+  }
+
+  Future<void> enableWifi() {
+    return platform.action.mobile(
+      android: platform.android.enableWifi,
+      ios: platform.ios.enableWifi,
+    );
+  }
+
+  Future<void> disableWifi() {
+    return platform.action.mobile(
+      android: platform.android.disableWifi,
+      ios: platform.ios.disableWifi,
+    );
+  }
+
+  Future<void> enableBluetooth() {
+    return platform.action.mobile(
+      android: platform.android.enableBluetooth,
+      ios: platform.ios.enableBluetooth,
+    );
+  }
+
+  Future<void> disableBluetooth() {
+    return platform.action.mobile(
+      android: platform.android.disableBluetooth,
+      ios: platform.ios.disableBluetooth,
     );
   }
 }
@@ -178,13 +321,13 @@ class PlatformAction {
     required T Function() web,
     required T Function() macos,
   }) {
-    if (io.Platform.isAndroid) {
+    if (isAndroid) {
       return android();
-    } else if (io.Platform.isIOS) {
+    } else if (isIOS) {
       return ios();
-    } else if (io.Platform.isMacOS) {
+    } else if (isMacOS) {
       return macos();
-    } else if (kIsWeb) {
+    } else if (isWeb) {
       return web();
     }
 

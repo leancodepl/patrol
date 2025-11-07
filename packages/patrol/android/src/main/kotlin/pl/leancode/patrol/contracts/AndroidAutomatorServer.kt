@@ -13,245 +13,98 @@ import org.http4k.core.Status.Companion.OK
 import org.http4k.routing.routes
 
 abstract class AndroidAutomatorServer {
-    abstract fun initialize()
-    abstract fun configure(request: Contracts.ConfigureRequest)
-    abstract fun pressHome()
     abstract fun pressBack()
-    abstract fun pressRecentApps()
     abstract fun doublePressRecentApps()
-    abstract fun openApp(request: Contracts.OpenAppRequest)
-    abstract fun openQuickSettings(request: Contracts.OpenQuickSettingsRequest)
-    abstract fun openUrl(request: Contracts.OpenUrlRequest)
-    abstract fun getNativeUITree(request: Contracts.GetNativeUITreeRequest): Contracts.GetNativeUITreeRespone
-    abstract fun getNativeViews(request: Contracts.GetNativeViewsRequest): Contracts.GetNativeViewsResponse
-    abstract fun tap(request: Contracts.TapRequest)
-    abstract fun doubleTap(request: Contracts.TapRequest)
-    abstract fun tapAt(request: Contracts.TapAtRequest)
-    abstract fun enterText(request: Contracts.EnterTextRequest)
-    abstract fun swipe(request: Contracts.SwipeRequest)
-    abstract fun waitUntilVisible(request: Contracts.WaitUntilVisibleRequest)
-    abstract fun pressVolumeUp()
-    abstract fun pressVolumeDown()
-    abstract fun enableAirplaneMode()
-    abstract fun disableAirplaneMode()
-    abstract fun enableWiFi()
-    abstract fun disableWiFi()
-    abstract fun enableCellular()
-    abstract fun disableCellular()
-    abstract fun enableBluetooth()
-    abstract fun disableBluetooth()
-    abstract fun enableDarkMode(request: Contracts.DarkModeRequest)
-    abstract fun disableDarkMode(request: Contracts.DarkModeRequest)
-    abstract fun openNotifications()
-    abstract fun closeNotifications()
-    abstract fun getNotifications(request: Contracts.GetNotificationsRequest): Contracts.GetNotificationsResponse
-    abstract fun tapOnNotification(request: Contracts.TapOnNotificationRequest)
-    abstract fun isPermissionDialogVisible(request: Contracts.PermissionDialogVisibleRequest): Contracts.PermissionDialogVisibleResponse
-    abstract fun handlePermissionDialog(request: Contracts.HandlePermissionRequest)
-    abstract fun setLocationAccuracy(request: Contracts.SetLocationAccuracyRequest)
-    abstract fun takeCameraPhoto(request: Contracts.TakeCameraPhotoRequest)
-    abstract fun pickImageFromGallery(request: Contracts.PickImageFromGalleryRequest)
-    abstract fun pickMultipleImagesFromGallery(request: Contracts.PickMultipleImagesFromGalleryRequest)
-    abstract fun setMockLocation(request: Contracts.SetMockLocationRequest)
-    abstract fun markPatrolAppServiceReady()
-    abstract fun isVirtualDevice(): Contracts.IsVirtualDeviceResponse
-    abstract fun getOsVersion(): Contracts.GetOsVersionResponse
+    abstract fun getNativeUITree(): Contracts.AndroidGetNativeUITreeResponse
+    abstract fun getNativeViews(request: Contracts.AndroidGetNativeViewsRequest): Contracts.AndroidGetNativeUITreeResponse
+    abstract fun tap(request: Contracts.AndroidTapRequest)
+    abstract fun doubleTap(request: Contracts.AndroidTapRequest)
+    abstract fun tapAt(request: Contracts.AndroidTapAtRequest)
+    abstract fun enterText(request: Contracts.AndroidEnterTextRequest)
+    abstract fun waitUntilVisible(request: Contracts.AndroidWaitUntilVisibleRequest)
+    abstract fun swipe(request: Contracts.AndroidSwipeRequest)
+    abstract fun enableLocation()
+    abstract fun disableLocation()
+    abstract fun tapOnNotification(request: Contracts.AndroidTapOnNotificationRequest)
+    abstract fun takeCameraPhoto(request: Contracts.AndroidTakeCameraPhotoRequest)
+    abstract fun pickImageFromGallery(request: Contracts.AndroidPickImageFromGalleryRequest)
+    abstract fun pickMultipleImagesFromGallery(request: Contracts.AndroidPickMultipleImagesFromGalleryRequest)
 
     val router = routes(
-      "initialize" bind POST to {
-        initialize()
-        Response(OK)
-      },
-      "configure" bind POST to {
-        val body = json.fromJson(it.bodyString(), Contracts.ConfigureRequest::class.java)
-        configure(body)
-        Response(OK)
-      },
-      "pressHome" bind POST to {
-        pressHome()
-        Response(OK)
-      },
       "pressBack" bind POST to {
         pressBack()
-        Response(OK)
-      },
-      "pressRecentApps" bind POST to {
-        pressRecentApps()
         Response(OK)
       },
       "doublePressRecentApps" bind POST to {
         doublePressRecentApps()
         Response(OK)
       },
-      "openApp" bind POST to {
-        val body = json.fromJson(it.bodyString(), Contracts.OpenAppRequest::class.java)
-        openApp(body)
-        Response(OK)
-      },
-      "openQuickSettings" bind POST to {
-        val body = json.fromJson(it.bodyString(), Contracts.OpenQuickSettingsRequest::class.java)
-        openQuickSettings(body)
-        Response(OK)
-      },
-      "openUrl" bind POST to {
-        val body = json.fromJson(it.bodyString(), Contracts.OpenUrlRequest::class.java)
-        openUrl(body)
-        Response(OK)
-      },
       "getNativeUITree" bind POST to {
-        val body = json.fromJson(it.bodyString(), Contracts.GetNativeUITreeRequest::class.java)
-        val response = getNativeUITree(body)
+        val response = getNativeUITree()
         Response(OK).body(json.toJson(response))
       },
       "getNativeViews" bind POST to {
-        val body = json.fromJson(it.bodyString(), Contracts.GetNativeViewsRequest::class.java)
+        val body = json.fromJson(it.bodyString(), Contracts.AndroidGetNativeViewsRequest::class.java)
         val response = getNativeViews(body)
         Response(OK).body(json.toJson(response))
       },
       "tap" bind POST to {
-        val body = json.fromJson(it.bodyString(), Contracts.TapRequest::class.java)
+        val body = json.fromJson(it.bodyString(), Contracts.AndroidTapRequest::class.java)
         tap(body)
         Response(OK)
       },
       "doubleTap" bind POST to {
-        val body = json.fromJson(it.bodyString(), Contracts.TapRequest::class.java)
+        val body = json.fromJson(it.bodyString(), Contracts.AndroidTapRequest::class.java)
         doubleTap(body)
         Response(OK)
       },
       "tapAt" bind POST to {
-        val body = json.fromJson(it.bodyString(), Contracts.TapAtRequest::class.java)
+        val body = json.fromJson(it.bodyString(), Contracts.AndroidTapAtRequest::class.java)
         tapAt(body)
         Response(OK)
       },
       "enterText" bind POST to {
-        val body = json.fromJson(it.bodyString(), Contracts.EnterTextRequest::class.java)
+        val body = json.fromJson(it.bodyString(), Contracts.AndroidEnterTextRequest::class.java)
         enterText(body)
         Response(OK)
       },
-      "swipe" bind POST to {
-        val body = json.fromJson(it.bodyString(), Contracts.SwipeRequest::class.java)
-        swipe(body)
-        Response(OK)
-      },
       "waitUntilVisible" bind POST to {
-        val body = json.fromJson(it.bodyString(), Contracts.WaitUntilVisibleRequest::class.java)
+        val body = json.fromJson(it.bodyString(), Contracts.AndroidWaitUntilVisibleRequest::class.java)
         waitUntilVisible(body)
         Response(OK)
       },
-      "pressVolumeUp" bind POST to {
-        pressVolumeUp()
+      "swipe" bind POST to {
+        val body = json.fromJson(it.bodyString(), Contracts.AndroidSwipeRequest::class.java)
+        swipe(body)
         Response(OK)
       },
-      "pressVolumeDown" bind POST to {
-        pressVolumeDown()
+      "enableLocation" bind POST to {
+        enableLocation()
         Response(OK)
       },
-      "enableAirplaneMode" bind POST to {
-        enableAirplaneMode()
+      "disableLocation" bind POST to {
+        disableLocation()
         Response(OK)
-      },
-      "disableAirplaneMode" bind POST to {
-        disableAirplaneMode()
-        Response(OK)
-      },
-      "enableWiFi" bind POST to {
-        enableWiFi()
-        Response(OK)
-      },
-      "disableWiFi" bind POST to {
-        disableWiFi()
-        Response(OK)
-      },
-      "enableCellular" bind POST to {
-        enableCellular()
-        Response(OK)
-      },
-      "disableCellular" bind POST to {
-        disableCellular()
-        Response(OK)
-      },
-      "enableBluetooth" bind POST to {
-        enableBluetooth()
-        Response(OK)
-      },
-      "disableBluetooth" bind POST to {
-        disableBluetooth()
-        Response(OK)
-      },
-      "enableDarkMode" bind POST to {
-        val body = json.fromJson(it.bodyString(), Contracts.DarkModeRequest::class.java)
-        enableDarkMode(body)
-        Response(OK)
-      },
-      "disableDarkMode" bind POST to {
-        val body = json.fromJson(it.bodyString(), Contracts.DarkModeRequest::class.java)
-        disableDarkMode(body)
-        Response(OK)
-      },
-      "openNotifications" bind POST to {
-        openNotifications()
-        Response(OK)
-      },
-      "closeNotifications" bind POST to {
-        closeNotifications()
-        Response(OK)
-      },
-      "getNotifications" bind POST to {
-        val body = json.fromJson(it.bodyString(), Contracts.GetNotificationsRequest::class.java)
-        val response = getNotifications(body)
-        Response(OK).body(json.toJson(response))
       },
       "tapOnNotification" bind POST to {
-        val body = json.fromJson(it.bodyString(), Contracts.TapOnNotificationRequest::class.java)
+        val body = json.fromJson(it.bodyString(), Contracts.AndroidTapOnNotificationRequest::class.java)
         tapOnNotification(body)
         Response(OK)
       },
-      "isPermissionDialogVisible" bind POST to {
-        val body = json.fromJson(it.bodyString(), Contracts.PermissionDialogVisibleRequest::class.java)
-        val response = isPermissionDialogVisible(body)
-        Response(OK).body(json.toJson(response))
-      },
-      "handlePermissionDialog" bind POST to {
-        val body = json.fromJson(it.bodyString(), Contracts.HandlePermissionRequest::class.java)
-        handlePermissionDialog(body)
-        Response(OK)
-      },
-      "setLocationAccuracy" bind POST to {
-        val body = json.fromJson(it.bodyString(), Contracts.SetLocationAccuracyRequest::class.java)
-        setLocationAccuracy(body)
-        Response(OK)
-      },
       "takeCameraPhoto" bind POST to {
-        val body = json.fromJson(it.bodyString(), Contracts.TakeCameraPhotoRequest::class.java)
+        val body = json.fromJson(it.bodyString(), Contracts.AndroidTakeCameraPhotoRequest::class.java)
         takeCameraPhoto(body)
         Response(OK)
       },
       "pickImageFromGallery" bind POST to {
-        val body = json.fromJson(it.bodyString(), Contracts.PickImageFromGalleryRequest::class.java)
+        val body = json.fromJson(it.bodyString(), Contracts.AndroidPickImageFromGalleryRequest::class.java)
         pickImageFromGallery(body)
         Response(OK)
       },
       "pickMultipleImagesFromGallery" bind POST to {
-        val body = json.fromJson(it.bodyString(), Contracts.PickMultipleImagesFromGalleryRequest::class.java)
+        val body = json.fromJson(it.bodyString(), Contracts.AndroidPickMultipleImagesFromGalleryRequest::class.java)
         pickMultipleImagesFromGallery(body)
         Response(OK)
-      },
-      "setMockLocation" bind POST to {
-        val body = json.fromJson(it.bodyString(), Contracts.SetMockLocationRequest::class.java)
-        setMockLocation(body)
-        Response(OK)
-      },
-      "markPatrolAppServiceReady" bind POST to {
-        markPatrolAppServiceReady()
-        Response(OK)
-      },
-      "isVirtualDevice" bind POST to {
-        val response = isVirtualDevice()
-        Response(OK).body(json.toJson(response))
-      },
-      "getOsVersion" bind POST to {
-        val response = getOsVersion()
-        Response(OK).body(json.toJson(response))
       }
     )
 

@@ -97,7 +97,6 @@ class IOSSelector {
 
 class AndroidGetNativeViewsRequest {
   AndroidSelector? selector;
-  late String appId;
 }
 
 class IOSGetNativeViewsRequest {
@@ -147,6 +146,14 @@ class IOSNativeView {
   // exists, isHittable,normalizedSliderPosition, accessibilityLabel, accessbilityHint, accessibilityValue, isAccessibilityElement etc..;
 }
 
+class AndroidGetNativeUITreeResponse {
+  late List<AndroidNativeView> roots;
+}
+
+class IOSGetNativeUITreeResponse {
+  late List<IOSNativeView> roots;
+}
+
 class Rectangle {
   late double minX;
   late double minY;
@@ -160,8 +167,7 @@ class Point2D {
 }
 
 class AndroidTapRequest {
-  late AndroidSelector selector;
-  late String appId;
+  late AndroidSelector? selector;
   int? timeoutMillis;
   int? delayBetweenTapsMillis;
 }
@@ -170,10 +176,14 @@ class IOSTapRequest {
   late IOSSelector selector;
   late String appId;
   int? timeoutMillis;
-  int? delayBetweenTapsMillis;
 }
 
-class TapAtRequest {
+class AndroidTapAtRequest {
+  late double x;
+  late double y;
+}
+
+class IOSTapAtRequest {
   late double x;
   late double y;
   late String appId;
@@ -183,9 +193,8 @@ enum KeyboardBehavior { showAndDismiss, alternative }
 
 class AndroidEnterTextRequest {
   late String data;
-  late String appId;
   int? index;
-  late AndroidSelector selector;
+  AndroidSelector? selector;
   late KeyboardBehavior keyboardBehavior;
   int? timeoutMillis;
   double? dx;
@@ -196,7 +205,7 @@ class IOSEnterTextRequest {
   late String data;
   late String appId;
   int? index;
-  late IOSSelector selector;
+  IOSSelector? selector;
   late KeyboardBehavior keyboardBehavior;
   int? timeoutMillis;
   double? dx;
@@ -204,7 +213,6 @@ class IOSEnterTextRequest {
 }
 
 class AndroidSwipeRequest {
-  late String appId;
   late double startX;
   late double startY;
   late double endX;
@@ -222,7 +230,6 @@ class IOSSwipeRequest {
 
 class AndroidWaitUntilVisibleRequest {
   late AndroidSelector selector;
-  late String appId;
   int? timeoutMillis;
 }
 
@@ -251,15 +258,13 @@ class GetNotificationsRequest {}
 
 class AndroidTapOnNotificationRequest {
   int? index;
-  late AndroidSelector selector;
-  late String appId;
+  late AndroidSelector? selector;
   int? timeoutMillis;
 }
 
 class IOSTapOnNotificationRequest {
   int? index;
-  late IOSSelector selector;
-  late String appId;
+  IOSSelector? selector;
   int? timeoutMillis;
 }
 
@@ -298,42 +303,39 @@ class GetOsVersionResponse {
 }
 
 class AndroidTakeCameraPhotoRequest {
-  late AndroidSelector shutterButtonSelector;
-  late AndroidSelector doneButtonSelector;
+  AndroidSelector? shutterButtonSelector;
+  AndroidSelector? doneButtonSelector;
   late int? timeoutMillis;
-  late String appId;
 }
 
 class IOSTakeCameraPhotoRequest {
-  late IOSSelector shutterButtonSelector;
-  late IOSSelector doneButtonSelector;
+  IOSSelector? shutterButtonSelector;
+  IOSSelector? doneButtonSelector;
   late int? timeoutMillis;
   late String appId;
 }
 
 class AndroidPickImageFromGalleryRequest {
-  late AndroidSelector imageSelector;
+  late AndroidSelector? imageSelector;
   late int? imageIndex;
   late int? timeoutMillis;
-  late String appId;
 }
 
 class IOSPickImageFromGalleryRequest {
-  late IOSSelector imageSelector;
+  late IOSSelector? imageSelector;
   late int? imageIndex;
   late int? timeoutMillis;
   late String appId;
 }
 
 class AndroidPickMultipleImagesFromGalleryRequest {
-  late AndroidSelector imageSelector;
+  late AndroidSelector? imageSelector;
   late List<int> imageIndexes;
   late int? timeoutMillis;
-  late String appId;
 }
 
 class IOSPickMultipleImagesFromGalleryRequest {
-  late IOSSelector imageSelector;
+  late IOSSelector? imageSelector;
   late List<int> imageIndexes;
   late int? timeoutMillis;
   late String appId;
@@ -350,9 +352,6 @@ abstract class MobileAutomator<IOSServer, AndroidServer, DartClient> {
   void openQuickSettings(OpenQuickSettingsRequest request);
   void openUrl(OpenUrlRequest request);
 
-  // general UI interaction
-  void tapAt(TapAtRequest request);
-
   // volume settings
   void pressVolumeUp();
   void pressVolumeDown();
@@ -368,8 +367,6 @@ abstract class MobileAutomator<IOSServer, AndroidServer, DartClient> {
   void disableBluetooth();
   void enableDarkMode(DarkModeRequest request);
   void disableDarkMode(DarkModeRequest request);
-  void enableLocation();
-  void disableLocation();
 
   // notifications
   void openNotifications();
@@ -400,10 +397,13 @@ abstract class AndroidAutomator<AndroidServer, DartClient> {
   void doublePressRecentApps();
 
   // general UI interaction
-  List<AndroidNativeView> getNativeUITree();
-  List<AndroidNativeView> getNativeViews(AndroidGetNativeViewsRequest request);
+  AndroidGetNativeUITreeResponse getNativeUITree();
+  AndroidGetNativeUITreeResponse getNativeViews(
+    AndroidGetNativeViewsRequest request,
+  );
   void tap(AndroidTapRequest request);
   void doubleTap(AndroidTapRequest request);
+  void tapAt(AndroidTapAtRequest request);
   void enterText(AndroidEnterTextRequest request);
   void waitUntilVisible(AndroidWaitUntilVisibleRequest request);
   void swipe(AndroidSwipeRequest request);
@@ -423,13 +423,14 @@ abstract class AndroidAutomator<AndroidServer, DartClient> {
   );
 }
 
-abstract class IOSAutomator<IOSServer, DartClient> {
+abstract class IosAutomator<IOSServer, DartClient> {
   // general UI interaction
-  List<IOSNativeView> getNativeUITree(IOSGetNativeUITreeRequest request);
-  List<IOSNativeView> getNativeViews(IOSGetNativeViewsRequest request);
+  IOSGetNativeUITreeResponse getNativeUITree(IOSGetNativeUITreeRequest request);
+  IOSGetNativeUITreeResponse getNativeViews(IOSGetNativeViewsRequest request);
   void tap(IOSTapRequest request);
   void doubleTap(IOSTapRequest request);
   void enterText(IOSEnterTextRequest request);
+  void tapAt(IOSTapAtRequest request);
   void waitUntilVisible(IOSTwaitUntilVisibleRequest request);
   void swipe(IOSSwipeRequest request);
 

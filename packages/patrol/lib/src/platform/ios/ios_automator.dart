@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:patrol/src/platform/ios/contracts/contracts.dart';
+import 'package:patrol/src/platform/contracts/contracts.dart';
+import 'package:patrol/src/platform/ios/ios_automator_config.dart';
 import 'package:patrol/src/platform/mobile/mobile_automator.dart';
 
 /// Provides functionality to interact with the OS that the app under test is
@@ -7,8 +8,8 @@ import 'package:patrol/src/platform/mobile/mobile_automator.dart';
 ///
 /// Communicates over http with the native automation server running on the
 /// target device.
-abstract class IOSAutomator extends MobileAutomator {
-  /// Closes the currently visible heads up notification (iOS only).
+abstract interface class IOSAutomator implements MobileAutomator {
+  /// Closes the currently visible heads up notification.
   ///
   /// If no heads up notification is visible, the behavior is undefined.
   Future<void> closeHeadsUpNotification();
@@ -17,7 +18,7 @@ abstract class IOSAutomator extends MobileAutomator {
   ///
   /// If the notification is not visible immediately, this method waits for the
   /// notification to become visible for [timeout] duration. If [timeout] is not
-  /// specified, it utilizes the [NativeAutomatorConfig.findTimeout] duration
+  /// specified, it utilizes the [IOSAutomatorConfig.findTimeout] duration
   /// from the configuration.
   ///
   /// Notification shade has to be opened first with [openNotifications].
@@ -28,56 +29,87 @@ abstract class IOSAutomator extends MobileAutomator {
   ///
   /// * [tapOnNotificationByIndex], which is less flexible but also less verbose
   Future<void> tapOnNotificationBySelector(
-    Selector selector, {
+    IOSSelector selector, {
     Duration? timeout,
   });
+
+  /// Searches for the [index]-th visible notification and taps on it.
+  ///
+  /// If the notification is not visible immediately, this method waits for the
+  /// notification to become visible for [timeout] duration. If [timeout] is not
+  /// specified, it utilizes the [IOSAutomatorConfig.findTimeout] duration
+  /// from the configuration.
+  ///
+  /// Notification shade has to be opened first with [openNotifications].
+  ///
+  /// See also:
+  ///
+  ///  * [tapOnNotificationBySelector], which allows for more precise
+  ///    specification of the notification to tap on
+  Future<void> tapOnNotificationByIndex(int index, {Duration? timeout});
 
   /// Taps on the native view specified by [selector].
   ///
   /// It waits for the view to become visible for [timeout] duration. If
   /// [timeout] is not specified, it utilizes the
-  /// [NativeAutomatorConfig.findTimeout] duration from the configuration.
+  /// [IOSAutomatorConfig.findTimeout] duration from the configuration.
   /// If the native view is not found, an exception is thrown.
-  Future<void> tap(Selector selector, {String? appId, Duration? timeout});
+  Future<void> tap(IOSSelector selector, {String? appId, Duration? timeout});
 
   /// Double taps on the native view specified by [selector].
   ///
   /// It waits for the view to become visible for [timeout] duration. If
   /// [timeout] is not specified, it utilizes the
-  /// [NativeAutomatorConfig.findTimeout] duration from the configuration.
+  /// [IOSAutomatorConfig.findTimeout] duration from the configuration.
   /// If the native view is not found, an exception is thrown.
-  ///
-  /// The [delayBetweenTaps] parameter allows you to specify the duration
-  /// between consecutive taps in milliseconds. This can be useful in scenarios
-  /// where the target view requires a certain delay between taps to register
-  /// the action correctly, such as in cases of UI responsiveness or animations.
-  /// The default delay between taps is 300 milliseconds.
-  ///
-  /// Note: The [delayBetweenTaps] parameter is currently respected only
-  /// for Android.
   Future<void> doubleTap(
-    Selector selector, {
+    IOSSelector selector, {
     String? appId,
     Duration? timeout,
-    Duration? delayBetweenTaps,
   });
+
+  /// Taps at a given [location].
+  ///
+  /// [location] must be in the inclusive 0-1 range.
+  Future<void> tapAt(Offset location, {String? appId});
 
   /// Enters text to the native view specified by [selector].
   ///
   /// If the text field isn't immediately visible, this method waits for the
   /// view to become visible. It prioritizes the [timeout] duration provided
   /// in the method call. If [timeout] is not specified, it utilizes the
-  /// [NativeAutomatorConfig.findTimeout] duration from the configuration.
+  /// [IOSAutomatorConfig.findTimeout] duration from the configuration.
   ///
   /// The native view specified by [selector] must be:
-  ///  * EditText or AutoCompleteTextView on Android
   ///  * TextField or SecureTextField on iOS
   ///
   /// See also:
   ///  * [enterTextByIndex], which is less flexible but also less verbose
   Future<void> enterText(
-    Selector selector, {
+    IOSSelector selector, {
     required String text,
+    String? appId,
+    KeyboardBehavior? keyboardBehavior,
+    Duration? timeout,
+    Offset? tapLocation,
+  });
+
+  /// Enters text to the [index]-th visible text field.
+  ///
+  /// If the text field at [index] isn't visible immediately, this method waits
+  /// for the view to become visible. It prioritizes the [timeout] duration
+  /// provided in the method call. If [timeout] is not specified, it utilizes
+  /// the [IOSAutomatorConfig.findTimeout] duration from the configuration.
+  ///
+  /// Native views considered to be texts fields are:
+  ///  * TextField or SecureTextField on iOS
+  ///
+  /// See also:
+  ///  * [enterText], which allows for more precise specification of the text
+  ///    field to enter text into
+  Future<void> enterTextByIndex(
+    String text, {
+    required int index,
     String? appId,
     KeyboardBehavior? keyboardBehavior,
     Duration? timeout,
@@ -94,12 +126,48 @@ abstract class IOSAutomator extends MobileAutomator {
     bool enablePatrolLog = true,
   });
 
+  /// Mimics the swipe back (left to right) gesture.
+  ///
+  /// [dy] determines the vertical offset of the swipe. It must be in the inclusive 0-1 range.
+  ///
+  /// [appId] optionally specifies the application ID to target.
+  ///
+  /// This is equivalent to:
+  /// $.native.swipe(
+  ///    from: Offset(0, dy),
+  ///    to: Offset(1, dy),
+  ///    appId: appId,
+  ///  );
+  ///
+  /// Example usage:
+  /// ```dart
+  /// await tester.swipeBack(dy: 0.8); // Swipe back at 1/5 height of the screen
+  /// await tester.swipeBack(); // Swipe back at the center of the screen
+  /// ```
+  Future<void> swipeBack({double dy = 0.5, String? appId});
+
+  /// Simulates pull-to-refresh gesture.
+  ///
+  /// It swipes from [from] to [to].
+  ///
+  /// [from] and [to] must be in the inclusive 0-1 range.
+  ///
+  /// The default values simulate a typical pull-to-refresh gesture:
+  /// * [from]: Center of the screen (0.5, 0.5)
+  /// * [to]: Bottom center of the screen (0.5, 0.9)
+  /// You can override these if scrollable content is not at the center of the
+  /// screen or if the direction of the gesture is different.
+  Future<void> pullToRefresh({
+    Offset from = const Offset(0.5, 0.5),
+    Offset to = const Offset(0.5, 0.9),
+  });
+
   /// Waits until the native view specified by [selector] becomes visible.
   /// It waits for the view to become visible for [timeout] duration. If
   /// [timeout] is not specified, it utilizes the
-  /// [NativeAutomatorConfig.findTimeout].
+  /// [IOSAutomatorConfig.findTimeout].
   Future<void> waitUntilVisible(
-    Selector selector, {
+    IOSSelector selector, {
     String? appId,
     Duration? timeout,
   });
@@ -108,7 +176,10 @@ abstract class IOSAutomator extends MobileAutomator {
   /// [selector], which are currently visible on screen.
   ///
   /// If [selector] is null, returns the whole native UI tree.
-  Future<List<NativeView>> getNativeViews(Selector selector, {String? appId});
+  Future<IOSGetNativeUITreeResponse> getNativeViews(
+    IOSSelector? selector, {
+    String? appId,
+  });
 
   /// Take and confirm the photo
   ///
@@ -122,8 +193,8 @@ abstract class IOSAutomator extends MobileAutomator {
   /// For different camera apps or device manufacturers, you may need to provide
   /// custom selectors with the appropriate resource identifiers for your specific app.
   Future<void> takeCameraPhoto({
-    Selector? shutterButtonSelector,
-    Selector? doneButtonSelector,
+    IOSSelector? shutterButtonSelector,
+    IOSSelector? doneButtonSelector,
     Duration? timeout,
   });
 
@@ -138,7 +209,7 @@ abstract class IOSAutomator extends MobileAutomator {
   ///
   /// Note: If you provide [imageSelector], the [index] parameter will be overwritten.
   Future<void> pickImageFromGallery({
-    Selector? imageSelector,
+    IOSSelector? imageSelector,
     int? index,
     Duration? timeout,
   });
@@ -152,7 +223,7 @@ abstract class IOSAutomator extends MobileAutomator {
   /// The method will automatically handle the selection confirmation process.
   Future<void> pickMultipleImagesFromGallery({
     required List<int> imageIndexes,
-    Selector? imageSelector,
+    IOSSelector? imageSelector,
     Duration? timeout,
   });
 }

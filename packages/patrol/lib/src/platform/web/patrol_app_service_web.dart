@@ -10,8 +10,6 @@ library;
 
 import 'dart:async';
 import 'dart:js_interop';
-import 'package:patrol/src/native/contracts/contracts.dart';
-import 'package:patrol/src/native/contracts/patrol_app_service_server.dart';
 import 'package:patrol_log/patrol_log.dart';
 
 class _TestExecutionResult {
