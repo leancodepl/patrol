@@ -1,8 +1,10 @@
 import 'package:patrol/src/platform/contracts/contracts.dart' as contracts;
+import 'package:patrol/src/platform/web/web_selector.dart' as web_selector;
 
 abstract interface class CompoundSelector {
   contracts.AndroidSelector get android;
   contracts.IOSSelector get ios;
+  web_selector.WebSelector get web;
 }
 
 class Selector implements CompoundSelector {
@@ -57,6 +59,10 @@ class Selector implements CompoundSelector {
     textContains: textContains,
     identifier: resourceId,
   );
+
+  @override
+  web_selector.WebSelector get web =>
+      web_selector.WebSelector(text: text, cssOrXpath: className);
 }
 
 class AndroidSelector extends contracts.AndroidSelector
@@ -67,6 +73,10 @@ class AndroidSelector extends contracts.AndroidSelector
   @override
   contracts.IOSSelector get ios =>
       throw UnsupportedError('IOS selector is not supported');
+
+  @override
+  web_selector.WebSelector get web =>
+      throw UnsupportedError('Web selector is not supported');
 }
 
 class IOSSelector extends contracts.IOSSelector implements CompoundSelector {
@@ -76,4 +86,21 @@ class IOSSelector extends contracts.IOSSelector implements CompoundSelector {
 
   @override
   contracts.IOSSelector get ios => this;
+
+  @override
+  web_selector.WebSelector get web =>
+      throw UnsupportedError('Web selector is not supported');
+}
+
+class WebSelector extends web_selector.WebSelector implements CompoundSelector {
+  @override
+  contracts.AndroidSelector get android =>
+      throw UnsupportedError('Android selector is not supported');
+
+  @override
+  contracts.IOSSelector get ios =>
+      throw UnsupportedError('IOS selector is not supported');
+
+  @override
+  web_selector.WebSelector get web => this;
 }

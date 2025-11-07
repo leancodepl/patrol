@@ -20,154 +20,6 @@ class PatrolActionException implements Exception {
   String toString() => 'Patrol action failed: $message';
 }
 
-/// Specifies how the OS keyboard should behave when using
-/// [NativeAutomator.enterText] and [NativeAutomator.enterTextByIndex].
-enum KeyboardBehavior {
-  /// The default keyboard behavior.
-  ///
-  /// Keyboard will be shown when entering text starts, and will be
-  /// automatically dismissed afterwards.
-  showAndDismiss,
-
-  /// The alternative keyboard behavior.
-  ///
-  /// On Android, no keyboard will be shown at all. The text will simply appear
-  /// inside the TextField.
-  ///
-  /// On iOS, the keyboard will not be dismissed after entering text.
-  alternative,
-}
-
-extension on KeyboardBehavior {
-  contracts.KeyboardBehavior get toContractsEnum {
-    switch (this) {
-      case KeyboardBehavior.showAndDismiss:
-        return contracts.KeyboardBehavior.showAndDismiss;
-      case KeyboardBehavior.alternative:
-        return contracts.KeyboardBehavior.alternative;
-    }
-  }
-}
-
-void _defaultPrintLogger(String message) {
-  // TODO: Use a logger instead of print
-  // ignore: avoid_print
-  print('Patrol (native): $message');
-}
-
-/// Configuration for [NativeAutomator].
-class NativeAutomatorConfig {
-  /// Creates a new [NativeAutomatorConfig].
-  const NativeAutomatorConfig({
-    this.host = const String.fromEnvironment(
-      'PATROL_HOST',
-      defaultValue: 'localhost',
-    ),
-    this.port = const String.fromEnvironment(
-      'PATROL_TEST_SERVER_PORT',
-      defaultValue: '8081',
-    ),
-    this.packageName = const String.fromEnvironment('PATROL_APP_PACKAGE_NAME'),
-    this.iosInstalledApps = const String.fromEnvironment(
-      'PATROL_IOS_INSTALLED_APPS',
-    ),
-    this.bundleId = const String.fromEnvironment('PATROL_APP_BUNDLE_ID'),
-    this.androidAppName = const String.fromEnvironment(
-      'PATROL_ANDROID_APP_NAME',
-    ),
-    this.iosAppName = const String.fromEnvironment('PATROL_IOS_APP_NAME'),
-    this.connectionTimeout = const Duration(seconds: 60),
-    this.findTimeout = const Duration(seconds: 10),
-    this.keyboardBehavior = KeyboardBehavior.showAndDismiss,
-    this.logger = _defaultPrintLogger,
-  });
-
-  /// Apps installed on the iOS simulator.
-  ///
-  /// This is needed for purpose of native view inspection in the Patrol
-  /// DevTools extension.
-  final String iosInstalledApps;
-
-  /// Host on which Patrol server instrumentation is running.
-  final String host;
-
-  /// Port on [host] on which Patrol server instrumentation is running.
-  final String port;
-
-  /// Time after which the connection with the native automator will fail.
-  ///
-  /// It must be longer than [findTimeout].
-  final Duration connectionTimeout;
-
-  /// Time to wait for native views to appear.
-  final Duration findTimeout;
-
-  /// How the keyboard should behave when entering text.
-  ///
-  /// See [KeyboardBehavior] to learn more.
-  final KeyboardBehavior keyboardBehavior;
-
-  /// Package name of the application under test.
-  ///
-  /// Android only.
-  final String packageName;
-
-  /// Bundle identifier name of the application under test.
-  ///
-  /// iOS only.
-  final String bundleId;
-
-  /// Name of the application under test on Android.
-  final String androidAppName;
-
-  /// Name of the application under test on iOS.
-  final String iosAppName;
-
-  /// Name of the application under test.
-  ///
-  /// Returns [androidAppName] on Android and [iosAppName] on iOS.
-  String get appName {
-    if (io.Platform.isAndroid) {
-      return androidAppName;
-    } else if (io.Platform.isIOS) {
-      return iosAppName;
-    } else {
-      throw StateError('Unsupported platform');
-    }
-  }
-
-  /// Called when a native action is performed.
-  final void Function(String) logger;
-
-  /// Creates a copy of this config but with the given fields replaced with the
-  /// new values.
-  NativeAutomatorConfig copyWith({
-    String? host,
-    String? port,
-    String? packageName,
-    String? bundleId,
-    String? androidAppName,
-    String? iosAppName,
-    Duration? connectionTimeout,
-    Duration? findTimeout,
-    KeyboardBehavior? keyboardBehavior,
-    void Function(String)? logger,
-  }) {
-    return NativeAutomatorConfig(
-      host: host ?? this.host,
-      port: port ?? this.port,
-      packageName: packageName ?? this.packageName,
-      bundleId: bundleId ?? this.bundleId,
-      androidAppName: androidAppName ?? this.androidAppName,
-      iosAppName: iosAppName ?? this.iosAppName,
-      connectionTimeout: connectionTimeout ?? this.connectionTimeout,
-      findTimeout: findTimeout ?? this.findTimeout,
-      keyboardBehavior: keyboardBehavior ?? this.keyboardBehavior,
-      logger: logger ?? this.logger,
-    );
-  }
-}
-
 /// Provides functionality to interact with the OS that the app under test is
 /// running on.
 ///
@@ -179,6 +31,10 @@ class NativeAutomatorConfig {
 )
 class NativeAutomator {
   /// Creates a new [NativeAutomator].
+  @Deprecated(
+    'NativeAutomator is deprecated and will be removed in a future release. '
+    'Please use PlatformAutomator instead.',
+  )
   NativeAutomator({required PlatformAutomator platform}) : _platform = platform;
 
   final PlatformAutomator _platform;
@@ -300,17 +156,8 @@ class NativeAutomator {
   Future<void> tapOnNotificationBySelector(
     Selector selector, {
     Duration? timeout,
-  }) async {
-    await _wrapRequest(
-      'tapOnNotificationBySelector',
-      () => _client.tapOnNotification(
-        TapOnNotificationRequest(
-          selector: selector,
-          timeoutMillis: timeout?.inMilliseconds,
-        ),
-      ),
-    );
-  }
+  }) =>
+      _platform.mobile.tapOnNotificationBySelector(selector, timeout: timeout);
 
   /// Press volume up
   ///
@@ -339,24 +186,12 @@ class NativeAutomator {
   Future<void> pressVolumeDown() => _platform.mobile.pressVolumeDown();
 
   /// Enables dark mode.
-  Future<void> enableDarkMode({String? appId}) async {
-    await _wrapRequest(
-      'enableDarkMode',
-      () => _client.enableDarkMode(
-        DarkModeRequest(appId: appId ?? resolvedAppId),
-      ),
-    );
-  }
+  Future<void> enableDarkMode({String? appId}) =>
+      _platform.mobile.enableDarkMode(appId: appId);
 
   /// Disables dark mode.
-  Future<void> disableDarkMode({String? appId}) async {
-    await _wrapRequest(
-      'disableDarkMode',
-      () => _client.disableDarkMode(
-        DarkModeRequest(appId: appId ?? resolvedAppId),
-      ),
-    );
-  }
+  Future<void> disableDarkMode({String? appId}) =>
+      _platform.mobile.disableDarkMode(appId: appId);
 
   /// Enables airplane mode.
   Future<void> enableAirplaneMode() => _platform.mobile.enableAirplaneMode();
@@ -435,41 +270,18 @@ class NativeAutomator {
     String? appId,
     Duration? timeout,
     Duration? delayBetweenTaps,
-  }) async {
-    await _wrapRequest(
-      'doubleTap',
-      () => _client.doubleTap(
-        TapRequest(
-          selector: selector,
-          appId: appId ?? resolvedAppId,
-          timeoutMillis: timeout?.inMilliseconds,
-          delayBetweenTapsMillis: delayBetweenTaps?.inMilliseconds,
-        ),
-      ),
-    );
-  }
+  }) => _platform.mobile.doubleTap(
+    selector,
+    appId: appId,
+    timeout: timeout,
+    delayBetweenTaps: delayBetweenTaps,
+  );
 
   /// Taps at a given [location].
   ///
   /// [location] must be in the inclusive 0-1 range.
-  Future<void> tapAt(Offset location, {String? appId}) async {
-    assert(location.dx >= 0 && location.dx <= 1);
-    assert(location.dy >= 0 && location.dy <= 1);
-
-    // Needed for an edge case observed on Android where if a newly opened app
-    // updates its layout right after being launched, tapping without delay fails
-    await Future<void>.delayed(const Duration(milliseconds: 5));
-
-    await _wrapRequest('tapAt', () async {
-      await _client.tapAt(
-        TapAtRequest(
-          x: location.dx,
-          y: location.dy,
-          appId: appId ?? resolvedAppId,
-        ),
-      );
-    });
-  }
+  Future<void> tapAt(Offset location, {String? appId}) =>
+      _platform.mobile.tapAt(location, appId: appId);
 
   /// Enters text to the native view specified by [selector].
   ///
@@ -490,27 +302,15 @@ class NativeAutomator {
     String? appId,
     KeyboardBehavior? keyboardBehavior,
     Duration? timeout,
-    Offset tapLocation = const Offset(0.9, 0.9),
-  }) async {
-    assert(tapLocation.dx >= 0.0 && tapLocation.dx <= 1.0);
-    assert(tapLocation.dy >= 0.0 && tapLocation.dy <= 1.0);
-
-    await _wrapRequest(
-      'enterText',
-      () => _client.enterText(
-        EnterTextRequest(
-          data: text,
-          appId: appId ?? resolvedAppId,
-          selector: selector,
-          keyboardBehavior:
-              (keyboardBehavior ?? _config.keyboardBehavior).toContractsEnum,
-          timeoutMillis: timeout?.inMilliseconds,
-          dx: tapLocation.dx,
-          dy: tapLocation.dy,
-        ),
-      ),
-    );
-  }
+    Offset? tapLocation,
+  }) => _platform.mobile.enterText(
+    selector,
+    text: text,
+    appId: appId,
+    keyboardBehavior: keyboardBehavior,
+    timeout: timeout,
+    tapLocation: tapLocation,
+  );
 
   /// Enters text to the [index]-th visible text field.
   ///
@@ -532,27 +332,15 @@ class NativeAutomator {
     String? appId,
     KeyboardBehavior? keyboardBehavior,
     Duration? timeout,
-    Offset tapLocation = const Offset(0.9, 0.9),
-  }) async {
-    assert(tapLocation.dx >= 0.0 && tapLocation.dx <= 1.0);
-    assert(tapLocation.dy >= 0.0 && tapLocation.dy <= 1.0);
-
-    await _wrapRequest(
-      'enterTextByIndex',
-      () => _client.enterText(
-        EnterTextRequest(
-          data: text,
-          appId: appId ?? resolvedAppId,
-          index: index,
-          keyboardBehavior:
-              (keyboardBehavior ?? _config.keyboardBehavior).toContractsEnum,
-          timeoutMillis: timeout?.inMilliseconds,
-          dx: tapLocation.dx,
-          dy: tapLocation.dy,
-        ),
-      ),
-    );
-  }
+    Offset? tapLocation,
+  }) => _platform.mobile.enterTextByIndex(
+    text,
+    index: index,
+    appId: appId,
+    keyboardBehavior: keyboardBehavior,
+    timeout: timeout,
+    tapLocation: tapLocation,
+  );
 
   /// Swipes from [from] to [to].
   ///
@@ -567,27 +355,13 @@ class NativeAutomator {
     int steps = 12,
     String? appId,
     bool enablePatrolLog = true,
-  }) async {
-    assert(from.dx >= 0 && from.dx <= 1);
-    assert(from.dy >= 0 && from.dy <= 1);
-    assert(to.dx >= 0 && to.dx <= 1);
-    assert(to.dy >= 0 && to.dy <= 1);
-
-    await _wrapRequest(
-      'swipe',
-      enablePatrolLog: enablePatrolLog,
-      () => _client.swipe(
-        SwipeRequest(
-          startX: from.dx,
-          startY: from.dy,
-          endX: to.dx,
-          endY: to.dy,
-          steps: steps,
-          appId: appId ?? resolvedAppId,
-        ),
-      ),
-    );
-  }
+  }) => _platform.mobile.swipe(
+    from: from,
+    to: to,
+    steps: steps,
+    appId: appId,
+    enablePatrolLog: enablePatrolLog,
+  );
 
   /// Mimics the swipe back (left to right) gesture.
   ///
@@ -609,18 +383,8 @@ class NativeAutomator {
   /// await tester.swipeBack(dy: 0.8); // Swipe back at 1/5 height of the screen
   /// await tester.swipeBack(); // Swipe back at the center of the screen
   /// ```
-  Future<void> swipeBack({double dy = 0.5, String? appId}) async {
-    assert(dy >= 0.0 && dy <= 1.0, 'dy must be between 0.0 and 1.0');
-    await _wrapRequest(
-      'swipeBack',
-      () => swipe(
-        from: Offset(0, dy),
-        to: Offset(1, dy),
-        appId: appId,
-        enablePatrolLog: false,
-      ),
-    );
-  }
+  Future<void> swipeBack({double dy = 0.5, String? appId}) =>
+      _platform.mobile.swipeBack(dy: dy, appId: appId);
 
   /// Simulates pull-to-refresh gesture.
   ///
@@ -641,22 +405,7 @@ class NativeAutomator {
     Offset from = const Offset(0.5, 0.5),
     Offset to = const Offset(0.5, 0.9),
     int steps = 50,
-  }) async {
-    assert(from.dx >= 0 && from.dx <= 1);
-    assert(from.dy >= 0 && from.dy <= 1);
-    assert(to.dx >= 0 && to.dx <= 1);
-    assert(to.dy >= 0 && to.dy <= 1);
-
-    await _wrapRequest(
-      'pullToRefresh',
-      () => swipe(
-        from: Offset(from.dx, from.dy),
-        to: Offset(to.dx, to.dy),
-        steps: steps,
-        enablePatrolLog: false,
-      ),
-    );
-  }
+  }) => _platform.mobile.pullToRefresh(from: from, to: to, steps: steps);
 
   /// Waits until the native view specified by [selector] becomes visible.
   /// It waits for the view to become visible for [timeout] duration. If
@@ -666,18 +415,11 @@ class NativeAutomator {
     Selector selector, {
     String? appId,
     Duration? timeout,
-  }) async {
-    await _wrapRequest(
-      'waitUntilVisible',
-      () => _client.waitUntilVisible(
-        WaitUntilVisibleRequest(
-          selector: selector,
-          appId: appId ?? resolvedAppId,
-          timeoutMillis: timeout?.inMilliseconds,
-        ),
-      ),
-    );
-  }
+  }) => _platform.mobile.waitUntilVisible(
+    selector,
+    appId: appId,
+    timeout: timeout,
+  );
 
   /// Returns a list of currently visible native UI controls, specified by
   /// [selector], which are currently visible on screen.
@@ -716,16 +458,7 @@ class NativeAutomator {
   /// Returns true if the dialog became visible within timeout, false otherwise.
   Future<bool> isPermissionDialogVisible({
     Duration timeout = const Duration(seconds: 1),
-  }) async {
-    final response = await _wrapRequest(
-      'isPermissionDialogVisible',
-      () => _client.isPermissionDialogVisible(
-        PermissionDialogVisibleRequest(timeoutMillis: timeout.inMilliseconds),
-      ),
-    );
-
-    return response.visible;
-  }
+  }) => _platform.mobile.isPermissionDialogVisible(timeout: timeout);
 
   /// Grants the permission that the currently visible native permission request
   /// dialog is asking for.
@@ -740,14 +473,8 @@ class NativeAutomator {
   ///
   ///  * [selectFineLocation] and [selectCoarseLocation], which works only for
   ///    location permission request dialogs
-  Future<void> grantPermissionWhenInUse() async {
-    await _wrapRequest(
-      'grantPermissionWhenInUse',
-      () => _client.handlePermissionDialog(
-        HandlePermissionRequest(code: HandlePermissionRequestCode.whileUsing),
-      ),
-    );
-  }
+  Future<void> grantPermissionWhenInUse() =>
+      _platform.mobile.grantPermissionWhenInUse();
 
   /// Grants the permission that the currently visible native permission request
   /// dialog is asking for.
@@ -769,14 +496,8 @@ class NativeAutomator {
   ///
   ///  * [selectFineLocation] and [selectCoarseLocation], which works only for
   ///    location permission request dialogs
-  Future<void> grantPermissionOnlyThisTime() async {
-    await _wrapRequest(
-      'grantPermissionOnlyThisTime',
-      () => _client.handlePermissionDialog(
-        HandlePermissionRequest(code: HandlePermissionRequestCode.onlyThisTime),
-      ),
-    );
-  }
+  Future<void> grantPermissionOnlyThisTime() =>
+      _platform.mobile.grantPermissionOnlyThisTime();
 
   /// Denies the permission that the currently visible native permission request
   /// dialog is asking for.
@@ -791,44 +512,20 @@ class NativeAutomator {
   ///
   ///  * [selectFineLocation] and [selectCoarseLocation], which works only for
   ///    location permission request dialogs
-  Future<void> denyPermission() async {
-    await _wrapRequest(
-      'denyPermission',
-      () => _client.handlePermissionDialog(
-        HandlePermissionRequest(code: HandlePermissionRequestCode.denied),
-      ),
-    );
-  }
+  Future<void> denyPermission() => _platform.mobile.denyPermission();
 
   /// Select the "coarse location" (aka "approximate") setting on the currently
   /// visible native permission request dialog.
   ///
   /// Throws if no permission request dialog is present.
-  Future<void> selectCoarseLocation() async {
-    await _wrapRequest(
-      'selectCoarseLocation',
-      () => _client.setLocationAccuracy(
-        SetLocationAccuracyRequest(
-          locationAccuracy: SetLocationAccuracyRequestLocationAccuracy.coarse,
-        ),
-      ),
-    );
-  }
+  Future<void> selectCoarseLocation() =>
+      _platform.mobile.selectCoarseLocation();
 
   /// Select the "fine location" (aka "precise") setting on the currently
   /// visible native permission request dialog.
   ///
   /// Throws if no permission request dialog is present.
-  Future<void> selectFineLocation() async {
-    await _wrapRequest(
-      'selectFineLocation',
-      () => _client.setLocationAccuracy(
-        SetLocationAccuracyRequest(
-          locationAccuracy: SetLocationAccuracyRequestLocationAccuracy.fine,
-        ),
-      ),
-    );
-  }
+  Future<void> selectFineLocation() => _platform.mobile.selectFineLocation();
 
   /// Set mock location
   ///
@@ -838,29 +535,11 @@ class NativeAutomator {
     double latitude,
     double longitude, {
     String? packageName,
-  }) async {
-    await _wrapRequest(
-      'setMockLocation latitude: $latitude, longitude: $longitude',
-      () => _client.setMockLocation(
-        SetMockLocationRequest(
-          latitude: latitude,
-          longitude: longitude,
-          packageName: packageName ?? _config.packageName,
-        ),
-      ),
-    );
-  }
-
-  /// Tells the AndroidJUnitRunner that PatrolAppService is ready to answer
-  /// requests about the structure of Dart tests.
-  @internal
-  Future<void> markPatrolAppServiceReady() async {
-    await _wrapRequest(
-      'markPatrolAppServiceReady',
-      _client.markPatrolAppServiceReady,
-      enablePatrolLog: false,
-    );
-  }
+  }) => _platform.mobile.setMockLocation(
+    latitude,
+    longitude,
+    packageName: packageName,
+  );
 
   /// Take and confirm the photo
   ///
@@ -874,19 +553,11 @@ class NativeAutomator {
     Selector? shutterButtonSelector,
     Selector? doneButtonSelector,
     Duration? timeout,
-  }) async {
-    await _wrapRequest('takeCameraPhoto', () async {
-      await _client.takeCameraPhoto(
-        TakeCameraPhotoRequest(
-          shutterButtonSelector: shutterButtonSelector,
-          doneButtonSelector: doneButtonSelector,
-          appId: resolvedAppId,
-          isNative2: false,
-          timeoutMillis: timeout?.inMilliseconds,
-        ),
-      );
-    });
-  }
+  }) => _platform.mobile.takeCameraPhoto(
+    shutterButtonSelector: shutterButtonSelector,
+    doneButtonSelector: doneButtonSelector,
+    timeout: timeout,
+  );
 
   /// Pick an image from the gallery
   ///
@@ -902,19 +573,11 @@ class NativeAutomator {
     Selector? imageSelector,
     int? index,
     Duration? timeout,
-  }) async {
-    await _wrapRequest('pickImageFromGallery', () async {
-      await _client.pickImageFromGallery(
-        PickImageFromGalleryRequest(
-          imageSelector: imageSelector,
-          appId: resolvedAppId,
-          isNative2: false,
-          timeoutMillis: timeout?.inMilliseconds,
-          imageIndex: index,
-        ),
-      );
-    });
-  }
+  }) => _platform.mobile.pickImageFromGallery(
+    imageSelector: imageSelector,
+    index: index,
+    timeout: timeout,
+  );
 
   /// Pick multiple images from the gallery
   ///
@@ -927,19 +590,11 @@ class NativeAutomator {
     required List<int> imageIndexes,
     Selector? imageSelector,
     Duration? timeout,
-  }) async {
-    await _wrapRequest('pickMultipleImagesFromGallery', () async {
-      await _client.pickMultipleImagesFromGallery(
-        PickMultipleImagesFromGalleryRequest(
-          imageSelector: imageSelector,
-          appId: resolvedAppId,
-          isNative2: false,
-          imageIndexes: imageIndexes,
-          timeoutMillis: timeout?.inMilliseconds,
-        ),
-      );
-    });
-  }
+  }) => _platform.mobile.pickMultipleImagesFromGallery(
+    imageIndexes: imageIndexes,
+    imageSelector: imageSelector,
+    timeout: timeout,
+  );
 
   /// Checks if the app is running on a virtual device (simulator or emulator).
   ///
@@ -948,14 +603,7 @@ class NativeAutomator {
   ///
   /// This can be useful for conditional logic in tests that need to behave
   /// differently on physical devices vs simulators/emulators.
-  Future<bool> isVirtualDevice() async {
-    final response = await _wrapRequest(
-      'isVirtualDevice',
-      () => _client.isVirtualDevice(),
-    );
-
-    return response.isVirtualDevice;
-  }
+  Future<bool> isVirtualDevice() => _platform.mobile.isVirtualDevice();
 
   /// Gets the OS version.
   ///
@@ -971,12 +619,5 @@ class NativeAutomator {
   ///   // Android 11+ specific behavior
   /// }
   /// ```
-  Future<int> getOsVersion() async {
-    final response = await _wrapRequest(
-      'getOsVersion',
-      () => _client.getOsVersion(),
-    );
-
-    return response.osVersion;
-  }
+  Future<int> getOsVersion() => _platform.getOsVersion();
 }

@@ -5,7 +5,7 @@ import 'package:patrol/src/platform/web/web_automator_config.dart';
 ///
 /// This class provides a default implementation for platforms where the native web automator
 /// is not available or supported. Any attempt to use its methods will throw an [UnimplementedError].
-class WebAutomator extends web_automator.WebAutomator {
+class WebAutomator implements web_automator.WebAutomator {
   /// Creates a new [WebAutomator] stub.
   /// [config] is required but not used for any real operations,
   /// we need to stay consistant with native_web_automator.dart

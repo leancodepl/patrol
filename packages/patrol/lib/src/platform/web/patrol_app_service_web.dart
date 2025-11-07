@@ -10,6 +10,7 @@ library;
 
 import 'dart:async';
 import 'dart:js_interop';
+import 'package:patrol/src/platform/contracts/contracts.dart';
 import 'package:patrol_log/patrol_log.dart';
 
 class _TestExecutionResult {
@@ -41,7 +42,7 @@ external JSPromise<JSAny?> __patrol__platformHandler(JSAny? request);
 /// [logger] - optional logger function for logging
 /// [patrolLog] - optional PatrolLogWriter for step logging
 /// Returns a Map with 'ok' boolean and optional 'data' or 'error' fields.
-Future<void> callPlaywright(
+Future<dynamic> callPlaywright(
   String action,
   Map<String, dynamic> params, {
   void Function(String)? logger,
@@ -57,12 +58,14 @@ Future<void> callPlaywright(
 
   try {
     final request = {'action': action, 'params': params};
-    await __patrol__platformHandler(request.jsify()).toDart;
+    final result = await __patrol__platformHandler(request.jsify()).toDart;
 
     logger?.call('$action() succeeded');
     if (patrolLog != null) {
       patrolLog.log(StepEntry(action: text, status: StepEntryStatus.success));
     }
+
+    return result.dartify();
   } catch (err) {
     logger?.call('$action() failed');
 

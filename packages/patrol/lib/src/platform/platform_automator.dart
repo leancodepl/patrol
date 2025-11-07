@@ -1,3 +1,4 @@
+import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/src/platform/android/android_automator.dart';
 import 'package:patrol/src/platform/android/android_automator_config.dart';
 import 'package:patrol/src/platform/android/android_automator_empty.dart'
@@ -6,7 +7,7 @@ import 'package:patrol/src/platform/android/android_automator_empty.dart'
     if (dart.library.io) 'package:patrol/src/platform/android/android_automator_native.dart'
     as native_android_automator;
 import 'package:patrol/src/platform/contracts/contracts.dart';
-import 'package:patrol/src/platform/current.dart';
+import 'package:patrol/src/platform/current.dart' as current_platform;
 import 'package:patrol/src/platform/ios/ios_automator.dart';
 import 'package:patrol/src/platform/ios/ios_automator_config.dart';
 import 'package:patrol/src/platform/ios/ios_automator_empty.dart'
@@ -63,7 +64,16 @@ class PlatformAutomator {
     return action.safe(
       android: () => android.tap(selector.android, timeout: timeout),
       ios: () => ios.tap(selector.ios, appId: appId, timeout: timeout),
-      web: () => web.tap(selector.web, appId: appId, timeout: timeout),
+      web: () => web.tap(selector.web),
+      macos: _throwOnMacOS,
+    );
+  }
+
+  Future<int> getOsVersion() {
+    return action.safe(
+      android: () => android.getOsVersion(),
+      ios: () => ios.getOsVersion(),
+      web: () => web.getOsVersion(),
       macos: _throwOnMacOS,
     );
   }
@@ -93,11 +103,79 @@ class MobileAutomator {
     );
   }
 
-  Future<void> doubleTap(CompoundSelector selector, {Duration? timeout}) {
+  Future<void> doubleTap(
+    CompoundSelector selector, {
+    Duration? timeout,
+    Duration? delayBetweenTaps,
+    String? appId,
+  }) {
     return platform.action.mobile(
-      android: () =>
-          platform.android.doubleTap(selector.android, timeout: timeout),
-      ios: () => platform.ios.doubleTap(selector.ios, timeout: timeout),
+      android: () => platform.android.doubleTap(
+        selector.android,
+        timeout: timeout,
+        delayBetweenTaps: delayBetweenTaps,
+      ),
+      ios: () =>
+          platform.ios.doubleTap(selector.ios, timeout: timeout, appId: appId),
+    );
+  }
+
+  Future<void> tapAt(Offset location, {String? appId}) {
+    return platform.action.mobile(
+      android: () => platform.android.tapAt(location),
+      ios: () => platform.ios.tapAt(location, appId: appId),
+    );
+  }
+
+  Future<void> enterText(
+    CompoundSelector selector, {
+    required String text,
+    String? appId,
+    KeyboardBehavior? keyboardBehavior,
+    Duration? timeout,
+    Offset? tapLocation,
+  }) {
+    return platform.action.mobile(
+      android: () => platform.android.enterText(
+        selector.android,
+        text: text,
+        keyboardBehavior: keyboardBehavior,
+        timeout: timeout,
+        tapLocation: tapLocation,
+      ),
+      ios: () => platform.ios.enterText(
+        selector.ios,
+        text: text,
+        keyboardBehavior: keyboardBehavior,
+        timeout: timeout,
+        tapLocation: tapLocation,
+      ),
+    );
+  }
+
+  Future<void> enterTextByIndex(
+    String text, {
+    required int index,
+    String? appId,
+    KeyboardBehavior? keyboardBehavior,
+    Duration? timeout,
+    Offset? tapLocation,
+  }) {
+    return platform.action.mobile(
+      android: () => platform.android.enterTextByIndex(
+        text,
+        index: index,
+        keyboardBehavior: keyboardBehavior,
+        timeout: timeout,
+        tapLocation: tapLocation,
+      ),
+      ios: () => platform.ios.enterTextByIndex(
+        text,
+        index: index,
+        keyboardBehavior: keyboardBehavior,
+        timeout: timeout,
+        tapLocation: tapLocation,
+      ),
     );
   }
 
@@ -169,6 +247,22 @@ class MobileAutomator {
       android: () =>
           platform.android.tapOnNotificationByIndex(index, timeout: timeout),
       ios: () => platform.ios.tapOnNotificationByIndex(index, timeout: timeout),
+    );
+  }
+
+  Future<void> tapOnNotificationBySelector(
+    Selector selector, {
+    Duration? timeout,
+  }) {
+    return platform.action.mobile(
+      android: () => platform.android.tapOnNotificationBySelector(
+        selector.android,
+        timeout: timeout,
+      ),
+      ios: () => platform.ios.tapOnNotificationBySelector(
+        selector.ios,
+        timeout: timeout,
+      ),
     );
   }
 
@@ -255,6 +349,192 @@ class MobileAutomator {
       ios: platform.ios.disableBluetooth,
     );
   }
+
+  Future<void> swipe({
+    required Offset from,
+    required Offset to,
+    int steps = 12,
+    String? appId,
+    bool enablePatrolLog = true,
+  }) {
+    return platform.action.mobile(
+      android: () => platform.android.swipe(
+        from: from,
+        to: to,
+        steps: steps,
+        enablePatrolLog: enablePatrolLog,
+      ),
+      ios: () => platform.ios.swipe(
+        from: from,
+        to: to,
+        appId: appId,
+        enablePatrolLog: enablePatrolLog,
+      ),
+    );
+  }
+
+  Future<void> swipeBack({double dy = 0.5, String? appId}) {
+    return platform.action.mobile(
+      android: () => platform.android.swipeBack(dy: dy),
+      ios: () => platform.ios.swipeBack(dy: dy, appId: appId),
+    );
+  }
+
+  Future<void> pullToRefresh({
+    Offset from = const Offset(0.5, 0.5),
+    Offset to = const Offset(0.5, 0.9),
+    int steps = 50,
+  }) {
+    return platform.action.mobile(
+      android: () =>
+          platform.android.pullToRefresh(from: from, to: to, steps: steps),
+      ios: () => platform.ios.pullToRefresh(from: from, to: to),
+    );
+  }
+
+  Future<void> waitUntilVisible(
+    CompoundSelector selector, {
+    String? appId,
+    Duration? timeout,
+  }) {
+    return platform.action.mobile(
+      android: () =>
+          platform.android.waitUntilVisible(selector.android, timeout: timeout),
+      ios: () => platform.ios.waitUntilVisible(
+        selector.ios,
+        appId: appId,
+        timeout: timeout,
+      ),
+    );
+  }
+
+  Future<bool> isPermissionDialogVisible({
+    Duration timeout = const Duration(seconds: 1),
+  }) {
+    return platform.action.mobile(
+      android: () =>
+          platform.android.isPermissionDialogVisible(timeout: timeout),
+      ios: () => platform.ios.isPermissionDialogVisible(timeout: timeout),
+    );
+  }
+
+  Future<void> grantPermissionWhenInUse() {
+    return platform.action.mobile(
+      android: platform.android.grantPermissionWhenInUse,
+      ios: platform.ios.grantPermissionWhenInUse,
+    );
+  }
+
+  Future<void> grantPermissionOnlyThisTime() {
+    return platform.action.mobile(
+      android: platform.android.grantPermissionOnlyThisTime,
+      ios: platform.ios.grantPermissionOnlyThisTime,
+    );
+  }
+
+  Future<void> denyPermission() {
+    return platform.action.mobile(
+      android: platform.android.denyPermission,
+      ios: platform.ios.denyPermission,
+    );
+  }
+
+  Future<void> selectCoarseLocation() {
+    return platform.action.mobile(
+      android: platform.android.selectCoarseLocation,
+      ios: platform.ios.selectCoarseLocation,
+    );
+  }
+
+  Future<void> selectFineLocation() {
+    return platform.action.mobile(
+      android: platform.android.selectFineLocation,
+      ios: platform.ios.selectFineLocation,
+    );
+  }
+
+  Future<void> setMockLocation(
+    double latitude,
+    double longitude, {
+    String? packageName,
+  }) {
+    return platform.action.mobile(
+      android: () => platform.android.setMockLocation(
+        latitude,
+        longitude,
+        packageName: packageName,
+      ),
+      ios: () => platform.ios.setMockLocation(
+        latitude,
+        longitude,
+        packageName: packageName,
+      ),
+    );
+  }
+
+  Future<void> takeCameraPhoto({
+    CompoundSelector? shutterButtonSelector,
+    CompoundSelector? doneButtonSelector,
+    Duration? timeout,
+  }) {
+    return platform.action.mobile(
+      android: () => platform.android.takeCameraPhoto(
+        shutterButtonSelector: shutterButtonSelector?.android,
+        doneButtonSelector: doneButtonSelector?.android,
+        timeout: timeout,
+      ),
+      ios: () => platform.ios.takeCameraPhoto(
+        shutterButtonSelector: shutterButtonSelector?.ios,
+        doneButtonSelector: doneButtonSelector?.ios,
+        timeout: timeout,
+      ),
+    );
+  }
+
+  Future<void> pickImageFromGallery({
+    CompoundSelector? imageSelector,
+    int? index,
+    Duration? timeout,
+  }) {
+    return platform.action.mobile(
+      android: () => platform.android.pickImageFromGallery(
+        imageSelector: imageSelector?.android,
+        index: index,
+        timeout: timeout,
+      ),
+      ios: () => platform.ios.pickImageFromGallery(
+        imageSelector: imageSelector?.ios,
+        index: index,
+        timeout: timeout,
+      ),
+    );
+  }
+
+  Future<void> pickMultipleImagesFromGallery({
+    required List<int> imageIndexes,
+    CompoundSelector? imageSelector,
+    Duration? timeout,
+  }) {
+    return platform.action.mobile(
+      android: () => platform.android.pickMultipleImagesFromGallery(
+        imageIndexes: imageIndexes,
+        imageSelector: imageSelector?.android,
+        timeout: timeout,
+      ),
+      ios: () => platform.ios.pickMultipleImagesFromGallery(
+        imageIndexes: imageIndexes,
+        imageSelector: imageSelector?.ios,
+        timeout: timeout,
+      ),
+    );
+  }
+
+  Future<bool> isVirtualDevice() {
+    return platform.action.mobile(
+      android: platform.android.isVirtualDevice,
+      ios: platform.ios.isVirtualDevice,
+    );
+  }
 }
 
 class PlatformAction {
@@ -321,13 +601,13 @@ class PlatformAction {
     required T Function() web,
     required T Function() macos,
   }) {
-    if (isAndroid) {
+    if (current_platform.isAndroid) {
       return android();
-    } else if (isIOS) {
+    } else if (current_platform.isIOS) {
       return ios();
-    } else if (isMacOS) {
+    } else if (current_platform.isMacOS) {
       return macos();
-    } else if (isWeb) {
+    } else if (current_platform.isWeb) {
       return web();
     }
 

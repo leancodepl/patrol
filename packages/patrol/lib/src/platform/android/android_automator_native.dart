@@ -444,16 +444,13 @@ class AndroidAutomator extends NativeMobileAutomator
   ///
   /// If [selector] is null, returns the whole native UI tree.
   Future<AndroidGetNativeUITreeResponse> getNativeViews(
-    AndroidSelector selector, {
-  }) async {
-
+    AndroidSelector selector,
+  ) async {
     // TOOD: add this weird logic with empty selector
     final response = await wrapRequest(
       'getNativeViews',
       () => _client.getNativeViews(
-       AndroidGetNativeUITreeResponse(
-          selector: selector,
-        ),
+        AndroidGetNativeUITreeResponse(selector: selector),
       ),
     );
 

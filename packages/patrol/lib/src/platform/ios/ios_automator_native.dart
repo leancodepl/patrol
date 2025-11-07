@@ -2,13 +2,24 @@ import 'dart:io' as io;
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
-import 'package:patrol/src/native/native.dart' hide KeyboardBehavior;
+import 'package:patrol/src/native/native_automator.dart';
 import 'package:patrol/src/platform/contracts/contracts.dart';
 import 'package:patrol/src/platform/contracts/ios_automator_client.dart';
 import 'package:patrol/src/platform/ios/ios_automator.dart' as ios_automator;
 import 'package:patrol/src/platform/ios/ios_automator_config.dart';
 import 'package:patrol/src/platform/mobile/native_mobile_automator.dart';
 import 'package:patrol_log/patrol_log.dart';
+
+extension on KeyboardBehavior {
+  KeyboardBehavior get toContractsEnum {
+    switch (this) {
+      case KeyboardBehavior.showAndDismiss:
+        return KeyboardBehavior.showAndDismiss;
+      case KeyboardBehavior.alternative:
+        return KeyboardBehavior.alternative;
+    }
+  }
+}
 
 /// Provides functionality to interact with the OS that the app under test is
 /// running on.
