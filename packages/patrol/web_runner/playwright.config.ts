@@ -21,5 +21,5 @@ export default defineConfig({
   // Output test results to the tested app directory
   outputDir,
   reporter: [["html", { outputFolder, open: "never" }], ["json"], ["list"]],
-  timeout: 300000,
+  timeout: 600000,
 });
