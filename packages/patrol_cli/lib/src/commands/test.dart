@@ -71,6 +71,8 @@ class TestCommand extends PatrolCommand {
     usesIOSOptions();
 
     usesFullIsolationOption();
+
+    usesPlaywright();
   }
 
   final DeviceFinder _deviceFinder;
@@ -283,7 +285,14 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       testServerPort: super.testServerPort,
     );
 
-    final webOpts = WebAppOptions(flutter: flutterOpts);
+    final webOpts = WebAppOptions(
+      flutter: flutterOpts,
+      retries: intArg('playwright-retries'),
+      video: stringArg('playwright-video'),
+      timeout: intArg('playwright-timeout'),
+      workers: intArg('playwright-workers'),
+      reporter: stringArg('playwright-reporter'),
+    );
 
     // No need to build web app for testing. It's done in the execute method.
     if (device.targetPlatform != TargetPlatform.web) {

@@ -427,6 +427,21 @@ class WebTestBackend {
                 'PATROL_TEST_REPORT_DIR': testReportDir,
                 'PLAYWRIGHT_JSON_OUTPUT_NAME': 'results.json',
                 'PLAYWRIGHT_JSON_OUTPUT_DIR': testReportDir,
+                ...(options.retries != null
+                    ? {'PLAYWRIGHT_RETRIES': options.retries.toString()}
+                    : {}),
+                ...(options.video != null
+                    ? {'PLAYWRIGHT_VIDEO': options.video.toString()}
+                    : {}),
+                ...(options.timeout != null
+                    ? {'PLAYWRIGHT_TIMEOUT': options.timeout.toString()}
+                    : {}),
+                ...(options.workers != null
+                    ? {'PLAYWRIGHT_WORKERS': options.workers.toString()}
+                    : {}),
+                ...(options.reporter != null
+                    ? {'PLAYWRIGHT_REPORTER': options.reporter.toString()}
+                    : {}),
                 ...Platform.environment,
               },
               runInShell: true,
