@@ -395,7 +395,17 @@ class MacOSAppOptions {
 class WebAppOptions {
   const WebAppOptions({
     required this.flutter,
+    this.retries,
+    this.video,
+    this.timeout,
+    this.workers,
+    this.reporter,
   });
 
   final FlutterAppOptions flutter;
+  final int? retries;
+  final String? video;
+  final int? timeout;
+  final int? workers;
+  final String? reporter;
 }

@@ -229,6 +229,36 @@ abstract class PatrolCommand extends Command<int> {
     );
   }
 
+  void usesPlaywright() {
+    argParser
+      ..addOption(
+        'playwright-retries',
+        help: 'https://playwright.dev/docs/test-retries',
+        valueHelp: 'number',
+      )
+      ..addOption(
+        'playwright-video',
+        help: 'https://playwright.dev/docs/videos',
+        valueHelp: 'off | on | retain-on-failure | on-first-retry',
+      )
+      ..addOption(
+        'playwright-timeout',
+        help: 'https://playwright.dev/docs/test-timeouts',
+        valueHelp: 'number',
+      )
+      ..addOption(
+        'playwright-workers',
+        help: 'https://playwright.dev/docs/test-parallel',
+        valueHelp: 'number',
+      )
+      ..addOption(
+        'playwright-reporter',
+        help: 'https://playwright.dev/docs/test-reporters',
+        valueHelp:
+            '[["html" | "json" | "list" | "dot" | "line" | "github" | "junit" | "null", { "outputFolder": "<PATH>" | undefined, "open": "never" | "always" | "on-failure" | undefined } | undefined]]',
+      );
+  }
+
   /// Gets the parsed command-line flag named [name] as a `bool`.
   ///
   /// If no flag named [name] was added to the `ArgParser`, an [ArgumentError]
