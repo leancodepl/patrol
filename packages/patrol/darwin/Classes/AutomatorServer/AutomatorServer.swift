@@ -51,6 +51,15 @@
       }
     }
 
+    func openPlatformApp(request: OpenPlatformAppRequest) throws {
+      return try runCatching {
+        guard let appId = request.iosAppId else {
+          throw PatrolError.internal("iosAppId must not be null on iOS")
+        }
+        try automator.openApp(appId)
+      }
+    }
+
     func openQuickSettings(request: OpenQuickSettingsRequest) throws {
       return try runCatching {
         try automator.openControlCenter()

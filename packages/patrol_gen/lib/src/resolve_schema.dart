@@ -15,10 +15,21 @@ Future<Schema> resolveSchema(String schemaPath) async {
   if (result is ResolvedUnitResult) {
     for (final declaration in result.unit.declarations) {
       if (declaration is EnumDeclaration) {
+        final enumFields = declaration.constants.map((e) {
+          final name = e.name.lexeme;
+          final value =
+              switch (e.arguments?.argumentList.arguments.firstOrNull) {
+            final expression? =>
+              expression.toString().replaceAll("'", '').replaceAll('"', ''),
+            _ => name,
+          };
+          return EnumField(name, value);
+        }).toList();
+
         enums.add(
           Enum(
             declaration.name.lexeme,
-            declaration.constants.map((e) => e.name.lexeme).toList(),
+            enumFields,
           ),
         );
       } else if (declaration is ClassDeclaration) {
