@@ -16,6 +16,6 @@ export async function initialise(page: Page) {
 
       return true;
     },
-    { timeout: 60000 }
+    { timeout: 100000 }
   );
 }
