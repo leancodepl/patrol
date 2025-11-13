@@ -16,6 +16,7 @@ class PatrolLogReader {
     required this.showFlutterLogs,
     required this.hideTestSteps,
     required this.clearTestSteps,
+    this.additionalOnData,
   }) : _scope = scope;
 
   final void Function(String) log;
@@ -30,6 +31,12 @@ class PatrolLogReader {
     bool? cancelOnError,
   })
   listenStdOut;
+
+  /// Additional on data callback to be called when new data is received.
+  /// This is used to handle additional data that is not part of the patrol log.
+  /// As we can listen to the stdout of the process only once.
+  void Function(String)? additionalOnData;
+
   final DisposeScope _scope;
 
   /// Stopwatch measuring the whole tests duration.
@@ -86,6 +93,7 @@ class PatrolLogReader {
   /// Parse the line from the process output.
   void parse(String line) {
     try {
+      additionalOnData?.call(line);
       if (line.contains('PATROL_LOG')) {
         _parsePatrolLog(line);
       } else if (showFlutterLogs) {
@@ -95,6 +103,8 @@ class PatrolLogReader {
           ),
           _ when line.contains('I flutter :') => _parseFlutterAndroidLog(line),
           _ when line.contains('flutter:') => _parseFlutterIOsReleaseLog(line),
+          _ when RegExp(r'^\[.*?\]\s*(.*)').hasMatch(line) =>
+            _parseFlutterWebLog(line),
           _ when line.contains('Playwright:') => _parsePlaywrightLog(line),
           _ => null,
         };
@@ -147,6 +157,14 @@ class PatrolLogReader {
   void _parseFlutterAndroidLog(String line) {
     final regExp = RegExp('I flutter (.*)');
     final match = regExp.firstMatch(line);
+    if (match?.group(1) case final firstMatch?) {
+      log(firstMatch);
+    }
+  }
+
+  /// Parse the line containing Flutter logs and print them.
+  void _parseFlutterWebLog(String line) {
+    final match = RegExp(r'^\[.*?\]\s*(.*)').firstMatch(line);
     if (match?.group(1) case final firstMatch?) {
       log(firstMatch);
     }
@@ -221,7 +239,7 @@ class PatrolLogReader {
             '${entry.pretty()} ${AnsiCodes.gray}(${executionTime}s)${AnsiCodes.reset}',
           );
         case StepEntry():
-          _singleEntries.last.addEntry(entry);
+          _singleEntries.lastOrNull?.addEntry(entry);
           if (!hideTestSteps) {
             // Clear the previous line it's not the new step, or increment counter
             // for new step
