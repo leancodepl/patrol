@@ -32,6 +32,8 @@ class DoctorCommand extends PatrolCommand {
       _printIosSpecifics();
     }
 
+    _printPlaywrightSpecifics();
+
     return 0;
   }
 
@@ -96,6 +98,11 @@ class DoctorCommand extends PatrolCommand {
       'ideviceinstaller',
       _commandHint('brew install ideviceinstaller'),
     );
+  }
+
+  void _printPlaywrightSpecifics() {
+    _logger.info('Playwright: ');
+    _checkIfToolInstalled('npm', 'Install npm`');
   }
 
   String _commandHint(String command) => 'install with `$command`';
