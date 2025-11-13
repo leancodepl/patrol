@@ -94,7 +94,7 @@ void patrolTest(
   ),
   NativeAutomatorConfig nativeAutomatorConfig = const NativeAutomatorConfig(),
   LiveTestWidgetsFlutterBindingFramePolicy framePolicy =
-      LiveTestWidgetsFlutterBindingFramePolicy.fadePointers,
+      LiveTestWidgetsFlutterBindingFramePolicy.fullyLive,
 }) {
   final patrolLog = PatrolLogWriter(config: {'printLogs': config.printLogs});
   final automator = NativeAutomator(config: nativeAutomatorConfig);

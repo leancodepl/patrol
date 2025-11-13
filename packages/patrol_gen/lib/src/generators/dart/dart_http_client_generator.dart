@@ -13,9 +13,9 @@ class DartHttpClientGenerator {
 
     return OutputFile(
       filename: config.clientFileName(service.name),
-      content:
-          DartFormatter(languageVersion: DartFormatter.latestLanguageVersion)
-              .format(buffer.toString()),
+      content: DartFormatter(
+        languageVersion: DartFormatter.latestLanguageVersion,
+      ).format(buffer.toString()),
     );
   }
 

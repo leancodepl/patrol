@@ -28,26 +28,26 @@ testing on iOS).
 ### Discussion
 
 By default, `patrol test` runs all integration tests (files ending with
-`_test.dart` located in the `integration_test` directory).
+`_test.dart` located in the `patrol_test` directory). You can customize the test directory by setting `test_directory` in your `pubspec.yaml` under the `patrol` section.
 
 To run a single test, use `--target`:
 
 ```
-patrol test --target integration_test/login_test.dart
+patrol test --target patrol_test/login_test.dart
 ```
 
 You can use `--target` more than once to run multiple tests:
 
 ```
 patrol test \
-  --target integration_test/login_test.dart \
-  --target integration_test/app_test.dart
+  --target patrol_test/login_test.dart \
+  --target patrol_test/app_test.dart
 ```
 
 Or alternatively:
 
 ```
-patrol test --targets integration_test/login_test.dart,integration_test/app_test.dart
+patrol test --targets patrol_test/login_test.dart,patrol_test/app_test.dart
 ```
 
 Test files must end with `_test.dart`. Otherwise the file is not considered a
@@ -103,7 +103,8 @@ patrol test --exclude-tags='(android||ios)'
 ```
 
 <Info>
-For comprehensive information about tag syntax, complex expressions, and advanced usage, see the [Patrol tags documentation](https://patrol.leancode.co/documentation/patrol-tags).
+    For comprehensive information about tag syntax, complex expressions, and advanced usage, see
+    the [Patrol tags documentation](https://patrol.leancode.co/documentation/patrol-tags).
 </Info>
 
 ### Coverage
@@ -120,7 +121,8 @@ patrol test --coverage
 
 The LCOV report will be saved to `/coverage/patrol_lcov.info`.
 
-Additionally, you can exclude certain files from the report using glob patterns and `--coverage-ignore` option. For instance,
+Additionally, you can exclude certain files from the report using glob patterns and `--coverage-ignore` option.
+For instance,
 
 ```
 patrol test --coverage --coverage-ignore="**/*.g.dart"
@@ -130,15 +132,39 @@ excludes all files ending with `.g.dart`.
 
 ### Build versioning
 
-You can specify custom build number and build name using the `--build-name` and `--build-number` flags. These work the same as in Flutter CLI:
+You can specify custom build number and build name using the `--build-name` and `--build-number` flags. These work
+the same as in Flutter CLI:
 
 - `--build-name`: Version name of the app. (e.g. `1.2.3`)
 - `--build-number`: Version code of the app. (e.g. `123`)
 
 ```
 patrol test --build-name=1.2.3 --build-number=123
-patrol test --target integration_test/login_test.dart --build-name=1.2.3 --build-number=123
+patrol test --target patrol_test/login_test.dart --build-name=1.2.3 --build-number=123
 ```
+
+### Isolation of test runs
+
+To achieve full isolation between test runs, you can use the `--full-isolation` flag or configure it directly in
+your build configuration.
+
+#### Using the --full-isolation flag
+
+<Warning>
+    This functionality is experimental on iOS.
+</Warning>
+
+The `--full-isolation` flag is supported on both Android and iOS:
+
+```bash
+patrol test --full-isolation
+```
+
+This flag:
+- **Android**: Clears package data before running each test
+- **iOS**: Uninstalls the app before running each test (except for the first one)
+
+See the [test command documentation](/cli-commands/test#full-isolation-between-tests) for more details.
 
 ### Under the hood
 

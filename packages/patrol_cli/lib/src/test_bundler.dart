@@ -14,6 +14,7 @@ class TestBundler {
 
   /// Creates an entrypoint for use with `patrol test` and `patrol build`.
   void createTestBundle(
+    String testDirectory,
     List<String> testFilePaths,
     String? tags,
     String? excludeTags,
@@ -35,7 +36,7 @@ import 'package:patrol/src/native/contracts/contracts.dart';
 import 'package:test_api/src/backend/invoker.dart';
 
 // START: GENERATED TEST IMPORTS
-${generateImports(testFilePaths)}
+${generateImports(testDirectory, testFilePaths)}
 // END: GENERATED TEST IMPORTS
 
 Future<void> main() async {
@@ -95,7 +96,7 @@ Future<void> main() async {
   });
 
   // START: GENERATED TEST GROUPS
-${generateGroupsCode(testFilePaths).split('\n').map((e) => '  $e').join('\n')}
+${generateGroupsCode(testDirectory, testFilePaths).split('\n').map((e) => '  $e').join('\n')}
   // END: GENERATED TEST GROUPS
 
   final dartTestGroup = await testExplorationCompleter.future;
@@ -114,23 +115,22 @@ ${generateGroupsCode(testFilePaths).split('\n').map((e) => '  $e').join('\n')}
 
     // This file must not end with "_test.dart", otherwise it'll be picked up
     // when finding tests to bundle.
-    bundledTestFile
+    final bundle = getBundledTestFile(testDirectory)
       ..createSync(recursive: true)
       ..writeAsStringSync(contents);
 
     _logger.detail(
-      'Generated entrypoint ${bundledTestFile.path} with ${testFilePaths.length} bundled test(s)',
+      'Generated entrypoint ${bundle.path} with ${testFilePaths.length} bundled test(s)',
     );
   }
 
   // This file must not end with "_test.dart", otherwise it'll be picked up
   // when finding tests to bundle.
-  File get bundledTestFile => _projectRoot
-      .childDirectory('integration_test')
-      .childFile('test_bundle.dart');
+  File getBundledTestFile(String testDirectory) =>
+      _projectRoot.childDirectory(testDirectory).childFile('test_bundle.dart');
 
   /// Creates an entrypoint for use with `patrol develop`.
-  void createDevelopTestBundle(String testFilePath) {
+  void createDevelopTestBundle(String testDirectory, String testFilePath) {
     final contents =
         '''
 // ignore_for_file: type=lint, invalid_use_of_internal_member
@@ -140,7 +140,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
 
 // START: GENERATED TEST IMPORTS
-${generateImports([testFilePath])}
+${generateImports(testDirectory, [testFilePath])}
 // END: GENERATED TEST IMPORTS
 
 Future<void> main() async {
@@ -151,27 +151,25 @@ Future<void> main() async {
         debugDefaultTargetPlatformOverride;
 
   // START: GENERATED TEST GROUPS
-${generateGroupsCode([testFilePath]).split('\n').map((e) => '  $e').join('\n')}
+${generateGroupsCode(testDirectory, [testFilePath]).split('\n').map((e) => '  $e').join('\n')}
   // END: GENERATED TEST GROUPS
 }
 ''';
 
-    bundledTestFile
+    final bundle = getBundledTestFile(testDirectory)
       ..createSync(recursive: true)
       ..writeAsStringSync(contents);
 
-    _logger.detail(
-      'Generated entrypoint ${bundledTestFile.path} for development',
-    );
+    _logger.detail('Generated entrypoint ${bundle.path} for development');
   }
 
   /// Input:
   ///
   /// ```dart
   /// [
-  ///   'integration_test/example_test.dart',
-  ///   'integration_test/permissions/permissions_location_test.dart',
-  ///   '/Users/charlie/awesome_app/integration_test/app_test.dart',
+  ///   'patrol_test/example_test.dart',
+  ///   'patrol_test/permissions/permissions_location_test.dart',
+  ///   '/Users/charlie/awesome_app/patrol_test/app_test.dart',
   /// ]
   /// ```
   /// Output:
@@ -179,15 +177,18 @@ ${generateGroupsCode([testFilePath]).split('\n').map((e) => '  $e').join('\n')}
   /// '''
   /// import 'example_test.dart' as example_test;
   /// import 'permissions/permissions_location_test.dart' as permissions__permissions_location_test;
-  /// import 'integration_test/app_test.dart' as app_test;
+  /// import 'patrol_test/app_test.dart' as app_test;
   /// '''
   /// ```
   @visibleForTesting
-  String generateImports(List<String> testFilePaths) {
+  String generateImports(String testDirectory, List<String> testFilePaths) {
     final imports = <String>[];
     for (final testFilePath in testFilePaths) {
-      final relativeTestFilePath = _normalizeTestPath(testFilePath);
-      final testName = _createTestName(relativeTestFilePath);
+      final relativeTestFilePath = _normalizeTestPath(
+        testDirectory,
+        testFilePath,
+      );
+      final testName = _createTestName(testDirectory, relativeTestFilePath);
       final relativeTestFilePathWithoutSlash = relativeTestFilePath[0] == '/'
           ? relativeTestFilePath.replaceFirst('/', '')
           : relativeTestFilePath;
@@ -201,8 +202,8 @@ ${generateGroupsCode([testFilePath]).split('\n').map((e) => '  $e').join('\n')}
   ///
   /// ```dart
   /// [
-  ///   'integration_test/permissions/permissions_location_test.dart',
-  ///   'integration_test/example_test.dart',
+  ///   'patrol_test/permissions/permissions_location_test.dart',
+  ///   'patrol_test/example_test.dart',
   /// ]
   /// ```
   ///
@@ -215,11 +216,14 @@ ${generateGroupsCode([testFilePath]).split('\n').map((e) => '  $e').join('\n')}
   /// '''
   /// ```
   @visibleForTesting
-  String generateGroupsCode(List<String> testFilePaths) {
+  String generateGroupsCode(String testDirectory, List<String> testFilePaths) {
     final groups = <String>[];
     for (final testFilePath in testFilePaths) {
-      final relativeTestFilePath = _normalizeTestPath(testFilePath);
-      final testName = _createTestName(relativeTestFilePath);
+      final relativeTestFilePath = _normalizeTestPath(
+        testDirectory,
+        testFilePath,
+      );
+      final testName = _createTestName(testDirectory, relativeTestFilePath);
       final groupName = testName.replaceAll('__', '.');
       final testEntrypoint = '$testName.main';
       groups.add("group('$groupName', $testEntrypoint);");
@@ -228,16 +232,16 @@ ${generateGroupsCode([testFilePath]).split('\n').map((e) => '  $e').join('\n')}
   }
 
   /// Normalizes [testFilePath] so that it always starts with
-  /// 'integration_test'.
-  String _normalizeTestPath(String testFilePath) {
+  /// the configured test directory.
+  String _normalizeTestPath(String testDirectory, String testFilePath) {
     var relativeTestFilePath = testFilePath.replaceAll(
-      _projectRoot.childDirectory('integration_test').absolute.path,
+      _projectRoot.childDirectory(testDirectory).absolute.path,
       '',
     );
 
-    if (relativeTestFilePath.startsWith('integration_test')) {
+    if (relativeTestFilePath.startsWith(testDirectory)) {
       relativeTestFilePath = relativeTestFilePath.replaceFirst(
-        'integration_test',
+        testDirectory,
         '',
       );
     }
@@ -250,9 +254,9 @@ ${generateGroupsCode([testFilePath]).split('\n').map((e) => '  $e').join('\n')}
     return relativeTestFilePath.replaceAll(_fs.path.separator, '/');
   }
 
-  String _createTestName(String relativeTestFilePath) {
+  String _createTestName(String testDirectory, String relativeTestFilePath) {
     var testName = relativeTestFilePath
-        .replaceFirst('integration_test${_fs.path.separator}', '')
+        .replaceFirst('$testDirectory${_fs.path.separator}', '')
         .replaceAll('/', '__');
 
     testName = testName.substring(0, testName.length - 5);

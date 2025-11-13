@@ -21,14 +21,11 @@ void patrol(
   bool? skip,
   List<String> tags = const [],
   NativeAutomatorConfig? nativeAutomatorConfig,
-  LiveTestWidgetsFlutterBindingFramePolicy framePolicy =
-      LiveTestWidgetsFlutterBindingFramePolicy.fadePointers,
 }) {
   patrolTest(
     description,
     config: _patrolTesterConfig,
     nativeAutomatorConfig: nativeAutomatorConfig ?? _nativeAutomatorConfig,
-    framePolicy: framePolicy,
     skip: skip,
     callback,
     tags: tags,

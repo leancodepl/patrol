@@ -14,6 +14,7 @@ import pl.leancode.patrol.contracts.Contracts.GetNotificationsResponse
 import pl.leancode.patrol.contracts.Contracts.HandlePermissionRequest
 import pl.leancode.patrol.contracts.Contracts.HandlePermissionRequestCode
 import pl.leancode.patrol.contracts.Contracts.OpenAppRequest
+import pl.leancode.patrol.contracts.Contracts.OpenPlatformAppRequest
 import pl.leancode.patrol.contracts.Contracts.OpenQuickSettingsRequest
 import pl.leancode.patrol.contracts.Contracts.PermissionDialogVisibleRequest
 import pl.leancode.patrol.contracts.Contracts.PermissionDialogVisibleResponse
@@ -55,6 +56,12 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
 
     override fun openApp(request: OpenAppRequest) {
         automation.openApp(request.appId)
+    }
+
+    override fun openPlatformApp(request: OpenPlatformAppRequest) {
+        val appId = request.androidAppId
+        requireNotNull(appId) { "androidAppId must not be null on Android" }
+        automation.openApp(appId)
     }
 
     override fun openNotifications() {

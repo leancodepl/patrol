@@ -11,13 +11,13 @@ class DartContractsGenerator {
     for (final enumDefinition in schema.enums) {
       buffer.writeln(_createEnum(enumDefinition));
     }
-    for (final messageDefintion in schema.messages) {
-      buffer.writeln(_createMessage(messageDefintion));
+    for (final messageDefinition in schema.messages) {
+      buffer.writeln(_createMessage(messageDefinition));
     }
 
-    final content =
-        DartFormatter(languageVersion: DartFormatter.latestLanguageVersion)
-            .format(buffer.toString());
+    final content = DartFormatter(
+      languageVersion: DartFormatter.latestLanguageVersion,
+    ).format(buffer.toString());
 
     return OutputFile(filename: config.contractsFilename, content: content);
   }
@@ -40,14 +40,15 @@ part '${path.basenameWithoutExtension(config.contractsFilename)}.g.dart';
 
   String _createEnum(Enum enumDefinition) {
     final fieldsContent = enumDefinition.fields.map((e) {
-      return '''
-@JsonValue('$e')
-$e''';
-    }).join(',\n');
+      return "${e.name}('${e.value}')";
+    }).join(',\n  ');
 
     return '''
 enum ${enumDefinition.name} {
-  $fieldsContent
+  $fieldsContent;
+
+  const ${enumDefinition.name}(this.value);
+  final String value;
 }
 ''';
   }
@@ -67,7 +68,6 @@ enum ${enumDefinition.name} {
         .join('\n  ');
 
     final propsGetter = _createPropsGetter(message);
-    final copyWith = _createCopyWith(message);
 
     var constructorParameters = message.fields
         .map((e) => '${e.isOptional ? '' : 'required'} this.${e.name},')
@@ -88,8 +88,6 @@ class ${message.name} with EquatableMixin {
   Map<String, dynamic> toJson() => _\$${message.name}ToJson(this);
 
   $propsGetter
-
-  $copyWith
 }''';
   }
 
@@ -104,34 +102,4 @@ class ${message.name} with EquatableMixin {
 ''';
   }
 
-  String _createCopyWith(Message message) {
-    if (message.fields.isEmpty) {
-      return '''
-  ${message.name} copyWith() {
-    return ${message.name}();
-  }''';
-    }
-    final parameters = message.fields
-        .map((e) => '${e.name}: ${e.name} ?? this.${e.name},')
-        .join('\n      ');
-    final copyWithParams = message.fields
-        .map(
-          (e) => switch (e.type) {
-            ListFieldType(type: final type) => 'List<$type>? ${e.name},',
-            MapFieldType(keyType: final keyType, valueType: final valueType) =>
-              'Map<$keyType,$valueType>? ${e.name},',
-            OrdinaryFieldType(type: final type) => '$type? ${e.name},'
-          },
-        )
-        .join('\n    ');
-
-    return '''
-  ${message.name} copyWith({
-    $copyWithParams
-  }) {
-    return ${message.name}(
-      $parameters
-    );
-  }''';
-  }
 }

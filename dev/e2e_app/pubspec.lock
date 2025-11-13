@@ -13,10 +13,10 @@ packages:
     dependency: transitive
     description:
       name: adb
-      sha256: "1be1de29cdf3877d6ecd8f1fa6e1182edd40672578eaa14b505fb71f01b5a571"
+      sha256: "1c1d53b356bc9a7b89e7abcbb8b7b941f6d6ab0fc61a77eb8a4928befa294202"
       url: "https://pub.dev"
     source: hosted
-    version: "0.5.0"
+    version: "0.6.0"
   analyzer:
     dependency: transitive
     description:
@@ -750,14 +750,14 @@ packages:
       path: "../../packages/patrol"
       relative: true
     source: path
-    version: "3.19.0"
+    version: "4.0.0"
   patrol_cli:
     dependency: "direct dev"
     description:
       path: "../../packages/patrol_cli"
       relative: true
     source: path
-    version: "3.10.0"
+    version: "4.0.0"
   patrol_finders:
     dependency: transitive
     description:
