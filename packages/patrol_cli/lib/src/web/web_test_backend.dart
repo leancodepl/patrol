@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 import 'dart:io' as io;
+import 'dart:io';
 
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:patrol_cli/src/base/logger.dart';
@@ -438,7 +438,7 @@ class WebTestBackend {
               listenStdOut: playwrightProcess.listenStdOut,
               scope: scope,
               log: _logger.info,
-              reportPath: "",
+              reportPath: '',
               showFlutterLogs: showFlutterLogs,
               hideTestSteps: hideTestSteps,
               clearTestSteps: clearTestSteps,
@@ -702,6 +702,24 @@ class WebTestBackend {
       _logger.info('Node.js dependencies installed successfully.');
     } else {
       _logger.detail('Node.js dependencies are already installed.');
+    }
+
+    _logger.info('Installing Playwright dependencies...');
+    final result = await _processManager.run(
+      ['npx', 'playwright', 'install'],
+      workingDirectory: webRunnerPath,
+      runInShell: true,
+    );
+
+    if (result.exitCode != 0) {
+      throw ProcessException(
+        'npx',
+        ['playwright', 'install'],
+        'Failed to install Playwright dependencies:\n'
+            'STDOUT: ${result.stdout}\n'
+            'STDERR: ${result.stderr}',
+        result.exitCode,
+      );
     }
   }
 }
