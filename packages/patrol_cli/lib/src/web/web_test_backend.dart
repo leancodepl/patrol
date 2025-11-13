@@ -442,6 +442,33 @@ class WebTestBackend {
                 ...(options.reporter != null
                     ? {'PLAYWRIGHT_REPORTER': options.reporter.toString()}
                     : {}),
+                ...(options.locale != null
+                    ? {'PLAYWRIGHT_LOCALE': options.locale.toString()}
+                    : {}),
+                ...(options.timezone != null
+                    ? {'PLAYWRIGHT_TIMEZONE': options.timezone.toString()}
+                    : {}),
+                ...(options.colorScheme != null
+                    ? {
+                        'PLAYWRIGHT_COLOR_SCHEME': options.colorScheme
+                            .toString(),
+                      }
+                    : {}),
+                ...(options.geolocation != null
+                    ? {'PLAYWRIGHT_GEOLOCATION': options.geolocation.toString()}
+                    : {}),
+                ...(options.permissions != null
+                    ? {'PLAYWRIGHT_PERMISSIONS': options.permissions.toString()}
+                    : {}),
+                ...(options.userAgent != null
+                    ? {'PLAYWRIGHT_USER_AGENT': options.userAgent.toString()}
+                    : {}),
+                ...(options.offline != null
+                    ? {'PLAYWRIGHT_OFFLINE': options.offline.toString()}
+                    : {}),
+                ...(options.viewport != null
+                    ? {'PLAYWRIGHT_VIEWPORT': options.viewport.toString()}
+                    : {}),
                 ...Platform.environment,
               },
               runInShell: true,
