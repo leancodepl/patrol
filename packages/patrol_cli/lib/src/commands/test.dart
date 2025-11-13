@@ -271,6 +271,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
           platform: device.targetPlatform,
           logger: _logger,
           ignoreGlobs: ignoreGlobs,
+          flutterCommand: flutterCommand,
           packagesRegExps: switch (coveragePackagesRegExps.length) {
             0 => {RegExp(config.flutterPackageName)},
             _ => coveragePackagesRegExps.map(RegExp.new).toSet(),
