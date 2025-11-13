@@ -404,6 +404,7 @@ class DevelopCommand extends PatrolCommand {
         }
       case TargetPlatform.web:
         action = () => _webTestBackend.develop(
+          _flutterTool,
           web,
           device,
           showFlutterLogs: showFlutterLogs,

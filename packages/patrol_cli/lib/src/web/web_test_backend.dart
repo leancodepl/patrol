@@ -1,12 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 import 'dart:io' as io;
+import 'dart:io';
 
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
+import 'package:patrol_cli/src/crossplatform/flutter_tool.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_log/patrol_log.dart';
 import 'package:process/process.dart';
@@ -114,6 +115,7 @@ class WebTestBackend {
   }
 
   Future<void> develop(
+    FlutterTool flutterTool,
     WebAppOptions options,
     Device device, {
     bool showFlutterLogs = false,
@@ -126,15 +128,30 @@ class WebTestBackend {
     // Start Flutter web server
     final flutterProcess = await _startFlutterWebServer(options, develop: true);
 
+    StdinModes? previousStdinModes;
+    if (io.stdin.hasTerminal) {
+      previousStdinModes = flutterTool.enableInteractiveMode();
+    }
+
     try {
       // Wait for server to be ready and get the URL
       final port = await _waitForWebDebugger(flutterProcess);
 
-      _attachForHotRestart(flutterProcess, stdin: stdin);
+      _attachForHotRestart(
+        flutterProcess,
+        previousStdinModes != null
+            ? () => flutterTool.revertInteractiveMode(previousStdinModes!)
+            : null,
+        stdin: stdin,
+      );
 
       // Run Playwright tests
       await _runPlaywrightDevelop(port, options);
     } finally {
+      if (previousStdinModes != null) {
+        flutterTool.revertInteractiveMode(previousStdinModes);
+      }
+
       // Clean up Flutter process gracefully
       _logger.detail('Stopping Flutter web server...');
 
@@ -331,7 +348,8 @@ class WebTestBackend {
   }
 
   void _attachForHotRestart(
-    Process flutterProcess, {
+    Process flutterProcess,
+    void Function()? revertInteractiveMode, {
     required Stream<List<int>> stdin,
   }) {
     final streamSubscription = stdin.listen((event) {
@@ -365,6 +383,10 @@ class WebTestBackend {
 
         _logger.success(helpText.toString());
       } else if (char == 'q' || char == 'Q') {
+        if (revertInteractiveMode != null) {
+          revertInteractiveMode();
+        }
+
         _logger.success('Quitting process...');
         flutterProcess.kill();
 
@@ -393,13 +415,6 @@ class WebTestBackend {
   }) async {
     _logger.info('Running Playwright tests against: $baseUrl');
     final completer = Completer<void>();
-
-    if (io.stdin.hasTerminal) {
-      io.stdin.echoMode = false;
-      io.stdin.lineMode = false;
-
-      _logger.detail('Interactive shell mode enabled.');
-    }
 
     await _disposeScope.run((scope) async {
       // Ensure web_runner directory exists and is properly set up
@@ -438,7 +453,7 @@ class WebTestBackend {
               listenStdOut: playwrightProcess.listenStdOut,
               scope: scope,
               log: _logger.info,
-              reportPath: "",
+              reportPath: '',
               showFlutterLogs: showFlutterLogs,
               hideTestSteps: hideTestSteps,
               clearTestSteps: clearTestSteps,
