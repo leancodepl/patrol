@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 import 'dart:io' as io;
+import 'dart:io';
 
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:patrol_cli/src/base/logger.dart';
@@ -427,6 +427,48 @@ class WebTestBackend {
                 'PATROL_TEST_REPORT_DIR': testReportDir,
                 'PLAYWRIGHT_JSON_OUTPUT_NAME': 'results.json',
                 'PLAYWRIGHT_JSON_OUTPUT_DIR': testReportDir,
+                ...(options.retries != null
+                    ? {'PLAYWRIGHT_RETRIES': options.retries.toString()}
+                    : {}),
+                ...(options.video != null
+                    ? {'PLAYWRIGHT_VIDEO': options.video.toString()}
+                    : {}),
+                ...(options.timeout != null
+                    ? {'PLAYWRIGHT_TIMEOUT': options.timeout.toString()}
+                    : {}),
+                ...(options.workers != null
+                    ? {'PLAYWRIGHT_WORKERS': options.workers.toString()}
+                    : {}),
+                ...(options.reporter != null
+                    ? {'PLAYWRIGHT_REPORTER': options.reporter.toString()}
+                    : {}),
+                ...(options.locale != null
+                    ? {'PLAYWRIGHT_LOCALE': options.locale.toString()}
+                    : {}),
+                ...(options.timezone != null
+                    ? {'PLAYWRIGHT_TIMEZONE': options.timezone.toString()}
+                    : {}),
+                ...(options.colorScheme != null
+                    ? {
+                        'PLAYWRIGHT_COLOR_SCHEME': options.colorScheme
+                            .toString(),
+                      }
+                    : {}),
+                ...(options.geolocation != null
+                    ? {'PLAYWRIGHT_GEOLOCATION': options.geolocation.toString()}
+                    : {}),
+                ...(options.permissions != null
+                    ? {'PLAYWRIGHT_PERMISSIONS': options.permissions.toString()}
+                    : {}),
+                ...(options.userAgent != null
+                    ? {'PLAYWRIGHT_USER_AGENT': options.userAgent.toString()}
+                    : {}),
+                ...(options.offline != null
+                    ? {'PLAYWRIGHT_OFFLINE': options.offline.toString()}
+                    : {}),
+                ...(options.viewport != null
+                    ? {'PLAYWRIGHT_VIEWPORT': options.viewport.toString()}
+                    : {}),
                 ...Platform.environment,
               },
               runInShell: true,
@@ -438,7 +480,7 @@ class WebTestBackend {
               listenStdOut: playwrightProcess.listenStdOut,
               scope: scope,
               log: _logger.info,
-              reportPath: "",
+              reportPath: '',
               showFlutterLogs: showFlutterLogs,
               hideTestSteps: hideTestSteps,
               clearTestSteps: clearTestSteps,

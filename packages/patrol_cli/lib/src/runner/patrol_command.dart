@@ -229,6 +229,76 @@ abstract class PatrolCommand extends Command<int> {
     );
   }
 
+  void usesPlaywright() {
+    argParser
+      ..addOption(
+        'playwright-retries',
+        help: 'https://playwright.dev/docs/test-retries',
+        valueHelp: 'number',
+      )
+      ..addOption(
+        'playwright-video',
+        help: 'https://playwright.dev/docs/videos',
+        valueHelp: 'off | on | retain-on-failure | on-first-retry',
+      )
+      ..addOption(
+        'playwright-timeout',
+        help: 'https://playwright.dev/docs/test-timeouts',
+        valueHelp: 'number',
+      )
+      ..addOption(
+        'playwright-workers',
+        help: 'https://playwright.dev/docs/test-parallel',
+        valueHelp: 'number',
+      )
+      ..addOption(
+        'playwright-reporter',
+        help: 'https://playwright.dev/docs/test-reporters',
+        valueHelp:
+            '[["html" | "json" | "list" | "dot" | "line" | "github" | "junit" | "null", { "outputFolder": "<PATH>" | undefined, "open": "never" | "always" | "on-failure" | undefined } | undefined]]',
+      )
+      ..addOption(
+        'playwright-locale',
+        help: 'https://playwright.dev/docs/emulation#locale--timezone',
+        valueHelp: 'en-US | pl-PL',
+      )
+      ..addOption(
+        'playwright-timezone',
+        help: 'https://playwright.dev/docs/emulation#locale--timezone',
+        valueHelp: 'Europe/Paris',
+      )
+      ..addOption(
+        'playwright-color-scheme',
+        help: 'https://playwright.dev/docs/emulation#color-scheme-and-media',
+        valueHelp: 'light | dark',
+      )
+      ..addOption(
+        'playwright-geolocation',
+        help: 'https://playwright.dev/docs/emulation#geolocation',
+        valueHelp: '{"latitude": 51.5074, "longitude": -0.1278}',
+      )
+      ..addOption(
+        'playwright-permissions',
+        help: 'https://playwright.dev/docs/emulation#permissions',
+        valueHelp: '["geolocation", ...]',
+      )
+      ..addOption(
+        'playwright-user-agent',
+        help: 'https://playwright.dev/docs/emulation#user-agent',
+        valueHelp: 'user agent string',
+      )
+      ..addOption(
+        'playwright-offline',
+        help: 'https://playwright.dev/docs/emulation#offline',
+        valueHelp: 'true | false',
+      )
+      ..addOption(
+        'playwright-viewport',
+        help: 'https://playwright.dev/docs/emulation#viewport',
+        valueHelp: '{"width": 1920, "height": 1080}',
+      );
+  }
+
   /// Gets the parsed command-line flag named [name] as a `bool`.
   ///
   /// If no flag named [name] was added to the `ArgParser`, an [ArgumentError]
