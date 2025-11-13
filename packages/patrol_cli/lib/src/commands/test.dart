@@ -292,6 +292,14 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       timeout: intArg('playwright-timeout'),
       workers: intArg('playwright-workers'),
       reporter: stringArg('playwright-reporter'),
+      locale: stringArg('playwright-locale'),
+      timezone: stringArg('playwright-timezone'),
+      colorScheme: stringArg('playwright-color-scheme'),
+      geolocation: stringArg('playwright-geolocation'),
+      permissions: stringArg('playwright-permissions'),
+      userAgent: stringArg('playwright-user-agent'),
+      offline: stringArg('playwright-offline'),
+      viewport: stringArg('playwright-viewport'),
     );
 
     // No need to build web app for testing. It's done in the execute method.

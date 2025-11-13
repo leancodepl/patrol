@@ -400,6 +400,14 @@ class WebAppOptions {
     this.timeout,
     this.workers,
     this.reporter,
+    this.locale,
+    this.timezone,
+    this.colorScheme,
+    this.geolocation,
+    this.permissions,
+    this.userAgent,
+    this.offline,
+    this.viewport,
   });
 
   final FlutterAppOptions flutter;
@@ -408,4 +416,12 @@ class WebAppOptions {
   final int? timeout;
   final int? workers;
   final String? reporter;
+  final String? locale;
+  final String? timezone;
+  final String? colorScheme;
+  final String? geolocation;
+  final String? permissions;
+  final String? userAgent;
+  final String? offline;
+  final String? viewport;
 }
