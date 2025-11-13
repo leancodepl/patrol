@@ -4,6 +4,7 @@
 - Fix report path generation for Android (#2724)
 - Fix issue that sometimes logs causes test crashes (#2742)
 - Add support for interactive device selection when running patrol. (#2722)
+- Fix `PATROL_FLUTTER_COMMAND` not being used when using `--coverage` flag. (#2781)
 
 ## 3.10.0
 
