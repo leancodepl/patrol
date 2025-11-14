@@ -126,6 +126,8 @@ class PubspecReader {
           if (git['ref'] != null) {
             return git['ref'].toString();
           }
+        } else if (patrol['path'] != null) {
+          return patrol['path'].toString();
         }
       }
 
