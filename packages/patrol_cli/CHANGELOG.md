@@ -8,6 +8,7 @@
 - Fix report path generation for Android (#2724)
 - Fix issue that sometimes logs causes test crashes (#2742)
 - Add support for interactive device selection when running patrol. (#2722)
+- Read Patrol version from `pubspec.lock` instead of `pubspec.yaml` for compatibility checks. Fix edge cases for compatibility checks. (#2709)
 
 ## 3.10.0
 
