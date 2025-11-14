@@ -1,3 +1,21 @@
+## 4.0.0
+
+- **Breaking**: Change default test directory from `integration_test` to `patrol_test`. (#2728)
+- Add support for configurable test directory via `test_directory` option in `pubspec.yaml`. (#2728)
+- Add `--build-name` and `--build-number` flags to `patrol test`, `patrol develop`, and `patrol build` commands. (#2590)
+- Replace clearing permissions functionality with uninstalling app on iOS. (#2730)
+- Bump `patrol_log` to `0.6.0`.
+- Change default frame policy to `LiveTestWidgetsFlutterBindingFramePolicy.fullyLive`. (#2763)
+- Extend `$.native.enterText()` on Android to support `AutoCompleteTextView`. (#1162)
+
+## 3.19.0
+
+- Fix logging for `$.native.pullToRefresh()` and `$.native.swipeBack()`. (#2707) 
+- Fix `$.native.enableDarkMode()` and `$.native.disableDarkMode()` on iOS 18 simulators. (#2705)
+- Add support for de, fr and pl languages for native methods that operates on strings. (#2659)
+- Add support for gallery permission dialog on iOS 17. (#2659)
+- Keep the app running after last step in patrol develop. (#2693)
+
 ## 3.18.0
 
 - Bump `leancode_lint` to `17.0.0`.

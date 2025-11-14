@@ -390,35 +390,71 @@
     func enableDarkMode(_ bundleId: String) throws {
       try runSettingsAction("enabling dark mode", bundleId) {
         #if targetEnvironment(simulator)
-          self.preferences.descendants(matching: .any)["Developer"].firstMatch.tap()
+          let developer = try Localization.getLocalizedString(key: "developer")
+          let darkAppearance = try Localization.getLocalizedString(key: "dark_appearance")
+
+          if let osVersionString = self.getOsVersion().split(separator: ".").first,
+            let osVersion = Int(osVersionString)
+          {
+            // For iOS 18 and above, we need to swipe to the developer option because it's is moved to the bottom of the list
+            if osVersion >= 18 {
+              let start = self.preferences.coordinate(
+                withNormalizedOffset: CGVector(dx: 0.5, dy: 0.9))
+              let end = self.preferences.coordinate(
+                withNormalizedOffset: CGVector(dx: 0.5, dy: 0.3))
+              start.press(forDuration: 0.1, thenDragTo: end)
+            }
+          }
+          self.preferences.descendants(matching: .any)[developer].firstMatch.tap()
 
           let value =
-            self.preferences.descendants(matching: .any)["Dark Appearance"].firstMatch.value
+            self.preferences.descendants(matching: .any)[darkAppearance].firstMatch.value
             as? String?
           if value == "0" {
-            self.preferences.descendants(matching: .any)["Dark Appearance"].firstMatch.tap()
+            self.preferences.descendants(matching: .any)[darkAppearance].firstMatch.tap()
           }
         #else
-          self.preferences.descendants(matching: .any)["Display & Brightness"].firstMatch.tap()
-          self.preferences.descendants(matching: .any)["Dark"].firstMatch.tap()
+          let displayBrightness = try Localization.getLocalizedString(key: "display_brightness")
+          let dark = try Localization.getLocalizedString(key: "dark")
+
+          self.preferences.descendants(matching: .any)[displayBrightness].firstMatch.tap()
+          self.preferences.descendants(matching: .any)[dark].firstMatch.tap()
         #endif
+
       }
     }
 
     func disableDarkMode(_ bundleId: String) throws {
       try runSettingsAction("disabling dark mode", bundleId) {
         #if targetEnvironment(simulator)
-          self.preferences.descendants(matching: .any)["Developer"].firstMatch.tap()
+          let developer = try Localization.getLocalizedString(key: "developer")
+          let darkAppearance = try Localization.getLocalizedString(key: "dark_appearance")
+
+          if let osVersionString = self.getOsVersion().split(separator: ".").first,
+            let osVersion = Int(osVersionString)
+          {
+            if osVersion >= 18 {
+              let start = self.preferences.coordinate(
+                withNormalizedOffset: CGVector(dx: 0.5, dy: 0.9))
+              let end = self.preferences.coordinate(
+                withNormalizedOffset: CGVector(dx: 0.5, dy: 0.3))
+              start.press(forDuration: 0.1, thenDragTo: end)
+            }
+          }
+          self.preferences.descendants(matching: .any)[developer].firstMatch.tap()
 
           let value =
-            self.preferences.descendants(matching: .any)["Dark Appearance"].firstMatch.value
+            self.preferences.descendants(matching: .any)[darkAppearance].firstMatch.value
             as? String?
           if value == "1" {
-            self.preferences.descendants(matching: .any)["Dark Appearance"].firstMatch.tap()
+            self.preferences.descendants(matching: .any)[darkAppearance].firstMatch.tap()
           }
         #else
-          self.preferences.descendants(matching: .any)["Display & Brightness"].firstMatch.tap()
-          self.preferences.descendants(matching: .any)["Light"].firstMatch.tap()
+          let displayBrightness = try Localization.getLocalizedString(key: "display_brightness")
+          let light = try Localization.getLocalizedString(key: "light")
+
+          self.preferences.descendants(matching: .any)[displayBrightness].firstMatch.tap()
+          self.preferences.descendants(matching: .any)[light].firstMatch.tap()
         #endif
       }
     }
@@ -701,8 +737,9 @@
 
         if self.isVirtualDevice() && self.isPhone() {
           // For some weird reason, this works differently on Simulator
+          let open = try Localization.getLocalizedString(key: "open")
           cell.doubleTap()
-          self.springboard.buttons.matching(identifier: "Open").firstMatch.tap()
+          self.springboard.buttons.matching(identifier: open).firstMatch.tap()
         } else {
           cell.tap()
         }
@@ -725,8 +762,9 @@
         Logger.shared.i("tapping on notification which contains text \(substring)")
         if self.isVirtualDevice() && self.isPhone() {
           // For some weird reason, this works differently on Simulator
+          let open = try Localization.getLocalizedString(key: "open")
           cell.doubleTap()
-          self.springboard.buttons.matching(identifier: "Open").firstMatch.tap()
+          self.springboard.buttons.matching(identifier: open).firstMatch.tap()
         } else {
           cell.tap()
         }
@@ -736,9 +774,16 @@
     // MARK: Permissions
 
     func isPermissionDialogVisible(timeout: TimeInterval) throws -> Bool {
-      return runAction("checking if permission dialog is visible") {
+      return try runAction("checking if permission dialog is visible") {
         let systemAlerts = self.springboard.alerts
-        let labels = ["OK", "Allow", "Allow once", "Allow While Using App", "Don’t Allow"]
+
+        let ok = try Localization.getLocalizedString(key: "ok")
+        let allow = try Localization.getLocalizedString(key: "allow")
+        let allowOnce = try Localization.getLocalizedString(key: "allow_once")
+        let allowWhileUsingApp = try Localization.getLocalizedString(key: "allow_while_using_app")
+        let dontAllow = try Localization.getLocalizedString(key: "dont_allow")
+
+        let labels = [ok, allow, allowOnce, allowWhileUsingApp, dontAllow]
 
         let button = self.waitForAnyElement(
           elements: labels.map { systemAlerts.buttons[$0] },
@@ -752,7 +797,13 @@
     func allowPermissionWhileUsingApp() throws {
       try runAction("allowing while using app") {
         let systemAlerts = self.springboard.alerts
-        let labels = ["OK", "Allow", "Allow While Using App"]
+
+        let ok = try Localization.getLocalizedString(key: "ok")
+        let allow = try Localization.getLocalizedString(key: "allow")
+        let allowWhileUsingApp = try Localization.getLocalizedString(key: "allow_while_using_app")
+        let limitAccess = try Localization.getLocalizedString(key: "limit_access")
+
+        let labels = [ok, allow, allowWhileUsingApp, limitAccess]
 
         guard
           let button = self.waitForAnyElement(
@@ -770,7 +821,15 @@
     func allowPermissionOnce() throws {
       try runAction("allowing once") {
         let systemAlerts = self.springboard.alerts
-        let labels = ["OK", "Allow", "Allow Once"]
+
+        let ok = try Localization.getLocalizedString(key: "ok")
+        let allow = try Localization.getLocalizedString(key: "allow")
+        let allowOnce = try Localization.getLocalizedString(key: "allow_once")
+        let allowFullAccess = try Localization.getLocalizedString(
+          key: "allow_full_access"
+        )
+
+        let labels = [ok, allow, allowOnce, allowFullAccess]
 
         guard
           let button = self.waitForAnyElement(
@@ -787,9 +846,9 @@
 
     func denyPermission() throws {
       try runAction("denying permission") {
-        let label = "Don’t Allow"  // not "Don't Allow"!
+        let dontAllow = try Localization.getLocalizedString(key: "dont_allow")
         let systemAlerts = self.springboard.alerts
-        let button = systemAlerts.buttons[label]
+        let button = systemAlerts.buttons[dontAllow]
 
         let exists = button.waitForExistence(timeout: self.timeout)
         guard exists else {
@@ -806,14 +865,16 @@
         return
       }
 
-      if isFineLocationEnabled() {
+      if try isFineLocationEnabled() {
         Logger.shared.i("Fine location is already enabled")
         return
       }
 
       try runAction("selecting fine location") {
         let alerts = self.springboard.alerts
-        let button = alerts.buttons["Precise: Off"]
+
+        let preciseOff = try Localization.getLocalizedString(key: "precise_off")
+        let button = alerts.buttons[preciseOff]
 
         let exists = button.waitForExistence(timeout: self.timeout)
         guard exists else {
@@ -824,16 +885,16 @@
       }
     }
 
-    func isFineLocationEnabled() -> Bool {
+    func isFineLocationEnabled() throws -> Bool {
       if iOS13orOlder() {
         Logger.shared.i("Ignored call to isFineLocationEnabled() (iOS < 14)")
         return false
       }
 
       let alerts = self.springboard.alerts
-      let button = alerts.buttons["Precise: On"]
+      let preciseOn = try Localization.getLocalizedString(key: "precise_on")
+      let button = alerts.buttons[preciseOn]
       let exists = button.waitForExistence(timeout: self.timeout)
-
       return exists
     }
 
@@ -843,14 +904,16 @@
         return
       }
 
-      if !isFineLocationEnabled() {
+      if try !isFineLocationEnabled() {
         Logger.shared.i("Coarse location is already enabled")
         return
       }
 
       try runAction("selecting coarse location") {
         let alerts = self.springboard.alerts
-        let button = alerts.buttons["Precise: On"]
+
+        let preciseOn = try Localization.getLocalizedString(key: "precise_on")
+        let button = alerts.buttons[preciseOn]
 
         let exists = button.waitForExistence(timeout: self.timeout)
         guard exists else {
@@ -1023,7 +1086,8 @@
 
     private func acceptSystemAlertIfVisible() throws {
       let systemAlerts = self.springboard.alerts
-      let labels = ["OK"]
+      let ok = try Localization.getLocalizedString(key: "ok")
+      let labels = [ok]
 
       if let button = self.waitForAnyElement(
         elements: labels.map { systemAlerts.buttons[$0] },
@@ -1053,14 +1117,14 @@
     private func runSettingsAction(
       _ log: String,
       _ bundleId: String,
-      block: @escaping () -> Void
+      block: @escaping () throws -> Void
     ) throws {
       try runAction(log) {
         self.springboard.activate()
         self.preferences.activate()  // Needed to make sure that settings will be opened with a clean state
         self.preferences.launch()
 
-        block()
+        try block()
 
         self.springboard.activate()
         self.preferences.terminate()

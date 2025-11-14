@@ -21,7 +21,7 @@ To see all available options and flags, run `patrol build android --help` or
 ### Description
 
 `patrol build` is useful if you want to run test on CI, for example on Firebase
-Test Lab. It works the same as `patrol test`, except that it does run tests.
+Test Lab. It works the same as `patrol test`, except that it does not run tests.
 
 `patrol build` builds apps in debug mode by default.
 
@@ -35,13 +35,13 @@ Test Lab. It works the same as `patrol test`, except that it does run tests.
 **To build a single test for Android in debug mode**
 
 ```
-patrol build android --target integration_test/example_test.dart
+patrol build android --target patrol_test/example_test.dart
 ```
 
 or alternatively (but redundantly):
 
 ```
-patrol build android --target integration_test/example_test.dart --debug
+patrol build android --target patrol_test/example_test.dart --debug
 ```
 
 **To build all tests for Android in debug mode**
@@ -53,18 +53,40 @@ patrol build android
 **To build a single test for iOS device in release mode**
 
 ```
-patrol build ios --target integration_test/example_test.dart --release
+patrol build ios --target patrol_test/example_test.dart --release
 ```
 
 **To build a single test for iOS simulator in debug mode**
 
 ```
-patrol build ios --target integration_test/example_test.dart --debug
+patrol build ios --target patrol_test/example_test.dart --debug
 ```
+
+**To build with custom build name and number**
+
+```
+patrol build android --build-name=1.2.3 --build-number=123
+patrol build ios --build-name=1.2.3 --build-number=123  --release
+```
+
+**To build with full isolation between tests**
+
+```
+patrol build ios --full-isolation
+```
+
+The `--full-isolation` flag enables full isolation between test runs:
+- **iOS**: Uninstalls the app before running each test (except for the first one)
+
+<Info>
+    It is effectively used only when building the iOS app.
+    The behavior on Android can be configured through the `patrol test` command or within the `build.gradle` file.
+    See the [test command documentation](/cli-commands/test#full-isolation-between-tests) for more details.
+</Info>
 
 ### Under the hood
 
-The `patrol build` command walks through hierarchy of the `integration_test`
+The `patrol build` command walks through hierarchy of the `patrol_test`
 directory and finds all files that end with `_test.dart`, and then creates an
 additional "test bundle" file that references all the tests it found. Thanks to
 this, all tests are built into a single app binary - only a single build is

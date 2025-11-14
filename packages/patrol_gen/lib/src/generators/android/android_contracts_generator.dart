@@ -12,8 +12,8 @@ class AndroidContractsGenerator {
     for (final enumDefinition in schema.enums) {
       buffer.writeln(_createEnum(enumDefinition));
     }
-    for (final messageDefintion in schema.messages) {
-      buffer.writeln(_createMessage(messageDefintion));
+    for (final messageDefinition in schema.messages) {
+      buffer.writeln(_createMessage(messageDefinition));
     }
 
     buffer.writeln('}');
@@ -76,7 +76,7 @@ $fields
   }
 
   String _createEnum(Enum enumDefinition) {
-    final cases = enumDefinition.fields.map((e) => '    $e,').join('\n');
+    final cases = enumDefinition.fields.map((e) => '    ${e.name},').join('\n');
 
     return '''
   enum class ${enumDefinition.name} {

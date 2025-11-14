@@ -15,9 +15,11 @@ void main() {
       test('on Windows', () {
         const flutterOptions = FlutterAppOptions(
           command: flutterCommand,
-          target: r'C:\Users\john\app\integration_test\app_test.dart',
+          target: r'C:\Users\john\app\patrol_test\app_test.dart',
           buildMode: BuildMode.debug,
           flavor: null,
+          buildName: null,
+          buildNumber: null,
           dartDefines: {},
           dartDefineFromFilePaths: ['somePath.json', 'someOtherPath.json'],
         );
@@ -36,7 +38,7 @@ void main() {
           equals([
             r'.\gradlew.bat',
             ':app:assembleDebugAndroidTest',
-            r'-Ptarget=C:\Users\john\app\integration_test\app_test.dart',
+            r'-Ptarget=C:\Users\john\app\patrol_test\app_test.dart',
             '-Pandroid.injected.androidTest.leaveApksInstalledAfterRun=true',
             '-Papp-server-port=1',
             '-Ptest-server-port=2',
@@ -47,9 +49,11 @@ void main() {
       test('on macOS', () {
         const flutterOpts = FlutterAppOptions(
           command: flutterCommand,
-          target: '/Users/john/app/integration_test/app_test.dart',
+          target: '/Users/john/app/patrol_test/app_test.dart',
           buildMode: BuildMode.release,
           flavor: null,
+          buildName: null,
+          buildNumber: null,
           dartDefines: {},
           dartDefineFromFilePaths: ['somePath.json', 'someOtherPath.json'],
         );
@@ -68,7 +72,7 @@ void main() {
           equals([
             './gradlew',
             ':app:assembleReleaseAndroidTest',
-            '-Ptarget=/Users/john/app/integration_test/app_test.dart',
+            '-Ptarget=/Users/john/app/patrol_test/app_test.dart',
             '-Pandroid.injected.androidTest.leaveApksInstalledAfterRun=true',
             '-Papp-server-port=1',
             '-Ptest-server-port=2',
@@ -87,9 +91,11 @@ void main() {
       test('on Windows', () {
         const flutterOpts = FlutterAppOptions(
           command: flutterCommand,
-          target: r'C:\Users\john\app\integration_test\app_test.dart',
+          target: r'C:\Users\john\app\patrol_test\app_test.dart',
           buildMode: BuildMode.release,
           flavor: 'dev',
+          buildName: null,
+          buildNumber: null,
           dartDefines: dartDefines,
           dartDefineFromFilePaths: [],
         );
@@ -98,6 +104,7 @@ void main() {
           appServerPort: 1,
           testServerPort: 2,
           uninstall: true,
+          fullIsolation: true,
         );
 
         final invocation = options.toGradleAssembleTestInvocation(
@@ -108,8 +115,9 @@ void main() {
           equals([
             r'.\gradlew.bat',
             ':app:assembleDevReleaseAndroidTest',
-            r'-Ptarget=C:\Users\john\app\integration_test\app_test.dart',
+            r'-Ptarget=C:\Users\john\app\patrol_test\app_test.dart',
             '-Pdart-defines=RU1BSUw9dXNlckBleGFtcGxlLmNvbQ==,UEFTU1dPUkQ9bnk0bmNhdA==,Zm9vPWJhcg==',
+            '-Pandroid.testInstrumentationRunnerArguments.clearPackageData=true',
             '-Papp-server-port=1',
             '-Ptest-server-port=2',
           ]),
@@ -119,9 +127,11 @@ void main() {
       test('on macOS', () {
         const flutterOpts = FlutterAppOptions(
           command: flutterCommand,
-          target: '/Users/john/app/integration_test/app_test.dart',
+          target: '/Users/john/app/patrol_test/app_test.dart',
           buildMode: BuildMode.debug,
           flavor: 'dev',
+          buildName: null,
+          buildNumber: null,
           dartDefines: dartDefines,
           dartDefineFromFilePaths: [],
         );
@@ -130,6 +140,7 @@ void main() {
           appServerPort: 1,
           testServerPort: 2,
           uninstall: true,
+          fullIsolation: true,
         );
 
         final invocation = options.toGradleAssembleTestInvocation(
@@ -140,8 +151,9 @@ void main() {
           equals([
             './gradlew',
             ':app:assembleDevDebugAndroidTest',
-            '-Ptarget=/Users/john/app/integration_test/app_test.dart',
+            '-Ptarget=/Users/john/app/patrol_test/app_test.dart',
             '-Pdart-defines=RU1BSUw9dXNlckBleGFtcGxlLmNvbQ==,UEFTU1dPUkQ9bnk0bmNhdA==,Zm9vPWJhcg==',
+            '-Pandroid.testInstrumentationRunnerArguments.clearPackageData=true',
             '-Papp-server-port=1',
             '-Ptest-server-port=2',
           ]),
@@ -151,9 +163,11 @@ void main() {
       test('on macOS with no uninstall', () {
         const flutterOpts = FlutterAppOptions(
           command: flutterCommand,
-          target: '/Users/john/app/integration_test/app_test.dart',
+          target: '/Users/john/app/patrol_test/app_test.dart',
           buildMode: BuildMode.debug,
           flavor: 'dev',
+          buildName: null,
+          buildNumber: null,
           dartDefines: dartDefines,
           dartDefineFromFilePaths: [],
         );
@@ -172,7 +186,7 @@ void main() {
           equals([
             './gradlew',
             ':app:connectedDevDebugAndroidTest',
-            '-Ptarget=/Users/john/app/integration_test/app_test.dart',
+            '-Ptarget=/Users/john/app/patrol_test/app_test.dart',
             '-Pdart-defines=RU1BSUw9dXNlckBleGFtcGxlLmNvbQ==,UEFTU1dPUkQ9bnk0bmNhdA==,Zm9vPWJhcg==',
             '-Pandroid.injected.androidTest.leaveApksInstalledAfterRun=true',
             '-Papp-server-port=1',
@@ -191,9 +205,11 @@ void main() {
       () {
         const flutterOpts = FlutterAppOptions(
           command: flutterCommand,
-          target: 'integration_test/app_test.dart',
+          target: 'patrol_test/app_test.dart',
           buildMode: BuildMode.debug,
           flavor: null,
+          buildName: null,
+          buildNumber: null,
           dartDefines: {},
           dartDefineFromFilePaths: ['somePath.json', 'someOtherPath.json'],
         );
@@ -222,7 +238,7 @@ void main() {
               '--no-version-check',
               '--suppress-analytics',
               ...['--config-only', '--no-codesign', '--debug', '--simulator'],
-              ...['--target', 'integration_test/app_test.dart'],
+              ...['--target', 'patrol_test/app_test.dart'],
               ...['--dart-define-from-file', 'somePath.json'],
               ...['--dart-define-from-file', 'someOtherPath.json'],
             ]),
@@ -242,6 +258,7 @@ void main() {
               '-quiet',
               ...['-derivedDataPath', '../build/ios_integ'],
               r'OTHER_SWIFT_FLAGS=$(inherited) -D PATROL_ENABLED',
+              r'OTHER_CFLAGS=$(inherited) -D FULL_ISOLATION=0',
             ]),
           );
         });
@@ -276,9 +293,11 @@ void main() {
       () {
         const flutterOpts = FlutterAppOptions(
           command: flutterCommand,
-          target: 'integration_test/app_test.dart',
+          target: 'patrol_test/app_test.dart',
           buildMode: BuildMode.debug,
           flavor: null,
+          buildName: null,
+          buildNumber: null,
           dartDefines: {},
           dartDefineFromFilePaths: [],
         );
@@ -307,7 +326,7 @@ void main() {
               '--no-version-check',
               '--suppress-analytics',
               ...['--config-only', '--no-codesign', '--debug', '--simulator'],
-              ...['--target', 'integration_test/app_test.dart'],
+              ...['--target', 'patrol_test/app_test.dart'],
             ]),
           );
 
@@ -325,6 +344,7 @@ void main() {
               '-quiet',
               ...['-derivedDataPath', '../build/ios_integ'],
               r'OTHER_SWIFT_FLAGS=$(inherited) -D PATROL_ENABLED',
+              r'OTHER_CFLAGS=$(inherited) -D FULL_ISOLATION=0',
             ]),
           );
         });
@@ -359,9 +379,11 @@ void main() {
       () {
         const flutterOpts = FlutterAppOptions(
           command: flutterCommand,
-          target: 'integration_test/app_test.dart',
+          target: 'patrol_test/app_test.dart',
           buildMode: BuildMode.release,
           flavor: 'prod',
+          buildName: '1.2.3',
+          buildNumber: '123',
           dartDefines: {
             'EMAIL': 'user@example.com',
             'PASSWORD': 'ny4ncat',
@@ -379,6 +401,7 @@ void main() {
             osVersion: 'latest',
             testServerPort: 8081,
             appServerPort: 8082,
+            fullIsolation: true,
           );
         });
 
@@ -395,7 +418,9 @@ void main() {
               '--suppress-analytics',
               ...['--config-only', '--no-codesign', '--release'],
               ...['--flavor', 'prod'],
-              ...['--target', 'integration_test/app_test.dart'],
+              ...['--build-name', '1.2.3'],
+              ...['--build-number', '123'],
+              ...['--target', 'patrol_test/app_test.dart'],
               ...['--dart-define', 'EMAIL=user@example.com'],
               ...['--dart-define', 'PASSWORD=ny4ncat'],
               ...['--dart-define', 'foo=bar'],
@@ -416,10 +441,93 @@ void main() {
               '-quiet',
               ...['-derivedDataPath', '../build/ios_integ'],
               r'OTHER_SWIFT_FLAGS=$(inherited) -D PATROL_ENABLED',
+              r'OTHER_CFLAGS=$(inherited) -D FULL_ISOLATION=1',
             ]),
           );
         });
       },
     );
+  });
+
+  group('MacOSAppOptions', () {
+    late MacOSAppOptions options;
+
+    group('correctly encodes Flutter build invocation with build flags', () {
+      test('with build name and number', () {
+        const flutterOpts = FlutterAppOptions(
+          command: flutterCommand,
+          target: 'patrol_test/app_test.dart',
+          buildMode: BuildMode.release,
+          flavor: 'prod',
+          buildName: '2.1.0',
+          buildNumber: '210',
+          dartDefines: {'ENV': 'production'},
+          dartDefineFromFilePaths: [],
+        );
+
+        options = MacOSAppOptions(
+          flutter: flutterOpts,
+          scheme: 'prod',
+          configuration: 'Release-prod',
+          appServerPort: 8082,
+          testServerPort: 8081,
+        );
+
+        final flutterInvocation = options.toFlutterBuildInvocation(
+          flutterOpts.buildMode,
+        );
+
+        expect(
+          flutterInvocation,
+          equals([
+            ...['flutter', 'build', 'macos'],
+            '--no-version-check',
+            '--suppress-analytics',
+            ...['--config-only', '--release'],
+            ...['--flavor', 'prod'],
+            ...['--build-name', '2.1.0'],
+            ...['--build-number', '210'],
+            ...['--target', 'patrol_test/app_test.dart'],
+            ...['--dart-define', 'ENV=production'],
+          ]),
+        );
+      });
+
+      test('without build name and number', () {
+        const flutterOpts = FlutterAppOptions(
+          command: flutterCommand,
+          target: 'patrol_test/app_test.dart',
+          buildMode: BuildMode.debug,
+          flavor: null,
+          buildName: null,
+          buildNumber: null,
+          dartDefines: {},
+          dartDefineFromFilePaths: [],
+        );
+
+        options = MacOSAppOptions(
+          flutter: flutterOpts,
+          scheme: 'Runner',
+          configuration: 'Debug',
+          appServerPort: 8082,
+          testServerPort: 8081,
+        );
+
+        final flutterInvocation = options.toFlutterBuildInvocation(
+          flutterOpts.buildMode,
+        );
+
+        expect(
+          flutterInvocation,
+          equals([
+            ...['flutter', 'build', 'macos'],
+            '--no-version-check',
+            '--suppress-analytics',
+            ...['--config-only', '--debug'],
+            ...['--target', 'patrol_test/app_test.dart'],
+          ]),
+        );
+      });
+    });
   });
 }

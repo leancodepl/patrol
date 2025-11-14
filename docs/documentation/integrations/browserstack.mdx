@@ -1,64 +1,113 @@
 ---
-title: Integrations - Browserstack
+title: Integrations - BrowserStack
 ---
 
-## Overview
+## Setup
 
-[Browserstack App Automate] is a popular cloud device farm.
+[BrowserStack App Automate] is a popular cloud device farm. You can use it to run your tests on real devices.
 
-<Warning>This integration is currently Android-only.</Warning>
+<Accordion title="Android setup">
+  <Steps>
+    <Step>
+      ### Change runner
 
-### Change runner
+        Modify the **app-level build.gradle**:
 
-Modify the **app-level build.gradle**:
+        ```groovy title="android/app/build.gradle"
+        android {
+          // ...
+          defaultConfig {
+            //...
+            testInstrumentationRunner "pl.leancode.patrol.BrowserstackPatrolJUnitRunner"
+          }
+          // ...
+        }
 
-```groovy title="android/app/build.gradle"
-android {
-  // ...
-  defaultConfig {
-    //...
-    testInstrumentationRunner "pl.leancode.patrol.BrowserstackPatrolJUnitRunner"
-  }
-  // ...
-}
+        // ...
+        ```
+    </Step>
+  </Steps>
+  That's it! You can now use `bs_android` to schedule a test run.
+</Accordion>
+<Accordion title="iOS setup">
+  <Warning>
+    You need to do a [Setup for physical iOS devices] first.
+  </Warning>
 
-// ...
-```
+  We need to convert your tests to use [Xcode test plans].
+  <Warning>
+    Make sure that the project name is "Runner" and the scheme is named "Runner" - this is the default name for the Flutter project.
+  </Warning>
 
-That's all!
+  <Steps>
+    <Step>
+      Open your project in Xcode and edit the scheme:
+      ![Edit scheme](/assets/edit_scheme.png)
+    </Step>
 
-### Upload to Browserstack
+    <Step>
+      Go to the **Test** tab and convert your tests to use test plans:
 
-To run Android UI tests on BrowserStack:
+      ![Convert to test plans](/assets/convert_to_use_test_plans.png)
+    </Step>
 
-1. Build the app under test and the instrumentation app ([see docs][patrol build])
-1. Upload the app under test APK to Browserstack ([see docs][bs_app_docs])
-1. Upload the instrumentation app APK to Browserstack ([see docs][bs_test_docs])
-1. Start test execution on Browserstack ([see docs][bs_execute_docs])
+    <Step>
+      Create from scheme:
+      ![Create from scheme](/assets/create_test_plan_from_scheme.png)
+    </Step>
 
-You can do it all manually, but we recommend using the [bs_android] script to
-speed up this process. `bs_android` is part of LeanCode's [mobile-tools]. If
-you're using Homebrew, you can install it with:
+    <Step>
+      Rename to "TestPlan" and save:
+      ![Rename to test plan](/assets/rename_to_testplan.png)
+      <Warning>
+        It has to be named "TestPlan" to work with the `bs_ios` script.
+      </Warning>
+    </Step>
+
+      Now, you can schedule a test run using the `bs_ios` script.
+  </Steps>
+</Accordion>
+
+You can choose between running tests in a recommended way using scripts or manually:
+
+<Accordion title="Running tests using scripts (recommended)">
+## Schedule tests using scripts
+
+We recommend using the [bs_android] and [bs_ios] scripts to schedule test runs.
+They are part of LeanCode's [mobile-tools]. If you're using Homebrew, you can install it with:
 
 ```bash
 brew tap leancodepl/tools
 brew install mobile-tools
 ```
 
-The `bs_android` script requires the `BROWSERSTACK_CREDS` environment variable
-to be set so it can authenticate with Browserstack:
+The scripts require the `BS_CREDENTIALS` environment variable
+to be set so it can authenticate with BrowserStack:
 
 ```bash
-export YOUR_USERNAME:YOUR_ACCESS_KEY
+export BS_CREDENTIALS="YOUR_USERNAME:YOUR_ACCESS_KEY"
 ```
 
-Get your username and access on [Browserstack's account page][bs_account].
+Get your username and access on [BrowserStack's account page][bs_account].
 
-Now reload your shell (e.g. `exec zsh`) and run `bs_android`:
+Now reload your shell (e.g. `exec zsh`)
+
+### Usage
+
+The scripts forward all its options and flags to `patrol build`, so you can use it like this:
+
+```bash
+bs_android \
+  --target patrol_test/example_test.dart,patrol_test/another_test.dart \
+  --verbose \
+  --dart-define 'KEY_EXAMPLE=VALUE_EXAMPLE'
+```
+
+Full example:
 
 ```
-$ export BROWSERSTACK_PROJECT=AwesomeApp # optional
-$ export BROWSERSTACK_DEVICES="[\"Google Pixel 4-10.0\"]" # optional
+$ export BS_PROJECT=AwesomeApp # optional
+$ export BS_ANDROID_DEVICES="[\"Google Pixel 4-10.0\"]" # optional
 $ bs_android
 • Building apk with entrypoint test_bundle.dart...
 ✓ Completed building apk with entrypoint test_bundle.dart (11.0s)
@@ -71,20 +120,41 @@ Uploaded test, url: bs://a715b1231d41ac627bd683f1b16c28476babd72e
 Scheduled test execution
 ```
 
-`bs_android` forwards all its options and flags to `patrol build`:
+That's all! "Success" means that the test execution was scheduled successfully.
 
-```bash
-bs_android \
-  --target integration_test/example_test.dart,integration_test/another_test.dart \
-  --release \
-  --dart-define 'KEY_EXAMPLE=VALUE_EXAMPLE'
-```
+</Accordion>
 
-[Browserstack App Automate]: https://www.browserstack.com/app-automate
-[patrol build]: /cli-commands/build
-[bs_android]: https://github.com/leancodepl/mobile-tools/blob/master/bin/bs_android
-[bs_app_docs]: https://www.browserstack.com/docs/app-automate/api-reference/espresso/apps
-[bs_test_docs]: https://www.browserstack.com/docs/app-automate/api-reference/espresso/tests
-[bs_execute_docs]: https://www.browserstack.com/docs/app-automate/api-reference/espresso/builds#execute-a-build
-[bs_account]: https://www.browserstack.com/accounts/profile
+<Accordion title="Running tests manually">
+
+You can follow BrowserStack's docs and/or follow the code of `bs_android` and `bs_ios` scripts:
+
+1. Build the app under test and the instrumentation app ([see docs][patrol build])
+1. Upload the app under test APK to BrowserStack ([see Android docs][bs_android_app_docs]) ([see iOS docs][bs_ios_app_docs])
+1. Upload the instrumentation app APK to BrowserStack ([see Android docs][bs_android_test_docs]) ([see iOS docs][bs_ios_test_docs])
+1. Start test execution on BrowserStack ([see Android docs][bs_execute_android_docs]) ([see iOS docs][bs_execute_ios_docs])
+
+</Accordion>
+
+After scheduling the test execution, you can check the status of the test execution in the [App Automate dashboard][bs_app_automate_dashboard].
+
+If you need to change the test configuration, check out full list of available devices and OS versions in the [BrowserStack Browsers & Devices][bs_devices].
+
+[BrowserStack App Automate]: https://www.browserstack.com/app-automate
 [mobile-tools]: https://github.com/leancodepl/mobile-tools
+[bs_account]: https://www.browserstack.com/accounts/profile
+[bs_app_automate_dashboard]: https://app-automate.browserstack.com/dashboard/v2
+[Setup for physical iOS devices]: /documentation/physical-ios-devices-setup
+[Xcode test plans]: https://developer.apple.com/documentation/xcode/organizing-tests-to-improve-feedback
+[bs_android]: https://github.com/leancodepl/mobile-tools/blob/master/bin/bs_android
+[bs_ios]: https://github.com/leancodepl/mobile-tools/blob/master/bin/bs_ios
+[bs_devices]: https://www.browserstack.com/list-of-browsers-and-platforms/app_automate
+
+[patrol build]: /cli-commands/build
+
+[bs_android_app_docs]: https://www.browserstack.com/docs/app-automate/api-reference/espresso/apps#upload-an-app
+[bs_android_test_docs]: https://www.browserstack.com/docs/app-automate/api-reference/espresso/tests#upload-a-test-suite
+[bs_execute_android_docs]: https://www.browserstack.com/docs/app-automate/api-reference/espresso/builds#execute-a-build
+
+[bs_ios_app_docs]: https://www.browserstack.com/docs/app-automate/api-reference/xcuitest/apps#upload-an-app
+[bs_ios_test_docs]: https://www.browserstack.com/docs/app-automate/api-reference/xcuitest/tests#upload-a-test-suite
+[bs_execute_ios_docs]: https://www.browserstack.com/docs/app-automate/api-reference/xcuitest/builds#execute-a-build

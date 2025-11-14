@@ -19,7 +19,7 @@ public class BrowserstackPatrolJUnitRunner extends PatrolJUnitRunner {
         try {
             client.listDartTests();
 
-            //TODO verify in a project where we use Browserstack
+            //TODO verify in a project where we use BrowserStack
         } catch (PatrolAppServiceClientException ex) {
             ex.printStackTrace();
             // If the client on localhost:8082 fails, let's apply the workaround

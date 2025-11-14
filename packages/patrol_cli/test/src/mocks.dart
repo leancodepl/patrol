@@ -1,12 +1,19 @@
 import 'dart:io' as io;
 
+import 'package:adb/adb.dart';
 import 'package:http/http.dart' as http;
 import 'package:mocktail/mocktail.dart';
 import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
 import 'package:patrol_cli/src/base/logger.dart' as logger;
+import 'package:patrol_cli/src/compatibility_checker/compatibility_checker.dart';
+import 'package:patrol_cli/src/dart_defines_reader.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
+import 'package:patrol_cli/src/macos/macos_test_backend.dart';
+import 'package:patrol_cli/src/pubspec_reader.dart';
+import 'package:patrol_cli/src/test_bundler.dart';
+import 'package:patrol_cli/src/test_finder.dart';
 import 'package:process/process.dart' as process;
 import 'package:pub_updater/pub_updater.dart' as pub;
 
@@ -29,6 +36,22 @@ class MockDeviceFinder extends Mock implements DeviceFinder {}
 class MockAndroidTestBackend extends Mock implements AndroidTestBackend {}
 
 class MockIOSTestBackend extends Mock implements IOSTestBackend {}
+
+class MockMacOSTestBackend extends Mock implements MacOSTestBackend {}
+
+class MockTestFinderFactory extends Mock implements TestFinderFactory {}
+
+class MockTestFinder extends Mock implements TestFinder {}
+
+class MockTestBundler extends Mock implements TestBundler {}
+
+class MockDartDefinesReader extends Mock implements DartDefinesReader {}
+
+class MockPubspecReader extends Mock implements PubspecReader {}
+
+class MockCompatibilityChecker extends Mock implements CompatibilityChecker {}
+
+class MockAdb extends Mock implements Adb {}
 
 class MockAnalytics extends Mock implements Analytics {
   @override

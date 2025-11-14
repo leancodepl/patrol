@@ -51,6 +51,15 @@
       }
     }
 
+    func openPlatformApp(request: OpenPlatformAppRequest) throws {
+      return try runCatching {
+        guard let appId = request.iosAppId else {
+          throw PatrolError.internal("iosAppId must not be null on iOS")
+        }
+        try automator.openApp(appId)
+      }
+    }
+
     func openQuickSettings(request: OpenQuickSettingsRequest) throws {
       return try runCatching {
         try automator.openControlCenter()
@@ -506,7 +515,7 @@
         try automator.tap(
           on: IOSSelector(
             elementType: IOSElementType.button,
-            label: "Add"
+            identifier: "Add"
           ),
           inApp: request.appId,
           withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
@@ -528,6 +537,10 @@
       } catch let err as PatrolError {
         Logger.shared.e(err.description)
         throw err
+      } catch let err as LocalizationError {
+        let message = err.errorDescription ?? "Localization error"
+        Logger.shared.e(message)
+        throw PatrolError.localizationError(message)
       } catch let err {
         throw PatrolError.unknown(err)
       }

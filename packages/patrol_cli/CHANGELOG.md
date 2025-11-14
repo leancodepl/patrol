@@ -1,3 +1,19 @@
+## 4.0.0
+
+- **Breaking**: Change default test directory from `integration_test` to `patrol_test`. (#2728)
+- Add support for configurable test directory via `test_directory` option in `pubspec.yaml`. (#2728)
+- Add `--build-name` and `--build-number` flags to `patrol test`, `patrol develop`, and `patrol build` commands. (#2590)
+- Replace `clear-permissions` flag with `full-isolation` flag and replace clearing permissions functionality with uninstalling app on iOS. (#2730)
+- Bump `patrol_log` to `0.6.0`.
+- Fix report path generation for Android (#2724)
+- Fix issue that sometimes logs causes test crashes (#2742)
+- Add support for interactive device selection when running patrol. (#2722)
+
+## 3.10.0
+
+- Add help command `h` to `patrol develop`. (#2701)
+- Add printing paths to the APKs after `patrol build` command. (#2685)
+
 ## 3.9.0
 
 - Re-land: Do not pass flavor as dart-define when building. (#2636)
@@ -8,7 +24,7 @@
 
 ## 3.8.0
 
-- Remove `--wait` argument from patrol develop command
+- Remove `--wait` argument from patrol develop command (#2671 & #2691)
 - Add support for comments in .patrol.env files. (#2653)
 - Skip update check when the `patrol_cli` binary is triggered for shell completion only (#2512)
 - Revert: Do not pass flavor as dart-define when building. (#2636)

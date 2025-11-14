@@ -2,6 +2,8 @@ export 'contracts/contracts.dart'
     show
         AndroidNativeView,
         AndroidSelector,
+        AppleApp,
+        GoogleApp,
         IOSElementType,
         IOSNativeView,
         IOSSelector,

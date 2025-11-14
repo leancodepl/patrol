@@ -6,116 +6,187 @@
 //
 
 public enum GroupEntryType: String, Codable {
-  case group
-  case test
+  case group = "group"
+  case test = "test"
 }
 
 public enum RunDartTestResponseResult: String, Codable {
-  case success
-  case skipped
-  case failure
+  case success = "success"
+  case skipped = "skipped"
+  case failure = "failure"
 }
 
 public enum KeyboardBehavior: String, Codable {
-  case showAndDismiss
-  case alternative
+  case showAndDismiss = "showAndDismiss"
+  case alternative = "alternative"
 }
 
 public enum HandlePermissionRequestCode: String, Codable {
-  case whileUsing
-  case onlyThisTime
-  case denied
+  case whileUsing = "whileUsing"
+  case onlyThisTime = "onlyThisTime"
+  case denied = "denied"
 }
 
 public enum SetLocationAccuracyRequestLocationAccuracy: String, Codable {
-  case coarse
-  case fine
+  case coarse = "coarse"
+  case fine = "fine"
 }
 
 public enum IOSElementType: String, Codable {
-  case any
-  case other
-  case application
-  case group
-  case window
-  case sheet
-  case drawer
-  case alert
-  case dialog
-  case button
-  case radioButton
-  case radioGroup
-  case checkBox
-  case disclosureTriangle
-  case popUpButton
-  case comboBox
-  case menuButton
-  case toolbarButton
-  case popover
-  case keyboard
-  case key
-  case navigationBar
-  case tabBar
-  case tabGroup
-  case toolbar
-  case statusBar
-  case table
-  case tableRow
-  case tableColumn
-  case outline
-  case outlineRow
-  case browser
-  case collectionView
-  case slider
-  case pageIndicator
-  case progressIndicator
-  case activityIndicator
-  case segmentedControl
-  case picker
-  case pickerWheel
-  case switch_
-  case toggle
-  case link
-  case image
-  case icon
-  case searchField
-  case scrollView
-  case scrollBar
-  case staticText
-  case textField
-  case secureTextField
-  case datePicker
-  case textView
-  case menu
-  case menuItem
-  case menuBar
-  case menuBarItem
-  case map
-  case webView
-  case incrementArrow
-  case decrementArrow
-  case timeline
-  case ratingIndicator
-  case valueIndicator
-  case splitGroup
-  case splitter
-  case relevanceIndicator
-  case colorWell
-  case helpTag
-  case matte
-  case dockItem
-  case ruler
-  case rulerMarker
-  case grid
-  case levelIndicator
-  case cell
-  case layoutArea
-  case layoutItem
-  case handle
-  case stepper
-  case tab
-  case touchBar
-  case statusItem
+  case any = "any"
+  case other = "other"
+  case application = "application"
+  case group = "group"
+  case window = "window"
+  case sheet = "sheet"
+  case drawer = "drawer"
+  case alert = "alert"
+  case dialog = "dialog"
+  case button = "button"
+  case radioButton = "radioButton"
+  case radioGroup = "radioGroup"
+  case checkBox = "checkBox"
+  case disclosureTriangle = "disclosureTriangle"
+  case popUpButton = "popUpButton"
+  case comboBox = "comboBox"
+  case menuButton = "menuButton"
+  case toolbarButton = "toolbarButton"
+  case popover = "popover"
+  case keyboard = "keyboard"
+  case key = "key"
+  case navigationBar = "navigationBar"
+  case tabBar = "tabBar"
+  case tabGroup = "tabGroup"
+  case toolbar = "toolbar"
+  case statusBar = "statusBar"
+  case table = "table"
+  case tableRow = "tableRow"
+  case tableColumn = "tableColumn"
+  case outline = "outline"
+  case outlineRow = "outlineRow"
+  case browser = "browser"
+  case collectionView = "collectionView"
+  case slider = "slider"
+  case pageIndicator = "pageIndicator"
+  case progressIndicator = "progressIndicator"
+  case activityIndicator = "activityIndicator"
+  case segmentedControl = "segmentedControl"
+  case picker = "picker"
+  case pickerWheel = "pickerWheel"
+  case switch_ = "switch_"
+  case toggle = "toggle"
+  case link = "link"
+  case image = "image"
+  case icon = "icon"
+  case searchField = "searchField"
+  case scrollView = "scrollView"
+  case scrollBar = "scrollBar"
+  case staticText = "staticText"
+  case textField = "textField"
+  case secureTextField = "secureTextField"
+  case datePicker = "datePicker"
+  case textView = "textView"
+  case menu = "menu"
+  case menuItem = "menuItem"
+  case menuBar = "menuBar"
+  case menuBarItem = "menuBarItem"
+  case map = "map"
+  case webView = "webView"
+  case incrementArrow = "incrementArrow"
+  case decrementArrow = "decrementArrow"
+  case timeline = "timeline"
+  case ratingIndicator = "ratingIndicator"
+  case valueIndicator = "valueIndicator"
+  case splitGroup = "splitGroup"
+  case splitter = "splitter"
+  case relevanceIndicator = "relevanceIndicator"
+  case colorWell = "colorWell"
+  case helpTag = "helpTag"
+  case matte = "matte"
+  case dockItem = "dockItem"
+  case ruler = "ruler"
+  case rulerMarker = "rulerMarker"
+  case grid = "grid"
+  case levelIndicator = "levelIndicator"
+  case cell = "cell"
+  case layoutArea = "layoutArea"
+  case layoutItem = "layoutItem"
+  case handle = "handle"
+  case stepper = "stepper"
+  case tab = "tab"
+  case touchBar = "touchBar"
+  case statusItem = "statusItem"
+}
+
+public enum GoogleApp: String, Codable {
+  case calculator = "com.google.android.calculator"
+  case calendar = "com.google.android.calendar"
+  case chrome = "com.android.chrome"
+  case drive = "com.google.android.apps.docs"
+  case gmail = "com.google.android.gm"
+  case maps = "com.google.android.apps.maps"
+  case photos = "com.google.android.apps.photos"
+  case playStore = "com.android.vending"
+  case settings = "com.android.settings"
+  case youtube = "com.google.android.youtube"
+}
+
+public enum AppleApp: String, Codable {
+  case appStore = "com.apple.AppStore"
+  case appleStore = "com.apple.store.Jolly"
+  case barcodeScanner = "com.apple.BarcodeScanner"
+  case books = "com.apple.iBooks"
+  case calculator = "com.apple.calculator"
+  case calendar = "com.apple.mobilecal"
+  case camera = "com.apple.camera"
+  case clips = "com.apple.clips"
+  case clock = "com.apple.mobiletimer"
+  case compass = "com.apple.compass"
+  case contacts = "com.apple.MobileAddressBook"
+  case developer = "developer.apple.wwdc-Release"
+  case faceTime = "com.apple.facetime"
+  case files = "com.apple.DocumentsApp"
+  case findMy = "com.apple.findmy"
+  case fitness = "com.apple.Fitness"
+  case freeform = "com.apple.freeform"
+  case garageBand = "com.apple.mobilegarageband"
+  case health = "com.apple.Health"
+  case home = "com.apple.Home"
+  case iCloudDrive = "com.apple.iCloudDriveApp"
+  case imagePlayground = "com.apple.GenerativePlaygroundApp"
+  case iMovie = "com.apple.iMovie"
+  case invites = "com.apple.rsvp"
+  case iTunesStore = "com.apple.MobileStore"
+  case journal = "com.apple.journal"
+  case keynote = "com.apple.Keynote"
+  case magnifier = "com.apple.Magnifier"
+  case mail = "com.apple.mobilemail"
+  case maps = "com.apple.Maps"
+  case measure = "com.apple.measure"
+  case messages = "com.apple.MobileSMS"
+  case music = "com.apple.Music"
+  case news = "com.apple.news"
+  case notes = "com.apple.mobilenotes"
+  case numbers = "com.apple.Numbers"
+  case pages = "com.apple.Pages"
+  case passwords = "com.apple.Passwords"
+  case phone = "com.apple.mobilephone"
+  case photoBooth = "com.apple.Photo-Booth"
+  case photos = "com.apple.mobileslideshow"
+  case podcasts = "com.apple.podcasts"
+  case reminders = "com.apple.reminders"
+  case safari = "com.apple.mobilesafari"
+  case settings = "com.apple.Preferences"
+  case shortcuts = "com.apple.shortcuts"
+  case stocks = "com.apple.stocks"
+  case swiftPlaygrounds = "com.apple.Playgrounds"
+  case tips = "com.apple.tips"
+  case translate = "com.apple.Translate"
+  case tv = "com.apple.tv"
+  case voiceMemos = "com.apple.VoiceMemos"
+  case wallet = "com.apple.Passbook"
+  case watch = "com.apple.Bridge"
+  case weather = "com.apple.weather"
 }
 
 public struct DartGroupEntry: Codable {
@@ -145,6 +216,11 @@ public struct ConfigureRequest: Codable {
 
 public struct OpenAppRequest: Codable {
   public var appId: String
+}
+
+public struct OpenPlatformAppRequest: Codable {
+  public var androidAppId: String?
+  public var iosAppId: String?
 }
 
 public struct OpenQuickSettingsRequest: Codable {

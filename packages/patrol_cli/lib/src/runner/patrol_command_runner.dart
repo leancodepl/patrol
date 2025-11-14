@@ -127,6 +127,11 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
 
     final rootDirectory = findRootDirectory(_fs) ?? _fs.currentDirectory;
 
+    final testBundler = TestBundler(
+      projectRoot: rootDirectory,
+      logger: _logger,
+    );
+
     final androidTestBackend = AndroidTestBackend(
       adb: adb,
       processManager: _processManager,
@@ -154,14 +159,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
       logger: _logger,
     );
 
-    final testBundler = TestBundler(
-      projectRoot: rootDirectory,
-      logger: _logger,
-    );
-
-    final testFinder = TestFinder(
-      testDir: rootDirectory.childDirectory('integration_test'),
-    );
+    final testFinderFactory = TestFinderFactory(rootDirectory: rootDirectory);
 
     final deviceFinder = DeviceFinder(
       processManager: _processManager,
@@ -171,7 +169,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
 
     addCommand(
       BuildCommand(
-        testFinder: testFinder,
+        testFinderFactory: testFinderFactory,
         testBundler: testBundler,
         dartDefinesReader: DartDefinesReader(projectRoot: rootDirectory),
         pubspecReader: PubspecReader(projectRoot: rootDirectory),
@@ -191,7 +189,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
     addCommand(
       DevelopCommand(
         deviceFinder: deviceFinder,
-        testFinder: testFinder,
+        testFinderFactory: testFinderFactory,
         testBundler: testBundler,
         dartDefinesReader: DartDefinesReader(projectRoot: rootDirectory),
         compatibilityChecker: CompatibilityChecker(
@@ -219,7 +217,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
       TestCommand(
         deviceFinder: deviceFinder,
         testBundler: testBundler,
-        testFinder: testFinder,
+        testFinderFactory: testFinderFactory,
         dartDefinesReader: DartDefinesReader(projectRoot: rootDirectory),
         compatibilityChecker: CompatibilityChecker(
           projectRoot: rootDirectory,

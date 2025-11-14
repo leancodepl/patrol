@@ -94,7 +94,7 @@ void patrolTest(
   ),
   NativeAutomatorConfig nativeAutomatorConfig = const NativeAutomatorConfig(),
   LiveTestWidgetsFlutterBindingFramePolicy framePolicy =
-      LiveTestWidgetsFlutterBindingFramePolicy.fadePointers,
+      LiveTestWidgetsFlutterBindingFramePolicy.fullyLive,
 }) {
   final patrolLog = PatrolLogWriter(config: {'printLogs': config.printLogs});
   final automator = NativeAutomator(config: nativeAutomatorConfig);
@@ -148,29 +148,27 @@ void patrolTest(
       );
       await callback(patrolTester);
 
-      // We need to silent this warning to avoid false positive
-      // avoid_redundant_argument_values
-      // ignore: prefer_const_declarations
-      final waitSeconds = const int.fromEnvironment('PATROL_WAIT');
-      final waitDuration = Duration(seconds: waitSeconds);
-
       if (debugDefaultTargetPlatformOverride !=
           patrolBinding.workaroundDebugDefaultTargetPlatformOverride) {
         debugDefaultTargetPlatformOverride =
             patrolBinding.workaroundDebugDefaultTargetPlatformOverride;
       }
 
-      if (waitDuration > Duration.zero) {
-        final stopwatch = Stopwatch()..start();
-        await Future.doWhile(() async {
+      if (constants.hotRestartEnabled &&
+          global_state.isCurrentTestLastInGroup) {
+        // Patrol log that test is finished
+        // If test fails this code will not be executed
+        patrolLog.log(
+          LogEntry(
+            message:
+                'All tests were executed. Press "r" to start again or "q" to quit',
+          ),
+        );
+        // Wait indefinitely in develop mode after the last test
+        while (true) {
           await widgetTester.pump();
-          if (stopwatch.elapsed > waitDuration) {
-            stopwatch.stop();
-            return false;
-          }
-
-          return true;
-        });
+          await Future<void>.delayed(const Duration(milliseconds: 10));
+        }
       }
     },
   );

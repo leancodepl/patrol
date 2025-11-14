@@ -177,9 +177,9 @@ jobs:
       - name: Start iOS simulator
         uses: futureware-tech/simulator-action@v2
         with:
-          model: iPhone 15
+          model: iPhone 16
           os: iOS
-          os_version: 18.1
+          os_version: 18.5
           erase_before_boot: true
           shutdown_after_job: true
 
@@ -191,8 +191,10 @@ jobs:
             -scheme Runner \
             -only-testing RunnerTests \
             -configuration Debug \
-            -sdk iphoneos -destination 'platform=iOS Simulator,name=iPhone 15' \
-            -derivedDataPath ../build/ios_unit | xcbeautify --renderer github-actions
+            -sdk iphoneos -destination 'platform=iOS Simulator,name=iPhone 16' \
+            -derivedDataPath ../build/ios_unit \
+            OTHER_CFLAGS='$(inherited) -D FULL_ISOLATION=0' \
+          | xcbeautify --renderer github-actions
 
   prepare-flutter:
     name: Flutter ${{ matrix.flutter-version }}

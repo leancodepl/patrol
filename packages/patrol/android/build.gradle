@@ -67,7 +67,7 @@ android {
 
         api "androidx.test:runner:1.5.1"
         api "androidx.test.espresso:espresso-core:3.5.0"
-        api "androidx.test.uiautomator:uiautomator:2.2.0"
+        api "androidx.test.uiautomator:uiautomator:2.3.0"
 
         implementation platform("org.http4k:http4k-bom:5.47.0.0")
         implementation "org.http4k:http4k-core"

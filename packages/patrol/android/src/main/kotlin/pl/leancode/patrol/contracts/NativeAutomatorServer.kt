@@ -20,6 +20,7 @@ abstract class NativeAutomatorServer {
     abstract fun pressRecentApps()
     abstract fun doublePressRecentApps()
     abstract fun openApp(request: Contracts.OpenAppRequest)
+    abstract fun openPlatformApp(request: Contracts.OpenPlatformAppRequest)
     abstract fun openQuickSettings(request: Contracts.OpenQuickSettingsRequest)
     abstract fun openUrl(request: Contracts.OpenUrlRequest)
     abstract fun getNativeUITree(request: Contracts.GetNativeUITreeRequest): Contracts.GetNativeUITreeRespone
@@ -90,6 +91,11 @@ abstract class NativeAutomatorServer {
       "openApp" bind POST to {
         val body = json.fromJson(it.bodyString(), Contracts.OpenAppRequest::class.java)
         openApp(body)
+        Response(OK)
+      },
+      "openPlatformApp" bind POST to {
+        val body = json.fromJson(it.bodyString(), Contracts.OpenPlatformAppRequest::class.java)
+        openPlatformApp(body)
         Response(OK)
       },
       "openQuickSettings" bind POST to {

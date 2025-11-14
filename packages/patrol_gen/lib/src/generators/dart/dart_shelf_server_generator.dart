@@ -15,7 +15,9 @@ class DartShelfServerGenerator {
 
     return OutputFile(
       filename: config.serviceFileName(service.name),
-      content: DartFormatter().format(buffer.toString()),
+      content: DartFormatter(
+        languageVersion: DartFormatter.latestLanguageVersion,
+      ).format(buffer.toString()),
     );
   }
 

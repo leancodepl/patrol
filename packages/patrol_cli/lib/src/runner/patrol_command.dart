@@ -31,13 +31,13 @@ abstract class PatrolCommand extends Command<int> {
         aliases: ['targets'],
         abbr: 't',
         help: 'Integration test target to use as entrypoint.',
-        valueHelp: 'integration_test/app_test.dart',
+        valueHelp: 'patrol_test/app_test.dart',
       )
       ..addMultiOption(
         'exclude',
         aliases: ['excludes'],
         help: 'Integration test targets to exclude.',
-        valueHelp: 'integration_test/flaky_test.dart',
+        valueHelp: 'patrol_test/flaky_test.dart',
       )
       ..addFlag(
         'generate-bundle',
@@ -134,6 +134,14 @@ abstract class PatrolCommand extends Command<int> {
     );
   }
 
+  void usesFullIsolationOption() {
+    argParser.addFlag(
+      'full-isolation',
+      help: 'Enable full isolation between test runs by clearing package data.',
+      negatable: false,
+    );
+  }
+
   void usesAndroidOptions() {
     argParser.addOption(
       'package-name',
@@ -148,12 +156,6 @@ abstract class PatrolCommand extends Command<int> {
         'bundle-id',
         help: 'Bundle identifier of the iOS app under test.',
         valueHelp: 'pl.leancode.AwesomeApp',
-      )
-      ..addFlag(
-        'clear-permissions',
-        help:
-            'Clear permissions available through XCUIProtectedResource API before running each test.',
-        negatable: false,
       )
       ..addOption(
         'ios',
@@ -208,6 +210,22 @@ abstract class PatrolCommand extends Command<int> {
       'check-compatibility',
       defaultsTo: true,
       help: 'Verify if the dependencies are compatible between each other.',
+    );
+  }
+
+  void usesBuildNameOption() {
+    argParser.addOption(
+      'build-name',
+      help: 'Version name of the app.',
+      valueHelp: '1.2.3',
+    );
+  }
+
+  void usesBuildNumberOption() {
+    argParser.addOption(
+      'build-number',
+      help: 'Version code of the app.',
+      valueHelp: '123',
     );
   }
 

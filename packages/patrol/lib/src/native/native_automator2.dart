@@ -230,6 +230,55 @@ class NativeAutomator2 {
     );
   }
 
+  /// Opens a platform-specific app.
+  ///
+  /// On Android, opens the app specified by [androidAppId] (package name).
+  /// On iOS, opens the app specified by [iosAppId] (bundle identifier).
+  ///
+  /// You can pass a [GoogleApp] enum for common Android apps, an [AppleApp]
+  /// enum for common iOS apps, or a custom app ID string.
+  ///
+  /// Example with enums:
+  /// ```dart
+  /// await $.native.openPlatformApp(
+  ///   androidAppId: GoogleApp.chrome,
+  ///   iosAppId: AppleApp.safari,
+  /// );
+  /// ```
+  ///
+  /// Example with custom app IDs:
+  /// ```dart
+  /// await $.native.openPlatformApp(
+  ///   androidAppId: 'com.mycompany.myapp',
+  ///   iosAppId: 'com.mycompany.myapp',
+  /// );
+  /// ```
+  Future<void> openPlatformApp({Object? androidAppId, Object? iosAppId}) async {
+    // Extract the actual app ID string from enum or string
+    final androidId = switch (androidAppId) {
+      final GoogleApp app => app.value,
+      final String id => id,
+      null => null,
+      _ => throw ArgumentError(
+        'androidAppId must be a GoogleApp enum or a String',
+      ),
+    };
+
+    final iosId = switch (iosAppId) {
+      final AppleApp app => app.value,
+      final String id => id,
+      null => null,
+      _ => throw ArgumentError('iosAppId must be an AppleApp enum or a String'),
+    };
+
+    await _wrapRequest(
+      'openPlatformApp',
+      () => _client.openPlatformApp(
+        OpenPlatformAppRequest(androidAppId: androidId, iosAppId: iosId),
+      ),
+    );
+  }
+
   /// Presses the recent apps button.
   ///
   /// See also:
@@ -570,7 +619,7 @@ class NativeAutomator2 {
   /// [NativeAutomatorConfig.findTimeout] duration from the configuration.
   ///
   /// The native view specified by [selector] must be:
-  ///  * EditText on Android
+  ///  * EditText or AutoCompleteTextView on Android
   ///  * TextField or SecureTextField on iOS
   ///
   /// See also:
@@ -652,6 +701,7 @@ class NativeAutomator2 {
     required Offset to,
     int steps = 12,
     String? appId,
+    bool enablePatrolLog = true,
   }) async {
     assert(from.dx >= 0 && from.dx <= 1);
     assert(from.dy >= 0 && from.dy <= 1);
@@ -660,6 +710,7 @@ class NativeAutomator2 {
 
     await _wrapRequest(
       'swipe',
+      enablePatrolLog: enablePatrolLog,
       () => _client.swipe(
         SwipeRequest(
           startX: from.dx,
@@ -693,9 +744,17 @@ class NativeAutomator2 {
   /// await tester.swipeBack(dy: 0.8); // Swipe back at 1/5 height of the screen
   /// await tester.swipeBack(); // Swipe back at the center of the screen
   /// ```
-  Future<void> swipeBack({double dy = 0.5, String? appId}) {
+  Future<void> swipeBack({double dy = 0.5, String? appId}) async {
     assert(dy >= 0.0 && dy <= 1.0, 'dy must be between 0.0 and 1.0');
-    return swipe(from: Offset(0, dy), to: Offset(1, dy), appId: appId);
+    await _wrapRequest(
+      'swipeBack',
+      () => swipe(
+        from: Offset(0, dy),
+        to: Offset(1, dy),
+        appId: appId,
+        enablePatrolLog: false,
+      ),
+    );
   }
 
   /// Simulates pull-to-refresh gesture.
@@ -717,16 +776,20 @@ class NativeAutomator2 {
     Offset from = const Offset(0.5, 0.5),
     Offset to = const Offset(0.5, 0.9),
     int steps = 50,
-  }) {
+  }) async {
     assert(from.dx >= 0 && from.dx <= 1);
     assert(from.dy >= 0 && from.dy <= 1);
     assert(to.dx >= 0 && to.dx <= 1);
     assert(to.dy >= 0 && to.dy <= 1);
 
-    return swipe(
-      from: Offset(from.dx, from.dy),
-      to: Offset(to.dx, to.dy),
-      steps: steps,
+    await _wrapRequest(
+      'pullToRefresh',
+      () => swipe(
+        from: Offset(from.dx, from.dy),
+        to: Offset(to.dx, to.dy),
+        steps: steps,
+        enablePatrolLog: false,
+      ),
     );
   }
 

@@ -41,7 +41,7 @@ want to test and updating paths to the target tests in `args`.
       "type": "dart",
       "program": "patrol/packages/patrol_cli/bin/main.dart",
       "cwd": "dev/e2e_app",
-      "args": ["test", "-t", "integration_test/example_test.dart"]
+      "args": ["test", "-t", "patrol_test/example_test.dart"]
     }
   ]
 }
@@ -55,7 +55,7 @@ project you want to test and updating paths to the target tests in `arguments`.
 ```xml
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="patrol_cli" type="DartCommandLineRunConfigurationType" factoryName="Dart Command Line Application">
-    <option name="arguments" value="test -t integration_test/example_test.dart" />
+    <option name="arguments" value="test -t patrol_test/example_test.dart" />
     <option name="filePath" value="$PROJECT_DIR$/packages/patrol_cli/bin/main.dart" />
     <option name="workingDirectory" value="$PROJECT_DIR$/dev/e2e_app" />
     <method v="2" />
@@ -77,3 +77,21 @@ Note: On iOS, during development you should remove `#if PATROL_ENABLED` from `Au
 ## Working with patrol_devtools_extension
 
 If you plan to use the local version of Patrol to test/modify the Patrol DevTools extension, you need to deploy it first. To do this, navigate to the `patrol_devtools_extension` folder and run the `./publish_to_patrol_extension` script.
+
+## Adding a new language or new strings to existing language for native OS interactions
+
+### iOS
+
+1. Go to `packages/patrol/darwin/Resources/` folder.
+2. Add a new language folder with the name of the language or use existing one.
+3. Add a new `Localizable.strings` or add strings to the existing file.
+4. Add the new language to the `getLocalizedStrings` function in `IOSAutomator.swift` file.
+5. If you added new strings, you need to find all functions where these strings are used and add them to the function. For example "labels" in `allowPermissionOnce()` in IOSAutomator.swift file.
+6. Add the new language to the `supportedLanguages` array in `Localization.swift` file.
+
+### Android
+
+1. Go to `packages/patrol/android/src/main/res/values-<language>/` folder.
+2. Add a new `strings.xml` with language folder name or add strings to the existing file.
+3. If you added a new string, you need to add it to proper function in Automator.kt, for example look at the `toggleAirplaneMode()` function.
+4. Add the new language to the `getLocalizedString` function in `Localization.kt` file. 
