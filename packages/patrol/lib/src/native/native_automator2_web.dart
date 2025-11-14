@@ -26,7 +26,7 @@ class NativeAutomator2 {
       'startTest',
       {},
       logger: _config.logger,
-      patrolLog: _patrolLog,
+      // patrolLog: _patrolLog,
     );
   }
 
