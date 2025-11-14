@@ -32,7 +32,7 @@ class DoctorCommand extends PatrolCommand {
       _printIosSpecifics();
     }
 
-    _printPlaywrightSpecifics();
+    _printWebSpecifics();
 
     return 0;
   }
@@ -100,8 +100,8 @@ class DoctorCommand extends PatrolCommand {
     );
   }
 
-  void _printPlaywrightSpecifics() {
-    _logger.info('Playwright: ');
+  void _printWebSpecifics() {
+    _logger.info('Web: ');
     _checkIfToolInstalled('npm', 'Install npm`');
   }
 
