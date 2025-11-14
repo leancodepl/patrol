@@ -59,13 +59,14 @@ class CoverageTool {
 
     await _disposeScope.run((scope) async {
       final logsProcess =
-          await _processManager.start([
-              flutterCommand.executable,
-              ...flutterCommand.arguments,
-              'logs',
-              '-d',
-              device.id,
-            ],
+          await _processManager.start(
+              [
+                flutterCommand.executable,
+                ...flutterCommand.arguments,
+                'logs',
+                '-d',
+                device.id,
+              ],
               workingDirectory: homeDirectory,
               runInShell: true,
             )
