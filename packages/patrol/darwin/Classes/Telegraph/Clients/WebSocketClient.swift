@@ -280,8 +280,8 @@ extension WebSocketClient: WebSocketConnectionDelegate {
     delegateQueue.async { [weak self] in
       guard let self = self else { return }
       switch message.payload {
-      case let .binary(data): self.delegate?.webSocketClient(self, didReceiveData: data)
-      case let .text(text): self.delegate?.webSocketClient(self, didReceiveText: text)
+      case .binary(let data): self.delegate?.webSocketClient(self, didReceiveData: data)
+      case .text(let text): self.delegate?.webSocketClient(self, didReceiveText: text)
       default: break
       }
     }
