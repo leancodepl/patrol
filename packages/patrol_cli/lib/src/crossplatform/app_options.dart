@@ -58,6 +58,7 @@ class AndroidAppOptions {
     required this.appServerPort,
     required this.testServerPort,
     required this.uninstall,
+    this.noTreeShakeIcons = false,
   });
 
   final FlutterAppOptions flutter;
@@ -65,6 +66,7 @@ class AndroidAppOptions {
   final int appServerPort;
   final int testServerPort;
   final bool uninstall;
+  final bool noTreeShakeIcons;
 
   String get description => 'apk with entrypoint ${basename(flutter.target)}';
 
@@ -193,6 +195,7 @@ class IOSAppOptions {
     required this.appServerPort,
     required this.testServerPort,
     this.clearPermissions = false,
+    this.noTreeShakeIcons = false,
   });
 
   final FlutterAppOptions flutter;
@@ -204,6 +207,7 @@ class IOSAppOptions {
   final int appServerPort;
   final int testServerPort;
   final bool clearPermissions;
+  final bool noTreeShakeIcons;
 
   String get description {
     final platform = simulator ? 'simulator' : 'device';
@@ -223,6 +227,7 @@ class IOSAppOptions {
         '--no-codesign',
         '--${buildMode.name}', // for example '--debug',
         if (simulator) '--simulator',
+        if (noTreeShakeIcons) '--no-tree-shake-icons',
       ],
       if (flutter.flavor case final flavor?) ...['--flavor', flavor],
       if (flutter.buildName case final buildName?) ...[

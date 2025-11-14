@@ -12,6 +12,7 @@ This version requires version 3.20.0 of `patrol` package.
 
 - Add help command `h` to `patrol develop`. (#2701)
 - Add printing paths to the APKs after `patrol build` command. (#2685)
+- Add support for `--no-tree-shake-icons` flag in cli commands (#2704)
 
 ## 3.9.0
 
