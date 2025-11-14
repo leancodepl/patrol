@@ -102,6 +102,7 @@ class DoctorCommand extends PatrolCommand {
 
   void _printWebSpecifics() {
     _logger.info('Web: ');
+    _checkIfToolInstalled('node', 'Install Node.js');
     _checkIfToolInstalled('npm', 'Install npm`');
   }
 
