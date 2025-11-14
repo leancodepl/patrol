@@ -1,3 +1,7 @@
+## Unreleased
+
+- Read Patrol version from `pubspec.lock` instead of `pubspec.yaml` for compatibility checks. Fix edge cases for compatibility checks. (#2709)
+
 ## 3.11.0
 
 - Add `--build-name` and `--build-number` flags to `patrol test`, `patrol develop`, and `patrol build` commands. (#2590)
