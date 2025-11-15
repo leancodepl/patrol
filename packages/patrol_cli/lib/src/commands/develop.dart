@@ -165,6 +165,13 @@ class DevelopCommand extends PatrolCommand {
       throwToolExit('macOS is not supported with develop');
     }
 
+    // Changes applied outside `/lib` directory are not 'hot-restarted'.
+    // This is a blocker from applying changes to test code.
+    // https://github.com/flutter/flutter/issues/175318
+    if (device.targetPlatform == TargetPlatform.web) {
+      throwToolExit('Web is not supported with develop');
+    }
+
     _logger.detail('Received device: ${device.name} (${device.id})');
 
     final packageName = stringArg('package-name') ?? config.android.packageName;
