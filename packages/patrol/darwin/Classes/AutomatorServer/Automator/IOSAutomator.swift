@@ -511,7 +511,7 @@
     }
 
     func getNativeViews(
-      on selector: Selector,
+      on selector: IOSSelector,
       inApp bundleId: String
     ) throws -> [IOSNativeView] {
       let view = createLogMessage(element: "views", from: selector)
