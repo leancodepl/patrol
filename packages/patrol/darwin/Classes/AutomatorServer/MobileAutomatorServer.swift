@@ -201,7 +201,7 @@ extension MobileAutomatorServer {
 }
 
 extension MobileAutomatorServer {
-    func setupRoutes(server: Server) {
+    func setupRoutesMobileAutomator(server: Server) {
         server.route(.POST, "configure") {
             request in handleRequest(
                 request: request,

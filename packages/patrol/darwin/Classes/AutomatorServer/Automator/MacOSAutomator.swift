@@ -78,7 +78,7 @@
     }
 
     func tap(
-      on selector: Selector,
+      on selector: IOSSelector,
       inApp bundleId: String,
       withTimeout timeout: TimeInterval?
     ) throws {
@@ -88,7 +88,7 @@
     }
 
     func doubleTap(
-      on selector: Selector,
+      on selector: IOSSelector,
       inApp bundleId: String,
       withTimeout timeout: TimeInterval?
     ) throws {
@@ -105,7 +105,7 @@
 
     func enterText(
       _ data: String,
-      on selector: Selector,
+      on selector: IOSSelector,
       inApp bundleId: String,
       dismissKeyboard: Bool,
       withTimeout timeout: TimeInterval?,
@@ -138,7 +138,7 @@
     }
 
     func waitUntilVisible(
-      on selector: Selector,
+      on selector: IOSSelector,
       inApp bundleId: String,
       withTimeout timeout: TimeInterval?
     ) throws {
@@ -220,7 +220,7 @@
       }
     }
 
-    func getNativeViews(on selector: Selector, inApp bundleId: String) throws -> [NativeView] {
+    func getNativeViews(on selector: IOSSelector, inApp bundleId: String) throws -> [NativeView] {
       try runAction("getNativeViews") {
         throw PatrolError.methodNotImplemented("getNativeViews")
       }

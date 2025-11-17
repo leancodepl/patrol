@@ -85,7 +85,7 @@ $response
 
     return '''
 extension ${service.name}Server {
-    func setupRoutes(server: Server) {
+    func setupRoutes${service.name}(server: Server) {
 $routes
     }
 }

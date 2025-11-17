@@ -123,7 +123,7 @@ extension IosAutomatorServer {
 }
 
 extension IosAutomatorServer {
-    func setupRoutes(server: Server) {
+    func setupRoutesIosAutomator(server: Server) {
         server.route(.POST, "getNativeViews") {
             request in handleRequest(
                 request: request,

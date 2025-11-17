@@ -71,7 +71,7 @@
 
     // MARK: General UI interaction
     func tap(
-      on selector: Selector,
+      on selector: IOSSelector,
       inApp bundleId: String,
       withTimeout timeout: TimeInterval?
     ) throws {
@@ -96,7 +96,7 @@
     }
 
     func doubleTap(
-      on selector: Selector,
+      on selector: IOSSelector,
       inApp bundleId: String,
       withTimeout timeout: TimeInterval?
     ) throws {
@@ -131,7 +131,7 @@
 
     func enterText(
       _ data: String,
-      on selector: Selector,
+      on selector: IOSSelector,
       inApp bundleId: String,
       dismissKeyboard: Bool,
       withTimeout timeout: TimeInterval?,
@@ -166,44 +166,6 @@
         ])
 
         let query = app.descendants(matching: .any).matching(finalPredicate)
-        guard
-          let element = self.waitFor(
-            query: query,
-            index: selector.instance ?? 0,
-            timeout: timeout ?? self.timeout
-          )
-        else {
-          throw PatrolError.viewNotExists(view)
-        }
-
-        self.clearAndEnterText(data: data, element: element, dx: dx, dy: dy)
-      }
-
-      // Prevent keyboard dismissal from happening too fast
-      sleepTask(timeInSeconds: 1)
-    }
-
-    func enterText(
-      _ data: String,
-      on selector: IOSSelector,
-      inApp bundleId: String,
-      dismissKeyboard: Bool,
-      withTimeout timeout: TimeInterval?,
-      dx: CGFloat,
-      dy: CGFloat
-    ) throws {
-      var data = data
-      if dismissKeyboard {
-        data = "\(data)\n"
-      }
-
-      var view = createLogMessage(element: "text field", from: selector)
-      view += " in app \(bundleId)"
-
-      try runAction("entering text \(format: data) into \(view)") {
-        let app = try self.getApp(withBundleId: bundleId)
-
-        let query = app.descendants(matching: .any).matching(selector.toNSPredicate())
         guard
           let element = self.waitFor(
             query: query,
@@ -278,7 +240,7 @@
     }
 
     func waitUntilVisible(
-      on selector: Selector,
+      on selector: IOSSelector,
       inApp bundleId: String,
       withTimeout timeout: TimeInterval?
     ) throws {
@@ -1045,7 +1007,7 @@
       group.wait()
     }
 
-    func createLogMessage(element: String, from selector: Selector) -> String {
+    func createLogMessage(element: String, from selector: IOSSelector) -> String {
       var logMessage = element
 
       if let text = selector.text {
@@ -1057,16 +1019,6 @@
       if let contains = selector.textContains {
         logMessage += " containing '\(contains)'"
       }
-      if let index = selector.instance {
-        logMessage += " at index \(index)"
-      }
-
-      return logMessage
-    }
-
-    func createLogMessage(element: String, from selector: IOSSelector) -> String {
-      var logMessage = element
-
       if let instance = selector.instance {
         logMessage += " with instance '\(instance)'"
       }
@@ -1139,7 +1091,6 @@
         },
         elementType: getIOSElementType(elementType: xcuielement.elementType),
         identifier: xcuielement.identifier,
-        accessibilityLabel: xcuielement.accessibilityLabel,
         label: xcuielement.label,
         title: xcuielement.title,
         hasFocus: xcuielement.hasFocus,
@@ -1151,6 +1102,8 @@
           maxX: xcuielement.frame.maxX,
           maxY: xcuielement.frame.maxY
         ),
+        // FIXME: accessibilityLabel 
+        //accessibilityLabel: xcuielement.accessibilityLabel,
         placeholderValue: xcuielement.placeholderValue,
         value: xcuielement.value as? String,
         bundleId: bundleId
@@ -1166,7 +1119,6 @@
         },
         elementType: getIOSElementType(elementType: xcuielement.elementType),
         identifier: xcuielement.identifier,
-        accessibilityLabel: xcuielement.accessibilityLabel,
         label: xcuielement.label,
         title: xcuielement.title,
         hasFocus: xcuielement.hasFocus,
@@ -1178,6 +1130,8 @@
           maxX: xcuielement.frame.maxX,
           maxY: xcuielement.frame.maxY
         ),
+        // FIXME: accessibilityLabel 
+        //accessibilityLabel: xcuielement.accessibilityLabel,
         placeholderValue: xcuielement.placeholderValue,
         value: xcuielement.value as? String,
         bundleId: bundleId
