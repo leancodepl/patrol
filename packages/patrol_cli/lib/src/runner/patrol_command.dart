@@ -229,72 +229,77 @@ abstract class PatrolCommand extends Command<int> {
     );
   }
 
-  void usesPlaywright() {
+  void usesWeb() {
     argParser
       ..addOption(
-        'playwright-retries',
-        help: 'https://playwright.dev/docs/test-retries',
+        'web-retries',
+        help: 'Number of times to retry failed tests.',
         valueHelp: 'number',
       )
       ..addOption(
-        'playwright-video',
-        help: 'https://playwright.dev/docs/videos',
+        'web-video',
+        help:
+            'Video recording mode. Use "retain-on-failure" to keep videos only for failed tests.',
         valueHelp: 'off | on | retain-on-failure | on-first-retry',
       )
       ..addOption(
-        'playwright-timeout',
-        help: 'https://playwright.dev/docs/test-timeouts',
+        'web-timeout',
+        help: 'Maximum time in milliseconds for test execution.',
         valueHelp: 'number',
       )
       ..addOption(
-        'playwright-workers',
-        help: 'https://playwright.dev/docs/test-parallel',
+        'web-workers',
+        help: 'Maximum number of parallel worker processes for test execution.',
         valueHelp: 'number',
       )
       ..addOption(
-        'playwright-reporter',
-        help: 'https://playwright.dev/docs/test-reporters',
+        'web-reporter',
+        help:
+            'Test reporter configuration. JSON array with reporter name and options.',
         valueHelp:
             '[["html" | "json" | "list" | "dot" | "line" | "github" | "junit" | "null", { "outputFolder": "<PATH>" | undefined, "open": "never" | "always" | "on-failure" | undefined } | undefined]]',
       )
       ..addOption(
-        'playwright-locale',
-        help: 'https://playwright.dev/docs/emulation#locale--timezone',
+        'web-locale',
+        help: 'Locale for browser emulation.',
         valueHelp: 'en-US | pl-PL',
       )
       ..addOption(
-        'playwright-timezone',
-        help: 'https://playwright.dev/docs/emulation#locale--timezone',
+        'web-timezone',
+        help: 'Timezone for browser emulation.',
         valueHelp: 'Europe/Paris',
       )
       ..addOption(
-        'playwright-color-scheme',
-        help: 'https://playwright.dev/docs/emulation#color-scheme-and-media',
+        'web-color-scheme',
+        help: 'Preferred color scheme for browser emulation.',
         valueHelp: 'light | dark',
       )
       ..addOption(
-        'playwright-geolocation',
-        help: 'https://playwright.dev/docs/emulation#geolocation',
+        'web-geolocation',
+        help:
+            'Geolocation for browser context. JSON object with latitude and longitude.',
         valueHelp: '{"latitude": 51.5074, "longitude": -0.1278}',
       )
       ..addOption(
-        'playwright-permissions',
-        help: 'https://playwright.dev/docs/emulation#permissions',
+        'web-permissions',
+        help:
+            'Permissions to grant to the browser context. JSON array of permission names.',
         valueHelp: '["geolocation", ...]',
       )
       ..addOption(
-        'playwright-user-agent',
-        help: 'https://playwright.dev/docs/emulation#user-agent',
+        'web-user-agent',
+        help: 'Custom user agent string for browser context.',
         valueHelp: 'user agent string',
       )
       ..addOption(
-        'playwright-offline',
-        help: 'https://playwright.dev/docs/emulation#offline',
+        'web-offline',
+        help: 'Whether to emulate network being offline.',
         valueHelp: 'true | false',
       )
       ..addOption(
-        'playwright-viewport',
-        help: 'https://playwright.dev/docs/emulation#viewport',
+        'web-viewport',
+        help:
+            'Viewport size for browser context. JSON object with width and height.',
         valueHelp: '{"width": 1920, "height": 1080}',
       );
   }

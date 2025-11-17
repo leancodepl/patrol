@@ -72,7 +72,7 @@ class TestCommand extends PatrolCommand {
 
     usesFullIsolationOption();
 
-    usesPlaywright();
+    usesWeb();
   }
 
   final DeviceFinder _deviceFinder;
@@ -287,19 +287,19 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
 
     final webOpts = WebAppOptions(
       flutter: flutterOpts,
-      retries: intArg('playwright-retries'),
-      video: stringArg('playwright-video'),
-      timeout: intArg('playwright-timeout'),
-      workers: intArg('playwright-workers'),
-      reporter: stringArg('playwright-reporter'),
-      locale: stringArg('playwright-locale'),
-      timezone: stringArg('playwright-timezone'),
-      colorScheme: stringArg('playwright-color-scheme'),
-      geolocation: stringArg('playwright-geolocation'),
-      permissions: stringArg('playwright-permissions'),
-      userAgent: stringArg('playwright-user-agent'),
-      offline: stringArg('playwright-offline'),
-      viewport: stringArg('playwright-viewport'),
+      retries: intArg('web-retries'),
+      video: stringArg('web-video'),
+      timeout: intArg('web-timeout'),
+      workers: intArg('web-workers'),
+      reporter: stringArg('web-reporter'),
+      locale: stringArg('web-locale'),
+      timezone: stringArg('web-timezone'),
+      colorScheme: stringArg('web-color-scheme'),
+      geolocation: stringArg('web-geolocation'),
+      permissions: stringArg('web-permissions'),
+      userAgent: stringArg('web-user-agent'),
+      offline: stringArg('web-offline'),
+      viewport: stringArg('web-viewport'),
     );
 
     // No need to build web app for testing. It's done in the execute method.
