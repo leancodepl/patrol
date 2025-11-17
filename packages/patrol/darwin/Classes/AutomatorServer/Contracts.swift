@@ -407,7 +407,7 @@ public struct AndroidWaitUntilVisibleRequest: Codable {
   public var timeoutMillis: Int?
 }
 
-public struct IOSTwaitUntilVisibleRequest: Codable {
+public struct IOSWaitUntilVisibleRequest: Codable {
   public var selector: IOSSelector
   public var appId: String
   public var timeoutMillis: Int?

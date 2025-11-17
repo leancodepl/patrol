@@ -513,7 +513,7 @@
     func getNativeViews(
       on selector: Selector,
       inApp bundleId: String
-    ) throws -> [NativeView] {
+    ) throws -> [IOSNativeView] {
       let view = createLogMessage(element: "views", from: selector)
       return try runAction("getting native \(view)") {
         let app = try self.getApp(withBundleId: bundleId)
@@ -523,18 +523,18 @@
         let elements = query.allElementsBoundByIndex
 
         let views = elements.map { xcuielement in
-          return NativeView.fromXCUIElement(xcuielement, bundleId)
+          return IOSNativeView.fromXCUIElement(xcuielement, bundleId)
         }
 
         return views
       }
     }
 
-    func getUITreeRoots(installedApps: [String]) throws -> [NativeView] {
+    func getUITreeRoots(installedApps: [String]) throws -> [IOSNativeView] {
       try runAction("getting ui tree roots") {
         let foregroundApp = self.getForegroundApp(installedApps: installedApps)
         let snapshot = try foregroundApp.snapshot()
-        return [NativeView.fromXCUIElementSnapshot(snapshot, foregroundApp.identifier)]
+        return [IOSNativeView.fromXCUIElementSnapshot(snapshot, foregroundApp.identifier)]
       }
     }
 
@@ -1131,11 +1131,11 @@
     }
   }
 
-  extension NativeView {
-    static func fromXCUIElement(_ xcuielement: XCUIElement, _ bundleId: String) -> NativeView {
-      return NativeView(
+  extension IOSNativeView {
+    static func fromXCUIElement(_ xcuielement: XCUIElement, _ bundleId: String) -> IOSNativeView {
+      return IOSNativeView(
         children: xcuielement.children(matching: .any).allElementsBoundByIndex.map { child in
-          return NativeView.fromXCUIElement(child, bundleId)
+          return IOSNativeView.fromXCUIElement(child, bundleId)
         },
         elementType: getIOSElementType(elementType: xcuielement.elementType),
         identifier: xcuielement.identifier,
@@ -1152,16 +1152,17 @@
           maxY: xcuielement.frame.maxY
         ),
         placeholderValue: xcuielement.placeholderValue,
-        value: xcuielement.value as? String
+        value: xcuielement.value as? String,
+        bundleId: bundleId
       )
     }
 
     static func fromXCUIElementSnapshot(_ xcuielement: XCUIElementSnapshot, _ bundleId: String)
-      -> NativeView
+      -> IOSNativeView
     {
-      return NativeView(
+      return IOSNativeView(
         children: xcuielement.children.map { child in
-          return NativeView.fromXCUIElementSnapshot(child, bundleId)
+          return IOSNativeView.fromXCUIElementSnapshot(child, bundleId)
         },
         elementType: getIOSElementType(elementType: xcuielement.elementType),
         identifier: xcuielement.identifier,
@@ -1178,7 +1179,8 @@
           maxY: xcuielement.frame.maxY
         ),
         placeholderValue: xcuielement.placeholderValue,
-        value: xcuielement.value as? String
+        value: xcuielement.value as? String,
+        bundleId: bundleId
       )
     }
   }

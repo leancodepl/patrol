@@ -166,8 +166,6 @@
     // MARK: Services
     func enableDarkMode(_ bundleId: String) throws
     func disableDarkMode(_ bundleId: String) throws
-    func enableLocation() throws
-    func disableLocation() throws
     func enableAirplaneMode() throws
     func disableAirplaneMode() throws
     func enableCellular() throws
@@ -177,10 +175,10 @@
     func enableBluetooth() throws
     func disableBluetooth() throws
     func getNativeViews(
-      on selector: Selector,
+      on selector: IOSSelector,
       inApp bundleId: String
-    ) throws -> [NativeView]
-    func getUITreeRoots(installedApps: [String]) throws -> [NativeView]
+    ) throws -> [IOSNativeView]
+    func getUITreeRoots(installedApps: [String]) throws -> [IOSNativeView]
 
     // MARK: Notifications
     func openNotifications() throws

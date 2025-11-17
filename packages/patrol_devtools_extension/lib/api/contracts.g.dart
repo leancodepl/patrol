@@ -622,16 +622,16 @@ Map<String, dynamic> _$AndroidWaitUntilVisibleRequestToJson(
   'timeoutMillis': instance.timeoutMillis,
 };
 
-IOSTwaitUntilVisibleRequest _$IOSTwaitUntilVisibleRequestFromJson(
+IOSWaitUntilVisibleRequest _$IOSWaitUntilVisibleRequestFromJson(
   Map<String, dynamic> json,
-) => IOSTwaitUntilVisibleRequest(
+) => IOSWaitUntilVisibleRequest(
   selector: IOSSelector.fromJson(json['selector'] as Map<String, dynamic>),
   appId: json['appId'] as String,
   timeoutMillis: (json['timeoutMillis'] as num?)?.toInt(),
 );
 
-Map<String, dynamic> _$IOSTwaitUntilVisibleRequestToJson(
-  IOSTwaitUntilVisibleRequest instance,
+Map<String, dynamic> _$IOSWaitUntilVisibleRequestToJson(
+  IOSWaitUntilVisibleRequest instance,
 ) => <String, dynamic>{
   'selector': instance.selector.toJson(),
   'appId': instance.appId,

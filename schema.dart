@@ -236,7 +236,7 @@ class AndroidWaitUntilVisibleRequest {
   int? timeoutMillis;
 }
 
-class IOSTwaitUntilVisibleRequest {
+class IOSWaitUntilVisibleRequest {
   late IOSSelector selector;
   late String appId;
   int? timeoutMillis;
@@ -433,7 +433,7 @@ abstract class IosAutomator<IOSServer, DartClient> {
   void doubleTap(IOSTapRequest request);
   void enterText(IOSEnterTextRequest request);
   void tapAt(IOSTapAtRequest request);
-  void waitUntilVisible(IOSTwaitUntilVisibleRequest request);
+  void waitUntilVisible(IOSWaitUntilVisibleRequest request);
   void swipe(IOSSwipeRequest request);
 
   // notifications

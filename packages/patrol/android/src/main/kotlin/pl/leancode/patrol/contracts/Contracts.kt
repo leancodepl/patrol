@@ -622,7 +622,7 @@ class Contracts {
     }
   }
 
-  data class IOSTwaitUntilVisibleRequest (
+  data class IOSWaitUntilVisibleRequest (
     val selector: IOSSelector,
     val appId: String,
     val timeoutMillis: Long? = null

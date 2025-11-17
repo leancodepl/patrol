@@ -957,21 +957,21 @@ class AndroidWaitUntilVisibleRequest with EquatableMixin {
 }
 
 @JsonSerializable()
-class IOSTwaitUntilVisibleRequest with EquatableMixin {
-  IOSTwaitUntilVisibleRequest({
+class IOSWaitUntilVisibleRequest with EquatableMixin {
+  IOSWaitUntilVisibleRequest({
     required this.selector,
     required this.appId,
     this.timeoutMillis,
   });
 
-  factory IOSTwaitUntilVisibleRequest.fromJson(Map<String, dynamic> json) =>
-      _$IOSTwaitUntilVisibleRequestFromJson(json);
+  factory IOSWaitUntilVisibleRequest.fromJson(Map<String, dynamic> json) =>
+      _$IOSWaitUntilVisibleRequestFromJson(json);
 
   final IOSSelector selector;
   final String appId;
   final int? timeoutMillis;
 
-  Map<String, dynamic> toJson() => _$IOSTwaitUntilVisibleRequestToJson(this);
+  Map<String, dynamic> toJson() => _$IOSWaitUntilVisibleRequestToJson(this);
 
   @override
   List<Object?> get props => [selector, appId, timeoutMillis];

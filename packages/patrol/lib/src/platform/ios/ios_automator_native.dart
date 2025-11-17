@@ -418,7 +418,7 @@ class IOSAutomator extends NativeMobileAutomator
     await wrapRequest(
       'waitUntilVisible',
       () => _client.waitUntilVisible(
-        IOSTwaitUntilVisibleRequest(
+        IOSWaitUntilVisibleRequest(
           selector: selector,
           appId: appId ?? resolvedAppId,
           timeoutMillis: timeout?.inMilliseconds,

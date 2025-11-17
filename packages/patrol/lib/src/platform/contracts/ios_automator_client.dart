@@ -62,7 +62,7 @@ class IosAutomatorClient {
     return _sendRequest('tapAt', request.toJson());
   }
 
-  Future<void> waitUntilVisible(IOSTwaitUntilVisibleRequest request) {
+  Future<void> waitUntilVisible(IOSWaitUntilVisibleRequest request) {
     return _sendRequest('waitUntilVisible', request.toJson());
   }
 

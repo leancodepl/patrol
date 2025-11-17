@@ -163,23 +163,13 @@
       }
     }
 
-    func waitUntilVisible(request: WaitUntilVisibleRequest) throws {
+    func waitUntilVisible(request: IOSWaitUntilVisibleRequest) throws {
       return try runCatching {
-        if let selector = request.selector {
-          return try automator.waitUntilVisible(
-            on: selector,
-            inApp: request.appId,
-            withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) }
-          )
-        } else if let iosSelector = request.iosSelector {
-          return try automator.waitUntilVisible(
-            on: iosSelector,
-            inApp: request.appId,
-            withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) }
-          )
-        } else {
-          throw PatrolError.internal("waitUntilVisible(): neither selector nor iosSelector are set")
-        }
+        return try automator.waitUntilVisible(
+          on: selector,
+          inApp: request.appId,
+          withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) }
+        )
       }
     }
 
@@ -255,18 +245,6 @@
     func disableDarkMode(request: DarkModeRequest) throws {
       return try runCatching {
         try automator.disableDarkMode(request.appId)
-      }
-    }
-
-    func enableLocation() throws {
-      return try runCatching {
-        try automator.enableLocation()
-      }
-    }
-
-    func disableLocation() throws {
-      return try runCatching {
-        try automator.disableLocation()
       }
     }
 

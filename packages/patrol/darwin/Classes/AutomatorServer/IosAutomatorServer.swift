@@ -11,7 +11,7 @@ protocol IosAutomatorServer {
     func doubleTap(request: IOSTapRequest) throws
     func enterText(request: IOSEnterTextRequest) throws
     func tapAt(request: IOSTapAtRequest) throws
-    func waitUntilVisible(request: IOSTwaitUntilVisibleRequest) throws
+    func waitUntilVisible(request: IOSWaitUntilVisibleRequest) throws
     func swipe(request: IOSSwipeRequest) throws
     func closeHeadsUpNotification() throws
     func tapOnNotification(request: IOSTapOnNotificationRequest) throws
@@ -57,7 +57,7 @@ extension IosAutomatorServer {
     }
 
     private func waitUntilVisibleHandler(request: HTTPRequest) throws -> HTTPResponse {
-        let requestArg = try JSONDecoder().decode(IOSTwaitUntilVisibleRequest.self, from: request.body)
+        let requestArg = try JSONDecoder().decode(IOSWaitUntilVisibleRequest.self, from: request.body)
         try waitUntilVisible(request: requestArg)
         return HTTPResponse(.ok)
     }
