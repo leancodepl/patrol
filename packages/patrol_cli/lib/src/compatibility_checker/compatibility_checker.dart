@@ -54,22 +54,9 @@ Check the compatibility table at: https://patrol.leancode.co/documentation/compa
 ''';
   }
 
-  /// Checks if the version compatibility and throws an error if incompatible
-  Future<void> checkVersionsCompatibility({
+  Future<String?> getPatrolVersion({
     required FlutterCommand flutterCommand,
-    required TargetPlatform targetPlatform,
   }) async {
-    if (targetPlatform == TargetPlatform.android) {
-      await _checkJavaVersion(
-        flutterCommand,
-        DisposeScope(),
-        _processManager,
-        _projectRoot,
-        _logger,
-      );
-    }
-
-    String? packageVersion;
     final packageCompleter = Completer<String?>();
 
     await _disposeScope.run((scope) async {
@@ -108,10 +95,28 @@ Check the compatibility table at: https://patrol.leancode.co/documentation/compa
           .disposedBy(scope);
     });
 
-    packageVersion = await packageCompleter.future;
+    return packageCompleter.future;
+  }
+
+  /// Checks if the version compatibility and throws an error if incompatible
+  Future<void> checkVersionsCompatibility({
+    required FlutterCommand flutterCommand,
+    required TargetPlatform targetPlatform,
+  }) async {
+    if (targetPlatform == TargetPlatform.android) {
+      await _checkJavaVersion(
+        flutterCommand,
+        DisposeScope(),
+        _processManager,
+        _projectRoot,
+        _logger,
+      );
+    }
 
     final cliVersion = Version.parse(constants.version);
-    final patrolVersion = Version.parse(packageVersion!);
+    final patrolVersion = Version.parse(
+      (await getPatrolVersion(flutterCommand: flutterCommand))!,
+    );
 
     final isCompatible = areVersionsCompatible(cliVersion, patrolVersion);
 
@@ -132,32 +137,32 @@ Check the compatibility table at: https://patrol.leancode.co/documentation/compa
   }
 
   /// Checks version compatibility and fails the build process if incompatible
-  Future<void> checkVersionsCompatibilityForBuild({
-    required String? patrolVersion,
-  }) async {
-    if (patrolVersion == null) {
-      return;
-    }
+  // Future<void> checkVersionsCompatibilityForBuild({
+  //   required String? patrolVersion,
+  // }) async {
+  //   if (patrolVersion == null) {
+  //     return;
+  //   }
 
-    final cliVersion = Version.parse(constants.version);
-    final packageVersion = Version.parse(patrolVersion);
+  //   final cliVersion = Version.parse(constants.version);
+  //   final packageVersion = Version.parse(patrolVersion);
 
-    final isCompatible = areVersionsCompatible(cliVersion, packageVersion);
-    if (!isCompatible) {
-      // Find the maximum compatible CLI version for this patrol version
-      final maxCliVersion = getMaxCompatibleCliVersion(packageVersion);
+  //   final isCompatible = areVersionsCompatible(cliVersion, packageVersion);
+  //   if (!isCompatible) {
+  //     // Find the maximum compatible CLI version for this patrol version
+  //     final maxCliVersion = getMaxCompatibleCliVersion(packageVersion);
 
-      throwToolExit(
-        _incompatibilityMessage(
-          packageVersion: packageVersion,
-          cliVersion: cliVersion,
-          additionalInfo:
-              'This will prevent your tests from running correctly.',
-          maxCliVersion: maxCliVersion,
-        ),
-      );
-    }
-  }
+  //     throwToolExit(
+  //       _incompatibilityMessage(
+  //         packageVersion: packageVersion,
+  //         cliVersion: cliVersion,
+  //         additionalInfo:
+  //             'This will prevent your tests from running correctly.',
+  //         maxCliVersion: maxCliVersion,
+  //       ),
+  //     );
+  //   }
+  // }
 }
 
 Future<void> _checkJavaVersion(

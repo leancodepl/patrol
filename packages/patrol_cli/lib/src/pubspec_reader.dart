@@ -84,46 +84,46 @@ class PubspecReader {
 
   /// Gets the patrol package version from pubspec.lock
   /// This reads the actual resolved version that's being used in the project.
-  String? getPatrolVersion() {
-    final filePath = _fs.path.join(_projectRoot.path, 'pubspec.lock');
-    final file = _fs.file(filePath);
+  // String? getPatrolVersion() {
+  //   final filePath = _fs.path.join(_projectRoot.path, 'pubspec.lock');
+  //   final file = _fs.file(filePath);
 
-    if (!file.existsSync()) {
-      return null;
-    }
+  //   if (!file.existsSync()) {
+  //     return null;
+  //   }
 
-    final contents = file.readAsStringSync();
-    if (contents.isEmpty) {
-      return null;
-    }
+  //   final contents = file.readAsStringSync();
+  //   if (contents.isEmpty) {
+  //     return null;
+  //   }
 
-    try {
-      final yaml = loadYaml(contents) as Map?;
-      if (yaml == null) {
-        return null;
-      }
+  //   try {
+  //     final yaml = loadYaml(contents) as Map?;
+  //     if (yaml == null) {
+  //       return null;
+  //     }
 
-      final packages = yaml['packages'] as Map?;
-      if (packages == null) {
-        return null;
-      }
+  //     final packages = yaml['packages'] as Map?;
+  //     if (packages == null) {
+  //       return null;
+  //     }
 
-      final patrol = packages['patrol'] as Map?;
-      if (patrol == null) {
-        return null;
-      }
+  //     final patrol = packages['patrol'] as Map?;
+  //     if (patrol == null) {
+  //       return null;
+  //     }
 
-      final version = patrol['version'];
-      if (version == null) {
-        return null;
-      }
+  //     final version = patrol['version'];
+  //     if (version == null) {
+  //       return null;
+  //     }
 
-      return version.toString();
-    } catch (err) {
-      // Handle YAML parsing errors
-      return null;
-    }
-  }
+  //     return version.toString();
+  //   } catch (err) {
+  //     // Handle YAML parsing errors
+  //     return null;
+  //   }
+  // }
 
   PatrolPubspecConfig read() {
     final filePath = _fs.path.join(_projectRoot.path, 'pubspec.yaml');

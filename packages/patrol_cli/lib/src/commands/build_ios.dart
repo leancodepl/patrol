@@ -3,11 +3,13 @@ import 'dart:async';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' show join;
 import 'package:patrol_cli/src/analytics/analytics.dart';
+import 'package:patrol_cli/src/base/constants.dart' as constants;
 import 'package:patrol_cli/src/base/extensions/core.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/compatibility_checker/compatibility_checker.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/dart_defines_reader.dart';
+import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:patrol_cli/src/pubspec_reader.dart';
 import 'package:patrol_cli/src/runner/patrol_command.dart';
@@ -83,11 +85,23 @@ class BuildIOSCommand extends PatrolCommand {
     final config = _pubspecReader.read();
     final testFileSuffix = config.testFileSuffix;
 
+    final latestVersion = await pubUpdater.getLatestVersion('patrol_cli');
+    const currentVersion = constants.version;
+
+    await checkForUpdates(
+      currentVersion: currentVersion,
+      latestVersion: latestVersion,
+      compatibilityChecker: _compatibilityChecker,
+      logger: _logger,
+    );
+
     // Check compatibility between CLI and package versions
     if (boolArg('check-compatibility')) {
-      final patrolVersion = _pubspecReader.getPatrolVersion();
-      await _compatibilityChecker.checkVersionsCompatibilityForBuild(
-        patrolVersion: patrolVersion,
+      //final patrolVersion = _pubspecReader.getPatrolVersion();
+      await _compatibilityChecker.checkVersionsCompatibility(
+        flutterCommand: flutterCommand,
+        targetPlatform: TargetPlatform.iOS,
+        //patrolVersion: patrolVersion,
       );
     }
 
