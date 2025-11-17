@@ -238,13 +238,12 @@ abstract class PatrolCommand extends Command<int> {
       )
       ..addOption(
         'web-video',
-        help:
-            'Video recording mode. Use "retain-on-failure" to keep videos only for failed tests.',
+        help: 'Video recording mode.',
         valueHelp: 'off | on | retain-on-failure | on-first-retry',
       )
       ..addOption(
         'web-timeout',
-        help: 'Maximum time in milliseconds for test execution.',
+        help: 'Maximum time in milliseconds for single test execution.',
         valueHelp: 'number',
       )
       ..addOption(

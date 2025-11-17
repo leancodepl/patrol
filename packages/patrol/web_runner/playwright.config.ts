@@ -3,26 +3,26 @@ import { defineConfig, PlaywrightTestOptions, VideoMode } from "@playwright/test
 const outputDir = process.env.PATROL_TEST_RESULTS_DIR || "./test-results"
 const baseURL = process.env.BASE_URL
 
-const retries = process.env.PLAYWRIGHT_RETRIES ? parseInt(process.env.PLAYWRIGHT_RETRIES) : undefined
-const video = process.env.PLAYWRIGHT_VIDEO ? (process.env.PLAYWRIGHT_VIDEO as VideoMode) : undefined
-const timeout = process.env.PLAYWRIGHT_TIMEOUT ? parseInt(process.env.PLAYWRIGHT_TIMEOUT) : 300000
-const workers = process.env.PLAYWRIGHT_WORKERS ? parseInt(process.env.PLAYWRIGHT_WORKERS) : 1
-const reporter = process.env.PLAYWRIGHT_REPORTER ? JSON.parse(process.env.PLAYWRIGHT_REPORTER) : undefined
-const locale = process.env.PLAYWRIGHT_LOCALE ? process.env.PLAYWRIGHT_LOCALE : undefined
-const timezoneId = process.env.PLAYWRIGHT_TIMEZONE ? process.env.PLAYWRIGHT_TIMEZONE : undefined
-const colorScheme = process.env.PLAYWRIGHT_COLOR_SCHEME
-  ? (process.env.PLAYWRIGHT_COLOR_SCHEME as PlaywrightTestOptions["colorScheme"])
+const retries = process.env.PATROL_WEB_RETRIES ? parseInt(process.env.PATROL_WEB_RETRIES) : undefined
+const video = process.env.PATROL_WEB_VIDEO ? (process.env.PATROL_WEB_VIDEO as VideoMode) : undefined
+const timeout = process.env.PATROL_WEB_TIMEOUT ? parseInt(process.env.PATROL_WEB_TIMEOUT) : 300000
+const workers = process.env.PATROL_WEB_WORKERS ? parseInt(process.env.PATROL_WEB_WORKERS) : 1
+const reporter = process.env.PATROL_WEB_REPORTER ? JSON.parse(process.env.PATROL_WEB_REPORTER) : undefined
+const locale = process.env.PATROL_WEB_LOCALE ? process.env.PATROL_WEB_LOCALE : undefined
+const timezoneId = process.env.PATROL_WEB_TIMEZONE ? process.env.PATROL_WEB_TIMEZONE : undefined
+const colorScheme = process.env.PATROL_WEB_COLOR_SCHEME
+  ? (process.env.PATROL_WEB_COLOR_SCHEME as PlaywrightTestOptions["colorScheme"])
   : undefined
-const geolocation = process.env.PLAYWRIGHT_GEOLOCATION
-  ? (JSON.parse(process.env.PLAYWRIGHT_GEOLOCATION) as PlaywrightTestOptions["geolocation"])
+const geolocation = process.env.PATROL_WEB_GEOLOCATION
+  ? (JSON.parse(process.env.PATROL_WEB_GEOLOCATION) as PlaywrightTestOptions["geolocation"])
   : undefined
-const permissions = process.env.PLAYWRIGHT_PERMISSIONS
-  ? (JSON.parse(process.env.PLAYWRIGHT_PERMISSIONS) as PlaywrightTestOptions["permissions"])
+const permissions = process.env.PATROL_WEB_PERMISSIONS
+  ? (JSON.parse(process.env.PATROL_WEB_PERMISSIONS) as PlaywrightTestOptions["permissions"])
   : undefined
-const userAgent = process.env.PLAYWRIGHT_USER_AGENT ? process.env.PLAYWRIGHT_USER_AGENT : undefined
-const offline = process.env.PLAYWRIGHT_OFFLINE ? process.env.PLAYWRIGHT_OFFLINE === "true" : undefined
-const viewport = process.env.PLAYWRIGHT_VIEWPORT
-  ? (JSON.parse(process.env.PLAYWRIGHT_VIEWPORT) as PlaywrightTestOptions["viewport"])
+const userAgent = process.env.PATROL_WEB_USER_AGENT ? process.env.PATROL_WEB_USER_AGENT : undefined
+const offline = process.env.PATROL_WEB_OFFLINE ? process.env.PATROL_WEB_OFFLINE === "true" : undefined
+const viewport = process.env.PATROL_WEB_VIEWPORT
+  ? (JSON.parse(process.env.PATROL_WEB_VIEWPORT) as PlaywrightTestOptions["viewport"])
   : undefined
 
 export default defineConfig({
