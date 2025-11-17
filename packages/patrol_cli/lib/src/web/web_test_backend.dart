@@ -475,8 +475,8 @@ class WebTestBackend {
         }
       }).ignore();
 
-      // Timeout after 5 minutes
-      Timer(const Duration(minutes: 15), () {
+      // Timeout after 25 minutes
+      Timer(const Duration(minutes: 25), () {
         if (!completer.isCompleted) {
           // stdoutSubscription.cancel();
           stderrSubscription.cancel();
