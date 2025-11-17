@@ -455,16 +455,16 @@ Map<String, dynamic> _$Point2DToJson(Point2D instance) => <String, dynamic>{
 
 AndroidTapRequest _$AndroidTapRequestFromJson(Map<String, dynamic> json) =>
     AndroidTapRequest(
-      selector: json['selector'] == null
-          ? null
-          : AndroidSelector.fromJson(json['selector'] as Map<String, dynamic>),
+      selector: AndroidSelector.fromJson(
+        json['selector'] as Map<String, dynamic>,
+      ),
       timeoutMillis: (json['timeoutMillis'] as num?)?.toInt(),
       delayBetweenTapsMillis: (json['delayBetweenTapsMillis'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$AndroidTapRequestToJson(AndroidTapRequest instance) =>
     <String, dynamic>{
-      'selector': instance.selector?.toJson(),
+      'selector': instance.selector.toJson(),
       'timeoutMillis': instance.timeoutMillis,
       'delayBetweenTapsMillis': instance.delayBetweenTapsMillis,
     };

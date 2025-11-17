@@ -343,7 +343,7 @@ public struct Point2D: Codable {
 }
 
 public struct AndroidTapRequest: Codable {
-  public var selector: AndroidSelector?
+  public var selector: AndroidSelector
   public var timeoutMillis: Int?
   public var delayBetweenTapsMillis: Int?
 }

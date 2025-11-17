@@ -511,13 +511,10 @@ class Contracts {
   )
 
   data class AndroidTapRequest (
-    val selector: AndroidSelector? = null,
+    val selector: AndroidSelector,
     val timeoutMillis: Long? = null,
     val delayBetweenTapsMillis: Long? = null
   ){
-    fun hasSelector(): Boolean {
-      return selector != null
-    }
     fun hasTimeoutMillis(): Boolean {
       return timeoutMillis != null
     }

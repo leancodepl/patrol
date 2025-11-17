@@ -170,7 +170,7 @@ class Point2D {
 }
 
 class AndroidTapRequest {
-  late AndroidSelector? selector;
+  late AndroidSelector selector;
   int? timeoutMillis;
   int? delayBetweenTapsMillis;
 }

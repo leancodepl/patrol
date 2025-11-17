@@ -4,11 +4,8 @@ import android.os.Build
 import pl.leancode.patrol.contracts.Contracts
 import pl.leancode.patrol.contracts.Contracts.ConfigureRequest
 import pl.leancode.patrol.contracts.Contracts.DarkModeRequest
-import pl.leancode.patrol.contracts.Contracts.EnterTextRequest
-import pl.leancode.patrol.contracts.Contracts.GetNativeUITreeRequest
-import pl.leancode.patrol.contracts.Contracts.GetNativeUITreeRespone
-import pl.leancode.patrol.contracts.Contracts.GetNativeViewsRequest
-import pl.leancode.patrol.contracts.Contracts.GetNativeViewsResponse
+import pl.leancode.patrol.contracts.Contracts.AndroidGetNativeViewsResponse
+import pl.leancode.patrol.contracts.Contracts.AndroidGetNativeViewsRequest
 import pl.leancode.patrol.contracts.Contracts.GetNotificationsRequest
 import pl.leancode.patrol.contracts.Contracts.GetNotificationsResponse
 import pl.leancode.patrol.contracts.Contracts.HandlePermissionRequest
@@ -18,18 +15,25 @@ import pl.leancode.patrol.contracts.Contracts.OpenPlatformAppRequest
 import pl.leancode.patrol.contracts.Contracts.OpenQuickSettingsRequest
 import pl.leancode.patrol.contracts.Contracts.PermissionDialogVisibleRequest
 import pl.leancode.patrol.contracts.Contracts.PermissionDialogVisibleResponse
-import pl.leancode.patrol.contracts.Contracts.Selector
+import pl.leancode.patrol.contracts.Contracts.AndroidSelector
+import pl.leancode.patrol.contracts.Contracts.AndroidEnterTextRequest
 import pl.leancode.patrol.contracts.Contracts.SetLocationAccuracyRequest
 import pl.leancode.patrol.contracts.Contracts.SetLocationAccuracyRequestLocationAccuracy
 import pl.leancode.patrol.contracts.Contracts.SetMockLocationRequest
 import pl.leancode.patrol.contracts.Contracts.AndroidSwipeRequest
-import pl.leancode.patrol.contracts.Contracts.TapOnNotificationRequest
+import pl.leancode.patrol.contracts.Contracts.AndroidTapOnNotificationRequest
 import pl.leancode.patrol.contracts.Contracts.AndroidTapRequest
-import pl.leancode.patrol.contracts.Contracts.WaitUntilVisibleRequest
+import pl.leancode.patrol.contracts.Contracts.AndroidWaitUntilVisibleRequest
 import pl.leancode.patrol.contracts.MobileAutomatorServer
 import pl.leancode.patrol.contracts.AndroidAutomatorServer
+import pl.leancode.patrol.contracts.getMobileAutomatorRoutes
+import pl.leancode.patrol.contracts.getAndroidAutomatorRoutes
+import org.http4k.routing.RoutingHttpHandler
+import org.http4k.routing.routes
 
-class AutomatorServer(private val automation: Automator) : MobileAutomatorServer(), AndroidAutomatorServer() {
+class AutomatorServer(private val automation: Automator) : MobileAutomatorServer, AndroidAutomatorServer {
+    val router: RoutingHttpHandler
+        get() = routes(getMobileAutomatorRoutes(this), getAndroidAutomatorRoutes(this))
 
     override fun initialize() {
         automation.initialize()
@@ -137,42 +141,18 @@ class AutomatorServer(private val automation: Automator) : MobileAutomatorServer
         automation.disableLocation()
     }
 
-    // THIS NEEDS WORK V
-    override fun getNativeViews(request: GetNativeViewsRequest): GetNativeViewsResponse {
+    override fun getNativeViews(request: AndroidGetNativeViewsRequest): AndroidGetNativeViewsResponse {
         if (request.selector != null) {
             val views = automation.getNativeViews(request.selector.toBySelector())
-            return GetNativeViewsResponse(
-                nativeViews = views,
-                iosNativeViews = listOf(),
-                androidNativeViews = listOf()
-
-            )
-        } else if (request.androidSelector != null) {
-            val views = automation.getNativeViewsV2(request.androidSelector.toBySelector())
-            return GetNativeViewsResponse(
-                nativeViews = listOf(),
-                androidNativeViews = views,
-                iosNativeViews = listOf()
+            return AndroidGetNativeViewsResponse(
+                roots = views,
             )
         } else {
             // When both selectors are null, return the full native tree
             val trees = automation.getNativeUITrees()
-            val treesV2 = automation.getNativeUITreesV2()
-            return GetNativeViewsResponse(
-                nativeViews = trees,
-                androidNativeViews = treesV2,
-                iosNativeViews = listOf()
+            return AndroidGetNativeViewsResponse(
+                roots = trees,
             )
-        }
-    }
-
-    override fun getNativeUITree(request: GetNativeUITreeRequest): GetNativeUITreeRespone {
-        return if (request.useNativeViewHierarchy) {
-            val trees = automation.getNativeUITrees()
-            GetNativeUITreeRespone(roots = trees, androidRoots = listOf(), iOSroots = listOf())
-        } else {
-            val trees = automation.getNativeUITreesV2()
-            GetNativeUITreeRespone(roots = listOf(), androidRoots = trees, iOSroots = listOf())
         }
     }
 
@@ -192,7 +172,6 @@ class AutomatorServer(private val automation: Automator) : MobileAutomatorServer
             index = request.selector.instance?.toInt() ?: 0,
             timeout = request.timeoutMillis
         )
-       
     }
 
     override fun doubleTap(request: AndroidTapRequest) {
@@ -280,12 +259,12 @@ class AutomatorServer(private val automation: Automator) : MobileAutomatorServer
     override fun takeCameraPhoto(request: Contracts.AndroidTakeCameraPhotoRequest) {
         val isEmulator = isVirtualDevice().isVirtualDevice
 
-        val shutterButtonSelector = request.shutterButtonSelector ?: Selector(
-            resourceId = if (isEmulator) "com.android.camera2:id/shutter_button" else "com.google.android.GoogleCamera:id/shutter_button",
+        val shutterButtonSelector = request.shutterButtonSelector ?: AndroidSelector(
+            resourceName = if (isEmulator) "com.android.camera2:id/shutter_button" else "com.google.android.GoogleCamera:id/shutter_button",
             instance = 0
         )
-        val doneButtonSelector = request.doneButtonSelector ?: Selector(
-            resourceId = if (isEmulator) "com.android.camera2:id/done_button" else "com.google.android.GoogleCamera:id/done_button",
+        val doneButtonSelector = request.doneButtonSelector ?: AndroidSelector(
+            resourceName = if (isEmulator) "com.android.camera2:id/done_button" else "com.google.android.GoogleCamera:id/done_button",
             instance = 0
         )
         val shutterButtonSelector2 = shutterButtonSelector.copy(instance = null)
@@ -302,22 +281,22 @@ class AutomatorServer(private val automation: Automator) : MobileAutomatorServer
     override fun pickImageFromGallery(request: Contracts.AndroidPickImageFromGalleryRequest) {
         val apiLvl = getOsVersion().osVersion
      
-        val androidImageSelector = request.imageSelector ?: Selector(
-            resourceId = if (apiLvl >= 34) "com.google.android.providers.media.module:id/icon_thumbnail" else "com.google.android.documentsui:id/icon_thumb",
+        val androidImageSelector = request.imageSelector ?: AndroidSelector(
+            resourceName = if (apiLvl >= 34) "com.google.android.providers.media.module:id/icon_thumbnail" else "com.google.android.documentsui:id/icon_thumb",
             instance = request.imageIndex ?: 0
         )
 
         val androidSubMenuSelector = if (apiLvl < 34) {
-            Selector(
-                resourceId = "com.google.android.documentsui:id/sub_menu_list",
+            AndroidSelector(
+                resourceName = "com.google.android.documentsui:id/sub_menu_list",
                 instance = 0
             )
         } else {
             null
         }
         val androidActionMenuSelector = if (apiLvl < 34) {
-            Selector(
-                resourceId = "com.google.android.documentsui:id/action_menu_select",
+            AndroidSelector(
+                resourceName = "com.google.android.documentsui:id/action_menu_select",
                 instance = 0
             )
         } else {
@@ -344,21 +323,21 @@ class AutomatorServer(private val automation: Automator) : MobileAutomatorServer
     override fun pickMultipleImagesFromGallery(request: Contracts.AndroidPickMultipleImagesFromGalleryRequest) {
         val apiLvl = getOsVersion().osVersion
 
-        val androidImageSelector = request.imageSelector ?: Selector(
-            resourceId = if (apiLvl >= 34) "com.google.android.providers.media.module:id/icon_thumbnail" else "com.google.android.documentsui:id/icon_thumb",
+        val androidImageSelector = request.imageSelector ?: AndroidSelector(
+            resourceName = if (apiLvl >= 34) "com.google.android.providers.media.module:id/icon_thumbnail" else "com.google.android.documentsui:id/icon_thumb",
             instance = 0
         )
 
         val androidSubMenuSelector = if (apiLvl < 34) {
-            Selector(
-                resourceId = "com.google.android.documentsui:id/sub_menu_list",
+            AndroidSelector(
+                resourceName = "com.google.android.documentsui:id/sub_menu_list",
                 instance = 0
             )
         } else {
             null
         }
-        val androidActionMenuSelector = Selector(
-            resourceId = if (apiLvl >= 34) "com.google.android.providers.media.module:id/button_add" else "com.google.android.documentsui:id/action_menu_select",
+        val androidActionMenuSelector = AndroidSelector(
+            resourceName = if (apiLvl >= 34) "com.google.android.providers.media.module:id/button_add" else "com.google.android.documentsui:id/action_menu_select",
             instance = 0
         )
 

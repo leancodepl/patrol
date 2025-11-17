@@ -741,7 +741,7 @@ class Point2D with EquatableMixin {
 @JsonSerializable()
 class AndroidTapRequest with EquatableMixin {
   AndroidTapRequest({
-    this.selector,
+    required this.selector,
     this.timeoutMillis,
     this.delayBetweenTapsMillis,
   });
@@ -749,7 +749,7 @@ class AndroidTapRequest with EquatableMixin {
   factory AndroidTapRequest.fromJson(Map<String, dynamic> json) =>
       _$AndroidTapRequestFromJson(json);
 
-  final AndroidSelector? selector;
+  final AndroidSelector selector;
   final int? timeoutMillis;
   final int? delayBetweenTapsMillis;
 
