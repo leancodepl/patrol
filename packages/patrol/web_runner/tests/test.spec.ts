@@ -12,7 +12,15 @@ if (tests.length === 0) {
 export const patrolTest = base.extend({
   page: async ({ page }, use) => {
     page.on("console", message => {
-      logger.info(message.text())
+      const text = message.text()
+      if (text.startsWith("PATROL_LOG")) {
+        // eslint-disable-next-line no-console
+        console.log(text)
+        return
+      }
+
+      // eslint-disable-next-line no-console
+      console.log(`Playwright: ${text}`)
     })
 
     await page.goto("/", { waitUntil: "load" })
