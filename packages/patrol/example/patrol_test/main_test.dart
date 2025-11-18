@@ -25,10 +25,40 @@ void main() {
 
     await $('Ready!').tap();
 
+    // Why doesn't it work?
+    // await $(ElevatedButton).$(Center).$('Fluttercon').tap();
+
     await $(
       PTElevatedButton,
     ).which<PTElevatedButton>((widget) => widget.caption == 'Fluttercon').tap();
 
     await $(ListTile).containing($(Icons.flutter_dash)).$('click').tap();
+
+    /*     // For macOS we don't want to continue the test as we don't have support for native interactions
+    if (!Platform.isMacOS) {
+      await $(ElevatedButton)
+          .which<ElevatedButton>((widget) => widget.enabled)
+          .at(2)
+          .scrollTo()
+          .tap();
+
+      if (await $.native.isPermissionDialogVisible()) {
+        await $.native.grantPermissionWhenInUse();
+      }
+
+      await $.native.pressHome();
+      await $.native.openNotifications();
+
+      // wait for notification to show up
+      await Future<void>.delayed(const Duration(seconds: 5));
+
+      await $.native.openNotifications();
+
+      await $.native.tapOnNotificationByIndex(0);
+
+      await $.pumpAndSettle();
+
+      expect($('Congratulations!'), findsOneWidget);
+    } */
   });
 }
