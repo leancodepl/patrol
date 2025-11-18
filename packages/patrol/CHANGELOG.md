@@ -1,6 +1,7 @@
 ## 4.0.0
 
 - **Breaking**: Change default test directory from `integration_test` to `patrol_test`. (#2728)
+- **Breaking**: Upgraded `http4k` to 6.16.0. Lowest supported Kotlin version is 2.2.0.
 - Add support for configurable test directory via `test_directory` option in `pubspec.yaml`. (#2728)
 - Add `--build-name` and `--build-number` flags to `patrol test`, `patrol develop`, and `patrol build` commands. (#2590)
 - Replace clearing permissions functionality with uninstalling app on iOS. (#2730)
