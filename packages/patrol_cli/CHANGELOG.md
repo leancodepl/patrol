@@ -4,12 +4,12 @@
 - Fix report path generation for Android (#2724)
 - Fix issue that sometimes logs causes test crashes (#2742)
 - Add support for interactive device selection when running patrol. (#2722)
+- Add support for `--no-tree-shake-icons` flag in cli commands (#2704)
 
 ## 3.10.0
 
 - Add help command `h` to `patrol develop`. (#2701)
 - Add printing paths to the APKs after `patrol build` command. (#2685)
-- Add support for `--no-tree-shake-icons` flag in cli commands (#2704)
 
 ## 3.9.0
 

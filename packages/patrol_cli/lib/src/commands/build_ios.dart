@@ -175,6 +175,7 @@ class BuildIOSCommand extends PatrolCommand {
       dartDefineFromFilePaths: dartDefineFromFilePaths,
       buildName: buildName,
       buildNumber: buildNumber,
+      noTreeShakeIcons: boolArg('no-tree-shake-icons'),
     );
 
     final iosOpts = IOSAppOptions(
@@ -186,7 +187,6 @@ class BuildIOSCommand extends PatrolCommand {
       appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
       clearPermissions: boolArg('clear-permissions'),
-      noTreeShakeIcons: boolArg('no-tree-shake-icons'),
     );
 
     try {

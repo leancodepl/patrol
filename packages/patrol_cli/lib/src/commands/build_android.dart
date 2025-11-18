@@ -180,6 +180,7 @@ class BuildAndroidCommand extends PatrolCommand {
       dartDefineFromFilePaths: dartDefineFromFilePaths,
       buildName: buildName,
       buildNumber: buildNumber,
+      noTreeShakeIcons: noTreeShakeIcons,
     );
 
     final androidOpts = AndroidAppOptions(
@@ -188,7 +189,6 @@ class BuildAndroidCommand extends PatrolCommand {
       appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
       uninstall: uninstall,
-      noTreeShakeIcons: noTreeShakeIcons,
     );
 
     try {

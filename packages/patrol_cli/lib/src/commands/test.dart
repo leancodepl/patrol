@@ -232,6 +232,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       dartDefineFromFilePaths: dartDefineFromFilePaths,
       buildName: buildName,
       buildNumber: buildNumber,
+      noTreeShakeIcons: noTreeShakeIcons,
     );
 
     final androidOpts = AndroidAppOptions(
@@ -240,7 +241,6 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
       uninstall: uninstall,
-      noTreeShakeIcons: noTreeShakeIcons,
     );
 
     final iosOpts = IOSAppOptions(
@@ -253,7 +253,6 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
       clearPermissions: boolArg('clear-permissions'),
-      noTreeShakeIcons: noTreeShakeIcons,
     );
 
     final macosOpts = MacOSAppOptions(
