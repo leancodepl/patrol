@@ -32,7 +32,7 @@ async function setup(config: FullConfig) {
 function mapEntry(entry: DartTestEntry, parentName?: string, skip = false, tags = new Set<string>()) {
   const fullEntryName = parentName ? `${parentName} ${entry.name}` : entry.name
   const fullEntrySkip = skip || entry.skip
-  const fullEntryTags = new Set([...tags, ...entry.tags])
+  const fullEntryTags = new Set([...tags, ...entry.tags.map(tag => `@${tag}`)])
 
   const tests: PatrolTestEntry[] = []
 
