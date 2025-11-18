@@ -12,6 +12,7 @@ import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/coverage/device_to_host_port_transformer.dart';
 import 'package:patrol_cli/src/coverage/vm_connection_details.dart';
 import 'package:patrol_cli/src/devices.dart';
+import 'package:patrol_cli/src/runner/flutter_command.dart';
 import 'package:platform/platform.dart';
 import 'package:process/process.dart';
 import 'package:vm_service/vm_service.dart';
@@ -50,6 +51,7 @@ class CoverageTool {
     required TargetPlatform platform,
     required Logger logger,
     required Set<Glob> ignoreGlobs,
+    required FlutterCommand flutterCommand,
   }) async {
     final homeDirectory =
         _platform.environment['HOME'] ?? _platform.environment['USERPROFILE'];
@@ -58,7 +60,13 @@ class CoverageTool {
     await _disposeScope.run((scope) async {
       final logsProcess =
           await _processManager.start(
-              ['flutter', 'logs', '-d', device.id],
+              [
+                flutterCommand.executable,
+                ...flutterCommand.arguments,
+                'logs',
+                '-d',
+                device.id,
+              ],
               workingDirectory: homeDirectory,
               runInShell: true,
             )

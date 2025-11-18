@@ -1,7 +1,10 @@
-## Unreleased
+## 3.20.0
 
-- Add `--build-name` and `--build-number` flags to `patrol test`, `patrol develop`, and `patrol build` commands.
+- Add `--build-name` and `--build-number` flags to `patrol test`, `patrol develop`, and `patrol build` commands. (#2590)
 - Extend `$.native.enterText()` on Android to support `AutoCompleteTextView`. (#1162)
+- Add support for enabling/disabling wifi on iOS 18. (#2719)
+
+This version requires version 3.11.0 of `patrol_cli` package.
 
 ## 3.19.0
 
