@@ -1,4 +1,5 @@
 ## Unreleased
+
 - Add support for `--no-tree-shake-icons` flag in cli commands (#2704)
 
 ## 3.11.0
