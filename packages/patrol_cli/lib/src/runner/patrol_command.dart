@@ -229,6 +229,85 @@ abstract class PatrolCommand extends Command<int> {
     );
   }
 
+  void usesWeb() {
+    argParser
+      ..addOption(
+        'web-retries',
+        help: 'Number of times to retry failed tests.',
+        valueHelp: 'number',
+      )
+      ..addOption(
+        'web-video',
+        help: 'Video recording mode.',
+        valueHelp: 'off | on | retain-on-failure | on-first-retry',
+      )
+      ..addOption(
+        'web-timeout',
+        help: 'Maximum time in milliseconds for single test execution.',
+        valueHelp: 'number',
+      )
+      ..addOption(
+        'web-workers',
+        help: 'Maximum number of parallel worker processes for test execution.',
+        valueHelp: 'number',
+      )
+      ..addOption(
+        'web-reporter',
+        help:
+            'Test reporter configuration. JSON array with reporter name and options.',
+        valueHelp:
+            '[["html" | "json" | "list" | "dot" | "line" | "github" | "junit" | "null", { "outputFolder": "<PATH>" | undefined, "open": "never" | "always" | "on-failure" | undefined } | undefined]]',
+      )
+      ..addOption(
+        'web-locale',
+        help: 'Locale for browser emulation.',
+        valueHelp: 'en-US | pl-PL',
+      )
+      ..addOption(
+        'web-timezone',
+        help: 'Timezone for browser emulation.',
+        valueHelp: 'Europe/Paris',
+      )
+      ..addOption(
+        'web-color-scheme',
+        help: 'Preferred color scheme for browser emulation.',
+        valueHelp: 'light | dark',
+      )
+      ..addOption(
+        'web-geolocation',
+        help:
+            'Geolocation for browser context. JSON object with latitude and longitude.',
+        valueHelp: '{"latitude": 51.5074, "longitude": -0.1278}',
+      )
+      ..addOption(
+        'web-permissions',
+        help:
+            'Permissions to grant to the browser context. JSON array of permission names.',
+        valueHelp: '["geolocation", ...]',
+      )
+      ..addOption(
+        'web-user-agent',
+        help: 'Custom user agent string for browser context.',
+        valueHelp: 'user agent string',
+      )
+      ..addOption(
+        'web-offline',
+        help: 'Whether to emulate network being offline.',
+        valueHelp: 'true | false',
+      )
+      ..addOption(
+        'web-viewport',
+        help:
+            'Viewport size for browser context. JSON object with width and height.',
+        valueHelp: '{"width": 1920, "height": 1080}',
+      )
+      ..addOption(
+        'web-global-timeout',
+        help: 'Maximum total time in milliseconds for the entire test run.',
+        valueHelp: 'number',
+      );
+  }
+
   /// Gets the parsed command-line flag named [name] as a `bool`.
   ///
   /// If no flag named [name] was added to the `ArgParser`, an [ArgumentError]

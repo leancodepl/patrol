@@ -425,8 +425,36 @@ class WebTestBackend {
                 'BASE_URL': baseUrl,
                 'PATROL_TEST_RESULTS_DIR': testResultsDir,
                 'PATROL_TEST_REPORT_DIR': testReportDir,
-                'PLAYWRIGHT_JSON_OUTPUT_NAME': 'results.json',
-                'PLAYWRIGHT_JSON_OUTPUT_DIR': testReportDir,
+                'PATROL_WEB_JSON_OUTPUT_NAME': 'results.json',
+                'PATROL_WEB_JSON_OUTPUT_DIR': testReportDir,
+                if (options.retries != null)
+                  'PATROL_WEB_RETRIES': options.retries.toString(),
+                if (options.video != null)
+                  'PATROL_WEB_VIDEO': options.video.toString(),
+                if (options.timeout != null)
+                  'PATROL_WEB_TIMEOUT': options.timeout.toString(),
+                if (options.workers != null)
+                  'PATROL_WEB_WORKERS': options.workers.toString(),
+                if (options.reporter != null)
+                  'PATROL_WEB_REPORTER': options.reporter.toString(),
+                if (options.locale != null)
+                  'PATROL_WEB_LOCALE': options.locale.toString(),
+                if (options.timezone != null)
+                  'PATROL_WEB_TIMEZONE': options.timezone.toString(),
+                if (options.colorScheme != null)
+                  'PATROL_WEB_COLOR_SCHEME': options.colorScheme.toString(),
+                if (options.geolocation != null)
+                  'PATROL_WEB_GEOLOCATION': options.geolocation.toString(),
+                if (options.permissions != null)
+                  'PATROL_WEB_PERMISSIONS': options.permissions.toString(),
+                if (options.userAgent != null)
+                  'PATROL_WEB_USER_AGENT': options.userAgent.toString(),
+                if (options.offline != null)
+                  'PATROL_WEB_OFFLINE': options.offline.toString(),
+                if (options.viewport != null)
+                  'PATROL_WEB_VIEWPORT': options.viewport.toString(),
+                if (options.globalTimeout != null)
+                  'PATROL_WEB_GLOBAL_TIMEOUT': options.globalTimeout.toString(),
                 ...Platform.environment,
               },
               runInShell: true,
@@ -474,17 +502,6 @@ class WebTestBackend {
           }
         }
       }).ignore();
-
-      // Timeout after 5 minutes
-      Timer(const Duration(minutes: 15), () {
-        if (!completer.isCompleted) {
-          // stdoutSubscription.cancel();
-          stderrSubscription.cancel();
-          completer.completeError(
-            'Timeout waiting for playwright tests to finish',
-          );
-        }
-      });
     });
 
     return completer.future;
@@ -514,8 +531,8 @@ class WebTestBackend {
         'DEBUGGER_PORT': port,
         'PATROL_TEST_RESULTS_DIR': testResultsDir,
         'PATROL_TEST_REPORT_DIR': testReportDir,
-        'PLAYWRIGHT_JSON_OUTPUT_NAME': 'results.json',
-        'PLAYWRIGHT_JSON_OUTPUT_DIR': testReportDir,
+        'PATROL_WEB_JSON_OUTPUT_NAME': 'results.json',
+        'PATROL_WEB_JSON_OUTPUT_DIR': testReportDir,
         ...Platform.environment,
       },
       runInShell: true,
