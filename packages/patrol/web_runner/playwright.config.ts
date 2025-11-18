@@ -5,7 +5,10 @@ const baseURL = process.env.BASE_URL
 
 const retries = process.env.PATROL_WEB_RETRIES ? parseInt(process.env.PATROL_WEB_RETRIES) : undefined
 const video = process.env.PATROL_WEB_VIDEO ? (process.env.PATROL_WEB_VIDEO as VideoMode) : undefined
-const timeout = process.env.PATROL_WEB_TIMEOUT ? parseInt(process.env.PATROL_WEB_TIMEOUT) : 300000
+const timeout = process.env.PATROL_WEB_TIMEOUT ? parseInt(process.env.PATROL_WEB_TIMEOUT) : undefined
+const globalTimeout = process.env.PATROL_WEB_GLOBAL_TIMEOUT
+  ? parseInt(process.env.PATROL_WEB_GLOBAL_TIMEOUT)
+  : undefined
 const workers = process.env.PATROL_WEB_WORKERS ? parseInt(process.env.PATROL_WEB_WORKERS) : 1
 const reporter = process.env.PATROL_WEB_REPORTER ? JSON.parse(process.env.PATROL_WEB_REPORTER) : undefined
 const locale = process.env.PATROL_WEB_LOCALE ? process.env.PATROL_WEB_LOCALE : undefined
@@ -45,6 +48,7 @@ export default defineConfig({
   outputDir,
   reporter: reporter,
   retries,
-  timeout: timeout ?? 300000,
+  timeout: timeout ?? 10 * 60 * 1000,
+  globalTimeout: globalTimeout ?? 2 * 60 * 60 * 1000,
   workers,
 })

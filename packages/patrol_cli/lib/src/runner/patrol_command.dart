@@ -300,6 +300,11 @@ abstract class PatrolCommand extends Command<int> {
         help:
             'Viewport size for browser context. JSON object with width and height.',
         valueHelp: '{"width": 1920, "height": 1080}',
+      )
+      ..addOption(
+        'web-global-timeout',
+        help: 'Maximum total time in milliseconds for the entire test run.',
+        valueHelp: 'number',
       );
   }
 

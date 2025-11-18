@@ -300,6 +300,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       userAgent: stringArg('web-user-agent'),
       offline: stringArg('web-offline'),
       viewport: stringArg('web-viewport'),
+      globalTimeout: intArg('web-global-timeout'),
     );
 
     // No need to build web app for testing. It's done in the execute method.
