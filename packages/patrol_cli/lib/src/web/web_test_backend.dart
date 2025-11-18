@@ -132,10 +132,13 @@ class WebTestBackend {
     if (io.stdin.hasTerminal) {
       previousStdinModes = flutterTool.enableInteractiveMode();
     }
+    final completer = Completer<String>();
+
+    _startPatrolLogReader(flutterProcess, completer);
 
     try {
       // Wait for server to be ready and get the URL
-      final port = await _waitForWebDebugger(flutterProcess);
+      final port = await completer.future;
 
       _attachForHotRestart(flutterProcess, switch (previousStdinModes) {
         final stdinModes? => () => flutterTool.revertInteractiveMode(
@@ -204,6 +207,45 @@ class WebTestBackend {
     return process;
   }
 
+  void _startPatrolLogReader(
+    Process flutterProcess,
+    Completer<String> completer,
+  ) {
+    PatrolLogReader(
+        scope: _disposeScope,
+        listenStdOut: flutterProcess.listenStdOut,
+        additionalOnData: (line) => _parseDebuggerPort(line, completer),
+        log: _logger.info,
+        reportPath: '',
+        showFlutterLogs: true,
+        hideTestSteps: false,
+        clearTestSteps: true,
+      )
+      ..listen()
+      ..startTimer();
+
+    Timer(const Duration(minutes: 2), () {
+      if (!completer.isCompleted) {
+        completer.completeError('Timeout waiting for web server to start');
+      }
+    });
+  }
+
+  void _parseDebuggerPort(String line, Completer<String> completer) {
+    _logger.detail('Flutter: $line');
+
+    // [CHROME]: DevTools listening on ws://127.0.0.1:38861/devtools/browser/431953d3-ef67-428f-9321-9317256022d0
+    final urlMatch = RegExp(
+      r'DevTools listening on ws://[^/]+:(\d+)',
+    ).firstMatch(line);
+
+    if (urlMatch != null && !completer.isCompleted) {
+      final port = urlMatch.group(1)!;
+      _logger.info('Debugger started at port: $port');
+      completer.complete(port);
+    }
+  }
+
   Future<String> _waitForWebServer(Process flutterProcess) {
     _logger.detail('Waiting for web server to start...');
 
@@ -265,62 +307,6 @@ class WebTestBackend {
               );
             }
           }
-        });
-
-    // Check if process exits unexpectedly
-    flutterProcess.exitCode.then((exitCode) {
-      if (!completer.isCompleted && exitCode != 0) {
-        stdoutSubscription.cancel();
-        stderrSubscription.cancel();
-        completer.completeError(
-          'Flutter process exited unexpectedly with code $exitCode',
-        );
-      }
-    }).ignore();
-
-    // Timeout after 2 minutes
-    Timer(const Duration(minutes: 2), () {
-      if (!completer.isCompleted) {
-        stdoutSubscription.cancel();
-        stderrSubscription.cancel();
-        completer.completeError('Timeout waiting for web server to start');
-      }
-    });
-
-    return completer.future;
-  }
-
-  Future<String> _waitForWebDebugger(Process flutterProcess) {
-    _logger.detail('Waiting for debugger to start...');
-
-    final completer = Completer<String>();
-    late StreamSubscription<String> stdoutSubscription;
-    late StreamSubscription<String> stderrSubscription;
-
-    stdoutSubscription = flutterProcess.stdout
-        .transform(const SystemEncoding().decoder)
-        .transform(const LineSplitter())
-        .listen((line) {
-          _logger.detail('Flutter: $line');
-
-          // [CHROME]: DevTools listening on ws://127.0.0.1:38861/devtools/browser/431953d3-ef67-428f-9321-9317256022d0
-          final urlMatch = RegExp(
-            r'DevTools listening on ws://[^/]+:(\d+)',
-          ).firstMatch(line);
-
-          if (urlMatch != null && !completer.isCompleted) {
-            final port = urlMatch.group(1)!;
-            _logger.info('Debugger started at port: $port');
-            completer.complete(port);
-          }
-        });
-
-    // Listen to stderr for errors
-    stderrSubscription = flutterProcess.stderr
-        .transform(const SystemEncoding().decoder)
-        .transform(const LineSplitter())
-        .listen((line) {
-          _logger.detail('Flutter stderr: $line');
         });
 
     // Check if process exits unexpectedly
