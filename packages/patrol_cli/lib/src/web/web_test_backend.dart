@@ -137,13 +137,12 @@ class WebTestBackend {
       // Wait for server to be ready and get the URL
       final port = await _waitForWebDebugger(flutterProcess);
 
-      _attachForHotRestart(
-        flutterProcess,
-        previousStdinModes != null
-            ? () => flutterTool.revertInteractiveMode(previousStdinModes!)
-            : null,
-        stdin: stdin,
-      );
+      _attachForHotRestart(flutterProcess, switch (previousStdinModes) {
+        final stdinModes? => () => flutterTool.revertInteractiveMode(
+          stdinModes,
+        ),
+        _ => null,
+      }, stdin: stdin);
 
       // Run Playwright tests
       await _runPlaywrightDevelop(port, options);
@@ -383,9 +382,7 @@ class WebTestBackend {
 
         _logger.success(helpText.toString());
       } else if (char == 'q' || char == 'Q') {
-        if (revertInteractiveMode != null) {
-          revertInteractiveMode();
-        }
+        revertInteractiveMode?.call();
 
         _logger.success('Quitting process...');
         flutterProcess.kill();
