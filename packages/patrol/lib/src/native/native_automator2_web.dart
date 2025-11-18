@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/src/native/contracts/contracts.dart';
 import 'package:patrol/src/native/native_automator_web.dart';
-import 'package:patrol/src/native/patrol_app_service_web.dart';
+import 'package:patrol/src/native/patrol_app_services/patrol_app_service_web.dart';
 import 'package:patrol_log/patrol_log.dart';
 
 class NativeAutomator2 {

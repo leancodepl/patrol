@@ -14,4 +14,4 @@ export 'native_automator.dart'
 export 'native_automator2.dart'
     if (dart.library.html) 'native_automator2_web.dart';
 export 'native_automator2_web.dart' show UploadFileData;
-export 'patrol_app_service.dart';
+export 'patrol_app_services/patrol_app_service.dart';
