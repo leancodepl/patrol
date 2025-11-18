@@ -408,6 +408,7 @@ class WebAppOptions {
     this.userAgent,
     this.offline,
     this.viewport,
+    this.globalTimeout,
   });
 
   final FlutterAppOptions flutter;
@@ -424,4 +425,5 @@ class WebAppOptions {
   final String? userAgent;
   final String? offline;
   final String? viewport;
+  final int? globalTimeout;
 }

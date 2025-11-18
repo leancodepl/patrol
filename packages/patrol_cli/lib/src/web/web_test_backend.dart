@@ -453,6 +453,8 @@ class WebTestBackend {
                   'PATROL_WEB_OFFLINE': options.offline.toString(),
                 if (options.viewport != null)
                   'PATROL_WEB_VIEWPORT': options.viewport.toString(),
+                if (options.globalTimeout != null)
+                  'PATROL_WEB_GLOBAL_TIMEOUT': options.globalTimeout.toString(),
                 ...Platform.environment,
               },
               runInShell: true,
@@ -500,17 +502,6 @@ class WebTestBackend {
           }
         }
       }).ignore();
-
-      // Timeout after 5 minutes
-      Timer(const Duration(minutes: 15), () {
-        if (!completer.isCompleted) {
-          // stdoutSubscription.cancel();
-          stderrSubscription.cancel();
-          completer.completeError(
-            'Timeout waiting for playwright tests to finish',
-          );
-        }
-      });
     });
 
     return completer.future;

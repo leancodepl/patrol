@@ -22,12 +22,7 @@ class NativeAutomator2 {
   }
 
   Future<void> _startTest() async {
-    await callPlaywright(
-      'startTest',
-      {},
-      logger: _config.logger,
-      patrolLog: _patrolLog,
-    );
+    await callPlaywright('startTest', {}, logger: _config.logger);
   }
 
   Future<void> enableDarkMode() async {
