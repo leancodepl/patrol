@@ -22,7 +22,7 @@ android {
 
     defaultConfig {
         applicationId = "pl.leancode.patrol.e2e_app"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 35
         versionCode = flutter.versionCode
         versionName = flutter.versionName
@@ -34,6 +34,12 @@ android {
 
     testOptions {
         execution = "ANDROIDX_TEST_ORCHESTRATOR"
+    }
+
+    packaging {
+        resources {
+            excludes += listOf("META-INF/INDEX.LIST", "META-INF/*.properties")
+        }
     }
 
     buildTypes {
