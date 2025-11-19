@@ -3,6 +3,7 @@
 
 import 'dart:async';
 import 'dart:io';
+
 import 'package:patrol/src/common.dart';
 import 'package:patrol/src/platform/contracts/contracts.dart';
 import 'package:patrol/src/platform/contracts/patrol_app_service_server.dart';
@@ -19,6 +20,7 @@ class _TestExecutionResult {
   final String? details;
 }
 
+/// Initializes the app service.
 Future<void> initAppService() async {
   // No-op for IO.
 }

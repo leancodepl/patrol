@@ -1,13 +1,21 @@
 import 'package:patrol/src/platform/contracts/contracts.dart' as contracts;
 import 'package:patrol/src/platform/web/web_selector.dart' as web_selector;
 
+/// A selector that can be used across platforms (Android, iOS, and Web).
 abstract interface class CompoundSelector {
+  /// Returns the Android-specific selector.
   contracts.AndroidSelector get android;
+
+  /// Returns the iOS-specific selector.
   contracts.IOSSelector get ios;
+
+  /// Returns the Web-specific selector.
   web_selector.WebSelector get web;
 }
 
+/// A cross-platform selector for finding UI elements.
 class Selector implements CompoundSelector {
+  /// Creates a new [Selector].
   Selector({
     this.text,
     this.textStartsWith,
@@ -23,17 +31,40 @@ class Selector implements CompoundSelector {
     this.pkg,
   });
 
+  /// The exact text to match.
   String? text;
+
+  /// Match text that starts with this string.
   String? textStartsWith;
+
+  /// Match text that contains this string.
   String? textContains;
+
+  /// The class name of the element.
   String? className;
+
+  /// The content description of the element.
   String? contentDescription;
+
+  /// Match content description that starts with this string.
   String? contentDescriptionStartsWith;
+
+  /// Match content description that contains this string.
   String? contentDescriptionContains;
+
+  /// The resource ID of the element.
   String? resourceId;
+
+  /// The instance index when multiple elements match.
   int? instance;
+
+  /// Whether the element is enabled.
   bool? enabled;
+
+  /// Whether the element is focused.
   bool? focused;
+
+  /// The package name of the application.
   String? pkg;
 
   @override
@@ -65,8 +96,10 @@ class Selector implements CompoundSelector {
       web_selector.WebSelector(text: text, cssOrXpath: className);
 }
 
+/// An Android-specific selector for finding UI elements.
 class AndroidSelector extends contracts.AndroidSelector
     implements CompoundSelector {
+  /// Creates a new [AndroidSelector].
   AndroidSelector({
     super.className,
     super.isCheckable,
@@ -100,7 +133,9 @@ class AndroidSelector extends contracts.AndroidSelector
       throw UnsupportedError('Web selector is not supported');
 }
 
+/// An iOS-specific selector for finding UI elements.
 class IOSSelector extends contracts.IOSSelector implements CompoundSelector {
+  /// Creates a new [IOSSelector].
   IOSSelector({
     super.value,
     super.instance,
@@ -134,7 +169,9 @@ class IOSSelector extends contracts.IOSSelector implements CompoundSelector {
       throw UnsupportedError('Web selector is not supported');
 }
 
+/// A Web-specific selector for finding UI elements.
 class WebSelector extends web_selector.WebSelector implements CompoundSelector {
+  /// Creates a new [WebSelector].
   WebSelector({
     super.role,
     super.label,

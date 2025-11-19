@@ -9,7 +9,9 @@ import 'package:patrol/src/platform/web/web_automator_config.dart';
 import 'package:patrol/src/platform/web/web_selector.dart';
 import 'package:patrol_log/patrol_log.dart';
 
+/// Provides functionality to interact with web applications.
 class WebAutomator implements web_automator.WebAutomator {
+  /// Creates a new [WebAutomator].
   WebAutomator({required WebAutomatorConfig config}) : _config = config;
 
   final _patrolLog = PatrolLogWriter();
