@@ -1,4 +1,5 @@
 import 'dart:collection';
+import 'dart:ui';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/src/platform/web/patrol_app_service_web.dart';
@@ -261,10 +262,10 @@ class WebAutomator implements web_automator.WebAutomator {
   }
 
   @override
-  Future<void> resizeWindow({required int width, required int height}) async {
+  Future<void> resizeWindow({required Size size}) async {
     await callPlaywright(
       'resizeWindow',
-      {'width': width, 'height': height},
+      {'width': size.width, 'height': size.height},
       logger: _config.logger,
       patrolLog: _patrolLog,
     );

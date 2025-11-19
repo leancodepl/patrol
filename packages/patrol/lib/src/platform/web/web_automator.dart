@@ -1,4 +1,6 @@
 import 'dart:collection';
+import 'dart:ui';
+
 import 'package:patrol/src/platform/web/upload_file_data.dart';
 import 'package:patrol/src/platform/web/web_selector.dart';
 
@@ -59,7 +61,7 @@ abstract interface class WebAutomator {
 
   Future<void> setClipboard({required String text});
 
-  Future<void> resizeWindow({required int width, required int height});
+  Future<void> resizeWindow({required Size size});
 
   Future<List<String>> verifyFileDownloads();
 }

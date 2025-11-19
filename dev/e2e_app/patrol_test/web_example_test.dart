@@ -243,15 +243,15 @@ void main() {
   patrol('resize window', ($) async {
     await $.pumpWidgetAndSettle(const ExampleApp());
 
-    await $.platform.web.resizeWindow(width: 800, height: 600);
+    await $.platform.web.resizeWindow(size: Size(800, 600));
     await $.pumpAndSettle();
     await Future<void>.delayed(const Duration(seconds: 2));
 
-    await $.platform.web.resizeWindow(width: 1920, height: 1080);
+    await $.platform.web.resizeWindow(size: Size(1920, 1080));
     await $.pumpAndSettle();
     await Future<void>.delayed(const Duration(seconds: 2));
 
-    await $.platform.web.resizeWindow(width: 1280, height: 720);
+    await $.platform.web.resizeWindow(size: Size(1280, 720));
     await $.pumpAndSettle();
     await Future<void>.delayed(const Duration(seconds: 1));
   });
