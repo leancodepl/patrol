@@ -18,7 +18,6 @@ interface MobileAutomatorServer {
     fun pressHome()
     fun pressRecentApps()
     fun openApp(request: Contracts.OpenAppRequest)
-    fun openPlatformApp(request: Contracts.OpenPlatformAppRequest)
     fun openQuickSettings(request: Contracts.OpenQuickSettingsRequest)
     fun openUrl(request: Contracts.OpenUrlRequest)
     fun pressVolumeUp()
@@ -64,11 +63,6 @@ fun getMobileAutomatorRoutes(server: MobileAutomatorServer): RoutingHttpHandler 
     "openApp" bind POST to {
       val body = json.fromJson(it.bodyString(), Contracts.OpenAppRequest::class.java)
       server.openApp(body)
-      Response(OK)
-    },
-    "openPlatformApp" bind POST to {
-      val body = json.fromJson(it.bodyString(), Contracts.OpenPlatformAppRequest::class.java)
-      server.openPlatformApp(body)
       Response(OK)
     },
     "openQuickSettings" bind POST to {

@@ -39,6 +39,10 @@ class IosAutomatorClient {
   final Uri _apiUri;
   final Map<String, String> _headers;
 
+  Future<void> openPlatformApp(IOSOpenPlatformAppRequest request) {
+    return _sendRequest('openPlatformApp', request.toJson());
+  }
+
   Future<IOSGetNativeViewsResponse> getNativeViews(
     IOSGetNativeViewsRequest request,
   ) async {

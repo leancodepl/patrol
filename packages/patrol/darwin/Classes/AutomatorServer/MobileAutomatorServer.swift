@@ -10,7 +10,6 @@ protocol MobileAutomatorServer {
     func pressHome() throws
     func pressRecentApps() throws
     func openApp(request: OpenAppRequest) throws
-    func openPlatformApp(request: OpenPlatformAppRequest) throws
     func openQuickSettings(request: OpenQuickSettingsRequest) throws
     func openUrl(request: OpenUrlRequest) throws
     func pressVolumeUp() throws
@@ -57,12 +56,6 @@ extension MobileAutomatorServer {
     private func openAppHandler(request: HTTPRequest) throws -> HTTPResponse {
         let requestArg = try JSONDecoder().decode(OpenAppRequest.self, from: request.body)
         try openApp(request: requestArg)
-        return HTTPResponse(.ok)
-    }
-
-    private func openPlatformAppHandler(request: HTTPRequest) throws -> HTTPResponse {
-        let requestArg = try JSONDecoder().decode(OpenPlatformAppRequest.self, from: request.body)
-        try openPlatformApp(request: requestArg)
         return HTTPResponse(.ok)
     }
 
@@ -221,11 +214,6 @@ extension MobileAutomatorServer {
             request in handleRequest(
                 request: request,
                 handler: openAppHandler)
-        }
-        server.route(.POST, "openPlatformApp") {
-            request in handleRequest(
-                request: request,
-                handler: openPlatformAppHandler)
         }
         server.route(.POST, "openQuickSettings") {
             request in handleRequest(

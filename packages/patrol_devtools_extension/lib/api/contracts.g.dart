@@ -80,19 +80,22 @@ OpenAppRequest _$OpenAppRequestFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$OpenAppRequestToJson(OpenAppRequest instance) =>
     <String, dynamic>{'appId': instance.appId};
 
-OpenPlatformAppRequest _$OpenPlatformAppRequestFromJson(
+AndroidOpenPlatformAppRequest _$AndroidOpenPlatformAppRequestFromJson(
   Map<String, dynamic> json,
-) => OpenPlatformAppRequest(
-  androidAppId: json['androidAppId'] as String?,
-  iosAppId: json['iosAppId'] as String?,
-);
+) =>
+    AndroidOpenPlatformAppRequest(androidAppId: json['androidAppId'] as String);
 
-Map<String, dynamic> _$OpenPlatformAppRequestToJson(
-  OpenPlatformAppRequest instance,
-) => <String, dynamic>{
-  'androidAppId': instance.androidAppId,
-  'iosAppId': instance.iosAppId,
-};
+Map<String, dynamic> _$AndroidOpenPlatformAppRequestToJson(
+  AndroidOpenPlatformAppRequest instance,
+) => <String, dynamic>{'androidAppId': instance.androidAppId};
+
+IOSOpenPlatformAppRequest _$IOSOpenPlatformAppRequestFromJson(
+  Map<String, dynamic> json,
+) => IOSOpenPlatformAppRequest(iosAppId: json['iosAppId'] as String);
+
+Map<String, dynamic> _$IOSOpenPlatformAppRequestToJson(
+  IOSOpenPlatformAppRequest instance,
+) => <String, dynamic>{'iosAppId': instance.iosAppId};
 
 OpenQuickSettingsRequest _$OpenQuickSettingsRequestFromJson(
   Map<String, dynamic> json,

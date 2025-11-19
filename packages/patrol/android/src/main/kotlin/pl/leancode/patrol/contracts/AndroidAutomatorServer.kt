@@ -17,6 +17,7 @@ interface AndroidAutomatorServer {
     fun initialize()
     fun pressBack()
     fun doublePressRecentApps()
+    fun openPlatformApp(request: Contracts.AndroidOpenPlatformAppRequest)
     fun getNativeViews(request: Contracts.AndroidGetNativeViewsRequest): Contracts.AndroidGetNativeViewsResponse
     fun tap(request: Contracts.AndroidTapRequest)
     fun doubleTap(request: Contracts.AndroidTapRequest)
@@ -45,6 +46,11 @@ fun getAndroidAutomatorRoutes(server: AndroidAutomatorServer): RoutingHttpHandle
     },
     "doublePressRecentApps" bind POST to {
       server.doublePressRecentApps()
+      Response(OK)
+    },
+    "openPlatformApp" bind POST to {
+      val body = json.fromJson(it.bodyString(), Contracts.AndroidOpenPlatformAppRequest::class.java)
+      server.openPlatformApp(body)
       Response(OK)
     },
     "getNativeViews" bind POST to {

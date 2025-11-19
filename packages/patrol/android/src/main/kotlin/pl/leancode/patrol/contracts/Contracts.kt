@@ -223,17 +223,13 @@ class Contracts {
     val appId: String
   )
 
-  data class OpenPlatformAppRequest (
-    val androidAppId: String? = null,
-    val iosAppId: String? = null
-  ){
-    fun hasAndroidAppId(): Boolean {
-      return androidAppId != null
-    }
-    fun hasIosAppId(): Boolean {
-      return iosAppId != null
-    }
-  }
+  data class AndroidOpenPlatformAppRequest (
+    val androidAppId: String
+  )
+
+  data class IOSOpenPlatformAppRequest (
+    val iosAppId: String
+  )
 
   class OpenQuickSettingsRequest (
 

@@ -9,6 +9,27 @@ import 'package:patrol/src/platform/mobile/mobile_automator.dart';
 /// Communicates over http with the native automation server running on the
 /// target device.
 abstract interface class IOSAutomator implements MobileAutomator {
+  /// Opens a platform-specific app.
+  ///
+  /// On iOS, opens the app specified by [iosAppId] (bundle identifier).
+  ///
+  /// You can pass an [AppleApp] enum for common iOS apps, or a custom app ID string.
+  ///
+  /// Example with enums:
+  /// ```dart
+  /// await $.platform.openPlatformApp(
+  ///   iosAppId: AppleApp.safari,
+  /// );
+  /// ```
+  ///
+  /// Example with custom app IDs:
+  /// ```dart
+  /// await $.platform.openPlatformApp(
+  ///   iosAppId: 'com.mycompany.myapp',
+  /// );
+  /// ```
+  Future<void> openPlatformApp({required Object iosAppId});
+
   /// Closes the currently visible heads up notification.
   ///
   /// If no heads up notification is visible, the behavior is undefined.

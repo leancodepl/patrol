@@ -64,6 +64,40 @@ class IOSAutomator extends NativeMobileAutomator
     return _config.bundleId;
   }
 
+  /// Opens a platform-specific app.
+  ///
+  /// On iOS, opens the app specified by [iosAppId] (bundle identifier).
+  ///
+  /// You can pass an [AppleApp] enum for common iOS apps, or a custom app ID string.
+  ///
+  /// Example with enums:
+  /// ```dart
+  /// await $.platform.openPlatformApp(
+  ///   iosAppId: AppleApp.safari,
+  /// );
+  /// ```
+  ///
+  /// Example with custom app IDs:
+  /// ```dart
+  /// await $.platform.openPlatformApp(
+  ///   iosAppId: 'com.mycompany.myapp',
+  /// );
+  /// ```
+  @override
+  Future<void> openPlatformApp({required Object iosAppId}) async {
+    // Extract the actual app ID string from enum or string
+    final iosId = switch (iosAppId) {
+      final AppleApp app => app.value,
+      final String id => id,
+      _ => throw ArgumentError('iosAppId must be an AppleApp enum or a String'),
+    };
+
+    await wrapRequest(
+      'openPlatformApp',
+      () => _client.openPlatformApp(IOSOpenPlatformAppRequest(iosAppId: iosId)),
+    );
+  }
+
   @override
   Future<T> wrapRequest<T>(
     String name,

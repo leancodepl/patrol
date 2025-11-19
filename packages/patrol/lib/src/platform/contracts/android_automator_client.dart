@@ -51,6 +51,10 @@ class AndroidAutomatorClient {
     return _sendRequest('doublePressRecentApps');
   }
 
+  Future<void> openPlatformApp(AndroidOpenPlatformAppRequest request) {
+    return _sendRequest('openPlatformApp', request.toJson());
+  }
+
   Future<AndroidGetNativeViewsResponse> getNativeViews(
     AndroidGetNativeViewsRequest request,
   ) async {

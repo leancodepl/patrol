@@ -56,6 +56,44 @@ class AndroidAutomator extends NativeMobileAutomator
 
   late final AndroidAutomatorClient _client;
 
+  /// Opens a platform-specific app.
+  ///
+  /// On Android, opens the app specified by [androidAppId] (package name).
+  ///
+  /// You can pass a [GoogleApp] enum for common Android apps or a custom app ID string.
+  ///
+  /// Example with enums:
+  /// ```dart
+  /// await $.platform.openPlatformApp(
+  ///   androidAppId: GoogleApp.chrome,
+  /// );
+  /// ```
+  ///
+  /// Example with custom app IDs:
+  /// ```dart
+  /// await $.platform.openPlatformApp(
+  ///   androidAppId: 'com.mycompany.myapp',
+  /// );
+  /// ```
+  @override
+  Future<void> openPlatformApp({required Object androidAppId}) async {
+    // Extract the actual app ID string from enum or string
+    final androidId = switch (androidAppId) {
+      final GoogleApp app => app.value,
+      final String id => id,
+      _ => throw ArgumentError(
+        'androidAppId must be a GoogleApp enum or a String',
+      ),
+    };
+
+    await wrapRequest(
+      'openPlatformApp',
+      () => _client.openPlatformApp(
+        AndroidOpenPlatformAppRequest(androidAppId: androidId),
+      ),
+    );
+  }
+
   /// Initializes the native automator.
   ///
   /// It's used to initialize `android.app.UiAutomation` before Flutter tests

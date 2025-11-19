@@ -6,6 +6,7 @@
 //
 
 protocol IosAutomatorServer {
+    func openPlatformApp(request: IOSOpenPlatformAppRequest) throws
     func getNativeViews(request: IOSGetNativeViewsRequest) throws -> IOSGetNativeViewsResponse
     func tap(request: IOSTapRequest) throws
     func doubleTap(request: IOSTapRequest) throws
@@ -25,6 +26,12 @@ protocol IosAutomatorServer {
 }
 
 extension IosAutomatorServer {
+    private func openPlatformAppHandler(request: HTTPRequest) throws -> HTTPResponse {
+        let requestArg = try JSONDecoder().decode(IOSOpenPlatformAppRequest.self, from: request.body)
+        try openPlatformApp(request: requestArg)
+        return HTTPResponse(.ok)
+    }
+
     private func getNativeViewsHandler(request: HTTPRequest) throws -> HTTPResponse {
         let requestArg = try JSONDecoder().decode(IOSGetNativeViewsRequest.self, from: request.body)
         let response = try getNativeViews(request: requestArg)
@@ -124,6 +131,11 @@ extension IosAutomatorServer {
 
 extension IosAutomatorServer {
     func setupRoutesIosAutomator(server: Server) {
+        server.route(.POST, "openPlatformApp") {
+            request in handleRequest(
+                request: request,
+                handler: openPlatformAppHandler)
+        }
         server.route(.POST, "getNativeViews") {
             request in handleRequest(
                 request: request,

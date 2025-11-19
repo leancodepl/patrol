@@ -45,9 +45,12 @@ class OpenAppRequest {
   late String appId;
 }
 
-class OpenPlatformAppRequest {
-  String? androidAppId;
-  String? iosAppId;
+class AndroidOpenPlatformAppRequest {
+  late String androidAppId;
+}
+
+class IOSOpenPlatformAppRequest {
+  late String iosAppId;
 }
 
 class OpenQuickSettingsRequest {}
@@ -351,7 +354,6 @@ abstract class MobileAutomator<IOSServer, AndroidServer, DartClient> {
   void pressHome();
   void pressRecentApps();
   void openApp(OpenAppRequest request);
-  void openPlatformApp(OpenPlatformAppRequest request);
   void openQuickSettings(OpenQuickSettingsRequest request);
   void openUrl(OpenUrlRequest request);
 
@@ -400,6 +402,8 @@ abstract class AndroidAutomator<AndroidServer, DartClient> {
   void pressBack();
   void doublePressRecentApps();
 
+  void openPlatformApp(AndroidOpenPlatformAppRequest request);
+
   // general UI interaction
   AndroidGetNativeViewsResponse getNativeViews(
     AndroidGetNativeViewsRequest request,
@@ -427,6 +431,8 @@ abstract class AndroidAutomator<AndroidServer, DartClient> {
 }
 
 abstract class IosAutomator<IOSServer, DartClient> {
+  void openPlatformApp(IOSOpenPlatformAppRequest request);
+
   // general UI interaction
   IOSGetNativeViewsResponse getNativeViews(IOSGetNativeViewsRequest request);
   void tap(IOSTapRequest request);

@@ -318,19 +318,33 @@ class OpenAppRequest with EquatableMixin {
 }
 
 @JsonSerializable()
-class OpenPlatformAppRequest with EquatableMixin {
-  OpenPlatformAppRequest({this.androidAppId, this.iosAppId});
+class AndroidOpenPlatformAppRequest with EquatableMixin {
+  AndroidOpenPlatformAppRequest({required this.androidAppId});
 
-  factory OpenPlatformAppRequest.fromJson(Map<String, dynamic> json) =>
-      _$OpenPlatformAppRequestFromJson(json);
+  factory AndroidOpenPlatformAppRequest.fromJson(Map<String, dynamic> json) =>
+      _$AndroidOpenPlatformAppRequestFromJson(json);
 
-  final String? androidAppId;
-  final String? iosAppId;
+  final String androidAppId;
 
-  Map<String, dynamic> toJson() => _$OpenPlatformAppRequestToJson(this);
+  Map<String, dynamic> toJson() => _$AndroidOpenPlatformAppRequestToJson(this);
 
   @override
-  List<Object?> get props => [androidAppId, iosAppId];
+  List<Object?> get props => [androidAppId];
+}
+
+@JsonSerializable()
+class IOSOpenPlatformAppRequest with EquatableMixin {
+  IOSOpenPlatformAppRequest({required this.iosAppId});
+
+  factory IOSOpenPlatformAppRequest.fromJson(Map<String, dynamic> json) =>
+      _$IOSOpenPlatformAppRequestFromJson(json);
+
+  final String iosAppId;
+
+  Map<String, dynamic> toJson() => _$IOSOpenPlatformAppRequestToJson(this);
+
+  @override
+  List<Object?> get props => [iosAppId];
 }
 
 @JsonSerializable()

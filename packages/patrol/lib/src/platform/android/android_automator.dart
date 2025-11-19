@@ -9,6 +9,27 @@ import 'package:patrol/src/platform/mobile/mobile_automator.dart';
 /// Communicates over http with the native automation server running on the
 /// target device.
 abstract interface class AndroidAutomator implements MobileAutomator {
+  /// Opens a platform-specific app.
+  ///
+  /// On Android, opens the app specified by [androidAppId] (package name).
+  ///
+  /// You can pass a [GoogleApp] enum for common Android apps or a custom app ID string.
+  ///
+  /// Example with enums:
+  /// ```dart
+  /// await $.platform.openPlatformApp(
+  ///   androidAppId: GoogleApp.chrome,
+  /// );
+  /// ```
+  ///
+  /// Example with custom app IDs:
+  /// ```dart
+  /// await $.platform.openPlatformApp(
+  ///   androidAppId: 'com.mycompany.myapp',
+  /// );
+  /// ```
+  Future<void> openPlatformApp({required Object androidAppId});
+
   /// Initializes the native automator.
   ///
   /// It's used to initialize `android.app.UiAutomation` before Flutter tests

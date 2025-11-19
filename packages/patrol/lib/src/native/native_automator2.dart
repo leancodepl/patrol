@@ -1,13 +1,7 @@
-import 'dart:collection';
-import 'dart:io' as io;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:http/http.dart' as http;
-import 'package:meta/meta.dart';
-import 'package:patrol/src/native/native_automator.dart' as native_automator;
 import 'package:patrol/src/native/native_automator.dart';
 import 'package:patrol/src/platform/contracts/contracts.dart';
 import 'package:patrol/src/platform/platform_automator.dart';
-import 'package:patrol_log/patrol_log.dart';
 
 /// This class represents the result of [NativeAutomator.getNativeViews].
 class GetNativeViewsResult {
@@ -109,31 +103,11 @@ class NativeAutomator2 {
   ///   iosAppId: 'com.mycompany.myapp',
   /// );
   /// ```
-  Future<void> openPlatformApp({Object? androidAppId, Object? iosAppId}) async {
-    // Extract the actual app ID string from enum or string
-    final androidId = switch (androidAppId) {
-      final GoogleApp app => app.value,
-      final String id => id,
-      null => null,
-      _ => throw ArgumentError(
-        'androidAppId must be a GoogleApp enum or a String',
-      ),
-    };
-
-    final iosId = switch (iosAppId) {
-      final AppleApp app => app.value,
-      final String id => id,
-      null => null,
-      _ => throw ArgumentError('iosAppId must be an AppleApp enum or a String'),
-    };
-
-    await _wrapRequest(
-      'openPlatformApp',
-      () => _client.openPlatformApp(
-        OpenPlatformAppRequest(androidAppId: androidId, iosAppId: iosId),
-      ),
-    );
-  }
+  Future<void> openPlatformApp({Object? androidAppId, Object? iosAppId}) =>
+      _platform.mobile.openPlatformApp(
+        androidAppId: androidAppId,
+        iosAppId: iosAppId,
+      );
 
   /// Presses the recent apps button.
   ///

@@ -218,9 +218,12 @@ public struct OpenAppRequest: Codable {
   public var appId: String
 }
 
-public struct OpenPlatformAppRequest: Codable {
-  public var androidAppId: String?
-  public var iosAppId: String?
+public struct AndroidOpenPlatformAppRequest: Codable {
+  public var androidAppId: String
+}
+
+public struct IOSOpenPlatformAppRequest: Codable {
+  public var iosAppId: String
 }
 
 public struct OpenQuickSettingsRequest: Codable {

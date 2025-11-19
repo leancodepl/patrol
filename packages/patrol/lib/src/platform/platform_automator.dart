@@ -180,6 +180,27 @@ class MobileAutomator {
 
   final PlatformAutomator platform;
 
+  Future<void> openPlatformApp({Object? androidAppId, Object? iosAppId}) {
+    return platform.action.mobile(
+      android: () {
+        if (androidAppId == null) {
+          throw ArgumentError(
+            'androidAppId cannot be null when calling openPlatformApp action on Android',
+          );
+        }
+        return platform.android.openPlatformApp(androidAppId: androidAppId);
+      },
+      ios: () {
+        if (iosAppId == null) {
+          throw ArgumentError(
+            'iosAppId cannot be null when calling openPlatformApp action on IOS',
+          );
+        }
+        return platform.ios.openPlatformApp(iosAppId: iosAppId);
+      },
+    );
+  }
+
   String get resolvedAppId {
     return platform.action.mobile(
       android: () => platform.android.resolvedAppId,
