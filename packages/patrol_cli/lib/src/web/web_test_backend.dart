@@ -30,13 +30,6 @@ class WebTestBackend {
   Future<void> build(WebAppOptions options) async {
     _logger.detail('Building web app for testing...');
 
-    // Warn if flavor is specified for web (not supported)
-    if (options.flutter.flavor != null) {
-      _logger.warn(
-        'Flavor "${options.flutter.flavor}" is not supported for web platform and will be ignored.',
-      );
-    }
-
     final result = await _processManager.run([
       options.flutter.command.executable,
       'build',
@@ -176,13 +169,6 @@ class WebTestBackend {
     required bool develop,
   }) async {
     _logger.detail('Starting Flutter web server...');
-
-    // Warn if flavor is specified for web (not supported)
-    if (options.flutter.flavor != null) {
-      _logger.warn(
-        'Flavor "${options.flutter.flavor}" is not supported for web platform and will be ignored.',
-      );
-    }
 
     final process = await _processManager.start([
       options.flutter.command.executable,
