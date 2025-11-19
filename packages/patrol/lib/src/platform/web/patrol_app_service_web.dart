@@ -94,7 +94,7 @@ Future<void> initAppService() {
   return isInitialised.future;
 }
 
-Future<void> runAppService(PatrolAppServiceWeb service) async {
+Future<void> runAppService(PatrolAppService service) async {
   JSAny? getTests() {
     return ListDartTestsResponse(
       group: service.topLevelDartTestGroup,
@@ -113,8 +113,8 @@ Future<void> runAppService(PatrolAppServiceWeb service) async {
   __patrol__runTest = runTest.toJS;
 }
 
-class PatrolAppServiceWeb {
-  PatrolAppServiceWeb({required this.topLevelDartTestGroup});
+class PatrolAppService {
+  PatrolAppService({required this.topLevelDartTestGroup});
 
   // Unused on web; present for API parity
   final int port = 0;
