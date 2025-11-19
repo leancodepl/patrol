@@ -4,6 +4,7 @@ import 'dart:io' as io;
 import 'dart:io';
 
 import 'package:dispose_scope/dispose_scope.dart';
+import 'package:package_config/package_config.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
@@ -403,7 +404,7 @@ class WebTestBackend {
       // Ensure web_runner directory exists and is properly set up
       await _ensureWebRunnerExists();
 
-      final webRunnerPath = _getWebRunnerPath();
+      final webRunnerPath = await _getWebRunnerPath();
 
       // Install Node.js dependencies if needed
       await _ensureNodeDependencies(webRunnerPath);
@@ -511,7 +512,7 @@ class WebTestBackend {
     // Ensure web_runner directory exists and is properly set up
     await _ensureWebRunnerExists();
 
-    final webRunnerPath = _getWebRunnerPath();
+    final webRunnerPath = await _getWebRunnerPath();
 
     await _ensureNodeDependencies(webRunnerPath);
 
@@ -573,61 +574,37 @@ class WebTestBackend {
     return completer.future;
   }
 
-  String _getWebRunnerPath() {
-    // Use web_runner from patrol_cli package instead of project root
-    // Get the path to patrol_cli package
-    final packageConfigPath =
-        '${Directory.current.path}/.dart_tool/package_config.json';
-    final packageConfigFile = File(packageConfigPath);
-
-    if (!packageConfigFile.existsSync()) {
-      throw Exception(
-        'Package configuration file not found at: $packageConfigPath\n'
-        'Please run "dart pub get" to generate the package configuration.',
-      );
-    }
-
+  Future<String> _getWebRunnerPath() async {
     try {
-      final packageConfigContent = packageConfigFile.readAsStringSync();
-      final packageConfig =
-          jsonDecode(packageConfigContent) as Map<String, dynamic>;
-      final packages = packageConfig['packages'] as List<dynamic>;
+      final packageConfig = await findPackageConfig(Directory.current);
 
-      // Find patrol package
-      for (final package in packages) {
-        final packageMap = package as Map<String, dynamic>;
-        if (packageMap['name'] == 'patrol') {
-          final packageUri = packageMap['rootUri'] as String;
-          // Convert relative URI to absolute path
-          String packagePath;
-          if (packageUri.startsWith('../')) {
-            // Relative path from .dart_tool/package_config.json
-            packagePath = Directory(
-              '${Directory.current.path}/.dart_tool/$packageUri',
-            ).resolveSymbolicLinksSync();
-          } else if (packageUri.startsWith('file://')) {
-            packagePath = Uri.parse(packageUri).toFilePath();
-          } else {
-            packagePath = packageUri;
-          }
-          return '$packagePath/web_runner';
-        }
+      if (packageConfig == null) {
+        throw Exception(
+          'Package configuration not found.\n'
+          'Please run "dart pub get" to generate the package configuration.',
+        );
       }
+
+      final patrolPackage = packageConfig['patrol'];
+      if (patrolPackage == null) {
+        throw Exception(
+          'patrol package not found in package configuration.\n'
+          'Please ensure patrol is added as a dependency and run "dart pub get".',
+        );
+      }
+
+      final packagePath = patrolPackage.root.toFilePath();
+      return '$packagePath/web_runner';
     } catch (e) {
       throw Exception(
-        'Failed to parse package_config.json: $e\n'
+        'Failed to locate patrol package: $e\n'
         'Please ensure your project dependencies are properly resolved by running "dart pub get".',
       );
     }
-
-    throw Exception(
-      'patrol package not found in package configuration.\n'
-      'Please ensure patrol is added as a dependency and run "dart pub get".',
-    );
   }
 
   Future<void> _ensureWebRunnerExists() async {
-    final webRunnerPath = _getWebRunnerPath();
+    final webRunnerPath = await _getWebRunnerPath();
     final webRunnerDir = Directory(webRunnerPath);
 
     if (!webRunnerDir.existsSync()) {
