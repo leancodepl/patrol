@@ -175,6 +175,7 @@ class BuildIOSCommand extends PatrolCommand {
       dartDefineFromFilePaths: dartDefineFromFilePaths,
       buildName: buildName,
       buildNumber: buildNumber,
+      noTreeShakeIcons: boolArg('no-tree-shake-icons'),
     );
 
     final iosOpts = IOSAppOptions(
