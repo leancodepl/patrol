@@ -1,16 +1,27 @@
+import 'dart:convert';
+
 import 'package:json_annotation/json_annotation.dart';
 
 part 'upload_file_data.g.dart';
 
+/// Represents a file to be uploaded via the web automator.
 @JsonSerializable()
 class UploadFileData {
+  /// Creates a file upload data object.
   UploadFileData({
     required this.name,
     required this.content,
     this.mimeType = 'application/octet-stream',
   });
 
-  Map<String, dynamic> toJson() => _$UploadFileDataToJson(this);
+  /// Converts this object to JSON, encoding the content as base64.
+  Map<String, dynamic> toJson() {
+    return {
+      'name': name,
+      'base64Data': base64Encode(content),
+      'mimeType': mimeType,
+    };
+  }
 
   /// The name of the file (e.g., 'example.txt')
   final String name;

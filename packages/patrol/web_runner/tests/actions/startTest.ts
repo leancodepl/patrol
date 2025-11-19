@@ -2,13 +2,13 @@ import { Page } from "playwright"
 import { logger } from "../logger"
 
 export const downloadedFiles: string[] = []
-let isInitialized = false
+const initializedPages = new WeakSet<Page>()
 
 export async function startTest(page: Page) {
   downloadedFiles.splice(0, downloadedFiles.length)
 
-  if (!isInitialized) {
-    isInitialized = true
+  if (!initializedPages.has(page)) {
+    initializedPages.add(page)
     page.on("download", async download => {
       const filename = download.suggestedFilename()
       downloadedFiles.push(filename)
