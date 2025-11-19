@@ -42,12 +42,9 @@
       }
     }
 
-    func openPlatformApp(request: OpenPlatformAppRequest) throws {
+    func openPlatformApp(request: IOSOpenPlatformAppRequest) throws {
       return try runCatching {
-        guard let appId = request.iosAppId else {
-          throw PatrolError.internal("iosAppId must not be null on iOS")
-        }
-        try automator.openApp(appId)
+        try automator.openApp(request.iosAppId)
       }
     }
 
