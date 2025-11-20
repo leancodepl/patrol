@@ -40,49 +40,55 @@ Patrol supports the following native actions through Playwright:
 
 ```dart
 // Dark mode
-await $.native2.enableDarkMode();
-await $.native2.disableDarkMode();
+await $.platform.web.enableDarkMode();
+await $.platform.web.disableDarkMode();
 
 // Keyboard input
-await $.native2.pressKey(key: 'a');
-await $.native2.pressKeyCombo(keys: ['Control', 'a']);
+await $.platform.web.pressKey(key: 'a');
+await $.platform.web.pressKeyCombo(keys: ['Control', 'a']);
 
 // Permissions
-await $.native2.grantPermissions(permissions: ['clipboard-read', 'clipboard-write']);
-await $.native2.clearPermissions();
+await $.platform.web.grantPermissions(permissions: ['clipboard-read', 'clipboard-write']);
+await $.platform.web.clearPermissions();
 
 // Clipboard
-await $.native2.setClipboard(text: 'test');
-final clipboard = await $.native2.getClipboard();
+await $.platform.web.setClipboard(text: 'test');
+final clipboard = await $.platform.web.getClipboard();
 
 // Browser navigation
-await $.native2.goBack();
-await $.native2.goForward();
+await $.platform.web.goBack();
+await $.platform.web.goForward();
 
 // Cookies
-await $.native2.addCookie(name: 'test_cookie', value: 'cookie_value', url: 'http://localhost:8080');
-final cookies = await $.native2.getCookies();
-await $.native2.clearCookies();
+await $.platform.web.addCookie(name: 'test_cookie', value: 'cookie_value', url: 'http://localhost:8080');
+final cookies = await $.platform.web.getCookies();
+await $.platform.web.clearCookies();
 
 // File operations
-await $.native2.uploadFile(files: [file]);
-final downloads = await $.native2.verifyFileDownloads();
+final fileContent = utf8.encode('Hello from Patrol file upload test!');
+final file = UploadFileData(
+  name: 'example_file.txt',
+  content: fileContent,
+  mimeType: 'text/plain',
+);
+await $.platform.web.uploadFile(files: [file]);
+final downloads = await $.platform.web.verifyFileDownloads();
 
 // Dialogs - because of blocking nature of dialogs, dialogs need to be subscribed to before triggering
-final dialogFuture = $.native2.acceptNextDialog();
+final dialogFuture = $.platform.web.acceptNextDialog();
 // ... trigger the dialog ...
 final dialogText = await dialogFuture;
 
-final dialogFuture = $.native2.dismissNextDialog();
+final dialogFuture = $.platform.web.dismissNextDialog();
 // ... trigger the dialog ...
 final dialogText = await dialogFuture;
 
 
 // Web element interactions (for iframes and external HTML)
-await $.native2.scrollToWeb(selector: inputSelector, iframeSelector: iframeSelector);
-await $.native2.enterTextWeb(selector: inputSelector, text: 'Hello from Patrol!', iframeSelector: iframeSelector);
-await $.native2.tapWeb(selector: buttonSelector, iframeSelector: iframeSelector);
+await $.platform.web.scrollToWeb(selector: inputSelector, iframeSelector: iframeSelector);
+await $.platform.web.enterTextWeb(selector: inputSelector, text: 'Hello from Patrol!', iframeSelector: iframeSelector);
+await $.platform.web.tapWeb(selector: buttonSelector, iframeSelector: iframeSelector);
 
 // Window operations
-await $.native2.resizeWindow(width: 800, height: 600);
+await $.platform.web.resizeWindow(size: Size(800, 600));
 ```
