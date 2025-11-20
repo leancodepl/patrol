@@ -1,0 +1,88 @@
+---
+title: Flutter Web Testing
+---
+
+Patrol provides support for running integration tests on Flutter web applications using
+[Playwright](https://playwright.dev/), a powerful browser automation framework. This allows you to handle native web
+browser interactions in your tests.
+
+## How it Works
+
+When you run Patrol tests on web, the following happens:
+
+1. **Flutter Web Server**: Patrol starts a Flutter web server that serves your application
+2. **Playwright Test Runner**: Patrol automatically launches Chromium using Playwright
+3. **Native Actions Bridge**: For native automation calls (like `$.native2.grantPermissions()`), your Dart test code sends requests to Playwright with actions to be executed
+4. **Results Collection**: Test results are collected and reported back in Patrol's standard format
+
+This architecture allows you to write the same Patrol tests that work across mobile and web platforms, with Playwright handling browser-specific interactions.
+
+## Prerequisites
+
+Before running Patrol tests on web, ensure you have installed [Node.js](https://nodejs.org/).
+
+## Running Tests on Web
+
+To run your Patrol tests on web, use the `--device` flag with `chrome`, e.g.:
+
+```bash
+patrol test --device chrome --target patrol_test/login_test.dart
+```
+
+<Info>
+  When you first run tests on web, Patrol will automatically install Node.js dependencies 
+  including Playwright and its browser binaries. This may take a moment.
+</Info>
+
+### Supported Native Actions on Web
+
+Patrol supports the following native actions through Playwright:
+
+```dart
+// Dark mode
+await $.native2.enableDarkMode();
+await $.native2.disableDarkMode();
+
+// Keyboard input
+await $.native2.pressKey(key: 'a');
+await $.native2.pressKeyCombo(keys: ['Control', 'a']);
+
+// Permissions
+await $.native2.grantPermissions(permissions: ['clipboard-read', 'clipboard-write']);
+await $.native2.clearPermissions();
+
+// Clipboard
+await $.native2.setClipboard(text: 'test');
+final clipboard = await $.native2.getClipboard();
+
+// Browser navigation
+await $.native2.goBack();
+await $.native2.goForward();
+
+// Cookies
+await $.native2.addCookie(name: 'test_cookie', value: 'cookie_value', url: 'http://localhost:8080');
+final cookies = await $.native2.getCookies();
+await $.native2.clearCookies();
+
+// File operations
+await $.native2.uploadFile(files: [file]);
+final downloads = await $.native2.verifyFileDownloads();
+
+// Dialogs - because of blocking nature of dialogs, dialogs need to be subscribed to before triggering
+final dialogFuture = $.native2.acceptNextDialog();
+// ... trigger the dialog ...
+final dialogText = await dialogFuture;
+
+final dialogFuture = $.native2.dismissNextDialog();
+// ... trigger the dialog ...
+final dialogText = await dialogFuture;
+
+
+// Web element interactions (for iframes and external HTML)
+await $.native2.scrollToWeb(selector: inputSelector, iframeSelector: iframeSelector);
+await $.native2.enterTextWeb(selector: inputSelector, text: 'Hello from Patrol!', iframeSelector: iframeSelector);
+await $.native2.tapWeb(selector: buttonSelector, iframeSelector: iframeSelector);
+
+// Window operations
+await $.native2.resizeWindow(width: 800, height: 600);
+```
