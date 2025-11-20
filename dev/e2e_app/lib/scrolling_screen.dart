@@ -9,7 +9,7 @@ class ScrollingScreen extends StatefulWidget {
 }
 
 class _ScrollingScreenState extends State<ScrollingScreen> {
-  bool _showRefreshText = false;
+  var _showRefreshText = false;
 
   Future<void> _onRefresh() async {
     // Simulate some async work

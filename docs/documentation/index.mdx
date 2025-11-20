@@ -175,6 +175,12 @@ Check out our video version of this tutorial on YouTube!
         testOptions {
           execution = "ANDROIDX_TEST_ORCHESTRATOR"
         }
+
+        packaging {
+          resources {
+              excludes += listOf("META-INF/INDEX.LIST", "META-INF/*.properties")
+          }
+        }
       ```
     </Step>
 
@@ -275,6 +281,12 @@ Check out our video version of this tutorial on YouTube!
       ```groovy title="android/app/build.gradle"
         testOptions {
           execution "ANDROIDX_TEST_ORCHESTRATOR"
+        }
+
+        packaging {
+          resources {
+              excludes += ["META-INF/INDEX.LIST", "META-INF/*.properties"]
+          }
         }
       ```
     </Step>

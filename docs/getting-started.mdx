@@ -85,23 +85,6 @@ Check out our video version of this tutorial on YouTube!
         bundle_id: com.example.macos.MyApp
     ```
 
-    <Info>
-        **Test Directory Configuration**: By default, Patrol looks for tests in the `patrol_test/` directory. 
-        You can customize this by adding `test_directory: your_custom_directory` to your `patrol` section in `pubspec.yaml`.
-        
-        ```yaml title="pubspec.yaml (optional customization)"
-        patrol:
-          app_name: My App
-          test_directory: integration_test  # Use custom directory
-          android:
-            package_name: com.example.myapp
-          ios:
-            bundle_id: com.example.MyApp
-          macos:
-            bundle_id: com.example.macos.MyApp
-        ```
-    </Info>
-
     <Warning>
         In this tutorial, we are using example app, which has package name
         `com.example.myapp` on Android, bundle id `com.example.MyApp` on iOS,
@@ -191,6 +174,12 @@ Check out our video version of this tutorial on YouTube!
       ```kotlin title="android/app/build.gradle.kts"
         testOptions {
           execution = "ANDROIDX_TEST_ORCHESTRATOR"
+        }
+
+        packaging {
+          resources {
+              excludes += listOf("META-INF/INDEX.LIST", "META-INF/*.properties")
+          }
         }
       ```
     </Step>
@@ -292,6 +281,12 @@ Check out our video version of this tutorial on YouTube!
       ```groovy title="android/app/build.gradle"
         testOptions {
           execution "ANDROIDX_TEST_ORCHESTRATOR"
+        }
+
+        packaging {
+          resources {
+              excludes += ["META-INF/INDEX.LIST", "META-INF/*.properties"]
+          }
         }
       ```
     </Step>
@@ -448,8 +443,11 @@ Check out our video version of this tutorial on YouTube!
           Go to **RunnerUITests** -> **Build Settings**, search for **User Script Sandboxing**
             and make sure it's set to **No**.
         </Step>
-      </Steps>
 
+        You're ready to run tests on iOS simulator but using real devices is a bit
+        more complicated.
+        Check out [Setup for physical iOS Devices] to learn how to set up Patrol for physical iOS devices.
+      </Steps>
     </Accordion>
 
     <Accordion title="macOS setup">
@@ -661,44 +659,44 @@ Check out our video version of this tutorial on YouTube!
     </Step>
 </Steps>
 
-      <Error>
-        To prevent issues during Patrol tests, please follow these guidelines:
+<Info>
+  If you are looking for a working example of a Flutter app with Patrol tests,
+  check out the [example app]
+    in the patrol repository.
+</Info>
 
-        1. Do not call `IntegrationTestWidgetsFlutterBinding.ensureInitialized`.
-           Patrol automatically initializes its own test binding.
-        2. Do not modify the global `FlutterError.onError` callback. Patrol's
-           internals depend on it. Keep in mind that this callback can also
-           be modified by popular packages such as Sentry or Crashlytics.
-           In such cases, you can disable them for Patrol tests.
-      </Error>
+## Initializing app inside a test
+  To be able to test your app, you need to initialize it and pump the app's root widget, so it appears on the screen.
+  It's very similar to what is done in main function of your app, but it has some key differences, that can break your tests.
+  Easy way to implement it is to copy main function of your app and then adjust it, so it works with Patrol.
+  Here's what to remove when running app inside a patrol test:
+  1. DO NOT call `WidgetsFlutterBinding.ensureInitialized()`.
+  2. DO NOT use `runApp()`. Instead, use `$.pumpWidget()` (or `$.pumpWidgetAndSettle()` to wait until the UI is rendered). Pass the same argument which was passed to `runApp()`.
+  3. DO NOT modify `FlutterError.onError`. Sometimes it is done by some monitoring tools (like Crashlytics). Those tools rely on intercepting errors by modifying `FlutterError.onError` callback and it causes that the test engine can't see any exceptions, thus can't end a test if it fails. One way is to move the code that would be common for both the test and the app into a method and leave the rest in main function of the app, or move whole app initialization to a function and define some arguments to enable or diable parts needed in a specific place.
+  
+  For an example, look at `createApp` in [`common.dart`] in Patrol repository on GitHub.
 
-      <Info>
-        If you are looking for a working example of a Flutter app with Patrol tests,
-        check out the [example app]
-         in the patrol repository.
-      </Info>
-
-      ## Flavors
-        If your app is using flavors, then you can pass them like so:
+## Flavors
+  If your app is using flavors, then you can pass them like so:
 
         ```
         patrol test --target patrol_test/example_test.dart --flavor development
         ```
 
-        or you can specify them in `pubspec.yaml` (recommended):
+  or you can specify them in `pubspec.yaml` (recommended):
 
-        ```yaml title="pubspec.yaml"
-        patrol:
-          app_name: My App
-          flavor: development
-          android:
-            package_name: com.example.myapp
-          ios:
-            bundle_id: com.example.MyApp
-            app_name: The Awesome App
-          macos:
-            bundle_id: com.example.macos.MyApp
-        ```
+  ```yaml title="pubspec.yaml"
+  patrol:
+    app_name: My App
+    flavor: development
+    android:
+      package_name: com.example.myapp
+    ios:
+      bundle_id: com.example.MyApp
+      app_name: The Awesome App
+    macos:
+      bundle_id: com.example.macos.MyApp
+  ```
 
 ## FAQ
 
@@ -729,7 +727,7 @@ Check out our video version of this tutorial on YouTube!
   ```
   It's a good practice to create a setup wrapper function for your tests, so you don't have to
   repeat the same code in every test. Look at the [example]
-  of a wrapper function.
+  of a wrapper function. Find out more in [Initializing app inside a test] section above.
 </Accordion>
 
 
@@ -782,6 +780,16 @@ Check out our video version of this tutorial on YouTube!
   (in case presented in snippet above, all should be set to 12.0).
 </Accordion>
 
+<Accordion title="How to generate FLUTTER_TARGET after removing it from *.xcconfig">
+  After removing `FLUTTER_TARGET` from `*.xcconfig`, you need to run the following command to generate it:
+
+  ```
+  flutter build ios --config-only patrol_test/example_test.dart
+  ```
+
+  Make sure to replace `patrol_test/example_test.dart` with the path to your test file.
+</Accordion>
+
 If you couldn't find an answer to your question/problem, feel free to ask on
 [Patrol Discord Server].
 
@@ -790,6 +798,7 @@ If you couldn't find an answer to your question/problem, feel free to ask on
 To learn how to write Patrol tests, see [finders] and [native automation] sections.
 
 [native automation]: /documentation/native/usage
+[Setup for physical iOS Devices]: /documentation/physical-ios-devices-setup
 [finders]: /documentation/finders/usage
 [Using Patrol finders in widget tests]: /documentation/finders/finders-setup
 [Here's why]: /documentation/native/advanced#embrace-the-native-tests
@@ -802,3 +811,5 @@ To learn how to write Patrol tests, see [finders] and [native automation] sectio
 [Learn more]: https://developer.android.com/build/jdks
 [this video]: https://www.youtube.com/watch?v=9LdEJR59fW4
 [Patrol Discord Server]: https://discord.gg/ukBK5t4EZg
+[Initializing app inside a test]: /documentation#initializing-app-inside-a-test
+[`common.dart`]: https://github.com/leancodepl/patrol/blob/master/dev/e2e_app/integration_test/common.dart

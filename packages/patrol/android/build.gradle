@@ -56,6 +56,12 @@ android {
         buildConfigField("String", "PATROL_TEST_PORT", project.hasProperty('test-server-port') ? '"' + project.getProperty('test-server-port') + '"' : '""')
     }
 
+    packaging {
+        resources {
+            excludes += ["META-INF/INDEX.LIST", "META-INF/*.properties"]
+        }
+    }
+
     buildFeatures {
         buildConfig true
     }
@@ -69,10 +75,10 @@ android {
         api "androidx.test.espresso:espresso-core:3.5.0"
         api "androidx.test.uiautomator:uiautomator:2.3.0"
 
-        implementation platform("org.http4k:http4k-bom:5.47.0.0")
-        implementation "org.http4k:http4k-core"
+        implementation platform("org.http4k:http4k-bom:6.16.0.0")
+        implementation "org.http4k:http4k-core:6.16.0.0"
         implementation "com.squareup.okhttp:okhttp:2.7.5" // See https://github.com/square/okhttp/issues/8031
-        implementation "org.http4k:http4k-server-ktorcio"
+        implementation "org.http4k:http4k-server-ktorcio:6.16.0.0"
         implementation "com.google.code.gson:gson:2.10.1"
 
         testImplementation "org.jetbrains.kotlin:kotlin-test"
