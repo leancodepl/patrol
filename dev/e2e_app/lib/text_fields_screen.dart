@@ -9,7 +9,7 @@ class TextFieldsScreen extends StatefulWidget {
 }
 
 class _TextFieldsScreenState extends State<TextFieldsScreen> {
-  FocusNode focusNode = FocusNode();
+  final _focusNode = FocusNode();
 
   @override
   Widget build(BuildContext context) {
@@ -24,9 +24,9 @@ class _TextFieldsScreenState extends State<TextFieldsScreen> {
                 ElevatedButton.icon(
                   key: K.buttonFocus,
                   onPressed: () =>
-                      FocusScope.of(context).requestFocus(focusNode),
+                      FocusScope.of(context).requestFocus(_focusNode),
                   label: const Icon(Icons.search),
-                  focusNode: focusNode,
+                  focusNode: _focusNode,
                 ),
                 const TextField(key: K.textField2),
                 ElevatedButton.icon(
