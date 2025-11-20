@@ -73,7 +73,7 @@ Future<void> main() async {
   // Dart test (out of which they had been created) and wait for it to complete.
   // The result of running the Dart test is the result of the native test case.
 
-  final platformAutomator = PlatformAutomator(config: PlatformAutomatorConfig.forTestSetup());
+  final platformAutomator = PlatformAutomator(config: PlatformAutomatorConfig.defaultConfig());
   await platformAutomator.initialize();
   final binding = PatrolBinding.ensureInitialized(platformAutomator);
   final testExplorationCompleter = Completer<DartGroupEntry>();
@@ -147,7 +147,7 @@ ${generateImports(testDirectory, [testFilePath])}
 // END: GENERATED TEST IMPORTS
 
 Future<void> main() async {
-  final platformAutomator = PlatformAutomator(config: PlatformAutomatorConfig.forTestSetup());
+  final platformAutomator = PlatformAutomator(config: PlatformAutomatorConfig.defaultConfig());
   await platformAutomator.initialize();
   
   PatrolBinding.ensureInitialized(platformAutomator)
