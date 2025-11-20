@@ -92,7 +92,7 @@ class PlatformAutomatorConfig {
   }
 
   /// Creates a new [PlatformAutomatorConfig] suitable for test setup.
-  factory PlatformAutomatorConfig.forTestSetup() {
+  factory PlatformAutomatorConfig.defaultConfig() {
     return PlatformAutomatorConfig(
       androidConfig: const AndroidAutomatorConfig(),
       iosConfig: const IOSAutomatorConfig(),

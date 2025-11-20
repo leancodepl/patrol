@@ -111,7 +111,8 @@ void patrolTest(
   final platformAutomator = PlatformAutomator(
     config:
         nativeAutomatorConfig?.toPlatformAutomatorConfig() ??
-        platformAutomatorConfig,
+        platformAutomatorConfig ??
+        PlatformAutomatorConfig.defaultConfig(),
   );
   final patrolBinding = PatrolBinding.ensureInitialized(platformAutomator)
     ..framePolicy = framePolicy;
