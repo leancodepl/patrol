@@ -50,14 +50,6 @@ jobs:
         working-directory: packages/patrol_cli
         run: dart pub global activate --source path . && patrol
 
-      - name: Install Node.js dependencies
-        working-directory: packages/patrol/web_runner
-        run: npm install
-
-      - name: Install Playwright browsers
-        working-directory: packages/patrol/web_runner
-        run: npx playwright install --with-deps
-
       - name: Run web tests
         id: tests_step
         run: |
