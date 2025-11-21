@@ -1,0 +1,68 @@
+name: test web
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'packages/patrol/web_runner/**'
+      - 'dev/e2e_app/patrol_test/web_example_test.dart'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  run_tests:
+    name: Flutter ${{ matrix.flutter-version }} on Web
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+  
+    strategy:
+      fail-fast: false
+      matrix:
+        flutter-version: ['3.32.x']
+        flutter-channel: ['stable']
+
+    defaults:
+      run:
+        working-directory: dev/e2e_app
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+          channel: ${{ matrix.flutter-channel }}
+
+      - name: Preload Flutter artifacts
+        run: flutter precache --web
+
+      - name: Set up Melos and activate workspace
+        working-directory: .
+        run: |
+          dart pub global activate melos
+          melos bootstrap
+
+      - name: Set up Patrol CLI
+        working-directory: packages/patrol_cli
+        run: dart pub global activate --source path . && patrol
+
+      - name: Install Node.js dependencies
+        working-directory: packages/patrol/web_runner
+        run: npm install
+
+      - name: Install Playwright browsers
+        working-directory: packages/patrol/web_runner
+        run: npx playwright install --with-deps
+
+      - name: Run web tests
+        id: tests_step
+        run: |
+          TESTS_EXIT_CODE=0
+          patrol test --target patrol_test/web_example_test.dart -d chrome --verbose || TESTS_EXIT_CODE=$?
+
+          echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> "$GITHUB_OUTPUT"
+          exit $TESTS_EXIT_CODE
