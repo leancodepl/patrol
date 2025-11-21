@@ -448,8 +448,6 @@ class WebTestBackend {
                   'PATROL_WEB_PERMISSIONS': options.permissions.toString(),
                 if (options.userAgent != null)
                   'PATROL_WEB_USER_AGENT': options.userAgent.toString(),
-                if (options.offline != null)
-                  'PATROL_WEB_OFFLINE': options.offline.toString(),
                 if (options.viewport != null)
                   'PATROL_WEB_VIEWPORT': options.viewport.toString(),
                 if (options.globalTimeout != null)

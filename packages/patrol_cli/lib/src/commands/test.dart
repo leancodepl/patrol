@@ -298,7 +298,6 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       geolocation: stringArg('web-geolocation'),
       permissions: stringArg('web-permissions'),
       userAgent: stringArg('web-user-agent'),
-      offline: stringArg('web-offline'),
       viewport: stringArg('web-viewport'),
       globalTimeout: intArg('web-global-timeout'),
       shard: stringArg('web-shard'),

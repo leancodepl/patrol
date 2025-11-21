@@ -406,7 +406,6 @@ class WebAppOptions {
     this.geolocation,
     this.permissions,
     this.userAgent,
-    this.offline,
     this.viewport,
     this.globalTimeout,
     this.shard,
@@ -425,7 +424,6 @@ class WebAppOptions {
   final String? geolocation;
   final String? permissions;
   final String? userAgent;
-  final String? offline;
   final String? viewport;
   final int? globalTimeout;
   final String? shard;

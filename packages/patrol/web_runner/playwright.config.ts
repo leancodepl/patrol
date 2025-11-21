@@ -23,7 +23,6 @@ const permissions = process.env.PATROL_WEB_PERMISSIONS
   ? (JSON.parse(process.env.PATROL_WEB_PERMISSIONS) as PlaywrightTestOptions["permissions"])
   : undefined
 const userAgent = process.env.PATROL_WEB_USER_AGENT ? process.env.PATROL_WEB_USER_AGENT : undefined
-const offline = process.env.PATROL_WEB_OFFLINE ? process.env.PATROL_WEB_OFFLINE === "true" : undefined
 const viewport = process.env.PATROL_WEB_VIEWPORT
   ? (JSON.parse(process.env.PATROL_WEB_VIEWPORT) as PlaywrightTestOptions["viewport"])
   : undefined
@@ -49,7 +48,6 @@ export default defineConfig({
     geolocation,
     permissions,
     userAgent,
-    offline,
     viewport,
   },
   globalSetup: require.resolve("./tests/setup"),

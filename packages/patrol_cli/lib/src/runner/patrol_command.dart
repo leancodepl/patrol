@@ -291,11 +291,6 @@ abstract class PatrolCommand extends Command<int> {
         valueHelp: 'user agent string',
       )
       ..addOption(
-        'web-offline',
-        help: 'Whether to emulate network being offline.',
-        valueHelp: 'true | false',
-      )
-      ..addOption(
         'web-viewport',
         help:
             'Viewport size for browser context. JSON object with width and height.',
