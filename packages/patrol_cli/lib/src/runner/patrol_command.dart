@@ -256,7 +256,7 @@ abstract class PatrolCommand extends Command<int> {
         help:
             'Test reporter configuration. JSON array with reporter name and options.',
         valueHelp:
-            '[["html" | "json" | "list" | "dot" | "line" | "github" | "junit" | "null", { "outputFolder": "<PATH>" | undefined, "open": "never" | "always" | "on-failure" | undefined } | undefined]]',
+            '\'[["html" | "json" | "list" | "dot" | "line" | "github" | "junit" | "null", { "outputFolder": "<PATH>" | undefined, "open": "never" | "always" | "on-failure" | undefined } | undefined]]\'',
       )
       ..addOption(
         'web-locale',
@@ -277,13 +277,13 @@ abstract class PatrolCommand extends Command<int> {
         'web-geolocation',
         help:
             'Geolocation for browser context. JSON object with latitude and longitude.',
-        valueHelp: '{"latitude": 51.5074, "longitude": -0.1278}',
+        valueHelp: '\'{"latitude": 51.5074, "longitude": -0.1278}\'',
       )
       ..addOption(
         'web-permissions',
         help:
             'Permissions to grant to the browser context. JSON array of permission names.',
-        valueHelp: '["geolocation", ...]',
+        valueHelp: '\'["geolocation", ...]\'',
       )
       ..addOption(
         'web-user-agent',
@@ -299,7 +299,7 @@ abstract class PatrolCommand extends Command<int> {
         'web-viewport',
         help:
             'Viewport size for browser context. JSON object with width and height.',
-        valueHelp: '{"width": 1920, "height": 1080}',
+        valueHelp: '\'{"width": 1920, "height": 1080}\'',
       )
       ..addOption(
         'web-global-timeout',
