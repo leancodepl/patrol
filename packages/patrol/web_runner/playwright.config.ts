@@ -27,6 +27,15 @@ const offline = process.env.PATROL_WEB_OFFLINE ? process.env.PATROL_WEB_OFFLINE 
 const viewport = process.env.PATROL_WEB_VIEWPORT
   ? (JSON.parse(process.env.PATROL_WEB_VIEWPORT) as PlaywrightTestOptions["viewport"])
   : undefined
+const shard = process.env.PATROL_WEB_SHARD
+  ? (() => {
+      const shardValue = process.env.PATROL_WEB_SHARD
+      if (!shardValue) return undefined
+      const [current, total] = shardValue.split("/").map(Number)
+      return { current, total }
+    })()
+  : undefined
+const fullyParallel = process.env.PATROL_WEB_FULLY_PARALLEL ? process.env.PATROL_WEB_FULLY_PARALLEL === "true" : false
 
 export default defineConfig({
   use: {
@@ -46,9 +55,11 @@ export default defineConfig({
   globalSetup: require.resolve("./tests/setup"),
   // Output test results to the tested app directory
   outputDir,
-  reporter: reporter,
+  reporter,
   retries,
   timeout: timeout ?? 10 * 60 * 1000,
   globalTimeout: globalTimeout ?? 2 * 60 * 60 * 1000,
   workers,
+  fullyParallel,
+  shard,
 })

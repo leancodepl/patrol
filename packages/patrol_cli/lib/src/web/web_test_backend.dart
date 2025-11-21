@@ -454,6 +454,10 @@ class WebTestBackend {
                   'PATROL_WEB_VIEWPORT': options.viewport.toString(),
                 if (options.globalTimeout != null)
                   'PATROL_WEB_GLOBAL_TIMEOUT': options.globalTimeout.toString(),
+                if (options.shard != null)
+                  'PATROL_WEB_SHARD': options.shard.toString(),
+                if (options.fullyParallel != null)
+                  'PATROL_WEB_FULLY_PARALLEL': options.fullyParallel.toString(),
                 ...Platform.environment,
               },
               runInShell: true,

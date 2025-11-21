@@ -301,6 +301,8 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       offline: stringArg('web-offline'),
       viewport: stringArg('web-viewport'),
       globalTimeout: intArg('web-global-timeout'),
+      shard: stringArg('web-shard'),
+      fullyParallel: stringArg('web-fully-parallel'),
     );
 
     // No need to build web app for testing. It's done in the execute method.

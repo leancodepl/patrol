@@ -305,6 +305,20 @@ abstract class PatrolCommand extends Command<int> {
         'web-global-timeout',
         help: 'Maximum total time in milliseconds for the entire test run.',
         valueHelp: 'number',
+      )
+      ..addOption(
+        'web-shard',
+        help:
+            'Shard tests and execute only the selected shard. '
+            'Specify in the format "current/total" (e.g., "1/4" for the first of 4 shards).',
+        valueHelp: '1/4',
+      )
+      ..addOption(
+        'web-fully-parallel',
+        help:
+            'If true, tests withing files will be executed in parallel. '
+            'By default, tests withing files are executed sequentially.',
+        valueHelp: 'true | false',
       );
   }
 

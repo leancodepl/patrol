@@ -409,6 +409,8 @@ class WebAppOptions {
     this.offline,
     this.viewport,
     this.globalTimeout,
+    this.shard,
+    this.fullyParallel,
   });
 
   final FlutterAppOptions flutter;
@@ -426,4 +428,6 @@ class WebAppOptions {
   final String? offline;
   final String? viewport;
   final int? globalTimeout;
+  final String? shard;
+  final String? fullyParallel;
 }
