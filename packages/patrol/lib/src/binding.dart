@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
-import 'dart:io';
 import 'dart:isolate';
 
 import 'package:flutter/foundation.dart';
@@ -11,6 +10,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
 import 'package:patrol/src/devtools_service_extensions/devtools_service_extensions.dart';
 import 'package:patrol/src/global_state.dart' as global_state;
+import 'package:patrol/src/platform/current_io.dart' as current_platform;
+import 'package:patrol/src/platform/platform_automator.dart';
 
 import 'constants.dart' as constants;
 
@@ -44,8 +45,8 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
   /// Creates a new [PatrolBinding].
   ///
   /// You most likely don't want to call it yourself.
-  PatrolBinding(NativeAutomatorConfig config)
-    : _serviceExtensions = DevtoolsServiceExtensions(config) {
+  PatrolBinding(PlatformAutomator platform)
+    : _serviceExtensions = DevtoolsServiceExtensions(platform) {
     setUp(() {
       if (_isDevelopMode) {
         return;
@@ -74,6 +75,9 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
       }
 
       final nameOfRequestedTest = await patrolAppService.testExecutionRequested;
+
+      print('PatrolBinding: nameOfRequestedTest: $nameOfRequestedTest');
+      print('PatrolBinding: _currentDartTest: $_currentDartTest');
 
       if (nameOfRequestedTest == _currentDartTest) {
         if (const bool.fromEnvironment('COVERAGE_ENABLED')) {
@@ -122,9 +126,9 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
   /// if necessary.
   ///
   /// This method is idempotent.
-  factory PatrolBinding.ensureInitialized(NativeAutomatorConfig config) {
+  factory PatrolBinding.ensureInitialized(PlatformAutomator platform) {
     if (_instance == null) {
-      PatrolBinding(config);
+      PatrolBinding(platform);
     }
     return _instance!;
   }
@@ -234,7 +238,7 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
           Failure(:final details?) => FlutterErrorDetails(exception: details),
           _ => null,
         };
-        final detailsAsString = (kReleaseMode && Platform.isIOS)
+        final detailsAsString = (kReleaseMode && current_platform.isIOS)
             ? '${details.exceptionAsString()}\n${details.stack}'
             : details.toString();
 

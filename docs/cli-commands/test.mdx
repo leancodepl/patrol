@@ -22,8 +22,10 @@ This command is the one use you'll be using most often.
 2. Installs the AUT and the instrumentation on the selected device
 3. Runs the tests natively, and reports results back in native format.
 
-Under the hood, it calls Gradle (when testing on Android) and `xcodebuild` (when
-testing on iOS).
+Under the hood, it calls:
+- Gradle (when testing on Android)
+- `xcodebuild` (when testing on iOS/macOS)
+- Playwright (when testing on web)
 
 ### Discussion
 
@@ -165,6 +167,29 @@ This flag:
 - **iOS**: Uninstalls the app before running each test (except for the first one)
 
 See the [test command documentation](/cli-commands/test#full-isolation-between-tests) for more details.
+
+### Web Platform
+
+Patrol supports running tests on Flutter web using Playwright. To run tests on web:
+
+```bash
+patrol test --device chrome
+```
+
+When running on web:
+- Tests execute in Chromium browser via Playwright
+- CLI arguments can be used to configure Playwright
+- Test results are generated in `test-results/`
+
+#### Arguments
+
+Playwright configuration is updated with values passed to the command. This allows direct control over Playwright
+features such as reporting. To see the full list of supported arguments, run `patrol test --help`.
+
+**Note:** Some arguments are not supported on web:
+- `--flavor`: Flavors are not supported for Flutter web
+- `--uninstall`: Not applicable to web platform
+- `--full-isolation`: Not applicable to web platform
 
 ### Under the hood
 
