@@ -456,6 +456,8 @@ class WebTestBackend {
                   'PATROL_WEB_SHARD': options.shard.toString(),
                 if (options.fullyParallel != null)
                   'PATROL_WEB_FULLY_PARALLEL': options.fullyParallel.toString(),
+                if (options.headless != null)
+                  'PATROL_WEB_HEADLESS': options.headless.toString(),
                 ...Platform.environment,
               },
               runInShell: true,

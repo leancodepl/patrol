@@ -314,6 +314,11 @@ abstract class PatrolCommand extends Command<int> {
             'If true, tests withing files will be executed in parallel. '
             'By default, tests withing files are executed sequentially.',
         valueHelp: 'true | false',
+      )
+      ..addOption(
+        'web-headless',
+        help: 'Whether to run browser in headless mode.',
+        valueHelp: 'true | false',
       );
   }
 

@@ -35,12 +35,13 @@ const shard = process.env.PATROL_WEB_SHARD
     })()
   : undefined
 const fullyParallel = process.env.PATROL_WEB_FULLY_PARALLEL ? process.env.PATROL_WEB_FULLY_PARALLEL === "true" : false
+const headless = process.env.PATROL_WEB_HEADLESS ? process.env.PATROL_WEB_HEADLESS === "true" : false
 
 export default defineConfig({
   use: {
     // This needs to be dynamically injected with env variables
     baseURL,
-    headless: false,
+    headless,
     video,
     locale,
     timezoneId,

@@ -410,6 +410,7 @@ class WebAppOptions {
     this.globalTimeout,
     this.shard,
     this.fullyParallel,
+    this.headless,
   });
 
   final FlutterAppOptions flutter;
@@ -428,4 +429,5 @@ class WebAppOptions {
   final int? globalTimeout;
   final String? shard;
   final String? fullyParallel;
+  final String? headless;
 }
