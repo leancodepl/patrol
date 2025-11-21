@@ -67,7 +67,9 @@ class WebTestBackend {
     bool hideTestSteps = false,
     bool clearTestSteps = false,
   }) async {
-    _logger.detail('Starting web test execution...');
+    _logger
+      ..detail('Starting web test execution...')
+      ..info('Building Flutter web app...');
 
     // Start Flutter web server
     final flutterProcess = await _startFlutterWebServer(
