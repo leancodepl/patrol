@@ -34,8 +34,8 @@ Future<void> _requestAndDenyCameraPermission(PatrolIntegrationTester $) async {
   if (!await Permission.camera.isGranted) {
     expect($(K.cameraPermissionTile).$(#statusText).text, 'Not granted');
     await $(K.requestCameraPermissionButton).tap();
-    if (await $.native.isPermissionDialogVisible(timeout: _timeout)) {
-      await $.native.denyPermission();
+    if (await $.platform.mobile.isPermissionDialogVisible(timeout: _timeout)) {
+      await $.platform.mobile.denyPermission();
       await $.pump();
     }
   }
@@ -49,8 +49,8 @@ Future<void> _requestAndDenyMicrophonePermission(
   if (!await Permission.microphone.isGranted) {
     expect($(K.microphonePermissionTile).$(#statusText).text, 'Not granted');
     await $(K.requestMicrophonePermissionButton).tap();
-    if (await $.native.isPermissionDialogVisible(timeout: _timeout)) {
-      await $.native.denyPermission();
+    if (await $.platform.mobile.isPermissionDialogVisible(timeout: _timeout)) {
+      await $.platform.mobile.denyPermission();
       await $.pump();
     }
   }
@@ -64,8 +64,8 @@ Future<void> _requestAndDenyLocationPermission(
   if (!await Permission.location.isGranted) {
     expect($(K.locationPermissionTile).$(#statusText).text, 'Not granted');
     await $(K.requestLocationPermissionButton).tap();
-    if (await $.native.isPermissionDialogVisible(timeout: _timeout)) {
-      await $.native.denyPermission();
+    if (await $.platform.mobile.isPermissionDialogVisible(timeout: _timeout)) {
+      await $.platform.mobile.denyPermission();
       await $.pump();
     }
   }
@@ -77,8 +77,8 @@ Future<void> _requestAndDenyGalleryPermission(PatrolIntegrationTester $) async {
   if (!await Permission.storage.isGranted) {
     expect($(K.galleryPermissionTile).$(#statusText).text, 'Not granted');
     await $(K.requestGalleryPermissionButton).tap();
-    if (await $.native.isPermissionDialogVisible(timeout: _timeout)) {
-      await $.native.denyPermission();
+    if (await $.platform.mobile.isPermissionDialogVisible(timeout: _timeout)) {
+      await $.platform.mobile.denyPermission();
       await $.pump();
     }
   }

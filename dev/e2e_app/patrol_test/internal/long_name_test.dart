@@ -22,8 +22,8 @@ void main() {
       await $(#textField).enterText('Hello, Flutter!');
       expect($('Hello, Flutter!'), findsOneWidget);
 
-      await $.native.pressHome();
-      await $.native.openApp();
+      await $.platform.mobile.pressHome();
+      await $.platform.mobile.openApp();
 
       expect($(#counterText).text, '1');
       await $(FloatingActionButton).tap();

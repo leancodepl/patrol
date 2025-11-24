@@ -14,13 +14,13 @@ void main() {
 
     await $(FloatingActionButton).tap();
 
-    await $.native.pressHome();
-    await $.native2.openPlatformApp(
+    await $.platform.mobile.pressHome();
+    await $.platform.mobile.openPlatformApp(
       androidAppId: GoogleApp.maps,
       iosAppId: AppleApp.maps,
     );
-    await $.native.pressHome();
-    await $.native.openApp();
+    await $.platform.mobile.pressHome();
+    await $.platform.mobile.openApp();
 
     expect($(#counterText).text, '1');
   });
@@ -33,13 +33,13 @@ void main() {
 
     await $(FloatingActionButton).tap();
 
-    await $.native.pressHome();
-    await $.native2.openPlatformApp(
+    await $.platform.mobile.pressHome();
+    await $.platform.mobile.openPlatformApp(
       androidAppId: GoogleApp.maps,
       iosAppId: AppleApp.maps,
     );
-    await $.native.pressHome();
-    await $.native.openApp();
+    await $.platform.mobile.pressHome();
+    await $.platform.mobile.openApp();
 
     expect($(#counterText).text, '1');
   });
@@ -52,13 +52,13 @@ void main() {
 
     await $(FloatingActionButton).tap();
 
-    await $.native.pressHome();
-    await $.native2.openPlatformApp(
+    await $.platform.mobile.pressHome();
+    await $.platform.mobile.openPlatformApp(
       androidAppId: GoogleApp.chrome,
       iosAppId: AppleApp.safari,
     );
-    await $.native.pressHome();
-    await $.native.openApp();
+    await $.platform.mobile.pressHome();
+    await $.platform.mobile.openApp();
 
     expect($(#counterText).text, '1');
   });

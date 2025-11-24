@@ -11,11 +11,11 @@ void main() {
 
     if (io.Platform.isAndroid) {
       await $.pumpAndSettle();
-      await $.native.pressVolumeUp();
+      await $.platform.mobile.pressVolumeUp();
       await $.pumpAndSettle();
-      await $.native.pressVolumeDown();
+      await $.platform.mobile.pressVolumeDown();
       await $.pumpAndSettle();
-      await $.native.pressVolumeUp();
+      await $.platform.mobile.pressVolumeUp();
       await $.pumpAndSettle();
     }
   });

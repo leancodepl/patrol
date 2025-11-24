@@ -14,13 +14,13 @@ void main() {
     await $('Open map screen').scrollTo().tap();
     await $.pumpAndSettle();
 
-    if (await $.native.isPermissionDialogVisible(timeout: _timeout)) {
-      await $.native.grantPermissionWhenInUse();
+    if (await $.platform.mobile.isPermissionDialogVisible(timeout: _timeout)) {
+      await $.platform.mobile.grantPermissionWhenInUse();
     }
 
     await $.pumpAndSettle();
 
-    await $.native.setMockLocation(55.2297, 21.0122);
+    await $.platform.mobile.setMockLocation(55.2297, 21.0122);
     await Future<void>.delayed(const Duration(milliseconds: 100));
     await $.pumpAndSettle();
     expect(await $('Location').waitUntilVisible(), findsOneWidget);
@@ -28,7 +28,7 @@ void main() {
     expect(await $('Longitude: 21.0122').waitUntilVisible(), findsOneWidget);
     await Future<void>.delayed(const Duration(milliseconds: 1500));
 
-    await $.native.setMockLocation(55.5297, 21.0122);
+    await $.platform.mobile.setMockLocation(55.5297, 21.0122);
     await Future<void>.delayed(const Duration(milliseconds: 100));
     await $.pumpAndSettle();
     expect(await $('Location').waitUntilVisible(), findsOneWidget);
@@ -36,7 +36,7 @@ void main() {
     expect(await $('Longitude: 21.0122').waitUntilVisible(), findsOneWidget);
     await Future<void>.delayed(const Duration(milliseconds: 1500));
 
-    await $.native.setMockLocation(55.7297, 21.0122);
+    await $.platform.mobile.setMockLocation(55.7297, 21.0122);
     await Future<void>.delayed(const Duration(milliseconds: 100));
     await $.pumpAndSettle();
     expect(await $('Location').waitUntilVisible(), findsOneWidget);
@@ -52,8 +52,8 @@ void main() {
     await $('Open map screen').scrollTo().tap();
     await $.pumpAndSettle();
 
-    if (await $.native.isPermissionDialogVisible(timeout: _timeout)) {
-      await $.native.grantPermissionWhenInUse();
+    if (await $.platform.mobile.isPermissionDialogVisible(timeout: _timeout)) {
+      await $.platform.mobile.grantPermissionWhenInUse();
     }
 
     await $.pumpAndSettle();
@@ -87,7 +87,7 @@ void main() {
       // }
       // previousTime = waypoint.time;
 
-      await $.native.setMockLocation(waypoint.lat!, waypoint.lon!);
+      await $.platform.mobile.setMockLocation(waypoint.lat!, waypoint.lon!);
 
       await $.pumpAndSettle();
       await Future<void>.delayed(const Duration(milliseconds: 1500));
