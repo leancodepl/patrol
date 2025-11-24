@@ -4,7 +4,7 @@ void main() {
   patrol('opens quick settings', ($) async {
     await createApp($);
 
-    await $.native.openQuickSettings();
-    await $.native.pressHome();
+    await $.platform.mobile.openQuickSettings();
+    await $.platform.mobile.pressHome();
   });
 }
