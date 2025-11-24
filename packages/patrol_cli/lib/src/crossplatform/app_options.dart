@@ -395,6 +395,8 @@ class MacOSAppOptions {
 class WebAppOptions {
   const WebAppOptions({
     required this.flutter,
+    this.resultsDir,
+    this.reportDir,
     this.retries,
     this.video,
     this.timeout,
@@ -414,6 +416,8 @@ class WebAppOptions {
   });
 
   final FlutterAppOptions flutter;
+  final String? resultsDir;
+  final String? reportDir;
   final int? retries;
   final String? video;
   final int? timeout;

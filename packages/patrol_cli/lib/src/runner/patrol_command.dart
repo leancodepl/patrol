@@ -232,6 +232,16 @@ abstract class PatrolCommand extends Command<int> {
   void usesWeb() {
     argParser
       ..addOption(
+        'web-results-dir',
+        help: 'Directory where test results will be saved.',
+        valueHelp: 'test-results',
+      )
+      ..addOption(
+        'web-report-dir',
+        help: 'Directory where test reports will be saved.',
+        valueHelp: 'playwright-report',
+      )
+      ..addOption(
         'web-retries',
         help: 'Number of times to retry failed tests.',
         valueHelp: 'number',
@@ -253,10 +263,8 @@ abstract class PatrolCommand extends Command<int> {
       )
       ..addOption(
         'web-reporter',
-        help:
-            'Test reporter configuration. JSON array with reporter name and options.',
-        valueHelp:
-            '\'[["html" | "json" | "list" | "dot" | "line" | "github" | "junit" | "null", { "outputFolder": "<PATH>" | undefined, "open": "never" | "always" | "on-failure" | undefined } | undefined]]\'',
+        help: 'Test reporters to use. JSON array of reporter names.',
+        valueHelp: '\'["html", "json", "list"]\'',
       )
       ..addOption(
         'web-locale',

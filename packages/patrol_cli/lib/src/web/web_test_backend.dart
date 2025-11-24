@@ -411,8 +411,10 @@ class WebTestBackend {
       // Install Node.js dependencies if needed
       await _ensureNodeDependencies(webRunnerPath);
 
-      final testResultsDir = '${Directory.current.path}/test-results';
-      final testReportDir = '${Directory.current.path}/playwright-report';
+      final testResultsDir =
+          options.resultsDir ?? '${Directory.current.path}/test-results';
+      final testReportDir =
+          options.reportDir ?? '${Directory.current.path}/playwright-report';
 
       _logger
         ..detail('Test results will be saved to: $testResultsDir')
@@ -426,8 +428,6 @@ class WebTestBackend {
                 'BASE_URL': baseUrl,
                 'PATROL_TEST_RESULTS_DIR': testResultsDir,
                 'PATROL_TEST_REPORT_DIR': testReportDir,
-                'PATROL_WEB_JSON_OUTPUT_NAME': 'results.json',
-                'PATROL_WEB_JSON_OUTPUT_DIR': testReportDir,
                 if (options.retries != null)
                   'PATROL_WEB_RETRIES': options.retries.toString(),
                 if (options.video != null)
@@ -522,8 +522,10 @@ class WebTestBackend {
 
     await _ensureNodeDependencies(webRunnerPath);
 
-    final testResultsDir = '${Directory.current.path}/test-results';
-    final testReportDir = '${Directory.current.path}/playwright-report';
+    final testResultsDir =
+        options.resultsDir ?? '${Directory.current.path}/test-results';
+    final testReportDir =
+        options.reportDir ?? '${Directory.current.path}/playwright-report';
 
     _logger
       ..detail('Test results will be saved to: $testResultsDir')

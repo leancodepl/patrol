@@ -287,6 +287,8 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
 
     final webOpts = WebAppOptions(
       flutter: flutterOpts,
+      resultsDir: stringArg('web-results-dir'),
+      reportDir: stringArg('web-report-dir'),
       retries: intArg('web-retries'),
       video: stringArg('web-video'),
       timeout: intArg('web-timeout'),
