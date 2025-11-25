@@ -471,7 +471,7 @@ class WebTestBackend {
               listenStdOut: playwrightProcess.listenStdOut,
               scope: scope,
               log: _logger.info,
-              reportPath: '',
+              reportPath: testReportDir,
               showFlutterLogs: showFlutterLogs,
               hideTestSteps: hideTestSteps,
               clearTestSteps: clearTestSteps,

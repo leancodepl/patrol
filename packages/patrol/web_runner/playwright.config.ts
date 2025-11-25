@@ -49,7 +49,7 @@ export default defineConfig({
   },
   globalSetup: require.resolve("./tests/setup"),
   outputDir,
-  reporter: reporter ?? [["list"]],
+  reporter: reporter ?? [["html", { outputFolder, open: "never" }]],
   retries,
   timeout: timeout ?? 10 * 60 * 1000,
   globalTimeout: globalTimeout ?? 2 * 60 * 60 * 1000,
