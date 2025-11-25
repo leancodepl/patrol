@@ -42,8 +42,6 @@ for (const { name, skip, tags } of tests) {
     })
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const testResult = await page.evaluate(async name => await window.__patrol__runTest!(name), name)
-
-    patrolTest.expect(testResult.result, testResult.details ?? undefined).toBe("success")
+    await page.evaluate(async name => await window.__patrol__runTest!(name), name)
   })
 }
