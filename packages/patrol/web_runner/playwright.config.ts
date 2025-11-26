@@ -31,7 +31,6 @@ const viewport = process.env.PATROL_WEB_VIEWPORT
   ? (JSON.parse(process.env.PATROL_WEB_VIEWPORT) as PlaywrightTestOptions["viewport"])
   : undefined
 const shard = process.env.PATROL_WEB_SHARD ? parseShard(process.env.PATROL_WEB_SHARD) : undefined
-const fullyParallel = process.env.PATROL_WEB_FULLY_PARALLEL ? process.env.PATROL_WEB_FULLY_PARALLEL === "true" : false
 const headless = process.env.PATROL_WEB_HEADLESS ? process.env.PATROL_WEB_HEADLESS === "true" : false
 
 export default defineConfig({
@@ -54,7 +53,7 @@ export default defineConfig({
   timeout: timeout ?? 10 * 60 * 1000,
   globalTimeout: globalTimeout ?? 2 * 60 * 60 * 1000,
   workers,
-  fullyParallel,
+  fullyParallel: true,
   shard,
 })
 

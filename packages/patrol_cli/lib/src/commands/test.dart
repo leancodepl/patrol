@@ -303,7 +303,6 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       viewport: stringArg('web-viewport'),
       globalTimeout: intArg('web-global-timeout'),
       shard: stringArg('web-shard'),
-      fullyParallel: stringArg('web-fully-parallel'),
       headless: stringArg('web-headless'),
     );
 

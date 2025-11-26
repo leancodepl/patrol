@@ -411,7 +411,6 @@ class WebAppOptions {
     this.viewport,
     this.globalTimeout,
     this.shard,
-    this.fullyParallel,
     this.headless,
   });
 
@@ -432,6 +431,5 @@ class WebAppOptions {
   final String? viewport;
   final int? globalTimeout;
   final String? shard;
-  final String? fullyParallel;
   final String? headless;
 }
