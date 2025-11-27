@@ -95,6 +95,7 @@ class PatrolLogReader {
           ),
           _ when line.contains('I flutter :') => _parseFlutterAndroidLog(line),
           _ when line.contains('flutter:') => _parseFlutterIOsReleaseLog(line),
+          _ when line.contains('Playwright:') => _parsePlaywrightLog(line),
           _ => null,
         };
       }
@@ -145,6 +146,15 @@ class PatrolLogReader {
   /// Parse the line containing Flutter logs on Android and print them.
   void _parseFlutterAndroidLog(String line) {
     final regExp = RegExp('I flutter (.*)');
+    final match = regExp.firstMatch(line);
+    if (match?.group(1) case final firstMatch?) {
+      log(firstMatch);
+    }
+  }
+
+  /// Parse the line containing Playwright logs and print them.
+  void _parsePlaywrightLog(String line) {
+    final regExp = RegExp('Playwright: (.*)');
     final match = regExp.firstMatch(line);
     if (match?.group(1) case final firstMatch?) {
       log(firstMatch);

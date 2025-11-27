@@ -58,9 +58,7 @@ class _Runner extends ValueNotifier<_State> {
       isolate: serviceManager.isolateManager.mainIsolate,
     );
 
-    final result = await api.getNativeUITree(
-      useNativeViewHierarchy: useNativeViewHierarchy,
-    );
+    final result = await api.getNativeUITree();
 
     switch (result) {
       case ApiSuccess(:final data):

@@ -33,6 +33,7 @@ import 'package:patrol_cli/src/macos/macos_test_backend.dart';
 import 'package:patrol_cli/src/pubspec_reader.dart';
 import 'package:patrol_cli/src/test_bundler.dart';
 import 'package:patrol_cli/src/test_finder.dart';
+import 'package:patrol_cli/src/web/web_test_backend.dart';
 import 'package:platform/platform.dart';
 import 'package:process/process.dart';
 import 'package:pub_updater/pub_updater.dart';
@@ -159,6 +160,12 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
       logger: _logger,
     );
 
+    final webTestBackend = WebTestBackend(
+      processManager: _processManager,
+      parentDisposeScope: _disposeScope,
+      logger: _logger,
+    );
+
     final testFinderFactory = TestFinderFactory(rootDirectory: rootDirectory);
 
     final deviceFinder = DeviceFinder(
@@ -208,8 +215,10 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         androidTestBackend: androidTestBackend,
         iosTestBackend: iosTestBackend,
         macosTestBackend: macosTestBackend,
+        webTestBackend: webTestBackend,
         analytics: _analytics,
         logger: _logger,
+        stdin: stdin,
       ),
     );
 
@@ -228,6 +237,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         androidTestBackend: androidTestBackend,
         iosTestBackend: iosTestBackend,
         macOSTestBackend: macosTestBackend,
+        webTestBackend: webTestBackend,
         coverageTool: CoverageTool(
           fs: _fs,
           rootDirectory: rootDirectory,

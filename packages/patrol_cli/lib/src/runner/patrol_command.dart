@@ -229,6 +229,100 @@ abstract class PatrolCommand extends Command<int> {
     );
   }
 
+  void usesWeb() {
+    argParser
+      ..addOption(
+        'web-results-dir',
+        help: 'Directory where test results will be saved.',
+        valueHelp: 'test-results',
+      )
+      ..addOption(
+        'web-report-dir',
+        help: 'Directory where test reports will be saved.',
+        valueHelp: 'playwright-report',
+      )
+      ..addOption(
+        'web-retries',
+        help: 'Number of times to retry failed tests.',
+        valueHelp: 'number',
+      )
+      ..addOption(
+        'web-video',
+        help: 'Video recording mode.',
+        valueHelp: 'off | on | retain-on-failure | on-first-retry',
+      )
+      ..addOption(
+        'web-timeout',
+        help: 'Maximum time in milliseconds for single test execution.',
+        valueHelp: 'number',
+      )
+      ..addOption(
+        'web-workers',
+        help: 'Maximum number of parallel worker processes for test execution.',
+        valueHelp: 'number',
+      )
+      ..addOption(
+        'web-reporter',
+        help: 'Test reporters to use. JSON array of reporter names.',
+        valueHelp: '\'["html", "json", "list"]\'',
+      )
+      ..addOption(
+        'web-locale',
+        help: 'Locale for browser emulation.',
+        valueHelp: 'en-US | pl-PL',
+      )
+      ..addOption(
+        'web-timezone',
+        help: 'Timezone for browser emulation.',
+        valueHelp: 'Europe/Paris',
+      )
+      ..addOption(
+        'web-color-scheme',
+        help: 'Preferred color scheme for browser emulation.',
+        valueHelp: 'light | dark',
+      )
+      ..addOption(
+        'web-geolocation',
+        help:
+            'Geolocation for browser context. JSON object with latitude and longitude.',
+        valueHelp: '\'{"latitude": 51.5074, "longitude": -0.1278}\'',
+      )
+      ..addOption(
+        'web-permissions',
+        help:
+            'Permissions to grant to the browser context. JSON array of permission names.',
+        valueHelp: '\'["geolocation", ...]\'',
+      )
+      ..addOption(
+        'web-user-agent',
+        help: 'Custom user agent string for browser context.',
+        valueHelp: 'user agent string',
+      )
+      ..addOption(
+        'web-viewport',
+        help:
+            'Viewport size for browser context. JSON object with width and height.',
+        valueHelp: '\'{"width": 1920, "height": 1080}\'',
+      )
+      ..addOption(
+        'web-global-timeout',
+        help: 'Maximum total time in milliseconds for the entire test run.',
+        valueHelp: 'number',
+      )
+      ..addOption(
+        'web-shard',
+        help:
+            'Shard tests and execute only the selected shard. '
+            'Specify in the format "current/total" (e.g., "1/4" for the first of 4 shards).',
+        valueHelp: '1/4',
+      )
+      ..addOption(
+        'web-headless',
+        help: 'Whether to run browser in headless mode.',
+        valueHelp: 'true | false',
+      );
+  }
+
   /// Gets the parsed command-line flag named [name] as a `bool`.
   ///
   /// If no flag named [name] was added to the `ArgParser`, an [ArgumentError]

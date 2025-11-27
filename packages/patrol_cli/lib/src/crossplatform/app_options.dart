@@ -391,3 +391,45 @@ class MacOSAppOptions {
     return cmd;
   }
 }
+
+class WebAppOptions {
+  const WebAppOptions({
+    required this.flutter,
+    this.resultsDir,
+    this.reportDir,
+    this.retries,
+    this.video,
+    this.timeout,
+    this.workers,
+    this.reporter,
+    this.locale,
+    this.timezone,
+    this.colorScheme,
+    this.geolocation,
+    this.permissions,
+    this.userAgent,
+    this.viewport,
+    this.globalTimeout,
+    this.shard,
+    this.headless,
+  });
+
+  final FlutterAppOptions flutter;
+  final String? resultsDir;
+  final String? reportDir;
+  final int? retries;
+  final String? video;
+  final int? timeout;
+  final int? workers;
+  final String? reporter;
+  final String? locale;
+  final String? timezone;
+  final String? colorScheme;
+  final String? geolocation;
+  final String? permissions;
+  final String? userAgent;
+  final String? viewport;
+  final int? globalTimeout;
+  final String? shard;
+  final String? headless;
+}
