@@ -17,7 +17,7 @@ void main() {
   ) async {
     await createApp($);
 
-    await $.native.openApp(appId: appId);
-    await $.native.tapAt(Offset(0.5, 0.8), appId: appId);
+    await $.platform.mobile.openApp(appId: appId);
+    await $.platform.mobile.tapAt(Offset(0.5, 0.8), appId: appId);
   });
 }

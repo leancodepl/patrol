@@ -20,8 +20,8 @@ void main() {
     expect($('Hello, Flutter!'), findsOneWidget);
 
     $.log('Tapped the button');
-    await $.native.pressHome();
-    await $.native.openApp();
+    await $.platform.mobile.pressHome();
+    await $.platform.mobile.openApp();
 
     expect($(#counterText).text, '1');
     await $(FloatingActionButton).tap();

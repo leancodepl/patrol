@@ -8,13 +8,13 @@ void main() {
 
     await $.pump(Duration(seconds: 5));
 
-    await $.native.tap(Selector(text: 'login'));
-    await $.native.enterTextByIndex(
+    await $.platform.mobile.tap(Selector(text: 'login'));
+    await $.platform.mobile.enterTextByIndex(
       'test@leancode.pl',
       index: 0,
       keyboardBehavior: KeyboardBehavior.showAndDismiss,
     );
-    await $.native.enterTextByIndex(
+    await $.platform.mobile.enterTextByIndex(
       'ny4ncat',
       index: 1,
       keyboardBehavior: KeyboardBehavior.showAndDismiss,
@@ -28,24 +28,23 @@ void main() {
 
     await $.pump(Duration(seconds: 5));
 
-    await $.native2.tap(
-      NativeSelector(
-        android: AndroidSelector(text: 'login'),
-        ios: IOSSelector(label: 'login'),
-      ),
-    );
-    await $.native2.enterTextByIndex(
+    await $.platform.mobile.tap(Selector(text: 'login'));
+    await $.platform.mobile.enterTextByIndex(
       'test@leancode.pl',
       index: 0,
       keyboardBehavior: KeyboardBehavior.showAndDismiss,
     );
-    await $.native2.enterText(
-      NativeSelector(
-        android: AndroidSelector(className: 'android.widget.EditText'),
-        ios: IOSSelector(elementType: IOSElementType.secureTextField),
+    await $.platform.action.mobile(
+      android: () => $.platform.android.enterText(
+        AndroidSelector(className: 'android.widget.EditText'),
+        text: 'ny4ncat',
+        keyboardBehavior: KeyboardBehavior.showAndDismiss,
       ),
-      text: 'ny4ncat',
-      keyboardBehavior: KeyboardBehavior.showAndDismiss,
+      ios: () => $.platform.ios.enterText(
+        IOSSelector(elementType: IOSElementType.secureTextField),
+        text: 'ny4ncat',
+        keyboardBehavior: KeyboardBehavior.showAndDismiss,
+      ),
     );
   });
 }
