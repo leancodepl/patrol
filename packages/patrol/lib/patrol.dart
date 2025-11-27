@@ -11,7 +11,13 @@ export 'src/common.dart';
 export 'src/custom_finders/patrol_integration_tester.dart';
 export 'src/native/native.dart';
 export 'src/platform/contracts/contracts.dart'
-    show AndroidNativeView, IOSElementType, IOSNativeView, KeyboardBehavior;
+    show
+        AndroidNativeView,
+        AppleApp,
+        GoogleApp,
+        IOSElementType,
+        IOSNativeView,
+        KeyboardBehavior;
 export 'src/platform/patrol_app_service.dart';
 export 'src/platform/selector.dart';
 // TODO: should this be exported from here?
