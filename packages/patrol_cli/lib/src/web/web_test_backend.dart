@@ -5,6 +5,7 @@ import 'dart:io';
 
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:package_config/package_config.dart';
+import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
@@ -491,17 +492,21 @@ class WebTestBackend {
       playwrightProcess.exitCode.then((exitCode) {
         if (!completer.isCompleted) {
           stderrSubscription.cancel();
+
           if (exitCode != 0) {
             completer.completeError(
               'Playwright process exited unexpectedly with code $exitCode',
             );
           } else {
             patrolLogReader.stopTimer();
-
             // TODO: Don't print the summary in develop
             _logger.info(patrolLogReader.summary);
 
-            completer.complete();
+            if (patrolLogReader.failedTestsCount > 0) {
+              completer.completeError('Some tests failed.');
+            } else {
+              completer.complete();
+            }
           }
         }
       }).ignore();
