@@ -175,7 +175,7 @@ class PatrolAppService {
   /// native side requsted execution of [dartTest], returns true. Otherwise
   /// returns false.
   ///
-  /// It's used inside of [patrolTest] to halt execution of test body until
+  /// It's used inside of `patrolTest` to halt execution of test body until
   /// [runDartTest] is called.
   Future<bool> waitForExecutionRequest(String dartTest) async {
     final requestedDartTest = await testExecutionRequested;

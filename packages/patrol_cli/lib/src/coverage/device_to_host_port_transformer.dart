@@ -13,10 +13,10 @@ class DeviceToHostPortTransformer
     required TargetPlatform devicePlatform,
     required Adb adb,
     required Logger logger,
-  })  : _device = device,
-        _devicePlatform = devicePlatform,
-        _adb = adb,
-        _logger = logger;
+  }) : _device = device,
+       _devicePlatform = devicePlatform,
+       _adb = adb,
+       _logger = logger;
 
   final Device _device;
   final TargetPlatform _devicePlatform;

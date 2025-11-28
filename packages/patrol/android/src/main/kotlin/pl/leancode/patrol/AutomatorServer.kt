@@ -143,13 +143,13 @@ class AutomatorServer(private val automation: Automator) : MobileAutomatorServer
         if (request.selector != null) {
             val views = automation.getNativeViews(request.selector.toBySelector())
             return AndroidGetNativeViewsResponse(
-                roots = views,
+                roots = views
             )
         } else {
             // When both selectors are null, return the full native tree
             val trees = automation.getNativeUITrees()
             return AndroidGetNativeViewsResponse(
-                roots = trees,
+                roots = trees
             )
         }
     }
@@ -278,7 +278,7 @@ class AutomatorServer(private val automation: Automator) : MobileAutomatorServer
 
     override fun pickImageFromGallery(request: Contracts.AndroidPickImageFromGalleryRequest) {
         val apiLvl = getOsVersion().osVersion
-     
+
         val androidImageSelector = request.imageSelector ?: AndroidSelector(
             resourceName = if (apiLvl >= 34) "com.google.android.providers.media.module:id/icon_thumbnail" else "com.google.android.documentsui:id/icon_thumb",
             instance = request.imageIndex ?: 0
