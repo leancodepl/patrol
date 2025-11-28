@@ -183,6 +183,7 @@ class AndroidTestBackend {
         '--build-number',
         buildNumber,
       ],
+      if (options.noTreeShakeIcons) '--no-tree-shake-icons',
       '-t',
       'integration_test/test_bundle.dart',
     ], runInShell: true);
