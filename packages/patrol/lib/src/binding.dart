@@ -76,7 +76,11 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
 
       final nameOfRequestedTest = await patrolAppService.testExecutionRequested;
 
+      // TODO: @piotruela IDK if it is needed
+      // ignore: avoid_print
       print('PatrolBinding: nameOfRequestedTest: $nameOfRequestedTest');
+      //
+      // ignore: avoid_print
       print('PatrolBinding: _currentDartTest: $_currentDartTest');
 
       if (nameOfRequestedTest == _currentDartTest) {

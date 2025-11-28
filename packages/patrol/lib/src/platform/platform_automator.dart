@@ -39,7 +39,7 @@ class PlatformAutomatorConfig {
 
     /// Time after which the connection with the native automator will fail.
     ///
-    /// It must be longer than [findTimeout].
+    /// It must be longer than `findTimeout`.
     Duration? connectionTimeout,
 
     /// Time to wait for native views to appear.

@@ -20,6 +20,8 @@ void main() {
 
       expect($('app'), findsOneWidget);
       if (!Platform.isMacOS) {
+        //
+        // ignore: deprecated_member_use
         await $.native.pressHome();
       }
     },

@@ -1,3 +1,4 @@
+import 'package:patrol/src/native/native_automator.dart';
 import 'package:patrol/src/platform/contracts/contracts.dart';
 import 'package:patrol/src/platform/platform_automator.dart';
 

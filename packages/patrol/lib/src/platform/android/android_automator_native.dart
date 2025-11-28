@@ -493,10 +493,11 @@ class AndroidAutomator extends NativeMobileAutomator
   /// [selector], which are currently visible on screen.
   ///
   /// If [selector] is null, returns the whole native UI tree.
+  @override
   Future<AndroidGetNativeViewsResponse> getNativeViews(
     AndroidSelector? selector,
-  ) async {
-    return await wrapRequest(
+  ) {
+    return wrapRequest(
       'getNativeViews',
       () => _client.getNativeViews(
         AndroidGetNativeViewsRequest(selector: selector),
