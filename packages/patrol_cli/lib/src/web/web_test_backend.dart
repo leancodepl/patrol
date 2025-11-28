@@ -666,43 +666,28 @@ class WebTestBackend {
   }
 
   Future<void> _ensureNodeDependencies(String webRunnerPath) async {
-    _logger.detail('Checking Node.js dependencies in web_runner...');
+    _logger.info('Installing Node.js dependencies...');
 
-    final nodeModulesDir = Directory('$webRunnerPath/node_modules');
-    final packageLockFile = File('$webRunnerPath/package-lock.json');
+    final nodeResult = await _processManager.run(
+      ['npm', 'install'],
+      workingDirectory: webRunnerPath,
+      runInShell: true,
+    );
 
-    // Check if node_modules exists and has content
-    final needsInstall =
-        !nodeModulesDir.existsSync() ||
-        nodeModulesDir.listSync().isEmpty ||
-        !packageLockFile.existsSync();
-
-    if (needsInstall) {
-      _logger.info('Installing Node.js dependencies...');
-
-      final result = await _processManager.run(
-        ['npm', 'install'],
-        workingDirectory: webRunnerPath,
-        runInShell: true,
+    if (nodeResult.exitCode != 0) {
+      throw ProcessException(
+        'npm',
+        ['install'],
+        'Failed to install Node.js dependencies:\n'
+            'STDOUT: ${nodeResult.stdout}\n'
+            'STDERR: ${nodeResult.stderr}',
+        nodeResult.exitCode,
       );
-
-      if (result.exitCode != 0) {
-        throw ProcessException(
-          'npm',
-          ['install'],
-          'Failed to install Node.js dependencies:\n'
-              'STDOUT: ${result.stdout}\n'
-              'STDERR: ${result.stderr}',
-          result.exitCode,
-        );
-      }
-
-      _logger.info('Node.js dependencies installed successfully.');
-    } else {
-      _logger.detail('Node.js dependencies are already installed.');
     }
 
-    _logger.info('Installing Playwright dependencies...');
+    _logger
+      ..info('Node.js dependencies installed successfully.')
+      ..info('Installing Playwright dependencies...');
     final result = await _processManager.run(
       ['npx', 'playwright', 'install'],
       workingDirectory: webRunnerPath,
