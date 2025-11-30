@@ -101,15 +101,6 @@
                                                                                                                 \
         }                                                                                                       \
                                                                                                                 \
-        NSString *deleteText1 = [ObjCLocalization getLocalizedStringWithKey:@"delete"];                          \
-        XCUIElement *deleteButton1 = springboard.alerts.buttons[deleteText1];                                     \
-        if (deleteButton1.exists) {                                                                              \
-          [deleteButton1 tap];                                                                                   \
-          while (deleteButton1.exists) {                                                                         \
-            [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];                  \
-          }                                                                                                     \
-        }                                                                                                       \
-                                                                                                                \
         NSLog(@"App uninstallation completed");                                                                 \
         return;                                                                                                 \
       }                                                                                                         \
@@ -131,6 +122,33 @@
                                                                                                                 \
     if (!appFound) {                                                                                            \
       NSLog(@"App icon not found on any home screen: %@", appName);                                             \
+    }                                                                                                           \
+  }                                                                                                             \
+  +(void)resetPermissions {                                                                                     \
+    NSLog(@"Clearing permissions");                                                                             \
+    XCUIApplication *app = [[XCUIApplication alloc] init];                                                      \
+    if (@available(iOS 13.4, *)) {                                                                              \
+      [app resetAuthorizationStatusForResource:XCUIProtectedResourceLocation];                                  \
+      [app resetAuthorizationStatusForResource:XCUIProtectedResourceContacts];                                  \
+      [app resetAuthorizationStatusForResource:XCUIProtectedResourceCalendar];                                  \
+      [app resetAuthorizationStatusForResource:XCUIProtectedResourceReminders];                                 \
+      [app resetAuthorizationStatusForResource:XCUIProtectedResourcePhotos];                                    \
+      [app resetAuthorizationStatusForResource:XCUIProtectedResourceBluetooth];                                 \
+      [app resetAuthorizationStatusForResource:XCUIProtectedResourceMicrophone];                                \
+      [app resetAuthorizationStatusForResource:XCUIProtectedResourceCamera];                                    \
+      [app resetAuthorizationStatusForResource:XCUIProtectedResourceHomeKit];                                   \
+      [app resetAuthorizationStatusForResource:XCUIProtectedResourceMediaLibrary];                              \
+      [app resetAuthorizationStatusForResource:XCUIProtectedResourceKeyboardNetwork];                           \
+    }                                                                                                           \
+    if (@available(iOS 14.0, *)) {                                                                              \
+      [app resetAuthorizationStatusForResource:XCUIProtectedResourceHealth];                                    \
+    }                                                                                                           \
+    if (@available(iOS 15.0, *)) {                                                                              \
+      [app resetAuthorizationStatusForResource:XCUIProtectedResourceUserTracking];                              \
+      [app resetAuthorizationStatusForResource:XCUIProtectedResourceFocus];                                     \
+    }                                                                                                           \
+    if (@available(iOS 15.4, *)) {                                                                              \
+      [app resetAuthorizationStatusForResource:XCUIProtectedResourceLocalNetwork];                              \
     }                                                                                                           \
   }                                                                                                             \
                                                                                                                 \
@@ -200,6 +218,12 @@
                                                                                                                 \
       IMP implementation = imp_implementationWithBlock(^(id _self) {                                            \
         NSLog(@"RunnerUITests running Dart test: %@", dartTestName);                                            \
+                                                                                                                \
+                                                                                                                \
+        if (CLEAR_PERMISSIONS && i > 0) {                                                                       \
+          [self resetPermissions];                                                                              \
+          NSLog(@"App permissions cleared");                                                                    \
+        }                                                                                                       \
                                                                                                                 \
         if (FULL_ISOLATION && i > 0) {                                                                          \
           NSLog(@"Uninstalling app");                                                                           \

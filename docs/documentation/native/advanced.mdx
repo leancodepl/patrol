@@ -28,24 +28,17 @@ version on CI systems to avoid unexpected breakages.
 
 ### Isolation of test runs
 
-To achieve full isolation between test runs, you can use the `--full-isolation` flag or configure it directly in
-your build configuration.
-
-#### Using the --full-isolation flag
+To achieve full isolation between test runs:
+- On Android: set `clearPackageData` to `true` in your `build.gradle` file,
+- On iOS Simulator: use the `--full-isolation` flag
 
 <Warning>
-    This functionality is experimental on iOS.
+    This functionality is experimental on iOS and might be removed in the future releases.
 </Warning>
-
-The `--full-isolation` flag is supported on both Android and iOS:
 
 ```bash
 patrol test --full-isolation
 ```
-
-This flag:
-- **Android**: Clears package data before running each test
-- **iOS**: Uninstalls the app before running each test (except for the first one)
 
 #### Android gradle configuration
 
@@ -58,11 +51,6 @@ defaultConfig {
     testInstrumentationRunnerArguments["clearPackageData"] = "true"
 }
 ```
-
-When both gradle configuration and `--full-isolation` flag are used:
-- If `clearPackageData` is **not set** in gradle (default `false`): `--full-isolation` sets it to `true`
-- If `clearPackageData` is **set to `true`** in gradle: `--full-isolation` has no effect (already `true`)
-- If `clearPackageData` is **set to `false`** in gradle: `--full-isolation` overrides it to `true`
 
 ### Embrace the native tests
 
