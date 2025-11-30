@@ -98,6 +98,16 @@
           while (deleteButton.exists) {                                                                         \
             [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];                  \
           }                                                                                                     \
+                                                                                                                \
+        }                                                                                                       \
+                                                                                                                \
+        NSString *deleteText1 = [ObjCLocalization getLocalizedStringWithKey:@"delete"];                          \
+        XCUIElement *deleteButton1 = springboard.alerts.buttons[deleteText1];                                     \
+        if (deleteButton1.exists) {                                                                              \
+          [deleteButton1 tap];                                                                                   \
+          while (deleteButton1.exists) {                                                                         \
+            [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];                  \
+          }                                                                                                     \
         }                                                                                                       \
                                                                                                                 \
         NSLog(@"App uninstallation completed");                                                                 \

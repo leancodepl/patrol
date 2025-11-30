@@ -50,6 +50,11 @@ class _HomePageBody extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         PTElevatedButton(
+          key: Key('requestNotificationPermissionButton'),
+          caption: 'Request notification permission',
+          onPressed: context.read<NotificationHandler>().requestPermission,
+        ),
+        PTElevatedButton(
           caption: 'Sign In with Google',
           onPressed: context.read<AuthCubit>().signInWithGoogle,
         ),
