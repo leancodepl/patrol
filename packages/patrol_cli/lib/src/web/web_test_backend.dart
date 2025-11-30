@@ -605,9 +605,9 @@ class WebTestBackend {
 
       final packagePath = patrolPackage.root.toFilePath();
       return '$packagePath/web_runner';
-    } catch (e) {
+    } catch (err) {
       throw Exception(
-        'Failed to locate patrol package: $e\n'
+        'Failed to locate patrol package: $err\n'
         'Please ensure your project dependencies are properly resolved by running "dart pub get".',
       );
     }
@@ -663,8 +663,8 @@ class WebTestBackend {
       );
 
       return isReady;
-    } catch (e) {
-      _logger.detail('Server verification failed: $e');
+    } catch (err) {
+      _logger.detail('Server verification failed: $err');
       return false;
     }
   }
