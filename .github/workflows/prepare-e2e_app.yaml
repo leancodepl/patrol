@@ -193,7 +193,7 @@ jobs:
             -configuration Debug \
             -sdk iphoneos -destination 'platform=iOS Simulator,name=iPhone 16' \
             -derivedDataPath ../build/ios_unit \
-            OTHER_CFLAGS='$(inherited) -D FULL_ISOLATION=0' \
+            OTHER_CFLAGS='$(inherited) -D FULL_ISOLATION=0 -D CLEAR_PERMISSIONS=0' \
           | xcbeautify --renderer github-actions
 
   prepare-flutter:

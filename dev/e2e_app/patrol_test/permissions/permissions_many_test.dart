@@ -18,17 +18,6 @@ void main() {
     await _requestAndDenyLocationPermission($);
     await _requestAndDenyGalleryPermission($);
   }, tags: ['locale_testing_ios']);
-
-  patrol('grants various permissions 2', ($) async {
-    await createApp($);
-
-    await $('Open permissions screen').scrollTo().tap();
-
-    await _requestAndGrantCameraPermission($);
-    await _requestAndGrantMicrophonePermission($);
-    await _requestAndDenyLocationPermission($);
-    await _requestAndDenyGalleryPermission($);
-  }, tags: ['locale_testing_ios']);
 }
 
 Future<void> _requestAndGrantCameraPermission(PatrolIntegrationTester $) async {

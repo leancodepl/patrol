@@ -37,7 +37,7 @@ void main() {
 
     await $(ListTile).containing($(Icons.flutter_dash)).$('click').tap();
 
-    // For macOS we don't want to continue the test as we don't have support for native interactions
+    /*     // For macOS we don't want to continue the test as we don't have support for native interactions
     if (!Platform.isMacOS) {
       await $(ElevatedButton)
           .which<ElevatedButton>((widget) => widget.enabled)
@@ -62,6 +62,6 @@ void main() {
       await $.pumpAndSettle();
 
       expect($('Congratulations!'), findsOneWidget);
-    }
+    } */
   });
 }

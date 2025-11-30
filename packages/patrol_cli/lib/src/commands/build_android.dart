@@ -47,7 +47,6 @@ class BuildAndroidCommand extends PatrolCommand {
     usesUninstallOption();
     usesBuildNameOption();
     usesBuildNumberOption();
-    usesFullIsolationOption();
 
     usesAndroidOptions();
   }

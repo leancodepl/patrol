@@ -46,7 +46,7 @@ class NotificationHandler {
     );
   }
 
-  Future<bool> requestPermission() async {
+  Future<bool> _requestPermission() async {
     final permissionStatus = await PermissionHandler.requestPermissions();
     return switch (permissionStatus) {
       PermissionStatus.granted => true,
@@ -58,7 +58,7 @@ class NotificationHandler {
     required VoidCallback onPressed,
     required VoidCallback onError,
   }) async {
-    final hasPermission = await requestPermission();
+    final hasPermission = await _requestPermission();
     if (!hasPermission) {
       onError();
       return;
@@ -70,7 +70,7 @@ class NotificationHandler {
   Future<void> triggerPushNotification({
     required VoidCallback onPressed,
   }) async {
-    final hasPermission = await requestPermission();
+    final hasPermission = await _requestPermission();
     if (!hasPermission) {
       return;
     }
