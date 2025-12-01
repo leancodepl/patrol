@@ -3,7 +3,14 @@ import 'package:patrol/src/platform/contracts/contracts.dart';
 import 'package:patrol/src/platform/platform_automator.dart';
 import 'package:patrol/src/platform/selector.dart';
 
+import 'native_automator_config.dart';
+
+/// Represents a native view in the UI hierarchy.
+///
+/// This class provides a unified representation of native views across different
+/// platforms (Android and iOS), allowing you to inspect the native UI tree.
 class NativeView {
+  /// Creates a new [NativeView].
   NativeView({
     required this.className,
     required this.text,
@@ -16,17 +23,22 @@ class NativeView {
     required this.children,
   });
 
-  String? className; // element type on ios, but requires some mapping
-  String? text; // label on ios,
-  String? contentDescription; // accessibilityLabel on ios
-  late bool focused; // hasFocus on ios
-  late bool enabled; // isEnabled on ios
-  int? childCount; // always empty on ios
-  String? resourceName; // identifier on ios
-  String?
-  applicationPackage; // bundleId on ios, but not returned from the automator currently
-  late List<NativeView> children;
+  /// Creates a [NativeView] from an iOS native view.
+  factory NativeView.fromIOS(IOSNativeView iosNativeView) {
+    return NativeView(
+      className: iosNativeView.elementType.name,
+      text: iosNativeView.label,
+      contentDescription: iosNativeView.accessibilityLabel,
+      focused: iosNativeView.hasFocus,
+      enabled: iosNativeView.isEnabled,
+      childCount: iosNativeView.children.length,
+      resourceName: iosNativeView.identifier,
+      applicationPackage: iosNativeView.bundleId,
+      children: iosNativeView.children.map(NativeView.fromIOS).toList(),
+    );
+  }
 
+  /// Creates a [NativeView] from an Android native view.
   factory NativeView.fromAndroid(AndroidNativeView androidNativeView) {
     return NativeView(
       className: androidNativeView.className,
@@ -41,19 +53,46 @@ class NativeView {
     );
   }
 
-  factory NativeView.fromIOS(IOSNativeView iosNativeView) {
-    return NativeView(
-      className: iosNativeView.elementType.name,
-      text: iosNativeView.label,
-      contentDescription: iosNativeView.accessibilityLabel,
-      focused: iosNativeView.hasFocus,
-      enabled: iosNativeView.isEnabled,
-      childCount: iosNativeView.children.length,
-      resourceName: iosNativeView.identifier,
-      applicationPackage: iosNativeView.bundleId,
-      children: iosNativeView.children.map(NativeView.fromIOS).toList(),
-    );
-  }
+  /// The class name of the native view.
+  ///
+  /// On Android, this is the class name. On iOS, this is the element type.
+  String? className;
+
+  /// The text content of the native view.
+  ///
+  /// On Android, this is the text. On iOS, this is the label.
+  String? text;
+
+  /// The content description of the native view.
+  ///
+  /// On Android, this is the content description. On iOS, this is the accessibility label.
+  String? contentDescription;
+
+  /// Whether the native view is focused.
+  ///
+  /// On Android, this is isFocused. On iOS, this is hasFocus.
+  late bool focused;
+
+  /// Whether the native view is enabled.
+  late bool enabled;
+
+  /// The number of child views.
+  ///
+  /// On iOS, this is always derived from the children list length.
+  int? childCount;
+
+  /// The resource name of the native view.
+  ///
+  /// On Android, this is the resource name. On iOS, this is the identifier.
+  String? resourceName;
+
+  /// The application package of the native view.
+  ///
+  /// On Android, this is the application package. On iOS, this is the bundle ID.
+  String? applicationPackage;
+
+  /// The list of child native views.
+  late List<NativeView> children;
 }
 
 /// Thrown when a native action fails.

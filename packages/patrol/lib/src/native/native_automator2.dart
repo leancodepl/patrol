@@ -3,6 +3,10 @@ import 'package:patrol/src/native/native_automator.dart';
 import 'package:patrol/src/platform/contracts/contracts.dart';
 import 'package:patrol/src/platform/platform_automator.dart';
 
+import 'native_automator_config.dart';
+
+// native2 is deprecated too so we can ignore the deprecation warning
+// ignore: deprecated_member_use_from_same_package
 /// This class represents the result of [NativeAutomator.getNativeViews].
 class GetNativeViewsResult {
   /// Creates a new [GetNativeViewsResult].

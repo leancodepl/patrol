@@ -143,7 +143,7 @@ class IOSAutomator extends NativeMobileAutomator
   ///
   /// If the notification is not visible immediately, this method waits for the
   /// notification to become visible for [timeout] duration. If [timeout] is not
-  /// specified, it utilizes the [NativeAutomatorConfig.findTimeout] duration
+  /// specified, it utilizes the `findTimeout` duration
   /// from the configuration.
   ///
   /// Notification shade has to be opened first with [openNotifications].
@@ -169,7 +169,7 @@ class IOSAutomator extends NativeMobileAutomator
   ///
   /// If the notification is not visible immediately, this method waits for the
   /// notification to become visible for [timeout] duration. If [timeout] is not
-  /// specified, it utilizes the [NativeAutomatorConfig.findTimeout] duration
+  /// specified, it utilizes the `findTimeout` duration
   /// from the configuration.
   ///
   /// Notification shade has to be opened first with [openNotifications].
@@ -199,7 +199,7 @@ class IOSAutomator extends NativeMobileAutomator
   ///
   /// It waits for the view to become visible for [timeout] duration. If
   /// [timeout] is not specified, it utilizes the
-  /// [NativeAutomatorConfig.findTimeout] duration from the configuration.
+  /// `findTimeout` duration from the configuration.
   /// If the native view is not found, an exception is thrown.
   @override
   Future<void> tap(
@@ -222,7 +222,7 @@ class IOSAutomator extends NativeMobileAutomator
   ///
   /// It waits for the view to become visible for [timeout] duration. If
   /// [timeout] is not specified, it utilizes the
-  /// [NativeAutomatorConfig.findTimeout] duration from the configuration.
+  /// `findTimeout` duration from the configuration.
   /// If the native view is not found, an exception is thrown.
   @override
   Future<void> doubleTap(
@@ -270,7 +270,7 @@ class IOSAutomator extends NativeMobileAutomator
   /// If the text field isn't immediately visible, this method waits for the
   /// view to become visible. It prioritizes the [timeout] duration provided
   /// in the method call. If [timeout] is not specified, it utilizes the
-  /// [NativeAutomatorConfig.findTimeout] duration from the configuration.
+  /// `findTimeout` duration from the configuration.
   ///
   /// The native view specified by [selector] must be:
   ///  * EditText or AutoCompleteTextView on Android
@@ -309,7 +309,7 @@ class IOSAutomator extends NativeMobileAutomator
   /// If the text field at [index] isn't visible immediately, this method waits
   /// for the view to become visible. It prioritizes the [timeout] duration
   /// provided in the method call. If [timeout] is not specified, it utilizes
-  /// the [NativeAutomatorConfig.findTimeout] duration from the configuration.
+  /// the `findTimeout` duration from the configuration.
   ///
   /// Native views considered to be texts fields are:
   ///  * EditText on Android
@@ -442,7 +442,7 @@ class IOSAutomator extends NativeMobileAutomator
   /// Waits until the native view specified by [selector] becomes visible.
   /// It waits for the view to become visible for [timeout] duration. If
   /// [timeout] is not specified, it utilizes the
-  /// [NativeAutomatorConfig.findTimeout].
+  /// `findTimeout`.
   @override
   Future<void> waitUntilVisible(
     IOSSelector selector, {
@@ -470,8 +470,8 @@ class IOSAutomator extends NativeMobileAutomator
     IOSSelector? selector, {
     List<String>? iosInstalledApps,
     String? appId,
-  }) async {
-    return await wrapRequest(
+  }) {
+    return wrapRequest(
       'getNativeViews',
       () => _client.getNativeViews(
         IOSGetNativeViewsRequest(

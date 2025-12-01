@@ -16,9 +16,9 @@ class DeviceFinder {
     required ProcessManager processManager,
     required DisposeScope parentDisposeScope,
     required Logger logger,
-  })  : _processManager = processManager,
-        _disposeScope = DisposeScope(),
-        _logger = logger {
+  }) : _processManager = processManager,
+       _disposeScope = DisposeScope(),
+       _logger = logger {
     _disposeScope.disposedBy(parentDisposeScope);
   }
 
@@ -152,17 +152,14 @@ class DeviceFinder {
     required FlutterCommand flutterCommand,
   }) async {
     var flutterKilled = false;
-    final process = await _processManager.start(
-      [
-        flutterCommand.executable,
-        ...flutterCommand.arguments,
-        '--no-version-check',
-        '--suppress-analytics',
-        'devices',
-        '--machine',
-      ],
-      runInShell: true,
-    );
+    final process = await _processManager.start([
+      flutterCommand.executable,
+      ...flutterCommand.arguments,
+      '--no-version-check',
+      '--suppress-analytics',
+      'devices',
+      '--machine',
+    ], runInShell: true);
     _disposeScope.addDispose(() {
       process.kill();
       flutterKilled = true; // `flutter` has exit code 0 on SIGINT

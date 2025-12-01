@@ -24,13 +24,13 @@ dependencies:
   flutter_test:
     sdk: flutter
   http: '^1.1.0'
+  js: ^0.7.0
   json_annotation: ^4.8.1
   meta: ^1.10.0
   patrol_finders: ^2.9.0
   patrol_log: ^0.5.0
   shelf: ^1.4.1
   test_api: '^0.7.0'
-  js: ^0.7.0
 
 dev_dependencies:
   build_runner: ^2.4.6
