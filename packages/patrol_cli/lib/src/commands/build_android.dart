@@ -47,7 +47,6 @@ class BuildAndroidCommand extends PatrolCommand {
     usesUninstallOption();
     usesBuildNameOption();
     usesBuildNumberOption();
-    usesFullIsolationOption();
 
     usesAndroidOptions();
   }
@@ -192,7 +191,6 @@ class BuildAndroidCommand extends PatrolCommand {
       appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
       uninstall: uninstall,
-      fullIsolation: boolArg('full-isolation'),
     );
 
     try {

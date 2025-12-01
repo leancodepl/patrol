@@ -3,53 +3,53 @@
   import os
 
   extension IOSSelector {
-      public func toTextFieldNSPredicate() -> NSPredicate {
-    var format = ""
-    var begun = false
-    var values = [String]()
+    public func toTextFieldNSPredicate() -> NSPredicate {
+      var format = ""
+      var begun = false
+      var values = [String]()
 
-    if text != nil {
-      begun = true
-      format += "(label == %@ OR title == %@ OR value == %@ OR placeholderValue == %@)"
-      values.append(text!)
-      values.append(text!)
-      values.append(text!)
-      values.append(text!)
+      if text != nil {
+        begun = true
+        format += "(label == %@ OR title == %@ OR value == %@ OR placeholderValue == %@)"
+        values.append(text!)
+        values.append(text!)
+        values.append(text!)
+        values.append(text!)
+      }
+
+      if textStartsWith != nil {
+        if begun { format += " AND " }
+        begun = true
+        format +=
+          "(label BEGINSWITH %@ OR title BEGINSWITH %@ OR value BEGINSWITH %@ OR placeholderValue BEGINSWITH %@)"
+        values.append(textStartsWith!)
+        values.append(textStartsWith!)
+        values.append(textStartsWith!)
+        values.append(textStartsWith!)
+      }
+
+      if textContains != nil {
+        if begun { format += " AND " }
+        begun = true
+        format +=
+          "(label CONTAINS %@ OR title CONTAINS %@ OR value CONTAINS %@ OR placeholderValue CONTAINS %@)"
+        values.append(textContains!)
+        values.append(textContains!)
+        values.append(textContains!)
+        values.append(textContains!)
+      }
+
+      if identifier != nil {
+        if begun { format += " AND " }
+        begun = true
+        format += "(identifier == %@)"
+        values.append(identifier!)
+      }
+
+      let predicate = NSPredicate(format: format, argumentArray: values)
+
+      return predicate
     }
-
-    if textStartsWith != nil {
-      if begun { format += " AND " }
-      begun = true
-      format +=
-        "(label BEGINSWITH %@ OR title BEGINSWITH %@ OR value BEGINSWITH %@ OR placeholderValue BEGINSWITH %@)"
-      values.append(textStartsWith!)
-      values.append(textStartsWith!)
-      values.append(textStartsWith!)
-      values.append(textStartsWith!)
-    }
-
-    if textContains != nil {
-      if begun { format += " AND " }
-      begun = true
-      format +=
-        "(label CONTAINS %@ OR title CONTAINS %@ OR value CONTAINS %@ OR placeholderValue CONTAINS %@)"
-      values.append(textContains!)
-      values.append(textContains!)
-      values.append(textContains!)
-      values.append(textContains!)
-    }
-
-    if identifier != nil {
-      if begun { format += " AND " }
-      begun = true
-      format += "(identifier == %@)"
-      values.append(identifier!)
-    }
-
-    let predicate = NSPredicate(format: format, argumentArray: values)
-
-    return predicate
-  }
 
     public func toNSPredicate() -> NSPredicate {
       var values = [Any]()
@@ -64,7 +64,9 @@
       }
 
       if let textStartsWith = textStartsWith {
-        conditions.append("(label BEGINSWITH %@ OR title BEGINSWITH %@ OR value BEGINSWITH %@ OR placeholderValue BEGINSWITH %@)")
+        conditions.append(
+          "(label BEGINSWITH %@ OR title BEGINSWITH %@ OR value BEGINSWITH %@ OR placeholderValue BEGINSWITH %@)"
+        )
         values.append(textStartsWith)
         values.append(textStartsWith)
         values.append(textStartsWith)
@@ -72,7 +74,9 @@
       }
 
       if let textContains = textContains {
-        conditions.append("(label CONTAINS %@ OR title CONTAINS %@ OR value CONTAINS %@ OR placeholderValue CONTAINS %@)")
+        conditions.append(
+          "(label CONTAINS %@ OR title CONTAINS %@ OR value CONTAINS %@ OR placeholderValue CONTAINS %@)"
+        )
         values.append(textContains)
         values.append(textContains)
         values.append(textContains)

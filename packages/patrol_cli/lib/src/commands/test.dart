@@ -70,8 +70,6 @@ class TestCommand extends PatrolCommand {
     usesAndroidOptions();
     usesIOSOptions();
 
-    usesFullIsolationOption();
-
     usesWeb();
   }
 
@@ -262,7 +260,6 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
       uninstall: uninstall,
-      fullIsolation: boolArg('full-isolation'),
     );
 
     final iosOpts = IOSAppOptions(
@@ -275,6 +272,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
       fullIsolation: boolArg('full-isolation'),
+      clearIOSPermissions: boolArg('clear-permissions'),
     );
 
     final macosOpts = MacOSAppOptions(

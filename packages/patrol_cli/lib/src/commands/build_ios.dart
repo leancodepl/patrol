@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' show join;
 import 'package:patrol_cli/src/analytics/analytics.dart';
+import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/compatibility_checker/compatibility_checker.dart';
@@ -44,7 +45,6 @@ class BuildIOSCommand extends PatrolCommand {
     usesCheckCompatibilityOption();
     usesBuildNameOption();
     usesBuildNumberOption();
-    usesFullIsolationOption();
 
     usesIOSOptions();
     argParser.addFlag(
@@ -192,6 +192,10 @@ class BuildIOSCommand extends PatrolCommand {
       testServerPort: super.testServerPort,
       fullIsolation: boolArg('full-isolation'),
     );
+
+    if (!iosOpts.simulator && iosOpts.fullIsolation) {
+      throwToolExit('Full isolation is only supported on iOS Simulator');
+    }
 
     try {
       await _iosTestBackend.build(iosOpts);

@@ -1102,7 +1102,7 @@
           maxX: xcuielement.frame.maxX,
           maxY: xcuielement.frame.maxY
         ),
-        // FIXME: accessibilityLabel 
+        // FIXME: accessibilityLabel
         //accessibilityLabel: xcuielement.accessibilityLabel,
         placeholderValue: xcuielement.placeholderValue,
         value: xcuielement.value as? String,
@@ -1130,7 +1130,7 @@
           maxX: xcuielement.frame.maxX,
           maxY: xcuielement.frame.maxY
         ),
-        // FIXME: accessibilityLabel 
+        // FIXME: accessibilityLabel
         //accessibilityLabel: xcuielement.accessibilityLabel,
         placeholderValue: xcuielement.placeholderValue,
         value: xcuielement.value as? String,
