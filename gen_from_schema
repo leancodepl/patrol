@@ -24,7 +24,7 @@ pushd "${patrol_package}"
 dart fix --apply "$patrol_dart_out_dir"
 dart format "$patrol_dart_out_dir"
 
-dart run build_runner build --delete-conflicting-outputs --build-filter="$patrol_dart_out_dir/*.dart"
+dart run build_runner build --delete-conflicting-outputs --build-filter="$patrol_dart_out_dir/contracts.dart"
 
 popd
 
