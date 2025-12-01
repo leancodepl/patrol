@@ -96,6 +96,37 @@ class Selector implements CompoundSelector {
       web_selector.WebSelector(text: text, cssOrXpath: className);
 }
 
+/// A compound selector that behaves like NativeSelector, allowing platform-specific
+/// iOS and Android selectors to be specified separately.
+///
+/// This is useful when iOS and Android require different selector values or types.
+class PlatformCompoundSelector implements CompoundSelector {
+  /// Creates a new [PlatformCompoundSelector].
+  PlatformCompoundSelector({
+    IOSSelector? ios,
+    AndroidSelector? android,
+    WebSelector? web,
+  }) : _ios = ios,
+       _android = android,
+       _web = web;
+
+  final IOSSelector? _ios;
+  final AndroidSelector? _android;
+  final WebSelector? _web;
+
+  @override
+  IOSSelector get ios =>
+      _ios ?? (throw UnsupportedError('iOS selector not provided'));
+
+  @override
+  AndroidSelector get android =>
+      _android ?? (throw UnsupportedError('Android selector not provided'));
+
+  @override
+  WebSelector get web =>
+      _web ?? (throw UnsupportedError('Web selector not provided'));
+}
+
 /// An Android-specific selector for finding UI elements.
 class AndroidSelector extends contracts.AndroidSelector
     implements CompoundSelector {
