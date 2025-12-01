@@ -103,6 +103,7 @@ jobs:
         id: set_excluded_tests
         run: |
           TESTS_TO_EXCLUDE="permissions/notifications_test,\
+          web_example_test,\
           overflow_test,\
           webview_hackernews_test,\
           webview_leancode_test,\

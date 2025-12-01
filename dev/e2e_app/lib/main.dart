@@ -276,14 +276,14 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
             child: const Text('Open login flow screen'),
           ),
           TextButton(
-            onPressed: () async => Navigator.of(context).push(
+            onPressed: () => Navigator.of(context).push(
               MaterialPageRoute<void>(builder: (_) => const OverflowScreen()),
             ),
             child: const Text('Open overflow screen'),
           ),
           TextButton(
             key: K.cameraFeaturesButton,
-            onPressed: () async => Navigator.of(context).push(
+            onPressed: () => Navigator.of(context).push(
               MaterialPageRoute<void>(builder: (_) => const CameraScreen()),
             ),
             child: const Text('Open camera related features'),

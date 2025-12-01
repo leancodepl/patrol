@@ -5,9 +5,11 @@ part 'native_views.g.dart';
 
 @JsonSerializable()
 class GetNativeUITreeResponse {
+  GetNativeUITreeResponse();
 
   factory GetNativeUITreeResponse.fromJson(Map<String, dynamic> json) =>
       _$GetNativeUITreeResponseFromJson(json);
+
   late List<IOSNativeView> iOSroots;
   late List<AndroidNativeView> androidRoots;
   late List<NativeView> roots;
@@ -29,6 +31,9 @@ class NativeView {
     required this.applicationPackage,
     required this.children,
   });
+
+  factory NativeView.fromJson(Map<String, dynamic> json) =>
+      _$NativeViewFromJson(json);
 
   factory NativeView.fromAndroid(AndroidNativeView androidNativeView) {
     return NativeView(
@@ -67,4 +72,6 @@ class NativeView {
   String? resourceName;
   String? applicationPackage;
   late List<NativeView> children;
+
+  Map<String, dynamic> toJson() => _$NativeViewToJson(this);
 }
