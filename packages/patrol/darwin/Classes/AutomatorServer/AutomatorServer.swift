@@ -81,20 +81,20 @@
     func tap(request: IOSTapRequest) throws {
       return try runCatching {
         return try automator.tap(
-            on: request.selector,
-            inApp: request.appId,
-            withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) }
-          )
+          on: request.selector,
+          inApp: request.appId,
+          withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) }
+        )
       }
     }
 
     func doubleTap(request: IOSTapRequest) throws {
       return try runCatching {
         return try automator.doubleTap(
-            on: request.selector,
-            inApp: request.appId,
-            withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) }
-          )
+          on: request.selector,
+          inApp: request.appId,
+          withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) }
+        )
       }
     }
 
@@ -340,23 +340,23 @@
     func pickImageFromGallery(request: IOSPickImageFromGalleryRequest) throws {
       let isSimulator = try isVirtualDevice().isVirtualDevice
       if request.imageSelector != nil {
-          try automator.tap(
-            on: request.imageSelector!,
-            inApp: request.appId,
-            withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
-          )
-        } else {
-          try automator.tap(
-            on: IOSSelector(
-                // Images start from index 1 on real device and index 2 on simulator
-                instance: isSimulator
-                  ? (request.imageIndex ?? 0) + 2 : (request.imageIndex ?? 0) + 1,
-                elementType: IOSElementType.image
-              ),
-            inApp: request.appId,
-            withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
-          )
-        }
+        try automator.tap(
+          on: request.imageSelector!,
+          inApp: request.appId,
+          withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
+        )
+      } else {
+        try automator.tap(
+          on: IOSSelector(
+            // Images start from index 1 on real device and index 2 on simulator
+            instance: isSimulator
+              ? (request.imageIndex ?? 0) + 2 : (request.imageIndex ?? 0) + 1,
+            elementType: IOSElementType.image
+          ),
+          inApp: request.appId,
+          withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
+        )
+      }
     }
 
     func pickMultipleImagesFromGallery(request: IOSPickMultipleImagesFromGalleryRequest) throws {
@@ -365,23 +365,23 @@
 
         // Select multiple images
         for i in request.imageIndexes {
-if let imageSelector = request.imageSelector {
-              try automator.tap(
-                on: imageSelector,
-                inApp: request.appId,
-                withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
-              )
-            } else {
-              try automator.tap(
-                on: IOSSelector(
-                    // Images start from index 1 on real device and index 2 on simulator
-                    instance: isSimulator ? i + 2 : i + 1,
-                    elementType: IOSElementType.image
-                  ),
-                inApp: request.appId,
-                withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
-              )
-            }
+          if let imageSelector = request.imageSelector {
+            try automator.tap(
+              on: imageSelector,
+              inApp: request.appId,
+              withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
+            )
+          } else {
+            try automator.tap(
+              on: IOSSelector(
+                // Images start from index 1 on real device and index 2 on simulator
+                instance: isSimulator ? i + 2 : i + 1,
+                elementType: IOSElementType.image
+              ),
+              inApp: request.appId,
+              withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
+            )
+          }
         }
 
         // Tap the "Add" button to confirm selection

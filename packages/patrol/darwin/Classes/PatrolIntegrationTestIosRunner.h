@@ -98,7 +98,6 @@
           while (deleteButton.exists) {                                                                         \
             [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];                  \
           }                                                                                                     \
-                                                                                                                \
         }                                                                                                       \
                                                                                                                 \
         NSLog(@"App uninstallation completed");                                                                 \
@@ -218,7 +217,6 @@
                                                                                                                 \
       IMP implementation = imp_implementationWithBlock(^(id _self) {                                            \
         NSLog(@"RunnerUITests running Dart test: %@", dartTestName);                                            \
-                                                                                                                \
                                                                                                                 \
         if (CLEAR_PERMISSIONS && i > 0) {                                                                       \
           [self resetPermissions];                                                                              \
