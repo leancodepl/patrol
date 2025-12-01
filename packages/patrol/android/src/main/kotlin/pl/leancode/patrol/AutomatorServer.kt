@@ -1,35 +1,35 @@
 package pl.leancode.patrol
 
 import android.os.Build
+import org.http4k.routing.RoutingHttpHandler
+import org.http4k.routing.routes
+import pl.leancode.patrol.contracts.AndroidAutomatorServer
 import pl.leancode.patrol.contracts.Contracts
+import pl.leancode.patrol.contracts.Contracts.AndroidEnterTextRequest
+import pl.leancode.patrol.contracts.Contracts.AndroidGetNativeViewsRequest
+import pl.leancode.patrol.contracts.Contracts.AndroidGetNativeViewsResponse
+import pl.leancode.patrol.contracts.Contracts.AndroidOpenPlatformAppRequest
+import pl.leancode.patrol.contracts.Contracts.AndroidSelector
+import pl.leancode.patrol.contracts.Contracts.AndroidSwipeRequest
+import pl.leancode.patrol.contracts.Contracts.AndroidTapOnNotificationRequest
+import pl.leancode.patrol.contracts.Contracts.AndroidTapRequest
+import pl.leancode.patrol.contracts.Contracts.AndroidWaitUntilVisibleRequest
 import pl.leancode.patrol.contracts.Contracts.ConfigureRequest
 import pl.leancode.patrol.contracts.Contracts.DarkModeRequest
-import pl.leancode.patrol.contracts.Contracts.AndroidGetNativeViewsResponse
-import pl.leancode.patrol.contracts.Contracts.AndroidGetNativeViewsRequest
 import pl.leancode.patrol.contracts.Contracts.GetNotificationsRequest
 import pl.leancode.patrol.contracts.Contracts.GetNotificationsResponse
 import pl.leancode.patrol.contracts.Contracts.HandlePermissionRequest
 import pl.leancode.patrol.contracts.Contracts.HandlePermissionRequestCode
 import pl.leancode.patrol.contracts.Contracts.OpenAppRequest
-import pl.leancode.patrol.contracts.Contracts.AndroidOpenPlatformAppRequest
 import pl.leancode.patrol.contracts.Contracts.OpenQuickSettingsRequest
 import pl.leancode.patrol.contracts.Contracts.PermissionDialogVisibleRequest
 import pl.leancode.patrol.contracts.Contracts.PermissionDialogVisibleResponse
-import pl.leancode.patrol.contracts.Contracts.AndroidSelector
-import pl.leancode.patrol.contracts.Contracts.AndroidEnterTextRequest
 import pl.leancode.patrol.contracts.Contracts.SetLocationAccuracyRequest
 import pl.leancode.patrol.contracts.Contracts.SetLocationAccuracyRequestLocationAccuracy
 import pl.leancode.patrol.contracts.Contracts.SetMockLocationRequest
-import pl.leancode.patrol.contracts.Contracts.AndroidSwipeRequest
-import pl.leancode.patrol.contracts.Contracts.AndroidTapOnNotificationRequest
-import pl.leancode.patrol.contracts.Contracts.AndroidTapRequest
-import pl.leancode.patrol.contracts.Contracts.AndroidWaitUntilVisibleRequest
 import pl.leancode.patrol.contracts.MobileAutomatorServer
-import pl.leancode.patrol.contracts.AndroidAutomatorServer
-import pl.leancode.patrol.contracts.getMobileAutomatorRoutes
 import pl.leancode.patrol.contracts.getAndroidAutomatorRoutes
-import org.http4k.routing.RoutingHttpHandler
-import org.http4k.routing.routes
+import pl.leancode.patrol.contracts.getMobileAutomatorRoutes
 
 class AutomatorServer(private val automation: Automator) : MobileAutomatorServer, AndroidAutomatorServer {
     val router: RoutingHttpHandler
