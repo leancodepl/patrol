@@ -13,7 +13,7 @@ class CameraScreen extends StatefulWidget {
 
 class _CameraScreenState extends State<CameraScreen> {
   final List<File> _capturedImages = [];
-  final ImagePicker _picker = ImagePicker();
+  final _picker = ImagePicker();
 
   Future<void> _onAddPhotoTap(ImageSource source) async {
     try {
