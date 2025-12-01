@@ -1,6 +1,7 @@
 ## 0.6.0
 
 - Update `TestEntry.nameWithPath` to use actual test directory. (#2728)
+- Add support for reading web-related logs. (#2789)
 
 ## 0.5.0
 
