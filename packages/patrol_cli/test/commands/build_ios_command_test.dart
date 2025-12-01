@@ -249,7 +249,7 @@ void main() {
       });
 
       test('builds iOS app with full isolation', () async {
-        final result = await runCommand(['--full-isolation']);
+        final result = await runCommand(['--simulator', '--full-isolation']);
 
         expect(result, equals(0));
 

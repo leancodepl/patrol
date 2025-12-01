@@ -254,7 +254,7 @@ void main() {
               '-quiet',
               ...['-derivedDataPath', '../build/ios_integ'],
               r'OTHER_SWIFT_FLAGS=$(inherited) -D PATROL_ENABLED',
-              r'OTHER_CFLAGS=$(inherited) -D FULL_ISOLATION=0',
+              r'OTHER_CFLAGS=$(inherited) -D FULL_ISOLATION=0 -D CLEAR_PERMISSIONS=0',
             ]),
           );
         });
@@ -340,7 +340,7 @@ void main() {
               '-quiet',
               ...['-derivedDataPath', '../build/ios_integ'],
               r'OTHER_SWIFT_FLAGS=$(inherited) -D PATROL_ENABLED',
-              r'OTHER_CFLAGS=$(inherited) -D FULL_ISOLATION=0',
+              r'OTHER_CFLAGS=$(inherited) -D FULL_ISOLATION=0 -D CLEAR_PERMISSIONS=0',
             ]),
           );
         });
@@ -437,7 +437,7 @@ void main() {
               '-quiet',
               ...['-derivedDataPath', '../build/ios_integ'],
               r'OTHER_SWIFT_FLAGS=$(inherited) -D PATROL_ENABLED',
-              r'OTHER_CFLAGS=$(inherited) -D FULL_ISOLATION=1',
+              r'OTHER_CFLAGS=$(inherited) -D FULL_ISOLATION=1 -D CLEAR_PERMISSIONS=0',
             ]),
           );
         });
