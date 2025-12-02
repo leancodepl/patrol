@@ -8,7 +8,7 @@ on:
 jobs:
   run_tests:
     name: Flutter ${{ matrix.flutter-version }} on ${{ matrix.device_model }} ${{ matrix.os }} ${{ matrix.os_version }} on FTL
-    runs-on: macos-latest
+    runs-on: macos-26
     timeout-minutes: 40
     outputs:
       SLACK_MESSAGE_TITLE: Flutter ${{ matrix.flutter-version }} on ${{ matrix.os }} ${{ matrix.os_version }}
@@ -21,8 +21,8 @@ jobs:
       matrix:
         flutter-version: ['3.32.x']
         flutter-channel: ['stable']
-        device_model: ['iphone14pro']
-        os_version: ['16.6']
+        device_model: ['iphone16pro']
+        os_version: ['18.3']
         os: [iOS]
 
     defaults:
