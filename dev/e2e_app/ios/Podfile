@@ -45,6 +45,10 @@ post_install do |installer|
 
     target.build_configurations.each do |config|
       config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = ios_deployment_target
+      # Fix Swift compatibility issues with Xcode 26
+      config.build_settings['OTHER_LDFLAGS'] ||= ['$(inherited)']
+      config.build_settings['OTHER_LDFLAGS'] << '-lswiftCompatibility56'
+      config.build_settings['OTHER_LDFLAGS'] << '-lswiftCompatibilityConcurrency'
       config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= [
         '$(inherited)',
 
