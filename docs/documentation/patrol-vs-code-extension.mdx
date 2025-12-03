@@ -2,36 +2,43 @@
 
 ## How to setup
 
-1. Install the extension from [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=LeanCode.patrol-vscode) 
-or [Open VSX Registry for other VSCode-like editors, eg. Cursor](https://open-vsx.org/extension/LeanCode/patrol-vscode). 
-It requires Dart extension - if you don't have it, you'll be prompted to install it.
-2.   
+<Steps>
+    <Step>
+    Install the extension from [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=LeanCode.patrol-vscode) 
+    or [Open VSX Registry for other VSCode-like editors, eg. Cursor](https://open-vsx.org/extension/LeanCode/patrol-vscode). 
+    It requires Dart extension - if you don't have it, you'll be prompted to install it.
+    </Step>
 
-<Info>
-  This step is only required if your tests are not located in the `patrol_test` directory and/or do not use the `_test.dart` suffix. 
-</Info>
+    <Step>
+    <Info>
+      This step is only required if your tests are not located in the `patrol_test` directory and/or do not use the `_test.dart` suffix. 
+    </Info>
 
-In your project's pubspec.yaml, add two lines to patrol section:
-```yaml title=pubspec.yaml
-patrol:
-  flavor: dev
-  test_directory: patrol_test # add this line
-  test_file_suffix: _test.dart # add this line
-  android:
-    package_name: pl.leancode.patrol.example.dev
-  ios:
-    bundle_id: pl.leancode.patrol.Example
-```
-You can change those values to your needs. Values you can see here are the default values used by Patrol and Patrol VS Code extension.
+    In your project's pubspec.yaml, add two lines to patrol section:
+    ```yaml title=pubspec.yaml
+    patrol:
+      flavor: dev
+      test_directory: patrol_test # add this line
+      test_file_suffix: _test.dart # add this line
+      android:
+        package_name: pl.leancode.patrol.example.dev
+      ios:
+        bundle_id: pl.leancode.patrol.Example
+    ```
+    You can change those values to your needs. Values you can see here are the default values used by Patrol and Patrol VS Code extension.
+    </Step>
 
-3. If you have a method wrapping `patrolTest()`, you need to add an annotation to it:
-```dart title=patrol_wrapper.dart
-@isTest // add this annotation here
-void patrolWrapper(
-    String testName, Future<void> Function(PatrolIntegrationTester) test) {
-  patrolTest(testName, test);
-}
-```
+    <Step>
+    If you have a method wrapping `patrolTest()`, you need to add an annotation to it:
+    ```dart title=patrol_wrapper.dart
+    @isTest // add this annotation here
+    void patrolWrapper(
+        String testName, Future<void> Function(PatrolIntegrationTester) test) {
+      patrolTest(testName, test);
+    }
+    ```
+    </Step>
+</Steps>
 
 You should now see patrol tests in the Test Explorer tab in VS Code. They should
  be in Patrol section. Also you should see a green play button next to 
