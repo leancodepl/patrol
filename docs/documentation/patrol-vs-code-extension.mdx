@@ -11,32 +11,36 @@
 
     <Step>
     <Info>
-      This step is only required if your tests are not located in the `patrol_test` directory and/or do not use the `_test.dart` suffix. 
+      This step is only required if your tests are not located in the `patrol_test` directory. 
     </Info>
 
-    In your project's pubspec.yaml, add two lines to patrol section:
+    In your project's pubspec.yaml, add a new line to patrol section:
     ```yaml title=pubspec.yaml
     patrol:
-      flavor: dev
-      test_directory: patrol_test # add this line
-      test_file_suffix: _test.dart # add this line
-      android:
-        package_name: pl.leancode.patrol.example.dev
-      ios:
-        bundle_id: pl.leancode.patrol.Example
+      test_directory: <your-test-directory> # default: patrol_test
     ```
-    You can change those values to your needs. Values you can see here are the default values used by Patrol and Patrol VS Code extension.
+    Set this value to the directory where your patrol tests are located. Default value for `test_directory` is `patrol_test` as this is the default since Patrol 4.0.0.
     </Step>
 
     <Step>
     If you have a method wrapping `patrolTest()`, you need to add an annotation to it:
     ```dart title=patrol_wrapper.dart
+    import 'package:meta/meta.dart';
+
     @isTest // add this annotation here
     void patrolWrapper(
         String testName, Future<void> Function(PatrolIntegrationTester) test) {
       patrolTest(testName, test);
     }
     ```
+
+    <Info>
+      The `@isTest` annotation comes from the `meta` package. If `meta` is not in your `pubspec.yaml`, add it as a dev dependency:
+      
+      ```
+      flutter pub add meta --dev
+      ```
+    </Info>
     </Step>
 </Steps>
 
