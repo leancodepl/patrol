@@ -1,6 +1,3 @@
-// We want to keep tests on deprecated APIs.
-// ignore_for_file: deprecated_member_use
-
 import 'dart:async';
 import 'dart:io' as io;
 
@@ -68,7 +65,9 @@ void main() {
     if (!await Permission.location.isGranted) {
       expect($('Permission not granted'), findsOneWidget);
       await $(K.grantLocationPermissionButton).tap();
-      if (await $.platform.mobile.isPermissionDialogVisible(timeout: _timeout)) {
+      if (await $.platform.mobile.isPermissionDialogVisible(
+        timeout: _timeout,
+      )) {
         await $.platform.mobile.selectCoarseLocation();
         await $.platform.mobile.selectFineLocation();
         await $.platform.mobile.selectCoarseLocation();
@@ -101,7 +100,9 @@ void main() {
     if (!await Permission.location.isGranted) {
       expect($('Permission not granted'), findsOneWidget);
       await $(K.grantLocationPermissionButton).tap();
-      if (await $.platform.mobile.isPermissionDialogVisible(timeout: _timeout)) {
+      if (await $.platform.mobile.isPermissionDialogVisible(
+        timeout: _timeout,
+      )) {
         await $.platform.mobile.selectCoarseLocation();
         await $.platform.mobile.selectFineLocation();
         await $.platform.mobile.selectCoarseLocation();
