@@ -1,8 +1,4 @@
-# \[BETA\] Guide for Patrol VS Code extension
-
-<Warning> This extension is in public beta. If you want to give us feedback on 
-it, head to a "vs-code-extension-beta" channel on our Discord server. Link to 
-join this channel: https://discord.gg/aueth8U7H5 </Warning>
+# Guide for Patrol VS Code extension
 
 ## How to setup
 
@@ -13,8 +9,8 @@ It requires Dart extension - if you don't have it, you'll be prompted to install
 ```yaml title=pubspec.yaml
 patrol:
   flavor: dev
-  test_directory: integration_test # add this line
-  test_file_suffix: _patrol.dart # add this line
+  test_directory: patrol_test # add this line
+  test_file_suffix: _test.dart # add this line
   android:
     package_name: pl.leancode.patrol.example.dev
   ios:
