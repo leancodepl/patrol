@@ -36,6 +36,10 @@ target 'Runner' do
     inherit! :complete
   end
 
+  target 'RunnerTests' do
+    inherit! :complete
+  end
+
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
 end
 
