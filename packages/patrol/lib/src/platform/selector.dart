@@ -2,6 +2,10 @@ import 'package:patrol/src/platform/contracts/contracts.dart' as contracts;
 import 'package:patrol/src/platform/web/web_selector.dart' as web_selector;
 
 /// A selector that can be used across platforms (Android, iOS, and Web).
+///
+/// Usage:
+/// - Use [Selector] when the same properties work across all platforms.
+/// - Use [PlatformSelector] when each platform needs a different selector.
 abstract interface class CompoundSelector {
   /// Returns the Android-specific selector.
   contracts.AndroidSelector get android;
