@@ -8,7 +8,7 @@ void main() {
     await $.pump(Duration(seconds: 5));
 
     // Use PlatformSelector when iOS and Android need different selectors
-    await $.platform.mobile.tap(
+    await $.platform.tap(
       PlatformSelector(
         android: AndroidSelector(text: 'login'),
         ios: IOSSelector(label: 'login'),
