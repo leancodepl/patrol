@@ -68,7 +68,7 @@ void main() {
           android: () async => (await $.platform.android.getNativeViews(
             android14PermissionSelector.android,
           )).roots.map(NativeView.fromAndroid).toList(),
-          ios: () async => <NativeView>[],
+          ios: () => Future.value(<NativeView>[]),
         );
         if (nativeViews.isNotEmpty) {
           await $.platform.mobile.tap(android14PermissionSelector);
