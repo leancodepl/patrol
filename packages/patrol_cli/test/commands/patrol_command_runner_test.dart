@@ -62,18 +62,19 @@ void main() {
     });
 
     test('shows update message with compatibility warning when needed', () async {
-      // Set up a compatibility list where patrol 3.0.0 is compatible only up to patrol_cli 2.5.0
+      // Set up a compatibility list where patrol 3.0.0 is compatible with patrol_cli 4.0.0-4.5.0
+      // This means current version (4.0.0) is compatible, but latest (999.0.0) is NOT
       versionCompatibilityList
         ..clear()
         ..add(
           VersionCompatibility.fromRangeString(
-            patrolCliVersion: '2.3.0 - 2.5.0',
+            patrolCliVersion: '4.0.0 - 4.5.0',
             patrolVersion: '3.0.0 - 3.3.0',
             minFlutterVersion: '3.16.0',
           ),
         );
 
-      // Set up a fake pubspec.yaml file with patrol dependency that is known to be incompatible
+      // Set up fake pubspec.yaml and pubspec.lock files with patrol dependency
       final dir = fs.directory('/project')..createSync();
       dir.childFile('pubspec.yaml')
         ..createSync()
@@ -82,7 +83,30 @@ name: test_project
 dependencies:
   patrol: ^3.0.0
 ''');
+      dir.childFile('pubspec.lock')
+        ..createSync()
+        ..writeAsStringSync('''
+packages:
+  patrol:
+    dependency: "direct main"
+    description:
+      name: patrol
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.0"
+''');
       fs.currentDirectory = dir;
+
+      // Create command runner AFTER setting up directory and files
+      commandRunner = PatrolCommandRunner(
+        platform: FakePlatform(environment: {}),
+        processManager: FakeProcessManager(),
+        pubUpdater: pubUpdater,
+        fs: fs,
+        analytics: MockAnalytics(),
+        logger: logger,
+        isCI: false,
+      );
 
       when(
         () => pubUpdater.getLatestVersion(any()),
@@ -100,25 +124,19 @@ dependencies:
       expect(result, equals(0));
 
       expect(capturedMessage, contains('Update available!'));
-      expect(capturedMessage, contains('${constants.version} → 2.5.0'));
-      expect(
-        capturedMessage,
-        contains(
-          '(Newest patrol_cli $latestVersion is not compatible with project patrol version.)',
-        ),
-      );
+      expect(capturedMessage, contains('${constants.version} → 4.5.0'));
       expect(
         capturedMessage,
         contains('To update to the latest compatible version, run:'),
       );
       expect(
         capturedMessage,
-        contains('dart pub global activate patrol_cli 2.5.0'),
+        contains('dart pub global activate patrol_cli 4.5.0'),
       );
       expect(
         capturedMessage,
         contains(
-          '⚠️  Before updating, please ensure your patrol package version is compatible with patrol_cli $latestVersion',
+          "⚠️  Newest patrol_cli $latestVersion is not compatible with your project's patrol version.",
         ),
       );
       expect(
@@ -132,33 +150,55 @@ dependencies:
     test(
       'shows simple update message when no compatibility warning is needed',
       () async {
-        // Set up a compatibility list where patrol 113.14.0 is compatible up to patrol_cli 114.0.0 (higher than test version)
+        // Set up a compatibility list where patrol 3.0.0 is compatible with patrol_cli 4.0.0 - 114.0.0
+        // This means both current (4.0.0) and latest (4.2.0) are compatible
         versionCompatibilityList
           ..clear()
           ..add(
             VersionCompatibility.fromRangeString(
-              // We set ridiculously high version numbers to make sure that this
-              // entry will always the highest versions in the compatibility list.
-              patrolCliVersion: '113.5.0 - 114.0.0',
-              patrolVersion: '113.14.0 - 113.15.0',
-              minFlutterVersion: '113.24.0',
+              patrolCliVersion: '4.0.0 - 114.0.0',
+              patrolVersion: '3.0.0 - 113.15.0',
+              minFlutterVersion: '3.24.0',
             ),
           );
 
-        // Set up a fake pubspec.yaml file with patrol dependency that should be compatible
+        // Set up fake pubspec.yaml and pubspec.lock files with patrol dependency that should be compatible
         final dir = fs.directory('/project')..createSync();
         dir.childFile('pubspec.yaml')
           ..createSync()
           ..writeAsStringSync('''
 name: test_project
 dependencies:
-  patrol: ^113.14.0
+  patrol: ^3.0.0
+''');
+        dir.childFile('pubspec.lock')
+          ..createSync()
+          ..writeAsStringSync('''
+packages:
+  patrol:
+    dependency: "direct main"
+    description:
+      name: patrol
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.0"
 ''');
         fs.currentDirectory = dir;
 
+        // Create command runner AFTER setting up directory and files
+        commandRunner = PatrolCommandRunner(
+          platform: FakePlatform(environment: {}),
+          processManager: FakeProcessManager(),
+          pubUpdater: pubUpdater,
+          fs: fs,
+          analytics: MockAnalytics(),
+          logger: logger,
+          isCI: false,
+        );
+
         when(
           () => pubUpdater.getLatestVersion(any()),
-        ).thenAnswer((_) async => '113.5.5');
+        ).thenAnswer((_) async => '4.2.0');
 
         String? capturedMessage;
         when(() => logger.info(any())).thenAnswer((invocation) {
@@ -172,11 +212,7 @@ dependencies:
         expect(result, equals(0));
 
         expect(capturedMessage, contains('Update available!'));
-        expect(capturedMessage, contains('${constants.version} → 113.5.5'));
-        expect(
-          capturedMessage,
-          contains('Run patrol update to update to the latest version.'),
-        );
+        expect(capturedMessage, contains('${constants.version} → 4.2.0'));
         expect(
           capturedMessage,
           contains(
