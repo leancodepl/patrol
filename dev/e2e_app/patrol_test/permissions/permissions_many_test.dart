@@ -1,6 +1,3 @@
-// We want to keep tests on deprecated APIs.
-// ignore_for_file: deprecated_member_use
-
 import 'dart:io';
 
 import 'package:e2e_app/keys.dart';
@@ -27,8 +24,8 @@ Future<void> _requestAndGrantCameraPermission(PatrolIntegrationTester $) async {
   if (!await Permission.camera.isGranted) {
     expect($(K.cameraPermissionTile).$(#statusText).text, 'Not granted');
     await $(K.requestCameraPermissionButton).tap();
-    if (await $.native.isPermissionDialogVisible(timeout: _timeout)) {
-      await $.native.grantPermissionWhenInUse();
+    if (await $.platform.mobile.isPermissionDialogVisible(timeout: _timeout)) {
+      await $.platform.mobile.grantPermissionWhenInUse();
       await $.pump();
     }
   }
@@ -42,8 +39,8 @@ Future<void> _requestAndGrantMicrophonePermission(
   if (!await Permission.microphone.isGranted) {
     expect($(K.microphonePermissionTile).$(#statusText).text, 'Not granted');
     await $(K.requestMicrophonePermissionButton).tap();
-    if (await $.native.isPermissionDialogVisible(timeout: _timeout)) {
-      await $.native.grantPermissionOnlyThisTime();
+    if (await $.platform.mobile.isPermissionDialogVisible(timeout: _timeout)) {
+      await $.platform.mobile.grantPermissionOnlyThisTime();
       await $.pump();
     }
   }
@@ -57,8 +54,8 @@ Future<void> _requestAndDenyLocationPermission(
   if (!await Permission.location.isGranted) {
     expect($(K.locationPermissionTile).$(#statusText).text, 'Not granted');
     await $(K.requestLocationPermissionButton).tap();
-    if (await $.native.isPermissionDialogVisible(timeout: _timeout)) {
-      await $.native.denyPermission();
+    if (await $.platform.mobile.isPermissionDialogVisible(timeout: _timeout)) {
+      await $.platform.mobile.denyPermission();
       await $.pump();
     }
   }
@@ -78,8 +75,8 @@ Future<void> _requestAndDenyGalleryPermission(PatrolIntegrationTester $) async {
       await $(K.requestGalleryPermissionButton).tap();
     }
   }
-  if (await $.native.isPermissionDialogVisible(timeout: _timeout)) {
-    await $.native.denyPermission();
+  if (await $.platform.mobile.isPermissionDialogVisible(timeout: _timeout)) {
+    await $.platform.mobile.denyPermission();
     await $.pump();
   }
   expect($(K.galleryPermissionTile).$(#statusText).text, 'Not granted');

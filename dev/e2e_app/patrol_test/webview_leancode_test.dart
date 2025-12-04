@@ -1,6 +1,3 @@
-// We want to keep tests on deprecated APIs.
-// ignore_for_file: deprecated_member_use
-
 import 'common.dart';
 
 void main() {
@@ -12,18 +9,18 @@ void main() {
     await $.pump(Duration(seconds: 8));
 
     try {
-      await $.native.tap(Selector(text: acceptCookiesButtonText));
+      await $.platform.mobile.tap(Selector(text: acceptCookiesButtonText));
     } on PatrolActionException catch (_) {
       // ignore
     }
     await $.pumpAndSettle();
     // TODO: Does not work need to investigate.
-    await $.native.enterTextByIndex(
+    await $.platform.mobile.enterTextByIndex(
       'test@leancode.pl',
       index: 0,
       keyboardBehavior: KeyboardBehavior.showAndDismiss,
     );
-    await $.native.tap(Selector(text: 'Subscribe'));
+    await $.platform.mobile.tap(Selector(text: 'Subscribe'));
   });
 
   patrol('interacts with the LeanCode website in a webview native2', ($) async {
@@ -34,27 +31,17 @@ void main() {
     await $.pumpAndSettle();
 
     try {
-      await $.native2.tap(
-        NativeSelector(
-          android: AndroidSelector(text: acceptCookiesButtonText),
-          ios: IOSSelector(label: acceptCookiesButtonText),
-        ),
-      );
+      await $.platform.mobile.tap(Selector(text: acceptCookiesButtonText));
     } on PatrolActionException catch (_) {
       // ignore
     }
     await $.pumpAndSettle();
 
-    await $.native2.enterTextByIndex(
+    await $.platform.mobile.enterTextByIndex(
       'test@leancode.pl',
       index: 0,
       keyboardBehavior: KeyboardBehavior.showAndDismiss,
     );
-    await $.native2.tap(
-      NativeSelector(
-        android: AndroidSelector(text: 'Subscribe'),
-        ios: IOSSelector(label: 'Subscribe'),
-      ),
-    );
+    await $.platform.mobile.tap(Selector(text: 'Subscribe'));
   });
 }

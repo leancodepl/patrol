@@ -1,14 +1,11 @@
-// We want to keep tests on deprecated APIs.
-// ignore_for_file: deprecated_member_use
-
 import 'common.dart';
 
 void main() {
   patrol('Open url in the app', ($) async {
     await createApp($);
-    await $.native.pressHome();
+    await $.platform.mobile.pressHome();
 
-    await $.native.openUrl('patrol://check/somepath?query=10');
+    await $.platform.mobile.openUrl('patrol://check/somepath?query=10');
     await $.pumpAndSettle();
 
     expect($('Applink Screen'), findsOneWidget);

@@ -1,6 +1,3 @@
-// We want to keep tests on deprecated APIs.
-// ignore_for_file: deprecated_member_use
-
 import 'dart:io' show Platform;
 
 import 'common.dart';
@@ -18,8 +15,8 @@ void main() {
   patrol('scrolls the Settings app', ($) async {
     await createApp($);
 
-    await $.native.openApp(appId: appId);
-    await $.native.swipe(
+    await $.platform.mobile.openApp(appId: appId);
+    await $.platform.mobile.swipe(
       from: Offset(0.5, 0.8),
       to: Offset(0.5, 0.2),
       appId: appId,

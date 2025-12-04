@@ -1,59 +1,56 @@
-// We want to keep tests on deprecated APIs.
-// ignore_for_file: deprecated_member_use
-
 import 'common.dart';
 
 void main() {
   patrol('taps around', ($) async {
     await createApp($);
 
-    await $.native.pressHome();
-    await $.native.pressDoubleRecentApps();
+    await $.platform.mobile.pressHome();
+    await $.platform.android.pressDoubleRecentApps();
 
-    await $.native.openNotifications();
+    await $.platform.mobile.openNotifications();
 
-    await $.native.enableWifi();
-    await $.native.disableWifi();
-    await $.native.enableWifi();
+    await $.platform.mobile.enableWifi();
+    await $.platform.mobile.disableWifi();
+    await $.platform.mobile.enableWifi();
 
-    await $.native.enableCellular();
-    await $.native.disableCellular();
-    await $.native.enableCellular();
+    await $.platform.mobile.enableCellular();
+    await $.platform.mobile.disableCellular();
+    await $.platform.mobile.enableCellular();
 
-    await $.native.enableDarkMode();
-    await $.native.disableDarkMode();
-    await $.native.enableDarkMode();
+    await $.platform.mobile.enableDarkMode();
+    await $.platform.mobile.disableDarkMode();
+    await $.platform.mobile.enableDarkMode();
 
-    await $.native.pressBack();
+    await $.platform.android.pressBack();
   });
 
   patrol('taps around 2', skip: true, ($) async {
     await createApp($);
 
-    await $.native.pressHome();
-    await $.native.pressDoubleRecentApps();
+    await $.platform.mobile.pressHome();
+    await $.platform.android.pressDoubleRecentApps();
 
-    await $.native.openNotifications();
+    await $.platform.mobile.openNotifications();
 
-    await $.native.enableWifi();
-    await $.native.disableWifi();
-    await $.native.enableWifi();
+    await $.platform.mobile.enableWifi();
+    await $.platform.mobile.disableWifi();
+    await $.platform.mobile.enableWifi();
 
-    await $.native.enableCellular();
-    await $.native.disableCellular();
-    await $.native.enableCellular();
+    await $.platform.mobile.enableCellular();
+    await $.platform.mobile.disableCellular();
+    await $.platform.mobile.enableCellular();
 
-    await $.native.enableDarkMode();
-    await $.native.disableDarkMode();
-    await $.native.enableDarkMode();
+    await $.platform.mobile.enableDarkMode();
+    await $.platform.mobile.disableDarkMode();
+    await $.platform.mobile.enableDarkMode();
 
-    await $.native.pressBack();
+    await $.platform.android.pressBack();
   });
 
   patrol('taps around 3', ($) async {
     await createApp($);
 
-    await $.native.pressHome();
-    await $.native.pressDoubleRecentApps();
+    await $.platform.mobile.pressHome();
+    await $.platform.android.pressDoubleRecentApps();
   });
 }

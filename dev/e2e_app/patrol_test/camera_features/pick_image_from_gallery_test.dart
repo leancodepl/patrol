@@ -1,6 +1,3 @@
-// We want to keep tests on deprecated APIs.
-// ignore_for_file: deprecated_member_use
-
 import 'dart:io';
 
 import '../common.dart';
@@ -10,7 +7,7 @@ void main() {
   patrol('pick image from gallery - native', ($) async {
     await createApp($);
     final cameraHelpers = CameraHelpers($);
-    final isVirtualDevice = await $.native.isVirtualDevice();
+    final isVirtualDevice = await $.platform.mobile.isVirtualDevice();
     if (isVirtualDevice && Platform.isAndroid) {
       await cameraHelpers.takePhotosAcceptDialogsAndOpenAppOnEmulator();
     } else if (Platform.isAndroid) {
@@ -22,7 +19,7 @@ void main() {
     await $(#cameraFeaturesButton).scrollTo().tap();
     await $(#chooseFromGalleryButton).tap();
     await cameraHelpers.maybeAcceptPermissionDialog();
-    await $.native.pickImageFromGallery(index: 1);
+    await $.platform.mobile.pickImageFromGallery(index: 1);
     await $.pumpAndSettle();
 
     await $(#smallImagePreview).waitUntilVisible();

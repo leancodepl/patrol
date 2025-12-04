@@ -1,6 +1,3 @@
-// We want to keep tests on deprecated APIs.
-// ignore_for_file: deprecated_member_use
-
 import 'package:flutter/material.dart';
 
 import '../common.dart';
@@ -22,8 +19,8 @@ void main() {
       await $(#textField).enterText('Hello, Flutter!');
       expect($('Hello, Flutter!'), findsOneWidget);
 
-      await $.native.pressHome();
-      await $.native.openApp();
+      await $.platform.mobile.pressHome();
+      await $.platform.mobile.openApp();
 
       expect($(#counterText).text, '1');
       await $(FloatingActionButton).tap();

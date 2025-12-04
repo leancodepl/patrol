@@ -1,6 +1,3 @@
-// We want to keep tests on deprecated APIs.
-// ignore_for_file: deprecated_member_use
-
 import 'package:patrol/src/global_state.dart' as global_state;
 
 import '../common.dart';
@@ -41,6 +38,6 @@ Future<void> _testBody(PatrolIntegrationTester $) async {
   final testName = global_state.currentTestFullName;
   await $(#textField).enterText(testName);
 
-  await $.native.pressHome();
-  await $.native.openApp();
+  await $.platform.mobile.pressHome();
+  await $.platform.mobile.openApp();
 }
