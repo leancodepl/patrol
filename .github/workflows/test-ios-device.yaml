@@ -74,14 +74,18 @@ jobs:
           flutter-version: ${{ matrix.flutter-version }}
           channel: ${{ matrix.flutter-channel }}
 
-      - name: Preload Flutter artifacts
-        run: flutter precache --ios
+      # - name: Preload Flutter artifacts
+      #   run: flutter precache --ios
 
       - name: Set up Melos and activate workspace
         working-directory: .
         run: |
           dart pub global activate melos
           melos bootstrap
+
+      - name: Install CocoaPods dependencies
+        working-directory: dev/e2e_app/ios
+        run: pod install --repo-update
 
       - name: Set up Patrol CLI
         working-directory: packages/patrol_cli
