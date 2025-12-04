@@ -85,7 +85,8 @@ jobs:
 
       - name: Install CocoaPods dependencies
         working-directory: dev/e2e_app/ios
-        run: pod install --repo-update
+        run: |
+          rm -rf Pods Podfile.lock && pod install --repo-update
 
       - name: Set up Patrol CLI
         working-directory: packages/patrol_cli
