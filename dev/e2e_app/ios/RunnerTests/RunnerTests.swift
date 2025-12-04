@@ -165,7 +165,7 @@ final class RunnerTests: XCTestCase {
     XCTAssertEqual(
       predicate.predicateFormat,
       """
-      isEnabled == YES
+      isEnabled == 1
       """)
   }
 
@@ -179,7 +179,7 @@ final class RunnerTests: XCTestCase {
     XCTAssertEqual(
       predicate.predicateFormat,
       """
-      hasFocus == NO
+      hasFocus == 0
       """)
   }
 
@@ -234,8 +234,8 @@ final class RunnerTests: XCTestCase {
       title CONTAINS "search" OR \
       value CONTAINS "search" OR \
       placeholderValue CONTAINS "search") AND \
-      isEnabled == YES AND \
-      identifier == "search_field"
+      identifier == "search_field" AND \
+      isEnabled == 1
       """)
   }
 }
