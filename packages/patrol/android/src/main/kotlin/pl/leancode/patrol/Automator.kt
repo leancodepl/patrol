@@ -570,15 +570,18 @@ class Automator private constructor() {
         Logger.d("tapOnNotificationV2($index)")
 
         try {
-            val query = AndroidSelector(
-                resourceName = "android:id/status_bar_latest_event_content",
-                instance = index.toLong()
+            val queryForBySelector = AndroidSelector(
+                resourceName = "android:id/status_bar_latest_event_content"
             )
-            val selector = query.toBySelector()
+            val selector = queryForBySelector.toBySelector()
             if (waitForView(selector, index, timeout) == null) {
                 throw UiObjectNotFoundException("$selector")
             }
-            val obj = uiDevice.findObject(query.toUiSelector())
+            val queryForUiSelector = AndroidSelector(
+                resourceName = "android:id/status_bar_latest_event_content",
+                instance = index.toLong()
+            )
+            val obj = uiDevice.findObject(queryForUiSelector.toUiSelector())
             obj.click()
         } catch (err: UiObjectNotFoundException) {
             throw UiObjectNotFoundException("notification at index $index")
