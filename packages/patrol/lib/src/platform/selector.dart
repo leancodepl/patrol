@@ -96,12 +96,12 @@ class Selector implements CompoundSelector {
       web_selector.WebSelector(text: text, cssOrXpath: className);
 }
 
-/// A compound selector that allows platform-specific selectors to be specified separately.
+/// A selector that allows platform-specific selectors to be specified separately.
 ///
 /// This is useful when different platforms require different selector values or types.
-class PlatformCompoundSelector implements CompoundSelector {
-  /// Creates a new [PlatformCompoundSelector].
-  PlatformCompoundSelector({
+class PlatformSelector implements CompoundSelector {
+  /// Creates a new [PlatformSelector].
+  PlatformSelector({
     IOSSelector? ios,
     AndroidSelector? android,
     WebSelector? web,
