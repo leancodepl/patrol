@@ -7,7 +7,6 @@
 - Bump `patrol_log` to `0.6.0`.
 - Change default frame policy to `LiveTestWidgetsFlutterBindingFramePolicy.fullyLive`. (#2763)
 - Extend `$.native.enterText()` on Android to support `AutoCompleteTextView`. (#1162)
-- Update `uiautomator` dependency to `2.3.0`. (#2770)
 
 ## 3.19.0
 
