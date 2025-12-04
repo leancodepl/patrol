@@ -42,7 +42,7 @@ void main() {
     setUp(() {
       logger = MockLogger();
       pubUpdater = MockPubUpdater();
-      fs = MemoryFileSystem.test();
+      fs = MemoryFileSystem();
 
       when(
         () => pubUpdater.getLatestVersion(any()),
@@ -50,6 +50,7 @@ void main() {
 
       when(() => logger.info(any())).thenReturn(null);
 
+      // Create commandRunner for tests that don't set up their own directory
       commandRunner = PatrolCommandRunner(
         platform: FakePlatform(environment: {}),
         processManager: FakeProcessManager(),
@@ -75,7 +76,7 @@ void main() {
         );
 
       // Set up fake pubspec.yaml and pubspec.lock files with patrol dependency
-      final dir = fs.directory('/project')..createSync();
+      final dir = fs.directory('/project')..createSync(recursive: true);
       dir.childFile('pubspec.yaml')
         ..createSync()
         ..writeAsStringSync('''
@@ -95,7 +96,14 @@ packages:
     source: hosted
     version: "3.0.0"
 ''');
-      fs.currentDirectory = dir;
+      // Set currentDirectory to the path string to ensure it's set correctly
+      fs.currentDirectory = dir.path;
+
+      // Verify files exist before creating commandRunner
+      if (!dir.childFile('pubspec.yaml').existsSync() ||
+          !dir.childFile('pubspec.lock').existsSync()) {
+        throw Exception('Files not created correctly');
+      }
 
       // Create command runner AFTER setting up directory and files
       commandRunner = PatrolCommandRunner(
@@ -163,7 +171,7 @@ packages:
           );
 
         // Set up fake pubspec.yaml and pubspec.lock files with patrol dependency that should be compatible
-        final dir = fs.directory('/project')..createSync();
+        final dir = fs.directory('/project')..createSync(recursive: true);
         dir.childFile('pubspec.yaml')
           ..createSync()
           ..writeAsStringSync('''
@@ -183,7 +191,14 @@ packages:
     source: hosted
     version: "3.0.0"
 ''');
-        fs.currentDirectory = dir;
+        // Set currentDirectory to the path string to ensure it's set correctly
+        fs.currentDirectory = dir.path;
+
+        // Verify files exist before creating commandRunner
+        if (!dir.childFile('pubspec.yaml').existsSync() ||
+            !dir.childFile('pubspec.lock').existsSync()) {
+          throw Exception('Files not created correctly');
+        }
 
         // Create command runner AFTER setting up directory and files
         commandRunner = PatrolCommandRunner(
