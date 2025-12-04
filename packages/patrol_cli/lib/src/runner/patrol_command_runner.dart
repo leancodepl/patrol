@@ -463,13 +463,22 @@ To install a specific version of Patrol CLI, run:
     required String currentVersion,
     required String latestVersion,
   }) async {
-    final currentVersionParsed = Version.parse(currentVersion);
-    final latestVersionParsed = Version.parse(latestVersion);
-    final patrolVersion = _getPatrolVersion();
+    Version currentVersionParsed;
+    Version latestVersionParsed;
+    Version? patrolVer;
+    String? patrolVersion;
 
-    // Parse patrol version if available
-    final patrolVer =
-        patrolVersion != null ? Version.parse(patrolVersion) : null;
+    try {
+      currentVersionParsed = Version.parse(currentVersion);
+      latestVersionParsed = Version.parse(latestVersion);
+      patrolVersion = _getPatrolVersion();
+
+      // Parse patrol version if available
+      patrolVer = patrolVersion != null ? Version.parse(patrolVersion) : null;
+    } on FormatException catch (e) {
+      _logger.detail('Failed to parse version string during update check: $e');
+      return;
+    }
 
     // Check for incompatibility first
     if (patrolVer != null) {
@@ -483,15 +492,13 @@ To install a specific version of Patrol CLI, run:
         final versionInfo =
             'patrol_cli ${lightCyan.wrap(currentVersion)} is not compatible with patrol ${lightCyan.wrap(patrolVersion)}.';
 
-        final command =
-            maxCliVersion != null
-                ? 'dart pub global activate patrol_cli $maxCliVersion'
-                : null;
+        final command = maxCliVersion != null
+            ? 'dart pub global activate patrol_cli $maxCliVersion'
+            : null;
 
-        final actionMessage =
-            maxCliVersion != null
-                ? 'To resolve this issue, ${currentVersionParsed < maxCliVersion ? "upgrade" : "downgrade"} patrol_cli to a compatible version:'
-                : 'Please upgrade both "patrol_cli" and "patrol" dependencies to the latest versions.';
+        final actionMessage = maxCliVersion != null
+            ? 'To resolve this issue, ${currentVersionParsed < maxCliVersion ? "upgrade" : "downgrade"} patrol_cli to a compatible version:'
+            : 'Please upgrade both "patrol_cli" and "patrol" dependencies to the latest versions.';
 
         _showVersionMessage(
           title: lightYellow.wrap('Version incompatibility detected!') ?? '',
@@ -557,10 +564,9 @@ To install a specific version of Patrol CLI, run:
     String? command,
     String? additionalWarning,
   }) {
-    final buffer =
-        StringBuffer()
-          ..writeln('$title $versionInfo')
-          ..writeln();
+    final buffer = StringBuffer()
+      ..writeln('$title $versionInfo')
+      ..writeln();
 
     if (command != null) {
       if (actionMessage != null) {
