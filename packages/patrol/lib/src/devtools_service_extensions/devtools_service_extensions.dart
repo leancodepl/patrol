@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:patrol/src/platform/platform_automator.dart';
 
 /// Devtools extension that fetches the native UI tree.
@@ -9,11 +11,37 @@ class DevtoolsServiceExtensions {
   final PlatformAutomator platform;
 
   /// Fetches the native UI tree based on the given [parameters].
-  Future<Map<String, dynamic>> getNativeUITree(Map<String, String> parameters) {
-    return platform.action(
-      android: () async =>
-          (await platform.android.getNativeViews(null)).toJson(),
-      ios: () async => (await platform.ios.getNativeViews(null)).toJson(),
-    );
+  Future<Map<String, dynamic>> getNativeUITree(
+    Map<String, String> parameters,
+  ) async {
+    try {
+      final result = await platform.action(
+        android: () async {
+          final response = await platform.android.getNativeViews(null);
+          final roots = response.roots.map((e) => e.toJson()).toList();
+
+          return {
+            'androidRoots': roots,
+            'iOSroots': <Map<String, dynamic>>[],
+            'roots': roots,
+          };
+        },
+        ios: () async {
+          final response = await platform.ios.getNativeViews(null);
+          final roots = response.roots.map((e) => e.toJson()).toList();
+
+          return {
+            'androidRoots': <Map<String, dynamic>>[],
+            'iOSroots': roots,
+            'roots': roots,
+          };
+        },
+      );
+
+      final encoded = jsonEncode(result);
+      return <String, String>{'result': encoded};
+    } catch (error) {
+      return {'error': error.toString()};
+    }
   }
 }

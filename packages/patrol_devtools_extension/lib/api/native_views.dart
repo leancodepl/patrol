@@ -24,8 +24,8 @@ class NativeView {
     required this.className,
     required this.text,
     required this.contentDescription,
-    required this.focused,
-    required this.enabled,
+    required this.isFocused,
+    required this.isEnabled,
     required this.childCount,
     required this.resourceName,
     required this.applicationPackage,
@@ -40,8 +40,8 @@ class NativeView {
       className: androidNativeView.className,
       text: androidNativeView.text,
       contentDescription: androidNativeView.contentDescription,
-      focused: androidNativeView.isFocused,
-      enabled: androidNativeView.isEnabled,
+      isFocused: androidNativeView.isFocused,
+      isEnabled: androidNativeView.isEnabled,
       childCount: androidNativeView.childCount,
       resourceName: androidNativeView.resourceName,
       applicationPackage: androidNativeView.applicationPackage,
@@ -54,8 +54,8 @@ class NativeView {
       className: iosNativeView.elementType.name,
       text: iosNativeView.label,
       contentDescription: iosNativeView.accessibilityLabel,
-      focused: iosNativeView.hasFocus,
-      enabled: iosNativeView.isEnabled,
+      isFocused: iosNativeView.hasFocus,
+      isEnabled: iosNativeView.isEnabled,
       childCount: iosNativeView.children.length,
       resourceName: iosNativeView.identifier,
       applicationPackage: iosNativeView.bundleId,
@@ -66,8 +66,8 @@ class NativeView {
   String? className;
   String? text;
   String? contentDescription;
-  late bool focused;
-  late bool enabled;
+  late bool isFocused;
+  late bool isEnabled;
   int? childCount;
   String? resourceName;
   String? applicationPackage;

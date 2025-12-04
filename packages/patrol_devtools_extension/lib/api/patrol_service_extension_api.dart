@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:patrol_devtools_extension/api/native_views.dart';
@@ -63,11 +65,11 @@ class PatrolServiceExtensionApi {
       );
 
       final json = r.json!;
-      if (json['success'] != true) {
-        return ApiFailure(json['success'] as String, null);
-      }
 
-      final res = resultFactory(json['result']);
+      final encodedResult = json['result'] as String;
+      final decodedJson = jsonDecode(encodedResult) as Map<String, dynamic>;
+
+      final res = resultFactory(decodedJson);
 
       return ApiSuccess(res);
     } catch (err, st) {
