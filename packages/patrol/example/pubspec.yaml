@@ -26,6 +26,8 @@ dependencies:
   http: ^1.1.0
   permission_handler: ^11.4.0
   provider: ^6.1.1
+  uuid: ^4.5.1
+  web: ^1.1.0
 
 # Due to: https://github.com/rrousselGit/provider/issues/907
 dependency_overrides:
