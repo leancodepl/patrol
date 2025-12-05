@@ -78,32 +78,12 @@
     }
 
     func tap(
-      on selector: Selector,
-      inApp bundleId: String,
-      withTimeout timeout: TimeInterval?
-    ) throws {
-      try runAction("tap") {
-        throw PatrolError.methodNotImplemented("tap")
-      }
-    }
-
-    func tap(
       on selector: IOSSelector,
       inApp bundleId: String,
       withTimeout timeout: TimeInterval?
     ) throws {
       try runAction("tap") {
         throw PatrolError.methodNotImplemented("tap")
-      }
-    }
-
-    func doubleTap(
-      on selector: Selector,
-      inApp bundleId: String,
-      withTimeout timeout: TimeInterval?
-    ) throws {
-      try runAction("doubleTap") {
-        throw PatrolError.methodNotImplemented("doubleTap")
       }
     }
 
@@ -120,20 +100,6 @@
     func tapAt(coordinate vector: CGVector, inApp bundleId: String) throws {
       try runAction("tapAt") {
         throw PatrolError.methodNotImplemented("tapAt")
-      }
-    }
-
-    func enterText(
-      _ data: String,
-      on selector: Selector,
-      inApp bundleId: String,
-      dismissKeyboard: Bool,
-      withTimeout timeout: TimeInterval?,
-      dx: CGFloat,
-      dy: CGFloat
-    ) throws {
-      try runAction("enterText") {
-        throw PatrolError.methodNotImplemented("enterText")
       }
     }
 
@@ -172,16 +138,6 @@
     }
 
     func waitUntilVisible(
-      on selector: Selector,
-      inApp bundleId: String,
-      withTimeout timeout: TimeInterval?
-    ) throws {
-      try runAction("waitUntilVisible") {
-        throw PatrolError.methodNotImplemented("waitUntilVisible")
-      }
-    }
-
-    func waitUntilVisible(
       on selector: IOSSelector,
       inApp bundleId: String,
       withTimeout timeout: TimeInterval?
@@ -213,18 +169,6 @@
     func disableDarkMode(_ bundleId: String) throws {
       try runAction("disableDarkMode") {
         throw PatrolError.methodNotImplemented("disableDarkMode")
-      }
-    }
-
-    func enableLocation() throws {
-      try runAction("enableLocation") {
-        throw PatrolError.methodNotImplemented("enableLocation")
-      }
-    }
-
-    func disableLocation() throws {
-      try runAction("disableLocation") {
-        throw PatrolError.methodNotImplemented("disableLocation")
       }
     }
 
@@ -276,14 +220,7 @@
       }
     }
 
-    func getNativeViews(on selector: Selector, inApp bundleId: String) throws -> [NativeView] {
-      try runAction("getNativeViews") {
-        throw PatrolError.methodNotImplemented("getNativeViews")
-      }
-    }
-
-    func getNativeViews(on selector: IOSSelector, inApp bundleId: String) throws -> [IOSNativeView]
-    {
+    func getNativeViews(on selector: IOSSelector, inApp bundleId: String) throws -> [NativeView] {
       try runAction("getNativeViews") {
         throw PatrolError.methodNotImplemented("getNativeViews")
       }
@@ -292,12 +229,6 @@
     func getUITreeRoots(installedApps: [String]) throws -> [NativeView] {
       try runAction("getUITreeRoots") {
         throw PatrolError.methodNotImplemented("getUITreeRoots")
-      }
-    }
-
-    func getUITreeRootsV2(installedApps: [String]) throws -> GetNativeUITreeRespone {
-      try runAction("getUITreeRootsV2") {
-        throw PatrolError.methodNotImplemented("getUITreeRootsV2")
       }
     }
 
@@ -412,21 +343,4 @@
       }
     }
   }
-
-  extension NativeView {
-    static func fromXCUIElement(_ xcuielement: XCUIElement, _ bundleId: String) -> NativeView {
-      return NativeView(
-        className: String(xcuielement.elementType.rawValue),  // TODO: Provide mapping for names
-        text: xcuielement.label,
-        contentDescription: "",  // TODO:
-        focused: false,  // TODO:
-        enabled: xcuielement.isEnabled,
-        resourceName: xcuielement.identifier,
-        applicationPackage: bundleId,
-        children: xcuielement.children(matching: .any).allElementsBoundByIndex.map { child in
-          return NativeView.fromXCUIElement(child, bundleId)
-        })
-    }
-  }
-
 #endif

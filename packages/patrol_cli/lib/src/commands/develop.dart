@@ -17,6 +17,7 @@ import 'package:patrol_cli/src/pubspec_reader.dart';
 import 'package:patrol_cli/src/runner/patrol_command.dart';
 import 'package:patrol_cli/src/test_bundler.dart';
 import 'package:patrol_cli/src/test_finder.dart';
+import 'package:patrol_cli/src/web/web_test_backend.dart';
 
 class DevelopCommand extends PatrolCommand {
   DevelopCommand({
@@ -29,9 +30,11 @@ class DevelopCommand extends PatrolCommand {
     required AndroidTestBackend androidTestBackend,
     required IOSTestBackend iosTestBackend,
     required MacOSTestBackend macosTestBackend,
+    required WebTestBackend webTestBackend,
     required FlutterTool flutterTool,
     required Analytics analytics,
     required Logger logger,
+    required Stream<List<int>> stdin,
   }) : _deviceFinder = deviceFinder,
        _testFinderFactory = testFinderFactory,
        _testBundler = testBundler,
@@ -41,9 +44,11 @@ class DevelopCommand extends PatrolCommand {
        _androidTestBackend = androidTestBackend,
        _iosTestBackend = iosTestBackend,
        _macosTestBackend = macosTestBackend,
+       _webTestBackend = webTestBackend,
        _flutterTool = flutterTool,
        _analytics = analytics,
-       _logger = logger {
+       _logger = logger,
+       _stdin = stdin {
     usesTargetOption();
     usesDeviceOption();
     usesBuildModeOption();
@@ -79,10 +84,12 @@ class DevelopCommand extends PatrolCommand {
   final AndroidTestBackend _androidTestBackend;
   final IOSTestBackend _iosTestBackend;
   final MacOSTestBackend _macosTestBackend;
+  final WebTestBackend _webTestBackend;
   final FlutterTool _flutterTool;
 
   final Analytics _analytics;
   final Logger _logger;
+  final Stream<List<int>> _stdin;
 
   @override
   String get name => 'develop';
@@ -156,6 +163,13 @@ class DevelopCommand extends PatrolCommand {
     // https://github.com/leancodepl/patrol/issues/1974
     if (device.targetPlatform == TargetPlatform.macOS) {
       throwToolExit('macOS is not supported with develop');
+    }
+
+    // Changes applied outside `/lib` directory are not 'hot-restarted'.
+    // This is a blocker from applying changes to test code.
+    // https://github.com/flutter/flutter/issues/175318
+    if (device.targetPlatform == TargetPlatform.web) {
+      throwToolExit('Web is not supported with develop');
     }
 
     _logger.detail('Received device: ${device.name} (${device.id})');
@@ -254,13 +268,16 @@ class DevelopCommand extends PatrolCommand {
       testServerPort: super.testServerPort,
     );
 
-    await _build(androidOpts, iosOpts, macosOpts, device);
+    final webOpts = WebAppOptions(flutter: flutterOpts);
+
+    await _build(androidOpts, iosOpts, macosOpts, webOpts, device);
     await _preExecute(androidOpts, iosOpts, device, uninstall);
     await _execute(
       flutterOpts,
       androidOpts,
       iosOpts,
       macosOpts,
+      webOpts,
       uninstall: uninstall,
       device: device,
       openDevtools: boolArg('open-devtools'),
@@ -276,6 +293,7 @@ class DevelopCommand extends PatrolCommand {
     AndroidAppOptions androidOpts,
     IOSAppOptions iosOpts,
     MacOSAppOptions macosOpts,
+    WebAppOptions webOpts,
     Device device,
   ) async {
     Future<void> Function() buildAction;
@@ -283,6 +301,7 @@ class DevelopCommand extends PatrolCommand {
       TargetPlatform.android => () => _androidTestBackend.build(androidOpts),
       TargetPlatform.iOS => () => _iosTestBackend.build(iosOpts),
       TargetPlatform.macOS => () => _macosTestBackend.build(macosOpts),
+      TargetPlatform.web => () => _webTestBackend.buildForDevelop(webOpts),
     };
 
     try {
@@ -325,6 +344,7 @@ class DevelopCommand extends PatrolCommand {
           );
         }
       case TargetPlatform.macOS:
+      case TargetPlatform.web:
     }
 
     try {
@@ -338,7 +358,8 @@ class DevelopCommand extends PatrolCommand {
     FlutterAppOptions flutterOpts,
     AndroidAppOptions android,
     IOSAppOptions iosOpts,
-    MacOSAppOptions macos, {
+    MacOSAppOptions macos,
+    WebAppOptions web, {
     required bool uninstall,
     required Device device,
     required bool openDevtools,
@@ -388,20 +409,33 @@ class DevelopCommand extends PatrolCommand {
             device: device,
           );
         }
+      case TargetPlatform.web:
+        action = () => _webTestBackend.develop(
+          _flutterTool,
+          web,
+          device,
+          showFlutterLogs: showFlutterLogs,
+          hideTestSteps: hideTestSteps,
+          clearTestSteps: clearTestSteps,
+          stdin: _stdin,
+        );
     }
 
     try {
       final future = action();
-      await _flutterTool.attachForHotRestart(
-        flutterCommand: flutterCommand,
-        deviceId: device.id,
-        target: flutterOpts.target,
-        appId: appId,
-        dartDefines: flutterOpts.dartDefines,
-        openDevtools: openDevtools,
-        attachUsingUrl: device.targetPlatform == TargetPlatform.macOS,
-        onQuit: finalizer,
-      );
+
+      if (device.targetPlatform != TargetPlatform.web) {
+        await _flutterTool.attachForHotRestart(
+          flutterCommand: flutterCommand,
+          deviceId: device.id,
+          target: flutterOpts.target,
+          appId: appId,
+          dartDefines: flutterOpts.dartDefines,
+          openDevtools: openDevtools,
+          attachUsingUrl: device.targetPlatform == TargetPlatform.macOS,
+          onQuit: finalizer,
+        );
+      }
 
       await future;
     } catch (err, st) {

@@ -58,7 +58,6 @@ class AndroidAppOptions {
     required this.appServerPort,
     required this.testServerPort,
     required this.uninstall,
-    this.fullIsolation = false,
   });
 
   final FlutterAppOptions flutter;
@@ -66,7 +65,6 @@ class AndroidAppOptions {
   final int appServerPort;
   final int testServerPort;
   final bool uninstall;
-  final bool fullIsolation;
 
   String get description => 'apk with entrypoint ${basename(flutter.target)}';
 
@@ -158,12 +156,6 @@ class AndroidAppOptions {
       cmd.add('-Pdart-defines=$dartDefinesString');
     }
 
-    if (fullIsolation) {
-      cmd.add(
-        '-Pandroid.testInstrumentationRunnerArguments.clearPackageData=true',
-      );
-    }
-
     /// In Android Gradle Plugin 8.1.0 default behaviour has been changed
     /// and the application is uninstalled after integration tests.
     /// An issue has been reported:
@@ -201,6 +193,7 @@ class IOSAppOptions {
     required this.appServerPort,
     required this.testServerPort,
     this.fullIsolation = false,
+    this.clearIOSPermissions = false,
   });
 
   final FlutterAppOptions flutter;
@@ -212,6 +205,7 @@ class IOSAppOptions {
   final int appServerPort;
   final int testServerPort;
   final bool fullIsolation;
+  final bool clearIOSPermissions;
 
   String get description {
     final platform = simulator ? 'simulator' : 'device';
@@ -271,7 +265,7 @@ class IOSAppOptions {
       '-quiet',
       ...['-derivedDataPath', '../build/ios_integ'],
       r'OTHER_SWIFT_FLAGS=$(inherited) -D PATROL_ENABLED',
-      'OTHER_CFLAGS=\$(inherited) -D FULL_ISOLATION=${fullIsolation ? 1 : 0}',
+      'OTHER_CFLAGS=\$(inherited) -D FULL_ISOLATION=${fullIsolation ? 1 : 0} -D CLEAR_PERMISSIONS=${clearIOSPermissions ? 1 : 0}',
     ];
 
     return cmd;
@@ -390,4 +384,46 @@ class MacOSAppOptions {
 
     return cmd;
   }
+}
+
+class WebAppOptions {
+  const WebAppOptions({
+    required this.flutter,
+    this.resultsDir,
+    this.reportDir,
+    this.retries,
+    this.video,
+    this.timeout,
+    this.workers,
+    this.reporter,
+    this.locale,
+    this.timezone,
+    this.colorScheme,
+    this.geolocation,
+    this.permissions,
+    this.userAgent,
+    this.viewport,
+    this.globalTimeout,
+    this.shard,
+    this.headless,
+  });
+
+  final FlutterAppOptions flutter;
+  final String? resultsDir;
+  final String? reportDir;
+  final int? retries;
+  final String? video;
+  final int? timeout;
+  final int? workers;
+  final String? reporter;
+  final String? locale;
+  final String? timezone;
+  final String? colorScheme;
+  final String? geolocation;
+  final String? permissions;
+  final String? userAgent;
+  final String? viewport;
+  final int? globalTimeout;
+  final String? shard;
+  final String? headless;
 }

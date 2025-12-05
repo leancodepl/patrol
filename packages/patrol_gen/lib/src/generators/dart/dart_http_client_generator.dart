@@ -69,7 +69,7 @@ $endpoints
         .timeout(_timeout);
 
     if (response.statusCode != 200) {
-      throw NativeAutomatorClientException(response.statusCode, response.body);
+      throw ${service.name}ClientException(response.statusCode, response.body);
     }
     
     return response.body.isNotEmpty

@@ -31,8 +31,8 @@ void main() {
 Future<void> _requestAndGrantCameraPermission(PatrolIntegrationTester $) async {
   expect($(K.cameraPermissionTile).$(K.statusText).text, 'Not granted');
   await $(K.requestCameraPermissionButton).tap();
-  if (await $.native.isPermissionDialogVisible(timeout: _timeout)) {
-    await $.native.grantPermissionWhenInUse();
+  if (await $.platform.mobile.isPermissionDialogVisible(timeout: _timeout)) {
+    await $.platform.mobile.grantPermissionWhenInUse();
     await $.pump();
   }
 }
@@ -42,8 +42,8 @@ Future<void> _requestAndGrantMicrophonePermission(
 ) async {
   expect($(K.microphonePermissionTile).$(K.statusText).text, 'Not granted');
   await $(K.requestMicrophonePermissionButton).tap();
-  if (await $.native.isPermissionDialogVisible(timeout: _timeout)) {
-    await $.native.grantPermissionOnlyThisTime();
+  if (await $.platform.mobile.isPermissionDialogVisible(timeout: _timeout)) {
+    await $.platform.mobile.grantPermissionOnlyThisTime();
     await $.pump();
   }
 }
@@ -53,8 +53,8 @@ Future<void> _requestAndGrantLocationPermission(
 ) async {
   expect($(K.locationPermissionTile).$(K.statusText).text, 'Not granted');
   await $(K.requestLocationPermissionButton).tap();
-  if (await $.native.isPermissionDialogVisible(timeout: _timeout)) {
-    await $.native.grantPermissionOnlyThisTime();
+  if (await $.platform.mobile.isPermissionDialogVisible(timeout: _timeout)) {
+    await $.platform.mobile.grantPermissionOnlyThisTime();
     await $.pump();
   }
 }
@@ -64,8 +64,8 @@ Future<void> _requestAndGrantGalleryPermission(
 ) async {
   expect($(K.galleryPermissionTile).$(K.statusText).text, 'Not granted');
   await $(K.requestGalleryPermissionButton).tap();
-  if (await $.native.isPermissionDialogVisible(timeout: _timeout)) {
-    await $.native.grantPermissionOnlyThisTime();
+  if (await $.platform.mobile.isPermissionDialogVisible(timeout: _timeout)) {
+    await $.platform.mobile.grantPermissionOnlyThisTime();
     await $.pump();
   }
 }

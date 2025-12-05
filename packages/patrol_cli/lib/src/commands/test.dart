@@ -17,6 +17,7 @@ import 'package:patrol_cli/src/pubspec_reader.dart';
 import 'package:patrol_cli/src/runner/patrol_command.dart';
 import 'package:patrol_cli/src/test_bundler.dart';
 import 'package:patrol_cli/src/test_finder.dart';
+import 'package:patrol_cli/src/web/web_test_backend.dart';
 
 class TestCommand extends PatrolCommand {
   TestCommand({
@@ -29,6 +30,7 @@ class TestCommand extends PatrolCommand {
     required AndroidTestBackend androidTestBackend,
     required IOSTestBackend iosTestBackend,
     required MacOSTestBackend macOSTestBackend,
+    required WebTestBackend webTestBackend,
     required CoverageTool coverageTool,
     required Analytics analytics,
     required Logger logger,
@@ -41,6 +43,7 @@ class TestCommand extends PatrolCommand {
        _androidTestBackend = androidTestBackend,
        _iosTestBackend = iosTestBackend,
        _macosTestBackend = macOSTestBackend,
+       _webTestBackend = webTestBackend,
        _coverageTool = coverageTool,
        _analytics = analytics,
        _logger = logger {
@@ -67,7 +70,7 @@ class TestCommand extends PatrolCommand {
     usesAndroidOptions();
     usesIOSOptions();
 
-    usesFullIsolationOption();
+    usesWeb();
   }
 
   final DeviceFinder _deviceFinder;
@@ -79,6 +82,7 @@ class TestCommand extends PatrolCommand {
   final AndroidTestBackend _androidTestBackend;
   final IOSTestBackend _iosTestBackend;
   final MacOSTestBackend _macosTestBackend;
+  final WebTestBackend _webTestBackend;
   final CoverageTool _coverageTool;
 
   final Analytics _analytics;
@@ -170,6 +174,15 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
 
     final device = devices.single;
 
+    // Validate that flavors are not used with web platform
+    if (device.targetPlatform == TargetPlatform.web &&
+        stringArg('flavor') != null) {
+      _logger.err(
+        'Flavors are not supported for web platform. Please remove the --flavor flag.',
+      );
+      return 1;
+    }
+
     if (boolArg('check-compatibility')) {
       await _compatibilityChecker.checkVersionsCompatibility(
         flutterCommand: flutterCommand,
@@ -199,9 +212,11 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       'PATROL_IOS_APP_NAME': config.ios.appName,
       'INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE': 'false',
       'PATROL_TEST_LABEL_ENABLED': displayLabel.toString(),
-      'PATROL_TEST_SERVER_PORT': super.testServerPort.toString(),
-      'PATROL_APP_SERVER_PORT': super.appServerPort.toString(),
       'PATROL_TEST_DIRECTORY': config.testDirectory,
+      if (device.targetPlatform != TargetPlatform.web) ...{
+        'PATROL_TEST_SERVER_PORT': super.testServerPort.toString(),
+        'PATROL_APP_SERVER_PORT': super.appServerPort.toString(),
+      },
       'COVERAGE_ENABLED': coverageEnabled.toString(),
     }.withNullsRemoved();
 
@@ -245,7 +260,6 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
       uninstall: uninstall,
-      fullIsolation: boolArg('full-isolation'),
     );
 
     final iosOpts = IOSAppOptions(
@@ -258,6 +272,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
       fullIsolation: boolArg('full-isolation'),
+      clearIOSPermissions: boolArg('clear-permissions'),
     );
 
     final macosOpts = MacOSAppOptions(
@@ -268,7 +283,32 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       testServerPort: super.testServerPort,
     );
 
-    await _build(androidOpts, iosOpts, macosOpts, device);
+    final webOpts = WebAppOptions(
+      flutter: flutterOpts,
+      resultsDir: stringArg('web-results-dir'),
+      reportDir: stringArg('web-report-dir'),
+      retries: intArg('web-retries'),
+      video: stringArg('web-video'),
+      timeout: intArg('web-timeout'),
+      workers: intArg('web-workers'),
+      reporter: stringArg('web-reporter'),
+      locale: stringArg('web-locale'),
+      timezone: stringArg('web-timezone'),
+      colorScheme: stringArg('web-color-scheme'),
+      geolocation: stringArg('web-geolocation'),
+      permissions: stringArg('web-permissions'),
+      userAgent: stringArg('web-user-agent'),
+      viewport: stringArg('web-viewport'),
+      globalTimeout: intArg('web-global-timeout'),
+      shard: stringArg('web-shard'),
+      headless: stringArg('web-headless'),
+    );
+
+    // No need to build web app for testing. It's done in the execute method.
+    if (device.targetPlatform != TargetPlatform.web) {
+      await _build(androidOpts, iosOpts, macosOpts, webOpts, device);
+    }
+
     await _preExecute(androidOpts, iosOpts, macosOpts, device, uninstall);
 
     if (coverageEnabled) {
@@ -292,6 +332,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       androidOpts,
       iosOpts,
       macosOpts,
+      webOpts,
       uninstall: uninstall,
       device: device,
       showFlutterLogs: boolArg('show-flutter-logs'),
@@ -332,6 +373,8 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
           );
         }
       case TargetPlatform.macOS:
+      case TargetPlatform.web:
+      // No uninstall needed for macOS and web
     }
 
     try {
@@ -345,12 +388,14 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
     AndroidAppOptions androidOpts,
     IOSAppOptions iosOpts,
     MacOSAppOptions macosOpts,
+    WebAppOptions webOpts,
     Device device,
   ) async {
     final buildAction = switch (device.targetPlatform) {
       TargetPlatform.android => () => _androidTestBackend.build(androidOpts),
       TargetPlatform.macOS => () => _macosTestBackend.build(macosOpts),
       TargetPlatform.iOS => () => _iosTestBackend.build(iosOpts),
+      TargetPlatform.web => () => _webTestBackend.build(webOpts),
     };
 
     try {
@@ -368,7 +413,8 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
     FlutterAppOptions flutterOpts,
     AndroidAppOptions android,
     IOSAppOptions ios,
-    MacOSAppOptions macos, {
+    MacOSAppOptions macos,
+    WebAppOptions web, {
     required bool uninstall,
     required Device device,
     required bool showFlutterLogs,
@@ -410,6 +456,14 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
             device: device,
           );
         }
+      case TargetPlatform.web:
+        action = () => _webTestBackend.execute(
+          web,
+          device,
+          showFlutterLogs: showFlutterLogs,
+          hideTestSteps: hideTestSteps,
+          clearTestSteps: clearTestSteps,
+        );
     }
 
     var allPassed = true;

@@ -75,6 +75,9 @@ class DeviceToHostPortTransformer
             ?.key;
       case TargetPlatform.iOS || TargetPlatform.macOS:
         hostPort = devicePort;
+      case TargetPlatform.web:
+        // TODO: Implement coverage for web
+        throw UnimplementedError('Web platform is not supported for coverage');
     }
 
     if (hostPort == null) {

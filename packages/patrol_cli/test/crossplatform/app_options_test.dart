@@ -104,7 +104,6 @@ void main() {
           appServerPort: 1,
           testServerPort: 2,
           uninstall: true,
-          fullIsolation: true,
         );
 
         final invocation = options.toGradleAssembleTestInvocation(
@@ -117,7 +116,6 @@ void main() {
             ':app:assembleDevReleaseAndroidTest',
             r'-Ptarget=C:\Users\john\app\patrol_test\app_test.dart',
             '-Pdart-defines=RU1BSUw9dXNlckBleGFtcGxlLmNvbQ==,UEFTU1dPUkQ9bnk0bmNhdA==,Zm9vPWJhcg==',
-            '-Pandroid.testInstrumentationRunnerArguments.clearPackageData=true',
             '-Papp-server-port=1',
             '-Ptest-server-port=2',
           ]),
@@ -140,7 +138,6 @@ void main() {
           appServerPort: 1,
           testServerPort: 2,
           uninstall: true,
-          fullIsolation: true,
         );
 
         final invocation = options.toGradleAssembleTestInvocation(
@@ -153,7 +150,6 @@ void main() {
             ':app:assembleDevDebugAndroidTest',
             '-Ptarget=/Users/john/app/patrol_test/app_test.dart',
             '-Pdart-defines=RU1BSUw9dXNlckBleGFtcGxlLmNvbQ==,UEFTU1dPUkQ9bnk0bmNhdA==,Zm9vPWJhcg==',
-            '-Pandroid.testInstrumentationRunnerArguments.clearPackageData=true',
             '-Papp-server-port=1',
             '-Ptest-server-port=2',
           ]),
@@ -258,7 +254,7 @@ void main() {
               '-quiet',
               ...['-derivedDataPath', '../build/ios_integ'],
               r'OTHER_SWIFT_FLAGS=$(inherited) -D PATROL_ENABLED',
-              r'OTHER_CFLAGS=$(inherited) -D FULL_ISOLATION=0',
+              r'OTHER_CFLAGS=$(inherited) -D FULL_ISOLATION=0 -D CLEAR_PERMISSIONS=0',
             ]),
           );
         });
@@ -344,7 +340,7 @@ void main() {
               '-quiet',
               ...['-derivedDataPath', '../build/ios_integ'],
               r'OTHER_SWIFT_FLAGS=$(inherited) -D PATROL_ENABLED',
-              r'OTHER_CFLAGS=$(inherited) -D FULL_ISOLATION=0',
+              r'OTHER_CFLAGS=$(inherited) -D FULL_ISOLATION=0 -D CLEAR_PERMISSIONS=0',
             ]),
           );
         });
@@ -441,7 +437,7 @@ void main() {
               '-quiet',
               ...['-derivedDataPath', '../build/ios_integ'],
               r'OTHER_SWIFT_FLAGS=$(inherited) -D PATROL_ENABLED',
-              r'OTHER_CFLAGS=$(inherited) -D FULL_ISOLATION=1',
+              r'OTHER_CFLAGS=$(inherited) -D FULL_ISOLATION=1 -D CLEAR_PERMISSIONS=0',
             ]),
           );
         });
