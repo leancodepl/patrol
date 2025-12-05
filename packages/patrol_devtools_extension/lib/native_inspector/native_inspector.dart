@@ -22,7 +22,7 @@ class NativeInspector extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final fullNodeNames = useState(false);
-    final nativeDetails = useState(false);
+    final nativeDetails = useState(true);
 
     final splitAxis = SplitPane.axisFor(context, 0.85);
     final child = SplitPane(

@@ -480,6 +480,7 @@ class IOSAutomator extends NativeMobileAutomator
           iosInstalledApps: iosInstalledApps,
         ),
       ),
+      enablePatrolLog: false,
     );
   }
 
