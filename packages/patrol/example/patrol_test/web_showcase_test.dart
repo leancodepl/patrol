@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:example/main_web.dart';
+import 'package:example/ui/components/button/elevated_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
@@ -8,11 +9,10 @@ import 'package:patrol/patrol.dart';
 void main() {
   patrolTest('test that completes the great testing tool test', ($) async {
     await $.pumpWidgetAndSettle(const WebAutomatorShowcaseApp());
-    await $.platform.web.resizeWindow(size: const Size(800, 700));
-    await Future<void>.delayed(const Duration(seconds: 20));
+    await $.platform.web.resizeWindow(size: const Size(1200, 900));
 
     // Verify we're on the home page
-    expect($('THE GREAT TESTING TOOL TEST'), findsOneWidget);
+    expect($('WEB TESTING TOOL CHALLENGE'), findsOneWidget);
     expect($('Start the test'), findsOneWidget);
 
     // Start the test
@@ -21,7 +21,7 @@ void main() {
 
     // Verify we're on Test1Screen
     expect($('Test 1'), findsOneWidget);
-    expect($('Oh, that theme is awful!'), findsOneWidget);
+    expect($('Change the theme to dark'), findsOneWidget);
 
     // Button should not be visible in light mode
     expect($('Continue to next test'), findsNothing);
@@ -78,7 +78,7 @@ void main() {
     // Verify we're on Test4Screen
     expect($('Test 4'), findsOneWidget);
     expect($('Cookie Challenge'), findsOneWidget);
-    await $.platform.web.resizeWindow(size: const Size(800, 700));
+    await $.platform.web.resizeWindow(size: const Size(1200, 900));
 
     await $.pumpAndSettle(duration: const Duration(seconds: 3));
 
@@ -162,12 +162,22 @@ void main() {
     expect($('Test 7'), findsOneWidget);
     expect($('Dialog Challenge'), findsOneWidget);
 
+    unawaited($.platform.web.acceptNextDialog());
+
     // Click the button to show dialog
     await $('Show dialog').tap();
+
     await $.pumpAndSettle(duration: const Duration(seconds: 1));
 
-    await $.platform.web.acceptNextDialog();
-    await $.pumpAndSettle(duration: const Duration(seconds: 1));
+    await $(
+      PTElevatedButton,
+    ).which<PTElevatedButton>((widget) => widget.caption == 'Fluttercon').tap();
+
+    await $(ListTile).containing($(Icons.flutter_dash)).$('click').tap();
+
+    await $(
+      ElevatedButton,
+    ).which<ElevatedButton>((widget) => widget.enabled).at(2).scrollTo().tap();
 
     // Verify we're on Test8Screen (navigated after accepting dialog)
     expect($('Test 8'), findsOneWidget);

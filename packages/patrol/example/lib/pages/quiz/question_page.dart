@@ -1,4 +1,5 @@
 import 'package:example/handlers/notification_handler.dart';
+import 'package:example/main_web.dart';
 import 'package:example/pages/quiz/error_page.dart';
 import 'package:example/pages/quiz/success_page.dart';
 import 'package:example/ui/components/button/elevated_button.dart';
@@ -12,11 +13,18 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 Route<void> get questionRoute =>
-    MaterialPageRoute(builder: (_) => _QuestionsPage());
+    MaterialPageRoute(builder: (_) => const _QuestionsPage());
+
+Route<void> get webQuestionRoute =>
+    MaterialPageRoute(builder: (_) => const _QuestionsPage(isWeb: true));
 
 class _QuestionsPage extends StatefulWidget {
+  const _QuestionsPage({this.isWeb = false});
+
   @override
   State<_QuestionsPage> createState() => _QuestionsPageState();
+
+  final bool isWeb;
 }
 
 class _QuestionsPageState extends State<_QuestionsPage> {
@@ -74,6 +82,12 @@ class _QuestionsPageState extends State<_QuestionsPage> {
     );
   }
 
+  void _completeChallenge() {
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute<void>(builder: (_) => const Test8Screen()));
+  }
+
   List<Widget> get firstTaskAnswers {
     return [
       PTTextButton(onPressed: _showError, text: 'Fluttercon'),
@@ -112,7 +126,12 @@ class _QuestionsPageState extends State<_QuestionsPage> {
     final secondPart = List.generate(
       5,
       (index) => index == 0
-          ? _EnabledButton(onPressed: _showNotification)
+          ? _EnabledButton(
+              onPressed: switch (widget.isWeb) {
+                true => _completeChallenge,
+                false => _showNotification,
+              },
+            )
           : const _DisabledButton(),
     )..shuffle();
     final thirdPart = List.generate(
