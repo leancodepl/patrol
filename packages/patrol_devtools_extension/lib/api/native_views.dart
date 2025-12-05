@@ -12,7 +12,6 @@ class GetNativeUITreeResponse {
 
   late List<IOSNativeView> iOSroots;
   late List<AndroidNativeView> androidRoots;
-  late List<NativeView> roots;
 
   Map<String, dynamic> toJson() => _$GetNativeUITreeResponseToJson(this);
 }

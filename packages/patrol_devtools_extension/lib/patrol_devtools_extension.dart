@@ -27,8 +27,7 @@ class _PatrolDevToolsExtensionState extends State<PatrolDevToolsExtension> {
           roots: state.roots,
           currentNode: state.currentNode,
           onNodeChanged: runner.changeNode,
-          onRefreshPressed: (nativeDetails) =>
-              runner.getNativeUITree(nativeDetails: nativeDetails),
+          onRefreshPressed: runner.getNativeUITree,
         );
       },
     );
@@ -47,8 +46,7 @@ class _Runner extends ValueNotifier<_State> {
     notifyListeners();
   }
 
-  Future<void> getNativeUITree({required bool nativeDetails}) async {
-    final useNativeViewHierarchy = !nativeDetails;
+  Future<void> getNativeUITree() async {
     value
       ..roots = []
       ..currentNode = null;
@@ -59,20 +57,18 @@ class _Runner extends ValueNotifier<_State> {
     );
 
     final result = await api.getNativeUITree();
+    print(result);
 
     switch (result) {
       case ApiSuccess(:final data):
-        if (useNativeViewHierarchy) {
-          value.roots = data.roots
-              .map((e) => NativeViewNode(view: e, androidNode: isAndroidApp))
-              .toList();
-        } else {
-          value.roots = isAndroidApp
-              ? data.androidRoots.map((e) => AndroidNode(view: e)).toList()
-              : data.iOSroots.map((e) => IOSNode(view: e)).toList();
-        }
+        final b = data.iOSroots.map((e) => IOSNode(view: e)).toList();
+        b.forEach((e) => print(e.fullNodeName));
+        value.roots = isAndroidApp
+            ? data.androidRoots.map((e) => AndroidNode(view: e)).toList()
+            : data.iOSroots.map((e) => IOSNode(view: e)).toList();
 
       case ApiFailure<void> _:
+        print('API FAILURE2222!!!!');
       // TODO: Handle failure
     }
 
