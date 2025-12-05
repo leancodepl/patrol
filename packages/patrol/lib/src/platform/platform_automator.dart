@@ -503,7 +503,7 @@ class MobileAutomator {
   ///
   /// * [tapOnNotificationByIndex], which is less flexible but also less verbose
   Future<void> tapOnNotificationBySelector(
-    Selector selector, {
+    CompoundSelector selector, {
     Duration? timeout,
   }) {
     return platform.action.mobile(
