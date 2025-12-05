@@ -1,8 +1,14 @@
-## 4.0.0-dev.1
+## 4.0.0-dev.2
 
 - **Breaking**: Change default test directory from `integration_test` to `patrol_test`. (#2728)
+- Add support for running Patrol tests on Web.
+- Deprecate `NativeAutomator` and `NativeAutomator2`.
+- Introduce new way of communicating with platform (`PlatformAutomator`). 
 - Add support for configurable test directory via `test_directory` option in `pubspec.yaml`. (#2728)
+- Introduces *experimental* `--full-isolation` flag that uninstall the app between each run on iOS Simulator.
 - Bump `patrol_log` to `0.6.0`.
+
+This version requires version `4.0.0-dev.2` of `patrol_cli` package.
 
 ## 3.20.0
 
