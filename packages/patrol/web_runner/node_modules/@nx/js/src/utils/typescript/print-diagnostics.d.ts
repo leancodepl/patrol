@@ -1,2 +1,0 @@
-export declare function printDiagnostics(errors?: string[], warnings?: string[]): Promise<void>;
-//# sourceMappingURL=print-diagnostics.d.ts.map
