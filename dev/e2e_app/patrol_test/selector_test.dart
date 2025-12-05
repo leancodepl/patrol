@@ -7,12 +7,27 @@ void main() {
     await $('Open webview (Hacker News)').scrollTo().tap();
     await $.pump(Duration(seconds: 5));
 
-    // Use PlatformSelector when iOS and Android need different selectors
     await $.platform.tap(
       PlatformSelector(
         android: AndroidSelector(text: 'login'),
         ios: IOSSelector(label: 'login'),
         web: WebSelector(text: 'login'),
+      ),
+    );
+  });
+
+  patrol('MobileSelector allows different selectors for mobile platforms', (
+    $,
+  ) async {
+    await createApp($);
+
+    await $('Open webview (Hacker News)').scrollTo().tap();
+    await $.pump(Duration(seconds: 5));
+
+    await $.platform.mobile.tap(
+      MobileSelector(
+        android: AndroidSelector(text: 'login'),
+        ios: IOSSelector(label: 'login'),
       ),
     );
   });

@@ -1,11 +1,12 @@
 import 'package:patrol/src/platform/contracts/contracts.dart' as contracts;
 import 'package:patrol/src/platform/web/web_selector.dart' as web_selector;
 
-/// A selector that can be used across platforms (Android, iOS, and Web).
+/// A selector that can be used across platforms.
 ///
 /// Usage:
 /// - Use [Selector] when the same properties work across all platforms.
 /// - Use [PlatformSelector] when each platform needs a different selector.
+/// - Use [MobileSelector] when you only need Android and iOS selectors.
 abstract interface class CompoundSelector {
   /// Returns the Android-specific selector.
   contracts.AndroidSelector get android;
@@ -102,7 +103,11 @@ class Selector implements CompoundSelector {
 
 /// A selector that allows platform-specific selectors to be specified separately.
 ///
-/// This is useful when different platforms require different selector values or types.
+/// Use this when you need different selector configurations for each platform
+///
+/// See also:
+/// - [MobileSelector] for mobile-only selectors (Android and iOS).
+/// - [Selector] for cross-platform selectors with unified properties.
 class PlatformSelector implements CompoundSelector {
   /// Creates a new [PlatformSelector].
   PlatformSelector({
@@ -128,6 +133,29 @@ class PlatformSelector implements CompoundSelector {
   @override
   WebSelector get web =>
       _web ?? (throw UnsupportedError('Web selector not provided'));
+}
+
+/// A mobile-specific selector for finding UI elements.
+class MobileSelector implements CompoundSelector {
+  /// Creates a new [MobileSelector].
+  MobileSelector({IOSSelector? ios, AndroidSelector? android})
+    : _ios = ios,
+      _android = android;
+
+  final IOSSelector? _ios;
+  final AndroidSelector? _android;
+
+  @override
+  IOSSelector get ios =>
+      _ios ?? (throw UnsupportedError('iOS selector not provided'));
+
+  @override
+  AndroidSelector get android =>
+      _android ?? (throw UnsupportedError('Android selector not provided'));
+
+  @override
+  web_selector.WebSelector get web =>
+      throw UnsupportedError('Web selector is not supported by MobileSelector');
 }
 
 /// An Android-specific selector for finding UI elements.
