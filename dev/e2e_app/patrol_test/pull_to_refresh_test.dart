@@ -7,14 +7,14 @@ void main() {
     await createApp($);
     await $('Open scrolling screen').scrollTo().tap();
     expect($(K.refreshText), findsNothing);
-    await $.native.pullToRefresh();
+    await $.platform.mobile.pullToRefresh();
     await $(K.refreshText).waitUntilVisible();
   });
   patrol('performs pull to refresh gesture (native2)', ($) async {
     await createApp($);
     await $('Open scrolling screen').scrollTo().tap();
     expect($(K.refreshText), findsNothing);
-    await $.native2.pullToRefresh();
+    await $.platform.mobile.pullToRefresh();
     await $(K.refreshText).waitUntilVisible();
   });
 }

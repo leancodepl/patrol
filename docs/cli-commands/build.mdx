@@ -75,14 +75,7 @@ patrol build ios --build-name=1.2.3 --build-number=123  --release
 patrol build ios --full-isolation
 ```
 
-The `--full-isolation` flag enables full isolation between test runs:
-- **iOS**: Uninstalls the app before running each test (except for the first one)
-
-<Info>
-    It is effectively used only when building the iOS app.
-    The behavior on Android can be configured through the `patrol test` command or within the `build.gradle` file.
-    See the [test command documentation](/cli-commands/test#full-isolation-between-tests) for more details.
-</Info>
+The `--full-isolation` flag enables full isolation between test runs on iOS Simulator.
 
 ### Under the hood
 

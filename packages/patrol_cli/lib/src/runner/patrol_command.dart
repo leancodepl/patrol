@@ -134,14 +134,6 @@ abstract class PatrolCommand extends Command<int> {
     );
   }
 
-  void usesFullIsolationOption() {
-    argParser.addFlag(
-      'full-isolation',
-      help: 'Enable full isolation between test runs by clearing package data.',
-      negatable: false,
-    );
-  }
-
   void usesAndroidOptions() {
     argParser.addOption(
       'package-name',
@@ -156,6 +148,18 @@ abstract class PatrolCommand extends Command<int> {
         'bundle-id',
         help: 'Bundle identifier of the iOS app under test.',
         valueHelp: 'pl.leancode.AwesomeApp',
+      )
+      ..addFlag(
+        'clear-permissions',
+        help:
+            'Clear permissions available through XCUIProtectedResource API before running each test.',
+        negatable: false,
+      )
+      ..addFlag(
+        'full-isolation',
+        help:
+            '(Experimental) Uninstall the app between test runs on iOS Simulator to achieve full isolation.',
+        negatable: false,
       )
       ..addOption(
         'ios',

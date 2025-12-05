@@ -5,9 +5,11 @@ part 'native_views.g.dart';
 
 @JsonSerializable()
 class GetNativeUITreeResponse {
+  GetNativeUITreeResponse();
 
   factory GetNativeUITreeResponse.fromJson(Map<String, dynamic> json) =>
       _$GetNativeUITreeResponseFromJson(json);
+
   late List<IOSNativeView> iOSroots;
   late List<AndroidNativeView> androidRoots;
   late List<NativeView> roots;
@@ -22,21 +24,24 @@ class NativeView {
     required this.className,
     required this.text,
     required this.contentDescription,
-    required this.focused,
-    required this.enabled,
+    required this.isFocused,
+    required this.isEnabled,
     required this.childCount,
     required this.resourceName,
     required this.applicationPackage,
     required this.children,
   });
 
+  factory NativeView.fromJson(Map<String, dynamic> json) =>
+      _$NativeViewFromJson(json);
+
   factory NativeView.fromAndroid(AndroidNativeView androidNativeView) {
     return NativeView(
       className: androidNativeView.className,
       text: androidNativeView.text,
       contentDescription: androidNativeView.contentDescription,
-      focused: androidNativeView.isFocused,
-      enabled: androidNativeView.isEnabled,
+      isFocused: androidNativeView.isFocused,
+      isEnabled: androidNativeView.isEnabled,
       childCount: androidNativeView.childCount,
       resourceName: androidNativeView.resourceName,
       applicationPackage: androidNativeView.applicationPackage,
@@ -49,8 +54,8 @@ class NativeView {
       className: iosNativeView.elementType.name,
       text: iosNativeView.label,
       contentDescription: iosNativeView.accessibilityLabel,
-      focused: iosNativeView.hasFocus,
-      enabled: iosNativeView.isEnabled,
+      isFocused: iosNativeView.hasFocus,
+      isEnabled: iosNativeView.isEnabled,
       childCount: iosNativeView.children.length,
       resourceName: iosNativeView.identifier,
       applicationPackage: iosNativeView.bundleId,
@@ -61,10 +66,12 @@ class NativeView {
   String? className;
   String? text;
   String? contentDescription;
-  late bool focused;
-  late bool enabled;
+  late bool isFocused;
+  late bool isEnabled;
   int? childCount;
   String? resourceName;
   String? applicationPackage;
   late List<NativeView> children;
+
+  Map<String, dynamic> toJson() => _$NativeViewToJson(this);
 }

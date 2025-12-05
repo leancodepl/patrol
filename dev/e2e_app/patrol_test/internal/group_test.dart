@@ -38,6 +38,6 @@ Future<void> _testBody(PatrolIntegrationTester $) async {
   final testName = global_state.currentTestFullName;
   await $(#textField).enterText(testName);
 
-  await $.native.pressHome();
-  await $.native.openApp();
+  await $.platform.mobile.pressHome();
+  await $.platform.mobile.openApp();
 }

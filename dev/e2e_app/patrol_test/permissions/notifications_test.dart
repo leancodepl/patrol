@@ -9,8 +9,8 @@ void main() {
     await createApp($);
     await $('Open notifications screen').scrollTo().tap();
 
-    if (await $.native.isPermissionDialogVisible()) {
-      await $.native.grantPermissionWhenInUse();
+    if (await $.platform.mobile.isPermissionDialogVisible()) {
+      await $.platform.mobile.grantPermissionWhenInUse();
     }
 
     // Android 14+ requires additional permission to schedule notifications.
@@ -18,22 +18,27 @@ void main() {
     final android14PermissionSelector = Selector(
       text: 'Allow setting alarms and reminders',
     );
-    final android14PermissionScreen = await $.native.getNativeViews(
-      android14PermissionSelector,
+    final android14PermissionScreen = await $.platform.action.mobile(
+      android: () async => (await $.platform.android.getNativeViews(
+        android14PermissionSelector.android,
+      )).roots.map(NativeView.fromAndroid).toList(),
+      ios: () async => (await $.platform.ios.getNativeViews(
+        android14PermissionSelector.ios,
+      )).roots.map(NativeView.fromIOS).toList(),
     );
     if (android14PermissionScreen.isNotEmpty) {
-      await $.native.tap(android14PermissionSelector);
-      await $.native.pressBack();
+      await $.platform.mobile.tap(android14PermissionSelector);
+      await $.platform.android.pressBack();
     }
 
     await $(K.showNotificationLaterButton).tap();
-    await $.native.pressHome();
-    await $.native.openNotifications();
+    await $.platform.mobile.pressHome();
+    await $.platform.mobile.openNotifications();
 
     // wait for notification to show up
     await Future<void>.delayed(const Duration(seconds: 5));
 
-    await $.native.tapOnNotificationBySelector(
+    await $.platform.mobile.tapOnNotificationBySelector(
       Selector(textContains: 'Someone liked'),
     );
 
@@ -46,8 +51,8 @@ void main() {
       await createApp($);
       await $('Open notifications screen').scrollTo().tap();
 
-      if (await $.native2.isPermissionDialogVisible()) {
-        await $.native2.grantPermissionWhenInUse();
+      if (await $.platform.mobile.isPermissionDialogVisible()) {
+        await $.platform.mobile.grantPermissionWhenInUse();
       }
 
       // Until we resolve the issue of invoking native methods without a
@@ -56,31 +61,34 @@ void main() {
       if (io.Platform.isAndroid) {
         // Android 14+ requires additional permission to schedule notifications.
         // Workaround for conditionally granting permission.
-        final android14PermissionSelector = AndroidSelector(
+        final android14PermissionSelector = Selector(
           text: 'Allow setting alarms and reminders',
         );
-        final nativeViews = await $.native2.getNativeViews(
-          NativeSelector(android: android14PermissionSelector),
+        final nativeViews = await $.platform.action.mobile(
+          android: () async => (await $.platform.android.getNativeViews(
+            android14PermissionSelector.android,
+          )).roots.map(NativeView.fromAndroid).toList(),
+          ios: () => Future.value(<NativeView>[]),
         );
-        if (nativeViews.androidViews.isNotEmpty) {
-          await $.native2.tap(
-            NativeSelector(android: android14PermissionSelector),
-          );
-          await $.native2.pressBack();
+        if (nativeViews.isNotEmpty) {
+          await $.platform.mobile.tap(android14PermissionSelector);
+          await $.platform.android.pressBack();
         }
       }
 
       await $(K.showNotificationLaterButton).tap();
-      await $.native2.pressHome();
-      await $.native2.openNotifications();
+      await $.platform.mobile.pressHome();
+      await $.platform.mobile.openNotifications();
 
       // wait for notification to show up
       await Future<void>.delayed(const Duration(seconds: 5));
 
-      await $.native2.tapOnNotificationBySelector(
-        NativeSelector(
-          android: AndroidSelector(textContains: 'Someone liked'),
-          ios: IOSSelector(titleContains: 'Someone liked'),
+      await $.platform.action.mobile(
+        android: () => $.platform.android.tapOnNotificationBySelector(
+          AndroidSelector(textContains: 'Someone liked'),
+        ),
+        ios: () => $.platform.ios.tapOnNotificationBySelector(
+          IOSSelector(titleContains: 'Someone liked'),
         ),
       );
 

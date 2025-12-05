@@ -502,6 +502,7 @@ class AndroidAutomator extends NativeMobileAutomator
       () => _client.getNativeViews(
         AndroidGetNativeViewsRequest(selector: selector),
       ),
+      enablePatrolLog: false,
     );
   }
 

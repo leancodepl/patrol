@@ -15,8 +15,8 @@ void main() {
   patrol('scrolls the Settings app', ($) async {
     await createApp($);
 
-    await $.native.openApp(appId: appId);
-    await $.native.swipe(
+    await $.platform.mobile.openApp(appId: appId);
+    await $.platform.mobile.swipe(
       from: Offset(0.5, 0.8),
       to: Offset(0.5, 0.2),
       appId: appId,

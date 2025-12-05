@@ -12,7 +12,7 @@ When you run Patrol tests on web, the following happens:
 
 1. **Flutter Web Server**: Patrol starts a Flutter web server that serves your application
 2. **Playwright Test Runner**: Patrol automatically launches Chromium using Playwright
-3. **Native Actions Bridge**: For native automation calls (like `$.native2.grantPermissions()`), your Dart test code sends requests to Playwright with actions to be executed
+3. **Platform Actions Bridge**: For platform automation calls (like `$.platform.web.grantPermissions()`), your Dart test code sends requests to Playwright with actions to be executed
 4. **Results Collection**: Test results are collected and reported back in Patrol's standard format
 
 This architecture allows you to write the same Patrol tests that work across mobile and web platforms, with Playwright handling browser-specific interactions.
@@ -36,7 +36,7 @@ patrol test --device chrome --target patrol_test/login_test.dart
 
 ### Supported Native Actions on Web
 
-Patrol supports the following native actions through Playwright:
+Patrol supports the following platform actions through Playwright:
 
 ```dart
 // Dark mode

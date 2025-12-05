@@ -147,26 +147,17 @@ patrol test --target patrol_test/login_test.dart --build-name=1.2.3 --build-numb
 
 ### Isolation of test runs
 
-To achieve full isolation between test runs, you can use the `--full-isolation` flag or configure it directly in
-your build configuration.
-
-#### Using the --full-isolation flag
+To achieve full isolation between test runs:
+- On Android: set `clearPackageData` to `true` in your `build.gradle` file,
+- On iOS Simulator: use the `--full-isolation` flag
 
 <Warning>
-    This functionality is experimental on iOS.
+    This functionality is experimental on iOS and might be removed in the future releases.
 </Warning>
-
-The `--full-isolation` flag is supported on both Android and iOS:
 
 ```bash
 patrol test --full-isolation
 ```
-
-This flag:
-- **Android**: Clears package data before running each test
-- **iOS**: Uninstalls the app before running each test (except for the first one)
-
-See the [test command documentation](/cli-commands/test#full-isolation-between-tests) for more details.
 
 ### Web Platform
 
@@ -189,6 +180,7 @@ features such as reporting. To see the full list of supported arguments, run `pa
 **Note:** Some arguments are not supported on web:
 - `--flavor`: Flavors are not supported for Flutter web
 - `--uninstall`: Not applicable to web platform
+- `--clear-permissions`: Not applicable to web platform
 - `--full-isolation`: Not applicable to web platform
 
 ### Under the hood
