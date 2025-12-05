@@ -40,8 +40,8 @@ class DevtoolsServiceExtensions {
 
       final encoded = jsonEncode(result);
       return <String, String>{'result': encoded};
-    } catch (error) {
-      return {'error': error.toString()};
+    } catch (err) {
+      return {'error': err.toString()};
     }
   }
 }
