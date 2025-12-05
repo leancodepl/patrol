@@ -22,32 +22,34 @@ This command is the one use you'll be using most often.
 2. Installs the AUT and the instrumentation on the selected device
 3. Runs the tests natively, and reports results back in native format.
 
-Under the hood, it calls Gradle (when testing on Android) and `xcodebuild` (when
-testing on iOS).
+Under the hood, it calls:
+- Gradle (when testing on Android)
+- `xcodebuild` (when testing on iOS/macOS)
+- Playwright (when testing on web)
 
 ### Discussion
 
 By default, `patrol test` runs all integration tests (files ending with
-`_test.dart` located in the `integration_test` directory).
+`_test.dart` located in the `patrol_test` directory). You can customize the test directory by setting `test_directory` in your `pubspec.yaml` under the `patrol` section.
 
 To run a single test, use `--target`:
 
 ```
-patrol test --target integration_test/login_test.dart
+patrol test --target patrol_test/login_test.dart
 ```
 
 You can use `--target` more than once to run multiple tests:
 
 ```
 patrol test \
-  --target integration_test/login_test.dart \
-  --target integration_test/app_test.dart
+  --target patrol_test/login_test.dart \
+  --target patrol_test/app_test.dart
 ```
 
 Or alternatively:
 
 ```
-patrol test --targets integration_test/login_test.dart,integration_test/app_test.dart
+patrol test --targets patrol_test/login_test.dart,patrol_test/app_test.dart
 ```
 
 Test files must end with `_test.dart`. Otherwise the file is not considered a
@@ -103,7 +105,8 @@ patrol test --exclude-tags='(android||ios)'
 ```
 
 <Info>
-For comprehensive information about tag syntax, complex expressions, and advanced usage, see the [Patrol tags documentation](https://patrol.leancode.co/documentation/patrol-tags).
+    For comprehensive information about tag syntax, complex expressions, and advanced usage, see
+    the [Patrol tags documentation](https://patrol.leancode.co/documentation/patrol-tags).
 </Info>
 
 ### Coverage
@@ -120,7 +123,8 @@ patrol test --coverage
 
 The LCOV report will be saved to `/coverage/patrol_lcov.info`.
 
-Additionally, you can exclude certain files from the report using glob patterns and `--coverage-ignore` option. For instance,
+Additionally, you can exclude certain files from the report using glob patterns and `--coverage-ignore` option.
+For instance,
 
 ```
 patrol test --coverage --coverage-ignore="**/*.g.dart"
@@ -130,15 +134,54 @@ excludes all files ending with `.g.dart`.
 
 ### Build versioning
 
-You can specify custom build number and build name using the `--build-name` and `--build-number` flags. These work the same as in Flutter CLI:
+You can specify custom build number and build name using the `--build-name` and `--build-number` flags. These work
+the same as in Flutter CLI:
 
 - `--build-name`: Version name of the app. (e.g. `1.2.3`)
 - `--build-number`: Version code of the app. (e.g. `123`)
 
 ```
 patrol test --build-name=1.2.3 --build-number=123
-patrol test --target integration_test/login_test.dart --build-name=1.2.3 --build-number=123
+patrol test --target patrol_test/login_test.dart --build-name=1.2.3 --build-number=123
 ```
+
+### Isolation of test runs
+
+To achieve full isolation between test runs:
+- On Android: set `clearPackageData` to `true` in your `build.gradle` file,
+- On iOS Simulator: use the `--full-isolation` flag
+
+<Warning>
+    This functionality is experimental on iOS and might be removed in the future releases.
+</Warning>
+
+```bash
+patrol test --full-isolation
+```
+
+### Web Platform
+
+Patrol supports running tests on Flutter web using Playwright. To run tests on web:
+
+```bash
+patrol test --device chrome
+```
+
+When running on web:
+- Tests execute in Chromium browser via Playwright
+- CLI arguments can be used to configure Playwright
+- Test results are generated in `test-results/`
+
+#### Arguments
+
+Playwright configuration is updated with values passed to the command. This allows direct control over Playwright
+features such as reporting. To see the full list of supported arguments, run `patrol test --help`.
+
+**Note:** Some arguments are not supported on web:
+- `--flavor`: Flavors are not supported for Flutter web
+- `--uninstall`: Not applicable to web platform
+- `--clear-permissions`: Not applicable to web platform
+- `--full-isolation`: Not applicable to web platform
 
 ### Under the hood
 

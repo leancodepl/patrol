@@ -1,6 +1,8 @@
+import 'dart:convert';
+
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
-import 'package:patrol_devtools_extension/api/contracts.dart';
+import 'package:patrol_devtools_extension/api/native_views.dart';
 import 'package:vm_service/vm_service.dart';
 
 sealed class ApiResult<T> extends Equatable {
@@ -40,15 +42,10 @@ class PatrolServiceExtensionApi {
   final VmService _service;
   final ValueListenable<IsolateRef?> _isolate;
 
-  Future<ApiResult<GetNativeUITreeRespone>> getNativeUITree({
-    required bool useNativeViewHierarchy,
-  }) {
-    return _callServiceExtension(
-      'patrol.getNativeUITree',
-      {'useNativeViewHierarchy': useNativeViewHierarchy ? 'yes' : 'no'},
-      (dynamic json) =>
-          GetNativeUITreeRespone.fromJson(json as Map<String, dynamic>),
-    );
+  Future<ApiResult<GetNativeUITreeResponse>> getNativeUITree() {
+    return _callServiceExtension('patrol.getNativeUITree', {}, (dynamic json) {
+      return GetNativeUITreeResponse.fromJson(json as Map<String, dynamic>);
+    });
   }
 
   Future<ApiResult<TResult>> _callServiceExtension<TResult>(
@@ -65,11 +62,11 @@ class PatrolServiceExtensionApi {
       );
 
       final json = r.json!;
-      if (json['success'] != true) {
-        return ApiFailure(json['success'] as String, null);
-      }
 
-      final res = resultFactory(json['result']);
+      final encodedResult = json['result'] as String;
+      final decodedJson = jsonDecode(encodedResult) as Map<String, dynamic>;
+
+      final res = resultFactory(decodedJson);
 
       return ApiSuccess(res);
     } catch (err, st) {

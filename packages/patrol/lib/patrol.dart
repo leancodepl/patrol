@@ -10,3 +10,14 @@ export 'src/binding.dart';
 export 'src/common.dart';
 export 'src/custom_finders/patrol_integration_tester.dart';
 export 'src/native/native.dart';
+export 'src/platform/contracts/contracts.dart'
+    show
+        AndroidNativeView,
+        AppleApp,
+        GoogleApp,
+        IOSElementType,
+        IOSNativeView,
+        KeyboardBehavior;
+export 'src/platform/patrol_app_service.dart';
+export 'src/platform/selector.dart';
+export 'src/platform/web/upload_file_data.dart';

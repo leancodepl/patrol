@@ -17,7 +17,7 @@ import 'package:patrol_cli/src/test_finder.dart';
 
 class BuildAndroidCommand extends PatrolCommand {
   BuildAndroidCommand({
-    required TestFinder testFinder,
+    required TestFinderFactory testFinderFactory,
     required TestBundler testBundler,
     required DartDefinesReader dartDefinesReader,
     required PubspecReader pubspecReader,
@@ -25,7 +25,7 @@ class BuildAndroidCommand extends PatrolCommand {
     required Analytics analytics,
     required Logger logger,
     required CompatibilityChecker compatibilityChecker,
-  }) : _testFinder = testFinder,
+  }) : _testFinderFactory = testFinderFactory,
        _testBundler = testBundler,
        _dartDefinesReader = dartDefinesReader,
        _pubspecReader = pubspecReader,
@@ -51,7 +51,7 @@ class BuildAndroidCommand extends PatrolCommand {
     usesAndroidOptions();
   }
 
-  final TestFinder _testFinder;
+  final TestFinderFactory _testFinderFactory;
   final TestBundler _testBundler;
   final DartDefinesReader _dartDefinesReader;
   final PubspecReader _pubspecReader;
@@ -80,6 +80,7 @@ class BuildAndroidCommand extends PatrolCommand {
     );
 
     final config = _pubspecReader.read();
+    final testDirectory = config.testDirectory;
     final testFileSuffix = config.testFileSuffix;
 
     // Check compatibility between CLI and package versions
@@ -90,10 +91,12 @@ class BuildAndroidCommand extends PatrolCommand {
       );
     }
 
+    final testFinder = _testFinderFactory.create(testDirectory);
+
     final target = stringsArg('target');
     final targets = target.isNotEmpty
-        ? _testFinder.findTests(target, testFileSuffix)
-        : _testFinder.findAllTests(
+        ? testFinder.findTests(target, testFileSuffix)
+        : testFinder.findAllTests(
             excludes: stringsArg('exclude').toSet(),
             testFileSuffix: testFileSuffix,
           );
@@ -111,9 +114,9 @@ class BuildAndroidCommand extends PatrolCommand {
     if (excludeTags != null) {
       _logger.detail('Received exclude tag(s): $excludeTags');
     }
-    final entrypoint = _testBundler.bundledTestFile;
+    final entrypoint = _testBundler.getBundledTestFile(testDirectory);
     if (boolArg('generate-bundle')) {
-      _testBundler.createTestBundle(targets, tags, excludeTags);
+      _testBundler.createTestBundle(testDirectory, targets, tags, excludeTags);
     }
 
     final flavor = stringArg('flavor') ?? config.android.flavor;
@@ -145,6 +148,7 @@ class BuildAndroidCommand extends PatrolCommand {
       'PATROL_APP_PACKAGE_NAME': packageName,
       'PATROL_ANDROID_APP_NAME': config.android.appName,
       'PATROL_TEST_LABEL_ENABLED': displayLabel.toString(),
+      'PATROL_TEST_DIRECTORY': config.testDirectory,
       'INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE': 'false',
     }.withNullsRemoved();
 

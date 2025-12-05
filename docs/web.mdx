@@ -1,0 +1,94 @@
+---
+title: Flutter Web Testing
+---
+
+Patrol provides support for running integration tests on Flutter web applications using
+[Playwright](https://playwright.dev/), a powerful browser automation framework. This allows you to handle native web
+browser interactions in your tests.
+
+## How it Works
+
+When you run Patrol tests on web, the following happens:
+
+1. **Flutter Web Server**: Patrol starts a Flutter web server that serves your application
+2. **Playwright Test Runner**: Patrol automatically launches Chromium using Playwright
+3. **Platform Actions Bridge**: For platform automation calls (like `$.platform.web.grantPermissions()`), your Dart test code sends requests to Playwright with actions to be executed
+4. **Results Collection**: Test results are collected and reported back in Patrol's standard format
+
+This architecture allows you to write the same Patrol tests that work across mobile and web platforms, with Playwright handling browser-specific interactions.
+
+## Prerequisites
+
+Before running Patrol tests on web, ensure you have installed [Node.js](https://nodejs.org/).
+
+## Running Tests on Web
+
+To run your Patrol tests on web, use the `--device` flag with `chrome`, e.g.:
+
+```bash
+patrol test --device chrome --target patrol_test/login_test.dart
+```
+
+<Info>
+  When you first run tests on web, Patrol will automatically install Node.js dependencies 
+  including Playwright and its browser binaries. This may take a moment.
+</Info>
+
+### Supported Native Actions on Web
+
+Patrol supports the following platform actions through Playwright:
+
+```dart
+// Dark mode
+await $.platform.web.enableDarkMode();
+await $.platform.web.disableDarkMode();
+
+// Keyboard input
+await $.platform.web.pressKey(key: 'a');
+await $.platform.web.pressKeyCombo(keys: ['Control', 'a']);
+
+// Permissions
+await $.platform.web.grantPermissions(permissions: ['clipboard-read', 'clipboard-write']);
+await $.platform.web.clearPermissions();
+
+// Clipboard
+await $.platform.web.setClipboard(text: 'test');
+final clipboard = await $.platform.web.getClipboard();
+
+// Browser navigation
+await $.platform.web.goBack();
+await $.platform.web.goForward();
+
+// Cookies
+await $.platform.web.addCookie(name: 'test_cookie', value: 'cookie_value', url: 'http://localhost:8080');
+final cookies = await $.platform.web.getCookies();
+await $.platform.web.clearCookies();
+
+// File operations
+final fileContent = utf8.encode('Hello from Patrol file upload test!');
+final file = UploadFileData(
+  name: 'example_file.txt',
+  content: fileContent,
+  mimeType: 'text/plain',
+);
+await $.platform.web.uploadFile(files: [file]);
+final downloads = await $.platform.web.verifyFileDownloads();
+
+// Dialogs - because of blocking nature of dialogs, dialogs need to be subscribed to before triggering
+final dialogFuture = $.platform.web.acceptNextDialog();
+// ... trigger the dialog ...
+final dialogText = await dialogFuture;
+
+final dialogFuture = $.platform.web.dismissNextDialog();
+// ... trigger the dialog ...
+final dialogText = await dialogFuture;
+
+
+// Web element interactions (for iframes and external HTML)
+await $.platform.web.scrollToWeb(selector: inputSelector, iframeSelector: iframeSelector);
+await $.platform.web.enterTextWeb(selector: inputSelector, text: 'Hello from Patrol!', iframeSelector: iframeSelector);
+await $.platform.web.tapWeb(selector: buttonSelector, iframeSelector: iframeSelector);
+
+// Window operations
+await $.platform.web.resizeWindow(size: Size(800, 600));
+```

@@ -12,10 +12,10 @@ class PermissionsScreen extends StatefulWidget {
 }
 
 class _PermissionsScreenState extends State<PermissionsScreen> {
-  bool _cameraPermissionGranted = false;
-  bool _microphonePermissionGranted = false;
-  bool _locationPermissionGranted = false;
-  bool _galleryPermissionGranted = false;
+  var _cameraPermissionGranted = false;
+  var _microphonePermissionGranted = false;
+  var _locationPermissionGranted = false;
+  var _galleryPermissionGranted = false;
 
   Future<void> _requestCameraPermission() async {
     await Future<void>.delayed(Duration(seconds: 1));

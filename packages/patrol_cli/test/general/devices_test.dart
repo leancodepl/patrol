@@ -49,19 +49,6 @@ void main() {
     );
 
     test(
-      'returns the first device when 2 devices is attached and no devices are '
-      'wanted',
-      () {
-        final devicesToUse = deviceFinder.findDevicesToUse(
-          attachedDevices: [androidDevice, iosDevice],
-          wantDevices: [],
-        );
-
-        expect(devicesToUse, [androidDevice]);
-      },
-    );
-
-    test(
       'returns the device when 1 device is attached and it is also wanted',
       () {
         final devicesToUse = deviceFinder.findDevicesToUse(

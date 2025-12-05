@@ -49,8 +49,18 @@ class FlutterTool {
     bool attachUsingUrl = false,
     Future<void> Function()? onQuit,
   }) async {
+    StdinModes? previousStdinModes;
     if (io.stdin.hasTerminal) {
-      _enableInteractiveMode();
+      previousStdinModes = enableInteractiveMode();
+    }
+
+    Future<void> onQuitWithRevertInteractiveMode() async {
+      if (previousStdinModes != null) {
+        revertInteractiveMode(previousStdinModes);
+      }
+      if (onQuit != null) {
+        await onQuit();
+      }
     }
 
     if (attachUsingUrl) {
@@ -69,7 +79,7 @@ class FlutterTool {
         debugUrl: url,
         dartDefines: dartDefines,
         openBrowser: openDevtools,
-        onQuit: onQuit,
+        onQuit: onQuitWithRevertInteractiveMode,
       );
     } else {
       await Future.wait<void>([
@@ -81,7 +91,7 @@ class FlutterTool {
           appId: appId,
           dartDefines: dartDefines,
           openBrowser: openDevtools,
-          onQuit: onQuit,
+          onQuit: onQuitWithRevertInteractiveMode,
         ),
       ]);
     }
@@ -299,7 +309,13 @@ class FlutterTool {
     });
   }
 
-  void _enableInteractiveMode() {
+  /// Enables interactive mode. Returns the previous stdin modes.
+  StdinModes enableInteractiveMode() {
+    final stdinModes = StdinModes(
+      echoMode: io.stdin.echoMode,
+      lineMode: io.stdin.lineMode,
+    );
+
     // Prevents keystrokes from being printed automatically. Needs to be
     // disabled for lineMode to be disabled too.
     io.stdin.echoMode = false;
@@ -309,6 +325,15 @@ class FlutterTool {
     io.stdin.lineMode = false;
 
     _logger.detail('Interactive shell mode enabled.');
+
+    return stdinModes;
+  }
+
+  void revertInteractiveMode(StdinModes stdinModes) {
+    io.stdin.echoMode = stdinModes.echoMode;
+    io.stdin.lineMode = stdinModes.lineMode;
+
+    _logger.detail('Interactive shell mode disabled.');
   }
 
   Future<void> _openDevtoolsPage(String url) async {
@@ -334,4 +359,11 @@ class FlutterTool {
     final startIndex = line.indexOf('http');
     return line.substring(startIndex);
   }
+}
+
+class StdinModes {
+  StdinModes({required this.echoMode, required this.lineMode});
+
+  final bool echoMode;
+  final bool lineMode;
 }

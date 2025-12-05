@@ -43,6 +43,9 @@ Check out our video version of this tutorial on YouTube!
       iOS / macOS:
       • Program xcodebuild found in /usr/bin/xcodebuild
       • Program ideviceinstaller found in /opt/homebrew/bin/ideviceinstaller
+      Web:
+      • Program node found in /usr/bin/node
+      • Program npm found in /usr/bin/npm
       ```
       Be sure that for the platform you want to run the test on, all the checks are green.
     
@@ -84,6 +87,23 @@ Check out our video version of this tutorial on YouTube!
       macos:
         bundle_id: com.example.macos.MyApp
     ```
+
+    <Info>
+        **Test Directory Configuration**: By default, Patrol looks for tests in the `patrol_test/` directory. 
+        You can customize this by adding `test_directory: your_custom_directory` to your `patrol` section in `pubspec.yaml`.
+        
+        ```yaml title="pubspec.yaml (optional customization)"
+        patrol:
+          app_name: My App
+          test_directory: integration_test  # Use custom directory
+          android:
+            package_name: com.example.myapp
+          ios:
+            bundle_id: com.example.MyApp
+          macos:
+            bundle_id: com.example.macos.MyApp
+        ```
+    </Info>
 
     <Warning>
         In this tutorial, we are using example app, which has package name
@@ -334,9 +354,7 @@ Check out our video version of this tutorial on YouTube!
         <Step>
           Make sure that the **iOS Deployment Target** of `RunnerUITests` within the
             **Build Settings** section is the same as `Runner`.
-            The minimum supported **iOS Deployment Target** is `11.0`. For the
-            [example app],
-            we set it to `13.0` because it's required by the app dependencies.
+            The minimum supported **iOS Deployment Target** is `13.0`.
 
           ![Xcode iOS deployment target](/assets/ios_deployment_target.png)
 
@@ -370,11 +388,11 @@ Check out our video version of this tutorial on YouTube!
         </Step>
 
         <Step>
-          Create an empty file `integration_test/example_test.dart` in the root of your Flutter project. From the command line, run
+          Create an empty file `patrol_test/example_test.dart` in the root of your Flutter project. From the command line, run
             the following command and make sure it completes with no errors:
 
           ```
-          flutter build ios --config-only integration_test/example_test.dart
+          $ flutter build ios --config-only patrol_test/example_test.dart
           ```
         </Step>
 
@@ -503,10 +521,10 @@ Check out our video version of this tutorial on YouTube!
         </Step>
 
         <Step>
-          Create an empty file `integration_test/example_test.dart` in the root of your Flutter project. From the command line, run:
+          Create an empty file `patrol_test/example_test.dart` in the root of your Flutter project. From the command line, run:
 
           ```
-          flutter build macos --config-only integration_test/example_test.dart
+          $ flutter build macos --config-only patrol_test/example_test.dart
           ```
         </Step>
 
@@ -590,9 +608,9 @@ Check out our video version of this tutorial on YouTube!
     Let's create a dummy Flutter integration test that you'll use to verify
     that Patrol is correctly set up.
 
-    Paste the following code into `integration_test/example_test.dart`:
+    Paste the following code into `patrol_test/example_test.dart`:
 
-        ```dart title="integration_test/example_test.dart"
+        ```dart title="patrol_test/example_test.dart"
         import 'dart:io';
 
         import 'package:flutter/material.dart';
@@ -628,10 +646,10 @@ Check out our video version of this tutorial on YouTube!
     - then (on mobile platforms), it exits to home screen
 
     It's a very simple test, but it's enough to verify that Patrol is correctly set
-    up. To run `integration_test/example_test.dart` on a connected Android, iOS or macOS device:
+    up. To run `patrol_test/example_test.dart` on a connected Android, iOS or macOS device:
 
         ```
-        patrol test -t integration_test/example_test.dart
+        patrol test -t patrol_test/example_test.dart
         ```
 
     If the setup is successful, you should see a summary like one below.
@@ -670,7 +688,7 @@ Check out our video version of this tutorial on YouTube!
   If your app is using flavors, then you can pass them like so:
 
   ```
-  patrol test --target integration_test/example_test.dart --flavor development
+  patrol test --target patrol_test/example_test.dart --flavor development
   ```
 
   or you can specify them in `pubspec.yaml` (recommended):
@@ -690,7 +708,7 @@ Check out our video version of this tutorial on YouTube!
 
 ## FAQ
 
-<Accordion title="Testing fails with error inside 'integration_test/test_bundle.dart'">
+<Accordion title="Testing fails with error inside 'patrol_test/test_bundle.dart'">
   The reason is probably a mismatch of `patrol` and `patrol_cli` versions. Go to [Compatibility table]
   and make sure that the versions of `patrol` and `patrol_cli` you are using are compatible.
 </Accordion>
@@ -797,7 +815,7 @@ To learn how to write Patrol tests, see [finders] and [native automation] sectio
 [Compatibility table]: /documentation/compatibility-table
 [README]: https://pub.dev/packages/patrol_cli#installation
 [example app]: https://github.com/leancodepl/patrol/tree/master/packages/patrol/example
-[example]: https://github.com/leancodepl/patrol/blob/d2c7493f9399a028e39cb94fd204affdb932c5fc/dev/e2e_app/integration_test/common.dart#L17-L33
+[example]: https://github.com/leancodepl/patrol/blob/d2c7493f9399a028e39cb94fd204affdb932c5fc/dev/e2e_app/patrol_test/common.dart#L17-L33
 [Learn more]: https://developer.android.com/build/jdks
 [this video]: https://www.youtube.com/watch?v=9LdEJR59fW4
 [Patrol Discord Server]: https://discord.gg/ukBK5t4EZg

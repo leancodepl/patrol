@@ -21,7 +21,7 @@ dependencies:
   flutter_local_notifications: ^17.2.2
   flutter_svg: ^2.0.9
   geocoding: ^2.1.1
-  geolocator: ^10.1.0
+  geolocator: ^14.0.2
   google_sign_in: ^6.1.6
   http: ^1.1.0
   permission_handler: ^11.4.0

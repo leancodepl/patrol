@@ -6,8 +6,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:meta/meta.dart';
 import 'package:patrol/src/binding.dart';
 import 'package:patrol/src/global_state.dart' as global_state;
-import 'package:patrol/src/native/contracts/contracts.dart';
-import 'package:patrol/src/native/native.dart';
+import 'package:patrol/src/native/native_automator_config.dart';
+import 'package:patrol/src/platform/contracts/contracts.dart';
+import 'package:patrol/src/platform/platform_automator.dart';
 import 'package:patrol_finders/patrol_finders.dart' as finders;
 import 'package:patrol_log/patrol_log.dart';
 
@@ -92,14 +93,28 @@ void patrolTest(
   finders.PatrolTesterConfig config = const finders.PatrolTesterConfig(
     printLogs: true,
   ),
-  NativeAutomatorConfig nativeAutomatorConfig = const NativeAutomatorConfig(),
+  @Deprecated(
+    'nativeAutomatorConfig is deprecated and will be removed in a future release. '
+    'Please use platformAutomatorConfig instead.',
+  )
+  NativeAutomatorConfig? nativeAutomatorConfig,
+  PlatformAutomatorConfig? platformAutomatorConfig,
   LiveTestWidgetsFlutterBindingFramePolicy framePolicy =
-      LiveTestWidgetsFlutterBindingFramePolicy.fadePointers,
+      LiveTestWidgetsFlutterBindingFramePolicy.fullyLive,
 }) {
   final patrolLog = PatrolLogWriter(config: {'printLogs': config.printLogs});
-  final automator = NativeAutomator(config: nativeAutomatorConfig);
-  final automator2 = NativeAutomator2(config: nativeAutomatorConfig);
-  final patrolBinding = PatrolBinding.ensureInitialized(nativeAutomatorConfig)
+  if (nativeAutomatorConfig != null && platformAutomatorConfig != null) {
+    throw StateError(
+      'Cannot use both nativeAutomatorConfig and platformAutomatorConfig',
+    );
+  }
+  final platformAutomator = PlatformAutomator(
+    config:
+        nativeAutomatorConfig?.toPlatformAutomatorConfig() ??
+        platformAutomatorConfig ??
+        PlatformAutomatorConfig.defaultConfig(),
+  );
+  final patrolBinding = PatrolBinding.ensureInitialized(platformAutomator)
     ..framePolicy = framePolicy;
 
   if (skip ?? false) {
@@ -133,18 +148,19 @@ void patrolTest(
         }
       }
 
-      await automator.configure();
-      // We don't have to call this line because automator.configure() does the same.
-      // await automator2.configure();
+      await platformAutomator.action.maybe(
+        android: platformAutomator.android.configure,
+        ios: platformAutomator.ios.configure,
+        web: platformAutomator.web.configure,
+      );
 
       patrolLog.log(
         TestEntry(name: description, status: TestEntryStatus.start),
       );
       final patrolTester = PatrolIntegrationTester(
         tester: widgetTester,
-        nativeAutomator: automator,
-        nativeAutomator2: automator2,
         config: config,
+        platformAutomator: platformAutomator,
       );
       await callback(patrolTester);
 

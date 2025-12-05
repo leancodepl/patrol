@@ -9,211 +9,211 @@ import 'package:json_annotation/json_annotation.dart';
 part 'contracts.g.dart';
 
 enum GroupEntryType {
-  @JsonValue('group')
-  group,
-  @JsonValue('test')
-  test,
+  group('group'),
+  test('test');
+
+  const GroupEntryType(this.value);
+  final String value;
 }
 
 enum RunDartTestResponseResult {
-  @JsonValue('success')
-  success,
-  @JsonValue('skipped')
-  skipped,
-  @JsonValue('failure')
-  failure,
+  success('success'),
+  skipped('skipped'),
+  failure('failure');
+
+  const RunDartTestResponseResult(this.value);
+  final String value;
 }
 
 enum KeyboardBehavior {
-  @JsonValue('showAndDismiss')
-  showAndDismiss,
-  @JsonValue('alternative')
-  alternative,
+  showAndDismiss('showAndDismiss'),
+  alternative('alternative');
+
+  const KeyboardBehavior(this.value);
+  final String value;
 }
 
 enum HandlePermissionRequestCode {
-  @JsonValue('whileUsing')
-  whileUsing,
-  @JsonValue('onlyThisTime')
-  onlyThisTime,
-  @JsonValue('denied')
-  denied,
+  whileUsing('whileUsing'),
+  onlyThisTime('onlyThisTime'),
+  denied('denied');
+
+  const HandlePermissionRequestCode(this.value);
+  final String value;
 }
 
 enum SetLocationAccuracyRequestLocationAccuracy {
-  @JsonValue('coarse')
-  coarse,
-  @JsonValue('fine')
-  fine,
+  coarse('coarse'),
+  fine('fine');
+
+  const SetLocationAccuracyRequestLocationAccuracy(this.value);
+  final String value;
 }
 
 enum IOSElementType {
-  @JsonValue('any')
-  any,
-  @JsonValue('other')
-  other,
-  @JsonValue('application')
-  application,
-  @JsonValue('group')
-  group,
-  @JsonValue('window')
-  window,
-  @JsonValue('sheet')
-  sheet,
-  @JsonValue('drawer')
-  drawer,
-  @JsonValue('alert')
-  alert,
-  @JsonValue('dialog')
-  dialog,
-  @JsonValue('button')
-  button,
-  @JsonValue('radioButton')
-  radioButton,
-  @JsonValue('radioGroup')
-  radioGroup,
-  @JsonValue('checkBox')
-  checkBox,
-  @JsonValue('disclosureTriangle')
-  disclosureTriangle,
-  @JsonValue('popUpButton')
-  popUpButton,
-  @JsonValue('comboBox')
-  comboBox,
-  @JsonValue('menuButton')
-  menuButton,
-  @JsonValue('toolbarButton')
-  toolbarButton,
-  @JsonValue('popover')
-  popover,
-  @JsonValue('keyboard')
-  keyboard,
-  @JsonValue('key')
-  key,
-  @JsonValue('navigationBar')
-  navigationBar,
-  @JsonValue('tabBar')
-  tabBar,
-  @JsonValue('tabGroup')
-  tabGroup,
-  @JsonValue('toolbar')
-  toolbar,
-  @JsonValue('statusBar')
-  statusBar,
-  @JsonValue('table')
-  table,
-  @JsonValue('tableRow')
-  tableRow,
-  @JsonValue('tableColumn')
-  tableColumn,
-  @JsonValue('outline')
-  outline,
-  @JsonValue('outlineRow')
-  outlineRow,
-  @JsonValue('browser')
-  browser,
-  @JsonValue('collectionView')
-  collectionView,
-  @JsonValue('slider')
-  slider,
-  @JsonValue('pageIndicator')
-  pageIndicator,
-  @JsonValue('progressIndicator')
-  progressIndicator,
-  @JsonValue('activityIndicator')
-  activityIndicator,
-  @JsonValue('segmentedControl')
-  segmentedControl,
-  @JsonValue('picker')
-  picker,
-  @JsonValue('pickerWheel')
-  pickerWheel,
-  @JsonValue('switch_')
-  switch_,
-  @JsonValue('toggle')
-  toggle,
-  @JsonValue('link')
-  link,
-  @JsonValue('image')
-  image,
-  @JsonValue('icon')
-  icon,
-  @JsonValue('searchField')
-  searchField,
-  @JsonValue('scrollView')
-  scrollView,
-  @JsonValue('scrollBar')
-  scrollBar,
-  @JsonValue('staticText')
-  staticText,
-  @JsonValue('textField')
-  textField,
-  @JsonValue('secureTextField')
-  secureTextField,
-  @JsonValue('datePicker')
-  datePicker,
-  @JsonValue('textView')
-  textView,
-  @JsonValue('menu')
-  menu,
-  @JsonValue('menuItem')
-  menuItem,
-  @JsonValue('menuBar')
-  menuBar,
-  @JsonValue('menuBarItem')
-  menuBarItem,
-  @JsonValue('map')
-  map,
-  @JsonValue('webView')
-  webView,
-  @JsonValue('incrementArrow')
-  incrementArrow,
-  @JsonValue('decrementArrow')
-  decrementArrow,
-  @JsonValue('timeline')
-  timeline,
-  @JsonValue('ratingIndicator')
-  ratingIndicator,
-  @JsonValue('valueIndicator')
-  valueIndicator,
-  @JsonValue('splitGroup')
-  splitGroup,
-  @JsonValue('splitter')
-  splitter,
-  @JsonValue('relevanceIndicator')
-  relevanceIndicator,
-  @JsonValue('colorWell')
-  colorWell,
-  @JsonValue('helpTag')
-  helpTag,
-  @JsonValue('matte')
-  matte,
-  @JsonValue('dockItem')
-  dockItem,
-  @JsonValue('ruler')
-  ruler,
-  @JsonValue('rulerMarker')
-  rulerMarker,
-  @JsonValue('grid')
-  grid,
-  @JsonValue('levelIndicator')
-  levelIndicator,
-  @JsonValue('cell')
-  cell,
-  @JsonValue('layoutArea')
-  layoutArea,
-  @JsonValue('layoutItem')
-  layoutItem,
-  @JsonValue('handle')
-  handle,
-  @JsonValue('stepper')
-  stepper,
-  @JsonValue('tab')
-  tab,
-  @JsonValue('touchBar')
-  touchBar,
-  @JsonValue('statusItem')
-  statusItem,
+  any('any'),
+  other('other'),
+  application('application'),
+  group('group'),
+  window('window'),
+  sheet('sheet'),
+  drawer('drawer'),
+  alert('alert'),
+  dialog('dialog'),
+  button('button'),
+  radioButton('radioButton'),
+  radioGroup('radioGroup'),
+  checkBox('checkBox'),
+  disclosureTriangle('disclosureTriangle'),
+  popUpButton('popUpButton'),
+  comboBox('comboBox'),
+  menuButton('menuButton'),
+  toolbarButton('toolbarButton'),
+  popover('popover'),
+  keyboard('keyboard'),
+  key('key'),
+  navigationBar('navigationBar'),
+  tabBar('tabBar'),
+  tabGroup('tabGroup'),
+  toolbar('toolbar'),
+  statusBar('statusBar'),
+  table('table'),
+  tableRow('tableRow'),
+  tableColumn('tableColumn'),
+  outline('outline'),
+  outlineRow('outlineRow'),
+  browser('browser'),
+  collectionView('collectionView'),
+  slider('slider'),
+  pageIndicator('pageIndicator'),
+  progressIndicator('progressIndicator'),
+  activityIndicator('activityIndicator'),
+  segmentedControl('segmentedControl'),
+  picker('picker'),
+  pickerWheel('pickerWheel'),
+  switch_('switch_'),
+  toggle('toggle'),
+  link('link'),
+  image('image'),
+  icon('icon'),
+  searchField('searchField'),
+  scrollView('scrollView'),
+  scrollBar('scrollBar'),
+  staticText('staticText'),
+  textField('textField'),
+  secureTextField('secureTextField'),
+  datePicker('datePicker'),
+  textView('textView'),
+  menu('menu'),
+  menuItem('menuItem'),
+  menuBar('menuBar'),
+  menuBarItem('menuBarItem'),
+  map('map'),
+  webView('webView'),
+  incrementArrow('incrementArrow'),
+  decrementArrow('decrementArrow'),
+  timeline('timeline'),
+  ratingIndicator('ratingIndicator'),
+  valueIndicator('valueIndicator'),
+  splitGroup('splitGroup'),
+  splitter('splitter'),
+  relevanceIndicator('relevanceIndicator'),
+  colorWell('colorWell'),
+  helpTag('helpTag'),
+  matte('matte'),
+  dockItem('dockItem'),
+  ruler('ruler'),
+  rulerMarker('rulerMarker'),
+  grid('grid'),
+  levelIndicator('levelIndicator'),
+  cell('cell'),
+  layoutArea('layoutArea'),
+  layoutItem('layoutItem'),
+  handle('handle'),
+  stepper('stepper'),
+  tab('tab'),
+  touchBar('touchBar'),
+  statusItem('statusItem');
+
+  const IOSElementType(this.value);
+  final String value;
+}
+
+enum GoogleApp {
+  calculator('com.google.android.calculator'),
+  calendar('com.google.android.calendar'),
+  chrome('com.android.chrome'),
+  drive('com.google.android.apps.docs'),
+  gmail('com.google.android.gm'),
+  maps('com.google.android.apps.maps'),
+  photos('com.google.android.apps.photos'),
+  playStore('com.android.vending'),
+  settings('com.android.settings'),
+  youtube('com.google.android.youtube');
+
+  const GoogleApp(this.value);
+  final String value;
+}
+
+enum AppleApp {
+  appStore('com.apple.AppStore'),
+  appleStore('com.apple.store.Jolly'),
+  barcodeScanner('com.apple.BarcodeScanner'),
+  books('com.apple.iBooks'),
+  calculator('com.apple.calculator'),
+  calendar('com.apple.mobilecal'),
+  camera('com.apple.camera'),
+  clips('com.apple.clips'),
+  clock('com.apple.mobiletimer'),
+  compass('com.apple.compass'),
+  contacts('com.apple.MobileAddressBook'),
+  developer('developer.apple.wwdc-Release'),
+  faceTime('com.apple.facetime'),
+  files('com.apple.DocumentsApp'),
+  findMy('com.apple.findmy'),
+  fitness('com.apple.Fitness'),
+  freeform('com.apple.freeform'),
+  garageBand('com.apple.mobilegarageband'),
+  health('com.apple.Health'),
+  home('com.apple.Home'),
+  iCloudDrive('com.apple.iCloudDriveApp'),
+  imagePlayground('com.apple.GenerativePlaygroundApp'),
+  iMovie('com.apple.iMovie'),
+  invites('com.apple.rsvp'),
+  iTunesStore('com.apple.MobileStore'),
+  journal('com.apple.journal'),
+  keynote('com.apple.Keynote'),
+  magnifier('com.apple.Magnifier'),
+  mail('com.apple.mobilemail'),
+  maps('com.apple.Maps'),
+  measure('com.apple.measure'),
+  messages('com.apple.MobileSMS'),
+  music('com.apple.Music'),
+  news('com.apple.news'),
+  notes('com.apple.mobilenotes'),
+  numbers('com.apple.Numbers'),
+  pages('com.apple.Pages'),
+  passwords('com.apple.Passwords'),
+  phone('com.apple.mobilephone'),
+  photoBooth('com.apple.Photo-Booth'),
+  photos('com.apple.mobileslideshow'),
+  podcasts('com.apple.podcasts'),
+  reminders('com.apple.reminders'),
+  safari('com.apple.mobilesafari'),
+  settings('com.apple.Preferences'),
+  shortcuts('com.apple.shortcuts'),
+  stocks('com.apple.stocks'),
+  swiftPlaygrounds('com.apple.Playgrounds'),
+  tips('com.apple.tips'),
+  translate('com.apple.Translate'),
+  tv('com.apple.tv'),
+  voiceMemos('com.apple.VoiceMemos'),
+  wallet('com.apple.Passbook'),
+  watch('com.apple.Bridge'),
+  weather('com.apple.weather');
+
+  const AppleApp(this.value);
+  final String value;
 }
 
 @JsonSerializable()
@@ -239,22 +239,6 @@ class DartGroupEntry with EquatableMixin {
 
   @override
   List<Object?> get props => [name, type, entries, skip, tags];
-
-  DartGroupEntry copyWith({
-    String? name,
-    GroupEntryType? type,
-    List<DartGroupEntry>? entries,
-    bool? skip,
-    List<String>? tags,
-  }) {
-    return DartGroupEntry(
-      name: name ?? this.name,
-      type: type ?? this.type,
-      entries: entries ?? this.entries,
-      skip: skip ?? this.skip,
-      tags: tags ?? this.tags,
-    );
-  }
 }
 
 @JsonSerializable()
@@ -270,10 +254,6 @@ class ListDartTestsResponse with EquatableMixin {
 
   @override
   List<Object?> get props => [group];
-
-  ListDartTestsResponse copyWith({DartGroupEntry? group}) {
-    return ListDartTestsResponse(group: group ?? this.group);
-  }
 }
 
 @JsonSerializable()
@@ -289,10 +269,6 @@ class RunDartTestRequest with EquatableMixin {
 
   @override
   List<Object?> get props => [name];
-
-  RunDartTestRequest copyWith({String? name}) {
-    return RunDartTestRequest(name: name ?? this.name);
-  }
 }
 
 @JsonSerializable()
@@ -309,16 +285,6 @@ class RunDartTestResponse with EquatableMixin {
 
   @override
   List<Object?> get props => [result, details];
-
-  RunDartTestResponse copyWith({
-    RunDartTestResponseResult? result,
-    String? details,
-  }) {
-    return RunDartTestResponse(
-      result: result ?? this.result,
-      details: details ?? this.details,
-    );
-  }
 }
 
 @JsonSerializable()
@@ -334,12 +300,6 @@ class ConfigureRequest with EquatableMixin {
 
   @override
   List<Object?> get props => [findTimeoutMillis];
-
-  ConfigureRequest copyWith({int? findTimeoutMillis}) {
-    return ConfigureRequest(
-      findTimeoutMillis: findTimeoutMillis ?? this.findTimeoutMillis,
-    );
-  }
 }
 
 @JsonSerializable()
@@ -355,10 +315,36 @@ class OpenAppRequest with EquatableMixin {
 
   @override
   List<Object?> get props => [appId];
+}
 
-  OpenAppRequest copyWith({String? appId}) {
-    return OpenAppRequest(appId: appId ?? this.appId);
-  }
+@JsonSerializable()
+class AndroidOpenPlatformAppRequest with EquatableMixin {
+  AndroidOpenPlatformAppRequest({required this.androidAppId});
+
+  factory AndroidOpenPlatformAppRequest.fromJson(Map<String, dynamic> json) =>
+      _$AndroidOpenPlatformAppRequestFromJson(json);
+
+  final String androidAppId;
+
+  Map<String, dynamic> toJson() => _$AndroidOpenPlatformAppRequestToJson(this);
+
+  @override
+  List<Object?> get props => [androidAppId];
+}
+
+@JsonSerializable()
+class IOSOpenPlatformAppRequest with EquatableMixin {
+  IOSOpenPlatformAppRequest({required this.iosAppId});
+
+  factory IOSOpenPlatformAppRequest.fromJson(Map<String, dynamic> json) =>
+      _$IOSOpenPlatformAppRequestFromJson(json);
+
+  final String iosAppId;
+
+  Map<String, dynamic> toJson() => _$IOSOpenPlatformAppRequestToJson(this);
+
+  @override
+  List<Object?> get props => [iosAppId];
 }
 
 @JsonSerializable()
@@ -372,10 +358,6 @@ class OpenQuickSettingsRequest with EquatableMixin {
 
   @override
   List<Object?> get props => const [];
-
-  OpenQuickSettingsRequest copyWith() {
-    return OpenQuickSettingsRequest();
-  }
 }
 
 @JsonSerializable()
@@ -391,10 +373,6 @@ class OpenUrlRequest with EquatableMixin {
 
   @override
   List<Object?> get props => [url];
-
-  OpenUrlRequest copyWith({String? url}) {
-    return OpenUrlRequest(url: url ?? this.url);
-  }
 }
 
 @JsonSerializable()
@@ -468,52 +446,6 @@ class AndroidSelector with EquatableMixin {
     resourceName,
     instance,
   ];
-
-  AndroidSelector copyWith({
-    String? className,
-    bool? isCheckable,
-    bool? isChecked,
-    bool? isClickable,
-    bool? isEnabled,
-    bool? isFocusable,
-    bool? isFocused,
-    bool? isLongClickable,
-    bool? isScrollable,
-    bool? isSelected,
-    String? applicationPackage,
-    String? contentDescription,
-    String? contentDescriptionStartsWith,
-    String? contentDescriptionContains,
-    String? text,
-    String? textStartsWith,
-    String? textContains,
-    String? resourceName,
-    int? instance,
-  }) {
-    return AndroidSelector(
-      className: className ?? this.className,
-      isCheckable: isCheckable ?? this.isCheckable,
-      isChecked: isChecked ?? this.isChecked,
-      isClickable: isClickable ?? this.isClickable,
-      isEnabled: isEnabled ?? this.isEnabled,
-      isFocusable: isFocusable ?? this.isFocusable,
-      isFocused: isFocused ?? this.isFocused,
-      isLongClickable: isLongClickable ?? this.isLongClickable,
-      isScrollable: isScrollable ?? this.isScrollable,
-      isSelected: isSelected ?? this.isSelected,
-      applicationPackage: applicationPackage ?? this.applicationPackage,
-      contentDescription: contentDescription ?? this.contentDescription,
-      contentDescriptionStartsWith:
-          contentDescriptionStartsWith ?? this.contentDescriptionStartsWith,
-      contentDescriptionContains:
-          contentDescriptionContains ?? this.contentDescriptionContains,
-      text: text ?? this.text,
-      textStartsWith: textStartsWith ?? this.textStartsWith,
-      textContains: textContains ?? this.textContains,
-      resourceName: resourceName ?? this.resourceName,
-      instance: instance ?? this.instance,
-    );
-  }
 }
 
 @JsonSerializable()
@@ -523,6 +455,9 @@ class IOSSelector with EquatableMixin {
     this.instance,
     this.elementType,
     this.identifier,
+    this.text,
+    this.textStartsWith,
+    this.textContains,
     this.label,
     this.labelStartsWith,
     this.labelContains,
@@ -544,6 +479,9 @@ class IOSSelector with EquatableMixin {
   final int? instance;
   final IOSElementType? elementType;
   final String? identifier;
+  final String? text;
+  final String? textStartsWith;
+  final String? textContains;
   final String? label;
   final String? labelStartsWith;
   final String? labelContains;
@@ -565,6 +503,9 @@ class IOSSelector with EquatableMixin {
     instance,
     elementType,
     identifier,
+    text,
+    textStartsWith,
+    textContains,
     label,
     labelStartsWith,
     labelContains,
@@ -578,230 +519,42 @@ class IOSSelector with EquatableMixin {
     placeholderValueStartsWith,
     placeholderValueContains,
   ];
-
-  IOSSelector copyWith({
-    String? value,
-    int? instance,
-    IOSElementType? elementType,
-    String? identifier,
-    String? label,
-    String? labelStartsWith,
-    String? labelContains,
-    String? title,
-    String? titleStartsWith,
-    String? titleContains,
-    bool? hasFocus,
-    bool? isEnabled,
-    bool? isSelected,
-    String? placeholderValue,
-    String? placeholderValueStartsWith,
-    String? placeholderValueContains,
-  }) {
-    return IOSSelector(
-      value: value ?? this.value,
-      instance: instance ?? this.instance,
-      elementType: elementType ?? this.elementType,
-      identifier: identifier ?? this.identifier,
-      label: label ?? this.label,
-      labelStartsWith: labelStartsWith ?? this.labelStartsWith,
-      labelContains: labelContains ?? this.labelContains,
-      title: title ?? this.title,
-      titleStartsWith: titleStartsWith ?? this.titleStartsWith,
-      titleContains: titleContains ?? this.titleContains,
-      hasFocus: hasFocus ?? this.hasFocus,
-      isEnabled: isEnabled ?? this.isEnabled,
-      isSelected: isSelected ?? this.isSelected,
-      placeholderValue: placeholderValue ?? this.placeholderValue,
-      placeholderValueStartsWith:
-          placeholderValueStartsWith ?? this.placeholderValueStartsWith,
-      placeholderValueContains:
-          placeholderValueContains ?? this.placeholderValueContains,
-    );
-  }
 }
 
 @JsonSerializable()
-class Selector with EquatableMixin {
-  Selector({
-    this.text,
-    this.textStartsWith,
-    this.textContains,
-    this.className,
-    this.contentDescription,
-    this.contentDescriptionStartsWith,
-    this.contentDescriptionContains,
-    this.resourceId,
-    this.instance,
-    this.enabled,
-    this.focused,
-    this.pkg,
-  });
+class AndroidGetNativeViewsRequest with EquatableMixin {
+  AndroidGetNativeViewsRequest({this.selector});
 
-  factory Selector.fromJson(Map<String, dynamic> json) =>
-      _$SelectorFromJson(json);
+  factory AndroidGetNativeViewsRequest.fromJson(Map<String, dynamic> json) =>
+      _$AndroidGetNativeViewsRequestFromJson(json);
 
-  final String? text;
-  final String? textStartsWith;
-  final String? textContains;
-  final String? className;
-  final String? contentDescription;
-  final String? contentDescriptionStartsWith;
-  final String? contentDescriptionContains;
-  final String? resourceId;
-  final int? instance;
-  final bool? enabled;
-  final bool? focused;
-  final String? pkg;
+  final AndroidSelector? selector;
 
-  Map<String, dynamic> toJson() => _$SelectorToJson(this);
+  Map<String, dynamic> toJson() => _$AndroidGetNativeViewsRequestToJson(this);
 
   @override
-  List<Object?> get props => [
-    text,
-    textStartsWith,
-    textContains,
-    className,
-    contentDescription,
-    contentDescriptionStartsWith,
-    contentDescriptionContains,
-    resourceId,
-    instance,
-    enabled,
-    focused,
-    pkg,
-  ];
-
-  Selector copyWith({
-    String? text,
-    String? textStartsWith,
-    String? textContains,
-    String? className,
-    String? contentDescription,
-    String? contentDescriptionStartsWith,
-    String? contentDescriptionContains,
-    String? resourceId,
-    int? instance,
-    bool? enabled,
-    bool? focused,
-    String? pkg,
-  }) {
-    return Selector(
-      text: text ?? this.text,
-      textStartsWith: textStartsWith ?? this.textStartsWith,
-      textContains: textContains ?? this.textContains,
-      className: className ?? this.className,
-      contentDescription: contentDescription ?? this.contentDescription,
-      contentDescriptionStartsWith:
-          contentDescriptionStartsWith ?? this.contentDescriptionStartsWith,
-      contentDescriptionContains:
-          contentDescriptionContains ?? this.contentDescriptionContains,
-      resourceId: resourceId ?? this.resourceId,
-      instance: instance ?? this.instance,
-      enabled: enabled ?? this.enabled,
-      focused: focused ?? this.focused,
-      pkg: pkg ?? this.pkg,
-    );
-  }
+  List<Object?> get props => [selector];
 }
 
 @JsonSerializable()
-class GetNativeViewsRequest with EquatableMixin {
-  GetNativeViewsRequest({
+class IOSGetNativeViewsRequest with EquatableMixin {
+  IOSGetNativeViewsRequest({
     this.selector,
-    this.androidSelector,
-    this.iosSelector,
+    this.iosInstalledApps,
     required this.appId,
   });
 
-  factory GetNativeViewsRequest.fromJson(Map<String, dynamic> json) =>
-      _$GetNativeViewsRequestFromJson(json);
+  factory IOSGetNativeViewsRequest.fromJson(Map<String, dynamic> json) =>
+      _$IOSGetNativeViewsRequestFromJson(json);
 
-  final Selector? selector;
-  final AndroidSelector? androidSelector;
-  final IOSSelector? iosSelector;
+  final IOSSelector? selector;
+  final List<String>? iosInstalledApps;
   final String appId;
 
-  Map<String, dynamic> toJson() => _$GetNativeViewsRequestToJson(this);
+  Map<String, dynamic> toJson() => _$IOSGetNativeViewsRequestToJson(this);
 
   @override
-  List<Object?> get props => [selector, androidSelector, iosSelector, appId];
-
-  GetNativeViewsRequest copyWith({
-    Selector? selector,
-    AndroidSelector? androidSelector,
-    IOSSelector? iosSelector,
-    String? appId,
-  }) {
-    return GetNativeViewsRequest(
-      selector: selector ?? this.selector,
-      androidSelector: androidSelector ?? this.androidSelector,
-      iosSelector: iosSelector ?? this.iosSelector,
-      appId: appId ?? this.appId,
-    );
-  }
-}
-
-@JsonSerializable()
-class GetNativeUITreeRequest with EquatableMixin {
-  GetNativeUITreeRequest({
-    this.iosInstalledApps,
-    required this.useNativeViewHierarchy,
-  });
-
-  factory GetNativeUITreeRequest.fromJson(Map<String, dynamic> json) =>
-      _$GetNativeUITreeRequestFromJson(json);
-
-  final List<String>? iosInstalledApps;
-  final bool useNativeViewHierarchy;
-
-  Map<String, dynamic> toJson() => _$GetNativeUITreeRequestToJson(this);
-
-  @override
-  List<Object?> get props => [iosInstalledApps, useNativeViewHierarchy];
-
-  GetNativeUITreeRequest copyWith({
-    List<String>? iosInstalledApps,
-    bool? useNativeViewHierarchy,
-  }) {
-    return GetNativeUITreeRequest(
-      iosInstalledApps: iosInstalledApps ?? this.iosInstalledApps,
-      useNativeViewHierarchy:
-          useNativeViewHierarchy ?? this.useNativeViewHierarchy,
-    );
-  }
-}
-
-@JsonSerializable()
-class GetNativeUITreeRespone with EquatableMixin {
-  GetNativeUITreeRespone({
-    required this.iOSroots,
-    required this.androidRoots,
-    required this.roots,
-  });
-
-  factory GetNativeUITreeRespone.fromJson(Map<String, dynamic> json) =>
-      _$GetNativeUITreeResponeFromJson(json);
-
-  final List<IOSNativeView> iOSroots;
-  final List<AndroidNativeView> androidRoots;
-  final List<NativeView> roots;
-
-  Map<String, dynamic> toJson() => _$GetNativeUITreeResponeToJson(this);
-
-  @override
-  List<Object?> get props => [iOSroots, androidRoots, roots];
-
-  GetNativeUITreeRespone copyWith({
-    List<IOSNativeView>? iOSroots,
-    List<AndroidNativeView>? androidRoots,
-    List<NativeView>? roots,
-  }) {
-    return GetNativeUITreeRespone(
-      iOSroots: iOSroots ?? this.iOSroots,
-      androidRoots: androidRoots ?? this.androidRoots,
-      roots: roots ?? this.roots,
-    );
-  }
+  List<Object?> get props => [selector, iosInstalledApps, appId];
 }
 
 @JsonSerializable()
@@ -872,48 +625,6 @@ class AndroidNativeView with EquatableMixin {
     visibleCenter,
     children,
   ];
-
-  AndroidNativeView copyWith({
-    String? resourceName,
-    String? text,
-    String? className,
-    String? contentDescription,
-    String? applicationPackage,
-    int? childCount,
-    bool? isCheckable,
-    bool? isChecked,
-    bool? isClickable,
-    bool? isEnabled,
-    bool? isFocusable,
-    bool? isFocused,
-    bool? isLongClickable,
-    bool? isScrollable,
-    bool? isSelected,
-    Rectangle? visibleBounds,
-    Point2D? visibleCenter,
-    List<AndroidNativeView>? children,
-  }) {
-    return AndroidNativeView(
-      resourceName: resourceName ?? this.resourceName,
-      text: text ?? this.text,
-      className: className ?? this.className,
-      contentDescription: contentDescription ?? this.contentDescription,
-      applicationPackage: applicationPackage ?? this.applicationPackage,
-      childCount: childCount ?? this.childCount,
-      isCheckable: isCheckable ?? this.isCheckable,
-      isChecked: isChecked ?? this.isChecked,
-      isClickable: isClickable ?? this.isClickable,
-      isEnabled: isEnabled ?? this.isEnabled,
-      isFocusable: isFocusable ?? this.isFocusable,
-      isFocused: isFocused ?? this.isFocused,
-      isLongClickable: isLongClickable ?? this.isLongClickable,
-      isScrollable: isScrollable ?? this.isScrollable,
-      isSelected: isSelected ?? this.isSelected,
-      visibleBounds: visibleBounds ?? this.visibleBounds,
-      visibleCenter: visibleCenter ?? this.visibleCenter,
-      children: children ?? this.children,
-    );
-  }
 }
 
 @JsonSerializable()
@@ -928,8 +639,10 @@ class IOSNativeView with EquatableMixin {
     required this.isEnabled,
     required this.isSelected,
     required this.frame,
+    this.accessibilityLabel,
     this.placeholderValue,
     this.value,
+    this.bundleId,
   });
 
   factory IOSNativeView.fromJson(Map<String, dynamic> json) =>
@@ -944,8 +657,10 @@ class IOSNativeView with EquatableMixin {
   final bool isEnabled;
   final bool isSelected;
   final Rectangle frame;
+  final String? accessibilityLabel;
   final String? placeholderValue;
   final String? value;
+  final String? bundleId;
 
   Map<String, dynamic> toJson() => _$IOSNativeViewToJson(this);
 
@@ -960,37 +675,41 @@ class IOSNativeView with EquatableMixin {
     isEnabled,
     isSelected,
     frame,
+    accessibilityLabel,
     placeholderValue,
     value,
+    bundleId,
   ];
+}
 
-  IOSNativeView copyWith({
-    List<IOSNativeView>? children,
-    IOSElementType? elementType,
-    String? identifier,
-    String? label,
-    String? title,
-    bool? hasFocus,
-    bool? isEnabled,
-    bool? isSelected,
-    Rectangle? frame,
-    String? placeholderValue,
-    String? value,
-  }) {
-    return IOSNativeView(
-      children: children ?? this.children,
-      elementType: elementType ?? this.elementType,
-      identifier: identifier ?? this.identifier,
-      label: label ?? this.label,
-      title: title ?? this.title,
-      hasFocus: hasFocus ?? this.hasFocus,
-      isEnabled: isEnabled ?? this.isEnabled,
-      isSelected: isSelected ?? this.isSelected,
-      frame: frame ?? this.frame,
-      placeholderValue: placeholderValue ?? this.placeholderValue,
-      value: value ?? this.value,
-    );
-  }
+@JsonSerializable()
+class AndroidGetNativeViewsResponse with EquatableMixin {
+  AndroidGetNativeViewsResponse({required this.roots});
+
+  factory AndroidGetNativeViewsResponse.fromJson(Map<String, dynamic> json) =>
+      _$AndroidGetNativeViewsResponseFromJson(json);
+
+  final List<AndroidNativeView> roots;
+
+  Map<String, dynamic> toJson() => _$AndroidGetNativeViewsResponseToJson(this);
+
+  @override
+  List<Object?> get props => [roots];
+}
+
+@JsonSerializable()
+class IOSGetNativeViewsResponse with EquatableMixin {
+  IOSGetNativeViewsResponse({required this.roots});
+
+  factory IOSGetNativeViewsResponse.fromJson(Map<String, dynamic> json) =>
+      _$IOSGetNativeViewsResponseFromJson(json);
+
+  final List<IOSNativeView> roots;
+
+  Map<String, dynamic> toJson() => _$IOSGetNativeViewsResponseToJson(this);
+
+  @override
+  List<Object?> get props => [roots];
 }
 
 @JsonSerializable()
@@ -1014,15 +733,6 @@ class Rectangle with EquatableMixin {
 
   @override
   List<Object?> get props => [minX, minY, maxX, maxY];
-
-  Rectangle copyWith({double? minX, double? minY, double? maxX, double? maxY}) {
-    return Rectangle(
-      minX: minX ?? this.minX,
-      minY: minY ?? this.minY,
-      maxX: maxX ?? this.maxX,
-      maxY: maxY ?? this.maxY,
-    );
-  }
 }
 
 @JsonSerializable()
@@ -1039,220 +749,146 @@ class Point2D with EquatableMixin {
 
   @override
   List<Object?> get props => [x, y];
-
-  Point2D copyWith({double? x, double? y}) {
-    return Point2D(x: x ?? this.x, y: y ?? this.y);
-  }
 }
 
 @JsonSerializable()
-class NativeView with EquatableMixin {
-  NativeView({
-    this.className,
-    this.text,
-    this.contentDescription,
-    required this.focused,
-    required this.enabled,
-    this.childCount,
-    this.resourceName,
-    this.applicationPackage,
-    required this.children,
-  });
-
-  factory NativeView.fromJson(Map<String, dynamic> json) =>
-      _$NativeViewFromJson(json);
-
-  final String? className;
-  final String? text;
-  final String? contentDescription;
-  final bool focused;
-  final bool enabled;
-  final int? childCount;
-  final String? resourceName;
-  final String? applicationPackage;
-  final List<NativeView> children;
-
-  Map<String, dynamic> toJson() => _$NativeViewToJson(this);
-
-  @override
-  List<Object?> get props => [
-    className,
-    text,
-    contentDescription,
-    focused,
-    enabled,
-    childCount,
-    resourceName,
-    applicationPackage,
-    children,
-  ];
-
-  NativeView copyWith({
-    String? className,
-    String? text,
-    String? contentDescription,
-    bool? focused,
-    bool? enabled,
-    int? childCount,
-    String? resourceName,
-    String? applicationPackage,
-    List<NativeView>? children,
-  }) {
-    return NativeView(
-      className: className ?? this.className,
-      text: text ?? this.text,
-      contentDescription: contentDescription ?? this.contentDescription,
-      focused: focused ?? this.focused,
-      enabled: enabled ?? this.enabled,
-      childCount: childCount ?? this.childCount,
-      resourceName: resourceName ?? this.resourceName,
-      applicationPackage: applicationPackage ?? this.applicationPackage,
-      children: children ?? this.children,
-    );
-  }
-}
-
-@JsonSerializable()
-class GetNativeViewsResponse with EquatableMixin {
-  GetNativeViewsResponse({
-    required this.nativeViews,
-    required this.iosNativeViews,
-    required this.androidNativeViews,
-  });
-
-  factory GetNativeViewsResponse.fromJson(Map<String, dynamic> json) =>
-      _$GetNativeViewsResponseFromJson(json);
-
-  final List<NativeView> nativeViews;
-  final List<IOSNativeView> iosNativeViews;
-  final List<AndroidNativeView> androidNativeViews;
-
-  Map<String, dynamic> toJson() => _$GetNativeViewsResponseToJson(this);
-
-  @override
-  List<Object?> get props => [nativeViews, iosNativeViews, androidNativeViews];
-
-  GetNativeViewsResponse copyWith({
-    List<NativeView>? nativeViews,
-    List<IOSNativeView>? iosNativeViews,
-    List<AndroidNativeView>? androidNativeViews,
-  }) {
-    return GetNativeViewsResponse(
-      nativeViews: nativeViews ?? this.nativeViews,
-      iosNativeViews: iosNativeViews ?? this.iosNativeViews,
-      androidNativeViews: androidNativeViews ?? this.androidNativeViews,
-    );
-  }
-}
-
-@JsonSerializable()
-class TapRequest with EquatableMixin {
-  TapRequest({
-    this.selector,
-    this.androidSelector,
-    this.iosSelector,
-    required this.appId,
+class AndroidTapRequest with EquatableMixin {
+  AndroidTapRequest({
+    required this.selector,
     this.timeoutMillis,
     this.delayBetweenTapsMillis,
   });
 
-  factory TapRequest.fromJson(Map<String, dynamic> json) =>
-      _$TapRequestFromJson(json);
+  factory AndroidTapRequest.fromJson(Map<String, dynamic> json) =>
+      _$AndroidTapRequestFromJson(json);
 
-  final Selector? selector;
-  final AndroidSelector? androidSelector;
-  final IOSSelector? iosSelector;
-  final String appId;
+  final AndroidSelector selector;
   final int? timeoutMillis;
   final int? delayBetweenTapsMillis;
 
-  Map<String, dynamic> toJson() => _$TapRequestToJson(this);
+  Map<String, dynamic> toJson() => _$AndroidTapRequestToJson(this);
 
   @override
-  List<Object?> get props => [
-    selector,
-    androidSelector,
-    iosSelector,
-    appId,
-    timeoutMillis,
-    delayBetweenTapsMillis,
-  ];
-
-  TapRequest copyWith({
-    Selector? selector,
-    AndroidSelector? androidSelector,
-    IOSSelector? iosSelector,
-    String? appId,
-    int? timeoutMillis,
-    int? delayBetweenTapsMillis,
-  }) {
-    return TapRequest(
-      selector: selector ?? this.selector,
-      androidSelector: androidSelector ?? this.androidSelector,
-      iosSelector: iosSelector ?? this.iosSelector,
-      appId: appId ?? this.appId,
-      timeoutMillis: timeoutMillis ?? this.timeoutMillis,
-      delayBetweenTapsMillis:
-          delayBetweenTapsMillis ?? this.delayBetweenTapsMillis,
-    );
-  }
+  List<Object?> get props => [selector, timeoutMillis, delayBetweenTapsMillis];
 }
 
 @JsonSerializable()
-class TapAtRequest with EquatableMixin {
-  TapAtRequest({required this.x, required this.y, required this.appId});
+class IOSTapRequest with EquatableMixin {
+  IOSTapRequest({
+    required this.selector,
+    required this.appId,
+    this.timeoutMillis,
+  });
 
-  factory TapAtRequest.fromJson(Map<String, dynamic> json) =>
-      _$TapAtRequestFromJson(json);
+  factory IOSTapRequest.fromJson(Map<String, dynamic> json) =>
+      _$IOSTapRequestFromJson(json);
+
+  final IOSSelector selector;
+  final String appId;
+  final int? timeoutMillis;
+
+  Map<String, dynamic> toJson() => _$IOSTapRequestToJson(this);
+
+  @override
+  List<Object?> get props => [selector, appId, timeoutMillis];
+}
+
+@JsonSerializable()
+class AndroidTapAtRequest with EquatableMixin {
+  AndroidTapAtRequest({required this.x, required this.y});
+
+  factory AndroidTapAtRequest.fromJson(Map<String, dynamic> json) =>
+      _$AndroidTapAtRequestFromJson(json);
+
+  final double x;
+  final double y;
+
+  Map<String, dynamic> toJson() => _$AndroidTapAtRequestToJson(this);
+
+  @override
+  List<Object?> get props => [x, y];
+}
+
+@JsonSerializable()
+class IOSTapAtRequest with EquatableMixin {
+  IOSTapAtRequest({required this.x, required this.y, required this.appId});
+
+  factory IOSTapAtRequest.fromJson(Map<String, dynamic> json) =>
+      _$IOSTapAtRequestFromJson(json);
 
   final double x;
   final double y;
   final String appId;
 
-  Map<String, dynamic> toJson() => _$TapAtRequestToJson(this);
+  Map<String, dynamic> toJson() => _$IOSTapAtRequestToJson(this);
 
   @override
   List<Object?> get props => [x, y, appId];
-
-  TapAtRequest copyWith({double? x, double? y, String? appId}) {
-    return TapAtRequest(
-      x: x ?? this.x,
-      y: y ?? this.y,
-      appId: appId ?? this.appId,
-    );
-  }
 }
 
 @JsonSerializable()
-class EnterTextRequest with EquatableMixin {
-  EnterTextRequest({
+class AndroidEnterTextRequest with EquatableMixin {
+  AndroidEnterTextRequest({
     required this.data,
-    required this.appId,
     this.index,
     this.selector,
-    this.androidSelector,
-    this.iosSelector,
     required this.keyboardBehavior,
     this.timeoutMillis,
     this.dx,
     this.dy,
   });
 
-  factory EnterTextRequest.fromJson(Map<String, dynamic> json) =>
-      _$EnterTextRequestFromJson(json);
+  factory AndroidEnterTextRequest.fromJson(Map<String, dynamic> json) =>
+      _$AndroidEnterTextRequestFromJson(json);
 
   final String data;
-  final String appId;
   final int? index;
-  final Selector? selector;
-  final AndroidSelector? androidSelector;
-  final IOSSelector? iosSelector;
+  final AndroidSelector? selector;
   final KeyboardBehavior keyboardBehavior;
   final int? timeoutMillis;
   final double? dx;
   final double? dy;
 
-  Map<String, dynamic> toJson() => _$EnterTextRequestToJson(this);
+  Map<String, dynamic> toJson() => _$AndroidEnterTextRequestToJson(this);
+
+  @override
+  List<Object?> get props => [
+    data,
+    index,
+    selector,
+    keyboardBehavior,
+    timeoutMillis,
+    dx,
+    dy,
+  ];
+}
+
+@JsonSerializable()
+class IOSEnterTextRequest with EquatableMixin {
+  IOSEnterTextRequest({
+    required this.data,
+    required this.appId,
+    this.index,
+    this.selector,
+    required this.keyboardBehavior,
+    this.timeoutMillis,
+    this.dx,
+    this.dy,
+  });
+
+  factory IOSEnterTextRequest.fromJson(Map<String, dynamic> json) =>
+      _$IOSEnterTextRequestFromJson(json);
+
+  final String data;
+  final String appId;
+  final int? index;
+  final IOSSelector? selector;
+  final KeyboardBehavior keyboardBehavior;
+  final int? timeoutMillis;
+  final double? dx;
+  final double? dy;
+
+  Map<String, dynamic> toJson() => _$IOSEnterTextRequestToJson(this);
 
   @override
   List<Object?> get props => [
@@ -1260,45 +896,16 @@ class EnterTextRequest with EquatableMixin {
     appId,
     index,
     selector,
-    androidSelector,
-    iosSelector,
     keyboardBehavior,
     timeoutMillis,
     dx,
     dy,
   ];
-
-  EnterTextRequest copyWith({
-    String? data,
-    String? appId,
-    int? index,
-    Selector? selector,
-    AndroidSelector? androidSelector,
-    IOSSelector? iosSelector,
-    KeyboardBehavior? keyboardBehavior,
-    int? timeoutMillis,
-    double? dx,
-    double? dy,
-  }) {
-    return EnterTextRequest(
-      data: data ?? this.data,
-      appId: appId ?? this.appId,
-      index: index ?? this.index,
-      selector: selector ?? this.selector,
-      androidSelector: androidSelector ?? this.androidSelector,
-      iosSelector: iosSelector ?? this.iosSelector,
-      keyboardBehavior: keyboardBehavior ?? this.keyboardBehavior,
-      timeoutMillis: timeoutMillis ?? this.timeoutMillis,
-      dx: dx ?? this.dx,
-      dy: dy ?? this.dy,
-    );
-  }
 }
 
 @JsonSerializable()
-class SwipeRequest with EquatableMixin {
-  SwipeRequest({
-    required this.appId,
+class AndroidSwipeRequest with EquatableMixin {
+  AndroidSwipeRequest({
     required this.startX,
     required this.startY,
     required this.endX,
@@ -1306,85 +913,81 @@ class SwipeRequest with EquatableMixin {
     required this.steps,
   });
 
-  factory SwipeRequest.fromJson(Map<String, dynamic> json) =>
-      _$SwipeRequestFromJson(json);
+  factory AndroidSwipeRequest.fromJson(Map<String, dynamic> json) =>
+      _$AndroidSwipeRequestFromJson(json);
 
-  final String appId;
   final double startX;
   final double startY;
   final double endX;
   final double endY;
   final int steps;
 
-  Map<String, dynamic> toJson() => _$SwipeRequestToJson(this);
+  Map<String, dynamic> toJson() => _$AndroidSwipeRequestToJson(this);
 
   @override
-  List<Object?> get props => [appId, startX, startY, endX, endY, steps];
-
-  SwipeRequest copyWith({
-    String? appId,
-    double? startX,
-    double? startY,
-    double? endX,
-    double? endY,
-    int? steps,
-  }) {
-    return SwipeRequest(
-      appId: appId ?? this.appId,
-      startX: startX ?? this.startX,
-      startY: startY ?? this.startY,
-      endX: endX ?? this.endX,
-      endY: endY ?? this.endY,
-      steps: steps ?? this.steps,
-    );
-  }
+  List<Object?> get props => [startX, startY, endX, endY, steps];
 }
 
 @JsonSerializable()
-class WaitUntilVisibleRequest with EquatableMixin {
-  WaitUntilVisibleRequest({
-    this.selector,
-    this.androidSelector,
-    this.iosSelector,
+class IOSSwipeRequest with EquatableMixin {
+  IOSSwipeRequest({
+    required this.appId,
+    required this.startX,
+    required this.startY,
+    required this.endX,
+    required this.endY,
+  });
+
+  factory IOSSwipeRequest.fromJson(Map<String, dynamic> json) =>
+      _$IOSSwipeRequestFromJson(json);
+
+  final String appId;
+  final double startX;
+  final double startY;
+  final double endX;
+  final double endY;
+
+  Map<String, dynamic> toJson() => _$IOSSwipeRequestToJson(this);
+
+  @override
+  List<Object?> get props => [appId, startX, startY, endX, endY];
+}
+
+@JsonSerializable()
+class AndroidWaitUntilVisibleRequest with EquatableMixin {
+  AndroidWaitUntilVisibleRequest({required this.selector, this.timeoutMillis});
+
+  factory AndroidWaitUntilVisibleRequest.fromJson(Map<String, dynamic> json) =>
+      _$AndroidWaitUntilVisibleRequestFromJson(json);
+
+  final AndroidSelector selector;
+  final int? timeoutMillis;
+
+  Map<String, dynamic> toJson() => _$AndroidWaitUntilVisibleRequestToJson(this);
+
+  @override
+  List<Object?> get props => [selector, timeoutMillis];
+}
+
+@JsonSerializable()
+class IOSWaitUntilVisibleRequest with EquatableMixin {
+  IOSWaitUntilVisibleRequest({
+    required this.selector,
     required this.appId,
     this.timeoutMillis,
   });
 
-  factory WaitUntilVisibleRequest.fromJson(Map<String, dynamic> json) =>
-      _$WaitUntilVisibleRequestFromJson(json);
+  factory IOSWaitUntilVisibleRequest.fromJson(Map<String, dynamic> json) =>
+      _$IOSWaitUntilVisibleRequestFromJson(json);
 
-  final Selector? selector;
-  final AndroidSelector? androidSelector;
-  final IOSSelector? iosSelector;
+  final IOSSelector selector;
   final String appId;
   final int? timeoutMillis;
 
-  Map<String, dynamic> toJson() => _$WaitUntilVisibleRequestToJson(this);
+  Map<String, dynamic> toJson() => _$IOSWaitUntilVisibleRequestToJson(this);
 
   @override
-  List<Object?> get props => [
-    selector,
-    androidSelector,
-    iosSelector,
-    appId,
-    timeoutMillis,
-  ];
-
-  WaitUntilVisibleRequest copyWith({
-    Selector? selector,
-    AndroidSelector? androidSelector,
-    IOSSelector? iosSelector,
-    String? appId,
-    int? timeoutMillis,
-  }) {
-    return WaitUntilVisibleRequest(
-      selector: selector ?? this.selector,
-      androidSelector: androidSelector ?? this.androidSelector,
-      iosSelector: iosSelector ?? this.iosSelector,
-      appId: appId ?? this.appId,
-      timeoutMillis: timeoutMillis ?? this.timeoutMillis,
-    );
-  }
+  List<Object?> get props => [selector, appId, timeoutMillis];
 }
 
 @JsonSerializable()
@@ -1400,10 +1003,6 @@ class DarkModeRequest with EquatableMixin {
 
   @override
   List<Object?> get props => [appId];
-
-  DarkModeRequest copyWith({String? appId}) {
-    return DarkModeRequest(appId: appId ?? this.appId);
-  }
 }
 
 @JsonSerializable()
@@ -1427,20 +1026,6 @@ class Notification with EquatableMixin {
 
   @override
   List<Object?> get props => [appName, title, content, raw];
-
-  Notification copyWith({
-    String? appName,
-    String? title,
-    String? content,
-    String? raw,
-  }) {
-    return Notification(
-      appName: appName ?? this.appName,
-      title: title ?? this.title,
-      content: content ?? this.content,
-      raw: raw ?? this.raw,
-    );
-  }
 }
 
 @JsonSerializable()
@@ -1456,12 +1041,6 @@ class GetNotificationsResponse with EquatableMixin {
 
   @override
   List<Object?> get props => [notifications];
-
-  GetNotificationsResponse copyWith({List<Notification>? notifications}) {
-    return GetNotificationsResponse(
-      notifications: notifications ?? this.notifications,
-    );
-  }
 }
 
 @JsonSerializable()
@@ -1475,57 +1054,45 @@ class GetNotificationsRequest with EquatableMixin {
 
   @override
   List<Object?> get props => const [];
-
-  GetNotificationsRequest copyWith() {
-    return GetNotificationsRequest();
-  }
 }
 
 @JsonSerializable()
-class TapOnNotificationRequest with EquatableMixin {
-  TapOnNotificationRequest({
+class AndroidTapOnNotificationRequest with EquatableMixin {
+  AndroidTapOnNotificationRequest({
     this.index,
     this.selector,
-    this.androidSelector,
-    this.iosSelector,
     this.timeoutMillis,
   });
 
-  factory TapOnNotificationRequest.fromJson(Map<String, dynamic> json) =>
-      _$TapOnNotificationRequestFromJson(json);
+  factory AndroidTapOnNotificationRequest.fromJson(Map<String, dynamic> json) =>
+      _$AndroidTapOnNotificationRequestFromJson(json);
 
   final int? index;
-  final Selector? selector;
-  final AndroidSelector? androidSelector;
-  final IOSSelector? iosSelector;
+  final AndroidSelector? selector;
   final int? timeoutMillis;
 
-  Map<String, dynamic> toJson() => _$TapOnNotificationRequestToJson(this);
+  Map<String, dynamic> toJson() =>
+      _$AndroidTapOnNotificationRequestToJson(this);
 
   @override
-  List<Object?> get props => [
-    index,
-    selector,
-    androidSelector,
-    iosSelector,
-    timeoutMillis,
-  ];
+  List<Object?> get props => [index, selector, timeoutMillis];
+}
 
-  TapOnNotificationRequest copyWith({
-    int? index,
-    Selector? selector,
-    AndroidSelector? androidSelector,
-    IOSSelector? iosSelector,
-    int? timeoutMillis,
-  }) {
-    return TapOnNotificationRequest(
-      index: index ?? this.index,
-      selector: selector ?? this.selector,
-      androidSelector: androidSelector ?? this.androidSelector,
-      iosSelector: iosSelector ?? this.iosSelector,
-      timeoutMillis: timeoutMillis ?? this.timeoutMillis,
-    );
-  }
+@JsonSerializable()
+class IOSTapOnNotificationRequest with EquatableMixin {
+  IOSTapOnNotificationRequest({this.index, this.selector, this.timeoutMillis});
+
+  factory IOSTapOnNotificationRequest.fromJson(Map<String, dynamic> json) =>
+      _$IOSTapOnNotificationRequestFromJson(json);
+
+  final int? index;
+  final IOSSelector? selector;
+  final int? timeoutMillis;
+
+  Map<String, dynamic> toJson() => _$IOSTapOnNotificationRequestToJson(this);
+
+  @override
+  List<Object?> get props => [index, selector, timeoutMillis];
 }
 
 @JsonSerializable()
@@ -1542,10 +1109,6 @@ class PermissionDialogVisibleResponse with EquatableMixin {
 
   @override
   List<Object?> get props => [visible];
-
-  PermissionDialogVisibleResponse copyWith({bool? visible}) {
-    return PermissionDialogVisibleResponse(visible: visible ?? this.visible);
-  }
 }
 
 @JsonSerializable()
@@ -1561,12 +1124,6 @@ class PermissionDialogVisibleRequest with EquatableMixin {
 
   @override
   List<Object?> get props => [timeoutMillis];
-
-  PermissionDialogVisibleRequest copyWith({int? timeoutMillis}) {
-    return PermissionDialogVisibleRequest(
-      timeoutMillis: timeoutMillis ?? this.timeoutMillis,
-    );
-  }
 }
 
 @JsonSerializable()
@@ -1582,10 +1139,6 @@ class HandlePermissionRequest with EquatableMixin {
 
   @override
   List<Object?> get props => [code];
-
-  HandlePermissionRequest copyWith({HandlePermissionRequestCode? code}) {
-    return HandlePermissionRequest(code: code ?? this.code);
-  }
 }
 
 @JsonSerializable()
@@ -1601,14 +1154,6 @@ class SetLocationAccuracyRequest with EquatableMixin {
 
   @override
   List<Object?> get props => [locationAccuracy];
-
-  SetLocationAccuracyRequest copyWith({
-    SetLocationAccuracyRequestLocationAccuracy? locationAccuracy,
-  }) {
-    return SetLocationAccuracyRequest(
-      locationAccuracy: locationAccuracy ?? this.locationAccuracy,
-    );
-  }
 }
 
 @JsonSerializable()
@@ -1630,18 +1175,6 @@ class SetMockLocationRequest with EquatableMixin {
 
   @override
   List<Object?> get props => [latitude, longitude, packageName];
-
-  SetMockLocationRequest copyWith({
-    double? latitude,
-    double? longitude,
-    String? packageName,
-  }) {
-    return SetMockLocationRequest(
-      latitude: latitude ?? this.latitude,
-      longitude: longitude ?? this.longitude,
-      packageName: packageName ?? this.packageName,
-    );
-  }
 }
 
 @JsonSerializable()
@@ -1657,12 +1190,6 @@ class IsVirtualDeviceResponse with EquatableMixin {
 
   @override
   List<Object?> get props => [isVirtualDevice];
-
-  IsVirtualDeviceResponse copyWith({bool? isVirtualDevice}) {
-    return IsVirtualDeviceResponse(
-      isVirtualDevice: isVirtualDevice ?? this.isVirtualDevice,
-    );
-  }
 }
 
 @JsonSerializable()
@@ -1678,196 +1205,156 @@ class GetOsVersionResponse with EquatableMixin {
 
   @override
   List<Object?> get props => [osVersion];
-
-  GetOsVersionResponse copyWith({int? osVersion}) {
-    return GetOsVersionResponse(osVersion: osVersion ?? this.osVersion);
-  }
 }
 
 @JsonSerializable()
-class TakeCameraPhotoRequest with EquatableMixin {
-  TakeCameraPhotoRequest({
+class AndroidTakeCameraPhotoRequest with EquatableMixin {
+  AndroidTakeCameraPhotoRequest({
     this.shutterButtonSelector,
-    this.androidShutterButtonSelector,
-    this.iosShutterButtonSelector,
     this.doneButtonSelector,
-    this.androidDoneButtonSelector,
     this.timeoutMillis,
-    this.iosDoneButtonSelector,
-    required this.appId,
-    required this.isNative2,
   });
 
-  factory TakeCameraPhotoRequest.fromJson(Map<String, dynamic> json) =>
-      _$TakeCameraPhotoRequestFromJson(json);
+  factory AndroidTakeCameraPhotoRequest.fromJson(Map<String, dynamic> json) =>
+      _$AndroidTakeCameraPhotoRequestFromJson(json);
 
-  final Selector? shutterButtonSelector;
-  final AndroidSelector? androidShutterButtonSelector;
-  final IOSSelector? iosShutterButtonSelector;
-  final Selector? doneButtonSelector;
-  final AndroidSelector? androidDoneButtonSelector;
+  final AndroidSelector? shutterButtonSelector;
+  final AndroidSelector? doneButtonSelector;
   final int? timeoutMillis;
-  final IOSSelector? iosDoneButtonSelector;
-  final String appId;
-  final bool isNative2;
 
-  Map<String, dynamic> toJson() => _$TakeCameraPhotoRequestToJson(this);
+  Map<String, dynamic> toJson() => _$AndroidTakeCameraPhotoRequestToJson(this);
 
   @override
   List<Object?> get props => [
     shutterButtonSelector,
-    androidShutterButtonSelector,
-    iosShutterButtonSelector,
     doneButtonSelector,
-    androidDoneButtonSelector,
     timeoutMillis,
-    iosDoneButtonSelector,
-    appId,
-    isNative2,
   ];
-
-  TakeCameraPhotoRequest copyWith({
-    Selector? shutterButtonSelector,
-    AndroidSelector? androidShutterButtonSelector,
-    IOSSelector? iosShutterButtonSelector,
-    Selector? doneButtonSelector,
-    AndroidSelector? androidDoneButtonSelector,
-    int? timeoutMillis,
-    IOSSelector? iosDoneButtonSelector,
-    String? appId,
-    bool? isNative2,
-  }) {
-    return TakeCameraPhotoRequest(
-      shutterButtonSelector:
-          shutterButtonSelector ?? this.shutterButtonSelector,
-      androidShutterButtonSelector:
-          androidShutterButtonSelector ?? this.androidShutterButtonSelector,
-      iosShutterButtonSelector:
-          iosShutterButtonSelector ?? this.iosShutterButtonSelector,
-      doneButtonSelector: doneButtonSelector ?? this.doneButtonSelector,
-      androidDoneButtonSelector:
-          androidDoneButtonSelector ?? this.androidDoneButtonSelector,
-      timeoutMillis: timeoutMillis ?? this.timeoutMillis,
-      iosDoneButtonSelector:
-          iosDoneButtonSelector ?? this.iosDoneButtonSelector,
-      appId: appId ?? this.appId,
-      isNative2: isNative2 ?? this.isNative2,
-    );
-  }
 }
 
 @JsonSerializable()
-class PickImageFromGalleryRequest with EquatableMixin {
-  PickImageFromGalleryRequest({
+class IOSTakeCameraPhotoRequest with EquatableMixin {
+  IOSTakeCameraPhotoRequest({
+    this.shutterButtonSelector,
+    this.doneButtonSelector,
+    this.timeoutMillis,
+    required this.appId,
+  });
+
+  factory IOSTakeCameraPhotoRequest.fromJson(Map<String, dynamic> json) =>
+      _$IOSTakeCameraPhotoRequestFromJson(json);
+
+  final IOSSelector? shutterButtonSelector;
+  final IOSSelector? doneButtonSelector;
+  final int? timeoutMillis;
+  final String appId;
+
+  Map<String, dynamic> toJson() => _$IOSTakeCameraPhotoRequestToJson(this);
+
+  @override
+  List<Object?> get props => [
+    shutterButtonSelector,
+    doneButtonSelector,
+    timeoutMillis,
+    appId,
+  ];
+}
+
+@JsonSerializable()
+class AndroidPickImageFromGalleryRequest with EquatableMixin {
+  AndroidPickImageFromGalleryRequest({
     this.imageSelector,
-    this.androidImageSelector,
-    this.iosImageSelector,
+    this.imageIndex,
+    this.timeoutMillis,
+  });
+
+  factory AndroidPickImageFromGalleryRequest.fromJson(
+    Map<String, dynamic> json,
+  ) => _$AndroidPickImageFromGalleryRequestFromJson(json);
+
+  final AndroidSelector? imageSelector;
+  final int? imageIndex;
+  final int? timeoutMillis;
+
+  Map<String, dynamic> toJson() =>
+      _$AndroidPickImageFromGalleryRequestToJson(this);
+
+  @override
+  List<Object?> get props => [imageSelector, imageIndex, timeoutMillis];
+}
+
+@JsonSerializable()
+class IOSPickImageFromGalleryRequest with EquatableMixin {
+  IOSPickImageFromGalleryRequest({
+    this.imageSelector,
     this.imageIndex,
     this.timeoutMillis,
     required this.appId,
-    required this.isNative2,
   });
 
-  factory PickImageFromGalleryRequest.fromJson(Map<String, dynamic> json) =>
-      _$PickImageFromGalleryRequestFromJson(json);
+  factory IOSPickImageFromGalleryRequest.fromJson(Map<String, dynamic> json) =>
+      _$IOSPickImageFromGalleryRequestFromJson(json);
 
-  final Selector? imageSelector;
-  final AndroidSelector? androidImageSelector;
-  final IOSSelector? iosImageSelector;
+  final IOSSelector? imageSelector;
   final int? imageIndex;
   final int? timeoutMillis;
   final String appId;
-  final bool isNative2;
 
-  Map<String, dynamic> toJson() => _$PickImageFromGalleryRequestToJson(this);
+  Map<String, dynamic> toJson() => _$IOSPickImageFromGalleryRequestToJson(this);
 
   @override
-  List<Object?> get props => [
-    imageSelector,
-    androidImageSelector,
-    iosImageSelector,
-    imageIndex,
-    timeoutMillis,
-    appId,
-    isNative2,
-  ];
-
-  PickImageFromGalleryRequest copyWith({
-    Selector? imageSelector,
-    AndroidSelector? androidImageSelector,
-    IOSSelector? iosImageSelector,
-    int? imageIndex,
-    int? timeoutMillis,
-    String? appId,
-    bool? isNative2,
-  }) {
-    return PickImageFromGalleryRequest(
-      imageSelector: imageSelector ?? this.imageSelector,
-      androidImageSelector: androidImageSelector ?? this.androidImageSelector,
-      iosImageSelector: iosImageSelector ?? this.iosImageSelector,
-      imageIndex: imageIndex ?? this.imageIndex,
-      timeoutMillis: timeoutMillis ?? this.timeoutMillis,
-      appId: appId ?? this.appId,
-      isNative2: isNative2 ?? this.isNative2,
-    );
-  }
+  List<Object?> get props => [imageSelector, imageIndex, timeoutMillis, appId];
 }
 
 @JsonSerializable()
-class PickMultipleImagesFromGalleryRequest with EquatableMixin {
-  PickMultipleImagesFromGalleryRequest({
+class AndroidPickMultipleImagesFromGalleryRequest with EquatableMixin {
+  AndroidPickMultipleImagesFromGalleryRequest({
     this.imageSelector,
-    this.androidImageSelector,
-    this.iosImageSelector,
+    required this.imageIndexes,
+    this.timeoutMillis,
+  });
+
+  factory AndroidPickMultipleImagesFromGalleryRequest.fromJson(
+    Map<String, dynamic> json,
+  ) => _$AndroidPickMultipleImagesFromGalleryRequestFromJson(json);
+
+  final AndroidSelector? imageSelector;
+  final List<int> imageIndexes;
+  final int? timeoutMillis;
+
+  Map<String, dynamic> toJson() =>
+      _$AndroidPickMultipleImagesFromGalleryRequestToJson(this);
+
+  @override
+  List<Object?> get props => [imageSelector, imageIndexes, timeoutMillis];
+}
+
+@JsonSerializable()
+class IOSPickMultipleImagesFromGalleryRequest with EquatableMixin {
+  IOSPickMultipleImagesFromGalleryRequest({
+    this.imageSelector,
     required this.imageIndexes,
     this.timeoutMillis,
     required this.appId,
-    required this.isNative2,
   });
 
-  factory PickMultipleImagesFromGalleryRequest.fromJson(
+  factory IOSPickMultipleImagesFromGalleryRequest.fromJson(
     Map<String, dynamic> json,
-  ) => _$PickMultipleImagesFromGalleryRequestFromJson(json);
+  ) => _$IOSPickMultipleImagesFromGalleryRequestFromJson(json);
 
-  final Selector? imageSelector;
-  final AndroidSelector? androidImageSelector;
-  final IOSSelector? iosImageSelector;
+  final IOSSelector? imageSelector;
   final List<int> imageIndexes;
   final int? timeoutMillis;
   final String appId;
-  final bool isNative2;
 
   Map<String, dynamic> toJson() =>
-      _$PickMultipleImagesFromGalleryRequestToJson(this);
+      _$IOSPickMultipleImagesFromGalleryRequestToJson(this);
 
   @override
   List<Object?> get props => [
     imageSelector,
-    androidImageSelector,
-    iosImageSelector,
     imageIndexes,
     timeoutMillis,
     appId,
-    isNative2,
   ];
-
-  PickMultipleImagesFromGalleryRequest copyWith({
-    Selector? imageSelector,
-    AndroidSelector? androidImageSelector,
-    IOSSelector? iosImageSelector,
-    List<int>? imageIndexes,
-    int? timeoutMillis,
-    String? appId,
-    bool? isNative2,
-  }) {
-    return PickMultipleImagesFromGalleryRequest(
-      imageSelector: imageSelector ?? this.imageSelector,
-      androidImageSelector: androidImageSelector ?? this.androidImageSelector,
-      iosImageSelector: iosImageSelector ?? this.iosImageSelector,
-      imageIndexes: imageIndexes ?? this.imageIndexes,
-      timeoutMillis: timeoutMillis ?? this.timeoutMillis,
-      appId: appId ?? this.appId,
-      isNative2: isNative2 ?? this.isNative2,
-    );
-  }
 }

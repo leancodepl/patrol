@@ -31,13 +31,13 @@ abstract class PatrolCommand extends Command<int> {
         aliases: ['targets'],
         abbr: 't',
         help: 'Integration test target to use as entrypoint.',
-        valueHelp: 'integration_test/app_test.dart',
+        valueHelp: 'patrol_test/app_test.dart',
       )
       ..addMultiOption(
         'exclude',
         aliases: ['excludes'],
         help: 'Integration test targets to exclude.',
-        valueHelp: 'integration_test/flaky_test.dart',
+        valueHelp: 'patrol_test/flaky_test.dart',
       )
       ..addFlag(
         'generate-bundle',
@@ -155,6 +155,12 @@ abstract class PatrolCommand extends Command<int> {
             'Clear permissions available through XCUIProtectedResource API before running each test.',
         negatable: false,
       )
+      ..addFlag(
+        'full-isolation',
+        help:
+            '(Experimental) Uninstall the app between test runs on iOS Simulator to achieve full isolation.',
+        negatable: false,
+      )
       ..addOption(
         'ios',
         help:
@@ -225,6 +231,100 @@ abstract class PatrolCommand extends Command<int> {
       help: 'Version code of the app.',
       valueHelp: '123',
     );
+  }
+
+  void usesWeb() {
+    argParser
+      ..addOption(
+        'web-results-dir',
+        help: 'Directory where test results will be saved.',
+        valueHelp: 'test-results',
+      )
+      ..addOption(
+        'web-report-dir',
+        help: 'Directory where test reports will be saved.',
+        valueHelp: 'playwright-report',
+      )
+      ..addOption(
+        'web-retries',
+        help: 'Number of times to retry failed tests.',
+        valueHelp: 'number',
+      )
+      ..addOption(
+        'web-video',
+        help: 'Video recording mode.',
+        valueHelp: 'off | on | retain-on-failure | on-first-retry',
+      )
+      ..addOption(
+        'web-timeout',
+        help: 'Maximum time in milliseconds for single test execution.',
+        valueHelp: 'number',
+      )
+      ..addOption(
+        'web-workers',
+        help: 'Maximum number of parallel worker processes for test execution.',
+        valueHelp: 'number',
+      )
+      ..addOption(
+        'web-reporter',
+        help: 'Test reporters to use. JSON array of reporter names.',
+        valueHelp: '\'["html", "json", "list"]\'',
+      )
+      ..addOption(
+        'web-locale',
+        help: 'Locale for browser emulation.',
+        valueHelp: 'en-US | pl-PL',
+      )
+      ..addOption(
+        'web-timezone',
+        help: 'Timezone for browser emulation.',
+        valueHelp: 'Europe/Paris',
+      )
+      ..addOption(
+        'web-color-scheme',
+        help: 'Preferred color scheme for browser emulation.',
+        valueHelp: 'light | dark',
+      )
+      ..addOption(
+        'web-geolocation',
+        help:
+            'Geolocation for browser context. JSON object with latitude and longitude.',
+        valueHelp: '\'{"latitude": 51.5074, "longitude": -0.1278}\'',
+      )
+      ..addOption(
+        'web-permissions',
+        help:
+            'Permissions to grant to the browser context. JSON array of permission names.',
+        valueHelp: '\'["geolocation", ...]\'',
+      )
+      ..addOption(
+        'web-user-agent',
+        help: 'Custom user agent string for browser context.',
+        valueHelp: 'user agent string',
+      )
+      ..addOption(
+        'web-viewport',
+        help:
+            'Viewport size for browser context. JSON object with width and height.',
+        valueHelp: '\'{"width": 1920, "height": 1080}\'',
+      )
+      ..addOption(
+        'web-global-timeout',
+        help: 'Maximum total time in milliseconds for the entire test run.',
+        valueHelp: 'number',
+      )
+      ..addOption(
+        'web-shard',
+        help:
+            'Shard tests and execute only the selected shard. '
+            'Specify in the format "current/total" (e.g., "1/4" for the first of 4 shards).',
+        valueHelp: '1/4',
+      )
+      ..addOption(
+        'web-headless',
+        help: 'Whether to run browser in headless mode.',
+        valueHelp: 'true | false',
+      );
   }
 
   /// Gets the parsed command-line flag named [name] as a `bool`.
