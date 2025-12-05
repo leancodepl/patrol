@@ -3,7 +3,9 @@ import 'dart:js_interop';
 import 'dart:js_interop_unsafe';
 import 'dart:ui_web' as ui_web;
 
+import 'package:example/pages/quiz/question_page.dart';
 import 'package:example/ui/components/button/elevated_button.dart';
+import 'package:example/ui/components/text_field.dart';
 import 'package:example/ui/style/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -31,6 +33,7 @@ class WebAutomatorShowcaseApp extends StatelessWidget {
 
   ThemeData _buildDarkTheme() {
     return ThemeData.dark().copyWith(
+      appBarTheme: const AppBarTheme(backgroundColor: PTColors.lcYellow),
       brightness: Brightness.dark,
       colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.grey),
       primaryColor: PTColors.lcBlack,
@@ -39,6 +42,11 @@ class WebAutomatorShowcaseApp extends StatelessWidget {
         selectionColor: PTColors.lcYellow.withValues(alpha: 0.5),
         cursorColor: PTColors.textWhite,
         selectionHandleColor: PTColors.lcYellow,
+      ),
+      inputDecorationTheme: const InputDecorationTheme(
+        border: OutlineInputBorder(
+          borderSide: BorderSide(color: PTColors.lcYellow),
+        ),
       ),
     );
   }
@@ -73,7 +81,7 @@ class WebShowcaseHomePage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Text(
-                'THE GREAT TESTING TOOL TEST',
+                'WEB TESTING TOOL CHALLENGE',
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
@@ -83,18 +91,8 @@ class WebShowcaseHomePage extends StatelessWidget {
               ),
               const SizedBox(height: 32),
               const Text(
-                "This is your chance to prove that you're indeed a great testing tool.",
+                "Complete all the challenges to prove you're a great testing tool.",
                 style: TextStyle(fontSize: 16, color: PTColors.textWhite),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                'Only the greatest pass this test',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontStyle: FontStyle.italic,
-                  color: PTColors.textDisabled,
-                ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 48),
@@ -131,22 +129,17 @@ class Test1Screen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  'Oh, that theme is awful!',
+                  'Change the theme to dark',
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                   textAlign: TextAlign.center,
                 ),
                 SizedBox(height: 24),
                 Text(
-                  "Let's fix it. Before we start (for real), can you please change the theme to dark?",
+                  'Before we start, please change the theme to dark.',
                   style: TextStyle(fontSize: 16),
                   textAlign: TextAlign.center,
                 ),
                 SizedBox(height: 16),
-                Text(
-                  'It might also reveal something very important...',
-                  style: TextStyle(fontSize: 14, fontStyle: FontStyle.italic),
-                  textAlign: TextAlign.center,
-                ),
               ],
             ),
             Brightness.dark => Column(
@@ -405,13 +398,10 @@ class _Test4ScreenState extends State<Test4Screen> {
               const SizedBox(height: 32),
               SizedBox(
                 width: 400,
-                child: TextField(
+                child: PTTextField(
                   controller: _controller,
+                  label: 'Enter the secret code',
                   onChanged: _onTextChanged,
-                  decoration: const InputDecoration(
-                    labelText: 'Enter the secret code',
-                    border: OutlineInputBorder(),
-                  ),
                 ),
               ),
               const SizedBox(height: 48),
@@ -620,13 +610,10 @@ class _Test6ScreenState extends State<Test6Screen> {
               const SizedBox(height: 32),
               SizedBox(
                 width: 400,
-                child: TextField(
+                child: PTTextField(
                   controller: _controller,
                   onChanged: _onTextChanged,
-                  decoration: const InputDecoration(
-                    labelText: 'Paste the password here',
-                    border: OutlineInputBorder(),
-                  ),
+                  label: 'Paste the password here',
                 ),
               ),
             ],
@@ -644,11 +631,7 @@ class Test7Screen extends StatelessWidget {
     final confirmed = web.window.confirm('Press accept to go to the next page');
     if (confirmed) {
       if (context.mounted) {
-        unawaited(
-          Navigator.of(
-            context,
-          ).push(MaterialPageRoute<void>(builder: (_) => const Test8Screen())),
-        );
+        Navigator.of(context).push(webQuestionRoute);
       }
     }
   }

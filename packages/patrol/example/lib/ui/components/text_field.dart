@@ -8,11 +8,13 @@ class PTTextField extends StatelessWidget {
     required this.controller,
     required this.label,
     this.errorText,
+    this.onChanged,
   });
 
   final TextEditingController controller;
   final String label;
   final String? errorText;
+  final void Function(String)? onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +25,11 @@ class PTTextField extends StatelessWidget {
       children: [
         SizedBox(
           height: 48,
-          child: _TextField(controller: controller, label: label),
+          child: _TextField(
+            controller: controller,
+            label: label,
+            onChanged: onChanged,
+          ),
         ),
         if (errorText != null) ...[
           const SizedBox(height: 4),
@@ -38,10 +44,15 @@ class PTTextField extends StatelessWidget {
 }
 
 class _TextField extends StatelessWidget {
-  const _TextField({required this.controller, required this.label});
+  const _TextField({
+    required this.controller,
+    required this.label,
+    this.onChanged,
+  });
 
   final String label;
   final TextEditingController controller;
+  final void Function(String)? onChanged;
 
   static const _borderColor = Color(0xFF777777);
   static const _fillColor = Color(0xFF2F2F2F);
@@ -50,6 +61,7 @@ class _TextField extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextField(
       controller: controller,
+      onChanged: onChanged,
       style: PTTextStyles.bodyMedium.copyWith(color: PTColors.textWhite),
       cursorColor: PTColors.textWhite,
       decoration: InputDecoration(
