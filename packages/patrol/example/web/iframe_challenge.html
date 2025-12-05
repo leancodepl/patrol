@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IFrame Challenge</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      color: #e6e6e6;
+      min-height: 100vh;
+    }
+    .container {
+      padding: 20px;
+    }
+    .spacer {
+      height: 400px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+    .spacer-text {
+      font-size: 18px;
+      color: #888;
+      text-align: center;
+    }
+    .arrow {
+      font-size: 32px;
+      color: #888;
+      margin-top: 20px;
+      animation: bounce 1s infinite;
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(10px); }
+    }
+    .password-section {
+      background: #0f0f23;
+      border-radius: 12px;
+      padding: 24px;
+      margin-top: 20px;
+    }
+    .password-section h2 {
+      color: #f0ff00;
+      margin-bottom: 16px;
+      font-size: 20px;
+    }
+    .password-section p {
+      color: #aaa;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+    .input-group {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    #password-input {
+      flex: 1;
+      min-width: 200px;
+      padding: 12px 16px;
+      font-size: 16px;
+      border: 2px solid #333;
+      border-radius: 8px;
+      background: #1a1a2e;
+      color: #fff;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    #password-input:focus {
+      border-color: #f0ff00;
+    }
+    #submit-btn {
+      padding: 12px 24px;
+      font-size: 16px;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      background: #f0ff00;
+      color: #1a1a2e;
+      cursor: pointer;
+      transition: transform 0.1s, opacity 0.2s;
+    }
+    #submit-btn:hover {
+      opacity: 0.9;
+    }
+    #submit-btn:active {
+      transform: scale(0.98);
+    }
+    .message {
+      margin-top: 16px;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      display: none;
+    }
+    .message.error {
+      display: block;
+      background: rgba(255, 50, 50, 0.2);
+      color: #ff6b6b;
+      border: 1px solid #ff6b6b;
+    }
+    .message.success {
+      display: block;
+      background: rgba(50, 255, 50, 0.2);
+      color: #6bff6b;
+      border: 1px solid #6bff6b;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="spacer">
+      <p class="spacer-text">Scroll down to find the password field</p>
+      <div class="arrow">↓</div>
+    </div>
+    
+    <div class="password-section">
+      <h2>🔐 Password Required</h2>
+      <p>Enter the secret password to continue. Hint: It's a very simple sequence.</p>
+      <div class="input-group">
+        <input type="text" id="password-input" placeholder="Enter password..." autocomplete="off">
+        <button id="submit-btn">Submit</button>
+      </div>
+      <div id="message" class="message"></div>
+    </div>
+  </div>
+
+  <script>
+    const SECRET_PASSWORD = '12345';
+    const passwordInput = document.getElementById('password-input');
+    const submitBtn = document.getElementById('submit-btn');
+    const messageEl = document.getElementById('message');
+
+    function checkPassword() {
+      const value = passwordInput.value;
+      
+      if (value === SECRET_PASSWORD) {
+        messageEl.className = 'message success';
+        messageEl.textContent = '✓ Correct! Sending message to host...';
+        
+        // Send postMessage to parent (Flutter)
+        window.parent.postMessage({
+          type: 'PASSWORD_CORRECT',
+          payload: { success: true }
+        }, '*');
+      } else {
+        messageEl.className = 'message error';
+        messageEl.textContent = '✗ Incorrect password. Try again!';
+      }
+    }
+
+    submitBtn.addEventListener('click', checkPassword);
+    
+    passwordInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        checkPassword();
+      }
+    });
+  </script>
+</body>
+</html>
+

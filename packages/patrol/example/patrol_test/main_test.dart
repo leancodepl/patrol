@@ -29,6 +29,9 @@ void main() {
 
     await $('Ready!').tap();
 
+    // Why doesn't it work?
+    await $(ElevatedButton).$(Center).$('Fluttercon').tap();
+
     await $(
       PTElevatedButton,
     ).which<PTElevatedButton>((widget) => widget.caption == 'Fluttercon').tap();
