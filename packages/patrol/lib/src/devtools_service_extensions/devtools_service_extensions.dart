@@ -33,7 +33,7 @@ class DevtoolsServiceExtensions {
           return {
             'androidRoots': <Map<String, dynamic>>[],
             'iOSroots': roots,
-            'roots': roots,
+            'roots': <Map<String, dynamic>>[],
           };
         },
       );

@@ -14,9 +14,6 @@ GetNativeUITreeResponse _$GetNativeUITreeResponseFromJson(
       .toList()
   ..androidRoots = (json['androidRoots'] as List<dynamic>)
       .map((e) => AndroidNativeView.fromJson(e as Map<String, dynamic>))
-      .toList()
-  ..roots = (json['roots'] as List<dynamic>)
-      .map((e) => NativeView.fromJson(e as Map<String, dynamic>))
       .toList();
 
 Map<String, dynamic> _$GetNativeUITreeResponseToJson(
@@ -24,7 +21,6 @@ Map<String, dynamic> _$GetNativeUITreeResponseToJson(
 ) => <String, dynamic>{
   'iOSroots': instance.iOSroots.map((e) => e.toJson()).toList(),
   'androidRoots': instance.androidRoots.map((e) => e.toJson()).toList(),
-  'roots': instance.roots.map((e) => e.toJson()).toList(),
 };
 
 NativeView _$NativeViewFromJson(Map<String, dynamic> json) => NativeView(

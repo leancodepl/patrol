@@ -43,12 +43,9 @@ class PatrolServiceExtensionApi {
   final ValueListenable<IsolateRef?> _isolate;
 
   Future<ApiResult<GetNativeUITreeResponse>> getNativeUITree() {
-    return _callServiceExtension(
-      'patrol.getNativeUITree',
-      {},
-      (dynamic json) =>
-          GetNativeUITreeResponse.fromJson(json as Map<String, dynamic>),
-    );
+    return _callServiceExtension('patrol.getNativeUITree', {}, (dynamic json) {
+      return GetNativeUITreeResponse.fromJson(json as Map<String, dynamic>);
+    });
   }
 
   Future<ApiResult<TResult>> _callServiceExtension<TResult>(

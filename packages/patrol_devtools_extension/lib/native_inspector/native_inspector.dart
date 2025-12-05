@@ -17,12 +17,11 @@ class NativeInspector extends HookWidget {
   final List<Node> roots;
   final Node? currentNode;
   final ValueChanged<Node?> onNodeChanged;
-  final ValueChanged<bool> onRefreshPressed;
+  final VoidCallback onRefreshPressed;
 
   @override
   Widget build(BuildContext context) {
     final fullNodeNames = useState(false);
-    final nativeDetails = useState(true);
 
     final splitAxis = SplitPane.axisFor(context, 0.85);
     final child = SplitPane(
@@ -32,9 +31,8 @@ class NativeInspector extends HookWidget {
         RoundedOutlinedBorder(
           clip: true,
           child: NativeViewHierarchy(
-            nativeDetails: nativeDetails,
             fullNodeNames: fullNodeNames,
-            onRefreshPressed: () => onRefreshPressed(nativeDetails.value),
+            onRefreshPressed: onRefreshPressed,
             roots: roots,
             props: NodeProps(
               currentNode: currentNode,
