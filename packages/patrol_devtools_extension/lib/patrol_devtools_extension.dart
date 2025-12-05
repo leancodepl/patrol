@@ -57,18 +57,14 @@ class _Runner extends ValueNotifier<_State> {
     );
 
     final result = await api.getNativeUITree();
-    print(result);
 
     switch (result) {
       case ApiSuccess(:final data):
-        final b = data.iOSroots.map((e) => IOSNode(view: e)).toList();
-        b.forEach((e) => print(e.fullNodeName));
         value.roots = isAndroidApp
             ? data.androidRoots.map((e) => AndroidNode(view: e)).toList()
             : data.iOSroots.map((e) => IOSNode(view: e)).toList();
 
       case ApiFailure<void> _:
-        print('API FAILURE2222!!!!');
       // TODO: Handle failure
     }
 

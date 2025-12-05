@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
@@ -45,7 +44,6 @@ class PatrolServiceExtensionApi {
 
   Future<ApiResult<GetNativeUITreeResponse>> getNativeUITree() {
     return _callServiceExtension('patrol.getNativeUITree', {}, (dynamic json) {
-      print('resultFactory: $json');
       return GetNativeUITreeResponse.fromJson(json as Map<String, dynamic>);
     });
   }
@@ -62,11 +60,6 @@ class PatrolServiceExtensionApi {
         isolateId: _isolate.value!.id,
         args: args,
       );
-      if (r.json case final json?) {
-        print('json not null: $json');
-      } else {
-        print('json is null');
-      }
 
       final json = r.json!;
 
@@ -77,7 +70,6 @@ class PatrolServiceExtensionApi {
 
       return ApiSuccess(res);
     } catch (err, st) {
-      print('API FAILURE!!!!');
       return ApiFailure(err, st);
     }
   }

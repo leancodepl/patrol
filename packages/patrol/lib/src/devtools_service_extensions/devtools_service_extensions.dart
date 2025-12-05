@@ -30,12 +30,11 @@ class DevtoolsServiceExtensions {
           final response = await platform.ios.getNativeViews(null);
           final roots = response.roots.map((e) => e.toJson()).toList();
 
-          final a = {
+          return {
             'androidRoots': <Map<String, dynamic>>[],
             'iOSroots': roots,
             'roots': <Map<String, dynamic>>[],
           };
-          return a;
         },
       );
 
