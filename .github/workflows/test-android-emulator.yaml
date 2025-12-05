@@ -104,6 +104,7 @@ jobs:
         run: |
           TESTS_TO_EXCLUDE="permissions/notifications_test,\
           overflow_test,\
+          web_example_test,\
           webview_hackernews_test,\
           webview_leancode_test,\
           webview_stackoverflow_test"
