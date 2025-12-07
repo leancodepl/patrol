@@ -220,13 +220,14 @@
       }
     }
 
-    func getNativeViews(on selector: IOSSelector, inApp bundleId: String) throws -> [NativeView] {
+    func getNativeViews(on selector: IOSSelector, inApp bundleId: String) throws -> [IOSNativeView]
+    {
       try runAction("getNativeViews") {
         throw PatrolError.methodNotImplemented("getNativeViews")
       }
     }
 
-    func getUITreeRoots(installedApps: [String]) throws -> [NativeView] {
+    func getUITreeRoots(installedApps: [String]) throws -> [IOSNativeView] {
       try runAction("getUITreeRoots") {
         throw PatrolError.methodNotImplemented("getUITreeRoots")
       }
