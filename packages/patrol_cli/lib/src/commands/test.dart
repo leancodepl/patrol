@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:glob/glob.dart';
 import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
+import 'package:patrol_cli/src/android/video_recording_config.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/commands/dart_define_utils.dart';
@@ -66,6 +67,7 @@ class TestCommand extends PatrolCommand {
 
     usesAndroidOptions();
     usesIOSOptions();
+    usesVideoRecordingOptions();
   }
 
   final DeviceFinder _deviceFinder;
@@ -371,6 +373,14 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
     Future<void> Function() action;
     Future<void> Function()? finalizer;
 
+    // Create video recording configuration
+    final videoConfig = VideoRecordingConfig.fromArgs(
+      recordVideo: boolArg('record-video'),
+      videoOutputDir: stringArg('video-output-dir')!,
+      videoSize: stringArg('video-size'),
+      videoBitRate: stringArg('video-bit-rate'),
+    );
+
     switch (device.targetPlatform) {
       case TargetPlatform.android:
         action = () => _androidTestBackend.execute(
@@ -380,6 +390,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
           hideTestSteps: hideTestSteps,
           flavor: flutterOpts.flavor,
           clearTestSteps: clearTestSteps,
+          videoConfig: videoConfig,
         );
         final package = android.packageName;
         if (package != null && uninstall) {
@@ -394,6 +405,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
           showFlutterLogs: showFlutterLogs,
           hideTestSteps: hideTestSteps,
           clearTestSteps: clearTestSteps,
+          videoConfig: videoConfig,
         );
         final bundleId = ios.bundleId;
         if (bundleId != null && uninstall) {

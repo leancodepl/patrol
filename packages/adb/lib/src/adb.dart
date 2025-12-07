@@ -2,10 +2,9 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io' as io;
 
-import 'package:adb/adb.dart';
-import 'package:adb/src/exceptions.dart';
-import 'package:adb/src/extensions.dart';
-import 'package:adb/src/internals.dart';
+import 'exceptions.dart';
+import 'extensions.dart';
+import 'internals.dart';
 
 /// Provides Dart interface for common Android Debug Bridge features.
 ///
