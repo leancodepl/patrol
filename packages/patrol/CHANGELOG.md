@@ -1,14 +1,43 @@
-## 4.0.0-dev.2
+## 4.0.0
 
-- **Breaking**: Change default test directory from `integration_test` to `patrol_test`. (#2728)
-- Add support for running Patrol tests on Web.
-- Deprecate `NativeAutomator` and `NativeAutomator2`.
-- Introduce new way of communicating with platform (`PlatformAutomator`). 
+Patrol 4.0 is here!
+
+Read the article announcing Patrol 4.0 [here](!!!!ADD LINK HERE!!!!).
+
+- New API for native/platform interactions: 
+  - Introduce new way of communicating with platform (`PlatformAutomator`). (#2789) 
+  - Deprecate `NativeAutomator` and `NativeAutomator2`. (#2789)
+
+- Add support for running Patrol tests on Web:
+  - Create `WebAutomator` that handles numerous interactions with native browser:
+    - `enableDarkMode`, `disableDarkMode`,
+    - `tap`,
+    - `enterText`,
+    - `scrollTo`,
+    - `grantPermissions`, `clearPermissions`,
+    - `addCookie`, `getCookies`, `clearCookies`,
+    - `pressKey`, `pressKeyCombo`,
+    - `uploadFile`, `verifyFileDownloads`,
+    - `goBack`, `goForward`,
+    - `acceptNextDialog`, `dismissNextDialog`,
+    - `resizeWindow`,
+    - `setClipboard`, `getClipboard`.
+  - Introduce support for web-related flags:
+    - `--web-results-dir`, `--web-report-dir`, `--web-reporter`,
+    - `--web-timeout`, `--web-global-timeout`, `--web-retries`,
+    - `--web-workers`, `--web-shard`,
+    - `--web-video`, `--web-headless`,
+    - `--web-locale`, `--web-timezone`, `--web-color-scheme`,
+    - `--web-geolocation`, `--web-permissions`,
+    - `--web-user-agent`, `--web-viewport`.
 - Add support for configurable test directory via `test_directory` option in `pubspec.yaml`. (#2728)
-- Introduces *experimental* `--full-isolation` flag that uninstall the app between each run on iOS Simulator.
-- Bump `patrol_log` to `0.6.0`.
+- Introduces *experimental* `--full-isolation` flag that uninstall the app between each run on iOS Simulator. (#2803)
+- Bump `patrol_log` to `0.6.0`. 
 
-This version requires version `4.0.0-dev.2` of `patrol_cli` package.
+- **BREAKING CHANGE**
+  - Change default test directory from `integration_test` to `patrol_test`. (#2728)
+
+This version requires version `4.0.0` of `patrol_cli` package.
 
 ## 3.20.0
 
