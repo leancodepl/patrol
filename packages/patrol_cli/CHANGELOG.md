@@ -2,7 +2,7 @@
 
 Patrol 4.0 is here!
 
-Read the article announcing Patrol 4.0 [here](!!!!ADD LINK HERE!!!!).
+Read the article announcing Patrol 4.0 [here](https://leancode.co/blog/patrol-4-0-release).
 
 - Add support for running Patrol tests on Web:
   - Introduce support for web-related flags:
