@@ -148,8 +148,8 @@ packages:
           ..clear()
           ..add(
             VersionCompatibility.fromRangeString(
-              patrolCliVersion: '3.9.0+',
-              patrolVersion: '3.18.0+',
+              patrolCliVersion: '4.0.0+',
+              patrolVersion: '4.0.0+',
               minFlutterVersion: '3.32.0',
             ),
           );
@@ -168,13 +168,13 @@ packages:
       name: patrol
       url: "https://pub.dev"
     source: hosted
-    version: "3.18.0"
+    version: "4.0.0"
 ''');
         fs.currentDirectory = dir;
 
         when(
           () => pubUpdater.getLatestVersion(any()),
-        ).thenAnswer((_) async => '4.0.0');
+        ).thenAnswer((_) async => '5.0.0');
 
         String? capturedMessage;
         when(() => logger.info(any())).thenAnswer((invocation) {
@@ -188,7 +188,7 @@ packages:
         expect(result, equals(0));
 
         expect(capturedMessage, contains('Update available!'));
-        expect(capturedMessage, contains('${constants.version} → 4.0.0'));
+        expect(capturedMessage, contains('${constants.version} → 5.0.0'));
         expect(
           capturedMessage,
           contains(
