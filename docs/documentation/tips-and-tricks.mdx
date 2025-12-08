@@ -33,6 +33,47 @@ Once you have [idb] installed, perform a dump:
 idb ui describe-all
 ```
 
+### Configuring test directory
+
+By default, Patrol looks for tests in the `patrol_test/` directory.
+This default was changed from `integration_test/` to avoid conflicts with Flutter's official integration testing plugin
+and to give Patrol tests their own dedicated space. This change was introduced in Patrol 4.0.0.
+
+#### Using custom test directory
+
+You can configure Patrol to use a different directory by adding `test_directory` to your `pubspec.yaml`:
+
+```yaml title="pubspec.yaml"
+patrol:
+  app_name: My App
+  test_directory: my_custom_tests  # Custom directory
+  android:
+    package_name: com.example.myapp
+  ios:
+    bundle_id: com.example.MyApp
+```
+
+#### Migrating from integration_test directory
+
+If you have existing Patrol tests in the `integration_test/` directory, you have two options:
+
+**Option 1: Rename integration_test directory to patrol_test**
+
+**Option 2: Configure Patrol to use integration_test**
+```yaml title="pubspec.yaml"
+patrol:
+  app_name: My App
+  test_directory: integration_test  # Keep using old directory
+  android:
+    package_name: com.example.myapp
+  ios:
+    bundle_id: com.example.MyApp
+```
+
+<Info>
+    Non-patrol integration tests should remain in the integration_test directory.
+</Info>
+
 ### Avoiding hardcoding credentials in tests
 
 It's a bad practice to hardcode data such as emails, usernames, and passwords in

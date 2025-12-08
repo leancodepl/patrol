@@ -15,3 +15,5 @@ key.properties
 
 test-reports
 test-results
+
+/build

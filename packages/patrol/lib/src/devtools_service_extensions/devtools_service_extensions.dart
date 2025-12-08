@@ -1,56 +1,47 @@
 import 'dart:convert';
 
-import 'package:flutter/widgets.dart';
-import 'package:http/http.dart' as http;
-import 'package:patrol/src/native/contracts/contracts.dart';
-import 'package:patrol/src/native/contracts/native_automator_client.dart';
-import 'package:patrol/src/native/native_automator.dart';
+import 'package:patrol/src/platform/platform_automator.dart';
 
 /// Devtools extension that fetches the native UI tree.
 class DevtoolsServiceExtensions {
-  /// Creates a new [DevtoolsServiceExtensions] based on the given [config].
-  DevtoolsServiceExtensions(NativeAutomatorConfig config) {
-    _client = NativeAutomatorClient(
-      http.Client(),
-      Uri.http('${config.host}:${config.port}'),
-      timeout: config.connectionTimeout,
-    );
+  /// Creates a new [DevtoolsServiceExtensions] based on the given [platform].
+  DevtoolsServiceExtensions(this.platform);
 
-    _iosInstalledApps = config.iosInstalledApps.isNotEmpty
-        ? (jsonDecode(config.iosInstalledApps) as List<dynamic>).cast<String>()
-        : null;
-  }
-
-  late final List<String>? _iosInstalledApps;
-  late final NativeAutomatorClient _client;
+  /// The [PlatformAutomator] used to interact with platform-specific automation features.
+  final PlatformAutomator platform;
 
   /// Fetches the native UI tree based on the given [parameters].
-  Future<Map<String, dynamic>> getNativeUITree(Map<String, String> parameters) {
-    return _wrapRequest('getNativeUITree', () async {
-      final res = await _client.getNativeUITree(
-        GetNativeUITreeRequest(
-          iosInstalledApps: _iosInstalledApps,
-          useNativeViewHierarchy: parameters['useNativeViewHierarchy'] == 'yes',
-        ),
-      );
-      return res.toJson();
-    });
-  }
-
-  Future<Map<String, dynamic>> _wrapRequest(
-    String name,
-    Future<Map<String, dynamic>> Function() callback,
+  Future<Map<String, dynamic>> getNativeUITree(
+    Map<String, String> parameters,
   ) async {
     try {
-      debugPrint('Start $name');
+      final result = await platform.action(
+        android: () async {
+          final response = await platform.android.getNativeViews(null);
+          final roots = response.roots.map((e) => e.toJson()).toList();
 
-      final res = await callback();
+          return {
+            'androidRoots': roots,
+            'iOSroots': <Map<String, dynamic>>[],
+            'roots': roots,
+          };
+        },
+        ios: () async {
+          final response = await platform.ios.getNativeViews(null);
+          final roots = response.roots.map((e) => e.toJson()).toList();
 
-      debugPrint('End $name');
+          return {
+            'androidRoots': <Map<String, dynamic>>[],
+            'iOSroots': roots,
+            'roots': <Map<String, dynamic>>[],
+          };
+        },
+      );
 
-      return <String, dynamic>{'result': res, 'success': true};
-    } catch (err, st) {
-      return <String, dynamic>{'result': '$err $st', 'success': false};
+      final encoded = jsonEncode(result);
+      return <String, String>{'result': encoded};
+    } catch (err) {
+      return {'error': err.toString()};
     }
   }
 }

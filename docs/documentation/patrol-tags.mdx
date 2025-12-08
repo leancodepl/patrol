@@ -9,7 +9,7 @@ By design, patrol tags should work the same as flutter test tags.
 
 You can assign tags to your Patrol tests using the `tags` parameter. Tags are defined as a list of strings:
 
-```dart title="integration_test/example_test.dart"
+```dart title="patrol_test/example_test.dart"
 import 'package:flutter/material.dart';
 import 'package:patrol/patrol.dart';
 
@@ -108,5 +108,5 @@ patrol test --tags='((login || payment) && (smoke || regression))'
 You can combine tag filtering with other Patrol CLI options:
 
 ```
-patrol test --target integration_test/login_test.dart --tags smoke
+patrol test --target patrol_test/login_test.dart --tags smoke
 ```

@@ -97,11 +97,11 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
         padding: EdgeInsets.all(8),
         key: K.listViewKey,
         children: [
-          const Text('FIRST_KEY: ${String.fromEnvironment('FIRST_KEY')}'),
-          const Text('SECOND_KEY: ${String.fromEnvironment('SECOND_KEY')}'),
-          const Text('THIRD_KEY: ${String.fromEnvironment('THIRD_KEY')}'),
-          const Text('FIFTH_KEY: ${String.fromEnvironment('FIFTH_KEY')}'),
-          const Text('BOOL_DEFINED: ${String.fromEnvironment('BOOL_DEFINED')}'),
+          Text('FIRST_KEY: ${const String.fromEnvironment('FIRST_KEY')}'),
+          Text('SECOND_KEY: ${const String.fromEnvironment('SECOND_KEY')}'),
+          Text('THIRD_KEY: ${const String.fromEnvironment('THIRD_KEY')}'),
+          Text('FIFTH_KEY: ${const String.fromEnvironment('FIFTH_KEY')}'),
+          Text('BOOL_DEFINED: ${const String.fromEnvironment('BOOL_DEFINED')}'),
           FutureBuilder(
             future: PackageInfo.fromPlatform(),
             builder: (context, snapshot) {
@@ -276,14 +276,14 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
             child: const Text('Open login flow screen'),
           ),
           TextButton(
-            onPressed: () async => Navigator.of(context).push(
+            onPressed: () => Navigator.of(context).push(
               MaterialPageRoute<void>(builder: (_) => const OverflowScreen()),
             ),
             child: const Text('Open overflow screen'),
           ),
           TextButton(
             key: K.cameraFeaturesButton,
-            onPressed: () async => Navigator.of(context).push(
+            onPressed: () => Navigator.of(context).push(
               MaterialPageRoute<void>(builder: (_) => const CameraScreen()),
             ),
             child: const Text('Open camera related features'),

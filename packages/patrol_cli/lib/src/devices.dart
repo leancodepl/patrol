@@ -39,7 +39,8 @@ class DeviceFinder {
       final targetPlatform = deviceJson['targetPlatform'] as String;
       if (!targetPlatform.startsWith('android-') &&
           targetPlatform != 'ios' &&
-          targetPlatform != 'darwin') {
+          targetPlatform != 'darwin' &&
+          targetPlatform != 'web-javascript') {
         continue;
       }
 
@@ -240,6 +241,8 @@ class Device {
         return '$platformDescription $name';
       case TargetPlatform.macOS:
         return '$platformDescription $name';
+      case TargetPlatform.web:
+        return '$platformDescription $name';
     }
   }
 
@@ -251,11 +254,13 @@ class Device {
         return real ? 'device' : 'simulator';
       case TargetPlatform.macOS:
         return 'desktop';
+      case TargetPlatform.web:
+        return 'browser';
     }
   }
 }
 
-enum TargetPlatform { iOS, android, macOS }
+enum TargetPlatform { iOS, android, macOS, web }
 
 extension TargetPlatformX on TargetPlatform {
   static TargetPlatform fromString(String platform) {
@@ -265,6 +270,8 @@ extension TargetPlatformX on TargetPlatform {
       return TargetPlatform.android;
     } else if (platform == 'darwin') {
       return TargetPlatform.macOS;
+    } else if (platform == 'web-javascript') {
+      return TargetPlatform.web;
     } else {
       throw Exception('Unsupported platform $platform');
     }

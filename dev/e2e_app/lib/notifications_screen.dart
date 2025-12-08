@@ -137,13 +137,13 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               children: [
                 ElevatedButton(
                   key: K.showNotificationNowButton,
-                  onPressed: () async =>
+                  onPressed: () =>
                       _showNotificationNow(id: 1, title: _firstTitle),
                   child: const Text('Show now'),
                 ),
                 ElevatedButton(
                   key: K.showNotificationLaterButton,
-                  onPressed: () async =>
+                  onPressed: () =>
                       _showNotificationLater(id: 1, title: _firstTitle),
                   child: const Text('Show in a few seconds'),
                 ),
@@ -160,13 +160,13 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               children: [
                 ElevatedButton(
                   key: K.showNotificationNowButton2,
-                  onPressed: () async =>
+                  onPressed: () =>
                       _showNotificationNow(id: 2, title: _secondTitle),
                   child: const Text('Show now'),
                 ),
                 ElevatedButton(
                   key: K.showNotificationLaterButton2,
-                  onPressed: () async =>
+                  onPressed: () =>
                       _showNotificationLater(id: 2, title: _secondTitle),
                   child: const Text('Show in a few seconds'),
                 ),

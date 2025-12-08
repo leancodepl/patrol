@@ -1,3 +1,29 @@
+## 4.0.0
+
+Patrol 4.0 is here!
+
+Read the article announcing Patrol 4.0 [here](https://leancode.co/blog/patrol-4-0-release).
+
+- Add support for running Patrol tests on Web:
+  - Introduce support for web-related flags:
+    - `--web-results-dir`, `--web-report-dir`, `--web-reporter`,
+    - `--web-timeout`, `--web-global-timeout`, `--web-retries`,
+    - `--web-workers`, `--web-shard`,
+    - `--web-video`, `--web-headless`,
+    - `--web-locale`, `--web-timezone`, `--web-color-scheme`,
+    - `--web-geolocation`, `--web-permissions`,
+    - `--web-user-agent`, `--web-viewport`.
+
+- Add support for configurable test directory via `test_directory` option in `pubspec.yaml`. (#2728)
+- Introduces *experimental* `--full-isolation` flag that uninstall the app between each run on iOS Simulator.
+- Bump `patrol_log` to `0.6.0`.
+- Read Patrol version from `pubspec.lock` instead of `pubspec.yaml` for compatibility checks. Fix edge cases for compatibility checks. (#2709)
+
+- **BREAKING CHANGE**
+  - Change default test directory from `integration_test` to `patrol_test`. (#2728)
+
+This version requires version `4.0.0` of `patrol` package.
+
 ## 3.11.0
 
 - Add `--build-name` and `--build-number` flags to `patrol test`, `patrol develop`, and `patrol build` commands. (#2590)

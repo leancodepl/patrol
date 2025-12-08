@@ -33,6 +33,7 @@ import 'package:patrol_cli/src/macos/macos_test_backend.dart';
 import 'package:patrol_cli/src/pubspec_reader.dart';
 import 'package:patrol_cli/src/test_bundler.dart';
 import 'package:patrol_cli/src/test_finder.dart';
+import 'package:patrol_cli/src/web/web_test_backend.dart';
 import 'package:platform/platform.dart';
 import 'package:process/process.dart';
 import 'package:pub_updater/pub_updater.dart';
@@ -127,6 +128,11 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
 
     final rootDirectory = findRootDirectory(_fs) ?? _fs.currentDirectory;
 
+    final testBundler = TestBundler(
+      projectRoot: rootDirectory,
+      logger: _logger,
+    );
+
     final androidTestBackend = AndroidTestBackend(
       adb: adb,
       processManager: _processManager,
@@ -154,14 +160,13 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
       logger: _logger,
     );
 
-    final testBundler = TestBundler(
-      projectRoot: rootDirectory,
+    final webTestBackend = WebTestBackend(
+      processManager: _processManager,
+      parentDisposeScope: _disposeScope,
       logger: _logger,
     );
 
-    final testFinder = TestFinder(
-      testDir: rootDirectory.childDirectory('integration_test'),
-    );
+    final testFinderFactory = TestFinderFactory(rootDirectory: rootDirectory);
 
     final deviceFinder = DeviceFinder(
       processManager: _processManager,
@@ -171,7 +176,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
 
     addCommand(
       BuildCommand(
-        testFinder: testFinder,
+        testFinderFactory: testFinderFactory,
         testBundler: testBundler,
         dartDefinesReader: DartDefinesReader(projectRoot: rootDirectory),
         pubspecReader: PubspecReader(projectRoot: rootDirectory),
@@ -191,7 +196,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
     addCommand(
       DevelopCommand(
         deviceFinder: deviceFinder,
-        testFinder: testFinder,
+        testFinderFactory: testFinderFactory,
         testBundler: testBundler,
         dartDefinesReader: DartDefinesReader(projectRoot: rootDirectory),
         compatibilityChecker: CompatibilityChecker(
@@ -210,8 +215,10 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         androidTestBackend: androidTestBackend,
         iosTestBackend: iosTestBackend,
         macosTestBackend: macosTestBackend,
+        webTestBackend: webTestBackend,
         analytics: _analytics,
         logger: _logger,
+        stdin: stdin,
       ),
     );
 
@@ -219,7 +226,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
       TestCommand(
         deviceFinder: deviceFinder,
         testBundler: testBundler,
-        testFinder: testFinder,
+        testFinderFactory: testFinderFactory,
         dartDefinesReader: DartDefinesReader(projectRoot: rootDirectory),
         compatibilityChecker: CompatibilityChecker(
           projectRoot: rootDirectory,
@@ -230,6 +237,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         androidTestBackend: androidTestBackend,
         iosTestBackend: iosTestBackend,
         macOSTestBackend: macosTestBackend,
+        webTestBackend: webTestBackend,
         coverageTool: CoverageTool(
           fs: _fs,
           rootDirectory: rootDirectory,
@@ -382,14 +390,10 @@ To install a specific version of Patrol CLI, run:
     if (_wantsUpdateCheck(commandName)) {
       final latestVersion = await _pubUpdater.getLatestVersion('patrol_cli');
       const currentVersion = constants.version;
-      final maxCompatibleCliVersion = getMaxCompatibleCliVersion(
-        Version.parse(latestVersion),
-      );
 
       await _checkForUpdates(
         currentVersion: currentVersion,
         latestVersion: latestVersion,
-        maxCompatibleCliVersion: maxCompatibleCliVersion.toString(),
       );
     }
 
@@ -445,11 +449,9 @@ To install a specific version of Patrol CLI, run:
   Future<void> testCheckForUpdates({
     required String currentVersion,
     required String latestVersion,
-    required String maxCompatibleCliVersion,
   }) => _checkForUpdates(
     currentVersion: currentVersion,
     latestVersion: latestVersion,
-    maxCompatibleCliVersion: maxCompatibleCliVersion,
   );
 
   bool _wantsUpdateCheck(String? commandName) {
@@ -470,82 +472,135 @@ To install a specific version of Patrol CLI, run:
   Future<void> _checkForUpdates({
     required String currentVersion,
     required String latestVersion,
-    required String maxCompatibleCliVersion,
   }) async {
-    final latestVersionParsed = Version.parse(latestVersion);
+    Version currentVersionParsed;
+    Version latestVersionParsed;
+    Version? patrolVer;
+    String? patrolVersion;
 
-    if (latestVersionParsed > Version.parse(currentVersion)) {
-      // Try to find the current patrol version in the project
-      String? patrolVersion;
-      final rootDir = findRootDirectory(_fs);
-      if (rootDir != null) {
-        final pubspecReader = PubspecReader(projectRoot: rootDir);
-        patrolVersion = pubspecReader.getPatrolVersion();
-      }
+    try {
+      currentVersionParsed = Version.parse(currentVersion);
+      latestVersionParsed = Version.parse(latestVersion);
+      patrolVersion = _getPatrolVersion();
 
-      final buffer = StringBuffer();
-
-      // Only show compatibility messages if we found a patrol version
-      if (patrolVersion != null) {
-        final patrolVer = Version.parse(patrolVersion);
-        final maxCliVersion = getMaxCompatibleCliVersion(patrolVer);
-
-        if (maxCliVersion != null && latestVersionParsed > maxCliVersion) {
-          // Show warning when incompatible
-          buffer
-            ..writeln(
-              '${lightYellow.wrap('Update available!')} ${lightCyan.wrap(currentVersion)} \u2192 ${lightCyan.wrap(maxCliVersion.toString())}. (Newest patrol_cli $latestVersion is not compatible with project patrol version.)',
-            )
-            ..writeln()
-            ..writeln('To update to the latest compatible version, run:')
-            ..writeln(
-              lightCyan.wrap(
-                'dart pub global activate patrol_cli $maxCliVersion',
-              ),
-            )
-            ..writeln()
-            ..writeln(
-              '⚠️  Before updating, please ensure your patrol package version is compatible with patrol_cli $latestVersion',
-            )
-            ..writeln(
-              'Check the compatibility table at: ${lightCyan.wrap('https://patrol.leancode.co/documentation/compatibility-table')}',
-            );
-        } else {
-          // Show simple update message when compatible
-          buffer
-            ..writeln(
-              '${lightYellow.wrap('Update available!')} ${lightCyan.wrap(currentVersion)} \u2192 ${lightCyan.wrap(latestVersion)}',
-            )
-            ..writeln()
-            ..writeln(
-              'Run ${lightCyan.wrap('patrol update')} to update to the latest version.',
-            )
-            ..writeln()
-            ..writeln(
-              'Check the compatibility table at: ${lightCyan.wrap('https://patrol.leancode.co/documentation/compatibility-table')}',
-            );
-        }
-      } else {
-        // Show simple update message when no patrol version found
-        buffer
-          ..writeln(
-            '${lightYellow.wrap('Update available!')} ${lightCyan.wrap(currentVersion)} \u2192 ${lightCyan.wrap(latestVersion)}',
-          )
-          ..writeln()
-          ..writeln(
-            'Run ${lightCyan.wrap('patrol update')} to update to the latest version.',
-          )
-          ..writeln()
-          ..writeln(
-            'Check the compatibility table at: ${lightCyan.wrap('https://patrol.leancode.co/documentation/compatibility-table')}',
-          );
-      }
-
-      _logger
-        ..info('')
-        ..info(buffer.toString())
-        ..info('');
+      // Parse patrol version if available
+      patrolVer = patrolVersion != null ? Version.parse(patrolVersion) : null;
+    } on FormatException catch (e) {
+      _logger.detail('Failed to parse version string during update check: $e');
+      return;
     }
+
+    // Check for incompatibility first
+    if (patrolVer != null) {
+      final isCompatible = areVersionsCompatible(
+        currentVersionParsed,
+        patrolVer,
+      );
+
+      if (!isCompatible) {
+        final maxCliVersion = getMaxCompatibleCliVersion(patrolVer);
+        final versionInfo =
+            'patrol_cli ${lightCyan.wrap(currentVersion)} is not compatible with patrol ${lightCyan.wrap(patrolVersion)}.';
+
+        final command = maxCliVersion != null
+            ? 'dart pub global activate patrol_cli $maxCliVersion'
+            : null;
+
+        final actionMessage = maxCliVersion != null
+            ? 'To resolve this issue, ${currentVersionParsed < maxCliVersion ? "upgrade" : "downgrade"} patrol_cli to a compatible version:'
+            : 'Please upgrade both "patrol_cli" and "patrol" dependencies to the latest versions.';
+
+        _showVersionMessage(
+          title: lightYellow.wrap('Version incompatibility detected!') ?? '',
+          versionInfo: versionInfo,
+          actionMessage: actionMessage,
+          command: command,
+        );
+        return;
+      }
+    }
+
+    // No update available
+    if (latestVersionParsed <= currentVersionParsed) {
+      return;
+    }
+
+    // Determine if we should show update notification and which message
+    if (patrolVer != null) {
+      final maxCliVersion = getMaxCompatibleCliVersion(patrolVer);
+
+      // Already at max compatible version for this patrol version
+      if (maxCliVersion != null && currentVersionParsed >= maxCliVersion) {
+        return;
+      }
+
+      // Show constrained update message if latest is incompatible
+      if (maxCliVersion != null && latestVersionParsed > maxCliVersion) {
+        _showVersionMessage(
+          title: lightYellow.wrap('Update available!') ?? '',
+          versionInfo:
+              '${lightCyan.wrap(currentVersion)} \u2192 ${lightCyan.wrap(maxCliVersion.toString())}',
+          actionMessage: 'To update to the latest compatible version, run:',
+          command: 'dart pub global activate patrol_cli $maxCliVersion',
+          additionalWarning:
+              "⚠️  Newest patrol_cli $latestVersion is not compatible with your project's patrol version.\nConsider upgrading your patrol package for the latest features.",
+        );
+        return;
+      }
+    }
+
+    // Show simple update message
+    _showVersionMessage(
+      title: lightYellow.wrap('Update available!') ?? '',
+      versionInfo:
+          '${lightCyan.wrap(currentVersion)} \u2192 ${lightCyan.wrap(latestVersion)}',
+      actionMessage: 'Run ${lightCyan.wrap('patrol update')} to update.',
+    );
+  }
+
+  String? _getPatrolVersion() {
+    final rootDir = findRootDirectory(_fs);
+    if (rootDir != null) {
+      final pubspecReader = PubspecReader(projectRoot: rootDir);
+      return pubspecReader.getPatrolVersion();
+    }
+    return null;
+  }
+
+  void _showVersionMessage({
+    required String title,
+    required String versionInfo,
+    String? actionMessage,
+    String? command,
+    String? additionalWarning,
+  }) {
+    final buffer = StringBuffer()
+      ..writeln('$title $versionInfo')
+      ..writeln();
+
+    if (command != null) {
+      if (actionMessage != null) {
+        buffer.writeln(actionMessage);
+      }
+      buffer
+        ..writeln(lightCyan.wrap(command))
+        ..writeln();
+    }
+
+    if (additionalWarning != null) {
+      buffer
+        ..writeln(additionalWarning)
+        ..writeln();
+    }
+
+    buffer.writeln(
+      'Check the compatibility table at: ${lightCyan.wrap('https://patrol.leancode.co/documentation/compatibility-table')}',
+    );
+
+    _logger
+      ..info('')
+      ..info(buffer.toString())
+      ..info('');
   }
 }
 

@@ -28,29 +28,13 @@ import androidx.test.uiautomator.UiSelector
 import pl.leancode.patrol.contracts.Contracts.AndroidNativeView
 import pl.leancode.patrol.contracts.Contracts.AndroidSelector
 import pl.leancode.patrol.contracts.Contracts.KeyboardBehavior
-import pl.leancode.patrol.contracts.Contracts.NativeView
 import pl.leancode.patrol.contracts.Contracts.Notification
 import pl.leancode.patrol.contracts.Contracts.Point2D
 import pl.leancode.patrol.contracts.Contracts.Rectangle
-import pl.leancode.patrol.contracts.Contracts.Selector
 import kotlin.math.roundToInt
 import pl.leancode.patrol.R.string as s
 
-private fun fromUiObject2(obj: UiObject2): NativeView {
-    return NativeView(
-        className = obj.className,
-        text = obj.text,
-        contentDescription = obj.contentDescription,
-        focused = obj.isFocused,
-        enabled = obj.isEnabled,
-        childCount = obj.childCount.toLong(),
-        resourceName = obj.resourceName,
-        applicationPackage = obj.applicationPackage,
-        children = obj.children?.map { fromUiObject2(it) } ?: listOf()
-    )
-}
-
-private fun fromUiObject2V2(obj: UiObject2): AndroidNativeView {
+private fun fromUiObject2(obj: UiObject2): AndroidNativeView {
     val bounds = obj.visibleBounds
     val center = obj.visibleCenter
 
@@ -80,7 +64,7 @@ private fun fromUiObject2V2(obj: UiObject2): AndroidNativeView {
             x = center.x.toDouble(),
             y = center.y.toDouble()
         ),
-        children = obj.children?.map { fromUiObject2V2(it) } ?: listOf()
+        children = obj.children?.map { fromUiObject2(it) } ?: listOf()
     )
 }
 
@@ -265,30 +249,17 @@ class Automator private constructor() {
         }
     }
 
-    fun getNativeViews(selector: BySelector): List<NativeView> {
-        Logger.d("getNativeViews()")
+    fun getNativeViews(selector: BySelector): List<AndroidNativeView> {
+        Logger.d("getNativeViewsV2()")
 
         val uiObjects2 = uiDevice.findObjects(selector)
         return uiObjects2.map { fromUiObject2(it) }
     }
 
-    fun getNativeViewsV2(selector: BySelector): List<AndroidNativeView> {
-        Logger.d("getNativeViewsV2()")
-
-        val uiObjects2 = uiDevice.findObjects(selector)
-        return uiObjects2.map { fromUiObject2V2(it) }
-    }
-
-    fun getNativeUITrees(): List<NativeView> {
+    fun getNativeUITrees(): List<AndroidNativeView> {
         Logger.d("getNativeUITrees()")
 
         return getWindowTrees(uiDevice, uiAutomation)
-    }
-
-    fun getNativeUITreesV2(): List<AndroidNativeView> {
-        Logger.d("getNativeUITreesV2()")
-
-        return getWindowTreesV2(uiDevice, uiAutomation)
     }
 
     fun tap(uiSelector: UiSelector, bySelector: BySelector, index: Int, timeout: Long? = null) {
@@ -391,7 +362,7 @@ class Automator private constructor() {
             uiDevice.click(x.toInt(), y.toInt())
         }
 
-        uiObject.text = text
+        uiObject.setText(text)
 
         if (keyboardBehavior == KeyboardBehavior.showAndDismiss) {
             pressBack() // Hide keyboard.
@@ -446,7 +417,7 @@ class Automator private constructor() {
             uiDevice.click(x.toInt(), y.toInt())
         }
 
-        uiObject.text = text
+        uiObject.setText(text)
 
         if (keyboardBehavior == KeyboardBehavior.showAndDismiss) {
             pressBack() // Hide keyboard.
@@ -596,39 +567,21 @@ class Automator private constructor() {
     }
 
     fun tapOnNotification(index: Int, timeout: Long? = null) {
-        Logger.d("tapOnNotification($index)")
-
-        try {
-            val query = Selector(
-                resourceId = "android:id/status_bar_latest_event_content",
-                instance = index.toLong()
-            )
-            val selector = query.toBySelector()
-            if (waitForView(selector, index, timeout) == null) {
-                throw UiObjectNotFoundException("$selector")
-            }
-            val obj = uiDevice.findObject(query.toUiSelector())
-            obj.click()
-        } catch (err: UiObjectNotFoundException) {
-            throw UiObjectNotFoundException("notification at index $index")
-        }
-
-        delay()
-    }
-
-    fun tapOnNotificationV2(index: Int, timeout: Long? = null) {
         Logger.d("tapOnNotificationV2($index)")
 
         try {
-            val query = AndroidSelector(
-                resourceName = "android:id/status_bar_latest_event_content",
-                instance = index.toLong()
+            val queryForBySelector = AndroidSelector(
+                resourceName = "android:id/status_bar_latest_event_content"
             )
-            val selector = query.toBySelector()
+            val selector = queryForBySelector.toBySelector()
             if (waitForView(selector, index, timeout) == null) {
                 throw UiObjectNotFoundException("$selector")
             }
-            val obj = uiDevice.findObject(query.toUiSelector())
+            val queryForUiSelector = AndroidSelector(
+                resourceName = "android:id/status_bar_latest_event_content",
+                instance = index.toLong()
+            )
+            val obj = uiDevice.findObject(queryForUiSelector.toUiSelector())
             obj.click()
         } catch (err: UiObjectNotFoundException) {
             throw UiObjectNotFoundException("notification at index $index")
