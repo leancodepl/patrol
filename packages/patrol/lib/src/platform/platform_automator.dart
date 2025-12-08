@@ -142,6 +142,12 @@ class PlatformAutomator {
       ios: (config?.iosEnabled ?? false)
           ? () => native_ios_automator.IOSAutomator(config: iosConfig)
           : null,
+      // TODO: Create MacOSAutomator when such class will be implemented
+      // For now we reuse the IOSAutomator for native communication on MacOS
+      // The reason is that the only native interaction on MacOS is marking the app service ready
+      macos: (config?.iosEnabled ?? false)
+          ? () => native_ios_automator.IOSAutomator(config: iosConfig)
+          : null,
       fallback: () => empty_ios_automator.IOSAutomator(config: iosConfig),
     );
 
@@ -198,6 +204,10 @@ class PlatformAutomator {
     await action.maybe(
       android: () async => {await android.markPatrolAppServiceReady()},
       ios: () async => {await ios.markPatrolAppServiceReady()},
+      // TODO: Use MacOSAutomator when such class will be implemented
+      // For now we reuse the IOSAutomator for native communication on MacOS
+      // The reason is that the only native interaction on MacOS is marking the app service ready
+      macos: () async => {await ios.markPatrolAppServiceReady()},
     );
   }
 
