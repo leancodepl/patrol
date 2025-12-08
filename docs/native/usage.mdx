@@ -1,24 +1,24 @@
 ---
-title: Native automation - usage
+title: Platform automation - usage
 ---
 
 Once set up, interacting with the native UI using Patrol is very easy!
 
 ### Basics
 
-After you've got your `NativeAutomator` object, you simply call methods on it
-and it does the magic.
+After you've got your `PlatformAutomator` object via `$.platform`, you simply call methods on it
+and it does the magic. For cross-platform mobile actions, use `$.platform.mobile`.
 
 To tap on a native view (for example, a button in a WebView):
 
 ```dart
-await $.native.tap(Selector(text: 'Sign up for newsletter'));
+await $.platform.mobile.tap(Selector(text: 'Sign up for newsletter'));
 ```
 
 To enter text into a native view (for example, a form in a WebView):
 
 ```dart
-await $.native.enterText(
+await $.platform.mobile.enterText(
   Selector(text: 'Enter your email'),
   text: 'charlie@root.me',
 );
@@ -28,13 +28,26 @@ You can also enter text into n-th currently visible text field (counting from
 0):
 
 ```dart
-await $.native.enterTextByIndex('charlie_root', index: 0); // enter username
-await $.native.enterTextByIndex('ny4ncat', index: 1); // enter password
+await $.platform.mobile.enterTextByIndex('charlie_root', index: 0); // enter username
+await $.platform.mobile.enterTextByIndex('ny4ncat', index: 1); // enter password
 ```
 
 The above are the simplest, most common actions, but they already make it
 possible to test scenarios that were impossible to test before, such as
 WebViews.
+
+### Platform-specific selectors
+
+When you need different selectors for Android and iOS, use `MobileSelector`:
+
+```dart
+await $.platform.mobile.tap(
+  MobileSelector(
+    android: AndroidSelector(resourceName: 'com.example:id/button'),
+    ios: IOSSelector(identifier: 'myButton'),
+  ),
+);
+```
 
 <Warning>
   To tap, enter text, or perform generally any UI interaction with a iOS app
@@ -43,8 +56,8 @@ WebViews.
   use:
 
 ```dart
-await $.native.tap(
-  Selector(text: 'Add'),
+await $.platform.ios.tap(
+  IOSSelector(text: 'Add'),
   appId: 'com.apple.MobileAddressBook',
 );
 ```
@@ -56,19 +69,19 @@ await $.native.tap(
 To open the notification shade:
 
 ```dart
-await $.native.openNotifications();
+await $.platform.mobile.openNotifications();
 ```
 
 To tap on the second notification:
 
 ```dart
-await $.native.tapOnNotificationByIndex(1);
+await $.platform.mobile.tapOnNotificationByIndex(1);
 ```
 
 You can also tap on notification by its content:
 
 ```dart
-await $.native.tapOnNotificationBySelector(
+await $.platform.mobile.tapOnNotificationBySelector(
   Selector(textContains: 'Someone liked your recent post'),
 );
 ```
@@ -80,9 +93,9 @@ await $.native.tapOnNotificationBySelector(
 To handle the native permission request dialog:
 
 ```dart
-await $.native.grantPermissionWhenInUse();
-await $.native.grantPermissionOnlyThisTime();
-await $.native.denyPermission();
+await $.platform.mobile.grantPermissionWhenInUse();
+await $.platform.mobile.grantPermissionOnlyThisTime();
+await $.platform.mobile.denyPermission();
 ```
 
 <YouTube id="yC3sqpY5P_A" />
@@ -91,8 +104,8 @@ If the permission request dialog visible is the location dialog, you can also
 select the accuracy:
 
 ```dart
-await $.native.selectFineLocation();
-await $.native.selectCoarseLocation();
+await $.platform.mobile.selectFineLocation();
+await $.platform.mobile.selectCoarseLocation();
 ```
 
 <YouTube id="Wl2DyOy5e2U" />
@@ -101,8 +114,8 @@ The test will fail if the permission request dialog is not visible. You can
 check if it is with:
 
 ```dart
-if (await $.native.isPermissionDialogVisible()) {
-  await $.native.grantPermissionWhenInUse();
+if (await $.platform.mobile.isPermissionDialogVisible()) {
+  await $.platform.mobile.grantPermissionWhenInUse();
 }
 ```
 
@@ -110,8 +123,8 @@ By default, `isPermissionDialogVisible()` waits for a short amount of time and
 then returns `false` if the dialog is not visible. To increase the timeout:
 
 ```dart
-if (await $.native.isPermissionDialogVisible(timeout: Duration(seconds: 5))) {
-  await $.native.grantPermissionWhenInUse();
+if (await $.platform.mobile.isPermissionDialogVisible(timeout: Duration(seconds: 5))) {
+  await $.platform.mobile.grantPermissionWhenInUse();
 }
 ```
 
@@ -124,8 +137,8 @@ If you want to handle permissions on iOS device with non-English locale, do it
 manually:
 
 ```dart
-await $.native.tap(
-  Selector(text: 'Allow'),
+await $.platform.ios.tap(
+  IOSSelector(text: 'Allow'),
   appId: 'com.apple.springboard',
 );
 ```

@@ -1,5 +1,5 @@
 ---
-title: Native automation - overview
+title: Platform automation - overview
 ---
 
 Flutter's [integration_test][integration_test] does a good job at providing
@@ -8,14 +8,14 @@ interaction with the OS your Flutter app is running on. This makes it impossible
 to test many critical business features:
 
 - granting runtime permissions
-- signing into the app which uses WebView or 0Auth (like Google) as the login
+- signing into the app which uses WebView or OAuth (like Google) as the login
   page
 - listing and tapping on notifications
 - exiting the app, coming back, and verifying that state is preserved
 - enabling and disabling features such as Wi-Fi, mobile data, location, or dark
   mode
 
-Patrol's _native automation_ feature finally solves these problems. Here's a
+Patrol's _platform automation_ feature finally solves these problems. Here's a
 tiny snippet to spice things up:
 
 ```dart title="patrol_test/demo_test.dart"
@@ -23,24 +23,44 @@ void main() {
   patrolTest('demo', (PatrolIntegrationTester $) async {
     await $.pumpWidgetAndSettle(AwesomeApp());
     // prepare network conditions
-    await $.native.enableCellular();
-    await $.native.disableWifi();
+    await $.platform.mobile.enableCellular();
+    await $.platform.mobile.disableWifi();
 
     // toggle system theme
-    await $.native.enableDarkMode();
+    await $.platform.mobile.enableDarkMode();
 
     // handle native location permission request dialog
-    await $.native.selectFineLocation();
-    await $.native.grantPermissionWhenInUse();
+    await $.platform.mobile.selectFineLocation();
+    await $.platform.mobile.grantPermissionWhenInUse();
 
     // tap on the first notification
-    await $.native.openNotifications();
-    await $.native.tapOnNotificationByIndex(0);
+    await $.platform.mobile.openNotifications();
+    await $.platform.mobile.tapOnNotificationByIndex(0);
   });
 }
 ```
 
-<Info>Native automation is currently available only on Android and iOS.</Info>
+For web applications, Patrol provides browser-specific automation capabilities. You can
+interact with browser dialogs, manage cookies, handle file uploads, and more:
+
+```dart title="patrol_test/web_demo_test.dart"
+void main() {
+  patrolTest('web demo', (PatrolIntegrationTester $) async {
+    await $.pumpWidgetAndSettle(AwesomeWebApp());
+
+    // grant browser permissions
+    await $.platform.web.grantPermissions(permissions: ['clipboard-read']);
+
+    // manage cookies
+    await $.platform.web.addCookie(name: 'session', value: 'abc123');
+
+    // handle browser dialogs
+    await $.platform.web.acceptNextDialog();
+  });
+}
+```
+
+<Info>Platform automation is currently available on Android, iOS, and Web.</Info>
 
 <Tweet id="1592464714227142658" />
 
