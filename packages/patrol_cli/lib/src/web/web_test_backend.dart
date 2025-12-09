@@ -218,8 +218,10 @@ class WebTestBackend {
             _verifyServerReady(url)
                 .then((isReady) {
                   if (!completer.isCompleted && isReady) {
-                    stdoutSubscription.cancel();
-                    stderrSubscription.cancel();
+                    // IMPORTANT: Do NOT cancel subscriptions here!
+                    // Cancelling stdout/stderr subscriptions causes Flutter's
+                    // web server to terminate unexpectedly. Keep them active
+                    // so Flutter continues serving the app.
                     completer.complete(url);
                   }
                 })
