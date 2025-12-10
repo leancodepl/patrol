@@ -1,3 +1,7 @@
+## 4.0.1
+
+- Fix running web tests on Flutter 3.38.x. (#2828)
+
 ## 4.0.0
 
 Patrol 4.0 is here!
