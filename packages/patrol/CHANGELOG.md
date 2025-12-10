@@ -1,3 +1,7 @@
+## 4.0.1
+
+- Remove dependency on `js`. (#2831)
+
 ## 4.0.0
 
 Patrol 4.0 is here!
