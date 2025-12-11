@@ -11,7 +11,6 @@ import 'package:patrol/patrol.dart';
 import 'package:patrol/src/devtools_service_extensions/devtools_service_extensions.dart';
 import 'package:patrol/src/global_state.dart' as global_state;
 import 'package:patrol/src/platform/current_io.dart' as current_platform;
-import 'package:patrol/src/platform/platform_automator.dart';
 
 import 'constants.dart' as constants;
 
