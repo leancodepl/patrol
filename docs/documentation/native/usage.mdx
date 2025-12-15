@@ -1,108 +1,238 @@
 ---
-title: Native automation - usage
+title: Usage
 ---
 
 Once set up, interacting with the native UI using Patrol is very easy!
 
 ### Basics
 
-After you've got your `NativeAutomator` object, you simply call methods on it
-and it does the magic.
+After you've got your `PlatformAutomator` object via `$.platform`, you simply call methods on it
+and it does the magic. For cross-platform mobile actions, use `$.platform.mobile`.
 
 To tap on a native view (for example, a button in a WebView):
 
 ```dart
-await $.native.tap(Selector(text: 'Sign up for newsletter'));
+await $.platform.mobile.tap(Selector(text: 'Sign up for newsletter'));
 ```
 
 To enter text into a native view (for example, a form in a WebView):
 
 ```dart
-await $.native.enterText(
+await $.platform.mobile.enterText(
   Selector(text: 'Enter your email'),
   text: 'charlie@root.me',
 );
 ```
 
-You can also enter text into n-th currently visible text field (counting from
-0):
+You can also enter text into the n-th currently visible text field (counting from 0):
 
 ```dart
-await $.native.enterTextByIndex('charlie_root', index: 0); // enter username
-await $.native.enterTextByIndex('ny4ncat', index: 1); // enter password
+await $.platform.mobile.enterTextByIndex('charlie_root', index: 0); // enter username
+await $.platform.mobile.enterTextByIndex('ny4ncat', index: 1); // enter password
 ```
 
 The above are the simplest, most common actions, but they already make it
 possible to test scenarios that were impossible to test before, such as
 WebViews.
 
-<Warning>
-  To tap, enter text, or perform generally any UI interaction with a iOS app
-  that is not your Flutter app under test, you need to pass its bundle
-  identifier. For example, to tap on the plus button in the iPhone contacts app,
-  use:
+### Platform-specific selectors
+
+When you need different selectors for Android and iOS, use `MobileSelector`:
 
 ```dart
-await $.native.tap(
-  Selector(text: 'Add'),
+await $.platform.mobile.tap(
+  MobileSelector(
+    android: AndroidSelector(resourceName: 'com.example:id/button'),
+    ios: IOSSelector(identifier: 'myButton'),
+  ),
+);
+```
+
+### Android-specific actions
+
+For Android-only actions, use `$.platform.android`:
+
+```dart
+// Press the hardware back button (Android only)
+await $.platform.android.pressBack();
+
+// Double press the recent apps button to switch to the previous app
+await $.platform.android.pressDoubleRecentApps();
+
+// Tap on a native view using Android-specific selector
+await $.platform.android.tap(
+  AndroidSelector(resourceName: 'com.example:id/submit_button'),
+);
+
+// Open a specific Android app
+await $.platform.android.openPlatformApp(androidAppId: 'com.android.settings');
+```
+
+### iOS-specific actions
+
+For iOS-only actions, use `$.platform.ios`:
+
+```dart
+// Tap on a native view using iOS-specific selector
+await $.platform.ios.tap(
+  IOSSelector(identifier: 'submitButton'),
+);
+
+// Close a heads-up notification
+await $.platform.ios.closeHeadsUpNotification();
+
+// Swipe back gesture (iOS edge swipe)
+await $.platform.ios.swipeBack();
+
+// Open a specific iOS app
+await $.platform.ios.openPlatformApp(iosAppId: 'com.apple.Preferences');
+```
+
+<Warning>
+  To tap, enter text, or perform generally any UI interaction with an iOS app
+  that is not your Flutter app under test, you need to pass its bundle
+  identifier. For example, to tap on the "Add" button in the iPhone contacts app:
+
+```dart
+await $.platform.ios.tap(
+  IOSSelector(text: 'Add'),
   appId: 'com.apple.MobileAddressBook',
 );
 ```
 
 </Warning>
 
+### Web-specific actions
+
+For Flutter Web apps, use `$.platform.web` to interact with browser elements and features:
+
+```dart
+// Tap on a web element by text
+await $.platform.web.tap(WebSelector(text: 'Submit'));
+
+// Tap on a web element using CSS selector
+await $.platform.web.tap(WebSelector(cssOrXpath: 'css=#submit-button'));
+
+// Tap on a web element by test ID
+await $.platform.web.tap(WebSelector(testId: 'login-button'));
+
+// Enter text into a form field
+await $.platform.web.enterText(
+  WebSelector(placeholder: 'Email address'),
+  text: 'user@example.com',
+);
+
+// Scroll to an element
+await $.platform.web.scrollTo(WebSelector(text: 'Load more'));
+```
+
+Web automation also supports advanced browser interactions:
+
+```dart
+// Handle browser dialogs
+await $.platform.web.acceptNextDialog();
+await $.platform.web.dismissNextDialog();
+
+// Manage cookies
+await $.platform.web.addCookie(name: 'session', value: 'abc123');
+await $.platform.web.clearCookies();
+
+// Control dark mode
+await $.platform.web.enableDarkMode();
+await $.platform.web.disableDarkMode();
+
+// Browser navigation
+await $.platform.web.goBack();
+await $.platform.web.goForward();
+
+// Keyboard interactions
+await $.platform.web.pressKey(key: 'Enter');
+await $.platform.web.pressKeyCombo(keys: ['Control', 'a']);
+
+// Clipboard operations
+await $.platform.web.setClipboard(text: 'Copied text');
+final clipboardContent = await $.platform.web.getClipboard();
+
+// Browser permissions
+await $.platform.web.grantPermissions(permissions: ['geolocation', 'notifications']);
+await $.platform.web.clearPermissions();
+
+// File uploads
+await $.platform.web.uploadFile(files: [UploadFileData(name: 'test.txt', content: 'Hello')]);
+
+// Verify file downloads
+final downloadedFiles = await $.platform.web.verifyFileDownloads();
+
+// Resize browser window
+await $.platform.web.resizeWindow(size: Size(1920, 1080));
+```
+
+Working with iframes:
+
+```dart
+// Tap on an element inside an iframe
+await $.platform.web.tap(
+  WebSelector(text: 'Submit'),
+  iframeSelector: WebSelector(cssOrXpath: 'css=#payment-iframe'),
+);
+```
+
+### Cross-platform mobile actions
+
+For actions that work on both Android and iOS, use `$.platform.mobile`. This is the recommended
+approach when you don't need platform-specific behavior, as it keeps your tests clean and
+maintainable across both platforms.
+
+The `$.platform.mobile` automator automatically routes calls to the appropriate platform
+implementation based on where your test is running. You can use the unified `Selector` class
+for simple cases, or `MobileSelector` when you need different selectors per platform.
+
 ### Notifications
 
 To open the notification shade:
 
 ```dart
-await $.native.openNotifications();
+await $.platform.mobile.openNotifications();
 ```
 
 To tap on the second notification:
 
 ```dart
-await $.native.tapOnNotificationByIndex(1);
+await $.platform.mobile.tapOnNotificationByIndex(1);
 ```
 
 You can also tap on notification by its content:
 
 ```dart
-await $.native.tapOnNotificationBySelector(
+await $.platform.mobile.tapOnNotificationBySelector(
   Selector(textContains: 'Someone liked your recent post'),
 );
 ```
-
-<YouTube id="G0i6HEk0HQg" />
 
 ### Permissions
 
 To handle the native permission request dialog:
 
 ```dart
-await $.native.grantPermissionWhenInUse();
-await $.native.grantPermissionOnlyThisTime();
-await $.native.denyPermission();
+await $.platform.mobile.grantPermissionWhenInUse();
+await $.platform.mobile.grantPermissionOnlyThisTime();
+await $.platform.mobile.denyPermission();
 ```
-
-<YouTube id="yC3sqpY5P_A" />
 
 If the permission request dialog visible is the location dialog, you can also
 select the accuracy:
 
 ```dart
-await $.native.selectFineLocation();
-await $.native.selectCoarseLocation();
+await $.platform.mobile.selectFineLocation();
+await $.platform.mobile.selectCoarseLocation();
 ```
-
-<YouTube id="Wl2DyOy5e2U" />
 
 The test will fail if the permission request dialog is not visible. You can
 check if it is with:
 
 ```dart
-if (await $.native.isPermissionDialogVisible()) {
-  await $.native.grantPermissionWhenInUse();
+if (await $.platform.mobile.isPermissionDialogVisible()) {
+  await $.platform.mobile.grantPermissionWhenInUse();
 }
 ```
 
@@ -110,8 +240,8 @@ By default, `isPermissionDialogVisible()` waits for a short amount of time and
 then returns `false` if the dialog is not visible. To increase the timeout:
 
 ```dart
-if (await $.native.isPermissionDialogVisible(timeout: Duration(seconds: 5))) {
-  await $.native.grantPermissionWhenInUse();
+if (await $.platform.mobile.isPermissionDialogVisible(timeout: Duration(seconds: 5))) {
+  await $.platform.mobile.grantPermissionWhenInUse();
 }
 ```
 
@@ -124,13 +254,28 @@ If you want to handle permissions on iOS device with non-English locale, do it
 manually:
 
 ```dart
-await $.native.tap(
-  Selector(text: 'Allow'),
+await $.platform.ios.tap(
+  IOSSelector(text: 'Allow'),
   appId: 'com.apple.springboard',
 );
 ```
 
 </Warning>
+
+### Device information
+
+Get information about the device running the tests:
+
+```dart
+// Check if running on an emulator/simulator
+final isVirtual = await $.platform.mobile.isVirtualDevice();
+
+// Get OS version (e.g., 30 for Android 11)
+final osVersion = await $.platform.mobile.getOsVersion();
+if (osVersion >= 30) {
+  // Android 11+ specific behavior
+}
+```
 
 ### More resources
 

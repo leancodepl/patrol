@@ -1,0 +1,37 @@
+@import "tailwindcss";
+@import "fumadocs-ui/css/black.css";
+@import "fumadocs-ui/css/preset.css";
+
+.dark {
+  --color-fd-background: rgb(11, 13, 14);
+
+  --patrol-orange: rgb(255, 160, 63);
+  --patrol-yellow: rgb(240, 255, 0);
+}
+
+:root {
+  a {
+    overflow-wrap: break-word;
+    text-decoration-color: var(--patrol-orange);
+  }
+
+  a:not(.border-transparent) {
+    border-bottom-color: var(--patrol-orange);
+  }
+
+  div[style*="--callout-color:var(--color-fd-info"] svg {
+    fill: var(--patrol-yellow);
+  }
+
+  div[style*="--callout-color:var(--color-fd-info"] div[role="none"] {
+    background-color: var(--patrol-yellow);
+  }
+
+  h1 {
+    font-weight: 600;
+  }
+
+  article h1:first-child {
+    font-weight: 800;
+  }
+}

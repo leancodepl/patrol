@@ -1,0 +1,21 @@
+{
+  "title": "Documentation",
+  "root": true,
+  "pages": [
+    "---Introduction---",
+    "index",
+    "write-your-first-test",
+    "logs",
+    "cheatsheet",
+    "supported-platforms",
+    "web",
+    "compatibility-table",
+    "---Advanced---",
+    "physical-ios-devices-setup",
+    "finders",
+    "native",
+    "ci",
+    "integrations",
+    "other"
+  ]
+}
