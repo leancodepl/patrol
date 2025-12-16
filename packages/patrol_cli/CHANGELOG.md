@@ -2,6 +2,37 @@
 
 - Add support for `--no-tree-shake-icons` flag in cli commands (#2704)
 
+## 4.0.1
+
+- Fix running web tests on Flutter 3.38.x. (#2828)
+
+## 4.0.0
+
+Patrol 4.0 is here!
+
+Read the article announcing Patrol 4.0 [here](https://leancode.co/blog/patrol-4-0-release).
+
+- Add support for running Patrol tests on Web:
+
+  - Introduce support for web-related flags:
+    - `--web-results-dir`, `--web-report-dir`, `--web-reporter`,
+    - `--web-timeout`, `--web-global-timeout`, `--web-retries`,
+    - `--web-workers`, `--web-shard`,
+    - `--web-video`, `--web-headless`,
+    - `--web-locale`, `--web-timezone`, `--web-color-scheme`,
+    - `--web-geolocation`, `--web-permissions`,
+    - `--web-user-agent`, `--web-viewport`.
+
+- Add support for configurable test directory via `test_directory` option in `pubspec.yaml`. (#2728)
+- Introduces _experimental_ `--full-isolation` flag that uninstall the app between each run on iOS Simulator.
+- Bump `patrol_log` to `0.6.0`.
+- Read Patrol version from `pubspec.lock` instead of `pubspec.yaml` for compatibility checks. Fix edge cases for compatibility checks. (#2709)
+
+- **BREAKING CHANGE**
+  - Change default test directory from `integration_test` to `patrol_test`. (#2728)
+
+This version requires version `4.0.0` of `patrol` package.
+
 ## 3.11.0
 
 - Add `--build-name` and `--build-number` flags to `patrol test`, `patrol develop`, and `patrol build` commands. (#2590)
@@ -35,7 +66,7 @@ This version requires version 3.20.0 of `patrol` package.
 ## 3.7.0
 
 - Bump min Flutter SDK to 3.32.0 (#2649)
-- Introduce `check-compatibility` flag to allow disabling the compatibility check. (#2649) 
+- Introduce `check-compatibility` flag to allow disabling the compatibility check. (#2649)
 
 ## 3.6.0
 
@@ -53,8 +84,8 @@ This version requires version 3.20.0 of `patrol` package.
 
 - Gracefully handle when analytics fail to send. (#2460)
 - Handle uninstallation of the app after tests finish when using AGP 8.2+. (#2535)
-- Add `--coverage-packages` flag to `patrol test` that specifies which packages should be included 
-in the coverage report. (#2536)
+- Add `--coverage-packages` flag to `patrol test` that specifies which packages should be included
+  in the coverage report. (#2536)
 - Fix skipping tests with coverage collection enabled. (#2539)
 
 ## 3.5.0
@@ -65,7 +96,7 @@ in the coverage report. (#2536)
 ## 3.4.1
 
 - Add android product flavor to dart-define. (#2425)
-- Detect and warn about Orchestrator 1.5.0. (#2437) 
+- Detect and warn about Orchestrator 1.5.0. (#2437)
 
 ## 3.4.0
 
@@ -123,6 +154,7 @@ This version requires version 3.10.0 of `patrol` package.
 - Add support for custom flutter commands (#2124).
 
 ## 2.6.5
+
 - Add support for --app-server-port and --test-server-port on Android (#2154).
 
 ## 2.6.4
@@ -139,7 +171,7 @@ This version requires version 3.10.0 of `patrol` package.
 
 ## 2.6.1
 
-- Fix passing port on iOS when `patrol build` is executed (#2061). 
+- Fix passing port on iOS when `patrol build` is executed (#2061).
 
 ## 2.6.0
 

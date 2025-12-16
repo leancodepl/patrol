@@ -79,13 +79,14 @@ jobs:
           service_cellular_test,\
           service_wifi_test,\
           service_location_test,\
+          web_example_test,\
           webview_stackoverflow_test,\
           webview_leancode_test,\
           webview_hackernews_test"
 
           target_paths=""
           for target in $(echo $TESTS_TO_EXCLUDE | tr ',' '\n'); do
-              target_paths+="integration_test/${target}.dart,"
+              target_paths+="patrol_test/${target}.dart,"
           done
           target_paths="${target_paths%,}"
 
@@ -104,7 +105,7 @@ jobs:
           sleep 10 # See https://github.com/leancodepl/patrol/issues/1282
 
           TESTS_EXIT_CODE=0
-          patrol test --exclude ${{ env.EXCLUDED_TESTS }} --verbose --clear-permissions || TESTS_EXIT_CODE=$?
+          patrol test --exclude ${{ env.EXCLUDED_TESTS }} --verbose --full-isolation || TESTS_EXIT_CODE=$?
 
           kill -SIGINT $recordingpid
           kill -SIGINT $logpid

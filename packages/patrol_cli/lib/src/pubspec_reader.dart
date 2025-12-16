@@ -11,6 +11,7 @@ class PatrolPubspecConfig with EquatableMixin {
     required this.android,
     required this.ios,
     required this.macos,
+    this.testDirectory = 'patrol_test',
     this.testFileSuffix = '_test.dart',
   });
 
@@ -26,10 +27,17 @@ class PatrolPubspecConfig with EquatableMixin {
   AndroidPubspecConfig android;
   IOSPubspecConfig ios;
   MacOSPubspecConfig macos;
+  String testDirectory;
   String testFileSuffix;
 
   @override
-  List<Object?> get props => [android, ios, macos, testFileSuffix];
+  List<Object?> get props => [
+    android,
+    ios,
+    macos,
+    testDirectory,
+    testFileSuffix,
+  ];
 }
 
 class AndroidPubspecConfig with EquatableMixin {
@@ -82,9 +90,10 @@ class PubspecReader {
   final Directory _projectRoot;
   final FileSystem _fs;
 
-  /// Gets the patrol package version from pubspec.yaml dependencies
+  /// Gets the patrol package version from pubspec.lock
+  /// This reads the actual resolved version that's being used in the project.
   String? getPatrolVersion() {
-    final filePath = _fs.path.join(_projectRoot.path, 'pubspec.yaml');
+    final filePath = _fs.path.join(_projectRoot.path, 'pubspec.lock');
     final file = _fs.file(filePath);
 
     if (!file.existsSync()) {
@@ -102,34 +111,22 @@ class PubspecReader {
         return null;
       }
 
-      // Check both dependencies and dev_dependencies
-      final dependencies = yaml['dependencies'] as Map?;
-      final devDependencies = yaml['dev_dependencies'] as Map?;
+      final packages = yaml['packages'] as Map?;
+      if (packages == null) {
+        return null;
+      }
 
-      // Try to find patrol in dependencies first
-      final patrol = dependencies?['patrol'] ?? devDependencies?['patrol'];
+      final patrol = packages['patrol'] as Map?;
       if (patrol == null) {
         return null;
       }
 
-      // Handle different dependency formats
-      if (patrol is String || patrol is num) {
-        // Direct version (e.g., patrol: ^1.0.0, patrol: 3.15.1-dev.1, patrol: 3.15.1+1)
-        return patrol.toString().replaceAll(RegExp(r'[\^~]'), '');
-      } else if (patrol is Map) {
-        // Hosted dependency (e.g., patrol: {version: ^1.0.0})
-        // Git dependency (e.g., patrol: {git: {url: ..., ref: ...}})
-        if (patrol['version'] != null) {
-          return patrol['version'].toString().replaceAll(RegExp(r'[\^~]'), '');
-        } else if (patrol['git'] != null && patrol['git'] is Map) {
-          final git = patrol['git'] as Map;
-          if (git['ref'] != null) {
-            return git['ref'].toString();
-          }
-        }
+      final version = patrol['version'];
+      if (version == null) {
+        return null;
       }
 
-      return null;
+      return version.toString();
     } catch (err) {
       // Handle YAML parsing errors
       return null;
@@ -172,6 +169,11 @@ class PubspecReader {
     if (flavor != null && flavor is String?) {
       config.android.flavor = flavor;
       config.ios.flavor = flavor;
+    }
+
+    final dynamic testDirectory = patrol['test_directory'];
+    if (testDirectory != null && testDirectory is String) {
+      config.testDirectory = testDirectory;
     }
 
     final dynamic testFileSuffix = patrol['test_file_suffix'];

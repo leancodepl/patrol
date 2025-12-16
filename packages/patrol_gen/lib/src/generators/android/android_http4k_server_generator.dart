@@ -28,6 +28,7 @@ import org.http4k.core.Response
 import org.http4k.core.Method.POST
 import org.http4k.routing.bind
 import org.http4k.core.Status.Companion.OK
+import org.http4k.routing.RoutingHttpHandler
 import org.http4k.routing.routes
 
 ''';
@@ -36,26 +37,25 @@ import org.http4k.routing.routes
   String _createServerClass(Service service) {
     final handlers = _generateHandlers(service);
     final routes = _generateRoutes(service);
+    final functionName = _getRoutesFunctionName(service.name);
 
     return '''
-abstract class ${service.name}Server {
+interface ${service.name}Server {
 $handlers
-
-    val router = routes(
-$routes
-    )
-
-    private val json = Gson()
 }
+
+private val json = Gson()
+
+fun $functionName(server: ${service.name}Server): RoutingHttpHandler = routes(
+$routes
+)
 ''';
   }
 
   String _generateRoutes(Service service) {
     return service.endpoints.map((e) {
       final requestDeserialization = e.request != null
-          ? '''
-
-        val body = json.fromJson(it.bodyString(), Contracts.${e.request!.name}::class.java)'''
+          ? '      val body = json.fromJson(it.bodyString(), Contracts.${e.request!.name}::class.java)\n'
           : '';
       final requestArg = e.request != null ? 'body' : '';
 
@@ -65,10 +65,10 @@ $routes
       final responseVariable = e.response != null ? 'val response = ' : '';
 
       return '''
-      "${e.name}" bind POST to {$requestDeserialization
-        $responseVariable${e.name}($requestArg)
-        Response(OK)$responseSerialization
-      }''';
+    "${e.name}" bind POST to {
+$requestDeserialization      ${responseVariable}server.${e.name}($requestArg)
+      Response(OK)$responseSerialization
+    }''';
     }).join(',\n');
   }
 
@@ -81,7 +81,14 @@ $routes
           ? 'request: Contracts.${endpoint.request!.name}'
           : '';
 
-      return '    abstract fun ${endpoint.name}($request)$response';
+      return '    fun ${endpoint.name}($request)$response';
     }).join('\n');
+  }
+
+  String _getRoutesFunctionName(String serviceName) {
+    // Convert ServiceNameServer to getServiceNameRoutes
+    // e.g., MobileAutomatorServer -> getMobileAutomatorRoutes
+    final baseName = serviceName.replaceAll('Server', '');
+    return 'get${baseName}Routes';
   }
 }

@@ -7,12 +7,17 @@ import 'package:patrol_gen/src/schema.dart';
 
 class AndroidGenerator {
   List<OutputFile> generate(Schema schema, AndroidConfig config) {
-    final result = [
-      AndroidContractsGenerator().generate(schema, config),
-    ];
-
     final serverGenerator = AndroidHttp4kServerGenerator();
     final clientGenerator = AndroidHttp4kClientGenerator();
+    final needsContracts = schema.services.any(
+      (service) => service.android.needsClient || service.android.needsServer,
+    );
+
+    final result = <OutputFile>[];
+
+    if (needsContracts) {
+      result.add(AndroidContractsGenerator().generate(schema, config));
+    }
 
     for (final service in schema.services) {
       if (service.android.needsServer) {

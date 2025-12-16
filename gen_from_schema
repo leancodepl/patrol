@@ -9,7 +9,8 @@ cd "$(dirname "$0")" || exit
 schema="./schema.dart"
 patrol_package="./packages/patrol"
 patrol_devtools_extension_package="./packages/patrol_devtools_extension"
-patrol_dart_out_dir="lib/src/native/contracts"
+patrol_dart_out_dir="lib/src/platform/contracts"
+patrol_dart_web_out_dir="lib/src/platform/web"
 
 darwin_out="$patrol_package/darwin/Classes/AutomatorServer"
 dart_out="$patrol_package/$patrol_dart_out_dir"
@@ -24,7 +25,7 @@ pushd "${patrol_package}"
 dart fix --apply "$patrol_dart_out_dir"
 dart format "$patrol_dart_out_dir"
 
-dart run build_runner build --delete-conflicting-outputs --build-filter="$patrol_dart_out_dir/*.dart"
+dart run build_runner build --delete-conflicting-outputs --build-filter="$patrol_dart_out_dir/contracts.g.dart" --build-filter="$patrol_dart_web_out_dir/*.g.dart"
 
 popd
 

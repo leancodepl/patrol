@@ -194,7 +194,8 @@ class IOSAppOptions {
     required this.osVersion,
     required this.appServerPort,
     required this.testServerPort,
-    this.clearPermissions = false,
+    this.fullIsolation = false,
+    this.clearIOSPermissions = false,
   });
 
   final FlutterAppOptions flutter;
@@ -205,7 +206,8 @@ class IOSAppOptions {
   final bool simulator;
   final int appServerPort;
   final int testServerPort;
-  final bool clearPermissions;
+  final bool fullIsolation;
+  final bool clearIOSPermissions;
 
   String get description {
     final platform = simulator ? 'simulator' : 'device';
@@ -266,8 +268,7 @@ class IOSAppOptions {
       '-quiet',
       ...['-derivedDataPath', '../build/ios_integ'],
       r'OTHER_SWIFT_FLAGS=$(inherited) -D PATROL_ENABLED',
-      if (clearPermissions)
-        r'GCC_PREPROCESSOR_DEFINITIONS=$(inherited) CLEAR_PERMISSIONS=1',
+      'OTHER_CFLAGS=\$(inherited) -D FULL_ISOLATION=${fullIsolation ? 1 : 0} -D CLEAR_PERMISSIONS=${clearIOSPermissions ? 1 : 0}',
     ];
 
     return cmd;
@@ -386,4 +387,46 @@ class MacOSAppOptions {
 
     return cmd;
   }
+}
+
+class WebAppOptions {
+  const WebAppOptions({
+    required this.flutter,
+    this.resultsDir,
+    this.reportDir,
+    this.retries,
+    this.video,
+    this.timeout,
+    this.workers,
+    this.reporter,
+    this.locale,
+    this.timezone,
+    this.colorScheme,
+    this.geolocation,
+    this.permissions,
+    this.userAgent,
+    this.viewport,
+    this.globalTimeout,
+    this.shard,
+    this.headless,
+  });
+
+  final FlutterAppOptions flutter;
+  final String? resultsDir;
+  final String? reportDir;
+  final int? retries;
+  final String? video;
+  final int? timeout;
+  final int? workers;
+  final String? reporter;
+  final String? locale;
+  final String? timezone;
+  final String? colorScheme;
+  final String? geolocation;
+  final String? permissions;
+  final String? userAgent;
+  final String? viewport;
+  final int? globalTimeout;
+  final String? shard;
+  final String? headless;
 }
