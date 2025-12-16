@@ -32,7 +32,6 @@ import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
-import 'package:patrol/src/platform/platform_automator.dart';
 import 'package:patrol/src/platform/contracts/contracts.dart';
 import 'package:test_api/src/backend/invoker.dart';
 
@@ -140,7 +139,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
 import 'package:patrol/src/platform/contracts/contracts.dart';
-import 'package:patrol/src/platform/platform_automator.dart';
 
 // START: GENERATED TEST IMPORTS
 ${generateImports(testDirectory, [testFilePath])}
