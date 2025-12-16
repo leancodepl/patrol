@@ -18,6 +18,9 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
+    defaults:
+      run:
+        working-directory: docs_app
     steps:
       - uses: actions/checkout@v4
 
@@ -26,6 +29,7 @@ jobs:
         with:
           node-version: '24'
           cache: 'npm'
+          cache-dependency-path: docs_app/package-lock.json
 
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
