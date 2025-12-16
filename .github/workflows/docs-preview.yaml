@@ -10,6 +10,7 @@ on:
     paths:
       - 'docs/**'
       - 'docs_app/**'
+      - '.github/workflows/docs-preview.yaml'
 
 jobs:
   Deploy-Preview:
