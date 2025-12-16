@@ -24,6 +24,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Copy docs into docs_app
+        run: cp -r ../docs ./docs
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:

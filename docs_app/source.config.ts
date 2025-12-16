@@ -2,10 +2,12 @@ import { defineConfig, defineDocs, frontmatterSchema, metaSchema } from "fumadoc
 import { z } from "zod"
 import { remarkImage } from "fumadocs-core/mdx-plugins"
 
+const docsDir = process.env.CI ? "./docs" : "../docs"
+
 // You can customise Zod schemas for frontmatter and `meta.json` here
 // see https://fumadocs.dev/docs/mdx/collections
 export const docs = defineDocs({
-  dir: "../docs",
+  dir: docsDir,
   docs: {
     schema: frontmatterSchema.extend({
       title: z.string().optional(),
