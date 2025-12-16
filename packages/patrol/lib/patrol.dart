@@ -19,5 +19,6 @@ export 'src/platform/contracts/contracts.dart'
         IOSNativeView,
         KeyboardBehavior;
 export 'src/platform/patrol_app_service.dart';
+export 'src/platform/platform_automator.dart';
 export 'src/platform/selector.dart';
 export 'src/platform/web/upload_file_data.dart';
