@@ -1,7 +1,7 @@
-import { DocsLayoutProps } from "fumadocs-ui/layouts/notebook";
-import Image from "next/image";
-import patrolIcon from "assets/patrol_icon.svg";
-import { GithubInfo } from "fumadocs-ui/components/github-info";
+import { DocsLayoutProps } from "fumadocs-ui/layouts/notebook"
+import Image from "next/image"
+import patrolIcon from "assets/patrol_icon.svg"
+import { GithubInfo } from "../components/GithubInfo"
 
 export function baseOptions(): Partial<DocsLayoutProps> {
   return {
@@ -50,10 +50,8 @@ export function baseOptions(): Partial<DocsLayoutProps> {
     links: [
       {
         type: "custom",
-        children: (
-          <GithubInfo owner="leancodepl" repo="patrol" className="lg:-mx-2" />
-        ),
+        children: <GithubInfo owner="leancodepl" repo="patrol" className="lg:-mx-2" />,
       },
     ],
-  };
+  }
 }
