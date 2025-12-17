@@ -7,7 +7,7 @@ env:
 on:
   push:
     branches:
-      - main
+      - master
     paths:
       - 'docs/**'
       - 'docs_app/**'
