@@ -1,0 +1,10 @@
+{
+  "title": "Integrations",
+  "pages": [
+    "firebase-test-lab",
+    "allure",
+    "browserstack",
+    "lambdatest"
+  ]
+}
+

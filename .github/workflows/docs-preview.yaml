@@ -1,0 +1,83 @@
+name: Vercel Preview Deployment
+
+env:
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'docs/**'
+      - 'docs_app/**'
+      - '.github/workflows/docs-preview.yaml'
+
+jobs:
+  Deploy-Preview:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    defaults:
+      run:
+        working-directory: docs_app
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Copy docs into docs_app
+        run: cp -r ../docs ./docs
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+          cache-dependency-path: docs_app/package-lock.json
+
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+
+      - name: Pull Vercel Environment Information
+        run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Build Project Artifacts
+        run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy Project Artifacts to Vercel
+        id: deploy
+        run: |
+          # Deploy and get the deployment URL
+          deployment_url=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})
+          
+          # Create a stable alias for this PR
+          pr_number=${{ github.event.pull_request.number }}
+          alias="pr-${pr_number}-patrol-docs"
+          vercel alias set "$deployment_url" "$alias" --token=${{ secrets.VERCEL_TOKEN }} --scope=${{ secrets.VERCEL_ORG_ID }} || true
+          
+          echo "url=https://${alias}.vercel.app" >> $GITHUB_OUTPUT
+
+      - name: Get commit info
+        id: commit
+        run: |
+          echo "short_sha=$(echo ${{ github.event.pull_request.head.sha }} | cut -c1-7)" >> $GITHUB_OUTPUT
+          echo "timestamp=$(date -u +'%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_OUTPUT
+
+      - name: Comment PR with Preview URL
+        if: github.event_name == 'pull_request'
+        uses: thollander/actions-comment-pull-request@v3
+        with:
+          message: |
+            ## 🚀 Preview Deployment Ready!
+            
+            **Preview URL:** ${{ steps.deploy.outputs.url }}
+            
+            ---
+            
+            ### Latest Deployment
+            - **Commit:** [`${{ steps.commit.outputs.short_sha }}`](${{ github.event.pull_request.head.repo.html_url }}/commit/${{ github.event.pull_request.head.sha }})
+            - **Branch:** `${{ github.head_ref }}`
+            - **Triggered by:** @${{ github.actor }}
+            - **Deployed at:** ${{ steps.commit.outputs.timestamp }}
+            
+            <sub>This preview URL is stable and will be updated with each new commit to this PR.</sub>
+          comment-tag: preview-deployment
