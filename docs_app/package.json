@@ -7,9 +7,13 @@
     "dev": "next dev",
     "start": "next start",
     "postinstall": "fumadocs-mdx",
-    "lint": "eslint"
+    "lint": "eslint .",
+    "format": "prettier --check .",
+    "lint:fix": "eslint . --fix",
+    "format:fix": "prettier --write ."
   },
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^7.1.0",
     "@fortawesome/free-brands-svg-icons": "7.1.0",
     "@fortawesome/free-solid-svg-icons": "7.1.0",
     "@fortawesome/react-fontawesome": "3.1.1",
@@ -23,10 +27,13 @@
     "react": "19.2.1",
     "react-dom": "19.2.1",
     "react-social-media-embed": "2.5.18",
-    "tailwind-merge": "^3.4.0"
+    "tailwind-merge": "^3.4.0",
+    "zod": "^4.2.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
+    "@leancodepl/eslint-config": "9.7.0",
+    "@leancodepl/prettier-config": "9.7.0",
     "@tailwindcss/postcss": "^4.1.16",
     "@types/mdx": "^2.0.13",
     "@types/node": "^24.10.0",

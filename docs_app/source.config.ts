@@ -1,6 +1,5 @@
 import { defineConfig, defineDocs, frontmatterSchema, metaSchema } from "fumadocs-mdx/config"
 import { z } from "zod"
-import { remarkImage } from "fumadocs-core/mdx-plugins"
 
 const docsDir = process.env.CI ? "./docs" : "../docs"
 

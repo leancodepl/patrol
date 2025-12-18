@@ -1,15 +1,10 @@
-import { docs } from "@/.source";
-import { fab, faDiscord, faXTwitter } from "@fortawesome/free-brands-svg-icons";
-import { fas, faCode } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  type InferPageType,
-  loader,
-  LoaderPlugin,
-  PageTreeTransformer,
-} from "fumadocs-core/source";
+import { docs } from "@/.source"
+import { fab, faDiscord, faXTwitter } from "@fortawesome/free-brands-svg-icons"
+import { faCode, fas } from "@fortawesome/free-solid-svg-icons"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { type InferPageType, loader, LoaderPlugin, PageTreeTransformer } from "fumadocs-core/source"
 
-const common_links = [
+const commonLinks = [
   {
     type: "page" as const,
     name: "Follow us on X!",
@@ -38,51 +33,49 @@ const common_links = [
     external: true,
     icon: <FontAwesomeIcon icon={faCode} />,
   },
-];
+]
 
 // See https://fumadocs.dev/docs/headless/source-api for more info
 export const source = loader({
   baseUrl: "/",
   source: docs.toFumadocsSource(),
   plugins: [fontAwesomeIconsPlugin(), sharedLinksPlugin()],
-});
+})
 
 export function getPageImage(page: InferPageType<typeof source>) {
-  const segments = [...page.slugs, "image.png"];
+  const segments = [...page.slugs, "image.png"]
 
   return {
     segments,
     url: `/og/${segments.join("/")}`,
-  };
+  }
 }
 
 export async function getLLMText(page: InferPageType<typeof source>) {
-  const processed = await page.data.getText("processed");
+  const processed = await page.data.getText("processed")
 
   return `# ${page.data.title}
 
-${processed}`;
+${processed}`
 }
 
-type GetNodeType<T extends "file" | "folder" | "separator"> = Parameters<
-  Exclude<PageTreeTransformer[T], undefined>
->[0];
+type GetNodeType<T extends "file" | "folder" | "separator"> = Parameters<Exclude<PageTreeTransformer[T], undefined>>[0]
 
-type Item = GetNodeType<"file">;
-type Folder = GetNodeType<"folder">;
-type Separator = GetNodeType<"separator">;
+type Item = GetNodeType<"file">
+type Folder = GetNodeType<"folder">
+type Separator = GetNodeType<"separator">
 
 function fontAwesomeIconsPlugin(): LoaderPlugin {
-  const icons = { ...fas, ...fab };
+  const icons = { ...fas, ...fab }
 
-  function replaceIcon<T extends Item | Folder | Separator>(node: T) {
+  function replaceIcon<T extends Folder | Item | Separator>(node: T) {
     if (typeof node.icon === "string") {
-      const possibleFaIconName = `fa${node.icon}`;
+      const possibleFaIconName = `fa${node.icon}`
       if (possibleFaIconName in icons) {
-        node.icon = <FontAwesomeIcon icon={icons[possibleFaIconName]} />;
+        node.icon = <FontAwesomeIcon icon={icons[possibleFaIconName]} />
       }
     }
-    return node;
+    return node
   }
 
   return {
@@ -92,19 +85,19 @@ function fontAwesomeIconsPlugin(): LoaderPlugin {
       folder: replaceIcon,
       separator: replaceIcon,
     },
-  };
+  }
 }
 
 function sharedLinksPlugin(): LoaderPlugin {
   return {
     name: "fumadocs:shared-links",
     transformPageTree: {
-      folder: (folder) => {
+      folder: folder => {
         if (folder.root) {
-          folder.children = [...common_links, ...folder.children];
+          folder.children = [...commonLinks, ...folder.children]
         }
-        return folder;
+        return folder
       },
     },
-  };
+  }
 }
