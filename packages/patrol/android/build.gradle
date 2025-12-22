@@ -64,7 +64,7 @@ android {
 
     packaging {
         resources {
-            excludes += ["META-INF/INDEX.LIST", "META-INF/*.properties"]
+            excludes += ["META-INF/INDEX.LIST", "META-INF/*.properties", 'META-INF/DEPENDENCIES', 'META-INF/AL2.0', 'META-INF/LGPL2.1']
         }
     }
 
@@ -93,6 +93,9 @@ android {
         implementation "io.ktor:ktor-serialization-gson"
 
         testImplementation "org.jetbrains.kotlin:kotlin-test"
+
+        api 'com.deque.android:axe-devtools-android:8.1.0'
+        debugImplementation 'com.google.mlkit:text-recognition:16.0.1'
     }
 }
 
