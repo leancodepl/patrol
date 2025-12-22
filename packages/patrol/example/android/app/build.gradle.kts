@@ -37,7 +37,7 @@ android {
 
     defaultConfig {
         applicationId = "pl.leancode.patrol.example"
-        minSdk = 23
+        minSdk = 26
         targetSdk = 35
         versionCode = flutter.versionCode
         versionName = flutter.versionName
@@ -54,6 +54,12 @@ android {
             signingConfig = signingConfigs.getByName("debug")
         }
     }
+
+    packaging {
+        resources {
+            excludes += listOf("META-INF/INDEX.LIST", "META-INF/*.properties", "META-INF/DEPENDENCIES", "META-INF/AL2.0", "META-INF/LGPL2.1")
+        }
+    }
 }
 
 flutter {
@@ -63,4 +69,7 @@ flutter {
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
     androidTestUtil("androidx.test:orchestrator:1.5.1")
+
+    androidTestImplementation("com.deque.android:axe-devtools-android:8.1.0")
+    debugImplementation("com.google.mlkit:text-recognition:16.0.1")
 }
