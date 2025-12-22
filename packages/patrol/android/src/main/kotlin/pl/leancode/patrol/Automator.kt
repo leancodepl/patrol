@@ -36,6 +36,8 @@ import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
 import kotlin.math.roundToInt
 import pl.leancode.patrol.R.string as s
+import com.deque.mobile.devtools.AxeDevTools
+import androidx.test.uiautomator.Until
 
 private fun fromUiObject2(obj: UiObject2): AndroidNativeView {
     val bounds = obj.visibleBounds
@@ -481,12 +483,27 @@ class Automator private constructor() {
     }
 
     fun pressVolumeUp() {
-        Logger.d("pressVolumeUp")
-        val success = uiDevice.pressKeyCode(KEYCODE_VOLUME_UP)
-        if (!success) {
-            throw PatrolException("Could not press volume up")
-        }
-        delay()
+        val axe = AxeDevTools()
+        val instrumentation = InstrumentationRegistry.getInstrumentation()
+        val device = UiDevice.getInstance(instrumentation)
+        val appContext = instrumentation.targetContext
+        val appPackageName = appContext.packageName
+
+        // wait for your app to load on screen
+        device.wait(Until.hasObject(By.pkg(appPackageName).depth(0)), 5000)
+
+        axe.setInstrumentation(instrumentation)
+
+        axe.startSession(/* api key needed here */)
+
+        val scanHandler = axe.scan()
+        scanHandler?.saveResultToLocalStorage("axe")
+        // Logger.d("pressVolumeUp")
+        // val success = uiDevice.pressKeyCode(KEYCODE_VOLUME_UP)
+        // if (!success) {
+        //     throw PatrolException("Could not press volume up")
+        // }
+        // delay()
     }
 
     fun pressVolumeDown() {
