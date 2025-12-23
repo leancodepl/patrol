@@ -1,4 +1,4 @@
-## Unreleased
+## 4.1.0
 
 - Add `PlatformAutomator` to exports. (#2833)
 
