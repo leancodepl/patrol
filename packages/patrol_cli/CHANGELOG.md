@@ -1,3 +1,7 @@
+## 4.0.2
+
+- Remove `platform_automator.dart` import from `test_bundler.dart`. (#2833) 
+
 ## 4.0.1
 
 - Fix running web tests on Flutter 3.38.x. (#2828)
