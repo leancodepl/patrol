@@ -17,9 +17,8 @@
     "playwright": "1.56.0"
   },
   "devDependencies": {
-    "@leancodepl/eslint-config": "9.6.5",
-    "@leancodepl/prettier-config": "9.6.5",
-    "@nx/eslint-plugin": "22.0.2",
+    "@leancodepl/eslint-config": "9.7.0",
+    "@leancodepl/prettier-config": "9.7.0",
     "@types/node": "24.3.1",
     "typescript": "5.9.3"
   }

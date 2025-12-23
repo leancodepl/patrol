@@ -1,10 +1,11 @@
-import { RootProvider } from "fumadocs-ui/provider/next"
-import "./global.css"
-import { Inter } from "next/font/google"
 import { config } from "@fortawesome/fontawesome-svg-core"
-import "@fortawesome/fontawesome-svg-core/styles.css"
 import { GoogleTagManager } from "@next/third-parties/google"
+import { RootProvider } from "fumadocs-ui/provider/next"
+import { Inter } from "next/font/google"
 import Script from "next/script"
+import "./global.css"
+import "@fortawesome/fontawesome-svg-core/styles.css"
+
 config.autoAddCss = false
 
 const inter = Inter({
