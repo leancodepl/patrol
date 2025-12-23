@@ -1,3 +1,7 @@
+## Unreleased
+
+- Add support for `--no-tree-shake-icons` flag in cli commands (#2704)
+
 ## 4.0.1
 
 - Fix running web tests on Flutter 3.38.x. (#2828)
