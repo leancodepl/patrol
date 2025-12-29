@@ -1,6 +1,6 @@
 ## Unreleased
 
-- Fix `PATROL_FLUTTER_COMMAND` not being used when building web app. (#2853)
+- Fix `PATROL_FLUTTER_COMMAND` not being used when building web app. (#2857)
 
 ## 4.0.2
 
