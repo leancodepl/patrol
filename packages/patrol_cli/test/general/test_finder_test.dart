@@ -23,7 +23,10 @@ void _test(Platform platform) {
       ..createSync(recursive: true);
     fs.currentDirectory = projectRoot;
 
-    testFinder = TestFinder(testDir: fs.directory('patrol_test').absolute);
+    testFinder = TestFinder(
+      testDir: fs.directory('patrol_test').absolute,
+      rootDir: projectRoot,
+    );
   });
 
   group('findTests', () {
