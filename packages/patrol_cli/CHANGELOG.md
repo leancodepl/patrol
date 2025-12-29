@@ -1,3 +1,7 @@
+## Unreleased
+
+- Fix `PATROL_FLUTTER_COMMAND` not being used when building web app. (#2853)
+
 ## 4.0.2
 
 - Remove `platform_automator.dart` import from `test_bundler.dart`. (#2833) 
