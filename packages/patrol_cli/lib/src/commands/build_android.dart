@@ -1,9 +1,8 @@
 import 'dart:async';
 
-import 'package:meta/meta.dart';
-import 'package:path/path.dart' show join;
 import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
+import 'package:patrol_cli/src/android/apk_paths.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/commands/dart_define_utils.dart';
@@ -207,46 +206,19 @@ class BuildAndroidCommand extends PatrolCommand {
     return 0;
   }
 
-  @visibleForTesting
   /// Prints the paths to the APKs for the app under test and the test instrumentation app.
   ///
   /// [flavor] is the flavor of the app under test.
   /// [buildMode] is the build mode of the app under test.
   void printApkPaths({String? flavor, required String buildMode}) {
-    // Standard Android APK output paths (relative to project root)
-    final baseApkPath = join('build', 'app', 'outputs', 'apk');
-
-    final String flavorPath;
-    final String apkPrefix;
-
-    if (flavor != null) {
-      flavorPath = join(baseApkPath, flavor, buildMode.toLowerCase());
-      apkPrefix = 'app-$flavor-${buildMode.toLowerCase()}';
-    } else {
-      flavorPath = join(baseApkPath, buildMode.toLowerCase());
-      apkPrefix = 'app-${buildMode.toLowerCase()}';
-    }
-
-    final appApkPath = join(flavorPath, '$apkPrefix.apk');
-
-    // Test APK path - include flavor if present
-    final String testApkPath;
-    if (flavor != null) {
-      testApkPath = join(
-        baseApkPath,
-        'androidTest',
-        flavor,
-        buildMode.toLowerCase(),
-        '$apkPrefix-androidTest.apk',
-      );
-    } else {
-      testApkPath = join(
-        baseApkPath,
-        'androidTest',
-        buildMode.toLowerCase(),
-        '$apkPrefix-androidTest.apk',
-      );
-    }
+    final appApkPath = ApkPaths.appApkPath(
+      flavor: flavor,
+      buildMode: buildMode,
+    );
+    final testApkPath = ApkPaths.testApkPath(
+      flavor: flavor,
+      buildMode: buildMode,
+    );
 
     _logger
       ..info('$appApkPath (app under test)')

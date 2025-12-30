@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:path/path.dart' as p;
 import 'package:patrol_cli/src/analytics/analytics.dart';
+import 'package:patrol_cli/src/android/apk_paths.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/commands/browserstack/browserstack_client.dart';
@@ -148,8 +148,14 @@ class BsAndroidCommand extends PatrolCommand {
     final flavor = stringArg('flavor');
     final buildMode = super.buildMode.androidName;
 
-    final appApk = _findAppApk(flavor: flavor, buildMode: buildMode);
-    final testApk = _findTestApk(flavor: flavor, buildMode: buildMode);
+    final File appApk;
+    final File testApk;
+    try {
+      appApk = ApkPaths.findAppApk(flavor: flavor, buildMode: buildMode);
+      testApk = ApkPaths.findTestApk(flavor: flavor, buildMode: buildMode);
+    } on FileSystemException catch (e) {
+      throwToolExit(e.message);
+    }
 
     _logger
       ..info('Found app APK: ${appApk.path}')
@@ -234,52 +240,5 @@ class BsAndroidCommand extends PatrolCommand {
     } finally {
       client.close();
     }
-  }
-
-  File _findAppApk({String? flavor, required String buildMode}) {
-    final baseApkPath = p.join('build', 'app', 'outputs', 'apk');
-
-    final String apkPath;
-    final String apkName;
-
-    if (flavor != null) {
-      apkPath = p.join(baseApkPath, flavor, buildMode.toLowerCase());
-      apkName = 'app-$flavor-${buildMode.toLowerCase()}.apk';
-    } else {
-      apkPath = p.join(baseApkPath, buildMode.toLowerCase());
-      apkName = 'app-${buildMode.toLowerCase()}.apk';
-    }
-
-    final file = File(p.join(apkPath, apkName));
-    if (!file.existsSync()) {
-      throwToolExit('Could not find app APK at: ${file.path}');
-    }
-    return file;
-  }
-
-  File _findTestApk({String? flavor, required String buildMode}) {
-    final baseApkPath = p.join('build', 'app', 'outputs', 'apk');
-
-    final String apkPath;
-    final String apkName;
-
-    if (flavor != null) {
-      apkPath = p.join(
-        baseApkPath,
-        'androidTest',
-        flavor,
-        buildMode.toLowerCase(),
-      );
-      apkName = 'app-$flavor-${buildMode.toLowerCase()}-androidTest.apk';
-    } else {
-      apkPath = p.join(baseApkPath, 'androidTest', buildMode.toLowerCase());
-      apkName = 'app-${buildMode.toLowerCase()}-androidTest.apk';
-    }
-
-    final file = File(p.join(apkPath, apkName));
-    if (!file.existsSync()) {
-      throwToolExit('Could not find test APK at: ${file.path}');
-    }
-    return file;
   }
 }

@@ -81,6 +81,44 @@ void main() {
           contains('RunnerUITests-Runner.app (test instrumentation app)'),
         );
       });
+
+      test('prints correct paths for simulator build with flavor', () {
+        command.printBinaryPaths(
+          simulator: true,
+          buildMode: 'Debug',
+          flavor: 'dev',
+        );
+
+        verify(
+          () => mockLogger.info(
+            '${join('build', 'ios_integ', 'Build', 'Products', 'Debug-dev-iphonesimulator', 'Runner.app')} (app under test)',
+          ),
+        ).called(1);
+        verify(
+          () => mockLogger.info(
+            '${join('build', 'ios_integ', 'Build', 'Products', 'Debug-dev-iphonesimulator', 'RunnerUITests-Runner.app')} (test instrumentation app)',
+          ),
+        ).called(1);
+      });
+
+      test('prints correct paths for device build with flavor', () {
+        command.printBinaryPaths(
+          simulator: false,
+          buildMode: 'Release',
+          flavor: 'prod',
+        );
+
+        verify(
+          () => mockLogger.info(
+            '${join('build', 'ios_integ', 'Build', 'Products', 'Release-prod-iphoneos', 'Runner.app')} (app under test)',
+          ),
+        ).called(1);
+        verify(
+          () => mockLogger.info(
+            '${join('build', 'ios_integ', 'Build', 'Products', 'Release-prod-iphoneos', 'RunnerUITests-Runner.app')} (test instrumentation app)',
+          ),
+        ).called(1);
+      });
     });
   });
 }

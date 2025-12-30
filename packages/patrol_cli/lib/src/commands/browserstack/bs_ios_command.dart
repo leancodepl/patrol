@@ -11,6 +11,7 @@ import 'package:patrol_cli/src/commands/browserstack/browserstack_client.dart';
 import 'package:patrol_cli/src/commands/browserstack/browserstack_config.dart';
 import 'package:patrol_cli/src/commands/browserstack/bs_outputs_command.dart';
 import 'package:patrol_cli/src/commands/build_ios.dart';
+import 'package:patrol_cli/src/ios/ios_paths.dart';
 import 'package:patrol_cli/src/runner/patrol_command.dart';
 
 /// BrowserStack iOS command for patrol CLI.
@@ -144,27 +145,34 @@ class BsIosCommand extends PatrolCommand {
     _logger.info('Creating zip archives of test files...');
 
     final flavor = stringArg('flavor');
-    final flavorSeparator = flavor != null ? '-$flavor-' : '-';
     final runnerPrefix = flavor ?? 'Runner';
 
-    final currentDir = Directory.current.path;
-    final productsDir = p.join(currentDir, 'build/ios_integ/Build/Products');
-    final releaseDir = p.join(productsDir, 'Release${flavorSeparator}iphoneos');
+    final productsDir = IosPaths.productsDir();
+    final releaseDir = IosPaths.buildDir(
+      buildMode: 'Release',
+      simulator: false,
+      flavor: flavor,
+    );
 
     if (!Directory(releaseDir).existsSync()) {
       throwToolExit('Release directory not found: $releaseDir');
     }
 
     // Create IPA
-    final ipaPath = await _createIpa(productsDir, flavorSeparator);
+    final ipaPath = await _createIpa(productsDir, flavor);
     _logger.info('Created IPA: $ipaPath');
 
     // Find xctestrun file
-    final xctestrunFile = await _findXctestrunFile(
-      productsDir,
-      runnerPrefix,
-      testPlan,
-    );
+    final File xctestrunFile;
+    try {
+      xctestrunFile = await IosPaths.findXctestrunFile(
+        runnerPrefix: runnerPrefix,
+        testPlan: testPlan,
+        simulator: false,
+      );
+    } on FileSystemException catch (e) {
+      throwToolExit(e.message);
+    }
 
     // Remove DiagnosticCollectionPolicy (BrowserStack fails if present)
     await _removeUnsupportedKeys(xctestrunFile.path);
@@ -274,11 +282,12 @@ class BsIosCommand extends PatrolCommand {
     }
   }
 
-  Future<String> _createIpa(String productsDir, String flavorSeparator) async {
+  Future<String> _createIpa(String productsDir, String? flavor) async {
     final payloadDir = p.join(productsDir, 'Payload');
-    final runnerAppDir = p.join(
-      productsDir,
-      'Release${flavorSeparator}iphoneos/Runner.app',
+    final runnerAppPath = IosPaths.appPath(
+      buildMode: 'Release',
+      simulator: false,
+      flavor: flavor,
     );
     final ipaPath = p.join(productsDir, 'Runner.ipa');
 
@@ -291,7 +300,7 @@ class BsIosCommand extends PatrolCommand {
 
     // Copy Runner.app to Payload
     await _copyDirectory(
-      Directory(runnerAppDir),
+      Directory(runnerAppPath),
       Directory(p.join(payloadDir, 'Runner.app')),
     );
 
@@ -299,28 +308,6 @@ class BsIosCommand extends PatrolCommand {
     await _createZip(payloadDir, ipaPath, 'Payload');
 
     return ipaPath;
-  }
-
-  Future<File> _findXctestrunFile(
-    String productsDir,
-    String runnerPrefix,
-    String testPlan,
-  ) async {
-    final xctestrunPattern = '${runnerPrefix}_${testPlan}_iphoneos';
-    final directory = Directory(productsDir);
-
-    await for (final entity in directory.list()) {
-      if (entity is File) {
-        final name = p.basename(entity.path);
-        if (name.contains(xctestrunPattern) && name.endsWith('.xctestrun')) {
-          return entity;
-        }
-      }
-    }
-
-    throwToolExit(
-      'Could not find xctestrun file matching: $xctestrunPattern*.xctestrun',
-    );
   }
 
   Future<void> _copyDirectory(Directory source, Directory destination) async {
