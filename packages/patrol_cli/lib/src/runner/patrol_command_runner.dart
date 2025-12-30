@@ -16,7 +16,10 @@ import 'package:patrol_cli/src/base/constants.dart' as constants;
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
+import 'package:patrol_cli/src/commands/browserstack/browserstack_command.dart';
 import 'package:patrol_cli/src/commands/build.dart';
+import 'package:patrol_cli/src/commands/build_android.dart';
+import 'package:patrol_cli/src/commands/build_ios.dart';
 import 'package:patrol_cli/src/commands/develop.dart';
 import 'package:patrol_cli/src/commands/devices.dart';
 import 'package:patrol_cli/src/commands/doctor.dart';
@@ -175,25 +178,6 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
     );
 
     addCommand(
-      BuildCommand(
-        testFinderFactory: testFinderFactory,
-        testBundler: testBundler,
-        dartDefinesReader: DartDefinesReader(projectRoot: rootDirectory),
-        pubspecReader: PubspecReader(projectRoot: rootDirectory),
-        androidTestBackend: androidTestBackend,
-        iosTestBackend: iosTestBackend,
-        macosTestBackend: macosTestBackend,
-        compatibilityChecker: CompatibilityChecker(
-          projectRoot: rootDirectory,
-          processManager: _processManager,
-          logger: _logger,
-        ),
-        analytics: _analytics,
-        logger: _logger,
-      ),
-    );
-
-    addCommand(
       DevelopCommand(
         deviceFinder: deviceFinder,
         testFinderFactory: testFinderFactory,
@@ -259,6 +243,64 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
     addCommand(
       UpdateCommand(
         pubUpdater: _pubUpdater,
+        analytics: _analytics,
+        logger: _logger,
+      ),
+    );
+
+    final buildAndroidCommand = BuildAndroidCommand(
+      testFinderFactory: testFinderFactory,
+      testBundler: testBundler,
+      dartDefinesReader: DartDefinesReader(projectRoot: rootDirectory),
+      pubspecReader: PubspecReader(projectRoot: rootDirectory),
+      androidTestBackend: androidTestBackend,
+      compatibilityChecker: CompatibilityChecker(
+        projectRoot: rootDirectory,
+        processManager: _processManager,
+        logger: _logger,
+      ),
+      analytics: _analytics,
+      logger: _logger,
+    );
+
+    final buildIOSCommand = BuildIOSCommand(
+      testFinderFactory: testFinderFactory,
+      testBundler: testBundler,
+      dartDefinesReader: DartDefinesReader(projectRoot: rootDirectory),
+      pubspecReader: PubspecReader(projectRoot: rootDirectory),
+      iosTestBackend: iosTestBackend,
+      compatibilityChecker: CompatibilityChecker(
+        projectRoot: rootDirectory,
+        processManager: _processManager,
+        logger: _logger,
+      ),
+      analytics: _analytics,
+      logger: _logger,
+    );
+
+    addCommand(
+      BuildCommand(
+        buildAndroidCommand: buildAndroidCommand,
+        buildIOSCommand: buildIOSCommand,
+        macosTestBackend: macosTestBackend,
+        testFinderFactory: testFinderFactory,
+        testBundler: testBundler,
+        dartDefinesReader: DartDefinesReader(projectRoot: rootDirectory),
+        pubspecReader: PubspecReader(projectRoot: rootDirectory),
+        compatibilityChecker: CompatibilityChecker(
+          projectRoot: rootDirectory,
+          processManager: _processManager,
+          logger: _logger,
+        ),
+        analytics: _analytics,
+        logger: _logger,
+      ),
+    );
+
+    addCommand(
+      BrowserStackCommand(
+        buildAndroidCommand: buildAndroidCommand,
+        buildIOSCommand: buildIOSCommand,
         analytics: _analytics,
         logger: _logger,
       ),

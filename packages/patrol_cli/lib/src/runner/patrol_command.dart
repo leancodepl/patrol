@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:args/args.dart';
 import 'package:args/command_runner.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
@@ -18,6 +19,22 @@ abstract class PatrolCommand extends Command<int> {
       'See the logs above to learn what happened. Also consider running with '
       "--verbose. If the logs still aren't useful, then it's a bug - please "
       'report it.';
+
+  ArgResults? _argResultsOverride;
+
+  @override
+  ArgResults? get argResults => _argResultsOverride ?? super.argResults;
+
+  set argResultsOverride(ArgResults? results) => _argResultsOverride = results;
+
+  ArgResults? _globalResultsOverride;
+
+  @override
+  ArgResults? get globalResults =>
+      _globalResultsOverride ?? super.globalResults;
+
+  set globalResultsOverride(ArgResults? results) =>
+      _globalResultsOverride = results;
 
   // Common options
 
