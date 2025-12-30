@@ -1,12 +1,12 @@
-import { cn } from "../../lib/cn"
-import { Star } from "lucide-react"
 import { type AnchorHTMLAttributes } from "react"
+import { Star } from "lucide-react"
+import { cn } from "../../lib/cn"
 
 async function getRepoStarsAndForks(
   owner: string,
   repo: string,
   token?: string,
-  baseUrl: string = "https://api.github.com",
+  baseUrl = "https://api.github.com",
 ): Promise<{
   stars: number
   forks: number
