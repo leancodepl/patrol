@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:patrol_cli/src/analytics/analytics.dart';
-import 'package:patrol_cli/src/android/apk_paths.dart';
+import 'package:patrol_cli/src/android/android_paths.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/commands/browserstack/browserstack_client.dart';
@@ -151,8 +151,8 @@ class BsAndroidCommand extends PatrolCommand {
     final File appApk;
     final File testApk;
     try {
-      appApk = ApkPaths.findAppApk(flavor: flavor, buildMode: buildMode);
-      testApk = ApkPaths.findTestApk(flavor: flavor, buildMode: buildMode);
+      appApk = AndroidPaths.findAppApk(flavor: flavor, buildMode: buildMode);
+      testApk = AndroidPaths.findTestApk(flavor: flavor, buildMode: buildMode);
     } on FileSystemException catch (e) {
       throwToolExit(e.message);
     }

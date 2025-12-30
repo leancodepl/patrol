@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 
-/// Utilities for finding Android APK paths.
-class ApkPaths {
+/// Utilities for finding Android build artifact paths.
+class AndroidPaths {
   /// Returns the path to the app APK.
   ///
   /// [flavor] is the flavor of the app (optional).
