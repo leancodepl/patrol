@@ -3,7 +3,7 @@ import 'dart:io' show Process;
 
 import 'package:adb/adb.dart';
 import 'package:dispose_scope/dispose_scope.dart';
-import 'package:file/file.dart' hide File;
+import 'package:file/file.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/extensions/completer.dart';
 import 'package:patrol_cli/src/base/logger.dart';
