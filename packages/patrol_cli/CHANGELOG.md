@@ -1,3 +1,7 @@
+## Unreleased
+
+- Fix a bug when user set a nested test_directory (eg. test/e2e), TestFinder was searching for test files in parent directory instead of project's root (#2858)
+
 ## 4.0.2
 
 - Remove `platform_automator.dart` import from `test_bundler.dart`. (#2833) 
