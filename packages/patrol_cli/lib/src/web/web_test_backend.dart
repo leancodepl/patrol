@@ -33,6 +33,7 @@ class WebTestBackend {
 
     final result = await _processManager.run([
       options.flutter.command.executable,
+      ...options.flutter.command.arguments,
       'build',
       'web',
       '--target=${options.flutter.target}',
@@ -175,6 +176,7 @@ class WebTestBackend {
 
     final process = await _processManager.start([
       options.flutter.command.executable,
+      ...options.flutter.command.arguments,
       'run',
       '-d',
       if (develop) 'chrome' else 'web-server',
