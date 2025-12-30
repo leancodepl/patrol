@@ -301,7 +301,6 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
       BrowserStackCommand(
         buildAndroidCommand: buildAndroidCommand,
         buildIOSCommand: buildIOSCommand,
-        androidTestBackend: androidTestBackend,
         iosTestBackend: iosTestBackend,
         analytics: _analytics,
         logger: _logger,

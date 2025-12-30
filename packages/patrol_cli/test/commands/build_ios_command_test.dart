@@ -119,49 +119,6 @@ void main() {
         ),
       ).thenReturn('build/ios_integ/Runner_Test.xctestrun');
       when(
-        () => mockIosTestBackend.appPath(
-          buildMode: any(named: 'buildMode'),
-          simulator: any(named: 'simulator'),
-          flavor: any(named: 'flavor'),
-        ),
-      ).thenAnswer((invocation) {
-        final buildMode = invocation.namedArguments[#buildMode] as String;
-        final simulator = invocation.namedArguments[#simulator] as bool;
-        final flavor = invocation.namedArguments[#flavor] as String?;
-        final platform = simulator ? 'iphonesimulator' : 'iphoneos';
-        final flavorPart = flavor != null ? '-$flavor' : '';
-        return join(
-          'build',
-          'ios_integ',
-          'Build',
-          'Products',
-          '$buildMode$flavorPart-$platform',
-          'Runner.app',
-        );
-      });
-      when(
-        () => mockIosTestBackend.testAppPath(
-          buildMode: any(named: 'buildMode'),
-          simulator: any(named: 'simulator'),
-          flavor: any(named: 'flavor'),
-        ),
-      ).thenAnswer((invocation) {
-        final buildMode = invocation.namedArguments[#buildMode] as String;
-        final simulator = invocation.namedArguments[#simulator] as bool;
-        final flavor = invocation.namedArguments[#flavor] as String?;
-        final platform = simulator ? 'iphonesimulator' : 'iphoneos';
-        final flavorPart = flavor != null ? '-$flavor' : '';
-        return join(
-          'build',
-          'ios_integ',
-          'Build',
-          'Products',
-          '$buildMode$flavorPart-$platform',
-          'RunnerUITests-Runner.app',
-        );
-      });
-
-      when(
         () => mockCompatibilityChecker.checkVersionsCompatibilityForBuild(
           patrolVersion: any(named: 'patrolVersion'),
         ),

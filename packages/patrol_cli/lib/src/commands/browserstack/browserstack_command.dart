@@ -1,5 +1,4 @@
 import 'package:patrol_cli/src/analytics/analytics.dart';
-import 'package:patrol_cli/src/android/android_test_backend.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/commands/browserstack/bs_android_command.dart';
 import 'package:patrol_cli/src/commands/browserstack/bs_ios_command.dart';
@@ -19,7 +18,6 @@ class BrowserStackCommand extends PatrolCommand {
   BrowserStackCommand({
     required BuildAndroidCommand buildAndroidCommand,
     required BuildIOSCommand buildIOSCommand,
-    required AndroidTestBackend androidTestBackend,
     required IOSTestBackend iosTestBackend,
     required Analytics analytics,
     required Logger logger,
@@ -30,7 +28,6 @@ class BrowserStackCommand extends PatrolCommand {
       BsAndroidCommand(
         buildAndroidCommand: buildAndroidCommand,
         bsOutputsCommand: bsOutputsCommand,
-        androidTestBackend: androidTestBackend,
         analytics: analytics,
         logger: logger,
       ),

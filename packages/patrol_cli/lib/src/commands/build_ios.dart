@@ -227,20 +227,13 @@ class BuildIOSCommand extends PatrolCommand {
     required String buildMode,
     String? flavor,
   }) {
-    final appPath = _iosTestBackend.appPath(
-      buildMode: buildMode,
-      simulator: simulator,
-      flavor: flavor,
-    );
-    final testAppPath = _iosTestBackend.testAppPath(
-      buildMode: buildMode,
-      simulator: simulator,
-      flavor: flavor,
-    );
-
     _logger
-      ..info('$appPath (app under test)')
-      ..info('$testAppPath (test instrumentation app)');
+      ..info(
+        '${appPath(buildMode: buildMode, simulator: simulator, flavor: flavor)} (app under test)',
+      )
+      ..info(
+        '${testAppPath(buildMode: buildMode, simulator: simulator, flavor: flavor)} (test instrumentation app)',
+      );
   }
 
   Future<void> _printXcTestRunPath({
@@ -256,5 +249,35 @@ class BuildIOSCommand extends PatrolCommand {
     );
 
     _logger.info('$xcTestRunPath (xctestrun file)');
+  }
+
+  static const _productsDir = 'build/ios_integ/Build/Products';
+
+  static String _buildDir({
+    required String buildMode,
+    required bool simulator,
+    String? flavor,
+  }) {
+    final platform = simulator ? 'iphonesimulator' : 'iphoneos';
+    final flavorPart = flavor != null ? '-$flavor' : '';
+    return '$_productsDir/$buildMode$flavorPart-$platform';
+  }
+
+  /// Returns the path to Runner.app (app under test).
+  static String appPath({
+    required String buildMode,
+    required bool simulator,
+    String? flavor,
+  }) {
+    return '${_buildDir(buildMode: buildMode, simulator: simulator, flavor: flavor)}/Runner.app';
+  }
+
+  /// Returns the path to RunnerUITests-Runner.app (test instrumentation app).
+  static String testAppPath({
+    required String buildMode,
+    required bool simulator,
+    String? flavor,
+  }) {
+    return '${_buildDir(buildMode: buildMode, simulator: simulator, flavor: flavor)}/RunnerUITests-Runner.app';
   }
 }

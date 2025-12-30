@@ -206,21 +206,33 @@ class BuildAndroidCommand extends PatrolCommand {
   }
 
   /// Prints the paths to the APKs for the app under test and the test instrumentation app.
-  ///
-  /// [flavor] is the flavor of the app under test.
-  /// [buildMode] is the build mode of the app under test.
   void printApkPaths({String? flavor, required String buildMode}) {
-    final appApkPath = _androidTestBackend.appApkPath(
-      flavor: flavor,
-      buildMode: buildMode,
-    );
-    final testApkPath = _androidTestBackend.testApkPath(
-      flavor: flavor,
-      buildMode: buildMode,
-    );
-
     _logger
-      ..info('$appApkPath (app under test)')
-      ..info('$testApkPath (test instrumentation app)');
+      ..info(
+        '${appApkPath(flavor: flavor, buildMode: buildMode)} (app under test)',
+      )
+      ..info(
+        '${testApkPath(flavor: flavor, buildMode: buildMode)} (test instrumentation app)',
+      );
+  }
+
+  static const _baseApkPath = 'build/app/outputs/apk';
+
+  /// Returns the path to the app APK.
+  static String appApkPath({String? flavor, required String buildMode}) {
+    final mode = buildMode.toLowerCase();
+    if (flavor != null) {
+      return '$_baseApkPath/$flavor/$mode/app-$flavor-$mode.apk';
+    }
+    return '$_baseApkPath/$mode/app-$mode.apk';
+  }
+
+  /// Returns the path to the test (instrumentation) APK.
+  static String testApkPath({String? flavor, required String buildMode}) {
+    final mode = buildMode.toLowerCase();
+    if (flavor != null) {
+      return '$_baseApkPath/androidTest/$flavor/$mode/app-$flavor-$mode-androidTest.apk';
+    }
+    return '$_baseApkPath/androidTest/$mode/app-$mode-androidTest.apk';
   }
 }

@@ -4,7 +4,6 @@ import 'dart:io' show Process;
 import 'package:adb/adb.dart';
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart' hide File;
-import 'package:path/path.dart' show join;
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/extensions/completer.dart';
 import 'package:patrol_cli/src/base/logger.dart';
@@ -356,31 +355,5 @@ class AndroidTestBackend {
     }
 
     return 'file://$rootPath/build/app/reports/androidTests/connected/${buildModeAndFlavorPath}index.html';
-  }
-
-  static const _baseApkPath = 'build/app/outputs/apk';
-
-  /// Returns the path to the app APK.
-  String appApkPath({String? flavor, required String buildMode}) {
-    final mode = buildMode.toLowerCase();
-    if (flavor != null) {
-      return join(_baseApkPath, flavor, mode, 'app-$flavor-$mode.apk');
-    }
-    return join(_baseApkPath, mode, 'app-$mode.apk');
-  }
-
-  /// Returns the path to the test (instrumentation) APK.
-  String testApkPath({String? flavor, required String buildMode}) {
-    final mode = buildMode.toLowerCase();
-    if (flavor != null) {
-      return join(
-        _baseApkPath,
-        'androidTest',
-        flavor,
-        mode,
-        'app-$flavor-$mode-androidTest.apk',
-      );
-    }
-    return join(_baseApkPath, 'androidTest', mode, 'app-$mode-androidTest.apk');
   }
 }

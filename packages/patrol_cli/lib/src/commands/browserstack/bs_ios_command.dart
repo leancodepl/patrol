@@ -282,7 +282,7 @@ class BsIosCommand extends PatrolCommand {
 
   Future<String> _createIpa(String productsDir, String? flavor) async {
     final payloadDir = p.join(productsDir, 'Payload');
-    final runnerAppPath = _iosTestBackend.appPath(
+    final runnerAppPath = BuildIOSCommand.appPath(
       buildMode: 'Release',
       simulator: false,
       flavor: flavor,
