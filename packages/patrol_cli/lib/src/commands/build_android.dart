@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:patrol_cli/src/analytics/analytics.dart';
-import 'package:patrol_cli/src/android/android_paths.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
 import 'package:patrol_cli/src/base/logger.dart';
@@ -211,11 +210,11 @@ class BuildAndroidCommand extends PatrolCommand {
   /// [flavor] is the flavor of the app under test.
   /// [buildMode] is the build mode of the app under test.
   void printApkPaths({String? flavor, required String buildMode}) {
-    final appApkPath = AndroidPaths.appApkPath(
+    final appApkPath = _androidTestBackend.appApkPath(
       flavor: flavor,
       buildMode: buildMode,
     );
-    final testApkPath = AndroidPaths.testApkPath(
+    final testApkPath = _androidTestBackend.testApkPath(
       flavor: flavor,
       buildMode: buildMode,
     );

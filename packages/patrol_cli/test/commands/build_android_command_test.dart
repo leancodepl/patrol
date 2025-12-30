@@ -104,6 +104,34 @@ void main() {
       );
 
       when(() => mockAndroidTestBackend.build(any())).thenAnswer((_) async {});
+      when(
+        () => mockAndroidTestBackend.appApkPath(
+          flavor: any(named: 'flavor'),
+          buildMode: any(named: 'buildMode'),
+        ),
+      ).thenAnswer((invocation) {
+        final flavor = invocation.namedArguments[#flavor] as String?;
+        final buildMode = (invocation.namedArguments[#buildMode] as String)
+            .toLowerCase();
+        if (flavor != null) {
+          return 'build/app/outputs/apk/$flavor/$buildMode/app-$flavor-$buildMode.apk';
+        }
+        return 'build/app/outputs/apk/$buildMode/app-$buildMode.apk';
+      });
+      when(
+        () => mockAndroidTestBackend.testApkPath(
+          flavor: any(named: 'flavor'),
+          buildMode: any(named: 'buildMode'),
+        ),
+      ).thenAnswer((invocation) {
+        final flavor = invocation.namedArguments[#flavor] as String?;
+        final buildMode = (invocation.namedArguments[#buildMode] as String)
+            .toLowerCase();
+        if (flavor != null) {
+          return 'build/app/outputs/apk/androidTest/$flavor/$buildMode/app-$flavor-$buildMode-androidTest.apk';
+        }
+        return 'build/app/outputs/apk/androidTest/$buildMode/app-$buildMode-androidTest.apk';
+      });
 
       when(
         () => mockCompatibilityChecker.checkVersionsCompatibilityForBuild(

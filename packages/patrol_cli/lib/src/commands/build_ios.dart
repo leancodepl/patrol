@@ -7,7 +7,6 @@ import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/compatibility_checker/compatibility_checker.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/dart_defines_reader.dart';
-import 'package:patrol_cli/src/ios/ios_paths.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:patrol_cli/src/pubspec_reader.dart';
 import 'package:patrol_cli/src/runner/patrol_command.dart';
@@ -228,12 +227,12 @@ class BuildIOSCommand extends PatrolCommand {
     required String buildMode,
     String? flavor,
   }) {
-    final appPath = IosPaths.appPath(
+    final appPath = _iosTestBackend.appPath(
       buildMode: buildMode,
       simulator: simulator,
       flavor: flavor,
     );
-    final testAppPath = IosPaths.testAppPath(
+    final testAppPath = _iosTestBackend.testAppPath(
       buildMode: buildMode,
       simulator: simulator,
       flavor: flavor,
@@ -249,7 +248,7 @@ class BuildIOSCommand extends PatrolCommand {
     required String scheme,
   }) async {
     final sdkVersion = await _iosTestBackend.getSdkVersion(real: !simulator);
-    final xcTestRunPath = await _iosTestBackend.xcTestRunPath(
+    final xcTestRunPath = _iosTestBackend.xcTestRunPath(
       real: !simulator,
       scheme: scheme,
       sdkVersion: sdkVersion,

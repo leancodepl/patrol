@@ -1,9 +1,8 @@
 import 'dart:convert';
-import 'dart:io' show Process;
+import 'dart:io' show FileSystemException, Process;
 
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
-import 'package:glob/glob.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' show join;
 import 'package:patrol_cli/src/base/exceptions.dart';
@@ -193,7 +192,7 @@ class IOSTestBackend {
           await _processManager.start(
               options.testWithoutBuildingInvocation(
                 device,
-                xcTestRunPath: await xcTestRunPath(
+                xcTestRunPath: xcTestRunPath(
                   real: device.real,
                   scheme: options.scheme,
                   sdkVersion: sdkVersion,
@@ -305,43 +304,77 @@ class IOSTestBackend {
     return appId.substring(0, idx);
   }
 
-  // TODO: The path should be joined using platform-specific separator.
-  // https://github.com/leancodepl/patrol/issues/1980
-  Future<String> xcTestRunPath({
+  static const _productsDir = 'build/ios_integ/Build/Products';
+
+  /// Base products directory for iOS builds.
+  String get productsDir => _productsDir;
+
+  String _buildDir({
+    required String buildMode,
+    required bool simulator,
+    String? flavor,
+  }) {
+    final platform = simulator ? 'iphonesimulator' : 'iphoneos';
+    final flavorPart = flavor != null ? '-$flavor' : '';
+    return join(_productsDir, '$buildMode$flavorPart-$platform');
+  }
+
+  /// Returns the path to Runner.app (app under test).
+  String appPath({
+    required String buildMode,
+    required bool simulator,
+    String? flavor,
+  }) {
+    return join(
+      _buildDir(buildMode: buildMode, simulator: simulator, flavor: flavor),
+      'Runner.app',
+    );
+  }
+
+  /// Returns the path to RunnerUITests-Runner.app (test instrumentation app).
+  String testAppPath({
+    required String buildMode,
+    required bool simulator,
+    String? flavor,
+  }) {
+    return join(
+      _buildDir(buildMode: buildMode, simulator: simulator, flavor: flavor),
+      'RunnerUITests-Runner.app',
+    );
+  }
+
+  /// Finds the xctestrun file matching the pattern.
+  ///
+  /// Searches for files matching: `{scheme}_*_{platform}{sdkVersion}*.xctestrun`
+  String xcTestRunPath({
     required bool real,
     required String scheme,
     required String sdkVersion,
     bool absolutePath = true,
-  }) async {
-    final targetPlatform = real ? 'iphoneos' : 'iphonesimulator';
-    final glob = Glob('${scheme}_*$targetPlatform$sdkVersion*.xctestrun');
+  }) {
+    final directory = _fs.directory(join(_rootDirectory.path, _productsDir));
+    final platform = real ? 'iphoneos' : 'iphonesimulator';
+    final prefix = '${scheme}_';
+    final platformSdk = '_$platform$sdkVersion';
 
-    var root = 'build/ios_integ/Build/Products';
-    if (absolutePath) {
-      root = '${_rootDirectory.absolute.path}/$root';
-    }
-    _logger.detail('Looking for .xctestrun matching ${glob.pattern} at $root');
-    final files = await glob.listFileSystem(_fs, root: root).toList();
-    if (files.isEmpty) {
-      final cause = 'No .xctestrun file was found at $root';
-      throwToolExit(cause);
+    for (final entity in directory.listSync()) {
+      final name = entity.basename;
+      if (name.startsWith(prefix) &&
+          name.contains(platformSdk) &&
+          name.endsWith('.xctestrun')) {
+        if (absolutePath) {
+          return entity.absolute.path;
+        }
+        return join(_productsDir, name);
+      }
     }
 
-    _logger.detail(
-      'Found ${files.length} match(es), the first one will be used',
+    throw FileSystemException(
+      'Could not find xctestrun file matching: $prefix*$platformSdk*.xctestrun',
     );
-    for (final file in files) {
-      _logger.detail('Found ${file.absolute.path}');
-    }
-
-    if (absolutePath) {
-      return files.first.absolute.path;
-    }
-    return files.first.path;
   }
 
-  /// [timestamp] (milliseconds since UNIX epoch) is required for the generation
-  /// of unique path for the results bundle.
+  /// Returns absolute path to the xcresult bundle.
   String resultBundlePath({required int timestamp}) {
     return _fs
         .file(

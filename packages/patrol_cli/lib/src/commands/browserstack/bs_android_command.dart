@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:patrol_cli/src/analytics/analytics.dart';
-import 'package:patrol_cli/src/android/android_paths.dart';
+import 'package:patrol_cli/src/android/android_test_backend.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/commands/browserstack/browserstack_client.dart';
@@ -23,10 +23,12 @@ class BsAndroidCommand extends PatrolCommand {
   BsAndroidCommand({
     required BuildAndroidCommand buildAndroidCommand,
     required BsOutputsCommand bsOutputsCommand,
+    required AndroidTestBackend androidTestBackend,
     required Analytics analytics,
     required Logger logger,
   }) : _buildAndroidCommand = buildAndroidCommand,
        _bsOutputsCommand = bsOutputsCommand,
+       _androidTestBackend = androidTestBackend,
        _analytics = analytics,
        _logger = logger {
     usesTargetOption();
@@ -82,6 +84,7 @@ class BsAndroidCommand extends PatrolCommand {
 
   final BuildAndroidCommand _buildAndroidCommand;
   final BsOutputsCommand _bsOutputsCommand;
+  final AndroidTestBackend _androidTestBackend;
   final Analytics _analytics;
   final Logger _logger;
 
@@ -148,13 +151,23 @@ class BsAndroidCommand extends PatrolCommand {
     final flavor = stringArg('flavor');
     final buildMode = super.buildMode.androidName;
 
-    final File appApk;
-    final File testApk;
-    try {
-      appApk = AndroidPaths.findAppApk(flavor: flavor, buildMode: buildMode);
-      testApk = AndroidPaths.findTestApk(flavor: flavor, buildMode: buildMode);
-    } on FileSystemException catch (e) {
-      throwToolExit(e.message);
+    final appApkPath = _androidTestBackend.appApkPath(
+      flavor: flavor,
+      buildMode: buildMode,
+    );
+    final testApkPath = _androidTestBackend.testApkPath(
+      flavor: flavor,
+      buildMode: buildMode,
+    );
+
+    final appApk = File(appApkPath);
+    final testApk = File(testApkPath);
+
+    if (!appApk.existsSync()) {
+      throwToolExit('Could not find app APK at: $appApkPath');
+    }
+    if (!testApk.existsSync()) {
+      throwToolExit('Could not find test APK at: $testApkPath');
     }
 
     _logger

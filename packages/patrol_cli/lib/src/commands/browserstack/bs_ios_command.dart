@@ -11,7 +11,7 @@ import 'package:patrol_cli/src/commands/browserstack/browserstack_client.dart';
 import 'package:patrol_cli/src/commands/browserstack/browserstack_config.dart';
 import 'package:patrol_cli/src/commands/browserstack/bs_outputs_command.dart';
 import 'package:patrol_cli/src/commands/build_ios.dart';
-import 'package:patrol_cli/src/ios/ios_paths.dart';
+import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:patrol_cli/src/runner/patrol_command.dart';
 
 /// BrowserStack iOS command for patrol CLI.
@@ -25,10 +25,12 @@ class BsIosCommand extends PatrolCommand {
   BsIosCommand({
     required BuildIOSCommand buildIOSCommand,
     required BsOutputsCommand bsOutputsCommand,
+    required IOSTestBackend iosTestBackend,
     required Analytics analytics,
     required Logger logger,
   }) : _buildIOSCommand = buildIOSCommand,
        _bsOutputsCommand = bsOutputsCommand,
+       _iosTestBackend = iosTestBackend,
        _analytics = analytics,
        _logger = logger {
     usesTargetOption();
@@ -58,7 +60,6 @@ class BsIosCommand extends PatrolCommand {
         help: 'Skip building, only upload existing artifacts',
         negatable: false,
       )
-      ..addOption('test-plan', help: 'XCTest plan name', defaultsTo: 'TestPlan')
       ..addOption(
         'api-params',
         help: 'Parameters for "Execute a build" API (JSON)',
@@ -83,6 +84,7 @@ class BsIosCommand extends PatrolCommand {
 
   final BuildIOSCommand _buildIOSCommand;
   final BsOutputsCommand _bsOutputsCommand;
+  final IOSTestBackend _iosTestBackend;
   final Analytics _analytics;
   final Logger _logger;
 
@@ -108,8 +110,6 @@ class BsIosCommand extends PatrolCommand {
     final waitTimeoutMinutes =
         int.tryParse(argResults!['wait-timeout'] as String? ?? '60') ?? 60;
     final outputDir = argResults!['output-dir'] as String? ?? '.';
-    final testPlan = argResults!['test-plan'] as String? ?? 'TestPlan';
-
     final credentials =
         argResults!['credentials'] as String? ??
         Platform.environment['PATROL_BS_CREDENTIALS'] ??
@@ -147,12 +147,9 @@ class BsIosCommand extends PatrolCommand {
     final flavor = stringArg('flavor');
     final runnerPrefix = flavor ?? 'Runner';
 
-    final productsDir = IosPaths.productsDir();
-    final releaseDir = IosPaths.buildDir(
-      buildMode: 'Release',
-      simulator: false,
-      flavor: flavor,
-    );
+    final productsDir = _iosTestBackend.productsDir;
+    final flavorPart = flavor != null ? '-$flavor' : '';
+    final releaseDir = p.join(productsDir, 'Release$flavorPart-iphoneos');
 
     if (!Directory(releaseDir).existsSync()) {
       throwToolExit('Release directory not found: $releaseDir');
@@ -163,24 +160,25 @@ class BsIosCommand extends PatrolCommand {
     _logger.info('Created IPA: $ipaPath');
 
     // Find xctestrun file
-    final File xctestrunFile;
+    final String xctestrunPath;
     try {
-      xctestrunFile = await IosPaths.findXctestrunFile(
-        runnerPrefix: runnerPrefix,
-        testPlan: testPlan,
-        simulator: false,
+      final sdkVersion = await _iosTestBackend.getSdkVersion(real: true);
+      xctestrunPath = _iosTestBackend.xcTestRunPath(
+        real: true,
+        scheme: runnerPrefix,
+        sdkVersion: sdkVersion,
       );
     } on FileSystemException catch (e) {
       throwToolExit(e.message);
     }
 
     // Remove DiagnosticCollectionPolicy (BrowserStack fails if present)
-    await _removeUnsupportedKeys(xctestrunFile.path);
+    await _removeUnsupportedKeys(xctestrunPath);
 
     // Copy xctestrun to release dir
-    final xctestrunName = p.basename(xctestrunFile.path);
+    final xctestrunName = p.basename(xctestrunPath);
     final xctestrunDest = p.join(releaseDir, xctestrunName);
-    await xctestrunFile.copy(xctestrunDest);
+    await File(xctestrunPath).copy(xctestrunDest);
 
     // Create test zip
     final testZipPath = p.join(releaseDir, 'ios_tests.zip');
@@ -284,7 +282,7 @@ class BsIosCommand extends PatrolCommand {
 
   Future<String> _createIpa(String productsDir, String? flavor) async {
     final payloadDir = p.join(productsDir, 'Payload');
-    final runnerAppPath = IosPaths.appPath(
+    final runnerAppPath = _iosTestBackend.appPath(
       buildMode: 'Release',
       simulator: false,
       flavor: flavor,
