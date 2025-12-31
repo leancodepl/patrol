@@ -192,8 +192,16 @@ class BuildAndroidCommand extends PatrolCommand {
       uninstall: uninstall,
     );
 
-    await _androidTestBackend.build(androidOpts);
-    printApkPaths(flavor: flavor, buildMode: buildMode.androidName);
+    try {
+      await _androidTestBackend.build(androidOpts);
+      printApkPaths(flavor: flavor, buildMode: buildMode.androidName);
+    } catch (err, st) {
+      _logger
+        ..err('$err')
+        ..detail('$st')
+        ..err(defaultFailureMessage);
+      rethrow;
+    }
 
     return 0;
   }

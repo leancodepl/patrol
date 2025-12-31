@@ -386,14 +386,12 @@ To install a specific version of Patrol CLI, run:
       }
       exitCode = await runCommand(topLevelResults) ?? 0;
     } on ToolExit catch (err, st) {
-      _logger.err('$err');
       if (verbose) {
-        _logger.err('$st');
+        _logger
+          ..err('$err')
+          ..err('$st');
       } else {
-        _logger.info(
-          'See the logs above to learn what happened. '
-          'Also consider running with --verbose.',
-        );
+        _logger.err('$err');
       }
     } on ToolInterrupted catch (err, st) {
       if (verbose) {

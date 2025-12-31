@@ -195,16 +195,24 @@ class BuildIOSCommand extends PatrolCommand {
       throwToolExit('Full isolation is only supported on iOS Simulator');
     }
 
-    await _iosTestBackend.build(iosOpts);
-    printBinaryPaths(
-      simulator: iosOpts.simulator,
-      buildMode: flutterOpts.buildMode.xcodeName,
-      flavor: flavor,
-    );
-    await _printXcTestRunPath(
-      simulator: iosOpts.simulator,
-      scheme: iosOpts.scheme,
-    );
+    try {
+      await _iosTestBackend.build(iosOpts);
+      printBinaryPaths(
+        simulator: iosOpts.simulator,
+        buildMode: flutterOpts.buildMode.xcodeName,
+        flavor: flavor,
+      );
+      await _printXcTestRunPath(
+        simulator: iosOpts.simulator,
+        scheme: iosOpts.scheme,
+      );
+    } catch (err, st) {
+      _logger
+        ..err('$err')
+        ..detail('$st')
+        ..err(defaultFailureMessage);
+      rethrow;
+    }
 
     return 0;
   }

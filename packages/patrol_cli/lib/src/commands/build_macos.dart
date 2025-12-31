@@ -185,11 +185,19 @@ class BuildMacOSCommand extends PatrolCommand {
       testServerPort: super.testServerPort,
     );
 
-    await _macosTestBackend.build(macosOpts);
+    try {
+      await _macosTestBackend.build(macosOpts);
 
-    printBinaryPaths(buildMode: flutterOpts.buildMode.xcodeName);
+      printBinaryPaths(buildMode: flutterOpts.buildMode.xcodeName);
 
-    await printXcTestRunPath(scheme: macosOpts.scheme);
+      await printXcTestRunPath(scheme: macosOpts.scheme);
+    } catch (err, st) {
+      _logger
+        ..err('$err')
+        ..detail('$st')
+        ..err(defaultFailureMessage);
+      rethrow;
+    }
 
     return 0;
   }

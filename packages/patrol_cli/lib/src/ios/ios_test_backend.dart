@@ -95,7 +95,6 @@ class IOSTestBackend {
       // flutter build ios --config-only
 
       var flutterBuildKilled = false;
-      final flutterStdoutBuffer = <String>[];
       process = await _processManager.start(
         options.toFlutterBuildInvocation(options.flutter.buildMode),
         runInShell: true,
@@ -104,23 +103,11 @@ class IOSTestBackend {
         process.kill();
         flutterBuildKilled = true; // `flutter build` has exit code 0 on SIGINT
       });
-      process
-          .listenStdOut((l) {
-            flutterStdoutBuffer.add(l);
-            _logger.detail('\t$l');
-          })
-          .disposedBy(scope);
+      process.listenStdOut((l) => _logger.info('\t$l')).disposedBy(scope);
       process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
       var exitCode = await process.exitCode;
       final flutterCommand = options.flutter.command;
       if (exitCode != 0) {
-        // Show buffered output on failure (only if not already shown in verbose mode)
-        if (_logger.level != Level.verbose) {
-          _logger.err('Build output:');
-          for (final line in flutterStdoutBuffer) {
-            _logger.err('\t$line');
-          }
-        }
         final cause = '`$flutterCommand build ios` exited with code $exitCode';
         task.fail('Failed to build $subject ($cause)');
         throwToolExit(cause);
@@ -132,7 +119,6 @@ class IOSTestBackend {
 
       // xcodebuild build-for-testing
 
-      final xcodebuildStdoutBuffer = <String>[];
       process =
           await _processManager.start(
               options.buildForTestingInvocation(),
@@ -140,12 +126,7 @@ class IOSTestBackend {
               workingDirectory: _rootDirectory.childDirectory('ios').path,
             )
             ..disposedBy(scope);
-      process
-          .listenStdOut((l) {
-            xcodebuildStdoutBuffer.add(l);
-            _logger.detail('\t$l');
-          })
-          .disposedBy(scope);
+      process.listenStdOut((l) => _logger.detail('\t$l')).disposedBy(scope);
       process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
       exitCode = await process.exitCode;
       if (exitCode == 0) {
@@ -155,13 +136,6 @@ class IOSTestBackend {
         task.fail('Failed to execute tests of $subject ($cause)');
         throwToolInterrupted(cause);
       } else {
-        // Show buffered output on failure (only if not already shown in verbose mode)
-        if (_logger.level != Level.verbose) {
-          _logger.err('Build output:');
-          for (final line in xcodebuildStdoutBuffer) {
-            _logger.err('\t$line');
-          }
-        }
         final cause = 'xcodebuild exited with code $exitCode';
         task.fail('Failed to build $subject ($cause)');
         throwToolExit(cause);
