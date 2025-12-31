@@ -37,7 +37,15 @@ class BsIosCommand extends PatrolCommand {
        _analytics = analytics,
        _logger = logger {
     usesTargetOption();
-    usesBuildModeOption();
+    // Build mode flags - release is default for BrowserStack
+    argParser
+      ..addFlag('debug', help: 'Build a debug version of your app')
+      ..addFlag('profile', help: 'Build a profile version of your app')
+      ..addFlag(
+        'release',
+        help: 'Build a release version (default for BrowserStack)',
+        defaultsTo: true,
+      );
     usesFlavorOption();
     usesDartDefineOption();
     usesDartDefineFromFileOption();
@@ -51,8 +59,14 @@ class BsIosCommand extends PatrolCommand {
 
     usesIOSOptions();
 
-    // Only BrowserStack-specific options - everything else passes to patrol build
+    // Simulator flag (always false for BrowserStack - real devices only)
     argParser
+      ..addFlag(
+        'simulator',
+        help: 'Build for simulator (not supported for BrowserStack)',
+        hide: true,
+      )
+      // Only BrowserStack-specific options - everything else passes to patrol build
       ..addOption(
         'credentials',
         help: 'BrowserStack credentials (username:access_key)',
