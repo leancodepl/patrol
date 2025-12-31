@@ -342,12 +342,14 @@ To install a specific version of Patrol CLI, run:
       }
       exitCode = await runCommand(topLevelResults) ?? 0;
     } on ToolExit catch (err, st) {
+      _logger.err('$err');
       if (verbose) {
-        _logger
-          ..err('$err')
-          ..err('$st');
+        _logger.err('$st');
       } else {
-        _logger.err('$err');
+        _logger.info(
+          'See the logs above to learn what happened. '
+          'Also consider running with --verbose.',
+        );
       }
     } on ToolInterrupted catch (err, st) {
       if (verbose) {
