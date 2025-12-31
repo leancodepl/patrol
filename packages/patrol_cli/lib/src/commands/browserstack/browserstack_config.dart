@@ -29,11 +29,11 @@ class BrowserStackConfig {
        iosApiParams =
            iosApiParams ?? Platform.environment['PATROL_BS_IOS_API_PARAMS'];
 
-  /// Default Android devices for testing.
-  static const defaultAndroidDevices = '["Google Pixel 8-14.0"]';
+  /// Default Android devices for testing (any Pixel, latest OS).
+  static const defaultAndroidDevices = '[{"device": "Google Pixel.*"}]';
 
-  /// Default iOS devices for testing.
-  static const defaultIosDevices = '["iPhone 15 Pro-17"]';
+  /// Default iOS devices for testing (any iPhone, latest OS).
+  static const defaultIosDevices = '[{"device": "iPhone.*"}]';
 
   /// BrowserStack credentials (username:access_key).
   final String credentials;
