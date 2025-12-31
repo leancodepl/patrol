@@ -211,27 +211,40 @@ class BsIosCommand extends PatrolCommand {
       logger: _logger,
     );
 
+    // Handle Ctrl+C to cancel uploads
+    final sigintSubscription = ProcessSignal.sigint.watch().listen((_) {
+      _logger.err('\nUpload cancelled by user');
+      client.close();
+      exit(130); // Standard exit code for SIGINT
+    });
+
     try {
       // Upload app
-      _logger.info('Uploading app...');
+      final appProgress = _logger.progress('Uploading app (0%)');
       final appResponse = await client.uploadFile(
         '/app-automate/xcuitest/v2/app',
         appFile,
+        onProgress: (percent) =>
+            appProgress.update('Uploading app ($percent%)'),
       );
       final appUrl = appResponse['app_url'] as String;
+      appProgress.complete('Uploaded app');
+      _logger.detail('App URL: $appUrl');
 
-      _logger
-        ..success('Uploaded app: $appUrl')
-        ..info('Uploading test suite...');
+      // Upload test suite
+      final testProgress = _logger.progress('Uploading test suite (0%)');
       final testResponse = await client.uploadFile(
         '/app-automate/xcuitest/v2/test-suite',
         testFile,
+        onProgress: (percent) =>
+            testProgress.update('Uploading test suite ($percent%)'),
       );
       final testUrl = testResponse['test_suite_url'] as String;
+      testProgress.complete('Uploaded test suite');
+      _logger.detail('Test URL: $testUrl');
 
-      _logger
-        ..success('Uploaded test: $testUrl')
-        ..info('Scheduling test execution...');
+      // Schedule test execution
+      final scheduleProgress = _logger.progress('Scheduling test execution');
 
       final payload = <String, dynamic>{
         'app': appUrl,
@@ -253,19 +266,15 @@ class BsIosCommand extends PatrolCommand {
         '/app-automate/xcuitest/v2/xctestrun-build',
         payload,
       );
-
       final buildId = runResponse['build_id'] as String;
+      scheduleProgress.complete('Test execution scheduled');
 
       _logger
-        ..success('Test execution scheduled')
-        ..info('')
         ..info(
-          '  Dashboard: https://app-automate.browserstack.com/dashboard/v2/builds/$buildId',
+          'Dashboard: https://app-automate.browserstack.com/dashboard/v2/builds/$buildId',
         )
-        ..info('  Build ID: $buildId');
-
-      // Output build ID to stdout for scripting
-      stdout.writeln(buildId);
+        ..detail('Build ID:')
+        ..detail(buildId);
 
       if (wait) {
         return _bsOutputsCommand.execute(
@@ -281,6 +290,7 @@ class BsIosCommand extends PatrolCommand {
 
       return 0;
     } finally {
+      await sigintSubscription.cancel();
       client.close();
     }
   }

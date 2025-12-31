@@ -212,15 +212,15 @@ class BuildAndroidCommand extends PatrolCommand {
     final testPath = testApkPath(flavor: flavor, buildMode: buildMode);
 
     if (!File(appPath).existsSync()) {
-      _logger.warn('App APK not found at: $appPath');
+      _logger.warn('App not found at: $appPath');
     }
     if (!File(testPath).existsSync()) {
-      _logger.warn('Test APK not found at: $testPath');
+      _logger.warn('Test not found at: $testPath');
     }
 
     _logger
-      ..info('$appPath (app under test)')
-      ..info('$testPath (test instrumentation app)');
+      ..info('App: $appPath')
+      ..info('Test: $testPath');
   }
 
   static const _defaultApkDir = 'build/app/outputs/apk';

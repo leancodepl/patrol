@@ -63,11 +63,39 @@ class BrowserStackClient {
   }
 
   /// Upload a file to BrowserStack.
-  Future<Map<String, dynamic>> uploadFile(String endpoint, File file) async {
+  ///
+  /// [onProgress] is called with the percentage (0-100) of upload progress.
+  Future<Map<String, dynamic>> uploadFile(
+    String endpoint,
+    File file, {
+    void Function(int percent)? onProgress,
+  }) async {
     final url = Uri.parse('$_baseUrl$endpoint');
+    final fileLength = await file.length();
+
+    // Create a stream that tracks progress
+    var bytesUploaded = 0;
+    var lastReportedPercent = -1;
+    final fileStream = file.openRead().map((chunk) {
+      bytesUploaded += chunk.length;
+      final percent = (bytesUploaded * 100 / fileLength).round();
+      if (onProgress != null && percent != lastReportedPercent) {
+        lastReportedPercent = percent;
+        onProgress(percent);
+      }
+      return chunk;
+    });
+
+    final multipartFile = http.MultipartFile(
+      'file',
+      fileStream,
+      fileLength,
+      filename: file.path.split('/').last,
+    );
+
     final request = http.MultipartRequest('POST', url)
       ..headers.addAll(_defaultHeaders)
-      ..files.add(await http.MultipartFile.fromPath('file', file.path));
+      ..files.add(multipartFile);
 
     final streamedResponse = await request.send();
     final response = await http.Response.fromStream(streamedResponse);

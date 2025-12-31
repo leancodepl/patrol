@@ -229,10 +229,10 @@ class BuildIOSCommand extends PatrolCommand {
   }) {
     _logger
       ..info(
-        '${appPath(buildMode: buildMode, simulator: simulator, flavor: flavor)} (app under test)',
+        'App: ${appPath(buildMode: buildMode, simulator: simulator, flavor: flavor)}',
       )
       ..info(
-        '${testAppPath(buildMode: buildMode, simulator: simulator, flavor: flavor)} (test instrumentation app)',
+        'Test App: ${testAppPath(buildMode: buildMode, simulator: simulator, flavor: flavor)}',
       );
   }
 
@@ -248,7 +248,7 @@ class BuildIOSCommand extends PatrolCommand {
       absolutePath: false,
     );
 
-    _logger.info('$xcTestRunPath (xctestrun file)');
+    _logger.info('Test Plan: $xcTestRunPath');
   }
 
   static const _productsDir = 'build/ios_integ/Build/Products';

@@ -146,8 +146,6 @@ class BsAndroidCommand extends PatrolCommand {
     }
 
     // Find APK files
-    _logger.info('Locating APK files...');
-
     final config = _pubspecReader.read();
     final flavor = stringArg('flavor') ?? config.android.flavor;
     final buildMode = super.buildMode.androidName;
@@ -171,37 +169,46 @@ class BsAndroidCommand extends PatrolCommand {
       throwToolExit('Could not find test APK at: $testApkPath');
     }
 
-    _logger
-      ..info('Found app APK: ${appApk.path}')
-      ..info('Found test APK: ${testApk.path}');
-
     // Create BrowserStack client
     final client = BrowserStackClient(
       credentials: credentials,
       logger: _logger,
     );
 
+    // Handle Ctrl+C to cancel uploads
+    final sigintSubscription = ProcessSignal.sigint.watch().listen((_) {
+      _logger.err('\nUpload cancelled by user');
+      client.close();
+      exit(130); // Standard exit code for SIGINT
+    });
+
     try {
-      // Upload app APK
-      _logger.info('Uploading app APK...');
+      // Upload app
+      final appProgress = _logger.progress('Uploading app (0%)');
       final appResponse = await client.uploadFile(
         '/app-automate/espresso/v2/app',
         appApk,
+        onProgress: (percent) =>
+            appProgress.update('Uploading app ($percent%)'),
       );
       final appUrl = appResponse['app_url'] as String;
+      appProgress.complete('Uploaded app');
+      _logger.detail('App URL: $appUrl');
 
-      _logger
-        ..success('Uploaded app: $appUrl')
-        ..info('Uploading test APK...');
+      // Upload test
+      final testProgress = _logger.progress('Uploading test (0%)');
       final testResponse = await client.uploadFile(
         '/app-automate/espresso/v2/test-suite',
         testApk,
+        onProgress: (percent) =>
+            testProgress.update('Uploading test ($percent%)'),
       );
       final testUrl = testResponse['test_suite_url'] as String;
+      testProgress.complete('Uploaded test');
+      _logger.detail('Test URL: $testUrl');
 
-      _logger
-        ..success('Uploaded test: $testUrl')
-        ..info('Scheduling test execution...');
+      // Schedule test execution
+      final scheduleProgress = _logger.progress('Scheduling test execution');
 
       final payload = <String, dynamic>{
         'app': appUrl,
@@ -224,19 +231,15 @@ class BsAndroidCommand extends PatrolCommand {
         '/app-automate/espresso/v2/build',
         payload,
       );
-
       final buildId = runResponse['build_id'] as String;
+      scheduleProgress.complete('Test execution scheduled');
 
       _logger
-        ..success('Test execution scheduled')
-        ..info('')
         ..info(
-          '  Dashboard: https://app-automate.browserstack.com/dashboard/v2/builds/$buildId',
+          'Dashboard: https://app-automate.browserstack.com/dashboard/v2/builds/$buildId',
         )
-        ..info('  Build ID: $buildId');
-
-      // Output build ID to stdout for scripting
-      stdout.writeln(buildId);
+        ..detail('Build ID:')
+        ..detail(buildId);
 
       if (wait) {
         return _bsOutputsCommand.execute(
@@ -252,6 +255,7 @@ class BsAndroidCommand extends PatrolCommand {
 
       return 0;
     } finally {
+      await sigintSubscription.cancel();
       client.close();
     }
   }
