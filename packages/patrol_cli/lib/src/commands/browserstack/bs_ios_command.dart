@@ -12,6 +12,7 @@ import 'package:patrol_cli/src/commands/browserstack/browserstack_config.dart';
 import 'package:patrol_cli/src/commands/browserstack/bs_outputs_command.dart';
 import 'package:patrol_cli/src/commands/build_ios.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
+import 'package:patrol_cli/src/pubspec_reader.dart';
 import 'package:patrol_cli/src/runner/patrol_command.dart';
 
 /// BrowserStack iOS command for patrol CLI.
@@ -26,11 +27,13 @@ class BsIosCommand extends PatrolCommand {
     required BuildIOSCommand buildIOSCommand,
     required BsOutputsCommand bsOutputsCommand,
     required IOSTestBackend iosTestBackend,
+    required PubspecReader pubspecReader,
     required Analytics analytics,
     required Logger logger,
   }) : _buildIOSCommand = buildIOSCommand,
        _bsOutputsCommand = bsOutputsCommand,
        _iosTestBackend = iosTestBackend,
+       _pubspecReader = pubspecReader,
        _analytics = analytics,
        _logger = logger {
     usesTargetOption();
@@ -85,6 +88,7 @@ class BsIosCommand extends PatrolCommand {
   final BuildIOSCommand _buildIOSCommand;
   final BsOutputsCommand _bsOutputsCommand;
   final IOSTestBackend _iosTestBackend;
+  final PubspecReader _pubspecReader;
   final Analytics _analytics;
   final Logger _logger;
 
@@ -144,7 +148,8 @@ class BsIosCommand extends PatrolCommand {
     // Create archives
     _logger.info('Creating zip archives of test files...');
 
-    final flavor = stringArg('flavor');
+    final config = _pubspecReader.read();
+    final flavor = stringArg('flavor') ?? config.ios.flavor;
     final runnerPrefix = flavor ?? 'Runner';
 
     final productsDir = _iosTestBackend.productsDir;
@@ -345,9 +350,7 @@ class BsIosCommand extends PatrolCommand {
     }
 
     final zipData = ZipEncoder().encode(archive);
-    if (zipData != null) {
-      await File(outputPath).writeAsBytes(zipData);
-    }
+    await File(outputPath).writeAsBytes(zipData);
   }
 
   Future<void> _createTestZip(
@@ -378,9 +381,7 @@ class BsIosCommand extends PatrolCommand {
     }
 
     final zipData = ZipEncoder().encode(archive);
-    if (zipData != null) {
-      await File(outputPath).writeAsBytes(zipData);
-    }
+    await File(outputPath).writeAsBytes(zipData);
   }
 
   Future<void> _removeUnsupportedKeys(String plistPath) async {

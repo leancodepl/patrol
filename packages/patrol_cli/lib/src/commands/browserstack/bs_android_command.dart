@@ -9,6 +9,7 @@ import 'package:patrol_cli/src/commands/browserstack/browserstack_client.dart';
 import 'package:patrol_cli/src/commands/browserstack/browserstack_config.dart';
 import 'package:patrol_cli/src/commands/browserstack/bs_outputs_command.dart';
 import 'package:patrol_cli/src/commands/build_android.dart';
+import 'package:patrol_cli/src/pubspec_reader.dart';
 import 'package:patrol_cli/src/runner/patrol_command.dart';
 
 /// BrowserStack Android command for patrol CLI.
@@ -22,10 +23,12 @@ class BsAndroidCommand extends PatrolCommand {
   BsAndroidCommand({
     required BuildAndroidCommand buildAndroidCommand,
     required BsOutputsCommand bsOutputsCommand,
+    required PubspecReader pubspecReader,
     required Analytics analytics,
     required Logger logger,
   }) : _buildAndroidCommand = buildAndroidCommand,
        _bsOutputsCommand = bsOutputsCommand,
+       _pubspecReader = pubspecReader,
        _analytics = analytics,
        _logger = logger {
     usesTargetOption();
@@ -81,6 +84,7 @@ class BsAndroidCommand extends PatrolCommand {
 
   final BuildAndroidCommand _buildAndroidCommand;
   final BsOutputsCommand _bsOutputsCommand;
+  final PubspecReader _pubspecReader;
   final Analytics _analytics;
   final Logger _logger;
 
@@ -144,7 +148,8 @@ class BsAndroidCommand extends PatrolCommand {
     // Find APK files
     _logger.info('Locating APK files...');
 
-    final flavor = stringArg('flavor');
+    final config = _pubspecReader.read();
+    final flavor = stringArg('flavor') ?? config.android.flavor;
     final buildMode = super.buildMode.androidName;
 
     final appApkPath = BuildAndroidCommand.appApkPath(

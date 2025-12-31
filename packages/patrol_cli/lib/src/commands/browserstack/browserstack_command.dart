@@ -6,6 +6,7 @@ import 'package:patrol_cli/src/commands/browserstack/bs_outputs_command.dart';
 import 'package:patrol_cli/src/commands/build_android.dart';
 import 'package:patrol_cli/src/commands/build_ios.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
+import 'package:patrol_cli/src/pubspec_reader.dart';
 import 'package:patrol_cli/src/runner/patrol_command.dart';
 
 /// BrowserStack command for patrol CLI.
@@ -19,6 +20,7 @@ class BrowserStackCommand extends PatrolCommand {
     required BuildAndroidCommand buildAndroidCommand,
     required BuildIOSCommand buildIOSCommand,
     required IOSTestBackend iosTestBackend,
+    required PubspecReader pubspecReader,
     required Analytics analytics,
     required Logger logger,
   }) {
@@ -28,6 +30,7 @@ class BrowserStackCommand extends PatrolCommand {
       BsAndroidCommand(
         buildAndroidCommand: buildAndroidCommand,
         bsOutputsCommand: bsOutputsCommand,
+        pubspecReader: pubspecReader,
         analytics: analytics,
         logger: logger,
       ),
@@ -37,6 +40,7 @@ class BrowserStackCommand extends PatrolCommand {
         buildIOSCommand: buildIOSCommand,
         bsOutputsCommand: bsOutputsCommand,
         iosTestBackend: iosTestBackend,
+        pubspecReader: pubspecReader,
         analytics: analytics,
         logger: logger,
       ),

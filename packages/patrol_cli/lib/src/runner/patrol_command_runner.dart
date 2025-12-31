@@ -302,6 +302,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         buildAndroidCommand: buildAndroidCommand,
         buildIOSCommand: buildIOSCommand,
         iosTestBackend: iosTestBackend,
+        pubspecReader: PubspecReader(projectRoot: rootDirectory),
         analytics: _analytics,
         logger: _logger,
       ),
