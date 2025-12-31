@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
@@ -207,32 +208,62 @@ class BuildAndroidCommand extends PatrolCommand {
 
   /// Prints the paths to the APKs for the app under test and the test instrumentation app.
   void printApkPaths({String? flavor, required String buildMode}) {
+    final appPath = appApkPath(flavor: flavor, buildMode: buildMode);
+    final testPath = testApkPath(flavor: flavor, buildMode: buildMode);
+
+    if (!File(appPath).existsSync()) {
+      _logger.warn('App APK not found at: $appPath');
+    }
+    if (!File(testPath).existsSync()) {
+      _logger.warn('Test APK not found at: $testPath');
+    }
+
     _logger
-      ..info(
-        '${appApkPath(flavor: flavor, buildMode: buildMode)} (app under test)',
-      )
-      ..info(
-        '${testApkPath(flavor: flavor, buildMode: buildMode)} (test instrumentation app)',
-      );
+      ..info('$appPath (app under test)')
+      ..info('$testPath (test instrumentation app)');
   }
 
-  static const _baseApkPath = 'build/app/outputs/apk';
+  static const _defaultApkDir = 'build/app/outputs/apk';
 
-  /// Returns the path to the app APK.
+  /// Finds the app APK path. Checks default path first, then searches recursively.
   static String appApkPath({String? flavor, required String buildMode}) {
     final mode = buildMode.toLowerCase();
-    if (flavor != null) {
-      return '$_baseApkPath/$flavor/$mode/app-$flavor-$mode.apk';
-    }
-    return '$_baseApkPath/$mode/app-$mode.apk';
+    final name = flavor != null ? 'app-$flavor-$mode.apk' : 'app-$mode.apk';
+    final dir = flavor != null ? '$flavor/$mode' : mode;
+    return _findApkPath('$_defaultApkDir/$dir/$name', name);
   }
 
-  /// Returns the path to the test (instrumentation) APK.
+  /// Finds the test APK path. Checks default path first, then searches recursively.
   static String testApkPath({String? flavor, required String buildMode}) {
     final mode = buildMode.toLowerCase();
-    if (flavor != null) {
-      return '$_baseApkPath/androidTest/$flavor/$mode/app-$flavor-$mode-androidTest.apk';
+    final name = flavor != null
+        ? 'app-$flavor-$mode-androidTest.apk'
+        : 'app-$mode-androidTest.apk';
+    final dir = flavor != null
+        ? 'androidTest/$flavor/$mode'
+        : 'androidTest/$mode';
+    return _findApkPath('$_defaultApkDir/$dir/$name', name);
+  }
+
+  static String _findApkPath(String defaultPath, String apkName) {
+    if (File(defaultPath).existsSync()) {
+      return defaultPath;
     }
-    return '$_baseApkPath/androidTest/$mode/app-$mode-androidTest.apk';
+
+    for (final root in [Directory('build'), Directory('android')]) {
+      if (!root.existsSync()) {
+        continue;
+      }
+      try {
+        for (final entity in root.listSync(recursive: true)) {
+          if (entity is File &&
+              entity.path.contains('outputs/apk/') &&
+              entity.path.endsWith(apkName)) {
+            return entity.path;
+          }
+        }
+      } catch (_) {}
+    }
+    return defaultPath;
   }
 }
