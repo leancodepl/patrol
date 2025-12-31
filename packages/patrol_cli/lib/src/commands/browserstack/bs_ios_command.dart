@@ -37,15 +37,11 @@ class BsIosCommand extends PatrolCommand {
        _analytics = analytics,
        _logger = logger {
     usesTargetOption();
-    // Build mode flags - release is default for BrowserStack
+    // Build mode flags - only release is supported for real iOS devices
     argParser
-      ..addFlag('debug', help: 'Build a debug version of your app')
-      ..addFlag('profile', help: 'Build a profile version of your app')
-      ..addFlag(
-        'release',
-        help: 'Build a release version (default for BrowserStack)',
-        defaultsTo: true,
-      );
+      ..addFlag('debug', hide: true)
+      ..addFlag('profile', hide: true)
+      ..addFlag('release', hide: true, defaultsTo: true);
     usesFlavorOption();
     usesDartDefineOption();
     usesDartDefineFromFileOption();
@@ -57,21 +53,30 @@ class BsIosCommand extends PatrolCommand {
     usesBuildNameOption();
     usesBuildNumberOption();
 
-    usesIOSOptions();
-
-    // Simulator flag (always false for BrowserStack - real devices only)
+    // Only add bundle-id from iOS options (skip simulator-only options like --ios, --full-isolation)
     argParser
-      ..addFlag(
-        'simulator',
-        help: 'Build for simulator (not supported for BrowserStack)',
-        hide: true,
+      ..addOption(
+        'bundle-id',
+        help: 'Bundle identifier of the iOS app under test.',
+        valueHelp: 'pl.leancode.AwesomeApp',
       )
-      // Only BrowserStack-specific options - everything else passes to patrol build
+      // BrowserStack-specific options
+      // Hidden flags for compatibility with BuildIOSCommand
+      ..addFlag('simulator', hide: true)
+      ..addFlag('full-isolation', hide: true)
+      ..addFlag('clear-permissions')
+      ..addOption('ios', hide: true)
+      ..addSeparator('BrowserStack options:')
       ..addOption(
         'credentials',
-        help: 'BrowserStack credentials (username:access_key)',
+        help: 'Access key from BrowserStack Dashboard (username:access_key)',
       )
-      ..addOption('devices', help: 'JSON array of devices to test on')
+      ..addOption(
+        'devices',
+        help:
+            'JSON array of devices to test on\n'
+            "(default: '${BrowserStackConfig.defaultIosDevices}')",
+      )
       ..addFlag(
         'skip-build',
         help: 'Skip building, only upload existing artifacts',
@@ -79,7 +84,10 @@ class BsIosCommand extends PatrolCommand {
       )
       ..addOption(
         'api-params',
-        help: 'Parameters for "Execute a build" API (JSON)',
+        help:
+            'Parameters for "Execute a build" API (JSON)\n'
+            "(e.g. '{\"networkProfile\": \"2g-gprs-lossy\", \"buildTag\": \"smoke\"}')\n"
+            r'(or from file: --api-params "$(cat params.json)")',
       )
       ..addFlag(
         'wait',
@@ -89,13 +97,15 @@ class BsIosCommand extends PatrolCommand {
       )
       ..addOption(
         'wait-timeout',
-        help: 'Timeout in minutes when waiting for test run',
-        defaultsTo: '60',
+        help:
+            'Timeout in minutes when waiting for test run\n'
+            '(default: 60)',
       )
       ..addOption(
         'output-dir',
-        help: 'Directory to save outputs when waiting',
-        defaultsTo: '.',
+        help:
+            'Directory to save outputs when waiting\n'
+            '(default: ".")',
       );
   }
 
@@ -110,11 +120,11 @@ class BsIosCommand extends PatrolCommand {
   String get name => 'ios';
 
   @override
-  String? get docsName => 'bs';
-
-  @override
   String get description =>
       'Build and upload iOS apps to BrowserStack for testing.';
+
+  @override
+  String? get docsName => 'bs';
 
   @override
   Future<int> run() async {

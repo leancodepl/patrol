@@ -56,9 +56,10 @@ class BrowserStackCommand extends PatrolCommand {
       'Build, upload, and test on BrowserStack App Automate.';
 
   @override
-  String? get usageFooter => '''
-Read detailed docs at https://patrol.leancode.co/cli-commands/bs
+  String? get docsName => 'bs';
 
+  @override
+  String? get usageFooter => '''
 Environment variables:
   PATROL_BS_CREDENTIALS         BrowserStack credentials (username:access_key)
   PATROL_BS_ANDROID_DEVICES     JSON array of Android devices
@@ -66,7 +67,4 @@ Environment variables:
   PATROL_BS_ANDROID_API_PARAMS  Extra API params for Android (JSON)
   PATROL_BS_IOS_API_PARAMS      Extra API params for iOS (JSON)
 ''';
-
-  @override
-  String? get docsName => 'bs';
 }

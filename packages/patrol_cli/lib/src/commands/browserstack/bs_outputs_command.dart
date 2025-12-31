@@ -24,12 +24,13 @@ class BsOutputsCommand extends PatrolCommand {
     argParser
       ..addOption(
         'credentials',
-        help: 'BrowserStack credentials (username:access_key)',
+        help: 'Access key from BrowserStack Dashboard (username:access_key)',
       )
       ..addOption(
         'output-dir',
-        help: 'Directory to save outputs',
-        defaultsTo: '.',
+        help:
+            'Directory to save outputs\n'
+            '(default: ".")',
       )
       ..addFlag(
         'only-report',
@@ -54,11 +55,11 @@ class BsOutputsCommand extends PatrolCommand {
   String get name => 'outputs';
 
   @override
-  String? get docsName => 'bs';
-
-  @override
   String get description =>
       'Get outputs and artifacts from a BrowserStack build.';
+
+  @override
+  String? get docsName => 'bs';
 
   @override
   String get invocation => 'patrol bs outputs <build_id> [options]';

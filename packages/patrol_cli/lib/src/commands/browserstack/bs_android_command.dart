@@ -48,13 +48,19 @@ class BsAndroidCommand extends PatrolCommand {
 
     usesAndroidOptions();
 
-    // Only BrowserStack-specific options - everything else passes to patrol build
+    // BrowserStack-specific options
     argParser
+      ..addSeparator('BrowserStack options:')
       ..addOption(
         'credentials',
-        help: 'BrowserStack credentials (username:access_key)',
+        help: 'Access key from BrowserStack Dashboard (username:access_key)',
       )
-      ..addOption('devices', help: 'JSON array of devices to test on')
+      ..addOption(
+        'devices',
+        help:
+            'JSON array of devices to test on\n'
+            "(default: '${BrowserStackConfig.defaultAndroidDevices}')",
+      )
       ..addFlag(
         'skip-build',
         help: 'Skip building, only upload existing APKs',
@@ -62,7 +68,10 @@ class BsAndroidCommand extends PatrolCommand {
       )
       ..addOption(
         'api-params',
-        help: 'Parameters for "Execute a build" API (JSON)',
+        help:
+            'Parameters for "Execute a build" API (JSON)\n'
+            "(e.g. '{\"shards\": {\"numberOfShards\": 2}, \"buildTag\": \"smoke\"}')\n"
+            r'(or from file: --api-params "$(cat params.json)")',
       )
       ..addFlag(
         'wait',
@@ -72,13 +81,15 @@ class BsAndroidCommand extends PatrolCommand {
       )
       ..addOption(
         'wait-timeout',
-        help: 'Timeout in minutes when waiting for test run',
-        defaultsTo: '60',
+        help:
+            'Timeout in minutes when waiting for test run\n'
+            '(default: 60)',
       )
       ..addOption(
         'output-dir',
-        help: 'Directory to save outputs when waiting',
-        defaultsTo: '.',
+        help:
+            'Directory to save outputs when waiting\n'
+            '(default: ".")',
       );
   }
 
@@ -92,11 +103,11 @@ class BsAndroidCommand extends PatrolCommand {
   String get name => 'android';
 
   @override
-  String? get docsName => 'bs';
-
-  @override
   String get description =>
       'Build and upload Android APKs to BrowserStack for testing.';
+
+  @override
+  String? get docsName => 'bs';
 
   @override
   Future<int> run() async {
