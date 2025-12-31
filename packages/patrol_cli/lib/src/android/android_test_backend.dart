@@ -58,7 +58,7 @@ class AndroidTestBackend {
 
       // :app:assembleDebug
 
-      final assembleOutputBuffer = <String>[];
+      final assembleStdoutBuffer = <String>[];
       process =
           await _processManager.start(
               options.toGradleAssembleInvocation(
@@ -74,16 +74,11 @@ class AndroidTestBackend {
             ..disposedBy(scope);
       process
           .listenStdOut((l) {
-            assembleOutputBuffer.add(l);
-            _logger.detail('\t$l');
+            assembleStdoutBuffer.add(l);
+            _logger.detail('\t: $l');
           })
           .disposedBy(scope);
-      process
-          .listenStdErr((l) {
-            assembleOutputBuffer.add(l);
-            _logger.detail('\t$l');
-          })
-          .disposedBy(scope);
+      process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
       exitCode = await process.exitCode;
       if (exitCode == exitCodeInterrupted) {
         const cause = 'Gradle build interrupted';
@@ -92,7 +87,8 @@ class AndroidTestBackend {
       } else if (exitCode != 0) {
         // Show buffered output on failure (only if not already shown in verbose mode)
         if (_logger.level != Level.verbose) {
-          for (final line in assembleOutputBuffer) {
+          _logger.err('Build output:');
+          for (final line in assembleStdoutBuffer) {
             _logger.err('\t$line');
           }
         }
@@ -103,7 +99,7 @@ class AndroidTestBackend {
 
       // :app:assembleDebugAndroidTest
 
-      final assembleTestOutputBuffer = <String>[];
+      final assembleTestStdoutBuffer = <String>[];
       process =
           await _processManager.start(
               options.toGradleAssembleTestInvocation(
@@ -119,16 +115,11 @@ class AndroidTestBackend {
             ..disposedBy(scope);
       process
           .listenStdOut((l) {
-            assembleTestOutputBuffer.add(l);
-            _logger.detail('\t$l');
+            assembleTestStdoutBuffer.add(l);
+            _logger.detail('\t: $l');
           })
           .disposedBy(scope);
-      process
-          .listenStdErr((l) {
-            assembleTestOutputBuffer.add(l);
-            _logger.detail('\t$l');
-          })
-          .disposedBy(scope);
+      process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
 
       exitCode = await process.exitCode;
       if (exitCode == 0) {
@@ -140,7 +131,8 @@ class AndroidTestBackend {
       } else {
         // Show buffered output on failure (only if not already shown in verbose mode)
         if (_logger.level != Level.verbose) {
-          for (final line in assembleTestOutputBuffer) {
+          _logger.err('Build output:');
+          for (final line in assembleTestStdoutBuffer) {
             _logger.err('\t$line');
           }
         }
