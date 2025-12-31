@@ -95,7 +95,7 @@ class IOSTestBackend {
       // flutter build ios --config-only
 
       var flutterBuildKilled = false;
-      final flutterStdoutBuffer = <String>[];
+      final flutterOutputBuffer = <String>[];
       process = await _processManager.start(
         options.toFlutterBuildInvocation(options.flutter.buildMode),
         runInShell: true,
@@ -106,18 +106,22 @@ class IOSTestBackend {
       });
       process
           .listenStdOut((l) {
-            flutterStdoutBuffer.add(l);
+            flutterOutputBuffer.add(l);
             _logger.detail('\t$l');
           })
           .disposedBy(scope);
-      process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
+      process
+          .listenStdErr((l) {
+            flutterOutputBuffer.add(l);
+            _logger.detail('\t$l');
+          })
+          .disposedBy(scope);
       var exitCode = await process.exitCode;
       final flutterCommand = options.flutter.command;
       if (exitCode != 0) {
         // Show buffered output on failure (only if not already shown in verbose mode)
         if (_logger.level != Level.verbose) {
-          _logger.err('Build output:');
-          for (final line in flutterStdoutBuffer) {
+          for (final line in flutterOutputBuffer) {
             _logger.err('\t$line');
           }
         }
@@ -132,7 +136,7 @@ class IOSTestBackend {
 
       // xcodebuild build-for-testing
 
-      final xcodebuildStdoutBuffer = <String>[];
+      final xcodebuildOutputBuffer = <String>[];
       process =
           await _processManager.start(
               options.buildForTestingInvocation(),
@@ -142,11 +146,16 @@ class IOSTestBackend {
             ..disposedBy(scope);
       process
           .listenStdOut((l) {
-            xcodebuildStdoutBuffer.add(l);
+            xcodebuildOutputBuffer.add(l);
             _logger.detail('\t$l');
           })
           .disposedBy(scope);
-      process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
+      process
+          .listenStdErr((l) {
+            xcodebuildOutputBuffer.add(l);
+            _logger.detail('\t$l');
+          })
+          .disposedBy(scope);
       exitCode = await process.exitCode;
       if (exitCode == 0) {
         task.complete('Completed building $subject');
@@ -157,8 +166,7 @@ class IOSTestBackend {
       } else {
         // Show buffered output on failure (only if not already shown in verbose mode)
         if (_logger.level != Level.verbose) {
-          _logger.err('Build output:');
-          for (final line in xcodebuildStdoutBuffer) {
+          for (final line in xcodebuildOutputBuffer) {
             _logger.err('\t$line');
           }
         }
