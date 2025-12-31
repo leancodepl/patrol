@@ -58,6 +58,7 @@ class AndroidTestBackend {
 
       // :app:assembleDebug
 
+      final assembleStdoutBuffer = <String>[];
       process =
           await _processManager.start(
               options.toGradleAssembleInvocation(
@@ -71,21 +72,34 @@ class AndroidTestBackend {
               },
             )
             ..disposedBy(scope);
-      process.listenStdOut((l) => _logger.detail('\t: $l')).disposedBy(scope);
+      process
+          .listenStdOut((l) {
+            assembleStdoutBuffer.add(l);
+            _logger.detail('\t: $l');
+          })
+          .disposedBy(scope);
       process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
       exitCode = await process.exitCode;
       if (exitCode == exitCodeInterrupted) {
         const cause = 'Gradle build interrupted';
         task.fail('Failed to build $subject ($cause)');
-        throw Exception(cause);
+        throwToolExit(cause);
       } else if (exitCode != 0) {
+        // Show buffered output on failure (only if not already shown in verbose mode)
+        if (_logger.level != Level.verbose) {
+          _logger.err('Build output:');
+          for (final line in assembleStdoutBuffer) {
+            _logger.err('\t$line');
+          }
+        }
         final cause = 'Gradle build failed with code $exitCode';
         task.fail('Failed to build $subject ($cause)');
-        throw Exception(cause);
+        throwToolExit(cause);
       }
 
       // :app:assembleDebugAndroidTest
 
+      final assembleTestStdoutBuffer = <String>[];
       process =
           await _processManager.start(
               options.toGradleAssembleTestInvocation(
@@ -99,7 +113,12 @@ class AndroidTestBackend {
               },
             )
             ..disposedBy(scope);
-      process.listenStdOut((l) => _logger.detail('\t: $l')).disposedBy(scope);
+      process
+          .listenStdOut((l) {
+            assembleTestStdoutBuffer.add(l);
+            _logger.detail('\t: $l');
+          })
+          .disposedBy(scope);
       process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
 
       exitCode = await process.exitCode;
@@ -108,11 +127,18 @@ class AndroidTestBackend {
       } else if (exitCode == exitCodeInterrupted) {
         const cause = 'Gradle build interrupted';
         task.fail('Failed to build $subject ($cause)');
-        throw Exception(cause);
+        throwToolExit(cause);
       } else {
+        // Show buffered output on failure (only if not already shown in verbose mode)
+        if (_logger.level != Level.verbose) {
+          _logger.err('Build output:');
+          for (final line in assembleTestStdoutBuffer) {
+            _logger.err('\t$line');
+          }
+        }
         final cause = 'Gradle build failed with code $exitCode';
         task.fail('Failed to build $subject ($cause)');
-        throw Exception(cause);
+        throwToolExit(cause);
       }
     });
   }
@@ -189,7 +215,7 @@ class AndroidTestBackend {
 
     final exitCode = await process.exitCode;
     if (exitCode != 0) {
-      throw Exception('Failed to build APK config with exit code $exitCode');
+      throwToolExit('Failed to build APK config with exit code $exitCode');
     }
   }
 
@@ -318,11 +344,11 @@ class AndroidTestBackend {
       } else if (exitCode == exitCodeInterrupted) {
         const cause = 'Gradle test execution interrupted';
         task.fail('Failed to execute tests of $subject ($cause)');
-        throw Exception(cause);
+        throwToolInterrupted(cause);
       } else {
         final cause = 'Gradle test execution failed with code $exitCode';
         task.fail('Failed to execute tests of $subject ($cause)');
-        throw Exception(cause);
+        throwToolExit(cause);
       }
     });
   }
