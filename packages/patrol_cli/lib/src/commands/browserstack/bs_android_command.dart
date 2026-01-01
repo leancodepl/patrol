@@ -55,6 +55,7 @@ class BsAndroidCommand extends PatrolCommand {
         'credentials',
         help: 'Access key from BrowserStack Dashboard (username:access_key)',
       )
+      ..addOption('project', help: 'Project name in BrowserStack Dashboard')
       ..addOption(
         'devices',
         help:
@@ -136,6 +137,9 @@ class BsAndroidCommand extends PatrolCommand {
     final apiParams =
         argResults!['api-params'] as String? ??
         Platform.environment['PATROL_BS_ANDROID_API_PARAMS'];
+    final project =
+        argResults!['project'] as String? ??
+        Platform.environment['PATROL_BS_PROJECT'];
 
     if (credentials.isEmpty) {
       throwToolExit(
@@ -231,6 +235,9 @@ class BsAndroidCommand extends PatrolCommand {
         'deviceLogs': true,
         'enableResultBundle': true,
       };
+      if (project != null) {
+        payload['project'] = project;
+      }
 
       // Merge with custom API params if provided
       if (apiParams != null && apiParams.isNotEmpty) {

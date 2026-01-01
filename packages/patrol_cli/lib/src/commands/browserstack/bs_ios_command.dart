@@ -71,6 +71,7 @@ class BsIosCommand extends PatrolCommand {
         'credentials',
         help: 'Access key from BrowserStack Dashboard (username:access_key)',
       )
+      ..addOption('project', help: 'Project name in BrowserStack Dashboard')
       ..addOption(
         'devices',
         help:
@@ -149,6 +150,9 @@ class BsIosCommand extends PatrolCommand {
     final apiParams =
         argResults!['api-params'] as String? ??
         Platform.environment['PATROL_BS_IOS_API_PARAMS'];
+    final project =
+        argResults!['project'] as String? ??
+        Platform.environment['PATROL_BS_PROJECT'];
 
     if (credentials.isEmpty) {
       throwToolExit(
@@ -170,7 +174,7 @@ class BsIosCommand extends PatrolCommand {
     }
 
     // Create archives
-    _logger.info('Creating zip archives of test files...');
+    _logger.detail('Creating zip archives of test files...');
 
     final config = _pubspecReader.read();
     final flavor = stringArg('flavor') ?? config.ios.flavor;
@@ -215,7 +219,7 @@ class BsIosCommand extends PatrolCommand {
       xctestrunName,
       'RunnerUITests-Runner.app',
     ]);
-    _logger.success('Created zip archives');
+    _logger.detail('Created zip archives');
 
     // Verify files exist
     final appFile = File(ipaPath);
@@ -279,6 +283,9 @@ class BsIosCommand extends PatrolCommand {
         'enableResultBundle': true,
         'networkLogs': false,
       };
+      if (project != null) {
+        payload['project'] = project;
+      }
 
       // Merge with custom API params if provided
       if (apiParams != null && apiParams.isNotEmpty) {
