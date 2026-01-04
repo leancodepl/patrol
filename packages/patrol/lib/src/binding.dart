@@ -247,9 +247,26 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
       }
     };
 
-    await testBody();
+    try {
+      await testBody();
+    } catch (err, st) {
+      // Catch TestFailure and other exceptions thrown in testBody
+      if (_currentDartTest case final testName?) {
+        final previousDetails = switch (_testResults[testName]) {
+          Failure(:final details?) => details,
+          _ => null,
+        };
+        final detailsAsString = '$err\n$st';
 
-    FlutterError.onError = previousOnError;
+        _testResults[testName] = Failure(
+          testName,
+          '$detailsAsString${previousDetails != null ? '\n$previousDetails' : ''}',
+        );
+      }
+      rethrow;
+    } finally {
+      FlutterError.onError = previousOnError;
+    }
   }
 
   @override
