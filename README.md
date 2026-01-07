@@ -185,7 +185,6 @@ flutter pub global activate -s path .
 [patrol_github_link]: https://github.com/leancodepl/patrol
 [patrol_discord_link]: https://discord.gg/ukBK5t4EZg
 [github_patrol]: https://github.com/leancodepl/patrol/tree/master/packages/patrol
-[github_patrol_finders]: https://github.com/leancodepl/patrol/tree/master/packages/patrol_finders
 [github_patrol_cli]: https://github.com/leancodepl/patrol/tree/master/packages/patrol_cli
 [docs]: https://patrol.leancode.co
 [docs_finders]: https://patrol.leancode.co/finders/overview
@@ -194,4 +193,3 @@ flutter pub global activate -s path .
 [article_4x]: https://leancode.co/blog/patrol-4-0-release
 [article_vscode]: https://leancode.co/blog/patrol-vs-code-extension
 [integration_test]: https://github.com/flutter/flutter/tree/master/packages/integration_test
-[hot restart]: https://patrol.leancode.co/cli-commands/develop
