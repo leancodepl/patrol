@@ -23,7 +23,7 @@ Learn more about Patrol:
 
 ## Patrol CLI
 
-Command-line tool to make working with [`patrol`][patrol_link] easier.
+Command-line tool to run and debug tests written with [`patrol`][patrol_link] framework.
 
 ## Installation
 
