@@ -17,10 +17,9 @@ by [LeanCode](https://leancode.co).
 Learn more about Patrol:
 
 - [Our extensive documentation][docs]
-- [Patrol 4.0 with Web support announcement][article_4x]
-- [The article about the test bundling feature in Patrol 2.0][article_2x]
-- [The first stable 1.0 release article][article_1x]
-- [The article about the first public release][article_0x]
+- [How Patrol 4.0 Makes Cross-Platform Flutter Testing Possible][article_4x]
+- [Simplifying Flutter Web Testing: Patrol Web][article_web]
+- [Patrol VS Code Extension - A Better Way to Run and Debug Flutter UI Tests][article_vscode]
 
 ## Patrol CLI
 
@@ -99,9 +98,8 @@ Read the documentation:
 [docs]: https://patrol.leancode.co
 [docs_finders]: https://patrol.leancode.co/finders/overview
 [promo_graphics]: ../../docs/assets/promo.png
-[article_0x]: https://leancode.co/blog/patrol-flutter-first-ui-testing-framework
-[article_1x]: https://leancode.co/blog/patrol-1-0-powerful-flutter-ui-testing-framework
-[article_2x]: https://leancode.co/blog/patrol-2-0-improved-flutter-ui-testing
+[article_web]: https://leancode.co/blog/patrol-web-support
 [article_4x]: https://leancode.co/blog/patrol-4-0-release
+[article_vscode]: https://leancode.co/blog/patrol-vs-code-extension
 [integration_test]: https://github.com/flutter/flutter/tree/master/packages/integration_test
 [hot restart]: https://patrol.leancode.co/cli-commands/develop
