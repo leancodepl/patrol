@@ -1,23 +1,25 @@
 # Patrol
 
 [![patrol on pub.dev][patrol_badge]][patrol_link]
-[![patrol_finders on pub.dev][patrol_finders_badge]][patrol_finders_link]
 [![patrol_cli on pub.dev][patrol_cli_badge]][patrol_cli_link]
+[![patrol_finders on pub.dev][patrol_finders_badge]][patrol_finders_link]
+[![patrol_discord]][patrol_discord_link]
 [![code style][leancode_lint_badge]][leancode_lint_link]
-[![powered by][docs_page_badge]][docs_page_link]
-
-![Patrol promotial graphics][promo_graphics]
+[![patrol_github_stars]][patrol_github_link]
+[![patrol_x]][patrol_x_link]
 
 Simple yet powerful Flutter-first UI testing framework overcoming limitations of
 `flutter_test`, `integration_test`, and `flutter_driver`. Created and supported
 by [LeanCode](https://leancode.co).
 
+![Patrol promotial graphics][promo_graphics]
+
 Learn more about Patrol:
 
 - [Our extensive documentation][docs]
-- [The article about the test bundling feature in Patrol 2.0][article_2x]
-- [The first stable 1.0 release article][article_1x]
-- [The article about the first public release][article_0x]
+- [How Patrol 4.0 Makes Cross-Platform Flutter Testing Possible][article_4x]
+- [Simplifying Flutter Web Testing: Patrol Web][article_web]
+- [Patrol VS Code Extension - A Better Way to Run and Debug Flutter UI Tests][article_vscode]
 
 ## Patrol custom finders
 
@@ -172,20 +174,22 @@ flutter pub global activate -s path .
 [patrol_finders_badge]: https://img.shields.io/pub/v/patrol_finders?label=patrol_finders
 [patrol_cli_badge]: https://img.shields.io/pub/v/patrol_cli?label=patrol_cli
 [leancode_lint_badge]: https://img.shields.io/badge/code%20style-leancode__lint-black
-[docs_page_badge]: https://img.shields.io/badge/documentation-docs.page-34C4AC.svg?style
+[patrol_github_stars]: https://img.shields.io/github/stars/leancodepl/patrol
+[patrol_x]: https://img.shields.io/twitter/follow/patrol_leancode
+[patrol_discord]: https://img.shields.io/discord/1167030497612922931?color=blue&logo=discord
 [patrol_link]: https://pub.dev/packages/patrol
 [patrol_finders_link]: https://pub.dev/packages/patrol_finders
 [patrol_cli_link]: https://pub.dev/packages/patrol_cli
 [leancode_lint_link]: https://pub.dev/packages/leancode_lint
-[docs_page_link]: https://docs.page
+[patrol_x_link]: https://x.com/patrol_leancode
+[patrol_github_link]: https://github.com/leancodepl/patrol
+[patrol_discord_link]: https://discord.gg/ukBK5t4EZg
 [github_patrol]: https://github.com/leancodepl/patrol/tree/master/packages/patrol
-[github_patrol_finders]: https://github.com/leancodepl/patrol/tree/master/packages/patrol_finders
 [github_patrol_cli]: https://github.com/leancodepl/patrol/tree/master/packages/patrol_cli
 [docs]: https://patrol.leancode.co
 [docs_finders]: https://patrol.leancode.co/finders/overview
 [promo_graphics]: docs/assets/promo.png
-[article_0x]: https://leancode.co/blog/patrol-flutter-first-ui-testing-framework
-[article_1x]: https://leancode.co/blog/patrol-1-0-powerful-flutter-ui-testing-framework
-[article_2x]: https://leancode.co/blog/patrol-2-0-improved-flutter-ui-testing
+[article_web]: https://leancode.co/blog/patrol-web-support
+[article_4x]: https://leancode.co/blog/patrol-4-0-release
+[article_vscode]: https://leancode.co/blog/patrol-vs-code-extension
 [integration_test]: https://github.com/flutter/flutter/tree/master/packages/integration_test
-[hot restart]: https://patrol.leancode.co/cli-commands/develop

@@ -1,18 +1,35 @@
-# patrol
+# Patrol
 
-[![patrol on pub.dev][pub_badge]][pub_link]
-[![codestyle][pub_badge_style]][pub_badge_link]
+[![patrol on pub.dev][patrol_badge]][patrol_link]
+[![patrol_cli on pub.dev][patrol_cli_badge]][patrol_cli_link]
+[![patrol_finders on pub.dev][patrol_finders_badge]][patrol_finders_link]
+[![patrol_discord]][patrol_discord_link]
+[![code style][leancode_lint_badge]][leancode_lint_link]
+[![patrol_github_stars]][patrol_github_link]
+[![patrol_x]][patrol_x_link]
+
+Simple yet powerful Flutter-first UI testing framework overcoming limitations of
+`flutter_test`, `integration_test`, and `flutter_driver`. Created and supported
+by [LeanCode](https://leancode.co).
+
+![Patrol promotial graphics][promo_graphics]
+
+Learn more about Patrol:
+
+- [Our extensive documentation][docs]
+- [How Patrol 4.0 Makes Cross-Platform Flutter Testing Possible][article_4x]
+- [Simplifying Flutter Web Testing: Patrol Web][article_web]
+- [Patrol VS Code Extension - A Better Way to Run and Debug Flutter UI Tests][article_vscode]
+
+## Patrol
 
 `patrol` package builds on top of `flutter_test` and `integration_test` to make
-it easy to control the native UI from Dart test code. Created and supported by
-[LeanCode](https://leancode.co).
-
-It must be used together with [patrol_cli].
+it easy to control the native UI from Dart test code. It must be used together with [`patrol_cli`][patrol_cli_link].
 
 It also provides a new custom finder system to make Flutter widget tests more
 concise and understandable, and writing them – faster and more fun. It you want
 to only use custom finders, check out
-[patrol_finders](https://pub.dev/packages/patrol_finders).
+[`patrol_finders`](https://pub.dev/packages/patrol_finders).
 
 ## Installation
 
@@ -92,10 +109,26 @@ void main() {
 }
 ```
 
-[patrol_cli]: https://pub.dev/packages/patrol_cli
-[pub_badge]: https://img.shields.io/pub/v/patrol.svg
-[pub_link]: https://pub.dartlang.org/packages/patrol
-[pub_badge_style]: https://img.shields.io/badge/style-leancode__lint-black
-[pub_badge_link]: https://pub.dartlang.org/packages/leancode_lint
 [native automation]: https://patrol.leancode.co/native/overview
 [custom finders]: https://patrol.leancode.co/finders/overview
+[patrol_badge]: https://img.shields.io/pub/v/patrol?label=patrol
+[patrol_finders_badge]: https://img.shields.io/pub/v/patrol_finders?label=patrol_finders
+[patrol_cli_badge]: https://img.shields.io/pub/v/patrol_cli?label=patrol_cli
+[leancode_lint_badge]: https://img.shields.io/badge/code%20style-leancode__lint-blue
+[patrol_github_stars]: https://img.shields.io/github/stars/leancodepl/patrol
+[patrol_x]: https://img.shields.io/twitter/follow/patrol_leancode
+[patrol_discord]: https://img.shields.io/discord/1167030497612922931?color=blue&logo=discord
+[patrol_link]: https://pub.dev/packages/patrol
+[patrol_finders_link]: https://pub.dev/packages/patrol_finders
+[patrol_cli_link]: https://pub.dev/packages/patrol_cli
+[leancode_lint_link]: https://pub.dev/packages/leancode_lint
+[patrol_x_link]: https://x.com/patrol_leancode
+[patrol_github_link]: https://github.com/leancodepl/patrol
+[patrol_discord_link]: https://discord.gg/ukBK5t4EZg
+[docs]: https://patrol.leancode.co
+[docs_finders]: https://patrol.leancode.co/finders/overview
+[promo_graphics]: ../../docs/assets/promo.png
+[article_web]: https://leancode.co/blog/patrol-web-support
+[article_4x]: https://leancode.co/blog/patrol-4-0-release
+[article_vscode]: https://leancode.co/blog/patrol-vs-code-extension
+[integration_test]: https://github.com/flutter/flutter/tree/master/packages/integration_test
