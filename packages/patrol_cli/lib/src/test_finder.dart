@@ -46,9 +46,7 @@ class TestFinder {
       if (target.endsWith(testFileSuffix)) {
         final isFile = _fs.isFileSync(target);
         if (!isFile) {
-          throwToolExit(
-            'target file $target does not exist, cwd: ${_fs.currentDirectory}',
-          );
+          throwToolExit('target file $target does not exist');
         }
         testFiles.add(_fs.file(target).absolute.path);
       } else if (_fs.isDirectorySync(target)) {
