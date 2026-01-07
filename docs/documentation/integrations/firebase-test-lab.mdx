@@ -1,5 +1,5 @@
 ---
-title: CI - Firebase Test Lab
+title: Firebase Test Lab
 ---
 
 There are many device lab providers. Below we're showing how to run Patrol tests
@@ -13,13 +13,10 @@ Farm][aws_device_farm].
 </Info>
 
 <Tabs
-  defaultValue="android"
-  values={[
-    { label: "Android", value: "android" },
-    { label: "iOS", value: "ios" },
-  ]}
+  defaultIndex={0}
+  items={['Android', 'iOS']}
 >
-  <TabItem value="android">
+  <Tab value="Android">
     To run the integration tests on Android, you need 2 apps: the app itself
     (often called the "app under test") and the test intrumentation app.
 
@@ -64,8 +61,8 @@ Farm][aws_device_farm].
       changed using the [alpha version of the gcloud tool].
     </Info>
 
-  </TabItem>
-  <TabItem value="ios">
+  </Tab>
+  <Tab value="iOS">
 
     To run the integration tests on iOS, you need 2 apps: the app itself
     (often called the "app under test") and the test intrumentation app.
@@ -123,7 +120,7 @@ Farm][aws_device_farm].
     every time. You might want to take a look at Patrol example app's
     [run_ios_testlab script][example_ios_script].
 
-  </TabItem>
+  </Tab>
 </Tabs>
 
 [native setup]: /documentation

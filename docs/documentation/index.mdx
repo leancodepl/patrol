@@ -1,5 +1,6 @@
 ---
 title: Install Patrol
+hidePrevious: true
 ---
 
 Check out our video version of this tutorial on YouTube!
@@ -43,6 +44,9 @@ Check out our video version of this tutorial on YouTube!
       iOS / macOS:
       • Program xcodebuild found in /usr/bin/xcodebuild
       • Program ideviceinstaller found in /opt/homebrew/bin/ideviceinstaller
+      Web:
+      • Program node found in /usr/bin/node
+      • Program npm found in /usr/bin/npm
       ```
       Be sure that for the platform you want to run the test on, all the checks are green.
     
@@ -85,6 +89,23 @@ Check out our video version of this tutorial on YouTube!
         bundle_id: com.example.macos.MyApp
     ```
 
+    <Info>
+        **Test Directory Configuration**: By default, Patrol looks for tests in the `patrol_test/` directory. 
+        You can customize this by adding `test_directory: your_custom_directory` to your `patrol` section in `pubspec.yaml`.
+
+        ```yaml title="pubspec.yaml (optional customization)"
+        patrol:
+          app_name: My App
+          test_directory: integration_test  # Use custom directory
+          android:
+            package_name: com.example.myapp
+          ios:
+            bundle_id: com.example.MyApp
+          macos:
+            bundle_id: com.example.macos.MyApp
+        ```
+    </Info>
+
     <Warning>
         In this tutorial, we are using example app, which has package name
         `com.example.myapp` on Android, bundle id `com.example.MyApp` on iOS,
@@ -105,6 +126,7 @@ Check out our video version of this tutorial on YouTube!
 
     Psst... Android is a bit easier to set up, so we recommend starting with it!
 
+<Accordions>
 <Accordion defaultOpen title="Android setup (for projects using Kotlin DSL)">
   <Steps>
     <Step>
@@ -306,7 +328,9 @@ Check out our video version of this tutorial on YouTube!
 </Warning>
 
 </Accordion>
+</Accordions>
 
+    <Accordions>
     <Accordion title="iOS setup">
       <Steps>
         <Step>
@@ -372,7 +396,7 @@ Check out our video version of this tutorial on YouTube!
             the following command and make sure it completes with no errors:
 
           ```
-          $ flutter build ios --config-only patrol_test/example_test.dart
+          flutter build ios --config-only patrol_test/example_test.dart
           ```
         </Step>
 
@@ -504,7 +528,7 @@ Check out our video version of this tutorial on YouTube!
           Create an empty file `patrol_test/example_test.dart` in the root of your Flutter project. From the command line, run:
 
           ```
-          $ flutter build macos --config-only patrol_test/example_test.dart
+          flutter build macos --config-only patrol_test/example_test.dart
           ```
         </Step>
 
@@ -580,6 +604,7 @@ Check out our video version of this tutorial on YouTube!
         </Step>
       </Steps>
     </Accordion>
+    </Accordions>
     </Step>
 
     <Step>
@@ -688,6 +713,8 @@ Check out our video version of this tutorial on YouTube!
 
 ## FAQ
 
+<Accordions>
+
 <Accordion title="Testing fails with error inside 'patrol_test/test_bundle.dart'">
   The reason is probably a mismatch of `patrol` and `patrol_cli` versions. Go to [Compatibility table]
   and make sure that the versions of `patrol` and `patrol_cli` you are using are compatible.
@@ -717,10 +744,11 @@ Check out our video version of this tutorial on YouTube!
   repeat the same code in every test. Look at the [example]
   of a wrapper function. Find out more in [Initializing app inside a test] section above.
 </Accordion>
-
+</Accordions>
 
 ### Android
 
+<Accordions>
 <Accordion title="Where do I get 'package_name' from?">
   Go to `android/app/build.gradle` and look for `applicationId` in `defaultConfig` section.
 </Accordion>
@@ -734,10 +762,11 @@ Check out our video version of this tutorial on YouTube!
   **Settings** -> **Build, Execution, Deployment** -> **Build Tools** -> **Gradle** -> **Gradle JDK**.
   [Learn more]
 </Accordion>
-
+</Accordions>
 
 ### iOS
 
+<Accordions>
 <Accordion title="Where do I get `bundle_id` from?">
   For iOS go to `ios/Runner.xcodeproj/project.pbxproj` and look for `PRODUCT_BUNDLE_IDENTIFIER`.
   For macOS go to `macos/Runner.xcodeproj/project.pbxproj` and look for `PRODUCT_BUNDLE_IDENTIFIER`.
@@ -777,6 +806,7 @@ Check out our video version of this tutorial on YouTube!
 
   Make sure to replace `patrol_test/example_test.dart` with the path to your test file.
 </Accordion>
+</Accordions>
 
 If you couldn't find an answer to your question/problem, feel free to ask on
 [Patrol Discord Server].

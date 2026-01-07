@@ -1,3 +1,7 @@
+## 4.1.0
+
+- Add `PlatformAutomator` to exports. (#2833)
+
 ## 4.0.1
 
 - Remove dependency on `js`. (#2831)

@@ -2,6 +2,7 @@ name: Report a bug
 description:
   You have run into problems while installing Patrol, setting it up in your app,
   or your tests don't behave as you'd expect.
+labels: ["needs triage"]
 body:
   - type: markdown
     attributes:
