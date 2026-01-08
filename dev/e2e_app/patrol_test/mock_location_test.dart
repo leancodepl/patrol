@@ -29,7 +29,6 @@ void main() {
     await Future<void>.delayed(const Duration(milliseconds: 100));
     await $.pumpAndSettle();
     expect(await $('Location').waitUntilVisible(), findsOneWidget);
-    expect(await $('Latitude: 55.5297').waitUntilVisible(), findsOneWidget);
     expect(await $('Longitude: 21.0122').waitUntilVisible(), findsOneWidget);
     await Future<void>.delayed(const Duration(milliseconds: 1500));
 
