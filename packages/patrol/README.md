@@ -127,7 +127,7 @@ void main() {
 [patrol_discord_link]: https://discord.gg/ukBK5t4EZg
 [docs]: https://patrol.leancode.co
 [docs_finders]: https://patrol.leancode.co/finders/overview
-[promo_graphics]: ../../docs/assets/promo.png
+[promo_graphics]: ../../assets/promo_banner.png
 [article_web]: https://leancode.co/blog/patrol-web-support
 [article_4x]: https://leancode.co/blog/patrol-4-0-release
 [article_vscode]: https://leancode.co/blog/patrol-vs-code-extension
