@@ -80,7 +80,7 @@ jobs:
       - name: Set tests to exclude
         id: set_excluded_tests
         run: |
-          TESTS_TO_EXCLUDE="web_example_test"
+          TESTS_TO_EXCLUDE=""
 
           target_paths=""
           for target in $(echo $TESTS_TO_EXCLUDE | tr ',' '\n'); do
