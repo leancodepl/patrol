@@ -1,6 +1,8 @@
 // We want to keep tests on deprecated APIs.
 // ignore_for_file: deprecated_member_use
 
+import 'dart:io' as io;
+
 import 'package:flutter/services.dart';
 import 'package:gpx/gpx.dart';
 import 'common.dart';
@@ -16,6 +18,13 @@ void main() {
 
     if (await $.native.isPermissionDialogVisible(timeout: _timeout)) {
       await $.native.grantPermissionWhenInUse();
+    }
+    if (io.Platform.isAndroid) {
+      try {
+        await $.native.tap(Selector(text: 'Turn on'));
+      } catch (_) {
+        // ignore
+      }
     }
 
     await $.pumpAndSettle();

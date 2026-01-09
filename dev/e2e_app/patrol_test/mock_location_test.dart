@@ -1,3 +1,5 @@
+import 'dart:io' as io;
+
 import 'package:flutter/services.dart';
 import 'package:gpx/gpx.dart';
 import 'common.dart';
@@ -14,7 +16,13 @@ void main() {
     if (await $.platform.mobile.isPermissionDialogVisible(timeout: _timeout)) {
       await $.platform.mobile.grantPermissionWhenInUse();
     }
-
+    if (io.Platform.isAndroid) {
+      try {
+        await $.platform.mobile.tap(Selector(text: 'Turn on'));
+      } catch (_) {
+        // ignore
+      }
+    }
     await $.pumpAndSettle();
 
     await $.platform.mobile.setMockLocation(55.2297, 21.0122);
