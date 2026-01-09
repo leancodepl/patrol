@@ -60,7 +60,9 @@ class CameraHelpers {
     await $.native2.openApp(appId: 'com.google.android.GoogleCamera');
     await maybeAcceptPermissionDialog();
     try {
-      await $.native2.tap(NativeSelector(android: AndroidSelector(text: 'Done')));
+      await $.native2.tap(
+        NativeSelector(android: AndroidSelector(text: 'Done')),
+      );
     } catch (_) {
       /* ignore */
     }
