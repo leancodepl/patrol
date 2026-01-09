@@ -68,7 +68,7 @@ Future<void> _requestAndGrantGalleryPermission(
   expect($(K.galleryPermissionTile).$(K.statusText).text, 'Not granted');
   await $(K.requestGalleryPermissionButton).tap();
   if (await $.native.isPermissionDialogVisible(timeout: _timeout)) {
-    await $.native.grantPermissionOnlyThisTime();
+    await $.native.grantPermissionWhenInUse();
     await $.pump();
   }
 }

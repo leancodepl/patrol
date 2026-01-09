@@ -4,7 +4,7 @@ import '../common.dart';
 import 'camera_helpers.dart';
 
 void main() {
-  patrol('pick image from gallery - native', ($) async {
+  patrol('pick image from gallery - platform', ($) async {
     await createApp($);
     final cameraHelpers = CameraHelpers($);
     final isVirtualDevice = await $.platform.mobile.isVirtualDevice();

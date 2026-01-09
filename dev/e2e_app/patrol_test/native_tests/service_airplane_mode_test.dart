@@ -5,7 +5,16 @@ import 'dart:io';
 
 import 'common.dart';
 
+final nativeAutomator = NativeAutomator(
+  platformAutomator: PlatformAutomator(
+    config: PlatformAutomatorConfig.defaultConfig(),
+  ),
+);
+
 void main() {
+  patrolTearDown(() async {
+    await nativeAutomator.disableAirplaneMode();
+  });
   patrol('disables and enables airplane mode twice', ($) async {
     await createApp($);
     if (await $.native.isVirtualDevice() && Platform.isIOS) {
