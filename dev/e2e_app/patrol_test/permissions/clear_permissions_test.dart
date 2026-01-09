@@ -34,7 +34,7 @@ void main() {
     expect($(K.galleryPermissionTile).$(K.statusText).text, 'Not granted');
     await $(K.requestGalleryPermissionButton).tap();
     if (await $.platform.mobile.isPermissionDialogVisible(timeout: _timeout)) {
-      await $.platform.mobile.grantPermissionOnlyThisTime();
+      await $.platform.mobile.grantPermissionWhenInUse();
       await $.pump();
     }
   });
