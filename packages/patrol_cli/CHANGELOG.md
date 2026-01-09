@@ -1,3 +1,7 @@
+## Unreleased
+
+- Add support for `--no-tree-shake-icons` flag in cli commands (#2704)
+
 ## 4.0.2
 
 - Remove `platform_automator.dart` import from `test_bundler.dart`. (#2833) 

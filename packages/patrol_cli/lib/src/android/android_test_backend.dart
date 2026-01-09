@@ -183,6 +183,7 @@ class AndroidTestBackend {
         '--build-number',
         buildNumber,
       ],
+      if (options.noTreeShakeIcons) '--no-tree-shake-icons',
       '-t',
       options.target,
     ], runInShell: true);

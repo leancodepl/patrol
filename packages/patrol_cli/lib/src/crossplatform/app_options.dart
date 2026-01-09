@@ -16,6 +16,7 @@ class FlutterAppOptions {
     required this.dartDefineFromFilePaths,
     required this.buildName,
     required this.buildNumber,
+    this.noTreeShakeIcons = false,
   });
 
   final FlutterCommand command;
@@ -26,6 +27,7 @@ class FlutterAppOptions {
   final List<String> dartDefineFromFilePaths;
   final String? buildName;
   final String? buildNumber;
+  final bool noTreeShakeIcons;
 
   /// Translates these options into a proper `flutter attach`.
   @nonVirtual
@@ -225,6 +227,7 @@ class IOSAppOptions {
         '--no-codesign',
         '--${buildMode.name}', // for example '--debug',
         if (simulator) '--simulator',
+        if (flutter.noTreeShakeIcons) '--no-tree-shake-icons',
       ],
       if (flutter.flavor case final flavor?) ...['--flavor', flavor],
       if (flutter.buildName case final buildName?) ...[
