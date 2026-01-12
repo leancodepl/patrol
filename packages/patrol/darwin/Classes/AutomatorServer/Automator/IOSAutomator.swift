@@ -4,6 +4,8 @@
   import XCTest
   import os
 
+  import axeDevToolsXCUI
+
   class IOSAutomator: Automator {
 
     private lazy var device: XCUIDevice = {
@@ -37,6 +39,7 @@
     }
 
     func openApp(_ bundleId: String) throws {
+      var axe: AxeDevTools?
       try runAction("opening app with id \(bundleId)") {
         let app = try self.getApp(withBundleId: bundleId)
         app.activate()
@@ -370,11 +373,14 @@
 
     // MARK: Volume settings
     func pressVolumeUp() throws {
-      #if targetEnvironment(simulator)
-        throw PatrolError.methodNotAvailable("pressVolumeUp", "simulator")
-      #else
-        self.device.press(XCUIDevice.Button.volumeUp)
-      #endif
+      var axe: AxeDevTools?
+      // axe = try? AxeDevTools.startSession(apiKey: "<DEQUE_APIKEY>",
+      //       projectId: "<DEVHUB_PROJECT_ID>")
+      // #if targetEnvironment(simulator)
+      //   throw PatrolError.methodNotAvailable("pressVolumeUp", "simulator")
+      // #else
+      //   self.device.press(XCUIDevice.Button.volumeUp)
+      // #endif
     }
 
     func pressVolumeDown() throws {

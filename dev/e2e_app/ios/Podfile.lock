@@ -81,7 +81,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   app_links: f3e17e4ee5e357b39d8b95290a9b2c299fca71c6
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
-  Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
+  Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
   flutter_local_notifications: 4cde75091f6327eb8517fa068a0a5950212d2086
   flutter_timezone: ac3da59ac941ff1c98a2e1f0293420e020120282
   geolocator_apple: 66b711889fd333205763b83c9dcf0a57a28c7afd
@@ -90,7 +90,7 @@ SPEC CHECKSUMS:
   GoogleMaps: 8939898920281c649150e0af74aa291c60f2e77d
   image_picker_ios: c560581cceedb403a6ff17f2f816d7fea1421fc1
   package_info_plus: c0502532a26c7662a62a356cebe2692ec5fe4ec4
-  patrol: 5a504c6012be7a84369231475ede1fce6e777268
+  patrol: e0f1dbf8bb54feca06f1a89245371e15f4e8db62
   permission_handler_apple: 9878588469a2b0d0fc1e048d9f43605f92e6cec2
   webview_flutter_wkwebview: a4af96a051138e28e29f60101d094683b9f82188
 

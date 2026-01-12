@@ -35,4 +35,7 @@ Runs tests that use flutter_test and patrol APIs as native macOS / iOS integrati
   s.swift_version = '5.0'
 
   s.dependency 'CocoaAsyncSocket', '~> 7.6'
+  s.ios.vendored_frameworks = [
+    "axe-devtools-ios/axeDevToolsXCUI.xcframework"
+  ]
 end
