@@ -1,3 +1,7 @@
+# Unreleased
+
+- Fix Android permission dialog not being tapped with `grantPermissionWhenInUse`.(#2876)
+
 ## 4.1.0
 
 - Add `PlatformAutomator` to exports. (#2833)
