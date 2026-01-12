@@ -137,14 +137,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.2.0"
-  cli_util:
-    dependency: transitive
-    description:
-      name: cli_util
-      sha256: ff6785f7e9e3c38ac98b2fb035701789de90154024a75b6cb926445e83197d1c
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.4.2"
   clock:
     dependency: transitive
     description:
@@ -161,14 +153,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.19.1"
-  convert:
-    dependency: transitive
-    description:
-      name: convert
-      sha256: b30acd5944035672bc15c6b7a8b47d773e41e2f17de064350988c5d02adb1c68
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.1.2"
   coverage:
     dependency: transitive
     description:
@@ -560,14 +544,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.0"
-  hotreloader:
-    dependency: transitive
-    description:
-      name: hotreloader
-      sha256: bc167a1163807b03bada490bfe2df25b0d744df359227880220a5cbd04e5734b
-      url: "https://pub.dev"
-    source: hosted
-    version: "4.3.0"
   html:
     dependency: transitive
     description:
@@ -974,14 +950,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.2.2"
-  rxdart:
-    dependency: transitive
-    description:
-      name: rxdart
-      sha256: "5c3004a4a8dbb94bd4bf5412a4def4acdaa12e12f269737a5751369e12d1a962"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.28.0"
   sanitize_html:
     dependency: transitive
     description:
@@ -1123,14 +1091,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "15.0.0"
-  watcher:
-    dependency: transitive
-    description:
-      name: watcher
-      sha256: "0b7fd4a0bbc4b92641dbf20adfd7e3fd1398fe17102d94b674234563e110088a"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.1.2"
   web:
     dependency: "direct main"
     description:
