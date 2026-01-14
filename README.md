@@ -188,7 +188,7 @@ flutter pub global activate -s path .
 [github_patrol_cli]: https://github.com/leancodepl/patrol/tree/master/packages/patrol_cli
 [docs]: https://patrol.leancode.co
 [docs_finders]: https://patrol.leancode.co/finders/overview
-[promo_graphics]: docs/assets/promo.png
+[promo_graphics]: assets/promo_banner.png
 [article_web]: https://leancode.co/blog/patrol-web-support
 [article_4x]: https://leancode.co/blog/patrol-4-0-release
 [article_vscode]: https://leancode.co/blog/patrol-vs-code-extension
