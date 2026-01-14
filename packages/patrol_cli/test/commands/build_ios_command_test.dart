@@ -467,6 +467,32 @@ void main() {
         expect(opts.testServerPort, equals(9091));
       });
 
+      test('builds iOS app with no-tree-shake-icons flag', () async {
+        final result = await runCommand(['--no-tree-shake-icons']);
+
+        expect(result, equals(0));
+
+        final captured = verify(
+          () => mockIosTestBackend.build(captureAny()),
+        ).captured;
+        final opts = captured.first as IOSAppOptions;
+
+        expect(opts.flutter.noTreeShakeIcons, equals(true));
+      });
+
+      test('builds iOS app without no-tree-shake-icons flag defaults to false', () async {
+        final result = await runCommand();
+
+        expect(result, equals(0));
+
+        final captured = verify(
+          () => mockIosTestBackend.build(captureAny()),
+        ).captured;
+        final opts = captured.first as IOSAppOptions;
+
+        expect(opts.flutter.noTreeShakeIcons, equals(false));
+      });
+
       test('rethrows exception when iosTestBackend.build fails', () async {
         const error = 'Build process failed';
 

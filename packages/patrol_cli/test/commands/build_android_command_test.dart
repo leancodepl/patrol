@@ -447,6 +447,32 @@ void main() {
         expect(opts.testServerPort, equals(9091));
       });
 
+      test('builds Android app with no-tree-shake-icons flag', () async {
+        final result = await runCommand(['--no-tree-shake-icons']);
+
+        expect(result, equals(0));
+
+        final captured = verify(
+          () => mockAndroidTestBackend.build(captureAny()),
+        ).captured;
+        final opts = captured.first as AndroidAppOptions;
+
+        expect(opts.flutter.noTreeShakeIcons, equals(true));
+      });
+
+      test('builds Android app without no-tree-shake-icons flag defaults to false', () async {
+        final result = await runCommand();
+
+        expect(result, equals(0));
+
+        final captured = verify(
+          () => mockAndroidTestBackend.build(captureAny()),
+        ).captured;
+        final opts = captured.first as AndroidAppOptions;
+
+        expect(opts.flutter.noTreeShakeIcons, equals(false));
+      });
+
       test('rethrows exception when androidTestBackend.build fails', () async {
         const error = 'Build process failed';
 
