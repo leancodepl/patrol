@@ -6,11 +6,11 @@ const _kDefaultTestFileSuffix = '_test.dart';
 
 /// Discovers integration tests.
 class TestFinder {
-  TestFinder({required Directory testDir})
-    : _integrationTestDirectory = testDir,
-      _fs = testDir.fileSystem..currentDirectory = testDir.parent;
+  TestFinder({required Directory testDir, required Directory rootDir})
+    : _patrolTestDirectory = testDir,
+      _fs = rootDir.fileSystem;
 
-  final Directory _integrationTestDirectory;
+  final Directory _patrolTestDirectory;
   final FileSystem _fs;
 
   String findTest(
@@ -78,7 +78,7 @@ class TestFinder {
     Set<String> excludes = const {},
     String testFileSuffix = _kDefaultTestFileSuffix,
   }) {
-    directory ??= _integrationTestDirectory;
+    directory ??= _patrolTestDirectory;
 
     if (!directory.existsSync()) {
       throwToolExit("Directory ${directory.path} doesn't exist");
@@ -113,6 +113,8 @@ class TestFinderFactory {
 
   final Directory rootDirectory;
 
-  TestFinder create(String testDirectory) =>
-      TestFinder(testDir: rootDirectory.childDirectory(testDirectory));
+  TestFinder create(String testDirectory) => TestFinder(
+    testDir: rootDirectory.childDirectory(testDirectory),
+    rootDir: rootDirectory,
+  );
 }

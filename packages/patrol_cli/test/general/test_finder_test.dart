@@ -23,7 +23,10 @@ void _test(Platform platform) {
       ..createSync(recursive: true);
     fs.currentDirectory = projectRoot;
 
-    testFinder = TestFinder(testDir: fs.directory('patrol_test').absolute);
+    testFinder = TestFinder(
+      testDir: fs.directory('patrol_test').absolute,
+      rootDir: projectRoot,
+    );
   });
 
   group('findTests', () {
@@ -204,6 +207,21 @@ void _test(Platform platform) {
 
       // when
       final found = testFinder.findTests([target], '_patrol.dart');
+
+      // then
+      expect(found, equals([fs.path.join(fs.currentDirectory.path, target)]));
+    });
+
+    test('finds tests when custom test directory is nested', () {
+      // given
+      final target = fs.path.join('tests', 'e2e', 'test_patrol.dart');
+      fs.file(target).createSync(recursive: true);
+      final nestedTestFinder = TestFinderFactory(
+        rootDirectory: fs.directory(fs.path.join('projects', 'awesome_app')),
+      ).create('tests/e2e');
+
+      // when
+      final found = nestedTestFinder.findTests([target], '_patrol.dart');
 
       // then
       expect(found, equals([fs.path.join(fs.currentDirectory.path, target)]));

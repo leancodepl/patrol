@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Fix a bug when user set a nested test_directory (eg. test/e2e), TestFinder was searching for test files in parent directory instead of project's root (#2858)
 - Add support for `--no-tree-shake-icons` flag in cli commands (#2704)
 
 ## 4.0.2
