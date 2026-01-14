@@ -608,7 +608,6 @@ class Automator private constructor() {
             "com.android.packageinstaller:id/permission_allow_button",
             "com.android.permissioncontroller:id/permission_allow_button",
             "com.android.permissioncontroller:id/permission_allow_foreground_only_button",
-            "com.android.permissioncontroller:id/permission_allow_all_button",
             // once
             "com.android.packageinstaller:id/permission_allow_button",
             "com.android.permissioncontroller:id/permission_allow_button",
