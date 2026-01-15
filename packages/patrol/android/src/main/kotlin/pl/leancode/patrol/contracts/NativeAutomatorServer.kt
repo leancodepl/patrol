@@ -55,6 +55,8 @@ abstract class NativeAutomatorServer {
     abstract fun takeCameraPhoto(request: Contracts.TakeCameraPhotoRequest)
     abstract fun pickImageFromGallery(request: Contracts.PickImageFromGalleryRequest)
     abstract fun pickMultipleImagesFromGallery(request: Contracts.PickMultipleImagesFromGalleryRequest)
+    abstract fun initAxeSession(request: Contracts.InitAxeSessionRequest)
+    abstract fun axeA11yScan()
     abstract fun debug()
     abstract fun setMockLocation(request: Contracts.SetMockLocationRequest)
     abstract fun markPatrolAppServiceReady()
@@ -250,6 +252,15 @@ abstract class NativeAutomatorServer {
       "pickMultipleImagesFromGallery" bind POST to {
         val body = json.fromJson(it.bodyString(), Contracts.PickMultipleImagesFromGalleryRequest::class.java)
         pickMultipleImagesFromGallery(body)
+        Response(OK)
+      },
+      "initAxeSession" bind POST to {
+        val body = json.fromJson(it.bodyString(), Contracts.InitAxeSessionRequest::class.java)
+        initAxeSession(body)
+        Response(OK)
+      },
+      "axeA11yScan" bind POST to {
+        axeA11yScan()
         Response(OK)
       },
       "debug" bind POST to {

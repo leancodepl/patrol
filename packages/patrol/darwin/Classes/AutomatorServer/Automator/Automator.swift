@@ -293,6 +293,10 @@ extension Selector {
     func selectFineLocation() throws
     func selectCoarseLocation() throws
 
+    // MARK: Axe A11y scans
+    func initAxeSession(dequeApiKey: String, dequeProjectId: String) throws
+    func axeA11yScan() throws
+
     // MARK: Other
     func debug() throws
     func setMockLocation(latitude: Double, longitude: Double) throws

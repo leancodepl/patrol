@@ -224,6 +224,14 @@ class NativeAutomatorClient {
     return _sendRequest('pickMultipleImagesFromGallery', request.toJson());
   }
 
+  Future<void> initAxeSession(InitAxeSessionRequest request) {
+    return _sendRequest('initAxeSession', request.toJson());
+  }
+
+  Future<void> axeA11yScan() {
+    return _sendRequest('axeA11yScan');
+  }
+
   Future<void> debug() {
     return _sendRequest('debug');
   }

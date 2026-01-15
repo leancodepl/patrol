@@ -1029,6 +1029,26 @@ class NativeAutomator2 {
     });
   }
 
+  Future<void> initAxeSession({
+    required String dequeApiKey,
+    required String dequeProjectId,
+  }) async {
+    await _wrapRequest('initAxeSession', () async {
+      await _client.initAxeSession(
+        InitAxeSessionRequest(
+          dequeApiKey: dequeApiKey,
+          dequeProjectId: dequeProjectId,
+        ),
+      );
+    });
+  }
+
+  Future<void> axeA11yScan() async {
+    await _wrapRequest('axeA11yScan', () async {
+      await _client.axeA11yScan();
+    });
+  }
+
   /// Checks if the app is running on a virtual device (simulator or emulator).
   ///
   /// Returns `true` if running on iOS simulator or Android emulator, `false` otherwise.

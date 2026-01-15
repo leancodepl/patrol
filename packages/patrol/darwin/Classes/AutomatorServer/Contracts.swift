@@ -428,3 +428,8 @@ public struct PickMultipleImagesFromGalleryRequest: Codable {
   public var isNative2: Bool
 }
 
+public struct InitAxeSessionRequest: Codable {
+  public var dequeApiKey: String
+  public var dequeProjectId: String
+}
+

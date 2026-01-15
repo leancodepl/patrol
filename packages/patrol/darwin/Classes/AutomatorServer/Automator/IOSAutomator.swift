@@ -24,6 +24,8 @@
       return device.system
     }()
 
+    private lazy var axe: AxeDevTools?
+
     private var timeout: TimeInterval = 10
 
     func configure(timeout: TimeInterval) {
@@ -973,6 +975,18 @@
 
         button.tap()
       }
+    }
+
+    // MARK: Axe A11y scans
+
+    func initAxeSession(dequeApiKey: String, dequeProjectId: String) throws {
+      axe = try? AxeDevTools.startSession(apiKey: dequeApiKey,
+            projectId: dequeProjectId)
+    }
+
+    func axeA11yScan() throws {
+      guard let result = try axe?.run(onElement: app)
+      try axe?.saveResult(result)
     }
 
     // MARK: Other

@@ -48,6 +48,8 @@ protocol NativeAutomatorServer {
     func takeCameraPhoto(request: TakeCameraPhotoRequest) throws
     func pickImageFromGallery(request: PickImageFromGalleryRequest) throws
     func pickMultipleImagesFromGallery(request: PickMultipleImagesFromGalleryRequest) throws
+    func initAxeSession(request: InitAxeSessionRequest) throws
+    func axeA11yScan() throws
     func debug() throws
     func setMockLocation(request: SetMockLocationRequest) throws
     func markPatrolAppServiceReady() throws
@@ -292,6 +294,17 @@ extension NativeAutomatorServer {
         return HTTPResponse(.ok)
     }
 
+    private func initAxeSessionHandler(request: HTTPRequest) throws -> HTTPResponse {
+        let requestArg = try JSONDecoder().decode(InitAxeSessionRequest.self, from: request.body)
+        try initAxeSession(request: requestArg)
+        return HTTPResponse(.ok)
+    }
+
+    private func axeA11yScanHandler(request: HTTPRequest) throws -> HTTPResponse {
+        try axeA11yScan()
+        return HTTPResponse(.ok)
+    }
+
     private func debugHandler(request: HTTPRequest) throws -> HTTPResponse {
         try debug()
         return HTTPResponse(.ok)
@@ -532,6 +545,16 @@ extension NativeAutomatorServer {
             request in handleRequest(
                 request: request,
                 handler: pickMultipleImagesFromGalleryHandler)
+        }
+        server.route(.POST, "initAxeSession") {
+            request in handleRequest(
+                request: request,
+                handler: initAxeSessionHandler)
+        }
+        server.route(.POST, "axeA11yScan") {
+            request in handleRequest(
+                request: request,
+                handler: axeA11yScanHandler)
         }
         server.route(.POST, "debug") {
             request in handleRequest(

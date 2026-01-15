@@ -923,3 +923,17 @@ Map<String, dynamic> _$PickMultipleImagesFromGalleryRequestToJson(
   'appId': instance.appId,
   'isNative2': instance.isNative2,
 };
+
+InitAxeSessionRequest _$InitAxeSessionRequestFromJson(
+  Map<String, dynamic> json,
+) => InitAxeSessionRequest(
+  dequeApiKey: json['dequeApiKey'] as String,
+  dequeProjectId: json['dequeProjectId'] as String,
+);
+
+Map<String, dynamic> _$InitAxeSessionRequestToJson(
+  InitAxeSessionRequest instance,
+) => <String, dynamic>{
+  'dequeApiKey': instance.dequeApiKey,
+  'dequeProjectId': instance.dequeProjectId,
+};

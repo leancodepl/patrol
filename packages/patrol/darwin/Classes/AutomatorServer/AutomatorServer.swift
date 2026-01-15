@@ -514,6 +514,21 @@
       }
     }
 
+    // MARK: Axe A11y scans
+    func initAxeSession(dequeApiKey: String, dequeProjectId: String) throws {
+      return try runCatching {
+        automator.initAxeSession(dequeApiKey, dequeProjectId)
+      }
+    }
+
+    func axeA11yScan() throws {
+      return try runCatching {
+        automator.axeA11yScan()
+      }
+    }
+
+    // MARK: Other
+
     func debug() throws {
       return try runCatching {
         try automator.debug()

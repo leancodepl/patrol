@@ -1872,3 +1872,32 @@ class PickMultipleImagesFromGalleryRequest with EquatableMixin {
     );
   }
 }
+
+@JsonSerializable()
+class InitAxeSessionRequest with EquatableMixin {
+  InitAxeSessionRequest({
+    required this.dequeApiKey,
+    required this.dequeProjectId,
+  });
+
+  factory InitAxeSessionRequest.fromJson(Map<String, dynamic> json) =>
+      _$InitAxeSessionRequestFromJson(json);
+
+  final String dequeApiKey;
+  final String dequeProjectId;
+
+  Map<String, dynamic> toJson() => _$InitAxeSessionRequestToJson(this);
+
+  @override
+  List<Object?> get props => [dequeApiKey, dequeProjectId];
+
+  InitAxeSessionRequest copyWith({
+    String? dequeApiKey,
+    String? dequeProjectId,
+  }) {
+    return InitAxeSessionRequest(
+      dequeApiKey: dequeApiKey ?? this.dequeApiKey,
+      dequeProjectId: dequeProjectId ?? this.dequeProjectId,
+    );
+  }
+}

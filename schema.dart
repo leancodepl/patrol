@@ -330,6 +330,11 @@ class PickMultipleImagesFromGalleryRequest {
   late bool isNative2;
 }
 
+class InitAxeSessionRequest {
+  late String dequeApiKey;
+  late String dequeProjectId;
+}
+
 abstract class NativeAutomator<IOSServer, AndroidServer, DartClient> {
   void initialize();
   void configure(ConfigureRequest request);
@@ -391,6 +396,10 @@ abstract class NativeAutomator<IOSServer, AndroidServer, DartClient> {
   void pickMultipleImagesFromGallery(
     PickMultipleImagesFromGalleryRequest request,
   );
+
+  // axe integration
+  void initAxeSession(InitAxeSessionRequest request);
+  void axeA11yScan();
 
   // other
   void debug();
