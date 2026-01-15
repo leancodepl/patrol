@@ -388,6 +388,14 @@ class AutomatorServer(private val automation: Automator) : MobileAutomatorServer
         )
     }
 
+    override fun initAxeSession(request: Contracts.InitAxeSessionRequest) {
+        automation.initAxeSession(request.dequeApiKey, request.dequeProjectId)
+    }
+
+    override fun axeA11yScan() {
+        automation.axeA11yScan()
+    }
+
     override fun setMockLocation(request: SetMockLocationRequest) {
         automation.setMockLocation(request.latitude, request.longitude, request.packageName)
     }

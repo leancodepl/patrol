@@ -81,6 +81,7 @@ class Automator private constructor() {
     private lateinit var uiDevice: UiDevice
     private lateinit var targetContext: Context
     private lateinit var uiAutomation: UiAutomation
+    private lateinit var axe: AxeDevTools
 
     private var mockLocationExecutor: ScheduledExecutorService? = null
     private var mockLocationTask: java.util.concurrent.ScheduledFuture<*>? = null
@@ -483,27 +484,12 @@ class Automator private constructor() {
     }
 
     fun pressVolumeUp() {
-        val axe = AxeDevTools()
-        val instrumentation = InstrumentationRegistry.getInstrumentation()
-        val device = UiDevice.getInstance(instrumentation)
-        val appContext = instrumentation.targetContext
-        val appPackageName = appContext.packageName
-
-        // wait for your app to load on screen
-        device.wait(Until.hasObject(By.pkg(appPackageName).depth(0)), 5000)
-
-        axe.setInstrumentation(instrumentation)
-
-        axe.startSession(/* api key needed here */)
-
-        val scanHandler = axe.scan()
-        scanHandler?.saveResultToLocalStorage("axe")
-        // Logger.d("pressVolumeUp")
-        // val success = uiDevice.pressKeyCode(KEYCODE_VOLUME_UP)
-        // if (!success) {
-        //     throw PatrolException("Could not press volume up")
-        // }
-        // delay()
+        Logger.d("pressVolumeUp")
+        val success = uiDevice.pressKeyCode(KEYCODE_VOLUME_UP)
+        if (!success) {
+            throw PatrolException("Could not press volume up")
+        }
+        delay()
     }
 
     fun pressVolumeDown() {
@@ -864,6 +850,21 @@ class Automator private constructor() {
         }
 
         tap(actionMenuUiSelector, actionMenuBySelector, 0, timeout)
+    }
+
+    fun initAxeSession(dequeApiKey: String, dequeProjectId: String) {
+        axe = AxeDevTools()
+        val appPackageName = targetContext.packageName
+
+        // wait for your app to load on screen
+        uiDevice.wait(Until.hasObject(By.pkg(appPackageName).depth(0)), 5000)
+        axe.setInstrumentation(instrumentation)
+        axe.startSession(dequeApiKey, dequeProjectId)
+    }
+
+    fun axeA11yScan() {
+        val scanHandler = axe.scan()
+        scanHandler?.saveResultToLocalStorage("axe")
     }
 
     /**

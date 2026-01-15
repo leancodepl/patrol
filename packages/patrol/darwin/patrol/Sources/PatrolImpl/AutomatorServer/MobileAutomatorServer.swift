@@ -33,6 +33,12 @@ protocol MobileAutomatorServer {
     func isPermissionDialogVisible(request: PermissionDialogVisibleRequest) throws -> PermissionDialogVisibleResponse
     func handlePermissionDialog(request: HandlePermissionRequest) throws
     func setLocationAccuracy(request: SetLocationAccuracyRequest) throws
+    func takeCameraPhoto(request: TakeCameraPhotoRequest) throws
+    func pickImageFromGallery(request: PickImageFromGalleryRequest) throws
+    func pickMultipleImagesFromGallery(request: PickMultipleImagesFromGalleryRequest) throws
+    func initAxeSession(request: InitAxeSessionRequest) throws
+    func axeA11yScan() throws
+    func debug() throws
     func setMockLocation(request: SetMockLocationRequest) throws
     func stopMockLocation() throws
     func markPatrolAppServiceReady() throws
@@ -175,6 +181,40 @@ extension MobileAutomatorServer {
     private func setLocationAccuracyHandler(request: HTTPRequest) throws -> HTTPResponse {
         let requestArg = try JSONDecoder().decode(SetLocationAccuracyRequest.self, from: request.body)
         try setLocationAccuracy(request: requestArg)
+        return HTTPResponse(.ok)
+    }
+
+    private func takeCameraPhotoHandler(request: HTTPRequest) throws -> HTTPResponse {
+        let requestArg = try JSONDecoder().decode(TakeCameraPhotoRequest.self, from: request.body)
+        try takeCameraPhoto(request: requestArg)
+        return HTTPResponse(.ok)
+    }
+
+    private func pickImageFromGalleryHandler(request: HTTPRequest) throws -> HTTPResponse {
+        let requestArg = try JSONDecoder().decode(PickImageFromGalleryRequest.self, from: request.body)
+        try pickImageFromGallery(request: requestArg)
+        return HTTPResponse(.ok)
+    }
+
+    private func pickMultipleImagesFromGalleryHandler(request: HTTPRequest) throws -> HTTPResponse {
+        let requestArg = try JSONDecoder().decode(PickMultipleImagesFromGalleryRequest.self, from: request.body)
+        try pickMultipleImagesFromGallery(request: requestArg)
+        return HTTPResponse(.ok)
+    }
+
+    private func initAxeSessionHandler(request: HTTPRequest) throws -> HTTPResponse {
+        let requestArg = try JSONDecoder().decode(InitAxeSessionRequest.self, from: request.body)
+        try initAxeSession(request: requestArg)
+        return HTTPResponse(.ok)
+    }
+
+    private func axeA11yScanHandler(request: HTTPRequest) throws -> HTTPResponse {
+        try axeA11yScan()
+        return HTTPResponse(.ok)
+    }
+
+    private func debugHandler(request: HTTPRequest) throws -> HTTPResponse {
+        try debug()
         return HTTPResponse(.ok)
     }
 
@@ -333,6 +373,36 @@ extension MobileAutomatorServer {
             request in handleRequest(
                 request: request,
                 handler: setLocationAccuracyHandler)
+        }
+        server.route(.POST, "takeCameraPhoto") {
+            request in handleRequest(
+                request: request,
+                handler: takeCameraPhotoHandler)
+        }
+        server.route(.POST, "pickImageFromGallery") {
+            request in handleRequest(
+                request: request,
+                handler: pickImageFromGalleryHandler)
+        }
+        server.route(.POST, "pickMultipleImagesFromGallery") {
+            request in handleRequest(
+                request: request,
+                handler: pickMultipleImagesFromGalleryHandler)
+        }
+        server.route(.POST, "initAxeSession") {
+            request in handleRequest(
+                request: request,
+                handler: initAxeSessionHandler)
+        }
+        server.route(.POST, "axeA11yScan") {
+            request in handleRequest(
+                request: request,
+                handler: axeA11yScanHandler)
+        }
+        server.route(.POST, "debug") {
+            request in handleRequest(
+                request: request,
+                handler: debugHandler)
         }
         server.route(.POST, "setMockLocation") {
             request in handleRequest(

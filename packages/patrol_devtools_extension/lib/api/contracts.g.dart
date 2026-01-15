@@ -950,3 +950,17 @@ Map<String, dynamic> _$IOSPickMultipleImagesFromGalleryRequestToJson(
   'timeoutMillis': instance.timeoutMillis,
   'appId': instance.appId,
 };
+
+InitAxeSessionRequest _$InitAxeSessionRequestFromJson(
+  Map<String, dynamic> json,
+) => InitAxeSessionRequest(
+  dequeApiKey: json['dequeApiKey'] as String,
+  dequeProjectId: json['dequeProjectId'] as String,
+);
+
+Map<String, dynamic> _$InitAxeSessionRequestToJson(
+  InitAxeSessionRequest instance,
+) => <String, dynamic>{
+  'dequeApiKey': instance.dequeApiKey,
+  'dequeProjectId': instance.dequeProjectId,
+};

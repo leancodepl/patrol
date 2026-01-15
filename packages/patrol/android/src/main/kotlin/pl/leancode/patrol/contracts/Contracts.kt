@@ -817,4 +817,9 @@ class Contracts {
     }
   }
 
+  data class InitAxeSessionRequest (
+    val dequeApiKey: String,
+    val dequeProjectId: String
+  ){
+
 }
