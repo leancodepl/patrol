@@ -342,6 +342,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       showFlutterLogs: boolArg('show-flutter-logs'),
       hideTestSteps: boolArg('hide-test-steps'),
       clearTestSteps: boolArg('clear-test-steps'),
+      testDirectory: testDirectory,
     );
 
     return allPassed ? 0 : 1;
@@ -424,14 +425,19 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
     required bool showFlutterLogs,
     required bool hideTestSteps,
     required bool clearTestSteps,
+    required String testDirectory,
   }) async {
     Future<void> Function() action;
     Future<void> Function()? finalizer;
 
+    // Video output directory always follows test directory
+    final videoOutputDir =
+        stringArg('video-output-dir') ?? '$testDirectory/videos';
+
     // Create video recording configuration
     final videoConfig = VideoRecordingConfig.fromArgs(
       recordVideo: boolArg('record-video'),
-      videoOutputDir: stringArg('video-output-dir')!,
+      videoOutputDir: videoOutputDir,
       videoSize: stringArg('video-size'),
       videoBitRate: stringArg('video-bit-rate'),
     );
