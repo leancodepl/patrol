@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# https://www.browserstack.com/docs/app-automate/xcuitest/image-injection
+
+file_path="${1:-qr_code.png}"
+
+echo "Uploading: $file_path" >&2
+
+response=$(curl -u "$BROWSERSTACK_CREDS" \
+    -X POST "https://api-cloud.browserstack.com/app-automate/upload-media" \
+    -F "file=@${file_path}" 2>/dev/null)
+
+echo "$response" | jq .
