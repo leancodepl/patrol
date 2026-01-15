@@ -342,7 +342,6 @@ abstract class PatrolCommand extends Command<int> {
       ..addOption(
         'video-output-dir',
         help: 'Directory to save recorded videos.',
-        defaultsTo: 'integration_test/videos',
         valueHelp: 'path/to/videos',
       )
       ..addOption(
