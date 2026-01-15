@@ -358,7 +358,13 @@ class IOSPickMultipleImagesFromGalleryRequest {
   late String appId;
 }
 
+class InitAxeSessionRequest {
+  late String dequeApiKey;
+  late String dequeProjectId;
+}
+
 abstract class MobileAutomator<IOSServer, AndroidServer, DartClient> {
+  void initialize();
   void configure(ConfigureRequest request);
 
   // general
@@ -480,6 +486,11 @@ abstract class IosAutomator<IOSServer, DartClient> {
     IOSPickMultipleImagesFromGalleryRequest request,
   );
 
+  // axe integration
+  void initAxeSession(InitAxeSessionRequest request);
+  void axeA11yScan();
+
+  // other
   void debug();
 }
 

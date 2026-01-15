@@ -148,6 +148,32 @@ class MobileAutomatorClient {
     return _sendRequest('setLocationAccuracy', request.toJson());
   }
 
+  Future<void> takeCameraPhoto(TakeCameraPhotoRequest request) {
+    return _sendRequest('takeCameraPhoto', request.toJson());
+  }
+
+  Future<void> pickImageFromGallery(PickImageFromGalleryRequest request) {
+    return _sendRequest('pickImageFromGallery', request.toJson());
+  }
+
+  Future<void> pickMultipleImagesFromGallery(
+    PickMultipleImagesFromGalleryRequest request,
+  ) {
+    return _sendRequest('pickMultipleImagesFromGallery', request.toJson());
+  }
+
+  Future<void> initAxeSession(InitAxeSessionRequest request) {
+    return _sendRequest('initAxeSession', request.toJson());
+  }
+
+  Future<void> axeA11yScan() {
+    return _sendRequest('axeA11yScan');
+  }
+
+  Future<void> debug() {
+    return _sendRequest('debug');
+  }
+
   Future<void> setMockLocation(SetMockLocationRequest request) {
     return _sendRequest('setMockLocation', request.toJson());
   }
