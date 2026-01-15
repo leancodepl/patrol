@@ -140,6 +140,8 @@ class BuildIOSCommand extends PatrolCommand {
 
     final displayLabel = boolArg('label');
 
+    final noTreeShakeIcons = boolArg('no-tree-shake-icons');
+
     final customDartDefines = {
       ..._dartDefinesReader.fromFile(),
       ..._dartDefinesReader.fromCli(args: stringsArg('dart-define')),
@@ -180,6 +182,7 @@ class BuildIOSCommand extends PatrolCommand {
       dartDefineFromFilePaths: dartDefineFromFilePaths,
       buildName: buildName,
       buildNumber: buildNumber,
+      noTreeShakeIcons: noTreeShakeIcons,
     );
 
     final iosOpts = IOSAppOptions(
