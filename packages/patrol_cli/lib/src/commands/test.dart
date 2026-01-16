@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:glob/glob.dart';
 import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
+import 'package:patrol_cli/src/android/video_recording_config.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/commands/dart_define_utils.dart';
@@ -69,6 +70,7 @@ class TestCommand extends PatrolCommand {
 
     usesAndroidOptions();
     usesIOSOptions();
+    usesVideoRecordingOptions();
 
     usesWeb();
   }
@@ -340,6 +342,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       showFlutterLogs: boolArg('show-flutter-logs'),
       hideTestSteps: boolArg('hide-test-steps'),
       clearTestSteps: boolArg('clear-test-steps'),
+      testDirectory: testDirectory,
     );
 
     return allPassed ? 0 : 1;
@@ -422,9 +425,22 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
     required bool showFlutterLogs,
     required bool hideTestSteps,
     required bool clearTestSteps,
+    required String testDirectory,
   }) async {
     Future<void> Function() action;
     Future<void> Function()? finalizer;
+
+    // Video output directory always follows test directory
+    final videoOutputDir =
+        stringArg('video-output-dir') ?? '$testDirectory/videos';
+
+    // Create video recording configuration
+    final videoConfig = VideoRecordingConfig.fromArgs(
+      recordVideo: boolArg('record-video'),
+      videoOutputDir: videoOutputDir,
+      videoSize: stringArg('video-size'),
+      videoBitRate: stringArg('video-bit-rate'),
+    );
 
     switch (device.targetPlatform) {
       case TargetPlatform.android:
@@ -435,6 +451,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
           hideTestSteps: hideTestSteps,
           flavor: flutterOpts.flavor,
           clearTestSteps: clearTestSteps,
+          videoConfig: videoConfig,
         );
         final package = android.packageName;
         if (package != null && uninstall) {
@@ -449,6 +466,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
           showFlutterLogs: showFlutterLogs,
           hideTestSteps: hideTestSteps,
           clearTestSteps: clearTestSteps,
+          videoConfig: videoConfig,
         );
         final bundleId = ios.bundleId;
         if (bundleId != null && uninstall) {

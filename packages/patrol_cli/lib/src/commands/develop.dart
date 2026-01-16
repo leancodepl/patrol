@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
+import 'package:patrol_cli/src/android/video_recording_config.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
 import 'package:patrol_cli/src/base/logger.dart';
@@ -68,6 +69,7 @@ class DevelopCommand extends PatrolCommand {
 
     usesAndroidOptions();
     usesIOSOptions();
+    usesVideoRecordingOptions();
 
     argParser.addFlag(
       'open-devtools',
@@ -371,6 +373,14 @@ class DevelopCommand extends PatrolCommand {
     Future<void> Function()? finalizer;
     String? appId;
 
+    // Create video recording configuration
+    final videoConfig = VideoRecordingConfig.fromArgs(
+      recordVideo: boolArg('record-video'),
+      videoOutputDir: stringArg('video-output-dir')!,
+      videoSize: stringArg('video-size'),
+      videoBitRate: stringArg('video-bit-rate'),
+    );
+
     switch (device.targetPlatform) {
       case TargetPlatform.android:
         appId = android.packageName;
@@ -382,6 +392,7 @@ class DevelopCommand extends PatrolCommand {
           hideTestSteps: hideTestSteps,
           flavor: flutterOpts.flavor,
           clearTestSteps: clearTestSteps,
+          videoConfig: videoConfig,
         );
         final package = android.packageName;
         if (package != null && uninstall) {
@@ -400,6 +411,7 @@ class DevelopCommand extends PatrolCommand {
           showFlutterLogs: showFlutterLogs,
           hideTestSteps: hideTestSteps,
           clearTestSteps: clearTestSteps,
+          videoConfig: videoConfig,
         );
         final bundleId = iosOpts.bundleId;
         if (bundleId != null && uninstall) {
