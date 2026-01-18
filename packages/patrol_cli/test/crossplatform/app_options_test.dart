@@ -543,9 +543,7 @@ void main() {
           dartDefineFromFilePaths: [],
         );
 
-        options = const WebAppOptions(
-          flutter: flutterOpts,
-        );
+        options = const WebAppOptions(flutter: flutterOpts);
 
         final flutterInvocation = options.toFlutterBuildInvocation();
 
@@ -573,9 +571,7 @@ void main() {
           dartDefineFromFilePaths: [],
         );
 
-        options = const WebAppOptions(
-          flutter: flutterOpts,
-        );
+        options = const WebAppOptions(flutter: flutterOpts);
 
         final flutterInvocation = options.toFlutterBuildInvocation();
 
@@ -607,9 +603,7 @@ void main() {
           dartDefineFromFilePaths: [],
         );
 
-        options = const WebAppOptions(
-          flutter: flutterOpts,
-        );
+        options = const WebAppOptions(flutter: flutterOpts);
 
         final flutterInvocation = options.toFlutterBuildInvocation();
 
@@ -640,9 +634,7 @@ void main() {
           dartDefineFromFilePaths: ['defines.json', 'secrets.env'],
         );
 
-        options = const WebAppOptions(
-          flutter: flutterOpts,
-        );
+        options = const WebAppOptions(flutter: flutterOpts);
 
         final flutterInvocation = options.toFlutterBuildInvocation();
 
@@ -668,16 +660,11 @@ void main() {
           flavor: null,
           buildName: null,
           buildNumber: null,
-          dartDefines: {
-            'ENV': 'production',
-            'DEBUG_MODE': 'false',
-          },
+          dartDefines: {'ENV': 'production', 'DEBUG_MODE': 'false'},
           dartDefineFromFilePaths: ['config.json'],
         );
 
-        options = const WebAppOptions(
-          flutter: flutterOpts,
-        );
+        options = const WebAppOptions(flutter: flutterOpts);
 
         final flutterInvocation = options.toFlutterBuildInvocation();
 
@@ -697,10 +684,10 @@ void main() {
       });
 
       test('with custom flutter command arguments', () {
-        const customFlutterCommand = FlutterCommand(
-          'flutter',
-          ['--verbose', '--no-pub'],
-        );
+        const customFlutterCommand = FlutterCommand('flutter', [
+          '--verbose',
+          '--no-pub',
+        ]);
 
         const flutterOpts = FlutterAppOptions(
           command: customFlutterCommand,
@@ -713,9 +700,7 @@ void main() {
           dartDefineFromFilePaths: [],
         );
 
-        options = const WebAppOptions(
-          flutter: flutterOpts,
-        );
+        options = const WebAppOptions(flutter: flutterOpts);
 
         final flutterInvocation = options.toFlutterBuildInvocation();
 
@@ -747,9 +732,7 @@ void main() {
           dartDefineFromFilePaths: [],
         );
 
-        options = const WebAppOptions(
-          flutter: flutterOpts,
-        );
+        options = const WebAppOptions(flutter: flutterOpts);
 
         final flutterInvocation = options.toFlutterBuildInvocation();
 
@@ -764,10 +747,7 @@ void main() {
             '--release',
           ]),
         );
-        expect(
-          flutterInvocation,
-          isNot(contains('--flavor')),
-        );
+        expect(flutterInvocation, isNot(contains('--flavor')));
       });
     });
   });
