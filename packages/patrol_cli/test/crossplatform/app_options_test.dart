@@ -526,4 +526,249 @@ void main() {
       });
     });
   });
+
+  group('WebAppOptions', () {
+    late WebAppOptions options;
+
+    group('correctly encodes Flutter build invocation', () {
+      test('with minimal configuration', () {
+        const flutterOpts = FlutterAppOptions(
+          command: flutterCommand,
+          target: 'patrol_test/app_test.dart',
+          buildMode: BuildMode.debug,
+          flavor: null,
+          buildName: null,
+          buildNumber: null,
+          dartDefines: {},
+          dartDefineFromFilePaths: [],
+        );
+
+        options = const WebAppOptions(
+          flutter: flutterOpts,
+        );
+
+        final flutterInvocation = options.toFlutterBuildInvocation();
+
+        expect(
+          flutterInvocation,
+          equals([
+            'flutter',
+            'build',
+            'web',
+            '--target=patrol_test/app_test.dart',
+            '--debug',
+          ]),
+        );
+      });
+
+      test('with release build mode', () {
+        const flutterOpts = FlutterAppOptions(
+          command: flutterCommand,
+          target: 'integration_test/app_test.dart',
+          buildMode: BuildMode.release,
+          flavor: null,
+          buildName: null,
+          buildNumber: null,
+          dartDefines: {},
+          dartDefineFromFilePaths: [],
+        );
+
+        options = const WebAppOptions(
+          flutter: flutterOpts,
+        );
+
+        final flutterInvocation = options.toFlutterBuildInvocation();
+
+        expect(
+          flutterInvocation,
+          equals([
+            'flutter',
+            'build',
+            'web',
+            '--target=integration_test/app_test.dart',
+            '--release',
+          ]),
+        );
+      });
+
+      test('with dart defines', () {
+        const flutterOpts = FlutterAppOptions(
+          command: flutterCommand,
+          target: 'patrol_test/app_test.dart',
+          buildMode: BuildMode.debug,
+          flavor: null,
+          buildName: null,
+          buildNumber: null,
+          dartDefines: {
+            'EMAIL': 'user@example.com',
+            'PASSWORD': 'ny4ncat',
+            'API_KEY': 'secret123',
+          },
+          dartDefineFromFilePaths: [],
+        );
+
+        options = const WebAppOptions(
+          flutter: flutterOpts,
+        );
+
+        final flutterInvocation = options.toFlutterBuildInvocation();
+
+        expect(
+          flutterInvocation,
+          equals([
+            'flutter',
+            'build',
+            'web',
+            '--target=patrol_test/app_test.dart',
+            '--debug',
+            '--dart-define=EMAIL=user@example.com',
+            '--dart-define=PASSWORD=ny4ncat',
+            '--dart-define=API_KEY=secret123',
+          ]),
+        );
+      });
+
+      test('with dart define from file paths', () {
+        const flutterOpts = FlutterAppOptions(
+          command: flutterCommand,
+          target: 'patrol_test/app_test.dart',
+          buildMode: BuildMode.release,
+          flavor: null,
+          buildName: null,
+          buildNumber: null,
+          dartDefines: {},
+          dartDefineFromFilePaths: ['defines.json', 'secrets.env'],
+        );
+
+        options = const WebAppOptions(
+          flutter: flutterOpts,
+        );
+
+        final flutterInvocation = options.toFlutterBuildInvocation();
+
+        expect(
+          flutterInvocation,
+          equals([
+            'flutter',
+            'build',
+            'web',
+            '--target=patrol_test/app_test.dart',
+            '--release',
+            '--dart-define-from-file=defines.json',
+            '--dart-define-from-file=secrets.env',
+          ]),
+        );
+      });
+
+      test('with both dart defines and dart define from file', () {
+        const flutterOpts = FlutterAppOptions(
+          command: flutterCommand,
+          target: 'patrol_test/web_test.dart',
+          buildMode: BuildMode.profile,
+          flavor: null,
+          buildName: null,
+          buildNumber: null,
+          dartDefines: {
+            'ENV': 'production',
+            'DEBUG_MODE': 'false',
+          },
+          dartDefineFromFilePaths: ['config.json'],
+        );
+
+        options = const WebAppOptions(
+          flutter: flutterOpts,
+        );
+
+        final flutterInvocation = options.toFlutterBuildInvocation();
+
+        expect(
+          flutterInvocation,
+          equals([
+            'flutter',
+            'build',
+            'web',
+            '--target=patrol_test/web_test.dart',
+            '--profile',
+            '--dart-define=ENV=production',
+            '--dart-define=DEBUG_MODE=false',
+            '--dart-define-from-file=config.json',
+          ]),
+        );
+      });
+
+      test('with custom flutter command arguments', () {
+        const customFlutterCommand = FlutterCommand(
+          'flutter',
+          ['--verbose', '--no-pub'],
+        );
+
+        const flutterOpts = FlutterAppOptions(
+          command: customFlutterCommand,
+          target: 'test/my_test.dart',
+          buildMode: BuildMode.debug,
+          flavor: null,
+          buildName: null,
+          buildNumber: null,
+          dartDefines: {},
+          dartDefineFromFilePaths: [],
+        );
+
+        options = const WebAppOptions(
+          flutter: flutterOpts,
+        );
+
+        final flutterInvocation = options.toFlutterBuildInvocation();
+
+        expect(
+          flutterInvocation,
+          equals([
+            'flutter',
+            '--verbose',
+            '--no-pub',
+            'build',
+            'web',
+            '--target=test/my_test.dart',
+            '--debug',
+          ]),
+        );
+      });
+
+      test('flavor is ignored for web builds', () {
+        // Note: Web builds don't support flavors, so this should be handled
+        // by not including --flavor in the command
+        const flutterOpts = FlutterAppOptions(
+          command: flutterCommand,
+          target: 'patrol_test/app_test.dart',
+          buildMode: BuildMode.release,
+          flavor: 'production', // This should be ignored for web
+          buildName: null,
+          buildNumber: null,
+          dartDefines: {},
+          dartDefineFromFilePaths: [],
+        );
+
+        options = const WebAppOptions(
+          flutter: flutterOpts,
+        );
+
+        final flutterInvocation = options.toFlutterBuildInvocation();
+
+        // Verify that --flavor is NOT included in the invocation
+        expect(
+          flutterInvocation,
+          equals([
+            'flutter',
+            'build',
+            'web',
+            '--target=patrol_test/app_test.dart',
+            '--release',
+          ]),
+        );
+        expect(
+          flutterInvocation,
+          isNot(contains('--flavor')),
+        );
+      });
+    });
+  });
 }
