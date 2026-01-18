@@ -31,21 +31,9 @@ class WebTestBackend {
   Future<void> build(WebAppOptions options) async {
     _logger.detail('Building web app for testing...');
 
-    final result = await _processManager.run([
-      options.flutter.command.executable,
-      ...options.flutter.command.arguments,
-      'build',
-      'web',
-      '--target=${options.flutter.target}',
-      '--${options.flutter.buildMode.name}',
-      // Note: --flavor is not supported for web, so we don't include it
-      ...options.flutter.dartDefines.entries.map(
-        (e) => '--dart-define=${e.key}=${e.value}',
-      ),
-      ...options.flutter.dartDefineFromFilePaths.map(
-        (e) => '--dart-define-from-file=$e',
-      ),
-    ]);
+    final result = await _processManager.run(
+      options.toFlutterBuildInvocation(),
+    );
 
     if (result.exitCode != 0) {
       throw ProcessException(
