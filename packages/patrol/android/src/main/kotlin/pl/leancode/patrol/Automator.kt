@@ -819,6 +819,7 @@ class Automator private constructor() {
     }
 
     fun axeA11yScan() {
+        uiDevice.wait(Until.hasObject(By.pkg(appPackageName).depth(0)), 5000)
         val scanHandler = axe.scan()
         scanHandler?.saveResultToLocalStorage("axe")
     }
