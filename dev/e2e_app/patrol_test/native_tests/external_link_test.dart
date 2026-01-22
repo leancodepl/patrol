@@ -18,12 +18,6 @@ void main() {
     }
 
     try {
-      await $.native.tap(Selector(text: 'Contact us'));
-    } on PatrolActionException catch (_) {
-      // ignore
-    }
-
-    try {
       await $.native.tap(Selector(text: 'No thanks'));
     } on PatrolActionException catch (_) {
       // ignore
@@ -41,7 +35,7 @@ void main() {
         appId: 'com.apple.mobilesafari',
       );
     } else {
-      await $.native.waitUntilVisible(Selector(text: 'Subscribe'));
+      await $.native.waitUntilVisible(Selector(text: 'Contact us'));
     }
   });
 }
