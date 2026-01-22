@@ -197,12 +197,12 @@ flutter pub global activate -s path .
 [patrol_discord_link]: https://discord.gg/ukBK5t4EZg
 [github_patrol]: https://github.com/leancodepl/patrol/tree/master/packages/patrol
 [github_patrol_cli]: https://github.com/leancodepl/patrol/tree/master/packages/patrol_cli
-[docs]: https://patrol.leancode.co
+[docs]: https://patrol.leancode.co/?utm_source=github.com&utm_medium=referral&utm_campaign=patrol-readme
 [docs_finders]: https://patrol.leancode.co/finders/overview
 [promo_graphics]: assets/promo_banner.png
-[article_web]: https://leancode.co/blog/patrol-web-support
-[article_4x]: https://leancode.co/blog/patrol-4-0-release
-[article_vscode]: https://leancode.co/blog/patrol-vs-code-extension
+[article_web]: https://leancode.co/blog/patrol-web-support?utm_source=github.com&utm_medium=referral&utm_campaign=patrol-readme
+[article_4x]: https://leancode.co/blog/patrol-4-0-release?utm_source=github.com&utm_medium=referral&utm_campaign=patrol-readme
+[article_vscode]: https://leancode.co/blog/patrol-vs-code-extension?utm_source=github.com&utm_medium=referral&utm_campaign=patrol-readme
 [integration_test]: https://github.com/flutter/flutter/tree/master/packages/integration_test
 [automate_flutter_app_testing_with_patrol]: https://leancode.co/products/automated-ui-testing-in-flutter?utm_source=github.com&utm_medium=referral&utm_campaign=patrol-readme
 [patrol_setup_and_training]: https://leancode.co/products/patrol-setup-training?utm_source=github.com&utm_medium=referral&utm_campaign=patrol-readme
