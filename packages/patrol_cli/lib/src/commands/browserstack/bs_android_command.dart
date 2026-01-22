@@ -75,13 +75,13 @@ class BsAndroidCommand extends PatrolCommand {
             r'(or from file: --api-params "$(cat params.json)")',
       )
       ..addFlag(
-        'wait',
-        abbr: 'w',
-        help: 'Wait for the test run to complete',
+        'download-outputs',
+        abbr: 'd',
+        help: 'Wait for the test run to complete and download outputs',
         negatable: false,
       )
       ..addOption(
-        'wait-timeout',
+        'timeout',
         help:
             'Timeout in minutes when waiting for test run\n'
             '(default: 60)',
@@ -121,9 +121,9 @@ class BsAndroidCommand extends PatrolCommand {
 
     // Parse BS-specific options
     final skipBuild = argResults!['skip-build'] as bool? ?? false;
-    final wait = argResults!['wait'] as bool? ?? false;
-    final waitTimeoutMinutes =
-        int.tryParse(argResults!['wait-timeout'] as String? ?? '60') ?? 60;
+    final downloadOutputs = argResults!['download-outputs'] as bool? ?? false;
+    final timeoutMinutes =
+        int.tryParse(argResults!['timeout'] as String? ?? '60') ?? 60;
     final outputDir = argResults!['output-dir'] as String? ?? '.';
 
     final credentials =
@@ -259,7 +259,7 @@ class BsAndroidCommand extends PatrolCommand {
         ..detail('Build ID:')
         ..detail(buildId);
 
-      if (wait) {
+      if (downloadOutputs) {
         return _bsOutputsCommand.execute(
           buildId: buildId,
           outputDir: outputDir,
@@ -267,7 +267,7 @@ class BsAndroidCommand extends PatrolCommand {
           retryLimit: 5,
           retryDelay: const Duration(seconds: 30),
           credentials: credentials,
-          timeout: Duration(minutes: waitTimeoutMinutes),
+          timeout: Duration(minutes: timeoutMinutes),
         );
       }
 
