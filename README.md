@@ -184,7 +184,7 @@ flutter pub global activate -s path .
 ## 🛠️ Maintained by LeanCode
 
 <div align="center">
-  <a href="https://leancode.co/?utm_source=github.com&utm_medium=referral&utm_campaign=marionette-mcp">
+  <a href="https://leancode.co/?utm_source=github.com&utm_medium=referral&utm_campaign=patrol-readme">
     <img src="https://leancodepublic.blob.core.windows.net/public/wide.png" alt="LeanCode Logo" height="100" />
   </a>
 </div>
