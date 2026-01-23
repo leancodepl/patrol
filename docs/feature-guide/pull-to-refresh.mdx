@@ -7,10 +7,10 @@ Patrol provides a function for pull-to-refresh gesture (`pullToRefresh`), allowi
 
 ## Basic usage
 
-The `pullToRefresh` method is available through the native automator:
+The `pullToRefresh` method is available through the platform automator:
 
 ```dart
-await $.native.pullToRefresh();
+await $.platform.mobile.pullToRefresh();
 ```
 
 By default, this performs a pull-to-refresh gesture from the center of the screen (0.5, 0.5) to the bottom center (0.5, 0.9).

@@ -128,9 +128,9 @@ app on the device we want to run the tests on looks like this:
 And here's the code:
 
 ```dart
-await $.native.tap(Selector(text: 'Camera')); // tap on the list tile
-await $.native.tap(Selector(text: 'ALLOW')); // handle the confirmation dialog
-await $.native.pressBack(); // go back to the app under test
+await $.platform.mobile.tap(Selector(text: 'Camera')); // tap on the list tile
+await $.platform.mobile.tap(Selector(text: 'ALLOW')); // handle the confirmation dialog
+await $.platform.mobile.pressBack(); // go back to the app under test
 ```
 
 Please note that the UI of the Settings app differs across operating systems,
@@ -189,7 +189,7 @@ grant the permissions, and finally, await the `Future` from the first step:
 // 1. request the permission
 final permissionRequestFuture = Geolocator.requestPermission();
 // 2. grant the permission using Patrol
-await $.native.grantPermissionWhenInUse();
+await $.platform.mobile.grantPermissionWhenInUse();
 // 3. wait for permission being granted
 final permissionRequestResult = await permissionRequestFuture;
 expect(permissionRequestResult, equals(LocationPermission.whileInUse));
