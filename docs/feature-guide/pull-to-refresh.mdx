@@ -24,7 +24,7 @@ const maxAttempts = 5;
 var attempt = 0;
 while (attempt < maxAttempts) {
   // Perform pull to refresh
-  await $.native.pullToRefresh();
+  await $.platform.mobile.pullToRefresh();
 
   // Wait for the refresh to complete
   await $.pumpAndSettle();
@@ -49,7 +49,7 @@ await $(K.awaitedElement).waitUntilVisible();
 - Adjust coordinates based on your app's layout (e.g., when the center of the screen is not part of the scrollable area, or when testing horizontal lists that implement pull-to-refresh)
 ```dart
 // Pull to refresh horizontally (swipe left)
-await $.native.pullToRefresh(
+await $.platform.mobile.pullToRefresh(
   start: Offset(0.5, 0.5),
   end: Offset(0.1, 0.5),
 );
