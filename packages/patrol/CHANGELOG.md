@@ -1,6 +1,7 @@
 # Unreleased
 
 - Fix Android permission dialog not being tapped with `grantPermissionWhenInUse`.(#2876)
+- Fix `tapOnNotificationByIndex` on iOS 18+ to use consistent indexing with other systems.
 
 ## 4.1.0
 
