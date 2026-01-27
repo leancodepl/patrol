@@ -29,6 +29,15 @@ class PatrolAppServiceClient {
     }
   }
 
+  func getDartTestStatus(request: GetDartTestStatusRequest, completion: @escaping (Result<GetDartTestStatusResponse, Error>) -> Void) {
+    do {
+      let body = try JSONEncoder().encode(request)
+      performRequestWithResult(requestName: "getDartTestStatus", body: body, completion: completion)
+    } catch let err {
+      completion(.failure(err))
+    }
+  }
+
   private func performRequestWithResult<TResult: Decodable>(
     requestName: String, body: Data? = nil, completion: @escaping (Result<TResult, Error>) -> Void
   ) {

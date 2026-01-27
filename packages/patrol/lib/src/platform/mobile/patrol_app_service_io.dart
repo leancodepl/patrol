@@ -86,6 +86,12 @@ class PatrolAppService extends PatrolAppServiceServer {
 
   final _patrolLog = PatrolLogWriter();
 
+  /// Tracks the name of the currently running test (for status polling).
+  String? _currentlyRunningTest;
+
+  /// Stores the result of the last completed test (for status polling).
+  _TestExecutionResult? _lastTestResult;
+
   /// Marks [dartFileName] as completed with the given [passed] status.
   ///
   /// If an exception was thrown during the test, [details] should contain the
@@ -155,9 +161,18 @@ class PatrolAppService extends PatrolAppServiceServer {
     // patrolTest() always calls this method.
 
     print('PatrolAppService.runDartTest(${request.name}) called');
+
+    // Track test execution state for status polling
+    _currentlyRunningTest = request.name;
+    _lastTestResult = null;
+
     _testExecutionRequested.complete(request.name);
 
     final testExecutionResult = await testExecutionCompleted;
+
+    // Update state after test completion
+    _lastTestResult = testExecutionResult;
+    _currentlyRunningTest = null;
 
     if (!testExecutionResult.passed) {
       _patrolLog.log(
@@ -177,6 +192,32 @@ class PatrolAppService extends PatrolAppServiceServer {
           ? RunDartTestResponseResult.success
           : RunDartTestResponseResult.failure,
       details: testExecutionResult.details,
+    );
+  }
+
+  @override
+  Future<GetDartTestStatusResponse> getDartTestStatus(
+    GetDartTestStatusRequest request,
+  ) async {
+    print('PatrolAppService.getDartTestStatus(${request.name}) called');
+
+    if (_currentlyRunningTest == request.name) {
+      return GetDartTestStatusResponse(
+        status: DartTestExecutionStatus.running,
+      );
+    }
+
+    if (_lastTestResult != null) {
+      return GetDartTestStatusResponse(
+        status: _lastTestResult!.passed
+            ? DartTestExecutionStatus.success
+            : DartTestExecutionStatus.failure,
+        details: _lastTestResult!.details,
+      );
+    }
+
+    return GetDartTestStatusResponse(
+      status: DartTestExecutionStatus.notStarted,
     );
   }
 }

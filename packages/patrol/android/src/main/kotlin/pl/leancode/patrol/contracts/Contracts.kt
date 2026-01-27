@@ -17,6 +17,13 @@ class Contracts {
     failure,
   }
 
+  enum class DartTestExecutionStatus {
+    notStarted,
+    running,
+    success,
+    failure,
+  }
+
   enum class KeyboardBehavior {
     showAndDismiss,
     alternative,
@@ -208,6 +215,19 @@ class Contracts {
 
   data class RunDartTestResponse (
     val result: RunDartTestResponseResult,
+    val details: String? = null
+  ){
+    fun hasDetails(): Boolean {
+      return details != null
+    }
+  }
+
+  data class GetDartTestStatusRequest (
+    val name: String
+  )
+
+  data class GetDartTestStatusResponse (
+    val status: DartTestExecutionStatus,
     val details: String? = null
   ){
     fun hasDetails(): Boolean {

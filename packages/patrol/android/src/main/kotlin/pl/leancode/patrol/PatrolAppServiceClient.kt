@@ -52,4 +52,10 @@ class PatrolAppServiceClient {
         Logger.i("PatrolAppServiceClient.runDartTest($name)")
         return client.runDartTest(Contracts.RunDartTestRequest(name))
     }
+
+    @Throws(PatrolAppServiceClientException::class)
+    fun getDartTestStatus(name: String): Contracts.GetDartTestStatusResponse {
+        Logger.i("PatrolAppServiceClient.getDartTestStatus($name)")
+        return client.getDartTestStatus(Contracts.GetDartTestStatusRequest(name))
+    }
 }

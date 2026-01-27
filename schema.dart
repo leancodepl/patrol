@@ -32,9 +32,21 @@ class RunDartTestResponse {
   String? details;
 }
 
+enum DartTestExecutionStatus { notStarted, running, success, failure }
+
+class GetDartTestStatusRequest {
+  late String name;
+}
+
+class GetDartTestStatusResponse {
+  late DartTestExecutionStatus status;
+  String? details;
+}
+
 abstract class PatrolAppService<IOSClient, AndroidClient, DartServer> {
   ListDartTestsResponse listDartTests();
   RunDartTestResponse runDartTest(RunDartTestRequest request);
+  GetDartTestStatusResponse getDartTestStatus(GetDartTestStatusRequest request);
 }
 
 class ConfigureRequest {

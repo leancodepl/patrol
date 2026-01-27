@@ -16,6 +16,13 @@ public enum RunDartTestResponseResult: String, Codable {
   case failure = "failure"
 }
 
+public enum DartTestExecutionStatus: String, Codable {
+  case notStarted = "notStarted"
+  case running = "running"
+  case success = "success"
+  case failure = "failure"
+}
+
 public enum KeyboardBehavior: String, Codable {
   case showAndDismiss = "showAndDismiss"
   case alternative = "alternative"
@@ -207,6 +214,15 @@ public struct RunDartTestRequest: Codable {
 
 public struct RunDartTestResponse: Codable {
   public var result: RunDartTestResponseResult
+  public var details: String?
+}
+
+public struct GetDartTestStatusRequest: Codable {
+  public var name: String
+}
+
+public struct GetDartTestStatusResponse: Codable {
+  public var status: DartTestExecutionStatus
   public var details: String?
 }
 

@@ -24,6 +24,11 @@ class PatrolAppServiceClient(address: String, port: Int, private val timeout: Lo
         return json.fromJson(response, Contracts.RunDartTestResponse::class.java)
     }
 
+    fun getDartTestStatus(request: Contracts.GetDartTestStatusRequest): Contracts.GetDartTestStatusResponse {
+        val response = performRequest("getDartTestStatus", json.toJson(request))
+        return json.fromJson(response, Contracts.GetDartTestStatusResponse::class.java)
+    }
+
     private fun performRequest(path: String, requestBody: String? = null): String {
         val endpoint = "$serverUrl$path"
 

@@ -21,11 +21,20 @@ abstract class PatrolAppServiceServer {
     } else if ('runDartTest' == request.url.path) {
       final stringContent = await request.readAsString(utf8);
       final json = jsonDecode(stringContent);
-      final requestObj = RunDartTestRequest.fromJson(
-        json as Map<String, dynamic>,
-      );
+      final requestObj =
+          RunDartTestRequest.fromJson(json as Map<String, dynamic>);
 
       final result = await runDartTest(requestObj);
+
+      final body = jsonEncode(result.toJson());
+      return Response.ok(body);
+    } else if ('getDartTestStatus' == request.url.path) {
+      final stringContent = await request.readAsString(utf8);
+      final json = jsonDecode(stringContent);
+      final requestObj =
+          GetDartTestStatusRequest.fromJson(json as Map<String, dynamic>);
+
+      final result = await getDartTestStatus(requestObj);
 
       final body = jsonEncode(result.toJson());
       return Response.ok(body);
@@ -36,4 +45,7 @@ abstract class PatrolAppServiceServer {
 
   Future<ListDartTestsResponse> listDartTests();
   Future<RunDartTestResponse> runDartTest(RunDartTestRequest request);
+  Future<GetDartTestStatusResponse> getDartTestStatus(
+    GetDartTestStatusRequest request,
+  );
 }
