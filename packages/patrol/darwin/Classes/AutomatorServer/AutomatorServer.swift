@@ -268,7 +268,7 @@
           )
         } else if let selector = request.selector {
           try automator.tapOnNotification(
-            bySubstring: selector.textContains ?? selector.titleContains ?? String(),
+            bySubstring: selector.textContains ?? selector.titleContains ?? selector.text ?? String(),
             withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) }
           )
         } else {
