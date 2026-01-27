@@ -219,7 +219,11 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
       invariantTester,
       description: description,
     );
-    _testResults[description] ??= _success;
+    // Use _currentDartTest as key to be consistent with _wrapTestBodyWithExceptionGatherer
+    // and tearDown, which both use _currentDartTest for lookups.
+    // Falls back to description for develop mode where _currentDartTest may be null.
+    final testKey = _currentDartTest ?? description;
+    _testResults[testKey] ??= _success;
   }
 
   /// Wraps the test body with a function that gathers exceptions and reports
@@ -307,10 +311,27 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
 
   @override
   void reportExceptionNoticed(FlutterErrorDetails exception) {
-    // This override is copied from IntegrationTestWidgetsFlutterBinding. It may
-    // be not needed.
-    //
-    // See: https://github.com/flutter/flutter/issues/81534
+    // Capture exception details when Flutter Test Framework catches errors
+    // via Zone (not through FlutterError.onError). This ensures we capture
+    // async errors and other exceptions that bypass FlutterError.onError.
+    if (_isDevelopMode) {
+      return;
+    }
+
+    if (_currentDartTest case final testName?) {
+      final previousDetails = switch (_testResults[testName]) {
+        Failure(:final details?) => details,
+        _ => null,
+      };
+      final detailsAsString = (kReleaseMode && current_platform.isIOS)
+          ? '${exception.exceptionAsString()}\n${exception.stack}'
+          : exception.toString();
+
+      _testResults[testName] = Failure(
+        testName,
+        '$detailsAsString${previousDetails != null ? '\n$previousDetails' : ''}',
+      );
+    }
   }
 }
 
