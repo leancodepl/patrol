@@ -606,6 +606,16 @@
       sleepTask(timeInSeconds: 1)
     }
 
+    /// On iOS 18+, the first element matched by "ListCell" is not a real notification
+    /// (it's a header/system element), so we need to skip it.
+    private var notificationIndexOffset: Int {
+      if #available(iOS 18, *) {
+        return 1
+      } else {
+        return 0
+      }
+    }
+
     func getNotifications() throws -> [Notification] {
       var notifications = [Notification]()
       runAction("getting notifications") {
@@ -622,11 +632,13 @@
     }
 
     func tapOnNotification(byIndex index: Int, withTimeout timeout: TimeInterval?) throws {
-      try runAction("tapping on notification at index \(index)") {
+      // Adjust index to account for non-notification elements (iOS 18+ has a header element)
+      let adjustedIndex = index + notificationIndexOffset
+      try runAction("tapping on notification at index \(index) (adjusted: \(adjustedIndex))") {
         let cellsQuery = self.springboard.buttons.matching(
           identifier: self.notificationCellIdentifier)
         guard
-          let cell = self.waitFor(query: cellsQuery, index: index, timeout: timeout ?? self.timeout)
+          let cell = self.waitFor(query: cellsQuery, index: adjustedIndex, timeout: timeout ?? self.timeout)
         else {
           throw PatrolError.viewNotExists("notification at index \(index)")
         }
