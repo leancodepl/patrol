@@ -92,9 +92,8 @@ class PatrolLogReader {
       if (line.contains('PATROL_LOG')) {
         _parsePatrolLog(line);
       } else if (_testFrameworkPattern.hasMatch(line)) {
-        // Always show test framework output (e.g., "00:13 +0 -1: Some tests failed.")
-        // This is needed because on iOS, flutter logs doesn't capture this output,
-        // but the iOS backend's log stream does.
+        // Print test framework output to the console. On iOS, this output
+        // is captured by the log stream but not by flutter logs.
         final match = _testFrameworkPattern.firstMatch(line);
         if (match != null) {
           log('\t${match.group(1)}');
