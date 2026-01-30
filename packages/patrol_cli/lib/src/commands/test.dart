@@ -127,10 +127,6 @@ class TestCommand extends PatrolCommand {
     if (excludeTags != null) {
       _logger.detail('Received exclude tag(s): $excludeTags');
     }
-    final entrypoint = _testBundler.getBundledTestFile(testDirectory);
-    if (boolArg('generate-bundle')) {
-      _testBundler.createTestBundle(testDirectory, targets, tags, excludeTags);
-    }
 
     final androidFlavor = stringArg('flavor') ?? config.android.flavor;
     final iosFlavor = stringArg('flavor') ?? config.ios.flavor;
@@ -181,6 +177,21 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
         'Flavors are not supported for web platform. Please remove the --flavor flag.',
       );
       return 1;
+    }
+
+    final isWeb = device.targetPlatform == TargetPlatform.web;
+    final entrypoint = _testBundler.getBundledTestFile(
+      testDirectory,
+      web: isWeb,
+    );
+    if (boolArg('generate-bundle') || isWeb) {
+      _testBundler.createTestBundle(
+        testDirectory,
+        targets,
+        tags,
+        excludeTags,
+        web: isWeb,
+      );
     }
 
     if (boolArg('check-compatibility')) {

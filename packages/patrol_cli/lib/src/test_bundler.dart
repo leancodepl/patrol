@@ -17,8 +17,9 @@ class TestBundler {
     String testDirectory,
     List<String> testFilePaths,
     String? tags,
-    String? excludeTags,
-  ) {
+    String? excludeTags, {
+    bool web = false,
+  }) {
     if (testFilePaths.isEmpty) {
       throw ArgumentError('testFilePaths must not be empty');
     }
@@ -36,7 +37,7 @@ import 'package:patrol/src/platform/contracts/contracts.dart';
 import 'package:test_api/src/backend/invoker.dart';
 
 // START: GENERATED TEST IMPORTS
-${generateImports(testDirectory, testFilePaths)}
+${generateImports(testDirectory, testFilePaths, web: web)}
 // END: GENERATED TEST IMPORTS
 
 Future<void> main() async {
@@ -98,9 +99,9 @@ Future<void> main() async {
     reportGroupStructure(dartTestGroup);
   });
 
-  // START: GENERATED TEST GROUPS
-${generateGroupsCode(testDirectory, testFilePaths).split('\n').map((e) => '  $e').join('\n')}
-  // END: GENERATED TEST GROUPS
+// START: GENERATED TEST GROUPS
+${generateGroupsCode(testDirectory, testFilePaths, web: web).split('\n').map((e) => '  $e').join('\n')}
+// END: GENERATED TEST GROUPS
 
   final dartTestGroup = await testExplorationCompleter.future;
   final appService = PatrolAppService(topLevelDartTestGroup: dartTestGroup);
@@ -118,7 +119,7 @@ ${generateGroupsCode(testDirectory, testFilePaths).split('\n').map((e) => '  $e'
 
     // This file must not end with "_test.dart", otherwise it'll be picked up
     // when finding tests to bundle.
-    final bundle = getBundledTestFile(testDirectory)
+    final bundle = getBundledTestFile(testDirectory, web: web)
       ..createSync(recursive: true)
       ..writeAsStringSync(contents);
 
@@ -129,8 +130,11 @@ ${generateGroupsCode(testDirectory, testFilePaths).split('\n').map((e) => '  $e'
 
   // This file must not end with "_test.dart", otherwise it'll be picked up
   // when finding tests to bundle.
-  File getBundledTestFile(String testDirectory) =>
-      _projectRoot.childDirectory(testDirectory).childFile('test_bundle.dart');
+  File getBundledTestFile(String testDirectory, {bool web = false}) => web
+      ? _projectRoot.childFile('test_bundle.dart')
+      : _projectRoot
+            .childDirectory(testDirectory)
+            .childFile('test_bundle.dart');
 
   /// Creates an entrypoint for use with `patrol develop`.
   void createDevelopTestBundle(String testDirectory, String testFilePath) {
@@ -187,7 +191,11 @@ ${generateGroupsCode(testDirectory, [testFilePath]).split('\n').map((e) => '  $e
   /// '''
   /// ```
   @visibleForTesting
-  String generateImports(String testDirectory, List<String> testFilePaths) {
+  String generateImports(
+    String testDirectory,
+    List<String> testFilePaths, {
+    bool web = false,
+  }) {
     final imports = <String>[];
     for (final testFilePath in testFilePaths) {
       final relativeTestFilePath = _normalizeTestPath(
@@ -198,7 +206,13 @@ ${generateGroupsCode(testDirectory, [testFilePath]).split('\n').map((e) => '  $e
       final relativeTestFilePathWithoutSlash = relativeTestFilePath[0] == '/'
           ? relativeTestFilePath.replaceFirst('/', '')
           : relativeTestFilePath;
-      imports.add("import '$relativeTestFilePathWithoutSlash' as $testName;");
+
+      // For web tests, include the test directory prefix in imports to ensure
+      // correct path resolution since the bundle is at project root
+      final importPath = web
+          ? '$testDirectory/$relativeTestFilePathWithoutSlash'
+          : relativeTestFilePathWithoutSlash;
+      imports.add("import '$importPath' as $testName;");
     }
 
     return imports.join('\n');
@@ -222,7 +236,11 @@ ${generateGroupsCode(testDirectory, [testFilePath]).split('\n').map((e) => '  $e
   /// '''
   /// ```
   @visibleForTesting
-  String generateGroupsCode(String testDirectory, List<String> testFilePaths) {
+  String generateGroupsCode(
+    String testDirectory,
+    List<String> testFilePaths, {
+    bool web = false,
+  }) {
     final groups = <String>[];
     for (final testFilePath in testFilePaths) {
       final relativeTestFilePath = _normalizeTestPath(
@@ -230,7 +248,13 @@ ${generateGroupsCode(testDirectory, [testFilePath]).split('\n').map((e) => '  $e
         testFilePath,
       );
       final testName = _createTestName(testDirectory, relativeTestFilePath);
-      final groupName = testName.replaceAll('__', '.');
+
+      // For web tests, include the test directory in the group name to match
+      // the import path structure
+      final groupName = web
+          ? '$testDirectory.${testName.replaceAll('__', '.')}'
+          : testName.replaceAll('__', '.');
+
       final testEntrypoint = '$testName.main';
       groups.add("group('$groupName', $testEntrypoint);");
     }
