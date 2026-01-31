@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:archive/archive.dart';
@@ -7,7 +6,7 @@ import 'package:path/path.dart' as p;
 import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/logger.dart';
-import 'package:patrol_cli/src/commands/browserstack/browserstack_client.dart';
+import 'package:patrol_cli/src/commands/browserstack/browserstack_command_mixin.dart';
 import 'package:patrol_cli/src/commands/browserstack/browserstack_config.dart';
 import 'package:patrol_cli/src/commands/browserstack/bs_outputs_command.dart';
 import 'package:patrol_cli/src/commands/build_ios.dart';
@@ -22,7 +21,7 @@ import 'package:patrol_cli/src/runner/patrol_command.dart';
 ///
 /// Usage:
 ///   patrol bs ios --target patrol_test/app_test.dart --flavor dev
-class BsIosCommand extends PatrolCommand {
+class BsIosCommand extends PatrolCommand with BrowserStackCommandMixin {
   BsIosCommand({
     required BuildIOSCommand buildIOSCommand,
     required BsOutputsCommand bsOutputsCommand,
@@ -38,6 +37,7 @@ class BsIosCommand extends PatrolCommand {
        _logger = logger {
     usesTargetOption();
     // Build mode flags - only release is supported for real iOS devices
+    // These flags are hidden but accepted for compatibility with build commands
     argParser
       ..addFlag('debug', hide: true)
       ..addFlag('profile', hide: true)
@@ -53,61 +53,26 @@ class BsIosCommand extends PatrolCommand {
     usesBuildNameOption();
     usesBuildNumberOption();
 
-    // Only add bundle-id from iOS options (skip simulator-only options like --ios, --full-isolation)
+    // Only add bundle-id from iOS options (skip simulator-only options)
     argParser
       ..addOption(
         'bundle-id',
         help: 'Bundle identifier of the iOS app under test.',
         valueHelp: 'pl.leancode.AwesomeApp',
       )
-      // BrowserStack-specific options
       // Hidden flags for compatibility with BuildIOSCommand
       ..addFlag('simulator', hide: true)
       ..addFlag('full-isolation', hide: true)
       ..addFlag('clear-permissions')
-      ..addOption('ios', hide: true)
-      ..addSeparator('BrowserStack options:')
-      ..addOption(
-        'credentials',
-        help: 'Access key from BrowserStack Dashboard (username:access_key)',
-      )
-      ..addOption('project', help: 'Project name in BrowserStack Dashboard')
-      ..addOption(
-        'devices',
-        help:
-            'JSON array of devices to test on\n'
-            "(default: '${BrowserStackConfig.defaultIosDevices}')",
-      )
-      ..addFlag(
-        'skip-build',
-        help: 'Skip building, only upload existing artifacts',
-        negatable: false,
-      )
-      ..addOption(
-        'api-params',
-        help:
-            'Parameters for "Execute a build" API (JSON)\n'
-            "(e.g. '{\"networkProfile\": \"2g-gprs-lossy\", \"buildTag\": \"smoke\"}')\n"
-            r'(or from file: --api-params "$(cat params.json)")',
-      )
-      ..addFlag(
-        'download-outputs',
-        abbr: 'd',
-        help: 'Wait for the test run to complete and download outputs',
-        negatable: false,
-      )
-      ..addOption(
-        'timeout',
-        help:
-            'Timeout in minutes when waiting for test run\n'
-            '(default: 60)',
-      )
-      ..addOption(
-        'output-dir',
-        help:
-            'Directory to save outputs when waiting\n'
-            '(default: ".")',
-      );
+      ..addOption('ios', hide: true);
+
+    // BrowserStack-specific options
+    usesBrowserStackOptions(
+      argParser,
+      defaultDevices: BrowserStackConfig.defaultIosDevices,
+      devicesEnvVar: 'PATROL_BS_IOS_DEVICES',
+      apiParamsEnvVar: 'PATROL_BS_IOS_API_PARAMS',
+    );
   }
 
   final BuildIOSCommand _buildIOSCommand;
@@ -133,36 +98,17 @@ class BsIosCommand extends PatrolCommand {
       _analytics.sendCommand(FlutterVersion.fromCLI(flutterCommand), 'bs_ios'),
     );
 
-    // Parse BS-specific options
-    final skipBuild = argResults!['skip-build'] as bool? ?? false;
-    final downloadOutputs = argResults!['download-outputs'] as bool? ?? false;
-    final timeoutMinutes =
-        int.tryParse(argResults!['timeout'] as String? ?? '60') ?? 60;
-    final outputDir = argResults!['output-dir'] as String? ?? '.';
-    final credentials =
-        argResults!['credentials'] as String? ??
-        Platform.environment['PATROL_BS_CREDENTIALS'] ??
-        '';
-    final devices =
-        argResults!['devices'] as String? ??
-        Platform.environment['PATROL_BS_IOS_DEVICES'] ??
-        BrowserStackConfig.defaultIosDevices;
-    final apiParams =
-        argResults!['api-params'] as String? ??
-        Platform.environment['PATROL_BS_IOS_API_PARAMS'];
-    final project =
-        argResults!['project'] as String? ??
-        Platform.environment['PATROL_BS_PROJECT'];
+    // Parse BrowserStack options
+    final bsConfig = parseBrowserStackConfig(
+      defaultDevices: BrowserStackConfig.defaultIosDevices,
+      devicesEnvVar: 'PATROL_BS_IOS_DEVICES',
+      apiParamsEnvVar: 'PATROL_BS_IOS_API_PARAMS',
+    );
 
-    if (credentials.isEmpty) {
-      throwToolExit(
-        'BrowserStack credentials not set.\n'
-        'Set via: --credentials or PATROL_BS_CREDENTIALS env var',
-      );
-    }
+    validateCredentials(bsConfig.credentials);
 
     // Build the iOS app using patrol build ios (always release for BrowserStack)
-    if (!skipBuild) {
+    if (!bsConfig.skipBuild) {
       _buildIOSCommand.argResultsOverride = argResults;
       _buildIOSCommand.globalResultsOverride = globalResults;
       final exitCode = await _buildIOSCommand.run();
@@ -233,97 +179,15 @@ class BsIosCommand extends PatrolCommand {
       throwToolExit('Test zip not found: $testZipPath');
     }
 
-    // Create BrowserStack client
-    final client = BrowserStackClient(
-      credentials: credentials,
+    // Upload and schedule test execution
+    return uploadAndSchedule(
+      appFile: appFile,
+      testFile: testFile,
+      config: bsConfig,
+      platform: BrowserStackPlatformConfig.ios,
+      bsOutputsCommand: _bsOutputsCommand,
       logger: _logger,
     );
-
-    // Handle Ctrl+C to cancel uploads
-    final sigintSubscription = ProcessSignal.sigint.watch().listen((_) {
-      _logger.err('\nUpload cancelled by user');
-      client.close();
-      exit(130); // Standard exit code for SIGINT
-    });
-
-    try {
-      // Upload app
-      final appProgress = _logger.progress('Uploading app (0%)');
-      final appResponse = await client.uploadFile(
-        '/app-automate/xcuitest/v2/app',
-        appFile,
-        onProgress: (percent) =>
-            appProgress.update('Uploading app ($percent%)'),
-      );
-      final appUrl = appResponse['app_url'] as String;
-      appProgress.complete('Uploaded app');
-      _logger.detail('App URL: $appUrl');
-
-      // Upload test suite
-      final testProgress = _logger.progress('Uploading test suite (0%)');
-      final testResponse = await client.uploadFile(
-        '/app-automate/xcuitest/v2/test-suite',
-        testFile,
-        onProgress: (percent) =>
-            testProgress.update('Uploading test suite ($percent%)'),
-      );
-      final testUrl = testResponse['test_suite_url'] as String;
-      testProgress.complete('Uploaded test suite');
-      _logger.detail('Test URL: $testUrl');
-
-      // Schedule test execution
-      final scheduleProgress = _logger.progress('Scheduling test execution');
-
-      final payload = <String, dynamic>{
-        'app': appUrl,
-        'testSuite': testUrl,
-        'devices': jsonDecode(devices),
-        'singleRunnerInvocation': true,
-        'deviceLogs': true,
-        'enableResultBundle': true,
-        'networkLogs': false,
-      };
-      if (project != null) {
-        payload['project'] = project;
-      }
-
-      // Merge with custom API params if provided
-      if (apiParams != null && apiParams.isNotEmpty) {
-        final extra = jsonDecode(apiParams) as Map<String, dynamic>;
-        payload.addAll(extra);
-      }
-
-      final runResponse = await client.post(
-        '/app-automate/xcuitest/v2/xctestrun-build',
-        payload,
-      );
-      final buildId = runResponse['build_id'] as String;
-      scheduleProgress.complete('Test execution scheduled');
-
-      _logger
-        ..info(
-          'Dashboard: https://app-automate.browserstack.com/dashboard/v2/builds/$buildId',
-        )
-        ..detail('Build ID:')
-        ..detail(buildId);
-
-      if (downloadOutputs) {
-        return _bsOutputsCommand.execute(
-          buildId: buildId,
-          outputDir: outputDir,
-          onlyReport: false,
-          retryLimit: 5,
-          retryDelay: const Duration(seconds: 30),
-          credentials: credentials,
-          timeout: Duration(minutes: timeoutMinutes),
-        );
-      }
-
-      return 0;
-    } finally {
-      await sigintSubscription.cancel();
-      client.close();
-    }
   }
 
   Future<String> _createIpa(String productsDir, String? flavor) async {
@@ -446,9 +310,8 @@ class BsIosCommand extends PatrolCommand {
     if (removed) {
       _logger.detail('Removed DiagnosticCollectionPolicy from $plistPath');
     } else {
-      _logger.warn(
-        'Failed to remove DiagnosticCollectionPolicy from $plistPath',
-      );
+      // Key not present is OK - only log at detail level
+      _logger.detail('DiagnosticCollectionPolicy not present in $plistPath');
     }
   }
 }
