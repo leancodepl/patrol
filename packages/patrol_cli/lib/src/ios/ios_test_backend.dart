@@ -321,7 +321,7 @@ class IOSTestBackend {
     final directory = _fs.directory(join(_rootDirectory.path, _productsDir));
     final platform = real ? 'iphoneos' : 'iphonesimulator';
     final prefix = '${scheme}_';
-    final platformSdk = '_$platform$sdkVersion';
+    final platformSdk = '$platform$sdkVersion';
 
     for (final entity in directory.listSync()) {
       final name = entity.basename;
