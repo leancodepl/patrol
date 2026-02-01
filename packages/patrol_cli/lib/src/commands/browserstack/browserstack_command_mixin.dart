@@ -110,7 +110,10 @@ mixin BrowserStackCommandMixin {
       ..addOption(
         'devices',
         help:
-            'JSON array of devices to test on\n'
+            'JSON array of devices. Two formats supported:\n'
+            '  Specific: \'["Samsung Galaxy S24-14.0"]\'\n'
+            '  Regex:    \'[{"device": "Google Pixel.*", "os_version": "14"}]\'\n'
+            '(os_version is optional, defaults to latest)\n'
             "(default: '$defaultDevices')",
       )
       ..addFlag(
@@ -265,7 +268,8 @@ mixin BrowserStackCommandMixin {
       final appResponse = await client.uploadFile(
         platform.appEndpoint,
         appFile,
-        onProgress: (percent) => appProgress.update('Uploading app ($percent%)'),
+        onProgress: (percent) =>
+            appProgress.update('Uploading app ($percent%)'),
       );
       final appUrl = appResponse['app_url'] as String;
       appProgress.complete('Uploaded app');

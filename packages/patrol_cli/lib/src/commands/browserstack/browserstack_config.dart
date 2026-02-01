@@ -30,9 +30,11 @@ class BrowserStackConfig {
            iosApiParams ?? Platform.environment['PATROL_BS_IOS_API_PARAMS'];
 
   /// Default Android devices for testing (any Pixel, latest OS).
+  /// Supports regex - see: https://www.browserstack.com/docs/app-automate/espresso/specify-devices#use-regular-expressions-to-specify-device-attributes
   static const defaultAndroidDevices = '[{"device": "Google Pixel.*"}]';
 
   /// Default iOS devices for testing (any iPhone, latest OS).
+  /// Supports regex - see: https://www.browserstack.com/docs/app-automate/xcuitest/specify-devices#use-regular-expressions-to-specify-device-attributes
   static const defaultIosDevices = '[{"device": "iPhone.*"}]';
 
   /// BrowserStack credentials (username:access_key).
