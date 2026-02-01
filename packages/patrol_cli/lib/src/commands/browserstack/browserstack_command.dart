@@ -58,6 +58,8 @@ class BrowserStackCommand extends PatrolCommand {
   @override
   String? get docsName => 'bs';
 
+  // TODO: Add link to BrowserStack docs when available
+  //  https://patrol.leancode.co/cli-commands/bs
   @override
   String? get usageFooter => '''
 Environment variables:
