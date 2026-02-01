@@ -63,7 +63,12 @@ class BsIosCommand extends PatrolCommand with BrowserStackCommandMixin {
       // Hidden flags for compatibility with BuildIOSCommand
       ..addFlag('simulator', hide: true)
       ..addFlag('full-isolation', hide: true)
-      ..addFlag('clear-permissions', hide: true)
+      ..addFlag(
+        'clear-permissions',
+        help:
+            'Clear permissions available through XCUIProtectedResource API before running each test.',
+        negatable: false,
+      )
       ..addOption('ios', hide: true);
 
     // BrowserStack-specific options
