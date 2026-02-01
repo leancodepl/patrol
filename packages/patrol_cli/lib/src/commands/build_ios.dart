@@ -116,10 +116,11 @@ class BuildIOSCommand extends PatrolCommand {
     if (excludeTags != null) {
       _logger.detail('Received exclude tag(s): $excludeTags');
     }
-    final entrypoint = _testBundler.getBundledTestFile(testDirectory);
     if (boolArg('generate-bundle')) {
       _testBundler.createTestBundle(testDirectory, targets, tags, excludeTags);
     }
+    _testBundler.ensureEntrypoint(testDirectory);
+    final entrypoint = _testBundler.getEntrypointFile(testDirectory);
 
     final flavor = stringArg('flavor') ?? config.ios.flavor;
     if (flavor != null) {
