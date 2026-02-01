@@ -27,6 +27,7 @@ class BrowserStackRunConfig {
     required this.downloadOutputs,
     required this.timeoutMinutes,
     required this.outputDir,
+    this.shards,
   });
 
   final String credentials;
@@ -37,6 +38,9 @@ class BrowserStackRunConfig {
   final bool downloadOutputs;
   final int timeoutMinutes;
   final String outputDir;
+
+  /// Number of shards for test sharding (Android/Espresso only).
+  final int? shards;
 }
 
 /// Platform-specific configuration for BrowserStack uploads.
@@ -160,6 +164,18 @@ mixin BrowserStackCommandMixin {
   }) {
     final results = argResults!;
 
+    // Parse shards if the option exists (Android-specific)
+    int? shards;
+    if (results.options.contains('shards')) {
+      final shardsStr = results['shards'] as String?;
+      if (shardsStr != null) {
+        shards = int.tryParse(shardsStr);
+        if (shards == null || shards < 2) {
+          throwToolExit('--shards must be an integer >= 2, got: $shardsStr');
+        }
+      }
+    }
+
     return BrowserStackRunConfig(
       skipBuild: results['skip-build'] as bool? ?? false,
       downloadOutputs: results['download-outputs'] as bool? ?? false,
@@ -182,6 +198,7 @@ mixin BrowserStackCommandMixin {
       project:
           results['project'] as String? ??
           Platform.environment['PATROL_BS_PROJECT'],
+      shards: shards,
     );
   }
 
@@ -242,7 +259,7 @@ mixin BrowserStackCommandMixin {
   ///
   /// Returns validated devices list and API params for use in the payload.
   Future<({List<dynamic> devices, Map<String, dynamic>? apiParams})>
-      validateBeforeUpload({
+  validateBeforeUpload({
     required File appFile,
     required File testFile,
     required BrowserStackRunConfig config,
@@ -372,6 +389,12 @@ mixin BrowserStackCommandMixin {
 
       if (config.project != null) {
         payload['project'] = config.project;
+      }
+
+      // Add shards configuration if specified (Android/Espresso)
+      if (config.shards != null) {
+        payload['shards'] = {'numberOfShards': config.shards};
+        logger.detail('Sharding enabled: ${config.shards} shards');
       }
 
       // Merge with custom API params if provided

@@ -54,6 +54,18 @@ class BsAndroidCommand extends PatrolCommand with BrowserStackCommandMixin {
       devicesEnvVar: 'PATROL_BS_ANDROID_DEVICES',
       apiParamsEnvVar: 'PATROL_BS_ANDROID_API_PARAMS',
     );
+
+    // Android/Espresso-specific: Test sharding
+    argParser
+      ..addSeparator('Test sharding (Espresso):\n')
+      ..addOption(
+        'shards',
+        help:
+            'Split tests into N shards and run in parallel.\n'
+            'Each shard runs on all specified devices.\n'
+            '(e.g., --shards 4 splits tests into 4 parallel groups)',
+        valueHelp: 'N',
+      );
   }
 
   final BuildAndroidCommand _buildAndroidCommand;
