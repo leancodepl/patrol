@@ -235,6 +235,65 @@ mixin BrowserStackCommandMixin {
     }
   }
 
+  /// Validates all inputs before uploading (fail-fast).
+  ///
+  /// This should be called before any uploads to catch errors early and avoid
+  /// wasting time/bandwidth uploading large files only to fail on validation.
+  ///
+  /// Returns validated devices list and API params for use in the payload.
+  Future<({List<dynamic> devices, Map<String, dynamic>? apiParams})>
+      validateBeforeUpload({
+    required File appFile,
+    required File testFile,
+    required BrowserStackRunConfig config,
+    required Logger logger,
+  }) async {
+    logger.detail('Validating inputs before upload...');
+
+    // Validate files exist
+    if (!appFile.existsSync()) {
+      throwToolExit('App file not found: ${appFile.path}');
+    }
+    if (!testFile.existsSync()) {
+      throwToolExit('Test file not found: ${testFile.path}');
+    }
+    logger.detail('  Files exist: OK');
+
+    // Validate JSON formats (do this before any network calls)
+    final devices = parseDevicesJson(config.devices);
+    logger.detail('  Devices JSON: OK');
+
+    final apiParams = parseApiParamsJson(config.apiParams);
+    if (apiParams != null) {
+      logger.detail('  API params JSON: OK');
+    }
+
+    // Validate credentials with a lightweight API call
+    logger.detail('  Validating credentials...');
+    final client = BrowserStackClient(
+      credentials: config.credentials,
+      logger: logger,
+    );
+
+    try {
+      await client.validateCredentials();
+      logger.detail('  Credentials: OK');
+    } on BrowserStackException catch (e) {
+      if (e.message.contains('401')) {
+        throwToolExit(
+          'Invalid BrowserStack credentials.\n'
+          'Verify your username and access key are correct.',
+        );
+      }
+      throwToolExit('Failed to validate credentials: ${e.message}');
+    } finally {
+      client.close();
+    }
+
+    logger.detail('Validation passed');
+    return (devices: devices, apiParams: apiParams);
+  }
+
   /// Uploads artifacts and schedules test execution on BrowserStack.
   ///
   /// Returns the exit code (0 for success, or the result of downloading outputs).
@@ -246,6 +305,14 @@ mixin BrowserStackCommandMixin {
     required BsOutputsCommand bsOutputsCommand,
     required Logger logger,
   }) async {
+    // Validate everything before uploading (fail-fast)
+    final validated = await validateBeforeUpload(
+      appFile: appFile,
+      testFile: testFile,
+      config: config,
+      logger: logger,
+    );
+
     final client = BrowserStackClient(
       credentials: config.credentials,
       logger: logger,
@@ -299,7 +366,7 @@ mixin BrowserStackCommandMixin {
       final payload = <String, dynamic>{
         'app': appUrl,
         'testSuite': testUrl,
-        'devices': parseDevicesJson(config.devices),
+        'devices': validated.devices,
         ...platform.defaultPayload,
       };
 
@@ -308,9 +375,8 @@ mixin BrowserStackCommandMixin {
       }
 
       // Merge with custom API params if provided
-      final extraParams = parseApiParamsJson(config.apiParams);
-      if (extraParams != null) {
-        payload.addAll(extraParams);
+      if (validated.apiParams != null) {
+        payload.addAll(validated.apiParams!);
       }
 
       final runResponse = await client.post(platform.buildEndpoint, payload);

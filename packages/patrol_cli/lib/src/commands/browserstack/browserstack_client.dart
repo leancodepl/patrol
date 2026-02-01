@@ -27,6 +27,14 @@ class BrowserStackClient {
 
   Map<String, String> get _defaultHeaders => {'Authorization': _authHeader};
 
+  /// Validates that the credentials are correct by making a lightweight API call.
+  ///
+  /// Throws [BrowserStackException] if credentials are invalid.
+  Future<void> validateCredentials() async {
+    // Use the app-automate plan endpoint - it's lightweight and validates auth
+    await get('/app-automate/plan.json');
+  }
+
   /// Make a GET request to the BrowserStack API.
   Future<Map<String, dynamic>> get(String endpoint) async {
     final url = Uri.parse('$_baseUrl$endpoint');
