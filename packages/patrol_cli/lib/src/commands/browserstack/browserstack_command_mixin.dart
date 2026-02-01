@@ -101,10 +101,10 @@ mixin BrowserStackCommandMixin {
     required String apiParamsEnvVar,
   }) {
     argParser
-      ..addSeparator('BrowserStack options:')
+      ..addSeparator('BrowserStack options:\n')
       ..addOption(
         'credentials',
-        help: 'Access key from BrowserStack Dashboard (username:access_key)',
+        help: 'BrowserStack credentials in format (username:access_key)',
       )
       ..addOption('project', help: 'Project name in BrowserStack Dashboard')
       ..addOption(

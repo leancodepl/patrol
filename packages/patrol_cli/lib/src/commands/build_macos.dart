@@ -65,7 +65,7 @@ class BuildMacOSCommand extends PatrolCommand {
   String? get docsName => 'build';
 
   @override
-  String get description => 'Build app for integration testing on MacOS.';
+  String get description => 'Build app for integration testing on macOS.';
 
   @override
   Future<int> run() async {

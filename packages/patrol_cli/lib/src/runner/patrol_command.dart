@@ -129,7 +129,7 @@ abstract class PatrolCommand extends Command<int> {
     argParser.addMultiOption(
       'dart-define-from-file',
       help:
-          'Environment configuration from a provided path that will be available'
+          'Environment configuration from a provided path that will be available '
           'to the app under test.',
       valueHelp: 'config/test.json',
     );

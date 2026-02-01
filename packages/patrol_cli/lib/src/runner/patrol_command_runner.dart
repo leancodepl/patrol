@@ -357,7 +357,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
 
   @override
   String? get usageFooter => '''
-Read documentation at https://patrol.leancode.pl
+Read documentation at https://patrol.leancode.co
 Report bugs, request features at https://github.com/leancodepl/patrol/issues
 Ask questions, get support at https://github.com/leancodepl/patrol/discussions
 
