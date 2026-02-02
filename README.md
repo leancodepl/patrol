@@ -14,12 +14,23 @@ by [LeanCode](https://leancode.co).
 
 ![Patrol promotial graphics][promo_graphics]
 
-Learn more about Patrol:
+## Learn more about Patrol:
 
 - [Our extensive documentation][docs]
 - [How Patrol 4.0 Makes Cross-Platform Flutter Testing Possible][article_4x]
 - [Simplifying Flutter Web Testing: Patrol Web][article_web]
 - [Patrol VS Code Extension - A Better Way to Run and Debug Flutter UI Tests][article_vscode]
+
+## How can we help you:
+
+Patrol is an open-source framework created and maintained by LeanCode.
+However, if your company wants to scale fast and accelerate Patrol’s
+adoption, we offer a set of value-added services on top of the core framework.
+
+You can find out more below:
+
+- 🚀  [Automate Flutter app testing with Patrol][automate_flutter_app_testing_with_patrol]
+- 🚀  [Patrol Setup & Patrol Training][patrol_setup_and_training]
 
 ## Patrol custom finders
 
@@ -101,19 +112,19 @@ void main() {
   patrolTest('showtime', (PatrolIntegrationTester $) async {
     await $.pumpWidgetAndSettle(AwesomeApp());
     // prepare network conditions
-    await $.native.enableCellular();
-    await $.native.disableWifi();
+    await $.platform.mobile.enableCellular();
+    await $.platform.mobile.disableWifi();
 
     // toggle system theme
-    await $.native.enableDarkMode();
+    await $.platform.mobile.enableDarkMode();
 
     // handle native location permission request dialog
-    await $.native.selectFineLocation();
-    await $.native.grantPermissionWhenInUse();
+    await $.platform.mobile.selectFineLocation();
+    await $.platform.mobile.grantPermissionWhenInUse();
 
     // tap on the first notification
-    await $.native.openNotifications();
-    await $.native.tapOnNotificationByIndex(0);
+    await $.platform.mobile.openNotifications();
+    await $.platform.mobile.tapOnNotificationByIndex(0);
   });
 }
 
@@ -170,6 +181,35 @@ cd packages/patrol_cli
 flutter pub global activate -s path .
 ```
 
+## 🛠️ Maintained by LeanCode
+
+<div align="center">
+  <a href="https://leancode.co/?utm_source=github.com&utm_medium=referral&utm_campaign=patrol-readme">
+    <img src="https://leancodepublic.blob.core.windows.net/public/wide.png" alt="LeanCode Logo" height="100" />
+  </a>
+</div>
+
+This package is built with 💙 by **[LeanCode](https://leancode.co?utm_source=github.com&utm_medium=referral&utm_campaign=patrol-readme)**.
+We are **top-tier experts** focused on Flutter Enterprise solutions.
+
+### Why LeanCode?
+
+- **Creators of [Patrol](https://patrol.leancode.co/?utm_source=github.com&utm_medium=referral&utm_campaign=patrol-readme)** – the next-gen testing framework for Flutter.
+
+- **Production-Ready** – We use this package in apps with millions of users.
+- **Full-Cycle Product Development** – We take your product from scratch to long-term maintenance.
+
+<div align="center">
+  <br />
+
+  **Need help with your Flutter project?**
+
+  [**👉 Hire our team**](https://leancode.co/get-estimate?utm_source=github.com&utm_medium=referral&utm_campaign=patrol-readme)
+  &nbsp;&nbsp;•&nbsp;&nbsp;
+  [Check our other packages](https://pub.dev/packages?q=publisher%3Aleancode.co&sort=downloads)
+
+</div>
+
 [patrol_badge]: https://img.shields.io/pub/v/patrol?label=patrol
 [patrol_finders_badge]: https://img.shields.io/pub/v/patrol_finders?label=patrol_finders
 [patrol_cli_badge]: https://img.shields.io/pub/v/patrol_cli?label=patrol_cli
@@ -186,10 +226,12 @@ flutter pub global activate -s path .
 [patrol_discord_link]: https://discord.gg/ukBK5t4EZg
 [github_patrol]: https://github.com/leancodepl/patrol/tree/master/packages/patrol
 [github_patrol_cli]: https://github.com/leancodepl/patrol/tree/master/packages/patrol_cli
-[docs]: https://patrol.leancode.co
+[docs]: https://patrol.leancode.co/?utm_source=github.com&utm_medium=referral&utm_campaign=patrol-readme
 [docs_finders]: https://patrol.leancode.co/finders/overview
 [promo_graphics]: assets/promo_banner.png
-[article_web]: https://leancode.co/blog/patrol-web-support
-[article_4x]: https://leancode.co/blog/patrol-4-0-release
-[article_vscode]: https://leancode.co/blog/patrol-vs-code-extension
+[article_web]: https://leancode.co/blog/patrol-web-support?utm_source=github.com&utm_medium=referral&utm_campaign=patrol-readme
+[article_4x]: https://leancode.co/blog/patrol-4-0-release?utm_source=github.com&utm_medium=referral&utm_campaign=patrol-readme
+[article_vscode]: https://leancode.co/blog/patrol-vs-code-extension?utm_source=github.com&utm_medium=referral&utm_campaign=patrol-readme
 [integration_test]: https://github.com/flutter/flutter/tree/master/packages/integration_test
+[automate_flutter_app_testing_with_patrol]: https://leancode.co/products/automated-ui-testing-in-flutter?utm_source=github.com&utm_medium=referral&utm_campaign=patrol-readme
+[patrol_setup_and_training]: https://leancode.co/products/patrol-setup-training?utm_source=github.com&utm_medium=referral&utm_campaign=patrol-readme

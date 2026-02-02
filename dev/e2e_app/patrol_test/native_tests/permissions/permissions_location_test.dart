@@ -1,58 +1,13 @@
 // We want to keep tests on deprecated APIs.
 // ignore_for_file: deprecated_member_use
 
-import 'dart:async';
 import 'dart:io' as io;
-
 import 'package:e2e_app/keys.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../common.dart';
 
 const _timeout = Duration(seconds: 5); // to avoid timeouts on CI
-
-// Firebase Test Lab pops out another dialog we need to handle
-Future<void> tapOkIfGoogleDialogAppears(PatrolIntegrationTester $) async {
-  await $.pump(Duration(seconds: 10));
-
-  var listWithOkText = <NativeView>[];
-  final inactivityTimer = Timer(Duration(seconds: 10), () {});
-
-  while (listWithOkText.isEmpty && io.Platform.isAndroid) {
-    listWithOkText = await $.native.getNativeViews(
-      Selector(textContains: 'OK'),
-    );
-    final timeoutReached = !inactivityTimer.isActive;
-    if (timeoutReached) {
-      inactivityTimer.cancel();
-      break;
-    }
-  }
-  if (listWithOkText.isNotEmpty) {
-    await $.native.tap(Selector(text: 'OK'));
-  }
-}
-
-Future<void> tapOkIfGoogleDialogAppearsV2(PatrolIntegrationTester $) async {
-  var listWithOkText = <AndroidNativeView>[];
-  final inactivityTimer = Timer(Duration(seconds: 10), () {});
-
-  while (listWithOkText.isEmpty && io.Platform.isAndroid) {
-    final nativeViews = await $.native2.getNativeViews(
-      NativeSelector(android: AndroidSelector(textContains: 'OK')),
-    );
-    listWithOkText = nativeViews.androidViews;
-
-    final timeoutReached = !inactivityTimer.isActive;
-    if (timeoutReached) {
-      inactivityTimer.cancel();
-      break;
-    }
-  }
-  if (listWithOkText.isNotEmpty) {
-    await $.native2.tap(NativeSelector(android: AndroidSelector(text: 'OK')));
-  }
-}
 
 void main() {
   patrol('accepts location permission', ($) async {
@@ -64,14 +19,20 @@ void main() {
       expect($('Permission not granted'), findsOneWidget);
       await $(K.grantLocationPermissionButton).tap();
       if (await $.native.isPermissionDialogVisible(timeout: _timeout)) {
-        await $.native.selectCoarseLocation();
-        await $.native.selectFineLocation();
-        await $.native.selectCoarseLocation();
-        await $.native.selectFineLocation();
+        if (io.Platform.isAndroid) {
+          await $.native.selectCoarseLocation();
+          await $.native.selectFineLocation();
+          await $.native.selectCoarseLocation();
+          await $.native.selectFineLocation();
+        }
         await $.native.grantPermissionOnlyThisTime();
       }
 
-      await tapOkIfGoogleDialogAppears($);
+      try {
+        await $.native.tap(Selector(text: 'Turn on'));
+      } catch (_) {
+        // ignore
+      }
     }
 
     expect(
@@ -97,13 +58,22 @@ void main() {
       expect($('Permission not granted'), findsOneWidget);
       await $(K.grantLocationPermissionButton).tap();
       if (await $.native2.isPermissionDialogVisible(timeout: _timeout)) {
-        await $.native2.selectCoarseLocation();
-        await $.native2.selectFineLocation();
-        await $.native2.selectCoarseLocation();
-        await $.native2.selectFineLocation();
+        if (io.Platform.isAndroid) {
+          await $.native2.selectCoarseLocation();
+          await $.native2.selectFineLocation();
+          await $.native2.selectCoarseLocation();
+          await $.native2.selectFineLocation();
+        }
         await $.native2.grantPermissionOnlyThisTime();
       }
-      await tapOkIfGoogleDialogAppearsV2($);
+
+      try {
+        await $.native2.tap(
+          NativeSelector(android: AndroidSelector(text: 'Turn on')),
+        );
+      } catch (_) {
+        // ignore
+      }
     }
 
     expect(

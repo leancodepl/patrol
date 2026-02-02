@@ -44,7 +44,17 @@ class CameraHelpers {
   Future<void> takePhotosAcceptDialogsAndOpenAppOnRealDeviceAndroid() async {
     await $.platform.mobile.openApp(appId: 'com.google.android.GoogleCamera');
     await maybeAcceptPermissionDialog();
-    await $.platform.android.tap(AndroidSelector(text: 'Done'));
+    try {
+      await $.platform.android.tap(AndroidSelector(text: 'Done'));
+    } catch (_) {
+      /* ignore */
+    }
+    try {
+      await $.platform.android.tap(AndroidSelector(text: 'OK'));
+    } catch (_) {
+      /* ignore */
+    }
+
     await $.platform.android.tap(
       AndroidSelector(
         resourceName: 'com.google.android.GoogleCamera:id/shutter_button',

@@ -2,7 +2,14 @@ import 'dart:io';
 
 import 'common.dart';
 
+final platformAutomator = PlatformAutomator(
+  config: PlatformAutomatorConfig.defaultConfig(),
+);
+
 void main() {
+  patrolTearDown(() async {
+    await platformAutomator.mobile.disableAirplaneMode();
+  });
   patrol('disables and enables airplane mode twice', ($) async {
     await createApp($);
     if (await $.platform.mobile.isVirtualDevice() && Platform.isIOS) {
