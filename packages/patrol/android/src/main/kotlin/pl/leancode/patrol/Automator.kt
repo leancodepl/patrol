@@ -626,7 +626,8 @@ class Automator private constructor() {
         val identifiers = arrayOf(
             "com.android.packageinstaller:id/permission_allow_button", // API <= 28
             "com.android.permissioncontroller:id/permission_allow_button", // API 29
-            "com.android.permissioncontroller:id/permission_allow_foreground_only_button" // API >= 30 + API 29 (only for location permission)
+            "com.android.permissioncontroller:id/permission_allow_foreground_only_button", // API >= 30 + API 29 (only for location permission)
+            "com.android.permissioncontroller:id/permission_allow_all_button" // for gallery permission
         )
 
         val uiObject = waitForUiObjectByResourceId(*identifiers, timeout = timeoutMillis)

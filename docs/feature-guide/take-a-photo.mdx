@@ -39,8 +39,8 @@ void main() {
     ($) async {
       await $.pumpWidgetAndSettle(const MyApp());
       await $.tap(#addPhotoButton); // Clicks a photo button inside your app to open camera
-      await $.native2.grantPermissionWhenInUse(); // Some devices require permission to be granted before taking a photo
-      await $.native2.takeCameraPhoto(); // Takes a photo using the camera
+      await $.platform.mobile.grantPermissionWhenInUse(); // Some devices require permission to be granted before taking a photo
+      await $.platform.mobile.takeCameraPhoto(); // Takes a photo using the camera
     },
   );
 }
@@ -58,8 +58,8 @@ void main() {
     ($) async {
       await $.pumpWidgetAndSettle(const MyApp());
       await $.tap(#addPhotoButton); // Clicks a photo button inside your app to open camera
-      await $.native2.grantPermissionWhenInUse(); // Some devices require permission to be granted before taking a photo
-      await $.native2.takeCameraPhoto(shutterButtonSelector: NativeSelector(
+      await $.platform.mobile.grantPermissionWhenInUse(); // Some devices require permission to be granted before taking a photo
+      await $.platform.mobile.takeCameraPhoto(shutterButtonSelector: NativeSelector(
         android: AndroidSelector(
           resourceName: 'com.oplus.camera:id/shutter_button',
         ),

@@ -85,7 +85,12 @@ abstract class PatrolCommand extends Command<int> {
         'profile',
         help: 'Build a version of your app for performance profiling.',
       )
-      ..addFlag('release', help: 'Build a release version of your app');
+      ..addFlag('release', help: 'Build a release version of your app')
+      ..addFlag(
+        'no-tree-shake-icons',
+        help: 'Disable tree shaking of icons when building the app.',
+        negatable: false,
+      );
   }
 
   void usesFlavorOption() {

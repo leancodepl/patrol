@@ -59,7 +59,18 @@ class CameraHelpers {
   Future<void> takePhotosAcceptDialogsAndOpenAppOnRealDeviceAndroid() async {
     await $.native2.openApp(appId: 'com.google.android.GoogleCamera');
     await maybeAcceptPermissionDialog();
-    await $.native2.tap(NativeSelector(android: AndroidSelector(text: 'Done')));
+    try {
+      await $.native2.tap(
+        NativeSelector(android: AndroidSelector(text: 'Done')),
+      );
+    } catch (_) {
+      /* ignore */
+    }
+    try {
+      await $.native2.tap(NativeSelector(android: AndroidSelector(text: 'OK')));
+    } catch (_) {
+      /* ignore */
+    }
     await $.native2.tap(
       NativeSelector(
         android: AndroidSelector(

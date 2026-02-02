@@ -1,6 +1,6 @@
+import patrolIcon from "assets/patrol_icon.svg"
 import { DocsLayoutProps } from "fumadocs-ui/layouts/notebook"
 import Image from "next/image"
-import patrolIcon from "assets/patrol_icon.svg"
 import { GithubInfo } from "../components/GithubInfo"
 
 export function baseOptions(): Partial<DocsLayoutProps> {

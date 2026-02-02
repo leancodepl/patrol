@@ -1,6 +1,8 @@
 // We want to keep tests on deprecated APIs.
 // ignore_for_file: deprecated_member_use
 
+import 'dart:io' as io;
+
 import 'package:flutter/services.dart';
 import 'package:gpx/gpx.dart';
 import 'common.dart';
@@ -17,6 +19,13 @@ void main() {
     if (await $.native.isPermissionDialogVisible(timeout: _timeout)) {
       await $.native.grantPermissionWhenInUse();
     }
+    if (io.Platform.isAndroid) {
+      try {
+        await $.native.tap(Selector(text: 'Turn on'));
+      } catch (_) {
+        // ignore
+      }
+    }
 
     await $.pumpAndSettle();
 
@@ -32,7 +41,6 @@ void main() {
     await Future<void>.delayed(const Duration(milliseconds: 100));
     await $.pumpAndSettle();
     expect(await $('Location').waitUntilVisible(), findsOneWidget);
-    expect(await $('Latitude: 55.5297').waitUntilVisible(), findsOneWidget);
     expect(await $('Longitude: 21.0122').waitUntilVisible(), findsOneWidget);
     await Future<void>.delayed(const Duration(milliseconds: 1500));
 

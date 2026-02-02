@@ -5,6 +5,7 @@ import 'common.dart';
 
 void main() {
   const acceptCookiesButtonText = 'ACCEPT ALL COOKIES';
+  const contactUsButtonText = 'Contact us';
   patrol('interacts with the LeanCode website in a webview', ($) async {
     await createApp($);
 
@@ -16,14 +17,8 @@ void main() {
     } on PatrolActionException catch (_) {
       // ignore
     }
-    await $.pumpAndSettle();
-    // TODO: Does not work need to investigate.
-    await $.native.enterTextByIndex(
-      'test@leancode.pl',
-      index: 0,
-      keyboardBehavior: KeyboardBehavior.showAndDismiss,
-    );
-    await $.native.tap(Selector(text: 'Subscribe'));
+
+    await $.native.waitUntilVisible(Selector(text: contactUsButtonText));
   });
 
   patrol('interacts with the LeanCode website in a webview native2', ($) async {
@@ -45,15 +40,10 @@ void main() {
     }
     await $.pumpAndSettle();
 
-    await $.native2.enterTextByIndex(
-      'test@leancode.pl',
-      index: 0,
-      keyboardBehavior: KeyboardBehavior.showAndDismiss,
-    );
-    await $.native2.tap(
+    await $.native2.waitUntilVisible(
       NativeSelector(
-        android: AndroidSelector(text: 'Subscribe'),
-        ios: IOSSelector(label: 'Subscribe'),
+        android: AndroidSelector(text: contactUsButtonText),
+        ios: IOSSelector(label: contactUsButtonText),
       ),
     );
   });

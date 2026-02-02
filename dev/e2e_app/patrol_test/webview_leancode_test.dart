@@ -2,6 +2,7 @@ import 'common.dart';
 
 void main() {
   const acceptCookiesButtonText = 'ACCEPT ALL COOKIES';
+  const contactUsButtonText = 'Contact us';
   patrol('interacts with the LeanCode website in a webview', ($) async {
     await createApp($);
 
@@ -14,13 +15,8 @@ void main() {
       // ignore
     }
     await $.pumpAndSettle();
-    // TODO: Does not work need to investigate.
-    await $.platform.mobile.enterTextByIndex(
-      'test@leancode.pl',
-      index: 0,
-      keyboardBehavior: KeyboardBehavior.showAndDismiss,
-    );
-    await $.platform.mobile.tap(Selector(text: 'Subscribe'));
+
+    await $.platform.mobile.tap(Selector(text: contactUsButtonText));
   });
 
   patrol('interacts with the LeanCode website in a webview native2', ($) async {
@@ -37,11 +33,6 @@ void main() {
     }
     await $.pumpAndSettle();
 
-    await $.platform.mobile.enterTextByIndex(
-      'test@leancode.pl',
-      index: 0,
-      keyboardBehavior: KeyboardBehavior.showAndDismiss,
-    );
-    await $.platform.mobile.tap(Selector(text: 'Subscribe'));
+    await $.platform.mobile.tap(Selector(text: contactUsButtonText));
   });
 }

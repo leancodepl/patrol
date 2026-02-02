@@ -141,7 +141,6 @@ ${generateGroupsCode(testDirectory, testFilePaths).split('\n').map((e) => '  $e'
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
-import 'package:patrol/src/platform/contracts/contracts.dart';
 
 // START: GENERATED TEST IMPORTS
 ${generateImports(testDirectory, [testFilePath])}

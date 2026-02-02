@@ -1,17 +1,17 @@
-"use client";
+"use client"
 
-import { useTheme } from "next-themes";
-import { YouTubeEmbed, XEmbed } from "react-social-media-embed";
+import { XEmbed, YouTubeEmbed } from "react-social-media-embed"
+import { useTheme } from "next-themes"
 
 export function YouTube({ id }: { id: string }) {
   return (
     <div className="[&_iframe]:max-w-full">
       <YouTubeEmbed url={`https://www.youtube.com/watch?v=${id}`} />
     </div>
-  );
+  )
 }
 export function Tweet({ id }: { id: string }) {
-  const { theme } = useTheme();
+  const { theme } = useTheme()
 
   return (
     <div className="[&_iframe]:rounded-[14px]">
@@ -22,5 +22,5 @@ export function Tweet({ id }: { id: string }) {
         twitterTweetEmbedProps={{ tweetId: id, options: { theme } }}
       />
     </div>
-  );
+  )
 }

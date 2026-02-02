@@ -638,7 +638,7 @@ Check out our video version of this tutorial on YouTube!
 
               expect($('app'), findsOneWidget);
               if (!Platform.isMacOS) {
-                await $.native.pressHome();
+                await $.platform.mobile.pressHome();
               }
             },
           );

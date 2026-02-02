@@ -34,4 +34,8 @@
   article h1:first-child {
     font-weight: 800;
   }
+
+  aside [data-radix-scroll-area-viewport] {
+    padding-bottom: 44px;
+  }
 }
