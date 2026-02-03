@@ -1,6 +1,7 @@
 # Unreleased
 
 - Fix Android permission dialog not being tapped with `grantPermissionWhenInUse`.(#2876)
+- Fix iOS `tapOnNotificationBySelector` to support `text` parameter. (#2898)
 - Fix `tapOnNotificationByIndex` on iOS 18+ to use consistent indexing with other systems. (#2899)
 
 ## 4.1.0
