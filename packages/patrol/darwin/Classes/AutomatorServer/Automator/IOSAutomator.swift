@@ -622,6 +622,11 @@
         let cells = self.springboard.buttons.matching(identifier: self.notificationCellIdentifier)
           .allElementsBoundByIndex
         for (i, cell) in cells.enumerated() {
+          // Skip non-notification elements (iOS 18+ has a header element at the start)
+          if i < self.notificationIndexOffset {
+            Logger.shared.i("skipping non-notification element at index \(i)")
+            continue
+          }
           Logger.shared.i("found notification at index \(i) with label \(format: cell.label)")
           let notification = Notification(title: String(), content: String(), raw: cell.label)
           notifications.append(notification)
