@@ -183,7 +183,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       testDirectory,
       web: isWeb,
     );
-    if (boolArg('generate-bundle') || isWeb) {
+    if (boolArg('generate-bundle')) {
       _testBundler.createTestBundle(
         testDirectory,
         targets,
