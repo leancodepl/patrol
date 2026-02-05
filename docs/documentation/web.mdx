@@ -36,10 +36,10 @@ patrol test --device chrome --target patrol_test/login_test.dart
 
 ### Running Tests in your CI pipeline
 
-CI environments typically do not provide a graphical display. For this reason, Patrol web tests must be run in **headless mode**.
+CI environments typically do not provide a graphical display. For this reason, it's recommended to run Patrol web tests in **headless mode**.
 
 By default, Patrol runs web tests in headed mode (with a visible browser window).  
-In CI pipelines (e.g. GitHub Actions, GitLab CI), you should explicitly enable headless mode using `--web-headless true`:
+In CI pipelines (e.g. GitHub Actions, GitLab CI), it's recommended to enable headless mode using `--web-headless true`:
 
 ```bash
 patrol test \
