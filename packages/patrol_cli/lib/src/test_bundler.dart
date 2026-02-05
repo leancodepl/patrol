@@ -248,13 +248,7 @@ ${generateGroupsCode(testDirectory, [testFilePath]).split('\n').map((e) => '  $e
         testFilePath,
       );
       final testName = _createTestName(testDirectory, relativeTestFilePath);
-
-      // For web tests, include the test directory in the group name to match
-      // the import path structure
-      final groupName = web
-          ? '$testDirectory.${testName.replaceAll('__', '.')}'
-          : testName.replaceAll('__', '.');
-
+      final groupName = testName.replaceAll('__', '.');
       final testEntrypoint = '$testName.main';
       groups.add("group('$groupName', $testEntrypoint);");
     }
