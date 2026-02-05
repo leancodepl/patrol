@@ -169,17 +169,16 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
     }
 
     final device = devices.single;
+    final isWeb = device.targetPlatform == TargetPlatform.web;
 
     // Validate that flavors are not used with web platform
-    if (device.targetPlatform == TargetPlatform.web &&
-        stringArg('flavor') != null) {
+    if (isWeb && stringArg('flavor') != null) {
       _logger.err(
         'Flavors are not supported for web platform. Please remove the --flavor flag.',
       );
       return 1;
     }
 
-    final isWeb = device.targetPlatform == TargetPlatform.web;
     final entrypoint = _testBundler.getBundledTestFile(
       testDirectory,
       web: isWeb,
