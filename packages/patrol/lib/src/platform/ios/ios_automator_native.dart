@@ -169,7 +169,8 @@ class IOSAutomator extends NativeMobileAutomator
   ///
   /// Notification shade has to be opened first with [openNotifications].
   ///
-  /// On iOS, only [IOSSelector.titleContains] is taken into account.
+  /// On iOS, [IOSSelector.textContains], [IOSSelector.titleContains], and
+  /// [IOSSelector.text] are taken into account.
   ///
   /// See also:
   ///
