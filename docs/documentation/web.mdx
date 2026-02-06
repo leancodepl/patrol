@@ -34,6 +34,20 @@ patrol test --device chrome --target patrol_test/login_test.dart
   including Playwright and its browser binaries. This may take a moment.
 </Info>
 
+### Running Tests in your CI pipeline
+
+CI environments typically do not provide a graphical display. For this reason, it's recommended to run Patrol web tests in **headless mode**.
+
+By default, Patrol runs web tests in headed mode (with a visible browser window).  
+In CI pipelines (e.g. GitHub Actions, GitLab CI), it's recommended to enable headless mode using `--web-headless true`:
+
+```bash
+patrol test \
+  --device chrome \
+  --target patrol_test/login_test.dart \
+  --web-headless true
+```
+
 ### Supported Native Actions on Web
 
 Patrol supports the following platform actions through Playwright:
