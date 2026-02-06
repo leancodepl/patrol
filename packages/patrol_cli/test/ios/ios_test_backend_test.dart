@@ -1,7 +1,6 @@
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
-import 'package:meta/meta.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
@@ -64,117 +63,116 @@ void main() {
     });
 
     group('xcTestRunPath', () {
-      @isTest
-      void testXcTestRunPath(
-        String description, {
-        String scheme = 'Runner',
-        bool simulator = false,
-        String? arch,
-        String? testPlan,
-      }) {
-        test(description, () async {
-          final target = simulator ? 'iphonesimulator' : 'iphoneos';
-          if (arch != null) {
-            arch = '-$arch';
-          }
+      test('finds xctestrun for iphoneos (real device)', () {
+        fs
+            .file(
+              'build/ios_integ/Build/Products/Runner_TestPlan_iphoneos16.2-arm64.xctestrun',
+            )
+            .createSync(recursive: true);
 
-          final xcTestPlan = testPlan != null ? '-$testPlan' : '';
+        final path = iosTestBackend.xcTestRunPath(
+          real: true,
+          scheme: 'Runner',
+          sdkVersion: '16.2',
+        );
 
-          final name = '${scheme}_$xcTestPlan${target}16.2$arch.xctestrun';
+        expect(
+          path,
+          '/example_app/build/ios_integ/Build/Products/Runner_TestPlan_iphoneos16.2-arm64.xctestrun',
+        );
+      });
 
-          fs
-              .file('build/ios_integ/Build/Products/$name')
-              .createSync(recursive: true);
+      test('finds xctestrun for iphonesimulator', () {
+        fs
+            .file(
+              'build/ios_integ/Build/Products/Runner_CustomPlan_iphonesimulator16.2-arm64-x86_64.xctestrun',
+            )
+            .createSync(recursive: true);
 
-          final found = await iosTestBackend.xcTestRunPath(
-            real: !simulator,
-            scheme: scheme,
+        final path = iosTestBackend.xcTestRunPath(
+          real: false,
+          scheme: 'Runner',
+          sdkVersion: '16.2',
+        );
+
+        expect(
+          path,
+          '/example_app/build/ios_integ/Build/Products/Runner_CustomPlan_iphonesimulator16.2-arm64-x86_64.xctestrun',
+        );
+      });
+
+      test('finds xctestrun with custom scheme for iphoneos', () {
+        fs
+            .file(
+              'build/ios_integ/Build/Products/dev_AnotherTestPlan_iphoneos17.0-arm64.xctestrun',
+            )
+            .createSync(recursive: true);
+
+        final path = iosTestBackend.xcTestRunPath(
+          real: true,
+          scheme: 'dev',
+          sdkVersion: '17.0',
+        );
+
+        expect(
+          path,
+          '/example_app/build/ios_integ/Build/Products/dev_AnotherTestPlan_iphoneos17.0-arm64.xctestrun',
+        );
+      });
+
+      test('finds xctestrun with custom scheme for iphonesimulator', () {
+        fs
+            .file(
+              'build/ios_integ/Build/Products/prod_MyTestPlan_iphonesimulator26.1-arm64-x86_64.xctestrun',
+            )
+            .createSync(recursive: true);
+
+        final path = iosTestBackend.xcTestRunPath(
+          real: false,
+          scheme: 'prod',
+          sdkVersion: '26.1',
+        );
+
+        expect(
+          path,
+          '/example_app/build/ios_integ/Build/Products/prod_MyTestPlan_iphonesimulator26.1-arm64-x86_64.xctestrun',
+        );
+      });
+
+      test('returns relative path when absolutePath is false', () {
+        fs
+            .file(
+              'build/ios_integ/Build/Products/Runner_TestPlan_iphoneos16.2-arm64.xctestrun',
+            )
+            .createSync(recursive: true);
+
+        final path = iosTestBackend.xcTestRunPath(
+          real: true,
+          scheme: 'Runner',
+          sdkVersion: '16.2',
+          absolutePath: false,
+        );
+
+        expect(
+          path,
+          'build/ios_integ/Build/Products/Runner_TestPlan_iphoneos16.2-arm64.xctestrun',
+        );
+      });
+
+      test('throws when xctestrun file not found', () {
+        fs
+            .directory('build/ios_integ/Build/Products')
+            .createSync(recursive: true);
+
+        expect(
+          () => iosTestBackend.xcTestRunPath(
+            real: true,
+            scheme: 'Runner',
             sdkVersion: '16.2',
-          );
-
-          expect(found, '/example_app/build/ios_integ/Build/Products/$name');
-        });
-      }
-
-      testXcTestRunPath('finds xctestrun with no arch on iphoneos');
-
-      testXcTestRunPath(
-        'finds xctestrun with single arch on iphoneos',
-        arch: 'arm64',
-      );
-
-      testXcTestRunPath(
-        'finds xctestrun with single arch on iphoneos (test plan)',
-        arch: 'arm64',
-        testPlan: 'TestPlan',
-      );
-
-      testXcTestRunPath(
-        'finds xctestrun with double arch on iphoneos',
-        arch: 'arm64-x86_64',
-      );
-
-      testXcTestRunPath(
-        'finds xctestrun with no arch and custom scheme on iphoneos',
-        scheme: 'dev',
-      );
-
-      testXcTestRunPath(
-        'finds xctestrun with single arch and custom scheme on iphoneos',
-        arch: 'arm64',
-        scheme: 'dev',
-      );
-
-      testXcTestRunPath(
-        'finds xctestrun with double arch and custom scheme on iphoneos',
-        arch: 'arm64-x86_64',
-        scheme: 'dev',
-      );
-
-      testXcTestRunPath(
-        'finds xctestrun with no arch on iphonesimulator',
-        simulator: true,
-      );
-
-      testXcTestRunPath(
-        'finds xctestrun with single arch on iphonesimulator',
-        arch: 'arm64',
-        simulator: true,
-      );
-
-      testXcTestRunPath(
-        'finds xctestrun with double arch on iphonesimulator',
-        arch: 'arm64-x86_64',
-        simulator: true,
-      );
-
-      testXcTestRunPath(
-        'finds xctestrun with no arch and custom scheme on iphonesimulator',
-        simulator: true,
-        scheme: 'dev',
-      );
-
-      testXcTestRunPath(
-        'finds xctestrun with single arch and custom scheme on iphonesimulator',
-        arch: 'arm64',
-        simulator: true,
-        scheme: 'dev',
-      );
-
-      testXcTestRunPath(
-        'finds xctestrun with double arch and custom scheme on iphonesimulator',
-        arch: 'arm64-x86_64',
-        simulator: true,
-        scheme: 'dev',
-      );
-
-      testXcTestRunPath(
-        'finds xctestrun with double arch and custom scheme on iphonesimulator (test plan)',
-        arch: 'arm64-x86_64',
-        simulator: true,
-        scheme: 'dev',
-        testPlan: 'SomeTestPlan',
-      );
+          ),
+          throwsA(isA<FileSystemException>()),
+        );
+      });
     });
 
     group('stripFlavorFromAppId', () {
