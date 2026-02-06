@@ -12,7 +12,7 @@ Simple yet powerful Flutter-first UI testing framework overcoming limitations of
 `flutter_test`, `integration_test`, and `flutter_driver`. Created and supported
 by [LeanCode](https://leancode.co).
 
-![Patrol promotial graphics][promo_graphics]
+[![Patrol promotial graphics][promo_graphics]](https://patrol.leancode.co)
 
 ## Learn more about Patrol:
 
