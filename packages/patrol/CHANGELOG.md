@@ -1,7 +1,9 @@
-# 4.2.0
+# 4.1.1
 
 - Fix Android permission dialog not being tapped with `grantPermissionWhenInUse`.(#2876)
 - Fix iOS `tapOnNotificationBySelector` to support `text` parameter. (#2898)
+- Bump `patrol_log` to `0.7.0`. (#2917)
+- Bump `patrol_finders` to `3.1.0`. (#2917)
 
 ## 4.1.0
 

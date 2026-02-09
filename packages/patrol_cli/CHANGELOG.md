@@ -5,6 +5,7 @@
 - Add support for `--no-tree-shake-icons` flag in cli commands. (#2704)
 - Fix `PATROL_FLUTTER_COMMAND` not being used when building web app. (#2857)
 - Remove unused import in `test_bundle.dart` files. (#2885)
+- Bump `patrol_log` to `0.7.0`. (#2917)
 
 ## 4.0.2
 
