@@ -100,7 +100,7 @@ Future<void> main() async {
   });
 
 // START: GENERATED TEST GROUPS
-${generateGroupsCode(testDirectory, testFilePaths, web: web).split('\n').map((e) => '  $e').join('\n')}
+${generateGroupsCode(testDirectory, testFilePaths).split('\n').map((e) => '  $e').join('\n')}
 // END: GENERATED TEST GROUPS
 
   final dartTestGroup = await testExplorationCompleter.future;
@@ -236,11 +236,7 @@ ${generateGroupsCode(testDirectory, [testFilePath]).split('\n').map((e) => '  $e
   /// '''
   /// ```
   @visibleForTesting
-  String generateGroupsCode(
-    String testDirectory,
-    List<String> testFilePaths, {
-    bool web = false,
-  }) {
+  String generateGroupsCode(String testDirectory, List<String> testFilePaths) {
     final groups = <String>[];
     for (final testFilePath in testFilePaths) {
       final relativeTestFilePath = _normalizeTestPath(
