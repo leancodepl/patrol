@@ -117,8 +117,7 @@ void main() {
           sdkVersion: any(named: 'sdkVersion'),
           absolutePath: any(named: 'absolutePath'),
         ),
-      ).thenAnswer((_) async => 'build/ios_integ/Runner_Test.xctestrun');
-
+      ).thenReturn('build/ios_integ/Runner_Test.xctestrun');
       when(
         () => mockCompatibilityChecker.checkVersionsCompatibilityForBuild(
           patrolVersion: any(named: 'patrolVersion'),
