@@ -985,7 +985,7 @@
     }
 
     func axeA11yScan() throws {
-      guard let result = try axe?.run(onElement: app)
+      let result = try axe?.run(onElement: app)
       let path = try axe?.saveResult(result)
       Logger.shared.i("Result saved to location: \(path)")
     }
