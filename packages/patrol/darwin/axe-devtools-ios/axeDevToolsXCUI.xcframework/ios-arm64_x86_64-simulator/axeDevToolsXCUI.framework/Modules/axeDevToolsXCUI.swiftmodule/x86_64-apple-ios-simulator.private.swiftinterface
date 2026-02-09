@@ -1,0 +1,776 @@
+// swift-interface-format-version: 1.0
+// swift-compiler-version: Apple Swift version 6.2 effective-5.10 (swiftlang-6.2.0.19.9 clang-1700.3.19.1)
+// swift-module-flags: -target x86_64-apple-ios16.0-simulator -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -enable-experimental-feature AccessLevelOnImport -enable-experimental-feature DebugDescriptionMacro -enable-bare-slash-regex -module-name axeDevToolsXCUI
+// swift-module-flags-ignorable: -no-verify-emitted-module-interface -formal-cxx-interoperability-mode=off -interface-compiler-version 6.2
+import CoreGraphics
+import CoreImage
+import CryptoKit
+import Foundation
+import OSLog
+import Swift
+import UIKit
+import Vision
+import _Concurrency
+import _StringProcessing
+import _SwiftConcurrencyShims
+import zlib
+@_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers @objc public class AxeImage : ObjectiveC.NSObject {
+  @objc final public let base64png: Swift.String
+  @objc final public let frame: axeDevToolsXCUI.AxeBounds
+  @objc override dynamic public var hash: Swift.Int {
+    @objc get
+  }
+  #if compiler(>=5.3) && $NonescapableTypes
+  @objc override dynamic public func isEqual(_ object: Any?) -> Swift.Bool
+  #endif
+  @objc deinit
+}
+@_hasMissingDesignatedInitializers open class AxeRule : Swift.Hashable {
+  public static func == (lhs: axeDevToolsXCUI.AxeRule, rhs: axeDevToolsXCUI.AxeRule) -> Swift.Bool
+  final public let id: Swift.String
+  public var summary: Swift.String {
+    get
+  }
+  public var passingDescription: Swift.String?
+  public var standard: axeDevToolsXCUI.AxeStandard {
+    get
+  }
+  public var impact: axeDevToolsXCUI.AxeImpact {
+    get
+  }
+  public var config: axeDevToolsXCUI.RuleConf
+  public init(ruleConf: axeDevToolsXCUI.RuleConf)
+  open func setUp(_ context: axeDevToolsXCUI.AxeContext)
+  open func collectProps(for node: axeDevToolsXCUI.AxeView) -> axeDevToolsXCUI.AxeProps
+  open func runRule(_ props: axeDevToolsXCUI.AxeProps) throws -> axeDevToolsXCUI.AxeStatus
+  open func tearDown()
+  final public func hash(into hasher: inout Swift.Hasher)
+  @objc deinit
+  open var hashValue: Swift.Int {
+    get
+  }
+}
+extension axeDevToolsXCUI.AxeDevTools {
+  @available(*, deprecated, message: "This method will be removed in a future release; please use AxeDevTools.startSession(withApiKey, toServer, usingProjectId) instead")
+  @objc public static func login(withUsername username: Swift.String, andPassword password: Swift.String, toServer url: Swift.String = "") throws -> axeDevToolsXCUI.AxeDevTools
+  @available(*, deprecated, message: "This method will be removed in a future release; please use AxeDevTools.startSession(withApiKey, toServer, usingProjectId) instead")
+  @objc public static func login(withAPIKey apiKey: Swift.String, toServer url: Swift.String = "") throws -> axeDevToolsXCUI.AxeDevTools
+  @objc public static func startSession(apiKey: Swift.String, url: Swift.String = "", projectId: Swift.String = "") throws -> axeDevToolsXCUI.AxeDevTools
+  #if compiler(>=5.3) && $NonescapableTypes
+  @objc public static func startSession(withApiKey apiKey: Swift.String, toServer url: Swift.String = "", usingProjectId projectId: Swift.String, _ completion: @escaping (axeDevToolsXCUI.AxeDevTools?, (any Swift.Error)?) -> Swift.Void)
+  #endif
+}
+@objc public enum AxeRole : Swift.Int {
+  case textElement
+  case control
+  case image
+  case genericElement
+  public func toString() -> Swift.String
+  #if compiler(>=5.3) && $NonescapableTypes
+  public init?(rawValue: Swift.Int)
+  #endif
+  public typealias AllCases = [axeDevToolsXCUI.AxeRole]
+  public typealias RawValue = Swift.Int
+  nonisolated public static var allCases: [axeDevToolsXCUI.AxeRole] {
+    get
+  }
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+@_hasMissingDesignatedInitializers @objc public class AxeMetaData : ObjectiveC.NSObject, Swift.Codable {
+  @objc final public let appIdentifier: Swift.String
+  @objc final public let analysisTimestamp: Swift.Int64
+  @objc final public let axeVersion: Swift.String
+  @objc public var screenTitle: Swift.String
+  @objc final public let isFullScreenForML: Swift.Bool
+  @objc override dynamic public var hash: Swift.Int {
+    @objc get
+  }
+  @objc override dynamic public var description: Swift.String {
+    @objc get
+  }
+  required public init(from decoder: any Swift.Decoder) throws
+  #if compiler(>=5.3) && $NonescapableTypes
+  @objc override dynamic public func isEqual(_ object: Any?) -> Swift.Bool
+  #endif
+  public func encode(to encoder: any Swift.Encoder) throws
+  @objc deinit
+}
+@objc public enum AxeStatus : Swift.Int {
+  case INAPPLICABLE = 0
+  case INCOMPLETE = 1
+  case PASS = 2
+  case FAIL = 3
+  case IGNORED = 4
+  public func toString() -> Swift.String
+  #if compiler(>=5.3) && $NonescapableTypes
+  public init?(rawValue: Swift.Int)
+  #endif
+  public typealias AllCases = [axeDevToolsXCUI.AxeStatus]
+  public typealias RawValue = Swift.Int
+  nonisolated public static var allCases: [axeDevToolsXCUI.AxeStatus] {
+    get
+  }
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+@_hasMissingDesignatedInitializers @objc public class AxeView : ObjectiveC.NSObject, Swift.Codable {
+  @objc final public let className: Swift.String
+  @objc final public let elementType: axeDevToolsXCUI.AxeElementType
+  @objc final public let boundsInScreen: axeDevToolsXCUI.AxeBounds
+  @objc final public let accessibilityIdentifier: Swift.String?
+  @objc final public let name: Swift.String?
+  @objc final public let role: axeDevToolsXCUI.AxeRole
+  @objc final public let state: Swift.String?
+  @objc final public let value: Swift.String?
+  @objc public var isAccessibilityFocusable: Swift.Bool {
+    get
+  }
+  @objc public var children: [axeDevToolsXCUI.AxeView] {
+    get
+  }
+  @objc weak public var parent: axeDevToolsXCUI.AxeView?
+  @objc public var detectedText: Swift.String? {
+    get
+  }
+  @objc public var axeViewId: Swift.String {
+    @objc get
+  }
+  @objc public var isVisibleToUser: Swift.Bool {
+    get
+  }
+  @objc override dynamic public var description: Swift.String {
+    @objc get
+  }
+  required public init(from decoder: any Swift.Decoder) throws
+  public func encode(to encoder: any Swift.Encoder) throws
+  #if compiler(>=5.3) && $NonescapableTypes
+  @objc override dynamic public func isEqual(_ object: Any?) -> Swift.Bool
+  #endif
+  @discardableResult
+  @objc public func runOnSelfAndDescendants(_ function: (axeDevToolsXCUI.AxeView) -> axeDevToolsXCUI.RunStatus) -> axeDevToolsXCUI.RunStatus
+  #if compiler(>=5.3) && $NonescapableTypes
+  public func getOrError(prop: axeDevToolsXCUI.AxeProps.Name) throws -> (any Swift.Decodable & Swift.Encodable)?
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
+  public func get(prop: axeDevToolsXCUI.AxeProps.Name) -> (any Swift.Decodable & Swift.Encodable)?
+  #endif
+  public func getOrError<T>(prop name: axeDevToolsXCUI.AxeProps.Name, withType t: T.Type) throws -> T where T : Swift.Decodable, T : Swift.Encodable
+  #if compiler(>=5.3) && $NonescapableTypes
+  public func get<T>(prop name: axeDevToolsXCUI.AxeProps.Name, withType t: T.Type) -> T? where T : Swift.Decodable, T : Swift.Encodable
+  #endif
+  @objc public func isPropTypeOrChild(ofProp propName: axeDevToolsXCUI.AxeProps.Name) -> Swift.Bool
+  @objc public func isChild(ofProp propName: axeDevToolsXCUI.AxeProps.Name) -> Swift.Bool
+  @objc public func isChild(ofElementType elementType: axeDevToolsXCUI.AxeElementType) -> Swift.Bool
+  @objc public func isElementOrChild(ofElementType elementType: axeDevToolsXCUI.AxeElementType) -> Swift.Bool
+  @objc deinit
+}
+@objc public class RuleConf : ObjectiveC.NSObject, Swift.Codable {
+  @objc final public let experimental: Swift.Bool
+  @objc final public let summary: Swift.String
+  final public let standard: axeDevToolsXCUI.AxeStandard
+  @objc public var impact: axeDevToolsXCUI.AxeImpact {
+    get
+  }
+  @objc final public let ruleId: Swift.String?
+  #if compiler(>=5.3) && $NonescapableTypes
+  public var category: axeDevToolsXCUI.AxeCategory? {
+    get
+  }
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
+  public var successCriteria: axeDevToolsXCUI.AxeSuccessCriteria? {
+    get
+  }
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
+  public init(impact: axeDevToolsXCUI.AxeImpact, standard: axeDevToolsXCUI.AxeStandard = .bestPractice, summary: Swift.String, experimental: Swift.Bool = false, ruleId: Swift.String? = nil)
+  #endif
+  required public init(from decoder: any Swift.Decoder) throws
+  public func encode(to encoder: any Swift.Encoder) throws
+  #if compiler(>=5.3) && $NonescapableTypes
+  @objc override dynamic public func isEqual(_ object: Any?) -> Swift.Bool
+  #endif
+  @objc deinit
+}
+public enum AxeCategory : Swift.String, Swift.Codable {
+  case other
+  case nameRoleValue
+  case color
+  case structure
+  case textAlternatives
+  case sensoryAndVisualCues
+  case keyboard
+  #if compiler(>=5.3) && $NonescapableTypes
+  public init?(rawValue: Swift.String)
+  #endif
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+extension axeDevToolsXCUI.AxeElementType : Swift.Equatable {
+}
+@_hasMissingDesignatedInitializers @objc public class AxeDevToolsResultKey : ObjectiveC.NSObject, Swift.Codable {
+  @objc final public let packageName: Swift.String
+  @objc final public let userId: Swift.String
+  @objc final public let resultId: Swift.String
+  @objc final public let uuid: Swift.String
+  @objc override dynamic public var hash: Swift.Int {
+    @objc get
+  }
+  @objc override dynamic public var description: Swift.String {
+    @objc get
+  }
+  #if compiler(>=5.3) && $NonescapableTypes
+  @available(*, deprecated, message: "This will be removed in a future release; please use AxeDevToolsResultKey(userId:, packageName:, resultId:, uuid:) instead")
+  @objc public init?(fabTitle: Swift.String)
+  #endif
+  required public init(from decoder: any Swift.Decoder) throws
+  #if compiler(>=5.3) && $NonescapableTypes
+  @objc override dynamic public func isEqual(_ object: Any?) -> Swift.Bool
+  #endif
+  @objc deinit
+  public func encode(to encoder: any Swift.Encoder) throws
+}
+@_inheritsConvenienceInitializers @objc final public class AxeConf : ObjectiveC.NSObject, Swift.Codable {
+  final public var customRules: Swift.Set<axeDevToolsXCUI.AxeRule> {
+    get
+    set
+  }
+  final public var optInToSupportsDynamicType: Swift.Bool {
+    get
+    set
+  }
+  @objc override final public var description: Swift.String {
+    @objc get
+  }
+  @objc override dynamic public init()
+  required public init(from decoder: any Swift.Decoder) throws
+  final public func encode(to encoder: any Swift.Encoder) throws
+  @objc final public func ignore(rule: Swift.String, _ shouldIgnore: Swift.Bool = true)
+  @objc final public func ignore(rules: [Swift.String], _ shouldIgnore: Swift.Bool = true)
+  @objc final public func ignoreExperimental()
+  @objc final public func ignore(rulesFor: [Swift.String : Swift.Set<Swift.String>])
+  #if compiler(>=5.3) && $NonescapableTypes
+  @objc override final public func isEqual(_ object: Any?) -> Swift.Bool
+  #endif
+  @objc deinit
+}
+@objc public enum AxeViewHierarchy : Swift.Int {
+  case UIKit
+  case SwiftUI
+  case ReactNative
+  public func toString() -> Swift.String
+  #if compiler(>=5.3) && $NonescapableTypes
+  public init?(rawValue: Swift.Int)
+  #endif
+  public typealias AllCases = [axeDevToolsXCUI.AxeViewHierarchy]
+  public typealias RawValue = Swift.Int
+  nonisolated public static var allCases: [axeDevToolsXCUI.AxeViewHierarchy] {
+    get
+  }
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+@objc public enum RunStatus : Swift.Int {
+  case Continue
+  case Stop
+  case SkipDescendants
+  #if compiler(>=5.3) && $NonescapableTypes
+  public init?(rawValue: Swift.Int)
+  #endif
+  public typealias RawValue = Swift.Int
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+@_hasMissingDesignatedInitializers @objc public class AxeRuleResult : ObjectiveC.NSObject, Swift.Codable {
+  @objc final public let status: axeDevToolsXCUI.AxeStatus
+  @objc final public let impact: axeDevToolsXCUI.AxeImpact
+  @objc final public let ruleId: Swift.String
+  @objc final public let ruleSummary: Swift.String
+  @objc final public let props: axeDevToolsXCUI.AxeProps
+  @objc final public let axeViewId: Swift.String
+  @objc final public let isVisibleToUser: Swift.Bool
+  @objc final public let experimental: Swift.Bool
+  #if compiler(>=5.3) && $NonescapableTypes
+  @nonobjc public var axeRuleId: axeDevToolsXCUI.AxeRuleId? {
+    get
+  }
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
+  public var category: axeDevToolsXCUI.AxeCategory? {
+    get
+  }
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
+  public var standard: axeDevToolsXCUI.AxeStandard? {
+    get
+  }
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
+  public var successCriteria: axeDevToolsXCUI.AxeSuccessCriteria? {
+    get
+  }
+  #endif
+  @objc override dynamic public var description: Swift.String {
+    @objc get
+  }
+  required public init(from decoder: any Swift.Decoder) throws
+  public func encode(to encoder: any Swift.Encoder) throws
+  #if compiler(>=5.3) && $NonescapableTypes
+  @objc override dynamic public func isEqual(_ object: Any?) -> Swift.Bool
+  #endif
+  @objc deinit
+}
+@_hasMissingDesignatedInitializers @objc public class AxeRect : ObjectiveC.NSObject, Swift.Codable {
+  @objc final public let left: Swift.Float
+  @objc final public let right: Swift.Float
+  @objc final public let top: Swift.Float
+  @objc final public let bottom: Swift.Float
+  @objc public var height: Swift.Float {
+    @objc get
+  }
+  @objc public var width: Swift.Float {
+    @objc get
+  }
+  @objc override dynamic public var description: Swift.String {
+    @objc get
+  }
+  @objc override dynamic public var hash: Swift.Int {
+    @objc get
+  }
+  required public init(from decoder: any Swift.Decoder) throws
+  #if compiler(>=5.3) && $NonescapableTypes
+  @objc override dynamic public func isEqual(_ object: Any?) -> Swift.Bool
+  #endif
+  public func encode(to encoder: any Swift.Encoder) throws
+  @objc deinit
+}
+@objc public enum AxeOrientation : Swift.UInt, Swift.Codable {
+  case all = 0
+  case portrait = 1
+  case landscape = 2
+  public init(from decoder: any Swift.Decoder) throws
+  public func encode(to encoder: any Swift.Encoder) throws
+  #if compiler(>=5.3) && $NonescapableTypes
+  public init?(rawValue: Swift.UInt)
+  #endif
+  public typealias AllCases = [axeDevToolsXCUI.AxeOrientation]
+  public typealias RawValue = Swift.UInt
+  nonisolated public static var allCases: [axeDevToolsXCUI.AxeOrientation] {
+    get
+  }
+  public var rawValue: Swift.UInt {
+    get
+  }
+}
+@objc public enum AxeRuleId : Swift.Int {
+  case A11yElementFocusBox
+  case ActiveControlName
+  case AssociatedText
+  case CollidingViews
+  case ColorContrast
+  case ConflictingTraits
+  case FocusableText
+  case ImageViewName
+  case InScrollView
+  case InaccessibleAction
+  case LabelAtFront
+  case LabelInName
+  case MeaningfulAccessibleName
+  case NestedElementsName
+  case ScreenOrientation
+  case ScreenTitle
+  case SupportsDynamicType
+  case TouchTargetSize
+  case TouchTargetSpacing
+  #if compiler(>=5.3) && $NonescapableTypes
+  public init?(_ str: Swift.String)
+  #endif
+  public func toString() -> Swift.String
+  #if compiler(>=5.3) && $NonescapableTypes
+  public init?(rawValue: Swift.Int)
+  #endif
+  public typealias AllCases = [axeDevToolsXCUI.AxeRuleId]
+  public typealias RawValue = Swift.Int
+  nonisolated public static var allCases: [axeDevToolsXCUI.AxeRuleId] {
+    get
+  }
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+@objc public enum AxeElementType : Swift.UInt {
+  case any = 0
+  case other = 1
+  case application = 2
+  case window = 4
+  case sheet = 5
+  case alert = 7
+  case button = 9
+  case keyboard = 19
+  case key = 20
+  case navigationBar = 21
+  case tabBar = 22
+  case tabGroup = 23
+  case toolbar = 24
+  case statusBar = 25
+  case table = 26
+  case collectionView = 32
+  case slider = 33
+  case pageIndicator = 34
+  case progressIndicator = 35
+  case activityIndicator = 36
+  case segmentedControl = 37
+  case picker = 38
+  case pickerWheel = 39
+  case `switch` = 40
+  case toggle = 41
+  case link = 42
+  case image = 43
+  case searchField = 45
+  case scrollView = 46
+  case scrollBar = 47
+  case staticText = 48
+  case textField = 49
+  case secureTextField = 50
+  case datePicker = 51
+  case textView = 52
+  case map = 57
+  case webView = 58
+  case cell = 75
+  case stepper = 79
+  case tab = 80
+  public func toString() -> Swift.String
+  #if compiler(>=5.3) && $NonescapableTypes
+  public init?(rawValue: Swift.UInt)
+  #endif
+  public typealias AllCases = [axeDevToolsXCUI.AxeElementType]
+  public typealias RawValue = Swift.UInt
+  nonisolated public static var allCases: [axeDevToolsXCUI.AxeElementType] {
+    get
+  }
+  public var rawValue: Swift.UInt {
+    get
+  }
+}
+@_hasMissingDesignatedInitializers @objc public class AxeResult : ObjectiveC.NSObject, Swift.Codable {
+  @objc public var sessionId: Swift.String?
+  @objc public var scanName: Swift.String?
+  @objc public var tags: [Swift.String]?
+  @objc final public let axeConf: axeDevToolsXCUI.AxeConf
+  @objc final public let axeContext: axeDevToolsXCUI.AxeContext
+  @objc final public let axeRuleResults: [axeDevToolsXCUI.AxeRuleResult]
+  @objc public var failures: [axeDevToolsXCUI.AxeRuleResult] {
+    @objc get
+  }
+  @objc public var passes: [axeDevToolsXCUI.AxeRuleResult] {
+    @objc get
+  }
+  @objc public var incompletes: [axeDevToolsXCUI.AxeRuleResult] {
+    @objc get
+  }
+  @objc override dynamic public var description: Swift.String {
+    @objc get
+  }
+  @objc public var shortDescription: Swift.String {
+    @objc get
+  }
+  #if compiler(>=5.3) && $NonescapableTypes
+  @objc override dynamic public func isEqual(_ object: Any?) -> Swift.Bool
+  #endif
+  @objc deinit
+  public func encode(to encoder: any Swift.Encoder) throws
+  required public init(from decoder: any Swift.Decoder) throws
+}
+@_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers @objc final public class AxeBounds : axeDevToolsXCUI.AxeRect {
+  @objc override final public var description: Swift.String {
+    @objc get
+  }
+  required public init(from decoder: any Swift.Decoder) throws
+  @objc deinit
+}
+extension Swift.String {
+  public static let label: Swift.String
+}
+@_hasMissingDesignatedInitializers @objc public class AxePoint : ObjectiveC.NSObject, Swift.Codable {
+  @objc final public let x: Swift.Int
+  @objc final public let y: Swift.Int
+  @objc override dynamic public var description: Swift.String {
+    @objc get
+  }
+  convenience required public init(from decoder: any Swift.Decoder) throws
+  public func encode(to encoder: any Swift.Encoder) throws
+  #if compiler(>=5.3) && $NonescapableTypes
+  @objc override dynamic public func isEqual(_ object: Any?) -> Swift.Bool
+  #endif
+  @objc deinit
+}
+@_hasMissingDesignatedInitializers @objc public class AxeContext : ObjectiveC.NSObject, Swift.Codable {
+  @objc final public let axeView: axeDevToolsXCUI.AxeView
+  @objc final public let axeDevice: axeDevToolsXCUI.AxeDevice
+  @objc final public let screenshot: axeDevToolsXCUI.AxeImage
+  @objc public var axeMetaData: axeDevToolsXCUI.AxeMetaData
+  required public init(from decoder: any Swift.Decoder) throws
+  #if compiler(>=5.3) && $NonescapableTypes
+  @objc override dynamic public func isEqual(_ object: Any?) -> Swift.Bool
+  #endif
+  public func encode(to encoder: any Swift.Encoder) throws
+  @objc deinit
+}
+public struct AxeStandard : Swift.Equatable, Swift.Codable {
+  public let rawValue: Swift.String
+  public init(rawValue: Swift.String)
+  public init(from decoder: any Swift.Decoder) throws
+  public func encode(to encoder: any Swift.Encoder) throws
+  public static func == (a: axeDevToolsXCUI.AxeStandard, b: axeDevToolsXCUI.AxeStandard) -> Swift.Bool
+}
+extension axeDevToolsXCUI.AxeStandard {
+  public static let bestPractice: axeDevToolsXCUI.AxeStandard
+  public static let wcag2a: axeDevToolsXCUI.AxeStandard
+  public static let wcag2aa: axeDevToolsXCUI.AxeStandard
+  public static let wcag21a: axeDevToolsXCUI.AxeStandard
+  public static let wcag21aa: axeDevToolsXCUI.AxeStandard
+  public static let wcag21aaa: axeDevToolsXCUI.AxeStandard
+  public static let wcag22aa: axeDevToolsXCUI.AxeStandard
+  public static let unknown: axeDevToolsXCUI.AxeStandard
+  @available(*, deprecated, message: "This will be removed in a future release; please use AxeStandard.bestPractice instead")
+  public static let BEST_PRACTICE: axeDevToolsXCUI.AxeStandard
+}
+@_hasMissingDesignatedInitializers @objc public class AxeDevice : ObjectiveC.NSObject, Swift.Codable {
+  @objc final public let name: Swift.String
+  @objc final public let os: Swift.String
+  @objc final public let osVersion: Swift.String
+  @objc final public let screenHeight: Swift.Float
+  @objc final public let screenWidth: Swift.Float
+  @objc final public let scale: Swift.Float
+  @objc override dynamic public var hash: Swift.Int {
+    @objc get
+  }
+  required public init(from decoder: any Swift.Decoder) throws
+  #if compiler(>=5.3) && $NonescapableTypes
+  @objc override dynamic public func isEqual(_ object: Any?) -> Swift.Bool
+  #endif
+  public func encode(to encoder: any Swift.Encoder) throws
+  @objc deinit
+}
+@_inheritsConvenienceInitializers @objc final public class AxeProps : ObjectiveC.NSObject, Swift.Codable {
+  public typealias Name = Swift.String
+  @objc override final public var description: Swift.String {
+    @objc get
+  }
+  @objc override dynamic public init()
+  required public init(from decoder: any Swift.Decoder) throws
+  final public func encode(to encoder: any Swift.Encoder) throws
+  #if compiler(>=5.3) && $NonescapableTypes
+  @objc override final public func isEqual(_ object: Any?) -> Swift.Bool
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
+  final public func get(_ name: axeDevToolsXCUI.AxeProps.Name) -> (any Swift.Decodable & Swift.Encodable)?
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
+  final public func getOrError(_ name: axeDevToolsXCUI.AxeProps.Name) throws -> (any Swift.Decodable & Swift.Encodable)?
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
+  final public func get<T>(_ name: axeDevToolsXCUI.AxeProps.Name, withType objType: T.Type) -> T? where T : Swift.Decodable, T : Swift.Encodable
+  #endif
+  final public func getOrError<T>(_ name: axeDevToolsXCUI.AxeProps.Name, withType objType: T.Type) throws -> T where T : Swift.Decodable, T : Swift.Encodable
+  #if compiler(>=5.3) && $NonescapableTypes
+  final public func add(_ props: [axeDevToolsXCUI.AxeProps.Name : (any Swift.Decodable & Swift.Encodable)?])
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
+  final public func add(_ propName: axeDevToolsXCUI.AxeProps.Name, _ prop: (any Swift.Decodable & Swift.Encodable)?)
+  #endif
+  final public func remove(_ propName: axeDevToolsXCUI.AxeProps.Name)
+  @objc deinit
+}
+extension Swift.String {
+  public static let className: Swift.String
+  public static let elementType: Swift.String
+  public static let axeViewId: Swift.String
+  public static let parent: Swift.String
+  public static let children: Swift.String
+  public static let boundsInScreen: Swift.String
+  public static let isAccessibilityFocusable: Swift.String
+  public static let accessibilityIdentifier: Swift.String
+  public static let name: Swift.String
+  public static let role: Swift.String
+  public static let state: Swift.String
+  public static let value: Swift.String
+  public static let isVisibleToUser: Swift.String
+  public static let isHeaderOrFooter: Swift.String
+  public static let isEnabled: Swift.String
+  public static let text: Swift.String
+  public static let frame: Swift.String
+  public static let isActiveControl: Swift.String
+  public static let isAccessibilityElement: Swift.String
+  public static let elementOffScreen: Swift.String
+  public static let accessibilityPath: Swift.String
+  public static let accessibilityTraits: Swift.String
+  public static let supportedOrientations: Swift.String
+  public static let keyboardOnScreen: Swift.String
+  public static let viewHierarchyType: Swift.String
+}
+@_hasMissingDesignatedInitializers @objc final public class AxeDevTools : ObjectiveC.NSObject {
+  @objc final public var configuration: axeDevToolsXCUI.AxeConf {
+    @objc get
+    @objc set
+  }
+  @objc public static var debugStatements: Swift.Bool {
+    @objc get
+    @objc set
+  }
+  #if compiler(>=5.3) && $NonescapableTypes
+  @objc final public var sessionId: Swift.String? {
+    @objc get
+  }
+  #endif
+  @objc final public func getResult(_ resultKey: axeDevToolsXCUI.AxeDevToolsResultKey) throws -> axeDevToolsXCUI.AxeResult
+  #if compiler(>=5.3) && $NonescapableTypes
+  @discardableResult
+  @objc final public func postResult(_ result: axeDevToolsXCUI.AxeResult, withTags tags: [Swift.String] = [], withScanName scanName: Swift.String? = nil) throws -> axeDevToolsXCUI.AxeDevToolsResultKey
+  #endif
+  @objc final public func tagResult(_ resultKey: axeDevToolsXCUI.AxeDevToolsResultKey, withTags tags: [Swift.String]) throws
+  @objc final public func deleteResult(_ resultKey: axeDevToolsXCUI.AxeDevToolsResultKey) throws
+  @objc final public func updateScanName(_ resultKey: axeDevToolsXCUI.AxeDevToolsResultKey, to scanName: Swift.String) throws
+  #if compiler(>=5.3) && $NonescapableTypes
+  @objc final public func saveResult(_ result: axeDevToolsXCUI.AxeResult, toAbsolutePath path: Swift.String, withFileName fileName: Swift.String = "", withScanName scanName: Swift.String? = nil) throws -> Swift.String
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
+  @objc final public func saveResult(_ result: axeDevToolsXCUI.AxeResult, toPath path: Swift.String = "AxeDevToolsResults", withFileName fileName: Swift.String = "", withScanName scanName: Swift.String? = nil) throws -> Swift.String
+  #endif
+  @objc final public func run(onBundleIdentifier bundleId: Swift.String) throws -> axeDevToolsXCUI.AxeResult
+  @objc final public func run(onElement element: Any) throws -> axeDevToolsXCUI.AxeResult
+  @objc deinit
+}
+@objc public enum AxeSuccessCriteria : Swift.Int, Swift.Codable {
+  case wcag412
+  case wcag143
+  case wcag132
+  case wcag111
+  case wcag144
+  case wcag211
+  case wcag253
+  case wcag134
+  case wcag242
+  case wcag255
+  case wcag258
+  case unknown = -1
+  public var stringValue: Swift.String {
+    get
+  }
+  public init(stringValue: Swift.String)
+  public init(from decoder: any Swift.Decoder) throws
+  public func encode(to encoder: any Swift.Encoder) throws
+  #if compiler(>=5.3) && $NonescapableTypes
+  public init?(rawValue: Swift.Int)
+  #endif
+  public typealias RawValue = Swift.Int
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+@_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers @objc public class AxeTraits : ObjectiveC.NSObject, Swift.Codable, Swift.OptionSet {
+  @objc public var rawValue: Swift.UInt64
+  @objc override dynamic public var hash: Swift.Int {
+    @objc get
+  }
+  @objc override dynamic public var description: Swift.String {
+    @objc get
+  }
+  @objc required override dynamic public init()
+  @objc required public init(rawValue raw: Swift.UInt64)
+  #if compiler(>=5.3) && $NonescapableTypes
+  @objc override dynamic public func isEqual(_ object: Any?) -> Swift.Bool
+  #endif
+  @objc public func formUnion(_ other: axeDevToolsXCUI.AxeTraits)
+  @objc public func formIntersection(_ other: axeDevToolsXCUI.AxeTraits)
+  @objc public func formSymmetricDifference(_ other: axeDevToolsXCUI.AxeTraits)
+  @objc public static let adjustable: axeDevToolsXCUI.AxeTraits
+  @objc public static let allowsDirectInteraction: axeDevToolsXCUI.AxeTraits
+  @objc public static let button: axeDevToolsXCUI.AxeTraits
+  @objc public static let causesPageTurn: axeDevToolsXCUI.AxeTraits
+  @objc public static let header: axeDevToolsXCUI.AxeTraits
+  @objc public static let image: axeDevToolsXCUI.AxeTraits
+  @objc public static let keyboardKey: axeDevToolsXCUI.AxeTraits
+  @objc public static let link: axeDevToolsXCUI.AxeTraits
+  @objc public static let none: axeDevToolsXCUI.AxeTraits
+  @objc public static let notEnabled: axeDevToolsXCUI.AxeTraits
+  @objc public static let playsSound: axeDevToolsXCUI.AxeTraits
+  @objc public static let searchField: axeDevToolsXCUI.AxeTraits
+  @objc public static let selected: axeDevToolsXCUI.AxeTraits
+  @objc public static let startsMediaSession: axeDevToolsXCUI.AxeTraits
+  @objc public static let staticText: axeDevToolsXCUI.AxeTraits
+  @objc public static let summaryElement: axeDevToolsXCUI.AxeTraits
+  @objc public static let tabBar: axeDevToolsXCUI.AxeTraits
+  @objc public static let updatesFrequently: axeDevToolsXCUI.AxeTraits
+  @objc public func toString() -> Swift.String
+  required convenience public init(from decoder: any Swift.Decoder) throws
+  public func encode(to encoder: any Swift.Encoder) throws
+  public typealias ArrayLiteralElement = axeDevToolsXCUI.AxeTraits
+  public typealias Element = axeDevToolsXCUI.AxeTraits
+  public typealias RawValue = Swift.UInt64
+  @objc deinit
+}
+@objc public enum AxeImpact : Swift.Int {
+  case MINOR = 0
+  case MODERATE = 1
+  case SERIOUS = 2
+  case CRITICAL = 3
+  public func toString() -> Swift.String
+  #if compiler(>=5.3) && $NonescapableTypes
+  public init?(rawValue: Swift.Int)
+  #endif
+  public typealias AllCases = [axeDevToolsXCUI.AxeImpact]
+  public typealias RawValue = Swift.Int
+  nonisolated public static var allCases: [axeDevToolsXCUI.AxeImpact] {
+    get
+  }
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+@_hasMissingDesignatedInitializers @objc public class AccessToken : ObjectiveC.NSObject {
+  @objc deinit
+}
+extension axeDevToolsXCUI.AxeRole : Swift.CaseIterable {}
+extension axeDevToolsXCUI.AxeRole : Swift.RawRepresentable {}
+extension axeDevToolsXCUI.AxeRole : Swift.Hashable {}
+extension axeDevToolsXCUI.AxeRole : Swift.Equatable {}
+extension axeDevToolsXCUI.AxeStatus : Swift.CaseIterable {}
+extension axeDevToolsXCUI.AxeStatus : Swift.RawRepresentable {}
+extension axeDevToolsXCUI.AxeStatus : Swift.Hashable {}
+extension axeDevToolsXCUI.AxeStatus : Swift.Equatable {}
+extension axeDevToolsXCUI.AxeCategory : Swift.Equatable {}
+extension axeDevToolsXCUI.AxeCategory : Swift.Hashable {}
+extension axeDevToolsXCUI.AxeCategory : Swift.RawRepresentable {}
+extension axeDevToolsXCUI.AxeElementType : Swift.CaseIterable {}
+extension axeDevToolsXCUI.AxeElementType : Swift.RawRepresentable {}
+extension axeDevToolsXCUI.AxeElementType : Swift.Hashable {}
+extension axeDevToolsXCUI.AxeViewHierarchy : Swift.CaseIterable {}
+extension axeDevToolsXCUI.AxeViewHierarchy : Swift.RawRepresentable {}
+extension axeDevToolsXCUI.AxeViewHierarchy : Swift.Hashable {}
+extension axeDevToolsXCUI.AxeViewHierarchy : Swift.Equatable {}
+extension axeDevToolsXCUI.RunStatus : Swift.Equatable {}
+extension axeDevToolsXCUI.RunStatus : Swift.Hashable {}
+extension axeDevToolsXCUI.RunStatus : Swift.RawRepresentable {}
+extension axeDevToolsXCUI.AxeOrientation : Swift.CaseIterable {}
+extension axeDevToolsXCUI.AxeOrientation : Swift.RawRepresentable {}
+extension axeDevToolsXCUI.AxeOrientation : Swift.Hashable {}
+extension axeDevToolsXCUI.AxeOrientation : Swift.Equatable {}
+extension axeDevToolsXCUI.AxeRuleId : Swift.CaseIterable {}
+extension axeDevToolsXCUI.AxeRuleId : Swift.RawRepresentable {}
+extension axeDevToolsXCUI.AxeRuleId : Swift.Hashable {}
+extension axeDevToolsXCUI.AxeRuleId : Swift.Equatable {}
+extension axeDevToolsXCUI.AxeSuccessCriteria : Swift.Equatable {}
+extension axeDevToolsXCUI.AxeSuccessCriteria : Swift.Hashable {}
+extension axeDevToolsXCUI.AxeSuccessCriteria : Swift.RawRepresentable {}
+extension axeDevToolsXCUI.AxeImpact : Swift.CaseIterable {}
+extension axeDevToolsXCUI.AxeImpact : Swift.RawRepresentable {}
+extension axeDevToolsXCUI.AxeImpact : Swift.Hashable {}
+extension axeDevToolsXCUI.AxeImpact : Swift.Equatable {}
