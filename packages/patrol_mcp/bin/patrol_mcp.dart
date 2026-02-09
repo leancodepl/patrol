@@ -96,7 +96,7 @@ Future<int> main(List<String> args) async {
           )
           // Tools
           ..tool(
-            'patrol-run',
+            'run',
             description:
                 'Run patrol tests (starts new session or restarts if already running) and wait for completion',
             toolInputSchema: const ToolInputSchema(
@@ -127,7 +127,7 @@ Future<int> main(List<String> args) async {
             },
           )
           ..tool(
-            'patrol-quit',
+            'quit',
             description: 'Quit the active patrol session gracefully',
             toolInputSchema: const ToolInputSchema(properties: {}),
             annotations: const ToolAnnotations(title: 'Quit Patrol'),
@@ -139,7 +139,7 @@ Future<int> main(List<String> args) async {
             },
           )
           ..tool(
-            'patrol-status',
+            'status',
             description:
                 'Get the current status of the patrol session and recent output',
             toolInputSchema: const ToolInputSchema(properties: {}),
@@ -156,7 +156,7 @@ Future<int> main(List<String> args) async {
             },
           )
           ..tool(
-            'patrol-screenshot',
+            'screenshot',
             description:
                 'Capture a screenshot of the current device/simulator screen',
             toolInputSchema: const ToolInputSchema(
@@ -178,7 +178,7 @@ Future<int> main(List<String> args) async {
             },
           )
           ..tool(
-            'patrol-native-tree',
+            'native-tree',
             description:
                 'Fetch the native UI tree. '
                 'Requires an active patrol develop session.',

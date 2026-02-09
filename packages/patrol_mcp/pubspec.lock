@@ -9,6 +9,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "85.0.0"
+  adb:
+    dependency: "direct main"
+    description:
+      path: "../adb"
+      relative: true
+    source: path
+    version: "0.6.0"
   analyzer:
     dependency: transitive
     description:

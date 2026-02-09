@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:adb/adb.dart';
 import 'package:mcp_dart/mcp_dart.dart';
 
 abstract final class NativeTreeService {
@@ -214,11 +215,7 @@ abstract final class NativeTreeService {
   }
 
   static Future<void> _setupPortForwarding() async {
-    final process = await Process.start('adb', [
-      'forward',
-      'tcp:$_port',
-      'tcp:$_port',
-    ]);
-    await process.exitCode;
+    final port = int.parse(_port);
+    await Adb().forwardPorts(fromHost: port, toDevice: port);
   }
 }
