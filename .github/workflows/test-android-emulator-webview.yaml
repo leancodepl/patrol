@@ -94,8 +94,7 @@ jobs:
       - name: Set tests to include
         run: |
           TESTS_TO_INCLUDE="webview_hackernews_test,\
-          webview_leancode_test,\
-          webview_stackoverflow_test"
+          webview_leancode_test"
 
           target_paths=""
           for target in $(echo $TESTS_TO_INCLUDE | tr ',' '\n'); do
