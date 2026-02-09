@@ -151,5 +151,62 @@ group('example.example_test', example__example_test.main);''');
         contains('$testDirectory${fs.path.separator}test_bundle.dart'),
       );
     });
+
+    test('uses project root for web test bundle', () {
+      // given
+      final defaultTestBundler = TestBundler(
+        projectRoot: fs.directory(fs.path.join(platform.home, 'awesome_app')),
+        logger: MockLogger(),
+      );
+
+      // when
+      final bundledTestFilePath = defaultTestBundler.getBundledTestFile(
+        testDirectory,
+        web: true,
+      );
+
+      // then
+      expect(bundledTestFilePath.path, endsWith('test_bundle.dart'));
+      expect(
+        bundledTestFilePath.path,
+        isNot(contains('$testDirectory${fs.path.separator}test_bundle.dart')),
+      );
+    });
+
+    test('generates web imports with test directory prefix', () {
+      // given
+      final tests = [
+        fs.path.join('patrol_test', 'web', 'my_test.dart'),
+        fs.path.join('patrol_test', 'example', 'example_test.dart'),
+      ];
+
+      // when
+      final imports = testBundler.generateImports(
+        testDirectory,
+        tests,
+        web: true,
+      );
+
+      /// then
+      expect(imports, '''
+import 'patrol_test/web/my_test.dart' as web__my_test;
+import 'patrol_test/example/example_test.dart' as example__example_test;''');
+    });
+
+    test('generates web groups with test directory prefix', () {
+      // given
+      final tests = [
+        fs.path.join('patrol_test', 'web', 'my_test.dart'),
+        fs.path.join('patrol_test', 'example', 'example_test.dart'),
+      ];
+
+      // when
+      final groupsCode = testBundler.generateGroupsCode(testDirectory, tests);
+
+      /// then
+      expect(groupsCode, '''
+group('web.my_test', web__my_test.main);
+group('example.example_test', example__example_test.main);''');
+    });
   });
 }
