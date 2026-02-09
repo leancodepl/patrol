@@ -1,4 +1,4 @@
-## Unreleased
+## 0.7.0
 
 - Show Flutter test framework output on iOS in `patrol develop`. (#2904)
 
