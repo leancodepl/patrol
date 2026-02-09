@@ -813,14 +813,16 @@ class Automator private constructor() {
 
         // wait for your app to load on screen
         uiDevice.wait(Until.hasObject(By.pkg(targetContext.packageName).depth(0)), 5000)
-        axe.setInstrumentation(instrumentation)
         axe.startSession(dequeApiKey, dequeProjectId)
+        axe.setInstrumentation(instrumentation)
+        
     }
 
     fun axeA11yScan() {
         uiDevice.wait(Until.hasObject(By.pkg(targetContext.packageName).depth(0)), 5000)
+
         val scanHandler = axe.scan()
-        scanHandler?.saveResultToLocalStorage("axe")
+        scanHandler?.saveResultToLocalStorage(System.currentTimeMillis().toString())
     }
 
     /**
