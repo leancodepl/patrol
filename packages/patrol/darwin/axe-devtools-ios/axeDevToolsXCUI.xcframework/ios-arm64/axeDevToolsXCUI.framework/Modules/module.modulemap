@@ -1,0 +1,4 @@
+framework module axeDevToolsXCUI {
+  header "axeDevToolsXCUI-Swift.h"
+  requires objc
+}
