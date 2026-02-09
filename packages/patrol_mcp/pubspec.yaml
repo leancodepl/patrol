@@ -1,0 +1,20 @@
+name: patrol_mcp
+description: MCP server for managing Patrol develop sessions for Flutter projects.
+version: 0.3.0
+publish_to: none
+
+environment:
+  sdk: ">=3.8.0 <4.0.0"
+
+dependencies:
+  args: ^2.7.0
+  image: ^4.5.4
+  logging: ^1.3.0
+  mcp_dart: ^0.6.4
+  path: ^1.9.1
+
+dev_dependencies:
+  leancode_lint: ^17.0.0
+
+executables:
+  patrol_mcp: patrol_mcp
