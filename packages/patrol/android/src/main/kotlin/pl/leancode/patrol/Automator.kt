@@ -120,7 +120,7 @@ class Automator private constructor() {
         configurator.waitForIdleTimeout = 5000
         configurator.keyInjectionDelay = 50
 
-        configurator.uiAutomationFlags = UiAutomation.FLAG_DONT_SUPPRESS_ACCESSIBILITY_SERVICES
+        //configurator.uiAutomationFlags = UiAutomation.FLAG_DONT_SUPPRESS_ACCESSIBILITY_SERVICES
 
         Logger.i("Timeout: $timeoutMillis ms")
         Logger.i("Android UiAutomator configuration:")
@@ -130,7 +130,7 @@ class Automator private constructor() {
         Logger.i("\tactionAcknowledgmentTimeout: ${configurator.actionAcknowledgmentTimeout} ms")
         Logger.i("\tscrollAcknowledgmentTimeout: ${configurator.scrollAcknowledgmentTimeout} ms")
         Logger.i("\ttoolType: ${configurator.toolType}")
-        Logger.i("\tuiAutomationFlags: ${configurator.uiAutomationFlags}")
+        //Logger.i("\tuiAutomationFlags: ${configurator.uiAutomationFlags}")
     }
 
     private fun executeShellCommand(cmd: String) {
