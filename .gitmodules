@@ -1,3 +1,0 @@
-[submodule "packages/patrol/darwin/axe-devtools-ios"]
-	path = packages/patrol/darwin/axe-devtools-ios
-	url = git@github.com:dequelabs/axe-devtools-ios.git
