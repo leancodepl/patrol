@@ -102,7 +102,7 @@ your_mobile_project/
 
 ## Usage (from Cursor)
 
-- `patrol-run` - Run patrol tests and wait for completion (blocks Cursor)
+- `run` - Run patrol tests and wait for completion (blocks Cursor)
 
   - Input: `{ "testFile": "integration_test/your_test.dart", "timeoutMinutes": 5 }`
   - Logs are written to `patrol.log` in the project root
@@ -110,18 +110,18 @@ your_mobile_project/
   - If session already running: automatically restarts current tests
   - Default timeout: 5 minutes (activity-based)
 
-- `patrol-quit` - Quit the patrol session gracefully
+- `quit` - Quit the patrol session gracefully
 
   - Input: `{}`
   - Sends "Q" command to patrol process for clean shutdown
   - Returns immediately
 
-- `patrol-status` - Get current status and recent output
+- `status` - Get current status and recent output
 
   - Input: `{}`
   - Returns: `isDevelopRunning`, `testState`, `lastOutput`
 
-- `patrol-screenshot` - Capture a screenshot of the current device/simulator screen
+- `screenshot` - Capture a screenshot of the current device/simulator screen
 
   - Input: `{ "platform": "android" }` or `{ "platform": "ios" }`
   - Captures screenshot using platform-specific commands:
@@ -130,7 +130,7 @@ your_mobile_project/
   - Returns image as base64-encoded PNG that Cursor can display directly
   - Requires active device/simulator connection
 
-- `patrol-native-tree` - Fetch the native UI tree from the device
+- `native-tree` - Fetch the native UI tree from the device
 
   - Input: `{}`
   - Requires an active patrol develop session
