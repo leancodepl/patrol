@@ -201,16 +201,12 @@ import 'patrol_test/example/example_test.dart' as example__example_test;''');
       ];
 
       // when
-      final groupsCode = testBundler.generateGroupsCode(
-        testDirectory,
-        tests,
-        web: true,
-      );
+      final groupsCode = testBundler.generateGroupsCode(testDirectory, tests);
 
       /// then
       expect(groupsCode, '''
-group('patrol_test.web.my_test', web__my_test.main);
-group('patrol_test.example.example_test', example__example_test.main);''');
+group('web.my_test', web__my_test.main);
+group('example.example_test', example__example_test.main);''');
     });
   });
 }
