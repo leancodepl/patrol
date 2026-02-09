@@ -1,9 +1,11 @@
-## Unreleased
+## 4.1.0
+
 - Fix bug when running web tests with relative imports from integration_test directory. (#2906)
 - Fix a bug when user set a nested test_directory (eg. test/e2e), TestFinder was searching for test files in parent directory instead of project's root. (#2858)
 - Add support for `--no-tree-shake-icons` flag in cli commands. (#2704)
 - Fix `PATROL_FLUTTER_COMMAND` not being used when building web app. (#2857)
 - Remove unused import in `test_bundle.dart` files. (#2885)
+- Bump `patrol_log` to `0.7.0`. (#2917)
 
 ## 4.0.2
 
