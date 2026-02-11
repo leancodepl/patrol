@@ -327,9 +327,7 @@ void _test(Platform platform) {
 
       // when
       final found = testFinder.findAllTests(
-        excludes: {
-          fs.path.join('patrol_test', 'alpha'),
-        },
+        excludes: {fs.path.join('patrol_test', 'alpha')},
       );
 
       // then
@@ -395,9 +393,7 @@ void _test(Platform platform) {
 
       // when - exclude 'permissions' but not 'permissions_other'
       final found = testFinder.findAllTests(
-        excludes: {
-          fs.path.join('patrol_test', 'permissions'),
-        },
+        excludes: {fs.path.join('patrol_test', 'permissions')},
       );
 
       // then
@@ -425,20 +421,13 @@ void _test(Platform platform) {
 
       // when
       final found = testFinder.findAllTests(
-        excludes: {
-          fs.path.join('patrol_test', 'alpha'),
-        },
+        excludes: {fs.path.join('patrol_test', 'alpha')},
       );
 
       // then
       final wd = fs.currentDirectory.absolute.path;
       final testRoot = fs.path.join(wd, 'patrol_test');
-      expect(
-        found,
-        equals([
-          fs.path.join(testRoot, 'bravo_test.dart'),
-        ]),
-      );
+      expect(found, equals([fs.path.join(testRoot, 'bravo_test.dart')]));
     });
 
     test('searches for files with provided custom suffix', () {
