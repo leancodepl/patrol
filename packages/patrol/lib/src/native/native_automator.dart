@@ -697,7 +697,7 @@ class NativeAutomator {
 
   Future<void> axeA11yScan() async {
     await _wrapRequest('axeA11yScan', () async {
-      await _client.axeA11yScan();
+      await _client.axeA11yScan(AxeA11yScanRequest(appId: resolvedAppId));
     });
   }
 

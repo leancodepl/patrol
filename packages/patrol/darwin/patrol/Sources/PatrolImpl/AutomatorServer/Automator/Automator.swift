@@ -258,7 +258,7 @@
 
     // MARK: Axe A11y scans
     func initAxeSession(dequeApiKey: String, dequeProjectId: String) throws
-    func axeA11yScan() throws
+    func axeA11yScan(bundleId: String) throws
 
     // MARK: Other
     func debug() throws
