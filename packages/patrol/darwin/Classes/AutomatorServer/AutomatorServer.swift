@@ -521,9 +521,9 @@
       }
     }
 
-    func axeA11yScan() throws {
+    func axeA11yScan(request: AxeA11yScanRequest) throws {
       return try runCatching {
-        automator.axeA11yScan()
+        automator.axeA11yScan(request.appId)
       }
     }
 

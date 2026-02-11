@@ -1901,3 +1901,22 @@ class InitAxeSessionRequest with EquatableMixin {
     );
   }
 }
+
+@JsonSerializable()
+class AxeA11yScanRequest with EquatableMixin {
+  AxeA11yScanRequest({required this.appId});
+
+  factory AxeA11yScanRequest.fromJson(Map<String, dynamic> json) =>
+      _$AxeA11yScanRequestFromJson(json);
+
+  final String appId;
+
+  Map<String, dynamic> toJson() => _$AxeA11yScanRequestToJson(this);
+
+  @override
+  List<Object?> get props => [appId];
+
+  AxeA11yScanRequest copyWith({String? appId}) {
+    return AxeA11yScanRequest(appId: appId ?? this.appId);
+  }
+}

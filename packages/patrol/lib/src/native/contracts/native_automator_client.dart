@@ -228,7 +228,7 @@ class NativeAutomatorClient {
     return _sendRequest('initAxeSession', request.toJson());
   }
 
-  Future<void> axeA11yScan() {
+  Future<void> axeA11yScan(AxeA11yScanRequest request) {
     return _sendRequest('axeA11yScan');
   }
 

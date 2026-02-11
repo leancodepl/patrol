@@ -49,7 +49,7 @@ protocol NativeAutomatorServer {
     func pickImageFromGallery(request: PickImageFromGalleryRequest) throws
     func pickMultipleImagesFromGallery(request: PickMultipleImagesFromGalleryRequest) throws
     func initAxeSession(request: InitAxeSessionRequest) throws
-    func axeA11yScan() throws
+    func axeA11yScan(request: AxeA11yScanRequest) throws
     func debug() throws
     func setMockLocation(request: SetMockLocationRequest) throws
     func markPatrolAppServiceReady() throws

@@ -41,7 +41,6 @@
     }
 
     func openApp(_ bundleId: String) throws {
-      var axe: AxeDevTools?
       try runAction("opening app with id \(bundleId)") {
         let app = try self.getApp(withBundleId: bundleId)
         app.activate()
@@ -375,14 +374,11 @@
 
     // MARK: Volume settings
     func pressVolumeUp() throws {
-      var axe: AxeDevTools?
-      // axe = try? AxeDevTools.startSession(apiKey: "<DEQUE_APIKEY>",
-      //       projectId: "<DEVHUB_PROJECT_ID>")
-      // #if targetEnvironment(simulator)
-      //   throw PatrolError.methodNotAvailable("pressVolumeUp", "simulator")
-      // #else
-      //   self.device.press(XCUIDevice.Button.volumeUp)
-      // #endif
+      #if targetEnvironment(simulator)
+        throw PatrolError.methodNotAvailable("pressVolumeUp", "simulator")
+      #else
+        self.device.press(XCUIDevice.Button.volumeUp)
+      #endif
     }
 
     func pressVolumeDown() throws {
@@ -984,7 +980,8 @@
             projectId: dequeProjectId)
     }
 
-    func axeA11yScan() throws {
+    func axeA11yScan(bundleId: String) throws {
+      let app = getApp(bundleId: bundleId)
       let result = try axe?.run(onElement: app)
       let path = try axe?.saveResult(result)
       Logger.shared.i("Result saved to location: \(path)")

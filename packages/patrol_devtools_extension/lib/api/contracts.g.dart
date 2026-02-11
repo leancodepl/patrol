@@ -937,3 +937,9 @@ Map<String, dynamic> _$InitAxeSessionRequestToJson(
   'dequeApiKey': instance.dequeApiKey,
   'dequeProjectId': instance.dequeProjectId,
 };
+
+AxeA11yScanRequest _$AxeA11yScanRequestFromJson(Map<String, dynamic> json) =>
+    AxeA11yScanRequest(appId: json['appId'] as String);
+
+Map<String, dynamic> _$AxeA11yScanRequestToJson(AxeA11yScanRequest instance) =>
+    <String, dynamic>{'appId': instance.appId};
