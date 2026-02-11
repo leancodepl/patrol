@@ -525,3 +525,6 @@ public struct InitAxeSessionRequest: Codable {
   public var dequeProjectId: String
 }
 
+public struct AxeA11yScanRequest: Codable {
+  public var appId: String
+}
