@@ -24,7 +24,7 @@
       return device.system
     }()
 
-    private lazy var axe: AxeDevTools?
+    private lazy var axe: AxeDevTools? = nil
 
     private var timeout: TimeInterval = 10
 
