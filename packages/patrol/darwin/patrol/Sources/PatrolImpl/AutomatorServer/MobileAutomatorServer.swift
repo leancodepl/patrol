@@ -209,7 +209,8 @@ extension MobileAutomatorServer {
     }
 
     private func axeA11yScanHandler(request: HTTPRequest) throws -> HTTPResponse {
-        try axeA11yScan()
+        let requestArg = try JSONDecoder().decode(AxeA11yScanRequest.self, from: request.body)
+        try axeA11yScan(request: requestArg)
         return HTTPResponse(.ok)
     }
 
