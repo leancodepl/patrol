@@ -517,13 +517,13 @@
     // MARK: Axe A11y scans
     func initAxeSession(request: InitAxeSessionRequest) throws {
       return try runCatching {
-        automator.initAxeSession(request.dequeApiKey, request.dequeProjectId)
+        automator.initAxeSession(dequeApiKey: request.dequeApiKey, dequeProjectId: request.dequeProjectId)
       }
     }
 
     func axeA11yScan(request: AxeA11yScanRequest) throws {
       return try runCatching {
-        automator.axeA11yScan(request.appId)
+        automator.axeA11yScan(bundleId: request.appId)
       }
     }
 
