@@ -88,7 +88,7 @@ class TestFinder {
     for (final exclude in excludes) {
       // Try to resolve as absolute path first, then relative to root
       final entityPath = _fs.file(exclude).absolute.path;
-      
+
       // Check if it's a directory or a file
       if (_fs.isDirectorySync(entityPath)) {
         absoluteExcludes.add(_fs.directory(entityPath).absolute.path);
@@ -113,13 +113,13 @@ class TestFinder {
         // Filter out excluded files and files in excluded directories
         .where((fileSystemEntity) {
           final filePath = fileSystemEntity.path;
-          
+
           for (final exclude in absoluteExcludes) {
             // Check if the file exactly matches an excluded file
             if (filePath == exclude) {
               return false;
             }
-            
+
             // Check if the file is inside an excluded directory
             // Need to add path separator to avoid matching prefixes
             // e.g., "patrol_test/permissions" shouldn't match "patrol_test/permissions_other"
@@ -130,7 +130,7 @@ class TestFinder {
               return false;
             }
           }
-          
+
           return true;
         })
         .map((entity) => entity.absolute.path)
