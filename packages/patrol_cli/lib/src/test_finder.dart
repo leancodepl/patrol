@@ -87,7 +87,7 @@ class TestFinder {
     final absoluteExcludes = <String>{};
     for (final exclude in excludes) {
       // Try to resolve as absolute path first, then relative to root
-      var entityPath = _fs.file(exclude).absolute.path;
+      final entityPath = _fs.file(exclude).absolute.path;
       
       // Check if it's a directory or a file
       if (_fs.isDirectorySync(entityPath)) {
