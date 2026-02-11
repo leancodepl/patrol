@@ -981,9 +981,9 @@
     }
 
     func axeA11yScan(bundleId: String) throws {
-      let app = getApp(withBundleId: bundleId)
-      let result = try axe?.run(onElement: app)
-      let path = try axe?.saveResult(result)
+      let app = try getApp(withBundleId: bundleId)
+      let result = (try axe?.run(onElement: app))!
+      let path = (try axe?.saveResult(result))!
       Logger.shared.i("Result saved to location: \(path)")
     }
 
