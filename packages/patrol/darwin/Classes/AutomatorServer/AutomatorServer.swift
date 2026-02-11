@@ -515,9 +515,9 @@
     }
 
     // MARK: Axe A11y scans
-    func initAxeSession(dequeApiKey: String, dequeProjectId: String) throws {
+    func initAxeSession(request: InitAxeSessionRequest) throws {
       return try runCatching {
-        automator.initAxeSession(dequeApiKey, dequeProjectId)
+        automator.initAxeSession(request.dequeApiKey, request.dequeProjectId)
       }
     }
 
