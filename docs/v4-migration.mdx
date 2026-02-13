@@ -1,0 +1,172 @@
+---
+title: Migrating to Patrol 4.0
+---
+
+Patrol 4.0 introduces the **Platform Automation API** and starts the deprecation of the legacy native automation entrypoints:
+
+- `$.native` (Native Automation 1.0)
+- `$.native2` (Native Automation 2.0)
+
+The recommended replacement is:
+
+- `$.platform.mobile` for cross-platform (Android + iOS) mobile actions
+- `$.platform.android` and `$.platform.ios` for platform-specific actions
+- `$.platform.web` for web actions
+
+<Warning>
+  `$.native`, `$.native2`, `NativeAutomator`, `NativeAutomator2`, and `NativeAutomatorConfig` are deprecated and will be removed in a future release. Migrate to `$.platform` and `PlatformAutomatorConfig`.
+</Warning>
+
+## Quick checklist
+
+- Upgrade dependencies (and CLI) to Patrol 4.x.
+- Replace `nativeAutomatorConfig:` with `platformAutomatorConfig:` in `patrolTest()`.
+- Rewrite `$.native.*` and `$.native2.*` calls to `$.platform.*`.
+- Replace `NativeSelector(...)` with `MobileSelector(...)` (most common when migrating from `native2`).
+
+## Breaking changes you’ll likely hit
+
+### 1) `nativeAutomatorConfig` is deprecated in `patrolTest()`
+
+If you configured native automation using the old `nativeAutomatorConfig:` parameter, switch to `platformAutomatorConfig:`.
+
+Before:
+
+```dart
+patrolTest(
+  'my test',
+  ($) async {
+    // ...
+  },
+  nativeAutomatorConfig: NativeAutomatorConfig(
+    packageName: 'com.example.app',
+    bundleId: 'com.example.app',
+  ),
+);
+```
+
+After:
+
+```dart
+patrolTest(
+  'my test',
+  ($) async {
+    // ...
+  },
+  platformAutomatorConfig: PlatformAutomatorConfig.fromOptions(
+    packageName: 'com.example.app',
+    bundleId: 'com.example.app',
+  ),
+);
+```
+
+<Info>
+  `NativeAutomatorConfig` still exists only for backwards compatibility and internally converts to `PlatformAutomatorConfig`. Prefer `PlatformAutomatorConfig` in all new code.
+</Info>
+
+### 2) `$.native` and `$.native2` are deprecated
+
+In Patrol 4.0 you should use `$.platform` as your entrypoint to platform automation.
+
+- `$.platform.mobile`: cross-platform mobile actions (recommended default)
+- `$.platform.android`: Android-only actions
+- `$.platform.ios`: iOS-only actions
+- `$.platform.web`: web automation
+
+## Common rewrites (copy/paste)
+
+### `native2` → `platform.mobile`
+
+#### Pressing Home
+
+```dart
+await $.native2.pressHome(); // Press home for notifications.
+await $.platform.mobile.pressHome(); // Press home for notifications.
+```
+
+#### Selectors: `NativeSelector` → `MobileSelector`
+
+Most `native2` methods used `NativeSelector(...)`. The Patrol 4.0 equivalent is `MobileSelector(...)` passed to `$.platform.mobile.*`.
+
+Before:
+
+```dart
+await $.native2.tap(
+  NativeSelector(
+    android: AndroidSelector(resourceName: 'com.example:id/submit_button'),
+    ios: IOSSelector(identifier: 'submitButton'),
+  ),
+);
+```
+
+After:
+
+```dart
+await $.platform.mobile.tap(
+  MobileSelector(
+    android: AndroidSelector(resourceName: 'com.example:id/submit_button'),
+    ios: IOSSelector(identifier: 'submitButton'),
+  ),
+);
+```
+
+### `native` → `platform.*`
+
+#### Cross-platform mobile actions
+
+Many “works on both Android and iOS” calls move from `$.native.*` to `$.platform.mobile.*`.
+
+```dart
+await $.native.pressHome();
+await $.platform.mobile.pressHome();
+```
+
+#### Granting permissions
+
+```dart
+await $.native.grantPermissionWhenInUse();
+await $.platform.mobile.grantPermissionWhenInUse();
+```
+
+#### Platform-specific actions
+
+Some legacy calls were platform-specific but lived under `$.native`. In Patrol 4.0 they live under `$.platform.android` / `$.platform.ios`.
+
+```dart
+// Android-only
+await $.native.pressBack();
+await $.platform.android.pressBack();
+
+// iOS-only
+await $.native.closeHeadsUpNotification();
+await $.platform.ios.closeHeadsUpNotification();
+```
+
+## Replacing manual automator creation
+
+Most test code shouldn’t need to instantiate automators directly (use `$.platform` inside `patrolTest()`), but if you used to create a native automator manually, migrate to `PlatformAutomator`.
+
+```dart
+// Example legacy rewrite (from older codebases):
+final automator = NativeAutomator(config: nativeConfig);
+final automator = PlatformAutomator(config: platformConfig);
+```
+
+In Patrol 4.0, the config type is `PlatformAutomatorConfig` (and `NativeAutomator*` types are deprecated):
+
+```dart
+final platformConfig = PlatformAutomatorConfig.fromOptions(
+  packageName: 'com.example.app',
+  bundleId: 'com.example.app',
+);
+final platformAutomator = PlatformAutomator(config: platformConfig);
+```
+
+## Where to read more
+
+- Platform automation overview: `/documentation/native/overview`
+- Platform automation usage: `/documentation/native/usage`
+- `native2` deprecation notice: `/documentation/native/native2`
+
+
+
