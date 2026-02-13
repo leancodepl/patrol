@@ -7,10 +7,7 @@ class StepEntry extends Entry {
     required this.status,
     this.data,
     DateTime? timestamp,
-  }) : super(
-          timestamp: timestamp ?? DateTime.now(),
-          type: EntryType.step,
-        );
+  }) : super(timestamp: timestamp ?? DateTime.now(), type: EntryType.step);
 
   factory StepEntry.fromJson(Map<String, dynamic> json) =>
       _$StepEntryFromJson(json);
@@ -51,8 +48,8 @@ enum StepEntryStatus {
   failure;
 
   String get name => switch (this) {
-        StepEntryStatus.start => Emojis.waiting,
-        StepEntryStatus.success => Emojis.success,
-        StepEntryStatus.failure => Emojis.failure,
-      };
+    StepEntryStatus.start => Emojis.waiting,
+    StepEntryStatus.success => Emojis.success,
+    StepEntryStatus.failure => Emojis.failure,
+  };
 }

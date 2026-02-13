@@ -11,11 +11,13 @@ class DartContractsGenerator {
     for (final enumDefinition in schema.enums) {
       buffer.writeln(_createEnum(enumDefinition));
     }
-    for (final messageDefintion in schema.messages) {
-      buffer.writeln(_createMessage(messageDefintion));
+    for (final messageDefinition in schema.messages) {
+      buffer.writeln(_createMessage(messageDefinition));
     }
 
-    final content = DartFormatter().format(buffer.toString());
+    final content = DartFormatter(
+      languageVersion: DartFormatter.latestLanguageVersion,
+    ).format(buffer.toString());
 
     return OutputFile(filename: config.contractsFilename, content: content);
   }
@@ -37,15 +39,18 @@ part '${path.basenameWithoutExtension(config.contractsFilename)}.g.dart';
   }
 
   String _createEnum(Enum enumDefinition) {
-    final fieldsContent = enumDefinition.fields.map((e) {
-      return '''
-@JsonValue('$e')
-$e''';
-    }).join(',\n');
+    final fieldsContent = enumDefinition.fields
+        .map((e) {
+          return "${e.name}('${e.value}')";
+        })
+        .join(',\n  ');
 
     return '''
 enum ${enumDefinition.name} {
-  $fieldsContent
+  $fieldsContent;
+
+  const ${enumDefinition.name}(this.value);
+  final String value;
 }
 ''';
   }
@@ -59,19 +64,20 @@ enum ${enumDefinition.name} {
             MapFieldType(keyType: final keyType, valueType: final valueType) =>
               'final Map<$keyType,$valueType>${f.isOptional ? '?' : ''} ${f.name};',
             OrdinaryFieldType(type: final type) =>
-              'final $type${f.isOptional ? '?' : ''} ${f.name};'
+              'final $type${f.isOptional ? '?' : ''} ${f.name};',
           },
         )
-        .join('\n');
+        .join('\n  ');
 
     final propsGetter = _createPropsGetter(message);
 
     var constructorParameters = message.fields
         .map((e) => '${e.isOptional ? '' : 'required'} this.${e.name},')
-        .join();
+        .join('\n    ');
 
-    constructorParameters =
-        message.fields.isEmpty ? '' : '{$constructorParameters}';
+    constructorParameters = message.fields.isEmpty
+        ? ''
+        : '{\n    $constructorParameters\n  }';
 
     return '''
 @JsonSerializable()
@@ -85,14 +91,14 @@ class ${message.name} with EquatableMixin {
   Map<String, dynamic> toJson() => _\$${message.name}ToJson(this);
 
   $propsGetter
-}
-''';
+}''';
   }
 
   String _createPropsGetter(Message message) {
     final properties = message.fields.map((e) => e.name).join(',');
-    final propertiesContent =
-        properties.isEmpty ? 'const []' : '[$properties,]';
+    final propertiesContent = properties.isEmpty
+        ? 'const []'
+        : '[$properties,]';
 
     return '''
   @override

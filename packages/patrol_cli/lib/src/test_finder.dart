@@ -6,11 +6,11 @@ const _kDefaultTestFileSuffix = '_test.dart';
 
 /// Discovers integration tests.
 class TestFinder {
-  TestFinder({required Directory testDir})
-      : _integrationTestDirectory = testDir,
-        _fs = testDir.fileSystem..currentDirectory = testDir.parent;
+  TestFinder({required Directory testDir, required Directory rootDir})
+    : _patrolTestDirectory = testDir,
+      _fs = rootDir.fileSystem;
 
-  final Directory _integrationTestDirectory;
+  final Directory _patrolTestDirectory;
   final FileSystem _fs;
 
   String findTest(
@@ -55,9 +55,7 @@ class TestFinder {
           testFileSuffix: testFileSuffix,
         );
         if (foundTargets.isEmpty) {
-          throwToolExit(
-            'target directory $target does not contain any tests',
-          );
+          throwToolExit('target directory $target does not contain any tests');
         }
 
         testFiles.addAll(foundTargets);
@@ -71,34 +69,34 @@ class TestFinder {
     return testFiles;
   }
 
-  /// Recursively searches the `integration_test` directory and returns files
-  /// ending with defined [testFileSuffix]. If [testFileSuffix] is not defined,
-  /// the default suffix `_test.dart` is used.
+  /// Recursively searches the `patrol_test` directory (or custom directory via
+  /// `test_directory` in `pubspec.yaml`) and returns files ending with defined
+  /// [testFileSuffix]. If [testFileSuffix] is not defined, the default suffix
+  /// `_test.dart` is used.
   List<String> findAllTests({
     Directory? directory,
     Set<String> excludes = const {},
     String testFileSuffix = _kDefaultTestFileSuffix,
   }) {
-    directory ??= _integrationTestDirectory;
+    directory ??= _patrolTestDirectory;
 
     if (!directory.existsSync()) {
       throwToolExit("Directory ${directory.path} doesn't exist");
     }
 
-    final absoluteExcludes =
-        excludes.map((e) => _fs.file(e).absolute.path).toSet();
+    final absoluteExcludes = excludes
+        .map((e) => _fs.file(e).absolute.path)
+        .toSet();
 
     return directory
         .listSync(recursive: true, followLinks: false)
         .sorted((a, b) => a.path.compareTo(b.path))
         // Find only test files
-        .where(
-          (fileSystemEntity) {
-            final hasSuffix = fileSystemEntity.path.endsWith(testFileSuffix);
-            final isFile = _fs.isFileSync(fileSystemEntity.path);
-            return hasSuffix && isFile;
-          },
-        )
+        .where((fileSystemEntity) {
+          final hasSuffix = fileSystemEntity.path.endsWith(testFileSuffix);
+          final isFile = _fs.isFileSync(fileSystemEntity.path);
+          return hasSuffix && isFile;
+        })
         // Filter out excluded files
         .where((fileSystemEntity) {
           // TODO: Doesn't handle excluded passes as absolute paths
@@ -108,4 +106,15 @@ class TestFinder {
         .map((entity) => entity.absolute.path)
         .toList();
   }
+}
+
+class TestFinderFactory {
+  const TestFinderFactory({required this.rootDirectory});
+
+  final Directory rootDirectory;
+
+  TestFinder create(String testDirectory) => TestFinder(
+    testDir: rootDirectory.childDirectory(testDirectory),
+    rootDir: rootDirectory,
+  );
 }

@@ -1,8 +1,23 @@
-## Unreleased
+## 0.7.0
+
+- Show Flutter test framework output on iOS in `patrol develop`. (#2904)
+
+## 0.6.0
+
+- Update `TestEntry.nameWithPath` to use actual test directory. (#2728)
+- Add support for reading web-related logs. (#2789)
+
+## 0.5.0
+
+- Bump `leancode_lint` to `17.0.0`. (#2680)
+- Bump minimum Dart SDK to version 3.8.0 (#2680)
+
+## 0.4.0
 
 - Bump `custom_lint` to `0.7.0` and `leancode_lint` to `14.3.0`. (#2574)
 - Format the test duration to show it in minutes and hours instead of seconds. (#2599)
 - Fix gray text color in the terminal. (#2606)
+- Add support for reading logs on iOS devices in release. (#2569)
 
 ## 0.3.0
 

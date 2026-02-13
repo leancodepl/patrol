@@ -1,3 +1,4 @@
+import 'package:e2e_app/keys.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -45,19 +46,15 @@ class _LocationScreenState extends State<LocationScreen> {
   @override
   void initState() {
     super.initState();
-    Permission.location.isGranted.then(
-      (value) {
-        setState(() => _permissionGranted = value);
-      },
-    );
+    Permission.location.isGranted.then((value) {
+      setState(() => _permissionGranted = value);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Location'),
-      ),
+      appBar: AppBar(title: const Text('Location')),
       body: Center(
         child: Builder(
           builder: (context) {
@@ -69,8 +66,8 @@ class _LocationScreenState extends State<LocationScreen> {
                   Text(
                     'No location',
                     style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                          color: Theme.of(context).colorScheme.error,
-                        ),
+                      color: Theme.of(context).colorScheme.error,
+                    ),
                   ),
                   Text(
                     'Permission not granted',
@@ -78,12 +75,13 @@ class _LocationScreenState extends State<LocationScreen> {
                   ),
                   SizedBox(height: 24),
                   ElevatedButton(
+                    key: K.grantLocationPermissionButton,
                     onPressed: _requestPermission,
                     child: Text(
                       'Grant permission',
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            color: Theme.of(context).colorScheme.onPrimary,
-                          ),
+                        color: Theme.of(context).colorScheme.onPrimary,
+                      ),
                     ),
                   ),
                 ],
@@ -125,8 +123,8 @@ class _LocationScreenState extends State<LocationScreen> {
                     Text(
                       'Your location',
                       style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
                     ),
                     Text(
                       'lat: $lat',

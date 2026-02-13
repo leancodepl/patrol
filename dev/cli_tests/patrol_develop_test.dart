@@ -48,14 +48,14 @@ void main(List<String> args) async {
 
   final exampleAppDirectory = io.Directory(join('..', 'e2e_app'));
   final exampleTestFile = io.File(
-    join(exampleAppDirectory.path, 'integration_test', 'example_test.dart'),
+    join(exampleAppDirectory.path, 'patrol_test', 'example_test.dart'),
   );
 
   final process = await io.Process.start(
     'patrol',
     [
       'develop',
-      ...['--target', 'integration_test/example_test.dart'],
+      ...['--target', 'patrol_test/example_test.dart'],
       ...['--no-open-devtools'],
       ...args,
       '--verbose',

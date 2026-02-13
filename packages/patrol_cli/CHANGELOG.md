@@ -1,11 +1,92 @@
-## Unreleased
+## 4.1.0
+
+- Fix bug when running web tests with relative imports from integration_test directory. (#2906)
+- Fix a bug when user set a nested test_directory (eg. test/e2e), TestFinder was searching for test files in parent directory instead of project's root. (#2858)
+- Add support for `--no-tree-shake-icons` flag in cli commands. (#2704)
+- Fix `PATROL_FLUTTER_COMMAND` not being used when building web app. (#2857)
+- Remove unused import in `test_bundle.dart` files. (#2885)
+- Bump `patrol_log` to `0.7.0`. (#2917)
+
+## 4.0.2
+
+- Remove `platform_automator.dart` import from `test_bundler.dart`. (#2833) 
+
+## 4.0.1
+
+- Fix running web tests on Flutter 3.38.x. (#2828)
+
+## 4.0.0
+
+Patrol 4.0 is here!
+
+Read the article announcing Patrol 4.0 [here](https://leancode.co/blog/patrol-4-0-release).
+
+- Add support for running Patrol tests on Web:
+  - Introduce support for web-related flags:
+    - `--web-results-dir`, `--web-report-dir`, `--web-reporter`,
+    - `--web-timeout`, `--web-global-timeout`, `--web-retries`,
+    - `--web-workers`, `--web-shard`,
+    - `--web-video`, `--web-headless`,
+    - `--web-locale`, `--web-timezone`, `--web-color-scheme`,
+    - `--web-geolocation`, `--web-permissions`,
+    - `--web-user-agent`, `--web-viewport`.
+
+- Add support for configurable test directory via `test_directory` option in `pubspec.yaml`. (#2728)
+- Introduces *experimental* `--full-isolation` flag that uninstall the app between each run on iOS Simulator.
+- Bump `patrol_log` to `0.6.0`.
+- Read Patrol version from `pubspec.lock` instead of `pubspec.yaml` for compatibility checks. Fix edge cases for compatibility checks. (#2709)
+
+- **BREAKING CHANGE**
+  - Change default test directory from `integration_test` to `patrol_test`. (#2728)
+
+This version requires version `4.0.0` of `patrol` package.
+
+## 3.11.0
+
+- Add `--build-name` and `--build-number` flags to `patrol test`, `patrol develop`, and `patrol build` commands. (#2590)
+- Fix report path generation for Android. (#2724)
+- Fix issue that sometimes logs causes test crashes. (#2742)
+- Add support for interactive device selection when running patrol. (#2722)
+- Fix `PATROL_FLUTTER_COMMAND` not being used when using `--coverage` flag. (#2781)
+
+This version requires version 3.20.0 of `patrol` package.
+
+## 3.10.0
+
+- Add help command `h` to `patrol develop`. (#2701)
+- Add printing paths to the APKs after `patrol build` command. (#2685)
+
+## 3.9.0
+
+- Re-land: Do not pass flavor as dart-define when building. (#2636)
+- Wait for generating gradlew - fix race condition (#2678)
+- Bump `leancode_lint` to `17.0.0`.
+- Bump `patrol_log` to `0.5.0`.
+- Bump minimum Dart SDK to version 3.8.0.
+
+## 3.8.0
+
+- Remove `--wait` argument from patrol develop command (#2671 & #2691)
+- Add support for comments in .patrol.env files. (#2653)
+- Skip update check when the `patrol_cli` binary is triggered for shell completion only (#2512)
+- Revert: Do not pass flavor as dart-define when building. (#2636)
+
+## 3.7.0
+
+- Bump min Flutter SDK to 3.32.0 (#2649)
+- Introduce `check-compatibility` flag to allow disabling the compatibility check. (#2649) 
+
+## 3.6.0
 
 - Improve patrol test error messaging when compatibility check fails, added same compatibility check and error messaging to patrol build command (#2597)
 - Improve patrol update messaging by showing incompatibility warning when applicable, sharing compatibility table (#2579)
 - Add ability to quit the `patrol develop` process by pressing q on the keyboard (#2577)
+- Fix issue with reading logs on iOS devices in release. (#2569)
 - Add `--ios` flag to `patrol test` that specifies the iOS version to use. (#2540)
 - Bump `custom_lint` to `0.7.0` and `leancode_lint` to `14.3.0`. (#2574)
 - Display the name of the default device instead of its ID. (#2581)
+- Do not pass flavor as dart-define when building. (#2636)
+- Bump `vm_service` dependency to `15.0.0` (#2636)
 
 ## 3.5.1
 

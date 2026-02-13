@@ -1,7 +1,9 @@
 import 'dart:async';
 
+import 'package:meta/meta.dart';
 import 'package:path/path.dart' show join;
 import 'package:patrol_cli/src/analytics/analytics.dart';
+import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/compatibility_checker/compatibility_checker.dart';
@@ -15,7 +17,7 @@ import 'package:patrol_cli/src/test_finder.dart';
 
 class BuildIOSCommand extends PatrolCommand {
   BuildIOSCommand({
-    required TestFinder testFinder,
+    required TestFinderFactory testFinderFactory,
     required TestBundler testBundler,
     required DartDefinesReader dartDefinesReader,
     required PubspecReader pubspecReader,
@@ -23,24 +25,26 @@ class BuildIOSCommand extends PatrolCommand {
     required Analytics analytics,
     required Logger logger,
     required CompatibilityChecker compatibilityChecker,
-  })  : _testFinder = testFinder,
-        _testBundler = testBundler,
-        _dartDefinesReader = dartDefinesReader,
-        _pubspecReader = pubspecReader,
-        _iosTestBackend = iosTestBackend,
-        _analytics = analytics,
-        _logger = logger,
-        _compatibilityChecker = compatibilityChecker {
+  }) : _testFinderFactory = testFinderFactory,
+       _testBundler = testBundler,
+       _dartDefinesReader = dartDefinesReader,
+       _pubspecReader = pubspecReader,
+       _iosTestBackend = iosTestBackend,
+       _analytics = analytics,
+       _logger = logger,
+       _compatibilityChecker = compatibilityChecker {
     usesTargetOption();
     usesBuildModeOption();
     usesFlavorOption();
     usesDartDefineOption();
     usesDartDefineFromFileOption();
     usesLabelOption();
-    usesWaitOption();
     usesPortOptions();
     usesTagsOption();
     usesExcludeTagsOption();
+    usesCheckCompatibilityOption();
+    usesBuildNameOption();
+    usesBuildNumberOption();
 
     usesIOSOptions();
     argParser.addFlag(
@@ -49,7 +53,7 @@ class BuildIOSCommand extends PatrolCommand {
     );
   }
 
-  final TestFinder _testFinder;
+  final TestFinderFactory _testFinderFactory;
   final TestBundler _testBundler;
   final DartDefinesReader _dartDefinesReader;
   final PubspecReader _pubspecReader;
@@ -78,18 +82,23 @@ class BuildIOSCommand extends PatrolCommand {
     );
 
     final config = _pubspecReader.read();
+    final testDirectory = config.testDirectory;
     final testFileSuffix = config.testFileSuffix;
 
     // Check compatibility between CLI and package versions
-    final patrolVersion = _pubspecReader.getPatrolVersion();
-    await _compatibilityChecker.checkVersionsCompatibilityForBuild(
-      patrolVersion: patrolVersion,
-    );
+    if (boolArg('check-compatibility')) {
+      final patrolVersion = _pubspecReader.getPatrolVersion();
+      await _compatibilityChecker.checkVersionsCompatibilityForBuild(
+        patrolVersion: patrolVersion,
+      );
+    }
+
+    final testFinder = _testFinderFactory.create(testDirectory);
 
     final target = stringsArg('target');
     final targets = target.isNotEmpty
-        ? _testFinder.findTests(target, testFileSuffix)
-        : _testFinder.findAllTests(
+        ? testFinder.findTests(target, testFileSuffix)
+        : testFinder.findAllTests(
             excludes: stringsArg('exclude').toSet(),
             testFileSuffix: testFileSuffix,
           );
@@ -107,9 +116,9 @@ class BuildIOSCommand extends PatrolCommand {
     if (excludeTags != null) {
       _logger.detail('Received exclude tag(s): $excludeTags');
     }
-    final entrypoint = _testBundler.bundledTestFile;
+    final entrypoint = _testBundler.getBundledTestFile(testDirectory);
     if (boolArg('generate-bundle')) {
-      _testBundler.createTestBundle(targets, tags, excludeTags);
+      _testBundler.createTestBundle(testDirectory, targets, tags, excludeTags);
     }
 
     final flavor = stringArg('flavor') ?? config.ios.flavor;
@@ -117,9 +126,21 @@ class BuildIOSCommand extends PatrolCommand {
       _logger.detail('Received iOS flavor: $flavor');
     }
 
+    final buildName = stringArg('build-name');
+    if (buildName != null) {
+      _logger.detail('Received build name: $buildName');
+    }
+
+    final buildNumber = stringArg('build-number');
+    if (buildNumber != null) {
+      _logger.detail('Received build number: $buildNumber');
+    }
+
     final bundleId = stringArg('bundle-id') ?? config.ios.bundleId;
 
     final displayLabel = boolArg('label');
+
+    final noTreeShakeIcons = boolArg('no-tree-shake-icons');
 
     final customDartDefines = {
       ..._dartDefinesReader.fromFile(),
@@ -130,6 +151,7 @@ class BuildIOSCommand extends PatrolCommand {
       'PATROL_APP_BUNDLE_ID': bundleId,
       'PATROL_IOS_APP_NAME': config.ios.appName,
       'PATROL_TEST_LABEL_ENABLED': displayLabel.toString(),
+      'PATROL_TEST_DIRECTORY': config.testDirectory,
       'INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE': 'false',
       'PATROL_TEST_SERVER_PORT': super.testServerPort.toString(),
       'PATROL_APP_SERVER_PORT': super.appServerPort.toString(),
@@ -158,6 +180,9 @@ class BuildIOSCommand extends PatrolCommand {
       buildMode: buildMode,
       dartDefines: dartDefines,
       dartDefineFromFilePaths: dartDefineFromFilePaths,
+      buildName: buildName,
+      buildNumber: buildNumber,
+      noTreeShakeIcons: noTreeShakeIcons,
     );
 
     final iosOpts = IOSAppOptions(
@@ -168,12 +193,16 @@ class BuildIOSCommand extends PatrolCommand {
       osVersion: stringArg('ios') ?? 'latest',
       appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
-      clearPermissions: boolArg('clear-permissions'),
+      fullIsolation: boolArg('full-isolation'),
     );
+
+    if (!iosOpts.simulator && iosOpts.fullIsolation) {
+      throwToolExit('Full isolation is only supported on iOS Simulator');
+    }
 
     try {
       await _iosTestBackend.build(iosOpts);
-      _printBinaryPaths(
+      printBinaryPaths(
         simulator: iosOpts.simulator,
         buildMode: flutterOpts.buildMode.xcodeName,
       );
@@ -192,7 +221,12 @@ class BuildIOSCommand extends PatrolCommand {
     return 0;
   }
 
-  void _printBinaryPaths({required bool simulator, required String buildMode}) {
+  @visibleForTesting
+  /// Prints the paths to the binary files for the app under test and the test instrumentation app.
+  ///
+  /// [simulator] is a boolean indicating whether the build is for a simulator.
+  /// [buildMode] is the build mode of the app under test.
+  void printBinaryPaths({required bool simulator, required String buildMode}) {
     // print path for 2 apps that live in build/ios_integ/Build/Products
 
     final testRoot = join('build', 'ios_integ', 'Build', 'Products');

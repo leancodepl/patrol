@@ -14,6 +14,7 @@ import android.os.SystemClock
 import android.provider.Settings
 import android.view.KeyEvent.KEYCODE_VOLUME_DOWN
 import android.view.KeyEvent.KEYCODE_VOLUME_UP
+import android.widget.AutoCompleteTextView
 import android.widget.EditText
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.By
@@ -27,28 +28,13 @@ import androidx.test.uiautomator.UiSelector
 import pl.leancode.patrol.contracts.Contracts.AndroidNativeView
 import pl.leancode.patrol.contracts.Contracts.AndroidSelector
 import pl.leancode.patrol.contracts.Contracts.KeyboardBehavior
-import pl.leancode.patrol.contracts.Contracts.NativeView
 import pl.leancode.patrol.contracts.Contracts.Notification
 import pl.leancode.patrol.contracts.Contracts.Point2D
 import pl.leancode.patrol.contracts.Contracts.Rectangle
-import pl.leancode.patrol.contracts.Contracts.Selector
 import kotlin.math.roundToInt
+import pl.leancode.patrol.R.string as s
 
-private fun fromUiObject2(obj: UiObject2): NativeView {
-    return NativeView(
-        className = obj.className,
-        text = obj.text,
-        contentDescription = obj.contentDescription,
-        focused = obj.isFocused,
-        enabled = obj.isEnabled,
-        childCount = obj.childCount.toLong(),
-        resourceName = obj.resourceName,
-        applicationPackage = obj.applicationPackage,
-        children = obj.children?.map { fromUiObject2(it) } ?: listOf()
-    )
-}
-
-private fun fromUiObject2V2(obj: UiObject2): AndroidNativeView {
+private fun fromUiObject2(obj: UiObject2): AndroidNativeView {
     val bounds = obj.visibleBounds
     val center = obj.visibleCenter
 
@@ -78,7 +64,7 @@ private fun fromUiObject2V2(obj: UiObject2): AndroidNativeView {
             x = center.x.toDouble(),
             y = center.y.toDouble()
         ),
-        children = obj.children?.map { fromUiObject2V2(it) } ?: listOf()
+        children = obj.children?.map { fromUiObject2(it) } ?: listOf()
     )
 }
 
@@ -263,30 +249,17 @@ class Automator private constructor() {
         }
     }
 
-    fun getNativeViews(selector: BySelector): List<NativeView> {
-        Logger.d("getNativeViews()")
+    fun getNativeViews(selector: BySelector): List<AndroidNativeView> {
+        Logger.d("getNativeViewsV2()")
 
         val uiObjects2 = uiDevice.findObjects(selector)
         return uiObjects2.map { fromUiObject2(it) }
     }
 
-    fun getNativeViewsV2(selector: BySelector): List<AndroidNativeView> {
-        Logger.d("getNativeViewsV2()")
-
-        val uiObjects2 = uiDevice.findObjects(selector)
-        return uiObjects2.map { fromUiObject2V2(it) }
-    }
-
-    fun getNativeUITrees(): List<NativeView> {
+    fun getNativeUITrees(): List<AndroidNativeView> {
         Logger.d("getNativeUITrees()")
 
         return getWindowTrees(uiDevice, uiAutomation)
-    }
-
-    fun getNativeUITreesV2(): List<AndroidNativeView> {
-        Logger.d("getNativeUITreesV2()")
-
-        return getWindowTreesV2(uiDevice, uiAutomation)
     }
 
     fun tap(uiSelector: UiSelector, bySelector: BySelector, index: Int, timeout: Long? = null) {
@@ -389,7 +362,7 @@ class Automator private constructor() {
             uiDevice.click(x.toInt(), y.toInt())
         }
 
-        uiObject.text = text
+        uiObject.setText(text)
 
         if (keyboardBehavior == KeyboardBehavior.showAndDismiss) {
             pressBack() // Hide keyboard.
@@ -413,11 +386,28 @@ class Automator private constructor() {
         }
 
         var uiObject = uiDevice.findObject(uiSelector)
+        val uiObjectClassName = uiObject.getClassName()
 
-        val uiObjectClassname = uiObject.getClassName()
+        val supportedClassNames = setOf(
+            EditText::class.java.name,
+            AutoCompleteTextView::class.java.name
+        )
 
-        if (uiObjectClassname != EditText::class.java.name) {
-            uiObject = uiObject.getChild(UiSelector().className(EditText::class.java))
+        if (uiObjectClassName !in supportedClassNames) {
+            var hasSupportedChild = false
+            for (supportedClassName in supportedClassNames) {
+                try {
+                    uiObject = uiObject.getChild(UiSelector().className(supportedClassName))
+                    hasSupportedChild = true
+                    break
+                } catch (e: UiObjectNotFoundException) {
+                    // skip and try next
+                }
+            }
+
+            if (!hasSupportedChild) {
+                throw UiObjectNotFoundException("Could not find any supported child for $uiSelector")
+            }
         }
 
         if (keyboardBehavior == KeyboardBehavior.showAndDismiss) {
@@ -427,7 +417,7 @@ class Automator private constructor() {
             uiDevice.click(x.toInt(), y.toInt())
         }
 
-        uiObject.text = text
+        uiObject.setText(text)
 
         if (keyboardBehavior == KeyboardBehavior.showAndDismiss) {
             pressBack() // Hide keyboard.
@@ -577,39 +567,21 @@ class Automator private constructor() {
     }
 
     fun tapOnNotification(index: Int, timeout: Long? = null) {
-        Logger.d("tapOnNotification($index)")
-
-        try {
-            val query = Selector(
-                resourceId = "android:id/status_bar_latest_event_content",
-                instance = index.toLong()
-            )
-            val selector = query.toBySelector()
-            if (waitForView(selector, index, timeout) == null) {
-                throw UiObjectNotFoundException("$selector")
-            }
-            val obj = uiDevice.findObject(query.toUiSelector())
-            obj.click()
-        } catch (err: UiObjectNotFoundException) {
-            throw UiObjectNotFoundException("notification at index $index")
-        }
-
-        delay()
-    }
-
-    fun tapOnNotificationV2(index: Int, timeout: Long? = null) {
         Logger.d("tapOnNotificationV2($index)")
 
         try {
-            val query = AndroidSelector(
-                resourceName = "android:id/status_bar_latest_event_content",
-                instance = index.toLong()
+            val queryForBySelector = AndroidSelector(
+                resourceName = "android:id/status_bar_latest_event_content"
             )
-            val selector = query.toBySelector()
+            val selector = queryForBySelector.toBySelector()
             if (waitForView(selector, index, timeout) == null) {
                 throw UiObjectNotFoundException("$selector")
             }
-            val obj = uiDevice.findObject(query.toUiSelector())
+            val queryForUiSelector = AndroidSelector(
+                resourceName = "android:id/status_bar_latest_event_content",
+                instance = index.toLong()
+            )
+            val obj = uiDevice.findObject(queryForUiSelector.toUiSelector())
             obj.click()
         } catch (err: UiObjectNotFoundException) {
             throw UiObjectNotFoundException("notification at index $index")
@@ -654,7 +626,8 @@ class Automator private constructor() {
         val identifiers = arrayOf(
             "com.android.packageinstaller:id/permission_allow_button", // API <= 28
             "com.android.permissioncontroller:id/permission_allow_button", // API 29
-            "com.android.permissioncontroller:id/permission_allow_foreground_only_button" // API >= 30 + API 29 (only for location permission)
+            "com.android.permissioncontroller:id/permission_allow_foreground_only_button", // API >= 30 + API 29 (only for location permission)
+            "com.android.permissioncontroller:id/permission_allow_all_button" // for gallery permission
         )
 
         val uiObject = waitForUiObjectByResourceId(*identifiers, timeout = timeoutMillis)
@@ -672,7 +645,8 @@ class Automator private constructor() {
         }
 
         val identifiers = arrayOf(
-            "com.android.permissioncontroller:id/permission_allow_one_time_button" // API >= 30
+            "com.android.permissioncontroller:id/permission_allow_one_time_button", // API >= 30
+            "com.android.permissioncontroller:id/permission_allow_button" // only for files & gallery permission
         )
 
         val uiObject = waitForUiObjectByResourceId(*identifiers, timeout = timeoutMillis)
@@ -753,6 +727,38 @@ class Automator private constructor() {
         locationManager.setTestProviderLocation(mockLocationProvider, mockLocation)
     }
 
+    fun takeCameraPhoto(shutterButtonUiSelector: UiSelector, shutterButtonBySelector: BySelector, doneButtonUiSelector: UiSelector, doneButtonBySelector: BySelector, timeout: Long? = null) {
+        tap(shutterButtonUiSelector, shutterButtonBySelector, 0, timeout)
+        tap(doneButtonUiSelector, doneButtonBySelector, 0, timeout)
+    }
+
+    fun pickImageFromGallery(imageUiSelector: UiSelector, imageBySelector: BySelector, subMenuUiSelector: UiSelector?, subMenuBySelector: BySelector?, actionMenuUiSelector: UiSelector?, actionMenuBySelector: BySelector?, instance: Int, timeout: Long? = null) {
+        if (subMenuBySelector != null && subMenuUiSelector != null) {
+            tap(subMenuUiSelector, subMenuBySelector, 0)
+        }
+        tap(imageUiSelector, imageBySelector, instance.toInt())
+        if (actionMenuBySelector != null && actionMenuUiSelector != null) {
+            tap(actionMenuUiSelector, actionMenuBySelector, 0)
+        }
+    }
+
+    fun pickMultipleImagesFromGallery(imageUiSelector: UiSelector, imageBySelector: BySelector, subMenuUiSelector: UiSelector?, subMenuBySelector: BySelector?, actionMenuUiSelector: UiSelector, actionMenuBySelector: BySelector, imageIndexes: List<Long>, timeout: Long? = null) {
+        // For API level 33 and below, we need to change type of the list
+        // to be able to select multiple images with taps instead of long press
+        if (subMenuBySelector != null && subMenuUiSelector != null) {
+            tap(subMenuUiSelector, subMenuBySelector, 0, timeout)
+        }
+
+        // Tap on multiple images
+        for (i in imageIndexes) {
+            val image = i.toInt()
+            val imageUiSelectorWithInstance = imageUiSelector.instance(image)
+            tap(imageUiSelectorWithInstance, imageBySelector, image, timeout)
+        }
+
+        tap(actionMenuUiSelector, actionMenuBySelector, 0, timeout)
+    }
+
     /**
      * Returns true if [bySelector] found a view at [index] within [timeoutMillis], false otherwise.
      */
@@ -800,7 +806,7 @@ class Automator private constructor() {
         targetContext.startActivity(intent)
 
         var uiSelector = UiSelector()
-        uiSelector = uiSelector.text("Airplane mode")
+        uiSelector = uiSelector.text(Localization.getLocalizedString(targetContext, s.airplane_mode))
         val uiObject = uiDevice.findObject(uiSelector)
         if (uiObject != null) {
             uiObject.click()
@@ -817,7 +823,12 @@ class Automator private constructor() {
         targetContext.startActivity(intent)
 
         var uiSelector = UiSelector()
-        uiSelector = uiSelector.text("Use location")
+        uiSelector = uiSelector.text(
+            Localization.getLocalizedString(
+                targetContext,
+                s.use_location
+            )
+        )
         val uiObject = uiDevice.findObject(uiSelector)
         if (uiObject != null) {
             uiObject.click()

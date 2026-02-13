@@ -10,33 +10,29 @@ class LoadingScreen extends StatefulWidget {
 }
 
 class _LoadingScreenState extends State<LoadingScreen> {
-  bool _visible = false;
+  var _visible = false;
 
   @override
   void initState() {
     super.initState();
 
     unawaited(
-      Future<void>.delayed(const Duration(seconds: 3)).then(
-        (_) {
-          if (!mounted) {
-            return;
-          }
+      Future<void>.delayed(const Duration(seconds: 3)).then((_) {
+        if (!mounted) {
+          return;
+        }
 
-          setState(() {
-            _visible = true;
-          });
-        },
-      ),
+        setState(() {
+          _visible = true;
+        });
+      }),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Loading'),
-      ),
+      appBar: AppBar(title: const Text('Loading')),
       body: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,

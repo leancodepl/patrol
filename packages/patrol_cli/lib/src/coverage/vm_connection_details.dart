@@ -1,8 +1,5 @@
 class VMConnectionDetails {
-  const VMConnectionDetails({
-    required this.port,
-    required this.auth,
-  });
+  const VMConnectionDetails({required this.port, required this.auth});
 
   final int port;
   final String auth;
@@ -15,8 +12,9 @@ class VMConnectionDetails {
   }
 
   static VMConnectionDetails? tryExtractFromLogs(String logsLine) {
-    final vmLink =
-        RegExp('listening on (http.+)').firstMatch(logsLine)?.group(1);
+    final vmLink = RegExp(
+      'listening on (http.+)',
+    ).firstMatch(logsLine)?.group(1);
 
     if (vmLink == null) {
       return null;

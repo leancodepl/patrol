@@ -86,82 +86,108 @@ class VersionCompatibility {
 /// List of compatible version combinations between
 /// patrol_cli, patrol, and min Flutter version
 /// This is the single source of truth for version compatibility
-final List<VersionCompatibility> versionCompatibilityList = [
-  VersionCompatibility.fromRangeString(
-    patrolCliVersion: '3.5.0+',
-    patrolVersion: '3.14.0+',
-    minFlutterVersion: '3.24.0',
-  ),
-  VersionCompatibility.fromRangeString(
-    patrolCliVersion: '3.4.1',
-    patrolVersion: '3.13.1 - 3.13.2',
-    minFlutterVersion: '3.24.0',
-  ),
-  VersionCompatibility.fromRangeString(
-    patrolCliVersion: '3.4.0',
-    patrolVersion: '3.13.0',
-    minFlutterVersion: '3.24.0',
-  ),
-  VersionCompatibility.fromRangeString(
-    patrolCliVersion: '3.3.0',
-    patrolVersion: '3.12.0',
-    minFlutterVersion: '3.24.0',
-  ),
-  VersionCompatibility.fromRangeString(
-    patrolCliVersion: '3.2.1',
-    patrolVersion: '3.11.2',
-    minFlutterVersion: '3.24.0',
-  ),
-  VersionCompatibility.fromRangeString(
-    patrolCliVersion: '3.2.0',
-    patrolVersion: '3.11.0 - 3.11.1',
-    minFlutterVersion: '3.22.0',
-  ),
-  VersionCompatibility.fromRangeString(
-    patrolCliVersion: '3.1.0 - 3.1.1',
-    patrolVersion: '3.10.0',
-    minFlutterVersion: '3.22.0',
-  ),
-  VersionCompatibility.fromRangeString(
-    patrolCliVersion: '2.6.5 - 3.0.1',
-    patrolVersion: '3.6.0 - 3.10.0',
-    minFlutterVersion: '3.16.0',
-  ),
-  VersionCompatibility.fromRangeString(
-    patrolCliVersion: '2.6.0 - 2.6.4',
-    patrolVersion: '3.4.0 - 3.5.2',
-    minFlutterVersion: '3.16.0',
-  ),
-  VersionCompatibility.fromRangeString(
-    patrolCliVersion: '2.3.0 - 2.5.0',
-    patrolVersion: '3.0.0 - 3.3.0',
-    minFlutterVersion: '3.16.0',
-  ),
-  VersionCompatibility.fromRangeString(
-    patrolCliVersion: '2.2.0 - 2.2.2',
-    patrolVersion: '2.3.0 - 2.3.2',
-    minFlutterVersion: '3.3.0',
-  ),
-  VersionCompatibility.fromRangeString(
-    patrolCliVersion: '2.0.1 - 2.1.5',
-    patrolVersion: '2.0.1 - 2.2.5',
-    minFlutterVersion: '3.3.0',
-  ),
-  VersionCompatibility.fromRangeString(
-    patrolCliVersion: '2.0.0',
-    patrolVersion: '2.0.0',
-    minFlutterVersion: '3.3.0',
-  ),
-  VersionCompatibility.fromRangeString(
-    patrolCliVersion: '1.1.4 - 1.1.11',
-    patrolVersion: '1.0.9 - 1.1.11',
-    minFlutterVersion: '3.3.0',
-  ),
-]..sort((a, b) {
-    final aVersion = a.patrolTopRangeVersion ?? a.patrolBottomRangeVersion;
-    final bVersion = b.patrolTopRangeVersion ?? b.patrolBottomRangeVersion;
-    return bVersion.compareTo(aVersion);
-  });
+final versionCompatibilityList =
+    <VersionCompatibility>[
+      VersionCompatibility.fromRangeString(
+        patrolCliVersion: '4.0.2+',
+        patrolVersion: '4.1.0+',
+        minFlutterVersion: '3.32.0',
+      ),
+      VersionCompatibility.fromRangeString(
+        patrolCliVersion: '4.0.0 - 4.0.1',
+        patrolVersion: '4.0.0 - 4.0.1',
+        minFlutterVersion: '3.32.0',
+      ),
+      VersionCompatibility.fromRangeString(
+        patrolCliVersion: '3.11.0',
+        patrolVersion: '3.20.0',
+        minFlutterVersion: '3.32.0',
+      ),
+      VersionCompatibility.fromRangeString(
+        patrolCliVersion: '3.9.0 - 3.10.0',
+        patrolVersion: '3.18.0 - 3.19.0',
+        minFlutterVersion: '3.32.0',
+      ),
+      VersionCompatibility.fromRangeString(
+        patrolCliVersion: '3.7.0 - 3.8.0',
+        patrolVersion: '3.16.0 - 3.17.0',
+        minFlutterVersion: '3.32.0',
+      ),
+      VersionCompatibility.fromRangeString(
+        patrolCliVersion: '3.5.0 - 3.6.0',
+        patrolVersion: '3.14.0 - 3.15.2',
+        minFlutterVersion: '3.24.0',
+      ),
+      VersionCompatibility.fromRangeString(
+        patrolCliVersion: '3.4.1',
+        patrolVersion: '3.13.1 - 3.13.2',
+        minFlutterVersion: '3.24.0',
+      ),
+      VersionCompatibility.fromRangeString(
+        patrolCliVersion: '3.4.0',
+        patrolVersion: '3.13.0',
+        minFlutterVersion: '3.24.0',
+      ),
+      VersionCompatibility.fromRangeString(
+        patrolCliVersion: '3.3.0',
+        patrolVersion: '3.12.0',
+        minFlutterVersion: '3.24.0',
+      ),
+      VersionCompatibility.fromRangeString(
+        patrolCliVersion: '3.2.1',
+        patrolVersion: '3.11.2',
+        minFlutterVersion: '3.24.0',
+      ),
+      VersionCompatibility.fromRangeString(
+        patrolCliVersion: '3.2.0',
+        patrolVersion: '3.11.0 - 3.11.1',
+        minFlutterVersion: '3.22.0',
+      ),
+      VersionCompatibility.fromRangeString(
+        patrolCliVersion: '3.1.0 - 3.1.1',
+        patrolVersion: '3.10.0',
+        minFlutterVersion: '3.22.0',
+      ),
+      VersionCompatibility.fromRangeString(
+        patrolCliVersion: '2.6.5 - 3.0.1',
+        patrolVersion: '3.6.0 - 3.10.0',
+        minFlutterVersion: '3.16.0',
+      ),
+      VersionCompatibility.fromRangeString(
+        patrolCliVersion: '2.6.0 - 2.6.4',
+        patrolVersion: '3.4.0 - 3.5.2',
+        minFlutterVersion: '3.16.0',
+      ),
+      VersionCompatibility.fromRangeString(
+        patrolCliVersion: '2.3.0 - 2.5.0',
+        patrolVersion: '3.0.0 - 3.3.0',
+        minFlutterVersion: '3.16.0',
+      ),
+      VersionCompatibility.fromRangeString(
+        patrolCliVersion: '2.2.0 - 2.2.2',
+        patrolVersion: '2.3.0 - 2.3.2',
+        minFlutterVersion: '3.3.0',
+      ),
+      VersionCompatibility.fromRangeString(
+        patrolCliVersion: '2.0.1 - 2.1.5',
+        patrolVersion: '2.0.1 - 2.2.5',
+        minFlutterVersion: '3.3.0',
+      ),
+      VersionCompatibility.fromRangeString(
+        patrolCliVersion: '2.0.0',
+        patrolVersion: '2.0.0',
+        minFlutterVersion: '3.3.0',
+      ),
+      VersionCompatibility.fromRangeString(
+        patrolCliVersion: '1.1.4 - 1.1.11',
+        patrolVersion: '1.0.9 - 1.1.11',
+        minFlutterVersion: '3.3.0',
+      ),
+    ]..sort((a, b) {
+      final aVersion = a.patrolTopRangeVersion ?? a.patrolBottomRangeVersion;
+      final bVersion = b.patrolTopRangeVersion ?? b.patrolBottomRangeVersion;
+      return bVersion.compareTo(aVersion);
+    });
 
 /// Helper function to check if versions are compatible
 bool areVersionsCompatible(Version cliVersion, Version patrolVersion) {
@@ -177,8 +203,9 @@ bool areVersionsCompatible(Version cliVersion, Version patrolVersion) {
 Version? getLatestCompatiblePatrolVersion(Version cliVersion) {
   Version? latest;
   for (final compatibility in versionCompatibilityList) {
-    final maxVersion =
-        compatibility.getHighestCompatiblePatrolVersion(cliVersion);
+    final maxVersion = compatibility.getHighestCompatiblePatrolVersion(
+      cliVersion,
+    );
     if (maxVersion != null && (latest == null || maxVersion > latest)) {
       latest = maxVersion;
     }
@@ -187,6 +214,7 @@ Version? getLatestCompatiblePatrolVersion(Version cliVersion) {
 }
 
 /// Helper function to get the maximum compatible CLI version for a given patrol version
+/// Returns null if there's no upper bound (i.e., the range uses '+')
 Version? getMaxCompatibleCliVersion(Version patrolVersion) {
   Version? maxCli;
   for (final compatibility in versionCompatibilityList) {
@@ -195,10 +223,13 @@ Version? getMaxCompatibleCliVersion(Version patrolVersion) {
         (compatibility.patrolTopRangeVersion == null ||
             patrolVersion <= compatibility.patrolTopRangeVersion)) {
       // If patrol version is compatible, consider this CLI version
-      final cliMax = compatibility.patrolCliTopRangeVersion ??
-          compatibility.patrolCliBottomRangeVersion;
-      if (maxCli == null || cliMax > maxCli) {
-        maxCli = cliMax;
+      final cliTopRange = compatibility.patrolCliTopRangeVersion;
+      if (cliTopRange == null) {
+        // No upper bound means any version >= bottom is compatible
+        return null;
+      } else if (maxCli == null || cliTopRange > maxCli) {
+        // There's an upper bound, track the maximum
+        maxCli = cliTopRange;
       }
     }
   }

@@ -1,6 +1,7 @@
 name: Request a feature
 description: |
   Suggest a new idea to make Patrol better.
+labels: ["needs triage"]
 body:
   - type: markdown
     attributes:

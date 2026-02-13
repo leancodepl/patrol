@@ -17,11 +17,12 @@ import 'package:patrol_cli/src/pubspec_reader.dart';
 import 'package:patrol_cli/src/runner/patrol_command.dart';
 import 'package:patrol_cli/src/test_bundler.dart';
 import 'package:patrol_cli/src/test_finder.dart';
+import 'package:patrol_cli/src/web/web_test_backend.dart';
 
 class DevelopCommand extends PatrolCommand {
   DevelopCommand({
     required DeviceFinder deviceFinder,
-    required TestFinder testFinder,
+    required TestFinderFactory testFinderFactory,
     required TestBundler testBundler,
     required DartDefinesReader dartDefinesReader,
     required CompatibilityChecker compatibilityChecker,
@@ -29,21 +30,25 @@ class DevelopCommand extends PatrolCommand {
     required AndroidTestBackend androidTestBackend,
     required IOSTestBackend iosTestBackend,
     required MacOSTestBackend macosTestBackend,
+    required WebTestBackend webTestBackend,
     required FlutterTool flutterTool,
     required Analytics analytics,
     required Logger logger,
-  })  : _deviceFinder = deviceFinder,
-        _testFinder = testFinder,
-        _testBundler = testBundler,
-        _dartDefinesReader = dartDefinesReader,
-        _compatibilityChecker = compatibilityChecker,
-        _pubspecReader = pubspecReader,
-        _androidTestBackend = androidTestBackend,
-        _iosTestBackend = iosTestBackend,
-        _macosTestBackend = macosTestBackend,
-        _flutterTool = flutterTool,
-        _analytics = analytics,
-        _logger = logger {
+    required Stream<List<int>> stdin,
+  }) : _deviceFinder = deviceFinder,
+       _testFinderFactory = testFinderFactory,
+       _testBundler = testBundler,
+       _dartDefinesReader = dartDefinesReader,
+       _compatibilityChecker = compatibilityChecker,
+       _pubspecReader = pubspecReader,
+       _androidTestBackend = androidTestBackend,
+       _iosTestBackend = iosTestBackend,
+       _macosTestBackend = macosTestBackend,
+       _webTestBackend = webTestBackend,
+       _flutterTool = flutterTool,
+       _analytics = analytics,
+       _logger = logger,
+       _stdin = stdin {
     usesTargetOption();
     usesDeviceOption();
     usesBuildModeOption();
@@ -51,13 +56,15 @@ class DevelopCommand extends PatrolCommand {
     usesDartDefineOption();
     usesDartDefineFromFileOption();
     usesLabelOption();
-    usesWaitOption();
     usesPortOptions();
     usesTagsOption();
     usesHideTestSteps();
     usesClearTestSteps();
+    usesCheckCompatibilityOption();
 
     usesUninstallOption();
+    usesBuildNameOption();
+    usesBuildNumberOption();
 
     usesAndroidOptions();
     usesIOSOptions();
@@ -69,7 +76,7 @@ class DevelopCommand extends PatrolCommand {
   }
 
   final DeviceFinder _deviceFinder;
-  final TestFinder _testFinder;
+  final TestFinderFactory _testFinderFactory;
   final TestBundler _testBundler;
   final DartDefinesReader _dartDefinesReader;
   final CompatibilityChecker _compatibilityChecker;
@@ -77,10 +84,12 @@ class DevelopCommand extends PatrolCommand {
   final AndroidTestBackend _androidTestBackend;
   final IOSTestBackend _iosTestBackend;
   final MacOSTestBackend _macosTestBackend;
+  final WebTestBackend _webTestBackend;
   final FlutterTool _flutterTool;
 
   final Analytics _analytics;
   final Logger _logger;
+  final Stream<List<int>> _stdin;
 
   @override
   String get name => 'develop';
@@ -91,10 +100,7 @@ class DevelopCommand extends PatrolCommand {
   @override
   Future<int> run() async {
     unawaited(
-      _analytics.sendCommand(
-        FlutterVersion.fromCLI(flutterCommand),
-        name,
-      ),
+      _analytics.sendCommand(FlutterVersion.fromCLI(flutterCommand), name),
     );
 
     final targets = stringsArg('target');
@@ -105,17 +111,20 @@ class DevelopCommand extends PatrolCommand {
     }
 
     final config = _pubspecReader.read();
+    final testDirectory = config.testDirectory;
 
-    final target = _testFinder.findTest(targets.first, config.testFileSuffix);
+    final testFinder = _testFinderFactory.create(testDirectory);
+
+    final target = testFinder.findTest(targets.first, config.testFileSuffix);
     _logger.detail('Received test target: $target');
 
     if (boolArg('release')) {
       throwToolExit('Cannot use release build mode with develop');
     }
 
-    final entrypoint = _testBundler.bundledTestFile;
+    final entrypoint = _testBundler.getBundledTestFile(testDirectory);
     if (boolArg('generate-bundle')) {
-      _testBundler.createDevelopTestBundle(target);
+      _testBundler.createDevelopTestBundle(testDirectory, target);
     }
 
     final androidFlavor = stringArg('flavor') ?? config.android.flavor;
@@ -127,21 +136,40 @@ class DevelopCommand extends PatrolCommand {
       _logger.detail('Received iOS flavor: $iosFlavor');
     }
 
+    final buildName = stringArg('build-name');
+    if (buildName != null) {
+      _logger.detail('Received build name: $buildName');
+    }
+
+    final buildNumber = stringArg('build-number');
+    if (buildNumber != null) {
+      _logger.detail('Received build number: $buildNumber');
+    }
+
     final devices = await _deviceFinder.find(
       stringsArg('device'),
       flutterCommand: flutterCommand,
     );
     final device = devices.single;
 
-    await _compatibilityChecker.checkVersionsCompatibility(
-      flutterCommand: flutterCommand,
-      targetPlatform: device.targetPlatform,
-    );
+    if (boolArg('check-compatibility')) {
+      await _compatibilityChecker.checkVersionsCompatibility(
+        flutterCommand: flutterCommand,
+        targetPlatform: device.targetPlatform,
+      );
+    }
 
     // `flutter logs` doesn't work on macOS, so we don't support it for now
     // https://github.com/leancodepl/patrol/issues/1974
     if (device.targetPlatform == TargetPlatform.macOS) {
       throwToolExit('macOS is not supported with develop');
+    }
+
+    // Changes applied outside `/lib` directory are not 'hot-restarted'.
+    // This is a blocker from applying changes to test code.
+    // https://github.com/flutter/flutter/issues/175318
+    if (device.targetPlatform == TargetPlatform.web) {
+      throwToolExit('Web is not supported with develop');
     }
 
     _logger.detail('Received device: ${device.name} (${device.id})');
@@ -154,8 +182,8 @@ class DevelopCommand extends PatrolCommand {
 
     String? iOSInstalledAppsEnvVariable;
     if (device.targetPlatform == TargetPlatform.iOS) {
-      iOSInstalledAppsEnvVariable =
-          await _iosTestBackend.getInstalledAppsEnvVariable(device.id);
+      iOSInstalledAppsEnvVariable = await _iosTestBackend
+          .getInstalledAppsEnvVariable(device.id);
     }
 
     final customDartDefines = {
@@ -163,7 +191,6 @@ class DevelopCommand extends PatrolCommand {
       ..._dartDefinesReader.fromCli(args: stringsArg('dart-define')),
     };
     final internalDartDefines = {
-      'PATROL_WAIT': defaultWait.toString(),
       'PATROL_APP_PACKAGE_NAME': packageName,
       'PATROL_APP_BUNDLE_ID': bundleId,
       'PATROL_MACOS_APP_BUNDLE_ID': config.macos.bundleId,
@@ -171,6 +198,7 @@ class DevelopCommand extends PatrolCommand {
       'PATROL_IOS_APP_NAME': config.ios.appName,
       'INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE': 'false',
       'PATROL_TEST_LABEL_ENABLED': displayLabel.toString(),
+      'PATROL_TEST_DIRECTORY': config.testDirectory,
       // develop-specific
       ...{
         'PATROL_HOT_RESTART': 'true',
@@ -209,6 +237,8 @@ class DevelopCommand extends PatrolCommand {
       buildMode: buildMode,
       dartDefines: mergedDartDefines,
       dartDefineFromFilePaths: dartDefineFromFilePaths,
+      buildName: buildName,
+      buildNumber: buildNumber,
     );
 
     final androidOpts = AndroidAppOptions(
@@ -238,13 +268,16 @@ class DevelopCommand extends PatrolCommand {
       testServerPort: super.testServerPort,
     );
 
-    await _build(androidOpts, iosOpts, macosOpts, device);
+    final webOpts = WebAppOptions(flutter: flutterOpts);
+
+    await _build(androidOpts, iosOpts, macosOpts, webOpts, device);
     await _preExecute(androidOpts, iosOpts, device, uninstall);
     await _execute(
       flutterOpts,
       androidOpts,
       iosOpts,
       macosOpts,
+      webOpts,
       uninstall: uninstall,
       device: device,
       openDevtools: boolArg('open-devtools'),
@@ -260,6 +293,7 @@ class DevelopCommand extends PatrolCommand {
     AndroidAppOptions androidOpts,
     IOSAppOptions iosOpts,
     MacOSAppOptions macosOpts,
+    WebAppOptions webOpts,
     Device device,
   ) async {
     Future<void> Function() buildAction;
@@ -267,6 +301,7 @@ class DevelopCommand extends PatrolCommand {
       TargetPlatform.android => () => _androidTestBackend.build(androidOpts),
       TargetPlatform.iOS => () => _iosTestBackend.build(iosOpts),
       TargetPlatform.macOS => () => _macosTestBackend.build(macosOpts),
+      TargetPlatform.web => () => _webTestBackend.buildForDevelop(webOpts),
     };
 
     try {
@@ -303,12 +338,13 @@ class DevelopCommand extends PatrolCommand {
         final bundleId = iosOpts.bundleId;
         if (bundleId != null) {
           action = () => _iosTestBackend.uninstall(
-                appId: bundleId,
-                flavor: iosOpts.flutter.flavor,
-                device: device,
-              );
+            appId: bundleId,
+            flavor: iosOpts.flutter.flavor,
+            device: device,
+          );
         }
       case TargetPlatform.macOS:
+      case TargetPlatform.web:
     }
 
     try {
@@ -322,7 +358,8 @@ class DevelopCommand extends PatrolCommand {
     FlutterAppOptions flutterOpts,
     AndroidAppOptions android,
     IOSAppOptions iosOpts,
-    MacOSAppOptions macos, {
+    MacOSAppOptions macos,
+    WebAppOptions web, {
     required bool uninstall,
     required Device device,
     required bool openDevtools,
@@ -338,54 +375,67 @@ class DevelopCommand extends PatrolCommand {
       case TargetPlatform.android:
         appId = android.packageName;
         action = () => _androidTestBackend.execute(
-              android,
-              device,
-              interruptible: true,
-              showFlutterLogs: showFlutterLogs,
-              hideTestSteps: hideTestSteps,
-              flavor: flutterOpts.flavor,
-              clearTestSteps: clearTestSteps,
-            );
+          android,
+          device,
+          interruptible: true,
+          showFlutterLogs: showFlutterLogs,
+          hideTestSteps: hideTestSteps,
+          flavor: flutterOpts.flavor,
+          clearTestSteps: clearTestSteps,
+        );
         final package = android.packageName;
         if (package != null && uninstall) {
           finalizer = () => _androidTestBackend.uninstall(package, device);
         }
       case TargetPlatform.macOS:
         appId = macos.bundleId;
-        action = () async =>
+        action = () =>
             _macosTestBackend.execute(macos, device, interruptible: true);
       case TargetPlatform.iOS:
         appId = iosOpts.bundleId;
-        action = () async => _iosTestBackend.execute(
-              iosOpts,
-              device,
-              interruptible: true,
-              showFlutterLogs: showFlutterLogs,
-              hideTestSteps: hideTestSteps,
-              clearTestSteps: clearTestSteps,
-            );
+        action = () => _iosTestBackend.execute(
+          iosOpts,
+          device,
+          interruptible: true,
+          showFlutterLogs: showFlutterLogs,
+          hideTestSteps: hideTestSteps,
+          clearTestSteps: clearTestSteps,
+        );
         final bundleId = iosOpts.bundleId;
         if (bundleId != null && uninstall) {
           finalizer = () => _iosTestBackend.uninstall(
-                appId: bundleId,
-                flavor: iosOpts.flutter.flavor,
-                device: device,
-              );
+            appId: bundleId,
+            flavor: iosOpts.flutter.flavor,
+            device: device,
+          );
         }
+      case TargetPlatform.web:
+        action = () => _webTestBackend.develop(
+          _flutterTool,
+          web,
+          device,
+          showFlutterLogs: showFlutterLogs,
+          hideTestSteps: hideTestSteps,
+          clearTestSteps: clearTestSteps,
+          stdin: _stdin,
+        );
     }
 
     try {
       final future = action();
-      await _flutterTool.attachForHotRestart(
-        flutterCommand: flutterCommand,
-        deviceId: device.id,
-        target: flutterOpts.target,
-        appId: appId,
-        dartDefines: flutterOpts.dartDefines,
-        openDevtools: openDevtools,
-        attachUsingUrl: device.targetPlatform == TargetPlatform.macOS,
-        onQuit: finalizer,
-      );
+
+      if (device.targetPlatform != TargetPlatform.web) {
+        await _flutterTool.attachForHotRestart(
+          flutterCommand: flutterCommand,
+          deviceId: device.id,
+          target: flutterOpts.target,
+          appId: appId,
+          dartDefines: flutterOpts.dartDefines,
+          openDevtools: openDevtools,
+          attachUsingUrl: device.targetPlatform == TargetPlatform.macOS,
+          onQuit: finalizer,
+        );
+      }
 
       await future;
     } catch (err, st) {

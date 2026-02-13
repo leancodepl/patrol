@@ -12,7 +12,7 @@ concurrency:
 jobs:
   run_tests:
     name: Flutter ${{ matrix.flutter-version }} webview on ${{ matrix.device_model }} (${{ matrix.os_version }}) simulator
-    runs-on: macos-14
+    runs-on: macos-15
     timeout-minutes: 40
     outputs:
       SLACK_MESSAGE_TITLE: Flutter ${{ matrix.flutter-version }} on ${{ matrix.os }} ${{ matrix.os_version }} simulator
@@ -23,7 +23,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ["3.29.x"]
+        flutter-version: ["3.32.x"]
         flutter-channel: ["stable"]
         device_model: [iPhone 14]
         os: [iOS]
@@ -61,13 +61,14 @@ jobs:
 
       - name: Set tests to include
         run: |
-          TESTS_TO_INCLUDE="webview_hackernews_test,\
-          # webview_leancode_test,\  # See https://github.com/leancodepl/patrol/issues/2353
-          webview_stackoverflow_test"
+          TESTS_TO_INCLUDE="webview_hackernews_test"
+          # webview_leancode_test  
+          # See https://github.com/leancodepl/patrol/issues/2353
+        
 
           target_paths=""
           for target in $(echo $TESTS_TO_INCLUDE | tr ',' '\n'); do
-              target_paths+="integration_test/${target}.dart,"
+              target_paths+="patrol_test/${target}.dart,"
           done
           target_paths="${target_paths%,}"
 

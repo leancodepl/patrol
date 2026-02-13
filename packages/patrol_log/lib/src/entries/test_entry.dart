@@ -7,10 +7,7 @@ class TestEntry extends Entry {
     required this.status,
     DateTime? timestamp,
     this.error,
-  }) : super(
-          timestamp: timestamp ?? DateTime.now(),
-          type: EntryType.test,
-        );
+  }) : super(timestamp: timestamp ?? DateTime.now(), type: EntryType.test);
 
   @override
   factory TestEntry.fromJson(Map<String, dynamic> json) =>
@@ -34,8 +31,10 @@ class TestEntry extends Entry {
     return '${status.name} $nameWithPath${error != null ? '\n$error' : ''}';
   }
 
-  String get nameWithPath =>
-      '$_testName ${AnsiCodes.gray}(integration_test/$_filePath.dart)${AnsiCodes.reset}';
+  String get nameWithPath {
+    const testDirectory = String.fromEnvironment('PATROL_TEST_DIRECTORY');
+    return '$_testName ${AnsiCodes.gray}($testDirectory/$_filePath.dart)${AnsiCodes.reset}';
+  }
 
   /// Returns the file path of the test.
   ///
@@ -67,9 +66,9 @@ enum TestEntryStatus {
   skip;
 
   String get name => switch (this) {
-        TestEntryStatus.start => Emojis.testStart,
-        TestEntryStatus.success => Emojis.success,
-        TestEntryStatus.failure => Emojis.failure,
-        TestEntryStatus.skip => Emojis.skip,
-      };
+    TestEntryStatus.start => Emojis.testStart,
+    TestEntryStatus.success => Emojis.success,
+    TestEntryStatus.failure => Emojis.failure,
+    TestEntryStatus.skip => Emojis.skip,
+  };
 }

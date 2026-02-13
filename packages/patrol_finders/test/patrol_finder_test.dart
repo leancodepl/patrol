@@ -71,21 +71,15 @@ void main() {
         expect($('Hello'), findsOneWidget);
       });
 
-      patrolWidgetTest(
-        'text using 2 nested PatrolFinders',
-        ($) async {
-          await $.pumpWidget(app);
-          expect($($('Hello')), findsOneWidget);
-        },
-      );
+      patrolWidgetTest('text using 2 nested PatrolFinders', ($) async {
+        await $.pumpWidget(app);
+        expect($($('Hello')), findsOneWidget);
+      });
 
-      patrolWidgetTest(
-        'text using many nested PatrolFinders',
-        ($) async {
-          await $.pumpWidget(app);
-          expect($($($($($('Hello'))))), findsOneWidget);
-        },
-      );
+      patrolWidgetTest('text using many nested PatrolFinders', ($) async {
+        await $.pumpWidget(app);
+        expect($($($($($('Hello'))))), findsOneWidget);
+      });
 
       patrolWidgetTest('text using Flutter Finder', ($) async {
         await $.pumpWidget(app);
@@ -180,8 +174,9 @@ void main() {
           matching: find.byType(MaterialApp),
         );
 
-        final patrolFinder =
-            $(MaterialApp).containing($('layer').containing(#SomeKey));
+        final patrolFinder = $(
+          MaterialApp,
+        ).containing($('layer').containing(#SomeKey));
 
         expect(flutterFinder.toString(), patrolFinder.toString());
         expect(
@@ -207,65 +202,53 @@ void main() {
         'throws PatrolFinderException if the first widget found is not Text or RichText',
         ($) async {
           await $.pumpWidget(
-            const MaterialApp(
-              home: SizedBox(key: Key('someKey')),
-            ),
+            const MaterialApp(home: SizedBox(key: Key('someKey'))),
           );
 
           expect(() => $(#someKey).text, throwsA(isA<PatrolFinderException>()));
         },
       );
 
-      patrolWidgetTest(
-        'returns data when the first found widget is Text',
-        ($) async {
-          await $.pumpWidget(
-            const MaterialApp(
-              home: Text(
-                'some data',
-                key: Key('someKey'),
+      patrolWidgetTest('returns data when the first found widget is Text', (
+        $,
+      ) async {
+        await $.pumpWidget(
+          const MaterialApp(home: Text('some data', key: Key('someKey'))),
+        );
+
+        expect($(#someKey).text, 'some data');
+      });
+
+      patrolWidgetTest('returns data when the first found widget is RichText', (
+        $,
+      ) async {
+        await $.pumpWidget(
+          MaterialApp(
+            home: RichText(
+              key: const Key('someKey'),
+              text: const TextSpan(
+                text: 'some data',
+                children: [TextSpan(text: 'some data in child')],
               ),
             ),
-          );
+          ),
+        );
 
-          expect($(#someKey).text, 'some data');
-        },
-      );
-
-      patrolWidgetTest(
-        'returns data when the first found widget is RichText',
-        ($) async {
-          await $.pumpWidget(
-            MaterialApp(
-              home: RichText(
-                key: const Key('someKey'),
-                text: const TextSpan(
-                  text: 'some data',
-                  children: [
-                    TextSpan(text: 'some data in child'),
-                  ],
-                ),
-              ),
-            ),
-          );
-
-          expect($(#someKey).text, 'some datasome data in child');
-        },
-      );
+        expect($(#someKey).text, 'some datasome data in child');
+      });
     });
 
     group('tap()', () {
-      patrolWidgetTest(
-        'throws exception when no widget to tap on is found',
-        ($) async {
-          await $.pumpWidget(const MaterialApp());
+      patrolWidgetTest('throws exception when no widget to tap on is found', (
+        $,
+      ) async {
+        await $.pumpWidget(const MaterialApp());
 
-          await expectLater(
-            $('some text').tap,
-            throwsA(isA<WaitUntilVisibleTimeoutException>()),
-          );
-        },
-      );
+        await expectLater(
+          $('some text').tap,
+          throwsA(isA<WaitUntilVisibleTimeoutException>()),
+        );
+      });
 
       patrolWidgetTest('taps on widget and pumps', ($) async {
         var count = 0;
@@ -289,8 +272,9 @@ void main() {
         expect($('count: 1'), findsOneWidget);
       });
 
-      patrolWidgetTest('taps on the first widget by default and pumps',
-          ($) async {
+      patrolWidgetTest('taps on the first widget by default and pumps', (
+        $,
+      ) async {
         var count = 0;
         await $.pumpWidget(
           MaterialApp(
@@ -302,10 +286,7 @@ void main() {
                     onTap: () => setState(() => count++),
                     child: const Text('Tap'),
                   ),
-                  GestureDetector(
-                    onTap: () {},
-                    child: const Text('Tap'),
-                  ),
+                  GestureDetector(onTap: () {}, child: const Text('Tap')),
                 ],
               ),
             ),
@@ -375,8 +356,9 @@ void main() {
         },
       );
 
-      patrolWidgetTest('makes longPress gesture on widget and pumps',
-          ($) async {
+      patrolWidgetTest('makes longPress gesture on widget and pumps', (
+        $,
+      ) async {
         var count = 0;
         await $.pumpWidget(
           MaterialApp(
@@ -399,32 +381,33 @@ void main() {
       });
 
       patrolWidgetTest(
-          'makes longPress gesture on the first widget by default and pumps',
-          ($) async {
-        var count = 0;
-        await $.pumpWidget(
-          MaterialApp(
-            home: StatefulBuilder(
-              builder: (state, setState) => Column(
-                children: [
-                  Text('count: $count'),
-                  GestureDetector(
-                    onLongPress: () => setState(() => count++),
-                    child: const Text('Long press'),
-                  ),
-                  GestureDetector(
-                    onLongPress: () {},
-                    child: const Text('Long press'),
-                  ),
-                ],
+        'makes longPress gesture on the first widget by default and pumps',
+        ($) async {
+          var count = 0;
+          await $.pumpWidget(
+            MaterialApp(
+              home: StatefulBuilder(
+                builder: (state, setState) => Column(
+                  children: [
+                    Text('count: $count'),
+                    GestureDetector(
+                      onLongPress: () => setState(() => count++),
+                      child: const Text('Long press'),
+                    ),
+                    GestureDetector(
+                      onLongPress: () {},
+                      child: const Text('Long press'),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-        );
+          );
 
-        await $('Long press').longPress();
-        expect($('count: 1'), findsOneWidget);
-      });
+          await $('Long press').longPress();
+          expect($('count: 1'), findsOneWidget);
+        },
+      );
 
       group('with alignment', () {
         patrolWidgetTest('finds no widgets', ($) async {
@@ -486,21 +469,16 @@ void main() {
         },
       );
 
-      patrolWidgetTest(
-        'throws StateError when widget is not EditableText',
-        ($) async {
-          await $.pumpWidget(
-            const MaterialApp(
-              home: Text('not a TextField'),
-            ),
-          );
+      patrolWidgetTest('throws StateError when widget is not EditableText', (
+        $,
+      ) async {
+        await $.pumpWidget(const MaterialApp(home: Text('not a TextField')));
 
-          await expectLater(
-            () => $('not a TextField').enterText('some text'),
-            throwsStateError,
-          );
-        },
-      );
+        await expectLater(
+          () => $('not a TextField').enterText('some text'),
+          throwsStateError,
+        );
+      });
 
       patrolWidgetTest(
         'enters text when the target widget has EditableText descendant',
@@ -558,35 +536,32 @@ void main() {
         expect($('You entered: some input'), findsOneWidget);
       });
 
-      patrolWidgetTest(
-        'enters text in the first widget by default and pumps',
-        ($) async {
-          var content = '';
-          await $.pumpWidgetAndSettle(
-            MaterialApp(
-              home: Scaffold(
-                body: StatefulBuilder(
-                  builder: (state, setState) => Column(
-                    children: [
-                      Text('You entered: $content'),
-                      TextField(
-                        onChanged: (newValue) =>
-                            setState(() => content = newValue),
-                      ),
-                      TextField(
-                        onChanged: (_) {},
-                      ),
-                    ],
-                  ),
+      patrolWidgetTest('enters text in the first widget by default and pumps', (
+        $,
+      ) async {
+        var content = '';
+        await $.pumpWidgetAndSettle(
+          MaterialApp(
+            home: Scaffold(
+              body: StatefulBuilder(
+                builder: (state, setState) => Column(
+                  children: [
+                    Text('You entered: $content'),
+                    TextField(
+                      onChanged: (newValue) =>
+                          setState(() => content = newValue),
+                    ),
+                    TextField(onChanged: (_) {}),
+                  ],
                 ),
               ),
             ),
-          );
+          ),
+        );
 
-          await $(TextField).enterText('some text');
-          expect($('You entered: some text'), findsOneWidget);
-        },
-      );
+        await $(TextField).enterText('some text');
+        expect($('You entered: some text'), findsOneWidget);
+      });
 
       group('with alignment', () {
         patrolWidgetTest('finds no widgets', ($) async {
@@ -601,10 +576,9 @@ void main() {
           );
 
           await expectLater(
-            () => $(TextField).enterText(
-              'text',
-              alignment: Alignment.centerRight,
-            ),
+            () => $(
+              TextField,
+            ).enterText('text', alignment: Alignment.centerRight),
             throwsA(isA<WaitUntilVisibleTimeoutException>()),
           );
         });
@@ -618,18 +592,13 @@ void main() {
           await $.pumpWidget(
             ScreenWithPartiallyVisibleWidget(
               width: width,
-              testedWidget: TextField(
-                controller: controller,
-              ),
+              testedWidget: TextField(controller: controller),
             ),
           );
 
           const input = 'text';
 
-          await $(TextField).enterText(
-            input,
-            alignment: Alignment.centerLeft,
-          );
+          await $(TextField).enterText(input, alignment: Alignment.centerLeft);
 
           expect(controller.text, input);
         });
@@ -708,36 +677,37 @@ void main() {
       });
 
       patrolWidgetTest(
-          'waits until widget is only visible at the topCenter alignment',
-          ($) async {
-        await $.pumpWidget(
-          MaterialApp(
-            home: FutureBuilder(
-              future: Future<void>.delayed(const Duration(seconds: 3)),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.done) {
-                  return const Column(
-                    children: [
-                      Text('some text'),
-                      SizedBox(height: 60),
-                      Text('some other text'),
-                    ],
-                  );
-                } else {
-                  return const Text('in progress');
-                }
-              },
+        'waits until widget is only visible at the topCenter alignment',
+        ($) async {
+          await $.pumpWidget(
+            MaterialApp(
+              home: FutureBuilder(
+                future: Future<void>.delayed(const Duration(seconds: 3)),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    return const Column(
+                      children: [
+                        Text('some text'),
+                        SizedBox(height: 60),
+                        Text('some other text'),
+                      ],
+                    );
+                  } else {
+                    return const Text('in progress');
+                  }
+                },
+              ),
             ),
-          ),
-        );
-        await $(Column).waitUntilVisible(alignment: Alignment.topCenter);
-        expect($(Column).visible, false);
-        expect($(Column).isVisibleAt(alignment: Alignment.topCenter), true);
-        await expectLater(
-          $(Column).waitUntilVisible,
-          throwsA(isA<WaitUntilVisibleTimeoutException>()),
-        );
-      });
+          );
+          await $(Column).waitUntilVisible(alignment: Alignment.topCenter);
+          expect($(Column).visible, false);
+          expect($(Column).isVisibleAt(alignment: Alignment.topCenter), true);
+          await expectLater(
+            $(Column).waitUntilVisible,
+            throwsA(isA<WaitUntilVisibleTimeoutException>()),
+          );
+        },
+      );
     });
 
     group('scrollTo()', () {
@@ -758,9 +728,7 @@ void main() {
         ($) async {
           await $.pumpWidget(
             MaterialApp(
-              home: ListView(
-                children: const [Text('one'), Text('two')],
-              ),
+              home: ListView(children: const [Text('one'), Text('two')]),
             ),
           );
 
@@ -775,9 +743,7 @@ void main() {
         await $.pumpWidget(
           const MaterialApp(
             home: SingleChildScrollView(
-              child: Column(
-                children: [Text('some text')],
-              ),
+              child: Column(children: [Text('some text')]),
             ),
           ),
         );
@@ -800,15 +766,11 @@ void main() {
                     children: [
                       SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
-                        child: Column(
-                          children: [Text('text 1')],
-                        ),
+                        child: Column(children: [Text('text 1')]),
                       ),
                       SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
-                        child: Column(
-                          children: [Text('text 2')],
-                        ),
+                        child: Column(children: [Text('text 2')]),
                       ),
                     ],
                   );
@@ -841,10 +803,7 @@ void main() {
                       SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: Column(
-                          children: [
-                            Text('text 1'),
-                            Text('text 1'),
-                          ],
+                          children: [Text('text 1'), Text('text 1')],
                         ),
                       ),
                       SingleChildScrollView(
@@ -937,40 +896,40 @@ void main() {
         },
       );
 
-      patrolWidgetTest(
-        'scrolls to the first existing but not visible widget',
-        ($) async {
-          await $.pumpWidget(
-            MaterialApp(
-              home: LayoutBuilder(
-                builder: (_, constraints) {
-                  return SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        const Text('top text'),
-                        SizedBox(height: constraints.maxHeight),
-                        const Text('bottom text'),
-                        const Text('bottom text'),
-                      ],
-                    ),
-                  );
-                },
-              ),
+      patrolWidgetTest('scrolls to the first existing but not visible widget', (
+        $,
+      ) async {
+        await $.pumpWidget(
+          MaterialApp(
+            home: LayoutBuilder(
+              builder: (_, constraints) {
+                return SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      const Text('top text'),
+                      SizedBox(height: constraints.maxHeight),
+                      const Text('bottom text'),
+                      const Text('bottom text'),
+                    ],
+                  ),
+                );
+              },
             ),
-          );
+          ),
+        );
 
-          expect($('top text').visible, true);
-          expect($('bottom text').visible, false);
+        expect($('top text').visible, true);
+        expect($('bottom text').visible, false);
 
-          await $('bottom text').scrollTo();
+        await $('bottom text').scrollTo();
 
-          expect($('top text').visible, false);
-          expect($('bottom text').visible, true);
-        },
-      );
+        expect($('top text').visible, false);
+        expect($('bottom text').visible, true);
+      });
 
-      patrolWidgetTest('scrolls to non-existent and not visible widget',
-          ($) async {
+      patrolWidgetTest('scrolls to non-existent and not visible widget', (
+        $,
+      ) async {
         await $.pumpWidget(
           MaterialApp(
             home: LayoutBuilder(
@@ -1059,9 +1018,7 @@ void main() {
           );
 
           await expectLater(
-            () => $(ElevatedButton).scrollTo(
-              alignment: Alignment.centerRight,
-            ),
+            () => $(ElevatedButton).scrollTo(alignment: Alignment.centerRight),
             throwsA(isA<WaitUntilVisibleTimeoutException>()),
           );
         });
@@ -1085,9 +1042,7 @@ void main() {
             findsNothing,
           );
 
-          await $(ElevatedButton).scrollTo(
-            alignment: Alignment.centerLeft,
-          );
+          await $(ElevatedButton).scrollTo(alignment: Alignment.centerLeft);
 
           expect(
             $(ElevatedButton).hitTestable(at: Alignment.centerLeft),
@@ -1110,11 +1065,7 @@ void main() {
                 return Column(
                   key: const Key('column'),
                   children: [
-                    const Row(
-                      children: [
-                        Column(),
-                      ],
-                    ),
+                    const Row(children: [Column()]),
                     Text('count: $count'),
                     const ElevatedButton(
                       onPressed: null,
@@ -1149,9 +1100,9 @@ void main() {
       patrolWidgetTest('finds button by its active status', ($) async {
         await $.pumpWidget(app);
 
-        await $(ElevatedButton)
-            .which<ElevatedButton>((button) => button.enabled)
-            .tap();
+        await $(
+          ElevatedButton,
+        ).which<ElevatedButton>((button) => button.enabled).tap();
 
         expect($('count: 1'), findsOneWidget);
       });
@@ -1168,8 +1119,9 @@ void main() {
         expect($('count: 1'), findsOneWidget);
       });
 
-      patrolWidgetTest('finds button by its active status and color',
-          ($) async {
+      patrolWidgetTest('finds button by its active status and color', (
+        $,
+      ) async {
         await $.pumpWidget(app);
 
         await $(ElevatedButton)
@@ -1201,26 +1153,25 @@ void main() {
       });
 
       patrolWidgetTest(
-          'finds one widget if there are 2 widgets of the same type in the subtree',
-          ($) async {
-        await $.pumpWidget(app);
+        'finds one widget if there are 2 widgets of the same type in the subtree',
+        ($) async {
+          await $.pumpWidget(app);
 
-        expect(
-          $(#column).which<Column>(
-            (column) => column.mainAxisAlignment == MainAxisAlignment.start,
-          ),
-          findsOneWidget,
-        );
-      });
+          expect(
+            $(#column).which<Column>(
+              (column) => column.mainAxisAlignment == MainAxisAlignment.start,
+            ),
+            findsOneWidget,
+          );
+        },
+      );
     });
 
     group('at()', () {
       patrolWidgetTest('finds single widget at index', ($) async {
         await $.pumpWidget(
           const MaterialApp(
-            home: Column(
-              children: [Text('text'), Text('text'), Text('text')],
-            ),
+            home: Column(children: [Text('text'), Text('text'), Text('text')]),
           ),
         );
 
@@ -1246,10 +1197,7 @@ void main() {
         ($) async {
           await $.pumpWidget(const MaterialApp(home: Text('some text')));
 
-          expect(
-            () => $('some text').at(1),
-            throwsA(isA<IndexError>()),
-          );
+          expect(() => $('some text').at(1), throwsA(isA<IndexError>()));
         },
       );
     });
@@ -1335,21 +1283,23 @@ void main() {
     });
 
     patrolWidgetTest(
-        'can enter text into the same field, after focusing on button',
-        ($) async {
-      await $.pumpWidgetAndSettle(const TextFieldsScreen());
+      'can enter text into the same field, after focusing on button',
+      ($) async {
+        await $.pumpWidgetAndSettle(const TextFieldsScreen());
 
-      await $(const Key('textField1')).enterText('User');
-      await $(const Key('buttonFocus')).tap();
-      expect($('User'), findsOneWidget);
+        await $(const Key('textField1')).enterText('User');
+        await $(const Key('buttonFocus')).tap();
+        expect($('User'), findsOneWidget);
 
-      await $(const Key('textField1')).enterText('User2');
-      expect($('User'), findsNothing);
-      expect($('User2'), findsOneWidget);
-    });
+        await $(const Key('textField1')).enterText('User2');
+        expect($('User'), findsNothing);
+        expect($('User2'), findsOneWidget);
+      },
+    );
 
-    patrolWidgetTest('can enter text into same field, after unfocusing',
-        ($) async {
+    patrolWidgetTest('can enter text into same field, after unfocusing', (
+      $,
+    ) async {
       await $.pumpWidgetAndSettle(const TextFieldsScreen());
 
       await $(const Key('textField1')).enterText('User2');
@@ -1362,18 +1312,19 @@ void main() {
     });
 
     patrolWidgetTest(
-        'can enter text into same field, after entering text in another field',
-        ($) async {
-      await $.pumpWidgetAndSettle(const TextFieldsScreen());
+      'can enter text into same field, after entering text in another field',
+      ($) async {
+        await $.pumpWidgetAndSettle(const TextFieldsScreen());
 
-      await $(const Key('textField1')).enterText('User3');
-      expect($('User3'), findsOneWidget);
+        await $(const Key('textField1')).enterText('User3');
+        expect($('User3'), findsOneWidget);
 
-      await $(const Key('textField2')).enterText('User4');
-      await $(const Key('textField1')).enterText('User5');
-      expect($('User3'), findsNothing);
-      expect($('User4'), findsOneWidget);
-      expect($('User5'), findsOneWidget);
-    });
+        await $(const Key('textField2')).enterText('User4');
+        await $(const Key('textField1')).enterText('User5');
+        expect($('User3'), findsNothing);
+        expect($('User4'), findsOneWidget);
+        expect($('User5'), findsOneWidget);
+      },
+    );
   });
 }

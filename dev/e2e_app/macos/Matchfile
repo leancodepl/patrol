@@ -1,4 +1,4 @@
-git_url("https://github.com/leancodepl/certificates")
+git_url("git@github.com:leancodepl/certificates.git")
 storage_mode("git")
 type("development")
 platform("macos")

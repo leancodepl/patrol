@@ -23,10 +23,8 @@ void main() {
   group('findDevicesToUse()', () {
     test('throws when no devices are attached', () {
       expect(
-        () => deviceFinder.findDevicesToUse(
-          attachedDevices: [],
-          wantDevices: [],
-        ),
+        () =>
+            deviceFinder.findDevicesToUse(attachedDevices: [], wantDevices: []),
         throwsA(
           isA<ToolExit>().having(
             (err) => err.message,
@@ -43,19 +41,6 @@ void main() {
       () {
         final devicesToUse = deviceFinder.findDevicesToUse(
           attachedDevices: [androidDevice],
-          wantDevices: [],
-        );
-
-        expect(devicesToUse, [androidDevice]);
-      },
-    );
-
-    test(
-      'returns the first device when 2 devices is attached and no devices are '
-      'wanted',
-      () {
-        final devicesToUse = deviceFinder.findDevicesToUse(
-          attachedDevices: [androidDevice, iosDevice],
           wantDevices: [],
         );
 

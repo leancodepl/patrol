@@ -73,13 +73,24 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
         // It's simpler because we don't have the need for that much synchronization.
         // Currently, the only synchronization point we're interested in is when the app under test returns the list of tests.
         Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
-        Intent intent = new Intent(Intent.ACTION_MAIN);
-        intent.setClassName(instrumentation.getTargetContext(), activityClass.getCanonicalName());
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        instrumentation.getTargetContext().startActivity(intent);
 
         PatrolServer patrolServer = new PatrolServer();
         patrolServer.start(); // Gets killed when the instrumentation process dies. We're okay with this.
+
+
+
+        // Try to get the launcher intent first, which handles activity aliases properly
+        Intent intent = instrumentation.getTargetContext().getPackageManager()
+                .getLaunchIntentForPackage(instrumentation.getTargetContext().getPackageName());
+        
+        if (intent == null) {
+            // Fallback to the original approach if no launcher intent is found
+            intent = new Intent(Intent.ACTION_MAIN);
+            intent.setClassName(instrumentation.getTargetContext(), activityClass.getCanonicalName());
+        }
+        
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        instrumentation.getTargetContext().startActivity(intent);
 
         patrolAppServiceClient = createAppServiceClient();
     }

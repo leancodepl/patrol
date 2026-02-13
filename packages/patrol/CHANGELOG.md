@@ -1,9 +1,112 @@
+# 4.1.1
+
+- Fix Android permission dialog not being tapped with `grantPermissionWhenInUse`.(#2876)
+- Fix iOS `tapOnNotificationBySelector` to support `text` parameter. (#2898)
+- Bump `patrol_log` to `0.7.0`. (#2917)
+- Bump `patrol_finders` to `3.1.0`. (#2917)
+
+## 4.1.0
+
+- Add `PlatformAutomator` to exports. (#2833)
+
+## 4.0.1
+
+- Remove dependency on `js`. (#2831)
+
+## 4.0.0
+
+Patrol 4.0 is here!
+
+Read the article announcing Patrol 4.0 [here](https://leancode.co/blog/patrol-4-0-release).
+
+- New API for native/platform interactions: 
+  - Introduce new way of communicating with platform (`PlatformAutomator`). (#2789) 
+  - Deprecate `NativeAutomator` and `NativeAutomator2`. (#2789)
+
+- Add support for running Patrol tests on Web:
+  - Create `WebAutomator` that handles numerous interactions with native browser:
+    - `enableDarkMode`, `disableDarkMode`,
+    - `tap`,
+    - `enterText`,
+    - `scrollTo`,
+    - `grantPermissions`, `clearPermissions`,
+    - `addCookie`, `getCookies`, `clearCookies`,
+    - `pressKey`, `pressKeyCombo`,
+    - `uploadFile`, `verifyFileDownloads`,
+    - `goBack`, `goForward`,
+    - `acceptNextDialog`, `dismissNextDialog`,
+    - `resizeWindow`,
+    - `setClipboard`, `getClipboard`.
+  - Introduce support for web-related flags:
+    - `--web-results-dir`, `--web-report-dir`, `--web-reporter`,
+    - `--web-timeout`, `--web-global-timeout`, `--web-retries`,
+    - `--web-workers`, `--web-shard`,
+    - `--web-video`, `--web-headless`,
+    - `--web-locale`, `--web-timezone`, `--web-color-scheme`,
+    - `--web-geolocation`, `--web-permissions`,
+    - `--web-user-agent`, `--web-viewport`.
+- Add support for configurable test directory via `test_directory` option in `pubspec.yaml`. (#2728)
+- Introduces *experimental* `--full-isolation` flag that uninstall the app between each run on iOS Simulator. (#2803)
+- Bump `patrol_log` to `0.6.0`. 
+
+- **BREAKING CHANGE**
+  - Change default test directory from `integration_test` to `patrol_test`. (#2728)
+
+This version requires version `4.0.0` of `patrol_cli` package.
+
+## 3.20.0
+
+- Add `--build-name` and `--build-number` flags to `patrol test`, `patrol develop`, and `patrol build` commands. (#2590)
+- Extend `$.native.enterText()` on Android to support `AutoCompleteTextView`. (#1162)
+- Add support for enabling/disabling wifi on iOS 18. (#2719)
+
+This version requires version 3.11.0 of `patrol_cli` package.
+
+## 3.19.0
+
+- Fix logging for `$.native.pullToRefresh()` and `$.native.swipeBack()`. (#2707) 
+- Fix `$.native.enableDarkMode()` and `$.native.disableDarkMode()` on iOS 18 simulators. (#2705)
+- Add support for de, fr and pl languages for native methods that operates on strings. (#2659)
+- Add support for gallery permission dialog on iOS 17. (#2659)
+- Keep the app running after last step in patrol develop. (#2693)
+
+## 3.18.0
+
+- Bump `leancode_lint` to `17.0.0`.
+- Bump `patrol_log` to `0.5.0`.
+- Bump minimum Dart SDK to version 3.8.0.
+
+## 3.17.0
+
+- Add `takeCameraPhoto` method. (#2660)
+- Add `pickImageFromGallery` method (#2660)
+- Add `pickMultipleImagesFromGallery` (#2660)
+- Add `isVirtualDevice` method (#2660)
+- Add `getOsVersion` method (#2660)
+- Allow passing null to `$.native.getNativeViews()` (#2660)
+- Add `$.native.swipeBack()` method (#2608)
+- Add `$.native.pullToRefresh()` method (#2665)
+
+## 3.16.0
+
+- Make activity aliases work in PatrolJUnitRunner
+- Update test reports to show all exceptions thrown in Flutter. (#2362)
+- Bump min Flutter SDK to 3.32.0 (#2649)
+
+## 3.15.2
+
+- Bump `vm_service` dependency to `15.0.0` (#2636)
+
 ## 3.15.1
 
 - Fix `$.enterText()` issues (#2570)
 - Add `setMockLocation` method. (#2547)
 - Bump `custom_lint` to `0.7.0` and `leancode_lint` to `14.3.0`. (#2574)
 - Upgrade `http4k` to 5.47.0.0. (#2559)
+
+## 3.14.2
+
+- Make activity aliases work in PatrolJUnitRunner
 
 ## 3.14.1
 
@@ -16,11 +119,11 @@
 ## 3.14.0
 
 - Remove `exception` from `StepEntry`. When it was too long, it caused crash because of badly formed JSON. (#2481)
-- Bump `patrol_finders` and `patrol_log` versions. 
+- Bump `patrol_finders` and `patrol_log` versions.
 - Bump compileSdk to 35. (#2488)
 - Bump Gradle to 8.9.0. (#2488)
 - Make Patrol works with Java 21. (#2488)
- 
+
 ## 3.13.2
 
 - Bump `patrol_finders` and `patrol_log` - use version with patched enterText. (#2468)
@@ -77,7 +180,7 @@ This version requires version 3.2.0 of `patrol_cli` package.
 
 ## 3.8.0
 
-- Add `openUrl(String url)` method, for testing deeplinks. (#2219) 
+- Add `openUrl(String url)` method, for testing deeplinks. (#2219)
 - Add `pressVolumeUp` and `pressVolumeDown()`. (#2223)
 
 ## 3.7.3
@@ -90,7 +193,6 @@ This version requires version 3.2.0 of `patrol_cli` package.
 - Bump `patrol_devtools_extension` dependencies.
 - Bump min Flutter SDK to 3.22
 
-
 ## 3.7.1
 
 - Revert: Bump `patrol_devtools_extension` dependencies.
@@ -99,7 +201,7 @@ This version requires version 3.2.0 of `patrol_cli` package.
 ## 3.7.0
 
 - Bump `test_api` dependency to 0.7.0.
-- Bump `patrol_devtools_extension` dependencies. 
+- Bump `patrol_devtools_extension` dependencies.
 - Support customization of doubleTap delay (Android only). (#2165)
 
 ## 3.6.1
@@ -183,7 +285,7 @@ Give a warm welcome to the new **Patrol DevTools Extension**!
 Patrol DevTools extension allows you to explore the native view hierarchy when
 developing tests with `patrol develop`. Now you can easily see what Android /
 iOS views are currently visible and discover their properties so that they can
-be used in native selectors like `$.native.tap()`. You don’t have to use any
+be used in native selectors like `$.native.tap()`. You don't have to use any
 external tools for that. This is just the beginning, and we plan to add more
 features to our extension in the future.
 

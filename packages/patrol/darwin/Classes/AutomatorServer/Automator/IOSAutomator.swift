@@ -5,6 +5,7 @@
   import os
 
   class IOSAutomator: Automator {
+
     private lazy var device: XCUIDevice = {
       return XCUIDevice.shared
     }()
@@ -70,32 +71,6 @@
 
     // MARK: General UI interaction
     func tap(
-      on selector: Selector,
-      inApp bundleId: String,
-      withTimeout timeout: TimeInterval?
-    ) throws {
-      var view = createLogMessage(element: "view", from: selector)
-      view += " in app \(bundleId)"
-
-      try runAction("tapping on \(view)") {
-        let app = try self.getApp(withBundleId: bundleId)
-
-        // TODO: We should consider more view properties. See #1554
-        let query = app.descendants(matching: .any).matching(selector.toNSPredicate())
-
-        Logger.shared.i("waiting for existence of \(view)")
-        guard
-          let element = self.waitFor(
-            query: query, index: selector.instance ?? 0, timeout: timeout ?? self.timeout)
-        else {
-          throw PatrolError.viewNotExists(view)
-        }
-
-        element.forceTap()
-      }
-    }
-
-    func tap(
       on selector: IOSSelector,
       inApp bundleId: String,
       withTimeout timeout: TimeInterval?
@@ -106,30 +81,6 @@
       try runAction("tapping on \(view)") {
         let app = try self.getApp(withBundleId: bundleId)
 
-        let query = app.descendants(matching: .any).matching(selector.toNSPredicate())
-
-        Logger.shared.i("waiting for existence of \(view)")
-        guard
-          let element = self.waitFor(
-            query: query, index: selector.instance ?? 0, timeout: timeout ?? self.timeout)
-        else {
-          throw PatrolError.viewNotExists(view)
-        }
-
-        element.forceTap()
-      }
-    }
-
-    func doubleTap(
-      on selector: Selector,
-      inApp bundleId: String,
-      withTimeout timeout: TimeInterval?
-    ) throws {
-      var view = createLogMessage(element: "view", from: selector)
-      view += " in app \(bundleId)"
-
-      try runAction("double tapping on \(view)") {
-        let app = try self.getApp(withBundleId: bundleId)
         let query = app.descendants(matching: .any).matching(selector.toNSPredicate())
 
         Logger.shared.i("waiting for existence of \(view)")
@@ -180,7 +131,7 @@
 
     func enterText(
       _ data: String,
-      on selector: Selector,
+      on selector: IOSSelector,
       inApp bundleId: String,
       dismissKeyboard: Bool,
       withTimeout timeout: TimeInterval?,
@@ -202,7 +153,6 @@
         // See:
         // * https://developer.apple.com/documentation/xctest/xcuielementtype/xcuielementtypetextfield
         // * https://developer.apple.com/documentation/xctest/xcuielementtype/xcuielementtypesecuretextfield
-        // TODO: We should consider more view properties. See #1554
         let contentPredicate = selector.toTextFieldNSPredicate()
         let textFieldPredicate = NSPredicate(format: "elementType == 49")
         let secureTextFieldPredicate = NSPredicate(format: "elementType == 50")
@@ -216,44 +166,6 @@
         ])
 
         let query = app.descendants(matching: .any).matching(finalPredicate)
-        guard
-          let element = self.waitFor(
-            query: query,
-            index: selector.instance ?? 0,
-            timeout: timeout ?? self.timeout
-          )
-        else {
-          throw PatrolError.viewNotExists(view)
-        }
-
-        self.clearAndEnterText(data: data, element: element, dx: dx, dy: dy)
-      }
-
-      // Prevent keyboard dismissal from happening too fast
-      sleepTask(timeInSeconds: 1)
-    }
-
-    func enterText(
-      _ data: String,
-      on selector: IOSSelector,
-      inApp bundleId: String,
-      dismissKeyboard: Bool,
-      withTimeout timeout: TimeInterval?,
-      dx: CGFloat,
-      dy: CGFloat
-    ) throws {
-      var data = data
-      if dismissKeyboard {
-        data = "\(data)\n"
-      }
-
-      var view = createLogMessage(element: "text field", from: selector)
-      view += " in app \(bundleId)"
-
-      try runAction("entering text \(format: data) into \(view)") {
-        let app = try self.getApp(withBundleId: bundleId)
-
-        let query = app.descendants(matching: .any).matching(selector.toNSPredicate())
         guard
           let element = self.waitFor(
             query: query,
@@ -328,26 +240,6 @@
     }
 
     func waitUntilVisible(
-      on selector: Selector,
-      inApp bundleId: String,
-      withTimeout timeout: TimeInterval?
-    ) throws {
-      let view = createLogMessage(element: "view", from: selector)
-      try runAction(
-        "waiting until \(view) in app \(bundleId) becomes visible"
-      ) {
-        let app = try self.getApp(withBundleId: bundleId)
-        let query = app.descendants(matching: .any).containing(selector.toNSPredicate())
-        guard
-          let element = self.waitFor(
-            query: query, index: selector.instance ?? 0, timeout: timeout ?? self.timeout)
-        else {
-          throw PatrolError.viewNotExists(view)
-        }
-      }
-    }
-
-    func waitUntilVisible(
       on selector: IOSSelector,
       inApp bundleId: String,
       withTimeout timeout: TimeInterval?
@@ -389,48 +281,72 @@
     func enableDarkMode(_ bundleId: String) throws {
       try runSettingsAction("enabling dark mode", bundleId) {
         #if targetEnvironment(simulator)
-          self.preferences.descendants(matching: .any)["Developer"].firstMatch.tap()
+          let developer = try Localization.getLocalizedString(key: "developer")
+          let darkAppearance = try Localization.getLocalizedString(key: "dark_appearance")
+
+          if let osVersionString = self.getOsVersion().split(separator: ".").first,
+            let osVersion = Int(osVersionString)
+          {
+            // For iOS 18 and above, we need to swipe to the developer option because it's is moved to the bottom of the list
+            if osVersion >= 18 {
+              let start = self.preferences.coordinate(
+                withNormalizedOffset: CGVector(dx: 0.5, dy: 0.9))
+              let end = self.preferences.coordinate(
+                withNormalizedOffset: CGVector(dx: 0.5, dy: 0.3))
+              start.press(forDuration: 0.1, thenDragTo: end)
+            }
+          }
+          self.preferences.descendants(matching: .any)[developer].firstMatch.tap()
 
           let value =
-            self.preferences.descendants(matching: .any)["Dark Appearance"].firstMatch.value
+            self.preferences.descendants(matching: .any)[darkAppearance].firstMatch.value
             as? String?
           if value == "0" {
-            self.preferences.descendants(matching: .any)["Dark Appearance"].firstMatch.tap()
+            self.preferences.descendants(matching: .any)[darkAppearance].firstMatch.tap()
           }
         #else
-          self.preferences.descendants(matching: .any)["Display & Brightness"].firstMatch.tap()
-          self.preferences.descendants(matching: .any)["Dark"].firstMatch.tap()
+          let displayBrightness = try Localization.getLocalizedString(key: "display_brightness")
+          let dark = try Localization.getLocalizedString(key: "dark")
+
+          self.preferences.descendants(matching: .any)[displayBrightness].firstMatch.tap()
+          self.preferences.descendants(matching: .any)[dark].firstMatch.tap()
         #endif
+
       }
     }
 
     func disableDarkMode(_ bundleId: String) throws {
       try runSettingsAction("disabling dark mode", bundleId) {
         #if targetEnvironment(simulator)
-          self.preferences.descendants(matching: .any)["Developer"].firstMatch.tap()
+          let developer = try Localization.getLocalizedString(key: "developer")
+          let darkAppearance = try Localization.getLocalizedString(key: "dark_appearance")
+
+          if let osVersionString = self.getOsVersion().split(separator: ".").first,
+            let osVersion = Int(osVersionString)
+          {
+            if osVersion >= 18 {
+              let start = self.preferences.coordinate(
+                withNormalizedOffset: CGVector(dx: 0.5, dy: 0.9))
+              let end = self.preferences.coordinate(
+                withNormalizedOffset: CGVector(dx: 0.5, dy: 0.3))
+              start.press(forDuration: 0.1, thenDragTo: end)
+            }
+          }
+          self.preferences.descendants(matching: .any)[developer].firstMatch.tap()
 
           let value =
-            self.preferences.descendants(matching: .any)["Dark Appearance"].firstMatch.value
+            self.preferences.descendants(matching: .any)[darkAppearance].firstMatch.value
             as? String?
           if value == "1" {
-            self.preferences.descendants(matching: .any)["Dark Appearance"].firstMatch.tap()
+            self.preferences.descendants(matching: .any)[darkAppearance].firstMatch.tap()
           }
         #else
-          self.preferences.descendants(matching: .any)["Display & Brightness"].firstMatch.tap()
-          self.preferences.descendants(matching: .any)["Light"].firstMatch.tap()
+          let displayBrightness = try Localization.getLocalizedString(key: "display_brightness")
+          let light = try Localization.getLocalizedString(key: "light")
+
+          self.preferences.descendants(matching: .any)[displayBrightness].firstMatch.tap()
+          self.preferences.descendants(matching: .any)[light].firstMatch.tap()
         #endif
-      }
-    }
-
-    func enableLocation() throws {
-      try runAction("enableLocation") {
-        throw PatrolError.methodNotImplemented("enableLocation")
-      }
-    }
-
-    func disableLocation() throws {
-      try runAction("disableLocation") {
-        throw PatrolError.methodNotImplemented("disableLocation")
       }
     }
 
@@ -492,34 +408,79 @@
 
     func enableWiFi() throws {
       try runControlCenterAction("enabling wifi") {
-        let toggle = self.springboard.switches["wifi-button"]
-        let exists = toggle.waitForExistence(timeout: self.timeout)
-        guard exists else {
-          throw PatrolError.viewNotExists("wifi-button")
-        }
+        let toggle: XCUIElement
 
-        if toggle.value! as! String == "0" {
-          toggle.tap()
+        if #available(iOS 18, *) {
+          let wifiOff = self.springboard.images["wifi.slash"].firstMatch
+          let wifiOn = self.springboard.images["wifi"].firstMatch
+          if wifiOn.exists {
+            Logger.shared.i("wifi is already enabled")
+            return
+          }
+          if !wifiOn.exists && !wifiOff.exists {
+            throw PatrolError.viewNotExists("wifi-button")
+          }
+          wifiOff.tap()
+          return
         } else {
-          Logger.shared.i("wifi is already enabled")
+          toggle = self.springboard.switches["wifi-button"]
+          let exists = toggle.waitForExistence(timeout: self.timeout)
+          guard exists else {
+            throw PatrolError.viewNotExists("wifi-button")
+          }
+
+          if toggle.value! as! String == "0" {
+            toggle.tap()
+            // Disabling wifi can cause a system alert to appear
+            try self.acceptSystemAlertIfVisible()
+          } else {
+            Logger.shared.i("wifi is already disabled")
+          }
         }
       }
     }
 
     func disableWiFi() throws {
       try runControlCenterAction("disabling wifi") {
-        let toggle = self.springboard.switches["wifi-button"]
-        let exists = toggle.waitForExistence(timeout: self.timeout)
-        guard exists else {
-          throw PatrolError.viewNotExists("wifi-button")
-        }
+        let toggle: XCUIElement
 
-        if toggle.value! as! String == "1" {
-          toggle.tap()
-          // Disabling wifi can cause a system alert to appear
-          try self.acceptSystemAlertIfVisible()
+        if #available(iOS 18, *) {
+          if #available(iOS 26, *) {
+            let wifiOn = self.springboard.images["wifi"].firstMatch
+
+            if !wifiOn.exists {
+              throw PatrolError.viewNotExists("wifi-button")
+            }
+            wifiOn.tap()
+            try self.acceptSystemAlertIfVisible()
+            return
+          } else {
+            let wifiOn = self.springboard.images["wifi"].firstMatch
+            let wifiOff = self.springboard.images["wifi.slash"].firstMatch
+            if wifiOff.exists {
+              Logger.shared.i("wifi is already disabled")
+              return
+            }
+            if !wifiOn.exists && !wifiOff.exists {
+              throw PatrolError.viewNotExists("wifi-button")
+            }
+            wifiOn.tap()
+            try self.acceptSystemAlertIfVisible()
+            return
+          }
         } else {
-          Logger.shared.i("wifi is already disabled")
+          toggle = self.springboard.switches["wifi-button"]
+          let exists = toggle.waitForExistence(timeout: self.timeout)
+          guard exists else {
+            throw PatrolError.viewNotExists("wifi-button")
+          }
+          if toggle.value! as! String == "1" {
+            toggle.tap()
+            // Disabling wifi can cause a system alert to appear
+            try self.acceptSystemAlertIfVisible()
+          } else {
+            Logger.shared.i("wifi is already disabled")
+          }
         }
       }
     }
@@ -557,26 +518,6 @@
     }
 
     func getNativeViews(
-      on selector: Selector,
-      inApp bundleId: String
-    ) throws -> [NativeView] {
-      let view = createLogMessage(element: "views", from: selector)
-      return try runAction("getting native \(view)") {
-        let app = try self.getApp(withBundleId: bundleId)
-
-        // TODO: We should consider more view properties. See #1554
-        let query = app.descendants(matching: .any).matching(selector.toNSPredicate())
-        let elements = query.allElementsBoundByIndex
-
-        let views = elements.map { xcuielement in
-          return NativeView.fromXCUIElement(xcuielement, bundleId)
-        }
-
-        return views
-      }
-    }
-
-    func getNativeViews(
       on selector: IOSSelector,
       inApp bundleId: String
     ) throws -> [IOSNativeView] {
@@ -584,6 +525,7 @@
       return try runAction("getting native \(view)") {
         let app = try self.getApp(withBundleId: bundleId)
 
+        // TODO: We should consider more view properties. See #1554
         let query = app.descendants(matching: .any).matching(selector.toNSPredicate())
         let elements = query.allElementsBoundByIndex
 
@@ -595,20 +537,11 @@
       }
     }
 
-    func getUITreeRoots(installedApps: [String]) throws -> [NativeView] {
+    func getUITreeRoots(installedApps: [String]) throws -> [IOSNativeView] {
       try runAction("getting ui tree roots") {
         let foregroundApp = self.getForegroundApp(installedApps: installedApps)
         let snapshot = try foregroundApp.snapshot()
-        return [NativeView.fromXCUIElementSnapshot(snapshot, foregroundApp.identifier)]
-      }
-    }
-
-    func getUITreeRootsV2(installedApps: [String]) throws -> GetNativeUITreeRespone {
-      try runAction("getting ui tree roots") {
-        let foregroundApp = self.getForegroundApp(installedApps: installedApps)
-        let snapshot = try foregroundApp.snapshot()
-        let root = IOSNativeView.fromXCUIElementSnapshot(snapshot, foregroundApp.identifier)
-        return GetNativeUITreeRespone(iOSroots: [root], androidRoots: [], roots: [])
+        return [IOSNativeView.fromXCUIElementSnapshot(snapshot, foregroundApp.identifier)]
       }
     }
 
@@ -698,10 +631,11 @@
           throw PatrolError.viewNotExists("notification at index \(index)")
         }
 
-        if self.isSimulator() && self.isPhone() {
+        if self.isVirtualDevice() && self.isPhone() {
           // For some weird reason, this works differently on Simulator
+          let open = try Localization.getLocalizedString(key: "open")
           cell.doubleTap()
-          self.springboard.buttons.matching(identifier: "Open").firstMatch.tap()
+          self.springboard.buttons.matching(identifier: open).firstMatch.tap()
         } else {
           cell.tap()
         }
@@ -722,10 +656,11 @@
           throw PatrolError.viewNotExists("notification containing text \(format: substring)")
         }
         Logger.shared.i("tapping on notification which contains text \(substring)")
-        if self.isSimulator() && self.isPhone() {
+        if self.isVirtualDevice() && self.isPhone() {
           // For some weird reason, this works differently on Simulator
+          let open = try Localization.getLocalizedString(key: "open")
           cell.doubleTap()
-          self.springboard.buttons.matching(identifier: "Open").firstMatch.tap()
+          self.springboard.buttons.matching(identifier: open).firstMatch.tap()
         } else {
           cell.tap()
         }
@@ -735,9 +670,16 @@
     // MARK: Permissions
 
     func isPermissionDialogVisible(timeout: TimeInterval) throws -> Bool {
-      return runAction("checking if permission dialog is visible") {
+      return try runAction("checking if permission dialog is visible") {
         let systemAlerts = self.springboard.alerts
-        let labels = ["OK", "Allow", "Allow once", "Allow While Using App", "Don’t Allow"]
+
+        let ok = try Localization.getLocalizedString(key: "ok")
+        let allow = try Localization.getLocalizedString(key: "allow")
+        let allowOnce = try Localization.getLocalizedString(key: "allow_once")
+        let allowWhileUsingApp = try Localization.getLocalizedString(key: "allow_while_using_app")
+        let dontAllow = try Localization.getLocalizedString(key: "dont_allow")
+
+        let labels = [ok, allow, allowOnce, allowWhileUsingApp, dontAllow]
 
         let button = self.waitForAnyElement(
           elements: labels.map { systemAlerts.buttons[$0] },
@@ -751,7 +693,13 @@
     func allowPermissionWhileUsingApp() throws {
       try runAction("allowing while using app") {
         let systemAlerts = self.springboard.alerts
-        let labels = ["OK", "Allow", "Allow While Using App"]
+
+        let ok = try Localization.getLocalizedString(key: "ok")
+        let allow = try Localization.getLocalizedString(key: "allow")
+        let allowWhileUsingApp = try Localization.getLocalizedString(key: "allow_while_using_app")
+        let limitAccess = try Localization.getLocalizedString(key: "limit_access")
+
+        let labels = [ok, allow, allowWhileUsingApp, limitAccess]
 
         guard
           let button = self.waitForAnyElement(
@@ -769,7 +717,15 @@
     func allowPermissionOnce() throws {
       try runAction("allowing once") {
         let systemAlerts = self.springboard.alerts
-        let labels = ["OK", "Allow", "Allow Once"]
+
+        let ok = try Localization.getLocalizedString(key: "ok")
+        let allow = try Localization.getLocalizedString(key: "allow")
+        let allowOnce = try Localization.getLocalizedString(key: "allow_once")
+        let allowFullAccess = try Localization.getLocalizedString(
+          key: "allow_full_access"
+        )
+
+        let labels = [ok, allow, allowOnce, allowFullAccess]
 
         guard
           let button = self.waitForAnyElement(
@@ -786,9 +742,9 @@
 
     func denyPermission() throws {
       try runAction("denying permission") {
-        let label = "Don’t Allow"  // not "Don't Allow"!
+        let dontAllow = try Localization.getLocalizedString(key: "dont_allow")
         let systemAlerts = self.springboard.alerts
-        let button = systemAlerts.buttons[label]
+        let button = systemAlerts.buttons[dontAllow]
 
         let exists = button.waitForExistence(timeout: self.timeout)
         guard exists else {
@@ -805,14 +761,16 @@
         return
       }
 
-      if isFineLocationEnabled() {
+      if try isFineLocationEnabled() {
         Logger.shared.i("Fine location is already enabled")
         return
       }
 
       try runAction("selecting fine location") {
         let alerts = self.springboard.alerts
-        let button = alerts.buttons["Precise: Off"]
+
+        let preciseOff = try Localization.getLocalizedString(key: "precise_off")
+        let button = alerts.buttons[preciseOff]
 
         let exists = button.waitForExistence(timeout: self.timeout)
         guard exists else {
@@ -823,16 +781,16 @@
       }
     }
 
-    func isFineLocationEnabled() -> Bool {
+    func isFineLocationEnabled() throws -> Bool {
       if iOS13orOlder() {
         Logger.shared.i("Ignored call to isFineLocationEnabled() (iOS < 14)")
         return false
       }
 
       let alerts = self.springboard.alerts
-      let button = alerts.buttons["Precise: On"]
+      let preciseOn = try Localization.getLocalizedString(key: "precise_on")
+      let button = alerts.buttons[preciseOn]
       let exists = button.waitForExistence(timeout: self.timeout)
-
       return exists
     }
 
@@ -842,14 +800,16 @@
         return
       }
 
-      if !isFineLocationEnabled() {
+      if try !isFineLocationEnabled() {
         Logger.shared.i("Coarse location is already enabled")
         return
       }
 
       try runAction("selecting coarse location") {
         let alerts = self.springboard.alerts
-        let button = alerts.buttons["Precise: On"]
+
+        let preciseOn = try Localization.getLocalizedString(key: "precise_on")
+        let button = alerts.buttons[preciseOn]
 
         let exists = button.waitForExistence(timeout: self.timeout)
         guard exists else {
@@ -911,12 +871,16 @@
       element.typeText(delete + data)
     }
 
-    private func isSimulator() -> Bool {
+    func isVirtualDevice() -> Bool {
       #if targetEnvironment(simulator)
         return true
       #else
         return false
       #endif
+    }
+
+    func getOsVersion() -> String {
+      return UIDevice.current.systemVersion
     }
 
     private func isPhone() -> Bool {
@@ -1018,7 +982,8 @@
 
     private func acceptSystemAlertIfVisible() throws {
       let systemAlerts = self.springboard.alerts
-      let labels = ["OK"]
+      let ok = try Localization.getLocalizedString(key: "ok")
+      let labels = [ok]
 
       if let button = self.waitForAnyElement(
         elements: labels.map { systemAlerts.buttons[$0] },
@@ -1048,14 +1013,14 @@
     private func runSettingsAction(
       _ log: String,
       _ bundleId: String,
-      block: @escaping () -> Void
+      block: @escaping () throws -> Void
     ) throws {
       try runAction(log) {
         self.springboard.activate()
         self.preferences.activate()  // Needed to make sure that settings will be opened with a clean state
         self.preferences.launch()
 
-        block()
+        try block()
 
         self.springboard.activate()
         self.preferences.terminate()
@@ -1087,7 +1052,7 @@
       group.wait()
     }
 
-    func createLogMessage(element: String, from selector: Selector) -> String {
+    func createLogMessage(element: String, from selector: IOSSelector) -> String {
       var logMessage = element
 
       if let text = selector.text {
@@ -1099,16 +1064,6 @@
       if let contains = selector.textContains {
         logMessage += " containing '\(contains)'"
       }
-      if let index = selector.instance {
-        logMessage += " at index \(index)"
-      }
-
-      return logMessage
-    }
-
-    func createLogMessage(element: String, from selector: IOSSelector) -> String {
-      var logMessage = element
-
       if let instance = selector.instance {
         logMessage += " with instance '\(instance)'"
       }
@@ -1173,38 +1128,6 @@
     }
   }
 
-  extension NativeView {
-    static func fromXCUIElement(_ xcuielement: XCUIElement, _ bundleId: String) -> NativeView {
-      return NativeView(
-        className: getElementTypeName(elementType: xcuielement.elementType),
-        text: xcuielement.label,
-        contentDescription: xcuielement.accessibilityLabel,
-        focused: xcuielement.hasFocus,
-        enabled: xcuielement.isEnabled,
-        resourceName: xcuielement.identifier,
-        applicationPackage: bundleId,
-        children: xcuielement.children(matching: .any).allElementsBoundByIndex.map { child in
-          return NativeView.fromXCUIElement(child, bundleId)
-        })
-    }
-
-    static func fromXCUIElementSnapshot(_ xcuielement: XCUIElementSnapshot, _ bundleId: String)
-      -> NativeView
-    {
-      return NativeView(
-        className: getElementTypeName(elementType: xcuielement.elementType),
-        text: xcuielement.label,
-        contentDescription: "",  // TODO: Separate request
-        focused: xcuielement.hasFocus,
-        enabled: xcuielement.isEnabled,
-        resourceName: xcuielement.identifier,
-        applicationPackage: bundleId,
-        children: xcuielement.children.map { child in
-          return NativeView.fromXCUIElementSnapshot(child, bundleId)
-        })
-    }
-  }
-
   extension IOSNativeView {
     static func fromXCUIElement(_ xcuielement: XCUIElement, _ bundleId: String) -> IOSNativeView {
       return IOSNativeView(
@@ -1224,13 +1147,14 @@
           maxX: xcuielement.frame.maxX,
           maxY: xcuielement.frame.maxY
         ),
+        // FIXME: accessibilityLabel
+        //accessibilityLabel: xcuielement.accessibilityLabel,
         placeholderValue: xcuielement.placeholderValue,
-        value: xcuielement.value as? String
+        value: xcuielement.value as? String,
+        bundleId: bundleId
       )
     }
-  }
 
-  extension IOSNativeView {
     static func fromXCUIElementSnapshot(_ xcuielement: XCUIElementSnapshot, _ bundleId: String)
       -> IOSNativeView
     {
@@ -1251,8 +1175,11 @@
           maxX: xcuielement.frame.maxX,
           maxY: xcuielement.frame.maxY
         ),
+        // FIXME: accessibilityLabel
+        //accessibilityLabel: xcuielement.accessibilityLabel,
         placeholderValue: xcuielement.placeholderValue,
-        value: xcuielement.value as? String
+        value: xcuielement.value as? String,
+        bundleId: bundleId
       )
     }
   }
