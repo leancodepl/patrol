@@ -409,6 +409,8 @@ class WebAppOptions {
     this.globalTimeout,
     this.shard,
     this.headless,
+    this.webBrowserFlags,
+    this.webPort,
   });
 
   final FlutterAppOptions flutter;
@@ -429,6 +431,8 @@ class WebAppOptions {
   final int? globalTimeout;
   final String? shard;
   final String? headless;
+  final List<String>? webBrowserFlags;
+  final int? webPort;
 
   /// Translates these options into a proper flutter build invocation.
   List<String> toFlutterBuildInvocation() {

@@ -169,6 +169,9 @@ class WebTestBackend {
       '-d',
       if (develop) 'chrome' else 'web-server',
       ...develop ? ['--verbose'] : [],
+      if (options.webBrowserFlags != null)
+        ...options.webBrowserFlags!.map((flag) => '--web-browser-flag=$flag'),
+      if (options.webPort != null) '--web-port=${options.webPort}',
       '--target=${options.flutter.target}',
       '--${options.flutter.buildMode.name}',
       // Note: --flavor is not supported for web, so we don't include it

@@ -268,7 +268,11 @@ class DevelopCommand extends PatrolCommand {
       testServerPort: super.testServerPort,
     );
 
-    final webOpts = WebAppOptions(flutter: flutterOpts);
+    final webOpts = WebAppOptions(
+      flutter: flutterOpts,
+      webBrowserFlags: stringsArg('web-browser-flag'),
+      webPort: intArg('web-port'),
+    );
 
     await _build(androidOpts, iosOpts, macosOpts, webOpts, device);
     await _preExecute(androidOpts, iosOpts, device, uninstall);
