@@ -1,0 +1,73 @@
+diff --git a/lib/src/screens/home_screen.dart b/lib/src/screens/home_screen.dart
+new file mode 100644
+--- /dev/null
++++ b/lib/src/screens/home_screen.dart
+@@ -0,0 +1,45 @@
++import 'package:flutter/material.dart';
++
++class HomeScreen extends StatefulWidget {
++  const HomeScreen({super.key});
++
++  @override
++  State<HomeScreen> createState() => _HomeScreenState();
++}
++
++class _HomeScreenState extends State<HomeScreen> {
++  int _counter = 0;
++
++  void _incrementCounter() {
++    setState(() {
++      _counter++;
++    });
++  }
++
++  @override
++  Widget build(BuildContext context) {
++    return Scaffold(
++      appBar: AppBar(
++        title: const Text('Home'),
++      ),
++      body: Center(
++        child: Column(
++          mainAxisAlignment: MainAxisAlignment.center,
++          children: [
++            const Text('You have pushed the button this many times:'),
++            Text(
++              '$_counter',
++              style: Theme.of(context).textTheme.headlineMedium,
++            ),
++          ],
++        ),
++      ),
++      floatingActionButton: FloatingActionButton(
++        onPressed: _incrementCounter,
++        tooltip: 'Increment',
++        child: const Icon(Icons.add),
++      ),
++    );
++  }
++}
+diff --git a/lib/src/widgets/custom_button.dart b/lib/src/widgets/custom_button.dart
+--- a/lib/src/widgets/custom_button.dart
++++ b/lib/src/widgets/custom_button.dart
+@@ -10,6 +10,7 @@
+   final String label;
+   final VoidCallback onPressed;
++  final Color? color;
+
+   @override
+   Widget build(BuildContext context) {
+@@ -17,6 +18,7 @@
+     return ElevatedButton(
+       onPressed: onPressed,
++      style: color != null ? ElevatedButton.styleFrom(backgroundColor: color) : null,
+       child: Text(label),
+     );
+   }
+diff --git a/lib/src/models/user.g.dart b/lib/src/models/user.g.dart
+--- a/lib/src/models/user.g.dart
++++ b/lib/src/models/user.g.dart
+@@ -1,5 +1,6 @@
+ // GENERATED CODE - DO NOT MODIFY BY HAND
++// Some generated change
+ part of 'user.dart';

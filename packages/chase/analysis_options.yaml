@@ -1,0 +1,17 @@
+include: package:lints/recommended.yaml
+
+linter:
+  rules:
+    prefer_single_quotes: true
+    require_trailing_commas: true
+    sort_constructors_first: true
+    sort_unnamed_constructors_first: true
+    unawaited_futures: true
+    prefer_relative_imports: true
+
+analyzer:
+  exclude:
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
+    - build/**
+    - templates/**

@@ -1,0 +1,38 @@
+version: 1
+
+project:
+  test_directory: integration_test
+  base_branch: main
+  exclude:
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
+
+api_keys:
+  claude: ${CHASE_CLAUDE_API_KEY}
+  marathon: ${MARATHON_CLOUD_API_KEY}
+  github: ${GITHUB_TOKEN}
+
+agent:
+  model: claude-sonnet-4-20250514
+  max_iterations: 10
+  temperature: 0.0
+  max_cost_per_run: 0.50
+  allowed_commands:
+    - dart analyze
+    - dart format
+    - patrol build android
+    - patrol build ios
+  custom_instructions: |
+    Our app uses BLoC for state management.
+    Navigation uses GoRouter.
+
+marathon:
+  platform: android
+  isolated: true
+  timeout: 30m
+
+git:
+  branch_prefix: "chase/"
+  commit_prefix: "[chase]"
+  auto_push: true
+  auto_create_pr: true

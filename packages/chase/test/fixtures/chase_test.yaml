@@ -1,0 +1,30 @@
+version: 1
+
+project:
+  test_directory: integration_test
+  base_branch: develop
+  exclude:
+    - "**/*.g.dart"
+
+api_keys:
+  claude: sk-test-key-123
+
+agent:
+  model: claude-sonnet-4-20250514
+  max_iterations: 5
+  temperature: 0.0
+  max_cost_per_run: 1.00
+  allowed_commands:
+    - dart analyze
+    - dart format
+
+marathon:
+  platform: android
+  isolated: true
+  timeout: 20m
+
+git:
+  branch_prefix: "test/"
+  commit_prefix: "[test]"
+  auto_push: false
+  auto_create_pr: false
