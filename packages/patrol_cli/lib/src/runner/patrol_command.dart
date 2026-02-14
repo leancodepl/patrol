@@ -329,6 +329,16 @@ abstract class PatrolCommand extends Command<int> {
         'web-headless',
         help: 'Whether to run browser in headless mode.',
         valueHelp: 'true | false',
+      )
+      ..addMultiOption(
+        'web-browser-flag',
+        help: 'Additional flags to pass to the browser.',
+        valueHelp: '--disable-web-security',
+      )
+      ..addOption(
+        'web-port',
+        help: 'Port to use for the web server.',
+        valueHelp: '8080',
       );
   }
 

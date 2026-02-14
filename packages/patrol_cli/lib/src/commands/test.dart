@@ -314,6 +314,8 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       globalTimeout: intArg('web-global-timeout'),
       shard: stringArg('web-shard'),
       headless: stringArg('web-headless'),
+      webBrowserFlags: stringsArg('web-browser-flag'),
+      webPort: intArg('web-port'),
     );
 
     // No need to build web app for testing. It's done in the execute method.
