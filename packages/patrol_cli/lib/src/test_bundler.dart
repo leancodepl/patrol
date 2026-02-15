@@ -134,8 +134,6 @@ ${generateGroupsCode(testDirectory, testFilePaths).split('\n').map((e) => '  $e'
       ..createSync(recursive: true)
       ..writeAsStringSync(contents);
 
-    _createEntrypointProxyIfNeeded(testDirectory);
-
     _logger.detail(
       'Generated entrypoint ${bundle.path} with ${testFilePaths.length} bundled test(s)',
     );
@@ -161,6 +159,22 @@ ${generateGroupsCode(testDirectory, testFilePaths).split('\n').map((e) => '  $e'
   void ensureEntrypoint(String testDirectory) {
     if (_shouldUseEntrypointProxy(testDirectory)) {
       _createEntrypointProxyIfNeeded(testDirectory);
+    }
+  }
+
+  void deleteEntrypointProxy(String testDirectory) {
+    if (!_shouldUseEntrypointProxy(testDirectory)) {
+      return;
+    }
+
+    final proxyFile = getEntrypointFile(testDirectory);
+    if (proxyFile.existsSync()) {
+      proxyFile.deleteSync();
+    }
+
+    final proxyDir = proxyFile.parent;
+    if (proxyDir.existsSync() && proxyDir.listSync().isEmpty) {
+      proxyDir.deleteSync();
     }
   }
 

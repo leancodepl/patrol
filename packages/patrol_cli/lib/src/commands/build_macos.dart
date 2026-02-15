@@ -114,8 +114,7 @@ class BuildMacOSCommand extends PatrolCommand {
     if (boolArg('generate-bundle')) {
       _testBundler.createTestBundle(testDirectory, targets, tags, excludeTags);
     }
-    _testBundler.ensureEntrypoint(testDirectory);
-    final entrypoint = _testBundler.getEntrypointFile(testDirectory);
+    final entrypoint = _testBundler.getBundledTestFile(testDirectory);
 
     final flavor = stringArg('flavor') ?? config.macos.flavor;
     if (flavor != null) {
