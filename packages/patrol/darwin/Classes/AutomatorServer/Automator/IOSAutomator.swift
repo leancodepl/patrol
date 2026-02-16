@@ -976,15 +976,19 @@
     // MARK: Axe A11y scans
 
     func initAxeSession(dequeApiKey: String, dequeProjectId: String) throws {
-      axe = try? AxeDevTools.startSession(apiKey: dequeApiKey,
-            projectId: dequeProjectId)
+      try runAction("initialize axe session") {
+        axe = try? AxeDevTools.startSession(apiKey: dequeApiKey,
+              projectId: dequeProjectId)
+      }
     }
 
     func axeA11yScan(bundleId: String) throws {
-      let app = try getApp(withBundleId: bundleId)
-      let result = (try axe?.run(onElement: app))!
-      let path = (try axe?.saveResult(result))!
-      Logger.shared.i("Result saved to location: \(path)")
+      try runAction("run axe a11y scan") {
+        let app = try getApp(withBundleId: bundleId)
+        let result = (try axe?.run(onElement: app))!
+        let path = (try axe?.saveResult(result))!
+        Logger.shared.i("Result saved to location: \(path)")
+      }
     }
 
     // MARK: Other
