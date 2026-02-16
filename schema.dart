@@ -363,6 +363,10 @@ class InitAxeSessionRequest {
   late String dequeProjectId;
 }
 
+class AxeA11yScanRequest {
+  late String appId;
+}
+
 abstract class MobileAutomator<IOSServer, AndroidServer, DartClient> {
   void initialize();
   void configure(ConfigureRequest request);
@@ -488,7 +492,7 @@ abstract class IosAutomator<IOSServer, DartClient> {
 
   // axe integration
   void initAxeSession(InitAxeSessionRequest request);
-  void axeA11yScan();
+  void axeA11yScan(AxeA11yScanRequest request);
 
   // other
   void debug();
