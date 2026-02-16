@@ -2,7 +2,7 @@
 title: Migrating to Patrol 4.0
 ---
 
-Patrol 4.0 introduces the **Platform Automation API** and starts the deprecation of the legacy native automation entrypoints:
+Patrol 4.0 introduces the **Platform Automation API** and starts the deprecation of the legacy native automation entry points:
 
 - `$.native` (Native Automation 1.0)
 - `$.native2` (Native Automation 2.0)
@@ -19,54 +19,17 @@ The recommended replacement is:
 
 ## Quick checklist
 
-- Upgrade dependencies (and CLI) to Patrol 4.x.
-- Replace `nativeAutomatorConfig:` with `platformAutomatorConfig:` in `patrolTest()`.
+- Upgrade the `patrol` package (and Patrol CLI) to 4.x.
+- Rename your `integration_test/` directory to `patrol_test/` in `pubspec.yaml`, and update `.gitignore` accordingly.
 - Rewrite `$.native.*` and `$.native2.*` calls to `$.platform.*`.
-- Replace `NativeSelector(...)` with `MobileSelector(...)` (most common when migrating from `native2`).
+- Replace `NativeSelector(...)` with `MobileSelector(...)`, `Selector(...)`, or `PlatformSelector(...)` (most common when migrating from `native2`).
+- `patrol test` and `patrol develop` now prompt for a device. In CI, pass `--device`/`-d` to avoid the prompt, or set `CI=true` env variable.
 
 ## Breaking changes you’ll likely hit
 
-### 1) `nativeAutomatorConfig` is deprecated in `patrolTest()`
+### `$.native` and `$.native2` are deprecated
 
-If you configured native automation using the old `nativeAutomatorConfig:` parameter, switch to `platformAutomatorConfig:`.
-
-Before:
-
-```dart
-patrolTest(
-  'my test',
-  ($) async {
-    // ...
-  },
-  nativeAutomatorConfig: NativeAutomatorConfig(
-    packageName: 'com.example.app',
-    bundleId: 'com.example.app',
-  ),
-);
-```
-
-After:
-
-```dart
-patrolTest(
-  'my test',
-  ($) async {
-    // ...
-  },
-  platformAutomatorConfig: PlatformAutomatorConfig.fromOptions(
-    packageName: 'com.example.app',
-    bundleId: 'com.example.app',
-  ),
-);
-```
-
-<Info>
-  `NativeAutomatorConfig` still exists only for backwards compatibility and internally converts to `PlatformAutomatorConfig`. Prefer `PlatformAutomatorConfig` in all new code.
-</Info>
-
-### 2) `$.native` and `$.native2` are deprecated
-
-In Patrol 4.0 you should use `$.platform` as your entrypoint to platform automation.
+In Patrol 4.0 you should use `$.platform` as your entry point to platform automation.
 
 - `$.platform.mobile`: cross-platform mobile actions (recommended default)
 - `$.platform.android`: Android-only actions
@@ -110,22 +73,43 @@ await $.platform.mobile.tap(
 );
 ```
 
-### `native` → `platform.*`
+#### Selector types you can pass to `$.platform.mobile.tap()`
 
-#### Cross-platform mobile actions
+Patrol 4.0 native actions (for example `$.platform.mobile.tap(...)`) accept a `CompoundSelector`. In practice, you’ll usually use one of these three types:
 
-Many “works on both Android and iOS” calls move from `$.native.*` to `$.platform.mobile.*`.
+#### `MobileSelector(...)` (most common during migration)
+
+Use when Android and iOS require different selectors (this is the direct replacement for most `native2` uses).
 
 ```dart
-await $.native.pressHome();
-await $.platform.mobile.pressHome();
+await $.platform.mobile.tap(
+  MobileSelector(
+    android: AndroidSelector(resourceName: 'com.example:id/submit_button'),
+    ios: IOSSelector(identifier: 'submitButton'),
+  ),
+);
 ```
 
-#### Granting permissions
+#### `Selector(...)`
+
+Use when the same selector “shape” works on Android and iOS (for example text-based selectors).
 
 ```dart
-await $.native.grantPermissionWhenInUse();
-await $.platform.mobile.grantPermissionWhenInUse();
+await $.platform.mobile.tap(Selector(text: 'Allow'));
+```
+
+#### `PlatformSelector(...)`
+
+Use when you want to provide selectors for Android + iOS + Web in one place. This is most useful with `$.platform.tap(...)` (platform router), but it can also be used with `$.platform.mobile.*` as long as it includes Android and iOS selectors.
+
+```dart
+await $.platform.tap(
+  PlatformSelector(
+    android: AndroidSelector(text: 'Click me'),
+    ios: IOSSelector(text: 'Click me'),
+    web: WebSelector(text: 'Click me'),
+  ),
+);
 ```
 
 #### Platform-specific actions
@@ -141,32 +125,47 @@ await $.platform.android.pressBack();
 await $.native.closeHeadsUpNotification();
 await $.platform.ios.closeHeadsUpNotification();
 ```
+## More examples
 
-## Replacing manual automator creation
+### NativeAutomator → PlatformAutomator
+If you used to create native automators manually, create a `PlatformAutomator` instead.
 
-Most test code shouldn’t need to instantiate automators directly (use `$.platform` inside `patrolTest()`), but if you used to create a native automator manually, migrate to `PlatformAutomator`.
+**Before:**
 
 ```dart
-// Example legacy rewrite (from older codebases):
-final automator = NativeAutomator(config: nativeConfig);
-final automator = PlatformAutomator(config: platformConfig);
+patrolTearDown(() async {
+  final automator = NativeAutomator(config: nativeConfig);
+
+  await automator.enableWifi();
+  await automator.enableCellular();
+});
 ```
 
-In Patrol 4.0, the config type is `PlatformAutomatorConfig` (and `NativeAutomator*` types are deprecated):
+**After:**
+
+```dart
+patrolTearDown(() async {
+  final automator = PlatformAutomator(config: platformConfig);
+
+  await automator.mobile.enableWifi();
+  await automator.mobile.enableCellular();
+});
+```
+
+### NativeAutomatorConfig → PlatformAutomatorConfig
+
+**Before (legacy):**
+
+```dart
+final nativeConfig = NativeAutomatorConfig(
+  keyboardBehavior: KeyboardBehavior.alternative,
+);
+```
+
+**After:**
 
 ```dart
 final platformConfig = PlatformAutomatorConfig.fromOptions(
-  packageName: 'com.example.app',
-  bundleId: 'com.example.app',
+  keyboardBehavior: KeyboardBehavior.alternative,
 );
-final platformAutomator = PlatformAutomator(config: platformConfig);
 ```
-
-## Where to read more
-
-- Platform automation overview: `/documentation/native/overview`
-- Platform automation usage: `/documentation/native/usage`
-- `native2` deprecation notice: `/documentation/native/native2`
-
-
-
