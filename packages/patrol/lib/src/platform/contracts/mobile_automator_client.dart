@@ -167,7 +167,7 @@ class MobileAutomatorClient {
   }
 
   Future<void> axeA11yScan(AxeA11yScanRequest request) {
-    return _sendRequest('axeA11yScan');
+    return _sendRequest('axeA11yScan', request.toJson());
   }
 
   Future<void> debug() {
