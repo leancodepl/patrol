@@ -22,7 +22,7 @@ The recommended replacement is:
 - Upgrade the `patrol` package (and Patrol CLI) to 4.x.
 - Rename your `integration_test/` directory to `patrol_test/` in `pubspec.yaml`, and update `.gitignore` accordingly.
 - Rewrite `$.native.*` and `$.native2.*` calls to `$.platform.*`.
-- Replace `NativeSelector(...)` with `MobileSelector(...)`, `Selector(...)`, or `PlatformSelector(...)` (most common when migrating from `native2`).
+- Replace `NativeSelector(...)` with `MobileSelector(...)`, `Selector(...)`, or `PlatformSelector(...)`.
 - `patrol test` and `patrol develop` now prompt for a device. In CI, pass `--device`/`-d` to avoid the prompt, or set `CI=true` env variable.
 
 ## Breaking changes you’ll likely hit
