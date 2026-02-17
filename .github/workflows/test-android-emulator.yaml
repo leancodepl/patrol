@@ -19,7 +19,6 @@ jobs:
     outputs:
       SLACK_MESSAGE_TITLE: Flutter ${{ matrix.flutter-version }} on API ${{ matrix.api-level }}
       TESTS_EXIT_CODE: ${{ steps.tests_step.outputs.TESTS_EXIT_CODE }}
-      EXCLUDED_TESTS: ${{ steps.set_excluded_tests.outputs.EXCLUDED_TESTS }}
       URL_TO_DETAILS: ${{ steps.tests_step.outputs.URL_TO_DETAILS }}
 
     strategy:
@@ -99,31 +98,13 @@ jobs:
           echo "$HOME/bin" >> $GITHUB_PATH
           echo "EW_API_TOKEN=${{ secrets.EW_API_TOKEN }}" >> $GITHUB_ENV
 
-      - name: Set tests to exclude
-        id: set_excluded_tests
-        run: |
-          TESTS_TO_EXCLUDE="permissions/notifications_test,\
-          web_example_test,\
-          overflow_test,\
-          web_example_test,\
-          webview_hackernews_test,\
-          webview_leancode_test,\
-          web_example_test"
-
-          target_paths=""
-          for target in $(echo $TESTS_TO_EXCLUDE | tr ',' '\n'); do
-              target_paths+="patrol_test/${target}.dart,"
-          done
-          target_paths="${target_paths%,}"
-
-          echo "EXCLUDED_TESTS=$TESTS_TO_EXCLUDE" >> "$GITHUB_OUTPUT"
-          echo "EXCLUDED_TESTS=$target_paths" >> "$GITHUB_ENV"
-
       - name: patrol build android
         env:
           MAPS_API_KEY: ${{ secrets.MAPS_API_KEY }}
         run: | 
-          patrol build android --exclude ${{ env.EXCLUDED_TESTS }} \
+          patrol build android \
+          --tags='android && emulator' \
+          --exclude-tags='webview || web || macos || ios_only || not_on_android_emulator' \
           --dart-define-from-file=defines_1.json --dart-define-from-file=defines_2.json --dart-define-from-file=defines_3.env \
           --verbose
 
@@ -155,6 +136,5 @@ jobs:
     with:
       TESTS_EXIT_CODE: ${{ needs.run_tests.outputs.TESTS_EXIT_CODE }}
       SLACK_MESSAGE_TITLE: ${{ needs.run_tests.outputs.SLACK_MESSAGE_TITLE }}
-      EXCLUDED_TESTS: ${{ needs.run_tests.outputs.EXCLUDED_TESTS }}
       URL_TO_DETAILS: ${{ needs.run_tests.outputs.URL_TO_DETAILS }}
     secrets: inherit
