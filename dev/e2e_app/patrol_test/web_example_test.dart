@@ -12,7 +12,9 @@ import 'package:web/web.dart' as web;
 import 'common.dart';
 
 void main() {
-  patrol('dark mode', ($) async {
+  patrol(
+    'dark mode',
+    ($) async {
     await $.pumpWidgetAndSettle(const ExampleApp());
 
     await $.platform.web.enableDarkMode();
@@ -32,9 +34,11 @@ void main() {
     await Future<void>.delayed(const Duration(seconds: 1));
 
     expect($('Dark Mode Active'), findsOneWidget);
-  });
+  }, tags: ['web']);
 
-  patrol('clipboard and clicks', ($) async {
+  patrol(
+    'clipboard and clicks',
+    ($) async {
     await $.pumpWidgetAndSettle(const ExampleApp());
 
     await $(TextField).scrollTo().tap();
@@ -71,9 +75,11 @@ void main() {
     await $.platform.web.clearPermissions();
     await $.pumpAndSettle();
     await Future<void>.delayed(const Duration(seconds: 1));
-  });
+  }, tags: ['web']);
 
-  patrol('navigation', ($) async {
+  patrol(
+    'navigation',
+    ($) async {
     await $.pumpWidgetAndSettle(const ExampleApp());
 
     await Future<void>.delayed(const Duration(seconds: 1));
@@ -95,9 +101,11 @@ void main() {
     await Future<void>.delayed(const Duration(seconds: 2));
 
     expect($('This is Page 1'), findsOneWidget);
-  });
+  }, tags: ['web']);
 
-  patrol('cookies', ($) async {
+  patrol(
+    'cookies',
+    ($) async {
     await $.pumpWidgetAndSettle(const ExampleApp());
 
     await $.platform.web.addCookie(
@@ -129,9 +137,11 @@ void main() {
     expect(testCookie.isEmpty, isTrue);
     await $.pumpAndSettle();
     await Future<void>.delayed(const Duration(seconds: 1));
-  });
+  }, tags: ['web']);
 
-  patrol('file upload', ($) async {
+  patrol(
+    'file upload',
+    ($) async {
     await $.pumpWidgetAndSettle(const ExampleApp());
 
     expect($(#uploaded_file_name), findsNothing);
@@ -160,9 +170,11 @@ void main() {
     expect($('Uploaded: example_file.txt'), findsOneWidget);
     await $.pumpAndSettle();
     await Future<void>.delayed(const Duration(seconds: 1));
-  });
+  }, tags: ['web']);
 
-  patrol('accept alert dialog', ($) async {
+  patrol(
+    'accept alert dialog',
+    ($) async {
     await $.pumpWidgetAndSettle(const ExampleApp());
 
     final message = $.platform.web.acceptNextDialog();
@@ -175,9 +187,11 @@ void main() {
     expect($('Alert was accepted'), findsOneWidget);
 
     await Future<void>.delayed(const Duration(seconds: 1));
-  });
+  }, tags: ['web']);
 
-  patrol('accept confirm dialog', ($) async {
+  patrol(
+    'accept confirm dialog',
+    ($) async {
     await $.pumpWidgetAndSettle(const ExampleApp());
 
     final message = $.platform.web.acceptNextDialog();
@@ -190,9 +204,11 @@ void main() {
     expect($('Confirm was accepted'), findsOneWidget);
 
     await Future<void>.delayed(const Duration(seconds: 1));
-  });
+  }, tags: ['web']);
 
-  patrol('dismiss confirm dialog', ($) async {
+  patrol(
+    'dismiss confirm dialog',
+    ($) async {
     await $.pumpWidgetAndSettle(const ExampleApp());
 
     final message = $.platform.web.dismissNextDialog();
@@ -205,9 +221,11 @@ void main() {
     expect($('Confirm was dismissed'), findsOneWidget);
 
     await Future<void>.delayed(const Duration(seconds: 1));
-  });
+  }, tags: ['web']);
 
-  patrol('iframe interactions - scroll, enter text, and tap', ($) async {
+  patrol(
+    'iframe interactions - scroll, enter text, and tap',
+    ($) async {
     await $.pumpWidgetAndSettle(const ExampleApp());
 
     await $('Go to Iframe Test').scrollTo().tap();
@@ -238,9 +256,11 @@ void main() {
     await $.platform.web.tap(buttonSelector, iframeSelector: iframeSelector);
     await $.pumpAndSettle();
     await Future<void>.delayed(const Duration(seconds: 2));
-  });
+  }, tags: ['web']);
 
-  patrol('resize window', ($) async {
+  patrol(
+    'resize window',
+    ($) async {
     await $.pumpWidgetAndSettle(const ExampleApp());
 
     await $.platform.web.resizeWindow(size: Size(800, 600));
@@ -254,9 +274,11 @@ void main() {
     await $.platform.web.resizeWindow(size: Size(1280, 720));
     await $.pumpAndSettle();
     await Future<void>.delayed(const Duration(seconds: 1));
-  });
+  }, tags: ['web']);
 
-  patrol('verify file downloads', ($) async {
+  patrol(
+    'verify file downloads',
+    ($) async {
     await $.pumpWidgetAndSettle(const ExampleApp());
 
     var downloads = await $.platform.web.verifyFileDownloads();
@@ -273,14 +295,16 @@ void main() {
 
     await $.pumpAndSettle();
     await Future<void>.delayed(const Duration(seconds: 1));
-  });
+  }, tags: ['web']);
 
-  patrol('verify file downloads - check if list is empty', ($) async {
+  patrol(
+    'verify file downloads - check if list is empty',
+    ($) async {
     await $.pumpWidgetAndSettle(const ExampleApp());
 
     final downloads = await $.platform.web.verifyFileDownloads();
     expect(downloads, isEmpty);
-  });
+  }, tags: ['web']);
 }
 
 class ExampleApp extends StatefulWidget {
