@@ -5,7 +5,9 @@ import '../common.dart';
 const _timeout = Duration(seconds: 5); // to avoid timeouts on CI
 
 void main() {
-  patrol('grants various permissions', ($) async {
+  patrol(
+    'grants various permissions',
+    ($) async {
     await createApp($);
 
     await $('Open permissions screen').scrollTo().tap();
@@ -37,5 +39,5 @@ void main() {
       await $.platform.mobile.grantPermissionWhenInUse();
       await $.pump();
     }
-  });
+  }, tags: ['android', 'ios', 'physical_device', 'emulator', 'simulator']);
 }

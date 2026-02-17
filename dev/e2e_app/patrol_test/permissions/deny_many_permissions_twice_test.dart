@@ -6,7 +6,9 @@ import '../common.dart';
 const _timeout = Duration(seconds: 5); // to avoid timeouts on CI
 
 void main() {
-  patrol('denies various permissions', ($) async {
+  patrol(
+    'denies various permissions',
+    ($) async {
     await createApp($);
 
     await $('Open permissions screen').scrollTo().tap();
@@ -24,7 +26,7 @@ void main() {
 
     await _requestAndDenyGalleryPermission($);
     await _requestAndDenyGalleryPermission($);
-  }, tags: ['locale_testing_ios']);
+  }, tags: ['locale_testing_ios', 'android', 'ios', 'physical_device', 'emulator', 'simulator']);
 }
 
 Future<void> _requestAndDenyCameraPermission(PatrolIntegrationTester $) async {

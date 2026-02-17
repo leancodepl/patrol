@@ -12,5 +12,5 @@ void main() {
     await $('Open overflow screen').scrollTo().tap();
 
     return $(ValueKey('key')).scrollTo().tap();
-  });
+  }, tags: ['android', 'ios', 'physical_device']);
 }
