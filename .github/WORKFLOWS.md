@@ -52,6 +52,14 @@ This document describes all GitHub Actions workflows used in the Patrol project.
 | patrol_log publish | `patrol_log-publish.yaml` | Tag push (`patrol_log-v*`) | Publishes `patrol_log` package to pub.dev. Sends Slack notification for releases. |
 | adb publish | `adb-publish.yaml` | Tag push (`adb-v*`) | Publishes `adb` package to pub.dev. |
 
+### PR-Triggered Workflows with Permission Checks
+
+Some workflows run on `pull_request_target` (which has access to secrets) require repository write permission:
+- `test-android-emulator.yaml` - Requires repository write permission
+- `test-android-emulator-webview.yaml` - Requires repository write permission
+
+These workflows verify the user has write access before running. If you don't have write access, the workflow will fail with a permission error. Contact a Patrol team member to run these workflows on your PR.
+
 ## Semver Check Workflows
 
 | Workflow name | Workflow file | Runs on | Description |
