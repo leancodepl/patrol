@@ -32,7 +32,7 @@ void main() {
     await $.pumpAndSettle();
 
     await $.platform.mobile.setMockLocation(_lat1, _lon);
-    await Future<void>.delayed(const Duration(milliseconds: 500));
+    await Future<void>.delayed(const Duration(seconds: 1));
     await $.pumpAndSettle();
     expect(await $('Location').waitUntilVisible(), findsOneWidget);
     expect(await $('Latitude: $_lat1').waitUntilVisible(), findsOneWidget);
@@ -40,14 +40,14 @@ void main() {
     await Future<void>.delayed(const Duration(milliseconds: 1500));
 
     await $.platform.mobile.setMockLocation(_lat2, _lon);
-    await Future<void>.delayed(const Duration(milliseconds: 500));
+    await Future<void>.delayed(const Duration(seconds: 1));
     await $.pumpAndSettle();
     expect(await $('Location').waitUntilVisible(), findsOneWidget);
     expect(await $('Longitude: $_lon').waitUntilVisible(), findsOneWidget);
     await Future<void>.delayed(const Duration(milliseconds: 1500));
 
     await $.platform.mobile.setMockLocation(_lat3, _lon);
-    await Future<void>.delayed(const Duration(milliseconds: 500));
+    await Future<void>.delayed(const Duration(seconds: 1));
     await $.pumpAndSettle();
     expect(await $('Location').waitUntilVisible(), findsOneWidget);
     expect(await $('Latitude: $_lat3').waitUntilVisible(), findsOneWidget);
