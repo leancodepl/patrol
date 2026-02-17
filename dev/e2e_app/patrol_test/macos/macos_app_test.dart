@@ -3,9 +3,7 @@ import 'package:flutter/material.dart';
 import '../common.dart';
 
 void main() {
-  patrol(
-    'taps around',
-    ($) async {
+  patrol('taps around', ($) async {
     await createApp($);
     await $.waitUntilVisible($(#counterText));
 
@@ -30,10 +28,7 @@ void main() {
     );
   }, tags: ['macos']);
 
-  patrol(
-    'taps around test to skip',
-    skip: true,
-    ($) async {
+  patrol('taps around test to skip', skip: true, ($) async {
     await createApp($);
     await $.waitUntilVisible($(#counterText));
 

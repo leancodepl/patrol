@@ -9,24 +9,33 @@ void main() {
   patrol(
     'denies various permissions',
     ($) async {
-    await createApp($);
+      await createApp($);
 
-    await $('Open permissions screen').scrollTo().tap();
+      await $('Open permissions screen').scrollTo().tap();
 
-    // Duplicated methods because we want to be sure that permission is denied
-    await $.pumpAndSettle(duration: Duration(seconds: 12));
-    await _requestAndDenyCameraPermission($);
-    await _requestAndDenyCameraPermission($);
+      // Duplicated methods because we want to be sure that permission is denied
+      await $.pumpAndSettle(duration: Duration(seconds: 12));
+      await _requestAndDenyCameraPermission($);
+      await _requestAndDenyCameraPermission($);
 
-    await _requestAndDenyMicrophonePermission($);
-    await _requestAndDenyMicrophonePermission($);
+      await _requestAndDenyMicrophonePermission($);
+      await _requestAndDenyMicrophonePermission($);
 
-    await _requestAndDenyLocationPermission($);
-    await _requestAndDenyLocationPermission($);
+      await _requestAndDenyLocationPermission($);
+      await _requestAndDenyLocationPermission($);
 
-    await _requestAndDenyGalleryPermission($);
-    await _requestAndDenyGalleryPermission($);
-  }, tags: ['locale_testing_ios', 'android', 'ios', 'physical_device', 'emulator', 'simulator']);
+      await _requestAndDenyGalleryPermission($);
+      await _requestAndDenyGalleryPermission($);
+    },
+    tags: [
+      'locale_testing_ios',
+      'android',
+      'ios',
+      'physical_device',
+      'emulator',
+      'simulator',
+    ],
+  );
 }
 
 Future<void> _requestAndDenyCameraPermission(PatrolIntegrationTester $) async {
