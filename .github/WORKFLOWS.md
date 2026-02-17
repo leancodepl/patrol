@@ -8,26 +8,26 @@ This document describes all GitHub Actions workflows used in the Patrol project.
 
 | Workflow name | Workflow file | Runs on | Flutter version | Description |
 |--------------|--------------|---------|----------------|-------------|
-| test android device | `test-android-device.yaml` | Schedule (every 12h), manual | Flutter 3.32.x (stable) | Runs E2E tests on Firebase Test Lab physical devices (Pixel 7 - API 33, Pixel 8 - API 34). Tests all scenarios except `web_example_test`. |
-| test android emulator | `test-android-emulator.yaml` | PR, schedule (every 12h), manual | Flutter 3.32.x (stable) | Runs E2E tests on emulator.wtf emulators (Pixel7, Tablet10, NexusLowRes) across API levels 31-35. Tests most scenarios except notifications, webview, overflow, and web tests. |
-| test android emulator webview | `test-android-emulator-webview.yaml` | PR, schedule (daily at 23:00), manual | Flutter 3.32.x (stable) | Runs webview-specific E2E tests (`webview_hackernews_test`, `webview_leancode_test`) on emulator.wtf. |
-| test locales on android device | `test-android-locales.yaml` | PR (on locale changes), manual | Flutter 3.32.x (stable) | Tests locale support on Firebase Test Lab for English, French, German, and Polish locales on API 34. |
+| test android device | `test-android-device.yaml` | Schedule (every 12h), manual | Flutter 3.32.x (stable) | Runs E2E tests on Firebase Test Lab physical devices (Pixel 7 - API 33, Pixel 8 - API 34). Uses tags: `android && physical_device`, excludes webview, web, and platform-specific tests. |
+| test android emulator | `test-android-emulator.yaml` | PR, schedule (every 12h), manual | Flutter 3.32.x (stable) | Runs E2E tests on emulator.wtf emulators (Pixel7, Tablet10, NexusLowRes) across API levels 31-35. Uses tags: `android && emulator`, excludes webview, web, and tests that don't work on emulators. |
+| test android emulator webview | `test-android-emulator-webview.yaml` | PR, schedule (daily at 23:00), manual | Flutter 3.32.x (stable) | Runs webview-specific E2E tests on emulator.wtf. Uses tags: `webview && android`. |
+| test locales on android device | `test-android-locales.yaml` | PR (on locale changes), manual | Flutter 3.32.x (stable) | Tests locale support on Firebase Test Lab for English, French, German, and Polish locales on API 34. Uses tags: `locale_testing_android`. |
 
 ### iOS Testing
 
 | Workflow name | Workflow file | Runs on | Flutter version | Description |
 |--------------|--------------|---------|----------------|-------------|
-| test ios device | `test-ios-device.yaml` | Schedule (daily at 21:30), manual | Flutter 3.32.x (stable) | Runs E2E tests on Firebase Test Lab physical devices (iPhone 14 Pro, iOS 16.6). Excludes Android-specific, location, dark mode, overflow, web, and webview tests. |
-| test ios simulator | `test-ios-simulator.yaml` | Schedule (monthly on 1st), manual | Flutter 3.32.x (stable) | Runs E2E tests on iOS simulators (iPhone SE 3rd gen, iPhone 14, iPad 10th gen) on iOS 17.2. Records video and logs. Excludes Android-specific, system services, and webview tests. |
-| test ios simulator webview | `test-ios-simulator-webview.yaml` | Schedule (monthly on 1st), manual | Flutter 3.32.x (stable) | Runs webview-specific E2E tests (`webview_hackernews_test`) on iOS 17.2 simulator (iPhone 14). |
-| test locales on ios device | `test-ios-locales.yaml` | Manual only | Flutter 3.32.x (stable) | Tests locale support on Firebase Test Lab for English, French, German (de_DE), and Polish locales (iPhone 14 Pro, iOS 16.6). Currently disabled for PR triggers. |
+| test ios device | `test-ios-device.yaml` | Schedule (daily at 21:30), manual | Flutter 3.32.x (stable) | Runs E2E tests on Firebase Test Lab physical devices (iPhone 14 Pro, iOS 16.6). Uses tags: `ios && physical_device`, excludes webview, web, and platform-specific tests. |
+| test ios simulator | `test-ios-simulator.yaml` | Schedule (monthly on 1st), manual | Flutter 3.32.x (stable) | Runs E2E tests on iOS simulators (iPhone SE 3rd gen, iPhone 14, iPad 10th gen) on iOS 17.2. Uses tags: `ios && simulator`, excludes webview, web, and system service tests. Records video and logs. |
+| test ios simulator webview | `test-ios-simulator-webview.yaml` | Schedule (monthly on 1st), manual | Flutter 3.32.x (stable) | Runs webview-specific E2E tests on iOS 17.2 simulator (iPhone 14). Uses tags: `webview && ios`. |
+| test locales on ios device | `test-ios-locales.yaml` | Manual only | Flutter 3.32.x (stable) | Tests locale support on Firebase Test Lab for English, French, German (de_DE), and Polish locales (iPhone 14 Pro, iOS 16.6). Uses tags: `locale_testing_ios`. Currently disabled for PR triggers. |
 
 ### Other Platform Testing
 
 | Workflow name | Workflow file | Runs on | Flutter version | Description |
 |--------------|--------------|---------|----------------|-------------|
-| test web | `test-web.yaml` | PR (on web changes), manual | Flutter 3.32.x (stable) | Runs web-specific E2E test (`web_example_test`) on Chrome in headless mode. |
-| test macos | `test-macos.yaml` | PR (on darwin changes), schedule (every 12h), manual | Flutter 3.32.x (stable) | Runs E2E tests on macOS desktop platform. |
+| test web | `test-web.yaml` | PR (on web changes), manual | Flutter 3.32.x (stable) | Runs web-specific E2E tests on Chrome in headless mode. Uses tags: `web`. |
+| test macos | `test-macos.yaml` | PR (on darwin changes), schedule (every 12h), manual | Flutter 3.32.x (stable) | Runs E2E tests on macOS desktop platform. Runs tests from `patrol_test/macos` directory. |
 
 ## Package Preparation (CI) Workflows
 
@@ -105,3 +105,18 @@ These workflows verify the user has write access before running. If you don't ha
 - Test workflows send notifications to Slack via the reusable `send-slack-message` workflow
 - All publish workflows require tag pushes with specific prefixes and send Slack notifications for non-prerelease versions
 - Documentation deployments use Vercel with Node.js 24
+
+### Tag-Based Test Selection
+
+Test workflows use a tag-based system to select which tests to run. Tests are tagged in their source files using the `tags` parameter.
+
+**Common tags:**
+- **Platform**: `android`, `ios`, `web`, `macos`
+- **Environment**: `physical_device`, `emulator`, `simulator`
+- **Features**: `webview`, `locale_testing_android`, `locale_testing_ios`
+- **Exclusions**: `android_only`, `ios_only`, `not_on_android_emulator`, `not_on_ios_simulator`, `not_on_ios_physical_device`
+
+**Tag syntax uses boolean expressions:**
+- `--tags='android && physical_device'` - Tests must have BOTH tags
+- `--tags='android || ios'` - Tests must have EITHER tag
+- `--exclude-tags='webview || web'` - Tests with ANY of these tags are excluded
