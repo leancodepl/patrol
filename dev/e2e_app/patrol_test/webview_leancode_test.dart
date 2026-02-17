@@ -5,7 +5,7 @@ void main() {
   const contactUsButtonText = 'Contact us';
 
   patrol(
-    'interacts with the LeanCode website in a webview native2',
+    'interacts with the LeanCode website in a webview',
     ($) async {
       await createApp($);
 
