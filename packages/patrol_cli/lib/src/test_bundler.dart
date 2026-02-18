@@ -212,6 +212,9 @@ ${generateGroupsCode(testDirectory, [testFilePath]).split('\n').map((e) => '  $e
       ..createSync(recursive: true)
       ..writeAsStringSync(contents);
 
+    /// Related with [https://github.com/flutter/devtools/issues/9667].
+    /// Patrol devtools extension is not found when the test is moved to `patrol_test/`.
+    /// This is a workaround to create a proxy entrypoint to make the devtools extension work.
     _createEntrypointProxyIfNeeded(testDirectory);
 
     _logger.detail('Generated entrypoint ${bundle.path} for development');
