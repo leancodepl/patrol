@@ -84,9 +84,22 @@ class TestFinder {
       throwToolExit("Directory ${directory.path} doesn't exist");
     }
 
-    final absoluteExcludes = excludes
-        .map((e) => _fs.file(e).absolute.path)
-        .toSet();
+    final absoluteExcludes = <String>{};
+    for (final exclude in excludes) {
+      // Try to resolve as absolute path first, then relative to root
+      final entityPath = _fs.file(exclude).absolute.path;
+
+      // Check if it's a directory or a file
+      if (_fs.isDirectorySync(entityPath)) {
+        absoluteExcludes.add(_fs.directory(entityPath).absolute.path);
+      } else if (_fs.isFileSync(entityPath)) {
+        absoluteExcludes.add(entityPath);
+      } else {
+        // If it doesn't exist as absolute, it might be a relative path
+        // that we still want to track for matching
+        absoluteExcludes.add(entityPath);
+      }
+    }
 
     return directory
         .listSync(recursive: true, followLinks: false)
@@ -97,11 +110,28 @@ class TestFinder {
           final isFile = _fs.isFileSync(fileSystemEntity.path);
           return hasSuffix && isFile;
         })
-        // Filter out excluded files
+        // Filter out excluded files and files in excluded directories
         .where((fileSystemEntity) {
-          // TODO: Doesn't handle excluded passes as absolute paths
-          final isExcluded = absoluteExcludes.contains(fileSystemEntity.path);
-          return !isExcluded;
+          final filePath = fileSystemEntity.path;
+
+          for (final exclude in absoluteExcludes) {
+            // Check if the file exactly matches an excluded file
+            if (filePath == exclude) {
+              return false;
+            }
+
+            // Check if the file is inside an excluded directory
+            // Need to add path separator to avoid matching prefixes
+            // e.g., "patrol_test/permissions" shouldn't match "patrol_test/permissions_other"
+            final excludeWithSeparator = exclude.endsWith(_fs.path.separator)
+                ? exclude
+                : exclude + _fs.path.separator;
+            if (filePath.startsWith(excludeWithSeparator)) {
+              return false;
+            }
+          }
+
+          return true;
         })
         .map((entity) => entity.absolute.path)
         .toList();

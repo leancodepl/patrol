@@ -311,6 +311,125 @@ void _test(Platform platform) {
       );
     });
 
+    test('filters out excluded directories', () {
+      // given
+      final files = [
+        fs.path.join('patrol_test', 'alpha', 'alpha_test.dart'),
+        fs.path.join('patrol_test', 'alpha', 'bravo_test.dart'),
+        fs.path.join('patrol_test', 'alpha_test.dart'),
+        fs.path.join('patrol_test', 'bravo', 'bravo_test.dart'),
+        fs.path.join('patrol_test', 'charlie', 'charlie_test.dart'),
+        fs.path.join('patrol_test', 'zulu_test.dart'),
+      ];
+      for (final file in files) {
+        fs.file(file).createSync(recursive: true);
+      }
+
+      // when
+      final found = testFinder.findAllTests(
+        excludes: {fs.path.join('patrol_test', 'alpha')},
+      );
+
+      // then
+      final wd = fs.currentDirectory.absolute.path;
+      final testRoot = fs.path.join(wd, 'patrol_test');
+      expect(
+        found,
+        equals([
+          fs.path.join(testRoot, 'alpha_test.dart'),
+          fs.path.join(testRoot, 'bravo', 'bravo_test.dart'),
+          fs.path.join(testRoot, 'charlie', 'charlie_test.dart'),
+          fs.path.join(testRoot, 'zulu_test.dart'),
+        ]),
+      );
+    });
+
+    test('filters out multiple excluded directories', () {
+      // given
+      final files = [
+        fs.path.join('patrol_test', 'alpha', 'alpha_test.dart'),
+        fs.path.join('patrol_test', 'alpha', 'bravo_test.dart'),
+        fs.path.join('patrol_test', 'alpha_test.dart'),
+        fs.path.join('patrol_test', 'bravo', 'bravo_test.dart'),
+        fs.path.join('patrol_test', 'charlie', 'charlie_test.dart'),
+        fs.path.join('patrol_test', 'zulu_test.dart'),
+      ];
+      for (final file in files) {
+        fs.file(file).createSync(recursive: true);
+      }
+
+      // when
+      final found = testFinder.findAllTests(
+        excludes: {
+          fs.path.join('patrol_test', 'alpha'),
+          fs.path.join('patrol_test', 'bravo'),
+        },
+      );
+
+      // then
+      final wd = fs.currentDirectory.absolute.path;
+      final testRoot = fs.path.join(wd, 'patrol_test');
+      expect(
+        found,
+        equals([
+          fs.path.join(testRoot, 'alpha_test.dart'),
+          fs.path.join(testRoot, 'charlie', 'charlie_test.dart'),
+          fs.path.join(testRoot, 'zulu_test.dart'),
+        ]),
+      );
+    });
+
+    test('filters out directories with similar names correctly', () {
+      // given
+      final files = [
+        fs.path.join('patrol_test', 'permissions', 'perm1_test.dart'),
+        fs.path.join('patrol_test', 'permissions', 'perm2_test.dart'),
+        fs.path.join('patrol_test', 'permissions_other', 'other_test.dart'),
+        fs.path.join('patrol_test', 'alpha_test.dart'),
+      ];
+      for (final file in files) {
+        fs.file(file).createSync(recursive: true);
+      }
+
+      // when - exclude 'permissions' but not 'permissions_other'
+      final found = testFinder.findAllTests(
+        excludes: {fs.path.join('patrol_test', 'permissions')},
+      );
+
+      // then
+      final wd = fs.currentDirectory.absolute.path;
+      final testRoot = fs.path.join(wd, 'patrol_test');
+      expect(
+        found,
+        equals([
+          fs.path.join(testRoot, 'alpha_test.dart'),
+          fs.path.join(testRoot, 'permissions_other', 'other_test.dart'),
+        ]),
+      );
+    });
+
+    test('filters out nested directories', () {
+      // given
+      final files = [
+        fs.path.join('patrol_test', 'alpha', 'nested', 'deep_test.dart'),
+        fs.path.join('patrol_test', 'alpha', 'shallow_test.dart'),
+        fs.path.join('patrol_test', 'bravo_test.dart'),
+      ];
+      for (final file in files) {
+        fs.file(file).createSync(recursive: true);
+      }
+
+      // when
+      final found = testFinder.findAllTests(
+        excludes: {fs.path.join('patrol_test', 'alpha')},
+      );
+
+      // then
+      final wd = fs.currentDirectory.absolute.path;
+      final testRoot = fs.path.join(wd, 'patrol_test');
+      expect(found, equals([fs.path.join(testRoot, 'bravo_test.dart')]));
+    });
+
     test('searches for files with provided custom suffix', () {
       // given
       final files = [
