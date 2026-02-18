@@ -7,12 +7,6 @@ Patrol 4.0 introduces the **Platform Automation API** and starts the deprecation
 - `$.native` (Native Automation 1.0)
 - `$.native2` (Native Automation 2.0)
 
-The recommended replacement is:
-
-- `$.platform.mobile` for cross-platform (Android + iOS) mobile actions
-- `$.platform.android` and `$.platform.ios` for platform-specific actions
-- `$.platform.web` for web actions
-
 <Warning>
   `$.native`, `$.native2`, `NativeAutomator`, `NativeAutomator2`, and `NativeAutomatorConfig` are deprecated and will be removed in a future release. Migrate to `$.platform` and `PlatformAutomatorConfig`.
 </Warning>
@@ -27,8 +21,6 @@ The recommended replacement is:
 
 ## Breaking changes you’ll likely hit
 
-### `$.native` and `$.native2` are deprecated
-
 In Patrol 4.0 you should use `$.platform` as your entry point to platform automation.
 
 - `$.platform.mobile`: cross-platform mobile actions (recommended default)
@@ -36,7 +28,7 @@ In Patrol 4.0 you should use `$.platform` as your entry point to platform automa
 - `$.platform.ios`: iOS-only actions
 - `$.platform.web`: web automation
 
-## Common rewrites (copy/paste)
+## Common rewrites (search and replace)
 
 ### `native2` → `platform.mobile`
 
@@ -48,7 +40,6 @@ await $.platform.mobile.pressHome(); // Press home for notifications.
 ```
 
 #### Selectors: `NativeSelector` → `MobileSelector`
-
 Most `native2` methods used `NativeSelector(...)`. The Patrol 4.0 equivalent is `MobileSelector(...)` passed to `$.platform.mobile.*`.
 
 Before:
