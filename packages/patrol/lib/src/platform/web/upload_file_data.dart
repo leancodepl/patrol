@@ -2,8 +2,6 @@ import 'dart:convert';
 
 import 'package:json_annotation/json_annotation.dart';
 
-part 'upload_file_data.g.dart';
-
 /// Represents a file to be uploaded via the web automator.
 @JsonSerializable()
 class UploadFileData {
