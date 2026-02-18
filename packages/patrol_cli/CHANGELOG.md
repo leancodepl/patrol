@@ -1,3 +1,8 @@
+## Unreleased
+
+- Add support for `--web-browser-flag` option to pass additional flags to the browser when running web tests with `patrol test`. (#2832)
+- Add support for `--web-port` option to specify the port for the web server when running web tests with `patrol test`. (#2832)
+
 ## 4.1.0
 
 - Fix bug when running web tests with relative imports from integration_test directory. (#2906)
