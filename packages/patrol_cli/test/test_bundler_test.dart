@@ -269,9 +269,7 @@ group('example.example_test', example__example_test.main);''');
       );
       expect(
         fs
-            .file(
-              fs.path.join(recognizedDir, 'patrol_test_bundle.dart'),
-            )
+            .file(fs.path.join(recognizedDir, 'patrol_test_bundle.dart'))
             .existsSync(),
         isFalse,
       );
