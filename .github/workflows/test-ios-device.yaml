@@ -89,8 +89,7 @@ jobs:
       - name: Build tests
         run: |
           patrol build ios \
-          --tags='ios && physical_device' \
-          --exclude-tags='webview || web || macos || android_only || not_on_ios_physical_device' \
+          --tags='ios && physical_device'
           --dart-define-from-file=defines_1.json --dart-define-from-file=defines_2.json --dart-define-from-file=defines_3.env \
           --release \
           --verbose
