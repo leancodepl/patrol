@@ -169,29 +169,34 @@ class AndroidTestBackend {
   ///
   /// This fix issue: https://github.com/leancodepl/patrol/issues/1668
   Future<void> buildApkConfigOnly(FlutterAppOptions options) async {
-    final process = await _processManager.start([
-      options.command.executable,
-      ...options.command.arguments,
-      'build',
-      'apk',
-      '--config-only',
-      if (options.buildName case final buildName?) ...[
-        '--build-name',
-        buildName,
-      ],
-      if (options.buildNumber case final buildNumber?) ...[
-        '--build-number',
-        buildNumber,
-      ],
-      if (options.noTreeShakeIcons) '--no-tree-shake-icons',
-      '-t',
-      options.target,
-    ], runInShell: true);
+    await _disposeScope.run((scope) async {
+      final process = await _processManager.start([
+        options.command.executable,
+        ...options.command.arguments,
+        'build',
+        'apk',
+        '--config-only',
+        if (options.buildName case final buildName?) ...[
+          '--build-name',
+          buildName,
+        ],
+        if (options.buildNumber case final buildNumber?) ...[
+          '--build-number',
+          buildNumber,
+        ],
+        if (options.noTreeShakeIcons) '--no-tree-shake-icons',
+        '-t',
+        options.target,
+      ], runInShell: true)
+        ..disposedBy(scope);
+      process.listenStdOut((l) => _logger.detail('\t: $l')).disposedBy(scope);
+      process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
 
-    final exitCode = await process.exitCode;
-    if (exitCode != 0) {
-      throw Exception('Failed to build APK config with exit code $exitCode');
-    }
+      final exitCode = await process.exitCode;
+      if (exitCode != 0) {
+        throw Exception('Failed to build APK config with exit code $exitCode');
+      }
+    });
   }
 
   /// Detects the orchestrator version and warns the user if it's 1.5.0.
