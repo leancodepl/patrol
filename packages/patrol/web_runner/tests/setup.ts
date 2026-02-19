@@ -1,6 +1,5 @@
 import { chromium, type FullConfig } from "@playwright/test"
 import { initialise } from "./initialise"
-import { logger } from "./logger"
 import { DartTestEntry, PatrolTestEntry } from "./types"
 
 async function setup(config: FullConfig) {
