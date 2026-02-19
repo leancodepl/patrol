@@ -4,8 +4,9 @@ import 'dart:typed_data';
 
 import 'package:image/image.dart' as img;
 import 'package:mcp_dart/mcp_dart.dart';
+import 'package:patrol_cli/develop.dart' show Device, TargetPlatform;
 
-enum _Platform {
+enum ScreenshotPlatform {
   android('adb', ['exec-out', 'screencap', '-p']),
   ios('xcrun', [
     'simctl',
@@ -16,53 +17,60 @@ enum _Platform {
     '/dev/stdout',
   ]);
 
-  const _Platform(this.command, this.args);
+  const ScreenshotPlatform(this.command, this.args);
 
   final String command;
   final List<String> args;
 
-  static _Platform fromString(String name) => switch (name.toLowerCase()) {
-    'android' => _Platform.android,
-    'ios' => _Platform.ios,
-    _ => throw ArgumentError(
-      'Invalid platform: $name. Must be "android" or "ios"',
-    ),
-  };
+  static ScreenshotPlatform fromDevice(Device device) =>
+      switch (device.targetPlatform) {
+        TargetPlatform.android => ScreenshotPlatform.android,
+        TargetPlatform.iOS => ScreenshotPlatform.ios,
+        _ => throw ArgumentError(
+          'Screenshot not supported for platform: '
+          '${device.targetPlatform.name}',
+        ),
+      };
 }
 
 abstract final class ScreenshotService {
   static const _maxHeight = 800;
 
-  static Future<CallToolResult> handleScreenshotRequest(
-    Map<String, dynamic> args,
-  ) async {
+  static Future<CallToolResult> handleScreenshotRequest(Device? device) async {
     try {
-      final platformName = args['platform'] as String?;
-      if (platformName == null) {
-        return CallToolResult.fromContent(
+      if (device == null) {
+        return const CallToolResult(
           content: [
-            const TextContent(text: 'Missing required parameter: platform'),
+            TextContent(
+              text:
+                  'No active patrol session. '
+                  'Run a test first so the device platform can be detected.',
+            ),
           ],
           isError: true,
         );
       }
 
-      final platform = _Platform.fromString(platformName);
+      final platform = ScreenshotPlatform.fromDevice(device);
       final bytes = await _captureScreenshot(platform);
-      final base64 = base64Encode(bytes);
+      final base64Data = base64Encode(bytes);
 
-      return CallToolResult.fromContent(
-        content: [ImageContent(data: base64, mimeType: 'image/png')],
+      return CallToolResult(
+        content: [ImageContent(data: base64Data, mimeType: 'image/png')],
       );
-    } on Exception catch (e) {
-      return CallToolResult.fromContent(
+    } catch (e) {
+      // Catches both Exception and Error (e.g. ArgumentError from
+      // unsupported platform).
+      return CallToolResult(
         content: [TextContent(text: 'Failed to capture screenshot: $e')],
         isError: true,
       );
     }
   }
 
-  static Future<Uint8List> _captureScreenshot(_Platform platform) async {
+  static Future<Uint8List> _captureScreenshot(
+    ScreenshotPlatform platform,
+  ) async {
     final process = await Process.start(platform.command, platform.args);
 
     final bytes = await process.stdout.expand((chunk) => chunk).toList();

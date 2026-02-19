@@ -162,7 +162,16 @@ void patrolTest(
         config: config,
         platformAutomator: platformAutomator,
       );
-      await callback(patrolTester);
+      try {
+        await callback(patrolTester);
+      } catch (_) {
+        if (constants.hotRestartEnabled) {
+          patrolLog.log(
+            TestEntry(name: description, status: TestEntryStatus.failure),
+          );
+        }
+        rethrow;
+      }
 
       if (debugDefaultTargetPlatformOverride !=
           patrolBinding.workaroundDebugDefaultTargetPlatformOverride) {
@@ -174,12 +183,16 @@ void patrolTest(
           global_state.isCurrentTestLastInGroup) {
         // Patrol log that test is finished
         // If test fails this code will not be executed
-        patrolLog.log(
-          LogEntry(
-            message:
-                'All tests were executed. Press "r" to start again or "q" to quit',
-          ),
-        );
+        patrolLog
+          ..log(
+            LogEntry(
+              message:
+                  'All tests were executed. Press "r" to start again or "q" to quit',
+            ),
+          )
+          ..log(
+            ConfigEntry(config: {'patrol_develop_completed': true}),
+          );
         // Wait indefinitely in develop mode after the last test
         while (true) {
           await widgetTester.pump();

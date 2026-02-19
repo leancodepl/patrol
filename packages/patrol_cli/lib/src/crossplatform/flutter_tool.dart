@@ -19,11 +19,13 @@ class FlutterTool {
     required DisposeScope parentDisposeScope,
     required Logger logger,
     this.onQuit,
+    Future<void> Function()? onExit,
   }) : _stdin = stdin,
        _processManager = processManager,
        _platform = platform,
        _disposeScope = DisposeScope(),
-       _logger = logger {
+       _logger = logger,
+       _onExit = onExit ?? (() async => exit(0)) {
     _disposeScope.disposedBy(parentDisposeScope);
   }
 
@@ -33,6 +35,7 @@ class FlutterTool {
   final DisposeScope _disposeScope;
   final Logger _logger;
   final Future<void> Function()? onQuit;
+  final Future<void> Function() _onExit;
 
   var _hotRestartActive = false;
   var _logsActive = false;
@@ -185,7 +188,11 @@ class FlutterTool {
                 }
               }
 
-              exit(0);
+              try {
+                await _onExit();
+              } catch (err) {
+                _logger.err('Failed during exit: $err');
+              }
             }
           })
           .disposedBy(scope);

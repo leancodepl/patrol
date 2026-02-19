@@ -1,11 +1,125 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
+import 'dart:io' as io;
 
+import 'package:dispose_scope/dispose_scope.dart';
 import 'package:logging/logging.dart';
 import 'package:path/path.dart' as p;
+import 'package:patrol_cli/develop.dart';
 
 import 'log_streaming.dart';
+
+/// An [io.Stdout] wrapper that forwards writes to [_inner] (e.g. stderr) and
+/// also captures complete lines, invoking [_onLine] for each one.
+/// This lets us redirect mason_logger output away from the JSON-protocol stdout
+/// while still capturing it for the patrol.log file and output buffer.
+class _CapturingStdout implements io.Stdout {
+  _CapturingStdout(this._inner, this._onLine);
+
+  final io.Stdout _inner;
+  final void Function(String line) _onLine;
+  final _buffer = StringBuffer();
+
+  void _processChunk(String text) {
+    // Split on newlines, buffering incomplete lines
+    final parts = text.split('\n');
+    for (var i = 0; i < parts.length; i++) {
+      _buffer.write(parts[i]);
+      if (i < parts.length - 1) {
+        // We hit a newline boundary -- emit the complete line
+        final line = _buffer.toString();
+        _buffer.clear();
+        if (line.isNotEmpty) {
+          _onLine(line);
+        }
+      }
+    }
+  }
+
+  @override
+  void write(Object? object) {
+    final text = '$object';
+    _inner.write(text);
+    _processChunk(text);
+  }
+
+  @override
+  void writeln([Object? object = '']) {
+    final text = '$object';
+    _inner.writeln(text);
+    _processChunk('$text\n');
+  }
+
+  @override
+  void writeAll(Iterable<Object?> objects, [String sep = '']) {
+    final text = objects.join(sep);
+    _inner.writeAll(objects, sep);
+    _processChunk(text);
+  }
+
+  @override
+  void writeCharCode(int charCode) {
+    _inner.writeCharCode(charCode);
+    _processChunk(String.fromCharCode(charCode));
+  }
+
+  @override
+  void add(List<int> data) {
+    _inner.add(data);
+    _processChunk(utf8.decode(data, allowMalformed: true));
+  }
+
+  @override
+  void addError(Object error, [StackTrace? stackTrace]) =>
+      _inner.addError(error, stackTrace);
+
+  @override
+  Future<void> addStream(Stream<List<int>> stream) => _inner.addStream(stream);
+
+  @override
+  Future<void> close() {
+    // Flush any partial line still sitting in the buffer.
+    final remaining = _buffer.toString();
+    _buffer.clear();
+    if (remaining.isNotEmpty) {
+      _onLine(remaining);
+    }
+    return _inner.close();
+  }
+
+  @override
+  Future<void> get done => _inner.done;
+
+  @override
+  Encoding get encoding => _inner.encoding;
+
+  @override
+  set encoding(Encoding value) => _inner.encoding = value;
+
+  @override
+  Future<void> flush() => _inner.flush();
+
+  @override
+  bool get hasTerminal => _inner.hasTerminal;
+
+  @override
+  String get lineTerminator => _inner.lineTerminator;
+
+  @override
+  set lineTerminator(String value) => _inner.lineTerminator = value;
+
+  @override
+  io.IOSink get nonBlocking => _inner.nonBlocking;
+
+  @override
+  bool get supportsAnsiEscapes => _inner.supportsAnsiEscapes;
+
+  @override
+  int get terminalColumns => _inner.terminalColumns;
+
+  @override
+  int get terminalLines => _inner.terminalLines;
+}
 
 enum TestState {
   idle,
@@ -37,6 +151,9 @@ class PatrolStatus {
     required this.output,
     this.currentTestFile,
     this.warning,
+    this.deviceName,
+    this.deviceId,
+    this.devicePlatform,
   });
 
   final bool isDevelopRunning;
@@ -44,14 +161,20 @@ class PatrolStatus {
   final String output;
   final String? currentTestFile;
   final String? warning;
+  final String? deviceName;
+  final String? deviceId;
+  final String? devicePlatform;
 
   String get summary => testState.summary;
 
   Map<String, Object> toMap() => {
     'isDevelopRunning': isDevelopRunning,
     'testState': testState.name,
-    if (currentTestFile != null) 'currentTestFile': currentTestFile!,
-    if (warning != null) 'warning': warning!,
+    'currentTestFile': ?currentTestFile,
+    'warning': ?warning,
+    'deviceName': ?deviceName,
+    'deviceId': ?deviceId,
+    'devicePlatform': ?devicePlatform,
     'output': output,
     'summary': summary,
   };
@@ -70,16 +193,20 @@ final class PatrolSession {
 
   static const _maxOutputLines = 200;
 
-  Process? _process;
   var _isRunning = false;
   String? _currentTestFile;
   final _outputs = <String>[];
   TestState _testState = TestState.idle;
-  var _isHotRestartPending = false;
 
   Completer<void>? _finishCompleter;
+  DisposeScope? _disposeScope;
+  StreamController<List<int>>? _stdinController;
+  DevelopService? _developService;
 
   final _logStreaming = LogStreaming.instance;
+
+  /// The device discovered by the last [startAndWait] call.
+  Device? get device => _developService?.device;
 
   /// Returns null if started successfully, or a warning message if blocked
   Future<String?> _start(String testFile) async {
@@ -100,84 +227,144 @@ final class PatrolSession {
 
     final resolvedCwd = p.canonicalize(flutterProjectPath);
 
-    final testPort = Platform.environment['PATROL_TEST_PORT'];
-    final args = [
-      'develop',
-      if (additionalFlags.isNotEmpty) ...additionalFlags.split(' '),
-      if (testPort != null) ...['--test-server-port', testPort],
-      '-t',
-      testFile,
-    ];
+    // Create a DisposeScope for the session lifecycle
+    final disposeScope = DisposeScope();
+    _disposeScope = disposeScope;
 
-    final process = await Process.start(
-      'patrol',
-      args,
-      workingDirectory: resolvedCwd,
-      runInShell: true,
-      environment: Platform.environment,
+    // Create a StreamController to feed FlutterTool's stdin programmatically
+    final stdinController = StreamController<List<int>>.broadcast();
+    _stdinController = stdinController;
+
+    // Use DevelopSessionFactory to wire up all CLI components in one call,
+    // with a custom onExit that signals a completer instead of exit(0).
+    final exitCompleter = Completer<void>();
+    final developService = DevelopSessionFactory.create(
+      projectRoot: resolvedCwd,
+      disposeScope: disposeScope,
+      stdin: stdinController.stream,
+      onExit: () async {
+        if (!exitCompleter.isCompleted) {
+          exitCompleter.complete();
+        }
+      },
+      onEntry: _handleEntry,
+      onTestsCompleted: _handleTestsCompleted,
+    );
+    _developService = developService;
+
+    // Parse additional flags using the same ArgParser definitions as the CLI.
+    // Environment variables for ports and flutter command are folded in.
+    final flagParts = additionalFlags.isNotEmpty
+        ? additionalFlags.split(RegExp(r'\s+'))
+        : <String>[];
+
+    final testPort = io.Platform.environment['PATROL_TEST_PORT'];
+    final appPort = io.Platform.environment['PATROL_APP_SERVER_PORT'];
+    if (testPort != null) {
+      flagParts.addAll(['--test-server-port', testPort]);
+    }
+    if (appPort != null) {
+      flagParts.addAll(['--app-server-port', appPort]);
+    }
+    // Skip compatibility checking in MCP context for speed.
+    flagParts.add('--no-check-compatibility');
+
+    final flutterCmd = io.Platform.environment['PATROL_FLUTTER_COMMAND'];
+
+    final options = DevelopOptions.fromArgs(
+      flagParts,
+      target: testFile,
+      flutterCommand: flutterCmd != null && flutterCmd.isNotEmpty
+          ? FlutterCommand.parse(flutterCmd)
+          : null,
     );
 
-    _process = process;
     _isRunning = true;
+    _cleanupDone = false;
     _currentTestFile = testFile;
     _testState = TestState.running;
     _outputs.clear();
+    // Create the completer eagerly so callbacks can signal it even if
+    // test completion happens before _waitForFinish is called.
+    _finishCompleter = Completer<void>();
 
-    _finishCompleter = null;
+    // Run the develop service in the background.
+    // Test completion is detected by structured callbacks,
+    // NOT by developService.run() returning (the process stays alive for
+    // hot restart in develop mode).
+    _runDevelopSession(developService, options, exitCompleter, logger);
 
-    process.stdout
-        .transform(utf8.decoder)
-        .listen(
-          (data) => _handleStreamData(data, isStderr: false),
-          onError: (Object error) => _pushOutput('STDOUT ERROR: $error'),
-        );
-
-    process.stderr
-        .transform(utf8.decoder)
-        .listen(
-          (data) => _handleStreamData(data, isStderr: true),
-          onError: (Object error) => _pushOutput('STDERR ERROR: $error'),
-        );
-
-    unawaited(
-      process.exitCode
-          .then((code) {
-            _isRunning = false;
-            _currentTestFile = null;
-            if (_testState != TestState.finishedPassed &&
-                _testState != TestState.finishedFailed) {
-              _testState = TestState.idle;
-            }
-            _completeFinish();
-
-            unawaited(_logStreaming.stopLogging());
-
-            logger.fine('Patrol process exited with code $code');
-          })
-          .catchError((Object error) {
-            _isRunning = false;
-            _currentTestFile = null;
-            _testState = TestState.idle;
-            _completeFinish();
-
-            unawaited(_logStreaming.stopLogging());
-
-            logger.warning('Error waiting for patrol process exit: $error');
-          }),
-    );
-
-    if (_isRunning) {
-      return null;
-    }
-    throw StateError('Failed to start patrol develop session');
+    return null;
   }
 
-  void _handleStreamData(String data, {required bool isStderr}) {
-    for (final line in const LineSplitter().convert(data)) {
-      final outputLine = isStderr ? 'STDERR: $line' : line;
-      _pushOutput(outputLine);
-      _analyzeOutput(line);
+  void _runDevelopSession(
+    DevelopService developService,
+    DevelopOptions options,
+    Completer<void> exitCompleter,
+    Logger logger,
+  ) {
+    // Use a _CapturingStdout so that:
+    //  1) mason_logger output goes to stderr (not stdout / the JSON protocol)
+    //  2) every line is captured for the patrol.log file and output buffer
+    final capturingStdout = _CapturingStdout(io.stderr, _pushOutput);
+
+    // Redirect stdout inside this zone to our capturing wrapper.
+    // mason_logger resolves its stdout handle via IOOverrides.
+    io.IOOverrides.runZoned(stdout: () => capturingStdout, () {
+      // Fire-and-forget: developService.run() blocks for the entire develop
+      // session (gradle/xcodebuild + flutter attach stay alive for hot
+      // restart). Test completion is detected by callbacks, not by run()
+      // returning.
+      unawaited(
+        Future.any([developService.run(options), exitCompleter.future])
+            .then((_) {
+              // Session ended (e.g. user sent quit). If tests haven't already
+              // been marked as done by callbacks, mark idle.
+              if (_testState == TestState.running) {
+                _testState = TestState.idle;
+              }
+              _completeFinish();
+              unawaited(_cleanup());
+            })
+            .catchError((Object err, StackTrace st) {
+              logger.warning('Develop session error: $err\n$st');
+              _pushOutput('ERROR: $err');
+              if (_testState == TestState.running) {
+                _testState = TestState.finishedFailed;
+              }
+              _completeFinish();
+              unawaited(_cleanup());
+            }),
+      );
+    });
+  }
+
+  var _cleanupDone = false;
+
+  /// Clean up all resources for the current session.
+  /// Safe to call multiple times -- only the first call does actual work.
+  Future<void> _cleanup() async {
+    if (_cleanupDone) {
+      return;
     }
+    _cleanupDone = true;
+
+    final logger = Logger('PatrolSession');
+    _isRunning = false;
+    _currentTestFile = null;
+
+    await _logStreaming.stopLogging();
+
+    try {
+      final scope = _disposeScope;
+      if (scope != null && !scope.disposed) {
+        await scope.dispose();
+      }
+    } catch (e) {
+      logger.fine('Error disposing scope: $e');
+    }
+    await _stdinController?.close();
+    logger.fine('Develop session ended');
   }
 
   void _pushOutput(String line) {
@@ -192,43 +379,34 @@ final class PatrolSession {
     }
   }
 
-  void _analyzeOutput(String line) {
-    final normalized = _normalizeLine(line);
-
-    // Detect code errors during hot restart
-    if (_isHotRestartPending) {
-      final isErrorLine = RegExp(r':\d+:\d+:\s*Error:').hasMatch(normalized);
-      final isStderr =
-          _outputs.isNotEmpty && _outputs.last.startsWith('STDERR:');
-
-      if (isErrorLine && isStderr) {
-        _testState = TestState.finishedFailed;
-        _completeFinish();
-        return;
-      }
-      // Stop looking for errors after test run starts
-      if (normalized.contains(
-            'Patrol (native): NativeAutomatorClient created, port:',
-          ) &&
-          _testState != TestState.finishedFailed) {
-        _isHotRestartPending = false;
-      }
-    }
-
-    // Detect test completion - success cases
-    if (normalized.contains('All tests were executed') ||
-        normalized.contains('All tests passed!')) {
-      _testState = TestState.finishedPassed;
-      _completeFinish();
-      return;
-    }
-
-    // Detect test completion - failure cases
-    if (normalized.contains('Test failed. See exception logs above.') ||
-        normalized.contains('Some tests failed')) {
+  /// Structured signal from patrol framework (via PATROL_LOG ConfigEntry) that
+  /// all tests were executed in develop mode.
+  void _handleEntry(Entry entry) {
+    if (entry is TestEntry &&
+        entry.status == TestEntryStatus.failure &&
+        _testState == TestState.running) {
       _testState = TestState.finishedFailed;
       _completeFinish();
       return;
+    }
+
+    if (entry is ConfigEntry &&
+        entry.config['patrol_develop_completed'] == true &&
+        _testState == TestState.running) {
+      _testState = TestState.finishedPassed;
+      _completeFinish();
+    }
+  }
+
+  /// Backend exit signal from [DevelopService].
+  ///
+  /// In develop mode, successful runs stay alive for hot restart and don't exit.
+  /// So if the backend exits while we're still running, treat it as failure.
+  /// (Quit path sets state to idle before this callback can affect it.)
+  void _handleTestsCompleted(TestCompletionResult result) {
+    if (_testState == TestState.running) {
+      _testState = TestState.finishedFailed;
+      _completeFinish();
     }
   }
 
@@ -238,33 +416,58 @@ final class PatrolSession {
 
   String sendCommand(PatrolCommand command) {
     final logger = Logger('PatrolSession');
-    final proc = _process;
-    if (!_isRunning || proc == null) {
-      throw StateError('No active patrol session');
+
+    if (command == PatrolCommand.quit) {
+      final controller = _stdinController;
+      if (!_isRunning || controller == null) {
+        throw StateError('No active patrol session');
+      }
+
+      controller.add('Q'.codeUnits);
+      _testState = TestState.idle;
+      _completeFinish();
+      unawaited(_cleanup());
+
+      return 'Quit command sent to patrol session';
     }
 
-    try {
-      proc.stdin.writeln(command.value);
-    } catch (e) {
-      logger.warning('Failed to write command to patrol process: $e');
-      throw StateError('Failed to send command to patrol session: $e');
-    }
     if (command == PatrolCommand.hotRestart) {
-      _isHotRestartPending = true;
+      final controller = _stdinController;
+      if (!_isRunning || controller == null) {
+        throw StateError('No active patrol session');
+      }
+
+      try {
+        controller.add('R'.codeUnits);
+      } catch (e) {
+        logger.warning('Failed to send hot restart: $e');
+        throw StateError('Failed to send hot restart to patrol session: $e');
+      }
+
       _outputs.clear();
       _testState = TestState.running;
+      // Complete the old completer so any previous waiters are unblocked, then
+      // immediately create a fresh one. This avoids a race where callbacks
+      // could fire between null-ing and lazy re-creation in _waitForFinish.
       _completeFinish();
-      _finishCompleter = null;
+      _finishCompleter = Completer<void>();
+
+      return 'Hot restart sent to patrol session';
     }
-    return "Command '${command.value}' sent to patrol session";
+
+    throw StateError('Unknown command: ${command.value}');
   }
 
   PatrolStatus getStatus() {
+    final dev = _developService?.device;
     return PatrolStatus(
       isDevelopRunning: _isRunning,
       testState: _testState,
       output: _formatLogs(_outputs),
       currentTestFile: _currentTestFile,
+      deviceName: dev?.name,
+      deviceId: dev?.id,
+      devicePlatform: dev?.targetPlatform.name,
     );
   }
 
@@ -285,7 +488,7 @@ final class PatrolSession {
         await future;
       }
     } on TimeoutException {
-      // Timeout occurred, but don't fail - just return current status with full output
+      // Timeout occurred, but don't fail - just return current status
     }
 
     return getStatus();
@@ -320,26 +523,27 @@ final class PatrolSession {
         output: status.output,
         currentTestFile: status.currentTestFile,
         warning: warning,
+        deviceName: status.deviceName,
+        deviceId: status.deviceId,
+        devicePlatform: status.devicePlatform,
       );
     }
-    _finishCompleter = null;
     return _waitForFinish(timeout: timeout);
   }
 
-  /// Automatically start log streaming and optionally launch terminal for live logs
+  /// Automatically start log streaming and optionally launch terminal
   Future<void> _startLogStreamingAndTerminal() async {
     final logger = Logger('PatrolSession');
 
     try {
       final logPath = await _logStreaming.startLogging(flutterProjectPath);
 
-      // Open Terminal with tail command only on macOS and if showTerminal is enabled
-      if (showTerminal && Platform.isMacOS) {
-        await Process.run('osascript', [
+      if (showTerminal && io.Platform.isMacOS) {
+        await io.Process.run('osascript', [
           '-e',
           'tell application "Terminal"',
           '-e',
-          'do script "echo \'Patrol Test Logs - Live Stream\'; echo \'\'; tail -f \'$logPath\'" in front window',
+          "do script \"echo 'Patrol Test Logs - Live Stream'; echo ''; tail -f '$logPath'\" in front window",
           '-e',
           'end tell',
         ]);
@@ -347,7 +551,8 @@ final class PatrolSession {
         logger.info('Log file created at: $logPath');
       } else {
         logger.info(
-          'Log file created at: $logPath (automatic terminal launch is only available on macOS)',
+          'Log file created at: $logPath '
+          '(automatic terminal launch is only available on macOS)',
         );
       }
     } catch (e) {
