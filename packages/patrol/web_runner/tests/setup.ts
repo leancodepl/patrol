@@ -11,22 +11,38 @@ async function setup(config: FullConfig) {
     throw new Error("baseURL is not set")
   }
 
+  const setupPageErrorPromise = new Promise<never>((_, reject) => {
+    page.on("pageerror", error => {
+      error.message = `Page error during setup: ${error.message}`
+      // eslint-disable-next-line no-console
+      console.error(error.stack ?? error.message)
+      reject(error)
+    })
+  })
+
   await page.goto(baseURL)
 
   await initialise(page)
 
-  const { group: testEntries } = await page
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
-    .waitForFunction(() => window.__patrol__getTests?.()!, {
-      timeout: 120000,
-    })
-    .then(v => v.jsonValue())
+  try {
+    const testEntriesResponse = (await Promise.race([
+      page
+        .waitForFunction(
+          () => {
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            return window.__patrol__getTests?.()!
+          },
+          { timeout: 120000 },
+        )
+        .then(v => v.jsonValue()),
+      setupPageErrorPromise,
+    ])) as { group: DartTestEntry }
 
-  await browser.close()
-
-  const patrolTests = mapEntry(testEntries)
-
-  process.env.PATROL_TESTS = JSON.stringify(patrolTests)
+    const patrolTests = mapEntry(testEntriesResponse.group)
+    process.env.PATROL_TESTS = JSON.stringify(patrolTests)
+  } finally {
+    await browser.close()
+  }
 }
 
 function mapEntry(entry: DartTestEntry, parentName?: string, skip = false, tags = new Set<string>()) {

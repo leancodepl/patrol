@@ -1,3 +1,7 @@
+## Unreleased
+
+- Improve setup error reporting for Patrol Web failures. (#2928)
+
 # 4.1.1
 
 - Fix Android permission dialog not being tapped with `grantPermissionWhenInUse`.(#2876)
