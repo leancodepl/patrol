@@ -59,21 +59,6 @@ jobs:
           erase_before_boot: true
           shutdown_after_job: true
 
-      - name: Set tests to include
-        run: |
-          TESTS_TO_INCLUDE="webview_hackernews_test"
-          # webview_leancode_test  
-          # See https://github.com/leancodepl/patrol/issues/2353
-        
-
-          target_paths=""
-          for target in $(echo $TESTS_TO_INCLUDE | tr ',' '\n'); do
-              target_paths+="patrol_test/${target}.dart,"
-          done
-          target_paths="${target_paths%,}"
-
-          echo "INCLUDED_TESTS=$target_paths" >> "$GITHUB_ENV"
-
       - name: Run tests
         id: tests_step
         run: |
@@ -86,7 +71,7 @@ jobs:
           sleep 10 # See https://github.com/leancodepl/patrol/issues/1282
 
           TESTS_EXIT_CODE=0
-          patrol test --target ${{ env.INCLUDED_TESTS }} --verbose || TESTS_EXIT_CODE=$?
+          patrol test --tags='webview && ios' --verbose || TESTS_EXIT_CODE=$?
 
           kill -SIGINT $recordingpid
           kill -SIGINT $logpid
