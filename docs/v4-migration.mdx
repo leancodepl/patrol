@@ -11,14 +11,6 @@ Patrol 4.0 introduces the **Platform Automation API** and starts the deprecation
   `$.native`, `$.native2`, `NativeAutomator`, `NativeAutomator2`, and `NativeAutomatorConfig` are deprecated and will be removed in a future release. Migrate to `$.platform` and `PlatformAutomatorConfig`.
 </Warning>
 
-## Quick checklist
-
-- Upgrade the `patrol` package (and Patrol CLI) to 4.x.
-- Rename your `integration_test/` directory to `patrol_test/` in `pubspec.yaml`, and update `.gitignore` accordingly.
-- Rewrite `$.native.*` and `$.native2.*` calls to `$.platform.*`.
-- Replace `NativeSelector(...)` with `MobileSelector(...)`, `Selector(...)`, or `PlatformSelector(...)`.
-- `patrol test` and `patrol develop` now prompt for a device. In CI, pass `--device`/`-d` to avoid the prompt, or set `CI=true` env variable.
-
 ## Breaking changes you’ll likely hit
 
 In Patrol 4.0 you should use `$.platform` as your entry point to platform automation.
@@ -27,6 +19,14 @@ In Patrol 4.0 you should use `$.platform` as your entry point to platform automa
 - `$.platform.android`: Android-only actions
 - `$.platform.ios`: iOS-only actions
 - `$.platform.web`: web automation
+
+## Quick checklist
+
+- Upgrade the `patrol` package (and Patrol CLI) to 4.x.
+- Rename your `integration_test/` directory to `patrol_test/` in `pubspec.yaml`, and update `.gitignore` accordingly.
+- Rewrite `$.native.*` and `$.native2.*` calls to `$.platform.*`.
+- Replace `NativeSelector(...)` with `MobileSelector(...)`, `Selector(...)`, or `PlatformSelector(...)`.
+- `patrol test` and `patrol develop` now prompt for a device. In CI, pass `--device`/`-d` to avoid the prompt, or set `CI=true` env variable.
 
 ## Common rewrites (search and replace)
 
