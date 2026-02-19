@@ -3,35 +3,48 @@ import 'dart:io';
 
 import 'package:adb/adb.dart';
 import 'package:mcp_dart/mcp_dart.dart';
+import 'package:patrol_cli/develop.dart' show Device, TargetPlatform;
 
 abstract final class NativeTreeService {
   static const _host = 'localhost';
   static final _port = Platform.environment['PATROL_TEST_PORT'] ?? '8081';
 
   static Future<CallToolResult> handleGetNativeTreeRequest(
-    Map<String, dynamic> args,
+    Device? device,
   ) async {
     try {
-      await _setupPortForwarding();
+      if (device == null) {
+        return const CallToolResult(
+          content: [
+            TextContent(
+              text:
+                  'No active patrol session. '
+                  'Run a test first so the device platform can be detected.',
+            ),
+          ],
+          isError: true,
+        );
+      }
+
+      await _setupConnection(device);
 
       final tree = await _fetchNativeTree();
 
       if (_isTreeEmpty(tree)) {
-        return CallToolResult.fromContent(
+        return const CallToolResult(
           content: [
-            const TextContent(
+            TextContent(
               text:
                   'Native automator not ready yet. '
                   'Please wait a moment and try again.',
             ),
           ],
-          isError: false,
         );
       }
 
       final trimmed = _trimTree(tree);
 
-      return CallToolResult.fromContent(
+      return CallToolResult(
         content: [
           TextContent(
             text: const JsonEncoder.withIndent('  ').convert(trimmed),
@@ -39,7 +52,7 @@ abstract final class NativeTreeService {
         ],
       );
     } on Exception catch (e) {
-      return CallToolResult.fromContent(
+      return CallToolResult(
         content: [TextContent(text: 'Failed to fetch native tree: $e')],
         isError: true,
       );
@@ -214,7 +227,12 @@ abstract final class NativeTreeService {
     }
   }
 
-  static Future<void> _setupPortForwarding() async {
+  static Future<void> _setupConnection(Device device) async {
+    if (device.targetPlatform != TargetPlatform.android) {
+      // iOS simulator traffic goes directly to localhost.
+      return;
+    }
+
     final port = int.parse(_port);
     await Adb().forwardPorts(fromHost: port, toDevice: port);
   }
