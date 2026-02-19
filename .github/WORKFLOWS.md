@@ -26,7 +26,7 @@ This document describes all GitHub Actions workflows used in the Patrol project.
 
 | Workflow name | Workflow file | Runs on | Flutter version | Tags | Description |
 |--------------|--------------|---------|----------------|------|-------------|
-| test web | `test-web.yaml` | PR (on web changes), manual | Flutter 3.32.x (stable) | `web` | Runs web-specific E2E tests on Chrome in headless mode. |
+| test web | `test-web.yaml` | PR (on web changes), manual | Flutter 3.32.x (stable) | — | Runs web-specific E2E tests on Chrome in headless mode. Uses target file instead of tags. |
 | test macos | `test-macos.yaml` | PR (on darwin changes), schedule (every 12h), manual | Flutter 3.32.x (stable) | — | Runs E2E tests on macOS desktop platform. Runs tests from `patrol_test/macos` directory. |
 
 ## Package Preparation (CI) Workflows
