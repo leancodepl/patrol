@@ -82,8 +82,7 @@ jobs:
 
           TESTS_EXIT_CODE=0
           patrol test \
-          --tags='ios && simulator' \
-          --exclude-tags='webview || web || macos || android_only || not_on_ios_simulator' \
+          --tags='ios && simulator'
           --verbose \
           --full-isolation || TESTS_EXIT_CODE=$?
 
