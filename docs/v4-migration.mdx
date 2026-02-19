@@ -35,38 +35,16 @@ In Patrol 4.0 you should use `$.platform` as your entry point to platform automa
 #### Pressing Home
 
 ```dart
-await $.native2.pressHome(); // Press home for notifications.
-await $.platform.mobile.pressHome(); // Press home for notifications.
-```
-
-#### Selectors: `NativeSelector` → `MobileSelector`
-Most `native2` methods used `NativeSelector(...)`. The Patrol 4.0 equivalent is `MobileSelector(...)` passed to `$.platform.mobile.*`.
-
 Before:
-
-```dart
-await $.native2.tap(
-  NativeSelector(
-    android: AndroidSelector(resourceName: 'com.example:id/submit_button'),
-    ios: IOSSelector(identifier: 'submitButton'),
-  ),
-);
-```
+await $.native2.pressHome(); // Press home for notifications.
 
 After:
-
-```dart
-await $.platform.mobile.tap(
-  MobileSelector(
-    android: AndroidSelector(resourceName: 'com.example:id/submit_button'),
-    ios: IOSSelector(identifier: 'submitButton'),
-  ),
-);
+await $.platform.mobile.pressHome(); // Press home for notifications.
 ```
 
 #### Selector types you can pass to `$.platform.mobile.tap()`
 
-Patrol 4.0 native actions (for example `$.platform.mobile.tap(...)`) accept a `CompoundSelector`. In practice, you’ll usually use one of these three types:
+Patrol 4.0 native actions (for example `$.platform.mobile.tap(...)`) accept a `MobileSelector`, `PlatformSelector`, or `Selector`. In practice, you’ll usually use one of these three types:
 
 #### `MobileSelector(...)` (most common during migration)
 
