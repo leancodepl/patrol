@@ -54,7 +54,8 @@ jobs:
         id: tests_step
         run: |
           TESTS_EXIT_CODE=0
-          patrol test --tags=web -d chrome --verbose --web-headless true || TESTS_EXIT_CODE=$?
+          # Do not use tags here, tags do not work with patrol web tests
+          patrol test --target patrol_test/web_example_test.dart -d chrome --verbose --web-headless true || TESTS_EXIT_CODE=$?
 
           echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> "$GITHUB_OUTPUT"
           exit $TESTS_EXIT_CODE
