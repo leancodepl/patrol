@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    compileSdk = 35
+    compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
     namespace = "pl.leancode.patrol.example"
@@ -37,7 +37,7 @@ android {
 
     defaultConfig {
         applicationId = "pl.leancode.patrol.example"
-        minSdk = 23
+        minSdk = flutter.minSdkVersion
         targetSdk = 35
         versionCode = flutter.versionCode
         versionName = flutter.versionName
