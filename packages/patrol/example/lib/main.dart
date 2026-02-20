@@ -1,6 +1,7 @@
 import 'package:animations/animations.dart';
 import 'package:example/cubit/auth_cubit.dart';
 import 'package:example/firebase_options.dart';
+import 'package:example/handlers/biometric_handler.dart';
 import 'package:example/handlers/notification_handler.dart';
 import 'package:example/pages/home_page.dart';
 import 'package:example/pages/push_notification/notification_success_page.dart';
@@ -14,6 +15,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:local_auth/local_auth.dart';
 import 'package:provider/provider.dart';
 
 const firebaseEnabled = String.fromEnvironment('FIREBASE_ENABLED') == 'true';
@@ -65,30 +67,33 @@ class MyApp extends StatelessWidget {
           FlutterLocalNotificationsPlugin(),
           firebaseEnabled ? FirebaseMessaging.instance : null,
         )..init(() => Navigator.push(context, notificationRoute)),
-        child: MaterialApp(
-          theme: ThemeData.dark().copyWith(
-            pageTransitionsTheme: const PageTransitionsTheme(
-              builders: {
-                TargetPlatform.android: SharedAxisPageTransitionsBuilder(
-                  transitionType: SharedAxisTransitionType.horizontal,
-                ),
-                TargetPlatform.iOS: SharedAxisPageTransitionsBuilder(
-                  transitionType: SharedAxisTransitionType.horizontal,
-                ),
-              },
+        child: Provider<BiometricHandler>(
+          create: (_) => BiometricHandler(LocalAuthentication()),
+          child: MaterialApp(
+            theme: ThemeData.dark().copyWith(
+              pageTransitionsTheme: const PageTransitionsTheme(
+                builders: {
+                  TargetPlatform.android: SharedAxisPageTransitionsBuilder(
+                    transitionType: SharedAxisTransitionType.horizontal,
+                  ),
+                  TargetPlatform.iOS: SharedAxisPageTransitionsBuilder(
+                    transitionType: SharedAxisTransitionType.horizontal,
+                  ),
+                },
+              ),
+              colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.grey),
+              primaryColor: PTColors.lcBlack,
+              canvasColor: PTColors.textDark,
+              textSelectionTheme: TextSelectionThemeData(
+                selectionColor: PTColors.lcYellow.withValues(alpha: 0.5),
+                cursorColor: PTColors.textWhite,
+                selectionHandleColor: PTColors.lcYellow,
+              ),
             ),
-            colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.grey),
-            primaryColor: PTColors.lcBlack,
-            canvasColor: PTColors.textDark,
-            textSelectionTheme: TextSelectionThemeData(
-              selectionColor: PTColors.lcYellow.withValues(alpha: 0.5),
-              cursorColor: PTColors.textWhite,
-              selectionHandleColor: PTColors.lcYellow,
-            ),
+            debugShowCheckedModeBanner: false,
+            title: 'Patrol Challenge',
+            home: const HomePage(),
           ),
-          debugShowCheckedModeBanner: false,
-          title: 'Patrol Challenge',
-          home: const HomePage(),
         ),
       ),
     );

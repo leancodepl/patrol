@@ -67,5 +67,7 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>NSFaceIDUsageDescription</key>
+	<string>This app uses Face ID to authenticate your identity.</string>
 </dict>
 </plist>
