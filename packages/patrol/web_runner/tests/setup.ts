@@ -4,7 +4,12 @@ import { DartTestEntry, PatrolTestEntry } from "./types"
 
 async function setup(config: FullConfig) {
   const { baseURL } = config.projects[0].use
-  const browser = await chromium.launch()
+  const launchArgs = parseBrowserArgs()
+
+  const browser = await chromium.launch({
+    args: launchArgs,
+  })
+  
   const page = await browser.newPage()
 
   if (!baseURL) {
@@ -63,6 +68,28 @@ function mapEntry(entry: DartTestEntry, parentName?: string, skip = false, tags 
   tests.push(...entry.entries.flatMap(e => mapEntry(e, fullEntryName, fullEntrySkip, fullEntryTags)))
 
   return tests
+}
+
+function parseBrowserArgs() {
+  const browserArgs = process.env.PATROL_WEB_BROWSER_ARGS
+  if (!browserArgs) {
+    return []
+  }
+
+  let parsed: unknown
+  try {
+    parsed = JSON.parse(browserArgs)
+  } catch (error) {
+    throw new Error(
+      `PATROL_WEB_BROWSER_ARGS must be a valid JSON array of strings. Received: ${browserArgs}. Error: ${String(error)}`,
+    )
+  }
+
+  if (!Array.isArray(parsed) || !parsed.every(arg => typeof arg === "string")) {
+    throw new Error("PATROL_WEB_BROWSER_ARGS must be a JSON array of strings")
+  }
+
+  return parsed
 }
 
 export default setup

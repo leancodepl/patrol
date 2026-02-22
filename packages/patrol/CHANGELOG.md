@@ -3,6 +3,7 @@
 - Improve setup error reporting for Patrol Web failures. (#2928)
 - Fix `tapOnNotificationByIndex` and `getNotifications` on iOS 18+ to use consistent indexing with other systems. (#2899)
 - Fix Android native automator error logs to use `AndroidAutomatorClientException` instead of `IosAutomatorClientException`.
+- Allow to pass additional web browser args through `web-browser-args`. (#2932)
 
 # 4.1.1
 
