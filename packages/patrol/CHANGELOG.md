@@ -1,6 +1,7 @@
 ## Unreleased
 
 - Improve setup error reporting for Patrol Web failures. (#2928)
+- Allow to pass additional web browser args through `web-browser-args`. (#2932)
 
 # 4.1.1
 
