@@ -5,7 +5,7 @@ on:
   pull_request:
     paths:
       - 'packages/patrol/web_runner/**'
-      - 'dev/e2e_app/patrol_test/web_example_test.dart'
+      - 'dev/e2e_app/patrol_test/web/**'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -54,7 +54,7 @@ jobs:
         id: tests_step
         run: |
           TESTS_EXIT_CODE=0
-          patrol test --target patrol_test/web_example_test.dart -d chrome --verbose --web-headless true || TESTS_EXIT_CODE=$?
+          patrol test --target patrol_test/web/ -d chrome --verbose --web-headless true --web-workers 2 || TESTS_EXIT_CODE=$?
 
           echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> "$GITHUB_OUTPUT"
           exit $TESTS_EXIT_CODE
