@@ -1,5 +1,6 @@
 import 'package:example/cubit/auth_cubit.dart';
 import 'package:example/handlers/notification_handler.dart';
+import 'package:example/pages/camera/camera_page.dart';
 import 'package:example/pages/google_sign_in/profile_page.dart';
 import 'package:example/pages/push_notification/notification_success_page.dart';
 import 'package:example/pages/quiz/welcome_page.dart';
@@ -65,6 +66,11 @@ class _HomePageBody extends StatelessWidget {
               context.read<NotificationHandler>().triggerPushNotification(
                 onPressed: () => Navigator.push(context, notificationRoute),
               ),
+        ),
+        const _TextSeparator(),
+        PTElevatedButton(
+          caption: 'Take a photo',
+          onPressed: () => Navigator.push(context, cameraRoute),
         ),
       ],
     ).horizontallyPadded24;

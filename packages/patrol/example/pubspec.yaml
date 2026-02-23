@@ -9,6 +9,7 @@ environment:
 
 dependencies:
   animations: ^2.0.8
+  camera: ^0.11.4
   confetti: ^0.7.0
   dispose_scope: ^2.1.0
   firebase_auth: ^5.4.1
