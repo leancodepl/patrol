@@ -128,7 +128,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-latest]
+        os: [macos-26]
         flutter-version: ['3.32.x']
         flutter-channel: ['stable']
 
@@ -177,9 +177,9 @@ jobs:
       - name: Start iOS simulator
         uses: futureware-tech/simulator-action@v2
         with:
-          model: iPhone 16
+          model: iPhone 17
           os: iOS
-          os_version: 18.5
+          os_version: 26.0
           erase_before_boot: true
           shutdown_after_job: true
 

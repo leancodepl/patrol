@@ -41,6 +41,8 @@
 	<array>
 		<string>_dartobservatory._tcp</string>
 	</array>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Required for communication between the Flutter app and the Dart VM for debugging.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>camera</string>
 	<key>NSContactsUsageDescription</key>
