@@ -18,6 +18,6 @@ void main() {
         await $.platform.mobile.enableBluetooth();
       }
     },
-    tags: ['android', 'ios', 'physical_device', 'not_on_ios_simulator'],
+    tags: ['android', 'ios', 'physical_device'],
   );
 }

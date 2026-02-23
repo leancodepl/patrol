@@ -22,7 +22,7 @@ void main() {
     await $.platform.mobile.enableDarkMode();
 
     await $.platform.android.pressBack();
-  }, tags: ['android_only', 'physical_device', 'emulator']);
+  }, tags: ['physical_device', 'emulator', 'android']);
 
   patrol('taps around 2', skip: true, ($) async {
     await createApp($);
@@ -45,12 +45,12 @@ void main() {
     await $.platform.mobile.enableDarkMode();
 
     await $.platform.android.pressBack();
-  }, tags: ['android_only', 'physical_device', 'emulator']);
+  }, tags: ['physical_device', 'emulator', 'android']);
 
   patrol('taps around 3', ($) async {
     await createApp($);
 
     await $.platform.mobile.pressHome();
     await $.platform.android.pressDoubleRecentApps();
-  }, tags: ['android_only', 'physical_device', 'emulator']);
+  }, tags: ['physical_device', 'emulator', 'android']);
 }

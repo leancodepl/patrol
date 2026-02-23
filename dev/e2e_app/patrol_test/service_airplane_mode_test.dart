@@ -24,12 +24,6 @@ void main() {
         await $.platform.mobile.enableAirplaneMode();
       }
     },
-    tags: [
-      'locale_testing_android',
-      'android',
-      'ios',
-      'physical_device',
-      'not_on_ios_simulator',
-    ],
+    tags: ['locale_testing_android', 'android', 'ios', 'physical_device'],
   );
 }
