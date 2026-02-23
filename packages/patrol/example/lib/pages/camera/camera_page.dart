@@ -1,10 +1,10 @@
 import 'dart:io';
 
-import 'package:camera/camera.dart';
 import 'package:example/ui/components/button/elevated_button.dart';
 import 'package:example/ui/components/scaffold.dart';
 import 'package:example/ui/widgets/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 Route<void> get cameraRoute =>
     MaterialPageRoute(builder: (_) => const _CameraPage());
@@ -16,87 +16,16 @@ class _CameraPage extends StatefulWidget {
   State<_CameraPage> createState() => _CameraPageState();
 }
 
-class _CameraPageState extends State<_CameraPage>
-    with WidgetsBindingObserver {
-  CameraController? _controller;
+class _CameraPageState extends State<_CameraPage> {
   String? _imagePath;
-  var _isInitializing = false;
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addObserver(this);
-    _initCamera();
-  }
-
-  Future<void> _initCamera() async {
-    if (_isInitializing) {
-      return;
-    }
-    _isInitializing = true;
-
-    try {
-      final cameras = await availableCameras();
-      if (cameras.isEmpty || !mounted) {
-        return;
-      }
-
-      final controller = CameraController(
-        cameras[0],
-        ResolutionPreset.medium,
-      );
-      await controller.initialize();
-      if (!mounted) {
-        await controller.dispose();
-        return;
-      }
-
-      setState(() {
-        _controller = controller;
-      });
-    } catch (_) {
-      // Camera initialization failed
-    } finally {
-      _isInitializing = false;
-    }
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    final controller = _controller;
-    if (controller == null || !controller.value.isInitialized) {
-      return;
-    }
-
-    if (state == AppLifecycleState.inactive) {
-      controller.dispose();
-      _controller = null;
-    } else if (state == AppLifecycleState.resumed) {
-      _initCamera();
-    }
-  }
 
   Future<void> _takePicture() async {
-    final controller = _controller;
-    if (controller == null || !controller.value.isInitialized) {
-      return;
-    }
-
-    try {
-      final xFile = await controller.takePicture();
+    final xFile = await ImagePicker().pickImage(source: ImageSource.camera);
+    if (xFile != null && mounted) {
       setState(() {
         _imagePath = xFile.path;
       });
-    } catch (_) {
-      // Taking picture failed
     }
-  }
-
-  @override
-  void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    _controller?.dispose();
-    super.dispose();
   }
 
   @override
