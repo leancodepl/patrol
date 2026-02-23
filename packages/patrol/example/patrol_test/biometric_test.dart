@@ -16,9 +16,23 @@ void main() {
 
     await $('Authenticate').tap();
 
-    await $.platform.mobile.tap(Selector(text: 'Pass'));
+    await $.pump(const Duration(seconds: 1));
 
-    await $.pumpAndSettle();
+    // final views = await $.platform.android.getNativeViews(
+    //   AndroidSelector(textContains: 'PASS'),
+    // );
+    // print(views.toJson());
+
+    await $.platform.mobile.tap(
+      PlatformSelector(
+        // It's not possible perform a tap using a `text` or `textContains` selector on Android on the BS dialog for some reason
+        // so we need to use the resourceName of the button found using the commented out code above.
+        android: AndroidSelector(resourceName: 'android:id/button1'),
+        ios: IOSSelector(text: 'Pass'),
+      ),
+    );
+
+    await $.pump(const Duration(seconds: 1));
 
     expect($('Authentication Successful'), findsOneWidget);
   });
