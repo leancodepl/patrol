@@ -8,6 +8,17 @@ class TestBundler {
       _fs = projectRoot.fileSystem,
       _logger = logger;
 
+  static const _devtoolsRootDirectories = {
+    'lib',
+    'bin',
+    'integration_test',
+    'test',
+    'benchmark',
+    'example',
+  };
+  static const _devtoolsEntrypointDirectory = 'integration_test';
+  static const _devtoolsEntrypointFileName = 'patrol_test_bundle.dart';
+
   final Directory _projectRoot;
   final FileSystem _fs;
   final Logger _logger;
@@ -17,8 +28,9 @@ class TestBundler {
     String testDirectory,
     List<String> testFilePaths,
     String? tags,
-    String? excludeTags,
-  ) {
+    String? excludeTags, {
+    bool web = false,
+  }) {
     if (testFilePaths.isEmpty) {
       throw ArgumentError('testFilePaths must not be empty');
     }
@@ -36,7 +48,7 @@ import 'package:patrol/src/platform/contracts/contracts.dart';
 import 'package:test_api/src/backend/invoker.dart';
 
 // START: GENERATED TEST IMPORTS
-${generateImports(testDirectory, testFilePaths)}
+${generateImports(testDirectory, testFilePaths, web: web)}
 // END: GENERATED TEST IMPORTS
 
 Future<void> main() async {
@@ -98,9 +110,9 @@ Future<void> main() async {
     reportGroupStructure(dartTestGroup);
   });
 
-  // START: GENERATED TEST GROUPS
+// START: GENERATED TEST GROUPS
 ${generateGroupsCode(testDirectory, testFilePaths).split('\n').map((e) => '  $e').join('\n')}
-  // END: GENERATED TEST GROUPS
+// END: GENERATED TEST GROUPS
 
   final dartTestGroup = await testExplorationCompleter.future;
   final appService = PatrolAppService(topLevelDartTestGroup: dartTestGroup);
@@ -118,7 +130,7 @@ ${generateGroupsCode(testDirectory, testFilePaths).split('\n').map((e) => '  $e'
 
     // This file must not end with "_test.dart", otherwise it'll be picked up
     // when finding tests to bundle.
-    final bundle = getBundledTestFile(testDirectory)
+    final bundle = getBundledTestFile(testDirectory, web: web)
       ..createSync(recursive: true)
       ..writeAsStringSync(contents);
 
@@ -129,8 +141,42 @@ ${generateGroupsCode(testDirectory, testFilePaths).split('\n').map((e) => '  $e'
 
   // This file must not end with "_test.dart", otherwise it'll be picked up
   // when finding tests to bundle.
-  File getBundledTestFile(String testDirectory) =>
-      _projectRoot.childDirectory(testDirectory).childFile('test_bundle.dart');
+  File getBundledTestFile(String testDirectory, {bool web = false}) => web
+      ? _projectRoot.childFile('test_bundle.dart')
+      : _projectRoot
+            .childDirectory(testDirectory)
+            .childFile('test_bundle.dart');
+
+  File getEntrypointFile(String testDirectory) {
+    if (_shouldUseEntrypointProxy(testDirectory)) {
+      return _projectRoot
+          .childDirectory(_devtoolsEntrypointDirectory)
+          .childFile(_devtoolsEntrypointFileName);
+    }
+    return getBundledTestFile(testDirectory);
+  }
+
+  void ensureEntrypoint(String testDirectory) {
+    if (_shouldUseEntrypointProxy(testDirectory)) {
+      _createEntrypointProxyIfNeeded(testDirectory);
+    }
+  }
+
+  void deleteEntrypointProxy(String testDirectory) {
+    if (!_shouldUseEntrypointProxy(testDirectory)) {
+      return;
+    }
+
+    final proxyFile = getEntrypointFile(testDirectory);
+    if (proxyFile.existsSync()) {
+      proxyFile.deleteSync();
+    }
+
+    final proxyDir = proxyFile.parent;
+    if (proxyDir.existsSync() && proxyDir.listSync().isEmpty) {
+      proxyDir.deleteSync();
+    }
+  }
 
   /// Creates an entrypoint for use with `patrol develop`.
   void createDevelopTestBundle(String testDirectory, String testFilePath) {
@@ -166,6 +212,11 @@ ${generateGroupsCode(testDirectory, [testFilePath]).split('\n').map((e) => '  $e
       ..createSync(recursive: true)
       ..writeAsStringSync(contents);
 
+    /// Related with [https://github.com/flutter/devtools/issues/9667].
+    /// Patrol devtools extension is not found when the test is moved to `patrol_test/`.
+    /// This is a workaround to create a proxy entrypoint to make the devtools extension work.
+    _createEntrypointProxyIfNeeded(testDirectory);
+
     _logger.detail('Generated entrypoint ${bundle.path} for development');
   }
 
@@ -187,7 +238,11 @@ ${generateGroupsCode(testDirectory, [testFilePath]).split('\n').map((e) => '  $e
   /// '''
   /// ```
   @visibleForTesting
-  String generateImports(String testDirectory, List<String> testFilePaths) {
+  String generateImports(
+    String testDirectory,
+    List<String> testFilePaths, {
+    bool web = false,
+  }) {
     final imports = <String>[];
     for (final testFilePath in testFilePaths) {
       final relativeTestFilePath = _normalizeTestPath(
@@ -198,7 +253,13 @@ ${generateGroupsCode(testDirectory, [testFilePath]).split('\n').map((e) => '  $e
       final relativeTestFilePathWithoutSlash = relativeTestFilePath[0] == '/'
           ? relativeTestFilePath.replaceFirst('/', '')
           : relativeTestFilePath;
-      imports.add("import '$relativeTestFilePathWithoutSlash' as $testName;");
+
+      // For web tests, include the test directory prefix in imports to ensure
+      // correct path resolution since the bundle is at project root
+      final importPath = web
+          ? '$testDirectory/$relativeTestFilePathWithoutSlash'
+          : relativeTestFilePathWithoutSlash;
+      imports.add("import '$importPath' as $testName;");
     }
 
     return imports.join('\n');
@@ -267,5 +328,32 @@ ${generateGroupsCode(testDirectory, [testFilePath]).split('\n').map((e) => '  $e
 
     testName = testName.substring(0, testName.length - 5);
     return testName;
+  }
+
+  bool _shouldUseEntrypointProxy(String testDirectory) {
+    return !_devtoolsRootDirectories.contains(testDirectory);
+  }
+
+  void _createEntrypointProxyIfNeeded(String testDirectory) {
+    if (!_shouldUseEntrypointProxy(testDirectory)) {
+      return;
+    }
+
+    final proxyFile = getEntrypointFile(testDirectory);
+    final targetFile = getBundledTestFile(testDirectory);
+    final relativeTargetPath = _fs.path
+        .relative(targetFile.path, from: proxyFile.parent.path)
+        .replaceAll(_fs.path.separator, '/');
+
+    proxyFile
+      ..createSync(recursive: true)
+      ..writeAsStringSync('''
+// GENERATED CODE - DO NOT MODIFY BY HAND AND DO NOT COMMIT TO VERSION CONTROL
+// ignore_for_file: type=lint
+
+import '$relativeTargetPath' as bundle;
+
+Future<void> main() => bundle.main();
+''');
   }
 }

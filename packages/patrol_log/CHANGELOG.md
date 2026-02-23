@@ -1,3 +1,7 @@
+## 0.7.0
+
+- Show Flutter test framework output on iOS in `patrol develop`. (#2904)
+
 ## 0.6.0
 
 - Update `TestEntry.nameWithPath` to use actual test directory. (#2728)
