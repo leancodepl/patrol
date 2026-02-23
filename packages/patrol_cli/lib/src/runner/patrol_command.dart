@@ -329,6 +329,11 @@ abstract class PatrolCommand extends Command<int> {
         'web-headless',
         help: 'Whether to run browser in headless mode.',
         valueHelp: 'true | false',
+      )
+      ..addOption(
+        'web-browser-args',
+        help: 'Custom browser launch arguments. JSON array of strings.',
+        valueHelp: '\'["--no-sandbox", "--disable-gpu"]\'',
       );
   }
 

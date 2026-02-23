@@ -1,6 +1,7 @@
 ## Unreleased
 
-- Fix running devtools after moving test to `patrol_test/`. (#2922) 
+- Fix running devtools after moving test to `patrol_test/`. (#2922)
+- Allow to pass additional web browser args through `web-browser-args`. (#2932) 
 
 ## 4.1.0
 
