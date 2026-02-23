@@ -815,14 +815,14 @@ class Automator private constructor() {
         uiDevice.wait(Until.hasObject(By.pkg(targetContext.packageName).depth(0)), 5000)
         axe.startSession(dequeApiKey, dequeProjectId)
         axe.setInstrumentation(instrumentation)
-        
     }
 
     fun axeA11yScan() {
         uiDevice.wait(Until.hasObject(By.pkg(targetContext.packageName).depth(0)), 5000)
 
         val scanHandler = axe.scan()
-        scanHandler?.saveResultToLocalStorage(System.currentTimeMillis().toString())
+        //scanHandler?.saveResultToLocalStorage(System.currentTimeMillis().toString())
+        scanHandler?.uploadToDashboard()
     }
 
     /**

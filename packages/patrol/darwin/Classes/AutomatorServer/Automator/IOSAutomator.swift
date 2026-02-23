@@ -986,8 +986,9 @@
       try runAction("run axe a11y scan") {
         let app = try self.getApp(withBundleId: bundleId)
         let result = (try self.axe?.run(onElement: app))!
-        let path = (try self.axe?.saveResult(result))!
-        Logger.shared.i("Result saved to location: \(path)")
+        try self.axe?.postResult(result)
+        //let path = (try self.axe?.saveResult(result))!
+        //Logger.shared.i("Result saved to location: \(path)")
       }
     }
 
