@@ -23,11 +23,12 @@ In Patrol 4.0 you should use `$.platform` as your entry point to platform automa
 ## Quick checklist
 
 - Upgrade the `patrol` package (and Patrol CLI) to 4.x.
-- Rename your `integration_test/` directory to `patrol_test/` in `pubspec.yaml`, and update `.gitignore` accordingly. 
-If you want to keep using the old directory, you can configure it by adding `test_directory: integration_test` to your `patrol` section in `pubspec.yaml`. Example:
+- Rename your `integration_test/` directory to `patrol_test/` and update `.gitignore` for `test_bundle.dart` accordingly. 
+- If you want to keep using the old directory, you can configure it by adding `test_directory: integration_test` to your `patrol` section in `pubspec.yaml`.
+Example: 
 ```yaml title="pubspec.yaml"
 patrol:
-  test_directory: my_e2e_tests
+  test_directory: integration_test
 ```
 - Rewrite `$.native.*` and `$.native2.*` calls to `$.platform.*`.
 - Replace `NativeSelector(...)` with `MobileSelector(...)`, `Selector(...)`, or `PlatformSelector(...)`.
