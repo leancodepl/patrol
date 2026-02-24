@@ -202,11 +202,13 @@ final class PatrolSession {
   DisposeScope? _disposeScope;
   StreamController<List<int>>? _stdinController;
   DevelopService? _developService;
+  int? _testServerPort;
 
   final _logStreaming = LogStreaming.instance;
 
   /// The device discovered by the last [startAndWait] call.
   Device? get device => _developService?.device;
+  int? get testServerPort => _testServerPort;
 
   /// Returns null if started successfully, or a warning message if blocked
   Future<String?> _start(String testFile) async {
@@ -253,21 +255,11 @@ final class PatrolSession {
     _developService = developService;
 
     // Parse additional flags using the same ArgParser definitions as the CLI.
-    // Environment variables for ports and flutter command are folded in.
-    final flagParts = additionalFlags.isNotEmpty
-        ? additionalFlags.split(RegExp(r'\s+'))
-        : <String>[];
-
-    final testPort = io.Platform.environment['PATROL_TEST_PORT'];
-    final appPort = io.Platform.environment['PATROL_APP_SERVER_PORT'];
-    if (testPort != null) {
-      flagParts.addAll(['--test-server-port', testPort]);
-    }
-    if (appPort != null) {
-      flagParts.addAll(['--app-server-port', appPort]);
-    }
-    // Skip compatibility checking in MCP context for speed.
-    flagParts.add('--no-check-compatibility');
+    final flagParts = (additionalFlags.isNotEmpty
+            ? additionalFlags.split(RegExp(r'\s+'))
+            : <String>[])
+        // Skip compatibility checking in MCP context for speed.
+        ..add('--no-check-compatibility');
 
     final flutterCmd = io.Platform.environment['PATROL_FLUTTER_COMMAND'];
 
@@ -278,6 +270,7 @@ final class PatrolSession {
           ? FlutterCommand.parse(flutterCmd)
           : null,
     );
+    _testServerPort = options.testServerPort;
 
     _isRunning = true;
     _cleanupDone = false;
@@ -352,6 +345,7 @@ final class PatrolSession {
     final logger = Logger('PatrolSession');
     _isRunning = false;
     _currentTestFile = null;
+    _testServerPort = null;
 
     await _logStreaming.stopLogging();
 
