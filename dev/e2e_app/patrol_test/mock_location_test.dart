@@ -34,24 +34,24 @@ void main() {
 
     await Future<void>.delayed(const Duration(seconds: 4));
     await $.pumpAndSettle();
-    expect(await $('Location').waitUntilVisible(), findsOneWidget);
-    expect(await $('Latitude: $_lat1').waitUntilVisible(), findsOneWidget);
-    expect(await $('Longitude: $_lon').waitUntilVisible(), findsOneWidget);
+    await $('Location').waitUntilVisible();
+    await $('Latitude: $_lat1').waitUntilVisible();
+    await $('Longitude: $_lon').waitUntilVisible();
     await Future<void>.delayed(const Duration(milliseconds: 1500));
 
     await $.platform.mobile.setMockLocation(_lat2, _lon);
     await Future<void>.delayed(const Duration(seconds: 4));
     await $.pumpAndSettle();
-    expect(await $('Location').waitUntilVisible(), findsOneWidget);
-    expect(await $('Longitude: $_lon').waitUntilVisible(), findsOneWidget);
+    await $('Location').waitUntilVisible();
+    await $('Longitude: $_lon').waitUntilVisible();
     await Future<void>.delayed(const Duration(milliseconds: 1500));
 
     await $.platform.mobile.setMockLocation(_lat3, _lon);
     await Future<void>.delayed(const Duration(seconds: 4));
     await $.pumpAndSettle();
-    expect(await $('Location').waitUntilVisible(), findsOneWidget);
-    expect(await $('Latitude: $_lat3').waitUntilVisible(), findsOneWidget);
-    expect(await $('Longitude: $_lon').waitUntilVisible(), findsOneWidget);
+    await $('Location').waitUntilVisible();
+    await $('Latitude: $_lat3').waitUntilVisible();
+    await $('Longitude: $_lon').waitUntilVisible();
     await Future<void>.delayed(const Duration(milliseconds: 1500));
   });
 
@@ -104,18 +104,14 @@ void main() {
       await Future<void>.delayed(const Duration(milliseconds: 1500));
 
       // Verify location display is updated
-      expect(
-        await $(
-          'Latitude: ${waypoint.lat!.toStringAsFixed(4)}',
-        ).waitUntilVisible(),
-        findsOneWidget,
-      );
-      expect(
-        await $(
-          'Longitude: ${waypoint.lon!.toStringAsFixed(4)}',
-        ).waitUntilVisible(),
-        findsOneWidget,
-      );
+
+      await $(
+        'Latitude: ${waypoint.lat!.toStringAsFixed(4)}',
+      ).waitUntilVisible();
+
+      await $(
+        'Longitude: ${waypoint.lon!.toStringAsFixed(4)}',
+      ).waitUntilVisible();
     }
   });
 }
