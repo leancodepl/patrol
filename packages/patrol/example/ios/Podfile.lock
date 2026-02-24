@@ -9,8 +9,6 @@ PODS:
     - GoogleUtilities/Environment (~> 8.0)
     - GoogleUtilities/UserDefaults (~> 8.0)
     - PromisesObjC (~> 2.4)
-  - camera_avfoundation (0.0.1):
-    - Flutter
   - CocoaAsyncSocket (7.6.5)
   - Firebase/Auth (11.15.0):
     - Firebase/CoreOnly
@@ -120,6 +118,8 @@ PODS:
   - GTMSessionFetcher/Core (3.5.0)
   - GTMSessionFetcher/Full (3.5.0):
     - GTMSessionFetcher/Core
+  - image_picker_ios (0.0.1):
+    - Flutter
   - nanopb (3.30910.0):
     - nanopb/decode (= 3.30910.0)
     - nanopb/encode (= 3.30910.0)
@@ -137,7 +137,6 @@ PODS:
   - RecaptchaInterop (101.0.0)
 
 DEPENDENCIES:
-  - camera_avfoundation (from `.symlinks/plugins/camera_avfoundation/ios`)
   - firebase_auth (from `.symlinks/plugins/firebase_auth/ios`)
   - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
   - firebase_messaging (from `.symlinks/plugins/firebase_messaging/ios`)
@@ -147,6 +146,7 @@ DEPENDENCIES:
   - geocoding_ios (from `.symlinks/plugins/geocoding_ios/ios`)
   - geolocator_apple (from `.symlinks/plugins/geolocator_apple/darwin`)
   - google_sign_in_ios (from `.symlinks/plugins/google_sign_in_ios/darwin`)
+  - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
   - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
   - patrol (from `.symlinks/plugins/patrol/darwin`)
   - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
@@ -175,8 +175,6 @@ SPEC REPOS:
     - RecaptchaInterop
 
 EXTERNAL SOURCES:
-  camera_avfoundation:
-    :path: ".symlinks/plugins/camera_avfoundation/ios"
   firebase_auth:
     :path: ".symlinks/plugins/firebase_auth/ios"
   firebase_core:
@@ -195,6 +193,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/geolocator_apple/darwin"
   google_sign_in_ios:
     :path: ".symlinks/plugins/google_sign_in_ios/darwin"
+  image_picker_ios:
+    :path: ".symlinks/plugins/image_picker_ios/ios"
   package_info_plus:
     :path: ".symlinks/plugins/package_info_plus/ios"
   patrol:
@@ -205,7 +205,6 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   AppAuth: d4f13a8fe0baf391b2108511793e4b479691fb73
   AppCheckCore: cc8fd0a3a230ddd401f326489c99990b013f0c4f
-  camera_avfoundation: 5675ca25298b6f81fa0a325188e7df62cc217741
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   Firebase: d99ac19b909cd2c548339c2241ecd0d1599ab02e
   firebase_auth: 50af8366c87bb88c80ebeae62eb60189c7246b9b
@@ -230,6 +229,7 @@ SPEC CHECKSUMS:
   GoogleUtilities: 00c88b9a86066ef77f0da2fab05f65d7768ed8e1
   GTMAppAuth: f69bd07d68cd3b766125f7e072c45d7340dea0de
   GTMSessionFetcher: 5aea5ba6bd522a239e236100971f10cb71b96ab6
+  image_picker_ios: e0ece4aa2a75771a7de3fa735d26d90817041326
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
   package_info_plus: af8e2ca6888548050f16fa2f1938db7b5a5df499
   patrol: cea8074f183a2a4232d0ebd10569ae05149ada42

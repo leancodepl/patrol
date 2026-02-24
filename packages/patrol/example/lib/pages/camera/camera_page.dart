@@ -42,10 +42,7 @@ class _CameraPageState extends State<_CameraPage> {
             ),
           ),
           const SizedBox(height: 24),
-          PTElevatedButton(
-            caption: 'Take a photo',
-            onPressed: _takePicture,
-          ),
+          PTElevatedButton(caption: 'Open camera', onPressed: _takePicture),
           const SizedBox(height: 40),
         ],
       ).horizontallyPadded24,
