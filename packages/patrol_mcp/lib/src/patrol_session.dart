@@ -247,7 +247,7 @@ final class PatrolSession {
           exitCompleter.complete();
         }
       },
-      onEntry: _handleEntry,
+      onLogEntry: _handleEntry,
       onTestsCompleted: _handleTestsCompleted,
     );
     _developService = developService;
@@ -391,7 +391,7 @@ final class PatrolSession {
     }
 
     if (entry is ConfigEntry &&
-        entry.config['patrol_develop_completed'] == true &&
+        entry.config[ConfigEntry.developCompletedKey] == true &&
         _testState == TestState.running) {
       _testState = TestState.finishedPassed;
       _completeFinish();

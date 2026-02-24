@@ -63,9 +63,9 @@ class DevelopOptions {
     FlutterCommand? flutterCommand,
   }) {
     final buildModes = {
-      if (results['debug'] as bool) BuildMode.debug,
-      if (results['profile'] as bool) BuildMode.profile,
-      if (results['release'] as bool) BuildMode.release,
+      if (results['debug'] case true) BuildMode.debug,
+      if (results['profile'] case true) BuildMode.profile,
+      if (results['release'] case true) BuildMode.release,
     };
     if (buildModes.isEmpty) {
       buildModes.add(BuildMode.debug);
