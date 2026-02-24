@@ -191,7 +191,7 @@ void patrolTest(
             ),
           )
           ..log(
-            ConfigEntry(config: {'patrol_develop_completed': true}),
+            ConfigEntry(config: {ConfigEntry.developCompletedKey: true}),
           );
         // Wait indefinitely in develop mode after the last test
         while (true) {

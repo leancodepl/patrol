@@ -43,7 +43,7 @@ class DevelopSessionFactory {
     required Stream<List<int>> stdin,
     Future<void> Function()? onExit,
     void Function(TestCompletionResult result)? onTestsCompleted,
-    void Function(Entry entry)? onEntry,
+    void Function(Entry entry)? onLogEntry,
   }) {
     const fs = LocalFileSystem();
     const platform = LocalPlatform();
@@ -111,7 +111,7 @@ class DevelopSessionFactory {
       logger: logger,
       stdin: stdin,
       onTestsCompleted: onTestsCompleted,
-      onEntry: onEntry,
+      onLogEntry: onLogEntry,
     );
   }
 }

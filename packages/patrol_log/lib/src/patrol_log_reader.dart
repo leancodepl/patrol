@@ -16,7 +16,7 @@ class PatrolLogReader {
     required this.showFlutterLogs,
     required this.hideTestSteps,
     required this.clearTestSteps,
-    this.onEntry,
+    this.onLogEntry,
   }) : _scope = scope;
 
   final void Function(String) log;
@@ -24,7 +24,7 @@ class PatrolLogReader {
   final bool showFlutterLogs;
   final bool hideTestSteps;
   final bool clearTestSteps;
-  final void Function(Entry entry)? onEntry;
+  final void Function(Entry entry)? onLogEntry;
   final StreamSubscription<void> Function(
     void Function(String) onData, {
     Function? onError,
@@ -124,14 +124,14 @@ class PatrolLogReader {
               !_skippedTests.contains(testEntry.name)) {
             _skippedTests.add(testEntry.name);
             _controller.add(entry);
-            onEntry?.call(entry);
+            onLogEntry?.call(entry);
           } else if (testEntry.status != TestEntryStatus.skip) {
             _controller.add(entry);
-            onEntry?.call(entry);
+            onLogEntry?.call(entry);
           }
         } else {
           _controller.add(entry);
-          onEntry?.call(entry);
+          onLogEntry?.call(entry);
         }
       }
     } catch (err) {

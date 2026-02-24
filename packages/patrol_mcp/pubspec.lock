@@ -361,12 +361,12 @@ packages:
     source: path
     version: "4.0.2"
   patrol_log:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
       path: "../patrol_log"
       relative: true
     source: path
-    version: "0.6.0"
+    version: "0.7.0"
   petitparser:
     dependency: transitive
     description:

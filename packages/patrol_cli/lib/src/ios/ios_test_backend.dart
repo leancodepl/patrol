@@ -157,7 +157,7 @@ class IOSTestBackend {
     required bool showFlutterLogs,
     required bool hideTestSteps,
     required bool clearTestSteps,
-    void Function(Entry entry)? onEntry,
+    void Function(Entry entry)? onLogEntry,
   }) async {
     await _disposeScope.run((scope) async {
       final patrolLogCommand = device.real
@@ -182,7 +182,7 @@ class IOSTestBackend {
               showFlutterLogs: showFlutterLogs,
               hideTestSteps: hideTestSteps,
               clearTestSteps: clearTestSteps,
-              onEntry: onEntry,
+              onLogEntry: onLogEntry,
             )
             ..listen()
             ..startTimer();
