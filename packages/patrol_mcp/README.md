@@ -35,41 +35,23 @@ dev_dependencies:
       path: packages/patrol_mcp
 ```
 
-2. Create `.cursor/run-patrol`:
-
-```sh
-#!/usr/bin/env sh
-
-cd "${PROJECT_ROOT:-.}"
-export PROJECT_ROOT=$PWD
-
-if [ -d ".fvm/flutter_sdk" ]; then
-  .fvm/flutter_sdk/bin/dart run patrol_mcp
-elif which fvm >/dev/null 2>&1; then
-  fvm dart run patrol_mcp
-else
-  dart run patrol_mcp
-fi
-```
-
-3. Make it executable:
-
-```sh
-chmod +x .cursor/run-patrol
-```
-
-4. Choose config scope:
+2. Choose config scope:
 
 - **Local/project config (recommended for teams):** keeps setup versioned with
   the repo and easier to reproduce across machines.
 - **Global/user config:** easier one-time setup across multiple projects.
 
-5. Add the MCP server to your AI coding assistant configuration:
+> [!IMPORTANT]
+> If your project uses FVM, change
+> `"PATROL_FLUTTER_COMMAND": "flutter"` to `"PATROL_FLUTTER_COMMAND": "fvm flutter"`
+> in the MCP server `env` object.
+
+3. Add the MCP server to your AI coding assistant configuration:
 
 <details>
 <summary>Cursor</summary>
 
-[![Install MCP Server](https://cursor.com/deeplink/mcp-install-dark.svg)](https://cursor.com/en-US/install-mcp?name=patrol&config=eyJjb21tYW5kIjoiLi8uY3Vyc29yL3J1bi1wYXRyb2wiLCJlbnYiOnsiUFJPSkVDVF9ST09UIjoiLiIsIlBBVFJPTF9GTEFHUyI6IiIsIlNIT1dfVEVSTUlOQUwiOiJmYWxzZSJ9fQ%3D%3D)
+[![Install MCP Server](https://cursor.com/deeplink/mcp-install-dark.svg)](https://cursor.com/en-US/install-mcp?name=patrol&config=eyJjb21tYW5kIjoiZGFydCIsImFyZ3MiOlsicnVuIiwicGF0cm9sX21jcCJdLCJlbnYiOnsiUFJPSkVDVF9ST09UIjoiLiIsIlBBVFJPTF9GTEFHUyI6IiIsIlBBVFJPTF9GTFVUVEVSX0NPTU1BTkQiOiJmbHV0dGVyIiwiU0hPV19URVJNSU5BTCI6ImZhbHNlIn19)
 
 Or manually add to your project's `.cursor/mcp.json` or your global `~/.cursor/mcp.json`:
 
@@ -77,10 +59,12 @@ Or manually add to your project's `.cursor/mcp.json` or your global `~/.cursor/m
 {
   "mcpServers": {
     "patrol": {
-      "command": "./.cursor/run-patrol",
+      "command": "dart",
+      "args": ["run", "patrol_mcp"],
       "env": {
         "PROJECT_ROOT": ".",
         "PATROL_FLAGS": "",
+        "PATROL_FLUTTER_COMMAND": "flutter",
         "SHOW_TERMINAL": "false"
       }
     }
@@ -104,6 +88,7 @@ Open the MCP store, click "Manage MCP Servers", then "View raw config" and add t
       "env": {
         "PROJECT_ROOT": ".",
         "PATROL_FLAGS": "",
+        "PATROL_FLUTTER_COMMAND": "flutter",
         "SHOW_TERMINAL": "false"
       }
     }
@@ -127,6 +112,7 @@ Add to your `~/.gemini/settings.json`:
       "env": {
         "PROJECT_ROOT": ".",
         "PATROL_FLAGS": "",
+        "PATROL_FLUTTER_COMMAND": "flutter",
         "SHOW_TERMINAL": "false"
       }
     }
@@ -156,6 +142,7 @@ Then make sure your Claude MCP config for `patrol` includes:
       "env": {
         "PROJECT_ROOT": ".",
         "PATROL_FLAGS": "",
+        "PATROL_FLUTTER_COMMAND": "flutter",
         "SHOW_TERMINAL": "false"
       }
     }
@@ -179,6 +166,7 @@ Add to your `mcp.json`:
       "env": {
         "PROJECT_ROOT": ".",
         "PATROL_FLAGS": "",
+        "PATROL_FLUTTER_COMMAND": "flutter",
         "SHOW_TERMINAL": "false"
       }
     }
@@ -199,6 +187,8 @@ Add to your `mcp.json`:
 
 `patrol_mcp` also respects environment variables supported by `patrol_cli`
 (for example: `PATROL_FLUTTER_COMMAND`).
+For FVM setups, this is typically:
+`"PATROL_FLUTTER_COMMAND": "fvm flutter"`.
 
 ### Setup Best Practices
 
@@ -219,7 +209,6 @@ Add to your `mcp.json`:
 
 - Make sure Cursor is opened at your mobile project root.
 - Run `dart pub get` in the Flutter project root.
-- Verify `.cursor/run-patrol` is executable.
 - Confirm MCP server is enabled in Cursor settings.
 
 ## 🛠️ Maintained by LeanCode
