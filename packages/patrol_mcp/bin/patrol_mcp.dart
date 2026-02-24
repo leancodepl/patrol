@@ -93,6 +93,21 @@ Future<int> main(List<String> args) async {
         capabilities: ServerCapabilities(
           tools: ServerCapabilitiesTools(),
         ),
+        instructions:
+            'Patrol MCP lets AI agents run and control Patrol develop sessions.\n\n'
+            'Usage workflow:\n'
+            '1. Use run with testFile (for example: {"testFile":"patrol_test/your_test.dart"}) '
+            'to start a test run.\n'
+            '2. Use screenshot to capture the current app screen.\n'
+            '3. Use native-tree to fetch the current native UI tree '
+            '(requires an active session/device).\n'
+            '4. Use quit to gracefully stop the active session when done.\n\n'
+            'Behavior notes:\n'
+            '- run waits for test completion.\n'
+            '- If no session is running, run starts a new session.\n'
+            '- If a session is already running, run triggers a restart for the requested test.\n'
+            '- status is optional and mainly useful for debugging session state and recent output.\n'
+            '- native-tree is intended for native interactions and cross-app/native context inspection.',
       ),
     )
       ..registerTool(
