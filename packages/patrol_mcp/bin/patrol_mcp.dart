@@ -33,9 +33,11 @@ void _printUsage(ArgParser argParser) {
       '  PROJECT_ROOT      Path to Flutter project (default: current directory)',
     )
     ..writeln('  PATROL_FLAGS      Additional flags for patrol develop command')
-    ..writeln('  PATROL_TEST_PORT  Port for patrol test server (default: 8081)')
     ..writeln(
       '  SHOW_TERMINAL     Set to "true" to open terminal with logs (macOS)',
+    )
+    ..writeln(
+      '  (also supports patrol_cli env vars, e.g. PATROL_FLUTTER_COMMAND)',
     )
     ..writeln()
     ..writeln(argParser.usage);
@@ -177,6 +179,7 @@ Future<int> main(List<String> args) async {
         callback: (args, extra) {
           return NativeTreeService.handleGetNativeTreeRequest(
             patrolSession.device,
+            patrolSession.testServerPort,
           );
         },
       );
