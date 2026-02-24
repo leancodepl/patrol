@@ -58,7 +58,13 @@ fi
 chmod +x .cursor/run-patrol
 ```
 
-4. Add the MCP server to your AI coding assistant configuration:
+4. Choose config scope:
+
+- **Local/project config (recommended for teams):** keeps setup versioned with
+  the repo and easier to reproduce across machines.
+- **Global/user config:** easier one-time setup across multiple projects.
+
+5. Add the MCP server to your AI coding assistant configuration:
 
 <details>
 <summary>Cursor</summary>
@@ -97,7 +103,8 @@ Open the MCP store, click "Manage MCP Servers", then "View raw config" and add t
       "args": ["run", "patrol_mcp"],
       "env": {
         "PROJECT_ROOT": ".",
-        "PATROL_FLAGS": ""
+        "PATROL_FLAGS": "",
+        "SHOW_TERMINAL": "false"
       }
     }
   }
@@ -119,7 +126,8 @@ Add to your `~/.gemini/settings.json`:
       "args": ["run", "patrol_mcp"],
       "env": {
         "PROJECT_ROOT": ".",
-        "PATROL_FLAGS": ""
+        "PATROL_FLAGS": "",
+        "SHOW_TERMINAL": "false"
       }
     }
   }
@@ -137,6 +145,24 @@ You can run:
 claude mcp add --transport stdio patrol -- dart run patrol_mcp
 ```
 
+Then make sure your Claude MCP config for `patrol` includes:
+
+```json
+{
+  "mcpServers": {
+    "patrol": {
+      "command": "dart",
+      "args": ["run", "patrol_mcp"],
+      "env": {
+        "PROJECT_ROOT": ".",
+        "PATROL_FLAGS": "",
+        "SHOW_TERMINAL": "false"
+      }
+    }
+  }
+}
+```
+
 </details>
 
 <details>
@@ -152,7 +178,8 @@ Add to your `mcp.json`:
       "args": ["run", "patrol_mcp"],
       "env": {
         "PROJECT_ROOT": ".",
-        "PATROL_FLAGS": ""
+        "PATROL_FLAGS": "",
+        "SHOW_TERMINAL": "false"
       }
     }
   }
@@ -163,7 +190,8 @@ Add to your `mcp.json`:
 
 ### Environment Variables
 
-- `PROJECT_ROOT`: Flutter project directory containing `pubspec.yaml`.
+- `PROJECT_ROOT` (recommended): Flutter project directory containing `pubspec.yaml`.
+  If omitted, `patrol_mcp` uses the current working directory.
 - `PATROL_FLAGS`: Extra `patrol develop` flags, for example:
   `--flavor dev --no-uninstall --open-devtools`.
   Use this for ports too: `--test-server-port 8081 --app-server-port 8082`.
@@ -171,6 +199,13 @@ Add to your `mcp.json`:
 
 `patrol_mcp` also respects environment variables supported by `patrol_cli`
 (for example: `PATROL_FLUTTER_COMMAND`).
+
+### Setup Best Practices
+
+- Prefer local/project MCP config when sharing setup with a team.
+- Use global/user MCP config for personal tooling across many projects.
+- In global setup, set `PROJECT_ROOT` explicitly if your IDE does not start MCP
+  in the project root working directory.
 
 ## Tools
 
