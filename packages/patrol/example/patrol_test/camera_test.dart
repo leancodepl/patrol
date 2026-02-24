@@ -7,7 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
 
 void main() {
-  patrolTest('camera flow', ($) async {
+  patrolTest('camera with injected image on BrowserStack', ($) async {
     await $.pumpWidgetAndSettle(const MyApp());
 
     await $('Take a photo').tap();
@@ -21,6 +21,13 @@ void main() {
         await $.platform.mobile.grantPermissionWhenInUse();
       }
 
+      // Inject the image before triggering the camera capture.
+      // the image with the specified name must have been uploaded to BrowserStack
+      // and included in the cameraInjectionMedia capability.
+      await $.platform.ios.injectCameraPhoto(imageName: 'flower.jpg');
+
+      // Take the camera photo as usual. The app will receive the
+      // injected image instead of real camera input.
       await $.platform.mobile.takeCameraPhoto();
 
       await $.pumpAndSettle(duration: const Duration(seconds: 1));

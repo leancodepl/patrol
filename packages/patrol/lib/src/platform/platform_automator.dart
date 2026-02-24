@@ -211,6 +211,18 @@ class PlatformAutomator {
     );
   }
 
+  /// Inject an image for BrowserStack Camera Image Injection (iOS only).
+  ///
+  /// Stages [imageName] so that the next camera capture returns this image
+  /// instead of real camera input. Call [MobileAutomator.takeCameraPhoto]
+  /// after this to trigger the actual capture.
+  ///
+  /// This only works on iOS when running on BrowserStack with the
+  /// appropriate capabilities enabled.
+  Future<void> injectCameraPhoto({required String imageName}) {
+    return ios.injectCameraPhoto(imageName: imageName);
+  }
+
   /// None of the native actions are supported on MacOS, so we will just always throw.
   static T _throwOnMacOS<T>() {
     throw UnsupportedError('MacOS native actions are not supported');

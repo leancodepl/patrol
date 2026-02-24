@@ -480,6 +480,18 @@ class IOSAutomator extends NativeMobileAutomator
     );
   }
 
+  @override
+  Future<void> injectCameraPhoto({required String imageName}) async {
+    await wrapRequest('injectCameraPhoto', () async {
+      await _client.injectCameraPhoto(
+        IOSInjectCameraPhotoRequest(
+          imageName: imageName,
+          appId: resolvedAppId,
+        ),
+      );
+    });
+  }
+
   /// Take and confirm the photo
   ///
   /// This method taps on the camera shutter button to take a photo, then taps

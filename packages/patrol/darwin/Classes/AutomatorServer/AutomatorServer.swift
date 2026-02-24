@@ -2,6 +2,10 @@
 
   import Foundation
 
+  #if canImport(BrowserStackTestHelper)
+    import BrowserStackTestHelper
+  #endif
+
   final class AutomatorServer: MobileAutomatorServer, IosAutomatorServer {
 
     private let automator: Automator
@@ -324,6 +328,38 @@
     }
 
     // MARK: Camera
+
+    func injectCameraPhoto(request: IOSInjectCameraPhotoRequest) throws {
+      #if canImport(BrowserStackTestHelper)
+        let injector = createInstance()
+        let semaphore = DispatchSemaphore(value: 0)
+        var injectionError: Error? = nil
+
+        injector.injectImage(imageName: request.imageName) { response in
+          let result = response.toDictionary()
+          if let status = result["status"] as? String, status != "success" {
+            injectionError = PatrolError.internal(
+              "BrowserStack image injection failed: \(result)"
+            )
+          }
+          semaphore.signal()
+        }
+
+        let waitResult = semaphore.wait(timeout: .now() + 30)
+        if waitResult == .timedOut {
+          throw PatrolError.internal("BrowserStack image injection timed out")
+        }
+        if let error = injectionError {
+          throw error
+        }
+      #else
+        throw PatrolError.internal(
+          "BrowserStackTestHelper framework is not available. "
+          + "To use injectCameraPhoto, add BrowserStackTestHelper to your project "
+          + "and ensure it is linked with the RunnerUITests target."
+        )
+      #endif
+    }
 
     func takeCameraPhoto(request: IOSTakeCameraPhotoRequest) throws {
       try automator.tap(
