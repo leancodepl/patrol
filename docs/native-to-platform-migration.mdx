@@ -1,0 +1,167 @@
+---
+title: Migrate from native to platform
+---
+
+Patrol 4.0 introduces the **Platform Automation API** and starts the deprecation of the legacy native automation entry points:
+
+- `$.native` (Native Automation 1.0)
+- `$.native2` (Native Automation 2.0)
+
+<Warning>
+  `$.native`, `$.native2`, `NativeAutomator`, `NativeAutomator2`, and `NativeAutomatorConfig` are deprecated and will be removed in a future release. Migrate to `$.platform` and `PlatformAutomatorConfig`.
+</Warning>
+
+## Breaking changes you’ll likely hit
+
+In Patrol 4.0 you should use `$.platform` as your entry point to platform automation.
+
+- `$.platform.mobile`: cross-platform mobile actions (recommended default)
+- `$.platform.android`: Android-only actions
+- `$.platform.ios`: iOS-only actions
+- `$.platform.web`: web automation
+
+## Quick checklist
+
+- Upgrade the `patrol` package (and Patrol CLI) to 4.x.
+- Rename your `integration_test/` directory to `patrol_test/` and update `.gitignore` for `test_bundle.dart` accordingly. 
+- If you want to keep using the old directory, you can configure it by adding `test_directory: integration_test` to your `patrol` section in `pubspec.yaml`.
+Example: 
+```yaml title="pubspec.yaml"
+patrol:
+  test_directory: integration_test
+```
+- Rewrite `$.native.*` and `$.native2.*` calls to `$.platform.*`.
+- Replace `NativeSelector(...)` with `MobileSelector(...)`, `Selector(...)`, or `PlatformSelector(...)`.
+- `patrol test` and `patrol develop` now prompt for a device. In CI, pass `--device`/`-d` to avoid the prompt, or set `CI=true` env variable.
+
+## Common rewrites (search and replace)
+
+### `native2` → `platform.mobile`
+
+#### Pressing Home
+
+```dart
+// Before:
+await $.native2.pressHome(); // Press home for notifications.
+
+// After:
+await $.platform.mobile.pressHome(); // Press home for notifications.
+```
+
+#### Selector types you can pass to `$.platform.mobile.tap()`
+
+Patrol 4.0 native actions (for example `$.platform.mobile.tap(...)`) accept a `MobileSelector`, `PlatformSelector`, or `Selector`. In practice, you’ll usually use one of these three types:
+
+#### `MobileSelector(...)` (most common during migration)
+
+Use when Android and iOS require different selectors (this is the direct replacement for most `native2` uses).
+
+```dart
+// Before:
+await $.native2.tap(
+  NativeSelector(
+    android: AndroidSelector(resourceName: 'com.example:id/submit_button'),
+    ios: IOSSelector(identifier: 'submitButton'),
+  ),
+);
+
+// After:
+await $.platform.mobile.tap(
+  MobileSelector(
+    android: AndroidSelector(resourceName: 'com.example:id/submit_button'),
+    ios: IOSSelector(identifier: 'submitButton'),
+  ),
+);
+```
+
+#### `Selector(...)`
+
+Use when the same selector “shape” works on Android and iOS (for example text-based selectors).
+
+```dart
+// Before:
+await $.native.tap(Selector(text: 'Allow'));
+
+// After:
+await $.platform.mobile.tap(Selector(text: 'Allow'));
+```
+
+#### `PlatformSelector(...)`
+
+Use when you want to provide selectors for Android + iOS + Web in one place. This is most useful with `$.platform.tap(...)` (platform router), but it can also be used with `$.platform.mobile.*` as long as it includes Android and iOS selectors.
+
+```dart
+// Before:
+await $.native2.tap(
+  NativeSelector(
+    android: AndroidSelector(text: 'Click Android text'),
+    ios: IOSSelector(text: 'Click iOS text'),
+    // Web was not supported in native2
+  ),
+);
+
+// After:
+await $.platform.tap(
+  PlatformSelector(
+    android: AndroidSelector(text: 'Click Android text'),
+    ios: IOSSelector(text: 'Click iOS text'),
+    web: WebSelector(text: 'Click web text'),
+  ),
+);
+```
+
+#### Platform-specific actions
+
+Some legacy calls were platform-specific but lived under `$.native`. In Patrol 4.0 they live under `$.platform.android` / `$.platform.ios`.
+
+```dart
+// Before:
+await $.native.pressBack();
+
+// After:
+await $.platform.android.pressBack();
+```
+
+```dart
+// Before:
+await $.native.closeHeadsUpNotification();
+
+// After:
+await $.platform.ios.closeHeadsUpNotification();
+```
+## More examples
+
+### NativeAutomator → PlatformAutomator
+If you used to create native automators manually, create a `PlatformAutomator` instead.
+
+```dart
+// Before:
+patrolTearDown(() async {
+  final automator = NativeAutomator(config: nativeConfig);
+
+  await automator.enableWifi();
+  await automator.enableCellular();
+});
+
+// After:
+patrolTearDown(() async {
+  final automator = PlatformAutomator(config: platformConfig);
+
+  await automator.mobile.enableWifi();
+  await automator.mobile.enableCellular();
+});
+```
+
+### NativeAutomatorConfig → PlatformAutomatorConfig
+
+```dart
+// Before:
+final nativeConfig = NativeAutomatorConfig(
+  keyboardBehavior: KeyboardBehavior.alternative,
+);
+
+// After:
+final platformConfig = PlatformAutomatorConfig.fromOptions(
+  keyboardBehavior: KeyboardBehavior.alternative,
+);
+```
