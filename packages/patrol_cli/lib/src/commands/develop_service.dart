@@ -51,7 +51,7 @@ class DevelopService {
     required Logger logger,
     required Stream<List<int>> stdin,
     this.onTestsCompleted,
-    this.onEntry,
+    this.onLogEntry,
   }) : _deviceFinder = deviceFinder,
        _testFinderFactory = testFinderFactory,
        _testBundler = testBundler,
@@ -71,7 +71,7 @@ class DevelopService {
   /// to test completion without waiting for the full develop session
   /// (including flutter attach) to tear down.
   final void Function(TestCompletionResult result)? onTestsCompleted;
-  final void Function(Entry entry)? onEntry;
+  final void Function(Entry entry)? onLogEntry;
 
   final DeviceFinder _deviceFinder;
   final TestFinderFactory _testFinderFactory;
@@ -371,7 +371,7 @@ class DevelopService {
           hideTestSteps: hideTestSteps,
           flavor: flutterOpts.flavor,
           clearTestSteps: clearTestSteps,
-          onEntry: onEntry,
+          onLogEntry: onLogEntry,
         );
         final package = android.packageName;
         if (package != null && uninstall) {
@@ -390,7 +390,7 @@ class DevelopService {
           showFlutterLogs: showFlutterLogs,
           hideTestSteps: hideTestSteps,
           clearTestSteps: clearTestSteps,
-          onEntry: onEntry,
+          onLogEntry: onLogEntry,
         );
         final bundleId = iosOpts.bundleId;
         if (bundleId != null && uninstall) {
