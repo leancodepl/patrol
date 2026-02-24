@@ -37,16 +37,11 @@ dev_dependencies:
 
 > [!IMPORTANT]
 > This README focuses on project-local MCP setup.
->
-> The setup below uses a project script (`./run-patrol`) that automatically
-> prefers FVM when available and falls back to plain Dart otherwise.
 
 2. Add the MCP server to your AI coding assistant configuration:
 
-<details>
-<summary>Cursor</summary>
-
-Create `./run-patrol`:
+Create launcher script (`run-patrol`) in the IDE-specific location you plan to
+reference from `command`.
 
 ```sh
 #!/usr/bin/env sh
@@ -67,16 +62,23 @@ fi
 Make it executable:
 
 ```sh
-chmod +x ./run-patrol
+chmod +x <path-to-run-patrol>
 ```
 
-Add to your project's `.cursor/mcp.json`:
+Then configure your IDE MCP server:
+
+<details>
+<summary>Cursor</summary>
+
+Add to `<workspace-root>/.cursor/mcp.json`:
+
+Put script at: `<workspace-root>/.antigravity/run-patrol`
 
 ```json
 {
   "mcpServers": {
     "patrol": {
-      "command": "./run-patrol",
+      "command": "./.antigravity/run-patrol",
       "env": {
         "PROJECT_ROOT": ".",
         "PATROL_FLAGS": "",
@@ -92,8 +94,7 @@ Add to your project's `.cursor/mcp.json`:
 <details>
 <summary>Google Antigravity</summary>
 
-Create `run-patrol` in your Antigravity workspace root (the directory where
-relative command paths are resolved), then use `"command": "./run-patrol"`.
+Put script at: `<workspace-root>/.cursor/run-patrol`
 
 Open the MCP store, click "Manage MCP Servers", then "View raw config" and add to `mcp_config.json`:
 
@@ -101,7 +102,7 @@ Open the MCP store, click "Manage MCP Servers", then "View raw config" and add t
 {
   "mcpServers": {
     "patrol": {
-      "command": "./run-patrol",
+      "command": "./.cursor/run-patrol",
       "env": {
         "PROJECT_ROOT": ".",
         "PATROL_FLAGS": "",
@@ -117,16 +118,15 @@ Open the MCP store, click "Manage MCP Servers", then "View raw config" and add t
 <details>
 <summary>Gemini CLI</summary>
 
-Create `run-patrol` in your project root (same level as `.gemini/`), then use
-`"command": "./run-patrol"`.
+Put script at: `<workspace-root>/.gemini/run-patrol`
 
-Add to your project's `.gemini/settings.json`:
+Add to `<workspace-root>/.gemini/settings.json`:
 
 ```json
 {
   "mcpServers": {
     "patrol": {
-      "command": "./run-patrol",
+      "command": "./.gemini/run-patrol",
       "env": {
         "PROJECT_ROOT": ".",
         "PATROL_FLAGS": "",
@@ -142,13 +142,12 @@ Add to your project's `.gemini/settings.json`:
 <details>
 <summary>Claude Code</summary>
 
-Create `run-patrol` in your project root and keep `"command": "./run-patrol"`
-in config.
+Put script at: `<workspace-root>/.claude/run-patrol`
 
 You can run:
 
 ```bash
-claude mcp add --transport stdio patrol -- ./run-patrol
+claude mcp add --transport stdio patrol -- ./.claude/run-patrol
 ```
 
 Then make sure your Claude MCP config for `patrol` includes:
@@ -157,7 +156,7 @@ Then make sure your Claude MCP config for `patrol` includes:
 {
   "mcpServers": {
     "patrol": {
-      "command": "./run-patrol",
+      "command": "./.claude/run-patrol",
       "env": {
         "PROJECT_ROOT": ".",
         "PATROL_FLAGS": "",
@@ -173,16 +172,15 @@ Then make sure your Claude MCP config for `patrol` includes:
 <details>
 <summary>Copilot</summary>
 
-Create `run-patrol` in your project root (same level as your `mcp.json`), then
-use `"command": "./run-patrol"`.
+Put script at: `<workspace-root>/.vscode/run-patrol`
 
-Add to your `mcp.json`:
+Add to `<workspace-root>/mcp.json`:
 
 ```json
 {
   "servers": {
     "patrol": {
-      "command": "./run-patrol",
+      "command": "./.vscode/run-patrol",
       "env": {
         "PROJECT_ROOT": ".",
         "PATROL_FLAGS": "",
@@ -206,7 +204,7 @@ Add to your `mcp.json`:
 
 `patrol_mcp` also respects environment variables supported by `patrol_cli`
 (for example: `PATROL_FLUTTER_COMMAND`).
-The provided `./run-patrol` sets `PATROL_FLUTTER_COMMAND` automatically:
+The provided `run-patrol` script sets `PATROL_FLUTTER_COMMAND` automatically:
 `fvm flutter` when FVM is available, otherwise `flutter`.
 
 ### Setup Best Practices
@@ -226,7 +224,7 @@ The provided `./run-patrol` sets `PATROL_FLUTTER_COMMAND` automatically:
 
 - Make sure your IDE is opened at the mobile project root.
 - Run `dart pub get` in the Flutter project root.
-- Verify `./run-patrol` is executable.
+- Verify your configured `run-patrol` path is executable.
 - Confirm MCP server is enabled in your IDE settings.
 
 ## 🛠️ Maintained by LeanCode
