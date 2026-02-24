@@ -56,17 +56,16 @@ Patrol 4.0 native actions (for example `$.platform.mobile.tap(...)`) accept a `M
 
 Use when Android and iOS require different selectors (this is the direct replacement for most `native2` uses).
 
-**Before:**
 ```dart
+Before:
 await $.native2.tap(
   NativeSelector(
     android: AndroidSelector(resourceName: 'com.example:id/submit_button'),
     ios: IOSSelector(identifier: 'submitButton'),
   ),
 );
-```
-**After:**
-```dart
+
+After:
 await $.platform.mobile.tap(
   MobileSelector(
     android: AndroidSelector(resourceName: 'com.example:id/submit_button'),
@@ -79,12 +78,11 @@ await $.platform.mobile.tap(
 
 Use when the same selector “shape” works on Android and iOS (for example text-based selectors).
 
-**Before:**
 ```dart
+Before:
 await $.native.tap(Selector(text: 'Allow'));
-```
-**After:**
-```dart
+
+After:
 await $.platform.mobile.tap(Selector(text: 'Allow'));
 ```
 
@@ -92,8 +90,8 @@ await $.platform.mobile.tap(Selector(text: 'Allow'));
 
 Use when you want to provide selectors for Android + iOS + Web in one place. This is most useful with `$.platform.tap(...)` (platform router), but it can also be used with `$.platform.mobile.*` as long as it includes Android and iOS selectors.
 
-**Before:**
 ```dart
+Before:
 await $.native2.tap(
   NativeSelector(
     android: AndroidSelector(text: 'Click Android text'),
@@ -101,10 +99,8 @@ await $.native2.tap(
     // Web was not supported in native2
   ),
 );
-```
 
-**After:**
-```dart
+After:
 await $.platform.tap(
   PlatformSelector(
     android: AndroidSelector(text: 'Click Android text'),
@@ -118,21 +114,19 @@ await $.platform.tap(
 
 Some legacy calls were platform-specific but lived under `$.native`. In Patrol 4.0 they live under `$.platform.android` / `$.platform.ios`.
 
-**Before:**
 ```dart
+Before:
 await $.native.pressBack();
-```
-**After:**
-```dart
+
+After:
 await $.platform.android.pressBack();
 ```
 
-**Before:**
 ```dart
+Before:
 await $.native.closeHeadsUpNotification();
-```
-**After:**
-```dart
+
+After:
 await $.platform.ios.closeHeadsUpNotification();
 ```
 ## More examples
@@ -140,20 +134,16 @@ await $.platform.ios.closeHeadsUpNotification();
 ### NativeAutomator → PlatformAutomator
 If you used to create native automators manually, create a `PlatformAutomator` instead.
 
-**Before:**
-
 ```dart
+Before:
 patrolTearDown(() async {
   final automator = NativeAutomator(config: nativeConfig);
 
   await automator.enableWifi();
   await automator.enableCellular();
 });
-```
 
-**After:**
-
-```dart
+After:
 patrolTearDown(() async {
   final automator = PlatformAutomator(config: platformConfig);
 
@@ -164,17 +154,13 @@ patrolTearDown(() async {
 
 ### NativeAutomatorConfig → PlatformAutomatorConfig
 
-**Before:**
-
 ```dart
+Before:
 final nativeConfig = NativeAutomatorConfig(
   keyboardBehavior: KeyboardBehavior.alternative,
 );
-```
 
-**After:**
-
-```dart
+After:
 final platformConfig = PlatformAutomatorConfig.fromOptions(
   keyboardBehavior: KeyboardBehavior.alternative,
 );
