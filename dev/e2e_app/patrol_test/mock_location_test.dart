@@ -16,7 +16,6 @@ void main() {
   patrol('mock location', ($) async {
     await createApp($);
 
-    await $.platform.mobile.setMockLocation(_lat1, _lon);
     await $('Open map screen').scrollTo().tap();
     await $.pumpAndSettle();
 
@@ -31,8 +30,8 @@ void main() {
       }
     }
     await $.pumpAndSettle();
-
-    await Future<void>.delayed(const Duration(seconds: 4));
+    await $.platform.mobile.setMockLocation(_lat1, _lon);
+    await Future<void>.delayed(const Duration(seconds: 5));
     await $.pumpAndSettle();
     await $('Location').waitUntilVisible();
     await $('Latitude: $_lat1').waitUntilVisible();
