@@ -31,7 +31,6 @@ void main() {
     }
     await $.pumpAndSettle();
     await $.platform.mobile.setMockLocation(_lat1, _lon);
-    await Future<void>.delayed(const Duration(seconds: 5));
     await $.pumpAndSettle();
     await $('Location').waitUntilVisible();
     await $('Latitude: $_lat1').waitUntilVisible();
@@ -39,14 +38,12 @@ void main() {
     await Future<void>.delayed(const Duration(milliseconds: 1500));
 
     await $.platform.mobile.setMockLocation(_lat2, _lon);
-    await Future<void>.delayed(const Duration(seconds: 4));
     await $.pumpAndSettle();
     await $('Location').waitUntilVisible();
     await $('Longitude: $_lon').waitUntilVisible();
     await Future<void>.delayed(const Duration(milliseconds: 1500));
 
     await $.platform.mobile.setMockLocation(_lat3, _lon);
-    await Future<void>.delayed(const Duration(seconds: 4));
     await $.pumpAndSettle();
     await $('Location').waitUntilVisible();
     await $('Latitude: $_lat3').waitUntilVisible();
