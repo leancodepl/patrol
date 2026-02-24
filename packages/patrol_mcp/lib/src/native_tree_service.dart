@@ -7,10 +7,10 @@ import 'package:patrol_cli/develop.dart' show Device, TargetPlatform;
 
 abstract final class NativeTreeService {
   static const _host = 'localhost';
-  static final _port = Platform.environment['PATROL_TEST_PORT'] ?? '8081';
 
   static Future<CallToolResult> handleGetNativeTreeRequest(
     Device? device,
+    int? testServerPort,
   ) async {
     try {
       if (device == null) {
@@ -26,9 +26,10 @@ abstract final class NativeTreeService {
         );
       }
 
-      await _setupConnection(device);
+      final port = testServerPort ?? 8081;
+      await _setupConnection(device, port);
 
-      final tree = await _fetchNativeTree();
+      final tree = await _fetchNativeTree(port);
 
       if (_isTreeEmpty(tree)) {
         return const CallToolResult(
@@ -197,12 +198,12 @@ abstract final class NativeTreeService {
     return trimmed;
   }
 
-  static Future<Map<String, dynamic>> _fetchNativeTree() async {
+  static Future<Map<String, dynamic>> _fetchNativeTree(int port) async {
     final client = HttpClient();
     try {
       final iosApps = await _getIosInstalledApps();
 
-      final uri = Uri.http('$_host:$_port', '/getNativeViews');
+      final uri = Uri.http('$_host:$port', '/getNativeViews');
       final request = await client.postUrl(uri)
         ..headers.contentType = ContentType.json
         ..write(
@@ -227,13 +228,12 @@ abstract final class NativeTreeService {
     }
   }
 
-  static Future<void> _setupConnection(Device device) async {
+  static Future<void> _setupConnection(Device device, int port) async {
     if (device.targetPlatform != TargetPlatform.android) {
       // iOS simulator traffic goes directly to localhost.
       return;
     }
 
-    final port = int.parse(_port);
     await Adb().forwardPorts(fromHost: port, toDevice: port);
   }
 }
