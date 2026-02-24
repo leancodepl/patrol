@@ -2,10 +2,6 @@
 
   import Foundation
 
-  #if canImport(BrowserStackTestHelper)
-    import BrowserStackTestHelper
-  #endif
-
   final class AutomatorServer: MobileAutomatorServer, IosAutomatorServer {
 
     private let automator: Automator
@@ -329,36 +325,71 @@
 
     // MARK: Camera
 
+    // Uses ObjC runtime reflection to call BrowserStack's API without a compile-time
+    // dependency. We can't use `import BrowserStackTestHelper` because the patrol pod
+    // compiles separately from RunnerUITests where the framework is linked.
     func injectCameraPhoto(request: IOSInjectCameraPhotoRequest) throws {
-      #if canImport(BrowserStackTestHelper)
-        let injector = createInstance()
-        let semaphore = DispatchSemaphore(value: 0)
-        var injectionError: Error? = nil
 
-        injector.injectImage(imageName: request.imageName) { response in
-          let result = response.toDictionary()
-          if let status = result["status"] as? String, status != "success" {
-            injectionError = PatrolError.internal(
-              "BrowserStack image injection failed: \(result)"
-            )
-          }
-          semaphore.signal()
-        }
-
-        let waitResult = semaphore.wait(timeout: .now() + 30)
-        if waitResult == .timedOut {
-          throw PatrolError.internal("BrowserStack image injection timed out")
-        }
-        if let error = injectionError {
-          throw error
-        }
-      #else
+      // Find InjectorFactory class by name (tries both human-readable and mangled ObjC name)
+      guard let factoryClass = (
+        NSClassFromString("BrowserStackTestHelper.InjectorFactory")
+        ?? NSClassFromString("_TtC22BrowserStackTestHelper15InjectorFactory")
+      ) as? NSObject.Type else {
         throw PatrolError.internal(
           "BrowserStackTestHelper framework is not available. "
           + "To use injectCameraPhoto, add BrowserStackTestHelper to your project "
           + "and ensure it is linked with the RunnerUITests target."
         )
-      #endif
+      }
+
+      // Call InjectorFactory.createInstance() by name to get an injector
+      let createSel = NSSelectorFromString("createInstance")
+      guard factoryClass.responds(to: createSel),
+            let result = factoryClass.perform(createSel),
+            let injector = result.takeUnretainedValue() as? NSObject else {
+        throw PatrolError.internal("Failed to create BrowserStack injector instance")
+      }
+
+      // Check that the injector has the injectImage method
+      let injectSel = NSSelectorFromString("injectImageWithImageName:completion:")
+      guard injector.responds(to: injectSel) else {
+        throw PatrolError.internal("BrowserStack injector does not respond to injectImage")
+      }
+
+      // Semaphore blocks this thread until BrowserStack's async callback fires
+      let semaphore = DispatchSemaphore(value: 0)
+      var injectionError: Error? = nil
+
+      // MUST be a separate variable — inline closures crash because Swift treats them
+      // as stack-allocated
+      let completionBlock: @convention(block) (NSObject) -> Void = { response in
+        // Read response properties by name since we can't import the type
+        if let isSuccess = response.value(forKey: "isSuccess") as? Bool, !isSuccess {
+          let message = (response.value(forKey: "message") as? String) ?? "Unknown error"
+          injectionError = PatrolError.internal(
+            "BrowserStack image injection failed: \(message)"
+          )
+        }
+        semaphore.signal()
+      }
+
+      // Get the raw function pointer and call it with the right argument types
+      typealias InjectIMP = @convention(c) (
+        NSObject, Selector, NSString, @convention(block) (NSObject) -> Void
+      ) -> Void
+      let imp = injector.method(for: injectSel)
+      let injectMethod = unsafeBitCast(imp, to: InjectIMP.self)
+
+      injectMethod(injector, injectSel, request.imageName as NSString, completionBlock)
+
+      // Wait for the callback (30s timeout)
+      let waitResult = semaphore.wait(timeout: .now() + 30)
+      if waitResult == .timedOut {
+        throw PatrolError.internal("BrowserStack image injection timed out")
+      }
+      if let error = injectionError {
+        throw error
+      }
     }
 
     func takeCameraPhoto(request: IOSTakeCameraPhotoRequest) throws {
