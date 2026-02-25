@@ -23,7 +23,6 @@ public class SwiftPatrolPlugin: NSObject, FlutterPlugin {
   public static func register(with registrar: FlutterPluginRegistrar) {
     #if os(iOS)
       let messenger = registrar.messenger()
-      CameraViewfinderInjector.shared.installSwizzles()
     #elseif os(macOS)
       let messenger = registrar.messenger
     #endif
@@ -40,6 +39,9 @@ public class SwiftPatrolPlugin: NSObject, FlutterPlugin {
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
     #if os(iOS)
       switch call.method {
+      case "enableBrowserStackFeatures":
+        CameraViewfinderInjector.shared.installSwizzles()
+        result(nil)
       case "feedInjectedImageToViewfinder":
         CameraViewfinderInjector.shared.feedInjectedImageToViewfinder { outcome in
           switch outcome {

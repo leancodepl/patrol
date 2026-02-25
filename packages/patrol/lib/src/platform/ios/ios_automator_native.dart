@@ -3,6 +3,7 @@ import 'dart:io' as io;
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
+import 'package:patrol/src/constants.dart' as constants;
 import 'package:patrol/src/native/native_automator.dart';
 import 'package:patrol/src/platform/contracts/contracts.dart';
 import 'package:patrol/src/platform/contracts/ios_automator_client.dart';
@@ -54,6 +55,14 @@ class IOSAutomator extends NativeMobileAutomator
 
   late final IosAutomatorClient _client;
   static const _channel = MethodChannel('pl.leancode.patrol/main');
+
+  @override
+  Future<void> configure() async {
+    await super.configure();
+    if (constants.browserStackEnabled) {
+      await _channel.invokeMethod('enableBrowserStackFeatures');
+    }
+  }
 
   /// Returns the platform-dependent unique identifier of the app under test.
   @override
