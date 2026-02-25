@@ -115,6 +115,13 @@ Test workflows use a tag-based system to select which tests to run. Tests are ta
 - **Environment**: `physical_device`, `emulator`, `simulator`
 - **Features**: `webview`, `locale_testing_android`, `locale_testing_ios`
 
-**Tag syntax uses boolean expressions:**
+**Tag filtering in workflows:**
+
+Workflows use the `--tags` flag with boolean expressions to select which tests to run:
 - `--tags='android && physical_device'` - Tests must have BOTH tags
-- `--tags='android || ios'` - Tests must have EITHER tag
+- `--tags='android && emulator'` - Tests with android AND emulator tags
+- `--tags='webview && ios'` - Tests with webview AND ios tags
+- `--tags='ios && simulator'` - Tests with ios AND simulator tags
+- `--tags='ios && physical_device'` - Tests with ios AND physical_device tags
+
+A test is selected if it matches ALL conditions in the boolean expression (AND operator). Tests can declare multiple tags in their `tags` parameter array, and the workflow filter will match tests that satisfy the expression.

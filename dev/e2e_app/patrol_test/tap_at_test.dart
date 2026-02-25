@@ -12,12 +12,14 @@ void main() {
     throw UnsupportedError('Unsupported platform');
   }
 
-  patrol('taps at the lower middle of the screen in the Settings app', (
-    $,
-  ) async {
-    await createApp($);
+  patrol(
+    'taps at the lower middle of the screen in the Settings app',
+    ($) async {
+      await createApp($);
 
-    await $.platform.mobile.openApp(appId: appId);
-    await $.platform.mobile.tapAt(Offset(0.5, 0.8), appId: appId);
-  });
+      await $.platform.mobile.openApp(appId: appId);
+      await $.platform.mobile.tapAt(Offset(0.5, 0.8), appId: appId);
+    },
+    tags: ['ios', 'simulator', 'physical_device', 'android'],
+  );
 }

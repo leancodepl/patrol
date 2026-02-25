@@ -21,5 +21,5 @@ void main() {
       to: Offset(0.5, 0.2),
       appId: appId,
     );
-  });
+  }, tags: ['ios', 'simulator', 'physical_device', 'android']);
 }
