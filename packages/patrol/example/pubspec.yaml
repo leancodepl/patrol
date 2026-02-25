@@ -24,7 +24,7 @@ dependencies:
   geolocator: ^14.0.2
   google_sign_in: ^6.1.6
   http: ^1.1.0
-  image_picker: ^1.2.1
+  mobile_scanner: ^7.2.0
   permission_handler: ^11.4.0
   provider: ^6.1.1
 
