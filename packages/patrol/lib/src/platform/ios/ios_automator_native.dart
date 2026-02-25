@@ -1,5 +1,6 @@
 import 'dart:io' as io;
 
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:patrol/src/native/native_automator.dart';
@@ -52,6 +53,7 @@ class IOSAutomator extends NativeMobileAutomator
   final IOSAutomatorConfig _config;
 
   late final IosAutomatorClient _client;
+  static const _channel = MethodChannel('pl.leancode.patrol/main');
 
   /// Returns the platform-dependent unique identifier of the app under test.
   @override
@@ -484,10 +486,7 @@ class IOSAutomator extends NativeMobileAutomator
   Future<void> injectCameraPhoto({required String imageName}) async {
     await wrapRequest('injectCameraPhoto', () async {
       await _client.injectCameraPhoto(
-        IOSInjectCameraPhotoRequest(
-          imageName: imageName,
-          appId: resolvedAppId,
-        ),
+        IOSInjectCameraPhotoRequest(imageName: imageName, appId: resolvedAppId),
       );
     });
   }
@@ -572,5 +571,10 @@ class IOSAutomator extends NativeMobileAutomator
         ),
       );
     });
+  }
+
+  @override
+  Future<void> feedInjectedImageToViewfinder() async {
+    await _channel.invokeMethod('feedInjectedImageToViewfinder');
   }
 }

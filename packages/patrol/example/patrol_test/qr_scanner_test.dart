@@ -19,7 +19,10 @@ void main() {
     expect($('Hello Patrol!'), findsNothing);
     expect($('No QR code detected'), findsOneWidget);
 
-    await $.pump(const Duration(seconds: 3));
+    // Wait for camera to initialize, then feed the injected image
+    await $.pump(const Duration(seconds: 2));
+    await $.platform.feedInjectedImageToViewfinder();
+    await $.pump(const Duration(seconds: 1));
 
     expect($('Hello Patrol!'), findsOneWidget);
     expect($('No QR code detected'), findsNothing);

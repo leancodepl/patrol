@@ -265,4 +265,16 @@ abstract interface class IOSAutomator implements MobileAutomator {
     IOSSelector? imageSelector,
     Duration? timeout,
   });
+
+  /// Feed the BrowserStack-injected image to the camera viewfinder.
+  ///
+  /// This captures the BrowserStack-injected image using a supported
+  /// AVCapturePhoto API and feeds it as a CMSampleBuffer to the
+  /// AVCaptureVideoDataOutput delegate. This makes QR scanner packages
+  /// (like mobile_scanner) detect the injected QR code.
+  ///
+  /// Call [injectCameraPhoto] first to stage the image, then open the camera
+  /// (e.g. navigate to the QR scanner screen), and finally call this method
+  /// to feed the injected image to the viewfinder.
+  Future<void> feedInjectedImageToViewfinder();
 }
