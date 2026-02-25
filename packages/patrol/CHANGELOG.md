@@ -2,6 +2,7 @@
 
 - Improve setup error reporting for Patrol Web failures. (#2928)
 - Fix `tapOnNotificationByIndex` and `getNotifications` on iOS 18+ to use consistent indexing with other systems. (#2899)
+- Fix `setMockLocation` on Android to avoid being overwritten by other location providers. (#2932)
 
 # 4.1.1
 
