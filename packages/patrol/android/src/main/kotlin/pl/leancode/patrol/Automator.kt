@@ -714,7 +714,6 @@ class Automator private constructor() {
         
         val mockLocationProvider = LocationManager.GPS_PROVIDER
         
-        // Usuń istniejący provider przed dodaniem (na wypadek crashu w poprzednim teście)
         try {
             locationManager.removeTestProvider(mockLocationProvider)
             Logger.d("Removed existing test provider")
@@ -737,7 +736,6 @@ class Automator private constructor() {
         
         locationManager.setTestProviderEnabled(mockLocationProvider, true)
         
-        // Uruchom ciągłe odświeżanie lokalizacji co 500ms
         if (mockLocationExecutor == null) {
             mockLocationExecutor = Executors.newSingleThreadScheduledExecutor()
         }
