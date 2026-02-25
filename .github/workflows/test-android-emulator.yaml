@@ -6,6 +6,18 @@ on:
     - cron: "0 */12 * * *"
   pull_request_target:
     types: [opened, synchronize]
+    paths:
+      - 'packages/patrol/**'
+      - 'packages/patrol_finders/**'
+      - 'packages/patrol_log/**'
+      - 'packages/patrol_cli/**'
+      - 'packages/adb/**'
+      - 'packages/patrol_gen/**'
+      - 'dev/e2e_app/**'
+      - 'schema.dart'
+      - 'gen_from_schema'
+      - '!**.md'
+      - '!**.mdx'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}

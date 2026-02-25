@@ -4,8 +4,16 @@ on:
   workflow_dispatch:
   pull_request:
     paths:
+      - 'packages/patrol/**'
+      - 'packages/patrol_finders/**'
+      - 'packages/patrol_log/**'
+      - 'packages/patrol_cli/**'
+      - 'packages/adb/**'
+      - 'packages/patrol_gen/**'
+      - 'dev/e2e_app/**'
       - 'packages/patrol/web_runner/**'
-      - 'dev/e2e_app/patrol_test/web_example_test.dart'
+      - '!**.md'
+      - '!**.mdx'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
