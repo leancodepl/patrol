@@ -70,15 +70,15 @@ Then configure your IDE MCP server:
 <details>
 <summary>Cursor</summary>
 
-Add to `<workspace-root>/.cursor/mcp.json`:
+Put script at: `<workspace-root>/.cursor/run-patrol`
 
-Put script at: `<workspace-root>/.antigravity/run-patrol`
+Add to `<workspace-root>/.cursor/mcp.json`:
 
 ```json
 {
   "mcpServers": {
     "patrol": {
-      "command": "./.antigravity/run-patrol",
+      "command": "./.cursor/run-patrol",
       "env": {
         "PROJECT_ROOT": ".",
         "PATROL_FLAGS": "",
@@ -94,7 +94,7 @@ Put script at: `<workspace-root>/.antigravity/run-patrol`
 <details>
 <summary>Google Antigravity</summary>
 
-Put script at: `<workspace-root>/.cursor/run-patrol`
+Put script at: `<workspace-root>/.antigravity/run-patrol`
 
 Open the MCP store, click "Manage MCP Servers", then "View raw config" and add to `mcp_config.json`:
 
@@ -102,7 +102,7 @@ Open the MCP store, click "Manage MCP Servers", then "View raw config" and add t
 {
   "mcpServers": {
     "patrol": {
-      "command": "./.cursor/run-patrol",
+      "command": "./.antigravity/run-patrol",
       "env": {
         "PROJECT_ROOT": ".",
         "PATROL_FLAGS": "",
