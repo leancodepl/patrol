@@ -13,5 +13,5 @@ void main() {
       await $.platform.mobile.disableCellular();
       await $.platform.mobile.enableCellular();
     }
-  });
+  }, tags: ['android', 'ios', 'physical_device']);
 }

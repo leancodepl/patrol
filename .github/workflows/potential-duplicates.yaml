@@ -1,0 +1,24 @@
+name: Potential Duplicates
+on:
+  issues:
+    types: [opened, edited]
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: wow-actions/potential-duplicates@v1
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          filter: ''
+          # Exclude keywords in title before detecting.
+          exclude: ''
+          label: potential-duplicate
+          state: open
+          threshold: 0.6
+          reactions: 'eyes, confused'
+          # Comment to post when potential duplicates are detected.
+          comment: >
+            Potential duplicates: {{#issues}}
+              - [#{{ number }}] {{ title }} ({{ accuracy }}%)
+            {{/issues}}

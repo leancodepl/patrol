@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
@@ -122,9 +123,14 @@ class DevelopCommand extends PatrolCommand {
       throwToolExit('Cannot use release build mode with develop');
     }
 
-    final entrypoint = _testBundler.getBundledTestFile(testDirectory);
     if (boolArg('generate-bundle')) {
       _testBundler.createDevelopTestBundle(testDirectory, target);
+    }
+    _testBundler.ensureEntrypoint(testDirectory);
+    final entrypoint = _testBundler.getEntrypointFile(testDirectory);
+    final signalSubscriptions = _registerProxyCleanupOnSignals(testDirectory);
+    Future<void> cleanupProxy() async {
+      _testBundler.deleteEntrypointProxy(testDirectory);
     }
 
     final androidFlavor = stringArg('flavor') ?? config.android.flavor;
@@ -270,21 +276,29 @@ class DevelopCommand extends PatrolCommand {
 
     final webOpts = WebAppOptions(flutter: flutterOpts);
 
-    await _build(androidOpts, iosOpts, macosOpts, webOpts, device);
-    await _preExecute(androidOpts, iosOpts, device, uninstall);
-    await _execute(
-      flutterOpts,
-      androidOpts,
-      iosOpts,
-      macosOpts,
-      webOpts,
-      uninstall: uninstall,
-      device: device,
-      openDevtools: boolArg('open-devtools'),
-      showFlutterLogs: false,
-      hideTestSteps: boolArg('hide-test-steps'),
-      clearTestSteps: boolArg('clear-test-steps'),
-    );
+    try {
+      await _build(androidOpts, iosOpts, macosOpts, webOpts, device);
+      await _preExecute(androidOpts, iosOpts, device, uninstall);
+      await _execute(
+        flutterOpts,
+        androidOpts,
+        iosOpts,
+        macosOpts,
+        webOpts,
+        uninstall: uninstall,
+        device: device,
+        openDevtools: boolArg('open-devtools'),
+        onQuitCleanup: cleanupProxy,
+        showFlutterLogs: false,
+        hideTestSteps: boolArg('hide-test-steps'),
+        clearTestSteps: boolArg('clear-test-steps'),
+      );
+    } finally {
+      for (final sub in signalSubscriptions) {
+        await sub.cancel();
+      }
+      await cleanupProxy();
+    }
 
     return 0; // for now, all exit codes are 0
   }
@@ -363,6 +377,7 @@ class DevelopCommand extends PatrolCommand {
     required bool uninstall,
     required Device device,
     required bool openDevtools,
+    required Future<void> Function() onQuitCleanup,
     required bool showFlutterLogs,
     required bool hideTestSteps,
     required bool clearTestSteps,
@@ -433,7 +448,7 @@ class DevelopCommand extends PatrolCommand {
           dartDefines: flutterOpts.dartDefines,
           openDevtools: openDevtools,
           attachUsingUrl: device.targetPlatform == TargetPlatform.macOS,
-          onQuit: finalizer,
+          onQuit: onQuitCleanup,
         );
       }
 
@@ -452,5 +467,25 @@ class DevelopCommand extends PatrolCommand {
         rethrow;
       }
     }
+  }
+
+  List<StreamSubscription<ProcessSignal>> _registerProxyCleanupOnSignals(
+    String testDirectory,
+  ) {
+    final subscriptions = <StreamSubscription<ProcessSignal>>[];
+
+    void cleanup(ProcessSignal signal) {
+      _logger.detail('Received $signal, removing devtools proxy entrypoint');
+      _testBundler.deleteEntrypointProxy(testDirectory);
+    }
+
+    subscriptions.add(ProcessSignal.sigint.watch().listen(cleanup));
+    try {
+      subscriptions.add(ProcessSignal.sigterm.watch().listen(cleanup));
+    } catch (_) {
+      // Some platforms may not support sigterm.
+    }
+
+    return subscriptions;
   }
 }

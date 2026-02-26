@@ -1,7 +1,15 @@
-# Unreleased
+## Unreleased
+
+- Improve setup error reporting for Patrol Web failures. (#2928)
+- Fix `tapOnNotificationByIndex` and `getNotifications` on iOS 18+ to use consistent indexing with other systems. (#2899)
+- Fix Android native automator error logs to use `AndroidAutomatorClientException` instead of `IosAutomatorClientException`.
+
+# 4.1.1
 
 - Fix Android permission dialog not being tapped with `grantPermissionWhenInUse`.(#2876)
 - Fix iOS `tapOnNotificationBySelector` to support `text` parameter. (#2898)
+- Bump `patrol_log` to `0.7.0`. (#2917)
+- Bump `patrol_finders` to `3.1.0`. (#2917)
 
 ## 4.1.0
 

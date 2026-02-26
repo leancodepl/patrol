@@ -91,24 +91,10 @@ jobs:
           echo "$HOME/bin" >> $GITHUB_PATH
           echo "EW_API_TOKEN=${{ secrets.EW_API_TOKEN }}" >> $GITHUB_ENV
 
-      - name: Set tests to include
-        run: |
-          TESTS_TO_INCLUDE="webview_hackernews_test,\
-          webview_leancode_test,\
-          webview_stackoverflow_test"
-
-          target_paths=""
-          for target in $(echo $TESTS_TO_INCLUDE | tr ',' '\n'); do
-              target_paths+="patrol_test/${target}.dart,"
-          done
-          target_paths="${target_paths%,}"
-
-          echo "INCLUDED_TESTS=$target_paths" >> "$GITHUB_ENV"
-
       - name: patrol build android
         env:
           MAPS_API_KEY: ${{ secrets.MAPS_API_KEY }}
-        run: patrol build android --target ${{ env.INCLUDED_TESTS }} --verbose
+        run: patrol build android --tags='webview && android' --verbose
 
       - name: Upload APKs to emulator.wtf and wait for tests to finish
         id: tests_step

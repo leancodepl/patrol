@@ -15,5 +15,5 @@ void main() {
       await $.platform.mobile.disableWifi();
       await $.platform.mobile.enableWifi();
     }
-  });
+  }, tags: ['android', 'ios', 'physical_device']);
 }

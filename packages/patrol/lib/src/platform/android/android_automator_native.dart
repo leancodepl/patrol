@@ -130,7 +130,7 @@ class AndroidAutomator extends NativeMobileAutomator
 
       _config.logger('$name() failed');
       final log =
-          'IosAutomatorClientException: '
+          'AndroidAutomatorClientException: '
           '$name() failed with $err';
 
       if (enablePatrolLog) {

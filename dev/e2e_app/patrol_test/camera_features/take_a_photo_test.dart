@@ -18,5 +18,5 @@ void main() {
     await $.platform.mobile.takeCameraPhoto();
     await $.pumpAndSettle();
     await $(#smallImagePreview).waitUntilVisible();
-  });
+  }, tags: ['android', 'ios', 'emulator', 'physical_device']);
 }

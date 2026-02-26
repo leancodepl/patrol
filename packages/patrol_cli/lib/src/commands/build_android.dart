@@ -114,10 +114,10 @@ class BuildAndroidCommand extends PatrolCommand {
     if (excludeTags != null) {
       _logger.detail('Received exclude tag(s): $excludeTags');
     }
-    final entrypoint = _testBundler.getBundledTestFile(testDirectory);
     if (boolArg('generate-bundle')) {
       _testBundler.createTestBundle(testDirectory, targets, tags, excludeTags);
     }
+    final entrypoint = _testBundler.getBundledTestFile(testDirectory);
 
     final flavor = stringArg('flavor') ?? config.android.flavor;
     if (flavor != null) {

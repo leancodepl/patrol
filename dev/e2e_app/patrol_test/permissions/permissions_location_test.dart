@@ -37,15 +37,14 @@ void main() {
 
     expect(
       // timeout duration is increased here as the location service on CI
-      // needs more time to start up
-      await $(RegExp('lat')).waitUntilVisible(timeout: Duration(seconds: 20)),
+      await $(RegExp('lat')).waitUntilVisible(timeout: Duration(seconds: 30)),
       findsOneWidget,
     );
     expect(
       // timeout duration is increased here as the location service on CI
       // needs more time to start up
-      await $(RegExp('lng')).waitUntilVisible(timeout: Duration(seconds: 20)),
+      await $(RegExp('lng')).waitUntilVisible(timeout: Duration(seconds: 30)),
       findsOneWidget,
     );
-  });
+  }, tags: ['android', 'ios', 'emulator', 'simulator']);
 }

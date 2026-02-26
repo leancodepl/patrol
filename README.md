@@ -10,9 +10,9 @@
 
 Simple yet powerful Flutter-first UI testing framework overcoming limitations of
 `flutter_test`, `integration_test`, and `flutter_driver`. Created and supported
-by [LeanCode](https://leancode.co).
+by [LeanCode](https://leancode.co?utm_source=github.com&utm_medium=referral&utm_campaign=patrol-readme).
 
-![Patrol promotial graphics][promo_graphics]
+[![Patrol promotial graphics][promo_graphics]][docs]
 
 ## Learn more about Patrol:
 
@@ -144,6 +144,10 @@ To run widget tests, you can continue to use `flutter test`.
 
 See [packages/patrol][github_patrol].
 
+## CI/CD Workflows
+
+See [.github/WORKFLOWS.md][github_workflows] for detailed documentation about all GitHub Actions workflows, including test schedules, Flutter versions, and deployment pipelines.
+
 ## Patrol contracts generator
 
 1. (Optionally) add new request type:
@@ -226,6 +230,7 @@ We are **top-tier experts** focused on Flutter Enterprise solutions.
 [patrol_discord_link]: https://discord.gg/ukBK5t4EZg
 [github_patrol]: https://github.com/leancodepl/patrol/tree/master/packages/patrol
 [github_patrol_cli]: https://github.com/leancodepl/patrol/tree/master/packages/patrol_cli
+[github_workflows]: https://github.com/leancodepl/patrol/blob/master/.github/WORKFLOWS.md
 [docs]: https://patrol.leancode.co/?utm_source=github.com&utm_medium=referral&utm_campaign=patrol-readme
 [docs_finders]: https://patrol.leancode.co/finders/overview
 [promo_graphics]: assets/promo_banner.png
