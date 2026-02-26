@@ -3,9 +3,19 @@ name: test macos
 on:
   workflow_dispatch:
   pull_request:
-    branches: [ master ]
     paths:
+      - 'packages/patrol/**'
+      - 'packages/patrol_finders/**'
+      - 'packages/patrol_log/**'
+      - 'packages/patrol_cli/**'
+      - 'packages/adb/**'
+      - 'packages/patrol_gen/**'
+      - 'dev/e2e_app/**'
+      - 'schema.dart'
+      - 'gen_from_schema'
       - 'packages/patrol/darwin/**'
+      - '!**.md'
+      - '!**.mdx'
   schedule:
     - cron: '0 */12 * * *'
 

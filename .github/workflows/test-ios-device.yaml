@@ -4,6 +4,19 @@ on:
   workflow_dispatch:
   schedule:
     - cron: '30 21 * * *'
+  pull_request:
+    paths:
+      - 'packages/patrol/**'
+      - 'packages/patrol_finders/**'
+      - 'packages/patrol_log/**'
+      - 'packages/patrol_cli/**'
+      - 'packages/adb/**'
+      - 'packages/patrol_gen/**'
+      - 'dev/e2e_app/**'
+      - 'schema.dart'
+      - 'gen_from_schema'
+      - '!**.md'
+      - '!**.mdx'
 
 jobs:
   run_tests:
