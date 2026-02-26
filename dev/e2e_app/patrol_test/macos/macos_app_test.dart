@@ -26,7 +26,7 @@ void main() {
       finder: $(#counterText),
       scrollDirection: AxisDirection.up,
     );
-  });
+  }, tags: ['macos']);
 
   patrol('taps around test to skip', skip: true, ($) async {
     await createApp($);
@@ -51,5 +51,5 @@ void main() {
       finder: $(#counterText),
       scrollDirection: AxisDirection.up,
     );
-  });
+  }, tags: ['macos']);
 }

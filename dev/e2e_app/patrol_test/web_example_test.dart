@@ -32,7 +32,7 @@ void main() {
     await Future<void>.delayed(const Duration(seconds: 1));
 
     expect($('Dark Mode Active'), findsOneWidget);
-  });
+  }, tags: ['web']);
 
   patrol('clipboard and clicks', ($) async {
     await $.pumpWidgetAndSettle(const ExampleApp());
@@ -71,7 +71,7 @@ void main() {
     await $.platform.web.clearPermissions();
     await $.pumpAndSettle();
     await Future<void>.delayed(const Duration(seconds: 1));
-  });
+  }, tags: ['web']);
 
   patrol('navigation', ($) async {
     await $.pumpWidgetAndSettle(const ExampleApp());
@@ -95,7 +95,7 @@ void main() {
     await Future<void>.delayed(const Duration(seconds: 2));
 
     expect($('This is Page 1'), findsOneWidget);
-  });
+  }, tags: ['web']);
 
   patrol('cookies', ($) async {
     await $.pumpWidgetAndSettle(const ExampleApp());
@@ -129,7 +129,7 @@ void main() {
     expect(testCookie.isEmpty, isTrue);
     await $.pumpAndSettle();
     await Future<void>.delayed(const Duration(seconds: 1));
-  });
+  }, tags: ['web']);
 
   patrol('file upload', ($) async {
     await $.pumpWidgetAndSettle(const ExampleApp());
@@ -160,7 +160,7 @@ void main() {
     expect($('Uploaded: example_file.txt'), findsOneWidget);
     await $.pumpAndSettle();
     await Future<void>.delayed(const Duration(seconds: 1));
-  });
+  }, tags: ['web']);
 
   patrol('accept alert dialog', ($) async {
     await $.pumpWidgetAndSettle(const ExampleApp());
@@ -175,7 +175,7 @@ void main() {
     expect($('Alert was accepted'), findsOneWidget);
 
     await Future<void>.delayed(const Duration(seconds: 1));
-  });
+  }, tags: ['web']);
 
   patrol('accept confirm dialog', ($) async {
     await $.pumpWidgetAndSettle(const ExampleApp());
@@ -190,7 +190,7 @@ void main() {
     expect($('Confirm was accepted'), findsOneWidget);
 
     await Future<void>.delayed(const Duration(seconds: 1));
-  });
+  }, tags: ['web']);
 
   patrol('dismiss confirm dialog', ($) async {
     await $.pumpWidgetAndSettle(const ExampleApp());
@@ -205,7 +205,7 @@ void main() {
     expect($('Confirm was dismissed'), findsOneWidget);
 
     await Future<void>.delayed(const Duration(seconds: 1));
-  });
+  }, tags: ['web']);
 
   patrol('iframe interactions - scroll, enter text, and tap', ($) async {
     await $.pumpWidgetAndSettle(const ExampleApp());
@@ -238,7 +238,7 @@ void main() {
     await $.platform.web.tap(buttonSelector, iframeSelector: iframeSelector);
     await $.pumpAndSettle();
     await Future<void>.delayed(const Duration(seconds: 2));
-  });
+  }, tags: ['web']);
 
   patrol('resize window', ($) async {
     await $.pumpWidgetAndSettle(const ExampleApp());
@@ -254,7 +254,7 @@ void main() {
     await $.platform.web.resizeWindow(size: Size(1280, 720));
     await $.pumpAndSettle();
     await Future<void>.delayed(const Duration(seconds: 1));
-  });
+  }, tags: ['web']);
 
   patrol('verify file downloads', ($) async {
     await $.pumpWidgetAndSettle(const ExampleApp());
@@ -273,14 +273,14 @@ void main() {
 
     await $.pumpAndSettle();
     await Future<void>.delayed(const Duration(seconds: 1));
-  });
+  }, tags: ['web']);
 
   patrol('verify file downloads - check if list is empty', ($) async {
     await $.pumpWidgetAndSettle(const ExampleApp());
 
     final downloads = await $.platform.web.verifyFileDownloads();
     expect(downloads, isEmpty);
-  });
+  }, tags: ['web']);
 }
 
 class ExampleApp extends StatefulWidget {

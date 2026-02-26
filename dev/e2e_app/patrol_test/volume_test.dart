@@ -15,5 +15,5 @@ void main() {
       await $.platform.mobile.pressVolumeUp();
       await $.pumpAndSettle();
     }
-  });
+  }, tags: ['android', 'emulator', 'physical_device', 'ios']);
 }

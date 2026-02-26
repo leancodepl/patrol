@@ -6,6 +6,12 @@ import 'common.dart';
 
 const _timeout = Duration(seconds: 5); // to avoid timeouts on CI
 
+// Test coordinates
+const _lat1 = 55.2297;
+const _lat2 = 55.5297;
+const _lat3 = 55.7297;
+const _lon = 21.0122;
+
 void main() {
   patrol('mock location', ($) async {
     await createApp($);
@@ -24,28 +30,24 @@ void main() {
       }
     }
     await $.pumpAndSettle();
-
-    await $.platform.mobile.setMockLocation(55.2297, 21.0122);
-    await Future<void>.delayed(const Duration(milliseconds: 100));
+    await $.platform.mobile.setMockLocation(_lat1, _lon);
     await $.pumpAndSettle();
-    expect(await $('Location').waitUntilVisible(), findsOneWidget);
-    expect(await $('Latitude: 55.2297').waitUntilVisible(), findsOneWidget);
-    expect(await $('Longitude: 21.0122').waitUntilVisible(), findsOneWidget);
+    await $('Location').waitUntilVisible();
+    await $('Latitude: $_lat1').waitUntilVisible();
+    await $('Longitude: $_lon').waitUntilVisible();
     await Future<void>.delayed(const Duration(milliseconds: 1500));
 
-    await $.platform.mobile.setMockLocation(55.5297, 21.0122);
-    await Future<void>.delayed(const Duration(milliseconds: 100));
+    await $.platform.mobile.setMockLocation(_lat2, _lon);
     await $.pumpAndSettle();
-    expect(await $('Location').waitUntilVisible(), findsOneWidget);
-    expect(await $('Longitude: 21.0122').waitUntilVisible(), findsOneWidget);
+    await $('Location').waitUntilVisible();
+    await $('Longitude: $_lon').waitUntilVisible();
     await Future<void>.delayed(const Duration(milliseconds: 1500));
 
-    await $.platform.mobile.setMockLocation(55.7297, 21.0122);
-    await Future<void>.delayed(const Duration(milliseconds: 100));
+    await $.platform.mobile.setMockLocation(_lat3, _lon);
     await $.pumpAndSettle();
-    expect(await $('Location').waitUntilVisible(), findsOneWidget);
-    expect(await $('Latitude: 55.7297').waitUntilVisible(), findsOneWidget);
-    expect(await $('Longitude: 21.0122').waitUntilVisible(), findsOneWidget);
+    await $('Location').waitUntilVisible();
+    await $('Latitude: $_lat3').waitUntilVisible();
+    await $('Longitude: $_lon').waitUntilVisible();
     await Future<void>.delayed(const Duration(milliseconds: 1500));
   });
 
@@ -93,18 +95,19 @@ void main() {
 
       await $.platform.mobile.setMockLocation(waypoint.lat!, waypoint.lon!);
 
+      await Future<void>.delayed(const Duration(milliseconds: 500));
       await $.pumpAndSettle();
       await Future<void>.delayed(const Duration(milliseconds: 1500));
 
       // Verify location display is updated
-      expect(
-        await $('Latitude: ${waypoint.lat!}').waitUntilVisible(),
-        findsOneWidget,
-      );
-      expect(
-        await $('Longitude: ${waypoint.lon!}').waitUntilVisible(),
-        findsOneWidget,
-      );
+
+      await $(
+        'Latitude: ${waypoint.lat!.toStringAsFixed(4)}',
+      ).waitUntilVisible();
+
+      await $(
+        'Longitude: ${waypoint.lon!.toStringAsFixed(4)}',
+      ).waitUntilVisible();
     }
   });
 }
