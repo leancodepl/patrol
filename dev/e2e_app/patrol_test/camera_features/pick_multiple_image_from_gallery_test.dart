@@ -18,11 +18,13 @@ void main() {
       } else if (Platform.isIOS && !isVirtualDevice) {
         await cameraHelpers.takePhotosAcceptDialogsAndOpenAppOnRealDeviceIOS();
       }
+      // Wait for photos to be saved in gallery.
+      await Future<void>.delayed(const Duration(seconds: 10));
       await $(#cameraFeaturesButton).scrollTo().tap();
       await $(#pickMultiplePhotosButton).tap();
       await cameraHelpers.maybeAcceptPermissionDialog();
       await $.platform.mobile.pickMultipleImagesFromGallery(
-        imageIndexes: [0, 2],
+        imageIndexes: [0, 1],
       );
 
       await $.pumpAndSettle();
