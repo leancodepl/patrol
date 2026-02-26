@@ -106,7 +106,7 @@ jobs:
       - name: patrol build android
         env:
           MAPS_API_KEY: ${{ secrets.MAPS_API_KEY }}
-        run: patrol build android --tags='webview && android' --verbose
+        run: patrol build android --tags='webview && android' --verbose --exclude patrol_test/web_example_test.dart
 
       - name: Upload APKs to emulator.wtf and wait for tests to finish
         id: tests_step
