@@ -4,6 +4,8 @@
 - Add support for `--no-tree-shake-icons` flag in cli commands. (#2704)
 - Fix `PATROL_FLUTTER_COMMAND` not being used when building web app. (#2857)
 - Remove unused import in `test_bundle.dart` files. (#2885)
+- Fix listen to stdout/stderr streams in buildApkConfigOnly to prevent hang on Windows. (#2905)
+
 
 ## 4.0.2
 
