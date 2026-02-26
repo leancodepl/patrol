@@ -21,7 +21,7 @@ void main() {
 
     // Wait for camera to initialize, then feed the injected image
     await $.pump(const Duration(seconds: 2));
-    await $.platform.feedInjectedImageToViewfinder();
+    await $.platform.ios.feedInjectedImageToViewfinder();
     await $.pump(const Duration(seconds: 1));
 
     expect($('Hello Patrol!'), findsOneWidget);

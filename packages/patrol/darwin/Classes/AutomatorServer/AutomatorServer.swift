@@ -325,6 +325,19 @@
 
     // MARK: Camera
 
+    func takeCameraPhoto(request: IOSTakeCameraPhotoRequest) throws {
+      try automator.tap(
+        on: request.shutterButtonSelector ?? IOSSelector(identifier: "PhotoCapture"),
+        inApp: request.appId,
+        withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
+      )
+      try automator.tap(
+        on: request.doneButtonSelector ?? IOSSelector(identifier: "Done"),
+        inApp: request.appId,
+        withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
+      )
+    }
+
     // Uses ObjC runtime reflection to call BrowserStack's API without a compile-time
     // dependency. We can't use `import BrowserStackTestHelper` because the patrol pod
     // compiles separately from RunnerUITests where the framework is linked.
@@ -390,19 +403,6 @@
       if let error = injectionError {
         throw error
       }
-    }
-
-    func takeCameraPhoto(request: IOSTakeCameraPhotoRequest) throws {
-      try automator.tap(
-        on: request.shutterButtonSelector ?? IOSSelector(identifier: "PhotoCapture"),
-        inApp: request.appId,
-        withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
-      )
-      try automator.tap(
-        on: request.doneButtonSelector ?? IOSSelector(identifier: "Done"),
-        inApp: request.appId,
-        withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
-      )
     }
 
     func pickImageFromGallery(request: IOSPickImageFromGalleryRequest) throws {

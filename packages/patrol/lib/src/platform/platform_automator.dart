@@ -211,29 +211,6 @@ class PlatformAutomator {
     );
   }
 
-  /// Inject an image for BrowserStack Camera Image Injection (iOS only).
-  ///
-  /// Stages [imageName] so that the next camera capture returns this image
-  /// instead of real camera input. Call [MobileAutomator.takeCameraPhoto]
-  /// after this to trigger the actual capture.
-  ///
-  /// This only works on iOS when running on BrowserStack with the
-  /// appropriate capabilities enabled.
-  Future<void> injectCameraPhoto({required String imageName}) {
-    return ios.injectCameraPhoto(imageName: imageName);
-  }
-
-  /// Feed the BrowserStack-injected image to the camera viewfinder (iOS only).
-  ///
-  /// Captures the staged image via AVCapturePhoto and feeds it to the
-  /// AVCaptureVideoDataOutput delegate, enabling QR scanner packages
-  /// to detect the injected QR code.
-  ///
-  /// Call [injectCameraPhoto] first, then open the camera, then call this.
-  Future<void> feedInjectedImageToViewfinder() {
-    return ios.feedInjectedImageToViewfinder();
-  }
-
   /// None of the native actions are supported on MacOS, so we will just always throw.
   static T _throwOnMacOS<T>() {
     throw UnsupportedError('MacOS native actions are not supported');

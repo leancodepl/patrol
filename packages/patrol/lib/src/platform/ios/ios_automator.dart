@@ -204,22 +204,6 @@ abstract interface class IOSAutomator implements MobileAutomator {
     String? appId,
   });
 
-  /// Inject an image for BrowserStack Camera Image Injection.
-  ///
-  /// This method stages the specified [imageName] so that the next time the
-  /// app opens the camera, it will receive the injected image instead of real
-  /// camera input. After calling this, use [takeCameraPhoto] to trigger the
-  /// actual camera capture.
-  ///
-  /// [imageName] must match the filename of an image uploaded to BrowserStack
-  /// and included in the `cameraInjectionMedia` build capability.
-  ///
-  /// This only works when running on BrowserStack with:
-  /// - `enableCameraImageInjection: "true"` capability
-  /// - `resignApp: "true"` capability
-  /// - `BrowserStackTestHelper` framework linked in the XCUITest target
-  Future<void> injectCameraPhoto({required String imageName});
-
   /// Take and confirm the photo
   ///
   /// This method taps on the camera shutter button to take a photo, then taps
@@ -236,6 +220,34 @@ abstract interface class IOSAutomator implements MobileAutomator {
     IOSSelector? doneButtonSelector,
     Duration? timeout,
   });
+
+  /// Inject an image for BrowserStack Camera Image Injection.
+  ///
+  /// This method stages the specified [imageName] so that the next time the
+  /// app opens the camera, it will receive the injected image instead of real
+  /// camera input. After calling this, use [takeCameraPhoto] to trigger the
+  /// actual camera capture.
+  ///
+  /// [imageName] must match the filename of an image uploaded to BrowserStack
+  /// and included in the `cameraInjectionMedia` build capability.
+  ///
+  /// This only works when running on BrowserStack with:
+  /// - `enableCameraImageInjection: "true"` capability
+  /// - `resignApp: "true"` capability
+  /// - `BrowserStackTestHelper` framework linked in the XCUITest target
+  Future<void> injectCameraPhoto({required String imageName});
+
+  /// Feed the BrowserStack-injected image to the camera viewfinder.
+  ///
+  /// This captures the BrowserStack-injected image using a supported
+  /// AVCapturePhoto API and feeds it as a CMSampleBuffer to the
+  /// AVCaptureVideoDataOutput delegate. This makes QR scanner packages
+  /// (like mobile_scanner) detect the injected QR code.
+  ///
+  /// Call [injectCameraPhoto] first to stage the image, then open the camera
+  /// (e.g. navigate to the QR scanner screen), and finally call this method
+  /// to feed the injected image to the viewfinder.
+  Future<void> feedInjectedImageToViewfinder();
 
   /// Pick an image from the gallery
   ///
@@ -265,16 +277,4 @@ abstract interface class IOSAutomator implements MobileAutomator {
     IOSSelector? imageSelector,
     Duration? timeout,
   });
-
-  /// Feed the BrowserStack-injected image to the camera viewfinder.
-  ///
-  /// This captures the BrowserStack-injected image using a supported
-  /// AVCapturePhoto API and feeds it as a CMSampleBuffer to the
-  /// AVCaptureVideoDataOutput delegate. This makes QR scanner packages
-  /// (like mobile_scanner) detect the injected QR code.
-  ///
-  /// Call [injectCameraPhoto] first to stage the image, then open the camera
-  /// (e.g. navigate to the QR scanner screen), and finally call this method
-  /// to feed the injected image to the viewfinder.
-  Future<void> feedInjectedImageToViewfinder();
 }
