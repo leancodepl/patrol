@@ -16,6 +16,7 @@ class PatrolLogReader {
     required this.showFlutterLogs,
     required this.hideTestSteps,
     required this.clearTestSteps,
+    this.onLogEntry,
   }) : _scope = scope;
 
   final void Function(String) log;
@@ -23,6 +24,7 @@ class PatrolLogReader {
   final bool showFlutterLogs;
   final bool hideTestSteps;
   final bool clearTestSteps;
+  final void Function(Entry entry)? onLogEntry;
   final StreamSubscription<void> Function(
     void Function(String) onData, {
     Function? onError,
@@ -83,21 +85,11 @@ class PatrolLogReader {
   String get failedTestsList =>
       failedTests.map((e) => '  - ${e.nameWithPath}').join('\n');
 
-  // Pattern for Flutter test framework output: "MM:SS +N -N: message" or "MM:SS +N: message"
-  static final _testFrameworkPattern = RegExp(r'(\d+:\d+ \+\d+( -\d+)?: .+)');
-
   /// Parse the line from the process output.
   void parse(String line) {
     try {
       if (line.contains('PATROL_LOG')) {
         _parsePatrolLog(line);
-      } else if (_testFrameworkPattern.hasMatch(line)) {
-        // Print test framework output to the console. On iOS, this output
-        // is captured by the log stream but not by flutter logs.
-        final match = _testFrameworkPattern.firstMatch(line);
-        if (match != null) {
-          log('\t${match.group(1)}');
-        }
       } else if (showFlutterLogs) {
         return switch (line) {
           _ when line.contains('(Flutter) flutter:') => _parseFlutterIOsLog(
@@ -132,11 +124,14 @@ class PatrolLogReader {
               !_skippedTests.contains(testEntry.name)) {
             _skippedTests.add(testEntry.name);
             _controller.add(entry);
+            onLogEntry?.call(entry);
           } else if (testEntry.status != TestEntryStatus.skip) {
             _controller.add(entry);
+            onLogEntry?.call(entry);
           }
         } else {
           _controller.add(entry);
+          onLogEntry?.call(entry);
         }
       }
     } catch (err) {
