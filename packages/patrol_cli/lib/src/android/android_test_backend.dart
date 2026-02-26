@@ -170,26 +170,26 @@ class AndroidTestBackend {
   /// This fix issue: https://github.com/leancodepl/patrol/issues/1668
   Future<void> buildApkConfigOnly(FlutterAppOptions options) async {
     await _disposeScope.run((scope) async {
-      final process = await _processManager
-          .start([
-            options.command.executable,
-            ...options.command.arguments,
-            'build',
-            'apk',
-            '--config-only',
-            if (options.buildName case final buildName?) ...[
-              '--build-name',
-              buildName,
-            ],
-            if (options.buildNumber case final buildNumber?) ...[
-              '--build-number',
-              buildNumber,
-            ],
-            if (options.noTreeShakeIcons) '--no-tree-shake-icons',
-            '-t',
-            options.target,
-          ], runInShell: true)
-          .disposedBy(scope);
+      final process =
+          await _processManager.start([
+              options.command.executable,
+              ...options.command.arguments,
+              'build',
+              'apk',
+              '--config-only',
+              if (options.buildName case final buildName?) ...[
+                '--build-name',
+                buildName,
+              ],
+              if (options.buildNumber case final buildNumber?) ...[
+                '--build-number',
+                buildNumber,
+              ],
+              if (options.noTreeShakeIcons) '--no-tree-shake-icons',
+              '-t',
+              options.target,
+            ], runInShell: true)
+            ..disposedBy(scope);
 
       process.listenStdOut((l) => _logger.detail('\t: $l')).disposedBy(scope);
       process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
