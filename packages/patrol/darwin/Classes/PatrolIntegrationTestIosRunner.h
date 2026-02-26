@@ -37,8 +37,8 @@
                                                                                                                 \
   +(BOOL)instancesRespondToSelector : (SEL)aSelector {                                                          \
     NSString *name = NSStringFromSelector(aSelector);                                                           \
-    BOOL isPatrolDartTestSelector = [self isPatrolDartTestSelectorName:name];                                  \
-    if (isPatrolDartTestSelector && [self selectedTest] == nil && _cachedInvocations == nil) {                 \
+    BOOL isPatrolDartTestSelector = [self isPatrolDartTestSelectorName:name];                                   \
+    if (isPatrolDartTestSelector && [self selectedTest] == nil && _cachedInvocations == nil) {                  \
       [self setSelectedTest:@{@"name" : name, @"skip" : @(NO)}];                                                \
     }                                                                                                           \
                                                                                                                 \
@@ -202,10 +202,10 @@
         NSLog(@"selectedTest: %@", [self selectedTest]);                                                        \
         dartTests = [NSArray arrayWithObject:[self selectedTest]];                                              \
       } else {                                                                                                  \
-        [self ensurePatrolBackendInitialized];                                                                   \
+        [self ensurePatrolBackendInitialized];                                                                  \
                                                                                                                 \
         /* Allow the Local Network permission required by Dart Observatory */                                   \
-        [self allowLocalNetworkPermissionIfNeeded];                                                              \
+        [self allowLocalNetworkPermissionIfNeeded];                                                             \
                                                                                                                 \
         /* Run the app for the first time to gather Dart tests */                                               \
         [[[XCUIApplication alloc] init] launch];                                                                \
@@ -247,7 +247,7 @@
         BOOL skip = [dartTest[@"skip"] boolValue];                                                              \
                                                                                                                 \
         IMP implementation = imp_implementationWithBlock(^(id _self) {                                          \
-          [self ensurePatrolBackendInitialized];                                                                 \
+          [self ensurePatrolBackendInitialized];                                                                \
           NSLog(@"RunnerUITests running Dart test: %@", dartTestName);                                          \
                                                                                                                 \
           if (CLEAR_PERMISSIONS && i > 0) {                                                                     \
@@ -262,7 +262,7 @@
           }                                                                                                     \
                                                                                                                 \
           [[[XCUIApplication alloc] init] launch];                                                              \
-          [self allowLocalNetworkPermissionIfNeeded];                                                            \
+          [self allowLocalNetworkPermissionIfNeeded];                                                           \
           if (skip) {                                                                                           \
             XCTSkip(@"Skip that test \"%@\"", dartTestName);                                                    \
           }                                                                                                     \
@@ -298,7 +298,7 @@
         SEL selector = NSSelectorFromString(dartTestName);                                                      \
         class_addMethod(self, selector, implementation, "v@:");                                                 \
                                                                                                                 \
-        /* Step 2 – create invocations to the dynamically created methods */                                    \
+        /* Step 2 – create invocations to the dynamically created methods */                                  \
         NSMethodSignature *signature = [self instanceMethodSignatureForSelector:selector];                      \
         NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];                      \
         invocation.selector = selector;                                                                         \
@@ -308,10 +308,10 @@
         [invocations addObject:invocation];                                                                     \
       }                                                                                                         \
                                                                                                                 \
-      _cachedInvocations = [invocations copy];                                                                   \
+      _cachedInvocations = [invocations copy];                                                                  \
     }                                                                                                           \
                                                                                                                 \
-    return _cachedInvocations;                                                                                   \
+    return _cachedInvocations;                                                                                  \
   }                                                                                                             \
                                                                                                                 \
   @end
