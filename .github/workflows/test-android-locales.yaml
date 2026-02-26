@@ -88,7 +88,7 @@ jobs:
 
       - name: patrol build android
         run: |
-          patrol build android --tags locale_testing_android --verbose
+          patrol build android --tags locale_testing_android --exclude patrol_test/web_example_test.dart --verbose
 
       - name: Upload APKs to Firebase Test Lab and wait for tests to finish
         id: tests_step

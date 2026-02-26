@@ -116,7 +116,7 @@ jobs:
         run: | 
           patrol build android \
           --tags='android && emulator' \
-          --exclude patrol_test/web_example_test.dart
+          --exclude patrol_test/web_example_test.dart \
           --dart-define-from-file=defines_1.json --dart-define-from-file=defines_2.json --dart-define-from-file=defines_3.env \
           --verbose
 

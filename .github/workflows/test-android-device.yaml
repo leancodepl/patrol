@@ -92,7 +92,8 @@ jobs:
       - name: patrol build android
         run: |
           patrol build android \
-          --tags='android && physical_device'
+          --tags='android && physical_device' \
+          --exclude patrol_test/web_example_test.dart \
           --dart-define-from-file=defines_1.json --dart-define-from-file=defines_2.json --dart-define-from-file=defines_3.env \
           --verbose
 
