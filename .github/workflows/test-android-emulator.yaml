@@ -115,7 +115,8 @@ jobs:
           MAPS_API_KEY: ${{ secrets.MAPS_API_KEY }}
         run: | 
           patrol build android \
-          --tags='android && emulator'
+          --tags='android && emulator' \
+          --exclude patrol_test/web_example_test.dart
           --dart-define-from-file=defines_1.json --dart-define-from-file=defines_2.json --dart-define-from-file=defines_3.env \
           --verbose
 
