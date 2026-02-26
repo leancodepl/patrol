@@ -19,7 +19,7 @@ void main() {
         await cameraHelpers.takePhotosAcceptDialogsAndOpenAppOnRealDeviceIOS();
       }
       // Wait for photos to be saved in gallery.
-      await Future<void>.delayed(const Duration(seconds: 10));
+      await Future<void>.delayed(const Duration(seconds: 5));
       await $(#cameraFeaturesButton).scrollTo().tap();
       await $(#pickMultiplePhotosButton).tap();
       await cameraHelpers.maybeAcceptPermissionDialog();
