@@ -110,6 +110,8 @@ These workflows verify the user has write access before running. If you don't ha
 
 Test workflows use a tag-based system to select which tests to run. Tests are tagged in their source files using the `tags` parameter.
 
+All tests in both the main `patrol_test` directory and the `patrol_test/native_tests` directory use the same tagging system.
+
 **Common tags:**
 - **Platform**: `android`, `ios`, `web`, `macos`
 - **Environment**: `physical_device`, `emulator`, `simulator`
@@ -125,3 +127,8 @@ Workflows use the `--tags` flag with boolean expressions to select which tests t
 - `--tags='ios && physical_device'` - Tests with ios AND physical_device tags
 
 A test is selected if it matches ALL conditions in the boolean expression (AND operator). Tests can declare multiple tags in their `tags` parameter array, and the workflow filter will match tests that satisfy the expression.
+
+**Test directories:**
+- `dev/e2e_app/patrol_test/` - Main test directory with platform.mobile API tests
+- `dev/e2e_app/patrol_test/native_tests/` - Tests using deprecated native/native2 API (both directories use the same tagging system)
+

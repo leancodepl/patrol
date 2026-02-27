@@ -49,7 +49,7 @@ void main() {
     await $('Latitude: $_lat3').waitUntilVisible();
     await $('Longitude: $_lon').waitUntilVisible();
     await Future<void>.delayed(const Duration(milliseconds: 1500));
-  });
+  }, tags: ['android', 'emulator', 'ios', 'simulator']);
 
   // Skip this test for now, as it's too long to run on CI.
   patrol('mock location from GPX', skip: true, ($) async {
@@ -109,7 +109,7 @@ void main() {
         'Longitude: ${waypoint.lon!.toStringAsFixed(4)}',
       ).waitUntilVisible();
     }
-  });
+  }, tags: ['android', 'emulator', 'ios', 'simulator']);
 }
 
 Future<List<Wpt>> loadGpxWaypoints(PatrolIntegrationTester $) async {

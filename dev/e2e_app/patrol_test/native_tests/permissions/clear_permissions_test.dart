@@ -8,27 +8,35 @@ import '../common.dart';
 const _timeout = Duration(seconds: 5); // to avoid timeouts on CI
 
 void main() {
-  patrol('grants various permissions', ($) async {
-    await createApp($);
+  patrol(
+    'grants various permissions',
+    ($) async {
+      await createApp($);
 
-    await $('Open permissions screen').scrollTo().tap();
+      await $('Open permissions screen').scrollTo().tap();
 
-    await _requestAndGrantCameraPermission($);
-    await _requestAndGrantMicrophonePermission($);
-    await _requestAndGrantLocationPermission($);
-    await _requestAndGrantGalleryPermission($);
-  });
+      await _requestAndGrantCameraPermission($);
+      await _requestAndGrantMicrophonePermission($);
+      await _requestAndGrantLocationPermission($);
+      await _requestAndGrantGalleryPermission($);
+    },
+    tags: ['android', 'emulator', 'ios', 'simulator'],
+  );
 
-  patrol('grants various permissions 2', ($) async {
-    await createApp($);
+  patrol(
+    'grants various permissions 2',
+    ($) async {
+      await createApp($);
 
-    await $('Open permissions screen').scrollTo().tap();
+      await $('Open permissions screen').scrollTo().tap();
 
-    await _requestAndGrantCameraPermission($);
-    await _requestAndGrantMicrophonePermission($);
-    await _requestAndGrantLocationPermission($);
-    await _requestAndGrantGalleryPermission($);
-  });
+      await _requestAndGrantCameraPermission($);
+      await _requestAndGrantMicrophonePermission($);
+      await _requestAndGrantLocationPermission($);
+      await _requestAndGrantGalleryPermission($);
+    },
+    tags: ['android', 'emulator', 'ios', 'simulator'],
+  );
 }
 
 Future<void> _requestAndGrantCameraPermission(PatrolIntegrationTester $) async {

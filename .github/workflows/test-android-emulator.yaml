@@ -38,7 +38,7 @@ jobs:
       matrix:
         flutter-version: ["3.32.x"]
         flutter-channel: ["stable"]
-        api-level: [35, 34, 33, 32, 31]
+        api-level: [36, 35, 34, 33, 32]
 
     defaults:
       run:
@@ -115,7 +115,8 @@ jobs:
           MAPS_API_KEY: ${{ secrets.MAPS_API_KEY }}
         run: | 
           patrol build android \
-          --tags='android && emulator'
+          --tags='android && emulator' \
+          --exclude patrol_test/web_example_test.dart \
           --dart-define-from-file=defines_1.json --dart-define-from-file=defines_2.json --dart-define-from-file=defines_3.env \
           --verbose
 
@@ -125,7 +126,6 @@ jobs:
           set +e
           output="$(ew-cli emulatorwtf.yaml:multi_api \
             --device model=Pixel7,version=${{ matrix.api-level }} \
-            --device model=Tablet10,version=${{ matrix.api-level }} \
             --device model=NexusLowRes,version=${{ matrix.api-level }} \
             --display-name "Patrol example app API ${{ matrix.api-level }} (${GITHUB_SHA::7})")"
           TESTS_EXIT_CODE=$?

@@ -6,31 +6,55 @@ import 'package:patrol/src/global_state.dart' as global_state;
 import '../common.dart';
 
 void main() {
-  patrol('at the beginning', ($) async {
-    await _testBody($);
-  });
+  patrol(
+    'at the beginning',
+    ($) async {
+      await _testBody($);
+    },
+    tags: ['android', 'emulator', 'ios', 'simulator'],
+  );
 
   group('top level group in file', () {
     group('alpha', () {
-      patrol('first', ($) async {
-        await _testBody($);
-      });
-      patrol('second', ($) async {
-        await _testBody($);
-      });
+      patrol(
+        'first',
+        ($) async {
+          await _testBody($);
+        },
+        tags: ['android', 'emulator', 'ios', 'simulator'],
+      );
+      patrol(
+        'second',
+        ($) async {
+          await _testBody($);
+        },
+        tags: ['android', 'emulator', 'ios', 'simulator'],
+      );
     });
 
-    patrol('in the middle', ($) async {
-      await _testBody($);
-    });
+    patrol(
+      'in the middle',
+      ($) async {
+        await _testBody($);
+      },
+      tags: ['android', 'emulator', 'ios', 'simulator'],
+    );
 
     group('bravo', () {
-      patrol('first', ($) async {
-        await _testBody($);
-      });
-      patrol('second', ($) async {
-        await _testBody($);
-      });
+      patrol(
+        'first',
+        ($) async {
+          await _testBody($);
+        },
+        tags: ['android', 'emulator', 'ios', 'simulator'],
+      );
+      patrol(
+        'second',
+        ($) async {
+          await _testBody($);
+        },
+        tags: ['android', 'emulator', 'ios', 'simulator'],
+      );
     });
   });
 }

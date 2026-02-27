@@ -51,7 +51,7 @@ void main() {
     expect(await $('Latitude: 55.7297').waitUntilVisible(), findsOneWidget);
     expect(await $('Longitude: 21.0122').waitUntilVisible(), findsOneWidget);
     await Future<void>.delayed(const Duration(milliseconds: 1500));
-  });
+  }, tags: ['android', 'emulator', 'ios', 'simulator']);
 
   // Skip this test for now, as it's too long to run on CI.
   patrol('mock location from GPX', skip: true, ($) async {

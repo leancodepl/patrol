@@ -18,5 +18,5 @@ void main() {
       await $.native.pressVolumeUp();
       await $.pumpAndSettle();
     }
-  });
+  }, tags: ['android', 'emulator', 'physical_device']);
 }

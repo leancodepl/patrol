@@ -37,5 +37,5 @@ void main() {
     } else {
       await $.native.waitUntilVisible(Selector(text: 'Contact us'));
     }
-  });
+  }, tags: ['android', 'emulator', 'ios', 'simulator']);
 }

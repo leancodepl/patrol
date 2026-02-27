@@ -26,5 +26,5 @@ void main() {
 
     await $.pumpAndSettle();
     await $(#selectedPhotosCount).$('2 photos selected').waitUntilVisible();
-  });
+  }, tags: ['android', 'emulator', 'physical_device', 'ios']);
 }

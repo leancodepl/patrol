@@ -25,35 +25,40 @@ void main() {
     await $.native.enableDarkMode();
 
     await $.native.pressBack();
-  });
+  }, tags: ['android', 'emulator']);
 
-  patrol('taps around 2', skip: true, ($) async {
-    await createApp($);
+  patrol(
+    'taps around 2',
+    skip: true,
+    ($) async {
+      await createApp($);
 
-    await $.native.pressHome();
-    await $.native.pressDoubleRecentApps();
+      await $.native.pressHome();
+      await $.native.pressDoubleRecentApps();
 
-    await $.native.openNotifications();
+      await $.native.openNotifications();
 
-    await $.native.enableWifi();
-    await $.native.disableWifi();
-    await $.native.enableWifi();
+      await $.native.enableWifi();
+      await $.native.disableWifi();
+      await $.native.enableWifi();
 
-    await $.native.enableCellular();
-    await $.native.disableCellular();
-    await $.native.enableCellular();
+      await $.native.enableCellular();
+      await $.native.disableCellular();
+      await $.native.enableCellular();
 
-    await $.native.enableDarkMode();
-    await $.native.disableDarkMode();
-    await $.native.enableDarkMode();
+      await $.native.enableDarkMode();
+      await $.native.disableDarkMode();
+      await $.native.enableDarkMode();
 
-    await $.native.pressBack();
-  });
+      await $.native.pressBack();
+    },
+    tags: ['android', 'emulator'],
+  );
 
   patrol('taps around 3', ($) async {
     await createApp($);
 
     await $.native.pressHome();
     await $.native.pressDoubleRecentApps();
-  });
+  }, tags: ['android', 'emulator']);
 }
