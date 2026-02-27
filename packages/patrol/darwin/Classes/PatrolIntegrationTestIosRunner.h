@@ -17,6 +17,9 @@
   @implementation __test_class                                                                                  \
                                                                                                                 \
   static NSDictionary *_selectedTest = nil;                                                                     \
+  static NSArray<NSInvocation *> *_cachedInvocations = nil;                                                     \
+  static PatrolServer *_server = nil;                                                                           \
+  static ObjCPatrolAppServiceClient *_appServiceClient = nil;                                                   \
                                                                                                                 \
   +(NSDictionary *)selectedTest {                                                                               \
     return _selectedTest;                                                                                       \
@@ -28,15 +31,48 @@
     }                                                                                                           \
   }                                                                                                             \
                                                                                                                 \
+  +(BOOL)isPatrolDartTestSelectorName : (NSString *)name {                                                      \
+    return [name containsString:@"_test "];                                                                     \
+  }                                                                                                             \
+                                                                                                                \
   +(BOOL)instancesRespondToSelector : (SEL)aSelector {                                                          \
     NSString *name = NSStringFromSelector(aSelector);                                                           \
-    BOOL skip = NO;                                                                                             \
-    NSDictionary *testInfo = @{@"name" : name, @"skip" : @(skip)};                                              \
-    [self setSelectedTest:testInfo];                                                                            \
+    BOOL isPatrolDartTestSelector = [self isPatrolDartTestSelectorName:name];                                   \
+    if (isPatrolDartTestSelector && [self selectedTest] == nil && _cachedInvocations == nil) {                  \
+      [self setSelectedTest:@{@"name" : name, @"skip" : @(NO)}];                                                \
+    }                                                                                                           \
                                                                                                                 \
-    [self defaultTestSuite]; /* calls testInvocations */                                                        \
     BOOL result = [super instancesRespondToSelector:aSelector];                                                 \
-    return true;                                                                                                \
+    return result || isPatrolDartTestSelector;                                                                  \
+  }                                                                                                             \
+                                                                                                                \
+  +(void)ensurePatrolBackendInitialized {                                                                       \
+    if (_server != nil && _appServiceClient != nil) {                                                           \
+      return;                                                                                                   \
+    }                                                                                                           \
+                                                                                                                \
+    @synchronized(self) {                                                                                       \
+      if (_server == nil) {                                                                                     \
+        _server = [[PatrolServer alloc] init];                                                                  \
+        NSError *err = nil;                                                                                     \
+        [_server startAndReturnError:&err];                                                                     \
+        if (err != nil) {                                                                                       \
+          NSLog(@"patrolServer.start(): failed, err: %@", err);                                                 \
+        }                                                                                                       \
+      }                                                                                                         \
+                                                                                                                \
+      if (_appServiceClient == nil) {                                                                           \
+        _appServiceClient = [[ObjCPatrolAppServiceClient alloc] init];                                          \
+      }                                                                                                         \
+    }                                                                                                           \
+  }                                                                                                             \
+                                                                                                                \
+  +(void)allowLocalNetworkPermissionIfNeeded {                                                                  \
+    XCUIApplication *springboard = [[XCUIApplication alloc] initWithBundleIdentifier:@"com.apple.springboard"]; \
+    XCUIElementQuery *systemAlerts = springboard.alerts;                                                        \
+    if (systemAlerts.buttons[@"Allow"].exists) {                                                                \
+      [systemAlerts.buttons[@"Allow"] tap];                                                                     \
+    }                                                                                                           \
   }                                                                                                             \
                                                                                                                 \
   +(void)uninstallApp {                                                                                         \
@@ -152,126 +188,130 @@
   }                                                                                                             \
                                                                                                                 \
   +(NSArray<NSInvocation *> *)testInvocations {                                                                 \
-    /* Start native automation server */                                                                        \
-    PatrolServer *server = [[PatrolServer alloc] init];                                                         \
-                                                                                                                \
-    NSError *_Nullable __autoreleasing *_Nullable err = NULL;                                                   \
-    [server startAndReturnError:err];                                                                           \
-    if (err != NULL) {                                                                                          \
-      NSLog(@"patrolServer.start(): failed, err: %@", err);                                                     \
+    if (_cachedInvocations != nil) {                                                                            \
+      return _cachedInvocations;                                                                                \
     }                                                                                                           \
                                                                                                                 \
-    /* Create a client for PatrolAppService, which lets us list and run Dart tests */                           \
-    __block ObjCPatrolAppServiceClient *appServiceClient = [[ObjCPatrolAppServiceClient alloc] init];           \
-                                                                                                                \
-    /* Allow the Local Network permission required by Dart Observatory */                                       \
-    XCUIApplication *springboard = [[XCUIApplication alloc] initWithBundleIdentifier:@"com.apple.springboard"]; \
-    XCUIElementQuery *systemAlerts = springboard.alerts;                                                        \
-    if (systemAlerts.buttons[@"Allow"].exists) {                                                                \
-      [systemAlerts.buttons[@"Allow"] tap];                                                                     \
-    }                                                                                                           \
-                                                                                                                \
-    __block NSArray<NSDictionary *> *dartTests = NULL;                                                          \
-    if ([self selectedTest] != nil) {                                                                           \
-      NSLog(@"selectedTest: %@", [self selectedTest]);                                                          \
-      dartTests = [NSArray arrayWithObject:[self selectedTest]];                                                \
-    } else {                                                                                                    \
-      /* Run the app for the first time to gather Dart tests */                                                 \
-      [[[XCUIApplication alloc] init] launch];                                                                  \
-      /* Spin the runloop waiting until the app reports that it is ready to report Dart tests */                \
-      while (!server.appReady) {                                                                                \
-        [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];                      \
-      }                                                                                                         \
-      [appServiceClient                                                                                         \
-          listDartTestsWithCompletion:^(NSArray<NSDictionary *> *_Nullable tests, NSError *_Nullable err) {     \
-            if (err != NULL) {                                                                                  \
-              NSLog(@"listDartTests(): failed, err: %@", err);                                                  \
-            }                                                                                                   \
-                                                                                                                \
-            dartTests = tests;                                                                                  \
-          }];                                                                                                   \
-                                                                                                                \
-      /* Spin the runloop waiting until the app reports the Dart tests it contains */                           \
-      while (!dartTests) {                                                                                      \
-        [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];                      \
+    @synchronized(self) {                                                                                       \
+      if (_cachedInvocations != nil) {                                                                          \
+        return _cachedInvocations;                                                                              \
       }                                                                                                         \
                                                                                                                 \
-      NSLog(@"Got %lu Dart tests: %@", dartTests.count, dartTests);                                             \
-    }                                                                                                           \
+      __block NSArray<NSDictionary *> *dartTests = NULL;                                                        \
+      if ([self selectedTest] != nil) {                                                                         \
+        NSLog(@"selectedTest: %@", [self selectedTest]);                                                        \
+        dartTests = [NSArray arrayWithObject:[self selectedTest]];                                              \
+      } else {                                                                                                  \
+        [self ensurePatrolBackendInitialized];                                                                  \
                                                                                                                 \
-    NSMutableArray<NSInvocation *> *invocations = [[NSMutableArray alloc] init];                                \
+        /* Allow the Local Network permission required by Dart Observatory */                                   \
+        [self allowLocalNetworkPermissionIfNeeded];                                                             \
                                                                                                                 \
-    /**                                                                                                         \
-     * Once Dart tests are available, we:                                                                       \
-     *                                                                                                          \
-     *  Step 1. Dynamically add test case methods that request execution of an individual Dart test file.       \
-     *                                                                                                          \
-     *  Step 2. Create invocations to the generated methods and return them                                     \
-     */                                                                                                         \
-                                                                                                                \
-    for (NSUInteger i = 0; i < dartTests.count; i++) {                                                          \
-      NSDictionary *dartTest = dartTests[i];                                                                    \
-      /* Step 1 - dynamically create test cases */                                                              \
-      NSString *dartTestName = dartTest[@"name"];                                                               \
-      BOOL skip = [dartTest[@"skip"] boolValue];                                                                \
-                                                                                                                \
-      IMP implementation = imp_implementationWithBlock(^(id _self) {                                            \
-        NSLog(@"RunnerUITests running Dart test: %@", dartTestName);                                            \
-                                                                                                                \
-        if (CLEAR_PERMISSIONS && i > 0) {                                                                       \
-          [self resetPermissions];                                                                              \
-          NSLog(@"App permissions cleared");                                                                    \
-        }                                                                                                       \
-                                                                                                                \
-        if (FULL_ISOLATION && i > 0) {                                                                          \
-          NSLog(@"Uninstalling app");                                                                           \
-          [self uninstallApp];                                                                                  \
-          NSLog(@"App uninstallation completed, launching fresh app instance");                                 \
-        }                                                                                                       \
-                                                                                                                \
+        /* Run the app for the first time to gather Dart tests */                                               \
         [[[XCUIApplication alloc] init] launch];                                                                \
-        if (skip) {                                                                                             \
-          XCTSkip(@"Skip that test \"%@\"", dartTestName);                                                      \
-        }                                                                                                       \
-                                                                                                                \
-        __block ObjCRunDartTestResponse *response = NULL;                                                       \
-        __block NSError *error;                                                                                 \
-        [appServiceClient                                                                                       \
-            runDartTestWithName:dartTestName                                                                    \
-                     completion:^(ObjCRunDartTestResponse *_Nullable r, NSError *_Nullable err) {               \
-                       NSString *status;                                                                        \
-                       if (err != NULL) {                                                                       \
-                         error = err;                                                                           \
-                         status = @"CRASHED";                                                                   \
-                       } else {                                                                                 \
-                         response = r;                                                                          \
-                         status = response.passed ? @"PASSED" : @"FAILED";                                      \
-                       }                                                                                        \
-                       NSLog(@"runDartTest(\"%@\"): call finished, test result: %@", dartTestName, status);     \
-                     }];                                                                                        \
-                                                                                                                \
-        /* Wait until Dart test finishes (either fails or passes) or crashes */                                 \
-        while (!response && !error) {                                                                           \
+        /* Spin the runloop waiting until the app reports that it is ready to report Dart tests */              \
+        while (!_server.appReady) {                                                                             \
           [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];                    \
         }                                                                                                       \
-        BOOL passed = response ? response.passed : NO;                                                          \
-        NSString *details = response ? response.details : @"(no details - app likely crashed)";                 \
-        XCTAssertTrue(passed, @"%@", details);                                                                  \
-      });                                                                                                       \
-      SEL selector = NSSelectorFromString(dartTestName);                                                        \
-      class_addMethod(self, selector, implementation, "v@:");                                                   \
+        [_appServiceClient                                                                                      \
+            listDartTestsWithCompletion:^(NSArray<NSDictionary *> *_Nullable tests, NSError *_Nullable err) {   \
+              if (err != NULL) {                                                                                \
+                NSLog(@"listDartTests(): failed, err: %@", err);                                                \
+              }                                                                                                 \
                                                                                                                 \
-      /* Step 2 – create invocations to the dynamically created methods */                                      \
-      NSMethodSignature *signature = [self instanceMethodSignatureForSelector:selector];                        \
-      NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];                        \
-      invocation.selector = selector;                                                                           \
+              dartTests = tests;                                                                                \
+            }];                                                                                                 \
                                                                                                                 \
-      NSLog(@"RunnerUITests.testInvocations(): selectorName = %@, signature: %@", dartTestName, signature);     \
+        /* Spin the runloop waiting until the app reports the Dart tests it contains */                         \
+        while (!dartTests) {                                                                                    \
+          [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];                    \
+        }                                                                                                       \
                                                                                                                 \
-      [invocations addObject:invocation];                                                                       \
+        NSLog(@"Got %lu Dart tests: %@", dartTests.count, dartTests);                                           \
+      }                                                                                                         \
+                                                                                                                \
+      NSMutableArray<NSInvocation *> *invocations = [[NSMutableArray alloc] init];                              \
+                                                                                                                \
+      /**                                                                                                       \
+       * Once Dart tests are available, we:                                                                     \
+       *                                                                                                        \
+       *  Step 1. Dynamically add test case methods that request execution of an individual Dart test file.     \
+       *                                                                                                        \
+       *  Step 2. Create invocations to the generated methods and return them                                   \
+       */                                                                                                       \
+                                                                                                                \
+      for (NSUInteger i = 0; i < dartTests.count; i++) {                                                        \
+        NSDictionary *dartTest = dartTests[i];                                                                  \
+        /* Step 1 - dynamically create test cases */                                                            \
+        NSString *dartTestName = dartTest[@"name"];                                                             \
+        BOOL skip = [dartTest[@"skip"] boolValue];                                                              \
+                                                                                                                \
+        IMP implementation = imp_implementationWithBlock(^(id _self) {                                          \
+          [self ensurePatrolBackendInitialized];                                                                \
+          NSLog(@"RunnerUITests running Dart test: %@", dartTestName);                                          \
+                                                                                                                \
+          if (CLEAR_PERMISSIONS && i > 0) {                                                                     \
+            [self resetPermissions];                                                                            \
+            NSLog(@"App permissions cleared");                                                                  \
+          }                                                                                                     \
+                                                                                                                \
+          if (FULL_ISOLATION && i > 0) {                                                                        \
+            NSLog(@"Uninstalling app");                                                                         \
+            [self uninstallApp];                                                                                \
+            NSLog(@"App uninstallation completed, launching fresh app instance");                               \
+          }                                                                                                     \
+                                                                                                                \
+          [[[XCUIApplication alloc] init] launch];                                                              \
+          [self allowLocalNetworkPermissionIfNeeded];                                                           \
+          if (skip) {                                                                                           \
+            XCTSkip(@"Skip that test \"%@\"", dartTestName);                                                    \
+          }                                                                                                     \
+                                                                                                                \
+          while (!_server.appReady) {                                                                           \
+            [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];                  \
+          }                                                                                                     \
+                                                                                                                \
+          __block ObjCRunDartTestResponse *response = NULL;                                                     \
+          __block NSError *error;                                                                               \
+          [_appServiceClient                                                                                    \
+              runDartTestWithName:dartTestName                                                                  \
+                       completion:^(ObjCRunDartTestResponse *_Nullable r, NSError *_Nullable err) {             \
+                         NSString *status;                                                                      \
+                         if (err != NULL) {                                                                     \
+                           error = err;                                                                         \
+                           status = @"CRASHED";                                                                 \
+                         } else {                                                                               \
+                           response = r;                                                                        \
+                           status = response.passed ? @"PASSED" : @"FAILED";                                    \
+                         }                                                                                      \
+                         NSLog(@"runDartTest(\"%@\"): call finished, test result: %@", dartTestName, status);   \
+                       }];                                                                                      \
+                                                                                                                \
+          /* Wait until Dart test finishes (either fails or passes) or crashes */                               \
+          while (!response && !error) {                                                                         \
+            [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];                  \
+          }                                                                                                     \
+          BOOL passed = response ? response.passed : NO;                                                        \
+          NSString *details = response ? response.details : @"(no details - app likely crashed)";               \
+          XCTAssertTrue(passed, @"%@", details);                                                                \
+        });                                                                                                     \
+        SEL selector = NSSelectorFromString(dartTestName);                                                      \
+        class_addMethod(self, selector, implementation, "v@:");                                                 \
+                                                                                                                \
+        /* Step 2 – create invocations to the dynamically created methods */                                  \
+        NSMethodSignature *signature = [self instanceMethodSignatureForSelector:selector];                      \
+        NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];                      \
+        invocation.selector = selector;                                                                         \
+                                                                                                                \
+        NSLog(@"RunnerUITests.testInvocations(): selectorName = %@, signature: %@", dartTestName, signature);   \
+                                                                                                                \
+        [invocations addObject:invocation];                                                                     \
+      }                                                                                                         \
+                                                                                                                \
+      _cachedInvocations = [invocations copy];                                                                  \
     }                                                                                                           \
                                                                                                                 \
-    return invocations;                                                                                         \
+    return _cachedInvocations;                                                                                  \
   }                                                                                                             \
                                                                                                                 \
   @end
