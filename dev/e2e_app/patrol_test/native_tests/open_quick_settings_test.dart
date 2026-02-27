@@ -9,5 +9,5 @@ void main() {
 
     await $.native.openQuickSettings();
     await $.native.pressHome();
-  });
+  }, tags: ['android', 'emulator', 'physical_device']);
 }

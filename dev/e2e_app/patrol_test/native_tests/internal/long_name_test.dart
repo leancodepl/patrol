@@ -31,6 +31,7 @@ void main() {
       expect($(#counterText).text, '2');
       expect($('Hello, Flutter!'), findsOneWidget);
     },
+    tags: ['android', 'emulator', 'ios', 'simulator'],
   );
 
   patrol(
@@ -41,6 +42,7 @@ void main() {
       await $(FloatingActionButton).tap();
       expect($(#counterText).text, '1');
     },
+    tags: ['android', 'emulator', 'ios', 'simulator'],
   );
 
   patrol(
@@ -51,5 +53,6 @@ void main() {
       await $(FloatingActionButton).tap();
       expect($(#counterText).text, '1');
     },
+    tags: ['android', 'emulator', 'ios', 'simulator'],
   );
 }

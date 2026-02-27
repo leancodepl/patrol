@@ -20,6 +20,6 @@ void main() {
       await $.platform.mobile.openApp(appId: appId);
       await $.platform.mobile.tapAt(Offset(0.5, 0.8), appId: appId);
     },
-    tags: ['ios', 'simulator', 'physical_device', 'android'],
+    tags: ['ios', 'simulator', 'emulator', 'physical_device', 'android'],
   );
 }

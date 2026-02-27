@@ -18,5 +18,5 @@ void main() {
       await $.native.disableBluetooth();
       await $.native.enableBluetooth();
     }
-  });
+  }, tags: ['android', 'emulator', 'physical_device']);
 }

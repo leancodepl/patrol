@@ -18,5 +18,5 @@ void main() {
       await $.native.disableWifi();
       await $.native.enableWifi();
     }
-  });
+  }, tags: ['android', 'emulator', 'physical_device']);
 }

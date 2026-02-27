@@ -14,5 +14,5 @@ void main() {
     await $.native.swipeBack(dy: 0.6);
 
     await openLoadingScreenButton.waitUntilExists();
-  });
+  }, tags: ['ios', 'simulator', 'physical_device']);
 }

@@ -26,5 +26,5 @@ void main() {
     await $.pumpAndSettle();
 
     await $(#smallImagePreview).waitUntilVisible();
-  });
+  }, tags: ['android', 'emulator', 'physical_device', 'ios']);
 }

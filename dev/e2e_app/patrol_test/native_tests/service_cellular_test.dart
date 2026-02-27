@@ -16,5 +16,5 @@ void main() {
       await $.native.disableCellular();
       await $.native.enableCellular();
     }
-  });
+  }, tags: ['android', 'emulator', 'physical_device']);
 }
