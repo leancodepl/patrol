@@ -1,6 +1,7 @@
 ## Unreleased
 
 - Fix running devtools after moving test to `patrol_test/`. (#2922) 
+- Fix listen to stdout/stderr streams in buildApkConfigOnly to prevent hang on Windows. (#2905)
 
 ## 4.1.0
 
