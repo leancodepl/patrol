@@ -34,6 +34,7 @@ import static pl.leancode.patrol.contracts.Contracts.RunDartTestResponse;
 public class PatrolJUnitRunner extends AndroidJUnitRunner {
     public PatrolAppServiceClient patrolAppServiceClient;
     private Map<String, Boolean> dartTestCaseSkipMap = new HashMap<>();
+    private Map<String, String> sanitizedToOriginalName = new HashMap<>();
 
     @Override
     protected boolean shouldWaitForActivitiesToComplete() {
@@ -126,8 +127,11 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
             List<DartGroupEntry> dartTestCases = ContractsExtensionsKt.listTestsFlat(dartTestGroup, "");
             List<String> dartTestCaseNamesList = new ArrayList<>();
             for (DartGroupEntry dartTestCase : dartTestCases) {
-                dartTestCaseSkipMap.put(dartTestCase.getName(), dartTestCase.getSkip());
-                dartTestCaseNamesList.add(dartTestCase.getName());
+                String name = dartTestCase.getName();
+                String sanitized = name.replace("/", "-");
+                dartTestCaseSkipMap.put(name, dartTestCase.getSkip());
+                sanitizedToOriginalName.put(sanitized, name);
+                dartTestCaseNamesList.add(sanitized);
             }
             Object[] dartTestCaseNames = dartTestCaseNamesList.toArray();
             Logger.INSTANCE.i(TAG + "Got Dart tests: " + Arrays.toString(dartTestCaseNames));
@@ -142,9 +146,9 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
      * Requests execution of a Dart test and waits for it to finish.
      * Throws AssertionError if the test fails.
      */
-    public RunDartTestResponse runDartTest(String name) {
-        final String TAG = "PatrolJUnitRunner.runDartTest(" + name + "): ";
-        
+    public RunDartTestResponse runDartTest(String sanitizedName) {
+        final String TAG = "PatrolJUnitRunner.runDartTest(" + sanitizedName + "): ";
+        String name = sanitizedToOriginalName.getOrDefault(sanitizedName, sanitizedName);
         final Boolean skip = dartTestCaseSkipMap.get(name);
         if (skip) {
             Logger.INSTANCE.i(TAG + "Test skipped");
