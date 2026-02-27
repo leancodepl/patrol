@@ -1262,6 +1262,22 @@ class IOSTakeCameraPhotoRequest with EquatableMixin {
 }
 
 @JsonSerializable()
+class IOSInjectCameraPhotoRequest with EquatableMixin {
+  IOSInjectCameraPhotoRequest({required this.imageName, required this.appId});
+
+  factory IOSInjectCameraPhotoRequest.fromJson(Map<String, dynamic> json) =>
+      _$IOSInjectCameraPhotoRequestFromJson(json);
+
+  final String imageName;
+  final String appId;
+
+  Map<String, dynamic> toJson() => _$IOSInjectCameraPhotoRequestToJson(this);
+
+  @override
+  List<Object?> get props => [imageName, appId];
+}
+
+@JsonSerializable()
 class AndroidPickImageFromGalleryRequest with EquatableMixin {
   AndroidPickImageFromGalleryRequest({
     this.imageSelector,

@@ -749,6 +749,11 @@ class Contracts {
     }
   }
 
+  data class IOSInjectCameraPhotoRequest (
+    val imageName: String,
+    val appId: String
+  )
+
   data class AndroidPickImageFromGalleryRequest (
     val imageSelector: AndroidSelector? = null,
     val imageIndex: Long? = null,

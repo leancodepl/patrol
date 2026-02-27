@@ -104,6 +104,10 @@ class IosAutomatorClient {
     return _sendRequest('takeCameraPhoto', request.toJson());
   }
 
+  Future<void> injectCameraPhoto(IOSInjectCameraPhotoRequest request) {
+    return _sendRequest('injectCameraPhoto', request.toJson());
+  }
+
   Future<void> pickImageFromGallery(IOSPickImageFromGalleryRequest request) {
     return _sendRequest('pickImageFromGallery', request.toJson());
   }
