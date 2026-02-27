@@ -8,9 +8,10 @@
 [![patrol_github_stars]][patrol_github_link]
 [![patrol_x]][patrol_x_link]
 
-Simple yet powerful Flutter-first UI testing framework overcoming limitations of
-`flutter_test`, `integration_test`, and `flutter_driver`. Created and supported
-by [LeanCode](https://leancode.co?utm_source=github.com&utm_medium=referral&utm_campaign=patrol-readme).
+A powerful, multiplatform E2E UI testing framework for Flutter apps that
+overcomes the limitations of integration_test by handling native interactions.
+Developed by [LeanCode](https://leancode.co?utm_source=github.com&utm_medium=referral&utm_campaign=patrol-readme) since 2022, battle-tested and
+shaped by production-grade experience.
 
 [![Patrol promotial graphics][promo_graphics]][docs]
 
