@@ -10,7 +10,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
 import 'package:patrol/src/devtools_service_extensions/devtools_service_extensions.dart';
 import 'package:patrol/src/global_state.dart' as global_state;
-import 'package:patrol/src/platform/current_io.dart' as current_platform;
+import 'package:patrol/src/platform/current.dart' as current_platform;
 
 import 'constants.dart' as constants;
 
