@@ -329,6 +329,13 @@ abstract class PatrolCommand extends Command<int> {
         'web-headless',
         help: 'Whether to run browser in headless mode.',
         valueHelp: 'true | false',
+      )
+      ..addOption(
+        'web-server-timeout',
+        help:
+            'Maximum time in seconds to wait for the Flutter web server to start. '
+            'Defaults to 120 (2 minutes).',
+        valueHelp: 'number',
       );
   }
 
