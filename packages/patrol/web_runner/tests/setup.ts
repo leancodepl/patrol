@@ -4,7 +4,13 @@ import { DartTestEntry, PatrolTestEntry } from "./types"
 
 async function setup(config: FullConfig) {
   const { baseURL } = config.projects[0].use
-  const browser = await chromium.launch()
+  const browser = await chromium.launch({
+    args: [
+      "--disable-background-timer-throttling",
+      "--disable-backgrounding-occluded-windows",
+      "--disable-renderer-backgrounding",
+    ],
+  })
   const page = await browser.newPage()
 
   if (!baseURL) {

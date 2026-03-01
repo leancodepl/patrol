@@ -45,6 +45,13 @@ export default defineConfig({
     permissions,
     userAgent,
     viewport,
+    launchOptions: {
+      args: [
+        "--disable-background-timer-throttling",
+        "--disable-backgrounding-occluded-windows",
+        "--disable-renderer-backgrounding",
+      ],
+    },
   },
   globalSetup: require.resolve("./tests/setup"),
   outputDir,
