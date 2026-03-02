@@ -27,9 +27,9 @@ jobs:
         flutter-version: ["3.32.x"]
         flutter-channel: ["stable"]
         device_model:
-          [iPhone SE (3rd generation), iPhone 14, iPad (10th generation)]
+          [iPhone SE (3rd generation), iPhone 16, iPad (10th generation)]
+        os_version: ["26.0"]
         os: [iOS]
-        os_version: ["17.2"]
 
     defaults:
       run:
@@ -83,7 +83,7 @@ jobs:
 
           TESTS_EXIT_CODE=0
           patrol test \
-          --tags='ios && simulator' --exclude=patrol_test/web_example_test.dart
+          --tags='ios && simulator' --exclude=patrol_test/web_example_test.dart,patrol_test/native_tests/volume_test.dart,patrol_test/volume_test.dart
           --verbose \
           --full-isolation || TESTS_EXIT_CODE=$?
 

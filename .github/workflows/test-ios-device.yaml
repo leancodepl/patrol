@@ -20,8 +20,8 @@ jobs:
       matrix:
         flutter-version: ['3.32.x']
         flutter-channel: ['stable']
-        device_model: ['iphone14pro']
-        os_version: ['16.6']
+        device_model: ['iPhone 17 Pro']
+        os_version: ['26.0']
         os: [iOS]
 
     defaults:
