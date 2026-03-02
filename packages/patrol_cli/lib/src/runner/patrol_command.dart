@@ -202,7 +202,8 @@ abstract class PatrolCommand extends Command<int> {
   void usesHideTestSteps() {
     argParser.addFlag(
       'hide-test-steps',
-      help: 'Hide test steps while running the tests.',
+      help:
+          'Hide test steps while running the tests. Will be ignored if web sharding is enabled.',
     );
   }
 
