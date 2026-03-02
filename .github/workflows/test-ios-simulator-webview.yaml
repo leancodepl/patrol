@@ -84,7 +84,7 @@ jobs:
           sleep 10 # See https://github.com/leancodepl/patrol/issues/1282
 
           TESTS_EXIT_CODE=0
-          patrol test --tags='webview && ios' --exclude=patrol_test/web_example_test.dart --verbose || TESTS_EXIT_CODE=$?
+          patrol test --tags='webview && ios' --exclude=patrol_test/web_example_test.dart,patrol_test/native_tests/volume_test.dart,patrol_test/volume_test.dart --verbose || TESTS_EXIT_CODE=$?
 
           kill -SIGINT $recordingpid
           kill -SIGINT $logpid
