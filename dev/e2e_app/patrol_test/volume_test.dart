@@ -11,5 +11,6 @@ void main() {
     await $.pumpAndSettle();
     await $.platform.mobile.pressVolumeUp();
     await $.pumpAndSettle();
+    // TODO: causing errors of whole test run on android emulator.
   }, tags: ['android', 'physical_device', 'ios ']);
 }
