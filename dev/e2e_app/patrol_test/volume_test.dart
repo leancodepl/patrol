@@ -11,5 +11,5 @@ void main() {
     await $.pumpAndSettle();
     await $.platform.mobile.pressVolumeUp();
     await $.pumpAndSettle();
-  }, tags: ['android', 'emulator', 'physical_device', 'ios ']);
+  }, tags: ['android', 'physical_device', 'ios ']);
 }
