@@ -18,7 +18,7 @@ This document describes all GitHub Actions workflows used in the Patrol project.
 | Workflow name | Workflow file | Runs on | Flutter version | Tags | Description |
 |--------------|--------------|---------|----------------|------|-------------|
 | test ios device | `test-ios-device.yaml` | Schedule (daily at 21:30), manual | Flutter 3.32.x (stable) | `ios && physical_device` | Runs E2E tests on Firebase Test Lab physical devices (iPhone 14 Pro, iOS 16.6). |
-| test ios simulator | `test-ios-simulator.yaml` | Schedule (monthly on 1st), manual | Flutter 3.32.x (stable) | `ios && simulator` | Runs E2E tests on iOS simulators (iPhone SE 3rd gen, iPhone 14, iPad 10th gen) on iOS 17.2. Records video and logs. |
+| test ios simulator | `test-ios-simulator.yaml` | Schedule (monthly on 1st), manual | Flutter 3.32.x (stable) | `ios && simulator` | Runs E2E tests on iOS simulators (iPad mini A17 Pro, iPhone 17, iPad Pro 13-inch M5) on iOS 26.1. Records video and logs. |
 | test ios simulator webview | `test-ios-simulator-webview.yaml` | Schedule (monthly on 1st), manual | Flutter 3.32.x (stable) | `webview && ios` | Runs webview-specific E2E tests on iOS 17.2 simulator (iPhone 14). |
 | test locales on ios device | `test-ios-locales.yaml` | Manual only | Flutter 3.32.x (stable) | `locale_testing_ios` | Tests locale support on Firebase Test Lab for English, French, German (de_DE), and Polish locales (iPhone 14 Pro, iOS 16.6). Currently disabled for PR triggers. |
 
