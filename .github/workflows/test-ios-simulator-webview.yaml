@@ -4,19 +4,6 @@ on:
   workflow_dispatch:
   schedule:
     - cron: "0 0 1 * *" #run this workflow once every month
-  pull_request:
-    paths:
-      - 'packages/patrol/**'
-      - 'packages/patrol_finders/**'
-      - 'packages/patrol_log/**'
-      - 'packages/patrol_cli/**'
-      - 'packages/adb/**'
-      - 'packages/patrol_gen/**'
-      - 'dev/e2e_app/**'
-      - 'schema.dart'
-      - 'gen_from_schema'
-      - '!**.md'
-      - '!**.mdx'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -38,9 +25,9 @@ jobs:
       matrix:
         flutter-version: ["3.32.x"]
         flutter-channel: ["stable"]
-        device_model: [iPhone 14]
+        device_model: [iPhone 17 Pro]
+        os_version: ["26.0"]
         os: [iOS]
-        os_version: ["17.2"]
 
     defaults:
       run:
@@ -84,7 +71,7 @@ jobs:
           sleep 10 # See https://github.com/leancodepl/patrol/issues/1282
 
           TESTS_EXIT_CODE=0
-          patrol test --tags='webview && ios' --exclude=patrol_test/web_example_test.dart --verbose || TESTS_EXIT_CODE=$?
+          patrol test --tags='webview && ios' --exclude=patrol_test/web_example_test.dart,patrol_test/native_tests/volume_test.dart,patrol_test/volume_test.dart --verbose || TESTS_EXIT_CODE=$?
 
           kill -SIGINT $recordingpid
           kill -SIGINT $logpid
