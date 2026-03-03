@@ -13,6 +13,8 @@ import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_log/patrol_log.dart';
 import 'package:process/process.dart';
 
+const _kDefaultWebServerTimeoutSeconds = 120;
+
 class WebTestBackend {
   WebTestBackend({
     required ProcessManager processManager,
@@ -68,7 +70,10 @@ class WebTestBackend {
 
     try {
       // Wait for server to be ready and get the URL
-      final baseUrl = await _waitForWebServer(flutterProcess);
+      final baseUrl = await _waitForWebServer(
+        flutterProcess,
+        serverTimeout: options.serverTimeout,
+      );
 
       // Run Playwright tests
       await _runPlaywrightTests(
@@ -120,7 +125,10 @@ class WebTestBackend {
 
     try {
       // Wait for server to be ready and get the URL
-      final port = await _waitForWebDebugger(flutterProcess);
+      final port = await _waitForWebDebugger(
+        flutterProcess,
+        serverTimeout: options.serverTimeout,
+      );
 
       _attachForHotRestart(flutterProcess, switch (previousStdinModes) {
         final stdinModes? => () => flutterTool.revertInteractiveMode(
@@ -183,8 +191,14 @@ class WebTestBackend {
     return process;
   }
 
-  Future<String> _waitForWebServer(Process flutterProcess) {
-    _logger.detail('Waiting for web server to start...');
+  Future<String> _waitForWebServer(
+    Process flutterProcess, {
+    int? serverTimeout,
+  }) {
+    final timeoutDuration = Duration(seconds: serverTimeout ?? _kDefaultWebServerTimeoutSeconds);
+    _logger.detail(
+      'Waiting for web server to start (timeout: ${timeoutDuration.inSeconds}s)...',
+    );
 
     final completer = Completer<String>();
     late StreamSubscription<String> stdoutSubscription;
@@ -259,20 +273,30 @@ class WebTestBackend {
       }
     }).ignore();
 
-    // Timeout after 2 minutes
-    Timer(const Duration(minutes: 2), () {
+    // Timeout after configured duration (default: 2 minutes)
+    Timer(timeoutDuration, () {
       if (!completer.isCompleted) {
         stdoutSubscription.cancel();
         stderrSubscription.cancel();
-        completer.completeError('Timeout waiting for web server to start');
+        completer.completeError(
+          'Timeout waiting for web server to start '
+          '(after ${timeoutDuration.inSeconds}s). '
+          'Consider increasing the timeout with --web-server-timeout.',
+        );
       }
     });
 
     return completer.future;
   }
 
-  Future<String> _waitForWebDebugger(Process flutterProcess) {
-    _logger.detail('Waiting for debugger to start...');
+  Future<String> _waitForWebDebugger(
+    Process flutterProcess, {
+    int? serverTimeout,
+  }) {
+    final timeoutDuration = Duration(seconds: serverTimeout ?? _kDefaultWebServerTimeoutSeconds);
+    _logger.detail(
+      'Waiting for debugger to start (timeout: ${timeoutDuration.inSeconds}s)...',
+    );
 
     final completer = Completer<String>();
     late StreamSubscription<String> stdoutSubscription;
@@ -315,12 +339,16 @@ class WebTestBackend {
       }
     }).ignore();
 
-    // Timeout after 2 minutes
-    Timer(const Duration(minutes: 2), () {
+    // Timeout after configured duration (default: 2 minutes)
+    Timer(timeoutDuration, () {
       if (!completer.isCompleted) {
         stdoutSubscription.cancel();
         stderrSubscription.cancel();
-        completer.completeError('Timeout waiting for web server to start');
+        completer.completeError(
+          'Timeout waiting for web debugger to start '
+          '(after ${timeoutDuration.inSeconds}s). '
+          'Consider increasing the timeout with --web-server-timeout.',
+        );
       }
     });
 

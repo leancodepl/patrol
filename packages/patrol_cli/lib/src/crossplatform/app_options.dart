@@ -409,6 +409,7 @@ class WebAppOptions {
     this.globalTimeout,
     this.shard,
     this.headless,
+    this.serverTimeout,
     this.browserArgs,
   });
 
@@ -431,6 +432,10 @@ class WebAppOptions {
   final String? shard;
   final String? headless;
   final String? browserArgs;
+
+  /// Timeout in seconds for the web server to start.
+  /// Defaults to 120 seconds (2 minutes) if not specified.
+  final int? serverTimeout;
 
   /// Translates these options into a proper flutter build invocation.
   List<String> toFlutterBuildInvocation() {
