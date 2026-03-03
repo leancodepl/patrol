@@ -13,6 +13,8 @@ import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_log/patrol_log.dart';
 import 'package:process/process.dart';
 
+const _kDefaultWebServerTimeoutSeconds = 120;
+
 class WebTestBackend {
   WebTestBackend({
     required ProcessManager processManager,
@@ -193,7 +195,7 @@ class WebTestBackend {
     Process flutterProcess, {
     int? serverTimeout,
   }) {
-    final timeoutDuration = Duration(seconds: serverTimeout ?? 120);
+    final timeoutDuration = Duration(seconds: serverTimeout ?? _kDefaultWebServerTimeoutSeconds);
     _logger.detail(
       'Waiting for web server to start (timeout: ${timeoutDuration.inSeconds}s)...',
     );
@@ -291,7 +293,7 @@ class WebTestBackend {
     Process flutterProcess, {
     int? serverTimeout,
   }) {
-    final timeoutDuration = Duration(seconds: serverTimeout ?? 120);
+    final timeoutDuration = Duration(seconds: serverTimeout ?? _kDefaultWebServerTimeoutSeconds);
     _logger.detail(
       'Waiting for debugger to start (timeout: ${timeoutDuration.inSeconds}s)...',
     );
