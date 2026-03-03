@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:web/web.dart' as web;
 
-import 'common.dart';
+import '../common.dart';
 
 void main() {
   patrol('dark mode', ($) async {
