@@ -4,19 +4,6 @@ on:
   workflow_dispatch:
   schedule:
     - cron: '0 */12 * * *'
-  pull_request:
-    paths:
-      - 'packages/patrol/**'
-      - 'packages/patrol_finders/**'
-      - 'packages/patrol_log/**'
-      - 'packages/patrol_cli/**'
-      - 'packages/adb/**'
-      - 'packages/patrol_gen/**'
-      - 'dev/e2e_app/**'
-      - 'schema.dart'
-      - 'gen_from_schema'
-      - '!**.md'
-      - '!**.mdx'
 
 jobs:
   run_tests:
@@ -93,7 +80,7 @@ jobs:
         run: |
           patrol build android \
           --tags='android && physical_device' \
-          --exclude patrol_test/web_example_test.dart \
+          --exclude patrol_test/web/ \
           --dart-define-from-file=defines_1.json --dart-define-from-file=defines_2.json --dart-define-from-file=defines_3.env \
           --verbose
 

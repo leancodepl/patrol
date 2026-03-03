@@ -478,11 +478,22 @@ class WebTestBackend {
                   'PATROL_WEB_SHARD': options.shard.toString(),
                 if (options.headless != null)
                   'PATROL_WEB_HEADLESS': options.headless.toString(),
+                if (options.browserArgs != null)
+                  'PATROL_WEB_BROWSER_ARGS': options.browserArgs.toString(),
                 ...Platform.environment,
               },
               runInShell: true,
             )
             ..disposedBy(scope);
+
+      final isShardedRun = (options.workers ?? 0) > 1;
+      if (isShardedRun) {
+        _logger.warn(
+          'Web sharding is enabled (workers: ${options.workers}). '
+          'Patrol hides per-test and step logs to avoid interleaved output. '
+          'Use the final summary/report for results.',
+        );
+      }
 
       final patrolLogReader =
           PatrolLogReader(
@@ -491,8 +502,9 @@ class WebTestBackend {
               log: _logger.info,
               reportPath: testReportDir,
               showFlutterLogs: showFlutterLogs,
-              hideTestSteps: hideTestSteps,
+              hideTestSteps: hideTestSteps || isShardedRun,
               clearTestSteps: clearTestSteps,
+              hideTestLifecycle: isShardedRun,
             )
             ..listen()
             ..startTimer();

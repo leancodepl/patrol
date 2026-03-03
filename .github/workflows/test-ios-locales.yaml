@@ -103,7 +103,7 @@ jobs:
         run: dart pub global activate --source path . && patrol
 
       - name: Build tests
-        run: patrol build ios --tags locale_testing_ios --release --verbose
+        run: patrol build ios --tags locale_testing_ios --exclude patrol_test/web_example_test.dart --release --verbose
 
       - name: Upload APKs to Firebase Test Lab and wait for tests to finish
         id: tests_step

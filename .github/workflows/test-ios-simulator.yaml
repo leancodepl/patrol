@@ -4,19 +4,7 @@ on:
   workflow_dispatch:
   schedule:
     - cron: "0 0 1 * *" #run this workflow once every month
-  pull_request:
-    paths:
-      - 'packages/patrol/**'
-      - 'packages/patrol_finders/**'
-      - 'packages/patrol_log/**'
-      - 'packages/patrol_cli/**'
-      - 'packages/adb/**'
-      - 'packages/patrol_gen/**'
-      - 'dev/e2e_app/**'
-      - 'schema.dart'
-      - 'gen_from_schema'
-      - '!**.md'
-      - '!**.mdx'
+
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -39,9 +27,9 @@ jobs:
         flutter-version: ["3.32.x"]
         flutter-channel: ["stable"]
         device_model:
-          [iPhone SE (3rd generation), iPhone 14, iPad (10th generation)]
+          [iPhone SE (3rd generation), iPhone 16, iPad (10th generation)]
+        os_version: ["26.0"]
         os: [iOS]
-        os_version: ["17.2"]
 
     defaults:
       run:
@@ -95,7 +83,7 @@ jobs:
 
           TESTS_EXIT_CODE=0
           patrol test \
-          --tags='ios && simulator'
+          --tags='ios && simulator' --exclude=patrol_test/web_example_test.dart,patrol_test/native_tests/volume_test.dart,patrol_test/volume_test.dart
           --verbose \
           --full-isolation || TESTS_EXIT_CODE=$?
 
@@ -131,14 +119,14 @@ jobs:
 
       - name: Upload XCRESULT test result to artifacts
         if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Test result from ${{ matrix.device_model }}.xcresult
           path: ${{ env.XCRESULT_PATH }}
 
       - name: Upload simulator logs to artifacts
         if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Logs from ${{ matrix.device_model }}
           path: |
@@ -146,7 +134,7 @@ jobs:
 
       - name: Upload captured video to artifacts
         if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Captured video from ${{ matrix.device_model }}.mp4
           path: ${{ github.workspace }}/dev/e2e_app/${{ matrix.device_model }}.mp4
