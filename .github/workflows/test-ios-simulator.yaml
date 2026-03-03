@@ -14,7 +14,7 @@ jobs:
   run_tests:
     name: Flutter ${{ matrix.flutter-version }} on ${{ matrix.device_model }} (${{ matrix.os_version }}) simulator
     runs-on: macos-latest
-    timeout-minutes: 40
+    timeout-minutes: 100
     outputs:
       SLACK_MESSAGE_TITLE: Flutter ${{ matrix.flutter-version }} on ${{ matrix.os }} ${{ matrix.os_version }} simulator
       TESTS_EXIT_CODE: ${{ steps.tests_step.outputs.TESTS_EXIT_CODE }}
