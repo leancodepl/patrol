@@ -1,6 +1,6 @@
 ## 0.7.1
 
-- Take the test name into account in the log entries.
+- Take the test name into account in the log entries. (#2955)
 
 ## 0.7.0
 

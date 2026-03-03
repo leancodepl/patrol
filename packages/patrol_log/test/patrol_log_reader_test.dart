@@ -261,9 +261,9 @@ void main() {
 
       // On mobile (iOS/Android), finish entries use currentTestFullName which
       // starts with the test file path in dotted notation, e.g.
-      // "integration_test.app_test my test".
+      // "patrol_test.app_test my test".
       test(
-        'matches mobile finish entry with integration_test.file prefix',
+        'matches mobile finish entry with patrol_test.file prefix',
         () async {
           reader
             ..parse(
@@ -274,7 +274,7 @@ void main() {
             ..parse(
               _patrolLogLine(
                 _testEntryJson(
-                  name: 'integration_test.app_test increase counter',
+                  name: 'patrol_test.app_test increase counter',
                   status: 'success',
                 ),
               ),
@@ -290,8 +290,8 @@ void main() {
       test(
         'matches mobile finish with deeply nested dotted path prefix',
         () async {
-          // Path like integration_test/features/auth_test.dart becomes
-          // "integration_test.features.auth_test" as the first token.
+          // Path like patrol_test/features/auth_test.dart becomes
+          // "patrol_test.features.auth_test" as the first token.
           reader
             ..parse(
               _patrolLogLine(
@@ -301,7 +301,7 @@ void main() {
             ..parse(
               _patrolLogLine(
                 _testEntryJson(
-                  name: 'integration_test.features.auth_test should login',
+                  name: 'patrol_test.features.auth_test should login',
                   status: 'success',
                 ),
               ),
@@ -317,14 +317,12 @@ void main() {
       test('correctly tracks multiple distinct sequential tests', () async {
         reader
           ..parse(
-            _patrolLogLine(
-              _testEntryJson(name: 'first test', status: 'start'),
-            ),
+            _patrolLogLine(_testEntryJson(name: 'first test', status: 'start')),
           )
           ..parse(
             _patrolLogLine(
               _testEntryJson(
-                name: 'integration_test.app_test first test',
+                name: 'patrol_test.app_test first test',
                 status: 'success',
               ),
             ),
@@ -337,7 +335,7 @@ void main() {
           ..parse(
             _patrolLogLine(
               _testEntryJson(
-                name: 'integration_test.app_test second test',
+                name: 'patrol_test.app_test second test',
                 status: 'failure',
                 error: 'Something went wrong',
               ),
@@ -381,19 +379,17 @@ void main() {
           // When patrolTest() is inside group('HomeScreen', ...), the start entry
           // uses just description ("my test"), but the mobile finish entry uses
           // currentTestFullName which includes the group:
-          // "integration_test.app_test HomeScreen my test".
+          // "patrol_test.app_test HomeScreen my test".
           // After normalization, finish becomes "HomeScreen my test" which does
           // not match the stored start key "my test".
           reader
             ..parse(
-              _patrolLogLine(
-                _testEntryJson(name: 'my test', status: 'start'),
-              ),
+              _patrolLogLine(_testEntryJson(name: 'my test', status: 'start')),
             )
             ..parse(
               _patrolLogLine(
                 _testEntryJson(
-                  name: 'integration_test.app_test HomeScreen my test',
+                  name: 'patrol_test.app_test HomeScreen my test',
                   status: 'success',
                 ),
               ),

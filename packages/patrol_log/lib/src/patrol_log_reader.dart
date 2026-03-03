@@ -295,9 +295,9 @@ class PatrolLogReader {
     return singleEntry;
   }
 
-  /// Web finish entries contain test file prefix, e.g.
-  /// `web.some_test my test name`, while start entries use `my test name`.
-  /// This normalizes both forms so they can be matched reliably.
+  /// Finish entries on web/mobile may contain a prefix, e.g. `web.some_test`
+  /// or `patrol_test.app_test`. This normalizes test names from start
+  /// and finish entries so they can be matched reliably by stripping the prefix.
   String _normalizeTestName(String testName) {
     final firstSpace = testName.indexOf(' ');
     if (firstSpace == -1) {
