@@ -239,7 +239,9 @@ class PatrolLogReader {
           if (!showFlutterLogs &&
               clearTestSteps &&
               entry.status != TestEntryStatus.failure) {
-            _clearLines(stepsCounter + logsCounter + 1);
+            // +1 for the test-start line, but only if it was actually printed.
+            final lifecycleLine = hideTestLifecycle ? 0 : 1;
+            _clearLines(stepsCounter + logsCounter + lifecycleLine);
           }
 
           final executionTime = singleEntry?.executionTime.inSeconds;
