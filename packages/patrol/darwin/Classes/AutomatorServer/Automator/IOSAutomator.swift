@@ -643,7 +643,8 @@
         let cellsQuery = self.springboard.buttons.matching(
           identifier: self.notificationCellIdentifier)
         guard
-          let cell = self.waitFor(query: cellsQuery, index: adjustedIndex, timeout: timeout ?? self.timeout)
+          let cell = self.waitFor(
+            query: cellsQuery, index: adjustedIndex, timeout: timeout ?? self.timeout)
         else {
           throw PatrolError.viewNotExists("notification at index \(index)")
         }
