@@ -1,3 +1,7 @@
+## 0.7.1
+
+- Take the test name into account in the log entries.
+
 ## 0.7.0
 
 - Show Flutter test framework output on iOS in `patrol develop`. (#2904)
