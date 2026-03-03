@@ -440,7 +440,9 @@ void main() {
             await reader.readEntries();
             reader
               ..parse(
-                _patrolLogLine(_testEntryJson(name: 'my test', status: 'start')),
+                _patrolLogLine(
+                  _testEntryJson(name: 'my test', status: 'start'),
+                ),
               )
               ..parse(
                 _patrolLogLine(
@@ -468,7 +470,9 @@ void main() {
             await reader.readEntries();
             reader
               ..parse(
-                _patrolLogLine(_testEntryJson(name: 'my test', status: 'start')),
+                _patrolLogLine(
+                  _testEntryJson(name: 'my test', status: 'start'),
+                ),
               )
               ..parse(
                 _patrolLogLine(
