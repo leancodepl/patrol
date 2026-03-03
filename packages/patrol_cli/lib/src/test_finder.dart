@@ -8,9 +8,11 @@ const _kDefaultTestFileSuffix = '_test.dart';
 class TestFinder {
   TestFinder({required Directory testDir, required Directory rootDir})
     : _patrolTestDirectory = testDir,
+      _rootDir = rootDir,
       _fs = rootDir.fileSystem;
 
   final Directory _patrolTestDirectory;
+  final Directory _rootDir;
   final FileSystem _fs;
 
   String findTest(
@@ -84,22 +86,16 @@ class TestFinder {
       throwToolExit("Directory ${directory.path} doesn't exist");
     }
 
-    final absoluteExcludes = <String>{};
-    for (final exclude in excludes) {
-      // Try to resolve as absolute path first, then relative to root
-      final entityPath = _fs.file(exclude).absolute.path;
-
-      // Check if it's a directory or a file
-      if (_fs.isDirectorySync(entityPath)) {
-        absoluteExcludes.add(_fs.directory(entityPath).absolute.path);
-      } else if (_fs.isFileSync(entityPath)) {
-        absoluteExcludes.add(entityPath);
-      } else {
-        // If it doesn't exist as absolute, it might be a relative path
-        // that we still want to track for matching
-        absoluteExcludes.add(entityPath);
+    final absoluteExcludes = excludes.map((exclude) {
+      if (_fs.path.isAbsolute(exclude)) {
+        return exclude;
       }
-    }
+      // Resolve relative to rootDir (not the process CWD).
+      // _rootDir.path is absolute in production (findRootDirectory returns
+      // an absolute directory), so avoid calling .absolute which would
+      // re-resolve against CWD.
+      return _fs.path.join(_rootDir.path, exclude);
+    }).toSet();
 
     return directory
         .listSync(recursive: true, followLinks: false)

@@ -16,16 +16,20 @@ void main() {
 void _test(Platform platform) {
   late FileSystem fs;
   late TestFinder testFinder;
+  late String projectRootAbsPath;
 
   setUp(() {
     fs = MemoryFileSystem.test(style: platform.fileSystemStyle);
     final projectRoot = fs.directory(fs.path.join('projects', 'awesome_app'))
       ..createSync(recursive: true);
+    // Capture the absolute path before changing CWD, matching production
+    // behavior where findRootDirectory always returns an absolute directory.
+    projectRootAbsPath = projectRoot.absolute.path;
     fs.currentDirectory = projectRoot;
 
     testFinder = TestFinder(
       testDir: fs.directory('patrol_test').absolute,
-      rootDir: projectRoot,
+      rootDir: fs.directory(projectRootAbsPath),
     );
   });
 
@@ -427,6 +431,31 @@ void _test(Platform platform) {
       // then
       final wd = fs.currentDirectory.absolute.path;
       final testRoot = fs.path.join(wd, 'patrol_test');
+      expect(found, equals([fs.path.join(testRoot, 'bravo_test.dart')]));
+    });
+
+    test('resolves relative excludes against rootDir, not CWD', () {
+      // given
+      final files = [
+        fs.path.join('patrol_test', 'alpha', 'alpha_test.dart'),
+        fs.path.join('patrol_test', 'bravo_test.dart'),
+      ];
+      for (final file in files) {
+        fs.file(file).createSync(recursive: true);
+      }
+
+      // Simulate running from a subdirectory of the project root
+      fs.currentDirectory = fs.directory(
+        fs.path.join(projectRootAbsPath, 'patrol_test'),
+      );
+
+      // when - exclude is relative to project root, not CWD
+      final found = testFinder.findAllTests(
+        excludes: {fs.path.join('patrol_test', 'alpha')},
+      );
+
+      // then - exclude should still match even though CWD != rootDir
+      final testRoot = fs.path.join(projectRootAbsPath, 'patrol_test');
       expect(found, equals([fs.path.join(testRoot, 'bravo_test.dart')]));
     });
 
