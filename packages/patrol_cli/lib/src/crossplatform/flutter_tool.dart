@@ -350,15 +350,23 @@ class FlutterTool {
     await process?.exitCode;
   }
 
-  String _getDevtoolsUrl(String line) {
-    final url = _getObservationUrl(line);
-    return url.replaceAllMapped('?uri=', (_) => '/patrol_ext?uri=');
-  }
+  String _getDevtoolsUrl(String line) => getDevtoolsUrl(line);
 
-  String _getObservationUrl(String line) {
-    final startIndex = line.indexOf('http');
-    return line.substring(startIndex);
-  }
+  String _getObservationUrl(String line) => getObservationUrl(line);
+}
+
+@visibleForTesting
+String getDevtoolsUrl(String line) {
+  final rawUrl = getObservationUrl(line);
+  final uri = Uri.parse(rawUrl);
+  final basePath = uri.path.endsWith('/') ? uri.path : '${uri.path}/';
+  return uri.replace(path: '${basePath}patrol_ext').toString();
+}
+
+@visibleForTesting
+String getObservationUrl(String line) {
+  final startIndex = line.indexOf('http');
+  return line.substring(startIndex);
 }
 
 class StdinModes {
