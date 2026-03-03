@@ -1,10 +1,19 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:dispose_scope/dispose_scope.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:patrol_log/patrol_log.dart';
 import 'package:test/test.dart';
 
-PatrolLogReader _buildReader({List<String>? capturedLogs}) {
+class _MockStdout extends Mock implements Stdout {}
+
+PatrolLogReader _buildReader({
+  List<String>? capturedLogs,
+  bool clearTestSteps = false,
+  bool hideTestSteps = false,
+  bool hideTestLifecycle = true,
+}) {
   return PatrolLogReader(
     scope: DisposeScope(),
     listenStdOut: (onData, {onError, onDone, cancelOnError}) =>
@@ -12,9 +21,9 @@ PatrolLogReader _buildReader({List<String>? capturedLogs}) {
     log: (capturedLogs ?? []).add,
     reportPath: 'test_report.html',
     showFlutterLogs: false,
-    hideTestSteps: false,
-    clearTestSteps: false,
-    hideTestLifecycle: true,
+    hideTestSteps: hideTestSteps,
+    clearTestSteps: clearTestSteps,
+    hideTestLifecycle: hideTestLifecycle,
   );
 }
 
@@ -401,6 +410,76 @@ void main() {
           // but the finish entry is not matched so the test stays "open".
           expect(reader.totalTests, 1);
           expect(reader.successfulTests, 0);
+        },
+      );
+    });
+
+    group('_clearLines', () {
+      Future<String> runWithCapturedStdout(Future<void> Function() body) async {
+        final mockStdout = _MockStdout();
+        final captured = StringBuffer();
+        when(() => mockStdout.write(any())).thenAnswer((invocation) {
+          captured.write(invocation.positionalArguments.first);
+        });
+        await IOOverrides.runZoned(body, stdout: () => mockStdout);
+        return captured.toString();
+      }
+
+      test(
+        'does not write ANSI clear sequences when hideTestLifecycle is true',
+        () async {
+          // Regression test for: _clearLines was called with +1 for the
+          // test-start line even when hideTestLifecycle: true meant it was
+          // never printed, causing unrelated output (e.g. warnings) to be
+          // erased.
+          final output = await runWithCapturedStdout(() async {
+            final reader = _buildReader(
+              clearTestSteps: true,
+              hideTestSteps: true,
+            );
+            await reader.readEntries();
+            reader
+              ..parse(
+                _patrolLogLine(_testEntryJson(name: 'my test', status: 'start')),
+              )
+              ..parse(
+                _patrolLogLine(
+                  _testEntryJson(name: 'my test', status: 'success'),
+                ),
+              );
+            await pumpEventQueue();
+            reader.close();
+          });
+
+          expect(output, isNot(contains('\x1B[A\x1B[K')));
+        },
+      );
+
+      test(
+        'writes ANSI clear sequence for the start line when hideTestLifecycle is false',
+        () async {
+          // Verify the normal (non-sharded) clearing path still works: one
+          // clear for the test-start line on successful completion.
+          final output = await runWithCapturedStdout(() async {
+            final reader = _buildReader(
+              clearTestSteps: true,
+              hideTestLifecycle: false,
+            );
+            await reader.readEntries();
+            reader
+              ..parse(
+                _patrolLogLine(_testEntryJson(name: 'my test', status: 'start')),
+              )
+              ..parse(
+                _patrolLogLine(
+                  _testEntryJson(name: 'my test', status: 'success'),
+                ),
+              );
+            await pumpEventQueue();
+            reader.close();
+          });
+
+          expect(output, contains('\x1B[A\x1B[K'));
         },
       );
     });
