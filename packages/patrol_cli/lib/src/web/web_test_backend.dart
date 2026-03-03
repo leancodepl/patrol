@@ -450,6 +450,8 @@ class WebTestBackend {
                   'PATROL_WEB_SHARD': options.shard.toString(),
                 if (options.headless != null)
                   'PATROL_WEB_HEADLESS': options.headless.toString(),
+                if (options.browserArgs != null)
+                  'PATROL_WEB_BROWSER_ARGS': options.browserArgs.toString(),
                 ...Platform.environment,
               },
               runInShell: true,
