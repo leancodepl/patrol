@@ -83,7 +83,7 @@ jobs:
 
           TESTS_EXIT_CODE=0
           patrol test \
-          --tags='ios && simulator' --exclude=patrol_test/web_example_test.dart,patrol_test/native_tests/volume_test.dart,patrol_test/volume_test.dart
+          --tags='ios && simulator' --exclude=patrol_test/web/,patrol_test/native_tests/volume_test.dart,patrol_test/volume_test.dart
           --verbose \
           --full-isolation || TESTS_EXIT_CODE=$?
 
