@@ -32,6 +32,9 @@ const viewport = process.env.PATROL_WEB_VIEWPORT
   : undefined
 const shard = process.env.PATROL_WEB_SHARD ? parseShard(process.env.PATROL_WEB_SHARD) : undefined
 const headless = process.env.PATROL_WEB_HEADLESS ? process.env.PATROL_WEB_HEADLESS === "true" : false
+const browserArgs = process.env.PATROL_WEB_BROWSER_ARGS
+  ? (JSON.parse(process.env.PATROL_WEB_BROWSER_ARGS) as string[])
+  : undefined
 
 export default defineConfig({
   use: {
@@ -45,6 +48,7 @@ export default defineConfig({
     permissions,
     userAgent,
     viewport,
+    launchOptions: browserArgs ? { args: browserArgs } : undefined,
   },
   globalSetup: require.resolve("./tests/setup"),
   outputDir,
