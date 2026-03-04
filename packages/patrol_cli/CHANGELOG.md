@@ -1,4 +1,4 @@
-## Unreleased
+## 4.2.0
 
 - Add support for `--web-port` option to specify the port for the web server when running web tests with `patrol test`. (#2832)
 - Add `--web-server-timeout` flag to configure the web server startup timeout (default: 120s). (#2948)
