@@ -6,6 +6,7 @@
 - Fix listen to stdout/stderr streams in buildApkConfigOnly to prevent hang on Windows. (#2905)
 - Fix bug that --exclude was not working for directories. (#2918)
 - Allow to pass additional web browser args through `web-browser-args`. (#2932) 
+- Correctly compose devtools link on new Flutter version. (#2957)
 
 ## 4.1.0
 
