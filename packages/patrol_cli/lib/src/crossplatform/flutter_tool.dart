@@ -342,15 +342,13 @@ class FlutterTool {
       case Platform.macOS:
         process = await _processManager.start(['open', url]);
       case Platform.windows:
-        process =
-            await _processManager.start(['cmd', '/c', 'start', '', url]);
+        process = await _processManager.start(['cmd', '/c', 'start', '', url]);
       case Platform.linux:
         process = await _processManager.start(['xdg-open', url]);
     }
 
     await process?.exitCode;
   }
-
 }
 
 @visibleForTesting
