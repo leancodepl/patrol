@@ -409,6 +409,7 @@ class WebAppOptions {
     this.globalTimeout,
     this.shard,
     this.headless,
+    this.webPort,
     this.serverTimeout,
     this.browserArgs,
   });
@@ -431,6 +432,7 @@ class WebAppOptions {
   final int? globalTimeout;
   final String? shard;
   final String? headless;
+  final int? webPort;
   final String? browserArgs;
 
   /// Timeout in seconds for the web server to start.

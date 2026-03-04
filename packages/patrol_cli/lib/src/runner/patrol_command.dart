@@ -332,6 +332,11 @@ abstract class PatrolCommand extends Command<int> {
         valueHelp: 'true | false',
       )
       ..addOption(
+        'web-port',
+        help: 'Port to use for the web server.',
+        valueHelp: '8080',
+      )
+      ..addOption(
         'web-server-timeout',
         help:
             'Maximum time in seconds to wait for the Flutter web server to start. '

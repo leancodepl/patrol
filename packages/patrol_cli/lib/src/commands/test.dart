@@ -314,6 +314,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       globalTimeout: intArg('web-global-timeout'),
       shard: stringArg('web-shard'),
       headless: stringArg('web-headless'),
+      webPort: intArg('web-port'),
       serverTimeout: intArg('web-server-timeout'),
       browserArgs: stringArg('web-browser-args'),
     );

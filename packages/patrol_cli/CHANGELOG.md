@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Add support for `--web-port` option to specify the port for the web server when running web tests with `patrol test`. (#2832)
 - Add `--web-server-timeout` flag to configure the web server startup timeout (default: 120s). (#2948)
 - Fix running devtools after moving test to `patrol_test/`. (#2922) 
 - Fix listen to stdout/stderr streams in buildApkConfigOnly to prevent hang on Windows. (#2905)

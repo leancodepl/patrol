@@ -177,6 +177,7 @@ class WebTestBackend {
       '-d',
       if (develop) 'chrome' else 'web-server',
       ...develop ? ['--verbose'] : [],
+      if (options.webPort != null) '--web-port=${options.webPort}',
       '--target=${options.flutter.target}',
       '--${options.flutter.buildMode.name}',
       // Note: --flavor is not supported for web, so we don't include it
@@ -195,7 +196,9 @@ class WebTestBackend {
     Process flutterProcess, {
     int? serverTimeout,
   }) {
-    final timeoutDuration = Duration(seconds: serverTimeout ?? _kDefaultWebServerTimeoutSeconds);
+    final timeoutDuration = Duration(
+      seconds: serverTimeout ?? _kDefaultWebServerTimeoutSeconds,
+    );
     _logger.detail(
       'Waiting for web server to start (timeout: ${timeoutDuration.inSeconds}s)...',
     );
@@ -293,7 +296,9 @@ class WebTestBackend {
     Process flutterProcess, {
     int? serverTimeout,
   }) {
-    final timeoutDuration = Duration(seconds: serverTimeout ?? _kDefaultWebServerTimeoutSeconds);
+    final timeoutDuration = Duration(
+      seconds: serverTimeout ?? _kDefaultWebServerTimeoutSeconds,
+    );
     _logger.detail(
       'Waiting for debugger to start (timeout: ${timeoutDuration.inSeconds}s)...',
     );
