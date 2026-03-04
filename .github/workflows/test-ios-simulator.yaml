@@ -113,6 +113,8 @@ jobs:
         uses: kishikawakatsumi/xcresulttool@v1.7.1
         with:
           title: Patrol tests on ${{ matrix.device_model }}
+          show-passed-tests: false
+          show-code-coverage: false
           upload-bundles: never
           path: |
             ${{ env.XCRESULT_PATH }}
