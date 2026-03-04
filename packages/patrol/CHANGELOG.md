@@ -1,4 +1,4 @@
-## Unreleased
+## 4.2.0
 
 - Improve setup error reporting for Patrol Web failures. (#2928)
 - Fix `tapOnNotificationByIndex` and `getNotifications` on iOS 18+ to use consistent indexing with other systems. (#2899)
