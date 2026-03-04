@@ -17,7 +17,7 @@ void main() {
     await _requestAndGrantMicrophonePermission($);
     await _requestAndGrantLocationPermission($);
     await _requestAndGrantGalleryPermission($);
-  });
+  }, tags: ['android', 'emulator', 'ios', 'simulator']);
 
   patrol('grants various permissions 2', ($) async {
     await createApp($);
@@ -28,7 +28,7 @@ void main() {
     await _requestAndGrantMicrophonePermission($);
     await _requestAndGrantLocationPermission($);
     await _requestAndGrantGalleryPermission($);
-  });
+  }, tags: ['android', 'emulator', 'ios', 'simulator']);
 }
 
 Future<void> _requestAndGrantCameraPermission(PatrolIntegrationTester $) async {

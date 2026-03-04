@@ -15,9 +15,6 @@ on:
       ERROR_STATUS:
         required: false
         type: string
-      EXCLUDED_TESTS:
-        required: false
-        type: string
       URL_TO_DETAILS:
         required: false
         type: string
@@ -70,19 +67,6 @@ jobs:
           echo "run_url=$run_url" >> $GITHUB_OUTPUT;
           echo "status=$status" >> $GITHUB_OUTPUT;
 
-      - name: Add excluded tests to message
-        env:
-          EXCLUDED_TESTS: ${{ inputs.EXCLUDED_TESTS }}
-        run: |
-          if [ -n "$EXCLUDED_TESTS" ]; then
-            EXCLUDED_TESTS=$(echo "$EXCLUDED_TESTS" | tr ',' '\n')
-            EXCLUDED_TESTS=$(printf ' • %s\n' $EXCLUDED_TESTS)
-            echo "excluded_tests<<EOF" >> $GITHUB_ENV
-            echo "Excluded tests:" >> $GITHUB_ENV
-            echo "$EXCLUDED_TESTS" >> $GITHUB_ENV
-            echo EOF >> $GITHUB_ENV
-          fi;
-
       - name: Share test results on Slack
         uses: rtCamp/action-slack-notify@v2
         env:
@@ -98,5 +82,3 @@ jobs:
             <${{ steps.slack_message.outputs.run_url }}|See workflow run>
 
             <${{ steps.slack_message.outputs.url_to_details }}|See tests details>
-            
-            ${{ env.excluded_tests }}

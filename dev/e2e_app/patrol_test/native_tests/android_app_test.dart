@@ -25,7 +25,7 @@ void main() {
     await $.native.enableDarkMode();
 
     await $.native.pressBack();
-  });
+  }, tags: ['android', 'emulator']);
 
   patrol('taps around 2', skip: true, ($) async {
     await createApp($);
@@ -48,12 +48,12 @@ void main() {
     await $.native.enableDarkMode();
 
     await $.native.pressBack();
-  });
+  }, tags: ['android', 'emulator']);
 
   patrol('taps around 3', ($) async {
     await createApp($);
 
     await $.native.pressHome();
     await $.native.pressDoubleRecentApps();
-  });
+  }, tags: ['android', 'emulator']);
 }

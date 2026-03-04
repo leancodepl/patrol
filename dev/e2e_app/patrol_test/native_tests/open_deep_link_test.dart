@@ -15,5 +15,5 @@ void main() {
     expect($('Uri: patrol://check/somepath?query=10'), findsOneWidget);
     expect($('Path: /somepath'), findsOneWidget);
     expect($('Query: query=10'), findsOneWidget);
-  });
+  }, tags: ['android', 'emulator', 'ios', 'simulator']);
 }

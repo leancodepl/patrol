@@ -208,5 +208,71 @@ import 'patrol_test/example/example_test.dart' as example__example_test;''');
 group('web.my_test', web__my_test.main);
 group('example.example_test', example__example_test.main);''');
     });
+
+    test('deletes proxy entrypoint and directory when empty', () {
+      // given
+      testBundler.ensureEntrypoint(testDirectory);
+      final proxyFile = testBundler.getEntrypointFile(testDirectory);
+
+      // when
+      testBundler.deleteEntrypointProxy(testDirectory);
+
+      // then
+      expect(proxyFile.existsSync(), isFalse);
+      expect(proxyFile.parent.existsSync(), isFalse);
+    });
+
+    test('keeps proxy directory when it contains other files', () {
+      // given
+      testBundler.ensureEntrypoint(testDirectory);
+      final proxyFile = testBundler.getEntrypointFile(testDirectory);
+      final siblingFile = fs.file(
+        fs.path.join(proxyFile.parent.path, 'keep.txt'),
+      )..writeAsStringSync('keep');
+
+      // when
+      testBundler.deleteEntrypointProxy(testDirectory);
+
+      // then
+      expect(proxyFile.existsSync(), isFalse);
+      expect(siblingFile.existsSync(), isTrue);
+      expect(proxyFile.parent.existsSync(), isTrue);
+    });
+
+    test('creates proxy entrypoint under integration_test', () {
+      // given
+      fs.directory('integration_test').createSync();
+
+      // when
+      testBundler.ensureEntrypoint(testDirectory);
+      final proxyFile = testBundler.getEntrypointFile(testDirectory);
+
+      // then
+      expect(proxyFile.path, contains('integration_test'));
+      expect(proxyFile.path, endsWith('patrol_test_bundle.dart'));
+      expect(proxyFile.existsSync(), isTrue);
+    });
+
+    test('does not create proxy for recognized test directory', () {
+      // given
+      const recognizedDir = 'integration_test';
+      fs.directory(recognizedDir).createSync();
+
+      // when
+      testBundler.ensureEntrypoint(recognizedDir);
+      final entrypoint = testBundler.getEntrypointFile(recognizedDir);
+
+      // then
+      expect(
+        entrypoint.path,
+        endsWith('$recognizedDir${fs.path.separator}test_bundle.dart'),
+      );
+      expect(
+        fs
+            .file(fs.path.join(recognizedDir, 'patrol_test_bundle.dart'))
+            .existsSync(),
+        isFalse,
+      );
+    });
   });
 }

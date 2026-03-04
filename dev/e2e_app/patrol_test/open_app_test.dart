@@ -20,26 +20,31 @@ void main() {
     await $.platform.mobile.openApp();
 
     expect($(#counterText).text, '1');
-  });
+  }, tags: ['android', 'emulator', 'ios', 'simulator']);
 
-  patrol('same open maps test that should be skipped', skip: true, ($) async {
-    await createApp($);
-    await $.waitUntilVisible($(#counterText));
+  patrol(
+    'same open maps test that should be skipped',
+    skip: true,
+    ($) async {
+      await createApp($);
+      await $.waitUntilVisible($(#counterText));
 
-    expect($(#counterText).text, '0');
+      expect($(#counterText).text, '0');
 
-    await $(FloatingActionButton).tap();
+      await $(FloatingActionButton).tap();
 
-    await $.platform.mobile.pressHome();
-    await $.platform.mobile.openPlatformApp(
-      androidAppId: GoogleApp.maps,
-      iosAppId: AppleApp.maps,
-    );
-    await $.platform.mobile.pressHome();
-    await $.platform.mobile.openApp();
+      await $.platform.mobile.pressHome();
+      await $.platform.mobile.openPlatformApp(
+        androidAppId: GoogleApp.maps,
+        iosAppId: AppleApp.maps,
+      );
+      await $.platform.mobile.pressHome();
+      await $.platform.mobile.openApp();
 
-    expect($(#counterText).text, '1');
-  });
+      expect($(#counterText).text, '1');
+    },
+    tags: ['android', 'emulator', 'ios', 'simulator'],
+  );
 
   patrol('open browser', ($) async {
     await createApp($);
@@ -58,5 +63,5 @@ void main() {
     await $.platform.mobile.openApp();
 
     expect($(#counterText).text, '1');
-  });
+  }, tags: ['android', 'emulator', 'ios', 'simulator']);
 }

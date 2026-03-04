@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'common.dart';
 
 final platformAutomator = PlatformAutomator(
@@ -10,16 +8,22 @@ void main() {
   patrolTearDown(() async {
     await platformAutomator.mobile.disableAirplaneMode();
   });
-  patrol('disables and enables airplane mode twice', ($) async {
-    await createApp($);
-    if (await $.platform.mobile.isVirtualDevice() && Platform.isIOS) {
-      $.log('Test will be skipped because of iOS simulator limitations');
-      return;
-    } else {
+  patrol(
+    'disables and enables airplane mode twice',
+    ($) async {
+      await createApp($);
+
       await $.platform.mobile.disableAirplaneMode();
       await $.platform.mobile.enableAirplaneMode();
       await $.platform.mobile.disableAirplaneMode();
       await $.platform.mobile.enableAirplaneMode();
-    }
-  }, tags: ['locale_testing_android']);
+    },
+    tags: [
+      'locale_testing_android',
+      'android',
+      'emulator',
+      'ios',
+      'physical_device',
+    ],
+  );
 }

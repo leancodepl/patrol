@@ -21,5 +21,5 @@ void main() {
     await $.native.takeCameraPhoto();
     await $.pumpAndSettle();
     await $(#smallImagePreview).waitUntilVisible();
-  });
+  }, tags: ['android', 'emulator', 'physical_device', 'ios']);
 }

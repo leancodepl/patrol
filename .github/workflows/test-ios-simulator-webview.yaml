@@ -25,9 +25,9 @@ jobs:
       matrix:
         flutter-version: ["3.32.x"]
         flutter-channel: ["stable"]
-        device_model: [iPhone 14]
+        device_model: [iPhone 17 Pro]
+        os_version: ["26.0"]
         os: [iOS]
-        os_version: ["17.2"]
 
     defaults:
       run:
@@ -59,21 +59,6 @@ jobs:
           erase_before_boot: true
           shutdown_after_job: true
 
-      - name: Set tests to include
-        run: |
-          TESTS_TO_INCLUDE="webview_hackernews_test"
-          # webview_leancode_test  
-          # See https://github.com/leancodepl/patrol/issues/2353
-        
-
-          target_paths=""
-          for target in $(echo $TESTS_TO_INCLUDE | tr ',' '\n'); do
-              target_paths+="patrol_test/${target}.dart,"
-          done
-          target_paths="${target_paths%,}"
-
-          echo "INCLUDED_TESTS=$target_paths" >> "$GITHUB_ENV"
-
       - name: Run tests
         id: tests_step
         run: |
@@ -86,7 +71,7 @@ jobs:
           sleep 10 # See https://github.com/leancodepl/patrol/issues/1282
 
           TESTS_EXIT_CODE=0
-          patrol test --target ${{ env.INCLUDED_TESTS }} --verbose || TESTS_EXIT_CODE=$?
+          patrol test --tags='webview && ios' --exclude=patrol_test/web_example_test.dart,patrol_test/native_tests/volume_test.dart,patrol_test/volume_test.dart --verbose || TESTS_EXIT_CODE=$?
 
           kill -SIGINT $recordingpid
           kill -SIGINT $logpid
@@ -120,14 +105,14 @@ jobs:
 
       - name: Upload XCRESULT test result to artifacts
         if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Test result from ${{ matrix.device_model }}.xcresult
           path: ${{ env.XCRESULT_PATH }}
 
       - name: Upload simulator logs to artifacts
         if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Logs from ${{ matrix.device_model }}
           path: |
@@ -135,7 +120,7 @@ jobs:
 
       - name: Upload captured video to artifacts
         if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Captured video from ${{ matrix.device_model }}.mp4
           path: ${{ github.workspace }}/dev/e2e_app/${{ matrix.device_model }}.mp4

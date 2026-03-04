@@ -28,7 +28,7 @@ dependencies:
   flutter_test:
     sdk: flutter
   meta: ^1.10.0
-  patrol_log: ^0.7.0
+  patrol_log: ^0.7.1
 
 dev_dependencies:
   leancode_lint: ^17.0.0

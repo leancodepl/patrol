@@ -8,6 +8,17 @@ class TestBundler {
       _fs = projectRoot.fileSystem,
       _logger = logger;
 
+  static const _devtoolsRootDirectories = {
+    'lib',
+    'bin',
+    'integration_test',
+    'test',
+    'benchmark',
+    'example',
+  };
+  static const _devtoolsEntrypointDirectory = 'integration_test';
+  static const _devtoolsEntrypointFileName = 'patrol_test_bundle.dart';
+
   final Directory _projectRoot;
   final FileSystem _fs;
   final Logger _logger;
@@ -136,6 +147,37 @@ ${generateGroupsCode(testDirectory, testFilePaths).split('\n').map((e) => '  $e'
             .childDirectory(testDirectory)
             .childFile('test_bundle.dart');
 
+  File getEntrypointFile(String testDirectory) {
+    if (_shouldUseEntrypointProxy(testDirectory)) {
+      return _projectRoot
+          .childDirectory(_devtoolsEntrypointDirectory)
+          .childFile(_devtoolsEntrypointFileName);
+    }
+    return getBundledTestFile(testDirectory);
+  }
+
+  void ensureEntrypoint(String testDirectory) {
+    if (_shouldUseEntrypointProxy(testDirectory)) {
+      _createEntrypointProxyIfNeeded(testDirectory);
+    }
+  }
+
+  void deleteEntrypointProxy(String testDirectory) {
+    if (!_shouldUseEntrypointProxy(testDirectory)) {
+      return;
+    }
+
+    final proxyFile = getEntrypointFile(testDirectory);
+    if (proxyFile.existsSync()) {
+      proxyFile.deleteSync();
+    }
+
+    final proxyDir = proxyFile.parent;
+    if (proxyDir.existsSync() && proxyDir.listSync().isEmpty) {
+      proxyDir.deleteSync();
+    }
+  }
+
   /// Creates an entrypoint for use with `patrol develop`.
   void createDevelopTestBundle(String testDirectory, String testFilePath) {
     final contents =
@@ -169,6 +211,11 @@ ${generateGroupsCode(testDirectory, [testFilePath]).split('\n').map((e) => '  $e
     final bundle = getBundledTestFile(testDirectory)
       ..createSync(recursive: true)
       ..writeAsStringSync(contents);
+
+    /// Related with [https://github.com/flutter/devtools/issues/9667].
+    /// Patrol devtools extension is not found when the test is moved to `patrol_test/`.
+    /// This is a workaround to create a proxy entrypoint to make the devtools extension work.
+    _createEntrypointProxyIfNeeded(testDirectory);
 
     _logger.detail('Generated entrypoint ${bundle.path} for development');
   }
@@ -281,5 +328,32 @@ ${generateGroupsCode(testDirectory, [testFilePath]).split('\n').map((e) => '  $e
 
     testName = testName.substring(0, testName.length - 5);
     return testName;
+  }
+
+  bool _shouldUseEntrypointProxy(String testDirectory) {
+    return !_devtoolsRootDirectories.contains(testDirectory);
+  }
+
+  void _createEntrypointProxyIfNeeded(String testDirectory) {
+    if (!_shouldUseEntrypointProxy(testDirectory)) {
+      return;
+    }
+
+    final proxyFile = getEntrypointFile(testDirectory);
+    final targetFile = getBundledTestFile(testDirectory);
+    final relativeTargetPath = _fs.path
+        .relative(targetFile.path, from: proxyFile.parent.path)
+        .replaceAll(_fs.path.separator, '/');
+
+    proxyFile
+      ..createSync(recursive: true)
+      ..writeAsStringSync('''
+// GENERATED CODE - DO NOT MODIFY BY HAND AND DO NOT COMMIT TO VERSION CONTROL
+// ignore_for_file: type=lint
+
+import '$relativeTargetPath' as bundle;
+
+Future<void> main() => bundle.main();
+''');
   }
 }

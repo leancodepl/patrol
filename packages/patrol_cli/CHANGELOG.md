@@ -1,7 +1,11 @@
 ## Unreleased
 
-- Add support for `--web-browser-flag` option to pass additional flags to the browser when running web tests with `patrol test`. (#2832)
 - Add support for `--web-port` option to specify the port for the web server when running web tests with `patrol test`. (#2832)
+- Add `--web-server-timeout` flag to configure the web server startup timeout (default: 120s). (#2948)
+- Fix running devtools after moving test to `patrol_test/`. (#2922)
+- Fix listen to stdout/stderr streams in buildApkConfigOnly to prevent hang on Windows. (#2905)
+- Fix bug that --exclude was not working for directories. (#2918)
+- Allow to pass additional web browser args through `web-browser-args`. (#2932)
 
 ## 4.1.0
 
@@ -14,7 +18,7 @@
 
 ## 4.0.2
 
-- Remove `platform_automator.dart` import from `test_bundler.dart`. (#2833) 
+- Remove `platform_automator.dart` import from `test_bundler.dart`. (#2833)
 
 ## 4.0.1
 
@@ -37,7 +41,7 @@ Read the article announcing Patrol 4.0 [here](https://leancode.co/blog/patrol-4-
     - `--web-user-agent`, `--web-viewport`.
 
 - Add support for configurable test directory via `test_directory` option in `pubspec.yaml`. (#2728)
-- Introduces *experimental* `--full-isolation` flag that uninstall the app between each run on iOS Simulator.
+- Introduces _experimental_ `--full-isolation` flag that uninstall the app between each run on iOS Simulator.
 - Bump `patrol_log` to `0.6.0`.
 - Read Patrol version from `pubspec.lock` instead of `pubspec.yaml` for compatibility checks. Fix edge cases for compatibility checks. (#2709)
 
@@ -79,7 +83,7 @@ This version requires version 3.20.0 of `patrol` package.
 ## 3.7.0
 
 - Bump min Flutter SDK to 3.32.0 (#2649)
-- Introduce `check-compatibility` flag to allow disabling the compatibility check. (#2649) 
+- Introduce `check-compatibility` flag to allow disabling the compatibility check. (#2649)
 
 ## 3.6.0
 
@@ -97,8 +101,8 @@ This version requires version 3.20.0 of `patrol` package.
 
 - Gracefully handle when analytics fail to send. (#2460)
 - Handle uninstallation of the app after tests finish when using AGP 8.2+. (#2535)
-- Add `--coverage-packages` flag to `patrol test` that specifies which packages should be included 
-in the coverage report. (#2536)
+- Add `--coverage-packages` flag to `patrol test` that specifies which packages should be included
+  in the coverage report. (#2536)
 - Fix skipping tests with coverage collection enabled. (#2539)
 
 ## 3.5.0
@@ -109,7 +113,7 @@ in the coverage report. (#2536)
 ## 3.4.1
 
 - Add android product flavor to dart-define. (#2425)
-- Detect and warn about Orchestrator 1.5.0. (#2437) 
+- Detect and warn about Orchestrator 1.5.0. (#2437)
 
 ## 3.4.0
 
@@ -167,6 +171,7 @@ This version requires version 3.10.0 of `patrol` package.
 - Add support for custom flutter commands (#2124).
 
 ## 2.6.5
+
 - Add support for --app-server-port and --test-server-port on Android (#2154).
 
 ## 2.6.4
@@ -183,7 +188,7 @@ This version requires version 3.10.0 of `patrol` package.
 
 ## 2.6.1
 
-- Fix passing port on iOS when `patrol build` is executed (#2061). 
+- Fix passing port on iOS when `patrol build` is executed (#2061).
 
 ## 2.6.0
 
