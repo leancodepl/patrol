@@ -66,6 +66,11 @@ void main() {
       const line = 'http://127.0.0.1:9104?uri=http://127.0.0.1:52263/';
       expect(getObservationUrl(line), line);
     });
+
+    test('throws FormatException when line contains no URL', () {
+      const line = 'no url here';
+      expect(() => getObservationUrl(line), throwsFormatException);
+    });
   });
 
   group('getDevtoolsUrl', () {

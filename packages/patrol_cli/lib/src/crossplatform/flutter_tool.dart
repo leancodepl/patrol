@@ -365,6 +365,11 @@ String getDevtoolsUrl(String line) {
 @visibleForTesting
 String getObservationUrl(String line) {
   final startIndex = line.indexOf('http');
+  if (startIndex == -1) {
+    throw FormatException(
+      'Could not find a valid URL starting with "http" in line: "$line"',
+    );
+  }
   return line.substring(startIndex);
 }
 
