@@ -121,11 +121,18 @@ jobs:
           mkdir -p test-results
           xcresultparser -o junit "${{ env.XCRESULT_PATH }}" > test-results/junit-report.xml
 
+      - name: Convert JUnit to CTRF format
+        if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
+        uses: ctrf-io/junit-to-ctrf@v1
+        with:
+          junit-file-path: 'test-results/junit-report.xml'
+          output-file: 'test-results/ctrf-report.json'
+
       - name: Publish test report to summary
         if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
         uses: ctrf-io/github-test-reporter@v1
         with:
-          report-path: '${{ github.workspace }}/dev/e2e_app/test-results/junit-report.xml'
+          report-path: '${{ github.workspace }}/dev/e2e_app/test-results/ctrf-report.json'
           summary-report: true
           failed-report: true
           github-report: true
