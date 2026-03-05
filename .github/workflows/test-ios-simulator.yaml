@@ -108,23 +108,30 @@ jobs:
           brew install coreutils # to provide realpath binary
           echo "XCRESULT_PATH=$(realpath build/ios_results_*.xcresult)" >> $GITHUB_ENV
 
-      - name: Debug - List build directory contents
+      - name: Install xcresultparser
         if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
-        run:  | 
-          pwd
-          ls -R /Users/runner/work/patrol/patrol/dev/e2e_app/build/
-          
+        env:
+          HOMEBREW_NO_AUTO_UPDATE: 1
+          HOMEBREW_NO_INSTALL_CLEANUP: 1
+        run: brew install xcresultparser
+
+      - name: Parse xcresult to JUnit format
+        if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
+        run: |
+          mkdir -p test-results
+          xcresultparser -o junit "${{ env.XCRESULT_PATH }}" > test-results/junit-report.xml
 
       - name: Publish test report to summary
         if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
-        uses: kishikawakatsumi/xcresulttool@v1.7.1
+        uses: ctrf-io/github-test-reporter@v1
         with:
-          title: Patrol tests on ${{ matrix.device_model }}
-          show-passed-tests: false
-          show-code-coverage: false
-          upload-bundles: never
-          path: |
-            ${{ env.XCRESULT_PATH }}
+          report-path: 'test-results/junit-report.xml'
+          summary-report: true
+          failed-report: true
+          github-report: true
+          title: 'Patrol tests on ${{ matrix.device_model }}'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload XCRESULT test result to artifacts
         if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
