@@ -27,7 +27,7 @@ jobs:
         flutter-version: ["3.32.x"]
         flutter-channel: ["stable"]
         device_model:
-          [ iPhone 16, iPad (10th generation)]
+          [ iPhone 16]
         os_version: ["26.0"]
         os: [iOS]
 
