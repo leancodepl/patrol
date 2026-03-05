@@ -108,6 +108,13 @@ jobs:
           brew install coreutils # to provide realpath binary
           echo "XCRESULT_PATH=$(realpath build/ios_results_*.xcresult)" >> $GITHUB_ENV
 
+      - name: Debug - List build directory contents
+        if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
+        run:  | 
+          pwd
+          ls -R /Users/runner/work/patrol/patrol/dev/e2e_app/build/
+          
+
       - name: Publish test report to summary
         if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
         uses: kishikawakatsumi/xcresulttool@v1.7.1
