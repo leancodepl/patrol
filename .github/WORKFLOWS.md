@@ -18,8 +18,8 @@ This document describes all GitHub Actions workflows used in the Patrol project.
 | Workflow name | Workflow file | Runs on | Flutter version | Tags | Description |
 |--------------|--------------|---------|----------------|------|-------------|
 | test ios device | `test-ios-device.yaml` | Schedule (daily at 21:30), manual | Flutter 3.32.x (stable) | `ios && physical_device` | Runs E2E tests on Firebase Test Lab physical devices (iPhone 17 Pro, iOS 26.0). Excludes `web_example_test.dart` and `volume_test.dart`. |
-| test ios simulator | `test-ios-simulator.yaml` | Schedule (monthly on 1st), manual | Flutter 3.32.x (stable) | `ios && simulator` | Runs E2E tests on iOS simulators (iPhone SE 3rd gen, iPhone 16, iPad 10th gen) on iOS 26.0. Excludes `web_example_test.dart` and `volume_test.dart`. Records video and logs. |
-| test ios simulator webview | `test-ios-simulator-webview.yaml` | Schedule (monthly on 1st), manual | Flutter 3.32.x (stable) | `webview && ios` | Runs webview-specific E2E tests on iOS 26.0 simulator (iPhone 17 Pro). Excludes `web_example_test.dart` and `volume_test.dart`. |
+| test ios simulator | `test-ios-simulator.yaml` | Schedule (monthly on 1st), manual | Flutter 3.32.x (stable) | `ios && simulator` | Runs E2E tests on iOS simulators (iPhone 16, iPad 10th gen) on iOS 26.0. Excludes `web/` directory, `volume_test.dart`, and `service_bluetooth_test.dart`. Records video and logs. Uses xcresultparser to generate JUnit reports and converts them to CTRF format for test reporting. Timeout: 100 minutes. Runs with `--full-isolation` flag. |
+| test ios simulator webview | `test-ios-simulator-webview.yaml` | Schedule (monthly on 1st), manual | Flutter 3.32.x (stable) | `webview && ios` | Runs webview-specific E2E tests on iOS 26.0 simulator (iPhone 17 Pro). Excludes `web_example_test.dart` and `volume_test.dart`. Uses xcresultparser to generate JUnit reports and converts them to CTRF format for test reporting. |
 | test locales on ios device | `test-ios-locales.yaml` | Manual only | Flutter 3.32.x (stable) | `locale_testing_ios` | Tests locale support on Firebase Test Lab for English, French, German (de_DE), and Polish locales (iPhone 14 Pro, iOS 16.6). Excludes `web_example_test.dart`. Currently disabled for PR triggers. |
 
 ### Other Platform Testing
@@ -27,7 +27,7 @@ This document describes all GitHub Actions workflows used in the Patrol project.
 | Workflow name | Workflow file | Runs on | Flutter version | Tags | Description |
 |--------------|--------------|---------|----------------|------|-------------|
 | test web | `test-web.yaml` | PR (on web changes), manual | Flutter 3.32.x (stable) | — | Runs web-specific E2E tests on Chrome in headless mode. Uses target file instead of tags. |
-| test macos | `test-macos.yaml` | Schedule (every 12h), manual | Flutter 3.32.x (stable) | — | Runs E2E tests on macOS desktop platform. Runs tests from `patrol_test/macos` directory. |
+| test macos | `test-macos.yaml` | Schedule (every 12h), manual | Flutter 3.32.x (stable) | — | Runs E2E tests on macOS desktop platform. Runs tests from `patrol_test/macos` directory. Uses xcresulttool v1.7.1 for test reporting. |
 
 ## Package Preparation (CI) Workflows
 
