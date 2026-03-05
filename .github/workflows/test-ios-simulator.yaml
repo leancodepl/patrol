@@ -125,7 +125,7 @@ jobs:
         if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
         uses: ctrf-io/github-test-reporter@v1
         with:
-          report-path: 'test-results/junit-report.xml'
+          report-path: '${{ github.workspace }}/dev/e2e_app/test-results/junit-report.xml'
           summary-report: true
           failed-report: true
           github-report: true
