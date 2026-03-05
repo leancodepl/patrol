@@ -123,10 +123,8 @@ jobs:
 
       - name: Convert JUnit to CTRF format
         if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
-        uses: ctrf-io/junit-to-ctrf@v1
-        with:
-          junit-file-path: 'test-results/junit-report.xml'
-          output-file: 'test-results/ctrf-report.json'
+        run: |
+          npx junit-to-ctrf test-results/junit-report.xml -o test-results/ctrf-report.json
 
       - name: Publish test report to summary
         if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
