@@ -47,6 +47,11 @@ export async function generateMetadata(props: PageProps<"/[[...slug]]">): Promis
 
   const title = page.data.title ? `${page.data.title} | Patrol` : "Patrol"
   return {
+    metadataBase: new URL(
+      process.env.VERCEL_PROJECT_PRODUCTION_URL
+        ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+        : "https://patrol.leancode.co",
+    ),
     title: page.data.headTitleOverride ?? title,
     description: page.data.description,
     openGraph: {
