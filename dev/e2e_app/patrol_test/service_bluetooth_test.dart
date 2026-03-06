@@ -11,6 +11,6 @@ void main() {
       await $.platform.mobile.disableBluetooth();
       await $.platform.mobile.enableBluetooth();
     },
-    tags: ['android', 'emulator', 'ios', 'simulator', 'physical_device'],
+    tags: ['android', 'emulator', 'ios', 'physical_device'],
   );
 }
