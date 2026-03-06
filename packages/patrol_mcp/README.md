@@ -96,7 +96,10 @@ Add to `<workspace-root>/.cursor/mcp.json`:
 
 Put script at: `<workspace-root>/.antigravity/run-patrol`
 
-Open the MCP store, click "Manage MCP Servers", then "View raw config" and add to `mcp_config.json`:
+Open the MCP store, click "Manage MCP Servers", then "View raw config" and add to `mcp_config.json`.
+Per-workspace MCP config is not yet supported — the config is global
+(`~/.gemini/antigravity/mcp_config.json`). The relative command path
+works because Antigravity resolves it against the open workspace:
 
 ```json
 {
@@ -140,17 +143,11 @@ Add to `<workspace-root>/.gemini/settings.json`:
 </details>
 
 <details>
-<summary>Claude Code</summary>
+<summary>Claude Code (CLI & VS Code extension)</summary>
 
 Put script at: `<workspace-root>/.claude/run-patrol`
 
-You can run:
-
-```bash
-claude mcp add --transport stdio patrol -- ./.claude/run-patrol
-```
-
-Then make sure your Claude MCP config for `patrol` includes:
+Add to `<workspace-root>/.mcp.json` (must be at project root):
 
 ```json
 {
@@ -167,6 +164,10 @@ Then make sure your Claude MCP config for `patrol` includes:
 }
 ```
 
+Claude Code automatically discovers `.mcp.json` from the project root —
+no additional registration step is needed. On first use, you will be
+prompted to approve the project-scoped MCP server.
+
 </details>
 
 <details>
@@ -174,7 +175,7 @@ Then make sure your Claude MCP config for `patrol` includes:
 
 Put script at: `<workspace-root>/.vscode/run-patrol`
 
-Add to `<workspace-root>/mcp.json`:
+Add to `<workspace-root>/.vscode/mcp.json`:
 
 ```json
 {
