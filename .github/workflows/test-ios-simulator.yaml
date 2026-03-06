@@ -73,7 +73,7 @@ jobs:
       - name: Run UI tests
         id: tests_step
         run: |
-          xcrun simctl io booted recordVideo --codec=h264 "${{ matrix.device_model }}.mp4" &
+          xcrun simctl io booted recordVideo --codec=h264 --force "${{ matrix.device_model }}_raw.mp4" &
           recordingpid="$!"
 
           xcrun simctl spawn booted log stream --type log --color none > all_simulator_logs.txt &
@@ -95,6 +95,23 @@ jobs:
 
           kill -SIGINT $recordingpid
           kill -SIGINT $logpid
+          
+          # Wait for processes to finish
+          wait $recordingpid 2>/dev/null || true
+          wait $logpid 2>/dev/null || true
+          
+          # Use ffmpeg to fix the MP4 file (re-encode to ensure proper MP4 structure)
+          if [ -f "${{ matrix.device_model }}_raw.mp4" ]; then
+            ffmpeg -i "${{ matrix.device_model }}_raw.mp4" \
+              -c copy -movflags faststart \
+              "${{ matrix.device_model }}.mp4" \
+              -y 2>/dev/null || \
+            ffmpeg -i "${{ matrix.device_model }}_raw.mp4" \
+              -c:v libx264 -preset ultrafast \
+              "${{ matrix.device_model }}.mp4" \
+              -y 2>/dev/null || true
+          fi
+          
           echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> "$GITHUB_OUTPUT"
           exit $TESTS_EXIT_CODE
 
