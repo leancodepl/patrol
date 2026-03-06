@@ -155,6 +155,7 @@ class BuildIOSCommand extends PatrolCommand {
       'INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE': 'false',
       'PATROL_TEST_SERVER_PORT': super.testServerPort.toString(),
       'PATROL_APP_SERVER_PORT': super.appServerPort.toString(),
+      if (boolArg('browserstack')) 'PATROL_BROWSERSTACK': 'true',
     }.withNullsRemoved();
 
     final dartDefines = {...customDartDefines, ...internalDartDefines};

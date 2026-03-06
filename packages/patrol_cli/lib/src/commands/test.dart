@@ -229,6 +229,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
         'PATROL_APP_SERVER_PORT': super.appServerPort.toString(),
       },
       'COVERAGE_ENABLED': coverageEnabled.toString(),
+      if (boolArg('browserstack')) 'PATROL_BROWSERSTACK': 'true',
     }.withNullsRemoved();
 
     final dartDefines = {...customDartDefines, ...internalDartDefines};
