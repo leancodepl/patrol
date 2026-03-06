@@ -118,11 +118,13 @@ Future<int> main(List<String> args) async {
           properties: {
             'testFile': JsonString(
               description:
-                  "Path to the test file (e.g., 'integration_test/personal_stats_test.dart')",
+                  'Path to the test file, relative to PROJECT_ROOT '
+                  "(e.g., 'integration_test/example_test.dart' or "
+                  "'patrol_test/scenarios/login_test.dart'). "
+                  'Do NOT include the PROJECT_ROOT prefix in the path.',
             ),
             'timeoutMinutes': JsonNumber(
-              description:
-                  'Optional timeout in minutes (default: 5)',
+              description: 'Optional timeout in minutes (default: 5)',
             ),
           },
           required: ['testFile'],
