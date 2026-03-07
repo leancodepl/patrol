@@ -9,6 +9,7 @@
 - Migrate to built-in Kotlin (#3084).
 - Fix iOS tests failing on devices whose name contains a comma 
 - Migrate Japanese text resources to SPM (#3128)
+- Add multi-tab browser support for web tests: `openNewTab`, `closeTab`, `switchToTab`, `getTabs`, `getCurrentTab`, `waitForPopup`. (#2871)
 
 ## 4.6.1
 
@@ -36,7 +37,6 @@
 - Reflect failed tests in Playwright report. (#2970)
 - Add `stopMockLocation` method to `PlatformAutomator` and make mockLocation method less flaky (#2937)
 - Fix matching test entries to produce test summary. (#2998)
-
 
 ## 4.3.0
 

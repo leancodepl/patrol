@@ -94,4 +94,14 @@ await $.platform.web.enterTextWeb(selector: inputSelector, text: 'Hello from Pat
 await $.platform.web.tapWeb(selector: buttonSelector, iframeSelector: iframeSelector);
 // Window operations
 await $.platform.web.resizeWindow(size: Size(800, 600));
+// Multi-tab management
+final tabId = await $.platform.web.openNewTab(url: 'https://example.com');
+await $.platform.web.switchToTab(tabId: tabId);
+final currentTab = await $.platform.web.getCurrentTab();
+final tabs = await $.platform.web.getTabs();
+await $.platform.web.closeTab(tabId: tabId);
+final popupTabId = await $.platform.web.waitForPopup(
+  triggerAction: 'tap',
+  triggerParams: {'selector': buttonSelector},
+);
 ```
