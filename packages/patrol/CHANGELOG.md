@@ -1,3 +1,7 @@
+## Unreleased
+
+- Add multi-tab browser support for web tests: `openNewTab`, `closeTab`, `switchToTab`, `getTabs`, `getCurrentTab`, `waitForPopup`. (#2871)
+
 ## 4.3.0
 
 - Fix WASM compatibility by migrating conditional imports from `dart.library.html` to `dart.library.js_interop`. (#2960)

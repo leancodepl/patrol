@@ -283,4 +283,71 @@ class WebAutomator implements web_automator.WebAutomator {
     );
     return (result as List<dynamic>).cast<String>();
   }
+
+  @override
+  Future<String> openNewTab({required String url}) async {
+    final result = await callPlaywright(
+      'openNewTab',
+      {'url': url},
+      logger: _config.logger,
+      patrolLog: _patrolLog,
+    );
+    return result as String;
+  }
+
+  @override
+  Future<void> closeTab({required String tabId}) async {
+    await callPlaywright(
+      'closeTab',
+      {'tabId': tabId},
+      logger: _config.logger,
+      patrolLog: _patrolLog,
+    );
+  }
+
+  @override
+  Future<void> switchToTab({required String tabId}) async {
+    await callPlaywright(
+      'switchToTab',
+      {'tabId': tabId},
+      logger: _config.logger,
+      patrolLog: _patrolLog,
+    );
+  }
+
+  @override
+  Future<LinkedHashMap<Object?, Object?>> getTabs() async {
+    final result = await callPlaywright(
+      'getTabs',
+      {},
+      logger: _config.logger,
+      patrolLog: _patrolLog,
+    );
+    return result as LinkedHashMap<Object?, Object?>;
+  }
+
+  @override
+  Future<String> getCurrentTab() async {
+    final result = await callPlaywright(
+      'getCurrentTab',
+      {},
+      logger: _config.logger,
+      patrolLog: _patrolLog,
+    );
+    return result as String;
+  }
+
+  @override
+  Future<String> waitForPopup({
+    required String triggerAction,
+    required Map<String, dynamic> triggerParams,
+  }) async {
+    final result = await callPlaywright(
+      'waitForPopup',
+      {'triggerAction': triggerAction, 'triggerParams': triggerParams},
+      logger: _config.logger,
+      patrolLog: _patrolLog,
+    );
+    return result as String;
+  }
 }
