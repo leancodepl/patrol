@@ -1,3 +1,7 @@
+## Unreleased
+
+- Add multi-tab browser support for web tests: `openNewTab`, `closeTab`, `switchToTab`, `getTabs`, `getCurrentTab`, `waitForPopup`. (#2871)
+
 ## 4.5.0
 
 - Fix `appId` not being passed down on `$.platform.mobile.enterText` and `$.platform.mobile.enterTextByIndex` (#2992)
@@ -12,7 +16,6 @@
 - Reflect failed tests in Playwright report. (#2970)
 - Add `stopMockLocation` method to `PlatformAutomator` and make mockLocation method less flaky (#2937)
 - Fix matching test entries to produce test summary. (#2998)
-
 
 ## 4.3.0
 

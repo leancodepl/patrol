@@ -1,6 +1,6 @@
 type PatrolNativeRequestBase<TAction extends string, TParams> = {
   action: TAction
-  params: TParams
+  params: TParams & { _routeToTab?: string }
 }
 
 export type WebSelector = {
@@ -105,6 +105,33 @@ export type ResizeWindowRequest = PatrolNativeRequestBase<
     height: number
   }
 >
+export type OpenNewTabRequest = PatrolNativeRequestBase<
+  "openNewTab",
+  {
+    url: string
+  }
+>
+export type CloseTabRequest = PatrolNativeRequestBase<
+  "closeTab",
+  {
+    tabId: string
+  }
+>
+export type SwitchToTabRequest = PatrolNativeRequestBase<
+  "switchToTab",
+  {
+    tabId: string
+  }
+>
+export type GetTabsRequest = PatrolNativeRequestBase<"getTabs", {}>
+export type GetCurrentTabRequest = PatrolNativeRequestBase<"getCurrentTab", {}>
+export type WaitForPopupRequest = PatrolNativeRequestBase<
+  "waitForPopup",
+  {
+    triggerAction: string
+    triggerParams: Record<string, unknown>
+  }
+>
 type UnknownRequest = PatrolNativeRequestBase<`unknown-placeholder-${string}`, unknown>
 
 export type PatrolNativeRequest =
@@ -112,22 +139,28 @@ export type PatrolNativeRequest =
   | AddCookieRequest
   | ClearCookiesRequest
   | ClearPermissionsRequest
+  | CloseTabRequest
   | DisableDarkModeRequest
   | DismissNextDialogRequest
   | EnableDarkModeRequest
   | EnterTextRequest
   | GetClipboardRequest
   | GetCookiesRequest
+  | GetCurrentTabRequest
+  | GetTabsRequest
   | GoBackRequest
   | GoForwardRequest
   | GrantPermissionsRequest
+  | OpenNewTabRequest
   | PressKeyComboRequest
   | PressKeyRequest
   | ResizeWindowRequest
   | ScrollToRequest
   | SetClipboardRequest
   | StartTestRequest
+  | SwitchToTabRequest
   | TapRequest
   | UnknownRequest
   | UploadFileRequest
   | VerifyFileDownloadsRequest
+  | WaitForPopupRequest
