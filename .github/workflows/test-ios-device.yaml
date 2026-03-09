@@ -20,8 +20,9 @@ jobs:
       matrix:
         flutter-version: ['3.32.x']
         flutter-channel: ['stable']
-        device_model: ['iPhone 17 Pro']
-        os_version: ['26.0']
+        # device model and os version are based on the latest device in Firebase Test Lab
+        device_model: ['iphone16pro']
+        os_version: ['18.3']
         os: [iOS]
 
     defaults:
