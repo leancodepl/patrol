@@ -11,7 +11,7 @@ This document describes all GitHub Actions workflows used in the Patrol project.
 | test android device | `test-android-device.yaml` | Schedule (every 12h), manual | Flutter 3.32.x (stable) | `android && physical_device` | Runs E2E tests on Firebase Test Lab physical devices (Pixel 7 - API 33, Pixel 8 - API 34). |
 | test android emulator | `test-android-emulator.yaml` | PR, schedule (every 12h), manual | Flutter 3.32.x (stable) | `android && emulator` | Runs E2E tests on emulator.wtf emulators (Pixel7, Tablet10, NexusLowRes) across API levels 31-35. Excludes `volume_test.dart` due to emulator instability issues. |
 | test android emulator webview | `test-android-emulator-webview.yaml` | PR, schedule (daily at 23:00), manual | Flutter 3.32.x (stable) | `webview && android` | Runs webview-specific E2E tests on emulator.wtf. |
-| test locales on android device | `test-android-locales.yaml` | PR (on locale changes), manual | Flutter 3.32.x (stable) | `locale_testing_android` | Tests locale support on Firebase Test Lab for English, French, German, and Polish locales on API 34. |
+| test locales on android device | `test-android-locales.yaml` | Schedule (every 12h), manual | Flutter 3.32.x (stable) | `locale_testing_android` | Tests locale support on Firebase Test Lab for English, French, German, and Polish locales on API 34. Excludes `native_tests/` directory. |
 
 ### iOS Testing
 
@@ -89,7 +89,7 @@ These workflows verify the user has write access before running. If you don't ha
 
 ## Schedule Summary
 
-- **Every 12 hours**: `test-android-device.yaml`, `test-android-emulator.yaml`, `test-macos.yaml`
+- **Every 12 hours**: `test-android-device.yaml`, `test-android-emulator.yaml`, `test-android-locales.yaml`, `test-macos.yaml`
 - **Daily at 21:30 UTC**: `test-ios-device.yaml`
 - **Daily at 23:00 UTC**: `test-android-emulator-webview.yaml`
 - **Monthly (1st day)**: `test-ios-simulator.yaml`, `test-ios-simulator-webview.yaml`
@@ -105,6 +105,7 @@ These workflows verify the user has write access before running. If you don't ha
 - Test workflows send notifications to Slack via the reusable `send-slack-message` workflow
 - All publish workflows require tag pushes with specific prefixes and send Slack notifications for non-prerelease versions
 - Documentation deployments use Vercel with Node.js 24
+- Android projects use Kotlin 2.1.0 for compatibility with Java 21 and modern Flutter tooling
 
 ### Tag-Based Test Selection
 
