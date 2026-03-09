@@ -2,19 +2,8 @@ name: test locales on android device
 
 on:
   workflow_dispatch:
-  pull_request:
-    paths:
-      - 'packages/patrol/**'
-      - 'packages/patrol_finders/**'
-      - 'packages/patrol_log/**'
-      - 'packages/patrol_cli/**'
-      - 'packages/adb/**'
-      - 'packages/patrol_gen/**'
-      - 'dev/e2e_app/**'
-      - 'schema.dart'
-      - 'gen_from_schema'
-      - '!**.md'
-      - '!**.mdx'
+  schedule:
+    - cron: '0 */12 * * *'
 
 jobs:
   run_tests:
@@ -88,7 +77,7 @@ jobs:
 
       - name: patrol build android
         run: |
-          patrol build android --tags locale_testing_android --exclude patrol_test/web/ --verbose
+          patrol build android --tags locale_testing_android --exclude patrol_test/web/, patrol_test/native_tests/ --verbose
 
       - name: Upload APKs to Firebase Test Lab and wait for tests to finish
         id: tests_step
