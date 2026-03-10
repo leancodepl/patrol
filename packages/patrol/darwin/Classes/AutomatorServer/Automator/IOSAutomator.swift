@@ -655,7 +655,13 @@
           cell.doubleTap()
           self.springboard.buttons.matching(identifier: open).firstMatch.tap()
         } else {
+          // Physical devices may also require tapping "open" button (e.g., with Face ID)
           cell.tap()
+          let open = try Localization.getLocalizedString(key: "open")
+          let openButton = self.springboard.buttons.matching(identifier: open).firstMatch
+          if openButton.exists {
+            openButton.tap()
+          }
         }
       }
     }
@@ -680,7 +686,13 @@
           cell.doubleTap()
           self.springboard.buttons.matching(identifier: open).firstMatch.tap()
         } else {
+          // Physical devices may also require tapping "open" button (e.g., with Face ID)
           cell.tap()
+          let open = try Localization.getLocalizedString(key: "open")
+          let openButton = self.springboard.buttons.matching(identifier: open).firstMatch
+          if openButton.exists {
+            openButton.tap()
+          }
         }
       }
     }
