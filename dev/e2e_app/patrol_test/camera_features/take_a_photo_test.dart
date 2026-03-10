@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import '../common.dart';
 import 'camera_helpers.dart';
 
@@ -9,7 +11,9 @@ void main() {
     await $(#cameraFeaturesButton).scrollTo().tap();
     await $(#takePhotoButton).tap();
     await cameraHelpers.maybeAcceptPermissionDialog();
-    await cameraHelpers.maybeAcceptDialogAndroid();
+    if (Platform.isAndroid) {
+      await cameraHelpers.maybeAcceptDialogAndroid();
+    }
 
     await $.platform.mobile.takeCameraPhoto();
     await $.pumpAndSettle();
