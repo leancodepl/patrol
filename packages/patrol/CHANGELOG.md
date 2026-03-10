@@ -4,6 +4,7 @@
 - Fix `takeCameraPhoto` do not accept location permission dialog on Pixel physical devices. (#2972)
 - Fix `takeCameraPhoto` on Android to use fallback button if done button is not visible. (#2974)
 - Reflect failed tests in Playwright report. (#2970)
+- Add `stopMockLocation` method to `PlatformAutomator` and make mockLocation method less flaky (#2937)
 
 
 ## 4.3.0
