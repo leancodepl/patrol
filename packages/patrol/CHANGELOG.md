@@ -1,3 +1,7 @@
+## Unreleased
+
+- Fix `takeCameraPhoto` do not accept location permission dialog on Pixel physical devices. (#2972)
+
 ## 4.3.0
 
 - Fix WASM compatibility by migrating conditional imports from `dart.library.html` to `dart.library.js_interop`. (#2960)
