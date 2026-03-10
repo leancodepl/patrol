@@ -323,6 +323,12 @@
       }
     }
 
+    func stopMockLocation() throws {
+      return try runCatching {
+        try automator.stopMockLocation()
+      }
+    }
+
     // MARK: Camera
 
     func takeCameraPhoto(request: IOSTakeCameraPhotoRequest) throws {

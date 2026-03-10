@@ -81,6 +81,7 @@ class Automator private constructor() {
     private lateinit var uiAutomation: UiAutomation
     
     private var mockLocationExecutor: ScheduledExecutorService? = null
+    private var mockLocationTask: java.util.concurrent.ScheduledFuture<*>? = null
     private var currentLatitude: Double = 0.0
     private var currentLongitude: Double = 0.0
 
@@ -736,11 +737,14 @@ class Automator private constructor() {
         
         locationManager.setTestProviderEnabled(mockLocationProvider, true)
         
+        // Cancel any existing scheduled task
+        mockLocationTask?.cancel(false)
+        
         if (mockLocationExecutor == null) {
             mockLocationExecutor = Executors.newSingleThreadScheduledExecutor()
         }
         
-        mockLocationExecutor?.scheduleAtFixedRate({
+        mockLocationTask = mockLocationExecutor?.scheduleAtFixedRate({
             try {
                 val mockLocation = Location(mockLocationProvider)
                 mockLocation.latitude = currentLatitude
@@ -758,6 +762,8 @@ class Automator private constructor() {
     }
     
     fun stopMockLocation() {
+        mockLocationTask?.cancel(false)
+        mockLocationTask = null
         mockLocationExecutor?.shutdown()
         mockLocationExecutor = null
         

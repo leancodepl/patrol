@@ -148,6 +148,10 @@ class MobileAutomatorClient {
     return _sendRequest('setMockLocation', request.toJson());
   }
 
+  Future<void> stopMockLocation() {
+    return _sendRequest('stopMockLocation');
+  }
+
   Future<void> markPatrolAppServiceReady() {
     return _sendRequest('markPatrolAppServiceReady');
   }
