@@ -1,6 +1,7 @@
 ## Unreleased
 
 - Reflect failed tests in Playwright report. (#2970)
+- Fix `takeCameraPhoto` do not accept location permission dialog on Pixel physical devices. (#2972)
 
 ## 4.3.0
 
