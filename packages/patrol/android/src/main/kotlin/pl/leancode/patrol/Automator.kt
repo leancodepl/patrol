@@ -728,6 +728,9 @@ class Automator private constructor() {
     }
 
     fun takeCameraPhoto(shutterButtonUiSelector: UiSelector, shutterButtonBySelector: BySelector, doneButtonUiSelector: UiSelector, doneButtonBySelector: BySelector, timeout: Long? = null) {
+        if (isPermissionDialogVisible(timeout = 2000)) {
+            allowPermissionWhileUsingApp()
+        }
         tap(shutterButtonUiSelector, shutterButtonBySelector, 0, timeout)
         tap(doneButtonUiSelector, doneButtonBySelector, 0, timeout)
     }
