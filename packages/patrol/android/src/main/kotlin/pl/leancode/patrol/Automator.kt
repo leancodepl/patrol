@@ -82,8 +82,8 @@ class Automator private constructor() {
     
     private var mockLocationExecutor: ScheduledExecutorService? = null
     private var mockLocationTask: java.util.concurrent.ScheduledFuture<*>? = null
-    private var currentLatitude: Double = 0.0
-    private var currentLongitude: Double = 0.0
+    @Volatile private var currentLatitude: Double = 0.0
+    @Volatile private var currentLongitude: Double = 0.0
 
     fun initialize() {
         if (!this::instrumentation.isInitialized) {
