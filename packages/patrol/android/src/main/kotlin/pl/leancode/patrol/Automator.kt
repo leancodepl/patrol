@@ -751,7 +751,6 @@ class Automator private constructor() {
                 mockLocation.elapsedRealtimeNanos = SystemClock.elapsedRealtimeNanos()
                 
                 locationManager.setTestProviderLocation(mockLocationProvider, mockLocation)
-                Logger.d("Mock location updated: lat=$currentLatitude, lon=$currentLongitude")
             } catch (e: Exception) {
                 Logger.e("Error updating mock location: ${e.message}")
             }
