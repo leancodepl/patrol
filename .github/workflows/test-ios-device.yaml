@@ -20,9 +20,9 @@ jobs:
       matrix:
         flutter-version: ['3.32.x']
         flutter-channel: ['stable']
-        # device model and os version are based on the latest device in Firebase Test Lab
-        device_model: ['iphone16pro']
-        os_version: ['18.3']
+        # We use older iOs because it allows to record video in the testlab
+        device_model: ['iphone14pro']
+        os_version: ['16.6']
         os: [iOS]
 
     defaults:
