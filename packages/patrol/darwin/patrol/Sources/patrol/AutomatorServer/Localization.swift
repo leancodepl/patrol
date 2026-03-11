@@ -41,7 +41,11 @@ class Localization {
     }
 
     // Get the bundle containing the Localizable.strings files
-    let bundle = Bundle(for: Localization.self)
+    #if SWIFT_PACKAGE
+      let bundle = Bundle.module
+    #else
+      let bundle = Bundle(for: Localization.self)
+    #endif
 
     // Try to load the localized strings file for the target language
     guard
