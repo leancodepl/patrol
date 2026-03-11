@@ -103,6 +103,13 @@ class _HomePage extends StatelessWidget {
                 label: const Text('Go to Page 1'),
               ),
               ElevatedButton.icon(
+                key: const Key('open_popup_button'),
+                onPressed: () =>
+                    web.window.open('about:blank', '_blank'),
+                icon: const Icon(Icons.open_in_new),
+                label: const Text('Open Popup Window'),
+              ),
+              ElevatedButton.icon(
                 onPressed: () => context.go('/iframe'),
                 icon: const Icon(Icons.web),
                 label: const Text('Go to Iframe Test'),

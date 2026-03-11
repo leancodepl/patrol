@@ -88,4 +88,28 @@ abstract interface class WebAutomator {
 
   /// Returns a list of all files downloaded during the single test.
   Future<List<String>> verifyFileDownloads();
+
+  /// Opens a new browser tab navigating to [url].
+  /// Returns the stable tab ID of the new tab.
+  Future<String> openNewTab({required String url});
+
+  /// Closes the tab with the given [tabId].
+  Future<void> closeTab({required String tabId});
+
+  /// Switches the active tab to [tabId].
+  /// All subsequent actions will target this tab until switched again.
+  Future<void> switchToTab({required String tabId});
+
+  /// Returns information about all open tabs.
+  Future<LinkedHashMap<Object?, Object?>> getTabs();
+
+  /// Returns the ID of the currently active tab.
+  Future<String> getCurrentTab();
+
+  /// Executes [triggerAction] and waits for a popup/new tab to open.
+  /// Returns the tab ID of the newly opened tab.
+  Future<String> waitForPopup({
+    required String triggerAction,
+    required Map<String, dynamic> triggerParams,
+  });
 }
