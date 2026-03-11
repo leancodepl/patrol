@@ -476,10 +476,7 @@ abstract class NativeMobileAutomator implements MobileAutomator {
 
   @override
   Future<void> stopMockLocation() async {
-    await wrapRequest(
-      'stopMockLocation',
-      _client.stopMockLocation,
-    );
+    await wrapRequest('stopMockLocation', _client.stopMockLocation);
   }
 
   /// Tells the AndroidJUnitRunner that PatrolAppService is ready to answer
