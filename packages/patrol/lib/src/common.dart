@@ -317,7 +317,7 @@ int reportGroupStructure(DartGroupEntry group, {int indentation = 0}) {
     }
   }
 
-  if (indentation == 0) {
+  if (indentation == 0 && !kIsWeb) {
     postEvent('testCount', {'testCount': testCount});
   }
 

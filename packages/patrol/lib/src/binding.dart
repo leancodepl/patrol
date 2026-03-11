@@ -1,13 +1,11 @@
-import 'dart:async';
 import 'dart:convert';
-import 'dart:developer';
-import 'dart:isolate';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
+import 'package:patrol/src/coverage_helper.dart';
 import 'package:patrol/src/devtools_service_extensions/devtools_service_extensions.dart';
 import 'package:patrol/src/global_state.dart' as global_state;
 import 'package:patrol/src/platform/current.dart' as current_platform;
@@ -77,21 +75,7 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
 
       if (nameOfRequestedTest == _currentDartTest) {
         if (const bool.fromEnvironment('COVERAGE_ENABLED')) {
-          postEvent('waitForCoverageCollection', {
-            'mainIsolateId': Service.getIsolateId(Isolate.current),
-          });
-
-          final testCompleter = Completer<void>();
-
-          registerExtension('ext.patrol.markTestCompleted', (
-            method,
-            parameters,
-          ) async {
-            testCompleter.complete();
-            return ServiceExtensionResponse.result(jsonEncode({}));
-          });
-
-          await testCompleter.future;
+          await waitForCoverageCollection();
         }
 
         logger(
