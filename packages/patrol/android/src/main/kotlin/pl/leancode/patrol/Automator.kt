@@ -31,10 +31,10 @@ import pl.leancode.patrol.contracts.Contracts.KeyboardBehavior
 import pl.leancode.patrol.contracts.Contracts.Notification
 import pl.leancode.patrol.contracts.Contracts.Point2D
 import pl.leancode.patrol.contracts.Contracts.Rectangle
-import kotlin.math.roundToInt
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
+import kotlin.math.roundToInt
 import pl.leancode.patrol.R.string as s
 
 private fun fromUiObject2(obj: UiObject2): AndroidNativeView {
@@ -79,10 +79,12 @@ class Automator private constructor() {
     private lateinit var uiDevice: UiDevice
     private lateinit var targetContext: Context
     private lateinit var uiAutomation: UiAutomation
-    
+
     private var mockLocationExecutor: ScheduledExecutorService? = null
     private var mockLocationTask: java.util.concurrent.ScheduledFuture<*>? = null
+
     @Volatile private var currentLatitude: Double = 0.0
+
     @Volatile private var currentLongitude: Double = 0.0
 
     fun initialize() {
@@ -709,19 +711,19 @@ class Automator private constructor() {
     fun setMockLocation(latitude: Double, longitude: Double, packageName: String) {
         currentLatitude = latitude
         currentLongitude = longitude
-        
+
         executeShellCommand("appops set $packageName android:mock_location allow")
         val locationManager = targetContext.getSystemService(LOCATION_SERVICE) as LocationManager
-        
+
         val mockLocationProvider = LocationManager.GPS_PROVIDER
-        
+
         try {
             locationManager.removeTestProvider(mockLocationProvider)
             Logger.d("Removed existing test provider")
         } catch (e: Exception) {
             Logger.d("No existing test provider to remove")
         }
-        
+
         locationManager.addTestProvider(
             mockLocationProvider,
             false,
@@ -734,17 +736,17 @@ class Automator private constructor() {
             ProviderProperties.POWER_USAGE_LOW,
             ProviderProperties.ACCURACY_FINE
         )
-        
+
         locationManager.setTestProviderEnabled(mockLocationProvider, true)
-        
+
         // Cancel any existing scheduled task
         mockLocationTask?.cancel(false)
-        
+
         if (mockLocationExecutor == null || mockLocationExecutor?.isShutdown == true) {
             mockLocationExecutor?.shutdown()
             mockLocationExecutor = Executors.newSingleThreadScheduledExecutor()
         }
-        
+
         mockLocationTask = mockLocationExecutor?.scheduleAtFixedRate({
             try {
                 val mockLocation = Location(mockLocationProvider)
@@ -754,20 +756,20 @@ class Automator private constructor() {
                 mockLocation.accuracy = 1.0f
                 mockLocation.time = System.currentTimeMillis()
                 mockLocation.elapsedRealtimeNanos = SystemClock.elapsedRealtimeNanos()
-                
+
                 locationManager.setTestProviderLocation(mockLocationProvider, mockLocation)
             } catch (e: Exception) {
                 Logger.e("Error updating mock location: ${e.message}")
             }
         }, 0, 500, TimeUnit.MILLISECONDS)
     }
-    
+
     fun stopMockLocation() {
         mockLocationTask?.cancel(false)
         mockLocationTask = null
         mockLocationExecutor?.shutdown()
         mockLocationExecutor = null
-        
+
         try {
             val locationManager = targetContext.getSystemService(LOCATION_SERVICE) as LocationManager
             locationManager.removeTestProvider(LocationManager.GPS_PROVIDER)
