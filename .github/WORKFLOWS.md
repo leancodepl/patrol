@@ -8,7 +8,7 @@ This document describes all GitHub Actions workflows used in the Patrol project.
 
 | Workflow name | Workflow file | Runs on | Flutter version | Tags | Description |
 |--------------|--------------|---------|----------------|------|-------------|
-| test android device | `test-android-device.yaml` | Schedule (every 12h), manual | Flutter 3.32.x (stable) | `android && physical_device` | Runs E2E tests on Firebase Test Lab physical devices (Pixel 7 - API 33, Pixel 8 - API 34). Excludes `native_tests/` to reduce test duration. |
+| test android device | `test-android-device.yaml` | Schedule (every 12h), manual | Flutter 3.32.x (stable) | `android && physical_device` | Runs E2E tests on Firebase Test Lab physical devices (Pixel 8 Pro - API 35). Excludes `native_tests/` to reduce test duration. |
 | test android emulator | `test-android-emulator.yaml` | PR, schedule (every 12h), manual | Flutter 3.32.x (stable) | `android && emulator` | Runs E2E tests on emulator.wtf emulators (Pixel7, Tablet10, NexusLowRes) across API levels 31-35. Excludes `volume_test.dart` due to emulator instability issues. |
 | test android emulator webview | `test-android-emulator-webview.yaml` | PR, schedule (daily at 23:00), manual | Flutter 3.32.x (stable) | `webview && android` | Runs webview-specific E2E tests on emulator.wtf. |
 | test locales on android device | `test-android-locales.yaml` | Schedule (every 12h), manual | Flutter 3.32.x (stable) | `locale_testing_android` | Tests locale support on Firebase Test Lab for English, French, German, and Polish locales on API 34. Excludes `native_tests/` directory. |
