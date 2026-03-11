@@ -1,3 +1,7 @@
+## Unreleased
+
+- Reflect failed tests in Playwright report. (#2970)
+
 ## 4.3.0
 
 - Fix WASM compatibility by migrating conditional imports from `dart.library.html` to `dart.library.js_interop`. (#2960)

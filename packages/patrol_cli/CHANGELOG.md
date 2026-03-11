@@ -1,3 +1,7 @@
+## Unreleased
+
+- Reflect failed tests in Playwright report. (#2970)
+
 ## 4.2.0
 
 - Add support for `--web-port` option to specify the port for the web server when running web tests with `patrol test`. (#2832)
