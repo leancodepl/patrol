@@ -35,7 +35,6 @@ void main() {
     await $('Location').waitUntilVisible();
     await $('Latitude: $_lat1').waitUntilVisible();
     await $('Longitude: $_lon').waitUntilVisible();
-    await $.platform.mobile.stopMockLocation();
     await Future<void>.delayed(const Duration(milliseconds: 1500));
     await $.platform.mobile.setMockLocation(_lat2, _lon);
     await $.pumpAndSettle();
@@ -50,7 +49,7 @@ void main() {
     await $('Location').waitUntilVisible();
     await $('Latitude: $_lat3').waitUntilVisible();
     await $('Longitude: $_lon').waitUntilVisible();
-    await Future<void>.delayed(const Duration(milliseconds: 1500));
+    await $.platform.mobile.stopMockLocation();
   }, tags: ['android', 'emulator', 'ios', 'simulator']);
 
   // Skip this test for now, as it's too long to run on CI.
