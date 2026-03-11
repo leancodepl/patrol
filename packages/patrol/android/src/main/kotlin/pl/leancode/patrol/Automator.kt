@@ -740,7 +740,8 @@ class Automator private constructor() {
         // Cancel any existing scheduled task
         mockLocationTask?.cancel(false)
         
-        if (mockLocationExecutor == null) {
+        if (mockLocationExecutor == null || mockLocationExecutor?.isShutdown == true) {
+            mockLocationExecutor?.shutdown()
             mockLocationExecutor = Executors.newSingleThreadScheduledExecutor()
         }
         
