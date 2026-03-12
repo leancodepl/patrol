@@ -1,6 +1,7 @@
 ## Unreleased
 - Fix `tapOnNotification` on iOS physical devices to Open button when tapping on notification. (#2972)
 - Fix `takeCameraPhoto` do not accept location permission dialog on Pixel physical devices. (#2972)
+- Fix `takeCameraPhoto` on Android to use fallback button if done button is not visible. (#2974)
 
 ## 4.3.0
 
