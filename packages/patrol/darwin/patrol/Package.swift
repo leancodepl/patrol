@@ -41,7 +41,6 @@ let package = Package(
                 .process("Resources/pl.lproj"),
             ],
             linkerSettings: [
-                .linkedFramework("XCTest", .when(platforms: [.iOS, .macOS])),
                 .linkedFramework("UIKit", .when(platforms: [.iOS])),
                 .linkedFramework("AppKit", .when(platforms: [.macOS]))
             ]
