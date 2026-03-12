@@ -69,6 +69,10 @@ private fun fromUiObject2(obj: UiObject2): AndroidNativeView {
 }
 
 class Automator private constructor() {
+    companion object {
+        private const val PERMISSION_DIALOG_WAIT_TIMEOUT = 2000L
+    }
+
     private var timeoutMillis: Long = 10_000
 
     private lateinit var instrumentation: Instrumentation
@@ -728,7 +732,7 @@ class Automator private constructor() {
     }
 
     fun takeCameraPhoto(shutterButtonUiSelector: UiSelector, shutterButtonBySelector: BySelector, doneButtonUiSelector: UiSelector, doneButtonBySelector: BySelector, timeout: Long? = null) {
-        if (isPermissionDialogVisible(timeout = 2000)) {
+        if (isPermissionDialogVisible(timeout = PERMISSION_DIALOG_WAIT_TIMEOUT)) {
             allowPermissionWhileUsingApp()
         }
         tap(shutterButtonUiSelector, shutterButtonBySelector, 0, timeout)
