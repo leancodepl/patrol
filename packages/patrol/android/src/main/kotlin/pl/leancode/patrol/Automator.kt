@@ -69,10 +69,6 @@ private fun fromUiObject2(obj: UiObject2): AndroidNativeView {
 }
 
 class Automator private constructor() {
-    companion object {
-        private const val PERMISSION_DIALOG_WAIT_TIMEOUT = 2000L
-    }
-
     private var timeoutMillis: Long = 10_000
 
     private lateinit var instrumentation: Instrumentation
@@ -732,7 +728,7 @@ class Automator private constructor() {
     }
 
     fun takeCameraPhoto(shutterButtonUiSelector: UiSelector, shutterButtonBySelector: BySelector, doneButtonUiSelector: UiSelector, doneButtonBySelector: BySelector, timeout: Long? = null) {
-        if (isPermissionDialogVisible(timeout = PERMISSION_DIALOG_WAIT_TIMEOUT)) {
+        if (isPermissionDialogVisible(timeout = AutomatorConstants.PERMISSION_DIALOG_WAIT_TIMEOUT)) {
             allowPermissionWhileUsingApp()
         }
         tap(shutterButtonUiSelector, shutterButtonBySelector, 0, timeout)
@@ -745,7 +741,7 @@ class Automator private constructor() {
             delay()
         } else {
             Logger.d("Done button not visible, trying fallback: Google Camera shutter button")
-            val fallbackBySelector = By.res("com.google.android.GoogleCamera:id/shutter_button")
+            val fallbackBySelector = By.res(AutomatorConstants.GOOGLE_CAMERA_SHUTTER_BUTTON_RES_ID)
             val fallbackButton = waitForView(fallbackBySelector, 0, timeout)
             if (fallbackButton != null) {
                 Logger.d("Fallback button found, tapping it")
