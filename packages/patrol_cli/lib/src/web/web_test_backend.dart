@@ -528,21 +528,18 @@ class WebTestBackend {
       playwrightProcess.exitCode.then((exitCode) {
         if (!completer.isCompleted) {
           stderrSubscription.cancel();
+          patrolLogReader.stopTimer();
+          // TODO: Don't print the summary in develop
+          _logger.info(patrolLogReader.summary);
 
-          if (exitCode != 0) {
+          if (patrolLogReader.failedTestsCount > 0) {
+            completer.completeError('Some tests failed.');
+          } else if (exitCode != 0) {
             completer.completeError(
               'Playwright process exited unexpectedly with code $exitCode',
             );
           } else {
-            patrolLogReader.stopTimer();
-            // TODO: Don't print the summary in develop
-            _logger.info(patrolLogReader.summary);
-
-            if (patrolLogReader.failedTestsCount > 0) {
-              completer.completeError('Some tests failed.');
-            } else {
-              completer.complete();
-            }
+            completer.complete();
           }
         }
       }).ignore();
