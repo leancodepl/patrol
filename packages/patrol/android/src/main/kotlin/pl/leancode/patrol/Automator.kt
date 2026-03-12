@@ -69,10 +69,6 @@ private fun fromUiObject2(obj: UiObject2): AndroidNativeView {
 }
 
 class Automator private constructor() {
-    companion object {
-        private const val PERMISSION_DIALOG_WAIT_TIMEOUT = 2000L
-    }
-
     private var timeoutMillis: Long = 10_000
 
     private lateinit var instrumentation: Instrumentation
@@ -732,11 +728,30 @@ class Automator private constructor() {
     }
 
     fun takeCameraPhoto(shutterButtonUiSelector: UiSelector, shutterButtonBySelector: BySelector, doneButtonUiSelector: UiSelector, doneButtonBySelector: BySelector, timeout: Long? = null) {
-        if (isPermissionDialogVisible(timeout = PERMISSION_DIALOG_WAIT_TIMEOUT)) {
+        if (isPermissionDialogVisible(timeout = AutomatorConstants.PERMISSION_DIALOG_WAIT_TIMEOUT)) {
             allowPermissionWhileUsingApp()
         }
         tap(shutterButtonUiSelector, shutterButtonBySelector, 0, timeout)
-        tap(doneButtonUiSelector, doneButtonBySelector, 0, timeout)
+
+        // Try to tap done button, if not visible try Google Camera shutter button fallback
+        val doneButton = waitForView(doneButtonBySelector, 0, timeout)
+        if (doneButton != null) {
+            Logger.d("Done button found, tapping it")
+            doneButton.click()
+            delay()
+        } else {
+            Logger.d("Done button not visible, trying fallback: Google Camera shutter button")
+            val fallbackBySelector = By.res(AutomatorConstants.GOOGLE_CAMERA_SHUTTER_BUTTON_RES_ID)
+            val fallbackButton = waitForView(fallbackBySelector, 0, timeout)
+            if (fallbackButton != null) {
+                Logger.d("Fallback button found, tapping it")
+                fallbackButton.click()
+                delay()
+            } else {
+                Logger.e("Neither done button nor fallback button found")
+                throw PatrolException("takeCameraPhoto(): neither done button nor Google Camera shutter button found")
+            }
+        }
     }
 
     fun pickImageFromGallery(imageUiSelector: UiSelector, imageBySelector: BySelector, subMenuUiSelector: UiSelector?, subMenuBySelector: BySelector?, actionMenuUiSelector: UiSelector?, actionMenuBySelector: BySelector?, instance: Int, timeout: Long? = null) {
