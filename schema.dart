@@ -387,6 +387,7 @@ abstract class MobileAutomator<IOSServer, AndroidServer, DartClient> {
 
   // other
   void setMockLocation(SetMockLocationRequest request);
+  void stopMockLocation();
 
   // TODO(bartekpacia): Move this RPC into a new PatrolNativeTestService service because it doesn't fit here
   void markPatrolAppServiceReady();

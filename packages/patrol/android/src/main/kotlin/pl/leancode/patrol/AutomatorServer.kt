@@ -360,6 +360,10 @@ class AutomatorServer(private val automation: Automator) : MobileAutomatorServer
         automation.setMockLocation(request.latitude, request.longitude, request.packageName)
     }
 
+    override fun stopMockLocation() {
+        automation.stopMockLocation()
+    }
+
     override fun tapOnNotification(request: AndroidTapOnNotificationRequest) {
         if (request.index != null) {
             automation.tapOnNotification(request.index.toInt(), timeout = request.timeoutMillis)

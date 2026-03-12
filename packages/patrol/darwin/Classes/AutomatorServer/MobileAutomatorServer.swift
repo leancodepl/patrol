@@ -31,6 +31,7 @@ protocol MobileAutomatorServer {
     func handlePermissionDialog(request: HandlePermissionRequest) throws
     func setLocationAccuracy(request: SetLocationAccuracyRequest) throws
     func setMockLocation(request: SetMockLocationRequest) throws
+    func stopMockLocation() throws
     func markPatrolAppServiceReady() throws
     func isVirtualDevice() throws -> IsVirtualDeviceResponse
     func getOsVersion() throws -> GetOsVersionResponse
@@ -172,6 +173,11 @@ extension MobileAutomatorServer {
     private func setMockLocationHandler(request: HTTPRequest) throws -> HTTPResponse {
         let requestArg = try JSONDecoder().decode(SetMockLocationRequest.self, from: request.body)
         try setMockLocation(request: requestArg)
+        return HTTPResponse(.ok)
+    }
+
+    private func stopMockLocationHandler(request: HTTPRequest) throws -> HTTPResponse {
+        try stopMockLocation()
         return HTTPResponse(.ok)
     }
 
@@ -319,6 +325,11 @@ extension MobileAutomatorServer {
             request in handleRequest(
                 request: request,
                 handler: setMockLocationHandler)
+        }
+        server.route(.POST, "stopMockLocation") {
+            request in handleRequest(
+                request: request,
+                handler: stopMockLocationHandler)
         }
         server.route(.POST, "markPatrolAppServiceReady") {
             request in handleRequest(
