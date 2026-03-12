@@ -210,6 +210,11 @@ abstract interface class MobileAutomator {
     String? packageName,
   });
 
+  /// Stop mock location
+  ///
+  /// Stops the mock location updates that were started by [setMockLocation].
+  Future<void> stopMockLocation();
+
   /// Tells the AndroidJUnitRunner that PatrolAppService is ready to answer
   /// requests about the structure of Dart tests.
   @internal

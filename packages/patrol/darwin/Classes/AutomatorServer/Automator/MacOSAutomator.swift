@@ -318,6 +318,12 @@
       }
     }
 
+    func stopMockLocation() throws {
+      try runAction("stopMockLocation") {
+        throw PatrolError.methodNotImplemented("stopMockLocation")
+      }
+    }
+
     func debug() throws {
       try runAction("debug") {
         throw PatrolError.methodNotImplemented("debug")

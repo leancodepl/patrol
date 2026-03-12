@@ -31,6 +31,9 @@ import pl.leancode.patrol.contracts.Contracts.KeyboardBehavior
 import pl.leancode.patrol.contracts.Contracts.Notification
 import pl.leancode.patrol.contracts.Contracts.Point2D
 import pl.leancode.patrol.contracts.Contracts.Rectangle
+import java.util.concurrent.Executors
+import java.util.concurrent.ScheduledExecutorService
+import java.util.concurrent.TimeUnit
 import kotlin.math.roundToInt
 import pl.leancode.patrol.R.string as s
 
@@ -69,10 +72,6 @@ private fun fromUiObject2(obj: UiObject2): AndroidNativeView {
 }
 
 class Automator private constructor() {
-    companion object {
-        private const val PERMISSION_DIALOG_WAIT_TIMEOUT = 2000L
-    }
-
     private var timeoutMillis: Long = 10_000
 
     private lateinit var instrumentation: Instrumentation
@@ -80,6 +79,13 @@ class Automator private constructor() {
     private lateinit var uiDevice: UiDevice
     private lateinit var targetContext: Context
     private lateinit var uiAutomation: UiAutomation
+
+    private var mockLocationExecutor: ScheduledExecutorService? = null
+    private var mockLocationTask: java.util.concurrent.ScheduledFuture<*>? = null
+
+    @Volatile private var currentLatitude: Double = 0.0
+
+    @Volatile private var currentLongitude: Double = 0.0
 
     fun initialize() {
         if (!this::instrumentation.isInitialized) {
@@ -703,10 +709,21 @@ class Automator private constructor() {
     }
 
     fun setMockLocation(latitude: Double, longitude: Double, packageName: String) {
+        currentLatitude = latitude
+        currentLongitude = longitude
+
         executeShellCommand("appops set $packageName android:mock_location allow")
         val locationManager = targetContext.getSystemService(LOCATION_SERVICE) as LocationManager
 
         val mockLocationProvider = LocationManager.GPS_PROVIDER
+
+        try {
+            locationManager.removeTestProvider(mockLocationProvider)
+            Logger.d("Removed existing test provider")
+        } catch (e: Exception) {
+            Logger.d("No existing test provider to remove")
+        }
+
         locationManager.addTestProvider(
             mockLocationProvider,
             false,
@@ -721,22 +738,71 @@ class Automator private constructor() {
         )
 
         locationManager.setTestProviderEnabled(mockLocationProvider, true)
-        val mockLocation = Location(mockLocationProvider)
-        mockLocation.latitude = latitude
-        mockLocation.longitude = longitude
-        mockLocation.altitude = 0.0
-        mockLocation.accuracy = 1.0f
-        mockLocation.time = System.currentTimeMillis()
-        mockLocation.elapsedRealtimeNanos = System.nanoTime()
-        locationManager.setTestProviderLocation(mockLocationProvider, mockLocation)
+
+        // Cancel any existing scheduled task
+        mockLocationTask?.cancel(false)
+
+        if (mockLocationExecutor == null) {
+            mockLocationExecutor = Executors.newSingleThreadScheduledExecutor()
+        }
+
+        mockLocationTask = mockLocationExecutor?.scheduleAtFixedRate({
+            try {
+                val mockLocation = Location(mockLocationProvider)
+                mockLocation.latitude = currentLatitude
+                mockLocation.longitude = currentLongitude
+                mockLocation.altitude = 0.0
+                mockLocation.accuracy = 1.0f
+                mockLocation.time = System.currentTimeMillis()
+                mockLocation.elapsedRealtimeNanos = SystemClock.elapsedRealtimeNanos()
+
+                locationManager.setTestProviderLocation(mockLocationProvider, mockLocation)
+            } catch (e: Exception) {
+                Logger.e("Error updating mock location: ${e.message}")
+            }
+        }, 0, 500, TimeUnit.MILLISECONDS)
+    }
+
+    fun stopMockLocation() {
+        mockLocationTask?.cancel(false)
+        mockLocationTask = null
+        mockLocationExecutor?.shutdown()
+        mockLocationExecutor = null
+
+        try {
+            val locationManager = targetContext.getSystemService(LOCATION_SERVICE) as LocationManager
+            locationManager.removeTestProvider(LocationManager.GPS_PROVIDER)
+            Logger.d("Mock location stopped and provider removed")
+        } catch (e: Exception) {
+            Logger.e("Error stopping mock location: ${e.message}")
+        }
     }
 
     fun takeCameraPhoto(shutterButtonUiSelector: UiSelector, shutterButtonBySelector: BySelector, doneButtonUiSelector: UiSelector, doneButtonBySelector: BySelector, timeout: Long? = null) {
-        if (isPermissionDialogVisible(timeout = PERMISSION_DIALOG_WAIT_TIMEOUT)) {
+        if (isPermissionDialogVisible(timeout = AutomatorConstants.PERMISSION_DIALOG_WAIT_TIMEOUT)) {
             allowPermissionWhileUsingApp()
         }
         tap(shutterButtonUiSelector, shutterButtonBySelector, 0, timeout)
-        tap(doneButtonUiSelector, doneButtonBySelector, 0, timeout)
+
+        // Try to tap done button, if not visible try Google Camera shutter button fallback
+        val doneButton = waitForView(doneButtonBySelector, 0, timeout)
+        if (doneButton != null) {
+            Logger.d("Done button found, tapping it")
+            doneButton.click()
+            delay()
+        } else {
+            Logger.d("Done button not visible, trying fallback: Google Camera shutter button")
+            val fallbackBySelector = By.res(AutomatorConstants.GOOGLE_CAMERA_SHUTTER_BUTTON_RES_ID)
+            val fallbackButton = waitForView(fallbackBySelector, 0, timeout)
+            if (fallbackButton != null) {
+                Logger.d("Fallback button found, tapping it")
+                fallbackButton.click()
+                delay()
+            } else {
+                Logger.e("Neither done button nor fallback button found")
+                throw PatrolException("takeCameraPhoto(): neither done button nor Google Camera shutter button found")
+            }
+        }
     }
 
     fun pickImageFromGallery(imageUiSelector: UiSelector, imageBySelector: BySelector, subMenuUiSelector: UiSelector?, subMenuBySelector: BySelector?, actionMenuUiSelector: UiSelector?, actionMenuBySelector: BySelector?, instance: Int, timeout: Long? = null) {

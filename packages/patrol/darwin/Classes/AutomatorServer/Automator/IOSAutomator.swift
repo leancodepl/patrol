@@ -886,6 +886,14 @@
       }
     }
 
+    func stopMockLocation() throws {
+      if #available(iOS 16.4, *) {
+        runAction("stopping mock location") {
+          XCUIDevice.shared.location = nil
+        }
+      }
+    }
+
     // MARK: Private stuff
     private func clearAndEnterText(data: String, element: XCUIElement, dx: CGFloat, dy: CGFloat) {
       let currentValue = element.value as? String

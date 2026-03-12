@@ -875,6 +875,16 @@ class MobileAutomator {
     );
   }
 
+  // Stop mock location
+  ///
+  /// Stops the mock location updates that were started by [setMockLocation].
+  Future<void> stopMockLocation() {
+    return platform.action.mobile(
+      android: platform.android.stopMockLocation,
+      ios: platform.ios.stopMockLocation,
+    );
+  }
+
   /// Take and confirm the photo
   ///
   /// This method taps on the camera shutter button to take a photo, then taps

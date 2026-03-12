@@ -474,6 +474,11 @@ abstract class NativeMobileAutomator implements MobileAutomator {
     );
   }
 
+  @override
+  Future<void> stopMockLocation() async {
+    await wrapRequest('stopMockLocation', _client.stopMockLocation);
+  }
+
   /// Tells the AndroidJUnitRunner that PatrolAppService is ready to answer
   /// requests about the structure of Dart tests.
   @override
