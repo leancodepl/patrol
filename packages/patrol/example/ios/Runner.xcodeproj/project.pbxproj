@@ -18,6 +18,7 @@
 		9835C3BA2AEBE2B200AD4576 /* RunnerUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9835C3B92AEBE2B200AD4576 /* RunnerUITests.m */; };
 		C4CD80A2806BBA53CC4676D4 /* Pods_Runner_RunnerUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 77B0713DC63135B5488A774E /* Pods_Runner_RunnerUITests.framework */; };
 		78A318202AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage in Frameworks */ = {isa = PBXBuildFile; productRef = 78A3181F2AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage */; };
+		AB7E2F012D5B8A0000000001 /* FlutterGeneratedPluginSwiftPackage in Frameworks */ = {isa = PBXBuildFile; productRef = AB7E2F012D5B8A0000000002 /* FlutterGeneratedPluginSwiftPackage */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -98,6 +99,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AB7E2F012D5B8A0000000001 /* FlutterGeneratedPluginSwiftPackage in Frameworks */,
 				C4CD80A2806BBA53CC4676D4 /* Pods_Runner_RunnerUITests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -227,6 +229,9 @@
 			productType = "com.apple.product-type.application";
 		};
 		9835C3B62AEBE2B200AD4576 /* RunnerUITests */ = {
+			packageProductDependencies = (
+				AB7E2F012D5B8A0000000002 /* FlutterGeneratedPluginSwiftPackage */,
+			);
 			isa = PBXNativeTarget;
 			buildConfigurationList = 9835C3C52AEBE2B200AD4576 /* Build configuration list for PBXNativeTarget "RunnerUITests" */;
 			buildPhases = (
@@ -608,6 +613,7 @@
 				SDKROOT = iphoneos;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				HEADER_SEARCH_PATHS = "$(SRCROOT)/Flutter/ephemeral/Packages/.packages/patrol/Sources/patrol/include";
 				TEST_TARGET_NAME = Runner;
 			};
 			name = "Debug-prod";
@@ -671,6 +677,7 @@
 				SDKROOT = iphoneos;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				HEADER_SEARCH_PATHS = "$(SRCROOT)/Flutter/ephemeral/Packages/.packages/patrol/Sources/patrol/include";
 				TEST_TARGET_NAME = Runner;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -735,6 +742,7 @@
 				SDKROOT = iphoneos;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				HEADER_SEARCH_PATHS = "$(SRCROOT)/Flutter/ephemeral/Packages/.packages/patrol/Sources/patrol/include";
 				TEST_TARGET_NAME = Runner;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -889,6 +897,7 @@
 				SDKROOT = iphoneos;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				HEADER_SEARCH_PATHS = "$(SRCROOT)/Flutter/ephemeral/Packages/.packages/patrol/Sources/patrol/include";
 				TEST_TARGET_NAME = Runner;
 			};
 			name = "Debug-dev";
@@ -1031,6 +1040,7 @@
 				SDKROOT = iphoneos;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				HEADER_SEARCH_PATHS = "$(SRCROOT)/Flutter/ephemeral/Packages/.packages/patrol/Sources/patrol/include";
 				TEST_TARGET_NAME = Runner;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -1172,6 +1182,7 @@
 				SDKROOT = iphoneos;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				HEADER_SEARCH_PATHS = "$(SRCROOT)/Flutter/ephemeral/Packages/.packages/patrol/Sources/patrol/include";
 				TEST_TARGET_NAME = Runner;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -1467,6 +1478,10 @@
 /* End XCLocalSwiftPackageReference section */
 /* Begin XCSwiftPackageProductDependency section */
 		78A3181F2AECB46A00862997 /* FlutterGeneratedPluginSwiftPackage */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = FlutterGeneratedPluginSwiftPackage;
+		};
+		AB7E2F012D5B8A0000000002 /* FlutterGeneratedPluginSwiftPackage */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = FlutterGeneratedPluginSwiftPackage;
 		};
