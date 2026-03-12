@@ -1,3 +1,5 @@
+import Foundation
+
 /// Simplified objective-c RunDartTestResponse model that we use in PatrolIntegrationTestRunner.h
 @objc public class ObjCRunDartTestResponse: NSObject {
   @objc public dynamic let passed: Bool

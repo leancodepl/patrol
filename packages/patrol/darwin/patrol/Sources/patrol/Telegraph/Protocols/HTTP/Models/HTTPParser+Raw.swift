@@ -6,6 +6,8 @@
 //  Copyright © 2018 Building42. All rights reserved.
 //
 
+import Foundation
+
 #if SWIFT_PACKAGE
 import HTTPParserC
 #endif
