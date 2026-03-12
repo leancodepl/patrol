@@ -734,16 +734,19 @@ class Automator private constructor() {
         tap(shutterButtonUiSelector, shutterButtonBySelector, 0, timeout)
         
         // Try to tap done button, if not visible try Google Camera shutter button fallback
-        if (waitForView(doneButtonBySelector, 0, timeout) != null) {
+        val doneButton = waitForView(doneButtonBySelector, 0, timeout)
+        if (doneButton != null) {
             Logger.d("Done button found, tapping it")
-            tap(doneButtonUiSelector, doneButtonBySelector, 0, timeout)
+            doneButton.click()
+            delay()
         } else {
             Logger.d("Done button not visible, trying fallback: Google Camera shutter button")
             val fallbackBySelector = By.res("com.google.android.GoogleCamera:id/shutter_button")
-            val fallbackUiSelector = UiSelector().resourceId("com.google.android.GoogleCamera:id/shutter_button")
-            if (waitForView(fallbackBySelector, 0, timeout) != null) {
+            val fallbackButton = waitForView(fallbackBySelector, 0, timeout)
+            if (fallbackButton != null) {
                 Logger.d("Fallback button found, tapping it")
-                tap(fallbackUiSelector, fallbackBySelector, 0, timeout)
+                fallbackButton.click()
+                delay()
             } else {
                 Logger.e("Neither done button nor fallback button found")
                 throw PatrolException("takeCameraPhoto(): neither done button nor Google Camera shutter button found")
