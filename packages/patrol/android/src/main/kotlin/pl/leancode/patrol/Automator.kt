@@ -732,7 +732,7 @@ class Automator private constructor() {
             allowPermissionWhileUsingApp()
         }
         tap(shutterButtonUiSelector, shutterButtonBySelector, 0, timeout)
-        
+
         // Try to tap done button, if not visible try Google Camera shutter button fallback
         val doneButton = waitForView(doneButtonBySelector, 0, timeout)
         if (doneButton != null) {
