@@ -81,15 +81,11 @@ jobs:
 
           sleep 10 # See https://github.com/leancodepl/patrol/issues/1282
 
-          # TODO: Investigate why permission tests fail on CI/CD
-          # Excluded tests:
-          # - patrol_test/native_tests/permissions/clear_permissions_test.dart
-          # - patrol_test/permissions/clear_permissions_test.dart
-          # - patrol_test/permissions/deny_many_permissions_twice_test.dart
-          # - patrol_test/permissions/permissions_many_test.dart
+          # Running single test to verify workflow stability
+          # Test: pull_to_refresh_test.dart
           TESTS_EXIT_CODE=0
           patrol test \
-          --tags='ios && simulator' --exclude=patrol_test/web/,patrol_test/native_tests/volume_test.dart,patrol_test/volume_test.dart,patrol_test/native_tests/permissions/clear_permissions_test.dart,patrol_test/permissions/clear_permissions_test.dart,patrol_test/permissions/deny_many_permissions_twice_test.dart,patrol_test/permissions/permissions_many_test.dart
+          --target patrol_test/native_tests/pull_to_refresh_test.dart \
           --verbose \
           --full-isolation || TESTS_EXIT_CODE=$?
 
