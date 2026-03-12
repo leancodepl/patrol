@@ -1,3 +1,13 @@
+## Unreleased
+
+- Fix `tapOnNotification` on iOS physical devices to Open button when tapping on notification. (#2972)
+- Fix `takeCameraPhoto` do not accept location permission dialog on Pixel physical devices. (#2972)
+- Reflect failed tests in Playwright report. (#2970)
+
+## 4.3.0
+
+- Fix WASM compatibility by migrating conditional imports from `dart.library.html` to `dart.library.js_interop`. (#2960)
+
 ## 4.2.0
 
 - Improve setup error reporting for Patrol Web failures. (#2928)
