@@ -17,6 +17,7 @@ TESTMU_ANDROID_DEVICES="${TESTMU_ANDROID_DEVICES:-[\"Pixel 7 Pro-13\"]}"
 TESTMU_SKIP_BUILD="${TESTMU_SKIP_BUILD:-0}"
 TESTMU_IDLE_TIMEOUT="${TESTMU_IDLE_TIMEOUT:-150}"
 TESTMU_QUEUE_TIMEOUT="${TESTMU_QUEUE_TIMEOUT:-10800}"
+TESTMU_GEOLOCATION="${TESTMU_GEOLOCATION:-}"
 
 # Capture all arguments because they'll be consumed by getopt
 original_args=("$@")
@@ -110,6 +111,12 @@ echo 1>&2 "Uploaded test instrumentation app, app_id: $test_id"
 # https://www.lambdatest.com/support/docs/getting-started-with-espresso-testing/#step-3-executing-the-test
 BASIC_AUTH_TOKEN="$(echo -n "$TESTMU_CREDENTIALS" | base64)"
 
+GEOLOCATION_FIELD=""
+if [ -n "$TESTMU_GEOLOCATION" ]; then
+	echo 1>&2 "GeoLocation: $TESTMU_GEOLOCATION"
+	GEOLOCATION_FIELD="\"geoLocation\": \"$TESTMU_GEOLOCATION\","
+fi
+
 printf 1>&2 "Will schedule test execution\n\n"
 if ! run_response="$(
 	curl --fail-with-body \
@@ -124,6 +131,7 @@ if ! run_response="$(
     "device": $TESTMU_ANDROID_DEVICES,
     "queueTimeout": $TESTMU_QUEUE_TIMEOUT,
     "IdleTimeout": $TESTMU_IDLE_TIMEOUT,
+    $GEOLOCATION_FIELD
     "deviceLog": true,
     "network": false
 }
