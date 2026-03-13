@@ -279,11 +279,18 @@ class AutomatorServer(private val automation: Automator) : MobileAutomatorServer
     override fun pickImageFromGallery(request: Contracts.AndroidPickImageFromGalleryRequest) {
         val apiLvl = getOsVersion().osVersion
 
-        val androidImageSelector = request.imageSelector ?: AndroidSelector(
-            resourceName = if (apiLvl >= 36) null else if (apiLvl >= 34) "com.google.android.providers.media.module:id/icon_thumbnail" else "com.google.android.documentsui:id/icon_thumb",
-            contentDescriptionContains = if (apiLvl >= 36) "Photo taken on" else null,
-            instance = request.imageIndex ?: 0
-        )
+        val androidImageSelector = request.imageSelector ?: run {
+            val (resourceName, contentDescriptionContains) = when {
+                apiLvl >= 36 -> null to AutomatorConstants.PHOTO_TAKEN_ON_CONTENT_DESCRIPTION
+                apiLvl >= 34 -> "com.google.android.providers.media.module:id/icon_thumbnail" to null
+                else -> "com.google.android.documentsui:id/icon_thumb" to null
+            }
+            AndroidSelector(
+                resourceName = resourceName,
+                contentDescriptionContains = contentDescriptionContains,
+                instance = request.imageIndex ?: 0
+            )
+        }
 
         val androidSubMenuSelector = if (apiLvl < 34) {
             AndroidSelector(
@@ -322,11 +329,18 @@ class AutomatorServer(private val automation: Automator) : MobileAutomatorServer
     override fun pickMultipleImagesFromGallery(request: Contracts.AndroidPickMultipleImagesFromGalleryRequest) {
         val apiLvl = getOsVersion().osVersion
 
-        val androidImageSelector = request.imageSelector ?: AndroidSelector(
-            resourceName = if (apiLvl >= 36) null else if (apiLvl >= 34) "com.google.android.providers.media.module:id/icon_thumbnail" else "com.google.android.documentsui:id/icon_thumb",
-            contentDescriptionContains = if (apiLvl >= 36) "Photo taken on" else null,
-            instance = 0
-        )
+        val androidImageSelector = request.imageSelector ?: run {
+            val (resourceName, contentDescriptionContains) = when {
+                apiLvl >= 36 -> null to AutomatorConstants.PHOTO_TAKEN_ON_CONTENT_DESCRIPTION
+                apiLvl >= 34 -> "com.google.android.providers.media.module:id/icon_thumbnail" to null
+                else -> "com.google.android.documentsui:id/icon_thumb" to null
+            }
+            AndroidSelector(
+                resourceName = resourceName,
+                contentDescriptionContains = contentDescriptionContains,
+                instance = 0
+            )
+        }
 
         val androidSubMenuSelector = if (apiLvl < 34) {
             AndroidSelector(
@@ -336,11 +350,18 @@ class AutomatorServer(private val automation: Automator) : MobileAutomatorServer
         } else {
             null
         }
-        val androidActionMenuSelector = AndroidSelector(
-            resourceName = if (apiLvl >= 36) null else if (apiLvl >= 34) "com.google.android.providers.media.module:id/button_add" else "com.google.android.documentsui:id/action_menu_select",
-            text = if (apiLvl >= 36) "Done" else null,
-            instance = 0
-        )
+        val androidActionMenuSelector = run {
+            val (resourceName, text) = when {
+                apiLvl >= 36 -> null to AutomatorConstants.GALLERY_DONE_BUTTON_TEXT
+                apiLvl >= 34 -> "com.google.android.providers.media.module:id/button_add" to null
+                else -> "com.google.android.documentsui:id/action_menu_select" to null
+            }
+            AndroidSelector(
+                resourceName = resourceName,
+                text = text,
+                instance = 0
+            )
+        }
 
         // Remove instance before creating bySelector, as it's not supported
         val androidImageSelector2 = androidImageSelector.copy(instance = null)

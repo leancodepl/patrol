@@ -1,0 +1,70 @@
+# Android Kotlin Conventions
+
+## Constants Management
+
+### AutomatorConstants.kt
+
+All constants used by the Android automation code should be defined in `AutomatorConstants.kt`.
+
+**When to add a constant to AutomatorConstants.kt:**
+- String literals that are used in automation logic (resource IDs, content descriptions, package names, etc.)
+- Timeout values used across multiple methods
+- Default values for automation behavior
+- Any hardcoded value that might need to be referenced in multiple places
+
+**DO NOT add constants to AutomatorConstants.kt for:**
+- Values that are only used once in a single method and unlikely to be reused
+- Configuration values that should come from external sources
+- Test-specific constants (those belong in test files)
+
+### Format for Constants
+
+When adding a constant to `AutomatorConstants.kt`:
+
+1. **Add KDoc documentation** explaining:
+   - What the constant represents
+   - When/where it is used
+   - Any API level or platform-specific context
+
+2. **Use descriptive names** following Kotlin naming conventions:
+   - ALL_CAPS_WITH_UNDERSCORES for const values
+   - Clear, self-documenting names
+
+3. **Group related constants** together with blank lines between groups
+
+### Example
+
+```kotlin
+/**
+ * Content description pattern for photo items in gallery on Android API 36+
+ * Used to identify images by their content description when resource IDs are not available
+ */
+const val PHOTO_TAKEN_ON_CONTENT_DESCRIPTION = "Photo taken on"
+```
+
+### Usage in Code
+
+When using constants from AutomatorConstants:
+
+```kotlin
+// Good: Reference constant from AutomatorConstants
+val contentDesc = AutomatorConstants.PHOTO_TAKEN_ON_CONTENT_DESCRIPTION
+
+// Bad: Hardcode the string value
+val contentDesc = "Photo taken on"
+```
+
+### Refactoring Magic Strings
+
+When you encounter magic strings or hardcoded values in the automation code:
+
+1. Check if a similar constant already exists in `AutomatorConstants.kt`
+2. If not, extract it to a new constant with proper documentation
+3. Replace all occurrences with the constant reference
+4. Consider if the constant might be useful elsewhere
+
+This improves:
+- Code maintainability
+- Reusability
+- Documentation
+- Refactoring safety
