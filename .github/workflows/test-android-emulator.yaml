@@ -36,7 +36,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ["3.32.x"]
+        flutter-version: ["3.38.x"]
         flutter-channel: ["stable"]
         api-level: [36, 35, 34, 33, 32]
 
