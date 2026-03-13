@@ -18,7 +18,7 @@ This document describes all GitHub Actions workflows used in the Patrol project.
 | Workflow name | Workflow file | Schedule? | Device name | iOS version | Flutter version | Tags | Description |
 |--------------|--------------|-----------|-------------|-------------|----------------|------|-------------|
 | test ios device | `test-ios-device.yaml` | Daily at 21:30 | iPhone 14 Pro | 16.6 | Flutter 3.38.x (stable) | `ios && physical_device` | Runs E2E tests on Firebase Test Lab physical devices. Excludes `native_tests/`, `overflow_test.dart`, and specific permission tests (`clear_permissions_test.dart`, `deny_many_permissions_test.dart`) because camera permissions are not cleared between tests on physical devices. Uses older iOS version to enable video recording in Test Lab. |
-| test ios simulator | `test-ios-simulator.yaml` | Monthly on 1st | iPhone 16 | 26.0 | Flutter 3.38.x (stable) | `ios && simulator` | Runs E2E tests on iOS simulator. Excludes `web/` directory, `volume_test.dart`, `service_bluetooth_test.dart`, and permission tests (`clear_permissions_test.dart`, `deny_many_permissions_twice_test.dart`, `permissions_many_test.dart`) - TODO: investigate why permission tests fail on CI/CD. Records video and logs (TODO: videos need to be fixed). Uses xcresultparser to generate JUnit reports and converts them to CTRF format for test reporting. Timeout: 100 minutes. Runs with `--full-isolation` flag. |
+| test ios simulator | `test-ios-simulator.yaml` | PR only | iPhone 16 | 26.0 | Flutter 3.38.x (stable) | `ios && simulator` | Runs E2E tests on iOS simulator. Triggers on PR for changes to packages, e2e_app, and schema (excludes docs). Excludes `web/` directory, `volume_test.dart`, `service_bluetooth_test.dart`, and permission tests (`clear_permissions_test.dart`, `deny_many_permissions_twice_test.dart`, `permissions_many_test.dart`) - TODO: investigate why permission tests fail on CI/CD. Records video and logs (TODO: videos need to be fixed). Uses xcresultparser to generate JUnit reports and converts them to CTRF format for test reporting. Timeout: 100 minutes. Runs with `--full-isolation` flag. |
 | test ios simulator webview | `test-ios-simulator-webview.yaml` | Monthly on 1st | iPhone 17 Pro | 26.0 | Flutter 3.38.x (stable) | `webview && ios` | Runs webview-specific E2E tests on iOS simulator. Excludes `web_example_test.dart` and `volume_test.dart`. Uses xcresultparser to generate JUnit reports and converts them to CTRF format for test reporting. |
 | test locales on ios device | `test-ios-locales.yaml` | No | iPhone 14 Pro | 16.6 | Flutter 3.38.x (stable) | `locale_testing_ios` | Tests locale support on Firebase Test Lab for English, French, German (de_DE), and Polish locales. Excludes `web_example_test.dart`. Currently disabled for PR triggers. |
 
@@ -92,7 +92,7 @@ These workflows verify the user has write access before running. If you don't ha
 - **Every 12 hours**: `test-android-device.yaml`, `test-android-emulator.yaml`, `test-android-locales.yaml`, `test-macos.yaml`
 - **Daily at 21:30 UTC**: `test-ios-device.yaml`
 - **Daily at 23:00 UTC**: `test-android-emulator-webview.yaml`
-- **Monthly (1st day)**: `test-ios-simulator.yaml`, `test-ios-simulator-webview.yaml`
+- **Monthly (1st day)**: `test-ios-simulator-webview.yaml`
 - **Hourly**: `close-inactive-issues.yaml`, `lock-closed-issues.yaml`
 
 ## Notes
