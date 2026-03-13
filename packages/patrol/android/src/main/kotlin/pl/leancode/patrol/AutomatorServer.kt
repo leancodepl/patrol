@@ -280,7 +280,8 @@ class AutomatorServer(private val automation: Automator) : MobileAutomatorServer
         val apiLvl = getOsVersion().osVersion
 
         val androidImageSelector = request.imageSelector ?: AndroidSelector(
-            resourceName = if (apiLvl >= 34) "com.google.android.providers.media.module:id/icon_thumbnail" else "com.google.android.documentsui:id/icon_thumb",
+            resourceName = if (apiLvl >= 36) null else if (apiLvl >= 34) "com.google.android.providers.media.module:id/icon_thumbnail" else "com.google.android.documentsui:id/icon_thumb",
+            contentDescriptionContains = if (apiLvl >= 36) "Photo taken on" else null,
             instance = request.imageIndex ?: 0
         )
 
@@ -322,7 +323,8 @@ class AutomatorServer(private val automation: Automator) : MobileAutomatorServer
         val apiLvl = getOsVersion().osVersion
 
         val androidImageSelector = request.imageSelector ?: AndroidSelector(
-            resourceName = if (apiLvl >= 34) "com.google.android.providers.media.module:id/icon_thumbnail" else "com.google.android.documentsui:id/icon_thumb",
+            resourceName = if (apiLvl >= 36) null else if (apiLvl >= 34) "com.google.android.providers.media.module:id/icon_thumbnail" else "com.google.android.documentsui:id/icon_thumb",
+            contentDescriptionContains = if (apiLvl >= 36) "Photo taken on" else null,
             instance = 0
         )
 
@@ -335,7 +337,8 @@ class AutomatorServer(private val automation: Automator) : MobileAutomatorServer
             null
         }
         val androidActionMenuSelector = AndroidSelector(
-            resourceName = if (apiLvl >= 34) "com.google.android.providers.media.module:id/button_add" else "com.google.android.documentsui:id/action_menu_select",
+            resourceName = if (apiLvl >= 36) null else if (apiLvl >= 34) "com.google.android.providers.media.module:id/button_add" else "com.google.android.documentsui:id/action_menu_select",
+            text = if (apiLvl >= 36) "Done" else null,
             instance = 0
         )
 
