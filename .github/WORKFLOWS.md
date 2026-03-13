@@ -6,28 +6,28 @@ This document describes all GitHub Actions workflows used in the Patrol project.
 
 ### Android Testing
 
-| Workflow name | Workflow file | Runs on | Flutter version | Tags | Description |
-|--------------|--------------|---------|----------------|------|-------------|
-| test android device | `test-android-device.yaml` | Schedule (every 12h), manual | Flutter 3.38.x (stable) | `android && physical_device` | Runs E2E tests on Firebase Test Lab physical devices (Pixel 8 Pro - API 35). Excludes `native_tests/` to reduce test duration. |
-| test android emulator | `test-android-emulator.yaml` | PR, schedule (every 12h), manual | Flutter 3.38.x (stable) | `android && emulator` | Runs E2E tests on emulator.wtf emulators (Pixel7, Tablet10, NexusLowRes) across API levels 31-35. Excludes `volume_test.dart` due to emulator instability issues. |
-| test android emulator webview | `test-android-emulator-webview.yaml` | PR, schedule (daily at 23:00), manual | Flutter 3.38.x (stable) | `webview && android` | Runs webview-specific E2E tests on emulator.wtf. |
-| test locales on android device | `test-android-locales.yaml` | Schedule (every 12h), manual | Flutter 3.38.x (stable) | `locale_testing_android` | Tests locale support on Firebase Test Lab for English, French, German, and Polish locales on API 34. Excludes `native_tests/` directory. |
+| Workflow name | Workflow file | Schedule? | Device name | API level | Flutter version | Tags | Description |
+|--------------|--------------|-----------|-------------|-----------|----------------|------|-------------|
+| test android device | `test-android-device.yaml` | Every 12h | Pixel 8 Pro (shiba) | 35 | Flutter 3.38.x (stable) | `android && physical_device` | Runs E2E tests on Firebase Test Lab physical devices. Excludes `native_tests/` to reduce test duration. |
+| test android emulator | `test-android-emulator.yaml` | PR, every 12h | Pixel7 | 36, 35, 34, 33, 32 | Flutter 3.38.x (stable) | `android && emulator` | Runs E2E tests on emulator.wtf emulators across multiple API levels. Excludes `volume_test.dart` due to emulator instability issues. |
+| test android emulator webview | `test-android-emulator-webview.yaml` | PR, daily at 23:00 | Pixel7 | 31 | Flutter 3.38.x (stable) | `webview && android` | Runs webview-specific E2E tests on emulator.wtf. |
+| test locales on android device | `test-android-locales.yaml` | Every 12h | MediumPhone.arm | 34 | Flutter 3.38.x (stable) | `locale_testing_android` | Tests locale support on Firebase Test Lab for English, French, German, and Polish locales. Excludes `native_tests/` directory. |
 
 ### iOS Testing
 
-| Workflow name | Workflow file | Runs on | Flutter version | Tags | Description |
-|--------------|--------------|---------|----------------|------|-------------|
-| test ios device | `test-ios-device.yaml` | Schedule (daily at 21:30), manual | Flutter 3.38.x (stable) | `ios && physical_device` | Runs E2E tests on Firebase Test Lab physical devices (iPhone 14 Pro, iOS 16.6). Excludes `native_tests/`, `overflow_test.dart`, and specific permission tests (`clear_permissions_test.dart`, `deny_many_permissions_test.dart`) because camera permissions are not cleared between tests on physical devices. Uses older iOS version to enable video recording in Test Lab. |
-| test ios simulator | `test-ios-simulator.yaml` | Schedule (monthly on 1st), manual | Flutter 3.38.x (stable) | `ios && simulator` | Runs E2E tests on iOS simulator (iPhone 16) on iOS 26.0. Excludes `web/` directory, `volume_test.dart`, `service_bluetooth_test.dart`, and permission tests (`clear_permissions_test.dart`, `deny_many_permissions_twice_test.dart`, `permissions_many_test.dart`) - TODO: investigate why permission tests fail on CI/CD. Records video and logs (TODO: videos need to be fixed). Uses xcresultparser to generate JUnit reports and converts them to CTRF format for test reporting. Timeout: 100 minutes. Runs with `--full-isolation` flag. |
-| test ios simulator webview | `test-ios-simulator-webview.yaml` | Schedule (monthly on 1st), manual | Flutter 3.38.x (stable) | `webview && ios` | Runs webview-specific E2E tests on iOS 26.0 simulator (iPhone 17 Pro). Excludes `web_example_test.dart` and `volume_test.dart`. Uses xcresultparser to generate JUnit reports and converts them to CTRF format for test reporting. |
-| test locales on ios device | `test-ios-locales.yaml` | Manual only | Flutter 3.38.x (stable) | `locale_testing_ios` | Tests locale support on Firebase Test Lab for English, French, German (de_DE), and Polish locales (iPhone 14 Pro, iOS 16.6). Excludes `web_example_test.dart`. Currently disabled for PR triggers. |
+| Workflow name | Workflow file | Schedule? | Device name | iOS version | Flutter version | Tags | Description |
+|--------------|--------------|-----------|-------------|-------------|----------------|------|-------------|
+| test ios device | `test-ios-device.yaml` | Daily at 21:30 | iPhone 14 Pro | 16.6 | Flutter 3.38.x (stable) | `ios && physical_device` | Runs E2E tests on Firebase Test Lab physical devices. Excludes `native_tests/`, `overflow_test.dart`, and specific permission tests (`clear_permissions_test.dart`, `deny_many_permissions_test.dart`) because camera permissions are not cleared between tests on physical devices. Uses older iOS version to enable video recording in Test Lab. |
+| test ios simulator | `test-ios-simulator.yaml` | Monthly on 1st | iPhone 16 | 26.0 | Flutter 3.38.x (stable) | `ios && simulator` | Runs E2E tests on iOS simulator. Excludes `web/` directory, `volume_test.dart`, `service_bluetooth_test.dart`, and permission tests (`clear_permissions_test.dart`, `deny_many_permissions_twice_test.dart`, `permissions_many_test.dart`) - TODO: investigate why permission tests fail on CI/CD. Records video and logs (TODO: videos need to be fixed). Uses xcresultparser to generate JUnit reports and converts them to CTRF format for test reporting. Timeout: 100 minutes. Runs with `--full-isolation` flag. |
+| test ios simulator webview | `test-ios-simulator-webview.yaml` | Monthly on 1st | iPhone 17 Pro | 26.0 | Flutter 3.38.x (stable) | `webview && ios` | Runs webview-specific E2E tests on iOS simulator. Excludes `web_example_test.dart` and `volume_test.dart`. Uses xcresultparser to generate JUnit reports and converts them to CTRF format for test reporting. |
+| test locales on ios device | `test-ios-locales.yaml` | No | iPhone 14 Pro | 16.6 | Flutter 3.38.x (stable) | `locale_testing_ios` | Tests locale support on Firebase Test Lab for English, French, German (de_DE), and Polish locales. Excludes `web_example_test.dart`. Currently disabled for PR triggers. |
 
 ### Other Platform Testing
 
-| Workflow name | Workflow file | Runs on | Flutter version | Tags | Description |
-|--------------|--------------|---------|----------------|------|-------------|
-| test web | `test-web.yaml` | PR (on web changes), manual | Flutter 3.38.x (stable) | — | Runs web-specific E2E tests on Chrome in headless mode. Uses target file instead of tags. |
-| test macos | `test-macos.yaml` | Schedule (every 12h), manual | Flutter 3.38.x (stable) | — | Runs E2E tests on macOS desktop platform. Runs tests from `patrol_test/macos` directory. Uses xcresulttool v1.7.1 for test reporting. |
+| Workflow name | Workflow file | Schedule? | Flutter version | Tags | Description |
+|--------------|--------------|-----------|----------------|------|-------------|
+| test web | `test-web.yaml` | No | Flutter 3.38.x (stable) | — | Runs web-specific E2E tests on Chrome in headless mode. Triggers on PR for web-related changes. Uses target file instead of tags. |
+| test macos | `test-macos.yaml` | Every 12h | Flutter 3.38.x (stable) | — | Runs E2E tests on macOS desktop platform. Runs tests from `patrol_test/macos` directory. Uses xcresulttool v1.7.1 for test reporting. |
 
 ## Package Preparation (CI) Workflows
 
@@ -39,7 +39,7 @@ This document describes all GitHub Actions workflows used in the Patrol project.
 | patrol_log prepare | `patrol_log-prepare.yaml` | PR (on patrol_log changes), manual | Flutter 3.38.x (stable) | Runs CI checks for `patrol_log` package: analyzer, formatter, and pub publish dry-run. |
 | patrol_devtools_extension prepare | `patrol_devtools_extension-prepare.yaml` | PR (on devtools extension changes), manual | Flutter 3.38.x (stable) | Runs CI checks for DevTools extension: tests, analyzer, formatter, and builds extension. |
 | adb prepare | `adb-prepare.yaml` | PR (on adb package changes), manual | Dart 3.8 | Runs CI checks for `adb` package: tests, analyzer, formatter, and pub publish dry-run. |
-| prepare e2e_app | `prepare-e2e_app.yaml` | PR (on all changes except docs), manual | Flutter 3.38.x (stable) | Runs CI checks for E2E test app: Android builds (Windows/Linux) with ktlint, iOS builds with swift-format/clang-format and unit tests, Flutter tests, analyzer, and formatter. |
+| prepare e2e_app | `prepare-e2e_app.yaml` | PR (on all changes except docs), manual | Flutter 3.38.x (Windows), Flutter 3.32.x (Linux/iOS) | Runs CI checks for E2E test app: Android builds (Windows/Linux) with ktlint, iOS builds with swift-format/clang-format and unit tests, Flutter tests, analyzer, and formatter. |
 | patrol_gen prepare | `patrol_gen-prepare.yaml` | PR (on patrol_gen changes), manual | Dart 3.8 | Runs CI checks for patrol contracts generator: analyzer and formatter. |
 
 ## Publishing Workflows
@@ -65,7 +65,6 @@ These workflows verify the user has write access before running. If you don't ha
 | Workflow name | Workflow file | Runs on | Description |
 |--------------|--------------|---------|-------------|
 | patrol check semver | `patrol-check-semver.yaml` | PR (on patrol package changes) | Verifies semantic versioning compliance for `patrol` package changes. |
-| patrol_cli check semver | `patrol_cli-check-semver.yaml` | PR (on patrol_cli changes) | Verifies semantic versioning compliance for `patrol_cli` package changes. |
 | patrol_finders check semver | `patrol_finders-check-semver.yaml` | PR (on patrol_finders changes) | Verifies semantic versioning compliance for `patrol_finders` package changes. |
 | patrol_log check semver | `patrol_log-check-semver.yaml` | PR (on patrol_log changes) | Verifies semantic versioning compliance for `patrol_log` package changes. |
 
@@ -84,6 +83,7 @@ These workflows verify the user has write access before running. If you don't ha
 | send slack message | `send-slack-message.yaml` | Reusable workflow | Reusable workflow for sending test results notifications to Slack. Called by test workflows. |
 | label pull request | `label_pull_request.yaml` | All PRs | Automatically labels PRs based on changed files. |
 | Add prioritized issues to project | `add-to-project.yaml` | Issue labeled (P0, P1, P2) | Automatically adds prioritized issues to GitHub project board. |
+| Potential Duplicates | `potential-duplicates.yaml` | Issue opened/edited | Automatically detects and labels potential duplicate issues using similarity threshold. |
 | close inactive issues | `close-inactive-issues.yaml` | Schedule (hourly), issue comment | Closes issues labeled "waiting for response" after 7 days of inactivity. |
 | lock closed issues | `lock-closed-issues.yaml` | Schedule (hourly) | Locks closed issues after 7 days of inactivity. |
 
