@@ -1,11 +1,9 @@
 // swift-tools-version: 5.9
-// The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import Foundation
 import PackageDescription
 
 // Resolve the Xcode developer directory to locate platform-specific frameworks (e.g., XCTest).
-// This is needed because SPM's unsafeFlags don't support Xcode build setting variables like $(PLATFORM_DIR).
 let xcodeDevDir: String = {
     let task = Process()
     task.executableURL = URL(fileURLWithPath: "/usr/bin/xcode-select")
