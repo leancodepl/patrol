@@ -32,7 +32,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ['3.32.x']
+        flutter-version: ['3.38.x']
         flutter-channel: ['stable']
         device_model: ['iphone14pro']
         locale: ['en', 'fr', 'de_DE', 'pl'] 

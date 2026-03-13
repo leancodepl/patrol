@@ -2,8 +2,19 @@ name: test ios simulator
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: "0 0 1 * *" #run this workflow once every month
+  pull_request:
+    paths:
+      - 'packages/patrol/**'
+      - 'packages/patrol_finders/**'
+      - 'packages/patrol_log/**'
+      - 'packages/patrol_cli/**'
+      - 'packages/adb/**'
+      - 'packages/patrol_gen/**'
+      - 'dev/e2e_app/**'
+      - 'schema.dart'
+      - 'gen_from_schema'
+      - '!**.md'
+      - '!**.mdx'
 
 
 concurrency:
@@ -24,7 +35,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ["3.32.x"]
+        flutter-version: ["3.38.x"]
         flutter-channel: ["stable"]
         device_model:
           [ iPhone 16]
