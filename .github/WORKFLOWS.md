@@ -6,7 +6,7 @@ This document describes all GitHub Actions workflows used in the Patrol project.
 
 ### Android Testing
 
-| Workflow name | Workflow file | Schedule? | Device name | API level | Flutter version | Tags | Description |
+| Workflow name | Workflow file | Triggered | Device name | API level | Flutter version | Tags | Description |
 |--------------|--------------|-----------|-------------|-----------|----------------|------|-------------|
 | test android device | `test-android-device.yaml` | Every 12h | Pixel 8 Pro (shiba) | 35 | Flutter 3.38.x (stable) | `android && physical_device` | Runs E2E tests on Firebase Test Lab physical devices. Excludes `native_tests/` to reduce test duration. |
 | test android emulator | `test-android-emulator.yaml` | PR, every 12h | Pixel7 | 36, 35, 34, 33, 32 | Flutter 3.38.x (stable) | `android && emulator` | Runs E2E tests on emulator.wtf emulators across multiple API levels. Excludes `volume_test.dart` due to emulator instability issues. |
@@ -15,7 +15,7 @@ This document describes all GitHub Actions workflows used in the Patrol project.
 
 ### iOS Testing
 
-| Workflow name | Workflow file | Schedule? | Device name | iOS version | Flutter version | Tags | Description |
+| Workflow name | Workflow file | Triggered | Device name | iOS version | Flutter version | Tags | Description |
 |--------------|--------------|-----------|-------------|-------------|----------------|------|-------------|
 | test ios device | `test-ios-device.yaml` | Daily at 21:30 | iPhone 14 Pro | 16.6 | Flutter 3.38.x (stable) | `ios && physical_device` | Runs E2E tests on Firebase Test Lab physical devices. Excludes `native_tests/`, `overflow_test.dart`, and specific permission tests (`clear_permissions_test.dart`, `deny_many_permissions_test.dart`) because camera permissions are not cleared between tests on physical devices. Uses older iOS version to enable video recording in Test Lab. |
 | test ios simulator | `test-ios-simulator.yaml` | PR only | iPhone 16 | 26.0 | Flutter 3.38.x (stable) | `ios && simulator` | Runs E2E tests on iOS simulator. Triggers on PR for changes to packages, e2e_app, and schema (excludes docs). Excludes `web/` directory, `volume_test.dart`, `service_bluetooth_test.dart`, and permission tests (`clear_permissions_test.dart`, `deny_many_permissions_twice_test.dart`, `permissions_many_test.dart`) - TODO: investigate why permission tests fail on CI/CD. Records video and logs (TODO: videos need to be fixed). Uses xcresultparser to generate JUnit reports and converts them to CTRF format for test reporting. Timeout: 100 minutes. Runs with `--full-isolation` flag. |
@@ -24,14 +24,14 @@ This document describes all GitHub Actions workflows used in the Patrol project.
 
 ### Other Platform Testing
 
-| Workflow name | Workflow file | Schedule? | Flutter version | Tags | Description |
+| Workflow name | Workflow file | Triggered | Flutter version | Tags | Description |
 |--------------|--------------|-----------|----------------|------|-------------|
 | test web | `test-web.yaml` | No | Flutter 3.38.x (stable) | — | Runs web-specific E2E tests on Chrome in headless mode. Triggers on PR for web-related changes. Uses target file instead of tags. |
 | test macos | `test-macos.yaml` | Every 12h | Flutter 3.38.x (stable) | — | Runs E2E tests on macOS desktop platform. Runs tests from `patrol_test/macos` directory. Uses xcresulttool v1.7.1 for test reporting. |
 
 ## Package Preparation (CI) Workflows
 
-| Workflow name | Workflow file | Runs on | Dart/Flutter version | Description |
+| Workflow name | Workflow file | Triggered | Dart/Flutter version | Description |
 |--------------|--------------|---------|---------------------|-------------|
 | patrol prepare | `patrol-prepare.yaml` | PR (on patrol package changes), manual | Flutter 3.38.x (stable) | Runs CI checks for the `patrol` package: Android builds (Windows/Linux), Darwin code formatting (swift-format, clang-format), Flutter tests, analyzer, formatter, and schema regeneration. |
 | patrol_cli prepare | `patrol_cli-prepare.yaml` | PR (on patrol_cli changes), manual | Flutter 3.38.x (stable) | Runs CI checks for `patrol_cli` package on Ubuntu and Windows: builds executable, runs tests, analyzer, formatter, and pub publish dry-run. |
@@ -44,7 +44,7 @@ This document describes all GitHub Actions workflows used in the Patrol project.
 
 ## Publishing Workflows
 
-| Workflow name | Workflow file | Runs on | Description |
+| Workflow name | Workflow file | Triggered | Description |
 |--------------|--------------|---------|-------------|
 | patrol publish | `patrol-publish.yaml` | Tag push (`patrol-v*`) | Publishes `patrol` package to pub.dev. Builds DevTools extension before publishing. Sends Slack notification for releases. |
 | patrol_cli publish | `patrol_cli-publish.yaml` | Tag push (`patrol_cli-v*`) | Publishes `patrol_cli` package to pub.dev. Verifies version consistency. Sends Slack notification for releases. |
@@ -77,7 +77,7 @@ These workflows verify the user has write access before running. If you don't ha
 
 ## Utility Workflows
 
-| Workflow name | Workflow file | Runs on | Description |
+| Workflow name | Workflow file | Triggered | Description |
 |--------------|--------------|---------|-------------|
 | Verify Version Compatibility | `verify_compatibility.yml` | PR/push (on compatibility checker changes) | Runs compatibility tests and verifies compatibility tables are up-to-date. |
 | send slack message | `send-slack-message.yaml` | Reusable workflow | Reusable workflow for sending test results notifications to Slack. Called by test workflows. |
