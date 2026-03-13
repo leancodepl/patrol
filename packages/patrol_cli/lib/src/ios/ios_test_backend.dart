@@ -190,28 +190,34 @@ class IOSTestBackend {
       );
 
       final PatrolLogReaderInterface patrolLogReader;
-      
+
       if (videoRecordingManager != null) {
-        patrolLogReader = IOSPatrolLogReaderWithVideo(
-          listenStdOut: processLogs.listenStdOut,
-          scope: scope,
-          log: _logger.info,
-          reportPath: reportPath,
-          showFlutterLogs: showFlutterLogs,
-          hideTestSteps: hideTestSteps,
-          clearTestSteps: clearTestSteps,
-          videoRecordingManager: videoRecordingManager,
-        )..listen()..startTimer();
+        patrolLogReader =
+            IOSPatrolLogReaderWithVideo(
+                listenStdOut: processLogs.listenStdOut,
+                scope: scope,
+                log: _logger.info,
+                reportPath: reportPath,
+                showFlutterLogs: showFlutterLogs,
+                hideTestSteps: hideTestSteps,
+                clearTestSteps: clearTestSteps,
+                videoRecordingManager: videoRecordingManager,
+              )
+              ..listen()
+              ..startTimer();
       } else {
-        patrolLogReader = IOSStandardPatrolLogReaderWrapper(
-          listenStdOut: processLogs.listenStdOut,
-          scope: scope,
-          log: _logger.info,
-          reportPath: reportPath,
-          showFlutterLogs: showFlutterLogs,
-          hideTestSteps: hideTestSteps,
-          clearTestSteps: clearTestSteps,
-        )..listen()..startTimer();
+        patrolLogReader =
+            IOSStandardPatrolLogReaderWrapper(
+                listenStdOut: processLogs.listenStdOut,
+                scope: scope,
+                log: _logger.info,
+                reportPath: reportPath,
+                showFlutterLogs: showFlutterLogs,
+                hideTestSteps: hideTestSteps,
+                clearTestSteps: clearTestSteps,
+              )
+              ..listen()
+              ..startTimer();
       }
 
       final subject = '${options.description} on ${device.description}';
