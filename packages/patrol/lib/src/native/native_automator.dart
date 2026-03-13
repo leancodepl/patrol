@@ -236,7 +236,7 @@ class NativeAutomator {
   ///
   /// Notification shade has to be opened first with [openNotifications].
   ///
-  /// On iOS, only [Selector.textContains] is taken into account.
+  /// On iOS, [Selector.textContains] and [Selector.text] are taken into account.
   ///
   /// See also:
   ///

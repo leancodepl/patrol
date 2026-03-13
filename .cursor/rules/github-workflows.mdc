@@ -1,0 +1,62 @@
+---
+description: GitHub workflow conventions - always update WORKFLOWS.md when changing workflows
+globs: .github/workflows/**/*.yaml
+alwaysApply: false
+---
+
+# GitHub Workflow Conventions
+
+## CRITICAL: Always Update Documentation
+
+**Whenever you modify any workflow file in `.github/workflows/`, you MUST also update `.github/WORKFLOWS.md` to reflect the changes.**
+
+This includes changes to:
+- Workflow triggers (schedule, PR events, manual, etc.)
+- Flutter/Dart versions
+- Test tags or target filters
+- Device models or OS versions
+- Exclusion patterns
+- Workflow names or descriptions
+- Job steps or configurations
+- Any other meaningful changes to workflow behavior
+
+### Documentation Sections to Update
+
+`.github/WORKFLOWS.md` contains these main sections:
+1. **Testing Workflows** - Android, iOS, and other platform tests
+2. **Package Preparation (CI) Workflows** - CI checks for packages
+3. **Publishing Workflows** - Package publishing workflows
+4. **Semver Check Workflows** - Semantic versioning compliance
+5. **Documentation Workflows** - Vercel deployments
+6. **Utility Workflows** - Helper and automation workflows
+7. **Schedule Summary** - Overview of scheduled workflows
+8. **Tag-Based Test Selection** - Test filtering patterns
+
+## Test Exclusions for Physical Device Workflows
+
+Physical device workflows (`test-android-device.yaml`, `test-ios-device.yaml`) should exclude the entire `native_tests/` directory to reduce test duration and costs on cloud testing infrastructure.
+
+### Standard Exclusion Pattern
+
+```yaml
+--exclude=patrol_test/web/,patrol_test/native_tests/,patrol_test/volume_test.dart
+```
+
+### Examples
+
+**iOS device workflow:**
+```yaml
+- name: Build tests
+  run: |
+    patrol build ios --tags='ios && physical_device' --exclude=patrol_test/web/,patrol_test/native_tests/,patrol_test/volume_test.dart --release --verbose
+```
+
+**Android device workflow:**
+```yaml
+- name: patrol build android
+  run: |
+    patrol build android \
+    --tags='android && physical_device' \
+    --exclude patrol_test/web/,patrol_test/native_tests/,patrol_test/volume_test.dart \
+    --verbose
+```

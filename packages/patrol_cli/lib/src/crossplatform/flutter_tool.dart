@@ -210,7 +210,7 @@ class FlutterTool {
             }
 
             if (line.startsWith('The Flutter DevTools debugger and profiler')) {
-              _devtoolsUrl = _getDevtoolsUrl(line);
+              _devtoolsUrl = getDevtoolsUrl(line);
               _logger.success(
                 'Patrol DevTools extension is available at $_devtoolsUrl',
               );
@@ -269,7 +269,7 @@ class FlutterTool {
       process
           .listenStdOut((line) {
             if (line.contains('Dart VM service')) {
-              final url = _getObservationUrl(line);
+              final url = getObservationUrl(line);
               observationUrlCompleter?.complete(url);
             }
             if (line.startsWith('Showing ') && line.endsWith('logs:')) {
@@ -342,23 +342,33 @@ class FlutterTool {
       case Platform.macOS:
         process = await _processManager.start(['open', url]);
       case Platform.windows:
-        process = await _processManager.start(['start', url], runInShell: true);
+        process = await _processManager.start(['cmd', '/c', 'start', '', url]);
       case Platform.linux:
         process = await _processManager.start(['xdg-open', url]);
     }
 
     await process?.exitCode;
   }
+}
 
-  String _getDevtoolsUrl(String line) {
-    final url = _getObservationUrl(line);
-    return url.replaceAllMapped('?uri=', (_) => '/patrol_ext?uri=');
-  }
+@visibleForTesting
+String getDevtoolsUrl(String line) {
+  final rawUrl = getObservationUrl(line);
+  final uri = Uri.parse(rawUrl);
+  final segments = uri.pathSegments.where((s) => s.isNotEmpty).toList()
+    ..add('patrol_ext');
+  return uri.replace(pathSegments: segments).toString();
+}
 
-  String _getObservationUrl(String line) {
-    final startIndex = line.indexOf('http');
-    return line.substring(startIndex);
+@visibleForTesting
+String getObservationUrl(String line) {
+  final startIndex = line.indexOf('http');
+  if (startIndex == -1) {
+    throw FormatException(
+      'Could not find a valid URL starting with "http" in line: "$line"',
+    );
   }
+  return line.substring(startIndex);
 }
 
 class StdinModes {

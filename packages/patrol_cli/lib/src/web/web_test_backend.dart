@@ -13,6 +13,8 @@ import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_log/patrol_log.dart';
 import 'package:process/process.dart';
 
+const _kDefaultWebServerTimeoutSeconds = 120;
+
 class WebTestBackend {
   WebTestBackend({
     required ProcessManager processManager,
@@ -31,20 +33,9 @@ class WebTestBackend {
   Future<void> build(WebAppOptions options) async {
     _logger.detail('Building web app for testing...');
 
-    final result = await _processManager.run([
-      options.flutter.command.executable,
-      'build',
-      'web',
-      '--target=${options.flutter.target}',
-      '--${options.flutter.buildMode.name}',
-      // Note: --flavor is not supported for web, so we don't include it
-      ...options.flutter.dartDefines.entries.map(
-        (e) => '--dart-define=${e.key}=${e.value}',
-      ),
-      ...options.flutter.dartDefineFromFilePaths.map(
-        (e) => '--dart-define-from-file=$e',
-      ),
-    ]);
+    final result = await _processManager.run(
+      options.toFlutterBuildInvocation(),
+    );
 
     if (result.exitCode != 0) {
       throw ProcessException(
@@ -79,7 +70,10 @@ class WebTestBackend {
 
     try {
       // Wait for server to be ready and get the URL
-      final baseUrl = await _waitForWebServer(flutterProcess);
+      final baseUrl = await _waitForWebServer(
+        flutterProcess,
+        serverTimeout: options.serverTimeout,
+      );
 
       // Run Playwright tests
       await _runPlaywrightTests(
@@ -131,7 +125,10 @@ class WebTestBackend {
 
     try {
       // Wait for server to be ready and get the URL
-      final port = await _waitForWebDebugger(flutterProcess);
+      final port = await _waitForWebDebugger(
+        flutterProcess,
+        serverTimeout: options.serverTimeout,
+      );
 
       _attachForHotRestart(flutterProcess, switch (previousStdinModes) {
         final stdinModes? => () => flutterTool.revertInteractiveMode(
@@ -175,10 +172,12 @@ class WebTestBackend {
 
     final process = await _processManager.start([
       options.flutter.command.executable,
+      ...options.flutter.command.arguments,
       'run',
       '-d',
       if (develop) 'chrome' else 'web-server',
       ...develop ? ['--verbose'] : [],
+      if (options.webPort != null) '--web-port=${options.webPort}',
       '--target=${options.flutter.target}',
       '--${options.flutter.buildMode.name}',
       // Note: --flavor is not supported for web, so we don't include it
@@ -193,8 +192,16 @@ class WebTestBackend {
     return process;
   }
 
-  Future<String> _waitForWebServer(Process flutterProcess) {
-    _logger.detail('Waiting for web server to start...');
+  Future<String> _waitForWebServer(
+    Process flutterProcess, {
+    int? serverTimeout,
+  }) {
+    final timeoutDuration = Duration(
+      seconds: serverTimeout ?? _kDefaultWebServerTimeoutSeconds,
+    );
+    _logger.detail(
+      'Waiting for web server to start (timeout: ${timeoutDuration.inSeconds}s)...',
+    );
 
     final completer = Completer<String>();
     late StreamSubscription<String> stdoutSubscription;
@@ -269,20 +276,32 @@ class WebTestBackend {
       }
     }).ignore();
 
-    // Timeout after 2 minutes
-    Timer(const Duration(minutes: 2), () {
+    // Timeout after configured duration (default: 2 minutes)
+    Timer(timeoutDuration, () {
       if (!completer.isCompleted) {
         stdoutSubscription.cancel();
         stderrSubscription.cancel();
-        completer.completeError('Timeout waiting for web server to start');
+        completer.completeError(
+          'Timeout waiting for web server to start '
+          '(after ${timeoutDuration.inSeconds}s). '
+          'Consider increasing the timeout with --web-server-timeout.',
+        );
       }
     });
 
     return completer.future;
   }
 
-  Future<String> _waitForWebDebugger(Process flutterProcess) {
-    _logger.detail('Waiting for debugger to start...');
+  Future<String> _waitForWebDebugger(
+    Process flutterProcess, {
+    int? serverTimeout,
+  }) {
+    final timeoutDuration = Duration(
+      seconds: serverTimeout ?? _kDefaultWebServerTimeoutSeconds,
+    );
+    _logger.detail(
+      'Waiting for debugger to start (timeout: ${timeoutDuration.inSeconds}s)...',
+    );
 
     final completer = Completer<String>();
     late StreamSubscription<String> stdoutSubscription;
@@ -325,12 +344,16 @@ class WebTestBackend {
       }
     }).ignore();
 
-    // Timeout after 2 minutes
-    Timer(const Duration(minutes: 2), () {
+    // Timeout after configured duration (default: 2 minutes)
+    Timer(timeoutDuration, () {
       if (!completer.isCompleted) {
         stdoutSubscription.cancel();
         stderrSubscription.cancel();
-        completer.completeError('Timeout waiting for web server to start');
+        completer.completeError(
+          'Timeout waiting for web debugger to start '
+          '(after ${timeoutDuration.inSeconds}s). '
+          'Consider increasing the timeout with --web-server-timeout.',
+        );
       }
     });
 
@@ -460,11 +483,22 @@ class WebTestBackend {
                   'PATROL_WEB_SHARD': options.shard.toString(),
                 if (options.headless != null)
                   'PATROL_WEB_HEADLESS': options.headless.toString(),
+                if (options.browserArgs != null)
+                  'PATROL_WEB_BROWSER_ARGS': options.browserArgs.toString(),
                 ...Platform.environment,
               },
               runInShell: true,
             )
             ..disposedBy(scope);
+
+      final isShardedRun = (options.workers ?? 0) > 1;
+      if (isShardedRun) {
+        _logger.warn(
+          'Web sharding is enabled (workers: ${options.workers}). '
+          'Patrol hides per-test and step logs to avoid interleaved output. '
+          'Use the final summary/report for results.',
+        );
+      }
 
       final patrolLogReader =
           PatrolLogReader(
@@ -473,8 +507,9 @@ class WebTestBackend {
               log: _logger.info,
               reportPath: testReportDir,
               showFlutterLogs: showFlutterLogs,
-              hideTestSteps: hideTestSteps,
+              hideTestSteps: hideTestSteps || isShardedRun,
               clearTestSteps: clearTestSteps,
+              hideTestLifecycle: isShardedRun,
             )
             ..listen()
             ..startTimer();
@@ -493,21 +528,18 @@ class WebTestBackend {
       playwrightProcess.exitCode.then((exitCode) {
         if (!completer.isCompleted) {
           stderrSubscription.cancel();
+          patrolLogReader.stopTimer();
+          // TODO: Don't print the summary in develop
+          _logger.info(patrolLogReader.summary);
 
-          if (exitCode != 0) {
+          if (patrolLogReader.failedTestsCount > 0) {
+            completer.completeError('Some tests failed.');
+          } else if (exitCode != 0) {
             completer.completeError(
               'Playwright process exited unexpectedly with code $exitCode',
             );
           } else {
-            patrolLogReader.stopTimer();
-            // TODO: Don't print the summary in develop
-            _logger.info(patrolLogReader.summary);
-
-            if (patrolLogReader.failedTestsCount > 0) {
-              completer.completeError('Some tests failed.');
-            } else {
-              completer.complete();
-            }
+            completer.complete();
           }
         }
       }).ignore();

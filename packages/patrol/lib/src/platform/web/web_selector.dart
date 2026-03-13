@@ -3,7 +3,7 @@ import 'package:json_annotation/json_annotation.dart';
 part 'web_selector.g.dart';
 
 /// A selector for finding UI elements on the web.
-@JsonSerializable()
+@JsonSerializable(createFactory: false)
 class WebSelector {
   /// Creates a new [WebSelector].
   WebSelector({

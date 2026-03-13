@@ -21,7 +21,7 @@ import 'package:patrol/src/platform/web/web_automator_config.dart';
 import 'package:patrol/src/platform/web/web_automator_empty.dart'
     as empty_web_automator;
 import 'package:patrol/src/platform/web/web_automator_empty.dart'
-    if (dart.library.html) 'package:patrol/src/platform/web/web_automator_native.dart'
+    if (dart.library.js_interop) 'package:patrol/src/platform/web/web_automator_native.dart'
     as native_web_automator;
 
 /// Configuration for [PlatformAutomator].
@@ -872,6 +872,16 @@ class MobileAutomator {
         longitude,
         packageName: packageName,
       ),
+    );
+  }
+
+  // Stop mock location
+  ///
+  /// Stops the mock location updates that were started by [setMockLocation].
+  Future<void> stopMockLocation() {
+    return platform.action.mobile(
+      android: platform.android.stopMockLocation,
+      ios: platform.ios.stopMockLocation,
     );
   }
 

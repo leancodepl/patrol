@@ -8,9 +8,11 @@ const _kDefaultTestFileSuffix = '_test.dart';
 class TestFinder {
   TestFinder({required Directory testDir, required Directory rootDir})
     : _patrolTestDirectory = testDir,
+      _rootDir = rootDir,
       _fs = rootDir.fileSystem;
 
   final Directory _patrolTestDirectory;
+  final Directory _rootDir;
   final FileSystem _fs;
 
   String findTest(
@@ -84,9 +86,16 @@ class TestFinder {
       throwToolExit("Directory ${directory.path} doesn't exist");
     }
 
-    final absoluteExcludes = excludes
-        .map((e) => _fs.file(e).absolute.path)
-        .toSet();
+    final absoluteExcludes = excludes.map((exclude) {
+      if (_fs.path.isAbsolute(exclude)) {
+        return exclude;
+      }
+      // Resolve relative to rootDir (not the process CWD).
+      // _rootDir.path is absolute in production (findRootDirectory returns
+      // an absolute directory), so avoid calling .absolute which would
+      // re-resolve against CWD.
+      return _fs.path.join(_rootDir.path, exclude);
+    }).toSet();
 
     return directory
         .listSync(recursive: true, followLinks: false)
@@ -97,11 +106,28 @@ class TestFinder {
           final isFile = _fs.isFileSync(fileSystemEntity.path);
           return hasSuffix && isFile;
         })
-        // Filter out excluded files
+        // Filter out excluded files and files in excluded directories
         .where((fileSystemEntity) {
-          // TODO: Doesn't handle excluded passes as absolute paths
-          final isExcluded = absoluteExcludes.contains(fileSystemEntity.path);
-          return !isExcluded;
+          final filePath = fileSystemEntity.path;
+
+          for (final exclude in absoluteExcludes) {
+            // Check if the file exactly matches an excluded file
+            if (filePath == exclude) {
+              return false;
+            }
+
+            // Check if the file is inside an excluded directory
+            // Need to add path separator to avoid matching prefixes
+            // e.g., "patrol_test/permissions" shouldn't match "patrol_test/permissions_other"
+            final excludeWithSeparator = exclude.endsWith(_fs.path.separator)
+                ? exclude
+                : exclude + _fs.path.separator;
+            if (filePath.startsWith(excludeWithSeparator)) {
+              return false;
+            }
+          }
+
+          return true;
         })
         .map((entity) => entity.absolute.path)
         .toList();

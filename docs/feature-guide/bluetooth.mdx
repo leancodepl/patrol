@@ -19,10 +19,10 @@ void main() {
       await $.pumpWidgetAndSettle(const MyApp());
 
       await Future<void>.delayed(const Duration(seconds: 2));
-      await $.native.openQuickSettings();
-      await $.native.disableBluetooth();
+      await $.platform.mobile.openQuickSettings();
+      await $.platform.mobile.disableBluetooth();
       await Future<void>.delayed(const Duration(seconds: 4));
-      await $.native.enableBluetooth();
+      await $.platform.mobile.enableBluetooth();
       await Future<void>.delayed(const Duration(seconds: 4));
     },
   );

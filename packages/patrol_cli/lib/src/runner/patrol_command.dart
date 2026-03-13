@@ -202,7 +202,8 @@ abstract class PatrolCommand extends Command<int> {
   void usesHideTestSteps() {
     argParser.addFlag(
       'hide-test-steps',
-      help: 'Hide test steps while running the tests.',
+      help:
+          'Hide test steps while running the tests. Will be ignored if web sharding is enabled.',
     );
   }
 
@@ -329,6 +330,23 @@ abstract class PatrolCommand extends Command<int> {
         'web-headless',
         help: 'Whether to run browser in headless mode.',
         valueHelp: 'true | false',
+      )
+      ..addOption(
+        'web-port',
+        help: 'Port to use for the web server.',
+        valueHelp: '8080',
+      )
+      ..addOption(
+        'web-server-timeout',
+        help:
+            'Maximum time in seconds to wait for the Flutter web server to start. '
+            'Defaults to 120 (2 minutes).',
+        valueHelp: 'number',
+      )
+      ..addOption(
+        'web-browser-args',
+        help: 'Custom browser launch arguments. JSON array of strings.',
+        valueHelp: '\'["--no-sandbox", "--disable-gpu"]\'',
       );
   }
 

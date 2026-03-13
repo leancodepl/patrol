@@ -5,67 +5,49 @@ import '../common.dart';
 const _timeout = Duration(seconds: 5); // to avoid timeouts on CI
 
 void main() {
-  patrol('grants various permissions', ($) async {
-    await createApp($);
+  patrol(
+    'grants various permissions',
+    ($) async {
+      await createApp($);
 
-    await $('Open permissions screen').scrollTo().tap();
+      await $('Open permissions screen').scrollTo().tap();
 
-    await _requestAndGrantCameraPermission($);
-    await _requestAndGrantMicrophonePermission($);
-    await _requestAndGrantLocationPermission($);
-    await _requestAndGrantGalleryPermission($);
-  });
+      expect($(K.cameraPermissionTile).$(K.statusText).text, 'Not granted');
+      await $(K.requestCameraPermissionButton).tap();
+      if (await $.platform.mobile.isPermissionDialogVisible(
+        timeout: _timeout,
+      )) {
+        await $.platform.mobile.grantPermissionWhenInUse();
+        await $.pump();
+      }
 
-  patrol('grants various permissions 2', ($) async {
-    await createApp($);
+      expect($(K.microphonePermissionTile).$(K.statusText).text, 'Not granted');
+      await $(K.requestMicrophonePermissionButton).tap();
+      if (await $.platform.mobile.isPermissionDialogVisible(
+        timeout: _timeout,
+      )) {
+        await $.platform.mobile.grantPermissionOnlyThisTime();
+        await $.pump();
+      }
 
-    await $('Open permissions screen').scrollTo().tap();
+      expect($(K.locationPermissionTile).$(K.statusText).text, 'Not granted');
+      await $(K.requestLocationPermissionButton).tap();
+      if (await $.platform.mobile.isPermissionDialogVisible(
+        timeout: _timeout,
+      )) {
+        await $.platform.mobile.grantPermissionOnlyThisTime();
+        await $.pump();
+      }
 
-    await _requestAndGrantCameraPermission($);
-    await _requestAndGrantMicrophonePermission($);
-    await _requestAndGrantLocationPermission($);
-    await _requestAndGrantGalleryPermission($);
-  });
-}
-
-Future<void> _requestAndGrantCameraPermission(PatrolIntegrationTester $) async {
-  expect($(K.cameraPermissionTile).$(K.statusText).text, 'Not granted');
-  await $(K.requestCameraPermissionButton).tap();
-  if (await $.platform.mobile.isPermissionDialogVisible(timeout: _timeout)) {
-    await $.platform.mobile.grantPermissionWhenInUse();
-    await $.pump();
-  }
-}
-
-Future<void> _requestAndGrantMicrophonePermission(
-  PatrolIntegrationTester $,
-) async {
-  expect($(K.microphonePermissionTile).$(K.statusText).text, 'Not granted');
-  await $(K.requestMicrophonePermissionButton).tap();
-  if (await $.platform.mobile.isPermissionDialogVisible(timeout: _timeout)) {
-    await $.platform.mobile.grantPermissionOnlyThisTime();
-    await $.pump();
-  }
-}
-
-Future<void> _requestAndGrantLocationPermission(
-  PatrolIntegrationTester $,
-) async {
-  expect($(K.locationPermissionTile).$(K.statusText).text, 'Not granted');
-  await $(K.requestLocationPermissionButton).tap();
-  if (await $.platform.mobile.isPermissionDialogVisible(timeout: _timeout)) {
-    await $.platform.mobile.grantPermissionOnlyThisTime();
-    await $.pump();
-  }
-}
-
-Future<void> _requestAndGrantGalleryPermission(
-  PatrolIntegrationTester $,
-) async {
-  expect($(K.galleryPermissionTile).$(K.statusText).text, 'Not granted');
-  await $(K.requestGalleryPermissionButton).tap();
-  if (await $.platform.mobile.isPermissionDialogVisible(timeout: _timeout)) {
-    await $.platform.mobile.grantPermissionOnlyThisTime();
-    await $.pump();
-  }
+      expect($(K.galleryPermissionTile).$(K.statusText).text, 'Not granted');
+      await $(K.requestGalleryPermissionButton).tap();
+      if (await $.platform.mobile.isPermissionDialogVisible(
+        timeout: _timeout,
+      )) {
+        await $.platform.mobile.grantPermissionWhenInUse();
+        await $.pump();
+      }
+    },
+    tags: ['android', 'ios', 'physical_device', 'emulator', 'simulator'],
+  );
 }

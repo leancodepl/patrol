@@ -21,9 +21,9 @@ void main() {
     if (!await Permission.camera.isGranted) {
       await $('Request camera permission').tap();
 
-      if (await $.native.isPermissionDialogVisible()) {
+      if (await $.platform.mobile.isPermissionDialogVisible()) {
         await Future<void>.delayed(const Duration(seconds: 1));
-        await $.native.grantPermissionWhenInUse();
+        await $.platform.mobile.grantPermissionWhenInUse();
         await $.pump();
       }
     }

@@ -27,5 +27,5 @@ void main() {
 
     // Verify we're on the welcome page with correct username
     expect($(K.welcomeText), findsOneWidget);
-  }, tags: ['enterText']);
+  }, tags: ['android', 'emulator']);
 }

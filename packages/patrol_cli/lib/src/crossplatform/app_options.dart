@@ -409,6 +409,9 @@ class WebAppOptions {
     this.globalTimeout,
     this.shard,
     this.headless,
+    this.webPort,
+    this.serverTimeout,
+    this.browserArgs,
   });
 
   final FlutterAppOptions flutter;
@@ -429,4 +432,31 @@ class WebAppOptions {
   final int? globalTimeout;
   final String? shard;
   final String? headless;
+  final int? webPort;
+  final String? browserArgs;
+
+  /// Timeout in seconds for the web server to start.
+  /// Defaults to 120 seconds (2 minutes) if not specified.
+  final int? serverTimeout;
+
+  /// Translates these options into a proper flutter build invocation.
+  List<String> toFlutterBuildInvocation() {
+    final cmd = [
+      flutter.command.executable,
+      ...flutter.command.arguments,
+      'build',
+      'web',
+      '--target=${flutter.target}',
+      '--${flutter.buildMode.name}',
+      // Note: --flavor is not supported for web, so we don't include it
+      ...flutter.dartDefines.entries.map(
+        (e) => '--dart-define=${e.key}=${e.value}',
+      ),
+      ...flutter.dartDefineFromFilePaths.map(
+        (e) => '--dart-define-from-file=$e',
+      ),
+    ];
+
+    return cmd;
+  }
 }

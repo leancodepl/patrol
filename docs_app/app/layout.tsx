@@ -16,7 +16,7 @@ export default function Layout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={inter.className} suppressHydrationWarning>
       <head>
-        <Script src="//cdn.cookie-script.com/s/3aee4f412722d00911596bace9d15935.js"/>
+        <Script src="//cdn.cookie-script.com/s/3aee4f412722d00911596bace9d15935.js" />
       </head>
       <body className="flex flex-col min-h-screen">
         <RootProvider>{children}</RootProvider>

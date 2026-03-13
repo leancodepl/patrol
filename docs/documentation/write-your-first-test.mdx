@@ -339,7 +339,7 @@ patrolTest(
     await $(keys.signInPage.emailTextField).enterText('test@email.com');
     await $(keys.signInPage.passwordTextField).enterText('password');
     await $(keys.signInPage.signInButton).tap();
-    await $.native.grantPermissionWhenInUse();
+    await $.platform.mobile.grantPermissionWhenInUse();
   },
 );
 ```
@@ -355,8 +355,8 @@ patrolTest(
     await $(keys.signInPage.emailTextField).enterText('test@email.com');
     await $(keys.signInPage.passwordTextField).enterText('password');
     await $(keys.signInPage.signInButton).tap();
-    if (await $.native.isPermissionDialogVisible()) {
-      await $.native.grantPermissionWhenInUse();
+    if (await $.platform.mobile.isPermissionDialogVisible()) {
+      await $.platform.mobile.grantPermissionWhenInUse();
     }
   },
 );
@@ -377,11 +377,11 @@ patrolTest(
     await $(keys.signInPage.emailTextField).enterText('test@email.com');
     await $(keys.signInPage.passwordTextField).enterText('password');
     await $(keys.signInPage.signInButton).tap();
-    if (await $.native.isPermissionDialogVisible()) {
-      await $.native.grantPermissionWhenInUse();
+    if (await $.platform.mobile.isPermissionDialogVisible()) {
+      await $.platform.mobile.grantPermissionWhenInUse();
     }
     await $(keys.homePage.notificationIcon).tap();
-    await $.native.pressHome();
+    await $.platform.mobile.pressHome();
   },
 );
 ```
@@ -397,13 +397,13 @@ patrolTest(
     await $(keys.signInPage.emailTextField).enterText('test@email.com');
     await $(keys.signInPage.passwordTextField).enterText('password');
     await $(keys.signInPage.signInButton).tap();
-    if (await $.native.isPermissionDialogVisible()) {
-      await $.native.grantPermissionWhenInUse();
+    if (await $.platform.mobile.isPermissionDialogVisible()) {
+      await $.platform.mobile.grantPermissionWhenInUse();
     }
     await $(keys.homePage.notificationIcon).tap();
-    await $.native.pressHome();
-    await $.native.openNotifications();
-    await $.native.tapOnNotificationBySelector(
+    await $.platform.mobile.pressHome();
+    await $.platform.mobile.openNotifications();
+    await $.platform.mobile.tapOnNotificationBySelector(
       Selector(textContains: 'Patrol says hello!'),
     );
   },
@@ -417,8 +417,8 @@ patrolTest(
   'signs in, triggers a notification, and taps on it',
   ($) async {
     ...
-    await $.native.openNotifications();
-    await $.native.tapOnNotificationBySelector(
+    await $.platform.mobile.openNotifications();
+    await $.platform.mobile.tapOnNotificationBySelector(
       Selector(textContains: 'Patrol says hello!'),
       timeout: const Duration(seconds: 5),
     );
@@ -437,13 +437,13 @@ patrolTest(
     await $(keys.signInPage.emailTextField).enterText('test@email.com');
     await $(keys.signInPage.passwordTextField).enterText('password');
     await $(keys.signInPage.signInButton).tap();
-    if (await $.native.isPermissionDialogVisible()) {
-      await $.native.grantPermissionWhenInUse();
+    if (await $.platform.mobile.isPermissionDialogVisible()) {
+      await $.platform.mobile.grantPermissionWhenInUse();
     }
     await $(keys.homePage.notificationIcon).tap();
-    await $.native.pressHome();
-    await $.native.openNotifications();
-    await $.native.tapOnNotificationBySelector(
+    await $.platform.mobile.pressHome();
+    await $.platform.mobile.openNotifications();
+    await $.platform.mobile.tapOnNotificationBySelector(
       Selector(textContains: 'Patrol says hello!'),
       timeout: const Duration(seconds: 5),
     );

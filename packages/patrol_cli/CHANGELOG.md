@@ -3,6 +3,26 @@
 - Fix a bug when user set a nested test_directory (eg. test/e2e), TestFinder was searching for test files in parent directory instead of project's root (#2858)
 - Add support for `--no-tree-shake-icons` flag in cli commands (#2704)
 - Add support for `--record-video` flag in cli commands (simulators only) (#2741)
+- Reflect failed tests in Playwright report. (#2970)
+
+## 4.2.0
+
+- Add support for `--web-port` option to specify the port for the web server when running web tests with `patrol test`. (#2832)
+- Add `--web-server-timeout` flag to configure the web server startup timeout (default: 120s). (#2948)
+- Fix running devtools after moving test to `patrol_test/`. (#2922) 
+- Fix listen to stdout/stderr streams in buildApkConfigOnly to prevent hang on Windows. (#2905)
+- Fix bug that --exclude was not working for directories. (#2918)
+- Allow to pass additional web browser args through `web-browser-args`. (#2932) 
+- Correctly compose devtools link on new Flutter version. (#2957)
+
+## 4.1.0
+
+- Fix bug when running web tests with relative imports from integration_test directory. (#2906)
+- Fix a bug when user set a nested test_directory (eg. test/e2e), TestFinder was searching for test files in parent directory instead of project's root. (#2858)
+- Add support for `--no-tree-shake-icons` flag in cli commands. (#2704)
+- Fix `PATROL_FLUTTER_COMMAND` not being used when building web app. (#2857)
+- Remove unused import in `test_bundle.dart` files. (#2885)
+- Bump `patrol_log` to `0.7.0`. (#2917)
 
 ## 4.0.2
 
