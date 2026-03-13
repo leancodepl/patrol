@@ -4,6 +4,7 @@ on:
   workflow_dispatch:
   pull_request:
     paths:
+      - '.github/workflows/test-patrol-develop.yaml'
       - 'packages/patrol_cli/**'
       - 'dev/cli_tests/**'
       - 'dev/e2e_app/**'
