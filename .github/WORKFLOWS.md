@@ -39,7 +39,7 @@ This document describes all GitHub Actions workflows used in the Patrol project.
 | patrol_log prepare | `patrol_log-prepare.yaml` | PR (on patrol_log changes), manual | Flutter 3.38.x (stable) | Runs CI checks for `patrol_log` package: analyzer, formatter, and pub publish dry-run. |
 | patrol_devtools_extension prepare | `patrol_devtools_extension-prepare.yaml` | PR (on devtools extension changes), manual | Flutter 3.38.x (stable) | Runs CI checks for DevTools extension: tests, analyzer, formatter, and builds extension. |
 | adb prepare | `adb-prepare.yaml` | PR (on adb package changes), manual | Dart 3.8 | Runs CI checks for `adb` package: tests, analyzer, formatter, and pub publish dry-run. |
-| prepare e2e_app | `prepare-e2e_app.yaml` | PR (on all changes except docs), manual | Flutter 3.38.x (Windows), Flutter 3.32.x (Linux/iOS) | Runs CI checks for E2E test app: Android builds (Windows/Linux) with ktlint, iOS builds with swift-format/clang-format and unit tests, Flutter tests, analyzer, and formatter. |
+| prepare e2e_app | `prepare-e2e_app.yaml` | PR (on all changes except docs), manual | Flutter 3.38.x (stable) | Runs CI checks for E2E test app: Android builds (Windows/Linux) with ktlint, iOS builds with swift-format/clang-format and unit tests, Flutter tests, analyzer, and formatter. |
 | patrol_gen prepare | `patrol_gen-prepare.yaml` | PR (on patrol_gen changes), manual | Dart 3.8 | Runs CI checks for patrol contracts generator: analyzer and formatter. |
 
 ## Publishing Workflows
