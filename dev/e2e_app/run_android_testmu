@@ -1,0 +1,140 @@
+#!/usr/bin/env bash
+set -uo pipefail
+
+# DO NOT set -e, otherwise error responses won't be shown to the user.
+
+# run_android_testmu uploads APKs for UI testing on TestMu (formerly
+# LambdaTest). Upon successful completion, it returns the build ID of the test
+# run on TestMu.
+#
+# It forwards all arguments to "patrol build android", so you can pass --target,
+# --flavor, --exclude etc. just as you would pass them to "patrol_cli".
+#
+# It can also be configured with the following environment variables:
+TESTMU_CREDENTIALS="${TESTMU_CREDENTIALS:-}"
+TESTMU_PROJECT="${TESTMU_PROJECT:-patrol-e2e}"
+TESTMU_ANDROID_DEVICES="${TESTMU_ANDROID_DEVICES:-[\"Pixel 7 Pro-13\"]}"
+TESTMU_SKIP_BUILD="${TESTMU_SKIP_BUILD:-0}"
+TESTMU_IDLE_TIMEOUT="${TESTMU_IDLE_TIMEOUT:-150}"
+TESTMU_QUEUE_TIMEOUT="${TESTMU_QUEUE_TIMEOUT:-10800}"
+
+# Capture all arguments because they'll be consumed by getopt
+original_args=("$@")
+
+# Argument parsing start
+FLAVOR=""
+FLAVOR_SUFFIXED="-"
+FLAVOR_DIR="/"
+
+TEMP=$(getopt -n "$0" -a -l "flavor:" -- -- "$@")
+eval set -- "$TEMP"
+while [ $# -gt 0 ]; do
+	case "$1" in
+	--flavor)
+		FLAVOR="$2"
+		shift
+		;;
+	--) shift ;;
+	esac
+	shift
+done
+
+if [ -n "$FLAVOR" ]; then
+	echo 1>&2 "Passed flavor: $FLAVOR"
+	FLAVOR_SUFFIXED="-$FLAVOR-"
+	FLAVOR_DIR="/$FLAVOR/"
+fi
+# Argument parsing end
+
+if [ -z "$TESTMU_CREDENTIALS" ]; then
+	echo 1>&2 "Error: TESTMU_CREDENTIALS not set (format: username:accessKey)"
+	exit 1
+fi
+
+echo 1>&2 "Project: $TESTMU_PROJECT"
+echo 1>&2 "Devices: $TESTMU_ANDROID_DEVICES"
+
+if [ "$TESTMU_SKIP_BUILD" = 1 ]; then
+	echo 1>&2 "TESTMU_SKIP_BUILD set to 1, build was skipped"
+else
+	patrol 1>&2 build android "${original_args[@]}"
+fi
+
+app_path="$PWD/build/app/outputs/apk${FLAVOR_DIR}debug/app${FLAVOR_SUFFIXED}debug.apk"
+if [ ! -f "$app_path" ]; then
+	echo 1>&2 "Error: apk not found at $app_path"
+	exit 1
+fi
+
+# Upload app under test
+# https://www.lambdatest.com/support/docs/getting-started-with-espresso-testing/#step-1-upload-your-application
+printf 1>&2 "Will upload app under test from %s\n\n" "$app_path"
+if ! app_upload_response="$(
+	curl --fail-with-body --user "$TESTMU_CREDENTIALS" \
+		--request POST "https://manual-api.lambdatest.com/app/uploadFramework" \
+		--form "appFile=@$app_path" \
+		--form 'type="espresso-android"'
+)"; then
+	echo 1>&2 "Error: failed to upload app under test"
+	echo 1>&2 "$app_upload_response"
+	exit 1
+fi
+
+app_id="$(echo "$app_upload_response" | jq --raw-output .app_id)"
+echo 1>&2 "Uploaded app under test, app_id: $app_id"
+
+test_path="$PWD/build/app/outputs/apk/androidTest${FLAVOR_DIR}debug/app${FLAVOR_SUFFIXED}debug-androidTest.apk"
+if [ ! -f "$test_path" ]; then
+	echo 1>&2 "Error: test apk not found at $test_path"
+	exit 1
+fi
+
+# Upload test suite
+# https://www.lambdatest.com/support/docs/getting-started-with-espresso-testing/#step-2-upload-your-test-suite
+printf 1>&2 "Will upload test instrumentation app from %s\n\n" "$test_path"
+if ! test_upload_response="$(
+	curl --fail-with-body --user "$TESTMU_CREDENTIALS" \
+		--request POST "https://manual-api.lambdatest.com/app/uploadFramework" \
+		--form "appFile=@$test_path" \
+		--form 'type="espresso-android"'
+)"; then
+	echo 1>&2 "Error: failed to upload test instrumentation app"
+	echo 1>&2 "$test_upload_response"
+	exit 1
+fi
+
+test_id="$(echo "$test_upload_response" | jq --raw-output .app_id)"
+echo 1>&2 "Uploaded test instrumentation app, app_id: $test_id"
+
+# Schedule test execution
+# https://www.lambdatest.com/support/docs/getting-started-with-espresso-testing/#step-3-executing-the-test
+BASIC_AUTH_TOKEN="$(echo -n "$TESTMU_CREDENTIALS" | base64)"
+
+printf 1>&2 "Will schedule test execution\n\n"
+if ! run_response="$(
+	curl --fail-with-body \
+		--request POST "https://mobile-api.lambdatest.com/framework/v1/espresso/build" \
+		--header "Authorization: Basic $BASIC_AUTH_TOKEN" \
+		--header "Content-Type: application/json" \
+		--data-binary @- <<EOF
+{
+    "app": "$app_id",
+    "testSuite": "$test_id",
+    "build": "$TESTMU_PROJECT",
+    "device": $TESTMU_ANDROID_DEVICES,
+    "queueTimeout": $TESTMU_QUEUE_TIMEOUT,
+    "IdleTimeout": $TESTMU_IDLE_TIMEOUT,
+    "deviceLog": true,
+    "network": false
+}
+EOF
+)"; then
+	echo 1>&2 "Error: failed to schedule test execution"
+	echo 1>&2 "$run_response"
+	exit 1
+fi
+
+printf 1>&2 "\n\nScheduled test execution\n"
+
+build_id="$(echo "$run_response" | jq --raw-output '.buildId[0] // .buildId')"
+echo "$build_id"
