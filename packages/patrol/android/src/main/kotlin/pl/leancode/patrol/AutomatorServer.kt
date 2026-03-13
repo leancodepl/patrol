@@ -258,11 +258,11 @@ class AutomatorServer(private val automation: Automator) : MobileAutomatorServer
         val isEmulator = isVirtualDevice().isVirtualDevice
 
         val shutterButtonSelector = request.shutterButtonSelector ?: AndroidSelector(
-            resourceName = if (isEmulator) "com.android.camera2:id/shutter_button" else "com.google.android.GoogleCamera:id/shutter_button",
+            resourceName = if (isEmulator) AutomatorConstants.EMULATOR_CAMERA_SHUTTER_BUTTON_RES_ID else AutomatorConstants.GOOGLE_CAMERA_SHUTTER_BUTTON_RES_ID,
             instance = 0
         )
         val doneButtonSelector = request.doneButtonSelector ?: AndroidSelector(
-            resourceName = if (isEmulator) "com.android.camera2:id/done_button" else "com.google.android.GoogleCamera:id/done_button",
+            resourceName = if (isEmulator) AutomatorConstants.EMULATOR_CAMERA_DONE_BUTTON_RES_ID else AutomatorConstants.GOOGLE_CAMERA_DONE_BUTTON_RES_ID,
             instance = 0
         )
         val shutterButtonSelector2 = shutterButtonSelector.copy(instance = null)
@@ -282,8 +282,8 @@ class AutomatorServer(private val automation: Automator) : MobileAutomatorServer
         val androidImageSelector = request.imageSelector ?: run {
             val (resourceName, contentDescriptionContains) = when {
                 apiLvl >= 36 -> null to AutomatorConstants.PHOTO_TAKEN_ON_CONTENT_DESCRIPTION
-                apiLvl >= 34 -> "com.google.android.providers.media.module:id/icon_thumbnail" to null
-                else -> "com.google.android.documentsui:id/icon_thumb" to null
+                apiLvl >= 34 -> AutomatorConstants.GALLERY_IMAGE_THUMBNAIL_RES_ID to null
+                else -> AutomatorConstants.GALLERY_IMAGE_THUMB_RES_ID to null
             }
             AndroidSelector(
                 resourceName = resourceName,
@@ -294,7 +294,7 @@ class AutomatorServer(private val automation: Automator) : MobileAutomatorServer
 
         val androidSubMenuSelector = if (apiLvl < 34) {
             AndroidSelector(
-                resourceName = "com.google.android.documentsui:id/sub_menu_list",
+                resourceName = AutomatorConstants.GALLERY_SUB_MENU_LIST_RES_ID,
                 instance = 0
             )
         } else {
@@ -302,7 +302,7 @@ class AutomatorServer(private val automation: Automator) : MobileAutomatorServer
         }
         val androidActionMenuSelector = if (apiLvl < 34) {
             AndroidSelector(
-                resourceName = "com.google.android.documentsui:id/action_menu_select",
+                resourceName = AutomatorConstants.GALLERY_SELECT_BUTTON_RES_ID,
                 instance = 0
             )
         } else {
@@ -332,8 +332,8 @@ class AutomatorServer(private val automation: Automator) : MobileAutomatorServer
         val androidImageSelector = request.imageSelector ?: run {
             val (resourceName, contentDescriptionContains) = when {
                 apiLvl >= 36 -> null to AutomatorConstants.PHOTO_TAKEN_ON_CONTENT_DESCRIPTION
-                apiLvl >= 34 -> "com.google.android.providers.media.module:id/icon_thumbnail" to null
-                else -> "com.google.android.documentsui:id/icon_thumb" to null
+                apiLvl >= 34 -> AutomatorConstants.GALLERY_IMAGE_THUMBNAIL_RES_ID to null
+                else -> AutomatorConstants.GALLERY_IMAGE_THUMB_RES_ID to null
             }
             AndroidSelector(
                 resourceName = resourceName,
@@ -344,7 +344,7 @@ class AutomatorServer(private val automation: Automator) : MobileAutomatorServer
 
         val androidSubMenuSelector = if (apiLvl < 34) {
             AndroidSelector(
-                resourceName = "com.google.android.documentsui:id/sub_menu_list",
+                resourceName = AutomatorConstants.GALLERY_SUB_MENU_LIST_RES_ID,
                 instance = 0
             )
         } else {
@@ -353,8 +353,8 @@ class AutomatorServer(private val automation: Automator) : MobileAutomatorServer
         val androidActionMenuSelector = run {
             val (resourceName, text) = when {
                 apiLvl >= 36 -> null to AutomatorConstants.GALLERY_DONE_BUTTON_TEXT
-                apiLvl >= 34 -> "com.google.android.providers.media.module:id/button_add" to null
-                else -> "com.google.android.documentsui:id/action_menu_select" to null
+                apiLvl >= 34 -> AutomatorConstants.GALLERY_ADD_BUTTON_RES_ID to null
+                else -> AutomatorConstants.GALLERY_SELECT_BUTTON_RES_ID to null
             }
             AndroidSelector(
                 resourceName = resourceName,
