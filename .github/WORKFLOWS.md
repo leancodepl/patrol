@@ -28,7 +28,7 @@ This document describes all GitHub Actions workflows used in the Patrol project.
 |--------------|--------------|-----------|----------------|------|-------------|
 | test web | `test-web.yaml` | No | Flutter 3.38.x (stable) | — | Runs web-specific E2E tests on Chrome in headless mode. Triggers on PR for web-related changes. Uses target file instead of tags. |
 | test macos | `test-macos.yaml` | Every 12h | Flutter 3.38.x (stable) | — | Runs E2E tests on macOS desktop platform. Runs tests from `patrol_test/macos` directory. Uses xcresulttool v1.7.1 for test reporting. |
-| test patrol develop | `test-patrol-develop.yaml` | PR (on patrol_cli, cli_tests, or e2e_app changes), manual | Flutter 3.38.x (stable) | — | Tests `patrol develop` command on Linux (Android emulator, API 34) and macOS (iOS simulator, iPhone 16 Pro Max). Runs `patrol_develop_test.dart` which verifies the hot restart flow. Timeout: 30 minutes per job. |
+| test patrol develop | `test-patrol-develop.yaml` | PR (on patrol_cli, cli_tests, or e2e_app changes), manual | Flutter 3.38.x (stable) | — | Tests `patrol develop` command on Linux (Android emulator, API 34). macOS (iOS simulator) job is **temporarily skipped** – `flutter attach` without `--debug-url` relies on mDNS discovery which doesn't work on GitHub Actions runners, so hot restart never attaches during the CI test run. Runs `patrol_develop_test.dart` which verifies the hot restart flow. Timeout: 30 minutes per job. |
 
 ## Package Preparation (CI) Workflows
 
