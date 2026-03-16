@@ -77,14 +77,18 @@ void main(List<String> args) async {
     final stringOutput = output.toString();
 
     if (isFirstTestPassed == false &&
-        stringOutput.contains('All tests passed')) {
+        stringOutput.contains(
+          'All tests were executed. Press "r" to start again or "q" to quit',
+        )) {
       isFirstTestPassed = true;
     }
 
     final isReadyToRestart =
         isFirstTestPassed &&
         isReloaded == false &&
-        stringOutput.contains('r Hot restart.');
+        stringOutput.contains(
+          'All tests were executed. Press "r" to start again or "q" to quit',
+        );
 
     if (isReadyToRestart) {
       exampleTestFile.writeAsStringSync(exampleTestWithFailingContents);
@@ -95,7 +99,7 @@ void main(List<String> args) async {
     final isRestartedTestFailed =
         isFirstTestPassed &&
         isReloaded &&
-        stringOutput.contains('Some tests failed');
+        stringOutput.contains('When the exception was thrown');
 
     if (isRestartedTestFailed) {
       print(
