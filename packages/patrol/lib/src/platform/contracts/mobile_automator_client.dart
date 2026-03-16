@@ -166,6 +166,11 @@ class MobileAutomatorClient {
     return GetOsVersionResponse.fromJson(json);
   }
 
+  Future<GetSystemProxyResponse> getSystemProxy() async {
+    final json = await _sendRequest('getSystemProxy');
+    return GetSystemProxyResponse.fromJson(json);
+  }
+
   Future<Map<String, dynamic>> _sendRequest(
     String requestName, [
     Map<String, dynamic>? request,

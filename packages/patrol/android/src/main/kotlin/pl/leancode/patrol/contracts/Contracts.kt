@@ -708,6 +708,18 @@ class Contracts {
     val packageName: String
   )
 
+  data class GetSystemProxyResponse (
+    val host: String? = null,
+    val port: Long? = null
+  ){
+    fun hasHost(): Boolean {
+      return host != null
+    }
+    fun hasPort(): Boolean {
+      return port != null
+    }
+  }
+
   data class IsVirtualDeviceResponse (
     val isVirtualDevice: Boolean
   )

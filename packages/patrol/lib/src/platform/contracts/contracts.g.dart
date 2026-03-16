@@ -794,6 +794,17 @@ Map<String, dynamic> _$SetMockLocationRequestToJson(
   'packageName': instance.packageName,
 };
 
+GetSystemProxyResponse _$GetSystemProxyResponseFromJson(
+  Map<String, dynamic> json,
+) => GetSystemProxyResponse(
+  host: json['host'] as String?,
+  port: (json['port'] as num?)?.toInt(),
+);
+
+Map<String, dynamic> _$GetSystemProxyResponseToJson(
+  GetSystemProxyResponse instance,
+) => <String, dynamic>{'host': instance.host, 'port': instance.port};
+
 IsVirtualDeviceResponse _$IsVirtualDeviceResponseFromJson(
   Map<String, dynamic> json,
 ) => IsVirtualDeviceResponse(isVirtualDevice: json['isVirtualDevice'] as bool);

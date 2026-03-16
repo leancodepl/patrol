@@ -1001,6 +1001,17 @@ class MobileAutomator {
       ios: platform.ios.isVirtualDevice,
     );
   }
+
+  /// Returns the system HTTP proxy settings, if configured.
+  ///
+  /// Reads proxy settings from JVM system properties on Android.
+  /// Returns a record with `host` and `port` (both nullable).
+  Future<({String? host, int? port})> getSystemProxy() {
+    return platform.action.mobile(
+      android: platform.android.getSystemProxy,
+      ios: platform.ios.getSystemProxy,
+    );
+  }
 }
 
 /// Platform-specific action router.

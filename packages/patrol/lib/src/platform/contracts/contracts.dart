@@ -1179,6 +1179,22 @@ class SetMockLocationRequest with EquatableMixin {
 }
 
 @JsonSerializable()
+class GetSystemProxyResponse with EquatableMixin {
+  GetSystemProxyResponse({this.host, this.port});
+
+  factory GetSystemProxyResponse.fromJson(Map<String, dynamic> json) =>
+      _$GetSystemProxyResponseFromJson(json);
+
+  final String? host;
+  final int? port;
+
+  Map<String, dynamic> toJson() => _$GetSystemProxyResponseToJson(this);
+
+  @override
+  List<Object?> get props => [host, port];
+}
+
+@JsonSerializable()
 class IsVirtualDeviceResponse with EquatableMixin {
   IsVirtualDeviceResponse({required this.isVirtualDevice});
 

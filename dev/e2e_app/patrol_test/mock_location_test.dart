@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io' as io;
 
 import 'package:flutter/services.dart';
@@ -13,6 +14,64 @@ const _lat3 = 55.7297;
 const _lon = 21.0122;
 
 void main() {
+  patrol('ip geolocation via dart http client with proxy', ($) async {
+    // Read the system proxy from the native side
+    final proxy = await $.platform.mobile.getSystemProxy();
+    $.log('System proxy: host=${proxy.host}, port=${proxy.port}');
+
+    final client = io.HttpClient();
+    if (proxy.host != null) {
+      final proxyHost = proxy.host!;
+      final proxyPort = proxy.port ?? 80;
+      $.log('Configuring HttpClient with proxy $proxyHost:$proxyPort');
+      client.findProxy = (uri) => 'PROXY $proxyHost:$proxyPort';
+    }
+
+    final request = await client.getUrl(
+      Uri.parse('https://ipinfo.io/json'),
+    );
+    final response = await request.close();
+    final body = await response.transform(utf8.decoder).join();
+    $.log('IP geolocation response: $body');
+
+    final json = jsonDecode(body) as Map<String, dynamic>;
+    final country = json['country'] as String;
+    $.log('Country: $country');
+    // When geolocation is set, the country should match.
+    // When not set, it will be IN (India, where TestMu devices are).
+    $.log('Country code from IP geolocation: $country');
+    client.close();
+  }, tags: ['android']);
+
+  patrol('ip geolocation via webview', ($) async {
+    await createApp($);
+
+    await $('Open webview (IP Check)').scrollTo().tap();
+    await $.pump(const Duration(seconds: 10));
+
+    await $.platform.mobile.waitUntilVisible(
+      Selector(textContains: '"country"'),
+      timeout: const Duration(seconds: 15),
+    );
+
+    final response = await $.platform.android.getNativeViews(
+      AndroidSelector(textContains: '"country"'),
+    );
+    final views = response.roots;
+    $.log('Found ${views.length} views with country');
+    for (final view in views) {
+      $.log('View text: ${view.text}');
+    }
+
+    expect(views, isNotEmpty);
+    final responseText = views.first.text ?? '';
+    $.log('Response text: $responseText');
+
+    final json = jsonDecode(responseText) as Map<String, dynamic>;
+    final country = json['country'] as String;
+    $.log('WebView country: $country');
+  }, tags: ['android']);
+
   patrol('mock location', ($) async {
     await createApp($);
 

@@ -244,4 +244,7 @@ abstract interface class MobileAutomator {
   /// }
   /// ```
   Future<int> getOsVersion();
+
+  /// Returns the system HTTP proxy settings, if configured.
+  Future<({String? host, int? port})> getSystemProxy();
 }

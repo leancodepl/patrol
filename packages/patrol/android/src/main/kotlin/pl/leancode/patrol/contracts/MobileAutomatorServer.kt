@@ -43,6 +43,7 @@ interface MobileAutomatorServer {
     fun markPatrolAppServiceReady()
     fun isVirtualDevice(): Contracts.IsVirtualDeviceResponse
     fun getOsVersion(): Contracts.GetOsVersionResponse
+    fun getSystemProxy(): Contracts.GetSystemProxyResponse
 }
 
 private val json = Gson()
@@ -173,6 +174,10 @@ fun getMobileAutomatorRoutes(server: MobileAutomatorServer): RoutingHttpHandler 
     },
     "getOsVersion" bind POST to {
       val response = server.getOsVersion()
+      Response(OK).body(json.toJson(response))
+    },
+    "getSystemProxy" bind POST to {
+      val response = server.getSystemProxy()
       Response(OK).body(json.toJson(response))
     }
 )

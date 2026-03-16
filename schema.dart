@@ -300,6 +300,11 @@ class SetMockLocationRequest {
   late String packageName;
 }
 
+class GetSystemProxyResponse {
+  String? host;
+  int? port;
+}
+
 class IsVirtualDeviceResponse {
   late bool isVirtualDevice;
 }
@@ -395,6 +400,8 @@ abstract class MobileAutomator<IOSServer, AndroidServer, DartClient> {
   IsVirtualDeviceResponse isVirtualDevice();
 
   GetOsVersionResponse getOsVersion();
+
+  GetSystemProxyResponse getSystemProxy();
 }
 
 abstract class AndroidAutomator<AndroidServer, DartClient> {

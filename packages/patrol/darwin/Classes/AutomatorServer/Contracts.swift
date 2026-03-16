@@ -469,6 +469,11 @@ public struct SetMockLocationRequest: Codable {
   public var packageName: String
 }
 
+public struct GetSystemProxyResponse: Codable {
+  public var host: String?
+  public var port: Int?
+}
+
 public struct IsVirtualDeviceResponse: Codable {
   public var isVirtualDevice: Bool
 }

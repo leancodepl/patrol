@@ -232,6 +232,17 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
             onPressed: () => Navigator.of(context).push(
               MaterialPageRoute<void>(
                 builder: (_) => const WebViewScreen(
+                  title: 'WebView (IP Check)',
+                  url: 'https://ipinfo.io/json',
+                ),
+              ),
+            ),
+            child: const Text('Open webview (IP Check)'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => const WebViewScreen(
                   title: 'WebView (LeanCode)',
                   url: 'https://leancode.co',
                 ),

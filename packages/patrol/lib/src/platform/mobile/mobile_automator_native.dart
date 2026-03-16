@@ -531,4 +531,14 @@ abstract class NativeMobileAutomator implements MobileAutomator {
 
     return response.osVersion;
   }
+
+  @override
+  Future<({String? host, int? port})> getSystemProxy() async {
+    final response = await wrapRequest(
+      'getSystemProxy',
+      () => _client.getSystemProxy(),
+    );
+
+    return (host: response.host, port: response.port?.toInt());
+  }
 }

@@ -35,6 +35,7 @@ protocol MobileAutomatorServer {
     func markPatrolAppServiceReady() throws
     func isVirtualDevice() throws -> IsVirtualDeviceResponse
     func getOsVersion() throws -> GetOsVersionResponse
+    func getSystemProxy() throws -> GetSystemProxyResponse
 }
 
 extension MobileAutomatorServer {
@@ -197,6 +198,12 @@ extension MobileAutomatorServer {
         let body = try JSONEncoder().encode(response)
         return HTTPResponse(.ok, body: body)
     }
+
+    private func getSystemProxyHandler(request: HTTPRequest) throws -> HTTPResponse {
+        let response = try getSystemProxy()
+        let body = try JSONEncoder().encode(response)
+        return HTTPResponse(.ok, body: body)
+    }
 }
 
 extension MobileAutomatorServer {
@@ -345,6 +352,11 @@ extension MobileAutomatorServer {
             request in handleRequest(
                 request: request,
                 handler: getOsVersionHandler)
+        }
+        server.route(.POST, "getSystemProxy") {
+            request in handleRequest(
+                request: request,
+                handler: getSystemProxyHandler)
         }
     }
 }

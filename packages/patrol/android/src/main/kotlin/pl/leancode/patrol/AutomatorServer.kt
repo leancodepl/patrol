@@ -406,4 +406,11 @@ class AutomatorServer(private val automation: Automator) : MobileAutomatorServer
     override fun getOsVersion(): Contracts.GetOsVersionResponse {
         return Contracts.GetOsVersionResponse(Build.VERSION.SDK_INT.toLong())
     }
+
+    override fun getSystemProxy(): Contracts.GetSystemProxyResponse {
+        val host = System.getProperty("http.proxyHost")
+        val portStr = System.getProperty("http.proxyPort")
+        val port = portStr?.toLongOrNull()
+        return Contracts.GetSystemProxyResponse(host, port)
+    }
 }
