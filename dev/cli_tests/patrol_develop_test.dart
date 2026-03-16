@@ -38,7 +38,7 @@ void main() {
 void main(List<String> args) async {
   _verifyWorkingDirectory();
 
-  const afterBuildCompletedTimeout = Duration(minutes: 8);
+  const afterBuildCompletedTimeout = Duration(minutes: 4);
   const inactivityTimeout = Duration(minutes: 15);
 
   var isFirstTestPassed = false;
