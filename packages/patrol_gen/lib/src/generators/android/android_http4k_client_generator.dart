@@ -30,6 +30,7 @@ import com.squareup.okhttp.MediaType
 import com.squareup.okhttp.OkHttpClient
 import com.squareup.okhttp.Request
 import com.squareup.okhttp.RequestBody
+import java.net.Proxy
 import java.util.concurrent.TimeUnit
 
 ''';
@@ -52,6 +53,7 @@ $endpoints
         val endpoint = $urlWithPath
 
         val client = OkHttpClient().apply {
+            setProxy(Proxy.NO_PROXY)
             setConnectTimeout(timeout, timeUnit)
             setReadTimeout(timeout, timeUnit)
             setWriteTimeout(timeout, timeUnit)
