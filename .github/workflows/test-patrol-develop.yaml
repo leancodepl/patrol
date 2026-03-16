@@ -46,10 +46,6 @@ jobs:
       - name: Set up Patrol CLI
         working-directory: packages/patrol_cli
         run: dart pub global activate --source path . && patrol
-      # Try without generating Gradle wrapper
-      # - name: Generate Gradle wrapper
-      #   working-directory: dev/e2e_app
-      #   run: flutter build apk --config-only
 
       - name: Enable KVM
         run: |
