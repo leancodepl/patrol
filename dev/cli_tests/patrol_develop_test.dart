@@ -86,9 +86,7 @@ void main(List<String> args) async {
     final isReadyToRestart =
         isFirstTestPassed &&
         isReloaded == false &&
-        stringOutput.contains(
-          'All tests were executed. Press "r" to start again or "q" to quit',
-        );
+        stringOutput.contains('Hot Restart: attached to the app');
 
     if (isReadyToRestart) {
       exampleTestFile.writeAsStringSync(exampleTestWithFailingContents);
