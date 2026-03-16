@@ -66,10 +66,7 @@ jobs:
           ram-size: 3072M
           disk-size: 6G
           emulator-options: -no-snapshot-save -no-window -noaudio -no-boot-anim
-          script: |
-            cd dev/cli_tests
-            dart pub get
-            dart patrol_develop_test.dart
+          script: cd dev/cli_tests && dart pub get && dart patrol_develop_test.dart
 
   test-macos:
     name: Test `patrol develop` on macOS
