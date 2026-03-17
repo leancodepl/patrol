@@ -15,7 +15,7 @@ const workers = process.env.PATROL_WEB_WORKERS ? parseInt(process.env.PATROL_WEB
 const reporter = process.env.PATROL_WEB_REPORTER
   ? mapReporters(process.env.PATROL_WEB_REPORTER, outputFolder)
   : undefined
-const locale = process.env.PATROL_WEB_LOCALE ? process.env.PATROL_WEB_LOCALE : undefined
+const locale = process.env.PATROL_WEB_LOCALE ? process.env.PATROL_WEB_LOCALE : "en-US"
 const timezoneId = process.env.PATROL_WEB_TIMEZONE ? process.env.PATROL_WEB_TIMEZONE : undefined
 const colorScheme = process.env.PATROL_WEB_COLOR_SCHEME
   ? (process.env.PATROL_WEB_COLOR_SCHEME as PlaywrightTestOptions["colorScheme"])
