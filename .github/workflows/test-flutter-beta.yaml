@@ -1,0 +1,99 @@
+name: test flutter beta channel
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 2 * * 1' # Weekly on Monday at 2 AM UTC
+
+jobs:
+  run_tests:
+    name: Flutter beta on Android API ${{ matrix.api-level }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    strategy:
+      fail-fast: false
+      matrix:
+        flutter-channel: ['beta']
+        api-level: [35]
+
+    defaults:
+      run:
+        working-directory: dev/e2e_app
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Gradle cache
+        uses: gradle/gradle-build-action@v2
+        with:
+          generate-job-summary: false
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: ${{ matrix.flutter-channel }}
+
+      - name: Display Flutter version
+        run: flutter --version
+
+      - name: Preload Flutter artifacts
+        run: flutter precache --android
+
+      - name: Set up Melos and activate workspace
+        working-directory: .
+        run: |
+          dart pub global activate melos
+          melos bootstrap
+
+      - name: Set up Patrol CLI
+        working-directory: packages/patrol_cli
+        run: dart pub global activate --source path . && patrol
+
+      - name: Generate Gradle wrapper
+        run: flutter build apk --config-only
+
+      - name: Install ew-cli
+        run: |
+          mkdir -p "$HOME/bin"
+          curl "https://maven.emulator.wtf/releases/ew-cli" -o "$HOME/bin/ew-cli"
+          chmod a+x "$HOME/bin/ew-cli"
+          echo "$HOME/bin" >> $GITHUB_PATH
+          echo "EW_API_TOKEN=${{ secrets.EW_API_TOKEN }}" >> $GITHUB_ENV
+
+      - name: patrol build android
+        run: | 
+          patrol build android \
+          --target patrol_test/example_test.dart \
+          --verbose
+
+      - name: Upload APKs to emulator.wtf and run smoke test
+        id: tests_step
+        run: |
+          set +e
+          output="$(ew-cli emulatorwtf.yaml:multi_api \
+            --device model=Pixel7,version=${{ matrix.api-level }} \
+            --display-name "Patrol beta Flutter smoke test (${GITHUB_SHA::7})")"
+          TESTS_EXIT_CODE=$?
+          set -e
+
+          echo "$output"
+
+          # Extract the results URL and write it to Github Summary
+          link="$(echo "$output" | jq -r ".resultsUrl")"
+          echo "[Test details on emulator.wtf]($link) (LeanCode members only)" >> "$GITHUB_STEP_SUMMARY"
+
+          if [ $TESTS_EXIT_CODE -eq 0 ]; then
+            echo "✅ Patrol is working with Flutter beta channel" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "❌ Patrol tests failed on Flutter beta channel" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+          exit $TESTS_EXIT_CODE
