@@ -11,7 +11,7 @@ This document describes all GitHub Actions workflows used in the Patrol project.
 | [test android device][test-android-device] | Weekly Mon 06:00 UTC | Pixel 8 Pro (shiba) | 35 | Flutter 3.38.x (stable) | `android && physical_device` | Runs E2E tests on Firebase Test Lab physical devices. Excludes `native_tests/` to reduce test duration. |
 | [test android emulator][test-android-emulator] | PR, every 12h | Pixel7 | 36, 35, 34, 33, 32 | Flutter 3.38.x (stable) | `android && emulator` | Runs E2E tests on emulator.wtf emulators across multiple API levels. Excludes `volume_test.dart` due to emulator instability issues. |
 | [test android emulator webview][test-android-emulator-webview] | PR, daily at 23:00 | Pixel7 | 31 | Flutter 3.38.x (stable) | `webview && android` | Runs webview-specific E2E tests on emulator.wtf. |
-| [test locales on android device][test-android-locales] | Every 12h | MediumPhone.arm | 34 | Flutter 3.38.x (stable) | `locale_testing_android` | Tests locale support on Firebase Test Lab for English, French, German, and Polish locales. Excludes `native_tests/` directory. |
+| [test locales on android device][test-android-locales] | Every 12h | MediumPhone.arm | 36 | Flutter 3.38.x (stable) | `locale_testing_android` | Tests locale support on Firebase Test Lab for English, French, German, and Polish locales. Excludes `volume_test.dart`. |
 
 ### iOS Testing
 
