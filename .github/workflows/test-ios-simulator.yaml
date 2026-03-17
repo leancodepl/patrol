@@ -188,7 +188,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Captured video from ${{ matrix.device_model }}.mp4
-          path: ${{ github.workspace }}/dev/e2e_app/${{ matrix.device_model }}.mp4
+          path: ${{ github.workspace }}/dev/e2e_app/${{ matrix.device_model }}_raw.mp4
 
   call_send_slack_message:
     name: Notify on Slack
