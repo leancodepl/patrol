@@ -36,6 +36,10 @@ const browserArgs = process.env.PATROL_WEB_BROWSER_ARGS
   ? (JSON.parse(process.env.PATROL_WEB_BROWSER_ARGS) as string[])
   : undefined
 
+// Ensure browser has locale set via --lang flag
+const defaultBrowserArgs = [`--lang=${locale}`]
+const finalBrowserArgs = browserArgs ? [...defaultBrowserArgs, ...browserArgs] : defaultBrowserArgs
+
 export default defineConfig({
   use: {
     baseURL,
@@ -48,7 +52,7 @@ export default defineConfig({
     permissions,
     userAgent,
     viewport,
-    launchOptions: browserArgs ? { args: browserArgs } : undefined,
+    launchOptions: { args: finalBrowserArgs },
   },
   globalSetup: require.resolve("./tests/setup"),
   outputDir,
