@@ -31,7 +31,11 @@ dependencies:
   meta: ^1.10.0
   package_config: ^2.1.1
   path: ^1.8.3
-  patrol_log: ^0.7.1
+  patrol_log:
+    git:
+      url: git@github.com:leancodepl/patrol.git
+      ref: feat/patrol-mcp
+      path: packages/patrol_log
   platform: ^3.1.3
   process: ^5.0.1
   pub_updater: ^0.4.0
