@@ -139,6 +139,16 @@ abstract class PatrolCommand extends Command<int> {
     );
   }
 
+  void usesAddToAppOption() {
+    argParser.addFlag(
+      'add-to-app',
+      help:
+          'Enable support for Flutter module (add-to-app) projects. '
+          'Skips flutter config-only build and uses .android/.ios directories.',
+      negatable: false,
+    );
+  }
+
   void usesAndroidOptions() {
     argParser.addOption(
       'package-name',

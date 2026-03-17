@@ -47,6 +47,7 @@ class BuildIOSCommand extends PatrolCommand {
     usesBuildNumberOption();
 
     usesIOSOptions();
+    usesAddToAppOption();
     argParser.addFlag(
       'simulator',
       help: 'Build for simulator instead of real device.',
@@ -82,6 +83,10 @@ class BuildIOSCommand extends PatrolCommand {
     );
 
     final config = _pubspecReader.read();
+    final addToApp = boolArg('add-to-app') || config.addToApp;
+    if (addToApp) {
+      _logger.info('Running in add-to-app (module) mode');
+    }
     final testDirectory = config.testDirectory;
     final testFileSuffix = config.testFileSuffix;
 
@@ -194,6 +199,7 @@ class BuildIOSCommand extends PatrolCommand {
       appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
       fullIsolation: boolArg('full-isolation'),
+      addToApp: addToApp,
     );
 
     if (!iosOpts.simulator && iosOpts.fullIsolation) {

@@ -69,6 +69,7 @@ class TestCommand extends PatrolCommand {
 
     usesAndroidOptions();
     usesIOSOptions();
+    usesAddToAppOption();
 
     usesWeb();
   }
@@ -101,6 +102,10 @@ class TestCommand extends PatrolCommand {
     );
 
     final config = _pubspecReader.read();
+    final addToApp = boolArg('add-to-app') || config.addToApp;
+    if (addToApp) {
+      _logger.info('Running in add-to-app (module) mode');
+    }
     final testDirectory = config.testDirectory;
     final testFileSuffix = config.testFileSuffix;
 
@@ -272,6 +277,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
       uninstall: uninstall,
+      addToApp: addToApp,
     );
 
     final iosOpts = IOSAppOptions(
@@ -285,6 +291,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       testServerPort: super.testServerPort,
       fullIsolation: boolArg('full-isolation'),
       clearIOSPermissions: boolArg('clear-permissions'),
+      addToApp: addToApp,
     );
 
     final macosOpts = MacOSAppOptions(

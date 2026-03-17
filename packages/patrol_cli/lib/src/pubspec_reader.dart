@@ -13,6 +13,7 @@ class PatrolPubspecConfig with EquatableMixin {
     required this.macos,
     this.testDirectory = 'patrol_test',
     this.testFileSuffix = '_test.dart',
+    this.addToApp = false,
   });
 
   PatrolPubspecConfig.empty({required String flutterPackageName})
@@ -29,6 +30,7 @@ class PatrolPubspecConfig with EquatableMixin {
   MacOSPubspecConfig macos;
   String testDirectory;
   String testFileSuffix;
+  bool addToApp;
 
   @override
   List<Object?> get props => [
@@ -37,6 +39,7 @@ class PatrolPubspecConfig with EquatableMixin {
     macos,
     testDirectory,
     testFileSuffix,
+    addToApp,
   ];
 }
 
@@ -144,6 +147,10 @@ class PubspecReader {
     final contents = file.readAsStringSync();
     final yaml = loadYaml(contents) as Map;
 
+    // Auto-detect Flutter module (add-to-app) projects
+    final flutter = yaml['flutter'] as Map?;
+    final isFlutterModule = flutter != null && flutter.containsKey('module');
+
     final androidConfig = AndroidPubspecConfig();
     final iosConfig = IOSPubspecConfig();
     final macosConfig = MacOSPubspecConfig();
@@ -152,11 +159,17 @@ class PubspecReader {
       android: androidConfig,
       ios: iosConfig,
       macos: macosConfig,
+      addToApp: isFlutterModule,
     );
 
     final patrol = yaml['patrol'] as Map?;
     if (patrol == null) {
       return config;
+    }
+
+    final dynamic addToApp = patrol['add_to_app'];
+    if (addToApp != null && addToApp is bool) {
+      config.addToApp = addToApp;
     }
 
     final dynamic appName = patrol['app_name'];

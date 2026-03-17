@@ -69,6 +69,7 @@ class DevelopCommand extends PatrolCommand {
 
     usesAndroidOptions();
     usesIOSOptions();
+    usesAddToAppOption();
 
     argParser.addFlag(
       'open-devtools',
@@ -112,6 +113,10 @@ class DevelopCommand extends PatrolCommand {
     }
 
     final config = _pubspecReader.read();
+    final addToApp = boolArg('add-to-app') || config.addToApp;
+    if (addToApp) {
+      _logger.info('Running in add-to-app (module) mode');
+    }
     final testDirectory = config.testDirectory;
 
     final testFinder = _testFinderFactory.create(testDirectory);
@@ -253,6 +258,7 @@ class DevelopCommand extends PatrolCommand {
       appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
       uninstall: uninstall,
+      addToApp: addToApp,
     );
 
     final iosOpts = IOSAppOptions(
@@ -264,6 +270,7 @@ class DevelopCommand extends PatrolCommand {
       osVersion: stringArg('ios') ?? 'latest',
       appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
+      addToApp: addToApp,
     );
 
     final macosOpts = MacOSAppOptions(

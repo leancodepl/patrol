@@ -44,8 +44,21 @@ class AndroidTestBackend {
   final Logger _logger;
   late final String? javaPath;
 
+  String _androidDirName(bool addToApp) => addToApp ? '.android' : 'android';
+
   Future<void> build(AndroidAppOptions options) async {
-    await buildApkConfigOnly(options.flutter);
+    if (options.addToApp) {
+      final dir = _rootDirectory.childDirectory('.android');
+      if (!dir.existsSync()) {
+        throw Exception(
+          'Directory ${dir.path} does not exist. '
+          'Run "flutter pub get" in your module project first.',
+        );
+      }
+      _logger.detail('Skipping flutter build apk --config-only (add-to-app mode)');
+    } else {
+      await buildApkConfigOnly(options.flutter);
+    }
     await loadJavaPathFromFlutterDoctor(options.flutter.command);
     await detectOrchestratorVersion(options);
 
@@ -64,7 +77,7 @@ class AndroidTestBackend {
                 isWindows: _platform.isWindows,
               ),
               runInShell: true,
-              workingDirectory: _rootDirectory.childDirectory('android').path,
+              workingDirectory: _rootDirectory.childDirectory(_androidDirName(options.addToApp)).path,
               environment: switch (javaPath) {
                 final String javaPath => {'JAVA_HOME': javaPath},
                 _ => {},
@@ -92,7 +105,7 @@ class AndroidTestBackend {
                 isWindows: _platform.isWindows,
               ),
               runInShell: true,
-              workingDirectory: _rootDirectory.childDirectory('android').path,
+              workingDirectory: _rootDirectory.childDirectory(_androidDirName(options.addToApp)).path,
               environment: switch (javaPath) {
                 final String javaPath => {'JAVA_HOME': javaPath},
                 _ => {},
@@ -211,7 +224,7 @@ class AndroidTestBackend {
           await _processManager.start(
               options.toGradleAppDependencies(isWindows: _platform.isWindows),
               runInShell: true,
-              workingDirectory: _rootDirectory.childDirectory('android').path,
+              workingDirectory: _rootDirectory.childDirectory(_androidDirName(options.addToApp)).path,
               environment: switch (javaPath) {
                 final javaPath? => {'JAVA_HOME': javaPath},
                 _ => {},
@@ -294,7 +307,7 @@ class AndroidTestBackend {
                 'ANDROID_SERIAL': device.id,
                 if (javaPath case final javaPath?) ...{'JAVA_HOME': javaPath},
               },
-              workingDirectory: _rootDirectory.childDirectory('android').path,
+              workingDirectory: _rootDirectory.childDirectory(_androidDirName(options.addToApp)).path,
             )
             ..disposedBy(scope);
       process.listenStdOut((l) => _logger.detail('\t: $l')).disposedBy(scope);

@@ -60,6 +60,7 @@ class AndroidAppOptions {
     required this.appServerPort,
     required this.testServerPort,
     required this.uninstall,
+    this.addToApp = false,
   });
 
   final FlutterAppOptions flutter;
@@ -67,6 +68,7 @@ class AndroidAppOptions {
   final int appServerPort;
   final int testServerPort;
   final bool uninstall;
+  final bool addToApp;
 
   String get description => 'apk with entrypoint ${basename(flutter.target)}';
 
@@ -196,6 +198,7 @@ class IOSAppOptions {
     required this.testServerPort,
     this.fullIsolation = false,
     this.clearIOSPermissions = false,
+    this.addToApp = false,
   });
 
   final FlutterAppOptions flutter;
@@ -208,6 +211,7 @@ class IOSAppOptions {
   final int testServerPort;
   final bool fullIsolation;
   final bool clearIOSPermissions;
+  final bool addToApp;
 
   String get description {
     final platform = simulator ? 'simulator' : 'device';

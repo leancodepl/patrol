@@ -76,6 +76,8 @@ class IOSTestBackend {
   final DisposeScope _disposeScope;
   final Logger _logger;
 
+  String _iosDirName(bool addToApp) => addToApp ? '.ios' : 'ios';
+
   Future<void> build(IOSAppOptions options) async {
     await _disposeScope.run((scope) async {
       final subject = options.description;
@@ -95,27 +97,38 @@ class IOSTestBackend {
 
       // flutter build ios --config-only
 
-      var flutterBuildKilled = false;
-      process = await _processManager.start(
-        options.toFlutterBuildInvocation(options.flutter.buildMode),
-        runInShell: true,
-      );
-      scope.addDispose(() {
-        process.kill();
-        flutterBuildKilled = true; // `flutter build` has exit code 0 on SIGINT
-      });
-      process.listenStdOut((l) => _logger.info('\t$l')).disposedBy(scope);
-      process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
-      var exitCode = await process.exitCode;
-      final flutterCommand = options.flutter.command;
-      if (exitCode != 0) {
-        final cause = '`$flutterCommand build ios` exited with code $exitCode';
-        task.fail('Failed to build $subject ($cause)');
-        throwToolExit(cause);
-      } else if (flutterBuildKilled) {
-        final cause = '`$flutterCommand build ios` was interrupted';
-        task.fail('Failed to build $subject ($cause)');
-        throwToolInterrupted(cause);
+      if (options.addToApp) {
+        final dir = _rootDirectory.childDirectory('.ios');
+        if (!dir.existsSync()) {
+          throw Exception(
+            'Directory ${dir.path} does not exist. '
+            'Run "flutter pub get" in your module project first.',
+          );
+        }
+        _logger.detail('Skipping flutter build ios --config-only (add-to-app mode)');
+      } else {
+        var flutterBuildKilled = false;
+        process = await _processManager.start(
+          options.toFlutterBuildInvocation(options.flutter.buildMode),
+          runInShell: true,
+        );
+        scope.addDispose(() {
+          process.kill();
+          flutterBuildKilled = true; // `flutter build` has exit code 0 on SIGINT
+        });
+        process.listenStdOut((l) => _logger.info('\t$l')).disposedBy(scope);
+        process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
+        final exitCode = await process.exitCode;
+        final flutterCommand = options.flutter.command;
+        if (exitCode != 0) {
+          final cause = '`$flutterCommand build ios` exited with code $exitCode';
+          task.fail('Failed to build $subject ($cause)');
+          throwToolExit(cause);
+        } else if (flutterBuildKilled) {
+          final cause = '`$flutterCommand build ios` was interrupted';
+          task.fail('Failed to build $subject ($cause)');
+          throwToolInterrupted(cause);
+        }
       }
 
       // xcodebuild build-for-testing
@@ -124,12 +137,12 @@ class IOSTestBackend {
           await _processManager.start(
               options.buildForTestingInvocation(),
               runInShell: true,
-              workingDirectory: _rootDirectory.childDirectory('ios').path,
+              workingDirectory: _rootDirectory.childDirectory(_iosDirName(options.addToApp)).path,
             )
             ..disposedBy(scope);
       process.listenStdOut((l) => _logger.detail('\t$l')).disposedBy(scope);
       process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
-      exitCode = await process.exitCode;
+      final exitCode = await process.exitCode;
       if (exitCode == 0) {
         task.complete('Completed building $subject');
       } else if (exitCode == _xcodebuildInterrupted) {
@@ -207,7 +220,7 @@ class IOSTestBackend {
                     .toString(),
                 'TEST_RUNNER_PATROL_APP_PORT': options.appServerPort.toString(),
               },
-              workingDirectory: _rootDirectory.childDirectory('ios').path,
+              workingDirectory: _rootDirectory.childDirectory(_iosDirName(options.addToApp)).path,
             )
             ..disposedBy(_disposeScope);
       process.listenStdOut((l) => _logger.detail('\t$l')).disposedBy(scope);

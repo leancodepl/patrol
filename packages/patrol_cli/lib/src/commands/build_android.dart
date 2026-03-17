@@ -49,6 +49,7 @@ class BuildAndroidCommand extends PatrolCommand {
     usesBuildNumberOption();
 
     usesAndroidOptions();
+    usesAddToAppOption();
   }
 
   final TestFinderFactory _testFinderFactory;
@@ -80,6 +81,10 @@ class BuildAndroidCommand extends PatrolCommand {
     );
 
     final config = _pubspecReader.read();
+    final addToApp = boolArg('add-to-app') || config.addToApp;
+    if (addToApp) {
+      _logger.info('Running in add-to-app (module) mode');
+    }
     final testDirectory = config.testDirectory;
     final testFileSuffix = config.testFileSuffix;
 
@@ -193,6 +198,7 @@ class BuildAndroidCommand extends PatrolCommand {
       appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
       uninstall: uninstall,
+      addToApp: addToApp,
     );
 
     try {
