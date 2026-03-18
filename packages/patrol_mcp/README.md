@@ -20,57 +20,53 @@ MCP server for managing `patrol develop` sessions from AI agents.
 
 ## Installation
 
+> [!IMPORTANT]
+> This README focuses on project-local MCP setup.
+
 By default, this setup assumes your Flutter project's `pubspec.yaml` is in the
 repository root. If your app lives in a subdirectory, set `PROJECT_ROOT`
 accordingly (for example `./app`).
 
 1. Add `patrol_mcp` as a dev dependency in your Flutter project:
 
-```yaml
-dev_dependencies:
-  patrol_mcp:
-    git:
-      url: https://github.com/leancodepl/patrol.git
-      ref: feat/patrol-mcp
-      path: packages/patrol_mcp
-```
+   ```yaml
+   dev_dependencies:
+     patrol_mcp:
+       git:
+         url: https://github.com/leancodepl/patrol.git
+         ref: feat/patrol-mcp
+         path: packages/patrol_mcp
+   ```
 
-> [!IMPORTANT]
-> This README focuses on project-local MCP setup.
+2. Create a launcher script named `run-patrol` with the contents below.
+   Where to save it and how to configure MCP depends on your IDE — see step 3.
 
-2. Add the MCP server to your AI coding assistant configuration:
+   ```sh
+   #!/usr/bin/env sh
+   set -e
 
-Create launcher script (`run-patrol`) in the IDE-specific location you plan to
-reference from `command`.
+   cd "${PROJECT_ROOT:-.}"
+   export PROJECT_ROOT=$PWD
 
-```sh
-#!/usr/bin/env sh
-set -e
+   if command -v fvm >/dev/null 2>&1; then
+     export PATROL_FLUTTER_COMMAND="${PATROL_FLUTTER_COMMAND:-fvm flutter}"
+     exec fvm dart run patrol_mcp
+   else
+     export PATROL_FLUTTER_COMMAND="${PATROL_FLUTTER_COMMAND:-flutter}"
+     exec dart run patrol_mcp
+   fi
+   ```
 
-cd "${PROJECT_ROOT:-.}"
-export PROJECT_ROOT=$PWD
-
-if command -v fvm >/dev/null 2>&1; then
-  export PATROL_FLUTTER_COMMAND="${PATROL_FLUTTER_COMMAND:-fvm flutter}"
-  exec fvm dart run patrol_mcp
-else
-  export PATROL_FLUTTER_COMMAND="${PATROL_FLUTTER_COMMAND:-flutter}"
-  exec dart run patrol_mcp
-fi
-```
-
-Make it executable:
-
-```sh
-chmod +x <path-to-run-patrol>
-```
-
-Then configure your IDE MCP server:
+3. Follow the instructions for your IDE:
 
 <details>
 <summary>Cursor</summary>
 
-Put script at: `<workspace-root>/.cursor/run-patrol`
+Save the script to `<workspace-root>/.cursor/run-patrol` and make it executable:
+
+```sh
+chmod +x .cursor/run-patrol
+```
 
 Add to `<workspace-root>/.cursor/mcp.json`:
 
@@ -89,12 +85,19 @@ Add to `<workspace-root>/.cursor/mcp.json`:
 }
 ```
 
+> [!NOTE]
+> Make sure MCP is enabled in Cursor: **Settings → Features → MCP**.
+
 </details>
 
 <details>
 <summary>Google Antigravity</summary>
 
-Put script at: `<workspace-root>/.antigravity/run-patrol`
+Save the script to `<workspace-root>/.antigravity/run-patrol` and make it executable:
+
+```sh
+chmod +x .antigravity/run-patrol
+```
 
 Open the MCP store, click "Manage MCP Servers", then "View raw config" and add to `mcp_config.json`.
 Per-workspace MCP config is not yet supported — the config is global
@@ -121,7 +124,11 @@ works because Antigravity resolves it against the open workspace:
 <details>
 <summary>Gemini CLI</summary>
 
-Put script at: `<workspace-root>/.gemini/run-patrol`
+Save the script to `<workspace-root>/.gemini/run-patrol` and make it executable:
+
+```sh
+chmod +x .gemini/run-patrol
+```
 
 Add to `<workspace-root>/.gemini/settings.json`:
 
@@ -145,7 +152,11 @@ Add to `<workspace-root>/.gemini/settings.json`:
 <details>
 <summary>Claude Code (CLI & VS Code extension)</summary>
 
-Put script at: `<workspace-root>/.claude/run-patrol`
+Save the script to `<workspace-root>/.claude/run-patrol` and make it executable:
+
+```sh
+chmod +x .claude/run-patrol
+```
 
 Add to `<workspace-root>/.mcp.json` (must be at project root):
 
@@ -173,7 +184,11 @@ prompted to approve the project-scoped MCP server.
 <details>
 <summary>Copilot</summary>
 
-Put script at: `<workspace-root>/.vscode/run-patrol`
+Save the script to `<workspace-root>/.vscode/run-patrol` and make it executable:
+
+```sh
+chmod +x .vscode/run-patrol
+```
 
 Add to `<workspace-root>/.vscode/mcp.json`:
 
