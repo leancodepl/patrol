@@ -76,7 +76,7 @@ jobs:
       - name: patrol build android
         run: | 
           patrol build android \
-          --target patrol_test/example_test.dart \
+          --target patrol_test/pull_to_refresh_test.dart \
           --verbose
 
       - name: Upload APKs to emulator.wtf and run smoke test
