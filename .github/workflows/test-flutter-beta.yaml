@@ -3,12 +3,12 @@ name: test flutter beta channel
 on:
   workflow_dispatch:
   schedule:
+    - cron: '0 2 * * 1' # Weekly on Monday at 2 AM UTC
    # temporary to test workflow on PR
-   pull_request:
+  pull_request:
     paths:
       - '*'
-  schedule:
-    - cron: '0 2 * * 1' # Weekly on Monday at 2 AM UTC
+
 
 jobs:
   run_tests:
