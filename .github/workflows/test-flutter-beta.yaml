@@ -4,10 +4,6 @@ on:
   workflow_dispatch:
   schedule:
     - cron: '0 2 * * 1' # Weekly on Monday at 2 AM UTC
-  # temporary to test workflow on this branch
-  push:
-    branches:
-      - 'workflows/add-workflow-for-flutter-beta'
 
 
 jobs:
