@@ -135,26 +135,32 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text('box 1'),
-                ListTile(
-                  onTap: () => _incrementCounter(10),
-                  key: K.tile1,
-                  title: const Text('Add'),
-                  trailing: IconButton(
-                    icon: const Icon(
-                      Icons.add,
-                      key: K.icon1,
-                      semanticLabel: 'Increment counter',
+                Material(
+                  color: Colors.transparent,
+                  child: ListTile(
+                    onTap: () => _incrementCounter(10),
+                    key: K.tile1,
+                    title: const Text('Add'),
+                    trailing: IconButton(
+                      icon: const Icon(
+                        Icons.add,
+                        key: K.icon1,
+                        semanticLabel: 'Increment counter',
+                      ),
+                      onPressed: _incrementCounter,
                     ),
-                    onPressed: _incrementCounter,
                   ),
                 ),
-                ListTile(
-                  onTap: () => _decrementCounter(10),
-                  key: K.tile2,
-                  title: const Text('Subtract'),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.remove, key: K.icon2),
-                    onPressed: _decrementCounter,
+                Material(
+                  color: Colors.transparent,
+                  child: ListTile(
+                    onTap: () => _decrementCounter(10),
+                    key: K.tile2,
+                    title: const Text('Subtract'),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.remove, key: K.icon2),
+                      onPressed: _decrementCounter,
+                    ),
                   ),
                 ),
               ],
@@ -169,22 +175,28 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text('box 2'),
-                ListTile(
-                  onTap: () => _incrementCounter(10),
-                  key: K.tile1,
-                  title: const Text('Add'),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.add, key: K.icon1),
-                    onPressed: _incrementCounter,
+                Material(
+                  color: Colors.transparent,
+                  child: ListTile(
+                    onTap: () => _incrementCounter(10),
+                    key: K.tile1,
+                    title: const Text('Add'),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.add, key: K.icon1),
+                      onPressed: _incrementCounter,
+                    ),
                   ),
                 ),
-                ListTile(
-                  onTap: () => _decrementCounter(10),
-                  key: K.tile2,
-                  title: const Text('Subtract'),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.remove, key: K.icon2),
-                    onPressed: _decrementCounter,
+                Material(
+                  color: Colors.transparent,
+                  child: ListTile(
+                    onTap: () => _decrementCounter(10),
+                    key: K.tile2,
+                    title: const Text('Subtract'),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.remove, key: K.icon2),
+                      onPressed: _decrementCounter,
+                    ),
                   ),
                 ),
               ],
