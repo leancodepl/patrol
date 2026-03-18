@@ -424,10 +424,7 @@ class DevelopService {
           dartDefines: flutterOpts.dartDefines,
           openDevtools: openDevtools,
           attachUsingUrl: device.targetPlatform == TargetPlatform.macOS,
-          onQuit: () async {
-            await onQuitCleanup();
-            await finalizer?.call();
-          },
+          onQuit: onQuitCleanup,
         );
       }
 
