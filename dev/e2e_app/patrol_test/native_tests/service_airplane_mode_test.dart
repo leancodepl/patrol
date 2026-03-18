@@ -26,5 +26,5 @@ void main() {
       await $.native.disableAirplaneMode();
       await $.native.enableAirplaneMode();
     }
-  }, tags: []);
+  });
 }
