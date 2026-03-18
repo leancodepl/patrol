@@ -5,7 +5,8 @@ on:
   schedule:
     - cron: '0 2 * * 1' # Weekly on Monday at 2 AM UTC
    # temporary to test workflow on PR
-  pull_request:
+  pull_request_target:
+    types: [opened, synchronize]
     paths:
       - '*'
 
