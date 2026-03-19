@@ -44,12 +44,15 @@ class DevelopSessionFactory {
     Future<void> Function()? onExit,
     void Function(TestCompletionResult result)? onTestsCompleted,
     void Function(Entry entry)? onLogEntry,
+    bool verbose = false,
   }) {
     const fs = LocalFileSystem();
     const platform = LocalPlatform();
     const processManager = LocalProcessManager();
     final rootDirectory = fs.directory(projectRoot);
-    final logger = Logger();
+    final logger = Logger(
+      level: verbose ? Level.verbose : Level.info,
+    );
 
     final flutterTool = FlutterTool(
       stdin: stdin,

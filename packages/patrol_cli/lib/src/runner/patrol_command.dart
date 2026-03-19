@@ -1,9 +1,32 @@
 import 'dart:io';
 
+import 'package:args/args.dart';
 import 'package:args/command_runner.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:patrol_cli/src/runner/flutter_command.dart';
+
+/// Adds global CLI flags (e.g. `--verbose`, `--flutter-command`) to [parser].
+///
+/// These flags live on the top-level runner in the CLI, but non-CLI callers
+/// (e.g. the MCP server) need them on the same parser as command-level flags.
+/// This function is the single source of truth for both paths.
+void addGlobalFlags(ArgParser parser) {
+  parser
+    ..addOption(
+      'flutter-command',
+      help:
+          'Command to use to run the Flutter CLI. Alternatively set the '
+          'PATROL_FLUTTER_COMMAND environment variable.',
+      valueHelp: 'fvm flutter',
+    )
+    ..addFlag(
+      'verbose',
+      abbr: 'v',
+      help: 'Print more logs.',
+      negatable: false,
+    );
+}
 
 abstract class PatrolCommand extends Command<int> {
   /// Seconds to wait after the individual test case finishes executing.

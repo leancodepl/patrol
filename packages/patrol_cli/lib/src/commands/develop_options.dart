@@ -33,30 +33,6 @@ class DevelopOptions {
     this.iosVersion,
   });
 
-  /// Creates [DevelopOptions] by parsing a list of CLI-style flag strings.
-  ///
-  /// Uses an [ArgParser] with the same option names and defaults as the
-  /// `patrol develop` CLI command. This is the entry point for non-CLI callers
-  /// (e.g. the MCP server) that receive flags as a flat string.
-  ///
-  /// [args] are the flag strings (e.g. `['--flavor', 'dev', '--no-uninstall']`).
-  /// [target] is the test file path (required, passed separately).
-  /// [flutterCommand] defaults to `flutter` if not provided.
-  factory DevelopOptions.fromArgs(
-    List<String> args, {
-    required String target,
-    FlutterCommand? flutterCommand,
-  }) {
-    final parserCommand = _DevelopOptionsParserCommand();
-    configureDevelopArgParser(parserCommand);
-    final results = parserCommand.argParser.parse(args);
-    return DevelopOptions.fromArgResults(
-      results,
-      target: target,
-      flutterCommand: flutterCommand,
-    );
-  }
-
   factory DevelopOptions.fromArgResults(
     ArgResults results, {
     required String target,
@@ -95,6 +71,50 @@ class DevelopOptions {
       checkCompatibility: results['check-compatibility'] as bool,
       iosVersion: results['ios'] as String?,
     );
+  }
+
+  /// Parses a list of CLI-style flag strings into [DevelopOptions] and the
+  /// full [ArgResults].
+  ///
+  /// Uses an [ArgParser] with the same option names and defaults as the
+  /// `patrol develop` CLI command, plus global flags (e.g. `--verbose`,
+  /// `--flutter-command`) that are normally handled by the CLI runner.
+  /// This is the entry point for non-CLI callers (e.g. the MCP server) that
+  /// receive all flags as a flat string.
+  ///
+  /// [args] are the flag strings (e.g. `['--flavor', 'dev', '--verbose']`).
+  /// [target] is the test file path (required, passed separately).
+  /// [flutterCommand] is a fallback; `--flutter-command` in [args] takes
+  /// precedence if present.
+  ///
+  /// Returns a record of ([DevelopOptions], [ArgResults]) so that callers can
+  /// inspect global flags (e.g. `verbose`) from the same parse pass.
+  static (DevelopOptions, ArgResults) parseArgs(
+    List<String> args, {
+    required String target,
+    FlutterCommand? flutterCommand,
+  }) {
+    final parserCommand = _DevelopOptionsParserCommand();
+    configureDevelopArgParser(parserCommand);
+    // Also accept global flags that are relevant to develop sessions.
+    // In the CLI these live on the runner's parser, but non-CLI callers
+    // (e.g. MCP) pass all flags flat so the parser must know about them.
+    addGlobalFlags(parserCommand.argParser);
+    final results = parserCommand.argParser.parse(args);
+
+    // --flutter-command from args takes precedence over the parameter.
+    final parsedFlutterCmd = results['flutter-command'] as String?;
+    final effectiveFlutterCmd =
+        parsedFlutterCmd != null && parsedFlutterCmd.isNotEmpty
+            ? FlutterCommand.parse(parsedFlutterCmd)
+            : flutterCommand;
+
+    final options = DevelopOptions.fromArgResults(
+      results,
+      target: target,
+      flutterCommand: effectiveFlutterCmd,
+    );
+    return (options, results);
   }
 
   final String target;
