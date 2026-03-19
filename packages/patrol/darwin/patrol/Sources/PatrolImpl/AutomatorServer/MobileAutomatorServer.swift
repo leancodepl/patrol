@@ -36,8 +36,7 @@ protocol MobileAutomatorServer {
     func takeCameraPhoto(request: TakeCameraPhotoRequest) throws
     func pickImageFromGallery(request: PickImageFromGalleryRequest) throws
     func pickMultipleImagesFromGallery(request: PickMultipleImagesFromGalleryRequest) throws
-    func initAxeSession(request: InitAxeSessionRequest) throws
-    func axeA11yScan(request: AxeA11yScanRequest) throws
+    func axeInitSession(request: AxeInitSessionRequest) throws
     func debug() throws
     func setMockLocation(request: SetMockLocationRequest) throws
     func stopMockLocation() throws
@@ -202,15 +201,9 @@ extension MobileAutomatorServer {
         return HTTPResponse(.ok)
     }
 
-    private func initAxeSessionHandler(request: HTTPRequest) throws -> HTTPResponse {
-        let requestArg = try JSONDecoder().decode(InitAxeSessionRequest.self, from: request.body)
-        try initAxeSession(request: requestArg)
-        return HTTPResponse(.ok)
-    }
-
-    private func axeA11yScanHandler(request: HTTPRequest) throws -> HTTPResponse {
-        let requestArg = try JSONDecoder().decode(AxeA11yScanRequest.self, from: request.body)
-        try axeA11yScan(request: requestArg)
+    private func axeInitSessionHandler(request: HTTPRequest) throws -> HTTPResponse {
+        let requestArg = try JSONDecoder().decode(AxeInitSessionRequest.self, from: request.body)
+        try axeInitSession(request: requestArg)
         return HTTPResponse(.ok)
     }
 
@@ -390,15 +383,10 @@ extension MobileAutomatorServer {
                 request: request,
                 handler: pickMultipleImagesFromGalleryHandler)
         }
-        server.route(.POST, "initAxeSession") {
+        server.route(.POST, "axeInitSession") {
             request in handleRequest(
                 request: request,
-                handler: initAxeSessionHandler)
-        }
-        server.route(.POST, "axeA11yScan") {
-            request in handleRequest(
-                request: request,
-                handler: axeA11yScanHandler)
+                handler: axeInitSessionHandler)
         }
         server.route(.POST, "debug") {
             request in handleRequest(
