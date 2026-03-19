@@ -5,6 +5,7 @@
 - Fix `takeCameraPhoto` on Android to use fallback button if done button is not visible. (#2974)
 - Reflect failed tests in Playwright report. (#2970)
 - Add `stopMockLocation` method to `PlatformAutomator` and make mockLocation method less flaky (#2937)
+- Fix issue that `patrol test` do not log success/failure of test completion. (#2984)
 
 
 ## 4.3.0
