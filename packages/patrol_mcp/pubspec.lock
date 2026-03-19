@@ -359,7 +359,7 @@ packages:
       path: "../patrol_cli"
       relative: true
     source: path
-    version: "4.0.2"
+    version: "4.1.0"
   patrol_log:
     dependency: "direct overridden"
     description:
