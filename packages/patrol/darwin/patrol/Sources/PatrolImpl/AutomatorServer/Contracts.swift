@@ -520,11 +520,7 @@ public struct IOSPickMultipleImagesFromGalleryRequest: Codable {
   public var appId: String
 }
 
-public struct InitAxeSessionRequest: Codable {
+public struct AxeInitSessionRequest: Codable {
   public var dequeApiKey: String
   public var dequeProjectId: String
-}
-
-public struct AxeA11yScanRequest: Codable {
-  public var appId: String
 }

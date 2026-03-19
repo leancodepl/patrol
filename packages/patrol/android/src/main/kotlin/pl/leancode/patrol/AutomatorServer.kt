@@ -14,14 +14,31 @@ import pl.leancode.patrol.contracts.Contracts.AndroidSwipeRequest
 import pl.leancode.patrol.contracts.Contracts.AndroidTapOnNotificationRequest
 import pl.leancode.patrol.contracts.Contracts.AndroidTapRequest
 import pl.leancode.patrol.contracts.Contracts.AndroidWaitUntilVisibleRequest
+import com.deque.networking.models.devtools.serializable.AxeDevToolsResultKey
+import pl.leancode.patrol.contracts.Contracts
+import pl.leancode.patrol.contracts.Contracts.AxeDeleteResultRequest
+import pl.leancode.patrol.contracts.Contracts.AxeGetResultRequest
+import pl.leancode.patrol.contracts.Contracts.AxeGetResultResponse
+import pl.leancode.patrol.contracts.Contracts.AxeIgnoreByViewIdResourceNameRequest
+import pl.leancode.patrol.contracts.Contracts.AxeIgnoreRulesRequest
+import pl.leancode.patrol.contracts.Contracts.AxeInitSessionRequest
+import pl.leancode.patrol.contracts.Contracts.AxeIsUserAuthenticatedResponse
+import pl.leancode.patrol.contracts.Contracts.AxeScanRequest
+import pl.leancode.patrol.contracts.Contracts.AxeScanResponse
+import pl.leancode.patrol.contracts.Contracts.AxeSetScanNameRequest
+import pl.leancode.patrol.contracts.Contracts.AxeTagScanAsRequest
+import pl.leancode.patrol.contracts.Contracts.AndroidSelector
 import pl.leancode.patrol.contracts.Contracts.ConfigureRequest
 import pl.leancode.patrol.contracts.Contracts.DarkModeRequest
 import pl.leancode.patrol.contracts.Contracts.GetNotificationsRequest
 import pl.leancode.patrol.contracts.Contracts.GetNotificationsResponse
+import pl.leancode.patrol.contracts.Contracts.GetOsVersionResponse
 import pl.leancode.patrol.contracts.Contracts.HandlePermissionRequest
 import pl.leancode.patrol.contracts.Contracts.HandlePermissionRequestCode
+import pl.leancode.patrol.contracts.Contracts.IsVirtualDeviceResponse
 import pl.leancode.patrol.contracts.Contracts.OpenAppRequest
 import pl.leancode.patrol.contracts.Contracts.OpenQuickSettingsRequest
+import pl.leancode.patrol.contracts.Contracts.OpenUrlRequest
 import pl.leancode.patrol.contracts.Contracts.PermissionDialogVisibleRequest
 import pl.leancode.patrol.contracts.Contracts.PermissionDialogVisibleResponse
 import pl.leancode.patrol.contracts.Contracts.SetLocationAccuracyRequest
@@ -79,7 +96,7 @@ class AutomatorServer(private val automation: Automator) : MobileAutomatorServer
         automation.openQuickSettings()
     }
 
-    override fun openUrl(request: Contracts.OpenUrlRequest) {
+    override fun openUrl(request: OpenUrlRequest) {
         automation.openUrl(request.url)
     }
 
@@ -388,12 +405,75 @@ class AutomatorServer(private val automation: Automator) : MobileAutomatorServer
         )
     }
 
-    override fun initAxeSession(request: Contracts.InitAxeSessionRequest) {
-        automation.initAxeSession(request.dequeApiKey, request.dequeProjectId)
+    override fun axeInitSession(request: AxeInitSessionRequest) {
+        automation.axeInitSession(request.dequeApiKey, request.dequeProjectId)
     }
 
-    override fun axeA11yScan() {
-        automation.axeA11yScan()
+    override fun axeIsUserAuthenticated(): AxeIsUserAuthenticatedResponse {
+        val isAuthenticated = automation.axeIsUserAuthenticated()
+        return AxeIsUserAuthenticatedResponse(isAuthenticated)
+    }
+
+    override fun axeDisconnect() {
+        automation.axeDisconnect()
+    }
+
+    override fun axeScan(request: AxeScanRequest): AxeScanResponse {
+        val result = automation.axeScan(
+            uploadToDashboard = request.uploadToDashboard,
+            saveLocallyWithPrefix = request.saveLocallyWithPrefix,
+            getSerializedResult = request.getSerializedResult
+        )
+        val serializedResult = result?.toString()
+        return AxeScanResponse(serializedResult)
+    }
+
+    override fun axeGetResult(request: AxeGetResultRequest): AxeGetResultResponse {
+        val result = automation.axeGetResult(
+            request.userId,
+            request.packageName,
+            request.resultId,
+            request.uuid
+        )
+        val serializedResult = result?.toString()
+        return AxeGetResultResponse(serializedResult)
+    }
+
+    override fun axeSetScanName(request: AxeSetScanNameRequest) {
+        automation.axeSetScanName(request.name)
+    }
+
+    override fun axeIgnoreRules(request: AxeIgnoreRulesRequest) {
+        automation.axeIgnoreRules(request.rulesToIgnore)
+    }
+
+    override fun axeIgnoreByViewIdResourceName(request: AxeIgnoreByViewIdResourceNameRequest) {
+        automation.axeIgnoreByViewIdResourceName(request.viewIdResourceName, request.ruleList)
+    }
+
+    override fun axeIgnoreExperimental() {
+        automation.axeIgnoreExperimental()
+    }
+
+    override fun axeResetIgnoredRules() {
+        automation.axeResetIgnoredRules()
+    }
+
+    override fun axeTagScanAs(request: AxeTagScanAsRequest) {
+        automation.axeTagScanAs(request.tags.toSet())
+    }
+
+    override fun axeTearDown() {
+        automation.axeTearDown()
+    }
+
+    override fun axeDeleteResult(request: AxeDeleteResultRequest) {
+        automation.axeDeleteResult(
+            request.userId,
+            request.packageName,
+            request.resultId,
+            request.uuid
+        )
     }
 
     override fun setMockLocation(request: SetMockLocationRequest) {
@@ -423,7 +503,7 @@ class AutomatorServer(private val automation: Automator) : MobileAutomatorServer
         PatrolServer.appReady.open()
     }
 
-    override fun isVirtualDevice(): Contracts.IsVirtualDeviceResponse {
+    override fun isVirtualDevice(): IsVirtualDeviceResponse {
         val isEmulator = Build.FINGERPRINT.startsWith("generic") ||
             Build.FINGERPRINT.startsWith("unknown") ||
             Build.MODEL.contains("google_sdk") ||
@@ -440,10 +520,10 @@ class AutomatorServer(private val automation: Automator) : MobileAutomatorServer
             (Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic")) ||
             "google_sdk" == Build.PRODUCT
 
-        return Contracts.IsVirtualDeviceResponse(isEmulator)
+        return IsVirtualDeviceResponse(isEmulator)
     }
 
-    override fun getOsVersion(): Contracts.GetOsVersionResponse {
-        return Contracts.GetOsVersionResponse(Build.VERSION.SDK_INT.toLong())
+    override fun getOsVersion(): GetOsVersionResponse {
+        return GetOsVersionResponse(Build.VERSION.SDK_INT.toLong())
     }
 }
