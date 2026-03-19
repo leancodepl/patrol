@@ -268,22 +268,22 @@ void main() {
         expect(reader.successfulTests, 1);
       });
 
-      // On mobile (iOS/Android), finish entries use currentTestFullName which
-      // starts with the test file path in dotted notation, e.g.
-      // "patrol_test.app_test my test".
+      // On mobile (iOS/Android), both start and finish entries use
+      // currentTestFullName which includes the test file name as a prefix, e.g.
+      // "app_test my test".
       test(
-        'matches mobile finish entry with patrol_test.file prefix',
+        'matches mobile entries with same file prefix',
         () async {
           reader
             ..parse(
               _patrolLogLine(
-                _testEntryJson(name: 'increase counter', status: 'start'),
+                _testEntryJson(name: 'app_test increase counter', status: 'start'),
               ),
             )
             ..parse(
               _patrolLogLine(
                 _testEntryJson(
-                  name: 'patrol_test.app_test increase counter',
+                  name: 'app_test increase counter',
                   status: 'success',
                 ),
               ),
@@ -297,20 +297,19 @@ void main() {
       );
 
       test(
-        'matches mobile finish with deeply nested dotted path prefix',
+        'matches mobile entries with deeply nested file path',
         () async {
-          // Path like patrol_test/features/auth_test.dart becomes
-          // "patrol_test.features.auth_test" as the first token.
+          // Both start and finish use the same name with file path prefix
           reader
             ..parse(
               _patrolLogLine(
-                _testEntryJson(name: 'should login', status: 'start'),
+                _testEntryJson(name: 'features auth_test should login', status: 'start'),
               ),
             )
             ..parse(
               _patrolLogLine(
                 _testEntryJson(
-                  name: 'patrol_test.features.auth_test should login',
+                  name: 'features auth_test should login',
                   status: 'success',
                 ),
               ),
