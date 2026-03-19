@@ -11,9 +11,13 @@
 MCP server for managing `patrol develop` sessions from AI agents.
 
 > [!NOTE]
-> **TODO** (`patrol_cli/lib/src/runner/patrol_command.dart`): Use `patrol_cli`
-> from pub dependencies instead of relying on the globally installed `patrol`
-> CLI from PATH.
+> **TODO** (`patrol_cli/pubspec.yaml`, `patrol_cli/lib/src/runner/patrol_command.dart`,
+> `dev/e2e_app/pubspec.yaml`): Use `patrol_cli` from pub dependencies instead
+> of relying on the globally installed `patrol` CLI from PATH. First, publish
+> a new `patrol_log` version (with `onLogEntry` callback and
+> `ConfigEntry.developCompletedKey`) so that `patrol_cli` can drop the git
+> dependency override and `e2e_app` can drop its `dependency_overrides` for
+> `patrol_log`.
 
 > [!NOTE]
 > **TODO:** Add a step at the top of Installation suggesting the user ask their AI
