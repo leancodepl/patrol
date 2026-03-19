@@ -271,56 +271,56 @@ void main() {
       // On mobile (iOS/Android), both start and finish entries use
       // currentTestFullName which includes the test file name as a prefix, e.g.
       // "app_test my test".
-      test(
-        'matches mobile entries with same file prefix',
-        () async {
-          reader
-            ..parse(
-              _patrolLogLine(
-                _testEntryJson(name: 'app_test increase counter', status: 'start'),
+      test('matches mobile entries with same file prefix', () async {
+        reader
+          ..parse(
+            _patrolLogLine(
+              _testEntryJson(
+                name: 'app_test increase counter',
+                status: 'start',
               ),
-            )
-            ..parse(
-              _patrolLogLine(
-                _testEntryJson(
-                  name: 'app_test increase counter',
-                  status: 'success',
-                ),
+            ),
+          )
+          ..parse(
+            _patrolLogLine(
+              _testEntryJson(
+                name: 'app_test increase counter',
+                status: 'success',
               ),
-            );
+            ),
+          );
 
-          await pumpEventQueue();
+        await pumpEventQueue();
 
-          expect(reader.totalTests, 1);
-          expect(reader.successfulTests, 1);
-        },
-      );
+        expect(reader.totalTests, 1);
+        expect(reader.successfulTests, 1);
+      });
 
-      test(
-        'matches mobile entries with deeply nested file path',
-        () async {
-          // Both start and finish use the same name with file path prefix
-          reader
-            ..parse(
-              _patrolLogLine(
-                _testEntryJson(name: 'features auth_test should login', status: 'start'),
+      test('matches mobile entries with deeply nested file path', () async {
+        // Both start and finish use the same name with file path prefix
+        reader
+          ..parse(
+            _patrolLogLine(
+              _testEntryJson(
+                name: 'features auth_test should login',
+                status: 'start',
               ),
-            )
-            ..parse(
-              _patrolLogLine(
-                _testEntryJson(
-                  name: 'features auth_test should login',
-                  status: 'success',
-                ),
+            ),
+          )
+          ..parse(
+            _patrolLogLine(
+              _testEntryJson(
+                name: 'features auth_test should login',
+                status: 'success',
               ),
-            );
+            ),
+          );
 
-          await pumpEventQueue();
+        await pumpEventQueue();
 
-          expect(reader.totalTests, 1);
-          expect(reader.successfulTests, 1);
-        },
-      );
+        expect(reader.totalTests, 1);
+        expect(reader.successfulTests, 1);
+      });
 
       test('correctly tracks multiple distinct sequential tests', () async {
         reader
