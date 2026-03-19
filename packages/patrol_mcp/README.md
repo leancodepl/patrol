@@ -10,6 +10,16 @@
 
 MCP server for managing `patrol develop` sessions from AI agents.
 
+> [!NOTE]
+> **TODO** (`patrol_cli/lib/src/runner/patrol_command.dart`): Use `patrol_cli`
+> from pub dependencies instead of relying on the globally installed `patrol`
+> CLI from PATH.
+
+> [!NOTE]
+> **TODO:** Add a step at the top of Installation suggesting the user ask their AI
+> agent to set up Patrol MCP (e.g. "Ask your AI agent to install and configure
+> Patrol MCP in this project").
+
 ## Features
 
 - Run Patrol tests and block until completion.

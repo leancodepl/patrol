@@ -4,7 +4,7 @@ import 'package:patrol_cli/src/runner/patrol_command.dart';
 ///
 /// This is shared by:
 /// - `DevelopCommand` runtime CLI parsing
-/// - `DevelopOptions.fromArgs` for programmatic callers (e.g. MCP)
+/// - `DevelopOptions.parseArgs` for programmatic callers (e.g. MCP)
 void configureDevelopArgParser(PatrolCommand command) {
   command
     ..usesTargetOption()

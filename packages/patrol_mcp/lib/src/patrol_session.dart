@@ -229,6 +229,28 @@ final class PatrolSession {
 
     final resolvedCwd = p.canonicalize(flutterProjectPath);
 
+    // Parse additional flags using the same ArgParser definitions as the CLI.
+    // This supports both develop-specific flags and global flags (e.g.
+    // --verbose, --flutter-command) so that PATROL_FLAGS works with everything
+    // that `patrol develop` accepts.
+    final flagParts = (additionalFlags.isNotEmpty
+            ? additionalFlags.split(RegExp(r'\s+'))
+            : <String>[])
+        // Skip compatibility checking in MCP context for speed.
+        ..add('--no-check-compatibility');
+
+    final flutterCmd = io.Platform.environment['PATROL_FLUTTER_COMMAND'];
+
+    final (options, globalResults) = DevelopOptions.parseArgs(
+      flagParts,
+      target: testFile,
+      flutterCommand: flutterCmd != null && flutterCmd.isNotEmpty
+          ? FlutterCommand.parse(flutterCmd)
+          : null,
+    );
+    _testServerPort = options.testServerPort;
+    final verbose = globalResults['verbose'] as bool? ?? false;
+
     // Create a DisposeScope for the session lifecycle
     final disposeScope = DisposeScope();
     _disposeScope = disposeScope;
@@ -244,6 +266,7 @@ final class PatrolSession {
       projectRoot: resolvedCwd,
       disposeScope: disposeScope,
       stdin: stdinController.stream,
+      verbose: verbose,
       onExit: () async {
         if (!exitCompleter.isCompleted) {
           exitCompleter.complete();
@@ -253,24 +276,6 @@ final class PatrolSession {
       onTestsCompleted: _handleTestsCompleted,
     );
     _developService = developService;
-
-    // Parse additional flags using the same ArgParser definitions as the CLI.
-    final flagParts = (additionalFlags.isNotEmpty
-            ? additionalFlags.split(RegExp(r'\s+'))
-            : <String>[])
-        // Skip compatibility checking in MCP context for speed.
-        ..add('--no-check-compatibility');
-
-    final flutterCmd = io.Platform.environment['PATROL_FLUTTER_COMMAND'];
-
-    final options = DevelopOptions.fromArgs(
-      flagParts,
-      target: testFile,
-      flutterCommand: flutterCmd != null && flutterCmd.isNotEmpty
-          ? FlutterCommand.parse(flutterCmd)
-          : null,
-    );
-    _testServerPort = options.testServerPort;
 
     _isRunning = true;
     _cleanupDone = false;
