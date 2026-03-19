@@ -515,15 +515,9 @@
     }
 
     // MARK: Axe A11y scans
-    func initAxeSession(request: InitAxeSessionRequest) throws {
+    func axeInitSession(request: AxeInitSessionRequest) throws {
       return try runCatching {
-        try automator.initAxeSession(dequeApiKey: request.dequeApiKey, dequeProjectId: request.dequeProjectId)
-      }
-    }
-
-    func axeA11yScan(request: AxeA11yScanRequest) throws {
-      return try runCatching {
-        try automator.axeA11yScan(bundleId: request.appId)
+        try automator.axeInitSession(dequeApiKey: request.dequeApiKey, dequeProjectId: request.dequeProjectId)
       }
     }
 

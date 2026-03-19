@@ -330,13 +330,58 @@ class PickMultipleImagesFromGalleryRequest {
   late bool isNative2;
 }
 
-class InitAxeSessionRequest {
+class AxeInitSessionRequest {
   late String dequeApiKey;
   late String dequeProjectId;
 }
 
-class AxeA11yScanRequest {
-  late String appId;
+class AxeIsUserAuthenticatedResponse {
+  late bool isAuthenticated;
+}
+
+class AxeScanRequest {
+  late bool uploadToDashboard;
+  String? saveLocallyWithPrefix;
+  late bool getSerializedResult;
+}
+
+class AxeScanResponse {
+  String? serializedResult;
+}
+
+class AxeGetResultRequest {
+  late String userId;
+  late String packageName;
+  late String resultId;
+  String? uuid;
+}
+
+class AxeGetResultResponse {
+  String? serializedResult;
+}
+
+class AxeSetScanNameRequest {
+  late String name;
+}
+
+class AxeIgnoreRulesRequest {
+  late List<String> rulesToIgnore;
+}
+
+class AxeIgnoreByViewIdResourceNameRequest {
+  late String viewIdResourceName;
+  late List<String> ruleList;
+}
+
+class AxeTagScanAsRequest {
+  late List<String> tags;
+}
+
+class AxeDeleteResultRequest {
+  late String userId;
+  late String packageName;
+  late String resultId;
+  String? uuid;
 }
 
 abstract class NativeAutomator<IOSServer, AndroidServer, DartClient> {
@@ -402,8 +447,19 @@ abstract class NativeAutomator<IOSServer, AndroidServer, DartClient> {
   );
 
   // axe integration
-  void initAxeSession(InitAxeSessionRequest request);
-  void axeA11yScan(AxeA11yScanRequest request);
+  void axeInitSession(AxeInitSessionRequest request);
+  AxeIsUserAuthenticatedResponse axeIsUserAuthenticated();
+  void axeDisconnect();
+  AxeScanResponse axeScan(AxeScanRequest request);
+  AxeGetResultResponse axeGetResult(AxeGetResultRequest request);
+  void axeSetScanName(AxeSetScanNameRequest request);
+  void axeIgnoreRules(AxeIgnoreRulesRequest request);
+  void axeIgnoreByViewIdResourceName(AxeIgnoreByViewIdResourceNameRequest request);
+  void axeIgnoreExperimental();
+  void axeResetIgnoredRules();
+  void axeTagScanAs(AxeTagScanAsRequest request);
+  void axeTearDown();
+  void axeDeleteResult(AxeDeleteResultRequest request);
 
   // other
   void debug();

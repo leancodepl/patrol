@@ -294,8 +294,7 @@ extension Selector {
     func selectCoarseLocation() throws
 
     // MARK: Axe A11y scans
-    func initAxeSession(dequeApiKey: String, dequeProjectId: String) throws
-    func axeA11yScan(bundleId: String) throws
+    func axeInitSession(dequeApiKey: String, dequeProjectId: String) throws
 
     // MARK: Other
     func debug() throws

@@ -37,6 +37,9 @@ import kotlin.math.roundToInt
 import pl.leancode.patrol.R.string as s
 import com.deque.mobile.devtools.AxeDevTools
 import androidx.test.uiautomator.Until
+import com.deque.axe.android.AxeResult
+import com.deque.networking.models.devtools.serializable.AxeDevToolsResult
+import com.deque.networking.models.devtools.serializable.AxeDevToolsResultKey
 
 private fun fromUiObject2(obj: UiObject2): NativeView {
     return NativeView(
@@ -808,7 +811,7 @@ class Automator private constructor() {
         tap(actionMenuUiSelector, actionMenuBySelector, 0, timeout)
     }
 
-    fun initAxeSession(dequeApiKey: String, dequeProjectId: String) {
+    fun axeInitSession(dequeApiKey: String, dequeProjectId: String) {
         axe = AxeDevTools()
 
         // wait for your app to load on screen
@@ -817,12 +820,68 @@ class Automator private constructor() {
         axe.setInstrumentation(instrumentation)
     }
 
-    fun axeA11yScan() {
+    fun axeIsUserAuthenticated(): Boolean {
+        return axe.isUserAuthenticated()
+    }
+
+    fun axeDisconnect() {
+        axe.disconnect()
+    }
+
+    fun axeScan(uploadToDashboard: Boolean = true, saveLocallyWithPrefix: String? = null, getSerializedResult: Boolean = false): AxeResult? {
         uiDevice.wait(Until.hasObject(By.pkg(targetContext.packageName).depth(0)), 5000)
 
         val scanHandler = axe.scan()
-        //scanHandler?.saveResultToLocalStorage(System.currentTimeMillis().toString())
-        scanHandler?.uploadToDashboard()
+        if (uploadToDashboard){
+            scanHandler?.uploadToDashboard()
+        }
+        if (saveLocallyWithPrefix != null) {
+            scanHandler?.saveResultToLocalStorage(saveLocallyWithPrefix)
+        }
+        if (getSerializedResult){
+            return scanHandler?.getSerializedResult()
+        }
+        return null;
+    }
+
+    fun axeGetResult(userId: String, packageName: String, resultId: String, uuid: String? = null): AxeDevToolsResult? { // TODO
+        return axe.getResult(AxeDevToolsResultKey(userId, packageName, resultId, uuid))
+    }
+
+    fun axeSetScanName(name: String){
+        axe.setScanName(name)
+    }
+
+//    fun axeAddCustomRule() {
+//        axe.addCustomRule()
+//    }
+
+    fun axeIgnoreRules(rulesToIgnore: List<String>){
+        axe.ignoreRules(rulesToIgnore)
+    }
+
+    fun axeIgnoreByViewIdResourceName(viewIdResourceName: String, ruleList: List<String>) {
+        axe.ignoreByViewIdResourceName(viewIdResourceName, ruleList)
+    }
+
+    fun axeIgnoreExperimental() {
+        axe.ignoreExperimental()
+    }
+
+    fun axeResetIgnoredRules() {
+        axe.resetIgnoredRules()
+    }
+
+    fun axeTagScanAs(tags: Set<String>) {
+        axe.tagScanAs(tags)
+    }
+
+    fun axeTearDown() {
+        axe.tearDown()
+    }
+
+    fun axeDeleteResult(userId: String, packageName: String, resultId: String, uuid: String? = null) {
+        axe.deleteResult(AxeDevToolsResultKey(userId, packageName, resultId, uuid))
     }
 
     /**

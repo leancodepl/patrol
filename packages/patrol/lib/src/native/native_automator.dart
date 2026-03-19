@@ -1155,13 +1155,13 @@ class NativeAutomator {
     });
   }
 
-  Future<void> initAxeSession({
+  Future<void> axeInitSession({
     required String dequeApiKey,
     required String dequeProjectId,
   }) async {
-    await _wrapRequest('initAxeSession', () async {
-      await _client.initAxeSession(
-        InitAxeSessionRequest(
+    await _wrapRequest('axeInitSession', () async {
+      await _client.axeInitSession(
+        AxeInitSessionRequest(
           dequeApiKey: dequeApiKey,
           dequeProjectId: dequeProjectId,
         ),
@@ -1169,9 +1169,117 @@ class NativeAutomator {
     });
   }
 
-  Future<void> axeA11yScan() async {
-    await _wrapRequest('axeA11yScan', () async {
-      await _client.axeA11yScan(AxeA11yScanRequest(appId: resolvedAppId));
+  Future<bool> axeIsUserAuthenticated() async {
+    final response = await _wrapRequest(
+      'axeIsUserAuthenticated',
+      _client.axeIsUserAuthenticated,
+    );
+    return response.isAuthenticated;
+  }
+
+  Future<void> axeDisconnect() async {
+    await _wrapRequest('axeDisconnect', _client.axeDisconnect);
+  }
+
+  Future<String?> axeScan({
+    bool uploadToDashboard = true,
+    String? saveLocallyWithPrefix,
+    bool getSerializedResult = false,
+  }) async {
+    final response = await _wrapRequest(
+      'axeScan',
+      () => _client.axeScan(
+        AxeScanRequest(
+          uploadToDashboard: uploadToDashboard,
+          saveLocallyWithPrefix: saveLocallyWithPrefix,
+          getSerializedResult: getSerializedResult,
+        ),
+      ),
+    );
+    return response.serializedResult;
+  }
+
+  Future<String?> axeGetResult({
+    required String userId,
+    required String packageName,
+    required String resultId,
+    String? uuid,
+  }) async {
+    final response = await _wrapRequest(
+      'axeGetResult',
+      () => _client.axeGetResult(
+        AxeGetResultRequest(
+          userId: userId,
+          packageName: packageName,
+          resultId: resultId,
+          uuid: uuid,
+        ),
+      ),
+    );
+    return response.serializedResult;
+  }
+
+  Future<void> axeSetScanName(String name) async {
+    await _wrapRequest('axeSetScanName', () async {
+      await _client.axeSetScanName(AxeSetScanNameRequest(name: name));
+    });
+  }
+
+  Future<void> axeIgnoreRules(List<String> rulesToIgnore) async {
+    await _wrapRequest('axeIgnoreRules', () async {
+      await _client.axeIgnoreRules(
+        AxeIgnoreRulesRequest(rulesToIgnore: rulesToIgnore),
+      );
+    });
+  }
+
+  Future<void> axeIgnoreByViewIdResourceName(
+    String viewIdResourceName,
+    List<String> ruleList,
+  ) async {
+    await _wrapRequest('axeIgnoreByViewIdResourceName', () async {
+      await _client.axeIgnoreByViewIdResourceName(
+        AxeIgnoreByViewIdResourceNameRequest(
+          viewIdResourceName: viewIdResourceName,
+          ruleList: ruleList,
+        ),
+      );
+    });
+  }
+
+  Future<void> axeIgnoreExperimental() async {
+    await _wrapRequest('axeIgnoreExperimental', _client.axeIgnoreExperimental);
+  }
+
+  Future<void> axeResetIgnoredRules() async {
+    await _wrapRequest('axeResetIgnoredRules', _client.axeResetIgnoredRules);
+  }
+
+  Future<void> axeTagScanAs(List<String> tags) async {
+    await _wrapRequest('axeTagScanAs', () async {
+      await _client.axeTagScanAs(AxeTagScanAsRequest(tags: tags));
+    });
+  }
+
+  Future<void> axeTearDown() async {
+    await _wrapRequest('axeTearDown', _client.axeTearDown);
+  }
+
+  Future<void> axeDeleteResult({
+    required String userId,
+    required String packageName,
+    required String resultId,
+    String? uuid,
+  }) async {
+    await _wrapRequest('axeDeleteResult', () async {
+      await _client.axeDeleteResult(
+        AxeDeleteResultRequest(
+          userId: userId,
+          packageName: packageName,
+          resultId: resultId,
+          uuid: uuid,
+        ),
+      );
     });
   }
 

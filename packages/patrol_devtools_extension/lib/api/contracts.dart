@@ -1873,49 +1873,30 @@ class PickMultipleImagesFromGalleryRequest with EquatableMixin {
 }
 
 @JsonSerializable()
-class InitAxeSessionRequest with EquatableMixin {
-  InitAxeSessionRequest({
+class AxeInitSessionRequest with EquatableMixin {
+  AxeInitSessionRequest({
     required this.dequeApiKey,
     required this.dequeProjectId,
   });
 
-  factory InitAxeSessionRequest.fromJson(Map<String, dynamic> json) =>
-      _$InitAxeSessionRequestFromJson(json);
+  factory AxeInitSessionRequest.fromJson(Map<String, dynamic> json) =>
+      _$AxeInitSessionRequestFromJson(json);
 
   final String dequeApiKey;
   final String dequeProjectId;
 
-  Map<String, dynamic> toJson() => _$InitAxeSessionRequestToJson(this);
+  Map<String, dynamic> toJson() => _$AxeInitSessionRequestToJson(this);
 
   @override
   List<Object?> get props => [dequeApiKey, dequeProjectId];
 
-  InitAxeSessionRequest copyWith({
+  AxeInitSessionRequest copyWith({
     String? dequeApiKey,
     String? dequeProjectId,
   }) {
-    return InitAxeSessionRequest(
+    return AxeInitSessionRequest(
       dequeApiKey: dequeApiKey ?? this.dequeApiKey,
       dequeProjectId: dequeProjectId ?? this.dequeProjectId,
     );
-  }
-}
-
-@JsonSerializable()
-class AxeA11yScanRequest with EquatableMixin {
-  AxeA11yScanRequest({required this.appId});
-
-  factory AxeA11yScanRequest.fromJson(Map<String, dynamic> json) =>
-      _$AxeA11yScanRequestFromJson(json);
-
-  final String appId;
-
-  Map<String, dynamic> toJson() => _$AxeA11yScanRequestToJson(this);
-
-  @override
-  List<Object?> get props => [appId];
-
-  AxeA11yScanRequest copyWith({String? appId}) {
-    return AxeA11yScanRequest(appId: appId ?? this.appId);
   }
 }

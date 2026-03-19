@@ -224,12 +224,61 @@ class NativeAutomatorClient {
     return _sendRequest('pickMultipleImagesFromGallery', request.toJson());
   }
 
-  Future<void> initAxeSession(InitAxeSessionRequest request) {
-    return _sendRequest('initAxeSession', request.toJson());
+  Future<void> axeInitSession(AxeInitSessionRequest request) {
+    return _sendRequest('axeInitSession', request.toJson());
   }
 
-  Future<void> axeA11yScan(AxeA11yScanRequest request) {
-    return _sendRequest('axeA11yScan', request.toJson());
+  Future<AxeIsUserAuthenticatedResponse> axeIsUserAuthenticated() async {
+    final json = await _sendRequest('axeIsUserAuthenticated');
+    return AxeIsUserAuthenticatedResponse.fromJson(json);
+  }
+
+  Future<void> axeDisconnect() {
+    return _sendRequest('axeDisconnect');
+  }
+
+  Future<AxeScanResponse> axeScan(AxeScanRequest request) async {
+    final json = await _sendRequest('axeScan', request.toJson());
+    return AxeScanResponse.fromJson(json);
+  }
+
+  Future<AxeGetResultResponse> axeGetResult(AxeGetResultRequest request) async {
+    final json = await _sendRequest('axeGetResult', request.toJson());
+    return AxeGetResultResponse.fromJson(json);
+  }
+
+  Future<void> axeSetScanName(AxeSetScanNameRequest request) {
+    return _sendRequest('axeSetScanName', request.toJson());
+  }
+
+  Future<void> axeIgnoreRules(AxeIgnoreRulesRequest request) {
+    return _sendRequest('axeIgnoreRules', request.toJson());
+  }
+
+  Future<void> axeIgnoreByViewIdResourceName(
+    AxeIgnoreByViewIdResourceNameRequest request,
+  ) {
+    return _sendRequest('axeIgnoreByViewIdResourceName', request.toJson());
+  }
+
+  Future<void> axeIgnoreExperimental() {
+    return _sendRequest('axeIgnoreExperimental');
+  }
+
+  Future<void> axeResetIgnoredRules() {
+    return _sendRequest('axeResetIgnoredRules');
+  }
+
+  Future<void> axeTagScanAs(AxeTagScanAsRequest request) {
+    return _sendRequest('axeTagScanAs', request.toJson());
+  }
+
+  Future<void> axeTearDown() {
+    return _sendRequest('axeTearDown');
+  }
+
+  Future<void> axeDeleteResult(AxeDeleteResultRequest request) {
+    return _sendRequest('axeDeleteResult', request.toJson());
   }
 
   Future<void> debug() {

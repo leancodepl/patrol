@@ -55,8 +55,19 @@ abstract class NativeAutomatorServer {
     abstract fun takeCameraPhoto(request: Contracts.TakeCameraPhotoRequest)
     abstract fun pickImageFromGallery(request: Contracts.PickImageFromGalleryRequest)
     abstract fun pickMultipleImagesFromGallery(request: Contracts.PickMultipleImagesFromGalleryRequest)
-    abstract fun initAxeSession(request: Contracts.InitAxeSessionRequest)
-    abstract fun axeA11yScan()
+    abstract fun axeInitSession(request: Contracts.AxeInitSessionRequest)
+    abstract fun axeIsUserAuthenticated(): Contracts.AxeIsUserAuthenticatedResponse
+    abstract fun axeDisconnect()
+    abstract fun axeScan(request: Contracts.AxeScanRequest): Contracts.AxeScanResponse
+    abstract fun axeGetResult(request: Contracts.AxeGetResultRequest): Contracts.AxeGetResultResponse
+    abstract fun axeSetScanName(request: Contracts.AxeSetScanNameRequest)
+    abstract fun axeIgnoreRules(request: Contracts.AxeIgnoreRulesRequest)
+    abstract fun axeIgnoreByViewIdResourceName(request: Contracts.AxeIgnoreByViewIdResourceNameRequest)
+    abstract fun axeIgnoreExperimental()
+    abstract fun axeResetIgnoredRules()
+    abstract fun axeTagScanAs(request: Contracts.AxeTagScanAsRequest)
+    abstract fun axeTearDown()
+    abstract fun axeDeleteResult(request: Contracts.AxeDeleteResultRequest)
     abstract fun debug()
     abstract fun setMockLocation(request: Contracts.SetMockLocationRequest)
     abstract fun markPatrolAppServiceReady()
@@ -254,13 +265,64 @@ abstract class NativeAutomatorServer {
         pickMultipleImagesFromGallery(body)
         Response(OK)
       },
-      "initAxeSession" bind POST to {
-        val body = json.fromJson(it.bodyString(), Contracts.InitAxeSessionRequest::class.java)
-        initAxeSession(body)
+      "axeInitSession" bind POST to {
+        val body = json.fromJson(it.bodyString(), Contracts.AxeInitSessionRequest::class.java)
+        axeInitSession(body)
         Response(OK)
       },
-      "axeA11yScan" bind POST to {
-        axeA11yScan()
+      "axeIsUserAuthenticated" bind POST to {
+        val response = axeIsUserAuthenticated()
+        Response(OK).body(json.toJson(response))
+      },
+      "axeDisconnect" bind POST to {
+        axeDisconnect()
+        Response(OK)
+      },
+      "axeScan" bind POST to {
+        val body = json.fromJson(it.bodyString(), Contracts.AxeScanRequest::class.java)
+        val response = axeScan(body)
+        Response(OK).body(json.toJson(response))
+      },
+      "axeGetResult" bind POST to {
+        val body = json.fromJson(it.bodyString(), Contracts.AxeGetResultRequest::class.java)
+        val response = axeGetResult(body)
+        Response(OK).body(json.toJson(response))
+      },
+      "axeSetScanName" bind POST to {
+        val body = json.fromJson(it.bodyString(), Contracts.AxeSetScanNameRequest::class.java)
+        axeSetScanName(body)
+        Response(OK)
+      },
+      "axeIgnoreRules" bind POST to {
+        val body = json.fromJson(it.bodyString(), Contracts.AxeIgnoreRulesRequest::class.java)
+        axeIgnoreRules(body)
+        Response(OK)
+      },
+      "axeIgnoreByViewIdResourceName" bind POST to {
+        val body = json.fromJson(it.bodyString(), Contracts.AxeIgnoreByViewIdResourceNameRequest::class.java)
+        axeIgnoreByViewIdResourceName(body)
+        Response(OK)
+      },
+      "axeIgnoreExperimental" bind POST to {
+        axeIgnoreExperimental()
+        Response(OK)
+      },
+      "axeResetIgnoredRules" bind POST to {
+        axeResetIgnoredRules()
+        Response(OK)
+      },
+      "axeTagScanAs" bind POST to {
+        val body = json.fromJson(it.bodyString(), Contracts.AxeTagScanAsRequest::class.java)
+        axeTagScanAs(body)
+        Response(OK)
+      },
+      "axeTearDown" bind POST to {
+        axeTearDown()
+        Response(OK)
+      },
+      "axeDeleteResult" bind POST to {
+        val body = json.fromJson(it.bodyString(), Contracts.AxeDeleteResultRequest::class.java)
+        axeDeleteResult(body)
         Response(OK)
       },
       "debug" bind POST to {

@@ -758,9 +758,78 @@ class Contracts {
     }
   }
 
-  data class InitAxeSessionRequest (
+  data class AxeInitSessionRequest (
     val dequeApiKey: String,
     val dequeProjectId: String
   )
+
+  data class AxeIsUserAuthenticatedResponse (
+    val isAuthenticated: Boolean
+  )
+
+  data class AxeScanRequest (
+    val uploadToDashboard: Boolean,
+    val saveLocallyWithPrefix: String? = null,
+    val getSerializedResult: Boolean
+  ){
+    fun hasSaveLocallyWithPrefix(): Boolean {
+      return saveLocallyWithPrefix != null
+    }
+  }
+
+  data class AxeScanResponse (
+    val serializedResult: String? = null
+  ){
+    fun hasSerializedResult(): Boolean {
+      return serializedResult != null
+    }
+  }
+
+  data class AxeGetResultRequest (
+    val userId: String,
+    val packageName: String,
+    val resultId: String,
+    val uuid: String? = null
+  ){
+    fun hasUuid(): Boolean {
+      return uuid != null
+    }
+  }
+
+  data class AxeGetResultResponse (
+    val serializedResult: String? = null
+  ){
+    fun hasSerializedResult(): Boolean {
+      return serializedResult != null
+    }
+  }
+
+  data class AxeSetScanNameRequest (
+    val name: String
+  )
+
+  data class AxeIgnoreRulesRequest (
+    val rulesToIgnore: List<String>
+  )
+
+  data class AxeIgnoreByViewIdResourceNameRequest (
+    val viewIdResourceName: String,
+    val ruleList: List<String>
+  )
+
+  data class AxeTagScanAsRequest (
+    val tags: List<String>
+  )
+
+  data class AxeDeleteResultRequest (
+    val userId: String,
+    val packageName: String,
+    val resultId: String,
+    val uuid: String? = null
+  ){
+    fun hasUuid(): Boolean {
+      return uuid != null
+    }
+  }
 
 }
