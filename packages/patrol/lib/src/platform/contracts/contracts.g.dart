@@ -860,6 +860,20 @@ Map<String, dynamic> _$IOSTakeCameraPhotoRequestToJson(
   'appId': instance.appId,
 };
 
+IOSInjectCameraPhotoRequest _$IOSInjectCameraPhotoRequestFromJson(
+  Map<String, dynamic> json,
+) => IOSInjectCameraPhotoRequest(
+  imageName: json['imageName'] as String,
+  appId: json['appId'] as String,
+);
+
+Map<String, dynamic> _$IOSInjectCameraPhotoRequestToJson(
+  IOSInjectCameraPhotoRequest instance,
+) => <String, dynamic>{
+  'imageName': instance.imageName,
+  'appId': instance.appId,
+};
+
 AndroidPickImageFromGalleryRequest _$AndroidPickImageFromGalleryRequestFromJson(
   Map<String, dynamic> json,
 ) => AndroidPickImageFromGalleryRequest(

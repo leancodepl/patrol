@@ -171,6 +171,12 @@ abstract class PatrolCommand extends Command<int> {
         help:
             'Pass iOS version. If empty, `latest` will be used. This flag only works with iOS simulator.',
         valueHelp: '17.5',
+      )
+      ..addFlag(
+        'browserstack',
+        help:
+            'Enable BrowserStack-specific features like camera image injection.',
+        negatable: false,
       );
   }
 

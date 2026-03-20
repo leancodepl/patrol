@@ -1,7 +1,9 @@
 import 'dart:io' as io;
 
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
+import 'package:patrol/src/constants.dart' as constants;
 import 'package:patrol/src/native/native_automator.dart';
 import 'package:patrol/src/platform/contracts/contracts.dart';
 import 'package:patrol/src/platform/contracts/ios_automator_client.dart';
@@ -52,6 +54,15 @@ class IOSAutomator extends NativeMobileAutomator
   final IOSAutomatorConfig _config;
 
   late final IosAutomatorClient _client;
+  static const _channel = MethodChannel('pl.leancode.patrol/main');
+
+  @override
+  Future<void> configure() async {
+    await super.configure();
+    if (constants.browserStackEnabled) {
+      await _channel.invokeMethod('enableBrowserStackFeatures');
+    }
+  }
 
   /// Returns the platform-dependent unique identifier of the app under test.
   @override
@@ -507,6 +518,51 @@ class IOSAutomator extends NativeMobileAutomator
         ),
       );
     });
+  }
+
+  /// BROWSERSTACK ONLY
+  ///
+  /// Inject an image for BrowserStack Image Injection.
+  ///
+  /// This method stages the specified [imageName] so that the next time the
+  /// app opens the camera, it will receive the injected image instead of real
+  /// camera input. After calling this, use [takeCameraPhoto] to trigger the
+  /// actual camera capture or call [feedInjectedImageToViewfinder] if a continuous
+  /// scanning implementation is used (such as in QR code scanners).
+  ///
+  /// [imageName] must match the filename of an image uploaded to BrowserStack
+  /// and included in the `cameraInjectionMedia` build capability.
+  ///
+  /// This only works when running on BrowserStack with:
+  /// - `enableCameraImageInjection: "true"`
+  /// - `resignApp: "true"`
+  /// - `BrowserStackTestHelper` framework linked in the RunnerUITests target
+  ///
+  /// See [BrowserStack documentation](https://www.browserstack.com/docs/app-automate/xcuitest/image-injection)
+  @override
+  Future<void> injectCameraPhoto({required String imageName}) async {
+    await wrapRequest('injectCameraPhoto', () async {
+      await _client.injectCameraPhoto(
+        IOSInjectCameraPhotoRequest(imageName: imageName, appId: resolvedAppId),
+      );
+    });
+  }
+
+  /// BROWSERSTACK ONLY
+  ///
+  /// Feed the BrowserStack-injected image to the camera viewfinder.
+  ///
+  /// This captures the BrowserStack-injected image using a supported
+  /// AVCapturePhoto API and feeds it to the AVCaptureVideoDataOutput
+  /// This makes continuous QR/barcode scanning implementations
+  /// (such as mobile_scanner) detect the injected image.
+  ///
+  /// Call [injectCameraPhoto] first to stage the image, then open the camera
+  /// (e.g. navigate to a QR scanner screen), and finally call this method
+  /// to feed the injected image to the viewfinder.
+  @override
+  Future<void> feedInjectedImageToViewfinder() async {
+    await _channel.invokeMethod('feedInjectedImageToViewfinder');
   }
 
   /// Pick an image from the gallery
