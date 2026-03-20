@@ -41,8 +41,10 @@ class TestFinder {
   List<String> findTests(
     List<String> targets, [
     String testFileSuffix = _kDefaultTestFileSuffix,
+    Set<String> excludes = const {},
   ]) {
     final testFiles = <String>[];
+    final absoluteExcludes = _toAbsoluteExcludes(excludes);
 
     for (final target in targets) {
       if (target.endsWith(testFileSuffix)) {
@@ -50,10 +52,14 @@ class TestFinder {
         if (!isFile) {
           throwToolExit('target file $target does not exist');
         }
-        testFiles.add(_fs.file(target).absolute.path);
+        final absoluteTargetPath = _fs.file(target).absolute.path;
+        if (!_isExcluded(absoluteTargetPath, absoluteExcludes)) {
+          testFiles.add(absoluteTargetPath);
+        }
       } else if (_fs.isDirectorySync(target)) {
         final foundTargets = findAllTests(
-          directory: _fs.directory(target),
+          directory: _fs.directory(target).absolute,
+          excludes: excludes,
           testFileSuffix: testFileSuffix,
         );
         if (foundTargets.isEmpty) {
@@ -86,16 +92,7 @@ class TestFinder {
       throwToolExit("Directory ${directory.path} doesn't exist");
     }
 
-    final absoluteExcludes = excludes.map((exclude) {
-      if (_fs.path.isAbsolute(exclude)) {
-        return exclude;
-      }
-      // Resolve relative to rootDir (not the process CWD).
-      // _rootDir.path is absolute in production (findRootDirectory returns
-      // an absolute directory), so avoid calling .absolute which would
-      // re-resolve against CWD.
-      return _fs.path.join(_rootDir.path, exclude);
-    }).toSet();
+    final absoluteExcludes = _toAbsoluteExcludes(excludes);
 
     return directory
         .listSync(recursive: true, followLinks: false)
@@ -110,27 +107,41 @@ class TestFinder {
         .where((fileSystemEntity) {
           final filePath = fileSystemEntity.path;
 
-          for (final exclude in absoluteExcludes) {
-            // Check if the file exactly matches an excluded file
-            if (filePath == exclude) {
-              return false;
-            }
-
-            // Check if the file is inside an excluded directory
-            // Need to add path separator to avoid matching prefixes
-            // e.g., "patrol_test/permissions" shouldn't match "patrol_test/permissions_other"
-            final excludeWithSeparator = exclude.endsWith(_fs.path.separator)
-                ? exclude
-                : exclude + _fs.path.separator;
-            if (filePath.startsWith(excludeWithSeparator)) {
-              return false;
-            }
-          }
-
-          return true;
+          return !_isExcluded(filePath, absoluteExcludes);
         })
         .map((entity) => entity.absolute.path)
         .toList();
+  }
+
+  Set<String> _toAbsoluteExcludes(Set<String> excludes) {
+    return excludes.map((exclude) {
+      if (_fs.path.isAbsolute(exclude)) {
+        return exclude;
+      }
+      // Resolve relative to rootDir (not the process CWD).
+      // _rootDir.path is absolute in production (findRootDirectory returns
+      // an absolute directory), so avoid calling .absolute which would
+      // re-resolve against CWD.
+      return _fs.path.join(_rootDir.path, exclude);
+    }).toSet();
+  }
+
+  bool _isExcluded(String filePath, Set<String> absoluteExcludes) {
+    for (final exclude in absoluteExcludes) {
+      // Check if the file exactly matches an excluded file.
+      if (filePath == exclude) {
+        return true;
+      }
+
+      final excludeWithSeparator = exclude.endsWith(_fs.path.separator)
+          ? exclude
+          : exclude + _fs.path.separator;
+      if (filePath.startsWith(excludeWithSeparator)) {
+        return true;
+      }
+    }
+
+    return false;
   }
 }
 
