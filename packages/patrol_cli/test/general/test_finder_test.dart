@@ -205,6 +205,22 @@ void _test(Platform platform) {
       expect(found, equals([fs.path.join(fs.currentDirectory.path, included)]));
     });
 
+    test('applies excludes when target is a file', () {
+      // given
+      final targetFile = fs.path.join('patrol_test', 'app_test.dart');
+      fs.file(targetFile).createSync(recursive: true);
+
+      // when
+      final found = testFinder.findTests(
+        [targetFile],
+        '_test.dart',
+        {targetFile},
+      );
+
+      // then
+      expect(found, isEmpty);
+    });
+
     test('finds tests when targets are files and directories', () {
       // given
       final testRoot = fs.directory('patrol_test')..createSync();
