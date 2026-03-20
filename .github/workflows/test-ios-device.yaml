@@ -3,6 +3,7 @@ name: test ios device
 on:
   workflow_dispatch:
   schedule:
+    # run this workflow daily at 21:30 UTC
     - cron: '30 21 * * *'
 
 jobs:

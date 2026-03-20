@@ -12,7 +12,7 @@ concurrency:
 jobs:
   run_tests:
     name: Flutter ${{ matrix.flutter-version }} webview on ${{ matrix.device_model }} (${{ matrix.os_version }}) simulator
-    runs-on: macos-15
+    runs-on: macos-latest
     timeout-minutes: 40
     outputs:
       SLACK_MESSAGE_TITLE: Flutter ${{ matrix.flutter-version }} on ${{ matrix.os }} ${{ matrix.os_version }} simulator
@@ -36,11 +36,6 @@ jobs:
     steps:
       - name: Clone repository
         uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
@@ -73,7 +68,7 @@ jobs:
       - name: Run tests
         id: tests_step
         run: |
-          xcrun simctl io booted recordVideo --codec=h264 "${{ matrix.device_model }}.mp4" &
+          xcrun simctl io booted recordVideo --codec=h264 --force "${{ matrix.device_model }}_raw.mp4" &
           recordingpid="$!"
 
           xcrun simctl spawn booted log stream --type log --color none > all_simulator_logs.txt &
@@ -86,6 +81,23 @@ jobs:
 
           kill -SIGINT $recordingpid
           kill -SIGINT $logpid
+
+          # Wait for processes to finish
+          wait $recordingpid 2>/dev/null || true
+          wait $logpid 2>/dev/null || true
+
+          # Use ffmpeg to fix the MP4 file (re-encode to ensure proper MP4 structure)
+          if [ -f "${{ matrix.device_model }}_raw.mp4" ]; then
+            ffmpeg -i "${{ matrix.device_model }}_raw.mp4" \
+              -c copy -movflags faststart \
+              "${{ matrix.device_model }}.mp4" \
+              -y 2>/dev/null || \
+            ffmpeg -i "${{ matrix.device_model }}_raw.mp4" \
+              -c:v libx264 -preset ultrafast \
+              "${{ matrix.device_model }}.mp4" \
+              -y 2>/dev/null || true
+          fi
+
           echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> "$GITHUB_OUTPUT"
           exit $TESTS_EXIT_CODE
 
