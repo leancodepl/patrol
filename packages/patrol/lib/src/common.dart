@@ -118,7 +118,12 @@ void patrolTest(
     ..framePolicy = framePolicy;
 
   if (skip ?? false) {
-    patrolLog.log(TestEntry(name: description, status: TestEntryStatus.skip));
+    patrolLog.log(
+      TestEntry(
+        name: global_state.currentTestFullName,
+        status: TestEntryStatus.skip,
+      ),
+    );
   }
   testWidgets(
     description,
