@@ -340,6 +340,7 @@ class MobileAutomator {
       ios: () => platform.ios.enterText(
         selector.ios,
         text: text,
+        appId: appId,
         keyboardBehavior: keyboardBehavior,
         timeout: timeout,
         tapLocation: tapLocation,
@@ -379,6 +380,7 @@ class MobileAutomator {
       ios: () => platform.ios.enterTextByIndex(
         text,
         index: index,
+        appId: appId,
         keyboardBehavior: keyboardBehavior,
         timeout: timeout,
         tapLocation: tapLocation,
