@@ -202,10 +202,7 @@ void _test(Platform platform) {
       );
 
       // then
-      expect(
-        found,
-        equals([fs.path.join(fs.currentDirectory.path, included)]),
-      );
+      expect(found, equals([fs.path.join(fs.currentDirectory.path, included)]));
     });
 
     test('finds tests when targets are files and directories', () {
