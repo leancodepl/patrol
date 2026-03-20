@@ -1,15 +1,15 @@
-name: test locales on android device
+name: test ios device
 
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 */12 * * *'
+    - cron: '30 21 * * *'
 
 jobs:
   run_tests:
-    name: Flutter ${{ matrix.flutter-version }} on ${{ matrix.os }} ${{ matrix.os_version }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
+    name: Flutter ${{ matrix.flutter-version }} on ${{ matrix.device_model }} ${{ matrix.os }} ${{ matrix.os_version }} on FTL
+    runs-on: macos-latest
+    timeout-minutes: 40
     outputs:
       SLACK_MESSAGE_TITLE: Flutter ${{ matrix.flutter-version }} on ${{ matrix.os }} ${{ matrix.os_version }}
       TESTS_EXIT_CODE: ${{ steps.tests_step.outputs.TESTS_EXIT_CODE }}
@@ -20,11 +20,10 @@ jobs:
       matrix:
         flutter-version: ['3.38.x']
         flutter-channel: ['stable']
-        locale: ['en', 'fr', 'de', 'pl'] 
-        os: ['Android API']
-        include:
-          - device_model: 'MediumPhone.arm'
-            os_version: '34'
+        # We use older iOs because it allows to record video in the testlab
+        device_model: ['iphone14pro']
+        os_version: ['16.6']
+        os: [iOS]
 
     defaults:
       run:
@@ -34,24 +33,40 @@ jobs:
       - name: Clone repository
         uses: actions/checkout@v4
 
-      - name: Set up Java
-        uses: actions/setup-java@v3
+      - name: Add current platform to Gemfile
+        working-directory: dev/e2e_app/ios
+        run: bundle lock --add-platform ruby
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
         with:
-          distribution: temurin
-          java-version: 17
+          ruby-version: '3.2'
+          bundler-cache: true
+          working-directory: dev/e2e_app/ios
+
+      - name: Set up fastlane
+        working-directory: dev/e2e_app/ios
+        run: bundle install
+
+      - name: Run fastlane match
+        working-directory: dev/e2e_app/ios
+        env:
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          GIT_USERNAME: ${{ secrets.PATROL_FASTLANE_CERTS_REPO_TOKEN_USERNAME }}
+          GIT_TOKEN: ${{ secrets.PATROL_FASTLANE_CERTS_REPO_TOKEN }}
+          APP_STORE_KEY_ID: ${{ secrets.APP_STORE_KEY_ID }}
+          APP_STORE_ISSUER_ID: ${{ secrets.APP_STORE_ISSUER_ID }}
+          APP_STORE_KEY: ${{ secrets.APP_STORE_KEY }}
+          MATCH_GIT_PRIVATE_KEY: ${{ secrets.MATCH_GIT_PRIVATE_KEY }}
+        run: bundle exec fastlane ios certificates
 
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v1
         with:
-          credentials_json: '${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY_JSON }}'
+          credentials_json: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY_JSON }}
 
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v1
-
-      - name: Gradle cache
-        uses: gradle/gradle-build-action@v2
-        with:
-          generate-job-summary: false
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
@@ -60,7 +75,7 @@ jobs:
           channel: ${{ matrix.flutter-channel }}
 
       - name: Preload Flutter artifacts
-        run: flutter precache --android
+        run: flutter precache --ios
 
       - name: Set up Melos and activate workspace
         working-directory: .
@@ -72,22 +87,20 @@ jobs:
         working-directory: packages/patrol_cli
         run: dart pub global activate --source path . && patrol
 
-      - name: Generate Gradle wrapper
-        run: flutter build apk --config-only
-
-      - name: patrol build android
+      # Note: clear_permissions_test and deny_many_permissions_test are excluded
+      # because camera permissions are not cleared between tests on physical devices
+      - name: Build tests
         run: |
-          patrol build android --tags locale_testing_android --exclude patrol_test/web/, patrol_test/native_tests/ --verbose
+          patrol build ios --tags='ios && physical_device' --exclude=patrol_test/web/,patrol_test/native_tests/,patrol_test/volume_test.dart,patrol_test/overflow_test.dart,patrol_test/permissions/clear_permissions_test.dart,patrol_test/permissions/deny_many_permissions_test.dart --dart-define-from-file=defines_1.json --dart-define-from-file=defines_2.json --dart-define-from-file=defines_3.env --release --verbose --clear-permissions
 
       - name: Upload APKs to Firebase Test Lab and wait for tests to finish
         id: tests_step
         env:
-          ANDROID_DEVICE_MODEL: ${{ matrix.device_model }}
-          ANDROID_DEVICE_VERSION: ${{ matrix.os_version }}
-          ANDROID_DEVICE_LOCALE: ${{ matrix.locale }}
+          IOS_DEVICE_MODEL: ${{ matrix.device_model }}
+          IOS_DEVICE_VERSION: ${{ matrix.os_version }}
         run: |
           set +e
-          output="$(./run_android_testlab 2>&1)"
+          output="$(./run_ios_testlab 2>&1)"
           TESTS_EXIT_CODE=$?
           set -e
 
@@ -103,7 +116,7 @@ jobs:
 
   call_send_slack_message:
     name: Notify on Slack
-    uses: ./.github/workflows/send-slack-message.yaml
+    uses: ./.github/workflows/utility/send-slack-message.yaml
     needs: run_tests
     if: always()
     with:
