@@ -232,8 +232,22 @@ class PatrolLogReader {
           logsCounter = 0;
         case TestEntry():
           // Close the matching test entry by name.
-          final singleEntry = _takeOpenSingleEntry(entry.name);
-          singleEntry?.closeTest(entry);
+          var singleEntry = _takeOpenSingleEntry(entry.name);
+          if (singleEntry == null) {
+            // Some failures can occur before we log a start entry.
+            // Keep final reporting accurate by synthesizing a zero-duration
+            // start entry and immediately closing it with the finish entry.
+            singleEntry = PatrolSingleTestEntry(
+              TestEntry(
+                name: entry.name,
+                status: TestEntryStatus.start,
+                timestamp: entry.timestamp,
+              ),
+            )..closeTest(entry);
+            _singleEntries.add(singleEntry);
+          } else {
+            singleEntry.closeTest(entry);
+          }
 
           // Optionally clear all printed [StepEntry] and [LogEntry].
           if (!showFlutterLogs &&
@@ -244,12 +258,12 @@ class PatrolLogReader {
             _clearLines(stepsCounter + logsCounter + lifecycleLine);
           }
 
-          final executionTime = singleEntry?.executionTime.inSeconds;
+          final executionTime = singleEntry.executionTime.inSeconds;
           // Print test entry summary to console.
           if (!hideTestLifecycle) {
             log(
               '${entry.pretty()} '
-              '${executionTime != null ? '${AnsiCodes.gray}(${executionTime}s)${AnsiCodes.reset}' : ''}',
+              '${AnsiCodes.gray}(${executionTime}s)${AnsiCodes.reset}',
             );
           }
         case StepEntry():

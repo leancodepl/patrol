@@ -120,7 +120,9 @@ void patrolTest(
   if (skip ?? false) {
     patrolLog.log(
       TestEntry(
-        name: global_state.currentTestFullName,
+        // At declaration time (before test execution starts), Invoker.current
+        // is null, so we have to use the declared test description.
+        name: description,
         status: TestEntryStatus.skip,
       ),
     );
