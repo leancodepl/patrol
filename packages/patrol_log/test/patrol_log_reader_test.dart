@@ -406,12 +406,44 @@ void main() {
 
           await pumpEventQueue();
 
-          // The test was registered (totalTests counts the start entry),
-          // but the finish entry is not matched so the test stays "open".
-          expect(reader.totalTests, 1);
-          expect(reader.successfulTests, 0);
+          // The unmatched finish entry is still counted via fallback handling.
+          expect(reader.totalTests, 2);
+          expect(reader.successfulTests, 1);
         },
       );
+
+      test('counts failure when finish entry has no matching start', () async {
+        reader.parse(
+          _patrolLogLine(
+            _testEntryJson(
+              name: 'patrol_test.app_test missing start',
+              status: 'failure',
+              error: 'Setup crashed before start log',
+            ),
+          ),
+        );
+
+        await pumpEventQueue();
+
+        expect(reader.totalTests, 1);
+        expect(reader.failedTestsCount, 1);
+      });
+
+      test('counts success when finish entry has no matching start', () async {
+        reader.parse(
+          _patrolLogLine(
+            _testEntryJson(
+              name: 'patrol_test.app_test missing start',
+              status: 'success',
+            ),
+          ),
+        );
+
+        await pumpEventQueue();
+
+        expect(reader.totalTests, 1);
+        expect(reader.successfulTests, 1);
+      });
     });
 
     group('_clearLines', () {

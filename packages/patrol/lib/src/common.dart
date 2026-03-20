@@ -118,7 +118,14 @@ void patrolTest(
     ..framePolicy = framePolicy;
 
   if (skip ?? false) {
-    patrolLog.log(TestEntry(name: description, status: TestEntryStatus.skip));
+    patrolLog.log(
+      TestEntry(
+        // At declaration time (before test execution starts), Invoker.current
+        // is null, so we have to use the declared test description.
+        name: description,
+        status: TestEntryStatus.skip,
+      ),
+    );
   }
   testWidgets(
     description,
@@ -155,7 +162,10 @@ void patrolTest(
       );
 
       patrolLog.log(
-        TestEntry(name: description, status: TestEntryStatus.start),
+        TestEntry(
+          name: global_state.currentTestFullName,
+          status: TestEntryStatus.start,
+        ),
       );
       final patrolTester = PatrolIntegrationTester(
         tester: widgetTester,
