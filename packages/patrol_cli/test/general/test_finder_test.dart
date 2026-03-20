@@ -178,6 +178,36 @@ void _test(Platform platform) {
       );
     });
 
+    test('applies excludes when target is a directory', () {
+      // given
+      final included = fs.path.join(
+        'patrol_test',
+        'permissions',
+        'other_test.dart',
+      );
+      final excluded = fs.path.join(
+        'patrol_test',
+        'permissions',
+        'test',
+        'excluded_test.dart',
+      );
+      fs.file(included).createSync(recursive: true);
+      fs.file(excluded).createSync(recursive: true);
+
+      // when
+      final found = testFinder.findTests(
+        [fs.path.join('patrol_test', 'permissions')],
+        '_test.dart',
+        {fs.path.join('patrol_test', 'permissions', 'test', '')},
+      );
+
+      // then
+      expect(
+        found,
+        equals([fs.path.join(fs.currentDirectory.path, included)]),
+      );
+    });
+
     test('finds tests when targets are files and directories', () {
       // given
       final testRoot = fs.directory('patrol_test')..createSync();
