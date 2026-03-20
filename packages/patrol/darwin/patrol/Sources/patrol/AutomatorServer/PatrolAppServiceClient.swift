@@ -5,6 +5,8 @@
 //  source: schema.dart
 //
 
+import Foundation
+
 class PatrolAppServiceClient {
   private let port: Int
   private let address: String
