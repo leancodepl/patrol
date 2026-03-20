@@ -28,6 +28,7 @@ This document describes all GitHub Actions workflows used in the Patrol project.
 |--------------|-----------|----------------|------|-------------|
 | [test web][test-web] | No | Flutter 3.38.x (stable) | — | Runs web-specific E2E tests on Chrome in headless mode. Triggers on PR for web-related changes. Uses target file instead of tags. |
 | [test macos][test-macos] | Every 12h | Flutter 3.38.x (stable) | — | Runs E2E tests on macOS desktop platform. Runs tests from `patrol_test/macos` directory. Uses xcresulttool v1.7.1 for test reporting. |
+| [test patrol develop][test-patrol-develop] | PR (on patrol_cli, cli_tests, or e2e_app changes), manual | Flutter 3.38.x (stable) | — | Tests `patrol develop` command on Linux (Android emulator, API 34). macOS (iOS simulator) job is **temporarily skipped** – `flutter attach` without `--debug-url` relies on mDNS discovery which doesn't work on GitHub Actions runners, so hot restart never attaches during the CI test run. Runs `patrol_develop_test.dart` which verifies the hot restart flow. Timeout: 30 minutes per job. |
 
 ## Package Preparation (CI) Workflows
 
@@ -148,6 +149,7 @@ A test is selected if it matches ALL conditions in the boolean expression (AND o
 [test-ios-locales]: workflows/test-ios-locales.yaml
 [test-web]: workflows/test-web.yaml
 [test-macos]: workflows/test-macos.yaml
+[test-patrol-develop]: workflows/test-patrol-develop.yaml
 [patrol-prepare]: workflows/patrol-prepare.yaml
 [patrol_cli-prepare]: workflows/patrol_cli-prepare.yaml
 [patrol_finders-prepare]: workflows/patrol_finders-prepare.yaml

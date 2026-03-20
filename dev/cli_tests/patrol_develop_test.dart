@@ -22,8 +22,8 @@ void main() {
       await $(#textField).enterText('Hello, Flutter!');
       expect($('Hello, Flutter!'), findsOneWidget);
 
-      await $.native.pressHome();
-      await $.native.openApp();
+      await $.platform.mobile.pressHome();
+      await $.platform.mobile.openApp();
 
       expect($(#counterText).text, '1');
       await $(FloatingActionButton).tap();
@@ -69,22 +69,24 @@ void main(List<String> args) async {
       .transform(const LineSplitter())
       .listen((msg) => print('[patrol develop] $msg'));
 
-  process.stdout
-      .transform(utf8.decoder)
-      .transform(const LineSplitter())
-      .listen((data) async {
+  process.stdout.transform(utf8.decoder).transform(const LineSplitter()).listen((
+    data,
+  ) {
     print('[patrol develop] $data');
     output.write(data);
     final stringOutput = output.toString();
 
     if (isFirstTestPassed == false &&
-        stringOutput.contains('All tests passed')) {
+        stringOutput.contains(
+          'All tests were executed. Press "r" to start again or "q" to quit',
+        )) {
       isFirstTestPassed = true;
     }
 
-    final isReadyToRestart = isFirstTestPassed &&
+    final isReadyToRestart =
+        isFirstTestPassed &&
         isReloaded == false &&
-        stringOutput.contains('r Hot restart.');
+        stringOutput.contains('Hot Restart: attached to the app');
 
     if (isReadyToRestart) {
       exampleTestFile.writeAsStringSync(exampleTestWithFailingContents);
@@ -92,9 +94,10 @@ void main(List<String> args) async {
       isReloaded = true;
     }
 
-    final isRestartedTestFailed = isFirstTestPassed &&
+    final isRestartedTestFailed =
+        isFirstTestPassed &&
         isReloaded &&
-        stringOutput.contains('Some tests failed');
+        stringOutput.contains('When the exception was thrown');
 
     if (isRestartedTestFailed) {
       print(

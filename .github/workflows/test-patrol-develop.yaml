@@ -1,0 +1,112 @@
+name: test patrol develop
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/test-patrol-develop.yaml'
+      - 'packages/patrol_cli/**'
+      - 'dev/cli_tests/**'
+      - 'dev/e2e_app/**'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  test-linux:
+    name: Test `patrol develop` on Linux
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.38.x'
+          channel: stable
+
+      - name: Preload Flutter artifacts
+        run: flutter precache --android
+
+      - name: Set up Melos and activate workspace
+        run: |
+          dart pub global activate melos
+          melos bootstrap
+
+      - name: Set up Patrol CLI
+        working-directory: packages/patrol_cli
+        run: dart pub global activate --source path . && patrol
+
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Run patrol develop test
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          target: google_apis_playstore
+          arch: x86_64
+          ram-size: 3072M
+          disk-size: 6G
+          emulator-options: -no-snapshot-save -no-window -noaudio -no-boot-anim
+          script: cd dev/cli_tests && dart pub get && dart patrol_develop_test.dart
+
+  # TODO: Skipped – `flutter attach` without `--debug-url` relies on mDNS
+  # discovery, which doesn't work on GitHub Actions macOS runners. Hot restart
+  # never attaches during the short CI test run. Fix: use `attachUsingUrl: true`
+  # for iOS in FlutterTool.attachForHotRestart (same approach as macOS).
+  test-macos:
+    if: false
+    name: Test `patrol develop` on macOS
+    runs-on: macos-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.38.x'
+          channel: stable
+
+      - name: Preload Flutter artifacts
+        run: flutter precache --ios
+
+      - name: Set up Melos and activate workspace
+        run: |
+          dart pub global activate melos
+          melos bootstrap
+
+      - name: Set up Patrol CLI
+        working-directory: packages/patrol_cli
+        run: dart pub global activate --source path . && patrol
+
+      - name: Start iOS simulator
+        uses: futureware-tech/simulator-action@v2
+        with:
+          model: iPhone 16 Pro Max
+          os: iOS
+          os_version: '26.0'
+          erase_before_boot: true
+          shutdown_after_job: true
+
+      - name: Run patrol develop test
+        working-directory: dev/cli_tests
+        run: |
+          dart pub get
+          dart patrol_develop_test.dart
