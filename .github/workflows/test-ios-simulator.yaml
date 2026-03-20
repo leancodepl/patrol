@@ -78,9 +78,6 @@ jobs:
           erase_before_boot: true
           shutdown_after_job: true
 
-      - name: Set simulator location
-        run: xcrun simctl location booted set 52.17469,21.03193
-
       - name: Run UI tests
         id: tests_step
         run: |
