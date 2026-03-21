@@ -1,3 +1,8 @@
+## Unreleased
+
+- Add `onLogEntry` callback to `PatrolLogReader`.
+- Add `developCompletedKey` to `ConfigEntry`.
+
 ## 0.7.1
 
 - Take the test name into account in the log entries. (#2955)
