@@ -1,4 +1,4 @@
-name: test locales on android device
+name: test android device
 
 on:
   workflow_dispatch:
@@ -9,7 +9,7 @@ jobs:
   run_tests:
     name: Flutter ${{ matrix.flutter-version }} on ${{ matrix.os }} ${{ matrix.os_version }}
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 60
     outputs:
       SLACK_MESSAGE_TITLE: Flutter ${{ matrix.flutter-version }} on ${{ matrix.os }} ${{ matrix.os_version }}
       TESTS_EXIT_CODE: ${{ steps.tests_step.outputs.TESTS_EXIT_CODE }}
@@ -20,11 +20,10 @@ jobs:
       matrix:
         flutter-version: ['3.38.x']
         flutter-channel: ['stable']
-        locale: ['en', 'fr', 'de', 'pl'] 
         os: ['Android API']
         include:
-          - device_model: 'MediumPhone.arm'
-            os_version: '34'
+          - device_model: 'shiba'
+            os_version: '35'
 
     defaults:
       run:
@@ -77,14 +76,17 @@ jobs:
 
       - name: patrol build android
         run: |
-          patrol build android --tags locale_testing_android --exclude patrol_test/web/, patrol_test/native_tests/ --verbose
+          patrol build android \
+          --tags='android && physical_device' \
+          --exclude patrol_test/web/,patrol_test/native_tests/,patrol_test/volume_test.dart \
+          --dart-define-from-file=defines_1.json --dart-define-from-file=defines_2.json --dart-define-from-file=defines_3.env \
+          --verbose
 
       - name: Upload APKs to Firebase Test Lab and wait for tests to finish
         id: tests_step
         env:
           ANDROID_DEVICE_MODEL: ${{ matrix.device_model }}
           ANDROID_DEVICE_VERSION: ${{ matrix.os_version }}
-          ANDROID_DEVICE_LOCALE: ${{ matrix.locale }}
         run: |
           set +e
           output="$(./run_android_testlab 2>&1)"
@@ -103,7 +105,7 @@ jobs:
 
   call_send_slack_message:
     name: Notify on Slack
-    uses: ./.github/workflows/utility/send-slack-message.yaml
+    uses: ./.github/workflows/send-slack-message.yaml
     needs: run_tests
     if: always()
     with:

@@ -11,7 +11,7 @@ on:
     paths:
       - 'docs/**'
       - 'docs_app/**'
-      - '.github/workflows/documentation/docs-production.yaml'
+      - '.github/workflows/docs-production.yaml'
 
 jobs:
   Deploy-Production:
