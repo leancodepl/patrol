@@ -125,7 +125,7 @@ jobs:
 
   call_send_slack_message:
     name: Notify on Slack
-    uses: ./.github/workflows/send-slack-message.yaml
+    uses: ./.github/workflows/utility/send-slack-message.yaml
     needs: run_tests
     if: always()
     with:
