@@ -28,7 +28,7 @@ This document describes all GitHub Actions workflows used in the Patrol project.
 |--------------|-----------|----------------|------|-------------|
 | [test web][test-web] | No | Flutter 3.38.x (stable) | — | Runs web-specific E2E tests on Chrome in headless mode. Triggers on PR for web-related changes. Uses target file instead of tags. |
 | [test macos][test-macos] | Every 12h | Flutter 3.38.x (stable) | — | Runs E2E tests on macOS desktop platform. Runs tests from `patrol_test/macos` directory. Uses xcresulttool v1.7.1 for test reporting. |
-| [test patrol develop][test-patrol-develop] | PR (on patrol_cli, cli_tests, or e2e_app changes), manual | Flutter 3.38.x (stable) | — | Tests `patrol develop` command on Linux (Android emulator, API 34) and macOS (iOS simulator: iPhone 16 Pro on iOS 26.2). The macOS job pins simulator runtime and passes `--ios 26.2` to `patrol_develop_test.dart` to keep xcode destination selection deterministic. Timeout: 30 minutes per job. |
+| [test patrol develop][test-patrol-develop] | `pull_request_target` (opened/synchronize on package, e2e_app, and schema changes; excludes docs), manual | Flutter 3.38.x (stable) | — | Tests `patrol develop` command on Linux (Android emulator, API 34) and macOS (iOS simulator: iPhone 16 Pro on iOS 26.2). The macOS job pins simulator runtime and passes `--ios 26.2` to `patrol_develop_test.dart` to keep xcode destination selection deterministic. Timeout: 30 minutes per job. |
 
 ## Package Preparation (CI) Workflows
 
