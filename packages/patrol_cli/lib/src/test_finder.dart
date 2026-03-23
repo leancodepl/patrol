@@ -113,19 +113,24 @@ class TestFinder {
         .toList();
   }
 
+  /// Converts `excludes` to absolute paths.
+  ///
+  /// Pass file paths or directory paths in `excludes`, either absolute or
+  /// relative to [_rootDir]. Absolute paths are kept as-is, and relative paths
+  /// are resolved against [_rootDir] (not the process working directory).
   Set<String> _toAbsoluteExcludes(Set<String> excludes) {
     return excludes.map((exclude) {
       if (_fs.path.isAbsolute(exclude)) {
         return exclude;
       }
-      // Resolve relative to rootDir (not the process CWD).
-      // _rootDir.path is absolute in production (findRootDirectory returns
-      // an absolute directory), so avoid calling .absolute which would
-      // re-resolve against CWD.
       return _fs.path.join(_rootDir.path, exclude);
     }).toSet();
   }
 
+  /// Returns `true` when [filePath] should be filtered out by exclusions.
+  ///
+  /// A file is excluded if it exactly matches an excluded path, or if it is
+  /// located under an excluded directory path.
   bool _isExcluded(String filePath, Set<String> absoluteExcludes) {
     for (final exclude in absoluteExcludes) {
       // Check if the file exactly matches an excluded file.
