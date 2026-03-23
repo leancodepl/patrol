@@ -78,96 +78,6 @@ accordingly (for example `./app`).
 3. Follow the instructions for your IDE:
 
 <details>
-<summary>Cursor</summary>
-
-Save the script to `<workspace-root>/.cursor/run-patrol` and make it executable:
-
-```sh
-chmod +x .cursor/run-patrol
-```
-
-Add to `<workspace-root>/.cursor/mcp.json`:
-
-```json
-{
-  "mcpServers": {
-    "patrol": {
-      "command": "./.cursor/run-patrol",
-      "env": {
-        "PROJECT_ROOT": ".",
-        "PATROL_FLAGS": "",
-        "SHOW_TERMINAL": "false"
-      }
-    }
-  }
-}
-```
-
-> [!NOTE]
-> Make sure MCP is enabled in Cursor: **Settings → Features → MCP**.
-
-</details>
-
-<details>
-<summary>Google Antigravity</summary>
-
-Save the script to `<workspace-root>/.antigravity/run-patrol` and make it executable:
-
-```sh
-chmod +x .antigravity/run-patrol
-```
-
-Open the MCP store, click "Manage MCP Servers", then "View raw config" and add to `mcp_config.json`.
-Per-workspace MCP config is not yet supported — the config is global
-(`~/.gemini/antigravity/mcp_config.json`). The relative command path
-works because Antigravity resolves it against the open workspace:
-
-```json
-{
-  "mcpServers": {
-    "patrol": {
-      "command": "./.antigravity/run-patrol",
-      "env": {
-        "PROJECT_ROOT": ".",
-        "PATROL_FLAGS": "",
-        "SHOW_TERMINAL": "false"
-      }
-    }
-  }
-}
-```
-
-</details>
-
-<details>
-<summary>Gemini CLI</summary>
-
-Save the script to `<workspace-root>/.gemini/run-patrol` and make it executable:
-
-```sh
-chmod +x .gemini/run-patrol
-```
-
-Add to `<workspace-root>/.gemini/settings.json`:
-
-```json
-{
-  "mcpServers": {
-    "patrol": {
-      "command": "./.gemini/run-patrol",
-      "env": {
-        "PROJECT_ROOT": ".",
-        "PATROL_FLAGS": "",
-        "SHOW_TERMINAL": "false"
-      }
-    }
-  }
-}
-```
-
-</details>
-
-<details>
 <summary>Claude Code (CLI & VS Code extension)</summary>
 
 Save the script to `<workspace-root>/.claude/run-patrol` and make it executable:
@@ -200,6 +110,37 @@ prompted to approve the project-scoped MCP server.
 </details>
 
 <details>
+<summary>Cursor</summary>
+
+Save the script to `<workspace-root>/.cursor/run-patrol` and make it executable:
+
+```sh
+chmod +x .cursor/run-patrol
+```
+
+Add to `<workspace-root>/.cursor/mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "patrol": {
+      "command": "./.cursor/run-patrol",
+      "env": {
+        "PROJECT_ROOT": ".",
+        "PATROL_FLAGS": "",
+        "SHOW_TERMINAL": "false"
+      }
+    }
+  }
+}
+```
+
+> [!NOTE]
+> Make sure MCP is enabled in Cursor: **Settings → Features → MCP**.
+
+</details>
+
+<details>
 <summary>Copilot</summary>
 
 Save the script to `<workspace-root>/.vscode/run-patrol` and make it executable:
@@ -215,6 +156,72 @@ Add to `<workspace-root>/.vscode/mcp.json`:
   "servers": {
     "patrol": {
       "command": "./.vscode/run-patrol",
+      "env": {
+        "PROJECT_ROOT": ".",
+        "PATROL_FLAGS": "",
+        "SHOW_TERMINAL": "false"
+      }
+    }
+  }
+}
+```
+
+Reload the IDE, then open **Settings → MCP: List Servers**. Go to
+**Patrol** and make sure the server is running — start it if needed.
+
+> [!NOTE]
+> After editing `mcp.json`, you may need to restart the MCP server:
+> **Settings → MCP: List Servers → Patrol → Start**.
+
+</details>
+
+<details>
+<summary>Gemini CLI</summary>
+
+Save the script to `<workspace-root>/.gemini/run-patrol` and make it executable:
+
+```sh
+chmod +x .gemini/run-patrol
+```
+
+Add to `<workspace-root>/.gemini/settings.json`:
+
+```json
+{
+  "mcpServers": {
+    "patrol": {
+      "command": "./.gemini/run-patrol",
+      "env": {
+        "PROJECT_ROOT": ".",
+        "PATROL_FLAGS": "",
+        "SHOW_TERMINAL": "false"
+      }
+    }
+  }
+}
+```
+
+</details>
+
+<details>
+<summary>Google Antigravity</summary>
+
+Save the script to `<workspace-root>/.antigravity/run-patrol` and make it executable:
+
+```sh
+chmod +x .antigravity/run-patrol
+```
+
+Open the MCP store, click "Manage MCP Servers", then "View raw config" and add to `mcp_config.json`.
+Per-workspace MCP config is not yet supported — the config is global
+(`~/.gemini/antigravity/mcp_config.json`). The relative command path
+works because Antigravity resolves it against the open workspace:
+
+```json
+{
+  "mcpServers": {
+    "patrol": {
+      "command": "./.antigravity/run-patrol",
       "env": {
         "PROJECT_ROOT": ".",
         "PATROL_FLAGS": "",
