@@ -447,9 +447,7 @@ class DevelopCommand extends PatrolCommand {
           appId: appId,
           dartDefines: flutterOpts.dartDefines,
           openDevtools: openDevtools,
-          attachUsingUrl:
-              device.targetPlatform == TargetPlatform.macOS ||
-              device.targetPlatform == TargetPlatform.iOS,
+          attachUsingUrl: device.targetPlatform == TargetPlatform.macOS,
           onQuit: onQuitCleanup,
         );
       }
