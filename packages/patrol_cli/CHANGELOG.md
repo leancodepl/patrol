@@ -1,6 +1,7 @@
 ## Unreleased
 
 - Reflect failed tests in Playwright report. (#2970)
+- Fix `--exclude` not working. (#2990)
 
 ## 4.2.0
 
