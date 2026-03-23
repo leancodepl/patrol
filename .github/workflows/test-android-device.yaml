@@ -3,7 +3,8 @@ name: test android device
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 */12 * * *'
+    # run this workflow weekly on Monday at 06:00 UTC
+    - cron: '0 6 * * 1'
 
 jobs:
   run_tests:

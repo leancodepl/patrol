@@ -3,6 +3,7 @@ name: test locales on android device
 on:
   workflow_dispatch:
   schedule:
+    # run this workflow every 12 hours
     - cron: '0 */12 * * *'
 
 jobs:

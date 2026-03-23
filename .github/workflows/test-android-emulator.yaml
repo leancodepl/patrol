@@ -3,6 +3,7 @@ name: test android emulator
 on:
   workflow_dispatch:
   schedule:
+    # run this workflow every 12 hours
     - cron: "0 */12 * * *"
   pull_request_target:
     types: [opened, synchronize]
