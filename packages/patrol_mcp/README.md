@@ -20,11 +20,6 @@ MCP server for managing `patrol develop` sessions from AI agents.
 > `patrol_log`.
 
 > [!NOTE]
-> **TODO:** Add a step at the top of Installation suggesting the user ask their AI
-> agent to set up Patrol MCP (e.g. "Ask your AI agent to install and configure
-> Patrol MCP in this project").
-
-> [!NOTE]
 > **TODO** (`patrol_mcp/README.md`): Document required `patrol_cli` version
 > — `patrol_mcp` follows `patrol_cli`'s version constraint.
 
@@ -37,6 +32,11 @@ MCP server for managing `patrol develop` sessions from AI agents.
 - Read native UI tree during active sessions.
 
 ## Installation
+
+> [!TIP]
+> **AI-assisted setup:** Ask your AI agent to install and configure Patrol MCP
+> in this project. Paste the [raw README][raw_readme] into the conversation for
+> full context.
 
 > [!IMPORTANT]
 > This README focuses on project-local MCP setup.
@@ -303,3 +303,4 @@ We are **top-tier experts** focused on Flutter Enterprise solutions.
 [patrol_x_link]: https://x.com/patrol_leancode
 [patrol_github_link]: https://github.com/leancodepl/patrol
 [patrol_discord_link]: https://discord.gg/ukBK5t4EZg
+[raw_readme]: https://raw.githubusercontent.com/leancodepl/patrol/refs/heads/master/packages/patrol_mcp/README.md
