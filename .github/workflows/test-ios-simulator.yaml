@@ -25,7 +25,7 @@ jobs:
   run_tests:
     name: Flutter ${{ matrix.flutter-version }} on ${{ matrix.device_model }} (${{ matrix.os_version }}) simulator
     runs-on: macos-latest
-    timeout-minutes: 100
+    timeout-minutes: 30
     outputs:
       SLACK_MESSAGE_TITLE: Flutter ${{ matrix.flutter-version }} on ${{ matrix.os }} ${{ matrix.os_version }} simulator
       TESTS_EXIT_CODE: ${{ steps.tests_step.outputs.TESTS_EXIT_CODE }}
@@ -77,9 +77,6 @@ jobs:
           os_version: ${{ matrix.os_version }}
           erase_before_boot: true
           shutdown_after_job: true
-
-      - name: Set simulator location
-        run: xcrun simctl location booted set 52.17469,21.03193
 
       - name: Run UI tests
         id: tests_step
@@ -192,7 +189,7 @@ jobs:
 
   call_send_slack_message:
     name: Notify on Slack
-    uses: ./.github/workflows/utility/send-slack-message.yaml
+    uses: ./.github/workflows/send-slack-message.yaml
     needs: run_tests
     if: always()
     with:

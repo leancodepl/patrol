@@ -8,18 +8,18 @@ This document describes all GitHub Actions workflows used in the Patrol project.
 
 | Workflow name | Triggered | Device name | API level | Flutter version | Tags | Description |
 |--------------|-----------|-------------|-----------|----------------|------|-------------|
-| [test android device][test-android-device] | Every 12h | Pixel 8 Pro (shiba) | 35 | Flutter 3.38.x (stable) | `android && physical_device` | Runs E2E tests on Firebase Test Lab physical devices. Excludes `native_tests/` to reduce test duration. |
+| [test android device][test-android-device] | Weekly Mon 06:00 UTC | Pixel 8 Pro (shiba) | 35 | Flutter 3.38.x (stable) | `android && physical_device` | Runs E2E tests on Firebase Test Lab physical devices. Excludes `native_tests/` to reduce test duration. |
 | [test android emulator][test-android-emulator] | PR, every 12h | Pixel7 | 36, 35, 34, 33, 32 | Flutter 3.38.x (stable) | `android && emulator` | Runs E2E tests on emulator.wtf emulators across multiple API levels. Excludes `volume_test.dart` due to emulator instability issues. |
 | [test android emulator webview][test-android-emulator-webview] | PR, daily at 23:00 | Pixel7 | 31 | Flutter 3.38.x (stable) | `webview && android` | Runs webview-specific E2E tests on emulator.wtf. |
-| [test locales on android device][test-android-locales] | Every 12h | MediumPhone.arm | 34 | Flutter 3.38.x (stable) | `locale_testing_android` | Tests locale support on Firebase Test Lab for English, French, German, and Polish locales. Excludes `native_tests/` directory. |
+| [test locales on android device][test-android-locales] | Every 12h | MediumPhone.arm | 36 | Flutter 3.38.x (stable) | `locale_testing_android` | Tests locale support on Firebase Test Lab for English, French, German, and Polish locales. Excludes `web/`, `native_tests/`, and `volume_test.dart`. |
 
 ### iOS Testing
 
 | Workflow name | Triggered | Device name | iOS version | Flutter version | Tags | Description |
 |--------------|-----------|-------------|-------------|----------------|------|-------------|
-| [test ios device][test-ios-device] | Daily at 21:30 | iPhone 14 Pro | 16.6 | Flutter 3.38.x (stable) | `ios && physical_device` | Runs E2E tests on Firebase Test Lab physical devices. Excludes `native_tests/`, `overflow_test.dart`, and specific permission tests (`clear_permissions_test.dart`, `deny_many_permissions_test.dart`) because camera permissions are not cleared between tests on physical devices. Uses older iOS version to enable video recording in Test Lab. |
-| [test ios simulator][test-ios-simulator] | PR only | iPhone 16 | 26.0 | Flutter 3.38.x (stable) | `ios && simulator` | Runs E2E tests on iOS simulator. Triggers on PR for changes to packages, e2e_app, and schema (excludes docs). Excludes `web/` directory, `volume_test.dart`, `service_bluetooth_test.dart`, and permission tests (`clear_permissions_test.dart`, `deny_many_permissions_twice_test.dart`, `permissions_many_test.dart`) - TODO: investigate why permission tests fail on CI/CD. Records video and logs (TODO: videos need to be fixed). Uses xcresultparser to generate JUnit reports and converts them to CTRF format for test reporting. Timeout: 100 minutes. Runs with `--full-isolation` flag. |
-| [test ios simulator webview][test-ios-simulator-webview] | Monthly on 1st | iPhone 17 Pro | 26.0 | Flutter 3.38.x (stable) | `webview && ios` | Runs webview-specific E2E tests on iOS simulator. Excludes `web_example_test.dart` and `volume_test.dart`. Uses xcresultparser to generate JUnit reports and converts them to CTRF format for test reporting. |
+| [test ios device][test-ios-device] | Weekly Mon 06:00 UTC | iPhone 14 Pro | 16.6 | Flutter 3.38.x (stable) | `ios && physical_device` | Runs E2E tests on Firebase Test Lab physical devices. Excludes `native_tests/`, `overflow_test.dart`, and specific permission tests (`clear_permissions_test.dart`, `deny_many_permissions_test.dart`) because camera permissions are not cleared between tests on physical devices. Uses older iOS version to enable video recording in Test Lab. |
+| [test ios simulator][test-ios-simulator] | PR only | iPhone 16 | 26.0 | Flutter 3.38.x (stable) | `ios && simulator` | Runs E2E tests on iOS simulator. Triggers on PR for changes to packages, e2e_app, and schema (excludes docs). Excludes `web/` directory, `volume_test.dart`, `service_bluetooth_test.dart`, and permission tests (`clear_permissions_test.dart`, `deny_many_permissions_twice_test.dart`, `permissions_many_test.dart`) -Records video (raw capture + ffmpeg) and logs. Uses xcresultparser to generate JUnit reports and converts them to CTRF format for test reporting. Timeout: 30 minutes. Runs with `--full-isolation` flag. |
+| [test ios simulator webview][test-ios-simulator-webview] | Monthly on 1st | iPhone 17 Pro | 26.0 | Flutter 3.38.x (stable) | `webview && ios` | Runs webview-specific E2E tests on iOS simulator (`macos-latest`, 40 min timeout). Uses the same screen recording (raw + ffmpeg) and xcresult → JUnit → CTRF reporting flow as [test ios simulator][test-ios-simulator]. Excludes `web_example_test.dart` and `volume_test.dart`. |
 | [test locales on ios device][test-ios-locales] | No | iPhone 14 Pro | 16.6 | Flutter 3.38.x (stable) | `locale_testing_ios` | Tests locale support on Firebase Test Lab for English, French, German (de_DE), and Polish locales. Excludes `web_example_test.dart`. Currently disabled for PR triggers. |
 
 ### Other Platform Testing
@@ -80,7 +80,7 @@ These workflows verify the user has write access before running. If you don't ha
 | Workflow name | Triggered | Description |
 |--------------|---------|-------------|
 | [Verify Version Compatibility][verify_compatibility] | PR/push (on compatibility checker changes) | Runs compatibility tests and verifies compatibility tables are up-to-date. |
-| [send slack message][send-slack-message] | Reusable workflow | Reusable workflow for sending test results notifications to Slack. Called by test workflows. |
+| [send slack message][send-slack-message] | Reusable workflow | Reusable workflow for sending test results notifications to Slack. Invoked by test workflows; the Slack step runs only when `github.event_name == 'schedule'` in the **caller** workflow (so scheduled cron runs notify; PR, push, `workflow_dispatch`, and other triggers do not). |
 | [label pull request][label_pull_request] | All PRs | Automatically labels PRs based on changed files. |
 | [Add prioritized issues to project][add-to-project] | Issue labeled (P0, P1, P2) | Automatically adds prioritized issues to GitHub project board. |
 | [Potential Duplicates][potential-duplicates] | Issue opened/edited | Automatically detects and labels potential duplicate issues using similarity threshold. |
@@ -89,8 +89,8 @@ These workflows verify the user has write access before running. If you don't ha
 
 ## Schedule Summary
 
-- **Every 12 hours**: [test android device][test-android-device], [test android emulator][test-android-emulator], [test locales on android device][test-android-locales], [test macos][test-macos]
-- **Daily at 21:30 UTC**: [test ios device][test-ios-device]
+- **Every 12 hours**: [test android emulator][test-android-emulator], [test locales on android device][test-android-locales], [test macos][test-macos]
+- **Weekly (Monday 06:00 UTC)**: [test android device][test-android-device], [test ios device][test-ios-device]
 - **Daily at 23:00 UTC**: [test android emulator webview][test-android-emulator-webview]
 - **Monthly (1st day)**: [test ios simulator webview][test-ios-simulator-webview]
 - **Hourly**: [close inactive issues][close-inactive-issues], [lock closed issues][lock-closed-issues]
@@ -102,7 +102,7 @@ These workflows verify the user has write access before running. If you don't ha
   - Firebase Test Lab (FTL) for Android/iOS physical devices
   - emulator.wtf for Android emulators
   - Local simulators/emulators for iOS/Android simulator tests
-- Test workflows send notifications to Slack via the reusable [send slack message][send-slack-message] workflow
+- Test workflows that call the reusable [send slack message][send-slack-message] workflow only post to Slack when the **caller** was started by a `schedule` event (see workflow `if` on the Slack step)
 - All publish workflows require tag pushes with specific prefixes and send Slack notifications for non-prerelease versions
 - Documentation deployments use Vercel with Node.js 24
 - Android projects use Kotlin 2.1.0 for compatibility with Java 21 and modern Flutter tooling
@@ -138,38 +138,38 @@ A test is selected if it matches ALL conditions in the boolean expression (AND o
 - This is configured using the `--exclude` flag: `--exclude=patrol_test/web/,patrol_test/native_tests/,patrol_test/volume_test.dart`
 
 <!-- Link definitions -->
-[test-android-device]: workflows/testing/android/test-android-device.yaml
-[test-android-emulator]: workflows/testing/android/test-android-emulator.yaml
-[test-android-emulator-webview]: workflows/testing/android/test-android-emulator-webview.yaml
-[test-android-locales]: workflows/testing/android/test-android-locales.yaml
-[test-ios-device]: workflows/testing/ios/test-ios-device.yaml
-[test-ios-simulator]: workflows/testing/ios/test-ios-simulator.yaml
-[test-ios-simulator-webview]: workflows/testing/ios/test-ios-simulator-webview.yaml
-[test-ios-locales]: workflows/testing/ios/test-ios-locales.yaml
-[test-web]: workflows/testing/other/test-web.yaml
-[test-macos]: workflows/testing/other/test-macos.yaml
-[patrol-prepare]: workflows/package-preparation/patrol-prepare.yaml
-[patrol_cli-prepare]: workflows/package-preparation/patrol_cli-prepare.yaml
-[patrol_finders-prepare]: workflows/package-preparation/patrol_finders-prepare.yaml
-[patrol_log-prepare]: workflows/package-preparation/patrol_log-prepare.yaml
-[patrol_devtools_extension-prepare]: workflows/package-preparation/patrol_devtools_extension-prepare.yaml
-[adb-prepare]: workflows/package-preparation/adb-prepare.yaml
-[prepare-e2e_app]: workflows/package-preparation/prepare-e2e_app.yaml
-[patrol_gen-prepare]: workflows/package-preparation/patrol_gen-prepare.yaml
-[patrol-publish]: workflows/publishing/patrol-publish.yaml
-[patrol_cli-publish]: workflows/publishing/patrol_cli-publish.yaml
-[patrol_finders-publish]: workflows/publishing/patrol_finders-publish.yaml
-[patrol_log-publish]: workflows/publishing/patrol_log-publish.yaml
-[adb-publish]: workflows/publishing/adb-publish.yaml
-[patrol-check-semver]: workflows/semver-check/patrol-check-semver.yaml
-[patrol_finders-check-semver]: workflows/semver-check/patrol_finders-check-semver.yaml
-[patrol_log-check-semver]: workflows/semver-check/patrol_log-check-semver.yaml
-[docs-production]: workflows/documentation/docs-production.yaml
-[docs-preview]: workflows/documentation/docs-preview.yaml
-[verify_compatibility]: workflows/utility/verify_compatibility.yml
-[send-slack-message]: workflows/utility/send-slack-message.yaml
-[label_pull_request]: workflows/utility/label_pull_request.yaml
-[add-to-project]: workflows/utility/add-to-project.yaml
-[potential-duplicates]: workflows/utility/potential-duplicates.yaml
-[close-inactive-issues]: workflows/utility/close-inactive-issues.yaml
-[lock-closed-issues]: workflows/utility/lock-closed-issues.yaml
+[test-android-device]: workflows/test-android-device.yaml
+[test-android-emulator]: workflows/test-android-emulator.yaml
+[test-android-emulator-webview]: workflows/test-android-emulator-webview.yaml
+[test-android-locales]: workflows/test-android-locales.yaml
+[test-ios-device]: workflows/test-ios-device.yaml
+[test-ios-simulator]: workflows/test-ios-simulator.yaml
+[test-ios-simulator-webview]: workflows/test-ios-simulator-webview.yaml
+[test-ios-locales]: workflows/test-ios-locales.yaml
+[test-web]: workflows/test-web.yaml
+[test-macos]: workflows/test-macos.yaml
+[patrol-prepare]: workflows/patrol-prepare.yaml
+[patrol_cli-prepare]: workflows/patrol_cli-prepare.yaml
+[patrol_finders-prepare]: workflows/patrol_finders-prepare.yaml
+[patrol_log-prepare]: workflows/patrol_log-prepare.yaml
+[patrol_devtools_extension-prepare]: workflows/patrol_devtools_extension-prepare.yaml
+[adb-prepare]: workflows/adb-prepare.yaml
+[prepare-e2e_app]: workflows/prepare-e2e_app.yaml
+[patrol_gen-prepare]: workflows/patrol_gen-prepare.yaml
+[patrol-publish]: workflows/patrol-publish.yaml
+[patrol_cli-publish]: workflows/patrol_cli-publish.yaml
+[patrol_finders-publish]: workflows/patrol_finders-publish.yaml
+[patrol_log-publish]: workflows/patrol_log-publish.yaml
+[adb-publish]: workflows/adb-publish.yaml
+[patrol-check-semver]: workflows/patrol-check-semver.yaml
+[patrol_finders-check-semver]: workflows/patrol_finders-check-semver.yaml
+[patrol_log-check-semver]: workflows/patrol_log-check-semver.yaml
+[docs-production]: workflows/docs-production.yaml
+[docs-preview]: workflows/docs-preview.yaml
+[verify_compatibility]: workflows/verify_compatibility.yml
+[send-slack-message]: workflows/send-slack-message.yaml
+[label_pull_request]: workflows/label_pull_request.yaml
+[add-to-project]: workflows/add-to-project.yaml
+[potential-duplicates]: workflows/potential-duplicates.yaml
+[close-inactive-issues]: workflows/close-inactive-issues.yaml
+[lock-closed-issues]: workflows/lock-closed-issues.yaml
