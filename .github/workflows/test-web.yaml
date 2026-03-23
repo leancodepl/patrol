@@ -64,7 +64,7 @@ jobs:
         run: |
           TESTS_EXIT_CODE=0
           # Do not use tags here, tags do not work with patrol web tests
-          patrol test --target patrol_test/web/ -d chrome --verbose --web-headless true --web-workers 2 --web-locale en-US || TESTS_EXIT_CODE=$?
+          patrol test --target patrol_test/web/ -d chrome --verbose --web-headless true --web-workers 2 --web-locale "en-US" || TESTS_EXIT_CODE=$?
 
           echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> "$GITHUB_OUTPUT"
           exit $TESTS_EXIT_CODE
