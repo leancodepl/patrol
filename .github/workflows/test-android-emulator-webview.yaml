@@ -3,6 +3,7 @@ name: test android emulator webview
 on:
   workflow_dispatch:
   schedule:
+    # run this workflow daily at 23:00 UTC
     - cron: "0 23 * * *"
   pull_request_target:
     types: [opened, synchronize]

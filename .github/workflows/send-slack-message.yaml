@@ -41,6 +41,7 @@ jobs:
           if [ -n "$error_status" ]; then
             message="Something went wrong ⚠️ ";
             status="failure";
+            should_notify="true";
           fi;
           if [ -n "$failure_status" ]; then
             if [ -n "$message" ]; then
@@ -49,10 +50,12 @@ jobs:
               message+="There were failing tests 💥 ";
               status="failure";
             fi;
+            should_notify="true";
           fi;
           if [ -z "$message" ]; then
               message="All tests have passed ✅ ";
               status="success";
+              should_notify="false";
           fi;
           
           run_url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}";
@@ -66,8 +69,10 @@ jobs:
           echo "message=$message" >> $GITHUB_OUTPUT;
           echo "run_url=$run_url" >> $GITHUB_OUTPUT;
           echo "status=$status" >> $GITHUB_OUTPUT;
+          echo "should_notify=$should_notify" >> $GITHUB_OUTPUT;
 
       - name: Share test results on Slack
+        if: steps.slack_message.outputs.should_notify == 'true' && github.event_name == 'schedule'
         uses: rtCamp/action-slack-notify@v2
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
@@ -81,4 +86,4 @@ jobs:
 
             <${{ steps.slack_message.outputs.run_url }}|See workflow run>
 
-            <${{ steps.slack_message.outputs.url_to_details }}|See tests details>
+            <${{ steps.slack_message.outputs.url_to_details }}|See tests details}>
