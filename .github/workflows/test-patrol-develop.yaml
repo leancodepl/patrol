@@ -69,9 +69,9 @@ jobs:
   # never attaches during the short CI test run. Fix: use `attachUsingUrl: true`
   # for iOS in FlutterTool.attachForHotRestart (same approach as macOS).
   test-macos:
-    if: false
     name: Test `patrol develop` on macOS
-    runs-on: macos-latest
+    # Use old macos beacuse hot restart is not attached on macos-latest
+    runs-on: macos-15
     timeout-minutes: 30
 
     steps:
