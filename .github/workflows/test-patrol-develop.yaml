@@ -101,7 +101,7 @@ jobs:
         with:
           model: iPhone 16 Pro
           os: iOS
-          os_version: '18.5'
+          os_version: '26.2'
           erase_before_boot: true
           shutdown_after_job: true
 
@@ -109,4 +109,4 @@ jobs:
         working-directory: dev/cli_tests
         run: |
           dart pub get
-          dart patrol_develop_test.dart
+          dart patrol_develop_test.dart --ios 26.2
