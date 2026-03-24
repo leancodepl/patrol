@@ -18,8 +18,8 @@ This document describes all GitHub Actions workflows used in the Patrol project.
 
 | Workflow name | Triggered | Device name | iOS version | Flutter version | Tags | Description |
 |--------------|-----------|-------------|-------------|----------------|------|-------------|
-| [test ios device][test-ios-device] | Weekly Mon 06:00 UTC | iPhone 14 Pro | 16.6 | Flutter 3.38.x (stable) | `ios && physical_device` | Runs E2E tests on Firebase Test Lab physical devices. Excludes `native_tests/`, `overflow_test.dart`, and specific permission tests (`clear_permissions_test.dart`, `deny_many_permissions_test.dart`) because camera permissions are not cleared between tests on physical devices. Uses older iOS version to enable video recording in Test Lab. |
-| [test ios simulator][test-ios-simulator] | PR only | iPhone 16 | 26.0 | Flutter 3.38.x (stable) | `ios && simulator` | Runs E2E tests on iOS simulator. Triggers on PR for changes to packages, e2e_app, and schema (excludes docs). Excludes `web/` directory, `volume_test.dart`, `service_bluetooth_test.dart`, and permission tests (`clear_permissions_test.dart`, `deny_many_permissions_twice_test.dart`, `permissions_many_test.dart`) -Records video (raw capture + ffmpeg) and logs. Uses xcresultparser to generate JUnit reports and converts them to CTRF format for test reporting. Timeout: 30 minutes. Runs with `--full-isolation` flag. |
+| [test ios device][test-ios-device] | Weekly Mon 06:00 UTC | iPhone 14 Pro | 16.6 | Flutter 3.38.x (stable) | `ios && physical_device` | Runs E2E tests on Firebase Test Lab physical devices. Excludes `native_tests/`, `overflow_test.dart`, and specific permission tests (`clear_permissions_test.dart`, `deny_many_permissions_test.dart`, `deny_many_permissions_twice_test.dart`) because camera permissions are not cleared between tests on physical devices. Uses older iOS version to enable video recording in Test Lab. |
+| [test ios simulator][test-ios-simulator] | PR only | iPhone 17 | 26.2 | Flutter 3.38.x (stable) | `ios && simulator` | Runs E2E tests on iOS simulator. Triggers on PR for changes to packages, e2e_app, and schema (excludes docs). Excludes `web/` directory, `volume_test.dart`, `service_bluetooth_test.dart`, and permission tests (`clear_permissions_test.dart`, `deny_many_permissions_twice_test.dart`, `permissions_many_test.dart`). Records video (raw capture + ffmpeg) and logs. Uses xcresultparser to generate JUnit reports and converts them to CTRF format for test reporting. Pins iOS runtime via `--ios 26.2` during `patrol test` and runs with `--full-isolation`. Timeout: 30 minutes. |
 | [test ios simulator webview][test-ios-simulator-webview] | Monthly on 1st | iPhone 17 Pro | 26.0 | Flutter 3.38.x (stable) | `webview && ios` | Runs webview-specific E2E tests on iOS simulator (`macos-latest`, 40 min timeout). Uses the same screen recording (raw + ffmpeg) and xcresult → JUnit → CTRF reporting flow as [test ios simulator][test-ios-simulator]. Excludes `web_example_test.dart` and `volume_test.dart`. |
 | [test locales on ios device][test-ios-locales] | No | iPhone 14 Pro | 16.6 | Flutter 3.38.x (stable) | `locale_testing_ios` | Tests locale support on Firebase Test Lab for English, French, German (de_DE), and Polish locales. Excludes `web_example_test.dart`. Currently disabled for PR triggers. |
 
@@ -29,6 +29,7 @@ This document describes all GitHub Actions workflows used in the Patrol project.
 |--------------|-----------|----------------|------|-------------|
 | [test web][test-web] | No | Flutter 3.38.x (stable) | — | Runs web-specific E2E tests on Chrome in headless mode. Triggers on PR for web-related changes. Uses target file instead of tags. |
 | [test macos][test-macos] | Every 12h | Flutter 3.38.x (stable) | — | Runs E2E tests on macOS desktop platform. Runs tests from `patrol_test/macos` directory. Uses xcresulttool v1.7.1 for test reporting. |
+| [test patrol develop][test-patrol-develop] | `pull_request_target` (opened/synchronize on package, e2e_app, and schema changes; excludes docs), manual | Flutter 3.38.x (stable) | — | Tests `patrol develop` command on Linux (Android emulator, API 34) and macOS (iOS simulator: iPhone 16 Pro on iOS 26.2). The macOS job pins simulator runtime and passes `--ios 26.2` to `patrol_develop_test.dart` to keep xcode destination selection deterministic. Timeout: 30 minutes per job. |
 
 ## Package Preparation (CI) Workflows
 
@@ -151,6 +152,7 @@ A test is selected if it matches ALL conditions in the boolean expression (AND o
 [test-ios-locales]: workflows/test-ios-locales.yaml
 [test-web]: workflows/test-web.yaml
 [test-macos]: workflows/test-macos.yaml
+[test-patrol-develop]: workflows/test-patrol-develop.yaml
 [patrol-prepare]: workflows/patrol-prepare.yaml
 [patrol_cli-prepare]: workflows/patrol_cli-prepare.yaml
 [patrol_finders-prepare]: workflows/patrol_finders-prepare.yaml

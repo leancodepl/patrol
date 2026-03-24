@@ -92,7 +92,7 @@ jobs:
       # because camera permissions are not cleared between tests on physical devices
       - name: Build tests
         run: |
-          patrol build ios --tags='ios && physical_device' --exclude=patrol_test/web/,patrol_test/native_tests/,patrol_test/volume_test.dart,patrol_test/overflow_test.dart,patrol_test/permissions/clear_permissions_test.dart,patrol_test/permissions/deny_many_permissions_test.dart --dart-define-from-file=defines_1.json --dart-define-from-file=defines_2.json --dart-define-from-file=defines_3.env --release --verbose --clear-permissions
+          patrol build ios --tags='ios && physical_device' --exclude=patrol_test/web/,patrol_test/native_tests/,patrol_test/volume_test.dart,patrol_test/overflow_test.dart,patrol_test/permissions/clear_permissions_test.dart,patrol_test/permissions/deny_many_permissions_test.dart,patrol_test/permissions/deny_many_permissions_twice_test.dart --dart-define-from-file=defines_1.json --dart-define-from-file=defines_2.json --dart-define-from-file=defines_3.env --release --verbose --clear-permissions
 
       - name: Upload APKs to Firebase Test Lab and wait for tests to finish
         id: tests_step
