@@ -8,11 +8,11 @@ on:
 
 jobs:
   run_tests:
-    name: Flutter ${{ matrix.flutter-version }} on ${{ matrix.os }} ${{ matrix.os_version }}
+    name: Flutter ${{ matrix.flutter-version }} on API ${{ matrix.api-level }} (${{ matrix.locale }})
     runs-on: ubuntu-latest
     timeout-minutes: 30
     outputs:
-      SLACK_MESSAGE_TITLE: Flutter ${{ matrix.flutter-version }} on ${{ matrix.os }} ${{ matrix.os_version }}
+      SLACK_MESSAGE_TITLE: Flutter ${{ matrix.flutter-version }} on API ${{ matrix.api-level }} (${{ matrix.locale }})
       TESTS_EXIT_CODE: ${{ steps.tests_step.outputs.TESTS_EXIT_CODE }}
       URL_TO_DETAILS: ${{ steps.tests_step.outputs.URL_TO_DETAILS }}
 
@@ -21,11 +21,9 @@ jobs:
       matrix:
         flutter-version: ['3.38.x']
         flutter-channel: ['stable']
-        locale: ['en', 'fr', 'de', 'pl'] 
-        os: ['Android API']
-        include:
-          - device_model: 'MediumPhone.arm'
-            os_version: '36'
+        locale: ['en_US', 'fr_FR', 'de_DE', 'pl_PL']
+        device-model: ['Pixel7']
+        api-level: ['36']
 
     defaults:
       run:
@@ -40,14 +38,6 @@ jobs:
         with:
           distribution: temurin
           java-version: 17
-
-      - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v1
-        with:
-          credentials_json: '${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY_JSON }}'
-
-      - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v1
 
       - name: Gradle cache
         uses: gradle/gradle-build-action@v2
@@ -76,27 +66,31 @@ jobs:
       - name: Generate Gradle wrapper
         run: flutter build apk --config-only
 
+      - name: Install ew-cli
+        run: |
+          mkdir -p "$HOME/bin"
+          curl "https://maven.emulator.wtf/releases/ew-cli" -o "$HOME/bin/ew-cli"
+          chmod a+x "$HOME/bin/ew-cli"
+          echo "$HOME/bin" >> $GITHUB_PATH
+          echo "EW_API_TOKEN=${{ secrets.EW_API_TOKEN }}" >> $GITHUB_ENV
+
       - name: patrol build android
         run: |
           patrol build android --tags locale_testing_android --exclude patrol_test/web/,patrol_test/native_tests/,patrol_test/volume_test.dart --verbose
 
-      - name: Upload APKs to Firebase Test Lab and wait for tests to finish
+      - name: Upload APKs to emulator.wtf and wait for tests to finish
         id: tests_step
-        env:
-          ANDROID_DEVICE_MODEL: ${{ matrix.device_model }}
-          ANDROID_DEVICE_VERSION: ${{ matrix.os_version }}
-          ANDROID_DEVICE_LOCALE: ${{ matrix.locale }}
         run: |
           set +e
-          output="$(./run_android_testlab 2>&1)"
+          output="$(ew-cli emulatorwtf.yaml:multi_api \
+            --device '[model=${{ matrix.device-model }},version=${{ matrix.api-level }},locale=${{ matrix.locale }}]' \
+            --display-name "Patrol locale tests API ${{ matrix.api-level }} (${{ matrix.locale }}) (${GITHUB_SHA::7})")"
           TESTS_EXIT_CODE=$?
           set -e
 
-          echo "$output"
-
-          # Extract the last link using grep, tail, and sed, and write it to Github Summmary
-          link="$(echo "$output" | grep -o 'https://[^ ]*' | tail -1 | sed 's/\[//;s/\]//')"
-          echo "[Test details on Firebase Test Lab]($link) (LeanCode members only)" >> "$GITHUB_STEP_SUMMARY"
+          # Extract the results URL and write it to GitHub summary
+          link="$(echo "$output" | jq -r ".resultsUrl")"
+          echo "[Test details on emulator.wtf]($link) (LeanCode members only)" >> "$GITHUB_STEP_SUMMARY"
 
           echo "URL_TO_DETAILS=$link" >> "$GITHUB_OUTPUT"
           echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> "$GITHUB_OUTPUT"
