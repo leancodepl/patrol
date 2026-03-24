@@ -66,7 +66,7 @@ abstract final class NativeTreeService {
         'simctl',
         'listapps',
         'booted',
-      ], runInShell: true);
+      ]);
 
       if (listApps.exitCode != 0) {
         return [];

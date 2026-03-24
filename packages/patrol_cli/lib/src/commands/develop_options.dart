@@ -43,6 +43,9 @@ class DevelopOptions {
       if (results['profile'] case true) BuildMode.profile,
       if (results['release'] case true) BuildMode.release,
     };
+    if (buildModes.length > 1) {
+      throw ArgumentError('Only one build mode can be specified');
+    }
     if (buildModes.isEmpty) {
       buildModes.add(BuildMode.debug);
     }
