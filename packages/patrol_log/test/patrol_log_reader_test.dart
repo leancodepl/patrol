@@ -382,35 +382,29 @@ void main() {
         expect(reader.successfulTests, 1);
       });
 
-      test(
-        'finish entry for test in group matches its start entry',
-        () async {
-          // Both start and finish entries now use currentTestFullName which
-          // includes the group name, so after normalization they match.
-          reader
-            ..parse(
-              _patrolLogLine(
-                _testEntryJson(
-                  name: 'HomeScreen my test',
-                  status: 'start',
-                ),
+      test('finish entry for test in group matches its start entry', () async {
+        // Both start and finish entries now use currentTestFullName which
+        // includes the group name, so after normalization they match.
+        reader
+          ..parse(
+            _patrolLogLine(
+              _testEntryJson(name: 'HomeScreen my test', status: 'start'),
+            ),
+          )
+          ..parse(
+            _patrolLogLine(
+              _testEntryJson(
+                name: 'patrol_test.app_test HomeScreen my test',
+                status: 'success',
               ),
-            )
-            ..parse(
-              _patrolLogLine(
-                _testEntryJson(
-                  name: 'patrol_test.app_test HomeScreen my test',
-                  status: 'success',
-                ),
-              ),
-            );
+            ),
+          );
 
-          await pumpEventQueue();
+        await pumpEventQueue();
 
-          expect(reader.totalTests, 1);
-          expect(reader.successfulTests, 1);
-        },
-      );
+        expect(reader.totalTests, 1);
+        expect(reader.successfulTests, 1);
+      });
     });
 
     group('_clearLines', () {
