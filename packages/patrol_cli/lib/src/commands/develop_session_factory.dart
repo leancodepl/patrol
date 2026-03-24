@@ -37,6 +37,8 @@ class DevelopSessionFactory {
   /// keeping the host process alive (e.g. in an MCP server).
   /// [onTestsCompleted] is forwarded to [DevelopService] for test completion
   /// notifications.
+  /// [onLogEntry] is called for every parsed log entry during the session.
+  /// [verbose] enables verbose logging when `true`.
   static DevelopService create({
     required String projectRoot,
     required DisposeScope disposeScope,
@@ -50,9 +52,7 @@ class DevelopSessionFactory {
     const platform = LocalPlatform();
     const processManager = LocalProcessManager();
     final rootDirectory = fs.directory(projectRoot);
-    final logger = Logger(
-      level: verbose ? Level.verbose : Level.info,
-    );
+    final logger = Logger(level: verbose ? Level.verbose : Level.info);
 
     final flutterTool = FlutterTool(
       stdin: stdin,
@@ -70,10 +70,7 @@ class DevelopSessionFactory {
         logger: logger,
       ),
       testFinderFactory: TestFinderFactory(rootDirectory: rootDirectory),
-      testBundler: TestBundler(
-        projectRoot: rootDirectory,
-        logger: logger,
-      ),
+      testBundler: TestBundler(projectRoot: rootDirectory, logger: logger),
       dartDefinesReader: DartDefinesReader(projectRoot: rootDirectory),
       compatibilityChecker: CompatibilityChecker(
         projectRoot: rootDirectory,
