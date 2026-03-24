@@ -28,8 +28,12 @@ Future<void> main() async {
 Future<void> setUpTimezone() async {
   tz_data.initializeTimeZones();
   final timezone = await FlutterTimezone.getLocalTimezone();
-  final location = tz.getLocation(timezone);
-  tz.setLocalLocation(location);
+  try {
+    tz.setLocalLocation(tz.getLocation(timezone));
+    // Causing errors on patrol develop test on Linux
+  } on tz.LocationNotFoundException {
+    tz.setLocalLocation(tz.UTC);
+  }
 }
 
 class ExampleApp extends StatelessWidget {
