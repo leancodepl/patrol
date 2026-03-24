@@ -1,3 +1,7 @@
+## 3.2.0
+
+- Bump `patrol_log` to `^0.8.0`.
+
 ## 3.1.0
 
 - Bump `patrol_log` to `0.7.0`.
