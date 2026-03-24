@@ -383,17 +383,18 @@ void main() {
       });
 
       test(
-        'finish entry for test in group does not match its start entry',
+        'finish entry for test in group matches its start entry',
         () async {
-          // When patrolTest() is inside group('HomeScreen', ...), the start entry
-          // uses just description ("my test"), but the mobile finish entry uses
-          // currentTestFullName which includes the group:
-          // "patrol_test.app_test HomeScreen my test".
-          // After normalization, finish becomes "HomeScreen my test" which does
-          // not match the stored start key "my test".
+          // Both start and finish entries now use currentTestFullName which
+          // includes the group name, so after normalization they match.
           reader
             ..parse(
-              _patrolLogLine(_testEntryJson(name: 'my test', status: 'start')),
+              _patrolLogLine(
+                _testEntryJson(
+                  name: 'HomeScreen my test',
+                  status: 'start',
+                ),
+              ),
             )
             ..parse(
               _patrolLogLine(
@@ -406,10 +407,8 @@ void main() {
 
           await pumpEventQueue();
 
-          // The test was registered (totalTests counts the start entry),
-          // but the finish entry is not matched so the test stays "open".
           expect(reader.totalTests, 1);
-          expect(reader.successfulTests, 0);
+          expect(reader.successfulTests, 1);
         },
       );
     });

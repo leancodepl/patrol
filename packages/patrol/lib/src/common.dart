@@ -155,7 +155,10 @@ void patrolTest(
       );
 
       patrolLog.log(
-        TestEntry(name: description, status: TestEntryStatus.start),
+        TestEntry(
+          name: global_state.currentTestFullName,
+          status: TestEntryStatus.start,
+        ),
       );
       final patrolTester = PatrolIntegrationTester(
         tester: widgetTester,
