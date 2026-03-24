@@ -81,7 +81,31 @@ abstract final class ScreenshotService {
       throw Exception('Failed to capture screenshot: $stderr');
     }
 
-    return _resizeImage(Uint8List.fromList(bytes));
+    final rawBytes = Uint8List.fromList(bytes);
+    _validatePng(rawBytes);
+    return _resizeImage(rawBytes);
+  }
+
+  /// Throws if the captured bytes don't start with a valid PNG header.
+  /// Any text that `screencap` printed to stdout before the image data
+  /// is included in the exception message so users can diagnose the issue.
+  static void _validatePng(Uint8List bytes) {
+    const pngSignature = [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A];
+
+    if (bytes.length >= pngSignature.length &&
+        pngSignature.indexed.every((e) => bytes[e.$1] == e.$2)) {
+      return;
+    }
+
+    final prefixBytes = bytes.length > 512 ? bytes.sublist(0, 512) : bytes;
+    final prefix = String.fromCharCodes(
+      prefixBytes.where((b) => b >= 0x20 && b < 0x7F),
+    );
+
+    throw Exception(
+      'screencap returned invalid image data.\n'
+      'Output prefix: $prefix',
+    );
   }
 
   static Uint8List _resizeImage(Uint8List bytes) {
