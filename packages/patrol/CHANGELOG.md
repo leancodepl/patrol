@@ -1,3 +1,8 @@
+## 4.4.1
+
+- Fix `appId` not being passed down on `$.platform.mobile.enterText` and `$.platform.mobile.enterTextByIndex` (#2992)
+
+
 ## 4.4.0
 - Add support for emulators with API lvl 36 for pickMultipleImagesFromGallery method. (#2977)
 - Fix `tapOnNotification` on iOS physical devices to Open button when tapping on notification. (#2972)
