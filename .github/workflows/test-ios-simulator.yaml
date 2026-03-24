@@ -38,8 +38,8 @@ jobs:
         flutter-version: ["3.38.x"]
         flutter-channel: ["stable"]
         device_model:
-          [ iPhone 16]
-        os_version: ["26.0"]
+          [iPhone 17]
+        os_version: ["26.2"]
         os: [iOS]
 
     defaults:
@@ -92,6 +92,7 @@ jobs:
           patrol test \
           --target patrol_test/pull_to_refresh_test.dart \
           --verbose \
+          --ios 26.2 \
           --full-isolation || TESTS_EXIT_CODE=$?
 
           kill -SIGINT $logpid 2>/dev/null || true

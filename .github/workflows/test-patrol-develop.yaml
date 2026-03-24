@@ -72,13 +72,8 @@ jobs:
           emulator-options: -no-snapshot-save -no-window -noaudio -no-boot-anim
           script: cd dev/cli_tests && dart pub get && dart patrol_develop_test.dart
 
-  # TODO: Skipped – `flutter attach` without `--debug-url` relies on mDNS
-  # discovery, which doesn't work on GitHub Actions macOS runners. Hot restart
-  # never attaches during the short CI test run. Fix: use `attachUsingUrl: true`
-  # for iOS in FlutterTool.attachForHotRestart (same approach as macOS).
   test-macos:
     name: Test `patrol develop` on macOS
-    # Use old macos beacuse hot restart is not attached on macos-latest
     runs-on: macos-15
     timeout-minutes: 30
 
@@ -109,6 +104,7 @@ jobs:
         with:
           model: iPhone 16 Pro
           os: iOS
+          # The version must match the version specified in the --ios flag.
           os_version: '26.2'
           erase_before_boot: true
           shutdown_after_job: true
