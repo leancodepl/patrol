@@ -11,6 +11,7 @@ This document describes all GitHub Actions workflows used in the Patrol project.
 | [test android device][test-android-device] | Weekly Mon 06:00 UTC | Pixel 8 Pro (shiba) | 35 | Flutter 3.38.x (stable) | `android && physical_device` | Runs E2E tests on Firebase Test Lab physical devices. Excludes `native_tests/` to reduce test duration. |
 | [test android emulator][test-android-emulator] | PR, every 12h | Pixel7 | 36, 35, 34, 33, 32 | Flutter 3.38.x (stable) | `android && emulator` | Runs E2E tests on emulator.wtf emulators across multiple API levels. Excludes `volume_test.dart` due to emulator instability issues. |
 | [test android emulator webview][test-android-emulator-webview] | PR, daily at 23:00 | Pixel7 | 31 | Flutter 3.38.x (stable) | `webview && android` | Runs webview-specific E2E tests on emulator.wtf. |
+| [test flutter beta channel][test-flutter-beta] | Daily at 8:00, manual | Pixel7 | 35 | Flutter beta | — | Runs smoke test on Flutter beta channel using `example_test.dart` to verify Patrol compatibility with beta Flutter releases. |
 | [test locales on android device][test-android-locales] | Every 12h | MediumPhone.arm | 36 | Flutter 3.38.x (stable) | `locale_testing_android` | Tests locale support on Firebase Test Lab for English, French, German, and Polish locales. Excludes `web/`, `native_tests/`, and `volume_test.dart`. |
 
 ### iOS Testing
@@ -93,6 +94,7 @@ These workflows verify the user has write access before running. If you don't ha
 - **Every 12 hours**: [test android emulator][test-android-emulator], [test locales on android device][test-android-locales], [test macos][test-macos]
 - **Weekly (Monday 06:00 UTC)**: [test android device][test-android-device], [test ios device][test-ios-device]
 - **Daily at 23:00 UTC**: [test android emulator webview][test-android-emulator-webview]
+- **Daily at 10:00 UTC**: [test flutter beta channel][test-flutter-beta]
 - **Monthly (1st day)**: [test ios simulator webview][test-ios-simulator-webview]
 - **Hourly**: [close inactive issues][close-inactive-issues], [lock closed issues][lock-closed-issues]
 
@@ -143,6 +145,7 @@ A test is selected if it matches ALL conditions in the boolean expression (AND o
 [test-android-emulator]: workflows/test-android-emulator.yaml
 [test-android-emulator-webview]: workflows/test-android-emulator-webview.yaml
 [test-android-locales]: workflows/test-android-locales.yaml
+[test-flutter-beta]: workflows/test-flutter-beta.yaml
 [test-ios-device]: workflows/test-ios-device.yaml
 [test-ios-simulator]: workflows/test-ios-simulator.yaml
 [test-ios-simulator-webview]: workflows/test-ios-simulator-webview.yaml
