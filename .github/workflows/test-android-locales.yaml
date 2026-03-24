@@ -83,12 +83,13 @@ jobs:
         run: |
           set +e
           output="$(ew-cli emulatorwtf.yaml:multi_api \
+            --json \
             --device '[model=${{ matrix.device-model }},version=${{ matrix.api-level }},locale=${{ matrix.locale }}]' \
             --display-name "Patrol locale tests API ${{ matrix.api-level }} (${{ matrix.locale }}) (${GITHUB_SHA::7})")"
           TESTS_EXIT_CODE=$?
           set -e
 
-          # Extract the results URL and write it to GitHub summary
+          # Extract the results URL and write it to GitHub Summary
           link="$(echo "$output" | jq -r ".resultsUrl")"
           echo "[Test details on emulator.wtf]($link) (LeanCode members only)" >> "$GITHUB_STEP_SUMMARY"
 
