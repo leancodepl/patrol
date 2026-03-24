@@ -47,19 +47,14 @@ bool isInternalTestExplorerEntry(GroupEntry entry) {
 String get currentTestFullName {
   final invoker = Invoker.current!;
 
-  final groupNames = invoker.liveTest.groups
-      .map((g) => g.name)
-      .where((name) => name.isNotEmpty)
-      .join(' ');
-
+  final parentGroupName = invoker.liveTest.groups.last.name;
   final testName = invoker.liveTest.individualName;
 
-  final fullTestName = groupNames.isEmpty ? testName : '$groupNames $testName';
-
-  if (fullTestName.length > 190) {
-    return fullTestName.substring(0, 190);
+  var nameCandidate = '$parentGroupName $testName';
+  if (nameCandidate.length > 190) {
+    nameCandidate = nameCandidate.substring(0, 190);
   }
-  return fullTestName;
+  return nameCandidate;
 }
 
 /// Returns the individual name of the current test. Omits all ancestor groups.
