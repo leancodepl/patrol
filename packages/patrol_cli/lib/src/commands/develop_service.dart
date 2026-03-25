@@ -166,8 +166,8 @@ class DevelopService {
 
     String? iOSInstalledAppsEnvVariable;
     if (device.targetPlatform == TargetPlatform.iOS) {
-      iOSInstalledAppsEnvVariable =
-          await _iosTestBackend.getInstalledAppsEnvVariable(device.id);
+      iOSInstalledAppsEnvVariable = await _iosTestBackend
+          .getInstalledAppsEnvVariable(device.id);
     }
 
     final customDartDefines = {
@@ -430,9 +430,7 @@ class DevelopService {
 
       try {
         await future;
-        onTestsCompleted?.call(
-          const TestCompletionResult(success: true),
-        );
+        onTestsCompleted?.call(const TestCompletionResult(success: true));
       } catch (err) {
         onTestsCompleted?.call(
           TestCompletionResult(success: false, error: err),

@@ -193,9 +193,7 @@ void patrolTest(
                   'All tests were executed. Press "r" to start again or "q" to quit',
             ),
           )
-          ..log(
-            ConfigEntry(config: {ConfigEntry.developCompletedKey: true}),
-          );
+          ..log(ConfigEntry(config: {ConfigEntry.developCompletedKey: true}));
         // Wait indefinitely in develop mode after the last test
         while (true) {
           await widgetTester.pump();

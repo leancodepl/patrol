@@ -20,12 +20,7 @@ void addGlobalFlags(ArgParser parser) {
           'PATROL_FLUTTER_COMMAND environment variable.',
       valueHelp: 'fvm flutter',
     )
-    ..addFlag(
-      'verbose',
-      abbr: 'v',
-      help: 'Print more logs.',
-      negatable: false,
-    );
+    ..addFlag('verbose', abbr: 'v', help: 'Print more logs.', negatable: false);
 }
 
 abstract class PatrolCommand extends Command<int> {

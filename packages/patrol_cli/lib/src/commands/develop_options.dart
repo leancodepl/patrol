@@ -109,8 +109,8 @@ class DevelopOptions {
     final parsedFlutterCmd = results['flutter-command'] as String?;
     final effectiveFlutterCmd =
         parsedFlutterCmd != null && parsedFlutterCmd.isNotEmpty
-            ? FlutterCommand.parse(parsedFlutterCmd)
-            : flutterCommand;
+        ? FlutterCommand.parse(parsedFlutterCmd)
+        : flutterCommand;
 
     final options = DevelopOptions.fromArgResults(
       results,
