@@ -855,11 +855,12 @@ packages:
     source: hosted
     version: "3.1.0"
   patrol_log:
-    dependency: "direct overridden"
+    dependency: transitive
     description:
-      path: "../../packages/patrol_log"
-      relative: true
-    source: path
+      name: patrol_log
+      sha256: b3bd2862c15bd6b163763d7d2a80ae07c24af6da07d62d202798ceea327045d7
+      url: "https://pub.dev"
+    source: hosted
     version: "0.7.1"
   permission_handler:
     dependency: "direct main"

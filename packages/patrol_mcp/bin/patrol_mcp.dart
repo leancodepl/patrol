@@ -9,7 +9,8 @@ import 'package:patrol_mcp/src/native_tree_service.dart';
 import 'package:patrol_mcp/src/patrol_session.dart';
 import 'package:patrol_mcp/src/screenshot_service.dart';
 
-const version = '0.3.0';
+/// Version of patrol_mcp. Must be kept in sync with pubspec.yaml.
+const version = '0.4.0';
 
 const double _defaultTimeoutMinutes = 5;
 
