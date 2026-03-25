@@ -10,10 +10,6 @@
 
 MCP server for managing `patrol develop` sessions from AI agents.
 
-> [!NOTE]
-> **TODO** (`patrol_mcp/README.md`): Document required `patrol_cli` version
-> — `patrol_mcp` follows `patrol_cli`'s version constraint.
-
 ## Features
 
 - Run Patrol tests and block until completion.

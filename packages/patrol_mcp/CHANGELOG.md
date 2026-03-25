@@ -1,8 +1,5 @@
-## 0.4.0
+## 0.1.0
 
-- Use `patrol_cli` as a library dependency instead of invoking the global CLI.
-- Bump `patrol_log` to `0.8.0`.
-
-## 0.3.0
-
-- Initial private release.
+- Initial release.
+- MCP server for managing Patrol develop sessions.
+- Tools: run tests, take screenshots, get native view tree.
