@@ -4,7 +4,8 @@ version: 0.1.0
 homepage: https://patrol.leancode.co
 repository: https://github.com/leancodepl/patrol/tree/master/packages/patrol_mcp
 issue_tracker: https://github.com/leancodepl/patrol/issues
-topics: [test, mcp, patrol, flutter-test]
+documentation: https://patrol.leancode.co
+topics: [test, e2e, flutter-test, claude, ai]
 
 environment:
   sdk: ">=3.8.0 <4.0.0"
