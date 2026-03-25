@@ -1,3 +1,7 @@
+## 4.5.0
+- Bump `patrol_log` to `^0.8.0`.
+- Add develop completion signaling.
+
 ## 4.4.0
 - Add support for emulators with API lvl 36 for pickMultipleImagesFromGallery method. (#2977)
 - Fix `tapOnNotification` on iOS physical devices to Open button when tapping on notification. (#2972)
