@@ -2,7 +2,7 @@ name: patrol
 description: >
   A powerful, multiplatform E2E UI testing framework for Flutter apps that
   overcomes the limitations of integration_test by handling native interactions.
-version: 4.4.1
+version: 4.5.0
 homepage: https://patrol.leancode.co
 repository: https://github.com/leancodepl/patrol/tree/master/packages/patrol
 issue_tracker: https://github.com/leancodepl/patrol/issues
@@ -27,7 +27,7 @@ dependencies:
   json_annotation: ^4.8.1
   meta: ^1.10.0
   patrol_finders: ^3.1.0
-  patrol_log: ^0.7.1
+  patrol_log: ^0.8.0
   shelf: ^1.4.1
   test_api: '^0.7.0'
   web: ^1.0.0
