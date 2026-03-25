@@ -1,0 +1,67 @@
+name: test flutter main channel
+# This workflows verifies if these tests are valid https://github.com/flutter/tests/blob/main/registry/patrol.test.disabled
+on:
+  workflow_dispatch:
+  schedule:
+    # Daily at 4:00 UTC.
+    - cron: '0 4 * * *'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  run_tests:
+    name: Flutter main - customer tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    outputs:
+      SLACK_MESSAGE_TITLE: Flutter main channel - customer tests
+      TESTS_EXIT_CODE: ${{ steps.tests_step.outputs.TESTS_EXIT_CODE }}
+      FAILURE_STATUS: ${{ steps.status_step.outputs.FAILURE_STATUS }}
+      ERROR_STATUS: ${{ steps.status_step.outputs.ERROR_STATUS }}
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+        with:
+          ref: fix/flutter-patrol-tests
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: master
+
+      - name: Display Flutter version
+        run: flutter --version
+
+      - name: Run customer tests
+        id: tests_step
+        run: |
+          TESTS_EXIT_CODE=0
+          bash scripts/flutter_test_repo_test.sh || TESTS_EXIT_CODE=$?
+
+          echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> "$GITHUB_OUTPUT"
+          exit $TESTS_EXIT_CODE
+
+      - name: Check if something went wrong
+        id: status_step
+        if: always()
+        run: >
+          if [ -z ${{ steps.tests_step.outputs.TESTS_EXIT_CODE }} ]; then 
+            echo "ERROR_STATUS=error" >> "$GITHUB_OUTPUT";
+          elif [ ! ${{ steps.tests_step.outputs.TESTS_EXIT_CODE }} == 0 ]; then
+            echo "FAILURE_STATUS=failure" >> "$GITHUB_OUTPUT";
+          fi;
+
+  call_send_slack_message:
+    name: Notify on Slack
+    uses: ./.github/workflows/send-slack-message.yaml
+    needs: run_tests
+    if: always()
+    with:
+      TESTS_EXIT_CODE: ${{ needs.run_tests.outputs.TESTS_EXIT_CODE }}
+      FAILURE_STATUS: ${{ needs.run_tests.outputs.FAILURE_STATUS }}
+      ERROR_STATUS: ${{ needs.run_tests.outputs.ERROR_STATUS }}
+      SLACK_MESSAGE_TITLE: ${{ needs.run_tests.outputs.SLACK_MESSAGE_TITLE }}
+    secrets: inherit
