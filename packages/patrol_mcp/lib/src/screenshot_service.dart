@@ -4,7 +4,7 @@ import 'dart:typed_data';
 
 import 'package:image/image.dart' as img;
 import 'package:mcp_dart/mcp_dart.dart';
-import 'package:patrol_cli/develop.dart' show Device, TargetPlatform;
+import 'package:patrol_cli/patrol_cli.dart' show Device, TargetPlatform;
 
 enum ScreenshotPlatform {
   android('adb', ['exec-out', 'screencap', '-p']),

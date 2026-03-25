@@ -5,7 +5,7 @@ import 'dart:io' as io;
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:logging/logging.dart';
 import 'package:path/path.dart' as p;
-import 'package:patrol_cli/develop.dart';
+import 'package:patrol_cli/patrol_cli.dart';
 
 import 'log_streaming.dart';
 

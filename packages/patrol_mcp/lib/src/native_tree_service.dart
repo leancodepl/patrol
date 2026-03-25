@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:adb/adb.dart';
 import 'package:mcp_dart/mcp_dart.dart';
-import 'package:patrol_cli/develop.dart' show Device, TargetPlatform;
+import 'package:patrol_cli/patrol_cli.dart' show Device, TargetPlatform;
 
 abstract final class NativeTreeService {
   static const _host = 'localhost';
