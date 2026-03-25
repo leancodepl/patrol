@@ -34,13 +34,15 @@ accordingly (for example `./app`).
 
 1. Add `patrol_mcp` as a dev dependency in your Flutter project:
 
+   ```sh
+   dart pub add --dev patrol_mcp
+   ```
+
+   Or add it manually to your `pubspec.yaml`:
+
    ```yaml
    dev_dependencies:
-     patrol_mcp:
-       git:
-         url: https://github.com/leancodepl/patrol.git
-         ref: feat/patrol-mcp
-         path: packages/patrol_mcp
+     patrol_mcp: ^0.1.0
    ```
 
 2. Create a launcher script named `run-patrol` with the contents below.
