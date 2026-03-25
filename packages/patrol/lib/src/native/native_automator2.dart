@@ -379,6 +379,7 @@ class NativeAutomator2 {
     ios: () => _platform.ios.enterText(
       _getSafeIOSSelector(selector),
       text: text,
+      appId: appId,
       keyboardBehavior: keyboardBehavior,
       timeout: timeout,
       tapLocation: tapLocation,
@@ -532,6 +533,7 @@ class NativeAutomator2 {
       androidViews: [],
       iosViews: (await _platform.ios.getNativeViews(
         _getSafeIOSSelector(selector),
+        appId: appId,
       )).roots,
     ),
   );
