@@ -1,3 +1,7 @@
+## 4.3.1
+
+- Update dependencies.
+
 ## 4.3.0
 
 - Bump `patrol_log` to `^0.8.0`.
