@@ -331,9 +331,12 @@ class IOSTestBackend {
     ];
 
     for (final key in keys) {
-      final read = await _processManager.run(
-        ['/usr/libexec/PlistBuddy', '-c', 'Print $key', plist],
-      );
+      final read = await _processManager.run([
+        '/usr/libexec/PlistBuddy',
+        '-c',
+        'Print $key',
+        plist,
+      ]);
       if (read.exitCode != 0) {
         continue;
       }
@@ -343,14 +346,12 @@ class IOSTestBackend {
         return;
       }
 
-      await _processManager.run(
-        [
-          '/usr/libexec/PlistBuddy',
-          '-c',
-          'Set $key $current:$addition',
-          plist,
-        ],
-      );
+      await _processManager.run([
+        '/usr/libexec/PlistBuddy',
+        '-c',
+        'Set $key $current:$addition',
+        plist,
+      ]);
       _logger.detail('Patched xctestrun DYLD_FRAMEWORK_PATH for Xcode 26+');
       return;
     }
