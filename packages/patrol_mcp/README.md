@@ -38,12 +38,8 @@ accordingly (for example `./app`).
    dart pub add --dev patrol_mcp
    ```
 
-   Or add it manually to your `pubspec.yaml`:
-
-   ```yaml
-   dev_dependencies:
-     patrol_mcp: ^0.1.0
-   ```
+   Or add it manually to your `pubspec.yaml` with the
+   [latest version from pub.dev](https://pub.dev/packages/patrol_mcp).
 
 2. Create a launcher script named `run-patrol` with the contents below.
    Where to save it and how to configure MCP depends on your IDE — see step 3.
