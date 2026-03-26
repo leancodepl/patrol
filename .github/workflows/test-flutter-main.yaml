@@ -1,11 +1,11 @@
 name: test flutter main channel
 # This workflow verifies if these tests are valid https://github.com/flutter/tests/blob/main/registry/patrol.test.disabled
-# It rebases fix/flutter-patrol-tests onto master weekly and creates a PR if tests fail.
+# It rebases fix/flutter-patrol-tests onto master weekly and always creates a PR with the results.
 on:
   workflow_dispatch:
   schedule:
-    # Weekly on Monday at 4:00 UTC.
-    - cron: '0 4 * * 1'
+    # Weekly on Tuesday at 4:00 UTC.
+    - cron: '0 4 * * 2'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -64,11 +64,11 @@ jobs:
             echo "FAILURE_STATUS=failure" >> "$GITHUB_OUTPUT";
           fi;
 
-  create_pr_on_failure:
-    name: Create PR on test failure
+  create_pr:
+    name: Create PR with test results
     runs-on: ubuntu-latest
     needs: run_tests
-    if: always() && needs.run_tests.result == 'failure'
+    if: always()
     permissions:
       contents: read
       pull-requests: write
@@ -82,19 +82,21 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           WORKFLOW_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          TEST_RESULT: ${{ needs.run_tests.result }}
         run: |
           EXISTING_PR=$(gh pr list --head fix/flutter-patrol-tests --base master --state open --json number --jq '.[0].number')
           if [ -n "$EXISTING_PR" ]; then
             echo "PR #$EXISTING_PR already exists, adding a comment."
-            gh pr comment "$EXISTING_PR" --body "Flutter main channel tests failed again on $(date -u '+%Y-%m-%d'). [See workflow run](${WORKFLOW_URL})"
+            gh pr comment "$EXISTING_PR" --body "Flutter main channel tests result: **${TEST_RESULT}** on $(date -u '+%Y-%m-%d'). [See workflow run](${WORKFLOW_URL})"
           else
             PR_BODY="## Summary
 
-          Automated PR created because Flutter main channel customer tests are failing on the \`fix/flutter-patrol-tests\` branch (rebased onto \`master\`).
+          Automated PR created after running Flutter main channel customer tests on the \`fix/flutter-patrol-tests\` branch (rebased onto \`master\`).
 
+          **Test result:** ${TEST_RESULT}
           **Workflow run:** ${WORKFLOW_URL}
 
-          ## Steps to fix
+          ## Steps to fix (if tests are failing)
 
           1. Fix tests locally on the \`fix/flutter-patrol-tests\` branch
           2. Fork the [flutter/tests](https://github.com/flutter/tests) repository
