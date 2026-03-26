@@ -10,7 +10,7 @@
 
 MCP server that lets AI agents run and manage Patrol tests in Flutter projects.
 
-![Patrol promotial graphics][promo_graphics]
+![Patrol promotional graphics][promo_graphics]
 
 ## Learn more about Patrol:
 

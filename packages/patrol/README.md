@@ -13,7 +13,7 @@ overcomes the limitations of integration_test by handling native interactions.
 Developed by [LeanCode](https://leancode.co) since 2022, battle-tested and
 shaped by production-grade experience.
 
-![Patrol promotial graphics][promo_graphics]
+![Patrol promotional graphics][promo_graphics]
 
 ## Learn more about Patrol:
 
