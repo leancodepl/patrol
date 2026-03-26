@@ -74,13 +74,12 @@ void main() {
       }) {
         test(description, () async {
           final target = simulator ? 'iphonesimulator' : 'iphoneos';
-          if (arch != null) {
-            arch = '-$arch';
-          }
+          final archSuffix = arch != null ? '-$arch' : '';
 
           final xcTestPlan = testPlan != null ? '-$testPlan' : '';
 
-          final name = '${scheme}_$xcTestPlan${target}16.2$arch.xctestrun';
+          final name =
+              '${scheme}_$xcTestPlan${target}16.2$archSuffix.xctestrun';
 
           fs
               .file('build/ios_integ/Build/Products/$name')
