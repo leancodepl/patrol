@@ -19,6 +19,17 @@ MCP server that lets AI agents run and manage Patrol tests in Flutter projects.
 - [Simplifying Flutter Web Testing: Patrol Web][article_web]
 - [Patrol VS Code Extension - A Better Way to Run and Debug Flutter UI Tests][article_vscode]
 
+## How can we help you:
+
+Patrol is an open-source framework created and maintained by LeanCode.
+However, if your company wants to scale fast and accelerate Patrol's
+adoption, we offer a set of value-added services on top of the core framework.
+
+You can find out more below:
+
+- 🚀  [Automate Flutter app testing with Patrol][automate_flutter_app_testing_with_patrol]
+- 🚀  [Patrol Setup & Patrol Training][patrol_setup_and_training]
+
 ## Features
 
 - Run Patrol tests and block until completion.
@@ -309,4 +320,6 @@ We are **top-tier experts** focused on Flutter Enterprise solutions.
 [article_web]: https://leancode.co/blog/patrol-web-support?utm_source=github.com&utm_medium=referral&utm_campaign=patrol-readme
 [article_4x]: https://leancode.co/blog/patrol-4-0-release?utm_source=github.com&utm_medium=referral&utm_campaign=patrol-readme
 [article_vscode]: https://leancode.co/blog/patrol-vs-code-extension?utm_source=github.com&utm_medium=referral&utm_campaign=patrol-readme
+[automate_flutter_app_testing_with_patrol]: https://leancode.co/products/automated-ui-testing-in-flutter?utm_source=github.com&utm_medium=referral&utm_campaign=patrol-readme
+[patrol_setup_and_training]: https://leancode.co/products/patrol-setup-training?utm_source=github.com&utm_medium=referral&utm_campaign=patrol-readme
 [raw_readme]: https://raw.githubusercontent.com/leancodepl/patrol/refs/heads/master/packages/patrol_mcp/README.md
