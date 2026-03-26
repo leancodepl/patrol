@@ -25,5 +25,3 @@ dependencies:
 dev_dependencies:
   leancode_lint: ^17.0.0
 
-executables:
-  patrol_mcp: patrol_mcp

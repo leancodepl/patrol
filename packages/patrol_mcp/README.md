@@ -8,7 +8,7 @@
 [![patrol_github_stars]][patrol_github_link]
 [![patrol_x]][patrol_x_link]
 
-MCP server for managing `patrol develop` sessions from AI agents.
+MCP server that lets AI agents run and manage Patrol tests in Flutter projects.
 
 ## Features
 
