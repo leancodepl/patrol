@@ -132,6 +132,9 @@ class IOSTestBackend {
       exitCode = await process.exitCode;
       if (exitCode == 0) {
         task.complete('Completed building $subject');
+        if (options.simulator) {
+          await _patchXcTestRunDyldPath(scheme: options.scheme);
+        }
       } else if (exitCode == _xcodebuildInterrupted) {
         const cause = 'xcodebuild was interrupted';
         task.fail('Failed to execute tests of $subject ($cause)');
@@ -305,6 +308,52 @@ class IOSTestBackend {
     }
 
     return appId.substring(0, idx);
+  }
+
+  /// Xcode 26+ ships `_Testing_Foundation.framework` only under
+  /// `__PLATFORMS__/.../Frameworks` but omits it from the xctestrun's
+  /// `DYLD_FRAMEWORK_PATH`. Append it if missing.
+  Future<void> _patchXcTestRunDyldPath({required String scheme}) async {
+    final sdkVersion = await getSdkVersion(real: false);
+    final plist = await xcTestRunPath(
+      real: false,
+      scheme: scheme,
+      sdkVersion: sdkVersion,
+    );
+
+    const addition =
+        '__PLATFORMS__/iPhoneSimulator.platform/Developer/Library/Frameworks';
+
+    // v1 (flat) and v2 (TestConfigurations) xctestrun formats
+    const keys = [
+      ':RunnerUITests:UITargetAppEnvironmentVariables:DYLD_FRAMEWORK_PATH',
+      ':TestConfigurations:0:TestTargets:0:UITargetAppEnvironmentVariables:DYLD_FRAMEWORK_PATH',
+    ];
+
+    for (final key in keys) {
+      final read = await _processManager.run(
+        ['/usr/libexec/PlistBuddy', '-c', 'Print $key', plist],
+      );
+      if (read.exitCode != 0) {
+        continue;
+      }
+
+      final current = read.stdOut.trim();
+      if (current.contains('__PLATFORMS__')) {
+        return;
+      }
+
+      await _processManager.run(
+        [
+          '/usr/libexec/PlistBuddy',
+          '-c',
+          'Set $key $current:$addition',
+          plist,
+        ],
+      );
+      _logger.detail('Patched xctestrun DYLD_FRAMEWORK_PATH for Xcode 26+');
+      return;
+    }
   }
 
   // TODO: The path should be joined using platform-specific separator.
