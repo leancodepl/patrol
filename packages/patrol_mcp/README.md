@@ -10,6 +10,15 @@
 
 MCP server that lets AI agents run and manage Patrol tests in Flutter projects.
 
+![Patrol promotial graphics][promo_graphics]
+
+## Learn more about Patrol:
+
+- [Our extensive documentation][docs]
+- [How Patrol 4.0 Makes Cross-Platform Flutter Testing Possible][article_4x]
+- [Simplifying Flutter Web Testing: Patrol Web][article_web]
+- [Patrol VS Code Extension - A Better Way to Run and Debug Flutter UI Tests][article_vscode]
+
 ## Features
 
 - Run Patrol tests and block until completion.
@@ -295,4 +304,9 @@ We are **top-tier experts** focused on Flutter Enterprise solutions.
 [patrol_x_link]: https://x.com/patrol_leancode
 [patrol_github_link]: https://github.com/leancodepl/patrol
 [patrol_discord_link]: https://discord.gg/ukBK5t4EZg
+[promo_graphics]: ../../assets/promo_banner.png
+[docs]: https://patrol.leancode.co/?utm_source=github.com&utm_medium=referral&utm_campaign=patrol-readme
+[article_web]: https://leancode.co/blog/patrol-web-support?utm_source=github.com&utm_medium=referral&utm_campaign=patrol-readme
+[article_4x]: https://leancode.co/blog/patrol-4-0-release?utm_source=github.com&utm_medium=referral&utm_campaign=patrol-readme
+[article_vscode]: https://leancode.co/blog/patrol-vs-code-extension?utm_source=github.com&utm_medium=referral&utm_campaign=patrol-readme
 [raw_readme]: https://raw.githubusercontent.com/leancodepl/patrol/refs/heads/master/packages/patrol_mcp/README.md
