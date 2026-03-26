@@ -2,7 +2,7 @@ name: patrol_mcp
 description: >
   An MCP server that empowers AI assistants to control, automate, and monitor
   interactive Patrol development sessions in Flutter.
-version: 0.1.0
+version: 0.1.1
 homepage: https://patrol.leancode.co
 repository: https://github.com/leancodepl/patrol/tree/master/packages/patrol_mcp
 issue_tracker: https://github.com/leancodepl/patrol/issues
@@ -25,5 +25,3 @@ dependencies:
 dev_dependencies:
   leancode_lint: ^17.0.0
 
-executables:
-  patrol_mcp: patrol_mcp

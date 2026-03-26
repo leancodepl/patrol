@@ -233,11 +233,12 @@ final class PatrolSession {
     // This supports both develop-specific flags and global flags (e.g.
     // --verbose, --flutter-command) so that PATROL_FLAGS works with everything
     // that `patrol develop` accepts.
-    final flagParts = (additionalFlags.isNotEmpty
-            ? additionalFlags.split(RegExp(r'\s+'))
-            : <String>[])
-        // Skip compatibility checking in MCP context for speed.
-        ..add('--no-check-compatibility');
+    final flagParts =
+        (additionalFlags.isNotEmpty
+              ? additionalFlags.split(RegExp(r'\s+'))
+              : <String>[])
+          // Skip compatibility checking in MCP context for speed.
+          ..add('--no-check-compatibility');
 
     final flutterCmd = io.Platform.environment['PATROL_FLUTTER_COMMAND'];
 

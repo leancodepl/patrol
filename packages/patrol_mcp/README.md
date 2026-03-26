@@ -8,7 +8,7 @@
 [![patrol_github_stars]][patrol_github_link]
 [![patrol_x]][patrol_x_link]
 
-MCP server for managing `patrol develop` sessions from AI agents.
+MCP server that lets AI agents run and manage Patrol tests in Flutter projects.
 
 ## Features
 
@@ -34,14 +34,12 @@ accordingly (for example `./app`).
 
 1. Add `patrol_mcp` as a dev dependency in your Flutter project:
 
-   ```yaml
-   dev_dependencies:
-     patrol_mcp:
-       git:
-         url: https://github.com/leancodepl/patrol.git
-         ref: feat/patrol-mcp
-         path: packages/patrol_mcp
+   ```sh
+   dart pub add --dev patrol_mcp
    ```
+
+   Or add it manually to your `pubspec.yaml` with the
+   [latest version from pub.dev](https://pub.dev/packages/patrol_mcp).
 
 2. Create a launcher script named `run-patrol` with the contents below.
    Where to save it and how to configure MCP depends on your IDE — see step 3.
