@@ -35,6 +35,20 @@ abstract interface class IOSAutomator implements MobileAutomator {
   /// If no heads up notification is visible, the behavior is undefined.
   Future<void> closeHeadsUpNotification();
 
+  /// Taps on the iOS "back to previous app" breadcrumb button.
+  ///
+  /// This button is visible in the status bar after opening another app and
+  /// has identifier `breadcrumb` with button trait.
+  ///
+  /// If the breadcrumb is not visible immediately, this method waits for the
+  /// button to become visible for [timeout] duration. If [timeout] is not
+  /// specified, it utilizes the [IOSAutomatorConfig.findTimeout] duration
+  /// from the configuration.
+  ///
+  /// Use [appId] to target a specific app context. If [appId] is not provided,
+  /// Patrol does not default to the app-under-test bundle ID.
+  Future<void> tapBackToPreviousAppButton({String? appId, Duration? timeout});
+
   /// Taps on the visible notification using [selector].
   ///
   /// If the notification is not visible immediately, this method waits for the
