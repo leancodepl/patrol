@@ -12,7 +12,7 @@ patrol_devtools_extension_package="./packages/patrol_devtools_extension"
 patrol_dart_out_dir="lib/src/platform/contracts"
 patrol_dart_web_out_dir="lib/src/platform/web"
 
-darwin_out="$patrol_package/darwin/Classes/AutomatorServer"
+darwin_out="$patrol_package/darwin/patrol/Sources/patrol/AutomatorServer"
 dart_out="$patrol_package/$patrol_dart_out_dir"
 
 android_out="$patrol_package/android/src/main/kotlin/pl/leancode/patrol/contracts"
