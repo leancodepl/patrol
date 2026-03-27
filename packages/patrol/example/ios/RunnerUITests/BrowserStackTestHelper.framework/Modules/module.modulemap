@@ -1,0 +1,11 @@
+framework module BrowserStackTestHelper {
+  umbrella header "BrowserStackTestHelper.h"
+  export *
+
+  module * { export * }
+}
+
+module BrowserStackTestHelper.Swift {
+  header "BrowserStackTestHelper-Swift.h"
+  requires objc
+}

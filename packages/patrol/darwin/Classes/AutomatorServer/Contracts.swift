@@ -490,6 +490,11 @@ public struct IOSTakeCameraPhotoRequest: Codable {
   public var appId: String
 }
 
+public struct IOSInjectCameraPhotoRequest: Codable {
+  public var imageName: String
+  public var appId: String
+}
+
 public struct AndroidPickImageFromGalleryRequest: Codable {
   public var imageSelector: AndroidSelector?
   public var imageIndex: Int?
