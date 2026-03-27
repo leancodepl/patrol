@@ -12,7 +12,6 @@ This document describes all GitHub Actions workflows used in the Patrol project.
 | [test android emulator][test-android-emulator] | PR, every 12h | Pixel7 | 36, 35, 34, 33, 32 | Flutter 3.38.x (stable) | `android && emulator` | Runs E2E tests on emulator.wtf emulators across multiple API levels. Excludes `volume_test.dart` due to emulator instability issues. |
 | [test android emulator webview][test-android-emulator-webview] | PR, daily at 23:00 | Pixel7 | 31 | Flutter 3.38.x (stable) | `webview && android` | Runs webview-specific E2E tests on emulator.wtf. |
 | [test flutter beta channel][test-flutter-beta] | Daily at 8:00, manual | Pixel7 | 35 | Flutter beta | — | Runs smoke test on Flutter beta channel using `example_test.dart` to verify Patrol compatibility with beta Flutter releases. |
-| [test flutter main channel][test-flutter-main] | Weekly Tue 4:00 UTC, manual | — | — | Flutter master | — | Rebases `fix/flutter-patrol-tests` onto `master`, then runs internal tests (`flutter analyze` + `flutter test` on `patrol_finders` and `patrol_cli`) against Flutter main channel. Always creates a PR with test results. Sends Slack notification on failure when triggered by schedule. |
 | [test locales on android device][test-android-locales] | Every 12h | MediumPhone.arm | 36 | Flutter 3.38.x (stable) | `locale_testing_android` | Tests locale support on Firebase Test Lab for English, French, German, and Polish locales. Excludes `web/`, `native_tests/`, and `volume_test.dart`. |
 
 ### iOS Testing
@@ -28,6 +27,7 @@ This document describes all GitHub Actions workflows used in the Patrol project.
 
 | Workflow name | Triggered | Flutter version | Tags | Description |
 |--------------|-----------|----------------|------|-------------|
+| [test flutter main channel][test-flutter-main] | Weekly Tue 4:00 UTC, manual | Flutter master | — | Rebases `fix/flutter-patrol-tests` onto `master`, then runs internal tests (`flutter analyze` + `flutter test` on `patrol_finders` and `patrol_cli`) against Flutter main channel. Always creates a PR with test results. Sends Slack notification on failure when triggered by schedule. |
 | [test web][test-web] | No | Flutter 3.38.x (stable) | — | Runs web-specific E2E tests on Chrome in headless mode. Triggers on PR for web-related changes. Uses target file instead of tags. |
 | [test macos][test-macos] | Every 12h | Flutter 3.38.x (stable) | — | Runs E2E tests on macOS desktop platform. Runs tests from `patrol_test/macos` directory. Uses xcresulttool v1.7.1 for test reporting. |
 | [test patrol develop][test-patrol-develop] | `pull_request_target` (opened/synchronize on package, e2e_app, and schema changes; excludes docs), manual | Flutter 3.38.x (stable) | — | Tests `patrol develop` command on Linux (Android emulator, API 34) and macOS (iOS simulator: iPhone 16 Pro on iOS 26.2). The macOS job pins simulator runtime and passes `--ios 26.2` to `patrol_develop_test.dart` to keep xcode destination selection deterministic. Timeout: 30 minutes per job. |
