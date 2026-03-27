@@ -137,7 +137,7 @@ class IOSTestBackend {
           real: !options.simulator,
         );
         if (!options.simulator) {
-          await _embedTestingFoundationFramework();
+          await _preparePhysicalDeviceXcode26Runtime();
         }
       } else if (exitCode == _xcodebuildInterrupted) {
         const cause = 'xcodebuild was interrupted';
@@ -377,62 +377,61 @@ class IOSTestBackend {
     }
   }
 
-  /// On physical devices, `libXCTestSwiftSupport.dylib` may require
-  /// `_Testing_Foundation.framework` and `lib_TestingInterop.dylib` to be
-  /// embedded in `Runner.app/Frameworks`.
-  Future<void> _embedTestingFoundationFramework() async {
-    const frameworkName = '_Testing_Foundation.framework';
-    const interopDylibName = 'lib_TestingInterop.dylib';
-    final sdkFramework = join(
-      '/Applications/Xcode.app/Contents/Developer/Platforms',
-      'iPhoneOS.platform/Developer/Library/Frameworks',
-      frameworkName,
-    );
-    final sdkInteropDylib = join(
-      '/Applications/Xcode.app/Contents/Developer/Platforms',
-      'iPhoneOS.platform/Developer/usr/lib',
-      interopDylibName,
-    );
-    if (!_fs.directory(sdkFramework).existsSync() &&
-        !_fs.file(sdkInteropDylib).existsSync()) {
-      _logger.detail(
-        '$frameworkName and $interopDylibName not found in iPhoneOS SDK, skipping',
-      );
-      return;
-    }
-
+  Future<void> _preparePhysicalDeviceXcode26Runtime() async {
     final appDir = join(
       _rootDirectory.absolute.path,
       'build/ios_integ/Build/Products/Release-iphoneos/Runner.app',
     );
     final frameworksDir = join(appDir, 'Frameworks');
-    final targetFramework = join(frameworksDir, frameworkName);
-    final targetInteropDylib = join(frameworksDir, interopDylibName);
+    final artifacts = <Map<String, String>>[
+      {
+        'name': '_Testing_Foundation.framework',
+        'source': join(
+          '/Applications/Xcode.app/Contents/Developer/Platforms',
+          'iPhoneOS.platform/Developer/Library/Frameworks',
+          '_Testing_Foundation.framework',
+        ),
+      },
+      {
+        'name': 'lib_TestingInterop.dylib',
+        'source': join(
+          '/Applications/Xcode.app/Contents/Developer/Platforms',
+          'iPhoneOS.platform/Developer/usr/lib',
+          'lib_TestingInterop.dylib',
+        ),
+      },
+    ];
 
-    if (_fs.directory(sdkFramework).existsSync() &&
-        !_fs.directory(targetFramework).existsSync()) {
-      final copy = await _processManager.run([
-        'cp',
-        '-R',
-        sdkFramework,
-        frameworksDir,
-      ]);
+    var copiedAny = false;
+    for (final artifact in artifacts) {
+      final source = artifact['source']!;
+      final name = artifact['name']!;
+      final destination = join(frameworksDir, name);
+      final isFramework = name.endsWith('.framework');
+      final existsInSdk = isFramework
+          ? _fs.directory(source).existsSync()
+          : _fs.file(source).existsSync();
+      final existsInApp = isFramework
+          ? _fs.directory(destination).existsSync()
+          : _fs.file(destination).existsSync();
+      if (!existsInSdk || existsInApp) {
+        continue;
+      }
+
+      final copy = await _processManager.run(
+        isFramework
+            ? ['cp', '-R', source, frameworksDir]
+            : ['cp', source, frameworksDir],
+      );
       if (copy.exitCode != 0) {
-        _logger.err('Failed to copy $frameworkName: ${copy.stdErr}');
+        _logger.err('Failed to copy $name: ${copy.stdErr}');
         return;
       }
+      copiedAny = true;
     }
-    if (_fs.file(sdkInteropDylib).existsSync() &&
-        !_fs.file(targetInteropDylib).existsSync()) {
-      final copy = await _processManager.run([
-        'cp',
-        sdkInteropDylib,
-        frameworksDir,
-      ]);
-      if (copy.exitCode != 0) {
-        _logger.err('Failed to copy $interopDylibName: ${copy.stdErr}');
-        return;
-      }
+
+    if (!copiedAny) {
+      return;
     }
 
     var result = await _processManager.run([
@@ -451,29 +450,17 @@ class IOSTestBackend {
     }
     final identity = identityMatch.group(1)!;
 
-    if (_fs.directory(targetFramework).existsSync()) {
-      result = await _processManager.run([
+    for (final artifact in artifacts) {
+      final destination = join(frameworksDir, artifact['name']);
+      final sign = await _processManager.run([
         'codesign',
         '--force',
         '--sign',
         identity,
-        targetFramework,
+        destination,
       ]);
-      if (result.exitCode != 0) {
-        _logger.err('Failed to sign $frameworkName: ${result.stdErr}');
-        return;
-      }
-    }
-    if (_fs.file(targetInteropDylib).existsSync()) {
-      result = await _processManager.run([
-        'codesign',
-        '--force',
-        '--sign',
-        identity,
-        targetInteropDylib,
-      ]);
-      if (result.exitCode != 0) {
-        _logger.err('Failed to sign $interopDylibName: ${result.stdErr}');
+      if (sign.exitCode != 0) {
+        _logger.err('Failed to sign ${artifact['name']}: ${sign.stdErr}');
         return;
       }
     }
@@ -527,10 +514,6 @@ class IOSTestBackend {
       _logger.err('Failed to re-sign Runner.app: ${result.stdErr}');
       return;
     }
-
-    _logger.detail(
-      'Embedded and signed Xcode testing runtime artifacts for physical device',
-    );
   }
 
   // TODO: The path should be joined using platform-specific separator.
