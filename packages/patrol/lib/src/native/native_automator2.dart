@@ -167,6 +167,18 @@ class NativeAutomator2 {
   Future<void> closeHeadsUpNotification() =>
       _platform.action(ios: _platform.ios.closeHeadsUpNotification);
 
+  /// Taps on the iOS "back to previous app" breadcrumb button (iOS only).
+  ///
+  /// This button is visible in the status bar after opening another app and
+  /// has identifier `breadcrumb` with button trait.
+  Future<void> tapBackToPreviousAppButton({String? appId, Duration? timeout}) =>
+      _platform.action(
+        ios: () => _platform.ios.tapBackToPreviousAppButton(
+          appId: appId,
+          timeout: timeout,
+        ),
+      );
+
   /// Searches for the [index]-th visible notification and taps on it.
   ///
   /// If the notification is not visible immediately, this method waits for the

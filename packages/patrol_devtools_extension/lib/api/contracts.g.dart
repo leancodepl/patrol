@@ -720,6 +720,20 @@ Map<String, dynamic> _$IOSTapOnNotificationRequestToJson(
   'timeoutMillis': instance.timeoutMillis,
 };
 
+IOSTapBackToPreviousAppButtonRequest
+_$IOSTapBackToPreviousAppButtonRequestFromJson(Map<String, dynamic> json) =>
+    IOSTapBackToPreviousAppButtonRequest(
+      appId: json['appId'] as String?,
+      timeoutMillis: (json['timeoutMillis'] as num?)?.toInt(),
+    );
+
+Map<String, dynamic> _$IOSTapBackToPreviousAppButtonRequestToJson(
+  IOSTapBackToPreviousAppButtonRequest instance,
+) => <String, dynamic>{
+  'appId': instance.appId,
+  'timeoutMillis': instance.timeoutMillis,
+};
+
 PermissionDialogVisibleResponse _$PermissionDialogVisibleResponseFromJson(
   Map<String, dynamic> json,
 ) => PermissionDialogVisibleResponse(visible: json['visible'] as bool);

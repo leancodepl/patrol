@@ -1097,6 +1097,24 @@ class IOSTapOnNotificationRequest with EquatableMixin {
 }
 
 @JsonSerializable()
+class IOSTapBackToPreviousAppButtonRequest with EquatableMixin {
+  IOSTapBackToPreviousAppButtonRequest({this.appId, this.timeoutMillis});
+
+  factory IOSTapBackToPreviousAppButtonRequest.fromJson(
+    Map<String, dynamic> json,
+  ) => _$IOSTapBackToPreviousAppButtonRequestFromJson(json);
+
+  final String? appId;
+  final int? timeoutMillis;
+
+  Map<String, dynamic> toJson() =>
+      _$IOSTapBackToPreviousAppButtonRequestToJson(this);
+
+  @override
+  List<Object?> get props => [appId, timeoutMillis];
+}
+
+@JsonSerializable()
 class PermissionDialogVisibleResponse with EquatableMixin {
   PermissionDialogVisibleResponse({required this.visible});
 

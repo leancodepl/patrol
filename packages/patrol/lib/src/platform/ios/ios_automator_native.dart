@@ -134,6 +134,26 @@ class IOSAutomator extends NativeMobileAutomator
     );
   }
 
+  /// Taps on the iOS "back to previous app" breadcrumb button.
+  ///
+  /// This button is visible in the status bar after opening another app and
+  /// has identifier `breadcrumb` with button trait.
+  @override
+  Future<void> tapBackToPreviousAppButton({
+    String? appId,
+    Duration? timeout,
+  }) async {
+    await wrapRequest(
+      'tapBackToPreviousAppButton',
+      () => _client.tapBackToPreviousAppButton(
+        IOSTapBackToPreviousAppButtonRequest(
+          appId: appId,
+          timeoutMillis: timeout?.inMilliseconds,
+        ),
+      ),
+    );
+  }
+
   /// Searches for the [index]-th visible notification and taps on it.
   ///
   /// If the notification is not visible immediately, this method waits for the
