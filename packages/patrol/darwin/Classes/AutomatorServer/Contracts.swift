@@ -447,6 +447,11 @@ public struct IOSTapOnNotificationRequest: Codable {
   public var timeoutMillis: Int?
 }
 
+public struct IOSTapBackToPreviousAppButtonRequest: Codable {
+  public var appId: String?
+  public var timeoutMillis: Int?
+}
+
 public struct PermissionDialogVisibleResponse: Codable {
   public var visible: Bool
 }

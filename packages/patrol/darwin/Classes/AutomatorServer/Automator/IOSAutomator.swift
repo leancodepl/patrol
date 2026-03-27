@@ -697,6 +697,39 @@
       }
     }
 
+    func tapBackToPreviousAppButton(inApp bundleId: String?, withTimeout timeout: TimeInterval?)
+      throws
+    {
+      let breadcrumbDescription = "view with elementType 'button' with identifier 'breadcrumb'"
+      let viewDescription =
+        bundleId.map { "\(breadcrumbDescription) in app \($0)" } ?? breadcrumbDescription
+
+      try runAction("tapping on \(viewDescription)") {
+        let buttonElementType = XCUIElement.ElementType.button.rawValue
+        let predicate = NSPredicate(
+          format: "elementType == %@ AND identifier == %@",
+          NSNumber(value: buttonElementType),
+          "breadcrumb"
+        )
+
+        let query: XCUIElementQuery
+        if let bundleId {
+          let app = try self.getApp(withBundleId: bundleId)
+          query = app.descendants(matching: .any).matching(predicate)
+        } else {
+          // Breadcrumb is a system-level control; by default search outside AUT.
+          query = self.springboard.descendants(matching: .any).matching(predicate)
+        }
+
+        guard let element = self.waitFor(query: query, index: 0, timeout: timeout ?? self.timeout)
+        else {
+          throw PatrolError.viewNotExists(viewDescription)
+        }
+
+        element.forceTap()
+      }
+    }
+
     // MARK: Permissions
 
     func isPermissionDialogVisible(timeout: TimeInterval) throws -> Bool {
