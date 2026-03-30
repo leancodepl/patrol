@@ -211,6 +211,16 @@ abstract class PatrolCommand extends Command<int> {
     );
   }
 
+  void usesNoBuildOption() {
+    argParser.addFlag(
+      'build',
+      defaultsTo: true,
+      help:
+          'Build the app before running tests. '
+          'Use --no-build to skip the build step and use previously built binaries.',
+    );
+  }
+
   void usesBuildNameOption() {
     argParser.addOption(
       'build-name',

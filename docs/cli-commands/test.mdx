@@ -140,6 +140,20 @@ patrol test --build-name=1.2.3 --build-number=123
 patrol test --target integration_test/login_test.dart --build-name=1.2.3 --build-number=123
 ```
 
+### Skipping the build step
+
+If you have already built your app binaries using [`patrol build`][patrol_build],
+you can skip the build step with `--no-build`:
+
+```
+patrol build android
+patrol test --no-build
+```
+
+This is useful in CI pipelines or iterative workflows where you want to build
+once and run tests multiple times without rebuilding. The previously built
+binaries are picked up from their default output paths.
+
 ### Under the hood
 
 `patrol test` basically calls `patrol build` and then runs the built app

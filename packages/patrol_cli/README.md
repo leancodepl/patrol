@@ -54,6 +54,21 @@ Read the documentation:
 - [setup](https://patrol.leancode.pl/getting-started)
 - [test command](https://patrol.leancode.co/cli-commands/test)
 
+### Skipping the build step
+
+If you want to separate the build and test steps (e.g. to build once and run
+tests multiple times), you can use `patrol build` to pre-build and then
+`patrol test --no-build` to run with the existing binaries:
+
+```console
+$ patrol build android
+$ patrol test --no-build
+```
+
+The `--no-build` flag tells `patrol test` to skip the build step entirely and
+use the binaries previously produced by `patrol build android` (or
+`patrol build ios`). The binaries are expected at their default output paths.
+
 [pub_badge]: https://img.shields.io/pub/v/patrol_cli.svg
 [pub_link]: https://pub.dartlang.org/packages/patrol_cli
 [pub_link_test]: https://pub.dartlang.org/packages/patrol
