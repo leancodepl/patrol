@@ -87,6 +87,9 @@ jobs:
       - name: Set up Patrol CLI
         working-directory: packages/patrol_cli
         run: dart pub global activate --source path . && patrol
+ 
+      - name: Refresh e2e app dependencies
+        run: flutter pub get
 
       # Note: clear_permissions_test and deny_many_permissions_test are excluded
       # because camera permissions are not cleared between tests on physical devices
