@@ -3,7 +3,8 @@ name: test ios device
 on:
   workflow_dispatch:
   schedule:
-    - cron: '30 21 * * *'
+    # run this workflow weekly on Monday at 06:00 UTC
+    - cron: '0 6 * * 1'
 
 jobs:
   run_tests:
@@ -13,14 +14,14 @@ jobs:
     outputs:
       SLACK_MESSAGE_TITLE: Flutter ${{ matrix.flutter-version }} on ${{ matrix.os }} ${{ matrix.os_version }}
       TESTS_EXIT_CODE: ${{ steps.tests_step.outputs.TESTS_EXIT_CODE }}
-      EXCLUDED_TESTS: ${{ steps.set_excluded_tests.outputs.EXCLUDED_TESTS }}
       URL_TO_DETAILS: ${{ steps.tests_step.outputs.URL_TO_DETAILS }}
 
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ['3.32.x']
+        flutter-version: ['3.38.x']
         flutter-channel: ['stable']
+        # We use older iOs because it allows to record video in the testlab
         device_model: ['iphone14pro']
         os_version: ['16.6']
         os: [iOS]
@@ -87,30 +88,11 @@ jobs:
         working-directory: packages/patrol_cli
         run: dart pub global activate --source path . && patrol
 
-      - name: Set tests to exclude
-        id: set_excluded_tests
-        run: |
-          TESTS_TO_EXCLUDE="android_app_test,\
-          permissions/permissions_location_test,\
-          service_dark_mode_test,\
-          service_location_test,\
-          permissions/notifications_test,\
-          overflow_test,\
-          webview_hackernews_test,\
-          webview_leancode_test,\
-          webview_stackoverflow_test"
-
-          target_paths=""
-          for target in $(echo $TESTS_TO_EXCLUDE | tr ',' '\n'); do
-              target_paths+="integration_test/${target}.dart,"
-          done
-          target_paths="${target_paths%,}"
-
-          echo "EXCLUDED_TESTS=$TESTS_TO_EXCLUDE" >> "$GITHUB_OUTPUT"
-          echo "EXCLUDED_TESTS=$target_paths" >> "$GITHUB_ENV"
-
+      # Note: clear_permissions_test and deny_many_permissions_test are excluded
+      # because camera permissions are not cleared between tests on physical devices
       - name: Build tests
-        run: patrol build ios  --dart-define-from-file=defines_1.json --dart-define-from-file=defines_2.json --dart-define-from-file=defines_3.env --release --exclude ${{ env.EXCLUDED_TESTS }} --verbose
+        run: |
+          patrol build ios --tags='ios && physical_device' --exclude=patrol_test/web/,patrol_test/native_tests/,patrol_test/volume_test.dart,patrol_test/overflow_test.dart,patrol_test/permissions/clear_permissions_test.dart,patrol_test/permissions/deny_many_permissions_test.dart,patrol_test/permissions/deny_many_permissions_twice_test.dart --dart-define-from-file=defines_1.json --dart-define-from-file=defines_2.json --dart-define-from-file=defines_3.env --release --verbose --clear-permissions
 
       - name: Upload APKs to Firebase Test Lab and wait for tests to finish
         id: tests_step
@@ -141,6 +123,5 @@ jobs:
     with:
       TESTS_EXIT_CODE: ${{ needs.run_tests.outputs.TESTS_EXIT_CODE }}
       SLACK_MESSAGE_TITLE: ${{ needs.run_tests.outputs.SLACK_MESSAGE_TITLE }}
-      EXCLUDED_TESTS: ${{ needs.run_tests.outputs.EXCLUDED_TESTS }}
       URL_TO_DETAILS: ${{ needs.run_tests.outputs.URL_TO_DETAILS }}
     secrets: inherit

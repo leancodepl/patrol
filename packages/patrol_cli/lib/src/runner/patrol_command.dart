@@ -1,9 +1,27 @@
 import 'dart:io';
 
+import 'package:args/args.dart';
 import 'package:args/command_runner.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:patrol_cli/src/runner/flutter_command.dart';
+
+/// Adds global CLI flags (e.g. `--verbose`, `--flutter-command`) to [parser].
+///
+/// These flags live on the top-level runner in the CLI, but non-CLI callers
+/// (e.g. the MCP server) need them on the same parser as command-level flags.
+/// This function is the single source of truth for both paths.
+void addGlobalFlags(ArgParser parser) {
+  parser
+    ..addOption(
+      'flutter-command',
+      help:
+          'Command to use to run the Flutter CLI. Alternatively set the '
+          'PATROL_FLUTTER_COMMAND environment variable.',
+      valueHelp: 'fvm flutter',
+    )
+    ..addFlag('verbose', abbr: 'v', help: 'Print more logs.', negatable: false);
+}
 
 abstract class PatrolCommand extends Command<int> {
   /// Seconds to wait after the individual test case finishes executing.
@@ -31,13 +49,13 @@ abstract class PatrolCommand extends Command<int> {
         aliases: ['targets'],
         abbr: 't',
         help: 'Integration test target to use as entrypoint.',
-        valueHelp: 'integration_test/app_test.dart',
+        valueHelp: 'patrol_test/app_test.dart',
       )
       ..addMultiOption(
         'exclude',
         aliases: ['excludes'],
         help: 'Integration test targets to exclude.',
-        valueHelp: 'integration_test/flaky_test.dart',
+        valueHelp: 'patrol_test/flaky_test.dart',
       )
       ..addFlag(
         'generate-bundle',
@@ -68,7 +86,12 @@ abstract class PatrolCommand extends Command<int> {
         'profile',
         help: 'Build a version of your app for performance profiling.',
       )
-      ..addFlag('release', help: 'Build a release version of your app');
+      ..addFlag('release', help: 'Build a release version of your app')
+      ..addFlag(
+        'no-tree-shake-icons',
+        help: 'Disable tree shaking of icons when building the app.',
+        negatable: false,
+      );
   }
 
   void usesFlavorOption() {
@@ -155,6 +178,12 @@ abstract class PatrolCommand extends Command<int> {
             'Clear permissions available through XCUIProtectedResource API before running each test.',
         negatable: false,
       )
+      ..addFlag(
+        'full-isolation',
+        help:
+            '(Experimental) Uninstall the app between test runs on iOS Simulator to achieve full isolation.',
+        negatable: false,
+      )
       ..addOption(
         'ios',
         help:
@@ -191,7 +220,8 @@ abstract class PatrolCommand extends Command<int> {
   void usesHideTestSteps() {
     argParser.addFlag(
       'hide-test-steps',
-      help: 'Hide test steps while running the tests.',
+      help:
+          'Hide test steps while running the tests. Will be ignored if web sharding is enabled.',
     );
   }
 
@@ -235,6 +265,117 @@ abstract class PatrolCommand extends Command<int> {
       help: 'Version code of the app.',
       valueHelp: '123',
     );
+  }
+
+  void usesWeb() {
+    argParser
+      ..addOption(
+        'web-results-dir',
+        help: 'Directory where test results will be saved.',
+        valueHelp: 'test-results',
+      )
+      ..addOption(
+        'web-report-dir',
+        help: 'Directory where test reports will be saved.',
+        valueHelp: 'playwright-report',
+      )
+      ..addOption(
+        'web-retries',
+        help: 'Number of times to retry failed tests.',
+        valueHelp: 'number',
+      )
+      ..addOption(
+        'web-video',
+        help: 'Video recording mode.',
+        valueHelp: 'off | on | retain-on-failure | on-first-retry',
+      )
+      ..addOption(
+        'web-timeout',
+        help: 'Maximum time in milliseconds for single test execution.',
+        valueHelp: 'number',
+      )
+      ..addOption(
+        'web-workers',
+        help: 'Maximum number of parallel worker processes for test execution.',
+        valueHelp: 'number',
+      )
+      ..addOption(
+        'web-reporter',
+        help: 'Test reporters to use. JSON array of reporter names.',
+        valueHelp: '\'["html", "json", "list"]\'',
+      )
+      ..addOption(
+        'web-locale',
+        help: 'Locale for browser emulation.',
+        valueHelp: 'en-US | pl-PL',
+      )
+      ..addOption(
+        'web-timezone',
+        help: 'Timezone for browser emulation.',
+        valueHelp: 'Europe/Paris',
+      )
+      ..addOption(
+        'web-color-scheme',
+        help: 'Preferred color scheme for browser emulation.',
+        valueHelp: 'light | dark',
+      )
+      ..addOption(
+        'web-geolocation',
+        help:
+            'Geolocation for browser context. JSON object with latitude and longitude.',
+        valueHelp: '\'{"latitude": 51.5074, "longitude": -0.1278}\'',
+      )
+      ..addOption(
+        'web-permissions',
+        help:
+            'Permissions to grant to the browser context. JSON array of permission names.',
+        valueHelp: '\'["geolocation", ...]\'',
+      )
+      ..addOption(
+        'web-user-agent',
+        help: 'Custom user agent string for browser context.',
+        valueHelp: 'user agent string',
+      )
+      ..addOption(
+        'web-viewport',
+        help:
+            'Viewport size for browser context. JSON object with width and height.',
+        valueHelp: '\'{"width": 1920, "height": 1080}\'',
+      )
+      ..addOption(
+        'web-global-timeout',
+        help: 'Maximum total time in milliseconds for the entire test run.',
+        valueHelp: 'number',
+      )
+      ..addOption(
+        'web-shard',
+        help:
+            'Shard tests and execute only the selected shard. '
+            'Specify in the format "current/total" (e.g., "1/4" for the first of 4 shards).',
+        valueHelp: '1/4',
+      )
+      ..addOption(
+        'web-headless',
+        help: 'Whether to run browser in headless mode.',
+        valueHelp: 'true | false',
+      )
+      ..addOption(
+        'web-port',
+        help: 'Port to use for the web server.',
+        valueHelp: '8080',
+      )
+      ..addOption(
+        'web-server-timeout',
+        help:
+            'Maximum time in seconds to wait for the Flutter web server to start. '
+            'Defaults to 120 (2 minutes).',
+        valueHelp: 'number',
+      )
+      ..addOption(
+        'web-browser-args',
+        help: 'Custom browser launch arguments. JSON array of strings.',
+        valueHelp: '\'["--no-sandbox", "--disable-gpu"]\'',
+      );
   }
 
   /// Gets the parsed command-line flag named [name] as a `bool`.

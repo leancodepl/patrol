@@ -16,6 +16,7 @@ class FlutterAppOptions {
     required this.dartDefineFromFilePaths,
     required this.buildName,
     required this.buildNumber,
+    this.noTreeShakeIcons = false,
   });
 
   final FlutterCommand command;
@@ -26,6 +27,7 @@ class FlutterAppOptions {
   final List<String> dartDefineFromFilePaths;
   final String? buildName;
   final String? buildNumber;
+  final bool noTreeShakeIcons;
 
   /// Translates these options into a proper `flutter attach`.
   @nonVirtual
@@ -192,7 +194,8 @@ class IOSAppOptions {
     required this.osVersion,
     required this.appServerPort,
     required this.testServerPort,
-    this.clearPermissions = false,
+    this.fullIsolation = false,
+    this.clearIOSPermissions = false,
   });
 
   final FlutterAppOptions flutter;
@@ -203,7 +206,8 @@ class IOSAppOptions {
   final bool simulator;
   final int appServerPort;
   final int testServerPort;
-  final bool clearPermissions;
+  final bool fullIsolation;
+  final bool clearIOSPermissions;
 
   String get description {
     final platform = simulator ? 'simulator' : 'device';
@@ -223,6 +227,7 @@ class IOSAppOptions {
         '--no-codesign',
         '--${buildMode.name}', // for example '--debug',
         if (simulator) '--simulator',
+        if (flutter.noTreeShakeIcons) '--no-tree-shake-icons',
       ],
       if (flutter.flavor case final flavor?) ...['--flavor', flavor],
       if (flutter.buildName case final buildName?) ...[
@@ -263,8 +268,7 @@ class IOSAppOptions {
       '-quiet',
       ...['-derivedDataPath', '../build/ios_integ'],
       r'OTHER_SWIFT_FLAGS=$(inherited) -D PATROL_ENABLED',
-      if (clearPermissions)
-        r'GCC_PREPROCESSOR_DEFINITIONS=$(inherited) CLEAR_PERMISSIONS=1',
+      'OTHER_CFLAGS=\$(inherited) -D FULL_ISOLATION=${fullIsolation ? 1 : 0} -D CLEAR_PERMISSIONS=${clearIOSPermissions ? 1 : 0}',
     ];
 
     return cmd;
@@ -379,6 +383,78 @@ class MacOSAppOptions {
       ...['-destination', 'platform=macOS'],
       ...['-resultBundlePath', resultBundlePath],
       '-verbose',
+    ];
+
+    return cmd;
+  }
+}
+
+class WebAppOptions {
+  const WebAppOptions({
+    required this.flutter,
+    this.resultsDir,
+    this.reportDir,
+    this.retries,
+    this.video,
+    this.timeout,
+    this.workers,
+    this.reporter,
+    this.locale,
+    this.timezone,
+    this.colorScheme,
+    this.geolocation,
+    this.permissions,
+    this.userAgent,
+    this.viewport,
+    this.globalTimeout,
+    this.shard,
+    this.headless,
+    this.webPort,
+    this.serverTimeout,
+    this.browserArgs,
+  });
+
+  final FlutterAppOptions flutter;
+  final String? resultsDir;
+  final String? reportDir;
+  final int? retries;
+  final String? video;
+  final int? timeout;
+  final int? workers;
+  final String? reporter;
+  final String? locale;
+  final String? timezone;
+  final String? colorScheme;
+  final String? geolocation;
+  final String? permissions;
+  final String? userAgent;
+  final String? viewport;
+  final int? globalTimeout;
+  final String? shard;
+  final String? headless;
+  final int? webPort;
+  final String? browserArgs;
+
+  /// Timeout in seconds for the web server to start.
+  /// Defaults to 120 seconds (2 minutes) if not specified.
+  final int? serverTimeout;
+
+  /// Translates these options into a proper flutter build invocation.
+  List<String> toFlutterBuildInvocation() {
+    final cmd = [
+      flutter.command.executable,
+      ...flutter.command.arguments,
+      'build',
+      'web',
+      '--target=${flutter.target}',
+      '--${flutter.buildMode.name}',
+      // Note: --flavor is not supported for web, so we don't include it
+      ...flutter.dartDefines.entries.map(
+        (e) => '--dart-define=${e.key}=${e.value}',
+      ),
+      ...flutter.dartDefineFromFilePaths.map(
+        (e) => '--dart-define-from-file=$e',
+      ),
     ];
 
     return cmd;

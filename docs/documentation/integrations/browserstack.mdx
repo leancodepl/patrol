@@ -1,24 +1,25 @@
 ---
-title: Integrations - BrowserStack
+title: BrowserStack
 ---
 
 ## Setup
 
 [BrowserStack App Automate] is a popular cloud device farm. You can use it to run your tests on real devices.
 
+<Accordions>
 <Accordion title="Android setup">
   <Steps>
     <Step>
       ### Change runner
 
-        Modify the **app-level build.gradle**:
+        Modify the **app-level build.gradle.kts**:
 
-        ```groovy title="android/app/build.gradle"
+        ```groovy title="android/app/build.gradle.kts"
         android {
           // ...
           defaultConfig {
             //...
-            testInstrumentationRunner "pl.leancode.patrol.BrowserstackPatrolJUnitRunner"
+            testInstrumentationRunner = "pl.leancode.patrol.BrowserstackPatrolJUnitRunner"
           }
           // ...
         }
@@ -67,9 +68,11 @@ title: Integrations - BrowserStack
       Now, you can schedule a test run using the `bs_ios` script.
   </Steps>
 </Accordion>
+</Accordions>
 
 You can choose between running tests in a recommended way using scripts or manually:
 
+<Accordions>
 <Accordion title="Running tests using scripts (recommended)">
 ## Schedule tests using scripts
 
@@ -98,7 +101,7 @@ The scripts forward all its options and flags to `patrol build`, so you can use 
 
 ```bash
 bs_android \
-  --target integration_test/example_test.dart,integration_test/another_test.dart \
+  --target patrol_test/example_test.dart,patrol_test/another_test.dart \
   --verbose \
   --dart-define 'KEY_EXAMPLE=VALUE_EXAMPLE'
 ```
@@ -134,6 +137,7 @@ You can follow BrowserStack's docs and/or follow the code of `bs_android` and `b
 1. Start test execution on BrowserStack ([see Android docs][bs_execute_android_docs]) ([see iOS docs][bs_execute_ios_docs])
 
 </Accordion>
+</Accordions>
 
 After scheduling the test execution, you can check the status of the test execution in the [App Automate dashboard][bs_app_automate_dashboard].
 

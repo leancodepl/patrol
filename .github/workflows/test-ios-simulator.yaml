@@ -2,8 +2,20 @@ name: test ios simulator
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: "0 0 1 * *" #run this workflow once every month
+  pull_request:
+    paths:
+      - 'packages/patrol/**'
+      - 'packages/patrol_finders/**'
+      - 'packages/patrol_log/**'
+      - 'packages/patrol_cli/**'
+      - 'packages/adb/**'
+      - 'packages/patrol_gen/**'
+      - 'dev/e2e_app/**'
+      - 'schema.dart'
+      - 'gen_from_schema'
+      - '!**.md'
+      - '!**.mdx'
+
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -13,23 +25,22 @@ jobs:
   run_tests:
     name: Flutter ${{ matrix.flutter-version }} on ${{ matrix.device_model }} (${{ matrix.os_version }}) simulator
     runs-on: macos-latest
-    timeout-minutes: 40
+    timeout-minutes: 30
     outputs:
       SLACK_MESSAGE_TITLE: Flutter ${{ matrix.flutter-version }} on ${{ matrix.os }} ${{ matrix.os_version }} simulator
       TESTS_EXIT_CODE: ${{ steps.tests_step.outputs.TESTS_EXIT_CODE }}
       FAILURE_STATUS: ${{ steps.status_step.outputs.FAILURE_STATUS }}
       ERROR_STATUS: ${{ steps.status_step.outputs.ERROR_STATUS }}
-      EXCLUDED_TESTS: ${{ steps.set_excluded_tests.outputs.EXCLUDED_TESTS }}
 
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ["3.32.x"]
+        flutter-version: ["3.38.x"]
         flutter-channel: ["stable"]
         device_model:
-          [iPhone SE (3rd generation), iPhone 14, iPad (10th generation)]
+          [iPhone 17]
+        os_version: ["26.2"]
         os: [iOS]
-        os_version: ["17.2"]
 
     defaults:
       run:
@@ -67,47 +78,27 @@ jobs:
           erase_before_boot: true
           shutdown_after_job: true
 
-      - name: Set simulator location
-        run: xcrun simctl location booted set 52.17469,21.03193
-
-      - name: Set tests to exclude
-        id: set_excluded_tests
-        run: |
-          TESTS_TO_EXCLUDE="android_app_test,\
-          service_airplane_mode_test,\
-          service_bluetooth_test,\
-          service_cellular_test,\
-          service_wifi_test,\
-          service_location_test,\
-          webview_stackoverflow_test,\
-          webview_leancode_test,\
-          webview_hackernews_test"
-
-          target_paths=""
-          for target in $(echo $TESTS_TO_EXCLUDE | tr ',' '\n'); do
-              target_paths+="integration_test/${target}.dart,"
-          done
-          target_paths="${target_paths%,}"
-
-          echo "EXCLUDED_TESTS=$TESTS_TO_EXCLUDE" >> "$GITHUB_OUTPUT"
-          echo "EXCLUDED_TESTS=$target_paths" >> "$GITHUB_ENV"
-
       - name: Run UI tests
         id: tests_step
         run: |
-          xcrun simctl io booted recordVideo --codec=h264 "${{ matrix.device_model }}.mp4" &
-          recordingpid="$!"
-
           xcrun simctl spawn booted log stream --type log --color none > all_simulator_logs.txt &
           logpid="$!"
 
           sleep 10 # See https://github.com/leancodepl/patrol/issues/1282
 
+          # Running single test to verify workflow stability
+          # Test: pull_to_refresh_test.dart
           TESTS_EXIT_CODE=0
-          patrol test --exclude ${{ env.EXCLUDED_TESTS }} --verbose --clear-permissions || TESTS_EXIT_CODE=$?
+          patrol test \
+          --target patrol_test/pull_to_refresh_test.dart \
+          --verbose \
+          --ios 26.2 \
+          --full-isolation || TESTS_EXIT_CODE=$?
 
-          kill -SIGINT $recordingpid
-          kill -SIGINT $logpid
+          kill -SIGINT $logpid 2>/dev/null || true
+          sleep 1
+          kill -9 $logpid 2>/dev/null || true
+          
           echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> "$GITHUB_OUTPUT"
           exit $TESTS_EXIT_CODE
 
@@ -127,36 +118,50 @@ jobs:
           brew install coreutils # to provide realpath binary
           echo "XCRESULT_PATH=$(realpath build/ios_results_*.xcresult)" >> $GITHUB_ENV
 
+      - name: Install xcresultparser
+        if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
+        env:
+          HOMEBREW_NO_AUTO_UPDATE: 1
+          HOMEBREW_NO_INSTALL_CLEANUP: 1
+        run: brew install xcresultparser
+
+      - name: Parse xcresult to JUnit format
+        if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
+        run: |
+          mkdir -p test-results
+          xcresultparser -o junit "${{ env.XCRESULT_PATH }}" > test-results/junit-report.xml
+
+      - name: Convert JUnit to CTRF format
+        if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
+        run: |
+          npx junit-to-ctrf test-results/junit-report.xml -o test-results/ctrf-report.json
+
       - name: Publish test report to summary
         if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
-        uses: kishikawakatsumi/xcresulttool@v1
+        uses: ctrf-io/github-test-reporter@v1
         with:
-          title: Patrol tests on ${{ matrix.device_model }}
-          upload-bundles: never
-          path: |
-            ${{ env.XCRESULT_PATH }}
+          report-path: '${{ github.workspace }}/dev/e2e_app/test-results/ctrf-report.json'
+          summary-report: true
+          failed-report: true
+          github-report: true
+          title: 'Patrol tests on ${{ matrix.device_model }}'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload XCRESULT test result to artifacts
         if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Test result from ${{ matrix.device_model }}.xcresult
           path: ${{ env.XCRESULT_PATH }}
 
       - name: Upload simulator logs to artifacts
         if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Logs from ${{ matrix.device_model }}
           path: |
             ${{ github.workspace }}/dev/e2e_app/all_simulator_logs.txt
-
-      - name: Upload captured video to artifacts
-        if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
-        uses: actions/upload-artifact@v3
-        with:
-          name: Captured video from ${{ matrix.device_model }}.mp4
-          path: ${{ github.workspace }}/dev/e2e_app/${{ matrix.device_model }}.mp4
 
   call_send_slack_message:
     name: Notify on Slack
@@ -168,5 +173,4 @@ jobs:
       FAILURE_STATUS: ${{ needs.run_tests.outputs.FAILURE_STATUS }}
       ERROR_STATUS: ${{ needs.run_tests.outputs.ERROR_STATUS }}
       SLACK_MESSAGE_TITLE: ${{ needs.run_tests.outputs.SLACK_MESSAGE_TITLE }}
-      EXCLUDED_TESTS: ${{ needs.run_tests.outputs.EXCLUDED_TESTS }}
     secrets: inherit

@@ -1,3 +1,15 @@
+## 3.2.0
+
+- Bump `patrol_log` to `^0.8.0`.
+
+## 3.1.0
+
+- Bump `patrol_log` to `0.7.0`.
+
+## 3.0.0
+
+- Bump `patrol_log` to `0.6.0`.
+
 ## 2.9.0
 
 - Bump `leancode_lint` to `17.0.0`. (#2681)

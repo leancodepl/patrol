@@ -2,6 +2,7 @@ name: Report a bug
 description:
   You have run into problems while installing Patrol, setting it up in your app,
   or your tests don't behave as you'd expect.
+labels: ["needs triage"]
 body:
   - type: markdown
     attributes:
@@ -50,7 +51,7 @@ body:
         1. Clone https://github.com/your_username/your_repo_with_bug and `cd` into it
         2. Start Android emulator (Pixel 4, API 31, Google Play)
         3. Verify that the app builds fine: `flutter build apk --debug`
-        4. Run the integration test: `patrol test --target integration_test/buggy_test.dart`
+        4. Run the integration test: `patrol test --target patrol_test/buggy_test.dart`
     validations:
       required: true
   - type: textarea

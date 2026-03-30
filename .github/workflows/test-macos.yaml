@@ -2,10 +2,6 @@ name: test macos
 
 on:
   workflow_dispatch:
-  pull_request:
-    branches: [ master ]
-    paths:
-      - 'packages/patrol/darwin/**'
   schedule:
     - cron: '0 */12 * * *'
 
@@ -27,7 +23,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ['3.32.x']
+        flutter-version: ['3.38.x']
         flutter-channel: ['stable']
         device_model: [macOS]
         os: [macOS]
@@ -90,7 +86,7 @@ jobs:
         id: tests_step
         run: |
           TESTS_EXIT_CODE=0
-          patrol test -t integration_test/macos --verbose -d macos || TESTS_EXIT_CODE=$?
+          patrol test -t patrol_test/macos --verbose -d macos || TESTS_EXIT_CODE=$?
 
           echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> "$GITHUB_OUTPUT"
           exit $TESTS_EXIT_CODE
@@ -113,7 +109,7 @@ jobs:
 
       - name: Publish test report to summary
         if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
-        uses: kishikawakatsumi/xcresulttool@v1
+        uses: kishikawakatsumi/xcresulttool@v1.7.1
         with:
           title: Patrol tests on ${{ matrix.device_model }}
           upload-bundles: never

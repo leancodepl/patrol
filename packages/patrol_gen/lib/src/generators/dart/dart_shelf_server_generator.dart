@@ -15,7 +15,9 @@ class DartShelfServerGenerator {
 
     return OutputFile(
       filename: config.serviceFileName(service.name),
-      content: DartFormatter().format(buffer.toString()),
+      content: DartFormatter(
+        languageVersion: DartFormatter.latestLanguageVersion,
+      ).format(buffer.toString()),
     );
   }
 
@@ -37,33 +39,35 @@ import '${path.basename(config.contractsFilename)}';
   }
 
   String _generateHandlerCalls(Service service) {
-    return service.endpoints.map((e) {
-      var requestDeserialization = '';
+    return service.endpoints
+        .map((e) {
+          var requestDeserialization = '';
 
-      if (e.request != null) {
-        requestDeserialization = '''
+          if (e.request != null) {
+            requestDeserialization =
+                '''
 final stringContent = await request.readAsString(utf8);
 final json = jsonDecode(stringContent);
 final requestObj = ${e.request!.name}.fromJson(json as Map<String,dynamic>);
 ''';
-      }
+          }
 
-      var handlerCall = e.request != null
-          ? 'await ${e.name}(requestObj);'
-          : 'await ${e.name}();';
-      if (e.response != null) {
-        handlerCall = 'final result = $handlerCall';
-      }
+          var handlerCall = e.request != null
+              ? 'await ${e.name}(requestObj);'
+              : 'await ${e.name}();';
+          if (e.response != null) {
+            handlerCall = 'final result = $handlerCall';
+          }
 
-      final responseSerialization = e.response != null
-          ? '''
+          final responseSerialization = e.response != null
+              ? '''
 final body = jsonEncode(result.toJson());
 return Response.ok(body);'''
-          : "return Response.ok('');";
+              : "return Response.ok('');";
 
-      final elseKeyword = e == service.endpoints.first ? '' : 'else';
+          final elseKeyword = e == service.endpoints.first ? '' : 'else';
 
-      return '''
+          return '''
 $elseKeyword if ('${e.name}' == request.url.path){
 
 $requestDeserialization
@@ -72,17 +76,21 @@ $handlerCall
 
 $responseSerialization
 }''';
-    }).join('\n');
+        })
+        .join('\n');
   }
 
   String _generateHandlers(Service service) {
-    return service.endpoints.map((endpoint) {
-      final result = endpoint.response?.name ?? 'void';
-      final request =
-          endpoint.request != null ? '${endpoint.request!.name} request' : '';
+    return service.endpoints
+        .map((endpoint) {
+          final result = endpoint.response?.name ?? 'void';
+          final request = endpoint.request != null
+              ? '${endpoint.request!.name} request'
+              : '';
 
-      return 'Future<$result> ${endpoint.name}($request);';
-    }).join('\n');
+          return 'Future<$result> ${endpoint.name}($request);';
+        })
+        .join('\n');
   }
 
   String _createServerClass(

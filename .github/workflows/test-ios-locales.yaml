@@ -5,7 +5,18 @@ on:
   # TODO: Locales does not work on FTL physical devices, so we need to disable this for now
   # pull_request:
   #   paths:
+  #     - 'packages/patrol/**'
+  #     - 'packages/patrol_finders/**'
+  #     - 'packages/patrol_log/**'
+  #     - 'packages/patrol_cli/**'
+  #     - 'packages/adb/**'
+  #     - 'packages/patrol_gen/**'
+  #     - 'dev/e2e_app/**'
+  #     - 'schema.dart'
+  #     - 'gen_from_schema'
   #     - 'packages/patrol/darwin/Resources/**'
+  #     - '!**.md'
+  #     - '!**.mdx'
 
 
 jobs:
@@ -16,13 +27,12 @@ jobs:
     outputs:
       SLACK_MESSAGE_TITLE: Flutter ${{ matrix.flutter-version }} on ${{ matrix.os }} ${{ matrix.os_version }}
       TESTS_EXIT_CODE: ${{ steps.tests_step.outputs.TESTS_EXIT_CODE }}
-      EXCLUDED_TESTS: ${{ steps.set_excluded_tests.outputs.EXCLUDED_TESTS }}
       URL_TO_DETAILS: ${{ steps.tests_step.outputs.URL_TO_DETAILS }}
 
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ['3.32.x']
+        flutter-version: ['3.38.x']
         flutter-channel: ['stable']
         device_model: ['iphone14pro']
         locale: ['en', 'fr', 'de_DE', 'pl'] 
@@ -93,7 +103,7 @@ jobs:
         run: dart pub global activate --source path . && patrol
 
       - name: Build tests
-        run: patrol build ios --tags locale_testing_ios --release --verbose
+        run: patrol build ios --tags locale_testing_ios --exclude patrol_test/web_example_test.dart --release --verbose
 
       - name: Upload APKs to Firebase Test Lab and wait for tests to finish
         id: tests_step
@@ -125,6 +135,5 @@ jobs:
     with:
       TESTS_EXIT_CODE: ${{ needs.run_tests.outputs.TESTS_EXIT_CODE }}
       SLACK_MESSAGE_TITLE: ${{ needs.run_tests.outputs.SLACK_MESSAGE_TITLE }}
-      EXCLUDED_TESTS: ${{ needs.run_tests.outputs.EXCLUDED_TESTS }}
       URL_TO_DETAILS: ${{ needs.run_tests.outputs.URL_TO_DETAILS }}
     secrets: inherit

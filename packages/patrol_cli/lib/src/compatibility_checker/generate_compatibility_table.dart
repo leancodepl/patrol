@@ -93,17 +93,9 @@ Future<void> generateCompatibilityTable() async {
   final docsDirFile = File(path.join(docsDir.path, 'compatibility-table.mdx'))
     ..writeAsStringSync(tableContent);
 
-  // Create and write to docs/compatibility-table.mdx
-  final docsRootDir = Directory(path.join(rootDir, 'docs'))
-    ..createSync(recursive: true);
-  final docsRootFile = File(
-    path.join(docsRootDir.path, 'compatibility-table.mdx'),
-  )..writeAsStringSync(tableContent);
-
   logger
     ..info('Generated compatibility table in:')
-    ..info('- ${docsDirFile.path}')
-    ..info('- ${docsRootFile.path}');
+    ..info('- ${docsDirFile.path}');
 }
 
 void main() {

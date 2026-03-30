@@ -1,0 +1,5 @@
+{
+  "title": "Articles & Resources",
+  "root": true,
+  "pages": ["---Articles & Resources---", "index"]
+}

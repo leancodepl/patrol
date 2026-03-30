@@ -169,28 +169,36 @@ class AndroidTestBackend {
   ///
   /// This fix issue: https://github.com/leancodepl/patrol/issues/1668
   Future<void> buildApkConfigOnly(FlutterAppOptions options) async {
-    final process = await _processManager.start([
-      options.command.executable,
-      ...options.command.arguments,
-      'build',
-      'apk',
-      '--config-only',
-      if (options.buildName case final buildName?) ...[
-        '--build-name',
-        buildName,
-      ],
-      if (options.buildNumber case final buildNumber?) ...[
-        '--build-number',
-        buildNumber,
-      ],
-      '-t',
-      'integration_test/test_bundle.dart',
-    ], runInShell: true);
+    await _disposeScope.run((scope) async {
+      final process =
+          await _processManager.start([
+              options.command.executable,
+              ...options.command.arguments,
+              'build',
+              'apk',
+              '--config-only',
+              if (options.buildName case final buildName?) ...[
+                '--build-name',
+                buildName,
+              ],
+              if (options.buildNumber case final buildNumber?) ...[
+                '--build-number',
+                buildNumber,
+              ],
+              if (options.noTreeShakeIcons) '--no-tree-shake-icons',
+              '-t',
+              options.target,
+            ], runInShell: true)
+            ..disposedBy(scope);
 
-    final exitCode = await process.exitCode;
-    if (exitCode != 0) {
-      throw Exception('Failed to build APK config with exit code $exitCode');
-    }
+      process.listenStdOut((l) => _logger.detail('\t: $l')).disposedBy(scope);
+      process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
+
+      final exitCode = await process.exitCode;
+      if (exitCode != 0) {
+        throw Exception('Failed to build APK config with exit code $exitCode');
+      }
+    });
   }
 
   /// Detects the orchestrator version and warns the user if it's 1.5.0.
@@ -240,6 +248,7 @@ class AndroidTestBackend {
     required bool showFlutterLogs,
     required bool hideTestSteps,
     required bool clearTestSteps,
+    void Function(Entry entry)? onLogEntry,
   }) async {
     await _disposeScope.run((scope) async {
       // Read patrol logs from logcat
@@ -269,6 +278,7 @@ class AndroidTestBackend {
               showFlutterLogs: showFlutterLogs,
               hideTestSteps: hideTestSteps,
               clearTestSteps: clearTestSteps,
+              onLogEntry: onLogEntry,
             )
             ..listen()
             ..startTimer();

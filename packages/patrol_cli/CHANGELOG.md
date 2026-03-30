@@ -1,3 +1,66 @@
+## 4.3.1
+
+- Update dependencies.
+
+## 4.3.0
+
+- Bump `patrol_log` to `^0.8.0`.
+- Refactor develop command into reusable components and expose public API for programmatic usage.
+- Reflect failed tests in Playwright report. (#2970)
+
+## 4.2.0
+
+- Add support for `--web-port` option to specify the port for the web server when running web tests with `patrol test`. (#2832)
+- Add `--web-server-timeout` flag to configure the web server startup timeout (default: 120s). (#2948)
+- Fix running devtools after moving test to `patrol_test/`. (#2922) 
+- Fix listen to stdout/stderr streams in buildApkConfigOnly to prevent hang on Windows. (#2905)
+- Fix bug that --exclude was not working for directories. (#2918)
+- Allow to pass additional web browser args through `web-browser-args`. (#2932) 
+- Correctly compose devtools link on new Flutter version. (#2957)
+
+## 4.1.0
+
+- Fix bug when running web tests with relative imports from integration_test directory. (#2906)
+- Fix a bug when user set a nested test_directory (eg. test/e2e), TestFinder was searching for test files in parent directory instead of project's root. (#2858)
+- Add support for `--no-tree-shake-icons` flag in cli commands. (#2704)
+- Fix `PATROL_FLUTTER_COMMAND` not being used when building web app. (#2857)
+- Remove unused import in `test_bundle.dart` files. (#2885)
+- Bump `patrol_log` to `0.7.0`. (#2917)
+
+## 4.0.2
+
+- Remove `platform_automator.dart` import from `test_bundler.dart`. (#2833) 
+
+## 4.0.1
+
+- Fix running web tests on Flutter 3.38.x. (#2828)
+
+## 4.0.0
+
+Patrol 4.0 is here!
+
+Read the article announcing Patrol 4.0 [here](https://leancode.co/blog/patrol-4-0-release).
+
+- Add support for running Patrol tests on Web:
+  - Introduce support for web-related flags:
+    - `--web-results-dir`, `--web-report-dir`, `--web-reporter`,
+    - `--web-timeout`, `--web-global-timeout`, `--web-retries`,
+    - `--web-workers`, `--web-shard`,
+    - `--web-video`, `--web-headless`,
+    - `--web-locale`, `--web-timezone`, `--web-color-scheme`,
+    - `--web-geolocation`, `--web-permissions`,
+    - `--web-user-agent`, `--web-viewport`.
+
+- Add support for configurable test directory via `test_directory` option in `pubspec.yaml`. (#2728)
+- Introduces *experimental* `--full-isolation` flag that uninstall the app between each run on iOS Simulator.
+- Bump `patrol_log` to `0.6.0`.
+- Read Patrol version from `pubspec.lock` instead of `pubspec.yaml` for compatibility checks. Fix edge cases for compatibility checks. (#2709)
+
+- **BREAKING CHANGE**
+  - Change default test directory from `integration_test` to `patrol_test`. (#2728)
+
+This version requires version `4.0.0` of `patrol` package.
+
 ## 3.11.0
 
 - Add `--build-name` and `--build-number` flags to `patrol test`, `patrol develop`, and `patrol build` commands. (#2590)

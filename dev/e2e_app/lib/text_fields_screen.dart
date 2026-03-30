@@ -9,7 +9,7 @@ class TextFieldsScreen extends StatefulWidget {
 }
 
 class _TextFieldsScreenState extends State<TextFieldsScreen> {
-  FocusNode focusNode = FocusNode();
+  final focusNode = FocusNode();
 
   @override
   Widget build(BuildContext context) {

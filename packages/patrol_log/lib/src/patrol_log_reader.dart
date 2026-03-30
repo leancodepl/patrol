@@ -16,6 +16,8 @@ class PatrolLogReader {
     required this.showFlutterLogs,
     required this.hideTestSteps,
     required this.clearTestSteps,
+    this.hideTestLifecycle = false,
+    this.onLogEntry,
   }) : _scope = scope;
 
   final void Function(String) log;
@@ -23,6 +25,8 @@ class PatrolLogReader {
   final bool showFlutterLogs;
   final bool hideTestSteps;
   final bool clearTestSteps;
+  final bool hideTestLifecycle;
+  final void Function(Entry entry)? onLogEntry;
   final StreamSubscription<void> Function(
     void Function(String) onData, {
     Function? onError,
@@ -37,6 +41,7 @@ class PatrolLogReader {
 
   /// List of tests entries.
   final List<PatrolSingleTestEntry> _singleEntries = [];
+  final Map<String, List<PatrolSingleTestEntry>> _openEntriesByName = {};
 
   /// List of tests names that were skipped.
   final List<String> _skippedTests = [];
@@ -95,6 +100,7 @@ class PatrolLogReader {
           ),
           _ when line.contains('I flutter :') => _parseFlutterAndroidLog(line),
           _ when line.contains('flutter:') => _parseFlutterIOsReleaseLog(line),
+          _ when line.contains('Playwright:') => _parsePlaywrightLog(line),
           _ => null,
         };
       }
@@ -121,11 +127,14 @@ class PatrolLogReader {
               !_skippedTests.contains(testEntry.name)) {
             _skippedTests.add(testEntry.name);
             _controller.add(entry);
+            onLogEntry?.call(entry);
           } else if (testEntry.status != TestEntryStatus.skip) {
             _controller.add(entry);
+            onLogEntry?.call(entry);
           }
         } else {
           _controller.add(entry);
+          onLogEntry?.call(entry);
         }
       }
     } catch (err) {
@@ -145,6 +154,15 @@ class PatrolLogReader {
   /// Parse the line containing Flutter logs on Android and print them.
   void _parseFlutterAndroidLog(String line) {
     final regExp = RegExp('I flutter (.*)');
+    final match = regExp.firstMatch(line);
+    if (match?.group(1) case final firstMatch?) {
+      log(firstMatch);
+    }
+  }
+
+  /// Parse the line containing Playwright logs and print them.
+  void _parsePlaywrightLog(String line) {
+    final regExp = RegExp('Playwright: (.*)');
     final match = regExp.firstMatch(line);
     if (match?.group(1) case final firstMatch?) {
       log(firstMatch);
@@ -186,30 +204,45 @@ class PatrolLogReader {
             when entry.status == TestEntryStatus.skip ||
                 entry.status == TestEntryStatus.start:
           // Create a new single test entry for the test that is starting or is skipped.
-          _singleEntries.add(PatrolSingleTestEntry(entry));
+          final singleEntry = PatrolSingleTestEntry(entry);
+          _singleEntries.add(singleEntry);
+          if (entry.status == TestEntryStatus.start) {
+            final normalizedTestName = _normalizeTestName(entry.name);
+            _openEntriesByName
+                .putIfAbsent(normalizedTestName, () => [])
+                .add(singleEntry);
+          }
 
           // Print the test entry to the console.
-          log(entry.pretty());
+          if (!hideTestLifecycle) {
+            log(entry.pretty());
+          }
 
           // Reset the counters needed for clearing the lines.
           stepsCounter = 0;
           logsCounter = 0;
         case TestEntry():
-          // Close the single test entry for the test that is finished.
-          _singleEntries.last.closeTest(entry);
+          // Close the matching test entry by name.
+          final singleEntry = _takeOpenSingleEntry(entry.name);
+          singleEntry?.closeTest(entry);
 
           // Optionally clear all printed [StepEntry] and [LogEntry].
           if (!showFlutterLogs &&
               clearTestSteps &&
               entry.status != TestEntryStatus.failure) {
-            _clearLines(stepsCounter + logsCounter + 1);
+            // +1 for the test-start line, but only if it was actually printed.
+            final lifecycleLine = hideTestLifecycle ? 0 : 1;
+            _clearLines(stepsCounter + logsCounter + lifecycleLine);
           }
 
-          final executionTime = _singleEntries.last.executionTime.inSeconds;
+          final executionTime = singleEntry?.executionTime.inSeconds;
           // Print test entry summary to console.
-          log(
-            '${entry.pretty()} ${AnsiCodes.gray}(${executionTime}s)${AnsiCodes.reset}',
-          );
+          if (!hideTestLifecycle) {
+            log(
+              '${entry.pretty()} '
+              '${executionTime != null ? '${AnsiCodes.gray}(${executionTime}s)${AnsiCodes.reset}' : ''}',
+            );
+          }
         case StepEntry():
           _singleEntries.last.addEntry(entry);
           if (!hideTestSteps) {
@@ -238,6 +271,38 @@ class PatrolLogReader {
           _readConfig(entry);
       }
     });
+  }
+
+  PatrolSingleTestEntry? _takeOpenSingleEntry(String testName) {
+    final normalizedTestName = _normalizeTestName(testName);
+    final openEntries = _openEntriesByName[normalizedTestName];
+    if (openEntries == null || openEntries.isEmpty) {
+      return null;
+    }
+
+    final singleEntry = openEntries.removeAt(0);
+    if (openEntries.isEmpty) {
+      _openEntriesByName.remove(normalizedTestName);
+    }
+
+    return singleEntry;
+  }
+
+  /// Finish entries on web/mobile may contain a prefix, e.g. `web.some_test`
+  /// or `patrol_test.app_test`. This normalizes test names from start
+  /// and finish entries so they can be matched reliably by stripping the prefix.
+  String _normalizeTestName(String testName) {
+    final firstSpace = testName.indexOf(' ');
+    if (firstSpace == -1) {
+      return testName;
+    }
+
+    final firstToken = testName.substring(0, firstSpace);
+    if (!firstToken.contains('.')) {
+      return testName;
+    }
+
+    return testName.substring(firstSpace + 1);
   }
 
   /// Read the config passed by [PatrolLogWriter].

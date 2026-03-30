@@ -32,6 +32,8 @@ class DoctorCommand extends PatrolCommand {
       _printIosSpecifics();
     }
 
+    _printWebSpecifics();
+
     return 0;
   }
 
@@ -96,6 +98,12 @@ class DoctorCommand extends PatrolCommand {
       'ideviceinstaller',
       _commandHint('brew install ideviceinstaller'),
     );
+  }
+
+  void _printWebSpecifics() {
+    _logger.info('Web: ');
+    _checkIfToolInstalled('node', 'Install Node.js');
+    _checkIfToolInstalled('npm', 'Install npm`');
   }
 
   String _commandHint(String command) => 'install with `$command`';

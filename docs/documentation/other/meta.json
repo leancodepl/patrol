@@ -1,0 +1,12 @@
+{
+  "title": "Other",
+  "pages": [
+    "patrol-tags",
+    "patrol-vs-code-extension",
+    "patrol-devtools-extension",
+    "effective-patrol",
+    "tips-and-tricks",
+    "debugging-patrol-tests"
+  ]
+}
+

@@ -9,6 +9,8 @@ class ConfigEntry extends Entry {
   factory ConfigEntry.fromJson(Map<String, dynamic> json) =>
       _$ConfigEntryFromJson(json);
 
+  static const developCompletedKey = 'patrol_develop_completed';
+
   final Map<String, dynamic> config;
 
   @override

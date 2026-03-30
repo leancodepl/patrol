@@ -1,3 +1,21 @@
+## 0.8.0
+
+- Add `onLogEntry` callback to `PatrolLogReader`.
+- Add `developCompletedKey` to `ConfigEntry`.
+
+## 0.7.1
+
+- Take the test name into account in the log entries. (#2955)
+
+## 0.7.0
+
+- Show Flutter test framework output on iOS in `patrol develop`. (#2904)
+
+## 0.6.0
+
+- Update `TestEntry.nameWithPath` to use actual test directory. (#2728)
+- Add support for reading web-related logs. (#2789)
+
 ## 0.5.0
 
 - Bump `leancode_lint` to `17.0.0`. (#2680)

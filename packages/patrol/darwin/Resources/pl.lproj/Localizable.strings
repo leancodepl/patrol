@@ -19,4 +19,12 @@
 
 /* Location precision */
 "precise_off" = "Dokładne: Wył.";
-"precise_on" = "Dokładne: Wł."; 
+"precise_on" = "Dokładne: Wł.";
+
+/* Gallery */
+"add" = "Dodaj";
+
+/* Uninstall app */
+"remove_app" = "Usuń aplikację";
+"delete_app" = "Usuń aplikację";
+"delete" = "Usuń";

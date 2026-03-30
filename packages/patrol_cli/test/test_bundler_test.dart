@@ -17,7 +17,7 @@ Directory _initFakeFs(FileSystem fs, Platform platform) {
     fs.path.join(platform.home, 'awesome_app'),
   )..createSync();
   fs.currentDirectory = projectRootDir;
-  fs.directory('integration_test').createSync();
+  fs.directory('patrol_test').createSync();
   return projectRootDir;
 }
 
@@ -27,6 +27,8 @@ void main() {
 }
 
 void _test(Platform platform) {
+  const testDirectory = 'patrol_test';
+
   group('(${platform.operatingSystem}) TestBundler', () {
     late FileSystem fs;
     late TestBundler testBundler;
@@ -42,7 +44,7 @@ void _test(Platform platform) {
 
     test('throws ArgumentError when no tests are given', () {
       expect(
-        () => testBundler.createTestBundle([], null, null),
+        () => testBundler.createTestBundle(testDirectory, [], null, null),
         throwsArgumentError,
       );
     });
@@ -50,12 +52,12 @@ void _test(Platform platform) {
     test('generates imports from relative paths', () {
       // given
       final tests = [
-        fs.path.join('integration_test', 'example_test.dart'),
-        fs.path.join('integration_test', 'example', 'example_test.dart'),
+        fs.path.join('patrol_test', 'example_test.dart'),
+        fs.path.join('patrol_test', 'example', 'example_test.dart'),
       ];
 
       // when
-      final imports = testBundler.generateImports(tests);
+      final imports = testBundler.generateImports(testDirectory, tests);
 
       /// then
       expect(imports, '''
@@ -69,19 +71,19 @@ import 'example/example_test.dart' as example__example_test;''');
         fs.path.join(
           platform.home,
           'awesome_app',
-          'integration_test',
+          'patrol_test',
           'example_test.dart',
         ),
         fs.path.join(
           platform.home,
           'awesome_app',
-          'integration_test',
+          'patrol_test',
           'example/example_test.dart',
         ),
       ];
 
       // when
-      final imports = testBundler.generateImports(tests);
+      final imports = testBundler.generateImports(testDirectory, tests);
 
       /// then
       expect(imports, '''
@@ -92,12 +94,12 @@ import 'example/example_test.dart' as example__example_test;''');
     test('generates groups from relative paths', () {
       // given
       final tests = [
-        fs.path.join('integration_test', 'example_test.dart'),
-        fs.path.join('integration_test', 'example/example_test.dart'),
+        fs.path.join('patrol_test', 'example_test.dart'),
+        fs.path.join('patrol_test', 'example/example_test.dart'),
       ];
 
       // when
-      final groupsCode = testBundler.generateGroupsCode(tests);
+      final groupsCode = testBundler.generateGroupsCode(testDirectory, tests);
 
       /// then
       expect(groupsCode, '''
@@ -111,24 +113,166 @@ group('example.example_test', example__example_test.main);''');
         fs.path.join(
           platform.home,
           'awesome_app',
-          'integration_test',
+          'patrol_test',
           'example_test.dart',
         ),
         fs.path.join(
           platform.home,
           'awesome_app',
-          'integration_test',
+          'patrol_test',
           'example/example_test.dart',
         ),
       ];
 
       // when
-      final groupsCode = testBundler.generateGroupsCode(tests);
+      final groupsCode = testBundler.generateGroupsCode(testDirectory, tests);
 
       /// then
       expect(groupsCode, '''
 group('example_test', example_test.main);
 group('example.example_test', example__example_test.main);''');
+    });
+
+    test('uses correct test directory', () {
+      // given
+      final defaultTestBundler = TestBundler(
+        projectRoot: fs.directory(fs.path.join(platform.home, 'awesome_app')),
+        logger: MockLogger(),
+      );
+
+      // when
+      final bundledTestFilePath = defaultTestBundler.getBundledTestFile(
+        testDirectory,
+      );
+
+      // then
+      expect(
+        bundledTestFilePath.path,
+        contains('$testDirectory${fs.path.separator}test_bundle.dart'),
+      );
+    });
+
+    test('uses project root for web test bundle', () {
+      // given
+      final defaultTestBundler = TestBundler(
+        projectRoot: fs.directory(fs.path.join(platform.home, 'awesome_app')),
+        logger: MockLogger(),
+      );
+
+      // when
+      final bundledTestFilePath = defaultTestBundler.getBundledTestFile(
+        testDirectory,
+        web: true,
+      );
+
+      // then
+      expect(bundledTestFilePath.path, endsWith('test_bundle.dart'));
+      expect(
+        bundledTestFilePath.path,
+        isNot(contains('$testDirectory${fs.path.separator}test_bundle.dart')),
+      );
+    });
+
+    test('generates web imports with test directory prefix', () {
+      // given
+      final tests = [
+        fs.path.join('patrol_test', 'web', 'my_test.dart'),
+        fs.path.join('patrol_test', 'example', 'example_test.dart'),
+      ];
+
+      // when
+      final imports = testBundler.generateImports(
+        testDirectory,
+        tests,
+        web: true,
+      );
+
+      /// then
+      expect(imports, '''
+import 'patrol_test/web/my_test.dart' as web__my_test;
+import 'patrol_test/example/example_test.dart' as example__example_test;''');
+    });
+
+    test('generates web groups with test directory prefix', () {
+      // given
+      final tests = [
+        fs.path.join('patrol_test', 'web', 'my_test.dart'),
+        fs.path.join('patrol_test', 'example', 'example_test.dart'),
+      ];
+
+      // when
+      final groupsCode = testBundler.generateGroupsCode(testDirectory, tests);
+
+      /// then
+      expect(groupsCode, '''
+group('web.my_test', web__my_test.main);
+group('example.example_test', example__example_test.main);''');
+    });
+
+    test('deletes proxy entrypoint and directory when empty', () {
+      // given
+      testBundler.ensureEntrypoint(testDirectory);
+      final proxyFile = testBundler.getEntrypointFile(testDirectory);
+
+      // when
+      testBundler.deleteEntrypointProxy(testDirectory);
+
+      // then
+      expect(proxyFile.existsSync(), isFalse);
+      expect(proxyFile.parent.existsSync(), isFalse);
+    });
+
+    test('keeps proxy directory when it contains other files', () {
+      // given
+      testBundler.ensureEntrypoint(testDirectory);
+      final proxyFile = testBundler.getEntrypointFile(testDirectory);
+      final siblingFile = fs.file(
+        fs.path.join(proxyFile.parent.path, 'keep.txt'),
+      )..writeAsStringSync('keep');
+
+      // when
+      testBundler.deleteEntrypointProxy(testDirectory);
+
+      // then
+      expect(proxyFile.existsSync(), isFalse);
+      expect(siblingFile.existsSync(), isTrue);
+      expect(proxyFile.parent.existsSync(), isTrue);
+    });
+
+    test('creates proxy entrypoint under integration_test', () {
+      // given
+      fs.directory('integration_test').createSync();
+
+      // when
+      testBundler.ensureEntrypoint(testDirectory);
+      final proxyFile = testBundler.getEntrypointFile(testDirectory);
+
+      // then
+      expect(proxyFile.path, contains('integration_test'));
+      expect(proxyFile.path, endsWith('patrol_test_bundle.dart'));
+      expect(proxyFile.existsSync(), isTrue);
+    });
+
+    test('does not create proxy for recognized test directory', () {
+      // given
+      const recognizedDir = 'integration_test';
+      fs.directory(recognizedDir).createSync();
+
+      // when
+      testBundler.ensureEntrypoint(recognizedDir);
+      final entrypoint = testBundler.getEntrypointFile(recognizedDir);
+
+      // then
+      expect(
+        entrypoint.path,
+        endsWith('$recognizedDir${fs.path.separator}test_bundle.dart'),
+      );
+      expect(
+        fs
+            .file(fs.path.join(recognizedDir, 'patrol_test_bundle.dart'))
+            .existsSync(),
+        isFalse,
+      );
     });
   });
 }

@@ -53,7 +53,7 @@ void main() {
       test('includes build flags when provided', () async {
         const flutterOptions = FlutterAppOptions(
           command: FlutterCommand('flutter'),
-          target: 'integration_test/app_test.dart',
+          target: 'patrol_test/test_bundle.dart',
           buildMode: BuildMode.debug,
           flavor: null,
           buildName: '1.2.3',
@@ -75,7 +75,7 @@ void main() {
             '--build-number',
             '123',
             '-t',
-            'integration_test/test_bundle.dart',
+            'patrol_test/test_bundle.dart',
           ], runInShell: true),
         );
       });
@@ -83,7 +83,7 @@ void main() {
       test('does not include build flags when not provided', () async {
         const flutterOptions = FlutterAppOptions(
           command: FlutterCommand('flutter'),
-          target: 'integration_test/app_test.dart',
+          target: 'patrol_test/test_bundle.dart',
           buildMode: BuildMode.debug,
           flavor: null,
           buildName: null,
@@ -101,7 +101,7 @@ void main() {
             'apk',
             '--config-only',
             '-t',
-            'integration_test/test_bundle.dart',
+            'patrol_test/test_bundle.dart',
           ], runInShell: true),
         );
       });
@@ -109,7 +109,7 @@ void main() {
       test('includes only build name when build number is null', () async {
         const flutterOptions = FlutterAppOptions(
           command: FlutterCommand('flutter'),
-          target: 'integration_test/app_test.dart',
+          target: 'patrol_test/test_bundle.dart',
           buildMode: BuildMode.debug,
           flavor: null,
           buildName: '1.2.3',
@@ -129,7 +129,7 @@ void main() {
             '--build-name',
             '1.2.3',
             '-t',
-            'integration_test/test_bundle.dart',
+            'patrol_test/test_bundle.dart',
           ], runInShell: true),
         );
       });
@@ -137,7 +137,7 @@ void main() {
       test('includes only build number when build name is null', () async {
         const flutterOptions = FlutterAppOptions(
           command: FlutterCommand('flutter'),
-          target: 'integration_test/app_test.dart',
+          target: 'patrol_test/test_bundle.dart',
           buildMode: BuildMode.debug,
           flavor: null,
           buildName: null,
@@ -157,7 +157,7 @@ void main() {
             '--build-number',
             '456',
             '-t',
-            'integration_test/test_bundle.dart',
+            'patrol_test/test_bundle.dart',
           ], runInShell: true),
         );
       });
@@ -169,7 +169,7 @@ void main() {
 
         const flutterOptions = FlutterAppOptions(
           command: FlutterCommand('flutter'),
-          target: 'integration_test/app_test.dart',
+          target: 'patrol_test/test_bundle.dart',
           buildMode: BuildMode.debug,
           flavor: null,
           buildName: null,

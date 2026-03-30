@@ -1,3 +1,86 @@
+## 4.5.0
+
+- Fix `appId` not being passed down on `$.platform.mobile.enterText` and `$.platform.mobile.enterTextByIndex` (#2992)
+- Bump `patrol_log` to `^0.8.0`.
+- Signal develop session completion via `ConfigEntry.developCompletedKey`.
+
+## 4.4.0
+- Add support for emulators with API lvl 36 for pickMultipleImagesFromGallery method. (#2977)
+- Fix `tapOnNotification` on iOS physical devices to Open button when tapping on notification. (#2972)
+- Fix `takeCameraPhoto` do not accept location permission dialog on Pixel physical devices. (#2972)
+- Fix `takeCameraPhoto` on Android to use fallback button if done button is not visible. (#2974)
+- Reflect failed tests in Playwright report. (#2970)
+- Add `stopMockLocation` method to `PlatformAutomator` and make mockLocation method less flaky (#2937)
+- Fix matching test entries to produce test summary. (#2998)
+
+
+## 4.3.0
+
+- Fix WASM compatibility by migrating conditional imports from `dart.library.html` to `dart.library.js_interop`. (#2960)
+
+## 4.2.0
+
+- Improve setup error reporting for Patrol Web failures. (#2928)
+- Fix `tapOnNotificationByIndex` and `getNotifications` on iOS 18+ to use consistent indexing with other systems. (#2899)
+- Fix Android native automator error logs to use `AndroidAutomatorClientException` instead of `IosAutomatorClientException`.
+- Allow to pass additional web browser args through `web-browser-args`. (#2932)
+
+# 4.1.1
+
+- Fix Android permission dialog not being tapped with `grantPermissionWhenInUse`.(#2876)
+- Fix iOS `tapOnNotificationBySelector` to support `text` parameter. (#2898)
+- Bump `patrol_log` to `0.7.0`. (#2917)
+- Bump `patrol_finders` to `3.1.0`. (#2917)
+
+## 4.1.0
+
+- Add `PlatformAutomator` to exports. (#2833)
+
+## 4.0.1
+
+- Remove dependency on `js`. (#2831)
+
+## 4.0.0
+
+Patrol 4.0 is here!
+
+Read the article announcing Patrol 4.0 [here](https://leancode.co/blog/patrol-4-0-release).
+
+- New API for native/platform interactions: 
+  - Introduce new way of communicating with platform (`PlatformAutomator`). (#2789) 
+  - Deprecate `NativeAutomator` and `NativeAutomator2`. (#2789)
+
+- Add support for running Patrol tests on Web:
+  - Create `WebAutomator` that handles numerous interactions with native browser:
+    - `enableDarkMode`, `disableDarkMode`,
+    - `tap`,
+    - `enterText`,
+    - `scrollTo`,
+    - `grantPermissions`, `clearPermissions`,
+    - `addCookie`, `getCookies`, `clearCookies`,
+    - `pressKey`, `pressKeyCombo`,
+    - `uploadFile`, `verifyFileDownloads`,
+    - `goBack`, `goForward`,
+    - `acceptNextDialog`, `dismissNextDialog`,
+    - `resizeWindow`,
+    - `setClipboard`, `getClipboard`.
+  - Introduce support for web-related flags:
+    - `--web-results-dir`, `--web-report-dir`, `--web-reporter`,
+    - `--web-timeout`, `--web-global-timeout`, `--web-retries`,
+    - `--web-workers`, `--web-shard`,
+    - `--web-video`, `--web-headless`,
+    - `--web-locale`, `--web-timezone`, `--web-color-scheme`,
+    - `--web-geolocation`, `--web-permissions`,
+    - `--web-user-agent`, `--web-viewport`.
+- Add support for configurable test directory via `test_directory` option in `pubspec.yaml`. (#2728)
+- Introduces *experimental* `--full-isolation` flag that uninstall the app between each run on iOS Simulator. (#2803)
+- Bump `patrol_log` to `0.6.0`. 
+
+- **BREAKING CHANGE**
+  - Change default test directory from `integration_test` to `patrol_test`. (#2728)
+
+This version requires version `4.0.0` of `patrol_cli` package.
+
 ## 3.20.0
 
 - Add `--build-name` and `--build-number` flags to `patrol test`, `patrol develop`, and `patrol build` commands. (#2590)

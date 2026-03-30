@@ -92,6 +92,78 @@ void main() {
       );
     });
 
+    group('versions with build metadata', () {
+      test('areVersionsCompatible handles CLI version with build metadata', () {
+        // Version 4.0.0+1 should be compatible with patrol 4.0.0
+        final cliVersionWithBuildMeta = Version.parse('4.0.0+1');
+        final patrolVersion = Version.parse('4.0.0');
+
+        expect(
+          areVersionsCompatible(cliVersionWithBuildMeta, patrolVersion),
+          isTrue,
+          reason: 'CLI version 4.0.0+1 should be compatible with patrol 4.0.0',
+        );
+      });
+
+      test(
+        'areVersionsCompatible handles patrol version with build metadata',
+        () {
+          // CLI 4.0.0 should be compatible with patrol 4.0.0+1
+          final cliVersion = Version.parse('4.0.0');
+          final patrolVersionWithBuildMeta = Version.parse('4.0.0+1');
+
+          expect(
+            areVersionsCompatible(cliVersion, patrolVersionWithBuildMeta),
+            isTrue,
+            reason:
+                'CLI version 4.0.0 should be compatible with patrol 4.0.0+1',
+          );
+        },
+      );
+
+      test(
+        'areVersionsCompatible handles both versions with build metadata',
+        () {
+          // Both versions with build metadata should be compatible
+          final cliVersionWithBuildMeta = Version.parse('4.0.0+1');
+          final patrolVersionWithBuildMeta = Version.parse('4.0.0+2');
+
+          expect(
+            areVersionsCompatible(
+              cliVersionWithBuildMeta,
+              patrolVersionWithBuildMeta,
+            ),
+            isTrue,
+            reason:
+                'CLI version 4.0.0+1 should be compatible with patrol 4.0.0+2',
+          );
+        },
+      );
+
+      test(
+        'build metadata is ignored in version comparison per semver spec',
+        () {
+          final v1 = Version.parse('4.0.0');
+          final v2 = Version.parse('4.0.0+1');
+          final v3 = Version.parse('4.0.0+99');
+
+          // Per semver spec, build metadata should be ignored in comparisons
+          expect(v1 == v2, isTrue, reason: '4.0.0 should equal 4.0.0+1');
+          expect(v2 == v3, isTrue, reason: '4.0.0+1 should equal 4.0.0+99');
+          expect(
+            v1 < v2,
+            isFalse,
+            reason: '4.0.0 should not be less than 4.0.0+1',
+          );
+          expect(
+            v1 > v2,
+            isFalse,
+            reason: '4.0.0 should not be greater than 4.0.0+1',
+          );
+        },
+      );
+    });
+
     test('current patrol_cli is compatible with listed patrol versions', () {
       final currentCliVersion = Version.parse(constants.version);
 

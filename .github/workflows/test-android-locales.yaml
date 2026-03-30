@@ -2,9 +2,9 @@ name: test locales on android device
 
 on:
   workflow_dispatch:
-  pull_request:
-    paths:
-      - 'packages/patrol/android/src/main/res/**'
+  schedule:
+    # run this workflow every 12 hours
+    - cron: '0 */12 * * *'
 
 jobs:
   run_tests:
@@ -14,19 +14,18 @@ jobs:
     outputs:
       SLACK_MESSAGE_TITLE: Flutter ${{ matrix.flutter-version }} on ${{ matrix.os }} ${{ matrix.os_version }}
       TESTS_EXIT_CODE: ${{ steps.tests_step.outputs.TESTS_EXIT_CODE }}
-      EXCLUDED_TESTS: ${{ steps.set_excluded_tests.outputs.EXCLUDED_TESTS }}
       URL_TO_DETAILS: ${{ steps.tests_step.outputs.URL_TO_DETAILS }}
 
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ['3.32.x']
+        flutter-version: ['3.38.x']
         flutter-channel: ['stable']
         locale: ['en', 'fr', 'de', 'pl'] 
         os: ['Android API']
         include:
           - device_model: 'MediumPhone.arm'
-            os_version: '34'
+            os_version: '36'
 
     defaults:
       run:
@@ -79,7 +78,7 @@ jobs:
 
       - name: patrol build android
         run: |
-          patrol build android --tags locale_testing_android --verbose
+          patrol build android --tags locale_testing_android --exclude patrol_test/web/,patrol_test/native_tests/,patrol_test/volume_test.dart --verbose
 
       - name: Upload APKs to Firebase Test Lab and wait for tests to finish
         id: tests_step
@@ -111,6 +110,5 @@ jobs:
     with:
       TESTS_EXIT_CODE: ${{ needs.run_tests.outputs.TESTS_EXIT_CODE }}
       SLACK_MESSAGE_TITLE: ${{ needs.run_tests.outputs.SLACK_MESSAGE_TITLE }}
-      EXCLUDED_TESTS: ${{ needs.run_tests.outputs.EXCLUDED_TESTS }}
       URL_TO_DETAILS: ${{ needs.run_tests.outputs.URL_TO_DETAILS }}
     secrets: inherit

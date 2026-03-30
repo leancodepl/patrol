@@ -23,3 +23,8 @@
 
 /* Gallery */
 "add" = "Add";
+
+/* Uninstall app */
+"remove_app" = "Remove App";
+"delete_app" = "Delete App";
+"delete" = "Delete";
