@@ -258,7 +258,8 @@
         NSString *details = response ? response.details : @"(no details - app likely crashed)";                 \
         XCTAssertTrue(passed, @"%@", details);                                                                  \
       });                                                                                                       \
-      SEL selector = NSSelectorFromString(dartTestName);                                                        \
+      NSString *selectorName = [NSString stringWithFormat:@"%05lu %@", (unsigned long)i, dartTestName];          \
+      SEL selector = NSSelectorFromString(selectorName);                                                        \
       class_addMethod(self, selector, implementation, "v@:");                                                   \
                                                                                                                 \
       /* Step 2 – create invocations to the dynamically created methods */                                      \
@@ -266,7 +267,7 @@
       NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];                        \
       invocation.selector = selector;                                                                           \
                                                                                                                 \
-      NSLog(@"RunnerUITests.testInvocations(): selectorName = %@, signature: %@", dartTestName, signature);     \
+      NSLog(@"RunnerUITests.testInvocations(): selectorName = %@, signature: %@", selectorName, signature);     \
                                                                                                                 \
       [invocations addObject:invocation];                                                                       \
     }                                                                                                           \
