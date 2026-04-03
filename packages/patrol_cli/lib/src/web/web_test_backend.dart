@@ -740,14 +740,23 @@ class WebTestBackend {
     }
   }
 
+  static const _kDependencyTimeoutSeconds = 120;
+
   Future<void> _ensureNodeDependencies(String webRunnerPath) async {
     _logger.info('Installing Node.js dependencies...');
 
-    final nodeResult = await _processManager.run(
-      ['npm', 'install'],
-      workingDirectory: webRunnerPath,
-      runInShell: true,
-    );
+    final nodeResult = await _processManager
+        .run(
+          ['npm', 'install'],
+          workingDirectory: webRunnerPath,
+          runInShell: true,
+        )
+        .timeout(
+          const Duration(seconds: _kDependencyTimeoutSeconds),
+          onTimeout: () => throw TimeoutException(
+            'npm install timed out after $_kDependencyTimeoutSeconds seconds',
+          ),
+        );
 
     if (nodeResult.exitCode != 0) {
       throw ProcessException(
@@ -763,11 +772,19 @@ class WebTestBackend {
     _logger
       ..info('Node.js dependencies installed successfully.')
       ..info('Installing Playwright dependencies...');
-    final result = await _processManager.run(
-      ['npx', 'playwright', 'install'],
-      workingDirectory: webRunnerPath,
-      runInShell: true,
-    );
+    final result = await _processManager
+        .run(
+          ['npx', 'playwright', 'install', 'chromium'],
+          workingDirectory: webRunnerPath,
+          runInShell: true,
+        )
+        .timeout(
+          const Duration(seconds: _kDependencyTimeoutSeconds),
+          onTimeout: () => throw TimeoutException(
+            'npx playwright install timed out after '
+            '$_kDependencyTimeoutSeconds seconds',
+          ),
+        );
 
     if (result.exitCode != 0) {
       throw ProcessException(
