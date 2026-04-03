@@ -210,6 +210,9 @@ final class PatrolSession {
   Device? get device => _developService?.device;
   int? get testServerPort => _testServerPort;
 
+  /// The Chrome debugger port for web develop sessions.
+  String? get webDebuggerPort => _developService?.webDebuggerPort;
+
   /// Returns null if started successfully, or a warning message if blocked
   Future<String?> _start(String testFile) async {
     if (_isRunning) {
