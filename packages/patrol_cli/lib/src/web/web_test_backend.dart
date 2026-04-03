@@ -10,6 +10,7 @@ import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/crossplatform/flutter_tool.dart';
 import 'package:patrol_cli/src/devices.dart';
+import 'package:patrol_log/patrol_log.dart';
 import 'package:patrol_log/patrol_log_reader.dart';
 import 'package:process/process.dart';
 
@@ -112,6 +113,7 @@ class WebTestBackend {
     bool hideTestSteps = false,
     bool clearTestSteps = false,
     required Stream<List<int>> stdin,
+    void Function(Entry entry)? onLogEntry,
   }) async {
     _logger.detail('Starting web develop execution...');
 
@@ -138,7 +140,7 @@ class WebTestBackend {
       }, stdin: stdin);
 
       // Run Playwright tests
-      await _runPlaywrightDevelop(port, options);
+      await _runPlaywrightDevelop(port, options, onLogEntry: onLogEntry);
     } finally {
       if (previousStdinModes != null) {
         flutterTool.revertInteractiveMode(previousStdinModes);
@@ -563,7 +565,11 @@ class WebTestBackend {
     return completer.future;
   }
 
-  Future<void> _runPlaywrightDevelop(String port, WebAppOptions options) async {
+  Future<void> _runPlaywrightDevelop(
+    String port,
+    WebAppOptions options, {
+    void Function(Entry entry)? onLogEntry,
+  }) async {
     _logger.info('Running Playwright tests using debugger on port: $port');
 
     // Ensure web_runner directory exists and is properly set up
@@ -605,6 +611,18 @@ class WebTestBackend {
         .transform(const LineSplitter())
         .listen((line) {
           _logger.detail('Playwright: $line');
+
+          if (onLogEntry != null && line.contains('PATROL_LOG')) {
+            final match = RegExp('PATROL_LOG (.*)').firstMatch(line);
+            if (match?.group(1) case final json?) {
+              try {
+                final entry = PatrolLogReader.parseEntry(json);
+                onLogEntry(entry);
+              } catch (_) {
+                _logger.detail('Failed to parse PATROL_LOG entry: $line');
+              }
+            }
+          }
         });
 
     // Listen to stderr for errors
