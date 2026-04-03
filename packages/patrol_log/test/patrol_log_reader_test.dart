@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:patrol_log/patrol_log.dart';
+import 'package:patrol_log/patrol_log_reader.dart';
 import 'package:test/test.dart';
 
 class _MockStdout extends Mock implements Stdout {}
