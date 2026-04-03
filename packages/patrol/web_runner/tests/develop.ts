@@ -19,6 +19,19 @@ async function develop() {
     const page = context.pages().at(0) ?? (await context.newPage())
 
     const pageManager = new PageManager(context, page)
+
+    page.on("console", message => {
+      const text = message.text()
+      if (text.startsWith("PATROL_LOG")) {
+        // eslint-disable-next-line no-console
+        console.log(text)
+        return
+      }
+
+      // eslint-disable-next-line no-console
+      console.log(`Playwright: ${text}`)
+    })
+
     await exposePatrolPlatformHandler(context, pageManager)
 
     await initialise(page)

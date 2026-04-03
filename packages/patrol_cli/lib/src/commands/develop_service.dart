@@ -428,6 +428,7 @@ class DevelopService {
           hideTestSteps: hideTestSteps,
           clearTestSteps: clearTestSteps,
           stdin: _stdin,
+          onLogEntry: onLogEntry,
         );
     }
 
