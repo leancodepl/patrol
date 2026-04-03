@@ -92,6 +92,9 @@ class DevelopService {
   /// The device discovered during the last [run] call.
   Device? get device => _device;
 
+  /// The Chrome debugger port discovered during web develop execution.
+  String? get webDebuggerPort => _webTestBackend.debuggerPort;
+
   /// Runs the full develop flow: discover device, read config, bundle test,
   /// build, execute, and attach for hot restart.
   Future<void> run(DevelopOptions options) async {
