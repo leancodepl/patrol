@@ -7,7 +7,7 @@ description: Rules for writing Patrol E2E tests with LeanCode's recommended arch
 
 1. Read provided test steps
 2. Inspect existing modules for functions that can be reused
-3. Also think if one of existing functions can be adjusted to match its exiting usage and new test
+3. Also think if one of existing functions can be adjusted to match its existing usage and new test
 4. Assign test keys to required elements if they are not assigned yet
 5. Start writing test: reuse existing modules/functions + put new test steps in new test file
 6. Write patrol actions directly in the test file, do not create new methods in modules
@@ -248,17 +248,20 @@ Importing keys from external packages to main lib/keys.dart:
 import 'package:common_ui/widgets/keys.dart' as ds;
 final keys = Keys();
 class Keys {
-  final designSystem = ds.dsKeys;
+  final widgetKeys = ds.widgetKeys;
+}
 ```
 
 Example of assigning a parameterized key to a widget:
 
 ```dart
-  enum SizeDTO {
-    small,
-    medium,
-    large,
-  }
+enum SizeDTO {
+  small,
+  medium,
+  large,
+}
+
+class PickSizeWidget extends StatelessWidget {
   Widget _sizeButton(SizeDTO size) {
     return _Button(
       key: keys.pickSize.sizeButton(size),
