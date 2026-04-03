@@ -307,6 +307,9 @@ class WebTestBackend {
     late StreamSubscription<String> stdoutSubscription;
     late StreamSubscription<String> stderrSubscription;
 
+    // Matches the verbose-log prefix, e.g. "[ +290 ms] " or "[        ] "
+    final _flutterLogPrefix = RegExp(r'^\[[\s\d+ms]*\]\s?');
+
     stdoutSubscription = flutterProcess.stdout
         .transform(const SystemEncoding().decoder)
         .transform(const LineSplitter())
@@ -322,6 +325,18 @@ class WebTestBackend {
             final port = urlMatch.group(1)!;
             _logger.info('Debugger started at port: $port');
             completer.complete(port);
+          }
+
+          // Surface Flutter test errors to the console
+          final stripped = line.replaceFirst(_flutterLogPrefix, '');
+          if (stripped.contains('EXCEPTION CAUGHT') ||
+              stripped.contains('TestFailure') ||
+              stripped.startsWith('Expected:') ||
+              stripped.startsWith('  Actual:') ||
+              stripped.startsWith('   Which:') ||
+              stripped.contains('Test failed.') ||
+              stripped.contains('Some tests failed.')) {
+            _logger.err(stripped);
           }
         });
 
