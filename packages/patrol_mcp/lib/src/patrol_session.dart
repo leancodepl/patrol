@@ -198,6 +198,10 @@ final class PatrolSession {
   final _outputs = <String>[];
   TestState _testState = TestState.idle;
 
+  /// True while a hot restart is in progress. Used to suppress stale
+  /// [_handleTestsCompleted] callbacks from the previous test run.
+  var _isHotRestarting = false;
+
   Completer<void>? _finishCompleter;
   DisposeScope? _disposeScope;
   StreamController<List<int>>? _stdinController;
@@ -222,7 +226,7 @@ final class PatrolSession {
             'Use patrol-quit first or run the same test file.';
       }
       // Same test file - hot restart
-      sendCommand(PatrolCommand.hotRestart);
+      await sendCommand(PatrolCommand.hotRestart);
       return null;
     }
 
@@ -320,6 +324,7 @@ final class PatrolSession {
       unawaited(
         Future.any([developService.run(options), exitCompleter.future])
             .then((_) {
+              _debugLog('_runDevelopSession .then: state=$_testState');
               // Session ended (e.g. user sent quit). If tests haven't already
               // been marked as done by callbacks, mark idle.
               if (_testState == TestState.running) {
@@ -329,6 +334,7 @@ final class PatrolSession {
               unawaited(_cleanup());
             })
             .catchError((Object err, StackTrace st) {
+              _debugLog('_runDevelopSession .catchError: $err');
               logger.warning('Develop session error: $err\n$st');
               _pushOutput('ERROR: $err');
               if (_testState == TestState.running) {
@@ -340,6 +346,10 @@ final class PatrolSession {
       );
     });
   }
+
+  /// Shut down the session and kill all child processes.
+  /// Called when the MCP server is exiting.
+  Future<void> shutdown() => _cleanup();
 
   var _cleanupDone = false;
 
@@ -357,6 +367,23 @@ final class PatrolSession {
     _testServerPort = null;
 
     await _logStreaming.stopLogging();
+
+    // Kill the Flutter web server process if it's still running.
+    // In the MCP quit path, the 'Q' stdin handler in WebTestBackend calls
+    // exit(0) which is intercepted — the develop() finally block never runs,
+    // leaving the Flutter process (and its child Chrome) orphaned.
+    final flutterProcess = _developService?.webFlutterProcess;
+    if (flutterProcess != null) {
+      logger.fine('Killing Flutter web server process...');
+      flutterProcess.kill();
+      try {
+        await flutterProcess.exitCode
+            .timeout(const Duration(seconds: 5));
+      } on TimeoutException {
+        flutterProcess.kill(io.ProcessSignal.sigkill);
+        await flutterProcess.exitCode;
+      }
+    }
 
     try {
       final scope = _disposeScope;
@@ -382,12 +409,34 @@ final class PatrolSession {
     }
   }
 
+  void _debugLog(String msg) {
+    io.File('/tmp/patrol_mcp_debug.log').writeAsStringSync(
+      '${DateTime.now()} $msg\n',
+      mode: io.FileMode.append,
+    );
+  }
+
   /// Structured signal from patrol framework (via PATROL_LOG ConfigEntry) that
   /// all tests were executed in develop mode.
   void _handleEntry(Entry entry) {
+    _debugLog('_handleEntry: ${entry.runtimeType} state=$_testState');
+    if (entry is TestEntry) {
+      _debugLog('  TestEntry: name=${entry.name} status=${entry.status}');
+    }
+    if (entry is ConfigEntry) {
+      _debugLog('  ConfigEntry: ${entry.config}');
+    }
+
+    // During restart, suppress stale entries from the dying process.
+    if (_isHotRestarting) {
+      _debugLog('  -> suppressed (hot restarting)');
+      return;
+    }
+
     if (entry is TestEntry &&
         entry.status == TestEntryStatus.failure &&
         _testState == TestState.running) {
+      _debugLog('  -> marking FAILED via _handleEntry');
       _testState = TestState.finishedFailed;
       _completeFinish();
       return;
@@ -396,6 +445,7 @@ final class PatrolSession {
     if (entry is ConfigEntry &&
         entry.config[ConfigEntry.developCompletedKey] == true &&
         _testState == TestState.running) {
+      _debugLog('  -> marking PASSED via _handleEntry');
       _testState = TestState.finishedPassed;
       _completeFinish();
     }
@@ -403,12 +453,22 @@ final class PatrolSession {
 
   /// Backend exit signal from [DevelopService].
   ///
-  /// In develop mode, successful runs stay alive for hot restart and don't exit.
-  /// So if the backend exits while we're still running, treat it as failure.
-  /// (Quit path sets state to idle before this callback can affect it.)
+  /// On mobile, successful develop sessions stay alive for hot restart and
+  /// don't exit, so an exit while running implies failure. On web, however,
+  /// the backend exits normally after tests complete, so we must respect
+  /// [TestCompletionResult.success].
+  ///
+  /// During hot restart, stale callbacks from the previous test run are
+  /// suppressed via [_isHotRestarting].
   void _handleTestsCompleted(TestCompletionResult result) {
-    if (_testState == TestState.running) {
-      _testState = TestState.finishedFailed;
+    _debugLog(
+      '_handleTestsCompleted: success=${result.success} '
+      'error=${result.error} state=$_testState hot=$_isHotRestarting',
+    );
+    if (_testState == TestState.running && !_isHotRestarting) {
+      _testState =
+          result.success ? TestState.finishedPassed : TestState.finishedFailed;
+      _debugLog('  -> marking $_testState via _handleTestsCompleted');
       _completeFinish();
     }
   }
@@ -417,7 +477,7 @@ final class PatrolSession {
     return line.replaceAll(RegExp(r'\x1B\[[0-9;?]*[ -/]*[@-~]'), '').trim();
   }
 
-  String sendCommand(PatrolCommand command) {
+  Future<String> sendCommand(PatrolCommand command) async {
     final logger = Logger('PatrolSession');
 
     if (command == PatrolCommand.quit) {
@@ -440,11 +500,19 @@ final class PatrolSession {
         throw StateError('No active patrol session');
       }
 
+      // Suppress stale _handleTestsCompleted callbacks from the old test run
+      // that fire as a side-effect of the hot restart killing the previous
+      // execution.
+      _isHotRestarting = true;
+
       try {
         controller.add('R'.codeUnits);
       } catch (e) {
+        _isHotRestarting = false;
         logger.warning('Failed to send hot restart: $e');
-        throw StateError('Failed to send hot restart to patrol session: $e');
+        throw StateError(
+          'Failed to send hot restart to patrol session: $e',
+        );
       }
 
       _outputs.clear();
@@ -455,7 +523,13 @@ final class PatrolSession {
       _completeFinish();
       _finishCompleter = Completer<void>();
 
-      return 'Hot restart sent to patrol session';
+      // Allow a brief window for stale callbacks to drain before accepting
+      // new test completion signals.
+      Future<void>.delayed(const Duration(seconds: 5), () {
+        _isHotRestarting = false;
+      });
+
+      return 'Restart sent to patrol session';
     }
 
     throw StateError('Unknown command: ${command.value}');
