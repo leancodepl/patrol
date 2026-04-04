@@ -264,7 +264,7 @@ Future<int> main(List<String> args) async {
             'quit',
             description: 'Quit the active patrol session gracefully',
             annotations: const ToolAnnotations(title: 'Quit Patrol'),
-            callback: (args, extra) {
+            callback: (args, extra) async {
               if (!patrolSession.getStatus().isDevelopRunning) {
                 return const CallToolResult(
                   content: [
@@ -277,7 +277,8 @@ Future<int> main(List<String> args) async {
                   isError: true,
                 );
               }
-              final result = patrolSession.sendCommand(PatrolCommand.quit);
+              final result =
+                  await patrolSession.sendCommand(PatrolCommand.quit);
               return CallToolResult(content: [TextContent(text: result)]);
             },
           )
