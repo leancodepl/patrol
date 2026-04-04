@@ -34,6 +34,14 @@ class WebTestBackend {
   String? get debuggerPort => _debuggerPort;
   String? _debuggerPort;
 
+  /// The Flutter web server process, stored so callers can kill it during
+  /// cleanup if the normal shutdown path is bypassed.
+  Process? get flutterProcess => _flutterProcess;
+  Process? _flutterProcess;
+
+  /// The Playwright develop process, tracked so it can be killed on restart.
+  Process? _playwrightDevelopProcess;
+
   Future<void> build(WebAppOptions options) async {
     _logger.detail('Building web app for testing...');
 
@@ -120,53 +128,108 @@ class WebTestBackend {
   }) async {
     _logger.detail('Starting web develop execution...');
 
-    // Start Flutter web server
-    final flutterProcess = await _startFlutterWebServer(options, develop: true);
-
     StdinModes? previousStdinModes;
     if (io.stdin.hasTerminal) {
       previousStdinModes = flutterTool.enableInteractiveMode();
     }
 
+    var shouldRestart = false;
+
+    final stdinSubscription = stdin.listen((event) async {
+      final char = String.fromCharCode(event.first);
+      _logger.detail('Flutter stdin: $char');
+
+      if (char == 'r' || char == 'R') {
+        _logger.info('Restarting app...');
+        shouldRestart = true;
+        _killRunningProcesses();
+      } else if (char == 'h' || char == 'H') {
+        _logger.success(
+          'Patrol develop key commands:\n'
+          'r Restart app (kill and relaunch)\n'
+          'h Print this help message\n'
+          'q Quit (terminate the process and application on the device)',
+        );
+      } else if (char == 'q' || char == 'Q') {
+        shouldRestart = false;
+        if (previousStdinModes != null) {
+          flutterTool.revertInteractiveMode(previousStdinModes);
+        }
+        _logger.success('Quitting process...');
+        _killRunningProcesses();
+        // Wait for flutter to close Chrome before exiting.
+        await _stopFlutterProcess();
+        exit(0);
+      }
+    });
+
     try {
-      // Wait for server to be ready and get the URL
-      final port = await _waitForWebDebugger(
-        flutterProcess,
-        serverTimeout: options.serverTimeout,
-      );
-      _debuggerPort = port;
+      do {
+        shouldRestart = false;
 
-      _attachForHotRestart(flutterProcess, switch (previousStdinModes) {
-        final stdinModes? => () => flutterTool.revertInteractiveMode(
-          stdinModes,
-        ),
-        _ => null,
-      }, stdin: stdin);
+        final flutterProcess = await _startFlutterWebServer(
+          options,
+          develop: true,
+        );
+        _flutterProcess = flutterProcess;
 
-      // Run Playwright tests
-      await _runPlaywrightDevelop(port, options, onLogEntry: onLogEntry);
+        try {
+          final port = await _waitForWebDebugger(
+            flutterProcess,
+            serverTimeout: options.serverTimeout,
+          );
+          _debuggerPort = port;
+
+          // Run Playwright tests
+          await _runPlaywrightDevelop(port, options, onLogEntry: onLogEntry);
+        } catch (err) {
+          if (!shouldRestart) {
+            rethrow;
+          }
+          _logger.detail('Process terminated for restart: $err');
+        } finally {
+          await _stopFlutterProcess();
+        }
+
+        if (shouldRestart) {
+          _logger.info('Restarting...');
+        }
+      } while (shouldRestart);
     } finally {
+      await stdinSubscription.cancel();
       if (previousStdinModes != null) {
         flutterTool.revertInteractiveMode(previousStdinModes);
       }
+    }
+  }
 
-      // Clean up Flutter process gracefully
-      _logger.detail('Stopping Flutter web server...');
+  void _killRunningProcesses() {
+    _playwrightDevelopProcess?.kill();
+    // Send 'q' to flutter stdin so it shuts down Chrome gracefully.
+    // A hard kill (SIGTERM) leaves the Chrome child process orphaned on macOS.
+    _flutterProcess?.stdin.writeln('q');
+  }
 
-      // Try graceful shutdown first
-      flutterProcess.kill();
+  Future<void> _stopFlutterProcess() async {
+    final process = _flutterProcess;
+    _flutterProcess = null;
+    if (process == null) {
+      return;
+    }
 
-      // Wait a bit for graceful shutdown
-      try {
-        await flutterProcess.exitCode.timeout(const Duration(seconds: 5));
-      } on TimeoutException {
-        // Timeout occurred, force kill
-        _logger.detail(
-          'Graceful shutdown timed out, force killing Flutter process...',
-        );
-        flutterProcess.kill(ProcessSignal.sigkill);
-        await flutterProcess.exitCode;
-      }
+    _logger.detail('Stopping Flutter web server...');
+
+    try {
+      // Flutter should already be exiting from the 'q' stdin command
+      // sent by _killRunningProcesses. Give it time to close Chrome.
+      await process.exitCode.timeout(const Duration(seconds: 10));
+    } on TimeoutException {
+      // Graceful shutdown didn't work — force kill.
+      _logger.detail(
+        'Graceful shutdown timed out, force killing Flutter process...',
+      );
+      process.kill(ProcessSignal.sigkill);
+      await process.exitCode;
     }
   }
 
@@ -381,63 +444,6 @@ class WebTestBackend {
     return completer.future;
   }
 
-  void _attachForHotRestart(
-    Process flutterProcess,
-    void Function()? revertInteractiveMode, {
-    required Stream<List<int>> stdin,
-  }) {
-    final streamSubscription = stdin.listen((event) {
-      final char = String.fromCharCode(event.first);
-
-      _logger.detail('Flutter stdin: $char');
-
-      if (char == 'r' || char == 'R') {
-        // if (!_hotRestartActive) {
-        //   _logger.warn('Hot Restart: not attached to the app yet!');
-        //   return;
-        // }
-
-        // _logger.success(
-        //   'Hot Restart for entrypoint ${basename(target)}...',
-        // );
-        flutterProcess.stdin.add('R'.codeUnits);
-      } else if (char == 'h' || char == 'H') {
-        final helpText = StringBuffer(
-          'Patrol develop key commands:\n'
-          'r Hot restart\n'
-          'h Print this help message\n'
-          'q Quit (terminate the process and application on the device)',
-        );
-
-        // if (_devtoolsUrl.isNotEmpty) {
-        //   helpText.writeln('\nDevTools: $_devtoolsUrl');
-        // } else {
-        //   helpText.writeln('\nDevTools: not available yet');
-        // }
-
-        _logger.success(helpText.toString());
-      } else if (char == 'q' || char == 'Q') {
-        revertInteractiveMode?.call();
-
-        _logger.success('Quitting process...');
-        flutterProcess.kill();
-
-        // Call the uninstall function if provided
-        // if (onQuit != null) {
-        //   try {
-        //     await onQuit();
-        //   } catch (err) {
-        //     _logger.err('Failed to clean up app: $err');
-        //   }
-        // }
-
-        exit(0);
-      }
-    });
-
-    Timer(const Duration(minutes: 2), streamSubscription.cancel);
-  }
-
   Future<void> _runPlaywrightTests(
     String baseUrl,
     WebAppOptions options, {
@@ -605,6 +611,7 @@ class WebTestBackend {
       },
       runInShell: true,
     );
+    _playwrightDevelopProcess = playwrightProcess;
 
     final completer = Completer<void>();
     late StreamSubscription<String> stdoutSubscription;
@@ -614,7 +621,9 @@ class WebTestBackend {
         .transform(const SystemEncoding().decoder)
         .transform(const LineSplitter())
         .listen((line) {
-          _logger.detail('Playwright: $line');
+          // Surface Playwright output at info level so it's captured
+          // by log streaming and visible in patrol.log / MCP output.
+          _logger.info('Playwright: $line');
 
           if (onLogEntry != null && line.contains('PATROL_LOG')) {
             final match = RegExp('PATROL_LOG (.*)').firstMatch(line);
@@ -634,11 +643,12 @@ class WebTestBackend {
         .transform(const SystemEncoding().decoder)
         .transform(const LineSplitter())
         .listen((line) {
-          _logger.detail('Playwright stderr: $line');
+          _logger.info('Playwright stderr: $line');
         });
 
     // Check if process exits unexpectedly
     playwrightProcess.exitCode.then((exitCode) {
+      _playwrightDevelopProcess = null;
       if (!completer.isCompleted) {
         stdoutSubscription.cancel();
         stderrSubscription.cancel();
