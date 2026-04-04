@@ -155,6 +155,7 @@ class PatrolStatus {
     this.currentTestFile,
     this.warning,
     this.deviceSelectionNote,
+    this.error,
     this.deviceName,
     this.deviceId,
     this.devicePlatform,
@@ -166,6 +167,7 @@ class PatrolStatus {
   final String? currentTestFile;
   final String? warning;
   final String? deviceSelectionNote;
+  final String? error;
   final String? deviceName;
   final String? deviceId;
   final String? devicePlatform;
@@ -178,6 +180,7 @@ class PatrolStatus {
     'currentTestFile': ?currentTestFile,
     'warning': ?warning,
     'deviceSelectionNote': ?deviceSelectionNote,
+    'error': ?error,
     'deviceName': ?deviceName,
     'deviceId': ?deviceId,
     'devicePlatform': ?devicePlatform,
@@ -202,6 +205,7 @@ final class PatrolSession {
   var _isRunning = false;
   String? _currentTestFile;
   final _outputs = <String>[];
+  final _errorDetails = <String>[];
   TestState _testState = TestState.idle;
 
   /// Set while quitting so a backend exit we caused isn't reported as a crash.
@@ -377,6 +381,7 @@ final class PatrolSession {
     _quitRequested = false;
     _finishWarning = null;
     _outputs.clear();
+    _errorDetails.clear();
     // Create the completer eagerly so callbacks can signal it even if
     // test completion happens before _waitForFinish is called.
     _finishCompleter = Completer<void>();
@@ -530,9 +535,18 @@ final class PatrolSession {
       return;
     }
 
+    // Collect error details from ErrorEntry messages.
+    if (entry is ErrorEntry) {
+      _errorDetails.add(entry.message);
+      return;
+    }
+
     if (entry is TestEntry &&
         entry.status == TestEntryStatus.failure &&
         _testState == TestState.running) {
+      if (entry.error != null) {
+        _errorDetails.add(entry.error!);
+      }
       _debugLog('  -> marking FAILED via _handleEntry');
       _testState = TestState.finishedFailed;
       _completeFinish();
@@ -635,6 +649,7 @@ final class PatrolSession {
       }
 
       _outputs.clear();
+    _errorDetails.clear();
       _testState = TestState.running;
       _finishWarning = null;
       // Complete the old completer so any previous waiters are unblocked, then
@@ -664,6 +679,7 @@ final class PatrolSession {
       currentTestFile: _currentTestFile,
       warning: overrideWarning ?? _finishWarning,
       deviceSelectionNote: _deviceSelectionNote,
+      error: _errorDetails.isNotEmpty ? _errorDetails.join('\n') : null,
       deviceName: dev?.name,
       deviceId: dev?.id,
       devicePlatform: dev?.targetPlatform.name,
