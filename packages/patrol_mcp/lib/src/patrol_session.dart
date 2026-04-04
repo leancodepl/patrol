@@ -151,6 +151,7 @@ class PatrolStatus {
     required this.output,
     this.currentTestFile,
     this.warning,
+    this.error,
     this.deviceName,
     this.deviceId,
     this.devicePlatform,
@@ -161,6 +162,7 @@ class PatrolStatus {
   final String output;
   final String? currentTestFile;
   final String? warning;
+  final String? error;
   final String? deviceName;
   final String? deviceId;
   final String? devicePlatform;
@@ -172,6 +174,7 @@ class PatrolStatus {
     'testState': testState.name,
     'currentTestFile': ?currentTestFile,
     'warning': ?warning,
+    'error': ?error,
     'deviceName': ?deviceName,
     'deviceId': ?deviceId,
     'devicePlatform': ?devicePlatform,
@@ -196,6 +199,7 @@ final class PatrolSession {
   var _isRunning = false;
   String? _currentTestFile;
   final _outputs = <String>[];
+  final _errorDetails = <String>[];
   TestState _testState = TestState.idle;
 
   /// True while a hot restart is in progress. Used to suppress stale
@@ -290,6 +294,7 @@ final class PatrolSession {
     _currentTestFile = testFile;
     _testState = TestState.running;
     _outputs.clear();
+    _errorDetails.clear();
     // Create the completer eagerly so callbacks can signal it even if
     // test completion happens before _waitForFinish is called.
     _finishCompleter = Completer<void>();
@@ -433,9 +438,18 @@ final class PatrolSession {
       return;
     }
 
+    // Collect error details from ErrorEntry messages.
+    if (entry is ErrorEntry) {
+      _errorDetails.add(entry.message);
+      return;
+    }
+
     if (entry is TestEntry &&
         entry.status == TestEntryStatus.failure &&
         _testState == TestState.running) {
+      if (entry.error != null) {
+        _errorDetails.add(entry.error!);
+      }
       _debugLog('  -> marking FAILED via _handleEntry');
       _testState = TestState.finishedFailed;
       _completeFinish();
@@ -516,6 +530,7 @@ final class PatrolSession {
       }
 
       _outputs.clear();
+    _errorDetails.clear();
       _testState = TestState.running;
       // Complete the old completer so any previous waiters are unblocked, then
       // immediately create a fresh one. This avoids a race where callbacks
@@ -542,6 +557,7 @@ final class PatrolSession {
       testState: _testState,
       output: _formatLogs(_outputs),
       currentTestFile: _currentTestFile,
+      error: _errorDetails.isNotEmpty ? _errorDetails.join('\n') : null,
       deviceName: dev?.name,
       deviceId: dev?.id,
       devicePlatform: dev?.targetPlatform.name,
