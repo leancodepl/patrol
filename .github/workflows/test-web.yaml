@@ -29,7 +29,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ['3.38.x']
+        flutter-version: ['3.35.x']
         flutter-channel: ['stable']
 
     defaults:
@@ -64,7 +64,7 @@ jobs:
         run: |
           TESTS_EXIT_CODE=0
           # Do not use tags here, tags do not work with patrol web tests
-          patrol test --target patrol_test/web/ -d chrome --verbose --web-headless true --web-workers 1 --web-locale en-US || TESTS_EXIT_CODE=$?
+          patrol test --target patrol_test/web/ -d chrome --verbose --web-headless true --web-workers 4 --web-locale en-US || TESTS_EXIT_CODE=$?
 
           echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> "$GITHUB_OUTPUT"
           exit $TESTS_EXIT_CODE
