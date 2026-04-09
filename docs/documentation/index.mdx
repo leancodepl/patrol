@@ -373,22 +373,45 @@ Check out our video version of this tutorial on YouTube!
           @import patrol;
           @import ObjectiveC.runtime;
 
+          #if !defined(PATROL_INTEGRATION_TEST_IOS_RUNNER)
+          #import "PatrolIntegrationTestIosRunner.h"
+          #endif
+
           PATROL_INTEGRATION_TEST_IOS_RUNNER(RunnerUITests)
           ```
 
-          Add the newly created target to `ios/Podfile` by embedding in the existing
-          `Runner` target.
+          <Tabs
+            defaultIndex={0}
+            items={['CocoaPods', 'Swift Package Manager']}
+          >
+            <Tab value="CocoaPods">
+              Add the newly created target to `ios/Podfile` by embedding in the existing
+              `Runner` target.
 
-          ```ruby title="ios/Podfile"
-          target 'Runner' do
-            # Do not change existing lines.
-            ...
+              ```ruby title="ios/Podfile"
+              target 'Runner' do
+                # Do not change existing lines.
+                ...
 
-            target 'RunnerUITests' do
-              inherit! :complete
-            end
-          end
-          ```
+                target 'RunnerUITests' do
+                  inherit! :complete
+                end
+              end
+              ```
+            </Tab>
+            <Tab value="Swift Package Manager">
+              If you haven't yet migrated your project to Swift Package Manager, follow the Flutter docs for
+              [integrating SPM with your app](https://docs.flutter.dev/packages-and-plugins/swift-package-manager/for-app-developers).
+
+              <Info>Following the Flutter docs will allow you to run or build the app itself (Runner target) but we still need to do some configuration for Patrol tests (RunnerUITests target).</Info>
+
+              To add the `FlutterGeneratedPluginSwiftPackage` to the **RunnerUITests**
+              target, in Xcode go to **RunnerUITests > General > Frameworks and Libraries**,
+              click **+**, and select `FlutterGeneratedPluginSwiftPackage`.
+
+              ![Xcode RunnerUITests Frameworks and Libraries](/assets/ios_spm_frameworks.png)
+            </Tab>
+          </Tabs>
         </Step>
 
         <Step>
@@ -401,7 +424,7 @@ Check out our video version of this tutorial on YouTube!
         </Step>
 
         <Step>
-          Go to your `ios` directory and run:
+           **(CocoaPods only)** Go to your `ios` directory and run:
 
           ```
           pod install --repo-update
@@ -442,6 +465,24 @@ Check out our video version of this tutorial on YouTube!
           ```
           /bin/sh "$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh" embed_and_thin
           ```
+        </Step>
+
+        <Step>
+          **(Swift Package Manager only)** In Xcode, go to **RunnerUITests > Build Settings**,
+            search for **Header Search Paths**, and add:
+
+          ```
+          $(SRCROOT)/Flutter/ephemeral/Packages/.packages/patrol/Sources/patrol/include
+          ```
+
+          In case you require backward compatibility with CocoaPods, add the following search path as well:
+          ```
+          $(inherited)
+          ```
+
+          <Warning>These search paths must be added for each configuration (Debug, Release, Profile) and scheme (e.g. dev, prod).</Warning>
+
+          ![Xcode RunnerUITests header search paths](/assets/ios_spm_header_search_paths.png)
         </Step>
 
         <Step>
