@@ -40,8 +40,8 @@ You can find out more below:
 
 ## Version Compatibility
 
-For the version compatibility table between `patrol_mcp`, `patrol_cli`, and
-`patrol`, see the [Patrol MCP documentation][mcp_docs].
+For the version compatibility table between `patrol_mcp` and `patrol_cli`,
+see the [Patrol MCP documentation][mcp_docs].
 
 ## Installation
 
