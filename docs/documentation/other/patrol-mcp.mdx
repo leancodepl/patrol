@@ -1,0 +1,46 @@
+---
+title: Patrol MCP
+description: AI-powered test automation with Patrol MCP server
+---
+
+## Overview
+
+Patrol MCP is an MCP (Model Context Protocol) server that lets AI assistants
+run and manage Patrol tests in Flutter projects. It wraps `patrol develop`
+and exposes it as a set of MCP tools.
+
+- [patrol_mcp on pub.dev](https://pub.dev/packages/patrol_mcp)
+- [Setup guide & IDE configuration (README)](https://github.com/leancodepl/patrol/blob/master/packages/patrol_mcp/README.md)
+
+
+## Version Compatibility
+
+<Info>
+**Most users can ignore this table.** If you use `patrol_cli` installed
+globally (via `dart pub global activate patrol_cli`), the version pinning
+does not affect you — the global CLI is a separate binary and `patrol_mcp`
+uses its own bundled copy of the CLI library.
+</Info>
+
+Each `patrol_mcp` release is pinned to an exact `patrol_cli` version it was
+built and tested against.
+
+| patrol_mcp | patrol_cli | patrol_log |
+|------------|------------|------------|
+| 0.1.3      | 4.3.1      | ^0.8.0     |
+| 0.1.2      | 4.3.0      | ^0.8.0     |
+| 0.1.1      | 4.3.0      | ^0.8.0     |
+| 0.1.0      | 4.3.0      | ^0.8.0     |
+
+
+
+This table only matters if you have **both** `patrol_cli` and `patrol_mcp` in
+the same `pubspec.yaml`. In that case, pub must resolve a single `patrol_cli`
+version that satisfies both packages. If you hit a version conflict, use the
+table above to find compatible versions.
+
+## Getting Started
+
+See the [full setup guide on GitHub](https://github.com/leancodepl/patrol/blob/master/packages/patrol_mcp/README.md)
+for installation steps, IDE-specific MCP configuration (Claude Code, Cursor,
+Copilot, Gemini CLI), environment variables, and troubleshooting.

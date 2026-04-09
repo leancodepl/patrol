@@ -38,6 +38,11 @@ You can find out more below:
 - Capture screenshots with auto-detected platform.
 - Read native UI tree during active sessions.
 
+## Version Compatibility
+
+For the version compatibility table between `patrol_mcp` and `patrol_cli`,
+see the [Patrol MCP documentation][mcp_docs].
+
 ## Installation
 
 > [!TIP]
@@ -244,7 +249,7 @@ works because Antigravity resolves it against the open workspace:
 - `PROJECT_ROOT` (recommended): Flutter project directory containing `pubspec.yaml`.
   If omitted, `patrol_mcp` uses the current working directory.
 - `PATROL_FLAGS`: Extra `patrol develop` flags, for example:
-  `--flavor dev --no-uninstall --open-devtools`.
+  `--flavor dev --verbose`.
   Use this for ports too: `--test-server-port 8081 --app-server-port 8082`.
 - `SHOW_TERMINAL`: Open macOS Terminal for live logs (`"true"` / `"false"`).
 
@@ -316,6 +321,7 @@ We are **top-tier experts** focused on Flutter Enterprise solutions.
 [patrol_github_link]: https://github.com/leancodepl/patrol
 [patrol_discord_link]: https://discord.gg/ukBK5t4EZg
 [promo_graphics]: ../../assets/promo_banner.png
+[mcp_docs]: https://patrol.leancode.co/documentation/other/patrol-mcp?utm_source=github.com&utm_medium=referral&utm_campaign=patrol-readme
 [docs]: https://patrol.leancode.co/?utm_source=github.com&utm_medium=referral&utm_campaign=patrol-readme
 [article_web]: https://leancode.co/blog/patrol-web-support?utm_source=github.com&utm_medium=referral&utm_campaign=patrol-readme
 [article_4x]: https://leancode.co/blog/patrol-4-0-release?utm_source=github.com&utm_medium=referral&utm_campaign=patrol-readme

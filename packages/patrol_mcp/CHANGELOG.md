@@ -1,3 +1,7 @@
+## 0.1.3
+
+- Bump `patrol_cli` to `4.3.1`.
+
 ## 0.1.2
 
 - Update README.
