@@ -1,5 +1,5 @@
 ---
-name: patrol-tests-leancode
+name: patrol-tests-architecture
 description: Rules for writing Patrol E2E tests with LeanCode's recommended architecture (modules, system, api clients)
 ---
 
