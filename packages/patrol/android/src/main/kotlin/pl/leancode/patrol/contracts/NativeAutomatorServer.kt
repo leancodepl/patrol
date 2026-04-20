@@ -57,12 +57,9 @@ abstract class NativeAutomatorServer {
     abstract fun pickMultipleImagesFromGallery(request: Contracts.PickMultipleImagesFromGalleryRequest)
     abstract fun axeInitSession(request: Contracts.AxeInitSessionRequest)
     abstract fun axeScan(request: Contracts.AxeScanRequest)
-    abstract fun axeGetResult(request: Contracts.AxeGetResultRequest): Contracts.AxeGetResultResponse
     abstract fun axeIgnoreRules(request: Contracts.AxeIgnoreRulesRequest)
     abstract fun axeIgnoreByViewIdResourceName(request: Contracts.AxeIgnoreByViewIdResourceNameRequest)
     abstract fun axeIgnoreExperimental()
-    abstract fun axeTearDown()
-    abstract fun axeDeleteResult(request: Contracts.AxeDeleteResultRequest)
     abstract fun debug()
     abstract fun setMockLocation(request: Contracts.SetMockLocationRequest)
     abstract fun markPatrolAppServiceReady()
@@ -270,11 +267,6 @@ abstract class NativeAutomatorServer {
         axeScan(body)
         Response(OK)
       },
-      "axeGetResult" bind POST to {
-        val body = json.fromJson(it.bodyString(), Contracts.AxeGetResultRequest::class.java)
-        val response = axeGetResult(body)
-        Response(OK).body(json.toJson(response))
-      },
       "axeIgnoreRules" bind POST to {
         val body = json.fromJson(it.bodyString(), Contracts.AxeIgnoreRulesRequest::class.java)
         axeIgnoreRules(body)
@@ -287,15 +279,6 @@ abstract class NativeAutomatorServer {
       },
       "axeIgnoreExperimental" bind POST to {
         axeIgnoreExperimental()
-        Response(OK)
-      },
-      "axeTearDown" bind POST to {
-        axeTearDown()
-        Response(OK)
-      },
-      "axeDeleteResult" bind POST to {
-        val body = json.fromJson(it.bodyString(), Contracts.AxeDeleteResultRequest::class.java)
-        axeDeleteResult(body)
         Response(OK)
       },
       "debug" bind POST to {

@@ -941,7 +941,6 @@ Map<String, dynamic> _$AxeInitSessionRequestToJson(
 AxeScanRequest _$AxeScanRequestFromJson(Map<String, dynamic> json) =>
     AxeScanRequest(
       uploadToDashboard: json['uploadToDashboard'] as bool,
-      saveLocallyWithPrefix: json['saveLocallyWithPrefix'] as String?,
       tags: (json['tags'] as List<dynamic>).map((e) => e as String).toList(),
       scanName: json['scanName'] as String?,
     );
@@ -949,36 +948,9 @@ AxeScanRequest _$AxeScanRequestFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$AxeScanRequestToJson(AxeScanRequest instance) =>
     <String, dynamic>{
       'uploadToDashboard': instance.uploadToDashboard,
-      'saveLocallyWithPrefix': instance.saveLocallyWithPrefix,
       'tags': instance.tags,
       'scanName': instance.scanName,
     };
-
-AxeGetResultRequest _$AxeGetResultRequestFromJson(Map<String, dynamic> json) =>
-    AxeGetResultRequest(
-      userId: json['userId'] as String,
-      packageName: json['packageName'] as String,
-      resultId: json['resultId'] as String,
-      uuid: json['uuid'] as String?,
-    );
-
-Map<String, dynamic> _$AxeGetResultRequestToJson(
-  AxeGetResultRequest instance,
-) => <String, dynamic>{
-  'userId': instance.userId,
-  'packageName': instance.packageName,
-  'resultId': instance.resultId,
-  'uuid': instance.uuid,
-};
-
-AxeGetResultResponse _$AxeGetResultResponseFromJson(
-  Map<String, dynamic> json,
-) =>
-    AxeGetResultResponse(serializedResult: json['serializedResult'] as String?);
-
-Map<String, dynamic> _$AxeGetResultResponseToJson(
-  AxeGetResultResponse instance,
-) => <String, dynamic>{'serializedResult': instance.serializedResult};
 
 AxeIgnoreRulesRequest _$AxeIgnoreRulesRequestFromJson(
   Map<String, dynamic> json,
@@ -1006,22 +978,4 @@ Map<String, dynamic> _$AxeIgnoreByViewIdResourceNameRequestToJson(
 ) => <String, dynamic>{
   'viewIdResourceName': instance.viewIdResourceName,
   'ruleList': instance.ruleList,
-};
-
-AxeDeleteResultRequest _$AxeDeleteResultRequestFromJson(
-  Map<String, dynamic> json,
-) => AxeDeleteResultRequest(
-  userId: json['userId'] as String,
-  packageName: json['packageName'] as String,
-  resultId: json['resultId'] as String,
-  uuid: json['uuid'] as String?,
-);
-
-Map<String, dynamic> _$AxeDeleteResultRequestToJson(
-  AxeDeleteResultRequest instance,
-) => <String, dynamic>{
-  'userId': instance.userId,
-  'packageName': instance.packageName,
-  'resultId': instance.resultId,
-  'uuid': instance.uuid,
 };

@@ -1906,7 +1906,6 @@ class AxeInitSessionRequest with EquatableMixin {
 class AxeScanRequest with EquatableMixin {
   AxeScanRequest({
     required this.uploadToDashboard,
-    this.saveLocallyWithPrefix,
     required this.tags,
     this.scanName,
   });
@@ -1915,7 +1914,6 @@ class AxeScanRequest with EquatableMixin {
       _$AxeScanRequestFromJson(json);
 
   final bool uploadToDashboard;
-  final String? saveLocallyWithPrefix;
   final List<String> tags;
   final String? scanName;
 
@@ -1924,81 +1922,19 @@ class AxeScanRequest with EquatableMixin {
   @override
   List<Object?> get props => [
     uploadToDashboard,
-    saveLocallyWithPrefix,
     tags,
     scanName,
   ];
 
   AxeScanRequest copyWith({
     bool? uploadToDashboard,
-    String? saveLocallyWithPrefix,
     List<String>? tags,
     String? scanName,
   }) {
     return AxeScanRequest(
       uploadToDashboard: uploadToDashboard ?? this.uploadToDashboard,
-      saveLocallyWithPrefix:
-          saveLocallyWithPrefix ?? this.saveLocallyWithPrefix,
       tags: tags ?? this.tags,
       scanName: scanName ?? this.scanName,
-    );
-  }
-}
-
-@JsonSerializable()
-class AxeGetResultRequest with EquatableMixin {
-  AxeGetResultRequest({
-    required this.userId,
-    required this.packageName,
-    required this.resultId,
-    this.uuid,
-  });
-
-  factory AxeGetResultRequest.fromJson(Map<String, dynamic> json) =>
-      _$AxeGetResultRequestFromJson(json);
-
-  final String userId;
-  final String packageName;
-  final String resultId;
-  final String? uuid;
-
-  Map<String, dynamic> toJson() => _$AxeGetResultRequestToJson(this);
-
-  @override
-  List<Object?> get props => [userId, packageName, resultId, uuid];
-
-  AxeGetResultRequest copyWith({
-    String? userId,
-    String? packageName,
-    String? resultId,
-    String? uuid,
-  }) {
-    return AxeGetResultRequest(
-      userId: userId ?? this.userId,
-      packageName: packageName ?? this.packageName,
-      resultId: resultId ?? this.resultId,
-      uuid: uuid ?? this.uuid,
-    );
-  }
-}
-
-@JsonSerializable()
-class AxeGetResultResponse with EquatableMixin {
-  AxeGetResultResponse({this.serializedResult});
-
-  factory AxeGetResultResponse.fromJson(Map<String, dynamic> json) =>
-      _$AxeGetResultResponseFromJson(json);
-
-  final String? serializedResult;
-
-  Map<String, dynamic> toJson() => _$AxeGetResultResponseToJson(this);
-
-  @override
-  List<Object?> get props => [serializedResult];
-
-  AxeGetResultResponse copyWith({String? serializedResult}) {
-    return AxeGetResultResponse(
-      serializedResult: serializedResult ?? this.serializedResult,
     );
   }
 }
@@ -2051,43 +1987,6 @@ class AxeIgnoreByViewIdResourceNameRequest with EquatableMixin {
     return AxeIgnoreByViewIdResourceNameRequest(
       viewIdResourceName: viewIdResourceName ?? this.viewIdResourceName,
       ruleList: ruleList ?? this.ruleList,
-    );
-  }
-}
-
-@JsonSerializable()
-class AxeDeleteResultRequest with EquatableMixin {
-  AxeDeleteResultRequest({
-    required this.userId,
-    required this.packageName,
-    required this.resultId,
-    this.uuid,
-  });
-
-  factory AxeDeleteResultRequest.fromJson(Map<String, dynamic> json) =>
-      _$AxeDeleteResultRequestFromJson(json);
-
-  final String userId;
-  final String packageName;
-  final String resultId;
-  final String? uuid;
-
-  Map<String, dynamic> toJson() => _$AxeDeleteResultRequestToJson(this);
-
-  @override
-  List<Object?> get props => [userId, packageName, resultId, uuid];
-
-  AxeDeleteResultRequest copyWith({
-    String? userId,
-    String? packageName,
-    String? resultId,
-    String? uuid,
-  }) {
-    return AxeDeleteResultRequest(
-      userId: userId ?? this.userId,
-      packageName: packageName ?? this.packageName,
-      resultId: resultId ?? this.resultId,
-      uuid: uuid ?? this.uuid,
     );
   }
 }

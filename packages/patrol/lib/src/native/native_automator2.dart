@@ -1045,7 +1045,6 @@ class NativeAutomator2 {
 
   Future<void> axeScan({
     bool uploadToDashboard = true,
-    String? saveLocallyWithPrefix,
     List<String> tags = const [],
     String? scanName,
   }) async {
@@ -1053,31 +1052,11 @@ class NativeAutomator2 {
       await _client.axeScan(
         AxeScanRequest(
           uploadToDashboard: uploadToDashboard,
-          saveLocallyWithPrefix: saveLocallyWithPrefix,
           tags: tags,
           scanName: scanName,
         ),
       );
     });
-  }
-
-  Future<String?> axeGetResult({
-    required String userId,
-    required String packageName,
-    required String resultId,
-    String? uuid,
-  }) async {
-    final response = await _wrapRequest('axeGetResult', () async {
-      return await _client.axeGetResult(
-        AxeGetResultRequest(
-          userId: userId,
-          packageName: packageName,
-          resultId: resultId,
-          uuid: uuid,
-        ),
-      );
-    });
-    return response.serializedResult;
   }
 
   Future<void> axeIgnoreRules(List<String> rulesToIgnore) async {
@@ -1104,28 +1083,6 @@ class NativeAutomator2 {
 
   Future<void> axeIgnoreExperimental() async {
     await _wrapRequest('axeIgnoreExperimental', _client.axeIgnoreExperimental);
-  }
-
-  Future<void> axeTearDown() async {
-    await _wrapRequest('axeTearDown', _client.axeTearDown);
-  }
-
-  Future<void> axeDeleteResult({
-    required String userId,
-    required String packageName,
-    required String resultId,
-    String? uuid,
-  }) async {
-    await _wrapRequest('axeDeleteResult', () async {
-      await _client.axeDeleteResult(
-        AxeDeleteResultRequest(
-          userId: userId,
-          packageName: packageName,
-          resultId: resultId,
-          uuid: uuid,
-        ),
-      );
-    });
   }
 
   /// Checks if the app is running on a virtual device (simulator or emulator).

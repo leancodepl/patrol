@@ -765,33 +765,9 @@ class Contracts {
 
   data class AxeScanRequest (
     val uploadToDashboard: Boolean,
-    val saveLocallyWithPrefix: String? = null,
     val tags: List<String> = emptyList(),
     val scanName: String? = null
-  ){
-    fun hasSaveLocallyWithPrefix(): Boolean {
-      return saveLocallyWithPrefix != null
-    }
-  }
-
-  data class AxeGetResultRequest (
-    val userId: String,
-    val packageName: String,
-    val resultId: String,
-    val uuid: String? = null
-  ){
-    fun hasUuid(): Boolean {
-      return uuid != null
-    }
-  }
-
-  data class AxeGetResultResponse (
-    val serializedResult: String? = null
-  ){
-    fun hasSerializedResult(): Boolean {
-      return serializedResult != null
-    }
-  }
+  )
 
   data class AxeIgnoreRulesRequest (
     val rulesToIgnore: List<String>
@@ -801,16 +777,5 @@ class Contracts {
     val viewIdResourceName: String,
     val ruleList: List<String>
   )
-
-  data class AxeDeleteResultRequest (
-    val userId: String,
-    val packageName: String,
-    val resultId: String,
-    val uuid: String? = null
-  ){
-    fun hasUuid(): Boolean {
-      return uuid != null
-    }
-  }
 
 }
