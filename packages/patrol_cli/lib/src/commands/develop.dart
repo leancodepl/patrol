@@ -252,13 +252,15 @@ class DevelopCommand extends PatrolCommand {
       buildNumber: buildNumber,
     );
 
-    final androidOpts = AndroidAppOptions(
-      flutter: flutterOpts,
+    final androidOpts = resolveAndroidAppOptions(
+      flutterOpts: flutterOpts,
       packageName: packageName,
       appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
       uninstall: uninstall,
       addToApp: addToApp,
+      nativeAndroidPathArg: stringArg('native-android-path'),
+      nativeAndroidPathFromConfig: config.android.nativeProjectPath,
     );
 
     final iosOpts = resolveIOSAppOptions(

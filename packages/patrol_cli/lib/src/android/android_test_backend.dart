@@ -46,16 +46,35 @@ class AndroidTestBackend {
 
   String _androidDirName(bool addToApp) => addToApp ? '.android' : 'android';
 
+  /// Resolves the directory Gradle should execute in.
+  ///
+  /// * When [AndroidAppOptions.nativeAndroidPath] is set, returns that path —
+  ///   Patrol drives Gradle against the real native Android app in add-to-app
+  ///   setups.
+  /// * Otherwise falls back to `.android/` (add-to-app scaffold) or `android/`
+  ///   (standard Flutter app).
+  String _gradleWorkingDir(AndroidAppOptions options) {
+    if (options.nativeAndroidPath != null) {
+      return options.nativeAndroidPath!;
+    }
+    return _rootDirectory
+        .childDirectory(_androidDirName(options.addToApp))
+        .path;
+  }
+
   Future<void> build(AndroidAppOptions options) async {
     if (options.addToApp) {
-      final dir = _rootDirectory.childDirectory('.android');
-      if (!dir.existsSync()) {
+      final workDirPath = _gradleWorkingDir(options);
+      final workDir = _rootDirectory.fileSystem.directory(workDirPath);
+      if (!workDir.existsSync()) {
         throw Exception(
-          'Directory ${dir.path} does not exist. '
+          'Directory ${workDir.path} does not exist. '
           'Run "flutter pub get" in your module project first.',
         );
       }
-      _logger.detail('Skipping flutter build apk --config-only (add-to-app mode)');
+      _logger.detail(
+        'Skipping flutter build apk --config-only (add-to-app mode)',
+      );
     } else {
       await buildApkConfigOnly(options.flutter);
     }
@@ -77,7 +96,7 @@ class AndroidTestBackend {
                 isWindows: _platform.isWindows,
               ),
               runInShell: true,
-              workingDirectory: _rootDirectory.childDirectory(_androidDirName(options.addToApp)).path,
+              workingDirectory: _gradleWorkingDir(options),
               environment: switch (javaPath) {
                 final String javaPath => {'JAVA_HOME': javaPath},
                 _ => {},
@@ -105,7 +124,7 @@ class AndroidTestBackend {
                 isWindows: _platform.isWindows,
               ),
               runInShell: true,
-              workingDirectory: _rootDirectory.childDirectory(_androidDirName(options.addToApp)).path,
+              workingDirectory: _gradleWorkingDir(options),
               environment: switch (javaPath) {
                 final String javaPath => {'JAVA_HOME': javaPath},
                 _ => {},
@@ -224,7 +243,7 @@ class AndroidTestBackend {
           await _processManager.start(
               options.toGradleAppDependencies(isWindows: _platform.isWindows),
               runInShell: true,
-              workingDirectory: _rootDirectory.childDirectory(_androidDirName(options.addToApp)).path,
+              workingDirectory: _gradleWorkingDir(options),
               environment: switch (javaPath) {
                 final javaPath? => {'JAVA_HOME': javaPath},
                 _ => {},
@@ -307,7 +326,7 @@ class AndroidTestBackend {
                 'ANDROID_SERIAL': device.id,
                 if (javaPath case final javaPath?) ...{'JAVA_HOME': javaPath},
               },
-              workingDirectory: _rootDirectory.childDirectory(_androidDirName(options.addToApp)).path,
+              workingDirectory: _gradleWorkingDir(options),
             )
             ..disposedBy(scope);
       process.listenStdOut((l) => _logger.detail('\t: $l')).disposedBy(scope);

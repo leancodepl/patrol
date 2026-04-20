@@ -142,6 +142,62 @@ class FlutterAppOptions {
   }
 }
 
+/// Resolves [AndroidAppOptions] while consolidating the native-android-path
+/// workflow.
+///
+/// When a native Android project path is provided (either via
+/// `--native-android-path` or `patrol.android.native_project_path` in
+/// pubspec.yaml), Patrol runs Gradle inside that directory instead of the
+/// Flutter module's generated `.android/` scaffold.
+AndroidAppOptions resolveAndroidAppOptions({
+  required FlutterAppOptions flutterOpts,
+  required String? packageName,
+  required int appServerPort,
+  required int testServerPort,
+  required bool uninstall,
+  required bool addToApp,
+  String? nativeAndroidPathArg,
+  String? nativeAndroidPathFromConfig,
+  String? flutterModuleRoot,
+}) {
+  final rawNativePath = nativeAndroidPathArg ?? nativeAndroidPathFromConfig;
+  String? resolvedNativePath;
+
+  if (rawNativePath != null) {
+    final moduleRoot = flutterModuleRoot ?? Directory.current.path;
+    resolvedNativePath = p.isAbsolute(rawNativePath)
+        ? rawNativePath
+        : p.normalize(p.join(moduleRoot, rawNativePath));
+
+    final dir = Directory(resolvedNativePath);
+    if (!dir.existsSync()) {
+      throw Exception(
+        'native-android-path does not exist: $resolvedNativePath. '
+        'Check the patrol.android.native_project_path entry in pubspec.yaml '
+        'or --native-android-path flag.',
+      );
+    }
+
+    final gradlew = p.join(resolvedNativePath, 'gradlew');
+    if (!FileSystemEntity.isFileSync(gradlew)) {
+      throw Exception(
+        'No gradlew script found in $resolvedNativePath. '
+        'The native Android project must have a Gradle wrapper.',
+      );
+    }
+  }
+
+  return AndroidAppOptions(
+    flutter: flutterOpts,
+    packageName: packageName,
+    appServerPort: appServerPort,
+    testServerPort: testServerPort,
+    uninstall: uninstall,
+    addToApp: addToApp,
+    nativeAndroidPath: resolvedNativePath,
+  );
+}
+
 class AndroidAppOptions {
   const AndroidAppOptions({
     required this.flutter,
@@ -150,6 +206,7 @@ class AndroidAppOptions {
     required this.testServerPort,
     required this.uninstall,
     this.addToApp = false,
+    this.nativeAndroidPath,
   });
 
   final FlutterAppOptions flutter;
@@ -158,6 +215,11 @@ class AndroidAppOptions {
   final int testServerPort;
   final bool uninstall;
   final bool addToApp;
+
+  /// Absolute path to an external native Android project (used for add-to-app
+  /// setups). When set, Patrol drives Gradle from this directory instead of
+  /// the Flutter module's generated `.android/` scaffold.
+  final String? nativeAndroidPath;
 
   String get description => 'apk with entrypoint ${basename(flutter.target)}';
 

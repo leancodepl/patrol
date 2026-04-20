@@ -44,17 +44,32 @@ class PatrolPubspecConfig with EquatableMixin {
 }
 
 class AndroidPubspecConfig with EquatableMixin {
-  AndroidPubspecConfig({this.packageName, this.appName, this.flavor});
+  AndroidPubspecConfig({
+    this.packageName,
+    this.appName,
+    this.flavor,
+    this.nativeProjectPath,
+  });
 
   AndroidPubspecConfig.empty()
-    : this(packageName: null, appName: null, flavor: null);
+    : this(
+        packageName: null,
+        appName: null,
+        flavor: null,
+        nativeProjectPath: null,
+      );
 
   String? packageName;
   String? appName;
   String? flavor;
 
+  /// Path (relative to pubspec.yaml) to an external native Android project used
+  /// in Flutter add-to-app setups. When set, Patrol runs Gradle against this
+  /// directory instead of the module's generated `.android/` scaffold.
+  String? nativeProjectPath;
+
   @override
-  List<Object?> get props => [packageName, appName, flavor];
+  List<Object?> get props => [packageName, appName, flavor, nativeProjectPath];
 }
 
 class IOSPubspecConfig with EquatableMixin {
@@ -225,6 +240,10 @@ class PubspecReader {
       final dynamic flavor = android['flavor'];
       if (flavor != null && flavor is String?) {
         androidConfig.flavor = flavor;
+      }
+      final dynamic nativeProjectPath = android['native_project_path'];
+      if (nativeProjectPath != null && nativeProjectPath is String?) {
+        androidConfig.nativeProjectPath = nativeProjectPath;
       }
     }
 

@@ -192,13 +192,15 @@ class BuildAndroidCommand extends PatrolCommand {
       noTreeShakeIcons: noTreeShakeIcons,
     );
 
-    final androidOpts = AndroidAppOptions(
-      flutter: flutterOpts,
+    final androidOpts = resolveAndroidAppOptions(
+      flutterOpts: flutterOpts,
       packageName: packageName,
       appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
       uninstall: uninstall,
       addToApp: addToApp,
+      nativeAndroidPathArg: stringArg('native-android-path'),
+      nativeAndroidPathFromConfig: config.android.nativeProjectPath,
     );
 
     try {

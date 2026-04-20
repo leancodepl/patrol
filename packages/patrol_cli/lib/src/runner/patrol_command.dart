@@ -156,6 +156,15 @@ abstract class PatrolCommand extends Command<int> {
             'Flutter module generated .ios/ scaffold. Can also be set via '
             'patrol.ios.native_project_path in pubspec.yaml.',
         valueHelp: '../mobilenet-ios',
+      )
+      ..addOption(
+        'native-android-path',
+        help:
+            'Path to an external native Android project (add-to-app). When '
+            'set, Patrol runs Gradle against this directory instead of the '
+            'Flutter module generated .android/ scaffold. Can also be set via '
+            'patrol.android.native_project_path in pubspec.yaml.',
+        valueHelp: '../mobilenet-android',
       );
   }
 
