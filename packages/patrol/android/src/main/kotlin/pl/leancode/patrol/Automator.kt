@@ -47,8 +47,6 @@ import pl.leancode.patrol.R.string as s
 import com.deque.mobile.devtools.AxeDevTools
 import androidx.test.uiautomator.Until
 import com.deque.axe.android.AxeResult
-import com.deque.networking.models.devtools.serializable.AxeDevToolsResult
-import com.deque.networking.models.devtools.serializable.AxeDevToolsResultKey
 
 private fun fromUiObject2(obj: UiObject2): AndroidNativeView {
     val bounds = obj.visibleBounds
@@ -961,7 +959,7 @@ class Automator private constructor() {
         axe.setInstrumentation(instrumentation)
     }
 
-    fun axeScan(uploadToDashboard: Boolean = true, saveLocallyWithPrefix: String? = null, tags: List<String> = emptyList(), scanName: String? = null) {
+    fun axeScan(uploadToDashboard: Boolean = true, tags: List<String> = emptyList(), scanName: String? = null) {
         uiDevice.wait(Until.hasObject(By.pkg(targetContext.packageName).depth(0)), 5000)
 
         if (scanName != null) {
@@ -974,13 +972,6 @@ class Automator private constructor() {
         if (uploadToDashboard){
             scanHandler?.uploadToDashboard()
         }
-        if (saveLocallyWithPrefix != null) {
-            scanHandler?.saveResultToLocalStorage(saveLocallyWithPrefix)
-        }
-    }
-
-    fun axeGetResult(userId: String, packageName: String, resultId: String, uuid: String? = null): AxeDevToolsResult? { // TODO
-        return axe.getResult(AxeDevToolsResultKey(userId, packageName, resultId, uuid))
     }
 
     fun axeIgnoreRules(rulesToIgnore: List<String>){
@@ -993,14 +984,6 @@ class Automator private constructor() {
 
     fun axeIgnoreExperimental() {
         axe.ignoreExperimental()
-    }
-
-    fun axeTearDown() {
-        axe.tearDown()
-    }
-
-    fun axeDeleteResult(userId: String, packageName: String, resultId: String, uuid: String? = null) {
-        axe.deleteResult(AxeDevToolsResultKey(userId, packageName, resultId, uuid))
     }
 
     /**
