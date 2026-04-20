@@ -16,9 +16,6 @@ import pl.leancode.patrol.contracts.Contracts.AndroidTapRequest
 import pl.leancode.patrol.contracts.Contracts.AndroidWaitUntilVisibleRequest
 import com.deque.networking.models.devtools.serializable.AxeDevToolsResultKey
 import pl.leancode.patrol.contracts.Contracts
-import pl.leancode.patrol.contracts.Contracts.AxeDeleteResultRequest
-import pl.leancode.patrol.contracts.Contracts.AxeGetResultRequest
-import pl.leancode.patrol.contracts.Contracts.AxeGetResultResponse
 import pl.leancode.patrol.contracts.Contracts.AxeIgnoreByViewIdResourceNameRequest
 import pl.leancode.patrol.contracts.Contracts.AxeIgnoreRulesRequest
 import pl.leancode.patrol.contracts.Contracts.AxeInitSessionRequest
@@ -408,21 +405,9 @@ class AutomatorServer(private val automation: Automator) : MobileAutomatorServer
     override fun axeScan(request: AxeScanRequest) {
         automation.axeScan(
             uploadToDashboard = request.uploadToDashboard,
-            saveLocallyWithPrefix = request.saveLocallyWithPrefix,
             tags = request.tags,
             scanName = request.scanName
         )
-    }
-
-    override fun axeGetResult(request: AxeGetResultRequest): AxeGetResultResponse {
-        val result = automation.axeGetResult(
-            request.userId,
-            request.packageName,
-            request.resultId,
-            request.uuid
-        )
-        val serializedResult = result?.toString()
-        return AxeGetResultResponse(serializedResult)
     }
 
     override fun axeIgnoreRules(request: AxeIgnoreRulesRequest) {
@@ -435,19 +420,6 @@ class AutomatorServer(private val automation: Automator) : MobileAutomatorServer
 
     override fun axeIgnoreExperimental() {
         automation.axeIgnoreExperimental()
-    }
-
-    override fun axeTearDown() {
-        automation.axeTearDown()
-    }
-
-    override fun axeDeleteResult(request: AxeDeleteResultRequest) {
-        automation.axeDeleteResult(
-            request.userId,
-            request.packageName,
-            request.resultId,
-            request.uuid
-        )
     }
 
     override fun setMockLocation(request: SetMockLocationRequest) {

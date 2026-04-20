@@ -170,11 +170,6 @@ class MobileAutomatorClient {
     return _sendRequest('axeScan', request.toJson());
   }
 
-  Future<AxeGetResultResponse> axeGetResult(AxeGetResultRequest request) async {
-    final json = await _sendRequest('axeGetResult', request.toJson());
-    return AxeGetResultResponse.fromJson(json);
-  }
-
   Future<void> axeIgnoreRules(AxeIgnoreRulesRequest request) {
     return _sendRequest('axeIgnoreRules', request.toJson());
   }
@@ -187,14 +182,6 @@ class MobileAutomatorClient {
 
   Future<void> axeIgnoreExperimental() {
     return _sendRequest('axeIgnoreExperimental');
-  }
-
-  Future<void> axeTearDown() {
-    return _sendRequest('axeTearDown');
-  }
-
-  Future<void> axeDeleteResult(AxeDeleteResultRequest request) {
-    return _sendRequest('axeDeleteResult', request.toJson());
   }
 
   Future<void> debug() {

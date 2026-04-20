@@ -358,20 +358,8 @@ class AxeInitSessionRequest {
 
 class AxeScanRequest {
   late bool uploadToDashboard;
-  String? saveLocallyWithPrefix;
   late List<String> tags;
   String? scanName;
-}
-
-class AxeGetResultRequest {
-  late String userId;
-  late String packageName;
-  late String resultId;
-  String? uuid;
-}
-
-class AxeGetResultResponse {
-  String? serializedResult;
 }
 
 class AxeIgnoreRulesRequest {
@@ -513,14 +501,11 @@ abstract class IosAutomator<IOSServer, DartClient> {
   // axe integration
   void axeInitSession(AxeInitSessionRequest request);
   void axeScan(AxeScanRequest request);
-  AxeGetResultResponse axeGetResult(AxeGetResultRequest request);
   void axeIgnoreRules(AxeIgnoreRulesRequest request);
   void axeIgnoreByViewIdResourceName(
     AxeIgnoreByViewIdResourceNameRequest request,
   );
   void axeIgnoreExperimental();
-  void axeTearDown();
-  void axeDeleteResult(AxeDeleteResultRequest request);
 
   // other
   void debug();
