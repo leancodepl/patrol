@@ -58,16 +58,32 @@ class AndroidPubspecConfig with EquatableMixin {
 }
 
 class IOSPubspecConfig with EquatableMixin {
-  IOSPubspecConfig({this.bundleId, this.appName, this.flavor});
+  IOSPubspecConfig({
+    this.bundleId,
+    this.appName,
+    this.flavor,
+    this.nativeProjectPath,
+  });
 
-  IOSPubspecConfig.empty() : this(bundleId: null, appName: null, flavor: null);
+  IOSPubspecConfig.empty()
+    : this(
+        bundleId: null,
+        appName: null,
+        flavor: null,
+        nativeProjectPath: null,
+      );
 
   String? bundleId;
   String? appName;
   String? flavor;
 
+  /// Path (relative to pubspec.yaml) to an external native iOS project used in
+  /// Flutter add-to-app setups. When set, Patrol runs xcodebuild against this
+  /// directory instead of the module's generated `.ios/` scaffold.
+  String? nativeProjectPath;
+
   @override
-  List<Object?> get props => [bundleId, appName, flavor];
+  List<Object?> get props => [bundleId, appName, flavor, nativeProjectPath];
 }
 
 class MacOSPubspecConfig with EquatableMixin {
@@ -227,6 +243,10 @@ class PubspecReader {
       final dynamic flavor = ios['flavor'];
       if (flavor != null && flavor is String?) {
         iosConfig.flavor = flavor;
+      }
+      final dynamic nativeProjectPath = ios['native_project_path'];
+      if (nativeProjectPath != null && nativeProjectPath is String?) {
+        iosConfig.nativeProjectPath = nativeProjectPath;
       }
     }
 

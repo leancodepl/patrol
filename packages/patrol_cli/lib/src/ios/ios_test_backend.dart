@@ -78,6 +78,18 @@ class IOSTestBackend {
 
   String _iosDirName(bool addToApp) => addToApp ? '.ios' : 'ios';
 
+  /// Resolves the directory xcodebuild should execute in.
+  ///
+  /// When `nativeIosPath` is set (external native iOS app, add-to-app), that
+  /// absolute path wins. Otherwise falls back to the Flutter module's `.ios/`
+  /// scaffold (add-to-app auto-detect) or the standard `ios/` directory.
+  String _xcodebuildWorkingDir(IOSAppOptions options) {
+    if (options.nativeIosPath != null) {
+      return options.nativeIosPath!;
+    }
+    return _rootDirectory.childDirectory(_iosDirName(options.addToApp)).path;
+  }
+
   Future<void> build(IOSAppOptions options) async {
     await _disposeScope.run((scope) async {
       final subject = options.description;
@@ -98,12 +110,28 @@ class IOSTestBackend {
       // flutter build ios --config-only
 
       if (options.addToApp) {
-        final dir = _rootDirectory.childDirectory('.ios');
-        if (!dir.existsSync()) {
-          throw Exception(
-            'Directory ${dir.path} does not exist. '
-            'Run "flutter pub get" in your module project first.',
+        final nativeIosPath = options.nativeIosPath;
+        if (nativeIosPath != null) {
+          final nativeDir = _fs.directory(nativeIosPath);
+          if (!nativeDir.existsSync()) {
+            throw Exception(
+              'native-ios-path does not exist: ${nativeDir.path}. '
+              'Check the patrol.ios.native_project_path entry in pubspec.yaml '
+              'or --native-ios-path flag.',
+            );
+          }
+          _logger.detail(
+            'Using external native iOS project at ${nativeDir.path} '
+            '(add-to-app mode)',
           );
+        } else {
+          final dir = _rootDirectory.childDirectory('.ios');
+          if (!dir.existsSync()) {
+            throw Exception(
+              'Directory ${dir.path} does not exist. '
+              'Run "flutter pub get" in your module project first.',
+            );
+          }
         }
         _logger.detail('Skipping flutter build ios --config-only (add-to-app mode)');
       } else {
@@ -137,7 +165,7 @@ class IOSTestBackend {
           await _processManager.start(
               options.buildForTestingInvocation(),
               runInShell: true,
-              workingDirectory: _rootDirectory.childDirectory(_iosDirName(options.addToApp)).path,
+              workingDirectory: _xcodebuildWorkingDir(options),
             )
             ..disposedBy(scope);
       process.listenStdOut((l) => _logger.detail('\t$l')).disposedBy(scope);
@@ -220,7 +248,7 @@ class IOSTestBackend {
                     .toString(),
                 'TEST_RUNNER_PATROL_APP_PORT': options.appServerPort.toString(),
               },
-              workingDirectory: _rootDirectory.childDirectory(_iosDirName(options.addToApp)).path,
+              workingDirectory: _xcodebuildWorkingDir(options),
             )
             ..disposedBy(_disposeScope);
       process.listenStdOut((l) => _logger.detail('\t$l')).disposedBy(scope);

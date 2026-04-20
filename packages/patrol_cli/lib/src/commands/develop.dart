@@ -261,8 +261,8 @@ class DevelopCommand extends PatrolCommand {
       addToApp: addToApp,
     );
 
-    final iosOpts = IOSAppOptions(
-      flutter: flutterOpts,
+    final iosOpts = resolveIOSAppOptions(
+      flutterOpts: flutterOpts,
       bundleId: bundleId,
       scheme: buildMode.createScheme(iosFlavor),
       configuration: buildMode.createConfiguration(iosFlavor),
@@ -270,7 +270,11 @@ class DevelopCommand extends PatrolCommand {
       osVersion: stringArg('ios') ?? 'latest',
       appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
+      fullIsolation: false,
+      clearIOSPermissions: false,
       addToApp: addToApp,
+      nativeIosPathArg: stringArg('native-ios-path'),
+      nativeIosPathFromConfig: config.ios.nativeProjectPath,
     );
 
     final macosOpts = MacOSAppOptions(

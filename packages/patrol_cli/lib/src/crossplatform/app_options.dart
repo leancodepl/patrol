@@ -1,10 +1,99 @@
 import 'dart:convert' show base64Encode, utf8;
+import 'dart:io' show Directory, FileSystemEntity;
 
 import 'package:meta/meta.dart';
+import 'package:path/path.dart' as p;
 import 'package:path/path.dart' show basename;
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:patrol_cli/src/runner/flutter_command.dart';
+
+/// Resolves [IOSAppOptions] while consolidating the native-iOS-path workflow.
+///
+/// When a native iOS project path is provided (either via `--native-ios-path`
+/// or `patrol.ios.native_project_path` in pubspec.yaml), the workspace name is
+/// auto-detected and derived data is forced to an absolute path anchored at
+/// the Flutter module's `build/ios_integ` directory.
+IOSAppOptions resolveIOSAppOptions({
+  required FlutterAppOptions flutterOpts,
+  required String? bundleId,
+  required String scheme,
+  required String configuration,
+  required bool simulator,
+  required String osVersion,
+  required int appServerPort,
+  required int testServerPort,
+  required bool fullIsolation,
+  required bool clearIOSPermissions,
+  required bool addToApp,
+  String? nativeIosPathArg,
+  String? nativeIosPathFromConfig,
+  String? flutterModuleRoot,
+}) {
+  final rawNativePath = nativeIosPathArg ?? nativeIosPathFromConfig;
+  String? resolvedNativePath;
+  var workspaceName = 'Runner.xcworkspace';
+  var uiTestTargetName = 'RunnerUITests';
+  var derivedDataPath = '../build/ios_integ';
+  var resolvedScheme = scheme;
+
+  if (rawNativePath != null) {
+    final moduleRoot = flutterModuleRoot ?? Directory.current.path;
+    resolvedNativePath = p.isAbsolute(rawNativePath)
+        ? rawNativePath
+        : p.normalize(p.join(moduleRoot, rawNativePath));
+
+    final dir = Directory(resolvedNativePath);
+    if (!dir.existsSync()) {
+      throw Exception(
+        'native-ios-path does not exist: $resolvedNativePath. '
+        'Check the patrol.ios.native_project_path entry in pubspec.yaml or '
+        '--native-ios-path flag.',
+      );
+    }
+
+    final workspaces = dir
+        .listSync()
+        .whereType<FileSystemEntity>()
+        .where((e) => e.path.endsWith('.xcworkspace'))
+        .toList();
+    if (workspaces.length == 1) {
+      workspaceName = p.basename(workspaces.single.path);
+    } else if (workspaces.length > 1) {
+      throw Exception(
+        'Multiple .xcworkspace files found in $resolvedNativePath. '
+        'Patrol cannot disambiguate between them.',
+      );
+    } else {
+      throw Exception(
+        'No .xcworkspace file found in $resolvedNativePath. '
+        'Run `pod install` in the native iOS project first.',
+      );
+    }
+
+    uiTestTargetName = 'PatrolUITests';
+    resolvedScheme = 'PatrolUITests';
+    derivedDataPath = p.join(moduleRoot, 'build', 'ios_integ');
+  }
+
+  return IOSAppOptions(
+    flutter: flutterOpts,
+    bundleId: bundleId,
+    scheme: resolvedScheme,
+    configuration: configuration,
+    simulator: simulator,
+    osVersion: osVersion,
+    appServerPort: appServerPort,
+    testServerPort: testServerPort,
+    fullIsolation: fullIsolation,
+    clearIOSPermissions: clearIOSPermissions,
+    addToApp: addToApp,
+    nativeIosPath: resolvedNativePath,
+    workspaceName: workspaceName,
+    uiTestTargetName: uiTestTargetName,
+    derivedDataPath: derivedDataPath,
+  );
+}
 
 class FlutterAppOptions {
   const FlutterAppOptions({
@@ -199,6 +288,10 @@ class IOSAppOptions {
     this.fullIsolation = false,
     this.clearIOSPermissions = false,
     this.addToApp = false,
+    this.nativeIosPath,
+    this.workspaceName = 'Runner.xcworkspace',
+    this.uiTestTargetName = 'RunnerUITests',
+    this.derivedDataPath = '../build/ios_integ',
   });
 
   final FlutterAppOptions flutter;
@@ -212,6 +305,23 @@ class IOSAppOptions {
   final bool fullIsolation;
   final bool clearIOSPermissions;
   final bool addToApp;
+
+  /// Absolute path to an external native iOS project (used for add-to-app
+  /// setups). When set, Patrol drives xcodebuild against this directory instead
+  /// of the Flutter module's generated `.ios/` scaffold.
+  final String? nativeIosPath;
+
+  /// Xcode workspace filename (within `.ios/` or [nativeIosPath]) that
+  /// xcodebuild targets. Defaults to `Runner.xcworkspace`.
+  final String workspaceName;
+
+  /// Name of the UI Test bundle target that hosts Patrol's runner.
+  /// Defaults to `RunnerUITests`.
+  final String uiTestTargetName;
+
+  /// Xcode `-derivedDataPath`. Interpreted as relative to the xcodebuild working
+  /// directory unless an absolute path is provided.
+  final String derivedDataPath;
 
   String get description {
     final platform = simulator ? 'simulator' : 'device';
@@ -261,7 +371,7 @@ class IOSAppOptions {
   List<String> buildForTestingInvocation() {
     final cmd = [
       ...['xcodebuild', 'build-for-testing'],
-      ...['-workspace', 'Runner.xcworkspace'],
+      ...['-workspace', workspaceName],
       ...['-scheme', scheme],
       ...['-configuration', configuration],
       ...['-sdk', if (simulator) 'iphonesimulator' else 'iphoneos'],
@@ -270,7 +380,7 @@ class IOSAppOptions {
         'generic/platform=${simulator ? 'iOS Simulator' : 'iOS'}',
       ],
       '-quiet',
-      ...['-derivedDataPath', '../build/ios_integ'],
+      ...['-derivedDataPath', derivedDataPath],
       r'OTHER_SWIFT_FLAGS=$(inherited) -D PATROL_ENABLED',
       'OTHER_CFLAGS=\$(inherited) -D FULL_ISOLATION=${fullIsolation ? 1 : 0} -D CLEAR_PERMISSIONS=${clearIOSPermissions ? 1 : 0}',
     ];
@@ -288,7 +398,7 @@ class IOSAppOptions {
     final cmd = [
       ...['xcodebuild', 'test-without-building'],
       ...['-xctestrun', xcTestRunPath],
-      ...['-only-testing', 'RunnerUITests/RunnerUITests'],
+      ...['-only-testing', '$uiTestTargetName/$uiTestTargetName'],
       ...[
         '-destination',
         'platform=${device.real ? 'iOS' : 'iOS Simulator,OS=$osVersion'},name=${device.name}',

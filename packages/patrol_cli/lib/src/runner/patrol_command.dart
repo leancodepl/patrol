@@ -140,13 +140,23 @@ abstract class PatrolCommand extends Command<int> {
   }
 
   void usesAddToAppOption() {
-    argParser.addFlag(
-      'add-to-app',
-      help:
-          'Enable support for Flutter module (add-to-app) projects. '
-          'Skips flutter config-only build and uses .android/.ios directories.',
-      negatable: false,
-    );
+    argParser
+      ..addFlag(
+        'add-to-app',
+        help:
+            'Enable support for Flutter module (add-to-app) projects. '
+            'Skips flutter config-only build and uses .android/.ios directories.',
+        negatable: false,
+      )
+      ..addOption(
+        'native-ios-path',
+        help:
+            'Path to an external native iOS project (add-to-app). When set, '
+            'Patrol runs xcodebuild against this directory instead of the '
+            'Flutter module generated .ios/ scaffold. Can also be set via '
+            'patrol.ios.native_project_path in pubspec.yaml.',
+        valueHelp: '../mobilenet-ios',
+      );
   }
 
   void usesAndroidOptions() {

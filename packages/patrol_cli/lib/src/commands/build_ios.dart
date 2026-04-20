@@ -190,8 +190,9 @@ class BuildIOSCommand extends PatrolCommand {
       noTreeShakeIcons: noTreeShakeIcons,
     );
 
-    final iosOpts = IOSAppOptions(
-      flutter: flutterOpts,
+    final iosOpts = resolveIOSAppOptions(
+      flutterOpts: flutterOpts,
+      bundleId: null,
       scheme: flutterOpts.buildMode.createScheme(flavor),
       configuration: flutterOpts.buildMode.createConfiguration(flavor),
       simulator: boolArg('simulator'),
@@ -199,7 +200,10 @@ class BuildIOSCommand extends PatrolCommand {
       appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
       fullIsolation: boolArg('full-isolation'),
+      clearIOSPermissions: false,
       addToApp: addToApp,
+      nativeIosPathArg: stringArg('native-ios-path'),
+      nativeIosPathFromConfig: config.ios.nativeProjectPath,
     );
 
     if (!iosOpts.simulator && iosOpts.fullIsolation) {

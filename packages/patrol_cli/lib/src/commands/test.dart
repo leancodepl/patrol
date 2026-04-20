@@ -280,8 +280,8 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       addToApp: addToApp,
     );
 
-    final iosOpts = IOSAppOptions(
-      flutter: flutterOpts,
+    final iosOpts = resolveIOSAppOptions(
+      flutterOpts: flutterOpts,
       bundleId: bundleId,
       scheme: buildMode.createScheme(iosFlavor),
       configuration: buildMode.createConfiguration(iosFlavor),
@@ -292,6 +292,8 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       fullIsolation: boolArg('full-isolation'),
       clearIOSPermissions: boolArg('clear-permissions'),
       addToApp: addToApp,
+      nativeIosPathArg: stringArg('native-ios-path'),
+      nativeIosPathFromConfig: config.ios.nativeProjectPath,
     );
 
     final macosOpts = MacOSAppOptions(
