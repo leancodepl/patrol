@@ -72,12 +72,15 @@ class AndroidTestBackend {
           'Run "flutter pub get" in your module project first.',
         );
       }
-      _logger.detail(
-        'Skipping flutter build apk --config-only (add-to-app mode)',
-      );
-    } else {
-      await buildApkConfigOnly(options.flutter);
     }
+
+    // Always run `flutter build apk --config-only` — including add-to-app:
+    // this step refreshes the Dart entrypoint (`--target`) in the module's
+    // `.android/Flutter/` config so Gradle compiles `patrol_test/test_bundle.dart`
+    // instead of the production `lib/main.dart`. Without it, Patrol's Dart
+    // runtime never boots and the test runner hangs waiting for a handshake.
+    await buildApkConfigOnly(options.flutter);
+
     await loadJavaPathFromFlutterDoctor(options.flutter.command);
     await detectOrchestratorVersion(options);
 

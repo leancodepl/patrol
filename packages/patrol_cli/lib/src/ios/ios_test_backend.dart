@@ -108,6 +108,18 @@ class IOSTestBackend {
       }
 
       // flutter build ios --config-only
+      //
+      // Must run in BOTH standard-app and add-to-app mode: this step writes
+      // the chosen Dart entrypoint (`--target=patrol_test/test_bundle.dart`)
+      // into `.ios/Flutter/flutter_export_environment.sh` +
+      // `.ios/Flutter/Generated.xcconfig` (or the non-dotted `ios/Flutter/*`
+      // for standard apps). The Xcode "Run Flutter Build" script phase later
+      // sources that file, so without this refresh the module keeps compiling
+      // `lib/main.dart` instead of the Patrol test bundle and nothing connects
+      // to the PatrolServer.
+      //
+      // Only `flutter build ios` without `--config-only` is unsupported on
+      // modules; `--config-only` writes config files only and works fine.
 
       if (options.addToApp) {
         final nativeIosPath = options.nativeIosPath;
@@ -133,30 +145,37 @@ class IOSTestBackend {
             );
           }
         }
-        _logger.detail('Skipping flutter build ios --config-only (add-to-app mode)');
-      } else {
-        var flutterBuildKilled = false;
-        process = await _processManager.start(
-          options.toFlutterBuildInvocation(options.flutter.buildMode),
-          runInShell: true,
-        );
-        scope.addDispose(() {
-          process.kill();
-          flutterBuildKilled = true; // `flutter build` has exit code 0 on SIGINT
-        });
-        process.listenStdOut((l) => _logger.info('\t$l')).disposedBy(scope);
-        process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
-        final exitCode = await process.exitCode;
-        final flutterCommand = options.flutter.command;
-        if (exitCode != 0) {
-          final cause = '`$flutterCommand build ios` exited with code $exitCode';
-          task.fail('Failed to build $subject ($cause)');
-          throwToolExit(cause);
-        } else if (flutterBuildKilled) {
-          final cause = '`$flutterCommand build ios` was interrupted';
-          task.fail('Failed to build $subject ($cause)');
-          throwToolInterrupted(cause);
-        }
+      }
+
+      var flutterBuildKilled = false;
+      process = await _processManager.start(
+        options.toFlutterBuildInvocation(options.flutter.buildMode),
+        runInShell: true,
+        // Always run from the Flutter module / app root — that is where
+        // `pubspec.yaml` lives and where `flutter build ios --config-only`
+        // expects to be invoked. Critical in add-to-app setups where
+        // `xcodebuild` itself is driven from the external native iOS repo
+        // (`nativeIosPath`).
+        workingDirectory: _rootDirectory.path,
+      );
+      scope.addDispose(() {
+        process.kill();
+        flutterBuildKilled = true; // `flutter build` has exit code 0 on SIGINT
+      });
+      process.listenStdOut((l) => _logger.info('\t$l')).disposedBy(scope);
+      process.listenStdErr((l) => _logger.err('\t$l')).disposedBy(scope);
+      final flutterExitCode = await process.exitCode;
+      final flutterCommand = options.flutter.command;
+      if (flutterExitCode != 0) {
+        final cause =
+            '`$flutterCommand build ios --config-only` exited with code '
+            '$flutterExitCode';
+        task.fail('Failed to build $subject ($cause)');
+        throwToolExit(cause);
+      } else if (flutterBuildKilled) {
+        final cause = '`$flutterCommand build ios --config-only` was interrupted';
+        task.fail('Failed to build $subject ($cause)');
+        throwToolInterrupted(cause);
       }
 
       // xcodebuild build-for-testing
