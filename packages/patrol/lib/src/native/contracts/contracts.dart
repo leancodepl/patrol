@@ -1903,32 +1903,12 @@ class AxeInitSessionRequest with EquatableMixin {
 }
 
 @JsonSerializable()
-class AxeIsUserAuthenticatedResponse with EquatableMixin {
-  AxeIsUserAuthenticatedResponse({required this.isAuthenticated});
-
-  factory AxeIsUserAuthenticatedResponse.fromJson(Map<String, dynamic> json) =>
-      _$AxeIsUserAuthenticatedResponseFromJson(json);
-
-  final bool isAuthenticated;
-
-  Map<String, dynamic> toJson() => _$AxeIsUserAuthenticatedResponseToJson(this);
-
-  @override
-  List<Object?> get props => [isAuthenticated];
-
-  AxeIsUserAuthenticatedResponse copyWith({bool? isAuthenticated}) {
-    return AxeIsUserAuthenticatedResponse(
-      isAuthenticated: isAuthenticated ?? this.isAuthenticated,
-    );
-  }
-}
-
-@JsonSerializable()
 class AxeScanRequest with EquatableMixin {
   AxeScanRequest({
     required this.uploadToDashboard,
     this.saveLocallyWithPrefix,
-    required this.getSerializedResult,
+    required this.tags,
+    this.scanName,
   });
 
   factory AxeScanRequest.fromJson(Map<String, dynamic> json) =>
@@ -1936,42 +1916,32 @@ class AxeScanRequest with EquatableMixin {
 
   final bool uploadToDashboard;
   final String? saveLocallyWithPrefix;
-  final bool getSerializedResult;
+  final List<String> tags;
+  final String? scanName;
 
   Map<String, dynamic> toJson() => _$AxeScanRequestToJson(this);
 
   @override
-  List<Object?> get props => [uploadToDashboard, saveLocallyWithPrefix, getSerializedResult];
+  List<Object?> get props => [
+    uploadToDashboard,
+    saveLocallyWithPrefix,
+    tags,
+    scanName,
+  ];
 
   AxeScanRequest copyWith({
     bool? uploadToDashboard,
     String? saveLocallyWithPrefix,
-    bool? getSerializedResult,
+    List<String>? tags,
+    String? scanName,
   }) {
     return AxeScanRequest(
       uploadToDashboard: uploadToDashboard ?? this.uploadToDashboard,
-      saveLocallyWithPrefix: saveLocallyWithPrefix ?? this.saveLocallyWithPrefix,
-      getSerializedResult: getSerializedResult ?? this.getSerializedResult,
+      saveLocallyWithPrefix:
+          saveLocallyWithPrefix ?? this.saveLocallyWithPrefix,
+      tags: tags ?? this.tags,
+      scanName: scanName ?? this.scanName,
     );
-  }
-}
-
-@JsonSerializable()
-class AxeScanResponse with EquatableMixin {
-  AxeScanResponse({this.serializedResult});
-
-  factory AxeScanResponse.fromJson(Map<String, dynamic> json) =>
-      _$AxeScanResponseFromJson(json);
-
-  final String? serializedResult;
-
-  Map<String, dynamic> toJson() => _$AxeScanResponseToJson(this);
-
-  @override
-  List<Object?> get props => [serializedResult];
-
-  AxeScanResponse copyWith({String? serializedResult}) {
-    return AxeScanResponse(serializedResult: serializedResult ?? this.serializedResult);
   }
 }
 
@@ -2027,26 +1997,9 @@ class AxeGetResultResponse with EquatableMixin {
   List<Object?> get props => [serializedResult];
 
   AxeGetResultResponse copyWith({String? serializedResult}) {
-    return AxeGetResultResponse(serializedResult: serializedResult ?? this.serializedResult);
-  }
-}
-
-@JsonSerializable()
-class AxeSetScanNameRequest with EquatableMixin {
-  AxeSetScanNameRequest({required this.name});
-
-  factory AxeSetScanNameRequest.fromJson(Map<String, dynamic> json) =>
-      _$AxeSetScanNameRequestFromJson(json);
-
-  final String name;
-
-  Map<String, dynamic> toJson() => _$AxeSetScanNameRequestToJson(this);
-
-  @override
-  List<Object?> get props => [name];
-
-  AxeSetScanNameRequest copyWith({String? name}) {
-    return AxeSetScanNameRequest(name: name ?? this.name);
+    return AxeGetResultResponse(
+      serializedResult: serializedResult ?? this.serializedResult,
+    );
   }
 }
 
@@ -2065,7 +2018,9 @@ class AxeIgnoreRulesRequest with EquatableMixin {
   List<Object?> get props => [rulesToIgnore];
 
   AxeIgnoreRulesRequest copyWith({List<String>? rulesToIgnore}) {
-    return AxeIgnoreRulesRequest(rulesToIgnore: rulesToIgnore ?? this.rulesToIgnore);
+    return AxeIgnoreRulesRequest(
+      rulesToIgnore: rulesToIgnore ?? this.rulesToIgnore,
+    );
   }
 }
 
@@ -2077,8 +2032,8 @@ class AxeIgnoreByViewIdResourceNameRequest with EquatableMixin {
   });
 
   factory AxeIgnoreByViewIdResourceNameRequest.fromJson(
-          Map<String, dynamic> json) =>
-      _$AxeIgnoreByViewIdResourceNameRequestFromJson(json);
+    Map<String, dynamic> json,
+  ) => _$AxeIgnoreByViewIdResourceNameRequestFromJson(json);
 
   final String viewIdResourceName;
   final List<String> ruleList;
@@ -2097,25 +2052,6 @@ class AxeIgnoreByViewIdResourceNameRequest with EquatableMixin {
       viewIdResourceName: viewIdResourceName ?? this.viewIdResourceName,
       ruleList: ruleList ?? this.ruleList,
     );
-  }
-}
-
-@JsonSerializable()
-class AxeTagScanAsRequest with EquatableMixin{
-  AxeTagScanAsRequest({required this.tags});
-
-  factory AxeTagScanAsRequest.fromJson(Map<String, dynamic> json) =>
-      _$AxeTagScanAsRequestFromJson(json);
-
-  final List<String> tags;
-
-  Map<String, dynamic> toJson() => _$AxeTagScanAsRequestToJson(this);
-
-  @override
-  List<Object?> get props => [tags];
-
-  AxeTagScanAsRequest copyWith({List<String>? tags}) {
-    return AxeTagScanAsRequest(tags: tags ?? this.tags);
   }
 }
 

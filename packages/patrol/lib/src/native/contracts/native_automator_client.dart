@@ -228,27 +228,13 @@ class NativeAutomatorClient {
     return _sendRequest('axeInitSession', request.toJson());
   }
 
-  Future<AxeIsUserAuthenticatedResponse> axeIsUserAuthenticated() async {
-    final json = await _sendRequest('axeIsUserAuthenticated');
-    return AxeIsUserAuthenticatedResponse.fromJson(json);
-  }
-
-  Future<void> axeDisconnect() {
-    return _sendRequest('axeDisconnect');
-  }
-
-  Future<AxeScanResponse> axeScan(AxeScanRequest request) async {
-    final json = await _sendRequest('axeScan', request.toJson());
-    return AxeScanResponse.fromJson(json);
+  Future<void> axeScan(AxeScanRequest request) {
+    return _sendRequest('axeScan', request.toJson());
   }
 
   Future<AxeGetResultResponse> axeGetResult(AxeGetResultRequest request) async {
     final json = await _sendRequest('axeGetResult', request.toJson());
     return AxeGetResultResponse.fromJson(json);
-  }
-
-  Future<void> axeSetScanName(AxeSetScanNameRequest request) {
-    return _sendRequest('axeSetScanName', request.toJson());
   }
 
   Future<void> axeIgnoreRules(AxeIgnoreRulesRequest request) {
@@ -263,14 +249,6 @@ class NativeAutomatorClient {
 
   Future<void> axeIgnoreExperimental() {
     return _sendRequest('axeIgnoreExperimental');
-  }
-
-  Future<void> axeResetIgnoredRules() {
-    return _sendRequest('axeResetIgnoredRules');
-  }
-
-  Future<void> axeTagScanAs(AxeTagScanAsRequest request) {
-    return _sendRequest('axeTagScanAs', request.toJson());
   }
 
   Future<void> axeTearDown() {

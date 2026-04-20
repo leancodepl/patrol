@@ -432,3 +432,37 @@ public struct AxeInitSessionRequest: Codable {
   public var dequeApiKey: String
   public var dequeProjectId: String
 }
+
+public struct AxeScanRequest: Codable {
+  public var uploadToDashboard: Bool
+  public var saveLocallyWithPrefix: String?
+  public var tags: [String]
+  public var scanName: String?
+}
+
+public struct AxeGetResultRequest: Codable {
+  public var userId: String
+  public var packageName: String
+  public var resultId: String
+  public var uuid: String?
+}
+
+public struct AxeGetResultResponse: Codable {
+  public var serializedResult: String?
+}
+
+public struct AxeIgnoreRulesRequest: Codable {
+  public var rulesToIgnore: [String]
+}
+
+public struct AxeIgnoreByViewIdResourceNameRequest: Codable {
+  public var viewIdResourceName: String
+  public var ruleList: [String]
+}
+
+public struct AxeDeleteResultRequest: Codable {
+  public var userId: String
+  public var packageName: String
+  public var resultId: String
+  public var uuid: String?
+}

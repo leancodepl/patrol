@@ -56,16 +56,11 @@ abstract class NativeAutomatorServer {
     abstract fun pickImageFromGallery(request: Contracts.PickImageFromGalleryRequest)
     abstract fun pickMultipleImagesFromGallery(request: Contracts.PickMultipleImagesFromGalleryRequest)
     abstract fun axeInitSession(request: Contracts.AxeInitSessionRequest)
-    abstract fun axeIsUserAuthenticated(): Contracts.AxeIsUserAuthenticatedResponse
-    abstract fun axeDisconnect()
-    abstract fun axeScan(request: Contracts.AxeScanRequest): Contracts.AxeScanResponse
+    abstract fun axeScan(request: Contracts.AxeScanRequest)
     abstract fun axeGetResult(request: Contracts.AxeGetResultRequest): Contracts.AxeGetResultResponse
-    abstract fun axeSetScanName(request: Contracts.AxeSetScanNameRequest)
     abstract fun axeIgnoreRules(request: Contracts.AxeIgnoreRulesRequest)
     abstract fun axeIgnoreByViewIdResourceName(request: Contracts.AxeIgnoreByViewIdResourceNameRequest)
     abstract fun axeIgnoreExperimental()
-    abstract fun axeResetIgnoredRules()
-    abstract fun axeTagScanAs(request: Contracts.AxeTagScanAsRequest)
     abstract fun axeTearDown()
     abstract fun axeDeleteResult(request: Contracts.AxeDeleteResultRequest)
     abstract fun debug()
@@ -270,28 +265,15 @@ abstract class NativeAutomatorServer {
         axeInitSession(body)
         Response(OK)
       },
-      "axeIsUserAuthenticated" bind POST to {
-        val response = axeIsUserAuthenticated()
-        Response(OK).body(json.toJson(response))
-      },
-      "axeDisconnect" bind POST to {
-        axeDisconnect()
-        Response(OK)
-      },
       "axeScan" bind POST to {
         val body = json.fromJson(it.bodyString(), Contracts.AxeScanRequest::class.java)
-        val response = axeScan(body)
-        Response(OK).body(json.toJson(response))
+        axeScan(body)
+        Response(OK)
       },
       "axeGetResult" bind POST to {
         val body = json.fromJson(it.bodyString(), Contracts.AxeGetResultRequest::class.java)
         val response = axeGetResult(body)
         Response(OK).body(json.toJson(response))
-      },
-      "axeSetScanName" bind POST to {
-        val body = json.fromJson(it.bodyString(), Contracts.AxeSetScanNameRequest::class.java)
-        axeSetScanName(body)
-        Response(OK)
       },
       "axeIgnoreRules" bind POST to {
         val body = json.fromJson(it.bodyString(), Contracts.AxeIgnoreRulesRequest::class.java)
@@ -305,15 +287,6 @@ abstract class NativeAutomatorServer {
       },
       "axeIgnoreExperimental" bind POST to {
         axeIgnoreExperimental()
-        Response(OK)
-      },
-      "axeResetIgnoredRules" bind POST to {
-        axeResetIgnoredRules()
-        Response(OK)
-      },
-      "axeTagScanAs" bind POST to {
-        val body = json.fromJson(it.bodyString(), Contracts.AxeTagScanAsRequest::class.java)
-        axeTagScanAs(body)
         Response(OK)
       },
       "axeTearDown" bind POST to {

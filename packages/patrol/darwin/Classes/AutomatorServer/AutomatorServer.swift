@@ -521,6 +521,67 @@
       }
     }
 
+    func axeScan(request: AxeScanRequest) throws {
+      return try runCatching {
+        try automator.axeScan(
+          uploadToDashboard: request.uploadToDashboard,
+          saveLocallyWithPrefix: request.saveLocallyWithPrefix,
+          tags: request.tags,
+          scanName: request.scanName
+        )
+      }
+    }
+
+    func axeGetResult(request: AxeGetResultRequest) throws -> AxeGetResultResponse {
+      return try runCatching {
+        let result = try automator.axeGetResult(
+          userId: request.userId,
+          packageName: request.packageName,
+          resultId: request.resultId,
+          uuid: request.uuid
+        )
+        return AxeGetResultResponse(serializedResult: result)
+      }
+    }
+
+    func axeIgnoreRules(request: AxeIgnoreRulesRequest) throws {
+      return try runCatching {
+        try automator.axeIgnoreRules(rulesToIgnore: request.rulesToIgnore)
+      }
+    }
+
+    func axeIgnoreByViewIdResourceName(request: AxeIgnoreByViewIdResourceNameRequest) throws {
+      return try runCatching {
+        try automator.axeIgnoreByViewIdResourceName(
+          viewIdResourceName: request.viewIdResourceName,
+          ruleList: Set(request.ruleList)
+        )
+      }
+    }
+
+    func axeIgnoreExperimental() throws {
+      return try runCatching {
+        try automator.axeIgnoreExperimental()
+      }
+    }
+
+    func axeTearDown() throws {
+      return try runCatching {
+        try automator.axeTearDown()
+      }
+    }
+
+    func axeDeleteResult(request: AxeDeleteResultRequest) throws {
+      return try runCatching {
+        try automator.axeDeleteResult(
+          userId: request.userId,
+          packageName: request.packageName,
+          resultId: request.resultId,
+          uuid: request.uuid
+        )
+      }
+    }
+
     // MARK: Other
 
     func debug() throws {

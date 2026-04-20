@@ -335,18 +335,11 @@ class AxeInitSessionRequest {
   late String dequeProjectId;
 }
 
-class AxeIsUserAuthenticatedResponse {
-  late bool isAuthenticated;
-}
-
 class AxeScanRequest {
   late bool uploadToDashboard;
   String? saveLocallyWithPrefix;
-  late bool getSerializedResult;
-}
-
-class AxeScanResponse {
-  String? serializedResult;
+  late List<String> tags;
+  String? scanName;
 }
 
 class AxeGetResultRequest {
@@ -360,10 +353,6 @@ class AxeGetResultResponse {
   String? serializedResult;
 }
 
-class AxeSetScanNameRequest {
-  late String name;
-}
-
 class AxeIgnoreRulesRequest {
   late List<String> rulesToIgnore;
 }
@@ -371,10 +360,6 @@ class AxeIgnoreRulesRequest {
 class AxeIgnoreByViewIdResourceNameRequest {
   late String viewIdResourceName;
   late List<String> ruleList;
-}
-
-class AxeTagScanAsRequest {
-  late List<String> tags;
 }
 
 class AxeDeleteResultRequest {
@@ -448,16 +433,13 @@ abstract class NativeAutomator<IOSServer, AndroidServer, DartClient> {
 
   // axe integration
   void axeInitSession(AxeInitSessionRequest request);
-  AxeIsUserAuthenticatedResponse axeIsUserAuthenticated();
-  void axeDisconnect();
-  AxeScanResponse axeScan(AxeScanRequest request);
+  void axeScan(AxeScanRequest request);
   AxeGetResultResponse axeGetResult(AxeGetResultRequest request);
-  void axeSetScanName(AxeSetScanNameRequest request);
   void axeIgnoreRules(AxeIgnoreRulesRequest request);
-  void axeIgnoreByViewIdResourceName(AxeIgnoreByViewIdResourceNameRequest request);
+  void axeIgnoreByViewIdResourceName(
+    AxeIgnoreByViewIdResourceNameRequest request,
+  );
   void axeIgnoreExperimental();
-  void axeResetIgnoredRules();
-  void axeTagScanAs(AxeTagScanAsRequest request);
   void axeTearDown();
   void axeDeleteResult(AxeDeleteResultRequest request);
 

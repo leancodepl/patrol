@@ -49,6 +49,13 @@ protocol NativeAutomatorServer {
     func pickImageFromGallery(request: PickImageFromGalleryRequest) throws
     func pickMultipleImagesFromGallery(request: PickMultipleImagesFromGalleryRequest) throws
     func axeInitSession(request: AxeInitSessionRequest) throws
+    func axeScan(request: AxeScanRequest) throws
+    func axeGetResult(request: AxeGetResultRequest) throws -> AxeGetResultResponse
+    func axeIgnoreRules(request: AxeIgnoreRulesRequest) throws
+    func axeIgnoreByViewIdResourceName(request: AxeIgnoreByViewIdResourceNameRequest) throws
+    func axeIgnoreExperimental() throws
+    func axeTearDown() throws
+    func axeDeleteResult(request: AxeDeleteResultRequest) throws
     func debug() throws
     func setMockLocation(request: SetMockLocationRequest) throws
     func markPatrolAppServiceReady() throws
@@ -299,6 +306,47 @@ extension NativeAutomatorServer {
         return HTTPResponse(.ok)
     }
 
+    private func axeScanHandler(request: HTTPRequest) throws -> HTTPResponse {
+        let requestArg = try JSONDecoder().decode(AxeScanRequest.self, from: request.body)
+        try axeScan(request: requestArg)
+        return HTTPResponse(.ok)
+    }
+
+    private func axeGetResultHandler(request: HTTPRequest) throws -> HTTPResponse {
+        let requestArg = try JSONDecoder().decode(AxeGetResultRequest.self, from: request.body)
+        let response = try axeGetResult(request: requestArg)
+        let responseData = try JSONEncoder().encode(response)
+        return HTTPResponse(.ok, body: responseData)
+    }
+
+    private func axeIgnoreRulesHandler(request: HTTPRequest) throws -> HTTPResponse {
+        let requestArg = try JSONDecoder().decode(AxeIgnoreRulesRequest.self, from: request.body)
+        try axeIgnoreRules(request: requestArg)
+        return HTTPResponse(.ok)
+    }
+
+    private func axeIgnoreByViewIdResourceNameHandler(request: HTTPRequest) throws -> HTTPResponse {
+        let requestArg = try JSONDecoder().decode(AxeIgnoreByViewIdResourceNameRequest.self, from: request.body)
+        try axeIgnoreByViewIdResourceName(request: requestArg)
+        return HTTPResponse(.ok)
+    }
+
+    private func axeIgnoreExperimentalHandler(request: HTTPRequest) throws -> HTTPResponse {
+        try axeIgnoreExperimental()
+        return HTTPResponse(.ok)
+    }
+
+    private func axeTearDownHandler(request: HTTPRequest) throws -> HTTPResponse {
+        try axeTearDown()
+        return HTTPResponse(.ok)
+    }
+
+    private func axeDeleteResultHandler(request: HTTPRequest) throws -> HTTPResponse {
+        let requestArg = try JSONDecoder().decode(AxeDeleteResultRequest.self, from: request.body)
+        try axeDeleteResult(request: requestArg)
+        return HTTPResponse(.ok)
+    }
+
     private func debugHandler(request: HTTPRequest) throws -> HTTPResponse {
         try debug()
         return HTTPResponse(.ok)
@@ -544,6 +592,41 @@ extension NativeAutomatorServer {
             request in handleRequest(
                 request: request,
                 handler: axeInitSessionHandler)
+        }
+        server.route(.POST, "axeScan") {
+            request in handleRequest(
+                request: request,
+                handler: axeScanHandler)
+        }
+        server.route(.POST, "axeGetResult") {
+            request in handleRequest(
+                request: request,
+                handler: axeGetResultHandler)
+        }
+        server.route(.POST, "axeIgnoreRules") {
+            request in handleRequest(
+                request: request,
+                handler: axeIgnoreRulesHandler)
+        }
+        server.route(.POST, "axeIgnoreByViewIdResourceName") {
+            request in handleRequest(
+                request: request,
+                handler: axeIgnoreByViewIdResourceNameHandler)
+        }
+        server.route(.POST, "axeIgnoreExperimental") {
+            request in handleRequest(
+                request: request,
+                handler: axeIgnoreExperimentalHandler)
+        }
+        server.route(.POST, "axeTearDown") {
+            request in handleRequest(
+                request: request,
+                handler: axeTearDownHandler)
+        }
+        server.route(.POST, "axeDeleteResult") {
+            request in handleRequest(
+                request: request,
+                handler: axeDeleteResultHandler)
         }
         server.route(.POST, "debug") {
             request in handleRequest(

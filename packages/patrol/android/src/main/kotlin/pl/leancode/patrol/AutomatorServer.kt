@@ -9,11 +9,7 @@ import pl.leancode.patrol.contracts.Contracts.AxeGetResultResponse
 import pl.leancode.patrol.contracts.Contracts.AxeIgnoreByViewIdResourceNameRequest
 import pl.leancode.patrol.contracts.Contracts.AxeIgnoreRulesRequest
 import pl.leancode.patrol.contracts.Contracts.AxeInitSessionRequest
-import pl.leancode.patrol.contracts.Contracts.AxeIsUserAuthenticatedResponse
 import pl.leancode.patrol.contracts.Contracts.AxeScanRequest
-import pl.leancode.patrol.contracts.Contracts.AxeScanResponse
-import pl.leancode.patrol.contracts.Contracts.AxeSetScanNameRequest
-import pl.leancode.patrol.contracts.Contracts.AxeTagScanAsRequest
 import pl.leancode.patrol.contracts.Contracts.AndroidSelector
 import pl.leancode.patrol.contracts.Contracts.ConfigureRequest
 import pl.leancode.patrol.contracts.Contracts.DarkModeRequest
@@ -538,23 +534,13 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
         automation.axeInitSession(request.dequeApiKey, request.dequeProjectId)
     }
 
-    override fun axeIsUserAuthenticated(): AxeIsUserAuthenticatedResponse {
-        val isAuthenticated = automation.axeIsUserAuthenticated()
-        return AxeIsUserAuthenticatedResponse(isAuthenticated)
-    }
-
-    override fun axeDisconnect() {
-        automation.axeDisconnect()
-    }
-
-    override fun axeScan(request: AxeScanRequest): AxeScanResponse {
-        val result = automation.axeScan(
+    override fun axeScan(request: AxeScanRequest) {
+        automation.axeScan(
             uploadToDashboard = request.uploadToDashboard,
             saveLocallyWithPrefix = request.saveLocallyWithPrefix,
-            getSerializedResult = request.getSerializedResult
+            tags = request.tags,
+            scanName = request.scanName
         )
-        val serializedResult = result?.toString()
-        return AxeScanResponse(serializedResult)
     }
 
     override fun axeGetResult(request: AxeGetResultRequest): AxeGetResultResponse {
@@ -568,10 +554,6 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
         return AxeGetResultResponse(serializedResult)
     }
 
-    override fun axeSetScanName(request: AxeSetScanNameRequest) {
-        automation.axeSetScanName(request.name)
-    }
-
     override fun axeIgnoreRules(request: AxeIgnoreRulesRequest) {
         automation.axeIgnoreRules(request.rulesToIgnore)
     }
@@ -582,14 +564,6 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
 
     override fun axeIgnoreExperimental() {
         automation.axeIgnoreExperimental()
-    }
-
-    override fun axeResetIgnoredRules() {
-        automation.axeResetIgnoredRules()
-    }
-
-    override fun axeTagScanAs(request: AxeTagScanAsRequest) {
-        automation.axeTagScanAs(request.tags.toSet())
     }
 
     override fun axeTearDown() {

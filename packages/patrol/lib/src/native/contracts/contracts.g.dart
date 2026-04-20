@@ -938,35 +938,21 @@ Map<String, dynamic> _$AxeInitSessionRequestToJson(
   'dequeProjectId': instance.dequeProjectId,
 };
 
-AxeIsUserAuthenticatedResponse _$AxeIsUserAuthenticatedResponseFromJson(
-  Map<String, dynamic> json,
-) => AxeIsUserAuthenticatedResponse(
-  isAuthenticated: json['isAuthenticated'] as bool,
-);
-
-Map<String, dynamic> _$AxeIsUserAuthenticatedResponseToJson(
-  AxeIsUserAuthenticatedResponse instance,
-) => <String, dynamic>{'isAuthenticated': instance.isAuthenticated};
-
 AxeScanRequest _$AxeScanRequestFromJson(Map<String, dynamic> json) =>
     AxeScanRequest(
       uploadToDashboard: json['uploadToDashboard'] as bool,
       saveLocallyWithPrefix: json['saveLocallyWithPrefix'] as String?,
-      getSerializedResult: json['getSerializedResult'] as bool,
+      tags: (json['tags'] as List<dynamic>).map((e) => e as String).toList(),
+      scanName: json['scanName'] as String?,
     );
 
 Map<String, dynamic> _$AxeScanRequestToJson(AxeScanRequest instance) =>
     <String, dynamic>{
       'uploadToDashboard': instance.uploadToDashboard,
       'saveLocallyWithPrefix': instance.saveLocallyWithPrefix,
-      'getSerializedResult': instance.getSerializedResult,
+      'tags': instance.tags,
+      'scanName': instance.scanName,
     };
-
-AxeScanResponse _$AxeScanResponseFromJson(Map<String, dynamic> json) =>
-    AxeScanResponse(serializedResult: json['serializedResult'] as String?);
-
-Map<String, dynamic> _$AxeScanResponseToJson(AxeScanResponse instance) =>
-    <String, dynamic>{'serializedResult': instance.serializedResult};
 
 AxeGetResultRequest _$AxeGetResultRequestFromJson(Map<String, dynamic> json) =>
     AxeGetResultRequest(
@@ -987,19 +973,12 @@ Map<String, dynamic> _$AxeGetResultRequestToJson(
 
 AxeGetResultResponse _$AxeGetResultResponseFromJson(
   Map<String, dynamic> json,
-) => AxeGetResultResponse(serializedResult: json['serializedResult'] as String?);
+) =>
+    AxeGetResultResponse(serializedResult: json['serializedResult'] as String?);
 
 Map<String, dynamic> _$AxeGetResultResponseToJson(
   AxeGetResultResponse instance,
 ) => <String, dynamic>{'serializedResult': instance.serializedResult};
-
-AxeSetScanNameRequest _$AxeSetScanNameRequestFromJson(
-  Map<String, dynamic> json,
-) => AxeSetScanNameRequest(name: json['name'] as String);
-
-Map<String, dynamic> _$AxeSetScanNameRequestToJson(
-  AxeSetScanNameRequest instance,
-) => <String, dynamic>{'name': instance.name};
 
 AxeIgnoreRulesRequest _$AxeIgnoreRulesRequestFromJson(
   Map<String, dynamic> json,
@@ -1014,14 +993,13 @@ Map<String, dynamic> _$AxeIgnoreRulesRequestToJson(
 ) => <String, dynamic>{'rulesToIgnore': instance.rulesToIgnore};
 
 AxeIgnoreByViewIdResourceNameRequest
-    _$AxeIgnoreByViewIdResourceNameRequestFromJson(
-  Map<String, dynamic> json,
-) => AxeIgnoreByViewIdResourceNameRequest(
-  viewIdResourceName: json['viewIdResourceName'] as String,
-  ruleList: (json['ruleList'] as List<dynamic>)
-      .map((e) => e as String)
-      .toList(),
-);
+_$AxeIgnoreByViewIdResourceNameRequestFromJson(Map<String, dynamic> json) =>
+    AxeIgnoreByViewIdResourceNameRequest(
+      viewIdResourceName: json['viewIdResourceName'] as String,
+      ruleList: (json['ruleList'] as List<dynamic>)
+          .map((e) => e as String)
+          .toList(),
+    );
 
 Map<String, dynamic> _$AxeIgnoreByViewIdResourceNameRequestToJson(
   AxeIgnoreByViewIdResourceNameRequest instance,
@@ -1029,15 +1007,6 @@ Map<String, dynamic> _$AxeIgnoreByViewIdResourceNameRequestToJson(
   'viewIdResourceName': instance.viewIdResourceName,
   'ruleList': instance.ruleList,
 };
-
-AxeTagScanAsRequest _$AxeTagScanAsRequestFromJson(Map<String, dynamic> json) =>
-    AxeTagScanAsRequest(
-      tags: (json['tags'] as List<dynamic>).map((e) => e as String).toList(),
-    );
-
-Map<String, dynamic> _$AxeTagScanAsRequestToJson(
-  AxeTagScanAsRequest instance,
-) => <String, dynamic>{'tags': instance.tags};
 
 AxeDeleteResultRequest _$AxeDeleteResultRequestFromJson(
   Map<String, dynamic> json,

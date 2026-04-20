@@ -295,6 +295,13 @@ extension Selector {
 
     // MARK: Axe A11y scans
     func axeInitSession(dequeApiKey: String, dequeProjectId: String) throws
+    func axeScan(uploadToDashboard: Bool, saveLocallyWithPrefix: String?, tags: [String], scanName: String?) throws
+    func axeGetResult(userId: String, packageName: String, resultId: String, uuid: String?) throws -> String?
+    func axeIgnoreRules(rulesToIgnore: [String]) throws
+    func axeIgnoreByViewIdResourceName(viewIdResourceName: String, ruleList: Set<String>) throws
+    func axeIgnoreExperimental() throws
+    func axeTearDown() throws
+    func axeDeleteResult(userId: String, packageName: String, resultId: String, uuid: String?) throws
 
     // MARK: Other
     func debug() throws

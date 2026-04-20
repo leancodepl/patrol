@@ -978,8 +978,57 @@
     func axeInitSession(dequeApiKey: String, dequeProjectId: String) throws {
       try runAction("initialize axe session") {
         self.axe = try? AxeDevTools.startSession(apiKey: dequeApiKey,
-              projectId: dequeProjectId)
+                                                 projectId: dequeProjectId)
       }
+    }
+
+    func axeScan(uploadToDashboard: Bool, saveLocallyWithPrefix: String?, tags: [String], scanName: String?) throws {
+        try runAction("scan with axe") {
+            guard let axe = self.axe else {
+                throw PatrolError.internal("axe session is not initialized; call axeInitSession first")
+            }
+            let result = try axe.run(onElement: XCUIApplication())
+            if uploadToDashboard {
+                _ = try AxeBridge.postResult(
+                    on: axe,
+                    result: result,
+                    tags: tags,
+                    scanName: scanName
+                )
+            }
+        }
+    }
+
+    func axeGetResult(userId: String, packageName: String, resultId: String, uuid: String?) throws -> String? {
+      throw PatrolError.methodNotImplemented("axeGetResult() is not implemented on iOS")
+    }
+
+    func axeIgnoreRules(rulesToIgnore: [String]) throws {
+        self.axe?.configuration.ignore(rules: rulesToIgnore)
+    }
+
+    func axeIgnoreByViewIdResourceName(viewIdResourceName: String, ruleList: Set<String>) throws {
+        self.axe?.configuration.ignore(rulesFor: [viewIdResourceName: ruleList])
+    }
+
+    func axeIgnoreExperimental() throws {
+        self.axe?.configuration.ignoreExperimental()
+    }
+
+    func axeTearDown() throws {
+      throw PatrolError.methodNotImplemented("axeTearDown() is not implemented on iOS")
+    }
+
+    func axeDeleteResult(userId: String, packageName: String, resultId: String, uuid: String?) throws {
+        let json: [String: Any] = [
+            "userId": userId,
+            "packageName": packageName,
+            "resultId": resultId,
+            "uuid": uuid ?? ""
+        ]
+        let data = try JSONSerialization.data(withJSONObject: json)
+        let resultKey = try JSONDecoder().decode(AxeDevToolsResultKey.self, from: data)
+        try self.axe?.deleteResult(resultKey)
     }
 
     // MARK: Other

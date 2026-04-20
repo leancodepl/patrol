@@ -1169,34 +1169,23 @@ class NativeAutomator {
     });
   }
 
-  Future<bool> axeIsUserAuthenticated() async {
-    final response = await _wrapRequest(
-      'axeIsUserAuthenticated',
-      _client.axeIsUserAuthenticated,
-    );
-    return response.isAuthenticated;
-  }
-
-  Future<void> axeDisconnect() async {
-    await _wrapRequest('axeDisconnect', _client.axeDisconnect);
-  }
-
-  Future<String?> axeScan({
+  Future<void> axeScan({
     bool uploadToDashboard = true,
     String? saveLocallyWithPrefix,
-    bool getSerializedResult = false,
+    List<String> tags = const [],
+    String? scanName,
   }) async {
-    final response = await _wrapRequest(
+    await _wrapRequest(
       'axeScan',
       () => _client.axeScan(
         AxeScanRequest(
           uploadToDashboard: uploadToDashboard,
           saveLocallyWithPrefix: saveLocallyWithPrefix,
-          getSerializedResult: getSerializedResult,
+          tags: tags,
+          scanName: scanName,
         ),
       ),
     );
-    return response.serializedResult;
   }
 
   Future<String?> axeGetResult({
@@ -1217,12 +1206,6 @@ class NativeAutomator {
       ),
     );
     return response.serializedResult;
-  }
-
-  Future<void> axeSetScanName(String name) async {
-    await _wrapRequest('axeSetScanName', () async {
-      await _client.axeSetScanName(AxeSetScanNameRequest(name: name));
-    });
   }
 
   Future<void> axeIgnoreRules(List<String> rulesToIgnore) async {
@@ -1249,16 +1232,6 @@ class NativeAutomator {
 
   Future<void> axeIgnoreExperimental() async {
     await _wrapRequest('axeIgnoreExperimental', _client.axeIgnoreExperimental);
-  }
-
-  Future<void> axeResetIgnoredRules() async {
-    await _wrapRequest('axeResetIgnoredRules', _client.axeResetIgnoredRules);
-  }
-
-  Future<void> axeTagScanAs(List<String> tags) async {
-    await _wrapRequest('axeTagScanAs', () async {
-      await _client.axeTagScanAs(AxeTagScanAsRequest(tags: tags));
-    });
   }
 
   Future<void> axeTearDown() async {

@@ -820,17 +820,15 @@ class Automator private constructor() {
         axe.setInstrumentation(instrumentation)
     }
 
-    fun axeIsUserAuthenticated(): Boolean {
-        return axe.isUserAuthenticated()
-    }
-
-    fun axeDisconnect() {
-        axe.disconnect()
-    }
-
-    fun axeScan(uploadToDashboard: Boolean = true, saveLocallyWithPrefix: String? = null, getSerializedResult: Boolean = false): AxeResult? {
+    fun axeScan(uploadToDashboard: Boolean = true, saveLocallyWithPrefix: String? = null, tags: List<String> = emptyList(), scanName: String? = null) {
         uiDevice.wait(Until.hasObject(By.pkg(targetContext.packageName).depth(0)), 5000)
 
+        if (scanName != null) {
+            axe.setScanName(scanName)
+        }
+        if (tags.isNotEmpty()) {
+            axe.tagScanAs(tags)
+        }
         val scanHandler = axe.scan()
         if (uploadToDashboard){
             scanHandler?.uploadToDashboard()
@@ -838,23 +836,11 @@ class Automator private constructor() {
         if (saveLocallyWithPrefix != null) {
             scanHandler?.saveResultToLocalStorage(saveLocallyWithPrefix)
         }
-        if (getSerializedResult){
-            return scanHandler?.getSerializedResult()
-        }
-        return null;
     }
 
     fun axeGetResult(userId: String, packageName: String, resultId: String, uuid: String? = null): AxeDevToolsResult? { // TODO
         return axe.getResult(AxeDevToolsResultKey(userId, packageName, resultId, uuid))
     }
-
-    fun axeSetScanName(name: String){
-        axe.setScanName(name)
-    }
-
-//    fun axeAddCustomRule() {
-//        axe.addCustomRule()
-//    }
 
     fun axeIgnoreRules(rulesToIgnore: List<String>){
         axe.ignoreRules(rulesToIgnore)
@@ -866,14 +852,6 @@ class Automator private constructor() {
 
     fun axeIgnoreExperimental() {
         axe.ignoreExperimental()
-    }
-
-    fun axeResetIgnoredRules() {
-        axe.resetIgnoredRules()
-    }
-
-    fun axeTagScanAs(tags: Set<String>) {
-        axe.tagScanAs(tags)
     }
 
     fun axeTearDown() {

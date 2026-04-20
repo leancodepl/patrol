@@ -763,25 +763,14 @@ class Contracts {
     val dequeProjectId: String
   )
 
-  data class AxeIsUserAuthenticatedResponse (
-    val isAuthenticated: Boolean
-  )
-
   data class AxeScanRequest (
     val uploadToDashboard: Boolean,
     val saveLocallyWithPrefix: String? = null,
-    val getSerializedResult: Boolean
+    val tags: List<String> = emptyList(),
+    val scanName: String? = null
   ){
     fun hasSaveLocallyWithPrefix(): Boolean {
       return saveLocallyWithPrefix != null
-    }
-  }
-
-  data class AxeScanResponse (
-    val serializedResult: String? = null
-  ){
-    fun hasSerializedResult(): Boolean {
-      return serializedResult != null
     }
   }
 
@@ -804,10 +793,6 @@ class Contracts {
     }
   }
 
-  data class AxeSetScanNameRequest (
-    val name: String
-  )
-
   data class AxeIgnoreRulesRequest (
     val rulesToIgnore: List<String>
   )
@@ -815,10 +800,6 @@ class Contracts {
   data class AxeIgnoreByViewIdResourceNameRequest (
     val viewIdResourceName: String,
     val ruleList: List<String>
-  )
-
-  data class AxeTagScanAsRequest (
-    val tags: List<String>
   )
 
   data class AxeDeleteResultRequest (
