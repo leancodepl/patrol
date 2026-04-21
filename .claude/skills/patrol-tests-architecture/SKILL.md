@@ -167,9 +167,9 @@ Main keys aggregator:
 
 ```dart
 // lib/keys.dart
+import 'common/widgets/keys.dart';
 import 'features/home/keys.dart';
 import 'features/profile/keys.dart';
-import 'common/widgets/keys.dart';
 
 final keys = Keys();
 
@@ -190,17 +190,17 @@ class _ProductPageKey extends ValueKey<String> {
   const _ProductPageKey(String value) : super('productPage_$value');
 }
 class ProductPageKeys {
-  final menuIconButton = _ProductPageKey('menuIconButton');
-  final productImage = _ProductPageKey('productImage');
-  final productName = _ProductPageKey('productName');
+  final menuIconButton = const _ProductPageKey('menuIconButton');
+  final productImage = const _ProductPageKey('productImage');
+  final productName = const _ProductPageKey('productName');
 }
 class _ProductConnectingPageKey extends ValueKey<String> {
   const _ProductConnectingPageKey(String value)
     : super('productConnectingPage_$value');
 }
 class ProductConnectingPageKeys {
-  final productName = _ProductConnectingPageKey('productName');
-  final productImage = _ProductConnectingPageKey('productImage');
+  final productImage = const _ProductConnectingPageKey('productImage');
+  final productName = const _ProductConnectingPageKey('productName');
 }
 ```
 
@@ -215,15 +215,14 @@ class _WidgetKey extends ValueKey<String> {
 }
 class WidgetKeys {
   final addButton = const _WidgetKey('addButton');
-  final searchBar = const _WidgetKey('searchBar');
-  final saveButton = const _WidgetKey('saveButton');
-  final cancelButton = const _WidgetKey('cancelButton');
-  final topBarHeaderMiddleText = const _WidgetKey('topBarHeaderMiddleText');
-  final pickCurrencyButton = const _WidgetKey('pickCurrencyButton');
+  _WidgetKey assetRow(String coinTitle) => _WidgetKey('assetRow_$coinTitle');
   _WidgetKey assetSlider(SelectAssetType type) =>
       _WidgetKey('assetSlider_$type');
-  ValueKey<String> assetRow(String coinTitle) =>
-      _WidgetKey('assetRow_${coinTitle}');
+  final cancelButton = const _WidgetKey('cancelButton');
+  final pickCurrencyButton = const _WidgetKey('pickCurrencyButton');
+  final saveButton = const _WidgetKey('saveButton');
+  final searchBar = const _WidgetKey('searchBar');
+  final topBarHeaderMiddleText = const _WidgetKey('topBarHeaderMiddleText');
 }
 
 ```
@@ -233,7 +232,7 @@ widgetbook/keys.dart:
 
 ```dart
 import 'package:flutter/widgets.dart';
-final widgetBook = WidgetBookKeys();
+final widgetKeys = WidgetBookKeys();
 class _WidgetBookKey extends ValueKey<String> {
   const _WidgetBookKey(String value) : super('widgetBook_$value');
 }
