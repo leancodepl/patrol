@@ -49,7 +49,7 @@ to only use custom finders, check out
 $ dart pub add patrol --dev
 ```
 
-> ⚠️ Additional setup is required to run tests — install [`patrol_cli`][patrol_cli_link] and complete native setup. See the [Patrol documentation][docs_setup].
+> ⚠️ Additional setup is required to run tests – install [`patrol_cli`][patrol_cli_link] and complete [native setup][docs_setup].
 
 ## Usage
 
