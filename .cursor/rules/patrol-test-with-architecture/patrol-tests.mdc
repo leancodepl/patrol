@@ -1,6 +1,6 @@
 ---
 description: Rules for writing Patrol E2E tests with LeanCode's recommended architecture (modules, system, api clients)
-globs: patrol_test/**/*.dart
+globs: **/integration_test/**,**/patrol_test/**
 alwaysApply: false
 ---
 

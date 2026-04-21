@@ -1,6 +1,6 @@
 ---
 description: Rules for writing Patrol E2E tests in Flutter apps
-globs: patrol_test/**/*.dart
+globs: **/integration_test/**,**/patrol_test/**
 alwaysApply: false
 ---
 

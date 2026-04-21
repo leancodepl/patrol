@@ -1,6 +1,6 @@
 ---
 description: Rules for assigning test keys to widgets with LeanCode's recommended architecture (feature-specific keys.dart + main aggregator)
-globs: lib/**/*.dart
+globs: **/keys.dart,**/integration_test/**,**/patrol_test/**
 alwaysApply: false
 ---
 
