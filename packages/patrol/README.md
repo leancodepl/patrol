@@ -49,6 +49,8 @@ to only use custom finders, check out
 $ dart pub add patrol --dev
 ```
 
+> ⚠️ Additional setup is required to run tests — install [`patrol_cli`][patrol_cli_link] and complete native setup. See the [Patrol documentation][docs_setup].
+
 ## Usage
 
 Patrol has 2 main features – [native automation] and [custom finders].
@@ -168,6 +170,7 @@ We are **top-tier experts** focused on Flutter Enterprise solutions.
 [patrol_github_link]: https://github.com/leancodepl/patrol
 [patrol_discord_link]: https://discord.gg/ukBK5t4EZg
 [docs]: https://patrol.leancode.co/?utm_source=github.com&utm_medium=referral&utm_campaign=patrol-readme
+[docs_setup]: https://patrol.leancode.co/documentation?utm_source=github.com&utm_medium=referral&utm_campaign=patrol-readme
 [docs_finders]: https://patrol.leancode.co/finders/overview
 [promo_graphics]: ../../assets/promo_banner.png
 [article_web]: https://leancode.co/blog/patrol-web-support?utm_source=github.com&utm_medium=referral&utm_campaign=patrol-readme
