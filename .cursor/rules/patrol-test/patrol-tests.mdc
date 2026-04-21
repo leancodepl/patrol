@@ -1,6 +1,7 @@
 ---
-name: patrol-tests
 description: Rules for writing Patrol E2E tests in Flutter apps
+globs: **/integration_test/**,**/patrol_test/**
+alwaysApply: false
 ---
 
 # Order of actions when writing new tests
@@ -60,36 +61,3 @@ When working with Patrol tests:
 - ALWAYS handle native dialogs that appear during the flow:
   - Handle dialogs immediately after the action that triggers them
   - For native permissions prefer `$.platform.mobile.grantPermissionWhenInUse` over `$.platform.mobile.tap`
-
-# Test Keys
-
-- Assign a key ONLY to widgets involved in testing
-- ONLY add the `key` parameter to existing widgets
-- NEVER change widget signatures
-- NEVER refactor existing code structure
-- NEVER hardcode keys in the app, you must use keys from the keys file that is shared between app and tests
-- NEVER create new widgets in the app
-- NEVER create a key that is not assigned to a widget
-- Always make sure that each key value is unique
-- ALWAYS sort keys alphabetically
-- Add keys as first parameter to the widget constructor
-
-- If widget is not unique (for example generated from a list) use a parameterized key
-
-  - ALWAYS prefer using enums or DTOs as the parameter if they already exist
-  - Use existing widget properties for parameterized keys
-  - NEVER assign a parameterized key in the app and then use fixed values for it in the keys file (and vice versa)
-  - NEVER create helper methods, use parameterized keys instead
-  - When widgets are generated from existing enums or DTOs, always use parameterized keys with the those enum/DTO values as the parameter
-
-  Use individual keys when:
-
-  - Widgets are hardcoded and known at compile time
-  - Widgets have distinct, meaningful names
-
-  Use parameterized keys when:
-
-  - Widgets are generated from dynamic data
-  - Widgets are generated from a DTO or enums
-  - Number of widgets is variable or large
-  - Widgets are generated in loops or from lists
