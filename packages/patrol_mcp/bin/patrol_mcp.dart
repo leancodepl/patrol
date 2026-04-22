@@ -242,16 +242,14 @@ class _ExitSignal {
     // SignalException. On that platform, graceful shutdown comes from stdin
     // EOF (MCP stdio transport) and Ctrl-C (SIGINT), both of which continue
     // to work. Guard the registration so the server can start on Windows.
-    if (!Platform.isWindows) {
-      _sigtermSubscription = ProcessSignal.sigterm.watch().listen(
-        _handleSignal,
-      );
-    }
+    _sigtermSubscription = !Platform.isWindows
+        ? ProcessSignal.sigterm.watch().listen(_handleSignal)
+        : null;
     _sigintSubscription = ProcessSignal.sigint.watch().listen(_handleSignal);
   }
 
   final _completer = Completer<ProcessSignal>();
-  StreamSubscription<ProcessSignal>? _sigtermSubscription;
+  late final StreamSubscription<ProcessSignal>? _sigtermSubscription;
   late final StreamSubscription<ProcessSignal> _sigintSubscription;
 
   Future<ProcessSignal> get wait => _completer.future;
