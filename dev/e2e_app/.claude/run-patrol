@@ -1,9 +1,7 @@
 #!/usr/bin/env sh
 set -e
 
-# When launched from this directory, treat it as the project root.
-# Override the inherited PROJECT_ROOT (which is relative to the patrol repo root).
-unset PROJECT_ROOT
+cd "${PROJECT_ROOT:-.}"
 export PROJECT_ROOT=$PWD
 
 if command -v fvm >/dev/null 2>&1; then

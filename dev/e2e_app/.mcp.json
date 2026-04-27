@@ -3,8 +3,8 @@
     "patrol": {
       "command": "./.claude/run-patrol",
       "env": {
-        "PROJECT_ROOT": "dev/e2e_app",
-        "PATROL_FLAGS": "-d chrome",
+        "PROJECT_ROOT": ".",
+        "PATROL_FLAGS": "",
         "SHOW_TERMINAL": "false"
       }
     }
