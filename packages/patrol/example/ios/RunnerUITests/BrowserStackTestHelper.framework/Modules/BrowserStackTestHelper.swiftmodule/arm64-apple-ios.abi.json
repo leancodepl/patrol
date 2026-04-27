@@ -1,0 +1,826 @@
+{
+  "ABIRoot": {
+    "kind": "Root",
+    "name": "BrowserStackTestHelper",
+    "printedName": "BrowserStackTestHelper",
+    "children": [
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "BrowserStackTestHelper",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "TypeDecl",
+        "name": "InjectorProtocol",
+        "printedName": "InjectorProtocol",
+        "children": [
+          {
+            "kind": "Function",
+            "name": "injectImage",
+            "printedName": "injectImage(imageName:completion:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(BrowserStackTestHelper.TestHelperResponse) -> ()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "TestHelperResponse",
+                    "printedName": "BrowserStackTestHelper.TestHelperResponse",
+                    "usr": "c:@M@BrowserStackTestHelper@objc(cs)TestHelperResponse"
+                  }
+                ]
+              }
+            ],
+            "declKind": "Func",
+            "usr": "c:@M@BrowserStackTestHelper@objc(pl)InjectorProtocol(im)injectImageWithImageName:completion:",
+            "mangledName": "$s22BrowserStackTestHelper16InjectorProtocolP11injectImage9imageName10completionySS_yAA0cD8ResponseCctF",
+            "moduleName": "BrowserStackTestHelper",
+            "genericSig": "<τ_0_0 where τ_0_0 : BrowserStackTestHelper.InjectorProtocol>",
+            "sugared_genericSig": "<Self where Self : BrowserStackTestHelper.InjectorProtocol>",
+            "protocolReq": true,
+            "objc_name": "injectImageWithImageName:completion:",
+            "declAttributes": [
+              "ObjC"
+            ],
+            "reqNewWitnessTableEntry": true,
+            "funcSelfKind": "NonMutating"
+          }
+        ],
+        "declKind": "Protocol",
+        "usr": "c:@M@BrowserStackTestHelper@objc(pl)InjectorProtocol",
+        "mangledName": "$s22BrowserStackTestHelper16InjectorProtocolP",
+        "moduleName": "BrowserStackTestHelper",
+        "genericSig": "<τ_0_0 : ObjectiveC.NSObjectProtocol>",
+        "sugared_genericSig": "<Self : ObjectiveC.NSObjectProtocol>",
+        "declAttributes": [
+          "AccessControl",
+          "ObjC"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          }
+        ]
+      },
+      {
+        "kind": "TypeDecl",
+        "name": "InjectorFactory",
+        "printedName": "InjectorFactory",
+        "children": [
+          {
+            "kind": "Function",
+            "name": "createInstance",
+            "printedName": "createInstance()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "ProtocolComposition",
+                "printedName": "any ObjectiveC.NSObject & BrowserStackTestHelper.InjectorProtocol"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "c:@M@BrowserStackTestHelper@objc(cs)InjectorFactory(cm)createInstance",
+            "mangledName": "$s22BrowserStackTestHelper15InjectorFactoryC14createInstanceAA0E8Protocol_So8NSObjectCXcyFZ",
+            "moduleName": "BrowserStackTestHelper",
+            "static": true,
+            "declAttributes": [
+              "Final",
+              "AccessControl",
+              "ObjC"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Constructor",
+            "name": "init",
+            "printedName": "init()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "InjectorFactory",
+                "printedName": "BrowserStackTestHelper.InjectorFactory",
+                "usr": "c:@M@BrowserStackTestHelper@objc(cs)InjectorFactory"
+              }
+            ],
+            "declKind": "Constructor",
+            "usr": "c:@M@BrowserStackTestHelper@objc(cs)InjectorFactory(im)init",
+            "mangledName": "$s22BrowserStackTestHelper15InjectorFactoryCACycfc",
+            "moduleName": "BrowserStackTestHelper",
+            "overriding": true,
+            "implicit": true,
+            "objc_name": "init",
+            "declAttributes": [
+              "Dynamic",
+              "ObjC",
+              "Override"
+            ],
+            "init_kind": "Designated"
+          }
+        ],
+        "declKind": "Class",
+        "usr": "c:@M@BrowserStackTestHelper@objc(cs)InjectorFactory",
+        "mangledName": "$s22BrowserStackTestHelper15InjectorFactoryC",
+        "moduleName": "BrowserStackTestHelper",
+        "isOpen": true,
+        "declAttributes": [
+          "AccessControl",
+          "ObjCMembers",
+          "RawDocComment",
+          "ObjC"
+        ],
+        "superclassUsr": "c:objc(cs)NSObject",
+        "inheritsConvenienceInitializers": true,
+        "superclassNames": [
+          "ObjectiveC.NSObject"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Equatable",
+            "printedName": "Equatable",
+            "usr": "s:SQ",
+            "mangledName": "$sSQ"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Hashable",
+            "printedName": "Hashable",
+            "usr": "s:SH",
+            "mangledName": "$sSH"
+          },
+          {
+            "kind": "Conformance",
+            "name": "CVarArg",
+            "printedName": "CVarArg",
+            "usr": "s:s7CVarArgP",
+            "mangledName": "$ss7CVarArgP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "_KeyValueCodingAndObservingPublishing",
+            "printedName": "_KeyValueCodingAndObservingPublishing",
+            "usr": "s:10Foundation37_KeyValueCodingAndObservingPublishingP",
+            "mangledName": "$s10Foundation37_KeyValueCodingAndObservingPublishingP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "_KeyValueCodingAndObserving",
+            "printedName": "_KeyValueCodingAndObserving",
+            "usr": "s:10Foundation27_KeyValueCodingAndObservingP",
+            "mangledName": "$s10Foundation27_KeyValueCodingAndObservingP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "CustomStringConvertible",
+            "printedName": "CustomStringConvertible",
+            "usr": "s:s23CustomStringConvertibleP",
+            "mangledName": "$ss23CustomStringConvertibleP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "CustomDebugStringConvertible",
+            "printedName": "CustomDebugStringConvertible",
+            "usr": "s:s28CustomDebugStringConvertibleP",
+            "mangledName": "$ss28CustomDebugStringConvertibleP"
+          }
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "BrowserStackTestHelper",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "TypeDecl",
+        "name": "TestHelperResponse",
+        "printedName": "TestHelperResponse",
+        "children": [
+          {
+            "kind": "Var",
+            "name": "statusCode",
+            "printedName": "statusCode",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Int",
+                "printedName": "Swift.Int",
+                "usr": "s:Si"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "c:@M@BrowserStackTestHelper@objc(cs)TestHelperResponse(py)statusCode",
+            "mangledName": "$s22BrowserStackTestHelper0cD8ResponseC10statusCodeSivp",
+            "moduleName": "BrowserStackTestHelper",
+            "isOpen": true,
+            "declAttributes": [
+              "HasStorage",
+              "AccessControl",
+              "ObjC"
+            ],
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Int",
+                    "printedName": "Swift.Int",
+                    "usr": "s:Si"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "c:@M@BrowserStackTestHelper@objc(cs)TestHelperResponse(im)statusCode",
+                "mangledName": "$s22BrowserStackTestHelper0cD8ResponseC10statusCodeSivg",
+                "moduleName": "BrowserStackTestHelper",
+                "implicit": true,
+                "isOpen": true,
+                "declAttributes": [
+                  "ObjC"
+                ],
+                "accessorKind": "get"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Set",
+                "printedName": "Set()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Int",
+                    "printedName": "Swift.Int",
+                    "usr": "s:Si"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "c:@M@BrowserStackTestHelper@objc(cs)TestHelperResponse(im)setStatusCode:",
+                "mangledName": "$s22BrowserStackTestHelper0cD8ResponseC10statusCodeSivs",
+                "moduleName": "BrowserStackTestHelper",
+                "implicit": true,
+                "isOpen": true,
+                "declAttributes": [
+                  "ObjC"
+                ],
+                "accessorKind": "set"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Modify",
+                "printedName": "Modify()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:22BrowserStackTestHelper0cD8ResponseC10statusCodeSivM",
+                "mangledName": "$s22BrowserStackTestHelper0cD8ResponseC10statusCodeSivM",
+                "moduleName": "BrowserStackTestHelper",
+                "implicit": true,
+                "isOpen": true,
+                "accessorKind": "_modify"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "message",
+            "printedName": "message",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "c:@M@BrowserStackTestHelper@objc(cs)TestHelperResponse(py)message",
+            "mangledName": "$s22BrowserStackTestHelper0cD8ResponseC7messageSSvp",
+            "moduleName": "BrowserStackTestHelper",
+            "isOpen": true,
+            "declAttributes": [
+              "HasStorage",
+              "AccessControl",
+              "ObjC"
+            ],
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "c:@M@BrowserStackTestHelper@objc(cs)TestHelperResponse(im)message",
+                "mangledName": "$s22BrowserStackTestHelper0cD8ResponseC7messageSSvg",
+                "moduleName": "BrowserStackTestHelper",
+                "implicit": true,
+                "isOpen": true,
+                "declAttributes": [
+                  "ObjC"
+                ],
+                "accessorKind": "get"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Set",
+                "printedName": "Set()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "c:@M@BrowserStackTestHelper@objc(cs)TestHelperResponse(im)setMessage:",
+                "mangledName": "$s22BrowserStackTestHelper0cD8ResponseC7messageSSvs",
+                "moduleName": "BrowserStackTestHelper",
+                "implicit": true,
+                "isOpen": true,
+                "declAttributes": [
+                  "ObjC"
+                ],
+                "accessorKind": "set"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Modify",
+                "printedName": "Modify()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:22BrowserStackTestHelper0cD8ResponseC7messageSSvM",
+                "mangledName": "$s22BrowserStackTestHelper0cD8ResponseC7messageSSvM",
+                "moduleName": "BrowserStackTestHelper",
+                "implicit": true,
+                "isOpen": true,
+                "accessorKind": "_modify"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "data",
+            "printedName": "data",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "Foundation.NSDictionary?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "NSDictionary",
+                    "printedName": "Foundation.NSDictionary",
+                    "usr": "c:objc(cs)NSDictionary"
+                  }
+                ],
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "c:@M@BrowserStackTestHelper@objc(cs)TestHelperResponse(py)data",
+            "mangledName": "$s22BrowserStackTestHelper0cD8ResponseC4dataSo12NSDictionaryCSgvp",
+            "moduleName": "BrowserStackTestHelper",
+            "isOpen": true,
+            "declAttributes": [
+              "HasInitialValue",
+              "HasStorage",
+              "AccessControl",
+              "ObjC"
+            ],
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Optional",
+                    "printedName": "Foundation.NSDictionary?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "NSDictionary",
+                        "printedName": "Foundation.NSDictionary",
+                        "usr": "c:objc(cs)NSDictionary"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "c:@M@BrowserStackTestHelper@objc(cs)TestHelperResponse(im)data",
+                "mangledName": "$s22BrowserStackTestHelper0cD8ResponseC4dataSo12NSDictionaryCSgvg",
+                "moduleName": "BrowserStackTestHelper",
+                "implicit": true,
+                "isOpen": true,
+                "declAttributes": [
+                  "ObjC"
+                ],
+                "accessorKind": "get"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Set",
+                "printedName": "Set()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Optional",
+                    "printedName": "Foundation.NSDictionary?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "NSDictionary",
+                        "printedName": "Foundation.NSDictionary",
+                        "usr": "c:objc(cs)NSDictionary"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "c:@M@BrowserStackTestHelper@objc(cs)TestHelperResponse(im)setData:",
+                "mangledName": "$s22BrowserStackTestHelper0cD8ResponseC4dataSo12NSDictionaryCSgvs",
+                "moduleName": "BrowserStackTestHelper",
+                "implicit": true,
+                "isOpen": true,
+                "declAttributes": [
+                  "ObjC"
+                ],
+                "accessorKind": "set"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Modify",
+                "printedName": "Modify()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:22BrowserStackTestHelper0cD8ResponseC4dataSo12NSDictionaryCSgvM",
+                "mangledName": "$s22BrowserStackTestHelper0cD8ResponseC4dataSo12NSDictionaryCSgvM",
+                "moduleName": "BrowserStackTestHelper",
+                "implicit": true,
+                "isOpen": true,
+                "accessorKind": "_modify"
+              }
+            ]
+          },
+          {
+            "kind": "Constructor",
+            "name": "init",
+            "printedName": "init(statusCode:message:data:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "TestHelperResponse",
+                "printedName": "BrowserStackTestHelper.TestHelperResponse",
+                "usr": "c:@M@BrowserStackTestHelper@objc(cs)TestHelperResponse"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Int",
+                "printedName": "Swift.Int",
+                "usr": "s:Si"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "Foundation.NSDictionary?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "NSDictionary",
+                    "printedName": "Foundation.NSDictionary",
+                    "usr": "c:objc(cs)NSDictionary"
+                  }
+                ],
+                "hasDefaultArg": true,
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Constructor",
+            "usr": "c:@M@BrowserStackTestHelper@objc(cs)TestHelperResponse(im)initWithStatusCode:message:data:",
+            "mangledName": "$s22BrowserStackTestHelper0cD8ResponseC10statusCode7message4dataACSi_SSSo12NSDictionaryCSgtcfc",
+            "moduleName": "BrowserStackTestHelper",
+            "objc_name": "initWithStatusCode:message:data:",
+            "declAttributes": [
+              "AccessControl",
+              "ObjC",
+              "RawDocComment"
+            ],
+            "init_kind": "Designated"
+          },
+          {
+            "kind": "Var",
+            "name": "isSuccess",
+            "printedName": "isSuccess",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Bool",
+                "printedName": "Swift.Bool",
+                "usr": "s:Sb"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "c:@M@BrowserStackTestHelper@objc(cs)TestHelperResponse(py)isSuccess",
+            "mangledName": "$s22BrowserStackTestHelper0cD8ResponseC9isSuccessSbvp",
+            "moduleName": "BrowserStackTestHelper",
+            "isOpen": true,
+            "declAttributes": [
+              "AccessControl",
+              "ObjC",
+              "RawDocComment"
+            ],
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Bool",
+                    "printedName": "Swift.Bool",
+                    "usr": "s:Sb"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "c:@M@BrowserStackTestHelper@objc(cs)TestHelperResponse(im)isSuccess",
+                "mangledName": "$s22BrowserStackTestHelper0cD8ResponseC9isSuccessSbvg",
+                "moduleName": "BrowserStackTestHelper",
+                "isOpen": true,
+                "declAttributes": [
+                  "ObjC"
+                ],
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Function",
+            "name": "toDictionary",
+            "printedName": "toDictionary()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "NSDictionary",
+                "printedName": "Foundation.NSDictionary",
+                "usr": "c:objc(cs)NSDictionary"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "c:@M@BrowserStackTestHelper@objc(cs)TestHelperResponse(im)toDictionary",
+            "mangledName": "$s22BrowserStackTestHelper0cD8ResponseC12toDictionarySo12NSDictionaryCyF",
+            "moduleName": "BrowserStackTestHelper",
+            "isOpen": true,
+            "declAttributes": [
+              "AccessControl",
+              "ObjC",
+              "RawDocComment"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Constructor",
+            "name": "init",
+            "printedName": "init()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "TestHelperResponse",
+                "printedName": "BrowserStackTestHelper.TestHelperResponse",
+                "usr": "c:@M@BrowserStackTestHelper@objc(cs)TestHelperResponse"
+              }
+            ],
+            "declKind": "Constructor",
+            "usr": "c:@M@BrowserStackTestHelper@objc(cs)TestHelperResponse(im)init",
+            "mangledName": "$s22BrowserStackTestHelper0cD8ResponseCACycfc",
+            "moduleName": "BrowserStackTestHelper",
+            "overriding": true,
+            "implicit": true,
+            "objc_name": "init",
+            "declAttributes": [
+              "Dynamic",
+              "ObjC",
+              "Override"
+            ],
+            "init_kind": "Designated"
+          }
+        ],
+        "declKind": "Class",
+        "usr": "c:@M@BrowserStackTestHelper@objc(cs)TestHelperResponse",
+        "mangledName": "$s22BrowserStackTestHelper0cD8ResponseC",
+        "moduleName": "BrowserStackTestHelper",
+        "isOpen": true,
+        "declAttributes": [
+          "AccessControl",
+          "ObjCMembers",
+          "ObjC"
+        ],
+        "superclassUsr": "c:objc(cs)NSObject",
+        "superclassNames": [
+          "ObjectiveC.NSObject"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Equatable",
+            "printedName": "Equatable",
+            "usr": "s:SQ",
+            "mangledName": "$sSQ"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Hashable",
+            "printedName": "Hashable",
+            "usr": "s:SH",
+            "mangledName": "$sSH"
+          },
+          {
+            "kind": "Conformance",
+            "name": "CVarArg",
+            "printedName": "CVarArg",
+            "usr": "s:s7CVarArgP",
+            "mangledName": "$ss7CVarArgP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "_KeyValueCodingAndObservingPublishing",
+            "printedName": "_KeyValueCodingAndObservingPublishing",
+            "usr": "s:10Foundation37_KeyValueCodingAndObservingPublishingP",
+            "mangledName": "$s10Foundation37_KeyValueCodingAndObservingPublishingP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "_KeyValueCodingAndObserving",
+            "printedName": "_KeyValueCodingAndObserving",
+            "usr": "s:10Foundation27_KeyValueCodingAndObservingP",
+            "mangledName": "$s10Foundation27_KeyValueCodingAndObservingP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "CustomStringConvertible",
+            "printedName": "CustomStringConvertible",
+            "usr": "s:s23CustomStringConvertibleP",
+            "mangledName": "$ss23CustomStringConvertibleP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "CustomDebugStringConvertible",
+            "printedName": "CustomDebugStringConvertible",
+            "usr": "s:s28CustomDebugStringConvertibleP",
+            "mangledName": "$ss28CustomDebugStringConvertibleP"
+          }
+        ]
+      }
+    ],
+    "json_format_version": 8
+  },
+  "ConstValues": [
+    {
+      "filePath": "\/Users\/gayatri\/Documents\/Work\/Repos\/browserstact_xcuitest_helper\/BrowserStackTestHelper\/Injector.swift",
+      "kind": "StringLiteral",
+      "offset": 588,
+      "length": 26,
+      "value": "\"[BrowserStack][Injector]\""
+    },
+    {
+      "filePath": "\/Users\/gayatri\/Documents\/Work\/Repos\/browserstact_xcuitest_helper\/BrowserStackTestHelper\/Injector.swift",
+      "kind": "StringLiteral",
+      "offset": 673,
+      "length": 37,
+      "value": "\"[BrowserStack][Injector][TestSuite]\""
+    },
+    {
+      "filePath": "\/Users\/gayatri\/Documents\/Work\/Repos\/browserstact_xcuitest_helper\/BrowserStackTestHelper\/TestHelperResponse.swift",
+      "kind": "IntegerLiteral",
+      "offset": 663,
+      "length": 3,
+      "value": "200"
+    },
+    {
+      "filePath": "\/Users\/gayatri\/Documents\/Work\/Repos\/browserstact_xcuitest_helper\/BrowserStackTestHelper\/TestHelperResponse.swift",
+      "kind": "IntegerLiteral",
+      "offset": 683,
+      "length": 3,
+      "value": "300"
+    }
+  ]
+}
