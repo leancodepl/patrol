@@ -5,8 +5,7 @@ import '../common.dart';
 import 'web_example_app.dart';
 
 String _getTextFieldValue(PatrolIntegrationTester $) {
-  final editableText =
-      $(EditableText).evaluate().first.widget as EditableText;
+  final editableText = $(EditableText).evaluate().first.widget as EditableText;
   return editableText.controller.text;
 }
 
