@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "patrol": {
+      "command": "/Users/piotrmaszota/Projects/patrol/.claude/run-patrol",
+      "env": {
+        "PROJECT_ROOT": "/Users/piotrmaszota/Projects/patrol/dev/e2e_app",
+        "PATROL_FLAGS": "-d chrome",
+        "SHOW_TERMINAL": "false"
+      }
+    }
+  }
+}

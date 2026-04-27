@@ -157,9 +157,7 @@ class WebTestBackend {
         }
         _logger.success('Quitting process...');
         _killRunningProcesses();
-        // Wait for flutter to close Chrome before exiting.
         await _stopFlutterProcess();
-        exit(0);
       }
     });
 

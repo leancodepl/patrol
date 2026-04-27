@@ -1,0 +1,13 @@
+#!/usr/bin/env sh
+set -e
+
+cd "${PROJECT_ROOT:-.}"
+export PROJECT_ROOT=$PWD
+
+if command -v fvm >/dev/null 2>&1; then
+  export PATROL_FLUTTER_COMMAND="${PATROL_FLUTTER_COMMAND:-fvm flutter}"
+  exec fvm dart run patrol_mcp
+else
+  export PATROL_FLUTTER_COMMAND="${PATROL_FLUTTER_COMMAND:-flutter}"
+  exec dart run patrol_mcp
+fi
