@@ -167,14 +167,15 @@ void patrolTest(
       );
       try {
         await callback(patrolTester);
-      } catch (error, stackTrace) {
+      } catch (err, st) {
         if (constants.hotRestartEnabled) {
           patrolLog.log(
             TestEntry(name: description, status: TestEntryStatus.failure),
           );
-          final details = error is TestFailure
-              ? (error.message ?? error.toString())
-              : '$error\n$stackTrace';
+          final details = switch (err) {
+            TestFailure(:final message?) => message,
+            _ => '$err\n$st',
+          };
           details
               .split('\n')
               .forEach((line) => patrolLog.log(ErrorEntry(message: line)));
