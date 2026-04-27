@@ -42,6 +42,10 @@ class WebTestBackend {
   /// The Playwright develop process, tracked so it can be killed on restart.
   Process? _playwrightDevelopProcess;
 
+  /// Set when the user presses 'q' so that subprocess kills are not surfaced
+  /// as unexpected exits.
+  bool _quitting = false;
+
   Future<void> build(WebAppOptions options) async {
     _logger.detail('Building web app for testing...');
 
@@ -152,8 +156,11 @@ class WebTestBackend {
         );
       } else if (char == 'q' || char == 'Q') {
         shouldRestart = false;
-        if (previousStdinModes != null) {
-          flutterTool.revertInteractiveMode(previousStdinModes);
+        _quitting = true;
+        final modes = previousStdinModes;
+        if (modes != null) {
+          flutterTool.revertInteractiveMode(modes);
+          previousStdinModes = null;
         }
         _logger.success('Quitting process...');
         _killRunningProcesses();
@@ -195,8 +202,9 @@ class WebTestBackend {
       } while (shouldRestart);
     } finally {
       await stdinSubscription.cancel();
-      if (previousStdinModes != null) {
-        flutterTool.revertInteractiveMode(previousStdinModes);
+      final modes = previousStdinModes;
+      if (modes != null) {
+        flutterTool.revertInteractiveMode(modes);
       }
     }
   }
@@ -649,7 +657,7 @@ class WebTestBackend {
       if (!completer.isCompleted) {
         stdoutSubscription.cancel();
         stderrSubscription.cancel();
-        if (exitCode != 0) {
+        if (exitCode != 0 && !_quitting) {
           completer.completeError(
             'Playwright process exited unexpectedly with code $exitCode',
           );
