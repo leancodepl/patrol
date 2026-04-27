@@ -231,7 +231,8 @@ Future<int> main(List<String> args) async {
             callback: (args, extra) {
               return ScreenshotService.handleScreenshotRequest(
                 patrolSession.device,
-                webDebuggerPort: patrolSession.webDebuggerPort,
+                webDebuggerPort:
+                    patrolSession.developService?.webDebuggerPort,
               );
             },
           )
