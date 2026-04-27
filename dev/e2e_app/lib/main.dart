@@ -5,6 +5,7 @@ import 'package:e2e_app/keys.dart';
 import 'package:e2e_app/loading_screen.dart';
 import 'package:e2e_app/location_screen.dart';
 import 'package:e2e_app/login_flow_screen.dart';
+import 'package:e2e_app/many_textfields_screen.dart';
 import 'package:e2e_app/map_screen.dart';
 import 'package:e2e_app/notifications_screen.dart';
 import 'package:e2e_app/overflow_screen.dart';
@@ -303,6 +304,13 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
               MaterialPageRoute<void>(builder: (_) => const CameraScreen()),
             ),
             child: const Text('Open camera related features'),
+          ),
+          TextButton(
+            key: K.textfieldsScreenButton,
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(builder: (_) => const TextfieldsScreen()),
+            ),
+            child: const Text('Open many textfields screen'),
           ),
           Text('EXAMPLE_KEY: ${const String.fromEnvironment('EXAMPLE_KEY')}'),
         ],
