@@ -167,11 +167,17 @@ void patrolTest(
       );
       try {
         await callback(patrolTester);
-      } catch (_) {
+      } catch (error, stackTrace) {
         if (constants.hotRestartEnabled) {
           patrolLog.log(
             TestEntry(name: description, status: TestEntryStatus.failure),
           );
+          final details = error is TestFailure
+              ? (error.message ?? error.toString())
+              : '$error\n$stackTrace';
+          details
+              .split('\n')
+              .forEach((line) => patrolLog.log(ErrorEntry(message: line)));
         }
         rethrow;
       }
