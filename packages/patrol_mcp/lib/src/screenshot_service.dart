@@ -93,9 +93,7 @@ abstract final class ScreenshotService {
   ) async {
     if (debuggerPort == null) {
       return const CallToolResult(
-        content: [
-          TextContent(text: 'Web debugger port not available.'),
-        ],
+        content: [TextContent(text: 'Web debugger port not available.')],
         isError: true,
       );
     }
@@ -129,10 +127,12 @@ abstract final class ScreenshotService {
       final targets = jsonDecode(body) as List;
 
       // Find the first page target
-      final pageTarget = targets.firstWhere(
-        (t) => (t as Map)['type'] == 'page',
-        orElse: () => throw Exception('No page target found'),
-      ) as Map;
+      final pageTarget =
+          targets.firstWhere(
+                (t) => (t as Map)['type'] == 'page',
+                orElse: () => throw Exception('No page target found'),
+              )
+              as Map;
 
       final wsUrl = pageTarget['webSocketDebuggerUrl'] as String?;
       if (wsUrl == null) {
@@ -140,7 +140,9 @@ abstract final class ScreenshotService {
       }
 
       // Connect via WebSocket and send CDP command
-      final ws = await WebSocket.connect(wsUrl);
+      final ws = await WebSocket.connect(
+        wsUrl,
+      ).timeout(const Duration(seconds: 5));
       try {
         ws.add(jsonEncode({'id': 1, 'method': 'Page.captureScreenshot'}));
 
