@@ -186,7 +186,14 @@ class WebTestBackend {
           _debuggerPort = port;
 
           // Run Playwright tests
-          await _runPlaywrightDevelop(port, options, onLogEntry: onLogEntry);
+          await _runPlaywrightDevelop(
+            port,
+            options,
+            showFlutterLogs: showFlutterLogs,
+            hideTestSteps: hideTestSteps,
+            clearTestSteps: clearTestSteps,
+            onLogEntry: onLogEntry,
+          );
         } catch (err) {
           if (!shouldRestart) {
             rethrow;
@@ -583,15 +590,15 @@ class WebTestBackend {
   Future<void> _runPlaywrightDevelop(
     String port,
     WebAppOptions options, {
+    required bool showFlutterLogs,
+    required bool hideTestSteps,
+    required bool clearTestSteps,
     void Function(Entry entry)? onLogEntry,
   }) async {
     _logger.info('Running Playwright tests using debugger on port: $port');
 
-    // Ensure web_runner directory exists and is properly set up
     await _ensureWebRunnerExists();
-
     final webRunnerPath = await _getWebRunnerPath();
-
     await _ensureNodeDependencies(webRunnerPath);
 
     final testResultsDir =
@@ -603,71 +610,58 @@ class WebTestBackend {
       ..detail('Test results will be saved to: $testResultsDir')
       ..detail('Test report will be saved to: $testReportDir');
 
-    final playwrightProcess = await _processManager.start(
-      ['npx', 'ts-node', 'tests/develop.ts'],
-      workingDirectory: webRunnerPath,
-      environment: {
-        'DEBUGGER_PORT': port,
-        'PATROL_TEST_RESULTS_DIR': testResultsDir,
-        'PATROL_TEST_REPORT_DIR': testReportDir,
-        'PATROL_WEB_JSON_OUTPUT_NAME': 'results.json',
-        'PATROL_WEB_JSON_OUTPUT_DIR': testReportDir,
-        ...Platform.environment,
-      },
-      runInShell: true,
-    );
-    _playwrightDevelopProcess = playwrightProcess;
-
     final completer = Completer<void>();
-    late StreamSubscription<String> stdoutSubscription;
-    late StreamSubscription<String> stderrSubscription;
 
-    stdoutSubscription = playwrightProcess.stdout
-        .transform(const SystemEncoding().decoder)
-        .transform(const LineSplitter())
-        .listen((line) {
-          // Surface Playwright output at info level so it's captured
-          // by log streaming and visible in patrol.log / MCP output.
-          _logger.info('Playwright: $line');
+    await _disposeScope.run((scope) async {
+      final playwrightProcess = await _processManager.start(
+        ['npx', 'ts-node', 'tests/develop.ts'],
+        workingDirectory: webRunnerPath,
+        environment: {
+          'DEBUGGER_PORT': port,
+          'PATROL_TEST_RESULTS_DIR': testResultsDir,
+          'PATROL_TEST_REPORT_DIR': testReportDir,
+          'PATROL_WEB_JSON_OUTPUT_NAME': 'results.json',
+          'PATROL_WEB_JSON_OUTPUT_DIR': testReportDir,
+          ...Platform.environment,
+        },
+        runInShell: true,
+      );
+      _playwrightDevelopProcess = playwrightProcess;
 
-          if (onLogEntry != null && line.contains('PATROL_LOG')) {
-            final match = RegExp('PATROL_LOG (.*)').firstMatch(line);
-            if (match?.group(1) case final json?) {
-              try {
-                final entry = PatrolLogReader.parseEntry(json);
-                onLogEntry(entry);
-              } catch (_) {
-                _logger.detail('Failed to parse PATROL_LOG entry: $line');
-              }
-            }
+      PatrolLogReader(
+          listenStdOut: playwrightProcess.listenStdOut,
+          scope: scope,
+          log: _logger.info,
+          reportPath: testReportDir,
+          showFlutterLogs: showFlutterLogs,
+          hideTestSteps: hideTestSteps,
+          clearTestSteps: clearTestSteps,
+          onLogEntry: onLogEntry,
+        )
+        ..listen()
+        ..startTimer();
+
+      playwrightProcess.stderr
+          .transform(const SystemEncoding().decoder)
+          .transform(const LineSplitter())
+          .listen((line) => _logger.detail('Playwright stderr: $line'))
+          .disposedBy(scope);
+
+      playwrightProcess.exitCode.then((exitCode) {
+        _playwrightDevelopProcess = null;
+        if (!completer.isCompleted) {
+          if (exitCode != 0 && !_quitting) {
+            completer.completeError(
+              'Playwright process exited unexpectedly with code $exitCode',
+            );
+          } else {
+            completer.complete();
           }
-        });
-
-    // Listen to stderr for errors
-    stderrSubscription = playwrightProcess.stderr
-        .transform(const SystemEncoding().decoder)
-        .transform(const LineSplitter())
-        .listen((line) {
-          _logger.info('Playwright stderr: $line');
-        });
-
-    // Check if process exits unexpectedly
-    playwrightProcess.exitCode.then((exitCode) {
-      _playwrightDevelopProcess = null;
-      if (!completer.isCompleted) {
-        stdoutSubscription.cancel();
-        stderrSubscription.cancel();
-        if (exitCode != 0 && !_quitting) {
-          completer.completeError(
-            'Playwright process exited unexpectedly with code $exitCode',
-          );
-        } else {
-          completer.complete();
         }
-      }
-    }).ignore();
+      }).ignore();
 
-    return completer.future;
+      await completer.future;
+    });
   }
 
   Future<String> _getWebRunnerPath() async {
