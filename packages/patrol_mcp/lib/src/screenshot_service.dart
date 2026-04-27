@@ -131,7 +131,7 @@ abstract final class ScreenshotService {
       try {
         ws.add(jsonEncode({'id': 1, 'method': 'Page.captureScreenshot'}));
 
-        await for (final message in ws) {
+        await for (final message in ws.timeout(const Duration(seconds: 10))) {
           final data = jsonDecode(message as String) as Map<String, dynamic>;
           if (data['id'] == 1) {
             final result = data['result'] as Map<String, dynamic>?;

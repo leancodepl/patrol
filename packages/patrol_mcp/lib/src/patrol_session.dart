@@ -207,6 +207,12 @@ final class PatrolSession {
   /// [_handleTestsCompleted] callbacks from the previous test run.
   var _isHotRestarting = false;
 
+  /// Incremented on every restart. The drain timer captures the epoch when
+  /// it's scheduled and only clears [_isHotRestarting] if it still matches —
+  /// so a second restart firing before the first drains can't be ended early
+  /// by the first restart's timer.
+  var _hotRestartEpoch = 0;
+
   Completer<void>? _finishCompleter;
   DisposeScope? _disposeScope;
   StreamController<List<int>>? _stdinController;
@@ -499,6 +505,7 @@ final class PatrolSession {
 
       final needsSuppression =
           _platformBehavior.suppressesStaleCallbacksOnRestart;
+      final epoch = ++_hotRestartEpoch;
       if (needsSuppression) {
         _isHotRestarting = true;
       }
@@ -524,9 +531,12 @@ final class PatrolSession {
 
       if (needsSuppression) {
         // Allow a brief window for stale callbacks to drain before accepting
-        // new test completion signals.
+        // new test completion signals. Guarded by epoch so a later restart's
+        // suppression isn't lifted by an earlier restart's timer.
         Future<void>.delayed(const Duration(seconds: 5), () {
-          _isHotRestarting = false;
+          if (_hotRestartEpoch == epoch) {
+            _isHotRestarting = false;
+          }
         });
       }
 
