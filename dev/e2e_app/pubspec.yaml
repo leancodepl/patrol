@@ -29,9 +29,9 @@ dependencies:
 
 # Due to: https://github.com/Baseflow/flutter-permission-handler/issues/1450#issuecomment-2673836556
 dependency_overrides:
-  permission_handler_apple: 9.4.5
   patrol_cli:
     path: ../../packages/patrol_cli
+  permission_handler_apple: 9.4.5
 
 dev_dependencies:
   flutter_test:
