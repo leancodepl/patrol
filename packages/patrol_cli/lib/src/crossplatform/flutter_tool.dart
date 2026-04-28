@@ -337,8 +337,16 @@ class FlutterTool {
   }
 
   void revertInteractiveMode(StdinModes stdinModes) {
-    io.stdin.echoMode = stdinModes.echoMode;
-    io.stdin.lineMode = stdinModes.lineMode;
+    // stdin may already be closed (e.g. after Ctrl+C), in which case setting
+    // echo/line mode throws a StdinException with "Bad file descriptor".
+    // That's harmless — the terminal is going away anyway — so swallow it.
+    try {
+      io.stdin.echoMode = stdinModes.echoMode;
+      io.stdin.lineMode = stdinModes.lineMode;
+    } on io.StdinException catch (err) {
+      _logger.detail('Failed to revert interactive shell mode: $err');
+      return;
+    }
 
     _logger.detail('Interactive shell mode disabled.');
   }
