@@ -38,4 +38,37 @@
   aside [data-radix-scroll-area-viewport] {
     padding-bottom: 44px;
   }
+
+  .patrol-docs-layout-with-banner {
+    --patrol-docs-banner-height: 0px;
+    grid-template:
+      ". header header header ."
+      ". banner banner banner ."
+      "sidebar sidebar toc-popover toc-popover ."
+      "sidebar sidebar main toc ." 1fr / minmax(min-content, 1fr) var(--fd-sidebar-col) minmax(
+        0,
+        calc(var(--fd-layout-width, 97rem) - var(--fd-sidebar-col) - var(--fd-toc-width))
+      )
+      var(--fd-toc-width) minmax(min-content, 1fr) !important;
+    --fd-docs-row-1: 0px !important;
+    --fd-docs-row-2: calc(var(--fd-header-height) + var(--patrol-docs-banner-height, 0px)) !important;
+    --fd-docs-row-3: calc(var(--fd-docs-row-2) + var(--fd-toc-popover-height)) !important;
+  }
+
+  .patrol-docs-layout-with-banner:has(#patrol-webinar-banner) {
+    --patrol-docs-banner-height: 3rem;
+  }
+
+  .nd-banner-patrol-webinar-banner .patrol-docs-layout-with-banner {
+    --patrol-docs-banner-height: 0px;
+  }
+
+  .patrol-docs-webinar-banner {
+    background-color: rgb(240, 255, 0);
+    color: rgb(0, 0, 0);
+    grid-area: banner;
+    min-height: var(--patrol-docs-banner-height);
+    top: var(--fd-header-height);
+    z-index: 9;
+  }
 }
