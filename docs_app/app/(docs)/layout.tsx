@@ -15,10 +15,12 @@ export default function Layout({ children }: LayoutProps<"/">) {
         className: "patrol-docs-layout-with-banner",
       }}>
       <Banner id="patrol-webinar-banner" changeLayout={false} className="patrol-docs-webinar-banner">
-        Webinar: Mastering Patrol & AI: Next-Level E2E Testing.{" "}
-        <a href={webinarUrl} className="font-bold underline underline-offset-2">
-          Register now
-        </a>
+        <span>
+          Webinar: Mastering Patrol & AI: Next-Level E2E Testing.{" "}
+          <a href={webinarUrl} className="font-bold underline underline-offset-2">
+            Register now
+          </a>
+        </span>
       </Banner>
       {children}
     </DocsLayout>

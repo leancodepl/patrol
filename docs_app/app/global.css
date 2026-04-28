@@ -64,7 +64,7 @@
   }
 
   .patrol-docs-webinar-banner {
-    background-color: rgb(240, 255, 0);
+    background-color: rgb(255, 255, 255);
     color: rgb(0, 0, 0);
     grid-area: banner;
     min-height: var(--patrol-docs-banner-height);
