@@ -69,6 +69,12 @@
       }
     }
 
+    func sendKeyboardEnter() throws {
+      runAction("sending keyboard enter") {
+          //self.device.
+      }
+    }
+
     // MARK: General UI interaction
     func tap(
       on selector: IOSSelector,

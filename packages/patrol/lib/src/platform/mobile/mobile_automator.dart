@@ -64,6 +64,9 @@ abstract interface class MobileAutomator {
   /// Opens the URL specified by [url].
   Future<void> openUrl(String url);
 
+  /// Sends the keyboard Enter/Return action to the currently focused input.
+  Future<void> sendKeyboardEnter();
+  
   /// Returns the first, topmost visible notification.
   ///
   /// Notification shade has to be opened with [openNotifications].
