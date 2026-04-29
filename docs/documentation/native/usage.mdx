@@ -15,6 +15,15 @@ To tap on a native view (for example, a button in a WebView):
 await $.platform.mobile.tap(Selector(text: 'Sign up for newsletter'));
 ```
 
+Pass `offset` to tap away from the center of the native view:
+
+```dart
+await $.platform.mobile.tap(
+  Selector(text: 'Sign up for newsletter'),
+  offset: const Offset(-20, 0),
+);
+```
+
 To enter text into a native view (for example, a form in a WebView):
 
 ```dart

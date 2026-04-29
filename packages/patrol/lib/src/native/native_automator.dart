@@ -335,8 +335,14 @@ class NativeAutomator {
   /// [timeout] is not specified, it utilizes the
   /// [NativeAutomatorConfig.findTimeout] duration from the configuration.
   /// If the native view is not found, an exception is thrown.
-  Future<void> tap(Selector selector, {String? appId, Duration? timeout}) =>
-      _platform.tap(selector, appId: appId, timeout: timeout);
+  /// If [offset] is provided, the tap is performed at the given offset from
+  /// the center of the native view.
+  Future<void> tap(
+    Selector selector, {
+    String? appId,
+    Duration? timeout,
+    Offset? offset,
+  }) => _platform.tap(selector, appId: appId, timeout: timeout, offset: offset);
 
   /// Double taps on the native view specified by [selector].
   ///

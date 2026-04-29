@@ -756,6 +756,7 @@ class AndroidTapRequest with EquatableMixin {
   AndroidTapRequest({
     required this.selector,
     this.timeoutMillis,
+    this.offset,
     this.delayBetweenTapsMillis,
   });
 
@@ -764,12 +765,18 @@ class AndroidTapRequest with EquatableMixin {
 
   final AndroidSelector selector;
   final int? timeoutMillis;
+  final Point2D? offset;
   final int? delayBetweenTapsMillis;
 
   Map<String, dynamic> toJson() => _$AndroidTapRequestToJson(this);
 
   @override
-  List<Object?> get props => [selector, timeoutMillis, delayBetweenTapsMillis];
+  List<Object?> get props => [
+    selector,
+    timeoutMillis,
+    offset,
+    delayBetweenTapsMillis,
+  ];
 }
 
 @JsonSerializable()
@@ -778,6 +785,7 @@ class IOSTapRequest with EquatableMixin {
     required this.selector,
     required this.appId,
     this.timeoutMillis,
+    this.offset,
   });
 
   factory IOSTapRequest.fromJson(Map<String, dynamic> json) =>
@@ -786,11 +794,12 @@ class IOSTapRequest with EquatableMixin {
   final IOSSelector selector;
   final String appId;
   final int? timeoutMillis;
+  final Point2D? offset;
 
   Map<String, dynamic> toJson() => _$IOSTapRequestToJson(this);
 
   @override
-  List<Object?> get props => [selector, appId, timeoutMillis];
+  List<Object?> get props => [selector, appId, timeoutMillis, offset];
 }
 
 @JsonSerializable()

@@ -348,6 +348,7 @@ public struct Point2D: Codable {
 public struct AndroidTapRequest: Codable {
   public var selector: AndroidSelector
   public var timeoutMillis: Int?
+  public var offset: Point2D?
   public var delayBetweenTapsMillis: Int?
 }
 
@@ -355,6 +356,7 @@ public struct IOSTapRequest: Codable {
   public var selector: IOSSelector
   public var appId: String
   public var timeoutMillis: Int?
+  public var offset: Point2D?
 }
 
 public struct AndroidTapAtRequest: Codable {

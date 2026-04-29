@@ -185,14 +185,19 @@ class PlatformAutomator {
   ///
   /// It waits for the view to become visible for [timeout] duration.
   /// If the native view is not found, an exception is thrown.
+  /// If [offset] is provided on mobile, the tap is performed at the given
+  /// offset from the center of the native view.
   Future<void> tap(
     CompoundSelector selector, {
     String? appId,
     Duration? timeout,
+    Offset? offset,
   }) {
     return action.safe(
-      android: () => android.tap(selector.android, timeout: timeout),
-      ios: () => ios.tap(selector.ios, appId: appId, timeout: timeout),
+      android: () =>
+          android.tap(selector.android, timeout: timeout, offset: offset),
+      ios: () =>
+          ios.tap(selector.ios, appId: appId, timeout: timeout, offset: offset),
       web: () => web.tap(selector.web),
       macos: _throwOnMacOS,
     );
@@ -262,10 +267,21 @@ class MobileAutomator {
   ///
   /// It waits for the view to become visible for [timeout] duration.
   /// If the native view is not found, an exception is thrown.
-  Future<void> tap(CompoundSelector selector, {Duration? timeout}) {
+  /// If [offset] is provided, the tap is performed at the given offset from
+  /// the center of the native view.
+  Future<void> tap(
+    CompoundSelector selector, {
+    Duration? timeout,
+    Offset? offset,
+  }) {
     return platform.action.mobile(
-      android: () => platform.android.tap(selector.android, timeout: timeout),
-      ios: () => platform.ios.tap(selector.ios, timeout: timeout),
+      android: () => platform.android.tap(
+        selector.android,
+        timeout: timeout,
+        offset: offset,
+      ),
+      ios: () =>
+          platform.ios.tap(selector.ios, timeout: timeout, offset: offset),
     );
   }
 

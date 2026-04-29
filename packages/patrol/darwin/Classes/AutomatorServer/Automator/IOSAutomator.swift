@@ -73,7 +73,8 @@
     func tap(
       on selector: IOSSelector,
       inApp bundleId: String,
-      withTimeout timeout: TimeInterval?
+      withTimeout timeout: TimeInterval?,
+      offset: Point2D?
     ) throws {
       var view = createLogMessage(element: "view", from: selector)
       view += " in app \(bundleId)"
@@ -91,7 +92,7 @@
           throw PatrolError.viewNotExists(view)
         }
 
-        element.forceTap()
+        element.forceTap(offset: offset)
       }
     }
 
@@ -1156,7 +1157,13 @@
 
   // Adapted from https://samwize.com/2016/02/28/everything-about-xcode-ui-testing-snapshot/
   extension XCUIElement {
-    func forceTap() {
+    func forceTap(offset: Point2D? = nil) {
+      if let offset = offset {
+        let center = self.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5))
+        center.withOffset(CGVector(dx: offset.x, dy: offset.y)).tap()
+        return
+      }
+
       if self.isHittable {
         self.tap()
       } else {

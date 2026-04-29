@@ -83,7 +83,8 @@
         return try automator.tap(
           on: request.selector,
           inApp: request.appId,
-          withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) }
+          withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) },
+          offset: request.offset
         )
       }
     }
@@ -335,12 +336,14 @@
       try automator.tap(
         on: request.shutterButtonSelector ?? IOSSelector(identifier: "PhotoCapture"),
         inApp: request.appId,
-        withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
+        withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000),
+        offset: nil
       )
       try automator.tap(
         on: request.doneButtonSelector ?? IOSSelector(identifier: "Done"),
         inApp: request.appId,
-        withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
+        withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000),
+        offset: nil
       )
     }
 
@@ -350,7 +353,8 @@
         try automator.tap(
           on: request.imageSelector!,
           inApp: request.appId,
-          withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
+          withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000),
+          offset: nil
         )
       } else {
         try automator.tap(
@@ -361,7 +365,8 @@
             elementType: IOSElementType.image
           ),
           inApp: request.appId,
-          withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
+          withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000),
+          offset: nil
         )
       }
     }
@@ -376,7 +381,8 @@
             try automator.tap(
               on: imageSelector,
               inApp: request.appId,
-              withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
+              withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000),
+              offset: nil
             )
           } else {
             try automator.tap(
@@ -386,7 +392,8 @@
                 elementType: IOSElementType.image
               ),
               inApp: request.appId,
-              withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
+              withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000),
+              offset: nil
             )
           }
         }
@@ -398,7 +405,8 @@
             identifier: "Add"
           ),
           inApp: request.appId,
-          withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000)
+          withTimeout: TimeInterval(request.timeoutMillis ?? 100000 / 1000),
+          offset: nil
         )
       }
     }

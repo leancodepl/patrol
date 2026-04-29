@@ -509,10 +509,14 @@ class Contracts {
   data class AndroidTapRequest (
     val selector: AndroidSelector,
     val timeoutMillis: Long? = null,
+    val offset: Point2D? = null,
     val delayBetweenTapsMillis: Long? = null
   ){
     fun hasTimeoutMillis(): Boolean {
       return timeoutMillis != null
+    }
+    fun hasOffset(): Boolean {
+      return offset != null
     }
     fun hasDelayBetweenTapsMillis(): Boolean {
       return delayBetweenTapsMillis != null
@@ -522,10 +526,14 @@ class Contracts {
   data class IOSTapRequest (
     val selector: IOSSelector,
     val appId: String,
-    val timeoutMillis: Long? = null
+    val timeoutMillis: Long? = null,
+    val offset: Point2D? = null
   ){
     fun hasTimeoutMillis(): Boolean {
       return timeoutMillis != null
+    }
+    fun hasOffset(): Boolean {
+      return offset != null
     }
   }
 

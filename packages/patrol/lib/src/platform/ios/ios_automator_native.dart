@@ -202,6 +202,7 @@ class IOSAutomator extends NativeMobileAutomator
     IOSSelector selector, {
     String? appId,
     Duration? timeout,
+    Offset? offset,
   }) async {
     await wrapRequest('tap', () async {
       await _client.tap(
@@ -209,6 +210,7 @@ class IOSAutomator extends NativeMobileAutomator
           selector: selector,
           appId: appId ?? resolvedAppId,
           timeoutMillis: timeout?.inMilliseconds,
+          offset: offset == null ? null : Point2D(x: offset.dx, y: offset.dy),
         ),
       );
     });

@@ -293,19 +293,24 @@ class NativeAutomator2 {
   /// [timeout] is not specified, it utilizes the
   /// [NativeAutomatorConfig.findTimeout] duration from the configuration.
   /// If the native view is not found, an exception is thrown.
+  /// If [offset] is provided, the tap is performed at the given offset from
+  /// the center of the native view.
   Future<void> tap(
     NativeSelector selector, {
     String? appId,
     Duration? timeout,
+    Offset? offset,
   }) => _platform.action.mobile(
     android: () => _platform.android.tap(
       _getSafeAndroidSelector(selector),
       timeout: timeout,
+      offset: offset,
     ),
     ios: () => _platform.ios.tap(
       _getSafeIOSSelector(selector),
       appId: appId,
       timeout: timeout,
+      offset: offset,
     ),
   );
 

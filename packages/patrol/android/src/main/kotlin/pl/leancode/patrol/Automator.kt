@@ -272,7 +272,13 @@ class Automator private constructor() {
         return getWindowTrees(uiDevice, uiAutomation)
     }
 
-    fun tap(uiSelector: UiSelector, bySelector: BySelector, index: Int, timeout: Long? = null) {
+    fun tap(
+        uiSelector: UiSelector,
+        bySelector: BySelector,
+        index: Int,
+        timeout: Long? = null,
+        offset: Point2D? = null
+    ) {
         Logger.d("tap(): $uiSelector, $bySelector")
 
         if (waitForView(bySelector, index, timeout) == null) {
@@ -280,8 +286,19 @@ class Automator private constructor() {
         }
 
         val uiObject = uiDevice.findObject(uiSelector)
-        Logger.d("Clicking on UIObject with text: ${uiObject.text}")
-        uiObject.click()
+        if (offset == null) {
+            Logger.d("Clicking on UIObject with text: ${uiObject.text}")
+            uiObject.click()
+        } else {
+            val rect = uiObject.bounds
+            val x = (rect.centerX() + offset.x).roundToInt()
+            val y = (rect.centerY() + offset.y).roundToInt()
+            Logger.d("Clicking on UIObject with text: ${uiObject.text} at offset (${offset.x}, ${offset.y})")
+            val successful = uiDevice.click(x, y)
+            if (!successful) {
+                throw IllegalArgumentException("Clicking at location [$x, $y] failed")
+            }
+        }
         delay()
     }
 

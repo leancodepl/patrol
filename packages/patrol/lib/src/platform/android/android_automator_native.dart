@@ -239,12 +239,17 @@ class AndroidAutomator extends NativeMobileAutomator
   /// [AndroidAutomatorConfig.findTimeout] duration from the configuration.
   /// If the native view is not found, an exception is thrown.
   @override
-  Future<void> tap(AndroidSelector selector, {Duration? timeout}) async {
+  Future<void> tap(
+    AndroidSelector selector, {
+    Duration? timeout,
+    Offset? offset,
+  }) async {
     await wrapRequest('tap', () async {
       await _client.tap(
         AndroidTapRequest(
           selector: selector,
           timeoutMillis: timeout?.inMilliseconds,
+          offset: offset == null ? null : Point2D(x: offset.dx, y: offset.dy),
         ),
       );
     });

@@ -178,7 +178,8 @@
     func tap(
       on selector: IOSSelector,
       inApp bundleId: String,
-      withTimeout timeout: TimeInterval?
+      withTimeout timeout: TimeInterval?,
+      offset: Point2D?
     ) throws
     func doubleTap(
       on selector: IOSSelector,

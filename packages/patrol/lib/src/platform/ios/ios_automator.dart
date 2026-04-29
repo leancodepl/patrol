@@ -76,7 +76,15 @@ abstract interface class IOSAutomator implements MobileAutomator {
   /// [timeout] is not specified, it utilizes the
   /// [IOSAutomatorConfig.findTimeout] duration from the configuration.
   /// If the native view is not found, an exception is thrown.
-  Future<void> tap(IOSSelector selector, {String? appId, Duration? timeout});
+  ///
+  /// If [offset] is provided, the tap is performed at the given offset from
+  /// the center of the native view.
+  Future<void> tap(
+    IOSSelector selector, {
+    String? appId,
+    Duration? timeout,
+    Offset? offset,
+  });
 
   /// Double taps on the native view specified by [selector].
   ///

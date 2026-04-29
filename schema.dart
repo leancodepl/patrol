@@ -175,6 +175,7 @@ class Point2D {
 class AndroidTapRequest {
   late AndroidSelector selector;
   int? timeoutMillis;
+  Point2D? offset;
   int? delayBetweenTapsMillis;
 }
 
@@ -182,6 +183,7 @@ class IOSTapRequest {
   late IOSSelector selector;
   late String appId;
   int? timeoutMillis;
+  Point2D? offset;
 }
 
 class AndroidTapAtRequest {

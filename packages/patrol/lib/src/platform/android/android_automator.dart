@@ -105,7 +105,14 @@ abstract interface class AndroidAutomator implements MobileAutomator {
   /// [timeout] is not specified, it utilizes the
   /// [AndroidAutomatorConfig.findTimeout] duration from the configuration.
   /// If the native view is not found, an exception is thrown.
-  Future<void> tap(AndroidSelector selector, {Duration? timeout});
+  ///
+  /// If [offset] is provided, the tap is performed at the given offset from
+  /// the center of the native view.
+  Future<void> tap(
+    AndroidSelector selector, {
+    Duration? timeout,
+    Offset? offset,
+  });
 
   /// Double taps on the native view specified by [selector].
   ///

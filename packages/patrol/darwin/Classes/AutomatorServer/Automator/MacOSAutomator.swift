@@ -80,7 +80,8 @@
     func tap(
       on selector: IOSSelector,
       inApp bundleId: String,
-      withTimeout timeout: TimeInterval?
+      withTimeout timeout: TimeInterval?,
+      offset: Point2D?
     ) throws {
       try runAction("tap") {
         throw PatrolError.methodNotImplemented("tap")

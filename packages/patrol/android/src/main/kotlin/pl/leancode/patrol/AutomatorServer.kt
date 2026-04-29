@@ -168,7 +168,8 @@ class AutomatorServer(private val automation: Automator) : MobileAutomatorServer
             uiSelector = request.selector.toUiSelector(),
             bySelector = bySelector,
             index = request.selector.instance?.toInt() ?: 0,
-            timeout = request.timeoutMillis
+            timeout = request.timeoutMillis,
+            offset = request.offset
         )
     }
 

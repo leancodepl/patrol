@@ -462,6 +462,9 @@ AndroidTapRequest _$AndroidTapRequestFromJson(Map<String, dynamic> json) =>
         json['selector'] as Map<String, dynamic>,
       ),
       timeoutMillis: (json['timeoutMillis'] as num?)?.toInt(),
+      offset: json['offset'] == null
+          ? null
+          : Point2D.fromJson(json['offset'] as Map<String, dynamic>),
       delayBetweenTapsMillis: (json['delayBetweenTapsMillis'] as num?)?.toInt(),
     );
 
@@ -469,6 +472,7 @@ Map<String, dynamic> _$AndroidTapRequestToJson(AndroidTapRequest instance) =>
     <String, dynamic>{
       'selector': instance.selector.toJson(),
       'timeoutMillis': instance.timeoutMillis,
+      'offset': instance.offset?.toJson(),
       'delayBetweenTapsMillis': instance.delayBetweenTapsMillis,
     };
 
@@ -477,6 +481,9 @@ IOSTapRequest _$IOSTapRequestFromJson(Map<String, dynamic> json) =>
       selector: IOSSelector.fromJson(json['selector'] as Map<String, dynamic>),
       appId: json['appId'] as String,
       timeoutMillis: (json['timeoutMillis'] as num?)?.toInt(),
+      offset: json['offset'] == null
+          ? null
+          : Point2D.fromJson(json['offset'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$IOSTapRequestToJson(IOSTapRequest instance) =>
@@ -484,6 +491,7 @@ Map<String, dynamic> _$IOSTapRequestToJson(IOSTapRequest instance) =>
       'selector': instance.selector.toJson(),
       'appId': instance.appId,
       'timeoutMillis': instance.timeoutMillis,
+      'offset': instance.offset?.toJson(),
     };
 
 AndroidTapAtRequest _$AndroidTapAtRequestFromJson(Map<String, dynamic> json) =>
