@@ -1,5 +1,5 @@
 import 'dart:convert' show base64Encode, utf8;
-import 'dart:io' show Directory, FileSystemEntity;
+import 'dart:io' show Directory, File, FileSystemEntity;
 
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
@@ -162,6 +162,7 @@ AndroidAppOptions resolveAndroidAppOptions({
 }) {
   final rawNativePath = nativeAndroidPathArg ?? nativeAndroidPathFromConfig;
   String? resolvedNativePath;
+  var androidProjectName = 'app';
 
   if (rawNativePath != null) {
     final moduleRoot = flutterModuleRoot ?? Directory.current.path;
@@ -185,6 +186,9 @@ AndroidAppOptions resolveAndroidAppOptions({
         'The native Android project must have a Gradle wrapper.',
       );
     }
+
+    androidProjectName =
+        _readAndroidHostProjectName(resolvedNativePath) ?? androidProjectName;
   }
 
   return AndroidAppOptions(
@@ -195,7 +199,34 @@ AndroidAppOptions resolveAndroidAppOptions({
     uninstall: uninstall,
     addToApp: addToApp,
     nativeAndroidPath: resolvedNativePath,
+    androidProjectName: androidProjectName,
   );
+}
+
+String? _readAndroidHostProjectName(String nativeAndroidPath) {
+  final propertiesFile = File(p.join(nativeAndroidPath, 'gradle.properties'));
+  if (!propertiesFile.existsSync()) {
+    return null;
+  }
+
+  for (final line in propertiesFile.readAsLinesSync()) {
+    final trimmed = line.trim();
+    if (trimmed.startsWith('#')) {
+      continue;
+    }
+
+    final separatorIndex = trimmed.indexOf('=');
+    if (separatorIndex < 0) {
+      continue;
+    }
+
+    final key = trimmed.substring(0, separatorIndex).trim();
+    if (key == 'flutter.hostAppProjectName') {
+      return trimmed.substring(separatorIndex + 1).trim();
+    }
+  }
+
+  return null;
 }
 
 class AndroidAppOptions {
@@ -207,6 +238,7 @@ class AndroidAppOptions {
     required this.uninstall,
     this.addToApp = false,
     this.nativeAndroidPath,
+    this.androidProjectName = 'app',
   });
 
   final FlutterAppOptions flutter;
@@ -220,6 +252,7 @@ class AndroidAppOptions {
   /// setups). When set, Patrol drives Gradle from this directory instead of
   /// the Flutter module's generated `.android/` scaffold.
   final String? nativeAndroidPath;
+  final String androidProjectName;
 
   String get description => 'apk with entrypoint ${basename(flutter.target)}';
 
@@ -258,7 +291,7 @@ class AndroidAppOptions {
     }
 
     // Add Gradle task
-    cmd.add(':app:dependencies');
+    cmd.add(':$androidProjectName:dependencies');
 
     return cmd;
   }
@@ -287,7 +320,7 @@ class AndroidAppOptions {
     }
 
     // Add Gradle task
-    cmd.add(':app:$task');
+    cmd.add(':$androidProjectName:$task');
 
     // Add Dart test target
     final target = '-Ptarget=${flutter.target}';
