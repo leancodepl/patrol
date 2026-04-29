@@ -132,6 +132,13 @@ class IOSTestBackend {
       exitCode = await process.exitCode;
       if (exitCode == 0) {
         task.complete('Completed building $subject');
+        await _patchXcTestRunDyldPath(
+          scheme: options.scheme,
+          real: !options.simulator,
+        );
+        if (!options.simulator) {
+          await _preparePhysicalDeviceXcode26Runtime();
+        }
       } else if (exitCode == _xcodebuildInterrupted) {
         const cause = 'xcodebuild was interrupted';
         task.fail('Failed to execute tests of $subject ($cause)');
@@ -307,6 +314,208 @@ class IOSTestBackend {
     return appId.substring(0, idx);
   }
 
+  /// Xcode 26+ ships `_Testing_Foundation.framework` under
+  /// `__PLATFORMS__/.../Frameworks`. Ensure xctestrun contains
+  /// `DYLD_FRAMEWORK_PATH` for simulator and device runs.
+  Future<void> _patchXcTestRunDyldPath({
+    required String scheme,
+    required bool real,
+  }) async {
+    final sdkVersion = await getSdkVersion(real: real);
+    final plist = await xcTestRunPath(
+      real: real,
+      scheme: scheme,
+      sdkVersion: sdkVersion,
+    );
+
+    final platformDir = real ? 'iPhoneOS' : 'iPhoneSimulator';
+    final addition =
+        '__PLATFORMS__/$platformDir.platform/Developer/Library/Frameworks';
+
+    // v1 (flat) and v2 (TestConfigurations) xctestrun formats
+    const keys = [
+      ':RunnerUITests:UITargetAppEnvironmentVariables:DYLD_FRAMEWORK_PATH',
+      ':TestConfigurations:0:TestTargets:0:UITargetAppEnvironmentVariables:DYLD_FRAMEWORK_PATH',
+    ];
+
+    for (final key in keys) {
+      final read = await _processManager.run([
+        '/usr/libexec/PlistBuddy',
+        '-c',
+        'Print $key',
+        plist,
+      ]);
+      if (read.exitCode != 0) {
+        final add = await _processManager.run([
+          '/usr/libexec/PlistBuddy',
+          '-c',
+          'Add $key string $addition',
+          plist,
+        ]);
+        if (add.exitCode == 0) {
+          _logger.detail(
+            'Added DYLD_FRAMEWORK_PATH to xctestrun for Xcode 26+',
+          );
+          return;
+        }
+        continue;
+      }
+
+      final current = read.stdOut.trim();
+      if (current.contains('__PLATFORMS__')) {
+        return;
+      }
+
+      await _processManager.run([
+        '/usr/libexec/PlistBuddy',
+        '-c',
+        'Set $key $current:$addition',
+        plist,
+      ]);
+      _logger.detail('Patched xctestrun DYLD_FRAMEWORK_PATH for Xcode 26+');
+      return;
+    }
+  }
+
+  Future<void> _preparePhysicalDeviceXcode26Runtime() async {
+    final appDir = join(
+      _rootDirectory.absolute.path,
+      'build/ios_integ/Build/Products/Release-iphoneos/Runner.app',
+    );
+    final frameworksDir = join(appDir, 'Frameworks');
+    final artifacts = <Map<String, String>>[
+      {
+        'name': '_Testing_Foundation.framework',
+        'source': join(
+          '/Applications/Xcode.app/Contents/Developer/Platforms',
+          'iPhoneOS.platform/Developer/Library/Frameworks',
+          '_Testing_Foundation.framework',
+        ),
+      },
+      {
+        'name': 'lib_TestingInterop.dylib',
+        'source': join(
+          '/Applications/Xcode.app/Contents/Developer/Platforms',
+          'iPhoneOS.platform/Developer/usr/lib',
+          'lib_TestingInterop.dylib',
+        ),
+      },
+    ];
+
+    var copiedAny = false;
+    for (final artifact in artifacts) {
+      final source = artifact['source']!;
+      final name = artifact['name']!;
+      final destination = join(frameworksDir, name);
+      final isFramework = name.endsWith('.framework');
+      final existsInSdk = isFramework
+          ? _fs.directory(source).existsSync()
+          : _fs.file(source).existsSync();
+      final existsInApp = isFramework
+          ? _fs.directory(destination).existsSync()
+          : _fs.file(destination).existsSync();
+      if (!existsInSdk || existsInApp) {
+        continue;
+      }
+
+      final copy = await _processManager.run(
+        isFramework
+            ? ['cp', '-R', source, frameworksDir]
+            : ['cp', source, frameworksDir],
+      );
+      if (copy.exitCode != 0) {
+        _logger.err('Failed to copy $name: ${copy.stdErr}');
+        return;
+      }
+      copiedAny = true;
+    }
+
+    if (!copiedAny) {
+      return;
+    }
+
+    var result = await _processManager.run([
+      'codesign',
+      '-d',
+      '--verbose=2',
+      appDir,
+    ]);
+    final identityMatch = RegExp(
+      r'^Authority=(.+)$',
+      multiLine: true,
+    ).firstMatch(result.stdErr);
+    if (identityMatch == null) {
+      _logger.err('Failed to determine signing identity for Runner.app');
+      return;
+    }
+    final identity = identityMatch.group(1)!;
+
+    for (final artifact in artifacts) {
+      final destination = join(frameworksDir, artifact['name']);
+      final sign = await _processManager.run([
+        'codesign',
+        '--force',
+        '--sign',
+        identity,
+        destination,
+      ]);
+      if (sign.exitCode != 0) {
+        _logger.err('Failed to sign ${artifact['name']}: ${sign.stdErr}');
+        return;
+      }
+    }
+
+    final profilePath = join(appDir, 'embedded.mobileprovision');
+    final profilePlist = join(
+      _rootDirectory.absolute.path,
+      'build/ios_integ/Build/Products/Release-iphoneos/_patrol_profile.plist',
+    );
+    final entitlementsPath = join(
+      _rootDirectory.absolute.path,
+      'build/ios_integ/Build/Products/Release-iphoneos/_patrol_entitlements.plist',
+    );
+
+    result = await _processManager.run([
+      'security',
+      'cms',
+      '-D',
+      '-i',
+      profilePath,
+    ]);
+    if (result.exitCode != 0 || result.stdOut.isEmpty) {
+      _logger.err('Failed to decode provisioning profile: ${result.stdErr}');
+      return;
+    }
+    _fs.file(profilePlist).writeAsStringSync(result.stdOut);
+
+    result = await _processManager.run([
+      '/usr/libexec/PlistBuddy',
+      '-x',
+      '-c',
+      'Print :Entitlements',
+      profilePlist,
+    ]);
+    if (result.exitCode != 0 || result.stdOut.isEmpty) {
+      _logger.err('Failed to extract profile entitlements: ${result.stdErr}');
+      return;
+    }
+    _fs.file(entitlementsPath).writeAsStringSync(result.stdOut);
+
+    result = await _processManager.run([
+      'codesign',
+      '--force',
+      '--sign',
+      identity,
+      '--entitlements',
+      entitlementsPath,
+      appDir,
+    ]);
+    if (result.exitCode != 0) {
+      _logger.err('Failed to re-sign Runner.app: ${result.stdErr}');
+      return;
+    }
+  }
+
   // TODO: The path should be joined using platform-specific separator.
   // https://github.com/leancodepl/patrol/issues/1980
   Future<String> xcTestRunPath({
@@ -370,7 +579,7 @@ class IOSTestBackend {
     final jsonOutput = jsonDecode(processResult.stdOut) as List<dynamic>;
     for (final sdkJson in jsonOutput) {
       final sdk = sdkJson as Map<String, dynamic>;
-      if (real && sdk['platform'] == 'iphonesimulator') {
+      if (real && sdk['platform'] == 'iphoneos') {
         sdkVersion = sdk['sdkVersion'] as String;
         platform = sdk['platform'] as String;
         break;
