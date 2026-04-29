@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:e2e_app/keys.dart';
 import 'package:flutter/material.dart';
 
 class TextfieldsScreen extends StatefulWidget {
@@ -67,6 +68,7 @@ class _TextfieldsScreenState extends State<TextfieldsScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 TextField(
+                  key: K.textFields[index],
                   controller: _textFieldControllers[index],
                   textInputAction: action,
                   decoration: InputDecoration(

@@ -79,4 +79,18 @@ class Keys {
   static const smallImagePreview = Key('smallImagePreview');
   static const selectedPhotosCount = Key('selectedPhotosCount');
 
+  // mobile keyboard enter test
+  static const textFields = [
+    Key('textField0'),
+    Key('textField1'),
+    Key('textField2'),
+    Key('textField3'),
+    Key('textField4'),
+    Key('textField5'),
+    Key('textField6'),
+    Key('textField7'),
+    Key('textField8'),
+    Key('textField9'),
+    Key('textField10'),
+  ];
 }
