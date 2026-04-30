@@ -66,6 +66,7 @@ class TestCommand extends PatrolCommand {
     usesBuildNumberOption();
 
     usesUninstallOption();
+    usesNoBuildOption();
 
     usesAndroidOptions();
     usesIOSOptions();
@@ -319,11 +320,16 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       browserArgs: stringArg('web-browser-args'),
     );
 
-    // No need to build web app for testing. It's done in the execute method.
-    if (device.targetPlatform != TargetPlatform.web) {
+    if (!boolArg('build')) {
+      _logger.info('Skipping build step (--no-build)');
+      if (device.targetPlatform == TargetPlatform.android) {
+        await _androidTestBackend
+            .loadJavaPathFromFlutterDoctor(flutterOpts.command);
+      }
+    } else if (device.targetPlatform != TargetPlatform.web) {
+      // No need to build web app for testing. It's done in the execute method.
       await _build(androidOpts, iosOpts, macosOpts, webOpts, device);
     }
-
     await _preExecute(androidOpts, iosOpts, macosOpts, device, uninstall);
 
     if (coverageEnabled) {
