@@ -478,7 +478,7 @@ class MobileAutomator {
       ios: platform.ios.sendKeyboardEnter,
     );
   }
-  
+
   /// Returns the first, topmost visible notification.
   ///
   /// Notification shade has to be opened with [openNotifications].

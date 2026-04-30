@@ -24,7 +24,7 @@ class _TextfieldsScreenState extends State<TextfieldsScreen> {
             action != TextInputAction.continueAction &&
             action != TextInputAction.join &&
             action != TextInputAction.route &&
-            action != TextInputAction.emergencyCall
+            action != TextInputAction.emergencyCall,
       )
       .toList();
   late final List<TextInputAction> _textInputActions;
@@ -82,9 +82,7 @@ class _TextfieldsScreenState extends State<TextfieldsScreen> {
                   },
                 ),
                 if (_textFieldsSubmitted[index])
-                  Text(
-                    'Submitted ${action.name}',
-                  ),
+                  Text('Submitted ${action.name}'),
                 const SizedBox(height: 16),
               ],
             );

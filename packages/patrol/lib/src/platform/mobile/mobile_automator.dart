@@ -66,7 +66,7 @@ abstract interface class MobileAutomator {
 
   /// Sends the keyboard Enter/Return action to the currently focused input.
   Future<void> sendKeyboardEnter();
-  
+
   /// Returns the first, topmost visible notification.
   ///
   /// Notification shade has to be opened with [openNotifications].
