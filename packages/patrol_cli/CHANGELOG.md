@@ -1,3 +1,7 @@
+## Unreleased
+
+- Add `--app-name` flag to override `app_name` from pubspec.yaml. (#2557)
+
 ## 4.3.1
 
 - Update dependencies.

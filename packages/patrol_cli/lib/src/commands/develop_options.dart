@@ -16,6 +16,7 @@ class DevelopOptions {
     required this.testServerPort,
     required this.appServerPort,
     this.flavor,
+    this.appName,
     this.packageName,
     this.bundleId,
     this.buildName,
@@ -57,6 +58,7 @@ class DevelopOptions {
       testServerPort: int.parse(results['test-server-port'] as String),
       appServerPort: int.parse(results['app-server-port'] as String),
       flavor: results['flavor'] as String?,
+      appName: results['app-name'] as String?,
       packageName: results['package-name'] as String?,
       bundleId: results['bundle-id'] as String?,
       buildName: results['build-name'] as String?,
@@ -127,6 +129,7 @@ class DevelopOptions {
   final int appServerPort;
 
   final String? flavor;
+  final String? appName;
   final String? packageName;
   final String? bundleId;
   final String? buildName;
