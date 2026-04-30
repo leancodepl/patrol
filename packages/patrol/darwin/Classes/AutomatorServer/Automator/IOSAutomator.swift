@@ -71,7 +71,8 @@
 
     func sendKeyboardEnter() throws {
       runAction("sending keyboard enter") {
-          //self.device.
+        // TODO: Implement
+        throw PatrolError.methodNotImplemented("sendKeyboardEnter")
       }
     }
 

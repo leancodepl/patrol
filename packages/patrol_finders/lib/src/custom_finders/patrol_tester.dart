@@ -456,7 +456,6 @@ class PatrolTester {
             await tester.enterText(resolvedFinder.first, text);
           } finally {
             if (!kIsWeb) {
-              // cleaning up text input state so the same field can be focused again
               tester.testTextInput.closeConnection();
               await tester.pump();
               tester.binding.focusedEditable = null;

@@ -531,7 +531,6 @@ class Automator private constructor() {
         if (!success) {
             throw PatrolException("Could not send keyboard enter")
         }
-        //uiDevice.pressBack()
         delay()
     }
 
