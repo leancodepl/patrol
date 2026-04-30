@@ -40,8 +40,6 @@ void main() {
         await $.platform.mobile.sendKeyboardEnter();
         await $('Submitted ${action.name}').waitUntilVisible();
       }
-
-      
     },
     tags: ['android', 'emulator', 'ios', 'simulator'],
   );
