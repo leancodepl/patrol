@@ -70,7 +70,7 @@
     }
 
     func sendKeyboardEnter() throws {
-      runAction("sending keyboard enter") {
+      try runAction("sending keyboard enter") {
         // TODO: Implement
         throw PatrolError.methodNotImplemented("sendKeyboardEnter")
       }
