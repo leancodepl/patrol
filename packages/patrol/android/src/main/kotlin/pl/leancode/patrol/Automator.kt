@@ -525,6 +525,15 @@ class Automator private constructor() {
         delay()
     }
 
+    fun sendKeyboardEnter() {
+        Logger.d("sendKeyboardEnter()")
+        val success = uiDevice.pressEnter()
+        if (!success) {
+            throw PatrolException("Could not send keyboard enter")
+        }
+        delay()
+    }
+
     fun getNotifications(): List<Notification> {
         Logger.d("getNotifications()")
 

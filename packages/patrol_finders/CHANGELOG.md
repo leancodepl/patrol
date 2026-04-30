@@ -1,3 +1,7 @@
+## Unreleased
+
+- Make `EnterText` unregister `testTextInput` to show system keyboard. (#2748)
+
 ## 3.2.0
 
 - Bump `patrol_log` to `^0.8.0`.

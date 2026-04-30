@@ -30,6 +30,7 @@ class Keys {
   static const icon1 = Key('icon1');
   static const icon2 = Key('icon2');
   static const cameraFeaturesButton = Key('cameraFeaturesButton');
+  static const textfieldsScreenButton = Key('textfieldsScreenButton');
 
   // text fields screen
   static const textField1 = Key('textField1');
@@ -77,4 +78,19 @@ class Keys {
   static const pickMultiplePhotosButton = Key('pickMultiplePhotosButton');
   static const smallImagePreview = Key('smallImagePreview');
   static const selectedPhotosCount = Key('selectedPhotosCount');
+
+  // mobile keyboard enter test
+  static const textFields = [
+    Key('textField0'),
+    Key('textField1'),
+    Key('textField2'),
+    Key('textField3'),
+    Key('textField4'),
+    Key('textField5'),
+    Key('textField6'),
+    Key('textField7'),
+    Key('textField8'),
+    Key('textField9'),
+    Key('textField10'),
+  ];
 }

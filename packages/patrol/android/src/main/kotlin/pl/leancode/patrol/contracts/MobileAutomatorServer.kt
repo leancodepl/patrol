@@ -20,6 +20,7 @@ interface MobileAutomatorServer {
     fun openApp(request: Contracts.OpenAppRequest)
     fun openQuickSettings(request: Contracts.OpenQuickSettingsRequest)
     fun openUrl(request: Contracts.OpenUrlRequest)
+    fun sendKeyboardEnter()
     fun pressVolumeUp()
     fun pressVolumeDown()
     fun enableAirplaneMode()
@@ -74,6 +75,10 @@ fun getMobileAutomatorRoutes(server: MobileAutomatorServer): RoutingHttpHandler 
     "openUrl" bind POST to {
       val body = json.fromJson(it.bodyString(), Contracts.OpenUrlRequest::class.java)
       server.openUrl(body)
+      Response(OK)
+    },
+    "sendKeyboardEnter" bind POST to {
+      server.sendKeyboardEnter()
       Response(OK)
     },
     "pressVolumeUp" bind POST to {

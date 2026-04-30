@@ -452,12 +452,17 @@ class PatrolTester {
             );
           }
 
-          await tester.enterText(resolvedFinder.first, text);
+          try {
+            await tester.enterText(resolvedFinder.first, text);
+          } finally {
+            if (!kIsWeb) {
+              tester.testTextInput.closeConnection();
+              await tester.pump();
+              tester.binding.focusedEditable = null;
 
-          if (!kIsWeb) {
-            // After interaction is done, we need to reset the testTextInput
-            // to not interfere with consecutive interactions in the same test.
-            tester.testTextInput.reset();
+              tester.testTextInput.reset();
+              tester.testTextInput.unregister();
+            }
           }
           await _performPump(
             settlePolicy: settlePolicy,

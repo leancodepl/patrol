@@ -83,6 +83,10 @@ class AutomatorServer(private val automation: Automator) : MobileAutomatorServer
         automation.openUrl(request.url)
     }
 
+    override fun sendKeyboardEnter() {
+        automation.sendKeyboardEnter()
+    }
+
     override fun pressVolumeUp() {
         automation.pressVolumeUp()
     }

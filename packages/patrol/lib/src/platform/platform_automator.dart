@@ -471,6 +471,14 @@ class MobileAutomator {
     );
   }
 
+  /// Sends the keyboard Enter/Return action to the currently focused input.
+  Future<void> sendKeyboardEnter() {
+    return platform.action.mobile(
+      android: platform.android.sendKeyboardEnter,
+      ios: platform.ios.sendKeyboardEnter,
+    );
+  }
+
   /// Returns the first, topmost visible notification.
   ///
   /// Notification shade has to be opened with [openNotifications].
