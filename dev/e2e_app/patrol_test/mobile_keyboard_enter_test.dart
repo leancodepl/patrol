@@ -32,14 +32,16 @@ void main() {
       await $(K.textfieldsScreenButton).scrollTo().tap();
 
       for (var index = 0; index < textInputActions.length; index++) {
+        final action = textInputActions[index];
         final textField = $(K.textFields[index]);
-        await textField.scrollTo().enterText(
-          'test_${textInputActions[index].name}',
-        );
+        await textField.scrollTo().enterText('test_${action.name}');
         await textField.tap();
         await Future<void>.delayed(const Duration(seconds: 1));
         await $.platform.mobile.sendKeyboardEnter();
+        await $('Submitted ${action.name}').waitUntilVisible();
       }
+
+      
     },
     tags: ['android', 'emulator', 'ios', 'simulator'],
   );
