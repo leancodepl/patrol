@@ -214,10 +214,17 @@ class DevelopService {
       _dartDefinesReader,
     );
 
+    final flavor = switch(device.targetPlatform) {
+      TargetPlatform.android => androidFlavor,
+      TargetPlatform.iOS => iosFlavor,
+      TargetPlatform.macOS => iosFlavor,
+      _ => null,
+    };
+
     final flutterOpts = FlutterAppOptions(
       command: options.flutterCommand,
       target: entrypoint.path,
-      flavor: androidFlavor,
+      flavor: flavor,
       buildMode: options.buildMode,
       dartDefines: mergedDartDefines,
       dartDefineFromFilePaths: options.dartDefineFromFilePaths,
