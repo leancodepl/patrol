@@ -130,9 +130,9 @@ export type PatrolNativeRequest =
   | PressKeyComboRequest
   | PressKeyRequest
   | ResizeWindowRequest
+  | ScreenshotRequest
   | ScrollToRequest
   | SetClipboardRequest
-  | ScreenshotRequest
   | StartTestRequest
   | TapRequest
   | UnknownRequest
