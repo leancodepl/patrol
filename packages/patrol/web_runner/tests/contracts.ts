@@ -105,6 +105,12 @@ export type ResizeWindowRequest = PatrolNativeRequestBase<
     height: number
   }
 >
+export type ScreenshotRequest = PatrolNativeRequestBase<
+  "screenshot",
+  {
+    path: string
+  }
+>
 type UnknownRequest = PatrolNativeRequestBase<`unknown-placeholder-${string}`, unknown>
 
 export type PatrolNativeRequest =
@@ -126,6 +132,7 @@ export type PatrolNativeRequest =
   | ResizeWindowRequest
   | ScrollToRequest
   | SetClipboardRequest
+  | ScreenshotRequest
   | StartTestRequest
   | TapRequest
   | UnknownRequest

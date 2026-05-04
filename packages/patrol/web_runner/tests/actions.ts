@@ -15,6 +15,7 @@ import { pressKey } from "./actions/pressKey"
 import { pressKeyCombo } from "./actions/pressKeyCombo"
 import { resizeWindow } from "./actions/resizeWindow"
 import { scrollTo } from "./actions/scrollTo"
+import { screenshot } from "./actions/screenshot"
 import { setClipboard } from "./actions/setClipboard"
 import { startTest } from "./actions/startTest"
 import { tap } from "./actions/tap"
@@ -29,6 +30,7 @@ export const actions = {
   tap,
   enterText,
   scrollTo,
+  screenshot,
   clearPermissions,
   addCookie,
   getCookies,
