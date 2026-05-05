@@ -19,6 +19,7 @@ void main() {
       await _requestAndGrantMicrophonePermission($);
       await _requestAndDenyLocationPermission($);
       await _requestAndDenyGalleryPermission($);
+      await _requestAndGrantBatteryPermission($);
     },
     tags: [
       'locale_testing_ios',
@@ -91,4 +92,19 @@ Future<void> _requestAndDenyGalleryPermission(PatrolIntegrationTester $) async {
     await $.pump();
   }
   expect($(K.galleryPermissionTile).$(#statusText).text, 'Not granted');
+}
+
+Future<void> _requestAndGrantBatteryPermission(PatrolIntegrationTester $) async {
+  if (Platform.isAndroid) {
+    if (!await Permission.ignoreBatteryOptimizations.isGranted) {
+      expect($(K.batteryPermissionTile).$(#statusText).text, 'Not granted');
+      await $(K.requestBatteryPermissionButton).tap();
+      if (await $.platform.mobile.isPermissionDialogVisible(timeout: _timeout)) {
+        await $.platform.mobile.grantPermissionOnlyThisTime();
+        await $.pump();
+      }
+    }
+
+    expect($(K.batteryPermissionTile).$(#statusText).text, 'Granted');
+  }
 }
