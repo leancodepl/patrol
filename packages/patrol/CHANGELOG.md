@@ -1,3 +1,7 @@
+## Unreleased
+
+- Add `allowPermission` method to `AndroidAutomator`.
+
 ## 4.5.0
 
 - Fix `appId` not being passed down on `$.platform.mobile.enterText` and `$.platform.mobile.enterTextByIndex` (#2992)
