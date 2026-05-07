@@ -832,6 +832,13 @@ class Automator private constructor() {
         tap(actionMenuUiSelector, actionMenuBySelector, 0, timeout)
     }
 
+    fun allowPermission()
+    {
+        val selector = AndroidSelector(resourceName = "android:id/button1")
+        val obj = uiDevice.findObject(selector.toUiSelector())
+        obj.click()
+    }
+
     /**
      * Returns true if [bySelector] found a view at [index] within [timeoutMillis], false otherwise.
      */

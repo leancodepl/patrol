@@ -380,6 +380,10 @@ class AutomatorServer(private val automation: Automator) : MobileAutomatorServer
         )
     }
 
+    override fun allowPermission() {
+        automation.allowPermission()
+    }
+
     override fun setMockLocation(request: SetMockLocationRequest) {
         automation.setMockLocation(request.latitude, request.longitude, request.packageName)
     }
