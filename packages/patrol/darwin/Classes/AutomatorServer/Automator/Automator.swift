@@ -3,7 +3,7 @@
   import os
 
   extension IOSSelector {
-    public func toTextFieldNSPredicate() -> NSPredicate {
+    public func toTextFieldNSPredicate() -> NSPredicate? {
       var format = ""
       var begun = false
       var values = [String]()
@@ -44,6 +44,10 @@
         begun = true
         format += "(identifier == %@)"
         values.append(identifier!)
+      }
+
+      if !begun {
+        return nil
       }
 
       let predicate = NSPredicate(format: format, argumentArray: values)
