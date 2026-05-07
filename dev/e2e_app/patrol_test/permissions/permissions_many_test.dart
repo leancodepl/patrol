@@ -94,15 +94,15 @@ Future<void> _requestAndDenyGalleryPermission(PatrolIntegrationTester $) async {
   expect($(K.galleryPermissionTile).$(#statusText).text, 'Not granted');
 }
 
-Future<void> _requestAndGrantBatteryPermission(PatrolIntegrationTester $) async {
+Future<void> _requestAndGrantBatteryPermission(
+  PatrolIntegrationTester $,
+) async {
   if (Platform.isAndroid) {
     if (!await Permission.ignoreBatteryOptimizations.isGranted) {
       expect($(K.batteryPermissionTile).$(#statusText).text, 'Not granted');
       await $(K.requestBatteryPermissionButton).tap();
-      if (await $.platform.mobile.isPermissionDialogVisible(timeout: _timeout)) {
-        await $.platform.mobile.grantPermissionOnlyThisTime();
-        await $.pump();
-      }
+      await $.platform.android.allowPermission();
+      await $.pump();
     }
 
     expect($(K.batteryPermissionTile).$(#statusText).text, 'Granted');
