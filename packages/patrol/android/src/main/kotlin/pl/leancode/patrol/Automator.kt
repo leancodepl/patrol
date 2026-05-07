@@ -679,11 +679,11 @@ class Automator private constructor() {
         uiObject.click()
     }
 
-    fun allowPermission()
-    {
-        val selector = AndroidSelector(resourceName = "android:id/button1")
-        val obj = uiDevice.findObject(selector.toUiSelector())
-        obj.click()
+    fun allowPermission() {
+        val resourceId = "android:id/button1"
+        val uiObject = waitForUiObjectByResourceId(resourceId, timeout = timeoutMillis)
+            ?: throw UiObjectNotFoundException("button to allow permission")
+        uiObject.click()
     }
 
     fun selectFineLocation() {
