@@ -669,13 +669,21 @@ class Automator private constructor() {
         val identifiers = arrayOf(
             "com.android.packageinstaller:id/permission_deny_button", // API <= 28
             "com.android.permissioncontroller:id/permission_deny_button", // API >= 29 (first invocation)
-            "com.android.permissioncontroller:id/permission_deny_and_dont_ask_again_button" // API >= 29 (second invocation)
+            "com.android.permissioncontroller:id/permission_deny_and_dont_ask_again_button", // API >= 29 (second invocation)
+            "android:id/button2" // for battery permission
         )
 
         val uiObject = waitForUiObjectByResourceId(*identifiers, timeout = timeoutMillis)
             ?: throw UiObjectNotFoundException("button to deny permission")
 
         uiObject.click()
+    }
+
+    fun allowPermission()
+    {
+        val selector = AndroidSelector(resourceName = "android:id/button1")
+        val obj = uiDevice.findObject(selector.toUiSelector())
+        obj.click()
     }
 
     fun selectFineLocation() {
@@ -830,13 +838,6 @@ class Automator private constructor() {
         }
 
         tap(actionMenuUiSelector, actionMenuBySelector, 0, timeout)
-    }
-
-    fun allowPermission()
-    {
-        val selector = AndroidSelector(resourceName = "android:id/button1")
-        val obj = uiDevice.findObject(selector.toUiSelector())
-        obj.click()
     }
 
     /**
