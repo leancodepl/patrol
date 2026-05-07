@@ -1,4 +1,4 @@
-## Unreleased
+## 4.6.0
 
 - Add `allowPermission` method to `AndroidAutomator`.
 
