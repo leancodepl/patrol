@@ -33,5 +33,23 @@ Going further, we need to sign the app and tests. Let's assume that your team jo
   </Step>
   <Step>
     Go to your IDE and try it out by running `patrol build ios --release`. If tests have been built successfully you're ready for action!
+    <Warning>
+  When running tests on a physical iOS device, a failed test can make
+  `xcodebuild` show a `password:` prompt while collecting diagnostics. The
+  command will stay blocked until the user interrupts it (e.g. by pressing `Ctrl+C`).
+
+  To avoid this, set `diagnosticCollectionPolicy` to `Never` in
+  `defaultOptions` in your `ios/TestPlan.xctestplan` file:
+
+  ```json
+  {
+    "defaultOptions" : {
+      "diagnosticCollectionPolicy" : "Never"
+    }
+  }
+  ```
+</Warning>
   </Step>
 </Steps>
+
+
