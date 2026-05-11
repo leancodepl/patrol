@@ -21,12 +21,13 @@ import { resizeWindow } from "./actions/resizeWindow"
 import { scrollTo } from "./actions/scrollTo"
 import { setClipboard } from "./actions/setClipboard"
 import { startTest } from "./actions/startTest"
+import { switchToMainPage } from "./actions/switchToMainPage"
 import { switchToPage } from "./actions/switchToPage"
 import { tap } from "./actions/tap"
 import { uploadFile } from "./actions/uploadFile"
 import { verifyFileDownloads } from "./actions/verifyFileDownloads"
 import { waitForPopup } from "./actions/waitForPopup"
-import { ActionParams, PatrolNativeRequest } from "./contracts"
+import { ActionParams } from "./contracts"
 
 export const actions = {
   acceptNextDialog,
@@ -52,6 +53,7 @@ export const actions = {
   scrollTo,
   setClipboard,
   startTest,
+  switchToMainPage,
   switchToPage,
   tap,
   uploadFile,
