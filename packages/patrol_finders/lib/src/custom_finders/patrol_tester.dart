@@ -480,7 +480,10 @@ class PatrolTester {
             }
           }
 
-          if (!kIsWeb && usesLiveBinding && editableTextState.mounted && !hideKeyboard) {
+          if (!kIsWeb &&
+              usesLiveBinding &&
+              editableTextState.mounted &&
+              !hideKeyboard) {
             editableTextState.requestKeyboard();
             await tester.pump();
           }
