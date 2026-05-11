@@ -407,6 +407,7 @@ class PatrolTester {
     Duration? settleTimeout,
     Alignment alignment = Alignment.center,
     bool enablePatrolLog = true,
+    bool hideKeyboard = true,
   }) {
     return TestAsyncUtils.guard(
       () => wrapWithPatrolLog(
@@ -432,6 +433,8 @@ class PatrolTester {
             editableTextFinder,
           );
           final wasFocused = editableTextState.widget.focusNode.hasFocus;
+          final usesLiveBinding =
+              tester.binding is LiveTestWidgetsFlutterBinding;
 
           if (!kIsWeb && wasFocused) {
             editableTextState.widget.focusNode.unfocus();
@@ -475,6 +478,11 @@ class PatrolTester {
               tester.testTextInput.reset();
               tester.testTextInput.unregister();
             }
+          }
+
+          if (!kIsWeb && usesLiveBinding && editableTextState.mounted && !hideKeyboard) {
+            editableTextState.requestKeyboard();
+            await tester.pump();
           }
           await _performPump(
             settlePolicy: settlePolicy,

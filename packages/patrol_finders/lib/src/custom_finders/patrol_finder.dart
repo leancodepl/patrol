@@ -323,6 +323,7 @@ class PatrolFinder implements MatchFinder {
     Duration? visibleTimeout,
     Duration? settleTimeout,
     Alignment alignment = Alignment.center,
+    bool hideKeyboard = true,
   }) => wrapWithPatrolLog(
     action: 'enterText',
     color: AnsiCodes.magenta,
@@ -334,6 +335,7 @@ class PatrolFinder implements MatchFinder {
       settleTimeout: settleTimeout,
       alignment: alignment,
       enablePatrolLog: false,
+      hideKeyboard: hideKeyboard,
     ),
   );
 
