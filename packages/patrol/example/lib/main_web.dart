@@ -203,7 +203,7 @@ class _Test2ScreenState extends State<Test2Screen> {
     return Shortcuts(
       shortcuts: {
         LogicalKeySet(
-          LogicalKeyboardKey.shift,
+          LogicalKeyboardKey.control,
           LogicalKeyboardKey.keyL,
           LogicalKeyboardKey.keyC,
         ): const RevealButtonIntent(),

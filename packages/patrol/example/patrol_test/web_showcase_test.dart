@@ -45,7 +45,7 @@ void main() {
     expect($('Continue to next test'), findsNothing);
 
     // Press Ctrl + L to reveal the button
-    await $.platform.web.pressKeyCombo(keys: ['Shift', 'L', 'C']);
+    await $.platform.web.pressKeyCombo(keys: ['Control', 'L', 'C']);
     await $.pumpAndSettle(duration: const Duration(seconds: 1));
 
     // Now the button should be visible
