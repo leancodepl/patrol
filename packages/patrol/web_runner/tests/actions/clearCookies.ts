@@ -1,5 +1,5 @@
-import { Page } from "playwright"
+import type { ActionParams, ClearCookiesRequest } from "../contracts"
 
-export async function clearCookies(page: Page) {
-  await page.context().clearCookies()
+export async function clearCookies({ pageManager }: ActionParams<ClearCookiesRequest>) {
+  await pageManager.context.clearCookies()
 }

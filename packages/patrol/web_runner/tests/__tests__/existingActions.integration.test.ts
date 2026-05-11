@@ -1,4 +1,4 @@
-import { test, expect, BrowserContext, Page } from "@playwright/test"
+import { test, expect, BrowserContext, Page, Cookie } from "@playwright/test"
 import { PageManager } from "../pageManager"
 import { handlePatrolPlatformAction } from "../patrolPlatformHandler"
 import { WebSelector } from "../contracts"
@@ -325,11 +325,7 @@ test("addCookie, getCookies, clearCookies - full cookie lifecycle", async ({ bro
     params: {},
   })) as any[]
 
-  expect(cookies).toEqual(
-    expect.arrayContaining([
-      expect.objectContaining({ name: "patrol_test", value: "abc123" }),
-    ]),
-  )
+  expect(cookies).toEqual(expect.arrayContaining([expect.objectContaining({ name: "patrol_test", value: "abc123" })]))
 
   // Clear cookies
   await handlePatrolPlatformAction(pageManager, {
@@ -604,41 +600,7 @@ test("dispatch of unknown action throws an error", async ({ browser }) => {
 })
 
 // ---------------------------------------------------------------------------
-// 20. tabId routing - action dispatches to the correct tab
-// ---------------------------------------------------------------------------
-test("tabId routing - actions target the correct tab via dispatch", async ({ browser }) => {
-  const { context, page, pageManager } = await setup(browser)
-
-  // Open a second tab
-  const tabId = await handlePatrolPlatformAction(pageManager, {
-    action: "openNewTab",
-    params: { url: "about:blank" },
-  })
-  expect(tabId).toBe("tab_1")
-
-  // Set content on tab_1 directly (for setup purposes)
-  const tab1Page = pageManager.resolve("tab_1")
-  await tab1Page.setContent(`<input data-testid="tab1-input" type="text" />`)
-
-  // Dispatch enterText with tabId targeting tab_1
-  await handlePatrolPlatformAction(pageManager, {
-    action: "enterText",
-    params: {
-      _routeToTab: "tab_1",
-      selector: selector({ testId: "tab1-input" }),
-      text: "typed in tab 1",
-      iframeSelector: null,
-    },
-  })
-
-  const value = await tab1Page.locator('[data-testid="tab1-input"]').inputValue()
-  expect(value).toBe("typed in tab 1")
-
-  await context.close()
-})
-
-// ---------------------------------------------------------------------------
-// 21. addCookie with extra options (httpOnly, secure, sameSite)
+// 20. addCookie with extra options (httpOnly, secure, sameSite)
 // ---------------------------------------------------------------------------
 test("addCookie - supports additional cookie properties", async ({ browser }) => {
   const { context, page, pageManager } = await setup(browser)
@@ -670,13 +632,13 @@ test("addCookie - supports additional cookie properties", async ({ browser }) =>
   const cookies = (await handlePatrolPlatformAction(pageManager, {
     action: "getCookies",
     params: {},
-  })) as any[]
+  })) as Cookie[]
 
-  const sessionCookie = cookies.find((c: any) => c.name === "session_id")
+  const sessionCookie = cookies.find(c => c.name === "session_id")
   expect(sessionCookie).toBeDefined()
-  expect(sessionCookie.value).toBe("xyz789")
-  expect(sessionCookie.httpOnly).toBe(true)
-  expect(sessionCookie.sameSite).toBe("Lax")
+  expect(sessionCookie!.value).toBe("xyz789")
+  expect(sessionCookie!.httpOnly).toBe(true)
+  expect(sessionCookie!.sameSite).toBe("Lax")
 
   await context.close()
 })

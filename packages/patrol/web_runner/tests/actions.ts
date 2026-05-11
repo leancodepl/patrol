@@ -2,58 +2,59 @@ import { acceptNextDialog } from "./actions/acceptNextDialog"
 import { addCookie } from "./actions/addCookie"
 import { clearCookies } from "./actions/clearCookies"
 import { clearPermissions } from "./actions/clearPermissions"
-import { closeTab } from "./actions/closeTab"
+import { closePage } from "./actions/closePage"
 import { disableDarkMode } from "./actions/disableDarkMode"
 import { dismissNextDialog } from "./actions/dismissNextDialog"
 import { enableDarkMode } from "./actions/enableDarkMode"
 import { enterText } from "./actions/enterText"
 import { getClipboard } from "./actions/getClipboard"
 import { getCookies } from "./actions/getCookies"
-import { getCurrentTab } from "./actions/getCurrentTab"
-import { getTabs } from "./actions/getTabs"
+import { getCurrentPage } from "./actions/getCurrentPage"
+import { getPages } from "./actions/getPages"
 import { goBack } from "./actions/goBack"
 import { goForward } from "./actions/goForward"
 import { grantPermissions } from "./actions/grantPermissions"
-import { openNewTab } from "./actions/openNewTab"
+import { openNewPage } from "./actions/openNewPage"
 import { pressKey } from "./actions/pressKey"
 import { pressKeyCombo } from "./actions/pressKeyCombo"
 import { resizeWindow } from "./actions/resizeWindow"
 import { scrollTo } from "./actions/scrollTo"
 import { setClipboard } from "./actions/setClipboard"
 import { startTest } from "./actions/startTest"
-import { switchToTab } from "./actions/switchToTab"
+import { switchToPage } from "./actions/switchToPage"
 import { tap } from "./actions/tap"
 import { uploadFile } from "./actions/uploadFile"
 import { verifyFileDownloads } from "./actions/verifyFileDownloads"
 import { waitForPopup } from "./actions/waitForPopup"
+import { ActionParams, PatrolNativeRequest } from "./contracts"
 
 export const actions = {
   acceptNextDialog,
   addCookie,
   clearCookies,
   clearPermissions,
-  closeTab,
+  closePage,
   disableDarkMode,
   dismissNextDialog,
   enableDarkMode,
   enterText,
   getClipboard,
   getCookies,
-  getCurrentTab,
-  getTabs,
+  getCurrentPage,
+  getPages,
   goBack,
   goForward,
   grantPermissions,
-  openNewTab,
+  openNewPage,
   pressKey,
   pressKeyCombo,
   resizeWindow,
   scrollTo,
   setClipboard,
   startTest,
-  switchToTab,
+  switchToPage,
   tap,
   uploadFile,
   verifyFileDownloads,
   waitForPopup,
-} as const
+} as const satisfies Record<string, (params: ActionParams<any>) => Promise<any>>

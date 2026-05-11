@@ -1,10 +1,10 @@
 import { test, expect, BrowserContext } from "@playwright/test"
 import { PageManager } from "../pageManager"
-import { openNewTab } from "../actions/openNewTab"
-import { closeTab } from "../actions/closeTab"
-import { switchToTab } from "../actions/switchToTab"
-import { getTabs } from "../actions/getTabs"
-import { getCurrentTab } from "../actions/getCurrentTab"
+import { openNewPage } from "../actions/openNewPage"
+import { closePage } from "../actions/closePage"
+import { switchToPage } from "../actions/switchToPage"
+import { getPages } from "../actions/getPages"
+import { getCurrentPage } from "../actions/getCurrentPage"
 import { handlePatrolPlatformAction } from "../patrolPlatformHandler"
 
 // Local HTML content served via route interception — no network access needed.
@@ -22,85 +22,85 @@ const POPUP_TARGET_HTML = `<!DOCTYPE html>
 
 /**
  * Intercept all requests to https://test.local/** and serve local HTML.
- * This lets us exercise the full openNewTab code path (newPage + goto)
+ * This lets us exercise the full openNewPage code path (newPage + goto)
  * without any real network access.
  */
 async function interceptTestRoutes(context: BrowserContext) {
-  await context.route("https://test.local/page1", (route) => {
+  await context.route("https://test.local/page1", route => {
     route.fulfill({ contentType: "text/html", body: TEST_PAGE_HTML })
   })
-  await context.route("https://test.local/page2", (route) => {
+  await context.route("https://test.local/page2", route => {
     route.fulfill({ contentType: "text/html", body: TEST_PAGE_2_HTML })
   })
-  await context.route("https://test.local/popup-target", (route) => {
+  await context.route("https://test.local/popup-target", route => {
     route.fulfill({ contentType: "text/html", body: POPUP_TARGET_HTML })
   })
 }
 
-test("open a new tab, switch to it, interact, and switch back", async ({ browser }) => {
+test("open a new page, switch to it, interact, and switch back", async ({ browser }) => {
   const context = await browser.newContext()
   await interceptTestRoutes(context)
   const page = await context.newPage()
   const pageManager = new PageManager(context, page)
 
-  // Open a new tab to locally-served page
-  const tabId = await openNewTab(page, { url: "https://test.local/page1" }, pageManager, context)
-  expect(tabId).toBe("tab_1")
+  // Open a new page to locally-served content
+  const pageId = await openNewPage(page, { url: "https://test.local/page1" }, pageManager, context)
+  expect(pageId).toBe("page_1")
 
-  // Verify 2 tabs exist
-  const tabsResult = await getTabs(page, {} as Record<string, never>, pageManager)
-  expect(tabsResult.tabs).toHaveLength(2)
-  expect(tabsResult.tabs).toContain("tab_0")
-  expect(tabsResult.tabs).toContain("tab_1")
+  // Verify 2 pages exist
+  const pagesResult = await getPages(page, {}, pageManager)
+  expect(pagesResult.pages).toHaveLength(2)
+  expect(pagesResult.pages).toContain("page_0")
+  expect(pagesResult.pages).toContain("page_1")
 
-  // Switch to the new tab
-  await switchToTab(page, { tabId: "tab_1" }, pageManager)
+  // Switch to the new page
+  await switchToPage(page, { pageId: "page_1" }, pageManager)
 
-  // Verify active tab is tab_1
-  const currentTab = await getCurrentTab(page, {} as Record<string, never>, pageManager)
-  expect(currentTab).toBe("tab_1")
+  // Verify active page is page_1
+  const currentPage = await getCurrentPage(page, {}, pageManager)
+  expect(currentPage).toBe("page_1")
 
-  // Verify the new tab loaded the local page
-  const newPage = pageManager.resolve("tab_1")
+  // Verify the new page loaded the local page
+  const newPage = pageManager.resolve("page_1")
   await newPage.waitForLoadState("domcontentloaded")
   const heading = await newPage.locator("h1").textContent()
   expect(heading).toContain("Test Page")
 
-  // Switch back to tab_0 and verify
-  await switchToTab(page, { tabId: "tab_0" }, pageManager)
-  const backToTab = await getCurrentTab(page, {} as Record<string, never>, pageManager)
-  expect(backToTab).toBe("tab_0")
+  // Switch back to page_0 and verify
+  await switchToPage(page, { pageId: "page_0" }, pageManager)
+  const backToPage = await getCurrentPage(page, {}, pageManager)
+  expect(backToPage).toBe("page_0")
 
   await context.close()
 })
 
-test("close a tab and verify cleanup", async ({ browser }) => {
+test("close a page and verify cleanup", async ({ browser }) => {
   const context = await browser.newContext()
   await interceptTestRoutes(context)
   const page = await context.newPage()
   const pageManager = new PageManager(context, page)
 
-  // Open 2 new tabs
-  await openNewTab(page, { url: "https://test.local/page1" }, pageManager, context)
-  await openNewTab(page, { url: "https://test.local/page2" }, pageManager, context)
+  // Open 2 new pages
+  await openNewPage(page, { url: "https://test.local/page1" }, pageManager, context)
+  await openNewPage(page, { url: "https://test.local/page2" }, pageManager, context)
 
-  // Verify 3 tabs total
-  const before = await getTabs(page, {} as Record<string, never>, pageManager)
-  expect(before.tabs).toHaveLength(3)
-  expect(before.tabs).toEqual(expect.arrayContaining(["tab_0", "tab_1", "tab_2"]))
+  // Verify 3 pages total
+  const before = await getPages(page, {}, pageManager)
+  expect(before.pages).toHaveLength(3)
+  expect(before.pages).toEqual(expect.arrayContaining(["page_0", "page_1", "page_2"]))
 
-  // Close tab_1
-  await closeTab(page, { tabId: "tab_1" }, pageManager)
+  // Close page_1
+  await closePage(page, { pageId: "page_1" }, pageManager)
 
-  // Verify 2 remain with stable IDs (tab_0 and tab_2)
-  const after = await getTabs(page, {} as Record<string, never>, pageManager)
-  expect(after.tabs).toHaveLength(2)
-  expect(after.tabs).toContain("tab_0")
-  expect(after.tabs).toContain("tab_2")
-  expect(after.tabs).not.toContain("tab_1")
+  // Verify 2 remain with stable IDs (page_0 and page_2)
+  const after = await getPages(page, {}, pageManager)
+  expect(after.pages).toHaveLength(2)
+  expect(after.pages).toContain("page_0")
+  expect(after.pages).toContain("page_2")
+  expect(after.pages).not.toContain("page_1")
 
-  // Verify resolving tab_1 throws
-  expect(() => pageManager.resolve("tab_1")).toThrow(/No page found for tab ID "tab_1"/)
+  // Verify resolving page_1 throws
+  expect(() => pageManager.resolve("page_1")).toThrow(/No page found for page ID "page_1"/)
 
   await context.close()
 })
@@ -111,19 +111,19 @@ test("dispatch via handlePatrolPlatformAction routes correctly", async ({ browse
   const page = await context.newPage()
   const pageManager = new PageManager(context, page)
 
-  // Dispatch openNewTab through the handler
-  const tabId = await handlePatrolPlatformAction(pageManager, {
-    action: "openNewTab",
+  // Dispatch openNewPage through the handler
+  const pageId = await handlePatrolPlatformAction(pageManager, {
+    action: "openNewPage",
     params: { url: "https://test.local/page1" },
   })
 
-  // Verify it returned a tab ID and the tab was registered
-  expect(tabId).toBe("tab_1")
+  // Verify it returned a page ID and the page was registered
+  expect(pageId).toBe("page_1")
   expect(pageManager.count).toBe(2)
-  expect(pageManager.ids).toContain("tab_1")
+  expect(pageManager.ids).toContain("page_1")
 
-  // Verify the new tab actually loaded the page
-  const newPage = pageManager.resolve("tab_1")
+  // Verify the new page actually loaded the page
+  const newPage = pageManager.resolve("page_1")
   await newPage.waitForLoadState("domcontentloaded")
   const heading = await newPage.locator("h1").textContent()
   expect(heading).toContain("Test Page")
@@ -131,31 +131,31 @@ test("dispatch via handlePatrolPlatformAction routes correctly", async ({ browse
   await context.close()
 })
 
-test("tabs persist correct content after switching", async ({ browser }) => {
+test("pages persist correct content after switching", async ({ browser }) => {
   const context = await browser.newContext()
   await interceptTestRoutes(context)
   const page = await context.newPage()
   const pageManager = new PageManager(context, page)
 
-  // Open tab_1 to locally-served page
-  await openNewTab(page, { url: "https://test.local/page1" }, pageManager, context)
+  // Open page_1 to locally-served page
+  await openNewPage(page, { url: "https://test.local/page1" }, pageManager, context)
 
-  // Switch to tab_1 and read the page title
-  await switchToTab(page, { tabId: "tab_1" }, pageManager)
-  const tab1Page = pageManager.resolve("tab_1")
-  await tab1Page.waitForLoadState("domcontentloaded")
-  const title = await tab1Page.title()
+  // Switch to page_1 and read the page title
+  await switchToPage(page, { pageId: "page_1" }, pageManager)
+  const page1 = pageManager.resolve("page_1")
+  await page1.waitForLoadState("domcontentloaded")
+  const title = await page1.title()
   expect(title).toContain("Test Page")
 
-  // Switch back to tab_0 and verify its URL is still about:blank
-  await switchToTab(page, { tabId: "tab_0" }, pageManager)
-  const tab0Page = pageManager.resolve("tab_0")
-  expect(tab0Page.url()).toBe("about:blank")
+  // Switch back to page_0 and verify its URL is still about:blank
+  await switchToPage(page, { pageId: "page_0" }, pageManager)
+  const page0 = pageManager.resolve("page_0")
+  expect(page0.url()).toBe("about:blank")
 
-  // Switch to tab_1 again and verify content is still there
-  await switchToTab(page, { tabId: "tab_1" }, pageManager)
-  const tab1PageAgain = pageManager.resolve("tab_1")
-  const headingText = await tab1PageAgain.locator("h1").textContent()
+  // Switch to page_1 again and verify content is still there
+  await switchToPage(page, { pageId: "page_1" }, pageManager)
+  const page1Again = pageManager.resolve("page_1")
+  const headingText = await page1Again.locator("h1").textContent()
   expect(headingText).toContain("Test Page")
 
   await context.close()
@@ -168,18 +168,15 @@ test("PageManager auto-registers popup from window.open", async ({ browser }) =>
   const pageManager = new PageManager(context, page)
 
   // Set initial page content with a button that opens a popup to a routed URL
-  await page.setContent('<button onclick="window.open(\'https://test.local/popup-target\')">Open</button>')
+  await page.setContent("<button onclick=\"window.open('https://test.local/popup-target')\">Open</button>")
 
   // Click the button and wait for the popup to appear
-  const [popup] = await Promise.all([
-    context.waitForEvent("page"),
-    page.locator("button").click(),
-  ])
+  const [popup] = await Promise.all([context.waitForEvent("page"), page.locator("button").click()])
 
   // Wait for the popup to finish loading
   await popup.waitForLoadState("domcontentloaded")
 
-  // Verify PageManager has 2 tabs
+  // Verify PageManager has 2 pages
   expect(pageManager.count).toBe(2)
 
   // Verify the popup page loaded the local content

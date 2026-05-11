@@ -1,5 +1,5 @@
-import { Page } from "playwright"
+import type { ActionParams, GoForwardRequest } from "../contracts"
 
-export async function goForward(page: Page) {
-  await page.goForward()
+export async function goForward({ pageManager }: ActionParams<GoForwardRequest>) {
+  await pageManager.activePage.goForward()
 }

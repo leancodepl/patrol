@@ -285,9 +285,9 @@ class WebAutomator implements web_automator.WebAutomator {
   }
 
   @override
-  Future<String> openNewTab({required String url}) async {
+  Future<String> openNewPage({required String url}) async {
     final result = await callPlaywright(
-      'openNewTab',
+      'openNewPage',
       {'url': url},
       logger: _config.logger,
       patrolLog: _patrolLog,
@@ -296,29 +296,29 @@ class WebAutomator implements web_automator.WebAutomator {
   }
 
   @override
-  Future<void> closeTab({required String tabId}) async {
+  Future<void> closePage({required String pageId}) async {
     await callPlaywright(
-      'closeTab',
-      {'tabId': tabId},
+      'closePage',
+      {'pageId': pageId},
       logger: _config.logger,
       patrolLog: _patrolLog,
     );
   }
 
   @override
-  Future<void> switchToTab({required String tabId}) async {
+  Future<void> switchToPage({required String pageId}) async {
     await callPlaywright(
-      'switchToTab',
-      {'tabId': tabId},
+      'switchToPage',
+      {'pageId': pageId},
       logger: _config.logger,
       patrolLog: _patrolLog,
     );
   }
 
   @override
-  Future<LinkedHashMap<Object?, Object?>> getTabs() async {
+  Future<LinkedHashMap<Object?, Object?>> getPages() async {
     final result = await callPlaywright(
-      'getTabs',
+      'getPages',
       {},
       logger: _config.logger,
       patrolLog: _patrolLog,
@@ -327,9 +327,9 @@ class WebAutomator implements web_automator.WebAutomator {
   }
 
   @override
-  Future<String> getCurrentTab() async {
+  Future<String> getCurrentPage() async {
     final result = await callPlaywright(
-      'getCurrentTab',
+      'getCurrentPage',
       {},
       logger: _config.logger,
       patrolLog: _patrolLog,

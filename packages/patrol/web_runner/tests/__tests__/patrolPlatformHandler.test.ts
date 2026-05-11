@@ -1,9 +1,6 @@
 import { test, expect } from "@playwright/test"
 import { EventEmitter } from "events"
-import {
-  exposePatrolPlatformHandler,
-  handlePatrolPlatformAction,
-} from "../patrolPlatformHandler"
+import { exposePatrolPlatformHandler, handlePatrolPlatformAction } from "../patrolPlatformHandler"
 import { PageManager } from "../pageManager"
 import type { PatrolNativeRequest } from "../contracts"
 
@@ -104,7 +101,7 @@ test.describe("patrolPlatformHandler", () => {
     let receivedPage: unknown
     let receivedParams: unknown
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ;(actionsModule.actions as any).enableDarkMode = async (page: unknown, params: unknown) => {
       receivedPage = page
       receivedParams = params
@@ -131,93 +128,7 @@ test.describe("patrolPlatformHandler", () => {
   })
 
   // -------------------------------------------------------------------------
-  // 3. handlePatrolPlatformAction resolves _routeToTab to the correct page
-  // -------------------------------------------------------------------------
-
-  test("handlePatrolPlatformAction resolves _routeToTab to the correct page instead of the active page", async () => {
-    const { context, initialPage, manager } = buildPageManager()
-
-    // Add a second page
-    const secondPage = createMockPage()
-    context.emit("page", secondPage)
-
-    // Active page is still tab_0; we explicitly request tab_1
-    const request: PatrolNativeRequest = {
-      action: "enableDarkMode",
-      params: { _routeToTab: "tab_1" },
-    }
-
-    // Spy on resolve to verify the correct tabId is passed
-    const originalResolve = manager.resolve.bind(manager)
-    let resolvedTabId: string | undefined
-    manager.resolve = (tabId?: string) => {
-      resolvedTabId = tabId
-      return originalResolve(tabId)
-    }
-
-    // Replace enableDarkMode with a no-op spy so the real action doesn't run
-    // against the mock page (which lacks emulateMedia, etc.)
-    const actionsModule = await import("../actions")
-    const originalAction = actionsModule.actions.enableDarkMode
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ;(actionsModule.actions as any).enableDarkMode = async () => {}
-
-    try {
-      await handlePatrolPlatformAction(manager, request)
-    } finally {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      ;(actionsModule.actions as any).enableDarkMode = originalAction
-    }
-
-    expect(resolvedTabId).toBe("tab_1")
-  })
-
-  // -------------------------------------------------------------------------
-  // 4. handlePatrolPlatformAction falls back to active page when no _routeToTab
-  // -------------------------------------------------------------------------
-
-  test("handlePatrolPlatformAction falls back to active page when no _routeToTab is provided", async () => {
-    const { context, manager } = buildPageManager()
-
-    // Add a second page and switch active to it
-    const secondPage = createMockPage()
-    context.emit("page", secondPage)
-    manager.activeId = "tab_1"
-
-    const request: PatrolNativeRequest = {
-      action: "enableDarkMode",
-      params: {},
-    }
-
-    // Spy on resolve to verify it's called without a tabId (falls back to active)
-    const originalResolve = manager.resolve.bind(manager)
-    let resolvedTabId: string | undefined = "SENTINEL"
-    manager.resolve = (tabId?: string) => {
-      resolvedTabId = tabId
-      return originalResolve(tabId)
-    }
-
-    // Replace enableDarkMode with a no-op spy so the real action doesn't run
-    // against the mock page (which lacks emulateMedia, etc.)
-    const actionsModule = await import("../actions")
-    const originalAction = actionsModule.actions.enableDarkMode
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ;(actionsModule.actions as any).enableDarkMode = async () => {}
-
-    try {
-      await handlePatrolPlatformAction(manager, request)
-    } finally {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      ;(actionsModule.actions as any).enableDarkMode = originalAction
-    }
-
-    // resolve() should have been called with undefined (no tabId), causing
-    // it to fall back to the active page internally
-    expect(resolvedTabId).toBeUndefined()
-  })
-
-  // -------------------------------------------------------------------------
-  // 5. handlePatrolPlatformAction throws for unknown action
+  // 3. handlePatrolPlatformAction throws for unknown action
   // -------------------------------------------------------------------------
 
   test("handlePatrolPlatformAction throws for an unknown action", async () => {
@@ -228,27 +139,25 @@ test.describe("patrolPlatformHandler", () => {
       params: {},
     } as PatrolNativeRequest
 
-    await expect(handlePatrolPlatformAction(manager, request)).rejects.toThrow(
-      /not found/i,
-    )
+    await expect(handlePatrolPlatformAction(manager, request)).rejects.toThrow(/not found/i)
   })
 
   // -------------------------------------------------------------------------
-  // 6. handlePatrolPlatformAction strips _routeToTab from params before passing
+  // 4. handlePatrolPlatformAction strips pageId from params before passing
   //    to the action function
   // -------------------------------------------------------------------------
 
-  test("handlePatrolPlatformAction strips _routeToTab from params before passing to the action", async () => {
+  test("handlePatrolPlatformAction strips pageId from params before passing to the action", async () => {
     const { context, manager } = buildPageManager()
 
-    // Add a second page so tab_1 is valid
+    // Add a second page so page_1 is valid
     const secondPage = createMockPage()
     context.emit("page", secondPage)
 
     let capturedParams: unknown
 
     // Replace enableDarkMode with a spy that captures the params it receives.
-    // This lets us verify that _routeToTab (a routing concern) is stripped before
+    // This lets us verify that pageId (a routing concern) is stripped before
     // the action function sees the params.
     const actionsModule = await import("../actions")
     const originalAction = actionsModule.actions.enableDarkMode
@@ -260,7 +169,7 @@ test.describe("patrolPlatformHandler", () => {
 
     const request: PatrolNativeRequest = {
       action: "enableDarkMode",
-      params: { _routeToTab: "tab_1" },
+      params: { _routeToPage: "page_1" },
     }
 
     try {
@@ -271,8 +180,8 @@ test.describe("patrolPlatformHandler", () => {
       ;(actionsModule.actions as any).enableDarkMode = originalAction
     }
 
-    // _routeToTab is a routing concern — it must NOT leak into action params
+    // pageId is a routing concern — it must NOT leak into action params
     expect(capturedParams).toBeDefined()
-    expect(capturedParams).not.toHaveProperty("_routeToTab")
+    expect(capturedParams).not.toHaveProperty("pageId")
   })
 })

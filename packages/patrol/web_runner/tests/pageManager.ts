@@ -1,32 +1,36 @@
 import type { Page, BrowserContext } from "playwright"
 
 export class PageManager {
-  private _registry = new Map<string, Page>()
-  private _reverse = new Map<Page, string>()
+  private registry = new Map<string, Page>()
+  private reverse = new Map<Page, string>()
   private _activeId: string
-  private _nextIndex = 0
-  readonly context: BrowserContext
+  readonly mainPageId: string
+  private nextIndex = 0
 
-  constructor(context: BrowserContext, initialPage: Page) {
+  constructor(
+    readonly context: BrowserContext,
+    mainPage: Page,
+  ) {
     this.context = context
-    this._register(initialPage)
-    this._activeId = "tab_0"
+    this.mainPageId = this.register(mainPage)
+    this._activeId = this.mainPageId
 
-    context.on("page", (page: Page) => {
-      this._register(page)
+    this.context.on("page", (page: Page) => {
+      this.register(page)
     })
   }
 
-  private _register(page: Page): string {
-    const id = `tab_${this._nextIndex++}`
-    this._registry.set(id, page)
-    this._reverse.set(page, id)
+  private register(page: Page): string {
+    const id = `page_${this.nextIndex++}`
+
+    this.registry.set(id, page)
+    this.reverse.set(page, id)
 
     const cleanup = () => {
-      this._registry.delete(id)
-      this._reverse.delete(page)
+      this.registry.delete(id)
+      this.reverse.delete(page)
       if (this._activeId === id) {
-        this._activeId = "tab_0"
+        this._activeId = this.mainPageId
       }
     }
 
@@ -36,35 +40,50 @@ export class PageManager {
     return id
   }
 
-  resolve(tabId?: string): Page {
-    const id = tabId ?? this._activeId
-    const page = this._registry.get(id)
+  resolve(pageId: string): Page {
+    const page = this.registry.get(pageId)
+
     if (!page) {
-      throw new Error(`No page found for tab ID "${id}"`)
+      throw new Error(`No page found for page ID "${pageId}"`)
     }
+
     return page
+  }
+
+  get activePage(): Page {
+    return this.resolve(this._activeId)
   }
 
   get activeId(): string {
     return this._activeId
   }
 
-  set activeId(tabId: string) {
-    if (!this._registry.has(tabId)) {
-      throw new Error(`No page found for tab ID "${tabId}"`)
+  set activeId(pageId: string) {
+    if (!this.registry.has(pageId)) {
+      throw new Error(`No page found for page ID "${pageId}"`)
     }
-    this._activeId = tabId
+
+    this._activeId = pageId
   }
 
   get count(): number {
-    return this._registry.size
+    return this.registry.size
   }
 
   get ids(): string[] {
-    return Array.from(this._registry.keys())
+    return Array.from(this.registry.keys())
   }
 
   idOf(page: Page): string | undefined {
-    return this._reverse.get(page)
+    return this.reverse.get(page)
+  }
+
+  isMainPage(page: Page): boolean {
+    const pageId = this.reverse.get(page)
+    return !!pageId && this.isMainPageId(pageId)
+  }
+
+  isMainPageId(pageId: string): boolean {
+    return pageId === this.mainPageId
   }
 }
