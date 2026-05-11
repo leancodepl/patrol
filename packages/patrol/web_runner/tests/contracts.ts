@@ -76,10 +76,8 @@ export type UploadFileRequest = PatrolNativeRequestBase<
     }>
   }
 >
-export type AcceptNextDialogRequest = PatrolNativeRequestBase<"acceptNextDialog", {
-}>
-export type DismissNextDialogRequest = PatrolNativeRequestBase<"dismissNextDialog", {
-}>
+export type AcceptNextDialogRequest = PatrolNativeRequestBase<"acceptNextDialog", {}>
+export type DismissNextDialogRequest = PatrolNativeRequestBase<"dismissNextDialog", {}>
 export type PressKeyRequest = PatrolNativeRequestBase<
   "pressKey",
   {
@@ -93,16 +91,8 @@ export type PressKeyComboRequest = PatrolNativeRequestBase<
   }
 >
 export type VerifyFileDownloadsRequest = PatrolNativeRequestBase<"verifyFileDownloads", {}>
-export type GoBackRequest = PatrolNativeRequestBase<
-  "goBack",
-  {
-  }
->
-export type GoForwardRequest = PatrolNativeRequestBase<
-  "goForward",
-  {
-  }
->
+export type GoBackRequest = PatrolNativeRequestBase<"goBack", {}>
+export type GoForwardRequest = PatrolNativeRequestBase<"goForward", {}>
 export type GetClipboardRequest = PatrolNativeRequestBase<"getClipboard", {}>
 export type SetClipboardRequest = PatrolNativeRequestBase<
   "setClipboard",
@@ -135,20 +125,10 @@ export type SwitchToPageRequest = PatrolNativeRequestBase<
     pageId: string
   }
 >
-export type SwitchToMainPageRequest = PatrolNativeRequestBase<
-  "switchToMainPage",
-  {
-  }
->
+export type SwitchToMainPageRequest = PatrolNativeRequestBase<"switchToMainPage", {}>
 export type GetPagesRequest = PatrolNativeRequestBase<"getPages", {}>
 export type GetCurrentPageRequest = PatrolNativeRequestBase<"getCurrentPage", {}>
-export type WaitForPopupRequest = PatrolNativeRequestBase<
-  "waitForPopup",
-  {
-    triggerAction: string
-    triggerParams: Record<string, unknown>
-  }
->
+export type WaitForPopupRequest = PatrolNativeRequestBase<"waitForPopup", {}>
 type UnknownRequest = PatrolNativeRequestBase<`unknown-placeholder-${string}`, unknown>
 
 export type PatrolNativeRequest =

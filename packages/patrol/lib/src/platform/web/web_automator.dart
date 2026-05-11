@@ -110,10 +110,7 @@ abstract interface class WebAutomator {
   /// Returns the ID of the currently active page.
   Future<String> getCurrentPage();
 
-  /// Executes [triggerAction] and waits for a popup/new page to open.
+  /// Waits for a popup/new page to open.
   /// Returns the page ID of the newly opened page.
-  Future<String> waitForPopup({
-    required String triggerAction,
-    required Map<String, dynamic> triggerParams,
-  });
+  Future<String> waitForPopup();
 }
