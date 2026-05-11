@@ -348,13 +348,10 @@ class WebAutomator implements web_automator.WebAutomator {
   }
 
   @override
-  Future<String> waitForPopup({
-    required String triggerAction,
-    required Map<String, dynamic> triggerParams,
-  }) async {
+  Future<String> waitForPopup() async {
     final result = await callPlaywright(
       'waitForPopup',
-      {'triggerAction': triggerAction, 'triggerParams': triggerParams},
+      {},
       logger: _config.logger,
       patrolLog: _patrolLog,
     );

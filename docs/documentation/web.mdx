@@ -101,8 +101,7 @@ await $.platform.web.switchToPage(pageId: pageId);
 final currentPage = await $.platform.web.getCurrentPage();
 final pages = await $.platform.web.getPages();
 await $.platform.web.closePage(pageId: pageId);
-final popupPageId = await $.platform.web.waitForPopup(
-  triggerAction: 'tap',
-  triggerParams: {'selector': buttonSelector},
-);
+final popupPageIdFuture = $.platform.web.waitForPopup();
+// ... trigger the popup ...
+final popupPageId = await popupPageIdFuture;
 ```

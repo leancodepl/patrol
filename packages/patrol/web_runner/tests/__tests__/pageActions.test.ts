@@ -9,6 +9,8 @@ import { switchToPage } from "../actions/switchToPage"
 import { getPages } from "../actions/getPages"
 import { getCurrentPage } from "../actions/getCurrentPage"
 import { waitForPopup } from "../actions/waitForPopup"
+import { tap } from "../actions/tap"
+import { WebSelector } from "../contracts"
 
 // ---------------------------------------------------------------------------
 // Lightweight mocks for Playwright's Page and BrowserContext.
@@ -86,6 +88,21 @@ function createMockContext(): MockContext {
   }) as MockContext
 
   return context
+}
+
+/** Build a full WebSelector with only the specified fields set; all others null. */
+function selector(overrides: Partial<WebSelector>): WebSelector {
+  return {
+    role: null,
+    label: null,
+    placeholder: null,
+    text: null,
+    altText: null,
+    title: null,
+    testId: null,
+    cssOrXpath: null,
+    ...overrides,
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -215,7 +232,7 @@ test.describe("closePage", () => {
         pageManager: manager,
         params: { pageId: "page_0" },
       }),
-    ).rejects.toThrow("Cannot close the initial Flutter page")
+    ).rejects.toThrow("Cannot close the main Flutter page")
   })
 })
 
@@ -348,14 +365,20 @@ test.describe("waitForPopup", () => {
       context.emit("page", popupPage)
     }, 10)
 
-    const pageId = await waitForPopup({
+    const pageIdPromise = waitForPopup({
       pageManager: manager,
+      params: {},
+    })
 
+    await tap({
+      pageManager: manager,
       params: {
-        triggerAction: "tap",
-        triggerParams: { selector: { text: "Open popup" } },
+        selector: selector({ text: "Open popup" }),
+        iframeSelector: null,
       },
     })
+
+    const pageId = await pageIdPromise
 
     expect(pageId).toBeDefined()
     expect(typeof pageId).toBe("string")
@@ -373,13 +396,20 @@ test.describe("waitForPopup", () => {
       context.emit("page", popupPage)
     }, 10)
 
-    const pageId = await waitForPopup({
+    const pageIdPromise = waitForPopup({
+      pageManager: manager,
+      params: {},
+    })
+
+    await tap({
       pageManager: manager,
       params: {
-        triggerAction: "tap",
-        triggerParams: { selector: { text: "Open popup" } },
+        selector: selector({ text: "Open popup" }),
+        iframeSelector: null,
       },
     })
+
+    const pageId = await pageIdPromise
 
     // The popup should be registered and the returned ID should resolve to it
     expect(manager.ids).toContain(pageId)
@@ -400,13 +430,20 @@ test.describe("waitForPopup", () => {
 
     const countBefore = manager.count
 
-    const pageId = await waitForPopup({
+    const pageIdPromise = waitForPopup({
+      pageManager: manager,
+      params: {},
+    })
+
+    await tap({
       pageManager: manager,
       params: {
-        triggerAction: "tap",
-        triggerParams: { selector: { text: "Open popup" } },
+        selector: selector({ text: "Open popup" }),
+        iframeSelector: null,
       },
     })
+
+    const pageId = await pageIdPromise
 
     expect(manager.count).toBe(countBefore + 1)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

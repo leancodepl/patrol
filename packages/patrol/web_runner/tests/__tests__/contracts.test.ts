@@ -1,8 +1,6 @@
 import { test, expect } from "@playwright/test"
 import type {
   TapRequest,
-  EnterTextRequest,
-  ScrollToRequest,
   OpenNewPageRequest,
   ClosePageRequest,
   SwitchToPageRequest,
@@ -131,11 +129,10 @@ test.describe("contract types - new multi-tab requests", () => {
   test("WaitForPopupRequest has correct structure", () => {
     const req: WaitForPopupRequest = {
       action: "waitForPopup",
-      params: { triggerAction: "tap", triggerParams: { selector: "button" } },
+      params: { },
     }
     expect(req.action).toBe("waitForPopup")
-    expect(req.params.triggerAction).toBe("tap")
-    expect(req.params.triggerParams).toEqual({ selector: "button" })
+    expect(req.params).toEqual({})
   })
 })
 
