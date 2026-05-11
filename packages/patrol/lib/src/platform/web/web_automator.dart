@@ -89,25 +89,25 @@ abstract interface class WebAutomator {
   /// Returns a list of all files downloaded during the single test.
   Future<List<String>> verifyFileDownloads();
 
-  /// Opens a new browser tab navigating to [url].
-  /// Returns the stable tab ID of the new tab.
-  Future<String> openNewTab({required String url});
+  /// Opens a new browser page navigating to [url].
+  /// Returns the stable page ID of the new page.
+  Future<String> openNewPage({required String url});
 
-  /// Closes the tab with the given [tabId].
-  Future<void> closeTab({required String tabId});
+  /// Closes the page with the given [pageId].
+  Future<void> closePage({required String pageId});
 
-  /// Switches the active tab to [tabId].
-  /// All subsequent actions will target this tab until switched again.
-  Future<void> switchToTab({required String tabId});
+  /// Switches the active page to [pageId].
+  /// All subsequent actions will target this page until switched again.
+  Future<void> switchToPage({required String pageId});
 
-  /// Returns information about all open tabs.
-  Future<LinkedHashMap<Object?, Object?>> getTabs();
+  /// Returns information about all open pages.
+  Future<LinkedHashMap<Object?, Object?>> getPages();
 
-  /// Returns the ID of the currently active tab.
-  Future<String> getCurrentTab();
+  /// Returns the ID of the currently active page.
+  Future<String> getCurrentPage();
 
-  /// Executes [triggerAction] and waits for a popup/new tab to open.
-  /// Returns the tab ID of the newly opened tab.
+  /// Executes [triggerAction] and waits for a popup/new page to open.
+  /// Returns the page ID of the newly opened page.
   Future<String> waitForPopup({
     required String triggerAction,
     required Map<String, dynamic> triggerParams,

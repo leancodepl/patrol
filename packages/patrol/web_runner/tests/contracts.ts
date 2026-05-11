@@ -1,6 +1,8 @@
+import { PageManager } from "./pageManager"
+
 type PatrolNativeRequestBase<TAction extends string, TParams> = {
   action: TAction
-  params: TParams & { _routeToTab?: string }
+  params: TParams
 }
 
 export type WebSelector = {
@@ -105,26 +107,26 @@ export type ResizeWindowRequest = PatrolNativeRequestBase<
     height: number
   }
 >
-export type OpenNewTabRequest = PatrolNativeRequestBase<
-  "openNewTab",
+export type OpenNewPageRequest = PatrolNativeRequestBase<
+  "openNewPage",
   {
     url: string
   }
 >
-export type CloseTabRequest = PatrolNativeRequestBase<
-  "closeTab",
+export type ClosePageRequest = PatrolNativeRequestBase<
+  "closePage",
   {
-    tabId: string
+    pageId: string
   }
 >
-export type SwitchToTabRequest = PatrolNativeRequestBase<
-  "switchToTab",
+export type SwitchToPageRequest = PatrolNativeRequestBase<
+  "switchToPage",
   {
-    tabId: string
+    pageId: string
   }
 >
-export type GetTabsRequest = PatrolNativeRequestBase<"getTabs", {}>
-export type GetCurrentTabRequest = PatrolNativeRequestBase<"getCurrentTab", {}>
+export type GetPagesRequest = PatrolNativeRequestBase<"getPages", {}>
+export type GetCurrentPageRequest = PatrolNativeRequestBase<"getCurrentPage", {}>
 export type WaitForPopupRequest = PatrolNativeRequestBase<
   "waitForPopup",
   {
@@ -139,28 +141,33 @@ export type PatrolNativeRequest =
   | AddCookieRequest
   | ClearCookiesRequest
   | ClearPermissionsRequest
-  | CloseTabRequest
+  | ClosePageRequest
   | DisableDarkModeRequest
   | DismissNextDialogRequest
   | EnableDarkModeRequest
   | EnterTextRequest
   | GetClipboardRequest
   | GetCookiesRequest
-  | GetCurrentTabRequest
-  | GetTabsRequest
+  | GetCurrentPageRequest
+  | GetPagesRequest
   | GoBackRequest
   | GoForwardRequest
   | GrantPermissionsRequest
-  | OpenNewTabRequest
+  | OpenNewPageRequest
   | PressKeyComboRequest
   | PressKeyRequest
   | ResizeWindowRequest
   | ScrollToRequest
   | SetClipboardRequest
   | StartTestRequest
-  | SwitchToTabRequest
+  | SwitchToPageRequest
   | TapRequest
   | UnknownRequest
   | UploadFileRequest
   | VerifyFileDownloadsRequest
   | WaitForPopupRequest
+
+export type ActionParams<T extends PatrolNativeRequest> = {
+  pageManager: PageManager
+  params: T["params"]
+}

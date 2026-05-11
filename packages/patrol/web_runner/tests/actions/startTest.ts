@@ -1,5 +1,6 @@
-import { Page } from "playwright"
+import type { Page } from "playwright"
 import { logger } from "../logger"
+import type { ActionParams, StartTestRequest } from "../contracts"
 
 export const downloadedFiles: string[] = []
 const initializedPages = new WeakSet<Page>()
@@ -15,12 +16,12 @@ function registerDownloadListener(page: Page) {
   }
 }
 
-export async function startTest(page: Page) {
+export async function startTest({ pageManager }: ActionParams<StartTestRequest>) {
   downloadedFiles.splice(0, downloadedFiles.length)
-  registerDownloadListener(page)
+  registerDownloadListener(pageManager.activePage)
 
   // Register on all currently tracked pages from the context
-  const context = page.context()
+  const context = pageManager.context
   for (const p of context.pages()) {
     registerDownloadListener(p)
   }

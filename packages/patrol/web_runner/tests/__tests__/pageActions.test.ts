@@ -3,17 +3,17 @@ import { EventEmitter } from "events"
 import { PageManager } from "../pageManager"
 
 // --- Imports from action files that DO NOT EXIST yet (RED phase) -----------
-import { openNewTab } from "../actions/openNewTab"
-import { closeTab } from "../actions/closeTab"
-import { switchToTab } from "../actions/switchToTab"
-import { getTabs } from "../actions/getTabs"
-import { getCurrentTab } from "../actions/getCurrentTab"
+import { openNewPage } from "../actions/openNewPage"
+import { closePage } from "../actions/closePage"
+import { switchToPage } from "../actions/switchToPage"
+import { getPages } from "../actions/getPages"
+import { getCurrentPage } from "../actions/getCurrentPage"
 import { waitForPopup } from "../actions/waitForPopup"
 
 // ---------------------------------------------------------------------------
 // Lightweight mocks for Playwright's Page and BrowserContext.
 // Extended from the pattern in pageManager.test.ts with goto, close, and
-// newPage capabilities needed by the tab management actions.
+// newPage capabilities needed by the page management actions.
 // ---------------------------------------------------------------------------
 
 type MockPage = EventEmitter & {
@@ -77,7 +77,7 @@ function createMockContext(): MockContext {
       return page
     },
     waitForEvent: (event: string): Promise<MockPage> => {
-      return new Promise((resolve) => {
+      return new Promise(resolve => {
         emitter.once(event, (page: MockPage) => {
           resolve(page)
         })
@@ -92,7 +92,7 @@ function createMockContext(): MockContext {
 // Tests
 // ---------------------------------------------------------------------------
 
-test.describe("openNewTab", () => {
+test.describe("openNewPage", () => {
   test("creates a new page via context.newPage()", async () => {
     const context = createMockContext()
     const initialPage = createMockPage()
@@ -100,19 +100,15 @@ test.describe("openNewTab", () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const manager = new PageManager(context as any, initialPage as any)
 
-    const tabId = await openNewTab(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      initialPage as any,
-      { url: "https://example.com" },
-      manager,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      context as any,
-    )
+    const pageId = await openNewPage({
+      pageManager: manager,
+      params: { url: "https://example.com" },
+    })
 
     // A new page should have been registered in the manager
     expect(manager.count).toBe(2)
-    expect(tabId).toBeDefined()
-    expect(typeof tabId).toBe("string")
+    expect(pageId).toBeDefined()
+    expect(typeof pageId).toBe("string")
   })
 
   test("navigates the new page to the given URL", async () => {
@@ -122,44 +118,36 @@ test.describe("openNewTab", () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const manager = new PageManager(context as any, initialPage as any)
 
-    const tabId = await openNewTab(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      initialPage as any,
-      { url: "https://example.com/test" },
-      manager,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      context as any,
-    )
+    const pageId = await openNewPage({
+      pageManager: manager,
+      params: { url: "https://example.com/test" },
+    })
 
     // The newly created page should have navigated to the URL
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const newPage = manager.resolve(tabId) as any as MockPage
+    const newPage = manager.resolve(pageId) as any as MockPage
     expect(newPage.url()).toBe("https://example.com/test")
   })
 
-  test("returns the tab ID assigned by PageManager", async () => {
+  test("returns the page ID assigned by PageManager", async () => {
     const context = createMockContext()
     const initialPage = createMockPage()
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const manager = new PageManager(context as any, initialPage as any)
 
-    const tabId = await openNewTab(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      initialPage as any,
-      { url: "https://example.com" },
-      manager,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      context as any,
-    )
+    const pageId = await openNewPage({
+      pageManager: manager,
+      params: { url: "https://example.com" },
+    })
 
-    // tab_0 is the initial page, so new tab should be tab_1
-    expect(tabId).toBe("tab_1")
-    expect(manager.ids).toContain(tabId)
+    // page_0 is the initial page, so new page should be page_1
+    expect(pageId).toBe("page_1")
+    expect(manager.ids).toContain(pageId)
   })
 })
 
-test.describe("closeTab", () => {
+test.describe("closePage", () => {
   test("resolves the page from pageManager and closes it", async () => {
     const context = createMockContext()
     const initialPage = createMockPage()
@@ -172,16 +160,14 @@ test.describe("closeTab", () => {
     context.emit("page", secondPage)
     expect(manager.count).toBe(2)
 
-    await closeTab(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      initialPage as any,
-      { tabId: "tab_1" },
-      manager,
-    )
+    await closePage({
+      pageManager: manager,
+      params: { pageId: "page_1" },
+    })
 
     // The page should be removed from the manager (via the close event)
     expect(manager.count).toBe(1)
-    expect(manager.ids).not.toContain("tab_1")
+    expect(manager.ids).not.toContain("page_1")
   })
 
   test("calls page.close() on the resolved page", async () => {
@@ -194,17 +180,15 @@ test.describe("closeTab", () => {
     const secondPage = createMockPage()
     context.emit("page", secondPage)
 
-    await closeTab(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      initialPage as any,
-      { tabId: "tab_1" },
-      manager,
-    )
+    await closePage({
+      pageManager: manager,
+      params: { pageId: "page_1" },
+    })
 
     expect(secondPage.isClosed()).toBe(true)
   })
 
-  test("throws if tabId does not exist", async () => {
+  test("throws if pageId does not exist", async () => {
     const context = createMockContext()
     const initialPage = createMockPage()
 
@@ -212,16 +196,14 @@ test.describe("closeTab", () => {
     const manager = new PageManager(context as any, initialPage as any)
 
     await expect(
-      closeTab(
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initialPage as any,
-        { tabId: "nonexistent" },
-        manager,
-      ),
+      closePage({
+        pageManager: manager,
+        params: { pageId: "nonexistent" },
+      }),
     ).rejects.toThrow()
   })
 
-  test("throws when trying to close tab_0", async () => {
+  test("throws when trying to close page_0", async () => {
     const context = createMockContext()
     const initialPage = createMockPage()
 
@@ -229,18 +211,16 @@ test.describe("closeTab", () => {
     const manager = new PageManager(context as any, initialPage as any)
 
     await expect(
-      closeTab(
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initialPage as any,
-        { tabId: "tab_0" },
-        manager,
-      ),
-    ).rejects.toThrow("Cannot close the initial Flutter tab")
+      closePage({
+        pageManager: manager,
+        params: { pageId: "page_0" },
+      }),
+    ).rejects.toThrow("Cannot close the initial Flutter page")
   })
 })
 
-test.describe("switchToTab", () => {
-  test("sets pageManager.activeId to the given tabId", async () => {
+test.describe("switchToPage", () => {
+  test("sets pageManager.activeId to the given pageId", async () => {
     const context = createMockContext()
     const initialPage = createMockPage()
 
@@ -250,17 +230,15 @@ test.describe("switchToTab", () => {
     const secondPage = createMockPage()
     context.emit("page", secondPage)
 
-    await switchToTab(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      initialPage as any,
-      { tabId: "tab_1" },
-      manager,
-    )
+    await switchToPage({
+      pageManager: manager,
+      params: { pageId: "page_1" },
+    })
 
-    expect(manager.activeId).toBe("tab_1")
+    expect(manager.activeId).toBe("page_1")
   })
 
-  test("throws if tabId does not exist", async () => {
+  test("throws if pageId does not exist", async () => {
     const context = createMockContext()
     const initialPage = createMockPage()
 
@@ -268,18 +246,16 @@ test.describe("switchToTab", () => {
     const manager = new PageManager(context as any, initialPage as any)
 
     await expect(
-      switchToTab(
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        initialPage as any,
-        { tabId: "nonexistent" },
-        manager,
-      ),
+      switchToPage({
+        pageManager: manager,
+        params: { pageId: "nonexistent" },
+      }),
     ).rejects.toThrow()
   })
 })
 
-test.describe("getTabs", () => {
-  test("returns all tab IDs from pageManager.ids", async () => {
+test.describe("getPages", () => {
+  test("returns all page IDs from pageManager.ids", async () => {
     const context = createMockContext()
     const initialPage = createMockPage()
 
@@ -292,18 +268,16 @@ test.describe("getTabs", () => {
     const thirdPage = createMockPage()
     context.emit("page", thirdPage)
 
-    const result = await getTabs(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      initialPage as any,
-      {} as Record<string, never>,
-      manager,
-    )
+    const result = await getPages({
+      pageManager: manager,
+      params: {},
+    })
 
-    expect(result.tabs).toEqual(expect.arrayContaining(["tab_0", "tab_1", "tab_2"]))
-    expect(result.tabs).toHaveLength(3)
+    expect(result.pages).toEqual(expect.arrayContaining(["page_0", "page_1", "page_2"]))
+    expect(result.pages).toHaveLength(3)
   })
 
-  test("returns the active tab ID from pageManager.activeId", async () => {
+  test("returns the active page ID from pageManager.activeId", async () => {
     const context = createMockContext()
     const initialPage = createMockPage()
 
@@ -312,38 +286,34 @@ test.describe("getTabs", () => {
 
     const secondPage = createMockPage()
     context.emit("page", secondPage)
-    manager.activeId = "tab_1"
+    manager.activeId = "page_1"
 
-    const result = await getTabs(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      initialPage as any,
-      {} as Record<string, never>,
-      manager,
-    )
+    const result = await getPages({
+      pageManager: manager,
+      params: {},
+    })
 
-    expect(result.activeTabId).toBe("tab_1")
+    expect(result.activePageId).toBe("page_1")
   })
 })
 
-test.describe("getCurrentTab", () => {
-  test("returns pageManager.activeId (default is tab_0)", async () => {
+test.describe("getCurrentPage", () => {
+  test("returns pageManager.activeId (default is page_0)", async () => {
     const context = createMockContext()
     const initialPage = createMockPage()
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const manager = new PageManager(context as any, initialPage as any)
 
-    const result = await getCurrentTab(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      initialPage as any,
-      {} as Record<string, never>,
-      manager,
-    )
+    const result = await getCurrentPage({
+      pageManager: manager,
+      params: {},
+    })
 
-    expect(result).toBe("tab_0")
+    expect(result).toBe("page_0")
   })
 
-  test("returns the updated activeId after switching tabs", async () => {
+  test("returns the updated activeId after switching pages", async () => {
     const context = createMockContext()
     const initialPage = createMockPage()
 
@@ -352,16 +322,14 @@ test.describe("getCurrentTab", () => {
 
     const secondPage = createMockPage()
     context.emit("page", secondPage)
-    manager.activeId = "tab_1"
+    manager.activeId = "page_1"
 
-    const result = await getCurrentTab(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      initialPage as any,
-      {} as Record<string, never>,
-      manager,
-    )
+    const result = await getCurrentPage({
+      pageManager: manager,
+      params: {},
+    })
 
-    expect(result).toBe("tab_1")
+    expect(result).toBe("page_1")
   })
 })
 
@@ -380,23 +348,20 @@ test.describe("waitForPopup", () => {
       context.emit("page", popupPage)
     }, 10)
 
-    const tabId = await waitForPopup(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      initialPage as any,
-      {
+    const pageId = await waitForPopup({
+      pageManager: manager,
+
+      params: {
         triggerAction: "tap",
         triggerParams: { selector: { text: "Open popup" } },
       },
-      manager,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      context as any,
-    )
+    })
 
-    expect(tabId).toBeDefined()
-    expect(typeof tabId).toBe("string")
+    expect(pageId).toBeDefined()
+    expect(typeof pageId).toBe("string")
   })
 
-  test("returns the tab ID of the newly appeared popup page", async () => {
+  test("returns the page ID of the newly appeared popup page", async () => {
     const context = createMockContext()
     const initialPage = createMockPage()
 
@@ -408,21 +373,17 @@ test.describe("waitForPopup", () => {
       context.emit("page", popupPage)
     }, 10)
 
-    const tabId = await waitForPopup(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      initialPage as any,
-      {
+    const pageId = await waitForPopup({
+      pageManager: manager,
+      params: {
         triggerAction: "tap",
         triggerParams: { selector: { text: "Open popup" } },
       },
-      manager,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      context as any,
-    )
+    })
 
     // The popup should be registered and the returned ID should resolve to it
-    expect(manager.ids).toContain(tabId)
-    expect(manager.resolve(tabId)).toBe(popupPage)
+    expect(manager.ids).toContain(pageId)
+    expect(manager.resolve(pageId)).toBe(popupPage)
   })
 
   test("the popup page is registered in the PageManager", async () => {
@@ -439,20 +400,16 @@ test.describe("waitForPopup", () => {
 
     const countBefore = manager.count
 
-    const tabId = await waitForPopup(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      initialPage as any,
-      {
+    const pageId = await waitForPopup({
+      pageManager: manager,
+      params: {
         triggerAction: "tap",
         triggerParams: { selector: { text: "Open popup" } },
       },
-      manager,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      context as any,
-    )
+    })
 
     expect(manager.count).toBe(countBefore + 1)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    expect(manager.idOf(popupPage as any)).toBe(tabId)
+    expect(manager.idOf(popupPage as any)).toBe(pageId)
   })
 })

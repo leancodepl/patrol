@@ -30,8 +30,9 @@ patrol test --device chrome --target patrol_test/login_test.dart
 ```
 
 <Info>
-  When you first run tests on web, Patrol will automatically install Node.js dependencies 
-  including Playwright and its browser binaries. This may take a moment.
+  When you first run tests on web, Patrol will automatically install Node.js
+  dependencies including Playwright and its browser binaries. This may take a
+  moment.
 </Info>
 
 ### Running Tests in your CI pipeline
@@ -95,12 +96,12 @@ await $.platform.web.tapWeb(selector: buttonSelector, iframeSelector: iframeSele
 // Window operations
 await $.platform.web.resizeWindow(size: Size(800, 600));
 // Multi-tab management
-final tabId = await $.platform.web.openNewTab(url: 'https://example.com');
-await $.platform.web.switchToTab(tabId: tabId);
-final currentTab = await $.platform.web.getCurrentTab();
-final tabs = await $.platform.web.getTabs();
-await $.platform.web.closeTab(tabId: tabId);
-final popupTabId = await $.platform.web.waitForPopup(
+final pageId = await $.platform.web.openNewPage(url: 'https://example.com');
+await $.platform.web.switchToPage(pageId: pageId);
+final currentPage = await $.platform.web.getCurrentPage();
+final pages = await $.platform.web.getPages();
+await $.platform.web.closePage(pageId: pageId);
+final popupPageId = await $.platform.web.waitForPopup(
   triggerAction: 'tap',
   triggerParams: {'selector': buttonSelector},
 );

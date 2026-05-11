@@ -49,16 +49,16 @@ type MockContext = EventEmitter & {
 // ---------------------------------------------------------------------------
 
 test.describe("PageManager", () => {
-  test("initial state: constructor registers the initial page as tab_0, sets it as active, count = 1", () => {
+  test("initial state: constructor registers the initial page as page_0, sets it as active, count = 1", () => {
     const context = createMockContext()
     const initialPage = createMockPage()
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const manager = new PageManager(context as any, initialPage as any)
 
-    expect(manager.activeId).toBe("tab_0")
+    expect(manager.activeId).toBe("page_0")
     expect(manager.count).toBe(1)
-    expect(manager.ids).toEqual(["tab_0"])
+    expect(manager.ids).toEqual(["page_0"])
   })
 
   test("resolve() with no args returns the active page", () => {
@@ -68,22 +68,22 @@ test.describe("PageManager", () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const manager = new PageManager(context as any, initialPage as any)
 
-    const resolved = manager.resolve()
+    const resolved = manager.activePage
     expect(resolved).toBe(initialPage)
   })
 
-  test("resolve() with a valid tabId returns the correct page", () => {
+  test("resolve() with a valid pageId returns the correct page", () => {
     const context = createMockContext()
     const initialPage = createMockPage()
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const manager = new PageManager(context as any, initialPage as any)
 
-    const resolved = manager.resolve("tab_0")
+    const resolved = manager.resolve("page_0")
     expect(resolved).toBe(initialPage)
   })
 
-  test("resolve() with an invalid tabId throws an error", () => {
+  test("resolve() with an invalid pageId throws an error", () => {
     const context = createMockContext()
     const initialPage = createMockPage()
 
@@ -93,7 +93,7 @@ test.describe("PageManager", () => {
     expect(() => manager.resolve("nonexistent")).toThrow()
   })
 
-  test("activeId setter: switching to a valid tab updates activeId", () => {
+  test("activeId setter: switching to a valid page updates activeId", () => {
     const context = createMockContext()
     const initialPage = createMockPage()
 
@@ -104,8 +104,8 @@ test.describe("PageManager", () => {
     const secondPage = createMockPage()
     context.emit("page", secondPage)
 
-    manager.activeId = "tab_1"
-    expect(manager.activeId).toBe("tab_1")
+    manager.activeId = "page_1"
+    expect(manager.activeId).toBe("page_1")
   })
 
   test("activeId setter with invalid ID throws an error", () => {
@@ -120,7 +120,7 @@ test.describe("PageManager", () => {
     }).toThrow()
   })
 
-  test("auto-registration: new page from context event is registered as tab_1 with incremented count", () => {
+  test("auto-registration: new page from context event is registered as page_1 with incremented count", () => {
     const context = createMockContext()
     const initialPage = createMockPage()
 
@@ -131,8 +131,8 @@ test.describe("PageManager", () => {
     context.emit("page", secondPage)
 
     expect(manager.count).toBe(2)
-    expect(manager.ids).toContain("tab_1")
-    expect(manager.resolve("tab_1")).toBe(secondPage)
+    expect(manager.ids).toContain("page_1")
+    expect(manager.resolve("page_1")).toBe(secondPage)
   })
 
   test("page close cleanup: when a page closes, it is removed from the registry", () => {
@@ -150,7 +150,7 @@ test.describe("PageManager", () => {
     secondPage.emit("close")
 
     expect(manager.count).toBe(1)
-    expect(manager.ids).not.toContain("tab_1")
+    expect(manager.ids).not.toContain("page_1")
   })
 
   test("page crash cleanup: when a page crashes, it is removed from the registry", () => {
@@ -168,10 +168,10 @@ test.describe("PageManager", () => {
     secondPage.emit("crash")
 
     expect(manager.count).toBe(1)
-    expect(manager.ids).not.toContain("tab_1")
+    expect(manager.ids).not.toContain("page_1")
   })
 
-  test("closing active tab: if the active tab closes, active switches to tab_0 (initial page)", () => {
+  test("closing active page: if the active page closes, active switches to page_0 (initial page)", () => {
     const context = createMockContext()
     const initialPage = createMockPage()
 
@@ -181,16 +181,16 @@ test.describe("PageManager", () => {
     const secondPage = createMockPage()
     context.emit("page", secondPage)
 
-    // Switch to the second tab, then close it
-    manager.activeId = "tab_1"
-    expect(manager.activeId).toBe("tab_1")
+    // Switch to the second page, then close it
+    manager.activeId = "page_1"
+    expect(manager.activeId).toBe("page_1")
 
     secondPage.emit("close")
 
-    expect(manager.activeId).toBe("tab_0")
+    expect(manager.activeId).toBe("page_0")
   })
 
-  test("stable IDs: closing tab_1 when tab_2 exists does not change tab_2 ID", () => {
+  test("stable IDs: closing page_1 when page_2 exists does not change page_2 ID", () => {
     const context = createMockContext()
     const initialPage = createMockPage()
 
@@ -204,26 +204,26 @@ test.describe("PageManager", () => {
     context.emit("page", thirdPage)
 
     expect(manager.count).toBe(3)
-    expect(manager.ids).toEqual(expect.arrayContaining(["tab_0", "tab_1", "tab_2"]))
+    expect(manager.ids).toEqual(expect.arrayContaining(["page_0", "page_1", "page_2"]))
 
-    // Close tab_1 — tab_2 must keep its ID
+    // Close page_1 — page_2 must keep its ID
     secondPage.emit("close")
 
     expect(manager.count).toBe(2)
-    expect(manager.ids).toContain("tab_0")
-    expect(manager.ids).toContain("tab_2")
-    expect(manager.ids).not.toContain("tab_1")
-    expect(manager.resolve("tab_2")).toBe(thirdPage)
+    expect(manager.ids).toContain("page_0")
+    expect(manager.ids).toContain("page_2")
+    expect(manager.ids).not.toContain("page_1")
+    expect(manager.resolve("page_2")).toBe(thirdPage)
   })
 
-  test("ids: returns all currently tracked tab IDs", () => {
+  test("ids: returns all currently tracked page IDs", () => {
     const context = createMockContext()
     const initialPage = createMockPage()
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const manager = new PageManager(context as any, initialPage as any)
 
-    expect(manager.ids).toEqual(["tab_0"])
+    expect(manager.ids).toEqual(["page_0"])
 
     const secondPage = createMockPage()
     context.emit("page", secondPage)
@@ -231,7 +231,7 @@ test.describe("PageManager", () => {
     const thirdPage = createMockPage()
     context.emit("page", thirdPage)
 
-    expect(manager.ids).toEqual(expect.arrayContaining(["tab_0", "tab_1", "tab_2"]))
+    expect(manager.ids).toEqual(expect.arrayContaining(["page_0", "page_1", "page_2"]))
     expect(manager.ids).toHaveLength(3)
   })
 
@@ -243,13 +243,13 @@ test.describe("PageManager", () => {
     const manager = new PageManager(context as any, initialPage as any)
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    expect(manager.idOf(initialPage as any)).toBe("tab_0")
+    expect(manager.idOf(initialPage as any)).toBe("page_0")
 
     const secondPage = createMockPage()
     context.emit("page", secondPage)
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    expect(manager.idOf(secondPage as any)).toBe("tab_1")
+    expect(manager.idOf(secondPage as any)).toBe("page_1")
   })
 
   test("idOf: returns undefined for an untracked Page instance", () => {

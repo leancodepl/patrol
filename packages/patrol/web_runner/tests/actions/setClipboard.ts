@@ -1,12 +1,11 @@
-import { Page } from "playwright"
-import { SetClipboardRequest } from "../contracts"
+import { ActionParams, SetClipboardRequest } from "../contracts"
 import { logger } from "../logger"
 import { sleep } from "../utils"
 
-export async function setClipboard(page: Page, params: SetClipboardRequest["params"]) {
+export async function setClipboard({ pageManager, params }: ActionParams<SetClipboardRequest>) {
   try {
     const write = async () => {
-      await page.evaluate(text => navigator.clipboard.writeText(text), params.text)
+      await pageManager.activePage.evaluate(text => navigator.clipboard.writeText(text), params.text)
       return true
     }
 

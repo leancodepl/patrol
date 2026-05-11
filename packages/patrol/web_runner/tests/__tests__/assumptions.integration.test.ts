@@ -74,7 +74,7 @@ test("teardown handles page that was already closed", async ({ browser }) => {
 // Download tracking tests
 // ---------------------------------------------------------------------------
 
-test("download in a secondary tab is captured by verifyFileDownloads", async ({ browser }) => {
+test("download in a secondary page is captured by verifyFileDownloads", async ({ browser }) => {
   const context = await browser.newContext({ acceptDownloads: true })
   const page = await context.newPage()
   new PageManager(context, page)
@@ -96,7 +96,7 @@ test("download in a secondary tab is captured by verifyFileDownloads", async ({ 
   // Wait for the download to finish so the event handler has fired
   await download.path()
 
-  // Verify that downloadedFiles captured the file from the secondary tab
+  // Verify that downloadedFiles captured the file from the secondary page
   expect(downloadedFiles).toContain("test-file.txt")
 
   await context.close()
@@ -132,9 +132,7 @@ test("download tracking is cleared between tests", async ({ browser }) => {
 // Binding timing tests
 // ---------------------------------------------------------------------------
 
-test("context.exposeBinding works on a page that loaded content BEFORE the binding was set up", async ({
-  browser,
-}) => {
+test("context.exposeBinding works on a page that loaded content BEFORE the binding was set up", async ({ browser }) => {
   const context = await browser.newContext()
   const page = await context.newPage()
 

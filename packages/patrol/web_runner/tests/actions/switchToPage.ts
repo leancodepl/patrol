@@ -1,0 +1,7 @@
+import type { ActionParams, SwitchToPageRequest } from "../contracts"
+
+export async function switchToPage({ pageManager, params }: ActionParams<SwitchToPageRequest>) {
+  pageManager.activeId = params.pageId
+  const page = pageManager.resolve(params.pageId)
+  await page.bringToFront()
+}

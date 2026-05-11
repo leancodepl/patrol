@@ -1,8 +1,8 @@
-import { Page } from "playwright"
+import type { ActionParams, DismissNextDialogRequest } from "../contracts"
 
-export async function dismissNextDialog(page: Page) {
+export async function dismissNextDialog({ pageManager }: ActionParams<DismissNextDialogRequest>) {
   return new Promise(resolve => {
-    page.once("dialog", async dialog => {
+    pageManager.activePage.once("dialog", async dialog => {
       const message = dialog.message()
       await dialog.dismiss()
       resolve(message)

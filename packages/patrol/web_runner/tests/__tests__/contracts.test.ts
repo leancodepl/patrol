@@ -3,11 +3,11 @@ import type {
   TapRequest,
   EnterTextRequest,
   ScrollToRequest,
-  OpenNewTabRequest,
-  CloseTabRequest,
-  SwitchToTabRequest,
-  GetTabsRequest,
-  GetCurrentTabRequest,
+  OpenNewPageRequest,
+  ClosePageRequest,
+  SwitchToPageRequest,
+  GetPagesRequest,
+  GetCurrentPageRequest,
   WaitForPopupRequest,
   PatrolNativeRequest,
 } from "../contracts"
@@ -21,100 +21,45 @@ import type {
 type AssertAssignable<A, B extends A> = B
 
 // ---------------------------------------------------------------------------
-// 1. Existing requests still work WITHOUT tabId
+// 1. Existing requests still work 
 // ---------------------------------------------------------------------------
 
-type _TapWithoutTabId = AssertAssignable<
+type _TapWithoutPageId = AssertAssignable<
   TapRequest,
   {
     action: "tap"
     params: {
       selector: {
-        role: null; label: null; placeholder: null; text: null
-        altText: null; title: null; testId: null; cssOrXpath: null
+        role: null
+        label: null
+        placeholder: null
+        text: null
+        altText: null
+        title: null
+        testId: null
+        cssOrXpath: null
       }
       iframeSelector: null
     }
   }
 >
 
-// ---------------------------------------------------------------------------
-// 2. _routeToTab is optional on all requests (spot-check TapRequest, EnterTextRequest, ScrollToRequest)
-// ---------------------------------------------------------------------------
-
-type _TapWithRouteToTab = AssertAssignable<
-  TapRequest,
-  {
-    action: "tap"
-    params: {
-      selector: {
-        role: null; label: null; placeholder: null; text: null
-        altText: null; title: null; testId: null; cssOrXpath: null
-      }
-      iframeSelector: null
-      _routeToTab: "tab_1"
-    }
-  }
->
-
-type _EnterTextWithRouteToTab = AssertAssignable<
-  EnterTextRequest,
-  {
-    action: "enterText"
-    params: {
-      selector: {
-        role: null; label: null; placeholder: null; text: null
-        altText: null; title: null; testId: null; cssOrXpath: null
-      }
-      text: "hello"
-      iframeSelector: null
-      _routeToTab: "tab_2"
-    }
-  }
->
-
-type _ScrollToWithRouteToTab = AssertAssignable<
-  ScrollToRequest,
-  {
-    action: "scrollTo"
-    params: {
-      selector: {
-        role: null; label: null; placeholder: null; text: null
-        altText: null; title: null; testId: null; cssOrXpath: null
-      }
-      iframeSelector: null
-      _routeToTab: "tab_3"
-    }
-  }
->
 
 // ---------------------------------------------------------------------------
-// 3. New request types exist and have the correct shape
+// 2. New request types exist and have the correct shape
 // ---------------------------------------------------------------------------
 
-type _OpenNewTab = AssertAssignable<
-  OpenNewTabRequest,
-  { action: "openNewTab"; params: { url: string } }
->
+type _OpenNewPage = AssertAssignable<OpenNewPageRequest, { action: "openNewPage"; params: { url: string } }>
 
-type _CloseTab = AssertAssignable<
-  CloseTabRequest,
-  { action: "closeTab"; params: { tabId: string } }
->
+type _ClosePage = AssertAssignable<ClosePageRequest, { action: "closePage"; params: { pageId: string } }>
 
-type _SwitchToTab = AssertAssignable<
-  SwitchToTabRequest,
-  { action: "switchToTab"; params: { tabId: string } }
->
+type _SwitchToPage = AssertAssignable<SwitchToPageRequest, { action: "switchToPage"; params: { pageId: string } }>
 
-type _GetTabs = AssertAssignable<
-  GetTabsRequest,
-  { action: "getTabs"; params: Record<string, never> }
->
+type _GetPages = AssertAssignable<GetPagesRequest, { action: "getPages"; params: Record<string, never> }>
 
-type _GetCurrentTab = AssertAssignable<
-  GetCurrentTabRequest,
-  { action: "getCurrentTab"; params: Record<string, never> }
+type _GetCurrentPage = AssertAssignable<
+  GetCurrentPageRequest,
+  { action: "getCurrentPage"; params: Record<string, never> }
 >
 
 type _WaitForPopup = AssertAssignable<
@@ -126,48 +71,60 @@ type _WaitForPopup = AssertAssignable<
 >
 
 // ---------------------------------------------------------------------------
-// 4. New types are included in the PatrolNativeRequest union
+// 3. New types are included in the PatrolNativeRequest union
 // ---------------------------------------------------------------------------
 
-type _UnionIncludesOpenNewTab = AssertAssignable<OpenNewTabRequest, Extract<PatrolNativeRequest, { action: "openNewTab" }>>
-type _UnionIncludesCloseTab = AssertAssignable<CloseTabRequest, Extract<PatrolNativeRequest, { action: "closeTab" }>>
-type _UnionIncludesSwitchToTab = AssertAssignable<SwitchToTabRequest, Extract<PatrolNativeRequest, { action: "switchToTab" }>>
-type _UnionIncludesGetTabs = AssertAssignable<GetTabsRequest, Extract<PatrolNativeRequest, { action: "getTabs" }>>
-type _UnionIncludesGetCurrentTab = AssertAssignable<GetCurrentTabRequest, Extract<PatrolNativeRequest, { action: "getCurrentTab" }>>
-type _UnionIncludesWaitForPopup = AssertAssignable<WaitForPopupRequest, Extract<PatrolNativeRequest, { action: "waitForPopup" }>>
+type _UnionIncludesOpenNewPage = AssertAssignable<
+  OpenNewPageRequest,
+  Extract<PatrolNativeRequest, { action: "openNewPage" }>
+>
+type _UnionIncludesClosePage = AssertAssignable<ClosePageRequest, Extract<PatrolNativeRequest, { action: "closePage" }>>
+type _UnionIncludesSwitchToPage = AssertAssignable<
+  SwitchToPageRequest,
+  Extract<PatrolNativeRequest, { action: "switchToPage" }>
+>
+type _UnionIncludesGetPages = AssertAssignable<GetPagesRequest, Extract<PatrolNativeRequest, { action: "getPages" }>>
+type _UnionIncludesGetCurrentPage = AssertAssignable<
+  GetCurrentPageRequest,
+  Extract<PatrolNativeRequest, { action: "getCurrentPage" }>
+>
+type _UnionIncludesWaitForPopup = AssertAssignable<
+  WaitForPopupRequest,
+  Extract<PatrolNativeRequest, { action: "waitForPopup" }>
+>
 
 // ---------------------------------------------------------------------------
 // Runtime structure tests
 // ---------------------------------------------------------------------------
 
 test.describe("contract types - new multi-tab requests", () => {
-  test("OpenNewTabRequest has correct structure", () => {
-    const req: OpenNewTabRequest = { action: "openNewTab", params: { url: "https://example.com" } }
-    expect(req.action).toBe("openNewTab")
+  test("OpenNewPageRequest has correct structure", () => {
+    const req: OpenNewPageRequest = { action: "openNewPage", params: { url: "https://example.com" } }
+    expect(req.action).toBe("openNewPage")
     expect(req.params).toEqual({ url: "https://example.com" })
   })
 
-  test("CloseTabRequest has correct structure", () => {
-    const req: CloseTabRequest = { action: "closeTab", params: { tabId: "tab_1" } }
-    expect(req.action).toBe("closeTab")
-    expect(req.params).toEqual({ tabId: "tab_1" })
+  test("ClosePageRequest has correct structure", () => {
+    const req: ClosePageRequest = { action: "closePage", params: { pageId: "tab_1" } }
+    expect(req.action).toBe("closePage")
+    expect(req.params).toEqual({ pageId: "tab_1" })
   })
 
-  test("SwitchToTabRequest has correct structure", () => {
-    const req: SwitchToTabRequest = { action: "switchToTab", params: { tabId: "tab_2" } }
-    expect(req.action).toBe("switchToTab")
-    expect(req.params).toEqual({ tabId: "tab_2" })
+  test("SwitchToPageRequest has correct structure", () => {
+    const req: SwitchToPageRequest = { action: "switchToPage", params: { pageId: "tab_2" } }
+    expect(req.action).toBe("switchToPage")
+    expect(req.params).toEqual({ pageId: "tab_2" })
   })
 
-  test("GetTabsRequest has correct structure", () => {
-    const req: GetTabsRequest = { action: "getTabs", params: {} }
-    expect(req.action).toBe("getTabs")
+  test("GetPagesRequest has correct structure", () => {
+    const req: GetPagesRequest = { action: "getPages", params: {} }
+    expect(req.action).toBe("getPages")
     expect(req.params).toEqual({})
   })
 
-  test("GetCurrentTabRequest has correct structure", () => {
-    const req: GetCurrentTabRequest = { action: "getCurrentTab", params: {} }
-    expect(req.action).toBe("getCurrentTab")
+  test("GetCurrentPageRequest has correct structure", () => {
+    const req: GetCurrentPageRequest = { action: "getCurrentPage", params: {} }
+    expect(req.action).toBe("getCurrentPage")
     expect(req.params).toEqual({})
   })
 
@@ -182,45 +139,14 @@ test.describe("contract types - new multi-tab requests", () => {
   })
 })
 
-test.describe("contract types - _routeToTab is optional on existing requests", () => {
-  test("TapRequest accepts _routeToTab in params", () => {
-    const req: TapRequest = {
-      action: "tap",
-      params: {
-        selector: {
-          role: null, label: null, placeholder: null, text: null,
-          altText: null, title: null, testId: null, cssOrXpath: null,
-        },
-        iframeSelector: null,
-        _routeToTab: "tab_1",
-      },
-    }
-    expect(req.params._routeToTab).toBe("tab_1")
-  })
-
-  test("TapRequest works without _routeToTab (backward compatible)", () => {
-    const req: TapRequest = {
-      action: "tap",
-      params: {
-        selector: {
-          role: null, label: null, placeholder: null, text: null,
-          altText: null, title: null, testId: null, cssOrXpath: null,
-        },
-        iframeSelector: null,
-      },
-    }
-    expect(req.params).not.toHaveProperty("_routeToTab")
-  })
-})
-
 test.describe("contract types - union includes new request types", () => {
   test("PatrolNativeRequest union accepts all new tab types", () => {
     const requests: PatrolNativeRequest[] = [
-      { action: "openNewTab", params: { url: "https://example.com" } },
-      { action: "closeTab", params: { tabId: "tab_1" } },
-      { action: "switchToTab", params: { tabId: "tab_2" } },
-      { action: "getTabs", params: {} },
-      { action: "getCurrentTab", params: {} },
+      { action: "openNewPage", params: { url: "https://example.com" } },
+      { action: "closePage", params: { pageId: "page_1" } },
+      { action: "switchToPage", params: { pageId: "page_2" } },
+      { action: "getPages", params: {} },
+      { action: "getCurrentPage", params: {} },
       { action: "waitForPopup", params: { triggerAction: "tap", triggerParams: {} } },
     ]
     expect(requests).toHaveLength(6)

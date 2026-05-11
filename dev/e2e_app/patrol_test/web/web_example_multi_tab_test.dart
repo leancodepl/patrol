@@ -9,16 +9,16 @@ void main() {
     await $.pumpWidgetAndSettle(const WebExampleApp());
 
     final formUrl = '${Uri.base.origin}/assets/assets/iframe_content.html';
-    final newTabId = await $.platform.web.openNewTab(url: formUrl);
+    final newPageId = await $.platform.web.openNewPage(url: formUrl);
     await $.pumpAndSettle();
     await Future<void>.delayed(const Duration(seconds: 2));
 
-    await $.platform.web.switchToTab(tabId: newTabId);
+    await $.platform.web.switchToPage(pageId: newPageId);
     await $.pumpAndSettle();
     await Future<void>.delayed(const Duration(seconds: 1));
 
-    final currentTab = await $.platform.web.getCurrentTab();
-    expect(currentTab, newTabId);
+    final currentTab = await $.platform.web.getCurrentPage();
+    expect(currentTab, newPageId);
 
     await $.platform.web.enterText(
       WebSelector(cssOrXpath: '#test-input'),
@@ -27,37 +27,37 @@ void main() {
     await $.platform.web.tap(WebSelector(cssOrXpath: '#submit-button'));
     await Future<void>.delayed(const Duration(seconds: 1));
 
-    await $.platform.web.switchToTab(tabId: 'tab_0');
+    await $.platform.web.switchToPage(pageId: 'page_0');
     await $.pumpAndSettle();
 
-    expect(await $.platform.web.getCurrentTab(), 'tab_0');
+    expect(await $.platform.web.getCurrentPage(), 'page_0');
     expect($('This is the home page'), findsOneWidget);
 
-    await $.platform.web.closeTab(tabId: newTabId);
+    await $.platform.web.closePage(pageId: newPageId);
   });
 
   patrol('open leancode.co, accept cookies, and close tab', ($) async {
     await $.pumpWidgetAndSettle(const WebExampleApp());
 
-    final newTabId = await $.platform.web.openNewTab(
+    final newPageId = await $.platform.web.openNewPage(
       url: 'https://leancode.co/',
     );
     await $.pumpAndSettle();
     await Future<void>.delayed(const Duration(seconds: 3));
 
-    await $.platform.web.switchToTab(tabId: newTabId);
+    await $.platform.web.switchToPage(pageId: newPageId);
     await $.pumpAndSettle();
     await Future<void>.delayed(const Duration(seconds: 2));
 
     await $.platform.web.tap(WebSelector(text: 'Accept All'));
     await Future<void>.delayed(const Duration(seconds: 1));
 
-    await $.platform.web.switchToTab(tabId: 'tab_0');
+    await $.platform.web.switchToPage(pageId: 'page_0');
     await $.pumpAndSettle();
 
     expect($('This is the home page'), findsOneWidget);
 
-    await $.platform.web.closeTab(tabId: newTabId);
+    await $.platform.web.closePage(pageId: newPageId);
   });
 
   patrol('cross-tab cookies persist across browser context', ($) async {
@@ -77,11 +77,11 @@ void main() {
     expect(sessionCookie['value'], 'abc123');
 
     final formUrl = '${Uri.base.origin}/assets/assets/iframe_content.html';
-    final newTabId = await $.platform.web.openNewTab(url: formUrl);
+    final newPageId = await $.platform.web.openNewPage(url: formUrl);
     await $.pumpAndSettle();
     await Future<void>.delayed(const Duration(seconds: 2));
 
-    await $.platform.web.switchToTab(tabId: newTabId);
+    await $.platform.web.switchToPage(pageId: newPageId);
     await $.pumpAndSettle();
     await Future<void>.delayed(const Duration(seconds: 1));
 
@@ -92,10 +92,10 @@ void main() {
     );
     expect(sessionCookie['value'], 'abc123');
 
-    await $.platform.web.switchToTab(tabId: 'tab_0');
+    await $.platform.web.switchToPage(pageId: 'page_0');
     await $.pumpAndSettle();
 
     await $.platform.web.clearCookies();
-    await $.platform.web.closeTab(tabId: newTabId);
+    await $.platform.web.closePage(pageId: newPageId);
   });
 }
