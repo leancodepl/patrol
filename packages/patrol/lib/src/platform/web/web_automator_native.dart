@@ -306,6 +306,16 @@ class WebAutomator implements web_automator.WebAutomator {
   }
 
   @override
+  Future<void> switchToMainPage() async {
+    await callPlaywright(
+      'switchToMainPage',
+      {},
+      logger: _config.logger,
+      patrolLog: _patrolLog,
+    );
+  }
+
+  @override
   Future<void> switchToPage({required String pageId}) async {
     await callPlaywright(
       'switchToPage',

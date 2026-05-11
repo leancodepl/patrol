@@ -3,8 +3,9 @@ import '../common.dart';
 import 'web_example_app.dart';
 
 void main() {
-  patrol('interact with form in new page while navigating Flutter app',
-      ($) async {
+  patrol('interact with form in new page while navigating Flutter app', (
+    $,
+  ) async {
     await $.pumpWidgetAndSettle(const WebExampleApp());
 
     final formUrl = '${Uri.base.origin}/assets/assets/iframe_content.html';
@@ -29,7 +30,7 @@ void main() {
     await Future<void>.delayed(const Duration(seconds: 1));
 
     // Switch back and navigate the Flutter app
-    await $.platform.web.switchToPage(pageId: 'page_0');
+    await $.platform.web.switchToMainPage();
     await $.pumpAndSettle();
 
     await $('Go to Page 1').scrollTo().tap();

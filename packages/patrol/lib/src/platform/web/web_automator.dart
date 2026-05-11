@@ -100,6 +100,10 @@ abstract interface class WebAutomator {
   /// All subsequent actions will target this page until switched again.
   Future<void> switchToPage({required String pageId});
 
+  /// Switches to the main page.
+  /// All subsequent actions will target the main page until switched again.
+  Future<void> switchToMainPage();
+
   /// Returns information about all open pages.
   Future<LinkedHashMap<Object?, Object?>> getPages();
 

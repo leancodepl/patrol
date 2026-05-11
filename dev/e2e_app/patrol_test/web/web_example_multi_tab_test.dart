@@ -27,7 +27,7 @@ void main() {
     await $.platform.web.tap(WebSelector(cssOrXpath: '#submit-button'));
     await Future<void>.delayed(const Duration(seconds: 1));
 
-    await $.platform.web.switchToPage(pageId: 'page_0');
+    await $.platform.web.switchToMainPage();
     await $.pumpAndSettle();
 
     expect(await $.platform.web.getCurrentPage(), 'page_0');
@@ -52,7 +52,7 @@ void main() {
     await $.platform.web.tap(WebSelector(text: 'Accept All'));
     await Future<void>.delayed(const Duration(seconds: 1));
 
-    await $.platform.web.switchToPage(pageId: 'page_0');
+    await $.platform.web.switchToMainPage();
     await $.pumpAndSettle();
 
     expect($('This is the home page'), findsOneWidget);
@@ -92,7 +92,7 @@ void main() {
     );
     expect(sessionCookie['value'], 'abc123');
 
-    await $.platform.web.switchToPage(pageId: 'page_0');
+    await $.platform.web.switchToMainPage();
     await $.pumpAndSettle();
 
     await $.platform.web.clearCookies();
