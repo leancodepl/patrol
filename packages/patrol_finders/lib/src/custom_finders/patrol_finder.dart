@@ -639,6 +639,7 @@ extension ActionCombiner on Future<PatrolFinder> {
     Duration? visibleTimeout,
     Duration? settleTimeout,
     Alignment alignment = Alignment.center,
+    bool hideKeyboard = true,
   }) async {
     await (await this).enterText(
       text,
@@ -646,6 +647,7 @@ extension ActionCombiner on Future<PatrolFinder> {
       visibleTimeout: visibleTimeout,
       settleTimeout: settleTimeout,
       alignment: alignment,
+      hideKeyboard: hideKeyboard,
     );
   }
 }
