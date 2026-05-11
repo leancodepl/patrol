@@ -23,11 +23,8 @@ export async function handlePatrolPlatformAction(pageManager: PageManager, { act
     throw new Error(`Action ${action} not found`)
   }
 
-  const { pageId, ...cleanParams } = params as Record<string, unknown>
-  const page = pageManager.resolve(pageId as string | undefined)
-
   try {
-    return await actionFn(page, cleanParams as any, pageManager, pageManager.context)
+    return await actionFn({ pageManager, params: params as any })
   } catch (e) {
     logger.error(e, "Failed to handle patrol platform request")
     throw e

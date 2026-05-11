@@ -44,6 +44,16 @@ function createMockPage(): MockPage {
   let currentUrl = "about:blank"
   let closed = false
 
+  let pageRef: any = null
+  function mockLocator() {
+    const locator = {
+      click: async () => {},
+      and: (other: any) => locator,
+      contentFrame: () => pageRef,
+    }
+    return locator
+  }
+
   const page = Object.assign(emitter, {
     on: emitter.on.bind(emitter),
     off: emitter.off.bind(emitter),
@@ -59,7 +69,18 @@ function createMockPage(): MockPage {
     },
     bringToFront: async () => {},
     url: () => currentUrl,
+    // Minimal Playwright-like selector helpers used by parseWebSelector
+    getByTestId: (_: string) => mockLocator(),
+    getByRole: (_: string) => mockLocator(),
+    getByLabel: (_: string) => mockLocator(),
+    getByPlaceholder: (_: string) => mockLocator(),
+    getByText: (_: string) => mockLocator(),
+    getByAltText: (_: string) => mockLocator(),
+    getByTitle: (_: string) => mockLocator(),
+    locator: (_: string) => mockLocator(),
   }) as MockPage
+
+  pageRef = page
 
   return page
 }

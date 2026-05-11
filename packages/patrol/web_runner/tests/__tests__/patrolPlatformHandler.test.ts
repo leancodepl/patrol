@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test"
 import { EventEmitter } from "events"
 import { exposePatrolPlatformHandler, handlePatrolPlatformAction } from "../patrolPlatformHandler"
 import { PageManager } from "../pageManager"
-import type { PatrolNativeRequest } from "../contracts"
+import type { ActionParams, PatrolNativeRequest } from "../contracts"
 
 // ---------------------------------------------------------------------------
 // Lightweight mocks — same EventEmitter pattern as pageManager.test.ts
@@ -98,12 +98,15 @@ test.describe("patrolPlatformHandler", () => {
     const actionsModule = await import("../actions")
     const originalAction = actionsModule.actions.enableDarkMode
 
-    let receivedPage: unknown
+    let receivedActivePage: unknown
     let receivedParams: unknown
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ;(actionsModule.actions as any).enableDarkMode = async (page: unknown, params: unknown) => {
-      receivedPage = page
+    ;(actionsModule.actions as any).enableDarkMode = async ({
+      pageManager,
+      params,
+    }: ActionParams<PatrolNativeRequest>) => {
+      receivedActivePage = pageManager.activePage
       receivedParams = params
     }
 
@@ -123,7 +126,7 @@ test.describe("patrolPlatformHandler", () => {
 
     // The handler should resolve the active page from PageManager and pass it
     // to the action function
-    expect(receivedPage).toBe(initialPage)
+    expect(receivedActivePage).toBe(initialPage)
     expect(receivedParams).toEqual({})
   })
 
@@ -140,48 +143,5 @@ test.describe("patrolPlatformHandler", () => {
     } as PatrolNativeRequest
 
     await expect(handlePatrolPlatformAction(manager, request)).rejects.toThrow(/not found/i)
-  })
-
-  // -------------------------------------------------------------------------
-  // 4. handlePatrolPlatformAction strips pageId from params before passing
-  //    to the action function
-  // -------------------------------------------------------------------------
-
-  test("handlePatrolPlatformAction strips pageId from params before passing to the action", async () => {
-    const { context, manager } = buildPageManager()
-
-    // Add a second page so page_1 is valid
-    const secondPage = createMockPage()
-    context.emit("page", secondPage)
-
-    let capturedParams: unknown
-
-    // Replace enableDarkMode with a spy that captures the params it receives.
-    // This lets us verify that pageId (a routing concern) is stripped before
-    // the action function sees the params.
-    const actionsModule = await import("../actions")
-    const originalAction = actionsModule.actions.enableDarkMode
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ;(actionsModule.actions as any).enableDarkMode = async (_page: unknown, params: unknown) => {
-      capturedParams = params
-    }
-
-    const request: PatrolNativeRequest = {
-      action: "enableDarkMode",
-      params: { _routeToPage: "page_1" },
-    }
-
-    try {
-      await handlePatrolPlatformAction(manager, request)
-    } finally {
-      // Restore original action
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      ;(actionsModule.actions as any).enableDarkMode = originalAction
-    }
-
-    // pageId is a routing concern — it must NOT leak into action params
-    expect(capturedParams).toBeDefined()
-    expect(capturedParams).not.toHaveProperty("pageId")
   })
 })
