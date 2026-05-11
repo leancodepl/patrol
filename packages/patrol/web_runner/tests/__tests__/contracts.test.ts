@@ -19,7 +19,7 @@ import type {
 type AssertAssignable<A, B extends A> = B
 
 // ---------------------------------------------------------------------------
-// 1. Existing requests still work 
+// 1. Existing requests still work
 // ---------------------------------------------------------------------------
 
 type _TapWithoutPageId = AssertAssignable<
@@ -41,7 +41,6 @@ type _TapWithoutPageId = AssertAssignable<
     }
   }
 >
-
 
 // ---------------------------------------------------------------------------
 // 2. New request types exist and have the correct shape
@@ -129,7 +128,7 @@ test.describe("contract types - new multi-tab requests", () => {
   test("WaitForPopupRequest has correct structure", () => {
     const req: WaitForPopupRequest = {
       action: "waitForPopup",
-      params: { },
+      params: {},
     }
     expect(req.action).toBe("waitForPopup")
     expect(req.params).toEqual({})
