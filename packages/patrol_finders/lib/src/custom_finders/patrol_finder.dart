@@ -622,7 +622,6 @@ class _PatrolIndexFinder extends ChainedFinder {
   @override
   Iterable<Element> filter(Iterable<Element> parentCandidates) sync* {
     if (index < 0) {
-      yield parentCandidates.elementAt(index);
       return;
     }
 
