@@ -1,6 +1,6 @@
 ## Unreleased
 
-- Fix issues with enterText (#2202, #2111)
+- Fix issues with `$.enterText()` (#2202, #2111)
 
 ## 3.2.0
 
