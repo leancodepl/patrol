@@ -1192,14 +1192,57 @@ void main() {
         );
       });
 
-      patrolWidgetTest(
-        'throws IndexError when widget at index does not exist',
-        ($) async {
-          await $.pumpWidget(const MaterialApp(home: Text('some text')));
+      patrolWidgetTest('finds nothing when widget at index does not exist', (
+        $,
+      ) async {
+        await $.pumpWidget(const MaterialApp(home: Text('some text')));
 
-          expect(() => $('some text').at(1), throwsA(isA<IndexError>()));
-        },
-      );
+        expect($('some text').at(1), findsNothing);
+      });
+
+      patrolWidgetTest('tap waits until widget at index exists', ($) async {
+        var itemCount = 1;
+        var tapCount = 0;
+        var itemScheduled = false;
+
+        await $.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: StatefulBuilder(
+                builder: (context, setState) {
+                  if (!itemScheduled) {
+                    itemScheduled = true;
+                    Future<void>.delayed(const Duration(milliseconds: 200), () {
+                      setState(() => itemCount = 2);
+                    });
+                  }
+
+                  return Column(
+                    children: [
+                      Text('taps: $tapCount'),
+                      Expanded(
+                        child: ListView.builder(
+                          itemCount: itemCount,
+                          itemBuilder: (context, index) {
+                            return ListTile(
+                              title: Text('item $index'),
+                              onTap: () => setState(() => tapCount++),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ),
+          ),
+        );
+
+        await $(ListView).$(ListTile).at(1).tap();
+
+        expect($('taps: 1'), findsOneWidget);
+      });
     });
 
     group('first', () {
