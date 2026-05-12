@@ -554,7 +554,10 @@ class PatrolFinder implements MatchFinder {
   @override
   PatrolFinder at(int index) {
     // TODO: Throw a better error (https://github.com/leancodepl/patrol/issues/548)
-    return PatrolFinder(tester: tester, finder: finder.at(index));
+    return PatrolFinder(
+      tester: tester,
+      finder: _PatrolIndexFinder(finder, index),
+    );
   }
 
   @override
@@ -609,6 +612,38 @@ class PatrolFinder implements MatchFinder {
   // Do we still need to use deprecated method?
   // ignore: deprecated_member_use
   bool precache() => finder.precache();
+}
+
+class _PatrolIndexFinder extends ChainedFinder {
+  _PatrolIndexFinder(super.parent, this.index);
+
+  final int index;
+
+  @override
+  Iterable<Element> filter(Iterable<Element> parentCandidates) sync* {
+    if (index < 0) {
+      yield parentCandidates.elementAt(index);
+      return;
+    }
+
+    var currentIndex = 0;
+    for (final candidate in parentCandidates) {
+      if (currentIndex == index) {
+        yield candidate;
+        return;
+      }
+
+      currentIndex += 1;
+    }
+  }
+
+  @override
+  String describeMatch(Plurality plurality) {
+    return '${parent.describeMatch(plurality)} (ignoring all but index $index)';
+  }
+
+  @override
+  String get description => describeMatch(Plurality.many);
 }
 
 /// Useful methods that make chained finders more readable.
