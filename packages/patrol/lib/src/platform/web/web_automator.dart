@@ -104,8 +104,8 @@ abstract interface class WebAutomator {
   /// All subsequent actions will target the main page until switched again.
   Future<void> switchToMainPage();
 
-  /// Returns information about all open pages.
-  Future<LinkedHashMap<Object?, Object?>> getPages();
+  /// Returns identifiers of all open pages.
+  Future<List<String>> getPages();
 
   /// Returns the ID of the currently active page.
   Future<String> getCurrentPage();
