@@ -77,10 +77,10 @@ test("teardown handles page that was already closed", async ({ browser }) => {
 test("download in a secondary page is captured by verifyFileDownloads", async ({ browser }) => {
   const context = await browser.newContext({ acceptDownloads: true })
   const page = await context.newPage()
-  new PageManager(context, page)
+  const pageManager = new PageManager(context, page)
 
   // Set up download tracking via startTest
-  await startTest(page)
+  await startTest({ pageManager, params: {} })
 
   // Open a secondary page — startTest's context.on('page') listener should
   // register a download listener on it automatically
@@ -105,9 +105,10 @@ test("download in a secondary page is captured by verifyFileDownloads", async ({
 test("download tracking is cleared between tests", async ({ browser }) => {
   const context = await browser.newContext({ acceptDownloads: true })
   const page = await context.newPage()
+  const pageManager = new PageManager(context, page)
 
   // First call to startTest should clear downloadedFiles
-  await startTest(page)
+  await startTest({ pageManager, params: {} })
   expect(downloadedFiles).toHaveLength(0)
 
   // Trigger a download
@@ -122,7 +123,7 @@ test("download tracking is cleared between tests", async ({ browser }) => {
   expect(downloadedFiles[0]).toBe("first-file.txt")
 
   // Calling startTest again should clear the list (simulates a new test run)
-  await startTest(page)
+  await startTest({ pageManager, params: {} })
   expect(downloadedFiles).toHaveLength(0)
 
   await context.close()

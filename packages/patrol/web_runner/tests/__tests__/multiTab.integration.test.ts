@@ -44,20 +44,20 @@ test("open a new page, switch to it, interact, and switch back", async ({ browse
   const pageManager = new PageManager(context, page)
 
   // Open a new page to locally-served content
-  const pageId = await openNewPage(page, { url: "https://test.local/page1" }, pageManager, context)
+  const pageId = await openNewPage({ pageManager, params: { url: "https://test.local/page1" } })
   expect(pageId).toBe("page_1")
 
   // Verify 2 pages exist
-  const pagesResult = await getPages(page, {}, pageManager)
+  const pagesResult = await getPages({ pageManager, params: {} })
   expect(pagesResult.pages).toHaveLength(2)
   expect(pagesResult.pages).toContain("page_0")
   expect(pagesResult.pages).toContain("page_1")
 
   // Switch to the new page
-  await switchToPage(page, { pageId: "page_1" }, pageManager)
+  await switchToPage({ pageManager, params: { pageId: "page_1" } })
 
   // Verify active page is page_1
-  const currentPage = await getCurrentPage(page, {}, pageManager)
+  const currentPage = await getCurrentPage({ pageManager, params: {} })
   expect(currentPage).toBe("page_1")
 
   // Verify the new page loaded the local page
@@ -67,8 +67,8 @@ test("open a new page, switch to it, interact, and switch back", async ({ browse
   expect(heading).toContain("Test Page")
 
   // Switch back to page_0 and verify
-  await switchToPage(page, { pageId: "page_0" }, pageManager)
-  const backToPage = await getCurrentPage(page, {}, pageManager)
+  await switchToPage({ pageManager, params: { pageId: "page_0" } })
+  const backToPage = await getCurrentPage({ pageManager, params: {} })
   expect(backToPage).toBe("page_0")
 
   await context.close()
@@ -81,19 +81,19 @@ test("close a page and verify cleanup", async ({ browser }) => {
   const pageManager = new PageManager(context, page)
 
   // Open 2 new pages
-  await openNewPage(page, { url: "https://test.local/page1" }, pageManager, context)
-  await openNewPage(page, { url: "https://test.local/page2" }, pageManager, context)
+  await openNewPage({ pageManager, params: { url: "https://test.local/page1" } })
+  await openNewPage({ pageManager, params: { url: "https://test.local/page2" } })
 
   // Verify 3 pages total
-  const before = await getPages(page, {}, pageManager)
+  const before = await getPages({ pageManager, params: {} })
   expect(before.pages).toHaveLength(3)
   expect(before.pages).toEqual(expect.arrayContaining(["page_0", "page_1", "page_2"]))
 
   // Close page_1
-  await closePage(page, { pageId: "page_1" }, pageManager)
+  await closePage({ pageManager, params: { pageId: "page_1" } })
 
   // Verify 2 remain with stable IDs (page_0 and page_2)
-  const after = await getPages(page, {}, pageManager)
+  const after = await getPages({ pageManager, params: {} })
   expect(after.pages).toHaveLength(2)
   expect(after.pages).toContain("page_0")
   expect(after.pages).toContain("page_2")
@@ -138,22 +138,22 @@ test("pages persist correct content after switching", async ({ browser }) => {
   const pageManager = new PageManager(context, page)
 
   // Open page_1 to locally-served page
-  await openNewPage(page, { url: "https://test.local/page1" }, pageManager, context)
+  await openNewPage({ pageManager, params: { url: "https://test.local/page1" } })
 
   // Switch to page_1 and read the page title
-  await switchToPage(page, { pageId: "page_1" }, pageManager)
+  await switchToPage({ pageManager, params: { pageId: "page_1" } })
   const page1 = pageManager.resolve("page_1")
   await page1.waitForLoadState("domcontentloaded")
   const title = await page1.title()
   expect(title).toContain("Test Page")
 
   // Switch back to page_0 and verify its URL is still about:blank
-  await switchToPage(page, { pageId: "page_0" }, pageManager)
+  await switchToPage({ pageManager, params: { pageId: "page_0" } })
   const page0 = pageManager.resolve("page_0")
   expect(page0.url()).toBe("about:blank")
 
   // Switch to page_1 again and verify content is still there
-  await switchToPage(page, { pageId: "page_1" }, pageManager)
+  await switchToPage({ pageManager, params: { pageId: "page_1" } })
   const page1Again = pageManager.resolve("page_1")
   const headingText = await page1Again.locator("h1").textContent()
   expect(headingText).toContain("Test Page")
