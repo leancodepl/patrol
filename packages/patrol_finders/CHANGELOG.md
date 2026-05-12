@@ -1,3 +1,7 @@
+## Unreleased
+
+- Add `isAndroid`, `isIOS`, `isWeb`, `isMacOS`, `isLinux`, `isWindows`, `isFuchsia` getters.
+
 ## 3.2.0
 
 - Bump `patrol_log` to `^0.8.0`.
