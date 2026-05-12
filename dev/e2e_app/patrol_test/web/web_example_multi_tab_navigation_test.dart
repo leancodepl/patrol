@@ -13,8 +13,7 @@ void main() {
     await $.pumpAndSettle();
     await Future<void>.delayed(const Duration(seconds: 2));
 
-    final pagesResult = await $.platform.web.getPages();
-    final pages = pagesResult['pages'] as List<Object?>;
+    final pages = await $.platform.web.getPages();
     expect(pages.length, 2);
 
     // Fill form in the new page
@@ -47,8 +46,7 @@ void main() {
 
     await $.platform.web.closePage(pageId: newPageId);
 
-    final finalPages = await $.platform.web.getPages();
-    final remaining = finalPages['pages'] as List<Object?>;
+    final remaining = await $.platform.web.getPages();
     expect(remaining.length, 1);
   });
 }

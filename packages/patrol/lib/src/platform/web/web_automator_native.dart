@@ -326,14 +326,14 @@ class WebAutomator implements web_automator.WebAutomator {
   }
 
   @override
-  Future<LinkedHashMap<Object?, Object?>> getPages() async {
+  Future<List<String>> getPages() async {
     final result = await callPlaywright(
       'getPages',
       {},
       logger: _config.logger,
       patrolLog: _patrolLog,
     );
-    return result as LinkedHashMap<Object?, Object?>;
+    return (result as List<dynamic>).cast<String>();
   }
 
   @override
