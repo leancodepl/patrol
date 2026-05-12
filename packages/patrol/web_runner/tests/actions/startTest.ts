@@ -27,7 +27,7 @@ export async function startTest({ pageManager }: ActionParams<StartTestRequest>)
   }
 
   // Listen for future pages in this context
-  context.on("page", (newPage: Page) => {
+  context.on("page", newPage => {
     registerDownloadListener(newPage)
   })
 }

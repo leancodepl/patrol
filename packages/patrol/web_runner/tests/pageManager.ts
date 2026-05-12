@@ -50,8 +50,13 @@ export class PageManager {
     return page
   }
 
-  get activePage(): Page {
-    return this.resolve(this._activeId)
+  async close(pageId: string): Promise<void> {
+    if (pageId === this.mainPageId) {
+      throw new Error("Cannot close the main Flutter page")
+    }
+
+    const page = this.resolve(pageId)
+    await page.close()
   }
 
   get activeId(): string {
@@ -64,6 +69,10 @@ export class PageManager {
     }
 
     this._activeId = pageId
+  }
+
+  get activePage(): Page {
+    return this.resolve(this.activeId)
   }
 
   get count(): number {
@@ -79,11 +88,6 @@ export class PageManager {
   }
 
   isMainPage(page: Page): boolean {
-    const pageId = this.reverse.get(page)
-    return !!pageId && this.isMainPageId(pageId)
-  }
-
-  isMainPageId(pageId: string): boolean {
-    return pageId === this.mainPageId
+    return this.idOf(page) === this.mainPageId
   }
 }

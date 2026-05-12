@@ -1,6 +1,6 @@
 import type { ActionParams, SwitchToMainPageRequest } from "../contracts"
+import { switchToPage } from "./switchToPage"
 
 export async function switchToMainPage({ pageManager }: ActionParams<SwitchToMainPageRequest>) {
-  const page = pageManager.activePage
-  await page.bringToFront()
+  await switchToPage({ pageManager, params: { pageId: pageManager.mainPageId } })
 }
