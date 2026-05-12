@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:patrol_cli/src/android/android_test_backend.dart';
+import 'package:patrol_cli/src/android/video_recording_config.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
 import 'package:patrol_cli/src/base/logger.dart';
@@ -281,6 +282,7 @@ class DevelopService {
         showFlutterLogs: false,
         hideTestSteps: options.hideTestSteps,
         clearTestSteps: options.clearTestSteps,
+        videoConfig: options.videoConfig,
       );
     } finally {
       for (final sub in signalSubscriptions) {
@@ -366,6 +368,7 @@ class DevelopService {
     required bool showFlutterLogs,
     required bool hideTestSteps,
     required bool clearTestSteps,
+    VideoRecordingConfig? videoConfig,
   }) async {
     Future<void> Function() action;
     Future<void> Function()? finalizer;
@@ -383,6 +386,7 @@ class DevelopService {
           flavor: flutterOpts.flavor,
           clearTestSteps: clearTestSteps,
           onLogEntry: onLogEntry,
+          videoConfig: videoConfig,
         );
         final package = android.packageName;
         if (package != null && uninstall) {
@@ -402,6 +406,7 @@ class DevelopService {
           hideTestSteps: hideTestSteps,
           clearTestSteps: clearTestSteps,
           onLogEntry: onLogEntry,
+          videoConfig: videoConfig,
         );
         final bundleId = iosOpts.bundleId;
         if (bundleId != null && uninstall) {
