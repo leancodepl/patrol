@@ -1,4 +1,5 @@
 import 'package:args/args.dart';
+import 'package:patrol_cli/src/android/video_recording_config.dart';
 import 'package:patrol_cli/src/commands/develop_arg_parser.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:patrol_cli/src/runner/flutter_command.dart';
@@ -32,6 +33,7 @@ class DevelopOptions {
     this.clearTestSteps = true,
     this.checkCompatibility = true,
     this.iosVersion,
+    this.videoConfig,
   });
 
   factory DevelopOptions.fromArgResults(
@@ -75,6 +77,12 @@ class DevelopOptions {
       clearTestSteps: results['clear-test-steps'] as bool,
       checkCompatibility: results['check-compatibility'] as bool,
       iosVersion: results['ios'] as String?,
+      videoConfig: VideoRecordingConfig.fromArgs(
+        recordVideo: results['record-video'] as bool,
+        videoOutputDir: results['video-output-dir'] as String,
+        videoSize: results['video-size'] as String?,
+        videoBitRate: results['video-bit-rate'] as String?,
+      ),
     );
   }
 
@@ -154,6 +162,9 @@ class DevelopOptions {
 
   /// iOS version for simulator. Defaults to 'latest' if null.
   final String? iosVersion;
+
+  /// Video recording configuration. `null` means video recording is disabled.
+  final VideoRecordingConfig? videoConfig;
 }
 
 class _DevelopOptionsParserCommand extends PatrolCommand {
