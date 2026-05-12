@@ -1,3 +1,7 @@
+## Unreleased
+
+- Fix `at()` to wait for widget to become visible.
+
 ## 3.2.0
 
 - Bump `patrol_log` to `^0.8.0`.
