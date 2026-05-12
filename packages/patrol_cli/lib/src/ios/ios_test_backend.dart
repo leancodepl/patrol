@@ -6,13 +6,16 @@ import 'package:file/file.dart';
 import 'package:glob/glob.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' show join;
+import 'package:patrol_cli/src/android/patrol_log_reader_with_video.dart';
+import 'package:patrol_cli/src/android/video_recording_config.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/devices.dart';
+import 'package:patrol_cli/src/ios/ios_patrol_log_reader_with_video.dart';
+import 'package:patrol_cli/src/ios/ios_video_recording_manager.dart';
 import 'package:patrol_log/patrol_log.dart';
-import 'package:patrol_log/patrol_log_reader.dart';
 import 'package:platform/platform.dart';
 import 'package:process/process.dart';
 
@@ -159,8 +162,22 @@ class IOSTestBackend {
     required bool hideTestSteps,
     required bool clearTestSteps,
     void Function(Entry entry)? onLogEntry,
+    VideoRecordingConfig? videoConfig,
   }) async {
     await _disposeScope.run((scope) async {
+      // Create video recording manager if enabled
+      IOSVideoRecordingManager? videoRecordingManager;
+      if (videoConfig?.enabled ?? false) {
+        videoRecordingManager = IOSVideoRecordingManager(
+          processManager: _processManager,
+          rootDirectory: _rootDirectory,
+          logger: _logger,
+          config: videoConfig!,
+          device: device,
+          scope: scope,
+        );
+      }
+
       final patrolLogCommand = device.real
           ? ['idevicesyslog']
           : ['log', 'stream'];
@@ -174,19 +191,38 @@ class IOSTestBackend {
         timestamp: DateTime.now().millisecondsSinceEpoch,
       );
 
-      final patrolLogReader =
-          PatrolLogReader(
-              listenStdOut: processLogs.listenStdOut,
-              scope: scope,
-              log: _logger.info,
-              reportPath: reportPath,
-              showFlutterLogs: showFlutterLogs,
-              hideTestSteps: hideTestSteps,
-              clearTestSteps: clearTestSteps,
-              onLogEntry: onLogEntry,
-            )
-            ..listen()
-            ..startTimer();
+      final PatrolLogReaderInterface patrolLogReader;
+
+      if (videoRecordingManager != null) {
+        patrolLogReader =
+            IOSPatrolLogReaderWithVideo(
+                listenStdOut: processLogs.listenStdOut,
+                scope: scope,
+                log: _logger.info,
+                reportPath: reportPath,
+                showFlutterLogs: showFlutterLogs,
+                hideTestSteps: hideTestSteps,
+                clearTestSteps: clearTestSteps,
+                videoRecordingManager: videoRecordingManager,
+                onLogEntry: onLogEntry,
+              )
+              ..listen()
+              ..startTimer();
+      } else {
+        patrolLogReader =
+            IOSStandardPatrolLogReaderWrapper(
+                listenStdOut: processLogs.listenStdOut,
+                scope: scope,
+                log: _logger.info,
+                reportPath: reportPath,
+                showFlutterLogs: showFlutterLogs,
+                hideTestSteps: hideTestSteps,
+                clearTestSteps: clearTestSteps,
+                onLogEntry: onLogEntry,
+              )
+              ..listen()
+              ..startTimer();
+      }
 
       final subject = '${options.description} on ${device.description}';
       final task = _logger.task('Running $subject');
@@ -219,6 +255,11 @@ class IOSTestBackend {
       final exitCode = await process.exitCode;
       patrolLogReader.stopTimer();
       processLogs.kill();
+
+      // Cleanup video recording manager
+      if (videoRecordingManager != null) {
+        await videoRecordingManager.dispose();
+      }
 
       // Don't print the summary in develop
       if (!interruptible) {
