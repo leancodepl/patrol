@@ -18,6 +18,7 @@ import 'package:platform/platform.dart';
 import 'package:process/process.dart';
 import 'package:vm_service/vm_service.dart';
 import 'package:vm_service/vm_service_io.dart';
+import 'package:yaml/yaml.dart';
 
 class CoverageTool {
   CoverageTool({
@@ -53,6 +54,7 @@ class CoverageTool {
     required Logger logger,
     required Set<Glob> ignoreGlobs,
     required FlutterCommand flutterCommand,
+    bool includeWorkspacePackages = false,
   }) async {
     final homeDirectory =
         _platform.environment['HOME'] ?? _platform.environment['USERPROFILE'];
@@ -60,7 +62,10 @@ class CoverageTool {
 
     // Resolved once per run; the package_config.json contents do not change
     // mid-run and we'd otherwise re-walk + re-parse for every test isolate.
-    final packages = await _getCoveragePackages(packagesRegExps);
+    final packages = await _getCoveragePackages(
+      packagesRegExps,
+      includeWorkspacePackages: includeWorkspacePackages,
+    );
 
     await _disposeScope.run((scope) async {
       final logsProcess =
@@ -236,7 +241,10 @@ class CoverageTool {
     await coverageDirectory.childFile('patrol_lcov.info').writeAsString(report);
   }
 
-  Future<Set<String>> _getCoveragePackages(Set<RegExp> packagesRegExps) async {
+  Future<Set<String>> _getCoveragePackages(
+    Set<RegExp> packagesRegExps, {
+    required bool includeWorkspacePackages,
+  }) async {
     final packageConfigFile = findPackageConfigFile(_rootDirectory);
     if (packageConfigFile == null) {
       throwToolExit(
@@ -252,9 +260,89 @@ class CoverageTool {
         ...packageConfig.packages.map((e) => e.name).where(regExp.hasMatch),
     };
 
+    if (includeWorkspacePackages) {
+      // package_config.json lives in <workspace-root>/.dart_tool/, so the
+      // workspace root is two levels up.
+      final workspaceRoot = packageConfigFile.parent.parent;
+      final members = findWorkspaceMemberPackages(workspaceRoot);
+      if (members.isEmpty) {
+        _logger.warn(
+          'No `workspace:` entries found in ${workspaceRoot.path}/pubspec.yaml; '
+          '--coverage-workspace had no effect.',
+        );
+      } else {
+        _logger.detail('Workspace member packages: $members');
+        packagesToInclude.addAll(members);
+      }
+    }
+
     _logger.detail('Packages included in coverage: $packagesToInclude');
 
     return packagesToInclude;
+  }
+}
+
+/// Returns the names of every member package declared under the top-level
+/// `workspace:` key in `<workspaceRoot>/pubspec.yaml`.
+///
+/// Each entry in `workspace:` is a path relative to [workspaceRoot]; the
+/// `name:` field of that path's `pubspec.yaml` is the package name. Members
+/// without a readable `pubspec.yaml` are silently skipped, since pub itself
+/// will already have surfaced that error during `pub get`.
+///
+/// Returns an empty set when [workspaceRoot] has no `pubspec.yaml`, when its
+/// `workspace:` key is missing, or when the file isn't a YAML map.
+Set<String> findWorkspaceMemberPackages(Directory workspaceRoot) {
+  final root = _tryLoadYamlMap(workspaceRoot.childFile('pubspec.yaml'));
+  if (root == null) {
+    return const {};
+  }
+  final members = root['workspace'];
+  if (members is! Iterable) {
+    return const {};
+  }
+
+  final names = <String>{};
+  for (final entry in members) {
+    if (entry is! String) {
+      continue;
+    }
+    // pubspec.yaml `workspace:` entries are always POSIX-style relative paths,
+    // so split on `/` and walk children to stay platform-agnostic.
+    var memberDir = workspaceRoot;
+    for (final segment in entry.split('/')) {
+      if (segment.isEmpty || segment == '.') {
+        continue;
+      }
+      memberDir = memberDir.childDirectory(segment);
+    }
+    final memberYaml = _tryLoadYamlMap(memberDir.childFile('pubspec.yaml'));
+    if (memberYaml == null) {
+      continue;
+    }
+    final name = memberYaml['name'];
+    if (name is String && name.isNotEmpty) {
+      names.add(name);
+    }
+  }
+  return names;
+}
+
+/// Reads [file] as YAML and returns its top-level map, or `null` when the
+/// file is missing, the contents fail to parse, or the root is not a map.
+///
+/// We treat a malformed `pubspec.yaml` the same as a missing one because pub
+/// itself surfaces the underlying error during `pub get`; the coverage flow
+/// should degrade gracefully rather than crash mid-test.
+Map<dynamic, dynamic>? _tryLoadYamlMap(File file) {
+  if (!file.existsSync()) {
+    return null;
+  }
+  try {
+    final parsed = loadYaml(file.readAsStringSync());
+    return parsed is Map ? parsed : null;
+  } on YamlException {
+    return null;
   }
 }
 
