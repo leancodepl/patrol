@@ -9,7 +9,7 @@
 - Migrate to built-in Kotlin (#3084).
 - Fix iOS tests failing on devices whose name contains a comma 
 - Migrate Japanese text resources to SPM (#3128)
-- Add multi-tab browser support for web tests: `openNewPage`, `closePage`, `switchToPage`, `getPages`, `getCurrentPage`, `waitForPopup`. (#2871)
+- Add multi-tab browser support for web tests: `openNewPage`, `closePage`, `switchToPage`, `switchToMainPage`, `getPages`, `getCurrentPage`, `getCurrentPageUrl`, `waitForPopup`. (#2871)
 
 ## 4.6.1
 
