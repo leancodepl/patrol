@@ -8,6 +8,7 @@ import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
 import 'package:glob/glob.dart';
 import 'package:package_config/package_config.dart';
+import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/coverage/device_to_host_port_transformer.dart';
 import 'package:patrol_cli/src/coverage/vm_connection_details.dart';
@@ -236,11 +237,15 @@ class CoverageTool {
   }
 
   Future<Set<String>> _getCoveragePackages(Set<RegExp> packagesRegExps) async {
-    final packageConfig = await loadPackageConfig(
-      _rootDirectory
-          .childDirectory('.dart_tool')
-          .childFile('package_config.json'),
-    );
+    final packageConfigFile = findPackageConfigFile(_rootDirectory);
+    if (packageConfigFile == null) {
+      throwToolExit(
+        "Couldn't find .dart_tool/package_config.json in "
+        '${_rootDirectory.path} or any parent directory. '
+        'Run `flutter pub get` first.',
+      );
+    }
+    final packageConfig = await loadPackageConfig(packageConfigFile);
 
     final packagesToInclude = {
       for (final regExp in packagesRegExps)
@@ -250,6 +255,28 @@ class CoverageTool {
     _logger.detail('Packages included in coverage: $packagesToInclude');
 
     return packagesToInclude;
+  }
+}
+
+/// Walks up from [directory] looking for `.dart_tool/package_config.json`.
+///
+/// In a Pub workspace the file lives at the workspace root, not in each
+/// member package. Returns `null` if no config is found up to the filesystem
+/// root.
+File? findPackageConfigFile(Directory directory) {
+  var current = directory;
+  while (true) {
+    final candidate = current
+        .childDirectory('.dart_tool')
+        .childFile('package_config.json');
+    if (candidate.existsSync()) {
+      return candidate;
+    }
+    final parent = current.parent;
+    if (parent.path == current.path) {
+      return null;
+    }
+    current = parent;
   }
 }
 
