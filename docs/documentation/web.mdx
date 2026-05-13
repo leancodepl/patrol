@@ -104,5 +104,5 @@ await $.platform.web.closePage(pageId: pageId);
 final popupPageIdFuture = $.platform.web.waitForPopup();
 // ... trigger the popup ...
 final popupPageId = await popupPageIdFuture;
-final url = await $.platform.web.getCurrentPageUrl()
+final url = await $.platform.web.getCurrentPageUrl();
 ```
