@@ -65,7 +65,7 @@ type _WaitForPopup = AssertAssignable<
   WaitForPopupRequest,
   {
     action: "waitForPopup"
-    params: { triggerAction: string; triggerParams: Record<string, unknown> }
+    params: Record<string, never>
   }
 >
 
@@ -157,7 +157,7 @@ test.describe("contract types - union includes new request types", () => {
       { action: "switchToPage", params: { pageId: "page_2" } },
       { action: "getPages", params: {} },
       { action: "getCurrentPage", params: {} },
-      { action: "waitForPopup", params: { triggerAction: "tap", triggerParams: {} } },
+      { action: "waitForPopup", params: {} },
     ]
     expect(requests).toHaveLength(6)
   })
