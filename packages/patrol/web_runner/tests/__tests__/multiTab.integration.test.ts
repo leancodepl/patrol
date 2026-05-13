@@ -48,10 +48,10 @@ test("open a new page, switch to it, interact, and switch back", async ({ browse
   expect(pageId).toBe("page_1")
 
   // Verify 2 pages exist
-  const pagesResult = await getPages({ pageManager, params: {} })
-  expect(pagesResult.pages).toHaveLength(2)
-  expect(pagesResult.pages).toContain("page_0")
-  expect(pagesResult.pages).toContain("page_1")
+  const pages = await getPages({ pageManager, params: {} })
+  expect(pages).toHaveLength(2)
+  expect(pages).toContain("page_0")
+  expect(pages).toContain("page_1")
 
   // Switch to the new page
   await switchToPage({ pageManager, params: { pageId: "page_1" } })
@@ -86,18 +86,18 @@ test("close a page and verify cleanup", async ({ browser }) => {
 
   // Verify 3 pages total
   const before = await getPages({ pageManager, params: {} })
-  expect(before.pages).toHaveLength(3)
-  expect(before.pages).toEqual(expect.arrayContaining(["page_0", "page_1", "page_2"]))
+  expect(before).toHaveLength(3)
+  expect(before).toEqual(expect.arrayContaining(["page_0", "page_1", "page_2"]))
 
   // Close page_1
   await closePage({ pageManager, params: { pageId: "page_1" } })
 
   // Verify 2 remain with stable IDs (page_0 and page_2)
   const after = await getPages({ pageManager, params: {} })
-  expect(after.pages).toHaveLength(2)
-  expect(after.pages).toContain("page_0")
-  expect(after.pages).toContain("page_2")
-  expect(after.pages).not.toContain("page_1")
+  expect(after).toHaveLength(2)
+  expect(after).toContain("page_0")
+  expect(after).toContain("page_2")
+  expect(after).not.toContain("page_1")
 
   // Verify resolving page_1 throws
   expect(() => pageManager.resolve("page_1")).toThrow(/No page found for page ID "page_1"/)

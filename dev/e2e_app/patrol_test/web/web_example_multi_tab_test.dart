@@ -20,6 +20,9 @@ void main() {
     final currentTab = await $.platform.web.getCurrentPage();
     expect(currentTab, newPageId);
 
+    final currentUrl = await $.platform.web.getCurrentPageUrl();
+    expect(currentUrl, formUrl);
+
     await $.platform.web.enterText(
       WebSelector(cssOrXpath: '#test-input'),
       text: 'Hello from new tab',

@@ -8,6 +8,8 @@ import type {
   GetCurrentPageRequest,
   WaitForPopupRequest,
   PatrolNativeRequest,
+  SwitchToMainPageRequest,
+  GetCurrentPageUrlRequest,
 } from "../contracts"
 
 // ---------------------------------------------------------------------------
@@ -113,6 +115,12 @@ test.describe("contract types - new multi-tab requests", () => {
     expect(req.params).toEqual({ pageId: "tab_2" })
   })
 
+  test("SwitchToMainPageRequest has correct structure", () => {
+    const req: SwitchToMainPageRequest = { action: "switchToMainPage", params: {} }
+    expect(req.action).toBe("switchToMainPage")
+    expect(req.params).toEqual({})
+  })
+
   test("GetPagesRequest has correct structure", () => {
     const req: GetPagesRequest = { action: "getPages", params: {} }
     expect(req.action).toBe("getPages")
@@ -122,6 +130,12 @@ test.describe("contract types - new multi-tab requests", () => {
   test("GetCurrentPageRequest has correct structure", () => {
     const req: GetCurrentPageRequest = { action: "getCurrentPage", params: {} }
     expect(req.action).toBe("getCurrentPage")
+    expect(req.params).toEqual({})
+  })
+
+  test("GetCurrentPageUrlRequest has correct structure", () => {
+    const req: GetCurrentPageUrlRequest = { action: "getCurrentPageUrl", params: {} }
+    expect(req.action).toBe("getCurrentPageUrl")
     expect(req.params).toEqual({})
   })
 

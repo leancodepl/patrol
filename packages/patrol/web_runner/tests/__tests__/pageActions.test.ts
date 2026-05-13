@@ -311,27 +311,8 @@ test.describe("getPages", () => {
       params: {},
     })
 
-    expect(result.pages).toEqual(expect.arrayContaining(["page_0", "page_1", "page_2"]))
-    expect(result.pages).toHaveLength(3)
-  })
-
-  test("returns the active page ID from pageManager.activeId", async () => {
-    const context = createMockContext()
-    const initialPage = createMockPage()
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const manager = new PageManager(context as any, initialPage as any)
-
-    const secondPage = createMockPage()
-    context.emit("page", secondPage)
-    manager.activeId = "page_1"
-
-    const result = await getPages({
-      pageManager: manager,
-      params: {},
-    })
-
-    expect(result.activePageId).toBe("page_1")
+    expect(result).toEqual(expect.arrayContaining(["page_0", "page_1", "page_2"]))
+    expect(result).toHaveLength(3)
   })
 })
 
