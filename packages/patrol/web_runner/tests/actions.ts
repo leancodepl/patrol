@@ -10,6 +10,7 @@ import { enterText } from "./actions/enterText"
 import { getClipboard } from "./actions/getClipboard"
 import { getCookies } from "./actions/getCookies"
 import { getCurrentPage } from "./actions/getCurrentPage"
+import { getCurrentPageUrl } from "./actions/getCurrentPageUrl"
 import { getPages } from "./actions/getPages"
 import { goBack } from "./actions/goBack"
 import { goForward } from "./actions/goForward"
@@ -42,6 +43,7 @@ export const actions = {
   getClipboard,
   getCookies,
   getCurrentPage,
+  getCurrentPageUrl,
   getPages,
   goBack,
   goForward,
