@@ -104,8 +104,7 @@ class _HomePage extends StatelessWidget {
               ),
               ElevatedButton.icon(
                 key: const Key('open_popup_button'),
-                onPressed: () =>
-                    web.window.open('about:blank', '_blank'),
+                onPressed: () => web.window.open('about:blank', '_blank'),
                 icon: const Icon(Icons.open_in_new),
                 label: const Text('Open Popup Window'),
               ),
