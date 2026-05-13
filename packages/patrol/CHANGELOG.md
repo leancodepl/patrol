@@ -1,6 +1,6 @@
 ## Unreleased
 
-- Add multi-tab browser support for web tests: `openNewPage`, `closePage`, `switchToPage`, `getPages`, `getCurrentPage`, `waitForPopup`. (#2871)
+- Add multi-tab browser support for web tests: `openNewPage`, `closePage`, `switchToPage`, `switchToMainPage`, `getPages`, `getCurrentPage`, `getCurrentPageUrl`, `waitForPopup`. (#2871)
 
 ## 4.5.0
 
