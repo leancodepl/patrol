@@ -348,6 +348,17 @@ class WebAutomator implements web_automator.WebAutomator {
   }
 
   @override
+  Future<String> getCurrentPageUrl() async {
+    final result = await callPlaywright(
+      'getCurrentPageUrl',
+      {},
+      logger: _config.logger,
+      patrolLog: _patrolLog,
+    );
+    return result as String;
+  }
+
+  @override
   Future<String> waitForPopup() async {
     final result = await callPlaywright(
       'waitForPopup',
