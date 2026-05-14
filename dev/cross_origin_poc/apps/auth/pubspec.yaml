@@ -1,0 +1,18 @@
+name: auth_app
+description: Auth app for Patrol cross-origin PoC.
+publish_to: none
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.8.0 <4.0.0"
+  flutter: ">=3.32.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  web: ^1.1.1
+  cross_origin_lib:
+    path: ../../cross_origin_lib
+
+flutter:
+  uses-material-design: true
