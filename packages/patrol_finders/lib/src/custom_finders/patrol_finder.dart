@@ -323,6 +323,7 @@ class PatrolFinder implements MatchFinder {
     Duration? visibleTimeout,
     Duration? settleTimeout,
     Alignment alignment = Alignment.center,
+    bool hideKeyboard = true,
   }) => wrapWithPatrolLog(
     action: 'enterText',
     color: AnsiCodes.magenta,
@@ -334,6 +335,7 @@ class PatrolFinder implements MatchFinder {
       settleTimeout: settleTimeout,
       alignment: alignment,
       enablePatrolLog: false,
+      hideKeyboard: hideKeyboard,
     ),
   );
 
@@ -637,6 +639,7 @@ extension ActionCombiner on Future<PatrolFinder> {
     Duration? visibleTimeout,
     Duration? settleTimeout,
     Alignment alignment = Alignment.center,
+    bool hideKeyboard = true,
   }) async {
     await (await this).enterText(
       text,
@@ -644,6 +647,7 @@ extension ActionCombiner on Future<PatrolFinder> {
       visibleTimeout: visibleTimeout,
       settleTimeout: settleTimeout,
       alignment: alignment,
+      hideKeyboard: hideKeyboard,
     );
   }
 }

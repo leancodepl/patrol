@@ -1,3 +1,7 @@
+## Unreleased
+
+- Fix issues with `$.enterText()` (#2202, #2111)
+
 ## 3.2.0
 
 - Bump `patrol_log` to `^0.8.0`.
