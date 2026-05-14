@@ -10,7 +10,12 @@ void main() {
 
       await $(_AtFinderItem).at(1).tap();
 
-      await $(#secondItemTapped).waitUntilVisible();
+      await $('Second item tapped 1').waitUntilVisible();
+
+      await $(_AtFinderItem).first.tap();
+      await $('First item tapped 1').waitUntilVisible();
+      await $(_AtFinderItem).last.tap();
+      await $('Second item tapped 2').waitUntilVisible();
     },
     tags: ['android', 'emulator', 'ios', 'simulator'],
   );
@@ -26,7 +31,8 @@ class _AtFinderApp extends StatefulWidget {
 class _AtFinderAppState extends State<_AtFinderApp> {
   var _isFirstItemVisible = false;
   var _isSecondItemVisible = false;
-  var _isSecondItemTapped = false;
+  var _SecondItemTapped = 0;
+  var _FirstItemTapped = 0;
 
   @override
   void initState() {
@@ -59,18 +65,24 @@ class _AtFinderAppState extends State<_AtFinderApp> {
       home: Scaffold(
         body: ListView(
           children: [
-            if (_isFirstItemVisible) _AtFinderItem(index: 0, onTap: () {}),
+            if (_isFirstItemVisible) _AtFinderItem(index: 0, onTap: () {
+              setState(() {
+                _FirstItemTapped++;
+              });
+            }),
             if (_isSecondItemVisible)
               _AtFinderItem(
                 index: 1,
                 onTap: () {
                   setState(() {
-                    _isSecondItemTapped = true;
+                    _SecondItemTapped++;
                   });
                 },
               ),
-            if (_isSecondItemTapped)
-              const Text('Second item tapped', key: Key('secondItemTapped')),
+            if (_SecondItemTapped > 0)
+              Text('Second item tapped $_SecondItemTapped', key: Key('secondItemTapped')),
+            if (_FirstItemTapped > 0)
+              Text('First item tapped $_FirstItemTapped', key: Key('firstItemTapped')),
           ],
         ),
       ),
