@@ -1,0 +1,41 @@
+name: controller_app
+description: Patrol controller for cross-origin opener+DUT PoC.
+publish_to: none
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.8.0 <4.0.0"
+  flutter: ">=3.32.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cross_origin_lib:
+    path: ../../cross_origin_lib
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  patrol:
+    path: ../../../../packages/patrol
+
+flutter:
+  uses-material-design: true
+
+# Read by cross_origin_lib's orchestrate.dart. Declares the remote apps this
+# controller test exercises. Each entry: path (to the Flutter Web app), port
+# (port on localhost). The orchestrator starts each app on its port and
+# compiles them as PATROL_REMOTE_APPS={"name": "http://localhost:port", ...}
+# dart-define into the controller bundle.
+patrol:
+  remote:
+    apps:
+      panel:
+        path: ../panel
+        port: 8082
+      auth:
+        path: ../auth
+        port: 8081
+      canvas:
+        path: ../canvas
+        port: 8083
