@@ -541,19 +541,51 @@ class PatrolFinder implements MatchFinder {
 
   @override
   PatrolFinder get first {
-    return PatrolFinder(tester: tester, finder: finder.first);
+    return _select(
+      description: 'first',
+      selector: (candidates) => candidates.take(1),
+    );
   }
 
   @override
   PatrolFinder get last {
-    return PatrolFinder(tester: tester, finder: finder.last);
+    return _select(
+      description: 'last',
+      selector: (candidates) {
+        if (candidates.isEmpty) {
+          return const Iterable<Element>.empty();
+        }
+
+        return [candidates.last] as Iterable<Element>;
+      },
+    );
   }
 
   @override
   PatrolFinder at(int index) {
+    return _select(
+      description: 'index $index',
+      selector: (candidates) {
+        if (index < 0) {
+          return const Iterable<Element>.empty();
+        }
+
+        return candidates.skip(index).take(1);
+      },
+    );
+  }
+
+  PatrolFinder _select({
+    required String description,
+    required Iterable<Element> Function(Iterable<Element> candidates) selector,
+  }) {
     return PatrolFinder(
       tester: tester,
-      finder: _PatrolIndexFinder(finder, index),
+      finder: _PatrolSelectorFinder(
+        finder,
+        selectorDescription: description,
+        selector: selector,
+      ),
     );
   }
 
@@ -611,31 +643,24 @@ class PatrolFinder implements MatchFinder {
   bool precache() => finder.precache();
 }
 
-class _PatrolIndexFinder extends ChainedFinder {
-  _PatrolIndexFinder(super.parent, this.index);
+class _PatrolSelectorFinder extends ChainedFinder {
+  _PatrolSelectorFinder(
+    super.parent, {
+    required this.selectorDescription,
+    required this.selector,
+  });
 
-  final int index;
+  final String selectorDescription;
+  final Iterable<Element> Function(Iterable<Element> candidates) selector;
 
   @override
-  Iterable<Element> filter(Iterable<Element> parentCandidates) sync* {
-    if (index < 0) {
-      return;
-    }
-
-    var currentIndex = 0;
-    for (final candidate in parentCandidates) {
-      if (currentIndex == index) {
-        yield candidate;
-        return;
-      }
-
-      currentIndex += 1;
-    }
-  }
+  Iterable<Element> filter(Iterable<Element> parentCandidates) =>
+      selector(parentCandidates);
 
   @override
   String describeMatch(Plurality plurality) {
-    return '${parent.describeMatch(plurality)} (ignoring all but index $index)';
+    return '${parent.describeMatch(plurality)} '
+        '(ignoring all but $selectorDescription)';
   }
 
   @override
