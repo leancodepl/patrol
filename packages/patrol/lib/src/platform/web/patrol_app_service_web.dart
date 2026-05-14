@@ -98,7 +98,9 @@ Future<void> initAppService() {
   return isInitialised.future;
 }
 
-/// Starts the service that runs the [PatrolAppService].
+/// @nodoc
+///
+/// Starts the service that runs the `PatrolAppService`.
 ///
 /// This function sets up the JavaScript bridge for the Playwright tests to
 /// interact with Dart tests.
@@ -122,6 +124,8 @@ Future<void> runAppService(PatrolAppService service) async {
 }
 
 /// Implements a stateful service for querying and executing Dart tests on web.
+///
+/// @nodoc
 ///
 /// This is an internal class and you don't want to use it. It's public so that
 /// the generated code can access it.
