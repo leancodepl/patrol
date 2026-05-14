@@ -153,15 +153,6 @@ class PatrolTester {
   /// Whether the test is running on macOS.
   bool get isMacOS => _is(TargetPlatform.macOS);
 
-  /// Whether the test is running on Linux.
-  bool get isLinux => _is(TargetPlatform.linux);
-
-  /// Whether the test is running on Windows.
-  bool get isWindows => _is(TargetPlatform.windows);
-
-  /// Whether the test is running on Fuchsia.
-  bool get isFuchsia => _is(TargetPlatform.fuchsia);
-
   bool _is(TargetPlatform platform) =>
       !kIsWeb && defaultTargetPlatform == platform;
 
