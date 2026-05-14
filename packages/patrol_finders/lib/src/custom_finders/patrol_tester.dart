@@ -142,28 +142,28 @@ class PatrolTester {
   final WidgetTester tester;
 
   /// Whether the test is running on Android.
-  bool get isAndroid =>
-      !isWeb && defaultTargetPlatform == TargetPlatform.android;
+  bool get isAndroid => _is(TargetPlatform.android);
 
   /// Whether the test is running on iOS.
-  bool get isIOS => !isWeb && defaultTargetPlatform == TargetPlatform.iOS;
+  bool get isIOS => _is(TargetPlatform.iOS);
 
   /// Whether the test is running on web.
   bool get isWeb => kIsWeb;
 
   /// Whether the test is running on macOS.
-  bool get isMacOS => !isWeb && defaultTargetPlatform == TargetPlatform.macOS;
+  bool get isMacOS => _is(TargetPlatform.macOS);
 
   /// Whether the test is running on Linux.
-  bool get isLinux => !isWeb && defaultTargetPlatform == TargetPlatform.linux;
+  bool get isLinux => _is(TargetPlatform.linux);
 
   /// Whether the test is running on Windows.
-  bool get isWindows =>
-      !isWeb && defaultTargetPlatform == TargetPlatform.windows;
+  bool get isWindows => _is(TargetPlatform.windows);
 
   /// Whether the test is running on Fuchsia.
-  bool get isFuchsia =>
-      !isWeb && defaultTargetPlatform == TargetPlatform.fuchsia;
+  bool get isFuchsia => _is(TargetPlatform.fuchsia);
+
+  bool _is(TargetPlatform platform) =>
+      !kIsWeb && defaultTargetPlatform == platform;
 
   /// Wraps a function with a log entry for the start and end of the function.
   Future<T> wrapWithPatrolLog<T>({
