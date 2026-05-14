@@ -283,4 +283,89 @@ class WebAutomator implements web_automator.WebAutomator {
     );
     return (result as List<dynamic>).cast<String>();
   }
+
+  @override
+  Future<String> openNewPage({required String url}) async {
+    final result = await callPlaywright(
+      'openNewPage',
+      {'url': url},
+      logger: _config.logger,
+      patrolLog: _patrolLog,
+    );
+    return result as String;
+  }
+
+  @override
+  Future<void> closePage({required String pageId}) async {
+    await callPlaywright(
+      'closePage',
+      {'pageId': pageId},
+      logger: _config.logger,
+      patrolLog: _patrolLog,
+    );
+  }
+
+  @override
+  Future<void> switchToMainPage() async {
+    await callPlaywright(
+      'switchToMainPage',
+      {},
+      logger: _config.logger,
+      patrolLog: _patrolLog,
+    );
+  }
+
+  @override
+  Future<void> switchToPage({required String pageId}) async {
+    await callPlaywright(
+      'switchToPage',
+      {'pageId': pageId},
+      logger: _config.logger,
+      patrolLog: _patrolLog,
+    );
+  }
+
+  @override
+  Future<List<String>> getPages() async {
+    final result = await callPlaywright(
+      'getPages',
+      {},
+      logger: _config.logger,
+      patrolLog: _patrolLog,
+    );
+    return (result as List<dynamic>).cast<String>();
+  }
+
+  @override
+  Future<String> getCurrentPage() async {
+    final result = await callPlaywright(
+      'getCurrentPage',
+      {},
+      logger: _config.logger,
+      patrolLog: _patrolLog,
+    );
+    return result as String;
+  }
+
+  @override
+  Future<String> getCurrentPageUrl() async {
+    final result = await callPlaywright(
+      'getCurrentPageUrl',
+      {},
+      logger: _config.logger,
+      patrolLog: _patrolLog,
+    );
+    return result as String;
+  }
+
+  @override
+  Future<String> waitForPopup() async {
+    final result = await callPlaywright(
+      'waitForPopup',
+      {},
+      logger: _config.logger,
+      patrolLog: _patrolLog,
+    );
+    return result as String;
+  }
 }

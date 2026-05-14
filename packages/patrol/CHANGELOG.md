@@ -1,3 +1,7 @@
+## Unreleased
+
+- Add multi-tab browser support for web tests: `openNewPage`, `closePage`, `switchToPage`, `switchToMainPage`, `getPages`, `getCurrentPage`, `getCurrentPageUrl`, `waitForPopup`. (#2871)
+
 ## 4.5.0
 
 - Fix `appId` not being passed down on `$.platform.mobile.enterText` and `$.platform.mobile.enterTextByIndex` (#2992)
@@ -12,7 +16,6 @@
 - Reflect failed tests in Playwright report. (#2970)
 - Add `stopMockLocation` method to `PlatformAutomator` and make mockLocation method less flaky (#2937)
 - Fix matching test entries to produce test summary. (#2998)
-
 
 ## 4.3.0
 
@@ -46,8 +49,8 @@ Patrol 4.0 is here!
 
 Read the article announcing Patrol 4.0 [here](https://leancode.co/blog/patrol-4-0-release).
 
-- New API for native/platform interactions: 
-  - Introduce new way of communicating with platform (`PlatformAutomator`). (#2789) 
+- New API for native/platform interactions:
+  - Introduce new way of communicating with platform (`PlatformAutomator`). (#2789)
   - Deprecate `NativeAutomator` and `NativeAutomator2`. (#2789)
 
 - Add support for running Patrol tests on Web:
@@ -74,7 +77,7 @@ Read the article announcing Patrol 4.0 [here](https://leancode.co/blog/patrol-4-
     - `--web-user-agent`, `--web-viewport`.
 - Add support for configurable test directory via `test_directory` option in `pubspec.yaml`. (#2728)
 - Introduces *experimental* `--full-isolation` flag that uninstall the app between each run on iOS Simulator. (#2803)
-- Bump `patrol_log` to `0.6.0`. 
+- Bump `patrol_log` to `0.6.0`.
 
 - **BREAKING CHANGE**
   - Change default test directory from `integration_test` to `patrol_test`. (#2728)
@@ -91,7 +94,7 @@ This version requires version 3.11.0 of `patrol_cli` package.
 
 ## 3.19.0
 
-- Fix logging for `$.native.pullToRefresh()` and `$.native.swipeBack()`. (#2707) 
+- Fix logging for `$.native.pullToRefresh()` and `$.native.swipeBack()`. (#2707)
 - Fix `$.native.enableDarkMode()` and `$.native.disableDarkMode()` on iOS 18 simulators. (#2705)
 - Add support for de, fr and pl languages for native methods that operates on strings. (#2659)
 - Add support for gallery permission dialog on iOS 17. (#2659)
@@ -320,7 +323,6 @@ Other changes:
 
 - Bump minimum supported Flutter version to 3.16
 - **BREAKING:**
-
   - Remove `bindingType` parameter from `patrolTest()` function. Now only
     `PatrolBinding` is used and it's automatically initialized (#1882)
   - Remove `nativeAutomation` parameter from `patrolTest()` function. Now it's
@@ -762,7 +764,6 @@ flakiness.
 ## 0.5.0
 
 - Revamp scrolling and dragging (#217)
-
   - New `MaestroTester.dragUntilExists()`
   - Fixed `MaestroTester.dragUntilVisible()`'s behavior
   - New `MaestroTester.scrollUntilExists` method
@@ -846,7 +847,6 @@ Native:
 ## 0.3.2
 
 - Improve selector engine:
-
   - Make it possible to pass a `Key` as `matching` to
     `MaestroTester.call(dynamic matching)` and `MaestroFinder.$(dynamic
 matching)`
@@ -859,7 +859,6 @@ matching)`
 ## 0.3.1
 
 - Improve selector engine:
-
   - Make it possible to pass a `MaestroFinder` as `matching` to
     `MaestroTester.call(dynamic matching)` and `MaestroFinder.$(dynamic
 matching)`
@@ -876,7 +875,6 @@ matching)`
 
 - Introduce `Selector` class, which can be passed into `Maestro.tap(selector)`.
 - Add more platform functionality:
-
   - `Maestro.enableWifi()` and `Maestro.disableWifi()`
   - `Maestro.enableCellular()` and `Maestro.disableCellular()`
   - `Maestro.enableDarkMode()` and `Maestro.disableDarkMode()`

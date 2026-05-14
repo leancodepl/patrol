@@ -1,3 +1,5 @@
+import { PageManager } from "./pageManager"
+
 type PatrolNativeRequestBase<TAction extends string, TParams> = {
   action: TAction
   params: TParams
@@ -105,6 +107,29 @@ export type ResizeWindowRequest = PatrolNativeRequestBase<
     height: number
   }
 >
+export type OpenNewPageRequest = PatrolNativeRequestBase<
+  "openNewPage",
+  {
+    url: string
+  }
+>
+export type ClosePageRequest = PatrolNativeRequestBase<
+  "closePage",
+  {
+    pageId: string
+  }
+>
+export type SwitchToPageRequest = PatrolNativeRequestBase<
+  "switchToPage",
+  {
+    pageId: string
+  }
+>
+export type SwitchToMainPageRequest = PatrolNativeRequestBase<"switchToMainPage", {}>
+export type GetPagesRequest = PatrolNativeRequestBase<"getPages", {}>
+export type GetCurrentPageRequest = PatrolNativeRequestBase<"getCurrentPage", {}>
+export type GetCurrentPageUrlRequest = PatrolNativeRequestBase<"getCurrentPageUrl", {}>
+export type WaitForPopupRequest = PatrolNativeRequestBase<"waitForPopup", {}>
 type UnknownRequest = PatrolNativeRequestBase<`unknown-placeholder-${string}`, unknown>
 
 export type PatrolNativeRequest =
@@ -112,22 +137,35 @@ export type PatrolNativeRequest =
   | AddCookieRequest
   | ClearCookiesRequest
   | ClearPermissionsRequest
+  | ClosePageRequest
   | DisableDarkModeRequest
   | DismissNextDialogRequest
   | EnableDarkModeRequest
   | EnterTextRequest
   | GetClipboardRequest
   | GetCookiesRequest
+  | GetCurrentPageRequest
+  | GetCurrentPageUrlRequest
+  | GetPagesRequest
   | GoBackRequest
   | GoForwardRequest
   | GrantPermissionsRequest
+  | OpenNewPageRequest
   | PressKeyComboRequest
   | PressKeyRequest
   | ResizeWindowRequest
   | ScrollToRequest
   | SetClipboardRequest
   | StartTestRequest
+  | SwitchToPageRequest
+  | SwitchToMainPageRequest
   | TapRequest
   | UnknownRequest
   | UploadFileRequest
   | VerifyFileDownloadsRequest
+  | WaitForPopupRequest
+
+export type ActionParams<T extends PatrolNativeRequest> = {
+  pageManager: PageManager
+  params: T["params"]
+}

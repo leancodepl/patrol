@@ -1,11 +1,10 @@
-import { Page } from "playwright"
-import { AddCookieRequest } from "../contracts"
+import type { ActionParams, AddCookieRequest } from "../contracts"
 import { logger } from "../logger"
 
-export async function addCookie(page: Page, params: AddCookieRequest["params"]) {
+export async function addCookie({ pageManager, params }: ActionParams<AddCookieRequest>) {
   logger.info(`Adding cookie: ${params.name} = ${params.value}`)
   logger.info(`Domain: ${params.domain}`)
-  await page.context().addCookies([
+  await pageManager.context.addCookies([
     {
       name: params.name,
       value: params.value,

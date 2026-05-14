@@ -88,4 +88,32 @@ abstract interface class WebAutomator {
 
   /// Returns a list of all files downloaded during the single test.
   Future<List<String>> verifyFileDownloads();
+
+  /// Opens a new browser page navigating to [url].
+  /// Returns the stable page ID of the new page.
+  Future<String> openNewPage({required String url});
+
+  /// Closes the page with the given [pageId].
+  Future<void> closePage({required String pageId});
+
+  /// Switches the active page to [pageId].
+  /// All subsequent actions will target this page until switched again.
+  Future<void> switchToPage({required String pageId});
+
+  /// Switches to the main page.
+  /// All subsequent actions will target the main page until switched again.
+  Future<void> switchToMainPage();
+
+  /// Returns identifiers of all open pages.
+  Future<List<String>> getPages();
+
+  /// Returns the ID of the currently active page.
+  Future<String> getCurrentPage();
+
+  /// Returns the URL of the currently active page.
+  Future<String> getCurrentPageUrl();
+
+  /// Waits for a popup/new page to open.
+  /// Returns the page ID of the newly opened page.
+  Future<String> waitForPopup();
 }

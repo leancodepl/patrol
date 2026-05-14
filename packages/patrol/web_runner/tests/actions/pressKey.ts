@@ -1,6 +1,5 @@
-import { Page } from "playwright"
-import { PressKeyRequest } from "../contracts"
+import { ActionParams, PressKeyRequest } from "../contracts"
 
-export async function pressKey(page: Page, params: PressKeyRequest["params"]) {
-  await page.keyboard.press(params.key)
+export async function pressKey({ pageManager, params }: ActionParams<PressKeyRequest>) {
+  await pageManager.activePage.keyboard.press(params.key)
 }
