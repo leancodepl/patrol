@@ -31,8 +31,8 @@ class _AtFinderApp extends StatefulWidget {
 class _AtFinderAppState extends State<_AtFinderApp> {
   var _isFirstItemVisible = false;
   var _isSecondItemVisible = false;
-  var _SecondItemTapped = 0;
-  var _FirstItemTapped = 0;
+  var _secondItemTapped = 0;
+  var _firstItemTapped = 0;
 
   @override
   void initState() {
@@ -65,24 +65,34 @@ class _AtFinderAppState extends State<_AtFinderApp> {
       home: Scaffold(
         body: ListView(
           children: [
-            if (_isFirstItemVisible) _AtFinderItem(index: 0, onTap: () {
-              setState(() {
-                _FirstItemTapped++;
-              });
-            }),
+            if (_isFirstItemVisible)
+              _AtFinderItem(
+                index: 0,
+                onTap: () {
+                  setState(() {
+                    _firstItemTapped++;
+                  });
+                },
+              ),
             if (_isSecondItemVisible)
               _AtFinderItem(
                 index: 1,
                 onTap: () {
                   setState(() {
-                    _SecondItemTapped++;
+                    _secondItemTapped++;
                   });
                 },
               ),
-            if (_SecondItemTapped > 0)
-              Text('Second item tapped $_SecondItemTapped', key: Key('secondItemTapped')),
-            if (_FirstItemTapped > 0)
-              Text('First item tapped $_FirstItemTapped', key: Key('firstItemTapped')),
+            if (_secondItemTapped > 0)
+              Text(
+                'Second item tapped $_secondItemTapped',
+                key: Key('secondItemTapped'),
+              ),
+            if (_firstItemTapped > 0)
+              Text(
+                'First item tapped $_firstItemTapped',
+                key: Key('firstItemTapped'),
+              ),
           ],
         ),
       ),
