@@ -1,0 +1,5 @@
+# Flutter build outputs
+**/build/
+
+# Runtime logs from run.sh / orchestrate.dart
+*.log
