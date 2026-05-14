@@ -541,19 +541,16 @@ class PatrolFinder implements MatchFinder {
 
   @override
   PatrolFinder get first {
-    // TODO: Throw a better error (https://github.com/leancodepl/patrol/issues/548)
     return PatrolFinder(tester: tester, finder: finder.first);
   }
 
   @override
   PatrolFinder get last {
-    // TODO: Throw a better error (https://github.com/leancodepl/patrol/issues/548)
     return PatrolFinder(tester: tester, finder: finder.last);
   }
 
   @override
   PatrolFinder at(int index) {
-    // TODO: Throw a better error (https://github.com/leancodepl/patrol/issues/548)
     return PatrolFinder(
       tester: tester,
       finder: _PatrolIndexFinder(finder, index),
