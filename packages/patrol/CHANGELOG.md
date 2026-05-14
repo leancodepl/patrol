@@ -1,3 +1,7 @@
+## Unreleased
+
+- Add BrowserStack-friendly Dart coverage collection. With `--dart-define=PATROL_BS_COVERAGE=true` (and optional `PATROL_BS_COVERAGE_PACKAGES=<regexp>`), patrol gathers Dart line coverage from the running VM service after each test and the Android test runner merges it into the JaCoCo `.exec` that BrowserStack collects.
+
 ## 4.5.0
 
 - Fix `appId` not being passed down on `$.platform.mobile.enterText` and `$.platform.mobile.enterTextByIndex` (#2992)
