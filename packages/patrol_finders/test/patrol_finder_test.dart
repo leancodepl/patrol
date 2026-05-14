@@ -1200,6 +1200,12 @@ void main() {
         expect($('some text').at(1), findsNothing);
       });
 
+      patrolWidgetTest('finds nothing when index is negative', ($) async {
+        await $.pumpWidget(const MaterialApp(home: Text('some text')));
+
+        expect($('some text').at(-1), findsNothing);
+      });
+
       patrolWidgetTest('tap waits until widget at index exists', ($) async {
         var itemCount = 1;
         var tapCount = 0;
@@ -1266,23 +1272,55 @@ void main() {
         );
       });
 
-      patrolWidgetTest(
-        'throws StateError when widget at index does not exist',
-        ($) async {
-          await $.pumpWidget(const MaterialApp());
+      patrolWidgetTest('finds nothing when no widgets exist', ($) async {
+        await $.pumpWidget(const MaterialApp());
 
-          expect(
-            () => $('some text').last,
-            throwsA(
-              isA<StateError>().having(
-                (err) => err.message,
-                'message',
-                'No element',
+        expect($('some text').first, findsNothing);
+      });
+
+      patrolWidgetTest('tap waits until first widget exists', ($) async {
+        var itemCount = 0;
+        var tapCount = 0;
+        var itemScheduled = false;
+
+        await $.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: StatefulBuilder(
+                builder: (context, setState) {
+                  if (!itemScheduled) {
+                    itemScheduled = true;
+                    Future<void>.delayed(const Duration(milliseconds: 200), () {
+                      setState(() => itemCount = 1);
+                    });
+                  }
+
+                  return Column(
+                    children: [
+                      Text('taps: $tapCount'),
+                      Expanded(
+                        child: ListView.builder(
+                          itemCount: itemCount,
+                          itemBuilder: (context, index) {
+                            return ListTile(
+                              title: Text('item $index'),
+                              onTap: () => setState(() => tapCount++),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  );
+                },
               ),
             ),
-          );
-        },
-      );
+          ),
+        );
+
+        await $(ListView).$(ListTile).first.tap();
+
+        expect($('taps: 1'), findsOneWidget);
+      });
     });
 
     group('last', () {
@@ -1306,23 +1344,57 @@ void main() {
         );
       });
 
-      patrolWidgetTest(
-        'throws StateError when widget at index does not exist',
-        ($) async {
-          await $.pumpWidget(const MaterialApp());
+      patrolWidgetTest('finds nothing when no widgets exist', ($) async {
+        await $.pumpWidget(const MaterialApp());
 
-          expect(
-            () => $('some text').last,
-            throwsA(
-              isA<StateError>().having(
-                (err) => err.message,
-                'message',
-                'No element',
+        expect($('some text').last, findsNothing);
+      });
+
+      patrolWidgetTest('tap waits until last widget exists', ($) async {
+        var itemCount = 0;
+        var tappedItem = 'none';
+        var itemScheduled = false;
+
+        await $.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: StatefulBuilder(
+                builder: (context, setState) {
+                  if (!itemScheduled) {
+                    itemScheduled = true;
+                    Future<void>.delayed(const Duration(milliseconds: 200), () {
+                      setState(() => itemCount = 2);
+                    });
+                  }
+
+                  return Column(
+                    children: [
+                      Text('tapped: $tappedItem'),
+                      Expanded(
+                        child: ListView.builder(
+                          itemCount: itemCount,
+                          itemBuilder: (context, index) {
+                            return ListTile(
+                              title: Text('item $index'),
+                              onTap: () {
+                                setState(() => tappedItem = 'item $index');
+                              },
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  );
+                },
               ),
             ),
-          );
-        },
-      );
+          ),
+        );
+
+        await $(ListView).$(ListTile).last.tap();
+
+        expect($('tapped: item 1'), findsOneWidget);
+      });
     });
 
     patrolWidgetTest(
