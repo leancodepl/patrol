@@ -34,9 +34,7 @@ void main() {
       for (var index = 0; index < textInputActions.length; index++) {
         final action = textInputActions[index];
         final textField = $(K.textFields[index]);
-        await textField.scrollTo().enterText('test_${action.name}');
-        await textField.tap();
-        await Future<void>.delayed(const Duration(seconds: 1));
+        await textField.scrollTo().tap();
         await $.platform.mobile.sendKeyboardEnter();
         await $('Submitted ${action.name}').waitUntilVisible();
       }
