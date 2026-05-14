@@ -1,6 +1,6 @@
 ## Unreleased
 
-- Fix `at()` to wait for widget to become visible.
+- Fix `at()`, `first` and `last` to wait for widget to become visible.
 
 ## 3.2.0
 
