@@ -2,6 +2,10 @@
 
 - Fix iOS Simulator test crash on Xcode 26.4+ caused by missing platform frameworks path in xctestrun.
 
+## 4.3.1
+
+- Update dependencies.
+
 ## 4.3.0
 
 - Bump `patrol_log` to `^0.8.0`.

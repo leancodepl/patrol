@@ -10,7 +10,7 @@
 
 A powerful, multiplatform E2E UI testing framework for Flutter apps that overcomes the limitations of integration_test by handling native interactions. Developed by LeanCode since 2022, battle-tested and shaped by production-grade experience.
 
-[![Patrol promotial graphics][promo_graphics]][docs]
+[![Patrol promotional graphics][promo_graphics]][docs]
 
 ## Learn more about Patrol:
 

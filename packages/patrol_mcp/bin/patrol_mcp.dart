@@ -10,7 +10,7 @@ import 'package:patrol_mcp/src/patrol_session.dart';
 import 'package:patrol_mcp/src/screenshot_service.dart';
 
 /// Version of patrol_mcp. Must be kept in sync with pubspec.yaml.
-const version = '0.1.0';
+const version = '0.1.3';
 
 const double _defaultTimeoutMinutes = 5;
 
@@ -88,119 +88,118 @@ Future<int> main(List<String> args) async {
       showTerminal: showTerminal,
     );
 
-    final server = McpServer(
-      const Implementation(name: 'patrol_mcp', version: version),
-      options: const McpServerOptions(
-        capabilities: ServerCapabilities(
-          tools: ServerCapabilitiesTools(),
-        ),
-        instructions:
-            'Patrol MCP lets AI agents run and control Patrol develop sessions.\n\n'
-            'Usage workflow:\n'
-            '1. Use run with testFile (for example: {"testFile":"patrol_test/your_test.dart"}) '
-            'to start a test run.\n'
-            '2. Use screenshot to capture the current app screen.\n'
-            '3. Use native-tree to fetch the current native UI tree '
-            '(requires an active session/device).\n'
-            '4. Use quit to gracefully stop the active session when done.\n\n'
-            'Behavior notes:\n'
-            '- run waits for test completion.\n'
-            '- If no session is running, run starts a new session.\n'
-            '- If a session is already running, run triggers a restart for the requested test.\n'
-            '- status is optional and mainly useful for debugging session state and recent output.\n'
-            '- native-tree is intended for native interactions and cross-app/native context inspection.',
-      ),
-    )
-      ..registerTool(
-        'run',
-        description:
-            'Run patrol tests (starts new session or restarts if already running) and wait for completion',
-        inputSchema: const ToolInputSchema(
-          properties: {
-            'testFile': JsonString(
-              description:
-                  'Path to the test file, relative to PROJECT_ROOT '
-                  "(e.g., 'integration_test/example_test.dart' or "
-                  "'patrol_test/scenarios/login_test.dart'). "
-                  'Do NOT include the PROJECT_ROOT prefix in the path.',
+    final server =
+        McpServer(
+            const Implementation(name: 'patrol_mcp', version: version),
+            options: const McpServerOptions(
+              capabilities: ServerCapabilities(
+                tools: ServerCapabilitiesTools(),
+              ),
+              instructions:
+                  'Patrol MCP lets AI agents run and control Patrol develop sessions.\n\n'
+                  'Usage workflow:\n'
+                  '1. Use run with testFile (for example: {"testFile":"patrol_test/your_test.dart"}) '
+                  'to start a test run.\n'
+                  '2. Use screenshot to capture the current app screen.\n'
+                  '3. Use native-tree to fetch the current native UI tree '
+                  '(requires an active session/device).\n'
+                  '4. Use quit to gracefully stop the active session when done.\n\n'
+                  'Behavior notes:\n'
+                  '- run waits for test completion.\n'
+                  '- If no session is running, run starts a new session.\n'
+                  '- If a session is already running, run triggers a restart for the requested test.\n'
+                  '- status is optional and mainly useful for debugging session state and recent output.\n'
+                  '- native-tree is intended for native interactions and cross-app/native context inspection.',
             ),
-            'timeoutMinutes': JsonNumber(
-              description: 'Optional timeout in minutes (default: 5)',
+          )
+          ..registerTool(
+            'run',
+            description:
+                'Run patrol tests (starts new session or restarts if already running) and wait for completion',
+            inputSchema: const ToolInputSchema(
+              properties: {
+                'testFile': JsonString(
+                  description:
+                      'Path to the test file, relative to PROJECT_ROOT '
+                      "(e.g., 'integration_test/example_test.dart' or "
+                      "'patrol_test/scenarios/login_test.dart'). "
+                      'Do NOT include the PROJECT_ROOT prefix in the path.',
+                ),
+                'timeoutMinutes': JsonNumber(
+                  description: 'Optional timeout in minutes (default: 5)',
+                ),
+              },
+              required: ['testFile'],
             ),
-          },
-          required: ['testFile'],
-        ),
-        annotations: const ToolAnnotations(title: 'Run Patrol Tests'),
-        callback: (args, extra) async {
-          final runArgs = _PatrolRunArgs.fromJson(args);
+            annotations: const ToolAnnotations(title: 'Run Patrol Tests'),
+            callback: (args, extra) async {
+              final runArgs = _PatrolRunArgs.fromJson(args);
 
-          final result = await patrolSession.startAndWait(
-            runArgs.testFile,
-            timeout: runArgs.timeout,
+              final result = await patrolSession.startAndWait(
+                runArgs.testFile,
+                timeout: runArgs.timeout,
+              );
+              return CallToolResult(
+                content: [TextContent(text: jsonEncode(result.toMap()))],
+              );
+            },
+          )
+          ..registerTool(
+            'quit',
+            description: 'Quit the active patrol session gracefully',
+            annotations: const ToolAnnotations(title: 'Quit Patrol'),
+            callback: (args, extra) {
+              final result = patrolSession.sendCommand(PatrolCommand.quit);
+              return CallToolResult(content: [TextContent(text: result)]);
+            },
+          )
+          ..registerTool(
+            'status',
+            description:
+                'Get the current status of the patrol session and recent output',
+            annotations: const ToolAnnotations(
+              title: 'Get Status',
+              readOnlyHint: true,
+              idempotentHint: true,
+            ),
+            callback: (args, extra) {
+              final status = patrolSession.getStatus();
+              return CallToolResult(
+                content: [TextContent(text: jsonEncode(status.toMap()))],
+              );
+            },
+          )
+          ..registerTool(
+            'screenshot',
+            description:
+                'Capture a screenshot of the current device/simulator screen. '
+                'Platform is auto-detected from the active patrol session.',
+            annotations: const ToolAnnotations(
+              title: 'Capture Screenshot',
+              readOnlyHint: true,
+            ),
+            callback: (args, extra) {
+              return ScreenshotService.handleScreenshotRequest(
+                patrolSession.device,
+              );
+            },
+          )
+          ..registerTool(
+            'native-tree',
+            description:
+                'Fetch the native UI tree. '
+                'Requires an active patrol develop session.',
+            annotations: const ToolAnnotations(
+              title: 'Get Native UI Tree',
+              readOnlyHint: true,
+            ),
+            callback: (args, extra) {
+              return NativeTreeService.handleGetNativeTreeRequest(
+                patrolSession.device,
+                patrolSession.testServerPort,
+              );
+            },
           );
-          return CallToolResult(
-            content: [TextContent(text: jsonEncode(result.toMap()))],
-          );
-        },
-      )
-      ..registerTool(
-        'quit',
-        description: 'Quit the active patrol session gracefully',
-        annotations: const ToolAnnotations(title: 'Quit Patrol'),
-        callback: (args, extra) {
-          final result = patrolSession.sendCommand(PatrolCommand.quit);
-          return CallToolResult(
-            content: [TextContent(text: result)],
-          );
-        },
-      )
-      ..registerTool(
-        'status',
-        description:
-            'Get the current status of the patrol session and recent output',
-        annotations: const ToolAnnotations(
-          title: 'Get Status',
-          readOnlyHint: true,
-          idempotentHint: true,
-        ),
-        callback: (args, extra) {
-          final status = patrolSession.getStatus();
-          return CallToolResult(
-            content: [TextContent(text: jsonEncode(status.toMap()))],
-          );
-        },
-      )
-      ..registerTool(
-        'screenshot',
-        description:
-            'Capture a screenshot of the current device/simulator screen. '
-            'Platform is auto-detected from the active patrol session.',
-        annotations: const ToolAnnotations(
-          title: 'Capture Screenshot',
-          readOnlyHint: true,
-        ),
-        callback: (args, extra) {
-          return ScreenshotService.handleScreenshotRequest(
-            patrolSession.device,
-          );
-        },
-      )
-      ..registerTool(
-        'native-tree',
-        description:
-            'Fetch the native UI tree. '
-            'Requires an active patrol develop session.',
-        annotations: const ToolAnnotations(
-          title: 'Get Native UI Tree',
-          readOnlyHint: true,
-        ),
-        callback: (args, extra) {
-          return NativeTreeService.handleGetNativeTreeRequest(
-            patrolSession.device,
-            patrolSession.testServerPort,
-          );
-        },
-      );
 
     return await _runStdio(server);
   } on FormatException catch (e) {

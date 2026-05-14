@@ -49,7 +49,6 @@ jobs:
     name: Notify on Slack
     runs-on: ubuntu-latest
     needs: publish
-    if: needs.publish.outputs.prerelease == 'false'
 
     steps:
       - name: Share test results on Slack

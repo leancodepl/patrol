@@ -12,6 +12,7 @@ import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_log/patrol_log.dart';
+import 'package:patrol_log/patrol_log_reader.dart';
 import 'package:platform/platform.dart';
 import 'package:process/process.dart';
 

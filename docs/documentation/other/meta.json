@@ -6,7 +6,8 @@
     "patrol-devtools-extension",
     "effective-patrol",
     "tips-and-tricks",
-    "debugging-patrol-tests"
+    "debugging-patrol-tests",
+    "patrol-mcp"
   ]
 }
 
