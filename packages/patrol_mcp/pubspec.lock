@@ -93,10 +93,10 @@ packages:
     dependency: transitive
     description:
       name: cli_completion
-      sha256: "1e87700c029c77041d836e57f9016b5c90d353151c43c2ca0c36deaadc05aa3a"
+      sha256: "72e8ccc4545f24efa7bbdf3bff7257dc9d62b072dee77513cc54295575bc9220"
       url: "https://pub.dev"
     source: hosted
-    version: "0.4.0"
+    version: "0.5.1"
   cli_config:
     dependency: transitive
     description:
@@ -309,10 +309,10 @@ packages:
     dependency: transitive
     description:
       name: mason_logger
-      sha256: "1fdf5c76870eb6fc3611ed6fbae1973a3794abe581ea5e22e68af2f73c688b93"
+      sha256: "1d46102c6f299c0df7fe986dd3dd3271d57c2ec7c00ae590660b7c3018810048"
       url: "https://pub.dev"
     source: hosted
-    version: "0.2.16"
+    version: "0.3.5"
   matcher:
     dependency: transitive
     description:
@@ -356,17 +356,19 @@ packages:
   patrol_cli:
     dependency: "direct main"
     description:
-      path: "../patrol_cli"
-      relative: true
-    source: path
-    version: "4.2.0"
+      name: patrol_cli
+      sha256: d4d04d3ec3458d82ecf6e881c257bdde93def4047b5b3a7cd88921aca9584c15
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.3.1"
   patrol_log:
-    dependency: "direct overridden"
+    dependency: transitive
     description:
-      path: "../patrol_log"
-      relative: true
-    source: path
-    version: "0.7.1"
+      name: patrol_log
+      sha256: a2360db165c34692665c0de146e5157887d6b584fdccca8f141f947a5acf1b2e
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.8.0"
   petitparser:
     dependency: transitive
     description:
@@ -411,10 +413,10 @@ packages:
     dependency: transitive
     description:
       name: pub_updater
-      sha256: "54e8dc865349059ebe7f163d6acce7c89eb958b8047e6d6e80ce93b13d7c9e60"
+      sha256: "739a0161d73a6974c0675b864fb0cf5147305f7b077b7f03a58fa7a9ab3e7e7d"
       url: "https://pub.dev"
     source: hosted
-    version: "0.4.0"
+    version: "0.5.0"
   pubspec_parse:
     dependency: transitive
     description:
