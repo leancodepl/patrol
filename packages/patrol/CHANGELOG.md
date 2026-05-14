@@ -1,3 +1,7 @@
+## Unreleased
+
+- Fix generated API docs links for public Patrol types.
+
 ## 4.5.0
 
 - Fix `appId` not being passed down on `$.platform.mobile.enterText` and `$.platform.mobile.enterTextByIndex` (#2992)
