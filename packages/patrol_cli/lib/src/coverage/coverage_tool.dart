@@ -58,6 +58,10 @@ class CoverageTool {
         _platform.environment['HOME'] ?? _platform.environment['USERPROFILE'];
     final hitMap = <String, coverage.HitMap>{};
 
+    // Resolved once per run; the package_config.json contents do not change
+    // mid-run and we'd otherwise re-walk + re-parse for every test isolate.
+    final packages = await _getCoveragePackages(packagesRegExps);
+
     await _disposeScope.run((scope) async {
       final logsProcess =
           await _processManager.start(
@@ -100,10 +104,8 @@ class CoverageTool {
       vmConnectionDetailsStream
           .take(totalTestCount)
           .asyncMap(
-            (details) => _collectFromVM(
-              packagesRegExps: packagesRegExps,
-              connectionDetails: details,
-            ),
+            (details) =>
+                _collectFromVM(packages: packages, connectionDetails: details),
           )
           .listen((coverage) {
             hitMap.merge(coverage);
@@ -147,7 +149,7 @@ class CoverageTool {
   }
 
   Future<Map<String, coverage.HitMap>> _collectFromVM({
-    required Set<RegExp> packagesRegExps,
+    required Set<String> packages,
     required VMConnectionDetails connectionDetails,
   }) async {
     final result = <String, coverage.HitMap>{};
@@ -182,7 +184,7 @@ class CoverageTool {
     result.merge(
       await _collectAndMarkTestCompleted(
         connectionDetails: connectionDetails,
-        packagesRegExps: packagesRegExps,
+        packages: packages,
         mainIsolateId: event.extensionData!.data['mainIsolateId'] as String,
       ),
     );
@@ -193,11 +195,9 @@ class CoverageTool {
 
   Future<Map<String, coverage.HitMap>> _collectAndMarkTestCompleted({
     required VMConnectionDetails connectionDetails,
-    required Set<RegExp> packagesRegExps,
+    required Set<String> packages,
     required String mainIsolateId,
   }) async {
-    final packages = await _getCoveragePackages(packagesRegExps);
-
     final data = await coverage.collect(
       connectionDetails.uri,
       false,

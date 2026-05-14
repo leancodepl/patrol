@@ -46,12 +46,12 @@ void _test(Platform platform) {
       () {
         final workspaceRoot = fs.directory(fs.path.join('projects', 'monorepo'))
           ..createSync(recursive: true);
-        final workspaceConfig = workspaceRoot
-            .childDirectory('.dart_tool')
-            .childFile('package_config.json')
-          ..createSync(recursive: true);
-        final memberApp = workspaceRoot.childDirectory('app')
-          ..createSync();
+        final workspaceConfig =
+            workspaceRoot
+                .childDirectory('.dart_tool')
+                .childFile('package_config.json')
+              ..createSync(recursive: true);
+        final memberApp = workspaceRoot.childDirectory('app')..createSync();
 
         final result = findPackageConfigFile(memberApp);
 
@@ -67,27 +67,25 @@ void _test(Platform platform) {
       expect(findPackageConfigFile(projectDir), isNull);
     });
 
-    test(
-      'prefers the closest package_config.json over a parent one',
-      () {
-        final workspaceRoot = fs.directory(fs.path.join('projects', 'monorepo'))
-          ..createSync(recursive: true);
-        workspaceRoot
-            .childDirectory('.dart_tool')
-            .childFile('package_config.json')
-            .createSync(recursive: true);
+    test('prefers the closest package_config.json over a parent one', () {
+      final workspaceRoot = fs.directory(fs.path.join('projects', 'monorepo'))
+        ..createSync(recursive: true);
+      workspaceRoot
+          .childDirectory('.dart_tool')
+          .childFile('package_config.json')
+          .createSync(recursive: true);
 
-        final memberApp = workspaceRoot.childDirectory('app')..createSync();
-        final memberConfig = memberApp
-            .childDirectory('.dart_tool')
-            .childFile('package_config.json')
-          ..createSync(recursive: true);
+      final memberApp = workspaceRoot.childDirectory('app')..createSync();
+      final memberConfig =
+          memberApp
+              .childDirectory('.dart_tool')
+              .childFile('package_config.json')
+            ..createSync(recursive: true);
 
-        final result = findPackageConfigFile(memberApp);
+      final result = findPackageConfigFile(memberApp);
 
-        expect(result, isNotNull);
-        expect(result!.path, memberConfig.path);
-      },
-    );
+      expect(result, isNotNull);
+      expect(result!.path, memberConfig.path);
+    });
   });
 }
