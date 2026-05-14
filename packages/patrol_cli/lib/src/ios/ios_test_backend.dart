@@ -155,7 +155,7 @@ class IOSTestBackend {
           scheme: options.scheme,
           sdkVersion: sdkVersion,
         );
-        await _patchXcTestRunFrameworkPath(xctestRunFile, options.scheme);
+        await _patchXcTestRunFrameworkPath(xctestRunFile);
       }
     });
   }
@@ -332,10 +332,7 @@ class IOSTestBackend {
   /// but xcodebuild only adds that path to TestingEnvironmentVariables (the
   /// test runner), not to UITargetAppEnvironmentVariables (the app under test).
   /// This causes Runner to crash at launch with DYLD "Library missing".
-  Future<void> _patchXcTestRunFrameworkPath(
-    String xctestRunPath,
-    String scheme,
-  ) async {
+  Future<void> _patchXcTestRunFrameworkPath(String xctestRunPath) async {
     const platformsFrameworks =
         '__PLATFORMS__/iPhoneSimulator.platform/Developer/Library/Frameworks';
     const plistKey =
@@ -356,13 +353,17 @@ class IOSTestBackend {
     }
 
     // Append the platform frameworks path.
+    // Use Add when the key doesn't exist yet, Set when it does.
     final newPath = currentPath.isEmpty
         ? platformsFrameworks
         : '$currentPath:$platformsFrameworks';
+    final plistCommand = readResult.exitCode != 0
+        ? 'Add :$plistKey string $newPath'
+        : 'Set :$plistKey $newPath';
     final setResult = await _processManager.run([
       '/usr/libexec/PlistBuddy',
       '-c',
-      'Set :$plistKey $newPath',
+      plistCommand,
       xctestRunPath,
     ], runInShell: true);
 
