@@ -1,6 +1,7 @@
 ## Unreleased
 
 - Add `isAndroid`, `isIOS`, `isWeb` and `isMacOS` getters.
+- Remove `dart:io`.
 
 ## 3.3.0
 
