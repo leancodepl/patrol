@@ -5,6 +5,8 @@
 //  source: schema.dart
 //
 
+import Foundation
+
 protocol IosAutomatorServer {
     func openPlatformApp(request: IOSOpenPlatformAppRequest) throws
     func getNativeViews(request: IOSGetNativeViewsRequest) throws -> IOSGetNativeViewsResponse
