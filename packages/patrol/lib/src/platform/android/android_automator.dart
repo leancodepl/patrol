@@ -236,6 +236,12 @@ abstract interface class AndroidAutomator implements MobileAutomator {
   /// [AndroidAutomatorConfig.findTimeout].
   Future<void> waitUntilVisible(AndroidSelector selector, {Duration? timeout});
 
+  /// Taps the standard Android system dialog "Allow" button.
+  ///
+  /// This is useful for Android dialogs that use the platform alert button with
+  /// `android:id/button1`, for example battery optimization permission dialogs.
+  Future<void> allowPermission();
+
   /// Returns a list of currently visible native UI controls, specified by
   /// [selector], which are currently visible on screen.
   ///

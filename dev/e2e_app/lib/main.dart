@@ -1,5 +1,6 @@
 import 'package:app_links/app_links.dart';
 import 'package:e2e_app/applink_screen.dart';
+import 'package:e2e_app/at_finder_screen.dart';
 import 'package:e2e_app/camera_screen.dart';
 import 'package:e2e_app/keys.dart';
 import 'package:e2e_app/loading_screen.dart';
@@ -211,6 +212,13 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
               MaterialPageRoute<void>(builder: (_) => const LoadingScreen()),
             ),
             child: const Text('Open loading screen'),
+          ),
+          TextButton(
+            key: K.atFinderScreenButton,
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(builder: (_) => const AtFinderScreen()),
+            ),
+            child: const Text('Open at() finder screen'),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).push(

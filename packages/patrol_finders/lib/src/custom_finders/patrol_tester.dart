@@ -1,5 +1,3 @@
-import 'dart:io' as io;
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -140,6 +138,21 @@ class PatrolTester {
 
   /// Flutter's widget tester that this [PatrolTester] wraps.
   final WidgetTester tester;
+
+  /// Whether the test is running on Android.
+  bool get isAndroid => _is(TargetPlatform.android);
+
+  /// Whether the test is running on iOS.
+  bool get isIOS => _is(TargetPlatform.iOS);
+
+  /// Whether the test is running on web.
+  bool get isWeb => kIsWeb;
+
+  /// Whether the test is running on macOS.
+  bool get isMacOS => _is(TargetPlatform.macOS);
+
+  bool _is(TargetPlatform platform) =>
+      !kIsWeb && defaultTargetPlatform == platform;
 
   /// Wraps a function with a log entry for the start and end of the function.
   Future<T> wrapWithPatrolLog<T>({
@@ -434,7 +447,7 @@ class PatrolTester {
           // Workaround for enterText() not working in release mode on real iOS devices.
           // [EditableTextState._openInputConnection] is not called when the text field is focused.
           // So we need to attach text input connection manually.
-          if (!kIsWeb && io.Platform.isIOS && kReleaseMode) {
+          if (isIOS && kReleaseMode) {
             final editableTextState = tester.state<EditableTextState>(
               find.descendant(
                 of: resolvedFinder.first,

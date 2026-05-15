@@ -22,6 +22,7 @@ void configureDevelopArgParser(PatrolCommand command) {
     ..usesUninstallOption()
     ..usesBuildNameOption()
     ..usesBuildNumberOption()
+    ..usesAppNameOption()
     ..usesAndroidOptions()
     ..usesIOSOptions();
 
