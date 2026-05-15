@@ -1,3 +1,8 @@
+## Unreleased
+
+- Fix `patrol test --coverage` crashing with `PathNotFoundException` in Pub workspaces by resolving `.dart_tool/package_config.json` from the workspace root. (#2844)
+- Add `--coverage-workspace` flag to include every package declared under the workspace root's `workspace:` key in the coverage report.
+
 ## 4.3.1
 
 - Update dependencies.
