@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Fix `at()`, `first` and `last` to wait for widget to become visible.
 - Add `isAndroid`, `isIOS`, `isWeb` and `isMacOS` getters.
 - Remove `dart:io`.
 

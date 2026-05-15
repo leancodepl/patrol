@@ -10,6 +10,12 @@ class Keys {
   static const bottomText = Key('bottomText');
   static const backButton = Key('backButton');
 
+  // at() finder screen
+  static const atFinderFirstItemTapped = Key('atFinderFirstItemTapped');
+  static const atFinderItem = Key('atFinderItem');
+  static const atFinderScreenButton = Key('atFinderScreenButton');
+  static const atFinderSecondItemTapped = Key('atFinderSecondItemTapped');
+
   // autofocus text field flow
   static const usernameTextField = Key('usernameTextField');
   static const usernameNextButton = Key('usernameNextButton');
@@ -81,4 +87,8 @@ class Keys {
   static const pickMultiplePhotosButton = Key('pickMultiplePhotosButton');
   static const smallImagePreview = Key('smallImagePreview');
   static const selectedPhotosCount = Key('selectedPhotosCount');
+}
+
+class AtFinderItemKey extends ValueKey<int> {
+  const AtFinderItemKey(super.value);
 }
