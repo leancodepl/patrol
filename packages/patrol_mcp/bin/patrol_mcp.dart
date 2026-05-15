@@ -148,8 +148,9 @@ Future<int> main(List<String> args) async {
             'quit',
             description: 'Quit the active patrol session gracefully',
             annotations: const ToolAnnotations(title: 'Quit Patrol'),
-            callback: (args, extra) {
-              final result = patrolSession.sendCommand(PatrolCommand.quit);
+            callback: (args, extra) async {
+              final result =
+                  await patrolSession.sendCommand(PatrolCommand.quit);
               return CallToolResult(content: [TextContent(text: result)]);
             },
           )
@@ -181,6 +182,8 @@ Future<int> main(List<String> args) async {
             callback: (args, extra) {
               return ScreenshotService.handleScreenshotRequest(
                 patrolSession.device,
+                webDebuggerPort:
+                    patrolSession.developService?.webDebuggerPort,
               );
             },
           )
@@ -201,7 +204,9 @@ Future<int> main(List<String> args) async {
             },
           );
 
-    return await _runStdio(server);
+    final exitCode = await _runStdio(server);
+    await patrolSession.shutdown();
+    return exitCode;
   } on FormatException catch (e) {
     stderr
       ..writeln(e.message)

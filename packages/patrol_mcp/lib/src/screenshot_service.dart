@@ -36,7 +36,10 @@ enum ScreenshotPlatform {
 abstract final class ScreenshotService {
   static const _maxHeight = 800;
 
-  static Future<CallToolResult> handleScreenshotRequest(Device? device) async {
+  static Future<CallToolResult> handleScreenshotRequest(
+    Device? device, {
+    String? webDebuggerPort,
+  }) async {
     try {
       if (device == null) {
         return const CallToolResult(
@@ -49,6 +52,10 @@ abstract final class ScreenshotService {
           ],
           isError: true,
         );
+      }
+
+      if (device.targetPlatform == TargetPlatform.web) {
+        return _handleWebScreenshot(webDebuggerPort);
       }
 
       final platform = ScreenshotPlatform.fromDevice(device);
@@ -65,6 +72,86 @@ abstract final class ScreenshotService {
         content: [TextContent(text: 'Failed to capture screenshot: $e')],
         isError: true,
       );
+    }
+  }
+
+  static Future<CallToolResult> _handleWebScreenshot(
+    String? debuggerPort,
+  ) async {
+    if (debuggerPort == null) {
+      return const CallToolResult(
+        content: [TextContent(text: 'Web debugger port not available.')],
+        isError: true,
+      );
+    }
+
+    try {
+      final bytes = await _captureWebScreenshot(debuggerPort);
+      final resized = _resizeImage(bytes);
+      final base64Data = base64Encode(resized);
+
+      return CallToolResult(
+        content: [ImageContent(data: base64Data, mimeType: 'image/png')],
+      );
+    } catch (e) {
+      return CallToolResult(
+        content: [TextContent(text: 'Failed to capture web screenshot: $e')],
+        isError: true,
+      );
+    }
+  }
+
+  /// Captures a screenshot via Chrome DevTools Protocol.
+  static Future<Uint8List> _captureWebScreenshot(String debuggerPort) async {
+    // Get the list of debuggable targets
+    final httpClient = HttpClient();
+    try {
+      final request = await httpClient.getUrl(
+        Uri.parse('http://localhost:$debuggerPort/json'),
+      );
+      final response = await request.close();
+      final body = await response.transform(utf8.decoder).join();
+      final targets = jsonDecode(body) as List;
+
+      // Find the first page target
+      final pageTarget =
+          targets.firstWhere(
+                (t) => (t as Map)['type'] == 'page',
+                orElse: () => throw Exception('No page target found'),
+              )
+              as Map;
+
+      final wsUrl = pageTarget['webSocketDebuggerUrl'] as String?;
+      if (wsUrl == null) {
+        throw Exception('No WebSocket debugger URL for page target');
+      }
+
+      // Connect via WebSocket and send CDP command
+      final ws = await WebSocket.connect(
+        wsUrl,
+      ).timeout(const Duration(seconds: 5));
+      try {
+        ws.add(jsonEncode({'id': 1, 'method': 'Page.captureScreenshot'}));
+
+        await for (final message in ws.timeout(const Duration(seconds: 10))) {
+          final data = jsonDecode(message as String) as Map<String, dynamic>;
+          if (data['id'] == 1) {
+            final result = data['result'] as Map<String, dynamic>?;
+            if (result == null || result['data'] == null) {
+              throw Exception(
+                'CDP screenshot failed: ${data['error'] ?? 'no result'}',
+              );
+            }
+            return base64Decode(result['data'] as String);
+          }
+        }
+
+        throw Exception('WebSocket closed without response');
+      } finally {
+        await ws.close();
+      }
+    } finally {
+      httpClient.close();
     }
   }
 
