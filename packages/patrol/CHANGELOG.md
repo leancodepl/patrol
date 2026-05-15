@@ -1,5 +1,7 @@
 ## 4.6.0
 
+- Bump `patrol_log` to `^0.9.0`.
+- Bump `patrol_finders` to `^3.4.0`.
 - Add `allowPermission` method to `AndroidAutomator`.
 
 ## 4.5.0
