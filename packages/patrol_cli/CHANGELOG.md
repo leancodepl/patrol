@@ -5,6 +5,7 @@
 
 ## 4.3.1
 
+- Add `--no-build` flag to `patrol test` to skip the build step and use previously built binaries.
 - Update dependencies.
 
 ## 4.3.0
