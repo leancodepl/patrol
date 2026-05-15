@@ -1,6 +1,7 @@
 ## Unreleased
 
-- Fix issues with `$.enterText()` (#2202, #2111)
+- Fix issues with `enterText()`. (#2202, #2111)
+- Add `hideKeyboard` optional argument to `enterText()` method.
 
 ## 3.2.0
 
