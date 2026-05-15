@@ -214,6 +214,105 @@ void main() {
         expect(find.text('content: some input'), findsOneWidget);
       });
 
+      patrolWidgetTest('unfocuses already focused field after entering text', (
+        tester,
+      ) async {
+        final controller = TextEditingController(text: 'initial input');
+        final focusNode = FocusNode();
+        final valuesOnUnfocus = <String>[];
+        addTearDown(controller.dispose);
+        addTearDown(focusNode.dispose);
+
+        focusNode.addListener(() {
+          if (!focusNode.hasFocus) {
+            valuesOnUnfocus.add(controller.text);
+          }
+        });
+
+        await tester.pumpWidgetAndSettle(
+          MaterialApp(
+            home: Scaffold(
+              body: TextField(
+                autofocus: true,
+                controller: controller,
+                focusNode: focusNode,
+              ),
+            ),
+          ),
+        );
+        expect(focusNode.hasFocus, true);
+
+        await tester.enterText(
+          find.byType(TextField),
+          'updated input',
+          hideKeyboard: true,
+        );
+
+        expect(controller.text, 'updated input');
+        expect(valuesOnUnfocus, isNotEmpty);
+        expect(valuesOnUnfocus.first, 'updated input');
+        expect(valuesOnUnfocus, isNot(contains('initial input')));
+      });
+
+      patrolWidgetTest('runs on-unfocus validation after entering text', (
+        tester,
+      ) async {
+        final controller = TextEditingController(text: 'initial input');
+        final focusNode = FocusNode();
+        final validatedValues = <String?>[];
+        addTearDown(controller.dispose);
+        addTearDown(focusNode.dispose);
+
+        await tester.pumpWidgetAndSettle(
+          MaterialApp(
+            home: Scaffold(
+              body: TextFormField(
+                autofocus: true,
+                autovalidateMode: AutovalidateMode.onUnfocus,
+                controller: controller,
+                focusNode: focusNode,
+                validator: (value) {
+                  validatedValues.add(value);
+                  return null;
+                },
+              ),
+            ),
+          ),
+        );
+        validatedValues.clear();
+        expect(focusNode.hasFocus, true);
+
+        await tester.enterText(
+          find.byType(TextFormField),
+          'updated input',
+          hideKeyboard: true,
+        );
+
+        expect(controller.text, 'updated input');
+        expect(validatedValues, isNotEmpty);
+        expect(validatedValues.first, 'updated input');
+        expect(validatedValues, isNot(contains('initial input')));
+      });
+
+      patrolWidgetTest('enters text in the same field multiple times', (
+        tester,
+      ) async {
+        final controller = TextEditingController();
+        addTearDown(controller.dispose);
+
+        await tester.pumpWidgetAndSettle(
+          MaterialApp(
+            home: Scaffold(body: TextField(controller: controller)),
+          ),
+        );
+
+        await tester.enterText(find.byType(TextField), 'first input');
+        expect(controller.text, 'first input');
+
+        await tester.enterText(find.byType(TextField), 'second input');
+        expect(controller.text, 'second input');
+      });
+
       patrolWidgetTest('enters text in the first widget by default and pumps', (
         tester,
       ) async {
