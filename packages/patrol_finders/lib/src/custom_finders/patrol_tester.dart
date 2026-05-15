@@ -447,7 +447,7 @@ class PatrolTester {
           // Workaround for enterText() not working in release mode on real iOS devices.
           // [EditableTextState._openInputConnection] is not called when the text field is focused.
           // So we need to attach text input connection manually.
-          if (!kIsWeb && isIOS && kReleaseMode) {
+          if (isIOS && kReleaseMode) {
             final editableTextState = tester.state<EditableTextState>(
               find.descendant(
                 of: resolvedFinder.first,
