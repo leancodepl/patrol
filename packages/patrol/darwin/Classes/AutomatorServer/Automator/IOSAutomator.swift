@@ -69,6 +69,13 @@
       }
     }
 
+    func sendKeyboardEnter() throws {
+      try runAction("sending keyboard enter") {
+        // TODO: Implement
+        throw PatrolError.methodNotImplemented("sendKeyboardEnter")
+      }
+    }
+
     // MARK: General UI interaction
     func tap(
       on selector: IOSSelector,
