@@ -213,6 +213,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
     final uninstall = boolArg('uninstall');
     final noTreeShakeIcons = boolArg('no-tree-shake-icons');
     final coverageEnabled = boolArg('coverage');
+    final coverageWorkspace = boolArg('coverage-workspace');
     final ignoreGlobs = stringsArg('coverage-ignore').map(Glob.new).toSet();
     final coveragePackagesRegExps = stringsArg('coverage-package');
 
@@ -340,8 +341,16 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
           logger: _logger,
           ignoreGlobs: ignoreGlobs,
           flutterCommand: flutterCommand,
-          packagesRegExps: switch (coveragePackagesRegExps.length) {
-            0 => {RegExp(config.flutterPackageName)},
+          includeWorkspacePackages: coverageWorkspace,
+          packagesRegExps: switch ((
+            coveragePackagesRegExps.length,
+            coverageWorkspace,
+          )) {
+            // No --coverage-package and no --coverage-workspace: fall back to
+            // the current package only.
+            (0, false) => {RegExp(config.flutterPackageName)},
+            // --coverage-workspace alone: rely entirely on workspace members.
+            (0, true) => const <RegExp>{},
             _ => coveragePackagesRegExps.map(RegExp.new).toSet(),
           },
         ),
@@ -511,6 +520,14 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
   void useCoverageOptions() {
     argParser
       ..addFlag('coverage', help: 'Generate coverage.')
+      ..addFlag(
+        'coverage-workspace',
+        help:
+            'Include every package declared under the top-level `workspace:` '
+            'key of the resolved pubspec.yaml in the coverage report. '
+            'Has no effect outside a Pub workspace. Can be combined with '
+            '--coverage-package.',
+      )
       ..addMultiOption(
         'coverage-ignore',
         help: 'Exclude files from coverage using glob patterns.',

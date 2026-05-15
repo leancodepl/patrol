@@ -35,6 +35,12 @@ jobs:
       - name: Run flutter tool (to dismiss the first run experience)
         run: flutter
 
+      - name: Set up Melos and activate workspace
+        working-directory: .
+        run: |
+          dart pub global activate melos
+          melos bootstrap
+
       - name: dart pub get
         run: dart pub get
 
