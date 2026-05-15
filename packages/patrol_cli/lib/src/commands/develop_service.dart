@@ -469,10 +469,13 @@ class DevelopService {
     }
 
     subscriptions.add(ProcessSignal.sigint.watch().listen(cleanup));
-    try {
+    // ProcessSignal.sigterm is not listenable on Windows and the failure
+    // surfaces as an unhandled async SignalException (not caught by a
+    // surrounding try/catch). Guard with Platform.isWindows to match the
+    // fix in patrol_mcp/_ExitSignal. Graceful cleanup on Windows still
+    // runs via the SIGINT path above and via stdio close.
+    if (!Platform.isWindows) {
       subscriptions.add(ProcessSignal.sigterm.watch().listen(cleanup));
-    } catch (_) {
-      // Some platforms may not support sigterm.
     }
 
     return subscriptions;
