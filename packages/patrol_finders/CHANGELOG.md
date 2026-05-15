@@ -1,6 +1,6 @@
 ## Unreleased
 
-- Add `isAndroid`, `isIOS`, `isWeb`, `isMacOS`, `isLinux`, `isWindows`, `isFuchsia` getters.
+- Add `isAndroid`, `isIOS`, `isWeb` and `isMacOS` getters.
 
 ## 3.2.0
 
