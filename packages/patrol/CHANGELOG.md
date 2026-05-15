@@ -1,3 +1,9 @@
+## 4.6.0
+
+- Bump `patrol_log` to `^0.9.0`.
+- Bump `patrol_finders` to `^3.4.0`.
+- Add `allowPermission` method to `AndroidAutomator`.
+
 ## 4.5.0
 
 - Fix `appId` not being passed down on `$.platform.mobile.enterText` and `$.platform.mobile.enterTextByIndex` (#2992)

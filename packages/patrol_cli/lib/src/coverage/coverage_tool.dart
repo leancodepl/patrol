@@ -8,6 +8,7 @@ import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
 import 'package:glob/glob.dart';
 import 'package:package_config/package_config.dart';
+import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/coverage/device_to_host_port_transformer.dart';
 import 'package:patrol_cli/src/coverage/vm_connection_details.dart';
@@ -17,6 +18,7 @@ import 'package:platform/platform.dart';
 import 'package:process/process.dart';
 import 'package:vm_service/vm_service.dart';
 import 'package:vm_service/vm_service_io.dart';
+import 'package:yaml/yaml.dart';
 
 class CoverageTool {
   CoverageTool({
@@ -52,10 +54,18 @@ class CoverageTool {
     required Logger logger,
     required Set<Glob> ignoreGlobs,
     required FlutterCommand flutterCommand,
+    bool includeWorkspacePackages = false,
   }) async {
     final homeDirectory =
         _platform.environment['HOME'] ?? _platform.environment['USERPROFILE'];
     final hitMap = <String, coverage.HitMap>{};
+
+    // Resolved once per run; the package_config.json contents do not change
+    // mid-run and we'd otherwise re-walk + re-parse for every test isolate.
+    final packages = await _getCoveragePackages(
+      packagesRegExps,
+      includeWorkspacePackages: includeWorkspacePackages,
+    );
 
     await _disposeScope.run((scope) async {
       final logsProcess =
@@ -99,10 +109,8 @@ class CoverageTool {
       vmConnectionDetailsStream
           .take(totalTestCount)
           .asyncMap(
-            (details) => _collectFromVM(
-              packagesRegExps: packagesRegExps,
-              connectionDetails: details,
-            ),
+            (details) =>
+                _collectFromVM(packages: packages, connectionDetails: details),
           )
           .listen((coverage) {
             hitMap.merge(coverage);
@@ -146,7 +154,7 @@ class CoverageTool {
   }
 
   Future<Map<String, coverage.HitMap>> _collectFromVM({
-    required Set<RegExp> packagesRegExps,
+    required Set<String> packages,
     required VMConnectionDetails connectionDetails,
   }) async {
     final result = <String, coverage.HitMap>{};
@@ -181,7 +189,7 @@ class CoverageTool {
     result.merge(
       await _collectAndMarkTestCompleted(
         connectionDetails: connectionDetails,
-        packagesRegExps: packagesRegExps,
+        packages: packages,
         mainIsolateId: event.extensionData!.data['mainIsolateId'] as String,
       ),
     );
@@ -192,11 +200,9 @@ class CoverageTool {
 
   Future<Map<String, coverage.HitMap>> _collectAndMarkTestCompleted({
     required VMConnectionDetails connectionDetails,
-    required Set<RegExp> packagesRegExps,
+    required Set<String> packages,
     required String mainIsolateId,
   }) async {
-    final packages = await _getCoveragePackages(packagesRegExps);
-
     final data = await coverage.collect(
       connectionDetails.uri,
       false,
@@ -235,21 +241,130 @@ class CoverageTool {
     await coverageDirectory.childFile('patrol_lcov.info').writeAsString(report);
   }
 
-  Future<Set<String>> _getCoveragePackages(Set<RegExp> packagesRegExps) async {
-    final packageConfig = await loadPackageConfig(
-      _rootDirectory
-          .childDirectory('.dart_tool')
-          .childFile('package_config.json'),
-    );
+  Future<Set<String>> _getCoveragePackages(
+    Set<RegExp> packagesRegExps, {
+    required bool includeWorkspacePackages,
+  }) async {
+    final packageConfigFile = findPackageConfigFile(_rootDirectory);
+    if (packageConfigFile == null) {
+      throwToolExit(
+        "Couldn't find .dart_tool/package_config.json in "
+        '${_rootDirectory.path} or any parent directory. '
+        'Run `flutter pub get` first.',
+      );
+    }
+    final packageConfig = await loadPackageConfig(packageConfigFile);
 
     final packagesToInclude = {
       for (final regExp in packagesRegExps)
         ...packageConfig.packages.map((e) => e.name).where(regExp.hasMatch),
     };
 
+    if (includeWorkspacePackages) {
+      // package_config.json lives in <workspace-root>/.dart_tool/, so the
+      // workspace root is two levels up.
+      final workspaceRoot = packageConfigFile.parent.parent;
+      final members = findWorkspaceMemberPackages(workspaceRoot);
+      if (members.isEmpty) {
+        _logger.warn(
+          'No `workspace:` entries found in ${workspaceRoot.path}/pubspec.yaml; '
+          '--coverage-workspace had no effect.',
+        );
+      } else {
+        _logger.detail('Workspace member packages: $members');
+        packagesToInclude.addAll(members);
+      }
+    }
+
     _logger.detail('Packages included in coverage: $packagesToInclude');
 
     return packagesToInclude;
+  }
+}
+
+/// Returns the names of every member package declared under the top-level
+/// `workspace:` key in `<workspaceRoot>/pubspec.yaml`.
+///
+/// Each entry in `workspace:` is a path relative to [workspaceRoot]; the
+/// `name:` field of that path's `pubspec.yaml` is the package name. Members
+/// without a readable `pubspec.yaml` are silently skipped, since pub itself
+/// will already have surfaced that error during `pub get`.
+///
+/// Returns an empty set when [workspaceRoot] has no `pubspec.yaml`, when its
+/// `workspace:` key is missing, or when the file isn't a YAML map.
+Set<String> findWorkspaceMemberPackages(Directory workspaceRoot) {
+  final root = _tryLoadYamlMap(workspaceRoot.childFile('pubspec.yaml'));
+  if (root == null) {
+    return const {};
+  }
+  final members = root['workspace'];
+  if (members is! Iterable) {
+    return const {};
+  }
+
+  final names = <String>{};
+  for (final entry in members) {
+    if (entry is! String) {
+      continue;
+    }
+    // pubspec.yaml `workspace:` entries are always POSIX-style relative paths,
+    // so split on `/` and walk children to stay platform-agnostic.
+    var memberDir = workspaceRoot;
+    for (final segment in entry.split('/')) {
+      if (segment.isEmpty || segment == '.') {
+        continue;
+      }
+      memberDir = memberDir.childDirectory(segment);
+    }
+    final memberYaml = _tryLoadYamlMap(memberDir.childFile('pubspec.yaml'));
+    if (memberYaml == null) {
+      continue;
+    }
+    final name = memberYaml['name'];
+    if (name is String && name.isNotEmpty) {
+      names.add(name);
+    }
+  }
+  return names;
+}
+
+/// Reads [file] as YAML and returns its top-level map, or `null` when the
+/// file is missing, the contents fail to parse, or the root is not a map.
+///
+/// We treat a malformed `pubspec.yaml` the same as a missing one because pub
+/// itself surfaces the underlying error during `pub get`; the coverage flow
+/// should degrade gracefully rather than crash mid-test.
+Map<dynamic, dynamic>? _tryLoadYamlMap(File file) {
+  if (!file.existsSync()) {
+    return null;
+  }
+  try {
+    final parsed = loadYaml(file.readAsStringSync());
+    return parsed is Map ? parsed : null;
+  } on YamlException {
+    return null;
+  }
+}
+
+/// Walks up from [directory] looking for `.dart_tool/package_config.json`.
+///
+/// In a Pub workspace the file lives at the workspace root, not in each
+/// member package. Returns `null` if no config is found up to the filesystem
+/// root.
+File? findPackageConfigFile(Directory directory) {
+  var current = directory;
+  while (true) {
+    final candidate = current
+        .childDirectory('.dart_tool')
+        .childFile('package_config.json');
+    if (candidate.existsSync()) {
+      return candidate;
+    }
+    final parent = current.parent;
+    if (parent.path == current.path) {
+      return null;
+    }
+    current = parent;
   }
 }
 
