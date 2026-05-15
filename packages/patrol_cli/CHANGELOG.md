@@ -1,5 +1,6 @@
 ## 4.4.0
 
+- Fix iOS Simulator test crash on Xcode 26.4+ caused by missing platform frameworks path in xctestrun.
 - Bump `patrol_log` to `^0.9.0`.
 - Add `--app-name` flag to override `app_name` from pubspec.yaml. (#2557)
 - Fix `patrol test --coverage` crashing with `PathNotFoundException` in Pub workspaces by resolving `.dart_tool/package_config.json` from the workspace root. (#2844)
