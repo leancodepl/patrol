@@ -1,3 +1,7 @@
+## Unreleased
+
+- Fix generated API docs links for public Patrol types.
+
 ## 4.6.0
 
 - Bump `patrol_log` to `^0.9.0`.

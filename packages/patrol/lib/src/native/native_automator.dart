@@ -484,9 +484,9 @@ class NativeAutomator {
   /// slower gesture.
   ///
   /// The default values simulate a typical pull-to-refresh gesture:
-  /// * [from]: Center of the screen (0.5, 0.5)
-  /// * [to]: Bottom center of the screen (0.5, 0.9)
-  /// * [steps]: 50
+  /// * `from`: Center of the screen (0.5, 0.5)
+  /// * `to`: Bottom center of the screen (0.5, 0.9)
+  /// * `steps`: 50
   /// You can override these if scrollable content is not at the center of the
   /// screen or if the direction of the gesture is different.
   Future<void> pullToRefresh({
