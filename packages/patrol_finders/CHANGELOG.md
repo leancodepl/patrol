@@ -1,4 +1,4 @@
-## Unreleased
+## 3.4.0
 
 - Fix `at()`, `first` and `last` to wait for widget to become visible.
 - Add `isAndroid`, `isIOS`, `isWeb` and `isMacOS` getters.
