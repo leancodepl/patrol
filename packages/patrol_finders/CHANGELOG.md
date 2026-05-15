@@ -1,3 +1,9 @@
+## 3.4.0
+
+- Fix `at()`, `first` and `last` to wait for widget to become visible.
+- Add `isAndroid`, `isIOS`, `isWeb` and `isMacOS` getters.
+- Remove `dart:io`.
+
 ## 3.3.0
 
 - Bump `patrol_log` to `^0.9.0`.

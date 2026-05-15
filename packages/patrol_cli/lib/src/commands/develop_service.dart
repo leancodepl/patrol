@@ -163,6 +163,9 @@ class DevelopService {
 
     final packageName = options.packageName ?? config.android.packageName;
     final bundleId = options.bundleId ?? config.ios.bundleId;
+    final androidAppName = options.appName ?? config.android.appName;
+    final iosAppName = options.appName ?? config.ios.appName;
+    final macosAppName = options.appName ?? config.macos.appName;
 
     String? iOSInstalledAppsEnvVariable;
     if (device.targetPlatform == TargetPlatform.iOS) {
@@ -178,8 +181,9 @@ class DevelopService {
       'PATROL_APP_PACKAGE_NAME': packageName,
       'PATROL_APP_BUNDLE_ID': bundleId,
       'PATROL_MACOS_APP_BUNDLE_ID': config.macos.bundleId,
-      'PATROL_ANDROID_APP_NAME': config.android.appName,
-      'PATROL_IOS_APP_NAME': config.ios.appName,
+      'PATROL_ANDROID_APP_NAME': androidAppName,
+      'PATROL_IOS_APP_NAME': iosAppName,
+      'PATROL_MACOS_APP_NAME': macosAppName,
       'INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE': 'false',
       'PATROL_TEST_LABEL_ENABLED': options.displayLabel.toString(),
       'PATROL_TEST_DIRECTORY': config.testDirectory,

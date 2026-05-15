@@ -98,6 +98,14 @@ abstract class PatrolCommand extends Command<int> {
     argParser.addOption('flavor', help: 'Flavor of the app to run.');
   }
 
+  void usesAppNameOption() {
+    argParser.addOption(
+      'app-name',
+      help: 'Display name of the app under test.',
+      valueHelp: 'Awesome App',
+    );
+  }
+
   void usesLabelOption() {
     argParser.addFlag(
       'label',
