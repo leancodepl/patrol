@@ -6,6 +6,7 @@
 ## 4.3.1
 
 - Update dependencies.
+- Add support for `--record-video` flag in cli commands (simulators only) (#2741)
 
 ## 4.3.0
 
