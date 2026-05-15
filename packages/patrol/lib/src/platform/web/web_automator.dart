@@ -88,4 +88,7 @@ abstract interface class WebAutomator {
 
   /// Returns a list of all files downloaded during the single test.
   Future<List<String>> verifyFileDownloads();
+
+  /// Takes a screenshot and saves it to the specified **absolute** [path].
+  Future<void> screenshot({required String path});
 }
