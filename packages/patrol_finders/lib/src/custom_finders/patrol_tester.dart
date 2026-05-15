@@ -141,6 +141,21 @@ class PatrolTester {
   /// Flutter's widget tester that this [PatrolTester] wraps.
   final WidgetTester tester;
 
+  /// Whether the test is running on Android.
+  bool get isAndroid => _is(TargetPlatform.android);
+
+  /// Whether the test is running on iOS.
+  bool get isIOS => _is(TargetPlatform.iOS);
+
+  /// Whether the test is running on web.
+  bool get isWeb => kIsWeb;
+
+  /// Whether the test is running on macOS.
+  bool get isMacOS => _is(TargetPlatform.macOS);
+
+  bool _is(TargetPlatform platform) =>
+      !kIsWeb && defaultTargetPlatform == platform;
+
   /// Wraps a function with a log entry for the start and end of the function.
   Future<T> wrapWithPatrolLog<T>({
     required String action,
