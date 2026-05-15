@@ -153,17 +153,19 @@
         // See:
         // * https://developer.apple.com/documentation/xctest/xcuielementtype/xcuielementtypetextfield
         // * https://developer.apple.com/documentation/xctest/xcuielementtype/xcuielementtypesecuretextfield
-        let contentPredicate = selector.toTextFieldNSPredicate()
         let textFieldPredicate = NSPredicate(format: "elementType == 49")
         let secureTextFieldPredicate = NSPredicate(format: "elementType == 50")
 
-        let finalPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
-          contentPredicate,
-          NSCompoundPredicate(orPredicateWithSubpredicates: [
-            textFieldPredicate, secureTextFieldPredicate,
-          ]
-          ),
-        ])
+        var subpredicates: [NSPredicate] = [NSCompoundPredicate(orPredicateWithSubpredicates: [
+          textFieldPredicate, secureTextFieldPredicate,
+        ])]
+
+        // toTextFieldNSPredicate() can be nil - depending on the selector user provided
+        if let contentPredicate = selector.toTextFieldNSPredicate() {
+          subpredicates.insert(contentPredicate, at: 0)
+        }
+
+        let finalPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: subpredicates)
 
         let query = app.descendants(matching: .any).matching(finalPredicate)
         guard
