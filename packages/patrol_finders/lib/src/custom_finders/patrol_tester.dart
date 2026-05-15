@@ -437,7 +437,8 @@ class PatrolTester {
               tester.binding is LiveTestWidgetsFlutterBinding;
 
           if (!kIsWeb && wasFocused) {
-            editableTextState.widget.focusNode.unfocus();
+            //editableTextState.widget.focusNode.unfocus();
+            editableTextState.requestKeyboard();
             await tester.pump();
             editableTextState = tester.state<EditableTextState>(
               editableTextFinder,
@@ -453,10 +454,10 @@ class PatrolTester {
             tester.testTextInput.register();
           }
 
-          // Workaround for enterText() not working in release mode on real iOS devices.
-          // [EditableTextState._openInputConnection] is not called when the text field is focused.
-          // So we need to attach text input connection manually.
           try {
+            // Workaround for enterText() not working in release mode on real iOS devices.
+            // [EditableTextState._openInputConnection] is not called when the text field is focused.
+            // So we need to attach text input connection manually.
             if (!kIsWeb && io.Platform.isIOS && kReleaseMode) {
               final effectiveAutofillClient =
                   editableTextState.widget.autofillClient;
