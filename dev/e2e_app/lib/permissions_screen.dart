@@ -16,6 +16,7 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
   var _microphonePermissionGranted = false;
   var _locationPermissionGranted = false;
   var _galleryPermissionGranted = false;
+  var _batteryPermissionGranted = false;
 
   Future<void> _requestCameraPermission() async {
     await Future<void>.delayed(Duration(seconds: 1));
@@ -46,6 +47,13 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
       _galleryPermissionGranted =
           status == PermissionStatus.granted ||
           status == PermissionStatus.limited;
+    });
+  }
+
+  Future<void> _requestBatteryPermission() async {
+    final status = await Permission.ignoreBatteryOptimizations.request();
+    setState(() {
+      _batteryPermissionGranted = status == PermissionStatus.granted;
     });
   }
 
@@ -80,6 +88,14 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
       Permission.photos.status.then((value) {
         setState(() {
           _galleryPermissionGranted = value == PermissionStatus.granted;
+        });
+      }),
+    );
+
+    unawaited(
+      Permission.ignoreBatteryOptimizations.status.then((value) {
+        setState(() {
+          _batteryPermissionGranted = value == PermissionStatus.granted;
         });
       }),
     );
@@ -121,6 +137,13 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
               onTap: _requestGalleryPermission,
               key: K.galleryPermissionTile,
             ),
+            _PermissionTile(
+              name: 'Battery Optimizations',
+              icon: Icons.battery_0_bar,
+              granted: _batteryPermissionGranted,
+              onTap: _requestBatteryPermission,
+              key: K.batteryPermissionTile,
+            ),
           ],
         ),
       ),
@@ -148,6 +171,7 @@ class _PermissionTile extends StatelessWidget {
         'microphone' => K.requestMicrophonePermissionButton,
         'location' => K.requestLocationPermissionButton,
         'gallery' => K.requestGalleryPermissionButton,
+        'battery optimizations' => K.requestBatteryPermissionButton,
         _ => Key('request${permissionName}PermissionButton'),
       };
 

@@ -430,6 +430,9 @@ abstract class AndroidAutomator<AndroidServer, DartClient> {
   void pickMultipleImagesFromGallery(
     AndroidPickMultipleImagesFromGalleryRequest request,
   );
+
+  // permissions
+  void allowPermission();
 }
 
 abstract class IosAutomator<IOSServer, DartClient> {
