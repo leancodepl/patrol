@@ -1,0 +1,123 @@
+name: test flutter main channel
+# This workflow verifies if these tests are valid https://github.com/flutter/tests/blob/main/registry/patrol.test.disabled
+# It rebases fix/flutter-patrol-tests onto master weekly and always creates a PR with the results.
+on:
+  workflow_dispatch:
+  schedule:
+    # Weekly on Tuesday at 4:00 UTC.
+    - cron: '0 4 * * 2'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  run_tests:
+    name: Flutter main - customer tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      SLACK_MESSAGE_TITLE: Flutter main channel - customer tests
+      TESTS_EXIT_CODE: ${{ steps.tests_step.outputs.TESTS_EXIT_CODE }}
+      FAILURE_STATUS: ${{ steps.status_step.outputs.FAILURE_STATUS }}
+      ERROR_STATUS: ${{ steps.status_step.outputs.ERROR_STATUS }}
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+        with:
+          ref: fix/flutter-patrol-tests
+          fetch-depth: 0
+
+      - name: Rebase fix/flutter-patrol-tests onto master
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git fetch origin master
+          git rebase origin/master
+          git push --force-with-lease origin fix/flutter-patrol-tests
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: master
+
+      - name: Display Flutter version
+        run: flutter --version
+
+      - name: Run customer tests
+        id: tests_step
+        run: |
+          TESTS_EXIT_CODE=0
+          bash scripts/flutter_test_repo_test.sh || TESTS_EXIT_CODE=$?
+
+          echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> "$GITHUB_OUTPUT"
+          exit $TESTS_EXIT_CODE
+
+      - name: Check if something went wrong
+        id: status_step
+        if: always()
+        run: >
+          if [ -z ${{ steps.tests_step.outputs.TESTS_EXIT_CODE }} ]; then 
+            echo "ERROR_STATUS=error" >> "$GITHUB_OUTPUT";
+          elif [ ! ${{ steps.tests_step.outputs.TESTS_EXIT_CODE }} == 0 ]; then
+            echo "FAILURE_STATUS=failure" >> "$GITHUB_OUTPUT";
+          fi;
+
+  create_pr:
+    name: Create PR with test results
+    runs-on: ubuntu-latest
+    needs: run_tests
+    if: always()
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+        with:
+          ref: fix/flutter-patrol-tests
+
+      - name: Create Pull Request
+        env:
+          GH_TOKEN: ${{ github.token }}
+          WORKFLOW_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          TEST_RESULT: ${{ needs.run_tests.result }}
+        run: |
+          EXISTING_PR=$(gh pr list --head fix/flutter-patrol-tests --base master --state open --json number --jq '.[0].number')
+          if [ -n "$EXISTING_PR" ]; then
+            echo "PR #$EXISTING_PR already exists, adding a comment."
+            gh pr comment "$EXISTING_PR" --body "Flutter main channel tests result: **${TEST_RESULT}** on $(date -u '+%Y-%m-%d'). [See workflow run](${WORKFLOW_URL})"
+          else
+            PR_BODY="## Summary
+
+          Automated PR created after running Flutter main channel customer tests on the \`fix/flutter-patrol-tests\` branch (rebased onto \`master\`).
+
+          **Test result:** ${TEST_RESULT}
+          **Workflow run:** ${WORKFLOW_URL}
+
+          ## Steps to fix (if tests are failing)
+
+          1. Fix tests locally on the \`fix/flutter-patrol-tests\` branch
+          2. Fork the [flutter/tests](https://github.com/flutter/tests) repository
+          3. Update the commit hash in [\`registry/patrol.test\`](https://github.com/flutter/tests/blob/main/registry/patrol.test) to point to the fixed commit
+          4. Create a PR manually from your fork to the [flutter/tests](https://github.com/flutter/tests) repository"
+
+            gh pr create \
+              --title "fix: Flutter main channel customer tests are failing" \
+              --body "$PR_BODY" \
+              --head fix/flutter-patrol-tests \
+              --base master
+          fi
+
+  call_send_slack_message:
+    name: Notify on Slack
+    uses: ./.github/workflows/send-slack-message.yaml
+    needs: run_tests
+    if: always()
+    with:
+      TESTS_EXIT_CODE: ${{ needs.run_tests.outputs.TESTS_EXIT_CODE }}
+      FAILURE_STATUS: ${{ needs.run_tests.outputs.FAILURE_STATUS }}
+      ERROR_STATUS: ${{ needs.run_tests.outputs.ERROR_STATUS }}
+      SLACK_MESSAGE_TITLE: ${{ needs.run_tests.outputs.SLACK_MESSAGE_TITLE }}
+    secrets: inherit

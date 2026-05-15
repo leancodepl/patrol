@@ -58,6 +58,9 @@ jobs:
         working-directory: packages/patrol_cli
         run: dart pub global activate --source path . && patrol
 
+      - name: Refresh e2e app dependencies
+        run: flutter pub get
+
       - name: Install ew-cli
         run: |
           mkdir -p "$HOME/bin"

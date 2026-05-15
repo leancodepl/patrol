@@ -1,5 +1,19 @@
-## Unreleased
+## 4.4.0
 
+- Fix iOS Simulator test crash on Xcode 26.4+ caused by missing platform frameworks path in xctestrun.
+- Bump `patrol_log` to `^0.9.0`.
+- Add `--app-name` flag to override `app_name` from pubspec.yaml. (#2557)
+- Fix `patrol test --coverage` crashing with `PathNotFoundException` in Pub workspaces by resolving `.dart_tool/package_config.json` from the workspace root. (#2844)
+- Add `--coverage-workspace` flag to include every package declared under the workspace root's `workspace:` key in the coverage report.
+
+## 4.3.1
+
+- Update dependencies.
+
+## 4.3.0
+
+- Bump `patrol_log` to `^0.8.0`.
+- Refactor develop command into reusable components and expose public API for programmatic usage.
 - Reflect failed tests in Playwright report. (#2970)
 - Fix `--exclude` not working. (#2990)
 

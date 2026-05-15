@@ -114,6 +114,10 @@ class AndroidAutomatorClient {
     return _sendRequest('pickMultipleImagesFromGallery', request.toJson());
   }
 
+  Future<void> allowPermission() {
+    return _sendRequest('allowPermission');
+  }
+
   Future<Map<String, dynamic>> _sendRequest(
     String requestName, [
     Map<String, dynamic>? request,

@@ -247,6 +247,10 @@ class AutomatorServer(private val automation: Automator) : MobileAutomatorServer
         }
     }
 
+    override fun allowPermission() {
+        automation.allowPermission()
+    }
+
     override fun setLocationAccuracy(request: SetLocationAccuracyRequest) {
         when (request.locationAccuracy) {
             SetLocationAccuracyRequestLocationAccuracy.coarse -> automation.selectCoarseLocation()

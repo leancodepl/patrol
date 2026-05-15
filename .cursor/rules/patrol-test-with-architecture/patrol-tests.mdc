@@ -1,0 +1,179 @@
+---
+description: Rules for writing Patrol E2E tests with LeanCode's recommended architecture (modules, system, api clients)
+globs: **/integration_test/**,**/patrol_test/**
+alwaysApply: false
+---
+
+# Order of actions when writing new tests
+
+1. Read the key files directly (modules aggregator, test wrapper, main keys.dart, and the specific app feature files for the scenario). These are known paths — don't search for them, open them directly
+2. Inspect existing modules for functions that can be reused
+3. Also think if one of existing functions can be adjusted to match its existing usage and new test
+4. Assign test keys to required elements if they are not assigned yet
+5. Start writing test: reuse existing modules/functions + put new test steps in new test file
+6. Write patrol actions directly in the test file, do not create new methods in modules
+7. Run the test frequently during development — don't wait until the full test is written. Run after completing each logical group of steps to catch failures early
+8. After full test passes, reorganize new code into existing/new modules. This is mandatory — the test file must only call module methods, not use Patrol APIs directly
+9. Rerun the test after reorganizing to confirm it still passes
+
+# Patrol MCP Usage
+
+When working with Patrol tests:
+
+- Use `patrol-run({ "testFile": "patrol_test/your_test.dart" })` to run tests and wait for completion
+- If no session running: starts new session with specified test file
+- If session already running: automatically restarts current tests
+- Use `patrol-screenshot({ "platform": "android" })` or `patrol-screenshot({ "platform": "ios" })` to capture screenshots for debugging test failures
+- Use `patrol-quit({})` to quit the session gracefully
+- Use `patrol-status({})` to check current status and recent output
+- Use `patrol-native-tree({})` to fetch the current native UI tree hierarchy for writing native interactions and interactions with apps other than the app under test.
+
+# Patrol Test Architecture
+
+## Structure
+
+- Use custom `testApp` wrapper for all tests
+- Each test file should contain only ONE test
+- Organize tests using `Modules`, `System`, and `ApiClients` pattern
+- Each module represents a feature from user perspective (eg. Auth, Home screen, Downloads, Player)
+- System is a class for native interactions, specifically for actions that we need to perform by using $.platform that are not part of our app, eg. enabling airplane mode to test offline mode. Do not put methods here unless they don't fit any module of the app
+- ApiClients - a class aggregating api clients for api communication. There will be separate clients for different apis we need to communicate with - eg. email server for testing, our test backend, or some third-party services
+
+## Method organization in modules
+
+- Do not write comments in all methods, use descriptive names instead
+- Split long methods in modules when the method is hard to read and navigate due to its length and it represents multiple logical steps that can be descriptively named
+- If there is a series of steps which is reused in many tests as a whole (e.g., long onboarding flow) create a wrapper method in the module which will call private methods for each step
+
+# Patrol Tests Rules
+
+## Patrol API
+
+- Any file that directly uses Patrol APIs (`$()`, `.scrollTo()`, `.tap()`, `.enterText()`, `.waitUntilVisible()`, etc.) should `import 'package:patrol/patrol.dart';`
+- ALWAYS inspect Patrol API before implementing test actions:
+  - Search codebase for existing Patrol API usage patterns
+  - Check $.platform APIs for the specific action
+  - If method not found in codebase, check: https://patrol.leancode.co/
+  - Only implement after confirming the correct API method
+- ALWAYS inspect `$.platform` methods before implementing test actions
+- Don't use flutter_test package. Use only patrol api
+- Only run tests with Patrol MCP server for single test and `patrol test` for all tests. Never use `flutter test` command
+- Do not write patrolSetUp and patrolTearDown methods on your own
+
+## Action Rules
+
+- Don't use `$.pump`, `waitUntilVisible` or `waitUntilExists` and other wait methods after or before tap, scrollTo and enterText. Patrol handles it automatically. Do this only at the end of the test
+- To find widgets, use only keys
+- Don't write try catch blocks unless absolutely necessary
+- After writing test check if it works by running it with MCP server, fix it if it fails
+- If test fails because element was not found, check if it need to be scrolled to in the app code and adjust the test if needed
+
+## Assertion Rules
+
+- Don't write assertions after actions, but do write them at the end of the test
+- Prefer using `waitUntilVisible` as assertion at the end of the test
+- Use `expect()` for assertions only when `waitUntilVisible` is not enough
+
+## Native Dialog Handling
+
+- ALWAYS handle native dialogs that appear during the flow:
+  - Handle dialogs immediately after the action that triggers them
+  - For native permissions prefer `$.platform.mobile.grantPermissionWhenInUse` over `$.platform.mobile.tap`
+
+# Code Examples
+
+## Module Structure
+
+Feature module example
+
+patrol_test/modules/home.dart
+
+```dart
+import 'package:patrol/patrol.dart';
+import 'module.dart';
+
+final class Home extends Module {
+  Home(super.$);
+
+  Future<void> navigateToSettings() async {
+    await $(keys.home.settingsButton).scrollTo().tap();
+  }
+
+  Future<void> searchForItem(String searchPhrase) async {
+    await $(keys.home.searchButton).scrollTo().tap();
+    await $(keys.home.searchInput).enterText(searchPhrase);
+    await $(keys.home.searchSubmitButton).tap();
+  }
+}
+```
+
+Modules aggregator
+
+patrol_test/modules/modules.dart
+
+```dart
+final class Modules {
+  Modules(this._$);
+  final PatrolIntegrationTester _$;
+
+  late final home = Home(_$);
+  late final auth = Auth(_$);
+}
+```
+
+## System Class
+
+patrol_test/modules/system.dart
+
+```dart
+final class System extends PlatformAutomator {
+  System({required super.config});
+
+  Future<void> checkIfNativePlayerIsVisible() async {
+    // Implementation
+  }
+}
+```
+
+## ApiClients Class
+
+patrol_test/modules/api_clients.dart
+
+```dart
+final class ApiClients {
+  final backend = BackendClient();
+  final mailpitClient = MailpitClient();
+}
+```
+
+## Complete Test Example
+
+```dart
+testApp('Download a chapter and play it offline', ($, modules, system, apiClients) async {
+    await modules.auth.getAuthToken();
+    await apiClients.backend.addFavourites();
+    await openApp($);
+    await modules.home.goToOldTestament();
+    await modules.testament.expandBook(bookName: 'Book of Revelation');
+    await modules.testament.chooseChapterOfBook(
+      bookName: 'Book of Revelation',
+      chapterIndex: 0,
+    );
+    await modules.player.expandChapters();
+    await modules.player.downloadChapter(chapterIndex: 9);
+    await modules.player.waitUntilDownloaded();
+    // usage of a method from $.platform Equivalent of await $.platform.mobile.enableAirplaneMode();
+    await system.enableAirplaneMode();
+    await modules.player.rollDownChapters();
+    await modules.player.closeChapterPlayer();
+    await modules.testament.closeTestament();
+    await modules.bottomNavigation.goToLibrary();
+    await modules.library.goToDownloads();
+    await modules.downloads.expandOldTestament();
+    await modules.downloads.goToBook(bookName: 'Book of Revelation');
+    await modules.player.checkIfChapterIsCorrect(chapterIndex: 0);
+    await modules.player.playCurrentTrack();
+    // usage of our method, which calls many methods from $.platform
+    await system.checkIfNativePlayerIsVisible();
+  });
+```

@@ -46,6 +46,7 @@ class BuildMacOSCommand extends PatrolCommand {
     usesBuildNumberOption();
 
     usesMacOSOptions();
+    usesAppNameOption();
   }
 
   final TestFinderFactory _testFinderFactory;
@@ -133,6 +134,7 @@ class BuildMacOSCommand extends PatrolCommand {
     }
 
     final bundleId = stringArg('bundle-id') ?? config.macos.bundleId;
+    final appName = stringArg('app-name') ?? config.macos.appName;
 
     final displayLabel = boolArg('label');
 
@@ -143,7 +145,7 @@ class BuildMacOSCommand extends PatrolCommand {
     final internalDartDefines = {
       'PATROL_WAIT': defaultWait.toString(),
       'PATROL_MACOS_APP_BUNDLE_ID': bundleId,
-      'PATROL_MACOS_APP_NAME': config.macos.appName,
+      'PATROL_MACOS_APP_NAME': appName,
       'PATROL_TEST_LABEL_ENABLED': displayLabel.toString(),
       'PATROL_TEST_DIRECTORY': config.testDirectory,
       'INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE': 'false',

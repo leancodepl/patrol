@@ -13,7 +13,7 @@ overcomes the limitations of integration_test by handling native interactions.
 Developed by [LeanCode](https://leancode.co) since 2022, battle-tested and
 shaped by production-grade experience.
 
-![Patrol promotial graphics][promo_graphics]
+![Patrol promotional graphics][promo_graphics]
 
 ## Learn more about Patrol:
 
@@ -48,6 +48,8 @@ to only use custom finders, check out
 ```console
 $ dart pub add patrol --dev
 ```
+
+> ⚠️ Additional setup is required to run tests – install [`patrol_cli`][patrol_cli_link] and complete [native setup][docs_setup].
 
 ## Usage
 
@@ -168,6 +170,7 @@ We are **top-tier experts** focused on Flutter Enterprise solutions.
 [patrol_github_link]: https://github.com/leancodepl/patrol
 [patrol_discord_link]: https://discord.gg/ukBK5t4EZg
 [docs]: https://patrol.leancode.co/?utm_source=github.com&utm_medium=referral&utm_campaign=patrol-readme
+[docs_setup]: https://patrol.leancode.co/documentation?utm_source=github.com&utm_medium=referral&utm_campaign=patrol-readme
 [docs_finders]: https://patrol.leancode.co/finders/overview
 [promo_graphics]: ../../assets/promo_banner.png
 [article_web]: https://leancode.co/blog/patrol-web-support?utm_source=github.com&utm_medium=referral&utm_campaign=patrol-readme

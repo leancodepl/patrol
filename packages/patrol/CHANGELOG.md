@@ -1,10 +1,23 @@
-## Unreleased
+## 4.6.0
+
+- Bump `patrol_log` to `^0.9.0`.
+- Bump `patrol_finders` to `^3.4.0`.
+- Add `allowPermission` method to `AndroidAutomator`.
+
+## 4.5.0
+
+- Fix `appId` not being passed down on `$.platform.mobile.enterText` and `$.platform.mobile.enterTextByIndex` (#2992)
+- Bump `patrol_log` to `^0.8.0`.
+- Signal develop session completion via `ConfigEntry.developCompletedKey`.
+
+## 4.4.0
 - Add support for emulators with API lvl 36 for pickMultipleImagesFromGallery method. (#2977)
 - Fix `tapOnNotification` on iOS physical devices to Open button when tapping on notification. (#2972)
 - Fix `takeCameraPhoto` do not accept location permission dialog on Pixel physical devices. (#2972)
 - Fix `takeCameraPhoto` on Android to use fallback button if done button is not visible. (#2974)
 - Reflect failed tests in Playwright report. (#2970)
 - Add `stopMockLocation` method to `PlatformAutomator` and make mockLocation method less flaky (#2937)
+- Fix matching test entries to produce test summary. (#2998)
 
 
 ## 4.3.0
