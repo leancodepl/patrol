@@ -106,12 +106,13 @@ class TestCommand extends PatrolCommand {
     final testFileSuffix = config.testFileSuffix;
 
     final testFinder = _testFinderFactory.create(testDirectory);
+    final excludes = stringsArg('exclude').toSet();
 
     final target = stringsArg('target');
     final targets = target.isNotEmpty
-        ? testFinder.findTests(target, testFileSuffix)
+        ? testFinder.findTests(target, testFileSuffix, excludes)
         : testFinder.findAllTests(
-            excludes: stringsArg('exclude').toSet(),
+            excludes: excludes,
             testFileSuffix: testFileSuffix,
           );
 
