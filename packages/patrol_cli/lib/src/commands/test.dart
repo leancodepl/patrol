@@ -67,6 +67,7 @@ class TestCommand extends PatrolCommand {
 
     usesUninstallOption();
 
+    usesAppNameOption();
     usesAndroidOptions();
     usesIOSOptions();
 
@@ -203,6 +204,10 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
     final packageName = stringArg('package-name') ?? config.android.packageName;
     final bundleId = stringArg('bundle-id') ?? config.ios.bundleId;
     final macosBundleId = stringArg('bundle-id') ?? config.macos.bundleId;
+    final appName = stringArg('app-name');
+    final androidAppName = appName ?? config.android.appName;
+    final iosAppName = appName ?? config.ios.appName;
+    final macosAppName = appName ?? config.macos.appName;
 
     final displayLabel = boolArg('label');
     final uninstall = boolArg('uninstall');
@@ -220,8 +225,9 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       'PATROL_APP_PACKAGE_NAME': packageName,
       'PATROL_APP_BUNDLE_ID': bundleId,
       'PATROL_MACOS_APP_BUNDLE_ID': macosBundleId,
-      'PATROL_ANDROID_APP_NAME': config.android.appName,
-      'PATROL_IOS_APP_NAME': config.ios.appName,
+      'PATROL_ANDROID_APP_NAME': androidAppName,
+      'PATROL_IOS_APP_NAME': iosAppName,
+      'PATROL_MACOS_APP_NAME': macosAppName,
       'INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE': 'false',
       'PATROL_TEST_LABEL_ENABLED': displayLabel.toString(),
       'PATROL_TEST_DIRECTORY': config.testDirectory,
