@@ -242,13 +242,10 @@ void main() {
         );
         expect(focusNode.hasFocus, true);
 
-        await tester.enterText(
-          find.byType(TextField),
-          'updated input',
-          hideKeyboard: true,
-        );
+        await tester.enterText(find.byType(TextField), 'updated input');
 
         expect(controller.text, 'updated input');
+        expect(focusNode.hasFocus, false);
         expect(valuesOnUnfocus, isNotEmpty);
         expect(valuesOnUnfocus.first, 'updated input');
         expect(valuesOnUnfocus, isNot(contains('initial input')));
@@ -282,17 +279,49 @@ void main() {
         validatedValues.clear();
         expect(focusNode.hasFocus, true);
 
-        await tester.enterText(
-          find.byType(TextFormField),
-          'updated input',
-          hideKeyboard: true,
-        );
+        await tester.enterText(find.byType(TextFormField), 'updated input');
 
         expect(controller.text, 'updated input');
         expect(validatedValues, isNotEmpty);
         expect(validatedValues.first, 'updated input');
         expect(validatedValues, isNot(contains('initial input')));
       });
+
+      patrolWidgetTest(
+        'keeps already focused field focused when hideKeyboard is false',
+        (tester) async {
+          final controller = TextEditingController(text: 'initial input');
+          final focusNode = FocusNode();
+          addTearDown(controller.dispose);
+          addTearDown(focusNode.dispose);
+
+          await tester.pumpWidgetAndSettle(
+            MaterialApp(
+              home: Scaffold(
+                body: TextField(
+                  autofocus: true,
+                  controller: controller,
+                  focusNode: focusNode,
+                ),
+              ),
+            ),
+          );
+          expect(focusNode.hasFocus, true);
+
+          await tester.enterText(
+            find.byType(TextField),
+            'updated input',
+            hideKeyboard: false,
+          );
+
+          expect(controller.text, 'updated input');
+          expect(focusNode.hasFocus, true);
+          expect(
+            tester.tester.testTextInput.editingState?['text'],
+            'updated input',
+          );
+        },
+      );
 
       patrolWidgetTest('enters text in the same field multiple times', (
         tester,
