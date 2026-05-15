@@ -321,6 +321,11 @@ class IOSTakeCameraPhotoRequest {
   late String appId;
 }
 
+class IOSInjectCameraPhotoRequest {
+  late String imageName;
+  late String appId;
+}
+
 class AndroidPickImageFromGalleryRequest {
   late AndroidSelector? imageSelector;
   late int? imageIndex;
@@ -459,6 +464,7 @@ abstract class IosAutomator<IOSServer, DartClient> {
 
   // camera
   void takeCameraPhoto(IOSTakeCameraPhotoRequest request);
+  void injectCameraPhoto(IOSInjectCameraPhotoRequest request);
   void pickImageFromGallery(IOSPickImageFromGalleryRequest request);
   void pickMultipleImagesFromGallery(
     IOSPickMultipleImagesFromGalleryRequest request,
