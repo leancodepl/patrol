@@ -271,7 +271,7 @@ enum flags {
 enum http_parser_errno { HTTP_ERRNO_MAP(HTTP_ERRNO_GEN) };
 #undef HTTP_ERRNO_GEN
 
-/* Get an http_errno value from an http_parser */
+/* Get an http_parser_errno value from an http_parser */
 #define HTTP_PARSER_ERRNO(p) ((enum http_parser_errno)(p)->http_errno)
 
 struct http_parser {
