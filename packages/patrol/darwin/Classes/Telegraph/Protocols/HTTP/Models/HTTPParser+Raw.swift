@@ -12,7 +12,7 @@
 
 typealias HTTPRawParser = http_parser
 typealias HTTPRawParserSettings = http_parser_settings
-typealias HTTPRawParserErrorCode = http_errno
+typealias HTTPRawParserErrorCode = http_parser_errno
 typealias ChunkPointer = UnsafePointer<Int8>
 
 // MARK: HTTPRawParser
@@ -66,7 +66,7 @@ extension HTTPRawParser {
 
   /// Returns the HTTP method.
   var httpMethod: HTTPMethod {
-    let methodCode = http_method(method)
+    let methodCode = http_parser_method(method)
     let methodName = String(cString: http_method_str(methodCode))
     return HTTPMethod(name: methodName)
   }

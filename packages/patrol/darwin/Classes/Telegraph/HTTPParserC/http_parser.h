@@ -150,7 +150,7 @@ typedef int (*http_cb)(http_parser*);
   XX(510, NOT_EXTENDED, Not Extended)                                       \
   XX(511, NETWORK_AUTHENTICATION_REQUIRED, Network Authentication Required)
 
-enum http_status {
+enum http_parser_status {
 #define XX(num, name, string) PARSER_HTTP_STATUS_##name = num,
   HTTP_STATUS_MAP(XX)
 #undef XX
@@ -201,7 +201,7 @@ enum http_status {
   /* icecast */                    \
   XX(33, SOURCE, SOURCE)
 
-enum http_method {
+enum http_parser_method {
 #define XX(num, name, string) PARSER_HTTP_##name = num,
   HTTP_METHOD_MAP(XX)
 #undef XX
@@ -268,11 +268,11 @@ enum flags {
 
 /* Define HPE_* values for each errno value above */
 #define HTTP_ERRNO_GEN(n, s) HPE_##n,
-enum http_errno { HTTP_ERRNO_MAP(HTTP_ERRNO_GEN) };
+enum http_parser_errno { HTTP_ERRNO_MAP(HTTP_ERRNO_GEN) };
 #undef HTTP_ERRNO_GEN
 
-/* Get an http_errno value from an http_parser */
-#define HTTP_PARSER_ERRNO(p) ((enum http_errno)(p)->http_errno)
+/* Get an http_parser_errno value from an http_parser */
+#define HTTP_PARSER_ERRNO(p) ((enum http_parser_errno)(p)->http_errno)
 
 struct http_parser {
   /** PRIVATE **/
@@ -385,16 +385,16 @@ size_t http_parser_execute(http_parser* parser, const http_parser_settings* sett
 int http_should_keep_alive(const http_parser* parser);
 
 /* Returns a string version of the HTTP method. */
-const char* http_method_str(enum http_method m);
+const char* http_method_str(enum http_parser_method m);
 
 /* Returns a string version of the HTTP status code. */
-const char* http_status_str(enum http_status s);
+const char* http_status_str(enum http_parser_status s);
 
 /* Return a string name of the given error */
-const char* http_errno_name(enum http_errno err);
+const char* http_errno_name(enum http_parser_errno err);
 
 /* Return a string description of the given error */
-const char* http_errno_description(enum http_errno err);
+const char* http_errno_description(enum http_parser_errno err);
 
 /* Initialize all http_parser_url members to 0 */
 void http_parser_url_init(struct http_parser_url* u);
