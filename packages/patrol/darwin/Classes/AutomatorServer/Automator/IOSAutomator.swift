@@ -712,14 +712,8 @@
           "breadcrumb"
         )
 
-        let query: XCUIElementQuery
-        if let bundleId {
-          let app = try self.getApp(withBundleId: bundleId)
-          query = app.descendants(matching: .any).matching(predicate)
-        } else {
-          // Breadcrumb is a system-level control; by default search outside AUT.
-          query = self.springboard.descendants(matching: .any).matching(predicate)
-        }
+        // Breadcrumb is a system-level control; search within Springboard.
+        let query = self.springboard.descendants(matching: .any).matching(predicate)
 
         guard let element = self.waitFor(query: query, index: 0, timeout: timeout ?? self.timeout)
         else {

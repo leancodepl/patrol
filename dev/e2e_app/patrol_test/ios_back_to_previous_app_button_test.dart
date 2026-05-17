@@ -1,3 +1,5 @@
+import 'package:e2e_app/keys.dart';
+
 import 'common.dart';
 
 void main() {
@@ -12,8 +14,8 @@ void main() {
 
       await $.platform.ios.tapBackToPreviousAppButton();
 
-      await $.waitUntilVisible($(#externalAppStatusText));
-      await $.waitUntilVisible($(#openIosSettingsButton));
+      await $(K.externalAppStatusText).waitUntilVisible();
+      await $(K.openIosSettingsButton).waitUntilVisible();
     },
     tags: ['ios', 'simulator', 'physical_device'],
   );
