@@ -82,6 +82,18 @@ jobs:
         working-directory: packages/patrol_cli
         run: dart pub global activate --source path . && patrol
 
+      - name: Start screen recording
+        run: |
+          screencapture -v macos_screen_recording.mov &
+          echo $! > /tmp/screencapture_pid
+          echo "Screen recording started (PID: $(cat /tmp/screencapture_pid))"
+
+      - name: Start log capture
+        run: |
+          log stream --predicate 'processImagePath contains "e2e_app" or processImagePath contains "patrol" or processImagePath contains "Runner"' --style compact > macos_app_logs.txt 2>&1 &
+          echo $! > /tmp/logstream_pid
+          echo "Log capture started (PID: $(cat /tmp/logstream_pid))"
+
       - name: Run UI tests
         id: tests_step
         run: |
@@ -90,6 +102,24 @@ jobs:
 
           echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> "$GITHUB_OUTPUT"
           exit $TESTS_EXIT_CODE
+
+      - name: Stop screen recording
+        if: always()
+        run: |
+          if [ -f /tmp/screencapture_pid ]; then
+            kill -SIGINT $(cat /tmp/screencapture_pid) 2>/dev/null || true
+            sleep 2
+            kill -9 $(cat /tmp/screencapture_pid) 2>/dev/null || true
+          fi
+
+      - name: Stop log capture
+        if: always()
+        run: |
+          if [ -f /tmp/logstream_pid ]; then
+            kill -SIGINT $(cat /tmp/logstream_pid) 2>/dev/null || true
+            sleep 1
+            kill -9 $(cat /tmp/logstream_pid) 2>/dev/null || true
+          fi
 
       - name: Check if something went wrong
         id: status_step
@@ -143,6 +173,20 @@ jobs:
         with:
           name: Test result from ${{ matrix.device_model }}.xcresult
           path: ${{ env.XCRESULT_PATH }}
+
+      - name: Upload screen recording to artifacts
+        if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: Screen recording from ${{ matrix.device_model }}
+          path: ${{ github.workspace }}/dev/e2e_app/macos_screen_recording.mov
+
+      - name: Upload macOS logs to artifacts
+        if: ${{ (failure() || success()) && contains(fromJson('["success", "failure"]'), steps.tests_step.conclusion) }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: Logs from ${{ matrix.device_model }}
+          path: ${{ github.workspace }}/dev/e2e_app/macos_app_logs.txt
 
   call_send_slack_message:
     name: Notify on Slack
