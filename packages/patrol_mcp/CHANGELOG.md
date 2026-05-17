@@ -1,3 +1,9 @@
+## 0.1.4
+
+- Added per-call `device` parameter to the `run` tool, allowing agents to
+  pin or switch the target device without restarting the MCP server.
+  Overrides any `--device` set via `PATROL_FLAGS`.
+
 ## 0.1.3
 
 - Bump `patrol_cli` to `4.3.1`.

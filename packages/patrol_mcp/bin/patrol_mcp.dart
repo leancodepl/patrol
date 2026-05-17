@@ -10,7 +10,7 @@ import 'package:patrol_mcp/src/patrol_session.dart';
 import 'package:patrol_mcp/src/screenshot_service.dart';
 
 /// Version of patrol_mcp. Must be kept in sync with pubspec.yaml.
-const version = '0.1.3';
+const version = '0.1.4';
 
 const double _defaultTimeoutMinutes = 5;
 
@@ -52,10 +52,12 @@ Duration _parseTimeout(num? timeoutMinutes) {
 class _PatrolRunArgs {
   _PatrolRunArgs.fromJson(Map<String, dynamic> json)
     : testFile = json['testFile'] as String,
-      timeout = _parseTimeout(json['timeoutMinutes'] as num?);
+      timeout = _parseTimeout(json['timeoutMinutes'] as num?),
+      device = json['device'] as String?;
 
   final String testFile;
   final Duration timeout;
+  final String? device;
 }
 
 Future<int> main(List<String> args) async {
@@ -128,6 +130,17 @@ Future<int> main(List<String> args) async {
                 'timeoutMinutes': JsonNumber(
                   description: 'Optional timeout in minutes (default: 5)',
                 ),
+                'device': JsonString(
+                  description:
+                      "Optional device id or name to run on (e.g. 'iPhone 15 "
+                      "Pro', 'emulator-5554', a UDID like "
+                      "'EFADF727-...', or 'chrome'). Equivalent to "
+                      "'patrol develop --device <value>'. If omitted, patrol "
+                      'picks the first available device. Ignored on '
+                      'hot-restart of an already-running test (device is '
+                      'fixed for the lifetime of a develop session — quit '
+                      'first to switch).',
+                ),
               },
               required: ['testFile'],
             ),
@@ -138,6 +151,7 @@ Future<int> main(List<String> args) async {
               final result = await patrolSession.startAndWait(
                 runArgs.testFile,
                 timeout: runArgs.timeout,
+                device: runArgs.device,
               );
               return CallToolResult(
                 content: [TextContent(text: jsonEncode(result.toMap()))],

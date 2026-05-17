@@ -121,6 +121,63 @@ class _CapturingStdout implements io.Stdout {
   int get terminalLines => _inner.terminalLines;
 }
 
+/// Builds the args list passed to `DevelopOptions.parseArgs`.
+///
+/// - Splits [additionalFlags] (typically from `PATROL_FLAGS`) on whitespace.
+/// - Always appends `--no-check-compatibility` for MCP speed.
+/// - If [device] is non-null and non-empty, removes any existing
+///   `--device`/`-d` entries from the split flags (the per-call value wins)
+///   and appends `--device <value>` as two separate argv entries (spaces
+///   in the value are preserved).
+///
+/// [onDeviceOverride] is invoked with the removed device values when a
+/// per-call [device] supersedes one or more `--device` flags from
+/// [additionalFlags].
+List<String> buildFlagParts({
+  required String additionalFlags,
+  String? device,
+  void Function(List<String> removedDevices)? onDeviceOverride,
+}) {
+  final normalizedDevice = (device != null && device.trim().isNotEmpty)
+      ? device.trim()
+      : null;
+
+  final parts = additionalFlags.trim().isNotEmpty
+      ? additionalFlags.trim().split(RegExp(r'\s+'))
+      : <String>[];
+
+  if (normalizedDevice != null) {
+    final removed = <String>[];
+    final cleaned = <String>[];
+    for (var i = 0; i < parts.length; i++) {
+      final part = parts[i];
+      if (part == '--device' || part == '-d') {
+        if (i + 1 < parts.length) {
+          removed.add(parts[i + 1]);
+          i++;
+        }
+        continue;
+      }
+      if (part.startsWith('--device=')) {
+        removed.add(part.substring('--device='.length));
+        continue;
+      }
+      cleaned.add(part);
+    }
+    if (removed.isNotEmpty && onDeviceOverride != null) {
+      onDeviceOverride(removed);
+    }
+    return [
+      ...cleaned,
+      '--no-check-compatibility',
+      '--device',
+      normalizedDevice,
+    ];
+  }
+
+  return [...parts, '--no-check-compatibility'];
+}
+
 enum TestState {
   idle,
   running,
@@ -211,12 +268,29 @@ final class PatrolSession {
   int? get testServerPort => _testServerPort;
 
   /// Returns null if started successfully, or a warning message if blocked
-  Future<String?> _start(String testFile) async {
+  Future<String?> _start(String testFile, {String? device}) async {
+    final normalizedDevice = (device != null && device.trim().isNotEmpty)
+        ? device.trim()
+        : null;
+
     if (_isRunning) {
       if (_currentTestFile != testFile) {
         return 'Patrol session is already running "$_currentTestFile". '
             'Cannot start different test "$testFile". '
             'Use patrol-quit first or run the same test file.';
+      }
+      if (normalizedDevice != null) {
+        final current = _developService?.device;
+        final currentId = current?.id;
+        final currentName = current?.name;
+        final matches =
+            currentId == normalizedDevice || currentName == normalizedDevice;
+        if (current != null && !matches) {
+          return 'Patrol session is already running on '
+              '"${currentName ?? currentId}". '
+              'Device cannot be changed via hot restart — call quit first, '
+              'then run with the new device.';
+        }
       }
       // Same test file - hot restart
       sendCommand(PatrolCommand.hotRestart);
@@ -233,12 +307,16 @@ final class PatrolSession {
     // This supports both develop-specific flags and global flags (e.g.
     // --verbose, --flutter-command) so that PATROL_FLAGS works with everything
     // that `patrol develop` accepts.
-    final flagParts =
-        (additionalFlags.isNotEmpty
-              ? additionalFlags.split(RegExp(r'\s+'))
-              : <String>[])
-          // Skip compatibility checking in MCP context for speed.
-          ..add('--no-check-compatibility');
+    final flagParts = buildFlagParts(
+      additionalFlags: additionalFlags,
+      device: normalizedDevice,
+      onDeviceOverride: (existing) {
+        logger.info(
+          'Overriding --device from PATROL_FLAGS (was: '
+          '${existing.join(', ')}) with per-call device=$normalizedDevice',
+        );
+      },
+    );
 
     final flutterCmd = io.Platform.environment['PATROL_FLUTTER_COMMAND'];
 
@@ -512,8 +590,9 @@ final class PatrolSession {
   Future<PatrolStatus> startAndWait(
     String testFile, {
     Duration? timeout,
+    String? device,
   }) async {
-    final warning = await _start(testFile);
+    final warning = await _start(testFile, device: device);
     if (warning != null) {
       // Return current status with warning (blocked by different test)
       final status = getStatus();

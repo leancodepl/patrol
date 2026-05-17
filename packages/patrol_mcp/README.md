@@ -251,6 +251,10 @@ works because Antigravity resolves it against the open workspace:
 - `PATROL_FLAGS`: Extra `patrol develop` flags, for example:
   `--flavor dev --verbose`.
   Use this for ports too: `--test-server-port 8081 --app-server-port 8082`.
+  When pinning a target device, prefer the per-call `device` argument on the
+  `run` tool instead of setting `--device` here — env changes require
+  restarting the MCP server, while the per-call argument is read fresh on
+  every invocation. If both are set, the per-call argument wins.
 - `SHOW_TERMINAL`: Open macOS Terminal for live logs (`"true"` / `"false"`).
 
 `patrol_mcp` also respects environment variables supported by `patrol_cli`
@@ -265,7 +269,11 @@ The provided `run-patrol` script sets `PATROL_FLUTTER_COMMAND` automatically:
 
 ## Tools
 
-- `run`: Runs a test file and waits for completion.
+- `run`: Runs a test file and waits for completion. Accepts an optional
+  `device` (e.g. `"iPhone 15 Pro"`, `"emulator-5554"`, a UDID, or `"chrome"`)
+  to target a specific device — same semantics as
+  `patrol develop --device <value>`. Example:
+  `{"testFile": "integration_test/foo.dart", "device": "iPhone 15 Pro"}`.
 - `quit`: Gracefully stops the active session.
 - `status`: Returns session state and recent output.
 - `screenshot`: Captures screenshot from active session device.
