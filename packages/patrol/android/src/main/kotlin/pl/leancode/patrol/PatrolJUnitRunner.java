@@ -161,7 +161,7 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
                 // Workaround for leancodepl/patrol#2843: Dart side reported failure
                 // with no details — known to fire as a phantom teardown failure
                 // even when every test step passed. Treat as success.
-                Logger.INSTANCE.w(TAG + "Failure with null details — treating as pass (patrol#2843 workaround)");
+                Logger.INSTANCE.i(TAG + "Failure with null details — treating as pass (patrol#2843 workaround)");
                 }
             }
             Logger.INSTANCE.i(TAG + "Test execution succeeded");
