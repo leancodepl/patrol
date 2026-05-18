@@ -1,7 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:patrol/src/platform/contracts/contracts.dart';
+import 'package:patrol/src/platform/contracts/contracts.dart'
+    show AppleApp, IOSGetNativeViewsResponse, KeyboardBehavior;
 import 'package:patrol/src/platform/ios/ios_automator_config.dart';
 import 'package:patrol/src/platform/mobile/mobile_automator.dart';
+import 'package:patrol/src/platform/selector.dart' show IOSSelector;
 
 /// Provides functionality to interact with the OS that the app under test is
 /// running on.

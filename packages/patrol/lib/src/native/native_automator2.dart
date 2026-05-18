@@ -1,7 +1,15 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/src/native/native_automator.dart';
-import 'package:patrol/src/platform/contracts/contracts.dart';
+import 'package:patrol/src/platform/contracts/contracts.dart'
+    show
+        AndroidNativeView,
+        AppleApp,
+        GoogleApp,
+        IOSNativeView,
+        KeyboardBehavior,
+        Notification;
 import 'package:patrol/src/platform/platform_automator.dart';
+import 'package:patrol/src/platform/selector.dart';
 
 import 'native_automator_config.dart';
 
@@ -480,9 +488,9 @@ class NativeAutomator2 {
   /// slower gesture.
   ///
   /// The default values simulate a typical pull-to-refresh gesture:
-  /// * [from]: Center of the screen (0.5, 0.5)
-  /// * [to]: Bottom center of the screen (0.5, 0.9)
-  /// * [steps]: 50
+  /// * `from`: Center of the screen (0.5, 0.5)
+  /// * `to`: Bottom center of the screen (0.5, 0.9)
+  /// * `steps`: 50
   /// You can override these if scrollable content is not at the center of the
   /// screen or if the direction of the gesture is different.
   Future<void> pullToRefresh({
