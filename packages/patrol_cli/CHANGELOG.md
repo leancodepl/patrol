@@ -1,3 +1,7 @@
+## 4.3.2
+
+- Fix a bug when running tests with iOS and Android specific flavors based on the configuration in pubspec. (#3046)
+
 ## 4.3.1
 
 - Update dependencies.
