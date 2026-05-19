@@ -723,14 +723,12 @@ Map<String, dynamic> _$IOSTapOnNotificationRequestToJson(
 IOSTapBackToPreviousAppButtonRequest
 _$IOSTapBackToPreviousAppButtonRequestFromJson(Map<String, dynamic> json) =>
     IOSTapBackToPreviousAppButtonRequest(
-      appId: json['appId'] as String?,
       timeoutMillis: (json['timeoutMillis'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$IOSTapBackToPreviousAppButtonRequestToJson(
   IOSTapBackToPreviousAppButtonRequest instance,
 ) => <String, dynamic>{
-  'appId': instance.appId,
   'timeoutMillis': instance.timeoutMillis,
 };
 

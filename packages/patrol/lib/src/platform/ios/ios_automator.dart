@@ -47,9 +47,7 @@ abstract interface class IOSAutomator implements MobileAutomator {
   /// specified, it utilizes the [IOSAutomatorConfig.findTimeout] duration
   /// from the configuration.
   ///
-  /// Use [appId] to target a specific app context. If [appId] is not provided,
-  /// Patrol does not default to the app-under-test bundle ID.
-  Future<void> tapBackToPreviousAppButton({String? appId, Duration? timeout});
+  Future<void> tapBackToPreviousAppButton({Duration? timeout});
 
   /// Taps on the visible notification using [selector].
   ///

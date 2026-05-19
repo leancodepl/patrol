@@ -138,16 +138,13 @@ class IOSAutomator extends NativeMobileAutomator
   ///
   /// This button is visible in the status bar after opening another app and
   /// has identifier `breadcrumb` with button trait.
+  ///
   @override
-  Future<void> tapBackToPreviousAppButton({
-    String? appId,
-    Duration? timeout,
-  }) async {
+  Future<void> tapBackToPreviousAppButton({Duration? timeout}) async {
     await wrapRequest(
       'tapBackToPreviousAppButton',
       () => _client.tapBackToPreviousAppButton(
         IOSTapBackToPreviousAppButtonRequest(
-          appId: appId,
           timeoutMillis: timeout?.inMilliseconds,
         ),
       ),

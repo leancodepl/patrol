@@ -697,14 +697,10 @@
       }
     }
 
-    func tapBackToPreviousAppButton(inApp bundleId: String?, withTimeout timeout: TimeInterval?)
-      throws
-    {
+    func tapBackToPreviousAppButton(withTimeout timeout: TimeInterval?) throws {
       let breadcrumbDescription = "view with elementType 'button' with identifier 'breadcrumb'"
-      let viewDescription =
-        bundleId.map { "\(breadcrumbDescription) in app \($0)" } ?? breadcrumbDescription
 
-      try runAction("tapping on \(viewDescription)") {
+      try runAction("tapping on \(breadcrumbDescription)") {
         let buttonElementType = XCUIElement.ElementType.button.rawValue
         let predicate = NSPredicate(
           format: "elementType == %@ AND identifier == %@",
@@ -712,12 +708,12 @@
           "breadcrumb"
         )
 
-        // Breadcrumb is a system-level control; search within Springboard.
-        let query = self.springboard.descendants(matching: .any).matching(predicate)
+        // Breadcrumb is a system-level control in the status bar; search within Springboard.
+        let query = self.springboard.statusBars.buttons.matching(predicate)
 
         guard let element = self.waitFor(query: query, index: 0, timeout: timeout ?? self.timeout)
         else {
-          throw PatrolError.viewNotExists(viewDescription)
+          throw PatrolError.viewNotExists(breadcrumbDescription)
         }
 
         element.forceTap()

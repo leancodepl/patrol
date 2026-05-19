@@ -448,7 +448,6 @@ public struct IOSTapOnNotificationRequest: Codable {
 }
 
 public struct IOSTapBackToPreviousAppButtonRequest: Codable {
-  public var appId: String?
   public var timeoutMillis: Int?
 }
 

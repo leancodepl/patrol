@@ -275,7 +275,6 @@ class IOSTapOnNotificationRequest {
 }
 
 class IOSTapBackToPreviousAppButtonRequest {
-  String? appId;
   int? timeoutMillis;
 }
 

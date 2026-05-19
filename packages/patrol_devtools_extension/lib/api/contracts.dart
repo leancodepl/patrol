@@ -1097,20 +1097,19 @@ class IOSTapOnNotificationRequest with EquatableMixin {
 
 @JsonSerializable()
 class IOSTapBackToPreviousAppButtonRequest with EquatableMixin {
-  IOSTapBackToPreviousAppButtonRequest({this.appId, this.timeoutMillis});
+  IOSTapBackToPreviousAppButtonRequest({this.timeoutMillis});
 
   factory IOSTapBackToPreviousAppButtonRequest.fromJson(
     Map<String, dynamic> json,
   ) => _$IOSTapBackToPreviousAppButtonRequestFromJson(json);
 
-  final String? appId;
   final int? timeoutMillis;
 
   Map<String, dynamic> toJson() =>
       _$IOSTapBackToPreviousAppButtonRequestToJson(this);
 
   @override
-  List<Object?> get props => [appId, timeoutMillis];
+  List<Object?> get props => [timeoutMillis];
 }
 
 @JsonSerializable()

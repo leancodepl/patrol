@@ -281,8 +281,7 @@
     func tapBackToPreviousAppButton(request: IOSTapBackToPreviousAppButtonRequest) throws {
       return try runCatching {
         try automator.tapBackToPreviousAppButton(
-          inApp: request.appId,
-          withTimeout: request.timeoutMillis.map { TimeInterval($0 / 1000) }
+          withTimeout: request.timeoutMillis.map { TimeInterval(Double($0) / 1000.0) }
         )
       }
     }
