@@ -276,8 +276,7 @@
       }
     }
 
-    func tapBackToPreviousAppButton(withTimeout timeout: TimeInterval?) throws
-    {
+    func tapBackToPreviousAppButton(withTimeout timeout: TimeInterval?) throws {
       try runAction("tapBackToPreviousAppButton") {
         throw PatrolError.methodNotImplemented("tapBackToPreviousAppButton")
       }
