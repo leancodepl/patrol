@@ -489,6 +489,12 @@ class AndroidAutomator extends NativeMobileAutomator
     );
   }
 
+  /// Taps the standard Android system dialog "Allow" button.
+  @override
+  Future<void> allowPermission() async {
+    await wrapRequest('allowPermission', _client.allowPermission);
+  }
+
   /// Returns a list of currently visible native UI controls, specified by
   /// [selector], which are currently visible on screen.
   ///

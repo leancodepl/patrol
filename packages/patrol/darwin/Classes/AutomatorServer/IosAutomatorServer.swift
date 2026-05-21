@@ -16,6 +16,7 @@ protocol IosAutomatorServer {
     func swipe(request: IOSSwipeRequest) throws
     func closeHeadsUpNotification() throws
     func tapOnNotification(request: IOSTapOnNotificationRequest) throws
+    func tapBackToPreviousAppButton(request: IOSTapBackToPreviousAppButtonRequest) throws
     func isPermissionDialogVisible(request: PermissionDialogVisibleRequest) throws -> PermissionDialogVisibleResponse
     func handlePermissionDialog(request: HandlePermissionRequest) throws
     func setLocationAccuracy(request: SetLocationAccuracyRequest) throws
@@ -83,6 +84,12 @@ extension IosAutomatorServer {
     private func tapOnNotificationHandler(request: HTTPRequest) throws -> HTTPResponse {
         let requestArg = try JSONDecoder().decode(IOSTapOnNotificationRequest.self, from: request.body)
         try tapOnNotification(request: requestArg)
+        return HTTPResponse(.ok)
+    }
+
+    private func tapBackToPreviousAppButtonHandler(request: HTTPRequest) throws -> HTTPResponse {
+        let requestArg = try JSONDecoder().decode(IOSTapBackToPreviousAppButtonRequest.self, from: request.body)
+        try tapBackToPreviousAppButton(request: requestArg)
         return HTTPResponse(.ok)
     }
 
@@ -180,6 +187,11 @@ extension IosAutomatorServer {
             request in handleRequest(
                 request: request,
                 handler: tapOnNotificationHandler)
+        }
+        server.route(.POST, "tapBackToPreviousAppButton") {
+            request in handleRequest(
+                request: request,
+                handler: tapBackToPreviousAppButtonHandler)
         }
         server.route(.POST, "isPermissionDialogVisible") {
             request in handleRequest(

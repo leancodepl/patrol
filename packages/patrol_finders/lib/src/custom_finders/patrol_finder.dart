@@ -541,20 +541,52 @@ class PatrolFinder implements MatchFinder {
 
   @override
   PatrolFinder get first {
-    // TODO: Throw a better error (https://github.com/leancodepl/patrol/issues/548)
-    return PatrolFinder(tester: tester, finder: finder.first);
+    return _select(
+      description: 'first',
+      selector: (candidates) => candidates.take(1),
+    );
   }
 
   @override
   PatrolFinder get last {
-    // TODO: Throw a better error (https://github.com/leancodepl/patrol/issues/548)
-    return PatrolFinder(tester: tester, finder: finder.last);
+    return _select(
+      description: 'last',
+      selector: (candidates) {
+        if (candidates.isEmpty) {
+          return const Iterable<Element>.empty();
+        }
+
+        return [candidates.last] as Iterable<Element>;
+      },
+    );
   }
 
   @override
   PatrolFinder at(int index) {
-    // TODO: Throw a better error (https://github.com/leancodepl/patrol/issues/548)
-    return PatrolFinder(tester: tester, finder: finder.at(index));
+    return _select(
+      description: 'index $index',
+      selector: (candidates) {
+        if (index < 0) {
+          return const Iterable<Element>.empty();
+        }
+
+        return candidates.skip(index).take(1);
+      },
+    );
+  }
+
+  PatrolFinder _select({
+    required String description,
+    required Iterable<Element> Function(Iterable<Element> candidates) selector,
+  }) {
+    return PatrolFinder(
+      tester: tester,
+      finder: _PatrolSelectorFinder(
+        finder,
+        selectorDescription: description,
+        selector: selector,
+      ),
+    );
   }
 
   @override
@@ -609,6 +641,30 @@ class PatrolFinder implements MatchFinder {
   // Do we still need to use deprecated method?
   // ignore: deprecated_member_use
   bool precache() => finder.precache();
+}
+
+class _PatrolSelectorFinder extends ChainedFinder {
+  _PatrolSelectorFinder(
+    super.parent, {
+    required this.selectorDescription,
+    required this.selector,
+  });
+
+  final String selectorDescription;
+  final Iterable<Element> Function(Iterable<Element> candidates) selector;
+
+  @override
+  Iterable<Element> filter(Iterable<Element> parentCandidates) =>
+      selector(parentCandidates);
+
+  @override
+  String describeMatch(Plurality plurality) {
+    return '${parent.describeMatch(plurality)} '
+        '(ignoring all but $selectorDescription)';
+  }
+
+  @override
+  String get description => describeMatch(Plurality.many);
 }
 
 /// Useful methods that make chained finders more readable.

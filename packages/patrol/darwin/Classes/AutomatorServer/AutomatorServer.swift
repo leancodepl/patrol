@@ -278,6 +278,14 @@
       }
     }
 
+    func tapBackToPreviousAppButton(request: IOSTapBackToPreviousAppButtonRequest) throws {
+      return try runCatching {
+        try automator.tapBackToPreviousAppButton(
+          withTimeout: request.timeoutMillis.map { TimeInterval(Double($0) / 1000.0) }
+        )
+      }
+    }
+
     // MARK: Permissions
 
     func isPermissionDialogVisible(

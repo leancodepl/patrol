@@ -1,3 +1,7 @@
+## 0.9.0
+
+- **Breaking:** Move `PatrolLogReader` to a separate `package:patrol_log/patrol_log_reader.dart` export, removing the transitive `dart:io` dependency from the main barrel file.
+
 ## 0.8.0
 
 - Add `onLogEntry` callback to `PatrolLogReader`.

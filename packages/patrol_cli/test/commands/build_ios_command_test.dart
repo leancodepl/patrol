@@ -248,6 +248,22 @@ void main() {
         expect(opts.simulator, equals(true));
       });
 
+      test('builds iOS app with custom app name', () async {
+        final result = await runCommand(['--app-name', 'Custom App']);
+
+        expect(result, equals(0));
+
+        final captured = verify(
+          () => mockIosTestBackend.build(captureAny()),
+        ).captured;
+        final opts = captured.first as IOSAppOptions;
+
+        expect(
+          opts.flutter.dartDefines,
+          containsPair('PATROL_IOS_APP_NAME', 'Custom App'),
+        );
+      });
+
       test('builds iOS app with full isolation', () async {
         final result = await runCommand(['--simulator', '--full-isolation']);
 
