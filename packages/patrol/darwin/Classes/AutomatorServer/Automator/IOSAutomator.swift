@@ -697,6 +697,29 @@
       }
     }
 
+    func tapBackToPreviousAppButton(withTimeout timeout: TimeInterval?) throws {
+      let breadcrumbDescription = "view with elementType 'button' with identifier 'breadcrumb'"
+
+      try runAction("tapping on \(breadcrumbDescription)") {
+        let buttonElementType = XCUIElement.ElementType.button.rawValue
+        let predicate = NSPredicate(
+          format: "elementType == %@ AND identifier == %@",
+          NSNumber(value: buttonElementType),
+          "breadcrumb"
+        )
+
+        // Breadcrumb is a system-level control in the status bar; search within Springboard.
+        let query = self.springboard.statusBars.buttons.matching(predicate)
+
+        guard let element = self.waitFor(query: query, index: 0, timeout: timeout ?? self.timeout)
+        else {
+          throw PatrolError.viewNotExists(breadcrumbDescription)
+        }
+
+        element.forceTap()
+      }
+    }
+
     // MARK: Permissions
 
     func isPermissionDialogVisible(timeout: TimeInterval) throws -> Bool {

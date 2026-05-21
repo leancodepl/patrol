@@ -1,6 +1,7 @@
 ## Unreleased
 
 - Fix generated API docs links for public Patrol types.
+- Add `tapBackToPreviousAppButton` method to `$.platform.ios`. (#3015)
 
 ## 4.6.0
 
