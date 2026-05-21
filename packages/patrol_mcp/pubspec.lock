@@ -357,18 +357,18 @@ packages:
     dependency: "direct main"
     description:
       name: patrol_cli
-      sha256: d4d04d3ec3458d82ecf6e881c257bdde93def4047b5b3a7cd88921aca9584c15
+      sha256: "7970bcd73b4b8e1966e26ac698819ed84bf555148a9cb310aceba652a3915ac0"
       url: "https://pub.dev"
     source: hosted
-    version: "4.3.1"
+    version: "4.4.0"
   patrol_log:
     dependency: transitive
     description:
       name: patrol_log
-      sha256: a2360db165c34692665c0de146e5157887d6b584fdccca8f141f947a5acf1b2e
+      sha256: "16ab747b28621640115d9493138eae82a1d410a613857cb0caf9000ce62fc546"
       url: "https://pub.dev"
     source: hosted
-    version: "0.8.0"
+    version: "0.9.0"
   petitparser:
     dependency: transitive
     description:
