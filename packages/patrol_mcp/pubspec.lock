@@ -12,10 +12,9 @@ packages:
   adb:
     dependency: "direct main"
     description:
-      name: adb
-      sha256: "1c1d53b356bc9a7b89e7abcbb8b7b941f6d6ab0fc61a77eb8a4928befa294202"
-      url: "https://pub.dev"
-    source: hosted
+      path: "../adb"
+      relative: true
+    source: path
     version: "0.6.0"
   analyzer:
     dependency: transitive
@@ -356,19 +355,17 @@ packages:
   patrol_cli:
     dependency: "direct main"
     description:
-      name: patrol_cli
-      sha256: d4d04d3ec3458d82ecf6e881c257bdde93def4047b5b3a7cd88921aca9584c15
-      url: "https://pub.dev"
-    source: hosted
-    version: "4.3.1"
+      path: "../patrol_cli"
+      relative: true
+    source: path
+    version: "4.4.0"
   patrol_log:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: patrol_log
-      sha256: a2360db165c34692665c0de146e5157887d6b584fdccca8f141f947a5acf1b2e
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.8.0"
+      path: "../patrol_log"
+      relative: true
+    source: path
+    version: "0.9.0"
   petitparser:
     dependency: transitive
     description:
