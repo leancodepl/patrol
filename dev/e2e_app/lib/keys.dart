@@ -10,6 +10,12 @@ class Keys {
   static const bottomText = Key('bottomText');
   static const backButton = Key('backButton');
 
+  // at() finder screen
+  static const atFinderFirstItemTapped = Key('atFinderFirstItemTapped');
+  static const atFinderItem = Key('atFinderItem');
+  static const atFinderScreenButton = Key('atFinderScreenButton');
+  static const atFinderSecondItemTapped = Key('atFinderSecondItemTapped');
+
   // autofocus text field flow
   static const usernameTextField = Key('usernameTextField');
   static const usernameNextButton = Key('usernameNextButton');
@@ -30,6 +36,7 @@ class Keys {
   static const icon1 = Key('icon1');
   static const icon2 = Key('icon2');
   static const cameraFeaturesButton = Key('cameraFeaturesButton');
+  static const openExternalAppScreenButton = Key('openExternalAppScreenButton');
 
   // text fields screen
   static const textField1 = Key('textField1');
@@ -43,6 +50,7 @@ class Keys {
   static const microphonePermissionTile = Key('microphone');
   static const locationPermissionTile = Key('location');
   static const galleryPermissionTile = Key('gallery');
+  static const batteryPermissionTile = Key('battery');
   static const permissionsScreen = Key('permissionsScreen');
   static const requestCameraPermissionButton = Key(
     'requestCameraPermissionButton',
@@ -55,6 +63,9 @@ class Keys {
   );
   static const requestGalleryPermissionButton = Key(
     'requestGalleryPermissionButton',
+  );
+  static const requestBatteryPermissionButton = Key(
+    'requestBatteryPermissionButton',
   );
 
   // location screen
@@ -77,4 +88,12 @@ class Keys {
   static const pickMultiplePhotosButton = Key('pickMultiplePhotosButton');
   static const smallImagePreview = Key('smallImagePreview');
   static const selectedPhotosCount = Key('selectedPhotosCount');
+
+  // external app screen
+  static const openIosSettingsButton = Key('openIosSettingsButton');
+  static const externalAppStatusText = Key('externalAppStatusText');
+}
+
+class AtFinderItemKey extends ValueKey<int> {
+  const AtFinderItemKey(super.value);
 }

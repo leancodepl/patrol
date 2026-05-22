@@ -31,6 +31,7 @@ interface AndroidAutomatorServer {
     fun takeCameraPhoto(request: Contracts.AndroidTakeCameraPhotoRequest)
     fun pickImageFromGallery(request: Contracts.AndroidPickImageFromGalleryRequest)
     fun pickMultipleImagesFromGallery(request: Contracts.AndroidPickMultipleImagesFromGalleryRequest)
+    fun allowPermission()
 }
 
 private val json = Gson()
@@ -114,6 +115,10 @@ fun getAndroidAutomatorRoutes(server: AndroidAutomatorServer): RoutingHttpHandle
     "pickMultipleImagesFromGallery" bind POST to {
       val body = json.fromJson(it.bodyString(), Contracts.AndroidPickMultipleImagesFromGalleryRequest::class.java)
       server.pickMultipleImagesFromGallery(body)
+      Response(OK)
+    },
+    "allowPermission" bind POST to {
+      server.allowPermission()
       Response(OK)
     }
 )

@@ -231,6 +231,22 @@ void main() {
         expect(opts.packageName, equals('com.custom.app'));
       });
 
+      test('builds Android app with custom app name', () async {
+        final result = await runCommand(['--app-name', 'Custom App']);
+
+        expect(result, equals(0));
+
+        final captured = verify(
+          () => mockAndroidTestBackend.build(captureAny()),
+        ).captured;
+        final opts = captured.first as AndroidAppOptions;
+
+        expect(
+          opts.flutter.dartDefines,
+          containsPair('PATROL_ANDROID_APP_NAME', 'Custom App'),
+        );
+      });
+
       test('builds Android app with uninstall option', () async {
         final result = await runCommand(['--uninstall']);
 

@@ -276,6 +276,12 @@
       }
     }
 
+    func tapBackToPreviousAppButton(withTimeout timeout: TimeInterval?) throws {
+      try runAction("tapBackToPreviousAppButton") {
+        throw PatrolError.methodNotImplemented("tapBackToPreviousAppButton")
+      }
+    }
+
     func isPermissionDialogVisible(timeout: TimeInterval) throws -> Bool {
       try runAction("isPermissionDialogVisible") {
         throw PatrolError.methodNotImplemented("isPermissionDialogVisible")

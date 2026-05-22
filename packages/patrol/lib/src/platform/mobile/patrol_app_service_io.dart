@@ -25,7 +25,9 @@ Future<void> initAppService() async {
   // No-op for IO.
 }
 
-/// Starts the gRPC server that runs the [PatrolAppService].
+/// @nodoc
+///
+/// Starts the gRPC server that runs the `PatrolAppService`.
 Future<void> runAppService(PatrolAppService service) async {
   final pipeline = const shelf.Pipeline()
       .addMiddleware(shelf.logRequests())
@@ -48,6 +50,8 @@ Future<void> runAppService(PatrolAppService service) async {
 }
 
 /// Implements a stateful HTTP service for querying and executing Dart tests.
+///
+/// @nodoc
 ///
 /// This is an internal class and you don't want to use it. It's public so that
 /// the generated code can access it.
