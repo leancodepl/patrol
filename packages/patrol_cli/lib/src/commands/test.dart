@@ -261,7 +261,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       _dartDefinesReader,
     );
 
-    final flavor = switch(device.targetPlatform) {
+    final flavor = switch (device.targetPlatform) {
       TargetPlatform.android => androidFlavor,
       TargetPlatform.iOS => iosFlavor,
       TargetPlatform.macOS => macosFlavor,
