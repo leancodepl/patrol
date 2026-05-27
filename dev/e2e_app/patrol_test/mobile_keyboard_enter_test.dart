@@ -36,6 +36,7 @@ void main() {
         final textField = $(K.textFields[index]);
         await textField.scrollTo().tap();
         await $.platform.mobile.sendKeyboardEnter();
+        await $('Submitted ${action.name}').scrollTo();
         await $('Submitted ${action.name}').waitUntilVisible();
       }
     },
