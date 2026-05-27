@@ -240,6 +240,7 @@
     func getNotifications() throws -> [Notification]
     func tapOnNotification(byIndex index: Int, withTimeout timeout: TimeInterval?) throws
     func tapOnNotification(bySubstring substring: String, withTimeout timeout: TimeInterval?) throws
+    func tapBackToPreviousAppButton(withTimeout timeout: TimeInterval?) throws
 
     // MARK: Permissions
     func isPermissionDialogVisible(timeout: TimeInterval) throws -> Bool

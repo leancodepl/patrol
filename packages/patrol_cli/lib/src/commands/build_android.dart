@@ -49,6 +49,7 @@ class BuildAndroidCommand extends PatrolCommand {
     usesBuildNumberOption();
 
     usesAndroidOptions();
+    usesAppNameOption();
   }
 
   final TestFinderFactory _testFinderFactory;
@@ -135,6 +136,7 @@ class BuildAndroidCommand extends PatrolCommand {
     }
 
     final packageName = stringArg('package-name') ?? config.android.packageName;
+    final appName = stringArg('app-name') ?? config.android.appName;
 
     final displayLabel = boolArg('label');
     final uninstall = boolArg('uninstall');
@@ -147,7 +149,7 @@ class BuildAndroidCommand extends PatrolCommand {
     final internalDartDefines = {
       'PATROL_WAIT': defaultWait.toString(),
       'PATROL_APP_PACKAGE_NAME': packageName,
-      'PATROL_ANDROID_APP_NAME': config.android.appName,
+      'PATROL_ANDROID_APP_NAME': appName,
       'PATROL_TEST_LABEL_ENABLED': displayLabel.toString(),
       'PATROL_TEST_DIRECTORY': config.testDirectory,
       'INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE': 'false',

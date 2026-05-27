@@ -274,6 +274,10 @@ class IOSTapOnNotificationRequest {
   int? timeoutMillis;
 }
 
+class IOSTapBackToPreviousAppButtonRequest {
+  int? timeoutMillis;
+}
+
 class PermissionDialogVisibleResponse {
   late bool visible;
 }
@@ -450,6 +454,7 @@ abstract class IosAutomator<IOSServer, DartClient> {
   // notifications
   void closeHeadsUpNotification();
   void tapOnNotification(IOSTapOnNotificationRequest request);
+  void tapBackToPreviousAppButton(IOSTapBackToPreviousAppButtonRequest request);
 
   // permissions
   PermissionDialogVisibleResponse isPermissionDialogVisible(

@@ -1,8 +1,8 @@
 import 'dart:collection';
 import 'dart:ui';
 
+import 'package:patrol/src/platform/selector.dart' show WebSelector;
 import 'package:patrol/src/platform/web/upload_file_data.dart';
-import 'package:patrol/src/platform/web/web_selector.dart';
 
 /// Provides functionality to interact with web applications.
 abstract interface class WebAutomator {

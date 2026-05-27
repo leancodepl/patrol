@@ -2,8 +2,16 @@
 
 - Add `sendKeyboardEnter` method for `MobileAutomator`. (#2748)
 
+## 4.6.1
+
+- Fix changelog
+
 ## 4.6.0
 
+- Fix generated API docs links for public Patrol types.
+- Add `tapBackToPreviousAppButton` method to `$.platform.ios`. (#3015)
+- Bump `patrol_log` to `^0.9.0`.
+- Bump `patrol_finders` to `^3.4.0`.
 - Add `allowPermission` method to `AndroidAutomator`.
 
 ## 4.5.0

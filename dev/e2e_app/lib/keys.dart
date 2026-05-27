@@ -10,6 +10,12 @@ class Keys {
   static const bottomText = Key('bottomText');
   static const backButton = Key('backButton');
 
+  // at() finder screen
+  static const atFinderFirstItemTapped = Key('atFinderFirstItemTapped');
+  static const atFinderItem = Key('atFinderItem');
+  static const atFinderScreenButton = Key('atFinderScreenButton');
+  static const atFinderSecondItemTapped = Key('atFinderSecondItemTapped');
+
   // autofocus text field flow
   static const usernameTextField = Key('usernameTextField');
   static const usernameNextButton = Key('usernameNextButton');
@@ -31,6 +37,7 @@ class Keys {
   static const icon2 = Key('icon2');
   static const cameraFeaturesButton = Key('cameraFeaturesButton');
   static const textfieldsScreenButton = Key('textfieldsScreenButton');
+  static const openExternalAppScreenButton = Key('openExternalAppScreenButton');
 
   // text fields screen
   static const textField1 = Key('textField1');
@@ -97,4 +104,12 @@ class Keys {
     Key('textField9'),
     Key('textField10'),
   ];
+  
+  // external app screen
+  static const openIosSettingsButton = Key('openIosSettingsButton');
+  static const externalAppStatusText = Key('externalAppStatusText');
+}
+
+class AtFinderItemKey extends ValueKey<int> {
+  const AtFinderItemKey(super.value);
 }

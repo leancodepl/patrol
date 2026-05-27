@@ -1,5 +1,3 @@
-import 'dart:io' as io;
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
@@ -140,6 +138,21 @@ class PatrolTester {
 
   /// Flutter's widget tester that this [PatrolTester] wraps.
   final WidgetTester tester;
+
+  /// Whether the test is running on Android.
+  bool get isAndroid => _is(TargetPlatform.android);
+
+  /// Whether the test is running on iOS.
+  bool get isIOS => _is(TargetPlatform.iOS);
+
+  /// Whether the test is running on web.
+  bool get isWeb => kIsWeb;
+
+  /// Whether the test is running on macOS.
+  bool get isMacOS => _is(TargetPlatform.macOS);
+
+  bool _is(TargetPlatform platform) =>
+      !kIsWeb && defaultTargetPlatform == platform;
 
   /// Wraps a function with a log entry for the start and end of the function.
   Future<T> wrapWithPatrolLog<T>({
@@ -407,15 +420,8 @@ class PatrolTester {
     Duration? settleTimeout,
     Alignment alignment = Alignment.center,
     bool enablePatrolLog = true,
+    bool hideKeyboard = true,
   }) {
-    if (!kIsWeb) {
-      // Fix for enterText() not working in release mode on real iOS devices.
-      // See https://github.com/flutter/flutter/pull/89703
-      // Also the fix for enterText() is not able to interact with the same
-      // textfield 2 times in the same test.
-      // See https://github.com/flutter/flutter/issues/134604
-      tester.testTextInput.register();
-    }
     return TestAsyncUtils.guard(
       () => wrapWithPatrolLog(
         action: 'enterText',
@@ -431,33 +437,73 @@ class PatrolTester {
             enablePatrolLog: false,
           );
 
-          // Workaround for enterText() not working in release mode on real iOS devices.
-          // [EditableTextState._openInputConnection] is not called when the text field is focused.
-          // So we need to attach text input connection manually.
-          if (!kIsWeb && io.Platform.isIOS && kReleaseMode) {
-            final editableTextState = tester.state<EditableTextState>(
-              find.descendant(
-                of: resolvedFinder.first,
-                matching: find.byType(EditableText),
-                matchRoot: true,
-              ),
-            );
-            final effectiveAutofillClient =
-                editableTextState.widget.autofillClient;
+          final editableTextFinder = find.descendant(
+            of: resolvedFinder.first,
+            matching: find.byType(EditableText),
+            matchRoot: true,
+          );
+          final editableTextState = tester.state<EditableTextState>(
+            editableTextFinder,
+          );
+          final wasFocused = editableTextState.widget.focusNode.hasFocus;
+          final usesLiveBinding =
+              tester.binding is LiveTestWidgetsFlutterBinding;
+          final textEditingValue = TextEditingValue(
+            text: text,
+            selection: TextSelection.collapsed(offset: text.length),
+          );
 
-            TextInput.attach(
+          if (!kIsWeb && wasFocused) {
+            await _enterTextIntoFocusedEditable(
               editableTextState,
-              effectiveAutofillClient?.textInputConfiguration ??
-                  const TextInputConfiguration(),
+              textEditingValue,
             );
+          } else {
+            if (!kIsWeb) {
+              // Fix for enterText() not working in release mode on real iOS devices.
+              // See https://github.com/flutter/flutter/pull/89703
+              // Also the fix for enterText() is not able to interact with the same
+              // textfield 2 times in the same test.
+              // See https://github.com/flutter/flutter/issues/134604
+              tester.testTextInput.register();
+            }
+
+            try {
+              // Workaround for enterText() not working in release mode on real iOS devices.
+              // [EditableTextState._openInputConnection] is not called when the text field is focused.
+              // So we need to attach text input connection manually.
+              if (isIOS && kReleaseMode) {
+                final effectiveAutofillClient =
+                    editableTextState.widget.autofillClient;
+
+                TextInput.attach(
+                  editableTextState,
+                  effectiveAutofillClient?.textInputConfiguration ??
+                      const TextInputConfiguration(),
+                );
+              }
+
+              await tester.enterText(resolvedFinder.first, text);
+            } finally {
+              if (!kIsWeb) {
+                tester.testTextInput.closeConnection();
+                await tester.pump();
+                tester.binding.focusedEditable = null;
+
+                tester.testTextInput.reset();
+                tester.testTextInput.unregister();
+              }
+            }
           }
 
-          await tester.enterText(resolvedFinder.first, text);
-
-          if (!kIsWeb) {
-            // After interaction is done, we need to reset the testTextInput
-            // to not interfere with consecutive interactions in the same test.
-            tester.testTextInput.reset();
+          if (!kIsWeb && editableTextState.mounted) {
+            if (hideKeyboard) {
+              editableTextState.widget.focusNode.unfocus();
+              await tester.pump();
+            } else if (usesLiveBinding) {
+              editableTextState.requestKeyboard();
+              await tester.pump();
+            }
           }
           await _performPump(
             settlePolicy: settlePolicy,
@@ -466,6 +512,19 @@ class PatrolTester {
         },
       ),
     );
+  }
+
+  Future<void> _enterTextIntoFocusedEditable(
+    EditableTextState editableTextState,
+    TextEditingValue textEditingValue,
+  ) async {
+    editableTextState.requestKeyboard();
+    await tester.pump();
+    editableTextState.userUpdateTextEditingValue(
+      textEditingValue,
+      SelectionChangedCause.keyboard,
+    );
+    await tester.idle();
   }
 
   /// Waits until this finder finds at least one widget.

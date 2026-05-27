@@ -686,6 +686,14 @@ class Contracts {
     }
   }
 
+  data class IOSTapBackToPreviousAppButtonRequest (
+    val timeoutMillis: Long? = null
+  ){
+    fun hasTimeoutMillis(): Boolean {
+      return timeoutMillis != null
+    }
+  }
+
   data class PermissionDialogVisibleResponse (
     val visible: Boolean
   )
