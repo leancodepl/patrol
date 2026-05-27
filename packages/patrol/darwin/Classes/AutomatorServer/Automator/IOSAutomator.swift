@@ -963,12 +963,14 @@
       let normalizedReturnKeyLabels = Set(returnKeyLabels.map { $0.lowercased() })
       let buttons = keyboard.buttons.allElementsBoundByIndex.filter { $0.exists && $0.isHittable }
 
-      if let button = buttons.first(where: { button in normalizedReturnKeyLabels.contains(button.identifier.lowercased())
+      if let button = buttons.first(where: { button in
+        normalizedReturnKeyLabels.contains(button.identifier.lowercased())
       }) {
         return button
       }
 
-      return buttons
+      return
+        buttons
         .filter { button in
           let frame = button.frame
           return frame.midY > keyboard.frame.midY && frame.width > 44
