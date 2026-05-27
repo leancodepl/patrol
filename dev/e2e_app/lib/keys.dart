@@ -104,7 +104,7 @@ class Keys {
     Key('textField9'),
     Key('textField10'),
   ];
-  
+
   // external app screen
   static const openIosSettingsButton = Key('openIosSettingsButton');
   static const externalAppStatusText = Key('externalAppStatusText');
