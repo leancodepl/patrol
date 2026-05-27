@@ -963,7 +963,7 @@
       let normalizedReturnKeyLabels = Set(returnKeyLabels.map { $0.lowercased() })
       let buttons = keyboard.buttons.allElementsBoundByIndex.filter { $0.exists && $0.isHittable }
 
-      if let button = buttons.first(where: { button innormalizedReturnKeyLabels.contains(button.identifier.lowercased())
+      if let button = buttons.first(where: { button in normalizedReturnKeyLabels.contains(button.identifier.lowercased())
       }) {
         return button
       }
