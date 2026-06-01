@@ -1,10 +1,16 @@
 import { createMDX } from "fumadocs-mdx/next"
+import { fileURLToPath } from "node:url"
 
 const withMDX = createMDX()
+const repoRoot = fileURLToPath(new URL("..", import.meta.url))
 
 /** @type {import('next').NextConfig} */
 const config = {
+  outputFileTracingRoot: repoRoot,
   reactStrictMode: true,
+  turbopack: {
+    root: repoRoot,
+  },
   redirects: async () => [
     {
       source: "/patrol/native/feature-parity",
