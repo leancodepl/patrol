@@ -1,3 +1,7 @@
+## Unreleased
+
+- Don't listen for `SIGTERM` on Windows, where it is not supported and throws an unhandled `SignalException`. (#3035)
+
 ## 4.3.1
 
 - Update dependencies.
