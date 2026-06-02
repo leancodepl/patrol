@@ -69,6 +69,22 @@
       }
     }
 
+    func sendKeyboardEnter() throws {
+      try runAction("sending keyboard enter") {
+        let app = XCUIApplication()
+        let keyboard = app.keyboards.firstMatch
+        guard keyboard.waitForExistence(timeout: self.timeout) else {
+          throw PatrolError.viewNotExists("keyboard")
+        }
+
+        guard let returnKey = self.findKeyboardReturnKey(in: keyboard) else {
+          throw PatrolError.viewNotExists("keyboard enter button")
+        }
+
+        returnKey.tap()
+      }
+    }
+
     // MARK: General UI interaction
     func tap(
       on selector: IOSSelector,
@@ -930,6 +946,38 @@
       coordinate.tap()
 
       element.typeText(delete + data)
+    }
+
+    private func findKeyboardReturnKey(in keyboard: XCUIElement) -> XCUIElement? {
+      let returnKeyLabels = [
+        "Return",
+        "Done",
+        "Go",
+        "Search",
+        "Send",
+        "Next:",
+        "Join:",
+        "Route",
+        "Emergency call",
+      ]
+      let normalizedReturnKeyLabels = Set(returnKeyLabels.map { $0.lowercased() })
+      let buttons = keyboard.buttons.allElementsBoundByIndex.filter { $0.exists && $0.isHittable }
+
+      if let button = buttons.first(where: { button in
+        normalizedReturnKeyLabels.contains(button.identifier.lowercased())
+      }) {
+        return button
+      }
+
+      return
+        buttons
+        .filter { button in
+          let frame = button.frame
+          return frame.midY > keyboard.frame.midY && frame.width > 44
+        }
+        .max { lhs, rhs in
+          lhs.frame.maxX < rhs.frame.maxX
+        }
     }
 
     func isVirtualDevice() -> Bool {

@@ -360,6 +360,7 @@ abstract class MobileAutomator<IOSServer, AndroidServer, DartClient> {
   void openApp(OpenAppRequest request);
   void openQuickSettings(OpenQuickSettingsRequest request);
   void openUrl(OpenUrlRequest request);
+  void sendKeyboardEnter();
 
   // volume settings
   void pressVolumeUp();

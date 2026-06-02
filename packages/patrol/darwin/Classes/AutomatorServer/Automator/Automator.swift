@@ -173,6 +173,7 @@
     func openAppSwitcher() throws
     func openControlCenter() throws
     func openUrl(_ url: String) throws
+    func sendKeyboardEnter() throws
 
     // MARK: General UI interaction
     func tap(

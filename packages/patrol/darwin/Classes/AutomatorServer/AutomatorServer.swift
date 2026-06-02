@@ -60,6 +60,12 @@
       }
     }
 
+    func sendKeyboardEnter() throws {
+      return try runCatching {
+        try automator.sendKeyboardEnter()
+      }
+    }
+
     // MARK: General UI interaction
     func getNativeViews(
       request: IOSGetNativeViewsRequest

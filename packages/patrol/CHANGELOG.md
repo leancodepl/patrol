@@ -1,3 +1,7 @@
+## Unreleased
+
+- Add `sendKeyboardEnter` method for `MobileAutomator`. (#2748)
+
 ## 4.6.1
 
 - Fix changelog
