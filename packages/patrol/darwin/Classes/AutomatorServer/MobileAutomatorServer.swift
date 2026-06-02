@@ -12,6 +12,7 @@ protocol MobileAutomatorServer {
     func openApp(request: OpenAppRequest) throws
     func openQuickSettings(request: OpenQuickSettingsRequest) throws
     func openUrl(request: OpenUrlRequest) throws
+    func sendKeyboardEnter() throws
     func pressVolumeUp() throws
     func pressVolumeDown() throws
     func enableAirplaneMode() throws
@@ -69,6 +70,11 @@ extension MobileAutomatorServer {
     private func openUrlHandler(request: HTTPRequest) throws -> HTTPResponse {
         let requestArg = try JSONDecoder().decode(OpenUrlRequest.self, from: request.body)
         try openUrl(request: requestArg)
+        return HTTPResponse(.ok)
+    }
+
+    private func sendKeyboardEnterHandler(request: HTTPRequest) throws -> HTTPResponse {
+        try sendKeyboardEnter()
         return HTTPResponse(.ok)
     }
 
@@ -230,6 +236,11 @@ extension MobileAutomatorServer {
             request in handleRequest(
                 request: request,
                 handler: openUrlHandler)
+        }
+        server.route(.POST, "sendKeyboardEnter") {
+            request in handleRequest(
+                request: request,
+                handler: sendKeyboardEnterHandler)
         }
         server.route(.POST, "pressVolumeUp") {
             request in handleRequest(

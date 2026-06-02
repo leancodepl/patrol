@@ -525,6 +525,15 @@ class Automator private constructor() {
         delay()
     }
 
+    fun sendKeyboardEnter() {
+        Logger.d("sendKeyboardEnter()")
+        val success = uiDevice.pressEnter()
+        if (!success) {
+            throw PatrolException("Could not send keyboard enter")
+        }
+        delay()
+    }
+
     fun getNotifications(): List<Notification> {
         Logger.d("getNotifications()")
 
@@ -669,12 +678,20 @@ class Automator private constructor() {
         val identifiers = arrayOf(
             "com.android.packageinstaller:id/permission_deny_button", // API <= 28
             "com.android.permissioncontroller:id/permission_deny_button", // API >= 29 (first invocation)
-            "com.android.permissioncontroller:id/permission_deny_and_dont_ask_again_button" // API >= 29 (second invocation)
+            "com.android.permissioncontroller:id/permission_deny_and_dont_ask_again_button", // API >= 29 (second invocation)
+            "android:id/button2" // for battery permission
         )
 
         val uiObject = waitForUiObjectByResourceId(*identifiers, timeout = timeoutMillis)
             ?: throw UiObjectNotFoundException("button to deny permission")
 
+        uiObject.click()
+    }
+
+    fun allowPermission() {
+        val resourceId = "android:id/button1"
+        val uiObject = waitForUiObjectByResourceId(resourceId, timeout = timeoutMillis)
+            ?: throw UiObjectNotFoundException("button to allow permission")
         uiObject.click()
     }
 

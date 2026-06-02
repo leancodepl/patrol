@@ -75,8 +75,8 @@ These workflows verify the user has write access before running. If you don't ha
 
 | Workflow name | Runs on | Description |
 |--------------|---------|-------------|
-| [Vercel Production Deployment][docs-production] | Push to master (on docs changes) | Deploys documentation to Vercel production environment. Uses Node.js 24. |
-| [Vercel Preview Deployment][docs-preview] | PR (on docs changes) | Deploys documentation preview to Vercel with stable PR-specific alias. Comments preview URL on PR. Uses Node.js 24. |
+| [Vercel Production Deployment][docs-production] | Push to master (on docs changes) | Deploys documentation to Vercel production environment. Uses Node.js 24. Runs Vercel CLI steps from the repository root so the Vercel project root resolves to `docs_app`. |
+| [Vercel Preview Deployment][docs-preview] | PR (on docs changes) | Deploys documentation preview to Vercel with stable PR-specific alias. Comments preview URL on PR. Uses Node.js 24. Runs Vercel CLI steps from the repository root so the Vercel project root resolves to `docs_app`. |
 
 ## Utility Workflows
 
@@ -109,7 +109,7 @@ These workflows verify the user has write access before running. If you don't ha
   - Local simulators/emulators for iOS/Android simulator tests
 - Test workflows that call the reusable [send slack message][send-slack-message] workflow only post to Slack when the **caller** was started by a `schedule` event (see workflow `if` on the Slack step)
 - All publish workflows require tag pushes with specific prefixes and send Slack notifications for non-prerelease versions
-- Documentation deployments use Vercel with Node.js 24
+- Documentation deployments use Vercel with Node.js 24. The docs workflows copy `docs/` into `docs_app/docs`, then run Vercel CLI commands from the repository root so Vercel's configured `docs_app` root is not applied twice.
 - Android projects use Kotlin 2.1.0 for compatibility with Java 21 and modern Flutter tooling
 
 ### Tag-Based Test Selection

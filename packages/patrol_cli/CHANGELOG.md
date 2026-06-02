@@ -2,6 +2,15 @@
 
 - Don't listen for `SIGTERM` on Windows, where it is not supported and throws an unhandled `SignalException`. (#3035)
 
+## 4.4.0
+
+- Fix iOS Simulator test crash on Xcode 26.4+ caused by missing platform frameworks path in xctestrun.
+- Bump `patrol_log` to `^0.9.0`.
+- Add `--app-name` flag to override `app_name` from pubspec.yaml. (#2557)
+- Fix `patrol test --coverage` crashing with `PathNotFoundException` in Pub workspaces by resolving `.dart_tool/package_config.json` from the workspace root. (#2844)
+- Add `--coverage-workspace` flag to include every package declared under the workspace root's `workspace:` key in the coverage report.
+- Fix a bug when running tests with iOS and Android specific flavors based on the configuration in pubspec. (#3046)
+
 ## 4.3.1
 
 - Update dependencies.

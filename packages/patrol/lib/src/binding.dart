@@ -34,11 +34,11 @@ void _defaultPrintLogger(String message) {
 /// that is executed after each test. Inside that callback, the name of the Dart
 /// test file being currently executed is retrieved.
 ///
-/// At this point, the [PatrolAppService] is handling the gRPC `runDartTest()`
+/// At this point, the `PatrolAppService` is handling the gRPC `runDartTest()`
 /// called by the native side.
 ///
 /// [PatrolBinding] submits the Dart test file name that is being currently
-/// executed to [PatrolAppService]. Once the name is submitted to it, that
+/// executed to `PatrolAppService`. Once the name is submitted to it, that
 /// pending `runDartTest()` method returns.
 class PatrolBinding extends LiveTestWidgetsFlutterBinding {
   /// Creates a new [PatrolBinding].
@@ -138,11 +138,7 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
   /// Logger used by this binding.
   void Function(String message) logger = _defaultPrintLogger;
 
-  /// The [PatrolAppService] used by this binding to report tests to the native
-  /// side.
-  ///
-  /// It's only for test reporting purposes and should not be used for anything
-  /// else.
+  /// @nodoc
   late PatrolAppService patrolAppService;
 
   /// The singleton instance of this object.

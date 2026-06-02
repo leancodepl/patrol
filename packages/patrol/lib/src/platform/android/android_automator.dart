@@ -1,7 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/src/platform/android/android_automator_config.dart';
-import 'package:patrol/src/platform/contracts/contracts.dart';
+import 'package:patrol/src/platform/contracts/contracts.dart'
+    show AndroidGetNativeViewsResponse, GoogleApp, KeyboardBehavior;
 import 'package:patrol/src/platform/mobile/mobile_automator.dart';
+import 'package:patrol/src/platform/selector.dart'
+    show AndroidSelector, IOSSelector;
 
 /// Provides functionality to interact with the OS that the app under test is
 /// running on.
@@ -232,6 +235,12 @@ abstract interface class AndroidAutomator implements MobileAutomator {
   /// [timeout] is not specified, it utilizes the
   /// [AndroidAutomatorConfig.findTimeout].
   Future<void> waitUntilVisible(AndroidSelector selector, {Duration? timeout});
+
+  /// Taps the standard Android system dialog "Allow" button.
+  ///
+  /// This is useful for Android dialogs that use the platform alert button with
+  /// `android:id/button1`, for example battery optimization permission dialogs.
+  Future<void> allowPermission();
 
   /// Returns a list of currently visible native UI controls, specified by
   /// [selector], which are currently visible on screen.

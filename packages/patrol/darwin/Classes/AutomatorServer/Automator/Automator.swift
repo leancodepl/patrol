@@ -173,6 +173,7 @@
     func openAppSwitcher() throws
     func openControlCenter() throws
     func openUrl(_ url: String) throws
+    func sendKeyboardEnter() throws
 
     // MARK: General UI interaction
     func tap(
@@ -239,6 +240,7 @@
     func getNotifications() throws -> [Notification]
     func tapOnNotification(byIndex index: Int, withTimeout timeout: TimeInterval?) throws
     func tapOnNotification(bySubstring substring: String, withTimeout timeout: TimeInterval?) throws
+    func tapBackToPreviousAppButton(withTimeout timeout: TimeInterval?) throws
 
     // MARK: Permissions
     func isPermissionDialogVisible(timeout: TimeInterval) throws -> Bool
