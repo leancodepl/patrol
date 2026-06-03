@@ -6,10 +6,38 @@ import { DocsBody, DocsDescription, DocsPage, DocsTitle } from "fumadocs-ui/page
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 
+function handleMissingPage(slugs: string[] | undefined, context: "page" | "metadata"): never {
+  const normalizedSlugs = slugs ?? []
+  const pages = source.getPages()
+
+  console.error(
+    "[docs:not-found]",
+    JSON.stringify({
+      context,
+      slugs: normalizedSlugs,
+      pagesCount: pages.length,
+      rootExists: Boolean(source.getPage([])),
+      firstPages: pages.slice(0, 20).map(page => ({
+        url: page.url,
+        slugs: page.slugs,
+        path: page.path,
+      })),
+      vercelRegion: process.env.VERCEL_REGION,
+      deploymentId: process.env.VERCEL_DEPLOYMENT_ID,
+    }),
+  )
+
+  if (normalizedSlugs.length === 0) {
+    throw new Error("Root docs page missing from source during render")
+  }
+
+  notFound()
+}
+
 export default async function Page(props: PageProps<"/[[...slug]]">) {
   const params = await props.params
   const page = source.getPage(params.slug)
-  if (!page) notFound()
+  if (!page) handleMissingPage(params.slug, "page")
 
   const MDX = page.data.body
   const footer = getFooterNavigation(page)
@@ -43,7 +71,7 @@ export async function generateStaticParams() {
 export async function generateMetadata(props: PageProps<"/[[...slug]]">): Promise<Metadata> {
   const params = await props.params
   const page = source.getPage(params.slug)
-  if (!page) notFound()
+  if (!page) handleMissingPage(params.slug, "metadata")
 
   const title = page.data.title ? `${page.data.title} | Patrol` : "Patrol"
   return {
