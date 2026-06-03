@@ -1,4 +1,4 @@
-## Unreleased
+## 3.5.0
 
 - Fix issues with `enterText()`. (#2202, #2111)
 - Add `hideKeyboard` optional argument to `enterText()` method.
