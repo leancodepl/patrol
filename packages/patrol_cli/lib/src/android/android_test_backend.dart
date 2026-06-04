@@ -230,6 +230,11 @@ class AndroidTestBackend {
             }
           })
           .disposedBy(scope);
+      // `:app:dependencies` writes a lot to stderr (Gradle warnings, daemon
+      // and progress output). The stderr stream must be drained or the child
+      // process blocks once the OS pipe buffer fills, hanging the command
+      // forever on Windows. Same failure mode fixed in buildApkConfigOnly.
+      process.listenStdErr((l) => _logger.detail('\t$l')).disposedBy(scope);
 
       await process.exitCode;
     });
