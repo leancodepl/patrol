@@ -1,3 +1,8 @@
+## Unreleased
+
+- Fix `patrol test`/`patrol develop` hanging on Windows at `gradlew :app:dependencies` by also draining the gradle process stderr stream during orchestrator-version detection. (#2565)
+- Fix garbled `test_bundle.dart` imports when the test target is passed with a `.\` prefix or forward slashes (e.g. from PowerShell tab-completion or `patrol develop`/MCP) by resolving the relative test path with `path.relative`. (#1428)
+
 ## 4.4.0
 
 - Fix iOS Simulator test crash on Xcode 26.4+ caused by missing platform frameworks path in xctestrun.
