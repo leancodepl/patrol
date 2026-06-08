@@ -1,6 +1,7 @@
 ## Unreleased
 
 - Add `sendKeyboardEnter` method for `MobileAutomator`. (#2748)
+- Add Japanese (ja) language support for native OS interactions.
 
 ## 4.6.1
 
