@@ -765,7 +765,7 @@ class Contracts {
 
   data class AxeScanRequest (
     val uploadToDashboard: Boolean,
-    val tags: List<String> = emptyList(),
+    val tags: Set<String> = emptySet(),
     val scanName: String? = null
   )
 
