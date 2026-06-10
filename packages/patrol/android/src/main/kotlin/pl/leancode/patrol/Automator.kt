@@ -862,7 +862,7 @@ class Automator private constructor() {
         axe.setInstrumentation(instrumentation)
     }
 
-    fun axeScan(uploadToDashboard: Boolean = true, tags: List<String> = emptyList(), scanName: String? = null) {
+    fun axeScan(uploadToDashboard: Boolean = true, tags: Set<String> = emptySet(), scanName: String? = null) {
         uiDevice.wait(Until.hasObject(By.pkg(targetContext.packageName).depth(0)), 5000)
 
         if (scanName != null) {
