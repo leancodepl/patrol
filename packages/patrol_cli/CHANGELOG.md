@@ -1,3 +1,7 @@
+## Unreleased
+
+- Don't listen for `SIGTERM` on Windows, where it is not supported and throws an unhandled `SignalException`. (#3035)
+
 ## 4.4.0
 
 - Fix iOS Simulator test crash on Xcode 26.4+ caused by missing platform frameworks path in xctestrun.
