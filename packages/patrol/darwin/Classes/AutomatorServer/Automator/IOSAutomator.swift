@@ -172,9 +172,11 @@
         let textFieldPredicate = NSPredicate(format: "elementType == 49")
         let secureTextFieldPredicate = NSPredicate(format: "elementType == 50")
 
-        var subpredicates: [NSPredicate] = [NSCompoundPredicate(orPredicateWithSubpredicates: [
-          textFieldPredicate, secureTextFieldPredicate,
-        ])]
+        var subpredicates: [NSPredicate] = [
+          NSCompoundPredicate(orPredicateWithSubpredicates: [
+            textFieldPredicate, secureTextFieldPredicate,
+          ])
+        ]
 
         // toTextFieldNSPredicate() can be nil - depending on the selector user provided
         if let contentPredicate = selector.toTextFieldNSPredicate() {
