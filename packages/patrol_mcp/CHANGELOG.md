@@ -1,3 +1,7 @@
+## 0.1.5
+
+- Update README: fix and simplify the GitHub Copilot MCP setup (#3089)
+
 ## 0.1.4
 
 - Relax `patrol_cli` constraint to `^4.3.0` so `patrol_mcp` resolves
