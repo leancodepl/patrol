@@ -46,6 +46,8 @@
         values.append(identifier!)
       }
 
+      // this if is needed to avoid a crash when no conditions are met. 
+      // format argument in NSPredicate must not be empty.
       if !begun {
         return nil
       }
