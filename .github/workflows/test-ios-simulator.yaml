@@ -50,6 +50,11 @@ jobs:
       - name: Clone repository
         uses: actions/checkout@v4
 
+      - name: Select Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '26.2'
+
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
