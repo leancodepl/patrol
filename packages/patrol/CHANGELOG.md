@@ -1,6 +1,7 @@
 ## Unreleased
 
 - Add `sendKeyboardEnter` method for `MobileAutomator`. (#2748)
+- Fix a crash when an `IOSSelector` has no arguments needed for creating `NSPredicate` for textfield. (#3053)
 
 ## 4.6.1
 
