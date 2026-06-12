@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:patrol_cli/src/android/android_test_backend.dart';
+import 'package:patrol_cli/src/base/app_id_validator.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
 import 'package:patrol_cli/src/base/logger.dart';
@@ -163,6 +164,17 @@ class DevelopService {
 
     final packageName = options.packageName ?? config.android.packageName;
     final bundleId = options.bundleId ?? config.ios.bundleId;
+    switch (device.targetPlatform) {
+      case TargetPlatform.iOS:
+        warnIfIosBundleIdMissing(bundleId, _logger);
+      case TargetPlatform.android:
+        warnIfAndroidPackageNameMissing(packageName, _logger);
+      case TargetPlatform.macOS:
+        warnIfMacosBundleIdMissing(config.macos.bundleId, _logger);
+      case TargetPlatform.web:
+        // web does not use a native bundle id
+        break;
+    }
     final androidAppName = options.appName ?? config.android.appName;
     final iosAppName = options.appName ?? config.ios.appName;
     final macosAppName = options.appName ?? config.macos.appName;

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' show join;
 import 'package:patrol_cli/src/analytics/analytics.dart';
+import 'package:patrol_cli/src/base/app_id_validator.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/compatibility_checker/compatibility_checker.dart';
@@ -133,6 +134,7 @@ class BuildMacOSCommand extends PatrolCommand {
     }
 
     final bundleId = stringArg('bundle-id') ?? config.macos.bundleId;
+    warnIfMacosBundleIdMissing(bundleId, _logger);
     final appName = stringArg('app-name') ?? config.macos.appName;
 
     final displayLabel = boolArg('label');

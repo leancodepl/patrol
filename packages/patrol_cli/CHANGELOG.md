@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Warn when the resolved `bundle_id` / `package_name` is empty in `build`, `test`, and `develop` commands. Previously, missing both `--bundle-id` / `--package-name` and the `patrol:` block in `pubspec.yaml` caused the native test runner to fail with `Failed to resolve query: Application  is not running` (note two spaces) without any diagnostic output. The warning is only emitted for the platform actually being targeted (iOS / Android / macOS); web flows are unaffected.
 - Don't listen for `SIGTERM` on Windows, where it is not supported and throws an unhandled `SignalException`. (#3035)
 
 ## 4.4.0

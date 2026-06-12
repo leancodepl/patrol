@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' show join;
 import 'package:patrol_cli/src/analytics/analytics.dart';
+import 'package:patrol_cli/src/base/app_id_validator.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
 import 'package:patrol_cli/src/base/logger.dart';
@@ -138,6 +139,7 @@ class BuildIOSCommand extends PatrolCommand {
     }
 
     final bundleId = stringArg('bundle-id') ?? config.ios.bundleId;
+    warnIfIosBundleIdMissing(bundleId, _logger);
     final appName = stringArg('app-name') ?? config.ios.appName;
 
     final displayLabel = boolArg('label');

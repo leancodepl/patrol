@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:glob/glob.dart';
 import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
+import 'package:patrol_cli/src/base/app_id_validator.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/commands/dart_define_utils.dart';
@@ -204,6 +205,17 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
     final packageName = stringArg('package-name') ?? config.android.packageName;
     final bundleId = stringArg('bundle-id') ?? config.ios.bundleId;
     final macosBundleId = stringArg('bundle-id') ?? config.macos.bundleId;
+    switch (device.targetPlatform) {
+      case TargetPlatform.iOS:
+        warnIfIosBundleIdMissing(bundleId, _logger);
+      case TargetPlatform.android:
+        warnIfAndroidPackageNameMissing(packageName, _logger);
+      case TargetPlatform.macOS:
+        warnIfMacosBundleIdMissing(macosBundleId, _logger);
+      case TargetPlatform.web:
+        // web does not use a native bundle id
+        break;
+    }
     final appName = stringArg('app-name');
     final androidAppName = appName ?? config.android.appName;
     final iosAppName = appName ?? config.ios.appName;

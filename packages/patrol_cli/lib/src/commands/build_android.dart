@@ -4,6 +4,7 @@ import 'package:meta/meta.dart';
 import 'package:path/path.dart' show join;
 import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
+import 'package:patrol_cli/src/base/app_id_validator.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/commands/dart_define_utils.dart';
@@ -136,6 +137,7 @@ class BuildAndroidCommand extends PatrolCommand {
     }
 
     final packageName = stringArg('package-name') ?? config.android.packageName;
+    warnIfAndroidPackageNameMissing(packageName, _logger);
     final appName = stringArg('app-name') ?? config.android.appName;
 
     final displayLabel = boolArg('label');
