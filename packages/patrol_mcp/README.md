@@ -188,7 +188,9 @@ chmod +x .copilot/run-patrol
 }
 ```
 
-Then reload the IDE and start it: **Settings → MCP: List Servers → Patrol → Start**.
+Save the file — VS Code auto-discovers `.vscode/mcp.json` and lets you start
+the `patrol` server (it offers an inline **Start** action, or use VS Code's MCP
+server management). See [VS Code's MCP docs][vscode_mcp] for the current steps.
 
 **Copilot CLI** → `<workspace-root>/.mcp.json` at the project root:
 
@@ -353,6 +355,7 @@ We are **top-tier experts** focused on Flutter Enterprise solutions.
 [patrol_discord_link]: https://discord.gg/ukBK5t4EZg
 [promo_graphics]: ../../assets/promo_banner.png
 [mcp_docs]: https://patrol.leancode.co/documentation/other/patrol-mcp?utm_source=github.com&utm_medium=referral&utm_campaign=patrol-readme
+[vscode_mcp]: https://code.visualstudio.com/docs/copilot/chat/mcp-servers
 [docs]: https://patrol.leancode.co/?utm_source=github.com&utm_medium=referral&utm_campaign=patrol-readme
 [article_web]: https://leancode.co/blog/patrol-web-support?utm_source=github.com&utm_medium=referral&utm_campaign=patrol-readme
 [article_4x]: https://leancode.co/blog/patrol-4-0-release?utm_source=github.com&utm_medium=referral&utm_campaign=patrol-readme
