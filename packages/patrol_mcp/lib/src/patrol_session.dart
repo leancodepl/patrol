@@ -8,6 +8,7 @@ import 'package:path/path.dart' as p;
 import 'package:patrol_cli/patrol_cli.dart';
 
 import 'log_streaming.dart';
+import 'platform_session_behavior.dart';
 
 /// An [io.Stdout] wrapper that forwards writes to [_inner] (e.g. stderr) and
 /// also captures complete lines, invoking [_onLine] for each one.
@@ -151,6 +152,7 @@ class PatrolStatus {
     required this.output,
     this.currentTestFile,
     this.warning,
+    this.error,
     this.deviceName,
     this.deviceId,
     this.devicePlatform,
@@ -161,6 +163,7 @@ class PatrolStatus {
   final String output;
   final String? currentTestFile;
   final String? warning;
+  final String? error;
   final String? deviceName;
   final String? deviceId;
   final String? devicePlatform;
@@ -172,6 +175,7 @@ class PatrolStatus {
     'testState': testState.name,
     'currentTestFile': ?currentTestFile,
     'warning': ?warning,
+    'error': ?error,
     'deviceName': ?deviceName,
     'deviceId': ?deviceId,
     'devicePlatform': ?devicePlatform,
@@ -196,7 +200,18 @@ final class PatrolSession {
   var _isRunning = false;
   String? _currentTestFile;
   final _outputs = <String>[];
+  final _errorDetails = <String>[];
   TestState _testState = TestState.idle;
+
+  /// True while a hot restart is in progress. Used to suppress stale
+  /// [_handleTestsCompleted] callbacks from the previous test run.
+  var _isHotRestarting = false;
+
+  /// Incremented on every restart. The drain timer captures the epoch when
+  /// it's scheduled and only clears [_isHotRestarting] if it still matches —
+  /// so a second restart firing before the first drains can't be ended early
+  /// by the first restart's timer.
+  var _hotRestartEpoch = 0;
 
   Completer<void>? _finishCompleter;
   DisposeScope? _disposeScope;
@@ -210,6 +225,18 @@ final class PatrolSession {
   Device? get device => _developService?.device;
   int? get testServerPort => _testServerPort;
 
+  /// The underlying develop service, exposed so that callers (e.g. MCP tool
+  /// registrations) can read platform-specific properties like the web
+  /// debugger port without routing every accessor through [PatrolSession].
+  DevelopService? get developService => _developService;
+
+  PlatformSessionBehavior get _platformBehavior {
+    if (_developService?.device?.targetPlatform == TargetPlatform.web) {
+      return const WebPlatformBehavior();
+    }
+    return const MobilePlatformBehavior();
+  }
+
   /// Returns null if started successfully, or a warning message if blocked
   Future<String?> _start(String testFile) async {
     if (_isRunning) {
@@ -219,7 +246,7 @@ final class PatrolSession {
             'Use patrol-quit first or run the same test file.';
       }
       // Same test file - hot restart
-      sendCommand(PatrolCommand.hotRestart);
+      await sendCommand(PatrolCommand.hotRestart);
       return null;
     }
 
@@ -283,6 +310,7 @@ final class PatrolSession {
     _currentTestFile = testFile;
     _testState = TestState.running;
     _outputs.clear();
+    _errorDetails.clear();
     // Create the completer eagerly so callbacks can signal it even if
     // test completion happens before _waitForFinish is called.
     _finishCompleter = Completer<void>();
@@ -338,6 +366,10 @@ final class PatrolSession {
     });
   }
 
+  /// Shut down the session and kill all child processes.
+  /// Called when the MCP server is exiting.
+  Future<void> shutdown() => _cleanup();
+
   var _cleanupDone = false;
 
   /// Clean up all resources for the current session.
@@ -354,6 +386,8 @@ final class PatrolSession {
     _testServerPort = null;
 
     await _logStreaming.stopLogging();
+
+    await _platformBehavior.cleanup(_developService);
 
     try {
       final scope = _disposeScope;
@@ -382,9 +416,23 @@ final class PatrolSession {
   /// Structured signal from patrol framework (via PATROL_LOG ConfigEntry) that
   /// all tests were executed in develop mode.
   void _handleEntry(Entry entry) {
+    // During restart, suppress stale entries from the dying process.
+    if (_isHotRestarting) {
+      return;
+    }
+
+    // Collect error details from ErrorEntry messages.
+    if (entry is ErrorEntry) {
+      _errorDetails.add(entry.message);
+      return;
+    }
+
     if (entry is TestEntry &&
         entry.status == TestEntryStatus.failure &&
         _testState == TestState.running) {
+      if (entry.error != null) {
+        _errorDetails.add(entry.error!);
+      }
       _testState = TestState.finishedFailed;
       _completeFinish();
       return;
@@ -400,13 +448,31 @@ final class PatrolSession {
 
   /// Backend exit signal from [DevelopService].
   ///
-  /// In develop mode, successful runs stay alive for hot restart and don't exit.
-  /// So if the backend exits while we're still running, treat it as failure.
-  /// (Quit path sets state to idle before this callback can affect it.)
+  /// On mobile, successful develop sessions stay alive for hot restart and
+  /// don't exit, so an exit while running implies failure. On web, however,
+  /// the backend exits normally after tests complete, so we must respect
+  /// [TestCompletionResult.success].
+  ///
+  /// During hot restart, stale callbacks from the previous test run are
+  /// suppressed via [_isHotRestarting].
   void _handleTestsCompleted(TestCompletionResult result) {
-    if (_testState == TestState.running) {
-      _testState = TestState.finishedFailed;
-      _completeFinish();
+    if (_testState != TestState.running) {
+      return;
+    }
+
+    final interpretation = _platformBehavior.interpretTestCompletion(
+      result,
+      isHotRestarting: _isHotRestarting,
+    );
+    switch (interpretation) {
+      case ExitInterpretation.success:
+        _testState = TestState.finishedPassed;
+        _completeFinish();
+      case ExitInterpretation.failure:
+        _testState = TestState.finishedFailed;
+        _completeFinish();
+      case ExitInterpretation.suppress:
+        break;
     }
   }
 
@@ -414,7 +480,7 @@ final class PatrolSession {
     return line.replaceAll(RegExp(r'\x1B\[[0-9;?]*[ -/]*[@-~]'), '').trim();
   }
 
-  String sendCommand(PatrolCommand command) {
+  Future<String> sendCommand(PatrolCommand command) async {
     final logger = Logger('PatrolSession');
 
     if (command == PatrolCommand.quit) {
@@ -437,14 +503,25 @@ final class PatrolSession {
         throw StateError('No active patrol session');
       }
 
+      final needsSuppression =
+          _platformBehavior.suppressesStaleCallbacksOnRestart;
+      final epoch = ++_hotRestartEpoch;
+      if (needsSuppression) {
+        _isHotRestarting = true;
+      }
+
       try {
         controller.add('R'.codeUnits);
       } catch (e) {
+        _isHotRestarting = false;
         logger.warning('Failed to send hot restart: $e');
-        throw StateError('Failed to send hot restart to patrol session: $e');
+        throw StateError(
+          'Failed to send hot restart to patrol session: $e',
+        );
       }
 
       _outputs.clear();
+      _errorDetails.clear();
       _testState = TestState.running;
       // Complete the old completer so any previous waiters are unblocked, then
       // immediately create a fresh one. This avoids a race where callbacks
@@ -452,7 +529,18 @@ final class PatrolSession {
       _completeFinish();
       _finishCompleter = Completer<void>();
 
-      return 'Hot restart sent to patrol session';
+      if (needsSuppression) {
+        // Allow a brief window for stale callbacks to drain before accepting
+        // new test completion signals. Guarded by epoch so a later restart's
+        // suppression isn't lifted by an earlier restart's timer.
+        Future<void>.delayed(const Duration(seconds: 5), () {
+          if (_hotRestartEpoch == epoch) {
+            _isHotRestarting = false;
+          }
+        });
+      }
+
+      return 'Restart sent to patrol session';
     }
 
     throw StateError('Unknown command: ${command.value}');
@@ -465,6 +553,7 @@ final class PatrolSession {
       testState: _testState,
       output: _formatLogs(_outputs),
       currentTestFile: _currentTestFile,
+      error: _errorDetails.isNotEmpty ? _errorDetails.join('\n') : null,
       deviceName: dev?.name,
       deviceId: dev?.id,
       devicePlatform: dev?.targetPlatform.name,

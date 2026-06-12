@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "patrol": {
+      "command": "./.claude/run-patrol",
+      "env": {
+        "PROJECT_ROOT": ".",
+        "PATROL_FLAGS": "",
+        "SHOW_TERMINAL": "false"
+      }
+    }
+  }
+}

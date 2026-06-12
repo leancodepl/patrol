@@ -167,11 +167,18 @@ void patrolTest(
       );
       try {
         await callback(patrolTester);
-      } catch (_) {
+      } catch (err, st) {
         if (constants.hotRestartEnabled) {
           patrolLog.log(
             TestEntry(name: description, status: TestEntryStatus.failure),
           );
+          final details = switch (err) {
+            TestFailure(:final message?) => message,
+            _ => '$err\n$st',
+          };
+          details
+              .split('\n')
+              .forEach((line) => patrolLog.log(ErrorEntry(message: line)));
         }
         rethrow;
       }
