@@ -1,0 +1,30 @@
+/* Permission dialog buttons */
+"ok" = "OK";
+"allow" = "許可";
+"allow_once" = "1度だけ許可";
+"allow_while_using_app" = "アプリの使用中は許可";
+"dont_allow" = "許可しない";
+"limit_access" = "アクセスを制限…";  // … is a Unicode ellipsis
+"allow_full_access" = "フルアクセスを許可";
+
+/* Notification identifiers */
+"open" = "開く";
+
+/* Settings navigation */
+"developer" = "デベロッパ";
+"dark_appearance" = "ダークの外観モード";
+"display_brightness" = "画面表示と明るさ";
+"dark" = "ダーク";
+"light" = "ライト";
+
+/* Location precision */
+"precise_off" = "正確な位置情報: オフ";
+"precise_on" = "正確な位置情報: オン";
+
+/* Gallery */
+"add" = "追加";
+
+/* Uninstall app */
+"remove_app" = "アプリを取り除く";
+"delete_app" = "アプリを削除";
+"delete" = "削除";
