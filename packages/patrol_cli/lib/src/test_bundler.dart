@@ -226,7 +226,7 @@ ${generateGroupsCode(testDirectory, [testFilePath]).split('\n').map((e) => '  $e
   /// [
   ///   'patrol_test/example_test.dart',
   ///   'patrol_test/permissions/permissions_location_test.dart',
-  ///   '/Users/charlie/awesome_app/patrol_test/app_test.dart',
+  ///   '/Users/charlie/awesome_app/integration_test/app_test.dart',
   /// ]
   /// ```
   /// Output:
@@ -234,7 +234,7 @@ ${generateGroupsCode(testDirectory, [testFilePath]).split('\n').map((e) => '  $e
   /// '''
   /// import 'example_test.dart' as example_test;
   /// import 'permissions/permissions_location_test.dart' as permissions__permissions_location_test;
-  /// import 'patrol_test/app_test.dart' as app_test;
+  /// import '../integration_test/app_test.dart' as integration_test__app_test;
   /// '''
   /// ```
   @visibleForTesting
@@ -245,20 +245,12 @@ ${generateGroupsCode(testDirectory, [testFilePath]).split('\n').map((e) => '  $e
   }) {
     final imports = <String>[];
     for (final testFilePath in testFilePaths) {
-      final relativeTestFilePath = _normalizeTestPath(
+      final importPath = _createImportPath(
         testDirectory,
         testFilePath,
+        web: web,
       );
-      final testName = _createTestName(testDirectory, relativeTestFilePath);
-      final relativeTestFilePathWithoutSlash = relativeTestFilePath[0] == '/'
-          ? relativeTestFilePath.replaceFirst('/', '')
-          : relativeTestFilePath;
-
-      // For web tests, include the test directory prefix in imports to ensure
-      // correct path resolution since the bundle is at project root
-      final importPath = web
-          ? '$testDirectory/$relativeTestFilePathWithoutSlash'
-          : relativeTestFilePathWithoutSlash;
+      final testName = _createTestName(testDirectory, testFilePath);
       imports.add("import '$importPath' as $testName;");
     }
 
@@ -286,11 +278,7 @@ ${generateGroupsCode(testDirectory, [testFilePath]).split('\n').map((e) => '  $e
   String generateGroupsCode(String testDirectory, List<String> testFilePaths) {
     final groups = <String>[];
     for (final testFilePath in testFilePaths) {
-      final relativeTestFilePath = _normalizeTestPath(
-        testDirectory,
-        testFilePath,
-      );
-      final testName = _createTestName(testDirectory, relativeTestFilePath);
+      final testName = _createTestName(testDirectory, testFilePath);
       final groupName = testName.replaceAll('__', '.');
       final testEntrypoint = '$testName.main';
       groups.add("group('$groupName', $testEntrypoint);");
@@ -298,36 +286,70 @@ ${generateGroupsCode(testDirectory, [testFilePath]).split('\n').map((e) => '  $e
     return groups.join('\n');
   }
 
-  /// Normalizes [testFilePath] so that it always starts with
-  /// the configured test directory.
-  String _normalizeTestPath(String testDirectory, String testFilePath) {
-    var relativeTestFilePath = testFilePath.replaceAll(
-      _projectRoot.childDirectory(testDirectory).absolute.path,
-      '',
+  /// Computes the path used in the generated `import` directive for
+  /// [testFilePath], relative to the directory the bundle file lives in.
+  ///
+  /// Using a path relative to the bundle keeps the import valid regardless of
+  /// where the test file is located - in particular when it lives outside the
+  /// configured [testDirectory] (e.g. a target under `integration_test/` while
+  /// `test_directory` is `patrol_test`). In that case the result is a path such
+  /// as `../integration_test/example_test.dart`.
+  String _createImportPath(
+    String testDirectory,
+    String testFilePath, {
+    required bool web,
+  }) {
+    final bundleDirectory = getBundledTestFile(
+      testDirectory,
+      web: web,
+    ).parent.absolute.path;
+
+    final relativeTestFilePath = _fs.path.relative(
+      testFilePath,
+      from: bundleDirectory,
     );
 
-    if (relativeTestFilePath.startsWith(testDirectory)) {
-      relativeTestFilePath = relativeTestFilePath.replaceFirst(
-        testDirectory,
-        '',
-      );
-    }
-
-    if (relativeTestFilePath.startsWith(_fs.path.separator)) {
-      relativeTestFilePath = relativeTestFilePath.substring(1);
-    }
-
-    // Dart source code uses forward slash.
+    // Dart source code uses forward slashes regardless of the host platform.
     return relativeTestFilePath.replaceAll(_fs.path.separator, '/');
   }
 
-  String _createTestName(String testDirectory, String relativeTestFilePath) {
-    var testName = relativeTestFilePath
-        .replaceFirst('$testDirectory${_fs.path.separator}', '')
-        .replaceAll('/', '__');
+  /// Builds a valid Dart identifier used as the import alias (and, after
+  /// replacing `__` with `.`, the group name) for [testFilePath].
+  ///
+  /// The name is derived from the path of the test file relative to the
+  /// configured [testDirectory]. Any character that is not allowed in a Dart
+  /// identifier (e.g. the hyphen in `acme-corp`, or the dots introduced by a
+  /// `..` segment when the test lives outside [testDirectory]) is replaced with
+  /// an underscore so the generated bundle always compiles.
+  String _createTestName(String testDirectory, String testFilePath) {
+    final testDirectoryPath = _projectRoot
+        .childDirectory(testDirectory)
+        .absolute
+        .path;
 
-    testName = testName.substring(0, testName.length - 5);
-    return testName;
+    var name = _fs.path
+        .relative(testFilePath, from: testDirectoryPath)
+        .replaceAll(_fs.path.separator, '/');
+
+    if (name.endsWith('.dart')) {
+      name = name.substring(0, name.length - '.dart'.length);
+    }
+
+    // Drop leading `../` segments (present when the test lives outside the
+    // test directory) so the alias stays readable instead of starting with a
+    // run of underscores.
+    while (name.startsWith('../')) {
+      name = name.substring('../'.length);
+    }
+
+    name = name.replaceAll('/', '__').replaceAll(RegExp('[^a-zA-Z0-9_]'), '_');
+
+    // A Dart identifier must not start with a digit.
+    if (name.isNotEmpty && RegExp('[0-9]').hasMatch(name[0])) {
+      name = '_$name';
+    }
+
+    return name;
   }
 
   bool _shouldUseEntrypointProxy(String testDirectory) {

@@ -91,6 +91,75 @@ import 'example_test.dart' as example_test;
 import 'example/example_test.dart' as example__example_test;''');
     });
 
+    test(
+      'generates relative import when target is outside the test directory',
+      () {
+        // given
+        // The target lives in `integration_test/` while the configured test
+        // directory is `patrol_test/`. See:
+        // https://github.com/leancodepl/patrol/issues/3101
+        final tests = [
+          fs.path.join(
+            platform.home,
+            'awesome_app',
+            'integration_test',
+            'example_test.dart',
+          ),
+        ];
+
+        // when
+        final imports = testBundler.generateImports(testDirectory, tests);
+
+        // then
+        expect(
+          imports,
+          "import '../integration_test/example_test.dart' "
+          'as integration_test__example_test;',
+        );
+      },
+    );
+
+    test('generates groups when target is outside the test directory', () {
+      // given
+      final tests = [
+        fs.path.join(
+          platform.home,
+          'awesome_app',
+          'integration_test',
+          'example_test.dart',
+        ),
+      ];
+
+      // when
+      final groupsCode = testBundler.generateGroupsCode(testDirectory, tests);
+
+      // then
+      expect(
+        groupsCode,
+        "group('integration_test.example_test', "
+        'integration_test__example_test.main);',
+      );
+    });
+
+    test('sanitizes invalid identifier characters in import aliases', () {
+      // given
+      // Hyphens (and any other non-identifier characters) in the path must not
+      // leak into the generated Dart alias, otherwise the bundle won't compile.
+      // See https://github.com/leancodepl/patrol/issues/3101
+      final tests = [
+        fs.path.join('patrol_test', 'my-feature', 'some-test.dart'),
+      ];
+
+      // when
+      final imports = testBundler.generateImports(testDirectory, tests);
+
+      // then
+      expect(
+        imports,
+        "import 'my-feature/some-test.dart' as my_feature__some_test;",
+      );
+    });
+
     test('generates groups from relative paths', () {
       // given
       final tests = [
