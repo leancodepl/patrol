@@ -238,12 +238,18 @@ Future<int> _runStdio(McpServer server) async {
 
 class _ExitSignal {
   _ExitSignal() {
-    _sigtermSubscription = ProcessSignal.sigterm.watch().listen(_handleSignal);
+    // ProcessSignal.sigterm cannot be listened to on Windows — it throws
+    // SignalException. On that platform, graceful shutdown comes from stdin
+    // EOF (MCP stdio transport) and Ctrl-C (SIGINT), both of which continue
+    // to work. Guard the registration so the server can start on Windows.
+    _sigtermSubscription = !Platform.isWindows
+        ? ProcessSignal.sigterm.watch().listen(_handleSignal)
+        : null;
     _sigintSubscription = ProcessSignal.sigint.watch().listen(_handleSignal);
   }
 
   final _completer = Completer<ProcessSignal>();
-  late final StreamSubscription<ProcessSignal> _sigtermSubscription;
+  late final StreamSubscription<ProcessSignal>? _sigtermSubscription;
   late final StreamSubscription<ProcessSignal> _sigintSubscription;
 
   Future<ProcessSignal> get wait => _completer.future;
@@ -256,7 +262,7 @@ class _ExitSignal {
   }
 
   void _cleanup() {
-    _sigtermSubscription.cancel();
+    _sigtermSubscription?.cancel();
     _sigintSubscription.cancel();
   }
 }

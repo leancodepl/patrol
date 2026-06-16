@@ -1,3 +1,7 @@
+## Unreleased
+
+- Don't listen for `SIGTERM` on Windows, where it is not supported and throws an unhandled `SignalException` that prevented the MCP server from starting. (#3035)
+
 ## 0.1.4
 
 - Relax `patrol_cli` constraint to `^4.3.0` so `patrol_mcp` resolves

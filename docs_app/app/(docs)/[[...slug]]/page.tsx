@@ -6,15 +6,27 @@ import { DocsBody, DocsDescription, DocsPage, DocsTitle } from "fumadocs-ui/page
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 
+export const dynamicParams = false
+
+function isNextInternalSegmentPath(slugs: string[]) {
+  return slugs.some(slug => {
+    const decodedSlug = decodeURIComponent(slug)
+
+    return decodedSlug.endsWith(".segments") || decodedSlug.startsWith("$oc$") || decodedSlug.startsWith("!")
+  })
+}
+
 function handleMissingPage(slugs: string[] | undefined, context: "page" | "metadata"): never {
   const normalizedSlugs = slugs ?? []
   const pages = source.getPages()
+  const isInternalSegmentPath = isNextInternalSegmentPath(normalizedSlugs)
 
   console.error(
     "[docs:not-found]",
     JSON.stringify({
       context,
       slugs: normalizedSlugs,
+      isInternalSegmentPath,
       pagesCount: pages.length,
       rootExists: Boolean(source.getPage([])),
       firstPages: pages.slice(0, 20).map(page => ({
@@ -27,8 +39,8 @@ function handleMissingPage(slugs: string[] | undefined, context: "page" | "metad
     }),
   )
 
-  if (normalizedSlugs.length === 0) {
-    throw new Error("Root docs page missing from source during render")
+  if (isInternalSegmentPath) {
+    throw new Error("Unexpected docs route miss during render")
   }
 
   notFound()
