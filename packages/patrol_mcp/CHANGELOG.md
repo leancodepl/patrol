@@ -1,6 +1,8 @@
 ## Unreleased
 
 - Don't listen for `SIGTERM` on Windows, where it is not supported and throws an unhandled `SignalException` that prevented the MCP server from starting. (#3035)
+- Update README: fix and simplify the GitHub Copilot MCP setup (#3089)
+
 
 ## 0.1.4
 

@@ -151,21 +151,33 @@ Add to `<workspace-root>/.cursor/mcp.json`:
 </details>
 
 <details>
-<summary>Copilot</summary>
+<summary>GitHub Copilot (VS Code extension & CLI)</summary>
 
-Save the script to `<workspace-root>/.vscode/run-patrol` and make it executable:
+Copilot has two flavors, each with its **own MCP config file** — a different
+path *and* a different top-level key:
+
+| Flavor | Config file | Top-level key |
+| --- | --- | --- |
+| VS Code extension | `.vscode/mcp.json` | `servers` |
+| Copilot CLI | `.mcp.json` (project root) | `mcpServers` |
+
+(There's no shared MCP config standard, so each tool uses its own format.) Set
+up the launcher once, then add the config for whichever you use — both point at
+the same script.
+
+Save the script to `<workspace-root>/.copilot/run-patrol` and make it executable:
 
 ```sh
-chmod +x .vscode/run-patrol
+chmod +x .copilot/run-patrol
 ```
 
-Add to `<workspace-root>/.vscode/mcp.json`:
+**VS Code extension** → `<workspace-root>/.vscode/mcp.json`:
 
 ```json
 {
   "servers": {
     "patrol": {
-      "command": "./.vscode/run-patrol",
+      "command": "./.copilot/run-patrol",
       "env": {
         "PROJECT_ROOT": ".",
         "PATROL_FLAGS": "",
@@ -176,12 +188,33 @@ Add to `<workspace-root>/.vscode/mcp.json`:
 }
 ```
 
-Reload the IDE, then open **Settings → MCP: List Servers**. Go to
-**Patrol** and make sure the server is running — start it if needed.
+Save the file — VS Code auto-discovers `.vscode/mcp.json` and lets you start
+the `patrol` server (it offers an inline **Start** action, or use VS Code's MCP
+server management). See [VS Code's MCP docs][vscode_mcp] for the current steps.
+
+**Copilot CLI** → `<workspace-root>/.mcp.json` at the project root:
+
+```json
+{
+  "mcpServers": {
+    "patrol": {
+      "type": "local",
+      "command": "./.copilot/run-patrol",
+      "env": {
+        "PROJECT_ROOT": ".",
+        "PATROL_FLAGS": "",
+        "SHOW_TERMINAL": "false"
+      }
+    }
+  }
+}
+```
+
+Then run `/mcp` in the CLI to confirm `patrol` is listed.
 
 > [!NOTE]
-> After editing `mcp.json`, you may need to restart the MCP server:
-> **Settings → MCP: List Servers → Patrol → Start**.
+> Using both the extension and the CLI? Keep both config files, but point them
+> at the same `run-patrol` script.
 
 </details>
 
@@ -322,6 +355,7 @@ We are **top-tier experts** focused on Flutter Enterprise solutions.
 [patrol_discord_link]: https://discord.gg/ukBK5t4EZg
 [promo_graphics]: ../../assets/promo_banner.png
 [mcp_docs]: https://patrol.leancode.co/documentation/other/patrol-mcp?utm_source=github.com&utm_medium=referral&utm_campaign=patrol-readme
+[vscode_mcp]: https://code.visualstudio.com/docs/copilot/chat/mcp-servers
 [docs]: https://patrol.leancode.co/?utm_source=github.com&utm_medium=referral&utm_campaign=patrol-readme
 [article_web]: https://leancode.co/blog/patrol-web-support?utm_source=github.com&utm_medium=referral&utm_campaign=patrol-readme
 [article_4x]: https://leancode.co/blog/patrol-4-0-release?utm_source=github.com&utm_medium=referral&utm_campaign=patrol-readme
