@@ -29,7 +29,7 @@ This document describes all GitHub Actions workflows used in the Patrol project.
 |--------------|-----------|----------------|------|-------------|
 | [test flutter main channel][test-flutter-main] | Weekly Tue 4:00 UTC, manual | Flutter master | — | Rebases `fix/flutter-patrol-tests` onto `master`, then runs internal tests (`flutter analyze` + `flutter test` on `patrol_finders` and `patrol_cli`) against Flutter main channel. Always creates a PR with test results. Sends Slack notification on failure when triggered by schedule. |
 | [test web][test-web] | No | Flutter 3.38.x (stable) | — | Runs web-specific E2E tests on Chrome in headless mode. Triggers on PR for web-related changes. Uses target file instead of tags. |
-| [test macos][test-macos] | Every 12h | Flutter 3.38.x (stable) | — | Runs E2E tests on macOS desktop platform. Runs tests from `patrol_test/macos` directory. Uses xcresultparser to generate JUnit reports and converts them to CTRF format for test reporting. |
+| [test macos][test-macos] | PR, daily at 00:00 UTC | Flutter 3.38.x (stable) | — | Runs E2E tests on macOS desktop platform. Triggers on PR for changes to packages, e2e_app, and schema (excludes docs). Runs tests from `patrol_test/macos` directory. Uses xcresultparser to generate JUnit reports and converts them to CTRF format for test reporting. |
 | [test patrol develop][test-patrol-develop] | `pull_request_target` (opened/synchronize on package, e2e_app, and schema changes; excludes docs), manual | Flutter 3.38.x (stable) | — | Tests `patrol develop` command on Linux (Android emulator, API 34) and macOS (iOS simulator: iPhone 16 Pro on iOS 26.2). The macOS job pins simulator runtime and passes `--ios 26.2` to `patrol_develop_test.dart` to keep xcode destination selection deterministic. Timeout: 30 minutes per job. |
 
 ## Package Preparation (CI) Workflows
@@ -92,8 +92,9 @@ These workflows verify the user has write access before running. If you don't ha
 
 ## Schedule Summary
 
-- **Every 12 hours**: [test android emulator][test-android-emulator], [test locales on android device][test-android-locales], [test macos][test-macos]
+- **Every 12 hours**: [test android emulator][test-android-emulator], [test locales on android device][test-android-locales]
 - **Weekly (Monday 06:00 UTC)**: [test android device][test-android-device], [test ios device][test-ios-device]
+- **Daily at 00:00 UTC**: [test macos][test-macos]
 - **Daily at 23:00 UTC**: [test android emulator webview][test-android-emulator-webview]
 - **Weekly (Tuesday 04:00 UTC)**: [test flutter main channel][test-flutter-main]
 - **Daily at 10:00 UTC**: [test flutter beta channel][test-flutter-beta]
