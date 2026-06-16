@@ -305,7 +305,7 @@ ${generateGroupsCode(testDirectory, [testFilePath]).split('\n').map((e) => '  $e
     ).parent.absolute.path;
 
     final relativeTestFilePath = _fs.path.relative(
-      testFilePath,
+      _toAbsoluteTestPath(testFilePath),
       from: bundleDirectory,
     );
 
@@ -328,7 +328,7 @@ ${generateGroupsCode(testDirectory, [testFilePath]).split('\n').map((e) => '  $e
         .path;
 
     var name = _fs.path
-        .relative(testFilePath, from: testDirectoryPath)
+        .relative(_toAbsoluteTestPath(testFilePath), from: testDirectoryPath)
         .replaceAll(_fs.path.separator, '/');
 
     if (name.endsWith('.dart')) {
@@ -351,6 +351,19 @@ ${generateGroupsCode(testDirectory, [testFilePath]).split('\n').map((e) => '  $e
 
     return name;
   }
+
+  /// Resolves [testFilePath] to an absolute path.
+  ///
+  /// A relative path is resolved against the project root - not the process'
+  /// current working directory - so the generated bundle is identical no
+  /// matter where `patrol` is invoked from (running the CLI from outside the
+  /// project root is supported). This mirrors how `TestFinder` resolves
+  /// relative paths. In practice the commands always pass absolute targets, so
+  /// this only matters for relative paths (e.g. in tests).
+  String _toAbsoluteTestPath(String testFilePath) =>
+      _fs.path.isAbsolute(testFilePath)
+      ? testFilePath
+      : _fs.path.join(_projectRoot.absolute.path, testFilePath);
 
   bool _shouldUseEntrypointProxy(String testDirectory) {
     return !_devtoolsRootDirectories.contains(testDirectory);

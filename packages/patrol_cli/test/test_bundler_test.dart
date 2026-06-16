@@ -65,6 +65,28 @@ import 'example_test.dart' as example_test;
 import 'example/example_test.dart' as example__example_test;''');
     });
 
+    test(
+      'resolves relative paths against project root, not the process CWD',
+      () {
+        // given
+        // Relative targets must be resolved against the project root even when
+        // the CLI is invoked from a different working directory (supported
+        // since patrol_cli 3.2.1). Here the CWD is a nested subdirectory.
+        fs.directory(fs.path.join('patrol_test', 'nested')).createSync();
+        fs.currentDirectory = fs.path.join('patrol_test', 'nested');
+
+        final tests = [fs.path.join('patrol_test', 'example_test.dart')];
+
+        // when
+        final imports = testBundler.generateImports(testDirectory, tests);
+        final groupsCode = testBundler.generateGroupsCode(testDirectory, tests);
+
+        // then
+        expect(imports, "import 'example_test.dart' as example_test;");
+        expect(groupsCode, "group('example_test', example_test.main);");
+      },
+    );
+
     test('generates imports from absolute paths', () {
       // given
       final tests = [
