@@ -77,6 +77,12 @@
       }
     }
 
+    func sendKeyboardEnter() throws {
+      try runAction("sendKeyboardEnter") {
+        throw PatrolError.methodNotImplemented("sendKeyboardEnter")
+      }
+    }
+
     func tap(
       on selector: IOSSelector,
       inApp bundleId: String,
