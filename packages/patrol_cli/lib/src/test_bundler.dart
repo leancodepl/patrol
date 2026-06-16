@@ -301,24 +301,22 @@ ${generateGroupsCode(testDirectory, [testFilePath]).split('\n').map((e) => '  $e
   /// Normalizes [testFilePath] so that it always starts with
   /// the configured test directory.
   String _normalizeTestPath(String testDirectory, String testFilePath) {
-    var relativeTestFilePath = testFilePath.replaceAll(
-      _projectRoot.childDirectory(testDirectory).absolute.path,
-      '',
-    );
-
-    if (relativeTestFilePath.startsWith(testDirectory)) {
-      relativeTestFilePath = relativeTestFilePath.replaceFirst(
-        testDirectory,
-        '',
-      );
-    }
-
-    if (relativeTestFilePath.startsWith(_fs.path.separator)) {
-      relativeTestFilePath = relativeTestFilePath.substring(1);
-    }
+    final testDirAbs = _projectRoot.childDirectory(testDirectory).absolute.path;
+    // Resolve the test file to a normalized absolute path before comparing.
+    // Different callers pass different forms: `patrol test` gives a backslash
+    // absolute path, `patrol develop`/MCP gives a forward-slash absolute path,
+    // and PowerShell tab-completion injects a `.\` (`.`) segment. A literal
+    // string strip is defeated by any of those; `path.relative` is not.
+    final fileAbs = _fs.path.isAbsolute(testFilePath)
+        ? _fs.path.normalize(testFilePath)
+        : _fs.path.normalize(
+            _fs.path.join(_projectRoot.absolute.path, testFilePath),
+          );
 
     // Dart source code uses forward slash.
-    return relativeTestFilePath.replaceAll(_fs.path.separator, '/');
+    return _fs.path
+        .relative(fileAbs, from: testDirAbs)
+        .replaceAll(_fs.path.separator, '/');
   }
 
   String _createTestName(String testDirectory, String relativeTestFilePath) {
