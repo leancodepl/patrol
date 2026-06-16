@@ -1,21 +1,6 @@
 // swift-tools-version: 5.9
 
-import Foundation
 import PackageDescription
-
-// Resolve the Xcode developer directory to locate platform-specific frameworks (e.g., XCTest).
-let xcodeDevDir: String = {
-    let task = Process()
-    task.executableURL = URL(fileURLWithPath: "/usr/bin/xcode-select")
-    task.arguments = ["-p"]
-    let pipe = Pipe()
-    task.standardOutput = pipe
-    try? task.run()
-    task.waitUntilExit()
-    let data = pipe.fileHandleForReading.readDataToEndOfFile()
-    return String(data: data, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines)
-        ?? "/Applications/Xcode.app/Contents/Developer"
-}()
 
 let package = Package(
     name: "patrol",
@@ -29,7 +14,7 @@ let package = Package(
     ],
     dependencies: [
         // TODO: Add this when Patrol targets Flutter 3.41.0 or higher
-        // .package(name: "FlutterFramework", path: "../FlutterFramework")
+        // .package(name: "FlutterFramework", path: "../FlutterFramework"),
         .package(url: "https://github.com/robbiehanson/CocoaAsyncSocket", from: "7.6.4")
     ],
     targets: [
@@ -55,17 +40,6 @@ let package = Package(
                 .process("Resources/pl.lproj"),
             ],
             linkerSettings: [
-                .unsafeFlags([
-                    // Framework search paths for XCTest.framework
-                    "-F", "\(xcodeDevDir)/Platforms/iPhoneSimulator.platform/Developer/Library/Frameworks",
-                    "-F", "\(xcodeDevDir)/Platforms/iPhoneOS.platform/Developer/Library/Frameworks",
-                    "-F", "\(xcodeDevDir)/Platforms/MacOSX.platform/Developer/Library/Frameworks",
-                    // Library search paths for libXCTestSwiftSupport.dylib
-                    "-L", "\(xcodeDevDir)/Platforms/iPhoneSimulator.platform/Developer/usr/lib",
-                    "-L", "\(xcodeDevDir)/Platforms/iPhoneOS.platform/Developer/usr/lib",
-                    "-L", "\(xcodeDevDir)/Platforms/MacOSX.platform/Developer/usr/lib",
-                    "-weak_framework", "XCTest",
-                ]),
                 .linkedFramework("UIKit", .when(platforms: [.iOS])),
                 .linkedFramework("AppKit", .when(platforms: [.macOS]))
             ]
