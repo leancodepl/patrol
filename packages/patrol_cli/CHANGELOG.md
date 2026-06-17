@@ -1,6 +1,7 @@
 ## Unreleased
 
 - Don't listen for `SIGTERM` on Windows, where it is not supported and throws an unhandled `SignalException`. (#3035)
+- Fix `--exclude` not working. (#2990)
 
 ## 4.4.0
 
