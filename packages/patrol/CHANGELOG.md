@@ -1,10 +1,10 @@
 ## Unreleased
 
-- Migrate to built-in Kotlin (#3084).
 - Add `sendKeyboardEnter` method for `MobileAutomator`. (#2748)
 - Fix a crash when an `IOSSelector` has no arguments needed for creating `NSPredicate` for textfield. (#3053)
 - Add Japanese (ja) language support for native OS interactions.
 - Fix macOS build by implementing `sendKeyboardEnter` in `MacOSAutomator`. (#3105)
+- Migrate to built-in Kotlin (#3084).
 
 ## 4.6.1
 
