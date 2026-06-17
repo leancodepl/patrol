@@ -20,7 +20,7 @@ apply plugin: "com.android.library"
 
 def agpMajor = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION.tokenize('.')[0] as int
 // Host apps control Kotlin compilation mode via gradle.properties (android.builtInKotlin).
-// false (Flutter default for unmigrated apps): apply KGP on AGP 9+ — transitional escape hatch.
+// false (Flutter default for unmigrated apps): apply KGP on AGP 9+.
 // true (fully migrated apps): skip KGP and rely on AGP built-in Kotlin on AGP 9+.
 // AGP < 9 always uses KGP regardless of the flag. This plugin supports both paths.
 def usesBuiltInKotlin = project.findProperty("android.builtInKotlin") == "true"
