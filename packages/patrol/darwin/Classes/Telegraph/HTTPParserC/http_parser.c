@@ -937,7 +937,7 @@ reexecute:
           goto error;
         }
 
-        parser->method = (enum http_method) 0;
+        parser->method = (enum http_parser_method) 0;
         parser->index = 1;
         switch (ch) {
           case 'A': parser->method = PARSER_HTTP_ACL; break;
@@ -2205,13 +2205,13 @@ http_should_keep_alive (const http_parser *parser)
 
 
 const char *
-http_method_str (enum http_method m)
+http_method_str (enum http_parser_method m)
 {
   return ELEM_AT(method_strings, m, "<unknown>");
 }
 
 const char *
-http_status_str (enum http_status s)
+http_status_str (enum http_parser_status s)
 {
   switch (s) {
 #define XX(num, name, string) case PARSER_HTTP_STATUS_##name: return #string;
@@ -2239,13 +2239,13 @@ http_parser_settings_init(http_parser_settings *settings)
 }
 
 const char *
-http_errno_name(enum http_errno err) {
+http_errno_name(enum http_parser_errno err) {
   assert(((size_t) err) < ARRAY_SIZE(http_strerror_tab));
   return http_strerror_tab[err].name;
 }
 
 const char *
-http_errno_description(enum http_errno err) {
+http_errno_description(enum http_parser_errno err) {
   assert(((size_t) err) < ARRAY_SIZE(http_strerror_tab));
   return http_strerror_tab[err].description;
 }
