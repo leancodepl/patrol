@@ -1,0 +1,56 @@
+PODS:
+  - file_saver (0.0.1):
+    - Flutter
+  - Flutter (1.0.0)
+  - flutter_local_notifications (0.0.1):
+    - Flutter
+  - Google-Maps-iOS-Utils (5.0.0):
+    - GoogleMaps (~> 8.0)
+  - google_maps_flutter_ios (0.0.1):
+    - Flutter
+    - Google-Maps-iOS-Utils (< 7.0, >= 5.0)
+    - GoogleMaps (< 10.0, >= 8.4)
+  - GoogleMaps (8.4.0):
+    - GoogleMaps/Maps (= 8.4.0)
+  - GoogleMaps/Base (8.4.0)
+  - GoogleMaps/Maps (8.4.0):
+    - GoogleMaps/Base
+  - permission_handler_apple (9.3.0):
+    - Flutter
+
+DEPENDENCIES:
+  - file_saver (from `.symlinks/plugins/file_saver/ios`)
+  - Flutter (from `Flutter`)
+  - flutter_local_notifications (from `.symlinks/plugins/flutter_local_notifications/ios`)
+  - google_maps_flutter_ios (from `.symlinks/plugins/google_maps_flutter_ios/ios`)
+  - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
+
+SPEC REPOS:
+  trunk:
+    - Google-Maps-iOS-Utils
+    - GoogleMaps
+
+EXTERNAL SOURCES:
+  file_saver:
+    :path: ".symlinks/plugins/file_saver/ios"
+  Flutter:
+    :path: Flutter
+  flutter_local_notifications:
+    :path: ".symlinks/plugins/flutter_local_notifications/ios"
+  google_maps_flutter_ios:
+    :path: ".symlinks/plugins/google_maps_flutter_ios/ios"
+  permission_handler_apple:
+    :path: ".symlinks/plugins/permission_handler_apple/ios"
+
+SPEC CHECKSUMS:
+  file_saver: 503e386464dbe118f630e17b4c2e1190fa0cf808
+  Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
+  flutter_local_notifications: 4cde75091f6327eb8517fa068a0a5950212d2086
+  Google-Maps-iOS-Utils: 66d6de12be1ce6d3742a54661e7a79cb317a9321
+  google_maps_flutter_ios: e31555a04d1986ab130f2b9f24b6cdc861acc6d3
+  GoogleMaps: 8939898920281c649150e0af74aa291c60f2e77d
+  permission_handler_apple: 9878588469a2b0d0fc1e048d9f43605f92e6cec2
+
+PODFILE CHECKSUM: 59a478160b0a6f171b0d93666039c6b298688734
+
+COCOAPODS: 1.16.2
