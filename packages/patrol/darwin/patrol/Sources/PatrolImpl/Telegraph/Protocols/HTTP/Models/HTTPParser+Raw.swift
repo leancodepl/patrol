@@ -9,6 +9,7 @@
 import Foundation
 
 #if SWIFT_PACKAGE
+import Foundation
 import HTTPParserC
 #endif
 
