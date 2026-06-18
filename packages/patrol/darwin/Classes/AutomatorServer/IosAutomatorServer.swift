@@ -21,6 +21,7 @@ protocol IosAutomatorServer {
     func handlePermissionDialog(request: HandlePermissionRequest) throws
     func setLocationAccuracy(request: SetLocationAccuracyRequest) throws
     func takeCameraPhoto(request: IOSTakeCameraPhotoRequest) throws
+    func injectCameraPhoto(request: IOSInjectCameraPhotoRequest) throws
     func pickImageFromGallery(request: IOSPickImageFromGalleryRequest) throws
     func pickMultipleImagesFromGallery(request: IOSPickMultipleImagesFromGalleryRequest) throws
     func debug() throws
@@ -118,6 +119,12 @@ extension IosAutomatorServer {
         return HTTPResponse(.ok)
     }
 
+    private func injectCameraPhotoHandler(request: HTTPRequest) throws -> HTTPResponse {
+        let requestArg = try JSONDecoder().decode(IOSInjectCameraPhotoRequest.self, from: request.body)
+        try injectCameraPhoto(request: requestArg)
+        return HTTPResponse(.ok)
+    }
+
     private func pickImageFromGalleryHandler(request: HTTPRequest) throws -> HTTPResponse {
         let requestArg = try JSONDecoder().decode(IOSPickImageFromGalleryRequest.self, from: request.body)
         try pickImageFromGallery(request: requestArg)
@@ -212,6 +219,11 @@ extension IosAutomatorServer {
             request in handleRequest(
                 request: request,
                 handler: takeCameraPhotoHandler)
+        }
+        server.route(.POST, "injectCameraPhoto") {
+            request in handleRequest(
+                request: request,
+                handler: injectCameraPhotoHandler)
         }
         server.route(.POST, "pickImageFromGallery") {
             request in handleRequest(
