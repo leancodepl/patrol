@@ -24,14 +24,18 @@ let package = Package(
             path: "Sources/HTTPParserC",
             publicHeadersPath: "include"
         ),
+        // Swift implementation. SwiftPM does not allow mixing Swift and ObjC in a
+        // single target, so the Swift code lives here and the ObjC runner macros
+        // live in the `patrol` Clang target below, which re-exports this module.
         .target(
-            name: "patrol",
+            name: "PatrolImpl",
             dependencies: [
                 // TODO: Add this when Patrol targets Flutter 3.41.0 or higher
                 // .product(name: "FlutterFramework", package: "FlutterFramework")
                 .product(name: "CocoaAsyncSocket", package: "CocoaAsyncSocket"),
                 "HTTPParserC"
             ],
+            path: "Sources/PatrolImpl",
             resources: [
                 .process("Resources/PrivacyInfo.xcprivacy"),
                 .process("Resources/en.lproj"),
@@ -43,6 +47,17 @@ let package = Package(
                 .linkedFramework("UIKit", .when(platforms: [.iOS])),
                 .linkedFramework("AppKit", .when(platforms: [.macOS]))
             ]
+        ),
+        // Public module named `patrol`. This is the module Flutter's generated
+        // registrant imports and the module users `@import` from RunnerUITests.
+        // It hosts the ObjC runner macros (Sources/patrol/include) and re-exports
+        // PatrolImpl (via include/patrol.h + `export *` in module.modulemap), so a
+        // single `@import patrol` exposes both the macro and the Swift @objc API.
+        .target(
+            name: "patrol",
+            dependencies: ["PatrolImpl"],
+            path: "Sources/patrol",
+            publicHeadersPath: "include"
         )
     ]
 )
