@@ -112,8 +112,9 @@ $endpoints
   }
 
   String _createEndpoint(Endpoint endpoint) {
-    final requestDef =
-        endpoint.request != null ? 'request: ${endpoint.request!.name}' : '';
+    final requestDef = endpoint.request != null
+        ? 'request: ${endpoint.request!.name}'
+        : '';
 
     final completionDef = endpoint.response != null
         ? 'completion: @escaping (Result<${endpoint.response!.name}, Error>) -> Void'
