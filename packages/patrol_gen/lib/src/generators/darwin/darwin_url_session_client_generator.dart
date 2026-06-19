@@ -23,6 +23,8 @@ class IOSURLSessionClientGenerator {
 //  source: schema.dart
 //
 
+import Foundation
+
 ''';
   }
 
