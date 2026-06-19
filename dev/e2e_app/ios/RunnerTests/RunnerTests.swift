@@ -1,5 +1,5 @@
-import XCTest
 import PatrolImpl
+import XCTest
 
 final class RunnerTests: XCTestCase {
   func testSample() {
