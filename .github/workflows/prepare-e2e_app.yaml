@@ -188,7 +188,7 @@ jobs:
           set -o pipefail
           xcodebuild test \
             -workspace Runner.xcworkspace \
-            -scheme Runner \
+            -scheme RunnerTests \
             -only-testing RunnerTests \
             -configuration Debug \
             -sdk iphoneos -destination 'platform=iOS Simulator,name=iPhone 16' \
