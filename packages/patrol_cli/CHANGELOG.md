@@ -1,4 +1,4 @@
-## Unreleased
+## 4.5.0-dev.1
 
 - Add `-weak_framework XCTest` linker flags to iOS and macOS `build-for-testing` to support Swift Package Manager integration.
 - Don't listen for `SIGTERM` on Windows, where it is not supported and throws an unhandled `SignalException`. (#3035)

@@ -1,4 +1,4 @@
-## Unreleased
+## 4.7.0-dev.1
 
 - Add Swift Package Manager (SPM) support for iOS and macOS. CocoaPods remains supported for projects that have not migrated to SPM.
 - Add `sendKeyboardEnter` method for `MobileAutomator`. (#2748)
