@@ -29,6 +29,8 @@ class DarwinTelegraphServerGenerator {
 //  source: schema.dart
 //
 
+import Foundation
+
 ''';
   }
 
