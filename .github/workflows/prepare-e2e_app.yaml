@@ -172,6 +172,7 @@ jobs:
         run: flutter precache --ios
 
       - name: Generate iOS build files
+        working-directory: dev/e2e_app
         run: flutter build ios --config-only --simulator
 
       - name: Start iOS simulator
@@ -191,7 +192,7 @@ jobs:
             -scheme RunnerTests \
             -only-testing RunnerTests \
             -configuration Debug \
-            -sdk iphoneos -destination 'platform=iOS Simulator,name=iPhone 16' \
+            -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 16' \
             -derivedDataPath ../build/ios_unit \
             OTHER_CFLAGS='$(inherited) -D FULL_ISOLATION=0 -D CLEAR_PERMISSIONS=0' \
           | xcbeautify --renderer github-actions

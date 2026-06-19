@@ -1,1 +1,6 @@
 #include "../Flutter/Generated.xcconfig"
+
+FRAMEWORK_SEARCH_PATHS[sdk=iphonesimulator*] = $(inherited) "$(FLUTTER_ROOT)/bin/cache/artifacts/engine/ios/Flutter.xcframework/ios-arm64_x86_64-simulator"
+FRAMEWORK_SEARCH_PATHS[sdk=iphoneos*] = $(inherited) "$(FLUTTER_ROOT)/bin/cache/artifacts/engine/ios/Flutter.xcframework/ios-arm64"
+OTHER_LDFLAGS = $(inherited) -framework Flutter
+LD_RUNPATH_SEARCH_PATHS = $(inherited) @loader_path/Frameworks @executable_path/Frameworks
