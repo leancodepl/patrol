@@ -19,7 +19,7 @@ let kErrorCreateChannelFailedMsg = "Failed to create GRPC channel"
 ///
 /// Since test reports are now sent directly from PatrolBinding to native test runners, this plugin does nothing.
 @objc(PatrolPlugin)
-public class SwiftPatrolPlugin: NSObject, FlutterPlugin {
+public class PatrolPlugin: NSObject, FlutterPlugin {
   public static func register(with registrar: FlutterPluginRegistrar) {
     #if os(iOS)
       let messenger = registrar.messenger()
@@ -32,7 +32,7 @@ public class SwiftPatrolPlugin: NSObject, FlutterPlugin {
       binaryMessenger: messenger
     )
 
-    let instance = SwiftPatrolPlugin()
+    let instance = PatrolPlugin()
     registrar.addMethodCallDelegate(instance, channel: channel)
   }
 
