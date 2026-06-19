@@ -372,80 +372,77 @@ void main() {
       },
     );
 
-    group(
-      'correctly encodes customized xcodebuild invocation for real device',
-      () {
-        const flutterOpts = FlutterAppOptions(
-          command: flutterCommand,
-          target: 'patrol_test/app_test.dart',
-          buildMode: BuildMode.release,
-          flavor: 'prod',
-          buildName: '1.2.3',
-          buildNumber: '123',
-          dartDefines: {
-            'EMAIL': 'user@example.com',
-            'PASSWORD': 'ny4ncat',
-            'foo': 'bar',
-          },
-          dartDefineFromFilePaths: [],
+    group('correctly encodes customized xcodebuild invocation for real device', () {
+      const flutterOpts = FlutterAppOptions(
+        command: flutterCommand,
+        target: 'patrol_test/app_test.dart',
+        buildMode: BuildMode.release,
+        flavor: 'prod',
+        buildName: '1.2.3',
+        buildNumber: '123',
+        dartDefines: {
+          'EMAIL': 'user@example.com',
+          'PASSWORD': 'ny4ncat',
+          'foo': 'bar',
+        },
+        dartDefineFromFilePaths: [],
+      );
+
+      setUp(() {
+        options = IOSAppOptions(
+          flutter: flutterOpts,
+          scheme: 'prod',
+          configuration: 'Release-prod',
+          simulator: false,
+          osVersion: 'latest',
+          testServerPort: 8081,
+          appServerPort: 8082,
+          fullIsolation: true,
+        );
+      });
+
+      test('when building tests', () {
+        final flutterInvocation = options.toFlutterBuildInvocation(
+          flutterOpts.buildMode,
         );
 
-        setUp(() {
-          options = IOSAppOptions(
-            flutter: flutterOpts,
-            scheme: 'prod',
-            configuration: 'Release-prod',
-            simulator: false,
-            osVersion: 'latest',
-            testServerPort: 8081,
-            appServerPort: 8082,
-            fullIsolation: true,
-          );
-        });
+        expect(
+          flutterInvocation,
+          equals([
+            ...['flutter', 'build', 'ios'],
+            '--no-version-check',
+            '--suppress-analytics',
+            ...['--config-only', '--no-codesign', '--release'],
+            ...['--flavor', 'prod'],
+            ...['--build-name', '1.2.3'],
+            ...['--build-number', '123'],
+            ...['--target', 'patrol_test/app_test.dart'],
+            ...['--dart-define', 'EMAIL=user@example.com'],
+            ...['--dart-define', 'PASSWORD=ny4ncat'],
+            ...['--dart-define', 'foo=bar'],
+          ]),
+        );
 
-        test('when building tests', () {
-          final flutterInvocation = options.toFlutterBuildInvocation(
-            flutterOpts.buildMode,
-          );
+        final xcodebuildInvocation = options.buildForTestingInvocation();
 
-          expect(
-            flutterInvocation,
-            equals([
-              ...['flutter', 'build', 'ios'],
-              '--no-version-check',
-              '--suppress-analytics',
-              ...['--config-only', '--no-codesign', '--release'],
-              ...['--flavor', 'prod'],
-              ...['--build-name', '1.2.3'],
-              ...['--build-number', '123'],
-              ...['--target', 'patrol_test/app_test.dart'],
-              ...['--dart-define', 'EMAIL=user@example.com'],
-              ...['--dart-define', 'PASSWORD=ny4ncat'],
-              ...['--dart-define', 'foo=bar'],
-            ]),
-          );
-
-          final xcodebuildInvocation = options.buildForTestingInvocation();
-
-          expect(
-            xcodebuildInvocation,
-            equals([
-              ...['xcodebuild', 'build-for-testing'],
-              ...['-workspace', 'Runner.xcworkspace'],
-              ...['-scheme', 'prod'],
-              ...['-configuration', 'Release-prod'],
-              ...['-sdk', 'iphoneos'],
-              ...['-destination', 'generic/platform=iOS'],
-              '-quiet',
-              ...['-derivedDataPath', '../build/ios_integ'],
-              r'OTHER_SWIFT_FLAGS=$(inherited) -D PATROL_ENABLED',
-              r'OTHER_LDFLAGS=$(inherited) -weak_framework XCTest -F$(PLATFORM_DIR)/Developer/Library/Frameworks -L$(PLATFORM_DIR)/Developer/usr/lib',
-              r'OTHER_CFLAGS=$(inherited) -D FULL_ISOLATION=1 -D CLEAR_PERMISSIONS=0',
-            ]),
-          );
-        });
-      },
-    );
+        expect(
+          xcodebuildInvocation,
+          equals([
+            ...['xcodebuild', 'build-for-testing'],
+            ...['-workspace', 'Runner.xcworkspace'],
+            ...['-scheme', 'prod'],
+            ...['-configuration', 'Release-prod'],
+            ...['-sdk', 'iphoneos'],
+            ...['-destination', 'generic/platform=iOS'],
+            '-quiet',
+            ...['-derivedDataPath', '../build/ios_integ'],
+            r'OTHER_SWIFT_FLAGS=$(inherited) -D PATROL_ENABLED',
+            r'OTHER_LDFLAGS=$(inherited) -weak_framework XCTest -F$(PLATFORM_DIR)/Developer/Library/Frameworks -L$(PLATFORM_DIR)/Developer/usr/lib',
+            r'OTHER_CFLAGS=$(inherited) -D FULL_ISOLATION=1 -D CLEAR_PERMISSIONS=0',
+          ]),
+        );
+      });
+    });
   });
 
   group('MacOSAppOptions', () {
