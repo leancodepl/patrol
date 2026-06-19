@@ -468,24 +468,6 @@ Check out our video version of this tutorial on YouTube!
         </Step>
 
         <Step>
-          **(Swift Package Manager only)** In Xcode, go to **RunnerUITests > Build Settings**,
-            search for **Header Search Paths**, and add:
-
-          ```
-          $(SRCROOT)/Flutter/ephemeral/Packages/.packages/patrol/Sources/patrol/include
-          ```
-
-          In case you require backward compatibility with CocoaPods, add the following search path as well:
-          ```
-          $(inherited)
-          ```
-
-          <Warning>These search paths must be added for each configuration (Debug, Release, Profile) and scheme (e.g. dev, prod).</Warning>
-
-          ![Xcode RunnerUITests header search paths](/assets/ios_spm_header_search_paths.png)
-        </Step>
-
-        <Step>
           Xcode by default also enables a "parallel execution" setting, which
             breaks Patrol. Disable it **for all schemes** (if you have more than one):
 

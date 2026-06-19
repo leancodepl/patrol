@@ -613,10 +613,6 @@
 				SDKROOT = iphoneos;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(SRCROOT)/Flutter/ephemeral/Packages/.packages/patrol/Sources/patrol/include",
-				);
 				TEST_TARGET_NAME = Runner;
 			};
 			name = "Debug-prod";
@@ -680,10 +676,6 @@
 				SDKROOT = iphoneos;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(SRCROOT)/Flutter/ephemeral/Packages/.packages/patrol/Sources/patrol/include",
-				);
 				TEST_TARGET_NAME = Runner;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -748,10 +740,6 @@
 				SDKROOT = iphoneos;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(SRCROOT)/Flutter/ephemeral/Packages/.packages/patrol/Sources/patrol/include",
-				);
 				TEST_TARGET_NAME = Runner;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -906,10 +894,6 @@
 				SDKROOT = iphoneos;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(SRCROOT)/Flutter/ephemeral/Packages/.packages/patrol/Sources/patrol/include",
-				);
 				TEST_TARGET_NAME = Runner;
 			};
 			name = "Debug-dev";
@@ -1052,10 +1036,6 @@
 				SDKROOT = iphoneos;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(SRCROOT)/Flutter/ephemeral/Packages/.packages/patrol/Sources/patrol/include",
-				);
 				TEST_TARGET_NAME = Runner;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -1197,10 +1177,6 @@
 				SDKROOT = iphoneos;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(SRCROOT)/Flutter/ephemeral/Packages/.packages/patrol/Sources/patrol/include",
-				);
 				TEST_TARGET_NAME = Runner;
 				VALIDATE_PRODUCT = YES;
 			};
