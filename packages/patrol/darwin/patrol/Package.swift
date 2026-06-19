@@ -43,6 +43,9 @@ let package = Package(
                 .process("Resources/fr.lproj"),
                 .process("Resources/pl.lproj"),
             ],
+            swiftSettings: [
+                .define("PATROL_ENABLED")
+            ],
             linkerSettings: [
                 .linkedFramework("UIKit", .when(platforms: [.iOS])),
                 .linkedFramework("AppKit", .when(platforms: [.macOS]))
