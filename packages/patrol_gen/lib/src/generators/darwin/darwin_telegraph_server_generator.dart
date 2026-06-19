@@ -45,10 +45,12 @@ $endpoints
   }
 
   String _generateProtocolMethod(Endpoint endpoint) {
-    final request =
-        endpoint.request != null ? 'request: ${endpoint.request!.name}' : '';
-    final response =
-        endpoint.response != null ? ' -> ${endpoint.response!.name}' : '';
+    final request = endpoint.request != null
+        ? 'request: ${endpoint.request!.name}'
+        : '';
+    final response = endpoint.response != null
+        ? ' -> ${endpoint.response!.name}'
+        : '';
     return '    func ${endpoint.name}($request) throws$response';
   }
 
