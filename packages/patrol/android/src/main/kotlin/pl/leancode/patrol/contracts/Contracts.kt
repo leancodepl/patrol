@@ -723,7 +723,7 @@ class Contracts {
 
   data class AxeScanRequest (
     val uploadToDashboard: Boolean,
-    val tags: Set,
+    val tags: Set<String>,
     val scanName: String? = null
   ){
     fun hasScanName(): Boolean {
