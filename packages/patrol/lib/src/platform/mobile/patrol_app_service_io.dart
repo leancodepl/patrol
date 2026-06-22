@@ -28,24 +28,16 @@ Future<void> initAppService() async {
 
 /// @nodoc
 ///
-/// Starts the gRPC server that runs the `PatrolAppService`.
+/// Starts the HTTP server that runs the [PatrolAppService].
 Future<void> runAppService(PatrolAppService service) async {
   final pipeline = const shelf.Pipeline()
       .addMiddleware(shelf.logRequests())
       .addHandler(service.handle);
 
-  // final server = await shelf_io.serve(
-  //   pipeline,
-  //   InternetAddress.anyIPv4,
-  //   service.port,
-  //   poweredByHeader: null,
-  // );
-
   final server = await HttpMultiServer.loopback(service.port);
   server.idleTimeout = _idleTimeout;
 
   shelf_io.serveRequests(server, pipeline);
-  print('PatrolAppService serving requests using HttpMultiServer...');
 
   final address = server.address;
 
@@ -123,7 +115,7 @@ class PatrolAppService extends PatrolAppServiceServer {
   }
 
   /// Returns when the native side requests execution of a Dart test. If the
-  /// native side requsted execution of [dartTest], returns true. Otherwise
+  /// native side requested execution of [dartTest], returns true. Otherwise
   /// returns false.
   ///
   /// It's used inside of [patrolTest] to halt execution of test body until
