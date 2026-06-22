@@ -15,12 +15,10 @@ import pl.leancode.patrol.contracts.Contracts.AndroidTapOnNotificationRequest
 import pl.leancode.patrol.contracts.Contracts.AndroidTapRequest
 import pl.leancode.patrol.contracts.Contracts.AndroidWaitUntilVisibleRequest
 import com.deque.networking.models.devtools.serializable.AxeDevToolsResultKey
-import pl.leancode.patrol.contracts.Contracts
 import pl.leancode.patrol.contracts.Contracts.AxeIgnoreByViewIdResourceNameRequest
 import pl.leancode.patrol.contracts.Contracts.AxeIgnoreRulesRequest
 import pl.leancode.patrol.contracts.Contracts.AxeInitSessionRequest
 import pl.leancode.patrol.contracts.Contracts.AxeScanRequest
-import pl.leancode.patrol.contracts.Contracts.AndroidSelector
 import pl.leancode.patrol.contracts.Contracts.ConfigureRequest
 import pl.leancode.patrol.contracts.Contracts.DarkModeRequest
 import pl.leancode.patrol.contracts.Contracts.GetNotificationsRequest
