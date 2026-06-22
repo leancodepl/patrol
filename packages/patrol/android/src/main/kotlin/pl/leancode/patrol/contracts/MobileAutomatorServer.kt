@@ -14,6 +14,7 @@ import org.http4k.routing.RoutingHttpHandler
 import org.http4k.routing.routes
 
 interface MobileAutomatorServer {
+    fun initialize()
     fun configure(request: Contracts.ConfigureRequest)
     fun pressHome()
     fun pressRecentApps()
@@ -54,6 +55,10 @@ interface MobileAutomatorServer {
 private val json = Gson()
 
 fun getMobileAutomatorRoutes(server: MobileAutomatorServer): RoutingHttpHandler = routes(
+    "initialize" bind POST to {
+      server.initialize()
+      Response(OK)
+    },
     "configure" bind POST to {
       val body = json.fromJson(it.bodyString(), Contracts.ConfigureRequest::class.java)
       server.configure(body)

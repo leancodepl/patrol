@@ -700,7 +700,7 @@ class NativeAutomator {
   /// make it easier to identify on the dashboard.
   Future<void> axeScan({
     bool uploadToDashboard = true,
-    List<String> tags = const [],
+    Set<String> tags = const {},
     String? scanName,
   }) => _platform.mobile.axeScan(
     uploadToDashboard: uploadToDashboard,
