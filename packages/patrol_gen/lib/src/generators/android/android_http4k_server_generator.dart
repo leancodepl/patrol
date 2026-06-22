@@ -78,12 +78,14 @@ $requestDeserialization      ${responseVariable}server.${e.name}($requestArg)
   String _generateHandlers(Service service) {
     return service.endpoints
         .map((endpoint) {
-          final response = endpoint.response != null
-              ? ': Contracts.${endpoint.response!.name}'
-              : '';
-          final request = endpoint.request != null
-              ? 'request: Contracts.${endpoint.request!.name}'
-              : '';
+          final response = switch (endpoint.response) {
+            final response? => ': Contracts.${response.name}',
+            null => '',
+          };
+          final request = switch (endpoint.request) {
+            final request? => 'request: Contracts.${request.name}',
+            null => '',
+          };
 
           return '    fun ${endpoint.name}($request)$response';
         })

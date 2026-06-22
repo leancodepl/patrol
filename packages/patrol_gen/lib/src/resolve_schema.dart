@@ -110,38 +110,34 @@ Message _createMessage(ClassDeclaration declaration) {
         .whereType<VariableDeclarationList>()
         .map((e) {
           final type = e.type;
-          if (type is NamedType) {
-            final isOptional = type.question != null;
-            final fieldName = e.variables.first.name.lexeme;
-
-            if (type.type?.isDartCoreMap ?? false) {
-              final arguments = type.typeArguments!.arguments;
-              return MessageField(
-                isOptional: isOptional,
-                name: fieldName,
-                type: MapFieldType(
-                  keyType: (arguments[0] as NamedType).name2.lexeme,
-                  valueType: (arguments[1] as NamedType).name2.lexeme,
-                ),
-              );
-            } else if (type.type?.isDartCoreList ?? false) {
-              final genericType =
-                  type.typeArguments!.arguments.first as NamedType;
-              return MessageField(
-                isOptional: isOptional,
-                name: fieldName,
-                type: ListFieldType(type: genericType.name2.lexeme),
-              );
-            } else {
-              return MessageField(
-                isOptional: isOptional,
-                name: fieldName,
-                type: OrdinaryFieldType(type: type.name2.lexeme),
-              );
-            }
-          } else {
+          if (type is! NamedType) {
             throw UnsupportedError('unsupported type $type');
           }
+
+          final arguments = type.typeArguments?.arguments;
+
+          final fieldType = switch (type.type) {
+            final t? when t.isDartCoreMap => switch (arguments) {
+              [final NamedType key, final NamedType value] => MapFieldType(
+                keyType: key.name2.lexeme,
+                valueType: value.name2.lexeme,
+              ),
+              _ => throw UnsupportedError('unsupported map type $type'),
+            },
+            final t? when t.isDartCoreList => switch (arguments) {
+              [final NamedType element, ...] => ListFieldType(
+                type: element.name2.lexeme,
+              ),
+              _ => throw UnsupportedError('unsupported list type $type'),
+            },
+            _ => OrdinaryFieldType(type: type.name2.lexeme),
+          };
+
+          return MessageField(
+            isOptional: type.question != null,
+            name: e.variables.first.name.lexeme,
+            type: fieldType,
+          );
         })
         .toList(),
   );
