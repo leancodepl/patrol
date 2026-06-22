@@ -821,14 +821,14 @@ Map<String, dynamic> _$AxeInitSessionRequestToJson(
 AxeScanRequest _$AxeScanRequestFromJson(Map<String, dynamic> json) =>
     AxeScanRequest(
       uploadToDashboard: json['uploadToDashboard'] as bool,
-      tags: (json['tags'] as List<dynamic>).map((e) => e as String).toList(),
+      tags: (json['tags'] as List<dynamic>).toSet(),
       scanName: json['scanName'] as String?,
     );
 
 Map<String, dynamic> _$AxeScanRequestToJson(AxeScanRequest instance) =>
     <String, dynamic>{
       'uploadToDashboard': instance.uploadToDashboard,
-      'tags': instance.tags,
+      'tags': instance.tags.toList(),
       'scanName': instance.scanName,
     };
 

@@ -566,7 +566,7 @@ abstract class NativeMobileAutomator implements MobileAutomator {
   @override
   Future<void> axeScan({
     bool uploadToDashboard = true,
-    List<String> tags = const [],
+    Set<String> tags = const {},
     String? scanName,
   }) async {
     await wrapRequest(

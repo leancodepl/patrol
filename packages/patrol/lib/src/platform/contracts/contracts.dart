@@ -1226,7 +1226,7 @@ class AxeScanRequest with EquatableMixin {
       _$AxeScanRequestFromJson(json);
 
   final bool uploadToDashboard;
-  final List<String> tags;
+  final Set tags;
   final String? scanName;
 
   Map<String, dynamic> toJson() => _$AxeScanRequestToJson(this);

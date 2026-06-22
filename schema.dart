@@ -311,7 +311,7 @@ class AxeInitSessionRequest {
 
 class AxeScanRequest {
   late bool uploadToDashboard;
-  late List<String> tags;
+  late Set<String> tags;
   String? scanName;
 }
 

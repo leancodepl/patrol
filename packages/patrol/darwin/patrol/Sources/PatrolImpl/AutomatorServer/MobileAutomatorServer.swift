@@ -8,6 +8,7 @@
 import Foundation
 
 protocol MobileAutomatorServer {
+    func initialize() throws
     func configure(request: ConfigureRequest) throws
     func pressHome() throws
     func pressRecentApps() throws
@@ -46,6 +47,11 @@ protocol MobileAutomatorServer {
 }
 
 extension MobileAutomatorServer {
+    private func initializeHandler(request: HTTPRequest) throws -> HTTPResponse {
+        try initialize()
+        return HTTPResponse(.ok)
+    }
+
     private func configureHandler(request: HTTPRequest) throws -> HTTPResponse {
         let requestArg = try JSONDecoder().decode(ConfigureRequest.self, from: request.body)
         try configure(request: requestArg)
@@ -243,6 +249,11 @@ extension MobileAutomatorServer {
 
 extension MobileAutomatorServer {
     func setupRoutesMobileAutomator(server: Server) {
+        server.route(.POST, "initialize") {
+            request in handleRequest(
+                request: request,
+                handler: initializeHandler)
+        }
         server.route(.POST, "configure") {
             request in handleRequest(
                 request: request,
