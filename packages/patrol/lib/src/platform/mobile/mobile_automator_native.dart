@@ -537,4 +537,84 @@ abstract class NativeMobileAutomator implements MobileAutomator {
 
     return response.osVersion;
   }
+
+  /// Initializes an axe DevTools accessibility testing session.
+  ///
+  /// [dequeApiKey] and [dequeProjectId] are the credentials used to
+  /// authenticate with the axe DevTools dashboard.
+  @override
+  Future<void> axeInitSession({
+    required String dequeApiKey,
+    required String dequeProjectId,
+  }) async {
+    await wrapRequest(
+      'axeInitSession',
+      () => _client.axeInitSession(
+        AxeInitSessionRequest(
+          dequeApiKey: dequeApiKey,
+          dequeProjectId: dequeProjectId,
+        ),
+      ),
+    );
+  }
+
+  /// Runs an axe DevTools accessibility scan of the currently visible UI.
+  ///
+  /// When [uploadToDashboard] is true, the scan results are uploaded to the
+  /// axe DevTools dashboard. [tags] and [scanName] are attached to the scan to
+  /// make it easier to identify on the dashboard.
+  @override
+  Future<void> axeScan({
+    bool uploadToDashboard = true,
+    List<String> tags = const [],
+    String? scanName,
+  }) async {
+    await wrapRequest(
+      'axeScan',
+      () => _client.axeScan(
+        AxeScanRequest(
+          uploadToDashboard: uploadToDashboard,
+          tags: tags,
+          scanName: scanName,
+        ),
+      ),
+    );
+  }
+
+  /// Configures the axe DevTools scanner to ignore the accessibility rules
+  /// identified by [rulesToIgnore].
+  @override
+  Future<void> axeIgnoreRules(List<String> rulesToIgnore) async {
+    await wrapRequest(
+      'axeIgnoreRules',
+      () => _client.axeIgnoreRules(
+        AxeIgnoreRulesRequest(rulesToIgnore: rulesToIgnore),
+      ),
+    );
+  }
+
+  /// Configures the axe DevTools scanner to ignore the accessibility rules in
+  /// [ruleList] for the view identified by [viewIdResourceName].
+  @override
+  Future<void> axeIgnoreByViewIdResourceName(
+    String viewIdResourceName,
+    List<String> ruleList,
+  ) async {
+    await wrapRequest(
+      'axeIgnoreByViewIdResourceName',
+      () => _client.axeIgnoreByViewIdResourceName(
+        AxeIgnoreByViewIdResourceNameRequest(
+          viewIdResourceName: viewIdResourceName,
+          ruleList: ruleList,
+        ),
+      ),
+    );
+  }
+
+  /// Configures the axe DevTools scanner to ignore experimental accessibility
+  /// rules.
+  @override
+  Future<void> axeIgnoreExperimental() async {
+    await wrapRequest('axeIgnoreExperimental', _client.axeIgnoreExperimental);
+  }
 }

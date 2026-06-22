@@ -41,6 +41,11 @@ interface MobileAutomatorServer {
     fun setLocationAccuracy(request: Contracts.SetLocationAccuracyRequest)
     fun setMockLocation(request: Contracts.SetMockLocationRequest)
     fun stopMockLocation()
+    fun axeInitSession(request: Contracts.AxeInitSessionRequest)
+    fun axeScan(request: Contracts.AxeScanRequest)
+    fun axeIgnoreRules(request: Contracts.AxeIgnoreRulesRequest)
+    fun axeIgnoreByViewIdResourceName(request: Contracts.AxeIgnoreByViewIdResourceNameRequest)
+    fun axeIgnoreExperimental()
     fun markPatrolAppServiceReady()
     fun isVirtualDevice(): Contracts.IsVirtualDeviceResponse
     fun getOsVersion(): Contracts.GetOsVersionResponse
@@ -166,6 +171,30 @@ fun getMobileAutomatorRoutes(server: MobileAutomatorServer): RoutingHttpHandler 
     },
     "stopMockLocation" bind POST to {
       server.stopMockLocation()
+      Response(OK)
+    },
+    "axeInitSession" bind POST to {
+      val body = json.fromJson(it.bodyString(), Contracts.AxeInitSessionRequest::class.java)
+      server.axeInitSession(body)
+      Response(OK)
+    },
+    "axeScan" bind POST to {
+      val body = json.fromJson(it.bodyString(), Contracts.AxeScanRequest::class.java)
+      server.axeScan(body)
+      Response(OK)
+    },
+    "axeIgnoreRules" bind POST to {
+      val body = json.fromJson(it.bodyString(), Contracts.AxeIgnoreRulesRequest::class.java)
+      server.axeIgnoreRules(body)
+      Response(OK)
+    },
+    "axeIgnoreByViewIdResourceName" bind POST to {
+      val body = json.fromJson(it.bodyString(), Contracts.AxeIgnoreByViewIdResourceNameRequest::class.java)
+      server.axeIgnoreByViewIdResourceName(body)
+      Response(OK)
+    },
+    "axeIgnoreExperimental" bind POST to {
+      server.axeIgnoreExperimental()
       Response(OK)
     },
     "markPatrolAppServiceReady" bind POST to {

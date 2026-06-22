@@ -716,6 +716,41 @@ class Contracts {
     val packageName: String
   )
 
+  data class AxeInitSessionRequest (
+    val dequeApiKey: String,
+    val dequeProjectId: String
+  )
+
+  data class AxeScanRequest (
+    val uploadToDashboard: Boolean,
+    val tags: List<String>,
+    val scanName: String? = null
+  ){
+    fun hasScanName(): Boolean {
+      return scanName != null
+    }
+  }
+
+  data class AxeIgnoreRulesRequest (
+    val rulesToIgnore: List<String>
+  )
+
+  data class AxeIgnoreByViewIdResourceNameRequest (
+    val viewIdResourceName: String,
+    val ruleList: List<String>
+  )
+
+  data class AxeDeleteResultRequest (
+    val userId: String,
+    val packageName: String,
+    val resultId: String,
+    val uuid: String? = null
+  ){
+    fun hasUuid(): Boolean {
+      return uuid != null
+    }
+  }
+
   data class IsVirtualDeviceResponse (
     val isVirtualDevice: Boolean
   )
@@ -816,25 +851,5 @@ class Contracts {
       return timeoutMillis != null
     }
   }
-
-  data class AxeInitSessionRequest (
-    val dequeApiKey: String,
-    val dequeProjectId: String
-  )
-
-  data class AxeScanRequest (
-    val uploadToDashboard: Boolean,
-    val tags: Set<String> = emptySet(),
-    val scanName: String? = null
-  )
-
-  data class AxeIgnoreRulesRequest (
-    val rulesToIgnore: List<String>
-  )
-
-  data class AxeIgnoreByViewIdResourceNameRequest (
-    val viewIdResourceName: String,
-    val ruleList: List<String>
-  )
 
 }

@@ -33,17 +33,13 @@ protocol MobileAutomatorServer {
     func isPermissionDialogVisible(request: PermissionDialogVisibleRequest) throws -> PermissionDialogVisibleResponse
     func handlePermissionDialog(request: HandlePermissionRequest) throws
     func setLocationAccuracy(request: SetLocationAccuracyRequest) throws
-    func takeCameraPhoto(request: TakeCameraPhotoRequest) throws
-    func pickImageFromGallery(request: PickImageFromGalleryRequest) throws
-    func pickMultipleImagesFromGallery(request: PickMultipleImagesFromGalleryRequest) throws
+    func setMockLocation(request: SetMockLocationRequest) throws
+    func stopMockLocation() throws
     func axeInitSession(request: AxeInitSessionRequest) throws
     func axeScan(request: AxeScanRequest) throws
     func axeIgnoreRules(request: AxeIgnoreRulesRequest) throws
     func axeIgnoreByViewIdResourceName(request: AxeIgnoreByViewIdResourceNameRequest) throws
     func axeIgnoreExperimental() throws
-    func debug() throws
-    func setMockLocation(request: SetMockLocationRequest) throws
-    func stopMockLocation() throws
     func markPatrolAppServiceReady() throws
     func isVirtualDevice() throws -> IsVirtualDeviceResponse
     func getOsVersion() throws -> GetOsVersionResponse
@@ -187,21 +183,14 @@ extension MobileAutomatorServer {
         return HTTPResponse(.ok)
     }
 
-    private func takeCameraPhotoHandler(request: HTTPRequest) throws -> HTTPResponse {
-        let requestArg = try JSONDecoder().decode(TakeCameraPhotoRequest.self, from: request.body)
-        try takeCameraPhoto(request: requestArg)
+    private func setMockLocationHandler(request: HTTPRequest) throws -> HTTPResponse {
+        let requestArg = try JSONDecoder().decode(SetMockLocationRequest.self, from: request.body)
+        try setMockLocation(request: requestArg)
         return HTTPResponse(.ok)
     }
 
-    private func pickImageFromGalleryHandler(request: HTTPRequest) throws -> HTTPResponse {
-        let requestArg = try JSONDecoder().decode(PickImageFromGalleryRequest.self, from: request.body)
-        try pickImageFromGallery(request: requestArg)
-        return HTTPResponse(.ok)
-    }
-
-    private func pickMultipleImagesFromGalleryHandler(request: HTTPRequest) throws -> HTTPResponse {
-        let requestArg = try JSONDecoder().decode(PickMultipleImagesFromGalleryRequest.self, from: request.body)
-        try pickMultipleImagesFromGallery(request: requestArg)
+    private func stopMockLocationHandler(request: HTTPRequest) throws -> HTTPResponse {
+        try stopMockLocation()
         return HTTPResponse(.ok)
     }
 
@@ -231,22 +220,6 @@ extension MobileAutomatorServer {
 
     private func axeIgnoreExperimentalHandler(request: HTTPRequest) throws -> HTTPResponse {
         try axeIgnoreExperimental()
-        return HTTPResponse(.ok)
-    }
-
-    private func debugHandler(request: HTTPRequest) throws -> HTTPResponse {
-        try debug()
-        return HTTPResponse(.ok)
-    }
-
-    private func setMockLocationHandler(request: HTTPRequest) throws -> HTTPResponse {
-        let requestArg = try JSONDecoder().decode(SetMockLocationRequest.self, from: request.body)
-        try setMockLocation(request: requestArg)
-        return HTTPResponse(.ok)
-    }
-
-    private func stopMockLocationHandler(request: HTTPRequest) throws -> HTTPResponse {
-        try stopMockLocation()
         return HTTPResponse(.ok)
     }
 
@@ -395,20 +368,15 @@ extension MobileAutomatorServer {
                 request: request,
                 handler: setLocationAccuracyHandler)
         }
-        server.route(.POST, "takeCameraPhoto") {
+        server.route(.POST, "setMockLocation") {
             request in handleRequest(
                 request: request,
-                handler: takeCameraPhotoHandler)
+                handler: setMockLocationHandler)
         }
-        server.route(.POST, "pickImageFromGallery") {
+        server.route(.POST, "stopMockLocation") {
             request in handleRequest(
                 request: request,
-                handler: pickImageFromGalleryHandler)
-        }
-        server.route(.POST, "pickMultipleImagesFromGallery") {
-            request in handleRequest(
-                request: request,
-                handler: pickMultipleImagesFromGalleryHandler)
+                handler: stopMockLocationHandler)
         }
         server.route(.POST, "axeInitSession") {
             request in handleRequest(
@@ -434,21 +402,6 @@ extension MobileAutomatorServer {
             request in handleRequest(
                 request: request,
                 handler: axeIgnoreExperimentalHandler)
-        }
-        server.route(.POST, "debug") {
-            request in handleRequest(
-                request: request,
-                handler: debugHandler)
-        }
-        server.route(.POST, "setMockLocation") {
-            request in handleRequest(
-                request: request,
-                handler: setMockLocationHandler)
-        }
-        server.route(.POST, "stopMockLocation") {
-            request in handleRequest(
-                request: request,
-                handler: stopMockLocationHandler)
         }
         server.route(.POST, "markPatrolAppServiceReady") {
             request in handleRequest(

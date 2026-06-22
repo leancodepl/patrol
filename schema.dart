@@ -304,6 +304,33 @@ class SetMockLocationRequest {
   late String packageName;
 }
 
+class AxeInitSessionRequest {
+  late String dequeApiKey;
+  late String dequeProjectId;
+}
+
+class AxeScanRequest {
+  late bool uploadToDashboard;
+  late List<String> tags;
+  String? scanName;
+}
+
+class AxeIgnoreRulesRequest {
+  late List<String> rulesToIgnore;
+}
+
+class AxeIgnoreByViewIdResourceNameRequest {
+  late String viewIdResourceName;
+  late List<String> ruleList;
+}
+
+class AxeDeleteResultRequest {
+  late String userId;
+  late String packageName;
+  late String resultId;
+  String? uuid;
+}
+
 class IsVirtualDeviceResponse {
   late bool isVirtualDevice;
 }
@@ -351,33 +378,6 @@ class IOSPickMultipleImagesFromGalleryRequest {
   late String appId;
 }
 
-class AxeInitSessionRequest {
-  late String dequeApiKey;
-  late String dequeProjectId;
-}
-
-class AxeScanRequest {
-  late bool uploadToDashboard;
-  late List<String> tags;
-  String? scanName;
-}
-
-class AxeIgnoreRulesRequest {
-  late List<String> rulesToIgnore;
-}
-
-class AxeIgnoreByViewIdResourceNameRequest {
-  late String viewIdResourceName;
-  late List<String> ruleList;
-}
-
-class AxeDeleteResultRequest {
-  late String userId;
-  late String packageName;
-  late String resultId;
-  String? uuid;
-}
-
 abstract class MobileAutomator<IOSServer, AndroidServer, DartClient> {
   void initialize();
   void configure(ConfigureRequest request);
@@ -421,6 +421,15 @@ abstract class MobileAutomator<IOSServer, AndroidServer, DartClient> {
   // other
   void setMockLocation(SetMockLocationRequest request);
   void stopMockLocation();
+
+  // axe integration
+  void axeInitSession(AxeInitSessionRequest request);
+  void axeScan(AxeScanRequest request);
+  void axeIgnoreRules(AxeIgnoreRulesRequest request);
+  void axeIgnoreByViewIdResourceName(
+    AxeIgnoreByViewIdResourceNameRequest request,
+  );
+  void axeIgnoreExperimental();
 
   // TODO(bartekpacia): Move this RPC into a new PatrolNativeTestService service because it doesn't fit here
   void markPatrolAppServiceReady();
@@ -497,15 +506,6 @@ abstract class IosAutomator<IOSServer, DartClient> {
   void pickMultipleImagesFromGallery(
     IOSPickMultipleImagesFromGalleryRequest request,
   );
-
-  // axe integration
-  void axeInitSession(AxeInitSessionRequest request);
-  void axeScan(AxeScanRequest request);
-  void axeIgnoreRules(AxeIgnoreRulesRequest request);
-  void axeIgnoreByViewIdResourceName(
-    AxeIgnoreByViewIdResourceNameRequest request,
-  );
-  void axeIgnoreExperimental();
 
   // other
   void debug();

@@ -1041,6 +1041,86 @@ class MobileAutomator {
       ios: platform.ios.isVirtualDevice,
     );
   }
+
+  /// Initializes an axe DevTools accessibility testing session.
+  ///
+  /// [dequeApiKey] and [dequeProjectId] are the credentials used to
+  /// authenticate with the axe DevTools dashboard.
+  Future<void> axeInitSession({
+    required String dequeApiKey,
+    required String dequeProjectId,
+  }) {
+    return platform.action.mobile(
+      android: () => platform.android.axeInitSession(
+        dequeApiKey: dequeApiKey,
+        dequeProjectId: dequeProjectId,
+      ),
+      ios: () => platform.ios.axeInitSession(
+        dequeApiKey: dequeApiKey,
+        dequeProjectId: dequeProjectId,
+      ),
+    );
+  }
+
+  /// Runs an axe DevTools accessibility scan of the currently visible UI.
+  ///
+  /// When [uploadToDashboard] is true, the scan results are uploaded to the
+  /// axe DevTools dashboard. [tags] and [scanName] are attached to the scan to
+  /// make it easier to identify on the dashboard.
+  Future<void> axeScan({
+    bool uploadToDashboard = true,
+    List<String> tags = const [],
+    String? scanName,
+  }) {
+    return platform.action.mobile(
+      android: () => platform.android.axeScan(
+        uploadToDashboard: uploadToDashboard,
+        tags: tags,
+        scanName: scanName,
+      ),
+      ios: () => platform.ios.axeScan(
+        uploadToDashboard: uploadToDashboard,
+        tags: tags,
+        scanName: scanName,
+      ),
+    );
+  }
+
+  /// Configures the axe DevTools scanner to ignore the accessibility rules
+  /// identified by [rulesToIgnore].
+  Future<void> axeIgnoreRules(List<String> rulesToIgnore) {
+    return platform.action.mobile(
+      android: () => platform.android.axeIgnoreRules(rulesToIgnore),
+      ios: () => platform.ios.axeIgnoreRules(rulesToIgnore),
+    );
+  }
+
+  /// Configures the axe DevTools scanner to ignore the accessibility rules in
+  /// [ruleList] for the view identified by [viewIdResourceName].
+  Future<void> axeIgnoreByViewIdResourceName(
+    String viewIdResourceName,
+    List<String> ruleList,
+  ) {
+    return platform.action.mobile(
+      android: () => platform.android.axeIgnoreByViewIdResourceName(
+        viewIdResourceName,
+        ruleList,
+      ),
+      ios: () => platform.ios.axeIgnoreByViewIdResourceName(
+        viewIdResourceName,
+        ruleList,
+      ),
+    );
+  }
+
+  /// Configures the axe DevTools scanner to ignore experimental accessibility
+  /// rules.
+  Future<void> axeIgnoreExperimental() {
+    return platform.action.mobile(
+      android: platform.android.axeIgnoreExperimental,
+      ios: platform.ios.axeIgnoreExperimental,
+    );
+  }
 }
 
 /// Platform-specific action router.

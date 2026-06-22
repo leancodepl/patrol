@@ -804,6 +804,80 @@ Map<String, dynamic> _$SetMockLocationRequestToJson(
   'packageName': instance.packageName,
 };
 
+AxeInitSessionRequest _$AxeInitSessionRequestFromJson(
+  Map<String, dynamic> json,
+) => AxeInitSessionRequest(
+  dequeApiKey: json['dequeApiKey'] as String,
+  dequeProjectId: json['dequeProjectId'] as String,
+);
+
+Map<String, dynamic> _$AxeInitSessionRequestToJson(
+  AxeInitSessionRequest instance,
+) => <String, dynamic>{
+  'dequeApiKey': instance.dequeApiKey,
+  'dequeProjectId': instance.dequeProjectId,
+};
+
+AxeScanRequest _$AxeScanRequestFromJson(Map<String, dynamic> json) =>
+    AxeScanRequest(
+      uploadToDashboard: json['uploadToDashboard'] as bool,
+      tags: (json['tags'] as List<dynamic>).map((e) => e as String).toList(),
+      scanName: json['scanName'] as String?,
+    );
+
+Map<String, dynamic> _$AxeScanRequestToJson(AxeScanRequest instance) =>
+    <String, dynamic>{
+      'uploadToDashboard': instance.uploadToDashboard,
+      'tags': instance.tags,
+      'scanName': instance.scanName,
+    };
+
+AxeIgnoreRulesRequest _$AxeIgnoreRulesRequestFromJson(
+  Map<String, dynamic> json,
+) => AxeIgnoreRulesRequest(
+  rulesToIgnore: (json['rulesToIgnore'] as List<dynamic>)
+      .map((e) => e as String)
+      .toList(),
+);
+
+Map<String, dynamic> _$AxeIgnoreRulesRequestToJson(
+  AxeIgnoreRulesRequest instance,
+) => <String, dynamic>{'rulesToIgnore': instance.rulesToIgnore};
+
+AxeIgnoreByViewIdResourceNameRequest
+_$AxeIgnoreByViewIdResourceNameRequestFromJson(Map<String, dynamic> json) =>
+    AxeIgnoreByViewIdResourceNameRequest(
+      viewIdResourceName: json['viewIdResourceName'] as String,
+      ruleList: (json['ruleList'] as List<dynamic>)
+          .map((e) => e as String)
+          .toList(),
+    );
+
+Map<String, dynamic> _$AxeIgnoreByViewIdResourceNameRequestToJson(
+  AxeIgnoreByViewIdResourceNameRequest instance,
+) => <String, dynamic>{
+  'viewIdResourceName': instance.viewIdResourceName,
+  'ruleList': instance.ruleList,
+};
+
+AxeDeleteResultRequest _$AxeDeleteResultRequestFromJson(
+  Map<String, dynamic> json,
+) => AxeDeleteResultRequest(
+  userId: json['userId'] as String,
+  packageName: json['packageName'] as String,
+  resultId: json['resultId'] as String,
+  uuid: json['uuid'] as String?,
+);
+
+Map<String, dynamic> _$AxeDeleteResultRequestToJson(
+  AxeDeleteResultRequest instance,
+) => <String, dynamic>{
+  'userId': instance.userId,
+  'packageName': instance.packageName,
+  'resultId': instance.resultId,
+  'uuid': instance.uuid,
+};
+
 IsVirtualDeviceResponse _$IsVirtualDeviceResponseFromJson(
   Map<String, dynamic> json,
 ) => IsVirtualDeviceResponse(isVirtualDevice: json['isVirtualDevice'] as bool);
@@ -949,18 +1023,4 @@ Map<String, dynamic> _$IOSPickMultipleImagesFromGalleryRequestToJson(
   'imageIndexes': instance.imageIndexes,
   'timeoutMillis': instance.timeoutMillis,
   'appId': instance.appId,
-};
-
-AxeInitSessionRequest _$AxeInitSessionRequestFromJson(
-  Map<String, dynamic> json,
-) => AxeInitSessionRequest(
-  dequeApiKey: json['dequeApiKey'] as String,
-  dequeProjectId: json['dequeProjectId'] as String,
-);
-
-Map<String, dynamic> _$AxeInitSessionRequestToJson(
-  AxeInitSessionRequest instance,
-) => <String, dynamic>{
-  'dequeApiKey': instance.dequeApiKey,
-  'dequeProjectId': instance.dequeProjectId,
 };

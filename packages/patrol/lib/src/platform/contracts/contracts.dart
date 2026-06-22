@@ -1196,6 +1196,105 @@ class SetMockLocationRequest with EquatableMixin {
 }
 
 @JsonSerializable()
+class AxeInitSessionRequest with EquatableMixin {
+  AxeInitSessionRequest({
+    required this.dequeApiKey,
+    required this.dequeProjectId,
+  });
+
+  factory AxeInitSessionRequest.fromJson(Map<String, dynamic> json) =>
+      _$AxeInitSessionRequestFromJson(json);
+
+  final String dequeApiKey;
+  final String dequeProjectId;
+
+  Map<String, dynamic> toJson() => _$AxeInitSessionRequestToJson(this);
+
+  @override
+  List<Object?> get props => [dequeApiKey, dequeProjectId];
+}
+
+@JsonSerializable()
+class AxeScanRequest with EquatableMixin {
+  AxeScanRequest({
+    required this.uploadToDashboard,
+    required this.tags,
+    this.scanName,
+  });
+
+  factory AxeScanRequest.fromJson(Map<String, dynamic> json) =>
+      _$AxeScanRequestFromJson(json);
+
+  final bool uploadToDashboard;
+  final List<String> tags;
+  final String? scanName;
+
+  Map<String, dynamic> toJson() => _$AxeScanRequestToJson(this);
+
+  @override
+  List<Object?> get props => [uploadToDashboard, tags, scanName];
+}
+
+@JsonSerializable()
+class AxeIgnoreRulesRequest with EquatableMixin {
+  AxeIgnoreRulesRequest({required this.rulesToIgnore});
+
+  factory AxeIgnoreRulesRequest.fromJson(Map<String, dynamic> json) =>
+      _$AxeIgnoreRulesRequestFromJson(json);
+
+  final List<String> rulesToIgnore;
+
+  Map<String, dynamic> toJson() => _$AxeIgnoreRulesRequestToJson(this);
+
+  @override
+  List<Object?> get props => [rulesToIgnore];
+}
+
+@JsonSerializable()
+class AxeIgnoreByViewIdResourceNameRequest with EquatableMixin {
+  AxeIgnoreByViewIdResourceNameRequest({
+    required this.viewIdResourceName,
+    required this.ruleList,
+  });
+
+  factory AxeIgnoreByViewIdResourceNameRequest.fromJson(
+    Map<String, dynamic> json,
+  ) => _$AxeIgnoreByViewIdResourceNameRequestFromJson(json);
+
+  final String viewIdResourceName;
+  final List<String> ruleList;
+
+  Map<String, dynamic> toJson() =>
+      _$AxeIgnoreByViewIdResourceNameRequestToJson(this);
+
+  @override
+  List<Object?> get props => [viewIdResourceName, ruleList];
+}
+
+@JsonSerializable()
+class AxeDeleteResultRequest with EquatableMixin {
+  AxeDeleteResultRequest({
+    required this.userId,
+    required this.packageName,
+    required this.resultId,
+    this.uuid,
+  });
+
+  factory AxeDeleteResultRequest.fromJson(Map<String, dynamic> json) =>
+      _$AxeDeleteResultRequestFromJson(json);
+
+  final String userId;
+  final String packageName;
+  final String resultId;
+  final String? uuid;
+
+  Map<String, dynamic> toJson() => _$AxeDeleteResultRequestToJson(this);
+
+  @override
+  List<Object?> get props => [userId, packageName, resultId, uuid];
+}
+
+@JsonSerializable()
 class IsVirtualDeviceResponse with EquatableMixin {
   IsVirtualDeviceResponse({required this.isVirtualDevice});
 
