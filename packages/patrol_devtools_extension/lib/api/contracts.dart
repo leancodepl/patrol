@@ -1213,6 +1213,105 @@ class SetMockLocationRequest with Equatable {
 }
 
 @JsonSerializable()
+class AxeInitSessionRequest with Equatable {
+  AxeInitSessionRequest({
+    required this.dequeApiKey,
+    required this.dequeProjectId,
+  });
+
+  factory AxeInitSessionRequest.fromJson(Map<String, dynamic> json) =>
+      _$AxeInitSessionRequestFromJson(json);
+
+  final String dequeApiKey;
+  final String dequeProjectId;
+
+  Map<String, dynamic> toJson() => _$AxeInitSessionRequestToJson(this);
+
+  @override
+  List<Object?> get props => [dequeApiKey, dequeProjectId];
+}
+
+@JsonSerializable()
+class AxeScanRequest with Equatable {
+  AxeScanRequest({
+    required this.uploadToDashboard,
+    required this.tags,
+    this.scanName,
+  });
+
+  factory AxeScanRequest.fromJson(Map<String, dynamic> json) =>
+      _$AxeScanRequestFromJson(json);
+
+  final bool uploadToDashboard;
+  final List<String> tags;
+  final String? scanName;
+
+  Map<String, dynamic> toJson() => _$AxeScanRequestToJson(this);
+
+  @override
+  List<Object?> get props => [uploadToDashboard, tags, scanName];
+}
+
+@JsonSerializable()
+class AxeIgnoreRulesRequest with Equatable {
+  AxeIgnoreRulesRequest({required this.rulesToIgnore});
+
+  factory AxeIgnoreRulesRequest.fromJson(Map<String, dynamic> json) =>
+      _$AxeIgnoreRulesRequestFromJson(json);
+
+  final List<String> rulesToIgnore;
+
+  Map<String, dynamic> toJson() => _$AxeIgnoreRulesRequestToJson(this);
+
+  @override
+  List<Object?> get props => [rulesToIgnore];
+}
+
+@JsonSerializable()
+class AxeIgnoreByViewIdResourceNameRequest with Equatable {
+  AxeIgnoreByViewIdResourceNameRequest({
+    required this.viewIdResourceName,
+    required this.ruleList,
+  });
+
+  factory AxeIgnoreByViewIdResourceNameRequest.fromJson(
+    Map<String, dynamic> json,
+  ) => _$AxeIgnoreByViewIdResourceNameRequestFromJson(json);
+
+  final String viewIdResourceName;
+  final List<String> ruleList;
+
+  Map<String, dynamic> toJson() =>
+      _$AxeIgnoreByViewIdResourceNameRequestToJson(this);
+
+  @override
+  List<Object?> get props => [viewIdResourceName, ruleList];
+}
+
+@JsonSerializable()
+class AxeDeleteResultRequest with Equatable {
+  AxeDeleteResultRequest({
+    required this.userId,
+    required this.packageName,
+    required this.resultId,
+    this.uuid,
+  });
+
+  factory AxeDeleteResultRequest.fromJson(Map<String, dynamic> json) =>
+      _$AxeDeleteResultRequestFromJson(json);
+
+  final String userId;
+  final String packageName;
+  final String resultId;
+  final String? uuid;
+
+  Map<String, dynamic> toJson() => _$AxeDeleteResultRequestToJson(this);
+
+  @override
+  List<Object?> get props => [userId, packageName, resultId, uuid];
+}
+
+@JsonSerializable()
 class IsVirtualDeviceResponse with Equatable {
   const IsVirtualDeviceResponse({required this.isVirtualDevice});
 
@@ -1409,33 +1508,4 @@ class IOSPickMultipleImagesFromGalleryRequest with Equatable {
     timeoutMillis,
     appId,
   ];
-}
-
-@JsonSerializable()
-class AxeInitSessionRequest with EquatableMixin {
-  AxeInitSessionRequest({
-    required this.dequeApiKey,
-    required this.dequeProjectId,
-  });
-
-  factory AxeInitSessionRequest.fromJson(Map<String, dynamic> json) =>
-      _$AxeInitSessionRequestFromJson(json);
-
-  final String dequeApiKey;
-  final String dequeProjectId;
-
-  Map<String, dynamic> toJson() => _$AxeInitSessionRequestToJson(this);
-
-  @override
-  List<Object?> get props => [dequeApiKey, dequeProjectId];
-
-  AxeInitSessionRequest copyWith({
-    String? dequeApiKey,
-    String? dequeProjectId,
-  }) {
-    return AxeInitSessionRequest(
-      dequeApiKey: dequeApiKey ?? this.dequeApiKey,
-      dequeProjectId: dequeProjectId ?? this.dequeProjectId,
-    );
-  }
 }

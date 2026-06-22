@@ -39,6 +39,10 @@ class MobileAutomatorClient {
   final Uri _apiUri;
   final Map<String, String> _headers;
 
+  Future<void> initialize() {
+    return _sendRequest('initialize');
+  }
+
   Future<void> configure(ConfigureRequest request) {
     return _sendRequest('configure', request.toJson());
   }
@@ -148,18 +152,12 @@ class MobileAutomatorClient {
     return _sendRequest('setLocationAccuracy', request.toJson());
   }
 
-  Future<void> takeCameraPhoto(TakeCameraPhotoRequest request) {
-    return _sendRequest('takeCameraPhoto', request.toJson());
+  Future<void> setMockLocation(SetMockLocationRequest request) {
+    return _sendRequest('setMockLocation', request.toJson());
   }
 
-  Future<void> pickImageFromGallery(PickImageFromGalleryRequest request) {
-    return _sendRequest('pickImageFromGallery', request.toJson());
-  }
-
-  Future<void> pickMultipleImagesFromGallery(
-    PickMultipleImagesFromGalleryRequest request,
-  ) {
-    return _sendRequest('pickMultipleImagesFromGallery', request.toJson());
+  Future<void> stopMockLocation() {
+    return _sendRequest('stopMockLocation');
   }
 
   Future<void> axeInitSession(AxeInitSessionRequest request) {
@@ -182,18 +180,6 @@ class MobileAutomatorClient {
 
   Future<void> axeIgnoreExperimental() {
     return _sendRequest('axeIgnoreExperimental');
-  }
-
-  Future<void> debug() {
-    return _sendRequest('debug');
-  }
-
-  Future<void> setMockLocation(SetMockLocationRequest request) {
-    return _sendRequest('setMockLocation', request.toJson());
-  }
-
-  Future<void> stopMockLocation() {
-    return _sendRequest('stopMockLocation');
   }
 
   Future<void> markPatrolAppServiceReady() {
