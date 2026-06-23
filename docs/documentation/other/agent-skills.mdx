@@ -3,24 +3,11 @@ title: Agent skills
 description: AI agent skills that teach coding agents how to write Patrol tests
 ---
 
-## Overview
-
 Patrol ships [agent skills](https://github.com/leancodepl/patrol/tree/master/skills) — focused,
 on-demand instructions in the open [Agent Skills](https://agentskills.io/) format (`SKILL.md`) that
-teach an AI coding agent *how* to write Patrol tests following best practices.
+teach an AI coding agent *how* to write Patrol tests following best practices. They complement
+[Patrol MCP](/documentation/other/patrol-mcp): the MCP gives the agent the tools to run tests, while
+a skill teaches it how to use those tools to write tests well.
 
-They complement [Patrol MCP](/documentation/other/patrol-mcp): the MCP gives the agent the tools to
-run tests, while a skill teaches it how to use those tools to write tests well.
-
-## Available skills
-
-- **patrol-write-test** — order of actions, Patrol API and assertion rules, native dialog handling,
-  and test-key conventions.
-- **patrol-test-architecture** — LeanCode's recommended modular architecture (Modules, System,
-  ApiClients) with shared test keys.
-
-## Installation
-
-The skills are distributed with the [`skills`](https://github.com/vercel-labs/skills) CLI. See the
-[skills catalog](https://github.com/leancodepl/patrol/tree/master/skills) for the full list and the
-per-agent install commands (Claude Code, Cursor, Codex, GitHub Copilot, and more).
+See the [skills catalog in the Patrol repo](https://github.com/leancodepl/patrol/tree/master/skills)
+for the available skills and per-agent install instructions.
