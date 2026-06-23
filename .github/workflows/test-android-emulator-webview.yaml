@@ -133,6 +133,26 @@ jobs:
           echo "TESTS_EXIT_CODE=$TESTS_EXIT_CODE" >> "$GITHUB_OUTPUT"
           exit $TESTS_EXIT_CODE
 
+      # TEMP DEBUG: surface which webview test failed (Android webview workflow
+      # otherwise uploads nothing). Revert once the webview test is stable.
+      - name: Dump test outputs on failure
+        if: always()
+        run: |
+          echo "===== summary.json ====="
+          cat ew-test_outputs/summary.json 2>/dev/null || echo "no summary.json"
+          echo "===== results.xml ====="
+          cat ew-test_outputs/results.xml 2>/dev/null || echo "no results.xml"
+          echo "===== per-shard test_result XMLs ====="
+          find ew-test_outputs -name 'test_result_*.xml' | while read -r f; do
+            echo "--- $f ---"
+            cat "$f"
+          done
+          echo "===== patrol-relevant logcat lines ====="
+          find ew-test_outputs -name 'logcat.txt' | while read -r f; do
+            echo "--- $f ---"
+            grep -aiE "PatrolActionException|TimeoutException|waitUntilVisible|Selector|view not found|Bad state|Exception|assert|FAILURES!!!|shard|interacts with" "$f" | head -80 || true
+          done
+
   call_send_slack_message:
     name: Notify on Slack
     uses: ./.github/workflows/send-slack-message.yaml
