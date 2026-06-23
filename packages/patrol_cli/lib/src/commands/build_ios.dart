@@ -197,6 +197,7 @@ class BuildIOSCommand extends PatrolCommand {
       appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
       fullIsolation: boolArg('full-isolation'),
+      clearIOSPermissions: boolArg('clear-permissions'),
     );
 
     if (!iosOpts.simulator && iosOpts.fullIsolation) {
