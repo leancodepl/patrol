@@ -1,7 +1,7 @@
 ## Unreleased
 
 - Download only Chromium instead of all default Playwright browsers during web runner setup. (#3156)
-- Add support for `--record-video` flag in cli commands (simulators only). (#2741)
+- Add `--record-video` flag to `patrol test` and `patrol develop` to record a video per test case on Android devices/emulators and iOS simulators. (#2741)
 
 ## 4.5.1
 
