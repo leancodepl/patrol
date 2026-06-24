@@ -99,11 +99,41 @@ class VideoRecordingManager {
     final testName = _currentTestName ?? 'unknown_test';
     _logger.detail('Stopping video recording for test: $testName');
 
-    // Stop the recording process
-    _currentRecordingProcess!.kill();
+    // `adb screenrecord` only finalizes the .mp4 (writes the moov atom) when the
+    // device-side process receives SIGINT. Killing the host-side `adb shell`
+    // client sends SIGTERM, which on physical devices often leaves the file
+    // unflushed or never created. So signal screenrecord on the device with
+    // SIGINT and wait for it to finish writing before pulling.
+    try {
+      await _processManager.run([
+        'adb',
+        if (_device.id.isNotEmpty) ...['-s', _device.id],
+        'shell',
+        'pkill',
+        '-INT',
+        'screenrecord',
+      ], runInShell: true);
+    } catch (err) {
+      _logger.detail('Failed to signal screenrecord to stop: $err');
+    }
 
-    // Wait a moment for the file to be finalized
-    await Future<void>.delayed(const Duration(milliseconds: 1000));
+    // Wait for the recording process to flush and exit. Fall back to killing the
+    // host process if it does not exit in time.
+    try {
+      await _currentRecordingProcess!.exitCode.timeout(
+        const Duration(seconds: 10),
+        onTimeout: () {
+          _currentRecordingProcess?.kill();
+          return -1;
+        },
+      );
+    } catch (err) {
+      _logger.detail('Error while waiting for screenrecord to exit: $err');
+      _currentRecordingProcess?.kill();
+    }
+
+    // Give the device a moment to finish writing the file to disk.
+    await Future<void>.delayed(const Duration(milliseconds: 500));
 
     try {
       // Create output directory if it doesn't exist
