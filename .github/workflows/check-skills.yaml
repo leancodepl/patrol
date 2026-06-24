@@ -1,0 +1,23 @@
+name: check skills
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'skills/**'
+      - '.agents/skills/**'
+      - '.claude/skills'
+      - 'tool/check_skills.sh'
+      - '.github/workflows/check-skills.yaml'
+
+jobs:
+  check-skills:
+    name: Validate agent skills
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+
+      - name: Check agent skills
+        run: tool/check_skills.sh

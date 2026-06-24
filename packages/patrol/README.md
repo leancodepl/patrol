@@ -123,6 +123,11 @@ void main() {
 }
 ```
 
+## Agent skills
+
+Patrol ships [agent skills][skills] that teach AI coding agents how to write Patrol tests following
+best practices — see the catalog for what's available and how to install them.
+
 ## 🛠️ Maintained by LeanCode
 
 <div align="center">
@@ -155,6 +160,7 @@ We are **top-tier experts** focused on Flutter Enterprise solutions.
 
 [native automation]: https://patrol.leancode.co/native/overview
 [custom finders]: https://patrol.leancode.co/finders/overview
+[skills]: https://github.com/leancodepl/patrol/tree/master/skills
 [patrol_badge]: https://img.shields.io/pub/v/patrol?label=patrol
 [patrol_finders_badge]: https://img.shields.io/pub/v/patrol_finders?label=patrol_finders
 [patrol_cli_badge]: https://img.shields.io/pub/v/patrol_cli?label=patrol_cli

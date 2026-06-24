@@ -304,6 +304,12 @@ The provided `run-patrol` script sets `PATROL_FLUTTER_COMMAND` automatically:
 - `screenshot`: Captures screenshot from active session device.
 - `native-tree`: Fetches native UI tree from active session device.
 
+## Agent skills
+
+Patrol also ships [agent skills][skills] that complement this MCP server — the MCP provides the tools
+above, while a skill teaches the agent *how* to use them to write Patrol tests. See the catalog for
+the list and install instructions.
+
 ## Troubleshooting
 
 - Make sure your IDE is opened at the mobile project root.
@@ -356,6 +362,7 @@ We are **top-tier experts** focused on Flutter Enterprise solutions.
 [promo_graphics]: ../../assets/promo_banner.png
 [mcp_docs]: https://patrol.leancode.co/documentation/other/patrol-mcp?utm_source=github.com&utm_medium=referral&utm_campaign=patrol-readme
 [vscode_mcp]: https://code.visualstudio.com/docs/copilot/chat/mcp-servers
+[skills]: https://github.com/leancodepl/patrol/tree/master/skills
 [docs]: https://patrol.leancode.co/?utm_source=github.com&utm_medium=referral&utm_campaign=patrol-readme
 [article_web]: https://leancode.co/blog/patrol-web-support?utm_source=github.com&utm_medium=referral&utm_campaign=patrol-readme
 [article_4x]: https://leancode.co/blog/patrol-4-0-release?utm_source=github.com&utm_medium=referral&utm_campaign=patrol-readme

@@ -1,6 +1,6 @@
 ---
-name: patrol-tests
-description: Rules for writing Patrol E2E tests in Flutter apps
+name: patrol-write-test
+description: Write Patrol end-to-end (E2E) tests for a Flutter app — order of actions, Patrol API and assertion rules, native dialog handling, and test-key conventions. Use when adding or editing Patrol/integration tests, assigning widget keys for testing, or debugging a failing Patrol test.
 ---
 
 # Order of actions when writing new tests
