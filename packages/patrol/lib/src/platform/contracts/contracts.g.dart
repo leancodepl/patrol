@@ -929,6 +929,22 @@ Map<String, dynamic> _$AndroidPickMultipleImagesFromGalleryRequestToJson(
   'timeoutMillis': instance.timeoutMillis,
 };
 
+AndroidBiometricAuthenticationRequest
+_$AndroidBiometricAuthenticationRequestFromJson(Map<String, dynamic> json) =>
+    AndroidBiometricAuthenticationRequest(success: json['success'] as bool);
+
+Map<String, dynamic> _$AndroidBiometricAuthenticationRequestToJson(
+  AndroidBiometricAuthenticationRequest instance,
+) => <String, dynamic>{'success': instance.success};
+
+AndroidEnrollBiometricRequest _$AndroidEnrollBiometricRequestFromJson(
+  Map<String, dynamic> json,
+) => AndroidEnrollBiometricRequest(pin: json['pin'] as String);
+
+Map<String, dynamic> _$AndroidEnrollBiometricRequestToJson(
+  AndroidEnrollBiometricRequest instance,
+) => <String, dynamic>{'pin': instance.pin};
+
 IOSPickMultipleImagesFromGalleryRequest
 _$IOSPickMultipleImagesFromGalleryRequestFromJson(Map<String, dynamic> json) =>
     IOSPickMultipleImagesFromGalleryRequest(

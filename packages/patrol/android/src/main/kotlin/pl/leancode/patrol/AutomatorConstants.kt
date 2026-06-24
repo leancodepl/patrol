@@ -74,4 +74,21 @@ object AutomatorConstants {
      * Used to confirm selection when picking images from gallery
      */
     const val GALLERY_SELECT_BUTTON_RES_ID = "com.google.android.documentsui:id/action_menu_select"
+
+    /**
+     * Resource ID for the negative/cancel button in the BiometricPrompt dialog (Android 10+).
+     */
+    const val BIOMETRIC_NEGATIVE_BUTTON_RES_ID = "com.android.systemui:id/button_negative"
+
+    /**
+     * Resource ID for the scroll view container of the BiometricPrompt dialog (Android 10+).
+     * Used to detect whether a biometric prompt is currently displayed.
+     */
+    const val BIOMETRIC_SCROLLVIEW_RES_ID = "com.android.systemui:id/scrollView"
+
+    /**
+     * Resource ID for the fingerprint icon in the BiometricPrompt dialog.
+     * Used to detect whether a biometric prompt is currently displayed.
+     */
+    const val BIOMETRIC_ICON_RES_ID = "com.android.systemui:id/biometric_icon"
 }

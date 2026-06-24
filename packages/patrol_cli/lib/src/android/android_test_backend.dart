@@ -251,6 +251,13 @@ class AndroidTestBackend {
     required bool clearTestSteps,
     void Function(Entry entry)? onLogEntry,
   }) async {
+    // On emulators, automatically push the console auth token so that the
+    // patrol biometric enrollment API can connect to the emulator console
+    // without any manual setup step.
+    if (!device.real) {
+      await _pushEmulatorAuthToken(device.id);
+    }
+
     await _disposeScope.run((scope) async {
       // Read patrol logs from logcat
       final processLogcat =
@@ -286,6 +293,13 @@ class AndroidTestBackend {
 
       final subject = '${options.description} on ${device.description}';
       final task = _logger.task('Executing tests of $subject');
+
+      if (!device.real) {
+        // On emulators, run a background helper that handles `enrollBiometricOnEmulator()`
+        // calls by sending host-side `adb emu finger touch 1` commands. The in-device
+        // telnet path does not advance fingerprint enrollment on Google Play API 36.
+        unawaited(_runBiometricEnrollmentHelper(device.id, scope));
+      }
 
       final process =
           await _processManager.start(
@@ -336,6 +350,112 @@ class AndroidTestBackend {
         throw Exception(cause);
       }
     });
+  }
+
+  Future<void> _pushEmulatorAuthToken(String deviceId) async {
+    final home =
+        _platform.environment['HOME'] ??
+        _platform.environment['USERPROFILE'] ??
+        '';
+    if (home.isEmpty) {
+      return;
+    }
+
+    final tokenPath = _platform.isWindows
+        ? '$home\\.emulator_console_auth_token'
+        : '$home/.emulator_console_auth_token';
+
+    final tokenFile = _rootDirectory.fileSystem.file(tokenPath);
+    if (!tokenFile.existsSync()) {
+      _logger.detail(
+        'Emulator auth token not found at $tokenPath — '
+        'biometric enrollment will not work on this emulator',
+      );
+      return;
+    }
+
+    _logger.detail('Pushing emulator auth token to $deviceId');
+    try {
+      final result = await Process.run(
+        'adb',
+        [
+          '-s',
+          deviceId,
+          'push',
+          tokenPath,
+          '/data/local/tmp/.emulator_console_auth_token',
+        ],
+        runInShell: true,
+      );
+      if (result.exitCode == 0) {
+        _logger.detail('Emulator auth token pushed to $deviceId');
+      } else {
+        _logger.warn(
+          'Failed to push emulator auth token to $deviceId: ${result.stderr}',
+        );
+      }
+    } catch (e) {
+      _logger.warn('Failed to push emulator auth token to $deviceId: $e');
+    }
+  }
+
+  /// Sends host-side `adb emu finger touch` commands when Kotlin's
+  /// `enrollBiometricOnEmulator` writes the `/data/local/tmp/patrol_biometric_ready`
+  /// flag file.  Runs concurrently with the test process for the lifetime of [scope].
+  Future<void> _runBiometricEnrollmentHelper(
+    String deviceId,
+    DisposeScope scope,
+  ) async {
+    // Clean up any stale flags from a previous run.
+    await Process.run(
+      'adb',
+      ['-s', deviceId, 'shell', 'rm', '-f', '/data/local/tmp/patrol_biometric_ready'],
+      runInShell: true,
+    );
+
+    while (!scope.disposed) {
+      await Future<void>.delayed(const Duration(milliseconds: 500));
+      if (scope.disposed) {
+        return;
+      }
+
+      final check = await Process.run(
+        'adb',
+        [
+          '-s', deviceId, 'shell',
+          'test -f /data/local/tmp/patrol_biometric_ready && echo yes || echo no',
+        ],
+        runInShell: true,
+      );
+
+      if (check.stdout.toString().trim() != 'yes') {
+        continue;
+      }
+
+      // Delete the flag before sending touches to avoid re-triggering.
+      await Process.run(
+        'adb',
+        ['-s', deviceId, 'shell', 'rm', '-f', '/data/local/tmp/patrol_biometric_ready'],
+        runInShell: true,
+      );
+
+      _logger.detail('Biometric enrollment: sending host-side finger touches via adb emu');
+
+      for (var i = 0; i < 30 && !scope.disposed; i++) {
+        await Process.run(
+          'adb',
+          ['-s', deviceId, 'emu', 'finger', 'touch', '1'],
+          runInShell: true,
+        );
+        await Future<void>.delayed(const Duration(milliseconds: 600));
+        await Process.run(
+          'adb',
+          ['-s', deviceId, 'emu', 'finger', 'touch', '-1'],
+          runInShell: true,
+        );
+        await Future<void>.delayed(const Duration(milliseconds: 500));
+      }
+    }
   }
 
   Future<void> uninstall(String appId, Device device) async {

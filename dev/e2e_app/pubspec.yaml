@@ -10,6 +10,7 @@ environment:
 dependencies:
   app_links: ^6.1.1
   cupertino_icons: ^1.0.6
+  local_auth: ^2.3.0
   file_picker: ^10.3.3
   file_saver: ^0.3.1
   flutter:
@@ -33,6 +34,8 @@ dependency_overrides:
     path: ../../packages/patrol_cli
   # Due to: https://github.com/Baseflow/flutter-permission-handler/issues/1450#issuecomment-2673836556
   permission_handler_apple: 9.4.5
+  patrol_cli:
+    path: ../../packages/patrol_cli
 
 dev_dependencies:
   flutter_test:

@@ -5,6 +5,8 @@ import org.http4k.routing.RoutingHttpHandler
 import org.http4k.routing.routes
 import pl.leancode.patrol.contracts.AndroidAutomatorServer
 import pl.leancode.patrol.contracts.Contracts
+import pl.leancode.patrol.contracts.Contracts.AndroidBiometricAuthenticationRequest
+import pl.leancode.patrol.contracts.Contracts.AndroidEnrollBiometricRequest
 import pl.leancode.patrol.contracts.Contracts.AndroidEnterTextRequest
 import pl.leancode.patrol.contracts.Contracts.AndroidGetNativeViewsRequest
 import pl.leancode.patrol.contracts.Contracts.AndroidGetNativeViewsResponse
@@ -409,6 +411,14 @@ class AutomatorServer(private val automation: Automator) : MobileAutomatorServer
         } else {
             throw PatrolException("tapOnNotification(): neither index nor selector are set")
         }
+    }
+
+    override fun performBiometricAuthentication(request: AndroidBiometricAuthenticationRequest) {
+        automation.performBiometricAuthentication(request.success)
+    }
+
+    override fun enrollBiometricOnEmulator(request: AndroidEnrollBiometricRequest) {
+        automation.enrollBiometricOnEmulator(request.pin)
     }
 
     override fun markPatrolAppServiceReady() {

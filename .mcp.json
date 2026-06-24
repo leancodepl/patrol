@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "patrol": {
+      "command": "./.claude/run-patrol",
+      "env": {
+        "PROJECT_ROOT": "./dev/e2e_app",
+        "PATROL_FLAGS": "-d emulator-5554",
+        "SHOW_TERMINAL": "false"
+      }
+    }
+  }
+}

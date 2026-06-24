@@ -803,6 +803,14 @@ class Contracts {
     }
   }
 
+  data class AndroidBiometricAuthenticationRequest (
+    val success: Boolean
+  )
+
+  data class AndroidEnrollBiometricRequest (
+    val pin: String
+  )
+
   data class IOSPickMultipleImagesFromGalleryRequest (
     val imageSelector: IOSSelector? = null,
     val imageIndexes: List<Long>,

@@ -31,6 +31,10 @@ import pl.leancode.patrol.contracts.Contracts.KeyboardBehavior
 import pl.leancode.patrol.contracts.Contracts.Notification
 import pl.leancode.patrol.contracts.Contracts.Point2D
 import pl.leancode.patrol.contracts.Contracts.Rectangle
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import java.io.PrintWriter
+import java.net.Socket
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
@@ -847,6 +851,351 @@ class Automator private constructor() {
         }
 
         tap(actionMenuUiSelector, actionMenuBySelector, 0, timeout)
+    }
+
+    fun isBiometricPromptVisible(timeout: Long): Boolean {
+        Logger.d("isBiometricPromptVisible()")
+        val identifiers = arrayOf(
+            AutomatorConstants.BIOMETRIC_SCROLLVIEW_RES_ID,
+            AutomatorConstants.BIOMETRIC_NEGATIVE_BUTTON_RES_ID,
+            AutomatorConstants.BIOMETRIC_ICON_RES_ID,
+        )
+        val uiObject = waitForUiObjectByResourceId(*identifiers, timeout = timeout)
+        return uiObject != null
+    }
+
+    fun performBiometricAuthentication(success: Boolean) {
+        Logger.d("performBiometricAuthentication(success: $success)")
+
+        if (success) {
+            val isEmulator = Build.FINGERPRINT.startsWith("generic") ||
+                Build.FINGERPRINT.startsWith("unknown") ||
+                Build.MODEL.contains("google_sdk") ||
+                Build.MODEL.contains("Emulator") ||
+                Build.MODEL.contains("Android SDK built for x86") ||
+                Build.MODEL.contains("Android SDK built for arm64") ||
+                Build.MODEL.contains("sdk_gphone") ||
+                Build.MANUFACTURER.contains("Genymotion") ||
+                Build.HARDWARE.contains("ranchu") ||
+                Build.HARDWARE.contains("goldfish") ||
+                Build.PRODUCT.contains("sdk_gphone") ||
+                Build.PRODUCT.contains("google_sdk") ||
+                Build.PRODUCT.contains("sdk") ||
+                (Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic")) ||
+                "google_sdk" == Build.PRODUCT
+
+            if (isEmulator) {
+                simulateFingerprintSuccessOnEmulator()
+            } else {
+                throw PatrolException(
+                    "performBiometricAuthentication(success: true) is only supported on Android emulators. " +
+                    "On real devices, use success: false to cancel the biometric prompt instead."
+                )
+            }
+        } else {
+            clickBiometricCancelButton()
+        }
+    }
+
+    fun enrollBiometricOnEmulator(pin: String) {
+        Logger.d("enrollBiometricOnEmulator(pin=***)")
+
+        // Wake the device if sleeping and dismiss any keyguard.
+        uiDevice.wakeUp()
+        delay(500)
+
+        // Clear any existing screen lock (which also removes enrolled fingerprints, since
+        // Android ties biometrics to the screen lock). Clearing converts the keyguard to a
+        // swipe-only lock so wm dismiss-keyguard can bypass it in the next step.
+        uiDevice.executeShellCommand("locksettings clear --old $pin")
+        delay(500)
+
+        // Dismiss while the keyguard is non-secure (swipe-only), before we set the PIN.
+        // This leaves the device unlocked so the fingerprint enrollment activity can
+        // launch without triggering a "Confirm your screen lock" prompt.
+        uiDevice.executeShellCommand("wm dismiss-keyguard")
+        delay(500)
+
+        // Now set the PIN from an already-unlocked state — the active session stays open.
+        uiDevice.executeShellCommand("locksettings set-pin $pin")
+        delay(1000)
+
+        // Launch the fingerprint enrollment flow directly via Settings intent.
+        val intent = Intent("android.settings.FINGERPRINT_ENROLL").apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+        targetContext.startActivity(intent)
+        // On cold Settings starts (first test in a session), the enrollment activity can take
+        // longer than 2 seconds to render its first screen. 4 seconds covers cold-start latency
+        // on Google Play API 36 emulators.
+        delay(4000)
+
+        // Navigate through all pre-enrollment screens (intro/consent/PIN confirmation).
+        // Different Android versions and OEM skins show these in different orders, so we
+        // loop and handle each screen type as it appears rather than assuming a fixed order.
+        // "MORE" must come before "I agree" — Pixel Imprint shows a scrollable terms screen
+        // where "MORE" scrolls to reveal the "I agree" button at the bottom.
+        // textMatches uses case-insensitive regex so "I agree", "I AGREE", etc. all match.
+        val navButtons = listOf("I agree", "Agree", "Continue", "Next", "Start", "OK", "Add fingerprint", "MORE")
+        var consecutiveMisses = 0
+        for (navAttempt in 1..15) {
+            val pinEntry = uiDevice.findObject(UiSelector().className("android.widget.EditText"))
+            if (pinEntry.exists()) {
+                consecutiveMisses = 0
+                Logger.d("enrollBiometricOnEmulator: PIN confirmation screen (attempt $navAttempt)")
+                pinEntry.setText(pin)
+                delay(300)
+                uiDevice.pressEnter()
+                delay(2000)
+                continue
+            }
+
+            var clicked = false
+            for (buttonText in navButtons) {
+                val btn = uiDevice.findObject(
+                    UiSelector().textMatches("(?i)${Regex.escape(buttonText)}")
+                )
+                if (btn.exists()) {
+                    consecutiveMisses = 0
+                    Logger.d("enrollBiometricOnEmulator: tapping '$buttonText' (attempt $navAttempt)")
+                    btn.click()
+                    delay(3000)
+                    clicked = true
+                    break
+                }
+            }
+
+            if (!clicked) {
+                consecutiveMisses++
+                Logger.d("enrollBiometricOnEmulator: no nav button found (attempt $navAttempt, miss $consecutiveMisses/3)")
+                if (consecutiveMisses >= 3) {
+                    Logger.d("enrollBiometricOnEmulator: 3 consecutive misses — confirmed on placement screen")
+                    break
+                }
+                // Screen may still be loading — wait before retrying.
+                delay(2000)
+            }
+        }
+
+        // Signal patrol_cli to send host-side finger touches via `adb emu finger touch 1`.
+        // Fingerprint enrollment on Google Play API 36 emulators does not respond to
+        // finger touch events sent via the in-device telnet console — only the ADB
+        // transport path (used by `adb emu`) actually advances the HAL enrollment counter.
+        // patrol_cli detects this flag file and sends the touches from the host machine.
+        uiDevice.executeShellCommand("touch /data/local/tmp/patrol_biometric_ready")
+        Logger.d("enrollBiometricOnEmulator: wrote ready flag — waiting for patrol_cli finger touches")
+
+        val deadline = System.currentTimeMillis() + 60_000
+        var enrolled = false
+        while (System.currentTimeMillis() < deadline) {
+            delay(500)
+            if (uiDevice.findObject(UiSelector().textMatches("(?i)done")).exists()) {
+                enrolled = true
+                Logger.d("enrollBiometricOnEmulator: 'Done' button appeared, enrollment complete")
+                break
+            }
+        }
+
+        if (!enrolled) {
+            throw PatrolException(
+                "enrollBiometricOnEmulator: 'Done' button not found after 60 seconds. " +
+                "Ensure patrol_cli can run 'adb -s <device> emu finger touch 1' — " +
+                "this requires an Android emulator and patrol_cli to be running the test."
+            )
+        }
+
+        val doneBtn = uiDevice.findObject(UiSelector().textMatches("(?i)done"))
+        Logger.d("enrollBiometricOnEmulator: tapping 'Done' to finish enrollment")
+        doneBtn.click()
+        delay(1000)
+        // Android automatically returns focus to the test app after the enrollment task finishes.
+        // Do NOT press back here — it would navigate away from the test app and destroy its activity.
+    }
+
+    private fun simulateFingerprintSuccessOnEmulator(fingerprintId: Int = 1) {
+        // Wait for the BiometricPrompt dialog to be visible before triggering the fingerprint.
+        if (!isBiometricPromptVisible(timeoutMillis)) {
+            throw PatrolException(
+                "BiometricPrompt did not appear within ${timeoutMillis}ms. " +
+                "Make sure biometric authentication has been requested before calling this method."
+            )
+        }
+
+        // Determine the emulator console port from the device serial (e.g. "emulator-5554" → 5554).
+        val consolePort = getEmulatorConsolePort()
+        Logger.d("simulateFingerprintSuccessOnEmulator: connecting to 10.0.2.2:$consolePort")
+
+        val socket = try {
+            Socket().also {
+                it.bind(java.net.InetSocketAddress(java.net.InetAddress.getByName("0.0.0.0"), 0))
+                it.connect(java.net.InetSocketAddress("10.0.2.2", consolePort), 5000)
+                it.soTimeout = 5000
+            }
+        } catch (e: Exception) {
+            throw PatrolException(
+                "simulateFingerprintSuccessOnEmulator() failed to connect to emulator console " +
+                "at 10.0.2.2:$consolePort: ${e.message}. " +
+                "Ensure the test is running on an Android emulator."
+            )
+        }
+
+        val writer = PrintWriter(socket.getOutputStream(), true)
+        val reader = BufferedReader(InputStreamReader(socket.getInputStream()))
+
+        try {
+            val greeting = readConsoleUntilPrompt(reader)
+            Logger.d("simulateFingerprintSuccessOnEmulator: greeting: $greeting")
+
+            // Try finger touch immediately; some emulators allow it without auth.
+            writer.println("finger touch $fingerprintId")
+            val firstResponse = readConsoleUntilPrompt(reader)
+            Logger.d("simulateFingerprintSuccessOnEmulator: first finger touch response: '$firstResponse'")
+
+            val needsAuth = firstResponse.contains("not authenticated", ignoreCase = true) ||
+                firstResponse.contains("KO: missing authentication", ignoreCase = true) ||
+                (greeting.contains("Authentication required", ignoreCase = true) &&
+                    !firstResponse.trimEnd().endsWith("OK"))
+
+            if (needsAuth) {
+                val authToken = readEmulatorAuthToken()
+                    ?: throw PatrolException(
+                        "simulateFingerprintSuccessOnEmulator() failed: emulator console requires " +
+                        "authentication but no token was found. " +
+                        "Push the auth token to the device with one of:\n" +
+                        "  adb push ~/.emulator_console_auth_token /data/local/tmp/.emulator_console_auth_token\n" +
+                        "  adb push ~/.emulator_console_auth_token /sdcard/.emulator_console_auth_token"
+                    )
+
+                writer.println("auth $authToken")
+                val authResponse = readConsoleUntilPrompt(reader)
+                Logger.d("simulateFingerprintSuccessOnEmulator: auth response: '$authResponse'")
+
+                if (!authResponse.trimEnd().endsWith("OK")) {
+                    throw PatrolException(
+                        "simulateFingerprintSuccessOnEmulator() failed: emulator console rejected the auth token."
+                    )
+                }
+
+                writer.println("finger touch $fingerprintId")
+                val retryResponse = readConsoleUntilPrompt(reader)
+                Logger.d("simulateFingerprintSuccessOnEmulator: retry finger touch response: '$retryResponse'")
+
+                if (!retryResponse.trimEnd().endsWith("OK")) {
+                    throw PatrolException(
+                        "simulateFingerprintSuccessOnEmulator() failed: emulator rejected " +
+                        "'finger touch $fingerprintId': '$retryResponse'. " +
+                        "Make sure fingerprint ID $fingerprintId is enrolled in Settings > Security > Fingerprint."
+                    )
+                }
+            } else if (!firstResponse.trimEnd().endsWith("OK")) {
+                throw PatrolException(
+                    "simulateFingerprintSuccessOnEmulator() failed: emulator rejected " +
+                    "'finger touch $fingerprintId': '$firstResponse'. " +
+                    "Make sure fingerprint ID $fingerprintId is enrolled in Settings > Security > Fingerprint."
+                )
+            }
+        } catch (e: PatrolException) {
+            throw e
+        } catch (e: Exception) {
+            throw PatrolException("simulateFingerprintSuccessOnEmulator() failed: ${e.message}")
+        } finally {
+            socket.close()
+        }
+
+        delay()
+    }
+
+    private fun getEmulatorConsolePort(): Int {
+        val serial = uiDevice.executeShellCommand("getprop ro.serialno").trim()
+        return if (serial.startsWith("emulator-")) {
+            serial.substringAfter("emulator-").toIntOrNull() ?: 5554
+        } else {
+            5554
+        }
+    }
+
+    private fun readEmulatorAuthToken(): String? {
+        val candidates = listOf(
+            "/data/local/tmp/.emulator_console_auth_token",
+            "/sdcard/.emulator_console_auth_token",
+        )
+        for (path in candidates) {
+            val token = try {
+                uiDevice.executeShellCommand("cat $path 2>/dev/null").trim()
+            } catch (e: Exception) {
+                ""
+            }
+            if (token.isNotEmpty()) {
+                Logger.d("readEmulatorAuthToken: found token at $path")
+                return token
+            }
+        }
+        return null
+    }
+
+    private fun readConsoleUntilPrompt(reader: BufferedReader, timeoutMs: Long = 5000): String {
+        val sb = StringBuilder()
+        val startTime = System.currentTimeMillis()
+
+        while (System.currentTimeMillis() - startTime < timeoutMs) {
+            if (reader.ready()) {
+                val line = reader.readLine() ?: break
+                sb.appendLine(line)
+                if (line == "OK" || line.startsWith("KO")) break
+            } else {
+                Thread.sleep(100)
+            }
+        }
+
+        return sb.toString()
+    }
+
+    private fun clickBiometricCancelButton() {
+        // Wait for the dialog to appear before trying to interact with it.
+        if (!isBiometricPromptVisible(timeoutMillis)) {
+            throw PatrolException(
+                "BiometricPrompt did not appear within ${timeoutMillis}ms. " +
+                "Make sure biometric authentication has been requested before calling this method."
+            )
+        }
+
+        // Try the well-known resource ID first (works on older API levels).
+        val uiObject = waitForUiObjectByResourceId(
+            AutomatorConstants.BIOMETRIC_NEGATIVE_BUTTON_RES_ID,
+            timeout = 2_000,
+        )
+        if (uiObject != null) {
+            Logger.d("clickBiometricCancelButton: clicking by resource ID")
+            uiObject.click()
+            delay()
+            return
+        }
+
+        // Fallback: find by text (case-insensitive to handle "CANCEL" on API 36).
+        val cancelPatterns = listOf("Cancel", "CANCEL", "Cancel authentication")
+        for (text in cancelPatterns) {
+            val obj = uiDevice.findObject(UiSelector().text(text))
+            if (obj.exists()) {
+                Logger.d("clickBiometricCancelButton: clicking by text '$text'")
+                obj.click()
+                delay()
+                return
+            }
+        }
+        val cancelByRegex = uiDevice.findObject(UiSelector().textMatches("(?i)cancel.*"))
+        if (cancelByRegex.exists()) {
+            Logger.d("clickBiometricCancelButton: clicking by cancel pattern")
+            cancelByRegex.click()
+            delay()
+            return
+        }
+
+        // Final fallback: press Back to dismiss the dialog.
+        // BiometricPrompt fires onAuthenticationError(ERROR_USER_CANCELED) on Back press,
+        // which is equivalent to the user tapping Cancel.
+        Logger.d("clickBiometricCancelButton: pressing Back to dismiss biometric dialog")
+        uiDevice.pressBack()
+        delay()
     }
 
     /**

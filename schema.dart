@@ -344,6 +344,14 @@ class AndroidPickMultipleImagesFromGalleryRequest {
   late int? timeoutMillis;
 }
 
+class AndroidBiometricAuthenticationRequest {
+  late bool success;
+}
+
+class AndroidEnrollBiometricRequest {
+  late String pin;
+}
+
 class IOSPickMultipleImagesFromGalleryRequest {
   late IOSSelector? imageSelector;
   late List<int> imageIndexes;
@@ -437,6 +445,12 @@ abstract class AndroidAutomator<AndroidServer, DartClient> {
 
   // permissions
   void allowPermission();
+
+  // biometric
+  void performBiometricAuthentication(
+    AndroidBiometricAuthenticationRequest request,
+  );
+  void enrollBiometricOnEmulator(AndroidEnrollBiometricRequest request);
 }
 
 abstract class IosAutomator<IOSServer, DartClient> {

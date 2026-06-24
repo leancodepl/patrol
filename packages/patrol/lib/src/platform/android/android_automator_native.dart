@@ -590,4 +590,24 @@ class AndroidAutomator extends NativeMobileAutomator
       );
     });
   }
+
+  @override
+  Future<void> performBiometricAuthentication({required bool success}) async {
+    await wrapRequest(
+      'performBiometricAuthentication',
+      () => _client.performBiometricAuthentication(
+        AndroidBiometricAuthenticationRequest(success: success),
+      ),
+    );
+  }
+
+  @override
+  Future<void> enrollBiometricOnEmulator({String pin = '1234'}) async {
+    await wrapRequest(
+      'enrollBiometricOnEmulator',
+      () => _client.enrollBiometricOnEmulator(
+        AndroidEnrollBiometricRequest(pin: pin),
+      ),
+    );
+  }
 }

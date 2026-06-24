@@ -118,6 +118,18 @@ class AndroidAutomatorClient {
     return _sendRequest('allowPermission');
   }
 
+  Future<void> performBiometricAuthentication(
+    AndroidBiometricAuthenticationRequest request,
+  ) {
+    return _sendRequest('performBiometricAuthentication', request.toJson());
+  }
+
+  Future<void> enrollBiometricOnEmulator(
+    AndroidEnrollBiometricRequest request,
+  ) {
+    return _sendRequest('enrollBiometricOnEmulator', request.toJson());
+  }
+
   Future<Map<String, dynamic>> _sendRequest(
     String requestName, [
     Map<String, dynamic>? request,

@@ -513,6 +513,14 @@ public struct AndroidPickMultipleImagesFromGalleryRequest: Codable {
   public var timeoutMillis: Int?
 }
 
+public struct AndroidBiometricAuthenticationRequest: Codable {
+  public var success: Bool
+}
+
+public struct AndroidEnrollBiometricRequest: Codable {
+  public var pin: String
+}
+
 public struct IOSPickMultipleImagesFromGalleryRequest: Codable {
   public var imageSelector: IOSSelector?
   public var imageIndexes: [Int]

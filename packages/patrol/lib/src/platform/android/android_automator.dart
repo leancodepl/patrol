@@ -295,4 +295,48 @@ abstract interface class AndroidAutomator implements MobileAutomator {
     AndroidSelector? imageSelector,
     Duration? timeout,
   });
+
+  /// Simulates a biometric authentication result on Android.
+  ///
+  /// When [success] is `true`, the biometric prompt is accepted:
+  /// * On **emulators**: the virtual fingerprint sensor is triggered via the
+  ///   emulator console. The emulator console must be reachable (the default
+  ///   port 5554 is tried first, then 5556, 5558, 5560). If the console
+  ///   requires authentication, push the auth token to the device first:
+  ///   ```shell
+  ///   adb push ~/.emulator_console_auth_token /data/local/tmp/patrol_emu_auth_token
+  ///   ```
+  /// * On **physical devices**: throws a `PatrolActionException` because
+  ///   fingerprint hardware cannot be simulated without cloud infrastructure.
+  ///   Use `success: false` to cancel the prompt instead.
+  ///
+  /// When [success] is `false`, the biometric prompt is cancelled by clicking
+  /// its negative/cancel button. This works on both emulators and real devices.
+  ///
+  /// The biometric prompt must already be displayed before calling this method.
+  Future<void> performBiometricAuthentication({required bool success});
+
+  /// Enrolls a fingerprint on an Android emulator.
+  ///
+  /// This is a one-time setup step required before biometric tests can run.
+  /// It sets up a device PIN (required by Android as a prerequisite), then
+  /// navigates the fingerprint enrollment UI in Android Settings and simulates
+  /// fingerprint scans via the emulator console.
+  ///
+  /// Only works on Android emulators. If called on a physical device, it throws.
+  ///
+  /// The patrol CLI automatically pushes the emulator console auth token
+  /// (`~/.emulator_console_auth_token`) to the device before each test run,
+  /// so no manual setup is required when using `patrol test`.
+  ///
+  /// The [pin] sets the device screen-lock PIN used during enrollment (default: `'1234'`).
+  ///
+  /// Typical usage — enroll before each biometric test:
+  /// ```dart
+  /// patrol('biometric test', ($) async {
+  ///   await $.platform.android.enrollBiometricOnEmulator();
+  ///   // ... rest of test
+  /// });
+  /// ```
+  Future<void> enrollBiometricOnEmulator({String pin = '1234'});
 }

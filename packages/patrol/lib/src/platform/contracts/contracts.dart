@@ -1348,6 +1348,38 @@ class AndroidPickMultipleImagesFromGalleryRequest with EquatableMixin {
 }
 
 @JsonSerializable()
+class AndroidBiometricAuthenticationRequest with EquatableMixin {
+  AndroidBiometricAuthenticationRequest({required this.success});
+
+  factory AndroidBiometricAuthenticationRequest.fromJson(
+    Map<String, dynamic> json,
+  ) => _$AndroidBiometricAuthenticationRequestFromJson(json);
+
+  final bool success;
+
+  Map<String, dynamic> toJson() =>
+      _$AndroidBiometricAuthenticationRequestToJson(this);
+
+  @override
+  List<Object?> get props => [success];
+}
+
+@JsonSerializable()
+class AndroidEnrollBiometricRequest with EquatableMixin {
+  AndroidEnrollBiometricRequest({required this.pin});
+
+  factory AndroidEnrollBiometricRequest.fromJson(Map<String, dynamic> json) =>
+      _$AndroidEnrollBiometricRequestFromJson(json);
+
+  final String pin;
+
+  Map<String, dynamic> toJson() => _$AndroidEnrollBiometricRequestToJson(this);
+
+  @override
+  List<Object?> get props => [pin];
+}
+
+@JsonSerializable()
 class IOSPickMultipleImagesFromGalleryRequest with EquatableMixin {
   IOSPickMultipleImagesFromGalleryRequest({
     this.imageSelector,

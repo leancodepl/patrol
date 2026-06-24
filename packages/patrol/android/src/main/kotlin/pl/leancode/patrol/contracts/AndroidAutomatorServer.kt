@@ -32,6 +32,8 @@ interface AndroidAutomatorServer {
     fun pickImageFromGallery(request: Contracts.AndroidPickImageFromGalleryRequest)
     fun pickMultipleImagesFromGallery(request: Contracts.AndroidPickMultipleImagesFromGalleryRequest)
     fun allowPermission()
+    fun performBiometricAuthentication(request: Contracts.AndroidBiometricAuthenticationRequest)
+    fun enrollBiometricOnEmulator(request: Contracts.AndroidEnrollBiometricRequest)
 }
 
 private val json = Gson()
@@ -119,6 +121,16 @@ fun getAndroidAutomatorRoutes(server: AndroidAutomatorServer): RoutingHttpHandle
     },
     "allowPermission" bind POST to {
       server.allowPermission()
+      Response(OK)
+    },
+    "performBiometricAuthentication" bind POST to {
+      val body = json.fromJson(it.bodyString(), Contracts.AndroidBiometricAuthenticationRequest::class.java)
+      server.performBiometricAuthentication(body)
+      Response(OK)
+    },
+    "enrollBiometricOnEmulator" bind POST to {
+      val body = json.fromJson(it.bodyString(), Contracts.AndroidEnrollBiometricRequest::class.java)
+      server.enrollBiometricOnEmulator(body)
       Response(OK)
     }
 )

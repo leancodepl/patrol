@@ -108,6 +108,11 @@ class Keys {
   // external app screen
   static const openIosSettingsButton = Key('openIosSettingsButton');
   static const externalAppStatusText = Key('externalAppStatusText');
+
+  // biometric screen
+  static const biometricScreenButton = Key('biometricScreenButton');
+  static const biometricStatusText = Key('biometricStatusText');
+  static const biometricAuthenticateButton = Key('biometricAuthenticateButton');
 }
 
 class AtFinderItemKey extends ValueKey<int> {
