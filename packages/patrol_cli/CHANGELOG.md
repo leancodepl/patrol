@@ -5,7 +5,7 @@
 
 ## Unreleased
 
-- Add `--record-video` flag to `patrol test` and `patrol develop` to record a video per test case on Android devices/emulators and iOS simulators. (#2741)
+- Add `--record-video` flag to `patrol test` and `patrol develop` to record a video per test case on Android emulators and iOS simulators. (#2741)
 
 ## 4.6.0
 
