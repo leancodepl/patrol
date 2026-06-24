@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:dispose_scope/dispose_scope.dart';
@@ -77,8 +78,40 @@ class VideoRecordingManager {
       ], runInShell: true);
       _currentRecordingProcess!.disposedBy(_scope);
 
-      // Give the recording a moment to start
+      // Capture screenrecord output so startup failures surface instead of
+      // silently producing no file (later failing on `adb pull`).
+      final processOutput = StringBuffer();
+      _currentRecordingProcess!.stdout.listen(
+        (data) => processOutput.write(String.fromCharCodes(data)),
+      );
+      _currentRecordingProcess!.stderr.listen(
+        (data) => processOutput.write(String.fromCharCodes(data)),
+      );
+
+      // Detect an immediate exit (e.g. `screenrecord` denied access to the
+      // output path, which some OEM/SELinux policies enforce).
+      int? earlyExitCode;
+      unawaited(
+        _currentRecordingProcess!.exitCode.then((code) => earlyExitCode = code),
+      );
+
+      // Give the recording a moment to start.
       await Future<void>.delayed(const Duration(milliseconds: 500));
+
+      if (earlyExitCode != null) {
+        final details = processOutput.toString().trim();
+        _logger.warn(
+          'Video recording failed to start for test "$testName" '
+          '(screenrecord exited with code $earlyExitCode)'
+          '${details.isNotEmpty ? ': $details' : ''}. '
+          'Some devices block `adb shell screenrecord` from writing to '
+          'storage (e.g. via SELinux); the test will continue without video.',
+        );
+        _currentRecordingProcess = null;
+        _currentVideoFilename = null;
+        _currentDeviceVideoPath = null;
+        _currentTestName = null;
+      }
     } catch (err) {
       _logger.warn('Failed to start video recording for test $testName: $err');
       _currentRecordingProcess = null;
