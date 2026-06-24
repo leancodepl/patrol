@@ -381,7 +381,8 @@ abstract class PatrolCommand extends Command<int> {
       ..addFlag(
         'record-video',
         help:
-            'Record video of the test execution (Android and iOS simulators).',
+            'Record video of the test execution '
+            '(Android emulators and iOS simulators only).',
       )
       ..addOption(
         'video-output-dir',
