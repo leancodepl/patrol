@@ -31,6 +31,12 @@ To update later:
 npx skills update
 ```
 
+> **Claude Code:** `npx skills update` can write to `.agents/skills` instead of `.claude/skills`
+> (where Claude Code reads them), due to
+> [vercel-labs/skills#744](https://github.com/vercel-labs/skills/issues/744). If your skills stop
+> being picked up, regenerate them with
+> `npx skills add leancodepl/patrol -s '*' -a claude-code -y`.
+
 ## Available skills
 
 | Skill | Description | Example prompt |
