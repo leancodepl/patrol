@@ -1,6 +1,6 @@
 ---
-name: patrol-tests-architecture
-description: Rules for writing Patrol E2E tests with LeanCode's recommended architecture (modules, system, api clients)
+name: patrol-test-architecture
+description: Write Patrol E2E tests using LeanCode's recommended architecture — Modules, System, and ApiClients — with shared test keys. Use when structuring a Patrol test suite, organizing reusable test code into modules, or writing tests in a project that already follows this modular architecture.
 ---
 
 # Order of actions when writing new tests
