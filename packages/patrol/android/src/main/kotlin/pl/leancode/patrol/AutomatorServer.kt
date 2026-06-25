@@ -83,6 +83,10 @@ class AutomatorServer(private val automation: Automator) : MobileAutomatorServer
         automation.openUrl(request.url)
     }
 
+    override fun sendKeyboardEnter() {
+        automation.sendKeyboardEnter()
+    }
+
     override fun pressVolumeUp() {
         automation.pressVolumeUp()
     }
@@ -245,6 +249,10 @@ class AutomatorServer(private val automation: Automator) : MobileAutomatorServer
             HandlePermissionRequestCode.onlyThisTime -> automation.allowPermissionOnce()
             HandlePermissionRequestCode.denied -> automation.denyPermission()
         }
+    }
+
+    override fun allowPermission() {
+        automation.allowPermission()
     }
 
     override fun setLocationAccuracy(request: SetLocationAccuracyRequest) {

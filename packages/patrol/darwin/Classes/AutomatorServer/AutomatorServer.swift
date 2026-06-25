@@ -60,6 +60,12 @@
       }
     }
 
+    func sendKeyboardEnter() throws {
+      return try runCatching {
+        try automator.sendKeyboardEnter()
+      }
+    }
+
     // MARK: General UI interaction
     func getNativeViews(
       request: IOSGetNativeViewsRequest
@@ -275,6 +281,14 @@
         } else {
           throw PatrolError.internal("tapOnNotification(): neither index nor selector are set")
         }
+      }
+    }
+
+    func tapBackToPreviousAppButton(request: IOSTapBackToPreviousAppButtonRequest) throws {
+      return try runCatching {
+        try automator.tapBackToPreviousAppButton(
+          withTimeout: request.timeoutMillis.map { TimeInterval(Double($0) / 1000.0) }
+        )
       }
     }
 

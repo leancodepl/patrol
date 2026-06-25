@@ -13,6 +13,7 @@ import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:patrol_cli/src/runner/flutter_command.dart';
 import 'package:patrol_log/patrol_log.dart';
+import 'package:patrol_log/patrol_log_reader.dart';
 import 'package:platform/platform.dart';
 import 'package:process/process.dart';
 
@@ -248,6 +249,7 @@ class AndroidTestBackend {
     required bool showFlutterLogs,
     required bool hideTestSteps,
     required bool clearTestSteps,
+    void Function(Entry entry)? onLogEntry,
   }) async {
     await _disposeScope.run((scope) async {
       // Read patrol logs from logcat
@@ -277,6 +279,7 @@ class AndroidTestBackend {
               showFlutterLogs: showFlutterLogs,
               hideTestSteps: hideTestSteps,
               clearTestSteps: clearTestSteps,
+              onLogEntry: onLogEntry,
             )
             ..listen()
             ..startTimer();

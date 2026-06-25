@@ -8,11 +8,13 @@ async function setup(config: FullConfig) {
     ? JSON.parse(process.env.PATROL_WEB_BROWSER_ARGS)
     : undefined
 
+  const locale = process.env.PATROL_WEB_LOCALE || undefined
+
   const browser = await chromium.launch({
     args: browserArgs,
   })
-  
-  const page = await browser.newPage()
+
+  const page = await browser.newPage({ locale })
 
   if (!baseURL) {
     throw new Error("baseURL is not set")

@@ -38,4 +38,9 @@
   aside [data-radix-scroll-area-viewport] {
     padding-bottom: 44px;
   }
+
+  .patrol-docs-webinar-banner {
+    background-color: rgb(240, 255, 0);
+    color: rgb(0, 0, 0);
+  }
 }

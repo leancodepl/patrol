@@ -12,7 +12,7 @@ This document describes all GitHub Actions workflows used in the Patrol project.
 | [test android emulator][test-android-emulator] | PR, every 12h | Pixel7 | 36, 35, 34, 33, 32 | Flutter 3.38.x (stable) | `android && emulator` | Runs E2E tests on emulator.wtf emulators across multiple API levels. Excludes `volume_test.dart` due to emulator instability issues. |
 | [test android emulator webview][test-android-emulator-webview] | PR, daily at 23:00 | Pixel7 | 31 | Flutter 3.38.x (stable) | `webview && android` | Runs webview-specific E2E tests on emulator.wtf. |
 | [test flutter beta channel][test-flutter-beta] | Daily at 8:00, manual | Pixel7 | 35 | Flutter beta | — | Runs smoke test on Flutter beta channel using `example_test.dart` to verify Patrol compatibility with beta Flutter releases. |
-| [test locales on android device][test-android-locales] | Every 12h | MediumPhone.arm | 36 | Flutter 3.38.x (stable) | `locale_testing_android` | Tests locale support on Firebase Test Lab for English, French, German, and Polish locales. Excludes `web/`, `native_tests/`, and `volume_test.dart`. |
+| [test locales on android device][test-android-locales] | Every 12h | MediumPhone.arm | 36 | Flutter 3.38.x (stable) | `locale_testing_android` | Tests locale support on Firebase Test Lab for English, French, German, Polish, and Japanese locales. Excludes `web/`, `native_tests/`, and `volume_test.dart`. |
 
 ### iOS Testing
 
@@ -21,14 +21,15 @@ This document describes all GitHub Actions workflows used in the Patrol project.
 | [test ios device][test-ios-device] | Weekly Mon 06:00 UTC | iPhone 14 Pro | 16.6 | Flutter 3.38.x (stable) | `ios && physical_device` | Runs E2E tests on Firebase Test Lab physical devices. Excludes `native_tests/`, `overflow_test.dart`, and specific permission tests (`clear_permissions_test.dart`, `deny_many_permissions_test.dart`, `deny_many_permissions_twice_test.dart`) because camera permissions are not cleared between tests on physical devices. Uses older iOS version to enable video recording in Test Lab. |
 | [test ios simulator][test-ios-simulator] | PR only | iPhone 17 | 26.2 | Flutter 3.38.x (stable) | `ios && simulator` | Runs E2E tests on iOS simulator. Triggers on PR for changes to packages, e2e_app, and schema (excludes docs). Excludes `web/` directory, `volume_test.dart`, `service_bluetooth_test.dart`, and permission tests (`clear_permissions_test.dart`, `deny_many_permissions_twice_test.dart`, `permissions_many_test.dart`). Records video (raw capture + ffmpeg) and logs. Uses xcresultparser to generate JUnit reports and converts them to CTRF format for test reporting. Pins iOS runtime via `--ios 26.2` during `patrol test` and runs with `--full-isolation`. Timeout: 30 minutes. |
 | [test ios simulator webview][test-ios-simulator-webview] | Monthly on 1st | iPhone 17 Pro | 26.0 | Flutter 3.38.x (stable) | `webview && ios` | Runs webview-specific E2E tests on iOS simulator (`macos-latest`, 40 min timeout). Uses the same screen recording (raw + ffmpeg) and xcresult → JUnit → CTRF reporting flow as [test ios simulator][test-ios-simulator]. Excludes `web_example_test.dart` and `volume_test.dart`. |
-| [test locales on ios device][test-ios-locales] | No | iPhone 14 Pro | 16.6 | Flutter 3.38.x (stable) | `locale_testing_ios` | Tests locale support on Firebase Test Lab for English, French, German (de_DE), and Polish locales. Excludes `web_example_test.dart`. Currently disabled for PR triggers. |
+| [test locales on ios device][test-ios-locales] | No | iPhone 14 Pro | 16.6 | Flutter 3.38.x (stable) | `locale_testing_ios` | Tests locale support on Firebase Test Lab for English, French, German (de_DE), Polish, and Japanese locales. Excludes `web_example_test.dart`. Currently disabled for PR triggers. |
 
 ### Other Platform Testing
 
 | Workflow name | Triggered | Flutter version | Tags | Description |
 |--------------|-----------|----------------|------|-------------|
+| [test flutter main channel][test-flutter-main] | Weekly Tue 4:00 UTC, manual | Flutter master | — | Rebases `fix/flutter-patrol-tests` onto `master`, then runs internal tests (`flutter analyze` + `flutter test` on `patrol_finders` and `patrol_cli`) against Flutter main channel. Always creates a PR with test results. Sends Slack notification on failure when triggered by schedule. |
 | [test web][test-web] | No | Flutter 3.38.x (stable) | — | Runs web-specific E2E tests on Chrome in headless mode. Triggers on PR for web-related changes. Uses target file instead of tags. |
-| [test macos][test-macos] | Every 12h | Flutter 3.38.x (stable) | — | Runs E2E tests on macOS desktop platform. Runs tests from `patrol_test/macos` directory. Uses xcresulttool v1.7.1 for test reporting. |
+| [test macos][test-macos] | PR, daily at 00:00 UTC | Flutter 3.38.x (stable) | — | Runs E2E tests on macOS desktop platform. Triggers on PR for changes to packages, e2e_app, and schema (excludes docs). Runs tests from `patrol_test/macos` directory. Uses xcresultparser to generate JUnit reports and converts them to CTRF format for test reporting. |
 | [test patrol develop][test-patrol-develop] | `pull_request_target` (opened/synchronize on package, e2e_app, and schema changes; excludes docs), manual | Flutter 3.38.x (stable) | — | Tests `patrol develop` command on Linux (Android emulator, API 34) and macOS (iOS simulator: iPhone 16 Pro on iOS 26.2). The macOS job pins simulator runtime and passes `--ios 26.2` to `patrol_develop_test.dart` to keep xcode destination selection deterministic. Timeout: 30 minutes per job. |
 
 ## Package Preparation (CI) Workflows
@@ -74,14 +75,15 @@ These workflows verify the user has write access before running. If you don't ha
 
 | Workflow name | Runs on | Description |
 |--------------|---------|-------------|
-| [Vercel Production Deployment][docs-production] | Push to master (on docs changes) | Deploys documentation to Vercel production environment. Uses Node.js 24. |
-| [Vercel Preview Deployment][docs-preview] | PR (on docs changes) | Deploys documentation preview to Vercel with stable PR-specific alias. Comments preview URL on PR. Uses Node.js 24. |
+| [Vercel Production Deployment][docs-production] | Push to master (on docs changes) | Deploys documentation to Vercel production environment. Uses Node.js 24. Runs Vercel CLI steps from the repository root so the Vercel project root resolves to `docs_app`. |
+| [Vercel Preview Deployment][docs-preview] | PR (on docs changes) | Deploys documentation preview to Vercel with stable PR-specific alias. Comments preview URL on PR. Uses Node.js 24. Runs Vercel CLI steps from the repository root so the Vercel project root resolves to `docs_app`. |
 
 ## Utility Workflows
 
 | Workflow name | Triggered | Description |
 |--------------|---------|-------------|
 | [Verify Version Compatibility][verify_compatibility] | PR/push (on compatibility checker changes) | Runs compatibility tests and verifies compatibility tables are up-to-date. |
+| [check skills][check-skills] | PR (on `skills/`, `.agents/skills/`, `.claude/skills`, or script changes), manual | Validates the agent-skills setup via `tool/check_skills.sh`: the `.claude/skills` symlink resolves to `.agents/skills`, and every `SKILL.md` has valid frontmatter (`name` matches its folder and is kebab-case, plus a non-empty `description`). |
 | [send slack message][send-slack-message] | Reusable workflow | Reusable workflow for sending test results notifications to Slack. Invoked by test workflows; the Slack step runs only when `github.event_name == 'schedule'` in the **caller** workflow (so scheduled cron runs notify; PR, push, `workflow_dispatch`, and other triggers do not). |
 | [label pull request][label_pull_request] | All PRs | Automatically labels PRs based on changed files. |
 | [Add prioritized issues to project][add-to-project] | Issue labeled (P0, P1, P2) | Automatically adds prioritized issues to GitHub project board. |
@@ -91,9 +93,11 @@ These workflows verify the user has write access before running. If you don't ha
 
 ## Schedule Summary
 
-- **Every 12 hours**: [test android emulator][test-android-emulator], [test locales on android device][test-android-locales], [test macos][test-macos]
+- **Every 12 hours**: [test android emulator][test-android-emulator], [test locales on android device][test-android-locales]
 - **Weekly (Monday 06:00 UTC)**: [test android device][test-android-device], [test ios device][test-ios-device]
+- **Daily at 00:00 UTC**: [test macos][test-macos]
 - **Daily at 23:00 UTC**: [test android emulator webview][test-android-emulator-webview]
+- **Weekly (Tuesday 04:00 UTC)**: [test flutter main channel][test-flutter-main]
 - **Daily at 10:00 UTC**: [test flutter beta channel][test-flutter-beta]
 - **Monthly (1st day)**: [test ios simulator webview][test-ios-simulator-webview]
 - **Hourly**: [close inactive issues][close-inactive-issues], [lock closed issues][lock-closed-issues]
@@ -107,7 +111,7 @@ These workflows verify the user has write access before running. If you don't ha
   - Local simulators/emulators for iOS/Android simulator tests
 - Test workflows that call the reusable [send slack message][send-slack-message] workflow only post to Slack when the **caller** was started by a `schedule` event (see workflow `if` on the Slack step)
 - All publish workflows require tag pushes with specific prefixes and send Slack notifications for non-prerelease versions
-- Documentation deployments use Vercel with Node.js 24
+- Documentation deployments use Vercel with Node.js 24. The docs workflows copy `docs/` into `docs_app/docs`, then run Vercel CLI commands from the repository root so Vercel's configured `docs_app` root is not applied twice.
 - Android projects use Kotlin 2.1.0 for compatibility with Java 21 and modern Flutter tooling
 
 ### Tag-Based Test Selection
@@ -146,6 +150,7 @@ A test is selected if it matches ALL conditions in the boolean expression (AND o
 [test-android-emulator-webview]: workflows/test-android-emulator-webview.yaml
 [test-android-locales]: workflows/test-android-locales.yaml
 [test-flutter-beta]: workflows/test-flutter-beta.yaml
+[test-flutter-main]: workflows/test-flutter-main.yaml
 [test-ios-device]: workflows/test-ios-device.yaml
 [test-ios-simulator]: workflows/test-ios-simulator.yaml
 [test-ios-simulator-webview]: workflows/test-ios-simulator-webview.yaml
@@ -178,3 +183,4 @@ A test is selected if it matches ALL conditions in the boolean expression (AND o
 [potential-duplicates]: workflows/potential-duplicates.yaml
 [close-inactive-issues]: workflows/close-inactive-issues.yaml
 [lock-closed-issues]: workflows/lock-closed-issues.yaml
+[check-skills]: workflows/check-skills.yaml

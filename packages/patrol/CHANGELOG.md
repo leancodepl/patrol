@@ -1,3 +1,28 @@
+## Unreleased
+
+- Add `sendKeyboardEnter` method for `MobileAutomator`. (#2748)
+- Fix a crash when an `IOSSelector` has no arguments needed for creating `NSPredicate` for textfield. (#3053)
+- Add Japanese (ja) language support for native OS interactions.
+- Fix macOS build by implementing `sendKeyboardEnter` in `MacOSAutomator`. (#3105)
+
+## 4.6.1
+
+- Fix changelog
+
+## 4.6.0
+
+- Fix generated API docs links for public Patrol types.
+- Add `tapBackToPreviousAppButton` method to `$.platform.ios`. (#3015)
+- Bump `patrol_log` to `^0.9.0`.
+- Bump `patrol_finders` to `^3.4.0`.
+- Add `allowPermission` method to `AndroidAutomator`.
+
+## 4.5.0
+
+- Fix `appId` not being passed down on `$.platform.mobile.enterText` and `$.platform.mobile.enterTextByIndex` (#2992)
+- Bump `patrol_log` to `^0.8.0`.
+- Signal develop session completion via `ConfigEntry.developCompletedKey`.
+
 ## 4.4.0
 - Add support for emulators with API lvl 36 for pickMultipleImagesFromGallery method. (#2977)
 - Fix `tapOnNotification` on iOS physical devices to Open button when tapping on notification. (#2972)

@@ -200,6 +200,12 @@ abstract class NativeMobileAutomator implements MobileAutomator {
     );
   }
 
+  /// Sends the keyboard Enter/Return action to the currently focused input.
+  @override
+  Future<void> sendKeyboardEnter() async {
+    await wrapRequest('sendKeyboardEnter', _client.sendKeyboardEnter);
+  }
+
   /// Returns the first, topmost visible notification.
   ///
   /// Notification shade has to be opened with [openNotifications].

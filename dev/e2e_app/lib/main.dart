@@ -1,10 +1,13 @@
 import 'package:app_links/app_links.dart';
 import 'package:e2e_app/applink_screen.dart';
+import 'package:e2e_app/at_finder_screen.dart';
 import 'package:e2e_app/camera_screen.dart';
+import 'package:e2e_app/external_app_screen.dart';
 import 'package:e2e_app/keys.dart';
 import 'package:e2e_app/loading_screen.dart';
 import 'package:e2e_app/location_screen.dart';
 import 'package:e2e_app/login_flow_screen.dart';
+import 'package:e2e_app/many_textfields_screen.dart';
 import 'package:e2e_app/map_screen.dart';
 import 'package:e2e_app/notifications_screen.dart';
 import 'package:e2e_app/overflow_screen.dart';
@@ -213,6 +216,13 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
             child: const Text('Open loading screen'),
           ),
           TextButton(
+            key: K.atFinderScreenButton,
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(builder: (_) => const AtFinderScreen()),
+            ),
+            child: const Text('Open at() finder screen'),
+          ),
+          TextButton(
             onPressed: () => Navigator.of(context).push(
               MaterialPageRoute<void>(builder: (_) => const LocationScreen()),
             ),
@@ -303,6 +313,22 @@ class _ExampleHomePageState extends State<ExampleHomePage> {
               MaterialPageRoute<void>(builder: (_) => const CameraScreen()),
             ),
             child: const Text('Open camera related features'),
+          ),
+          TextButton(
+            key: K.textfieldsScreenButton,
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(builder: (_) => const TextfieldsScreen()),
+            ),
+            child: const Text('Open many textfields screen'),
+          ),
+          TextButton(
+            key: K.openExternalAppScreenButton,
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => const ExternalAppScreen(),
+              ),
+            ),
+            child: const Text('Open external app screen'),
           ),
           Text('EXAMPLE_KEY: ${const String.fromEnvironment('EXAMPLE_KEY')}'),
         ],

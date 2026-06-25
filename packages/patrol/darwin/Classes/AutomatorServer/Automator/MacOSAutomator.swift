@@ -77,6 +77,12 @@
       }
     }
 
+    func sendKeyboardEnter() throws {
+      try runAction("sendKeyboardEnter") {
+        throw PatrolError.methodNotImplemented("sendKeyboardEnter")
+      }
+    }
+
     func tap(
       on selector: IOSSelector,
       inApp bundleId: String,
@@ -273,6 +279,12 @@
     {
       try runAction("tapOnNotification") {
         throw PatrolError.methodNotImplemented("tapOnNotification")
+      }
+    }
+
+    func tapBackToPreviousAppButton(withTimeout timeout: TimeInterval?) throws {
+      try runAction("tapBackToPreviousAppButton") {
+        throw PatrolError.methodNotImplemented("tapBackToPreviousAppButton")
       }
     }
 

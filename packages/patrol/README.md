@@ -13,7 +13,7 @@ overcomes the limitations of integration_test by handling native interactions.
 Developed by [LeanCode](https://leancode.co) since 2022, battle-tested and
 shaped by production-grade experience.
 
-![Patrol promotial graphics][promo_graphics]
+![Patrol promotional graphics][promo_graphics]
 
 ## Learn more about Patrol:
 
@@ -48,6 +48,8 @@ to only use custom finders, check out
 ```console
 $ dart pub add patrol --dev
 ```
+
+> ⚠️ Additional setup is required to run tests – install [`patrol_cli`][patrol_cli_link] and complete [native setup][docs_setup].
 
 ## Usage
 
@@ -121,6 +123,11 @@ void main() {
 }
 ```
 
+## Agent skills
+
+Patrol ships [agent skills][skills] that teach AI coding agents how to write Patrol tests following
+best practices — see the catalog for what's available and how to install them.
+
 ## 🛠️ Maintained by LeanCode
 
 <div align="center">
@@ -153,6 +160,7 @@ We are **top-tier experts** focused on Flutter Enterprise solutions.
 
 [native automation]: https://patrol.leancode.co/native/overview
 [custom finders]: https://patrol.leancode.co/finders/overview
+[skills]: https://github.com/leancodepl/patrol/tree/master/skills
 [patrol_badge]: https://img.shields.io/pub/v/patrol?label=patrol
 [patrol_finders_badge]: https://img.shields.io/pub/v/patrol_finders?label=patrol_finders
 [patrol_cli_badge]: https://img.shields.io/pub/v/patrol_cli?label=patrol_cli
@@ -168,6 +176,7 @@ We are **top-tier experts** focused on Flutter Enterprise solutions.
 [patrol_github_link]: https://github.com/leancodepl/patrol
 [patrol_discord_link]: https://discord.gg/ukBK5t4EZg
 [docs]: https://patrol.leancode.co/?utm_source=github.com&utm_medium=referral&utm_campaign=patrol-readme
+[docs_setup]: https://patrol.leancode.co/documentation?utm_source=github.com&utm_medium=referral&utm_campaign=patrol-readme
 [docs_finders]: https://patrol.leancode.co/finders/overview
 [promo_graphics]: ../../assets/promo_banner.png
 [article_web]: https://leancode.co/blog/patrol-web-support?utm_source=github.com&utm_medium=referral&utm_campaign=patrol-readme

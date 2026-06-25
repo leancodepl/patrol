@@ -1,11 +1,5 @@
 include: package:leancode_lint/analysis_options.yaml
 
 analyzer:
-  errors:
-    # leancode_lint <=17 enables both `type_annotate_public_apis` and
-    # `omit_obvious_property_types`, which newer analyzers (Flutter main
-    # channel) report as incompatible. Ignore the included-file warning so
-    # `flutter analyze` stays green.
-    included_file_warning: ignore
   plugins:
     - custom_lint

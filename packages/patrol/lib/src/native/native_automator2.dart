@@ -1,7 +1,15 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/src/native/native_automator.dart';
-import 'package:patrol/src/platform/contracts/contracts.dart';
+import 'package:patrol/src/platform/contracts/contracts.dart'
+    show
+        AndroidNativeView,
+        AppleApp,
+        GoogleApp,
+        IOSNativeView,
+        KeyboardBehavior,
+        Notification;
 import 'package:patrol/src/platform/platform_automator.dart';
+import 'package:patrol/src/platform/selector.dart';
 
 import 'native_automator_config.dart';
 
@@ -166,6 +174,15 @@ class NativeAutomator2 {
   /// If no heads up notification is visible, the behavior is undefined.
   Future<void> closeHeadsUpNotification() =>
       _platform.action(ios: _platform.ios.closeHeadsUpNotification);
+
+  /// Taps on the iOS "back to previous app" breadcrumb button (iOS only).
+  ///
+  /// This button is visible in the status bar after opening another app and
+  /// has identifier `breadcrumb` with button trait.
+  Future<void> tapBackToPreviousAppButton({Duration? timeout}) =>
+      _platform.action(
+        ios: () => _platform.ios.tapBackToPreviousAppButton(timeout: timeout),
+      );
 
   /// Searches for the [index]-th visible notification and taps on it.
   ///
@@ -379,6 +396,7 @@ class NativeAutomator2 {
     ios: () => _platform.ios.enterText(
       _getSafeIOSSelector(selector),
       text: text,
+      appId: appId,
       keyboardBehavior: keyboardBehavior,
       timeout: timeout,
       tapLocation: tapLocation,
@@ -479,9 +497,9 @@ class NativeAutomator2 {
   /// slower gesture.
   ///
   /// The default values simulate a typical pull-to-refresh gesture:
-  /// * [from]: Center of the screen (0.5, 0.5)
-  /// * [to]: Bottom center of the screen (0.5, 0.9)
-  /// * [steps]: 50
+  /// * `from`: Center of the screen (0.5, 0.5)
+  /// * `to`: Bottom center of the screen (0.5, 0.9)
+  /// * `steps`: 50
   /// You can override these if scrollable content is not at the center of the
   /// screen or if the direction of the gesture is different.
   Future<void> pullToRefresh({
@@ -532,6 +550,7 @@ class NativeAutomator2 {
       androidViews: [],
       iosViews: (await _platform.ios.getNativeViews(
         _getSafeIOSSelector(selector),
+        appId: appId,
       )).roots,
     ),
   );

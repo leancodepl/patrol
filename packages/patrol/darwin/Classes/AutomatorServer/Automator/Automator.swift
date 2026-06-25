@@ -3,7 +3,7 @@
   import os
 
   extension IOSSelector {
-    public func toTextFieldNSPredicate() -> NSPredicate {
+    public func toTextFieldNSPredicate() -> NSPredicate? {
       var format = ""
       var begun = false
       var values = [String]()
@@ -44,6 +44,12 @@
         begun = true
         format += "(identifier == %@)"
         values.append(identifier!)
+      }
+
+      // this if is needed to avoid a crash when no conditions are met.
+      // format argument in NSPredicate must not be empty.
+      if !begun {
+        return nil
       }
 
       let predicate = NSPredicate(format: format, argumentArray: values)
@@ -173,6 +179,7 @@
     func openAppSwitcher() throws
     func openControlCenter() throws
     func openUrl(_ url: String) throws
+    func sendKeyboardEnter() throws
 
     // MARK: General UI interaction
     func tap(
@@ -239,6 +246,7 @@
     func getNotifications() throws -> [Notification]
     func tapOnNotification(byIndex index: Int, withTimeout timeout: TimeInterval?) throws
     func tapOnNotification(bySubstring substring: String, withTimeout timeout: TimeInterval?) throws
+    func tapBackToPreviousAppButton(withTimeout timeout: TimeInterval?) throws
 
     // MARK: Permissions
     func isPermissionDialogVisible(timeout: TimeInterval) throws -> Bool

@@ -31,6 +31,7 @@ import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:patrol_cli/src/macos/macos_test_backend.dart';
 import 'package:patrol_cli/src/pubspec_reader.dart';
+import 'package:patrol_cli/src/runner/patrol_command.dart' show addGlobalFlags;
 import 'package:patrol_cli/src/test_bundler.dart';
 import 'package:patrol_cli/src/test_finder.dart';
 import 'package:patrol_cli/src/web/web_test_backend.dart';
@@ -264,25 +265,13 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
       ),
     );
 
-    argParser
-      ..addOption(
-        'flutter-command',
-        help:
-            'Command to use to run the Flutter CLI. Alternatively set the PATROL_FLUTTER_COMMAND environment variable.',
-        valueHelp: 'fvm flutter',
-      )
-      ..addFlag(
-        'verbose',
-        abbr: 'v',
-        help: 'Print more logs.',
-        negatable: false,
-      )
-      ..addFlag(
-        'version',
-        abbr: 'V',
-        help: 'Print version of this program.',
-        negatable: false,
-      );
+    addGlobalFlags(argParser);
+    argParser.addFlag(
+      'version',
+      abbr: 'V',
+      help: 'Print version of this program.',
+      negatable: false,
+    );
   }
 
   final PubUpdater _pubUpdater;

@@ -1,14 +1,13 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
-import 'package:patrol_cli/src/base/extensions/core.dart';
 import 'package:patrol_cli/src/base/logger.dart';
-import 'package:patrol_cli/src/commands/dart_define_utils.dart';
+import 'package:patrol_cli/src/commands/develop_arg_parser.dart';
+import 'package:patrol_cli/src/commands/develop_options.dart';
+import 'package:patrol_cli/src/commands/develop_service.dart';
 import 'package:patrol_cli/src/compatibility_checker/compatibility_checker.dart';
-import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/crossplatform/flutter_tool.dart';
 import 'package:patrol_cli/src/dart_defines_reader.dart';
 import 'package:patrol_cli/src/devices.dart';
@@ -36,61 +35,27 @@ class DevelopCommand extends PatrolCommand {
     required Analytics analytics,
     required Logger logger,
     required Stream<List<int>> stdin,
-  }) : _deviceFinder = deviceFinder,
-       _testFinderFactory = testFinderFactory,
-       _testBundler = testBundler,
-       _dartDefinesReader = dartDefinesReader,
-       _compatibilityChecker = compatibilityChecker,
-       _pubspecReader = pubspecReader,
-       _androidTestBackend = androidTestBackend,
-       _iosTestBackend = iosTestBackend,
-       _macosTestBackend = macosTestBackend,
-       _webTestBackend = webTestBackend,
-       _flutterTool = flutterTool,
-       _analytics = analytics,
-       _logger = logger,
-       _stdin = stdin {
-    usesTargetOption();
-    usesDeviceOption();
-    usesBuildModeOption();
-    usesFlavorOption();
-    usesDartDefineOption();
-    usesDartDefineFromFileOption();
-    usesLabelOption();
-    usesPortOptions();
-    usesTagsOption();
-    usesHideTestSteps();
-    usesClearTestSteps();
-    usesCheckCompatibilityOption();
-
-    usesUninstallOption();
-    usesBuildNameOption();
-    usesBuildNumberOption();
-
-    usesAndroidOptions();
-    usesIOSOptions();
-
-    argParser.addFlag(
-      'open-devtools',
-      help: 'Automatically open Patrol extension in DevTools when ready.',
-    );
+  }) : _analytics = analytics,
+       _developService = DevelopService(
+         deviceFinder: deviceFinder,
+         testFinderFactory: testFinderFactory,
+         testBundler: testBundler,
+         dartDefinesReader: dartDefinesReader,
+         compatibilityChecker: compatibilityChecker,
+         pubspecReader: pubspecReader,
+         androidTestBackend: androidTestBackend,
+         iosTestBackend: iosTestBackend,
+         macosTestBackend: macosTestBackend,
+         webTestBackend: webTestBackend,
+         flutterTool: flutterTool,
+         logger: logger,
+         stdin: stdin,
+       ) {
+    configureDevelopArgParser(this);
   }
 
-  final DeviceFinder _deviceFinder;
-  final TestFinderFactory _testFinderFactory;
-  final TestBundler _testBundler;
-  final DartDefinesReader _dartDefinesReader;
-  final CompatibilityChecker _compatibilityChecker;
-  final PubspecReader _pubspecReader;
-  final AndroidTestBackend _androidTestBackend;
-  final IOSTestBackend _iosTestBackend;
-  final MacOSTestBackend _macosTestBackend;
-  final WebTestBackend _webTestBackend;
-  final FlutterTool _flutterTool;
-
   final Analytics _analytics;
-  final Logger _logger;
-  final Stream<List<int>> _stdin;
+  final DevelopService _developService;
 
   @override
   String get name => 'develop';
@@ -111,381 +76,14 @@ class DevelopCommand extends PatrolCommand {
       throwToolExit('Only one target can be provided with --target');
     }
 
-    final config = _pubspecReader.read();
-    final testDirectory = config.testDirectory;
-
-    final testFinder = _testFinderFactory.create(testDirectory);
-
-    final target = testFinder.findTest(targets.first, config.testFileSuffix);
-    _logger.detail('Received test target: $target');
-
-    if (boolArg('release')) {
-      throwToolExit('Cannot use release build mode with develop');
-    }
-
-    if (boolArg('generate-bundle')) {
-      _testBundler.createDevelopTestBundle(testDirectory, target);
-    }
-    _testBundler.ensureEntrypoint(testDirectory);
-    final entrypoint = _testBundler.getEntrypointFile(testDirectory);
-    final signalSubscriptions = _registerProxyCleanupOnSignals(testDirectory);
-    Future<void> cleanupProxy() async {
-      _testBundler.deleteEntrypointProxy(testDirectory);
-    }
-
-    final androidFlavor = stringArg('flavor') ?? config.android.flavor;
-    final iosFlavor = stringArg('flavor') ?? config.ios.flavor;
-    if (androidFlavor != null) {
-      _logger.detail('Received Android flavor: $androidFlavor');
-    }
-    if (iosFlavor != null) {
-      _logger.detail('Received iOS flavor: $iosFlavor');
-    }
-
-    final buildName = stringArg('build-name');
-    if (buildName != null) {
-      _logger.detail('Received build name: $buildName');
-    }
-
-    final buildNumber = stringArg('build-number');
-    if (buildNumber != null) {
-      _logger.detail('Received build number: $buildNumber');
-    }
-
-    final devices = await _deviceFinder.find(
-      stringsArg('device'),
+    final options = DevelopOptions.fromArgResults(
+      argResults!,
+      target: targets.first,
       flutterCommand: flutterCommand,
     );
-    final device = devices.single;
 
-    if (boolArg('check-compatibility')) {
-      await _compatibilityChecker.checkVersionsCompatibility(
-        flutterCommand: flutterCommand,
-        targetPlatform: device.targetPlatform,
-      );
-    }
-
-    // `flutter logs` doesn't work on macOS, so we don't support it for now
-    // https://github.com/leancodepl/patrol/issues/1974
-    if (device.targetPlatform == TargetPlatform.macOS) {
-      throwToolExit('macOS is not supported with develop');
-    }
-
-    // Changes applied outside `/lib` directory are not 'hot-restarted'.
-    // This is a blocker from applying changes to test code.
-    // https://github.com/flutter/flutter/issues/175318
-    if (device.targetPlatform == TargetPlatform.web) {
-      throwToolExit('Web is not supported with develop');
-    }
-
-    _logger.detail('Received device: ${device.name} (${device.id})');
-
-    final packageName = stringArg('package-name') ?? config.android.packageName;
-    final bundleId = stringArg('bundle-id') ?? config.ios.bundleId;
-
-    final displayLabel = boolArg('label');
-    final uninstall = boolArg('uninstall');
-
-    String? iOSInstalledAppsEnvVariable;
-    if (device.targetPlatform == TargetPlatform.iOS) {
-      iOSInstalledAppsEnvVariable = await _iosTestBackend
-          .getInstalledAppsEnvVariable(device.id);
-    }
-
-    final customDartDefines = {
-      ..._dartDefinesReader.fromFile(),
-      ..._dartDefinesReader.fromCli(args: stringsArg('dart-define')),
-    };
-    final internalDartDefines = {
-      'PATROL_APP_PACKAGE_NAME': packageName,
-      'PATROL_APP_BUNDLE_ID': bundleId,
-      'PATROL_MACOS_APP_BUNDLE_ID': config.macos.bundleId,
-      'PATROL_ANDROID_APP_NAME': config.android.appName,
-      'PATROL_IOS_APP_NAME': config.ios.appName,
-      'INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE': 'false',
-      'PATROL_TEST_LABEL_ENABLED': displayLabel.toString(),
-      'PATROL_TEST_DIRECTORY': config.testDirectory,
-      // develop-specific
-      ...{
-        'PATROL_HOT_RESTART': 'true',
-        'PATROL_IOS_INSTALLED_APPS': iOSInstalledAppsEnvVariable,
-      },
-      'PATROL_TEST_SERVER_PORT': super.testServerPort.toString(),
-      'PATROL_APP_SERVER_PORT': super.appServerPort.toString(),
-    }.withNullsRemoved();
-
-    final dartDefines = {...customDartDefines, ...internalDartDefines};
-    _logger.detail(
-      'Received ${dartDefines.length} --dart-define(s) '
-      '(${customDartDefines.length} custom, ${internalDartDefines.length} internal)',
-    );
-    for (final dartDefine in customDartDefines.entries) {
-      _logger.detail('Received custom --dart-define: ${dartDefine.key}');
-    }
-    for (final dartDefine in internalDartDefines.entries) {
-      _logger.detail(
-        'Received internal --dart-define: ${dartDefine.key}=${dartDefine.value}',
-      );
-    }
-
-    final dartDefineFromFilePaths = stringsArg('dart-define-from-file');
-
-    final mergedDartDefines = mergeDartDefines(
-      dartDefineFromFilePaths,
-      dartDefines,
-      _dartDefinesReader,
-    );
-
-    final flutterOpts = FlutterAppOptions(
-      command: flutterCommand,
-      target: entrypoint.path,
-      flavor: androidFlavor,
-      buildMode: buildMode,
-      dartDefines: mergedDartDefines,
-      dartDefineFromFilePaths: dartDefineFromFilePaths,
-      buildName: buildName,
-      buildNumber: buildNumber,
-    );
-
-    final androidOpts = AndroidAppOptions(
-      flutter: flutterOpts,
-      packageName: packageName,
-      appServerPort: super.appServerPort,
-      testServerPort: super.testServerPort,
-      uninstall: uninstall,
-    );
-
-    final iosOpts = IOSAppOptions(
-      flutter: flutterOpts,
-      bundleId: bundleId,
-      scheme: buildMode.createScheme(iosFlavor),
-      configuration: buildMode.createConfiguration(iosFlavor),
-      simulator: !device.real,
-      osVersion: stringArg('ios') ?? 'latest',
-      appServerPort: super.appServerPort,
-      testServerPort: super.testServerPort,
-    );
-
-    final macosOpts = MacOSAppOptions(
-      flutter: flutterOpts,
-      scheme: buildMode.createScheme(iosFlavor),
-      configuration: buildMode.createConfiguration(iosFlavor),
-      appServerPort: super.appServerPort,
-      testServerPort: super.testServerPort,
-    );
-
-    final webOpts = WebAppOptions(flutter: flutterOpts);
-
-    try {
-      await _build(androidOpts, iosOpts, macosOpts, webOpts, device);
-      await _preExecute(androidOpts, iosOpts, device, uninstall);
-      await _execute(
-        flutterOpts,
-        androidOpts,
-        iosOpts,
-        macosOpts,
-        webOpts,
-        uninstall: uninstall,
-        device: device,
-        openDevtools: boolArg('open-devtools'),
-        onQuitCleanup: cleanupProxy,
-        showFlutterLogs: false,
-        hideTestSteps: boolArg('hide-test-steps'),
-        clearTestSteps: boolArg('clear-test-steps'),
-      );
-    } finally {
-      for (final sub in signalSubscriptions) {
-        await sub.cancel();
-      }
-      await cleanupProxy();
-    }
+    await _developService.run(options);
 
     return 0; // for now, all exit codes are 0
-  }
-
-  Future<void> _build(
-    AndroidAppOptions androidOpts,
-    IOSAppOptions iosOpts,
-    MacOSAppOptions macosOpts,
-    WebAppOptions webOpts,
-    Device device,
-  ) async {
-    Future<void> Function() buildAction;
-    buildAction = switch (device.targetPlatform) {
-      TargetPlatform.android => () => _androidTestBackend.build(androidOpts),
-      TargetPlatform.iOS => () => _iosTestBackend.build(iosOpts),
-      TargetPlatform.macOS => () => _macosTestBackend.build(macosOpts),
-      TargetPlatform.web => () => _webTestBackend.buildForDevelop(webOpts),
-    };
-
-    try {
-      await buildAction();
-    } catch (err, st) {
-      _logger
-        ..err('$err')
-        ..detail('$st')
-        ..err(defaultFailureMessage);
-      rethrow;
-    }
-  }
-
-  /// Uninstall the apps before running the tests.
-  Future<void> _preExecute(
-    AndroidAppOptions androidOpts,
-    IOSAppOptions iosOpts,
-    Device device,
-    bool uninstall,
-  ) async {
-    if (!uninstall) {
-      return;
-    }
-    _logger.detail('Will uninstall apps before running tests');
-
-    late Future<void> Function()? action;
-    switch (device.targetPlatform) {
-      case TargetPlatform.android:
-        final packageName = androidOpts.packageName;
-        if (packageName != null) {
-          action = () => _androidTestBackend.uninstall(packageName, device);
-        }
-      case TargetPlatform.iOS:
-        final bundleId = iosOpts.bundleId;
-        if (bundleId != null) {
-          action = () => _iosTestBackend.uninstall(
-            appId: bundleId,
-            flavor: iosOpts.flutter.flavor,
-            device: device,
-          );
-        }
-      case TargetPlatform.macOS:
-      case TargetPlatform.web:
-    }
-
-    try {
-      await action?.call();
-    } catch (_) {
-      // ignore any failures, we don't care
-    }
-  }
-
-  Future<void> _execute(
-    FlutterAppOptions flutterOpts,
-    AndroidAppOptions android,
-    IOSAppOptions iosOpts,
-    MacOSAppOptions macos,
-    WebAppOptions web, {
-    required bool uninstall,
-    required Device device,
-    required bool openDevtools,
-    required Future<void> Function() onQuitCleanup,
-    required bool showFlutterLogs,
-    required bool hideTestSteps,
-    required bool clearTestSteps,
-  }) async {
-    Future<void> Function() action;
-    Future<void> Function()? finalizer;
-    String? appId;
-
-    switch (device.targetPlatform) {
-      case TargetPlatform.android:
-        appId = android.packageName;
-        action = () => _androidTestBackend.execute(
-          android,
-          device,
-          interruptible: true,
-          showFlutterLogs: showFlutterLogs,
-          hideTestSteps: hideTestSteps,
-          flavor: flutterOpts.flavor,
-          clearTestSteps: clearTestSteps,
-        );
-        final package = android.packageName;
-        if (package != null && uninstall) {
-          finalizer = () => _androidTestBackend.uninstall(package, device);
-        }
-      case TargetPlatform.macOS:
-        appId = macos.bundleId;
-        action = () =>
-            _macosTestBackend.execute(macos, device, interruptible: true);
-      case TargetPlatform.iOS:
-        appId = iosOpts.bundleId;
-        action = () => _iosTestBackend.execute(
-          iosOpts,
-          device,
-          interruptible: true,
-          showFlutterLogs: showFlutterLogs,
-          hideTestSteps: hideTestSteps,
-          clearTestSteps: clearTestSteps,
-        );
-        final bundleId = iosOpts.bundleId;
-        if (bundleId != null && uninstall) {
-          finalizer = () => _iosTestBackend.uninstall(
-            appId: bundleId,
-            flavor: iosOpts.flutter.flavor,
-            device: device,
-          );
-        }
-      case TargetPlatform.web:
-        action = () => _webTestBackend.develop(
-          _flutterTool,
-          web,
-          device,
-          showFlutterLogs: showFlutterLogs,
-          hideTestSteps: hideTestSteps,
-          clearTestSteps: clearTestSteps,
-          stdin: _stdin,
-        );
-    }
-
-    try {
-      final future = action();
-
-      if (device.targetPlatform != TargetPlatform.web) {
-        await _flutterTool.attachForHotRestart(
-          flutterCommand: flutterCommand,
-          deviceId: device.id,
-          target: flutterOpts.target,
-          appId: appId,
-          dartDefines: flutterOpts.dartDefines,
-          openDevtools: openDevtools,
-          attachUsingUrl: device.targetPlatform == TargetPlatform.macOS,
-          onQuit: onQuitCleanup,
-        );
-      }
-
-      await future;
-    } catch (err, st) {
-      _logger
-        ..err('$err')
-        ..detail('$st')
-        ..err(defaultFailureMessage);
-      rethrow;
-    } finally {
-      try {
-        await finalizer?.call();
-      } catch (err) {
-        _logger.err('Failed to call finalizer: $err');
-        rethrow;
-      }
-    }
-  }
-
-  List<StreamSubscription<ProcessSignal>> _registerProxyCleanupOnSignals(
-    String testDirectory,
-  ) {
-    final subscriptions = <StreamSubscription<ProcessSignal>>[];
-
-    void cleanup(ProcessSignal signal) {
-      _logger.detail('Received $signal, removing devtools proxy entrypoint');
-      _testBundler.deleteEntrypointProxy(testDirectory);
-    }
-
-    subscriptions.add(ProcessSignal.sigint.watch().listen(cleanup));
-    try {
-      subscriptions.add(ProcessSignal.sigterm.watch().listen(cleanup));
-    } catch (_) {
-      // Some platforms may not support sigterm.
-    }
-
-    return subscriptions;
   }
 }
