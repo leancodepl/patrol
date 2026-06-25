@@ -54,7 +54,7 @@ class TestFinder {
         }
         final absoluteTargetPath = _fs.file(target).absolute.path;
         if (!_isExcluded(absoluteTargetPath, absoluteExcludes)) {
-          testFiles.add(absoluteTargetPath);
+          testFiles.add(absoluteTargetPath.replaceAll(r'.\', ''));
         }
       } else if (_fs.isDirectorySync(target)) {
         final foundTargets = findAllTests(
