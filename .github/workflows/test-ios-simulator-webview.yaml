@@ -26,7 +26,7 @@ jobs:
         flutter-version: ["3.38.x"]
         flutter-channel: ["stable"]
         device_model: [iPhone 17 Pro]
-        os_version: ["26.0"]
+        os_version: ["26.2"]
         os: [iOS]
 
     defaults:
@@ -77,7 +77,7 @@ jobs:
           sleep 10 # See https://github.com/leancodepl/patrol/issues/1282
 
           TESTS_EXIT_CODE=0
-          patrol test --tags='webview && ios' --exclude=patrol_test/web_example_test.dart,patrol_test/native_tests/volume_test.dart,patrol_test/volume_test.dart --verbose || TESTS_EXIT_CODE=$?
+          patrol test --tags='webview && ios' --exclude=patrol_test/web/,patrol_test/native_tests/volume_test.dart,patrol_test/volume_test.dart --ios 26.2 --verbose || TESTS_EXIT_CODE=$?
 
           kill -SIGINT $recordingpid
           kill -SIGINT $logpid
