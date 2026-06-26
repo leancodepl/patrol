@@ -1,3 +1,7 @@
+## Unreleased
+
+- Fix `PatrolLogReader` crash when step or log entries arrive without a matching open test start entry.
+
 ## 0.9.0
 
 - **Breaking:** Move `PatrolLogReader` to a separate `package:patrol_log/patrol_log_reader.dart` export, removing the transitive `dart:io` dependency from the main barrel file.
