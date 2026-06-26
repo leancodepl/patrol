@@ -1244,7 +1244,7 @@ class AxeScanRequest with Equatable {
       _$AxeScanRequestFromJson(json);
 
   final bool uploadToDashboard;
-  final Set tags;
+  final Set<String> tags;
   final String? scanName;
 
   Map<String, dynamic> toJson() => _$AxeScanRequestToJson(this);
