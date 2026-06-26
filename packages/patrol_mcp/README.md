@@ -74,7 +74,7 @@ accordingly (for example `./app`).
    set -e
 
    cd "${PROJECT_ROOT:-.}"
-   export PROJECT_ROOT=$PWD
+   export PROJECT_ROOT="$PWD"
 
    if command -v fvm >/dev/null 2>&1; then
      export PATROL_FLUTTER_COMMAND="${PATROL_FLUTTER_COMMAND:-fvm flutter}"
