@@ -58,30 +58,21 @@ class _PatrolRunArgs {
   final Duration timeout;
 }
 
-/// Output schema shared by `run` and `status` -- both return a serialized
-/// [PatrolStatus] (see PatrolStatus.toMap).
+/// Output schema for `run` and `status` -- a serialized [PatrolStatus].
+/// Keys mirror `PatrolStatus.toMap`.
 const _sessionStatusSchema = JsonObject(
   properties: {
-    'isDevelopRunning': JsonBoolean(
-      description: 'Whether a patrol develop session is currently running.',
-    ),
+    'isDevelopRunning': JsonBoolean(),
     'testState': JsonString(
-      description: 'Lifecycle state of the most recent test run.',
       enumValues: ['idle', 'running', 'finishedPassed', 'finishedFailed'],
     ),
-    'currentTestFile': JsonString(
-      description: 'Test file of the active session, if any.',
-    ),
-    'warning': JsonString(
-      description:
-          'Set when a request was blocked, e.g. a different test is already '
-          'running.',
-    ),
-    'deviceName': JsonString(description: 'Name of the target device.'),
-    'deviceId': JsonString(description: 'Id of the target device.'),
-    'devicePlatform': JsonString(description: 'Platform of the target device.'),
-    'output': JsonString(description: 'Recent captured session output.'),
-    'summary': JsonString(description: 'Human-readable summary of the state.'),
+    'currentTestFile': JsonString(),
+    'warning': JsonString(),
+    'deviceName': JsonString(),
+    'deviceId': JsonString(),
+    'devicePlatform': JsonString(),
+    'output': JsonString(),
+    'summary': JsonString(),
   },
   required: ['isDevelopRunning', 'testState', 'output', 'summary'],
 );
