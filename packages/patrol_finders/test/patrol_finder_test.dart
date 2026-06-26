@@ -955,6 +955,48 @@ void main() {
         expect($('bottom text').visible, true);
       });
 
+      // Regression test for https://github.com/leancodepl/patrol/issues/3115.
+      //
+      // With SettlePolicy.noSettle a single frame is pumped after each drag.
+      // The pointer-up from the drag starts a ballistic fling, and while a
+      // scrollable is mid-fling it wraps its contents in an IgnorePointer, so
+      // the target is never reported as hit-testable (visible) even though it
+      // scrolls into view - the loop drags until maxScrolls and throws.
+      //
+      // The target sits in the middle of a long scrollable (large trailing
+      // space below it) so the scroll never reaches its end - otherwise the
+      // boundary would stop the fling and mask the bug.
+      patrolWidgetTest(
+        'scrolls to widget in CustomScrollView with SettlePolicy.noSettle',
+        ($) async {
+          await $.pumpWidget(
+            const MaterialApp(
+              home: Scaffold(
+                body: CustomScrollView(
+                  slivers: [
+                    SliverList(
+                      delegate: SliverChildListDelegate.fixed([
+                        Text('top text'),
+                        SizedBox(height: 700),
+                        Text('bottom text'),
+                        SizedBox(height: 2000),
+                      ]),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+
+          expect($('top text').visible, true);
+          expect($('bottom text').visible, false);
+
+          await $('bottom text').scrollTo(settlePolicy: SettlePolicy.noSettle);
+
+          expect($('bottom text').visible, true);
+        },
+      );
+
       final app = MaterialApp(
         home: Scaffold(
           body: Column(

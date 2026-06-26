@@ -970,6 +970,30 @@ class PatrolTester {
       await pumpAndSettle(timeout: timeout);
     } else {
       await tester.pump();
+      // A single pump is not enough for the ballistic fling started by the
+      // drag's pointer-up to finish. While a scrollable is mid-fling it wraps
+      // its contents in an IgnorePointer, so the target is never reported as
+      // hit-testable (visible) - the scroll loop then drags forever and times
+      // out. Halt any in-progress fling so the next visibility check is
+      // reliable, without advancing the clock (which noSettle deliberately
+      // avoids, e.g. to not progress unrelated infinite animations).
+      // See https://github.com/leancodepl/patrol/issues/3115.
+      _stopInProgressScrolling();
+    }
+  }
+
+  /// Stops any scrollable that is currently mid-fling by pinning it to its
+  /// current offset. This makes it idle, which releases the [IgnorePointer]
+  /// that a scrolling [Scrollable] keeps over its contents.
+  void _stopInProgressScrolling() {
+    for (final element in find.byType(Scrollable).evaluate()) {
+      final state = (element as StatefulElement).state;
+      if (state is ScrollableState) {
+        final position = state.position;
+        if (position.isScrollingNotifier.value && position.hasPixels) {
+          position.jumpTo(position.pixels);
+        }
+      }
     }
   }
 }
