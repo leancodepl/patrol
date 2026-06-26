@@ -864,7 +864,7 @@ class Automator private constructor() {
 
     fun axeScan(uploadToDashboard: Boolean = true, tags: Set<String> = emptySet(), scanName: String? = null) {
         uiDevice.wait(Until.hasObject(By.pkg(targetContext.packageName).depth(0)), 5000)
-
+        Logger.d("Axe scan started, tags: $tags, scanName: $scanName")
         if (scanName != null) {
             axe.setScanName(scanName)
         }
