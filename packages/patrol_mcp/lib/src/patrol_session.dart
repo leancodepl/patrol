@@ -343,11 +343,15 @@ final class PatrolSession {
   /// Stops an active develop session and waits for its child processes to be
   /// torn down. Safe to call when idle or repeatedly.
   Future<void> dispose() async {
-    if (!_isRunning) {
-      return;
+    if (_isRunning) {
+      sendCommand(PatrolCommand.quit);
     }
-    sendCommand(PatrolCommand.quit);
-    await _cleanup();
+    // Await any in-flight teardown -- the quit above, or one the session
+    // already started on its own -- so children are reaped before we exit.
+    final cleanup = _cleanupFuture;
+    if (cleanup != null) {
+      await cleanup;
+    }
   }
 
   /// Cleans up the session. Memoized -- callers share one teardown.
@@ -355,6 +359,10 @@ final class PatrolSession {
 
   Future<void> _doCleanup() async {
     final logger = Logger('PatrolSession');
+    // Capture this session's resources before the first await -- a new session
+    // could reassign these fields while we're awaiting below.
+    final scope = _disposeScope;
+    final stdinController = _stdinController;
     _isRunning = false;
     _currentTestFile = null;
     _testServerPort = null;
@@ -362,14 +370,13 @@ final class PatrolSession {
     await _logStreaming.stopLogging();
 
     try {
-      final scope = _disposeScope;
       if (scope != null && !scope.disposed) {
         await scope.dispose();
       }
     } catch (e) {
       logger.fine('Error disposing scope: $e');
     }
-    await _stdinController?.close();
+    await stdinController?.close();
     logger.fine('Develop session ended');
   }
 
