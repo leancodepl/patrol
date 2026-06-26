@@ -279,7 +279,7 @@ final class PatrolSession {
     _developService = developService;
 
     _isRunning = true;
-    _cleanupDone = false;
+    _cleanupFuture = null;
     _currentTestFile = testFile;
     _testState = TestState.running;
     _outputs.clear();
@@ -338,16 +338,22 @@ final class PatrolSession {
     });
   }
 
-  var _cleanupDone = false;
+  Future<void>? _cleanupFuture;
 
-  /// Clean up all resources for the current session.
-  /// Safe to call multiple times -- only the first call does actual work.
-  Future<void> _cleanup() async {
-    if (_cleanupDone) {
+  /// Stops an active develop session and waits for its child processes to be
+  /// torn down. Safe to call when idle or repeatedly.
+  Future<void> dispose() async {
+    if (!_isRunning) {
       return;
     }
-    _cleanupDone = true;
+    sendCommand(PatrolCommand.quit);
+    await _cleanup();
+  }
 
+  /// Cleans up the session. Memoized -- callers share one teardown.
+  Future<void> _cleanup() => _cleanupFuture ??= _doCleanup();
+
+  Future<void> _doCleanup() async {
     final logger = Logger('PatrolSession');
     _isRunning = false;
     _currentTestFile = null;
