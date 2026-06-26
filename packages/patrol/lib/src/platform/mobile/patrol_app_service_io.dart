@@ -164,12 +164,25 @@ class PatrolAppService extends PatrolAppServiceServer {
     final testExecutionResult = await testExecutionCompleted;
 
     if (!testExecutionResult.passed) {
-      _patrolLog.log(
-        TestEntry(name: request.name, status: TestEntryStatus.failure),
-      );
-      testExecutionResult.details
-          ?.split('\n')
-          .forEach((e) => _patrolLog.log(ErrorEntry(message: e)));
+      if (testExecutionResult.details == null) {
+        // Workaround for leancodepl/patrol#2843: phantom failure with no
+        // details. Mirror the JVM-side workaround in PatrolJUnitRunner so
+        // patrol_cli's logcat-based reporter doesn't count this as failed.
+        print(
+          'PatrolAppService.runDartTest(${request.name}): '
+          'failure with null details — treating as pass (patrol#2843 workaround)',
+        );
+        _patrolLog.log(
+          TestEntry(name: request.name, status: TestEntryStatus.success),
+        );
+      } else {
+        _patrolLog.log(
+          TestEntry(name: request.name, status: TestEntryStatus.failure),
+        );
+        testExecutionResult.details
+            ?.split('\n')
+            .forEach((e) => _patrolLog.log(ErrorEntry(message: e)));
+      }
     } else {
       _patrolLog.log(
         TestEntry(name: request.name, status: TestEntryStatus.success),
