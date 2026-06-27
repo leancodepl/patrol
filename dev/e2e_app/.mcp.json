@@ -1,7 +1,7 @@
 {
   "mcpServers": {
     "patrol": {
-      "command": "./scripts/run-patrol",
+      "command": "./tools/run-patrol",
       "env": {
         "PROJECT_ROOT": ".",
         "PATROL_FLAGS": "",
