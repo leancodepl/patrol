@@ -1,6 +1,7 @@
 ## Unreleased
 
 - Fix `PatrolLogReader` crash when step or log entries arrive without a matching open test start entry.
+- Report flaky tests separately. `PatrolLogReader` now collapses retries of a test into a single outcome, so a test that fails then passes on retry is counted as flaky (new `flakyTests`/`flakyTestsCount`) instead of failed. `failedTestsCount` counts only tests that failed every attempt, `totalTests` counts distinct tests (not attempts), and the summary gained a `Flaky` line.
 
 ## 0.9.0
 

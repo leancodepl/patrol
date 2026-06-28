@@ -4,6 +4,7 @@
 - Fix `--clear-permissions` being ignored by `patrol build ios`. The flag was wired into `patrol test` but dropped from `build ios`, so prebuilt iOS test bundles (e.g. for BrowserStack/Firebase Test Lab) never had `CLEAR_PERMISSIONS` enabled.
 - Don't listen for `SIGTERM` on Windows, where it is not supported and throws an unhandled `SignalException`. (#3035)
 - Fix `--exclude` not working. (#2990)
+- Web: a flaky test (fails then passes on retry with `--web-retries`) no longer fails the run. The exit code is now non-zero only when a test fails every attempt, matching Playwright's flaky-vs-unexpected semantics. Flaky tests are listed separately in the summary.
 
 ## 4.4.0
 

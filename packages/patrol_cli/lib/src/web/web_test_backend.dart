@@ -532,6 +532,14 @@ class WebTestBackend {
           // TODO: Don't print the summary in develop
           _logger.info(patrolLogReader.summary);
 
+          // `failedTestsCount` counts only tests that ultimately failed
+          // (every retry exhausted). Flaky tests that passed on retry are not
+          // counted here, so they do not fail the run — matching Playwright,
+          // which exits non-zero only on unexpected failures, not flaky ones.
+          // We still rely on the parsed count rather than Playwright's exit
+          // code because Playwright uses exit code 1 for both real test
+          // failures and unexpected process errors and does not distinguish
+          // them (https://github.com/microsoft/playwright/issues/14109).
           if (patrolLogReader.failedTestsCount > 0) {
             completer.completeError('Some tests failed.');
           } else if (exitCode != 0) {

@@ -408,6 +408,252 @@ void main() {
       });
     });
 
+    group('flaky tests (retries)', () {
+      late PatrolLogReader reader;
+
+      setUp(() async {
+        reader = _buildReader();
+        await reader.readEntries();
+      });
+
+      tearDown(() => reader.close());
+
+      test(
+        'test that fails then passes on retry is flaky, not failed',
+        () async {
+          reader
+            ..parse(
+              _patrolLogLine(_testEntryJson(name: 'my test', status: 'start')),
+            )
+            ..parse(
+              _patrolLogLine(
+                _testEntryJson(
+                  name: 'my test',
+                  status: 'failure',
+                  error: 'Flaky failure',
+                ),
+              ),
+            )
+            ..parse(
+              _patrolLogLine(_testEntryJson(name: 'my test', status: 'start')),
+            )
+            ..parse(
+              _patrolLogLine(
+                _testEntryJson(name: 'my test', status: 'success'),
+              ),
+            );
+
+          await pumpEventQueue();
+
+          expect(reader.totalTests, 1);
+          expect(reader.failedTestsCount, 0);
+          expect(reader.flakyTestsCount, 1);
+          // Flaky tests are reported separately, not as successful.
+          expect(reader.successfulTests, 0);
+        },
+      );
+
+      test('test that fails every attempt is failed, not flaky', () async {
+        reader
+          ..parse(
+            _patrolLogLine(_testEntryJson(name: 'my test', status: 'start')),
+          )
+          ..parse(
+            _patrolLogLine(
+              _testEntryJson(
+                name: 'my test',
+                status: 'failure',
+                error: 'First failure',
+              ),
+            ),
+          )
+          ..parse(
+            _patrolLogLine(_testEntryJson(name: 'my test', status: 'start')),
+          )
+          ..parse(
+            _patrolLogLine(
+              _testEntryJson(
+                name: 'my test',
+                status: 'failure',
+                error: 'Second failure',
+              ),
+            ),
+          );
+
+        await pumpEventQueue();
+
+        expect(reader.totalTests, 1);
+        expect(reader.failedTestsCount, 1);
+        expect(reader.flakyTestsCount, 0);
+        expect(reader.successfulTests, 0);
+      });
+
+      test(
+        'matches flaky retry across web prefix on the finish entry',
+        () async {
+          reader
+            ..parse(
+              _patrolLogLine(_testEntryJson(name: 'my test', status: 'start')),
+            )
+            ..parse(
+              _patrolLogLine(
+                _testEntryJson(
+                  name: 'web.some_test my test',
+                  status: 'failure',
+                  error: 'Flaky failure',
+                ),
+              ),
+            )
+            ..parse(
+              _patrolLogLine(_testEntryJson(name: 'my test', status: 'start')),
+            )
+            ..parse(
+              _patrolLogLine(
+                _testEntryJson(
+                  name: 'web.some_test my test',
+                  status: 'success',
+                ),
+              ),
+            );
+
+          await pumpEventQueue();
+
+          expect(reader.totalTests, 1);
+          expect(reader.failedTestsCount, 0);
+          expect(reader.flakyTestsCount, 1);
+        },
+      );
+
+      test(
+        'two distinct tests sharing a name running in parallel are not flaky',
+        () async {
+          // Both attempts are open at the same time (overlapping), so they are
+          // distinct tests, not a retry of one.
+          reader
+            ..parse(
+              _patrolLogLine(_testEntryJson(name: 'my test', status: 'start')),
+            )
+            ..parse(
+              _patrolLogLine(_testEntryJson(name: 'my test', status: 'start')),
+            )
+            ..parse(
+              _patrolLogLine(
+                _testEntryJson(name: 'web.shard1 my test', status: 'success'),
+              ),
+            )
+            ..parse(
+              _patrolLogLine(
+                _testEntryJson(
+                  name: 'web.shard2 my test',
+                  status: 'failure',
+                  error: 'Error',
+                ),
+              ),
+            );
+
+          await pumpEventQueue();
+
+          expect(reader.totalTests, 2);
+          expect(reader.successfulTests, 1);
+          expect(reader.failedTestsCount, 1);
+          expect(reader.flakyTestsCount, 0);
+        },
+      );
+
+      test('a passing test followed by a retry of a failing test', () async {
+        // First test passes; second (distinct) test fails then passes on retry.
+        reader
+          ..parse(
+            _patrolLogLine(
+              _testEntryJson(name: 'passing test', status: 'start'),
+            ),
+          )
+          ..parse(
+            _patrolLogLine(
+              _testEntryJson(name: 'passing test', status: 'success'),
+            ),
+          )
+          ..parse(
+            _patrolLogLine(_testEntryJson(name: 'flaky test', status: 'start')),
+          )
+          ..parse(
+            _patrolLogLine(
+              _testEntryJson(
+                name: 'flaky test',
+                status: 'failure',
+                error: 'Flaky',
+              ),
+            ),
+          )
+          ..parse(
+            _patrolLogLine(_testEntryJson(name: 'flaky test', status: 'start')),
+          )
+          ..parse(
+            _patrolLogLine(
+              _testEntryJson(name: 'flaky test', status: 'success'),
+            ),
+          );
+
+        await pumpEventQueue();
+
+        expect(reader.totalTests, 2);
+        expect(reader.successfulTests, 1);
+        expect(reader.flakyTestsCount, 1);
+        expect(reader.failedTestsCount, 0);
+      });
+
+      test('summary includes the flaky line and list', () async {
+        reader
+          ..parse(
+            _patrolLogLine(_testEntryJson(name: 'my test', status: 'start')),
+          )
+          ..parse(
+            _patrolLogLine(
+              _testEntryJson(
+                name: 'my test',
+                status: 'failure',
+                error: 'Flaky failure',
+              ),
+            ),
+          )
+          ..parse(
+            _patrolLogLine(_testEntryJson(name: 'my test', status: 'start')),
+          )
+          ..parse(
+            _patrolLogLine(_testEntryJson(name: 'my test', status: 'success')),
+          );
+
+        await pumpEventQueue();
+
+        expect(reader.summary, contains('Flaky: 1'));
+        expect(reader.summary, contains('Failed: 0'));
+        expect(reader.summary, contains('Total: 1'));
+      });
+
+      test(
+        'summary omits the flaky line when there are no flaky tests',
+        () async {
+          reader
+            ..parse(
+              _patrolLogLine(_testEntryJson(name: 'my test', status: 'start')),
+            )
+            ..parse(
+              _patrolLogLine(
+                _testEntryJson(name: 'my test', status: 'success'),
+              ),
+            );
+
+          await pumpEventQueue();
+
+          expect(reader.flakyTestsCount, 0);
+          expect(reader.summary, isNot(contains('Flaky')));
+          // The rest of the summary is unaffected.
+          expect(reader.summary, contains('Successful: 1'));
+          expect(reader.summary, contains('Failed: 0'));
+        },
+      );
+    });
+
     group('_clearLines', () {
       Future<String> runWithCapturedStdout(Future<void> Function() body) async {
         final mockStdout = _MockStdout();

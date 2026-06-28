@@ -6,6 +6,7 @@ import 'package:dispose_scope/dispose_scope.dart';
 import 'package:patrol_log/patrol_log.dart';
 import 'package:patrol_log/src/duration_extension.dart';
 import 'package:patrol_log/src/emojis.dart';
+import 'package:patrol_log/src/test_results.dart';
 
 class PatrolLogReader {
   PatrolLogReader({
@@ -39,9 +40,14 @@ class PatrolLogReader {
   /// Stopwatch measuring the whole tests duration.
   final _stopwatch = Stopwatch();
 
-  /// List of tests entries.
+  /// List of tests entries. One entry is created per *attempt* — a flaky test
+  /// that fails once and passes on retry contributes two entries here.
   final List<PatrolSingleTestEntry> _singleEntries = [];
   final Map<String, List<PatrolSingleTestEntry>> _openEntriesByName = {};
+
+  /// Collapses per-attempt entries into per-test outcomes (passed/flaky/failed),
+  /// so retries are reported per test instead of per attempt.
+  final _results = TestResults();
 
   /// List of tests names that were skipped.
   final List<String> _skippedTests = [];
@@ -65,19 +71,30 @@ class PatrolLogReader {
   /// Stops the timer measuring whole tests duration.
   void stopTimer() => _stopwatch.stop();
 
-  /// Returns the total number of tests.
-  int get totalTests => _singleEntries.length;
+  /// Returns the total number of distinct tests (not attempts). A flaky test
+  /// that ran twice counts once; skipped tests are included.
+  int get totalTests => _results.total + skippedTests;
 
-  /// Returns the number of tests that passed.
-  int get successfulTests =>
-      _singleEntries.where((e) => e.status == TestEntryStatus.success).length;
+  /// Returns the number of tests that passed on every attempt (no failed
+  /// attempt). Flaky tests are reported separately and are NOT counted here.
+  int get successfulTests => _results.passed.length;
 
-  /// Return list of failed tests.
+  /// Returns the list of tests that ultimately failed (every attempt failed,
+  /// including all retries). Flaky tests are excluded.
   List<PatrolSingleTestEntry> get failedTests =>
-      _singleEntries.where((e) => e.status == TestEntryStatus.failure).toList();
+      _results.failed.map((r) => r.last).toList();
 
-  /// Returns the number of failed tests.
+  /// Returns the number of tests that ultimately failed (unexpected failures).
+  /// Flaky tests that eventually passed are NOT counted here.
   int get failedTestsCount => failedTests.length;
+
+  /// Returns the list of flaky tests — tests that failed at least one attempt
+  /// but passed on a later retry.
+  List<PatrolSingleTestEntry> get flakyTests =>
+      _results.flaky.map((r) => r.last).toList();
+
+  /// Returns the number of flaky tests.
+  int get flakyTestsCount => flakyTests.length;
 
   /// Returns the number of skipped tests.
   int get skippedTests =>
@@ -87,6 +104,11 @@ class PatrolLogReader {
   /// with relative path to file that contains the test.
   String get failedTestsList =>
       failedTests.map((e) => '  - ${e.nameWithPath}').join('\n');
+
+  /// Returns `String` with bullet points naming the flaky tests with the
+  /// relative path to the file that contains the test.
+  String get flakyTestsList =>
+      flakyTests.map((e) => '  - ${e.nameWithPath}').join('\n');
 
   /// Parse the line from the process output.
   void parse(String line) {
@@ -208,6 +230,12 @@ class PatrolLogReader {
           _singleEntries.add(singleEntry);
           if (entry.status == TestEntryStatus.start) {
             final normalizedTestName = _normalizeTestName(entry.name);
+            _results.registerStart(
+              normalizedTestName,
+              singleEntry,
+              hasOpenAttempt:
+                  _openEntriesByName[normalizedTestName]?.isNotEmpty ?? false,
+            );
             _openEntriesByName
                 .putIfAbsent(normalizedTestName, () => [])
                 .add(singleEntry);
@@ -343,10 +371,12 @@ class PatrolLogReader {
 
   /// Returns a summary of the test results. That contains:
   ///
-  /// - Total number of tests
+  /// - Total number of distinct tests
   /// - Number of successful tests
-  /// - Number of failed tests
+  /// - Number of failed (unexpected) tests
   /// - List of failed tests
+  /// - Number of flaky tests (failed then passed on retry)
+  /// - List of flaky tests
   /// - Number of skipped tests
   /// - Path to the report file
   /// - Duration of the tests
@@ -356,6 +386,9 @@ class PatrolLogReader {
       '${Emojis.success} Successful: $successfulTests\n'
       '${Emojis.failure} Failed: $failedTestsCount\n'
       '${failedTestsCount > 0 ? '$failedTestsList\n' : ''}'
+      // Flaky is a web-retry concept; omit the line entirely when there are no
+      // flaky tests (e.g. always on mobile) to avoid a misleading `Flaky: 0`.
+      '${flakyTestsCount > 0 ? '${Emojis.flaky} Flaky: $flakyTestsCount\n$flakyTestsList\n' : ''}'
       '${Emojis.skip} Skipped: $skippedTests\n'
       '${Emojis.report} Report: ${reportPath.replaceAll(' ', '%20')}\n'
       '${Emojis.duration} Duration: ${_stopwatch.elapsed.toFormattedString()}\n';
