@@ -58,3 +58,4 @@ NS_ASSUME_NONNULL_END
 #import "PatrolIntegrationTestIosRunner.h"
 #import "PatrolIntegrationTestMacosRunner.h"
 #import "PatrolPlugin.h"
+#import "AxeBridge.m"
