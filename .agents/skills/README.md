@@ -1,0 +1,17 @@
+# Contributor Agent Skills
+
+Skills for **developing Patrol itself** — the framework, the CLI, native automation, and docs.
+They're consumed by contributors working in this repository and are **not** published to Patrol
+users. (User-facing skills for *writing tests* live in [`../../skills/`](../../skills/) and ship via
+`npx skills add leancodepl/patrol`.)
+
+This directory (`.agents/skills/`) is the canonical location, read by Codex, GitHub Copilot, and
+Antigravity. `.claude/skills` is a symlink to it, so Claude Code and Cursor read the same source —
+one source of truth, no duplication. Skills follow the open
+[Agent Skills](https://agentskills.io/specification) standard (a folder with a `SKILL.md` entrypoint,
+plus an optional `scripts/` directory for executable helpers).
+
+## Available skills
+
+_None yet._ Contributor skills (e.g. a `fix-issue` skill for working through a reported bug) land
+here as `<skill-name>/SKILL.md`.

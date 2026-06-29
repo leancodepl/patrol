@@ -7,9 +7,7 @@ import 'package:patrol_gen/src/schema.dart';
 
 class DartGenerator {
   List<OutputFile> generate(Schema schema, DartConfig config) {
-    final result = [
-      DartContractsGenerator().generate(schema, config),
-    ];
+    final result = [DartContractsGenerator().generate(schema, config)];
 
     final serverGenerator = DartShelfServerGenerator();
     final clientGenerator = DartHttpClientGenerator();

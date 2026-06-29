@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Add Swift Package Manager (SPM) support for iOS and macOS. CocoaPods remains supported for projects that have not migrated to SPM.
 - Add `sendKeyboardEnter` method for `MobileAutomator`. (#2748)
 - Fix a crash when an `IOSSelector` has no arguments needed for creating `NSPredicate` for textfield. (#3053)
 - Add Japanese (ja) language support for native OS interactions.

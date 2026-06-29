@@ -10,7 +10,7 @@ if (agpMajor < 9 || !usesBuiltInKotlin) {
 }
 
 android {
-    compileSdk = 35
+    compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
     namespace = "pl.leancode.patrol.e2e_app"
