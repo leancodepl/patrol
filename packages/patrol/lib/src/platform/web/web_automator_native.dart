@@ -283,4 +283,14 @@ class WebAutomator implements web_automator.WebAutomator {
     );
     return (result as List<dynamic>).cast<String>();
   }
+
+  @override
+  Future<void> screenshot({required String path}) async {
+    await callPlaywright(
+      'screenshot',
+      {'path': path},
+      logger: _config.logger,
+      patrolLog: _patrolLog,
+    );
+  }
 }
