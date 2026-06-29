@@ -480,7 +480,7 @@ public struct AxeInitSessionRequest: Codable {
 
 public struct AxeScanRequest: Codable {
   public var uploadToDashboard: Bool
-  public var tags: Set
+  public var tags: [String]
   public var scanName: String?
 }
 
