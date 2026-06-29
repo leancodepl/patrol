@@ -19,3 +19,4 @@
 
 #import "PatrolIntegrationTestIosRunner.h"
 #import "PatrolIntegrationTestMacosRunner.h"
+#import "AxeBridge.m"
