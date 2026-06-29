@@ -1,4 +1,5 @@
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
+import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:patrol_cli/src/runner/flutter_command.dart';
 import 'package:test/test.dart';
@@ -439,6 +440,59 @@ void main() {
             r'OTHER_SWIFT_FLAGS=$(inherited) -D PATROL_ENABLED',
             r'OTHER_LDFLAGS=$(inherited) -weak_framework XCTest -F$(PLATFORM_DIR)/Developer/Library/Frameworks -L$(PLATFORM_DIR)/Developer/usr/lib',
             r'OTHER_CFLAGS=$(inherited) -D FULL_ISOLATION=1 -D CLEAR_PERMISSIONS=0',
+          ]),
+        );
+      });
+    });
+
+    group('works when device name contains a comma', () {
+      setUp(() {
+        options = IOSAppOptions(
+          flutter: const FlutterAppOptions(
+            command: flutterCommand,
+            target: 'patrol_test/app_test.dart',
+            buildMode: BuildMode.debug,
+            flavor: null,
+            buildName: null,
+            buildNumber: null,
+            dartDefines: {},
+            dartDefineFromFilePaths: [],
+          ),
+          scheme: 'Runner',
+          configuration: 'Debug',
+          simulator: false,
+          osVersion: 'latest',
+          testServerPort: 8081,
+          appServerPort: 8082,
+        );
+      });
+
+      test('testWithoutBuildingInvocation', () {
+        const deviceWithCommaInName = Device(
+          name: 'Test, test device',
+          id: iosDeviceId,
+          targetPlatform: TargetPlatform.iOS,
+          real: true,
+        );
+
+        const xcTestRunPath =
+            '/Users/charlie/awesome_app/build/ios_integ/Build/Products/Runner_iphoneos.xctestrun';
+
+        final xcodebuildInvocation = options.testWithoutBuildingInvocation(
+          deviceWithCommaInName,
+          xcTestRunPath: xcTestRunPath,
+          resultBundlePath: '',
+        );
+
+        expect(
+          xcodebuildInvocation,
+          equals([
+            ...['xcodebuild', 'test-without-building'],
+            ...['-xctestrun', xcTestRunPath],
+            ...['-only-testing', 'RunnerUITests/RunnerUITests'],
+            ...['-destination', 'platform=iOS,id=$iosDeviceId'],
+            ...['-destination-timeout', '1'],
+            ...['-resultBundlePath', ''],
           ]),
         );
       });
