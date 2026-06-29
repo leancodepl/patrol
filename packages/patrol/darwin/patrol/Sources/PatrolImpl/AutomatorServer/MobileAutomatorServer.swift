@@ -5,6 +5,8 @@
 //  source: schema.dart
 //
 
+import Foundation
+
 protocol MobileAutomatorServer {
     func configure(request: ConfigureRequest) throws
     func pressHome() throws

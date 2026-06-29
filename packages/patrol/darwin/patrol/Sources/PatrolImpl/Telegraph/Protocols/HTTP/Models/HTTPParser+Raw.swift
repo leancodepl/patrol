@@ -6,7 +6,12 @@
 //  Copyright © 2018 Building42. All rights reserved.
 //
 
-// import HTTPParserC
+import Foundation
+
+#if SWIFT_PACKAGE
+  import Foundation
+  import HTTPParserC
+#endif
 
 // MARK: Types
 

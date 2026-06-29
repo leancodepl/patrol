@@ -53,36 +53,43 @@ $routes
   }
 
   String _generateRoutes(Service service) {
-    return service.endpoints.map((e) {
-      final requestDeserialization = e.request != null
-          ? '      val body = json.fromJson(it.bodyString(), Contracts.${e.request!.name}::class.java)\n'
-          : '';
-      final requestArg = e.request != null ? 'body' : '';
+    return service.endpoints
+        .map((e) {
+          final requestDeserialization = e.request != null
+              ? '      val body = json.fromJson(it.bodyString(), Contracts.${e.request!.name}::class.java)\n'
+              : '';
+          final requestArg = e.request != null ? 'body' : '';
 
-      final responseSerialization =
-          e.response != null ? '.body(json.toJson(response))' : '';
+          final responseSerialization = e.response != null
+              ? '.body(json.toJson(response))'
+              : '';
 
-      final responseVariable = e.response != null ? 'val response = ' : '';
+          final responseVariable = e.response != null ? 'val response = ' : '';
 
-      return '''
+          return '''
     "${e.name}" bind POST to {
 $requestDeserialization      ${responseVariable}server.${e.name}($requestArg)
       Response(OK)$responseSerialization
     }''';
-    }).join(',\n');
+        })
+        .join(',\n');
   }
 
   String _generateHandlers(Service service) {
-    return service.endpoints.map((endpoint) {
-      final response = endpoint.response != null
-          ? ': Contracts.${endpoint.response!.name}'
-          : '';
-      final request = endpoint.request != null
-          ? 'request: Contracts.${endpoint.request!.name}'
-          : '';
+    return service.endpoints
+        .map((endpoint) {
+          final response = switch (endpoint.response) {
+            final response? => ': Contracts.${response.name}',
+            null => '',
+          };
+          final request = switch (endpoint.request) {
+            final request? => 'request: Contracts.${request.name}',
+            null => '',
+          };
 
-      return '    fun ${endpoint.name}($request)$response';
-    }).join('\n');
+          return '    fun ${endpoint.name}($request)$response';
+        })
+        .join('\n');
   }
 
   String _getRoutesFunctionName(String serviceName) {

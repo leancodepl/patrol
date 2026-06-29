@@ -31,8 +31,9 @@ class PatrolGen {
       ..addAll(AndroidGenerator().generate(schema, config.androidConfig));
 
     for (final outputFile in files) {
-      await File(outputFile.filename)
-          .writeAsString(outputFile.content, flush: true);
+      await File(
+        outputFile.filename,
+      ).writeAsString(outputFile.content, flush: true);
     }
   }
 }
