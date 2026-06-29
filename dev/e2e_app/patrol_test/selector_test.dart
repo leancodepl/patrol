@@ -11,7 +11,7 @@ void main() {
     // can vary, so try the common variants and ignore if none are present.
 
     try {
-      await $.platform.mobile.tap(
+      await $.platform.tap(
         Selector(text: 'ACCEPT ALL COOKIES'),
         timeout: const Duration(seconds: 10),
       );
