@@ -11,6 +11,7 @@ import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/devices.dart';
+import 'package:patrol_cli/src/ios/xcode_test_codegen.dart';
 import 'package:patrol_log/patrol_log.dart';
 import 'package:patrol_log/patrol_log_reader.dart';
 import 'package:platform/platform.dart';
@@ -94,6 +95,17 @@ class IOSTestBackend {
         );
       }
 
+      // Build-time test discovery (experimental, opt-in). Runs a host
+      // `flutter test` in discovery mode that writes a manifest of the Dart
+      // test tree. Failures are non-fatal: the native side falls back to
+      // runtime discovery when the manifest is absent.
+      if (options.emitTestManifest) {
+        final manifestPath = await _generateTestManifest(options, scope);
+        if (manifestPath != null) {
+          _generateXcodeTests(manifestPath);
+        }
+      }
+
       // flutter build ios --config-only
 
       var flutterBuildKilled = false;
@@ -159,6 +171,79 @@ class IOSTestBackend {
         await _patchXcTestRunFrameworkPath(xctestRunFile);
       }
     });
+  }
+
+  /// Runs the bundle on the host in discovery mode and returns the absolute
+  /// path to the generated manifest, or null if discovery failed.
+  Future<String?> _generateTestManifest(
+    IOSAppOptions options,
+    DisposeScope scope,
+  ) async {
+    final manifestFile = _rootDirectory
+        .childDirectory('build')
+        .childDirectory('patrol')
+        .childFile('patrol_test_manifest.json');
+    manifestFile.parent.createSync(recursive: true);
+    if (manifestFile.existsSync()) {
+      manifestFile.deleteSync();
+    }
+
+    final task = _logger.task('Discovering Dart tests at build time');
+    final process =
+        await _processManager.start(
+            options.flutter.toFlutterTestDiscoveryInvocation(
+              manifestOutputPath: manifestFile.absolute.path,
+            ),
+            runInShell: true,
+            workingDirectory: _rootDirectory.path,
+          )
+          ..disposedBy(scope);
+    process.listenStdOut((l) => _logger.detail('\t$l')).disposedBy(scope);
+    process.listenStdErr((l) => _logger.detail('\t$l')).disposedBy(scope);
+    final exitCode = await process.exitCode;
+
+    if (exitCode != 0 || !manifestFile.existsSync()) {
+      task.fail(
+        'Build-time test discovery failed (exit code $exitCode); the native '
+        'side will fall back to runtime discovery',
+      );
+      return null;
+    }
+
+    task.complete('Discovered Dart tests → ${manifestFile.path}');
+    return manifestFile.absolute.path;
+  }
+
+  /// Generates static XCTest methods from the manifest into the RunnerUITests
+  /// target. The file is `#included` by RunnerUITests.m (between the
+  /// PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN/END macros), so it compiles
+  /// as part of the test target - no project.pbxproj surgery needed.
+  ///
+  /// Because the tests are now real, statically-discoverable XCTest methods,
+  /// each can be selected individually with
+  /// `-only-testing RunnerUITests/RunnerUITests/test_...`. That enables sharding
+  /// by splitting the selectors across runners.
+  ///
+  /// CAVEAT - parallelism on a single host (e.g. bluepill,
+  /// `xcodebuild -parallel-testing-enabled`): this does NOT work out of the box
+  /// yet. Every Patrol test talks to PatrolServer on FIXED ports (PATROL_TEST/
+  /// APP_SERVER_PORT, default 8081/8082, baked into the app as dart-defines).
+  /// iOS simulators share the host loopback, so running several shards in
+  /// parallel on one machine collides on those ports. Sharding across SEPARATE
+  /// hosts (one simulator each) works today; parallel-on-one-host first needs
+  /// per-shard port isolation (and the app must learn its port at runtime rather
+  /// than from a build-time dart-define).
+  void _generateXcodeTests(String manifestPath) {
+    final output = _rootDirectory
+        .childDirectory('ios')
+        .childDirectory('RunnerUITests')
+        .childFile('PatrolGeneratedTests.inc');
+
+    final count = XcodeTestCodegen(_fs).generate(
+      manifestPath: manifestPath,
+      outputPath: output.path,
+    );
+    _logger.detail('Generated $count static XCTest method(s) → ${output.path}');
   }
 
   /// Executes the tests of the given [options] on the given [device].

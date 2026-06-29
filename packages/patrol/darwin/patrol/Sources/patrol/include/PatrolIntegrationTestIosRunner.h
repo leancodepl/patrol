@@ -176,27 +176,37 @@
       NSLog(@"selectedTest: %@", [self selectedTest]);                                                          \
       dartTests = [NSArray arrayWithObject:[self selectedTest]];                                                \
     } else {                                                                                                    \
-      /* Run the app for the first time to gather Dart tests */                                                 \
-      [[[XCUIApplication alloc] init] launch];                                                                  \
-      /* Spin the runloop waiting until the app reports that it is ready to report Dart tests */                \
-      while (!server.appReady) {                                                                                \
-        [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];                      \
+      /* Prefer the build-time test manifest embedded in the .xctest bundle. */                                 \
+      NSString *manifestPath =                                                                                  \
+          [[NSBundle bundleForClass:self] pathForResource:@"patrol_test_manifest" ofType:@"json"];              \
+      NSArray<NSDictionary *> *manifestTests =                                                                  \
+          manifestPath != nil ? [PatrolTestManifest flatTestsFromManifestAtPath:manifestPath] : nil;            \
+      if (manifestTests != nil) {                                                                               \
+        NSLog(@"Loaded %lu Dart tests from build-time manifest: %@", manifestTests.count, manifestPath);        \
+        dartTests = manifestTests;                                                                              \
+      } else {                                                                                                  \
+        /* Fallback: run the app for the first time to gather Dart tests */                                     \
+        [[[XCUIApplication alloc] init] launch];                                                                \
+        /* Spin the runloop waiting until the app reports that it is ready to report Dart tests */              \
+        while (!server.appReady) {                                                                              \
+          [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];                    \
+        }                                                                                                       \
+        [appServiceClient                                                                                       \
+            listDartTestsWithCompletion:^(NSArray<NSDictionary *> *_Nullable tests, NSError *_Nullable err) {   \
+              if (err != NULL) {                                                                                \
+                NSLog(@"listDartTests(): failed, err: %@", err);                                                \
+              }                                                                                                 \
+                                                                                                                \
+              dartTests = tests;                                                                                \
+            }];                                                                                                 \
+                                                                                                                \
+        /* Spin the runloop waiting until the app reports the Dart tests it contains */                         \
+        while (!dartTests) {                                                                                    \
+          [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];                    \
+        }                                                                                                       \
+                                                                                                                \
+        NSLog(@"Got %lu Dart tests: %@", dartTests.count, dartTests);                                           \
       }                                                                                                         \
-      [appServiceClient                                                                                         \
-          listDartTestsWithCompletion:^(NSArray<NSDictionary *> *_Nullable tests, NSError *_Nullable err) {     \
-            if (err != NULL) {                                                                                  \
-              NSLog(@"listDartTests(): failed, err: %@", err);                                                  \
-            }                                                                                                   \
-                                                                                                                \
-            dartTests = tests;                                                                                  \
-          }];                                                                                                   \
-                                                                                                                \
-      /* Spin the runloop waiting until the app reports the Dart tests it contains */                           \
-      while (!dartTests) {                                                                                      \
-        [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];                      \
-      }                                                                                                         \
-                                                                                                                \
-      NSLog(@"Got %lu Dart tests: %@", dartTests.count, dartTests);                                             \
     }                                                                                                           \
                                                                                                                 \
     NSMutableArray<NSInvocation *> *invocations = [[NSMutableArray alloc] init];                                \
@@ -275,3 +285,87 @@
   }                                                                                                             \
                                                                                                                 \
   @end
+
+
+// Static-codegen variant: build-time `patrol build ios` generates real XCTest
+// methods (a #included .inc) that call patrolExecuteDartTest:. BEGIN opens the
+// class and shared infra; END closes it. No +testInvocations - XCTest discovers
+// the generated `test_` methods natively (Xcode navigator, -only-testing).
+#define PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN(__test_class)                                           \
+  @interface __test_class : XCTestCase                                                                          \
+  @end                                                                                                          \
+                                                                                                                \
+  @implementation __test_class                                                                                  \
+                                                                                                                \
+  static PatrolServer *_patrolStaticServer = nil;                                                               \
+  static ObjCPatrolAppServiceClient *_patrolStaticClient = nil;                                                 \
+  static int _patrolStaticTestIndex = 0;                                                                        \
+                                                                                                                \
+  +(void)setUp {                                                                                                \
+    [super setUp];                                                                                              \
+    _patrolStaticServer = [[PatrolServer alloc] init];                                                          \
+    NSError *_Nullable __autoreleasing *_Nullable err = NULL;                                                   \
+    [_patrolStaticServer startAndReturnError:err];                                                              \
+    if (err != NULL) {                                                                                          \
+      NSLog(@"patrolServer.start(): failed, err: %@", err);                                                     \
+    }                                                                                                           \
+    _patrolStaticClient = [[ObjCPatrolAppServiceClient alloc] init];                                            \
+                                                                                                                \
+    XCUIApplication *springboard = [[XCUIApplication alloc] initWithBundleIdentifier:@"com.apple.springboard"]; \
+    if (springboard.alerts.buttons[@"Allow"].exists) {                                                          \
+      [springboard.alerts.buttons[@"Allow"] tap];                                                               \
+    }                                                                                                           \
+  }                                                                                                             \
+                                                                                                                \
+  +(void)resetPermissions {                                                                                     \
+    NSLog(@"Clearing permissions");                                                                             \
+    XCUIApplication *app = [[XCUIApplication alloc] init];                                                      \
+    if (@available(iOS 13.4, *)) {                                                                              \
+      [app resetAuthorizationStatusForResource:XCUIProtectedResourceLocation];                                  \
+      [app resetAuthorizationStatusForResource:XCUIProtectedResourceContacts];                                  \
+      [app resetAuthorizationStatusForResource:XCUIProtectedResourceCalendar];                                  \
+      [app resetAuthorizationStatusForResource:XCUIProtectedResourceReminders];                                 \
+      [app resetAuthorizationStatusForResource:XCUIProtectedResourcePhotos];                                    \
+      [app resetAuthorizationStatusForResource:XCUIProtectedResourceBluetooth];                                 \
+      [app resetAuthorizationStatusForResource:XCUIProtectedResourceMicrophone];                                \
+      [app resetAuthorizationStatusForResource:XCUIProtectedResourceCamera];                                    \
+    }                                                                                                           \
+    if (@available(iOS 15.0, *)) {                                                                              \
+      [app resetAuthorizationStatusForResource:XCUIProtectedResourceUserTracking];                              \
+    }                                                                                                           \
+  }                                                                                                             \
+                                                                                                                \
+  -(void)patrolExecuteDartTest:(NSString *)dartTestName skip:(BOOL)skip {                                       \
+    NSLog(@"RunnerUITests running Dart test: %@", dartTestName);                                                \
+    if (CLEAR_PERMISSIONS && _patrolStaticTestIndex > 0) {                                                      \
+      [[self class] resetPermissions];                                                                          \
+      NSLog(@"App permissions cleared");                                                                        \
+    }                                                                                                           \
+    _patrolStaticTestIndex++;                                                                                   \
+                                                                                                                \
+    [[[XCUIApplication alloc] init] launch];                                                                    \
+    if (skip) {                                                                                                 \
+      XCTSkip(@"Skip that test \"%@\"", dartTestName);                                                          \
+    }                                                                                                           \
+                                                                                                                \
+    __block ObjCRunDartTestResponse *response = NULL;                                                           \
+    __block NSError *error;                                                                                     \
+    [_patrolStaticClient                                                                                        \
+        runDartTestWithName:dartTestName                                                                        \
+                 completion:^(ObjCRunDartTestResponse *_Nullable r, NSError *_Nullable e) {                     \
+                   if (e != NULL) {                                                                             \
+                     error = e;                                                                                 \
+                   } else {                                                                                     \
+                     response = r;                                                                              \
+                   }                                                                                            \
+                 }];                                                                                            \
+                                                                                                                \
+    while (!response && !error) {                                                                               \
+      [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];                        \
+    }                                                                                                           \
+    BOOL passed = response ? response.passed : NO;                                                              \
+    NSString *details = response ? response.details : @"(no details - app likely crashed)";                     \
+    XCTAssertTrue(passed, @"%@", details);                                                                      \
+  }
+
+#define PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_END @end
