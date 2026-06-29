@@ -19,7 +19,6 @@ void main() {
       // nothing
     }
     await Future<void>.delayed(const Duration(seconds: 5));
-    // Open the search modal and type a query into its input field.
     await $.platform.mobile.tap(
       PlatformSelector(
         android: AndroidSelector(text: 'Open Search'),
