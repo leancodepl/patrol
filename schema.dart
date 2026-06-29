@@ -386,7 +386,6 @@ class IOSPickMultipleImagesFromGalleryRequest {
 }
 
 abstract class MobileAutomator<IOSServer, AndroidServer, DartClient> {
-  void initialize();
   void configure(ConfigureRequest request);
 
   // general
@@ -447,8 +446,6 @@ abstract class MobileAutomator<IOSServer, AndroidServer, DartClient> {
 }
 
 abstract class AndroidAutomator<AndroidServer, DartClient> {
-  void initialize();
-
   void pressBack();
   void doublePressRecentApps();
 
