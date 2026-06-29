@@ -28,6 +28,11 @@ typedef PatrolTesterCallback = Future<void> Function(PatrolIntegrationTester $);
 
 /// A modification of [setUp] that works with Patrol's native automation.
 void patrolSetUp(dynamic Function() body) {
+  if (constants.testDiscoveryEnabled) {
+    // In discovery mode bodies never run, so the setUp would only reach for
+    // PatrolBinding.instance and crash. Skip registering it entirely.
+    return;
+  }
   setUp(() async {
     if (constants.hotRestartEnabled) {
       await body();
@@ -47,6 +52,9 @@ void patrolSetUp(dynamic Function() body) {
 
 /// A modification of [tearDown] that works with Patrol's native automation.
 void patrolTearDown(dynamic Function() body) {
+  if (constants.testDiscoveryEnabled) {
+    return;
+  }
   tearDown(() async {
     if (constants.hotRestartEnabled) {
       await body();
@@ -102,6 +110,21 @@ void patrolTest(
   LiveTestWidgetsFlutterBindingFramePolicy framePolicy =
       LiveTestWidgetsFlutterBindingFramePolicy.fullyLive,
 }) {
+  if (constants.testDiscoveryEnabled) {
+    // Build-time discovery (host `flutter test`): only register the test so it
+    // shows up in the group tree. Do NOT initialize PatrolBinding (Live binding,
+    // incompatible with the host automated binding) and do NOT run the body
+    // (it would block on waitForExecutionRequest()).
+    testWidgets(
+      description,
+      skip: skip,
+      timeout: timeout,
+      tags: tags,
+      (_) async {},
+    );
+    return;
+  }
+
   final patrolLog = PatrolLogWriter(config: {'printLogs': config.printLogs});
   if (nativeAutomatorConfig != null && platformAutomatorConfig != null) {
     throw StateError(
