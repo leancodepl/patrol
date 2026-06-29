@@ -51,6 +51,36 @@ class FlutterAppOptions {
 
     return cmd;
   }
+
+  /// Translates these options into a host `flutter test` invocation that runs
+  /// the bundle in build-time discovery mode and writes the test manifest to
+  /// [manifestOutputPath].
+  ///
+  /// The same `--dart-define`s as the real build are forwarded on purpose: a
+  /// test description can be built from a dart-define (e.g. a target env), so
+  /// discovery must see the exact same config or the manifest names would
+  /// diverge from what the on-device run registers.
+  @nonVirtual
+  List<String> toFlutterTestDiscoveryInvocation({
+    required String manifestOutputPath,
+  }) {
+    return [
+      ...[command.executable, ...command.arguments],
+      'test',
+      target,
+      '--suppress-analytics',
+      ...['--dart-define', 'PATROL_TEST_DISCOVERY=true'],
+      ...['--dart-define', 'PATROL_MANIFEST_OUTPUT=$manifestOutputPath'],
+      for (final dartDefine in dartDefines.entries) ...[
+        '--dart-define',
+        '${dartDefine.key}=${dartDefine.value}',
+      ],
+      for (final dartDefineFromFilePath in dartDefineFromFilePaths) ...[
+        '--dart-define-from-file',
+        dartDefineFromFilePath,
+      ],
+    ];
+  }
 }
 
 class AndroidAppOptions {
@@ -196,6 +226,7 @@ class IOSAppOptions {
     required this.testServerPort,
     this.fullIsolation = false,
     this.clearIOSPermissions = false,
+    this.emitTestManifest = false,
   });
 
   final FlutterAppOptions flutter;
@@ -208,6 +239,11 @@ class IOSAppOptions {
   final int testServerPort;
   final bool fullIsolation;
   final bool clearIOSPermissions;
+
+  /// Whether to discover Dart tests at build time (host `flutter test`) and
+  /// embed a manifest into the test bundle, so the native runner can skip the
+  /// runtime discovery launch. Experimental, opt-in.
+  final bool emitTestManifest;
 
   String get description {
     final platform = simulator ? 'simulator' : 'device';

@@ -48,10 +48,18 @@ class BuildIOSCommand extends PatrolCommand {
 
     usesIOSOptions();
     usesAppNameOption();
-    argParser.addFlag(
-      'simulator',
-      help: 'Build for simulator instead of real device.',
-    );
+    argParser
+      ..addFlag(
+        'simulator',
+        help: 'Build for simulator instead of real device.',
+      )
+      ..addFlag(
+        'emit-test-manifest',
+        help:
+            'Experimental: discover Dart tests at build time (host `flutter '
+            'test`) and embed a manifest into the test bundle, so the native '
+            'runner can skip the runtime discovery launch.',
+      );
   }
 
   final TestFinderFactory _testFinderFactory;
@@ -198,6 +206,7 @@ class BuildIOSCommand extends PatrolCommand {
       testServerPort: super.testServerPort,
       fullIsolation: boolArg('full-isolation'),
       clearIOSPermissions: boolArg('clear-permissions'),
+      emitTestManifest: boolArg('emit-test-manifest'),
     );
 
     if (!iosOpts.simulator && iosOpts.fullIsolation) {
