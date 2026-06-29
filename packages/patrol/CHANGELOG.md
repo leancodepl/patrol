@@ -1,10 +1,12 @@
 ## Unreleased
 
 - Add Swift Package Manager (SPM) support for iOS and macOS. CocoaPods remains supported for projects that have not migrated to SPM.
+- Fix iOS/macOS regular app builds failing with undefined XCTest symbols when using SPM.
 - Add `sendKeyboardEnter` method for `MobileAutomator`. (#2748)
 - Fix a crash when an `IOSSelector` has no arguments needed for creating `NSPredicate` for textfield. (#3053)
 - Add Japanese (ja) language support for native OS interactions.
 - Fix macOS build by implementing `sendKeyboardEnter` in `MacOSAutomator`. (#3105)
+- Fix iOS tests failing on devices whose name contains a comma 
 
 ## 4.6.1
 
