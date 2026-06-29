@@ -9,9 +9,7 @@ void main() {
       await $('Open webview (Patrol docs)').scrollTo().tap();
       await $.pump(const Duration(seconds: 5));
 
-      // Dismiss the cookie consent popup if it appears. The exact button label
-      // can vary, so try the common variants and ignore if none are present.
-
+      // Dismiss the cookie consent popup if it appears
       try {
         await $.platform.mobile.tap(
           Selector(text: 'ACCEPT ALL COOKIES'),
