@@ -7,7 +7,8 @@ import PackageDescription
 // and we need to base it on a env flag set in patrol cli.
 let patrolEnabled = ProcessInfo.processInfo.environment["PATROL_ENABLED"] == "1"
 
-let patrolImplSwiftSettings: [SwiftSetting] = patrolEnabled
+let patrolImplSwiftSettings: [SwiftSetting] =
+  patrolEnabled
   ? [.define("PATROL_ENABLED")]
   : []
 
@@ -16,7 +17,8 @@ let patrolImplBaseLinkerSettings: [LinkerSetting] = [
   .linkedFramework("AppKit", .when(platforms: [.macOS])),
 ]
 
-let patrolImplLinkerSettings: [LinkerSetting] = patrolEnabled
+let patrolImplLinkerSettings: [LinkerSetting] =
+  patrolEnabled
   ? patrolImplBaseLinkerSettings + [.unsafeFlags(["-weak_framework", "XCTest"])]
   : patrolImplBaseLinkerSettings
 
