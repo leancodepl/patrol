@@ -83,6 +83,7 @@ These workflows verify the user has write access before running. If you don't ha
 | Workflow name | Triggered | Description |
 |--------------|---------|-------------|
 | [Verify Version Compatibility][verify_compatibility] | PR/push (on compatibility checker changes) | Runs compatibility tests and verifies compatibility tables are up-to-date. |
+| [check skills][check-skills] | PR (on `skills/`, `.agents/skills/`, `.claude/skills`, or script changes), manual | Validates the agent-skills setup via `tool/check_skills.sh`: the `.claude/skills` symlink resolves to `.agents/skills`, and every `SKILL.md` has valid frontmatter (`name` matches its folder and is kebab-case, plus a non-empty `description`). |
 | [send slack message][send-slack-message] | Reusable workflow | Reusable workflow for sending test results notifications to Slack. Invoked by test workflows; the Slack step runs only when `github.event_name == 'schedule'` in the **caller** workflow (so scheduled cron runs notify; PR, push, `workflow_dispatch`, and other triggers do not). |
 | [label pull request][label_pull_request] | All PRs | Automatically labels PRs based on changed files. |
 | [Add prioritized issues to project][add-to-project] | Issue labeled (P0, P1, P2) | Automatically adds prioritized issues to GitHub project board. |
@@ -182,3 +183,4 @@ A test is selected if it matches ALL conditions in the boolean expression (AND o
 [potential-duplicates]: workflows/potential-duplicates.yaml
 [close-inactive-issues]: workflows/close-inactive-issues.yaml
 [lock-closed-issues]: workflows/lock-closed-issues.yaml
+[check-skills]: workflows/check-skills.yaml

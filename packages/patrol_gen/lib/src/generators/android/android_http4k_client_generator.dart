@@ -90,8 +90,9 @@ $endpoints
         ? ': Contracts.${endpoint.response!.name}'
         : '';
 
-    final serializeParameter =
-        endpoint.request != null ? ', json.toJson(request)' : '';
+    final serializeParameter = endpoint.request != null
+        ? ', json.toJson(request)'
+        : '';
 
     final body = endpoint.response != null
         ? '''
