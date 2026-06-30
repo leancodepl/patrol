@@ -42,6 +42,7 @@ let package = Package(
         .process("Resources/de.lproj"),
         .process("Resources/fr.lproj"),
         .process("Resources/pl.lproj"),
+        .process("Resources/ja.lproj"),
       ],
       swiftSettings: [
         .define("PATROL_ENABLED")
