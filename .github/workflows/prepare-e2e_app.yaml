@@ -46,6 +46,13 @@ jobs:
       - name: Generate Gradle wrapper
         run: flutter build apk --config-only
 
+      # Kotlin 2.3.x incremental compilation fails on Windows CI with
+      # "Could not close incremental caches ... *.tab" file-locking errors.
+      # Incremental compilation gives no benefit on clean CI builds, so disable
+      # it here (Windows only) instead of globally in gradle.properties.
+      - name: Disable Kotlin incremental compilation
+        run: Add-Content -Path gradle.properties -Value "kotlin.incremental=false"
+
       - name: ktlint check
         run: .\gradlew.bat :patrol:ktlintCheck
 
