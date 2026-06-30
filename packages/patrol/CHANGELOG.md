@@ -7,6 +7,7 @@
 - Add Japanese (ja) language support for native OS interactions.
 - Fix macOS build by implementing `sendKeyboardEnter` in `MacOSAutomator`. (#3105)
 - Fix iOS tests failing on devices whose name contains a comma 
+- Migrate Japanese text resources to SPM (#3128)
 
 ## 4.6.1
 
