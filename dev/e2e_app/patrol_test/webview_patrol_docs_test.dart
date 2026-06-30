@@ -32,18 +32,17 @@ void main() {
         index: 0,
         keyboardBehavior: KeyboardBehavior.showAndDismiss,
       );
-      await $.platform.mobile.tap(
-        MobileSelector(
-          android: AndroidSelector(
-            text: 'Patrol MCP',
-            className: 'android.widget.Button',
-          ),
-          ios: IOSSelector(
-            label: 'Patrol MCP',
-            elementType: IOSElementType.button,
-          ),
+      final patrolMcpResult = MobileSelector(
+        android: AndroidSelector(text: 'Patrol MCP'),
+        ios: IOSSelector(
+          label: 'Patrol MCP',
+          elementType: IOSElementType.button,
         ),
       );
+      // The search results are fetched asynchronously over the network, so
+      // wait for the result to render before tapping it instead of racing it.
+      await $.platform.mobile.waitUntilVisible(patrolMcpResult);
+      await $.platform.mobile.tap(patrolMcpResult);
       await Future<void>.delayed(const Duration(seconds: 5));
       await $.platform.mobile.waitUntilVisible(
         MobileSelector(
