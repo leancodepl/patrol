@@ -4,6 +4,7 @@
 - Fix `--clear-permissions` being ignored by `patrol build ios`. The flag was wired into `patrol test` but dropped from `build ios`, so prebuilt iOS test bundles (e.g. for BrowserStack/Firebase Test Lab) never had `CLEAR_PERMISSIONS` enabled.
 - Don't listen for `SIGTERM` on Windows, where it is not supported and throws an unhandled `SignalException`. (#3035)
 - Fix `--exclude` not working. (#2990)
+- Add `--record-video` flag to `patrol test` and `patrol develop` to record a video per test case on Android emulators and iOS simulators. (#2741)
 
 ## 4.4.0
 

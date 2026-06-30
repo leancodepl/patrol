@@ -24,7 +24,8 @@ void configureDevelopArgParser(PatrolCommand command) {
     ..usesBuildNumberOption()
     ..usesAppNameOption()
     ..usesAndroidOptions()
-    ..usesIOSOptions();
+    ..usesIOSOptions()
+    ..usesVideoRecordingOptions();
 
   command.argParser.addFlag(
     'open-devtools',
