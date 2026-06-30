@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     id("dev.flutter.flutter-gradle-plugin")
+    id("org.jetbrains.kotlin.android") apply false
 }
 
 val agpMajor = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION.substringBefore('.').toInt()
