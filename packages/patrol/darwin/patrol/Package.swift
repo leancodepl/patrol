@@ -1,6 +1,24 @@
 // swift-tools-version: 5.9
 
+import Foundation
 import PackageDescription
+
+// PATROL_ENABLED flag must be set here, so OTHER_SWIFT_FLAGS don't work like they do in cocoapods
+// and we need to base it on a env flag set in patrol cli.
+let patrolEnabled = ProcessInfo.processInfo.environment["PATROL_ENABLED"] == "1"
+
+let patrolImplSwiftSettings: [SwiftSetting] = patrolEnabled
+  ? [.define("PATROL_ENABLED")]
+  : []
+
+let patrolImplBaseLinkerSettings: [LinkerSetting] = [
+  .linkedFramework("UIKit", .when(platforms: [.iOS])),
+  .linkedFramework("AppKit", .when(platforms: [.macOS])),
+]
+
+let patrolImplLinkerSettings: [LinkerSetting] = patrolEnabled
+  ? patrolImplBaseLinkerSettings + [.unsafeFlags(["-weak_framework", "XCTest"])]
+  : patrolImplBaseLinkerSettings
 
 let package = Package(
   name: "patrol",
@@ -43,10 +61,8 @@ let package = Package(
         .process("Resources/fr.lproj"),
         .process("Resources/pl.lproj"),
       ],
-      linkerSettings: [
-        .linkedFramework("UIKit", .when(platforms: [.iOS])),
-        .linkedFramework("AppKit", .when(platforms: [.macOS])),
-      ]
+      swiftSettings: patrolImplSwiftSettings,
+      linkerSettings: patrolImplLinkerSettings
     ),
     // Public module named `patrol`. This is the module Flutter's generated
     // registrant imports and the module users `@import` from RunnerUITests.
