@@ -76,9 +76,9 @@ android {
         api "androidx.test.uiautomator:uiautomator:2.3.0"
 
         implementation platform("org.http4k:http4k-bom:6.16.0.0")
-        implementation "org.http4k:http4k-core:6.16.0.0"
+        implementation "org.http4k:http4k-core"
         implementation "com.squareup.okhttp:okhttp:2.7.5" // See https://github.com/square/okhttp/issues/8031
-        implementation "org.http4k:http4k-server-ktorcio:6.16.0.0"
+        implementation "org.http4k:http4k-server-ktorcio"
         implementation "com.google.code.gson:gson:2.10.1"
 
         testImplementation "org.jetbrains.kotlin:kotlin-test"
