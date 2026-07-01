@@ -2,7 +2,7 @@ group "pl.leancode.patrol"
 version "1.0-SNAPSHOT"
 
 buildscript {
-    ext.kotlin_version = "1.9.20"
+    ext.kotlin_version = "2.1.0"
     repositories {
         google()
         mavenCentral()
@@ -17,7 +17,17 @@ buildscript {
 }
 
 apply plugin: "com.android.library"
-apply plugin: "kotlin-android"
+
+def agpMajor = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION.tokenize('.')[0] as int
+// Host apps control Kotlin compilation mode via gradle.properties (android.builtInKotlin).
+// false (Flutter default for unmigrated apps): apply KGP on AGP 9+.
+// true (fully migrated apps): skip KGP and rely on AGP built-in Kotlin on AGP 9+.
+// AGP < 9 always uses KGP regardless of the flag. This plugin supports both paths.
+def usesBuiltInKotlin = project.findProperty("android.builtInKotlin") == "true"
+if (agpMajor < 9 || !usesBuiltInKotlin) {
+    apply plugin: "kotlin-android"
+}
+
 apply plugin: "org.jlleitschuh.gradle.ktlint"
 
 ktlint {
@@ -40,10 +50,6 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
-    }
-
-    kotlinOptions {
-        jvmTarget = "1.8"
     }
 
     sourceSets {
@@ -76,6 +82,14 @@ android {
         implementation "com.google.code.gson:gson:2.10.1"
 
         testImplementation "org.jetbrains.kotlin:kotlin-test"
+    }
+}
+
+plugins.withId("org.jetbrains.kotlin.android") {
+    kotlin {
+        compilerOptions {
+            jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_1_8
+        }
     }
 }
 

@@ -2,8 +2,14 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     id("com.android.application")
-    id("kotlin-android")
     id("dev.flutter.flutter-gradle-plugin")
+    id("org.jetbrains.kotlin.android") apply false
+}
+
+val agpMajor = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION.substringBefore('.').toInt()
+val usesBuiltInKotlin = project.findProperty("android.builtInKotlin") == "true"
+if (agpMajor < 9 || !usesBuiltInKotlin) {
+    apply(plugin = "org.jetbrains.kotlin.android")
 }
 
 android {
@@ -41,9 +47,11 @@ android {
     }
 }
 
-kotlin {
-    compilerOptions {
-        jvmTarget = JvmTarget.JVM_11
+plugins.withId("org.jetbrains.kotlin.android") {
+    project.extensions.configure(org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension::class.java) {
+        compilerOptions {
+            jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11
+        }
     }
 }
 
