@@ -282,14 +282,15 @@ class IOSAppOptions {
     required String xcTestRunPath,
     required String resultBundlePath,
   }) {
+    final destination = device.real
+        ? 'platform=iOS,id=${device.id}'
+        : 'platform=iOS Simulator,id=${device.id},OS=$osVersion';
+
     final cmd = [
       ...['xcodebuild', 'test-without-building'],
       ...['-xctestrun', xcTestRunPath],
       ...['-only-testing', 'RunnerUITests/RunnerUITests'],
-      ...[
-        '-destination',
-        'platform=${device.real ? 'iOS' : 'iOS Simulator,OS=$osVersion'},name=${device.name}',
-      ],
+      ...['-destination', destination],
       ...['-destination-timeout', '1'],
       ...['-resultBundlePath', resultBundlePath],
     ];

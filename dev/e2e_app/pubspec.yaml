@@ -4,8 +4,8 @@ publish_to: none
 version: 1.0.0+1
 
 environment:
-  sdk: ">=3.8.0 <4.0.0"
-  flutter: ">=3.32.0"
+  sdk: ">=3.10.0 <4.0.0"
+  flutter: ">=3.38.0"
 
 dependencies:
   app_links: ^6.1.1
@@ -18,7 +18,7 @@ dependencies:
   flutter_timezone: ^4.1.0
   geolocator: ^13.0.0
   go_router: ^16.0.0
-  google_maps_flutter: ^2.10.0
+  google_maps_flutter: ^2.17.1
   image_picker: ^1.1.2
   meta: ^1.10.0
   package_info_plus: ^8.3.1
