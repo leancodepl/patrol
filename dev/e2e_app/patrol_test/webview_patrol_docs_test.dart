@@ -9,9 +9,7 @@ void main() {
       await $('Open webview (Patrol docs)').scrollTo().tap();
       await $.pump(const Duration(seconds: 5));
 
-      // Dismiss the cookie consent popup if it appears. The exact button label
-      // can vary, so try the common variants and ignore if none are present.
-
+      // Dismiss the cookie consent popup if it appears
       try {
         await $.platform.mobile.tap(
           Selector(text: 'ACCEPT ALL COOKIES'),
@@ -34,18 +32,17 @@ void main() {
         index: 0,
         keyboardBehavior: KeyboardBehavior.showAndDismiss,
       );
-      await $.platform.mobile.tap(
-        MobileSelector(
-          android: AndroidSelector(
-            text: 'Patrol MCP',
-            className: 'android.widget.Button',
-          ),
-          ios: IOSSelector(
-            label: 'Patrol MCP',
-            elementType: IOSElementType.button,
-          ),
+      final patrolMcpResult = MobileSelector(
+        android: AndroidSelector(text: 'Patrol MCP'),
+        ios: IOSSelector(
+          label: 'Patrol MCP',
+          elementType: IOSElementType.button,
         ),
       );
+      // The search results are fetched asynchronously over the network, so
+      // wait for the result to render before tapping it instead of racing it.
+      await $.platform.mobile.waitUntilVisible(patrolMcpResult);
+      await $.platform.mobile.tap(patrolMcpResult);
       await Future<void>.delayed(const Duration(seconds: 5));
       await $.platform.mobile.waitUntilVisible(
         MobileSelector(
