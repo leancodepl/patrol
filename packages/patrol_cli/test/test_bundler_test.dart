@@ -65,6 +65,28 @@ import 'example_test.dart' as example_test;
 import 'example/example_test.dart' as example__example_test;''');
     });
 
+    test(
+      'resolves relative paths against project root, not the process CWD',
+      () {
+        // given
+        // Relative targets must be resolved against the project root even when
+        // the CLI is invoked from a different working directory (supported
+        // since patrol_cli 3.2.1). Here the CWD is a nested subdirectory.
+        fs.directory(fs.path.join('patrol_test', 'nested')).createSync();
+        fs.currentDirectory = fs.path.join('patrol_test', 'nested');
+
+        final tests = [fs.path.join('patrol_test', 'example_test.dart')];
+
+        // when
+        final imports = testBundler.generateImports(testDirectory, tests);
+        final groupsCode = testBundler.generateGroupsCode(testDirectory, tests);
+
+        // then
+        expect(imports, "import 'example_test.dart' as example_test;");
+        expect(groupsCode, "group('example_test', example_test.main);");
+      },
+    );
+
     test('generates imports from absolute paths', () {
       // given
       final tests = [
@@ -89,6 +111,75 @@ import 'example/example_test.dart' as example__example_test;''');
       expect(imports, '''
 import 'example_test.dart' as example_test;
 import 'example/example_test.dart' as example__example_test;''');
+    });
+
+    test(
+      'generates relative import when target is outside the test directory',
+      () {
+        // given
+        // The target lives in `integration_test/` while the configured test
+        // directory is `patrol_test/`. See:
+        // https://github.com/leancodepl/patrol/issues/3101
+        final tests = [
+          fs.path.join(
+            platform.home,
+            'awesome_app',
+            'integration_test',
+            'example_test.dart',
+          ),
+        ];
+
+        // when
+        final imports = testBundler.generateImports(testDirectory, tests);
+
+        // then
+        expect(
+          imports,
+          "import '../integration_test/example_test.dart' "
+          'as integration_test__example_test;',
+        );
+      },
+    );
+
+    test('generates groups when target is outside the test directory', () {
+      // given
+      final tests = [
+        fs.path.join(
+          platform.home,
+          'awesome_app',
+          'integration_test',
+          'example_test.dart',
+        ),
+      ];
+
+      // when
+      final groupsCode = testBundler.generateGroupsCode(testDirectory, tests);
+
+      // then
+      expect(
+        groupsCode,
+        "group('integration_test.example_test', "
+        'integration_test__example_test.main);',
+      );
+    });
+
+    test('sanitizes invalid identifier characters in import aliases', () {
+      // given
+      // Hyphens (and any other non-identifier characters) in the path must not
+      // leak into the generated Dart alias, otherwise the bundle won't compile.
+      // See https://github.com/leancodepl/patrol/issues/3101
+      final tests = [
+        fs.path.join('patrol_test', 'my-feature', 'some-test.dart'),
+      ];
+
+      // when
+      final imports = testBundler.generateImports(testDirectory, tests);
+
+      // then
+      expect(
+        imports,
+        "import 'my-feature/some-test.dart' as my_feature__some_test;",
+      );
     });
 
     test('generates groups from relative paths', () {
