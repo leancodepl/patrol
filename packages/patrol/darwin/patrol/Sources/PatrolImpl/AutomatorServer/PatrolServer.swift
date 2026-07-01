@@ -58,6 +58,22 @@ import Foundation
 
       provider.setupRoutes(server: server)
 
+      // Mount optional extension routes on the same server.
+      let registrar = PatrolRouteRegistrar { path, handler in
+        server.route(.POST, path) { request in
+          do {
+            let responseBody = try handler(request.body)
+            return HTTPResponse(.ok, body: responseBody)
+          } catch let err {
+            return HTTPResponse(.badRequest, headers: [:], error: err)
+          }
+        }
+      }
+      for ext in PatrolServerExtensions.discover() {
+        Logger.shared.i("Loaded Patrol server extension: \(ext.name)")
+        ext.register(on: registrar)
+      }
+
       try server.start(port: port)
 
       Logger.shared.i("Server started on http://0.0.0.0:\(port)")

@@ -1,0 +1,28 @@
+name: patrol_axe
+description: >
+  Optional native Patrol extension package (axe accessibility scanning POC).
+publish_to: none
+version: 0.0.1
+
+environment:
+  sdk: ">=3.8.0 <4.0.0"
+  flutter: ">=3.32.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_test:
+    sdk: flutter
+  http: ^1.1.0
+  patrol:
+    path: ../../packages/patrol
+
+dev_dependencies:
+  leancode_lint: ^17.0.0
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: pl.leancode.patrol.axe
+        pluginClass: PatrolAxePlugin

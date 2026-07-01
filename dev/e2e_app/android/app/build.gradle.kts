@@ -62,4 +62,5 @@ flutter {
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
     androidTestUtil("androidx.test:orchestrator:1.5.1")
+    androidTestImplementation(project(":patrol_axe"))
 }
