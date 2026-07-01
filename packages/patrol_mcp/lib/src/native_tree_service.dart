@@ -51,6 +51,7 @@ abstract final class NativeTreeService {
             text: const JsonEncoder.withIndent('  ').convert(trimmed),
           ),
         ],
+        structuredContent: trimmed,
       );
     } on Exception catch (e) {
       return CallToolResult(
