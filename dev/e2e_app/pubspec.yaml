@@ -45,6 +45,8 @@ dev_dependencies:
     path: ../../packages/patrol_cli
   patrol_mcp:
     path: ../../packages/patrol_mcp
+  patrol_axe:
+    path: ../patrol_axe
 
 flutter:
   uses-material-design: true

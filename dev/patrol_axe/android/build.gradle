@@ -1,0 +1,51 @@
+group "pl.leancode.patrol.axe"
+version "1.0-SNAPSHOT"
+
+buildscript {
+    ext.kotlin_version = "1.9.20"
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath "com.android.tools.build:gradle:8.2.2"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+apply plugin: "com.android.library"
+apply plugin: "kotlin-android"
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+android {
+    namespace "pl.leancode.patrol.axe"
+    compileSdk 35
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+
+    defaultConfig {
+        minSdk 21
+    }
+}
+
+dependencies {
+    // PatrolServerExtension — provided at runtime by the patrol Flutter plugin.
+    compileOnly project(":patrol")
+
+    implementation platform("org.http4k:http4k-bom:5.47.0.0")
+    implementation "org.http4k:http4k-core"
+    implementation "com.google.code.gson:gson:2.10.1"
+}

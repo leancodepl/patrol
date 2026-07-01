@@ -9,6 +9,7 @@ export 'src/binding.dart';
 // ignore: invalid_export_of_internal_element
 export 'src/common.dart';
 export 'src/custom_finders/patrol_integration_tester.dart';
+export 'src/extensions/patrol_extension.dart';
 export 'src/native/native.dart';
 export 'src/platform/android/android_automator.dart';
 export 'src/platform/android/android_automator_config.dart';
