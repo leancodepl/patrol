@@ -234,6 +234,6 @@ abstract final class NativeTreeService {
       return;
     }
 
-    await Adb().forwardPorts(fromHost: port, toDevice: port);
+    await Adb().forwardPorts(fromHost: port, toDevice: port, device: device.id);
   }
 }
