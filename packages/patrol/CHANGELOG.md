@@ -8,6 +8,7 @@
 - Fix macOS build by implementing `sendKeyboardEnter` in `MacOSAutomator`. (#3105)
 - Migrate to built-in Kotlin (#3084).
 - Fix iOS tests failing on devices whose name contains a comma 
+- Migrate Japanese text resources to SPM (#3128)
 
 ## 4.6.1
 
