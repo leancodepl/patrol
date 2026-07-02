@@ -6,13 +6,16 @@
 package pl.leancode.patrol.contracts;
 
 import com.google.gson.Gson
-import io.ktor.client.*
-import io.ktor.client.engine.cio.*
-import io.ktor.client.plugins.*
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.cio.CIO
+import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
-import io.ktor.http.*
+import io.ktor.client.request.request
+import io.ktor.client.request.setBody
+import io.ktor.client.statement.bodyAsText
+import io.ktor.http.ContentType
+import io.ktor.http.HttpMethod
+import io.ktor.http.contentType
 import io.ktor.serialization.gson.gson
 import kotlinx.coroutines.runBlocking
 import java.util.concurrent.TimeUnit
@@ -22,7 +25,7 @@ class PatrolAppServiceClient(
     private val port: Int,
     private val timeout: Long,
     private val timeUnit: TimeUnit
-) {
+) : AutoCloseable {
     private val client = HttpClient(CIO) {
         install(HttpTimeout) {
             connectTimeoutMillis = timeUnit.toMillis(timeout)
@@ -63,6 +66,10 @@ class PatrolAppServiceClient(
         }
 
         response.bodyAsText()
+    }
+
+    override fun close() {
+        client.close()
     }
 }
 
