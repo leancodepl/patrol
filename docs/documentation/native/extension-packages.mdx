@@ -1,0 +1,157 @@
+---
+title: Extension packages
+---
+
+Patrol can be extended with optional companion packages (for example, SDK-specific packages such as accessibility, payments, biometrics, etc.) without adding SDK logic to core `patrol`.
+
+This page explains the recommended pattern for building such a package.
+
+## Architecture in one minute
+
+1. Core Patrol starts the native automation server on `:8081`.
+2. Core Patrol discovers extension implementations at startup:
+   - Android via `ServiceLoader` (SPI file in `META-INF/services/...`)
+   - iOS via Objective-C runtime protocol discovery
+3. Extension package registers extra POST endpoints (for example `/mySdkScan`) on the same server.
+4. Dart API in the extension package calls those endpoints over HTTP (same host/port as `$.platform.mobile.*`).
+
+The only core dependency from extension Dart code is `patrolNativeServerUri`.
+
+## What belongs where
+
+| Area | Core `patrol` | Extension package |
+| ---- | ---- | ---- |
+| Route discovery and mounting | ✅ | ❌ |
+| SDK-specific routes and handlers | ❌ | ✅ |
+| Third-party SDK dependencies | ❌ | ✅ |
+| Package-owned schema (`schema/*.dart`) | ❌ | ✅ |
+| `$.mySdk` Dart extension API | ❌ | ✅ |
+
+## Step-by-step: create a new package
+
+### 1) Create Flutter plugin package
+
+Create a package with Flutter plugin structure (for example `patrol_my_sdk`).
+
+In `pubspec.yaml`, keep it as a test-time dependency in consumer apps:
+
+```yaml title="consumer app pubspec.yaml"
+dev_dependencies:
+  patrol: ^<version>
+  patrol_my_sdk: ^<version>
+```
+
+### 2) Define package schema
+
+Create a package-local schema file, for example `schema/my_sdk.dart`.
+
+```dart title="schema/my_sdk.dart"
+class MySdkScanRequest {
+  late bool upload;
+}
+
+class MySdkScanResponse {
+  late int violations;
+}
+
+abstract class MySdkAutomator<IOSServer, AndroidServer, DartClient> {
+  MySdkScanResponse mySdkScan(MySdkScanRequest request);
+}
+```
+
+Use unique endpoint prefixes (`mySdk*`) to avoid route collisions.
+
+### 3) Generate contracts/clients (recommended)
+
+Run `patrol_gen` for the package schema to produce:
+
+- Dart client (`DartClient` enabled)
+- Android server contracts/routes (`AndroidServer` enabled)
+- iOS server contracts/routes (`IOSServer` enabled)
+
+You can hand-write the HTTP client in a POC, but production packages should prefer codegen so endpoint names and payloads stay synchronized.
+
+### 4) Build Dart API (`$.mySdk`)
+
+Expose an extension on `PatrolIntegrationTester`:
+
+```dart title="lib/src/patrol_my_sdk_extension.dart"
+extension PatrolMySdkExtension on PatrolIntegrationTester {
+  MySdkAutomator get mySdk => MySdkAutomator(this);
+}
+```
+
+Inside your package automator, initialize client with:
+
+```dart
+patrolNativeServerUri
+```
+
+This ensures the same host/port resolution as core Patrol (`PATROL_HOST` / `PATROL_TEST_SERVER_PORT`).
+
+### 5) Implement Android native extension
+
+Implement Patrol's extension interface and return routes:
+
+```kotlin title="android/src/main/kotlin/.../MySdkServerExtension.kt"
+class MySdkServerExtension : PatrolServerExtension {
+    override val name: String = "patrol_my_sdk"
+
+    override fun routes(): RoutingHttpHandler = routes(
+        "mySdkScan" bind POST to { req ->
+            // parse JSON, call SDK, return response
+            Response(OK).body(...)
+        },
+    )
+}
+```
+
+Register with SPI file:
+
+```text title="android/src/main/resources/META-INF/services/pl.leancode.patrol.PatrolServerExtension"
+com.example.patrol_my_sdk.MySdkServerExtension
+```
+
+### 6) Implement iOS native extension
+
+Create class conforming to `PatrolServerExtension` and register endpoints via `PatrolRouteRegistrar`.
+
+```swift title="darwin/patrol_my_sdk/Sources/PatrolMySdk/MySdkServerExtension.swift"
+@objc(MySdkServerExtension)
+public class MySdkServerExtension: NSObject, PatrolServerExtension {
+  public override required init() { super.init() }
+  public var name: String { "patrol_my_sdk" }
+
+  public func register(on registrar: PatrolRouteRegistrar) {
+    registrar.post("mySdkScan") { body in
+      // decode request, call SDK, encode response
+      return Data()
+    }
+  }
+}
+```
+
+### 7) Consumer app wiring
+
+#### Android
+
+The extension must be available on the instrumentation (`androidTest`) classpath:
+
+```kotlin title="android/app/build.gradle.kts"
+dependencies {
+  androidTestImplementation(project(":patrol_my_sdk"))
+}
+```
+
+In some repository layouts (for example local monorepo path deps), you may also need to map Gradle project path in `android/settings.gradle(.kts)`.
+
+#### iOS
+
+Use the standard Patrol iOS setup:
+
+- `RunnerUITests` target configured
+- `FlutterGeneratedPluginSwiftPackage` linked to `RunnerUITests` (SPM), or `inherit! :complete` for `RunnerUITests` in Podfile (CocoaPods)
+
+Then the extension plugin is pulled into the UITest target with the rest of Flutter plugins.
+
+
