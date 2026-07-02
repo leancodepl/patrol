@@ -25,7 +25,9 @@ public class BrowserstackPatrolJUnitRunner extends PatrolJUnitRunner {
             // If the client on localhost:8082 fails, let's apply the workaround
             Logger.INSTANCE.i("PatrolAppServiceClientException in createAppServiceClient " + ex.getMessage());
             Logger.INSTANCE.i("LOOPBACK: " + getLoopback());
-            client.close();
+            if (client != null) {
+                client.close();
+            }
             client = new PatrolAppServiceClient(getLoopback());
         }
 
