@@ -3,16 +3,20 @@ import 'package:patrol_axe/patrol_axe.dart';
 import 'common.dart';
 
 void main() {
-  patrol('patrol_axe native extension ping', ($) async {
+  patrol('patrol_axe extension smoke', ($) async {
     await createApp($);
 
-    final ping = await $.axe.ping();
-    expect(ping.native, isTrue);
-    expect(ping.extension, 'patrol_axe');
-    expect(ping.platform, 'android');
+    const apiKey = String.fromEnvironment('DEQUE_API_KEY');
+    const projectId = String.fromEnvironment('DEQUE_PROJECT_ID');
+    if (apiKey.isEmpty || projectId.isEmpty) {
+      $.log(
+        'Skipping axe integration: set DEQUE_API_KEY and DEQUE_PROJECT_ID '
+        'via --dart-define to run a full scan.',
+      );
+      return;
+    }
 
-    final scan = await $.axe.scan(scanName: 'e2e-poc');
-    expect(scan.native, isTrue);
-    expect(scan.extension, 'patrol_axe');
+    await $.axe.initSession(dequeApiKey: apiKey, dequeProjectId: projectId);
+    await $.axe.scan(scanName: 'patrol-axe-smoke', uploadToDashboard: false);
   });
 }

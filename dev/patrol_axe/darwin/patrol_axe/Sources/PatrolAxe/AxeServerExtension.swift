@@ -1,15 +1,12 @@
-// Representation only. A real patrol_axe iOS pod would link the Deque
-// `axeDevToolsXCUI` xcframework and be added to the UITest target.
-//
-// It implements core Patrol's `PatrolServerExtension` protocol. Core Patrol
-// discovers it at runtime via the Objective-C runtime — no core change per
-// package.
-
 #if PATROL_ENABLED
 
   import Foundation
-  import PatrolImpl  // provides PatrolServerExtension + PatrolRouteRegistrar
-  // import axeDevToolsXCUI  // the real Deque SDK
+
+  #if canImport(PatrolImpl)
+    import PatrolImpl
+  #else
+    import patrol
+  #endif
 
   @objc(AxeServerExtension)
   public class AxeServerExtension: NSObject, PatrolServerExtension {
@@ -20,10 +17,7 @@
     public func register(on registrar: PatrolRouteRegistrar) {
       registrar.post("axeInitSession") { body in
         let req = try JSONDecoder().decode(AxeInitSessionRequest.self, from: body)
-        AxeAutomator.shared.initSession(
-          apiKey: req.dequeApiKey,
-          projectId: req.dequeProjectId
-        )
+        try AxeAutomator.shared.initSession(apiKey: req.dequeApiKey, projectId: req.dequeProjectId)
         return Data()
       }
 
@@ -36,10 +30,29 @@
         )
         return Data()
       }
+
+      registrar.post("axeIgnoreRules") { body in
+        let req = try JSONDecoder().decode(AxeIgnoreRulesRequest.self, from: body)
+        AxeAutomator.shared.ignoreRules(req.rulesToIgnore)
+        return Data()
+      }
+
+      registrar.post("axeIgnoreByViewIdResourceName") { body in
+        let req = try JSONDecoder().decode(AxeIgnoreByViewIdResourceNameRequest.self, from: body)
+        AxeAutomator.shared.ignoreByViewIdResourceName(
+          viewIdResourceName: req.viewIdResourceName,
+          ruleList: req.ruleList
+        )
+        return Data()
+      }
+
+      registrar.post("axeIgnoreExperimental") { _ in
+        AxeAutomator.shared.ignoreExperimental()
+        return Data()
+      }
     }
   }
 
-  // Request models — represent patrol_gen output from schema/axe.dart.
   private struct AxeInitSessionRequest: Decodable {
     let dequeApiKey: String
     let dequeProjectId: String
@@ -51,11 +64,13 @@
     let scanName: String?
   }
 
-  // Wraps the real Deque SDK (calls elided for the POC).
-  final class AxeAutomator {
-    static let shared = AxeAutomator()
-    func initSession(apiKey: String, projectId: String) { /* AxeDevTools.startSession(...) */ }
-    func scan(uploadToDashboard: Bool, tags: [String], scanName: String?) throws { /* axe.run(...) */ }
+  private struct AxeIgnoreRulesRequest: Decodable {
+    let rulesToIgnore: [String]
+  }
+
+  private struct AxeIgnoreByViewIdResourceNameRequest: Decodable {
+    let viewIdResourceName: String
+    let ruleList: [String]
   }
 
 #endif

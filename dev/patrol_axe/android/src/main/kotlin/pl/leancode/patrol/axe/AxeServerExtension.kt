@@ -11,6 +11,11 @@ import pl.leancode.patrol.PatrolServerExtension
 
 data class AxeInitSessionRequest(val dequeApiKey: String, val dequeProjectId: String)
 data class AxeScanRequest(val uploadToDashboard: Boolean, val tags: Set<String>, val scanName: String?)
+data class AxeIgnoreRulesRequest(val rulesToIgnore: List<String>)
+data class AxeIgnoreByViewIdResourceNameRequest(
+    val viewIdResourceName: String,
+    val ruleList: List<String>,
+)
 
 class AxeServerExtension : PatrolServerExtension {
     override val name: String = "patrol_axe"
@@ -19,10 +24,6 @@ class AxeServerExtension : PatrolServerExtension {
     private val automator = AxeAutomator()
 
     override fun routes(): RoutingHttpHandler = routes(
-        "axePing" bind POST to {
-            val body = automator.ping()
-            Response(OK).body(body)
-        },
         "axeInitSession" bind POST to { req ->
             val body = json.fromJson(req.bodyString(), AxeInitSessionRequest::class.java)
             automator.initSession(body.dequeApiKey, body.dequeProjectId)
@@ -31,7 +32,21 @@ class AxeServerExtension : PatrolServerExtension {
         "axeScan" bind POST to { req ->
             val body = json.fromJson(req.bodyString(), AxeScanRequest::class.java)
             automator.scan(body.uploadToDashboard, body.tags, body.scanName)
-            Response(OK).body(automator.ping())
+            Response(OK)
+        },
+        "axeIgnoreRules" bind POST to { req ->
+            val body = json.fromJson(req.bodyString(), AxeIgnoreRulesRequest::class.java)
+            automator.ignoreRules(body.rulesToIgnore)
+            Response(OK)
+        },
+        "axeIgnoreByViewIdResourceName" bind POST to { req ->
+            val body = json.fromJson(req.bodyString(), AxeIgnoreByViewIdResourceNameRequest::class.java)
+            automator.ignoreByViewIdResourceName(body.viewIdResourceName, body.ruleList)
+            Response(OK)
+        },
+        "axeIgnoreExperimental" bind POST to {
+            automator.ignoreExperimental()
+            Response(OK)
         },
     )
 }
