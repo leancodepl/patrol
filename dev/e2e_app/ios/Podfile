@@ -25,6 +25,7 @@ def flutter_root
 end
 
 require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelper'), flutter_root)
+require_relative '../../patrol_axe/darwin/patrol_axe_post_install'
 
 flutter_ios_podfile_setup
 
@@ -46,7 +47,7 @@ post_install do |installer|
     flutter_additional_ios_build_settings(target)
 
     # Add PATROL_ENABLED flag to the patrol pod for RunnerTests
-    if target.name == 'patrol'
+    if target.name == 'patrol' || target.name == 'patrol_axe'
       target.build_configurations.each do |config|
         config.build_settings['OTHER_SWIFT_FLAGS'] ||= '$(inherited)'
         config.build_settings['OTHER_SWIFT_FLAGS'] += ' -D PATROL_ENABLED'
@@ -102,4 +103,6 @@ post_install do |installer|
       ]
     end
   end
+
+  patrol_axe_post_install(installer)
 end

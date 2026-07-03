@@ -37,13 +37,16 @@ android {
     }
 
     defaultConfig {
-        minSdk 21
+        minSdk 26
     }
 }
 
 dependencies {
-    // PatrolServerExtension — provided at runtime by the patrol Flutter plugin.
     compileOnly project(":patrol")
+
+    implementation "com.deque.android:axe-devtools-android:8.1.0"
+    implementation "androidx.test.uiautomator:uiautomator:2.3.0"
+    implementation "androidx.test:runner:1.5.1"
 
     implementation platform("org.http4k:http4k-bom:5.47.0.0")
     implementation "org.http4k:http4k-core"

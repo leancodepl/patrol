@@ -1,8 +1,8 @@
 name: patrol_axe
 description: >
-  Optional native Patrol extension package (axe accessibility scanning POC).
+  Optional native Patrol extension package for Deque axe DevTools accessibility scanning.
 publish_to: none
-version: 0.0.1
+version: 0.1.0
 
 environment:
   sdk: ">=3.8.0 <4.0.0"
@@ -26,3 +26,6 @@ flutter:
       android:
         package: pl.leancode.patrol.axe
         pluginClass: PatrolAxePlugin
+      ios:
+        pluginClass: PatrolAxePlugin
+        sharedDarwinSource: true
