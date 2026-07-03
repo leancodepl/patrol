@@ -1,3 +1,7 @@
+## Unreleased
+
+- Fix `enterText()` failing when the finder matches a hint-text widget (non-hit-testable `RichText` inside `InputDecorator`). The method now walks up the element tree to find the sibling `EditableText` and targets it directly.
+
 ## 3.5.0
 
 - Fix issues with `enterText()`. (#2202, #2111)
