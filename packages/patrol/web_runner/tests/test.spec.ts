@@ -39,6 +39,13 @@ for (const { name, skip, tags } of tests) {
 
     await page.waitForFunction(() => window.__patrol__runTest, {
       timeout: 300000,
+      // Use time-based polling instead of the default `requestAnimationFrame`
+      // polling. `rAF` is paused by the browser while the page/tab is not
+      // visible (e.g. an occluded or unfocused window in a headed run), which
+      // can make this wait hang between tests even though the Dart side has
+      // already exposed `__patrol__runTest`. See
+      // https://github.com/leancodepl/patrol/issues/3132.
+      polling: 100,
     })
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

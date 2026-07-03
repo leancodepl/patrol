@@ -9,6 +9,7 @@
 - Migrate to built-in Kotlin (#3084).
 - Fix iOS tests failing on devices whose name contains a comma 
 - Migrate Japanese text resources to SPM (#3128)
+- Fix web tests hanging between bundled tests by using time-based polling instead of `requestAnimationFrame` polling in the Playwright runner, which is paused while the page is not visible in headed runs. (#3133)
 
 ## 4.6.1
 
