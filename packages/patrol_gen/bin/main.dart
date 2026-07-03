@@ -8,12 +8,8 @@ Future<void> main(List<String> args) {
   return PatrolGen().run(
     PatrolGenConfig(
       schemaFilename: normalizePath(args[0]),
-      dartConfig: DartConfig(
-        outputDirectory: normalizePath(args[1]),
-      ),
-      darwinConfig: DarwinConfig(
-        outputDirectory: normalizePath(args[2]),
-      ),
+      dartConfig: DartConfig(outputDirectory: normalizePath(args[1])),
+      darwinConfig: DarwinConfig(outputDirectory: normalizePath(args[2])),
       androidConfig: AndroidConfig(
         outputDirectory: normalizePath(args[3]),
         package: args[4],

@@ -268,6 +268,7 @@ class IOSAppOptions {
       '-quiet',
       ...['-derivedDataPath', '../build/ios_integ'],
       r'OTHER_SWIFT_FLAGS=$(inherited) -D PATROL_ENABLED',
+      r'OTHER_LDFLAGS=$(inherited) -weak_framework XCTest -F$(PLATFORM_DIR)/Developer/Library/Frameworks -L$(PLATFORM_DIR)/Developer/usr/lib',
       'OTHER_CFLAGS=\$(inherited) -D FULL_ISOLATION=${fullIsolation ? 1 : 0} -D CLEAR_PERMISSIONS=${clearIOSPermissions ? 1 : 0}',
     ];
 
@@ -281,14 +282,15 @@ class IOSAppOptions {
     required String xcTestRunPath,
     required String resultBundlePath,
   }) {
+    final destination = device.real
+        ? 'platform=iOS,id=${device.id}'
+        : 'platform=iOS Simulator,id=${device.id},OS=$osVersion';
+
     final cmd = [
       ...['xcodebuild', 'test-without-building'],
       ...['-xctestrun', xcTestRunPath],
       ...['-only-testing', 'RunnerUITests/RunnerUITests'],
-      ...[
-        '-destination',
-        'platform=${device.real ? 'iOS' : 'iOS Simulator,OS=$osVersion'},name=${device.name}',
-      ],
+      ...['-destination', destination],
       ...['-destination-timeout', '1'],
       ...['-resultBundlePath', resultBundlePath],
     ];
@@ -364,6 +366,7 @@ class MacOSAppOptions {
       '-quiet',
       ...['-derivedDataPath', '../build/macos_integ'],
       r'OTHER_SWIFT_FLAGS=$(inherited) -D PATROL_ENABLED',
+      r'OTHER_LDFLAGS=$(inherited) -weak_framework XCTest -F$(PLATFORM_DIR)/Developer/Library/Frameworks -L$(PLATFORM_DIR)/Developer/usr/lib',
     ];
 
     return cmd;

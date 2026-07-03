@@ -13,5 +13,6 @@ plus an optional `scripts/` directory for executable helpers).
 
 ## Available skills
 
-_None yet._ Contributor skills (e.g. a `fix-issue` skill for working through a reported bug) land
-here as `<skill-name>/SKILL.md`.
+| Skill | Description | Example prompt |
+|---|---|---|
+| [fix-issue](fix-issue/SKILL.md) | Turn a reported Patrol bug into a verified PR — reproduce, locate the right package, fix without regressions, verify, and open the PR. | Fix issue #3101 |

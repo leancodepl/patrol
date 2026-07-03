@@ -10,6 +10,7 @@ import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
+import 'package:patrol_cli/src/crossplatform/patrol_build_environment.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:platform/platform.dart';
 import 'package:process/process.dart';
@@ -115,6 +116,7 @@ class MacOSTestBackend {
       process =
           await _processManager.start(
               options.buildForTestingInvocation(),
+              environment: darwinEnvironment,
               runInShell: true,
               workingDirectory: _rootDirectory.childDirectory('macos').path,
             )
