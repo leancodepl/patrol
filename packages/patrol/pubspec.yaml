@@ -29,7 +29,7 @@ dependencies:
   flutter_test:
     sdk: flutter
   http: '^1.1.0'
-  json_annotation: ^4.8.1
+  json_annotation: ^4.9.0
   meta: ^1.10.0
   patrol_finders: ^3.4.0
   patrol_log: ^0.9.0
