@@ -22,7 +22,7 @@ import { resizeWindow } from "./actions/resizeWindow"
 import { scrollTo } from "./actions/scrollTo"
 import { setClipboard } from "./actions/setClipboard"
 import { startTest } from "./actions/startTest"
-import { switchToMainPage } from "./actions/switchToMainPage"
+import { switchToInitialPage } from "./actions/switchToInitialPage"
 import { switchToPage } from "./actions/switchToPage"
 import { tap } from "./actions/tap"
 import { uploadFile } from "./actions/uploadFile"
@@ -55,7 +55,7 @@ export const actions = {
   scrollTo,
   setClipboard,
   startTest,
-  switchToMainPage,
+  switchToInitialPage,
   switchToPage,
   tap,
   uploadFile,

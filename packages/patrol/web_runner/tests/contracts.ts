@@ -125,7 +125,7 @@ export type SwitchToPageRequest = PatrolNativeRequestBase<
     pageId: string
   }
 >
-export type SwitchToMainPageRequest = PatrolNativeRequestBase<"switchToMainPage", {}>
+export type SwitchToInitialPageRequest = PatrolNativeRequestBase<"switchToInitialPage", {}>
 export type GetPagesRequest = PatrolNativeRequestBase<"getPages", {}>
 export type GetCurrentPageRequest = PatrolNativeRequestBase<"getCurrentPage", {}>
 export type GetCurrentPageUrlRequest = PatrolNativeRequestBase<"getCurrentPageUrl", {}>
@@ -158,7 +158,7 @@ export type PatrolNativeRequest =
   | SetClipboardRequest
   | StartTestRequest
   | SwitchToPageRequest
-  | SwitchToMainPageRequest
+  | SwitchToInitialPageRequest
   | TapRequest
   | UnknownRequest
   | UploadFileRequest

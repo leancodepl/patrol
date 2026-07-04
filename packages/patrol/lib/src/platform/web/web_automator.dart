@@ -95,7 +95,7 @@ abstract interface class WebAutomator {
 
   /// Closes the page with the given [pageId].
   ///
-  /// Throws if [pageId] refers to the main page (see [switchToMainPage]),
+  /// Throws if [pageId] refers to the initial page (see [switchToInitialPage]),
   /// which cannot be closed.
   Future<void> closePage({required String pageId});
 
@@ -103,11 +103,10 @@ abstract interface class WebAutomator {
   /// All subsequent actions will target this page until switched again.
   Future<void> switchToPage({required String pageId});
 
-  /// Switches back to the main page.
+  /// Switches back to the initial page.
   ///
-  /// The main page is the initial page hosting the Flutter app under test.
-  /// It always exists and cannot be closed.
-  Future<void> switchToMainPage();
+  /// The initial page is the one the test starts on, hosting the Flutter app.
+  Future<void> switchToInitialPage();
 
   /// Returns identifiers of all open pages.
   Future<List<String>> getPages();

@@ -106,9 +106,9 @@ an external site you want to check alongside your app. Patrol lets you open, swi
 inspect, and close these pages from your test.
 
 Every open page has a stable ID that Patrol returns when the page opens. The page your test
-starts on is the main page. It hosts the Flutter app under test, is always open, and can't be closed. One
+starts on is the initial page. It hosts the Flutter app under test, is always open, and can't be closed. One
 page is active at a time, and platform actions (taps, text entry, navigation, and so on) run
-against it. The main page is active when the test starts.
+against it. The initial page is active when the test starts.
 
 ### Opening a new page
 
@@ -122,13 +122,13 @@ await $.platform.web.switchToPage(pageId: pageId);
 
 ### Switching between pages
 
-`switchToPage` makes a page active, and `switchToMainPage` takes you back to the Flutter app.
+`switchToPage` makes a page active, and `switchToInitialPage` takes you back to the Flutter app.
 Actions after the switch run against the newly active page:
 
 ```dart
 await $.platform.web.switchToPage(pageId: pageId);
 // ... interact with that page ...
-await $.platform.web.switchToMainPage();
+await $.platform.web.switchToInitialPage();
 ```
 
 ### Inspecting pages
@@ -141,8 +141,8 @@ final pages = await $.platform.web.getPages();                // all open page I
 
 ### Closing pages
 
-`closePage` closes a page by ID. You can't close the main page, and closing the active page
-switches you back to the main page:
+`closePage` closes a page by ID. You can't close the initial page, and closing the active page
+switches you back to the initial page:
 
 ```dart
 await $.platform.web.closePage(pageId: pageId);
@@ -176,6 +176,6 @@ patrol('opens an external page in a new tab', ($) async {
   expect(url, contains('example.com'));
 
   await $.platform.web.closePage(pageId: pageId);
-  await $.platform.web.switchToMainPage();
+  await $.platform.web.switchToInitialPage();
 });
 ```

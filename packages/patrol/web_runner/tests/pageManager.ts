@@ -4,16 +4,16 @@ export class PageManager {
   private registry = new Map<string, Page>()
   private reverse = new Map<Page, string>()
   private _activeId: string
-  readonly mainPageId: string
+  readonly initialPageId: string
   private nextIndex = 0
 
   constructor(
     readonly context: BrowserContext,
-    mainPage: Page,
+    initialPage: Page,
   ) {
     this.context = context
-    this.mainPageId = this.register(mainPage)
-    this._activeId = this.mainPageId
+    this.initialPageId = this.register(initialPage)
+    this._activeId = this.initialPageId
 
     this.context.on("page", (page: Page) => {
       this.register(page)
@@ -30,7 +30,7 @@ export class PageManager {
       this.registry.delete(id)
       this.reverse.delete(page)
       if (this._activeId === id) {
-        this._activeId = this.mainPageId
+        this._activeId = this.initialPageId
       }
     }
 
@@ -51,8 +51,8 @@ export class PageManager {
   }
 
   async close(pageId: string): Promise<void> {
-    if (pageId === this.mainPageId) {
-      throw new Error("Cannot close the main Flutter page")
+    if (pageId === this.initialPageId) {
+      throw new Error("Cannot close the initial page")
     }
 
     const page = this.resolve(pageId)
@@ -87,7 +87,7 @@ export class PageManager {
     return this.reverse.get(page)
   }
 
-  isMainPage(page: Page): boolean {
-    return this.idOf(page) === this.mainPageId
+  isInitialPage(page: Page): boolean {
+    return this.idOf(page) === this.initialPageId
   }
 }

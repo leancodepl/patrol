@@ -29,7 +29,7 @@ void main() {
     await Future<void>.delayed(const Duration(seconds: 1));
 
     // Switch back and navigate the Flutter app
-    await $.platform.web.switchToMainPage();
+    await $.platform.web.switchToInitialPage();
     await $.pumpAndSettle();
 
     await $('Go to Page 1').scrollTo().tap();

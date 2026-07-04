@@ -6,8 +6,8 @@ import { PageManager } from "./pageManager"
 
 export async function exposePatrolPlatformHandler(context: BrowserContext, pageManager: PageManager) {
   await context.exposeBinding("__patrol__platformHandler", async ({ page }, request) => {
-    if (!pageManager.isMainPage(page)) {
-      throw new Error(`Unauthorized: only the main test page can call the platform handler`)
+    if (!pageManager.isInitialPage(page)) {
+      throw new Error(`Unauthorized: only the initial test page can call the platform handler`)
     }
 
     return handlePatrolPlatformAction(pageManager, request)

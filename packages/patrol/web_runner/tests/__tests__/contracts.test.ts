@@ -8,7 +8,7 @@ import type {
   GetCurrentPageRequest,
   WaitForPopupRequest,
   PatrolNativeRequest,
-  SwitchToMainPageRequest,
+  SwitchToInitialPageRequest,
   GetCurrentPageUrlRequest,
 } from "../contracts"
 
@@ -115,9 +115,9 @@ test.describe("contract types - new multi-tab requests", () => {
     expect(req.params).toEqual({ pageId: "tab_2" })
   })
 
-  test("SwitchToMainPageRequest has correct structure", () => {
-    const req: SwitchToMainPageRequest = { action: "switchToMainPage", params: {} }
-    expect(req.action).toBe("switchToMainPage")
+  test("SwitchToInitialPageRequest has correct structure", () => {
+    const req: SwitchToInitialPageRequest = { action: "switchToInitialPage", params: {} }
+    expect(req.action).toBe("switchToInitialPage")
     expect(req.params).toEqual({})
   })
 

@@ -253,7 +253,7 @@ test.describe("closePage", () => {
         pageManager: manager,
         params: { pageId: "page_0" },
       }),
-    ).rejects.toThrow("Cannot close the main Flutter page")
+    ).rejects.toThrow("Cannot close the initial page")
   })
 })
 
