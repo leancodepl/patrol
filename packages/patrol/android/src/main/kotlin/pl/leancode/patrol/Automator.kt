@@ -854,14 +854,24 @@ class Automator private constructor() {
     }
 
     fun isBiometricPromptVisible(timeout: Long): Boolean {
-        Logger.d("isBiometricPromptVisible()")
+        // On API 33+ Google Play builds the cancel button and icon views are hidden
+        // from UiAutomator (ByMatcher returns null children), but the root container
+        // is still present. Check it first, then fall back to the child view IDs.
         val identifiers = arrayOf(
-            AutomatorConstants.BIOMETRIC_SCROLLVIEW_RES_ID,
+            AutomatorConstants.BIOMETRIC_PROMPT_LAYOUT_RES_ID,
             AutomatorConstants.BIOMETRIC_NEGATIVE_BUTTON_RES_ID,
             AutomatorConstants.BIOMETRIC_ICON_RES_ID,
         )
-        val uiObject = waitForUiObjectByResourceId(*identifiers, timeout = timeout)
-        return uiObject != null
+        val startTime = System.currentTimeMillis()
+        while (System.currentTimeMillis() - startTime < timeout) {
+            for (ident in identifiers) {
+                if (uiDevice.findObjects(By.res(ident)).isNotEmpty()) {
+                    return true
+                }
+            }
+            delay(ms = 500)
+        }
+        return false
     }
 
     fun performBiometricAuthentication(success: Boolean) {
@@ -1007,19 +1017,21 @@ class Automator private constructor() {
         val doneBtn = uiDevice.findObject(UiSelector().textMatches("(?i)done"))
         Logger.d("enrollBiometricOnEmulator: tapping 'Done' to finish enrollment")
         doneBtn.click()
+        // Signal patrol_cli that enrollment is complete so it stops sending finger touches.
+        // Without this, the CLI would send the full 30-iteration batch, and the tail end of
+        // those touches would hit the test's BiometricPrompt and auto-authenticate it.
+        uiDevice.executeShellCommand("touch /data/local/tmp/patrol_biometric_done")
+        Logger.d("enrollBiometricOnEmulator: wrote done flag — patrol_cli will stop finger touches")
         delay(1000)
         // Android automatically returns focus to the test app after the enrollment task finishes.
         // Do NOT press back here — it would navigate away from the test app and destroy its activity.
     }
 
     private fun simulateFingerprintSuccessOnEmulator(fingerprintId: Int = 1) {
-        // Wait for the BiometricPrompt dialog to be visible before triggering the fingerprint.
-        if (!isBiometricPromptVisible(timeoutMillis)) {
-            throw PatrolException(
-                "BiometricPrompt did not appear within ${timeoutMillis}ms. " +
-                "Make sure biometric authentication has been requested before calling this method."
-            )
-        }
+        // The biometric hardware listener is registered synchronously inside authenticate() before
+        // the prompt UI appears, so UiAutomator visibility detection is not needed here. A short
+        // delay avoids a race on very slow devices where the listener might not be active yet.
+        delay(ms = 1_000)
 
         // Determine the emulator console port from the device serial (e.g. "emulator-5554" → 5554).
         val consolePort = getEmulatorConsolePort()
@@ -1151,7 +1163,6 @@ class Automator private constructor() {
     }
 
     private fun clickBiometricCancelButton() {
-        // Wait for the dialog to appear before trying to interact with it.
         if (!isBiometricPromptVisible(timeoutMillis)) {
             throw PatrolException(
                 "BiometricPrompt did not appear within ${timeoutMillis}ms. " +
@@ -1159,24 +1170,22 @@ class Automator private constructor() {
             )
         }
 
-        // Try the well-known resource ID first (works on older API levels).
+        // Try the well-known resource ID first (works on AOSP builds up to API 35).
         val uiObject = waitForUiObjectByResourceId(
             AutomatorConstants.BIOMETRIC_NEGATIVE_BUTTON_RES_ID,
             timeout = 2_000,
         )
         if (uiObject != null) {
-            Logger.d("clickBiometricCancelButton: clicking by resource ID")
             uiObject.click()
             delay()
             return
         }
 
-        // Fallback: find by text (case-insensitive to handle "CANCEL" on API 36).
+        // Fallback: find by text (handles localised or differently styled dialogs).
         val cancelPatterns = listOf("Cancel", "CANCEL", "Cancel authentication")
         for (text in cancelPatterns) {
             val obj = uiDevice.findObject(UiSelector().text(text))
             if (obj.exists()) {
-                Logger.d("clickBiometricCancelButton: clicking by text '$text'")
                 obj.click()
                 delay()
                 return
@@ -1184,16 +1193,15 @@ class Automator private constructor() {
         }
         val cancelByRegex = uiDevice.findObject(UiSelector().textMatches("(?i)cancel.*"))
         if (cancelByRegex.exists()) {
-            Logger.d("clickBiometricCancelButton: clicking by cancel pattern")
             cancelByRegex.click()
             delay()
             return
         }
 
-        // Final fallback: press Back to dismiss the dialog.
-        // BiometricPrompt fires onAuthenticationError(ERROR_USER_CANCELED) on Back press,
-        // which is equivalent to the user tapping Cancel.
-        Logger.d("clickBiometricCancelButton: pressing Back to dismiss biometric dialog")
+        // On Android 13+ (API 33+) with enableOnBackInvokedCallback="true", pressing Back
+        // routes through OnBackInvokedDispatcher. BiometricFragment's callback (registered
+        // when the dialog appeared, highest priority) handles the event and dismisses the
+        // dialog. Flutter's Navigator callback is not called, so the host screen stays put.
         uiDevice.pressBack()
         delay()
     }

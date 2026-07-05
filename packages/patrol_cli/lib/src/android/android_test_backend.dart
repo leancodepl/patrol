@@ -409,7 +409,7 @@ class AndroidTestBackend {
     // Clean up any stale flags from a previous run.
     await Process.run(
       'adb',
-      ['-s', deviceId, 'shell', 'rm', '-f', '/data/local/tmp/patrol_biometric_ready'],
+      ['-s', deviceId, 'shell', 'rm', '-f', '/data/local/tmp/patrol_biometric_ready', '/data/local/tmp/patrol_biometric_done'],
       runInShell: true,
     );
 
@@ -454,6 +454,27 @@ class AndroidTestBackend {
           runInShell: true,
         );
         await Future<void>.delayed(const Duration(milliseconds: 500));
+
+        // Stop early when Kotlin signals that enrollment is complete (Done tapped).
+        // Without this, residual touches from the tail of the 30-iteration batch hit
+        // the test's BiometricPrompt and auto-authenticate it before the cancel action runs.
+        final doneCheck = await Process.run(
+          'adb',
+          [
+            '-s', deviceId, 'shell',
+            'test -f /data/local/tmp/patrol_biometric_done && echo yes || echo no',
+          ],
+          runInShell: true,
+        );
+        if (doneCheck.stdout.toString().trim() == 'yes') {
+          await Process.run(
+            'adb',
+            ['-s', deviceId, 'shell', 'rm', '-f', '/data/local/tmp/patrol_biometric_done'],
+            runInShell: true,
+          );
+          _logger.detail('Biometric enrollment: done flag detected — stopping finger touches after $i iterations');
+          break;
+        }
       }
     }
   }

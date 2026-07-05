@@ -33,7 +33,9 @@ class _BiometricScreenState extends State<BiometricScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
       appBar: AppBar(title: const Text('Biometric')),
       body: Padding(
         padding: const EdgeInsets.all(24),
@@ -57,7 +59,7 @@ class _BiometricScreenState extends State<BiometricScreen> {
           ],
         ),
       ),
-    );
+    ));
   }
 }
 
