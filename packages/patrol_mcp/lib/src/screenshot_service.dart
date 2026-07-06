@@ -7,20 +7,33 @@ import 'package:mcp_dart/mcp_dart.dart';
 import 'package:patrol_cli/patrol_cli.dart' show Device, TargetPlatform;
 
 enum ScreenshotPlatform {
-  android('adb', ['exec-out', 'screencap', '-p']),
-  ios('xcrun', [
-    'simctl',
-    'io',
-    'booted',
-    'screenshot',
-    '--type=png',
-    '/dev/stdout',
-  ]);
+  android('adb'),
+  ios('xcrun');
 
-  const ScreenshotPlatform(this.command, this.args);
+  const ScreenshotPlatform(this.command);
 
   final String command;
-  final List<String> args;
+
+  /// Builds the command arguments that target [device] specifically, so
+  /// the capture doesn't fail (or silently hit the wrong device) when
+  /// multiple devices/simulators are attached.
+  List<String> argsFor(Device device) => switch (this) {
+    ScreenshotPlatform.android => [
+      '-s',
+      device.id,
+      'exec-out',
+      'screencap',
+      '-p',
+    ],
+    ScreenshotPlatform.ios => [
+      'simctl',
+      'io',
+      device.id,
+      'screenshot',
+      '--type=png',
+      '/dev/stdout',
+    ],
+  };
 
   static ScreenshotPlatform fromDevice(Device device) =>
       switch (device.targetPlatform) {
@@ -52,7 +65,7 @@ abstract final class ScreenshotService {
       }
 
       final platform = ScreenshotPlatform.fromDevice(device);
-      final bytes = await _captureScreenshot(platform);
+      final bytes = await _captureScreenshot(platform, device);
       final base64Data = base64Encode(bytes);
 
       return CallToolResult(
@@ -70,8 +83,12 @@ abstract final class ScreenshotService {
 
   static Future<Uint8List> _captureScreenshot(
     ScreenshotPlatform platform,
+    Device device,
   ) async {
-    final process = await Process.start(platform.command, platform.args);
+    final process = await Process.start(
+      platform.command,
+      platform.argsFor(device),
+    );
 
     final bytes = await process.stdout.expand((chunk) => chunk).toList();
 

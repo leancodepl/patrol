@@ -46,6 +46,13 @@ jobs:
       - name: Generate Gradle wrapper
         run: flutter build apk --config-only
 
+      # Kotlin 2.3.x incremental compilation fails on Windows CI with
+      # "Could not close incremental caches ... *.tab" file-locking errors.
+      # Incremental compilation gives no benefit on clean CI builds, so disable
+      # it here (Windows only) instead of globally in gradle.properties.
+      - name: Disable Kotlin incremental compilation
+        run: Add-Content -Path gradle.properties -Value "kotlin.incremental=false"
+
       - name: ktlint check
         run: .\gradlew.bat :patrol:ktlintCheck
 
@@ -140,6 +147,11 @@ jobs:
       - name: Clone repository
         uses: actions/checkout@v4
 
+      - name: Select Xcode
+        uses: maxim-lobanov/setup-xcode@ed7a3b1fda3918c0306d1b724322adc0b8cc0a90 # v1.7.0
+        with:
+          xcode-version: '26.2'
+
       - name: Install tools
         run: |
           brew update
@@ -178,13 +190,15 @@ jobs:
       - name: Start iOS simulator
         uses: futureware-tech/simulator-action@v2
         with:
-          model: iPhone 16
+          model: iPhone 17
           os: iOS
-          os_version: 18.5
+          os_version: 26.2
           erase_before_boot: true
           shutdown_after_job: true
 
       - name: Run unit tests
+        env:
+          PATROL_ENABLED: '1'
         run: |
           set -o pipefail
           xcodebuild test \
@@ -192,7 +206,7 @@ jobs:
             -scheme RunnerTests \
             -only-testing RunnerTests \
             -configuration Debug \
-            -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 16' \
+            -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 17' \
             -derivedDataPath ../build/ios_unit \
             OTHER_CFLAGS='$(inherited) -D FULL_ISOLATION=0 -D CLEAR_PERMISSIONS=0' \
           | xcbeautify --renderer github-actions
