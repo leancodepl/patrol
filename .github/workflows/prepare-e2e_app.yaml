@@ -197,6 +197,8 @@ jobs:
           shutdown_after_job: true
 
       - name: Run unit tests
+        env:
+          PATROL_ENABLED: '1'
         run: |
           set -o pipefail
           xcodebuild test \
