@@ -22,7 +22,12 @@ void main() {
 
       await $.platform.android.performBiometricAuthentication(success: true);
 
-      await $.pumpAndSettle();
+      // The authentication result arrives via an async platform-channel callback,
+      // so wait for the status to reflect it instead of asserting immediately —
+      // asserting right after pumpAndSettle races the callback and flakes.
+      await $('Authenticated').waitUntilVisible(
+        timeout: const Duration(seconds: 30),
+      );
       expect($(K.biometricStatusText).text, 'Authenticated');
     },
     tags: ['android', 'emulator'],
@@ -42,7 +47,10 @@ void main() {
 
       await $.platform.android.performBiometricAuthentication(success: false);
 
-      await $.pumpAndSettle();
+      // Same async-callback race as above: wait for the cancelled state to land.
+      await $('Not authenticated').waitUntilVisible(
+        timeout: const Duration(seconds: 30),
+      );
       expect($(K.biometricStatusText).text, 'Not authenticated');
     },
     tags: ['android', 'emulator', 'physical_device'],
