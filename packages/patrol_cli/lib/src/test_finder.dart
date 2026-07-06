@@ -109,7 +109,7 @@ class TestFinder {
 
           return !_isExcluded(filePath, absoluteExcludes);
         })
-        .map((entity) => entity.absolute.path)
+        .map((entity) => _fs.path.normalize(entity.absolute.path))
         .toList();
   }
 
