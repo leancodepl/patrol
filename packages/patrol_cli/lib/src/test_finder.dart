@@ -54,7 +54,7 @@ class TestFinder {
         }
         final absoluteTargetPath = _fs.file(target).absolute.path;
         if (!_isExcluded(absoluteTargetPath, absoluteExcludes)) {
-          testFiles.add(absoluteTargetPath);
+          testFiles.add(_fs.path.normalize(absoluteTargetPath));
         }
       } else if (_fs.isDirectorySync(target)) {
         final foundTargets = findAllTests(
@@ -109,7 +109,7 @@ class TestFinder {
 
           return !_isExcluded(filePath, absoluteExcludes);
         })
-        .map((entity) => entity.absolute.path)
+        .map((entity) => _fs.path.normalize(entity.absolute.path))
         .toList();
   }
 
