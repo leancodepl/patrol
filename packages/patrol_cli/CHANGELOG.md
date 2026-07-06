@@ -1,4 +1,4 @@
-## Unreleased
+## 4.5.0-dev.2
 
 - Add `-weak_framework XCTest` linker flags to iOS and macOS `build-for-testing` to support Swift Package Manager integration.
 - Fix `--clear-permissions` being ignored by `patrol build ios`. The flag was wired into `patrol test` but dropped from `build ios`, so prebuilt iOS test bundles (e.g. for BrowserStack/Firebase Test Lab) never had `CLEAR_PERMISSIONS` enabled.

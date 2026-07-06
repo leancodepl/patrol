@@ -1,4 +1,4 @@
-## Unreleased
+## 4.7.0-dev.2
 
 - Add Swift Package Manager (SPM) support for iOS and macOS. CocoaPods remains supported for projects that have not migrated to SPM.
 - Fix iOS/macOS regular app builds failing with undefined XCTest symbols when using SPM.
