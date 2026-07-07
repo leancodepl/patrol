@@ -193,7 +193,11 @@ void patrolTest(
                   'All tests were executed. Press "r" to start again or "q" to quit',
             ),
           )
-          ..log(ConfigEntry(config: {ConfigEntry.developCompletedKey: true}));
+          ..log(
+            ConfigEntry(
+              config: const {ConfigEntry.developCompletedKey: true},
+            ),
+          );
         // Wait indefinitely in develop mode after the last test
         while (true) {
           await widgetTester.pump();
@@ -220,7 +224,7 @@ DartGroupEntry createDartTestGroup(
   final groupDTO = DartGroupEntry(
     name: name,
     type: GroupEntryType.group,
-    entries: [],
+    entries: const [],
     skip: parentGroup.metadata.skip,
     tags: parentGroup.metadata.tags.toList(),
   );
@@ -273,7 +277,7 @@ DartGroupEntry createDartTestGroup(
           DartGroupEntry(
             name: name,
             type: GroupEntryType.test,
-            entries: [],
+            entries: const [],
             skip: entry.metadata.skip,
             tags: entry.metadata.tags.toList(),
           ),

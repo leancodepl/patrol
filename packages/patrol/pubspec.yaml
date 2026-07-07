@@ -23,7 +23,7 @@ environment:
 
 dependencies:
   boolean_selector: ^2.1.1
-  equatable: ^2.0.5
+  equatable: ^2.1.0
   flutter:
     sdk: flutter
   flutter_test:

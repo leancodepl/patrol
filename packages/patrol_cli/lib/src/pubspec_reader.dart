@@ -5,7 +5,7 @@ import 'package:equatable/equatable.dart';
 import 'package:file/file.dart';
 import 'package:yaml/yaml.dart';
 
-class PatrolPubspecConfig with EquatableMixin {
+class PatrolPubspecConfig with Equatable {
   PatrolPubspecConfig({
     required this.flutterPackageName,
     required this.android,
@@ -40,7 +40,7 @@ class PatrolPubspecConfig with EquatableMixin {
   ];
 }
 
-class AndroidPubspecConfig with EquatableMixin {
+class AndroidPubspecConfig with Equatable {
   AndroidPubspecConfig({this.packageName, this.appName, this.flavor});
 
   AndroidPubspecConfig.empty()
@@ -54,7 +54,7 @@ class AndroidPubspecConfig with EquatableMixin {
   List<Object?> get props => [packageName, appName, flavor];
 }
 
-class IOSPubspecConfig with EquatableMixin {
+class IOSPubspecConfig with Equatable {
   IOSPubspecConfig({this.bundleId, this.appName, this.flavor});
 
   IOSPubspecConfig.empty() : this(bundleId: null, appName: null, flavor: null);
@@ -67,7 +67,7 @@ class IOSPubspecConfig with EquatableMixin {
   List<Object?> get props => [bundleId, appName, flavor];
 }
 
-class MacOSPubspecConfig with EquatableMixin {
+class MacOSPubspecConfig with Equatable {
   MacOSPubspecConfig({this.bundleId, this.appName, this.flavor});
 
   MacOSPubspecConfig.empty()
