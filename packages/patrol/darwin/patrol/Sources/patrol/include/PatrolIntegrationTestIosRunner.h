@@ -161,9 +161,9 @@
       IMP implementation = imp_implementationWithBlock(^(id _self) {                                            \
         NSLog(@"Patrol develop session: starting native automation server");                                    \
         PatrolServer *server = [[PatrolServer alloc] init];                                                     \
-        NSError *_Nullable __autoreleasing *_Nullable err = NULL;                                               \
-        [server startAndReturnError:err];                                                                       \
-        if (err != NULL) {                                                                                      \
+        NSError *err = nil;                                                                                     \
+        [server startAndReturnError:&err];                                                                      \
+        if (err != nil) {                                                                                       \
           NSLog(@"patrolServer.start(): failed, err: %@", err);                                                 \
         }                                                                                                       \
         XCUIApplication *springboard =                                                                          \
@@ -194,9 +194,9 @@
     /* Start native automation server */                                                                        \
     PatrolServer *server = [[PatrolServer alloc] init];                                                         \
                                                                                                                 \
-    NSError *_Nullable __autoreleasing *_Nullable err = NULL;                                                   \
-    [server startAndReturnError:err];                                                                           \
-    if (err != NULL) {                                                                                          \
+    NSError *err = nil;                                                                                         \
+    [server startAndReturnError:&err];                                                                          \
+    if (err != nil) {                                                                                           \
       NSLog(@"patrolServer.start(): failed, err: %@", err);                                                     \
     }                                                                                                           \
                                                                                                                 \
