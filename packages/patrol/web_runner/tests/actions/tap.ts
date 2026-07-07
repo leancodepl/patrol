@@ -1,12 +1,12 @@
-import { FrameLocator, Page } from "playwright"
-import { TapRequest } from "../contracts"
+import type { FrameLocator, Page } from "playwright"
+import type { ActionParams, TapRequest } from "../contracts"
 import { parseWebSelector } from "../parseWebSelector"
 
-export async function tap(page: Page, params: TapRequest["params"]) {
-  let context: FrameLocator | Page = page
+export async function tap({ pageManager, params }: ActionParams<TapRequest>) {
+  let context: FrameLocator | Page = pageManager.activePage
 
   if (params.iframeSelector) {
-    const iframeLocator = parseWebSelector(page, params.iframeSelector)
+    const iframeLocator = parseWebSelector(context, params.iframeSelector)
     context = iframeLocator.contentFrame()
     if (!context) throw new Error("Iframe not found")
   }

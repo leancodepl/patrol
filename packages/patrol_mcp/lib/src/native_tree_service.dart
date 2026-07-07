@@ -51,6 +51,7 @@ abstract final class NativeTreeService {
             text: const JsonEncoder.withIndent('  ').convert(trimmed),
           ),
         ],
+        structuredContent: trimmed,
       );
     } on Exception catch (e) {
       return CallToolResult(
@@ -234,6 +235,6 @@ abstract final class NativeTreeService {
       return;
     }
 
-    await Adb().forwardPorts(fromHost: port, toDevice: port);
+    await Adb().forwardPorts(fromHost: port, toDevice: port, device: device.id);
   }
 }
