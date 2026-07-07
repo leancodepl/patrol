@@ -99,27 +99,32 @@ With that in place, `patrol_axe` is picked up as a Flutter plugin like other iOS
 
 ### CocoaPods: `patrol_axe_post_install` (required)
 
-Add to `ios/Podfile`:
+Add to `ios/Podfile` (after `flutter pub get`, which creates the plugin symlink):
 
 ```ruby
-require_relative '../patrol/dev/patrol_axe/darwin/patrol_axe_post_install'
+def load_patrol_axe_post_install
+  path = File.expand_path(
+    '.symlinks/plugins/patrol_axe/darwin/patrol_axe_post_install.rb',
+    __dir__,
+  )
+  unless File.exist?(path)
+    Pod::UI.warn "patrol_axe: post_install hook not found. Run `flutter pub get` first."
+    return
+  end
+  require path
+end
+
+load_patrol_axe_post_install
 
 post_install do |installer|
-  flutter_additional_ios_build_settings(installer)
-  patrol_axe_post_install(installer)
-
   installer.pods_project.targets.each do |target|
-    if target.name == 'patrol' || target.name == 'patrol_axe'
-      target.build_configurations.each do |config|
-        config.build_settings['OTHER_SWIFT_FLAGS'] ||= '$(inherited)'
-        config.build_settings['OTHER_SWIFT_FLAGS'] += ' -D PATROL_ENABLED'
-      end
-    end
+    flutter_additional_ios_build_settings(target)
   end
+  patrol_axe_post_install(installer) if defined?(patrol_axe_post_install)
 end
 ```
 
-Adjust `require_relative` to match where your patrol clone lives.
+This resolves the hook from Flutter's plugin symlink (`.symlinks/plugins/patrol_axe/...`), so it works with `path:`, `git:`, or pub.dev dependencies — no hardcoded path to a local patrol clone.
 
 Then:
 
@@ -205,7 +210,7 @@ patrol test --target patrol_test/axe_test.dart \
 | minSdk ≥ 26 | ✅ | — |
 | `androidTestImplementation(project(":patrol_axe"))` | ✅ | — |
 | `patrol_axe_post_install` in Podfile | — | ✅ (CocoaPods) |
-| `PATROL_ENABLED` on `patrol_axe` pod | — | ✅ |
+| `PATROL_ENABLED` (via `patrol_axe` podspec / `Package.swift`) | — | ✅ automatic |
 | Patrol UITest target configured | — | ✅ |
 | `import patrol_axe` → `$.axe` in tests | ✅ | ✅ |
 
@@ -224,5 +229,5 @@ patrol test --target patrol_test/axe_test.dart \
 
 **iOS: axe not discovered in UITests**
 
-- Confirm `PATROL_ENABLED` is set for the `patrol_axe` pod target.
 - Confirm `RunnerUITests` links plugins (`inherit! :complete` or `FlutterGeneratedPluginSwiftPackage`).
+- `PATROL_ENABLED` is set by `patrol_axe` itself (podspec / `Package.swift`) — no Podfile flag needed.
