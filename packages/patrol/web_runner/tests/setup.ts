@@ -41,7 +41,11 @@ async function setup(config: FullConfig) {
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             return window.__patrol__getTests?.()!
           },
-          { timeout: 120000 },
+          // Time-based polling instead of the default `requestAnimationFrame`
+          // polling, which is paused while the page/tab is not visible and can
+          // hang this wait in headed runs. See
+          // https://github.com/leancodepl/patrol/issues/3132.
+          { timeout: 120000, polling: 100 },
         )
         .then(v => v.jsonValue()),
       setupPageErrorPromise,
