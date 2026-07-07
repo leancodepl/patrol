@@ -37,7 +37,7 @@ android {
 
     defaultConfig {
         applicationId = "pl.leancode.patrol.example"
-        minSdk = 23
+        minSdk = 26
         targetSdk = 35
         versionCode = flutter.versionCode
         versionName = flutter.versionName
