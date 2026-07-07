@@ -12,8 +12,8 @@ part 'config_entry.dart';
 
 part 'entry.g.dart';
 
-sealed class Entry with EquatableMixin {
-  Entry({required this.timestamp, required this.type});
+sealed class Entry with Equatable {
+  const Entry({required this.timestamp, required this.type});
 
   // This is a base sealed class, so it should not be instantiated.
   // ignore: avoid_unused_constructor_parameters
