@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Fix `patrol develop` on iOS Simulator timing out after ~6 minutes with "Test runner never began executing tests after launching". Requires a matching `patrol_cli` version that sets `PATROL_DEVELOP`. (#1748)
 - Add Swift Package Manager (SPM) support for iOS and macOS. CocoaPods remains supported for projects that have not migrated to SPM.
 - Fix iOS/macOS regular app builds failing with undefined XCTest symbols when using SPM.
 - Add `sendKeyboardEnter` method for `MobileAutomator`. (#2748)
