@@ -55,14 +55,26 @@ Ensure `minSdk >= 26` in your app.
 
 ### iOS (CocoaPods)
 
-Add to your `Podfile` `post_install` hook:
+Add to your `Podfile` `post_install` hook (run `flutter pub get` first):
 
 ```ruby
-require_relative '../patrol_axe/darwin/patrol_axe_post_install'
+def load_patrol_axe_post_install
+  path = File.expand_path(
+    '.symlinks/plugins/patrol_axe/darwin/patrol_axe_post_install.rb',
+    __dir__,
+  )
+  unless File.exist?(path)
+    Pod::UI.warn "patrol_axe: post_install hook not found. Run `flutter pub get` first."
+    return
+  end
+  require path
+end
+
+load_patrol_axe_post_install
 
 post_install do |installer|
   flutter_additional_ios_build_settings(installer)
-  patrol_axe_post_install(installer)
+  patrol_axe_post_install(installer) if defined?(patrol_axe_post_install)
 end
 ```
 

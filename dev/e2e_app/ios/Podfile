@@ -25,7 +25,20 @@ def flutter_root
 end
 
 require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelper'), flutter_root)
-require_relative '../../patrol_axe/darwin/patrol_axe_post_install'
+
+def load_patrol_axe_post_install
+  path = File.expand_path(
+    '.symlinks/plugins/patrol_axe/darwin/patrol_axe_post_install.rb',
+    __dir__,
+  )
+  unless File.exist?(path)
+    Pod::UI.warn "patrol_axe: post_install hook not found at #{path}. Run `flutter pub get` first."
+    return
+  end
+  require path
+end
+
+load_patrol_axe_post_install
 
 flutter_ios_podfile_setup
 
@@ -45,14 +58,6 @@ end
 post_install do |installer|
   installer.pods_project.targets.each do |target|
     flutter_additional_ios_build_settings(target)
-
-    # Add PATROL_ENABLED flag to the patrol pod for RunnerTests
-    if target.name == 'patrol' || target.name == 'patrol_axe'
-      target.build_configurations.each do |config|
-        config.build_settings['OTHER_SWIFT_FLAGS'] ||= '$(inherited)'
-        config.build_settings['OTHER_SWIFT_FLAGS'] += ' -D PATROL_ENABLED'
-      end
-    end
 
     target.build_configurations.each do |config|
       config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = ios_deployment_target
@@ -104,5 +109,5 @@ post_install do |installer|
     end
   end
 
-  patrol_axe_post_install(installer)
+  patrol_axe_post_install(installer) if defined?(patrol_axe_post_install)
 end
