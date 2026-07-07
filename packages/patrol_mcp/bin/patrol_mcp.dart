@@ -58,6 +58,25 @@ class _PatrolRunArgs {
   final Duration timeout;
 }
 
+/// Output schema for `run` and `status` -- a serialized [PatrolStatus].
+/// Keys mirror `PatrolStatus.toMap`.
+const _sessionStatusSchema = JsonObject(
+  properties: {
+    'isDevelopRunning': JsonBoolean(),
+    'testState': JsonString(
+      enumValues: ['idle', 'running', 'finishedPassed', 'finishedFailed'],
+    ),
+    'currentTestFile': JsonString(),
+    'warning': JsonString(),
+    'deviceName': JsonString(),
+    'deviceId': JsonString(),
+    'devicePlatform': JsonString(),
+    'output': JsonString(),
+    'summary': JsonString(),
+  },
+  required: ['isDevelopRunning', 'testState', 'output', 'summary'],
+);
+
 Future<int> main(List<String> args) async {
   final argParser = _buildParser();
   logging.Logger.root.level = logging.Level.INFO;
@@ -131,16 +150,32 @@ Future<int> main(List<String> args) async {
               },
               required: ['testFile'],
             ),
+            outputSchema: _sessionStatusSchema,
             annotations: const ToolAnnotations(title: 'Run Patrol Tests'),
             callback: (args, extra) async {
-              final runArgs = _PatrolRunArgs.fromJson(args);
+              final testFile = args['testFile'];
+              if (testFile is! String || testFile.trim().isEmpty) {
+                return const CallToolResult(
+                  content: [
+                    TextContent(
+                      text:
+                          'The "testFile" argument is required, e.g. '
+                          '{"testFile":"integration_test/app_test.dart"}.',
+                    ),
+                  ],
+                  isError: true,
+                );
+              }
 
+              final runArgs = _PatrolRunArgs.fromJson(args);
               final result = await patrolSession.startAndWait(
                 runArgs.testFile,
                 timeout: runArgs.timeout,
               );
+              final status = result.toMap();
               return CallToolResult(
-                content: [TextContent(text: jsonEncode(result.toMap()))],
+                content: [TextContent(text: jsonEncode(status))],
+                structuredContent: status,
               );
             },
           )
@@ -149,6 +184,18 @@ Future<int> main(List<String> args) async {
             description: 'Quit the active patrol session gracefully',
             annotations: const ToolAnnotations(title: 'Quit Patrol'),
             callback: (args, extra) {
+              if (!patrolSession.getStatus().isDevelopRunning) {
+                return const CallToolResult(
+                  content: [
+                    TextContent(
+                      text:
+                          'No active patrol session to quit. '
+                          'Start one with the run tool first.',
+                    ),
+                  ],
+                  isError: true,
+                );
+              }
               final result = patrolSession.sendCommand(PatrolCommand.quit);
               return CallToolResult(content: [TextContent(text: result)]);
             },
@@ -157,15 +204,17 @@ Future<int> main(List<String> args) async {
             'status',
             description:
                 'Get the current status of the patrol session and recent output',
+            outputSchema: _sessionStatusSchema,
             annotations: const ToolAnnotations(
               title: 'Get Status',
               readOnlyHint: true,
               idempotentHint: true,
             ),
             callback: (args, extra) {
-              final status = patrolSession.getStatus();
+              final status = patrolSession.getStatus().toMap();
               return CallToolResult(
-                content: [TextContent(text: jsonEncode(status.toMap()))],
+                content: [TextContent(text: jsonEncode(status))],
+                structuredContent: status,
               );
             },
           )
@@ -201,7 +250,7 @@ Future<int> main(List<String> args) async {
             },
           );
 
-    return await _runStdio(server);
+    return await _runStdio(server, patrolSession);
   } on FormatException catch (e) {
     stderr
       ..writeln(e.message)
@@ -216,9 +265,19 @@ Future<int> main(List<String> args) async {
   }
 }
 
-Future<int> _runStdio(McpServer server) async {
+Future<int> _runStdio(McpServer server, PatrolSession patrolSession) async {
   final logger = logging.Logger('patrol_mcp');
   final transport = StdioServerTransport();
+
+  // MCP clients disconnect by closing stdin (EOF), not always via SIGTERM, so
+  // wake on EOF too -- otherwise we'd block on _ExitSignal forever and orphan.
+  final closed = Completer<void>();
+  server.server.onclose = () {
+    if (!closed.isCompleted) {
+      closed.complete();
+    }
+  };
+
   try {
     logger.info('Running MCP server on stdio');
     await server.connect(transport);
@@ -228,10 +287,18 @@ Future<int> _runStdio(McpServer server) async {
     return 1;
   }
 
-  final signal = await _ExitSignal().wait;
-  logger.info('Received ${signal.name}, stopping');
-  await server.close();
-  await transport.close();
+  // Shut down on an OS signal or a client disconnect (stdin EOF).
+  final exitSignal = _ExitSignal();
+  await Future.any([exitSignal.wait, closed.future]);
+  // ProcessSignal.watch() keeps the VM alive; the EOF path skips _handleSignal,
+  // so cancel here.
+  exitSignal.cancel();
+  logger.info('Shutting down (signal or client disconnect)');
+
+  // Tear down any active session so its child processes don't outlive us.
+  await patrolSession.dispose();
+
+  await server.close(); // closes the transport too
   logger.info('Stopped');
   return 0;
 }
@@ -253,6 +320,9 @@ class _ExitSignal {
   late final StreamSubscription<ProcessSignal> _sigintSubscription;
 
   Future<ProcessSignal> get wait => _completer.future;
+
+  /// Cancels the signal subscriptions. Idempotent.
+  void cancel() => _cleanup();
 
   void _handleSignal(ProcessSignal signal) {
     if (!_completer.isCompleted) {
