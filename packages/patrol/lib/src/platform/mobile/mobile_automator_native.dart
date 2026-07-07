@@ -368,7 +368,9 @@ abstract class NativeMobileAutomator implements MobileAutomator {
     await wrapRequest(
       'grantPermissionWhenInUse',
       () => _client.handlePermissionDialog(
-        const HandlePermissionRequest(code: HandlePermissionRequestCode.whileUsing),
+        const HandlePermissionRequest(
+          code: HandlePermissionRequestCode.whileUsing,
+        ),
       ),
     );
   }
@@ -398,7 +400,9 @@ abstract class NativeMobileAutomator implements MobileAutomator {
     await wrapRequest(
       'grantPermissionOnlyThisTime',
       () => _client.handlePermissionDialog(
-        const HandlePermissionRequest(code: HandlePermissionRequestCode.onlyThisTime),
+        const HandlePermissionRequest(
+          code: HandlePermissionRequestCode.onlyThisTime,
+        ),
       ),
     );
   }
