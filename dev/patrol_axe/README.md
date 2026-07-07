@@ -32,6 +32,8 @@ patrol test --target patrol_test/my_axe_test.dart \
 
 ## How a user adds it
 
+See **[SETUP.md](SETUP.md)** for full instructions (external apps, local clone, Android/iOS wiring, and why the CocoaPods post-install hook is required).
+
 ### Dart
 
 ```yaml
