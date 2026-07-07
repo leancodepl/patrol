@@ -18,7 +18,7 @@
     }
 
     /// Registers a POST handler at `path` on the Patrol automation server.
-    @objc public func post(_ path: String, handler: @escaping (Data) throws -> Data) {
+    public func post(_ path: String, handler: @escaping (Data) throws -> Data) {
       _post(path, handler)
     }
   }
