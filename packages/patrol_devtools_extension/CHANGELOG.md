@@ -1,3 +1,7 @@
+## Unreleased
+
+- Bump `equatable` to `^2.1.0` and migrate API contract types from deprecated `EquatableMixin` to `with Equatable`.
+
 ## 0.4.0
 
 - Bump `leancode_lint` to `17.0.0`. (#2690)
