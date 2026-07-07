@@ -194,9 +194,7 @@ void patrolTest(
             ),
           )
           ..log(
-            ConfigEntry(
-              config: const {ConfigEntry.developCompletedKey: true},
-            ),
+            ConfigEntry(config: const {ConfigEntry.developCompletedKey: true}),
           );
         // Wait indefinitely in develop mode after the last test
         while (true) {
@@ -224,7 +222,7 @@ DartGroupEntry createDartTestGroup(
   final groupDTO = DartGroupEntry(
     name: name,
     type: GroupEntryType.group,
-    entries: const [],
+    entries: [],
     skip: parentGroup.metadata.skip,
     tags: parentGroup.metadata.tags.toList(),
   );
@@ -277,7 +275,7 @@ DartGroupEntry createDartTestGroup(
           DartGroupEntry(
             name: name,
             type: GroupEntryType.test,
-            entries: const [],
+            entries: [],
             skip: entry.metadata.skip,
             tags: entry.metadata.tags.toList(),
           ),
