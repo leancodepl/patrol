@@ -1,6 +1,8 @@
 ## Unreleased
 
 - Fix `screenshot` and `native-tree` MCP tools failing with `error: more than one device/emulator` (Android) or capturing the wrong simulator (iOS) when multiple devices are attached. Both now target the active session's device explicitly.
+- Exit on client disconnect (stdin EOF), not just `SIGTERM`/`SIGINT`, and tear down the active develop session on shutdown so it doesn't orphan.
+- Return structured output (`structuredContent`) from `run`/`status`/`native-tree`, and reply with a clear error instead of crashing when `quit` has no active session.
 - Don't listen for `SIGTERM` on Windows, where it is not supported and throws an unhandled `SignalException` that prevented the MCP server from starting. (#3035)
 - Update README: fix and simplify the GitHub Copilot MCP setup (#3089)
 

@@ -5,6 +5,7 @@
 - Fix `--clear-permissions` being ignored by `patrol build ios`. The flag was wired into `patrol test` but dropped from `build ios`, so prebuilt iOS test bundles (e.g. for BrowserStack/Firebase Test Lab) never had `CLEAR_PERMISSIONS` enabled.
 - Don't listen for `SIGTERM` on Windows, where it is not supported and throws an unhandled `SignalException`. (#3035)
 - Fix `--exclude` not working. (#2990)
+- Fix `test_bundle.dart` generating a broken absolute import (and an invalid import alias containing characters such as `-`) when the test target lives outside the configured `test_directory`. The import is now computed relative to the bundle and the alias is sanitized. (#3104)
 
 ## 4.4.0
 
