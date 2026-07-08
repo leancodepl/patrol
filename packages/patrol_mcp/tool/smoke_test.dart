@@ -22,9 +22,16 @@ Future<void> main() async {
     workingDirectory: Directory.current.path,
   );
 
+  // If the server exits early, writes to its stdin break; swallow that so the
+  // exitCode race below reports the real failure instead of an unhandled error.
+  unawaited(process.stdin.done.catchError((Object _) {}));
+
   // The server logs to stderr; mirror it so CI shows what happened on failure.
+  // allowMalformed: a non-UTF-8 console code page (Windows) must not crash us.
   final stderrBuffer = StringBuffer();
-  process.stderr.transform(utf8.decoder).listen((chunk) {
+  process.stderr.transform(const Utf8Decoder(allowMalformed: true)).listen((
+    chunk,
+  ) {
     stderrBuffer.write(chunk);
     stderr.write(chunk);
   });
@@ -33,7 +40,7 @@ Future<void> main() async {
   // line that is a JSON-RPC response to our initialize request (id == 1).
   final handshake = Completer<String>();
   final stdoutSub = process.stdout
-      .transform(utf8.decoder)
+      .transform(const Utf8Decoder(allowMalformed: true))
       .transform(const LineSplitter())
       .listen((line) {
         final message = _tryDecode(line);
@@ -55,8 +62,13 @@ Future<void> main() async {
       'clientInfo': {'name': 'patrol_mcp_smoke', 'version': '1.0.0'},
     },
   };
-  process.stdin.writeln(jsonEncode(initializeRequest));
-  await process.stdin.flush();
+  // A broken pipe here just means the server already exited; the race reports it.
+  try {
+    process.stdin.writeln(jsonEncode(initializeRequest));
+    await process.stdin.flush();
+  } on Object {
+    /* ignored — surfaced via the exit branch below */
+  }
 
   // Race the handshake against early exit so a startup crash fails fast. The
   // exit branch yields a sentinel (not _fail) so it's a no-op if handshake wins.
@@ -105,8 +117,13 @@ Future<void> main() async {
   );
 
   // Closing stdin sends EOF — how MCP clients disconnect. Server must exit
-  // cleanly, not hang and orphan its process subtree (#3122).
-  await process.stdin.close();
+  // cleanly, not hang and orphan its process subtree (#3122). A throw here means
+  // it already exited — fine, the exitCode check below still runs.
+  try {
+    await process.stdin.close();
+  } on Object {
+    /* ignored */
+  }
 
   final exitCode = await process.exitCode.timeout(
     _shutdownTimeout,
