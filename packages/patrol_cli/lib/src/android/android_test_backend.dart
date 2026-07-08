@@ -413,6 +413,16 @@ class AndroidTestBackend {
     final task = _logger.task('Enrolling fingerprint on ${device.name}');
 
     try {
+      // Enrollment persists on the emulator between runs, so skip the ~40s
+      // wizard when a fingerprint is already there — repeated runs with
+      // --enroll-fingerprint then start almost instantly.
+      if (await _isFingerprintEnrolled(deviceId)) {
+        task.complete(
+          'Fingerprint already enrolled on ${device.name} — enrollment skipped',
+        );
+        return;
+      }
+
       // Wake the device and get rid of the keyguard before touching lock
       // settings. Clearing the lock also removes previously enrolled
       // fingerprints, so every run starts from a clean slate.
@@ -547,6 +557,15 @@ class AndroidTestBackend {
       'appeared. Make sure the target is an Android emulator and its console '
       "is reachable (try 'adb -s $deviceId emu finger touch 1' manually).",
     );
+  }
+
+  /// Whether the emulator already has an enrolled fingerprint.
+  ///
+  /// The framework's fingerprint dump reports per-user enrollment counts as
+  /// `"count":N` (0 when nothing is enrolled).
+  Future<bool> _isFingerprintEnrolled(String deviceId) async {
+    final dump = await _adbShell(deviceId, 'dumpsys fingerprint');
+    return RegExp(r'"count":\s*[1-9]').hasMatch(dump);
   }
 
   /// Dumps the current UI hierarchy via `uiautomator dump` and returns the
