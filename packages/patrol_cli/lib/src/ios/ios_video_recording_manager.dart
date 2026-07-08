@@ -2,8 +2,8 @@ import 'dart:io' as io;
 
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
-import 'package:patrol_cli/src/android/video_recording_config.dart';
 import 'package:patrol_cli/src/base/logger.dart';
+import 'package:patrol_cli/src/crossplatform/video_recording_config.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_log/patrol_log.dart';
 import 'package:process/process.dart';
@@ -126,32 +126,6 @@ class IOSVideoRecordingManager {
     ];
 
     _logger.detail('Executing command: ${command.join(' ')}');
-
-    // First, test if we can take a screenshot to verify simulator is accessible
-    try {
-      final screenshotTest = await _processManager.run([
-        'xcrun',
-        'simctl',
-        'io',
-        _device.id,
-        'screenshot',
-        '/tmp/patrol_test_screenshot.png',
-      ], runInShell: true);
-
-      if (screenshotTest.exitCode == 0) {
-        _logger.detail('Screenshot test successful - simulator is accessible');
-        // Clean up test screenshot
-        try {
-          await _processManager.run(['rm', '/tmp/patrol_test_screenshot.png']);
-        } catch (_) {}
-      } else {
-        _logger.warn(
-          'Screenshot test failed - simulator might not be accessible',
-        );
-      }
-    } catch (err) {
-      _logger.warn('Could not test simulator accessibility: $err');
-    }
 
     try {
       _currentRecordingProcess = await _processManager.start(
@@ -301,6 +275,10 @@ class IOSVideoRecordingManager {
     return testName.replaceAll(RegExp(r'[^\w\-_\s]'), '_');
   }
 
+  /// Chain serializing start/stop operations so that log events arriving in
+  /// quick succession cannot interleave recording state changes.
+  Future<void> _operations = Future.value();
+
   /// Handles test entry events from PatrolLogReader.
   void handleTestEntry(TestEntry testEntry) {
     _logger.detail(
@@ -309,26 +287,19 @@ class IOSVideoRecordingManager {
 
     switch (testEntry.status) {
       case TestEntryStatus.start:
-        _logger.detail(
-          'iOS Video: Starting recording for test: ${testEntry.name}',
-        );
-        startRecording(testEntry.name);
+        _operations = _operations.then((_) => startRecording(testEntry.name));
       case TestEntryStatus.success:
       case TestEntryStatus.failure:
-        _logger.detail(
-          'iOS Video: Stopping recording for test: ${testEntry.name}',
-        );
-        stopRecording();
+        _operations = _operations.then((_) => stopRecording());
       case TestEntryStatus.skip:
-        _logger.detail(
-          'iOS Video: Skipping recording for skipped test: ${testEntry.name}',
-        );
-      // No recording needed for skipped tests
+        // No recording needed for skipped tests
+        break;
     }
   }
 
   /// Cleanup method to stop any ongoing recording.
   Future<void> dispose() async {
+    await _operations;
     await stopRecording();
   }
 }

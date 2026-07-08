@@ -3,8 +3,8 @@ import 'dart:io';
 
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
-import 'package:patrol_cli/src/android/video_recording_config.dart';
 import 'package:patrol_cli/src/base/logger.dart';
+import 'package:patrol_cli/src/crossplatform/video_recording_config.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_log/patrol_log.dart';
 import 'package:process/process.dart';
@@ -51,7 +51,7 @@ class VideoRecordingManager {
       deviceId: _device.id,
       testName: _sanitizeTestName(testName),
     );
-    _currentDeviceVideoPath = _config.getDeviceVideoPath(
+    _currentDeviceVideoPath = _config.getAndroidDeviceVideoPath(
       _currentVideoFilename!,
     );
 
@@ -233,14 +233,18 @@ class VideoRecordingManager {
     return testName.replaceAll(RegExp(r'[^\w\-_\s]'), '_');
   }
 
+  /// Chain serializing start/stop operations so that log events arriving in
+  /// quick succession cannot interleave recording state changes.
+  Future<void> _operations = Future.value();
+
   /// Handles test entry events from PatrolLogReader.
   void handleTestEntry(TestEntry testEntry) {
     switch (testEntry.status) {
       case TestEntryStatus.start:
-        startRecording(testEntry.name);
+        _operations = _operations.then((_) => startRecording(testEntry.name));
       case TestEntryStatus.success:
       case TestEntryStatus.failure:
-        stopRecording();
+        _operations = _operations.then((_) => stopRecording());
       case TestEntryStatus.skip:
         // No recording needed for skipped tests
         break;
@@ -249,6 +253,7 @@ class VideoRecordingManager {
 
   /// Cleanup method to stop any ongoing recording.
   Future<void> dispose() async {
+    await _operations;
     await stopRecording();
   }
 }
