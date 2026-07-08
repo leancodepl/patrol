@@ -8,8 +8,8 @@ import 'package:patrol_cli/src/devices.dart';
 enum TargetRunStatus { failedToBuild, failedToExecute, passed, canceled }
 
 /// Represents a single run of a single target on a single device.
-class TargetRunResult with EquatableMixin {
-  TargetRunResult({
+class TargetRunResult with Equatable {
+  const TargetRunResult({
     required this.target,
     required this.device,
     required this.runs,
@@ -118,7 +118,7 @@ abstract class TestRunner implements Disposable {
   Future<RunResults> run();
 }
 
-class RunResults with EquatableMixin {
+class RunResults with Equatable {
   const RunResults({required this.targetRunResults});
 
   final List<TargetRunResult> targetRunResults;
