@@ -81,8 +81,8 @@ enum ${enumDefinition.name} {
 
     return '''
 @JsonSerializable()
-class ${message.name} with EquatableMixin {
-  ${message.name}($constructorParameters);
+class ${message.name} with Equatable {
+  const ${message.name}($constructorParameters);
 
   factory ${message.name}.fromJson(Map<String,dynamic> json) => _\$${message.name}FromJson(json);
 
