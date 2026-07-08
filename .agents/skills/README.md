@@ -3,7 +3,8 @@
 Skills for **developing Patrol itself** — the framework, the CLI, native automation, and docs.
 They're consumed by contributors working in this repository and are **not** published to Patrol
 users. (User-facing skills for *writing tests* live in [`../../skills/`](../../skills/) and ship via
-`npx skills add leancodepl/patrol`.)
+`npx skills add leancodepl/patrol/skills` — scoped to that subdirectory, so the contributor skills
+here are never pulled into a consumer's project.)
 
 This directory (`.agents/skills/`) is the canonical location, read by Codex, GitHub Copilot, and
 Antigravity. `.claude/skills` is a symlink to it, so Claude Code and Cursor read the same source —
