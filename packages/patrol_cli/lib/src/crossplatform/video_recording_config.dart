@@ -1,4 +1,4 @@
-/// Configuration for Android video recording during test execution.
+/// Configuration for video recording during test execution.
 class VideoRecordingConfig {
   const VideoRecordingConfig({
     required this.enabled,
@@ -7,21 +7,6 @@ class VideoRecordingConfig {
     this.bitRate,
     this.timeLimit = 180, // Default Android screenrecord limit
   });
-
-  /// Creates a VideoRecordingConfig from command line arguments.
-  factory VideoRecordingConfig.fromArgs({
-    required bool recordVideo,
-    required String videoOutputDir,
-    String? videoSize,
-    String? videoBitRate,
-  }) {
-    return VideoRecordingConfig(
-      enabled: recordVideo,
-      outputDirectory: videoOutputDir,
-      size: videoSize,
-      bitRate: videoBitRate != null ? int.tryParse(videoBitRate) : null,
-    );
-  }
 
   /// Whether video recording is enabled.
   final bool enabled;
@@ -50,7 +35,7 @@ class VideoRecordingConfig {
   }
 
   /// Path on the Android device where the video will be temporarily stored.
-  String getDeviceVideoPath(String filename) {
+  String getAndroidDeviceVideoPath(String filename) {
     return '/sdcard/$filename';
   }
 

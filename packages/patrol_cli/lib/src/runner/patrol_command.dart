@@ -391,12 +391,12 @@ abstract class PatrolCommand extends Command<int> {
       )
       ..addOption(
         'video-size',
-        help: 'Video recording size (e.g., 1280x720).',
+        help: 'Video recording size (e.g., 1280x720). Android only.',
         valueHelp: '1280x720',
       )
       ..addOption(
         'video-bit-rate',
-        help: 'Video recording bit rate in bits per second.',
+        help: 'Video recording bit rate in bits per second. Android only.',
         valueHelp: '4000000',
       );
   }

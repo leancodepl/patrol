@@ -3,13 +3,13 @@ import 'dart:async';
 import 'package:glob/glob.dart';
 import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
-import 'package:patrol_cli/src/android/video_recording_config.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/commands/dart_define_utils.dart';
 import 'package:patrol_cli/src/compatibility_checker/compatibility_checker.dart';
 import 'package:patrol_cli/src/coverage/coverage_tool.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
+import 'package:patrol_cli/src/crossplatform/video_recording_config.dart';
 import 'package:patrol_cli/src/dart_defines_reader.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
@@ -467,15 +467,11 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
     Future<void> Function()? finalizer;
 
     // Video output directory always follows test directory
-    final videoOutputDir =
-        stringArg('video-output-dir') ?? '$testDirectory/videos';
-
-    // Create video recording configuration
-    final videoConfig = VideoRecordingConfig.fromArgs(
-      recordVideo: boolArg('record-video'),
-      videoOutputDir: videoOutputDir,
-      videoSize: stringArg('video-size'),
-      videoBitRate: stringArg('video-bit-rate'),
+    final videoConfig = VideoRecordingConfig(
+      enabled: boolArg('record-video'),
+      outputDirectory: stringArg('video-output-dir') ?? '$testDirectory/videos',
+      size: stringArg('video-size'),
+      bitRate: int.tryParse(stringArg('video-bit-rate') ?? ''),
     );
 
     switch (device.targetPlatform) {
