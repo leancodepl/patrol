@@ -16,13 +16,13 @@ Copilot, Antigravity, Gemini CLI and most others share `.agents/skills/` (the `u
 
 ```bash
 # Claude Code
-npx skills add leancodepl/patrol -s '*' -a claude-code -y
+npx skills add leancodepl/patrol/skills -s '*' -a claude-code -y
 
 # Cursor, Codex, GitHub Copilot, Antigravity, Gemini CLI, … (the "universal" location)
-npx skills add leancodepl/patrol -s '*' -a universal -y
+npx skills add leancodepl/patrol/skills -s '*' -a universal -y
 
 # …or cover both at once
-npx skills add leancodepl/patrol -s '*' -a claude-code universal -y
+npx skills add leancodepl/patrol/skills -s '*' -a claude-code universal -y
 ```
 
 To update later:
@@ -35,7 +35,7 @@ npx skills update
 > (where Claude Code reads them), due to
 > [vercel-labs/skills#744](https://github.com/vercel-labs/skills/issues/744). If your skills stop
 > being picked up, regenerate them with
-> `npx skills add leancodepl/patrol -s '*' -a claude-code -y`.
+> `npx skills add leancodepl/patrol/skills -s '*' -a claude-code -y`.
 
 ## Available skills
 
