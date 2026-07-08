@@ -40,6 +40,12 @@ android {
         execution = "ANDROIDX_TEST_ORCHESTRATOR"
     }
 
+    packaging {
+        resources {
+            excludes += listOf("META-INF/INDEX.LIST", "META-INF/*.properties")
+        }
+    }
+
     buildTypes {
         release {
             signingConfig = signingConfigs.getByName("debug")

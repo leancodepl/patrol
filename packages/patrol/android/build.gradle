@@ -62,12 +62,6 @@ android {
         buildConfigField("String", "PATROL_TEST_PORT", project.hasProperty('test-server-port') ? '"' + project.getProperty('test-server-port') + '"' : '""')
     }
 
-    packaging {
-        resources {
-            excludes += ["META-INF/INDEX.LIST", "META-INF/*.properties"]
-        }
-    }
-
     buildFeatures {
         buildConfig true
     }
