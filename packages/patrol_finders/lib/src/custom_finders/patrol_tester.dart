@@ -430,8 +430,36 @@ class PatrolTester {
         color: AnsiCodes.magenta,
         enablePatrolLog: enablePatrolLog,
         function: () async {
+          // If the finder matches widgets that are not hit-testable (e.g. a
+          // hint-text RichText inside InputDecorator), locate the sibling
+          // EditableText by walking up the tree until we find an ancestor
+          // that has an EditableText descendant (e.g. the TextField).
+          // We target the EditableText directly because it is hit-testable.
+          Finder effectiveFinder = finder;
+          final earlyMatches = finder.evaluate();
+          if (earlyMatches.isNotEmpty &&
+              finder.hitTestable(at: alignment).evaluate().isEmpty) {
+            Finder? editableFinder;
+            earlyMatches.first.visitAncestorElements((ancestor) {
+              final parentFinder =
+                  find.byElementPredicate((e) => e == ancestor);
+              final editable = find.descendant(
+                of: parentFinder,
+                matching: find.byType(EditableText),
+              );
+              if (editable.evaluate().isNotEmpty) {
+                editableFinder = editable;
+                return false;
+              }
+              return true;
+            });
+            if (editableFinder != null) {
+              effectiveFinder = editableFinder!;
+            }
+          }
+
           final resolvedFinder = await waitUntilVisible(
-            finder,
+            effectiveFinder,
             timeout: visibleTimeout,
             alignment: alignment,
             enablePatrolLog: false,
