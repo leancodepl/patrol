@@ -113,6 +113,37 @@ import 'example_test.dart' as example_test;
 import 'example/example_test.dart' as example__example_test;''');
     });
 
+    test('generates clean imports from non-native path forms (#1428)', () {
+      // The target is not always passed in the host-native form: `patrol
+      // develop`/MCP hand over forward-slash absolute paths, and PowerShell
+      // tab-completion injects a leading `.\` segment. Both must still resolve
+      // to a valid, relative import rather than leaking a raw absolute path
+      // into the generated bundle. Regression test for:
+      // https://github.com/leancodepl/patrol/issues/1428
+      final absoluteNative = fs.path.join(
+        platform.home,
+        'awesome_app',
+        'patrol_test',
+        'example_test.dart',
+      );
+
+      // Forward-slash absolute path (e.g. `c:/Users/.../example_test.dart`).
+      final forwardSlashAbsolute = absoluteNative.replaceAll(r'\', '/');
+      expect(
+        testBundler.generateImports(testDirectory, [forwardSlashAbsolute]),
+        "import 'example_test.dart' as example_test;",
+      );
+
+      // `.\`-prefixed relative path.
+      final dotSlashRelative =
+          '.${fs.path.separator}'
+          '${fs.path.join('patrol_test', 'example_test.dart')}';
+      expect(
+        testBundler.generateImports(testDirectory, [dotSlashRelative]),
+        "import 'example_test.dart' as example_test;",
+      );
+    });
+
     test(
       'generates relative import when target is outside the test directory',
       () {
