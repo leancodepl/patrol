@@ -1,0 +1,55 @@
+name: patrol_mcp prepare
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'packages/patrol_mcp/**'
+
+jobs:
+  smoke_test:
+    name: Smoke (${{ matrix.resolution }} patrol_cli) on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        # Windows matters because the server's only OS-specific code is the
+        # SIGTERM path that broke startup there (#3035); ubuntu covers POSIX.
+        os: [ubuntu-latest, windows-latest]
+        # Resolve from pub.dev at both ends of patrol_mcp's patrol_cli range:
+        #  - latest: newest patrol_cli allowed (what a fresh `pub get` gives).
+        #  - floor:  lowest allowed (^4.3.0 -> 4.3.0). If patrol_mcp starts using
+        #    a newer patrol_cli API without bumping its constraint, the floor
+        #    build fails HERE instead of shipping broken to users who resolve
+        #    patrol_cli to an older version the loose constraint still permits.
+        resolution: [latest, floor]
+
+    defaults:
+      run:
+        working-directory: packages/patrol_mcp
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+
+      # patrol_mcp is a pure-Dart package with only pub.dev dependencies, so the
+      # Dart SDK alone resolves it — no Flutter toolchain or melos needed here.
+      # Testing against pub.dev (not local melos paths) is deliberate: local
+      # resolution would mask a stale patrol_cli constraint.
+      - name: Set up Dart
+        uses: dart-lang/setup-dart@v1
+
+      - name: Resolve dependencies (from pub.dev)
+        run: dart pub get
+
+      # Pin ONLY patrol_cli to the floor of its constraint, leaving other deps at
+      # their latest resolved versions. A full `dart pub downgrade` would drag in
+      # unfixable ancient transitive floors (e.g. win32) that patrol_mcp can't
+      # control and that have nothing to do with the patrol_cli constraint.
+      - name: Downgrade patrol_cli to its constraint floor
+        if: matrix.resolution == 'floor'
+        run: dart pub downgrade patrol_cli
+
+      - name: Smoke test — server starts, handshakes, and shuts down on EOF
+        run: dart run tool/smoke_test.dart
