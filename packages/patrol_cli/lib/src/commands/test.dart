@@ -66,6 +66,7 @@ class TestCommand extends PatrolCommand {
     usesBuildNumberOption();
 
     usesUninstallOption();
+    usesEnrollFingerprintOptions();
 
     usesAppNameOption();
     usesAndroidOptions();
@@ -177,6 +178,16 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
     if (isWeb && stringArg('flavor') != null) {
       _logger.err(
         'Flavors are not supported for web platform. Please remove the --flavor flag.',
+      );
+      return 1;
+    }
+
+    final enrollFingerprint = boolArg('enroll-fingerprint');
+    if (enrollFingerprint &&
+        (device.targetPlatform != TargetPlatform.android || device.real)) {
+      _logger.err(
+        '--enroll-fingerprint requires an Android emulator, '
+        'but the target device is ${device.name} (${device.id}).',
       );
       return 1;
     }
@@ -340,6 +351,13 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
     }
 
     await _preExecute(androidOpts, iosOpts, macosOpts, device, uninstall);
+
+    if (enrollFingerprint) {
+      await _androidTestBackend.enrollFingerprint(
+        device,
+        pin: stringArg('enroll-fingerprint-pin') ?? '1234',
+      );
+    }
 
     if (coverageEnabled) {
       unawaited(

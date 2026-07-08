@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Add `--enroll-fingerprint` flag to `patrol test`. It enrolls a fingerprint on the target Android emulator before the run (over adb, no manual interaction), so tests can call `performBiometricAuthentication()` without enrolling themselves. The screen-lock PIN it sets is configurable with `--enroll-fingerprint-pin`.
 - Add `-weak_framework XCTest` linker flags to iOS and macOS `build-for-testing` to support Swift Package Manager integration.
 - Fix `--clear-permissions` being ignored by `patrol build ios`. The flag was wired into `patrol test` but dropped from `build ios`, so prebuilt iOS test bundles (e.g. for BrowserStack/Firebase Test Lab) never had `CLEAR_PERMISSIONS` enabled.
 - Don't listen for `SIGTERM` on Windows, where it is not supported and throws an unhandled `SignalException`. (#3035)

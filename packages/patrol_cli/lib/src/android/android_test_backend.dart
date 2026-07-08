@@ -399,6 +399,210 @@ class AndroidTestBackend {
     }
   }
 
+  /// Enrolls a fingerprint on the emulator [device] from the host, before any
+  /// tests run. Used by the `--enroll-fingerprint` flag.
+  ///
+  /// Drives the same flow as the in-test `enrollBiometricOnEmulator()` API,
+  /// but entirely over adb: sets a screen-lock PIN with `locksettings`,
+  /// launches the Settings fingerprint wizard, navigates it with
+  /// `uiautomator dump` + `input tap`, and advances the fingerprint reader
+  /// with `adb emu finger touch`. Tests can then call
+  /// `performBiometricAuthentication()` without enrolling themselves.
+  Future<void> enrollFingerprint(Device device, {required String pin}) async {
+    final deviceId = device.id;
+    final task = _logger.task('Enrolling fingerprint on ${device.name}');
+
+    try {
+      // Wake the device and get rid of the keyguard before touching lock
+      // settings. Clearing the lock also removes previously enrolled
+      // fingerprints, so every run starts from a clean slate.
+      await _adbShell(deviceId, 'input keyevent KEYCODE_WAKEUP');
+      await _adbShell(deviceId, 'locksettings clear --old $pin');
+      await _adbShell(deviceId, 'wm dismiss-keyguard');
+      await _adbShell(deviceId, 'locksettings set-pin $pin');
+
+      await _adbShell(
+        deviceId,
+        'am start -a android.settings.FINGERPRINT_ENROLL',
+      );
+      // Cold Settings starts can take a few seconds to render the wizard.
+      await Future<void>.delayed(const Duration(seconds: 4));
+
+      await _navigateEnrollmentWizard(deviceId, pin);
+      await _completeEnrollmentWithFingerTouches(deviceId);
+
+      // Leave Settings so it doesn't sit on top of the app under test.
+      await _adbShell(deviceId, 'input keyevent KEYCODE_HOME');
+      task.complete('Enrolled fingerprint on ${device.name}');
+    } catch (err) {
+      task.fail('Failed to enroll fingerprint on ${device.name}');
+      rethrow;
+    }
+  }
+
+  /// Taps through the pre-enrollment wizard screens (intro/consent/PIN
+  /// confirmation). Mirrors the screen handling of the in-test Kotlin
+  /// implementation: screens vary between Android versions, so each dump is
+  /// matched against the known button set instead of assuming a fixed order.
+  Future<void> _navigateEnrollmentWizard(String deviceId, String pin) async {
+    const navButtons = [
+      'I agree',
+      'Agree',
+      'Continue',
+      'Next',
+      'Start',
+      'OK',
+      'Add fingerprint',
+      'MORE',
+    ];
+
+    var consecutiveMisses = 0;
+    for (var attempt = 1; attempt <= 15; attempt++) {
+      final nodes = await _dumpUiNodes(deviceId);
+
+      final pinField = _firstNode(
+        nodes,
+        (node) => node['class'] == 'android.widget.EditText',
+      );
+      if (pinField != null) {
+        consecutiveMisses = 0;
+        _logger.detail(
+          'enrollFingerprint: PIN confirmation screen (attempt $attempt)',
+        );
+        await _adbShell(deviceId, 'input text $pin');
+        await _adbShell(deviceId, 'input keyevent KEYCODE_ENTER');
+        await Future<void>.delayed(const Duration(seconds: 2));
+        continue;
+      }
+
+      Map<String, String>? button;
+      for (final label in navButtons) {
+        button = _firstNode(
+          nodes,
+          (node) => (node['text'] ?? '').toLowerCase() == label.toLowerCase(),
+        );
+        if (button != null) {
+          break;
+        }
+      }
+
+      if (button != null) {
+        consecutiveMisses = 0;
+        _logger.detail(
+          "enrollFingerprint: tapping '${button['text']}' (attempt $attempt)",
+        );
+        await _tapNode(deviceId, button);
+        await Future<void>.delayed(const Duration(seconds: 3));
+        continue;
+      }
+
+      consecutiveMisses++;
+      _logger.detail(
+        'enrollFingerprint: no nav button found '
+        '(attempt $attempt, miss $consecutiveMisses/3)',
+      );
+      if (consecutiveMisses >= 3) {
+        // Three dumps in a row with nothing to tap — we're on the
+        // "touch the sensor" screen.
+        return;
+      }
+      await Future<void>.delayed(const Duration(seconds: 2));
+    }
+  }
+
+  /// Sends host-side `adb emu finger touch` events until the wizard shows the
+  /// "Done" button, then taps it to finish enrollment.
+  Future<void> _completeEnrollmentWithFingerTouches(String deviceId) async {
+    for (var i = 0; i < 30; i++) {
+      await Process.run(
+        'adb',
+        ['-s', deviceId, 'emu', 'finger', 'touch', '1'],
+        runInShell: true,
+      );
+      await Future<void>.delayed(const Duration(milliseconds: 600));
+      await Process.run(
+        'adb',
+        ['-s', deviceId, 'emu', 'finger', 'touch', '-1'],
+        runInShell: true,
+      );
+      await Future<void>.delayed(const Duration(milliseconds: 500));
+
+      final nodes = await _dumpUiNodes(deviceId);
+      final done = _firstNode(
+        nodes,
+        (node) => (node['text'] ?? '').toLowerCase() == 'done',
+      );
+      if (done != null) {
+        _logger.detail(
+          'enrollFingerprint: enrollment complete after ${i + 1} touch(es)',
+        );
+        await _tapNode(deviceId, done);
+        await Future<void>.delayed(const Duration(seconds: 1));
+        return;
+      }
+    }
+
+    throw Exception(
+      "Fingerprint enrollment did not complete: the 'Done' button never "
+      'appeared. Make sure the target is an Android emulator and its console '
+      "is reachable (try 'adb -s $deviceId emu finger touch 1' manually).",
+    );
+  }
+
+  /// Dumps the current UI hierarchy via `uiautomator dump` and returns the
+  /// attribute maps of all its nodes. Returns an empty list when the dump
+  /// fails (e.g. mid-transition) — callers treat that as "nothing found" and
+  /// retry.
+  Future<List<Map<String, String>>> _dumpUiNodes(String deviceId) async {
+    const dumpPath = '/sdcard/patrol_ui_dump.xml';
+    await _adbShell(deviceId, 'uiautomator dump $dumpPath');
+    final xml = await _adbShell(deviceId, 'cat $dumpPath 2>/dev/null');
+
+    return [
+      for (final node in RegExp('<node ([^>]*)>').allMatches(xml))
+        {
+          for (final attr in RegExp(
+            r'([\w-]+)="([^"]*)"',
+          ).allMatches(node.group(1)!))
+            attr.group(1)!: attr.group(2)!,
+        },
+    ];
+  }
+
+  Map<String, String>? _firstNode(
+    List<Map<String, String>> nodes,
+    bool Function(Map<String, String> node) test,
+  ) {
+    for (final node in nodes) {
+      if (test(node)) {
+        return node;
+      }
+    }
+    return null;
+  }
+
+  /// Taps the center of [node]'s `bounds` (formatted `[left,top][right,bottom]`).
+  Future<void> _tapNode(String deviceId, Map<String, String> node) async {
+    final bounds = RegExp(
+      r'\[(\d+),(\d+)\]\[(\d+),(\d+)\]',
+    ).firstMatch(node['bounds'] ?? '');
+    if (bounds == null) {
+      throw Exception('Cannot tap a node without bounds: $node');
+    }
+    final x = (int.parse(bounds.group(1)!) + int.parse(bounds.group(3)!)) ~/ 2;
+    final y = (int.parse(bounds.group(2)!) + int.parse(bounds.group(4)!)) ~/ 2;
+    await _adbShell(deviceId, 'input tap $x $y');
+  }
+
+  Future<String> _adbShell(String deviceId, String command) async {
+    final result = await Process.run(
+      'adb',
+      ['-s', deviceId, 'shell', command],
+      runInShell: true,
+    );
+    return result.stdout.toString();
+  }
+
   /// Sends host-side `adb emu finger touch` commands when Kotlin's
   /// `enrollBiometricOnEmulator` writes the `/data/local/tmp/patrol_biometric_ready`
   /// flag file.  Runs concurrently with the test process for the lifetime of [scope].

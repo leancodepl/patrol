@@ -218,6 +218,27 @@ abstract class PatrolCommand extends Command<int> {
     );
   }
 
+  void usesEnrollFingerprintOptions() {
+    argParser
+      ..addFlag(
+        'enroll-fingerprint',
+        help:
+            'Enroll a fingerprint on the target Android emulator before '
+            'running the tests, so tests can call '
+            'performBiometricAuthentication() without enrolling themselves. '
+            'Only works on Android emulators.',
+        negatable: false,
+      )
+      ..addOption(
+        'enroll-fingerprint-pin',
+        help:
+            'Screen-lock PIN set on the emulator during --enroll-fingerprint '
+            '(Android requires a screen lock before biometrics).',
+        valueHelp: '1234',
+        defaultsTo: '1234',
+      );
+  }
+
   void usesShowFlutterLogs() {
     argParser.addFlag(
       'show-flutter-logs',
