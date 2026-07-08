@@ -1,14 +1,8 @@
 name: patrol_mcp cli-compat
 
-# Non-blocking heads-up for patrol_cli authors.
-#
-# patrol_cli exposes a public API barrel (lib/patrol_cli.dart) specifically for
-# patrol_mcp. A breaking change to it does NOT break released patrol_mcp users
-# (patrol_mcp is pinned to a *published* patrol_cli), so this must never fail CI.
-# But the author may not realize they broke patrol_mcp against the current source
-# — this job builds patrol_mcp against THIS PR's patrol_cli (local, via melos)
-# and, if it breaks, surfaces a warning annotation + job summary. It always
-# exits green.
+# Non-blocking heads-up: does this patrol_cli change break patrol_mcp when built
+# against local source? Released users are safe (patrol_mcp pins a published
+# patrol_cli), so on a break we only warn — never fail CI.
 
 on:
   workflow_dispatch:
@@ -36,8 +30,7 @@ jobs:
           flutter-version: ${{ matrix.flutter-version }}
           channel: ${{ matrix.flutter-channel }}
 
-      # melos path-links the local packages so patrol_mcp builds against this
-      # PR's patrol_cli source rather than the published version.
+      # melos path-links local packages so patrol_mcp builds against this PR's cli.
       - name: Set up Melos and bootstrap workspace
         continue-on-error: true
         run: |

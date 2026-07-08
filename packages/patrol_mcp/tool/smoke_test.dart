@@ -1,30 +1,10 @@
-// Startup smoke test for the patrol_mcp server.
+// Smoke test: spawn the MCP server, complete the `initialize` handshake over
+// stdio, then close stdin and assert it exits cleanly. Guards startup (#3035)
+// and shutdown-on-EOF (#3122). Dart, not shell, so it runs identically on every
+// OS. Run from the package root: dart run tool/smoke_test.dart
 //
-// Dependency-resolution checks (`dart pub get`) prove the package *resolves*,
-// but not that the server *runs*. Recent releases fixed runtime bugs that a
-// `pub get` sails straight past. This guards the two that bookend a session's
-// lifecycle:
-//   - Startup: the Windows SIGTERM crash that stopped the server from starting
-//     at all (#3035).
-//   - Shutdown: MCP clients disconnect by closing stdin (EOF), not via a
-//     signal; the server used to block forever on EOF and orphan its process
-//     subtree (#3122). It must now exit cleanly on EOF.
-//
-// So this test spawns the real server, completes the MCP `initialize` handshake
-// over stdio, then closes stdin and asserts the server exits with code 0. It
-// needs no device or Patrol session — the handshake happens before any tool is
-// invoked — so it is safe to run on a bare CI runner on every OS.
-//
-// Dependency resolution is the caller's choice — this script only spawns and
-// drives the server, so it is agnostic to how deps were resolved:
-//   - patrol_mcp-prepare runs it against pub.dev (newest, and constraint-floor).
-//   - patrol_mcp-cli-compat runs it under melos against the local patrol_cli.
-//
-// It is written in Dart (not shell) on purpose: it must behave identically on
-// ubuntu, macOS, and Windows, and pure-Dart process handling avoids the
-// portability traps of `timeout`, background jobs, and PowerShell-vs-bash.
-//
-// Run from the package root:  dart run tool/smoke_test.dart
+// Resolution is the caller's choice (pub.dev in prepare, melos in cli-compat);
+// this script only drives the server.
 
 import 'dart:async';
 import 'dart:convert';
@@ -78,11 +58,8 @@ Future<void> main() async {
   process.stdin.writeln(jsonEncode(initializeRequest));
   await process.stdin.flush();
 
-  // Race the handshake against the process dying, so a server that crashes on
-  // startup fails fast with a clear message instead of hanging until timeout.
-  // The exit branch resolves to a sentinel (rather than calling _fail directly)
-  // so it stays side-effect-free if the handshake wins — otherwise it would
-  // still fire later, during the normal EOF shutdown below.
+  // Race the handshake against early exit so a startup crash fails fast. The
+  // exit branch yields a sentinel (not _fail) so it's a no-op if handshake wins.
   const exitedSentinel = ' process-exited';
   final line =
       await Future.any([
@@ -127,9 +104,8 @@ Future<void> main() async {
     'v${serverInfo?['version']} responded to initialize',
   );
 
-  // Closing stdin sends EOF — the disconnect signal an MCP client uses. The
-  // server must exit cleanly instead of blocking and orphaning its process
-  // subtree (#3122). This is the shutdown regression guard.
+  // Closing stdin sends EOF — how MCP clients disconnect. Server must exit
+  // cleanly, not hang and orphan its process subtree (#3122).
   await process.stdin.close();
 
   final exitCode = await process.exitCode.timeout(

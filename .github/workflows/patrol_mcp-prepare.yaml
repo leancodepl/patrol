@@ -14,15 +14,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Windows matters because the server's only OS-specific code is the
-        # SIGTERM path that broke startup there (#3035); ubuntu covers POSIX.
+        # Windows: the SIGTERM startup path that broke there (#3035); ubuntu = POSIX.
         os: [ubuntu-latest, windows-latest]
-        # Resolve from pub.dev at both ends of patrol_mcp's patrol_cli range:
-        #  - latest: newest patrol_cli allowed (what a fresh `pub get` gives).
-        #  - floor:  lowest allowed (^4.3.0 -> 4.3.0). If patrol_mcp starts using
-        #    a newer patrol_cli API without bumping its constraint, the floor
-        #    build fails HERE instead of shipping broken to users who resolve
-        #    patrol_cli to an older version the loose constraint still permits.
+        # floor = lowest patrol_cli the constraint allows; fails here if patrol_mcp
+        # outgrew its constraint, rather than shipping broken to users.
         resolution: [latest, floor]
 
     defaults:
@@ -33,20 +28,15 @@ jobs:
       - name: Clone repository
         uses: actions/checkout@v4
 
-      # patrol_mcp is a pure-Dart package with only pub.dev dependencies, so the
-      # Dart SDK alone resolves it — no Flutter toolchain or melos needed here.
-      # Testing against pub.dev (not local melos paths) is deliberate: local
-      # resolution would mask a stale patrol_cli constraint.
+      # pub.dev, not melos: local resolution would mask a stale patrol_cli constraint.
       - name: Set up Dart
         uses: dart-lang/setup-dart@v1
 
       - name: Resolve dependencies (from pub.dev)
         run: dart pub get
 
-      # Pin ONLY patrol_cli to the floor of its constraint, leaving other deps at
-      # their latest resolved versions. A full `dart pub downgrade` would drag in
-      # unfixable ancient transitive floors (e.g. win32) that patrol_mcp can't
-      # control and that have nothing to do with the patrol_cli constraint.
+      # Only patrol_cli, not a full downgrade (that drags in unfixable old
+      # transitive floors like win32).
       - name: Downgrade patrol_cli to its constraint floor
         if: matrix.resolution == 'floor'
         run: dart pub downgrade patrol_cli
