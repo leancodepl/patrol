@@ -32,8 +32,8 @@ dependencies:
   http_multi_server: ^3.2.2
   json_annotation: ^4.9.0
   meta: ^1.10.0
-  patrol_finders: ^3.4.0
-  patrol_log: ^0.9.0
+  patrol_finders: ^3.6.0
+  patrol_log: ^0.10.0
   shelf: ^1.4.1
   test_api: '^0.7.0'
   web: ^1.0.0
