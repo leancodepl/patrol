@@ -1,5 +1,8 @@
 ## Unreleased
 
+- Bump `patrol_finders` to `^3.6.0`.
+- Bump `patrol_log` to `^0.10.0`.
+
 - Fix `patrol develop` on iOS Simulator timing out after ~6 minutes with "Test runner never began executing tests after launching". Requires a matching `patrol_cli` version that sets `PATROL_DEVELOP`. (#3139)
 - Bump `equatable` to `^2.1.0` and migrate generated platform contracts from deprecated `EquatableMixin` to `with Equatable`.
 - Add Swift Package Manager (SPM) support for iOS and macOS. CocoaPods remains supported for projects that have not migrated to SPM.
