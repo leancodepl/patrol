@@ -57,7 +57,7 @@ class AxeAutomatorClient {
   Future<void> _post(String endpoint, Map<String, dynamic> body) async {
     final response = await _client
         .post(
-          _baseUri.replace(path: endpoint),
+          _baseUri.resolve(endpoint),
           headers: const {'Content-Type': 'application/json'},
           body: jsonEncode(body),
         )
