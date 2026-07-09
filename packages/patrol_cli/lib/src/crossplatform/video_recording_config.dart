@@ -29,8 +29,8 @@ class VideoRecordingConfig {
     required String testName,
   }) {
     final timestamp = DateTime.now().millisecondsSinceEpoch;
-    final sanitizedTestName = testName.replaceAll(RegExp(r'[^\w\-_]'), '_');
-    final sanitizedDeviceId = deviceId.replaceAll(RegExp(r'[^\w\-_]'), '_');
+    final sanitizedTestName = testName.replaceAll(RegExp(r'[^\w\-]'), '_');
+    final sanitizedDeviceId = deviceId.replaceAll(RegExp(r'[^\w\-]'), '_');
     return 'patrol_${sanitizedTestName}_${sanitizedDeviceId}_$timestamp.mp4';
   }
 
