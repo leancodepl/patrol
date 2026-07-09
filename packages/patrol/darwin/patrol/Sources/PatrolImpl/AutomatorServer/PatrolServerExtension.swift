@@ -53,9 +53,23 @@
       for i in 0..<Int(count) {
         let cls: AnyClass = classList[i]
         guard class_conformsToProtocol(cls, proto) else { continue }
-        guard let type = cls as? PatrolServerExtension.Type else { continue }
-        result.append(type.init())
+        let className = NSStringFromClass(cls)
+
+        Logger.shared.i("Patrol extension candidate found: \(className)")
+
+        guard let objectType = cls as? NSObject.Type else {
+          Logger.shared.i("Skipping extension candidate (not NSObject.Type): \(className)")
+          continue
+        }
+        let instance = objectType.init()
+        guard let ext = instance as? PatrolServerExtension else {
+          Logger.shared.i("Skipping extension candidate (instance cast failed): \(className)")
+          continue
+        }
+        Logger.shared.i("Discovered Patrol extension: \(ext.name) (\(className))")
+        result.append(ext)
       }
+      Logger.shared.i("Patrol extension discovery complete, found \(result.count) extension(s)")
       return result
     }
   }
