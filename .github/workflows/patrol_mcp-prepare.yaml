@@ -1,0 +1,44 @@
+name: patrol_mcp prepare
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'packages/patrol_mcp/**'
+
+jobs:
+  smoke_test:
+    name: Smoke (${{ matrix.resolution }} patrol_cli) on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        # floor = lowest patrol_cli the constraint allows; fails here if patrol_mcp
+        # outgrew its constraint, rather than shipping broken to users.
+        resolution: [latest, floor]
+
+    defaults:
+      run:
+        working-directory: packages/patrol_mcp
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+
+      # pub.dev, not melos: local resolution would mask a stale patrol_cli constraint.
+      - name: Set up Dart
+        uses: dart-lang/setup-dart@v1
+
+      - name: Resolve dependencies (from pub.dev)
+        run: dart pub get
+
+      # Only patrol_cli, not a full downgrade (that drags in unfixable old
+      # transitive floors like win32).
+      - name: Downgrade patrol_cli to its constraint floor
+        if: matrix.resolution == 'floor'
+        run: dart pub downgrade patrol_cli
+
+      - name: Smoke test — server starts, handshakes, and shuts down on EOF
+        run: dart run tool/smoke_test.dart
