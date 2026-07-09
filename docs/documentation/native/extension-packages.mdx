@@ -131,6 +131,32 @@ public class MySdkServerExtension: NSObject, PatrolServerExtension {
 }
 ```
 
+Register the class at module load time so Patrol can discover it without scanning the
+full Objective-C runtime (which is unsafe in large UITest binaries):
+
+```objc title="darwin/patrol_my_sdk/Sources/PatrolMySdk/MySdkServerExtensionRegistration.m"
+#import <Foundation/Foundation.h>
+#import <patrol/PatrolExtensionRegistry.h>
+
+@interface MySdkExtensionLoader : NSObject
+@end
+
+@implementation MySdkExtensionLoader
+
++ (void)load {
+  Class extensionClass = NSClassFromString(@"MySdkServerExtension");
+  if (extensionClass == Nil) {
+    return;
+  }
+  PatrolRegisterServerExtensionClass(extensionClass);
+}
+
+@end
+```
+
+Do not call `registerExtensionClass:` via `performSelector:` — Swift class methods are
+not reliably invokable that way from ObjC.
+
 ### 7) Consumer app wiring
 
 #### Android

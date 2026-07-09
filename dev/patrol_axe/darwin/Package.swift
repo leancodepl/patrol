@@ -18,10 +18,11 @@ let package = Package(
     .target(
       name: "PatrolAxeObjC",
       dependencies: [
+        .product(name: "patrol", package: "patrol"),
         .product(name: "axeDevToolsXCUI", package: "axe-devtools-ios"),
       ],
       path: "patrol_axe/Sources/PatrolAxe",
-      sources: ["AxeBridge.m"],
+      sources: ["AxeBridge.m", "AxeServerExtensionRegistration.m"],
       publicHeadersPath: ".",
     ),
     .target(

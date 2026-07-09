@@ -1,7 +1,6 @@
 #if PATROL_ENABLED
 
   import Foundation
-  import ObjectiveC.runtime
 
   /// Facade over Patrol's internal HTTP server.
   ///
@@ -25,9 +24,8 @@
 
   /// Generic extension point for the Patrol automation server on iOS.
   ///
-  /// Implementations live in optional packages and are discovered at runtime via
-  /// the Objective-C runtime, so core Patrol never references a specific
-  /// extension. This is the iOS analogue of the Android `ServiceLoader` hook.
+  /// Implementations live in optional packages and are registered explicitly via
+  /// `PatrolServerExtensions.registerExtensionClass(_:)` (see extension package docs).
   @objc(PatrolServerExtension)
   public protocol PatrolServerExtension: NSObjectProtocol {
     @objc init()
@@ -41,37 +39,67 @@
 
   @objc(PatrolServerExtensions)
   public class PatrolServerExtensions: NSObject {
-    /// Discovers all classes conforming to `PatrolServerExtension`.
-    @objc public static func discover() -> [PatrolServerExtension] {
-      guard let proto = objc_getProtocol("PatrolServerExtension") else { return [] }
+    private static let registeredExtensionClassNames = NSMutableArray()
 
-      var count: UInt32 = 0
-      guard let classList = objc_copyClassList(&count) else { return [] }
-      defer { free(UnsafeMutableRawPointer(classList)) }
+    /// Registers an extension implementation class for later discovery.
+    ///
+    /// Extension packages should call this once at module load time (see
+    /// `patrol_axe` for an example). We intentionally avoid scanning the full
+    /// Objective-C class table (`objc_copyClassList`), which can trap in large
+    /// UITest binaries.
+    @objc(registerExtensionClass:)
+    public static func registerExtensionClass(_ cls: AnyClass) {
+      let className = NSStringFromClass(cls)
+      guard !registeredExtensionClassNames.contains(className) else {
+        Logger.shared.i("Patrol extension class already registered: \(className)")
+        return
+      }
+      registeredExtensionClassNames.add(className)
+      Logger.shared.i("Registered Patrol extension class: \(className)")
+    }
+
+    /// Instantiates extensions registered via [registerExtensionClass].
+    @objc public static func discover() -> [PatrolServerExtension] {
+      Logger.shared.i(
+        "Discovering Patrol extensions from registry (\(registeredExtensionClassNames.count) class name(s))"
+      )
 
       var result: [PatrolServerExtension] = []
-      for i in 0..<Int(count) {
-        let cls: AnyClass = classList[i]
-        guard class_conformsToProtocol(cls, proto) else { continue }
-        let className = NSStringFromClass(cls)
+      for entry in registeredExtensionClassNames {
+        guard let className = entry as? String else {
+          Logger.shared.i("Skipping registry entry (not a String class name)")
+          continue
+        }
 
-        Logger.shared.i("Patrol extension candidate found: \(className)")
+        guard let cls = NSClassFromString(className) else {
+          Logger.shared.i("Skipping extension class (NSClassFromString failed): \(className)")
+          continue
+        }
 
         guard let objectType = cls as? NSObject.Type else {
-          Logger.shared.i("Skipping extension candidate (not NSObject.Type): \(className)")
+          Logger.shared.i("Skipping extension class (not NSObject.Type): \(className)")
           continue
         }
+
         let instance = objectType.init()
         guard let ext = instance as? PatrolServerExtension else {
-          Logger.shared.i("Skipping extension candidate (instance cast failed): \(className)")
+          Logger.shared.i("Skipping extension class (instance cast failed): \(className)")
           continue
         }
+
         Logger.shared.i("Discovered Patrol extension: \(ext.name) (\(className))")
         result.append(ext)
       }
+
       Logger.shared.i("Patrol extension discovery complete, found \(result.count) extension(s)")
       return result
     }
+  }
+
+  /// Stable C entry point for extension packages (callable from ObjC `+load`).
+  @_cdecl("PatrolRegisterServerExtensionClass")
+  public func PatrolRegisterServerExtensionClass(_ cls: AnyClass) {
+    PatrolServerExtensions.registerExtensionClass(cls)
   }
 
 #endif
