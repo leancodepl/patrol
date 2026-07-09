@@ -1,4 +1,4 @@
-## Unreleased
+## 4.5.0-dev.3
 
 - Bump `patrol_log` to `^0.10.0`.
 
