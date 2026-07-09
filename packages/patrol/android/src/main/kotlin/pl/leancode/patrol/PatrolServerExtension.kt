@@ -35,7 +35,10 @@ interface PatrolServerExtension {
 /** Discovers [PatrolServerExtension]s available on the instrumentation classpath. */
 object PatrolServerExtensions {
     fun discover(): List<PatrolServerExtension> = try {
-        ServiceLoader.load(PatrolServerExtension::class.java).toList()
+        ServiceLoader.load(
+            PatrolServerExtension::class.java,
+            PatrolServerExtension::class.java.classLoader,
+        ).toList()
     } catch (e: Throwable) {
         Logger.i("Failed to load Patrol server extensions: ${e.message}")
         emptyList()
