@@ -78,7 +78,7 @@ android {
         implementation platform("org.http4k:http4k-bom:6.17.0.0")
         implementation "org.http4k:http4k-core"
         implementation "com.squareup.okhttp:okhttp:2.7.5" // See https://github.com/square/okhttp/issues/8031
-        implementation "org.http4k:http4k-server-ktorcio" {
+        implementation("org.http4k:http4k-server-ktorcio") {
             exclude group: "io.ktor", module: "ktor-server-netty-jvm"
         }
         implementation "com.google.code.gson:gson:2.10.1"
