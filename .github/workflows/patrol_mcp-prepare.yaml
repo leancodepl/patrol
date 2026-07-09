@@ -14,7 +14,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Windows: the SIGTERM startup path that broke there (#3035); ubuntu = POSIX.
         os: [ubuntu-latest, windows-latest]
         # floor = lowest patrol_cli the constraint allows; fails here if patrol_mcp
         # outgrew its constraint, rather than shipping broken to users.

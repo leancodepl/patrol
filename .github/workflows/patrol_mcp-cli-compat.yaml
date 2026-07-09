@@ -1,14 +1,11 @@
 name: patrol_mcp cli-compat
 
-# Non-blocking heads-up: does this patrol_cli change break patrol_mcp when built
-# against local source? Released users are safe (patrol_mcp pins a published
-# patrol_cli), so on a break we only warn — never fail CI.
-
 on:
   workflow_dispatch:
   pull_request:
     paths:
-      - 'packages/patrol_cli/**'
+      - 'packages/patrol_cli/lib/**'
+      - 'packages/patrol_cli/pubspec.yaml'
 
 jobs:
   mcp_compat:
