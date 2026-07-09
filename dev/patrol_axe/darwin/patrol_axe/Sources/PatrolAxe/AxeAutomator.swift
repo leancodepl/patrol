@@ -20,17 +20,12 @@
 
       let result = try axe.run(onElement: XCUIApplication())
       if uploadToDashboard {
-        var error: NSError?
-        _ = AxeBridge.postResult(
+        _ = try AxeBridge.postResult(
           on: axe,
           result: result,
           tags: tags,
-          scanName: scanName,
-          error: &error
+          scanName: scanName
         )
-        if let error {
-          throw error
-        }
       }
     }
 
