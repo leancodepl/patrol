@@ -59,8 +59,8 @@ import Foundation
       provider.setupRoutes(server: server)
 
       // Mount optional extension routes on the same server.
-      let registrar = PatrolRouteRegistrar { path, handler in
-        server.route(.POST, path) { request in
+      let registrar = PatrolRouteRegistrar { [self] path, handler in
+        self.server.route(.POST, path) { request in
           do {
             let responseBody = try handler(request.body)
             return HTTPResponse(.ok, body: responseBody)
