@@ -141,6 +141,9 @@ class WebTestBackend {
     var shouldRestart = false;
 
     final stdinSubscription = stdin.listen((event) async {
+      if (event.isEmpty) {
+        return;
+      }
       final char = String.fromCharCode(event.first);
       _logger.detail('Flutter stdin: $char');
 
@@ -755,18 +758,12 @@ class WebTestBackend {
   Future<void> _ensureNodeDependencies(String webRunnerPath) async {
     _logger.info('Installing Node.js dependencies...');
 
-    final nodeResult = await _processManager
-        .run(
-          ['npm', 'install'],
-          workingDirectory: webRunnerPath,
-          runInShell: true,
-        )
-        .timeout(
-          const Duration(seconds: _kDependencyTimeoutSeconds),
-          onTimeout: () => throw TimeoutException(
-            'npm install timed out after $_kDependencyTimeoutSeconds seconds',
-          ),
-        );
+    final nodeResult = await _runInstallWithTimeout(
+      ['npm', 'install'],
+      workingDirectory: webRunnerPath,
+      timeoutMessage:
+          'npm install timed out after $_kDependencyTimeoutSeconds seconds',
+    );
 
     if (nodeResult.exitCode != 0) {
       throw ProcessException(
@@ -782,19 +779,13 @@ class WebTestBackend {
     _logger
       ..info('Node.js dependencies installed successfully.')
       ..info('Installing Playwright dependencies...');
-    final result = await _processManager
-        .run(
-          ['npx', 'playwright', 'install', 'chromium'],
-          workingDirectory: webRunnerPath,
-          runInShell: true,
-        )
-        .timeout(
-          const Duration(seconds: _kDependencyTimeoutSeconds),
-          onTimeout: () => throw TimeoutException(
-            'npx playwright install timed out after '
-            '$_kDependencyTimeoutSeconds seconds',
-          ),
-        );
+    final result = await _runInstallWithTimeout(
+      ['npx', 'playwright', 'install', 'chromium'],
+      workingDirectory: webRunnerPath,
+      timeoutMessage:
+          'npx playwright install timed out after '
+          '$_kDependencyTimeoutSeconds seconds',
+    );
 
     if (result.exitCode != 0) {
       throw ProcessException(
@@ -806,5 +797,50 @@ class WebTestBackend {
         result.exitCode,
       );
     }
+  }
+
+  /// Runs [command] with a hard timeout, killing the process if it exceeds it.
+  ///
+  /// Unlike `_processManager.run().timeout()`, timing out here actually
+  /// terminates the spawned process (and drains its output) instead of leaving
+  /// it running in the background holding lockfiles or other resources.
+  Future<ProcessResult> _runInstallWithTimeout(
+    List<String> command, {
+    required String workingDirectory,
+    required String timeoutMessage,
+  }) async {
+    final process = await _processManager.start(
+      command,
+      workingDirectory: workingDirectory,
+      runInShell: true,
+    );
+
+    // Drain stdout/stderr concurrently so a full pipe buffer can't stall the
+    // process, and capture them for error reporting.
+    final stdoutFuture = process.stdout
+        .transform(const SystemEncoding().decoder)
+        .join();
+    final stderrFuture = process.stderr
+        .transform(const SystemEncoding().decoder)
+        .join();
+
+    final int exitCode;
+    try {
+      exitCode = await process.exitCode.timeout(
+        const Duration(seconds: _kDependencyTimeoutSeconds),
+      );
+    } on TimeoutException {
+      process.kill(ProcessSignal.sigkill);
+      // Let the drains complete so we don't leak stream subscriptions.
+      await Future.wait([stdoutFuture, stderrFuture]);
+      throw TimeoutException(timeoutMessage);
+    }
+
+    return ProcessResult(
+      process.pid,
+      exitCode,
+      await stdoutFuture,
+      await stderrFuture,
+    );
   }
 }

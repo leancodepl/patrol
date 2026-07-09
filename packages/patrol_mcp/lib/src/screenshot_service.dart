@@ -129,7 +129,7 @@ abstract final class ScreenshotService {
       // Find the first page target
       final pageTarget =
           targets.firstWhere(
-                (t) => (t as Map)['type'] == 'page',
+                (t) => t is Map && t['type'] == 'page',
                 orElse: () => throw Exception('No page target found'),
               )
               as Map;
