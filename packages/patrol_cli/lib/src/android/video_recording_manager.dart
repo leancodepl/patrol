@@ -228,9 +228,9 @@ class VideoRecordingManager {
     final parts = testName.split(' ');
     if (parts.length > 1) {
       // Skip the first part which is usually the file path
-      return parts.skip(1).join(' ').replaceAll(RegExp(r'[^\w\-_\s]'), '_');
+      return parts.skip(1).join(' ').replaceAll(RegExp(r'[^\w\-\s]'), '_');
     }
-    return testName.replaceAll(RegExp(r'[^\w\-_\s]'), '_');
+    return testName.replaceAll(RegExp(r'[^\w\-\s]'), '_');
   }
 
   /// Chain serializing start/stop operations so that log events arriving in

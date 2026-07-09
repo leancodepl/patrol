@@ -75,18 +75,6 @@ class IOSVideoRecordingManager {
       // Give the recording a moment to start and wait for the "Recording started" message
       await Future<void>.delayed(const Duration(milliseconds: 2000));
       _logger.detail('iOS video recording started successfully');
-
-      // Try to bring simulator to foreground to ensure content is visible
-      try {
-        await _processManager.run([
-          'osascript',
-          '-e',
-          'tell application "Simulator" to activate',
-        ], runInShell: true);
-        _logger.detail('Brought Simulator to foreground');
-      } catch (err) {
-        _logger.detail('Could not bring Simulator to foreground: $err');
-      }
     } catch (err) {
       _logger.warn(
         'Failed to start iOS video recording for test $testName: $err',
@@ -270,9 +258,9 @@ class IOSVideoRecordingManager {
     final parts = testName.split(' ');
     if (parts.length > 1) {
       // Skip the first part which is usually the file path
-      return parts.skip(1).join(' ').replaceAll(RegExp(r'[^\w\-_\s]'), '_');
+      return parts.skip(1).join(' ').replaceAll(RegExp(r'[^\w\-\s]'), '_');
     }
-    return testName.replaceAll(RegExp(r'[^\w\-_\s]'), '_');
+    return testName.replaceAll(RegExp(r'[^\w\-\s]'), '_');
   }
 
   /// Chain serializing start/stop operations so that log events arriving in
