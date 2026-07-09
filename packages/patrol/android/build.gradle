@@ -62,6 +62,12 @@ android {
         buildConfigField("String", "PATROL_TEST_PORT", project.hasProperty('test-server-port') ? '"' + project.getProperty('test-server-port') + '"' : '""')
     }
 
+    packaging {
+        resources {
+            excludes += ["META-INF/INDEX.LIST", "META-INF/*.properties"]
+        }
+    }
+
     buildFeatures {
         buildConfig true
     }
@@ -75,15 +81,20 @@ android {
         api "androidx.test.espresso:espresso-core:3.5.0"
         api "androidx.test.uiautomator:uiautomator:2.3.0"
 
-        implementation platform("org.http4k:http4k-bom:5.47.0.0")
-        implementation "org.http4k:http4k-core"
+        implementation platform("org.http4k:http4k-bom:6.17.0.0")
+        implementation "org.http4k:http4k-core:6.17.0.0"
         implementation "com.squareup.okhttp:okhttp:2.7.5" // See https://github.com/square/okhttp/issues/8031
-        implementation "org.http4k:http4k-server-ktorcio"
+        // http4k-bridge-ktor pulls in the Ktor Netty server engine transitively, but we only
+        // use the CIO engine (KtorCIO). Netty requires minSdk 26 and can't be desugared, so
+        // exclude it to keep Patrol usable on lower minSdk levels.
+        implementation("org.http4k:http4k-server-ktorcio:6.17.0.0") {
+            exclude group: "io.ktor", module: "ktor-server-netty-jvm"
+        }
         implementation "com.google.code.gson:gson:2.10.1"
-        implementation "io.ktor:ktor-client-core:3.0.3"
-        implementation "io.ktor:ktor-client-cio:3.0.3"
-        implementation "io.ktor:ktor-client-content-negotiation:3.0.3"
-        implementation "io.ktor:ktor-serialization-gson:3.0.3"
+        implementation "io.ktor:ktor-client-core:3.2.3"
+        implementation "io.ktor:ktor-client-cio:3.2.3"
+        implementation "io.ktor:ktor-client-content-negotiation:3.2.3"
+        implementation "io.ktor:ktor-serialization-gson:3.2.3"
 
         testImplementation "org.jetbrains.kotlin:kotlin-test"
     }
