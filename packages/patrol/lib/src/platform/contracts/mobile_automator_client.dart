@@ -30,6 +30,8 @@ class MobileAutomatorClient {
     Duration timeout = const Duration(seconds: 30),
   }) : _timeout = timeout,
        _headers = {
+         'Content-Type': 'application/json; charset=utf-8',
+         'Accept': 'application/json',
          'Connection': 'keep-alive',
          'Keep-Alive': 'timeout=${timeout.inSeconds}',
        };
@@ -174,10 +176,11 @@ class MobileAutomatorClient {
     String requestName, [
     Map<String, dynamic>? request,
   ]) async {
+    final requestBody = request != null ? jsonEncode(request) : null;
     final response = await _client
         .post(
           _apiUri.resolve(requestName),
-          body: jsonEncode(request),
+          body: requestBody,
           headers: _headers,
         )
         .timeout(_timeout);
