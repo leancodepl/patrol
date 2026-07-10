@@ -34,9 +34,6 @@ let package = Package(
       ],
       path: "patrol_axe/Sources/PatrolAxe",
       sources: ["AxeAutomator.swift", "AxeServerExtension.swift", "PatrolAxePlugin.swift"],
-      swiftSettings: [
-        .define("PATROL_ENABLED"),
-      ],
       linkerSettings: [
         .linkedFramework("XCTest", .when(platforms: [.iOS])),
       ],

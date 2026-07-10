@@ -22,7 +22,6 @@ Optional Patrol extension package for axe accessibility scanning in native UI te
   ]
   s.pod_target_xcconfig = {
     'DEFINES_MODULE' => 'YES',
-    'OTHER_SWIFT_FLAGS' => '$(inherited) -D PATROL_ENABLED',
     'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386',
   }
   s.swift_version = '5.0'
