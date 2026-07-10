@@ -26,7 +26,7 @@ android {
 
     defaultConfig {
         applicationId = "pl.leancode.patrol.e2e_app"
-        minSdk = 26
+        minSdk = 24
         targetSdk = 35
         versionCode = flutter.versionCode
         versionName = flutter.versionName
@@ -62,5 +62,4 @@ flutter {
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
     androidTestUtil("androidx.test:orchestrator:1.5.1")
-    androidTestImplementation(project(":patrol_axe"))
 }

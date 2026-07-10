@@ -23,5 +23,3 @@ plugins {
 }
 
 include(":app")
-include(":patrol_axe")
-project(":patrol_axe").projectDir = file("../../patrol_axe/android")
