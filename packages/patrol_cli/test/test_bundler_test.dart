@@ -113,6 +113,34 @@ import 'example_test.dart' as example_test;
 import 'example/example_test.dart' as example__example_test;''');
     });
 
+    test('generates clean imports from non-native path forms (#1428)', () {
+      // Non-native target forms must still resolve to a relative import:
+      // forward-slash absolute paths (`patrol develop`/MCP) and `.\`-prefixed
+      // paths (PowerShell tab-completion).
+      final absoluteNative = fs.path.join(
+        platform.home,
+        'awesome_app',
+        'patrol_test',
+        'example_test.dart',
+      );
+
+      // Forward-slash absolute path (e.g. `c:/Users/.../example_test.dart`).
+      final forwardSlashAbsolute = absoluteNative.replaceAll(r'\', '/');
+      expect(
+        testBundler.generateImports(testDirectory, [forwardSlashAbsolute]),
+        "import 'example_test.dart' as example_test;",
+      );
+
+      // `.\`-prefixed relative path.
+      final dotSlashRelative =
+          '.${fs.path.separator}'
+          '${fs.path.join('patrol_test', 'example_test.dart')}';
+      expect(
+        testBundler.generateImports(testDirectory, [dotSlashRelative]),
+        "import 'example_test.dart' as example_test;",
+      );
+    });
+
     test(
       'generates relative import when target is outside the test directory',
       () {
