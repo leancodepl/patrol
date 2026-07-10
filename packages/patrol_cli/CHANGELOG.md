@@ -1,7 +1,7 @@
 ## Unreleased
 
+- Bump min Flutter SDK to 3.35.0 (#3154)
 - Bump `patrol_log` to `^0.10.0`.
-
 - Fix `patrol develop` on iOS Simulator timing out after ~6 minutes with "Test runner never began executing tests after launching". Requires a matching `patrol` version that enables the develop-specific native test runner path. (#3139)
 - Bump `equatable` to `^2.1.0` and migrate `PatrolPubspecConfig` and related config classes from deprecated `EquatableMixin` to `with Equatable`.
 - Fix wrong import generated string on Windows commands like `patrol test -t .\patrol_test\example_test.dart` now generate correct import path;
