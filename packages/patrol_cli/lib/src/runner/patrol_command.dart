@@ -376,13 +376,16 @@ abstract class PatrolCommand extends Command<int> {
       )
       ..addOption(
         'web-channel',
-        help: 'Browser distribution channel to run tests against.',
-        valueHelp: 'chromium | chrome | chrome-beta | msedge',
+        help:
+            'Browser distribution channel, e.g. a branded build instead of '
+            'the bundled Chromium, see https://playwright.dev/docs/browsers.',
+        valueHelp: 'chromium|chrome|msedge|...',
       )
       ..addOption(
         'web-executable-path',
         help:
-            'Path to a custom browser binary to use instead of the bundled one.',
+            'Path to a custom Chromium-based browser binary to use instead of '
+            'the bundled one. Takes precedence over --web-channel.',
         valueHelp: 'path',
       )
       ..addOption(
