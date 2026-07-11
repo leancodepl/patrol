@@ -17,7 +17,9 @@ const timeout = envInt("PATROL_WEB_TIMEOUT") ?? 10 * 60 * 1000
 const globalTimeout = envInt("PATROL_WEB_GLOBAL_TIMEOUT") ?? 2 * 60 * 60 * 1000
 const workers = envInt("PATROL_WEB_WORKERS") ?? 1
 
-const reporter = envParsed("PATROL_WEB_REPORTER", value => mapReporters(value, outputFolder)) ?? [["html", { outputFolder, open: "never" }]]
+const reporter = envParsed("PATROL_WEB_REPORTER", value => mapReporters(value, outputFolder)) ?? [
+  ["html", { outputFolder, open: "never" }],
+]
 const locale = envString("PATROL_WEB_LOCALE")
 const timezoneId = envString("PATROL_WEB_TIMEZONE")
 const colorScheme = envString("PATROL_WEB_COLOR_SCHEME") as PlaywrightTestOptions["colorScheme"] | undefined
@@ -130,7 +132,13 @@ function envBool(name: string): boolean | undefined {
 }
 
 function envJson<T>(name: string): T | undefined {
-  return envParsed(name, value => JSON.parse(value) as T)
+  return envParsed(name, value => {
+    try {
+      return JSON.parse(value) as T
+    } catch (err) {
+      throw new Error(`${name} must be a valid JSON`)
+    }
+  })
 }
 
 function parseIgnoreDefaultArgs(value: string): LaunchOptions["ignoreDefaultArgs"] {
@@ -138,14 +146,15 @@ function parseIgnoreDefaultArgs(value: string): LaunchOptions["ignoreDefaultArgs
     return value === "true"
   }
 
-  const parsed: unknown = JSON.parse(value)
-  if (!Array.isArray(parsed) || parsed.some(arg => typeof arg !== "string")) {
-    throw new Error("PATROL_WEB_IGNORE_DEFAULT_ARGS must be 'true', 'false' or a JSON array of strings")
-  }
+  try {
+    const parsed: unknown = JSON.parse(value)
+    if (Array.isArray(parsed) && parsed.every(arg => typeof arg === "string")) {
+      return parsed
+    }
+  } catch {}
 
-  return parsed
+  throw new Error("PATROL_WEB_IGNORE_DEFAULT_ARGS must be 'true', 'false' or a JSON array of strings")
 }
-
 
 function parseShard(shardValue: string) {
   const [current, total] = shardValue.split("/").map(Number)
