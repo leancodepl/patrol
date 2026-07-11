@@ -424,11 +424,11 @@ class WebAppOptions {
     this.proxy,
     this.browserTimeout,
     this.tracesDir,
-    this.bypassCSP,
-    this.ignoreHTTPSErrors,
+    this.bypassCsp,
+    this.ignoreHttpsErrors,
     this.offline,
     this.httpCredentials,
-    this.extraHTTPHeaders,
+    this.extraHttpHeaders,
     this.screenshot,
     this.trace,
     this.storageState,
@@ -464,11 +464,11 @@ class WebAppOptions {
   final String? proxy;
   final int? browserTimeout;
   final String? tracesDir;
-  final String? bypassCSP;
-  final String? ignoreHTTPSErrors;
+  final String? bypassCsp;
+  final String? ignoreHttpsErrors;
   final String? offline;
   final String? httpCredentials;
-  final String? extraHTTPHeaders;
+  final String? extraHttpHeaders;
   final String? screenshot;
   final String? trace;
   final String? storageState;
@@ -507,11 +507,11 @@ class WebAppOptions {
       'PATROL_WEB_PROXY': proxy,
       'PATROL_WEB_BROWSER_TIMEOUT': browserTimeout,
       'PATROL_WEB_TRACES_DIR': tracesDir,
-      'PATROL_WEB_BYPASS_CSP': bypassCSP,
-      'PATROL_WEB_IGNORE_HTTPS_ERRORS': ignoreHTTPSErrors,
+      'PATROL_WEB_BYPASS_CSP': bypassCsp,
+      'PATROL_WEB_IGNORE_HTTPS_ERRORS': ignoreHttpsErrors,
       'PATROL_WEB_OFFLINE': offline,
       'PATROL_WEB_HTTP_CREDENTIALS': httpCredentials,
-      'PATROL_WEB_EXTRA_HTTP_HEADERS': extraHTTPHeaders,
+      'PATROL_WEB_EXTRA_HTTP_HEADERS': extraHttpHeaders,
       'PATROL_WEB_SCREENSHOT': screenshot,
       'PATROL_WEB_TRACE': trace,
       'PATROL_WEB_STORAGE_STATE': storageState,
