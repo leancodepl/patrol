@@ -1,6 +1,6 @@
 ## Unreleased
 
-- Wire additional Playwright browser launch and context options into the web runner config, configurable through the matching `patrol_cli` `--web-*` flags (channel, executable path, slow-mo, Chromium sandbox, downloads path, ignore default args, proxy, browser timeout, traces dir, bypass CSP, ignore HTTPS errors, offline, HTTP credentials, extra HTTP headers, screenshot, trace, storage state, accept downloads).
+- Wire additional Playwright browser launch and context options into the web runner config, configurable through the matching `patrol_cli` `--web-*` flags (channel, executable path, slow-mo, Chromium sandbox, downloads path, ignore default args, proxy, browser timeout, traces dir, bypass CSP, ignore HTTPS errors, offline, HTTP credentials, extra HTTP headers, screenshot, trace, storage state, accept downloads). (#3155)
 
 ## 4.7.1
 
