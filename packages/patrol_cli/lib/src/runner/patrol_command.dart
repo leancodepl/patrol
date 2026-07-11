@@ -355,7 +355,7 @@ abstract class PatrolCommand extends Command<int> {
       ..addOption(
         'web-headless',
         help: 'Whether to run browser in headless mode.',
-        valueHelp: 'true | false',
+        allowed: ['true', 'false'],
       )
       ..addOption(
         'web-port',
