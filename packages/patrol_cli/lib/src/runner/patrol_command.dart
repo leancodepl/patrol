@@ -285,7 +285,7 @@ abstract class PatrolCommand extends Command<int> {
       ..addOption(
         'web-video',
         help: 'Video recording mode.',
-        valueHelp: 'off | on | retain-on-failure | on-first-retry',
+        allowed: ['off', 'on', 'retain-on-failure', 'on-first-retry'],
       )
       ..addOption(
         'web-timeout',
@@ -315,7 +315,7 @@ abstract class PatrolCommand extends Command<int> {
       ..addOption(
         'web-color-scheme',
         help: 'Preferred color scheme for browser emulation.',
-        valueHelp: 'light | dark',
+        allowed: ['light', 'dark', 'no-preference'],
       )
       ..addOption(
         'web-geolocation',
