@@ -13,11 +13,11 @@ const baseURL = envString("BASE_URL")
 
 const retries = envInt("PATROL_WEB_RETRIES")
 const video = envString("PATROL_WEB_VIDEO") as VideoMode | undefined
-const timeout = envInt("PATROL_WEB_TIMEOUT")
-const globalTimeout = envInt("PATROL_WEB_GLOBAL_TIMEOUT")
+const timeout = envInt("PATROL_WEB_TIMEOUT") ?? 10 * 60 * 1000
+const globalTimeout = envInt("PATROL_WEB_GLOBAL_TIMEOUT") ?? 2 * 60 * 60 * 1000
 const workers = envInt("PATROL_WEB_WORKERS") ?? 1
 
-const reporter = envParsed("PATROL_WEB_REPORTER", value => mapReporters(value, outputFolder))
+const reporter = envParsed("PATROL_WEB_REPORTER", value => mapReporters(value, outputFolder)) ?? [["html", { outputFolder, open: "never" }]]
 const locale = envString("PATROL_WEB_LOCALE")
 const timezoneId = envString("PATROL_WEB_TIMEZONE")
 const colorScheme = envString("PATROL_WEB_COLOR_SCHEME") as PlaywrightTestOptions["colorScheme"] | undefined
@@ -27,17 +27,7 @@ const userAgent = envString("PATROL_WEB_USER_AGENT")
 const viewport = envJson<PlaywrightTestOptions["viewport"]>("PATROL_WEB_VIEWPORT")
 const shard = envParsed("PATROL_WEB_SHARD", parseShard)
 const headless = envBool("PATROL_WEB_HEADLESS") ?? false
-const browserArgs = envJson<string[]>("PATROL_WEB_BROWSER_ARGS")
-
 const channel = envString("PATROL_WEB_CHANNEL")
-const executablePath = envString("PATROL_WEB_EXECUTABLE_PATH")
-const slowMo = envInt("PATROL_WEB_SLOW_MO")
-const chromiumSandbox = envBool("PATROL_WEB_CHROMIUM_SANDBOX")
-const downloadsPath = envString("PATROL_WEB_DOWNLOADS_PATH")
-const ignoreDefaultArgs = envParsed("PATROL_WEB_IGNORE_DEFAULT_ARGS", parseIgnoreDefaultArgs)
-const proxy = envJson<LaunchOptions["proxy"]>("PATROL_WEB_PROXY")
-const browserTimeout = envInt("PATROL_WEB_BROWSER_TIMEOUT")
-const tracesDir = envString("PATROL_WEB_TRACES_DIR")
 const bypassCSP = envBool("PATROL_WEB_BYPASS_CSP")
 const ignoreHTTPSErrors = envBool("PATROL_WEB_IGNORE_HTTPS_ERRORS")
 const offline = envBool("PATROL_WEB_OFFLINE")
@@ -48,17 +38,17 @@ const trace = envString("PATROL_WEB_TRACE") as PlaywrightWorkerOptions["trace"] 
 const storageState = envString("PATROL_WEB_STORAGE_STATE")
 const acceptDownloads = envBool("PATROL_WEB_ACCEPT_DOWNLOADS")
 
-const launchOptions = undefinedIfEmpty<LaunchOptions>({
-  args: browserArgs,
-  executablePath,
-  slowMo,
-  chromiumSandbox,
-  downloadsPath,
-  ignoreDefaultArgs,
-  proxy,
-  timeout: browserTimeout,
-  tracesDir,
-})
+const launchOptions: LaunchOptions = {
+  args: envJson<string[]>("PATROL_WEB_BROWSER_ARGS"),
+  executablePath: envString("PATROL_WEB_EXECUTABLE_PATH"),
+  slowMo: envInt("PATROL_WEB_SLOW_MO"),
+  chromiumSandbox: envBool("PATROL_WEB_CHROMIUM_SANDBOX"),
+  downloadsPath: envString("PATROL_WEB_DOWNLOADS_PATH"),
+  ignoreDefaultArgs: envParsed("PATROL_WEB_IGNORE_DEFAULT_ARGS", parseIgnoreDefaultArgs),
+  proxy: envJson<LaunchOptions["proxy"]>("PATROL_WEB_PROXY"),
+  timeout: envInt("PATROL_WEB_BROWSER_TIMEOUT"),
+  tracesDir: envString("PATROL_WEB_TRACES_DIR"),
+}
 
 export default defineConfig({
   use: {
@@ -86,10 +76,10 @@ export default defineConfig({
   },
   globalSetup: require.resolve("./tests/setup"),
   outputDir,
-  reporter: reporter ?? [["html", { outputFolder, open: "never" }]],
+  reporter,
   retries,
-  timeout: timeout ?? 10 * 60 * 1000,
-  globalTimeout: globalTimeout ?? 2 * 60 * 60 * 1000,
+  timeout,
+  globalTimeout,
   workers,
   fullyParallel: true,
   shard,
@@ -156,9 +146,6 @@ function parseIgnoreDefaultArgs(value: string): LaunchOptions["ignoreDefaultArgs
   return parsed
 }
 
-function undefinedIfEmpty<T extends object>(obj: T): T | undefined {
-  return Object.values(obj).some(value => value !== undefined) ? obj : undefined
-}
 
 function parseShard(shardValue: string) {
   const [current, total] = shardValue.split("/").map(Number)
