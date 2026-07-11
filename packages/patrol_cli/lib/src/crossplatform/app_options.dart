@@ -478,6 +478,52 @@ class WebAppOptions {
   /// Defaults to 120 seconds (2 minutes) if not specified.
   final int? serverTimeout;
 
+  /// Translates these options into environment variables consumed by the
+  /// Playwright web runner. Unset options are omitted.
+  Map<String, String> toEnvironmentVariables() {
+    final values = <String, Object?>{
+      'PATROL_WEB_RETRIES': retries,
+      'PATROL_WEB_VIDEO': video,
+      'PATROL_WEB_TIMEOUT': timeout,
+      'PATROL_WEB_WORKERS': workers,
+      'PATROL_WEB_REPORTER': reporter,
+      'PATROL_WEB_LOCALE': locale,
+      'PATROL_WEB_TIMEZONE': timezone,
+      'PATROL_WEB_COLOR_SCHEME': colorScheme,
+      'PATROL_WEB_GEOLOCATION': geolocation,
+      'PATROL_WEB_PERMISSIONS': permissions,
+      'PATROL_WEB_USER_AGENT': userAgent,
+      'PATROL_WEB_VIEWPORT': viewport,
+      'PATROL_WEB_GLOBAL_TIMEOUT': globalTimeout,
+      'PATROL_WEB_SHARD': shard,
+      'PATROL_WEB_HEADLESS': headless,
+      'PATROL_WEB_BROWSER_ARGS': browserArgs,
+      'PATROL_WEB_CHANNEL': channel,
+      'PATROL_WEB_EXECUTABLE_PATH': executablePath,
+      'PATROL_WEB_SLOW_MO': slowMo,
+      'PATROL_WEB_CHROMIUM_SANDBOX': chromiumSandbox,
+      'PATROL_WEB_DOWNLOADS_PATH': downloadsPath,
+      'PATROL_WEB_IGNORE_DEFAULT_ARGS': ignoreDefaultArgs,
+      'PATROL_WEB_PROXY': proxy,
+      'PATROL_WEB_BROWSER_TIMEOUT': browserTimeout,
+      'PATROL_WEB_TRACES_DIR': tracesDir,
+      'PATROL_WEB_BYPASS_CSP': bypassCSP,
+      'PATROL_WEB_IGNORE_HTTPS_ERRORS': ignoreHTTPSErrors,
+      'PATROL_WEB_OFFLINE': offline,
+      'PATROL_WEB_HTTP_CREDENTIALS': httpCredentials,
+      'PATROL_WEB_EXTRA_HTTP_HEADERS': extraHTTPHeaders,
+      'PATROL_WEB_SCREENSHOT': screenshot,
+      'PATROL_WEB_TRACE': trace,
+      'PATROL_WEB_STORAGE_STATE': storageState,
+      'PATROL_WEB_ACCEPT_DOWNLOADS': acceptDownloads,
+    };
+
+    return {
+      for (final entry in values.entries)
+        if (entry.value != null) entry.key: entry.value.toString(),
+    };
+  }
+
   /// Translates these options into a proper flutter build invocation.
   List<String> toFlutterBuildInvocation() {
     final cmd = [

@@ -7,64 +7,46 @@ import {
   VideoMode,
 } from "@playwright/test"
 
-const outputDir = process.env.PATROL_TEST_RESULTS_DIR || "./test-results"
-const outputFolder = process.env.PATROL_TEST_REPORT_DIR || "./playwright-report"
-const baseURL = process.env.BASE_URL
+const outputDir = envString("PATROL_TEST_RESULTS_DIR") ?? "./test-results"
+const outputFolder = envString("PATROL_TEST_REPORT_DIR") ?? "./playwright-report"
+const baseURL = envString("BASE_URL")
 
-const retries = process.env.PATROL_WEB_RETRIES ? parseInt(process.env.PATROL_WEB_RETRIES) : undefined
-const video = process.env.PATROL_WEB_VIDEO ? (process.env.PATROL_WEB_VIDEO as VideoMode) : undefined
-const timeout = process.env.PATROL_WEB_TIMEOUT ? parseInt(process.env.PATROL_WEB_TIMEOUT) : undefined
-const globalTimeout = process.env.PATROL_WEB_GLOBAL_TIMEOUT
-  ? parseInt(process.env.PATROL_WEB_GLOBAL_TIMEOUT)
-  : undefined
-const workers = process.env.PATROL_WEB_WORKERS ? parseInt(process.env.PATROL_WEB_WORKERS) : 1
+const retries = envInt("PATROL_WEB_RETRIES")
+const video = envString("PATROL_WEB_VIDEO") as VideoMode | undefined
+const timeout = envInt("PATROL_WEB_TIMEOUT")
+const globalTimeout = envInt("PATROL_WEB_GLOBAL_TIMEOUT")
+const workers = envInt("PATROL_WEB_WORKERS") ?? 1
 
-const reporter = process.env.PATROL_WEB_REPORTER
-  ? mapReporters(process.env.PATROL_WEB_REPORTER, outputFolder)
-  : undefined
-const locale = process.env.PATROL_WEB_LOCALE ? process.env.PATROL_WEB_LOCALE : undefined
-const timezoneId = process.env.PATROL_WEB_TIMEZONE ? process.env.PATROL_WEB_TIMEZONE : undefined
-const colorScheme = process.env.PATROL_WEB_COLOR_SCHEME
-  ? (process.env.PATROL_WEB_COLOR_SCHEME as PlaywrightTestOptions["colorScheme"])
-  : undefined
-const geolocation = process.env.PATROL_WEB_GEOLOCATION
-  ? (JSON.parse(process.env.PATROL_WEB_GEOLOCATION) as PlaywrightTestOptions["geolocation"])
-  : undefined
-const permissions = process.env.PATROL_WEB_PERMISSIONS
-  ? (JSON.parse(process.env.PATROL_WEB_PERMISSIONS) as PlaywrightTestOptions["permissions"])
-  : undefined
-const userAgent = process.env.PATROL_WEB_USER_AGENT ? process.env.PATROL_WEB_USER_AGENT : undefined
-const viewport = process.env.PATROL_WEB_VIEWPORT
-  ? (JSON.parse(process.env.PATROL_WEB_VIEWPORT) as PlaywrightTestOptions["viewport"])
-  : undefined
-const shard = process.env.PATROL_WEB_SHARD ? parseShard(process.env.PATROL_WEB_SHARD) : undefined
-const headless = process.env.PATROL_WEB_HEADLESS ? process.env.PATROL_WEB_HEADLESS === "true" : false
-const browserArgs = process.env.PATROL_WEB_BROWSER_ARGS
-  ? (JSON.parse(process.env.PATROL_WEB_BROWSER_ARGS) as string[])
-  : undefined
+const reporter = envParsed("PATROL_WEB_REPORTER", value => mapReporters(value, outputFolder))
+const locale = envString("PATROL_WEB_LOCALE")
+const timezoneId = envString("PATROL_WEB_TIMEZONE")
+const colorScheme = envString("PATROL_WEB_COLOR_SCHEME") as PlaywrightTestOptions["colorScheme"] | undefined
+const geolocation = envJson<PlaywrightTestOptions["geolocation"]>("PATROL_WEB_GEOLOCATION")
+const permissions = envJson<PlaywrightTestOptions["permissions"]>("PATROL_WEB_PERMISSIONS")
+const userAgent = envString("PATROL_WEB_USER_AGENT")
+const viewport = envJson<PlaywrightTestOptions["viewport"]>("PATROL_WEB_VIEWPORT")
+const shard = envParsed("PATROL_WEB_SHARD", parseShard)
+const headless = envBool("PATROL_WEB_HEADLESS") ?? false
+const browserArgs = envJson<string[]>("PATROL_WEB_BROWSER_ARGS")
 
-// Browser launch options.
-const channel = process.env.PATROL_WEB_CHANNEL ? process.env.PATROL_WEB_CHANNEL : undefined
-const executablePath = process.env.PATROL_WEB_EXECUTABLE_PATH
-  ? process.env.PATROL_WEB_EXECUTABLE_PATH
-  : undefined
-const slowMo = process.env.PATROL_WEB_SLOW_MO ? parseInt(process.env.PATROL_WEB_SLOW_MO) : undefined
-const chromiumSandbox = process.env.PATROL_WEB_CHROMIUM_SANDBOX
-  ? process.env.PATROL_WEB_CHROMIUM_SANDBOX === "true"
-  : undefined
-const downloadsPath = process.env.PATROL_WEB_DOWNLOADS_PATH
-  ? process.env.PATROL_WEB_DOWNLOADS_PATH
-  : undefined
-const ignoreDefaultArgs = process.env.PATROL_WEB_IGNORE_DEFAULT_ARGS
-  ? process.env.PATROL_WEB_IGNORE_DEFAULT_ARGS === "true"
-  : undefined
-const proxy = process.env.PATROL_WEB_PROXY
-  ? (JSON.parse(process.env.PATROL_WEB_PROXY) as LaunchOptions["proxy"])
-  : undefined
-const browserTimeout = process.env.PATROL_WEB_BROWSER_TIMEOUT
-  ? parseInt(process.env.PATROL_WEB_BROWSER_TIMEOUT)
-  : undefined
-const tracesDir = process.env.PATROL_WEB_TRACES_DIR ? process.env.PATROL_WEB_TRACES_DIR : undefined
+const channel = envString("PATROL_WEB_CHANNEL")
+const executablePath = envString("PATROL_WEB_EXECUTABLE_PATH")
+const slowMo = envInt("PATROL_WEB_SLOW_MO")
+const chromiumSandbox = envBool("PATROL_WEB_CHROMIUM_SANDBOX")
+const downloadsPath = envString("PATROL_WEB_DOWNLOADS_PATH")
+const ignoreDefaultArgs = envParsed("PATROL_WEB_IGNORE_DEFAULT_ARGS", parseIgnoreDefaultArgs)
+const proxy = envJson<LaunchOptions["proxy"]>("PATROL_WEB_PROXY")
+const browserTimeout = envInt("PATROL_WEB_BROWSER_TIMEOUT")
+const tracesDir = envString("PATROL_WEB_TRACES_DIR")
+const bypassCSP = envBool("PATROL_WEB_BYPASS_CSP")
+const ignoreHTTPSErrors = envBool("PATROL_WEB_IGNORE_HTTPS_ERRORS")
+const offline = envBool("PATROL_WEB_OFFLINE")
+const httpCredentials = envJson<PlaywrightTestOptions["httpCredentials"]>("PATROL_WEB_HTTP_CREDENTIALS")
+const extraHTTPHeaders = envJson<PlaywrightTestOptions["extraHTTPHeaders"]>("PATROL_WEB_EXTRA_HTTP_HEADERS")
+const screenshot = envString("PATROL_WEB_SCREENSHOT") as PlaywrightWorkerOptions["screenshot"] | undefined
+const trace = envString("PATROL_WEB_TRACE") as PlaywrightWorkerOptions["trace"] | undefined
+const storageState = envString("PATROL_WEB_STORAGE_STATE")
+const acceptDownloads = envBool("PATROL_WEB_ACCEPT_DOWNLOADS")
 
 const launchOptions = undefinedIfEmpty<LaunchOptions>({
   args: browserArgs,
@@ -77,31 +59,6 @@ const launchOptions = undefinedIfEmpty<LaunchOptions>({
   timeout: browserTimeout,
   tracesDir,
 })
-
-// Browser context options.
-const bypassCSP = process.env.PATROL_WEB_BYPASS_CSP
-  ? process.env.PATROL_WEB_BYPASS_CSP === "true"
-  : undefined
-const ignoreHTTPSErrors = process.env.PATROL_WEB_IGNORE_HTTPS_ERRORS
-  ? process.env.PATROL_WEB_IGNORE_HTTPS_ERRORS === "true"
-  : undefined
-const offline = process.env.PATROL_WEB_OFFLINE ? process.env.PATROL_WEB_OFFLINE === "true" : undefined
-const httpCredentials = process.env.PATROL_WEB_HTTP_CREDENTIALS
-  ? (JSON.parse(process.env.PATROL_WEB_HTTP_CREDENTIALS) as PlaywrightTestOptions["httpCredentials"])
-  : undefined
-const extraHTTPHeaders = process.env.PATROL_WEB_EXTRA_HTTP_HEADERS
-  ? (JSON.parse(process.env.PATROL_WEB_EXTRA_HTTP_HEADERS) as PlaywrightTestOptions["extraHTTPHeaders"])
-  : undefined
-const screenshot = process.env.PATROL_WEB_SCREENSHOT
-  ? (process.env.PATROL_WEB_SCREENSHOT as PlaywrightWorkerOptions["screenshot"])
-  : undefined
-const trace = process.env.PATROL_WEB_TRACE
-  ? (process.env.PATROL_WEB_TRACE as PlaywrightWorkerOptions["trace"])
-  : undefined
-const storageState = process.env.PATROL_WEB_STORAGE_STATE ? process.env.PATROL_WEB_STORAGE_STATE : undefined
-const acceptDownloads = process.env.PATROL_WEB_ACCEPT_DOWNLOADS
-  ? process.env.PATROL_WEB_ACCEPT_DOWNLOADS === "true"
-  : undefined
 
 export default defineConfig({
   use: {
@@ -163,6 +120,40 @@ function mapReporters(reporterEnv: string, outputFolder: string) {
         throw new Error(`Unsupported reporter: ${name}`)
     }
   })
+}
+
+function envString(name: string): string | undefined {
+  return process.env[name] || undefined
+}
+
+function envParsed<T>(name: string, parse: (value: string) => T): T | undefined {
+  const value = process.env[name]
+  return value ? parse(value) : undefined
+}
+
+function envInt(name: string): number | undefined {
+  return envParsed(name, value => parseInt(value))
+}
+
+function envBool(name: string): boolean | undefined {
+  return envParsed(name, value => value === "true")
+}
+
+function envJson<T>(name: string): T | undefined {
+  return envParsed(name, value => JSON.parse(value) as T)
+}
+
+function parseIgnoreDefaultArgs(value: string): LaunchOptions["ignoreDefaultArgs"] {
+  if (value === "true" || value === "false") {
+    return value === "true"
+  }
+
+  const parsed: unknown = JSON.parse(value)
+  if (!Array.isArray(parsed) || parsed.some(arg => typeof arg !== "string")) {
+    throw new Error("PATROL_WEB_IGNORE_DEFAULT_ARGS must be 'true', 'false' or a JSON array of strings")
+  }
+
+  return parsed
 }
 
 function undefinedIfEmpty<T extends object>(obj: T): T | undefined {
