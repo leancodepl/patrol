@@ -377,7 +377,7 @@ abstract class PatrolCommand extends Command<int> {
       ..addOption(
         'web-channel',
         help: 'Browser distribution channel to run tests against.',
-        valueHelp: 'chrome | chrome-beta | msedge',
+        valueHelp: 'chromium | chrome | chrome-beta | msedge',
       )
       ..addOption(
         'web-executable-path',
@@ -394,7 +394,7 @@ abstract class PatrolCommand extends Command<int> {
       ..addOption(
         'web-chromium-sandbox',
         help: 'Whether to enable the Chromium sandbox.',
-        valueHelp: 'true | false',
+        allowed: ['true', 'false'],
       )
       ..addOption(
         'web-downloads-path',
@@ -403,8 +403,10 @@ abstract class PatrolCommand extends Command<int> {
       )
       ..addOption(
         'web-ignore-default-args',
-        help: "Whether to skip Playwright's default browser arguments.",
-        valueHelp: 'true | false',
+        help:
+            "Skip Playwright's default browser arguments. Pass true/false or "
+            'a JSON array of arguments to skip.',
+        valueHelp: 'true | false | \'["--mute-audio"]\'',
       )
       ..addOption(
         'web-proxy',
@@ -425,17 +427,17 @@ abstract class PatrolCommand extends Command<int> {
       ..addOption(
         'web-bypass-csp',
         help: 'Whether to bypass the page Content-Security-Policy.',
-        valueHelp: 'true | false',
+        allowed: ['true', 'false'],
       )
       ..addOption(
         'web-ignore-https-errors',
         help: 'Whether to ignore HTTPS errors when sending network requests.',
-        valueHelp: 'true | false',
+        allowed: ['true', 'false'],
       )
       ..addOption(
         'web-offline',
         help: 'Whether to emulate network being offline.',
-        valueHelp: 'true | false',
+        allowed: ['true', 'false'],
       )
       ..addOption(
         'web-http-credentials',
@@ -450,12 +452,19 @@ abstract class PatrolCommand extends Command<int> {
       ..addOption(
         'web-screenshot',
         help: 'Screenshot capture mode.',
-        valueHelp: 'off | on | only-on-failure',
+        allowed: ['off', 'on', 'only-on-failure', 'on-first-failure'],
       )
       ..addOption(
         'web-trace',
         help: 'Trace recording mode.',
-        valueHelp: 'off | on | retain-on-failure | on-first-retry',
+        allowed: [
+          'off',
+          'on',
+          'retain-on-failure',
+          'on-first-retry',
+          'on-all-retries',
+          'retain-on-first-failure',
+        ],
       )
       ..addOption(
         'web-storage-state',
@@ -466,7 +475,7 @@ abstract class PatrolCommand extends Command<int> {
       ..addOption(
         'web-accept-downloads',
         help: 'Whether to automatically accept all downloads.',
-        valueHelp: 'true | false',
+        allowed: ['true', 'false'],
       );
   }
 
