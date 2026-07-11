@@ -373,6 +373,100 @@ abstract class PatrolCommand extends Command<int> {
         'web-browser-args',
         help: 'Custom browser launch arguments. JSON array of strings.',
         valueHelp: '\'["--no-sandbox", "--disable-gpu"]\'',
+      )
+      ..addOption(
+        'web-channel',
+        help: 'Browser distribution channel to run tests against.',
+        valueHelp: 'chrome | chrome-beta | msedge',
+      )
+      ..addOption(
+        'web-executable-path',
+        help:
+            'Path to a custom browser binary to use instead of the bundled one.',
+        valueHelp: 'path',
+      )
+      ..addOption(
+        'web-slow-mo',
+        help:
+            'Slow down operations by the specified number of milliseconds. Useful for debugging.',
+        valueHelp: 'number',
+      )
+      ..addOption(
+        'web-chromium-sandbox',
+        help: 'Whether to enable the Chromium sandbox.',
+        valueHelp: 'true | false',
+      )
+      ..addOption(
+        'web-downloads-path',
+        help: 'Directory where downloaded files will be saved.',
+        valueHelp: 'path',
+      )
+      ..addOption(
+        'web-ignore-default-args',
+        help: "Whether to skip Playwright's default browser arguments.",
+        valueHelp: 'true | false',
+      )
+      ..addOption(
+        'web-proxy',
+        help: 'Network proxy configuration. JSON object.',
+        valueHelp: '\'{"server": "http://myproxy:3128"}\'',
+      )
+      ..addOption(
+        'web-browser-timeout',
+        help:
+            'Maximum time in milliseconds to wait for the browser instance to start.',
+        valueHelp: 'number',
+      )
+      ..addOption(
+        'web-traces-dir',
+        help: 'Directory where trace files will be saved.',
+        valueHelp: 'path',
+      )
+      ..addOption(
+        'web-bypass-csp',
+        help: 'Whether to bypass the page Content-Security-Policy.',
+        valueHelp: 'true | false',
+      )
+      ..addOption(
+        'web-ignore-https-errors',
+        help: 'Whether to ignore HTTPS errors when sending network requests.',
+        valueHelp: 'true | false',
+      )
+      ..addOption(
+        'web-offline',
+        help: 'Whether to emulate network being offline.',
+        valueHelp: 'true | false',
+      )
+      ..addOption(
+        'web-http-credentials',
+        help: 'Credentials for HTTP authentication. JSON object.',
+        valueHelp: '\'{"username": "user", "password": "pass"}\'',
+      )
+      ..addOption(
+        'web-extra-http-headers',
+        help: 'Additional HTTP headers sent with every request. JSON object.',
+        valueHelp: '\'{"X-My-Header": "value"}\'',
+      )
+      ..addOption(
+        'web-screenshot',
+        help: 'Screenshot capture mode.',
+        valueHelp: 'off | on | only-on-failure',
+      )
+      ..addOption(
+        'web-trace',
+        help: 'Trace recording mode.',
+        valueHelp: 'off | on | retain-on-failure | on-first-retry',
+      )
+      ..addOption(
+        'web-storage-state',
+        help:
+            'Path to a file with the storage state to seed the browser context with.',
+        valueHelp: 'path',
+      )
+      ..addOption(
+        'web-accept-downloads',
+        help: 'Whether to automatically accept all downloads.',
+        valueHelp: 'true | false',
       );
   }
 

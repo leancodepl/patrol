@@ -415,6 +415,24 @@ class WebAppOptions {
     this.webPort,
     this.serverTimeout,
     this.browserArgs,
+    this.channel,
+    this.executablePath,
+    this.slowMo,
+    this.chromiumSandbox,
+    this.downloadsPath,
+    this.ignoreDefaultArgs,
+    this.proxy,
+    this.browserTimeout,
+    this.tracesDir,
+    this.bypassCSP,
+    this.ignoreHTTPSErrors,
+    this.offline,
+    this.httpCredentials,
+    this.extraHTTPHeaders,
+    this.screenshot,
+    this.trace,
+    this.storageState,
+    this.acceptDownloads,
   });
 
   final FlutterAppOptions flutter;
@@ -437,6 +455,24 @@ class WebAppOptions {
   final String? headless;
   final int? webPort;
   final String? browserArgs;
+  final String? channel;
+  final String? executablePath;
+  final int? slowMo;
+  final String? chromiumSandbox;
+  final String? downloadsPath;
+  final String? ignoreDefaultArgs;
+  final String? proxy;
+  final int? browserTimeout;
+  final String? tracesDir;
+  final String? bypassCSP;
+  final String? ignoreHTTPSErrors;
+  final String? offline;
+  final String? httpCredentials;
+  final String? extraHTTPHeaders;
+  final String? screenshot;
+  final String? trace;
+  final String? storageState;
+  final String? acceptDownloads;
 
   /// Timeout in seconds for the web server to start.
   /// Defaults to 120 seconds (2 minutes) if not specified.

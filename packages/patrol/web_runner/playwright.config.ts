@@ -1,4 +1,11 @@
-import { defineConfig, PlaywrightTestOptions, ReporterDescription, VideoMode } from "@playwright/test"
+import {
+  defineConfig,
+  LaunchOptions,
+  PlaywrightTestOptions,
+  PlaywrightWorkerOptions,
+  ReporterDescription,
+  VideoMode,
+} from "@playwright/test"
 
 const outputDir = process.env.PATROL_TEST_RESULTS_DIR || "./test-results"
 const outputFolder = process.env.PATROL_TEST_REPORT_DIR || "./playwright-report"
@@ -36,6 +43,66 @@ const browserArgs = process.env.PATROL_WEB_BROWSER_ARGS
   ? (JSON.parse(process.env.PATROL_WEB_BROWSER_ARGS) as string[])
   : undefined
 
+// Browser launch options.
+const channel = process.env.PATROL_WEB_CHANNEL ? process.env.PATROL_WEB_CHANNEL : undefined
+const executablePath = process.env.PATROL_WEB_EXECUTABLE_PATH
+  ? process.env.PATROL_WEB_EXECUTABLE_PATH
+  : undefined
+const slowMo = process.env.PATROL_WEB_SLOW_MO ? parseInt(process.env.PATROL_WEB_SLOW_MO) : undefined
+const chromiumSandbox = process.env.PATROL_WEB_CHROMIUM_SANDBOX
+  ? process.env.PATROL_WEB_CHROMIUM_SANDBOX === "true"
+  : undefined
+const downloadsPath = process.env.PATROL_WEB_DOWNLOADS_PATH
+  ? process.env.PATROL_WEB_DOWNLOADS_PATH
+  : undefined
+const ignoreDefaultArgs = process.env.PATROL_WEB_IGNORE_DEFAULT_ARGS
+  ? process.env.PATROL_WEB_IGNORE_DEFAULT_ARGS === "true"
+  : undefined
+const proxy = process.env.PATROL_WEB_PROXY
+  ? (JSON.parse(process.env.PATROL_WEB_PROXY) as LaunchOptions["proxy"])
+  : undefined
+const browserTimeout = process.env.PATROL_WEB_BROWSER_TIMEOUT
+  ? parseInt(process.env.PATROL_WEB_BROWSER_TIMEOUT)
+  : undefined
+const tracesDir = process.env.PATROL_WEB_TRACES_DIR ? process.env.PATROL_WEB_TRACES_DIR : undefined
+
+const launchOptions = undefinedIfEmpty<LaunchOptions>({
+  args: browserArgs,
+  executablePath,
+  slowMo,
+  chromiumSandbox,
+  downloadsPath,
+  ignoreDefaultArgs,
+  proxy,
+  timeout: browserTimeout,
+  tracesDir,
+})
+
+// Browser context options.
+const bypassCSP = process.env.PATROL_WEB_BYPASS_CSP
+  ? process.env.PATROL_WEB_BYPASS_CSP === "true"
+  : undefined
+const ignoreHTTPSErrors = process.env.PATROL_WEB_IGNORE_HTTPS_ERRORS
+  ? process.env.PATROL_WEB_IGNORE_HTTPS_ERRORS === "true"
+  : undefined
+const offline = process.env.PATROL_WEB_OFFLINE ? process.env.PATROL_WEB_OFFLINE === "true" : undefined
+const httpCredentials = process.env.PATROL_WEB_HTTP_CREDENTIALS
+  ? (JSON.parse(process.env.PATROL_WEB_HTTP_CREDENTIALS) as PlaywrightTestOptions["httpCredentials"])
+  : undefined
+const extraHTTPHeaders = process.env.PATROL_WEB_EXTRA_HTTP_HEADERS
+  ? (JSON.parse(process.env.PATROL_WEB_EXTRA_HTTP_HEADERS) as PlaywrightTestOptions["extraHTTPHeaders"])
+  : undefined
+const screenshot = process.env.PATROL_WEB_SCREENSHOT
+  ? (process.env.PATROL_WEB_SCREENSHOT as PlaywrightWorkerOptions["screenshot"])
+  : undefined
+const trace = process.env.PATROL_WEB_TRACE
+  ? (process.env.PATROL_WEB_TRACE as PlaywrightWorkerOptions["trace"])
+  : undefined
+const storageState = process.env.PATROL_WEB_STORAGE_STATE ? process.env.PATROL_WEB_STORAGE_STATE : undefined
+const acceptDownloads = process.env.PATROL_WEB_ACCEPT_DOWNLOADS
+  ? process.env.PATROL_WEB_ACCEPT_DOWNLOADS === "true"
+  : undefined
+
 export default defineConfig({
   use: {
     baseURL,
@@ -48,7 +115,17 @@ export default defineConfig({
     permissions,
     userAgent,
     viewport,
-    launchOptions: browserArgs ? { args: browserArgs } : undefined,
+    channel,
+    bypassCSP,
+    ignoreHTTPSErrors,
+    offline,
+    httpCredentials,
+    extraHTTPHeaders,
+    screenshot,
+    trace,
+    storageState,
+    acceptDownloads,
+    launchOptions,
   },
   globalSetup: require.resolve("./tests/setup"),
   outputDir,
@@ -86,6 +163,10 @@ function mapReporters(reporterEnv: string, outputFolder: string) {
         throw new Error(`Unsupported reporter: ${name}`)
     }
   })
+}
+
+function undefinedIfEmpty<T extends object>(obj: T): T | undefined {
+  return Object.values(obj).some(value => value !== undefined) ? obj : undefined
 }
 
 function parseShard(shardValue: string) {

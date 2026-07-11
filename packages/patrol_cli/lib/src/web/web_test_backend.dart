@@ -485,6 +485,50 @@ class WebTestBackend {
                   'PATROL_WEB_HEADLESS': options.headless.toString(),
                 if (options.browserArgs != null)
                   'PATROL_WEB_BROWSER_ARGS': options.browserArgs.toString(),
+                if (options.channel != null)
+                  'PATROL_WEB_CHANNEL': options.channel.toString(),
+                if (options.executablePath != null)
+                  'PATROL_WEB_EXECUTABLE_PATH':
+                      options.executablePath.toString(),
+                if (options.slowMo != null)
+                  'PATROL_WEB_SLOW_MO': options.slowMo.toString(),
+                if (options.chromiumSandbox != null)
+                  'PATROL_WEB_CHROMIUM_SANDBOX':
+                      options.chromiumSandbox.toString(),
+                if (options.downloadsPath != null)
+                  'PATROL_WEB_DOWNLOADS_PATH': options.downloadsPath.toString(),
+                if (options.ignoreDefaultArgs != null)
+                  'PATROL_WEB_IGNORE_DEFAULT_ARGS':
+                      options.ignoreDefaultArgs.toString(),
+                if (options.proxy != null)
+                  'PATROL_WEB_PROXY': options.proxy.toString(),
+                if (options.browserTimeout != null)
+                  'PATROL_WEB_BROWSER_TIMEOUT':
+                      options.browserTimeout.toString(),
+                if (options.tracesDir != null)
+                  'PATROL_WEB_TRACES_DIR': options.tracesDir.toString(),
+                if (options.bypassCSP != null)
+                  'PATROL_WEB_BYPASS_CSP': options.bypassCSP.toString(),
+                if (options.ignoreHTTPSErrors != null)
+                  'PATROL_WEB_IGNORE_HTTPS_ERRORS':
+                      options.ignoreHTTPSErrors.toString(),
+                if (options.offline != null)
+                  'PATROL_WEB_OFFLINE': options.offline.toString(),
+                if (options.httpCredentials != null)
+                  'PATROL_WEB_HTTP_CREDENTIALS':
+                      options.httpCredentials.toString(),
+                if (options.extraHTTPHeaders != null)
+                  'PATROL_WEB_EXTRA_HTTP_HEADERS':
+                      options.extraHTTPHeaders.toString(),
+                if (options.screenshot != null)
+                  'PATROL_WEB_SCREENSHOT': options.screenshot.toString(),
+                if (options.trace != null)
+                  'PATROL_WEB_TRACE': options.trace.toString(),
+                if (options.storageState != null)
+                  'PATROL_WEB_STORAGE_STATE': options.storageState.toString(),
+                if (options.acceptDownloads != null)
+                  'PATROL_WEB_ACCEPT_DOWNLOADS':
+                      options.acceptDownloads.toString(),
                 ...Platform.environment,
               },
               runInShell: true,
