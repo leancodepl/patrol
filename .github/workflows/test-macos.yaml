@@ -36,7 +36,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ['3.38.x']
+        flutter-version: ['3.41.x']
         flutter-channel: ['stable']
         device_model: [macOS]
         os: [macOS]

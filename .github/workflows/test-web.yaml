@@ -25,11 +25,11 @@ jobs:
     name: Flutter ${{ matrix.flutter-version }} on Web
     runs-on: ubuntu-latest
     timeout-minutes: 30
-  
+
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ['3.38.x']
+        flutter-version: ['3.41.x']
         flutter-channel: ['stable']
 
     defaults:
