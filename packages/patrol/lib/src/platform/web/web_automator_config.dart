@@ -1,4 +1,4 @@
-import 'web_automator.dart';
+import 'package:patrol/src/platform/web/web_automator.dart';
 
 void _defaultPrintLogger(String message) {
   // TODO: Use a logger instead of print

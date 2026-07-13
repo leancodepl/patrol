@@ -5,6 +5,5 @@ linter:
     prefer_const_constructors: false
     avoid_print: false
 
-analyzer:
-  plugins:
-    - custom_lint
+plugins:
+  leancode_lint: ^24.0.0

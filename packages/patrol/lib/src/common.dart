@@ -5,6 +5,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:meta/meta.dart';
 import 'package:patrol/src/binding.dart';
+import 'package:patrol/src/constants.dart' as constants;
+import 'package:patrol/src/custom_finders/patrol_integration_tester.dart';
 import 'package:patrol/src/global_state.dart' as global_state;
 import 'package:patrol/src/native/native_automator_config.dart';
 import 'package:patrol/src/platform/contracts/contracts.dart';
@@ -19,9 +21,6 @@ import 'package:test_api/src/backend/group.dart';
 /// We need [Test] to recreate test hierarchy.
 // ignore: implementation_imports
 import 'package:test_api/src/backend/test.dart';
-
-import 'constants.dart' as constants;
-import 'custom_finders/patrol_integration_tester.dart';
 
 /// Signature for callback to [patrolTest].
 typedef PatrolTesterCallback = Future<void> Function(PatrolIntegrationTester $);

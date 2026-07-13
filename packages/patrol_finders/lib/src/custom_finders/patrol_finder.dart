@@ -512,11 +512,8 @@ class PatrolFinder implements MatchFinder {
   /// {@macro patrol_tester.alignment_on_visible_check}
   bool isVisibleAt({Alignment alignment = Alignment.center}) {
     final isVisible = hitTestable(at: alignment).evaluate().isNotEmpty;
-    if (isVisible == true) {
-      assert(
-        exists == true,
-        'visible returned true, but exists returned false',
-      );
+    if (isVisible) {
+      assert(exists, 'visible returned true, but exists returned false');
     }
 
     return isVisible;

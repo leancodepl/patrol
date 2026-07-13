@@ -46,9 +46,7 @@ jobs:
 
       - name: Run analyzer
         if: success() || failure()
-        run: |
-          flutter analyze
-          dart run custom_lint
+        run: dart analyze
 
       - name: dart format
         if: success() || failure()

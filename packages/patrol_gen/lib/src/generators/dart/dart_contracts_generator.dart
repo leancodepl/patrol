@@ -59,11 +59,11 @@ enum ${enumDefinition.name} {
     final fieldsContent = message.fields
         .map(
           (f) => switch (f.type) {
-            ListFieldType(type: final type) =>
+            ListFieldType(:final type) =>
               'final List<$type>${f.isOptional ? '?' : ''} ${f.name};',
-            MapFieldType(keyType: final keyType, valueType: final valueType) =>
+            MapFieldType(:final keyType, :final valueType) =>
               'final Map<$keyType,$valueType>${f.isOptional ? '?' : ''} ${f.name};',
-            OrdinaryFieldType(type: final type) =>
+            OrdinaryFieldType(:final type) =>
               'final $type${f.isOptional ? '?' : ''} ${f.name};',
           },
         )

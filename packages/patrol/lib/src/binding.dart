@@ -8,11 +8,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
+import 'package:patrol/src/constants.dart' as constants;
 import 'package:patrol/src/devtools_service_extensions/devtools_service_extensions.dart';
 import 'package:patrol/src/global_state.dart' as global_state;
 import 'package:patrol/src/platform/current.dart' as current_platform;
-
-import 'constants.dart' as constants;
 
 const _success = 'success';
 

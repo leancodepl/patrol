@@ -27,7 +27,7 @@ class DartShelfServerGenerator {
 //  Generated code. Do not modify.
 //  source: schema.dart
 //
-// ignore_for_file: public_member_api_docs
+// ignore_for_file: public_member_api_docs, always_use_package_imports
 
 import 'dart:async';
 import 'dart:convert';

@@ -37,9 +37,7 @@ jobs:
 
       - name: Run analyzer
         if: success() || failure()
-        run: |
-          dart analyze
-          dart run custom_lint
+        run: dart analyze
 
       - name: dart format
         run: dart format --set-exit-if-changed .
