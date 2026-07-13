@@ -1,5 +1,10 @@
 ## Unreleased
 
+- **Breaking:** Require Dart 3.11 or newer (ships with Flutter 3.41).
+- Bump `package_config` to `^3.0.0`.
+
+## 4.5.0
+
 - Bump min Flutter SDK to 3.35.0 (#3154)
 - Bump `patrol_log` to `^0.10.0`.
 - Fix `patrol develop` on iOS Simulator timing out after ~6 minutes with "Test runner never began executing tests after launching". Requires a matching `patrol` version that enables the develop-specific native test runner path. (#3139)
