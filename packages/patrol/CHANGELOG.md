@@ -1,21 +1,22 @@
 ## 4.7.0
 
+- Add Swift Package Manager (SPM) support for iOS and macOS. CocoaPods remains supported for projects that have not migrated to SPM.
+- Fix iOS/macOS regular app builds failing with undefined XCTest symbols when using SPM.
+- Add multi-tab browser support for web tests: `openNewPage`, `closePage`, `switchToPage`, `switchToInitialPage`, `getPages`, `getCurrentPage`, `getCurrentPageUrl`, `waitForPopup`. (#2871)
+- Fix `patrol develop` on iOS Simulator timing out after ~6 minutes with "Test runner never began executing tests after launching". Requires a matching `patrol_cli` version that sets `PATROL_DEVELOP`. (#3139)
+- Fix iOS tests failing on devices whose name contains a comma.
+- Fix a crash when an `IOSSelector` has no arguments needed for creating `NSPredicate` for textfield. (#3053)
+- Fix macOS build by implementing `sendKeyboardEnter` in `MacOSAutomator`. (#3105)
+- Add `sendKeyboardEnter` method for `MobileAutomator`. (#2748)
+- Add Japanese (ja) language support for native OS interactions.
+- Migrate Japanese text resources to SPM (#3128)
+- Use HttpMultiServer and Ktor for handling raw HTTP requests. (#2645)
+- Migrate to built-in Kotlin (#3084).
+- Bump `equatable` to `^2.1.0` and migrate generated platform contracts from deprecated `EquatableMixin` to `with Equatable`.
 - Bump `patrol_finders` to `^3.6.0`.
 - Bump `patrol_log` to `^0.10.0`.
 
-- Fix `patrol develop` on iOS Simulator timing out after ~6 minutes with "Test runner never began executing tests after launching". Requires a matching `patrol_cli` version that sets `PATROL_DEVELOP`. (#3139)
-- Bump `equatable` to `^2.1.0` and migrate generated platform contracts from deprecated `EquatableMixin` to `with Equatable`.
-- Add Swift Package Manager (SPM) support for iOS and macOS. CocoaPods remains supported for projects that have not migrated to SPM.
-- Fix iOS/macOS regular app builds failing with undefined XCTest symbols when using SPM.
-- Use HttpMultiServer and Ktor for handling raw HTTP requests. (#2645)
-- Add `sendKeyboardEnter` method for `MobileAutomator`. (#2748)
-- Fix a crash when an `IOSSelector` has no arguments needed for creating `NSPredicate` for textfield. (#3053)
-- Add Japanese (ja) language support for native OS interactions.
-- Fix macOS build by implementing `sendKeyboardEnter` in `MacOSAutomator`. (#3105)
-- Migrate to built-in Kotlin (#3084).
-- Fix iOS tests failing on devices whose name contains a comma 
-- Migrate Japanese text resources to SPM (#3128)
-- Add multi-tab browser support for web tests: `openNewPage`, `closePage`, `switchToPage`, `switchToInitialPage`, `getPages`, `getCurrentPage`, `getCurrentPageUrl`, `waitForPopup`. (#2871)
+This version requires version `4.5.0` of `patrol_cli` package.
 
 ## 4.6.1
 

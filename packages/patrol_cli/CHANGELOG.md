@@ -1,16 +1,17 @@
 ## 4.5.0
 
+- Add `-weak_framework XCTest` linker flags to iOS and macOS `build-for-testing` to support Swift Package Manager integration.
+- Fix `patrol develop` on iOS Simulator timing out after ~6 minutes with "Test runner never began executing tests after launching". Requires a matching `patrol` version that enables the develop-specific native test runner path. (#3139)
+- Fix `patrol test`/`patrol develop` hanging on Windows at `gradlew :app:dependencies` by also draining the gradle process stderr stream during orchestrator-version detection. (#2565)
+- Fix `--exclude` not working. (#2990)
+- Fix `--clear-permissions` being ignored by `patrol build ios`. The flag was wired into `patrol test` but dropped from `build ios`, so prebuilt iOS test bundles (e.g. for BrowserStack/Firebase Test Lab) never had `CLEAR_PERMISSIONS` enabled.
+- Fix wrong import path being generated on Windows for commands like `patrol test -t .\patrol_test\example_test.dart`.
+- Fix `test_bundle.dart` generating a broken absolute import (and an invalid import alias containing characters such as `-`) when the test target lives outside the configured `test_directory`. The import is now computed relative to the bundle and the alias is sanitized. (#3104)
+- Don't listen for `SIGTERM` on Windows, where it is not supported and throws an unhandled `SignalException`. (#3035)
+- Bump `equatable` to `^2.1.0` and migrate `PatrolPubspecConfig` and related config classes from deprecated `EquatableMixin` to `with Equatable`.
 - Bump `patrol_log` to `^0.10.0`.
 
-- Fix `patrol develop` on iOS Simulator timing out after ~6 minutes with "Test runner never began executing tests after launching". Requires a matching `patrol` version that enables the develop-specific native test runner path. (#3139)
-- Bump `equatable` to `^2.1.0` and migrate `PatrolPubspecConfig` and related config classes from deprecated `EquatableMixin` to `with Equatable`.
-- Fix wrong import generated string on Windows commands like `patrol test -t .\patrol_test\example_test.dart` now generate correct import path;
-- Add `-weak_framework XCTest` linker flags to iOS and macOS `build-for-testing` to support Swift Package Manager integration.
-- Fix `--clear-permissions` being ignored by `patrol build ios`. The flag was wired into `patrol test` but dropped from `build ios`, so prebuilt iOS test bundles (e.g. for BrowserStack/Firebase Test Lab) never had `CLEAR_PERMISSIONS` enabled.
-- Don't listen for `SIGTERM` on Windows, where it is not supported and throws an unhandled `SignalException`. (#3035)
-- Fix `--exclude` not working. (#2990)
-- Fix `test_bundle.dart` generating a broken absolute import (and an invalid import alias containing characters such as `-`) when the test target lives outside the configured `test_directory`. The import is now computed relative to the bundle and the alias is sanitized. (#3104)
-- Fix `patrol test`/`patrol develop` hanging on Windows at `gradlew :app:dependencies` by also draining the gradle process stderr stream during orchestrator-version detection. (#2565)
+This version requires version `4.7.0` of `patrol` package.
 
 ## 4.4.0
 
