@@ -4,7 +4,7 @@
 - Fix iOS/macOS regular app builds failing with undefined XCTest symbols when using SPM.
 - Add multi-tab browser support for web tests: `openNewPage`, `closePage`, `switchToPage`, `switchToInitialPage`, `getPages`, `getCurrentPage`, `getCurrentPageUrl`, `waitForPopup`. (#2871)
 - Fix `patrol develop` on iOS Simulator timing out after ~6 minutes with "Test runner never began executing tests after launching". Requires a matching `patrol_cli` version that sets `PATROL_DEVELOP`. (#3139)
-- Fix iOS tests failing on devices whose name contains a comma 
+- Fix iOS tests failing on devices whose name contains a comma.
 - Fix a crash when an `IOSSelector` has no arguments needed for creating `NSPredicate` for textfield. (#3053)
 - Fix macOS build by implementing `sendKeyboardEnter` in `MacOSAutomator`. (#3105)
 - Add `sendKeyboardEnter` method for `MobileAutomator`. (#2748)
