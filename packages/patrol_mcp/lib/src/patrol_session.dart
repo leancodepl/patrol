@@ -6,8 +6,7 @@ import 'package:dispose_scope/dispose_scope.dart';
 import 'package:logging/logging.dart';
 import 'package:path/path.dart' as p;
 import 'package:patrol_cli/patrol_cli.dart';
-
-import 'log_streaming.dart';
+import 'package:patrol_mcp/src/log_streaming.dart';
 
 /// An [io.Stdout] wrapper that forwards writes to [_inner] (e.g. stderr) and
 /// also captures complete lines, invoking [_onLine] for each one.
