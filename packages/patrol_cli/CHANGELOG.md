@@ -5,7 +5,7 @@
 - Fix `patrol test`/`patrol develop` hanging on Windows at `gradlew :app:dependencies` by also draining the gradle process stderr stream during orchestrator-version detection. (#2565)
 - Fix `--exclude` not working. (#2990)
 - Fix `--clear-permissions` being ignored by `patrol build ios`. The flag was wired into `patrol test` but dropped from `build ios`, so prebuilt iOS test bundles (e.g. for BrowserStack/Firebase Test Lab) never had `CLEAR_PERMISSIONS` enabled.
-- Fix wrong import generated string on Windows commands like `patrol test -t .\patrol_test\example_test.dart` now generate correct import path;
+- Fix wrong import path being generated on Windows for commands like `patrol test -t .\patrol_test\example_test.dart`.
 - Fix `test_bundle.dart` generating a broken absolute import (and an invalid import alias containing characters such as `-`) when the test target lives outside the configured `test_directory`. The import is now computed relative to the bundle and the alias is sanitized. (#3104)
 - Don't listen for `SIGTERM` on Windows, where it is not supported and throws an unhandled `SignalException`. (#3035)
 - Bump `equatable` to `^2.1.0` and migrate `PatrolPubspecConfig` and related config classes from deprecated `EquatableMixin` to `with Equatable`.
