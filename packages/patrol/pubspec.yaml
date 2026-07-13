@@ -43,6 +43,10 @@ dev_dependencies:
   json_serializable: ^6.10.0
   leancode_lint: ^24.0.0
 
+dependency_overrides:
+  # Match *at least* Flutter 3.41's meta dependency
+  meta: ^1.17.0
+
 flutter:
   plugin:
     platforms:

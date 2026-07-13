@@ -19,5 +19,9 @@ dev_dependencies:
   patrol_finders:
     path: ../
 
+dependency_overrides:
+  # Match *at least* Flutter 3.41's meta dependency
+  meta: ^1.17.0
+
 flutter:
   uses-material-design: true
