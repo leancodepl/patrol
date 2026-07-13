@@ -1,4 +1,4 @@
-## Unreleased
+## 4.7.0
 
 - Bump `patrol_finders` to `^3.6.0`.
 - Bump `patrol_log` to `^0.10.0`.
