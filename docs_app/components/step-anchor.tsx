@@ -36,7 +36,9 @@ function CopyStepLink({ fullId }: { fullId: string }) {
 // scroll offset tracks `--fd-docs-row-3` — the notebook layout's full sticky-top
 // stack (promo banner + nav header + mobile TOC bar) — so the target always clears
 // whatever is pinned above it and shrinks back automatically when the banner is
-// dismissed (`--fd-banner-height` becomes unset → the stack collapses).
+// dismissed (`--fd-banner-height` becomes unset → the stack collapses). The added
+// `4.5rem` is a deliberate, constant breathing gap (~1.5× the banner height) so the
+// step never sits flush below the bar, banner or not; tune it via this one number.
 export function Step({ id, children }: { id?: string; children: ReactNode }) {
   const sectionId = useSectionId()
   const hash = useHash()
@@ -78,7 +80,7 @@ export function Step({ id, children }: { id?: string; children: ReactNode }) {
   }, [isTarget])
 
   return (
-    <div ref={ref} id={fullId} className="group/step scroll-mt-[calc(var(--fd-docs-row-3)_+_1rem)]">
+    <div ref={ref} id={fullId} className="group/step scroll-mt-[calc(var(--fd-docs-row-3)_+_4.5rem)]">
       <FumadocsStep>
         {/* `pe-8` reserves a right-hand column for the copy-link button so the step
             text wraps before it and never sits under the icon. Only added when there
