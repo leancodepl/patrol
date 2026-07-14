@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:args/args.dart';
 import 'package:logging/logging.dart' as logging;
 import 'package:mcp_dart/mcp_dart.dart';
+import 'package:path/path.dart' as p;
 import 'package:patrol_mcp/src/native_tree_service.dart';
 import 'package:patrol_mcp/src/patrol_session.dart';
 import 'package:patrol_mcp/src/screenshot_service.dart';
@@ -95,8 +96,12 @@ Future<int> main(List<String> args) async {
       return 0;
     }
 
-    final projectRoot =
-        Platform.environment['PROJECT_ROOT'] ?? Directory.current.path;
+    // Canonicalize to an absolute path before use: PROJECT_ROOT may be relative
+    // (e.g. "." or "./app"), and once we change the working directory below a
+    // relative value would resolve against the new directory (double-nesting).
+    final projectRoot = p.canonicalize(
+      Platform.environment['PROJECT_ROOT'] ?? Directory.current.path,
+    );
     // Run from the project root so patrol_cli resolves the pubspec, test
     // target, and build outputs there even when the server was launched from a
     // different directory and pointed at the project via PROJECT_ROOT.
