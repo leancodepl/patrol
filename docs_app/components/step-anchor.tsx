@@ -45,13 +45,43 @@ export function Step({ id, children }: { id?: string; children: ReactNode }) {
   // Scroll to this step when it becomes the hash target (fires on mount for a cold
   // load once its section opens, and on later hash changes when already mounted).
   useEffect(() => {
-    if (isTarget) ref.current?.scrollIntoView({ block: "start" })
+    if (!isTarget) return
+    const el = ref.current
+    if (!el) return
+
+    // `scroll-m-24` keeps the step clear of the sticky header.
+    const scroll = () => el.scrollIntoView({ block: "start" })
+
+    // On a cold load the enclosing accordion is opened first and expands via a CSS
+    // animation that runs *after* this step mounts, so scrolling now lands at the
+    // still-collapsed section top. Scroll immediately for the warm / already-open
+    // case, then re-scroll once the expand animation finishes (with a timeout
+    // fallback for when it never fires, e.g. reduced motion). The animation belongs
+    // to an ancestor accordion-content element, so match it by name + containment.
+    scroll()
+
+    const onAnimationEnd = (event: AnimationEvent) => {
+      if (event.animationName.startsWith("fd-accordion") && event.target instanceof Node && event.target.contains(el)) {
+        scroll()
+      }
+    }
+    document.addEventListener("animationend", onAnimationEnd)
+    const fallback = window.setTimeout(scroll, 300)
+
+    return () => {
+      document.removeEventListener("animationend", onAnimationEnd)
+      window.clearTimeout(fallback)
+    }
   }, [isTarget])
 
   return (
     <div ref={ref} id={fullId} className="group/step scroll-m-24">
       <FumadocsStep>
-        <div className="relative">
+        {/* `pe-8` reserves a right-hand column for the copy-link button so the step
+            text wraps before it and never sits under the icon. Only added when there
+            is a link to show. Absolute insets resolve against this padding box, so the
+            icon still sits flush at the edge, clear of the text. */}
+        <div className={cn("relative", fullId !== undefined && "pe-8")}>
           {children}
           {fullId !== undefined ? <CopyStepLink fullId={fullId} /> : null}
         </div>
