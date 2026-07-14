@@ -128,11 +128,12 @@ See [VS Code's MCP docs][vscode_mcp] for starting the server.
 > the script and switch to the config above.
 
 > [!NOTE]
-> **Using FVM?** If your project is FVM-pinned (`.fvmrc` or `.fvm/`), develop
-> sessions use the pinned SDK automatically. To override, set
-> `PATROL_FLUTTER_COMMAND` in the `env` above. If `dart run patrol_mcp` fails
-> with a version-resolution error under FVM, run the server under the pinned
-> SDK too: `"command": "fvm", "args": ["dart", "run", "patrol_mcp"]`.
+> **Using FVM?** If your project uses FVM, develop sessions use the pinned
+> Flutter automatically. To override, set `PATROL_FLUTTER_COMMAND` in the `env`
+> above. This auto-detects the *develop* Flutter, not the Dart that runs the
+> server — so if `dart run patrol_mcp` fails with a version-resolution error
+> under FVM, run the server under the pinned SDK too:
+> `"command": "fvm", "args": ["dart", "run", "patrol_mcp"]`.
 
 ### Environment Variables
 
@@ -170,8 +171,8 @@ the list and install instructions.
 - Make sure your IDE is opened at the mobile project root.
 - Run `dart pub get` in the Flutter project root.
 - Confirm MCP server is enabled in your IDE settings.
-- Wrong Flutter/SDK used? The chosen Flutter command is logged at startup to the
-  server's stderr (visible in your IDE's MCP logs).
+- Wrong Flutter/SDK used? The chosen Flutter command is logged to the server's
+  stderr when a develop session starts (visible in your IDE's MCP logs).
 
 ## 🛠️ Maintained by LeanCode
 
