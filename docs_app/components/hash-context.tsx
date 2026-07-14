@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react"
+import { createContext, useContext, useSyncExternalStore, type ReactNode } from "react"
 
 // Reading `location.hash` is the single imperative edge for deep-linking, and it
 // lives here. `HashProvider` is the ONLY place in the app that attaches a
@@ -8,28 +8,32 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from "
 // behavior from the value it publishes instead of listening on its own.
 const HashContext = createContext("")
 
-function currentHash(): string {
+function subscribe(onStoreChange: () => void): () => void {
+  window.addEventListener("hashchange", onStoreChange)
+  return () => window.removeEventListener("hashchange", onStoreChange)
+}
+
+// The current URL fragment, decoded, without the leading `#`.
+function getSnapshot(): string {
   return decodeURIComponent(window.location.hash.slice(1))
 }
 
-// Mounted once, high in the docs layout. Holds the current fragment in state and
-// keeps it in sync via one listener, so the whole page reacts to a single source
-// of truth.
-export function HashProvider({ children }: { children: ReactNode }) {
-  const [hash, setHash] = useState("")
+// No hash on the server; returning "" avoids a hydration mismatch.
+function getServerSnapshot(): string {
+  return ""
+}
 
-  useEffect(() => {
-    const sync = () => setHash(currentHash())
-    sync()
-    window.addEventListener("hashchange", sync)
-    return () => window.removeEventListener("hashchange", sync)
-  }, [])
+// Mounted once, high in the docs layout. Subscribes to `hashchange` a single
+// time and publishes the current fragment through context, so the whole page
+// reacts to a single source of truth.
+export function HashProvider({ children }: { children: ReactNode }) {
+  const hash = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot)
 
   return <HashContext.Provider value={hash}>{children}</HashContext.Provider>
 }
 
 // The current URL fragment (without the leading `#`, decoded), kept in sync by
-// the single `HashProvider` listener. Empty string when there is no fragment.
+// the single `HashProvider` subscription. Empty string when there is no fragment.
 export function useHash(): string {
   return useContext(HashContext)
 }
