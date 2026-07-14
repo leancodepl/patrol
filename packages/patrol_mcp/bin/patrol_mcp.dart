@@ -97,6 +97,10 @@ Future<int> main(List<String> args) async {
 
     final projectRoot =
         Platform.environment['PROJECT_ROOT'] ?? Directory.current.path;
+    // Run from the project root so patrol_cli resolves the pubspec, test
+    // target, and build outputs there even when the server was launched from a
+    // different directory and pointed at the project via PROJECT_ROOT.
+    Directory.current = projectRoot;
     final flags = Platform.environment['PATROL_FLAGS'] ?? '';
     final showTerminal =
         Platform.environment['SHOW_TERMINAL']?.toLowerCase() == 'true';
