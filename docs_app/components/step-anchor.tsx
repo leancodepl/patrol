@@ -11,9 +11,14 @@ import type { ReactNode } from "react"
 // `.fd-step`, `counter-reset: step` on `.fd-steps`) and the numbered circle is
 // positioned relative to `.fd-steps`, so an extra unstyled wrapper changes
 // neither the numbering nor the layout.
+//
+// `scroll-m-24` gives the deep-link target the same `scroll-margin-top` fumadocs
+// puts on its own accordion anchors (see `AccordionItem` in fumadocs-ui), so a
+// step scrolled to via `element.scrollIntoView()` clears the sticky header
+// exactly like a whole-accordion or heading anchor does.
 export function Step({ id, children }: { id?: string; children: ReactNode }) {
   return (
-    <div id={id}>
+    <div id={id} className="scroll-m-24">
       <FumadocsStep>{children}</FumadocsStep>
     </div>
   )
