@@ -31,7 +31,8 @@ class PatrolServer {
     fun start() {
         Logger.i("Starting server...")
 
-        automatorServer = AutomatorServer(Automator.instance)
+        val automator = AutomatorServer(Automator.instance)
+        automatorServer = automator
 
         // Discover optional extension packages and mount their routes on the same server.
         val extensions = PatrolServerExtensions.discover()
@@ -39,7 +40,7 @@ class PatrolServer {
 
         val extensionRoutes = extensions.map { it.routes() }
         val allRoutes = ArrayList<RoutingHttpHandler>(1 + extensionRoutes.size)
-        allRoutes.add(automatorServer!!.router)
+        allRoutes.add(automator.router)
         allRoutes.addAll(extensionRoutes)
 
         server = routes(*(allRoutes.toTypedArray()))

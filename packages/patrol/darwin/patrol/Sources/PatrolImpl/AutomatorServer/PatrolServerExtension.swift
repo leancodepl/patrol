@@ -29,12 +29,15 @@ public protocol PatrolServerExtension: NSObjectProtocol {
 
 @objc(PatrolServerExtensions)
 public class PatrolServerExtensions: NSObject {
+  private static let lock = NSLock()
   private static let registeredExtensionClassNames = NSMutableArray()
 
   /// Registers an extension class for [discover].
   @objc(registerExtensionClass:)
   public static func registerExtensionClass(_ cls: AnyClass) {
     let className = NSStringFromClass(cls)
+    lock.lock()
+    defer { lock.unlock() }
     guard !registeredExtensionClassNames.contains(className) else {
       Logger.shared.i("Patrol extension class already registered: \(className)")
       return
@@ -45,17 +48,16 @@ public class PatrolServerExtensions: NSObject {
 
   /// Instantiates extensions registered via [registerExtensionClass].
   @objc public static func discover() -> [PatrolServerExtension] {
+    lock.lock()
+    let classNames = registeredExtensionClassNames.compactMap { $0 as? String }
+    lock.unlock()
+
     Logger.shared.i(
-      "Discovering Patrol extensions from registry (\(registeredExtensionClassNames.count) class name(s))"
+      "Discovering Patrol extensions from registry (\(classNames.count) class name(s))"
     )
 
     var result: [PatrolServerExtension] = []
-    for entry in registeredExtensionClassNames {
-      guard let className = entry as? String else {
-        Logger.shared.i("Skipping registry entry (not a String class name)")
-        continue
-      }
-
+    for className in classNames {
       guard let cls = NSClassFromString(className) else {
         Logger.shared.i("Skipping extension class (NSClassFromString failed): \(className)")
         continue
