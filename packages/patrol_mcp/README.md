@@ -66,43 +66,18 @@ accordingly (for example `./app`).
    Or add it manually to your `pubspec.yaml` with the
    [latest version from pub.dev](https://pub.dev/packages/patrol_mcp).
 
-2. Create a launcher script named `run-patrol` with the contents below.
-   Where to save it and how to configure MCP depends on your IDE — see step 3.
+2. Add the config for your editor. The server is launched directly with
+   `dart run patrol_mcp` — no wrapper script or `chmod` needed.
 
-   ```sh
-   #!/usr/bin/env sh
-   set -e
-
-   cd "${PROJECT_ROOT:-.}"
-   export PROJECT_ROOT="$PWD"
-
-   if command -v fvm >/dev/null 2>&1; then
-     export PATROL_FLUTTER_COMMAND="${PATROL_FLUTTER_COMMAND:-fvm flutter}"
-     exec fvm dart run patrol_mcp
-   else
-     export PATROL_FLUTTER_COMMAND="${PATROL_FLUTTER_COMMAND:-flutter}"
-     exec dart run patrol_mcp
-   fi
-   ```
-
-3. Follow the instructions for your IDE:
-
-<details>
-<summary>Claude Code (CLI & VS Code extension)</summary>
-
-Save the script to `<workspace-root>/.claude/run-patrol` and make it executable:
-
-```sh
-chmod +x .claude/run-patrol
-```
-
-Add to `<workspace-root>/.mcp.json` (must be at project root):
+Most editors use the **same** entry — only the config file location differs. Add
+this block to your editor's MCP config file:
 
 ```json
 {
   "mcpServers": {
     "patrol": {
-      "command": "./.claude/run-patrol",
+      "command": "dart",
+      "args": ["run", "patrol_mcp"],
       "env": {
         "PROJECT_ROOT": ".",
         "PATROL_FLAGS": "",
@@ -113,71 +88,27 @@ Add to `<workspace-root>/.mcp.json` (must be at project root):
 }
 ```
 
-Claude Code automatically discovers `.mcp.json` from the project root —
-no additional registration step is needed. On first use, you will be
-prompted to approve the project-scoped MCP server.
-
-</details>
-
-<details>
-<summary>Cursor</summary>
-
-Save the script to `<workspace-root>/.cursor/run-patrol` and make it executable:
-
-```sh
-chmod +x .cursor/run-patrol
-```
-
-Add to `<workspace-root>/.cursor/mcp.json`:
-
-```json
-{
-  "mcpServers": {
-    "patrol": {
-      "command": "./.cursor/run-patrol",
-      "env": {
-        "PROJECT_ROOT": ".",
-        "PATROL_FLAGS": "",
-        "SHOW_TERMINAL": "false"
-      }
-    }
-  }
-}
-```
-
-> [!NOTE]
-> Make sure MCP is enabled in Cursor: **Settings → Features → MCP**.
-
-</details>
-
-<details>
-<summary>GitHub Copilot (VS Code extension & CLI)</summary>
-
-Copilot has two flavors, each with its **own MCP config file** — a different
-path *and* a different top-level key:
-
-| Flavor | Config file | Top-level key |
+| Editor | Config file | Notes |
 | --- | --- | --- |
-| VS Code extension | `.vscode/mcp.json` | `servers` |
-| Copilot CLI | `.mcp.json` (project root) | `mcpServers` |
+| Claude Code | `.mcp.json` (project root) | Auto-discovered; you'll be prompted to approve on first use. |
+| Cursor | `.cursor/mcp.json` | Enable MCP under **Settings → Features → MCP**. |
+| Gemini CLI | `.gemini/settings.json` | `mcpServers` lives alongside other keys in this file. |
+| Google Antigravity | Global — open via MCP store → **Manage MCP Servers → View raw config** | Per-workspace config isn't supported. |
+| GitHub Copilot (CLI) | `.mcp.json` (project root), or `~/.copilot/mcp-config.json` (global) | Then run `/mcp` to confirm `patrol` is listed. |
 
-(There's no shared MCP config standard, so each tool uses its own format.) Set
-up the launcher once, then add the config for whichever you use — both point at
-the same script.
+<details>
+<summary>GitHub Copilot — VS Code extension (different format)</summary>
 
-Save the script to `<workspace-root>/.copilot/run-patrol` and make it executable:
-
-```sh
-chmod +x .copilot/run-patrol
-```
-
-**VS Code extension** → `<workspace-root>/.vscode/mcp.json`:
+The VS Code extension uses `.vscode/mcp.json` with a `servers` key (not
+`mcpServers`) and an explicit `"type": "stdio"`:
 
 ```json
 {
   "servers": {
     "patrol": {
-      "command": "./.copilot/run-patrol",
+      "type": "stdio",
+      "command": "dart",
+      "args": ["run", "patrol_mcp"],
       "env": {
         "PROJECT_ROOT": ".",
         "PATROL_FLAGS": "",
@@ -188,94 +119,20 @@ chmod +x .copilot/run-patrol
 }
 ```
 
-Save the file — VS Code auto-discovers `.vscode/mcp.json` and lets you start
-the `patrol` server (it offers an inline **Start** action, or use VS Code's MCP
-server management). See [VS Code's MCP docs][vscode_mcp] for the current steps.
+See [VS Code's MCP docs][vscode_mcp] for starting the server.
 
-**Copilot CLI** → `<workspace-root>/.mcp.json` at the project root:
-
-```json
-{
-  "mcpServers": {
-    "patrol": {
-      "type": "local",
-      "command": "./.copilot/run-patrol",
-      "env": {
-        "PROJECT_ROOT": ".",
-        "PATROL_FLAGS": "",
-        "SHOW_TERMINAL": "false"
-      }
-    }
-  }
-}
-```
-
-Then run `/mcp` in the CLI to confirm `patrol` is listed.
+</details>
 
 > [!NOTE]
-> Using both the extension and the CLI? Keep both config files, but point them
-> at the same `run-patrol` script.
+> **Upgrading from the `run-patrol` wrapper?** It still works — you can delete
+> the script and switch to the config above.
 
-</details>
-
-<details>
-<summary>Gemini CLI</summary>
-
-Save the script to `<workspace-root>/.gemini/run-patrol` and make it executable:
-
-```sh
-chmod +x .gemini/run-patrol
-```
-
-Add to `<workspace-root>/.gemini/settings.json`:
-
-```json
-{
-  "mcpServers": {
-    "patrol": {
-      "command": "./.gemini/run-patrol",
-      "env": {
-        "PROJECT_ROOT": ".",
-        "PATROL_FLAGS": "",
-        "SHOW_TERMINAL": "false"
-      }
-    }
-  }
-}
-```
-
-</details>
-
-<details>
-<summary>Google Antigravity</summary>
-
-Save the script to `<workspace-root>/.antigravity/run-patrol` and make it executable:
-
-```sh
-chmod +x .antigravity/run-patrol
-```
-
-Open the MCP store, click "Manage MCP Servers", then "View raw config" and add to `mcp_config.json`.
-Per-workspace MCP config is not yet supported — the config is global
-(`~/.gemini/antigravity/mcp_config.json`). The relative command path
-works because Antigravity resolves it against the open workspace:
-
-```json
-{
-  "mcpServers": {
-    "patrol": {
-      "command": "./.antigravity/run-patrol",
-      "env": {
-        "PROJECT_ROOT": ".",
-        "PATROL_FLAGS": "",
-        "SHOW_TERMINAL": "false"
-      }
-    }
-  }
-}
-```
-
-</details>
+> [!NOTE]
+> **Using FVM?** If your project is FVM-pinned (`.fvmrc` or `.fvm/`), develop
+> sessions use the pinned SDK automatically. To override, set
+> `PATROL_FLUTTER_COMMAND` in the `env` above. If `dart run patrol_mcp` fails
+> with a version-resolution error under FVM, run the server under the pinned
+> SDK too: `"command": "fvm", "args": ["dart", "run", "patrol_mcp"]`.
 
 ### Environment Variables
 
@@ -287,9 +144,7 @@ works because Antigravity resolves it against the open workspace:
 - `SHOW_TERMINAL`: Open macOS Terminal for live logs (`"true"` / `"false"`).
 
 `patrol_mcp` also respects environment variables supported by `patrol_cli`
-(for example: `PATROL_FLUTTER_COMMAND`).
-The provided `run-patrol` script sets `PATROL_FLUTTER_COMMAND` automatically:
-`fvm flutter` when FVM is available, otherwise `flutter`.
+(for example: `PATROL_FLUTTER_COMMAND`, which overrides FVM auto-detection).
 
 ### Setup Best Practices
 
@@ -314,8 +169,9 @@ the list and install instructions.
 
 - Make sure your IDE is opened at the mobile project root.
 - Run `dart pub get` in the Flutter project root.
-- Verify your configured `run-patrol` path is executable.
 - Confirm MCP server is enabled in your IDE settings.
+- Wrong Flutter/SDK used? The chosen Flutter command is logged at startup to the
+  server's stderr (visible in your IDE's MCP logs).
 
 ## 🛠️ Maintained by LeanCode
 

@@ -7,6 +7,7 @@ import 'package:logging/logging.dart';
 import 'package:path/path.dart' as p;
 import 'package:patrol_cli/patrol_cli.dart';
 
+import 'flutter_command_resolver.dart';
 import 'log_streaming.dart';
 
 /// An [io.Stdout] wrapper that forwards writes to [_inner] (e.g. stderr) and
@@ -240,15 +241,36 @@ final class PatrolSession {
           // Skip compatibility checking in MCP context for speed.
           ..add('--no-check-compatibility');
 
-    final flutterCmd = io.Platform.environment['PATROL_FLUTTER_COMMAND'];
+    final flutterResolution = FlutterCommandResolver().resolve(
+      projectRoot: resolvedCwd,
+    );
 
     final (options, globalResults) = DevelopOptions.parseArgs(
       flagParts,
       target: testFile,
-      flutterCommand: flutterCmd != null && flutterCmd.isNotEmpty
-          ? FlutterCommand.parse(flutterCmd)
-          : null,
+      flutterCommand: flutterResolution.command,
     );
+
+    // Log the effective Flutter command once (to stderr via the logging sink).
+    final flagCmd = globalResults['flutter-command'] as String?;
+    final effective = options.flutterCommand;
+    final effectiveStr = [
+      effective.executable,
+      ...effective.arguments,
+    ].join(' ');
+    if (flagCmd != null && flagCmd.isNotEmpty) {
+      logger.info(
+        'Flutter command: $effectiveStr (from --flutter-command in PATROL_FLAGS)',
+      );
+    } else if (flutterResolution.isWarning) {
+      logger.warning(
+        'Flutter command: $effectiveStr -- ${flutterResolution.reason}',
+      );
+    } else {
+      logger.info(
+        'Flutter command: $effectiveStr (${flutterResolution.reason})',
+      );
+    }
     _testServerPort = options.testServerPort;
     final verbose = globalResults['verbose'] as bool? ?? false;
 
