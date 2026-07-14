@@ -129,13 +129,13 @@ Check out our video version of this tutorial on YouTube!
 <Accordions>
 <Accordion defaultOpen id="android-setup" title="Android setup (for projects using Kotlin DSL)">
   <Steps>
-    <Step id="android-setup-step-1">
+    <Step id="create-androidtest-dir">
       Go to **android/app/src/androidTest/java/com/example/myapp/** in your project
          directory. If there are no such folders, create them. **Remember to replace
          `/com/example/myapp/` with the path created by your app's package name.**
     </Step>
     
-    <Step id="android-setup-step-2">
+    <Step id="create-mainactivitytest">
       Create a file named `MainActivityTest.java` and copy there the code below.
 
       ```java title="MainActivityTest.java"
@@ -176,12 +176,12 @@ Check out our video version of this tutorial on YouTube!
       ```
     </Step>
 
-    <Step id="android-setup-step-3">
+    <Step id="open-build-gradle">
       Go to the **build.gradle.kts** file, located in **android/app** folder in your
          project directory.
     </Step>
 
-    <Step id="android-setup-step-4">
+    <Step id="set-test-runner">
       Add these 2 lines to the `defaultConfig` section:
 
       ```kotlin title="android/app/build.gradle.kts"
@@ -190,7 +190,7 @@ Check out our video version of this tutorial on YouTube!
       ```
     </Step>
 
-    <Step id="android-setup-step-5">
+    <Step id="enable-test-orchestrator">
       Add this section to the `android` section:
 
       ```kotlin title="android/app/build.gradle.kts"
@@ -200,7 +200,7 @@ Check out our video version of this tutorial on YouTube!
       ```
     </Step>
 
-    <Step id="android-setup-step-6">
+    <Step id="add-orchestrator-dependency">
       Add this line to `dependencies` section:
 
       ```kotlin title="android/app/build.gradle.kts"
@@ -230,13 +230,13 @@ Check out our video version of this tutorial on YouTube!
 
 <Accordion id="old-android-setup" title="Old Android setup (for projects using Groovy build configuration files)">
   <Steps>
-    <Step id="old-android-setup-step-1">
+    <Step id="create-androidtest-dir">
       Go to **android/app/src/androidTest/java/com/example/myapp/** in your project
          directory. If there are no such folders, create them. **Remember to replace
          `/com/example/myapp/` with the path created by your app's package name.**
     </Step>
     
-    <Step id="old-android-setup-step-2">
+    <Step id="create-mainactivitytest">
       Create a file named `MainActivityTest.java` and copy there the code below.
 
       ```java title="MainActivityTest.java"
@@ -277,12 +277,12 @@ Check out our video version of this tutorial on YouTube!
       ```
     </Step>
 
-    <Step id="old-android-setup-step-3">
+    <Step id="open-build-gradle">
       Go to the **build.gradle** file, located in **android/app** folder in your
          project directory.
     </Step>
 
-    <Step id="old-android-setup-step-4">
+    <Step id="set-test-runner">
       Add these 2 lines to the `defaultConfig` section:
 
       ```groovy title="android/app/build.gradle"
@@ -291,7 +291,7 @@ Check out our video version of this tutorial on YouTube!
       ```
     </Step>
 
-    <Step id="old-android-setup-step-5">
+    <Step id="enable-test-orchestrator">
       Add this section to the `android` section:
 
       ```groovy title="android/app/build.gradle"
@@ -301,7 +301,7 @@ Check out our video version of this tutorial on YouTube!
       ```
     </Step>
 
-    <Step id="old-android-setup-step-6">
+    <Step id="add-orchestrator-dependency">
       Add this line to `dependencies` section:
 
       ```groovy title="android/app/build.gradle"
@@ -333,11 +333,11 @@ Check out our video version of this tutorial on YouTube!
     <Accordions>
     <Accordion id="ios-setup" title="iOS setup">
       <Steps>
-        <Step id="ios-setup-step-1">
+        <Step id="open-xcworkspace">
           Open `ios/Runner.xcworkspace` in Xcode.
         </Step>
           
-        <Step id="ios-setup-step-2">
+        <Step id="create-test-target">
           Create a test target if you do not already have one (see the screenshot below
             for the reference). Select `File > New > Target...` and select `UI Testing Bundle`.
             Change the `Product Name` to `RunnerUITests`. Set the `Organization Identifier`
@@ -349,13 +349,13 @@ Check out our video version of this tutorial on YouTube!
           ![Xcode iOS test target](/assets/ios_test_target.png)
         </Step>
 
-        <Step id="ios-setup-step-3">
+        <Step id="delete-launch-tests">
           2 files are created: `RunnerUITests.m` and `RunnerUITestsLaunchTests.m`.
             Delete `RunnerUITestsLaunchTests.m` **through Xcode** by clicking on it and
             selecting `Move to Trash`.
         </Step>
 
-        <Step id="ios-setup-step-4">
+        <Step id="set-min-ios-version">
           Make sure that the **iOS Deployment Target** of `RunnerUITests` within the
             **Build Settings** section is the same as `Runner`.
             The minimum supported **iOS Deployment Target** is `13.0`.
@@ -365,7 +365,7 @@ Check out our video version of this tutorial on YouTube!
           ![Xcode iOS deployment target 2](/assets/ios_deployment_target_2.png)
         </Step>
 
-        <Step id="ios-setup-step-5">
+        <Step id="configure-runner-uitests">
           Replace contents of `RunnerUITests.m` file with the following:
 
           ```objective-c title="ios/RunnerUITests/RunnerUITests.m"
@@ -414,7 +414,7 @@ Check out our video version of this tutorial on YouTube!
           </Tabs>
         </Step>
 
-        <Step id="ios-setup-step-6">
+        <Step id="build-ios-config">
           Create an empty file `patrol_test/example_test.dart` in the root of your Flutter project. From the command line, run
             the following command and make sure it completes with no errors:
 
@@ -423,7 +423,7 @@ Check out our video version of this tutorial on YouTube!
           ```
         </Step>
 
-        <Step id="ios-setup-step-7">
+        <Step id="pod-install">
            **(CocoaPods only)** Go to your `ios` directory and run:
 
           ```
@@ -431,27 +431,27 @@ Check out our video version of this tutorial on YouTube!
           ```
         </Step>
 
-        <Step id="ios-setup-step-8">
+        <Step id="match-build-configs">
           Open your Xcode project and Make sure that for each build configuration,
             the `RunnerUITests` have the same Configuration Set selected as the `Runner`:
 
           ![Xcode config setup](/assets/ios_runner_configs.png)
         </Step>
 
-        <Step id="ios-setup-step-9">
+        <Step id="add-build-phases">
           Go to **RunnerUITests** -> **Build Phases** and add 2 new "Run Script Phase" Build Phases.
             Name them `xcode_backend build` and `xcode_backend embed_and_thin`.
 
           ![Xcode config setup](/assets/ios_runner_build_phases_create.png)
         </Step>
 
-        <Step id="ios-setup-step-10">
+        <Step id="order-build-phases">
           Arrange the newly created Build Phases in the order shown in the screenshot below.
 
           ![Xcode config setup](/assets/ios_runner_build_phases.png)
         </Step>
 
-        <Step id="ios-setup-step-11">
+        <Step id="set-xcode-backend-build">
           Paste this code into the `xcode_backend build` Build Phase:
 
           ```
@@ -459,7 +459,7 @@ Check out our video version of this tutorial on YouTube!
           ```
         </Step>
 
-        <Step id="ios-setup-step-12">
+        <Step id="set-xcode-backend-embed">
           Paste this code into the `xcode_backend embed_and_thin` Build Phase:
 
           ```
@@ -467,14 +467,14 @@ Check out our video version of this tutorial on YouTube!
           ```
         </Step>
 
-        <Step id="ios-setup-step-13">
+        <Step id="disable-parallel-execution">
           Xcode by default also enables a "parallel execution" setting, which
             breaks Patrol. Disable it **for all schemes** (if you have more than one):
 
           <YouTube id="9LdEJR59fW4" />
         </Step>
 
-        <Step id="ios-setup-step-14">
+        <Step id="disable-script-sandboxing">
           Go to **RunnerUITests** -> **Build Settings**, search for **User Script Sandboxing**
             and make sure it's set to **No**.
         </Step>

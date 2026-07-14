@@ -1,8 +1,9 @@
 import { Tweet, YouTube } from "@/components/Embed"
-import { Accordion, Accordions } from "fumadocs-ui/components/accordion"
+import { SetupAccordion } from "@/components/setup-accordion"
+import { SetupAccordions } from "@/components/setup-accordions"
+import { Step } from "@/components/step-anchor"
 import { Callout } from "fumadocs-ui/components/callout"
 import { Steps } from "fumadocs-ui/components/steps"
-import { Step } from "@/components/step-anchor"
 import * as TabsComponents from "fumadocs-ui/components/tabs"
 import defaultMdxComponents from "fumadocs-ui/mdx"
 import type { MDXComponents } from "mdx/types"
@@ -20,7 +21,7 @@ export function getMDXComponents(components?: MDXComponents): MDXComponents {
     Steps,
     YouTube,
     Tweet,
-    Accordions,
-    Accordion,
+    Accordions: SetupAccordions,
+    Accordion: SetupAccordion,
   }
 }
