@@ -75,7 +75,22 @@ Read the documentation:
 - [setup](https://patrol.leancode.pl/getting-started)
 - [test command](https://patrol.leancode.co/cli-commands/test)
 
-## 🛠️ Maintained by LeanCode
+### Skipping the build step
+
+If you want to separate the build and test steps (e.g. to build once and run
+tests multiple times), you can use `patrol build` to pre-build and then
+`patrol test --no-build` to run with the existing binaries:
+
+```console
+$ patrol build android
+$ patrol test --no-build
+```
+
+The `--no-build` flag tells `patrol test` to skip the build step entirely and
+use the binaries previously produced by `patrol build android` (or
+`patrol build ios`). The binaries are expected at their default output paths.
+
+## Maintained by LeanCode
 
 <div align="center">
   <a href="https://leancode.co/?utm_source=github.com&utm_medium=referral&utm_campaign=patrol-readme">
@@ -103,7 +118,6 @@ We are **top-tier experts** focused on Flutter Enterprise solutions.
   [Check our other packages](https://pub.dev/packages?q=publisher%3Aleancode.co&sort=downloads)
 
 </div>
-
 [pub_link]: https://pub.dartlang.org/packages/patrol_cli
 [pub_badge_style]: https://img.shields.io/badge/style-leancode__lint-black
 [pub_badge_link]: https://pub.dartlang.org/packages/leancode_lint
