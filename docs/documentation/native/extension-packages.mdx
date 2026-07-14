@@ -11,7 +11,7 @@ This page explains the recommended pattern for building such a package.
 1. Core Patrol starts the native automation server on `:8081`.
 2. Core Patrol discovers extension implementations at startup:
    - Android via `ServiceLoader` (SPI file in `META-INF/services/...`)
-   - iOS via Objective-C runtime protocol discovery
+   - iOS via an explicit registry populated at module load time (`+load` calls `PatrolRegisterServerExtensionClass`)
 3. Extension package registers extra POST endpoints (for example `/mySdkScan`) on the same server.
 4. Dart API in the extension package calls those endpoints over HTTP (same host/port as `$.platform.mobile.*`).
 
@@ -156,6 +156,12 @@ full Objective-C runtime (which is unsafe in large UITest binaries):
 
 Do not call `registerExtensionClass:` via `performSelector:` — Swift class methods are
 not reliably invokable that way from ObjC.
+
+Patrol invokes extension route handlers on the HTTP server's worker threads, not on the
+main thread. If your handler calls XCTest or XCUI APIs (for example `XCUIApplication()`),
+dispatch that work to the main thread first — core Patrol's `IOSAutomator` does the same
+via `DispatchQueue.main.sync`. Calling XCTest from a background thread crashes with
+`Must be called on the main thread`.
 
 ### 7) Consumer app wiring
 
