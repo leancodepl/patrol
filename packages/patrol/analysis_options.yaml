@@ -3,6 +3,3 @@ include: package:leancode_lint/analysis_options_package.yaml
 analyzer:
   exclude:
     - lib/**/*.g.dart
-
-plugins:
-  leancode_lint: ^24.0.0

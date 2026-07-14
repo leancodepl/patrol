@@ -4,6 +4,3 @@ linter:
   rules:
     prefer_const_constructors: false
     avoid_print: false
-
-plugins:
-  leancode_lint: ^24.0.0
