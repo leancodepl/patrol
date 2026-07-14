@@ -1,6 +1,26 @@
 ---
 title: Install Patrol
 hidePrevious: true
+# The platform setup sections are accordions, not markdown headings, so they are
+# absent from the auto-generated "On this page" TOC. Surface them (sections only —
+# their individual steps would overwhelm the list) nested under the "Setup" entry.
+tocExtra:
+  - title: Android setup
+    url: "#android-setup"
+    depth: 3
+    after: "#setup"
+  - title: Old Android setup
+    url: "#old-android-setup"
+    depth: 3
+    after: "#setup"
+  - title: iOS setup
+    url: "#ios-setup"
+    depth: 3
+    after: "#setup"
+  - title: macOS setup
+    url: "#macos-setup"
+    depth: 3
+    after: "#setup"
 ---
 
 Check out our video version of this tutorial on YouTube!
@@ -15,7 +35,7 @@ Check out our video version of this tutorial on YouTube!
 ## Setup
 
 <Steps>
-    <Step>
+    <Step id="install-patrol-cli">
     Install `patrol_cli`:
     ```
       flutter pub global activate patrol_cli
@@ -29,7 +49,7 @@ Check out our video version of this tutorial on YouTube!
       </Info>
     </Step>
 
-    <Step>
+    <Step id="verify-installation">
     Verify that installation was successful and your environment is set up properly:
 
       ```
@@ -59,7 +79,7 @@ Check out our video version of this tutorial on YouTube!
       </Warning>
     </Step>
 
-    <Step>
+    <Step id="add-patrol-dependency">
     Add a dependency on the `patrol` package in the
     `dev_dependencies` section of `pubspec.yaml`.  `patrol` package requires
     Android SDK version 21 or higher.
@@ -69,7 +89,7 @@ Check out our video version of this tutorial on YouTube!
     ```
     </Step>
 
-    <Step>
+    <Step id="configure-pubspec">
     Create `patrol` section in your `pubspec.yaml`:
 
     ```yaml title="pubspec.yaml"
@@ -119,7 +139,7 @@ Check out our video version of this tutorial on YouTube!
 
     </Step>
 
-    <Step>
+    <Step id="integrate-native-side">
     Integrate with native side
 
     The 3 first steps were common across platforms. The rest is platform-specific.
@@ -495,23 +515,23 @@ Check out our video version of this tutorial on YouTube!
     </Warning>
 
       <Steps>
-        <Step>
+        <Step id="open-xcworkspace">
           Open `macos/Runner.xcworkspace` in Xcode.
         </Step>
 
-        <Step>
+        <Step id="create-test-target">
           Create a test target if you do not already have one via `File > New > Target...`
             and select `UI Testing Bundle`. Change the `Product Name` to `RunnerUITests`. Make
             sure `Target to be Tested` is set to `Runner` and language is set to `Objective-C`.
             Select `Finish`.
         </Step>
 
-        <Step>
+        <Step id="delete-launch-tests">
           2 files are created: `RunnerUITests.m` and `RunnerUITestsLaunchTests.m`.
             Delete `RunnerUITestsLaunchTests.m` **through Xcode**.
         </Step>
 
-        <Step>
+        <Step id="set-min-macos-version">
           Make sure that the **macOS Deployment Target** of `RunnerUITests` within the
             **Build Settings** section is the same as `Runner`.
             The minimum supported **macOS Deployment Target** is `10.14`.
@@ -521,7 +541,7 @@ Check out our video version of this tutorial on YouTube!
           ![Xcode macOS deployment target 2](/assets/macos_deployment_target_2.png)
         </Step>
 
-        <Step>
+        <Step id="configure-runner-uitests">
           Replace contents of `RunnerUITests.m` file with the following:
 
           ```objective-c title="macos/RunnerUITests/RunnerUITests.m"
@@ -547,7 +567,7 @@ Check out our video version of this tutorial on YouTube!
           ```
         </Step>
 
-        <Step>
+        <Step id="build-macos-config">
           Create an empty file `patrol_test/example_test.dart` in the root of your Flutter project. From the command line, run:
 
           ```
@@ -555,7 +575,7 @@ Check out our video version of this tutorial on YouTube!
           ```
         </Step>
 
-        <Step>
+        <Step id="pod-install">
           Go to your `macos` directory and run:
 
           ```
@@ -563,7 +583,7 @@ Check out our video version of this tutorial on YouTube!
           ```
         </Step>
 
-        <Step>
+        <Step id="add-build-phases">
           Go to **RunnerUITests** -> **Build Phases** and add 2 new "Run Script Phase" Build Phases.
             Rename them to `xcode_backend build` and `xcode_backend embed_and_thin` by double clicking
             on their names.
@@ -571,13 +591,13 @@ Check out our video version of this tutorial on YouTube!
           ![Xcode config setup](/assets/macos_runner_build_phases_create.png)
         </Step>
 
-        <Step>
+        <Step id="order-build-phases">
           Arrange the newly created Build Phases in the order shown in the screenshot below.
 
           ![Xcode config setup](/assets/macos_runner_build_phases.png)
         </Step>
 
-        <Step>
+        <Step id="set-macos-assemble-build">
           Paste this code into the first `macos_assemble build` Build Phase:
 
           ```
@@ -585,7 +605,7 @@ Check out our video version of this tutorial on YouTube!
           ```
         </Step>
 
-        <Step>
+        <Step id="set-macos-assemble-embed">
           Paste this code into the second `macos_assemble embed` Build Phase:
 
           ```
@@ -593,19 +613,19 @@ Check out our video version of this tutorial on YouTube!
           ```
         </Step>
 
-        <Step>
+        <Step id="disable-parallel-execution">
           Xcode by default also enables a "parallel execution" setting, which
             breaks Patrol. Disable it **for all schemes** (if you have more than one):
 
           <YouTube id="9LdEJR59fW4" />
         </Step>
 
-        <Step>
+        <Step id="disable-script-sandboxing">
           Go to **RunnerUITests** -> **Build Settings**, search for **User Script Sandboxing**
             and make sure it's set to **No**.
         </Step>
 
-        <Step>
+        <Step id="enable-app-sandbox-connections">
           Go to **Runner** -> **Signing & Capabilities**. Make sure that in all **App Sandbox**
             sections, **Incoming Connections (Server)** and **Outgoing Connections (Client)** checkboxes
             are checked.
@@ -613,12 +633,12 @@ Check out our video version of this tutorial on YouTube!
           ![Xcode entitlements setup](/assets/macos_entitlements.png)
         </Step>
 
-        <Step>
+        <Step id="copy-entitlements">
           **Copy** `DebugProfile.entitlements` and `Release.entitlements` files from `macos/Runner`
             to `macos/RunnerUITests` directory.
         </Step>
 
-        <Step>
+        <Step id="set-signing-entitlements">
           Go to **RunnerUITests** -> **Build Settings** and set **Code Signing Entitlements** to
             `RunnerUITests/DebugProfile.entitlements` for **Debug** and **Profile** configuration and to
             `RunnerUITests/Release.entitlements` for **Release** configuration.
@@ -630,7 +650,7 @@ Check out our video version of this tutorial on YouTube!
     </Accordions>
     </Step>
 
-    <Step>
+    <Step id="create-integration-test">
     Create a simple integration test
 
     Let's create a dummy Flutter integration test that you'll use to verify
