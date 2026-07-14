@@ -1,5 +1,6 @@
 "use client"
 
+import { scrollAnchorBelowStickyHeader } from "@/components/anchor-scroll"
 import { useHash } from "@/components/hash-context"
 import { SectionProvider } from "@/components/section-context"
 import { Accordion as FumadocsAccordion } from "fumadocs-ui/components/accordion"
@@ -14,8 +15,8 @@ import { useEffect, useRef, type ComponentProps } from "react"
 // anchor `id` on the header while its `scroll-m-24` lives on the parent item, so
 // native scroll ignores the offset and hides the header under the sticky top stack.
 // Instead we scroll the section ourselves once it is the hash target — with the same
-// `--patrol-anchor-scroll-mt` offset (applied inline here and to the header in
-// `global.css`, so our scroll and the native one agree) and the same expand-aware
+// offset (`--fd-docs-row-3` + `--patrol-anchor-scroll-gap`, applied inline here and to
+// the header in `global.css`, so our scroll and the native one agree) and expand-aware
 // re-scroll as `Step`, so sections land exactly like steps and stay put while the
 // controlled accordion animates open. Steps inside the section keep scrolling
 // themselves; this only fires when the hash is the section id itself.
@@ -29,12 +30,12 @@ export function SetupAccordion({ id, children, ...props }: ComponentProps<typeof
     const el = ref.current
     if (!el) return
 
-    // The item's inline `scroll-margin-top` (below) keeps it clear of the sticky top
-    // stack; scroll now for the already-open case, then re-scroll once the expand
-    // animation finishes (timeout fallback for when it never fires, e.g. reduced
-    // motion). The animation runs on a descendant content element, so match it by
-    // name + containment within this item.
-    const scroll = () => el.scrollIntoView({ block: "start" })
+    // The item's inline `scroll-margin-top` (below) is the offset the scroll honors;
+    // scroll now for the already-open case, then re-scroll once the expand animation
+    // finishes (timeout fallback for when it never fires, e.g. reduced motion). The
+    // animation runs on a descendant content element, so match it by name + containment
+    // within this item.
+    const scroll = () => scrollAnchorBelowStickyHeader(el)
     scroll()
 
     const onAnimationEnd = (event: AnimationEvent) => {
@@ -52,7 +53,11 @@ export function SetupAccordion({ id, children, ...props }: ComponentProps<typeof
   }, [isTarget])
 
   return (
-    <FumadocsAccordion id={id} ref={ref} style={{ scrollMarginTop: "var(--patrol-anchor-scroll-mt)" }} {...props}>
+    <FumadocsAccordion
+      id={id}
+      ref={ref}
+      style={{ scrollMarginTop: "calc(var(--fd-docs-row-3) + var(--patrol-anchor-scroll-gap))" }}
+      {...props}>
       <SectionProvider value={id}>{children}</SectionProvider>
     </FumadocsAccordion>
   )

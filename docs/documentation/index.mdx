@@ -35,7 +35,7 @@ Check out our video version of this tutorial on YouTube!
 ## Setup
 
 <Steps>
-    <Step>
+    <Step id="install-patrol-cli">
     Install `patrol_cli`:
     ```
       flutter pub global activate patrol_cli
@@ -49,7 +49,7 @@ Check out our video version of this tutorial on YouTube!
       </Info>
     </Step>
 
-    <Step>
+    <Step id="verify-installation">
     Verify that installation was successful and your environment is set up properly:
 
       ```
@@ -79,7 +79,7 @@ Check out our video version of this tutorial on YouTube!
       </Warning>
     </Step>
 
-    <Step>
+    <Step id="add-patrol-dependency">
     Add a dependency on the `patrol` package in the
     `dev_dependencies` section of `pubspec.yaml`.  `patrol` package requires
     Android SDK version 21 or higher.
@@ -89,7 +89,7 @@ Check out our video version of this tutorial on YouTube!
     ```
     </Step>
 
-    <Step>
+    <Step id="configure-pubspec">
     Create `patrol` section in your `pubspec.yaml`:
 
     ```yaml title="pubspec.yaml"
@@ -139,7 +139,7 @@ Check out our video version of this tutorial on YouTube!
 
     </Step>
 
-    <Step>
+    <Step id="integrate-native-side">
     Integrate with native side
 
     The 3 first steps were common across platforms. The rest is platform-specific.
@@ -650,7 +650,7 @@ Check out our video version of this tutorial on YouTube!
     </Accordions>
     </Step>
 
-    <Step>
+    <Step id="create-integration-test">
     Create a simple integration test
 
     Let's create a dummy Flutter integration test that you'll use to verify

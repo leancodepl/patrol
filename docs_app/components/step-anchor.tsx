@@ -1,5 +1,6 @@
 "use client"
 
+import { scrollAnchorBelowStickyHeader } from "@/components/anchor-scroll"
 import { useHash } from "@/components/hash-context"
 import { useSectionId } from "@/components/section-context"
 import { cn } from "@/lib/cn"
@@ -33,8 +34,10 @@ function CopyStepLink({ fullId }: { fullId: string }) {
 // Wraps fumadocs' `Step` to make it deep-linkable. Full id is `${sectionId}-${slug}`
 // (section id from `SectionContext`), stable because it never encodes position. The
 // extra id-bearing wrapper is safe since step numbering is CSS-counter based. The
-// scroll offset is the shared `--patrol-anchor-scroll-mt` token (see `global.css`),
-// so steps and setup sections clear the sticky top stack by the exact same amount.
+// scroll offset clears the notebook layout's full sticky-top stack (`--fd-docs-row-3`
+// = promo banner + nav header + mobile TOC bar, resolved on this element where it is
+// inherited from the container) plus the shared `--patrol-anchor-scroll-gap` breathing
+// gap (see `global.css`), so steps and setup sections land by the exact same amount.
 export function Step({ id, children }: { id?: string; children: ReactNode }) {
   const sectionId = useSectionId()
   const hash = useHash()
@@ -50,8 +53,8 @@ export function Step({ id, children }: { id?: string; children: ReactNode }) {
     const el = ref.current
     if (!el) return
 
-    // The element's `scroll-mt` (below) keeps the step clear of the sticky top stack.
-    const scroll = () => el.scrollIntoView({ block: "start" })
+    // The element's `scroll-mt` (below) is the offset the scroll honors.
+    const scroll = () => scrollAnchorBelowStickyHeader(el)
 
     // On a cold load the enclosing accordion is opened first and expands via a CSS
     // animation that runs *after* this step mounts, so scrolling now lands at the
@@ -76,7 +79,10 @@ export function Step({ id, children }: { id?: string; children: ReactNode }) {
   }, [isTarget])
 
   return (
-    <div ref={ref} id={fullId} className="group/step scroll-mt-[var(--patrol-anchor-scroll-mt)]">
+    <div
+      ref={ref}
+      id={fullId}
+      className="group/step scroll-mt-[calc(var(--fd-docs-row-3)_+_var(--patrol-anchor-scroll-gap))]">
       <FumadocsStep>
         {/* `pe-8` reserves a right-hand column for the copy-link button so the step
             text wraps before it and never sits under the icon. Only added when there
