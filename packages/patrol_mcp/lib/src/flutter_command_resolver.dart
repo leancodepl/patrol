@@ -157,9 +157,13 @@ class FlutterCommandResolver {
     final names = io.Platform.isWindows
         ? ['$base.bat', '$base.exe', '$base.cmd', base]
         : [base];
-    for (final dir in pathVar.split(io.Platform.isWindows ? ';' : ':')) {
+    for (var dir in pathVar.split(io.Platform.isWindows ? ';' : ':')) {
       if (dir.isEmpty) {
         continue;
+      }
+      // Windows PATH entries containing spaces are sometimes wrapped in quotes.
+      if (io.Platform.isWindows && dir.startsWith('"') && dir.endsWith('"')) {
+        dir = dir.substring(1, dir.length - 1);
       }
       for (final name in names) {
         if (pathExists(p.join(dir, name))) {

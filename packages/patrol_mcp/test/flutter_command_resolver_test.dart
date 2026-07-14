@@ -138,5 +138,23 @@ void main() {
       expect(r.command, isNull);
       expect(r.reason, contains('flutter'));
     });
+
+    test(
+      'uses default PATH resolution to detect fvm when flutter is missing',
+      () {
+        // Exercises the real _exeOnPath: fvm is on PATH, flutter is not, so the
+        // safety net falls back to `fvm flutter`. isFvmInstalled/isFlutterInstalled
+        // are NOT mocked here.
+        final binDir = io.Platform.isWindows ? r'C:\bin' : '/bin';
+        final fvmBin = io.Platform.isWindows ? 'fvm.bat' : 'fvm';
+        final r = FlutterCommandResolver(
+          environment: {'PATH': binDir},
+          pathExists: (path) => path == p.join(binDir, fvmBin),
+        ).resolve(projectRoot: root);
+
+        expect(r.command!.executable, 'fvm');
+        expect(r.command!.arguments, ['flutter']);
+      },
+    );
   });
 }
