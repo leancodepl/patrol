@@ -452,6 +452,13 @@ final class PatrolSession {
     }
 
     _testState = TestState.finishedFailed;
+    // Surface the underlying error (backend threw rather than exiting cleanly)
+    // so it isn't swallowed by the generic warning below.
+    final error = result.error;
+    if (error != null) {
+      _pushOutput('ERROR: $error');
+      Logger('PatrolSession').severe('Backend exit error: $error');
+    }
     _finishWarning =
         'The app shut down before the test reported completion. This usually '
         'means the app crashed or exited early rather than a test assertion '
