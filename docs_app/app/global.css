@@ -2,6 +2,16 @@
 @import "fumadocs-ui/css/black.css";
 @import "fumadocs-ui/css/preset.css";
 
+/* fumadocs renders the accordion's anchor `id` on the header element but puts its
+   scroll-margin (`scroll-m-24`) on the parent item, so a native hash scroll to a
+   section (e.g. `#ios-setup`) ignores that margin and lands the header flush at the
+   top, hidden under the sticky top stack. Re-apply our offset to the header — the
+   actual scroll target, matched here by the `data-accordion-value` fumadocs sets on
+   it — so section anchors clear the bar exactly like the deep-linked steps do. */
+[data-accordion-value] {
+  scroll-margin-top: var(--patrol-anchor-scroll-mt);
+}
+
 .dark {
   --color-fd-background: rgb(11, 13, 14);
 
@@ -10,6 +20,15 @@
 }
 
 :root {
+  /* Shared scroll offset for every deep-link target (setup steps and the setup
+     section accordions). Tracks the notebook layout's full sticky-top stack
+     (`--fd-docs-row-3` = promo banner + nav header + mobile TOC bar) so a target
+     always clears whatever is pinned above it and collapses automatically when the
+     banner is dismissed. The `4.5rem` is a deliberate, constant breathing gap
+     (~1.5x the banner height) so the target never sits flush below the bar; it is
+     the single number to tune, and both steps and sections read it from here. */
+  --patrol-anchor-scroll-mt: calc(var(--fd-docs-row-3) + 4.5rem);
+
   a {
     overflow-wrap: break-word;
     text-decoration-color: var(--patrol-orange);
