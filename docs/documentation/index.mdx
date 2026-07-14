@@ -127,15 +127,15 @@ Check out our video version of this tutorial on YouTube!
     Psst... Android is a bit easier to set up, so we recommend starting with it!
 
 <Accordions>
-<Accordion defaultOpen title="Android setup (for projects using Kotlin DSL)">
+<Accordion defaultOpen id="android-setup" title="Android setup (for projects using Kotlin DSL)">
   <Steps>
-    <Step>
+    <Step id="create-androidtest-dir">
       Go to **android/app/src/androidTest/java/com/example/myapp/** in your project
          directory. If there are no such folders, create them. **Remember to replace
          `/com/example/myapp/` with the path created by your app's package name.**
     </Step>
     
-    <Step>
+    <Step id="create-mainactivitytest">
       Create a file named `MainActivityTest.java` and copy there the code below.
 
       ```java title="MainActivityTest.java"
@@ -176,12 +176,12 @@ Check out our video version of this tutorial on YouTube!
       ```
     </Step>
 
-    <Step>
+    <Step id="open-build-gradle">
       Go to the **build.gradle.kts** file, located in **android/app** folder in your
          project directory.
     </Step>
 
-    <Step>
+    <Step id="set-test-runner">
       Add these 2 lines to the `defaultConfig` section:
 
       ```kotlin title="android/app/build.gradle.kts"
@@ -190,7 +190,7 @@ Check out our video version of this tutorial on YouTube!
       ```
     </Step>
 
-    <Step>
+    <Step id="enable-test-orchestrator">
       Add this section to the `android` section:
 
       ```kotlin title="android/app/build.gradle.kts"
@@ -200,7 +200,7 @@ Check out our video version of this tutorial on YouTube!
       ```
     </Step>
 
-    <Step>
+    <Step id="add-orchestrator-dependency">
       Add this line to `dependencies` section:
 
       ```kotlin title="android/app/build.gradle.kts"
@@ -228,15 +228,15 @@ Check out our video version of this tutorial on YouTube!
 
 </Accordion>
 
-<Accordion title="Old Android setup (for projects using Groovy build configuration files)">
+<Accordion id="old-android-setup" title="Old Android setup (for projects using Groovy build configuration files)">
   <Steps>
-    <Step>
+    <Step id="create-androidtest-dir">
       Go to **android/app/src/androidTest/java/com/example/myapp/** in your project
          directory. If there are no such folders, create them. **Remember to replace
          `/com/example/myapp/` with the path created by your app's package name.**
     </Step>
     
-    <Step>
+    <Step id="create-mainactivitytest">
       Create a file named `MainActivityTest.java` and copy there the code below.
 
       ```java title="MainActivityTest.java"
@@ -277,12 +277,12 @@ Check out our video version of this tutorial on YouTube!
       ```
     </Step>
 
-    <Step>
+    <Step id="open-build-gradle">
       Go to the **build.gradle** file, located in **android/app** folder in your
          project directory.
     </Step>
 
-    <Step>
+    <Step id="set-test-runner">
       Add these 2 lines to the `defaultConfig` section:
 
       ```groovy title="android/app/build.gradle"
@@ -291,7 +291,7 @@ Check out our video version of this tutorial on YouTube!
       ```
     </Step>
 
-    <Step>
+    <Step id="enable-test-orchestrator">
       Add this section to the `android` section:
 
       ```groovy title="android/app/build.gradle"
@@ -301,7 +301,7 @@ Check out our video version of this tutorial on YouTube!
       ```
     </Step>
 
-    <Step>
+    <Step id="add-orchestrator-dependency">
       Add this line to `dependencies` section:
 
       ```groovy title="android/app/build.gradle"
@@ -331,13 +331,13 @@ Check out our video version of this tutorial on YouTube!
 </Accordions>
 
     <Accordions>
-    <Accordion title="iOS setup">
+    <Accordion id="ios-setup" title="iOS setup">
       <Steps>
-        <Step>
+        <Step id="open-xcworkspace">
           Open `ios/Runner.xcworkspace` in Xcode.
         </Step>
           
-        <Step>
+        <Step id="create-test-target">
           Create a test target if you do not already have one (see the screenshot below
             for the reference). Select `File > New > Target...` and select `UI Testing Bundle`.
             Change the `Product Name` to `RunnerUITests`. Set the `Organization Identifier`
@@ -349,13 +349,13 @@ Check out our video version of this tutorial on YouTube!
           ![Xcode iOS test target](/assets/ios_test_target.png)
         </Step>
 
-        <Step>
+        <Step id="delete-launch-tests">
           2 files are created: `RunnerUITests.m` and `RunnerUITestsLaunchTests.m`.
             Delete `RunnerUITestsLaunchTests.m` **through Xcode** by clicking on it and
             selecting `Move to Trash`.
         </Step>
 
-        <Step>
+        <Step id="set-min-ios-version">
           Make sure that the **iOS Deployment Target** of `RunnerUITests` within the
             **Build Settings** section is the same as `Runner`.
             The minimum supported **iOS Deployment Target** is `13.0`.
@@ -365,7 +365,7 @@ Check out our video version of this tutorial on YouTube!
           ![Xcode iOS deployment target 2](/assets/ios_deployment_target_2.png)
         </Step>
 
-        <Step>
+        <Step id="configure-runner-uitests">
           Replace contents of `RunnerUITests.m` file with the following:
 
           ```objective-c title="ios/RunnerUITests/RunnerUITests.m"
@@ -414,7 +414,7 @@ Check out our video version of this tutorial on YouTube!
           </Tabs>
         </Step>
 
-        <Step>
+        <Step id="build-ios-config">
           Create an empty file `patrol_test/example_test.dart` in the root of your Flutter project. From the command line, run
             the following command and make sure it completes with no errors:
 
@@ -423,7 +423,7 @@ Check out our video version of this tutorial on YouTube!
           ```
         </Step>
 
-        <Step>
+        <Step id="pod-install">
            **(CocoaPods only)** Go to your `ios` directory and run:
 
           ```
@@ -431,27 +431,27 @@ Check out our video version of this tutorial on YouTube!
           ```
         </Step>
 
-        <Step>
+        <Step id="match-build-configs">
           Open your Xcode project and Make sure that for each build configuration,
             the `RunnerUITests` have the same Configuration Set selected as the `Runner`:
 
           ![Xcode config setup](/assets/ios_runner_configs.png)
         </Step>
 
-        <Step>
+        <Step id="add-build-phases">
           Go to **RunnerUITests** -> **Build Phases** and add 2 new "Run Script Phase" Build Phases.
             Name them `xcode_backend build` and `xcode_backend embed_and_thin`.
 
           ![Xcode config setup](/assets/ios_runner_build_phases_create.png)
         </Step>
 
-        <Step>
+        <Step id="order-build-phases">
           Arrange the newly created Build Phases in the order shown in the screenshot below.
 
           ![Xcode config setup](/assets/ios_runner_build_phases.png)
         </Step>
 
-        <Step>
+        <Step id="set-xcode-backend-build">
           Paste this code into the `xcode_backend build` Build Phase:
 
           ```
@@ -459,7 +459,7 @@ Check out our video version of this tutorial on YouTube!
           ```
         </Step>
 
-        <Step>
+        <Step id="set-xcode-backend-embed">
           Paste this code into the `xcode_backend embed_and_thin` Build Phase:
 
           ```
@@ -467,14 +467,14 @@ Check out our video version of this tutorial on YouTube!
           ```
         </Step>
 
-        <Step>
+        <Step id="disable-parallel-execution">
           Xcode by default also enables a "parallel execution" setting, which
             breaks Patrol. Disable it **for all schemes** (if you have more than one):
 
           <YouTube id="9LdEJR59fW4" />
         </Step>
 
-        <Step>
+        <Step id="disable-script-sandboxing">
           Go to **RunnerUITests** -> **Build Settings**, search for **User Script Sandboxing**
             and make sure it's set to **No**.
         </Step>
@@ -485,7 +485,7 @@ Check out our video version of this tutorial on YouTube!
       </Steps>
     </Accordion>
 
-    <Accordion title="macOS setup">
+    <Accordion id="macos-setup" title="macOS setup">
 
     <Warning>
         Support for macOS is in alpha stage. Please be aware that some features
@@ -747,12 +747,12 @@ This file is generated by Patrol and should not be committed.
 
 <Accordions>
 
-<Accordion title="Testing fails with error inside 'patrol_test/test_bundle.dart'">
+<Accordion id="faq-test-bundle-error" title="Testing fails with error inside 'patrol_test/test_bundle.dart'">
   The reason is probably a mismatch of `patrol` and `patrol_cli` versions. Go to [Compatibility table]
   and make sure that the versions of `patrol` and `patrol_cli` you are using are compatible.
 </Accordion>
 
-<Accordion title="'example_test.dart' passed but I can't get my application to run within the patrol test.">
+<Accordion id="faq-app-not-running-in-test" title="'example_test.dart' passed but I can't get my application to run within the patrol test.">
   To run your application within the patrol test, you need to call `$.pumpWidgetAndSettle()`,
   and pass your application's main widget to it. Be sure that you registered all the
   necessary services before calling `$.pumpWidgetAndSettle()`.
@@ -781,11 +781,11 @@ This file is generated by Patrol and should not be committed.
 ### Android
 
 <Accordions>
-<Accordion title="Where do I get 'package_name' from?">
+<Accordion id="faq-android-package-name" title="Where do I get 'package_name' from?">
   Go to `android/app/build.gradle` and look for `applicationId` in `defaultConfig` section.
 </Accordion>
 
-<Accordion title="Running patrol test fails containing 'Unsupported class file major version' error">
+<Accordion id="faq-unsupported-class-file-version" title="Running patrol test fails containing 'Unsupported class file major version' error">
   It's most likely caused by using incompatible JDK version.
   Run `javac -version` to check your JDK version. Patrol officially works on JDK 17,
   so unexpected errors may occur on other versions.
@@ -795,7 +795,7 @@ This file is generated by Patrol and should not be committed.
   [Learn more]
 </Accordion>
 
-<Accordion title="Build gets stuck during 'patrol test' or 'patrol build android'">
+<Accordion id="faq-build-stuck" title="Build gets stuck during 'patrol test' or 'patrol build android'">
   If the build hangs and running with `--verbose` shows it stuck at `$ flutter build apk --config-only`, updating orchestrator to `1.6.1` in your `build.gradle` might help.
 </Accordion>
 </Accordions>
@@ -803,27 +803,27 @@ This file is generated by Patrol and should not be committed.
 ### iOS
 
 <Accordions>
-<Accordion title="Where do I get `bundle_id` from?">
+<Accordion id="faq-ios-bundle-id" title="Where do I get `bundle_id` from?">
   For iOS go to `ios/Runner.xcodeproj/project.pbxproj` and look for `PRODUCT_BUNDLE_IDENTIFIER`.
   For macOS go to `macos/Runner.xcodeproj/project.pbxproj` and look for `PRODUCT_BUNDLE_IDENTIFIER`.
 </Accordion>
 
-<Accordion title="When I run tests the simulator is getting cloned">
+<Accordion id="faq-simulator-cloned" title="When I run tests the simulator is getting cloned">
   Make sure that you disabled "Paralell execution" for **all schemes** in Xcode.
   See [this video] for details.
 </Accordion>
 
-<Accordion title="Running test stops on 'Wait for com.example.myapp to idle'">
+<Accordion id="faq-test-stops-wait-for-idle" title="Running test stops on 'Wait for com.example.myapp to idle'">
   Search for a `FLUTTER_TARGET` in your project files and remove it (both value and key)
   from *.xcconfig and *.pbxproj files.
 </Accordion>
 
-<Accordion title="When running a test, real app without test is opened instead">
+<Accordion id="faq-real-app-opened-instead" title="When running a test, real app without test is opened instead">
   Search for a `FLUTTER_TARGET` in your project files and remove it (both value and key)
   from *.xcconfig and *.pbxproj files.
 </Accordion>
 
-<Accordion title="Build is failing with errors on mismatching iOS deployment versions">
+<Accordion id="faq-ios-deployment-version-mismatch" title="Build is failing with errors on mismatching iOS deployment versions">
   Check if this line in `Podfile` is present and uncommented.
   ```
   platform :ios, '12.0'
@@ -833,7 +833,7 @@ This file is generated by Patrol and should not be committed.
   (in case presented in snippet above, all should be set to 12.0).
 </Accordion>
 
-<Accordion title="How to generate FLUTTER_TARGET after removing it from *.xcconfig">
+<Accordion id="faq-generate-flutter-target" title="How to generate FLUTTER_TARGET after removing it from *.xcconfig">
   After removing `FLUTTER_TARGET` from `*.xcconfig`, you need to run the following command to generate it:
 
   ```
