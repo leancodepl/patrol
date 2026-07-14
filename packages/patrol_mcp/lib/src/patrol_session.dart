@@ -230,6 +230,14 @@ final class PatrolSession {
 
     final resolvedCwd = p.canonicalize(flutterProjectPath);
 
+    // Resolve the target against PROJECT_ROOT. patrol_cli resolves it relative
+    // to the process working directory, so without this the test file wouldn't
+    // be found when the server runs from a different directory (e.g. an app in a
+    // subdirectory pointed at by PROJECT_ROOT).
+    final resolvedTarget = p.isAbsolute(testFile)
+        ? testFile
+        : p.join(resolvedCwd, testFile);
+
     // Parse additional flags using the same ArgParser definitions as the CLI.
     // This supports both develop-specific flags and global flags (e.g.
     // --verbose, --flutter-command) so that PATROL_FLAGS works with everything
@@ -247,7 +255,7 @@ final class PatrolSession {
 
     final (options, globalResults) = DevelopOptions.parseArgs(
       flagParts,
-      target: testFile,
+      target: resolvedTarget,
       flutterCommand: flutterResolution.command,
     );
 
