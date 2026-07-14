@@ -17,6 +17,20 @@ export const docs = defineDocs({
       previous: z.string().optional(),
       previousTitle: z.string().optional(),
       hidePrevious: z.boolean().optional(),
+      // Extra "On this page" entries that don't come from markdown headings — used to
+      // surface in-page anchors that live inside components (e.g. the setup accordion
+      // sections). Each item is inserted right after the existing TOC entry whose url
+      // matches `after` (appended if omitted / not found), preserving authored order.
+      tocExtra: z
+        .array(
+          z.object({
+            title: z.string(),
+            url: z.string(),
+            depth: z.number().int().default(3),
+            after: z.string().optional(),
+          }),
+        )
+        .optional(),
     }),
 
     postprocess: {
