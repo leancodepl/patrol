@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'package:path/path.dart' as path;
 import 'package:patrol_cli/src/base/logger.dart';
+import 'package:patrol_cli/src/compatibility_checker/version_compatibility.dart';
 import 'package:version/version.dart';
-import 'version_compatibility.dart';
 
 /// Generates a compatibility table in MDX format and saves it to both
 /// docs/documentation/compatibility-table.mdx and docs/compatibility-table.mdx

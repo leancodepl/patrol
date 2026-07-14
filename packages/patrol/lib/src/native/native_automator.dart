@@ -1,9 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:patrol/src/native/native_automator_config.dart';
 import 'package:patrol/src/platform/contracts/contracts.dart';
 import 'package:patrol/src/platform/platform_automator.dart';
 import 'package:patrol/src/platform/selector.dart';
-
-import 'native_automator_config.dart';
 
 /// Represents a native view in the UI hierarchy.
 ///

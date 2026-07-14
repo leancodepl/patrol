@@ -1,7 +1,7 @@
 // This file wraps the Invoker API, which is internal to package:test.
 
-// Ignoring this because causes conflicts between linter and analyzer
-// ignore: dangling_library_doc_comments
+import 'package:patrol/src/common.dart';
+
 /// We need [Group] to check test hierarchy.
 // ignore: implementation_imports
 import 'package:test_api/src/backend/group.dart';
@@ -17,8 +17,6 @@ import 'package:test_api/src/backend/invoker.dart';
 /// We need [LiveTest] to check test hierarchy.
 // ignore: implementation_imports
 import 'package:test_api/src/backend/live_test.dart';
-
-import 'common.dart';
 
 /// Maximum test case length for ATO, after transformations.
 ///

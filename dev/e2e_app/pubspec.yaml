@@ -4,7 +4,7 @@ publish_to: none
 version: 1.0.0+1
 
 environment:
-  sdk: ">=3.10.0 <4.0.0"
+  sdk: ">=3.11.0 <4.0.0"
   flutter: ">=3.38.0"
 
 dependencies:
@@ -28,6 +28,7 @@ dependencies:
   webview_flutter: ^4.4.2
 
 dependency_overrides:
+  meta: ^1.18.0
   # patrol_mcp pulls patrol_cli from pub; force the local one.
   patrol_cli:
     path: ../../packages/patrol_cli
@@ -38,7 +39,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   gpx: ^2.3.0
-  leancode_lint: ^17.0.0
+  leancode_lint: ^24.0.0
   patrol:
     path: ../../packages/patrol
   patrol_cli:

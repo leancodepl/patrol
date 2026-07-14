@@ -76,7 +76,7 @@ void main(List<String> args) async {
     output.write(data);
     final stringOutput = output.toString();
 
-    if (isFirstTestPassed == false &&
+    if (!isFirstTestPassed &&
         stringOutput.contains(
           'All tests were executed. Press "r" to start again or "q" to quit',
         )) {
@@ -85,7 +85,7 @@ void main(List<String> args) async {
 
     final isReadyToRestart =
         isFirstTestPassed &&
-        isReloaded == false &&
+        !isReloaded &&
         stringOutput.contains('Hot Restart: attached to the app');
 
     if (isReadyToRestart) {

@@ -6,7 +6,7 @@ import 'package:patrol_gen/src/schema.dart';
 
 Future<Schema> resolveSchema(String schemaPath) async {
   final file = path.normalize(path.absolute(schemaPath));
-  final result = await resolveFile2(path: file);
+  final result = await resolveFile(path: file);
 
   final enums = <Enum>[];
   final messages = <Message>[];
@@ -15,7 +15,7 @@ Future<Schema> resolveSchema(String schemaPath) async {
   if (result is ResolvedUnitResult) {
     for (final declaration in result.unit.declarations) {
       if (declaration is EnumDeclaration) {
-        final enumFields = declaration.constants.map((e) {
+        final enumFields = declaration.body.constants.map((e) {
           final name = e.name.lexeme;
           final value =
               switch (e.arguments?.argumentList.arguments.firstOrNull) {
@@ -26,7 +26,7 @@ Future<Schema> resolveSchema(String schemaPath) async {
           return EnumField(name, value);
         }).toList();
 
-        enums.add(Enum(declaration.name.lexeme, enumFields));
+        enums.add(Enum(declaration.namePart.typeName.lexeme, enumFields));
       } else if (declaration is ClassDeclaration) {
         if (declaration.abstractKeyword != null) {
           classServices.add(declaration);
@@ -46,7 +46,7 @@ Future<Schema> resolveSchema(String schemaPath) async {
 
 Service _createService(ClassDeclaration declaration, List<Message> messages) {
   final genericTypes =
-      declaration.typeParameters?.typeParameters
+      declaration.namePart.typeParameters?.typeParameters
           .map((e) => e.name.lexeme)
           .toSet() ??
       {};
@@ -67,30 +67,25 @@ Service _createService(ClassDeclaration declaration, List<Message> messages) {
   );
 
   return Service(
-    declaration.name.lexeme,
+    declaration.namePart.typeName.lexeme,
     iosGenConfig,
     dartGenConfig,
     androidGenConfig,
-    declaration.members.whereType<MethodDeclaration>().map((method) {
+    declaration.body.members.whereType<MethodDeclaration>().map((method) {
       final returnType = method.returnType;
       if (returnType is NamedType) {
-        final responseMessage = returnType.name2.lexeme == 'void'
+        final responseMessage = returnType.name.lexeme == 'void'
             ? null
-            : messages.firstWhere((msg) => msg.name == returnType.name2.lexeme);
+            : messages.firstWhere((msg) => msg.name == returnType.name.lexeme);
 
         Message? requestMessage;
         if (method.parameters!.parameters.isNotEmpty) {
           final parameter = method.parameters!.parameters.first;
-          if (parameter is SimpleFormalParameter) {
-            final parameterTypeName =
-                (parameter.type! as NamedType).name2.lexeme;
+          final parameterTypeName = (parameter.type! as NamedType).name.lexeme;
 
-            requestMessage = messages.firstWhere(
-              (msg) => msg.name == parameterTypeName,
-            );
-          } else {
-            throw UnsupportedError('unsupported parameter $parameter');
-          }
+          requestMessage = messages.firstWhere(
+            (msg) => msg.name == parameterTypeName,
+          );
         }
 
         return Endpoint(responseMessage, requestMessage, method.name.lexeme);
@@ -103,8 +98,8 @@ Service _createService(ClassDeclaration declaration, List<Message> messages) {
 
 Message _createMessage(ClassDeclaration declaration) {
   return Message(
-    declaration.name.lexeme,
-    declaration.members
+    declaration.namePart.typeName.lexeme,
+    declaration.body.members
         .whereType<FieldDeclaration>()
         .map((e) => e.fields)
         .whereType<VariableDeclarationList>()
@@ -119,18 +114,18 @@ Message _createMessage(ClassDeclaration declaration) {
           final fieldType = switch (type.type) {
             final t? when t.isDartCoreMap => switch (arguments) {
               [final NamedType key, final NamedType value] => MapFieldType(
-                keyType: key.name2.lexeme,
-                valueType: value.name2.lexeme,
+                keyType: key.name.lexeme,
+                valueType: value.name.lexeme,
               ),
               _ => throw UnsupportedError('unsupported map type $type'),
             },
             final t? when t.isDartCoreList => switch (arguments) {
               [final NamedType element, ...] => ListFieldType(
-                type: element.name2.lexeme,
+                type: element.name.lexeme,
               ),
               _ => throw UnsupportedError('unsupported list type $type'),
             },
-            _ => OrdinaryFieldType(type: type.name2.lexeme),
+            _ => OrdinaryFieldType(type: type.name.lexeme),
           };
 
           return MessageField(

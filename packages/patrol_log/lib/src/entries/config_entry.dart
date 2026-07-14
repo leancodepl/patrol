@@ -5,7 +5,6 @@ class ConfigEntry extends Entry {
   ConfigEntry({required this.config, DateTime? timestamp})
     : super(timestamp: timestamp ?? DateTime.now(), type: EntryType.config);
 
-  @override
   factory ConfigEntry.fromJson(Map<String, dynamic> json) =>
       _$ConfigEntryFromJson(json);
 

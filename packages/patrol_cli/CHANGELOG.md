@@ -1,3 +1,8 @@
+## Unreleased
+
+- **Breaking:** Require Dart 3.11 or newer (ships with Flutter 3.41).
+- Bump `package_config` to `^3.0.0`.
+
 ## 4.5.0
 
 - Add `-weak_framework XCTest` linker flags to iOS and macOS `build-for-testing` to support Swift Package Manager integration.

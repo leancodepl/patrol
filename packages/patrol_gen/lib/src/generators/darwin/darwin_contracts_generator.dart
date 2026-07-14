@@ -36,11 +36,11 @@ class DarwinContractsGenerator {
         .map((e) {
           final optional = e.isOptional ? '?' : '';
           return switch (e.type) {
-            MapFieldType(keyType: final keyType, valueType: final valueType) =>
+            MapFieldType(:final keyType, :final valueType) =>
               '${e.name}: [${_transformType(keyType)}: ${_transformType(valueType)}]$optional',
-            ListFieldType(type: final type) =>
+            ListFieldType(:final type) =>
               '${e.name}: [${_transformType(type)}]$optional',
-            OrdinaryFieldType(type: final type) =>
+            OrdinaryFieldType(:final type) =>
               '${e.name}: ${_transformType(type)}$optional',
           };
         })

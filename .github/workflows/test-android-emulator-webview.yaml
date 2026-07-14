@@ -19,7 +19,7 @@ on:
       - 'gen_from_schema'
       - '!**.md'
       - '!**.mdx'
-      
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
@@ -37,7 +37,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ["3.38.x"]
+        flutter-version: ['3.41.x']
         flutter-channel: ["stable"]
 
     defaults:
@@ -113,7 +113,7 @@ jobs:
       - name: patrol build android
         env:
           MAPS_API_KEY: ${{ secrets.MAPS_API_KEY }}
-        run: patrol build android --tags='webview && android' --exclude patrol_test/web/,patrol_test/volume_test.dart,patrol_test/native_tests/volume_test.dart --verbose 
+        run: patrol build android --tags='webview && android' --exclude patrol_test/web/,patrol_test/volume_test.dart,patrol_test/native_tests/volume_test.dart --verbose
 
       - name: Upload APKs to emulator.wtf and wait for tests to finish
         id: tests_step

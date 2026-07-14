@@ -11,7 +11,7 @@ documentation: https://patrol.leancode.co
 topics: [test, e2e, flutter-test, claude, ai]
 
 environment:
-  sdk: ">=3.8.0 <4.0.0"
+  sdk: ">=3.11.0 <4.0.0"
 
 dependencies:
   adb: ^0.6.0
@@ -24,5 +24,4 @@ dependencies:
   patrol_cli: ^4.3.0
 
 dev_dependencies:
-  leancode_lint: ^17.0.0
-
+  leancode_lint: ^24.0.0

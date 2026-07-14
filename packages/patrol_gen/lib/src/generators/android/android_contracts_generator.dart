@@ -41,11 +41,11 @@ package ${config.package};
         .map((e) {
           final optional = e.isOptional ? '? = null' : '';
           return switch (e.type) {
-            MapFieldType(keyType: final keyType, valueType: final valueType) =>
+            MapFieldType(:final keyType, :final valueType) =>
               '    val ${e.name}: Map<${_transformType(keyType)}, ${_transformType(valueType)}>$optional',
-            ListFieldType(type: final type) =>
+            ListFieldType(:final type) =>
               '    val ${e.name}: List<${_transformType(type)}>$optional',
-            OrdinaryFieldType(type: final type) =>
+            OrdinaryFieldType(:final type) =>
               '    val ${e.name}: ${_transformType(type)}$optional',
           };
         })

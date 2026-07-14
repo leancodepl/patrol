@@ -11,9 +11,9 @@ screenshots:
     path: screenshots/logo.png
 
 environment:
-  sdk: '>=3.8.0 <4.0.0'
-  flutter: '>=3.32.0'
-  
+  sdk: '>=3.11.0 <4.0.0'
+  flutter: '>=3.41.0'
+
 platforms:
   android:
   ios:
@@ -31,4 +31,8 @@ dependencies:
   patrol_log: ^0.10.0
 
 dev_dependencies:
-  leancode_lint: ^17.0.0
+  leancode_lint: ^24.0.0
+
+dependency_overrides:
+  # Match *at least* Flutter 3.41's meta dependency
+  meta: ^1.17.0

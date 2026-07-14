@@ -19,7 +19,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ['3.38.x']
+        flutter-version: ['3.41.x']
         flutter-channel: ['stable']
         # We use older iOs because it allows to record video in the testlab
         device_model: ['iphone14pro']
@@ -87,7 +87,7 @@ jobs:
       - name: Set up Patrol CLI
         working-directory: packages/patrol_cli
         run: dart pub global activate --source path . && patrol
- 
+
       - name: Refresh e2e app dependencies
         run: flutter pub get
 

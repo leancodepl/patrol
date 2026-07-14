@@ -15,7 +15,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
-        flutter-version: ['3.38.x']
+        flutter-version: ['3.41.x']
         flutter-channel: ['stable']
 
     defaults:
@@ -55,9 +55,7 @@ jobs:
 
       - name: Run analyzer
         if: success() || failure()
-        run: |
-          flutter analyze
-          dart run custom_lint
+        run: dart analyze
 
       - name: dart format
         run: dart format --set-exit-if-changed .

@@ -152,7 +152,7 @@ class PatrolAppService extends PatrolAppServiceServer {
 
   @override
   Future<RunDartTestResponse> runDartTest(RunDartTestRequest request) async {
-    assert(_testExecutionCompleted.isCompleted == false);
+    assert(!_testExecutionCompleted.isCompleted);
     // patrolTest() always calls this method.
 
     print('PatrolAppService.runDartTest(${request.name}) called');

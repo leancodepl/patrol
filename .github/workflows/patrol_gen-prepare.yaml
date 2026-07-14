@@ -14,7 +14,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        dart-version: ['3.8']
+        dart-version: ['3.11']
 
     defaults:
       run:
@@ -34,9 +34,7 @@ jobs:
 
       - name: Run analyzer
         if: success() || failure()
-        run: |
-          dart analyze
-          dart run custom_lint
+        run: dart analyze
 
       - name: dart format
         if: success() || failure()

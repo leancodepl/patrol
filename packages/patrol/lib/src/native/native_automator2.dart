@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/src/native/native_automator.dart';
+import 'package:patrol/src/native/native_automator_config.dart';
 import 'package:patrol/src/platform/contracts/contracts.dart'
     show
         AndroidNativeView,
@@ -10,8 +11,6 @@ import 'package:patrol/src/platform/contracts/contracts.dart'
         Notification;
 import 'package:patrol/src/platform/platform_automator.dart';
 import 'package:patrol/src/platform/selector.dart';
-
-import 'native_automator_config.dart';
 
 // native2 is deprecated too so we can ignore the deprecation warning
 // ignore: deprecated_member_use_from_same_package

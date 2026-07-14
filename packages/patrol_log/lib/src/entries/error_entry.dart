@@ -5,7 +5,6 @@ class ErrorEntry extends Entry {
   ErrorEntry({required this.message, DateTime? timestamp})
     : super(timestamp: timestamp ?? DateTime.now(), type: EntryType.error);
 
-  @override
   factory ErrorEntry.fromJson(Map<String, dynamic> json) =>
       _$ErrorEntryFromJson(json);
 
