@@ -1,6 +1,6 @@
 ## Unreleased
 
-- Add a regression test for finding widgets by keys containing special characters (diacritics, symbols, emoji).
+- Add a regression test for finding widgets by keys containing special characters (diacritics, symbols, emoji). (#3169)
 
 ## 3.6.0
 
