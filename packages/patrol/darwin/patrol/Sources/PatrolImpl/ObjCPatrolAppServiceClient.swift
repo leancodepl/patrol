@@ -24,7 +24,7 @@ import Foundation
 
   private let client: PatrolAppServiceClient
 
-  private var passedPort: Int = {
+  private static func portFromEnvironment() -> Int {
     guard let portStr = ProcessInfo.processInfo.environment[envPortKey] else {
       Logger.shared.i("\(envPortKey) is null, falling back to default (\(defaultPort))")
       return defaultPort
@@ -38,16 +38,21 @@ import Foundation
     }
 
     return portInt
-  }()
+  }
 
-  @objc public override init() {
-    self.port = passedPort
+  @objc public init(port: Int) {
+    self.port = port
 
     // https://github.com/leancodepl/patrol/issues/1683
     let timeout = TimeInterval(2 * 60 * 60)
 
     client = PatrolAppServiceClient(port: port, address: "localhost", timeout: timeout)
+    super.init()
     NSLog("PatrolAppServiceClient: created, port: \(port)")
+  }
+
+  @objc public convenience override init() {
+    self.init(port: Self.portFromEnvironment())
   }
 
   @objc public func listDartTests(completion: @escaping ([[String: Any]]?, Error?) -> Void) {

@@ -1,4 +1,5 @@
 import 'package:patrol/src/platform/mobile/mobile_automator.dart';
+import 'package:patrol/src/platform/mobile/patrol_runtime_ports.dart';
 
 void _defaultPrintLogger(String message) {
   // TODO: Use a logger instead of print
@@ -9,27 +10,35 @@ void _defaultPrintLogger(String message) {
 /// Configuration for [MobileAutomator].
 class MobileAutomatorConfig {
   /// Creates a new [MobileAutomatorConfig].
-  const MobileAutomatorConfig({
+  MobileAutomatorConfig({
     String? host,
     String? port,
     Duration? connectionTimeout,
     Duration? findTimeout,
     void Function(String)? logger,
-  }) : host =
-           host ??
-           const String.fromEnvironment(
-             'PATROL_HOST',
-             defaultValue: 'localhost',
-           ),
-       port =
-           port ??
-           const String.fromEnvironment(
-             'PATROL_TEST_SERVER_PORT',
-             defaultValue: '8081',
-           ),
+  }) : host = host ?? _defaultHost(),
+       port = port ?? _defaultPort(),
        connectionTimeout = connectionTimeout ?? const Duration(seconds: 60),
        findTimeout = findTimeout ?? const Duration(seconds: 10),
        logger = logger ?? _defaultPrintLogger;
+
+  static String _defaultHost() {
+    return const String.fromEnvironment(
+      'PATROL_HOST',
+      defaultValue: 'localhost',
+    );
+  }
+
+  static String _defaultPort() {
+    final launchArgPort = PatrolRuntimePorts.testServerPort();
+    if (launchArgPort != null) {
+      return launchArgPort.toString();
+    }
+    return const String.fromEnvironment(
+      'PATROL_TEST_SERVER_PORT',
+      defaultValue: '8081',
+    );
+  }
 
   /// Host on which Patrol server instrumentation is running.
   final String host;

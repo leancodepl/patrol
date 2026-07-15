@@ -4,6 +4,7 @@
 import 'dart:async';
 
 import 'package:http_multi_server/http_multi_server.dart';
+import 'package:patrol/src/platform/mobile/patrol_runtime_ports.dart';
 import 'package:patrol/patrol.dart';
 import 'package:patrol/src/common.dart';
 import 'package:patrol/src/platform/contracts/contracts.dart';
@@ -55,10 +56,18 @@ Future<void> runAppService(PatrolAppService service) async {
 class PatrolAppService extends PatrolAppServiceServer {
   /// Creates a new [PatrolAppService].
   PatrolAppService({required this.topLevelDartTestGroup})
-    : port = const int.fromEnvironment(
-        'PATROL_APP_SERVER_PORT',
-        defaultValue: 8082,
-      );
+    : port = _resolveAppServerPort();
+
+  static int _resolveAppServerPort() {
+    final launchArgPort = PatrolRuntimePorts.appServerPort();
+    if (launchArgPort != null) {
+      return launchArgPort;
+    }
+    return const int.fromEnvironment(
+      'PATROL_APP_SERVER_PORT',
+      defaultValue: 8082,
+    );
+  }
 
   /// Port the server will use to listen for incoming HTTP traffic.
   final int port;

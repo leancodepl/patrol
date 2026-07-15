@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Run Patrol Android integration tests via local Marathon.
+# Requires: patrol CLI, marathon CLI, Java (installed with marathon via brew).
+#
+# Usage (from this app's root):
+#   ./run_marathon_android
+#   ./run_marathon_android --skip-build
+
+APP_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$APP_ROOT"
+
+SKIP_BUILD=false
+for arg in "$@"; do
+  case "$arg" in
+    --skip-build) SKIP_BUILD=true ;;
+    *) echo "Unknown argument: $arg" >&2; exit 1 ;;
+  esac
+done
+
+if ! command -v marathon >/dev/null 2>&1; then
+  echo "error: marathon CLI not found. Install with:" >&2
+  echo "  brew tap malinskiy/tap && brew install malinskiy/tap/marathon" >&2
+  exit 1
+fi
+
+if ! command -v patrol >/dev/null 2>&1; then
+  echo "error: patrol CLI not found. From the patrol repo root run:" >&2
+  echo "  dart pub global activate --source path packages/patrol_cli" >&2
+  exit 1
+fi
+
+if [[ "$SKIP_BUILD" == false ]]; then
+  echo "Building Android integration test artifacts..."
+  patrol build android
+fi
+
+echo "Running Marathon Android..."
+marathon run -m Marathonfile.android

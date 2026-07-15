@@ -1,0 +1,144 @@
+---
+title: Marathon
+---
+
+[Marathon] is a test runner for parallel execution on local device pools. Patrol
+integrates with Marathon the same way as other device farms: build standard
+native test artifacts with `patrol build`, then run Marathon externally.
+
+<Info>
+  Before you proceed, complete the [native setup](/documentation) guide for your
+  target platform.
+</Info>
+
+## Prerequisites
+
+- **Android**: any OS with Android SDK and emulators or physical devices
+- **iOS (local Marathon)**: macOS with Xcode, iOS simulators, and Java
+  (installed automatically with Marathon via Homebrew)
+- [Patrol CLI](/cli-commands/build) matching your project's `patrol` package
+  version
+- [Marathon CLI](https://github.com/MarathonLabs/marathon) 0.10+:
+
+```bash
+brew tap malinskiy/tap
+brew install malinskiy/tap/marathon
+```
+
+## Android
+
+Patrol emits standard instrumentation APKs. Set `testParserConfiguration.type` to
+`remote` so Marathon discovers Dart tests at runtime through `PatrolJUnitRunner`
+(the same mechanism Android Test Orchestrator uses).
+
+### 1. Add Marathonfile
+
+Create `Marathonfile.android` in your app root:
+
+```yaml
+name: "My app Android"
+outputDir: "build/reports/marathon/android"
+vendorConfiguration:
+  type: "Android"
+  applicationApk: "build/app/outputs/apk/debug/app-debug.apk"
+  testApplicationApk: "build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk"
+  testParserConfiguration:
+    type: "remote"
+```
+
+Adjust APK paths if you use flavors or release builds.
+
+### 2. Build and run
+
+```bash
+patrol build android
+marathon run -m Marathonfile.android
+```
+
+Marathon discovers connected emulators automatically. Reports are written to
+`outputDir`.
+
+## iOS (simulator)
+
+Patrol registers XCTest methods at runtime, so set
+`testParserConfiguration.type` to `xctest`. Marathon's default parser will not
+find any tests.
+
+Set `batchingStrategy` to run multiple Patrol tests per `xcodebuild` invocation
+— Marathon's default is one test per batch, which is significantly slower.
+
+### 1. Add Marathonfile and Marathondevices
+
+Create `Marathonfile.ios`:
+
+```yaml
+name: "My app iOS"
+outputDir: "build/reports/marathon/ios"
+batchingStrategy:
+  type: "fixed-size"
+  size: 10
+vendorConfiguration:
+  type: "iOS"
+  testParserConfiguration:
+    type: "xctest"
+  bundle:
+    application: "build/ios_integ/Build/Products/Debug-iphonesimulator/Runner.app"
+    testApplication: "build/ios_integ/Build/Products/Debug-iphonesimulator/RunnerUITests-Runner.app/PlugIns/RunnerUITests.xctest"
+    testType: "xcuitest"
+```
+
+Create `Marathondevices` in the same directory:
+
+```yaml
+workers:
+  - transport:
+      type: local
+    devices:
+      - type: simulatorProfile
+        deviceType: com.apple.CoreSimulator.SimDeviceType.iPhone-17
+      - type: simulatorProfile
+        deviceType: com.apple.CoreSimulator.SimDeviceType.iPhone-17-Pro
+```
+
+Use `simulatorProfile` so Marathon provisions simulators automatically. Pick
+device types available on your Mac (`xcrun simctl list devicetypes`).
+
+To run tests in parallel on one Mac, add multiple simulators to
+`Marathondevices` and set `batchingStrategy.size` smaller than your test count
+so Marathon splits batches across devices.
+
+### 2. Build and run
+
+```bash
+patrol build ios --debug --simulator
+marathon run -m Marathonfile.ios
+```
+
+Or use the all-in-one script from the e2e app:
+
+```bash
+./run_marathon_ios
+```
+
+Verify discovery with:
+
+```bash
+marathon parse -m Marathonfile.ios
+```
+
+This should list all Patrol tests.
+
+## Reference example
+
+The Patrol repository's [e2e app](https://github.com/leancodepl/patrol/tree/master/dev/e2e_app)
+includes working configs:
+
+| File | Purpose |
+|------|---------|
+| `Marathonfile.android` | Android Marathon config |
+| `Marathonfile.ios` | iOS Marathon config |
+| `Marathondevices` | Local iOS simulator pool |
+| `run_marathon_android` | Build + run Android |
+| `run_marathon_ios` | Build + run iOS |
+
+[Marathon]: https://github.com/MarathonLabs/marathon

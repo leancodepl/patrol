@@ -68,6 +68,12 @@ class PlatformAutomatorConfig {
 
     /// Called when a native action is performed.
     void Function(String)? logger,
+
+    /// Host of the native Patrol automation server.
+    String? host,
+
+    /// Port of the native Patrol automation server.
+    String? port,
   }) {
     return PlatformAutomatorConfig(
       androidConfig: AndroidAutomatorConfig(
@@ -77,6 +83,8 @@ class PlatformAutomatorConfig {
         connectionTimeout: connectionTimeout,
         findTimeout: findTimeout,
         logger: logger,
+        host: host,
+        port: port,
       ),
       iosConfig: IOSAutomatorConfig(
         iosInstalledApps: iosInstalledApps,
@@ -86,6 +94,8 @@ class PlatformAutomatorConfig {
         connectionTimeout: connectionTimeout,
         findTimeout: findTimeout,
         logger: logger,
+        host: host,
+        port: port,
       ),
       webConfig: WebAutomatorConfig(logger: logger),
     );
@@ -94,8 +104,8 @@ class PlatformAutomatorConfig {
   /// Creates a new [PlatformAutomatorConfig] suitable for test setup.
   factory PlatformAutomatorConfig.defaultConfig() {
     return PlatformAutomatorConfig(
-      androidConfig: const AndroidAutomatorConfig(),
-      iosConfig: const IOSAutomatorConfig(),
+      androidConfig: AndroidAutomatorConfig(),
+      iosConfig: IOSAutomatorConfig(),
       webConfig: const WebAutomatorConfig(),
     );
   }
@@ -125,8 +135,8 @@ class PlatformAutomator {
   /// Creates a new [PlatformAutomator].
   PlatformAutomator({PlatformAutomatorConfig? config}) {
     final androidConfig =
-        config?.androidConfig ?? const AndroidAutomatorConfig();
-    final iosConfig = config?.iosConfig ?? const IOSAutomatorConfig();
+        config?.androidConfig ?? AndroidAutomatorConfig();
+    final iosConfig = config?.iosConfig ?? IOSAutomatorConfig();
     final webConfig = config?.webConfig ?? const WebAutomatorConfig();
 
     android = action.fallback(

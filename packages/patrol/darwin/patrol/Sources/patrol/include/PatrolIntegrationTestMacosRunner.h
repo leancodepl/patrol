@@ -15,6 +15,15 @@
                                                                                                             \
   @implementation __test_class                                                                              \
                                                                                                             \
+  +(void)launchPatrolAppWithServer : (PatrolServer *)server {                                               \
+    XCUIApplication *app = [[XCUIApplication alloc] init];                                                  \
+    app.launchArguments = @[                                                                                  \
+      [NSString stringWithFormat:@"--PATROL_TEST_SERVER_PORT=%d", server.boundTestPort],                      \
+      [NSString stringWithFormat:@"--PATROL_APP_SERVER_PORT=%d", server.boundAppPort],                       \
+    ];                                                                                                        \
+    [app launch];                                                                                             \
+  }                                                                                                         \
+                                                                                                            \
   +(NSArray<NSInvocation *> *)testInvocations {                                                             \
     /* Start native automation gRPC server */                                                               \
     PatrolServer *server = [[PatrolServer alloc] init];                                                     \
@@ -27,12 +36,13 @@
     NSLog(@"Create PatrolAppServiceClient");                                                                \
                                                                                                             \
     /* Create a client for PatrolAppService, which lets us list and run Dart tests */                       \
-    __block ObjCPatrolAppServiceClient *appServiceClient = [[ObjCPatrolAppServiceClient alloc] init];       \
+    __block ObjCPatrolAppServiceClient *appServiceClient =                                                  \
+        [[ObjCPatrolAppServiceClient alloc] initWithPort:server.boundAppPort];                              \
                                                                                                             \
     NSLog(@"Run the app for the first time");                                                               \
                                                                                                             \
     /* Run the app for the first time to gather Dart tests */                                               \
-    [[[XCUIApplication alloc] init] launch];                                                                \
+    [__test_class launchPatrolAppWithServer:server];                                                        \
                                                                                                             \
     NSLog(@"Waiting until the app reports that it is ready");                                               \
                                                                                                             \
@@ -78,7 +88,7 @@
       BOOL skip = [dartTest[@"skip"] boolValue];                                                            \
                                                                                                             \
       IMP implementation = imp_implementationWithBlock(^(id _self) {                                        \
-        [[[XCUIApplication alloc] init] launch];                                                            \
+        [__test_class launchPatrolAppWithServer:server];                                                    \
         if (skip) {                                                                                         \
           XCTSkip(@"Skip that test \"%@\"", dartTestName);                                                  \
         }                                                                                                   \

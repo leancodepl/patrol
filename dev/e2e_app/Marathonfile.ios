@@ -1,0 +1,13 @@
+name: "Patrol e2e_app iOS"
+outputDir: "build/reports/marathon/ios"
+batchingStrategy:
+  type: "fixed-size"
+  size: 5
+vendorConfiguration:
+  type: "iOS"
+  testParserConfiguration:
+    type: "xctest"
+  bundle:
+    application: "build/ios_integ/Build/Products/Debug-iphonesimulator/Runner.app"
+    testApplication: "build/ios_integ/Build/Products/Debug-iphonesimulator/RunnerUITests-Runner.app/PlugIns/RunnerUITests.xctest"
+    testType: "xcuitest"
