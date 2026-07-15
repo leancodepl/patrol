@@ -4,6 +4,7 @@ import 'dart:io' show Process;
 import 'package:adb/adb.dart';
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
+import 'package:meta/meta.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/extensions/completer.dart';
 import 'package:patrol_cli/src/base/logger.dart';
@@ -46,6 +47,7 @@ class AndroidTestBackend {
   late final String? javaPath;
 
   Future<void> build(AndroidAppOptions options) async {
+    verifyAndroidEnvironment();
     await buildApkConfigOnly(options.flutter);
     await loadJavaPathFromFlutterDoctor(options.flutter.command);
     await detectOrchestratorVersion(options);
@@ -116,6 +118,44 @@ class AndroidTestBackend {
         throw Exception(cause);
       }
     });
+  }
+
+  /// Verifies that the Android SDK is reachable before invoking gradlew.
+  ///
+  /// Without an Android SDK, the gradlew invocation hangs with no clear
+  /// error message. See https://github.com/leancodepl/patrol/issues/2364.
+  @visibleForTesting
+  void verifyAndroidEnvironment() {
+    final androidHome = _platform.environment['ANDROID_HOME'];
+    final androidSdkRoot = _platform.environment['ANDROID_SDK_ROOT'];
+    final sdkPath = switch ((androidHome, androidSdkRoot)) {
+      (final String home, _) when home.isNotEmpty => home,
+      (_, final String root) when root.isNotEmpty => root,
+      _ => null,
+    };
+
+    if (sdkPath == null) {
+      final linkHint = switch (_platform.operatingSystem) {
+        Platform.linux ||
+        Platform.macOS => 'https://developer.android.com/tools/variables#set',
+        Platform.windows =>
+          'https://www.ibm.com/docs/en/rtw/11.0.0?topic=prwut-setting-changing-android-home-path-in-windows-operating-systems',
+        _ => '',
+      };
+      throwToolExit(
+        r'Env var $ANDROID_HOME is not set. Set it to the path of your '
+        'Android SDK (see the link: $linkHint) or run `patrol doctor` to '
+        'diagnose your setup.',
+      );
+    }
+
+    if (!_rootDirectory.fileSystem.directory(sdkPath).existsSync()) {
+      throwToolExit(
+        'Android SDK directory does not exist: $sdkPath. Make sure '
+        r'$ANDROID_HOME points to a valid Android SDK installation or run '
+        '`patrol doctor` to diagnose your setup.',
+      );
+    }
   }
 
   /// Load the Java path from the output of `flutter doctor`.
@@ -253,6 +293,7 @@ class AndroidTestBackend {
     required bool clearTestSteps,
     void Function(Entry entry)? onLogEntry,
   }) async {
+    verifyAndroidEnvironment();
     await _disposeScope.run((scope) async {
       // Read patrol logs from logcat
       final processLogcat =

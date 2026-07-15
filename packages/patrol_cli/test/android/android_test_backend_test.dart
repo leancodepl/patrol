@@ -3,6 +3,7 @@ import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
+import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:patrol_cli/src/runner/flutter_command.dart';
@@ -187,6 +188,97 @@ void main() {
               (e) => e.toString(),
               'message',
               exceptionMessage,
+            ),
+          ),
+        );
+      });
+    });
+
+    group('verifyAndroidEnvironment', () {
+      AndroidTestBackend createBackend(Platform platform) {
+        return AndroidTestBackend(
+          adb: MockAdb(),
+          processManager: processManager,
+          platform: platform,
+          rootDirectory: rootDirectory,
+          parentDisposeScope: DisposeScope(),
+          logger: logger,
+        );
+      }
+
+      test(
+        'throws ToolExit when neither ANDROID_HOME nor ANDROID_SDK_ROOT is set',
+        () {
+          final backend = createBackend(
+            FakePlatform(operatingSystem: Platform.macOS, environment: {}),
+          );
+
+          expect(
+            backend.verifyAndroidEnvironment,
+            throwsA(
+              isA<ToolExit>().having(
+                (e) => e.message,
+                'message',
+                contains(r'$ANDROID_HOME is not set'),
+              ),
+            ),
+          );
+        },
+      );
+
+      test(
+        'throws ToolExit when ANDROID_HOME points to a missing directory',
+        () {
+          final backend = createBackend(
+            FakePlatform(environment: {'ANDROID_HOME': '/nonexistent/sdk'}),
+          );
+
+          expect(
+            backend.verifyAndroidEnvironment,
+            throwsA(
+              isA<ToolExit>().having(
+                (e) => e.message,
+                'message',
+                contains('does not exist: /nonexistent/sdk'),
+              ),
+            ),
+          );
+        },
+      );
+
+      test('passes when ANDROID_HOME points to an existing directory', () {
+        fs.directory('/android/sdk').createSync(recursive: true);
+        final backend = createBackend(
+          FakePlatform(environment: {'ANDROID_HOME': '/android/sdk'}),
+        );
+
+        expect(backend.verifyAndroidEnvironment, returnsNormally);
+      });
+
+      test('falls back to ANDROID_SDK_ROOT when ANDROID_HOME is not set', () {
+        fs.directory('/android/sdk').createSync(recursive: true);
+        final backend = createBackend(
+          FakePlatform(environment: {'ANDROID_SDK_ROOT': '/android/sdk'}),
+        );
+
+        expect(backend.verifyAndroidEnvironment, returnsNormally);
+      });
+
+      test('treats an empty ANDROID_HOME as not set', () {
+        final backend = createBackend(
+          FakePlatform(
+            operatingSystem: Platform.macOS,
+            environment: {'ANDROID_HOME': ''},
+          ),
+        );
+
+        expect(
+          backend.verifyAndroidEnvironment,
+          throwsA(
+            isA<ToolExit>().having(
+              (e) => e.message,
+              'message',
+              contains(r'$ANDROID_HOME is not set'),
             ),
           ),
         );
