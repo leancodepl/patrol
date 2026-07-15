@@ -1,3 +1,7 @@
+## Unreleased
+
+- Add a regression test for finding widgets by keys containing special characters (diacritics, symbols, emoji).
+
 ## 3.6.0
 
 - Bump `patrol_log` to `^0.10.0`.
