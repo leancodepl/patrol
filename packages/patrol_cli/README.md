@@ -22,6 +22,9 @@ Learn more about Patrol:
 - [Simplifying Flutter Web Testing: Patrol Web][article_web]
 - [Patrol VS Code Extension - A Better Way to Run and Debug Flutter UI Tests][article_vscode]
 
+> **Patrol 4.7.0 adds Swift Package Manager support for iOS and macOS!**
+> If you migrate your project to SPM, a few small setup changes are needed — see the [iOS setup][docs_ios_setup_spm] guide for details.
+
 ## Patrol CLI
 
 Command-line tool to run and debug tests written with [`patrol`][patrol_link] framework.
@@ -123,6 +126,7 @@ We are **top-tier experts** focused on Flutter Enterprise solutions.
 [patrol_github_link]: https://github.com/leancodepl/patrol
 [patrol_discord_link]: https://discord.gg/ukBK5t4EZg
 [docs]: https://patrol.leancode.co
+[docs_ios_setup_spm]: https://patrol.leancode.co/documentation?utm_source=github.com&utm_medium=referral&utm_campaign=patrol-readme#ios-setup-configure-runner-uitests
 [docs_finders]: https://patrol.leancode.co/finders/overview
 [promo_graphics]: ../../assets/promo_banner.png
 [article_web]: https://leancode.co/blog/patrol-web-support

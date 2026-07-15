@@ -1,3 +1,7 @@
+## 4.7.1
+
+- Add a Swift Package Manager support note to the README.
+
 ## 4.7.0
 
 - Add Swift Package Manager (SPM) support for iOS and macOS. CocoaPods remains supported for projects that have not migrated to SPM.

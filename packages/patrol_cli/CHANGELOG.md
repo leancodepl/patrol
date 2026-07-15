@@ -2,6 +2,10 @@
 
 - Download only Chromium instead of all default Playwright browsers during web runner setup. (#3156)
 
+## 4.5.1
+
+- Add a Swift Package Manager support note to the README.
+
 ## 4.5.0
 
 - Add `-weak_framework XCTest` linker flags to iOS and macOS `build-for-testing` to support Swift Package Manager integration.
