@@ -1,3 +1,7 @@
+## Unreleased
+
+- Fix incorrect test description in the failure log entry when a test fails in `patrol develop` (hot restart) mode.
+
 ## 4.7.1
 
 - Add a Swift Package Manager support note to the README.

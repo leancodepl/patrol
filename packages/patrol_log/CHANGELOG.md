@@ -1,3 +1,7 @@
+## Unreleased
+
+- Fix first word of a test description being displayed as the test file name when the finished test entry name has no file prefix.
+
 ## 0.10.0
 
 - Bump `equatable` to `^2.1.0` and migrate log `Entry` types from deprecated `EquatableMixin` to `with Equatable`.
