@@ -58,6 +58,29 @@ void main() {
       },
     );
 
+    test(
+      'does not strip a first word containing a dot (class name, version)',
+      () {
+        final classNameEntry = TestEntry(
+          name: 'MyClass.myMethod should work',
+          status: TestEntryStatus.failure,
+        );
+        expect(
+          classNameEntry.pretty(),
+          '${Emojis.failure} MyClass.myMethod should work',
+        );
+
+        final versionEntry = TestEntry(
+          name: '1.0 should do something',
+          status: TestEntryStatus.failure,
+        );
+        expect(
+          versionEntry.pretty(),
+          '${Emojis.failure} 1.0 should do something',
+        );
+      },
+    );
+
     test('appends error to a failed test without file prefix', () {
       final entry = TestEntry(
         name: 'Sign up full onboarding flow',

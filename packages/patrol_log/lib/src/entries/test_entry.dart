@@ -43,17 +43,17 @@ class TestEntry extends Entry {
   /// `permissions.permissions_location_test`, followed by the test
   /// description.
   ///
-  /// Test files always match `*_test.dart`, so a prefix either ends with
-  /// `_test` or contains a `.` separating directory names. Without this guard,
-  /// a name logged without the prefix would lose the first word of its
-  /// description to [_filePath].
+  /// Test files always match `*_test.dart`, so a prefix always ends with
+  /// `_test`, also for nested paths (`.` separates directory names). Without
+  /// this guard, a name logged without the prefix would lose the first word
+  /// of its description to [_filePath].
   bool get _hasFilePathPrefix {
     final firstSpace = name.indexOf(' ');
     if (firstSpace == -1) {
       return false;
     }
     final firstToken = name.substring(0, firstSpace);
-    return firstToken.contains('.') || firstToken.endsWith('_test');
+    return firstToken.endsWith('_test');
   }
 
   /// Returns the file path of the test.
