@@ -1,6 +1,6 @@
 ## Unreleased
 
-- Fail fast with a clear error instead of hanging on gradlew when `ANDROID_HOME` is not set or points to a missing directory.
+- Fail fast with a clear error instead of hanging on gradlew when `ANDROID_HOME` is not set or points to a missing directory. (#3168)
 - Download only Chromium instead of all default Playwright browsers during web runner setup. (#3156)
 
 ## 4.5.1
