@@ -1,3 +1,7 @@
+## Unreleased
+
+- Download only Chromium instead of all default Playwright browsers during web runner setup. (#3156)
+
 ## 4.5.1
 
 - Add a Swift Package Manager support note to the README.

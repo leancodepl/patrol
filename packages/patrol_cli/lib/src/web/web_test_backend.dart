@@ -727,7 +727,7 @@ class WebTestBackend {
       ..info('Node.js dependencies installed successfully.')
       ..info('Installing Playwright dependencies...');
     final result = await _processManager.run(
-      ['npx', 'playwright', 'install'],
+      ['npx', 'playwright', 'install', 'chromium'],
       workingDirectory: webRunnerPath,
       runInShell: true,
     );
@@ -735,7 +735,7 @@ class WebTestBackend {
     if (result.exitCode != 0) {
       throw ProcessException(
         'npx',
-        ['playwright', 'install'],
+        ['playwright', 'install', 'chromium'],
         'Failed to install Playwright dependencies:\n'
             'STDOUT: ${result.stdout}\n'
             'STDERR: ${result.stderr}',
