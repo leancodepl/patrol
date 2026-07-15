@@ -1,6 +1,6 @@
 ## Unreleased
 
-- Fix incorrect test description in the failure log entry when a test fails in `patrol develop` (hot restart) mode.
+- Fix incorrect test description in the failure log entry when a test fails in `patrol develop` (hot restart) mode. (#3167)
 
 ## 4.7.1
 

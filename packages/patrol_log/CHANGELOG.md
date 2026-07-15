@@ -1,6 +1,6 @@
 ## Unreleased
 
-- Fix first word of a test description being displayed as the test file name when the finished test entry name has no file prefix.
+- Fix first word of a test description being displayed as the test file name when the finished test entry name has no file prefix. (#3167)
 
 ## 0.10.0
 
