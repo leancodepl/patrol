@@ -209,7 +209,8 @@ class AndroidVideoRecordingManager extends VideoRecordingManager {
         _logger.detail('Failed to remove video file from device: $err');
       }
 
-      _logger.info(
+      addSavedVideo(localVideoPath);
+      _logger.detail(
         'Video recording saved for test "$testName": $localVideoPath',
       );
     } catch (err) {

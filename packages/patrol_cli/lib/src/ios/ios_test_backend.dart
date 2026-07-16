@@ -263,6 +263,10 @@ class IOSTestBackend {
       // Don't print the summary in develop
       if (!interruptible) {
         _logger.info(patrolLogReader.summary);
+        final recordingSummary = videoRecordingManager?.recordingSummary;
+        if (recordingSummary != null) {
+          _logger.info(recordingSummary);
+        }
       }
 
       if (exitCode == 0) {
