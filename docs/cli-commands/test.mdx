@@ -157,6 +157,25 @@ To achieve full isolation between test runs:
 patrol test --full-isolation
 ```
 
+### Video recording
+
+Record a video of each test case using `--record-video`:
+
+```bash
+patrol test --record-video
+```
+
+Videos are saved as `.mp4` files in `<test-directory>/videos` (override with
+`--video-output-dir`). Supported on Android emulators and iOS simulators.
+
+- Physical Android devices may also work, depending on the vendor (some block `screenrecord`).
+- Physical iOS devices are not supported.
+- `--video-size` and `--video-bit-rate` apply to Android only.
+
+<Warning>
+    Recording is skipped on unsupported devices, and the test still runs.
+</Warning>
+
 ### Web Platform
 
 Patrol supports running tests on Flutter web using Playwright. To run tests on web:
