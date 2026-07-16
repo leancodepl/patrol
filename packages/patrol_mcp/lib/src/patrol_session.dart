@@ -7,6 +7,8 @@ import 'package:logging/logging.dart';
 import 'package:path/path.dart' as p;
 import 'package:patrol_cli/patrol_cli.dart';
 
+import 'device_lister.dart';
+import 'device_selection.dart';
 import 'flutter_command_resolver.dart';
 import 'log_streaming.dart';
 
@@ -152,6 +154,7 @@ class PatrolStatus {
     required this.output,
     this.currentTestFile,
     this.warning,
+    this.deviceSelectionNote,
     this.deviceName,
     this.deviceId,
     this.devicePlatform,
@@ -162,6 +165,7 @@ class PatrolStatus {
   final String output;
   final String? currentTestFile;
   final String? warning;
+  final String? deviceSelectionNote;
   final String? deviceName;
   final String? deviceId;
   final String? devicePlatform;
@@ -173,6 +177,7 @@ class PatrolStatus {
     'testState': testState.name,
     'currentTestFile': ?currentTestFile,
     'warning': ?warning,
+    'deviceSelectionNote': ?deviceSelectionNote,
     'deviceName': ?deviceName,
     'deviceId': ?deviceId,
     'devicePlatform': ?devicePlatform,
@@ -205,6 +210,10 @@ final class PatrolSession {
   DevelopService? _developService;
   int? _testServerPort;
 
+  /// A note about device selection surfaced in the next status (e.g. which
+  /// device was auto-selected, or that a `device` argument was overridden).
+  String? _deviceSelectionNote;
+
   final _logStreaming = LogStreaming.instance;
 
   /// The device discovered by the last [startAndWait] call.
@@ -212,14 +221,21 @@ final class PatrolSession {
   int? get testServerPort => _testServerPort;
 
   /// Returns null if started successfully, or a warning message if blocked
-  Future<String?> _start(String testFile) async {
+  Future<String?> _start(String testFile, {String? device}) async {
+    _deviceSelectionNote = null;
     if (_isRunning) {
       if (_currentTestFile != testFile) {
         return 'Patrol session is already running "$_currentTestFile". '
             'Cannot start different test "$testFile". '
             'Use patrol-quit first or run the same test file.';
       }
-      // Same test file - hot restart
+      // Same test file - hot restart. The device can't change on hot restart.
+      if (device != null) {
+        _deviceSelectionNote =
+            'Device "$device" ignored: hot-restarting the running session on '
+            '${this.device?.name ?? 'the current device'}. Use patrol-quit '
+            'first to switch devices.';
+      }
       sendCommand(PatrolCommand.hotRestart);
       return null;
     }
@@ -244,11 +260,53 @@ final class PatrolSession {
     final flutterResolution = FlutterCommandResolver().resolve(
       projectRoot: resolvedCwd,
     );
+    final flutterCommand = flutterResolution.command;
 
-    final (options, globalResults) = DevelopOptions.parseArgs(
+    // First parse: see what PATROL_FLAGS already specifies.
+    final (flagOptions, globalResults) = DevelopOptions.parseArgs(
       flagParts,
       target: testFile,
-      flutterCommand: flutterResolution.command,
+      flutterCommand: flutterCommand,
+    );
+    final verbose = globalResults['verbose'] as bool? ?? false;
+
+    // Resolve the device. Precedence: PATROL_FLAGS `--device` > `device`
+    // argument > auto-selection.
+    if (flagOptions.devices.isNotEmpty) {
+      if (device != null) {
+        _deviceSelectionNote =
+            'Ignored device "$device": PATROL_FLAGS already pins '
+            '--device ${flagOptions.devices.join(', ')}.';
+      }
+    } else if (device != null) {
+      flagParts.addAll(['--device', device]);
+    } else {
+      final List<Device> attached;
+      try {
+        attached = await listAttachedDevices(
+          flutterCommand: flutterCommand ?? const FlutterCommand('flutter'),
+        );
+      } catch (e) {
+        return 'Failed to detect attached devices: $e';
+      }
+      final selected = autoSelectDevice(attached);
+      if (selected == null) {
+        return 'No Android or iOS device detected. Start an emulator or '
+            'simulator (or connect a device) and try again.';
+      }
+      flagParts.addAll(['--device', selected.id]);
+      if (supportedDevices(attached).length > 1) {
+        _deviceSelectionNote =
+            'Auto-selected ${selected.name} (${selected.id}); '
+            'pass "device" to run on a different one.';
+      }
+    }
+
+    // Final parse, now including the resolved `--device` (if any).
+    final (options, _) = DevelopOptions.parseArgs(
+      flagParts,
+      target: testFile,
+      flutterCommand: flutterCommand,
     );
 
     // Log the effective Flutter command once (to stderr via the logging sink).
@@ -272,7 +330,6 @@ final class PatrolSession {
       );
     }
     _testServerPort = options.testServerPort;
-    final verbose = globalResults['verbose'] as bool? ?? false;
 
     // Create a DisposeScope for the session lifecycle
     final disposeScope = DisposeScope();
@@ -388,6 +445,7 @@ final class PatrolSession {
     _isRunning = false;
     _currentTestFile = null;
     _testServerPort = null;
+    _deviceSelectionNote = null;
 
     await _logStreaming.stopLogging();
 
@@ -500,6 +558,7 @@ final class PatrolSession {
       testState: _testState,
       output: _formatLogs(_outputs),
       currentTestFile: _currentTestFile,
+      deviceSelectionNote: _deviceSelectionNote,
       deviceName: dev?.name,
       deviceId: dev?.id,
       devicePlatform: dev?.targetPlatform.name,
@@ -547,8 +606,9 @@ final class PatrolSession {
   Future<PatrolStatus> startAndWait(
     String testFile, {
     Duration? timeout,
+    String? device,
   }) async {
-    final warning = await _start(testFile);
+    final warning = await _start(testFile, device: device);
     if (warning != null) {
       // Return current status with warning (blocked by different test)
       final status = getStatus();
@@ -558,6 +618,7 @@ final class PatrolSession {
         output: status.output,
         currentTestFile: status.currentTestFile,
         warning: warning,
+        deviceSelectionNote: status.deviceSelectionNote,
         deviceName: status.deviceName,
         deviceId: status.deviceId,
         devicePlatform: status.devicePlatform,
