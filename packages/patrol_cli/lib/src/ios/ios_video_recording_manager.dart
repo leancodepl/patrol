@@ -4,12 +4,12 @@ import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/crossplatform/video_recording_config.dart';
+import 'package:patrol_cli/src/crossplatform/video_recording_manager.dart';
 import 'package:patrol_cli/src/devices.dart';
-import 'package:patrol_log/patrol_log.dart';
 import 'package:process/process.dart';
 
 /// Manages video recording for individual test cases on iOS devices and simulators.
-class IOSVideoRecordingManager {
+class IOSVideoRecordingManager extends VideoRecordingManager {
   IOSVideoRecordingManager({
     required ProcessManager processManager,
     required Directory rootDirectory,
@@ -35,7 +35,7 @@ class IOSVideoRecordingManager {
   String? _currentVideoFilename;
   String? _currentTestName;
 
-  /// Starts video recording for a test case.
+  @override
   Future<void> startRecording(String testName) async {
     if (!_config.enabled) {
       return;
@@ -47,7 +47,7 @@ class IOSVideoRecordingManager {
     _currentTestName = testName;
     _currentVideoFilename = _config.generateVideoFilename(
       deviceId: _device.id,
-      testName: _sanitizeTestName(testName),
+      testName: sanitizeTestName(testName),
     );
 
     _logger
@@ -160,7 +160,7 @@ class IOSVideoRecordingManager {
     );
   }
 
-  /// Stops video recording and saves the file.
+  @override
   Future<void> stopRecording() async {
     if (_currentRecordingProcess == null || _currentVideoFilename == null) {
       _logger.detail('No active iOS recording to stop');
@@ -252,42 +252,4 @@ class IOSVideoRecordingManager {
     _currentRecordingProcess?.kill();
   }
 
-  /// Sanitizes test name for use in filename.
-  String _sanitizeTestName(String testName) {
-    // Remove file path prefix and keep only the actual test name
-    final parts = testName.split(' ');
-    if (parts.length > 1) {
-      // Skip the first part which is usually the file path
-      return parts.skip(1).join(' ').replaceAll(RegExp(r'[^\w\-\s]'), '_');
-    }
-    return testName.replaceAll(RegExp(r'[^\w\-\s]'), '_');
-  }
-
-  /// Chain serializing start/stop operations so that log events arriving in
-  /// quick succession cannot interleave recording state changes.
-  Future<void> _operations = Future.value();
-
-  /// Handles test entry events from PatrolLogReader.
-  void handleTestEntry(TestEntry testEntry) {
-    _logger.detail(
-      'iOS Video: Handling TestEntry - ${testEntry.name} (${testEntry.status.name})',
-    );
-
-    switch (testEntry.status) {
-      case TestEntryStatus.start:
-        _operations = _operations.then((_) => startRecording(testEntry.name));
-      case TestEntryStatus.success:
-      case TestEntryStatus.failure:
-        _operations = _operations.then((_) => stopRecording());
-      case TestEntryStatus.skip:
-        // No recording needed for skipped tests
-        break;
-    }
-  }
-
-  /// Cleanup method to stop any ongoing recording.
-  Future<void> dispose() async {
-    await _operations;
-    await stopRecording();
-  }
 }

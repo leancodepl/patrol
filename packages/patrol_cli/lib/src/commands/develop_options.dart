@@ -80,8 +80,6 @@ class DevelopOptions {
       iosVersion: results['ios'] as String?,
       videoConfig: VideoRecordingConfig(
         enabled: results['record-video'] as bool,
-        // Video output directory defaults to a `videos` directory next to
-        // the test target.
         outputDirectory:
             results['video-output-dir'] as String? ??
             path.join(path.dirname(target), 'videos'),
