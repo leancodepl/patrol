@@ -217,13 +217,9 @@ class IOSTestBackend {
               showFlutterLogs: showFlutterLogs,
               hideTestSteps: hideTestSteps,
               clearTestSteps: clearTestSteps,
-              onLogEntry: (entry) {
-                // Start/stop video recording on test lifecycle events.
-                if (entry is TestEntry) {
-                  videoRecordingManager?.handleTestEntry(entry);
-                }
-                onLogEntry?.call(entry);
-              },
+              onLogEntry:
+                  videoRecordingManager?.wrapOnLogEntry(onLogEntry) ??
+                  onLogEntry,
             )
             ..listen()
             ..startTimer();

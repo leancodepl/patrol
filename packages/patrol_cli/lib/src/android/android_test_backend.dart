@@ -258,9 +258,9 @@ class AndroidTestBackend {
   }) async {
     await _disposeScope.run((scope) async {
       // Create video recording manager if enabled
-      VideoRecordingManager? videoRecordingManager;
+      AndroidVideoRecordingManager? videoRecordingManager;
       if (videoConfig?.enabled ?? false) {
-        videoRecordingManager = VideoRecordingManager(
+        videoRecordingManager = AndroidVideoRecordingManager(
           processManager: _processManager,
           rootDirectory: _rootDirectory,
           logger: _logger,
@@ -297,13 +297,9 @@ class AndroidTestBackend {
               showFlutterLogs: showFlutterLogs,
               hideTestSteps: hideTestSteps,
               clearTestSteps: clearTestSteps,
-              onLogEntry: (entry) {
-                // Start/stop video recording on test lifecycle events.
-                if (entry is TestEntry) {
-                  videoRecordingManager?.handleTestEntry(entry);
-                }
-                onLogEntry?.call(entry);
-              },
+              onLogEntry:
+                  videoRecordingManager?.wrapOnLogEntry(onLogEntry) ??
+                  onLogEntry,
             )
             ..listen()
             ..startTimer();

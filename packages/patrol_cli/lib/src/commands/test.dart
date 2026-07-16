@@ -466,7 +466,6 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
     Future<void> Function() action;
     Future<void> Function()? finalizer;
 
-    // Video output directory always follows test directory
     final videoConfig = VideoRecordingConfig(
       enabled: boolArg('record-video'),
       outputDirectory: stringArg('video-output-dir') ?? '$testDirectory/videos',
