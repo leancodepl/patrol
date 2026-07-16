@@ -151,10 +151,18 @@ void main() {
     test('returns a synthetic web device for chrome', () {
       final device = Device.bundledForTest('chrome');
 
-      expect(device, isNotNull);
-      expect(device!.targetPlatform, TargetPlatform.web);
-      expect(device.id, 'chrome');
-      expect(device.real, true);
+      expect(
+        device,
+        isA<Device>()
+            .having((d) => d.name, 'name', 'Chrome')
+            .having((d) => d.id, 'id', 'chrome')
+            .having(
+              (d) => d.targetPlatform,
+              'targetPlatform',
+              TargetPlatform.web,
+            )
+            .having((d) => d.real, 'real', true),
+      );
     });
 
     test('is case-insensitive and trims whitespace', () {
