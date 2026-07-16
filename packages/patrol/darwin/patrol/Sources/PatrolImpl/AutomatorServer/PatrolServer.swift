@@ -137,10 +137,14 @@ import Foundation
       socklen_t(MemoryLayout<Int32>.size)
     )
 
+    guard let uint16Port = UInt16(exactly: port) else {
+      return false
+    }
+
     var addr = sockaddr_in()
     addr.sin_len = UInt8(MemoryLayout<sockaddr_in>.size)
     addr.sin_family = sa_family_t(AF_INET)
-    addr.sin_port = in_port_t(UInt16(port)).bigEndian
+    addr.sin_port = in_port_t(uint16Port).bigEndian
     addr.sin_addr.s_addr = in_addr_t(INADDR_ANY.bigEndian)
 
     let bindResult = withUnsafePointer(to: &addr) {

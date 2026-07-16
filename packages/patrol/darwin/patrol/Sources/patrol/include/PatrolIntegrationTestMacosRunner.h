@@ -20,8 +20,8 @@
     XCUIApplication *app = [[XCUIApplication alloc] init];                                                  \
     NSMutableDictionary<NSString *, NSString *> *environment =                                              \
         [app.launchEnvironment mutableCopy] ?: [NSMutableDictionary dictionary];                            \
-    environment[@"PATROL_TEST_SERVER_PORT"] = [NSString stringWithFormat:@"%d", server.boundTestPort];      \
-    environment[@"PATROL_APP_SERVER_PORT"] = [NSString stringWithFormat:@"%d", server.boundAppPort];        \
+    environment[@"PATROL_TEST_SERVER_PORT"] = [NSString stringWithFormat:@"%ld", (long)server.boundTestPort]; \
+    environment[@"PATROL_APP_SERVER_PORT"] = [NSString stringWithFormat:@"%ld", (long)server.boundAppPort]; \
     app.launchEnvironment = environment;                                                                    \
     [app launch];                                                                                           \
   }                                                                                                         \
@@ -57,7 +57,7 @@
                                                                                                             \
     /* Spin the runloop waiting until the app reports that it is ready to report Dart tests */              \
     if (![__test_class waitForPatrolAppReadyWithServer:server]) {                                          \
-      XCTFail(@"Patrol app did not become ready on port %d", server.boundAppPort);                         \
+      XCTFail(@"Patrol app did not become ready on port %ld", (long)server.boundAppPort);                  \
       return @[];                                                                                           \
     }                                                                                                       \
                                                                                                             \
@@ -104,7 +104,7 @@
                                                                                                             \
         [__test_class launchPatrolAppWithServer:server];                                                    \
         BOOL appReady = [__test_class waitForPatrolAppReadyWithServer:server];                             \
-        XCTAssertTrue(appReady, @"Patrol app did not become ready on port %d", server.boundAppPort);      \
+        XCTAssertTrue(appReady, @"Patrol app did not become ready on port %ld", (long)server.boundAppPort); \
         if (!appReady) {                                                                                    \
           return;                                                                                           \
         }                                                                                                   \
