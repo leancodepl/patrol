@@ -220,7 +220,8 @@ class IOSVideoRecordingManager extends VideoRecordingManager {
         _logger.detail('Video file exists with size: $fileSize bytes');
 
         if (fileSize > 0) {
-          _logger.info(
+          addSavedVideo(actualVideoPath);
+          _logger.detail(
             'iOS video recording saved for test "$testName": $actualVideoPath',
           );
         } else {

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:meta/meta.dart';
+import 'package:path/path.dart' as path;
 import 'package:patrol_log/patrol_log.dart';
 
 /// Starts and stops video recording for individual test cases based on test
@@ -9,6 +10,23 @@ abstract class VideoRecordingManager {
   /// Chain serializing start/stop operations so that log events arriving in
   /// quick succession cannot interleave recording state changes.
   Future<void> _operations = Future<void>.value();
+
+  final List<String> _savedVideos = [];
+
+  /// Records that a video was successfully saved at [videoPath].
+  @protected
+  void addSavedVideo(String videoPath) => _savedVideos.add(videoPath);
+
+  /// One-line summary of saved recordings for the CLI summary, or `null` if
+  /// nothing was recorded.
+  String? get recordingSummary {
+    if (_savedVideos.isEmpty) {
+      return null;
+    }
+    final count = _savedVideos.length;
+    final directory = path.dirname(_savedVideos.first);
+    return 'Recorded $count video${count == 1 ? '' : 's'} to $directory';
+  }
 
   /// Starts video recording for a test case.
   Future<void> startRecording(String testName);
