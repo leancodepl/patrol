@@ -452,27 +452,27 @@ class WebAppOptions {
   final String? viewport;
   final int? globalTimeout;
   final String? shard;
-  final String? headless;
+  final bool? headless;
   final int? webPort;
   final String? browserArgs;
   final String? channel;
   final String? executablePath;
   final int? slowMo;
-  final String? chromiumSandbox;
+  final bool? chromiumSandbox;
   final String? downloadsPath;
   final String? ignoreDefaultArgs;
   final String? proxy;
   final int? browserTimeout;
   final String? tracesDir;
-  final String? bypassCsp;
-  final String? ignoreHttpsErrors;
-  final String? offline;
+  final bool? bypassCsp;
+  final bool? ignoreHttpsErrors;
+  final bool? offline;
   final String? httpCredentials;
   final String? extraHttpHeaders;
   final String? screenshot;
   final String? trace;
   final String? storageState;
-  final String? acceptDownloads;
+  final bool? acceptDownloads;
 
   /// Timeout in seconds for the web server to start.
   /// Defaults to 120 seconds (2 minutes) if not specified.

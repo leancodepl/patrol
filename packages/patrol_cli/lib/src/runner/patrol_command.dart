@@ -352,10 +352,10 @@ abstract class PatrolCommand extends Command<int> {
             'Specify in the format "current/total" (e.g., "1/4" for the first of 4 shards).',
         valueHelp: '1/4',
       )
-      ..addOption(
+      ..addFlag(
         'web-headless',
         help: 'Whether to run browser in headless mode.',
-        allowed: ['true', 'false'],
+        defaultsTo: null,
       )
       ..addOption(
         'web-port',
@@ -394,10 +394,10 @@ abstract class PatrolCommand extends Command<int> {
             'Slow down operations by the specified number of milliseconds. Useful for debugging.',
         valueHelp: 'number',
       )
-      ..addOption(
+      ..addFlag(
         'web-chromium-sandbox',
         help: 'Whether to enable the Chromium sandbox.',
-        allowed: ['true', 'false'],
+        defaultsTo: null,
       )
       ..addOption(
         'web-downloads-path',
@@ -427,20 +427,20 @@ abstract class PatrolCommand extends Command<int> {
         help: 'Directory where trace files will be saved.',
         valueHelp: 'path',
       )
-      ..addOption(
+      ..addFlag(
         'web-bypass-csp',
         help: 'Whether to bypass the page Content-Security-Policy.',
-        allowed: ['true', 'false'],
+        defaultsTo: null,
       )
-      ..addOption(
+      ..addFlag(
         'web-ignore-https-errors',
         help: 'Whether to ignore HTTPS errors when sending network requests.',
-        allowed: ['true', 'false'],
+        defaultsTo: null,
       )
-      ..addOption(
+      ..addFlag(
         'web-offline',
         help: 'Whether to emulate network being offline.',
-        allowed: ['true', 'false'],
+        defaultsTo: null,
       )
       ..addOption(
         'web-http-credentials',
@@ -475,10 +475,10 @@ abstract class PatrolCommand extends Command<int> {
             'Path to a file with the storage state to seed the browser context with.',
         valueHelp: 'path',
       )
-      ..addOption(
+      ..addFlag(
         'web-accept-downloads',
         help: 'Whether to automatically accept all downloads.',
-        allowed: ['true', 'false'],
+        defaultsTo: null,
       );
   }
 
@@ -487,6 +487,12 @@ abstract class PatrolCommand extends Command<int> {
   /// If no flag named [name] was added to the `ArgParser`, an [ArgumentError]
   /// will be thrown.
   bool boolArg(String name) => argResults![name] as bool;
+
+  /// Gets the parsed command-line flag named [name] as a nullable `bool`.
+  ///
+  /// Returns null if the flag was declared with a null default and wasn't
+  /// passed on the command line.
+  bool? optionalBoolArg(String name) => argResults![name] as bool?;
 
   /// Gets the parsed command-line option named [name] as a `String`.
   ///
