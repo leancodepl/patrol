@@ -3,6 +3,7 @@
 - Download only Chromium instead of all default Playwright browsers during web runner setup. (#3156)
 - Fix `patrol test -d chrome` failing with `No devices attached` on machines without a system Chrome installation. (#3172)
 - Add browser launch and context options for web tests: `--web-channel`, `--web-executable-path`, `--web-slow-mo`, `--web-chromium-sandbox`, `--web-downloads-path`, `--web-ignore-default-args`, `--web-proxy`, `--web-browser-timeout`, `--web-traces-dir`, `--web-bypass-csp`, `--web-ignore-https-errors`, `--web-offline`, `--web-http-credentials`, `--web-extra-http-headers`, `--web-screenshot`, `--web-trace`, `--web-storage-state` and `--web-accept-downloads`. (#3155)
+- Convert `--web-headless` to a flag. Use `--web-headless`/`--no-web-headless` instead of `--web-headless true/false`. The old syntax still works, but is deprecated and will be removed in a future release. (#3155)
 
 ## 4.5.1
 
