@@ -146,4 +146,23 @@ void main() {
       expect(devicesToUse, [iosDevice]);
     });
   });
+
+  group('Device.bundledForTest()', () {
+    test('returns a synthetic web device for chrome', () {
+      final device = Device.bundledForTest('chrome');
+
+      expect(device, isNotNull);
+      expect(device!.targetPlatform, TargetPlatform.web);
+      expect(device.id, 'chrome');
+      expect(device.real, true);
+    });
+
+    test('is case-insensitive and trims whitespace', () {
+      expect(Device.bundledForTest(' Chrome '), isNotNull);
+    });
+
+    test('returns null for a device that is not bundled', () {
+      expect(Device.bundledForTest('emulator-5554'), isNull);
+    });
+  });
 }
