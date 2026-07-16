@@ -299,16 +299,17 @@ abstract interface class AndroidAutomator implements MobileAutomator {
   /// Simulates a biometric authentication result on Android.
   ///
   /// When [success] is `true`, the biometric prompt is accepted:
-  /// * On **emulators**: the virtual fingerprint sensor is triggered via the
-  ///   emulator console. The emulator console must be reachable (the default
-  ///   port 5554 is tried first, then 5556, 5558, 5560). If the console
-  ///   requires authentication, push the auth token to the device first:
+  /// * On **emulators**: the emulator's fingerprint sensor is triggered via the
+  ///   emulator console (reached from the device at `10.0.2.2`). The `patrol`
+  ///   CLI pushes the console auth token automatically, so no manual setup is
+  ///   required when running with `patrol test`. If you run the instrumentation
+  ///   another way and the console requires authentication, push the token to
+  ///   the device yourself:
   ///   ```shell
-  ///   adb push ~/.emulator_console_auth_token /data/local/tmp/patrol_emu_auth_token
+  ///   adb push ~/.emulator_console_auth_token /data/local/tmp/.emulator_console_auth_token
   ///   ```
-  /// * On **physical devices**: throws a `PatrolActionException` because
-  ///   fingerprint hardware cannot be simulated without cloud infrastructure.
-  ///   Use `success: false` to cancel the prompt instead.
+  /// * On **physical devices**: throws, because fingerprint hardware cannot be
+  ///   simulated. Use `success: false` to cancel the prompt instead.
   ///
   /// When [success] is `false`, the biometric prompt is cancelled by clicking
   /// its negative/cancel button. This works on both emulators and real devices.

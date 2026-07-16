@@ -22,11 +22,17 @@ class _BiometricScreenState extends State<BiometricScreen> {
         localizedReason: 'Please authenticate to continue',
         options: const AuthenticationOptions(biometricOnly: true),
       );
+      if (!mounted) {
+        return;
+      }
       setState(
         () => _status =
             didAuthenticate ? _Status.authenticated : _Status.notAuthenticated,
       );
     } catch (e) {
+      if (!mounted) {
+        return;
+      }
       setState(() => _status = _Status.error);
     }
   }

@@ -910,6 +910,12 @@ class Automator private constructor() {
     fun enrollBiometricOnEmulator(pin: String) {
         Logger.d("enrollBiometricOnEmulator(pin=***)")
 
+        // The PIN is interpolated into shell command lines, so reject anything that
+        // isn't plain digits to avoid broken commands or shell injection.
+        if (!pin.matches(Regex("^\\d+$"))) {
+            throw PatrolException("Invalid biometric PIN: only digits are allowed.")
+        }
+
         // Wake the device if sleeping and dismiss any keyguard.
         uiDevice.wakeUp()
         delay(500)
@@ -946,7 +952,7 @@ class Automator private constructor() {
         // "MORE" must come before "I agree" — Pixel Imprint shows a scrollable terms screen
         // where "MORE" scrolls to reveal the "I agree" button at the bottom.
         // textMatches uses case-insensitive regex so "I agree", "I AGREE", etc. all match.
-        val navButtons = listOf("I agree", "Agree", "Continue", "Next", "Start", "OK", "Add fingerprint", "MORE")
+        val navButtons = listOf("MORE", "I agree", "Agree", "Continue", "Next", "Start", "OK", "Add fingerprint")
         var consecutiveMisses = 0
         for (navAttempt in 1..15) {
             val pinEntry = uiDevice.findObject(UiSelector().className("android.widget.EditText"))
@@ -1118,6 +1124,21 @@ class Automator private constructor() {
     }
 
     private fun getEmulatorConsolePort(): Int {
+        // patrol_cli pushes the real console port here, because the device cannot
+        // derive it: ro.serialno is not the host-side "emulator-<port>" serial.
+        val pushedPort = try {
+            uiDevice.executeShellCommand("cat /data/local/tmp/patrol_emu_console_port 2>/dev/null")
+                .trim()
+                .toIntOrNull()
+        } catch (e: Exception) {
+            null
+        }
+        if (pushedPort != null) {
+            return pushedPort
+        }
+
+        // Fallback: parse the serial in case it happens to be "emulator-<port>",
+        // otherwise assume the default console port.
         val serial = uiDevice.executeShellCommand("getprop ro.serialno").trim()
         return if (serial.startsWith("emulator-")) {
             serial.substringAfter("emulator-").toIntOrNull() ?: 5554

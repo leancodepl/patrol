@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Add Android biometric testing: `performBiometricAuthentication` and `enrollBiometricOnEmulator` on `$.platform.android` (emulator only).
 - Add Swift Package Manager (SPM) support for iOS and macOS. CocoaPods remains supported for projects that have not migrated to SPM.
 - Fix iOS/macOS regular app builds failing with undefined XCTest symbols when using SPM.
 - Add `sendKeyboardEnter` method for `MobileAutomator`. (#2748)

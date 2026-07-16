@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io' show Process;
 
 import 'package:adb/adb.dart';
+import 'package:collection/collection.dart';
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
@@ -253,9 +254,13 @@ class AndroidTestBackend {
   }) async {
     // On emulators, automatically push the console auth token so that the
     // patrol biometric enrollment API can connect to the emulator console
-    // without any manual setup step.
+    // without any manual setup step. Also push the real console port: the
+    // device cannot derive it itself (`ro.serialno` is not the host-side
+    // `emulator-<port>` serial), so without this it would always assume 5554
+    // and target the wrong emulator when the test runs on another port.
     if (!device.real) {
       await _pushEmulatorAuthToken(device.id);
+      await _pushEmulatorConsolePort(device.id);
     }
 
     await _disposeScope.run((scope) async {
@@ -294,11 +299,23 @@ class AndroidTestBackend {
       final subject = '${options.description} on ${device.description}';
       final task = _logger.task('Executing tests of $subject');
 
+      // Stops the biometric helper below when the test process exits. Without
+      // it the helper would keep polling for the whole CLI process lifetime
+      // (DisposeScope.run reuses the backend-lifetime scope; it is not disposed
+      // when execute() returns), and repeated execute() calls would stack
+      // concurrent helpers on the same flag files.
+      final biometricHelperStop = Completer<void>();
       if (!device.real) {
         // On emulators, run a background helper that handles `enrollBiometricOnEmulator()`
         // calls by sending host-side `adb emu finger touch 1` commands. The in-device
         // telnet path does not advance fingerprint enrollment on Google Play API 36.
-        unawaited(_runBiometricEnrollmentHelper(device.id, scope));
+        unawaited(
+          _runBiometricEnrollmentHelper(
+            device.id,
+            scope,
+            biometricHelperStop.future,
+          ),
+        );
       }
 
       final process =
@@ -328,6 +345,9 @@ class AndroidTestBackend {
           .disposedBy(scope);
 
       final exitCode = await process.exitCode;
+      if (!biometricHelperStop.isCompleted) {
+        biometricHelperStop.complete();
+      }
       patrolLogReader.stopTimer();
       processLogcat.kill();
 
@@ -399,6 +419,30 @@ class AndroidTestBackend {
     }
   }
 
+  /// Pushes the emulator console port (parsed from the `emulator-<port>` serial)
+  /// to the device, so the on-device biometric code can reach the right console
+  /// at `10.0.2.2:<port>`. The device can't derive this itself.
+  Future<void> _pushEmulatorConsolePort(String deviceId) async {
+    final port = RegExp(r'emulator-(\d+)').firstMatch(deviceId)?.group(1);
+    if (port == null) {
+      return;
+    }
+    try {
+      await Process.run(
+        'adb',
+        [
+          '-s',
+          deviceId,
+          'shell',
+          'echo $port > /data/local/tmp/patrol_emu_console_port',
+        ],
+        runInShell: true,
+      );
+    } catch (e) {
+      _logger.warn('Failed to push emulator console port to $deviceId: $e');
+    }
+  }
+
   /// Enrolls a fingerprint on the emulator [device] from the host, before any
   /// tests run. Used by the `--enroll-fingerprint` flag.
   ///
@@ -409,6 +453,14 @@ class AndroidTestBackend {
   /// with `adb emu finger touch`. Tests can then call
   /// `performBiometricAuthentication()` without enrolling themselves.
   Future<void> enrollFingerprint(Device device, {required String pin}) async {
+    // The PIN is interpolated into `adb shell` command lines, so reject anything
+    // that isn't plain digits to avoid broken commands or shell injection.
+    if (!RegExp(r'^\d+$').hasMatch(pin)) {
+      throw Exception(
+        'Invalid fingerprint PIN "$pin": only digits are allowed.',
+      );
+    }
+
     final deviceId = device.id;
     final task = _logger.task('Enrolling fingerprint on ${device.name}');
 
@@ -455,7 +507,11 @@ class AndroidTestBackend {
   /// implementation: screens vary between Android versions, so each dump is
   /// matched against the known button set instead of assuming a fixed order.
   Future<void> _navigateEnrollmentWizard(String deviceId, String pin) async {
+    // 'MORE' must come before 'I agree': Pixel Imprint shows a scrollable terms
+    // screen where 'MORE' scrolls to reveal the (initially off-screen) 'I agree'
+    // button, so it has to be tapped first when both are present.
     const navButtons = [
+      'MORE',
       'I agree',
       'Agree',
       'Continue',
@@ -463,15 +519,13 @@ class AndroidTestBackend {
       'Start',
       'OK',
       'Add fingerprint',
-      'MORE',
     ];
 
     var consecutiveMisses = 0;
     for (var attempt = 1; attempt <= 15; attempt++) {
       final nodes = await _dumpUiNodes(deviceId);
 
-      final pinField = _firstNode(
-        nodes,
+      final pinField = nodes.firstWhereOrNull(
         (node) => node['class'] == 'android.widget.EditText',
       );
       if (pinField != null) {
@@ -487,8 +541,7 @@ class AndroidTestBackend {
 
       Map<String, String>? button;
       for (final label in navButtons) {
-        button = _firstNode(
-          nodes,
+        button = nodes.firstWhereOrNull(
           (node) => (node['text'] ?? '').toLowerCase() == label.toLowerCase(),
         );
         if (button != null) {
@@ -538,8 +591,7 @@ class AndroidTestBackend {
       await Future<void>.delayed(const Duration(milliseconds: 500));
 
       final nodes = await _dumpUiNodes(deviceId);
-      final done = _firstNode(
-        nodes,
+      final done = nodes.firstWhereOrNull(
         (node) => (node['text'] ?? '').toLowerCase() == 'done',
       );
       if (done != null) {
@@ -588,18 +640,6 @@ class AndroidTestBackend {
     ];
   }
 
-  Map<String, String>? _firstNode(
-    List<Map<String, String>> nodes,
-    bool Function(Map<String, String> node) test,
-  ) {
-    for (final node in nodes) {
-      if (test(node)) {
-        return node;
-      }
-    }
-    return null;
-  }
-
   /// Taps the center of [node]'s `bounds` (formatted `[left,top][right,bottom]`).
   Future<void> _tapNode(String deviceId, Map<String, String> node) async {
     final bounds = RegExp(
@@ -624,11 +664,16 @@ class AndroidTestBackend {
 
   /// Sends host-side `adb emu finger touch` commands when Kotlin's
   /// `enrollBiometricOnEmulator` writes the `/data/local/tmp/patrol_biometric_ready`
-  /// flag file.  Runs concurrently with the test process for the lifetime of [scope].
+  /// flag file. Runs concurrently with the test process and stops when [stop]
+  /// completes (the test process exited) or [scope] is disposed.
   Future<void> _runBiometricEnrollmentHelper(
     String deviceId,
     DisposeScope scope,
+    Future<void> stop,
   ) async {
+    var stopped = false;
+    unawaited(stop.then((_) => stopped = true));
+
     // Clean up any stale flags from a previous run.
     await Process.run(
       'adb',
@@ -636,9 +681,9 @@ class AndroidTestBackend {
       runInShell: true,
     );
 
-    while (!scope.disposed) {
+    while (!scope.disposed && !stopped) {
       await Future<void>.delayed(const Duration(milliseconds: 500));
-      if (scope.disposed) {
+      if (scope.disposed || stopped) {
         return;
       }
 
@@ -664,7 +709,7 @@ class AndroidTestBackend {
 
       _logger.detail('Biometric enrollment: sending host-side finger touches via adb emu');
 
-      for (var i = 0; i < 30 && !scope.disposed; i++) {
+      for (var i = 0; i < 30 && !scope.disposed && !stopped; i++) {
         await Process.run(
           'adb',
           ['-s', deviceId, 'emu', 'finger', 'touch', '1'],
