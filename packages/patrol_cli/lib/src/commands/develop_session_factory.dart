@@ -119,22 +119,34 @@ class DevelopSessionFactory {
 
   /// Devices Flutter reports as attached (Android, iOS, macOS, web), unfiltered.
   ///
-  /// Exposed for non-CLI callers (e.g. the MCP). Logger output is redirected to
-  /// stderr because [Logger] writes to `stdout` — the MCP's JSON-RPC channel.
+  /// Exposed for non-CLI callers (e.g. the MCP). All console output is redirected
+  /// to stderr so nothing leaks to `stdout` — the MCP's JSON-RPC channel: the
+  /// [Logger] writes to `io.stdout` (covered by [io.IOOverrides]), and any stray
+  /// `print` is redirected via the zone's `print` handler.
   static Future<List<Device>> findAttachedDevices({
     required FlutterCommand flutterCommand,
     bool verbose = false,
   }) async {
     final disposeScope = DisposeScope();
     try {
-      return await io.IOOverrides.runZoned(() {
-        final deviceFinder = DeviceFinder(
-          processManager: const LocalProcessManager(),
-          parentDisposeScope: disposeScope,
-          logger: Logger(level: verbose ? Level.verbose : Level.info),
-        );
-        return deviceFinder.getAttachedDevices(flutterCommand: flutterCommand);
-      }, stdout: () => io.stderr);
+      return await io.IOOverrides.runZoned(
+        () => runZoned(
+          () {
+            final deviceFinder = DeviceFinder(
+              processManager: const LocalProcessManager(),
+              parentDisposeScope: disposeScope,
+              logger: Logger(level: verbose ? Level.verbose : Level.info),
+            );
+            return deviceFinder.getAttachedDevices(
+              flutterCommand: flutterCommand,
+            );
+          },
+          zoneSpecification: ZoneSpecification(
+            print: (_, _, _, line) => io.stderr.writeln(line),
+          ),
+        ),
+        stdout: () => io.stderr,
+      );
     } finally {
       await disposeScope.dispose();
     }
