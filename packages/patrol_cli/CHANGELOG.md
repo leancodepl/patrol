@@ -1,6 +1,7 @@
 ## Unreleased
 
 - Download only Chromium instead of all default Playwright browsers during web runner setup. (#3156)
+- Add `DevelopSessionFactory.findAttachedDevices` to enumerate attached devices, so non-CLI callers (e.g. `patrol_mcp`) can list devices without building a `DeviceFinder` themselves.
 
 ## 4.5.1
 

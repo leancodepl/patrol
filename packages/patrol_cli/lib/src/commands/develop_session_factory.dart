@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io' as io;
 
 import 'package:adb/adb.dart';
 import 'package:dispose_scope/dispose_scope.dart';
@@ -13,6 +14,7 @@ import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:patrol_cli/src/macos/macos_test_backend.dart' hide BuildMode;
 import 'package:patrol_cli/src/pubspec_reader.dart';
+import 'package:patrol_cli/src/runner/flutter_command.dart';
 import 'package:patrol_cli/src/test_bundler.dart';
 import 'package:patrol_cli/src/test_finder.dart';
 import 'package:patrol_cli/src/web/web_test_backend.dart';
@@ -113,5 +115,28 @@ class DevelopSessionFactory {
       onTestsCompleted: onTestsCompleted,
       onLogEntry: onLogEntry,
     );
+  }
+
+  /// Devices Flutter reports as attached (Android, iOS, macOS, web), unfiltered.
+  ///
+  /// Exposed for non-CLI callers (e.g. the MCP). Logger output is redirected to
+  /// stderr because [Logger] writes to `stdout` — the MCP's JSON-RPC channel.
+  static Future<List<Device>> findAttachedDevices({
+    required FlutterCommand flutterCommand,
+    bool verbose = false,
+  }) async {
+    final disposeScope = DisposeScope();
+    try {
+      return await io.IOOverrides.runZoned(() {
+        final deviceFinder = DeviceFinder(
+          processManager: const LocalProcessManager(),
+          parentDisposeScope: disposeScope,
+          logger: Logger(level: verbose ? Level.verbose : Level.info),
+        );
+        return deviceFinder.getAttachedDevices(flutterCommand: flutterCommand);
+      }, stdout: () => io.stderr);
+    } finally {
+      await disposeScope.dispose();
+    }
   }
 }
