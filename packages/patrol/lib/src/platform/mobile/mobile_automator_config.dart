@@ -17,10 +17,12 @@ class MobileAutomatorConfig {
     Duration? findTimeout,
     void Function(String)? logger,
   }) : host = host ?? _defaultHost(),
-       port = port ?? _defaultPort(),
+       _portOverride = port,
        connectionTimeout = connectionTimeout ?? const Duration(seconds: 60),
        findTimeout = findTimeout ?? const Duration(seconds: 10),
        logger = logger ?? _defaultPrintLogger;
+
+  final String? _portOverride;
 
   static String _defaultHost() {
     return const String.fromEnvironment(
@@ -30,9 +32,9 @@ class MobileAutomatorConfig {
   }
 
   static String _defaultPort() {
-    final launchArgPort = PatrolRuntimePorts.testServerPort();
-    if (launchArgPort != null) {
-      return launchArgPort.toString();
+    final injectedPort = PatrolRuntimePorts.testServerPort();
+    if (injectedPort != null) {
+      return injectedPort.toString();
     }
     return const String.fromEnvironment(
       'PATROL_TEST_SERVER_PORT',
@@ -44,7 +46,7 @@ class MobileAutomatorConfig {
   final String host;
 
   /// Port on [host] on which Patrol server instrumentation is running.
-  final String port;
+  String get port => _portOverride ?? _defaultPort();
 
   /// Time after which the connection with the native automator will fail.
   ///

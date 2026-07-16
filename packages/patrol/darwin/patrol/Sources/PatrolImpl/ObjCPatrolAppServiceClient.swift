@@ -76,25 +76,19 @@ import Foundation
   @objc public func runDartTest(
     name: String, completion: @escaping (ObjCRunDartTestResponse?, Error?) -> Void
   ) {
-    // TODO: simple workaround - patrolAppService starts running too slowly.
-    // We should wait for appReady in the dynamically created test case method,
-    // before calling runDartTest() (in PATROL_INTEGRATION_TEST_[IOS/MACOS]_MACRO)
-    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-      NSLog("PatrolAppServiceClient.runDartTest(\(name))")
+    NSLog("PatrolAppServiceClient.runDartTest(\(name))")
 
-      let request = RunDartTestRequest(name: name)
-      self.client.runDartTest(request: request) { result in
-        switch result {
-        case .success(let result):
-          let testRespone = ObjCRunDartTestResponse(
-            passed: result.result == .success,
-            details: result.details
-          )
-          completion(testRespone, nil)
-        case .failure(let error):
-          completion(nil, error)
-        }
-
+    let request = RunDartTestRequest(name: name)
+    client.runDartTest(request: request) { result in
+      switch result {
+      case .success(let result):
+        let testResponse = ObjCRunDartTestResponse(
+          passed: result.result == .success,
+          details: result.details
+        )
+        completion(testResponse, nil)
+      case .failure(let error):
+        completion(nil, error)
       }
     }
   }

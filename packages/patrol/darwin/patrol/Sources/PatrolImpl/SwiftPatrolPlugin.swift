@@ -2,24 +2,16 @@ import Foundation
 
 #if os(iOS)
   import Flutter
-  import UIKit
 #elseif os(macOS)
   import FlutterMacOS
-  import AppKit
 #endif
 
-let kChannelName = "pl.leancode.patrol/main"
-let kMethodAllTestsFinished = "allTestsFinished"
-
-let kErrorCreateChannelFailed = "create_channel_failed"
-let kErrorCreateChannelFailedMsg = "Failed to create GRPC channel"
-
-/// A Flutter plugin that was responsible for communicating the test results back
-/// to iOS/macOS XCUITest.
-///
-/// Since test reports are now sent directly from PatrolBinding to native test runners, this plugin does nothing.
+/// Flutter plugin that exposes native Patrol runtime state to Dart.
 @objc(PatrolPlugin)
 public class PatrolPlugin: NSObject, FlutterPlugin {
+  private static let channelName = "pl.leancode.patrol/main"
+  private static let getRuntimePortsMethod = "getRuntimePorts"
+
   public static func register(with registrar: FlutterPluginRegistrar) {
     #if os(iOS)
       let messenger = registrar.messenger()
@@ -28,7 +20,7 @@ public class PatrolPlugin: NSObject, FlutterPlugin {
     #endif
 
     let channel = FlutterMethodChannel(
-      name: kChannelName,
+      name: channelName,
       binaryMessenger: messenger
     )
 
@@ -37,6 +29,15 @@ public class PatrolPlugin: NSObject, FlutterPlugin {
   }
 
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-    result(FlutterMethodNotImplemented)
+    switch call.method {
+    case Self.getRuntimePortsMethod:
+      let environment = ProcessInfo.processInfo.environment
+      var ports = [String: String]()
+      ports["testServerPort"] = environment["PATROL_TEST_SERVER_PORT"]
+      ports["appServerPort"] = environment["PATROL_APP_SERVER_PORT"]
+      result(ports)
+    default:
+      result(FlutterMethodNotImplemented)
+    }
   }
 }

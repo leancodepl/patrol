@@ -16,12 +16,21 @@
   @implementation __test_class                                                                              \
                                                                                                             \
   +(void)launchPatrolAppWithServer : (PatrolServer *)server {                                               \
+    server.appReady = NO;                                                                                   \
     XCUIApplication *app = [[XCUIApplication alloc] init];                                                  \
-    app.launchArguments = @[                                                                                  \
-      [NSString stringWithFormat:@"--PATROL_TEST_SERVER_PORT=%d", server.boundTestPort],                      \
-      [NSString stringWithFormat:@"--PATROL_APP_SERVER_PORT=%d", server.boundAppPort],                       \
-    ];                                                                                                        \
-    [app launch];                                                                                             \
+    NSMutableDictionary<NSString *, NSString *> *environment =                                              \
+        [app.launchEnvironment mutableCopy] ?: [NSMutableDictionary dictionary];                            \
+    environment[@"PATROL_TEST_SERVER_PORT"] = [NSString stringWithFormat:@"%d", server.boundTestPort];      \
+    environment[@"PATROL_APP_SERVER_PORT"] = [NSString stringWithFormat:@"%d", server.boundAppPort];        \
+    app.launchEnvironment = environment;                                                                    \
+    [app launch];                                                                                           \
+  }                                                                                                         \
+  +(BOOL)waitForPatrolAppReadyWithServer : (PatrolServer *)server {                                        \
+    NSDate *deadline = [NSDate dateWithTimeIntervalSinceNow:60.0];                                         \
+    while (!server.appReady && deadline.timeIntervalSinceNow > 0) {                                        \
+      [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];                   \
+    }                                                                                                       \
+    return server.appReady;                                                                                 \
   }                                                                                                         \
                                                                                                             \
   +(NSArray<NSInvocation *> *)testInvocations {                                                             \
@@ -47,8 +56,9 @@
     NSLog(@"Waiting until the app reports that it is ready");                                               \
                                                                                                             \
     /* Spin the runloop waiting until the app reports that it is ready to report Dart tests */              \
-    while (!server.appReady) {                                                                              \
-      [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];                    \
+    if (![__test_class waitForPatrolAppReadyWithServer:server]) {                                          \
+      XCTFail(@"Patrol app did not become ready on port %d", server.boundAppPort);                         \
+      return @[];                                                                                           \
     }                                                                                                       \
                                                                                                             \
     NSLog(@"listDartTests");                                                                                \
@@ -88,9 +98,15 @@
       BOOL skip = [dartTest[@"skip"] boolValue];                                                            \
                                                                                                             \
       IMP implementation = imp_implementationWithBlock(^(id _self) {                                        \
-        [__test_class launchPatrolAppWithServer:server];                                                    \
         if (skip) {                                                                                         \
           XCTSkip(@"Skip that test \"%@\"", dartTestName);                                                  \
+        }                                                                                                   \
+                                                                                                            \
+        [__test_class launchPatrolAppWithServer:server];                                                    \
+        BOOL appReady = [__test_class waitForPatrolAppReadyWithServer:server];                             \
+        XCTAssertTrue(appReady, @"Patrol app did not become ready on port %d", server.boundAppPort);      \
+        if (!appReady) {                                                                                    \
+          return;                                                                                           \
         }                                                                                                   \
                                                                                                             \
         __block ObjCRunDartTestResponse *response = NULL;                                                   \
