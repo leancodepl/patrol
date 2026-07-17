@@ -6,8 +6,10 @@ void main() {
 
     await $('Open webview (Hacker News)').scrollTo().tap();
 
-    await $.pump(Duration(seconds: 5));
-
+    // The Hacker News page is loaded into the webview over the network. Wait
+    // for its content to actually render instead of racing a fixed delay,
+    // which is flaky on CI when the page is slow to load.
+    await $.platform.mobile.waitUntilVisible(Selector(text: 'login'));
     await $.platform.mobile.tap(Selector(text: 'login'));
     await $.platform.ios.enterText(
       IOSSelector(elementType: IOSElementType.textField),

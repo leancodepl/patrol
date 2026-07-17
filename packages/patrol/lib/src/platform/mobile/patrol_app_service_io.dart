@@ -2,12 +2,15 @@
 // ignore_for_file: avoid_print
 
 import 'dart:async';
+import 'dart:io' show exit;
 
 import 'package:http_multi_server/http_multi_server.dart';
 import 'package:patrol/patrol.dart';
 import 'package:patrol/src/common.dart';
+import 'package:patrol/src/constants.dart' as constants;
 import 'package:patrol/src/platform/contracts/contracts.dart';
 import 'package:patrol/src/platform/contracts/patrol_app_service_server.dart';
+import 'package:patrol/src/platform/current.dart' as current_platform;
 import 'package:patrol_log/patrol_log.dart';
 import 'package:shelf/shelf.dart' as shelf;
 import 'package:shelf/shelf_io.dart' as shelf_io;
@@ -173,11 +176,47 @@ class PatrolAppService extends PatrolAppServiceServer {
       );
     }
 
+    _scheduleFastExitIfNeeded();
+
     return RunDartTestResponse(
       result: testExecutionResult.passed
           ? RunDartTestResponseResult.success
           : RunDartTestResponseResult.failure,
       details: testExecutionResult.details,
+    );
+  }
+
+  /// Hard-exits the app process shortly after the result of a Dart test has
+  /// been reported back to the native side, on iOS only.
+  ///
+  /// The native side runs each Dart test in its own freshly launched app
+  /// process, and [runDartTest] is called exactly once per process. When the
+  /// test finishes, XCUITest terminates the app under test during its teardown
+  /// and waits — with a fixed, short internal timeout — for the process to
+  /// reach the "Not Running" state. Flutter's graceful shutdown on a loaded CI
+  /// simulator is frequently slower than that timeout, so XCUITest reports
+  /// `Failed to terminate <app>:0` and fails a test that actually passed.
+  ///
+  /// See:
+  ///  * https://github.com/leancodepl/patrol/issues/2291
+  ///  * https://github.com/leancodepl/patrol/issues/1474
+  ///
+  /// A hard [exit] makes the process disappear almost immediately, so by the
+  /// time XCUITest terminates it there is nothing left to wait for. The delay
+  /// is long enough for this HTTP response to flush to the native side over the
+  /// loopback socket (which happens within milliseconds) before the process
+  /// dies, yet far shorter than the slow graceful shutdown that trips the
+  /// timeout.
+  ///
+  /// It is skipped in Hot Restart (develop) mode, where the app must stay alive
+  /// between runs, and on Android, whose Espresso-based runner is unaffected.
+  void _scheduleFastExitIfNeeded() {
+    if (!current_platform.isIOS || constants.hotRestartEnabled) {
+      return;
+    }
+
+    unawaited(
+      Future<void>.delayed(const Duration(milliseconds: 500), () => exit(0)),
     );
   }
 }

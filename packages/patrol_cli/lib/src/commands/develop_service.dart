@@ -456,7 +456,15 @@ class DevelopService {
           appId: appId,
           dartDefines: flutterOpts.dartDefines,
           openDevtools: openDevtools,
-          attachUsingUrl: device.targetPlatform == TargetPlatform.macOS,
+          // Always attach using the VM service URL discovered from
+          // `flutter logs`, on every native platform. Discovery-based attach
+          // (Flutter's "Waiting for a connection from Flutter ..." mode) is
+          // unreliable on the iOS simulator and Android emulator on CI: it can
+          // wait forever without ever connecting, so Hot Restart is never armed
+          // and `patrol develop` hangs. The URL-based path is deterministic and
+          // has been used for macOS all along. Web never reaches this call (see
+          // the `!= TargetPlatform.web` guard above).
+          attachUsingUrl: true,
           onQuit: onQuitCleanup,
         );
       }

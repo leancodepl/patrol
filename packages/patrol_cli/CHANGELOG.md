@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Fix `patrol develop` hanging on the iOS simulator and Android emulator. Hot Restart attach now always uses the VM service URL discovered from `flutter logs` instead of Flutter's discovery-based attach ("Waiting for a connection from Flutter ..."), which could wait forever on CI and never arm Hot Restart.
 - Download only Chromium instead of all default Playwright browsers during web runner setup. (#3156)
 - Fix `patrol develop` not reporting completion when the app shuts down before the tests finish, causing `patrol_mcp` to hang until its timeout. The backend exit is now detected independently of `flutter attach`.
 - Fix `patrol test -d chrome` failing with `No devices attached` on machines without a system Chrome installation. (#3172)

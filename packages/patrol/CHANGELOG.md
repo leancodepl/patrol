@@ -1,3 +1,7 @@
+## Unreleased
+
+- Fix iOS tests that pass being reported as failed with `Failed to terminate <app>:0`. The app under test now hard-exits shortly after reporting its result to the native side, so XCUITest's teardown finds the process already gone instead of racing Flutter's slow graceful shutdown on loaded CI simulators. (#2291, #1474)
+
 ## 4.7.1
 
 - Add a Swift Package Manager support note to the README.
