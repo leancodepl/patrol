@@ -39,18 +39,9 @@ https://patrol.leancode.co/documentation#setup
 
 ## 4. Run on an emulator
 
-Boot an Android emulator, wait for boot to complete, then run the one test:
-
-```bash
-emulator -list-avds
-emulator -avd <avd_name> -no-boot-anim &
-adb wait-for-device
-until [ "$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')" = "1" ]; do sleep 1; done
-
-patrol test -t patrol_test/example_test.dart -d emulator-5554
-```
-
-A green single test confirms the setup.
+Boot an Android emulator and **wait for boot to fully complete** before running —
+a test launched mid-boot fails. Then run the single test with `patrol test`. A
+green run confirms the setup.
 
 ## Gotchas
 
