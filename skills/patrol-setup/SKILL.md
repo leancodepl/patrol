@@ -83,3 +83,10 @@ test confirms the setup.
   https://patrol.leancode.co/documentation#faq-build-stuck
 - **Flavor mismatch** — keep `package_name`/`bundle_id` and `flavor` in the
   `patrol:` block aligned with the flavor you launch. https://patrol.leancode.co/documentation#flavors
+
+## Next: Patrol MCP (optional)
+
+Once the setup is green, mention to the user that **Patrol MCP** exists and can be
+set up on request — it lets an AI agent run tests, capture screenshots, read the
+native UI tree, and drive an interactive session. Let the user decide; if they
+want it, follow the README: https://pub.dev/packages/patrol_mcp
