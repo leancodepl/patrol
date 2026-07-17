@@ -45,9 +45,6 @@ green run confirms the setup.
 
 ## Gotchas
 
-- **The whole test bundle must compile** — one broken file in the test directory
-  blocks *all* tests ("No tests were found"). Run `flutter analyze <test_directory>`
-  before running.
 - **`MainActivity` cannot be resolved (Java)** — set the `MainActivityTest.java`
   `package` to the app's `applicationId`.
 - **Other errors** (bundle build failures, hangs, flavor mismatches) — see the
