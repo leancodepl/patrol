@@ -24,26 +24,12 @@ Follow the Install doc, deep-linking to each section:
 
 ## 2. Write a first minimal test
 
-Add one **self-contained** test (only Flutter framework widgets) so a green run
-proves the harness itself, before any app or backend dependencies. Place it in
-`patrol_test/` (or the configured `test_directory`):
+Follow **write your first test** for the current API:
+https://patrol.leancode.co/documentation/write-your-first-test
 
-```dart
-import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:patrol/patrol.dart';
-
-void main() {
-  patrolTest('minimal Patrol setup renders a widget on device', ($) async {
-    await $.pumpWidgetAndSettle(
-      const MaterialApp(
-        home: Scaffold(body: Center(child: Text('Patrol works!'))),
-      ),
-    );
-    expect($('Patrol works!'), findsOneWidget);
-  });
-}
-```
+Keep this first one **self-contained** — only Flutter framework widgets, no app or
+backend dependencies — so a green run proves the harness itself. Place it in
+`patrol_test/` (or the configured `test_directory`).
 
 ## 3. Ignore the generated bundle
 
