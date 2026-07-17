@@ -113,11 +113,15 @@ import Foundation
         }
       }
 
-      throw lastError ?? NSError(
-        domain: "PatrolServer",
-        code: 1,
-        userInfo: [NSLocalizedDescriptionKey: "Failed to bind PatrolServer after \(Self.maxPortBindAttempts) attempts"]
-      )
+      throw lastError
+        ?? NSError(
+          domain: "PatrolServer",
+          code: 1,
+          userInfo: [
+            NSLocalizedDescriptionKey:
+              "Failed to bind PatrolServer after \(Self.maxPortBindAttempts) attempts"
+          ]
+        )
     #endif
   }
 

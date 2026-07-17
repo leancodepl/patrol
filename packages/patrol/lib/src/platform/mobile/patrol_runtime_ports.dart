@@ -22,14 +22,14 @@ class PatrolRuntimePorts {
   /// Must be called after the Flutter binding is initialized so the method
   /// channel handler is registered.
   ///
-  /// This goes through [PatrolPlugin], which ships with `patrol` as a
-  /// `dev_dependency`. On iOS/macOS that plugin is still registered in release
-  /// builds only because Flutter temporarily includes Darwin `dev_dependencies`
-  /// in all modes (flutter/flutter#171015, flutter/flutter#164133). If Flutter
-  /// later switches to inclusionary registration and omits the plugin from
-  /// release, [MissingPluginException] would land here. If that happens we fall
-  /// back to default 8081/8082 ports, which still works for Patrol testing on
-  /// a single device.
+  /// This goes through the native `PatrolPlugin` method channel, which ships
+  /// with `patrol` as a `dev_dependency`. On iOS/macOS that plugin is still
+  /// registered in release builds only because Flutter temporarily includes
+  /// Darwin `dev_dependencies` in all modes (flutter/flutter#171015,
+  /// flutter/flutter#164133). If Flutter later switches to inclusionary
+  /// registration and omits the plugin from release, [MissingPluginException]
+  /// would land here. If that happens we fall back to default 8081/8082 ports,
+  /// which still works for Patrol testing on a single device.
   static Future<void> ensureLoaded() async {
     if (kIsWeb || !(Platform.isIOS || Platform.isMacOS)) {
       return;

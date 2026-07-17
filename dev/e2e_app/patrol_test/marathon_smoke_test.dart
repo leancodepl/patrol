@@ -19,21 +19,25 @@ void main() {
     expect($(#counterText).text, '1');
   });
 
-  patrol('marathon smoke tap once shows one copy a', tags: ['ios', 'simulator'], (
-    $,
-  ) async {
-    await createApp($);
-    await $(FloatingActionButton).tap();
-    expect($(#counterText).text, '1');
-  });
+  patrol(
+    'marathon smoke tap once shows one copy a',
+    tags: ['ios', 'simulator'],
+    ($) async {
+      await createApp($);
+      await $(FloatingActionButton).tap();
+      expect($(#counterText).text, '1');
+    },
+  );
 
-  patrol('marathon smoke tap once shows one copy b', tags: ['ios', 'simulator'], (
-    $,
-  ) async {
-    await createApp($);
-    await $(FloatingActionButton).tap();
-    expect($(#counterText).text, '1');
-  });
+  patrol(
+    'marathon smoke tap once shows one copy b',
+    tags: ['ios', 'simulator'],
+    ($) async {
+      await createApp($);
+      await $(FloatingActionButton).tap();
+      expect($(#counterText).text, '1');
+    },
+  );
 
   patrol('marathon smoke tap twice shows two', tags: ['ios', 'simulator'], (
     $,
@@ -44,14 +48,16 @@ void main() {
     expect($(#counterText).text, '2');
   });
 
-  patrol('marathon smoke tap twice shows two copy a', tags: ['ios', 'simulator'], (
-    $,
-  ) async {
-    await createApp($);
-    await $(FloatingActionButton).tap();
-    await $(FloatingActionButton).tap();
-    expect($(#counterText).text, '2');
-  });
+  patrol(
+    'marathon smoke tap twice shows two copy a',
+    tags: ['ios', 'simulator'],
+    ($) async {
+      await createApp($);
+      await $(FloatingActionButton).tap();
+      await $(FloatingActionButton).tap();
+      expect($(#counterText).text, '2');
+    },
+  );
 
   patrol('marathon smoke enter hello text', tags: ['ios', 'simulator'], (
     $,

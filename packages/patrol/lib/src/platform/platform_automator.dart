@@ -134,8 +134,7 @@ class PlatformAutomatorConfig {
 class PlatformAutomator {
   /// Creates a new [PlatformAutomator].
   PlatformAutomator({PlatformAutomatorConfig? config}) {
-    final androidConfig =
-        config?.androidConfig ?? AndroidAutomatorConfig();
+    final androidConfig = config?.androidConfig ?? AndroidAutomatorConfig();
     final iosConfig = config?.iosConfig ?? IOSAutomatorConfig();
     final webConfig = config?.webConfig ?? const WebAutomatorConfig();
 
