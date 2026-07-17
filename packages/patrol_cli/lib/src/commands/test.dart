@@ -9,6 +9,7 @@ import 'package:patrol_cli/src/commands/dart_define_utils.dart';
 import 'package:patrol_cli/src/compatibility_checker/compatibility_checker.dart';
 import 'package:patrol_cli/src/coverage/coverage_tool.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
+import 'package:patrol_cli/src/crossplatform/video_recording_config.dart';
 import 'package:patrol_cli/src/dart_defines_reader.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
@@ -70,6 +71,7 @@ class TestCommand extends PatrolCommand {
     usesAppNameOption();
     usesAndroidOptions();
     usesIOSOptions();
+    usesVideoRecordingOptions();
 
     usesWeb();
   }
@@ -376,6 +378,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       showFlutterLogs: boolArg('show-flutter-logs'),
       hideTestSteps: boolArg('hide-test-steps'),
       clearTestSteps: boolArg('clear-test-steps'),
+      testDirectory: testDirectory,
     );
 
     return allPassed ? 0 : 1;
@@ -458,9 +461,17 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
     required bool showFlutterLogs,
     required bool hideTestSteps,
     required bool clearTestSteps,
+    required String testDirectory,
   }) async {
     Future<void> Function() action;
     Future<void> Function()? finalizer;
+
+    final videoConfig = VideoRecordingConfig(
+      enabled: boolArg('record-video'),
+      outputDirectory: stringArg('video-output-dir') ?? '$testDirectory/videos',
+      size: stringArg('video-size'),
+      bitRate: int.tryParse(stringArg('video-bit-rate') ?? ''),
+    );
 
     switch (device.targetPlatform) {
       case TargetPlatform.android:
@@ -471,6 +482,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
           hideTestSteps: hideTestSteps,
           flavor: flutterOpts.flavor,
           clearTestSteps: clearTestSteps,
+          videoConfig: videoConfig,
         );
         final package = android.packageName;
         if (package != null && uninstall) {
@@ -485,6 +497,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
           showFlutterLogs: showFlutterLogs,
           hideTestSteps: hideTestSteps,
           clearTestSteps: clearTestSteps,
+          videoConfig: videoConfig,
         );
         final bundleId = ios.bundleId;
         if (bundleId != null && uninstall) {

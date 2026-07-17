@@ -4,11 +4,13 @@ import 'dart:io' show Process;
 import 'package:adb/adb.dart';
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
+import 'package:patrol_cli/src/android/video_recording_manager.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/extensions/completer.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
+import 'package:patrol_cli/src/crossplatform/video_recording_config.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:patrol_cli/src/runner/flutter_command.dart';
@@ -252,8 +254,22 @@ class AndroidTestBackend {
     required bool hideTestSteps,
     required bool clearTestSteps,
     void Function(Entry entry)? onLogEntry,
+    VideoRecordingConfig? videoConfig,
   }) async {
     await _disposeScope.run((scope) async {
+      // Create video recording manager if enabled
+      AndroidVideoRecordingManager? videoRecordingManager;
+      if (videoConfig?.enabled ?? false) {
+        videoRecordingManager = AndroidVideoRecordingManager(
+          processManager: _processManager,
+          rootDirectory: _rootDirectory,
+          logger: _logger,
+          config: videoConfig!,
+          device: device,
+          scope: scope,
+        );
+      }
+
       // Read patrol logs from logcat
       final processLogcat =
           await _adb.logcat(
@@ -281,7 +297,9 @@ class AndroidTestBackend {
               showFlutterLogs: showFlutterLogs,
               hideTestSteps: hideTestSteps,
               clearTestSteps: clearTestSteps,
-              onLogEntry: onLogEntry,
+              onLogEntry:
+                  videoRecordingManager?.wrapOnLogEntry(onLogEntry) ??
+                  onLogEntry,
             )
             ..listen()
             ..startTimer();
@@ -319,9 +337,16 @@ class AndroidTestBackend {
       patrolLogReader.stopTimer();
       processLogcat.kill();
 
+      // Cleanup video recording manager
+      await videoRecordingManager?.dispose();
+
       // Don't print the summary in develop
       if (!interruptible) {
         _logger.info(patrolLogReader.summary);
+        final recordingSummary = videoRecordingManager?.recordingSummary;
+        if (recordingSummary != null) {
+          _logger.info(recordingSummary);
+        }
       }
 
       if (exitCode == 0) {
