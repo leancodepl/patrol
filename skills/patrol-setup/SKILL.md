@@ -1,13 +1,17 @@
 ---
 name: patrol-setup
-description: Set up Patrol end-to-end (E2E) testing in a Flutter project for the first time — configure the pubspec `patrol` block, wire native Android, and get a first minimal test passing on an emulator. Use when adding Patrol to a project that does not have it yet.
+description: Set up Patrol end-to-end (E2E) testing in a Flutter project for the first time — configure the pubspec `patrol` block, wire native Android, and get a first minimal test passing on an Android emulator. Covers Android only (iOS and other platforms follow the same install doc). Use when adding Patrol to a project that does not have it yet.
 ---
 
 # Patrol setup
 
-Get a first Patrol test passing on an Android emulator. This skill is the ordered
-process and the gotchas; the canonical docs are the source of truth for versions,
-native config, and code — follow them at each step instead of guessing:
+Get a first Patrol test passing on an Android emulator. Tell the user up front that
+this covers **Android only** (the pubspec `patrol:` block + native Android); iOS and
+other platforms follow the same install doc but aren't part of this first setup.
+
+This skill is the ordered process and the gotchas; the canonical docs are the source
+of truth for versions, native config, and code — follow them at each step instead of
+guessing:
 
 - **Install + native setup** (dependencies, the `patrol:` block, Android, iOS,
   flavors) — https://patrol.leancode.co/documentation

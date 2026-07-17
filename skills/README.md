@@ -41,6 +41,6 @@ npx skills update
 
 | Skill | Description | Example prompt |
 |---|---|---|
-| [patrol-setup](patrol-setup/SKILL.md) | Set up Patrol E2E testing in a Flutter project for the first time — pubspec `patrol` block, native Android wiring, and a first passing test on an emulator. | Set up Patrol in this project and get a first test passing |
+| [patrol-setup](patrol-setup/SKILL.md) | Set up Patrol E2E testing in a Flutter project for the first time (Android only) — pubspec `patrol` block, native Android wiring, and a first passing test on an Android emulator. | Set up Patrol in this project and get a first test passing |
 | [patrol-write-test](patrol-write-test/SKILL.md) | Write Patrol E2E tests — order of actions, Patrol API and assertion rules, native dialog handling, and test-key conventions. | Write a Patrol test that logs in and verifies the home screen |
 | [patrol-test-architecture](patrol-test-architecture/SKILL.md) | Write Patrol E2E tests using LeanCode's recommended architecture (Modules, System, ApiClients) with shared test keys. | Add a checkout test following our modular Patrol architecture |
