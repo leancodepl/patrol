@@ -227,6 +227,7 @@ class IOSTestBackend {
                 'TEST_RUNNER_PATROL_TEST_PORT': options.testServerPort
                     .toString(),
                 'TEST_RUNNER_PATROL_APP_PORT': options.appServerPort.toString(),
+                if (interruptible) 'TEST_RUNNER_PATROL_DEVELOP': '1',
               },
               workingDirectory: _rootDirectory.childDirectory('ios').path,
             )

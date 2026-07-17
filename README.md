@@ -30,6 +30,10 @@ You can find out more below:
 - 🚀  [Automate Flutter app testing with Patrol][automate_flutter_app_testing_with_patrol]
 - 🚀  [Patrol Setup & Patrol Training][patrol_setup_and_training]
 
+> [!NOTE] 
+> **Patrol 4.7.0 adds Swift Package Manager support for iOS and macOS!** 
+> If you migrate your project to SPM, a few small setup changes are needed — see the [iOS setup][docs_ios_setup_spm] guide for details.
+
 ## Patrol custom finders
 
 Flutter's finders are powerful, but not very intuitive to use.
@@ -231,6 +235,7 @@ We are **top-tier experts** focused on Flutter Enterprise solutions.
 [github_workflows]: https://github.com/leancodepl/patrol/blob/master/.github/WORKFLOWS.md
 [docs]: https://patrol.leancode.co/?utm_source=github.com&utm_medium=referral&utm_campaign=patrol-readme
 [docs_finders]: https://patrol.leancode.co/finders/overview
+[docs_ios_setup_spm]: https://patrol.leancode.co/documentation?utm_source=github.com&utm_medium=referral&utm_campaign=patrol-readme#ios-setup-configure-runner-uitests
 [promo_graphics]: assets/promo_banner.png
 [article_web]: https://leancode.co/blog/patrol-web-support?utm_source=github.com&utm_medium=referral&utm_campaign=patrol-readme
 [article_4x]: https://leancode.co/blog/patrol-4-0-release?utm_source=github.com&utm_medium=referral&utm_campaign=patrol-readme
