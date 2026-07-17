@@ -94,7 +94,7 @@ Boot an Android emulator, confirm it's visible, then run the one test:
 emulator -list-avds
 emulator -avd <avd_name> -no-boot-anim &
 adb wait-for-device
-adb shell getprop sys.boot_completed   # -> 1
+until [ "$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')" = "1" ]; do sleep 1; done
 
 patrol test -t patrol_test/example_test.dart -d emulator-5554
 ```
