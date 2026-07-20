@@ -1,5 +1,5 @@
-import { Page } from "playwright"
+import type { ActionParams, GoBackRequest } from "../contracts"
 
-export async function goBack(page: Page) {
-  await page.goBack()
+export async function goBack({ pageManager }: ActionParams<GoBackRequest>) {
+  await pageManager.activePage.goBack()
 }

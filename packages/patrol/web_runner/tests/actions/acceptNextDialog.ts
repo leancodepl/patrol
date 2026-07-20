@@ -1,8 +1,8 @@
-import { Page } from "playwright"
+import type { AcceptNextDialogRequest, ActionParams } from "../contracts"
 
-export async function acceptNextDialog(page: Page) {
+export async function acceptNextDialog({ pageManager }: ActionParams<AcceptNextDialogRequest>) {
   return new Promise(resolve => {
-    page.once("dialog", async dialog => {
+    pageManager.activePage.once("dialog", async dialog => {
       const message = dialog.message()
       await dialog.accept()
       resolve(message)

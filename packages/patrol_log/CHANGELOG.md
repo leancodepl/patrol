@@ -1,4 +1,8 @@
-## Unreleased
+## 0.10.0
+
+- Bump `equatable` to `^2.1.0` and migrate log `Entry` types from deprecated `EquatableMixin` to `with Equatable`.
+
+## 0.9.1
 
 - Fix `PatrolLogReader` crash when step or log entries arrive without a matching open test start entry.
 

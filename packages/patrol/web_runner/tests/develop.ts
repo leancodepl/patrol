@@ -1,6 +1,7 @@
 import { chromium } from "playwright"
 import { initialise } from "./initialise"
 import { logger } from "./logger"
+import { PageManager } from "./pageManager"
 import { exposePatrolPlatformHandler } from "./patrolPlatformHandler"
 import "./types"
 
@@ -17,7 +18,8 @@ async function develop() {
 
     const page = context.pages().at(0) ?? (await context.newPage())
 
-    await exposePatrolPlatformHandler(page)
+    const pageManager = new PageManager(context, page)
+    await exposePatrolPlatformHandler(context, pageManager)
 
     await initialise(page)
 

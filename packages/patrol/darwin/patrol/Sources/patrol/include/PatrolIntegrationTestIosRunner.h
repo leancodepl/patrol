@@ -165,7 +165,45 @@
     }                                                                                                           \
   }                                                                                                             \
                                                                                                                 \
+  +(BOOL)isPatrolDevelopMode {                                                                                  \
+    return [[NSProcessInfo processInfo].environment[@"PATROL_DEVELOP"] isEqualToString:@"1"];                   \
+  }                                                                                                             \
+                                                                                                                \
+  +(NSArray<NSInvocation *> *)patrolDevelopTestInvocations {                                                    \
+    static dispatch_once_t onceToken;                                                                           \
+    dispatch_once(&onceToken, ^{                                                                                \
+      IMP implementation = imp_implementationWithBlock(^(id _self) {                                            \
+        NSLog(@"Patrol develop session: starting native automation server");                                    \
+        PatrolServer *server = [[PatrolServer alloc] init];                                                     \
+        NSError *err = nil;                                                                                     \
+        [server startAndReturnError:&err];                                                                      \
+        if (err != nil) {                                                                                       \
+          NSLog(@"patrolServer.start(): failed, err: %@", err);                                                 \
+        }                                                                                                       \
+        XCUIApplication *springboard = [[XCUIApplication alloc] initWithBundleIdentifier:@"com.apple.springboard"]; \
+        if (springboard.alerts.buttons[@"Allow"].exists) {                                                      \
+          [springboard.alerts.buttons[@"Allow"] tap];                                                           \
+        }                                                                                                       \
+        [[[XCUIApplication alloc] init] launch];                                                                \
+        NSLog(@"Patrol develop session: keeping XCTest alive for hot restart");                                 \
+        while (true) {                                                                                          \
+          [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];                    \
+        }                                                                                                       \
+      });                                                                                                       \
+      class_addMethod(self, @selector(testPatrolDevelopSession), implementation, "v@:");                        \
+    });                                                                                                         \
+    SEL selector = @selector(testPatrolDevelopSession);                                                         \
+    NSMethodSignature *signature = [self instanceMethodSignatureForSelector:selector];                          \
+    NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:signature];                          \
+    invocation.selector = selector;                                                                             \
+    return @[ invocation ];                                                                                     \
+  }                                                                                                             \
+                                                                                                                \
   +(NSArray<NSInvocation *> *)testInvocations {                                                                 \
+    if ([self isPatrolDevelopMode]) {                                                                           \
+      return [self patrolDevelopTestInvocations];                                                               \
+    }                                                                                                           \
+                                                                                                                \
     /* Start the native automation server and app-service client once and reuse                                 \
        them. XCTest calls +testInvocations once per -only-testing selector (via                                 \
        +instancesRespondToSelector:), so allocating a fresh PatrolServer each                                   \

@@ -7,6 +7,7 @@ import 'package:logging/logging.dart';
 import 'package:path/path.dart' as p;
 import 'package:patrol_cli/patrol_cli.dart';
 
+import 'flutter_command_resolver.dart';
 import 'log_streaming.dart';
 
 /// An [io.Stdout] wrapper that forwards writes to [_inner] (e.g. stderr) and
@@ -240,15 +241,36 @@ final class PatrolSession {
           // Skip compatibility checking in MCP context for speed.
           ..add('--no-check-compatibility');
 
-    final flutterCmd = io.Platform.environment['PATROL_FLUTTER_COMMAND'];
+    final flutterResolution = FlutterCommandResolver().resolve(
+      projectRoot: resolvedCwd,
+    );
 
     final (options, globalResults) = DevelopOptions.parseArgs(
       flagParts,
       target: testFile,
-      flutterCommand: flutterCmd != null && flutterCmd.isNotEmpty
-          ? FlutterCommand.parse(flutterCmd)
-          : null,
+      flutterCommand: flutterResolution.command,
     );
+
+    // Log the effective Flutter command once (to stderr via the logging sink).
+    final flagCmd = globalResults['flutter-command'] as String?;
+    final effective = options.flutterCommand;
+    final effectiveStr = [
+      effective.executable,
+      ...effective.arguments,
+    ].join(' ');
+    if (flagCmd != null && flagCmd.isNotEmpty) {
+      logger.info(
+        'Flutter command: $effectiveStr (from --flutter-command in PATROL_FLAGS)',
+      );
+    } else if (flutterResolution.isWarning) {
+      logger.warning(
+        'Flutter command: $effectiveStr -- ${flutterResolution.reason}',
+      );
+    } else {
+      logger.info(
+        'Flutter command: $effectiveStr (${flutterResolution.reason})',
+      );
+    }
     _testServerPort = options.testServerPort;
     final verbose = globalResults['verbose'] as bool? ?? false;
 
@@ -279,7 +301,7 @@ final class PatrolSession {
     _developService = developService;
 
     _isRunning = true;
-    _cleanupDone = false;
+    _cleanupFuture = null;
     _currentTestFile = testFile;
     _testState = TestState.running;
     _outputs.clear();
@@ -338,17 +360,31 @@ final class PatrolSession {
     });
   }
 
-  var _cleanupDone = false;
+  Future<void>? _cleanupFuture;
 
-  /// Clean up all resources for the current session.
-  /// Safe to call multiple times -- only the first call does actual work.
-  Future<void> _cleanup() async {
-    if (_cleanupDone) {
-      return;
+  /// Stops an active develop session and waits for its child processes to be
+  /// torn down. Safe to call when idle or repeatedly.
+  Future<void> dispose() async {
+    if (_isRunning) {
+      sendCommand(PatrolCommand.quit);
     }
-    _cleanupDone = true;
+    // Await any in-flight teardown -- the quit above, or one the session
+    // already started on its own -- so children are reaped before we exit.
+    final cleanup = _cleanupFuture;
+    if (cleanup != null) {
+      await cleanup;
+    }
+  }
 
+  /// Cleans up the session. Memoized -- callers share one teardown.
+  Future<void> _cleanup() => _cleanupFuture ??= _doCleanup();
+
+  Future<void> _doCleanup() async {
     final logger = Logger('PatrolSession');
+    // Capture this session's resources before the first await -- a new session
+    // could reassign these fields while we're awaiting below.
+    final scope = _disposeScope;
+    final stdinController = _stdinController;
     _isRunning = false;
     _currentTestFile = null;
     _testServerPort = null;
@@ -356,14 +392,13 @@ final class PatrolSession {
     await _logStreaming.stopLogging();
 
     try {
-      final scope = _disposeScope;
       if (scope != null && !scope.disposed) {
         await scope.dispose();
       }
     } catch (e) {
       logger.fine('Error disposing scope: $e');
     }
-    await _stdinController?.close();
+    await stdinController?.close();
     logger.fine('Develop session ended');
   }
 

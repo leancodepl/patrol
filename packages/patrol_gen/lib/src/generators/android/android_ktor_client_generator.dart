@@ -2,7 +2,7 @@ import 'package:patrol_gen/src/generators/android/android_config.dart';
 import 'package:patrol_gen/src/generators/output_file.dart';
 import 'package:patrol_gen/src/schema.dart';
 
-class AndroidHttp4kClientGenerator {
+class AndroidKtorClientGenerator {
   OutputFile generate(Service service, AndroidConfig config) {
     final buffer = StringBuffer()
       ..write(_contentPrefix(config))
@@ -26,10 +26,18 @@ class AndroidHttp4kClientGenerator {
 package ${config.package};
 
 import com.google.gson.Gson
-import com.squareup.okhttp.MediaType
-import com.squareup.okhttp.OkHttpClient
-import com.squareup.okhttp.Request
-import com.squareup.okhttp.RequestBody
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.cio.CIO
+import io.ktor.client.plugins.HttpTimeout
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.request.request
+import io.ktor.client.request.setBody
+import io.ktor.client.statement.bodyAsText
+import io.ktor.http.ContentType
+import io.ktor.http.HttpMethod
+import io.ktor.http.contentType
+import io.ktor.serialization.gson.gson
+import kotlinx.coroutines.runBlocking
 import java.util.concurrent.TimeUnit
 
 ''';
@@ -38,47 +46,55 @@ import java.util.concurrent.TimeUnit
   String _generateClientClass(Service service) {
     const url = r'"http://$address:$port/"';
     final endpoints = service.endpoints.map(_createEndpoint).join('\n\n');
-    const throwException =
-        r'throw PatrolAppServiceClientException("Invalid response ${response.code()}, ${response?.body()?.string()}")';
+    final throwException =
+        'throw ${service.name}ClientException("Invalid response \${response.status.value}, \${response.bodyAsText()}")';
 
     const urlWithPath = r'"$serverUrl$path"';
 
     return '''
-class ${service.name}Client(address: String, port: Int, private val timeout: Long, private val timeUnit: TimeUnit) {
+class ${service.name}Client(
+    private val address: String,
+    private val port: Int,
+    private val timeout: Long,
+    private val timeUnit: TimeUnit
+) : AutoCloseable {
+    private val client = HttpClient(CIO) {
+        install(HttpTimeout) {
+            connectTimeoutMillis = timeUnit.toMillis(timeout)
+            requestTimeoutMillis = timeUnit.toMillis(timeout)
+            socketTimeoutMillis = timeUnit.toMillis(timeout)
+        }
+        install(ContentNegotiation) {
+            gson()
+        }
+    }
+
+    private val json = Gson()
+    val serverUrl = $url
 
 $endpoints
 
-    private fun performRequest(path: String, requestBody: String? = null): String {
+    private fun performRequest(path: String, requestBody: String? = null): String = runBlocking {
         val endpoint = $urlWithPath
 
-        val client = OkHttpClient().apply {
-            setConnectTimeout(timeout, timeUnit)
-            setReadTimeout(timeout, timeUnit)
-            setWriteTimeout(timeout, timeUnit)
+        val response = client.request(endpoint) {
+            method = if (requestBody != null) HttpMethod.Post else HttpMethod.Get
+            if (requestBody != null) {
+                contentType(ContentType.Application.Json)
+                setBody(requestBody)
+            }
         }
 
-        val request = Request.Builder()
-            .url(endpoint)
-            .also {
-                if (requestBody != null) {
-                    it.post(RequestBody.create(jsonMediaType, requestBody))
-                }
-            }
-            .build()
-
-        val response = client.newCall(request).execute()
-        if (response.code() != 200) {
+        if (response.status.value != 200) {
             $throwException
         }
 
-        return response.body().string()
+        response.bodyAsText()
     }
 
-    val serverUrl = $url
-
-    private val json = Gson()
-
-    private val jsonMediaType = MediaType.parse("application/json; charset=utf-8")
+    override fun close() {
+        client.close()
+    }
 }''';
   }
 

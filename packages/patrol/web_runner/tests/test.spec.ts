@@ -1,6 +1,7 @@
 import { test as base } from "@playwright/test"
 import { initialise } from "./initialise"
 import { logger } from "./logger"
+import { PageManager } from "./pageManager"
 import { exposePatrolPlatformHandler } from "./patrolPlatformHandler"
 import { PatrolTestEntry } from "./types"
 
@@ -10,7 +11,7 @@ if (tests.length === 0) {
 }
 
 export const patrolTest = base.extend({
-  page: async ({ page }, use) => {
+  page: async ({ page, context }, use) => {
     page.on("console", message => {
       const text = message.text()
       if (text.startsWith("PATROL_LOG")) {
@@ -25,11 +26,19 @@ export const patrolTest = base.extend({
 
     await page.goto("/", { waitUntil: "load" })
 
-    await exposePatrolPlatformHandler(page)
+    const pageManager = new PageManager(context, page)
+    await exposePatrolPlatformHandler(context, pageManager)
 
     await initialise(page)
 
     await use(page)
+
+    // Teardown: close all secondary pages (not the initial one)
+    for (const p of context.pages()) {
+      if (p !== page && !p.isClosed()) {
+        await p.close().catch(() => {})
+      }
+    }
   },
 })
 

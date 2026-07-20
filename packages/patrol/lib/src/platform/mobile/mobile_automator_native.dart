@@ -187,7 +187,7 @@ abstract class NativeMobileAutomator implements MobileAutomator {
   Future<void> openQuickSettings() async {
     await wrapRequest(
       'openQuickSettings',
-      () => _client.openQuickSettings(OpenQuickSettingsRequest()),
+      () => _client.openQuickSettings(const OpenQuickSettingsRequest()),
     );
   }
 
@@ -213,7 +213,7 @@ abstract class NativeMobileAutomator implements MobileAutomator {
   Future<Notification> getFirstNotification() async {
     final response = await wrapRequest(
       'getFirstNotification',
-      () => _client.getNotifications(GetNotificationsRequest()),
+      () => _client.getNotifications(const GetNotificationsRequest()),
     );
 
     return response.notifications.first;
@@ -226,7 +226,7 @@ abstract class NativeMobileAutomator implements MobileAutomator {
   Future<List<Notification>> getNotifications() async {
     final response = await wrapRequest(
       'getNotifications',
-      () => _client.getNotifications(GetNotificationsRequest()),
+      () => _client.getNotifications(const GetNotificationsRequest()),
     );
 
     return response.notifications;
@@ -368,7 +368,9 @@ abstract class NativeMobileAutomator implements MobileAutomator {
     await wrapRequest(
       'grantPermissionWhenInUse',
       () => _client.handlePermissionDialog(
-        HandlePermissionRequest(code: HandlePermissionRequestCode.whileUsing),
+        const HandlePermissionRequest(
+          code: HandlePermissionRequestCode.whileUsing,
+        ),
       ),
     );
   }
@@ -398,7 +400,9 @@ abstract class NativeMobileAutomator implements MobileAutomator {
     await wrapRequest(
       'grantPermissionOnlyThisTime',
       () => _client.handlePermissionDialog(
-        HandlePermissionRequest(code: HandlePermissionRequestCode.onlyThisTime),
+        const HandlePermissionRequest(
+          code: HandlePermissionRequestCode.onlyThisTime,
+        ),
       ),
     );
   }
@@ -421,7 +425,7 @@ abstract class NativeMobileAutomator implements MobileAutomator {
     await wrapRequest(
       'denyPermission',
       () => _client.handlePermissionDialog(
-        HandlePermissionRequest(code: HandlePermissionRequestCode.denied),
+        const HandlePermissionRequest(code: HandlePermissionRequestCode.denied),
       ),
     );
   }
@@ -435,7 +439,7 @@ abstract class NativeMobileAutomator implements MobileAutomator {
     await wrapRequest(
       'selectCoarseLocation',
       () => _client.setLocationAccuracy(
-        SetLocationAccuracyRequest(
+        const SetLocationAccuracyRequest(
           locationAccuracy: SetLocationAccuracyRequestLocationAccuracy.coarse,
         ),
       ),
@@ -451,7 +455,7 @@ abstract class NativeMobileAutomator implements MobileAutomator {
     await wrapRequest(
       'selectFineLocation',
       () => _client.setLocationAccuracy(
-        SetLocationAccuracyRequest(
+        const SetLocationAccuracyRequest(
           locationAccuracy: SetLocationAccuracyRequestLocationAccuracy.fine,
         ),
       ),

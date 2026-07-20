@@ -7,7 +7,7 @@ jobs:
   run:
     runs-on: ubuntu-latest
     steps:
-      - uses: wow-actions/potential-duplicates@v1
+      - uses: wow-actions/potential-duplicates@4d4ea0352e0383859279938e255179dd1dbb67b5 # v1.1.0
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           filter: ''
@@ -15,7 +15,7 @@ jobs:
           exclude: ''
           label: potential-duplicate
           state: open
-          threshold: 0.6
+          threshold: 0.5
           reactions: 'eyes, confused'
           # Comment to post when potential duplicates are detected.
           comment: >

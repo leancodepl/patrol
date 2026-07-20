@@ -30,8 +30,9 @@ patrol test --device chrome --target patrol_test/login_test.dart
 ```
 
 <Info>
-  When you first run tests on web, Patrol will automatically install Node.js dependencies 
-  including Playwright and its browser binaries. This may take a moment.
+  When you first run tests on web, Patrol will automatically install Node.js
+  dependencies including Playwright and its browser binaries. This may take a
+  moment.
 </Info>
 
 ### Running Tests in your CI pipeline
@@ -94,4 +95,87 @@ await $.platform.web.enterTextWeb(selector: inputSelector, text: 'Hello from Pat
 await $.platform.web.tapWeb(selector: buttonSelector, iframeSelector: iframeSelector);
 // Window operations
 await $.platform.web.resizeWindow(size: Size(800, 600));
+```
+
+See [Multi-page support](#multi-page-support) below for working with multiple browser pages (tabs).
+
+## Multi-page support
+
+Some tests need more than one browser page: a link that opens a new tab, an OAuth popup, or
+an external site you want to check alongside your app. Patrol lets you open, switch between,
+inspect, and close these pages from your test.
+
+Every open page has a stable ID that Patrol returns when the page opens. The page your test
+starts on is the initial page. It hosts the Flutter app under test, is always open, and can't be closed. One
+page is active at a time, and platform actions (taps, text entry, navigation, and so on) run
+against it. The initial page is active when the test starts.
+
+### Opening a new page
+
+`openNewPage` opens a page, navigates it to a URL, and returns its ID. It doesn't switch to
+the new page for you, so call `switchToPage` when you want to act on it:
+
+```dart
+final pageId = await $.platform.web.openNewPage(url: 'https://example.com');
+await $.platform.web.switchToPage(pageId: pageId);
+```
+
+### Switching between pages
+
+`switchToPage` makes a page active, and `switchToInitialPage` takes you back to the Flutter app.
+Actions after the switch run against the newly active page:
+
+```dart
+await $.platform.web.switchToPage(pageId: pageId);
+// ... interact with that page ...
+await $.platform.web.switchToInitialPage();
+```
+
+### Inspecting pages
+
+```dart
+final currentPage = await $.platform.web.getCurrentPage();    // active page ID
+final url = await $.platform.web.getCurrentPageUrl();         // active page URL
+final pages = await $.platform.web.getPages();                // all open page IDs
+```
+
+### Closing pages
+
+`closePage` closes a page by ID. You can't close the initial page, and closing the active page
+switches you back to the initial page:
+
+```dart
+await $.platform.web.closePage(pageId: pageId);
+```
+
+### Handling popups
+
+When your app opens a page you didn't open yourself (for example a button that spawns a popup
+window), use `waitForPopup` to catch it. Just like [dialogs](#supported-native-actions-on-web),
+subscribe before triggering the action, since the popup can appear before you get to await it:
+
+```dart
+final popupFuture = $.platform.web.waitForPopup();
+await $.platform.web.tap(WebSelector(cssOrXpath: '#open-popup'));
+final popupId = await popupFuture;
+await $.platform.web.switchToPage(pageId: popupId);
+```
+
+### Example
+
+Opening a page, checking its URL, then cleaning up:
+
+```dart
+patrol('opens an external page in a new tab', ($) async {
+  await $.pumpWidgetAndSettle(const MyApp());
+
+  final pageId = await $.platform.web.openNewPage(url: 'https://example.com');
+  await $.platform.web.switchToPage(pageId: pageId);
+
+  final url = await $.platform.web.getCurrentPageUrl();
+  expect(url, contains('example.com'));
+
+  await $.platform.web.closePage(pageId: pageId);
+  await $.platform.web.switchToInitialPage();
+});
 ```

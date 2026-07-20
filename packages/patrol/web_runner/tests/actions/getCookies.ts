@@ -1,5 +1,5 @@
-import { Page } from "playwright"
+import type { ActionParams, GetCookiesRequest } from "../contracts"
 
-export async function getCookies(page: Page) {
-  return await page.context().cookies()
+export async function getCookies({ pageManager }: ActionParams<GetCookiesRequest>) {
+  return await pageManager.context.cookies()
 }

@@ -230,6 +230,8 @@ class AndroidTestBackend {
             }
           })
           .disposedBy(scope);
+      // Drain stderr, or the process hangs on Windows when the pipe fills.
+      process.listenStdErr((l) => _logger.detail('\t$l')).disposedBy(scope);
 
       await process.exitCode;
     });

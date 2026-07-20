@@ -161,7 +161,7 @@ class MobileSelector implements CompoundSelector {
 class AndroidSelector extends contracts.AndroidSelector
     implements CompoundSelector {
   /// Creates a new [AndroidSelector].
-  AndroidSelector({
+  const AndroidSelector({
     super.className,
     super.isCheckable,
     super.isChecked,
@@ -197,7 +197,7 @@ class AndroidSelector extends contracts.AndroidSelector
 /// An iOS-specific selector for finding UI elements.
 class IOSSelector extends contracts.IOSSelector implements CompoundSelector {
   /// Creates a new [IOSSelector].
-  IOSSelector({
+  const IOSSelector({
     super.value,
     super.instance,
     super.elementType,
