@@ -18,6 +18,8 @@ import 'package:patrol_cli/src/runner/patrol_command.dart';
 import 'package:patrol_cli/src/test_bundler.dart';
 import 'package:patrol_cli/src/test_finder.dart';
 import 'package:patrol_cli/src/web/web_test_backend.dart';
+import 'package:patrol_cli/src/windows/windows_app_options.dart';
+import 'package:patrol_cli/src/windows/windows_test_backend.dart';
 
 class TestCommand extends PatrolCommand {
   TestCommand({
@@ -31,6 +33,7 @@ class TestCommand extends PatrolCommand {
     required IOSTestBackend iosTestBackend,
     required MacOSTestBackend macOSTestBackend,
     required WebTestBackend webTestBackend,
+    required WindowsTestBackend windowsTestBackend,
     required CoverageTool coverageTool,
     required Analytics analytics,
     required Logger logger,
@@ -44,6 +47,7 @@ class TestCommand extends PatrolCommand {
        _iosTestBackend = iosTestBackend,
        _macosTestBackend = macOSTestBackend,
        _webTestBackend = webTestBackend,
+       _windowsTestBackend = windowsTestBackend,
        _coverageTool = coverageTool,
        _analytics = analytics,
        _logger = logger {
@@ -84,6 +88,7 @@ class TestCommand extends PatrolCommand {
   final IOSTestBackend _iosTestBackend;
   final MacOSTestBackend _macosTestBackend;
   final WebTestBackend _webTestBackend;
+  final WindowsTestBackend _windowsTestBackend;
   final CoverageTool _coverageTool;
 
   final Analytics _analytics;
@@ -340,9 +345,22 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       browserArgs: stringArg('web-browser-args'),
     );
 
+    final windowsOpts = WindowsAppOptions(
+      flutter: flutterOpts,
+      appServerPort: super.appServerPort,
+      testServerPort: super.testServerPort,
+    );
+
     // No need to build web app for testing. It's done in the execute method.
     if (device.targetPlatform != TargetPlatform.web) {
-      await _build(androidOpts, iosOpts, macosOpts, webOpts, device);
+      await _build(
+        androidOpts,
+        iosOpts,
+        macosOpts,
+        webOpts,
+        windowsOpts,
+        device,
+      );
     }
 
     await _preExecute(androidOpts, iosOpts, macosOpts, device, uninstall);
@@ -377,6 +395,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       iosOpts,
       macosOpts,
       webOpts,
+      windowsOpts,
       uninstall: uninstall,
       device: device,
       showFlutterLogs: boolArg('show-flutter-logs'),
@@ -418,7 +437,8 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
         }
       case TargetPlatform.macOS:
       case TargetPlatform.web:
-      // No uninstall needed for macOS and web
+      case TargetPlatform.windows:
+      // No uninstall needed for macOS, web, and windows
     }
 
     try {
@@ -433,6 +453,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
     IOSAppOptions iosOpts,
     MacOSAppOptions macosOpts,
     WebAppOptions webOpts,
+    WindowsAppOptions windowsOpts,
     Device device,
   ) async {
     final buildAction = switch (device.targetPlatform) {
@@ -440,6 +461,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       TargetPlatform.macOS => () => _macosTestBackend.build(macosOpts),
       TargetPlatform.iOS => () => _iosTestBackend.build(iosOpts),
       TargetPlatform.web => () => _webTestBackend.build(webOpts),
+      TargetPlatform.windows => () => _windowsTestBackend.build(windowsOpts),
     };
 
     try {
@@ -458,7 +480,8 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
     AndroidAppOptions android,
     IOSAppOptions ios,
     MacOSAppOptions macos,
-    WebAppOptions web, {
+    WebAppOptions web,
+    WindowsAppOptions windows, {
     required bool uninstall,
     required Device device,
     required bool showFlutterLogs,
@@ -508,6 +531,8 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
           hideTestSteps: hideTestSteps,
           clearTestSteps: clearTestSteps,
         );
+      case TargetPlatform.windows:
+        action = () => _windowsTestBackend.execute(windows, device);
     }
 
     var allPassed = true;
