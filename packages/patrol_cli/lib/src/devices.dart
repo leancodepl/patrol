@@ -38,7 +38,9 @@ class DeviceFinder {
       if (!targetPlatform.startsWith('android-') &&
           targetPlatform != 'ios' &&
           targetPlatform != 'darwin' &&
-          targetPlatform != 'web-javascript') {
+          targetPlatform != 'web-javascript' &&
+          targetPlatform != 'windows' &&
+          !targetPlatform.startsWith('windows-')) {
         continue;
       }
 
@@ -247,6 +249,8 @@ class Device {
         return '$platformDescription $name';
       case TargetPlatform.web:
         return '$platformDescription $name';
+      case TargetPlatform.windows:
+        return '$platformDescription $name';
     }
   }
 
@@ -260,6 +264,8 @@ class Device {
         return 'desktop';
       case TargetPlatform.web:
         return 'browser';
+      case TargetPlatform.windows:
+        return 'desktop';
     }
   }
 }
@@ -273,7 +279,7 @@ const _testBundledDevices = {
   ),
 };
 
-enum TargetPlatform { iOS, android, macOS, web }
+enum TargetPlatform { iOS, android, macOS, web, windows }
 
 extension TargetPlatformX on TargetPlatform {
   static TargetPlatform fromString(String platform) {
@@ -285,6 +291,8 @@ extension TargetPlatformX on TargetPlatform {
       return TargetPlatform.macOS;
     } else if (platform == 'web-javascript') {
       return TargetPlatform.web;
+    } else if (platform == 'windows' || platform.startsWith('windows-')) {
+      return TargetPlatform.windows;
     } else {
       throw Exception('Unsupported platform $platform');
     }
