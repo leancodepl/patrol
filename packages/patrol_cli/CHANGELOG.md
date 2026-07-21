@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Pass `-Ppatrol-enabled=true` to Android Gradle builds so apps can detect a Patrol build.
 - Download only Chromium instead of all default Playwright browsers during web runner setup. (#3156)
 - Fix `patrol test -d chrome` failing with `No devices attached` on machines without a system Chrome installation. (#3172)
 

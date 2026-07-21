@@ -175,10 +175,12 @@ class AndroidAppOptions {
       cmd.add('-Pandroid.injected.androidTest.leaveApksInstalledAfterRun=true');
     }
 
-    // Add app and test server ports
+    // Ports for the native automator servers, plus a flag apps can use to
+    // detect a Patrol Gradle build.
     cmd
       ..add('-Papp-server-port=$appServerPort')
-      ..add('-Ptest-server-port=$testServerPort');
+      ..add('-Ptest-server-port=$testServerPort')
+      ..add('-Ppatrol-enabled=true');
 
     return cmd;
   }
