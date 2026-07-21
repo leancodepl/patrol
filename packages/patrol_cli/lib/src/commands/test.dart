@@ -232,9 +232,9 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       (true, true) => CoverageMode.web,
     };
 
-    if (coverageMode == CoverageMode.web && buildMode.name != 'debug') {
+    if (coverageMode != CoverageMode.none && buildMode.name != 'debug') {
       _logger.err(
-        'Coverage on the web platform requires a debug build. '
+        'Coverage requires a debug build. '
         'Please remove the --${buildMode.name} flag.',
       );
       return 1;
