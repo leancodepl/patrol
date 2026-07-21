@@ -9,3 +9,6 @@ const isIOS = false;
 
 /// True if running on macOS.
 const isMacOS = false;
+
+/// True if running on Windows.
+const isWindows = false;

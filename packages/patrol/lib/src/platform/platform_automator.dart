@@ -23,11 +23,23 @@ import 'package:patrol/src/platform/web/web_automator_empty.dart'
 import 'package:patrol/src/platform/web/web_automator_empty.dart'
     if (dart.library.js_interop) 'package:patrol/src/platform/web/web_automator_native.dart'
     as native_web_automator;
+import 'package:patrol/src/platform/windows/windows_automator.dart';
+import 'package:patrol/src/platform/windows/windows_automator_config.dart';
+import 'package:patrol/src/platform/windows/windows_automator_empty.dart'
+    as empty_windows_automator;
+import 'package:patrol/src/platform/windows/windows_automator_empty.dart'
+    if (dart.library.io) 'package:patrol/src/platform/windows/windows_automator_native.dart'
+    as native_windows_automator;
 
 /// Configuration for [PlatformAutomator].
 class PlatformAutomatorConfig {
   /// Creates a new [PlatformAutomatorConfig].
-  PlatformAutomatorConfig({this.androidConfig, this.iosConfig, this.webConfig});
+  PlatformAutomatorConfig({
+    this.androidConfig,
+    this.iosConfig,
+    this.webConfig,
+    this.windowsConfig,
+  });
 
   /// Creates a new [PlatformAutomatorConfig] from individual options.
   factory PlatformAutomatorConfig.fromOptions({
@@ -88,6 +100,10 @@ class PlatformAutomatorConfig {
         logger: logger,
       ),
       webConfig: WebAutomatorConfig(logger: logger),
+      windowsConfig: WindowsAutomatorConfig(
+        connectionTimeout: connectionTimeout,
+        logger: logger,
+      ),
     );
   }
 
@@ -97,6 +113,7 @@ class PlatformAutomatorConfig {
       androidConfig: const AndroidAutomatorConfig(),
       iosConfig: const IOSAutomatorConfig(),
       webConfig: const WebAutomatorConfig(),
+      windowsConfig: const WindowsAutomatorConfig(),
     );
   }
 
@@ -109,6 +126,9 @@ class PlatformAutomatorConfig {
   /// Configuration for Web platform.
   final WebAutomatorConfig? webConfig;
 
+  /// Configuration for Windows platform.
+  final WindowsAutomatorConfig? windowsConfig;
+
   /// Whether Android platform is enabled.
   bool get androidEnabled => androidConfig != null;
 
@@ -117,6 +137,9 @@ class PlatformAutomatorConfig {
 
   /// Whether Web platform is enabled.
   bool get webEnabled => webConfig != null;
+
+  /// Whether Windows platform is enabled.
+  bool get windowsEnabled => windowsConfig != null;
 }
 
 /// Provides functionality to interact with the OS that the app under test is
@@ -128,6 +151,8 @@ class PlatformAutomator {
         config?.androidConfig ?? const AndroidAutomatorConfig();
     final iosConfig = config?.iosConfig ?? const IOSAutomatorConfig();
     final webConfig = config?.webConfig ?? const WebAutomatorConfig();
+    final windowsConfig =
+        config?.windowsConfig ?? const WindowsAutomatorConfig();
 
     android = action.fallback(
       android: (config?.androidEnabled ?? false)
@@ -158,6 +183,15 @@ class PlatformAutomator {
       fallback: () => empty_web_automator.WebAutomator(config: webConfig),
     );
 
+    windows = action.fallback(
+      windows: (config?.windowsEnabled ?? false)
+          ? () =>
+                native_windows_automator.WindowsAutomator(config: windowsConfig)
+          : null,
+      fallback: () =>
+          empty_windows_automator.WindowsAutomator(config: windowsConfig),
+    );
+
     mobile = MobileAutomator(platform: this);
   }
 
@@ -169,6 +203,9 @@ class PlatformAutomator {
 
   /// iOS-specific automator.
   late final IOSAutomator ios;
+
+  /// Windows-specific automator.
+  late final WindowsAutomator windows;
 
   /// Mobile automator that works on both Android and iOS.
   late final MobileAutomator mobile;
@@ -212,12 +249,18 @@ class PlatformAutomator {
       // For now we reuse the IOSAutomator for native communication on MacOS
       // The reason is that the only native interaction on MacOS is marking the app service ready
       macos: () async => {await ios.markPatrolAppServiceReady()},
+      windows: () async => {await windows.markPatrolAppServiceReady()},
     );
   }
 
   /// None of the native actions are supported on MacOS, so we will just always throw.
   static T _throwOnMacOS<T>() {
     throw UnsupportedError('MacOS native actions are not supported');
+  }
+
+  /// Unsupported Windows native actions throw by default.
+  static T _throwOnWindows<T>() {
+    throw UnsupportedError('Windows native action is not supported');
   }
 }
 
@@ -1051,6 +1094,7 @@ class PlatformAction {
     T Function()? ios,
     T Function()? web,
     T Function()? macos,
+    T Function()? windows,
     T Function()? mobile,
   }) {
     final value = maybe(
@@ -1058,6 +1102,7 @@ class PlatformAction {
       ios: ios,
       web: web,
       macos: macos,
+      windows: windows,
       mobile: mobile,
     );
 
@@ -1074,6 +1119,7 @@ class PlatformAction {
     T Function()? ios,
     T Function()? web,
     T Function()? macos,
+    T Function()? windows,
     T Function()? mobile,
   }) {
     T? empty() => null;
@@ -1083,6 +1129,7 @@ class PlatformAction {
       ios: ios ?? mobile ?? empty,
       web: web ?? empty,
       macos: macos ?? empty,
+      windows: windows ?? empty,
     );
   }
 
@@ -1092,6 +1139,7 @@ class PlatformAction {
     T Function()? ios,
     T Function()? web,
     T Function()? macos,
+    T Function()? windows,
     T Function()? mobile,
     required T Function() fallback,
   }) {
@@ -1100,6 +1148,7 @@ class PlatformAction {
           ios: ios,
           web: web,
           macos: macos,
+          windows: windows,
           mobile: mobile,
         ) ??
         fallback();
@@ -1111,6 +1160,7 @@ class PlatformAction {
     required T Function() ios,
     required T Function() web,
     required T Function() macos,
+    T Function()? windows,
   }) {
     if (current_platform.isAndroid) {
       return android();
@@ -1120,6 +1170,11 @@ class PlatformAction {
       return macos();
     } else if (current_platform.isWeb) {
       return web();
+    } else if (current_platform.isWindows) {
+      if (windows != null) {
+        return windows();
+      }
+      return PlatformAutomator._throwOnWindows();
     }
 
     throw UnsupportedError('Unkown platform');
