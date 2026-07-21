@@ -223,6 +223,10 @@ class DevelopService {
       _testBundler.deleteEntrypointProxy(testDirectory);
     }
 
+    if (device.targetPlatform == TargetPlatform.windows) {
+      throwToolExit('Windows is not supported with develop');
+    }
+
     _logger.detail('Received device: ${device.name} (${device.id})');
 
     final prebuiltApksDir = options.prebuiltApksDir;
@@ -408,6 +412,8 @@ class DevelopService {
       TargetPlatform.iOS => () => _iosTestBackend.build(iosOpts),
       TargetPlatform.macOS => () => _macosTestBackend.build(macosOpts),
       TargetPlatform.web => () => _webTestBackend.buildForDevelop(webOpts),
+      TargetPlatform.windows =>
+        () => throwToolExit('Windows is not supported with develop'),
     };
 
     try {
@@ -450,6 +456,7 @@ class DevelopService {
         }
       case TargetPlatform.macOS:
       case TargetPlatform.web:
+      case TargetPlatform.windows:
     }
 
     try {
@@ -594,6 +601,8 @@ class DevelopService {
           onLogEntry: onLogEntry,
           openDevtools: openDevtools,
         );
+      case TargetPlatform.windows:
+        throwToolExit('Windows is not supported with develop');
     }
 
     try {

@@ -32,6 +32,13 @@ import 'package:patrol/src/platform/web/web_automator_empty.dart'
 import 'package:patrol/src/platform/web/web_automator_empty.dart'
     if (dart.library.js_interop) 'package:patrol/src/platform/web/web_automator_native.dart'
     as native_web_automator;
+import 'package:patrol/src/platform/windows/windows_automator.dart';
+import 'package:patrol/src/platform/windows/windows_automator_config.dart';
+import 'package:patrol/src/platform/windows/windows_automator_empty.dart'
+    as empty_windows_automator;
+import 'package:patrol/src/platform/windows/windows_automator_empty.dart'
+    if (dart.library.io) 'package:patrol/src/platform/windows/windows_automator_native.dart'
+    as native_windows_automator;
 
 /// Configuration for [PlatformAutomator].
 class PlatformAutomatorConfig {
@@ -41,6 +48,7 @@ class PlatformAutomatorConfig {
     this.iosConfig,
     this.macosConfig,
     this.webConfig,
+    this.windowsConfig,
   });
 
   /// Creates a new [PlatformAutomatorConfig] from individual options.
@@ -136,6 +144,10 @@ class PlatformAutomatorConfig {
         port: port,
       ),
       webConfig: WebAutomatorConfig(logger: logger),
+      windowsConfig: WindowsAutomatorConfig(
+        connectionTimeout: connectionTimeout,
+        logger: logger,
+      ),
     );
   }
 
@@ -146,6 +158,7 @@ class PlatformAutomatorConfig {
       iosConfig: const IOSAutomatorConfig(),
       macosConfig: const MacOSAutomatorConfig(),
       webConfig: const WebAutomatorConfig(),
+      windowsConfig: const WindowsAutomatorConfig(),
     );
   }
 
@@ -161,6 +174,9 @@ class PlatformAutomatorConfig {
   /// Configuration for Web platform.
   final WebAutomatorConfig? webConfig;
 
+  /// Configuration for Windows platform.
+  final WindowsAutomatorConfig? windowsConfig;
+
   /// Whether Android platform is enabled.
   bool get androidEnabled => androidConfig != null;
 
@@ -172,6 +188,9 @@ class PlatformAutomatorConfig {
 
   /// Whether Web platform is enabled.
   bool get webEnabled => webConfig != null;
+
+  /// Whether Windows platform is enabled.
+  bool get windowsEnabled => windowsConfig != null;
 }
 
 /// Provides functionality to interact with the OS that the app under test is
@@ -194,6 +213,8 @@ class PlatformAutomator {
             ? MacOSAutomatorConfig.fromIOSTransport(config.iosConfig!)
             : const MacOSAutomatorConfig());
     final webConfig = config?.webConfig ?? const WebAutomatorConfig();
+    final windowsConfig =
+        config?.windowsConfig ?? const WindowsAutomatorConfig();
 
     android = action.fallback(
       android: (config?.androidEnabled ?? false)
@@ -225,6 +246,15 @@ class PlatformAutomator {
       fallback: () => empty_web_automator.WebAutomator(config: webConfig),
     );
 
+    windows = action.fallback(
+      windows: (config?.windowsEnabled ?? false)
+          ? () =>
+                native_windows_automator.WindowsAutomator(config: windowsConfig)
+          : null,
+      fallback: () =>
+          empty_windows_automator.WindowsAutomator(config: windowsConfig),
+    );
+
     mobile = MobileAutomator(platform: this);
   }
 
@@ -239,6 +269,9 @@ class PlatformAutomator {
 
   /// macOS-specific automator.
   late final MacOSAutomator macos;
+
+  /// Windows-specific automator.
+  late final WindowsAutomator windows;
 
   /// Mobile automator that works on both Android and iOS.
   late final MobileAutomator mobile;
@@ -279,6 +312,7 @@ class PlatformAutomator {
       android: () async => {await android.markPatrolAppServiceReady()},
       ios: () async => {await ios.markPatrolAppServiceReady()},
       macos: () async => {await macos.markPatrolAppServiceReady()},
+      windows: () async => {await windows.markPatrolAppServiceReady()},
     );
   }
 
@@ -292,6 +326,11 @@ class PlatformAutomator {
       android: () => android.takeNativeScreenshot(tag),
       web: () => web.takeNativeScreenshot(tag),
     );
+  }
+
+  /// Unsupported Windows native actions throw by default.
+  static T _throwOnWindows<T>() {
+    throw UnsupportedError('Windows native action is not supported');
   }
 }
 
@@ -1135,6 +1174,7 @@ class PlatformAction {
     T Function()? ios,
     T Function()? web,
     T Function()? macos,
+    T Function()? windows,
     T Function()? mobile,
   }) {
     final value = maybe(
@@ -1142,6 +1182,7 @@ class PlatformAction {
       ios: ios,
       web: web,
       macos: macos,
+      windows: windows,
       mobile: mobile,
     );
 
@@ -1158,6 +1199,7 @@ class PlatformAction {
     T Function()? ios,
     T Function()? web,
     T Function()? macos,
+    T Function()? windows,
     T Function()? mobile,
   }) {
     T? empty() => null;
@@ -1167,6 +1209,7 @@ class PlatformAction {
       ios: ios ?? mobile ?? empty,
       web: web ?? empty,
       macos: macos ?? empty,
+      windows: windows ?? empty,
     );
   }
 
@@ -1176,6 +1219,7 @@ class PlatformAction {
     T Function()? ios,
     T Function()? web,
     T Function()? macos,
+    T Function()? windows,
     T Function()? mobile,
     required T Function() fallback,
   }) {
@@ -1184,6 +1228,7 @@ class PlatformAction {
           ios: ios,
           web: web,
           macos: macos,
+          windows: windows,
           mobile: mobile,
         ) ??
         fallback();
@@ -1195,6 +1240,7 @@ class PlatformAction {
     required T Function() ios,
     required T Function() web,
     required T Function() macos,
+    T Function()? windows,
   }) {
     if (current_platform.isAndroid) {
       return android();
@@ -1204,6 +1250,11 @@ class PlatformAction {
       return macos();
     } else if (current_platform.isWeb) {
       return web();
+    } else if (current_platform.isWindows) {
+      if (windows != null) {
+        return windows();
+      }
+      return PlatformAutomator._throwOnWindows();
     }
 
     throw UnsupportedError('Unkown platform');
