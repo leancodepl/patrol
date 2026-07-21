@@ -1,6 +1,7 @@
 ## Unreleased
 
 - Fix `AndroidNativeView.visibleBounds` always having zero height. (#3202)
+- Collect Chrome JavaScript coverage in the web runner when `patrol test --coverage` runs on the web platform.
 
 ## 4.8.0
 

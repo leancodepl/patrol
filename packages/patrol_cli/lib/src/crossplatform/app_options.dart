@@ -433,6 +433,7 @@ class WebAppOptions {
     this.trace,
     this.storageState,
     this.acceptDownloads,
+    this.coverageDir,
   });
 
   final FlutterAppOptions flutter;
@@ -477,6 +478,10 @@ class WebAppOptions {
   /// Timeout in seconds for the web server to start.
   /// Defaults to 120 seconds (2 minutes) if not specified.
   final int? serverTimeout;
+
+  /// Directory for the Playwright runner's raw JS coverage data; when set,
+  /// coverage collection is enabled.
+  final String? coverageDir;
 
   /// Translates these options into environment variables consumed by the
   /// Playwright web runner. Unset options are omitted.

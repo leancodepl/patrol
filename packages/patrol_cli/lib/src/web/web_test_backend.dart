@@ -455,6 +455,8 @@ class WebTestBackend {
                 'PATROL_TEST_RESULTS_DIR': testResultsDir,
                 'PATROL_TEST_REPORT_DIR': testReportDir,
                 ...options.toEnvironmentVariables(),
+                if (options.coverageDir != null)
+                  'PATROL_COVERAGE_DIR': options.coverageDir!,
               },
               runInShell: true,
             )
