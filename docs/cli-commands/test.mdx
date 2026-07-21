@@ -130,6 +130,19 @@ patrol test --coverage --coverage-ignore="**/*.g.dart"
 
 excludes all files ending with `.g.dart`.
 
+#### Coverage on the web
+
+Web coverage is collected differently from other platforms, so a couple of things differ:
+
+- Lines are reported as covered or uncovered only, without the per-line hit counts available on other platforms.
+- The covered-line set may differ slightly from the same code measured on mobile.
+
+The report format is otherwise identical.
+
+<Warning>
+    A debug build is required. `--profile` and `--release` are not supported with `--coverage` on the web.
+</Warning>
+
 ### Build versioning
 
 You can specify custom build number and build name using the `--build-name` and `--build-number` flags. These work

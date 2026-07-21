@@ -1,7 +1,7 @@
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:patrol_cli/src/base/extensions/platform.dart';
-import 'package:patrol_cli/src/coverage/coverage_tool.dart';
+import 'package:patrol_cli/src/coverage/coverage_common.dart';
 import 'package:platform/platform.dart';
 import 'package:test/test.dart';
 

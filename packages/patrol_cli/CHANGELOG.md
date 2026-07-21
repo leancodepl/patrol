@@ -2,6 +2,7 @@
 
 - Download only Chromium instead of all default Playwright browsers during web runner setup. (#3156)
 - Fix `patrol test -d chrome` failing with `No devices attached` on machines without a system Chrome installation. (#3172)
+- Add `patrol test --coverage` support for the web platform, producing the same `coverage/patrol_lcov.info` report as mobile. Requires a debug build (the default); Chromium only.
 
 ## 4.5.1
 

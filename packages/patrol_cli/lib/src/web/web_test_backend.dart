@@ -485,6 +485,8 @@ class WebTestBackend {
                   'PATROL_WEB_HEADLESS': options.headless.toString(),
                 if (options.browserArgs != null)
                   'PATROL_WEB_BROWSER_ARGS': options.browserArgs.toString(),
+                if (options.coverageDir != null)
+                  'PATROL_COVERAGE_DIR': options.coverageDir!,
                 ...Platform.environment,
               },
               runInShell: true,
