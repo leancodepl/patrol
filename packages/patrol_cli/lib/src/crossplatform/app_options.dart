@@ -90,6 +90,7 @@ class AndroidAppOptions {
     required this.appServerPort,
     required this.testServerPort,
     required this.uninstall,
+    this.emitTestManifest = false,
   });
 
   final FlutterAppOptions flutter;
@@ -97,6 +98,11 @@ class AndroidAppOptions {
   final int appServerPort;
   final int testServerPort;
   final bool uninstall;
+
+  /// Whether to discover Dart tests at build time (host `flutter test`) and
+  /// generate static JUnit test methods, so each Dart test becomes a real,
+  /// individually-selectable native test. Experimental, opt-in.
+  final bool emitTestManifest;
 
   String get description => 'apk with entrypoint ${basename(flutter.target)}';
 
@@ -117,12 +123,19 @@ class AndroidAppOptions {
     );
   }
 
-  List<String> toGradleConnectedTestInvocation({required bool isWindows}) {
+  List<String> toGradleConnectedTestInvocation({
+    required bool isWindows,
+    String? onlyTestClass,
+  }) {
     // for example: connectedDevDebugAndroidTest, connectedReleaseAndroidTest
     return _toGradleInvocation(
       isWindows: isWindows,
       task: 'connected$_effectiveFlavor${_buildMode}AndroidTest',
       noUninstallAfterTests: !uninstall,
+      // Restrict the run to the generated static class (the Android analog of
+      // iOS `-only-testing`). This also stops the parameterized host class from
+      // performing its runtime discovery launch.
+      onlyTestClass: onlyTestClass,
     );
   }
 
@@ -155,6 +168,7 @@ class AndroidAppOptions {
     required bool isWindows,
     required String task,
     bool noUninstallAfterTests = false,
+    String? onlyTestClass,
   }) {
     final List<String> cmd;
     if (isWindows) {
@@ -209,6 +223,13 @@ class AndroidAppOptions {
     cmd
       ..add('-Papp-server-port=$appServerPort')
       ..add('-Ptest-server-port=$testServerPort');
+
+    // Run only the generated static test class, if requested.
+    if (onlyTestClass != null) {
+      cmd.add(
+        '-Pandroid.testInstrumentationRunnerArguments.class=$onlyTestClass',
+      );
+    }
 
     return cmd;
   }

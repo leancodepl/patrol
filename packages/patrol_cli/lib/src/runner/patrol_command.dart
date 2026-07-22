@@ -200,6 +200,20 @@ abstract class PatrolCommand extends Command<int> {
       );
   }
 
+  /// Registers the experimental `--emit-test-manifest` flag, shared by the iOS
+  /// and Android build/test paths.
+  void usesEmitTestManifestOption() {
+    argParser.addFlag(
+      'emit-test-manifest',
+      help:
+          'Experimental: discover Dart tests at build time (host `flutter '
+          'test`) and generate static native test methods, so each Dart test '
+          'becomes an individually-selectable native test and the runtime '
+          'discovery launch is skipped.',
+      negatable: false,
+    );
+  }
+
   void usesMacOSOptions() {
     argParser.addOption(
       'bundle-id',
