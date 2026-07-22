@@ -25,6 +25,7 @@ import 'package:patrol_cli/src/commands/update.dart';
 import 'package:patrol_cli/src/compatibility_checker/compatibility_checker.dart';
 import 'package:patrol_cli/src/compatibility_checker/version_compatibility.dart';
 import 'package:patrol_cli/src/coverage/coverage_tool.dart';
+import 'package:patrol_cli/src/coverage/web_coverage_tool.dart';
 import 'package:patrol_cli/src/crossplatform/flutter_tool.dart';
 import 'package:patrol_cli/src/dart_defines_reader.dart';
 import 'package:patrol_cli/src/devices.dart';
@@ -247,6 +248,11 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
           adb: adb,
           logger: _logger,
           parentDisposeScope: _disposeScope,
+        ),
+        webCoverageTool: WebCoverageTool(
+          fs: _fs,
+          rootDirectory: rootDirectory,
+          logger: _logger,
         ),
         analytics: _analytics,
         logger: _logger,

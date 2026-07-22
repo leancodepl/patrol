@@ -113,6 +113,12 @@ patrol test --exclude-tags='(android||ios)'
         Coverage collection is currently not supported on macOS.
 </Warning>
 
+<Warning>
+    A debug build is required. Coverage relies on the Dart VM Service (mobile)
+    or DDC source maps (web), which are only available in debug builds, so
+    `--profile` and `--release` are not supported with `--coverage`.
+</Warning>
+
 To collect coverage from patrol tests, use `--coverage`.
 
 ```
@@ -129,6 +135,15 @@ patrol test --coverage --coverage-ignore="**/*.g.dart"
 ```
 
 excludes all files ending with `.g.dart`.
+
+#### Coverage on the web
+
+Web coverage is collected differently from other platforms, so a couple of things differ:
+
+- Lines are reported as covered or uncovered only, without the per-line hit counts available on other platforms.
+- The covered-line set may differ slightly from the same code measured on mobile.
+
+The report format is otherwise identical.
 
 ### Build versioning
 

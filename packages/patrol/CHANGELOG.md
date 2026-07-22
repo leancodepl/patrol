@@ -1,3 +1,7 @@
+## Unreleased
+
+- Collect Chrome JavaScript coverage in the web runner when `patrol test --coverage` runs on the web platform.
+
 ## 4.7.1
 
 - Add a Swift Package Manager support note to the README.
