@@ -46,21 +46,146 @@ class WindowsAutomator implements windows_automator.WindowsAutomator {
   }
 
   @override
-  Future<void> tap({String? name, String? automationId}) {
+  Future<void> tap({
+    String? name,
+    String? automationId,
+    String? className,
+    int? index,
+  }) {
     return _wrapRequest(
       'tap',
-      () => _sendRequest('tap', _selectorBody(name: name, automationId: automationId)),
+      () => _sendRequest(
+        'tap',
+        _selectorBody(
+          name: name,
+          automationId: automationId,
+          className: className,
+          index: index,
+        ),
+      ),
     );
   }
 
   @override
-  Future<void> waitUntilVisible({String? name, String? automationId}) {
+  Future<void> doubleTap({
+    String? name,
+    String? automationId,
+    String? className,
+    int? index,
+  }) {
+    return _wrapRequest(
+      'doubleTap',
+      () => _sendRequest(
+        'doubleTap',
+        _selectorBody(
+          name: name,
+          automationId: automationId,
+          className: className,
+          index: index,
+        ),
+      ),
+    );
+  }
+
+  @override
+  Future<void> waitUntilVisible({
+    String? name,
+    String? automationId,
+    String? className,
+    int? index,
+  }) {
     return _wrapRequest(
       'waitUntilVisible',
       () => _sendRequest(
         'waitUntilVisible',
-        _selectorBody(name: name, automationId: automationId),
+        _selectorBody(
+          name: name,
+          automationId: automationId,
+          className: className,
+          index: index,
+        ),
       ),
+    );
+  }
+
+  @override
+  Future<bool> isElementVisible({
+    String? name,
+    String? automationId,
+    String? className,
+    int? index,
+  }) {
+    return _wrapRequest(
+      'isElementVisible',
+      () async {
+        final json = await _sendRequest(
+          'isElementVisible',
+          _selectorBody(
+            name: name,
+            automationId: automationId,
+            className: className,
+            index: index,
+          ),
+        );
+        return json['visible'] == true;
+      },
+    );
+  }
+
+  @override
+  Future<windows_automator.WindowsUiElement?> findElement({
+    String? name,
+    String? automationId,
+    String? className,
+    int? index,
+  }) {
+    return _wrapRequest(
+      'findElement',
+      () async {
+        final json = await _sendRequest(
+          'findElement',
+          _selectorBody(
+            name: name,
+            automationId: automationId,
+            className: className,
+            index: index,
+          ),
+        );
+        final element = json['element'];
+        if (element is! Map<String, dynamic>) {
+          return null;
+        }
+        return windows_automator.WindowsUiElement.fromJson(element);
+      },
+    );
+  }
+
+  @override
+  Future<List<windows_automator.WindowsUiElement>> findElements({
+    String? name,
+    String? automationId,
+    String? className,
+  }) {
+    return _wrapRequest(
+      'findElements',
+      () async {
+        final json = await _sendRequest(
+          'findElements',
+          _selectorBody(
+            name: name,
+            automationId: automationId,
+            className: className,
+          ),
+        );
+        final raw = json['elements'];
+        if (raw is! List) {
+          return <windows_automator.WindowsUiElement>[];
+        }
+        return raw
+            .whereType<Map<String, dynamic>>()
+            .map(windows_automator.WindowsUiElement.fromJson)
+            .toList();
+      },
     );
   }
 
@@ -69,25 +194,62 @@ class WindowsAutomator implements windows_automator.WindowsAutomator {
     String text, {
     String? name,
     String? automationId,
+    String? className,
+    int? index,
   }) {
     return _wrapRequest(
       'enterText',
       () => _sendRequest('enterText', {
         'text': text,
-        ..._selectorBody(name: name, automationId: automationId),
+        ..._selectorBody(
+          name: name,
+          automationId: automationId,
+          className: className,
+          index: index,
+        ),
       }),
     );
   }
 
-  Map<String, String> _selectorBody({String? name, String? automationId}) {
+  @override
+  Future<void> pressKey(
+    int keyCode, {
+    bool shift = false,
+    bool ctrl = false,
+    bool alt = false,
+  }) {
+    return _wrapRequest(
+      'pressKey',
+      () => _sendRequest('pressKey', {
+        'keyCode': keyCode,
+        'shift': shift,
+        'ctrl': ctrl,
+        'alt': alt,
+      }),
+    );
+  }
+
+  Map<String, dynamic> _selectorBody({
+    String? name,
+    String? automationId,
+    String? className,
+    int? index,
+  }) {
     final hasName = name != null && name.isNotEmpty;
     final hasId = automationId != null && automationId.isNotEmpty;
-    if (hasName == hasId) {
+    final hasClass = className != null && className.isNotEmpty;
+    if (!hasName && !hasId && !hasClass) {
       throw ArgumentError(
-        'Provide exactly one of name or automationId',
+        'Provide at least one of name, automationId, or className',
       );
     }
-    return hasName ? {'name': name!} : {'automationId': automationId!};
+
+    return <String, dynamic>{
+      if (hasName) 'name': name,
+      if (hasId) 'automationId': automationId,
+      if (hasClass) 'className': className,
+      if (index != null) 'index': index,
+    };
   }
 
   Future<T> _wrapRequest<T>(

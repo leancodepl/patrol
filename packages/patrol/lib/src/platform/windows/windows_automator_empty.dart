@@ -13,32 +13,87 @@ class WindowsAutomator implements windows_automator.WindowsAutomator {
   @override
   WindowsAutomatorConfig get config => _config;
 
-  @override
-  Future<void> markPatrolAppServiceReady() {
-    throw UnsupportedError('Windows automator is not available on this platform');
+  Future<T> _unsupported<T>() {
+    throw UnsupportedError(
+      'Windows automator is not available on this platform',
+    );
   }
 
   @override
-  Future<void> tapAt(Offset point) {
-    throw UnsupportedError('Windows automator is not available on this platform');
-  }
+  Future<void> markPatrolAppServiceReady() => _unsupported();
 
   @override
-  Future<void> tap({String? name, String? automationId}) {
-    throw UnsupportedError('Windows automator is not available on this platform');
-  }
+  Future<void> tapAt(Offset point) => _unsupported();
 
   @override
-  Future<void> waitUntilVisible({String? name, String? automationId}) {
-    throw UnsupportedError('Windows automator is not available on this platform');
-  }
+  Future<void> tap({
+    String? name,
+    String? automationId,
+    String? className,
+    int? index,
+  }) =>
+      _unsupported();
+
+  @override
+  Future<void> doubleTap({
+    String? name,
+    String? automationId,
+    String? className,
+    int? index,
+  }) =>
+      _unsupported();
+
+  @override
+  Future<void> waitUntilVisible({
+    String? name,
+    String? automationId,
+    String? className,
+    int? index,
+  }) =>
+      _unsupported();
+
+  @override
+  Future<bool> isElementVisible({
+    String? name,
+    String? automationId,
+    String? className,
+    int? index,
+  }) =>
+      _unsupported();
+
+  @override
+  Future<windows_automator.WindowsUiElement?> findElement({
+    String? name,
+    String? automationId,
+    String? className,
+    int? index,
+  }) =>
+      _unsupported();
+
+  @override
+  Future<List<windows_automator.WindowsUiElement>> findElements({
+    String? name,
+    String? automationId,
+    String? className,
+  }) =>
+      _unsupported();
 
   @override
   Future<void> enterText(
     String text, {
     String? name,
     String? automationId,
-  }) {
-    throw UnsupportedError('Windows automator is not available on this platform');
-  }
+    String? className,
+    int? index,
+  }) =>
+      _unsupported();
+
+  @override
+  Future<void> pressKey(
+    int keyCode, {
+    bool shift = false,
+    bool ctrl = false,
+    bool alt = false,
+  }) =>
+      _unsupported();
 }
