@@ -62,19 +62,16 @@ void main() {
       );
     });
 
-    test(
-      'attributes relative sources escaping to a top-level lib/ '
-      'to the app package',
-      () {
-        expect(
-          resolve(
-            '../../lib/main.dart',
-            scriptUrl: 'http://localhost:8080/main.dart.js',
-          ),
-          Uri.parse('package:example_app/main.dart'),
-        );
-      },
-    );
+    test('attributes relative sources escaping to a top-level lib/ '
+        'to the app package', () {
+      expect(
+        resolve(
+          '../../lib/main.dart',
+          scriptUrl: 'http://localhost:8080/main.dart.js',
+        ),
+        Uri.parse('package:example_app/main.dart'),
+      );
+    });
 
     test('returns null for relative sources without a script URL', () {
       expect(resolve('lib/main.dart'), isNull);
@@ -123,11 +120,7 @@ void main() {
           jsonEncode({
             'configVersion': 2,
             'packages': [
-              {
-                'name': 'example_app',
-                'rootUri': '../',
-                'packageUri': 'lib/',
-              },
+              {'name': 'example_app', 'rootUri': '../', 'packageUri': 'lib/'},
             ],
           }),
         );
@@ -145,10 +138,7 @@ void main() {
       verify(
         () => logger.warn(any(that: contains('No web coverage data'))),
       ).called(1);
-      expect(
-        reportFs.file('coverage/patrol_lcov.info').existsSync(),
-        isFalse,
-      );
+      expect(reportFs.file('coverage/patrol_lcov.info').existsSync(), isFalse);
     });
 
     test('converts V8 coverage into an LCOV report', () async {
@@ -249,10 +239,7 @@ void main() {
           any(that: contains('did not map back to any Dart sources')),
         ),
       ).called(1);
-      expect(
-        reportFs.file('coverage/patrol_lcov.info').existsSync(),
-        isFalse,
-      );
+      expect(reportFs.file('coverage/patrol_lcov.info').existsSync(), isFalse);
     });
 
     test('prepareDataDirectory clears data from previous runs', () async {

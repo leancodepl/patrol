@@ -241,10 +241,7 @@ Uri? _packageUriFromPath(List<String> pathSegments, String appPackageName) {
 
   if (segments.indexOf('packages') case final i
       when i != -1 && i + 1 < segments.length) {
-    return Uri(
-      scheme: 'package',
-      pathSegments: segments.sublist(i + 1),
-    );
+    return Uri(scheme: 'package', pathSegments: segments.sublist(i + 1));
   }
 
   if (segments case ['lib', final first, ...final rest]) {
