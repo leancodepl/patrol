@@ -11,6 +11,7 @@ import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/crossplatform/patrol_build_environment.dart';
+import 'package:patrol_cli/src/crossplatform/test_manifest_generator.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/xcode_test_codegen.dart';
 import 'package:patrol_log/patrol_log.dart';
@@ -101,7 +102,11 @@ class IOSTestBackend {
       // test tree. Failures are non-fatal: the native side falls back to
       // runtime discovery when the manifest is absent.
       if (options.emitTestManifest) {
-        final manifestPath = await _generateTestManifest(options, scope);
+        final manifestPath = await TestManifestGenerator(
+          processManager: _processManager,
+          rootDirectory: _rootDirectory,
+          logger: _logger,
+        ).generate(options.flutter, scope);
         if (manifestPath != null) {
           _generateXcodeTests(manifestPath);
         }
@@ -173,47 +178,6 @@ class IOSTestBackend {
         await _patchXcTestRunFrameworkPath(xctestRunFile);
       }
     });
-  }
-
-  /// Runs the bundle on the host in discovery mode and returns the absolute
-  /// path to the generated manifest, or null if discovery failed.
-  Future<String?> _generateTestManifest(
-    IOSAppOptions options,
-    DisposeScope scope,
-  ) async {
-    final manifestFile = _rootDirectory
-        .childDirectory('build')
-        .childDirectory('patrol')
-        .childFile('patrol_test_manifest.json');
-    manifestFile.parent.createSync(recursive: true);
-    if (manifestFile.existsSync()) {
-      manifestFile.deleteSync();
-    }
-
-    final task = _logger.task('Discovering Dart tests at build time');
-    final process =
-        await _processManager.start(
-            options.flutter.toFlutterTestDiscoveryInvocation(
-              manifestOutputPath: manifestFile.absolute.path,
-            ),
-            runInShell: true,
-            workingDirectory: _rootDirectory.path,
-          )
-          ..disposedBy(scope);
-    process.listenStdOut((l) => _logger.detail('\t$l')).disposedBy(scope);
-    process.listenStdErr((l) => _logger.detail('\t$l')).disposedBy(scope);
-    final exitCode = await process.exitCode;
-
-    if (exitCode != 0 || !manifestFile.existsSync()) {
-      task.fail(
-        'Build-time test discovery failed (exit code $exitCode); the native '
-        'side will fall back to runtime discovery',
-      );
-      return null;
-    }
-
-    task.complete('Discovered Dart tests → ${manifestFile.path}');
-    return manifestFile.absolute.path;
   }
 
   /// Generates static XCTest methods from the manifest into the RunnerUITests

@@ -48,18 +48,11 @@ class BuildIOSCommand extends PatrolCommand {
 
     usesIOSOptions();
     usesAppNameOption();
-    argParser
-      ..addFlag(
-        'simulator',
-        help: 'Build for simulator instead of real device.',
-      )
-      ..addFlag(
-        'emit-test-manifest',
-        help:
-            'Experimental: discover Dart tests at build time (host `flutter '
-            'test`) and embed a manifest into the test bundle, so the native '
-            'runner can skip the runtime discovery launch.',
-      );
+    argParser.addFlag(
+      'simulator',
+      help: 'Build for simulator instead of real device.',
+    );
+    usesEmitTestManifestOption();
   }
 
   final TestFinderFactory _testFinderFactory;

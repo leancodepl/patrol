@@ -70,6 +70,7 @@ class TestCommand extends PatrolCommand {
     usesAppNameOption();
     usesAndroidOptions();
     usesIOSOptions();
+    usesEmitTestManifestOption();
 
     usesWeb();
   }
@@ -293,6 +294,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
       uninstall: uninstall,
+      emitTestManifest: boolArg('emit-test-manifest'),
     );
 
     final iosOpts = IOSAppOptions(
@@ -306,6 +308,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       testServerPort: super.testServerPort,
       fullIsolation: boolArg('full-isolation'),
       clearIOSPermissions: boolArg('clear-permissions'),
+      emitTestManifest: boolArg('emit-test-manifest'),
     );
 
     final macosOpts = MacOSAppOptions(

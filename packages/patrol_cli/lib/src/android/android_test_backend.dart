@@ -5,11 +5,13 @@ import 'package:adb/adb.dart';
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
 import 'package:meta/meta.dart';
+import 'package:patrol_cli/src/android/android_test_codegen.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/extensions/completer.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
+import 'package:patrol_cli/src/crossplatform/test_manifest_generator.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:patrol_cli/src/runner/flutter_command.dart';
@@ -58,6 +60,38 @@ class AndroidTestBackend {
 
       Process process;
       int exitCode;
+
+      // Build-time test discovery + static JUnit codegen (experimental,
+      // opt-in). Runs a host `flutter test` in discovery mode to obtain a
+      // manifest of the Dart test tree, then generates a static JUnit class so
+      // each Dart test becomes a real, individually-selectable native @Test
+      // (and shows up under its own name in reports, not under the parameterized
+      // `runDartTest[...]` wrapper). Failures are non-fatal: the build falls
+      // back to the runtime-discovery host class.
+      if (options.emitTestManifest) {
+        final manifestPath = await TestManifestGenerator(
+          processManager: _processManager,
+          rootDirectory: _rootDirectory,
+          logger: _logger,
+        ).generate(options.flutter, scope);
+        if (manifestPath != null) {
+          final result = AndroidTestCodegen(_rootDirectory.fileSystem).generate(
+            manifestPath: manifestPath,
+            androidDir: _rootDirectory.childDirectory('android'),
+          );
+          if (result != null) {
+            _logger.detail(
+              'Generated ${result.testCount} static JUnit test method(s) → '
+              '${result.outputPath}',
+            );
+          } else {
+            _logger.warn(
+              'Could not locate the androidTest host class; falling back to '
+              'runtime test discovery',
+            );
+          }
+        }
+      }
 
       // :app:assembleDebug
 
@@ -362,10 +396,20 @@ class AndroidTestBackend {
       final subject = '${options.description} on ${device.description}';
       final task = _logger.task('Executing tests of $subject');
 
+      // When static codegen ran, restrict the run to the generated class so the
+      // parameterized host class doesn't also perform its runtime-discovery
+      // launch (which would run every test a second time).
+      final onlyTestClass = options.emitTestManifest
+          ? AndroidTestCodegen(
+              _rootDirectory.fileSystem,
+            ).findGeneratedClassName(_rootDirectory.childDirectory('android'))
+          : null;
+
       final process =
           await _processManager.start(
               options.toGradleConnectedTestInvocation(
                 isWindows: _platform.isWindows,
+                onlyTestClass: onlyTestClass,
               ),
               runInShell: true,
               environment: {
