@@ -1,7 +1,10 @@
 import 'package:flutter/painting.dart';
 import 'package:patrol/src/platform/windows/windows_automator_config.dart';
 
-/// Windows-specific OS automation (POC: coordinate taps outside the Flutter app).
+/// Windows-specific OS automation (experimental).
+///
+/// Currently supports coordinate taps on the primary display via the Windows
+/// native test host. Selector-based actions are planned.
 abstract interface class WindowsAutomator {
   /// Configuration used by this automator.
   WindowsAutomatorConfig get config;

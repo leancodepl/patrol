@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text.Json;
 using Patrol.WindowsRunner.Native;
 using Patrol.WindowsRunner.Protocol;
@@ -7,9 +8,8 @@ namespace Patrol.WindowsRunner;
 internal sealed class AutomatorServer
 {
     private readonly int _port;
-    private readonly TaskCompletionSource _ready = new(
-        TaskCreationOptions.RunContinuationsAsynchronously
-    );
+    private readonly object _readyLock = new();
+    private TaskCompletionSource _ready = NewReadySource();
     private WebApplication? _app;
 
     public AutomatorServer(int port)
@@ -17,8 +17,24 @@ internal sealed class AutomatorServer
         _port = port;
     }
 
-    public Task WaitUntilReadyAsync(CancellationToken ct) =>
-        _ready.Task.WaitAsync(ct);
+    public void ResetReadyGate()
+    {
+        lock (_readyLock)
+        {
+            _ready = NewReadySource();
+        }
+    }
+
+    public Task WaitUntilReadyAsync(CancellationToken ct)
+    {
+        TaskCompletionSource ready;
+        lock (_readyLock)
+        {
+            ready = _ready;
+        }
+
+        return ready.Task.WaitAsync(ct);
+    }
 
     public async Task StartAsync(CancellationToken ct)
     {
@@ -34,7 +50,11 @@ internal sealed class AutomatorServer
             () =>
             {
                 Console.WriteLine("AutomatorServer: markPatrolAppServiceReady");
-                _ready.TrySetResult();
+                lock (_readyLock)
+                {
+                    _ready.TrySetResult();
+                }
+
                 return Results.Ok();
             }
         );
@@ -43,7 +63,10 @@ internal sealed class AutomatorServer
             "/tapAt",
             async (HttpRequest request) =>
             {
-                using var doc = await JsonDocument.ParseAsync(request.Body, cancellationToken: ct);
+                using var doc = await JsonDocument.ParseAsync(
+                    request.Body,
+                    cancellationToken: request.HttpContext.RequestAborted
+                );
                 var root = doc.RootElement;
                 var tap = new TapAtRequest
                 {
@@ -51,7 +74,12 @@ internal sealed class AutomatorServer
                     Y = root.GetProperty("y").GetDouble(),
                 };
 
-                Console.WriteLine($"AutomatorServer: tapAt({tap.X}, {tap.Y})");
+                Console.WriteLine(
+                    string.Create(
+                        CultureInfo.InvariantCulture,
+                        $"AutomatorServer: tapAt({tap.X}, {tap.Y})"
+                    )
+                );
                 WindowsInput.TapAtNormalized(tap.X, tap.Y);
                 return Results.Ok();
             }
@@ -71,4 +99,7 @@ internal sealed class AutomatorServer
         await _app.StopAsync();
         await _app.DisposeAsync();
     }
+
+    private static TaskCompletionSource NewReadySource() =>
+        new(TaskCreationOptions.RunContinuationsAsynchronously);
 }

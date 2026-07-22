@@ -20,7 +20,11 @@ internal static class WindowsInput
         if (x is < 0 or > 1 || y is < 0 or > 1)
         {
             throw new ArgumentOutOfRangeException(
-                $"Normalized coordinates must be in [0,1], got ({x}, {y})"
+                paramName: null,
+                message: string.Create(
+                    System.Globalization.CultureInfo.InvariantCulture,
+                    $"Normalized coordinates must be in [0,1], got ({x}, {y})"
+                )
             );
         }
 

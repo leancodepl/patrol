@@ -53,6 +53,11 @@ catch (OperationCanceledException)
     Console.Error.WriteLine("Cancelled");
     return 130;
 }
+catch (TimeoutException ex)
+{
+    Console.Error.WriteLine(ex.Message);
+    return 3;
+}
 catch (Exception ex)
 {
     Console.Error.WriteLine($"Fatal: {ex}");
@@ -73,7 +78,7 @@ static void PrintUsage()
 {
     Console.WriteLine(
         """
-        patrol_windows_runner — Patrol Windows POC native host
+        patrol_windows_runner — Patrol Windows native test host (experimental)
 
         Usage:
           patrol_windows_runner --app <path-to-flutter-exe> [--test-port 8081] [--app-port 8082]

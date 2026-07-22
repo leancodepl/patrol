@@ -1,5 +1,8 @@
+import 'dart:io' as io;
+
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
+import 'package:package_config/package_config.dart';
 import 'package:path/path.dart' as p;
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/logger.dart';
@@ -152,19 +155,11 @@ class WindowsTestBackend {
   }
 
   Future<String> _ensureRunnerBuilt(DisposeScope scope) async {
-    final runnerProject = _resolveRunnerProjectPath();
+    final runnerProject = await _resolveRunnerProjectPath();
     final task = _logger.task('Building patrol_windows_runner');
 
     final process = await _processManager.start(
-      [
-        'dotnet',
-        'build',
-        runnerProject,
-        '-c',
-        'Release',
-        '-v',
-        'q',
-      ],
+      ['dotnet', 'build', runnerProject, '-c', 'Release', '-v', 'q'],
       runInShell: true,
     );
     process.listenStdOut((l) => _logger.detail('\t$l')).disposedBy(scope);
@@ -190,59 +185,40 @@ class WindowsTestBackend {
     return exe.absolute.path;
   }
 
-  String _resolveRunnerProjectPath() {
-    // From an app using path: ../packages/patrol, or from the monorepo itself.
-    final fromPackage = _rootDirectory
-        .childDirectory('.dart_tool')
-        .childDirectory('package_config.json');
-
-    final candidates = <File>[
-      _rootDirectory
-          .childDirectory('packages')
-          .childDirectory('patrol')
-          .childDirectory('windows_runner')
-          .childFile('Patrol.WindowsRunner.csproj'),
-      _rootDirectory.parent
-          .childDirectory('patrol')
-          .childDirectory('windows_runner')
-          .childFile('Patrol.WindowsRunner.csproj'),
-      _rootDirectory.parent.parent
-          .childDirectory('packages')
-          .childDirectory('patrol')
-          .childDirectory('windows_runner')
-          .childFile('Patrol.WindowsRunner.csproj'),
-      // When running inside packages/patrol/example-like layouts:
-      _rootDirectory.parent
-          .childDirectory('windows_runner')
-          .childFile('Patrol.WindowsRunner.csproj'),
-    ];
-
-    for (final file in candidates) {
-      if (file.existsSync()) {
-        return file.absolute.path;
-      }
-    }
-
-    // Last resort: walk up looking for packages/patrol/windows_runner
-    var dir = _rootDirectory;
-    for (var i = 0; i < 6; i++) {
-      final candidate = dir
-          .childDirectory('packages')
-          .childDirectory('patrol')
-          .childDirectory('windows_runner')
-          .childFile('Patrol.WindowsRunner.csproj');
-      if (candidate.existsSync()) {
-        return candidate.absolute.path;
-      }
-      if (dir.parent.path == dir.path) {
-        break;
-      }
-      dir = dir.parent;
-    }
-
-    throwToolExit(
-      'Could not locate packages/patrol/windows_runner/Patrol.WindowsRunner.csproj '
-      '(looked from ${_rootDirectory.path}; package_config=${fromPackage.path})',
+  /// Resolves `packages/patrol/windows_runner` the same way web resolves
+  /// `web_runner`: via the app's package_config → installed `patrol` root.
+  Future<String> _resolveRunnerProjectPath() async {
+    final packageConfig = await findPackageConfig(
+      io.Directory(_rootDirectory.path),
     );
+    if (packageConfig == null) {
+      throwToolExit(
+        'Package configuration not found under ${_rootDirectory.path}.\n'
+        'Please run "dart pub get" (or "flutter pub get") first.',
+      );
+    }
+
+    final patrolPackage = packageConfig['patrol'];
+    if (patrolPackage == null) {
+      throwToolExit(
+        'patrol package not found in package configuration.\n'
+        'Please ensure patrol is a dependency and run "dart pub get".',
+      );
+    }
+
+    final runnerDir = p.join(patrolPackage.root.toFilePath(), 'windows_runner');
+    final csproj = _fs
+        .directory(runnerDir)
+        .childFile('Patrol.WindowsRunner.csproj');
+
+    if (!csproj.existsSync()) {
+      throwToolExit(
+        'windows_runner not found at: ${csproj.path}\n'
+        'This should ship with the patrol package (like web_runner).\n'
+        'Please ensure patrol is properly installed.',
+      );
+    }
+
+    return csproj.absolute.path;
   }
 }

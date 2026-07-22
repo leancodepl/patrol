@@ -247,6 +247,8 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
         'PATROL_TEST_SERVER_PORT': super.testServerPort.toString(),
         'PATROL_APP_SERVER_PORT': super.appServerPort.toString(),
       },
+      if (device.targetPlatform == TargetPlatform.windows)
+        'PATROL_HOST': '127.0.0.1',
       'COVERAGE_ENABLED': coverageEnabled.toString(),
     }.withNullsRemoved();
 
