@@ -23,6 +23,3 @@ custom_lint.log
 **/Properties/launchSettings.json
 *.user
 *.suo
-
-# Windows POC Flutter app (scaffold; recreate locally for now)
-/dev/windows_poc/app/
