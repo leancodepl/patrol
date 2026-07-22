@@ -435,6 +435,28 @@ class DevelopService {
     try {
       final future = action();
 
+      // If the backend settles before attach returns, the app shut down early.
+      // Report it now instead of after attach (which blocks for the whole
+      // session), so callers waiting on [onTestsCompleted] don't hang.
+      var testsReported = false;
+      void reportTestsCompleted(TestCompletionResult result) {
+        if (testsReported) {
+          return;
+        }
+        testsReported = true;
+        onTestsCompleted?.call(result);
+      }
+
+      unawaited(
+        future.then(
+          (_) =>
+              reportTestsCompleted(const TestCompletionResult(success: true)),
+          onError: (Object err, StackTrace st) => reportTestsCompleted(
+            TestCompletionResult(success: false, error: err),
+          ),
+        ),
+      );
+
       if (device.targetPlatform != TargetPlatform.web) {
         await _flutterTool.attachForHotRestart(
           flutterCommand: flutterOpts.command,
@@ -450,11 +472,9 @@ class DevelopService {
 
       try {
         await future;
-        onTestsCompleted?.call(const TestCompletionResult(success: true));
+        reportTestsCompleted(const TestCompletionResult(success: true));
       } catch (err) {
-        onTestsCompleted?.call(
-          TestCompletionResult(success: false, error: err),
-        );
+        reportTestsCompleted(TestCompletionResult(success: false, error: err));
         rethrow;
       }
     } catch (err, st) {

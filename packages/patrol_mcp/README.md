@@ -154,7 +154,10 @@ See [VS Code's MCP docs][vscode_mcp] for starting the server.
 
 ## Tools
 
-- `run`: Runs a test file and waits for completion.
+- `run`: Runs a test file and waits for completion. Auto-selects a device
+  (Android device > Android emulator > iOS device > iOS simulator), or pass
+  `device` to target one; `PATROL_FLAGS --device` wins.
+- `devices`: Lists attached Android/iOS devices to pass as `run`'s `device`.
 - `quit`: Gracefully stops the active session.
 - `status`: Returns session state and recent output.
 - `screenshot`: Captures screenshot from active session device.

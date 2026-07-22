@@ -17,3 +17,4 @@ plus an optional `scripts/` directory for executable helpers).
 | Skill | Description | Example prompt |
 |---|---|---|
 | [fix-issue](fix-issue/SKILL.md) | Turn a reported Patrol bug into a verified PR — reproduce, locate the right package, fix without regressions, verify, and open the PR. | Fix issue #3101 |
+| [issue-triage](issue-triage/SKILL.md) | Triage an incoming issue into a short, evidence-based recommendation (Patrol bug / User issue / Information needed / Feature / Docs / Duplicate) for a human to act on. Read-only. | Triage issue #3145 |
