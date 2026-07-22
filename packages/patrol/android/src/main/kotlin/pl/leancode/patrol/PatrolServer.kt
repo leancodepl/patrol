@@ -3,6 +3,8 @@ package pl.leancode.patrol
 import android.os.ConditionVariable
 import org.http4k.core.ContentType
 import org.http4k.filter.ServerFilters
+import org.http4k.routing.RoutingHttpHandler
+import org.http4k.routing.routes
 import org.http4k.server.Http4kServer
 import org.http4k.server.KtorCIO
 import org.http4k.server.asServer
@@ -29,8 +31,19 @@ class PatrolServer {
     fun start() {
         Logger.i("Starting server...")
 
-        automatorServer = AutomatorServer(Automator.instance)
-        server = automatorServer!!.router
+        val automator = AutomatorServer(Automator.instance)
+        automatorServer = automator
+
+        // Discover optional extension packages and mount their routes on the same server.
+        val extensions = PatrolServerExtensions.discover()
+        extensions.forEach { Logger.i("Loaded Patrol server extension: ${it.name}") }
+
+        val extensionRoutes = extensions.map { it.routes() }
+        val allRoutes = ArrayList<RoutingHttpHandler>(1 + extensionRoutes.size)
+        allRoutes.add(automator.router)
+        allRoutes.addAll(extensionRoutes)
+
+        server = routes(*(allRoutes.toTypedArray()))
             .withFilter(catcher)
             .withFilter(printer)
             .withFilter(ServerFilters.SetContentType(ContentType.TEXT_PLAIN))
