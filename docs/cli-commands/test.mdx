@@ -176,6 +176,12 @@ Videos are saved as `.mp4` files in `<test-directory>/videos` (override with
     Recording is skipped on unsupported devices, and the test still runs.
 </Warning>
 
+<Info>
+    On web, recording is handled by Playwright instead. Use `--web-video`
+    (e.g. `--web-video=on` or `retain-on-failure`). See the
+    [Playwright videos docs](https://playwright.dev/docs/videos).
+</Info>
+
 ### Web Platform
 
 Patrol supports running tests on Flutter web using Playwright. To run tests on web:
