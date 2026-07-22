@@ -476,6 +476,10 @@ To install a specific version of Patrol CLI, run:
 
   /// For testing purposes only
   @visibleForTesting
+  List<String> testNormalizeArgs(Iterable<String> args) => _normalizeArgs(args);
+
+  /// For testing purposes only
+  @visibleForTesting
   Future<void> testCheckForUpdates({
     required String currentVersion,
     required String latestVersion,
