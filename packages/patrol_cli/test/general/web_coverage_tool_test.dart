@@ -4,6 +4,7 @@ import 'dart:io' as io;
 import 'package:file/local.dart';
 import 'package:file/memory.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:path/path.dart' show join;
 import 'package:patrol_cli/src/coverage/web_coverage_tool.dart';
 import 'package:test/test.dart';
 
@@ -190,7 +191,7 @@ void main() {
       final report = reportFs
           .file('coverage/patrol_lcov.info')
           .readAsStringSync();
-      expect(report, contains('lib/main.dart'));
+      expect(report, contains(join('lib', 'main.dart')));
       expect(report, contains('DA:1,1'));
       expect(report, contains('DA:2,1'));
       expect(report, contains('DA:3,0'));
