@@ -22,4 +22,23 @@ class WindowsAutomator implements windows_automator.WindowsAutomator {
   Future<void> tapAt(Offset point) {
     throw UnsupportedError('Windows automator is not available on this platform');
   }
+
+  @override
+  Future<void> tap({String? name, String? automationId}) {
+    throw UnsupportedError('Windows automator is not available on this platform');
+  }
+
+  @override
+  Future<void> waitUntilVisible({String? name, String? automationId}) {
+    throw UnsupportedError('Windows automator is not available on this platform');
+  }
+
+  @override
+  Future<void> enterText(
+    String text, {
+    String? name,
+    String? automationId,
+  }) {
+    throw UnsupportedError('Windows automator is not available on this platform');
+  }
 }

@@ -33,10 +33,17 @@ internal static class WindowsInput
 
         var pixelX = screen.Bounds.Left + (int)Math.Round(x * (screen.Bounds.Width - 1));
         var pixelY = screen.Bounds.Top + (int)Math.Round(y * (screen.Bounds.Height - 1));
+        TapAtPixels(pixelX, pixelY);
+    }
 
+    public static void TapAtPixels(int pixelX, int pixelY)
+    {
         if (!SetCursorPos(pixelX, pixelY))
         {
-            throw new Win32Exception(Marshal.GetLastWin32Error(), $"SetCursorPos({pixelX}, {pixelY}) failed");
+            throw new Win32Exception(
+                Marshal.GetLastWin32Error(),
+                $"SetCursorPos({pixelX}, {pixelY}) failed"
+            );
         }
 
         mouse_event(MouseEventfLeftDown, 0, 0, 0, UIntPtr.Zero);

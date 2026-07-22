@@ -85,6 +85,60 @@ internal sealed class AutomatorServer
             }
         );
 
+        _app.MapPost("/tap", async (HttpRequest request) =>
+            await RunSelectorActionAsync(
+                request,
+                "tap",
+                selector => WindowsUiAutomation.Tap(selector)
+            ));
+
+        _app.MapPost("/waitUntilVisible", async (HttpRequest request) =>
+            await RunSelectorActionAsync(
+                request,
+                "waitUntilVisible",
+                selector => WindowsUiAutomation.WaitUntilVisible(selector)
+            ));
+
+        _app.MapPost(
+            "/enterText",
+            async (HttpRequest request) =>
+            {
+                using var doc = await JsonDocument.ParseAsync(
+                    request.Body,
+                    cancellationToken: request.HttpContext.RequestAborted
+                );
+                var root = doc.RootElement;
+                if (
+                    !root.TryGetProperty("text", out var textEl)
+                    || textEl.ValueKind != JsonValueKind.String
+                )
+                {
+                    return Results.BadRequest(new { error = "enterText requires \"text\"" });
+                }
+
+                try
+                {
+                    var selector = ParseSelector(root);
+                    var text = textEl.GetString() ?? "";
+                    Console.WriteLine($"AutomatorServer: enterText({selector})");
+                    WindowsUiAutomation.EnterText(selector, text);
+                    return Results.Ok();
+                }
+                catch (ArgumentException ex)
+                {
+                    return Results.BadRequest(new { error = ex.Message });
+                }
+                catch (InvalidOperationException ex)
+                {
+                    Console.Error.WriteLine($"AutomatorServer: enterText failed: {ex.Message}");
+                    return Results.Json(
+                        new { error = ex.Message },
+                        statusCode: StatusCodes.Status404NotFound
+                    );
+                }
+            }
+        );
+
         await _app.StartAsync(ct);
         Console.WriteLine($"AutomatorServer listening on http://127.0.0.1:{_port}");
     }
@@ -98,6 +152,60 @@ internal sealed class AutomatorServer
 
         await _app.StopAsync();
         await _app.DisposeAsync();
+    }
+
+    private static async Task<IResult> RunSelectorActionAsync(
+        HttpRequest request,
+        string actionName,
+        Action<UiSelector> action
+    )
+    {
+        using var doc = await JsonDocument.ParseAsync(
+            request.Body,
+            cancellationToken: request.HttpContext.RequestAborted
+        );
+        try
+        {
+            var selector = ParseSelector(doc.RootElement);
+            Console.WriteLine($"AutomatorServer: {actionName}({selector})");
+            action(selector);
+            return Results.Ok();
+        }
+        catch (ArgumentException ex)
+        {
+            return Results.BadRequest(new { error = ex.Message });
+        }
+        catch (InvalidOperationException ex)
+        {
+            Console.Error.WriteLine($"AutomatorServer: {actionName} failed: {ex.Message}");
+            return Results.Json(
+                new { error = ex.Message },
+                statusCode: StatusCodes.Status404NotFound
+            );
+        }
+    }
+
+    private static UiSelector ParseSelector(JsonElement root)
+    {
+        string? name = null;
+        string? automationId = null;
+        if (
+            root.TryGetProperty("name", out var nameEl)
+            && nameEl.ValueKind == JsonValueKind.String
+        )
+        {
+            name = nameEl.GetString();
+        }
+
+        if (
+            root.TryGetProperty("automationId", out var idEl)
+            && idEl.ValueKind == JsonValueKind.String
+        )
+        {
+            automationId = idEl.GetString();
+        }
+
+        return UiSelector.FromRequest(name, automationId);
     }
 
     private static TaskCompletionSource NewReadySource() =>
