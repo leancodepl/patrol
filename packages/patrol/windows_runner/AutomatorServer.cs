@@ -92,12 +92,87 @@ internal sealed class AutomatorServer
                 selector => WindowsUiAutomation.Tap(selector)
             ));
 
+        _app.MapPost("/doubleTap", async (HttpRequest request) =>
+            await RunSelectorActionAsync(
+                request,
+                "doubleTap",
+                selector => WindowsUiAutomation.DoubleTap(selector)
+            ));
+
         _app.MapPost("/waitUntilVisible", async (HttpRequest request) =>
             await RunSelectorActionAsync(
                 request,
                 "waitUntilVisible",
                 selector => WindowsUiAutomation.WaitUntilVisible(selector)
             ));
+
+        _app.MapPost(
+            "/isElementVisible",
+            async (HttpRequest request) =>
+            {
+                using var doc = await JsonDocument.ParseAsync(
+                    request.Body,
+                    cancellationToken: request.HttpContext.RequestAborted
+                );
+                try
+                {
+                    var selector = ParseSelector(doc.RootElement);
+                    Console.WriteLine($"AutomatorServer: isElementVisible({selector})");
+                    var visible = WindowsUiAutomation.IsElementVisible(selector);
+                    return Results.Json(new { visible });
+                }
+                catch (ArgumentException ex)
+                {
+                    return Results.BadRequest(new { error = ex.Message });
+                }
+            }
+        );
+
+        _app.MapPost(
+            "/findElement",
+            async (HttpRequest request) =>
+            {
+                using var doc = await JsonDocument.ParseAsync(
+                    request.Body,
+                    cancellationToken: request.HttpContext.RequestAborted
+                );
+                try
+                {
+                    var selector = ParseSelector(doc.RootElement);
+                    Console.WriteLine($"AutomatorServer: findElement({selector})");
+                    var info = WindowsUiAutomation.FindElementInfo(selector);
+                    return info is null
+                        ? Results.Json(new { element = (object?)null })
+                        : Results.Json(new { element = ToJson(info) });
+                }
+                catch (ArgumentException ex)
+                {
+                    return Results.BadRequest(new { error = ex.Message });
+                }
+            }
+        );
+
+        _app.MapPost(
+            "/findElements",
+            async (HttpRequest request) =>
+            {
+                using var doc = await JsonDocument.ParseAsync(
+                    request.Body,
+                    cancellationToken: request.HttpContext.RequestAborted
+                );
+                try
+                {
+                    var selector = ParseSelector(doc.RootElement);
+                    Console.WriteLine($"AutomatorServer: findElements({selector})");
+                    var elements = WindowsUiAutomation.FindElements(selector);
+                    return Results.Json(new { elements = elements.Select(ToJson) });
+                }
+                catch (ArgumentException ex)
+                {
+                    return Results.BadRequest(new { error = ex.Message });
+                }
+            }
+        );
 
         _app.MapPost(
             "/enterText",
@@ -134,6 +209,48 @@ internal sealed class AutomatorServer
                     return Results.Json(
                         new { error = ex.Message },
                         statusCode: StatusCodes.Status404NotFound
+                    );
+                }
+            }
+        );
+
+        _app.MapPost(
+            "/pressKey",
+            async (HttpRequest request) =>
+            {
+                using var doc = await JsonDocument.ParseAsync(
+                    request.Body,
+                    cancellationToken: request.HttpContext.RequestAborted
+                );
+                var root = doc.RootElement;
+                if (
+                    !root.TryGetProperty("keyCode", out var keyEl)
+                    || keyEl.ValueKind != JsonValueKind.Number
+                )
+                {
+                    return Results.BadRequest(new { error = "pressKey requires \"keyCode\"" });
+                }
+
+                try
+                {
+                    var keyCode = keyEl.GetInt32();
+                    var shift = root.TryGetProperty("shift", out var s) && s.GetBoolean();
+                    var ctrl = root.TryGetProperty("ctrl", out var c) && c.GetBoolean();
+                    var alt = root.TryGetProperty("alt", out var a) && a.GetBoolean();
+                    Console.WriteLine($"AutomatorServer: pressKey({keyCode})");
+                    WindowsUiAutomation.PressKey(keyCode, shift, ctrl, alt);
+                    return Results.Ok();
+                }
+                catch (ArgumentOutOfRangeException ex)
+                {
+                    return Results.BadRequest(new { error = ex.Message });
+                }
+                catch (Exception ex)
+                {
+                    Console.Error.WriteLine($"AutomatorServer: pressKey failed: {ex.Message}");
+                    return Results.Json(
+                        new { error = ex.Message },
+                        statusCode: StatusCodes.Status500InternalServerError
                     );
                 }
             }
@@ -189,6 +306,9 @@ internal sealed class AutomatorServer
     {
         string? name = null;
         string? automationId = null;
+        string? className = null;
+        int? index = null;
+
         if (
             root.TryGetProperty("name", out var nameEl)
             && nameEl.ValueKind == JsonValueKind.String
@@ -205,8 +325,36 @@ internal sealed class AutomatorServer
             automationId = idEl.GetString();
         }
 
-        return UiSelector.FromRequest(name, automationId);
+        if (
+            root.TryGetProperty("className", out var classEl)
+            && classEl.ValueKind == JsonValueKind.String
+        )
+        {
+            className = classEl.GetString();
+        }
+
+        if (
+            root.TryGetProperty("index", out var indexEl)
+            && indexEl.ValueKind == JsonValueKind.Number
+        )
+        {
+            index = indexEl.GetInt32();
+        }
+
+        return UiSelector.FromRequest(name, automationId, className, index);
     }
+
+    private static object ToJson(UiElementInfo info) =>
+        new
+        {
+            name = info.Name,
+            className = info.ClassName,
+            automationId = info.AutomationId,
+            x = info.X,
+            y = info.Y,
+            width = info.Width,
+            height = info.Height,
+        };
 
     private static TaskCompletionSource NewReadySource() =>
         new(TaskCreationOptions.RunContinuationsAsynchronously);
