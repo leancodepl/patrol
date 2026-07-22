@@ -132,4 +132,23 @@ abstract interface class WindowsAutomator {
     bool ctrl = false,
     bool alt = false,
   });
+
+  /// Launches a desktop app by executable path or name (e.g. `explorer.exe`).
+  ///
+  /// Returns the OS process id when available. Some apps (notably Explorer)
+  /// may reuse an existing shell process.
+  Future<int> launchApp({
+    required String appPath,
+    String? arguments,
+    bool activate = true,
+  });
+
+  /// Brings an already-running app window to the foreground.
+  ///
+  /// Provide at least one of [processName], [windowName], or [processId].
+  Future<void> activateApp({
+    String? processName,
+    String? windowName,
+    int? processId,
+  });
 }
