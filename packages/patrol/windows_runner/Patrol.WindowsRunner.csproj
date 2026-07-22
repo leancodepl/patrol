@@ -8,4 +8,7 @@
     <AssemblyName>patrol_windows_runner</AssemblyName>
     <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="FlaUI.UIA3" Version="4.0.0" />
+  </ItemGroup>
 </Project>

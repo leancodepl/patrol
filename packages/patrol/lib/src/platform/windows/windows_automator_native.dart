@@ -45,6 +45,51 @@ class WindowsAutomator implements windows_automator.WindowsAutomator {
     );
   }
 
+  @override
+  Future<void> tap({String? name, String? automationId}) {
+    return _wrapRequest(
+      'tap',
+      () => _sendRequest('tap', _selectorBody(name: name, automationId: automationId)),
+    );
+  }
+
+  @override
+  Future<void> waitUntilVisible({String? name, String? automationId}) {
+    return _wrapRequest(
+      'waitUntilVisible',
+      () => _sendRequest(
+        'waitUntilVisible',
+        _selectorBody(name: name, automationId: automationId),
+      ),
+    );
+  }
+
+  @override
+  Future<void> enterText(
+    String text, {
+    String? name,
+    String? automationId,
+  }) {
+    return _wrapRequest(
+      'enterText',
+      () => _sendRequest('enterText', {
+        'text': text,
+        ..._selectorBody(name: name, automationId: automationId),
+      }),
+    );
+  }
+
+  Map<String, String> _selectorBody({String? name, String? automationId}) {
+    final hasName = name != null && name.isNotEmpty;
+    final hasId = automationId != null && automationId.isNotEmpty;
+    if (hasName == hasId) {
+      throw ArgumentError(
+        'Provide exactly one of name or automationId',
+      );
+    }
+    return hasName ? {'name': name!} : {'automationId': automationId!};
+  }
+
   Future<T> _wrapRequest<T>(
     String name,
     Future<T> Function() request, {
