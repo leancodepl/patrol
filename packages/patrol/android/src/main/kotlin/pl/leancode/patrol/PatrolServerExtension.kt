@@ -37,7 +37,7 @@ object PatrolServerExtensions {
     fun discover(): List<PatrolServerExtension> = try {
         ServiceLoader.load(
             PatrolServerExtension::class.java,
-            PatrolServerExtension::class.java.classLoader,
+            PatrolServerExtension::class.java.classLoader
         ).toList()
     } catch (e: Throwable) {
         Logger.i("Failed to load Patrol server extensions: ${e.message}")
