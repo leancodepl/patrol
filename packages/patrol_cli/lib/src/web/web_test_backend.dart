@@ -450,11 +450,11 @@ class WebTestBackend {
               ['npx', 'playwright', 'test', 'tests/test.spec.ts'],
               workingDirectory: webRunnerPath,
               environment: {
+                ...Platform.environment,
                 'BASE_URL': baseUrl,
                 'PATROL_TEST_RESULTS_DIR': testResultsDir,
                 'PATROL_TEST_REPORT_DIR': testReportDir,
                 ...options.toEnvironmentVariables(),
-                ...Platform.environment,
               },
               runInShell: true,
             )
