@@ -256,6 +256,117 @@ internal sealed class AutomatorServer
             }
         );
 
+        _app.MapPost(
+            "/launchApp",
+            async (HttpRequest request) =>
+            {
+                using var doc = await JsonDocument.ParseAsync(
+                    request.Body,
+                    cancellationToken: request.HttpContext.RequestAborted
+                );
+                var root = doc.RootElement;
+                if (
+                    !root.TryGetProperty("appPath", out var pathEl)
+                    || pathEl.ValueKind != JsonValueKind.String
+                    || string.IsNullOrWhiteSpace(pathEl.GetString())
+                )
+                {
+                    return Results.BadRequest(new { error = "launchApp requires \"appPath\"" });
+                }
+
+                try
+                {
+                    var appPath = pathEl.GetString()!;
+                    string? arguments = null;
+                    if (
+                        root.TryGetProperty("arguments", out var argsEl)
+                        && argsEl.ValueKind == JsonValueKind.String
+                    )
+                    {
+                        arguments = argsEl.GetString();
+                    }
+
+                    var activate = true;
+                    if (root.TryGetProperty("activate", out var actEl)
+                        && (actEl.ValueKind == JsonValueKind.True
+                            || actEl.ValueKind == JsonValueKind.False))
+                    {
+                        activate = actEl.GetBoolean();
+                    }
+
+                    Console.WriteLine($"AutomatorServer: launchApp(\"{appPath}\")");
+                    var pid = WindowsAppControl.LaunchApp(appPath, arguments, activate);
+                    return Results.Json(new { processId = pid });
+                }
+                catch (Exception ex)
+                {
+                    Console.Error.WriteLine($"AutomatorServer: launchApp failed: {ex.Message}");
+                    return Results.Json(
+                        new { error = ex.Message },
+                        statusCode: StatusCodes.Status500InternalServerError
+                    );
+                }
+            }
+        );
+
+        _app.MapPost(
+            "/activateApp",
+            async (HttpRequest request) =>
+            {
+                using var doc = await JsonDocument.ParseAsync(
+                    request.Body,
+                    cancellationToken: request.HttpContext.RequestAborted
+                );
+                var root = doc.RootElement;
+                try
+                {
+                    string? processName = null;
+                    string? windowName = null;
+                    int? processId = null;
+
+                    if (
+                        root.TryGetProperty("processName", out var pn)
+                        && pn.ValueKind == JsonValueKind.String
+                    )
+                    {
+                        processName = pn.GetString();
+                    }
+
+                    if (
+                        root.TryGetProperty("windowName", out var wn)
+                        && wn.ValueKind == JsonValueKind.String
+                    )
+                    {
+                        windowName = wn.GetString();
+                    }
+
+                    if (
+                        root.TryGetProperty("processId", out var pidEl)
+                        && pidEl.ValueKind == JsonValueKind.Number
+                    )
+                    {
+                        processId = pidEl.GetInt32();
+                    }
+
+                    Console.WriteLine("AutomatorServer: activateApp");
+                    WindowsAppControl.ActivateApp(processName, windowName, processId);
+                    return Results.Ok();
+                }
+                catch (ArgumentException ex)
+                {
+                    return Results.BadRequest(new { error = ex.Message });
+                }
+                catch (InvalidOperationException ex)
+                {
+                    Console.Error.WriteLine($"AutomatorServer: activateApp failed: {ex.Message}");
+                    return Results.Json(
+                        new { error = ex.Message },
+                        statusCode: StatusCodes.Status404NotFound
+                    );
+                }
+            }
+        );
+
         await _app.StartAsync(ct);
         Console.WriteLine($"AutomatorServer listening on http://127.0.0.1:{_port}");
     }

@@ -96,4 +96,20 @@ class WindowsAutomator implements windows_automator.WindowsAutomator {
     bool alt = false,
   }) =>
       _unsupported();
+
+  @override
+  Future<int> launchApp({
+    required String appPath,
+    String? arguments,
+    bool activate = true,
+  }) =>
+      _unsupported();
+
+  @override
+  Future<void> activateApp({
+    String? processName,
+    String? windowName,
+    int? processId,
+  }) =>
+      _unsupported();
 }

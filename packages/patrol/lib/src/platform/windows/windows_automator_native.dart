@@ -229,6 +229,57 @@ class WindowsAutomator implements windows_automator.WindowsAutomator {
     );
   }
 
+  @override
+  Future<int> launchApp({
+    required String appPath,
+    String? arguments,
+    bool activate = true,
+  }) {
+    return _wrapRequest(
+      'launchApp',
+      () async {
+        final json = await _sendRequest('launchApp', {
+          'appPath': appPath,
+          if (arguments != null) 'arguments': arguments,
+          'activate': activate,
+        });
+        final pid = json['processId'];
+        if (pid is int) {
+          return pid;
+        }
+        if (pid is num) {
+          return pid.toInt();
+        }
+        return 0;
+      },
+    );
+  }
+
+  @override
+  Future<void> activateApp({
+    String? processName,
+    String? windowName,
+    int? processId,
+  }) {
+    final hasProcess = processName != null && processName.isNotEmpty;
+    final hasWindow = windowName != null && windowName.isNotEmpty;
+    final hasPid = processId != null && processId > 0;
+    if (!hasProcess && !hasWindow && !hasPid) {
+      throw ArgumentError(
+        'Provide at least one of processName, windowName, or processId',
+      );
+    }
+
+    return _wrapRequest(
+      'activateApp',
+      () => _sendRequest('activateApp', {
+        if (hasProcess) 'processName': processName,
+        if (hasWindow) 'windowName': windowName,
+        if (hasPid) 'processId': processId,
+      }),
+    );
+  }
+
   Map<String, dynamic> _selectorBody({
     String? name,
     String? automationId,
