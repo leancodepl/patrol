@@ -204,6 +204,12 @@ final class PatrolSession {
   final _outputs = <String>[];
   TestState _testState = TestState.idle;
 
+  /// Set while quitting so a backend exit we caused isn't reported as a crash.
+  var _quitRequested = false;
+
+  /// Warning attached to the next returned status (e.g. unexpected app exit).
+  String? _finishWarning;
+
   Completer<void>? _finishCompleter;
   DisposeScope? _disposeScope;
   StreamController<List<int>>? _stdinController;
@@ -361,6 +367,8 @@ final class PatrolSession {
     _cleanupFuture = null;
     _currentTestFile = testFile;
     _testState = TestState.running;
+    _quitRequested = false;
+    _finishWarning = null;
     _outputs.clear();
     // Create the completer eagerly so callbacks can signal it even if
     // test completion happens before _waitForFinish is called.
@@ -493,14 +501,27 @@ final class PatrolSession {
 
   /// Backend exit signal from [DevelopService].
   ///
-  /// In develop mode, successful runs stay alive for hot restart and don't exit.
-  /// So if the backend exits while we're still running, treat it as failure.
-  /// (Quit path sets state to idle before this callback can affect it.)
+  /// In develop mode runs stay alive for hot restart, so a backend exit while
+  /// running means the app shut down early -- report it as a failure. Our own
+  /// quit also exits it but flips to idle first; [_quitRequested] covers the race.
   void _handleTestsCompleted(TestCompletionResult result) {
-    if (_testState == TestState.running) {
-      _testState = TestState.finishedFailed;
-      _completeFinish();
+    if (_quitRequested || _testState != TestState.running) {
+      return;
     }
+
+    _testState = TestState.finishedFailed;
+    // Surface the underlying error (backend threw rather than exiting cleanly)
+    // so it isn't swallowed by the generic warning below.
+    final error = result.error;
+    if (error != null) {
+      _pushOutput('ERROR: $error');
+      Logger('PatrolSession').severe('Backend exit error: $error');
+    }
+    _finishWarning =
+        'The app shut down before the test reported completion. This usually '
+        'means the app crashed or exited early rather than a test assertion '
+        'failing. Check the output/logs above for the underlying error.';
+    _completeFinish();
   }
 
   String _normalizeLine(String line) {
@@ -516,6 +537,7 @@ final class PatrolSession {
         throw StateError('No active patrol session');
       }
 
+      _quitRequested = true;
       controller.add('Q'.codeUnits);
       _testState = TestState.idle;
       _completeFinish();
@@ -539,6 +561,7 @@ final class PatrolSession {
 
       _outputs.clear();
       _testState = TestState.running;
+      _finishWarning = null;
       // Complete the old completer so any previous waiters are unblocked, then
       // immediately create a fresh one. This avoids a race where callbacks
       // could fire between null-ing and lazy re-creation in _waitForFinish.
@@ -558,6 +581,7 @@ final class PatrolSession {
       testState: _testState,
       output: _formatLogs(_outputs),
       currentTestFile: _currentTestFile,
+      warning: _finishWarning,
       deviceSelectionNote: _deviceSelectionNote,
       deviceName: dev?.name,
       deviceId: dev?.id,
