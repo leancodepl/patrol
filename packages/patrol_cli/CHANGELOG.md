@@ -1,6 +1,7 @@
 ## Unreleased
 
 - Download only Chromium instead of all default Playwright browsers during web runner setup. (#3156)
+- Fix `patrol develop` not reporting completion when the app shuts down before the tests finish, causing `patrol_mcp` to hang until its timeout. The backend exit is now detected independently of `flutter attach`.
 - Fix `patrol test -d chrome` failing with `No devices attached` on machines without a system Chrome installation. (#3172)
 - Add browser launch and context options for web tests: (#3155)
   - `--web-channel`

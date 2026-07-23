@@ -19,6 +19,7 @@
   - trace
   - storage state
   - accept downloads
+- Add support for Patrol extensions. (#3160)
 
 ## 4.7.1
 

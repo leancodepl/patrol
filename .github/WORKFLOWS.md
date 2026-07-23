@@ -44,7 +44,7 @@ This document describes all GitHub Actions workflows used in the Patrol project.
 | [adb prepare][adb-prepare] | PR (on adb package changes), manual | Dart 3.8 | Runs CI checks for `adb` package: tests, analyzer, formatter, and pub publish dry-run. |
 | [prepare e2e_app][prepare-e2e_app] | PR (on all changes except docs), manual | Flutter 3.38.x (stable) | Runs CI checks for E2E test app: Android builds (Windows/Linux) with ktlint, iOS builds with swift-format/clang-format and unit tests, Flutter tests, analyzer, and formatter. |
 | [patrol_gen prepare][patrol_gen-prepare] | PR (on patrol_gen changes), manual | Dart 3.8 | Runs CI checks for patrol contracts generator: analyzer and formatter. |
-| [patrol_mcp prepare][patrol_mcp-prepare] | PR (on patrol_mcp changes), manual | Dart (stable) | Smoke-tests the MCP server on Ubuntu and Windows against the newest and floor `patrol_cli` (from pub.dev): verifies it starts, handshakes, and shuts down on stdin EOF. The floor run guards against a stale `patrol_cli` constraint. |
+| [patrol_mcp prepare][patrol_mcp-prepare] | PR (on patrol_mcp changes), manual | Dart (stable) | Runs the MCP server checks on Ubuntu and Windows against the newest and floor `patrol_cli` (from pub.dev): a smoke test (starts, handshakes, shuts down on stdin EOF) and unit tests (`dart test`). The floor run guards against a stale `patrol_cli` constraint. |
 | [patrol_mcp cli-compat][patrol_mcp-cli-compat] | PR (on patrol_cli `lib/` or pubspec changes), manual | Flutter 3.38.x (stable) | Non-blocking: builds `patrol_mcp` against the PR's local `patrol_cli` and warns (annotation + job summary, never fails CI) if the barrel API it consumes broke. |
 
 ## Publishing Workflows
