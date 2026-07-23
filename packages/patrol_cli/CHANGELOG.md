@@ -3,6 +3,27 @@
 - Download only Chromium instead of all default Playwright browsers during web runner setup. (#3156)
 - Fix `patrol develop` not reporting completion when the app shuts down before the tests finish, causing `patrol_mcp` to hang until its timeout. The backend exit is now detected independently of `flutter attach`.
 - Fix `patrol test -d chrome` failing with `No devices attached` on machines without a system Chrome installation. (#3172)
+- Add browser launch and context options for web tests: (#3155)
+  - `--web-channel`
+  - `--web-executable-path`
+  - `--web-slow-mo`
+  - `--web-chromium-sandbox`
+  - `--web-downloads-path`
+  - `--web-ignore-default-args`
+  - `--web-proxy`
+  - `--web-browser-timeout`
+  - `--web-traces-dir`
+  - `--web-bypass-csp`
+  - `--web-ignore-https-errors`
+  - `--web-offline`
+  - `--web-http-credentials`
+  - `--web-extra-http-headers`
+  - `--web-screenshot`
+  - `--web-trace`
+  - `--web-storage-state`
+  - `--web-accept-downloads`
+- Convert `--web-headless` to a flag. Use `--web-headless`/`--no-web-headless` instead of `--web-headless true/false`. The old syntax still works, but is deprecated and will be removed in a future release. (#3155)
+- Fix `--web-*` options being silently overridden by a same-named variable already set in the host shell environment when running web tests. (#3155)
 
 ## 4.5.1
 
