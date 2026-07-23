@@ -1,0 +1,65 @@
+---
+description: PostHog feature flags and experiments for docs_app — create/update via PostHog MCP and wire them in code. Use when adding, changing, removing, or debugging flags or A/B tests.
+alwaysApply: true
+---
+
+# PostHog feature flags & experiments (docs_app)
+
+docs_app uses PostHog (EU: `https://eu.i.posthog.com`) with `@leancodepl/feature-flags-react-client` and `@leancodepl/openfeature-posthog-provider`.
+
+- Typed **flags** + **experiments**: `docs_app/lib/posthog/posthog.ts`
+- Shared bootstrap type: `docs_app/lib/posthog/posthog-bootstrap.ts`
+- SSR bootstrap (`posthog-node`): `docs_app/lib/posthog/posthog-server.ts`
+- Client init + Cookie-Script consent: `docs_app/components/FeatureFlagsProvider/index.tsx`
+- Root layout fetches bootstrap and passes it into `AppFeatureFlagsProvider`
+
+PostHog experiments are multivariate feature flags. Keep them in the separate `experiments` object and use `useExperiment`.
+
+## When the user asks to add / change / remove a feature flag or experiment
+
+Do **both** sides in the same turn unless they ask for code-only or PostHog-only:
+
+1. **PostHog (via MCP)** — `create-feature-flag`, `update-feature-flag`, `delete-feature-flag`, experiment tools when relevant. Read tool schemas first. Confirm deletes.
+2. **Code** — sync `docs_app/lib/posthog/posthog.ts`:
+
+```ts
+export const featureFlags = {
+  newDocsNav: { defaultValue: false },
+} as const
+
+export const experiments = {
+  homepageHero: { defaultValue: "control" }, // variants: control | test | …
+} as const
+```
+
+3. **Usage**
+
+Client:
+
+```tsx
+"use client"
+import { useFeatureFlag, useExperiment } from "@/lib/posthog/posthog"
+
+const { value: enabled } = useFeatureFlag("newDocsNav")
+const { value: variant } = useExperiment("homepageHero")
+```
+
+Server:
+
+```ts
+import { getServerFeatureFlag, getServerExperiment } from "@/lib/posthog/posthog-server"
+
+const enabled = await getServerFeatureFlag("newDocsNav")
+const variant = await getServerExperiment("homepageHero")
+```
+
+Do **not** import `posthog-js/react` into Server Components. Do **not** mark `app/(docs)/layout.tsx` as `"use client"`. Extract a small client child instead.
+
+## Defaults when creating in PostHog
+
+Flags: boolean, low rollout, `evaluation_runtime: client` (or `all`).
+Experiments: multivariate variants (`control` / `test`), matching `experiments` defaults in code.
+
+## Auth
+
+For API key auth, put the key only in `~/.cursor/mcp.json` or similar, never in committed files.
