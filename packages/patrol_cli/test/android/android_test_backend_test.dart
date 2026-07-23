@@ -194,94 +194,88 @@ void main() {
       });
     });
 
-    group('verifyAndroidEnvironment', () {
-      AndroidTestBackend createBackend(Platform platform) {
-        return AndroidTestBackend(
-          adb: MockAdb(),
-          processManager: processManager,
-          platform: platform,
-          rootDirectory: rootDirectory,
-          parentDisposeScope: DisposeScope(),
-          logger: logger,
-        );
+    group('verifyAndroidSdkResolved', () {
+      void writeLocalProperties(String contents) {
+        rootDirectory.childDirectory('android').childFile('local.properties')
+          ..createSync(recursive: true)
+          ..writeAsStringSync(contents);
       }
 
-      test(
-        'throws ToolExit when neither ANDROID_HOME nor ANDROID_SDK_ROOT is set',
-        () {
-          final backend = createBackend(
-            FakePlatform(operatingSystem: Platform.macOS, environment: {}),
-          );
-
-          expect(
-            backend.verifyAndroidEnvironment,
-            throwsA(
-              isA<ToolExit>().having(
-                (e) => e.message,
-                'message',
-                contains(r'$ANDROID_HOME is not set'),
-              ),
-            ),
-          );
-        },
-      );
-
-      test(
-        'throws ToolExit when ANDROID_HOME points to a missing directory',
-        () {
-          final backend = createBackend(
-            FakePlatform(environment: {'ANDROID_HOME': '/nonexistent/sdk'}),
-          );
-
-          expect(
-            backend.verifyAndroidEnvironment,
-            throwsA(
-              isA<ToolExit>().having(
-                (e) => e.message,
-                'message',
-                contains('does not exist: /nonexistent/sdk'),
-              ),
-            ),
-          );
-        },
-      );
-
-      test('passes when ANDROID_HOME points to an existing directory', () {
-        fs.directory('/android/sdk').createSync(recursive: true);
-        final backend = createBackend(
-          FakePlatform(environment: {'ANDROID_HOME': '/android/sdk'}),
-        );
-
-        expect(backend.verifyAndroidEnvironment, returnsNormally);
-      });
-
-      test('falls back to ANDROID_SDK_ROOT when ANDROID_HOME is not set', () {
-        fs.directory('/android/sdk').createSync(recursive: true);
-        final backend = createBackend(
-          FakePlatform(environment: {'ANDROID_SDK_ROOT': '/android/sdk'}),
-        );
-
-        expect(backend.verifyAndroidEnvironment, returnsNormally);
-      });
-
-      test('treats an empty ANDROID_HOME as not set', () {
-        final backend = createBackend(
-          FakePlatform(
-            operatingSystem: Platform.macOS,
-            environment: {'ANDROID_HOME': ''},
-          ),
-        );
-
+      test('throws ToolExit when local.properties is missing', () {
         expect(
-          backend.verifyAndroidEnvironment,
+          androidTestBackend.verifyAndroidSdkResolved,
           throwsA(
             isA<ToolExit>().having(
               (e) => e.message,
               'message',
-              contains(r'$ANDROID_HOME is not set'),
+              contains("Couldn't locate the Android SDK"),
             ),
           ),
         );
+      });
+
+      test('throws ToolExit when sdk.dir is absent', () {
+        writeLocalProperties('flutter.sdk=/opt/flutter\n');
+
+        expect(
+          androidTestBackend.verifyAndroidSdkResolved,
+          throwsA(
+            isA<ToolExit>().having(
+              (e) => e.message,
+              'message',
+              contains("Couldn't locate the Android SDK"),
+            ),
+          ),
+        );
+      });
+
+      test('throws ToolExit when sdk.dir is empty', () {
+        writeLocalProperties('sdk.dir=\n');
+
+        expect(
+          androidTestBackend.verifyAndroidSdkResolved,
+          throwsA(
+            isA<ToolExit>().having(
+              (e) => e.message,
+              'message',
+              contains("Couldn't locate the Android SDK"),
+            ),
+          ),
+        );
+      });
+
+      test('throws ToolExit when sdk.dir points to a missing directory', () {
+        writeLocalProperties('sdk.dir=/nonexistent/sdk\n');
+
+        expect(
+          androidTestBackend.verifyAndroidSdkResolved,
+          throwsA(
+            isA<ToolExit>().having(
+              (e) => e.message,
+              'message',
+              contains('does not exist: /nonexistent/sdk'),
+            ),
+          ),
+        );
+      });
+
+      test('passes when sdk.dir points to an existing directory', () {
+        fs.directory('/android/sdk').createSync(recursive: true);
+        writeLocalProperties(
+          'flutter.sdk=/opt/flutter\nsdk.dir=/android/sdk\n',
+        );
+
+        expect(androidTestBackend.verifyAndroidSdkResolved, returnsNormally);
+      });
+
+      test('unescapes a Windows-style sdk.dir path', () {
+        fs.directory(r'C:\Users\me\Android\sdk').createSync(recursive: true);
+        writeLocalProperties(
+          r'sdk.dir=C\:\\Users\\me\\Android\\sdk'
+          '\n',
+        );
+
+        expect(androidTestBackend.verifyAndroidSdkResolved, returnsNormally);
       });
     });
   });

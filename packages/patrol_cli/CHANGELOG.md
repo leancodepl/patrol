@@ -1,6 +1,6 @@
 ## Unreleased
 
-- Fail fast with a clear error instead of hanging on gradlew when `ANDROID_HOME` is not set or points to a missing directory. (#3168)
+- Fail fast with a clear error instead of hanging on gradlew when the Android SDK can't be located (`sdk.dir` missing from `android/local.properties` after the config-only build). (#3168)
 - Download only Chromium instead of all default Playwright browsers during web runner setup. (#3156)
 - Fix `patrol develop` not reporting completion when the app shuts down before the tests finish, causing `patrol_mcp` to hang until its timeout. The backend exit is now detected independently of `flutter attach`.
 - Fix `patrol test -d chrome` failing with `No devices attached` on machines without a system Chrome installation. (#3172)

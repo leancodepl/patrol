@@ -47,8 +47,8 @@ class AndroidTestBackend {
   late final String? javaPath;
 
   Future<void> build(AndroidAppOptions options) async {
-    verifyAndroidEnvironment();
     await buildApkConfigOnly(options.flutter);
+    verifyAndroidSdkResolved();
     await loadJavaPathFromFlutterDoctor(options.flutter.command);
     await detectOrchestratorVersion(options);
 
@@ -120,42 +120,75 @@ class AndroidTestBackend {
     });
   }
 
-  /// Verifies that the Android SDK is reachable before invoking gradlew.
+  /// Verifies that Gradle will be able to locate the Android SDK before it is
+  /// invoked.
   ///
-  /// Without an Android SDK, the gradlew invocation hangs with no clear
-  /// error message. See https://github.com/leancodepl/patrol/issues/2364.
+  /// [buildApkConfigOnly] runs `flutter build apk --config-only`, which
+  /// resolves the Android SDK the same way Flutter does — the `ANDROID_HOME`/
+  /// `ANDROID_SDK_ROOT` env vars, `flutter config --android-sdk`, the default
+  /// Android Studio location, etc. — and writes the resolved path to
+  /// `android/local.properties` as `sdk.dir`. When Flutter can't resolve it,
+  /// that entry is missing and the subsequent gradlew invocation hangs with no
+  /// clear error. Fail fast with an actionable message instead.
+  ///
+  /// Must be called after [buildApkConfigOnly]. See
+  /// https://github.com/leancodepl/patrol/issues/2364.
   @visibleForTesting
-  void verifyAndroidEnvironment() {
-    final androidHome = _platform.environment['ANDROID_HOME'];
-    final androidSdkRoot = _platform.environment['ANDROID_SDK_ROOT'];
-    final sdkPath = switch ((androidHome, androidSdkRoot)) {
-      (final String home, _) when home.isNotEmpty => home,
-      (_, final String root) when root.isNotEmpty => root,
-      _ => null,
-    };
+  void verifyAndroidSdkResolved() {
+    final localProperties = _rootDirectory
+        .childDirectory('android')
+        .childFile('local.properties');
 
-    if (sdkPath == null) {
-      final linkHint = switch (_platform.operatingSystem) {
-        Platform.linux ||
-        Platform.macOS => 'https://developer.android.com/tools/variables#set',
-        Platform.windows =>
-          'https://www.ibm.com/docs/en/rtw/11.0.0?topic=prwut-setting-changing-android-home-path-in-windows-operating-systems',
-        _ => '',
-      };
+    final sdkDir = localProperties.existsSync()
+        ? _readSdkDir(localProperties.readAsStringSync())
+        : null;
+
+    if (sdkDir == null) {
       throwToolExit(
-        r'Env var $ANDROID_HOME is not set. Set it to the path of your '
-        'Android SDK (see the link: $linkHint) or run `patrol doctor` to '
+        "Couldn't locate the Android SDK. Set the ANDROID_HOME environment "
+        'variable to your Android SDK path, configure it with '
+        '`flutter config --android-sdk <path>`, or run `patrol doctor` to '
         'diagnose your setup.',
       );
     }
 
-    if (!_rootDirectory.fileSystem.directory(sdkPath).existsSync()) {
+    if (!_rootDirectory.fileSystem.directory(sdkDir).existsSync()) {
       throwToolExit(
-        'Android SDK directory does not exist: $sdkPath. Make sure '
-        r'$ANDROID_HOME points to a valid Android SDK installation or run '
-        '`patrol doctor` to diagnose your setup.',
+        'The configured Android SDK directory does not exist: $sdkDir. Fix '
+        '`sdk.dir` in android/local.properties (or the ANDROID_HOME '
+        'environment variable), or run `patrol doctor` to diagnose your setup.',
       );
     }
+  }
+
+  /// Reads the `sdk.dir` value from the contents of a `local.properties` file,
+  /// or `null` when it is absent or empty.
+  static String? _readSdkDir(String localProperties) {
+    for (final line in localProperties.split(RegExp(r'\r?\n'))) {
+      final trimmed = line.trim();
+      if (trimmed.startsWith('sdk.dir=')) {
+        final value = _unescapePropertyValue(
+          trimmed.substring('sdk.dir='.length).trim(),
+        );
+        return value.isEmpty ? null : value;
+      }
+    }
+    return null;
+  }
+
+  /// Undoes the `.properties` escaping Flutter applies when writing `sdk.dir`,
+  /// e.g. `C\:\\Users\\me\\Android\\sdk` on Windows.
+  static String _unescapePropertyValue(String value) {
+    final buffer = StringBuffer();
+    for (var i = 0; i < value.length; i++) {
+      final char = value[i];
+      if (char == r'\' && i + 1 < value.length) {
+        buffer.write(value[++i]);
+      } else {
+        buffer.write(char);
+      }
+    }
+    return buffer.toString();
   }
 
   /// Load the Java path from the output of `flutter doctor`.
@@ -293,7 +326,6 @@ class AndroidTestBackend {
     required bool clearTestSteps,
     void Function(Entry entry)? onLogEntry,
   }) async {
-    verifyAndroidEnvironment();
     await _disposeScope.run((scope) async {
       // Read patrol logs from logcat
       final processLogcat =
