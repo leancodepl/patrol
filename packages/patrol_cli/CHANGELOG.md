@@ -1,4 +1,4 @@
-## Unreleased
+## 4.6.0
 
 - Download only Chromium instead of all default Playwright browsers during web runner setup. (#3156)
 - Fix `patrol develop` not reporting completion when the app shuts down before the tests finish, causing `patrol_mcp` to hang until its timeout. The backend exit is now detected independently of `flutter attach`.
