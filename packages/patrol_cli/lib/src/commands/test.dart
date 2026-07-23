@@ -153,10 +153,16 @@ class TestCommand extends PatrolCommand {
       _logger.detail('Received build number: $buildNumber');
     }
 
-    final devices = await _deviceFinder.find(
-      stringsArg('device'),
-      flutterCommand: flutterCommand,
-    );
+    final wantDevices = stringsArg('device');
+    final bundledDevice = switch (wantDevices) {
+      [final name] => Device.bundledForTest(name),
+      _ => null,
+    };
+
+    final devices = bundledDevice != null
+        ? [bundledDevice]
+        : await _deviceFinder.find(wantDevices, flutterCommand: flutterCommand);
+
     _logger.detail('Received ${devices.length} device(s) to run on');
     for (final device in devices) {
       _logger.detail('Received device: ${device.name} (${device.id})');
@@ -328,10 +334,28 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       viewport: stringArg('web-viewport'),
       globalTimeout: intArg('web-global-timeout'),
       shard: stringArg('web-shard'),
-      headless: stringArg('web-headless'),
+      headless: optionalBoolArg('web-headless'),
       webPort: intArg('web-port'),
       serverTimeout: intArg('web-server-timeout'),
       browserArgs: stringArg('web-browser-args'),
+      channel: stringArg('web-channel'),
+      executablePath: stringArg('web-executable-path'),
+      slowMo: intArg('web-slow-mo'),
+      chromiumSandbox: optionalBoolArg('web-chromium-sandbox'),
+      downloadsPath: stringArg('web-downloads-path'),
+      ignoreDefaultArgs: stringArg('web-ignore-default-args'),
+      proxy: stringArg('web-proxy'),
+      browserTimeout: intArg('web-browser-timeout'),
+      tracesDir: stringArg('web-traces-dir'),
+      bypassCsp: optionalBoolArg('web-bypass-csp'),
+      ignoreHttpsErrors: optionalBoolArg('web-ignore-https-errors'),
+      offline: optionalBoolArg('web-offline'),
+      httpCredentials: stringArg('web-http-credentials'),
+      extraHttpHeaders: stringArg('web-extra-http-headers'),
+      screenshot: stringArg('web-screenshot'),
+      trace: stringArg('web-trace'),
+      storageState: stringArg('web-storage-state'),
+      acceptDownloads: optionalBoolArg('web-accept-downloads'),
     );
 
     // No need to build web app for testing. It's done in the execute method.

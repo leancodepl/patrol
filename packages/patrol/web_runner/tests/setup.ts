@@ -3,16 +3,9 @@ import { initialise } from "./initialise"
 import { DartTestEntry, PatrolTestEntry } from "./types"
 
 async function setup(config: FullConfig) {
-  const { baseURL } = config.projects[0].use
-  const browserArgs: string[] | undefined = process.env.PATROL_WEB_BROWSER_ARGS
-    ? JSON.parse(process.env.PATROL_WEB_BROWSER_ARGS)
-    : undefined
+  const { baseURL, channel, launchOptions, locale } = config.projects[0].use
 
-  const locale = process.env.PATROL_WEB_LOCALE || undefined
-
-  const browser = await chromium.launch({
-    args: browserArgs,
-  })
+  const browser = await chromium.launch({ ...launchOptions, channel })
 
   const page = await browser.newPage({ locale })
 

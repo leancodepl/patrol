@@ -1,7 +1,8 @@
 {
   "mcpServers": {
     "patrol": {
-      "command": "./tools/run-patrol",
+      "command": "dart",
+      "args": ["run", "patrol_mcp"],
       "env": {
         "PROJECT_ROOT": ".",
         "PATROL_FLAGS": "",

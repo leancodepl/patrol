@@ -285,7 +285,7 @@ abstract class PatrolCommand extends Command<int> {
       ..addOption(
         'web-video',
         help: 'Video recording mode.',
-        valueHelp: 'off | on | retain-on-failure | on-first-retry',
+        allowed: ['off', 'on', 'retain-on-failure', 'on-first-retry'],
       )
       ..addOption(
         'web-timeout',
@@ -315,7 +315,7 @@ abstract class PatrolCommand extends Command<int> {
       ..addOption(
         'web-color-scheme',
         help: 'Preferred color scheme for browser emulation.',
-        valueHelp: 'light | dark',
+        allowed: ['light', 'dark', 'no-preference'],
       )
       ..addOption(
         'web-geolocation',
@@ -352,10 +352,10 @@ abstract class PatrolCommand extends Command<int> {
             'Specify in the format "current/total" (e.g., "1/4" for the first of 4 shards).',
         valueHelp: '1/4',
       )
-      ..addOption(
+      ..addFlag(
         'web-headless',
         help: 'Whether to run browser in headless mode.',
-        valueHelp: 'true | false',
+        defaultsTo: null,
       )
       ..addOption(
         'web-port',
@@ -373,6 +373,112 @@ abstract class PatrolCommand extends Command<int> {
         'web-browser-args',
         help: 'Custom browser launch arguments. JSON array of strings.',
         valueHelp: '\'["--no-sandbox", "--disable-gpu"]\'',
+      )
+      ..addOption(
+        'web-channel',
+        help:
+            'Browser distribution channel, e.g. a branded build instead of '
+            'the bundled Chromium, see https://playwright.dev/docs/browsers.',
+        valueHelp: 'chromium|chrome|msedge|...',
+      )
+      ..addOption(
+        'web-executable-path',
+        help:
+            'Path to a custom Chromium-based browser binary to use instead of '
+            'the bundled one. Takes precedence over --web-channel.',
+        valueHelp: 'path',
+      )
+      ..addOption(
+        'web-slow-mo',
+        help:
+            'Slow down operations by the specified number of milliseconds. Useful for debugging.',
+        valueHelp: 'number',
+      )
+      ..addFlag(
+        'web-chromium-sandbox',
+        help: 'Whether to enable the Chromium sandbox.',
+        defaultsTo: null,
+      )
+      ..addOption(
+        'web-downloads-path',
+        help: 'Directory where downloaded files will be saved.',
+        valueHelp: 'path',
+      )
+      ..addOption(
+        'web-ignore-default-args',
+        help:
+            "Skip Playwright's default browser arguments. Pass true/false or "
+            'a JSON array of arguments to skip.',
+        valueHelp: 'true | false | \'["--mute-audio"]\'',
+      )
+      ..addOption(
+        'web-proxy',
+        help: 'Network proxy configuration. JSON object.',
+        valueHelp: '\'{"server": "http://myproxy:3128"}\'',
+      )
+      ..addOption(
+        'web-browser-timeout',
+        help:
+            'Maximum time in milliseconds to wait for the browser instance to start.',
+        valueHelp: 'number',
+      )
+      ..addOption(
+        'web-traces-dir',
+        help: 'Directory where trace files will be saved.',
+        valueHelp: 'path',
+      )
+      ..addFlag(
+        'web-bypass-csp',
+        help: 'Whether to bypass the page Content-Security-Policy.',
+        defaultsTo: null,
+      )
+      ..addFlag(
+        'web-ignore-https-errors',
+        help: 'Whether to ignore HTTPS errors when sending network requests.',
+        defaultsTo: null,
+      )
+      ..addFlag(
+        'web-offline',
+        help: 'Whether to emulate network being offline.',
+        defaultsTo: null,
+      )
+      ..addOption(
+        'web-http-credentials',
+        help: 'Credentials for HTTP authentication. JSON object.',
+        valueHelp: '\'{"username": "user", "password": "pass"}\'',
+      )
+      ..addOption(
+        'web-extra-http-headers',
+        help: 'Additional HTTP headers sent with every request. JSON object.',
+        valueHelp: '\'{"X-My-Header": "value"}\'',
+      )
+      ..addOption(
+        'web-screenshot',
+        help: 'Screenshot capture mode.',
+        allowed: ['off', 'on', 'only-on-failure', 'on-first-failure'],
+      )
+      ..addOption(
+        'web-trace',
+        help: 'Trace recording mode.',
+        allowed: [
+          'off',
+          'on',
+          'retain-on-failure',
+          'on-first-retry',
+          'on-all-retries',
+          'retain-on-first-failure',
+        ],
+      )
+      ..addOption(
+        'web-storage-state',
+        help:
+            'Path to a file with the storage state to seed the browser context with.',
+        valueHelp: 'path',
+      )
+      ..addFlag(
+        'web-accept-downloads',
+        help: 'Whether to automatically accept all downloads.',
+        defaultsTo: null,
       );
   }
 
@@ -381,6 +487,12 @@ abstract class PatrolCommand extends Command<int> {
   /// If no flag named [name] was added to the `ArgParser`, an [ArgumentError]
   /// will be thrown.
   bool boolArg(String name) => argResults![name] as bool;
+
+  /// Gets the parsed command-line flag named [name] as a nullable `bool`.
+  ///
+  /// Returns null if the flag was declared with a null default and wasn't
+  /// passed on the command line.
+  bool? optionalBoolArg(String name) => argResults![name] as bool?;
 
   /// Gets the parsed command-line option named [name] as a `String`.
   ///

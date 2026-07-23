@@ -1,5 +1,26 @@
 ## Unreleased
 
+- Wire additional Playwright browser launch and context options into the web runner config, configurable through the matching `patrol_cli` `--web-*` flags: (#3155)
+  - channel
+  - executable path
+  - slow-mo
+  - Chromium sandbox
+  - downloads path
+  - ignore default args
+  - proxy
+  - browser timeout
+  - traces dir
+  - bypass CSP
+  - ignore HTTPS errors
+  - offline
+  - HTTP credentials
+  - extra HTTP headers
+  - screenshot
+  - trace
+  - storage state
+  - accept downloads
+- Add support for Patrol extensions. (#3160)
+- Bump ktor packages. (#3187)
 - Fix incorrect test description in the failure log entry when a test fails in `patrol develop` (hot restart) mode. (#3167)
 
 ## 4.7.1

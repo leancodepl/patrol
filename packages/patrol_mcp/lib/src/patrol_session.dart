@@ -7,6 +7,9 @@ import 'package:logging/logging.dart';
 import 'package:path/path.dart' as p;
 import 'package:patrol_cli/patrol_cli.dart';
 
+import 'device_lister.dart';
+import 'device_selection.dart';
+import 'flutter_command_resolver.dart';
 import 'log_streaming.dart';
 
 /// An [io.Stdout] wrapper that forwards writes to [_inner] (e.g. stderr) and
@@ -151,6 +154,7 @@ class PatrolStatus {
     required this.output,
     this.currentTestFile,
     this.warning,
+    this.deviceSelectionNote,
     this.deviceName,
     this.deviceId,
     this.devicePlatform,
@@ -161,6 +165,7 @@ class PatrolStatus {
   final String output;
   final String? currentTestFile;
   final String? warning;
+  final String? deviceSelectionNote;
   final String? deviceName;
   final String? deviceId;
   final String? devicePlatform;
@@ -172,6 +177,7 @@ class PatrolStatus {
     'testState': testState.name,
     'currentTestFile': ?currentTestFile,
     'warning': ?warning,
+    'deviceSelectionNote': ?deviceSelectionNote,
     'deviceName': ?deviceName,
     'deviceId': ?deviceId,
     'devicePlatform': ?devicePlatform,
@@ -198,11 +204,21 @@ final class PatrolSession {
   final _outputs = <String>[];
   TestState _testState = TestState.idle;
 
+  /// Set while quitting so a backend exit we caused isn't reported as a crash.
+  var _quitRequested = false;
+
+  /// Warning attached to the next returned status (e.g. unexpected app exit).
+  String? _finishWarning;
+
   Completer<void>? _finishCompleter;
   DisposeScope? _disposeScope;
   StreamController<List<int>>? _stdinController;
   DevelopService? _developService;
   int? _testServerPort;
+
+  /// A note about device selection surfaced in the next status (e.g. which
+  /// device was auto-selected, or that a `device` argument was overridden).
+  String? _deviceSelectionNote;
 
   final _logStreaming = LogStreaming.instance;
 
@@ -211,14 +227,21 @@ final class PatrolSession {
   int? get testServerPort => _testServerPort;
 
   /// Returns null if started successfully, or a warning message if blocked
-  Future<String?> _start(String testFile) async {
+  Future<String?> _start(String testFile, {String? device}) async {
+    _deviceSelectionNote = null;
     if (_isRunning) {
       if (_currentTestFile != testFile) {
         return 'Patrol session is already running "$_currentTestFile". '
             'Cannot start different test "$testFile". '
             'Use patrol-quit first or run the same test file.';
       }
-      // Same test file - hot restart
+      // Same test file - hot restart. The device can't change on hot restart.
+      if (device != null) {
+        _deviceSelectionNote =
+            'Device "$device" ignored: hot-restarting the running session on '
+            '${this.device?.name ?? 'the current device'}. Use patrol-quit '
+            'first to switch devices.';
+      }
       sendCommand(PatrolCommand.hotRestart);
       return null;
     }
@@ -240,17 +263,79 @@ final class PatrolSession {
           // Skip compatibility checking in MCP context for speed.
           ..add('--no-check-compatibility');
 
-    final flutterCmd = io.Platform.environment['PATROL_FLUTTER_COMMAND'];
+    final flutterResolution = FlutterCommandResolver().resolve(
+      projectRoot: resolvedCwd,
+    );
+    final flutterCommand = flutterResolution.command;
 
-    final (options, globalResults) = DevelopOptions.parseArgs(
+    // First parse: see what PATROL_FLAGS already specifies.
+    final (flagOptions, globalResults) = DevelopOptions.parseArgs(
       flagParts,
       target: testFile,
-      flutterCommand: flutterCmd != null && flutterCmd.isNotEmpty
-          ? FlutterCommand.parse(flutterCmd)
-          : null,
+      flutterCommand: flutterCommand,
     );
-    _testServerPort = options.testServerPort;
     final verbose = globalResults['verbose'] as bool? ?? false;
+
+    // Resolve the device. Precedence: PATROL_FLAGS `--device` > `device`
+    // argument > auto-selection.
+    if (flagOptions.devices.isNotEmpty) {
+      if (device != null) {
+        _deviceSelectionNote =
+            'Ignored device "$device": PATROL_FLAGS already pins '
+            '--device ${flagOptions.devices.join(', ')}.';
+      }
+    } else if (device != null) {
+      flagParts.addAll(['--device', device]);
+    } else {
+      final List<Device> attached;
+      try {
+        attached = await listAttachedDevices(
+          flutterCommand: flutterCommand ?? const FlutterCommand('flutter'),
+        );
+      } catch (e) {
+        return 'Failed to detect attached devices: $e';
+      }
+      final selected = autoSelectDevice(attached);
+      if (selected == null) {
+        return 'No Android or iOS device detected. Start an emulator or '
+            'simulator (or connect a device) and try again.';
+      }
+      flagParts.addAll(['--device', selected.id]);
+      if (supportedDevices(attached).length > 1) {
+        _deviceSelectionNote =
+            'Auto-selected ${selected.name} (${selected.id}); '
+            'pass "device" to run on a different one.';
+      }
+    }
+
+    // Final parse, now including the resolved `--device` (if any).
+    final (options, _) = DevelopOptions.parseArgs(
+      flagParts,
+      target: testFile,
+      flutterCommand: flutterCommand,
+    );
+
+    // Log the effective Flutter command once (to stderr via the logging sink).
+    final flagCmd = globalResults['flutter-command'] as String?;
+    final effective = options.flutterCommand;
+    final effectiveStr = [
+      effective.executable,
+      ...effective.arguments,
+    ].join(' ');
+    if (flagCmd != null && flagCmd.isNotEmpty) {
+      logger.info(
+        'Flutter command: $effectiveStr (from --flutter-command in PATROL_FLAGS)',
+      );
+    } else if (flutterResolution.isWarning) {
+      logger.warning(
+        'Flutter command: $effectiveStr -- ${flutterResolution.reason}',
+      );
+    } else {
+      logger.info(
+        'Flutter command: $effectiveStr (${flutterResolution.reason})',
+      );
+    }
+    _testServerPort = options.testServerPort;
 
     // Create a DisposeScope for the session lifecycle
     final disposeScope = DisposeScope();
@@ -282,6 +367,8 @@ final class PatrolSession {
     _cleanupFuture = null;
     _currentTestFile = testFile;
     _testState = TestState.running;
+    _quitRequested = false;
+    _finishWarning = null;
     _outputs.clear();
     // Create the completer eagerly so callbacks can signal it even if
     // test completion happens before _waitForFinish is called.
@@ -366,6 +453,7 @@ final class PatrolSession {
     _isRunning = false;
     _currentTestFile = null;
     _testServerPort = null;
+    _deviceSelectionNote = null;
 
     await _logStreaming.stopLogging();
 
@@ -413,14 +501,27 @@ final class PatrolSession {
 
   /// Backend exit signal from [DevelopService].
   ///
-  /// In develop mode, successful runs stay alive for hot restart and don't exit.
-  /// So if the backend exits while we're still running, treat it as failure.
-  /// (Quit path sets state to idle before this callback can affect it.)
+  /// In develop mode runs stay alive for hot restart, so a backend exit while
+  /// running means the app shut down early -- report it as a failure. Our own
+  /// quit also exits it but flips to idle first; [_quitRequested] covers the race.
   void _handleTestsCompleted(TestCompletionResult result) {
-    if (_testState == TestState.running) {
-      _testState = TestState.finishedFailed;
-      _completeFinish();
+    if (_quitRequested || _testState != TestState.running) {
+      return;
     }
+
+    _testState = TestState.finishedFailed;
+    // Surface the underlying error (backend threw rather than exiting cleanly)
+    // so it isn't swallowed by the generic warning below.
+    final error = result.error;
+    if (error != null) {
+      _pushOutput('ERROR: $error');
+      Logger('PatrolSession').severe('Backend exit error: $error');
+    }
+    _finishWarning =
+        'The app shut down before the test reported completion. This usually '
+        'means the app crashed or exited early rather than a test assertion '
+        'failing. Check the output/logs above for the underlying error.';
+    _completeFinish();
   }
 
   String _normalizeLine(String line) {
@@ -436,6 +537,7 @@ final class PatrolSession {
         throw StateError('No active patrol session');
       }
 
+      _quitRequested = true;
       controller.add('Q'.codeUnits);
       _testState = TestState.idle;
       _completeFinish();
@@ -459,6 +561,7 @@ final class PatrolSession {
 
       _outputs.clear();
       _testState = TestState.running;
+      _finishWarning = null;
       // Complete the old completer so any previous waiters are unblocked, then
       // immediately create a fresh one. This avoids a race where callbacks
       // could fire between null-ing and lazy re-creation in _waitForFinish.
@@ -478,6 +581,8 @@ final class PatrolSession {
       testState: _testState,
       output: _formatLogs(_outputs),
       currentTestFile: _currentTestFile,
+      warning: _finishWarning,
+      deviceSelectionNote: _deviceSelectionNote,
       deviceName: dev?.name,
       deviceId: dev?.id,
       devicePlatform: dev?.targetPlatform.name,
@@ -525,8 +630,9 @@ final class PatrolSession {
   Future<PatrolStatus> startAndWait(
     String testFile, {
     Duration? timeout,
+    String? device,
   }) async {
-    final warning = await _start(testFile);
+    final warning = await _start(testFile, device: device);
     if (warning != null) {
       // Return current status with warning (blocked by different test)
       final status = getStatus();
@@ -536,6 +642,7 @@ final class PatrolSession {
         output: status.output,
         currentTestFile: status.currentTestFile,
         warning: warning,
+        deviceSelectionNote: status.deviceSelectionNote,
         deviceName: status.deviceName,
         deviceId: status.deviceId,
         devicePlatform: status.devicePlatform,
