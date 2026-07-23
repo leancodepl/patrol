@@ -53,6 +53,57 @@ void main() {
 
       verify(() => processManager.start(any(that: contains('testDeviceId'))));
     });
+
+    test('attach passes --flavor when a flavor is provided', () {
+      final process = MockProcess();
+      when(
+        () => process.stdout,
+      ).thenAnswer((_) => Stream<List<int>>.fromIterable([]));
+      when(
+        () => process.stderr,
+      ).thenAnswer((_) => Stream<List<int>>.fromIterable([]));
+      when(() => processManager.start(any())).thenAnswer((_) async => process);
+
+      flutterTool.attach(
+        flutterCommand: flutterCommand,
+        deviceId: 'testDeviceId',
+        target: 'target',
+        appId: 'appId',
+        dartDefines: {},
+        openBrowser: false,
+        flavor: 'dev',
+      );
+
+      verify(
+        () => processManager.start(
+          any(that: containsAllInOrder(['attach', '--flavor', 'dev'])),
+        ),
+      );
+    });
+
+    test('attach omits --flavor when no flavor is provided', () {
+      final process = MockProcess();
+      when(
+        () => process.stdout,
+      ).thenAnswer((_) => Stream<List<int>>.fromIterable([]));
+      when(
+        () => process.stderr,
+      ).thenAnswer((_) => Stream<List<int>>.fromIterable([]));
+      when(() => processManager.start(any())).thenAnswer((_) async => process);
+
+      flutterTool.attach(
+        flutterCommand: flutterCommand,
+        deviceId: 'testDeviceId',
+        target: 'target',
+        appId: 'appId',
+        dartDefines: {},
+        openBrowser: false,
+      );
+
+      verify(
+        () => processManager.start(any(that: isNot(contains('--flavor')))),
+      );
+    });
   });
 
   group('getObservationUrl', () {

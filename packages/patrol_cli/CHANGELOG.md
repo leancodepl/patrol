@@ -1,3 +1,7 @@
+## Unreleased
+
+- Fix `patrol develop` printing "You must specify a --flavor option" on iOS/macOS projects with schemes, by passing the flavor to `flutter attach`.
+
 ## 4.6.0
 
 - Download only Chromium instead of all default Playwright browsers during web runner setup. (#3156)
