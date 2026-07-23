@@ -1,3 +1,7 @@
+## Unreleased
+
+- Pin `mason_logger` to `0.3.4`. (#3166)
+
 ## 4.6.0
 
 - Download only Chromium instead of all default Playwright browsers during web runner setup. (#3156)

@@ -27,7 +27,7 @@ dependencies:
   file: ^7.0.0
   glob: ^2.1.2
   http: ^1.1.0
-  mason_logger: ^0.3.5
+  mason_logger: 0.3.4
   meta: ^1.10.0
   package_config: ^2.1.1
   path: ^1.8.3
