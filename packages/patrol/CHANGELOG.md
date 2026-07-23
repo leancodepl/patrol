@@ -20,6 +20,7 @@
   - storage state
   - accept downloads
 - Add support for Patrol extensions. (#3160)
+- Bump ktor packages. (#3187)
 
 ## 4.7.1
 
