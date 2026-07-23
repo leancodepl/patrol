@@ -1,3 +1,7 @@
+## Unreleased
+
+- Add Marathon integration for running Patrol tests on Android and iOS simulators. See the [Marathon integration guide](https://patrol.leancode.co/documentation/integrations/marathon).
+
 ## 4.7.1
 
 - Add a Swift Package Manager support note to the README.

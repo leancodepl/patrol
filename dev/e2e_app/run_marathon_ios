@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Run Patrol iOS integration tests via local Marathon on simulators.
+# Requires: patrol CLI, marathon CLI, Xcode, Java (installed with marathon via brew).
+#
+# Usage (from this app's root):
+#   ./run_marathon_ios
+#   ./run_marathon_ios --skip-build   # reuse existing build artifacts
+
+APP_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$APP_ROOT"
+
+if [[ -d /Applications/Xcode.app/Contents/Developer ]]; then
+  export DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer
+  export PATH="$DEVELOPER_DIR/usr/bin:$PATH"
+fi
+
+SKIP_BUILD=false
+for arg in "$@"; do
+  case "$arg" in
+    --skip-build) SKIP_BUILD=true ;;
+    *) echo "Unknown argument: $arg" >&2; exit 1 ;;
+  esac
+done
+
+if ! command -v marathon >/dev/null 2>&1; then
+  echo "error: marathon CLI not found. Install with:" >&2
+  echo "  brew tap malinskiy/tap && brew install malinskiy/tap/marathon" >&2
+  exit 1
+fi
+
+if ! command -v patrol >/dev/null 2>&1; then
+  echo "error: patrol CLI not found. From the patrol repo root run:" >&2
+  echo "  dart pub global activate --source path packages/patrol_cli" >&2
+  exit 1
+fi
+
+if [[ "$SKIP_BUILD" == false ]]; then
+  echo "Building iOS integration test artifacts..."
+  patrol build ios --debug --simulator --no-check-compatibility \
+    --target patrol_test/example_test.dart \
+    --target patrol_test/marathon_smoke_test.dart
+fi
+
+echo "Running Marathon iOS (xctest parser discovers Patrol tests)..."
+marathon run -m Marathonfile.ios
