@@ -1,6 +1,6 @@
 ## Unreleased
 
-- Add option to use patrol extension. (#3160)
+- Add support for Patrol extensions. (#3160)
 
 ## 4.7.1
 
