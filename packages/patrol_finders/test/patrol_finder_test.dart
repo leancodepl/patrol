@@ -42,6 +42,35 @@ void main() {
         expect($(const ValueKey({'key': 'icon1'})), findsNothing);
       });
 
+      patrolWidgetTest('key with special characters', ($) async {
+        // Regression test for
+        // https://github.com/leancodepl/patrol/issues/1117
+        const diacriticsKey = Key('zażółć gęślą jaźń ZAŻÓŁĆ GĘŚLĄ JAŹŃ');
+        const specialCharsKey = Key(r'key/with\special.chars:!@#$%^&*()');
+        const emojiKey = Key('key with emoji 🚀');
+
+        await $.pumpWidget(
+          const MaterialApp(
+            home: Column(
+              children: [
+                Text('diacritics', key: diacriticsKey),
+                Text('special chars', key: specialCharsKey),
+                Text('emoji', key: emojiKey),
+              ],
+            ),
+          ),
+        );
+
+        expect($(diacriticsKey), findsOneWidget);
+        expect(
+          $(const Key('zażółć gęślą jaźń ZAŻÓŁĆ GĘŚLĄ JAŹŃ')),
+          findsOneWidget,
+        );
+        expect($(specialCharsKey), findsOneWidget);
+        expect($(emojiKey), findsOneWidget);
+        expect($(const Key('zazolc gesla jazn')), findsNothing);
+      });
+
       patrolWidgetTest('text', ($) async {
         await $.pumpWidget(app);
         expect($('Hello'), findsOneWidget);

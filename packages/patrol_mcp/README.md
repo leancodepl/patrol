@@ -3,6 +3,7 @@
 [![patrol on pub.dev][patrol_badge]][patrol_link]
 [![patrol_cli on pub.dev][patrol_cli_badge]][patrol_cli_link]
 [![patrol_finders on pub.dev][patrol_finders_badge]][patrol_finders_link]
+[![patrol_mcp on pub.dev][patrol_mcp_badge]][patrol_mcp_link]
 [![patrol_discord]][patrol_discord_link]
 [![code style][leancode_lint_badge]][leancode_lint_link]
 [![patrol_github_stars]][patrol_github_link]
@@ -154,7 +155,10 @@ See [VS Code's MCP docs][vscode_mcp] for starting the server.
 
 ## Tools
 
-- `run`: Runs a test file and waits for completion.
+- `run`: Runs a test file and waits for completion. Auto-selects a device
+  (Android device > Android emulator > iOS device > iOS simulator), or pass
+  `device` to target one; `PATROL_FLAGS --device` wins.
+- `devices`: Lists attached Android/iOS devices to pass as `run`'s `device`.
 - `quit`: Gracefully stops the active session.
 - `status`: Returns session state and recent output.
 - `screenshot`: Captures screenshot from active session device.
@@ -204,6 +208,7 @@ We are **top-tier experts** focused on Flutter Enterprise solutions.
 
 [patrol_badge]: https://img.shields.io/pub/v/patrol?label=patrol
 [patrol_finders_badge]: https://img.shields.io/pub/v/patrol_finders?label=patrol_finders
+[patrol_mcp_badge]: https://img.shields.io/pub/v/patrol_mcp?label=patrol_mcp
 [patrol_cli_badge]: https://img.shields.io/pub/v/patrol_cli?label=patrol_cli
 [leancode_lint_badge]: https://img.shields.io/badge/code%20style-leancode__lint-blue
 [patrol_github_stars]: https://img.shields.io/github/stars/leancodepl/patrol
@@ -211,6 +216,7 @@ We are **top-tier experts** focused on Flutter Enterprise solutions.
 [patrol_discord]: https://img.shields.io/discord/1167030497612922931?color=blue&logo=discord
 [patrol_link]: https://pub.dev/packages/patrol
 [patrol_finders_link]: https://pub.dev/packages/patrol_finders
+[patrol_mcp_link]: https://pub.dev/packages/patrol_mcp
 [patrol_cli_link]: https://pub.dev/packages/patrol_cli
 [leancode_lint_link]: https://pub.dev/packages/leancode_lint
 [patrol_x_link]: https://x.com/patrol_leancode

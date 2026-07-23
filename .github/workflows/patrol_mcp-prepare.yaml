@@ -42,3 +42,6 @@ jobs:
 
       - name: Smoke test — server starts, handshakes, and shuts down on EOF
         run: dart run tool/smoke_test.dart
+
+      - name: Unit tests
+        run: dart test

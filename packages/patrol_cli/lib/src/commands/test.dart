@@ -153,10 +153,16 @@ class TestCommand extends PatrolCommand {
       _logger.detail('Received build number: $buildNumber');
     }
 
-    final devices = await _deviceFinder.find(
-      stringsArg('device'),
-      flutterCommand: flutterCommand,
-    );
+    final wantDevices = stringsArg('device');
+    final bundledDevice = switch (wantDevices) {
+      [final name] => Device.bundledForTest(name),
+      _ => null,
+    };
+
+    final devices = bundledDevice != null
+        ? [bundledDevice]
+        : await _deviceFinder.find(wantDevices, flutterCommand: flutterCommand);
+
     _logger.detail('Received ${devices.length} device(s) to run on');
     for (final device in devices) {
       _logger.detail('Received device: ${device.name} (${device.id})');
