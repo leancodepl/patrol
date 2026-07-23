@@ -1,3 +1,7 @@
+## Unreleased
+
+- Add support for Patrol extensions. (#3160)
+
 ## 4.7.1
 
 - Add a Swift Package Manager support note to the README.
