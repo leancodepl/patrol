@@ -606,10 +606,9 @@ final class PatrolSession {
         await future;
       }
     } on TimeoutException {
-      // The run didn't finish in time. The test is still running in the
-      // background, so surface the timeout distinctly instead of a plain
-      // `running` snapshot the caller can't tell apart from a normal
-      // in-progress status.
+      // The run didn't finish in time but is still running in the background.
+      // Surface the timeout distinctly, not a `running` snapshot the caller
+      // can't tell apart from a normal in-progress run.
       return getStatus(
         overrideWarning:
             'Run timed out, but the test is still running in the background. '
