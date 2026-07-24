@@ -574,14 +574,14 @@ final class PatrolSession {
     throw StateError('Unknown command: ${command.value}');
   }
 
-  PatrolStatus getStatus() {
+  PatrolStatus getStatus({String? overrideWarning}) {
     final dev = _developService?.device;
     return PatrolStatus(
       isDevelopRunning: _isRunning,
       testState: _testState,
       output: _formatLogs(_outputs),
       currentTestFile: _currentTestFile,
-      warning: _finishWarning,
+      warning: overrideWarning ?? _finishWarning,
       deviceSelectionNote: _deviceSelectionNote,
       deviceName: dev?.name,
       deviceId: dev?.id,
@@ -610,29 +610,14 @@ final class PatrolSession {
       // background, so surface the timeout distinctly instead of a plain
       // `running` snapshot the caller can't tell apart from a normal
       // in-progress status.
-      return _timedOutStatus();
+      return getStatus(
+        overrideWarning:
+            'Run timed out, but the test is still running in the background. '
+            'Call status to check progress, or quit to stop it.',
+      );
     }
 
     return getStatus();
-  }
-
-  /// A status snapshot annotated with a timeout warning, so a run that exceeded
-  /// its `timeout` is distinguishable from an ordinary in-progress status.
-  PatrolStatus _timedOutStatus() {
-    final base = getStatus();
-    return PatrolStatus(
-      isDevelopRunning: base.isDevelopRunning,
-      testState: base.testState,
-      output: base.output,
-      currentTestFile: base.currentTestFile,
-      warning:
-          'Run timed out, but the test is still running in the background. '
-          'Call status to check progress, or quit to stop it.',
-      deviceSelectionNote: base.deviceSelectionNote,
-      deviceName: base.deviceName,
-      deviceId: base.deviceId,
-      devicePlatform: base.devicePlatform,
-    );
   }
 
   String _formatLogs(List<String> logs) {
