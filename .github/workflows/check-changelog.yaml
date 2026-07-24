@@ -1,0 +1,24 @@
+name: check changelog
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'packages/**'
+      - 'tool/check_changelog.sh'
+      - '.github/workflows/check-changelog.yaml'
+
+jobs:
+  check-changelog:
+    name: Check CHANGELOG entries
+    runs-on: ubuntu-latest
+    if: ${{ !contains(github.event.pull_request.labels.*.name, 'skip changelog') }}
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check CHANGELOG entries
+        run: tool/check_changelog.sh "origin/${{ github.base_ref }}"
