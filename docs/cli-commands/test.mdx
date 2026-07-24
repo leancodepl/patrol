@@ -181,6 +181,29 @@ features such as reporting. To see the full list of supported arguments, run `pa
 - `--clear-permissions`: Not applicable to web platform
 - `--full-isolation`: Not applicable to web platform
 
+### Running without rebuilding
+
+When [build-time test discovery][discovery] is enabled
+(`patrol.emit_test_manifest: true`), you can re-run already-built tests **without
+rebuilding** with `--no-build`, reusing the artifacts from a previous
+`patrol build`:
+
+```bash
+# Run all discovered tests, no rebuild.
+patrol test --no-build
+
+# Run a single test by its exact Dart name (as printed during discovery).
+patrol test --no-build --only "example_test tap counter increments"
+```
+
+`--no-build` requires `emit_test_manifest` and a prior `patrol build`. It runs the
+tests via `xcodebuild test-without-building` on iOS and `adb shell am instrument`
+on Android, skipping compilation entirely — handy for a fast re-run of a single
+failing test. `--only` takes the exact Dart test name and can be repeated; omit it
+to run everything.
+
+[discovery]: /documentation/ci/build-time-test-discovery
+
 ### Under the hood
 
 `patrol test` basically calls `patrol build` and then runs the built app
