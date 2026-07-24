@@ -1,14 +1,6 @@
-import 'dart:convert';
-
 import 'package:file/file.dart';
 import 'package:path/path.dart' show join;
-
-/// A single discovered Dart test, flattened to the name the native runner uses.
-class _FlatTest {
-  _FlatTest(this.dartName, this.skip);
-  final String dartName;
-  final bool skip;
-}
+import 'package:patrol_cli/src/crossplatform/test_manifest.dart';
 
 /// The result of [AndroidTestCodegen.generate].
 class AndroidCodegenResult {
@@ -71,13 +63,9 @@ class AndroidTestCodegen {
       return null;
     }
 
-    final json =
-        jsonDecode(_fs.file(manifestPath).readAsStringSync())
-            as Map<String, dynamic>;
-    final tree = json['group'] as Map<String, dynamic>;
-
-    final tests = <_FlatTest>[];
-    _flatten(tree, '', tests);
+    final tests = TestManifest.parse(
+      _fs.file(manifestPath).readAsStringSync(),
+    ).tests;
 
     final source = _render(host.packageName, className, tests);
     final output = _fs.file(join(host.directory.path, '$className.java'))
@@ -149,32 +137,10 @@ class AndroidTestCodegen {
     return match?.group(1);
   }
 
-  /// Flattens the group tree the exact same way as the Kotlin
-  /// `DartGroupEntry.listTestsFlat`: group names joined with spaces, top-level
-  /// groups not prefixed.
-  void _flatten(
-    Map<String, dynamic> group,
-    String parentGroupName,
-    List<_FlatTest> out,
-  ) {
-    final entries = (group['entries'] as List).cast<Map<String, dynamic>>();
-    for (final entry in entries) {
-      final name = entry['name'] as String;
-      if (entry['type'] == 'test') {
-        out.add(_FlatTest('$parentGroupName $name', entry['skip'] as bool));
-      } else {
-        final childParent = parentGroupName.isEmpty
-            ? name
-            : '$parentGroupName $name';
-        _flatten(entry, childParent, out);
-      }
-    }
-  }
-
   String _render(
     String packageName,
     String className,
-    List<_FlatTest> tests,
+    List<DiscoveredTest> tests,
   ) {
     final usedNames = <String>{};
     final buffer = StringBuffer()
