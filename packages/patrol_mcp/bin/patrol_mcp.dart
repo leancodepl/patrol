@@ -196,16 +196,26 @@ Future<int> main(List<String> args) async {
               }
 
               final runArgs = _PatrolRunArgs.fromJson(args);
-              final result = await patrolSession.startAndWait(
-                runArgs.testFile,
-                timeout: runArgs.timeout,
-                device: runArgs.device,
-              );
-              final status = result.toMap();
-              return CallToolResult(
-                content: [TextContent(text: jsonEncode(status))],
-                structuredContent: status,
-              );
+
+              // If the client cancels the run (MCP notifications/cancelled),
+              // tear the develop session down so it isn't left orphaned.
+              final abortSub = extra.signal.onAbort.listen((_) {
+                unawaited(patrolSession.dispose());
+              });
+              try {
+                final result = await patrolSession.startAndWait(
+                  runArgs.testFile,
+                  timeout: runArgs.timeout,
+                  device: runArgs.device,
+                );
+                final status = result.toMap();
+                return CallToolResult(
+                  content: [TextContent(text: jsonEncode(status))],
+                  structuredContent: status,
+                );
+              } finally {
+                await abortSub.cancel();
+              }
             },
           )
           ..registerTool(
@@ -366,10 +376,15 @@ Future<int> _runStdio(McpServer server, PatrolSession patrolSession) async {
   exitSignal.cancel();
   logger.info('Shutting down (signal or client disconnect)');
 
-  // Tear down any active session so its child processes don't outlive us.
-  await patrolSession.dispose();
+  // Tear down the active session and close the transport, but never block
+  // forever: a stalled teardown (e.g. a run cancelled mid-build) would orphan
+  // the server process. Force-exit if it doesn't finish in time.
+  Future<void> shutdown() async {
+    await patrolSession.dispose();
+    await server.close(); // closes the transport too
+  }
 
-  await server.close(); // closes the transport too
+  await shutdown().timeout(const Duration(seconds: 10), onTimeout: () => exit(0));
   logger.info('Stopped');
   return 0;
 }
