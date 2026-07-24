@@ -108,4 +108,27 @@ void main() {
       expect(entry.pretty(), endsWith('\nsome error'));
     });
   });
+
+  group('TestEntry.nameWithPath', () {
+    // Covers the failed-tests summary, which renders entries via
+    // nameWithPath rather than pretty().
+    test('returns the raw name when there is no file prefix', () {
+      final entry = TestEntry(
+        name: 'Sign up full onboarding flow',
+        status: TestEntryStatus.failure,
+      );
+
+      expect(entry.nameWithPath, 'Sign up full onboarding flow');
+    });
+
+    test('renders the file path when the name has a file prefix', () {
+      final entry = TestEntry(
+        name: 'example_test signs up successfully',
+        status: TestEntryStatus.failure,
+      );
+
+      expect(entry.nameWithPath, startsWith('signs up successfully'));
+      expect(entry.nameWithPath, contains('/example_test.dart'));
+    });
+  });
 }
