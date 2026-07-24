@@ -280,5 +280,89 @@ packages:
         }).called(1);
       });
     });
+
+    group('_normalizeArgs', () {
+      test('leaves args without --web-headless untouched', () {
+        final result = commandRunner.testNormalizeArgs([
+          'test',
+          '-d',
+          'chrome',
+          '--verbose',
+        ]);
+
+        expect(result, equals(['test', '-d', 'chrome', '--verbose']));
+        verifyNever(() => logger.warn(any()));
+      });
+
+      test('rewrites --web-headless=<value> and warns about deprecation', () {
+        final trueResult = commandRunner.testNormalizeArgs([
+          'test',
+          '--web-headless=true',
+        ]);
+        expect(trueResult, equals(['test', '--web-headless']));
+
+        final falseResult = commandRunner.testNormalizeArgs([
+          'test',
+          '--web-headless=false',
+        ]);
+        expect(falseResult, equals(['test', '--no-web-headless']));
+
+        verify(
+          () => logger.warn(
+            'Passing a value to --web-headless is deprecated. '
+            'Use --web-headless or --no-web-headless instead.',
+          ),
+        ).called(2);
+      });
+
+      test('rewrites --web-headless <value> passed as two arguments', () {
+        final trueResult = commandRunner.testNormalizeArgs([
+          'test',
+          '--web-headless',
+          'true',
+        ]);
+        expect(trueResult, equals(['test', '--web-headless']));
+
+        final falseResult = commandRunner.testNormalizeArgs([
+          'test',
+          '--web-headless',
+          'false',
+        ]);
+        expect(falseResult, equals(['test', '--no-web-headless']));
+      });
+
+      test('leaves --web-headless untouched when not followed by a bool', () {
+        final result = commandRunner.testNormalizeArgs([
+          'test',
+          '--web-headless',
+          '-d',
+          'chrome',
+        ]);
+
+        expect(result, equals(['test', '--web-headless', '-d', 'chrome']));
+        verifyNever(() => logger.warn(any()));
+      });
+
+      test('leaves --web-headless untouched when it is the last argument', () {
+        final result = commandRunner.testNormalizeArgs([
+          'test',
+          '--web-headless',
+        ]);
+
+        expect(result, equals(['test', '--web-headless']));
+        verifyNever(() => logger.warn(any()));
+      });
+
+      test('stops rewriting after a bare -- separator', () {
+        final result = commandRunner.testNormalizeArgs([
+          'test',
+          '--',
+          '--web-headless=true',
+        ]);
+
+        expect(result, equals(['test', '--', '--web-headless=true']));
+        verifyNever(() => logger.warn(any()));
+      });
+    });
   });
 }
