@@ -170,6 +170,26 @@ if (exceptionCount != 0) {
 }
 ```
 
+### Accessing the underlying WidgetTester
+
+`PatrolIntegrationTester` (the `$` passed to your test body) is a thin wrapper
+around Flutter's [`WidgetTester`](https://api.flutter.dev/flutter/flutter_test/WidgetTester-class.html).
+Whenever you need a `WidgetTester` API that
+Patrol doesn't expose directly, reach for it through `$.tester`:
+
+```dart
+patrolTest('reads a widget property', ($) async {
+  await $.pumpWidgetAndSettle(const MyApp());
+
+  // Use any WidgetTester API via $.tester.
+  final size = $.tester.getSize(find.byType(MyBox));
+  expect(size.width, 100);
+});
+```
+
+This means you can drop down to plain `flutter_test` at any point without giving
+up Patrol's finders and native automation.
+
 ### Handling permission dialogs before the main app widget is pumped
 
 Sometimes you might want to manually request permissions in the test before the

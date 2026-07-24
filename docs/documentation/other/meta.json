@@ -5,6 +5,7 @@
     "patrol-vs-code-extension",
     "patrol-devtools-extension",
     "effective-patrol",
+    "test-execution-order",
     "tips-and-tricks",
     "debugging-patrol-tests",
     "patrol-mcp",
