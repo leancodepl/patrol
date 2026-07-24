@@ -146,7 +146,7 @@ Future<int> main(List<String> args) async {
                   'Behavior notes:\n'
                   '- run waits for test completion.\n'
                   '- If no session is running, run starts a new session.\n'
-                  '- If a session is already running, run hot-restarts it — but only for the same test file; a different test file is refused (quit first).\n'
+                  '- If a session is already running, run triggers a restart for the requested test.\n'
                   '- run auto-selects a device; to target a specific one, call devices and pass its id as run\'s "device".\n'
                   '- status is optional and mainly useful for debugging session state and recent output.\n'
                   '- native-tree is intended for native interactions and cross-app/native context inspection.',
@@ -319,10 +319,7 @@ Future<int> main(List<String> args) async {
             'native-tree',
             description:
                 'Fetch the native UI tree. '
-                'Requires an active patrol develop session. '
-                'Note: on iOS, a Flutter view may report an empty tree (no '
-                'native semantics) — native contexts (e.g. Safari/web) return '
-                'the full tree; on Android the Flutter view is richer.',
+                'Requires an active patrol develop session.',
             annotations: const ToolAnnotations(
               title: 'Get Native UI Tree',
               readOnlyHint: true,

@@ -1,9 +1,7 @@
 ## Unreleased
 
-- Return a distinct timeout warning from `run` when a run exceeds its `timeoutMinutes` while still executing, so callers can tell a timeout apart from an ordinary in-progress status (the test keeps running in the background — call `status` or `quit`).
-- Tear down the active develop session when the client cancels a `run` (MCP cancellation), instead of leaving it orphaned in a perpetual `running` state.
-- Fix misleading tool text: `run` only hot-restarts for the *same* test file (a different file is refused, quit first), and blocked-session warnings now refer to the `quit` tool by its correct name.
-- Note in the `native-tree` tool description that on iOS a Flutter view may report an empty tree (use native contexts); Android's Flutter view is richer.
+- Report a distinct timeout from `run` instead of a status indistinguishable from a normal in-progress run.
+- Stop the develop session when a `run` is cancelled, instead of leaving it running in the background.
 - Simplified setup: the `run-patrol` wrapper script is no longer needed — point your MCP config directly at `dart run patrol_mcp`. FVM-pinned projects run develop sessions with the pinned Flutter automatically. See the README for the updated setup.
 - Run develop sessions from `PROJECT_ROOT`, so `run` works when the server's working directory differs from the project (e.g. an app in a subdirectory).
 - Fix the `run` tool hanging until its timeout when the app shuts down before the test reports completion; it now returns promptly as a failed run with a warning, and a `quit` isn't misreported as a crash. Requires the first `patrol_cli` release after 4.5.1, which reports the backend exit independently of `flutter attach`.
