@@ -146,7 +146,7 @@ Future<int> main(List<String> args) async {
                   'Behavior notes:\n'
                   '- run waits for test completion.\n'
                   '- If no session is running, run starts a new session.\n'
-                  '- If a session is already running, run triggers a restart for the requested test.\n'
+                  '- If a session is already running, run hot-restarts it — but only for the same test file; a different test file is refused (quit first).\n'
                   '- run auto-selects a device; to target a specific one, call devices and pass its id as run\'s "device".\n'
                   '- status is optional and mainly useful for debugging session state and recent output.\n'
                   '- native-tree is intended for native interactions and cross-app/native context inspection.',
@@ -196,16 +196,27 @@ Future<int> main(List<String> args) async {
               }
 
               final runArgs = _PatrolRunArgs.fromJson(args);
-              final result = await patrolSession.startAndWait(
-                runArgs.testFile,
-                timeout: runArgs.timeout,
-                device: runArgs.device,
-              );
-              final status = result.toMap();
-              return CallToolResult(
-                content: [TextContent(text: jsonEncode(status))],
-                structuredContent: status,
-              );
+
+              // If the client cancels the run (MCP notifications/cancelled),
+              // tear the develop session down so it isn't left orphaned in a
+              // perpetual "running" state the client can no longer see.
+              final abortSub = extra.signal.onAbort.listen((_) {
+                unawaited(patrolSession.dispose());
+              });
+              try {
+                final result = await patrolSession.startAndWait(
+                  runArgs.testFile,
+                  timeout: runArgs.timeout,
+                  device: runArgs.device,
+                );
+                final status = result.toMap();
+                return CallToolResult(
+                  content: [TextContent(text: jsonEncode(status))],
+                  structuredContent: status,
+                );
+              } finally {
+                await abortSub.cancel();
+              }
             },
           )
           ..registerTool(
@@ -308,7 +319,10 @@ Future<int> main(List<String> args) async {
             'native-tree',
             description:
                 'Fetch the native UI tree. '
-                'Requires an active patrol develop session.',
+                'Requires an active patrol develop session. '
+                'Note: on iOS, a Flutter view may report an empty tree (no '
+                'native semantics) — native contexts (e.g. Safari/web) return '
+                'the full tree; on Android the Flutter view is richer.',
             annotations: const ToolAnnotations(
               title: 'Get Native UI Tree',
               readOnlyHint: true,

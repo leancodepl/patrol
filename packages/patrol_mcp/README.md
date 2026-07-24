@@ -56,7 +56,11 @@ see the [Patrol MCP documentation][mcp_docs].
 
 By default, this setup assumes your Flutter project's `pubspec.yaml` is in the
 repository root. If your app lives in a subdirectory, set `PROJECT_ROOT`
-accordingly (for example `./app`).
+accordingly (for example `./app`). Note that `PROJECT_ROOT` alone isn't enough
+for a subdirectory app: `dart run patrol_mcp` must be launched from a directory
+where Dart can resolve the `patrol_mcp` package (i.e. the app directory that has
+it in its `pubspec.yaml`). Set the MCP server's working directory to that app
+directory, and point `PROJECT_ROOT` at it too.
 
 1. Add `patrol_mcp` as a dev dependency in your Flutter project:
 

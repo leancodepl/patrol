@@ -233,13 +233,13 @@ final class PatrolSession {
       if (_currentTestFile != testFile) {
         return 'Patrol session is already running "$_currentTestFile". '
             'Cannot start different test "$testFile". '
-            'Use patrol-quit first or run the same test file.';
+            'Use quit first or run the same test file.';
       }
       // Same test file - hot restart. The device can't change on hot restart.
       if (device != null) {
         _deviceSelectionNote =
             'Device "$device" ignored: hot-restarting the running session on '
-            '${this.device?.name ?? 'the current device'}. Use patrol-quit '
+            '${this.device?.name ?? 'the current device'}. Use quit '
             'first to switch devices.';
       }
       sendCommand(PatrolCommand.hotRestart);
@@ -606,10 +606,33 @@ final class PatrolSession {
         await future;
       }
     } on TimeoutException {
-      // Timeout occurred, but don't fail - just return current status
+      // The run didn't finish in time. The test is still running in the
+      // background, so surface the timeout distinctly instead of a plain
+      // `running` snapshot the caller can't tell apart from a normal
+      // in-progress status.
+      return _timedOutStatus();
     }
 
     return getStatus();
+  }
+
+  /// A status snapshot annotated with a timeout warning, so a run that exceeded
+  /// its `timeout` is distinguishable from an ordinary in-progress status.
+  PatrolStatus _timedOutStatus() {
+    final base = getStatus();
+    return PatrolStatus(
+      isDevelopRunning: base.isDevelopRunning,
+      testState: base.testState,
+      output: base.output,
+      currentTestFile: base.currentTestFile,
+      warning:
+          'Run timed out, but the test is still running in the background. '
+          'Call status to check progress, or quit to stop it.',
+      deviceSelectionNote: base.deviceSelectionNote,
+      deviceName: base.deviceName,
+      deviceId: base.deviceId,
+      devicePlatform: base.devicePlatform,
+    );
   }
 
   String _formatLogs(List<String> logs) {
