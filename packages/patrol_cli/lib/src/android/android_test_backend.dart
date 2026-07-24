@@ -80,7 +80,7 @@ class AndroidTestBackend {
             androidDir: _rootDirectory.childDirectory('android'),
           );
           if (result != null) {
-            _logger.detail(
+            _logger.info(
               'Generated ${result.testCount} static JUnit test method(s) → '
               '${result.outputPath}',
             );

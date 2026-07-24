@@ -1,13 +1,5 @@
-import 'dart:convert';
-
 import 'package:file/file.dart';
-
-/// A single discovered Dart test, flattened to the name the native runner uses.
-class _FlatTest {
-  _FlatTest(this.dartName, this.skip);
-  final String dartName;
-  final bool skip;
-}
+import 'package:patrol_cli/src/crossplatform/test_manifest.dart';
 
 /// Generates a static Objective-C XCTest source file from a build-time test
 /// manifest, so each Dart test becomes a real native test method.
@@ -34,13 +26,9 @@ class XcodeTestCodegen {
     required String outputPath,
     String className = 'RunnerUITests',
   }) {
-    final json =
-        jsonDecode(_fs.file(manifestPath).readAsStringSync())
-            as Map<String, dynamic>;
-    final tree = json['group'] as Map<String, dynamic>;
-
-    final tests = <_FlatTest>[];
-    _flatten(tree, '', tests);
+    final tests = TestManifest.parse(
+      _fs.file(manifestPath).readAsStringSync(),
+    ).tests;
 
     final source = _render(className, tests);
     _fs.file(outputPath)
@@ -49,28 +37,7 @@ class XcodeTestCodegen {
     return tests.length;
   }
 
-  /// Flattens the group tree the exact same way as Swift `listTestsFlat`:
-  /// group names joined with spaces, top-level groups not prefixed.
-  void _flatten(
-    Map<String, dynamic> group,
-    String parentGroupName,
-    List<_FlatTest> out,
-  ) {
-    final entries = (group['entries'] as List).cast<Map<String, dynamic>>();
-    for (final entry in entries) {
-      final name = entry['name'] as String;
-      if (entry['type'] == 'test') {
-        out.add(_FlatTest('$parentGroupName $name', entry['skip'] as bool));
-      } else {
-        final childParent = parentGroupName.isEmpty
-            ? name
-            : '$parentGroupName $name';
-        _flatten(entry, childParent, out);
-      }
-    }
-  }
-
-  String _render(String className, List<_FlatTest> tests) {
+  String _render(String className, List<DiscoveredTest> tests) {
     final usedSelectors = <String>{};
     // Methods only: this file is #included inside the `@implementation` opened
     // by PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN, so it must not carry

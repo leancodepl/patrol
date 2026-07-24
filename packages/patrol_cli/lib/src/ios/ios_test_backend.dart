@@ -209,7 +209,7 @@ class IOSTestBackend {
       manifestPath: manifestPath,
       outputPath: output.path,
     );
-    _logger.detail('Generated $count static XCTest method(s) → ${output.path}');
+    _logger.info('Generated $count static XCTest method(s) → ${output.path}');
   }
 
   /// Executes the tests of the given [options] on the given [device].
