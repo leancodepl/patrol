@@ -76,4 +76,42 @@ void main() {
         '{"group":{"name":"","type":"group","skip":false,"entries":[]}}';
     expect(TestManifest.parse(manifest).tests, isEmpty);
   });
+
+  group('selector generation', () {
+    const manifest = '''
+{"group":{"name":"","type":"group","skip":false,"entries":[
+  {"name":"example_test","type":"group","skip":false,"entries":[
+    {"name":"tap once shows one","type":"test","skip":false},
+    {"name":"tap once shows one","type":"test","skip":false}
+  ]}
+]}}
+''';
+
+    test('iOS selectors are unique, index-suffixed and 1:1 with tests', () {
+      final tests = TestManifest.parse(manifest).tests;
+      final selectors = generateIosSelectors(tests);
+
+      expect(selectors, hasLength(tests.length));
+      // Zero-padded manifest index guarantees uniqueness even for duplicate
+      // Dart names.
+      expect(selectors, [
+        'test_example_test_tap_once_shows_one_0000',
+        'test_example_test_tap_once_shows_one_0001',
+      ]);
+      expect(selectors.toSet(), hasLength(selectors.length));
+    });
+
+    test('Android method names prefer clean names, disambiguate on collision', () {
+      final tests = TestManifest.parse(manifest).tests;
+      final methods = generateAndroidMethodNames(tests);
+
+      expect(methods, hasLength(tests.length));
+      // First occurrence keeps the clean name; the collision gets the index.
+      expect(methods, [
+        'example_test_tap_once_shows_one',
+        'example_test_tap_once_shows_one_1',
+      ]);
+      expect(methods.toSet(), hasLength(methods.length));
+    });
+  });
 }
