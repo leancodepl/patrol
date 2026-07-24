@@ -11,3 +11,6 @@ final isIOS = Platform.isIOS;
 
 /// True if running on macOS.
 final isMacOS = Platform.isMacOS;
+
+/// True if running on Windows.
+final isWindows = Platform.isWindows;

@@ -15,3 +15,11 @@ custom_lint.log
 
 .fvmrc
 .fvm/**
+
+# .NET build outputs (Windows POC runner / fixture)
+**/bin/
+**/obj/
+**/.vs/
+**/Properties/launchSettings.json
+*.user
+*.suo

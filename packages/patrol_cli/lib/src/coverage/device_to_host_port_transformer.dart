@@ -73,7 +73,7 @@ class DeviceToHostPortTransformer
             .where((entry) => entry.value == devicePort)
             .firstOrNull
             ?.key;
-      case TargetPlatform.iOS || TargetPlatform.macOS:
+      case TargetPlatform.iOS || TargetPlatform.macOS || TargetPlatform.windows:
         hostPort = devicePort;
       case TargetPlatform.web:
         // TODO: Implement coverage for web
