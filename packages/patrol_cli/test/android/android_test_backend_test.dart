@@ -3,6 +3,7 @@ import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
+import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:patrol_cli/src/runner/flutter_command.dart';
@@ -190,6 +191,91 @@ void main() {
             ),
           ),
         );
+      });
+    });
+
+    group('verifyAndroidSdkResolved', () {
+      void writeLocalProperties(String contents) {
+        rootDirectory.childDirectory('android').childFile('local.properties')
+          ..createSync(recursive: true)
+          ..writeAsStringSync(contents);
+      }
+
+      test('throws ToolExit when local.properties is missing', () {
+        expect(
+          androidTestBackend.verifyAndroidSdkResolved,
+          throwsA(
+            isA<ToolExit>().having(
+              (e) => e.message,
+              'message',
+              contains("Couldn't locate the Android SDK"),
+            ),
+          ),
+        );
+      });
+
+      test('throws ToolExit when sdk.dir is absent', () {
+        writeLocalProperties('flutter.sdk=/opt/flutter\n');
+
+        expect(
+          androidTestBackend.verifyAndroidSdkResolved,
+          throwsA(
+            isA<ToolExit>().having(
+              (e) => e.message,
+              'message',
+              contains("Couldn't locate the Android SDK"),
+            ),
+          ),
+        );
+      });
+
+      test('throws ToolExit when sdk.dir is empty', () {
+        writeLocalProperties('sdk.dir=\n');
+
+        expect(
+          androidTestBackend.verifyAndroidSdkResolved,
+          throwsA(
+            isA<ToolExit>().having(
+              (e) => e.message,
+              'message',
+              contains("Couldn't locate the Android SDK"),
+            ),
+          ),
+        );
+      });
+
+      test('throws ToolExit when sdk.dir points to a missing directory', () {
+        writeLocalProperties('sdk.dir=/nonexistent/sdk\n');
+
+        expect(
+          androidTestBackend.verifyAndroidSdkResolved,
+          throwsA(
+            isA<ToolExit>().having(
+              (e) => e.message,
+              'message',
+              contains('does not exist: /nonexistent/sdk'),
+            ),
+          ),
+        );
+      });
+
+      test('passes when sdk.dir points to an existing directory', () {
+        fs.directory('/android/sdk').createSync(recursive: true);
+        writeLocalProperties(
+          'flutter.sdk=/opt/flutter\nsdk.dir=/android/sdk\n',
+        );
+
+        expect(androidTestBackend.verifyAndroidSdkResolved, returnsNormally);
+      });
+
+      test('unescapes a Windows-style sdk.dir path', () {
+        fs.directory(r'C:\Users\me\Android\sdk').createSync(recursive: true);
+        writeLocalProperties(
+          r'sdk.dir=C\:\\Users\\me\\Android\\sdk'
+          '\n',
+        );
+
+        expect(androidTestBackend.verifyAndroidSdkResolved, returnsNormally);
       });
     });
   });
