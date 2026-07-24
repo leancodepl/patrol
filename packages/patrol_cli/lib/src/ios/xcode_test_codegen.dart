@@ -38,7 +38,7 @@ class XcodeTestCodegen {
   }
 
   String _render(String className, List<DiscoveredTest> tests) {
-    final usedSelectors = <String>{};
+    final selectors = generateIosSelectors(tests);
     // Methods only: this file is #included inside the `@implementation` opened
     // by PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN, so it must not carry
     // its own @import/@interface/@implementation wrapper.
@@ -50,7 +50,7 @@ class XcodeTestCodegen {
 
     for (var i = 0; i < tests.length; i++) {
       final test = tests[i];
-      final selector = _uniqueSelector(test.dartName, i, usedSelectors);
+      final selector = selectors[i];
       final literal = _objcStringLiteral(test.dartName);
       buffer
         ..writeln('- (void)$selector {')
@@ -62,29 +62,6 @@ class XcodeTestCodegen {
     }
 
     return buffer.toString();
-  }
-
-  String _uniqueSelector(String dartName, int index, Set<String> used) {
-    var sanitized = dartName
-        .replaceAll(RegExp('[^A-Za-z0-9]+'), '_')
-        .replaceAll(RegExp('_+'), '_')
-        .replaceAll(RegExp(r'^_|_$'), '');
-    // Keep selectors readable but bounded.
-    if (sanitized.length > 80) {
-      sanitized = sanitized.substring(0, 80);
-    }
-    // Index guarantees uniqueness and stable ordering even when two Dart names
-    // sanitize to the same identifier (e.g. differ only by punctuation).
-    final base = 'test_${sanitized}_${index.toString().padLeft(4, '0')}';
-    // The index already makes this unique; the suffix is purely defensive.
-    var selector = base;
-    var dedup = 0;
-    while (used.contains(selector)) {
-      dedup++;
-      selector = '${base}_$dedup';
-    }
-    used.add(selector);
-    return selector;
   }
 
   String _objcStringLiteral(String value) {

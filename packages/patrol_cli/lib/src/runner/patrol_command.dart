@@ -202,6 +202,11 @@ abstract class PatrolCommand extends Command<int> {
 
   /// Registers the experimental `--emit-test-manifest` flag, shared by the iOS
   /// and Android build/test paths.
+  ///
+  /// Declared with a null default (via [optionalBoolArg]) so that "flag not
+  /// passed" is distinguishable from an explicit `--no-emit-test-manifest`;
+  /// this lets the CLI flag override the persistent `patrol.emit_test_manifest`
+  /// pubspec setting when present, and fall back to it otherwise.
   void usesEmitTestManifestOption() {
     argParser.addFlag(
       'emit-test-manifest',
@@ -209,9 +214,32 @@ abstract class PatrolCommand extends Command<int> {
           'Experimental: discover Dart tests at build time (host `flutter '
           'test`) and generate static native test methods, so each Dart test '
           'becomes an individually-selectable native test and the runtime '
-          'discovery launch is skipped.',
-      negatable: false,
+          'discovery launch is skipped. Defaults to the '
+          '`patrol.emit_test_manifest` value in pubspec.yaml.',
+      defaultsTo: null,
     );
+  }
+
+  /// Registers `--no-build` and `--only`, for running already-built tests
+  /// without rebuilding. Only meaningful when build-time discovery
+  /// (`emit_test_manifest`) is enabled and a prior `patrol build` produced the
+  /// artifacts + manifest.
+  void usesNoBuildOption() {
+    argParser
+      ..addFlag(
+        'no-build',
+        help:
+            'Run already-built tests without rebuilding (reuses the artifacts '
+            'from a prior `patrol build`). Requires emit_test_manifest.',
+        negatable: false,
+      )
+      ..addMultiOption(
+        'only',
+        help:
+            'With --no-build, run only the test(s) whose exact Dart name '
+            '(as printed during discovery) is given. Repeatable; omit to run '
+            'all discovered tests.',
+      );
   }
 
   void usesMacOSOptions() {

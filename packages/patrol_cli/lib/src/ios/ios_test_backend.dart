@@ -11,6 +11,7 @@ import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/crossplatform/patrol_build_environment.dart';
+import 'package:patrol_cli/src/crossplatform/test_manifest.dart';
 import 'package:patrol_cli/src/crossplatform/test_manifest_generator.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/xcode_test_codegen.dart';
@@ -102,6 +103,7 @@ class IOSTestBackend {
       // test tree. Failures are non-fatal: the native side falls back to
       // runtime discovery when the manifest is absent.
       if (options.emitTestManifest) {
+        _verifyStaticRunnerSetup();
         final manifestPath = await TestManifestGenerator(
           processManager: _processManager,
           rootDirectory: _rootDirectory,
@@ -199,6 +201,75 @@ class IOSTestBackend {
   /// hosts (one simulator each) works today; parallel-on-one-host first needs
   /// per-shard port isolation (and the app must learn its port at runtime rather
   /// than from a build-time dart-define).
+  /// Fails fast when build-time discovery is enabled but the iOS UITest runner
+  /// hasn't been switched to the static form. The generated
+  /// `PatrolGeneratedTests.inc` is only compiled in when `RunnerUITests.m` uses
+  /// the STATIC macro and `#include`s that file; otherwise the build would
+  /// silently fall back to runtime discovery, which is confusing.
+  void _verifyStaticRunnerSetup() {
+    final runner = _rootDirectory
+        .childDirectory('ios')
+        .childDirectory('RunnerUITests')
+        .childFile('RunnerUITests.m');
+    if (!runner.existsSync()) {
+      // Missing target is surfaced by the regular xcodebuild step; nothing to
+      // guard here.
+      return;
+    }
+
+    final contents = runner.readAsStringSync();
+    const beginMacro = 'PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN';
+    const include = '#include "PatrolGeneratedTests.inc"';
+    if (contents.contains(beginMacro) && contents.contains(include)) {
+      return;
+    }
+
+    throwToolExit(
+      "Build-time test discovery is enabled, but ${runner.path} isn't set up "
+      'for it. Replace the PATROL_INTEGRATION_TEST_IOS_RUNNER(RunnerUITests) '
+      'macro with the static form:\n'
+      '\n'
+      '  PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN(RunnerUITests)\n'
+      '  #include "PatrolGeneratedTests.inc"\n'
+      '  PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_END\n'
+      '\n'
+      'See https://patrol.leancode.co/documentation/ci/build-time-test-discovery',
+    );
+  }
+
+  /// Maps requested Dart test [onlyTests] names to the generated XCTest
+  /// selectors (`test_<sanitized>_<index>`) using the build-time manifest.
+  /// Empty in → empty out (run the whole class). Used by `patrol test
+  /// --no-build --only`. Throws when the manifest is missing or no name matches.
+  List<String> _resolveOnlyTesting(List<String> onlyTests) {
+    if (onlyTests.isEmpty) {
+      return const [];
+    }
+    final manifest = TestManifest.loadFromBuild(_rootDirectory);
+    if (manifest == null) {
+      throwToolExit(
+        'No build-time test manifest found. Run `patrol build ios '
+        '--emit-test-manifest` (or set patrol.emit_test_manifest in pubspec) '
+        'before `patrol test --no-build`.',
+      );
+    }
+    final tests = manifest.tests;
+    final selectors = generateIosSelectors(tests);
+    final out = <String>[];
+    for (var i = 0; i < tests.length; i++) {
+      if (onlyTests.contains(tests[i].dartName)) {
+        out.add(selectors[i]);
+      }
+    }
+    if (out.isEmpty) {
+      throwToolExit(
+        'None of the requested --only test(s) were found in the manifest.\n'
+        'Available tests:\n${tests.map((t) => '  ${t.dartName}').join('\n')}',
+      );
+    }
+    return out;
+  }
+
   void _generateXcodeTests(String manifestPath) {
     final output = _rootDirectory
         .childDirectory('ios')
@@ -225,8 +296,10 @@ class IOSTestBackend {
     required bool showFlutterLogs,
     required bool hideTestSteps,
     required bool clearTestSteps,
+    List<String> onlyTests = const [],
     void Function(Entry entry)? onLogEntry,
   }) async {
+    final onlyTesting = _resolveOnlyTesting(onlyTests);
     await _disposeScope.run((scope) async {
       final patrolLogCommand = device.real
           ? ['idevicesyslog']
@@ -269,6 +342,7 @@ class IOSTestBackend {
                   sdkVersion: sdkVersion,
                 ),
                 resultBundlePath: reportPath,
+                onlyTesting: onlyTesting,
               ),
               runInShell: true,
               environment: {
