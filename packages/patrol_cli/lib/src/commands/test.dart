@@ -73,6 +73,7 @@ class TestCommand extends PatrolCommand {
     usesIOSOptions();
     usesVideoRecordingOptions();
     usesEmitTestManifestOption();
+    usesNoBuildOption();
 
     usesWeb();
   }
@@ -182,6 +183,30 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
     final device = devices.single;
     final isWeb = device.targetPlatform == TargetPlatform.web;
 
+    final emitTestManifest =
+        optionalBoolArg('emit-test-manifest') ?? config.emitTestManifest;
+    final noBuild = boolArg('no-build');
+    final onlyTests = stringsArg('only');
+
+    if (noBuild && !emitTestManifest) {
+      _logger.err(
+        '--no-build requires build-time test discovery. Enable '
+        '`patrol.emit_test_manifest: true` in pubspec.yaml (or pass '
+        '--emit-test-manifest when building) and run `patrol build` first.',
+      );
+      return 1;
+    }
+    if (onlyTests.isNotEmpty && !noBuild) {
+      _logger.err('--only can only be used together with --no-build.');
+      return 1;
+    }
+    if (noBuild &&
+        device.targetPlatform != TargetPlatform.android &&
+        device.targetPlatform != TargetPlatform.iOS) {
+      _logger.err('--no-build supports Android and iOS only.');
+      return 1;
+    }
+
     // Validate that flavors are not used with web platform
     if (isWeb && stringArg('flavor') != null) {
       _logger.err(
@@ -194,7 +219,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       testDirectory,
       web: isWeb,
     );
-    if (boolArg('generate-bundle')) {
+    if (boolArg('generate-bundle') && !noBuild) {
       _testBundler.createTestBundle(
         testDirectory,
         targets,
@@ -296,7 +321,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
       uninstall: uninstall,
-      emitTestManifest: boolArg('emit-test-manifest'),
+      emitTestManifest: emitTestManifest,
     );
 
     final iosOpts = IOSAppOptions(
@@ -310,7 +335,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       testServerPort: super.testServerPort,
       fullIsolation: boolArg('full-isolation'),
       clearIOSPermissions: boolArg('clear-permissions'),
-      emitTestManifest: boolArg('emit-test-manifest'),
+      emitTestManifest: emitTestManifest,
     );
 
     final macosOpts = MacOSAppOptions(
@@ -364,11 +389,15 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
     );
 
     // No need to build web app for testing. It's done in the execute method.
-    if (device.targetPlatform != TargetPlatform.web) {
+    // With --no-build we reuse the artifacts from a prior `patrol build`.
+    if (device.targetPlatform != TargetPlatform.web && !noBuild) {
       await _build(androidOpts, iosOpts, macosOpts, webOpts, device);
     }
 
-    await _preExecute(androidOpts, iosOpts, macosOpts, device, uninstall);
+    // Skip uninstall in --no-build mode: we must keep the already-installed app.
+    if (!noBuild) {
+      await _preExecute(androidOpts, iosOpts, macosOpts, device, uninstall);
+    }
 
     if (coverageEnabled) {
       unawaited(
@@ -406,6 +435,8 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       hideTestSteps: boolArg('hide-test-steps'),
       clearTestSteps: boolArg('clear-test-steps'),
       testDirectory: testDirectory,
+      noBuild: noBuild,
+      onlyTests: onlyTests,
     );
 
     return allPassed ? 0 : 1;
@@ -489,6 +520,8 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
     required bool hideTestSteps,
     required bool clearTestSteps,
     required String testDirectory,
+    bool noBuild = false,
+    List<String> onlyTests = const [],
   }) async {
     Future<void> Function() action;
     Future<void> Function()? finalizer;
@@ -502,17 +535,28 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
 
     switch (device.targetPlatform) {
       case TargetPlatform.android:
-        action = () => _androidTestBackend.execute(
-          android,
-          device,
-          showFlutterLogs: showFlutterLogs,
-          hideTestSteps: hideTestSteps,
-          flavor: flutterOpts.flavor,
-          clearTestSteps: clearTestSteps,
-          videoConfig: videoConfig,
-        );
+        action = () => noBuild
+            ? _androidTestBackend.executeWithoutBuilding(
+                android,
+                device,
+                showFlutterLogs: showFlutterLogs,
+                hideTestSteps: hideTestSteps,
+                flavor: flutterOpts.flavor,
+                clearTestSteps: clearTestSteps,
+                onlyTests: onlyTests,
+              )
+            : _androidTestBackend.execute(
+                android,
+                device,
+                showFlutterLogs: showFlutterLogs,
+                hideTestSteps: hideTestSteps,
+                flavor: flutterOpts.flavor,
+                clearTestSteps: clearTestSteps,
+                videoConfig: videoConfig,
+              );
         final package = android.packageName;
-        if (package != null && uninstall) {
+        // In --no-build we keep the app installed for further no-build runs.
+        if (package != null && uninstall && !noBuild) {
           finalizer = () => _androidTestBackend.uninstall(package, device);
         }
       case TargetPlatform.macOS:
@@ -525,6 +569,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
           hideTestSteps: hideTestSteps,
           clearTestSteps: clearTestSteps,
           videoConfig: videoConfig,
+          onlyTests: onlyTests,
         );
         final bundleId = ios.bundleId;
         if (bundleId != null && uninstall) {

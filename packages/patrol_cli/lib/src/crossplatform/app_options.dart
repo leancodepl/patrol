@@ -334,10 +334,16 @@ class IOSAppOptions {
 
   /// Translates these options into a proper `xcodebuild test-without-building`
   /// invocation.
+  ///
+  /// When [onlyTesting] is non-empty, one `-only-testing` selector is emitted per
+  /// entry (`RunnerUITests/RunnerUITests/<selector>`), restricting the run to
+  /// those specific generated tests; otherwise the whole `RunnerUITests` class
+  /// runs. Per-test selectors require the static codegen (build-time discovery).
   List<String> testWithoutBuildingInvocation(
     Device device, {
     required String xcTestRunPath,
     required String resultBundlePath,
+    List<String> onlyTesting = const [],
   }) {
     final destination = device.real
         ? 'platform=iOS,id=${device.id}'
@@ -346,7 +352,11 @@ class IOSAppOptions {
     final cmd = [
       ...['xcodebuild', 'test-without-building'],
       ...['-xctestrun', xcTestRunPath],
-      ...['-only-testing', 'RunnerUITests/RunnerUITests'],
+      if (onlyTesting.isEmpty)
+        ...['-only-testing', 'RunnerUITests/RunnerUITests']
+      else
+        for (final selector in onlyTesting)
+          ...['-only-testing', 'RunnerUITests/RunnerUITests/$selector'],
       ...['-destination', destination],
       ...['-destination-timeout', '1'],
       ...['-resultBundlePath', resultBundlePath],
