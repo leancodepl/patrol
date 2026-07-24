@@ -155,9 +155,26 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
      * Throws AssertionError if the test fails.
      */
     public RunDartTestResponse runDartTest(String name) {
-        final String TAG = "PatrolJUnitRunner.runDartTest(" + name + "): ";
-        
+        // Runtime-discovery path: the skip flag was recorded by listDartTests().
+        // Guard against a missing entry so a null Boolean can't NPE on unboxing.
         final Boolean skip = dartTestCaseSkipMap.get(name);
+        return runDartTest(name, Boolean.TRUE.equals(skip));
+    }
+
+    /**
+     * Requests execution of a Dart test and waits for it to finish.
+     * Throws AssertionError if the test fails.
+     *
+     * <p>
+     * This overload takes the [skip] flag explicitly, so it works without a
+     * prior {@link #listDartTests()} call. It's used by the statically generated
+     * test class produced by build-time test discovery
+     * (`patrol build android --emit-test-manifest`).
+     * </p>
+     */
+    public RunDartTestResponse runDartTest(String name, boolean skip) {
+        final String TAG = "PatrolJUnitRunner.runDartTest(" + name + "): ";
+
         if (skip) {
             Logger.INSTANCE.i(TAG + "Test skipped");
             assumeFalse(skip);

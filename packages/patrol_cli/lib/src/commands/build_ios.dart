@@ -52,6 +52,7 @@ class BuildIOSCommand extends PatrolCommand {
       'simulator',
       help: 'Build for simulator instead of real device.',
     );
+    usesEmitTestManifestOption();
   }
 
   final TestFinderFactory _testFinderFactory;
@@ -198,6 +199,8 @@ class BuildIOSCommand extends PatrolCommand {
       testServerPort: super.testServerPort,
       fullIsolation: boolArg('full-isolation'),
       clearIOSPermissions: boolArg('clear-permissions'),
+      emitTestManifest:
+          optionalBoolArg('emit-test-manifest') ?? config.emitTestManifest,
     );
 
     if (!iosOpts.simulator && iosOpts.fullIsolation) {

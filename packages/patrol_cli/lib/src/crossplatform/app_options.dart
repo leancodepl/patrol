@@ -51,6 +51,36 @@ class FlutterAppOptions {
 
     return cmd;
   }
+
+  /// Translates these options into a host `flutter test` invocation that runs
+  /// the bundle in build-time discovery mode and writes the test manifest to
+  /// [manifestOutputPath].
+  ///
+  /// The same `--dart-define`s as the real build are forwarded on purpose: a
+  /// test description can be built from a dart-define (e.g. a target env), so
+  /// discovery must see the exact same config or the manifest names would
+  /// diverge from what the on-device run registers.
+  @nonVirtual
+  List<String> toFlutterTestDiscoveryInvocation({
+    required String manifestOutputPath,
+  }) {
+    return [
+      ...[command.executable, ...command.arguments],
+      'test',
+      target,
+      '--suppress-analytics',
+      ...['--dart-define', 'PATROL_TEST_DISCOVERY=true'],
+      ...['--dart-define', 'PATROL_MANIFEST_OUTPUT=$manifestOutputPath'],
+      for (final dartDefine in dartDefines.entries) ...[
+        '--dart-define',
+        '${dartDefine.key}=${dartDefine.value}',
+      ],
+      for (final dartDefineFromFilePath in dartDefineFromFilePaths) ...[
+        '--dart-define-from-file',
+        dartDefineFromFilePath,
+      ],
+    ];
+  }
 }
 
 class AndroidAppOptions {
@@ -60,6 +90,7 @@ class AndroidAppOptions {
     required this.appServerPort,
     required this.testServerPort,
     required this.uninstall,
+    this.emitTestManifest = false,
   });
 
   final FlutterAppOptions flutter;
@@ -67,6 +98,11 @@ class AndroidAppOptions {
   final int appServerPort;
   final int testServerPort;
   final bool uninstall;
+
+  /// Whether to discover Dart tests at build time (host `flutter test`) and
+  /// generate static JUnit test methods, so each Dart test becomes a real,
+  /// individually-selectable native test. Experimental, opt-in.
+  final bool emitTestManifest;
 
   String get description => 'apk with entrypoint ${basename(flutter.target)}';
 
@@ -87,12 +123,19 @@ class AndroidAppOptions {
     );
   }
 
-  List<String> toGradleConnectedTestInvocation({required bool isWindows}) {
+  List<String> toGradleConnectedTestInvocation({
+    required bool isWindows,
+    String? onlyTestClass,
+  }) {
     // for example: connectedDevDebugAndroidTest, connectedReleaseAndroidTest
     return _toGradleInvocation(
       isWindows: isWindows,
       task: 'connected$_effectiveFlavor${_buildMode}AndroidTest',
       noUninstallAfterTests: !uninstall,
+      // Restrict the run to the generated static class (the Android analog of
+      // iOS `-only-testing`). This also stops the parameterized host class from
+      // performing its runtime discovery launch.
+      onlyTestClass: onlyTestClass,
     );
   }
 
@@ -125,6 +168,7 @@ class AndroidAppOptions {
     required bool isWindows,
     required String task,
     bool noUninstallAfterTests = false,
+    String? onlyTestClass,
   }) {
     final List<String> cmd;
     if (isWindows) {
@@ -180,6 +224,13 @@ class AndroidAppOptions {
       ..add('-Papp-server-port=$appServerPort')
       ..add('-Ptest-server-port=$testServerPort');
 
+    // Run only the generated static test class, if requested.
+    if (onlyTestClass != null) {
+      cmd.add(
+        '-Pandroid.testInstrumentationRunnerArguments.class=$onlyTestClass',
+      );
+    }
+
     return cmd;
   }
 }
@@ -196,6 +247,7 @@ class IOSAppOptions {
     required this.testServerPort,
     this.fullIsolation = false,
     this.clearIOSPermissions = false,
+    this.emitTestManifest = false,
   });
 
   final FlutterAppOptions flutter;
@@ -208,6 +260,11 @@ class IOSAppOptions {
   final int testServerPort;
   final bool fullIsolation;
   final bool clearIOSPermissions;
+
+  /// Whether to discover Dart tests at build time (host `flutter test`) and
+  /// embed a manifest into the test bundle, so the native runner can skip the
+  /// runtime discovery launch. Experimental, opt-in.
+  final bool emitTestManifest;
 
   String get description {
     final platform = simulator ? 'simulator' : 'device';
@@ -277,10 +334,16 @@ class IOSAppOptions {
 
   /// Translates these options into a proper `xcodebuild test-without-building`
   /// invocation.
+  ///
+  /// When [onlyTesting] is non-empty, one `-only-testing` selector is emitted per
+  /// entry (`RunnerUITests/RunnerUITests/<selector>`), restricting the run to
+  /// those specific generated tests; otherwise the whole `RunnerUITests` class
+  /// runs. Per-test selectors require the static codegen (build-time discovery).
   List<String> testWithoutBuildingInvocation(
     Device device, {
     required String xcTestRunPath,
     required String resultBundlePath,
+    List<String> onlyTesting = const [],
   }) {
     final destination = device.real
         ? 'platform=iOS,id=${device.id}'
@@ -289,7 +352,11 @@ class IOSAppOptions {
     final cmd = [
       ...['xcodebuild', 'test-without-building'],
       ...['-xctestrun', xcTestRunPath],
-      ...['-only-testing', 'RunnerUITests/RunnerUITests'],
+      if (onlyTesting.isEmpty)
+        ...['-only-testing', 'RunnerUITests/RunnerUITests']
+      else
+        for (final selector in onlyTesting)
+          ...['-only-testing', 'RunnerUITests/RunnerUITests/$selector'],
       ...['-destination', destination],
       ...['-destination-timeout', '1'],
       ...['-resultBundlePath', resultBundlePath],
