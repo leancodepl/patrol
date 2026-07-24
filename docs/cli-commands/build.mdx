@@ -77,6 +77,24 @@ patrol build ios --full-isolation
 
 The `--full-isolation` flag enables full isolation between test runs on iOS Simulator.
 
+### Build-time test discovery
+
+With the experimental `--emit-test-manifest` flag (or `patrol.emit_test_manifest:
+true` in `pubspec.yaml`), `patrol build` discovers your Dart tests at build time
+and generates a static native test method for each one. This makes every test
+individually addressable, which enables per-test sharding and
+[`patrol test --no-build`](/cli-commands/test#running-without-rebuilding).
+
+```
+patrol build android --emit-test-manifest
+patrol build ios --emit-test-manifest
+```
+
+See [Build-time test discovery][discovery] for setup (including the required iOS
+`RunnerUITests.m` change) and trade-offs.
+
+[discovery]: /documentation/ci/build-time-test-discovery
+
 ### Under the hood
 
 The `patrol build` command walks through hierarchy of the `patrol_test`
