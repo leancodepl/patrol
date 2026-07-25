@@ -12,6 +12,7 @@ import 'package:patrol_cli/src/coverage/bind_unused_port.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/crossplatform/flutter_tool.dart';
 import 'package:patrol_cli/src/devices.dart';
+import 'package:patrol_cli/src/web/web_devtools_server.dart';
 import 'package:patrol_log/patrol_log.dart';
 import 'package:patrol_log/patrol_log_reader.dart';
 import 'package:process/process.dart';
@@ -67,10 +68,13 @@ class WebTestBackend {
   /// as unexpected exits.
   bool _quitting = false;
 
-  /// Set for the duration of [develop] so the stdout handler can act on the
-  /// DevTools URL `flutter run` prints.
+  /// Set for the duration of [develop] so the DevTools URL can be opened.
   FlutterTool? _flutterTool;
   bool _openDevtools = false;
+
+  /// The app's VM service URI, scraped from `flutter run`'s output. DevTools
+  /// needs it to connect to the app.
+  String? _debugServiceUri;
 
   Future<void> build(WebAppOptions options) async {
     _logger.detail('Building web app for testing...');
@@ -237,6 +241,10 @@ class WebTestBackend {
         onLogEntry: onLogEntry,
       );
 
+      if (openDevtools) {
+        await _serveDevtools(options);
+      }
+
       // The session lives as long as `flutter run` does. Quitting completes it
       // through _stopFlutterProcess, a crash through the exitCode handler.
       await exited.future;
@@ -248,6 +256,44 @@ class WebTestBackend {
       if (modes != null) {
         flutterTool.revertInteractiveMode(modes);
       }
+    }
+  }
+
+  /// Serves DevTools so the Patrol extension is actually reachable on web.
+  ///
+  /// The DevTools instance `flutter run` serves can't find the extension for a
+  /// web app -- see [WebDevtoolsServer] for why -- so we stand up our own and
+  /// point it at the app's VM service.
+  Future<void> _serveDevtools(WebAppOptions options) async {
+    final debugServiceUri = _debugServiceUri;
+    if (debugServiceUri == null) {
+      _logger.detail('No VM service URI yet; skipping the DevTools server');
+      return;
+    }
+
+    final base =
+        await WebDevtoolsServer(
+          processManager: _processManager,
+          logger: _logger,
+          disposeScope: _disposeScope,
+        ).serve(
+          flutterCommand: options.flutter.command,
+          projectRoot: Directory.current.path,
+        );
+
+    if (base == null) {
+      _logger.warn(
+        'Could not serve the Patrol DevTools extension. Open DevTools from your '
+        'IDE instead -- on web the extension is only discoverable when the '
+        'project is registered as a workspace root.',
+      );
+      return;
+    }
+
+    final url = '$base/patrol_ext?uri=$debugServiceUri';
+    _logger.success('Patrol DevTools extension is available at $url');
+    if (_openDevtools) {
+      _flutterTool?.openDevtoolsPage(url).ignore();
     }
   }
 
@@ -369,16 +415,11 @@ class WebTestBackend {
       return;
     }
 
-    if (line.startsWith('The Flutter DevTools debugger and profiler')) {
-      final url = getDevtoolsUrl(line);
-      _logger.success('Patrol DevTools extension is available at $url');
-      if (_openDevtools) {
-        _flutterTool?.openDevtoolsPage(url).ignore();
-      }
-      return;
-    }
-
     if (line.startsWith('Debug service listening on')) {
+      final match = RegExp(r'ws://\S+').firstMatch(line);
+      if (match != null) {
+        _debugServiceUri = match.group(0);
+      }
       final completer = _debugServiceReady;
       if (completer != null && !completer.isCompleted) {
         completer.complete();
