@@ -119,6 +119,8 @@ void patrolTest(
       description,
       skip: skip,
       timeout: timeout,
+      semanticsEnabled: semanticsEnabled,
+      variant: variant,
       tags: tags,
       (_) async {},
     );
