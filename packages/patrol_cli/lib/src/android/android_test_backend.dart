@@ -71,6 +71,13 @@ class AndroidTestBackend {
       // (and shows up under its own name in reports, not under the parameterized
       // `runDartTest[...]` wrapper). Failures are non-fatal: the build falls
       // back to the runtime-discovery host class.
+      // Always start from a clean slate: remove any previously generated class
+      // so a stale one can't linger after a failed discovery or an opt-out
+      // (which would double-run tests alongside the runtime host class).
+      final codegen = AndroidTestCodegen(_rootDirectory.fileSystem);
+      final androidDir = _rootDirectory.childDirectory('android');
+      codegen.deleteGenerated(androidDir);
+
       if (options.emitTestManifest) {
         final manifestPath = await TestManifestGenerator(
           processManager: _processManager,
@@ -78,9 +85,9 @@ class AndroidTestBackend {
           logger: _logger,
         ).generate(options.flutter, scope);
         if (manifestPath != null) {
-          final result = AndroidTestCodegen(_rootDirectory.fileSystem).generate(
+          final result = codegen.generate(
             manifestPath: manifestPath,
-            androidDir: _rootDirectory.childDirectory('android'),
+            androidDir: androidDir,
           );
           if (result != null) {
             _logger.info(

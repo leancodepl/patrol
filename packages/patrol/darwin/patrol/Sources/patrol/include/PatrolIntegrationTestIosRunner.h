@@ -357,9 +357,19 @@
       [app resetAuthorizationStatusForResource:XCUIProtectedResourceBluetooth];                                 \
       [app resetAuthorizationStatusForResource:XCUIProtectedResourceMicrophone];                                \
       [app resetAuthorizationStatusForResource:XCUIProtectedResourceCamera];                                    \
+      [app resetAuthorizationStatusForResource:XCUIProtectedResourceHomeKit];                                   \
+      [app resetAuthorizationStatusForResource:XCUIProtectedResourceMediaLibrary];                              \
+      [app resetAuthorizationStatusForResource:XCUIProtectedResourceKeyboardNetwork];                           \
+    }                                                                                                           \
+    if (@available(iOS 14.0, *)) {                                                                              \
+      [app resetAuthorizationStatusForResource:XCUIProtectedResourceHealth];                                    \
     }                                                                                                           \
     if (@available(iOS 15.0, *)) {                                                                              \
       [app resetAuthorizationStatusForResource:XCUIProtectedResourceUserTracking];                              \
+      [app resetAuthorizationStatusForResource:XCUIProtectedResourceFocus];                                     \
+    }                                                                                                           \
+    if (@available(iOS 15.4, *)) {                                                                              \
+      [app resetAuthorizationStatusForResource:XCUIProtectedResourceLocalNetwork];                              \
     }                                                                                                           \
   }                                                                                                             \
                                                                                                                 \

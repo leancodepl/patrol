@@ -96,6 +96,27 @@ class AndroidTestCodegen {
     return '${host.packageName}.$className';
   }
 
+  /// Deletes a previously generated class, if present. Returns `true` when a
+  /// file was removed. Used to avoid a stale generated class lingering after a
+  /// failed discovery or when the user opts out of build-time discovery (which
+  /// would otherwise make the runtime host class and the stale generated class
+  /// both run, double-running every test).
+  bool deleteGenerated(
+    Directory androidDir, {
+    String className = 'PatrolGeneratedTests',
+  }) {
+    final host = _locateHostTest(androidDir);
+    if (host == null) {
+      return false;
+    }
+    final generated = _fs.file(join(host.directory.path, '$className.java'));
+    if (!generated.existsSync()) {
+      return false;
+    }
+    generated.deleteSync();
+    return true;
+  }
+
   /// Locates the host instrumentation test (the file that references
   /// `PatrolJUnitRunner`) under `android/app/src/androidTest`, returning its
   /// directory and declared package.
