@@ -228,7 +228,7 @@ class FlutterTool {
               );
 
               if (openBrowser) {
-                unawaited(_openDevtoolsPage(_devtoolsUrl));
+                unawaited(openDevtoolsPage(_devtoolsUrl));
               }
             }
 
@@ -356,7 +356,9 @@ class FlutterTool {
     _logger.detail('Interactive shell mode disabled.');
   }
 
-  Future<void> _openDevtoolsPage(String url) async {
+  /// Opens [url] in the system browser. Public so that backends which drive
+  /// `flutter run` themselves (e.g. web develop) can reuse it.
+  Future<void> openDevtoolsPage(String url) async {
     io.Process? process;
     switch (_platform.operatingSystem) {
       case Platform.macOS:
@@ -371,7 +373,7 @@ class FlutterTool {
   }
 }
 
-@visibleForTesting
+/// Rewrites the DevTools URL Flutter prints into the Patrol extension page.
 String getDevtoolsUrl(String line) {
   final rawUrl = getObservationUrl(line);
   final uri = Uri.parse(rawUrl);

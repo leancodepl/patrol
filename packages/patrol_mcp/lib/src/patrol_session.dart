@@ -307,7 +307,8 @@ final class PatrolSession {
       final selected = autoSelectDevice(attached);
       if (selected == null) {
         return 'No Android or iOS device detected. Start an emulator or '
-            'simulator (or connect a device) and try again.';
+            'simulator (or connect a device) and try again, or pass '
+            'device: "chrome" to run in a browser.';
       }
       flagParts.addAll(['--device', selected.id]);
       if (supportedDevices(attached).length > 1) {

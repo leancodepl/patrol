@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Support web develop sessions: the `devices` tool now lists browsers (e.g. `chrome`) and `run` accepts them as `device`. Web is still never auto-selected -- a browser is rarely what "run the test" means when a phone is attached -- so pass it explicitly. `screenshot` already worked on web via CDP; `native-tree` remains Android/iOS only.
 - Drop the web-specific session handling that existed only because `patrol develop` on web restarted cold: web sessions now stay alive across hot restarts like mobile ones, so there are no stale completion callbacks to suppress and no orphaned Flutter/Chrome process to force-kill. Requires the first `patrol_cli` release after 4.6.1.
 - Simplified setup: the `run-patrol` wrapper script is no longer needed — point your MCP config directly at `dart run patrol_mcp`. FVM-pinned projects run develop sessions with the pinned Flutter automatically. See the README for the updated setup.
 - Run develop sessions from `PROJECT_ROOT`, so `run` works when the server's working directory differs from the project (e.g. an app in a subdirectory).
