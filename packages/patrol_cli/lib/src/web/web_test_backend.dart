@@ -67,6 +67,11 @@ class WebTestBackend {
   /// as unexpected exits.
   bool _quitting = false;
 
+  /// Set for the duration of [develop] so the stdout handler can act on the
+  /// DevTools URL `flutter run` prints.
+  FlutterTool? _flutterTool;
+  bool _openDevtools = false;
+
   Future<void> build(WebAppOptions options) async {
     _logger.detail('Building web app for testing...');
 
@@ -163,8 +168,12 @@ class WebTestBackend {
     bool clearTestSteps = false,
     required Stream<List<int>> stdin,
     void Function(Entry entry)? onLogEntry,
+    bool openDevtools = false,
   }) async {
     _logger.detail('Starting web develop execution...');
+
+    _flutterTool = flutterTool;
+    _openDevtools = openDevtools;
 
     StdinModes? previousStdinModes;
     if (io.stdin.hasTerminal) {
@@ -356,6 +365,15 @@ class WebTestBackend {
         _logger.success(
           'Hot Restart: attached to the app\n$_developKeyCommands',
         );
+      }
+      return;
+    }
+
+    if (line.startsWith('The Flutter DevTools debugger and profiler')) {
+      final url = getDevtoolsUrl(line);
+      _logger.success('Patrol DevTools extension is available at $url');
+      if (_openDevtools) {
+        _flutterTool?.openDevtoolsPage(url).ignore();
       }
       return;
     }
