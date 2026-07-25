@@ -104,6 +104,15 @@ class IOSTestBackend {
       // `flutter test` in discovery mode that writes a manifest of the Dart
       // test tree. Failures are non-fatal: the native side falls back to
       // runtime discovery when the manifest is absent.
+      // Always start from a clean slate: drop any previously generated .inc so a
+      // stale one can't be #included and silently run old tests. On discovery
+      // failure the file stays absent, so the static #include fails loudly
+      // instead of compiling stale tests.
+      final generatedInc = _generatedIncFile;
+      if (generatedInc.existsSync()) {
+        generatedInc.deleteSync();
+      }
+
       if (options.emitTestManifest) {
         _verifyStaticRunnerSetup();
         final manifestPath = await TestManifestGenerator(
@@ -272,12 +281,14 @@ class IOSTestBackend {
     return out;
   }
 
-  void _generateXcodeTests(String manifestPath) {
-    final output = _rootDirectory
-        .childDirectory('ios')
-        .childDirectory('RunnerUITests')
-        .childFile('PatrolGeneratedTests.inc');
+  /// The generated static-XCTest include file, `#include`d by RunnerUITests.m.
+  File get _generatedIncFile => _rootDirectory
+      .childDirectory('ios')
+      .childDirectory('RunnerUITests')
+      .childFile('PatrolGeneratedTests.inc');
 
+  void _generateXcodeTests(String manifestPath) {
+    final output = _generatedIncFile;
     final count = XcodeTestCodegen(_fs).generate(
       manifestPath: manifestPath,
       outputPath: output.path,
