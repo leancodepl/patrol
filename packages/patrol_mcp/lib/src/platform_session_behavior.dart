@@ -47,8 +47,7 @@ class MobilePlatformBehavior implements PlatformSessionBehavior {
   ExitInterpretation interpretTestCompletion(
     TestCompletionResult result, {
     required bool isHotRestarting,
-  }) =>
-      ExitInterpretation.failure;
+  }) => ExitInterpretation.failure;
 
   @override
   bool get suppressesStaleCallbacksOnRestart => false;

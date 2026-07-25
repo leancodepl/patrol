@@ -629,9 +629,7 @@ final class PatrolSession {
       } catch (e) {
         _isHotRestarting = false;
         logger.warning('Failed to send hot restart: $e');
-        throw StateError(
-          'Failed to send hot restart to patrol session: $e',
-        );
+        throw StateError('Failed to send hot restart to patrol session: $e');
       }
 
       _outputs.clear();

@@ -267,8 +267,9 @@ Future<int> main(List<String> args) async {
                   isError: true,
                 );
               }
-              final result =
-                  await patrolSession.sendCommand(PatrolCommand.quit);
+              final result = await patrolSession.sendCommand(
+                PatrolCommand.quit,
+              );
               return CallToolResult(content: [TextContent(text: result)]);
             },
           )
@@ -302,8 +303,7 @@ Future<int> main(List<String> args) async {
             callback: (args, extra) {
               return ScreenshotService.handleScreenshotRequest(
                 patrolSession.device,
-                webDebuggerPort:
-                    patrolSession.developService?.webDebuggerPort,
+                webDebuggerPort: patrolSession.developService?.webDebuggerPort,
               );
             },
           )
