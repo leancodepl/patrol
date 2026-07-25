@@ -293,10 +293,9 @@ class IOSTestBackend {
 
   void _generateXcodeTests(String manifestPath) {
     final output = _generatedIncFile;
-    final count = XcodeTestCodegen(_fs).generate(
-      manifestPath: manifestPath,
-      outputPath: output.path,
-    );
+    final count = XcodeTestCodegen(
+      _fs,
+    ).generate(manifestPath: manifestPath, outputPath: output.path);
     _logger.info('Generated $count static XCTest method(s) → ${output.path}');
   }
 

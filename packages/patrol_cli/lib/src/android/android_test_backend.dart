@@ -583,11 +583,12 @@ class AndroidTestBackend {
       var failed = false;
       final process =
           await _adb.instrument(
-            packageName: instrumentPackage,
-            intentClass: instrumentRunner,
-            device: device.id,
-            arguments: {'class': classArg},
-          )..disposedBy(scope);
+              packageName: instrumentPackage,
+              intentClass: instrumentRunner,
+              device: device.id,
+              arguments: {'class': classArg},
+            )
+            ..disposedBy(scope);
       process
           .listenStdOut((l) {
             if (l.contains('FAILURES!!!') ||

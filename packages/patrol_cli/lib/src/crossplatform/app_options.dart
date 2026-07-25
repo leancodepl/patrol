@@ -352,11 +352,14 @@ class IOSAppOptions {
     final cmd = [
       ...['xcodebuild', 'test-without-building'],
       ...['-xctestrun', xcTestRunPath],
-      if (onlyTesting.isEmpty)
-        ...['-only-testing', 'RunnerUITests/RunnerUITests']
-      else
-        for (final selector in onlyTesting)
-          ...['-only-testing', 'RunnerUITests/RunnerUITests/$selector'],
+      if (onlyTesting.isEmpty) ...[
+        '-only-testing',
+        'RunnerUITests/RunnerUITests',
+      ] else
+        for (final selector in onlyTesting) ...[
+          '-only-testing',
+          'RunnerUITests/RunnerUITests/$selector',
+        ],
       ...['-destination', destination],
       ...['-destination-timeout', '1'],
       ...['-resultBundlePath', resultBundlePath],

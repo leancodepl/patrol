@@ -45,10 +45,11 @@ void main() {
     final tests = TestManifest.parse(manifest).tests;
 
     expect(tests.map((t) => t.skip).toList(), [false, true, false]);
-    expect(
-      tests.map((t) => t.topLevelGroup).toList(),
-      ['example_test', 'example_test', 'permissions.location_test'],
-    );
+    expect(tests.map((t) => t.topLevelGroup).toList(), [
+      'example_test',
+      'example_test',
+      'permissions.location_test',
+    ]);
   });
 
   test('deep tests keep the first-level group as their file', () {
@@ -101,17 +102,20 @@ void main() {
       expect(selectors.toSet(), hasLength(selectors.length));
     });
 
-    test('Android method names prefer clean names, disambiguate on collision', () {
-      final tests = TestManifest.parse(manifest).tests;
-      final methods = generateAndroidMethodNames(tests);
+    test(
+      'Android method names prefer clean names, disambiguate on collision',
+      () {
+        final tests = TestManifest.parse(manifest).tests;
+        final methods = generateAndroidMethodNames(tests);
 
-      expect(methods, hasLength(tests.length));
-      // First occurrence keeps the clean name; the collision gets the index.
-      expect(methods, [
-        'example_test_tap_once_shows_one',
-        'example_test_tap_once_shows_one_1',
-      ]);
-      expect(methods.toSet(), hasLength(methods.length));
-    });
+        expect(methods, hasLength(tests.length));
+        // First occurrence keeps the clean name; the collision gets the index.
+        expect(methods, [
+          'example_test_tap_once_shows_one',
+          'example_test_tap_once_shows_one_1',
+        ]);
+        expect(methods.toSet(), hasLength(methods.length));
+      },
+    );
   });
 }
