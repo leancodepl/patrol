@@ -100,6 +100,45 @@ public class MainActivityTest {}
     );
   });
 
+  test('uses a non-default activity from the host and replicates its import',
+      () {
+    final customFs = MemoryFileSystem.test();
+    customFs.file('/manifest.json')
+      ..createSync(recursive: true)
+      ..writeAsStringSync(manifest);
+    customFs
+        .file(
+          '/android/app/src/androidTest/java/pl/leancode/patrol/e2e_app/MainActivityTest.java',
+        )
+      ..createSync(recursive: true)
+      ..writeAsStringSync('''
+package pl.leancode.patrol.e2e_app;
+import androidx.test.core.app.ActivityScenario;
+import io.flutter.embedding.android.FlutterActivity;
+import pl.leancode.patrol.PatrolJUnitRunner;
+public class MainActivityTest {
+  public void setUp() {
+    instrumentation.setUp(FlutterActivity.class);
+  }
+}
+''');
+
+    final result = AndroidTestCodegen(customFs).generate(
+      manifestPath: '/manifest.json',
+      androidDir: customFs.directory('/android'),
+    );
+
+    final source = customFs.file(result!.outputPath).readAsStringSync();
+    // The generated class references the host's activity, not the default.
+    expect(source, contains('instrumentation.setUp(FlutterActivity.class);'));
+    expect(source, isNot(contains('setUp(MainActivity.class)')));
+    // And replicates the host's import so it compiles.
+    expect(
+      source,
+      contains('import io.flutter.embedding.android.FlutterActivity;'),
+    );
+  });
+
   test('returns null when no androidTest host class is present', () {
     final bare = MemoryFileSystem.test();
     bare.file('/manifest.json')

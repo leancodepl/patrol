@@ -67,7 +67,13 @@ class AndroidTestCodegen {
       _fs.file(manifestPath).readAsStringSync(),
     ).tests;
 
-    final source = _render(host.packageName, className, tests);
+    final source = _render(
+      host.packageName,
+      className,
+      tests,
+      activityClass: host.activityClass,
+      activityImport: host.activityImport,
+    );
     final output = _fs.file(join(host.directory.path, '$className.java'))
       ..createSync(recursive: true)
       ..writeAsStringSync(source);
@@ -145,7 +151,13 @@ class AndroidTestCodegen {
       if (packageName == null) {
         continue;
       }
-      return _HostTest(directory: entity.parent, packageName: packageName);
+      final activity = _parseActivity(content);
+      return _HostTest(
+        directory: entity.parent,
+        packageName: packageName,
+        activityClass: activity.className,
+        activityImport: activity.import,
+      );
     }
     return null;
   }
@@ -158,11 +170,43 @@ class AndroidTestCodegen {
     return match?.group(1);
   }
 
+  /// Parses the activity class the host passes to `instrumentation.setUp(...)`.
+  ///
+  /// Patrol supports host tests that launch a non-default activity (e.g.
+  /// `FlutterActivity.class` instead of `MainActivity.class`), so the generated
+  /// class must mirror whatever the host uses or it won't compile. When the host
+  /// references the class by its simple (unqualified) name, its matching
+  /// `import` is captured too so the generated file can replicate it. Falls back
+  /// to `MainActivity` (no import) when nothing matches.
+  _HostActivity _parseActivity(String content) {
+    final match = RegExp(
+      r'setUp\(\s*([A-Za-z_][\w.]*)\.class',
+    ).firstMatch(content);
+    final token = match?.group(1) ?? 'MainActivity';
+
+    // A fully-qualified reference (e.g. `com.example.FooActivity`) needs no
+    // import; emit it verbatim.
+    if (token.contains('.')) {
+      return _HostActivity(className: token, import: null);
+    }
+
+    // Unqualified: replicate the host's import for that class, if any. When the
+    // class lives in the host's own package it has no import and none is needed
+    // (the generated class shares that package).
+    final importMatch = RegExp(
+      '^\\s*import\\s+([\\w.]+\\.$token)\\s*;',
+      multiLine: true,
+    ).firstMatch(content);
+    return _HostActivity(className: token, import: importMatch?.group(1));
+  }
+
   String _render(
     String packageName,
     String className,
-    List<DiscoveredTest> tests,
-  ) {
+    List<DiscoveredTest> tests, {
+    String activityClass = 'MainActivity',
+    String? activityImport,
+  }) {
     final methodNames = generateAndroidMethodNames(tests);
     final buffer = StringBuffer()
       ..writeln('// GENERATED CODE - DO NOT MODIFY BY HAND')
@@ -181,7 +225,11 @@ class AndroidTestCodegen {
       ..writeln('import org.junit.BeforeClass;')
       ..writeln('import org.junit.Test;')
       ..writeln('import org.junit.runner.RunWith;')
-      ..writeln('import pl.leancode.patrol.PatrolJUnitRunner;')
+      ..writeln('import pl.leancode.patrol.PatrolJUnitRunner;');
+    if (activityImport != null) {
+      buffer.writeln('import $activityImport;');
+    }
+    buffer
       ..writeln()
       ..writeln('@RunWith(AndroidJUnit4.class)')
       ..writeln('public class $className {')
@@ -189,7 +237,7 @@ class AndroidTestCodegen {
       ..writeln('    public static void setUpAll() {')
       ..writeln('        PatrolJUnitRunner instrumentation = '
           '(PatrolJUnitRunner) InstrumentationRegistry.getInstrumentation();')
-      ..writeln('        instrumentation.setUp(MainActivity.class);')
+      ..writeln('        instrumentation.setUp($activityClass.class);')
       ..writeln('        instrumentation.waitForPatrolAppService();')
       ..writeln('    }')
       ..writeln();
@@ -229,7 +277,26 @@ class AndroidTestCodegen {
 }
 
 class _HostTest {
-  _HostTest({required this.directory, required this.packageName});
+  _HostTest({
+    required this.directory,
+    required this.packageName,
+    required this.activityClass,
+    required this.activityImport,
+  });
   final Directory directory;
   final String packageName;
+
+  /// The activity token the host passes to `instrumentation.setUp(...)`, e.g.
+  /// `MainActivity` or a fully-qualified `com.example.FooActivity`.
+  final String activityClass;
+
+  /// The `import` to replicate for [activityClass], or `null` when none is
+  /// needed (fully-qualified reference, or same-package class).
+  final String? activityImport;
+}
+
+class _HostActivity {
+  _HostActivity({required this.className, required this.import});
+  final String className;
+  final String? import;
 }
