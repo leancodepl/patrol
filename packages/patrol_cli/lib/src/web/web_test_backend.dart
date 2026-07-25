@@ -5,8 +5,10 @@ import 'dart:io';
 
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:package_config/package_config.dart';
+import 'package:path/path.dart' show basename;
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
+import 'package:patrol_cli/src/coverage/bind_unused_port.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/crossplatform/flutter_tool.dart';
 import 'package:patrol_cli/src/devices.dart';
@@ -15,6 +17,16 @@ import 'package:patrol_log/patrol_log_reader.dart';
 import 'package:process/process.dart';
 
 const _kDefaultWebServerTimeoutSeconds = 120;
+
+/// Strips the `[  +12 ms]` prefix that `flutter run --verbose` puts on every
+/// line. Harmless on non-verbose output.
+final _flutterLogPrefix = RegExp(r'^\[[\s\d+ms]*\]\s?');
+
+const _developKeyCommands =
+    'Patrol develop key commands:\n'
+    'r Hot restart\n'
+    'h Print this help message\n'
+    'q Quit (terminate the process and application on the device)';
 
 class WebTestBackend {
   WebTestBackend({
@@ -40,8 +52,17 @@ class WebTestBackend {
   Process? get flutterProcess => _flutterProcess;
   Process? _flutterProcess;
 
-  /// The Playwright develop process, tracked so it can be killed on restart.
+  /// The Playwright develop process, kept alive for the whole develop session.
   Process? _playwrightDevelopProcess;
+
+  /// True once `flutter run` reported that it is accepting key commands, i.e.
+  /// once it is safe to ask it for a hot restart.
+  bool _hotRestartActive = false;
+
+  /// True between asking `flutter run` for a hot restart and it reporting the
+  /// outcome. `flutter run` silently ignores key commands while it is busy, so
+  /// without this the user would press "r" and see nothing happen.
+  bool _restartInFlight = false;
 
   /// Set when the user presses 'q' so that subprocess kills are not surfaced
   /// as unexpected exits.
@@ -121,6 +142,19 @@ class WebTestBackend {
     }
   }
 
+  /// Runs a develop session on web.
+  ///
+  /// A single `flutter run -d chrome` and a single Playwright driver stay alive
+  /// for the whole session, and "r" performs a real Flutter hot restart instead
+  /// of relaunching them. A web hot restart re-runs `main()` in the same page
+  /// without navigating, so `window.__patrol__*` and the bindings Playwright
+  /// exposed on the browser context survive it — see `initAppService()` in
+  /// package:patrol, which short-circuits when Playwright has already
+  /// initialised the page.
+  ///
+  /// Requires the fix from https://github.com/flutter/flutter/pull/183838,
+  /// without which hot restart silently serves stale code for entrypoints
+  /// outside `lib/` (the develop test bundle is one).
   Future<void> develop(
     FlutterTool flutterTool,
     WebAppOptions options,
@@ -138,7 +172,20 @@ class WebTestBackend {
       previousStdinModes = flutterTool.enableInteractiveMode();
     }
 
-    var shouldRestart = false;
+    // Pick the Chrome debugging port up front instead of scraping it out of
+    // `flutter run --verbose` output. It's then known before Chrome even
+    // launches, so consumers (e.g. MCP screenshots) can use it right away.
+    final debuggerPort = await bindUnusedPort<int>((port) => port);
+    _debuggerPort = '$debuggerPort';
+
+    final flutterProcess = await _startFlutterWebServer(
+      options,
+      develop: true,
+      browserDebugPort: debuggerPort,
+    );
+    _flutterProcess = flutterProcess;
+
+    final exited = Completer<void>();
 
     final stdinSubscription = stdin.listen((event) async {
       if (event.isEmpty) {
@@ -148,18 +195,10 @@ class WebTestBackend {
       _logger.detail('Flutter stdin: $char');
 
       if (char == 'r' || char == 'R') {
-        _logger.info('Restarting app...');
-        shouldRestart = true;
-        _killRunningProcesses();
+        await _requestHotRestart(options.flutter.target);
       } else if (char == 'h' || char == 'H') {
-        _logger.success(
-          'Patrol develop key commands:\n'
-          'r Restart app (kill and relaunch)\n'
-          'h Print this help message\n'
-          'q Quit (terminate the process and application on the device)',
-        );
+        _logger.success(_developKeyCommands);
       } else if (char == 'q' || char == 'Q') {
-        shouldRestart = false;
         _quitting = true;
         final modes = previousStdinModes;
         if (modes != null) {
@@ -167,52 +206,36 @@ class WebTestBackend {
           previousStdinModes = null;
         }
         _logger.success('Quitting process...');
-        _killRunningProcesses();
+        _playwrightDevelopProcess?.kill();
         await _stopFlutterProcess();
       }
     });
 
     try {
-      do {
-        shouldRestart = false;
+      await _watchFlutterRun(flutterProcess, exited);
 
-        final flutterProcess = await _startFlutterWebServer(
-          options,
-          develop: true,
-        );
-        _flutterProcess = flutterProcess;
+      await _waitForWebDebugger(
+        flutterProcess,
+        debuggerPort,
+        serverTimeout: options.serverTimeout,
+      );
 
-        try {
-          final port = await _waitForWebDebugger(
-            flutterProcess,
-            serverTimeout: options.serverTimeout,
-          );
-          _debuggerPort = port;
+      await _runPlaywrightDevelop(
+        '$debuggerPort',
+        options,
+        showFlutterLogs: showFlutterLogs,
+        hideTestSteps: hideTestSteps,
+        clearTestSteps: clearTestSteps,
+        onLogEntry: onLogEntry,
+      );
 
-          // Run Playwright tests
-          await _runPlaywrightDevelop(
-            port,
-            options,
-            showFlutterLogs: showFlutterLogs,
-            hideTestSteps: hideTestSteps,
-            clearTestSteps: clearTestSteps,
-            onLogEntry: onLogEntry,
-          );
-        } catch (err) {
-          if (!shouldRestart) {
-            rethrow;
-          }
-          _logger.detail('Process terminated for restart: $err');
-        } finally {
-          await _stopFlutterProcess();
-        }
-
-        if (shouldRestart) {
-          _logger.info('Restarting...');
-        }
-      } while (shouldRestart);
+      // The session lives as long as `flutter run` does. Quitting completes it
+      // through _stopFlutterProcess, a crash through the exitCode handler.
+      await exited.future;
     } finally {
       await stdinSubscription.cancel();
+      _playwrightDevelopProcess?.kill();
+      await _stopFlutterProcess();
       final modes = previousStdinModes;
       if (modes != null) {
         flutterTool.revertInteractiveMode(modes);
@@ -220,11 +243,28 @@ class WebTestBackend {
     }
   }
 
-  void _killRunningProcesses() {
-    _playwrightDevelopProcess?.kill();
-    // Send 'q' to flutter stdin so it shuts down Chrome gracefully.
-    // A hard kill (SIGTERM) leaves the Chrome child process orphaned on macOS.
-    _flutterProcess?.stdin.writeln('q');
+  /// Asks the resident `flutter run` for a hot restart.
+  ///
+  /// The `flush()` matters: without it the byte sits in the pipe buffer and
+  /// `flutter run` never sees the key command.
+  Future<void> _requestHotRestart(String target) async {
+    final process = _flutterProcess;
+    if (process == null) {
+      return;
+    }
+    if (!_hotRestartActive) {
+      _logger.warn('Hot Restart: not attached to the app yet!');
+      return;
+    }
+    if (_restartInFlight) {
+      _logger.warn('Hot Restart: a restart is already in progress');
+      return;
+    }
+
+    _restartInFlight = true;
+    _logger.success('Hot Restart for entrypoint ${basename(target)}...');
+    process.stdin.add('R'.codeUnits);
+    await process.stdin.flush();
   }
 
   Future<void> _stopFlutterProcess() async {
@@ -237,8 +277,15 @@ class WebTestBackend {
     _logger.detail('Stopping Flutter web server...');
 
     try {
-      // Flutter should already be exiting from the 'q' stdin command
-      // sent by _killRunningProcesses. Give it time to close Chrome.
+      // Ask flutter to quit so it closes Chrome itself. A hard kill (SIGTERM)
+      // leaves the Chrome child process orphaned on macOS.
+      process.stdin.add('q'.codeUnits);
+      await process.stdin.flush();
+    } on Object catch (err) {
+      _logger.detail('Failed to send quit to Flutter: $err');
+    }
+
+    try {
       await process.exitCode.timeout(const Duration(seconds: 10));
     } on TimeoutException {
       // Graceful shutdown didn't work — force kill.
@@ -250,9 +297,111 @@ class WebTestBackend {
     }
   }
 
+  /// Attaches the session-long listeners to the resident `flutter run`.
+  ///
+  /// This owns the only subscription to flutter's stdout, so the readiness
+  /// signal and the restart outcome are read from the same stream instead of
+  /// competing subscriptions.
+  Future<void> _watchFlutterRun(Process process, Completer<void> exited) async {
+    final debugServiceReady = Completer<void>();
+    _debugServiceReady = debugServiceReady;
+
+    process.stdout
+        .transform(const SystemEncoding().decoder)
+        .transform(const LineSplitter())
+        .listen(_onFlutterLine)
+        .disposedBy(_disposeScope);
+
+    process.stderr
+        .transform(const SystemEncoding().decoder)
+        .transform(const LineSplitter())
+        .listen((line) => _logger.detail('Flutter stderr: $line'))
+        .disposedBy(_disposeScope);
+
+    process.exitCode.then((exitCode) {
+      _hotRestartActive = false;
+      _restartInFlight = false;
+      if (!debugServiceReady.isCompleted) {
+        debugServiceReady.completeError(
+          'Flutter process exited unexpectedly with code $exitCode',
+        );
+      }
+      if (exited.isCompleted) {
+        return;
+      }
+      if (exitCode != 0 && !_quitting) {
+        exited.completeError(
+          'Flutter process exited unexpectedly with code $exitCode',
+        );
+      } else {
+        exited.complete();
+      }
+    }).ignore();
+  }
+
+  Completer<void>? _debugServiceReady;
+
+  void _onFlutterLine(String rawLine) {
+    final line = rawLine.replaceFirst(_flutterLogPrefix, '');
+
+    // PATROL_LOG entries reach us twice: flutter forwards the app's `print`,
+    // and the Playwright driver re-emits them from the browser console. The
+    // Playwright stream is the one wired into PatrolLogReader, so drop these.
+    if (line.contains('PATROL_LOG')) {
+      return;
+    }
+
+    if (line == 'Flutter run key commands.') {
+      if (!_hotRestartActive) {
+        _hotRestartActive = true;
+        _logger.success(
+          'Hot Restart: attached to the app\n$_developKeyCommands',
+        );
+      }
+      return;
+    }
+
+    if (line.startsWith('Debug service listening on')) {
+      final completer = _debugServiceReady;
+      if (completer != null && !completer.isCompleted) {
+        completer.complete();
+      }
+      _logger.detail('Flutter: $line');
+      return;
+    }
+
+    if (line.startsWith('Restarted application in')) {
+      _restartInFlight = false;
+      _logger.success(line);
+      return;
+    }
+
+    if (line == 'Try again after fixing the above error(s).' ||
+        line.contains('Failed to recompile application.')) {
+      _restartInFlight = false;
+      _logger.err('Hot restart failed. Fix the errors above and press "r".');
+      return;
+    }
+
+    // Surface Dart test failures, which reach us over flutter's stdout.
+    if (line.contains('EXCEPTION CAUGHT') ||
+        line.contains('TestFailure') ||
+        line.startsWith('Expected:') ||
+        line.startsWith('  Actual:') ||
+        line.startsWith('   Which:') ||
+        line.contains('Test failed.') ||
+        line.contains('Some tests failed.')) {
+      _logger.err(line);
+      return;
+    }
+
+    _logger.detail('Flutter: $line');
+  }
+
   Future<Process> _startFlutterWebServer(
     WebAppOptions options, {
     required bool develop,
+    int? browserDebugPort,
   }) async {
     _logger.detail('Starting Flutter web server...');
 
@@ -262,7 +411,8 @@ class WebTestBackend {
       'run',
       '-d',
       if (develop) 'chrome' else 'web-server',
-      ...develop ? ['--verbose'] : [],
+      if (browserDebugPort != null)
+        '--web-browser-debug-port=$browserDebugPort',
       if (options.webPort != null) '--web-port=${options.webPort}',
       '--target=${options.flutter.target}',
       '--${options.flutter.buildMode.name}',
@@ -378,86 +528,56 @@ class WebTestBackend {
     return completer.future;
   }
 
-  Future<String> _waitForWebDebugger(
-    Process flutterProcess, {
+  /// Waits until Chrome's CDP endpoint answers on [debuggerPort] and the
+  /// Flutter debug service has attached to the page.
+  ///
+  /// The CDP poll replaces scraping `DevTools listening on ws://…` out of
+  /// `flutter run --verbose`, which is why develop no longer needs `--verbose`.
+  Future<void> _waitForWebDebugger(
+    Process flutterProcess,
+    int debuggerPort, {
     int? serverTimeout,
-  }) {
+  }) async {
     final timeoutDuration = Duration(
       seconds: serverTimeout ?? _kDefaultWebServerTimeoutSeconds,
     );
     _logger.detail(
-      'Waiting for debugger to start (timeout: ${timeoutDuration.inSeconds}s)...',
+      'Waiting for debugger on port $debuggerPort '
+      '(timeout: ${timeoutDuration.inSeconds}s)...',
     );
 
-    final completer = Completer<String>();
-    late StreamSubscription<String> stdoutSubscription;
-    late StreamSubscription<String> stderrSubscription;
+    final deadline = DateTime.now().add(timeoutDuration);
+    final endpoint = Uri.parse('http://127.0.0.1:$debuggerPort/json/version');
 
-    final flutterLogPrefix = RegExp(r'^\[[\s\d+ms]*\]\s?');
-
-    stdoutSubscription = flutterProcess.stdout
-        .transform(const SystemEncoding().decoder)
-        .transform(const LineSplitter())
-        .listen((line) {
-          _logger.detail('Flutter: $line');
-
-          // [CHROME]: DevTools listening on ws://127.0.0.1:38861/devtools/browser/431953d3-ef67-428f-9321-9317256022d0
-          final urlMatch = RegExp(
-            r'DevTools listening on ws://[^/]+:(\d+)',
-          ).firstMatch(line);
-
-          if (urlMatch != null && !completer.isCompleted) {
-            final port = urlMatch.group(1)!;
-            _logger.info('Debugger started at port: $port');
-            completer.complete(port);
-          }
-
-          // Surface Flutter test errors to the console
-          final stripped = line.replaceFirst(flutterLogPrefix, '');
-          if (stripped.contains('EXCEPTION CAUGHT') ||
-              stripped.contains('TestFailure') ||
-              stripped.startsWith('Expected:') ||
-              stripped.startsWith('  Actual:') ||
-              stripped.startsWith('   Which:') ||
-              stripped.contains('Test failed.') ||
-              stripped.contains('Some tests failed.')) {
-            _logger.err(stripped);
-          }
-        });
-
-    // Listen to stderr for errors
-    stderrSubscription = flutterProcess.stderr
-        .transform(const SystemEncoding().decoder)
-        .transform(const LineSplitter())
-        .listen((line) {
-          _logger.detail('Flutter stderr: $line');
-        });
-
-    // Check if process exits unexpectedly
-    flutterProcess.exitCode.then((exitCode) {
-      if (!completer.isCompleted && exitCode != 0) {
-        stdoutSubscription.cancel();
-        stderrSubscription.cancel();
-        completer.completeError(
-          'Flutter process exited unexpectedly with code $exitCode',
-        );
+    while (!await _verifyServerReady(endpoint.toString())) {
+      if (_flutterProcess == null) {
+        throw StateError('Flutter process stopped before Chrome was ready');
       }
-    }).ignore();
-
-    // Timeout after configured duration (default: 2 minutes)
-    Timer(timeoutDuration, () {
-      if (!completer.isCompleted) {
-        stdoutSubscription.cancel();
-        stderrSubscription.cancel();
-        completer.completeError(
-          'Timeout waiting for web debugger to start '
+      if (DateTime.now().isAfter(deadline)) {
+        throw StateError(
+          'Timeout waiting for the Chrome debugger on port $debuggerPort '
           '(after ${timeoutDuration.inSeconds}s). '
           'Consider increasing the timeout with --web-server-timeout.',
         );
       }
-    });
+      await Future<void>.delayed(const Duration(milliseconds: 250));
+    }
 
-    return completer.future;
+    _logger.info('Debugger started at port: $debuggerPort');
+
+    // Chrome answering CDP doesn't mean the app page is running yet. The debug
+    // service line is printed right before Flutter calls the app's main().
+    final ready = _debugServiceReady;
+    if (ready != null && !ready.isCompleted) {
+      await ready.future.timeout(
+        deadline.difference(DateTime.now()),
+        onTimeout: () => throw StateError(
+          'Timeout waiting for the Flutter debug service '
+          '(after ${timeoutDuration.inSeconds}s). '
+          'Consider increasing the timeout with --web-server-timeout.',
+        ),
+      );
+    }
   }
 
   Future<void> _runPlaywrightTests(
@@ -583,58 +703,52 @@ class WebTestBackend {
       ..detail('Test results will be saved to: $testResultsDir')
       ..detail('Test report will be saved to: $testReportDir');
 
-    final completer = Completer<void>();
+    // The driver attaches to the browser Flutter launched and then idles for
+    // the whole session — it survives hot restarts, so unlike the test path
+    // this doesn't wait for it to exit.
+    final playwrightProcess = await _processManager.start(
+      ['npx', 'ts-node', 'tests/develop.ts'],
+      workingDirectory: webRunnerPath,
+      environment: {
+        'DEBUGGER_PORT': port,
+        'PATROL_TEST_RESULTS_DIR': testResultsDir,
+        'PATROL_TEST_REPORT_DIR': testReportDir,
+        'PATROL_WEB_JSON_OUTPUT_NAME': 'results.json',
+        'PATROL_WEB_JSON_OUTPUT_DIR': testReportDir,
+        ...Platform.environment,
+      },
+      runInShell: true,
+    );
+    _playwrightDevelopProcess = playwrightProcess;
 
-    await _disposeScope.run((scope) async {
-      final playwrightProcess = await _processManager.start(
-        ['npx', 'ts-node', 'tests/develop.ts'],
-        workingDirectory: webRunnerPath,
-        environment: {
-          'DEBUGGER_PORT': port,
-          'PATROL_TEST_RESULTS_DIR': testResultsDir,
-          'PATROL_TEST_REPORT_DIR': testReportDir,
-          'PATROL_WEB_JSON_OUTPUT_NAME': 'results.json',
-          'PATROL_WEB_JSON_OUTPUT_DIR': testReportDir,
-          ...Platform.environment,
-        },
-        runInShell: true,
-      );
-      _playwrightDevelopProcess = playwrightProcess;
+    PatrolLogReader(
+        listenStdOut: playwrightProcess.listenStdOut,
+        scope: _disposeScope,
+        log: _logger.info,
+        reportPath: testReportDir,
+        showFlutterLogs: showFlutterLogs,
+        hideTestSteps: hideTestSteps,
+        clearTestSteps: clearTestSteps,
+        onLogEntry: onLogEntry,
+      )
+      ..listen()
+      ..startTimer();
 
-      PatrolLogReader(
-          listenStdOut: playwrightProcess.listenStdOut,
-          scope: scope,
-          log: _logger.info,
-          reportPath: testReportDir,
-          showFlutterLogs: showFlutterLogs,
-          hideTestSteps: hideTestSteps,
-          clearTestSteps: clearTestSteps,
-          onLogEntry: onLogEntry,
-        )
-        ..listen()
-        ..startTimer();
+    playwrightProcess.stderr
+        .transform(const SystemEncoding().decoder)
+        .transform(const LineSplitter())
+        .listen((line) => _logger.detail('Playwright stderr: $line'))
+        .disposedBy(_disposeScope);
 
-      playwrightProcess.stderr
-          .transform(const SystemEncoding().decoder)
-          .transform(const LineSplitter())
-          .listen((line) => _logger.detail('Playwright stderr: $line'))
-          .disposedBy(scope);
-
-      playwrightProcess.exitCode.then((exitCode) {
-        _playwrightDevelopProcess = null;
-        if (!completer.isCompleted) {
-          if (exitCode != 0 && !_quitting) {
-            completer.completeError(
-              'Playwright process exited unexpectedly with code $exitCode',
-            );
-          } else {
-            completer.complete();
-          }
-        }
-      }).ignore();
-
-      await completer.future;
-    });
+    playwrightProcess.exitCode.then((exitCode) {
+      _playwrightDevelopProcess = null;
+      if (exitCode != 0 && !_quitting) {
+        _logger.err(
+          'The Playwright driver exited unexpectedly with code $exitCode. '
+          'Platform actions will no longer work; quit and start again.',
+        );
+      }
+    }).ignore();
   }
 
   Future<String> _getWebRunnerPath() async {
