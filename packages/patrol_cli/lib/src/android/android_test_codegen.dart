@@ -58,7 +58,7 @@ class AndroidTestCodegen {
     required Directory androidDir,
     String className = 'PatrolGeneratedTests',
   }) {
-    final host = _locateHostTest(androidDir);
+    final host = _locateHostTest(androidDir, generatedClassName: className);
     if (host == null) {
       return null;
     }
@@ -91,7 +91,7 @@ class AndroidTestCodegen {
     Directory androidDir, {
     String className = 'PatrolGeneratedTests',
   }) {
-    final host = _locateHostTest(androidDir);
+    final host = _locateHostTest(androidDir, generatedClassName: className);
     if (host == null) {
       return null;
     }
@@ -111,7 +111,7 @@ class AndroidTestCodegen {
     Directory androidDir, {
     String className = 'PatrolGeneratedTests',
   }) {
-    final host = _locateHostTest(androidDir);
+    final host = _locateHostTest(androidDir, generatedClassName: className);
     if (host == null) {
       return false;
     }
@@ -126,7 +126,10 @@ class AndroidTestCodegen {
   /// Locates the host instrumentation test (the file that references
   /// `PatrolJUnitRunner`) under `android/app/src/androidTest`, returning its
   /// directory and declared package.
-  _HostTest? _locateHostTest(Directory androidDir) {
+  _HostTest? _locateHostTest(
+    Directory androidDir, {
+    String generatedClassName = 'PatrolGeneratedTests',
+  }) {
     final testRoot = androidDir
         .childDirectory('app')
         .childDirectory('src')
@@ -141,6 +144,12 @@ class AndroidTestCodegen {
       }
       final path = entity.path;
       if (!path.endsWith('.java') && !path.endsWith('.kt')) {
+        continue;
+      }
+      // Never treat our own generated class as the host: it also references
+      // PatrolJUnitRunner, so once it exists it would otherwise be an ambiguous
+      // second candidate (non-deterministic depending on listing order).
+      if (entity.basename == '$generatedClassName.java') {
         continue;
       }
       final content = entity.readAsStringSync();
