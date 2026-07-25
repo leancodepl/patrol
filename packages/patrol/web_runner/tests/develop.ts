@@ -14,6 +14,13 @@ async function develop() {
   try {
     const browser = await chromium.connectOverCDP(`http://localhost:${process.env.DEBUGGER_PORT}`)
 
+    // Without this the keep-alive interval below would outlive the browser,
+    // leaving this process running after `flutter run` closes Chrome.
+    browser.on("disconnected", () => {
+      logger.info("Browser disconnected. Shutting down...")
+      process.exit(0)
+    })
+
     const context = browser.contexts().at(0) ?? (await browser.newContext())
 
     const page = context.pages().at(0) ?? (await context.newPage())

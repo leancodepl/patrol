@@ -35,6 +35,34 @@ You can specify custom build number and build name using the `--build-name` and 
 patrol develop --target patrol_test/example_test.dart --build-name=1.2.3 --build-number=123
 ```
 
+### Web
+
+`patrol develop` also works on web. Pass `-d chrome`:
+
+```
+patrol develop --target patrol_test/web/example_test.dart -d chrome
+```
+
+Patrol launches Chrome once, attaches Playwright to it over the Chrome DevTools
+Protocol, and keeps both alive for the whole session. Typing **R** hot-restarts
+the Flutter app in place, without reloading the page or relaunching the browser.
+
+<Warning>
+  Hot Restart on web requires **Flutter 3.47 or newer**. The generated test
+  bundle lives outside `lib/`, and on older SDKs Flutter's web hot restart
+  silently serves stale code for such entrypoints, so your edits would appear to
+  have no effect. This was fixed in
+  [flutter/flutter#183838](https://github.com/flutter/flutter/pull/183838).
+</Warning>
+
+The caveats below apply on web too, with the browser taking the place of the
+native side: the page is never reloaded, so anything that lives on it survives a
+Hot Restart. In particular, browser history, the current URL, cookies, local
+storage, granted permissions and any extra tabs opened by a previous run are all
+still there on the next Hot Restart. If a test navigates or depends on where in
+the history it starts, make it set up that state itself rather than assuming a
+fresh page.
+
 ### Demo
 
 <YouTube id="Z71ltoGbFw0" />

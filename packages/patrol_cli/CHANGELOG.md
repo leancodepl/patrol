@@ -1,3 +1,9 @@
+## Unreleased
+
+- `patrol develop -d chrome` now uses a real Flutter hot restart instead of relaunching the browser and the Playwright driver on every `r`. One `flutter run` stays alive for the whole session, matching how develop already works on mobile. Requires Flutter with https://github.com/flutter/flutter/pull/183838 (Flutter 3.47 or newer); on older SDKs hot restart silently serves stale code for the test bundle, because it lives outside `lib/`.
+- Stop passing `--verbose` to `flutter run` in web develop mode. The Chrome debugging port is now chosen up front with `--web-browser-debug-port` instead of being scraped out of verbose output, so the log stream is no longer flooded with Flutter tracing and the port is known before Chrome launches.
+- Report hot restart outcomes in web develop mode, and warn instead of silently dropping an `r` pressed while `flutter run` is still busy.
+
 ## 4.7.0
 
 - **Requires `patrol` 4.9.0 or newer.**

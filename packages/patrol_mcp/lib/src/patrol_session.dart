@@ -11,7 +11,6 @@ import 'device_lister.dart';
 import 'device_selection.dart';
 import 'flutter_command_resolver.dart';
 import 'log_streaming.dart';
-import 'platform_session_behavior.dart';
 
 /// An [io.Stdout] wrapper that forwards writes to [_inner] (e.g. stderr) and
 /// also captures complete lines, invoking [_onLine] for each one.
@@ -215,16 +214,6 @@ final class PatrolSession {
   /// Warning attached to the next returned status (e.g. unexpected app exit).
   String? _finishWarning;
 
-  /// True while a hot restart is in progress. Used to suppress stale
-  /// [_handleTestsCompleted] callbacks from the previous test run.
-  var _isHotRestarting = false;
-
-  /// Incremented on every restart. The drain timer captures the epoch when
-  /// it's scheduled and only clears [_isHotRestarting] if it still matches —
-  /// so a second restart firing before the first drains can't be ended early
-  /// by the first restart's timer.
-  var _hotRestartEpoch = 0;
-
   Completer<void>? _finishCompleter;
   DisposeScope? _disposeScope;
   StreamController<List<int>>? _stdinController;
@@ -245,13 +234,6 @@ final class PatrolSession {
   /// registrations) can read platform-specific properties like the web
   /// debugger port without routing every accessor through [PatrolSession].
   DevelopService? get developService => _developService;
-
-  PlatformSessionBehavior get _platformBehavior {
-    if (_developService?.device?.targetPlatform == TargetPlatform.web) {
-      return const WebPlatformBehavior();
-    }
-    return const MobilePlatformBehavior();
-  }
 
   /// Returns null if started successfully, or a warning message if blocked
   Future<String?> _start(String testFile, {String? device}) async {
@@ -485,8 +467,6 @@ final class PatrolSession {
 
     await _logStreaming.stopLogging();
 
-    await _platformBehavior.cleanup(_developService);
-
     try {
       if (scope != null && !scope.disposed) {
         await scope.dispose();
@@ -513,11 +493,6 @@ final class PatrolSession {
   /// Structured signal from patrol framework (via PATROL_LOG ConfigEntry) that
   /// all tests were executed in develop mode.
   void _handleEntry(Entry entry) {
-    // During restart, suppress stale entries from the dying process.
-    if (_isHotRestarting) {
-      return;
-    }
-
     // Collect error details from ErrorEntry messages.
     if (entry is ErrorEntry) {
       _errorDetails.add(entry.message);
@@ -545,33 +520,13 @@ final class PatrolSession {
 
   /// Backend exit signal from [DevelopService].
   ///
-  /// On mobile, successful develop sessions stay alive for hot restart and
-  /// don't exit, so an exit while running implies failure. On web, however,
-  /// the backend exits normally after tests complete, so we must respect
-  /// [TestCompletionResult.success].
-  ///
-  /// Our own quit also exits the backend but flips to idle first;
-  /// [_quitRequested] covers the race. During hot restart, stale callbacks from
-  /// the previous test run are suppressed via [_isHotRestarting].
+  /// Develop sessions stay alive across hot restarts on every platform, so a
+  /// backend exit while running means the app shut down early -- report it as a
+  /// failure. Our own quit also exits it but flips to idle first;
+  /// [_quitRequested] covers the race.
   void _handleTestsCompleted(TestCompletionResult result) {
     if (_quitRequested || _testState != TestState.running) {
       return;
-    }
-
-    final interpretation = _platformBehavior.interpretTestCompletion(
-      result,
-      isHotRestarting: _isHotRestarting,
-    );
-
-    switch (interpretation) {
-      case ExitInterpretation.suppress:
-        return;
-      case ExitInterpretation.success:
-        _testState = TestState.finishedPassed;
-        _completeFinish();
-        return;
-      case ExitInterpretation.failure:
-        break;
     }
 
     _testState = TestState.finishedFailed;
@@ -617,17 +572,9 @@ final class PatrolSession {
         throw StateError('No active patrol session');
       }
 
-      final needsSuppression =
-          _platformBehavior.suppressesStaleCallbacksOnRestart;
-      final epoch = ++_hotRestartEpoch;
-      if (needsSuppression) {
-        _isHotRestarting = true;
-      }
-
       try {
         controller.add('R'.codeUnits);
       } catch (e) {
-        _isHotRestarting = false;
         logger.warning('Failed to send hot restart: $e');
         throw StateError('Failed to send hot restart to patrol session: $e');
       }
@@ -641,17 +588,6 @@ final class PatrolSession {
       // could fire between null-ing and lazy re-creation in _waitForFinish.
       _completeFinish();
       _finishCompleter = Completer<void>();
-
-      if (needsSuppression) {
-        // Allow a brief window for stale callbacks to drain before accepting
-        // new test completion signals. Guarded by epoch so a later restart's
-        // suppression isn't lifted by an earlier restart's timer.
-        Future<void>.delayed(const Duration(seconds: 5), () {
-          if (_hotRestartEpoch == epoch) {
-            _isHotRestarting = false;
-          }
-        });
-      }
 
       return 'Restart sent to patrol session';
     }

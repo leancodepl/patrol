@@ -1,6 +1,8 @@
 ## Unreleased
 
 - Android: keep third-party `AccessibilityService`s running during the test session again. `AndroidAutomatorConfig.dontSuppressAccessibilityServices` now defaults to `true` (it was effectively `false` since 4.8.0) and is configurable, also via the `PATROL_ANDROID_DONT_SUPPRESS_ACCESSIBILITY_SERVICES` dart-define. (#3227)
+- Fix the develop-mode idle loop leaking across hot restarts on web. A web hot restart re-runs `main()` in the same page, and pumping frames goes through `requestAnimationFrame`, which DDC does not invalidate per program generation, so the previous run's loop kept rendering into a disposed `EngineFlutterView` and flooded the console with assertions. The loop now stops as soon as a newer run claims the app.
+- Exit the Playwright develop driver when the browser disconnects, instead of idling forever after `flutter run` closes Chrome.
 
 ## 4.9.0
 
