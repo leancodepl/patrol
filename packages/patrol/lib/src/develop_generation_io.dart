@@ -3,5 +3,5 @@
 int claimDevelopGeneration() => 0;
 
 /// Whether [generation] is still the generation that owns the app. Always true
-/// off the web — see [claimDevelopGeneration].
+/// off the web. See [claimDevelopGeneration].
 bool isCurrentDevelopGeneration(int generation) => true;

@@ -49,7 +49,7 @@ the Flutter app in place, without reloading the page or relaunching the browser.
 
 The [Patrol DevTools extension](/documentation/other/patrol-devtools-extension)
 works here too. Its inspector shows the page's DOM, which is what web selectors
-resolve against — with semantics enabled Flutter renders `<flt-semantics>`
+resolve against. With semantics enabled Flutter renders `<flt-semantics>`
 elements carrying the roles, labels and text that finders like
 `$('Go to Page 1')` match, so it's the first place to look when a selector
 doesn't find what you expect.
@@ -66,7 +66,7 @@ you.
 <Info>
   On web this needs a little more than on mobile, which is why it's behind the
   flag. DevTools discovers extensions by scanning a package root that it resolves
-  from the app's entrypoint file path — and a web app doesn't have one, since its
+  from the app's entrypoint file path, and a web app doesn't have one, since its
   root library is `org-dartlang-app:///…`. So the DevTools instance that
   `flutter run` serves finds no extensions, and its URL gives you "The
   'patrol_ext' page cannot be found". With `--open-devtools`, patrol starts its

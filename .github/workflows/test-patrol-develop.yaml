@@ -131,7 +131,7 @@ jobs:
         uses: actions/checkout@v4
 
       # Hot Restart on web needs flutter/flutter#183838, which is not in
-      # stable 3.44.x — hence beta rather than the pin the other jobs use.
+      # stable 3.44.x, hence beta rather than the pin the other jobs use.
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
