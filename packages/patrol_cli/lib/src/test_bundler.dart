@@ -42,11 +42,11 @@ class TestBundler {
 
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
 import 'package:patrol/src/constants.dart' as constants;
+import 'package:patrol/src/manifest_writer.dart';
 import 'package:patrol/src/platform/contracts/contracts.dart';
 import 'package:patrol/src/platform/mobile/patrol_runtime_ports.dart';
 import 'package:test_api/src/backend/invoker.dart';
@@ -130,7 +130,8 @@ Future<void> main() async {
       // deadlock.
       const manifestOutput = String.fromEnvironment('PATROL_MANIFEST_OUTPUT');
       if (manifestOutput.isNotEmpty) {
-        File(manifestOutput).writeAsStringSync(
+        writeTestManifest(
+          manifestOutput,
           jsonEncode(ListDartTestsResponse(group: dartTestGroup).toJson()),
         );
       }
