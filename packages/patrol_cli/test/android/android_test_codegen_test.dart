@@ -5,11 +5,11 @@ import 'package:test/test.dart';
 void main() {
   late MemoryFileSystem fs;
 
-  const manifest = '''
+  const manifest = r'''
 {"group":{"name":"","type":"group","skip":false,"entries":[
   {"name":"example_test","type":"group","skip":false,"entries":[
     {"name":"tap once shows one","type":"test","skip":false},
-    {"name":"tap twice \\"quoted\\" shows two","type":"test","skip":true},
+    {"name":"tap twice \"quoted\" shows two","type":"test","skip":true},
     {"name":"tap once shows one","type":"test","skip":false}
   ]}
 ]}}
