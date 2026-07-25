@@ -84,10 +84,7 @@ public class MainActivityTest {}
 
   test('findGeneratedClassName returns the FQN only after generation', () {
     final codegen = AndroidTestCodegen(fs);
-    expect(
-      codegen.findGeneratedClassName(fs.directory('/android')),
-      isNull,
-    );
+    expect(codegen.findGeneratedClassName(fs.directory('/android')), isNull);
 
     codegen.generate(
       manifestPath: '/manifest.json',
@@ -100,16 +97,14 @@ public class MainActivityTest {}
     );
   });
 
-  test('uses a non-default activity from the host and replicates its import',
-      () {
+  test('uses a non-default activity from the host and replicates its import', () {
     final customFs = MemoryFileSystem.test();
     customFs.file('/manifest.json')
       ..createSync(recursive: true)
       ..writeAsStringSync(manifest);
-    customFs
-        .file(
-          '/android/app/src/androidTest/java/pl/leancode/patrol/e2e_app/MainActivityTest.java',
-        )
+    customFs.file(
+        '/android/app/src/androidTest/java/pl/leancode/patrol/e2e_app/MainActivityTest.java',
+      )
       ..createSync(recursive: true)
       ..writeAsStringSync('''
 package pl.leancode.patrol.e2e_app;

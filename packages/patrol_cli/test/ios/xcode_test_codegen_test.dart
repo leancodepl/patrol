@@ -30,10 +30,11 @@ void main() {
 ]}}
 ''';
     final count = XcodeTestCodegen(fs).generate(
-      manifestPath: (fs.file('/m.json')
-            ..createSync(recursive: true)
-            ..writeAsStringSync(manifest))
-          .path,
+      manifestPath:
+          (fs.file('/m.json')
+                ..createSync(recursive: true)
+                ..writeAsStringSync(manifest))
+              .path,
       outputPath: '/o.inc',
     );
     final source = fs.file('/o.inc').readAsStringSync();
@@ -87,10 +88,9 @@ void main() {
 ''';
     final source = generate(manifest);
 
-    final selectors = RegExp(r'- \(void\)(\w+) \{')
-        .allMatches(source)
-        .map((m) => m.group(1))
-        .toList();
+    final selectors = RegExp(
+      r'- \(void\)(\w+) \{',
+    ).allMatches(source).map((m) => m.group(1)).toList();
     expect(selectors, hasLength(2));
     expect(selectors.toSet(), hasLength(2));
   });

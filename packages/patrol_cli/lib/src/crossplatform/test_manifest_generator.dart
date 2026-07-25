@@ -32,7 +32,10 @@ class TestManifestGenerator {
   ///
   /// Failures are intentionally non-fatal: the caller can fall back to the
   /// native runtime discovery when the manifest is absent.
-  Future<String?> generate(FlutterAppOptions flutter, DisposeScope scope) async {
+  Future<String?> generate(
+    FlutterAppOptions flutter,
+    DisposeScope scope,
+  ) async {
     final manifestFile = _rootDirectory
         .childDirectory('build')
         .childDirectory('patrol')
