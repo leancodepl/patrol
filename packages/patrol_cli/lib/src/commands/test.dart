@@ -188,14 +188,6 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
     final noBuild = boolArg('no-build');
     final onlyTests = stringsArg('only');
 
-    if (noBuild && !emitTestManifest) {
-      _logger.err(
-        '--no-build requires build-time test discovery. Enable '
-        '`patrol.emit_test_manifest: true` in pubspec.yaml (or pass '
-        '--emit-test-manifest when building) and run `patrol build` first.',
-      );
-      return 1;
-    }
     if (onlyTests.isNotEmpty && !noBuild) {
       _logger.err('--only can only be used together with --no-build.');
       return 1;
