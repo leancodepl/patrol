@@ -378,7 +378,6 @@
                                                                                                                     \
   @end
 
-
 // Static-codegen variant: build-time `patrol build ios` generates real XCTest
 // methods (a #included .inc) that call patrolExecuteDartTest:. BEGIN opens the
 // class and shared infra; END closes it. No +testInvocations - XCTest discovers
@@ -522,7 +521,7 @@
     }                                                                                                           \
   }                                                                                                             \
                                                                                                                 \
-  -(void)patrolExecuteDartTest:(NSString *)dartTestName skip:(BOOL)skip {                                       \
+  -(void)patrolExecuteDartTest : (NSString *)dartTestName skip : (BOOL)skip {                                   \
     NSLog(@"RunnerUITests running Dart test: %@", dartTestName);                                                \
     if (CLEAR_PERMISSIONS && _patrolStaticTestIndex > 0) {                                                      \
       [[self class] resetPermissions];                                                                          \
@@ -542,15 +541,14 @@
                                                                                                                 \
     __block ObjCRunDartTestResponse *response = NULL;                                                           \
     __block NSError *error;                                                                                     \
-    [_patrolStaticClient                                                                                        \
-        runDartTestWithName:dartTestName                                                                        \
-                 completion:^(ObjCRunDartTestResponse *_Nullable r, NSError *_Nullable e) {                     \
-                   if (e != NULL) {                                                                             \
-                     error = e;                                                                                 \
-                   } else {                                                                                     \
-                     response = r;                                                                              \
-                   }                                                                                            \
-                 }];                                                                                            \
+    [_patrolStaticClient runDartTestWithName:dartTestName                                                       \
+                                  completion:^(ObjCRunDartTestResponse *_Nullable r, NSError *_Nullable e) {    \
+                                    if (e != NULL) {                                                            \
+                                      error = e;                                                                \
+                                    } else {                                                                    \
+                                      response = r;                                                             \
+                                    }                                                                           \
+                                  }];                                                                           \
                                                                                                                 \
     while (!response && !error) {                                                                               \
       [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];                        \
