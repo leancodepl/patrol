@@ -68,7 +68,9 @@ class XcodeTestCodegen {
     final escaped = value
         .replaceAll(r'\', r'\\')
         .replaceAll('"', r'\"')
-        .replaceAll('\n', r'\n');
+        .replaceAll('\n', r'\n')
+        .replaceAll('\r', r'\r')
+        .replaceAll('\t', r'\t');
     return '@"$escaped"';
   }
 }
