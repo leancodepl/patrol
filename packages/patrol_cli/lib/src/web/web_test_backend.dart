@@ -49,7 +49,7 @@ class WebTestBackend {
   String? _debuggerPort;
 
   /// The resident `flutter run` process that owns the develop session. Kept for
-  /// the whole session — hot restart goes through its stdin.
+  /// the whole session, since hot restart goes through its stdin.
   Process? _flutterProcess;
 
   /// The Playwright develop process, kept alive for the whole develop session.
@@ -156,7 +156,7 @@ class WebTestBackend {
   /// for the whole session, and "r" performs a real Flutter hot restart instead
   /// of relaunching them. A web hot restart re-runs `main()` in the same page
   /// without navigating, so `window.__patrol__*` and the bindings Playwright
-  /// exposed on the browser context survive it — see `initAppService()` in
+  /// exposed on the browser context survive it. See `initAppService()` in
   /// package:patrol, which short-circuits when Playwright has already
   /// initialised the page.
   ///
@@ -342,7 +342,7 @@ class WebTestBackend {
     try {
       await process.exitCode.timeout(const Duration(seconds: 10));
     } on TimeoutException {
-      // Graceful shutdown didn't work — force kill.
+      // Graceful shutdown didn't work, so force kill.
       _logger.detail(
         'Graceful shutdown timed out, force killing Flutter process...',
       );
@@ -734,7 +734,6 @@ class WebTestBackend {
         if (!completer.isCompleted) {
           stderrSubscription.cancel();
           patrolLogReader.stopTimer();
-          // TODO: Don't print the summary in develop
           _logger.info(patrolLogReader.summary);
 
           if (patrolLogReader.failedTestsCount > 0) {
@@ -777,7 +776,7 @@ class WebTestBackend {
       ..detail('Test report will be saved to: $testReportDir');
 
     // The driver attaches to the browser Flutter launched and then idles for
-    // the whole session — it survives hot restarts, so unlike the test path
+    // the whole session. It survives hot restarts, so unlike the test path
     // this doesn't wait for it to exit.
     final playwrightProcess = await _processManager.start(
       ['npx', 'ts-node', 'tests/develop.ts'],

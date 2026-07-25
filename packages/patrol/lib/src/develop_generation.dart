@@ -1,7 +1,7 @@
 // Tracks which "program generation" owns the app in develop mode.
 //
 // A hot restart on web re-runs `main()` inside the same page instead of tearing
-// down an isolate, and DDC only generation-gates timers and microtasks — not
+// down an isolate, and DDC only generation-gates timers and microtasks, not
 // DOM callbacks such as `requestAnimationFrame`. The idle loop that keeps the
 // app alive after the last test pumps frames, so without this the previous
 // generation's loop keeps rendering into the `EngineFlutterView` that the
