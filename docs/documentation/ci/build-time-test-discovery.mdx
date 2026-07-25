@@ -142,6 +142,18 @@ sharding. Each shard then runs its slice with `-only-testing`, in parallel, on a
 separate machine — which also sidesteps the fixed-port limitation, since each
 shard gets its own host.
 
+Deriving the list from the generated `.inc` keeps it byte-identical to what
+XCTest discovers. For example, to produce a SauceLabs `testListFile`:
+
+```bash
+grep -oE '^- \(void\)test_[A-Za-z0-9_]+' ios/RunnerUITests/PatrolGeneratedTests.inc \
+  | sed -E 's#^- \(void\)#RunnerUITests/RunnerUITests/#' \
+  > .sauce/ios_testlist.txt
+```
+
+Then point SauceLabs at it with `shard: concurrency` + `testListFile`. See
+`dev/e2e_app/scripts/generate_ios_testlist.sh` for a ready-made version.
+
 <Info>
   Generate the test list on every build and don't commit it — the `_<index>`
   suffix depends on the number and order of tests, so selectors change as your
