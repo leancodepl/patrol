@@ -204,4 +204,12 @@ Then point SauceLabs at it with `shard: concurrency` + `testListFile`. See
 - **Slower initial build.** Discovery adds a host `flutter test` pass to every
   `patrol build`, so the first build takes a bit longer. This cost is paid once —
   subsequent `patrol test --no-build` runs skip building altogether.
+- **`--no-build` reuses the previous build.** It runs exactly what was last built,
+  so re-run it only when the app and test code are unchanged (change Dart or native
+  code → rebuild). On Android it targets the instrumentation resolved from the
+  device (`pm list instrumentation`); a custom `testApplicationId` or runner is
+  picked up when installed, but an exotic setup that can't be resolved falls back
+  to the default `<applicationId>.test` / `PatrolJUnitRunner`, and a flavor
+  `applicationIdSuffix` that isn't reflected in `patrol.android.package_name` may
+  not match. For those setups, prefer a normal `patrol test`.
 - Experimental: the setup and flags may change.
