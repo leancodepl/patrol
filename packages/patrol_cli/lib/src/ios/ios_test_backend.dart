@@ -120,9 +120,13 @@ class IOSTestBackend {
           rootDirectory: _rootDirectory,
           logger: _logger,
         ).generate(options.flutter, scope);
-        if (manifestPath != null) {
-          _generateXcodeTests(manifestPath);
+        if (manifestPath == null) {
+          throwToolExit(
+            'Build-time test discovery failed; fix the errors above or disable '
+            'emit_test_manifest.',
+          );
         }
+        _generateXcodeTests(manifestPath);
       }
 
       // flutter build ios --config-only

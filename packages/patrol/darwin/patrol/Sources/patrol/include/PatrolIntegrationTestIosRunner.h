@@ -373,11 +373,101 @@
     }                                                                                                           \
   }                                                                                                             \
                                                                                                                 \
+  +(void)uninstallApp {                                                                                         \
+    XCUIApplication *app = [[XCUIApplication alloc] init];                                                      \
+    NSString *appName = app.label;                                                                              \
+    NSLog(@"Uninstalling app: %@", appName);                                                                    \
+                                                                                                                \
+    [app terminate];                                                                                            \
+                                                                                                                \
+    XCUIApplication *springboard = [[XCUIApplication alloc] initWithBundleIdentifier:@"com.apple.springboard"]; \
+                                                                                                                \
+    /* Go to home screen (springboard) by pressing home button */                                               \
+    [[XCUIDevice sharedDevice] pressButton:XCUIDeviceButtonHome];                                               \
+    [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];                          \
+                                                                                                                \
+    /* Search for app icon on current screen and subsequent screens */                                          \
+    BOOL appFound = NO;                                                                                         \
+    int maxScreens = 10; /* Maximum number of screens to check */                                               \
+    int currentScreen = 0;                                                                                      \
+                                                                                                                \
+    while (!appFound && currentScreen < maxScreens) {                                                           \
+      NSLog(@"Checking screen %d for app: %@", currentScreen + 1, appName);                                     \
+                                                                                                                \
+      /* Look for app icon on current screen */                                                                 \
+      XCUIElement *icon = springboard.icons[appName];                                                           \
+                                                                                                                \
+      if (icon.exists && icon.isHittable) {                                                                     \
+        NSLog(@"App icon found on screen %d: %@", currentScreen + 1, appName);                                  \
+        appFound = YES;                                                                                         \
+                                                                                                                \
+        /* Long press on the app icon to bring up context menu */                                               \
+        NSLog(@"Long pressing on app icon: %@", appName);                                                       \
+        [icon pressForDuration:1.3];                                                                            \
+        [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:2.0]];                      \
+                                                                                                                \
+        /* Perform uninstall based on localized strings */                                                      \
+        NSString *removeAppText = [ObjCLocalization getLocalizedStringWithKey:@"remove_app"];                   \
+        XCUIElement *removeAppButton = springboard.buttons[removeAppText];                                      \
+        if (!removeAppButton.exists) {                                                                          \
+          NSLog(@"'%@' button not found", removeAppText);                                                       \
+          return;                                                                                               \
+        }                                                                                                       \
+                                                                                                                \
+        [removeAppButton tap];                                                                                  \
+                                                                                                                \
+        NSString *deleteAppText = [ObjCLocalization getLocalizedStringWithKey:@"delete_app"];                   \
+        XCUIElement *deleteAppButton = springboard.alerts.buttons[deleteAppText];                               \
+        if (deleteAppButton.exists) {                                                                           \
+          [deleteAppButton tap];                                                                                \
+          while (deleteAppButton.exists) {                                                                      \
+            [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];                  \
+          }                                                                                                     \
+        }                                                                                                       \
+                                                                                                                \
+        NSString *deleteText = [ObjCLocalization getLocalizedStringWithKey:@"delete"];                          \
+        XCUIElement *deleteButton = springboard.alerts.buttons[deleteText];                                     \
+        if (deleteButton.exists) {                                                                              \
+          [deleteButton tap];                                                                                   \
+          while (deleteButton.exists) {                                                                         \
+            [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];                  \
+          }                                                                                                     \
+        }                                                                                                       \
+                                                                                                                \
+        NSLog(@"App uninstallation completed");                                                                 \
+        return;                                                                                                 \
+      }                                                                                                         \
+                                                                                                                \
+      currentScreen++;                                                                                          \
+                                                                                                                \
+      /* If app not found on current screen, swipe right to next screen */                                      \
+      if (currentScreen < maxScreens) {                                                                         \
+        NSLog(@"App not found on screen %d, swiping right to next screen", currentScreen);                      \
+        XCUICoordinate *startCoordinate = [springboard coordinateWithNormalizedOffset:CGVectorMake(0.8, 0.5)];  \
+        XCUICoordinate *endCoordinate = [springboard coordinateWithNormalizedOffset:CGVectorMake(0.2, 0.5)];    \
+        [startCoordinate pressForDuration:0.0                                                                   \
+                     thenDragToCoordinate:endCoordinate                                                         \
+                             withVelocity:XCUIGestureVelocityFast                                               \
+                      thenHoldForDuration:0.0];                                                                 \
+        [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];                      \
+      }                                                                                                         \
+    }                                                                                                           \
+                                                                                                                \
+    if (!appFound) {                                                                                            \
+      NSLog(@"App icon not found on any home screen: %@", appName);                                             \
+    }                                                                                                           \
+  }                                                                                                             \
+                                                                                                                \
   -(void)patrolExecuteDartTest:(NSString *)dartTestName skip:(BOOL)skip {                                       \
     NSLog(@"RunnerUITests running Dart test: %@", dartTestName);                                                \
     if (CLEAR_PERMISSIONS && _patrolStaticTestIndex > 0) {                                                      \
       [[self class] resetPermissions];                                                                          \
       NSLog(@"App permissions cleared");                                                                        \
+    }                                                                                                           \
+    if (FULL_ISOLATION && _patrolStaticTestIndex > 0) {                                                         \
+      NSLog(@"Uninstalling app");                                                                               \
+      [[self class] uninstallApp];                                                                              \
+      NSLog(@"App uninstallation completed, launching fresh app instance");                                     \
     }                                                                                                           \
     _patrolStaticTestIndex++;                                                                                   \
                                                                                                                 \
