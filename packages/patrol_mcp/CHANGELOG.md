@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Drop the web-specific session handling that existed only because `patrol develop` on web restarted cold: web sessions now stay alive across hot restarts like mobile ones, so there are no stale completion callbacks to suppress and no orphaned Flutter/Chrome process to force-kill. Requires the first `patrol_cli` release after 4.6.1.
 - Simplified setup: the `run-patrol` wrapper script is no longer needed — point your MCP config directly at `dart run patrol_mcp`. FVM-pinned projects run develop sessions with the pinned Flutter automatically. See the README for the updated setup.
 - Run develop sessions from `PROJECT_ROOT`, so `run` works when the server's working directory differs from the project (e.g. an app in a subdirectory).
 - Fix the `run` tool hanging until its timeout when the app shuts down before the test reports completion; it now returns promptly as a failed run with a warning, and a `quit` isn't misreported as a crash. Requires the first `patrol_cli` release after 4.5.1, which reports the backend exit independently of `flutter attach`.

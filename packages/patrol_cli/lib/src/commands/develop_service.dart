@@ -92,13 +92,8 @@ class DevelopService {
   /// The device discovered during the last [run] call.
   Device? get device => _device;
 
-  /// The Chrome debugger port discovered during web develop execution.
+  /// The Chrome debugger port used by the web develop session.
   String? get webDebuggerPort => _webTestBackend.debuggerPort;
-
-  /// The Flutter web server process, if running. Available so that callers
-  /// (e.g. MCP) can force-kill it during cleanup when the normal 'Q' stdin
-  /// shutdown path doesn't reach the finally block in [WebTestBackend.develop].
-  Process? get webFlutterProcess => _webTestBackend.flutterProcess;
 
   /// Runs the full develop flow: discover device, read config, bundle test,
   /// build, execute, and attach for hot restart.

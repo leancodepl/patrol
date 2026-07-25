@@ -47,9 +47,8 @@ class WebTestBackend {
   String? get debuggerPort => _debuggerPort;
   String? _debuggerPort;
 
-  /// The Flutter web server process, stored so callers can kill it during
-  /// cleanup if the normal shutdown path is bypassed.
-  Process? get flutterProcess => _flutterProcess;
+  /// The resident `flutter run` process that owns the develop session. Kept for
+  /// the whole session — hot restart goes through its stdin.
   Process? _flutterProcess;
 
   /// The Playwright develop process, kept alive for the whole develop session.
@@ -528,6 +527,21 @@ class WebTestBackend {
     return completer.future;
   }
 
+  /// Whether [url] answers with HTTP 200. Unlike [_verifyServerReady] this is
+  /// silent, so it can be used as a poll without flooding verbose logs.
+  Future<bool> _httpOk(Uri url) async {
+    final client = HttpClient()..connectionTimeout = const Duration(seconds: 2);
+    try {
+      final response = await (await client.getUrl(url)).close();
+      await response.drain<void>();
+      return response.statusCode == 200;
+    } on Object {
+      return false;
+    } finally {
+      client.close(force: true);
+    }
+  }
+
   /// Waits until Chrome's CDP endpoint answers on [debuggerPort] and the
   /// Flutter debug service has attached to the page.
   ///
@@ -549,7 +563,7 @@ class WebTestBackend {
     final deadline = DateTime.now().add(timeoutDuration);
     final endpoint = Uri.parse('http://127.0.0.1:$debuggerPort/json/version');
 
-    while (!await _verifyServerReady(endpoint.toString())) {
+    while (!await _httpOk(endpoint)) {
       if (_flutterProcess == null) {
         throw StateError('Flutter process stopped before Chrome was ready');
       }
