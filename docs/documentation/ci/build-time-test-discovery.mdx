@@ -58,9 +58,11 @@ with `--no-emit-test-manifest`.
 
 ### iOS only — switch `RunnerUITests.m` to the static runner
 
-The generated `PatrolGeneratedTests.inc` is only compiled in when your UITest
-runner uses the static macro. Replace the runtime macro in
-`ios/RunnerUITests/RunnerUITests.m`:
+The **default** `RunnerUITests.m` uses the runtime macro
+`PATROL_INTEGRATION_TEST_IOS_RUNNER(RunnerUITests)`, and that's what you keep for
+normal (runtime-discovery) runs. The generated `PatrolGeneratedTests.inc` is only
+compiled in when the runner uses the static macro, so when you opt in, replace the
+runtime macro in `ios/RunnerUITests/RunnerUITests.m` with:
 
 ```objc
 @import XCTest;
@@ -71,6 +73,14 @@ PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN(RunnerUITests)
 #include "PatrolGeneratedTests.inc"
 PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_END
 ```
+
+<Warning>
+  This iOS runner change is part of the opt-in — the static macro requires the
+  generated `.inc`, so a build **without** `--emit-test-manifest` won't compile.
+  To go back to runtime discovery you must restore the
+  `PATROL_INTEGRATION_TEST_IOS_RUNNER(RunnerUITests)` macro; `--no-emit-test-manifest`
+  alone is not enough on iOS.
+</Warning>
 
 <Info>
   If you enable `emit_test_manifest` but forget this step, `patrol build ios`

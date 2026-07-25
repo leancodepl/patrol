@@ -332,9 +332,9 @@
   +(void)setUp {                                                                                                \
     [super setUp];                                                                                              \
     _patrolStaticServer = [[PatrolServer alloc] init];                                                          \
-    NSError *_Nullable __autoreleasing *_Nullable err = NULL;                                                   \
-    [_patrolStaticServer startAndReturnError:err];                                                              \
-    if (err != NULL) {                                                                                          \
+    NSError *err = nil;                                                                                         \
+    [_patrolStaticServer startAndReturnError:&err];                                                             \
+    if (err != nil) {                                                                                           \
       NSLog(@"patrolServer.start(): failed, err: %@", err);                                                     \
     }                                                                                                           \
     _patrolStaticClient = [[ObjCPatrolAppServiceClient alloc] init];                                            \
