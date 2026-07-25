@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Render the web view hierarchy (the page's DOM) when connected to a Flutter web app, alongside the existing Android and iOS trees. Nodes are labelled by test id, DOM id or accessible label so a Flutter web tree doesn't read as a wall of identical `flt-semantics` entries, and the details panel shows role, aria-label, test id, text, visibility and bounds.
 - Bump `equatable` to `^2.1.0` and migrate API contract types from deprecated `EquatableMixin` to `with Equatable`.
 
 ## 0.4.0

@@ -3,13 +3,13 @@ title: "Patrol DevTools Extension"
 ---
 
 
-A powerful Flutter DevTools extension that allows you to **inspect native UI elements** on Android and iOS devices while developing your Patrol tests. This extension provides a tree view of native UI components, making it easier to write accurate selectors for your integration tests.
+A powerful Flutter DevTools extension that allows you to **inspect native UI elements** on Android and iOS devices, and the **page's DOM** on web, while developing your Patrol tests. This extension provides a tree view of the UI hierarchy your selectors resolve against, making it easier to write accurate selectors for your integration tests.
 
 ## Features
 
 - **Native UI Tree Inspection**: Browse the complete hierarchy of native UI elements on your device
 - **Element Details**: View detailed information about each native element (bounds, text, accessibility properties, etc.)
-- **Cross-platform Support**: Works with both Android and iOS applications
+- **Cross-platform Support**: Works with Android, iOS and web applications
 - **Live Updates**: Refresh the UI tree to see real-time changes
 - **Test Integration**: Copy element selectors directly for use in your Patrol tests
 
@@ -124,3 +124,23 @@ https://pub.dev/documentation/patrol/latest/patrol/AndroidSelector-class.html
 
 Full list of iOS properties can be found:
 https://pub.dev/documentation/patrol/latest/patrol/IOSSelector-class.html
+
+#### Web Properties
+
+On web there is no native view hierarchy — the inspector shows the page's DOM,
+which is exactly what web selectors resolve against. With semantics enabled
+(Patrol's default), Flutter renders `<flt-semantics>` elements carrying the roles
+and labels that finders match, so this is the first place to look when a selector
+doesn't find what you expect.
+
+| Property | Description | Example |
+|----------|-------------|---------|
+| `testId` | `data-testid` attribute (most reliable) | `login-btn` |
+| `id` | DOM `id` attribute | `flt-semantic-node-35` |
+| `role` | ARIA role | `button` |
+| `ariaLabel` | Accessible label | `"Enter text"` |
+| `text` | Text belonging directly to the element | `"Go to Page 1"` |
+| `tagName` | DOM tag name | `FLT-SEMANTICS` |
+
+These map onto `WebSelector`, whose full list of properties can be found:
+https://pub.dev/documentation/patrol/latest/patrol/WebSelector-class.html

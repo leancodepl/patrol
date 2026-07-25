@@ -47,6 +47,13 @@ Patrol launches Chrome once, attaches Playwright to it over the Chrome DevTools
 Protocol, and keeps both alive for the whole session. Typing **R** hot-restarts
 the Flutter app in place, without reloading the page or relaunching the browser.
 
+The [Patrol DevTools extension](/documentation/other/patrol-devtools-extension)
+works here too. Its inspector shows the page's DOM, which is what web selectors
+resolve against — with semantics enabled Flutter renders `<flt-semantics>`
+elements carrying the roles, labels and text that finders like
+`$('Go to Page 1')` match, so it's the first place to look when a selector
+doesn't find what you expect.
+
 <Warning>
   Hot Restart on web requires **Flutter 3.47 or newer**. The generated test
   bundle lives outside `lib/`, and on older SDKs Flutter's web hot restart
