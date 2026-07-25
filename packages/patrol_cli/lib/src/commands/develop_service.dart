@@ -159,6 +159,10 @@ class DevelopService {
       throwToolExit('Web is not supported with develop');
     }
 
+    if (device.targetPlatform == TargetPlatform.windows) {
+      throwToolExit('Windows is not supported with develop');
+    }
+
     _logger.detail('Received device: ${device.name} (${device.id})');
 
     final packageName = options.packageName ?? config.android.packageName;
@@ -302,6 +306,8 @@ class DevelopService {
       TargetPlatform.iOS => () => _iosTestBackend.build(iosOpts),
       TargetPlatform.macOS => () => _macosTestBackend.build(macosOpts),
       TargetPlatform.web => () => _webTestBackend.buildForDevelop(webOpts),
+      TargetPlatform.windows =>
+        () => throwToolExit('Windows is not supported with develop'),
     };
 
     try {
@@ -344,6 +350,7 @@ class DevelopService {
         }
       case TargetPlatform.macOS:
       case TargetPlatform.web:
+      case TargetPlatform.windows:
     }
 
     try {
@@ -421,6 +428,8 @@ class DevelopService {
           clearTestSteps: clearTestSteps,
           stdin: _stdin,
         );
+      case TargetPlatform.windows:
+        throwToolExit('Windows is not supported with develop');
     }
 
     try {

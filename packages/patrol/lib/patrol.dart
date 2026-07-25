@@ -35,3 +35,5 @@ export 'src/platform/selector.dart';
 export 'src/platform/web/upload_file_data.dart';
 export 'src/platform/web/web_automator.dart';
 export 'src/platform/web/web_automator_config.dart';
+export 'src/platform/windows/windows_automator.dart';
+export 'src/platform/windows/windows_automator_config.dart';
