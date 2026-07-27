@@ -233,13 +233,13 @@ final class PatrolSession {
       if (_currentTestFile != testFile) {
         return 'Patrol session is already running "$_currentTestFile". '
             'Cannot start different test "$testFile". '
-            'Use patrol-quit first or run the same test file.';
+            'Use quit first or run the same test file.';
       }
       // Same test file - hot restart. The device can't change on hot restart.
       if (device != null) {
         _deviceSelectionNote =
             'Device "$device" ignored: hot-restarting the running session on '
-            '${this.device?.name ?? 'the current device'}. Use patrol-quit '
+            '${this.device?.name ?? 'the current device'}. Use quit '
             'first to switch devices.';
       }
       sendCommand(PatrolCommand.hotRestart);
@@ -574,14 +574,14 @@ final class PatrolSession {
     throw StateError('Unknown command: ${command.value}');
   }
 
-  PatrolStatus getStatus() {
+  PatrolStatus getStatus({String? overrideWarning}) {
     final dev = _developService?.device;
     return PatrolStatus(
       isDevelopRunning: _isRunning,
       testState: _testState,
       output: _formatLogs(_outputs),
       currentTestFile: _currentTestFile,
-      warning: _finishWarning,
+      warning: overrideWarning ?? _finishWarning,
       deviceSelectionNote: _deviceSelectionNote,
       deviceName: dev?.name,
       deviceId: dev?.id,
@@ -606,7 +606,14 @@ final class PatrolSession {
         await future;
       }
     } on TimeoutException {
-      // Timeout occurred, but don't fail - just return current status
+      // The run didn't finish in time but is still running in the background.
+      // Surface the timeout distinctly, not a `running` snapshot the caller
+      // can't tell apart from a normal in-progress run.
+      return getStatus(
+        overrideWarning:
+            'Run timed out, but the test is still running in the background. '
+            'Call status to check progress, or quit to stop it.',
+      );
     }
 
     return getStatus();
