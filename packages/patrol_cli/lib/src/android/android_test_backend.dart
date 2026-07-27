@@ -5,7 +5,7 @@ import 'package:adb/adb.dart';
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
 import 'package:meta/meta.dart';
-import 'package:patrol_cli/src/android/video_recording_manager.dart';
+import 'package:patrol_cli/src/android/android_video_recording_manager.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/extensions/completer.dart';
 import 'package:patrol_cli/src/base/logger.dart';
