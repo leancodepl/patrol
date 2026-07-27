@@ -10,6 +10,7 @@ import 'package:patrol_cli/src/commands/develop_options.dart';
 import 'package:patrol_cli/src/compatibility_checker/compatibility_checker.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/crossplatform/flutter_tool.dart';
+import 'package:patrol_cli/src/crossplatform/video_recording_config.dart';
 import 'package:patrol_cli/src/dart_defines_reader.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
@@ -281,6 +282,7 @@ class DevelopService {
         showFlutterLogs: false,
         hideTestSteps: options.hideTestSteps,
         clearTestSteps: options.clearTestSteps,
+        videoConfig: options.videoConfig,
       );
     } finally {
       for (final sub in signalSubscriptions) {
@@ -366,6 +368,7 @@ class DevelopService {
     required bool showFlutterLogs,
     required bool hideTestSteps,
     required bool clearTestSteps,
+    VideoRecordingConfig? videoConfig,
   }) async {
     Future<void> Function() action;
     Future<void> Function()? finalizer;
@@ -383,6 +386,7 @@ class DevelopService {
           flavor: flutterOpts.flavor,
           clearTestSteps: clearTestSteps,
           onLogEntry: onLogEntry,
+          videoConfig: videoConfig,
         );
         final package = android.packageName;
         if (package != null && uninstall) {
@@ -402,6 +406,7 @@ class DevelopService {
           hideTestSteps: hideTestSteps,
           clearTestSteps: clearTestSteps,
           onLogEntry: onLogEntry,
+          videoConfig: videoConfig,
         );
         final bundleId = iosOpts.bundleId;
         if (bundleId != null && uninstall) {
