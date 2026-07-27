@@ -15,17 +15,18 @@ and exposes it as a set of MCP tools.
 
 ## Version Compatibility
 
-`patrol_mcp` must stay compatible with the `patrol` in your project — and with
-`patrol_cli`, if you also list it directly in your `pubspec.yaml`. If pub
-reports a version conflict, use the table to find versions that work together:
+`patrol_mcp` must stay compatible with the `patrol` in your project. Its only
+constraint is on `patrol_cli`; the resolver then picks a `patrol_cli` (and its
+`patrol_log`) that also fits your `patrol`:
 
-| patrol_mcp | patrol_cli | patrol_log |
-|------------|------------|------------|
-| 0.1.4+     | 4.3.x+     | 0.8.x+     |
-| 0.1.3      | 4.3.1      | ^0.8.0     |
-| 0.1.2      | 4.3.0      | ^0.8.0     |
-| 0.1.1      | 4.3.0      | ^0.8.0     |
-| 0.1.0      | 4.3.0      | ^0.8.0     |
+| patrol_mcp   | patrol_cli |
+|--------------|------------|
+| 0.1.4, 0.2.0 | ^4.3.0     |
+| 0.1.3        | 4.3.1      |
+| 0.1.0–0.1.2  | 4.3.0      |
+
+A version conflict means your `patrol` — or a `patrol_cli` you pin directly —
+falls outside that range.
 
 ## Getting Started
 
