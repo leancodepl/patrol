@@ -172,8 +172,9 @@ Future<int> main(List<String> args) async {
                   description:
                       'Optional device id or name to run on (from the '
                       '`devices` tool). Omit to auto-select (Android device '
-                      '> Android emulator > iOS device > iOS simulator). A '
-                      '`--device` in PATROL_FLAGS takes precedence.',
+                      '> Android emulator > iOS device > iOS simulator); web '
+                      'is never auto-selected, pass e.g. `chrome` to run in a '
+                      'browser. A `--device` in PATROL_FLAGS takes precedence.',
                 ),
               },
               required: ['testFile'],
@@ -211,8 +212,10 @@ Future<int> main(List<String> args) async {
           ..registerTool(
             'devices',
             description:
-                'List attached devices patrol can run on (Android, iOS). Use '
-                'to resolve a device name/id to pass as `device` to run.',
+                'List attached devices patrol can run on (Android, iOS, web). '
+                'Use to resolve a device name/id to pass as `device` to run. '
+                'Web (e.g. `chrome`) is listed but never auto-selected -- pass '
+                'it as `device` explicitly to run tests in a browser.',
             annotations: const ToolAnnotations(title: 'List Devices'),
             callback: (args, extra) async {
               // Resolve Flutter the same way `run` does (FVM autodetect,
@@ -254,7 +257,7 @@ Future<int> main(List<String> args) async {
             'quit',
             description: 'Quit the active patrol session gracefully',
             annotations: const ToolAnnotations(title: 'Quit Patrol'),
-            callback: (args, extra) {
+            callback: (args, extra) async {
               if (!patrolSession.getStatus().isDevelopRunning) {
                 return const CallToolResult(
                   content: [
@@ -267,7 +270,9 @@ Future<int> main(List<String> args) async {
                   isError: true,
                 );
               }
-              final result = patrolSession.sendCommand(PatrolCommand.quit);
+              final result = await patrolSession.sendCommand(
+                PatrolCommand.quit,
+              );
               return CallToolResult(content: [TextContent(text: result)]);
             },
           )
@@ -301,6 +306,7 @@ Future<int> main(List<String> args) async {
             callback: (args, extra) {
               return ScreenshotService.handleScreenshotRequest(
                 patrolSession.device,
+                webDebuggerPort: patrolSession.developService?.webDebuggerPort,
               );
             },
           )

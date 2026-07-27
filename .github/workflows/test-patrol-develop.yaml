@@ -12,6 +12,7 @@ on:
       - 'packages/adb/**'
       - 'packages/patrol_gen/**'
       - 'dev/e2e_app/**'
+      - 'dev/cli_tests/**'
       - 'schema.dart'
       - 'gen_from_schema'
       - '!**.md'
@@ -114,3 +115,50 @@ jobs:
         run: |
           dart pub get
           dart patrol_develop_test.dart --ios 26.2
+
+  test-web:
+    name: Test `patrol develop` on Web
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+
+      # Hot Restart on web needs flutter/flutter#183838, which is not in
+      # stable 3.44.x, hence beta rather than the pin the other jobs use.
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: beta
+
+      - name: Preload Flutter artifacts
+        run: flutter precache --web
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: packages/patrol/web_runner/package-lock.json
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('packages/patrol/web_runner/package-lock.json') }}
+
+      - name: Set up Melos and activate workspace
+        run: |
+          dart pub global activate melos
+          melos bootstrap
+
+      - name: Set up Patrol CLI
+        working-directory: packages/patrol_cli
+        run: dart pub global activate --source path . && patrol
+
+      - name: Run patrol develop test
+        working-directory: dev/cli_tests
+        run: |
+          dart pub get
+          xvfb-run --auto-servernum dart patrol_develop_test.dart --web

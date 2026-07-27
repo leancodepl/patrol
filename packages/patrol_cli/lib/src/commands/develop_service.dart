@@ -93,6 +93,9 @@ class DevelopService {
   /// The device discovered during the last [run] call.
   Device? get device => _device;
 
+  /// The Chrome debugger port used by the web develop session.
+  String? get webDebuggerPort => _webTestBackend.debuggerPort;
+
   /// Runs the full develop flow: discover device, read config, bundle test,
   /// build, execute, and attach for hot restart.
   Future<void> run(DevelopOptions options) async {
@@ -109,12 +112,6 @@ class DevelopService {
 
     if (options.generateBundle) {
       _testBundler.createDevelopTestBundle(testDirectory, target);
-    }
-    _testBundler.ensureEntrypoint(testDirectory);
-    final entrypoint = _testBundler.getEntrypointFile(testDirectory);
-    final signalSubscriptions = _registerProxyCleanupOnSignals(testDirectory);
-    Future<void> cleanupProxy() async {
-      _testBundler.deleteEntrypointProxy(testDirectory);
     }
 
     final androidFlavor = options.flavor ?? config.android.flavor;
@@ -153,11 +150,20 @@ class DevelopService {
       throwToolExit('macOS is not supported with develop');
     }
 
-    // Changes applied outside `/lib` directory are not 'hot-restarted'.
-    // This is a blocker from applying changes to test code.
-    // https://github.com/flutter/flutter/issues/175318
-    if (device.targetPlatform == TargetPlatform.web) {
-      throwToolExit('Web is not supported with develop');
+    // For web, use the bundle file directly (like the test command does),
+    // because the proxy entrypoint in integration_test/ causes broken
+    // relative imports under the web compiler.
+    final isWeb = device.targetPlatform == TargetPlatform.web;
+    final File entrypoint;
+    if (isWeb) {
+      entrypoint = _testBundler.getBundledTestFile(testDirectory);
+    } else {
+      _testBundler.ensureEntrypoint(testDirectory);
+      entrypoint = _testBundler.getEntrypointFile(testDirectory);
+    }
+    final signalSubscriptions = _registerProxyCleanupOnSignals(testDirectory);
+    Future<void> cleanupProxy() async {
+      _testBundler.deleteEntrypointProxy(testDirectory);
     }
 
     _logger.detail('Received device: ${device.name} (${device.id})');
@@ -425,6 +431,8 @@ class DevelopService {
           hideTestSteps: hideTestSteps,
           clearTestSteps: clearTestSteps,
           stdin: _stdin,
+          onLogEntry: onLogEntry,
+          openDevtools: openDevtools,
         );
     }
 

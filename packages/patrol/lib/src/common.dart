@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:meta/meta.dart';
 import 'package:patrol/src/binding.dart';
+import 'package:patrol/src/develop_generation.dart';
 import 'package:patrol/src/global_state.dart' as global_state;
 import 'package:patrol/src/native/native_automator_config.dart';
 import 'package:patrol/src/platform/contracts/contracts.dart';
@@ -154,6 +155,13 @@ void patrolTest(
         web: platformAutomator.web.configure,
       );
 
+      // Claim the app for this run. On web a hot restart re-runs main() in the
+      // same page, so this invalidates the idle loop left behind by the
+      // previous generation. No-op off the web.
+      final generation = constants.hotRestartEnabled
+          ? claimDevelopGeneration()
+          : 0;
+
       patrolLog.log(
         TestEntry(
           name: global_state.currentTestFullName,
@@ -167,11 +175,18 @@ void patrolTest(
       );
       try {
         await callback(patrolTester);
-      } catch (_) {
+      } catch (err, st) {
         if (constants.hotRestartEnabled) {
           patrolLog.log(
             TestEntry(name: description, status: TestEntryStatus.failure),
           );
+          final details = switch (err) {
+            TestFailure(:final message?) => message,
+            _ => '$err\n$st',
+          };
+          details
+              .split('\n')
+              .forEach((line) => patrolLog.log(ErrorEntry(message: line)));
         }
         rethrow;
       }
@@ -196,8 +211,14 @@ void patrolTest(
           ..log(
             ConfigEntry(config: const {ConfigEntry.developCompletedKey: true}),
           );
-        // Wait indefinitely in develop mode after the last test
-        while (true) {
+        // Wait indefinitely in develop mode after the last test.
+        //
+        // On web a hot restart neither kills this frame nor reloads the page,
+        // and pumping drives frames through requestAnimationFrame, which DDC
+        // does not generation-gate. Bail out as soon as a newer generation has
+        // claimed the app, or this loop keeps rendering into the disposed
+        // EngineFlutterView of the previous run.
+        while (isCurrentDevelopGeneration(generation)) {
           await widgetTester.pump();
           await Future<void>.delayed(const Duration(milliseconds: 10));
         }
