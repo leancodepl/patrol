@@ -252,5 +252,4 @@ class IOSVideoRecordingManager extends VideoRecordingManager {
     // For now, this is a placeholder
     _currentRecordingProcess?.kill();
   }
-
 }

@@ -223,5 +223,4 @@ class AndroidVideoRecordingManager extends VideoRecordingManager {
       _currentTestName = null;
     }
   }
-
 }
