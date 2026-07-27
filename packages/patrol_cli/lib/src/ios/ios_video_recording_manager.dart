@@ -116,10 +116,11 @@ class IOSVideoRecordingManager extends VideoRecordingManager {
     _logger.detail('Executing command: ${command.join(' ')}');
 
     try {
-      _currentRecordingProcess = await _processManager.start(
-        command,
-        runInShell: true,
-      );
+      // Do NOT run in a shell: the recording is stopped by sending SIGINT to
+      // this process so `simctl` can finalize the .mp4. A shell wrapper would
+      // receive the SIGINT itself and not forward it to `simctl`, leaving the
+      // recording running forever and hanging the test run.
+      _currentRecordingProcess = await _processManager.start(command);
       _currentRecordingProcess!.disposedBy(_scope);
 
       // Listen to stderr for any errors
@@ -180,12 +181,27 @@ class IOSVideoRecordingManager extends VideoRecordingManager {
           'Sending SIGINT to xcrun simctl process for proper termination...',
         );
 
-        // Send SIGINT instead of SIGTERM for proper video finalization
+        // Send SIGINT (not SIGTERM) so `simctl` finalizes the .mp4 on exit.
         _currentRecordingProcess!.kill(io.ProcessSignal.sigint);
 
-        // Wait for the process to finish and file to be written
+        // Wait for the process to flush and exit, but never block the run:
+        // if the test failed fast, the SIGINT can land while `simctl` is still
+        // starting up and be ignored, leaving the recording running forever.
+        // Force kill after a short grace period so a stuck recording can't
+        // hang the test run (and hold the simulator hostage from later tests).
         _logger.detail('Waiting for xcrun simctl process to exit...');
-        final exitCode = await _currentRecordingProcess!.exitCode;
+        final process = _currentRecordingProcess!;
+        final exitCode = await process.exitCode.timeout(
+          const Duration(seconds: 10),
+          onTimeout: () {
+            _logger.warn(
+              'xcrun simctl recordVideo did not exit after SIGINT; force '
+              'killing it. The video for this test may be incomplete.',
+            );
+            process.kill(io.ProcessSignal.sigkill);
+            return -1;
+          },
+        );
         _logger.detail('xcrun simctl process exited with code: $exitCode');
 
         // Try to ensure simulator state is stable after recording

@@ -6,7 +6,7 @@
 ## Unreleased
 
 - Add `--record-video` flag to `patrol test` and `patrol develop` to record a video per test case (Android and iOS simulators). (#2741)
-- Fix `patrol test`/`patrol develop` not capturing `PATROL_LOG` events on iOS simulators (empty test summary and no per-test video recording), by reading the simulator's own unified log via `simctl spawn` instead of the host's `log stream`.
+- Fix `patrol test`/`patrol develop` not reading logs from iOS simulators, by streaming the simulator's log via `simctl spawn`. (#3198)
 
 ## 4.6.0
 
