@@ -521,6 +521,7 @@ class WebAppOptions {
       'PATROL_WEB_TRACE': trace,
       'PATROL_WEB_STORAGE_STATE': storageState,
       'PATROL_WEB_ACCEPT_DOWNLOADS': acceptDownloads,
+      'PATROL_WEB_COVERAGE_DIR': coverageDir,
     };
 
     return {

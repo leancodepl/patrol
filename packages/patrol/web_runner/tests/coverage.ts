@@ -6,7 +6,7 @@ import { logger } from "./logger"
 // Set by patrol_cli for `patrol test --coverage` on web. When present, raw V8
 // coverage (plus source maps) is written here as one JSON file per test, which
 // the CLI later converts into an LCOV report.
-const coverageDir = process.env.PATROL_COVERAGE_DIR
+const coverageDir = process.env.PATROL_WEB_COVERAGE_DIR
 
 export async function startCoverage(page: Page): Promise<void> {
   if (!coverageDir) {
