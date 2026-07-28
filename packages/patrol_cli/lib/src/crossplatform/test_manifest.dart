@@ -150,6 +150,21 @@ String _uniqueIosSelector(String dartName, int index, Set<String> used) {
   return selector;
 }
 
+/// Java keywords and reserved literals, which cannot be used as method names.
+const _javaReservedWords = {
+  'abstract', 'assert', 'boolean', 'break', 'byte', 'case', 'catch', 'char',
+  'class', 'const', 'continue', 'default', 'do', 'double', 'else', 'enum',
+  'extends', 'final', 'finally', 'float', 'for', 'goto', 'if', 'implements',
+  'import', 'instanceof', 'int', 'interface', 'long', 'native', 'new',
+  'package', 'private', 'protected', 'public', 'return', 'short', 'static',
+  'strictfp', 'super', 'switch', 'synchronized', 'this', 'throw', 'throws',
+  'transient', 'try', 'void', 'volatile', 'while',
+  // Reserved literals.
+  'true', 'false', 'null',
+  // Restricted/contextual keywords (harmless to guard against).
+  '_',
+};
+
 /// Android method name: sanitized, unique Java identifier. Prefers the clean
 /// name and only appends the manifest index on collision, so most method names
 /// are name-derivable (also sidesteps the Android Test Orchestrator 1.5.0
@@ -164,6 +179,11 @@ String _uniqueAndroidMethodName(String dartName, int index, Set<String> used) {
   }
   // A Java identifier cannot start with a digit.
   if (RegExp('^[0-9]').hasMatch(sanitized)) {
+    sanitized = 't_$sanitized';
+  }
+  // A Java method cannot be named after a keyword or reserved literal (a Dart
+  // test called e.g. `class` would generate `public void class()`).
+  if (_javaReservedWords.contains(sanitized)) {
     sanitized = 't_$sanitized';
   }
   // Keep method names readable but bounded.

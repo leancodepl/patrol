@@ -50,15 +50,18 @@ fi
 
 # Extract each generated selector and prefix it with the target/class in the
 # format the selected device type expects.
+#
+# `|| true` on grep: with `set -euo pipefail` a no-match (exit 1) would abort the
+# script here, making the explicit empty-list diagnostic below unreachable.
 mkdir -p "$(dirname "$OUT_FILE")"
-grep -oE '^- \(void\)test_[A-Za-z0-9_]+' "$INC_FILE" \
+{ grep -oE '^- \(void\)test_[A-Za-z0-9_]+' "$INC_FILE" || true; } \
   | sed -E "s#^- \(void\)#$PREFIX#" \
   > "$OUT_FILE"
 
 COUNT="$(wc -l < "$OUT_FILE" | tr -d '[:space:]')"
 if [[ "$COUNT" -eq 0 ]]; then
   echo "ERROR: no test selectors found in $INC_FILE - empty test list." >&2
-  echo "Build-time discovery likely failed (native fell back to runtime)." >&2
+  echo "Build-time discovery produced no tests; re-run the build and check its output." >&2
   exit 1
 fi
 

@@ -78,6 +78,23 @@ void main() {
     expect(TestManifest.parse(manifest).tests, isEmpty);
   });
 
+  test('Android method names never collide with Java keywords', () {
+    const manifest = '''
+{"group":{"name":"","type":"group","skip":false,"entries":[
+  {"name":"class","type":"test","skip":false},
+  {"name":"null","type":"test","skip":false},
+  {"name":"static","type":"test","skip":false}
+]}}
+''';
+
+    final methods = generateAndroidMethodNames(
+      TestManifest.parse(manifest).tests,
+    );
+
+    // A method literally named `class` would not compile.
+    expect(methods, ['t_class', 't_null', 't_static']);
+  });
+
   group('selector generation', () {
     const manifest = '''
 {"group":{"name":"","type":"group","skip":false,"entries":[

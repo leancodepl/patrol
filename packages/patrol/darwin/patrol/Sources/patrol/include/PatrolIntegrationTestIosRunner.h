@@ -534,9 +534,19 @@
     }                                                                                                           \
     _patrolStaticTestIndex++;                                                                                   \
                                                                                                                 \
+    _patrolStaticServer.appReady = NO;                                                                          \
     [[[XCUIApplication alloc] init] launch];                                                                    \
     if (skip) {                                                                                                 \
       XCTSkip(@"Skip that test \"%@\"", dartTestName);                                                          \
+    }                                                                                                           \
+                                                                                                                \
+    NSDate *_patrolReadyDeadline = [NSDate dateWithTimeIntervalSinceNow:180.0];                                 \
+    while (!_patrolStaticServer.appReady) {                                                                     \
+      if ([[NSDate date] compare:_patrolReadyDeadline] == NSOrderedDescending) {                                \
+        XCTFail(@"App did not report PatrolAppService readiness in time");                                      \
+        return;                                                                                                 \
+      }                                                                                                         \
+      [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];                        \
     }                                                                                                           \
                                                                                                                 \
     __block ObjCRunDartTestResponse *response = NULL;                                                           \
