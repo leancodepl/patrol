@@ -38,8 +38,13 @@ With build-time discovery, `patrol build` / `patrol test`:
 3. Compiles those methods into the test binary, so the native test framework
    (XCTest / JUnit) discovers them natively.
 
-The generated method names are byte-identical to what runtime discovery produces,
-so the tests behave exactly the same — they just also exist statically.
+The native method names are sanitized (Dart names contain spaces and punctuation)
+and get a uniqueness suffix, so they are *not* the Dart names verbatim. What stays
+byte-identical is the Dart test name embedded in each method body and handed to
+Patrol — so the tests run exactly the same as under runtime discovery, they just
+also exist statically. Use the generated method names when building native
+selectors, and the Dart names when selecting tests through Patrol
+(e.g. `--only`).
 
 ## Setup
 

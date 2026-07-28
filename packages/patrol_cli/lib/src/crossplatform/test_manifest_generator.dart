@@ -30,8 +30,10 @@ class TestManifestGenerator {
   /// Runs the bundle on the host in discovery mode and returns the absolute
   /// path to the generated manifest, or `null` if discovery failed.
   ///
-  /// Failures are intentionally non-fatal: the caller can fall back to the
-  /// native runtime discovery when the manifest is absent.
+  /// A `null` result is terminal for the callers: both the iOS and the Android
+  /// backend abort the build, because once discovery is opted into there is no
+  /// usable runtime-discovery path left (the iOS static runner has no
+  /// `+testInvocations`).
   Future<String?> generate(
     FlutterAppOptions flutter,
     DisposeScope scope,
@@ -61,8 +63,8 @@ class TestManifestGenerator {
 
     if (exitCode != 0 || !manifestFile.existsSync()) {
       task.fail(
-        'Build-time test discovery failed (exit code $exitCode); the native '
-        'side will fall back to runtime discovery',
+        'Build-time test discovery failed (exit code $exitCode); see the '
+        'output above (run with --verbose for the full host `flutter test` log)',
       );
       return null;
     }
