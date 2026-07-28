@@ -162,7 +162,18 @@ grep -oE '^- \(void\)test_[A-Za-z0-9_]+' ios/RunnerUITests/PatrolGeneratedTests.
 ```
 
 Then point SauceLabs at it with `shard: concurrency` + `testListFile`. See
-`dev/e2e_app/scripts/generate_ios_testlist.sh` for a ready-made version.
+`dev/e2e_app/scripts/generate_ios_testlist.sh` for a ready-made version
+(`SAUCE_DEVICE=real|simulator`).
+
+<Warning>
+  The `testListFile` entry format differs by device type: SauceLabs expects
+  `TestTarget/TestClass/testMethod` on **simulators** but
+  `TestTarget.TestClass/testMethod` (a dot between target and class) on **real
+  devices**. Using the wrong one matches no tests, so the run installs the UITest
+  runner and then hangs on a blank/gray screen. The `sed` above produces the
+  simulator format; for real devices replace the first `/` with `.`
+  (`RunnerUITests.RunnerUITests/`), or run the script with `SAUCE_DEVICE=real`.
+</Warning>
 
 <Info>
   Generate the test list on every build and don't commit it — the `_<index>`
