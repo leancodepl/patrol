@@ -179,6 +179,49 @@ public class MainActivityTest {
     expect(source, contains('instrumentation.setUp(FlutterActivity.class);'));
   });
 
+  test('works on a Windows-style filesystem', () {
+    // Regression: paths were joined with the *host* platform separator instead
+    // of the filesystem's, so on Windows the generated file landed under a
+    // mangled name, the locator then mistook it for the host test, and
+    // findGeneratedClassName looked in the wrong directory and returned null.
+    final winFs = MemoryFileSystem.test(style: FileSystemStyle.windows);
+    winFs.file(r'C:\manifest.json')
+      ..createSync(recursive: true)
+      ..writeAsStringSync(manifest);
+    winFs.file(
+        r'C:\android\app\src\androidTest\java\pl\leancode\patrol\e2e_app\MainActivityTest.java',
+      )
+      ..createSync(recursive: true)
+      ..writeAsStringSync('''
+package pl.leancode.patrol.e2e_app;
+import pl.leancode.patrol.PatrolJUnitRunner;
+public class MainActivityTest {}
+''');
+
+    final codegen = AndroidTestCodegen(winFs);
+    final androidDir = winFs.directory(r'C:\android');
+
+    expect(codegen.findGeneratedClassName(androidDir), isNull);
+
+    final result = codegen.generate(
+      manifestPath: r'C:\manifest.json',
+      androidDir: androidDir,
+    );
+    expect(result, isNotNull);
+    expect(
+      result!.fullyQualifiedClassName,
+      'pl.leancode.patrol.e2e_app.PatrolGeneratedTests',
+    );
+
+    // The generated file must be found again from the same host directory.
+    expect(
+      codegen.findGeneratedClassName(androidDir),
+      'pl.leancode.patrol.e2e_app.PatrolGeneratedTests',
+    );
+    expect(codegen.deleteGenerated(androidDir), isTrue);
+    expect(codegen.findGeneratedClassName(androidDir), isNull);
+  });
+
   test('returns null when no androidTest host class is present', () {
     final bare = MemoryFileSystem.test();
     bare.file('/manifest.json')
