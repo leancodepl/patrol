@@ -9,6 +9,45 @@ import '../src/fixtures.dart';
 void main() {
   const flutterCommand = FlutterCommand('flutter');
 
+  group('FlutterAppOptions.toFlutterTestDiscoveryInvocation', () {
+    const flutterOptions = FlutterAppOptions(
+      command: flutterCommand,
+      target: 'patrol_test/test_bundle.dart',
+      buildMode: BuildMode.debug,
+      flavor: null,
+      buildName: null,
+      buildNumber: null,
+      dartDefines: {'TARGET_ENV': 'staging'},
+      dartDefineFromFilePaths: [],
+    );
+
+    test('runs only the explorer test and forwards the dart-defines', () {
+      final invocation = flutterOptions.toFlutterTestDiscoveryInvocation(
+        manifestOutputPath: '/tmp/manifest.json',
+      );
+
+      expect(
+        invocation,
+        equals([
+          'flutter',
+          'test',
+          'patrol_test/test_bundle.dart',
+          '--suppress-analytics',
+          // Restricting the run to the explorer keeps the user's setUp/tearDown
+          // (however they were registered) from executing during discovery.
+          '--plain-name',
+          'patrol_test_explorer',
+          '--dart-define',
+          'PATROL_TEST_DISCOVERY=true',
+          '--dart-define',
+          'PATROL_MANIFEST_OUTPUT=/tmp/manifest.json',
+          '--dart-define',
+          'TARGET_ENV=staging',
+        ]),
+      );
+    });
+  });
+
   group('AndroidAppOptions', () {
     late AndroidAppOptions options;
 

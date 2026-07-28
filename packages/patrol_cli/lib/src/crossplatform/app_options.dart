@@ -60,6 +60,14 @@ class FlutterAppOptions {
   /// test description can be built from a dart-define (e.g. a target env), so
   /// discovery must see the exact same config or the manifest names would
   /// diverge from what the on-device run registers.
+  ///
+  /// Only the internal `patrol_test_explorer` test is allowed to run
+  /// (`--plain-name`). Declaring the tests is what builds the group tree, so the
+  /// manifest stays complete, but nothing else is *scheduled* - which means no
+  /// `setUp`/`tearDown`/`setUpAll`/`tearDownAll` around the user's tests ever
+  /// executes during discovery. That holds regardless of how those hooks were
+  /// registered (plain `setUp`, `patrolSetUp`, or a project's own wrapper), so
+  /// device-dependent fixtures can't break the host discovery run.
   @nonVirtual
   List<String> toFlutterTestDiscoveryInvocation({
     required String manifestOutputPath,
@@ -69,6 +77,8 @@ class FlutterAppOptions {
       'test',
       target,
       '--suppress-analytics',
+      // Keep in sync with the explorer test name emitted by TestBundler.
+      ...['--plain-name', 'patrol_test_explorer'],
       ...['--dart-define', 'PATROL_TEST_DISCOVERY=true'],
       ...['--dart-define', 'PATROL_MANIFEST_OUTPUT=$manifestOutputPath'],
       for (final dartDefine in dartDefines.entries) ...[

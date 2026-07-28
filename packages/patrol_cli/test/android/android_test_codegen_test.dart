@@ -134,6 +134,51 @@ public class MainActivityTest {
     );
   });
 
+  test('ignores a runner subclass sitting next to the host test', () {
+    // The documented Allure setup puts AllurePatrolJUnitRunner.kt in the same
+    // directory as the host test; it references (and extends) PatrolJUnitRunner
+    // but is not the host. Sorted listing puts it FIRST, so a naive locator
+    // would pick it and lose the host's activity.
+    final fs2 = MemoryFileSystem.test();
+    fs2.file('/manifest.json')
+      ..createSync(recursive: true)
+      ..writeAsStringSync(manifest);
+    const dir = '/android/app/src/androidTest/java/pl/leancode/patrol/e2e_app';
+    fs2.file('$dir/AllurePatrolJUnitRunner.kt')
+      ..createSync(recursive: true)
+      ..writeAsStringSync('''
+package pl.leancode.patrol.e2e_app
+import pl.leancode.patrol.PatrolJUnitRunner
+class AllurePatrolJUnitRunner : PatrolJUnitRunner() {}
+''');
+    fs2.file('$dir/MainActivityTest.java')
+      ..createSync(recursive: true)
+      ..writeAsStringSync('''
+package pl.leancode.patrol.e2e_app;
+import io.flutter.embedding.android.FlutterActivity;
+import pl.leancode.patrol.PatrolJUnitRunner;
+public class MainActivityTest {
+  @Parameters
+  public static Object[] testCases() {
+    PatrolJUnitRunner instrumentation =
+        (PatrolJUnitRunner) InstrumentationRegistry.getInstrumentation();
+    instrumentation.setUp(FlutterActivity.class);
+    return instrumentation.listDartTests();
+  }
+}
+''');
+
+    final result = AndroidTestCodegen(fs2).generate(
+      manifestPath: '/manifest.json',
+      androidDir: fs2.directory('/android'),
+    );
+
+    expect(result, isNotNull);
+    final source = fs2.file(result!.outputPath).readAsStringSync();
+    // The host's activity was used, i.e. the host (not the runner) was located.
+    expect(source, contains('instrumentation.setUp(FlutterActivity.class);'));
+  });
+
   test('returns null when no androidTest host class is present', () {
     final bare = MemoryFileSystem.test();
     bare.file('/manifest.json')

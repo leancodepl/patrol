@@ -123,9 +123,17 @@ class AndroidTestCodegen {
     return true;
   }
 
-  /// Locates the host instrumentation test (the file that references
-  /// `PatrolJUnitRunner`) under `android/app/src/androidTest`, returning its
-  /// directory and declared package.
+  /// Locates the host instrumentation test under `android/app/src/androidTest`,
+  /// returning its directory, declared package and the activity it launches.
+  ///
+  /// Merely referencing `PatrolJUnitRunner` is not enough to identify the host:
+  /// a project may also *subclass* the runner next to the host test (the
+  /// documented Allure setup puts `AllurePatrolJUnitRunner.kt` in the same
+  /// directory), and our own generated class references it too. So runner
+  /// declarations and the generated class are skipped, and the host is
+  /// recognized by how it *uses* the runner (`getInstrumentation()` plus
+  /// `setUp(...)`/`listDartTests()`). Candidates are sorted by path so the
+  /// choice never depends on filesystem listing order.
   _HostTest? _locateHostTest(
     Directory androidDir, {
     String generatedClassName = 'PatrolGeneratedTests',
@@ -138,22 +146,29 @@ class AndroidTestCodegen {
       return null;
     }
 
-    for (final entity in testRoot.listSync(recursive: true)) {
-      if (entity is! File) {
-        continue;
-      }
-      final path = entity.path;
-      if (!path.endsWith('.java') && !path.endsWith('.kt')) {
-        continue;
-      }
-      // Never treat our own generated class as the host: it also references
-      // PatrolJUnitRunner, so once it exists it would otherwise be an ambiguous
-      // second candidate (non-deterministic depending on listing order).
-      if (entity.basename == '$generatedClassName.java') {
-        continue;
-      }
+    final sources =
+        testRoot
+            .listSync(recursive: true)
+            .whereType<File>()
+            .where((f) => f.path.endsWith('.java') || f.path.endsWith('.kt'))
+            .where(
+              (f) =>
+                  f.basename != '$generatedClassName.java' &&
+                  f.basename != '$generatedClassName.kt',
+            )
+            .toList()
+          ..sort((a, b) => a.path.compareTo(b.path));
+
+    _HostTest? weakMatch;
+    for (final entity in sources) {
       final content = entity.readAsStringSync();
       if (!content.contains('PatrolJUnitRunner')) {
+        continue;
+      }
+      // Skip runner declarations (e.g. `class AllurePatrolJUnitRunner :
+      // PatrolJUnitRunner()` / `extends PatrolJUnitRunner`) - they reference the
+      // runner but are not the test host.
+      if (_declaresRunnerSubclass(content)) {
         continue;
       }
       final packageName = _parsePackage(content);
@@ -161,14 +176,30 @@ class AndroidTestCodegen {
         continue;
       }
       final activity = _parseActivity(content);
-      return _HostTest(
+      final host = _HostTest(
         directory: entity.parent,
         packageName: packageName,
         activityClass: activity.className,
         activityImport: activity.import,
       );
+      // A file that actually drives the runner is the host; anything else that
+      // merely mentions it is only a fallback.
+      if (content.contains('getInstrumentation()') &&
+          (content.contains('setUp(') || content.contains('listDartTests('))) {
+        return host;
+      }
+      weakMatch ??= host;
     }
-    return null;
+    return weakMatch;
+  }
+
+  /// Whether [content] declares a class extending `PatrolJUnitRunner` (Java
+  /// `extends PatrolJUnitRunner` or Kotlin `: PatrolJUnitRunner()`).
+  bool _declaresRunnerSubclass(String content) {
+    return RegExp(
+      r'(extends\s+(\w+\.)*PatrolJUnitRunner\b)'
+      r'|(:\s*(\w+\.)*PatrolJUnitRunner\s*\()',
+    ).hasMatch(content);
   }
 
   String? _parsePackage(String content) {
