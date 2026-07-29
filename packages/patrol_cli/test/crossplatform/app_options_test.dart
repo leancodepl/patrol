@@ -804,5 +804,123 @@ void main() {
         expect(flutterInvocation, isNot(contains('--flavor')));
       });
     });
+
+    group('toEnvironmentVariables', () {
+      const flutterOpts = FlutterAppOptions(
+        command: flutterCommand,
+        target: 'patrol_test/app_test.dart',
+        buildMode: BuildMode.debug,
+        flavor: null,
+        buildName: null,
+        buildNumber: null,
+        dartDefines: {},
+        dartDefineFromFilePaths: [],
+      );
+
+      test('omits unset options', () {
+        options = const WebAppOptions(flutter: flutterOpts);
+
+        expect(options.toEnvironmentVariables(), isEmpty);
+      });
+
+      test('includes only the options that were set', () {
+        options = const WebAppOptions(
+          flutter: flutterOpts,
+          timeout: 30000,
+          headless: true,
+          channel: 'chrome',
+        );
+
+        expect(
+          options.toEnvironmentVariables(),
+          equals({
+            'PATROL_WEB_TIMEOUT': '30000',
+            'PATROL_WEB_HEADLESS': 'true',
+            'PATROL_WEB_CHANNEL': 'chrome',
+          }),
+        );
+      });
+
+      test('stringifies every supported option', () {
+        options = const WebAppOptions(
+          flutter: flutterOpts,
+          retries: 2,
+          video: 'on',
+          timeout: 30000,
+          workers: 4,
+          reporter: 'html',
+          locale: 'en-US',
+          timezone: 'UTC',
+          colorScheme: 'dark',
+          geolocation: '{"latitude":1,"longitude":2}',
+          permissions: '["geolocation"]',
+          userAgent: 'test-agent',
+          viewport: '{"width":800,"height":600}',
+          globalTimeout: 60000,
+          shard: '1/2',
+          headless: false,
+          browserArgs: '["--no-sandbox"]',
+          channel: 'msedge',
+          executablePath: '/usr/bin/chromium',
+          slowMo: 100,
+          chromiumSandbox: false,
+          downloadsPath: '/tmp/downloads',
+          ignoreDefaultArgs: 'true',
+          proxy: '{"server":"http://localhost:8080"}',
+          browserTimeout: 5000,
+          tracesDir: '/tmp/traces',
+          bypassCsp: true,
+          ignoreHttpsErrors: true,
+          offline: false,
+          httpCredentials: '{"username":"user","password":"pass"}',
+          extraHttpHeaders: '{"X-Test":"1"}',
+          screenshot: 'only-on-failure',
+          trace: 'retain-on-failure',
+          storageState: '/tmp/state.json',
+          acceptDownloads: true,
+        );
+
+        expect(
+          options.toEnvironmentVariables(),
+          equals({
+            'PATROL_WEB_RETRIES': '2',
+            'PATROL_WEB_VIDEO': 'on',
+            'PATROL_WEB_TIMEOUT': '30000',
+            'PATROL_WEB_WORKERS': '4',
+            'PATROL_WEB_REPORTER': 'html',
+            'PATROL_WEB_LOCALE': 'en-US',
+            'PATROL_WEB_TIMEZONE': 'UTC',
+            'PATROL_WEB_COLOR_SCHEME': 'dark',
+            'PATROL_WEB_GEOLOCATION': '{"latitude":1,"longitude":2}',
+            'PATROL_WEB_PERMISSIONS': '["geolocation"]',
+            'PATROL_WEB_USER_AGENT': 'test-agent',
+            'PATROL_WEB_VIEWPORT': '{"width":800,"height":600}',
+            'PATROL_WEB_GLOBAL_TIMEOUT': '60000',
+            'PATROL_WEB_SHARD': '1/2',
+            'PATROL_WEB_HEADLESS': 'false',
+            'PATROL_WEB_BROWSER_ARGS': '["--no-sandbox"]',
+            'PATROL_WEB_CHANNEL': 'msedge',
+            'PATROL_WEB_EXECUTABLE_PATH': '/usr/bin/chromium',
+            'PATROL_WEB_SLOW_MO': '100',
+            'PATROL_WEB_CHROMIUM_SANDBOX': 'false',
+            'PATROL_WEB_DOWNLOADS_PATH': '/tmp/downloads',
+            'PATROL_WEB_IGNORE_DEFAULT_ARGS': 'true',
+            'PATROL_WEB_PROXY': '{"server":"http://localhost:8080"}',
+            'PATROL_WEB_BROWSER_TIMEOUT': '5000',
+            'PATROL_WEB_TRACES_DIR': '/tmp/traces',
+            'PATROL_WEB_BYPASS_CSP': 'true',
+            'PATROL_WEB_IGNORE_HTTPS_ERRORS': 'true',
+            'PATROL_WEB_OFFLINE': 'false',
+            'PATROL_WEB_HTTP_CREDENTIALS':
+                '{"username":"user","password":"pass"}',
+            'PATROL_WEB_EXTRA_HTTP_HEADERS': '{"X-Test":"1"}',
+            'PATROL_WEB_SCREENSHOT': 'only-on-failure',
+            'PATROL_WEB_TRACE': 'retain-on-failure',
+            'PATROL_WEB_STORAGE_STATE': '/tmp/state.json',
+            'PATROL_WEB_ACCEPT_DOWNLOADS': 'true',
+          }),
+        );
+      });
+    });
   });
 }

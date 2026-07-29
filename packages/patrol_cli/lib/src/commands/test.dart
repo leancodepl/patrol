@@ -9,6 +9,7 @@ import 'package:patrol_cli/src/commands/dart_define_utils.dart';
 import 'package:patrol_cli/src/compatibility_checker/compatibility_checker.dart';
 import 'package:patrol_cli/src/coverage/coverage_tool.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
+import 'package:patrol_cli/src/crossplatform/video_recording_config.dart';
 import 'package:patrol_cli/src/dart_defines_reader.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
@@ -70,6 +71,7 @@ class TestCommand extends PatrolCommand {
     usesAppNameOption();
     usesAndroidOptions();
     usesIOSOptions();
+    usesVideoRecordingOptions();
 
     usesWeb();
   }
@@ -334,10 +336,28 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       viewport: stringArg('web-viewport'),
       globalTimeout: intArg('web-global-timeout'),
       shard: stringArg('web-shard'),
-      headless: stringArg('web-headless'),
+      headless: optionalBoolArg('web-headless'),
       webPort: intArg('web-port'),
       serverTimeout: intArg('web-server-timeout'),
       browserArgs: stringArg('web-browser-args'),
+      channel: stringArg('web-channel'),
+      executablePath: stringArg('web-executable-path'),
+      slowMo: intArg('web-slow-mo'),
+      chromiumSandbox: optionalBoolArg('web-chromium-sandbox'),
+      downloadsPath: stringArg('web-downloads-path'),
+      ignoreDefaultArgs: stringArg('web-ignore-default-args'),
+      proxy: stringArg('web-proxy'),
+      browserTimeout: intArg('web-browser-timeout'),
+      tracesDir: stringArg('web-traces-dir'),
+      bypassCsp: optionalBoolArg('web-bypass-csp'),
+      ignoreHttpsErrors: optionalBoolArg('web-ignore-https-errors'),
+      offline: optionalBoolArg('web-offline'),
+      httpCredentials: stringArg('web-http-credentials'),
+      extraHttpHeaders: stringArg('web-extra-http-headers'),
+      screenshot: stringArg('web-screenshot'),
+      trace: stringArg('web-trace'),
+      storageState: stringArg('web-storage-state'),
+      acceptDownloads: optionalBoolArg('web-accept-downloads'),
     );
 
     // No need to build web app for testing. It's done in the execute method.
@@ -382,6 +402,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       showFlutterLogs: boolArg('show-flutter-logs'),
       hideTestSteps: boolArg('hide-test-steps'),
       clearTestSteps: boolArg('clear-test-steps'),
+      testDirectory: testDirectory,
     );
 
     return allPassed ? 0 : 1;
@@ -464,9 +485,17 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
     required bool showFlutterLogs,
     required bool hideTestSteps,
     required bool clearTestSteps,
+    required String testDirectory,
   }) async {
     Future<void> Function() action;
     Future<void> Function()? finalizer;
+
+    final videoConfig = VideoRecordingConfig(
+      enabled: boolArg('record-video'),
+      outputDirectory: stringArg('video-output-dir') ?? '$testDirectory/videos',
+      size: stringArg('video-size'),
+      bitRate: int.tryParse(stringArg('video-bit-rate') ?? ''),
+    );
 
     switch (device.targetPlatform) {
       case TargetPlatform.android:
@@ -477,6 +506,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
           hideTestSteps: hideTestSteps,
           flavor: flutterOpts.flavor,
           clearTestSteps: clearTestSteps,
+          videoConfig: videoConfig,
         );
         final package = android.packageName;
         if (package != null && uninstall) {
@@ -491,6 +521,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
           showFlutterLogs: showFlutterLogs,
           hideTestSteps: hideTestSteps,
           clearTestSteps: clearTestSteps,
+          videoConfig: videoConfig,
         );
         final bundleId = ios.bundleId;
         if (bundleId != null && uninstall) {
