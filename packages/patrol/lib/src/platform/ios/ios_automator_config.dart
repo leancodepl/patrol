@@ -5,7 +5,7 @@ import 'package:patrol/src/platform/mobile/mobile_automator_config.dart';
 /// Configuration for [IOSAutomator].
 class IOSAutomatorConfig extends MobileAutomatorConfig {
   /// Creates a new [IOSAutomatorConfig].
-  const IOSAutomatorConfig({
+  IOSAutomatorConfig({
     String? iosInstalledApps,
     String? bundleId,
     String? appName,

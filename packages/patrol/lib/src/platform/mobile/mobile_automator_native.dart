@@ -20,19 +20,26 @@ abstract class NativeMobileAutomator implements MobileAutomator {
         config.connectionTimeout > config.findTimeout,
         'find timeout is longer than connection timeout',
       ),
-      _config = config {
-    _client = MobileAutomatorClient(
-      http.Client(),
-      Uri.http('${_config.host}:${_config.port}'),
-      timeout: _config.connectionTimeout,
-    );
-    _config.logger('MobileAutomatorClient created, port: ${_config.port}');
-  }
+      _config = config;
 
   final _patrolLog = PatrolLogWriter();
   final MobileAutomatorConfig _config;
 
-  late final MobileAutomatorClient _client;
+  MobileAutomatorClient? _clientInstance;
+
+  // Created lazily so the port is read after [PatrolRuntimePorts.ensureLoaded].
+  MobileAutomatorClient get _client {
+    final existing = _clientInstance;
+    if (existing != null) {
+      return existing;
+    }
+    _config.logger('MobileAutomatorClient created, port: ${_config.port}');
+    return _clientInstance = MobileAutomatorClient(
+      http.Client(),
+      Uri.http('${_config.host}:${_config.port}'),
+      timeout: _config.connectionTimeout,
+    );
+  }
 
   @protected
   /// Wraps a request with logging and error handling for native automator calls.

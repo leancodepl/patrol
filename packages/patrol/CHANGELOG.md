@@ -1,3 +1,7 @@
+## Unreleased
+
+- Add Marathon integration for running Patrol tests on Android and iOS simulators. See the [Marathon integration guide](https://patrol.leancode.co/documentation/integrations/marathon).
+
 ## 4.8.0
 
 - Wire additional Playwright browser launch and context options into the web runner config, configurable through the matching `patrol_cli` `--web-*` flags: (#3155)
