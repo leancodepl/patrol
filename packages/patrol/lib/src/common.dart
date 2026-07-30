@@ -176,6 +176,32 @@ void patrolTest(
         rethrow;
       }
 
+      // In develop (Hot Restart) mode the exception gatherer is disabled (see
+      // [PatrolBinding.runTest]), because it cannot override
+      // `FlutterError.onError` without tripping flutter_test. As a result,
+      // exceptions delivered asynchronously to `FlutterError.onError` - e.g.
+      // thrown from a widget's `onPressed` callback - are captured by the test
+      // framework but never surfaced: the develop test intentionally never
+      // completes (it waits in the loop below), so nobody reports them, and the
+      // test looks like it passed. Pull any framework-captured exception and
+      // report it through the Patrol log so it becomes visible in `patrol
+      // develop` (and via patrol_mcp), without ending the Hot Restart session.
+      if (constants.hotRestartEnabled) {
+        // Pump once so exceptions from in-flight gesture callbacks are recorded
+        // by the framework before we read them.
+        await widgetTester.pump();
+        final caughtException = patrolBinding.takeException();
+        if (caughtException != null) {
+          patrolLog.log(
+            TestEntry(
+              name: global_state.currentTestFullName,
+              status: TestEntryStatus.failure,
+              error: caughtException.toString(),
+            ),
+          );
+        }
+      }
+
       if (debugDefaultTargetPlatformOverride !=
           patrolBinding.workaroundDebugDefaultTargetPlatformOverride) {
         debugDefaultTargetPlatformOverride =
