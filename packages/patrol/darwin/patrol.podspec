@@ -13,17 +13,12 @@ Runs tests that use flutter_test and patrol APIs as native macOS / iOS integrati
   s.license          = { :file => '../LICENSE' }
   s.author           = { 'Bartek Pacia' => 'bartek.pacia@leancode.pl' }
   s.source           = { :http => 'https://github.com/leancodepl/patrol/tree/master/packages/patrol' }
-  # Swift sources live in PatrolImpl, the ObjC runner macros in patrol/include.
+  # Swift sources live in patrol, the ObjC runner macros in PatrolRunner/include.
   # CocoaPods compiles them all into a single `patrol` module (DEFINES_MODULE),
-  # so `@import patrol` exposes both — unlike SwiftPM, which requires the split.
-  s.source_files = 'patrol/Sources/patrol/**/*.{swift,h,m}', 'patrol/Sources/PatrolImpl/**/*.{swift,h,m}', 'patrol/Sources/HTTPParserC/**/*.{c,h}'
-  s.public_header_files = 'patrol/Sources/patrol/include/**/*.h', 'patrol/Sources/HTTPParserC/include/**/*.h'
-  # SwiftPM-only files must not be picked up by CocoaPods:
-  #  - module.modulemap: CocoaPods generates its own.
-  #  - patrol.h: SwiftPM umbrella that `@import PatrolImpl` (a module that only
-  #    exists under SwiftPM). Under CocoaPods the runner-macro headers are exposed
-  #    directly as public headers and the Swift sources are in the same module.
-  s.exclude_files = 'patrol/Sources/patrol/include/module.modulemap', 'patrol/Sources/patrol/include/patrol.h'
+  # so `@import patrol` exposes both — unlike SwiftPM, where the macros live in a
+  # separate `PatrolRunner` module (see Package.swift).
+  s.source_files = 'patrol/Sources/patrol/**/*.{swift,h,m}', 'patrol/Sources/PatrolRunner/**/*.{h,m}', 'patrol/Sources/HTTPParserC/**/*.{c,h}'
+  s.public_header_files = 'patrol/Sources/PatrolRunner/include/**/*.h', 'patrol/Sources/HTTPParserC/include/**/*.h'
   s.ios.dependency 'Flutter'
   s.osx.dependency 'FlutterMacOS'
   s.ios.deployment_target = '13.0'
@@ -32,12 +27,12 @@ Runs tests that use flutter_test and patrol APIs as native macOS / iOS integrati
   s.ios.framework  = 'UIKit'
   s.osx.framework  = 'AppKit'
   s.resource_bundles = {
-    'patrol_privacy' => ['patrol/Sources/PatrolImpl/Resources/PrivacyInfo.xcprivacy']
+    'patrol_privacy' => ['patrol/Sources/patrol/Resources/PrivacyInfo.xcprivacy']
   }
 
   # Include localization resources
   s.resources = [
-    'patrol/Sources/PatrolImpl/Resources/*.lproj'
+    'patrol/Sources/patrol/Resources/*.lproj'
   ]
 
   # Flutter.framework does not contain a i386 slice.

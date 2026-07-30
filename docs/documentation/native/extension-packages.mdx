@@ -136,7 +136,15 @@ full Objective-C runtime (which is unsafe in large UITest binaries):
 
 ```objc title="darwin/patrol_my_sdk/Sources/PatrolMySdk/MySdkServerExtensionRegistration.m"
 #import <Foundation/Foundation.h>
+
+#if __has_include(<patrol/PatrolExtensionRegistry.h>)
+// CocoaPods: patrol is a single pod, so its public headers are importable directly.
 #import <patrol/PatrolExtensionRegistry.h>
+#else
+// Swift Package Manager: declare the symbol locally instead of taking a package
+// dependency on patrol. It resolves at link time against patrol's @_cdecl export.
+FOUNDATION_EXPORT void PatrolRegisterServerExtensionClass(Class _Nonnull cls);
+#endif
 
 @interface MySdkExtensionLoader : NSObject
 @end

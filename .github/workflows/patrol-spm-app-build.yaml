@@ -1,0 +1,69 @@
+name: patrol SPM app build
+
+# Regression test for https://github.com/leancodepl/patrol/issues/3177.
+#
+# Merely depending on patrol must never break a plain app build, on any platform
+# and with either dependency manager. This builds a stock `flutter create` app
+# with patrol as a dev dependency and Swift Package Manager enabled — no Patrol
+# test setup at all, which is exactly the case that regressed.
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'packages/patrol/darwin/**'
+      - '.github/workflows/patrol-spm-app-build.yaml'
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    name: ${{ matrix.platform }} app-only with SPM
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-26]
+        platform: [ios, macos]
+        flutter-version: ['3.38.x']
+        flutter-channel: ['stable']
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+        with:
+          path: patrol
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+          channel: ${{ matrix.flutter-channel }}
+
+      - name: Enable Swift Package Manager
+        run: flutter config --enable-swift-package-manager
+
+      - name: Create a stock app that depends on patrol
+        run: |
+          flutter create spm_app --platforms=ios,macos
+          cd spm_app
+          # A path dependency on the patrol in this checkout, so the build
+          # exercises the darwin sources under review.
+          flutter pub add dev:patrol --path ../patrol/packages/patrol
+
+      - name: Build ${{ matrix.platform }}
+        working-directory: spm_app
+        run: |
+          if [ "${{ matrix.platform }}" = "macos" ]; then
+            flutter build macos --debug
+          else
+            flutter build ios --debug --simulator
+          fi
+
+      - name: Assert patrol was resolved through SPM, not CocoaPods
+        working-directory: spm_app
+        run: |
+          lock="${{ matrix.platform }}/Podfile.lock"
+          if [ -f "$lock" ] && grep -q '^  - patrol' "$lock"; then
+            echo "patrol fell back to CocoaPods - this job did not test the SPM path" >&2
+            exit 1
+          fi

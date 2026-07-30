@@ -7,20 +7,20 @@ import PackageDescription
 // and we need to base it on a env flag set in patrol cli.
 let patrolEnabled = ProcessInfo.processInfo.environment["PATROL_ENABLED"] == "1"
 
-let patrolImplSwiftSettings: [SwiftSetting] =
+let patrolSwiftSettings: [SwiftSetting] =
   patrolEnabled
   ? [.define("PATROL_ENABLED")]
   : []
 
-let patrolImplBaseLinkerSettings: [LinkerSetting] = [
+let patrolBaseLinkerSettings: [LinkerSetting] = [
   .linkedFramework("UIKit", .when(platforms: [.iOS])),
   .linkedFramework("AppKit", .when(platforms: [.macOS])),
 ]
 
-let patrolImplLinkerSettings: [LinkerSetting] =
+let patrolLinkerSettings: [LinkerSetting] =
   patrolEnabled
-  ? patrolImplBaseLinkerSettings + [.unsafeFlags(["-weak_framework", "XCTest"])]
-  : patrolImplBaseLinkerSettings
+  ? patrolBaseLinkerSettings + [.unsafeFlags(["-weak_framework", "XCTest"])]
+  : patrolBaseLinkerSettings
 
 let package = Package(
   name: "patrol",
@@ -30,7 +30,12 @@ let package = Package(
     .macOS("10.14"),
   ],
   products: [
-    .library(name: "patrol", targets: ["patrol"])
+    // Flutter derives the product name from the pub package name, so it has to
+    // stay `patrol`. Both targets are members of it: that is what makes
+    // `PatrolRunner` importable from RunnerUITests, which only ever links
+    // `FlutterGeneratedPluginSwiftPackage` (and that in turn depends solely on
+    // the `patrol` product).
+    .library(name: "patrol", targets: ["patrol", "PatrolRunner"])
   ],
   dependencies: [
     // TODO: Add this when Patrol targets Flutter 3.41.0 or higher
@@ -44,18 +49,22 @@ let package = Package(
       path: "Sources/HTTPParserC",
       publicHeadersPath: "include"
     ),
-    // Swift implementation. SwiftPM does not allow mixing Swift and ObjC in a
-    // single target, so the Swift code lives here and the ObjC runner macros
-    // live in the `patrol` Clang target below, which re-exports this module.
+    // The module Flutter's generated registrants import: `@import patrol;` from
+    // ios/Runner/GeneratedPluginRegistrant.m and `import patrol` from
+    // macos/Flutter/GeneratedPluginRegistrant.swift. Since the macOS registrant
+    // is Swift and calls `PatrolPlugin.register(with:)`, this has to be the
+    // Swift target - a Clang module that `@import`s a Swift one is only
+    // importable from ObjC, never from Swift. See
+    // https://github.com/leancodepl/patrol/issues/3177.
     .target(
-      name: "PatrolImpl",
+      name: "patrol",
       dependencies: [
         // TODO: Add this when Patrol targets Flutter 3.41.0 or higher
         // .product(name: "FlutterFramework", package: "FlutterFramework")
         .product(name: "CocoaAsyncSocket", package: "CocoaAsyncSocket"),
         "HTTPParserC",
       ],
-      path: "Sources/PatrolImpl",
+      path: "Sources/patrol",
       resources: [
         .process("Resources/PrivacyInfo.xcprivacy"),
         .process("Resources/en.lproj"),
@@ -64,18 +73,17 @@ let package = Package(
         .process("Resources/pl.lproj"),
         .process("Resources/ja.lproj"),
       ],
-      swiftSettings: patrolImplSwiftSettings,
-      linkerSettings: patrolImplLinkerSettings
+      swiftSettings: patrolSwiftSettings,
+      linkerSettings: patrolLinkerSettings
     ),
-    // Public module named `patrol`. This is the module Flutter's generated
-    // registrant imports and the module users `@import` from RunnerUITests.
-    // It hosts the ObjC runner macros (Sources/patrol/include) and re-exports
-    // PatrolImpl (via include/patrol.h + `export *` in module.modulemap), so a
-    // single `@import patrol` exposes both the macro and the Swift @objc API.
+    // The ObjC runner macros users expand in RunnerUITests.m, plus the
+    // extension registry declaration. Deliberately dependency-free: the macro
+    // bodies do reference @objc classes from `patrol`, but only once expanded
+    // in a translation unit that already did `@import patrol;`. Keeping this
+    // module free of any Swift import is what makes it work under SwiftPM.
     .target(
-      name: "patrol",
-      dependencies: ["PatrolImpl"],
-      path: "Sources/patrol",
+      name: "PatrolRunner",
+      path: "Sources/PatrolRunner",
       publicHeadersPath: "include"
     ),
   ]
