@@ -56,8 +56,19 @@ abstract interface class WebAutomator {
   /// Clears all cookies.
   Future<void> clearCookies();
 
-  /// Uploads files.
-  Future<void> uploadFile({required List<UploadFileData> files});
+  /// Uploads [files] to the browser file chooser that [trigger] opens.
+  ///
+  /// Flutter-web friendly. Opening a file chooser requires a trusted user
+  /// gesture, which a synthetic Patrol/Flutter tap does not provide. So this
+  /// first grants the page transient user activation and arms a one-time chooser
+  /// handler carrying [files] (supplied in-memory, no disk path), then runs
+  /// [trigger] — the app interaction that opens the picker, e.g.
+  /// `() => $(uploadButton).tap()`. The armed handler answers the chooser that
+  /// [trigger] opens.
+  Future<void> uploadFile({
+    required List<UploadFileData> files,
+    required Future<void> Function() trigger,
+  });
 
   /// Accepts the next dialog that appears.
   Future<String> acceptNextDialog();

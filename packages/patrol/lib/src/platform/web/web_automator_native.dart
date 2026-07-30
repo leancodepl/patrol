@@ -171,13 +171,21 @@ class WebAutomator implements web_automator.WebAutomator {
   }
 
   @override
-  Future<void> uploadFile({required List<UploadFileData> files}) async {
+  Future<void> uploadFile({
+    required List<UploadFileData> files,
+    required Future<void> Function() trigger,
+  }) async {
+    // Arm: grant transient user activation and register a one-time file-chooser
+    // handler carrying [files]. Returns as soon as the handler is armed.
     await callPlaywright(
       'uploadFile',
       {'files': files.map((f) => f.toJson()).toList()},
       logger: _config.logger,
       patrolLog: _patrolLog,
     );
+    // Trigger: run the app interaction that opens the picker (e.g. a tap). The
+    // armed handler supplies [files] to the chooser it opens.
+    await trigger();
   }
 
   @override
