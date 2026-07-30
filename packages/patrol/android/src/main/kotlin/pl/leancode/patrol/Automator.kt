@@ -61,7 +61,7 @@ private fun fromUiObject2(obj: UiObject2): AndroidNativeView {
             minX = bounds.left.toDouble(),
             minY = bounds.top.toDouble(),
             maxX = bounds.right.toDouble(),
-            maxY = bounds.top.toDouble()
+            maxY = bounds.bottom.toDouble()
         ),
         visibleCenter = Point2D(
             x = center.x.toDouble(),
