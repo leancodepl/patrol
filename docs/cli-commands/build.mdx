@@ -83,7 +83,7 @@ With the experimental `--emit-test-manifest` flag (or `patrol.emit_test_manifest
 true` in `pubspec.yaml`), `patrol build` discovers your Dart tests at build time
 and generates a static native test method for each one. This makes every test
 individually addressable, which enables per-test sharding and
-[`patrol test --no-build`](/cli-commands/test#running-without-rebuilding).
+[`patrol test-without-building`](/cli-commands/test-without-building).
 
 ```
 patrol build android --emit-test-manifest

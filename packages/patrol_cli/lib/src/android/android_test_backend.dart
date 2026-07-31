@@ -501,7 +501,7 @@ class AndroidTestBackend {
   /// makes each Dart test an individually-addressable `<fqcn>#<method>`.
   ///
   /// [onlyTests] are Dart test names (as shown by discovery); empty runs the
-  /// whole generated class. Backs `patrol test --no-build [--only ...]`.
+  /// whole generated class. Backs `patrol test-without-building [--only ...]`.
   Future<void> executeWithoutBuilding(
     AndroidAppOptions options,
     Device device, {
@@ -527,7 +527,7 @@ class AndroidTestBackend {
       throwToolExit(
         'No generated test class found. Run `patrol build android '
         '--emit-test-manifest` (or set patrol.emit_test_manifest in pubspec) '
-        'before `patrol test --no-build`.',
+        'before `patrol test-without-building`.',
       );
     }
 
@@ -535,7 +535,7 @@ class AndroidTestBackend {
 
     // `patrol build android` only ASSEMBLES the app + androidTest APKs; it does
     // not install them. Install both now so a clean device works with the
-    // documented `patrol build` -> `patrol test --no-build` flow.
+    // documented `patrol build` -> `patrol test-without-building` flow.
     await _installApks(options, device, flavor: flavor);
 
     // Resolve the real instrumentation component from the device so custom
@@ -627,7 +627,7 @@ class AndroidTestBackend {
     if (manifest == null) {
       throwToolExit(
         'No build-time test manifest found. Run `patrol build android '
-        '--emit-test-manifest` before `patrol test --no-build`.',
+        '--emit-test-manifest` before `patrol test-without-building`.',
       );
     }
     final tests = manifest.tests;
@@ -649,7 +649,7 @@ class AndroidTestBackend {
 
   /// Installs the app + androidTest APKs produced by `patrol build android`
   /// onto [device] (via `adb install -r -t`, no Gradle). Required before
-  /// `am instrument` in the `--no-build` flow, because `patrol build` only
+  /// `am instrument` in the test-without-building flow, because `patrol build` only
   /// assembles the APKs, it does not install them.
   Future<void> _installApks(
     AndroidAppOptions options,
@@ -666,7 +666,7 @@ class AndroidTestBackend {
     if (!apkDir.existsSync()) {
       throwToolExit(
         'No built APKs found under ${apkDir.path}. Run `patrol build android '
-        '--emit-test-manifest` before `patrol test --no-build`.',
+        '--emit-test-manifest` before `patrol test-without-building`.',
       );
     }
 
@@ -706,7 +706,7 @@ class AndroidTestBackend {
       throwToolExit(
         'Could not locate the built app and androidTest APKs under '
         '${apkDir.path}. Run `patrol build android --emit-test-manifest` '
-        'before `patrol test --no-build`.',
+        'before `patrol test-without-building`.',
       );
     }
 
