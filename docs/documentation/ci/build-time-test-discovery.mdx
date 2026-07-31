@@ -109,18 +109,22 @@ where the generated code landed.
 
 Once you've built with build-time discovery, you can run the already-built tests
 **without rebuilding** — reusing the artifacts from the previous `patrol build` —
-with `patrol test --no-build`:
+with `patrol test-without-building`:
 
 ```bash
 # Run all discovered tests, no rebuild.
-patrol test --no-build
+patrol test-without-building
 
 # Run a single test by its exact Dart name (as printed during discovery).
-patrol test --no-build --only "example_test tap counter increments"
+patrol test-without-building --only "example_test tap counter increments"
 ```
 
-`--no-build` requires `emit_test_manifest` to be enabled (it relies on the static
-native tests and the manifest). Under the hood it runs
+It's a separate command rather than a flag on `patrol test` because nothing is
+bundled, built or reinstalled here — so the options that shape a build
+(`--target`, `--tags`, `--dart-define`, …) don't apply and aren't accepted. It
+needs a prior `patrol build` with `emit_test_manifest`, since selecting individual
+tests natively is only possible thanks to the generated static tests. Under the
+hood it runs
 `xcodebuild test-without-building -only-testing …` on iOS and
 `adb shell am instrument -e class <fqcn>#<method> …` on Android — no compilation
 step. This is ideal for a fast edit-nothing / re-run-one-test loop and for
@@ -190,11 +194,11 @@ Then point SauceLabs at it with `shard: concurrency` + `testListFile`. See
 
 **Benefits**
 
-- **Re-run without rebuilding.** With `patrol test --no-build` you can re-run the
-  whole suite against the already-built artifacts, skipping compilation entirely.
-- **Run a single test without rebuilding.** `patrol test --no-build --only "<dart
-  name>"` runs just one test from the built set — a fast loop for debugging a
-  single failing test.
+- **Re-run without rebuilding.** `patrol test-without-building` re-runs the whole
+  suite against the already-built artifacts, skipping compilation entirely.
+- **Run a single test without rebuilding.** `patrol test-without-building --only
+  "<dart name>"` runs just one test from the built set — a fast loop for debugging
+  a single failing test.
 - Per-test selection → sharding across machines and device farms.
 - Cleaner reports: each test appears under its own name (Android no longer groups
   everything under a parameterized `runDartTest[...]` wrapper).
@@ -219,8 +223,9 @@ Then point SauceLabs at it with `shard: concurrency` + `testListFile`. See
   (one simulator each) — which is how cloud device farms already work.
 - **Slower initial build.** Discovery adds a host `flutter test` pass to every
   `patrol build`, so the first build takes a bit longer. This cost is paid once —
-  subsequent `patrol test --no-build` runs skip building altogether.
-- **`--no-build` reuses the previous build.** It runs exactly what was last built,
+  subsequent `patrol test-without-building` runs skip building altogether.
+- **`test-without-building` reuses the previous build.** It runs exactly what was
+  last built,
   so re-run it only when the app and test code are unchanged (change Dart or native
   code → rebuild). On Android it targets the instrumentation resolved from the
   device (`pm list instrumentation`); a custom `testApplicationId` or runner is

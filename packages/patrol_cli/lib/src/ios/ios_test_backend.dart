@@ -255,7 +255,7 @@ class IOSTestBackend {
   /// Maps requested Dart test [onlyTests] names to the generated XCTest
   /// selectors (`test_<sanitized>_<index>`) using the build-time manifest.
   /// Empty in → empty out (run the whole class). Used by `patrol test
-  /// --no-build --only`. Throws when the manifest is missing or no name matches.
+  /// test-without-building --only`. Throws when the manifest is missing or no name matches.
   List<String> _resolveOnlyTesting(List<String> onlyTests) {
     if (onlyTests.isEmpty) {
       return const [];
@@ -265,7 +265,7 @@ class IOSTestBackend {
       throwToolExit(
         'No build-time test manifest found. Run `patrol build ios '
         '--emit-test-manifest` (or set patrol.emit_test_manifest in pubspec) '
-        'before `patrol test --no-build`.',
+        'before `patrol test-without-building`.',
       );
     }
     final tests = manifest.tests;

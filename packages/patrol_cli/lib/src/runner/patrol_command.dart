@@ -75,7 +75,10 @@ abstract class PatrolCommand extends Command<int> {
     );
   }
 
-  void usesBuildModeOption() {
+  /// Registers only the build-mode selection flags. These pick the build mode
+  /// *and* therefore which already-built artifacts are used, so commands that
+  /// merely run prebuilt tests need them as well.
+  void usesBuildModeSelectionOption() {
     _usesBuildOption = true;
     argParser
       ..addFlag(
@@ -86,12 +89,16 @@ abstract class PatrolCommand extends Command<int> {
         'profile',
         help: 'Build a version of your app for performance profiling.',
       )
-      ..addFlag('release', help: 'Build a release version of your app')
-      ..addFlag(
-        'no-tree-shake-icons',
-        help: 'Disable tree shaking of icons when building the app.',
-        negatable: false,
-      );
+      ..addFlag('release', help: 'Build a release version of your app');
+  }
+
+  void usesBuildModeOption() {
+    usesBuildModeSelectionOption();
+    argParser.addFlag(
+      'no-tree-shake-icons',
+      help: 'Disable tree shaking of icons when building the app.',
+      negatable: false,
+    );
   }
 
   void usesFlavorOption() {
@@ -220,26 +227,17 @@ abstract class PatrolCommand extends Command<int> {
     );
   }
 
-  /// Registers `--no-build` and `--only`, for running already-built tests
-  /// without rebuilding. Only meaningful when build-time discovery
-  /// (`emit_test_manifest`) is enabled and a prior `patrol build` produced the
-  /// artifacts + manifest.
-  void usesNoBuildOption() {
-    argParser
-      ..addFlag(
-        'no-build',
-        help:
-            'Run already-built tests without rebuilding (reuses the artifacts '
-            'from a prior `patrol build`). Requires emit_test_manifest.',
-        negatable: false,
-      )
-      ..addMultiOption(
-        'only',
-        help:
-            'With --no-build, run only the test(s) whose exact Dart name '
-            '(as printed during discovery) is given. Repeatable; omit to run '
-            'all discovered tests.',
-      );
+  /// Registers `--only`, which selects individual already-built tests by their
+  /// Dart name. Selection happens natively (the name is mapped to the generated
+  /// test method through the build-time manifest), so it needs no rebuild.
+  void usesOnlyOption() {
+    argParser.addMultiOption(
+      'only',
+      help:
+          'Run only the test(s) with the given exact Dart name (as printed '
+          'during discovery). Repeatable; omit to run every built test.',
+      valueHelp: 'example_test logs in',
+    );
   }
 
   void usesMacOSOptions() {
