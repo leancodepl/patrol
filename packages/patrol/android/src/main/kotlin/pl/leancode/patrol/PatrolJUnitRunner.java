@@ -51,6 +51,18 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
         Logger.INSTANCE.i("PatrolJUnitRunner.onCreate() " + (isInitialRun ? "(initial run)" : ""));
     }
 
+    @Override
+    public void finish(int resultCode, Bundle results) {
+        if (patrolAppServiceClient != null) {
+            try {
+                patrolAppServiceClient.close();
+            } catch (Exception e) {
+                Logger.INSTANCE.e("Failed to close PatrolAppServiceClient", e);
+            }
+        }
+        super.finish(resultCode, results);
+    }
+
     /**
      * <p>
      * The native test runner needs to know what tests exist before it can execute them.
@@ -73,13 +85,24 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
         // It's simpler because we don't have the need for that much synchronization.
         // Currently, the only synchronization point we're interested in is when the app under test returns the list of tests.
         Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
-        Intent intent = new Intent(Intent.ACTION_MAIN);
-        intent.setClassName(instrumentation.getTargetContext(), activityClass.getCanonicalName());
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        instrumentation.getTargetContext().startActivity(intent);
 
         PatrolServer patrolServer = new PatrolServer();
         patrolServer.start(); // Gets killed when the instrumentation process dies. We're okay with this.
+
+
+
+        // Try to get the launcher intent first, which handles activity aliases properly
+        Intent intent = instrumentation.getTargetContext().getPackageManager()
+                .getLaunchIntentForPackage(instrumentation.getTargetContext().getPackageName());
+        
+        if (intent == null) {
+            // Fallback to the original approach if no launcher intent is found
+            intent = new Intent(Intent.ACTION_MAIN);
+            intent.setClassName(instrumentation.getTargetContext(), activityClass.getCanonicalName());
+        }
+        
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        instrumentation.getTargetContext().startActivity(intent);
 
         patrolAppServiceClient = createAppServiceClient();
     }
@@ -146,6 +169,7 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
             if (response.getResult() == Contracts.RunDartTestResponseResult.failure) {
                 throw new AssertionError("Dart test failed: " + name + "\n" + response.getDetails());
             }
+            Logger.INSTANCE.i(TAG + "Test execution succeeded");
             return response;
         } catch (PatrolAppServiceClientException e) {
             Logger.INSTANCE.e(TAG + e.getMessage(), e.getCause());

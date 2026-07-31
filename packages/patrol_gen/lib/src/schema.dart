@@ -1,8 +1,15 @@
+class EnumField {
+  const EnumField(this.name, this.value);
+
+  final String name;
+  final String value;
+}
+
 class Enum {
   const Enum(this.name, this.fields);
 
   final String name;
-  final List<String> fields;
+  final List<EnumField> fields;
 }
 
 sealed class MessageFieldType {}

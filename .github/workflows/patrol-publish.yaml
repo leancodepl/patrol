@@ -20,12 +20,14 @@ jobs:
 
     strategy:
       matrix:
-        flutter-version: ['3.22.x']
+        flutter-version: ['3.38.x']
         flutter-channel: ['stable']
 
     steps:
       - name: Clone repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       # This step adds the auth token for pub.dev
       - name: Set up Dart

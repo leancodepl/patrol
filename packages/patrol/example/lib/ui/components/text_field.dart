@@ -23,10 +23,7 @@ class PTTextField extends StatelessWidget {
       children: [
         SizedBox(
           height: 48,
-          child: _TextField(
-            controller: controller,
-            label: label,
-          ),
+          child: _TextField(controller: controller, label: label),
         ),
         if (errorText != null) ...[
           const SizedBox(height: 4),
@@ -41,10 +38,7 @@ class PTTextField extends StatelessWidget {
 }
 
 class _TextField extends StatelessWidget {
-  const _TextField({
-    required this.controller,
-    required this.label,
-  });
+  const _TextField({required this.controller, required this.label});
 
   final String label;
   final TextEditingController controller;
@@ -75,7 +69,7 @@ class _TextField extends StatelessWidget {
   }
 
   OutlineInputBorder _getBorder(Color color) => OutlineInputBorder(
-        borderRadius: const BorderRadius.all(Radius.circular(6)),
-        borderSide: BorderSide(color: color),
-      );
+    borderRadius: const BorderRadius.all(Radius.circular(6)),
+    borderSide: BorderSide(color: color),
+  );
 }

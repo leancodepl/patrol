@@ -57,6 +57,7 @@ void main() {
         processManager: FakeProcessManager(),
         platform: FakePlatform(),
         fs: fs,
+        rootDirectory: fs.currentDirectory,
         parentDisposeScope: DisposeScope(),
         logger: FakeLogger(),
       );
@@ -73,13 +74,12 @@ void main() {
       }) {
         test(description, () async {
           final target = simulator ? 'iphonesimulator' : 'iphoneos';
-          if (arch != null) {
-            arch = '-$arch';
-          }
+          final archSuffix = arch != null ? '-$arch' : '';
 
           final xcTestPlan = testPlan != null ? '-$testPlan' : '';
 
-          final name = '${scheme}_$xcTestPlan${target}16.2$arch.xctestrun';
+          final name =
+              '${scheme}_$xcTestPlan${target}16.2$archSuffix.xctestrun';
 
           fs
               .file('build/ios_integ/Build/Products/$name')
@@ -91,16 +91,11 @@ void main() {
             sdkVersion: '16.2',
           );
 
-          expect(
-            found,
-            '/example_app/build/ios_integ/Build/Products/$name',
-          );
+          expect(found, '/example_app/build/ios_integ/Build/Products/$name');
         });
       }
 
-      testXcTestRunPath(
-        'finds xctestrun with no arch on iphoneos',
-      );
+      testXcTestRunPath('finds xctestrun with no arch on iphoneos');
 
       testXcTestRunPath(
         'finds xctestrun with single arch on iphoneos',

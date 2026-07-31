@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:convert';
-import 'dart:io' as io;
+import 'dart:developer';
+import 'dart:isolate';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -7,14 +9,17 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
 import 'package:patrol/src/devtools_service_extensions/devtools_service_extensions.dart';
-// ignore: implementation_imports, depend_on_referenced_packages
 import 'package:patrol/src/global_state.dart' as global_state;
+import 'package:patrol/src/platform/current.dart' as current_platform;
 
 import 'constants.dart' as constants;
 
 const _success = 'success';
 
+bool get _isDevelopMode => constants.hotRestartEnabled;
+
 void _defaultPrintLogger(String message) {
+  // TODO: Use a logger instead of print
   // ignore: avoid_print
   print('PatrolBinding: $message');
 }
@@ -29,42 +34,20 @@ void _defaultPrintLogger(String message) {
 /// that is executed after each test. Inside that callback, the name of the Dart
 /// test file being currently executed is retrieved.
 ///
-/// At this point, the [PatrolAppService] is handling the gRPC `runDartTest()`
+/// At this point, the `PatrolAppService` is handling the gRPC `runDartTest()`
 /// called by the native side.
 ///
 /// [PatrolBinding] submits the Dart test file name that is being currently
-/// executed to [PatrolAppService]. Once the name is submitted to it, that
+/// executed to `PatrolAppService`. Once the name is submitted to it, that
 /// pending `runDartTest()` method returns.
 class PatrolBinding extends LiveTestWidgetsFlutterBinding {
   /// Creates a new [PatrolBinding].
   ///
   /// You most likely don't want to call it yourself.
-  PatrolBinding(NativeAutomatorConfig config)
-      : _serviceExtensions = DevtoolsServiceExtensions(config) {
-    final oldTestExceptionReporter = reportTestException;
-
-    /// Wraps the default test exception reporter to report the test results to
-    /// the native side of Patrol.
-    reportTestException = (details, testDescription) {
-      final currentDartTest = _currentDartTest;
-      if (currentDartTest != null) {
-        assert(!constants.hotRestartEnabled);
-        // On iOS in release mode, diagnostics are compacted or truncated.
-        // We use the exceptionAsString() and stack to get the information
-        // about the exception. See [DiagnosticLevel].
-        final detailsAsString = (kReleaseMode && io.Platform.isIOS)
-            ? '${details.exceptionAsString()} \n ${details.stack}'
-            : details.toString();
-        _testResults[currentDartTest] = Failure(
-          testDescription,
-          detailsAsString,
-        );
-      }
-      oldTestExceptionReporter(details, testDescription);
-    };
-
+  PatrolBinding(PlatformAutomator platform)
+    : _serviceExtensions = DevtoolsServiceExtensions(platform) {
     setUp(() {
-      if (constants.hotRestartEnabled) {
+      if (_isDevelopMode) {
         return;
       }
 
@@ -76,7 +59,7 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
     });
 
     tearDown(() async {
-      if (constants.hotRestartEnabled) {
+      if (_isDevelopMode) {
         // Sending results ends the test, which we don't want for Hot Restart
         return;
       }
@@ -93,6 +76,24 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
       final nameOfRequestedTest = await patrolAppService.testExecutionRequested;
 
       if (nameOfRequestedTest == _currentDartTest) {
+        if (const bool.fromEnvironment('COVERAGE_ENABLED')) {
+          postEvent('waitForCoverageCollection', {
+            'mainIsolateId': Service.getIsolateId(Isolate.current),
+          });
+
+          final testCompleter = Completer<void>();
+
+          registerExtension('ext.patrol.markTestCompleted', (
+            method,
+            parameters,
+          ) async {
+            testCompleter.complete();
+            return ServiceExtensionResponse.result(jsonEncode({}));
+          });
+
+          await testCompleter.future;
+        }
+
         logger(
           'finished test $_currentDartTest. Will report its status back to the native side',
         );
@@ -101,6 +102,7 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
         logger(
           'tearDown(): test "$testName" in group "$_currentDartTest", passed: $passed',
         );
+
         await patrolAppService.markDartTestAsCompleted(
           dartFileName: _currentDartTest!,
           passed: passed,
@@ -120,9 +122,9 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
   /// if necessary.
   ///
   /// This method is idempotent.
-  factory PatrolBinding.ensureInitialized(NativeAutomatorConfig config) {
+  factory PatrolBinding.ensureInitialized(PlatformAutomator platform) {
     if (_instance == null) {
-      PatrolBinding(config);
+      PatrolBinding(platform);
     }
     return _instance!;
   }
@@ -136,11 +138,7 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
   /// Logger used by this binding.
   void Function(String message) logger = _defaultPrintLogger;
 
-  /// The [PatrolAppService] used by this binding to report tests to the native
-  /// side.
-  ///
-  /// It's only for test reporting purposes and should not be used for anything
-  /// else.
+  /// @nodoc
   late PatrolAppService patrolAppService;
 
   /// The singleton instance of this object.
@@ -155,7 +153,7 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
 
   /// Keys are the test descriptions, and values are either [_success] or a
   /// [Failure].
-  final Map<String, Object> _testResults = <String, Object>{};
+  final _testResults = <String, Object>{};
 
   final DevtoolsServiceExtensions _serviceExtensions;
 
@@ -203,16 +201,51 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
     VoidCallback invariantTester, {
     String description = '',
     @Deprecated(
-        'This parameter has no effect. Use the `timeout` parameter on `testWidgets` instead. '
-        'This feature was deprecated after v2.6.0-1.0.pre.')
+      'This parameter has no effect. Use the `timeout` parameter on `testWidgets` instead. '
+      'This feature was deprecated after v2.6.0-1.0.pre.',
+    )
     Duration? timeout,
   }) async {
     await super.runTest(
-      testBody,
+      // If we're in develop mode, we cannot overwrite FlutterError.onError
+      // will get "A test overrode FlutterError.onError" exception.
+      _isDevelopMode
+          ? testBody
+          : () => _wrapTestBodyWithExceptionGatherer(testBody),
       invariantTester,
       description: description,
     );
     _testResults[description] ??= _success;
+  }
+
+  /// Wraps the test body with a function that gathers exceptions and reports
+  /// them to the native side of Patrol.
+  Future<void> _wrapTestBodyWithExceptionGatherer(
+    Future<void> Function() testBody,
+  ) async {
+    final previousOnError = FlutterError.onError;
+    FlutterError.onError = (details) {
+      if (_currentDartTest case final testName?) {
+        final previousDetails = switch (_testResults[testName]) {
+          Failure(:final details?) => FlutterErrorDetails(exception: details),
+          _ => null,
+        };
+        final detailsAsString = (kReleaseMode && current_platform.isIOS)
+            ? '${details.exceptionAsString()}\n${details.stack}'
+            : details.toString();
+
+        _testResults[testName] = Failure(
+          testName,
+          '$detailsAsString${previousDetails != null ? '\n$previousDetails' : ''}',
+        );
+
+        previousOnError?.call(details);
+      }
+    };
+
+    await testBody();
+
+    FlutterError.onError = previousOnError;
   }
 
   @override
@@ -227,12 +260,12 @@ class PatrolBinding extends LiveTestWidgetsFlutterBinding {
   @override
   Widget wrapWithDefaultView(Widget rootWidget) {
     assert(
-      (_currentDartTest != null) != (constants.hotRestartEnabled),
+      (_currentDartTest != null) != _isDevelopMode,
       '_currentDartTest can be null if and only if Hot Restart is enabled',
     );
 
     const testLabelEnabled = bool.fromEnvironment('PATROL_TEST_LABEL_ENABLED');
-    if (!testLabelEnabled || constants.hotRestartEnabled) {
+    if (!testLabelEnabled || _isDevelopMode) {
       return super.wrapWithDefaultView(RepaintBoundary(child: rootWidget));
     } else {
       return super.wrapWithDefaultView(

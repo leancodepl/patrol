@@ -23,10 +23,8 @@ void main() {
   group('findDevicesToUse()', () {
     test('throws when no devices are attached', () {
       expect(
-        () => deviceFinder.findDevicesToUse(
-          attachedDevices: [],
-          wantDevices: [],
-        ),
+        () =>
+            deviceFinder.findDevicesToUse(attachedDevices: [], wantDevices: []),
         throwsA(
           isA<ToolExit>().having(
             (err) => err.message,
@@ -43,19 +41,6 @@ void main() {
       () {
         final devicesToUse = deviceFinder.findDevicesToUse(
           attachedDevices: [androidDevice],
-          wantDevices: [],
-        );
-
-        expect(devicesToUse, [androidDevice]);
-      },
-    );
-
-    test(
-      'returns the first device when 2 devices is attached and no devices are '
-      'wanted',
-      () {
-        final devicesToUse = deviceFinder.findDevicesToUse(
-          attachedDevices: [androidDevice, iosDevice],
           wantDevices: [],
         );
 
@@ -159,6 +144,33 @@ void main() {
       );
 
       expect(devicesToUse, [iosDevice]);
+    });
+  });
+
+  group('Device.bundledForTest()', () {
+    test('returns a synthetic web device for chrome', () {
+      final device = Device.bundledForTest('chrome');
+
+      expect(
+        device,
+        isA<Device>()
+            .having((d) => d.name, 'name', 'Chrome')
+            .having((d) => d.id, 'id', 'chrome')
+            .having(
+              (d) => d.targetPlatform,
+              'targetPlatform',
+              TargetPlatform.web,
+            )
+            .having((d) => d.real, 'real', true),
+      );
+    });
+
+    test('is case-insensitive and trims whitespace', () {
+      expect(Device.bundledForTest(' Chrome '), isNotNull);
+    });
+
+    test('returns null for a device that is not bundled', () {
+      expect(Device.bundledForTest('emulator-5554'), isNull);
     });
   });
 }

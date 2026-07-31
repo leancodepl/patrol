@@ -1,27 +1,17 @@
 part of 'node.dart';
 
 final class NativeViewNode extends Node {
-  NativeViewNode({
-    required this.view,
-    this.parent,
-    required this.androidNode,
-  }) {
+  NativeViewNode({required this.view, this.parent, required this.androidNode}) {
     children = view.children
         .map(
-          (e) => NativeViewNode(
-            view: e,
-            parent: this,
-            androidNode: androidNode,
-          ),
+          (e) =>
+              NativeViewNode(view: e, parent: this, androidNode: androidNode),
         )
         .toList();
 
     fullNodeName = createNodeName(view.className, view.resourceName);
 
-    shortNodeName = _shortNodeName(
-      view.className,
-      view.resourceName,
-    );
+    shortNodeName = _shortNodeName(view.className, view.resourceName);
 
     initialCharacter = createInitialCharacter(shortNodeName);
   }
@@ -44,7 +34,10 @@ final class NativeViewNode extends Node {
   @override
   late final String shortNodeName;
 
-  static List<String> ignoreTypePrefixes = ['android.widget.', 'android.view.'];
+  static const ignoreTypePrefixes = <String>[
+    'android.widget.',
+    'android.view.',
+  ];
 
   String _shortNodeName(String? type, String? resourceName) {
     var typeName = type ?? '';

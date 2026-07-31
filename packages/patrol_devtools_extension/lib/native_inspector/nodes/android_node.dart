@@ -8,10 +8,7 @@ final class AndroidNode extends Node {
 
     fullNodeName = createNodeName(view.className, view.resourceName);
 
-    shortNodeName = _shortNodeName(
-      view.className,
-      view.resourceName,
-    );
+    shortNodeName = _shortNodeName(view.className, view.resourceName);
 
     initialCharacter = createInitialCharacter(shortNodeName);
   }
@@ -33,10 +30,7 @@ final class AndroidNode extends Node {
   @override
   late final String shortNodeName;
 
-  static final List<String> _ignoreTypePrefixes = [
-    'android.widget.',
-    'android.view.',
-  ];
+  static const _ignoreTypePrefixes = ['android.widget.', 'android.view.'];
 
   String _shortNodeName(String? type, String? resourceName) {
     var typeName = type ?? '';

@@ -5,7 +5,7 @@ apps:
 # Useful during debugging, when you want to run tests on all supported versions
 all_devices:
   device:
-    - model: Pixel7
+    - model: Pixel2
       version: 33
       gpu: auto
     - model: Pixel7
@@ -29,13 +29,13 @@ all_devices:
 ci_devices:
   device:
     - model: Pixel7
-      version: 31
+      version: 33
       gpu: auto
     - model: NexusLowRes
-      version: 31
+      version: 33
       gpu: auto
     - model: Tablet10
-      version: 31
+      version: 33
       gpu: auto
     # Unstable, see https://github.com/leancodepl/patrol/issues/1445
     # - model: Pixel2
@@ -44,8 +44,10 @@ ci_devices:
 
 ci_webview_devices:
   device:
+    # api 35: the Patrol docs site (Mintlify SPA) needs a newer WebView than
+    # the one bundled with api 31, which throws a client-side exception.
     - model: Pixel7
-      version: 31
+      version: 35
       gpu: auto
 
 config:
@@ -71,6 +73,10 @@ ci:
 
 ci_webview:
   include: [apps, ci_webview_devices, config, config_ci]
+
+# Multi-API testing configuration
+multi_api:
+  include: [apps, config, config_ci]
 
 debug:
   include: [apps, all_devices, config]

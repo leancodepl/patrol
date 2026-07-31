@@ -67,9 +67,8 @@ class _ProfilePageBody extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             ElevatedButton(
-              onPressed: () => context
-                  .read<NotificationHandler>()
-                  .triggerPushNotification(
+              onPressed: () =>
+                  context.read<NotificationHandler>().triggerPushNotification(
                     onPressed: () => Navigator.push(context, notificationRoute),
                   ),
               child: const Text('Notify me!'),

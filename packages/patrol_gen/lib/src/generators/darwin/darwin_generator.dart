@@ -7,12 +7,17 @@ import 'package:patrol_gen/src/schema.dart';
 
 class DarwinGenerator {
   List<OutputFile> generate(Schema schema, DarwinConfig config) {
-    final result = [
-      DarwinContractsGenerator().generate(schema, config),
-    ];
-
     final serverGenerator = DarwinTelegraphServerGenerator();
     final clientGenerator = IOSURLSessionClientGenerator();
+    final needsContracts = schema.services.any(
+      (service) => service.ios.needsClient || service.ios.needsServer,
+    );
+
+    final result = <OutputFile>[];
+
+    if (needsContracts) {
+      result.add(DarwinContractsGenerator().generate(schema, config));
+    }
 
     for (final service in schema.services) {
       if (service.ios.needsServer) {

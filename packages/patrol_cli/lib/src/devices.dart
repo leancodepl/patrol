@@ -1,8 +1,11 @@
 import 'dart:convert';
+import 'dart:io' as io;
 
+import 'package:ci/ci.dart' as ci;
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:meta/meta.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
+import 'package:patrol_cli/src/base/interactive_prompts.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/runner/flutter_command.dart';
@@ -13,9 +16,9 @@ class DeviceFinder {
     required ProcessManager processManager,
     required DisposeScope parentDisposeScope,
     required Logger logger,
-  })  : _processManager = processManager,
-        _disposeScope = DisposeScope(),
-        _logger = logger {
+  }) : _processManager = processManager,
+       _disposeScope = DisposeScope(),
+       _logger = logger {
     _disposeScope.disposedBy(parentDisposeScope);
   }
 
@@ -36,7 +39,8 @@ class DeviceFinder {
       final targetPlatform = deviceJson['targetPlatform'] as String;
       if (!targetPlatform.startsWith('android-') &&
           targetPlatform != 'ios' &&
-          targetPlatform != 'darwin') {
+          targetPlatform != 'darwin' &&
+          targetPlatform != 'web-javascript') {
         continue;
       }
 
@@ -57,8 +61,9 @@ class DeviceFinder {
     List<String> devices, {
     required FlutterCommand flutterCommand,
   }) async {
-    final attachedDevices =
-        await getAttachedDevices(flutterCommand: flutterCommand);
+    final attachedDevices = await getAttachedDevices(
+      flutterCommand: flutterCommand,
+    );
 
     return findDevicesToUse(
       attachedDevices: attachedDevices,
@@ -72,7 +77,11 @@ class DeviceFinder {
   ///
   /// * Throws if no devices are attached.
   ///
-  /// * Returns the first attached device if [wantDevices] is empty.
+  /// * Shows interactive device selection if multiple devices are attached,
+  ///   [wantDevices] is empty, and running in an interactive terminal.
+  ///
+  /// * Returns the first attached device if [wantDevices] is empty and not
+  ///   in an interactive environment.
   ///
   /// * Returns all attached devices if [wantDevices] contains a single element
   ///   `'all'`.
@@ -93,9 +102,19 @@ class DeviceFinder {
     }
 
     if (wantDevices.isEmpty) {
+      // Check if we should show interactive device selection
+      if (attachedDevices.length > 1 && _shouldShowInteractiveSelection()) {
+        final selectedDevice = _promptForDeviceSelection(attachedDevices);
+        if (selectedDevice == null) {
+          throwToolExit('Device selection was cancelled');
+        }
+        return [selectedDevice];
+      }
+
+      // Default behavior: use first device
       final firstDevice = attachedDevices.first;
       _logger.info(
-        'No device specified, using the first one (${firstDevice.resolvedName})',
+        'No device specified, using the first one (${firstDevice.name})',
       );
       return [firstDevice];
     }
@@ -133,18 +152,15 @@ class DeviceFinder {
     required FlutterCommand flutterCommand,
   }) async {
     var flutterKilled = false;
-    final process = await _processManager.start(
-      [
-        flutterCommand.executable,
-        ...flutterCommand.arguments,
-        '--no-version-check',
-        '--suppress-analytics',
-        'devices',
-        '--machine',
-      ],
-      runInShell: true,
-    );
-    _disposeScope.addDispose(() async {
+    final process = await _processManager.start([
+      flutterCommand.executable,
+      ...flutterCommand.arguments,
+      '--no-version-check',
+      '--suppress-analytics',
+      'devices',
+      '--machine',
+    ], runInShell: true);
+    _disposeScope.addDispose(() {
       process.kill();
       flutterKilled = true; // `flutter` has exit code 0 on SIGINT
     });
@@ -160,6 +176,44 @@ class DeviceFinder {
       return output;
     }
   }
+
+  /// Determines if interactive device selection should be shown.
+  ///
+  /// Returns true if:
+  /// - We have a terminal (stdin.hasTerminal)
+  /// - Not running in CI environment
+  bool _shouldShowInteractiveSelection() {
+    return io.stdin.hasTerminal && !ci.isCI;
+  }
+
+  /// Prompts the user to select a device from the list of attached devices.
+  ///
+  /// Returns the selected device or null if the user cancels.
+  Device? _promptForDeviceSelection(List<Device> attachedDevices) {
+    try {
+      final prompts = InteractivePrompts(logger: _logger);
+
+      final selectedIndex = prompts.selectFromList<Device>(
+        prompt: 'Multiple devices found. Please choose one:',
+        options: attachedDevices,
+        displayFunction: (device) => '${device.name} (${device.id})',
+        cancelMessage: 'Cancel and exit',
+      );
+
+      if (selectedIndex == null) {
+        return null;
+      }
+
+      final selectedDevice = attachedDevices[selectedIndex];
+      _logger.info(
+        'Selected device: ${selectedDevice.name} (${selectedDevice.id})',
+      );
+      return selectedDevice;
+    } catch (err) {
+      _logger.detail('Interactive device selection failed: $err');
+      return null;
+    }
+  }
 }
 
 class Device {
@@ -170,27 +224,16 @@ class Device {
     required this.real,
   });
 
+  /// The [Device] that `patrol test` bundles for [name], letting the caller
+  /// skip looking up a matching real device. Returns null if [name] isn't
+  /// bundled for `patrol test`.
+  static Device? bundledForTest(String name) =>
+      _testBundledDevices[name.trim().toLowerCase()];
+
   final String name;
   final String id;
   final TargetPlatform targetPlatform;
   final bool real;
-
-  /// Returns the name that Patrol is usually interested with.
-  ///
-  /// On Android, this is the ID of the device, e.g "emulator-5554".
-  ///
-  /// On iOS, this is the name of the device, e.g "iPhone 13" or
-  /// "Barteks-iPhone".
-  String get resolvedName {
-    switch (targetPlatform) {
-      case TargetPlatform.android:
-        return id;
-      case TargetPlatform.iOS:
-        return name;
-      case TargetPlatform.macOS:
-        return name;
-    }
-  }
 
   String get description {
     switch (targetPlatform) {
@@ -204,6 +247,8 @@ class Device {
         return '$platformDescription $name';
       case TargetPlatform.macOS:
         return '$platformDescription $name';
+      case TargetPlatform.web:
+        return '$platformDescription $name';
     }
   }
 
@@ -215,11 +260,22 @@ class Device {
         return real ? 'device' : 'simulator';
       case TargetPlatform.macOS:
         return 'desktop';
+      case TargetPlatform.web:
+        return 'browser';
     }
   }
 }
 
-enum TargetPlatform { iOS, android, macOS }
+const _testBundledDevices = {
+  'chrome': Device(
+    name: 'Chrome',
+    id: 'chrome',
+    targetPlatform: TargetPlatform.web,
+    real: true,
+  ),
+};
+
+enum TargetPlatform { iOS, android, macOS, web }
 
 extension TargetPlatformX on TargetPlatform {
   static TargetPlatform fromString(String platform) {
@@ -229,6 +285,8 @@ extension TargetPlatformX on TargetPlatform {
       return TargetPlatform.android;
     } else if (platform == 'darwin') {
       return TargetPlatform.macOS;
+    } else if (platform == 'web-javascript') {
+      return TargetPlatform.web;
     } else {
       throw Exception('Unsupported platform $platform');
     }

@@ -19,8 +19,8 @@ Map<String, String> mergeDartDefines(
   Map<String, String> dartDefines,
   DartDefinesReader dartDefinesReader,
 ) {
-  final dartDefineConfigJsonMap =
-      dartDefinesReader.extractDartDefineConfigJsonMap(dartDefineFromFilePaths);
+  final dartDefineConfigJsonMap = dartDefinesReader
+      .extractDartDefineConfigJsonMap(dartDefineFromFilePaths);
 
   return mergeKeys(json: dartDefineConfigJsonMap, dartDefines: dartDefines);
 }

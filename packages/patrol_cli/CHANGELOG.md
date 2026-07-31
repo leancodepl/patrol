@@ -1,5 +1,227 @@
+## 4.6.1
+
+- Fix `patrol develop` printing "You must specify a --flavor option" on iOS/macOS projects with schemes, by passing the flavor to `flutter attach`.
+- Fail fast with a clear error instead of hanging on gradlew when the Android SDK can't be located (`sdk.dir` missing from `android/local.properties` after the config-only build). (#3168)
+
+## Unreleased
+
+- Add `--record-video` flag to `patrol test` and `patrol develop` to record a video per test case (Android and iOS simulators). (#2741)
+
+## 4.6.0
+
+- Download only Chromium instead of all default Playwright browsers during web runner setup. (#3156)
+- Fix `patrol develop` not reporting completion when the app shuts down before the tests finish, causing `patrol_mcp` to hang until its timeout. The backend exit is now detected independently of `flutter attach`.
+- Fix `patrol test -d chrome` failing with `No devices attached` on machines without a system Chrome installation. (#3172)
+- Add browser launch and context options for web tests: (#3155)
+  - `--web-channel`
+  - `--web-executable-path`
+  - `--web-slow-mo`
+  - `--web-chromium-sandbox`
+  - `--web-downloads-path`
+  - `--web-ignore-default-args`
+  - `--web-proxy`
+  - `--web-browser-timeout`
+  - `--web-traces-dir`
+  - `--web-bypass-csp`
+  - `--web-ignore-https-errors`
+  - `--web-offline`
+  - `--web-http-credentials`
+  - `--web-extra-http-headers`
+  - `--web-screenshot`
+  - `--web-trace`
+  - `--web-storage-state`
+  - `--web-accept-downloads`
+- Convert `--web-headless` to a flag. Use `--web-headless`/`--no-web-headless` instead of `--web-headless true/false`. The old syntax still works, but is deprecated and will be removed in a future release. (#3155)
+- Fix `--web-*` options being silently overridden by a same-named variable already set in the host shell environment when running web tests. (#3155)
+
+## 4.5.1
+
+- Add a Swift Package Manager support note to the README.
+
+## 4.5.0
+
+- Add `-weak_framework XCTest` linker flags to iOS and macOS `build-for-testing` to support Swift Package Manager integration.
+- Fix `patrol develop` on iOS Simulator timing out after ~6 minutes with "Test runner never began executing tests after launching". Requires a matching `patrol` version that enables the develop-specific native test runner path. (#3139)
+- Fix `patrol test`/`patrol develop` hanging on Windows at `gradlew :app:dependencies` by also draining the gradle process stderr stream during orchestrator-version detection. (#2565)
+- Fix `--exclude` not working. (#2990)
+- Fix `--clear-permissions` being ignored by `patrol build ios`. The flag was wired into `patrol test` but dropped from `build ios`, so prebuilt iOS test bundles (e.g. for BrowserStack/Firebase Test Lab) never had `CLEAR_PERMISSIONS` enabled.
+- Fix wrong import path being generated on Windows for commands like `patrol test -t .\patrol_test\example_test.dart`.
+- Fix `test_bundle.dart` generating a broken absolute import (and an invalid import alias containing characters such as `-`) when the test target lives outside the configured `test_directory`. The import is now computed relative to the bundle and the alias is sanitized. (#3104)
+- Don't listen for `SIGTERM` on Windows, where it is not supported and throws an unhandled `SignalException`. (#3035)
+- Bump `equatable` to `^2.1.0` and migrate `PatrolPubspecConfig` and related config classes from deprecated `EquatableMixin` to `with Equatable`.
+- Bump `patrol_log` to `^0.10.0`.
+
+This version requires version `4.7.0` of `patrol` package.
+
+## 4.4.0
+
+- Fix iOS Simulator test crash on Xcode 26.4+ caused by missing platform frameworks path in xctestrun.
+- Bump `patrol_log` to `^0.9.0`.
+- Add `--app-name` flag to override `app_name` from pubspec.yaml. (#2557)
+- Fix `patrol test --coverage` crashing with `PathNotFoundException` in Pub workspaces by resolving `.dart_tool/package_config.json` from the workspace root. (#2844)
+- Add `--coverage-workspace` flag to include every package declared under the workspace root's `workspace:` key in the coverage report.
+- Fix a bug when running tests with iOS and Android specific flavors based on the configuration in pubspec. (#3046)
+
+## 4.3.1
+
+- Update dependencies.
+
+## 4.3.0
+
+- Bump `patrol_log` to `^0.8.0`.
+- Refactor develop command into reusable components and expose public API for programmatic usage.
+- Reflect failed tests in Playwright report. (#2970)
+
+## 4.2.0
+
+- Add support for `--web-port` option to specify the port for the web server when running web tests with `patrol test`. (#2832)
+- Add `--web-server-timeout` flag to configure the web server startup timeout (default: 120s). (#2948)
+- Fix running devtools after moving test to `patrol_test/`. (#2922) 
+- Fix listen to stdout/stderr streams in buildApkConfigOnly to prevent hang on Windows. (#2905)
+- Fix bug that --exclude was not working for directories. (#2918)
+- Allow to pass additional web browser args through `web-browser-args`. (#2932) 
+- Correctly compose devtools link on new Flutter version. (#2957)
+
+## 4.1.0
+
+- Fix bug when running web tests with relative imports from integration_test directory. (#2906)
+- Fix a bug when user set a nested test_directory (eg. test/e2e), TestFinder was searching for test files in parent directory instead of project's root. (#2858)
+- Add support for `--no-tree-shake-icons` flag in cli commands. (#2704)
+- Fix `PATROL_FLUTTER_COMMAND` not being used when building web app. (#2857)
+- Remove unused import in `test_bundle.dart` files. (#2885)
+- Bump `patrol_log` to `0.7.0`. (#2917)
+
+## 4.0.2
+
+- Remove `platform_automator.dart` import from `test_bundler.dart`. (#2833) 
+
+## 4.0.1
+
+- Fix running web tests on Flutter 3.38.x. (#2828)
+
+## 4.0.0
+
+Patrol 4.0 is here!
+
+Read the article announcing Patrol 4.0 [here](https://leancode.co/blog/patrol-4-0-release).
+
+- Add support for running Patrol tests on Web:
+  - Introduce support for web-related flags:
+    - `--web-results-dir`, `--web-report-dir`, `--web-reporter`,
+    - `--web-timeout`, `--web-global-timeout`, `--web-retries`,
+    - `--web-workers`, `--web-shard`,
+    - `--web-video`, `--web-headless`,
+    - `--web-locale`, `--web-timezone`, `--web-color-scheme`,
+    - `--web-geolocation`, `--web-permissions`,
+    - `--web-user-agent`, `--web-viewport`.
+
+- Add support for configurable test directory via `test_directory` option in `pubspec.yaml`. (#2728)
+- Introduces *experimental* `--full-isolation` flag that uninstall the app between each run on iOS Simulator.
+- Bump `patrol_log` to `0.6.0`.
+- Read Patrol version from `pubspec.lock` instead of `pubspec.yaml` for compatibility checks. Fix edge cases for compatibility checks. (#2709)
+
+- **BREAKING CHANGE**
+  - Change default test directory from `integration_test` to `patrol_test`. (#2728)
+
+This version requires version `4.0.0` of `patrol` package.
+
+## 3.11.0
+
+- Add `--build-name` and `--build-number` flags to `patrol test`, `patrol develop`, and `patrol build` commands. (#2590)
+- Fix report path generation for Android. (#2724)
+- Fix issue that sometimes logs causes test crashes. (#2742)
+- Add support for interactive device selection when running patrol. (#2722)
+- Fix `PATROL_FLUTTER_COMMAND` not being used when using `--coverage` flag. (#2781)
+
+This version requires version 3.20.0 of `patrol` package.
+
+## 3.10.0
+
+- Add help command `h` to `patrol develop`. (#2701)
+- Add printing paths to the APKs after `patrol build` command. (#2685)
+
+## 3.9.0
+
+- Re-land: Do not pass flavor as dart-define when building. (#2636)
+- Wait for generating gradlew - fix race condition (#2678)
+- Bump `leancode_lint` to `17.0.0`.
+- Bump `patrol_log` to `0.5.0`.
+- Bump minimum Dart SDK to version 3.8.0.
+
+## 3.8.0
+
+- Remove `--wait` argument from patrol develop command (#2671 & #2691)
+- Add support for comments in .patrol.env files. (#2653)
+- Skip update check when the `patrol_cli` binary is triggered for shell completion only (#2512)
+- Revert: Do not pass flavor as dart-define when building. (#2636)
+
+## 3.7.0
+
+- Bump min Flutter SDK to 3.32.0 (#2649)
+- Introduce `check-compatibility` flag to allow disabling the compatibility check. (#2649) 
+
+## 3.6.0
+
+- Improve patrol test error messaging when compatibility check fails, added same compatibility check and error messaging to patrol build command (#2597)
+- Improve patrol update messaging by showing incompatibility warning when applicable, sharing compatibility table (#2579)
+- Add ability to quit the `patrol develop` process by pressing q on the keyboard (#2577)
+- Fix issue with reading logs on iOS devices in release. (#2569)
+- Add `--ios` flag to `patrol test` that specifies the iOS version to use. (#2540)
+- Bump `custom_lint` to `0.7.0` and `leancode_lint` to `14.3.0`. (#2574)
+- Display the name of the default device instead of its ID. (#2581)
+- Do not pass flavor as dart-define when building. (#2636)
+- Bump `vm_service` dependency to `15.0.0` (#2636)
+
+## 3.5.1
+
+- Gracefully handle when analytics fail to send. (#2460)
+- Handle uninstallation of the app after tests finish when using AGP 8.2+. (#2535)
+- Add `--coverage-packages` flag to `patrol test` that specifies which packages should be included 
+in the coverage report. (#2536)
+- Fix skipping tests with coverage collection enabled. (#2539)
+
+## 3.5.0
+
+- Add `PATROL_ANALYTICS_ENABLED` environment variable to disable analytics. (#2483)
+- Enable analytics by default. (#2483)
+
+## 3.4.1
+
+- Add android product flavor to dart-define. (#2425)
+- Detect and warn about Orchestrator 1.5.0. (#2437) 
+
+## 3.4.0
+
+- Add support for the `patrol_log` package. (#2387)
+
+This version requires version 3.13.0 of `patrol` package.
+
+## 3.3.0
+
+- Add `clear-permissions` flag on ios commands. (#2367)
+
+This version requires version 3.12.0 of `patrol` package.
+
+## 3.2.1
+
+- Allow running Patrol tests from any subfolder of the project (#2351)
+- Bump min Flutter SDK to 3.24.0 and Dart SDK to 3.5.0 (#2371)
+
+## 3.2.0
+
+- Add code coverage collection support (#2294)
+
+This version requires version 3.11.0 of `patrol` package.
+
+## 3.1.1
+
+- Fix checking `java` version. (#2301)
+- Change selecting `java` path. (#2300)
+
 ## 3.1.0
+
 - Add `tags` and `exclude-tags`. (#2286)
+- Run `flutter build apk --config-only` during android build.(#2293)
 
 This version requires version 3.10.0 of `patrol` package.
 

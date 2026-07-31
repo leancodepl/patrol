@@ -1,5 +1,5 @@
 # Uncomment this line to define a global platform for your project
-ios_deployment_target = '11.0'
+ios_deployment_target = '16.0'
 platform :ios, ios_deployment_target
 
 # CocoaPods analytics sends network stats synchronously affecting flutter build latency.
@@ -36,12 +36,22 @@ target 'Runner' do
     inherit! :complete
   end
 
+  # RunnerTests links patrol via SPM (see Runner.xcodeproj).
+
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
 end
 
 post_install do |installer|
   installer.pods_project.targets.each do |target|
     flutter_additional_ios_build_settings(target)
+
+    # Add PATROL_ENABLED flag to the patrol pod for RunnerTests
+    if target.name == 'patrol'
+      target.build_configurations.each do |config|
+        config.build_settings['OTHER_SWIFT_FLAGS'] ||= '$(inherited)'
+        config.build_settings['OTHER_SWIFT_FLAGS'] += ' -D PATROL_ENABLED'
+      end
+    end
 
     target.build_configurations.each do |config|
       config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = ios_deployment_target
@@ -67,7 +77,7 @@ post_install do |installer|
         # 'PERMISSION_SPEECH_RECOGNIZER=1',
 
         ## dart: PermissionGroup.photos
-        # 'PERMISSION_PHOTOS=1',
+        'PERMISSION_PHOTOS=1',
 
         ## dart: [PermissionGroup.location, PermissionGroup.locationAlways, PermissionGroup.locationWhenInUse]
         'PERMISSION_LOCATION=1',

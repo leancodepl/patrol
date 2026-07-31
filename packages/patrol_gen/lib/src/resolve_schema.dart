@@ -15,12 +15,18 @@ Future<Schema> resolveSchema(String schemaPath) async {
   if (result is ResolvedUnitResult) {
     for (final declaration in result.unit.declarations) {
       if (declaration is EnumDeclaration) {
-        enums.add(
-          Enum(
-            declaration.name.lexeme,
-            declaration.constants.map((e) => e.name.lexeme).toList(),
-          ),
-        );
+        final enumFields = declaration.constants.map((e) {
+          final name = e.name.lexeme;
+          final value =
+              switch (e.arguments?.argumentList.arguments.firstOrNull) {
+                final expression? =>
+                  expression.toString().replaceAll("'", '').replaceAll('"', ''),
+                _ => name,
+              };
+          return EnumField(name, value);
+        }).toList();
+
+        enums.add(Enum(declaration.name.lexeme, enumFields));
       } else if (declaration is ClassDeclaration) {
         if (declaration.abstractKeyword != null) {
           classServices.add(declaration);
@@ -39,7 +45,8 @@ Future<Schema> resolveSchema(String schemaPath) async {
 }
 
 Service _createService(ClassDeclaration declaration, List<Message> messages) {
-  final genericTypes = declaration.typeParameters?.typeParameters
+  final genericTypes =
+      declaration.typeParameters?.typeParameters
           .map((e) => e.name.lexeme)
           .toSet() ??
       {};
@@ -78,8 +85,9 @@ Service _createService(ClassDeclaration declaration, List<Message> messages) {
             final parameterTypeName =
                 (parameter.type! as NamedType).name2.lexeme;
 
-            requestMessage =
-                messages.firstWhere((msg) => msg.name == parameterTypeName);
+            requestMessage = messages.firstWhere(
+              (msg) => msg.name == parameterTypeName,
+            );
           } else {
             throw UnsupportedError('unsupported parameter $parameter');
           }
@@ -101,38 +109,36 @@ Message _createMessage(ClassDeclaration declaration) {
         .map((e) => e.fields)
         .whereType<VariableDeclarationList>()
         .map((e) {
-      final type = e.type;
-      if (type is NamedType) {
-        final isOptional = type.question != null;
-        final fieldName = e.variables.first.name.lexeme;
+          final type = e.type;
+          if (type is! NamedType) {
+            throw UnsupportedError('unsupported type $type');
+          }
 
-        if (type.type?.isDartCoreMap ?? false) {
-          final arguments = type.typeArguments!.arguments;
+          final arguments = type.typeArguments?.arguments;
+
+          final fieldType = switch (type.type) {
+            final t? when t.isDartCoreMap => switch (arguments) {
+              [final NamedType key, final NamedType value] => MapFieldType(
+                keyType: key.name2.lexeme,
+                valueType: value.name2.lexeme,
+              ),
+              _ => throw UnsupportedError('unsupported map type $type'),
+            },
+            final t? when t.isDartCoreList => switch (arguments) {
+              [final NamedType element, ...] => ListFieldType(
+                type: element.name2.lexeme,
+              ),
+              _ => throw UnsupportedError('unsupported list type $type'),
+            },
+            _ => OrdinaryFieldType(type: type.name2.lexeme),
+          };
+
           return MessageField(
-            isOptional: isOptional,
-            name: fieldName,
-            type: MapFieldType(
-              keyType: (arguments[0] as NamedType).name2.lexeme,
-              valueType: (arguments[1] as NamedType).name2.lexeme,
-            ),
+            isOptional: type.question != null,
+            name: e.variables.first.name.lexeme,
+            type: fieldType,
           );
-        } else if (type.type?.isDartCoreList ?? false) {
-          final genericType = type.typeArguments!.arguments.first as NamedType;
-          return MessageField(
-            isOptional: isOptional,
-            name: fieldName,
-            type: ListFieldType(type: genericType.name2.lexeme),
-          );
-        } else {
-          return MessageField(
-            isOptional: isOptional,
-            name: fieldName,
-            type: OrdinaryFieldType(type: type.name2.lexeme),
-          );
-        }
-      } else {
-        throw UnsupportedError('unsupported type $type');
-      }
-    }).toList(),
+        })
+        .toList(),
   );
 }

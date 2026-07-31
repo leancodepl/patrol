@@ -1,0 +1,76 @@
+## 0.10.0
+
+- Bump `equatable` to `^2.1.0` and migrate log `Entry` types from deprecated `EquatableMixin` to `with Equatable`.
+
+## 0.9.1
+
+- Fix `PatrolLogReader` crash when step or log entries arrive without a matching open test start entry.
+
+## 0.9.0
+
+- **Breaking:** Move `PatrolLogReader` to a separate `package:patrol_log/patrol_log_reader.dart` export, removing the transitive `dart:io` dependency from the main barrel file.
+
+## 0.8.0
+
+- Add `onLogEntry` callback to `PatrolLogReader`.
+- Add `developCompletedKey` to `ConfigEntry`.
+
+## 0.7.1
+
+- Take the test name into account in the log entries. (#2955)
+
+## 0.7.0
+
+- Show Flutter test framework output on iOS in `patrol develop`. (#2904)
+
+## 0.6.0
+
+- Update `TestEntry.nameWithPath` to use actual test directory. (#2728)
+- Add support for reading web-related logs. (#2789)
+
+## 0.5.0
+
+- Bump `leancode_lint` to `17.0.0`. (#2680)
+- Bump minimum Dart SDK to version 3.8.0 (#2680)
+
+## 0.4.0
+
+- Bump `custom_lint` to `0.7.0` and `leancode_lint` to `14.3.0`. (#2574)
+- Format the test duration to show it in minutes and hours instead of seconds. (#2599)
+- Fix gray text color in the terminal. (#2606)
+- Add support for reading logs on iOS devices in release. (#2569)
+
+## 0.3.0
+
+- Remove `exception` from `StepEntry`. When it was too long, it caused crash because of badly formed JSON. (#2481)
+
+## 0.2.2
+
+- Don't pass `ConfigEntry` on start, if it's empty. (#2466)
+
+## 0.2.1
+
+- Fix skipping first word in started TestEntry. (#2433)
+
+## 0.2.0
+
+- Fix report path when path contain spaces. (#2426)
+- Fix path to the test file on the failed test list in summary. (#2426)
+- Add `ConfigEntry`. (#2426)
+
+## 0.1.0
+
+- Add option to not clear test steps.
+- Display test path only in finished test logs.
+
+## 0.0.1+2
+
+- Remove flutter from dependencies.
+
+## 0.0.1+1
+
+- Reset step counter in develop.
+
+## 0.0.1
+
+- Initial release as a standalone package.

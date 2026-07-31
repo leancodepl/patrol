@@ -1,9 +1,8 @@
 import 'package:path/path.dart' as path;
 
 class DarwinConfig {
-  DarwinConfig({
-    required this.outputDirectory,
-  }) : contractsFilename = path.join(outputDirectory, 'Contracts.swift');
+  DarwinConfig({required this.outputDirectory})
+    : contractsFilename = path.join(outputDirectory, 'Contracts.swift');
 
   final String outputDirectory;
   final String contractsFilename;

@@ -1,4 +1,3 @@
-// ignore_for_file: implementation_imports
 import 'dart:convert';
 import 'dart:io' as io;
 
@@ -6,26 +5,21 @@ import 'package:file/file.dart';
 import 'package:http/http.dart' as http;
 import 'package:patrol_cli/src/base/constants.dart' as constants;
 import 'package:patrol_cli/src/base/extensions/platform.dart';
+import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/runner/flutter_command.dart';
 import 'package:platform/platform.dart';
 import 'package:uuid/uuid.dart';
 
 class AnalyticsConfig {
-  AnalyticsConfig({
-    required this.clientId,
-    required this.enabled,
-  });
+  AnalyticsConfig({required this.clientId, required this.enabled});
 
   AnalyticsConfig.fromJson(Map<String, dynamic> json)
-      : clientId = json['clientId'] as String,
-        enabled = json['enabled'] as bool;
+    : clientId = json['clientId'] as String,
+      enabled = json['enabled'] as bool;
 
   Map<String, dynamic> toJson() {
-    return <String, dynamic>{
-      'clientId': clientId,
-      'enabled': enabled,
-    };
+    return <String, dynamic>{'clientId': clientId, 'enabled': enabled};
   }
 
   /// UUID v4 unique for this client.
@@ -41,11 +35,15 @@ class Analytics {
     required Platform platform,
     http.Client? httpClient,
     required bool isCI,
-  })  : _fs = fs,
-        _platform = platform,
-        _httpClient = httpClient ?? http.Client(),
-        _postUrl = _getAnalyticsUrl(measurementId, apiSecret),
-        _isCI = isCI;
+    required bool? envAnalyticsEnabled,
+    required Logger logger,
+  }) : _fs = fs,
+       _platform = platform,
+       _httpClient = httpClient ?? http.Client(),
+       _postUrl = _getAnalyticsUrl(measurementId, apiSecret),
+       _isCI = isCI,
+       _envAnalyticsEnabled = envAnalyticsEnabled,
+       _logger = logger;
 
   final FileSystem _fs;
   final Platform _platform;
@@ -54,6 +52,9 @@ class Analytics {
   final String _postUrl;
 
   final bool _isCI;
+  final bool? _envAnalyticsEnabled;
+
+  final Logger _logger;
 
   /// Sends an event to Google Analytics that command [name] run.
   ///
@@ -68,33 +69,40 @@ class Analytics {
       return false;
     }
 
-    final enabled = _config?.enabled ?? false;
+    /// If the environment variable `PATROL_ANALYTICS_ENABLED` is set,
+    /// use it to determine if the command should be sent.
+    /// If not set, use the value from the config file.
+    final enabled = _envAnalyticsEnabled ?? _config?.enabled ?? true;
     if (!enabled) {
       return false;
     }
 
-    await _httpClient.post(
-      Uri.parse(_postUrl),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: _generateRequestBody(
-        flutterVersion: flutterVersion,
-        clientId: uuid,
-        eventName: name,
-        additionalEventData: eventData,
-      ),
-    );
-    return true;
+    try {
+      await _httpClient.post(
+        Uri.parse(_postUrl),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: _generateRequestBody(
+          flutterVersion: flutterVersion,
+          clientId: uuid,
+          eventName: name,
+          additionalEventData: eventData,
+        ),
+      );
+      return true;
+    } on Exception catch (e) {
+      _logger
+        ..info('Failed to post analytics')
+        ..detail(e.toString());
+      return false;
+    }
   }
 
   bool get firstRun => _config == null;
 
   set enabled(bool newValue) {
-    _config = AnalyticsConfig(
-      clientId: const Uuid().v4(),
-      enabled: newValue,
-    );
+    _config = AnalyticsConfig(clientId: const Uuid().v4(), enabled: newValue);
   }
 
   bool get enabled {
@@ -179,17 +187,13 @@ class FlutterVersion {
   factory FlutterVersion.test() => FlutterVersion('1.2.3', 'stable');
 
   factory FlutterVersion.fromCLI(FlutterCommand flutterCommand) {
-    final result = io.Process.runSync(
-      flutterCommand.executable,
-      [
-        ...flutterCommand.arguments,
-        '--no-version-check',
-        '--suppress-analytics',
-        '--version',
-        '--machine',
-      ],
-      runInShell: true,
-    );
+    final result = io.Process.runSync(flutterCommand.executable, [
+      ...flutterCommand.arguments,
+      '--no-version-check',
+      '--suppress-analytics',
+      '--version',
+      '--machine',
+    ], runInShell: true);
 
     final versionData =
         jsonDecode(cleanJsonResult(result)) as Map<String, dynamic>;

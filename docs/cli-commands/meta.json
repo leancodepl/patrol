@@ -1,0 +1,13 @@
+{
+  "title": "CLI commands",
+  "root": true,
+  "pages": [
+    "---CLI commands---",
+    "index",
+    "test",
+    "build",
+    "doctor",
+    "update",
+    "devices"
+  ]
+}

@@ -3,8 +3,22 @@ name: test android emulator
 on:
   workflow_dispatch:
   schedule:
+    # run this workflow every 12 hours
     - cron: "0 */12 * * *"
-  pull_request:
+  pull_request_target:
+    types: [opened, synchronize]
+    paths:
+      - 'packages/patrol/**'
+      - 'packages/patrol_finders/**'
+      - 'packages/patrol_log/**'
+      - 'packages/patrol_cli/**'
+      - 'packages/adb/**'
+      - 'packages/patrol_gen/**'
+      - 'dev/e2e_app/**'
+      - 'schema.dart'
+      - 'gen_from_schema'
+      - '!**.md'
+      - '!**.mdx'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -12,28 +26,47 @@ concurrency:
 
 jobs:
   run_tests:
-    name: Flutter ${{ matrix.flutter-version }} on emulator.wtf
+    name: Flutter ${{ matrix.flutter-version }} on API ${{ matrix.api-level }}
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 55
     outputs:
-      SLACK_MESSAGE_TITLE: Flutter ${{ matrix.flutter-version }} on emulator.wtf
+      SLACK_MESSAGE_TITLE: Flutter ${{ matrix.flutter-version }} on API ${{ matrix.api-level }}
       TESTS_EXIT_CODE: ${{ steps.tests_step.outputs.TESTS_EXIT_CODE }}
-      EXCLUDED_TESTS: ${{ steps.set_excluded_tests.outputs.EXCLUDED_TESTS }}
       URL_TO_DETAILS: ${{ steps.tests_step.outputs.URL_TO_DETAILS }}
 
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ["3.22.x"]
+        flutter-version: ["3.38.x"]
         flutter-channel: ["stable"]
+        api-level: [36, 35, 34, 33, 32]
 
     defaults:
       run:
         working-directory: dev/e2e_app
 
     steps:
+      - name: Get User Permission
+        id: checkAccess
+        uses: actions-cool/check-user-permission@v2
+        with:
+          require: write
+          username: ${{ github.triggering_actor }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check User Permission
+        if: steps.checkAccess.outputs.require-result == 'false'
+        run: |
+          echo "${{ github.triggering_actor }} does not have permissions on this repo."
+          echo "Current permission level is ${{ steps.checkAccess.outputs.user-permission }}"
+          echo "Job originally triggered by ${{ github.actor }}"
+          exit 1
+
       - name: Clone repository
         uses: actions/checkout@v4
+        with:
+          ref: ${{  github.event.pull_request.head.sha }}
 
       - name: Set up Java
         uses: actions/setup-java@v3
@@ -66,6 +99,8 @@ jobs:
         run: dart pub global activate --source path . && patrol
 
       - name: Generate Gradle wrapper
+        env:
+          MAPS_API_KEY: ${{ secrets.MAPS_API_KEY }}
         run: flutter build apk --config-only
 
       - name: Install ew-cli
@@ -76,26 +111,13 @@ jobs:
           echo "$HOME/bin" >> $GITHUB_PATH
           echo "EW_API_TOKEN=${{ secrets.EW_API_TOKEN }}" >> $GITHUB_ENV
 
-      - name: Set tests to exclude
-        id: set_excluded_tests
-        run: |
-          TESTS_TO_EXCLUDE="permissions/notifications_test,\
-          webview_hackernews_test,\
-          webview_leancode_test,\
-          webview_stackoverflow_test"
-
-          target_paths=""
-          for target in $(echo $TESTS_TO_EXCLUDE | tr ',' '\n'); do
-              target_paths+="integration_test/${target}.dart,"
-          done
-          target_paths="${target_paths%,}"
-
-          echo "EXCLUDED_TESTS=$TESTS_TO_EXCLUDE" >> "$GITHUB_OUTPUT"
-          echo "EXCLUDED_TESTS=$target_paths" >> "$GITHUB_ENV"
-
       - name: patrol build android
+        env:
+          MAPS_API_KEY: ${{ secrets.MAPS_API_KEY }}
         run: | 
-          patrol build android --exclude ${{ env.EXCLUDED_TESTS }} \
+          patrol build android \
+          --tags='android && emulator' \
+          --exclude patrol_test/web/,patrol_test/native_tests/volume_test.dart,patrol_test/volume_test.dart \
           --dart-define-from-file=defines_1.json --dart-define-from-file=defines_2.json --dart-define-from-file=defines_3.env \
           --verbose
 
@@ -103,13 +125,13 @@ jobs:
         id: tests_step
         run: |
           set +e
-          output="$(ew-cli \
-            emulatorwtf.yaml:ci --json \
-            --display-name "Patrol example app (${GITHUB_SHA::7})")"
+          output="$(ew-cli emulatorwtf.yaml:multi_api \
+            --device model=Pixel7,version=${{ matrix.api-level }} \
+            --display-name "Patrol example app API ${{ matrix.api-level }} (${GITHUB_SHA::7})")"
           TESTS_EXIT_CODE=$?
           set -e
 
-          # Extract the results URL and write it to Github Summmary
+          # Extract the results URL and write it to Github Summary
           link="$(echo "$output" | jq -r ".resultsUrl")"
           echo "[Test details on emulator.wtf]($link) (LeanCode members only)" >> "$GITHUB_STEP_SUMMARY"
 
@@ -125,6 +147,5 @@ jobs:
     with:
       TESTS_EXIT_CODE: ${{ needs.run_tests.outputs.TESTS_EXIT_CODE }}
       SLACK_MESSAGE_TITLE: ${{ needs.run_tests.outputs.SLACK_MESSAGE_TITLE }}
-      EXCLUDED_TESTS: ${{ needs.run_tests.outputs.EXCLUDED_TESTS }}
       URL_TO_DETAILS: ${{ needs.run_tests.outputs.URL_TO_DETAILS }}
     secrets: inherit

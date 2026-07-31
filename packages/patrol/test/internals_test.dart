@@ -1,8 +1,7 @@
-// ignore_for_file: invalid_use_of_internal_member, depend_on_referenced_packages, implementation_imports
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/src/common.dart'
     show createDartTestGroup, deduplicateGroupEntryName;
-import 'package:patrol/src/native/contracts/contracts.dart';
+import 'package:patrol/src/platform/contracts/contracts.dart';
 import 'package:test_api/backend.dart';
 import 'package:test_api/src/backend/group.dart';
 import 'package:test_api/src/backend/invoker.dart' show LocalTest;
@@ -24,29 +23,23 @@ void main() {
       DartGroupEntry callback() => createDartTestGroup(topLevelGroup);
 
       // then
-      expect(
-        callback,
-        throwsA(isA<StateError>()),
-      );
+      expect(callback, throwsA(isA<StateError>()));
     });
 
     test('smoke test 1', () {
       // given
       final topLevelGroup = Group.root([
         LocalTest('patrol_test_explorer', Metadata.empty, () {}),
-        Group(
-          'example_test',
-          [
-            Group('example_test alpha', [
-              _localTest('example_test alpha first'),
-              _localTest('example_test alpha second'),
-            ]),
-            Group('example_test bravo', [
-              _localTest('example_test bravo first'),
-              _localTest('example_test bravo second'),
-            ]),
-          ],
-        ),
+        Group('example_test', [
+          Group('example_test alpha', [
+            _localTest('example_test alpha first'),
+            _localTest('example_test alpha second'),
+          ]),
+          Group('example_test bravo', [
+            _localTest('example_test bravo first'),
+            _localTest('example_test bravo second'),
+          ]),
+        ]),
         Group('open_app_test', [
           _localTest('open_app_test open maps'),
           _localTest('open_app_test open browser'),
@@ -64,33 +57,27 @@ void main() {
             name: '',
             type: GroupEntryType.group,
             skip: false,
-            tags: [],
+            tags: const [],
             entries: [
               DartGroupEntry(
                 name: 'example_test',
                 type: GroupEntryType.group,
                 skip: false,
-                tags: [],
+                tags: const [],
                 entries: [
                   DartGroupEntry(
                     name: 'alpha',
                     type: GroupEntryType.group,
                     skip: false,
-                    tags: [],
-                    entries: [
-                      _testEntry('first'),
-                      _testEntry('second'),
-                    ],
+                    tags: const [],
+                    entries: [_testEntry('first'), _testEntry('second')],
                   ),
                   DartGroupEntry(
                     name: 'bravo',
                     type: GroupEntryType.group,
                     skip: false,
-                    tags: [],
-                    entries: [
-                      _testEntry('first'),
-                      _testEntry('second'),
-                    ],
+                    tags: const [],
+                    entries: [_testEntry('first'), _testEntry('second')],
                   ),
                 ],
               ),
@@ -98,11 +85,8 @@ void main() {
                 name: 'open_app_test',
                 type: GroupEntryType.group,
                 skip: false,
-                tags: [],
-                entries: [
-                  _testEntry('open maps'),
-                  _testEntry('open browser'),
-                ],
+                tags: const [],
+                entries: [_testEntry('open maps'), _testEntry('open browser')],
               ),
             ],
           ),
@@ -114,22 +98,19 @@ void main() {
       // given
       final topLevelGroup = Group.root([
         LocalTest('patrol_test_explorer', Metadata.empty, () {}),
-        Group(
-          'example_test',
-          [
-            _localTest('example_test alpha'),
-            Group('example_test bravo', [
-              _localTest('example_test bravo first'),
-              _localTest('example_test bravo second'),
-            ]),
-            _localTest('example_test charlie'),
-            Group('example_test delta', [
-              _localTest('example_test delta first'),
-              _localTest('example_test delta second'),
-            ]),
-            _localTest('example_test echo'),
-          ],
-        ),
+        Group('example_test', [
+          _localTest('example_test alpha'),
+          Group('example_test bravo', [
+            _localTest('example_test bravo first'),
+            _localTest('example_test bravo second'),
+          ]),
+          _localTest('example_test charlie'),
+          Group('example_test delta', [
+            _localTest('example_test delta first'),
+            _localTest('example_test delta second'),
+          ]),
+          _localTest('example_test echo'),
+        ]),
       ]);
 
       // when
@@ -143,35 +124,29 @@ void main() {
             name: '',
             type: GroupEntryType.group,
             skip: false,
-            tags: [],
+            tags: const [],
             entries: [
               DartGroupEntry(
                 name: 'example_test',
                 type: GroupEntryType.group,
                 skip: false,
-                tags: [],
+                tags: const [],
                 entries: [
                   _testEntry('alpha'),
                   DartGroupEntry(
                     name: 'bravo',
                     type: GroupEntryType.group,
                     skip: false,
-                    tags: [],
-                    entries: [
-                      _testEntry('first'),
-                      _testEntry('second'),
-                    ],
+                    tags: const [],
+                    entries: [_testEntry('first'), _testEntry('second')],
                   ),
                   _testEntry('charlie'),
                   DartGroupEntry(
                     name: 'delta',
                     type: GroupEntryType.group,
                     skip: false,
-                    tags: [],
-                    entries: [
-                      _testEntry('first'),
-                      _testEntry('second'),
-                    ],
+                    tags: const [],
+                    entries: [_testEntry('first'), _testEntry('second')],
                   ),
                   _testEntry('echo'),
                 ],
@@ -186,13 +161,10 @@ void main() {
       // given
       final topLevelGroup = Group.root([
         LocalTest('patrol_test_explorer', Metadata.empty, () {}),
-        Group(
-          'example_test',
-          [
-            _localTest('example_test alpha'), // 18 chars
-            _localTest('example_test zielony kocyk'), // 26 chars, 6 too many
-          ],
-        ),
+        Group('example_test', [
+          _localTest('example_test alpha'), // 18 chars
+          _localTest('example_test zielony kocyk'), // 26 chars, 6 too many
+        ]),
       ]);
 
       // when
@@ -209,17 +181,14 @@ void main() {
             name: '',
             type: GroupEntryType.group,
             skip: false,
-            tags: [],
+            tags: const [],
             entries: [
               DartGroupEntry(
                 name: 'example_test',
                 type: GroupEntryType.group,
                 skip: false,
-                tags: [],
-                entries: [
-                  _testEntry('alpha'),
-                  _testEntry('zielony'),
-                ],
+                tags: const [],
+                entries: [_testEntry('alpha'), _testEntry('zielony')],
               ),
             ],
           ),
@@ -250,27 +219,18 @@ void main() {
       // given
       final topLevelGroup = Group.root([
         LocalTest('patrol_test_explorer', Metadata.empty, () {}),
-        Group(
-          'example_test',
-          [
-            _localTest('example_test alpha'),
-          ],
-          metadata: Metadata(skip: true),
-        ),
-        Group(
-          'example2_test',
-          [
-            _localTest('example2_test alpha'),
-            _localTest('example2_test bravo first'),
-            _localTest('example2_test bravo second'),
-          ],
-        ),
+        Group('example_test', [
+          _localTest('example_test alpha'),
+        ], metadata: Metadata(skip: true)),
+        Group('example2_test', [
+          _localTest('example2_test alpha'),
+          _localTest('example2_test bravo first'),
+          _localTest('example2_test bravo second'),
+        ]),
       ]);
 
       // when
-      final dartTestGroup = createDartTestGroup(
-        topLevelGroup,
-      );
+      final dartTestGroup = createDartTestGroup(topLevelGroup);
 
       // then
       expect(
@@ -280,22 +240,20 @@ void main() {
             name: '',
             type: GroupEntryType.group,
             skip: false,
-            tags: [],
+            tags: const [],
             entries: [
               DartGroupEntry(
                 name: 'example_test',
                 type: GroupEntryType.group,
                 skip: true,
-                tags: [],
-                entries: [
-                  _testEntry('alpha'),
-                ],
+                tags: const [],
+                entries: [_testEntry('alpha')],
               ),
               DartGroupEntry(
                 name: 'example2_test',
                 type: GroupEntryType.group,
                 skip: false,
-                tags: [],
+                tags: const [],
                 entries: [
                   _testEntry('alpha'),
                   _testEntry('bravo first'),
@@ -314,29 +272,21 @@ void main() {
       // given
       final topLevelGroup = Group.root([
         LocalTest('patrol_test_explorer', Metadata.empty, () {}),
-        Group(
-          'example_test',
-          [
-            _localTest(
-              'example_test alpha',
-              metadata: Metadata(tags: ['tag1']),
-            ),
-            _localTest(
-              'example_test bravo first',
-              metadata: Metadata(tags: ['tag2']),
-            ),
-            _localTest(
-              'example_test bravo second',
-              metadata: Metadata(tags: ['tag3']),
-            ),
-          ],
-        ),
+        Group('example_test', [
+          _localTest('example_test alpha', metadata: Metadata(tags: ['tag1'])),
+          _localTest(
+            'example_test bravo first',
+            metadata: Metadata(tags: ['tag2']),
+          ),
+          _localTest(
+            'example_test bravo second',
+            metadata: Metadata(tags: ['tag3']),
+          ),
+        ]),
       ]);
 
       // when
-      final dartTestGroup = createDartTestGroup(
-        topLevelGroup,
-      );
+      final dartTestGroup = createDartTestGroup(topLevelGroup);
 
       // then
       expect(
@@ -346,13 +296,13 @@ void main() {
             name: '',
             type: GroupEntryType.group,
             skip: false,
-            tags: [],
+            tags: const [],
             entries: [
               DartGroupEntry(
                 name: 'example_test',
                 type: GroupEntryType.group,
                 skip: false,
-                tags: [],
+                tags: const [],
                 entries: [
                   _testEntry('alpha', tags: ['tag1']),
                   _testEntry('bravo first', tags: ['tag2']),
@@ -369,30 +319,21 @@ void main() {
       // given
       final topLevelGroup = Group.root([
         LocalTest('patrol_test_explorer', Metadata.empty, () {}),
-        Group(
-          'example_test',
-          [
-            _localTest(
-              'example_test alpha',
-              metadata: Metadata(tags: ['tag1']),
-            ),
-            _localTest(
-              'example_test bravo first',
-              metadata: Metadata(tags: ['tag2']),
-            ),
-            _localTest(
-              'example_test bravo second',
-              metadata: Metadata(tags: ['tag3']),
-            ),
-          ],
-        ),
+        Group('example_test', [
+          _localTest('example_test alpha', metadata: Metadata(tags: ['tag1'])),
+          _localTest(
+            'example_test bravo first',
+            metadata: Metadata(tags: ['tag2']),
+          ),
+          _localTest(
+            'example_test bravo second',
+            metadata: Metadata(tags: ['tag3']),
+          ),
+        ]),
       ]);
 
       // when
-      final dartTestGroup = createDartTestGroup(
-        topLevelGroup,
-        tags: 'tag1',
-      );
+      final dartTestGroup = createDartTestGroup(topLevelGroup, tags: 'tag1');
 
       // then
       expect(
@@ -402,13 +343,13 @@ void main() {
             name: '',
             type: GroupEntryType.group,
             skip: false,
-            tags: [],
+            tags: const [],
             entries: [
               DartGroupEntry(
                 name: 'example_test',
                 type: GroupEntryType.group,
                 skip: false,
-                tags: [],
+                tags: const [],
                 entries: [
                   _testEntry('alpha', tags: ['tag1']),
                 ],
@@ -423,23 +364,17 @@ void main() {
       // given
       final topLevelGroup = Group.root([
         LocalTest('patrol_test_explorer', Metadata.empty, () {}),
-        Group(
-          'example_test',
-          [
-            _localTest(
-              'example_test alpha',
-              metadata: Metadata(tags: ['tag1']),
-            ),
-            _localTest(
-              'example_test bravo first',
-              metadata: Metadata(tags: ['tag2']),
-            ),
-            _localTest(
-              'example_test bravo second',
-              metadata: Metadata(tags: ['tag3']),
-            ),
-          ],
-        ),
+        Group('example_test', [
+          _localTest('example_test alpha', metadata: Metadata(tags: ['tag1'])),
+          _localTest(
+            'example_test bravo first',
+            metadata: Metadata(tags: ['tag2']),
+          ),
+          _localTest(
+            'example_test bravo second',
+            metadata: Metadata(tags: ['tag3']),
+          ),
+        ]),
       ]);
 
       // when
@@ -456,13 +391,13 @@ void main() {
             name: '',
             type: GroupEntryType.group,
             skip: false,
-            tags: [],
+            tags: const [],
             entries: [
               DartGroupEntry(
                 name: 'example_test',
                 type: GroupEntryType.group,
                 skip: false,
-                tags: [],
+                tags: const [],
                 entries: [
                   _testEntry('bravo first', tags: ['tag2']),
                   _testEntry('bravo second', tags: ['tag3']),
@@ -478,23 +413,17 @@ void main() {
       // given
       final topLevelGroup = Group.root([
         LocalTest('patrol_test_explorer', Metadata.empty, () {}),
-        Group(
-          'example_test',
-          [
-            _localTest(
-              'example_test alpha',
-              metadata: Metadata(tags: ['tag1']),
-            ),
-            _localTest(
-              'example_test bravo first',
-              metadata: Metadata(tags: ['tag1', 'tag2']),
-            ),
-            _localTest(
-              'example_test bravo second',
-              metadata: Metadata(tags: ['tag3']),
-            ),
-          ],
-        ),
+        Group('example_test', [
+          _localTest('example_test alpha', metadata: Metadata(tags: ['tag1'])),
+          _localTest(
+            'example_test bravo first',
+            metadata: Metadata(tags: ['tag1', 'tag2']),
+          ),
+          _localTest(
+            'example_test bravo second',
+            metadata: Metadata(tags: ['tag3']),
+          ),
+        ]),
       ]);
 
       // when
@@ -512,13 +441,13 @@ void main() {
             name: '',
             type: GroupEntryType.group,
             skip: false,
-            tags: [],
+            tags: const [],
             entries: [
               DartGroupEntry(
                 name: 'example_test',
                 type: GroupEntryType.group,
                 skip: false,
-                tags: [],
+                tags: const [],
                 entries: [
                   _testEntry('alpha', tags: ['tag1']),
                   _testEntry('bravo second', tags: ['tag3']),
@@ -543,7 +472,7 @@ DartGroupEntry _testEntry(
   return DartGroupEntry(
     name: name,
     type: GroupEntryType.test,
-    entries: [],
+    entries: const [],
     skip: skip,
     tags: tags,
   );

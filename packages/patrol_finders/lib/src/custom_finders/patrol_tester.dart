@@ -1,7 +1,9 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol_finders/patrol_finders.dart';
+import 'package:patrol_log/patrol_log.dart';
 
 /// Common configuration for [PatrolTester] and [PatrolFinder].
 class PatrolTesterConfig {
@@ -13,6 +15,7 @@ class PatrolTesterConfig {
     this.settlePolicy = SettlePolicy.trySettle,
     this.dragDuration = const Duration(milliseconds: 100),
     this.settleBetweenScrollsTimeout = const Duration(seconds: 5),
+    this.printLogs = false,
   });
 
   /// Time after which [PatrolFinder.waitUntilExists] fails if it doesn't find
@@ -52,6 +55,9 @@ class PatrolTesterConfig {
   /// [settlePolicy]).
   final Duration settleBetweenScrollsTimeout;
 
+  /// If true, patrol finders logs will be printed to the console.
+  final bool printLogs;
+
   /// Creates a copy of this config but with the given fields replaced with the
   /// new values.
   PatrolTesterConfig copyWith({
@@ -60,6 +66,8 @@ class PatrolTesterConfig {
     Duration? settleTimeout,
     SettlePolicy? settlePolicy,
     Duration? dragDuration,
+    Duration? settleBetweenScrollsTimeout,
+    bool? printLogs,
   }) {
     return PatrolTesterConfig(
       existsTimeout: existsTimeout ?? this.existsTimeout,
@@ -67,6 +75,9 @@ class PatrolTesterConfig {
       settleTimeout: settleTimeout ?? this.settleTimeout,
       settlePolicy: settlePolicy ?? this.settlePolicy,
       dragDuration: dragDuration ?? this.dragDuration,
+      settleBetweenScrollsTimeout:
+          settleBetweenScrollsTimeout ?? this.settleBetweenScrollsTimeout,
+      printLogs: printLogs ?? this.printLogs,
     );
   }
 }
@@ -116,16 +127,65 @@ const defaultScrollMaxIteration = 15;
 /// <https://dart.dev/guides/language/language-tour#callable-classes>
 class PatrolTester {
   /// Creates a new [PatrolTester] which wraps [tester].
-  const PatrolTester({
-    required this.tester,
-    required this.config,
-  });
+  PatrolTester({required this.tester, required this.config})
+    : patrolLog = PatrolLogWriter();
 
   /// Global configuration of this tester.
   final PatrolTesterConfig config;
 
+  /// Logs a message to the patrol log.
+  final PatrolLogWriter patrolLog;
+
   /// Flutter's widget tester that this [PatrolTester] wraps.
   final WidgetTester tester;
+
+  /// Whether the test is running on Android.
+  bool get isAndroid => _is(TargetPlatform.android);
+
+  /// Whether the test is running on iOS.
+  bool get isIOS => _is(TargetPlatform.iOS);
+
+  /// Whether the test is running on web.
+  bool get isWeb => kIsWeb;
+
+  /// Whether the test is running on macOS.
+  bool get isMacOS => _is(TargetPlatform.macOS);
+
+  bool _is(TargetPlatform platform) =>
+      !kIsWeb && defaultTargetPlatform == platform;
+
+  /// Wraps a function with a log entry for the start and end of the function.
+  Future<T> wrapWithPatrolLog<T>({
+    required String action,
+    String? value,
+    Finder? finder,
+    required String color,
+    required Future<T> Function() function,
+    bool enablePatrolLog = true,
+  }) async {
+    if (!(config.printLogs && enablePatrolLog)) {
+      return function();
+    }
+
+    final finderText =
+        finder
+            ?.toString(describeSelf: true)
+            .replaceAll('A finder that searches for', '')
+            .replaceAll(' (considering only hit-testable ones)', '')
+            .replaceAll(' (ignoring all but first)', '') ??
+        '';
+    final valueText = value != null ? ' "$value"' : '';
+    final text = '$color$action${AnsiCodes.reset}$valueText$finderText';
+    patrolLog.log(StepEntry(action: text, status: StepEntryStatus.start));
+    try {
+      final result = await function();
+      patrolLog.log(StepEntry(action: text, status: StepEntryStatus.success));
+      return result;
+    } catch (err) {
+      patrolLog.log(StepEntry(action: text, status: StepEntryStatus.failure));
+      rethrow;
+    }
+  }
 
   /// Returns a [PatrolFinder] that matches [matching].
   ///
@@ -185,6 +245,7 @@ class PatrolTester {
         phase,
         timeout ?? config.settleTimeout,
       );
+      // We want to catch pumpAndSettle timeouts, so we can ignore them
       // ignore: avoid_catching_errors
     } on FlutterError catch (err) {
       if (err.message == 'pumpAndSettle timed out') {
@@ -242,18 +303,31 @@ class PatrolTester {
     SettlePolicy? settlePolicy,
     Duration? visibleTimeout,
     Duration? settleTimeout,
+    Alignment alignment = Alignment.center,
+    bool enablePatrolLog = true,
   }) {
-    return TestAsyncUtils.guard(() async {
-      final resolvedFinder = await waitUntilVisible(
-        finder,
-        timeout: visibleTimeout,
-      );
-      await tester.tap(resolvedFinder.first);
-      await _performPump(
-        settlePolicy: settlePolicy,
-        settleTimeout: settleTimeout,
-      );
-    });
+    return TestAsyncUtils.guard(
+      () => wrapWithPatrolLog(
+        action: 'tap',
+        finder: finder,
+        color: AnsiCodes.yellow,
+        enablePatrolLog: enablePatrolLog,
+        function: () async {
+          final resolvedFinder = await waitUntilVisible(
+            finder,
+            timeout: visibleTimeout,
+            alignment: alignment,
+            enablePatrolLog: false,
+          );
+          final rect = tester.getRect(resolvedFinder.first);
+          await tester.tapAt(alignment.withinRect(rect));
+          await _performPump(
+            settlePolicy: settlePolicy,
+            settleTimeout: settleTimeout,
+          );
+        },
+      ),
+    );
   }
 
   /// Waits until this finder finds at least 1 visible widget and then makes
@@ -286,18 +360,31 @@ class PatrolTester {
     SettlePolicy? settlePolicy,
     Duration? visibleTimeout,
     Duration? settleTimeout,
+    Alignment alignment = Alignment.center,
+    bool enablePatrolLog = true,
   }) {
-    return TestAsyncUtils.guard(() async {
-      final resolvedFinder = await waitUntilVisible(
-        finder,
-        timeout: visibleTimeout,
-      );
-      await tester.longPress(resolvedFinder.first);
-      await _performPump(
-        settlePolicy: settlePolicy,
-        settleTimeout: settleTimeout,
-      );
-    });
+    return TestAsyncUtils.guard(
+      () => wrapWithPatrolLog(
+        action: 'longPress',
+        finder: finder,
+        color: AnsiCodes.yellow,
+        enablePatrolLog: enablePatrolLog,
+        function: () async {
+          final resolvedFinder = await waitUntilVisible(
+            finder,
+            timeout: visibleTimeout,
+            alignment: alignment,
+            enablePatrolLog: false,
+          );
+          final rect = tester.getRect(resolvedFinder.first);
+          await tester.longPressAt(alignment.withinRect(rect));
+          await _performPump(
+            settlePolicy: settlePolicy,
+            settleTimeout: settleTimeout,
+          );
+        },
+      ),
+    );
   }
 
   /// Waits until [finder] finds at least 1 visible widget and then enters text
@@ -331,57 +418,153 @@ class PatrolTester {
     SettlePolicy? settlePolicy,
     Duration? visibleTimeout,
     Duration? settleTimeout,
+    Alignment alignment = Alignment.center,
+    bool enablePatrolLog = true,
+    bool hideKeyboard = true,
   }) {
-    if (!kIsWeb) {
-      // Fix for enterText() not working in release mode on real iOS devices.
-      // See https://github.com/flutter/flutter/pull/89703
-      // Also a fix for enterText() not being able to interact with the same
-      // textfield 2 times in the same test.
-      // See https://github.com/flutter/flutter/issues/134604
-      tester.testTextInput.register();
-    }
+    return TestAsyncUtils.guard(
+      () => wrapWithPatrolLog(
+        action: 'enterText',
+        value: text,
+        finder: finder,
+        color: AnsiCodes.magenta,
+        enablePatrolLog: enablePatrolLog,
+        function: () async {
+          final resolvedFinder = await waitUntilVisible(
+            finder,
+            timeout: visibleTimeout,
+            alignment: alignment,
+            enablePatrolLog: false,
+          );
 
-    return TestAsyncUtils.guard(() async {
-      final resolvedFinder = await waitUntilVisible(
-        finder,
-        timeout: visibleTimeout,
-      );
-      await tester.enterText(resolvedFinder.first, text);
-      await _performPump(
-        settlePolicy: settlePolicy,
-        settleTimeout: settleTimeout,
-      );
-    });
+          final editableTextFinder = find.descendant(
+            of: resolvedFinder.first,
+            matching: find.byType(EditableText),
+            matchRoot: true,
+          );
+          final editableTextState = tester.state<EditableTextState>(
+            editableTextFinder,
+          );
+          final wasFocused = editableTextState.widget.focusNode.hasFocus;
+          final usesLiveBinding =
+              tester.binding is LiveTestWidgetsFlutterBinding;
+          final textEditingValue = TextEditingValue(
+            text: text,
+            selection: TextSelection.collapsed(offset: text.length),
+          );
+
+          if (!kIsWeb && wasFocused) {
+            await _enterTextIntoFocusedEditable(
+              editableTextState,
+              textEditingValue,
+            );
+          } else {
+            if (!kIsWeb) {
+              // Fix for enterText() not working in release mode on real iOS devices.
+              // See https://github.com/flutter/flutter/pull/89703
+              // Also the fix for enterText() is not able to interact with the same
+              // textfield 2 times in the same test.
+              // See https://github.com/flutter/flutter/issues/134604
+              tester.testTextInput.register();
+            }
+
+            try {
+              // Workaround for enterText() not working in release mode on real iOS devices.
+              // [EditableTextState._openInputConnection] is not called when the text field is focused.
+              // So we need to attach text input connection manually.
+              if (isIOS && kReleaseMode) {
+                final effectiveAutofillClient =
+                    editableTextState.widget.autofillClient;
+
+                TextInput.attach(
+                  editableTextState,
+                  effectiveAutofillClient?.textInputConfiguration ??
+                      const TextInputConfiguration(),
+                );
+              }
+
+              await tester.enterText(resolvedFinder.first, text);
+            } finally {
+              if (!kIsWeb) {
+                tester.testTextInput.closeConnection();
+                await tester.pump();
+                tester.binding.focusedEditable = null;
+
+                tester.testTextInput.reset();
+                tester.testTextInput.unregister();
+              }
+            }
+          }
+
+          if (!kIsWeb && editableTextState.mounted) {
+            if (hideKeyboard) {
+              editableTextState.widget.focusNode.unfocus();
+              await tester.pump();
+            } else if (usesLiveBinding) {
+              editableTextState.requestKeyboard();
+              await tester.pump();
+            }
+          }
+          await _performPump(
+            settlePolicy: settlePolicy,
+            settleTimeout: settleTimeout,
+          );
+        },
+      ),
+    );
+  }
+
+  Future<void> _enterTextIntoFocusedEditable(
+    EditableTextState editableTextState,
+    TextEditingValue textEditingValue,
+  ) async {
+    editableTextState.requestKeyboard();
+    await tester.pump();
+    editableTextState.userUpdateTextEditingValue(
+      textEditingValue,
+      SelectionChangedCause.keyboard,
+    );
+    await tester.idle();
   }
 
   /// Waits until this finder finds at least one widget.
   ///
   /// Throws a [WaitUntilVisibleTimeoutException] if no widgets  found.
   ///
-  /// Timeout is globally set by [PatrolTester.config.visibleTimeout]. If you
-  /// want to override this global setting, set [timeout].
+  /// Timeout is globally set by [PatrolTesterConfig.visibleTimeout] inside
+  /// [PatrolTester.config]. If you want to override this global setting, set
+  /// [timeout].
   Future<PatrolFinder> waitUntilExists(
     PatrolFinder finder, {
     Duration? timeout,
+    bool enablePatrolLog = true,
   }) {
-    return TestAsyncUtils.guard(() async {
-      final duration = timeout ?? config.existsTimeout;
-      final end = tester.binding.clock.now().add(duration);
+    return TestAsyncUtils.guard(
+      () => wrapWithPatrolLog<PatrolFinder>(
+        action: 'waitUntilExists',
+        finder: finder,
+        color: AnsiCodes.cyan,
+        enablePatrolLog: enablePatrolLog,
+        function: () async {
+          final duration = timeout ?? config.existsTimeout;
+          final end = tester.binding.clock.now().add(duration);
 
-      while (finder.evaluate().isEmpty) {
-        final now = tester.binding.clock.now();
-        if (now.isAfter(end)) {
-          throw WaitUntilExistsTimeoutException(
-            finder: finder,
-            duration: duration,
-          );
-        }
+          while (finder.evaluate().isEmpty) {
+            final now = tester.binding.clock.now();
+            if (now.isAfter(end)) {
+              throw WaitUntilExistsTimeoutException(
+                finder: finder,
+                duration: duration,
+              );
+            }
 
-        await tester.pump(const Duration(milliseconds: 100));
-      }
+            await tester.pump(const Duration(milliseconds: 100));
+          }
 
-      return finder;
-    });
+          return finder;
+        },
+      ),
+    );
   }
 
   /// Waits until [finder] finds at least one visible widget.
@@ -389,30 +572,78 @@ class PatrolTester {
   /// Throws a [WaitUntilVisibleTimeoutException] if more time than specified by
   /// the timeout passed and no widgets were found.
   ///
-  /// Timeout is globally set by [PatrolTester.config.visibleTimeout]. If you
-  /// want to override this global setting, set [timeout].
+  /// Timeout is globally set by [PatrolTesterConfig.visibleTimeout] inside
+  /// [PatrolTester.config]. If you want to override this global setting, set
+  /// [timeout].
+  ///
+  /// {@template patrol_tester.alignment_on_visible_check}
+  /// Provide [alignment] to fine tune the visibility check by calling
+  /// [Finder.hitTestable] at this [alignment] of the [Widget].
+  /// This might be helpful in case the tested [Widget] is or contains a [Row]
+  /// or a [Column]. The default [Alignment.center] might always be the best
+  ///  choice as the following example demonstrates:
+  ///
+  /// ```dart
+  ///
+  /// /// This [Widget] will only be found when calling
+  /// ///await $(Foo).waitUntilVisible(alignment: Alignment.topCenter)
+  /// class Foo extends StatelessWidget {
+  /// Foo({Key? key}) : super(key: key);
+  ///  @override
+  ///  Widget build(BuildContext context) {
+  ///    return const Column(
+  ///        children: [
+  ///          Text(
+  ///            'Foo',
+  ///          ),
+  ///          SizedBox(height: 48),
+  ///          Text('Bar'),
+  ///        ],
+  ///      )
+  ///  }
+  /// }
+  /// ```
+  /// As there is an empty [SizedBox] in the center of the [Column],
+  /// calling ``await $(Foo).waitUntilVisible()`` will fail
+  /// as the underlying [Finder.hitTestable] will not find any
+  /// hit-testable widget. Changing the ``alignment`` parameter
+  /// to ``Alignment.topCenter`` and calling
+  /// ``await $(Foo).waitUntilVisible(alignment: Alignment.topCenter)``
+  /// will make the test pass as the underlying [Finder.hitTestable]
+  /// will find the [Text] widget at the top of the [Column].
+  /// {@endtemplate}
   Future<PatrolFinder> waitUntilVisible(
     Finder finder, {
     Duration? timeout,
+    Alignment alignment = Alignment.center,
+    bool enablePatrolLog = true,
   }) {
-    return TestAsyncUtils.guard(() async {
-      final duration = timeout ?? config.visibleTimeout;
-      final end = tester.binding.clock.now().add(duration);
-      final hitTestableFinder = finder.hitTestable();
-      while (hitTestableFinder.evaluate().isEmpty) {
-        final now = tester.binding.clock.now();
-        if (now.isAfter(end)) {
-          throw WaitUntilVisibleTimeoutException(
-            finder: finder,
-            duration: duration,
-          );
-        }
+    return TestAsyncUtils.guard(
+      () => wrapWithPatrolLog(
+        action: 'waitUntilVisible',
+        finder: finder,
+        color: AnsiCodes.cyan,
+        enablePatrolLog: enablePatrolLog,
+        function: () async {
+          final duration = timeout ?? config.visibleTimeout;
+          final end = tester.binding.clock.now().add(duration);
+          final hitTestableFinder = finder.hitTestable(at: alignment);
+          while (hitTestableFinder.evaluate().isEmpty) {
+            final now = tester.binding.clock.now();
+            if (now.isAfter(end)) {
+              throw WaitUntilVisibleTimeoutException(
+                finder: finder,
+                duration: duration,
+              );
+            }
 
-        await tester.pump(const Duration(milliseconds: 100));
-      }
+            await tester.pump(const Duration(milliseconds: 100));
+          }
 
-      return PatrolFinder(finder: hitTestableFinder, tester: this);
-    });
+          return PatrolFinder(finder: hitTestableFinder, tester: this);
+        },
+      ),
+    );
   }
 
   /// Repeatedly drags [view] by [moveStep] until [finder] finds at least one
@@ -446,7 +677,7 @@ class PatrolTester {
   ///    [PatrolTester.config].
   ///
   /// See also:
-  ///  * [PatrolTester.config.settlePolicy], which controls the default settle
+  ///  * [PatrolTesterConfig.settlePolicy], which controls the default settle
   ///     behavior
   ///  * [PatrolTester.dragUntilVisible], which scrolls to visible widget,
   ///    not only existing one.
@@ -458,38 +689,43 @@ class PatrolTester {
     Duration? settleBetweenScrollsTimeout,
     Duration? dragDuration,
     SettlePolicy? settlePolicy,
+    bool enablePatrolLog = true,
   }) {
-    return TestAsyncUtils.guard(() async {
-      var viewPatrolFinder = PatrolFinder(finder: view, tester: this);
-      await viewPatrolFinder.waitUntilVisible();
-      viewPatrolFinder = viewPatrolFinder.hitTestable().first;
-      dragDuration ??= config.dragDuration;
-      settleBetweenScrollsTimeout ??= config.settleBetweenScrollsTimeout;
+    return TestAsyncUtils.guard(
+      () => wrapWithPatrolLog<PatrolFinder>(
+        action: 'dragUntilExists',
+        finder: view,
+        color: AnsiCodes.blue,
+        enablePatrolLog: enablePatrolLog,
+        function: () async {
+          var viewPatrolFinder = PatrolFinder(finder: view, tester: this);
+          await viewPatrolFinder.waitUntilVisible(enablePatrolLog: false);
+          viewPatrolFinder = viewPatrolFinder.hitTestable().first;
+          dragDuration ??= config.dragDuration;
+          settleBetweenScrollsTimeout ??= config.settleBetweenScrollsTimeout;
 
-      var iterationsLeft = maxIteration;
-      while (iterationsLeft > 0 && finder.evaluate().isEmpty) {
-        await tester.timedDrag(
-          viewPatrolFinder,
-          moveStep,
-          dragDuration!,
-        );
-        await _performPump(
-          settlePolicy: settlePolicy,
-          settleTimeout: settleBetweenScrollsTimeout,
-        );
-        iterationsLeft -= 1;
-      }
+          var iterationsLeft = maxIteration;
+          while (iterationsLeft > 0 && finder.evaluate().isEmpty) {
+            await tester.timedDrag(viewPatrolFinder, moveStep, dragDuration!);
+            await _performPump(
+              settlePolicy: settlePolicy,
+              settleTimeout: settleBetweenScrollsTimeout,
+            );
+            iterationsLeft -= 1;
+          }
 
-      if (iterationsLeft <= 0) {
-        throw WaitUntilExistsTimeoutException(
-          finder: finder,
-          // TODO: set reasonable duration or create new exception for this case
-          duration: settleBetweenScrollsTimeout!,
-        );
-      }
+          if (iterationsLeft <= 0) {
+            throw WaitUntilExistsTimeoutException(
+              finder: finder,
+              // TODO: set reasonable duration or create new exception for this case
+              duration: settleBetweenScrollsTimeout!,
+            );
+          }
 
-      return PatrolFinder(finder: finder, tester: this);
-    });
+          return PatrolFinder(finder: finder, tester: this);
+        },
+      ),
+    );
   }
 
   /// Repeatedly drags [view] by [moveStep] until [finder] finds at least one
@@ -531,38 +767,47 @@ class PatrolTester {
     Duration? settleBetweenScrollsTimeout,
     Duration? dragDuration,
     SettlePolicy? settlePolicy,
+    Alignment alignment = Alignment.center,
+    bool enablePatrolLog = true,
   }) {
-    return TestAsyncUtils.guard(() async {
-      var viewPatrolFinder = PatrolFinder(finder: view, tester: this);
-      await viewPatrolFinder.waitUntilVisible();
-      viewPatrolFinder = viewPatrolFinder.hitTestable().first;
-      dragDuration ??= config.dragDuration;
-      settleBetweenScrollsTimeout ??= config.settleBetweenScrollsTimeout;
+    return TestAsyncUtils.guard(
+      () => wrapWithPatrolLog<PatrolFinder>(
+        action: 'dragUntilVisible',
+        finder: view,
+        color: AnsiCodes.blue,
+        enablePatrolLog: enablePatrolLog,
+        function: () async {
+          final viewPatrolFinder = (await waitUntilVisible(
+            PatrolFinder(finder: view, tester: this),
+            enablePatrolLog: false,
+          )).first;
 
-      var iterationsLeft = maxIteration;
-      while (iterationsLeft > 0 && finder.hitTestable().evaluate().isEmpty) {
-        await tester.timedDrag(
-          viewPatrolFinder,
-          moveStep,
-          dragDuration!,
-        );
-        await _performPump(
-          settlePolicy: settlePolicy,
-          settleTimeout: settleBetweenScrollsTimeout,
-        );
-        iterationsLeft -= 1;
-      }
+          dragDuration ??= config.dragDuration;
+          settleBetweenScrollsTimeout ??= config.settleBetweenScrollsTimeout;
 
-      if (iterationsLeft <= 0) {
-        throw WaitUntilVisibleTimeoutException(
-          finder: finder.hitTestable(),
-          // TODO: set reasonable duration or create new exception for this case
-          duration: settleBetweenScrollsTimeout!,
-        );
-      }
+          final hitTestableFinder = finder.hitTestable(at: alignment);
+          var iterationsLeft = maxIteration;
+          while (iterationsLeft > 0 && hitTestableFinder.evaluate().isEmpty) {
+            await tester.timedDrag(viewPatrolFinder, moveStep, dragDuration!);
+            await _performPump(
+              settlePolicy: settlePolicy,
+              settleTimeout: settleBetweenScrollsTimeout,
+            );
+            iterationsLeft -= 1;
+          }
 
-      return PatrolFinder(finder: finder.hitTestable().first, tester: this);
-    });
+          if (iterationsLeft <= 0) {
+            throw WaitUntilVisibleTimeoutException(
+              finder: hitTestableFinder,
+              // TODO: set reasonable duration or create new exception for this case
+              duration: settleBetweenScrollsTimeout!,
+            );
+          }
+
+          return PatrolFinder(finder: hitTestableFinder.first, tester: this);
+        },
+      ),
+    );
   }
 
   /// Scrolls [view] in its scrolling direction until this finders finds
@@ -581,45 +826,58 @@ class PatrolTester {
     Duration? settleBetweenScrollsTimeout,
     Duration? dragDuration,
     SettlePolicy? settlePolicy,
-  }) async {
+    bool enablePatrolLog = true,
+  }) {
     assert(maxScrolls > 0, 'maxScrolls must be positive number');
-    view ??= find.byType(Scrollable);
-
-    final scrollablePatrolFinder = await PatrolFinder(
+    return wrapWithPatrolLog<PatrolFinder>(
+      action: 'scrollUntilExists',
       finder: view,
-      tester: this,
-    ).waitUntilVisible();
-    AxisDirection direction;
-    if (scrollDirection == null) {
-      if (view.evaluate().first.widget is Scrollable) {
-        direction = tester.firstWidget<Scrollable>(view).axisDirection;
-      } else {
-        direction = AxisDirection.down;
-      }
-    } else {
-      direction = scrollDirection;
-    }
+      color: AnsiCodes.green,
+      enablePatrolLog: enablePatrolLog,
+      function: () async {
+        final finderView = view ?? find.byType(Scrollable);
 
-    return TestAsyncUtils.guard<PatrolFinder>(() async {
-      final moveStep = switch (direction) {
-        AxisDirection.up => Offset(0, delta),
-        AxisDirection.down => Offset(0, -delta),
-        AxisDirection.left => Offset(delta, 0),
-        AxisDirection.right => Offset(-delta, 0),
-      };
+        final scrollablePatrolFinder = await PatrolFinder(
+          finder: finderView,
+          tester: this,
+        ).waitUntilVisible(enablePatrolLog: false);
 
-      final resolvedFinder = await dragUntilExists(
-        finder: finder,
-        view: scrollablePatrolFinder.first,
-        moveStep: moveStep,
-        maxIteration: maxScrolls,
-        settleBetweenScrollsTimeout: settleBetweenScrollsTimeout,
-        dragDuration: dragDuration,
-        settlePolicy: settlePolicy,
-      );
+        AxisDirection direction;
+        if (scrollDirection == null) {
+          if (finderView.evaluate().first.widget is Scrollable) {
+            direction = tester
+                .firstWidget<Scrollable>(finderView)
+                .axisDirection;
+          } else {
+            direction = AxisDirection.down;
+          }
+        } else {
+          direction = scrollDirection;
+        }
 
-      return resolvedFinder;
-    });
+        return TestAsyncUtils.guard<PatrolFinder>(() async {
+          final moveStep = switch (direction) {
+            AxisDirection.up => Offset(0, delta),
+            AxisDirection.down => Offset(0, -delta),
+            AxisDirection.left => Offset(delta, 0),
+            AxisDirection.right => Offset(-delta, 0),
+          };
+
+          final resolvedFinder = await dragUntilExists(
+            finder: finder,
+            view: scrollablePatrolFinder.first,
+            moveStep: moveStep,
+            maxIteration: maxScrolls,
+            settleBetweenScrollsTimeout: settleBetweenScrollsTimeout,
+            dragDuration: dragDuration,
+            settlePolicy: settlePolicy,
+            enablePatrolLog: false,
+          );
+
+          return resolvedFinder;
+        });
+      },
+    );
   }
 
   /// Scrolls [view] in [scrollDirection] until this finders finds
@@ -641,50 +899,63 @@ class PatrolTester {
     Duration? settleBetweenScrollsTimeout,
     Duration? dragDuration,
     SettlePolicy? settlePolicy,
-  }) async {
+    Alignment alignment = Alignment.center,
+    bool enablePatrolLog = true,
+  }) {
     assert(maxScrolls > 0, 'maxScrolls must be positive number');
-
-    view ??= find.byType(Scrollable);
-    final scrollablePatrolFinder = await PatrolFinder(
+    return wrapWithPatrolLog(
+      action: 'scrollUntilVisible',
       finder: view,
-      tester: this,
-    ).waitUntilVisible();
-    AxisDirection direction;
-    if (scrollDirection == null) {
-      if (view.evaluate().first.widget is Scrollable) {
-        direction = tester.firstWidget<Scrollable>(view).axisDirection;
-      } else {
-        direction = AxisDirection.down;
-      }
-    } else {
-      direction = scrollDirection;
-    }
+      color: AnsiCodes.green,
+      enablePatrolLog: enablePatrolLog,
+      function: () async {
+        final finderView = view ?? find.byType(Scrollable);
+        final scrollablePatrolFinder = await PatrolFinder(
+          finder: finderView,
+          tester: this,
+        ).waitUntilVisible(enablePatrolLog: false);
+        AxisDirection direction;
+        if (scrollDirection == null) {
+          if (finderView.evaluate().first.widget is Scrollable) {
+            direction = tester
+                .firstWidget<Scrollable>(finderView)
+                .axisDirection;
+          } else {
+            direction = AxisDirection.down;
+          }
+        } else {
+          direction = scrollDirection;
+        }
 
-    return TestAsyncUtils.guard<PatrolFinder>(() async {
-      Offset moveStep;
-      switch (direction) {
-        case AxisDirection.up:
-          moveStep = Offset(0, delta);
-        case AxisDirection.down:
-          moveStep = Offset(0, -delta);
-        case AxisDirection.left:
-          moveStep = Offset(delta, 0);
-        case AxisDirection.right:
-          moveStep = Offset(-delta, 0);
-      }
+        return TestAsyncUtils.guard<PatrolFinder>(() async {
+          Offset moveStep;
+          switch (direction) {
+            case AxisDirection.up:
+              moveStep = Offset(0, delta);
+            case AxisDirection.down:
+              moveStep = Offset(0, -delta);
+            case AxisDirection.left:
+              moveStep = Offset(delta, 0);
+            case AxisDirection.right:
+              moveStep = Offset(-delta, 0);
+          }
 
-      final resolvedFinder = await dragUntilVisible(
-        finder: finder,
-        view: scrollablePatrolFinder.first,
-        moveStep: moveStep,
-        maxIteration: maxScrolls,
-        settleBetweenScrollsTimeout: settleBetweenScrollsTimeout,
-        dragDuration: dragDuration,
-        settlePolicy: settlePolicy,
-      );
+          final resolvedFinder = await dragUntilVisible(
+            finder: finder,
+            view: scrollablePatrolFinder.first,
+            moveStep: moveStep,
+            maxIteration: maxScrolls,
+            settleBetweenScrollsTimeout: settleBetweenScrollsTimeout,
+            dragDuration: dragDuration,
+            settlePolicy: settlePolicy,
+            alignment: alignment,
+            enablePatrolLog: false,
+          );
 
-      return resolvedFinder;
-    });
+          return resolvedFinder;
+        });
+      },
+    );
   }
 
   Future<void> _performPump({
@@ -694,13 +965,9 @@ class PatrolTester {
     final settle = settlePolicy ?? config.settlePolicy;
     final timeout = settleTimeout ?? config.settleTimeout;
     if (settle == SettlePolicy.trySettle) {
-      await pumpAndTrySettle(
-        timeout: timeout,
-      );
+      await pumpAndTrySettle(timeout: timeout);
     } else if (settle == SettlePolicy.settle) {
-      await pumpAndSettle(
-        timeout: timeout,
-      );
+      await pumpAndSettle(timeout: timeout);
     } else {
       await tester.pump();
     }

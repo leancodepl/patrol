@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:e2e_app/keys.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -11,9 +12,11 @@ class PermissionsScreen extends StatefulWidget {
 }
 
 class _PermissionsScreenState extends State<PermissionsScreen> {
-  bool _cameraPermissionGranted = false;
-  bool _microphonePermissionGranted = false;
-  bool _contactsPermissionGranted = false;
+  var _cameraPermissionGranted = false;
+  var _microphonePermissionGranted = false;
+  var _locationPermissionGranted = false;
+  var _galleryPermissionGranted = false;
+  var _batteryPermissionGranted = false;
 
   Future<void> _requestCameraPermission() async {
     await Future<void>.delayed(Duration(seconds: 1));
@@ -31,10 +34,26 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
     });
   }
 
-  Future<void> _requestContactsPermission() async {
-    final status = await Permission.contacts.request();
+  Future<void> _requestLocationPermission() async {
+    final status = await Permission.location.request();
     setState(() {
-      _contactsPermissionGranted = status == PermissionStatus.granted;
+      _locationPermissionGranted = status == PermissionStatus.granted;
+    });
+  }
+
+  Future<void> _requestGalleryPermission() async {
+    final status = await Permission.photos.request();
+    setState(() {
+      _galleryPermissionGranted =
+          status == PermissionStatus.granted ||
+          status == PermissionStatus.limited;
+    });
+  }
+
+  Future<void> _requestBatteryPermission() async {
+    final status = await Permission.ignoreBatteryOptimizations.request();
+    setState(() {
+      _batteryPermissionGranted = status == PermissionStatus.granted;
     });
   }
 
@@ -43,32 +62,50 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
     super.initState();
 
     unawaited(
-      Permission.camera.status.then(
-        (value) {
-          setState(() {
-            _cameraPermissionGranted = value == PermissionStatus.granted;
-          });
-        },
-      ),
+      Permission.camera.status.then((value) {
+        setState(() {
+          _cameraPermissionGranted = value == PermissionStatus.granted;
+        });
+      }),
     );
 
     unawaited(
-      Permission.microphone.status.then(
-        (value) {
-          setState(() {
-            _microphonePermissionGranted = value == PermissionStatus.granted;
-          });
-        },
-      ),
+      Permission.microphone.status.then((value) {
+        setState(() {
+          _microphonePermissionGranted = value == PermissionStatus.granted;
+        });
+      }),
+    );
+    unawaited(
+      Permission.location.status.then((value) {
+        setState(() {
+          _locationPermissionGranted = value == PermissionStatus.granted;
+        });
+      }),
+    );
+
+    unawaited(
+      Permission.photos.status.then((value) {
+        setState(() {
+          _galleryPermissionGranted = value == PermissionStatus.granted;
+        });
+      }),
+    );
+
+    unawaited(
+      Permission.ignoreBatteryOptimizations.status.then((value) {
+        setState(() {
+          _batteryPermissionGranted = value == PermissionStatus.granted;
+        });
+      }),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Permissions'),
-      ),
+      key: K.permissionsScreen,
+      appBar: AppBar(title: const Text('Permissions')),
       body: Center(
         child: Column(
           children: [
@@ -77,18 +114,35 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
               icon: Icons.camera,
               granted: _cameraPermissionGranted,
               onTap: _requestCameraPermission,
+              key: K.cameraPermissionTile,
             ),
             _PermissionTile(
               name: 'Microphone',
               icon: Icons.mic,
               granted: _microphonePermissionGranted,
               onTap: _requestMicrophonePermission,
+              key: K.microphonePermissionTile,
             ),
             _PermissionTile(
-              name: 'Contacts',
-              icon: Icons.people,
-              granted: _contactsPermissionGranted,
-              onTap: _requestContactsPermission,
+              name: 'Location',
+              icon: Icons.pin_drop,
+              granted: _locationPermissionGranted,
+              onTap: _requestLocationPermission,
+              key: K.locationPermissionTile,
+            ),
+            _PermissionTile(
+              name: 'Gallery',
+              icon: Icons.photo_library,
+              granted: _galleryPermissionGranted,
+              onTap: _requestGalleryPermission,
+              key: K.galleryPermissionTile,
+            ),
+            _PermissionTile(
+              name: 'Battery Optimizations',
+              icon: Icons.battery_0_bar,
+              granted: _batteryPermissionGranted,
+              onTap: _requestBatteryPermission,
+              key: K.batteryPermissionTile,
             ),
           ],
         ),
@@ -99,6 +153,7 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
 
 class _PermissionTile extends StatelessWidget {
   const _PermissionTile({
+    super.key,
     required this.name,
     required this.icon,
     required this.granted,
@@ -110,10 +165,19 @@ class _PermissionTile extends StatelessWidget {
   final bool granted;
   final VoidCallback onTap;
 
+  Key _getRequestButtonKey(String permissionName) =>
+      switch (permissionName.toLowerCase()) {
+        'camera' => K.requestCameraPermissionButton,
+        'microphone' => K.requestMicrophonePermissionButton,
+        'location' => K.requestLocationPermissionButton,
+        'gallery' => K.requestGalleryPermissionButton,
+        'battery optimizations' => K.requestBatteryPermissionButton,
+        _ => Key('request${permissionName}PermissionButton'),
+      };
+
   @override
   Widget build(BuildContext context) {
     return Padding(
-      key: Key(name.toLowerCase()),
       padding: const EdgeInsets.all(8),
       child: Container(
         padding: const EdgeInsets.all(8),
@@ -129,24 +193,18 @@ class _PermissionTile extends StatelessWidget {
               children: [
                 Icon(icon),
                 const SizedBox(width: 8),
-                Text(
-                  name,
-                  style: Theme.of(context).textTheme.headlineSmall,
-                ),
+                Text(name, style: Theme.of(context).textTheme.headlineSmall),
               ],
             ),
-            Text(
-              key: const Key('statusText'),
-              granted ? 'Granted' : 'Not granted',
-            ),
+            Text(key: K.statusText, granted ? 'Granted' : 'Not granted'),
             TextButton(
+              key: _getRequestButtonKey(name),
               onPressed: onTap,
               child: Text(
                 'Request ${name.toLowerCase()} permission',
-                style: Theme.of(context)
-                    .textTheme
-                    .labelLarge
-                    ?.copyWith(color: Colors.white),
+                style: Theme.of(
+                  context,
+                ).textTheme.labelLarge?.copyWith(color: Colors.white),
               ),
             ),
           ],

@@ -1,12 +1,15 @@
 import 'dart:async';
 
+import 'package:glob/glob.dart';
 import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/commands/dart_define_utils.dart';
-import 'package:patrol_cli/src/compatibility_checker.dart';
+import 'package:patrol_cli/src/compatibility_checker/compatibility_checker.dart';
+import 'package:patrol_cli/src/coverage/coverage_tool.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
+import 'package:patrol_cli/src/crossplatform/video_recording_config.dart';
 import 'package:patrol_cli/src/dart_defines_reader.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
@@ -15,11 +18,12 @@ import 'package:patrol_cli/src/pubspec_reader.dart';
 import 'package:patrol_cli/src/runner/patrol_command.dart';
 import 'package:patrol_cli/src/test_bundler.dart';
 import 'package:patrol_cli/src/test_finder.dart';
+import 'package:patrol_cli/src/web/web_test_backend.dart';
 
 class TestCommand extends PatrolCommand {
   TestCommand({
     required DeviceFinder deviceFinder,
-    required TestFinder testFinder,
+    required TestFinderFactory testFinderFactory,
     required TestBundler testBundler,
     required DartDefinesReader dartDefinesReader,
     required CompatibilityChecker compatibilityChecker,
@@ -27,19 +31,23 @@ class TestCommand extends PatrolCommand {
     required AndroidTestBackend androidTestBackend,
     required IOSTestBackend iosTestBackend,
     required MacOSTestBackend macOSTestBackend,
+    required WebTestBackend webTestBackend,
+    required CoverageTool coverageTool,
     required Analytics analytics,
     required Logger logger,
-  })  : _deviceFinder = deviceFinder,
-        _testBundler = testBundler,
-        _testFinder = testFinder,
-        _dartDefinesReader = dartDefinesReader,
-        _compatibilityChecker = compatibilityChecker,
-        _pubspecReader = pubspecReader,
-        _androidTestBackend = androidTestBackend,
-        _iosTestBackend = iosTestBackend,
-        _macosTestBackend = macOSTestBackend,
-        _analytics = analytics,
-        _logger = logger {
+  }) : _deviceFinder = deviceFinder,
+       _testBundler = testBundler,
+       _testFinderFactory = testFinderFactory,
+       _dartDefinesReader = dartDefinesReader,
+       _compatibilityChecker = compatibilityChecker,
+       _pubspecReader = pubspecReader,
+       _androidTestBackend = androidTestBackend,
+       _iosTestBackend = iosTestBackend,
+       _macosTestBackend = macOSTestBackend,
+       _webTestBackend = webTestBackend,
+       _coverageTool = coverageTool,
+       _analytics = analytics,
+       _logger = logger {
     usesTargetOption();
     usesDeviceOption();
     usesBuildModeOption();
@@ -47,19 +55,29 @@ class TestCommand extends PatrolCommand {
     usesDartDefineOption();
     usesDartDefineFromFileOption();
     usesLabelOption();
-    usesWaitOption();
     usesPortOptions();
     usesTagsOption();
     usesExcludeTagsOption();
+    useCoverageOptions();
+    usesShowFlutterLogs();
+    usesHideTestSteps();
+    usesClearTestSteps();
+    usesCheckCompatibilityOption();
+    usesBuildNameOption();
+    usesBuildNumberOption();
 
     usesUninstallOption();
 
+    usesAppNameOption();
     usesAndroidOptions();
     usesIOSOptions();
+    usesVideoRecordingOptions();
+
+    usesWeb();
   }
 
   final DeviceFinder _deviceFinder;
-  final TestFinder _testFinder;
+  final TestFinderFactory _testFinderFactory;
   final TestBundler _testBundler;
   final DartDefinesReader _dartDefinesReader;
   final CompatibilityChecker _compatibilityChecker;
@@ -67,6 +85,8 @@ class TestCommand extends PatrolCommand {
   final AndroidTestBackend _androidTestBackend;
   final IOSTestBackend _iosTestBackend;
   final MacOSTestBackend _macosTestBackend;
+  final WebTestBackend _webTestBackend;
+  final CoverageTool _coverageTool;
 
   final Analytics _analytics;
   final Logger _logger;
@@ -80,20 +100,21 @@ class TestCommand extends PatrolCommand {
   @override
   Future<int> run() async {
     unawaited(
-      _analytics.sendCommand(
-        FlutterVersion.fromCLI(flutterCommand),
-        name,
-      ),
+      _analytics.sendCommand(FlutterVersion.fromCLI(flutterCommand), name),
     );
 
     final config = _pubspecReader.read();
+    final testDirectory = config.testDirectory;
     final testFileSuffix = config.testFileSuffix;
+
+    final testFinder = _testFinderFactory.create(testDirectory);
+    final excludes = stringsArg('exclude').toSet();
 
     final target = stringsArg('target');
     final targets = target.isNotEmpty
-        ? _testFinder.findTests(target, testFileSuffix)
-        : _testFinder.findAllTests(
-            excludes: stringsArg('exclude').toSet(),
+        ? testFinder.findTests(target, testFileSuffix, excludes)
+        : testFinder.findAllTests(
+            excludes: excludes,
             testFileSuffix: testFileSuffix,
           );
 
@@ -110,10 +131,6 @@ class TestCommand extends PatrolCommand {
     if (excludeTags != null) {
       _logger.detail('Received exclude tag(s): $excludeTags');
     }
-    final entrypoint = _testBundler.bundledTestFile;
-    if (boolArg('generate-bundle')) {
-      _testBundler.createTestBundle(targets, tags, excludeTags);
-    }
 
     final androidFlavor = stringArg('flavor') ?? config.android.flavor;
     final iosFlavor = stringArg('flavor') ?? config.ios.flavor;
@@ -128,13 +145,29 @@ class TestCommand extends PatrolCommand {
       _logger.detail('Received macOS flavor: $macosFlavor');
     }
 
-    final devices = await _deviceFinder.find(
-      stringsArg('device'),
-      flutterCommand: flutterCommand,
-    );
+    final buildName = stringArg('build-name');
+    if (buildName != null) {
+      _logger.detail('Received build name: $buildName');
+    }
+
+    final buildNumber = stringArg('build-number');
+    if (buildNumber != null) {
+      _logger.detail('Received build number: $buildNumber');
+    }
+
+    final wantDevices = stringsArg('device');
+    final bundledDevice = switch (wantDevices) {
+      [final name] => Device.bundledForTest(name),
+      _ => null,
+    };
+
+    final devices = bundledDevice != null
+        ? [bundledDevice]
+        : await _deviceFinder.find(wantDevices, flutterCommand: flutterCommand);
+
     _logger.detail('Received ${devices.length} device(s) to run on');
     for (final device in devices) {
-      _logger.detail('Received device: ${device.resolvedName}');
+      _logger.detail('Received device: ${device.name} (${device.id})');
     }
 
     if (devices.length > 1) {
@@ -146,35 +179,72 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
     }
 
     final device = devices.single;
+    final isWeb = device.targetPlatform == TargetPlatform.web;
 
-    await _compatibilityChecker.checkVersionsCompatibility(
-      flutterCommand: flutterCommand,
-      targetPlatform: device.targetPlatform,
+    // Validate that flavors are not used with web platform
+    if (isWeb && stringArg('flavor') != null) {
+      _logger.err(
+        'Flavors are not supported for web platform. Please remove the --flavor flag.',
+      );
+      return 1;
+    }
+
+    final entrypoint = _testBundler.getBundledTestFile(
+      testDirectory,
+      web: isWeb,
     );
+    if (boolArg('generate-bundle')) {
+      _testBundler.createTestBundle(
+        testDirectory,
+        targets,
+        tags,
+        excludeTags,
+        web: isWeb,
+      );
+    }
+
+    if (boolArg('check-compatibility')) {
+      await _compatibilityChecker.checkVersionsCompatibility(
+        flutterCommand: flutterCommand,
+        targetPlatform: device.targetPlatform,
+      );
+    }
 
     final packageName = stringArg('package-name') ?? config.android.packageName;
     final bundleId = stringArg('bundle-id') ?? config.ios.bundleId;
     final macosBundleId = stringArg('bundle-id') ?? config.macos.bundleId;
+    final appName = stringArg('app-name');
+    final androidAppName = appName ?? config.android.appName;
+    final iosAppName = appName ?? config.ios.appName;
+    final macosAppName = appName ?? config.macos.appName;
 
-    final wait = intArg('wait') ?? defaultWait;
     final displayLabel = boolArg('label');
     final uninstall = boolArg('uninstall');
+    final noTreeShakeIcons = boolArg('no-tree-shake-icons');
+    final coverageEnabled = boolArg('coverage');
+    final coverageWorkspace = boolArg('coverage-workspace');
+    final ignoreGlobs = stringsArg('coverage-ignore').map(Glob.new).toSet();
+    final coveragePackagesRegExps = stringsArg('coverage-package');
 
     final customDartDefines = {
       ..._dartDefinesReader.fromFile(),
       ..._dartDefinesReader.fromCli(args: stringsArg('dart-define')),
     };
     final internalDartDefines = {
-      'PATROL_WAIT': wait.toString(),
       'PATROL_APP_PACKAGE_NAME': packageName,
       'PATROL_APP_BUNDLE_ID': bundleId,
       'PATROL_MACOS_APP_BUNDLE_ID': macosBundleId,
-      'PATROL_ANDROID_APP_NAME': config.android.appName,
-      'PATROL_IOS_APP_NAME': config.ios.appName,
+      'PATROL_ANDROID_APP_NAME': androidAppName,
+      'PATROL_IOS_APP_NAME': iosAppName,
+      'PATROL_MACOS_APP_NAME': macosAppName,
       'INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE': 'false',
       'PATROL_TEST_LABEL_ENABLED': displayLabel.toString(),
-      'PATROL_TEST_SERVER_PORT': super.testServerPort.toString(),
-      'PATROL_APP_SERVER_PORT': super.appServerPort.toString(),
+      'PATROL_TEST_DIRECTORY': config.testDirectory,
+      if (device.targetPlatform != TargetPlatform.web) ...{
+        'PATROL_TEST_SERVER_PORT': super.testServerPort.toString(),
+        'PATROL_APP_SERVER_PORT': super.appServerPort.toString(),
+      },
+      'COVERAGE_ENABLED': coverageEnabled.toString(),
     }.withNullsRemoved();
 
     final dartDefines = {...customDartDefines, ...internalDartDefines};
@@ -200,13 +270,23 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       _dartDefinesReader,
     );
 
+    final flavor = switch (device.targetPlatform) {
+      TargetPlatform.android => androidFlavor,
+      TargetPlatform.iOS => iosFlavor,
+      TargetPlatform.macOS => macosFlavor,
+      _ => null,
+    };
+
     final flutterOpts = FlutterAppOptions(
       command: flutterCommand,
       target: entrypoint.path,
-      flavor: androidFlavor,
+      flavor: flavor,
       buildMode: buildMode,
       dartDefines: mergedDartDefines,
       dartDefineFromFilePaths: dartDefineFromFilePaths,
+      buildName: buildName,
+      buildNumber: buildNumber,
+      noTreeShakeIcons: noTreeShakeIcons,
     );
 
     final androidOpts = AndroidAppOptions(
@@ -214,6 +294,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       packageName: packageName,
       appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
+      uninstall: uninstall,
     );
 
     final iosOpts = IOSAppOptions(
@@ -222,8 +303,11 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       scheme: buildMode.createScheme(iosFlavor),
       configuration: buildMode.createConfiguration(iosFlavor),
       simulator: !device.real,
+      osVersion: stringArg('ios') ?? 'latest',
       appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
+      fullIsolation: boolArg('full-isolation'),
+      clearIOSPermissions: boolArg('clear-permissions'),
     );
 
     final macosOpts = MacOSAppOptions(
@@ -234,15 +318,91 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       testServerPort: super.testServerPort,
     );
 
-    await _build(androidOpts, iosOpts, macosOpts, device);
+    final webOpts = WebAppOptions(
+      flutter: flutterOpts,
+      resultsDir: stringArg('web-results-dir'),
+      reportDir: stringArg('web-report-dir'),
+      retries: intArg('web-retries'),
+      video: stringArg('web-video'),
+      timeout: intArg('web-timeout'),
+      workers: intArg('web-workers'),
+      reporter: stringArg('web-reporter'),
+      locale: stringArg('web-locale'),
+      timezone: stringArg('web-timezone'),
+      colorScheme: stringArg('web-color-scheme'),
+      geolocation: stringArg('web-geolocation'),
+      permissions: stringArg('web-permissions'),
+      userAgent: stringArg('web-user-agent'),
+      viewport: stringArg('web-viewport'),
+      globalTimeout: intArg('web-global-timeout'),
+      shard: stringArg('web-shard'),
+      headless: optionalBoolArg('web-headless'),
+      webPort: intArg('web-port'),
+      serverTimeout: intArg('web-server-timeout'),
+      browserArgs: stringArg('web-browser-args'),
+      channel: stringArg('web-channel'),
+      executablePath: stringArg('web-executable-path'),
+      slowMo: intArg('web-slow-mo'),
+      chromiumSandbox: optionalBoolArg('web-chromium-sandbox'),
+      downloadsPath: stringArg('web-downloads-path'),
+      ignoreDefaultArgs: stringArg('web-ignore-default-args'),
+      proxy: stringArg('web-proxy'),
+      browserTimeout: intArg('web-browser-timeout'),
+      tracesDir: stringArg('web-traces-dir'),
+      bypassCsp: optionalBoolArg('web-bypass-csp'),
+      ignoreHttpsErrors: optionalBoolArg('web-ignore-https-errors'),
+      offline: optionalBoolArg('web-offline'),
+      httpCredentials: stringArg('web-http-credentials'),
+      extraHttpHeaders: stringArg('web-extra-http-headers'),
+      screenshot: stringArg('web-screenshot'),
+      trace: stringArg('web-trace'),
+      storageState: stringArg('web-storage-state'),
+      acceptDownloads: optionalBoolArg('web-accept-downloads'),
+    );
+
+    // No need to build web app for testing. It's done in the execute method.
+    if (device.targetPlatform != TargetPlatform.web) {
+      await _build(androidOpts, iosOpts, macosOpts, webOpts, device);
+    }
+
     await _preExecute(androidOpts, iosOpts, macosOpts, device, uninstall);
+
+    if (coverageEnabled) {
+      unawaited(
+        _coverageTool.run(
+          device: device,
+          platform: device.targetPlatform,
+          logger: _logger,
+          ignoreGlobs: ignoreGlobs,
+          flutterCommand: flutterCommand,
+          includeWorkspacePackages: coverageWorkspace,
+          packagesRegExps: switch ((
+            coveragePackagesRegExps.length,
+            coverageWorkspace,
+          )) {
+            // No --coverage-package and no --coverage-workspace: fall back to
+            // the current package only.
+            (0, false) => {RegExp(config.flutterPackageName)},
+            // --coverage-workspace alone: rely entirely on workspace members.
+            (0, true) => const <RegExp>{},
+            _ => coveragePackagesRegExps.map(RegExp.new).toSet(),
+          },
+        ),
+      );
+    }
+
     final allPassed = await _execute(
       flutterOpts,
       androidOpts,
       iosOpts,
       macosOpts,
+      webOpts,
       uninstall: uninstall,
       device: device,
+      showFlutterLogs: boolArg('show-flutter-logs'),
+      hideTestSteps: boolArg('hide-test-steps'),
+      clearTestSteps: boolArg('clear-test-steps'),
+      testDirectory: testDirectory,
     );
 
     return allPassed ? 0 : 1;
@@ -272,12 +432,14 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
         final bundleId = iosOpts.bundleId;
         if (bundleId != null) {
           action = () => _iosTestBackend.uninstall(
-                appId: bundleId,
-                flavor: iosOpts.flutter.flavor,
-                device: device,
-              );
+            appId: bundleId,
+            flavor: iosOpts.flutter.flavor,
+            device: device,
+          );
         }
       case TargetPlatform.macOS:
+      case TargetPlatform.web:
+      // No uninstall needed for macOS and web
     }
 
     try {
@@ -291,12 +453,14 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
     AndroidAppOptions androidOpts,
     IOSAppOptions iosOpts,
     MacOSAppOptions macosOpts,
+    WebAppOptions webOpts,
     Device device,
   ) async {
     final buildAction = switch (device.targetPlatform) {
       TargetPlatform.android => () => _androidTestBackend.build(androidOpts),
       TargetPlatform.macOS => () => _macosTestBackend.build(macosOpts),
       TargetPlatform.iOS => () => _iosTestBackend.build(iosOpts),
+      TargetPlatform.web => () => _webTestBackend.build(webOpts),
     };
 
     try {
@@ -314,32 +478,67 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
     FlutterAppOptions flutterOpts,
     AndroidAppOptions android,
     IOSAppOptions ios,
-    MacOSAppOptions macos, {
+    MacOSAppOptions macos,
+    WebAppOptions web, {
     required bool uninstall,
     required Device device,
+    required bool showFlutterLogs,
+    required bool hideTestSteps,
+    required bool clearTestSteps,
+    required String testDirectory,
   }) async {
     Future<void> Function() action;
     Future<void> Function()? finalizer;
 
+    final videoConfig = VideoRecordingConfig(
+      enabled: boolArg('record-video'),
+      outputDirectory: stringArg('video-output-dir') ?? '$testDirectory/videos',
+      size: stringArg('video-size'),
+      bitRate: int.tryParse(stringArg('video-bit-rate') ?? ''),
+    );
+
     switch (device.targetPlatform) {
       case TargetPlatform.android:
-        action = () => _androidTestBackend.execute(android, device);
+        action = () => _androidTestBackend.execute(
+          android,
+          device,
+          showFlutterLogs: showFlutterLogs,
+          hideTestSteps: hideTestSteps,
+          flavor: flutterOpts.flavor,
+          clearTestSteps: clearTestSteps,
+          videoConfig: videoConfig,
+        );
         final package = android.packageName;
         if (package != null && uninstall) {
           finalizer = () => _androidTestBackend.uninstall(package, device);
         }
       case TargetPlatform.macOS:
-        action = () async => _macosTestBackend.execute(macos, device);
+        action = () => _macosTestBackend.execute(macos, device);
       case TargetPlatform.iOS:
-        action = () async => _iosTestBackend.execute(ios, device);
+        action = () => _iosTestBackend.execute(
+          ios,
+          device,
+          showFlutterLogs: showFlutterLogs,
+          hideTestSteps: hideTestSteps,
+          clearTestSteps: clearTestSteps,
+          videoConfig: videoConfig,
+        );
         final bundleId = ios.bundleId;
         if (bundleId != null && uninstall) {
           finalizer = () => _iosTestBackend.uninstall(
-                appId: bundleId,
-                flavor: ios.flutter.flavor,
-                device: device,
-              );
+            appId: bundleId,
+            flavor: ios.flutter.flavor,
+            device: device,
+          );
         }
+      case TargetPlatform.web:
+        action = () => _webTestBackend.execute(
+          web,
+          device,
+          showFlutterLogs: showFlutterLogs,
+          hideTestSteps: hideTestSteps,
+          clearTestSteps: clearTestSteps,
+        );
     }
 
     var allPassed = true;
@@ -361,5 +560,31 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
     }
 
     return allPassed;
+  }
+
+  void useCoverageOptions() {
+    argParser
+      ..addFlag('coverage', help: 'Generate coverage.')
+      ..addFlag(
+        'coverage-workspace',
+        help:
+            'Include every package declared under the top-level `workspace:` '
+            'key of the resolved pubspec.yaml in the coverage report. '
+            'Has no effect outside a Pub workspace. Can be combined with '
+            '--coverage-package.',
+      )
+      ..addMultiOption(
+        'coverage-ignore',
+        help: 'Exclude files from coverage using glob patterns.',
+      )
+      ..addMultiOption(
+        'coverage-package',
+        help:
+            'A regular expression matching packages names '
+            'to include in the coverage report (if coverage is enabled). '
+            'If unset, matches the current package name.',
+        valueHelp: 'package-name-regexp',
+        splitCommas: false,
+      );
   }
 }

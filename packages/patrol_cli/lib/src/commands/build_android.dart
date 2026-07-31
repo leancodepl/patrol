@@ -1,10 +1,13 @@
 import 'dart:async';
 
+import 'package:meta/meta.dart';
+import 'package:path/path.dart' show join;
 import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/commands/dart_define_utils.dart';
+import 'package:patrol_cli/src/compatibility_checker/compatibility_checker.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/dart_defines_reader.dart';
 import 'package:patrol_cli/src/pubspec_reader.dart';
@@ -14,39 +17,47 @@ import 'package:patrol_cli/src/test_finder.dart';
 
 class BuildAndroidCommand extends PatrolCommand {
   BuildAndroidCommand({
-    required TestFinder testFinder,
+    required TestFinderFactory testFinderFactory,
     required TestBundler testBundler,
     required DartDefinesReader dartDefinesReader,
     required PubspecReader pubspecReader,
     required AndroidTestBackend androidTestBackend,
     required Analytics analytics,
     required Logger logger,
-  })  : _testFinder = testFinder,
-        _testBundler = testBundler,
-        _dartDefinesReader = dartDefinesReader,
-        _pubspecReader = pubspecReader,
-        _androidTestBackend = androidTestBackend,
-        _analytics = analytics,
-        _logger = logger {
+    required CompatibilityChecker compatibilityChecker,
+  }) : _testFinderFactory = testFinderFactory,
+       _testBundler = testBundler,
+       _dartDefinesReader = dartDefinesReader,
+       _pubspecReader = pubspecReader,
+       _androidTestBackend = androidTestBackend,
+       _analytics = analytics,
+       _logger = logger,
+       _compatibilityChecker = compatibilityChecker {
     usesTargetOption();
     usesBuildModeOption();
     usesFlavorOption();
     usesDartDefineOption();
     usesDartDefineFromFileOption();
     usesLabelOption();
-    usesWaitOption();
     usesPortOptions();
     usesTagsOption();
     usesExcludeTagsOption();
+    usesCheckCompatibilityOption();
+
+    usesUninstallOption();
+    usesBuildNameOption();
+    usesBuildNumberOption();
 
     usesAndroidOptions();
+    usesAppNameOption();
   }
 
-  final TestFinder _testFinder;
+  final TestFinderFactory _testFinderFactory;
   final TestBundler _testBundler;
   final DartDefinesReader _dartDefinesReader;
   final PubspecReader _pubspecReader;
   final AndroidTestBackend _androidTestBackend;
+  final CompatibilityChecker _compatibilityChecker;
 
   final Analytics _analytics;
   final Logger _logger;
@@ -70,13 +81,25 @@ class BuildAndroidCommand extends PatrolCommand {
     );
 
     final config = _pubspecReader.read();
+    final testDirectory = config.testDirectory;
     final testFileSuffix = config.testFileSuffix;
+
+    // Check compatibility between CLI and package versions
+    if (boolArg('check-compatibility')) {
+      final patrolVersion = _pubspecReader.getPatrolVersion();
+      await _compatibilityChecker.checkVersionsCompatibilityForBuild(
+        patrolVersion: patrolVersion,
+      );
+    }
+
+    final testFinder = _testFinderFactory.create(testDirectory);
+    final excludes = stringsArg('exclude').toSet();
 
     final target = stringsArg('target');
     final targets = target.isNotEmpty
-        ? _testFinder.findTests(target, testFileSuffix)
-        : _testFinder.findAllTests(
-            excludes: stringsArg('exclude').toSet(),
+        ? testFinder.findTests(target, testFileSuffix, excludes)
+        : testFinder.findAllTests(
+            excludes: excludes,
             testFileSuffix: testFileSuffix,
           );
 
@@ -93,19 +116,32 @@ class BuildAndroidCommand extends PatrolCommand {
     if (excludeTags != null) {
       _logger.detail('Received exclude tag(s): $excludeTags');
     }
-    final entrypoint = _testBundler.bundledTestFile;
     if (boolArg('generate-bundle')) {
-      _testBundler.createTestBundle(targets, tags, excludeTags);
+      _testBundler.createTestBundle(testDirectory, targets, tags, excludeTags);
     }
+    final entrypoint = _testBundler.getBundledTestFile(testDirectory);
 
     final flavor = stringArg('flavor') ?? config.android.flavor;
     if (flavor != null) {
       _logger.detail('Received Android flavor: $flavor');
     }
 
+    final buildName = stringArg('build-name');
+    if (buildName != null) {
+      _logger.detail('Received build name: $buildName');
+    }
+
+    final buildNumber = stringArg('build-number');
+    if (buildNumber != null) {
+      _logger.detail('Received build number: $buildNumber');
+    }
+
     final packageName = stringArg('package-name') ?? config.android.packageName;
+    final appName = stringArg('app-name') ?? config.android.appName;
 
     final displayLabel = boolArg('label');
+    final uninstall = boolArg('uninstall');
+    final noTreeShakeIcons = boolArg('no-tree-shake-icons');
 
     final customDartDefines = {
       ..._dartDefinesReader.fromFile(),
@@ -114,8 +150,9 @@ class BuildAndroidCommand extends PatrolCommand {
     final internalDartDefines = {
       'PATROL_WAIT': defaultWait.toString(),
       'PATROL_APP_PACKAGE_NAME': packageName,
-      'PATROL_ANDROID_APP_NAME': config.android.appName,
+      'PATROL_ANDROID_APP_NAME': appName,
       'PATROL_TEST_LABEL_ENABLED': displayLabel.toString(),
+      'PATROL_TEST_DIRECTORY': config.testDirectory,
       'INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE': 'false',
     }.withNullsRemoved();
 
@@ -148,16 +185,22 @@ class BuildAndroidCommand extends PatrolCommand {
       buildMode: buildMode,
       dartDefines: mergedDartDefines,
       dartDefineFromFilePaths: dartDefineFromFilePaths,
+      buildName: buildName,
+      buildNumber: buildNumber,
+      noTreeShakeIcons: noTreeShakeIcons,
     );
+
     final androidOpts = AndroidAppOptions(
       flutter: flutterOpts,
       packageName: packageName,
       appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
+      uninstall: uninstall,
     );
 
     try {
       await _androidTestBackend.build(androidOpts);
+      printApkPaths(flavor: flavor, buildMode: buildMode.androidName);
     } catch (err, st) {
       _logger
         ..err('$err')
@@ -167,5 +210,51 @@ class BuildAndroidCommand extends PatrolCommand {
     }
 
     return 0;
+  }
+
+  @visibleForTesting
+  /// Prints the paths to the APKs for the app under test and the test instrumentation app.
+  ///
+  /// [flavor] is the flavor of the app under test.
+  /// [buildMode] is the build mode of the app under test.
+  void printApkPaths({String? flavor, required String buildMode}) {
+    // Standard Android APK output paths (relative to project root)
+    final baseApkPath = join('build', 'app', 'outputs', 'apk');
+
+    final String flavorPath;
+    final String apkPrefix;
+
+    if (flavor != null) {
+      flavorPath = join(baseApkPath, flavor, buildMode.toLowerCase());
+      apkPrefix = 'app-$flavor-${buildMode.toLowerCase()}';
+    } else {
+      flavorPath = join(baseApkPath, buildMode.toLowerCase());
+      apkPrefix = 'app-${buildMode.toLowerCase()}';
+    }
+
+    final appApkPath = join(flavorPath, '$apkPrefix.apk');
+
+    // Test APK path - include flavor if present
+    final String testApkPath;
+    if (flavor != null) {
+      testApkPath = join(
+        baseApkPath,
+        'androidTest',
+        flavor,
+        buildMode.toLowerCase(),
+        '$apkPrefix-androidTest.apk',
+      );
+    } else {
+      testApkPath = join(
+        baseApkPath,
+        'androidTest',
+        buildMode.toLowerCase(),
+        '$apkPrefix-androidTest.apk',
+      );
+    }
+
+    _logger
+      ..info('$appApkPath (app under test)')
+      ..info('$testApkPath (test instrumentation app)');
   }
 }

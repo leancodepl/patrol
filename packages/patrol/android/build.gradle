@@ -2,7 +2,7 @@ group "pl.leancode.patrol"
 version "1.0-SNAPSHOT"
 
 buildscript {
-    ext.kotlin_version = "1.9.20"
+    ext.kotlin_version = "2.1.0"
     repositories {
         google()
         mavenCentral()
@@ -10,14 +10,24 @@ buildscript {
     }
 
     dependencies {
-        classpath "com.android.tools.build:gradle:7.4.2"
+        classpath "com.android.tools.build:gradle:8.2.2"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jlleitschuh.gradle:ktlint-gradle:11.5.0"
     }
 }
 
 apply plugin: "com.android.library"
-apply plugin: "kotlin-android"
+
+def agpMajor = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION.tokenize('.')[0] as int
+// Host apps control Kotlin compilation mode via gradle.properties (android.builtInKotlin).
+// false (Flutter default for unmigrated apps): apply KGP on AGP 9+.
+// true (fully migrated apps): skip KGP and rely on AGP built-in Kotlin on AGP 9+.
+// AGP < 9 always uses KGP regardless of the flag. This plugin supports both paths.
+def usesBuiltInKotlin = project.findProperty("android.builtInKotlin") == "true"
+if (agpMajor < 9 || !usesBuiltInKotlin) {
+    apply plugin: "kotlin-android"
+}
+
 apply plugin: "org.jlleitschuh.gradle.ktlint"
 
 ktlint {
@@ -35,15 +45,11 @@ allprojects {
 
 android {
     namespace "pl.leancode.patrol"
-    compileSdk 33
+    compileSdk 35
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
-    }
-
-    kotlinOptions {
-        jvmTarget = "1.8"
     }
 
     sourceSets {
@@ -67,18 +73,28 @@ android {
 
         api "androidx.test:runner:1.5.1"
         api "androidx.test.espresso:espresso-core:3.5.0"
-        api "androidx.test.uiautomator:uiautomator:2.2.0"
+        api "androidx.test.uiautomator:uiautomator:2.3.0"
 
-        // We need to downgrade http4k-bom to 4.48.0.0 because apps with kotlin version (ext.kotlin_version) lower than 1.8 
-        // end up with compile-time errors. We can find more details in a similar problem:
-        // https://stackoverflow.com/questions/67699823/module-was-compiled-with-an-incompatible-version-of-kotlin-the-binary-version-o
-        implementation platform("org.http4k:http4k-bom:4.48.0.0")
+        implementation platform("org.http4k:http4k-bom:5.47.0.0")
+        implementation platform("io.ktor:ktor-bom:3.2.2")
         implementation "org.http4k:http4k-core"
         implementation "com.squareup.okhttp:okhttp:2.7.5" // See https://github.com/square/okhttp/issues/8031
         implementation "org.http4k:http4k-server-ktorcio"
         implementation "com.google.code.gson:gson:2.10.1"
+        implementation "io.ktor:ktor-client-core"
+        implementation "io.ktor:ktor-client-cio"
+        implementation "io.ktor:ktor-client-content-negotiation"
+        implementation "io.ktor:ktor-serialization-gson"
 
         testImplementation "org.jetbrains.kotlin:kotlin-test"
+    }
+}
+
+plugins.withId("org.jetbrains.kotlin.android") {
+    kotlin {
+        compilerOptions {
+            jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_1_8
+        }
     }
 }
 

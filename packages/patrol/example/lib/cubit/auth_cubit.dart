@@ -21,8 +21,9 @@ class AuthCubit extends Cubit<AuthState> {
     final user = _firebaseAuth.currentUser;
     _emitAuthState(user);
 
-    _authStateChangesSubscription =
-        _firebaseAuth.authStateChanges().listen(_emitAuthState);
+    _authStateChangesSubscription = _firebaseAuth.authStateChanges().listen(
+      _emitAuthState,
+    );
   }
 
   void _emitAuthState(User? user) {

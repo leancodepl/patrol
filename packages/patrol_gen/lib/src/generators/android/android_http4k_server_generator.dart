@@ -28,6 +28,7 @@ import org.http4k.core.Response
 import org.http4k.core.Method.POST
 import org.http4k.routing.bind
 import org.http4k.core.Status.Companion.OK
+import org.http4k.routing.RoutingHttpHandler
 import org.http4k.routing.routes
 
 ''';
@@ -36,52 +37,65 @@ import org.http4k.routing.routes
   String _createServerClass(Service service) {
     final handlers = _generateHandlers(service);
     final routes = _generateRoutes(service);
+    final functionName = _getRoutesFunctionName(service.name);
 
     return '''
-abstract class ${service.name}Server {
+interface ${service.name}Server {
 $handlers
-
-    val router = routes(
-$routes
-    )
-
-    private val json = Gson()
 }
+
+private val json = Gson()
+
+fun $functionName(server: ${service.name}Server): RoutingHttpHandler = routes(
+$routes
+)
 ''';
   }
 
   String _generateRoutes(Service service) {
-    return service.endpoints.map((e) {
-      final requestDeserialization = e.request != null
-          ? '''
+    return service.endpoints
+        .map((e) {
+          final requestDeserialization = e.request != null
+              ? '      val body = json.fromJson(it.bodyString(), Contracts.${e.request!.name}::class.java)\n'
+              : '';
+          final requestArg = e.request != null ? 'body' : '';
 
-        val body = json.fromJson(it.bodyString(), Contracts.${e.request!.name}::class.java)'''
-          : '';
-      final requestArg = e.request != null ? 'body' : '';
+          final responseSerialization = e.response != null
+              ? '.body(json.toJson(response))'
+              : '';
 
-      final responseSerialization =
-          e.response != null ? '.body(json.toJson(response))' : '';
+          final responseVariable = e.response != null ? 'val response = ' : '';
 
-      final responseVariable = e.response != null ? 'val response = ' : '';
-
-      return '''
-      "${e.name}" bind POST to {$requestDeserialization
-        $responseVariable${e.name}($requestArg)
-        Response(OK)$responseSerialization
-      }''';
-    }).join(',\n');
+          return '''
+    "${e.name}" bind POST to {
+$requestDeserialization      ${responseVariable}server.${e.name}($requestArg)
+      Response(OK)$responseSerialization
+    }''';
+        })
+        .join(',\n');
   }
 
   String _generateHandlers(Service service) {
-    return service.endpoints.map((endpoint) {
-      final response = endpoint.response != null
-          ? ': Contracts.${endpoint.response!.name}'
-          : '';
-      final request = endpoint.request != null
-          ? 'request: Contracts.${endpoint.request!.name}'
-          : '';
+    return service.endpoints
+        .map((endpoint) {
+          final response = switch (endpoint.response) {
+            final response? => ': Contracts.${response.name}',
+            null => '',
+          };
+          final request = switch (endpoint.request) {
+            final request? => 'request: Contracts.${request.name}',
+            null => '',
+          };
 
-      return '    abstract fun ${endpoint.name}($request)$response';
-    }).join('\n');
+          return '    fun ${endpoint.name}($request)$response';
+        })
+        .join('\n');
+  }
+
+  String _getRoutesFunctionName(String serviceName) {
+    // Convert ServiceNameServer to getServiceNameRoutes
+    // e.g., MobileAutomatorServer -> getMobileAutomatorRoutes
+    final baseName = serviceName.replaceAll('Server', '');
+    return 'get${baseName}Routes';
   }
 }

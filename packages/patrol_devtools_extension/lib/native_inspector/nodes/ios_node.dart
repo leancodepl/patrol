@@ -2,8 +2,9 @@ part of 'node.dart';
 
 final class IOSNode extends Node {
   IOSNode({required this.view, this.parent}) {
-    children =
-        view.children.map((view) => IOSNode(view: view, parent: this)).toList();
+    children = view.children
+        .map((view) => IOSNode(view: view, parent: this))
+        .toList();
 
     fullNodeName = createNodeName(view.elementType.name, view.identifier);
 

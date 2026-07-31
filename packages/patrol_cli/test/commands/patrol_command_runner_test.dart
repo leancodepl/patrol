@@ -1,58 +1,202 @@
 import 'package:args/command_runner.dart';
+import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:patrol_cli/src/base/constants.dart' as constants;
 import 'package:patrol_cli/src/base/extensions/command_runner.dart';
 import 'package:patrol_cli/src/base/logger.dart';
+import 'package:patrol_cli/src/compatibility_checker/version_compatibility.dart';
 import 'package:patrol_cli/src/runner/patrol_command_runner.dart';
 import 'package:platform/platform.dart';
 import 'package:pub_updater/pub_updater.dart';
 import 'package:test/test.dart';
-
 import '../ios/ios_test_backend_test.dart';
 import '../src/mocks.dart';
 
-const latestVersion = '0.0.0';
+const latestVersion = '999.0.0';
 
-final updatePrompt = '''
-${lightYellow.wrap('Update available!')} ${lightCyan.wrap(constants.version)} \u2192 ${lightCyan.wrap(latestVersion)}
-Run ${lightCyan.wrap('patrol update')} to update''';
+/// Strips ANSI color codes from a string
+String stripAnsi(String str) {
+  return str.replaceAll(RegExp(r'\x1B\[[0-9;]*[a-zA-Z]'), '');
+}
 
 void main() {
   group('PatrolCommandRunner', () {
     late Logger logger;
     late PubUpdater pubUpdater;
-
+    late FileSystem fs;
     late PatrolCommandRunner commandRunner;
+
+    // Save original compatibility list to restore after tests
+    final originalList = List<VersionCompatibility>.from(
+      versionCompatibilityList,
+    );
+
+    tearDown(() {
+      // Restore the original list after each test
+      versionCompatibilityList
+        ..clear()
+        ..addAll(originalList);
+    });
 
     setUp(() {
       logger = MockLogger();
       pubUpdater = MockPubUpdater();
+      fs = MemoryFileSystem.test();
 
       when(
         () => pubUpdater.getLatestVersion(any()),
       ).thenAnswer((_) async => constants.version);
 
+      when(() => logger.info(any())).thenReturn(null);
+
       commandRunner = PatrolCommandRunner(
         platform: FakePlatform(environment: {}),
         processManager: FakeProcessManager(),
         pubUpdater: pubUpdater,
-        fs: MemoryFileSystem.test(),
+        fs: fs,
         analytics: MockAnalytics(),
         logger: logger,
         isCI: false,
       );
     });
 
-    test('shows update message when newer version exists', () async {
+    test('shows update message with compatibility warning when needed', () async {
+      // Set up a compatibility list where patrol 3.17.0 is compatible only up to patrol_cli 3.8.0.
+      versionCompatibilityList
+        ..clear()
+        ..add(
+          VersionCompatibility.fromRangeString(
+            patrolCliVersion: '3.7.0 - 3.8.0',
+            patrolVersion: '3.16.0 - 3.17.0',
+            minFlutterVersion: '3.32.0',
+          ),
+        );
+
+      // Set up a fake project directory with pubspec.yaml and pubspec.lock
+      final dir = fs.directory('/project')..createSync();
+      dir.childFile('pubspec.yaml')
+        ..createSync()
+        ..writeAsStringSync('name: test_project\n');
+      dir.childFile('pubspec.lock')
+        ..createSync()
+        ..writeAsStringSync('''
+packages:
+  patrol:
+    dependency: "direct dev"
+    description:
+      name: patrol
+      sha256: "9d4aac7cbaf383a96abc992a3acc81f6796ab0dba922825ee0d5a2633bed61ce"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.17.0"
+''');
+      fs.currentDirectory = dir;
+
       when(
         () => pubUpdater.getLatestVersion(any()),
       ).thenAnswer((_) async => latestVersion);
 
-      final result = await commandRunner.run(['--version']);
-      expect(result, equals(0));
-      verify(() => logger.info(updatePrompt)).called(1);
+      String? capturedMessage;
+      when(() => logger.info(any())).thenAnswer((invocation) {
+        final message = invocation.positionalArguments[0] as String;
+        if (message.contains('Update available!')) {
+          capturedMessage = stripAnsi(message);
+        }
+      });
+
+      const currentVersion = '3.7.0';
+      await commandRunner.testCheckForUpdates(
+        currentVersion: currentVersion,
+        latestVersion: latestVersion,
+      );
+
+      expect(capturedMessage, contains('Update available!'));
+      expect(capturedMessage, contains('$currentVersion → 3.8.0'));
+      expect(
+        capturedMessage,
+        contains('To update to the latest compatible version, run:'),
+      );
+      expect(
+        capturedMessage,
+        contains('dart pub global activate patrol_cli 3.8.0'),
+      );
+      expect(
+        capturedMessage,
+        contains(
+          "⚠️  Newest patrol_cli $latestVersion is not compatible with your project's patrol version.",
+        ),
+      );
+      expect(
+        capturedMessage,
+        contains(
+          'Consider upgrading your patrol package for the latest features.',
+        ),
+      );
+      expect(
+        capturedMessage,
+        contains(
+          'Check the compatibility table at: https://patrol.leancode.co/documentation/compatibility-table',
+        ),
+      );
     });
+
+    test(
+      'shows simple update message when no compatibility warning is needed',
+      () async {
+        versionCompatibilityList
+          ..clear()
+          ..add(
+            VersionCompatibility.fromRangeString(
+              patrolCliVersion: '4.0.0+',
+              patrolVersion: '4.0.0+',
+              minFlutterVersion: '3.32.0',
+            ),
+          );
+
+        final dir = fs.directory('/project')..createSync();
+        dir.childFile('pubspec.yaml')
+          ..createSync()
+          ..writeAsStringSync('name: test_project\n');
+        dir.childFile('pubspec.lock')
+          ..createSync()
+          ..writeAsStringSync('''
+packages:
+  patrol:
+    dependency: "direct main"
+    description:
+      name: patrol
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.0.0"
+''');
+        fs.currentDirectory = dir;
+
+        when(
+          () => pubUpdater.getLatestVersion(any()),
+        ).thenAnswer((_) async => '5.0.0');
+
+        String? capturedMessage;
+        when(() => logger.info(any())).thenAnswer((invocation) {
+          final message = invocation.positionalArguments[0] as String;
+          if (message.contains('Update available!')) {
+            capturedMessage = stripAnsi(message);
+          }
+        });
+
+        final result = await commandRunner.run(['--version']);
+        expect(result, equals(0));
+
+        expect(capturedMessage, contains('Update available!'));
+        expect(capturedMessage, contains('${constants.version} → 5.0.0'));
+        expect(
+          capturedMessage,
+          contains(
+            'Check the compatibility table at: https://patrol.leancode.co/documentation/compatibility-table',
+          ),
+        );
+      },
+    );
 
     test('handles FormatException', () async {
       const exception = FormatException('bad format');
@@ -110,7 +254,7 @@ void main() {
         final result = await commandRunner.run(['--bar']);
         expect(result, equals(1));
         verify(
-          () => logger.err('Could not find an option named "bar".'),
+          () => logger.err('Could not find an option named "--bar".'),
         ).called(1);
         verify(
           () => logger.info(commandRunner.usageWithoutDescription),
@@ -134,6 +278,90 @@ void main() {
         verify(() {
           logger.info('Verbose mode enabled. More logs will be printed.');
         }).called(1);
+      });
+    });
+
+    group('_normalizeArgs', () {
+      test('leaves args without --web-headless untouched', () {
+        final result = commandRunner.testNormalizeArgs([
+          'test',
+          '-d',
+          'chrome',
+          '--verbose',
+        ]);
+
+        expect(result, equals(['test', '-d', 'chrome', '--verbose']));
+        verifyNever(() => logger.warn(any()));
+      });
+
+      test('rewrites --web-headless=<value> and warns about deprecation', () {
+        final trueResult = commandRunner.testNormalizeArgs([
+          'test',
+          '--web-headless=true',
+        ]);
+        expect(trueResult, equals(['test', '--web-headless']));
+
+        final falseResult = commandRunner.testNormalizeArgs([
+          'test',
+          '--web-headless=false',
+        ]);
+        expect(falseResult, equals(['test', '--no-web-headless']));
+
+        verify(
+          () => logger.warn(
+            'Passing a value to --web-headless is deprecated. '
+            'Use --web-headless or --no-web-headless instead.',
+          ),
+        ).called(2);
+      });
+
+      test('rewrites --web-headless <value> passed as two arguments', () {
+        final trueResult = commandRunner.testNormalizeArgs([
+          'test',
+          '--web-headless',
+          'true',
+        ]);
+        expect(trueResult, equals(['test', '--web-headless']));
+
+        final falseResult = commandRunner.testNormalizeArgs([
+          'test',
+          '--web-headless',
+          'false',
+        ]);
+        expect(falseResult, equals(['test', '--no-web-headless']));
+      });
+
+      test('leaves --web-headless untouched when not followed by a bool', () {
+        final result = commandRunner.testNormalizeArgs([
+          'test',
+          '--web-headless',
+          '-d',
+          'chrome',
+        ]);
+
+        expect(result, equals(['test', '--web-headless', '-d', 'chrome']));
+        verifyNever(() => logger.warn(any()));
+      });
+
+      test('leaves --web-headless untouched when it is the last argument', () {
+        final result = commandRunner.testNormalizeArgs([
+          'test',
+          '--web-headless',
+        ]);
+
+        expect(result, equals(['test', '--web-headless']));
+        verifyNever(() => logger.warn(any()));
+      });
+
+      test('stops rewriting after a bare -- separator', () {
+        final result = commandRunner.testNormalizeArgs([
+          'test',
+          '--',
+          '--web-headless=true',
+        ]);
+
+        expect(result, equals(['test', '--', '--web-headless=true']));
+        verifyNever(() => logger.warn(any()));
       });
     });
   });

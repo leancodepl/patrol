@@ -1,0 +1,48 @@
+name: Verify Version Compatibility
+
+on:
+  push:
+    branches: [ master ]
+    paths:
+      - 'packages/patrol_cli/lib/src/compatibility_checker/version_compatibility.dart'
+      - 'packages/patrol_cli/test/compatibility_checker/version_compatibility_test.dart'
+  pull_request:
+    branches: [ master ]
+    paths:
+      - 'packages/patrol_cli/lib/src/compatibility_checker/version_compatibility.dart'
+      - 'packages/patrol_cli/test/compatibility_checker/version_compatibility_test.dart'
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Dart
+      uses: dart-lang/setup-dart@v1
+    
+    - name: Install dependencies
+      run: |
+        cd packages/patrol_cli
+        dart pub get
+    
+    - name: Run compatibility tests
+      run: |
+        cd packages/patrol_cli
+        dart test test/compatibility_checker/version_compatibility_test.dart
+    
+    - name: Generate compatibility table
+      run: |
+        cd packages/patrol_cli
+        dart run lib/src/compatibility_checker/generate_compatibility_table.dart
+    
+    - name: Verify tables are up to date
+      run: |
+        MODIFIED_TABLES=$(git status --porcelain "docs/**/compatibility-table.mdx")
+        if [[ -n "$MODIFIED_TABLES" ]]; then
+          echo "The following compatibility tables are not up to date:"
+          echo "$MODIFIED_TABLES"
+          echo "Please run 'dart run lib/src/compatibility_checker/generate_compatibility_table.dart' and commit the changes."
+          exit 1
+        fi 

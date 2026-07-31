@@ -1,13 +1,21 @@
 package pl.leancode.patrol
 
+import android.os.Build
+import org.http4k.routing.RoutingHttpHandler
+import org.http4k.routing.routes
+import pl.leancode.patrol.contracts.AndroidAutomatorServer
 import pl.leancode.patrol.contracts.Contracts
+import pl.leancode.patrol.contracts.Contracts.AndroidEnterTextRequest
+import pl.leancode.patrol.contracts.Contracts.AndroidGetNativeViewsRequest
+import pl.leancode.patrol.contracts.Contracts.AndroidGetNativeViewsResponse
+import pl.leancode.patrol.contracts.Contracts.AndroidOpenPlatformAppRequest
+import pl.leancode.patrol.contracts.Contracts.AndroidSelector
+import pl.leancode.patrol.contracts.Contracts.AndroidSwipeRequest
+import pl.leancode.patrol.contracts.Contracts.AndroidTapOnNotificationRequest
+import pl.leancode.patrol.contracts.Contracts.AndroidTapRequest
+import pl.leancode.patrol.contracts.Contracts.AndroidWaitUntilVisibleRequest
 import pl.leancode.patrol.contracts.Contracts.ConfigureRequest
 import pl.leancode.patrol.contracts.Contracts.DarkModeRequest
-import pl.leancode.patrol.contracts.Contracts.EnterTextRequest
-import pl.leancode.patrol.contracts.Contracts.GetNativeUITreeRequest
-import pl.leancode.patrol.contracts.Contracts.GetNativeUITreeRespone
-import pl.leancode.patrol.contracts.Contracts.GetNativeViewsRequest
-import pl.leancode.patrol.contracts.Contracts.GetNativeViewsResponse
 import pl.leancode.patrol.contracts.Contracts.GetNotificationsRequest
 import pl.leancode.patrol.contracts.Contracts.GetNotificationsResponse
 import pl.leancode.patrol.contracts.Contracts.HandlePermissionRequest
@@ -18,13 +26,14 @@ import pl.leancode.patrol.contracts.Contracts.PermissionDialogVisibleRequest
 import pl.leancode.patrol.contracts.Contracts.PermissionDialogVisibleResponse
 import pl.leancode.patrol.contracts.Contracts.SetLocationAccuracyRequest
 import pl.leancode.patrol.contracts.Contracts.SetLocationAccuracyRequestLocationAccuracy
-import pl.leancode.patrol.contracts.Contracts.SwipeRequest
-import pl.leancode.patrol.contracts.Contracts.TapOnNotificationRequest
-import pl.leancode.patrol.contracts.Contracts.TapRequest
-import pl.leancode.patrol.contracts.Contracts.WaitUntilVisibleRequest
-import pl.leancode.patrol.contracts.NativeAutomatorServer
+import pl.leancode.patrol.contracts.Contracts.SetMockLocationRequest
+import pl.leancode.patrol.contracts.MobileAutomatorServer
+import pl.leancode.patrol.contracts.getAndroidAutomatorRoutes
+import pl.leancode.patrol.contracts.getMobileAutomatorRoutes
 
-class AutomatorServer(private val automation: Automator) : NativeAutomatorServer() {
+class AutomatorServer(private val automation: Automator) : MobileAutomatorServer, AndroidAutomatorServer {
+    val router: RoutingHttpHandler
+        get() = routes(getMobileAutomatorRoutes(this), getAndroidAutomatorRoutes(this))
 
     override fun initialize() {
         automation.initialize()
@@ -54,16 +63,16 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
         automation.openApp(request.appId)
     }
 
+    override fun openPlatformApp(request: AndroidOpenPlatformAppRequest) {
+        automation.openApp(request.androidAppId)
+    }
+
     override fun openNotifications() {
         automation.openNotifications()
     }
 
     override fun closeNotifications() {
         automation.closeNotifications()
-    }
-
-    override fun closeHeadsUpNotification() {
-        // iOS only
     }
 
     override fun openQuickSettings(request: OpenQuickSettingsRequest) {
@@ -74,14 +83,8 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
         automation.openUrl(request.url)
     }
 
-    override fun getNativeUITree(request: GetNativeUITreeRequest): GetNativeUITreeRespone {
-        return if (request.useNativeViewHierarchy) {
-            val trees = automation.getNativeUITrees()
-            GetNativeUITreeRespone(roots = trees, androidRoots = listOf(), iOSroots = listOf())
-        } else {
-            val trees = automation.getNativeUITreesV2()
-            GetNativeUITreeRespone(roots = listOf(), androidRoots = trees, iOSroots = listOf())
-        }
+    override fun sendKeyboardEnter() {
+        automation.sendKeyboardEnter()
     }
 
     override fun pressVolumeUp() {
@@ -140,24 +143,18 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
         automation.disableLocation()
     }
 
-    override fun getNativeViews(request: GetNativeViewsRequest): GetNativeViewsResponse {
+    override fun getNativeViews(request: AndroidGetNativeViewsRequest): AndroidGetNativeViewsResponse {
         if (request.selector != null) {
             val views = automation.getNativeViews(request.selector.toBySelector())
-            return GetNativeViewsResponse(
-                nativeViews = views,
-                iosNativeViews = listOf(),
-                androidNativeViews = listOf()
-
-            )
-        } else if (request.androidSelector != null) {
-            val views = automation.getNativeViewsV2(request.androidSelector.toBySelector())
-            return GetNativeViewsResponse(
-                nativeViews = listOf(),
-                androidNativeViews = views,
-                iosNativeViews = listOf()
+            return AndroidGetNativeViewsResponse(
+                roots = views
             )
         } else {
-            throw PatrolException("getNativeViews(): neither selector nor androidSelector are set")
+            // When both selectors are null, return the full native tree
+            val trees = automation.getNativeUITrees()
+            return AndroidGetNativeViewsResponse(
+                roots = trees
+            )
         }
     }
 
@@ -166,62 +163,45 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
         return GetNotificationsResponse(notifs)
     }
 
-    override fun tap(request: TapRequest) {
-        if (request.selector != null) {
-            automation.tap(
-                uiSelector = request.selector.toUiSelector(),
-                bySelector = request.selector.toBySelector(),
-                index = request.selector.instance?.toInt() ?: 0,
-                timeout = request.timeoutMillis
-            )
-        } else if (request.androidSelector != null) {
-            automation.tap(
-                uiSelector = request.androidSelector.toUiSelector(),
-                bySelector = request.androidSelector.toBySelector(),
-                index = request.androidSelector.instance?.toInt() ?: 0,
-                timeout = request.timeoutMillis
-            )
-        } else {
-            throw PatrolException("tap(): neither selector nor androidSelector are set")
-        }
+    override fun tap(request: AndroidTapRequest) {
+        // Remove instance before creating bySelector, as it's not supported
+        var selector2 = request.selector.copy(instance = null)
+        val bySelector = selector2.toBySelector()
+
+        automation.tap(
+            uiSelector = request.selector.toUiSelector(),
+            bySelector = bySelector,
+            index = request.selector.instance?.toInt() ?: 0,
+            timeout = request.timeoutMillis
+        )
     }
 
-    override fun doubleTap(request: TapRequest) {
-        if (request.selector != null) {
-            automation.doubleTap(
-                uiSelector = request.selector.toUiSelector(),
-                bySelector = request.selector.toBySelector(),
-                index = request.selector.instance?.toInt() ?: 0,
-                timeout = request.timeoutMillis,
-                delayBetweenTaps = request.delayBetweenTapsMillis
-            )
-        } else if (request.androidSelector != null) {
-            automation.doubleTap(
-                uiSelector = request.androidSelector.toUiSelector(),
-                bySelector = request.androidSelector.toBySelector(),
-                index = request.androidSelector.instance?.toInt() ?: 0,
-                timeout = request.timeoutMillis,
-                delayBetweenTaps = request.delayBetweenTapsMillis
-            )
-        } else {
-            throw PatrolException("doubleTap(): neither selector nor androidSelector are set")
-        }
+    override fun doubleTap(request: AndroidTapRequest) {
+        automation.doubleTap(
+            uiSelector = request.selector.toUiSelector(),
+            bySelector = request.selector.toBySelector(),
+            index = request.selector.instance?.toInt() ?: 0,
+            timeout = request.timeoutMillis,
+            delayBetweenTaps = request.delayBetweenTapsMillis
+        )
     }
 
-    override fun tapAt(request: Contracts.TapAtRequest) {
+    override fun tapAt(request: Contracts.AndroidTapAtRequest) {
         automation.tapAt(
             x = request.x.toFloat(),
             y = request.y.toFloat()
         )
     }
 
-    override fun enterText(request: EnterTextRequest) {
+    override fun enterText(request: AndroidEnterTextRequest) {
         if (request.index != null) {
             automation.enterText(
                 text = request.data,
                 index = request.index.toInt(),
                 keyboardBehavior = request.keyboardBehavior,
-                timeout = request.timeoutMillis
+                timeout = request.timeoutMillis,
+                dx = request.dx?.toFloat() ?: 0.9f,
+                dy = request.dy?.toFloat() ?: 0.9f
             )
         } else if (request.selector != null) {
             automation.enterText(
@@ -230,23 +210,16 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
                 bySelector = request.selector.toBySelector(),
                 index = request.selector.instance?.toInt() ?: 0,
                 keyboardBehavior = request.keyboardBehavior,
-                timeout = request.timeoutMillis
-            )
-        } else if (request.androidSelector != null) {
-            automation.enterText(
-                text = request.data,
-                uiSelector = request.androidSelector.toUiSelector(),
-                bySelector = request.androidSelector.toBySelector(),
-                index = request.androidSelector.instance?.toInt() ?: 0,
-                keyboardBehavior = request.keyboardBehavior,
-                timeout = request.timeoutMillis
+                timeout = request.timeoutMillis,
+                dx = request.dx?.toFloat() ?: 0.9f,
+                dy = request.dy?.toFloat() ?: 0.9f
             )
         } else {
             throw PatrolException("enterText(): neither index nor selector are set")
         }
     }
 
-    override fun swipe(request: SwipeRequest) {
+    override fun swipe(request: AndroidSwipeRequest) {
         automation.swipe(
             startX = request.startX.toFloat(),
             startY = request.startY.toFloat(),
@@ -256,24 +229,13 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
         )
     }
 
-    override fun waitUntilVisible(request: WaitUntilVisibleRequest) {
-        if (request.selector != null) {
-            automation.waitUntilVisible(
-                uiSelector = request.selector.toUiSelector(),
-                bySelector = request.selector.toBySelector(),
-                index = request.selector.instance?.toInt() ?: 0,
-                timeout = request.timeoutMillis
-            )
-        } else if (request.androidSelector != null) {
-            automation.waitUntilVisible(
-                uiSelector = request.androidSelector.toUiSelector(),
-                bySelector = request.androidSelector.toBySelector(),
-                index = request.androidSelector.instance?.toInt() ?: 0,
-                timeout = request.timeoutMillis
-            )
-        } else {
-            throw PatrolException("waitUntilVisible(): neither selector nor androidSelector are set")
-        }
+    override fun waitUntilVisible(request: AndroidWaitUntilVisibleRequest) {
+        automation.waitUntilVisible(
+            uiSelector = request.selector.toUiSelector(),
+            bySelector = request.selector.toBySelector(),
+            index = request.selector.instance?.toInt() ?: 0,
+            timeout = request.timeoutMillis
+        )
     }
 
     override fun isPermissionDialogVisible(request: PermissionDialogVisibleRequest): PermissionDialogVisibleResponse {
@@ -289,6 +251,10 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
         }
     }
 
+    override fun allowPermission() {
+        automation.allowPermission()
+    }
+
     override fun setLocationAccuracy(request: SetLocationAccuracyRequest) {
         when (request.locationAccuracy) {
             SetLocationAccuracyRequestLocationAccuracy.coarse -> automation.selectCoarseLocation()
@@ -296,19 +262,150 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
         }
     }
 
-    override fun debug() {
-        // iOS only
+    override fun takeCameraPhoto(request: Contracts.AndroidTakeCameraPhotoRequest) {
+        val isEmulator = isVirtualDevice().isVirtualDevice
+
+        val shutterButtonSelector = request.shutterButtonSelector ?: AndroidSelector(
+            resourceName = if (isEmulator) AutomatorConstants.EMULATOR_CAMERA_SHUTTER_BUTTON_RES_ID else AutomatorConstants.GOOGLE_CAMERA_SHUTTER_BUTTON_RES_ID,
+            instance = 0
+        )
+        val doneButtonSelector = request.doneButtonSelector ?: AndroidSelector(
+            resourceName = if (isEmulator) AutomatorConstants.EMULATOR_CAMERA_DONE_BUTTON_RES_ID else AutomatorConstants.GOOGLE_CAMERA_DONE_BUTTON_RES_ID,
+            instance = 0
+        )
+        val shutterButtonSelector2 = shutterButtonSelector.copy(instance = null)
+        val doneButtonSelector2 = doneButtonSelector.copy(instance = null)
+        automation.takeCameraPhoto(
+            shutterButtonSelector.toUiSelector(),
+            shutterButtonSelector2.toBySelector(),
+            doneButtonSelector.toUiSelector(),
+            doneButtonSelector2.toBySelector(),
+            request.timeoutMillis
+        )
     }
 
-    override fun tapOnNotification(request: TapOnNotificationRequest) {
+    override fun pickImageFromGallery(request: Contracts.AndroidPickImageFromGalleryRequest) {
+        val apiLvl = getOsVersion().osVersion
+
+        val androidImageSelector = request.imageSelector ?: run {
+            val (resourceName, contentDescriptionContains) = when {
+                apiLvl >= 36 -> null to AutomatorConstants.PHOTO_TAKEN_ON_CONTENT_DESCRIPTION
+                apiLvl >= 34 -> AutomatorConstants.GALLERY_IMAGE_THUMBNAIL_RES_ID to null
+                else -> AutomatorConstants.GALLERY_IMAGE_THUMB_RES_ID to null
+            }
+            AndroidSelector(
+                resourceName = resourceName,
+                contentDescriptionContains = contentDescriptionContains,
+                instance = request.imageIndex ?: 0
+            )
+        }
+
+        val androidSubMenuSelector = if (apiLvl < 34) {
+            AndroidSelector(
+                resourceName = AutomatorConstants.GALLERY_SUB_MENU_LIST_RES_ID,
+                instance = 0
+            )
+        } else {
+            null
+        }
+        val androidActionMenuSelector = if (apiLvl < 34) {
+            AndroidSelector(
+                resourceName = AutomatorConstants.GALLERY_SELECT_BUTTON_RES_ID,
+                instance = 0
+            )
+        } else {
+            null
+        }
+
+        // Remove instance before creating bySelector, as it's not supported
+        val androidImageSelector2 = androidImageSelector.copy(instance = null)
+        val androidSubMenuSelector2 = androidSubMenuSelector?.copy(instance = null)
+        val androidActionMenuSelector2 = androidActionMenuSelector?.copy(instance = null)
+
+        automation.pickImageFromGallery(
+            androidImageSelector.toUiSelector(),
+            androidImageSelector2.toBySelector(),
+            androidSubMenuSelector2?.toUiSelector(),
+            androidSubMenuSelector2?.toBySelector(),
+            androidActionMenuSelector2?.toUiSelector(),
+            androidActionMenuSelector2?.toBySelector(),
+            androidImageSelector.instance!!.toInt(),
+            request.timeoutMillis
+        )
+    }
+
+    override fun pickMultipleImagesFromGallery(request: Contracts.AndroidPickMultipleImagesFromGalleryRequest) {
+        val apiLvl = getOsVersion().osVersion
+
+        val androidImageSelector = request.imageSelector ?: run {
+            val (resourceName, contentDescriptionContains) = when {
+                apiLvl >= 36 -> null to AutomatorConstants.PHOTO_TAKEN_ON_CONTENT_DESCRIPTION
+                apiLvl >= 34 -> AutomatorConstants.GALLERY_IMAGE_THUMBNAIL_RES_ID to null
+                else -> AutomatorConstants.GALLERY_IMAGE_THUMB_RES_ID to null
+            }
+            AndroidSelector(
+                resourceName = resourceName,
+                contentDescriptionContains = contentDescriptionContains,
+                instance = 0
+            )
+        }
+
+        val androidSubMenuSelector = if (apiLvl < 34) {
+            AndroidSelector(
+                resourceName = AutomatorConstants.GALLERY_SUB_MENU_LIST_RES_ID,
+                instance = 0
+            )
+        } else {
+            null
+        }
+        val androidActionMenuSelector = run {
+            val (resourceName, text) = when {
+                apiLvl >= 36 -> null to AutomatorConstants.GALLERY_DONE_BUTTON_TEXT
+                apiLvl >= 34 -> AutomatorConstants.GALLERY_ADD_BUTTON_RES_ID to null
+                else -> AutomatorConstants.GALLERY_SELECT_BUTTON_RES_ID to null
+            }
+            AndroidSelector(
+                resourceName = resourceName,
+                text = text,
+                instance = 0
+            )
+        }
+
+        // Remove instance before creating bySelector, as it's not supported
+        val androidImageSelector2 = androidImageSelector.copy(instance = null)
+        val androidSubMenuSelector2 = androidSubMenuSelector?.copy(instance = null)
+        val androidActionMenuSelector2 = androidActionMenuSelector.copy(instance = null)
+
+        automation.pickMultipleImagesFromGallery(
+            androidImageSelector.toUiSelector(),
+            androidImageSelector2.toBySelector(),
+            androidSubMenuSelector?.toUiSelector(),
+            androidSubMenuSelector2?.toBySelector(),
+            androidActionMenuSelector.toUiSelector(),
+            androidActionMenuSelector2.toBySelector(),
+            request.imageIndexes,
+            request.timeoutMillis
+        )
+    }
+
+    override fun setMockLocation(request: SetMockLocationRequest) {
+        automation.setMockLocation(request.latitude, request.longitude, request.packageName)
+    }
+
+    override fun stopMockLocation() {
+        automation.stopMockLocation()
+    }
+
+    override fun tapOnNotification(request: AndroidTapOnNotificationRequest) {
         if (request.index != null) {
             automation.tapOnNotification(request.index.toInt(), timeout = request.timeoutMillis)
         } else if (request.selector != null) {
             val selector = request.selector
-            automation.tapOnNotification(selector.toUiSelector(), selector.toBySelector(), timeout = request.timeoutMillis)
-        } else if (request.androidSelector != null) {
-            val selector = request.androidSelector
-            automation.tapOnNotification(selector.toUiSelector(), selector.toBySelector(), timeout = request.timeoutMillis)
+            automation.tapOnNotification(
+                selector.toUiSelector(),
+                selector.toBySelector(),
+                timeout = request.timeoutMillis
+            )
         } else {
             throw PatrolException("tapOnNotification(): neither index nor selector are set")
         }
@@ -316,5 +413,29 @@ class AutomatorServer(private val automation: Automator) : NativeAutomatorServer
 
     override fun markPatrolAppServiceReady() {
         PatrolServer.appReady.open()
+    }
+
+    override fun isVirtualDevice(): Contracts.IsVirtualDeviceResponse {
+        val isEmulator = Build.FINGERPRINT.startsWith("generic") ||
+            Build.FINGERPRINT.startsWith("unknown") ||
+            Build.MODEL.contains("google_sdk") ||
+            Build.MODEL.contains("Emulator") ||
+            Build.MODEL.contains("Android SDK built for x86") ||
+            Build.MODEL.contains("Android SDK built for arm64") ||
+            Build.MODEL.contains("sdk_gphone") ||
+            Build.MANUFACTURER.contains("Genymotion") ||
+            Build.HARDWARE.contains("ranchu") ||
+            Build.HARDWARE.contains("goldfish") ||
+            Build.PRODUCT.contains("sdk_gphone") ||
+            Build.PRODUCT.contains("google_sdk") ||
+            Build.PRODUCT.contains("sdk") ||
+            (Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic")) ||
+            "google_sdk" == Build.PRODUCT
+
+        return Contracts.IsVirtualDeviceResponse(isEmulator)
+    }
+
+    override fun getOsVersion(): Contracts.GetOsVersionResponse {
+        return Contracts.GetOsVersionResponse(Build.VERSION.SDK_INT.toLong())
     }
 }

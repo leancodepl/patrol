@@ -1,0 +1,14 @@
+{
+  "title": "Patrol Feature Guide",
+  "root": true,
+  "pages": [
+    "---Patrol Feature Guide---",
+    "index",
+    "---Features---",
+    "bluetooth",
+    "granting-camera-permission",
+    "take-a-photo",
+    "pick-images-from-gallery",
+    "pull-to-refresh"
+  ]
+}

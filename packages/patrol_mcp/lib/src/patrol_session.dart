@@ -1,0 +1,690 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:io' as io;
+
+import 'package:dispose_scope/dispose_scope.dart';
+import 'package:logging/logging.dart';
+import 'package:path/path.dart' as p;
+import 'package:patrol_cli/patrol_cli.dart';
+
+import 'device_lister.dart';
+import 'device_selection.dart';
+import 'flutter_command_resolver.dart';
+import 'log_streaming.dart';
+
+/// An [io.Stdout] wrapper that forwards writes to [_inner] (e.g. stderr) and
+/// also captures complete lines, invoking [_onLine] for each one.
+/// This lets us redirect mason_logger output away from the JSON-protocol stdout
+/// while still capturing it for the patrol.log file and output buffer.
+class _CapturingStdout implements io.Stdout {
+  _CapturingStdout(this._inner, this._onLine);
+
+  final io.Stdout _inner;
+  final void Function(String line) _onLine;
+  final _buffer = StringBuffer();
+
+  void _processChunk(String text) {
+    // Split on newlines, buffering incomplete lines
+    final parts = text.split('\n');
+    for (var i = 0; i < parts.length; i++) {
+      _buffer.write(parts[i]);
+      if (i < parts.length - 1) {
+        // We hit a newline boundary -- emit the complete line
+        final line = _buffer.toString();
+        _buffer.clear();
+        if (line.isNotEmpty) {
+          _onLine(line);
+        }
+      }
+    }
+  }
+
+  @override
+  void write(Object? object) {
+    final text = '$object';
+    _inner.write(text);
+    _processChunk(text);
+  }
+
+  @override
+  void writeln([Object? object = '']) {
+    final text = '$object';
+    _inner.writeln(text);
+    _processChunk('$text\n');
+  }
+
+  @override
+  void writeAll(Iterable<Object?> objects, [String sep = '']) {
+    final text = objects.join(sep);
+    _inner.writeAll(objects, sep);
+    _processChunk(text);
+  }
+
+  @override
+  void writeCharCode(int charCode) {
+    _inner.writeCharCode(charCode);
+    _processChunk(String.fromCharCode(charCode));
+  }
+
+  @override
+  void add(List<int> data) {
+    _inner.add(data);
+    _processChunk(utf8.decode(data, allowMalformed: true));
+  }
+
+  @override
+  void addError(Object error, [StackTrace? stackTrace]) =>
+      _inner.addError(error, stackTrace);
+
+  @override
+  Future<void> addStream(Stream<List<int>> stream) => _inner.addStream(stream);
+
+  @override
+  Future<void> close() {
+    // Flush any partial line still sitting in the buffer.
+    final remaining = _buffer.toString();
+    _buffer.clear();
+    if (remaining.isNotEmpty) {
+      _onLine(remaining);
+    }
+    return _inner.close();
+  }
+
+  @override
+  Future<void> get done => _inner.done;
+
+  @override
+  Encoding get encoding => _inner.encoding;
+
+  @override
+  set encoding(Encoding value) => _inner.encoding = value;
+
+  @override
+  Future<void> flush() => _inner.flush();
+
+  @override
+  bool get hasTerminal => _inner.hasTerminal;
+
+  @override
+  String get lineTerminator => _inner.lineTerminator;
+
+  @override
+  set lineTerminator(String value) => _inner.lineTerminator = value;
+
+  @override
+  io.IOSink get nonBlocking => _inner.nonBlocking;
+
+  @override
+  bool get supportsAnsiEscapes => _inner.supportsAnsiEscapes;
+
+  @override
+  int get terminalColumns => _inner.terminalColumns;
+
+  @override
+  int get terminalLines => _inner.terminalLines;
+}
+
+enum TestState {
+  idle,
+  running,
+  finishedPassed,
+  finishedFailed;
+
+  String get summary => switch (this) {
+    finishedPassed => 'Tests completed successfully ✅',
+    finishedFailed => 'Tests failed ❌',
+    running => 'Tests are currently running...',
+    idle => 'Patrol session is idle',
+  };
+}
+
+enum PatrolCommand {
+  hotRestart('R'),
+  quit('Q');
+
+  const PatrolCommand(this.value);
+
+  final String value;
+}
+
+class PatrolStatus {
+  const PatrolStatus({
+    required this.isDevelopRunning,
+    required this.testState,
+    required this.output,
+    this.currentTestFile,
+    this.warning,
+    this.deviceSelectionNote,
+    this.deviceName,
+    this.deviceId,
+    this.devicePlatform,
+  });
+
+  final bool isDevelopRunning;
+  final TestState testState;
+  final String output;
+  final String? currentTestFile;
+  final String? warning;
+  final String? deviceSelectionNote;
+  final String? deviceName;
+  final String? deviceId;
+  final String? devicePlatform;
+
+  String get summary => testState.summary;
+
+  Map<String, Object> toMap() => {
+    'isDevelopRunning': isDevelopRunning,
+    'testState': testState.name,
+    'currentTestFile': ?currentTestFile,
+    'warning': ?warning,
+    'deviceSelectionNote': ?deviceSelectionNote,
+    'deviceName': ?deviceName,
+    'deviceId': ?deviceId,
+    'devicePlatform': ?devicePlatform,
+    'output': output,
+    'summary': summary,
+  };
+}
+
+final class PatrolSession {
+  PatrolSession({
+    required this.flutterProjectPath,
+    this.additionalFlags = '',
+    this.showTerminal = false,
+  });
+
+  final String flutterProjectPath;
+  final String additionalFlags;
+  final bool showTerminal;
+
+  static const _maxOutputLines = 200;
+
+  var _isRunning = false;
+  String? _currentTestFile;
+  final _outputs = <String>[];
+  TestState _testState = TestState.idle;
+
+  /// Set while quitting so a backend exit we caused isn't reported as a crash.
+  var _quitRequested = false;
+
+  /// Warning attached to the next returned status (e.g. unexpected app exit).
+  String? _finishWarning;
+
+  Completer<void>? _finishCompleter;
+  DisposeScope? _disposeScope;
+  StreamController<List<int>>? _stdinController;
+  DevelopService? _developService;
+  int? _testServerPort;
+
+  /// A note about device selection surfaced in the next status (e.g. which
+  /// device was auto-selected, or that a `device` argument was overridden).
+  String? _deviceSelectionNote;
+
+  final _logStreaming = LogStreaming.instance;
+
+  /// The device discovered by the last [startAndWait] call.
+  Device? get device => _developService?.device;
+  int? get testServerPort => _testServerPort;
+
+  /// Returns null if started successfully, or a warning message if blocked
+  Future<String?> _start(String testFile, {String? device}) async {
+    _deviceSelectionNote = null;
+    if (_isRunning) {
+      if (_currentTestFile != testFile) {
+        return 'Patrol session is already running "$_currentTestFile". '
+            'Cannot start different test "$testFile". '
+            'Use quit first or run the same test file.';
+      }
+      // Same test file - hot restart. The device can't change on hot restart.
+      if (device != null) {
+        _deviceSelectionNote =
+            'Device "$device" ignored: hot-restarting the running session on '
+            '${this.device?.name ?? 'the current device'}. Use quit '
+            'first to switch devices.';
+      }
+      sendCommand(PatrolCommand.hotRestart);
+      return null;
+    }
+
+    final logger = Logger('PatrolSession');
+
+    await _startLogStreamingAndTerminal();
+
+    final resolvedCwd = p.canonicalize(flutterProjectPath);
+
+    // Parse additional flags using the same ArgParser definitions as the CLI.
+    // This supports both develop-specific flags and global flags (e.g.
+    // --verbose, --flutter-command) so that PATROL_FLAGS works with everything
+    // that `patrol develop` accepts.
+    final flagParts =
+        (additionalFlags.isNotEmpty
+              ? additionalFlags.split(RegExp(r'\s+'))
+              : <String>[])
+          // Skip compatibility checking in MCP context for speed.
+          ..add('--no-check-compatibility');
+
+    final flutterResolution = FlutterCommandResolver().resolve(
+      projectRoot: resolvedCwd,
+    );
+    final flutterCommand = flutterResolution.command;
+
+    // First parse: see what PATROL_FLAGS already specifies.
+    final (flagOptions, globalResults) = DevelopOptions.parseArgs(
+      flagParts,
+      target: testFile,
+      flutterCommand: flutterCommand,
+    );
+    final verbose = globalResults['verbose'] as bool? ?? false;
+
+    // Resolve the device. Precedence: PATROL_FLAGS `--device` > `device`
+    // argument > auto-selection.
+    if (flagOptions.devices.isNotEmpty) {
+      if (device != null) {
+        _deviceSelectionNote =
+            'Ignored device "$device": PATROL_FLAGS already pins '
+            '--device ${flagOptions.devices.join(', ')}.';
+      }
+    } else if (device != null) {
+      flagParts.addAll(['--device', device]);
+    } else {
+      final List<Device> attached;
+      try {
+        attached = await listAttachedDevices(
+          flutterCommand: flutterCommand ?? const FlutterCommand('flutter'),
+        );
+      } catch (e) {
+        return 'Failed to detect attached devices: $e';
+      }
+      final selected = autoSelectDevice(attached);
+      if (selected == null) {
+        return 'No Android or iOS device detected. Start an emulator or '
+            'simulator (or connect a device) and try again.';
+      }
+      flagParts.addAll(['--device', selected.id]);
+      if (supportedDevices(attached).length > 1) {
+        _deviceSelectionNote =
+            'Auto-selected ${selected.name} (${selected.id}); '
+            'pass "device" to run on a different one.';
+      }
+    }
+
+    // Final parse, now including the resolved `--device` (if any).
+    final (options, _) = DevelopOptions.parseArgs(
+      flagParts,
+      target: testFile,
+      flutterCommand: flutterCommand,
+    );
+
+    // Log the effective Flutter command once (to stderr via the logging sink).
+    final flagCmd = globalResults['flutter-command'] as String?;
+    final effective = options.flutterCommand;
+    final effectiveStr = [
+      effective.executable,
+      ...effective.arguments,
+    ].join(' ');
+    if (flagCmd != null && flagCmd.isNotEmpty) {
+      logger.info(
+        'Flutter command: $effectiveStr (from --flutter-command in PATROL_FLAGS)',
+      );
+    } else if (flutterResolution.isWarning) {
+      logger.warning(
+        'Flutter command: $effectiveStr -- ${flutterResolution.reason}',
+      );
+    } else {
+      logger.info(
+        'Flutter command: $effectiveStr (${flutterResolution.reason})',
+      );
+    }
+    _testServerPort = options.testServerPort;
+
+    // Create a DisposeScope for the session lifecycle
+    final disposeScope = DisposeScope();
+    _disposeScope = disposeScope;
+
+    // Create a StreamController to feed FlutterTool's stdin programmatically
+    final stdinController = StreamController<List<int>>.broadcast();
+    _stdinController = stdinController;
+
+    // Use DevelopSessionFactory to wire up all CLI components in one call,
+    // with a custom onExit that signals a completer instead of exit(0).
+    final exitCompleter = Completer<void>();
+    final developService = DevelopSessionFactory.create(
+      projectRoot: resolvedCwd,
+      disposeScope: disposeScope,
+      stdin: stdinController.stream,
+      verbose: verbose,
+      onExit: () async {
+        if (!exitCompleter.isCompleted) {
+          exitCompleter.complete();
+        }
+      },
+      onLogEntry: _handleEntry,
+      onTestsCompleted: _handleTestsCompleted,
+    );
+    _developService = developService;
+
+    _isRunning = true;
+    _cleanupFuture = null;
+    _currentTestFile = testFile;
+    _testState = TestState.running;
+    _quitRequested = false;
+    _finishWarning = null;
+    _outputs.clear();
+    // Create the completer eagerly so callbacks can signal it even if
+    // test completion happens before _waitForFinish is called.
+    _finishCompleter = Completer<void>();
+
+    // Run the develop service in the background.
+    // Test completion is detected by structured callbacks,
+    // NOT by developService.run() returning (the process stays alive for
+    // hot restart in develop mode).
+    _runDevelopSession(developService, options, exitCompleter, logger);
+
+    return null;
+  }
+
+  void _runDevelopSession(
+    DevelopService developService,
+    DevelopOptions options,
+    Completer<void> exitCompleter,
+    Logger logger,
+  ) {
+    // Use a _CapturingStdout so that:
+    //  1) mason_logger output goes to stderr (not stdout / the JSON protocol)
+    //  2) every line is captured for the patrol.log file and output buffer
+    final capturingStdout = _CapturingStdout(io.stderr, _pushOutput);
+
+    // Redirect stdout inside this zone to our capturing wrapper.
+    // mason_logger resolves its stdout handle via IOOverrides.
+    io.IOOverrides.runZoned(stdout: () => capturingStdout, () {
+      // Fire-and-forget: developService.run() blocks for the entire develop
+      // session (gradle/xcodebuild + flutter attach stay alive for hot
+      // restart). Test completion is detected by callbacks, not by run()
+      // returning.
+      unawaited(
+        Future.any([developService.run(options), exitCompleter.future])
+            .then((_) {
+              // Session ended (e.g. user sent quit). If tests haven't already
+              // been marked as done by callbacks, mark idle.
+              if (_testState == TestState.running) {
+                _testState = TestState.idle;
+              }
+              _completeFinish();
+              unawaited(_cleanup());
+            })
+            .catchError((Object err, StackTrace st) {
+              logger.warning('Develop session error: $err\n$st');
+              _pushOutput('ERROR: $err');
+              if (_testState == TestState.running) {
+                _testState = TestState.finishedFailed;
+              }
+              _completeFinish();
+              unawaited(_cleanup());
+            }),
+      );
+    });
+  }
+
+  Future<void>? _cleanupFuture;
+
+  /// Stops an active develop session and waits for its child processes to be
+  /// torn down. Safe to call when idle or repeatedly.
+  Future<void> dispose() async {
+    if (_isRunning) {
+      sendCommand(PatrolCommand.quit);
+    }
+    // Await any in-flight teardown -- the quit above, or one the session
+    // already started on its own -- so children are reaped before we exit.
+    final cleanup = _cleanupFuture;
+    if (cleanup != null) {
+      await cleanup;
+    }
+  }
+
+  /// Cleans up the session. Memoized -- callers share one teardown.
+  Future<void> _cleanup() => _cleanupFuture ??= _doCleanup();
+
+  Future<void> _doCleanup() async {
+    final logger = Logger('PatrolSession');
+    // Capture this session's resources before the first await -- a new session
+    // could reassign these fields while we're awaiting below.
+    final scope = _disposeScope;
+    final stdinController = _stdinController;
+    _isRunning = false;
+    _currentTestFile = null;
+    _testServerPort = null;
+    _deviceSelectionNote = null;
+
+    await _logStreaming.stopLogging();
+
+    try {
+      if (scope != null && !scope.disposed) {
+        await scope.dispose();
+      }
+    } catch (e) {
+      logger.fine('Error disposing scope: $e');
+    }
+    await stdinController?.close();
+    logger.fine('Develop session ended');
+  }
+
+  void _pushOutput(String line) {
+    _outputs.add(line);
+    if (_outputs.length > _maxOutputLines) {
+      _outputs.removeRange(0, _outputs.length - _maxOutputLines);
+    }
+
+    final cleanLine = _normalizeLine(line);
+    if (cleanLine.isNotEmpty) {
+      _logStreaming.writeLog(cleanLine);
+    }
+  }
+
+  /// Structured signal from patrol framework (via PATROL_LOG ConfigEntry) that
+  /// all tests were executed in develop mode.
+  void _handleEntry(Entry entry) {
+    if (entry is TestEntry &&
+        entry.status == TestEntryStatus.failure &&
+        _testState == TestState.running) {
+      _testState = TestState.finishedFailed;
+      _completeFinish();
+      return;
+    }
+
+    if (entry is ConfigEntry &&
+        entry.config[ConfigEntry.developCompletedKey] == true &&
+        _testState == TestState.running) {
+      _testState = TestState.finishedPassed;
+      _completeFinish();
+    }
+  }
+
+  /// Backend exit signal from [DevelopService].
+  ///
+  /// In develop mode runs stay alive for hot restart, so a backend exit while
+  /// running means the app shut down early -- report it as a failure. Our own
+  /// quit also exits it but flips to idle first; [_quitRequested] covers the race.
+  void _handleTestsCompleted(TestCompletionResult result) {
+    if (_quitRequested || _testState != TestState.running) {
+      return;
+    }
+
+    _testState = TestState.finishedFailed;
+    // Surface the underlying error (backend threw rather than exiting cleanly)
+    // so it isn't swallowed by the generic warning below.
+    final error = result.error;
+    if (error != null) {
+      _pushOutput('ERROR: $error');
+      Logger('PatrolSession').severe('Backend exit error: $error');
+    }
+    _finishWarning =
+        'The app shut down before the test reported completion. This usually '
+        'means the app crashed or exited early rather than a test assertion '
+        'failing. Check the output/logs above for the underlying error.';
+    _completeFinish();
+  }
+
+  String _normalizeLine(String line) {
+    return line.replaceAll(RegExp(r'\x1B\[[0-9;?]*[ -/]*[@-~]'), '').trim();
+  }
+
+  String sendCommand(PatrolCommand command) {
+    final logger = Logger('PatrolSession');
+
+    if (command == PatrolCommand.quit) {
+      final controller = _stdinController;
+      if (!_isRunning || controller == null) {
+        throw StateError('No active patrol session');
+      }
+
+      _quitRequested = true;
+      controller.add('Q'.codeUnits);
+      _testState = TestState.idle;
+      _completeFinish();
+      unawaited(_cleanup());
+
+      return 'Quit command sent to patrol session';
+    }
+
+    if (command == PatrolCommand.hotRestart) {
+      final controller = _stdinController;
+      if (!_isRunning || controller == null) {
+        throw StateError('No active patrol session');
+      }
+
+      try {
+        controller.add('R'.codeUnits);
+      } catch (e) {
+        logger.warning('Failed to send hot restart: $e');
+        throw StateError('Failed to send hot restart to patrol session: $e');
+      }
+
+      _outputs.clear();
+      _testState = TestState.running;
+      _finishWarning = null;
+      // Complete the old completer so any previous waiters are unblocked, then
+      // immediately create a fresh one. This avoids a race where callbacks
+      // could fire between null-ing and lazy re-creation in _waitForFinish.
+      _completeFinish();
+      _finishCompleter = Completer<void>();
+
+      return 'Hot restart sent to patrol session';
+    }
+
+    throw StateError('Unknown command: ${command.value}');
+  }
+
+  PatrolStatus getStatus({String? overrideWarning}) {
+    final dev = _developService?.device;
+    return PatrolStatus(
+      isDevelopRunning: _isRunning,
+      testState: _testState,
+      output: _formatLogs(_outputs),
+      currentTestFile: _currentTestFile,
+      warning: overrideWarning ?? _finishWarning,
+      deviceSelectionNote: _deviceSelectionNote,
+      deviceName: dev?.name,
+      deviceId: dev?.id,
+      devicePlatform: dev?.targetPlatform.name,
+    );
+  }
+
+  Future<PatrolStatus> _waitForFinish({Duration? timeout}) async {
+    if (!_isRunning ||
+        _testState == TestState.finishedPassed ||
+        _testState == TestState.finishedFailed) {
+      return getStatus();
+    }
+
+    _finishCompleter ??= Completer<void>();
+
+    try {
+      final future = _finishCompleter!.future;
+      if (timeout != null) {
+        await future.timeout(timeout);
+      } else {
+        await future;
+      }
+    } on TimeoutException {
+      // The run didn't finish in time but is still running in the background.
+      // Surface the timeout distinctly, not a `running` snapshot the caller
+      // can't tell apart from a normal in-progress run.
+      return getStatus(
+        overrideWarning:
+            'Run timed out, but the test is still running in the background. '
+            'Call status to check progress, or quit to stop it.',
+      );
+    }
+
+    return getStatus();
+  }
+
+  String _formatLogs(List<String> logs) {
+    if (logs.isEmpty) {
+      return 'No output available';
+    }
+
+    return logs.join('\n');
+  }
+
+  void _completeFinish() {
+    if (_finishCompleter case final completer? when !completer.isCompleted) {
+      completer.complete();
+    }
+  }
+
+  // Start and wait for completion
+  Future<PatrolStatus> startAndWait(
+    String testFile, {
+    Duration? timeout,
+    String? device,
+  }) async {
+    final warning = await _start(testFile, device: device);
+    if (warning != null) {
+      // Return current status with warning (blocked by different test)
+      final status = getStatus();
+      return PatrolStatus(
+        isDevelopRunning: status.isDevelopRunning,
+        testState: status.testState,
+        output: status.output,
+        currentTestFile: status.currentTestFile,
+        warning: warning,
+        deviceSelectionNote: status.deviceSelectionNote,
+        deviceName: status.deviceName,
+        deviceId: status.deviceId,
+        devicePlatform: status.devicePlatform,
+      );
+    }
+    return _waitForFinish(timeout: timeout);
+  }
+
+  /// Automatically start log streaming and optionally launch terminal
+  Future<void> _startLogStreamingAndTerminal() async {
+    final logger = Logger('PatrolSession');
+
+    try {
+      final logPath = await _logStreaming.startLogging(flutterProjectPath);
+
+      if (showTerminal && io.Platform.isMacOS) {
+        await io.Process.run('osascript', [
+          '-e',
+          'tell application "Terminal"',
+          '-e',
+          "do script \"echo 'Patrol Test Logs - Live Stream'; echo ''; tail -f '$logPath'\" in front window",
+          '-e',
+          'end tell',
+        ]);
+      } else if (!showTerminal) {
+        logger.info('Log file created at: $logPath');
+      } else {
+        logger.info(
+          'Log file created at: $logPath '
+          '(automatic terminal launch is only available on macOS)',
+        );
+      }
+    } catch (e) {
+      // Don't fail the entire operation if log streaming fails
+      logger.warning('Failed to start log streaming or terminal: $e');
+    }
+  }
+}

@@ -1,3 +1,258 @@
+## Unreleased
+
+- Fix `AndroidNativeView.visibleBounds` always having zero height. (#3202)
+
+## 4.8.0
+
+- Wire additional Playwright browser launch and context options into the web runner config, configurable through the matching `patrol_cli` `--web-*` flags: (#3155)
+  - channel
+  - executable path
+  - slow-mo
+  - Chromium sandbox
+  - downloads path
+  - ignore default args
+  - proxy
+  - browser timeout
+  - traces dir
+  - bypass CSP
+  - ignore HTTPS errors
+  - offline
+  - HTTP credentials
+  - extra HTTP headers
+  - screenshot
+  - trace
+  - storage state
+  - accept downloads
+- Add support for Patrol extensions. (#3160)
+- Bump ktor packages. (#3187)
+
+## 4.7.1
+
+- Add a Swift Package Manager support note to the README.
+
+## 4.7.0
+
+- Add Swift Package Manager (SPM) support for iOS and macOS. CocoaPods remains supported for projects that have not migrated to SPM.
+- Fix iOS/macOS regular app builds failing with undefined XCTest symbols when using SPM.
+- Add multi-tab browser support for web tests: `openNewPage`, `closePage`, `switchToPage`, `switchToInitialPage`, `getPages`, `getCurrentPage`, `getCurrentPageUrl`, `waitForPopup`. (#2871)
+- Fix `patrol develop` on iOS Simulator timing out after ~6 minutes with "Test runner never began executing tests after launching". Requires a matching `patrol_cli` version that sets `PATROL_DEVELOP`. (#3139)
+- Fix iOS tests failing on devices whose name contains a comma.
+- Fix a crash when an `IOSSelector` has no arguments needed for creating `NSPredicate` for textfield. (#3053)
+- Fix macOS build by implementing `sendKeyboardEnter` in `MacOSAutomator`. (#3105)
+- Add `sendKeyboardEnter` method for `MobileAutomator`. (#2748)
+- Add Japanese (ja) language support for native OS interactions.
+- Migrate Japanese text resources to SPM (#3128)
+- Use HttpMultiServer and Ktor for handling raw HTTP requests. (#2645)
+- Migrate to built-in Kotlin (#3084).
+- Bump `equatable` to `^2.1.0` and migrate generated platform contracts from deprecated `EquatableMixin` to `with Equatable`.
+- Bump `patrol_finders` to `^3.6.0`.
+- Bump `patrol_log` to `^0.10.0`.
+
+This version requires version `4.5.0` of `patrol_cli` package.
+
+## 4.6.1
+
+- Fix changelog
+
+## 4.6.0
+
+- Fix generated API docs links for public Patrol types.
+- Add `tapBackToPreviousAppButton` method to `$.platform.ios`. (#3015)
+- Bump `patrol_log` to `^0.9.0`.
+- Bump `patrol_finders` to `^3.4.0`.
+- Add `allowPermission` method to `AndroidAutomator`.
+
+## 4.5.0
+
+- Fix `appId` not being passed down on `$.platform.mobile.enterText` and `$.platform.mobile.enterTextByIndex` (#2992)
+- Bump `patrol_log` to `^0.8.0`.
+- Signal develop session completion via `ConfigEntry.developCompletedKey`.
+
+## 4.4.0
+- Add support for emulators with API lvl 36 for pickMultipleImagesFromGallery method. (#2977)
+- Fix `tapOnNotification` on iOS physical devices to Open button when tapping on notification. (#2972)
+- Fix `takeCameraPhoto` do not accept location permission dialog on Pixel physical devices. (#2972)
+- Fix `takeCameraPhoto` on Android to use fallback button if done button is not visible. (#2974)
+- Reflect failed tests in Playwright report. (#2970)
+- Add `stopMockLocation` method to `PlatformAutomator` and make mockLocation method less flaky (#2937)
+- Fix matching test entries to produce test summary. (#2998)
+
+## 4.3.0
+
+- Fix WASM compatibility by migrating conditional imports from `dart.library.html` to `dart.library.js_interop`. (#2960)
+
+## 4.2.0
+
+- Improve setup error reporting for Patrol Web failures. (#2928)
+- Fix `tapOnNotificationByIndex` and `getNotifications` on iOS 18+ to use consistent indexing with other systems. (#2899)
+- Fix Android native automator error logs to use `AndroidAutomatorClientException` instead of `IosAutomatorClientException`.
+- Allow to pass additional web browser args through `web-browser-args`. (#2932)
+
+# 4.1.1
+
+- Fix Android permission dialog not being tapped with `grantPermissionWhenInUse`.(#2876)
+- Fix iOS `tapOnNotificationBySelector` to support `text` parameter. (#2898)
+- Bump `patrol_log` to `0.7.0`. (#2917)
+- Bump `patrol_finders` to `3.1.0`. (#2917)
+
+## 4.1.0
+
+- Add `PlatformAutomator` to exports. (#2833)
+
+## 4.0.1
+
+- Remove dependency on `js`. (#2831)
+
+## 4.0.0
+
+Patrol 4.0 is here!
+
+Read the article announcing Patrol 4.0 [here](https://leancode.co/blog/patrol-4-0-release).
+
+- New API for native/platform interactions:
+  - Introduce new way of communicating with platform (`PlatformAutomator`). (#2789)
+  - Deprecate `NativeAutomator` and `NativeAutomator2`. (#2789)
+
+- Add support for running Patrol tests on Web:
+  - Create `WebAutomator` that handles numerous interactions with native browser:
+    - `enableDarkMode`, `disableDarkMode`,
+    - `tap`,
+    - `enterText`,
+    - `scrollTo`,
+    - `grantPermissions`, `clearPermissions`,
+    - `addCookie`, `getCookies`, `clearCookies`,
+    - `pressKey`, `pressKeyCombo`,
+    - `uploadFile`, `verifyFileDownloads`,
+    - `goBack`, `goForward`,
+    - `acceptNextDialog`, `dismissNextDialog`,
+    - `resizeWindow`,
+    - `setClipboard`, `getClipboard`.
+  - Introduce support for web-related flags:
+    - `--web-results-dir`, `--web-report-dir`, `--web-reporter`,
+    - `--web-timeout`, `--web-global-timeout`, `--web-retries`,
+    - `--web-workers`, `--web-shard`,
+    - `--web-video`, `--web-headless`,
+    - `--web-locale`, `--web-timezone`, `--web-color-scheme`,
+    - `--web-geolocation`, `--web-permissions`,
+    - `--web-user-agent`, `--web-viewport`.
+- Add support for configurable test directory via `test_directory` option in `pubspec.yaml`. (#2728)
+- Introduces *experimental* `--full-isolation` flag that uninstall the app between each run on iOS Simulator. (#2803)
+- Bump `patrol_log` to `0.6.0`.
+
+- **BREAKING CHANGE**
+  - Change default test directory from `integration_test` to `patrol_test`. (#2728)
+
+This version requires version `4.0.0` of `patrol_cli` package.
+
+## 3.20.0
+
+- Add `--build-name` and `--build-number` flags to `patrol test`, `patrol develop`, and `patrol build` commands. (#2590)
+- Extend `$.native.enterText()` on Android to support `AutoCompleteTextView`. (#1162)
+- Add support for enabling/disabling wifi on iOS 18. (#2719)
+
+This version requires version 3.11.0 of `patrol_cli` package.
+
+## 3.19.0
+
+- Fix logging for `$.native.pullToRefresh()` and `$.native.swipeBack()`. (#2707)
+- Fix `$.native.enableDarkMode()` and `$.native.disableDarkMode()` on iOS 18 simulators. (#2705)
+- Add support for de, fr and pl languages for native methods that operates on strings. (#2659)
+- Add support for gallery permission dialog on iOS 17. (#2659)
+- Keep the app running after last step in patrol develop. (#2693)
+
+## 3.18.0
+
+- Bump `leancode_lint` to `17.0.0`.
+- Bump `patrol_log` to `0.5.0`.
+- Bump minimum Dart SDK to version 3.8.0.
+
+## 3.17.0
+
+- Add `takeCameraPhoto` method. (#2660)
+- Add `pickImageFromGallery` method (#2660)
+- Add `pickMultipleImagesFromGallery` (#2660)
+- Add `isVirtualDevice` method (#2660)
+- Add `getOsVersion` method (#2660)
+- Allow passing null to `$.native.getNativeViews()` (#2660)
+- Add `$.native.swipeBack()` method (#2608)
+- Add `$.native.pullToRefresh()` method (#2665)
+
+## 3.16.0
+
+- Make activity aliases work in PatrolJUnitRunner
+- Update test reports to show all exceptions thrown in Flutter. (#2362)
+- Bump min Flutter SDK to 3.32.0 (#2649)
+
+## 3.15.2
+
+- Bump `vm_service` dependency to `15.0.0` (#2636)
+
+## 3.15.1
+
+- Fix `$.enterText()` issues (#2570)
+- Add `setMockLocation` method. (#2547)
+- Bump `custom_lint` to `0.7.0` and `leancode_lint` to `14.3.0`. (#2574)
+- Upgrade `http4k` to 5.47.0.0. (#2559)
+
+## 3.14.2
+
+- Make activity aliases work in PatrolJUnitRunner
+
+## 3.14.1
+
+- Bump patrol plugin iOS and macOS deployment targets to 12.0. (#2514)
+- Bump Gradle version in the example app so it's possible to build them on the
+  latest JDK 23 (#2503)
+- Fix `$.native.tap()` not working with `Selector` having `instance` set. (#2501)
+- Fix not disposed semantics issue in Flutter 3.29.0 (#2530)
+
+## 3.14.0
+
+- Remove `exception` from `StepEntry`. When it was too long, it caused crash because of badly formed JSON. (#2481)
+- Bump `patrol_finders` and `patrol_log` versions.
+- Bump compileSdk to 35. (#2488)
+- Bump Gradle to 8.9.0. (#2488)
+- Make Patrol works with Java 21. (#2488)
+
+## 3.13.2
+
+- Bump `patrol_finders` and `patrol_log` - use version with patched enterText. (#2468)
+
+## 3.13.1
+
+- Remove whitespace replacement on Android test name. (#2437)
+
+## 3.13.0
+
+- Add support for the `patrol_log` package. (#2387)
+- Fix tapping on notification on iOS 18. (#2394)
+- Fix macos functionality. (#2408)
+- Bump `patrol_finders` and enable logging.
+
+This version requires version 3.4.0 of `patrol_cli` package.
+
+## 3.12.0
+
+- Add `clear-permissions` flag on ios commands. (#2367)
+
+This version requires version 3.3.0 of `patrol_cli` package.
+
+## 3.11.2
+
+- Bump min Flutter SDK to 3.24.0 and Dart SDK to 3.5.0 (#2371)
+
+## 3.11.1
+
+- Replace whitespace in test case name in `PatrolJUnitRunner.java`. (#2361)
+
+## 3.11.0
+
+- Add code coverage collection support. (#2294)
+- No throw error in `selectFineLocation` when it's already selected. (#2302)
+- Add option to select tap location in `enterText` and `enterTextByIndex` (#2312)
+
+This version requires version 3.2.0 of `patrol_cli` package.
+
 ## 3.10.0
 
 - Implement `enableBluetooth` and `disableBluetooth` methods for Android > 11. (#2254)
@@ -15,7 +270,7 @@
 
 ## 3.8.0
 
-- Add `openUrl(String url)` method, for testing deeplinks. (#2219) 
+- Add `openUrl(String url)` method, for testing deeplinks. (#2219)
 - Add `pressVolumeUp` and `pressVolumeDown()`. (#2223)
 
 ## 3.7.3
@@ -28,7 +283,6 @@
 - Bump `patrol_devtools_extension` dependencies.
 - Bump min Flutter SDK to 3.22
 
-
 ## 3.7.1
 
 - Revert: Bump `patrol_devtools_extension` dependencies.
@@ -37,7 +291,7 @@
 ## 3.7.0
 
 - Bump `test_api` dependency to 0.7.0.
-- Bump `patrol_devtools_extension` dependencies. 
+- Bump `patrol_devtools_extension` dependencies.
 - Support customization of doubleTap delay (Android only). (#2165)
 
 ## 3.6.1
@@ -121,7 +375,7 @@ Give a warm welcome to the new **Patrol DevTools Extension**!
 Patrol DevTools extension allows you to explore the native view hierarchy when
 developing tests with `patrol develop`. Now you can easily see what Android /
 iOS views are currently visible and discover their properties so that they can
-be used in native selectors like `$.native.tap()`. You don’t have to use any
+be used in native selectors like `$.native.tap()`. You don't have to use any
 external tools for that. This is just the beginning, and we plan to add more
 features to our extension in the future.
 
@@ -129,7 +383,6 @@ Other changes:
 
 - Bump minimum supported Flutter version to 3.16
 - **BREAKING:**
-
   - Remove `bindingType` parameter from `patrolTest()` function. Now only
     `PatrolBinding` is used and it's automatically initialized (#1882)
   - Remove `nativeAutomation` parameter from `patrolTest()` function. Now it's
@@ -571,7 +824,6 @@ flakiness.
 ## 0.5.0
 
 - Revamp scrolling and dragging (#217)
-
   - New `MaestroTester.dragUntilExists()`
   - Fixed `MaestroTester.dragUntilVisible()`'s behavior
   - New `MaestroTester.scrollUntilExists` method
@@ -655,7 +907,6 @@ Native:
 ## 0.3.2
 
 - Improve selector engine:
-
   - Make it possible to pass a `Key` as `matching` to
     `MaestroTester.call(dynamic matching)` and `MaestroFinder.$(dynamic
 matching)`
@@ -668,7 +919,6 @@ matching)`
 ## 0.3.1
 
 - Improve selector engine:
-
   - Make it possible to pass a `MaestroFinder` as `matching` to
     `MaestroTester.call(dynamic matching)` and `MaestroFinder.$(dynamic
 matching)`
@@ -685,7 +935,6 @@ matching)`
 
 - Introduce `Selector` class, which can be passed into `Maestro.tap(selector)`.
 - Add more platform functionality:
-
   - `Maestro.enableWifi()` and `Maestro.disableWifi()`
   - `Maestro.enableCellular()` and `Maestro.disableCellular()`
   - `Maestro.enableDarkMode()` and `Maestro.disableDarkMode()`

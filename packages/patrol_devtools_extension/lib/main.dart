@@ -11,8 +11,6 @@ class PatrolPackageDevToolsExtension extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const DevToolsExtension(
-      child: PatrolDevToolsExtension(),
-    );
+    return const DevToolsExtension(child: PatrolDevToolsExtension());
   }
 }

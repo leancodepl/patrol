@@ -23,6 +23,8 @@ class IOSURLSessionClientGenerator {
 //  source: schema.dart
 //
 
+import Foundation
+
 ''';
   }
 
@@ -110,12 +112,16 @@ $endpoints
   }
 
   String _createEndpoint(Endpoint endpoint) {
-    final requestDef =
-        endpoint.request != null ? 'request: ${endpoint.request!.name}' : '';
+    final requestDef = switch (endpoint.request) {
+      final request? => 'request: ${request.name}',
+      null => '',
+    };
 
-    final completionDef = endpoint.response != null
-        ? 'completion: @escaping (Result<${endpoint.response!.name}, Error>) -> Void'
-        : 'completion: @escaping (Error?) -> Void';
+    final completionDef = switch (endpoint.response) {
+      final response? =>
+        'completion: @escaping (Result<${response.name}, Error>) -> Void',
+      null => 'completion: @escaping (Error?) -> Void',
+    };
 
     final parameters = endpoint.request != null
         ? '$requestDef, $completionDef'

@@ -8,11 +8,9 @@ import 'package:patrol_cli/src/runner/patrol_command.dart';
 import 'package:platform/platform.dart';
 
 class DoctorCommand extends PatrolCommand {
-  DoctorCommand({
-    required Logger logger,
-    required Platform platform,
-  })  : _logger = logger,
-        _platform = platform;
+  DoctorCommand({required Logger logger, required Platform platform})
+    : _logger = logger,
+      _platform = platform;
 
   final Logger _logger;
   final Platform _platform;
@@ -33,6 +31,8 @@ class DoctorCommand extends PatrolCommand {
     if (_platform.isMacOS) {
       _printIosSpecifics();
     }
+
+    _printWebSpecifics();
 
     return 0;
   }
@@ -80,8 +80,7 @@ class DoctorCommand extends PatrolCommand {
     } else {
       final linkHint = switch (_platform.operatingSystem) {
         Platform.linux ||
-        Platform.macOS =>
-          'https://developer.android.com/tools/variables#set',
+        Platform.macOS => 'https://developer.android.com/tools/variables#set',
         Platform.windows =>
           'https://www.ibm.com/docs/en/rtw/11.0.0?topic=prwut-setting-changing-android-home-path-in-windows-operating-systems',
         _ => '',
@@ -101,6 +100,12 @@ class DoctorCommand extends PatrolCommand {
     );
   }
 
+  void _printWebSpecifics() {
+    _logger.info('Web: ');
+    _checkIfToolInstalled('node', 'Install Node.js');
+    _checkIfToolInstalled('npm', 'Install npm`');
+  }
+
   String _commandHint(String command) => 'install with `$command`';
 
   void _checkIfToolInstalled(String tool, [String? hint]) {
@@ -110,9 +115,7 @@ class DoctorCommand extends PatrolCommand {
     if (result.exitCode == 0) {
       _logger.success('• Program $tool found in ${result.stdOut.trim()}');
     } else {
-      _logger.err(
-        '• Program $tool not found ${hint != null ? "($hint)" : ""}',
-      );
+      _logger.err('• Program $tool not found ${hint != null ? "($hint)" : ""}');
     }
   }
 }

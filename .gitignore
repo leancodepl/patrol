@@ -1,6 +1,7 @@
 .DS_Store
 .idea
-.vscode/
+.vscode/*
+!.vscode/launch.json
 
 .flutter-plugins
 .flutter-plugins-dependencies
@@ -11,3 +12,6 @@
 /pubspec.lock
 pubspec_overrides.yaml
 custom_lint.log
+
+.fvmrc
+.fvm/**

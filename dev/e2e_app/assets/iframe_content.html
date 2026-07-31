@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Iframe Test Content</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background-color: #f5f5f5;
+      }
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .scrollable-content {
+        height: 400px;
+        overflow-y: auto;
+        border: 2px solid #ddd;
+        border-radius: 4px;
+        padding: 15px;
+        margin-bottom: 20px;
+      }
+      .content-item {
+        padding: 15px;
+        margin-bottom: 10px;
+        background: #f0f0f0;
+        border-radius: 4px;
+      }
+      .bottom-section {
+        padding: 15px;
+        background: #fff;
+        border: 2px solid #ddd;
+        border-radius: 4px;
+      }
+      h2 {
+        margin-top: 0;
+        color: #333;
+      }
+      input {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 14px;
+        box-sizing: border-box;
+      }
+      button {
+        width: 100%;
+        padding: 12px;
+        background-color: #2196f3;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+      button:hover {
+        background-color: #1976d2;
+      }
+      #result-text {
+        margin-top: 15px;
+        padding: 10px;
+        background: #e8f5e9;
+        border-radius: 4px;
+        min-height: 20px;
+        color: #2e7d32;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="scrollable-content" id="scrollable">
+        <h2>Scrollable Content</h2>
+        <div class="content-item">Item 1 - This is some content at the top</div>
+        <div class="content-item">Item 2 - Scroll down to find the input</div>
+        <div class="content-item">Item 3 - More filler content</div>
+        <div class="content-item">Item 4 - Keep scrolling</div>
+        <div class="content-item">Item 5 - Almost there</div>
+        <div class="content-item">Item 6 - Getting closer</div>
+        <div class="content-item">Item 7 - Just a bit more</div>
+        <div class="content-item">Item 8 - Almost at the bottom</div>
+
+        <div class="bottom-section">
+          <h3>Input Section (at bottom)</h3>
+          <input type="text" id="test-input" placeholder="Type something here..." />
+          <button id="submit-button" onclick="handleSubmit()">Submit Text</button>
+          <div id="result-text"></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function handleSubmit() {
+        const input = document.getElementById("test-input")
+        const resultText = document.getElementById("result-text")
+        const value = input.value
+
+        if (value) {
+          resultText.textContent = `Submitted: ${value}`
+        } else {
+          resultText.textContent = "Please enter some text first!"
+        }
+      }
+    </script>
+  </body>
+</html>

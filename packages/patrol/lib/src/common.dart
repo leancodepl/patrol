@@ -1,4 +1,4 @@
-import 'dart:io' as io;
+import 'dart:developer';
 
 import 'package:boolean_selector/boolean_selector.dart';
 import 'package:flutter/foundation.dart';
@@ -6,11 +6,17 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:meta/meta.dart';
 import 'package:patrol/src/binding.dart';
 import 'package:patrol/src/global_state.dart' as global_state;
-import 'package:patrol/src/native/contracts/contracts.dart';
-import 'package:patrol/src/native/native.dart';
+import 'package:patrol/src/native/native_automator_config.dart';
+import 'package:patrol/src/platform/contracts/contracts.dart';
+import 'package:patrol/src/platform/platform_automator.dart';
 import 'package:patrol_finders/patrol_finders.dart' as finders;
+import 'package:patrol_log/patrol_log.dart';
+
+/// We need [Group] to recreate test hierarchy.
 // ignore: implementation_imports
 import 'package:test_api/src/backend/group.dart';
+
+/// We need [Test] to recreate test hierarchy.
 // ignore: implementation_imports
 import 'package:test_api/src/backend/test.dart';
 
@@ -84,16 +90,36 @@ void patrolTest(
   bool semanticsEnabled = true,
   TestVariant<Object?> variant = const DefaultTestVariant(),
   dynamic tags,
-  finders.PatrolTesterConfig config = const finders.PatrolTesterConfig(),
-  NativeAutomatorConfig nativeAutomatorConfig = const NativeAutomatorConfig(),
+  finders.PatrolTesterConfig config = const finders.PatrolTesterConfig(
+    printLogs: true,
+  ),
+  @Deprecated(
+    'nativeAutomatorConfig is deprecated and will be removed in a future release. '
+    'Please use platformAutomatorConfig instead.',
+  )
+  NativeAutomatorConfig? nativeAutomatorConfig,
+  PlatformAutomatorConfig? platformAutomatorConfig,
   LiveTestWidgetsFlutterBindingFramePolicy framePolicy =
-      LiveTestWidgetsFlutterBindingFramePolicy.fadePointers,
+      LiveTestWidgetsFlutterBindingFramePolicy.fullyLive,
 }) {
-  final automator = NativeAutomator(config: nativeAutomatorConfig);
-  final automator2 = NativeAutomator2(config: nativeAutomatorConfig);
-  final patrolBinding = PatrolBinding.ensureInitialized(nativeAutomatorConfig)
+  final patrolLog = PatrolLogWriter(config: {'printLogs': config.printLogs});
+  if (nativeAutomatorConfig != null && platformAutomatorConfig != null) {
+    throw StateError(
+      'Cannot use both nativeAutomatorConfig and platformAutomatorConfig',
+    );
+  }
+  final platformAutomator = PlatformAutomator(
+    config:
+        nativeAutomatorConfig?.toPlatformAutomatorConfig() ??
+        platformAutomatorConfig ??
+        PlatformAutomatorConfig.defaultConfig(),
+  );
+  final patrolBinding = PatrolBinding.ensureInitialized(platformAutomator)
     ..framePolicy = framePolicy;
 
+  if (skip ?? false) {
+    patrolLog.log(TestEntry(name: description, status: TestEntryStatus.skip));
+  }
   testWidgets(
     description,
     skip: skip,
@@ -102,6 +128,13 @@ void patrolTest(
     variant: variant,
     tags: tags,
     (widgetTester) async {
+      widgetTester.binding.platformDispatcher.onSemanticsEnabledChanged = () {
+        // This callback is empty on purpose. It's a workaround for tests
+        // failing on iOS and (from Flutter 3.29.0) on Android.
+        //
+        // See https://github.com/leancodepl/patrol/issues/1474
+      };
+
       if (!constants.hotRestartEnabled) {
         // If Patrol's native automation feature is enabled, then this test will
         // be executed only if the native side requested it to be executed.
@@ -114,29 +147,34 @@ void patrolTest(
           return;
         }
       }
-      if (!kIsWeb && io.Platform.isIOS) {
-        widgetTester.binding.platformDispatcher.onSemanticsEnabledChanged = () {
-          // This callback is empty on purpose. It's a workaround for tests
-          // failing on iOS.
-          //
-          // See https://github.com/leancodepl/patrol/issues/1474
-        };
-      }
-      await automator.configure();
-      // We don't have to call this line because automator.configure() does the same.
-      // await automator2.configure();
 
+      await platformAutomator.action.maybe(
+        android: platformAutomator.android.configure,
+        ios: platformAutomator.ios.configure,
+        web: platformAutomator.web.configure,
+      );
+
+      patrolLog.log(
+        TestEntry(
+          name: global_state.currentTestFullName,
+          status: TestEntryStatus.start,
+        ),
+      );
       final patrolTester = PatrolIntegrationTester(
         tester: widgetTester,
-        nativeAutomator: automator,
-        nativeAutomator2: automator2,
         config: config,
+        platformAutomator: platformAutomator,
       );
-      await callback(patrolTester);
-
-      // ignore: prefer_const_declarations
-      final waitSeconds = const int.fromEnvironment('PATROL_WAIT');
-      final waitDuration = Duration(seconds: waitSeconds);
+      try {
+        await callback(patrolTester);
+      } catch (_) {
+        if (constants.hotRestartEnabled) {
+          patrolLog.log(
+            TestEntry(name: description, status: TestEntryStatus.failure),
+          );
+        }
+        rethrow;
+      }
 
       if (debugDefaultTargetPlatformOverride !=
           patrolBinding.workaroundDebugDefaultTargetPlatformOverride) {
@@ -144,17 +182,25 @@ void patrolTest(
             patrolBinding.workaroundDebugDefaultTargetPlatformOverride;
       }
 
-      if (waitDuration > Duration.zero) {
-        final stopwatch = Stopwatch()..start();
-        await Future.doWhile(() async {
+      if (constants.hotRestartEnabled &&
+          global_state.isCurrentTestLastInGroup) {
+        // Patrol log that test is finished
+        // If test fails this code will not be executed
+        patrolLog
+          ..log(
+            LogEntry(
+              message:
+                  'All tests were executed. Press "r" to start again or "q" to quit',
+            ),
+          )
+          ..log(
+            ConfigEntry(config: const {ConfigEntry.developCompletedKey: true}),
+          );
+        // Wait indefinitely in develop mode after the last test
+        while (true) {
           await widgetTester.pump();
-          if (stopwatch.elapsed > waitDuration) {
-            stopwatch.stop();
-            return false;
-          }
-
-          return true;
-        });
+          await Future<void>.delayed(const Duration(milliseconds: 10));
+        }
       }
     },
   );
@@ -260,25 +306,36 @@ DartGroupEntry createDartTestGroup(
 /// should return 'myTest'
 @internal
 String deduplicateGroupEntryName(String parentName, String currentName) {
-  return currentName.substring(
-    parentName.length + 1,
-    currentName.length,
-  );
+  return currentName.substring(parentName.length + 1, currentName.length);
 }
 
-/// Recursively prints the structure of the test suite.
+/// Recursively prints the structure of the test suite and reports test count
+/// of the top-most group
 @internal
-void printGroupStructure(DartGroupEntry group, {int indentation = 0}) {
+int reportGroupStructure(DartGroupEntry group, {int indentation = 0}) {
+  var testCount = group.type == GroupEntryType.test ? 1 : 0;
+
   final indent = ' ' * indentation;
-  debugPrint("$indent-- group: '${group.name}'");
+  final tag = group.type == GroupEntryType.group ? 'group' : 'test';
+  debugPrint("$indent-- $tag: '${group.name}'");
 
   for (final entry in group.entries) {
     if (entry.type == GroupEntryType.test) {
+      ++testCount;
       debugPrint("$indent     -- test: '${entry.name}'");
     } else {
       for (final subgroup in entry.entries) {
-        printGroupStructure(subgroup, indentation: indentation + 5);
+        testCount += reportGroupStructure(
+          subgroup,
+          indentation: indentation + 5,
+        );
       }
     }
   }
+
+  if (indentation == 0) {
+    postEvent('testCount', {'testCount': testCount});
+  }
+
+  return testCount;
 }

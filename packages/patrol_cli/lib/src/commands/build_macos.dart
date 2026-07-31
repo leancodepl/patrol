@@ -1,9 +1,11 @@
 import 'dart:async';
 
+import 'package:meta/meta.dart';
 import 'package:path/path.dart' show join;
 import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
 import 'package:patrol_cli/src/base/logger.dart';
+import 'package:patrol_cli/src/compatibility_checker/compatibility_checker.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/dart_defines_reader.dart';
 import 'package:patrol_cli/src/macos/macos_test_backend.dart';
@@ -14,39 +16,45 @@ import 'package:patrol_cli/src/test_finder.dart';
 
 class BuildMacOSCommand extends PatrolCommand {
   BuildMacOSCommand({
-    required TestFinder testFinder,
+    required TestFinderFactory testFinderFactory,
     required TestBundler testBundler,
     required DartDefinesReader dartDefinesReader,
     required PubspecReader pubspecReader,
     required MacOSTestBackend macosTestBackend,
     required Analytics analytics,
     required Logger logger,
-  })  : _testFinder = testFinder,
-        _testBundler = testBundler,
-        _dartDefinesReader = dartDefinesReader,
-        _pubspecReader = pubspecReader,
-        _macosTestBackend = macosTestBackend,
-        _analytics = analytics,
-        _logger = logger {
+    required CompatibilityChecker compatibilityChecker,
+  }) : _testFinderFactory = testFinderFactory,
+       _testBundler = testBundler,
+       _dartDefinesReader = dartDefinesReader,
+       _pubspecReader = pubspecReader,
+       _macosTestBackend = macosTestBackend,
+       _analytics = analytics,
+       _logger = logger,
+       _compatibilityChecker = compatibilityChecker {
     usesTargetOption();
     usesBuildModeOption();
     usesFlavorOption();
     usesDartDefineOption();
     usesDartDefineFromFileOption();
     usesLabelOption();
-    usesWaitOption();
     usesPortOptions();
     usesTagsOption();
     usesExcludeTagsOption();
+    usesCheckCompatibilityOption();
+    usesBuildNameOption();
+    usesBuildNumberOption();
 
     usesMacOSOptions();
+    usesAppNameOption();
   }
 
-  final TestFinder _testFinder;
+  final TestFinderFactory _testFinderFactory;
   final TestBundler _testBundler;
   final DartDefinesReader _dartDefinesReader;
   final PubspecReader _pubspecReader;
   final MacOSTestBackend _macosTestBackend;
+  final CompatibilityChecker _compatibilityChecker;
 
   final Analytics _analytics;
   final Logger _logger;
@@ -70,13 +78,25 @@ class BuildMacOSCommand extends PatrolCommand {
     );
 
     final config = _pubspecReader.read();
+    final testDirectory = config.testDirectory;
     final testFileSuffix = config.testFileSuffix;
+
+    // Check compatibility between CLI and package versions
+    if (boolArg('check-compatibility')) {
+      final patrolVersion = _pubspecReader.getPatrolVersion();
+      await _compatibilityChecker.checkVersionsCompatibilityForBuild(
+        patrolVersion: patrolVersion,
+      );
+    }
+
+    final testFinder = _testFinderFactory.create(testDirectory);
+    final excludes = stringsArg('exclude').toSet();
 
     final target = stringsArg('target');
     final targets = target.isNotEmpty
-        ? _testFinder.findTests(target, testFileSuffix)
-        : _testFinder.findAllTests(
-            excludes: stringsArg('exclude').toSet(),
+        ? testFinder.findTests(target, testFileSuffix, excludes)
+        : testFinder.findAllTests(
+            excludes: excludes,
             testFileSuffix: testFileSuffix,
           );
 
@@ -93,17 +113,28 @@ class BuildMacOSCommand extends PatrolCommand {
     if (excludeTags != null) {
       _logger.detail('Received exclude tag(s): $excludeTags');
     }
-    final entrypoint = _testBundler.bundledTestFile;
     if (boolArg('generate-bundle')) {
-      _testBundler.createTestBundle(targets, tags, excludeTags);
+      _testBundler.createTestBundle(testDirectory, targets, tags, excludeTags);
     }
+    final entrypoint = _testBundler.getBundledTestFile(testDirectory);
 
-    final flavor = stringArg('flavor') ?? config.ios.flavor;
+    final flavor = stringArg('flavor') ?? config.macos.flavor;
     if (flavor != null) {
-      _logger.detail('Received iOS flavor: $flavor');
+      _logger.detail('Received macOS flavor: $flavor');
     }
 
-    final bundleId = stringArg('bundle-id') ?? config.ios.bundleId;
+    final buildName = stringArg('build-name');
+    if (buildName != null) {
+      _logger.detail('Received build name: $buildName');
+    }
+
+    final buildNumber = stringArg('build-number');
+    if (buildNumber != null) {
+      _logger.detail('Received build number: $buildNumber');
+    }
+
+    final bundleId = stringArg('bundle-id') ?? config.macos.bundleId;
+    final appName = stringArg('app-name') ?? config.macos.appName;
 
     final displayLabel = boolArg('label');
 
@@ -113,9 +144,10 @@ class BuildMacOSCommand extends PatrolCommand {
     };
     final internalDartDefines = {
       'PATROL_WAIT': defaultWait.toString(),
-      'PATROL_APP_BUNDLE_ID': bundleId,
-      'PATROL_IOS_APP_NAME': config.ios.appName,
+      'PATROL_MACOS_APP_BUNDLE_ID': bundleId,
+      'PATROL_MACOS_APP_NAME': appName,
       'PATROL_TEST_LABEL_ENABLED': displayLabel.toString(),
+      'PATROL_TEST_DIRECTORY': config.testDirectory,
       'INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE': 'false',
       'PATROL_TEST_SERVER_PORT': super.testServerPort.toString(),
       'PATROL_APP_SERVER_PORT': super.appServerPort.toString(),
@@ -144,6 +176,8 @@ class BuildMacOSCommand extends PatrolCommand {
       buildMode: buildMode,
       dartDefines: dartDefines,
       dartDefineFromFilePaths: dartDefineFromFilePaths,
+      buildName: buildName,
+      buildNumber: buildNumber,
     );
 
     final macosOpts = MacOSAppOptions(
@@ -157,9 +191,9 @@ class BuildMacOSCommand extends PatrolCommand {
     try {
       await _macosTestBackend.build(macosOpts);
 
-      _printBinaryPaths(buildMode: flutterOpts.buildMode.xcodeName);
+      printBinaryPaths(buildMode: flutterOpts.buildMode.xcodeName);
 
-      await _printXcTestRunPath(scheme: macosOpts.scheme);
+      await printXcTestRunPath(scheme: macosOpts.scheme);
     } catch (err, st) {
       _logger
         ..err('$err')
@@ -171,11 +205,17 @@ class BuildMacOSCommand extends PatrolCommand {
     return 0;
   }
 
-  void _printBinaryPaths({required String buildMode}) {
+  @visibleForTesting
+  void printBinaryPaths({required String buildMode}) {
     // print path for 2 apps that live in build/macos_integ/Build/Products
 
-    final buildDir =
-        join('build', 'macos_integ', 'Build', 'Products', buildMode);
+    final buildDir = join(
+      'build',
+      'macos_integ',
+      'Build',
+      'Products',
+      buildMode,
+    );
 
     final appPath = join(buildDir, 'Runner.app');
     final testAppPath = join(buildDir, 'RunnerUITests-Runner.app');
@@ -185,9 +225,8 @@ class BuildMacOSCommand extends PatrolCommand {
       ..info('$testAppPath (test instrumentation app)');
   }
 
-  Future<void> _printXcTestRunPath({
-    required String scheme,
-  }) async {
+  @visibleForTesting
+  Future<void> printXcTestRunPath({required String scheme}) async {
     final sdkVersion = await _macosTestBackend.getSdkVersion();
     final xcTestRunPath = await _macosTestBackend.xcTestRunPath(
       scheme: scheme,

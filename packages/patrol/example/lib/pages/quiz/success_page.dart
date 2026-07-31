@@ -23,11 +23,8 @@ class _SuccessPage extends StatelessWidget {
               width: double.infinity,
               height: 76,
               alignment: Alignment.center,
-              color: PTColors.lcBlack.withOpacity(0.9),
-              child: Text(
-                'Congratulations!',
-                style: PTTextStyles.h2,
-              ),
+              color: PTColors.lcBlack.withValues(alpha: 0.9),
+              child: Text('Congratulations!', style: PTTextStyles.h2),
             ),
           ),
           Positioned(
@@ -35,9 +32,8 @@ class _SuccessPage extends StatelessWidget {
             right: 24,
             bottom: 24,
             child: PTElevatedButton(
-              onPressed: () => Navigator.of(context).popUntil(
-                (route) => route.isFirst,
-              ),
+              onPressed: () =>
+                  Navigator.of(context).popUntil((route) => route.isFirst),
               caption: 'Start again',
             ),
           ),

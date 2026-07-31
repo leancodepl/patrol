@@ -4,6 +4,7 @@ import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/commands/build_android.dart';
 import 'package:patrol_cli/src/commands/build_ios.dart';
 import 'package:patrol_cli/src/commands/build_macos.dart';
+import 'package:patrol_cli/src/compatibility_checker/compatibility_checker.dart';
 import 'package:patrol_cli/src/dart_defines_reader.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:patrol_cli/src/macos/macos_test_backend.dart';
@@ -14,7 +15,7 @@ import 'package:patrol_cli/src/test_finder.dart';
 
 class BuildCommand extends PatrolCommand {
   BuildCommand({
-    required TestFinder testFinder,
+    required TestFinderFactory testFinderFactory,
     required TestBundler testBundler,
     required DartDefinesReader dartDefinesReader,
     required PubspecReader pubspecReader,
@@ -22,37 +23,41 @@ class BuildCommand extends PatrolCommand {
     required IOSTestBackend iosTestBackend,
     required MacOSTestBackend macosTestBackend,
     required Analytics analytics,
+    required CompatibilityChecker compatibilityChecker,
     required Logger logger,
   }) {
     addSubcommand(
       BuildAndroidCommand(
-        testFinder: testFinder,
+        testFinderFactory: testFinderFactory,
         testBundler: testBundler,
         dartDefinesReader: dartDefinesReader,
         pubspecReader: pubspecReader,
         androidTestBackend: androidTestBackend,
+        compatibilityChecker: compatibilityChecker,
         analytics: analytics,
         logger: logger,
       ),
     );
     addSubcommand(
       BuildIOSCommand(
-        testFinder: testFinder,
+        testFinderFactory: testFinderFactory,
         testBundler: testBundler,
         dartDefinesReader: dartDefinesReader,
         pubspecReader: pubspecReader,
         iosTestBackend: iosTestBackend,
+        compatibilityChecker: compatibilityChecker,
         analytics: analytics,
         logger: logger,
       ),
     );
     addSubcommand(
       BuildMacOSCommand(
-        testFinder: testFinder,
+        testFinderFactory: testFinderFactory,
         testBundler: testBundler,
         dartDefinesReader: dartDefinesReader,
         pubspecReader: pubspecReader,
         macosTestBackend: macosTestBackend,
+        compatibilityChecker: compatibilityChecker,
         analytics: analytics,
         logger: logger,
       ),

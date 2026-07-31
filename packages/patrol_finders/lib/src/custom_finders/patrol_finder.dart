@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:meta/meta.dart';
 import 'package:patrol_finders/patrol_finders.dart';
 import 'package:patrol_finders/src/custom_finders/utils.dart';
+import 'package:patrol_log/patrol_log.dart';
 
 /// Thrown when some [PatrolFinder]'s method fails.
 class PatrolFinderException implements Exception {
@@ -155,17 +156,11 @@ class PatrolFinder implements MatchFinder {
     if (parentFinder != null) {
       return PatrolFinder(
         tester: tester,
-        finder: find.descendant(
-          of: parentFinder,
-          matching: finder,
-        ),
+        finder: find.descendant(of: parentFinder, matching: finder),
       );
     }
 
-    return PatrolFinder(
-      tester: tester,
-      finder: finder,
-    );
+    return PatrolFinder(tester: tester, finder: finder);
   }
 
   /// Finder that this [PatrolFinder] wraps.
@@ -173,6 +168,43 @@ class PatrolFinder implements MatchFinder {
 
   /// [PatrolTester] that this [PatrolFinder] wraps.
   final PatrolTester tester;
+
+  /// Wraps a function with a log entry for the start and end of the function.
+  Future<T> wrapWithPatrolLog<T>({
+    required String action,
+    String? value,
+    required String color,
+    required Future<T> Function() function,
+    bool enablePatrolLog = true,
+  }) async {
+    if (!(tester.config.printLogs && enablePatrolLog)) {
+      return function();
+    }
+
+    final finderText = finder
+        .toString(describeSelf: true)
+        .replaceAll('A finder that searches for', '')
+        .replaceAll(' (considering only hit-testable ones)', '')
+        .replaceAll(' (ignoring all but first)', '');
+
+    final valueText = value != null ? ' "$value"' : '';
+    final text = '$color$action${AnsiCodes.reset}$valueText$finderText';
+    tester.patrolLog.log(
+      StepEntry(action: text, status: StepEntryStatus.start),
+    );
+    try {
+      final result = await function();
+      tester.patrolLog.log(
+        StepEntry(action: text, status: StepEntryStatus.success),
+      );
+      return result;
+    } catch (err) {
+      tester.patrolLog.log(
+        StepEntry(action: text, status: StepEntryStatus.failure),
+      );
+      rethrow;
+    }
+  }
 
   /// Waits until this finder finds at least 1 visible widget and then taps on
   /// it.
@@ -203,14 +235,19 @@ class PatrolFinder implements MatchFinder {
     SettlePolicy? settlePolicy,
     Duration? visibleTimeout,
     Duration? settleTimeout,
-  }) async {
-    await tester.tap(
+    Alignment alignment = Alignment.center,
+  }) => wrapWithPatrolLog(
+    action: 'tap',
+    color: AnsiCodes.yellow,
+    function: () => tester.tap(
       this,
       settlePolicy: settlePolicy,
       visibleTimeout: visibleTimeout,
       settleTimeout: settleTimeout,
-    );
-  }
+      alignment: alignment,
+      enablePatrolLog: false,
+    ),
+  );
 
   /// Waits until this finder finds at least 1 visible widget and then makes
   /// long press gesture on it.
@@ -241,14 +278,19 @@ class PatrolFinder implements MatchFinder {
     SettlePolicy? settlePolicy,
     Duration? visibleTimeout,
     Duration? settleTimeout,
-  }) async {
-    await tester.longPress(
+    Alignment alignment = Alignment.center,
+  }) => wrapWithPatrolLog(
+    action: 'longPress',
+    color: AnsiCodes.yellow,
+    function: () => tester.longPress(
       this,
       settlePolicy: settlePolicy,
       visibleTimeout: visibleTimeout,
       settleTimeout: settleTimeout,
-    );
-  }
+      alignment: alignment,
+      enablePatrolLog: false,
+    ),
+  );
 
   /// Waits until this finder finds at least 1 visible widget and then enters
   /// text into it.
@@ -280,15 +322,22 @@ class PatrolFinder implements MatchFinder {
     SettlePolicy? settlePolicy,
     Duration? visibleTimeout,
     Duration? settleTimeout,
-  }) async {
-    await tester.enterText(
+    Alignment alignment = Alignment.center,
+    bool hideKeyboard = true,
+  }) => wrapWithPatrolLog(
+    action: 'enterText',
+    color: AnsiCodes.magenta,
+    function: () => tester.enterText(
       this,
       text,
       settlePolicy: settlePolicy,
       visibleTimeout: visibleTimeout,
       settleTimeout: settleTimeout,
-    );
-  }
+      alignment: alignment,
+      enablePatrolLog: false,
+      hideKeyboard: hideKeyboard,
+    ),
+  );
 
   /// Shorthand for [PatrolTester.scrollUntilVisible].
   ///
@@ -308,16 +357,25 @@ class PatrolFinder implements MatchFinder {
     Duration? settleBetweenScrollsTimeout,
     Duration? dragDuration,
     SettlePolicy? settlePolicy,
+    Alignment alignment = Alignment.center,
   }) {
-    return tester.scrollUntilVisible(
-      finder: finder,
-      view: view,
-      delta: step,
-      scrollDirection: scrollDirection,
-      maxScrolls: maxScrolls,
-      settleBetweenScrollsTimeout: settleBetweenScrollsTimeout,
-      settlePolicy: settlePolicy,
-      dragDuration: dragDuration,
+    return wrapWithPatrolLog(
+      action: 'scrollTo',
+      color: AnsiCodes.green,
+      function: () {
+        return tester.scrollUntilVisible(
+          finder: this,
+          view: view,
+          delta: step,
+          scrollDirection: scrollDirection,
+          maxScrolls: maxScrolls,
+          settleBetweenScrollsTimeout: settleBetweenScrollsTimeout,
+          settlePolicy: settlePolicy,
+          dragDuration: dragDuration,
+          alignment: alignment,
+          enablePatrolLog: false,
+        );
+      },
     );
   }
 
@@ -325,22 +383,45 @@ class PatrolFinder implements MatchFinder {
   ///
   /// Throws a [WaitUntilVisibleTimeoutException] if no widgets found.
   ///
-  /// Timeout is globally set by [PatrolTester.config.visibleTimeout]. If you
-  /// want to override this global setting, set [timeout].
-  Future<PatrolFinder> waitUntilExists({Duration? timeout}) {
-    return tester.waitUntilExists(this, timeout: timeout);
-  }
+  /// Timeout is globally set by [PatrolTesterConfig.visibleTimeout] inside
+  /// [PatrolTester.config]. If you want to override this global setting, set
+  /// [timeout].
+  Future<PatrolFinder> waitUntilExists({Duration? timeout}) =>
+      wrapWithPatrolLog(
+        action: 'waitUntilExists',
+        color: AnsiCodes.cyan,
+        function: () => tester.waitUntilExists(
+          this,
+          timeout: timeout,
+          enablePatrolLog: false,
+        ),
+      );
 
   /// Waits until this finder finds at least one visible widget.
   ///
   /// Throws a [WaitUntilVisibleTimeoutException] if more time than specified by
   /// timeout passed and no widgets were found.
   ///
-  /// Timeout is globally set by [PatrolTester.config.visibleTimeout]. If you
-  /// want to override this global setting, set [timeout].
-  Future<PatrolFinder> waitUntilVisible({Duration? timeout}) {
-    return tester.waitUntilVisible(this, timeout: timeout);
-  }
+
+  /// Timeout is globally set by [PatrolTesterConfig.visibleTimeout] inside
+  /// [PatrolTester.config]. If you want to override this global setting, set
+  /// [timeout].
+  /// {@macro patrol_tester.alignment_on_visible_check}
+  Future<PatrolFinder> waitUntilVisible({
+    Duration? timeout,
+    bool enablePatrolLog = true,
+    Alignment alignment = Alignment.center,
+  }) => wrapWithPatrolLog(
+    action: 'waitUntilVisible',
+    color: AnsiCodes.cyan,
+    function: () => tester.waitUntilVisible(
+      this,
+      timeout: timeout,
+      alignment: alignment,
+      enablePatrolLog: false,
+    ),
+    enablePatrolLog: enablePatrolLog,
+  );
 
   /// Returns a finder matching widget of type [T] which also fulfills
   /// [predicate].
@@ -356,9 +437,7 @@ class PatrolFinder implements MatchFinder {
           if (widget is! T) {
             return false;
           }
-          final foundWidgets = evaluate().map(
-            (e) => e.widget,
-          );
+          final foundWidgets = evaluate().map((e) => e.widget);
           if (!foundWidgets.contains(widget)) {
             return false;
           }
@@ -384,9 +463,7 @@ class PatrolFinder implements MatchFinder {
     final elements = finder.evaluate();
 
     if (elements.isEmpty) {
-      throw PatrolFinderException(
-        'Finder "${toString()}" found no widgets',
-      );
+      throw PatrolFinderException('Finder "${toString()}" found no widgets');
     }
 
     final firstWidget = elements.first.widget;
@@ -419,10 +496,7 @@ class PatrolFinder implements MatchFinder {
   PatrolFinder containing(dynamic matching) {
     return PatrolFinder(
       tester: tester,
-      finder: find.ancestor(
-        of: createFinder(matching),
-        matching: finder,
-      ),
+      finder: find.ancestor(of: createFinder(matching), matching: finder),
     );
   }
 
@@ -432,9 +506,12 @@ class PatrolFinder implements MatchFinder {
   @override
   String describeMatch(Plurality plurality) => finder.describeMatch(plurality);
 
-  /// Returns true if this finder finds at least 1 visible widget.
-  bool get visible {
-    final isVisible = hitTestable().evaluate().isNotEmpty;
+  /// Returns true if this finder finds at least 1 visible widget
+  /// at the given [alignment].
+  ///
+  /// {@macro patrol_tester.alignment_on_visible_check}
+  bool isVisibleAt({Alignment alignment = Alignment.center}) {
+    final isVisible = hitTestable(at: alignment).evaluate().isNotEmpty;
     if (isVisible == true) {
       assert(
         exists == true,
@@ -444,6 +521,14 @@ class PatrolFinder implements MatchFinder {
 
     return isVisible;
   }
+
+  /// Returns true if this finder finds at least 1 visible widget.
+  ///
+  /// Will call [isVisibleAt] with [Alignment.center]
+  ///
+  /// In case this returns false and you are sure that the widget is visible,
+  /// try calling [isVisibleAt] with a different [Alignment] parameter.
+  bool get visible => isVisibleAt();
 
   @override
   FinderResult<Element> evaluate() => finder.evaluate();
@@ -458,25 +543,51 @@ class PatrolFinder implements MatchFinder {
 
   @override
   PatrolFinder get first {
-    // TODO: Throw a better error (https://github.com/leancodepl/patrol/issues/548)
-    return PatrolFinder(tester: tester, finder: finder.first);
+    return _select(
+      description: 'first',
+      selector: (candidates) => candidates.take(1),
+    );
   }
 
   @override
   PatrolFinder get last {
-    // TODO: Throw a better error (https://github.com/leancodepl/patrol/issues/548)
-    return PatrolFinder(
-      tester: tester,
-      finder: finder.last,
+    return _select(
+      description: 'last',
+      selector: (candidates) {
+        if (candidates.isEmpty) {
+          return const Iterable<Element>.empty();
+        }
+
+        return [candidates.last] as Iterable<Element>;
+      },
     );
   }
 
   @override
   PatrolFinder at(int index) {
-    // TODO: Throw a better error (https://github.com/leancodepl/patrol/issues/548)
+    return _select(
+      description: 'index $index',
+      selector: (candidates) {
+        if (index < 0) {
+          return const Iterable<Element>.empty();
+        }
+
+        return candidates.skip(index).take(1);
+      },
+    );
+  }
+
+  PatrolFinder _select({
+    required String description,
+    required Iterable<Element> Function(Iterable<Element> candidates) selector,
+  }) {
     return PatrolFinder(
       tester: tester,
-      finder: finder.at(index),
+      finder: _PatrolSelectorFinder(
+        finder,
+        selectorDescription: description,
+        selector: selector,
+      ),
     );
   }
 
@@ -490,7 +601,10 @@ class PatrolFinder implements MatchFinder {
 
   @override
   PatrolFinder hitTestable({Alignment at = Alignment.center}) {
-    return PatrolFinder(finder: finder.hitTestable(at: at), tester: tester);
+    return PatrolFinder(
+      finder: finder.hitTestable(at: at),
+      tester: tester,
+    );
   }
 
   @override
@@ -515,17 +629,44 @@ class PatrolFinder implements MatchFinder {
 
   @override
   Iterable<Element> apply(Iterable<Element> candidates) {
+    // Do we still need to use deprecated method?
     // ignore: deprecated_member_use
     return finder.apply(candidates);
   }
 
   @override
+  // Do we still need to use deprecated field?
   // ignore: deprecated_member_use
   String get description => finder.description;
 
   @override
+  // Do we still need to use deprecated method?
   // ignore: deprecated_member_use
   bool precache() => finder.precache();
+}
+
+class _PatrolSelectorFinder extends ChainedFinder {
+  _PatrolSelectorFinder(
+    super.parent, {
+    required this.selectorDescription,
+    required this.selector,
+  });
+
+  final String selectorDescription;
+  final Iterable<Element> Function(Iterable<Element> candidates) selector;
+
+  @override
+  Iterable<Element> filter(Iterable<Element> parentCandidates) =>
+      selector(parentCandidates);
+
+  @override
+  String describeMatch(Plurality plurality) {
+    return '${parent.describeMatch(plurality)} '
+        '(ignoring all but $selectorDescription)';
+  }
+
+  @override
+  String get description => describeMatch(Plurality.many);
 }
 
 /// Useful methods that make chained finders more readable.
@@ -536,11 +677,13 @@ extension ActionCombiner on Future<PatrolFinder> {
     SettlePolicy? settlePolicy,
     Duration? visibleTimeout,
     Duration? settleTimeout,
+    Alignment alignment = Alignment.center,
   }) async {
     await (await this).tap(
       settlePolicy: settlePolicy,
       visibleTimeout: visibleTimeout,
       settleTimeout: settleTimeout,
+      alignment: alignment,
     );
   }
 
@@ -551,12 +694,16 @@ extension ActionCombiner on Future<PatrolFinder> {
     SettlePolicy? settlePolicy,
     Duration? visibleTimeout,
     Duration? settleTimeout,
+    Alignment alignment = Alignment.center,
+    bool hideKeyboard = true,
   }) async {
     await (await this).enterText(
       text,
       settlePolicy: settlePolicy,
       visibleTimeout: visibleTimeout,
       settleTimeout: settleTimeout,
+      alignment: alignment,
+      hideKeyboard: hideKeyboard,
     );
   }
 }

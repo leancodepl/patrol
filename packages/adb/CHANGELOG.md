@@ -1,6 +1,21 @@
-## Unreleased
+## 0.6.0
 
-- Bump minimum Dart SDK to version 3.2.0 (#1917)
+- Bump `custom_lint` to `0.7.0` and `leancode_lint` to `14.3.0`. (#2574)
+- Bump `leancode_lint` to `17.0.0`. (#2687)
+- Bump minimum Dart SDK to version 3.8.0 (#2687)
+
+## 0.5.0
+
+- Add `logcat` method to `Adb` (#2387)
+
+## 0.4.1
+
+- Bump minimum Dart SDK to version 3.5.0 (#2371)
+
+## 0.4.0
+
+- Add `getForwardedPorts` method to `Adb` (#2332)
+- Bump minimum Dart SDK to version 3.3.0-0 (#1917)
 
 ## 0.3.0
 

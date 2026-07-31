@@ -1,3 +1,4 @@
+// It's just a test. We can ignore this rule here.
 // ignore_for_file: avoid_single_child_in_multi_child_widgets
 import 'dart:async';
 
@@ -5,20 +6,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol_finders/src/custom_finders/custom_finders.dart';
 
+import 'utils/long_screen_with_partially_visible_widget.dart';
+import 'utils/screen_with_partially_visible_widget.dart';
+import 'utils/set_physical_size.dart';
+
 void main() {
   group('PatrolTester', () {
     group('tap()', () {
-      patrolWidgetTest(
-        'throws exception when no widget to tap on is found',
-        (tester) async {
-          await tester.pumpWidget(const MaterialApp());
+      patrolWidgetTest('throws exception when no widget to tap on is found', (
+        tester,
+      ) async {
+        await tester.pumpWidget(const MaterialApp());
 
-          await expectLater(
-            () => tester.tap(find.text('some text')),
-            throwsA(isA<WaitUntilVisibleTimeoutException>()),
-          );
-        },
-      );
+        await expectLater(
+          () => tester.tap(find.text('some text')),
+          throwsA(isA<WaitUntilVisibleTimeoutException>()),
+        );
+      });
 
       patrolWidgetTest('taps on widget and pumps', (tester) async {
         var count = 0;
@@ -44,45 +48,89 @@ void main() {
         expect(find.text('count: 1'), findsOneWidget);
       });
 
-      patrolWidgetTest(
-        'taps on the first widget by default and pumps',
-        (tester) async {
-          var count = 0;
-          await tester.pumpWidget(
-            MaterialApp(
-              home: StatefulBuilder(
-                builder: (state, setState) => Column(
-                  children: [
-                    Text('count: $count'),
-                    GestureDetector(
-                      onTap: () => setState(() => count++),
-                      child: const Text('Tap'),
-                    ),
-                    GestureDetector(
-                      onTap: () {},
-                      child: const Text('Tap'),
-                    ),
-                  ],
-                ),
+      patrolWidgetTest('taps on the first widget by default and pumps', (
+        tester,
+      ) async {
+        var count = 0;
+        await tester.pumpWidget(
+          MaterialApp(
+            home: StatefulBuilder(
+              builder: (state, setState) => Column(
+                children: [
+                  Text('count: $count'),
+                  GestureDetector(
+                    onTap: () => setState(() => count++),
+                    child: const Text('Tap'),
+                  ),
+                  GestureDetector(onTap: () {}, child: const Text('Tap')),
+                ],
               ),
             ),
-          );
+          ),
+        );
 
-          await tester.tap(find.text('Tap'));
-          expect(find.text('count: 1'), findsOneWidget);
-        },
-      );
+        await tester.tap(find.text('Tap'));
+        expect(find.text('count: 1'), findsOneWidget);
+      });
 
       patrolWidgetTest('is guarded', (tester) async {
         await tester.pumpWidget(const MaterialApp(home: Text('Tap')));
 
-        expect(
-          () {
-            unawaited(tester.tap(find.text('Tap')));
-            unawaited(tester.tap(find.text('Tap')));
-          },
-          throwsAssertionError,
-        );
+        expect(() {
+          unawaited(tester.tap(find.text('Tap')));
+          unawaited(tester.tap(find.text('Tap')));
+        }, throwsAssertionError);
+      });
+
+      group('with alignment', () {
+        patrolWidgetTest('finds no widgets', (tester) async {
+          const width = 300.0;
+          setPhysicalSize(tester.tester, width);
+
+          await tester.pumpWidget(
+            ScreenWithPartiallyVisibleWidget(
+              width: width,
+              testedWidget: ElevatedButton(
+                onPressed: () {},
+                child: const Text('some text'),
+              ),
+            ),
+          );
+
+          await expectLater(
+            () => tester.tap(
+              find.byType(ElevatedButton),
+              alignment: Alignment.centerRight,
+            ),
+            throwsA(isA<WaitUntilVisibleTimeoutException>()),
+          );
+        });
+
+        patrolWidgetTest('finds widgets', (tester) async {
+          const width = 300.0;
+          setPhysicalSize(tester.tester, width);
+
+          var counter = 0;
+
+          await tester.pumpWidget(
+            ScreenWithPartiallyVisibleWidget(
+              width: width,
+              testedWidget: ElevatedButton(
+                onPressed: () {
+                  counter++;
+                },
+                child: const Text('some text'),
+              ),
+            ),
+          );
+
+          await tester.tap(
+            find.byType(ElevatedButton),
+            alignment: Alignment.topLeft,
+          );
+
+          expect(counter, 1);
+        });
       });
     });
 
@@ -99,19 +147,18 @@ void main() {
         },
       );
 
-      patrolWidgetTest(
-        'throws StateError when widget is not EditableText',
-        (tester) async {
-          await tester.pumpWidget(
-            const MaterialApp(home: Text('not a TextField')),
-          );
+      patrolWidgetTest('throws StateError when widget is not EditableText', (
+        tester,
+      ) async {
+        await tester.pumpWidget(
+          const MaterialApp(home: Text('not a TextField')),
+        );
 
-          await expectLater(
-            () => tester.enterText(find.text('not a TextField'), 'some text'),
-            throwsStateError,
-          );
-        },
-      );
+        await expectLater(
+          () => tester.enterText(find.text('not a TextField'), 'some text'),
+          throwsStateError,
+        );
+      });
 
       patrolWidgetTest(
         'enters text when the target widget has an EditableText descendant',
@@ -167,48 +214,217 @@ void main() {
         expect(find.text('content: some input'), findsOneWidget);
       });
 
+      patrolWidgetTest('unfocuses already focused field after entering text', (
+        tester,
+      ) async {
+        final controller = TextEditingController(text: 'initial input');
+        final focusNode = FocusNode();
+        final valuesOnUnfocus = <String>[];
+        addTearDown(controller.dispose);
+        addTearDown(focusNode.dispose);
+
+        focusNode.addListener(() {
+          if (!focusNode.hasFocus) {
+            valuesOnUnfocus.add(controller.text);
+          }
+        });
+
+        await tester.pumpWidgetAndSettle(
+          MaterialApp(
+            home: Scaffold(
+              body: TextField(
+                autofocus: true,
+                controller: controller,
+                focusNode: focusNode,
+              ),
+            ),
+          ),
+        );
+        expect(focusNode.hasFocus, true);
+
+        await tester.enterText(find.byType(TextField), 'updated input');
+
+        expect(controller.text, 'updated input');
+        expect(focusNode.hasFocus, false);
+        expect(valuesOnUnfocus, isNotEmpty);
+        expect(valuesOnUnfocus.first, 'updated input');
+        expect(valuesOnUnfocus, isNot(contains('initial input')));
+      });
+
+      patrolWidgetTest('runs on-unfocus validation after entering text', (
+        tester,
+      ) async {
+        final controller = TextEditingController(text: 'initial input');
+        final focusNode = FocusNode();
+        final validatedValues = <String?>[];
+        addTearDown(controller.dispose);
+        addTearDown(focusNode.dispose);
+
+        await tester.pumpWidgetAndSettle(
+          MaterialApp(
+            home: Scaffold(
+              body: TextFormField(
+                autofocus: true,
+                autovalidateMode: AutovalidateMode.onUnfocus,
+                controller: controller,
+                focusNode: focusNode,
+                validator: (value) {
+                  validatedValues.add(value);
+                  return null;
+                },
+              ),
+            ),
+          ),
+        );
+        validatedValues.clear();
+        expect(focusNode.hasFocus, true);
+
+        await tester.enterText(find.byType(TextFormField), 'updated input');
+
+        expect(controller.text, 'updated input');
+        expect(validatedValues, isNotEmpty);
+        expect(validatedValues.first, 'updated input');
+        expect(validatedValues, isNot(contains('initial input')));
+      });
+
       patrolWidgetTest(
-        'enters text in the first widget by default and pumps',
+        'keeps already focused field focused when hideKeyboard is false',
         (tester) async {
-          var content = '';
+          final controller = TextEditingController(text: 'initial input');
+          final focusNode = FocusNode();
+          addTearDown(controller.dispose);
+          addTearDown(focusNode.dispose);
+
           await tester.pumpWidgetAndSettle(
             MaterialApp(
               home: Scaffold(
-                body: StatefulBuilder(
-                  builder: (state, setState) => Column(
-                    children: [
-                      Text('content: $content'),
-                      TextField(
-                        onChanged: (newValue) =>
-                            setState(() => content = newValue),
-                      ),
-                      TextField(
-                        onChanged: (_) {},
-                      ),
-                    ],
-                  ),
+                body: TextField(
+                  autofocus: true,
+                  controller: controller,
+                  focusNode: focusNode,
                 ),
               ),
             ),
           );
+          expect(focusNode.hasFocus, true);
 
-          await tester.enterText(find.byType(TextField), 'some text');
-          expect(find.text('content: some text'), findsOneWidget);
+          await tester.enterText(
+            find.byType(TextField),
+            'updated input',
+            hideKeyboard: false,
+          );
+
+          expect(controller.text, 'updated input');
+          expect(focusNode.hasFocus, true);
+          expect(
+            tester.tester.testTextInput.editingState?['text'],
+            'updated input',
+          );
         },
       );
+
+      patrolWidgetTest('enters text in the same field multiple times', (
+        tester,
+      ) async {
+        final controller = TextEditingController();
+        addTearDown(controller.dispose);
+
+        await tester.pumpWidgetAndSettle(
+          MaterialApp(
+            home: Scaffold(body: TextField(controller: controller)),
+          ),
+        );
+
+        await tester.enterText(find.byType(TextField), 'first input');
+        expect(controller.text, 'first input');
+
+        await tester.enterText(find.byType(TextField), 'second input');
+        expect(controller.text, 'second input');
+      });
+
+      patrolWidgetTest('enters text in the first widget by default and pumps', (
+        tester,
+      ) async {
+        var content = '';
+        await tester.pumpWidgetAndSettle(
+          MaterialApp(
+            home: Scaffold(
+              body: StatefulBuilder(
+                builder: (state, setState) => Column(
+                  children: [
+                    Text('content: $content'),
+                    TextField(
+                      onChanged: (newValue) =>
+                          setState(() => content = newValue),
+                    ),
+                    TextField(onChanged: (_) {}),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+
+        await tester.enterText(find.byType(TextField), 'some text');
+        expect(find.text('content: some text'), findsOneWidget);
+      });
 
       patrolWidgetTest('is guarded', (tester) async {
         await tester.pumpWidget(
           const MaterialApp(home: Scaffold(body: TextField())),
         );
 
-        expect(
-          () {
-            unawaited(tester.enterText(find.byType(TextField), 'some text'));
-            unawaited(tester.enterText(find.byType(TextField), 'some text'));
-          },
-          throwsAssertionError,
-        );
+        expect(() {
+          unawaited(tester.enterText(find.byType(TextField), 'some text'));
+          unawaited(tester.enterText(find.byType(TextField), 'some text'));
+        }, throwsAssertionError);
+      });
+
+      group('with alignment', () {
+        patrolWidgetTest('finds no widgets', (tester) async {
+          const width = 300.0;
+          setPhysicalSize(tester.tester, width);
+
+          await tester.pumpWidget(
+            const ScreenWithPartiallyVisibleWidget(
+              width: width,
+              testedWidget: TextField(),
+            ),
+          );
+
+          await expectLater(
+            () => tester.enterText(
+              find.byType(TextField),
+              'text',
+              alignment: Alignment.centerRight,
+            ),
+            throwsA(isA<WaitUntilVisibleTimeoutException>()),
+          );
+        });
+
+        patrolWidgetTest('finds widgets', (tester) async {
+          const width = 300.0;
+          setPhysicalSize(tester.tester, width);
+
+          final controller = TextEditingController();
+
+          await tester.pumpWidget(
+            ScreenWithPartiallyVisibleWidget(
+              width: width,
+              testedWidget: TextField(controller: controller),
+            ),
+          );
+
+          const input = 'text';
+
+          await tester.enterText(
+            find.byType(TextField),
+            input,
+            alignment: Alignment.centerLeft,
+          );
+
+          expect(controller.text, input);
+        });
       });
     });
 
@@ -235,9 +451,7 @@ void main() {
         (tester) async {
           await tester.pumpWidget(
             MaterialApp(
-              home: ListView(
-                children: const [Text('one'), Text('two')],
-              ),
+              home: ListView(children: const [Text('one'), Text('two')]),
             ),
           );
 
@@ -256,9 +470,7 @@ void main() {
         await tester.pumpWidget(
           const MaterialApp(
             home: SingleChildScrollView(
-              child: Column(
-                children: [Text('some text')],
-              ),
+              child: Column(children: [Text('some text')]),
             ),
           ),
         );
@@ -352,18 +564,11 @@ void main() {
                 children: [
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
-                    child: Column(
-                      children: [
-                        Text('text 1'),
-                        Text('text 1'),
-                      ],
-                    ),
+                    child: Column(children: [Text('text 1'), Text('text 1')]),
                   ),
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
-                    child: Column(
-                      children: [Text('text 2')],
-                    ),
+                    child: Column(children: [Text('text 2')]),
                   ),
                 ],
               ),
@@ -417,9 +622,7 @@ void main() {
         (tester) async {
           await tester.pumpWidget(
             MaterialApp(
-              home: ListView(
-                children: const [Text('one'), Text('two')],
-              ),
+              home: ListView(children: const [Text('one'), Text('two')]),
             ),
           );
 
@@ -438,9 +641,7 @@ void main() {
         await tester.pumpWidget(
           const MaterialApp(
             home: SingleChildScrollView(
-              child: Column(
-                children: [Text('some text')],
-              ),
+              child: Column(children: [Text('some text')]),
             ),
           ),
         );
@@ -527,17 +728,10 @@ void main() {
               home: Column(
                 children: [
                   SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        Text('text 1'),
-                        Text('text 1'),
-                      ],
-                    ),
+                    child: Column(children: [Text('text 1'), Text('text 1')]),
                   ),
                   SingleChildScrollView(
-                    child: Column(
-                      children: [Text('text 2')],
-                    ),
+                    child: Column(children: [Text('text 2')]),
                   ),
                 ],
               ),
@@ -595,10 +789,7 @@ void main() {
                       SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: Column(
-                          children: [
-                            SizedBox(width: 2000),
-                            Text('text 2'),
-                          ],
+                          children: [SizedBox(width: 2000), Text('text 2')],
                         ),
                       ),
                     ],
@@ -635,6 +826,65 @@ void main() {
           expect(find.text('text 2').hitTestable(), findsOneWidget);
         },
       );
+
+      group('with alignment', () {
+        patrolWidgetTest('finds no widgets', (tester) async {
+          const width = 300.0;
+          setPhysicalSize(tester.tester, width);
+
+          await tester.pumpWidget(
+            ScreenWithPartiallyVisibleWidget(
+              width: width,
+              testedWidget: ElevatedButton(
+                onPressed: () {},
+                child: const Text('some text'),
+              ),
+            ),
+          );
+
+          await expectLater(
+            () => tester.dragUntilVisible(
+              finder: find.byType(ElevatedButton),
+              view: find.byType(Scrollable),
+              moveStep: const Offset(0, -defaultScrollDelta),
+              alignment: Alignment.centerRight,
+            ),
+            throwsA(isA<WaitUntilVisibleTimeoutException>()),
+          );
+        });
+
+        patrolWidgetTest('finds widgets', (tester) async {
+          const width = 300.0;
+          setPhysicalSize(tester.tester, width);
+
+          await tester.pumpWidget(
+            LongScreenWithPartiallyVisibleWidget(
+              width: width,
+              testedWidget: ElevatedButton(
+                onPressed: () {},
+                child: const Text('some text'),
+              ),
+            ),
+          );
+
+          expect(
+            find.byType(ElevatedButton).hitTestable(at: Alignment.centerLeft),
+            findsNothing,
+          );
+
+          await tester.dragUntilVisible(
+            finder: find.byType(ElevatedButton),
+            view: find.byType(Scrollable),
+            moveStep: const Offset(0, -defaultScrollDelta),
+            alignment: Alignment.centerLeft,
+          );
+
+          expect(
+            find.byType(ElevatedButton).hitTestable(at: Alignment.centerLeft),
+            findsOneWidget,
+          );
+        });
+      });
     });
 
     patrolWidgetTest(
@@ -703,9 +953,7 @@ void main() {
         (tester) async {
           await tester.pumpWidget(
             MaterialApp(
-              home: ListView(
-                children: const [Text('one'), Text('two')],
-              ),
+              home: ListView(children: const [Text('one'), Text('two')]),
             ),
           );
 
@@ -716,14 +964,13 @@ void main() {
         },
       );
 
-      patrolWidgetTest('scrolls to existing and visible widget',
-          (tester) async {
+      patrolWidgetTest('scrolls to existing and visible widget', (
+        tester,
+      ) async {
         await tester.pumpWidget(
           const MaterialApp(
             home: SingleChildScrollView(
-              child: Column(
-                children: [Text('some text')],
-              ),
+              child: Column(children: [Text('some text')]),
             ),
           ),
         );
@@ -744,15 +991,11 @@ void main() {
                 children: [
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
-                    child: Column(
-                      children: [Text('text 1')],
-                    ),
+                    child: Column(children: [Text('text 1')]),
                   ),
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
-                    child: Column(
-                      children: [Text('text 2')],
-                    ),
+                    child: Column(children: [Text('text 2')]),
                   ),
                 ],
               ),
@@ -780,12 +1023,7 @@ void main() {
                 children: [
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
-                    child: Column(
-                      children: [
-                        Text('text 1'),
-                        Text('text 1'),
-                      ],
-                    ),
+                    child: Column(children: [Text('text 1'), Text('text 1')]),
                   ),
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
@@ -804,8 +1042,9 @@ void main() {
         },
       );
 
-      patrolWidgetTest('scrolls to existing but not visible widget',
-          (tester) async {
+      patrolWidgetTest('scrolls to existing but not visible widget', (
+        tester,
+      ) async {
         await tester.pumpWidget(
           MaterialApp(
             home: LayoutBuilder(
@@ -866,9 +1105,7 @@ void main() {
           expect(find.text('top text').hitTestable(), findsNothing);
           expect(find.text('bottom text').hitTestable(), findsNothing);
 
-          await tester.scrollUntilExists(
-            finder: find.text('top text'),
-          );
+          await tester.scrollUntilExists(finder: find.text('top text'));
           expect(find.text('top text').hitTestable(), findsOneWidget);
           expect(find.text('bottom text'), findsNothing);
           await tester.scrollUntilExists(
@@ -886,39 +1123,39 @@ void main() {
         },
       );
 
-      patrolWidgetTest(
-        'scrolls to the first existing but not visible widget',
-        (tester) async {
-          await tester.pumpWidget(
-            MaterialApp(
-              home: LayoutBuilder(
-                builder: (_, constraints) {
-                  return ListView(
-                    children: [
-                      const Text('top text'),
-                      SizedBox(height: constraints.maxHeight),
-                      const Text('bottom text'),
-                      SizedBox(height: constraints.maxHeight),
-                      const Text('bottom text'),
-                    ],
-                  );
-                },
-              ),
+      patrolWidgetTest('scrolls to the first existing but not visible widget', (
+        tester,
+      ) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            home: LayoutBuilder(
+              builder: (_, constraints) {
+                return ListView(
+                  children: [
+                    const Text('top text'),
+                    SizedBox(height: constraints.maxHeight),
+                    const Text('bottom text'),
+                    SizedBox(height: constraints.maxHeight),
+                    const Text('bottom text'),
+                  ],
+                );
+              },
             ),
-          );
+          ),
+        );
 
-          expect(find.text('top text').hitTestable(), findsOneWidget);
-          expect(find.text('bottom text'), findsNothing);
+        expect(find.text('top text').hitTestable(), findsOneWidget);
+        expect(find.text('bottom text'), findsNothing);
 
-          await tester.scrollUntilExists(finder: find.text('bottom text'));
+        await tester.scrollUntilExists(finder: find.text('bottom text'));
 
-          expect(find.text('top text').hitTestable(), findsNothing);
-          expect(find.text('bottom text'), findsOneWidget);
-        },
-      );
+        expect(find.text('top text').hitTestable(), findsNothing);
+        expect(find.text('bottom text'), findsOneWidget);
+      });
 
-      patrolWidgetTest('scrolls to non-existent and not visible widget',
-          ($) async {
+      patrolWidgetTest('scrolls to non-existent and not visible widget', (
+        $,
+      ) async {
         await $.pumpWidget(
           MaterialApp(
             home: LayoutBuilder(
@@ -1017,8 +1254,9 @@ void main() {
           await $.pumpWidget(appWithInfiniteAnimation);
 
           // 10 seconds is verbatim here to guard against changing the default
-          final end =
-              $.tester.binding.clock.now().add(const Duration(seconds: 10));
+          final end = $.tester.binding.clock.now().add(
+            const Duration(seconds: 10),
+          );
 
           await $(ElevatedButton).tap(settlePolicy: SettlePolicy.trySettle);
 

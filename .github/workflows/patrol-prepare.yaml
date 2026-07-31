@@ -15,7 +15,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [windows-latest]
-        flutter-version: ['3.22.x']
+        flutter-version: ['3.38.x']
         flutter-channel: ['stable']
 
     defaults:
@@ -65,7 +65,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        flutter-version: ['3.22.x']
+        flutter-version: ['3.38.x']
         flutter-channel: ['stable']
 
     defaults:
@@ -73,6 +73,18 @@ jobs:
         working-directory: packages/patrol/example/android
 
     steps:
+      - name: Free Disk Space (Ubuntu)
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false
+          
+          android: false
+          dotnet: true
+          haskell: true
+          large-packages: true
+          docker-images: true
+          swap-storage: true
+
       - name: Clone repository
         uses: actions/checkout@v4
 
@@ -120,8 +132,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-13]
-        flutter-version: ['3.22.x']
+        os: [macos-26]
+        flutter-version: ['3.38.x']
         flutter-channel: ['stable']
 
     defaults:
@@ -161,7 +173,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        flutter-version: ['3.22.x']
+        flutter-version: ['3.38.x']
         flutter-channel: ['stable']
 
     defaults:
@@ -203,9 +215,20 @@ jobs:
 
       - name: flutter pub publish --dry-run
         if: success() || failure()
-        run: flutter pub publish --dry-run
+        run: |
+          rm -f pubspec_overrides.yaml
+          flutter pub get
+          flutter pub publish --dry-run
 
       - name: flutter pub get (example app)
         if: success() || failure()
         working-directory: ./packages/patrol/example
         run: flutter pub get
+
+      - name: Check if files are regenerated from schema
+        if: success() || failure()
+        working-directory: .
+        run: |
+          git add .
+          ./gen_from_schema
+          git diff --exit-code || (echo "Files are not regenerated from schema. Please run ./gen_from_schema locally and push changes" && exit 1)

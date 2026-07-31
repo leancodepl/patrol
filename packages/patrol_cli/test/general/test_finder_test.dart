@@ -16,27 +16,32 @@ void main() {
 void _test(Platform platform) {
   late FileSystem fs;
   late TestFinder testFinder;
+  late String projectRootAbsPath;
 
   setUp(() {
     fs = MemoryFileSystem.test(style: platform.fileSystemStyle);
     final projectRoot = fs.directory(fs.path.join('projects', 'awesome_app'))
       ..createSync(recursive: true);
+    // Capture the absolute path before changing CWD, matching production
+    // behavior where findRootDirectory always returns an absolute directory.
+    projectRootAbsPath = projectRoot.absolute.path;
     fs.currentDirectory = projectRoot;
 
-    testFinder = TestFinder(testDir: fs.directory('integration_test'));
+    testFinder = TestFinder(
+      testDir: fs.directory('patrol_test').absolute,
+      rootDir: fs.directory(projectRootAbsPath),
+    );
   });
 
   group('findTests', () {
     test('throws exception when target file does not exist', () {
       expect(
-        () => testFinder.findTests(['integration_test/app_test.dart']),
+        () => testFinder.findTests(['patrol_test/app_test.dart']),
         throwsA(
           isA<ToolExit>().having(
             (exception) => exception.message,
             'message',
-            equals(
-              'target file integration_test/app_test.dart does not exist',
-            ),
+            equals('target file patrol_test/app_test.dart does not exist'),
           ),
         ),
       );
@@ -44,13 +49,13 @@ void _test(Platform platform) {
 
     test('throws exception when target directory does not exist', () {
       expect(
-        () => testFinder.findTests(['integration_test/features/login']),
+        () => testFinder.findTests(['patrol_test/features/login']),
         throwsA(
           isA<ToolExit>().having(
             (exception) => exception.message,
             'message',
             equals(
-              'target integration_test/features/login is invalid',
+              'target patrol_test/features/login is invalid. Does your test file(s) end with "_test.dart"?',
             ),
           ),
         ),
@@ -60,7 +65,7 @@ void _test(Platform platform) {
     test(
       'throws exception when target directory does not contain any tests',
       () {
-        const target = 'integration_test/features/login';
+        const target = 'patrol_test/features/login';
         fs.directory(target).createSync(recursive: true);
 
         expect(
@@ -69,9 +74,7 @@ void _test(Platform platform) {
             isA<ToolExit>().having(
               (exception) => exception.message,
               'message',
-              equals(
-                'target directory $target does not contain any tests',
-              ),
+              equals('target directory $target does not contain any tests'),
             ),
           ),
         );
@@ -80,7 +83,7 @@ void _test(Platform platform) {
 
     test('finds test when target is a file', () {
       // given
-      final target = fs.path.join('integration_test', 'app_test.dart');
+      final target = fs.path.join('patrol_test', 'app_test.dart');
       fs.file(target).createSync(recursive: true);
 
       // when
@@ -92,17 +95,16 @@ void _test(Platform platform) {
 
     test('finds tests when target is a directory', () {
       // given
-      final dir = fs
-          .directory(fs.path.join('integration_test', 'features', 'auth'))
+      final dir = fs.directory(fs.path.join('patrol_test', 'features', 'auth'))
         ..createSync(recursive: true);
       dir.childFile('login_test.dart').createSync();
       dir.childFile('register_test.dart').createSync();
       fs
-          .directory(fs.path.join('integration_test', 'another_test.dart'))
+          .directory(fs.path.join('patrol_test', 'another_test.dart'))
           .createSync();
 
       // when
-      final path = fs.path.join('integration_test', 'features', 'auth');
+      final path = fs.path.join('patrol_test', 'features', 'auth');
       final found = testFinder.findTests([path]);
 
       // then
@@ -119,17 +121,17 @@ void _test(Platform platform) {
       'finds tests when target is a directory containing another directory',
       () {
         // given
-        final dir = fs
-            .directory(fs.path.join('integration_test', 'features', 'auth'))
-          ..createSync(recursive: true);
+        final dir = fs.directory(
+          fs.path.join('patrol_test', 'features', 'auth'),
+        )..createSync(recursive: true);
         dir.childFile('login_test.dart').createSync();
         dir.childFile('register_test.dart').createSync();
         fs
-            .directory(fs.path.join('integration_test', 'another_test.dart'))
+            .directory(fs.path.join('patrol_test', 'another_test.dart'))
             .createSync();
 
         // when
-        final path = fs.path.join('integration_test', 'features');
+        final path = fs.path.join('patrol_test', 'features');
         final found = testFinder.findTests([path]);
 
         // then
@@ -146,39 +148,82 @@ void _test(Platform platform) {
 
     test('finds tests recursively when target is a directory', () {
       // given
-      final dir = fs.directory(fs.path.join('integration_test', 'auth'))
+      final dir = fs.directory(fs.path.join('patrol_test', 'auth'))
         ..createSync(recursive: true);
       dir.childFile('login_test.dart').createSync();
       dir.childFile('register_test.dart').createSync();
       fs
-          .directory(fs.path.join('integration_test', 'another_test.dart'))
+          .directory(fs.path.join('patrol_test', 'another_test.dart'))
           .createSync();
 
       // when+then
       final wd = fs.currentDirectory.absolute.path;
       expect(
-        testFinder.findTests([fs.path.join('integration_test', 'auth')]),
+        testFinder.findTests([fs.path.join('patrol_test', 'auth')]),
         equals([
-          fs.path.join(wd, 'integration_test', 'auth', 'login_test.dart'),
-          fs.path.join(wd, 'integration_test', 'auth', 'register_test.dart'),
+          fs.path.join(wd, 'patrol_test', 'auth', 'login_test.dart'),
+          fs.path.join(wd, 'patrol_test', 'auth', 'register_test.dart'),
         ]),
       );
 
       expect(
-        testFinder.findTests(
-          [fs.path.join('integration_test', 'auth${fs.path.separator}')],
-        ),
+        testFinder.findTests([
+          fs.path.join('patrol_test', 'auth${fs.path.separator}'),
+        ]),
         equals([
-          fs.path.join(wd, 'integration_test', 'auth', 'login_test.dart'),
-          fs.path.join(wd, 'integration_test', 'auth', 'register_test.dart'),
+          fs.path.join(wd, 'patrol_test', 'auth', 'login_test.dart'),
+          fs.path.join(wd, 'patrol_test', 'auth', 'register_test.dart'),
         ]),
         reason: 'trailing path separator',
       );
     });
 
+    test('applies excludes when target is a directory', () {
+      // given
+      final included = fs.path.join(
+        'patrol_test',
+        'permissions',
+        'other_test.dart',
+      );
+      final excluded = fs.path.join(
+        'patrol_test',
+        'permissions',
+        'test',
+        'excluded_test.dart',
+      );
+      fs.file(included).createSync(recursive: true);
+      fs.file(excluded).createSync(recursive: true);
+
+      // when
+      final found = testFinder.findTests(
+        [fs.path.join('patrol_test', 'permissions')],
+        '_test.dart',
+        {fs.path.join('patrol_test', 'permissions', 'test', '')},
+      );
+
+      // then
+      expect(found, equals([fs.path.join(fs.currentDirectory.path, included)]));
+    });
+
+    test('applies excludes when target is a file', () {
+      // given
+      final targetFile = fs.path.join('patrol_test', 'app_test.dart');
+      fs.file(targetFile).createSync(recursive: true);
+
+      // when
+      final found = testFinder.findTests(
+        [targetFile],
+        '_test.dart',
+        {targetFile},
+      );
+
+      // then
+      expect(found, isEmpty);
+    });
+
     test('finds tests when targets are files and directories', () {
       // given
-      final testRoot = fs.directory('integration_test')..createSync();
+      final testRoot = fs.directory('patrol_test')..createSync();
       testRoot.file('app_test.dart').createSync();
       testRoot.file('other_test.dart').createSync();
       testRoot.dir('auth').createSync();
@@ -187,8 +232,8 @@ void _test(Platform platform) {
 
       // when
       final found = testFinder.findTests([
-        fs.path.join('integration_test', 'app_test.dart'),
-        fs.path.join('integration_test', 'auth'),
+        fs.path.join('patrol_test', 'app_test.dart'),
+        fs.path.join('patrol_test', 'auth'),
       ]);
 
       // then
@@ -204,7 +249,7 @@ void _test(Platform platform) {
 
     test('searches for file with provided suffix', () {
       // given
-      final target = fs.path.join('integration_test', 'test_patrol.dart');
+      final target = fs.path.join('patrol_test', 'test_patrol.dart');
       fs.file(target).createSync(recursive: true);
 
       // when
@@ -213,19 +258,31 @@ void _test(Platform platform) {
       // then
       expect(found, equals([fs.path.join(fs.currentDirectory.path, target)]));
     });
+
+    test('finds tests when custom test directory is nested', () {
+      // given
+      final target = fs.path.join('tests', 'e2e', 'test_patrol.dart');
+      fs.file(target).createSync(recursive: true);
+      final nestedTestFinder = TestFinderFactory(
+        rootDirectory: fs.directory(fs.path.join('projects', 'awesome_app')),
+      ).create('tests/e2e');
+
+      // when
+      final found = nestedTestFinder.findTests([target], '_patrol.dart');
+
+      // then
+      expect(found, equals([fs.path.join(fs.currentDirectory.path, target)]));
+    });
   });
 
   group('findAllTests', () {
-    test(
-      'throws ToolExit when integration_test directory does not exist',
-      () {
-        expect(testFinder.findAllTests, throwsToolExit);
-      },
-    );
+    test('throws ToolExit when patrol_test directory does not exist', () {
+      expect(testFinder.findAllTests, throwsToolExit);
+    });
 
     test('finds all tests when no target is specified', () {
       // given
-      final dir = fs.directory('integration_test')..createSync();
+      final dir = fs.directory('patrol_test')..createSync();
       dir.childFile('app_test.dart').createSync();
       dir.childFile('permission_test.dart').createSync();
 
@@ -236,23 +293,21 @@ void _test(Platform platform) {
       final wd = fs.currentDirectory.path;
       expect(
         found,
-        equals(
-          [
-            fs.path.join(wd, 'integration_test', 'app_test.dart'),
-            fs.path.join(wd, 'integration_test', 'permission_test.dart'),
-          ],
-        ),
+        equals([
+          fs.path.join(wd, 'patrol_test', 'app_test.dart'),
+          fs.path.join(wd, 'patrol_test', 'permission_test.dart'),
+        ]),
       );
     });
 
     test('finds tests recursively in the correct order', () {
       final files = [
-        fs.path.join('integration_test', 'alpha', 'alpha_test.dart'),
-        fs.path.join('integration_test', 'alpha', 'bravo_test.dart'),
-        fs.path.join('integration_test', 'alpha_test.dart'),
-        fs.path.join('integration_test', 'bravo', 'bravo_test.dart'),
-        fs.path.join('integration_test', 'charlie', 'charlie_test.dart'),
-        fs.path.join('integration_test', 'zulu_test.dart'),
+        fs.path.join('patrol_test', 'alpha', 'alpha_test.dart'),
+        fs.path.join('patrol_test', 'alpha', 'bravo_test.dart'),
+        fs.path.join('patrol_test', 'alpha_test.dart'),
+        fs.path.join('patrol_test', 'bravo', 'bravo_test.dart'),
+        fs.path.join('patrol_test', 'charlie', 'charlie_test.dart'),
+        fs.path.join('patrol_test', 'zulu_test.dart'),
       ];
       for (final file in files) {
         fs.file(file).createSync(recursive: true);
@@ -269,12 +324,12 @@ void _test(Platform platform) {
     test('filters out excluded tests', () {
       // given
       final files = [
-        fs.path.join('integration_test', 'alpha', 'alpha_test.dart'),
-        fs.path.join('integration_test', 'alpha', 'bravo_test.dart'),
-        fs.path.join('integration_test', 'alpha_test.dart'),
-        fs.path.join('integration_test', 'bravo', 'bravo_test.dart'),
-        fs.path.join('integration_test', 'charlie', 'charlie_test.dart'),
-        fs.path.join('integration_test', 'zulu_test.dart'),
+        fs.path.join('patrol_test', 'alpha', 'alpha_test.dart'),
+        fs.path.join('patrol_test', 'alpha', 'bravo_test.dart'),
+        fs.path.join('patrol_test', 'alpha_test.dart'),
+        fs.path.join('patrol_test', 'bravo', 'bravo_test.dart'),
+        fs.path.join('patrol_test', 'charlie', 'charlie_test.dart'),
+        fs.path.join('patrol_test', 'zulu_test.dart'),
       ];
       for (final file in files) {
         fs.file(file).createSync(recursive: true);
@@ -284,14 +339,14 @@ void _test(Platform platform) {
       final found = testFinder.findAllTests(
         excludes: {
           'other_test.dart', // ignore invalid targets
-          fs.path.join('integration_test', 'alpha_test.dart'),
-          fs.path.join('integration_test', 'alpha', 'alpha_test.dart'),
+          fs.path.join('patrol_test', 'alpha_test.dart'),
+          fs.path.join('patrol_test', 'alpha', 'alpha_test.dart'),
         },
       );
 
       // then
       final wd = fs.currentDirectory.absolute.path;
-      final testRoot = fs.path.join(wd, 'integration_test');
+      final testRoot = fs.path.join(wd, 'patrol_test');
       expect(
         found,
         equals([
@@ -303,11 +358,155 @@ void _test(Platform platform) {
       );
     });
 
+    test('filters out excluded directories', () {
+      // given
+      final files = [
+        fs.path.join('patrol_test', 'alpha', 'alpha_test.dart'),
+        fs.path.join('patrol_test', 'alpha', 'bravo_test.dart'),
+        fs.path.join('patrol_test', 'alpha_test.dart'),
+        fs.path.join('patrol_test', 'bravo', 'bravo_test.dart'),
+        fs.path.join('patrol_test', 'charlie', 'charlie_test.dart'),
+        fs.path.join('patrol_test', 'zulu_test.dart'),
+      ];
+      for (final file in files) {
+        fs.file(file).createSync(recursive: true);
+      }
+
+      // when
+      final found = testFinder.findAllTests(
+        excludes: {fs.path.join('patrol_test', 'alpha')},
+      );
+
+      // then
+      final wd = fs.currentDirectory.absolute.path;
+      final testRoot = fs.path.join(wd, 'patrol_test');
+      expect(
+        found,
+        equals([
+          fs.path.join(testRoot, 'alpha_test.dart'),
+          fs.path.join(testRoot, 'bravo', 'bravo_test.dart'),
+          fs.path.join(testRoot, 'charlie', 'charlie_test.dart'),
+          fs.path.join(testRoot, 'zulu_test.dart'),
+        ]),
+      );
+    });
+
+    test('filters out multiple excluded directories', () {
+      // given
+      final files = [
+        fs.path.join('patrol_test', 'alpha', 'alpha_test.dart'),
+        fs.path.join('patrol_test', 'alpha', 'bravo_test.dart'),
+        fs.path.join('patrol_test', 'alpha_test.dart'),
+        fs.path.join('patrol_test', 'bravo', 'bravo_test.dart'),
+        fs.path.join('patrol_test', 'charlie', 'charlie_test.dart'),
+        fs.path.join('patrol_test', 'zulu_test.dart'),
+      ];
+      for (final file in files) {
+        fs.file(file).createSync(recursive: true);
+      }
+
+      // when
+      final found = testFinder.findAllTests(
+        excludes: {
+          fs.path.join('patrol_test', 'alpha'),
+          fs.path.join('patrol_test', 'bravo'),
+        },
+      );
+
+      // then
+      final wd = fs.currentDirectory.absolute.path;
+      final testRoot = fs.path.join(wd, 'patrol_test');
+      expect(
+        found,
+        equals([
+          fs.path.join(testRoot, 'alpha_test.dart'),
+          fs.path.join(testRoot, 'charlie', 'charlie_test.dart'),
+          fs.path.join(testRoot, 'zulu_test.dart'),
+        ]),
+      );
+    });
+
+    test('filters out directories with similar names correctly', () {
+      // given
+      final files = [
+        fs.path.join('patrol_test', 'permissions', 'perm1_test.dart'),
+        fs.path.join('patrol_test', 'permissions', 'perm2_test.dart'),
+        fs.path.join('patrol_test', 'permissions_other', 'other_test.dart'),
+        fs.path.join('patrol_test', 'alpha_test.dart'),
+      ];
+      for (final file in files) {
+        fs.file(file).createSync(recursive: true);
+      }
+
+      // when - exclude 'permissions' but not 'permissions_other'
+      final found = testFinder.findAllTests(
+        excludes: {fs.path.join('patrol_test', 'permissions')},
+      );
+
+      // then
+      final wd = fs.currentDirectory.absolute.path;
+      final testRoot = fs.path.join(wd, 'patrol_test');
+      expect(
+        found,
+        equals([
+          fs.path.join(testRoot, 'alpha_test.dart'),
+          fs.path.join(testRoot, 'permissions_other', 'other_test.dart'),
+        ]),
+      );
+    });
+
+    test('filters out nested directories', () {
+      // given
+      final files = [
+        fs.path.join('patrol_test', 'alpha', 'nested', 'deep_test.dart'),
+        fs.path.join('patrol_test', 'alpha', 'shallow_test.dart'),
+        fs.path.join('patrol_test', 'bravo_test.dart'),
+      ];
+      for (final file in files) {
+        fs.file(file).createSync(recursive: true);
+      }
+
+      // when
+      final found = testFinder.findAllTests(
+        excludes: {fs.path.join('patrol_test', 'alpha')},
+      );
+
+      // then
+      final wd = fs.currentDirectory.absolute.path;
+      final testRoot = fs.path.join(wd, 'patrol_test');
+      expect(found, equals([fs.path.join(testRoot, 'bravo_test.dart')]));
+    });
+
+    test('resolves relative excludes against rootDir, not CWD', () {
+      // given
+      final files = [
+        fs.path.join('patrol_test', 'alpha', 'alpha_test.dart'),
+        fs.path.join('patrol_test', 'bravo_test.dart'),
+      ];
+      for (final file in files) {
+        fs.file(file).createSync(recursive: true);
+      }
+
+      // Simulate running from a subdirectory of the project root
+      fs.currentDirectory = fs.directory(
+        fs.path.join(projectRootAbsPath, 'patrol_test'),
+      );
+
+      // when - exclude is relative to project root, not CWD
+      final found = testFinder.findAllTests(
+        excludes: {fs.path.join('patrol_test', 'alpha')},
+      );
+
+      // then - exclude should still match even though CWD != rootDir
+      final testRoot = fs.path.join(projectRootAbsPath, 'patrol_test');
+      expect(found, equals([fs.path.join(testRoot, 'bravo_test.dart')]));
+    });
+
     test('searches for files with provided custom suffix', () {
       // given
       final files = [
-        fs.path.join('integration_test', 'alpha_patrol.dart'),
-        fs.path.join('integration_test', 'beta_patrol.dart'),
+        fs.path.join('patrol_test', 'alpha_patrol.dart'),
+        fs.path.join('patrol_test', 'beta_patrol.dart'),
       ];
       for (final file in files) {
         fs.file(file).createSync(recursive: true);
@@ -318,7 +517,7 @@ void _test(Platform platform) {
 
       // then
       final wd = fs.currentDirectory.absolute.path;
-      final testRoot = fs.path.join(wd, 'integration_test');
+      final testRoot = fs.path.join(wd, 'patrol_test');
       expect(
         found,
         equals([

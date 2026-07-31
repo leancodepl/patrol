@@ -1,10 +1,8 @@
 import 'package:path/path.dart' as path;
 
 class AndroidConfig {
-  AndroidConfig({
-    required this.outputDirectory,
-    required this.package,
-  }) : contractsFilename = path.join(outputDirectory, 'Contracts.kt');
+  AndroidConfig({required this.outputDirectory, required this.package})
+    : contractsFilename = path.join(outputDirectory, 'Contracts.kt');
 
   final String package;
   final String outputDirectory;

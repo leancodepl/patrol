@@ -11,7 +11,7 @@ import '../src/fakes.dart';
 import '../src/mocks.dart';
 
 void main() {
-  group('Analytics', () {
+  group('Analytics with no env variable', () {
     late Analytics analytics;
     late FileSystem fs;
 
@@ -36,6 +36,8 @@ void main() {
         platform: fakePlatform('/Users/john'),
         httpClient: httpClient,
         isCI: false,
+        envAnalyticsEnabled: null,
+        logger: MockLogger(),
       );
     });
 
@@ -44,8 +46,10 @@ void main() {
       _createFakeFileSystem(fs, analyticsEnabled: true);
 
       // when
-      final sent =
-          await analytics.sendCommand(FlutterVersion.test(), 'test command');
+      final sent = await analytics.sendCommand(
+        FlutterVersion.test(),
+        'test command',
+      );
 
       // then
       expect(sent, true);
@@ -56,12 +60,175 @@ void main() {
       _createFakeFileSystem(fs, analyticsEnabled: false);
 
       // when
-      final sent =
-          await analytics.sendCommand(FlutterVersion.test(), 'test command');
+      final sent = await analytics.sendCommand(
+        FlutterVersion.test(),
+        'test command',
+      );
 
       // then
       expect(sent, false);
     });
+  });
+
+  group('Analytics with env variable enabled', () {
+    late Analytics analytics;
+    late FileSystem fs;
+
+    setUp(() {
+      setUpFakes();
+
+      fs = MemoryFileSystem.test();
+
+      final httpClient = MockHttpClient();
+      when(
+        () => httpClient.post(
+          any(),
+          body: any(named: 'body'),
+          headers: any(named: 'headers'),
+        ),
+      ).thenAnswer((_) async => http.Response('', 200));
+
+      analytics = Analytics(
+        measurementId: 'measurementId',
+        apiSecret: 'apiSecret',
+        fs: fs,
+        platform: fakePlatform('/Users/john'),
+        httpClient: httpClient,
+        isCI: false,
+        envAnalyticsEnabled: true,
+        logger: MockLogger(),
+      );
+    });
+
+    test('sends data when enabled', () async {
+      // given
+      _createFakeFileSystem(fs, analyticsEnabled: true);
+
+      // when
+      final sent = await analytics.sendCommand(
+        FlutterVersion.test(),
+        'test command',
+      );
+
+      // then
+      expect(sent, true);
+    });
+
+    test('does not send data when disabled', () async {
+      // given
+      _createFakeFileSystem(fs, analyticsEnabled: false);
+
+      // when
+      final sent = await analytics.sendCommand(
+        FlutterVersion.test(),
+        'test command',
+      );
+
+      // then
+      expect(sent, true);
+    });
+  });
+
+  group('Analytics with env variable disabled', () {
+    late Analytics analytics;
+    late FileSystem fs;
+
+    setUp(() {
+      setUpFakes();
+
+      fs = MemoryFileSystem.test();
+
+      final httpClient = MockHttpClient();
+      when(
+        () => httpClient.post(
+          any(),
+          body: any(named: 'body'),
+          headers: any(named: 'headers'),
+        ),
+      ).thenAnswer((_) async => http.Response('', 200));
+
+      analytics = Analytics(
+        measurementId: 'measurementId',
+        apiSecret: 'apiSecret',
+        fs: fs,
+        platform: fakePlatform('/Users/john'),
+        httpClient: httpClient,
+        isCI: false,
+        envAnalyticsEnabled: false,
+        logger: MockLogger(),
+      );
+    });
+
+    test('sends data when enabled', () async {
+      // given
+      _createFakeFileSystem(fs, analyticsEnabled: true);
+
+      // when
+      final sent = await analytics.sendCommand(
+        FlutterVersion.test(),
+        'test command',
+      );
+
+      // then
+      expect(sent, false);
+    });
+
+    test('does not send data when disabled', () async {
+      // given
+      _createFakeFileSystem(fs, analyticsEnabled: false);
+
+      // when
+      final sent = await analytics.sendCommand(
+        FlutterVersion.test(),
+        'test command',
+      );
+
+      // then
+      expect(sent, false);
+    });
+  });
+
+  test('does not throw when failing to send data', () async {
+    setUpFakes();
+
+    final fs = MemoryFileSystem.test();
+
+    final httpClient = MockHttpClient();
+    when(
+      () => httpClient.post(
+        any(),
+        body: any(named: 'body'),
+        headers: any(named: 'headers'),
+      ),
+    ).thenThrow(
+      http.ClientException(
+        'Failed host lookup',
+        Uri(scheme: 'https', host: 'google-analytics.com'),
+      ),
+    );
+
+    final analytics = Analytics(
+      measurementId: 'measurementId',
+      apiSecret: 'apiSecret',
+      fs: fs,
+      platform: fakePlatform('/Users/john'),
+      httpClient: httpClient,
+      isCI: false,
+      envAnalyticsEnabled: false,
+      logger: MockLogger(),
+    );
+
+    // given
+    _createFakeFileSystem(fs, analyticsEnabled: true);
+
+    // when
+    final sent = await analytics.sendCommand(
+      FlutterVersion.test(),
+      'test command',
+    );
+
+    // then
+    expect(sent, false);
   });
 }
 
@@ -70,7 +237,9 @@ void _createFakeFileSystem(FileSystem fs, {required bool analyticsEnabled}) {
   fs.directory(configDirPath).createSync(recursive: true);
 
   const configFilePath = '$configDirPath/analytics.json';
-  fs.file(configFilePath).writeAsStringSync(
+  fs
+      .file(configFilePath)
+      .writeAsStringSync(
         jsonEncode({
           'clientId': 'd528c6d1-b621-4a2b-9fcb-b23325c34a23',
           'enabled': analyticsEnabled,

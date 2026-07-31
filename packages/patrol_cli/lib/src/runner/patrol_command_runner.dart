@@ -1,3 +1,4 @@
+import 'dart:io' as p show Platform;
 import 'dart:io' show ProcessSignal, stdin;
 
 import 'package:adb/adb.dart';
@@ -8,6 +9,7 @@ import 'package:cli_completion/cli_completion.dart';
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
 import 'package:file/local.dart';
+import 'package:meta/meta.dart';
 import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
 import 'package:patrol_cli/src/base/constants.dart' as constants;
@@ -20,18 +22,23 @@ import 'package:patrol_cli/src/commands/devices.dart';
 import 'package:patrol_cli/src/commands/doctor.dart';
 import 'package:patrol_cli/src/commands/test.dart';
 import 'package:patrol_cli/src/commands/update.dart';
-import 'package:patrol_cli/src/compatibility_checker.dart';
+import 'package:patrol_cli/src/compatibility_checker/compatibility_checker.dart';
+import 'package:patrol_cli/src/compatibility_checker/version_compatibility.dart';
+import 'package:patrol_cli/src/coverage/coverage_tool.dart';
 import 'package:patrol_cli/src/crossplatform/flutter_tool.dart';
 import 'package:patrol_cli/src/dart_defines_reader.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:patrol_cli/src/macos/macos_test_backend.dart';
 import 'package:patrol_cli/src/pubspec_reader.dart';
+import 'package:patrol_cli/src/runner/patrol_command.dart' show addGlobalFlags;
 import 'package:patrol_cli/src/test_bundler.dart';
 import 'package:patrol_cli/src/test_finder.dart';
+import 'package:patrol_cli/src/web/web_test_backend.dart';
 import 'package:platform/platform.dart';
 import 'package:process/process.dart';
 import 'package:pub_updater/pub_updater.dart';
+import 'package:version/version.dart';
 
 Future<int> patrolCommandRunner(List<String> args) async {
   final pubUpdater = PubUpdater();
@@ -40,6 +47,8 @@ Future<int> patrolCommandRunner(List<String> args) async {
   const platform = LocalPlatform();
   final processManager = LoggingLocalProcessManager(logger: logger);
   final isCI = ci.isCI;
+  final analyticsEnv = p.Platform.environment[_patrolAnalyticsEnvName];
+  final analyticsEnabled = bool.tryParse(analyticsEnv ?? '');
 
   final runner = PatrolCommandRunner(
     pubUpdater: pubUpdater,
@@ -52,6 +61,8 @@ Future<int> patrolCommandRunner(List<String> args) async {
       fs: fs,
       platform: platform,
       isCI: isCI,
+      envAnalyticsEnabled: analyticsEnabled,
+      logger: logger,
     ),
     processManager: processManager,
     isCI: isCI,
@@ -78,6 +89,20 @@ Future<int> patrolCommandRunner(List<String> args) async {
 
 const _gaTrackingId = 'G-W8XN8GS5BC';
 const _gaApiSecret = 'CUIwI1nCQWGJQAK8E0AIfg';
+const _patrolAnalyticsEnvName = 'PATROL_ANALYTICS_ENABLED';
+const _helloPatrol = '''
++---------------------------------------------------+
+|             Patrol - Ready for action!            |
++---------------------------------------------------+
+| We would like to collect anonymous usage data     |
+| to improve Patrol CLI. No sensitive or private    |
+| information will ever leave your machine.         |
+|                                                   |
+| By default, analytics is enabled. If you want to  |
+| disable it, please set the environment variable:  |
+| `PATROL_ANALYTICS_ENABLED=false`                  |
++---------------------------------------------------+
+''';
 
 class PatrolCommandRunner extends CompletionCommandRunner<int> {
   PatrolCommandRunner({
@@ -88,23 +113,32 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
     required Analytics analytics,
     required Logger logger,
     required bool isCI,
-  })  : _platform = platform,
-        _pubUpdater = pubUpdater,
-        _fs = fs,
-        _analytics = analytics,
-        _processManager = processManager,
-        _disposeScope = DisposeScope(),
-        _logger = logger,
-        _isCI = isCI,
-        super(
-          'patrol',
-          'Tool for running Flutter-native UI tests with superpowers',
-        ) {
+  }) : _platform = platform,
+       _pubUpdater = pubUpdater,
+       _fs = fs,
+       _analytics = analytics,
+       _processManager = processManager,
+       _disposeScope = DisposeScope(),
+       _logger = logger,
+       _isCI = isCI,
+       super(
+         'patrol',
+         'Tool for running Flutter-native UI tests with superpowers',
+       ) {
+    final adb = Adb();
+
+    final rootDirectory = findRootDirectory(_fs) ?? _fs.currentDirectory;
+
+    final testBundler = TestBundler(
+      projectRoot: rootDirectory,
+      logger: _logger,
+    );
+
     final androidTestBackend = AndroidTestBackend(
-      adb: Adb(),
+      adb: adb,
       processManager: _processManager,
       platform: _platform,
-      fs: _fs,
+      rootDirectory: rootDirectory,
       parentDisposeScope: _disposeScope,
       logger: _logger,
     );
@@ -113,6 +147,7 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
       processManager: _processManager,
       platform: _platform,
       fs: _fs,
+      rootDirectory: rootDirectory,
       parentDisposeScope: _disposeScope,
       logger: _logger,
     );
@@ -121,15 +156,18 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
       processManager: _processManager,
       platform: _platform,
       fs: _fs,
+      rootDirectory: rootDirectory,
       parentDisposeScope: _disposeScope,
       logger: _logger,
     );
 
-    final testBundler = TestBundler(
-      projectRoot: _fs.currentDirectory,
+    final webTestBackend = WebTestBackend(
+      processManager: _processManager,
+      parentDisposeScope: _disposeScope,
       logger: _logger,
     );
-    final testFinder = TestFinder(testDir: _fs.directory('integration_test'));
+
+    final testFinderFactory = TestFinderFactory(rootDirectory: rootDirectory);
 
     final deviceFinder = DeviceFinder(
       processManager: _processManager,
@@ -139,13 +177,18 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
 
     addCommand(
       BuildCommand(
-        testFinder: testFinder,
+        testFinderFactory: testFinderFactory,
         testBundler: testBundler,
-        dartDefinesReader: DartDefinesReader(projectRoot: _fs.currentDirectory),
-        pubspecReader: PubspecReader(projectRoot: _fs.currentDirectory),
+        dartDefinesReader: DartDefinesReader(projectRoot: rootDirectory),
+        pubspecReader: PubspecReader(projectRoot: rootDirectory),
         androidTestBackend: androidTestBackend,
         iosTestBackend: iosTestBackend,
         macosTestBackend: macosTestBackend,
+        compatibilityChecker: CompatibilityChecker(
+          projectRoot: rootDirectory,
+          processManager: _processManager,
+          logger: _logger,
+        ),
         analytics: _analytics,
         logger: _logger,
       ),
@@ -154,15 +197,15 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
     addCommand(
       DevelopCommand(
         deviceFinder: deviceFinder,
-        testFinder: testFinder,
+        testFinderFactory: testFinderFactory,
         testBundler: testBundler,
-        dartDefinesReader: DartDefinesReader(projectRoot: _fs.currentDirectory),
+        dartDefinesReader: DartDefinesReader(projectRoot: rootDirectory),
         compatibilityChecker: CompatibilityChecker(
-          projectRoot: _fs.currentDirectory,
+          projectRoot: rootDirectory,
           processManager: _processManager,
           logger: _logger,
         ),
-        pubspecReader: PubspecReader(projectRoot: _fs.currentDirectory),
+        pubspecReader: PubspecReader(projectRoot: rootDirectory),
         flutterTool: FlutterTool(
           stdin: stdin,
           processManager: _processManager,
@@ -173,8 +216,10 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
         androidTestBackend: androidTestBackend,
         iosTestBackend: iosTestBackend,
         macosTestBackend: macosTestBackend,
+        webTestBackend: webTestBackend,
         analytics: _analytics,
         logger: _logger,
+        stdin: stdin,
       ),
     );
 
@@ -182,35 +227,35 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
       TestCommand(
         deviceFinder: deviceFinder,
         testBundler: testBundler,
-        testFinder: testFinder,
-        dartDefinesReader: DartDefinesReader(projectRoot: _fs.currentDirectory),
+        testFinderFactory: testFinderFactory,
+        dartDefinesReader: DartDefinesReader(projectRoot: rootDirectory),
         compatibilityChecker: CompatibilityChecker(
-          projectRoot: _fs.currentDirectory,
+          projectRoot: rootDirectory,
           processManager: _processManager,
           logger: _logger,
         ),
-        pubspecReader: PubspecReader(projectRoot: _fs.currentDirectory),
+        pubspecReader: PubspecReader(projectRoot: rootDirectory),
         androidTestBackend: androidTestBackend,
         iosTestBackend: iosTestBackend,
         macOSTestBackend: macosTestBackend,
+        webTestBackend: webTestBackend,
+        coverageTool: CoverageTool(
+          fs: _fs,
+          rootDirectory: rootDirectory,
+          processManager: _processManager,
+          platform: platform,
+          adb: adb,
+          logger: _logger,
+          parentDisposeScope: _disposeScope,
+        ),
         analytics: _analytics,
         logger: _logger,
       ),
     );
 
-    addCommand(
-      DevicesCommand(
-        deviceFinder: deviceFinder,
-        logger: _logger,
-      ),
-    );
+    addCommand(DevicesCommand(deviceFinder: deviceFinder, logger: _logger));
 
-    addCommand(
-      DoctorCommand(
-        logger: _logger,
-        platform: _platform,
-      ),
-    );
+    addCommand(DoctorCommand(logger: _logger, platform: _platform));
 
     addCommand(
       UpdateCommand(
@@ -220,25 +265,13 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
       ),
     );
 
-    argParser
-      ..addOption(
-        'flutter-command',
-        help:
-            'Command to use to run the Flutter CLI. Alternatively set the PATROL_FLUTTER_COMMAND environment variable.',
-        valueHelp: 'fvm flutter',
-      )
-      ..addFlag(
-        'verbose',
-        abbr: 'v',
-        help: 'Print more logs.',
-        negatable: false,
-      )
-      ..addFlag(
-        'version',
-        abbr: 'V',
-        help: 'Print version of this program.',
-        negatable: false,
-      );
+    addGlobalFlags(argParser);
+    argParser.addFlag(
+      'version',
+      abbr: 'V',
+      help: 'Print version of this program.',
+      negatable: false,
+    );
   }
 
   final PubUpdater _pubUpdater;
@@ -269,9 +302,16 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
 
   @override
   String? get usageFooter => '''
-Read documentation at https://patrol.leancode.pl
+Read documentation at https://patrol.leancode.co
 Report bugs, request features at https://github.com/leancodepl/patrol/issues
-Ask questions, get support at https://github.com/leancodepl/patrol/discussions''';
+Ask questions, get support at Discord server: https://discord.gg/ukBK5t4EZg
+
+To deactivate Patrol CLI, run:
+  dart pub global deactivate patrol_cli
+
+To install a specific version of Patrol CLI, run:
+  dart pub global activate patrol_cli <version>
+  Example: dart pub global activate patrol_cli 3.5.0''';
 
   @override
   Future<int?> run(Iterable<String> args) async {
@@ -281,7 +321,7 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
     try {
       _handleFirstRun();
 
-      final topLevelResults = parse(args);
+      final topLevelResults = parse(_normalizeArgs(args));
       verbose = topLevelResults['verbose'] == true;
 
       if (verbose) {
@@ -332,12 +372,59 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
     return exitCode;
   }
 
+  /// Rewrites the deprecated `--web-headless=<value>` and
+  /// `--web-headless <value>` forms to the `--web-headless`/`--no-web-headless`
+  /// flag syntax, warning about the deprecation.
+  List<String> _normalizeArgs(Iterable<String> args) {
+    final list = args.toList();
+    final result = <String>[];
+
+    for (var i = 0; i < list.length; i++) {
+      final arg = list[i];
+
+      // Everything after `--` is positional, not options.
+      if (arg == '--') {
+        result.addAll(list.sublist(i));
+        break;
+      }
+
+      bool? headless;
+      if (arg == '--web-headless' && i + 1 < list.length) {
+        headless = bool.tryParse(list[i + 1]);
+        if (headless != null) {
+          i++;
+        }
+      } else if (arg.startsWith('--web-headless=')) {
+        headless = bool.tryParse(arg.substring('--web-headless='.length));
+      }
+
+      if (headless == null) {
+        result.add(arg);
+        continue;
+      }
+
+      _logger.warn(
+        'Passing a value to --web-headless is deprecated. '
+        'Use --web-headless or --no-web-headless instead.',
+      );
+      result.add(headless ? '--web-headless' : '--no-web-headless');
+    }
+
+    return result;
+  }
+
   @override
   Future<int?> runCommand(ArgResults topLevelResults) async {
     final commandName = topLevelResults.command?.name;
 
     if (_wantsUpdateCheck(commandName)) {
-      await _checkForUpdate(commandName);
+      final latestVersion = await _pubUpdater.getLatestVersion('patrol_cli');
+      const currentVersion = constants.version;
+
+      await _checkForUpdates(
+        currentVersion: currentVersion,
+        latestVersion: latestVersion,
+      );
     }
 
     final int? exitCode;
@@ -362,24 +449,16 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
   }
 
   void _handleAnalytics() {
-    _logger.info(
-      '''
-\n
-+---------------------------------------------------+
-|             Patrol - Ready for action!            |
-+---------------------------------------------------+
-| We would like to collect anonymous usage data     |
-| to improve Patrol CLI. No sensitive or private    |
-| information will ever leave your machine.         |
-+---------------------------------------------------+
-\n''',
-    );
-    final analyticsEnabled = _logger.confirm(
-      'Enable analytics?',
-      defaultValue: true,
-    );
-    _analytics.enabled = analyticsEnabled;
-    if (analyticsEnabled) {
+    _logger.info(_helloPatrol);
+
+    /// If the environment variable `PATROL_ANALYTICS_ENABLED` is set,
+    /// use it to determine if the command should be sent.
+    /// If not, analytics will be enabled by default.
+    final patrolAnalyticsEnabled =
+        p.Platform.environment[_patrolAnalyticsEnvName];
+    _analytics.enabled =
+        bool.tryParse(patrolAnalyticsEnabled ?? 'true') ?? true;
+    if (_analytics.enabled) {
       _logger.info('Analytics enabled. Thank you!');
     } else {
       _logger.info('Analytics disabled.');
@@ -390,40 +469,188 @@ Ask questions, get support at https://github.com/leancodepl/patrol/discussions''
     DoctorCommand(logger: _logger, platform: _platform).run();
   }
 
+  /// For testing purposes only
+  @visibleForTesting
+  bool testWantsUpdateCheck(String? commandName) =>
+      _wantsUpdateCheck(commandName);
+
+  /// For testing purposes only
+  @visibleForTesting
+  List<String> testNormalizeArgs(Iterable<String> args) => _normalizeArgs(args);
+
+  /// For testing purposes only
+  @visibleForTesting
+  Future<void> testCheckForUpdates({
+    required String currentVersion,
+    required String latestVersion,
+  }) => _checkForUpdates(
+    currentVersion: currentVersion,
+    latestVersion: latestVersion,
+  );
+
   bool _wantsUpdateCheck(String? commandName) {
     if (_isCI) {
       // We don't want to check for updates on CI because of #1282
       return false;
     }
 
-    if (commandName == 'update' || commandName == 'doctor') {
+    if (commandName == 'update' ||
+        commandName == 'doctor' ||
+        commandName == HandleCompletionRequestCommand.commandName) {
       return false;
     }
 
     return true;
   }
 
-  /// Checks if the current version (set by the build runner on the version.dart
-  /// file) is the most recent one. If not, shows a prompt to the user.
-  Future<void> _checkForUpdate(String? commandName) async {
-    if (commandName == 'update' || commandName == 'doctor') {
+  Future<void> _checkForUpdates({
+    required String currentVersion,
+    required String latestVersion,
+  }) async {
+    Version currentVersionParsed;
+    Version latestVersionParsed;
+    Version? patrolVer;
+    String? patrolVersion;
+
+    try {
+      currentVersionParsed = Version.parse(currentVersion);
+      latestVersionParsed = Version.parse(latestVersion);
+      patrolVersion = _getPatrolVersion();
+
+      // Parse patrol version if available
+      patrolVer = patrolVersion != null ? Version.parse(patrolVersion) : null;
+    } on FormatException catch (e) {
+      _logger.detail('Failed to parse version string during update check: $e');
       return;
     }
 
-    final latestVersion = await _pubUpdater.getLatestVersion('patrol_cli');
-    final isUpToDate = constants.version == latestVersion;
+    // Check for incompatibility first
+    if (patrolVer != null) {
+      final isCompatible = areVersionsCompatible(
+        currentVersionParsed,
+        patrolVer,
+      );
 
-    if (isUpToDate) {
+      if (!isCompatible) {
+        final maxCliVersion = getMaxCompatibleCliVersion(patrolVer);
+        final versionInfo =
+            'patrol_cli ${lightCyan.wrap(currentVersion)} is not compatible with patrol ${lightCyan.wrap(patrolVersion)}.';
+
+        final command = maxCliVersion != null
+            ? 'dart pub global activate patrol_cli $maxCliVersion'
+            : null;
+
+        final actionMessage = maxCliVersion != null
+            ? 'To resolve this issue, ${currentVersionParsed < maxCliVersion ? "upgrade" : "downgrade"} patrol_cli to a compatible version:'
+            : 'Please upgrade both "patrol_cli" and "patrol" dependencies to the latest versions.';
+
+        _showVersionMessage(
+          title: lightYellow.wrap('Version incompatibility detected!') ?? '',
+          versionInfo: versionInfo,
+          actionMessage: actionMessage,
+          command: command,
+        );
+        return;
+      }
+    }
+
+    // No update available
+    if (latestVersionParsed <= currentVersionParsed) {
       return;
     }
+
+    // Determine if we should show update notification and which message
+    if (patrolVer != null) {
+      final maxCliVersion = getMaxCompatibleCliVersion(patrolVer);
+
+      // Already at max compatible version for this patrol version
+      if (maxCliVersion != null && currentVersionParsed >= maxCliVersion) {
+        return;
+      }
+
+      // Show constrained update message if latest is incompatible
+      if (maxCliVersion != null && latestVersionParsed > maxCliVersion) {
+        _showVersionMessage(
+          title: lightYellow.wrap('Update available!') ?? '',
+          versionInfo:
+              '${lightCyan.wrap(currentVersion)} \u2192 ${lightCyan.wrap(maxCliVersion.toString())}',
+          actionMessage: 'To update to the latest compatible version, run:',
+          command: 'dart pub global activate patrol_cli $maxCliVersion',
+          additionalWarning:
+              "⚠️  Newest patrol_cli $latestVersion is not compatible with your project's patrol version.\nConsider upgrading your patrol package for the latest features.",
+        );
+        return;
+      }
+    }
+
+    // Show simple update message
+    _showVersionMessage(
+      title: lightYellow.wrap('Update available!') ?? '',
+      versionInfo:
+          '${lightCyan.wrap(currentVersion)} \u2192 ${lightCyan.wrap(latestVersion)}',
+      actionMessage: 'Run ${lightCyan.wrap('patrol update')} to update.',
+    );
+  }
+
+  String? _getPatrolVersion() {
+    final rootDir = findRootDirectory(_fs);
+    if (rootDir != null) {
+      final pubspecReader = PubspecReader(projectRoot: rootDir);
+      return pubspecReader.getPatrolVersion();
+    }
+    return null;
+  }
+
+  void _showVersionMessage({
+    required String title,
+    required String versionInfo,
+    String? actionMessage,
+    String? command,
+    String? additionalWarning,
+  }) {
+    final buffer = StringBuffer()
+      ..writeln('$title $versionInfo')
+      ..writeln();
+
+    if (command != null) {
+      if (actionMessage != null) {
+        buffer.writeln(actionMessage);
+      }
+      buffer
+        ..writeln(lightCyan.wrap(command))
+        ..writeln();
+    }
+
+    if (additionalWarning != null) {
+      buffer
+        ..writeln(additionalWarning)
+        ..writeln();
+    }
+
+    buffer.writeln(
+      'Check the compatibility table at: ${lightCyan.wrap('https://patrol.leancode.co/documentation/compatibility-table')}',
+    );
 
     _logger
       ..info('')
-      ..info(
-        '''
-${lightYellow.wrap('Update available!')} ${lightCyan.wrap(constants.version)} \u2192 ${lightCyan.wrap(latestVersion)}
-Run ${lightCyan.wrap('patrol update')} to update''',
-      )
+      ..info(buffer.toString())
       ..info('');
+  }
+}
+
+// from: https://github.com/flutter/flutter/blob/285b9b11ec0d888078317445e56d6c1da397f5cd/packages/flutter_tools/lib/src/base/os.dart#L613
+Directory? findRootDirectory(FileSystem fileSystem) {
+  const kProjectRootSentinel = 'pubspec.yaml';
+  final directory = fileSystem.currentDirectory.path;
+  var currentDirectory = fileSystem.directory(directory).absolute;
+  while (true) {
+    if (currentDirectory.childFile(kProjectRootSentinel).existsSync()) {
+      return currentDirectory;
+    }
+    if (!currentDirectory.existsSync() ||
+        currentDirectory.parent.path == currentDirectory.path) {
+      return null;
+    }
+    currentDirectory = currentDirectory.parent;
   }
 }

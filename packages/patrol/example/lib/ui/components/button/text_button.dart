@@ -3,11 +3,7 @@ import 'package:example/ui/style/test_style.dart';
 import 'package:flutter/material.dart';
 
 class PTTextButton extends StatelessWidget {
-  const PTTextButton({
-    super.key,
-    required this.text,
-    required this.onPressed,
-  });
+  const PTTextButton({super.key, required this.text, required this.onPressed});
 
   final String text;
   final VoidCallback onPressed;
@@ -17,16 +13,14 @@ class PTTextButton extends StatelessWidget {
     return TextButton(
       style: ButtonStyle(
         overlayColor: WidgetStatePropertyAll(
-          PTColors.lcYellow.withOpacity(0.2),
+          PTColors.lcYellow.withValues(alpha: 0.2),
         ),
       ),
       onPressed: onPressed,
       child: Center(
         child: Text(
           text,
-          style: PTTextStyles.bodyBold.copyWith(
-            color: PTColors.lcYellow,
-          ),
+          style: PTTextStyles.bodyBold.copyWith(color: PTColors.lcYellow),
         ),
       ),
     );
