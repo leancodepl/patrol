@@ -1,5 +1,9 @@
 ## Unreleased
 
+- Fix `AndroidNativeView.visibleBounds` always having zero height. (#3202)
+
+## 4.8.0
+
 - Wire additional Playwright browser launch and context options into the web runner config, configurable through the matching `patrol_cli` `--web-*` flags: (#3155)
   - channel
   - executable path

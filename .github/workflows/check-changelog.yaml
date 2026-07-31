@@ -1,0 +1,29 @@
+name: check changelog
+
+on:
+  workflow_dispatch:
+  pull_request:
+    # `labeled`/`unlabeled` are included so toggling the `skip changelog`
+    # label re-evaluates the job condition below and updates the check status.
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+    paths:
+      - 'packages/**'
+      - 'tool/check_changelog.sh'
+      - '.github/workflows/check-changelog.yaml'
+
+jobs:
+  check-changelog:
+    name: Check CHANGELOG entries
+    runs-on: ubuntu-latest
+    if: ${{ !contains(github.event.pull_request.labels.*.name, 'skip changelog') }}
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check CHANGELOG entries
+        # github.base_ref is empty on workflow_dispatch, so fall back to the
+        # repository's default branch.
+        run: tool/check_changelog.sh "origin/${{ github.base_ref || github.event.repository.default_branch }}"
