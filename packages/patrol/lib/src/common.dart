@@ -170,7 +170,10 @@ void patrolTest(
       } catch (_) {
         if (constants.hotRestartEnabled) {
           patrolLog.log(
-            TestEntry(name: description, status: TestEntryStatus.failure),
+            TestEntry(
+              name: global_state.currentTestFullName,
+              status: TestEntryStatus.failure,
+            ),
           );
         }
         rethrow;
