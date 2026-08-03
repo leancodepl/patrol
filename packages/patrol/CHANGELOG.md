@@ -1,6 +1,9 @@
 ## Unreleased
 
 - Add Marathon integration for running Patrol tests on Android and iOS simulators. See the [Marathon integration guide](https://patrol.leancode.co/documentation/integrations/marathon).
+- Support build-time test discovery: add the static iOS runner macros
+  (`PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN`/`_END`), so each Dart test can be compiled
+  into a real native test instead of being registered after the app launches. (#3197)
 - Fix `AndroidNativeView.visibleBounds` always having zero height. (#3202)
 - Collect Chrome JavaScript coverage in the web runner when `patrol test --coverage` runs on the web platform.
 
