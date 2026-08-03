@@ -1,6 +1,9 @@
 ---
-description: PostHog feature flags and experiments for docs_app — create/update via PostHog MCP and wire them in code. Use when adding, changing, removing, or debugging flags or A/B tests.
-alwaysApply: true
+name: docs-posthog-feature-flags
+description: >-
+  PostHog feature flags and experiments for docs_app — create/update via PostHog
+  MCP and wire them in code. Use when adding, changing, removing, or debugging
+  docs_app flags or A/B tests, or when working under docs_app/lib/posthog/.
 ---
 
 # PostHog feature flags & experiments (docs_app)
@@ -8,7 +11,6 @@ alwaysApply: true
 docs_app uses PostHog (EU: `https://eu.i.posthog.com`) with `@leancodepl/feature-flags-react-client` and `@leancodepl/openfeature-posthog-provider`.
 
 - Typed **flags** + **experiments**: `docs_app/lib/posthog/posthog.ts`
-- Shared bootstrap type: `docs_app/lib/posthog/posthog-bootstrap.ts`
 - SSR bootstrap (`posthog-node`): `docs_app/lib/posthog/posthog-server.ts`
 - Client init + Cookie-Script consent: `docs_app/components/FeatureFlagsProvider/index.tsx`
 - Root layout fetches bootstrap and passes it into `AppFeatureFlagsProvider`
