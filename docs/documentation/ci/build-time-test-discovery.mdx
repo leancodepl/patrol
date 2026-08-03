@@ -50,6 +50,21 @@ selectors, and the Dart names when selecting tests through Patrol
 
 <Steps>
 
+### Keep your tests outside `integration_test/`
+
+Discovery runs your tests as plain widget tests on the host machine. Flutter
+decides what a test *is* purely from its directory: anything under
+`integration_test/` is treated as an integration test, which requires a connected
+device and a direct `integration_test` dependency — so discovery can't run there.
+
+Keep your Patrol tests in `patrol_test/` (the default) or any other directory that
+isn't `integration_test/`, and point Patrol at it:
+
+```yaml
+patrol:
+  test_directory: patrol_test
+```
+
 ### Enable it in `pubspec.yaml`
 
 ```yaml
@@ -101,7 +116,28 @@ patrol build ios --emit-test-manifest    # or: patrol build android
 ```
 
 After discovery, the CLI prints the discovered tests grouped by source file, and
-where the generated code landed.
+where the generated code landed:
+
+```text
+✓ Discovered Dart tests → build/patrol/patrol_test_manifest.json (9.0s)
+Discovered 3 Dart test(s) (1 skipped) in 1 file(s):
+
+  patrol_test/example_test.dart  (3 test(s), 1 skipped)
+    • example_test counter state is the same after going to Home and switching apps
+    • example_test short test with two tags  [skip]
+    • example_test short test with tag
+
+Generated 3 static XCTest method(s) → ios/RunnerUITests/PatrolGeneratedTests.inc
+```
+
+Those printed names are the exact Dart test names — pass one of them to `--only`
+when you want to run a single test.
+
+<Info>
+  The generated sources (`ios/RunnerUITests/PatrolGeneratedTests.inc` and
+  `PatrolGeneratedTests.java` in your `androidTest` source set) are build output.
+  Add them to `.gitignore`; they're regenerated on every build.
+</Info>
 
 </Steps>
 
