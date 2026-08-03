@@ -878,6 +878,7 @@ void main() {
           trace: 'retain-on-failure',
           storageState: '/tmp/state.json',
           acceptDownloads: true,
+          coverageDir: '/tmp/coverage',
         );
 
         expect(
@@ -918,6 +919,7 @@ void main() {
             'PATROL_WEB_TRACE': 'retain-on-failure',
             'PATROL_WEB_STORAGE_STATE': '/tmp/state.json',
             'PATROL_WEB_ACCEPT_DOWNLOADS': 'true',
+            'PATROL_WEB_COVERAGE_DIR': '/tmp/coverage',
           }),
         );
       });
