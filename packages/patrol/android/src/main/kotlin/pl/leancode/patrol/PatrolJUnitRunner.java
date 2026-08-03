@@ -47,6 +47,10 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
         // This is only true when the ATO requests a list of tests from the app during the initial run.
         boolean isInitialRun = Boolean.parseBoolean(arguments.getString("listTestsForOrchestrator"));
 
+        if (arguments.getString("orchestratorService") != null || isInitialRun) {
+            Logger.INSTANCE.i("AndroidX Test Orchestrator detected: Patrol requires single-process lifecycle mode to maintain local HTTP server connection.");
+        }
+
         Logger.INSTANCE.i("--------------------------------");
         Logger.INSTANCE.i("PatrolJUnitRunner.onCreate() " + (isInitialRun ? "(initial run)" : ""));
     }
