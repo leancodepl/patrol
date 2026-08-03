@@ -86,7 +86,7 @@ class PatrolTesterConfig {
 const defaultScrollDelta = 64.0;
 
 /// Default maximum number of drags during scrolling.
-const defaultScrollMaxIteration = 15;
+const defaultScrollMaxIteration = 25;
 
 /// [PatrolTester] wraps a [WidgetTester]. It provides support for _Patrol
 /// custom finder_, a.k.a `$`.

@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Increase default max scroll iterations to 25 to support deep lazy-loaded `ListView.builder` scrolling.
 - Add a regression test for finding widgets by keys containing special characters (diacritics, symbols, emoji). (#3169)
 
 ## 3.6.0
