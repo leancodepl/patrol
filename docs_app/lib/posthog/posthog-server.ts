@@ -1,9 +1,7 @@
-import type { PostHogBootstrap } from "@/lib/posthog/posthog-bootstrap"
 import { cookies } from "next/headers"
+import type { BootstrapConfig } from "posthog-js"
 import { PostHog } from "posthog-node"
 import { cache } from "react"
-
-export type { PostHogBootstrap }
 
 function createPostHogServerClient() {
   const token = process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN
@@ -18,33 +16,49 @@ function createPostHogServerClient() {
   })
 }
 
+/**
+ * PostHog JS persistence cookie name: `ph_<project_api_key>_posthog`
+ * @see https://posthog.com/docs/libraries/js/persistence
+ *
+ * The JS SDK sanitizes `+` / `/` / `=` in the token when building the name
+ * (same helpers as in posthog-js / upcoming posthog-node exports).
+ */
+function getPostHogCookieName(apiKey: string) {
+  const sanitized = apiKey.replaceAll("+", "PL").replaceAll("/", "SL").replaceAll("=", "EQ")
+  return `ph_${sanitized}_posthog`
+}
+
 async function readDistinctId() {
   const token = process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN
   if (!token) {
-    return crypto.randomUUID()
+    return undefined
   }
 
   const cookieStore = await cookies()
-  const cookie = cookieStore.get(`ph_${token}_posthog`)
+  const cookie = cookieStore.get(getPostHogCookieName(token))
   if (!cookie?.value) {
-    return crypto.randomUUID()
+    // No client identity yet — skip SSR bootstrap so posthog-js owns distinct_id.
+    return undefined
   }
 
   try {
     const parsed = JSON.parse(cookie.value) as { distinct_id?: string }
-    return parsed.distinct_id ?? crypto.randomUUID()
+    return parsed.distinct_id
   } catch {
-    return crypto.randomUUID()
+    return undefined
   }
 }
 
-export const getPostHogBootstrap = cache(async (): Promise<PostHogBootstrap | undefined> => {
+export const getPostHogBootstrap = cache(async (): Promise<BootstrapConfig | undefined> => {
+  const distinctID = await readDistinctId()
+  if (!distinctID) {
+    return undefined
+  }
+
   const client = createPostHogServerClient()
   if (!client) {
     return undefined
   }
-
-  const distinctID = await readDistinctId()
 
   try {
     const { featureFlags, featureFlagPayloads } = await client.getAllFlagsAndPayloads(distinctID)

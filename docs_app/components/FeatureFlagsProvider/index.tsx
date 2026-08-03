@@ -1,8 +1,8 @@
 "use client"
 
 import { FeatureFlagsProvider } from "@/lib/posthog/posthog"
-import type { PostHogBootstrap } from "@/lib/posthog/posthog-bootstrap"
 import posthog from "posthog-js"
+import type { BootstrapConfig } from "posthog-js"
 import { useRef } from "react"
 
 declare global {
@@ -48,7 +48,7 @@ function syncConsentFromCookieScript() {
   applyAnalyticsConsent(state.action === "accept" && hasAnalyticsConsent(state.categories))
 }
 
-function initPostHog(bootstrap?: PostHogBootstrap) {
+function initPostHog(bootstrap?: BootstrapConfig) {
   if (typeof window === "undefined" || (posthog as { __loaded?: boolean }).__loaded) {
     return
   }
@@ -78,7 +78,7 @@ export function AppFeatureFlagsProvider({
   bootstrap,
 }: {
   children: React.ReactNode
-  bootstrap?: PostHogBootstrap
+  bootstrap?: BootstrapConfig
 }) {
   const didInit = useRef(false)
 
