@@ -116,10 +116,8 @@ class IOSVideoRecordingManager extends VideoRecordingManager {
     _logger.detail('Executing command: ${command.join(' ')}');
 
     try {
-      // Do NOT run in a shell: the recording is stopped by sending SIGINT to
-      // this process so `simctl` can finalize the .mp4. A shell wrapper would
-      // receive the SIGINT itself and not forward it to `simctl`, leaving the
-      // recording running forever and hanging the test run.
+      // Not in a shell: the stop SIGINT must reach `simctl` directly, not a
+      // shell wrapper that would swallow it and leave the recording running.
       _currentRecordingProcess = await _processManager.start(command);
       _currentRecordingProcess!.disposedBy(_scope);
 
@@ -184,11 +182,9 @@ class IOSVideoRecordingManager extends VideoRecordingManager {
         // Send SIGINT (not SIGTERM) so `simctl` finalizes the .mp4 on exit.
         _currentRecordingProcess!.kill(io.ProcessSignal.sigint);
 
-        // Wait for the process to flush and exit, but never block the run:
-        // if the test failed fast, the SIGINT can land while `simctl` is still
-        // starting up and be ignored, leaving the recording running forever.
-        // Force kill after a short grace period so a stuck recording can't
-        // hang the test run (and hold the simulator hostage from later tests).
+        // Force kill if it doesn't exit shortly: a SIGINT sent while `simctl`
+        // is still starting up is ignored, so a stuck recording can't hang the
+        // run.
         _logger.detail('Waiting for xcrun simctl process to exit...');
         final process = _currentRecordingProcess!;
         final exitCode = await process.exitCode.timeout(

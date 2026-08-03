@@ -195,12 +195,6 @@ class IOSTestBackend {
         );
       }
 
-      // The app streams its `PATROL_LOG ...` lines to the device's unified log.
-      // On physical devices we read them with `idevicesyslog`. On simulators we
-      // must read the *simulator's* log via `simctl spawn`: a plain host
-      // `log stream` does not include the simulator's processes on recent
-      // macOS/Xcode, so the `PATROL_LOG` entries (and therefore test lifecycle
-      // events used for reporting and video recording) never arrive.
       final patrolLogCommand = device.real
           ? ['idevicesyslog']
           : [
