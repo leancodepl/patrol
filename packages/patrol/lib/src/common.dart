@@ -186,20 +186,30 @@ void patrolTest(
       // test looks like it passed. Pull any framework-captured exception and
       // report it through the Patrol log so it becomes visible in `patrol
       // develop` (and via patrol_mcp), without ending the Hot Restart session.
+      void reportDevelopException() {
+        final caughtException = patrolBinding.takeException();
+        if (caughtException == null) {
+          return;
+        }
+        // `takeException()` returns only the exception object; the full
+        // `FlutterErrorDetails` (with the stack trace) is captured separately by
+        // `PatrolBinding.reportExceptionNoticed`, so prefer it to get file and
+        // line into the output, matching what `patrol test` reports.
+        final details = patrolBinding.takeLastReportedExceptionDetails();
+        patrolLog.log(
+          TestEntry(
+            name: global_state.currentTestFullName,
+            status: TestEntryStatus.failure,
+            error: details?.toString() ?? caughtException.toString(),
+          ),
+        );
+      }
+
       if (constants.hotRestartEnabled) {
         // Pump once so exceptions from in-flight gesture callbacks are recorded
         // by the framework before we read them.
         await widgetTester.pump();
-        final caughtException = patrolBinding.takeException();
-        if (caughtException != null) {
-          patrolLog.log(
-            TestEntry(
-              name: global_state.currentTestFullName,
-              status: TestEntryStatus.failure,
-              error: caughtException.toString(),
-            ),
-          );
-        }
+        reportDevelopException();
       }
 
       if (debugDefaultTargetPlatformOverride !=
@@ -222,9 +232,12 @@ void patrolTest(
           ..log(
             ConfigEntry(config: const {ConfigEntry.developCompletedKey: true}),
           );
-        // Wait indefinitely in develop mode after the last test
+        // Wait indefinitely in develop mode after the last test. The app stays
+        // interactive here, so keep reporting exceptions (e.g. from manual taps
+        // while iterating) as they happen instead of losing them.
         while (true) {
           await widgetTester.pump();
+          reportDevelopException();
           await Future<void>.delayed(const Duration(milliseconds: 10));
         }
       }
