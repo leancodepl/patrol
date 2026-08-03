@@ -1,5 +1,8 @@
 ## Unreleased
 
+- Support build-time test discovery: add the static iOS runner macros
+  (`PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN`/`_END`), so each Dart test can be compiled
+  into a real native test instead of being registered after the app launches. (#3197)
 - Fix `AndroidNativeView.visibleBounds` always having zero height. (#3202)
 
 ## 4.8.0
