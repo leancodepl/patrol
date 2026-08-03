@@ -221,23 +221,22 @@ Uri? resolveDartSourceUri({
 
 /// Attributes a server/app-root path to a package: `packages/<name>/<path>`
 /// is a dependency, while a top-level `lib/` belongs to the app package.
+///
+/// Both prefixes are only recognized at the root, so an app source living under
+/// e.g. `lib/packages/widgets/button.dart` stays with the app package instead
+/// of being attributed to a `widgets` dependency.
 Uri? _packageUriFromPath(List<String> pathSegments, String appPackageName) {
   final segments = pathSegments.where((s) => s.isNotEmpty).toList();
-  if (segments.isEmpty) {
-    return null;
-  }
 
-  if (segments.indexOf('packages') case final i
-      when i != -1 && i + 1 < segments.length) {
-    return Uri(scheme: 'package', pathSegments: segments.sublist(i + 1));
-  }
-
-  if (segments case ['lib', final first, ...final rest]) {
-    return Uri(
+  return switch (segments) {
+    ['packages', final package, final first, ...final rest] => Uri(
+      scheme: 'package',
+      pathSegments: [package, first, ...rest],
+    ),
+    ['lib', final first, ...final rest] => Uri(
       scheme: 'package',
       pathSegments: [appPackageName, first, ...rest],
-    );
-  }
-
-  return null;
+    ),
+    _ => null,
+  };
 }

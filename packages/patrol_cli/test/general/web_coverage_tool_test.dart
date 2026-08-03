@@ -49,6 +49,30 @@ void main() {
       expect(resolve('org-dartlang-app:///web/main.dart'), isNull);
     });
 
+    test('keeps app sources under a nested packages/ directory '
+        'in the app package', () {
+      expect(
+        resolve('org-dartlang-app:///lib/packages/widgets/button.dart'),
+        Uri.parse('package:example_app/packages/widgets/button.dart'),
+      );
+      expect(
+        resolve('org-dartlang-app:///lib/foo/packages/bar.dart'),
+        Uri.parse('package:example_app/foo/packages/bar.dart'),
+      );
+    });
+
+    test('keeps a dependency source under its own nested packages/ directory '
+        'in that dependency', () {
+      expect(
+        resolve('org-dartlang-app:///packages/dep/src/packages/inner.dart'),
+        Uri.parse('package:dep/src/packages/inner.dart'),
+      );
+    });
+
+    test('ignores packages/ sources without a path inside the package', () {
+      expect(resolve('org-dartlang-app:///packages/dep.dart'), isNull);
+    });
+
     test('ignores unknown schemes', () {
       expect(resolve('webpack:///src/index.js'), isNull);
     });
@@ -85,6 +109,17 @@ void main() {
           scriptUrl: 'http://localhost:8080/main.dart.js',
         ),
         isNull,
+      );
+    });
+
+    test('attributes relative sources under a nested packages/ directory '
+        'to the app package', () {
+      expect(
+        resolve(
+          '../../lib/foo/packages/bar.dart',
+          scriptUrl: 'http://localhost:8080/main.dart.js',
+        ),
+        Uri.parse('package:example_app/foo/packages/bar.dart'),
       );
     });
   });
