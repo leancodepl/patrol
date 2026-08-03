@@ -8,10 +8,9 @@ import 'package:patrol_cli/src/coverage/coverage_common.dart';
 
 /// Generates a Dart coverage report for web test runs.
 ///
-/// The browser has no Dart VM, so instead of a VM service the Playwright runner
-/// records Chrome's JS coverage per test (with source maps) into
-/// [dataDirectory]. This tool maps it back to Dart and writes the same
-/// `coverage/patrol_lcov.info` report as the mobile flow.
+/// The browser has no Dart VM, so the Playwright runner records Chrome's JS
+/// coverage per test into [dataDirectory] instead. This tool maps it back to
+/// Dart via source maps and writes the same report as the mobile flow.
 class WebCoverageTool {
   WebCoverageTool({
     required FileSystem fs,
@@ -25,14 +24,11 @@ class WebCoverageTool {
   final Directory _rootDirectory;
   final Logger _logger;
 
-  /// Where the Playwright runner drops one JSON file per test with the raw V8
-  /// coverage entries.
   Directory get dataDirectory => _rootDirectory
       .childDirectory('.dart_tool')
       .childDirectory('patrol')
       .childDirectory('web_coverage');
 
-  /// Clears data from previous runs and returns the directory to write to.
   Future<Directory> prepareDataDirectory() async {
     final dir = dataDirectory;
     if (dir.existsSync()) {
@@ -65,9 +61,9 @@ class WebCoverageTool {
       return;
     }
 
-    // Parse concurrently, recovering each future to null so one bad file
-    // doesn't reject the whole batch. Package resolution runs alongside the
-    // parse and is awaited directly so its `ToolExit` propagates unwrapped.
+    // Recover each future to null so one bad file doesn't reject the batch.
+    // Package resolution runs alongside and is awaited directly, so its
+    // `ToolExit` propagates unwrapped.
     final testHitMapsFuture = Future.wait(
       files.map(
         (file) => _parseTestCoverage(file, flutterPackageName).catchError((
@@ -114,8 +110,6 @@ class WebCoverageTool {
     );
   }
 
-  /// Converts one test's V8 coverage into a Dart hit map, or null if the file
-  /// is unusable.
   Future<Map<String, coverage.HitMap>?> _parseTestCoverage(
     File file,
     String flutterPackageName,
@@ -126,7 +120,6 @@ class WebCoverageTool {
     }
     final byId = {for (final e in entries) e['scriptId'] as String: e};
 
-    // Source, source map and URL are supplied via these lookups by scriptId.
     final parsed = await coverage.parseChromeCoverage(
       entries,
       (id) async => byId[id]?['source'] as String?,
@@ -143,9 +136,8 @@ class WebCoverageTool {
     );
   }
 
-  /// Returns the entries `parseChromeCoverage` can consume, or null if the file
-  /// is malformed. Written by a separate process, so a bad file is skipped
-  /// rather than fatal; only entries with a String `scriptId` are kept.
+  /// The files come from a separate process, so a malformed one is skipped
+  /// rather than fatal.
   Future<List<Map<String, dynamic>>?> _readCoverageEntries(File file) async {
     final Object? json;
     try {
@@ -189,15 +181,11 @@ String? _packageNameOf(String source) {
 }
 
 /// Maps a source map `sources` entry to a Dart URI the `package:coverage`
-/// Resolver understands, or null for unattributable sources (which are then
-/// excluded from the report). Handles the shapes the compilers emit:
-/// - `package:` and `file:` URIs are already usable;
-/// - DDC's `org-dartlang-app:///` for app-root sources;
-/// - otherwise the source is relative to the script's URL, where the dev
-///   server exposes dependencies under `/packages/<name>/`.
+/// Resolver understands. Unattributable sources return null and are excluded
+/// from the report; SDK sources are already filtered by `parseChromeCoverage`.
 ///
-/// SDK sources (`org-dartlang-sdk:`) are already filtered by
-/// `parseChromeCoverage`.
+/// Relative sources are resolved against the script's URL, where the dev server
+/// exposes dependencies under `/packages/<name>/`.
 Uri? resolveDartSourceUri({
   required String sourceUrl,
   required String? scriptUrl,
