@@ -462,7 +462,13 @@ class DevelopService {
           dartDefines: flutterOpts.dartDefines,
           openDevtools: openDevtools,
           flavor: flutterOpts.flavor,
-          attachUsingUrl: device.targetPlatform == TargetPlatform.macOS,
+          // xcodebuild launches the app, so `flutter attach` discovery is
+          // unreliable on the simulator. Physical devices keep using discovery.
+          attachUsingUrl: switch (device.targetPlatform) {
+            TargetPlatform.macOS => true,
+            TargetPlatform.iOS => !device.real,
+            TargetPlatform.android || TargetPlatform.web => false,
+          },
           onQuit: onQuitCleanup,
         );
       }

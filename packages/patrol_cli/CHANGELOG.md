@@ -7,6 +7,7 @@
 
 - Add `--record-video` flag to `patrol test` and `patrol develop` to record a video per test case (Android and iOS simulators). (#2741)
 - Fix `patrol test`/`patrol develop` not reading logs from iOS simulators, by streaming the simulator's log via `simctl spawn`. (#3198)
+- Fix `patrol develop` hanging on iOS simulators with `Hot Restart: not attached to the app yet`, by attaching to the Dart VM service URL read from the device logs instead of relying on `flutter attach` discovery.
 
 ## 4.6.0
 
