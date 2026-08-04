@@ -115,13 +115,11 @@ class IOSVideoRecordingManager extends VideoRecordingManager {
 
     _logger.detail('Executing command: ${command.join(' ')}');
 
-    // A simulator allows only one host recording at a time, so clear any stale
-    // one left behind by an interrupted run first.
+    // A simulator allows only one recording at a time; clear a stale one first.
     await _clearStaleSimulatorRecording();
 
     try {
-      // Not in a shell: the stop SIGINT must reach `simctl` directly, not a
-      // shell wrapper that would swallow it and leave the recording running.
+      // No shell: the stop SIGINT must reach `simctl` directly, not a wrapper.
       _currentRecordingProcess = await _processManager.start(command);
       _currentRecordingProcess!.disposedBy(_scope);
 
@@ -140,14 +138,9 @@ class IOSVideoRecordingManager extends VideoRecordingManager {
     }
   }
 
-  /// Stops a leftover `simctl recordVideo` still recording this simulator.
-  ///
-  /// If a previous run was interrupted (or a recording was force-killed) the
-  /// `simctl` process can stay alive and keep holding the simulator's single
-  /// host-recording slot, making the next `recordVideo` fail with
-  /// "Host recording is already in progress". SIGINT lets `simctl` finalize and
-  /// release the slot. The pattern is scoped to this device's id, so it never
-  /// touches macOS screen recordings or recordings of other simulators.
+  /// SIGINT a leftover `recordVideo` from an interrupted run that still holds
+  /// this simulator's recording slot. Scoped to the device id, so it never
+  /// touches macOS screen recordings or other simulators.
   Future<void> _clearStaleSimulatorRecording() async {
     try {
       final result = await _processManager.run([
@@ -158,10 +151,8 @@ class IOSVideoRecordingManager extends VideoRecordingManager {
       ]);
       // pkill exits 0 only when it signalled a matching process.
       if (result.exitCode == 0) {
-        _logger.detail(
-          'Stopped a stale simctl recording for ${_device.id}; '
-          'waiting for it to release the recording slot',
-        );
+        _logger.detail('Stopped a stale simctl recording for ${_device.id}');
+        // Give it a moment to release the recording slot.
         await Future<void>.delayed(const Duration(seconds: 1));
       }
     } catch (err) {
@@ -215,9 +206,8 @@ class IOSVideoRecordingManager extends VideoRecordingManager {
         // Send SIGINT (not SIGTERM) so `simctl` finalizes the .mp4 on exit.
         _currentRecordingProcess!.kill(io.ProcessSignal.sigint);
 
-        // Force kill if it doesn't exit shortly: a SIGINT sent while `simctl`
-        // is still starting up is ignored, so a stuck recording can't hang the
-        // run.
+        // Force kill if it doesn't exit shortly (a SIGINT during startup is
+        // ignored), so a stuck recording can't hang the run.
         _logger.detail('Waiting for xcrun simctl process to exit...');
         final process = _currentRecordingProcess!;
         final exitCode = await process.exitCode.timeout(
