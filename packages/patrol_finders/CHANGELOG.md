@@ -1,6 +1,11 @@
 ## Unreleased
 
 - Fix `enterText()` failing when the finder matches a hint-text widget (non-hit-testable `RichText` inside `InputDecorator`). The method now walks up the element tree to find the sibling `EditableText` and targets it directly.
+- Add a regression test for finding widgets by keys containing special characters (diacritics, symbols, emoji). (#3169)
+
+## 3.6.0
+
+- Bump `patrol_log` to `^0.10.0`.
 
 ## 3.5.0
 

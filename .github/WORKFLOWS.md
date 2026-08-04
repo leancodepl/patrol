@@ -29,7 +29,7 @@ This document describes all GitHub Actions workflows used in the Patrol project.
 |--------------|-----------|----------------|------|-------------|
 | [test flutter main channel][test-flutter-main] | Weekly Tue 4:00 UTC, manual | Flutter master | — | Rebases `fix/flutter-patrol-tests` onto `master`, then runs internal tests (`flutter analyze` + `flutter test` on `patrol_finders` and `patrol_cli`) against Flutter main channel. Always creates a PR with test results. Sends Slack notification on failure when triggered by schedule. |
 | [test web][test-web] | No | Flutter 3.38.x (stable) | — | Runs web-specific E2E tests on Chrome in headless mode. Triggers on PR for web-related changes. Uses target file instead of tags. |
-| [test macos][test-macos] | Every 12h | Flutter 3.38.x (stable) | — | Runs E2E tests on macOS desktop platform. Runs tests from `patrol_test/macos` directory. Uses xcresultparser to generate JUnit reports and converts them to CTRF format for test reporting. |
+| [test macos][test-macos] | PR, daily at 00:00 UTC | Flutter 3.38.x (stable) | — | Runs E2E tests on macOS desktop platform. Triggers on PR for changes to packages, e2e_app, and schema (excludes docs). Runs tests from `patrol_test/macos` directory. Uses xcresultparser to generate JUnit reports and converts them to CTRF format for test reporting. |
 | [test patrol develop][test-patrol-develop] | `pull_request_target` (opened/synchronize on package, e2e_app, and schema changes; excludes docs), manual | Flutter 3.38.x (stable) | — | Tests `patrol develop` command on Linux (Android emulator, API 34) and macOS (iOS simulator: iPhone 16 Pro on iOS 26.2). The macOS job pins simulator runtime and passes `--ios 26.2` to `patrol_develop_test.dart` to keep xcode destination selection deterministic. Timeout: 30 minutes per job. |
 
 ## Package Preparation (CI) Workflows
@@ -44,6 +44,8 @@ This document describes all GitHub Actions workflows used in the Patrol project.
 | [adb prepare][adb-prepare] | PR (on adb package changes), manual | Dart 3.8 | Runs CI checks for `adb` package: tests, analyzer, formatter, and pub publish dry-run. |
 | [prepare e2e_app][prepare-e2e_app] | PR (on all changes except docs), manual | Flutter 3.38.x (stable) | Runs CI checks for E2E test app: Android builds (Windows/Linux) with ktlint, iOS builds with swift-format/clang-format and unit tests, Flutter tests, analyzer, and formatter. |
 | [patrol_gen prepare][patrol_gen-prepare] | PR (on patrol_gen changes), manual | Dart 3.8 | Runs CI checks for patrol contracts generator: analyzer and formatter. |
+| [patrol_mcp prepare][patrol_mcp-prepare] | PR (on patrol_mcp changes), manual | Dart (stable) | Runs the MCP server checks on Ubuntu and Windows against the newest and floor `patrol_cli` (from pub.dev): a smoke test (starts, handshakes, shuts down on stdin EOF) and unit tests (`dart test`). The floor run guards against a stale `patrol_cli` constraint. |
+| [patrol_mcp cli-compat][patrol_mcp-cli-compat] | PR (on patrol_cli `lib/` or pubspec changes), manual | Flutter 3.38.x (stable) | Non-blocking: builds `patrol_mcp` against the PR's local `patrol_cli` and warns (annotation + job summary, never fails CI) if the barrel API it consumes broke. |
 
 ## Publishing Workflows
 
@@ -83,6 +85,7 @@ These workflows verify the user has write access before running. If you don't ha
 | Workflow name | Triggered | Description |
 |--------------|---------|-------------|
 | [Verify Version Compatibility][verify_compatibility] | PR/push (on compatibility checker changes) | Runs compatibility tests and verifies compatibility tables are up-to-date. |
+| [check skills][check-skills] | PR (on `skills/`, `.agents/skills/`, `.claude/skills`, or script changes), manual | Validates the agent-skills setup via `tool/check_skills.sh`: the `.claude/skills` symlink resolves to `.agents/skills`, and every `SKILL.md` has valid frontmatter (`name` matches its folder and is kebab-case, plus a non-empty `description`). |
 | [send slack message][send-slack-message] | Reusable workflow | Reusable workflow for sending test results notifications to Slack. Invoked by test workflows; the Slack step runs only when `github.event_name == 'schedule'` in the **caller** workflow (so scheduled cron runs notify; PR, push, `workflow_dispatch`, and other triggers do not). |
 | [label pull request][label_pull_request] | All PRs | Automatically labels PRs based on changed files. |
 | [Add prioritized issues to project][add-to-project] | Issue labeled (P0, P1, P2) | Automatically adds prioritized issues to GitHub project board. |
@@ -92,8 +95,9 @@ These workflows verify the user has write access before running. If you don't ha
 
 ## Schedule Summary
 
-- **Every 12 hours**: [test android emulator][test-android-emulator], [test locales on android device][test-android-locales], [test macos][test-macos]
+- **Every 12 hours**: [test android emulator][test-android-emulator], [test locales on android device][test-android-locales]
 - **Weekly (Monday 06:00 UTC)**: [test android device][test-android-device], [test ios device][test-ios-device]
+- **Daily at 00:00 UTC**: [test macos][test-macos]
 - **Daily at 23:00 UTC**: [test android emulator webview][test-android-emulator-webview]
 - **Weekly (Tuesday 04:00 UTC)**: [test flutter main channel][test-flutter-main]
 - **Daily at 10:00 UTC**: [test flutter beta channel][test-flutter-beta]
@@ -164,6 +168,8 @@ A test is selected if it matches ALL conditions in the boolean expression (AND o
 [adb-prepare]: workflows/adb-prepare.yaml
 [prepare-e2e_app]: workflows/prepare-e2e_app.yaml
 [patrol_gen-prepare]: workflows/patrol_gen-prepare.yaml
+[patrol_mcp-prepare]: workflows/patrol_mcp-prepare.yaml
+[patrol_mcp-cli-compat]: workflows/patrol_mcp-cli-compat.yaml
 [patrol-publish]: workflows/patrol-publish.yaml
 [patrol_cli-publish]: workflows/patrol_cli-publish.yaml
 [patrol_finders-publish]: workflows/patrol_finders-publish.yaml
@@ -181,3 +187,4 @@ A test is selected if it matches ALL conditions in the boolean expression (AND o
 [potential-duplicates]: workflows/potential-duplicates.yaml
 [close-inactive-issues]: workflows/close-inactive-issues.yaml
 [lock-closed-issues]: workflows/lock-closed-issues.yaml
+[check-skills]: workflows/check-skills.yaml

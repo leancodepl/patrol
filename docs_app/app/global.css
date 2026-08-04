@@ -2,6 +2,19 @@
 @import "fumadocs-ui/css/black.css";
 @import "fumadocs-ui/css/preset.css";
 
+/* fumadocs renders the accordion's anchor `id` on the header element but puts its
+   scroll-margin (`scroll-m-24`) on the parent item, so a native hash scroll to a
+   section (e.g. `#ios-setup`) ignores that margin and lands the header flush at the
+   top, hidden under the sticky top stack. Re-apply our offset to the header — the
+   actual scroll target, matched here by the `data-accordion-value` fumadocs sets on
+   it — so section anchors clear the bar exactly like the deep-linked steps do.
+   `--fd-docs-row-3` is resolved here, on the header itself: it is defined on the
+   notebook layout container and inherits down to this element, but is NOT defined on
+   `:root`, so it must be added at each use site (see `--patrol-anchor-scroll-gap`). */
+[data-accordion-value] {
+  scroll-margin-top: calc(var(--fd-docs-row-3) + var(--patrol-anchor-scroll-gap));
+}
+
 .dark {
   --color-fd-background: rgb(11, 13, 14);
 
@@ -10,6 +23,17 @@
 }
 
 :root {
+  /* The constant breathing gap added below the sticky top stack for every deep-link
+     target (setup steps and the setup section accordions). This is the single number
+     to tune (~1.5x the promo banner height) so a target never sits flush below the
+     bar. The stack height itself (`--fd-docs-row-3` = promo banner + nav header +
+     mobile TOC bar) is added at each use site as `calc(var(--fd-docs-row-3) + var(
+     --patrol-anchor-scroll-gap))`, NOT baked into a token here: `--fd-docs-row-3` is
+     defined on the notebook layout container, so it only resolves against elements
+     inside the layout — a `:root`-level `calc(var(--fd-docs-row-3) + ...)` would see
+     it as undefined and collapse to an invalid, ignored value (scroll margin 0). */
+  --patrol-anchor-scroll-gap: 4.5rem;
+
   a {
     overflow-wrap: break-word;
     text-decoration-color: var(--patrol-orange);

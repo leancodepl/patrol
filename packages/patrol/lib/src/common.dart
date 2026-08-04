@@ -170,7 +170,10 @@ void patrolTest(
       } catch (_) {
         if (constants.hotRestartEnabled) {
           patrolLog.log(
-            TestEntry(name: description, status: TestEntryStatus.failure),
+            TestEntry(
+              name: global_state.currentTestFullName,
+              status: TestEntryStatus.failure,
+            ),
           );
         }
         rethrow;
@@ -193,7 +196,9 @@ void patrolTest(
                   'All tests were executed. Press "r" to start again or "q" to quit',
             ),
           )
-          ..log(ConfigEntry(config: {ConfigEntry.developCompletedKey: true}));
+          ..log(
+            ConfigEntry(config: const {ConfigEntry.developCompletedKey: true}),
+          );
         // Wait indefinitely in develop mode after the last test
         while (true) {
           await widgetTester.pump();

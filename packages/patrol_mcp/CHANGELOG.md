@@ -1,6 +1,14 @@
-## Unreleased
+## 0.2.0
 
-- Don't listen for `SIGTERM` on Windows, where it is not supported and throws an unhandled `SignalException` that prevented the MCP server from starting. (#3035)
+- Multi-device support: `run` auto-selects a device (Android before iOS, real before emulator/simulator) or targets one you pass as `device`, and a new `devices` tool lists what's attached. A `--device` in `PATROL_FLAGS` still wins.
+- Simplified setup: drop the `run-patrol` wrapper and point your MCP config straight at `dart run patrol_mcp`; FVM-pinned projects use the pinned Flutter automatically. See the README.
+- More reliable runs and cleanup:
+  - `run` returns a failed run instead of hanging when the app exits before the test finishes (needs `patrol` 4.7.0+); a timed-out run is distinguishable from a still-running one.
+  - No orphaned processes — sessions are torn down on cancel, client disconnect, and shutdown; the server force-exits if teardown stalls.
+  - `screenshot` and `native-tree` work with multiple devices attached.
+  - `quit` isn't misreported as a crash, and errors clearly when there's no active session.
+  - Structured output from `run`/`status`/`native-tree`; `run` works from a different working directory (`PROJECT_ROOT`); starts on Windows.
+
 
 ## 0.1.4
 

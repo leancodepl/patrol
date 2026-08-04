@@ -51,6 +51,18 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
         Logger.INSTANCE.i("PatrolJUnitRunner.onCreate() " + (isInitialRun ? "(initial run)" : ""));
     }
 
+    @Override
+    public void finish(int resultCode, Bundle results) {
+        if (patrolAppServiceClient != null) {
+            try {
+                patrolAppServiceClient.close();
+            } catch (Exception e) {
+                Logger.INSTANCE.e("Failed to close PatrolAppServiceClient", e);
+            }
+        }
+        super.finish(resultCode, results);
+    }
+
     /**
      * <p>
      * The native test runner needs to know what tests exist before it can execute them.

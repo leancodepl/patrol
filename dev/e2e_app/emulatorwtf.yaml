@@ -44,8 +44,10 @@ ci_devices:
 
 ci_webview_devices:
   device:
+    # api 35: the Patrol docs site (Mintlify SPA) needs a newer WebView than
+    # the one bundled with api 31, which throws a client-side exception.
     - model: Pixel7
-      version: 31
+      version: 35
       gpu: auto
 
 config:

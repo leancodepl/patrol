@@ -1,0 +1,55 @@
+name: patrol_mcp cli-compat
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'packages/patrol_cli/lib/**'
+      - 'packages/patrol_cli/pubspec.yaml'
+
+jobs:
+  mcp_compat:
+    name: patrol_mcp builds against local patrol_cli
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        flutter-version: ['3.38.x']
+        flutter-channel: ['stable']
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ matrix.flutter-version }}
+          channel: ${{ matrix.flutter-channel }}
+
+      # melos path-links local packages so patrol_mcp builds against this PR's cli.
+      - name: Set up Melos and bootstrap workspace
+        continue-on-error: true
+        run: |
+          dart pub global activate melos
+          melos bootstrap
+
+      - name: Build and start patrol_mcp against local patrol_cli
+        id: smoke
+        continue-on-error: true
+        working-directory: packages/patrol_mcp
+        run: dart run tool/smoke_test.dart
+
+      - name: Report incompatibility (non-blocking)
+        if: steps.smoke.outcome != 'success'
+        run: |
+          echo "::warning title=patrol_mcp may need updating::This patrol_cli change breaks patrol_mcp when built against your local changes. Released users are unaffected (patrol_mcp is pinned to a published patrol_cli), but you likely need to update patrol_mcp and bump its patrol_cli constraint alongside this change."
+          {
+            echo "### ⚠️ patrol_mcp compatibility"
+            echo ""
+            echo "\`patrol_mcp\` failed to build/start against **this PR's** \`patrol_cli\`."
+            echo ""
+            echo "This does **not** break released users — \`patrol_mcp\` depends on a *published* \`patrol_cli\`, not this branch. But you have likely changed the public API barrel (\`packages/patrol_cli/lib/patrol_cli.dart\`) that \`patrol_mcp\` consumes."
+            echo ""
+            echo "Consider updating \`patrol_mcp\` (and bumping its \`patrol_cli\` constraint) in the same release cycle."
+          } >> "$GITHUB_STEP_SUMMARY"

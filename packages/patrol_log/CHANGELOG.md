@@ -1,3 +1,15 @@
+## Unreleased
+
+- Fix first word of a test description being displayed as the test file name when the finished test entry name has no file prefix. (#3167)
+
+## 0.10.0
+
+- Bump `equatable` to `^2.1.0` and migrate log `Entry` types from deprecated `EquatableMixin` to `with Equatable`.
+
+## 0.9.1
+
+- Fix `PatrolLogReader` crash when step or log entries arrive without a matching open test start entry.
+
 ## 0.9.0
 
 - **Breaking:** Move `PatrolLogReader` to a separate `package:patrol_log/patrol_log_reader.dart` export, removing the transitive `dart:io` dependency from the main barrel file.

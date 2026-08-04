@@ -113,6 +113,12 @@ patrol test --exclude-tags='(android||ios)'
         Coverage collection is currently not supported on macOS.
 </Warning>
 
+<Warning>
+    A debug build is required. Coverage relies on the Dart VM Service (mobile)
+    or DDC source maps (web), which are only available in debug builds, so
+    `--profile` and `--release` are not supported with `--coverage`.
+</Warning>
+
 To collect coverage from patrol tests, use `--coverage`.
 
 ```
@@ -129,6 +135,15 @@ patrol test --coverage --coverage-ignore="**/*.g.dart"
 ```
 
 excludes all files ending with `.g.dart`.
+
+#### Coverage on the web
+
+Web coverage is collected differently from other platforms, so a couple of things differ:
+
+- Lines are reported as covered or uncovered only, without the per-line hit counts available on other platforms.
+- The covered-line set may differ slightly from the same code measured on mobile.
+
+The report format is otherwise identical.
 
 ### Build versioning
 
@@ -156,6 +171,31 @@ To achieve full isolation between test runs:
 ```bash
 patrol test --full-isolation
 ```
+
+### Video recording
+
+Record a video of each test case using `--record-video`:
+
+```bash
+patrol test --record-video
+```
+
+Videos are saved as `.mp4` files in `<test-directory>/videos` (override with
+`--video-output-dir`). Supported on Android emulators and iOS simulators.
+
+- Physical Android devices may also work, depending on the vendor (some block `screenrecord`).
+- Physical iOS devices are not supported.
+- `--video-size` and `--video-bit-rate` apply to Android only.
+
+<Warning>
+    Recording is skipped on unsupported devices, and the test still runs.
+</Warning>
+
+<Info>
+    On web, recording is handled by Playwright instead. Use `--web-video`
+    (e.g. `--web-video=on` or `retain-on-failure`). See the
+    [Playwright videos docs](https://playwright.dev/docs/videos).
+</Info>
 
 ### Web Platform
 
