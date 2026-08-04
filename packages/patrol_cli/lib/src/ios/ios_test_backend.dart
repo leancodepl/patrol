@@ -197,7 +197,18 @@ class IOSTestBackend {
 
       final patrolLogCommand = device.real
           ? ['idevicesyslog']
-          : ['log', 'stream'];
+          : [
+              'xcrun',
+              'simctl',
+              'spawn',
+              device.id,
+              'log',
+              'stream',
+              '--type',
+              'log',
+              '--color',
+              'none',
+            ];
 
       // Read patrol logs from log stream
       final processLogs =

@@ -115,11 +115,12 @@ class IOSVideoRecordingManager extends VideoRecordingManager {
 
     _logger.detail('Executing command: ${command.join(' ')}');
 
+    // A simulator allows only one recording at a time; clear a stale one first.
+    await _clearStaleSimulatorRecording();
+
     try {
-      _currentRecordingProcess = await _processManager.start(
-        command,
-        runInShell: true,
-      );
+      // No shell: the stop SIGINT must reach `simctl` directly, not a wrapper.
+      _currentRecordingProcess = await _processManager.start(command);
       _currentRecordingProcess!.disposedBy(_scope);
 
       // Listen to stderr for any errors
@@ -134,6 +135,28 @@ class IOSVideoRecordingManager extends VideoRecordingManager {
     } catch (err) {
       _logger.warn('Failed to start xcrun simctl process: $err');
       rethrow;
+    }
+  }
+
+  /// SIGINT a leftover `recordVideo` from an interrupted run that still holds
+  /// this simulator's recording slot. Scoped to the device id, so it never
+  /// touches macOS screen recordings or other simulators.
+  Future<void> _clearStaleSimulatorRecording() async {
+    try {
+      final result = await _processManager.run([
+        'pkill',
+        '-INT',
+        '-f',
+        'simctl io ${_device.id} recordVideo',
+      ]);
+      // pkill exits 0 only when it signalled a matching process.
+      if (result.exitCode == 0) {
+        _logger.detail('Stopped a stale simctl recording for ${_device.id}');
+        // Give it a moment to release the recording slot.
+        await Future<void>.delayed(const Duration(seconds: 1));
+      }
+    } catch (err) {
+      _logger.detail('Could not check for a stale simctl recording: $err');
     }
   }
 
@@ -180,12 +203,24 @@ class IOSVideoRecordingManager extends VideoRecordingManager {
           'Sending SIGINT to xcrun simctl process for proper termination...',
         );
 
-        // Send SIGINT instead of SIGTERM for proper video finalization
+        // Send SIGINT (not SIGTERM) so `simctl` finalizes the .mp4 on exit.
         _currentRecordingProcess!.kill(io.ProcessSignal.sigint);
 
-        // Wait for the process to finish and file to be written
+        // Force kill if it doesn't exit shortly (a SIGINT during startup is
+        // ignored), so a stuck recording can't hang the run.
         _logger.detail('Waiting for xcrun simctl process to exit...');
-        final exitCode = await _currentRecordingProcess!.exitCode;
+        final process = _currentRecordingProcess!;
+        final exitCode = await process.exitCode.timeout(
+          const Duration(seconds: 10),
+          onTimeout: () {
+            _logger.warn(
+              'xcrun simctl recordVideo did not exit after SIGINT; force '
+              'killing it. The video for this test may be incomplete.',
+            );
+            process.kill(io.ProcessSignal.sigkill);
+            return -1;
+          },
+        );
         _logger.detail('xcrun simctl process exited with code: $exitCode');
 
         // Try to ensure simulator state is stable after recording

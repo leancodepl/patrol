@@ -40,6 +40,11 @@ abstract class VideoRecordingManager {
     return (entry) {
       if (entry is TestEntry) {
         handleTestEntry(entry);
+      } else if (entry is ConfigEntry &&
+          entry.config[ConfigEntry.developCompletedKey] == true) {
+        // `patrol develop` signals a passing run's end with this entry (no
+        // `success` event), so stop here to save the video right away.
+        _operations = _operations.then((_) => stopRecording());
       }
       next?.call(entry);
     };
