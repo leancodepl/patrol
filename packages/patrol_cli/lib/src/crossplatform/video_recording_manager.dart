@@ -40,6 +40,13 @@ abstract class VideoRecordingManager {
     return (entry) {
       if (entry is TestEntry) {
         handleTestEntry(entry);
+      } else if (entry is ConfigEntry &&
+          entry.config[ConfigEntry.developCompletedKey] == true) {
+        // In `patrol develop` a passing test does not emit a `success` event;
+        // the framework signals completion with this config entry instead. Stop
+        // recording here so the video is saved as soon as the run finishes,
+        // rather than only when the user presses "r" (restart) or "q" (quit).
+        _operations = _operations.then((_) => stopRecording());
       }
       next?.call(entry);
     };
