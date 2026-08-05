@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Add `patrol validate` command that checks the project for missing Patrol setup (environment tooling plus shared, Android, iOS and macOS configuration derived from the setup docs). Failed `patrol test`/`patrol build` runs and runs that discover no tests (`Total: 0`) now print a hint pointing at it. (#3217)
+
 - Fix `patrol develop` on iOS Simulator timing out after ~6 minutes with "Test runner never began executing tests after launching". Requires a matching `patrol` version that enables the develop-specific native test runner path. (#3139)
 - Bump `equatable` to `^2.1.0` and migrate `PatrolPubspecConfig` and related config classes from deprecated `EquatableMixin` to `with Equatable`.
 - Fix wrong import generated string on Windows commands like `patrol test -t .\patrol_test\example_test.dart` now generate correct import path;

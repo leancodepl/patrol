@@ -74,6 +74,8 @@ Read the documentation:
 
 - [setup](https://patrol.leancode.pl/getting-started)
 - [test command](https://patrol.leancode.co/cli-commands/test)
+- [validate command](https://patrol.leancode.co/cli-commands/validate) — check
+  your project for missing Patrol setup
 
 ## 🛠️ Maintained by LeanCode
 
