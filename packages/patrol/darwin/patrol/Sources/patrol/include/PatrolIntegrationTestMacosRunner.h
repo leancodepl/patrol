@@ -36,10 +36,12 @@
   +(NSArray<NSInvocation *> *)testInvocations {                                                               \
     /* Start native automation gRPC server */                                                                 \
     PatrolServer *server = [[PatrolServer alloc] init];                                                       \
-    NSError *_Nullable __autoreleasing *_Nullable err = NULL;                                                 \
-    [server startAndReturnError:err];                                                                         \
-    if (err != NULL) {                                                                                        \
+    NSError *err = nil;                                                                                       \
+    [server startAndReturnError:&err];                                                                        \
+    if (err != nil) {                                                                                         \
       NSLog(@"patrolServer.start(): failed, err: %@", err);                                                   \
+      XCTFail(@"patrolServer.start() failed: %@", err);                                                       \
+      return @[];                                                                                             \
     }                                                                                                         \
                                                                                                               \
     NSLog(@"Create PatrolAppServiceClient");                                                                  \
@@ -64,20 +66,29 @@
     NSLog(@"listDartTests");                                                                                  \
                                                                                                               \
     __block NSArray<NSDictionary *> *dartTests = NULL;                                                        \
+    __block NSError *listError = nil;                                                                         \
+    __block BOOL listCompleted = NO;                                                                          \
     [appServiceClient                                                                                         \
         listDartTestsWithCompletion:^(NSArray<NSDictionary *> *_Nullable tests, NSError *_Nullable err) {     \
           if (err != NULL) {                                                                                  \
             NSLog(@"listDartTests(): failed, err: %@", err);                                                  \
+            listError = err;                                                                                  \
           }                                                                                                   \
                                                                                                               \
           dartTests = tests;                                                                                  \
+          listCompleted = YES;                                                                                \
         }];                                                                                                   \
                                                                                                               \
     NSLog(@"Spin the runloop waiting");                                                                       \
                                                                                                               \
     /* Spin the runloop waiting until the app reports the Dart tests it contains */                           \
-    while (!dartTests) {                                                                                      \
+    while (!listCompleted) {                                                                                  \
       [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:5.0]];                      \
+    }                                                                                                         \
+                                                                                                              \
+    if (listError != nil || dartTests == nil) {                                                               \
+      XCTFail(@"listDartTests() failed: %@", listError);                                                      \
+      return @[];                                                                                             \
     }                                                                                                         \
                                                                                                               \
     NSLog(@"Got %lu Dart tests: %@", dartTests.count, dartTests);                                             \

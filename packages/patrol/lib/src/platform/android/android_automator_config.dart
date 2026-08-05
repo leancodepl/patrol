@@ -5,7 +5,7 @@ import 'package:patrol/src/platform/mobile/mobile_automator_config.dart';
 /// Configuration for [AndroidAutomator].
 class AndroidAutomatorConfig extends MobileAutomatorConfig {
   /// Creates a new [AndroidAutomatorConfig].
-  AndroidAutomatorConfig({
+  const AndroidAutomatorConfig({
     String? packageName,
     String? appName,
     KeyboardBehavior? keyboardBehavior,

@@ -33,7 +33,9 @@
   }                                                                                                                 \
                                                                                                                     \
   +(NSString *)patrolSelectorForDartTestName : (NSString *)dartTestName {                                           \
-    return [dartTestName stringByReplacingOccurrencesOfString:@" " withString:@"+"];                                \
+    NSString *escaped =                                                                                             \
+        [dartTestName stringByReplacingOccurrencesOfString:@"+" withString:@"__PLUS__"];                            \
+    return [escaped stringByReplacingOccurrencesOfString:@" " withString:@"+"];                                     \
   }                                                                                                                 \
                                                                                                                     \
   +(BOOL)isPatrolDevelopMode {                                                                                      \
@@ -59,8 +61,8 @@
                                                                                                                     \
   +(BOOL)instancesRespondToSelector : (SEL)aSelector {                                                              \
     NSString *name = NSStringFromSelector(aSelector);                                                               \
-    /* Patrol Dart test selectors contain spaces, or + after Marathon sanitization. */                              \
-    if ([name containsString:@" "] || [name containsString:@"+"]) {                                                 \
+    /* Patrol Dart test selectors contain spaces, '+', or escaped literal '+' (__PLUS__). */                        \
+    if ([name containsString:@" "] || [name containsString:@"+"] || [name containsString:@"__PLUS__"]) {            \
       [self addSelectedTestName:name];                                                                              \
       [self defaultTestSuite]; /* calls testInvocations to register the method */                                   \
     }                                                                                                               \
@@ -190,6 +192,8 @@
         [server startAndReturnError:&err];                                                                          \
         if (err != nil) {                                                                                           \
           NSLog(@"patrolServer.start(): failed, err: %@", err);                                                     \
+          XCTFail(@"patrolServer.start() failed: %@", err);                                                         \
+          return;                                                                                                   \
         }                                                                                                           \
         XCUIApplication *springboard = [[XCUIApplication alloc] initWithBundleIdentifier:@"com.apple.springboard"]; \
         if (springboard.alerts.buttons[@"Allow"].exists) {                                                          \
@@ -224,6 +228,10 @@
       [server startAndReturnError:&err];                                                                            \
       if (err != nil) {                                                                                             \
         NSLog(@"patrolServer.start(): failed, err: %@", err);                                                       \
+        server = nil;                                                                                               \
+        appServiceClientSingleton = nil;                                                                            \
+        XCTFail(@"patrolServer.start() failed: %@", err);                                                           \
+        return @[];                                                                                                 \
       }                                                                                                             \
                                                                                                                     \
       appServiceClientSingleton = [[ObjCPatrolAppServiceClient alloc] initWithPort:server.boundAppPort];            \
@@ -245,15 +253,23 @@
         return @[];                                                                                                 \
       }                                                                                                             \
       __block NSArray<NSDictionary *> *listedTests = NULL;                                                          \
+      __block NSError *listError = nil;                                                                             \
+      __block BOOL listCompleted = NO;                                                                              \
       [appServiceClient                                                                                             \
           listDartTestsWithCompletion:^(NSArray<NSDictionary *> *_Nullable tests, NSError *_Nullable err) {         \
             if (err != NULL) {                                                                                      \
               NSLog(@"listDartTests(): failed, err: %@", err);                                                      \
+              listError = err;                                                                                      \
             }                                                                                                       \
             listedTests = tests;                                                                                    \
+            listCompleted = YES;                                                                                    \
           }];                                                                                                       \
-      while (!listedTests) {                                                                                        \
+      while (!listCompleted) {                                                                                      \
         [NSRunLoop.currentRunLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];                          \
+      }                                                                                                             \
+      if (listError != nil || listedTests == nil) {                                                                 \
+        XCTFail(@"listDartTests() failed: %@", listError);                                                          \
+        return @[];                                                                                                 \
       }                                                                                                             \
       allDartTests = listedTests;                                                                                   \
       NSLog(@"Got %lu Dart tests: %@", allDartTests.count, allDartTests);                                           \

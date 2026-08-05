@@ -104,8 +104,8 @@ class PlatformAutomatorConfig {
   /// Creates a new [PlatformAutomatorConfig] suitable for test setup.
   factory PlatformAutomatorConfig.defaultConfig() {
     return PlatformAutomatorConfig(
-      androidConfig: AndroidAutomatorConfig(),
-      iosConfig: IOSAutomatorConfig(),
+      androidConfig: const AndroidAutomatorConfig(),
+      iosConfig: const IOSAutomatorConfig(),
       webConfig: const WebAutomatorConfig(),
     );
   }
@@ -134,8 +134,9 @@ class PlatformAutomatorConfig {
 class PlatformAutomator {
   /// Creates a new [PlatformAutomator].
   PlatformAutomator({PlatformAutomatorConfig? config}) {
-    final androidConfig = config?.androidConfig ?? AndroidAutomatorConfig();
-    final iosConfig = config?.iosConfig ?? IOSAutomatorConfig();
+    final androidConfig =
+        config?.androidConfig ?? const AndroidAutomatorConfig();
+    final iosConfig = config?.iosConfig ?? const IOSAutomatorConfig();
     final webConfig = config?.webConfig ?? const WebAutomatorConfig();
 
     android = action.fallback(

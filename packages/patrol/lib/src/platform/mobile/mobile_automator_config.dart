@@ -10,26 +10,24 @@ void _defaultPrintLogger(String message) {
 /// Configuration for [MobileAutomator].
 class MobileAutomatorConfig {
   /// Creates a new [MobileAutomatorConfig].
-  MobileAutomatorConfig({
+  const MobileAutomatorConfig({
     String? host,
     String? port,
     Duration? connectionTimeout,
     Duration? findTimeout,
     void Function(String)? logger,
-  }) : host = host ?? _defaultHost(),
+  }) : host =
+           host ??
+           const String.fromEnvironment(
+             'PATROL_HOST',
+             defaultValue: 'localhost',
+           ),
        _portOverride = port,
        connectionTimeout = connectionTimeout ?? const Duration(seconds: 60),
        findTimeout = findTimeout ?? const Duration(seconds: 10),
        logger = logger ?? _defaultPrintLogger;
 
   final String? _portOverride;
-
-  static String _defaultHost() {
-    return const String.fromEnvironment(
-      'PATROL_HOST',
-      defaultValue: 'localhost',
-    );
-  }
 
   static String _defaultPort() {
     final injectedPort = PatrolRuntimePorts.testServerPort();
