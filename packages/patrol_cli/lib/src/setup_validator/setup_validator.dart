@@ -43,14 +43,17 @@ class SetupValidator {
     required Platform platform,
     EnvironmentChecks? environmentChecks,
     String cliVersion = constants.version,
+    String flutterExecutable = 'flutter',
   }) : _probe = ProjectProbe(projectRoot: projectRoot),
        _environmentChecks =
            environmentChecks ?? EnvironmentChecks(platform: platform),
-       _cliVersion = cliVersion;
+       _cliVersion = cliVersion,
+       _flutterExecutable = flutterExecutable;
 
   final ProjectProbe _probe;
   final EnvironmentChecks _environmentChecks;
   final String _cliVersion;
+  final String _flutterExecutable;
 
   static const _platforms = ['android', 'ios', 'macos'];
 
@@ -95,6 +98,7 @@ class SetupValidator {
           findings: _environmentChecks.check(
             declaredPlatforms: filtered,
             webPresent: _probe.dirExists('web'),
+            flutterExecutable: _flutterExecutable,
           ),
         ),
         ValidationSection(title: 'Shared', findings: _sharedFindings(ctx)),

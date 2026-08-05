@@ -502,7 +502,7 @@ class WebTestBackend {
           // TODO: Don't print the summary in develop
           _logger.info(patrolLogReader.summary);
           if (patrolLogReader.totalTests == 0) {
-            _logger.warn(zeroTestsHint, tag: 'HINT');
+            _logger.warn(zeroTestsHintWeb, tag: 'HINT');
           }
 
           if (patrolLogReader.failedTestsCount > 0) {

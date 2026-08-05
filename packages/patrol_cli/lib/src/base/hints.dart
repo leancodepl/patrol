@@ -15,3 +15,10 @@ const validateHint =
 const zeroTestsHint =
     'No tests were discovered (Total: 0). This usually means the native '
     'setup is incomplete — run `patrol validate` to check your Patrol setup.';
+
+/// Web variant — web has no native setup, so zero tests usually means the
+/// test files are not where Patrol looks.
+const zeroTestsHintWeb =
+    'No tests were discovered (Total: 0). Check that your test files are in '
+    'the configured test directory — run `patrol validate` to check your '
+    'Patrol setup.';

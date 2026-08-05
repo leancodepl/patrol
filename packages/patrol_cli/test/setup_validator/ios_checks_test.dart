@@ -39,8 +39,8 @@ String _pbxproj({bool spm = true, bool uiTestsTarget = true}) {
       ? '\t\tAA2 /* RunnerUITests */ = {\n'
             '\t\t\tisa = PBXNativeTarget;\n'
             '\t\t\tbuildPhases = (\n'
-            '\t\t\t\tB2 /* xcode_backend build */,\n'
-            '\t\t\t\tB3 /* xcode_backend embed_and_thin */,\n'
+            '\t\t\t\tBBBBBBBBBBBBBBBBBBBBBBB2 /* xcode_backend build */,\n'
+            '\t\t\t\tBBBBBBBBBBBBBBBBBBBBBBB3 /* xcode_backend embed_and_thin */,\n'
             '\t\t\t);\n'
             '\t\t\tname = RunnerUITests;\n'
             '${spm ? packageDependency : ''}'
@@ -56,12 +56,12 @@ String _pbxproj({bool spm = true, bool uiTestsTarget = true}) {
       '${spm ? packageDependency : ''}'
       '\t\t};\n'
       '$uiTests'
-      '\t\tB2 /* ShellScript */ = {\n'
+      '\t\tBBBBBBBBBBBBBBBBBBBBBBB2 /* ShellScript */ = {\n'
       '\t\t\tisa = PBXShellScriptBuildPhase;\n'
       '\t\t\tshellScript = "/bin/sh \\"\\\$FLUTTER_ROOT/packages/'
       'flutter_tools/bin/xcode_backend.sh\\" build\\n";\n'
       '\t\t};\n'
-      '\t\tB3 /* ShellScript */ = {\n'
+      '\t\tBBBBBBBBBBBBBBBBBBBBBBB3 /* ShellScript */ = {\n'
       '\t\t\tisa = PBXShellScriptBuildPhase;\n'
       '\t\t\tshellScript = "/bin/sh \\"\\\$FLUTTER_ROOT/packages/'
       'flutter_tools/bin/xcode_backend.sh\\" embed_and_thin\\n";\n'
@@ -253,8 +253,8 @@ void main() {
           '\t\t\tname = RunnerUITests;\n'
           '\t\t};\n';
       final pbxproj = _pbxproj(uiTestsTarget: false).replaceFirst(
-        '\t\tB2 /* ShellScript */',
-        '$orphanUITests\t\tB2 /* ShellScript */',
+        '\t\tBBBBBBBBBBBBBBBBBBBBBBB2 /* ShellScript */',
+        '$orphanUITests\t\tBBBBBBBBBBBBBBBBBBBBBBB2 /* ShellScript */',
       );
       write('ios/Runner.xcodeproj/project.pbxproj', pbxproj);
       write('ios/RunnerUITests/RunnerUITests.m', _runnerUITestsM);
@@ -286,7 +286,7 @@ void main() {
           '\t\t\tbuildPhases = (\n'
           '\t\t\t\tBBBBBBBBBBBBBBBBBBBBBBB1 /* xcode_backend build */,\n'
           '\t\t\t\tFFFFFFFFFFFFFFFFFFFFFFF1 /* Frameworks */,\n'
-          '\t\t\t\tBBBBBBBBBBBBBBBBBBBBBBB2 /* xcode_backend embed_and_thin */,\n'
+          '\t\t\t\tBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB2 /* xcode_backend embed_and_thin */,\n'
           '\t\t\t);\n'
           '\t\t\tname = RunnerUITests;\n'
           '\t\t};\n'
@@ -300,7 +300,7 @@ void main() {
           '\t\t\tisa = PBXShellScriptBuildPhase;\n'
           '\t\t\tshellScript = "xcode_backend.sh build";\n'
           '\t\t};\n'
-          '\t\tBBBBBBBBBBBBBBBBBBBBBBB2 /* ShellScript */ = {\n'
+          '\t\tBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB2 /* ShellScript */ = {\n'
           '\t\t\tisa = PBXShellScriptBuildPhase;\n'
           '\t\t\tshellScript = "xcode_backend.sh embed_and_thin";\n'
           '\t\t};\n'
@@ -322,6 +322,27 @@ void main() {
       ).firstWhere((finding) => finding.id == 'I7');
       expect(finding.severity, Severity.error);
       expect(finding.summary, contains('embed_and_thin'));
+    });
+  });
+
+  group('I7 scoping to the RunnerUITests target', () {
+    test('errors when the phases exist only on the Runner target', () {
+      writeSpmProject();
+      // Move the phase references from RunnerUITests to Runner — the phase
+      // objects still exist in the file, but not on the tests target.
+      const phaseRefs =
+          '\t\t\tbuildPhases = (\n'
+          '\t\t\t\tBBBBBBBBBBBBBBBBBBBBBBB2 /* xcode_backend build */,\n'
+          '\t\t\t\tBBBBBBBBBBBBBBBBBBBBBBB3 /* xcode_backend embed_and_thin */,\n'
+          '\t\t\t);\n';
+      final pbxproj = _pbxproj()
+          .replaceFirst(phaseRefs, '')
+          .replaceFirst('\t\t\tname = Runner;\n', '$phaseRefs\t\t\tname = Runner;\n');
+      write('ios/Runner.xcodeproj/project.pbxproj', pbxproj);
+      final finding = iosFindings(
+        context(),
+      ).firstWhere((finding) => finding.id == 'I7');
+      expect(finding.severity, Severity.error);
     });
   });
 

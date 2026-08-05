@@ -10,19 +10,21 @@ const compatibilityTableUrl =
     'https://patrol.leancode.co/documentation/compatibility-table';
 
 /// Parsed pubspec state shared by the checks. Absence probes only —
-/// presence is a silent pass, so we never validate values.
+/// presence is a silent pass, so we never validate values. Malformed shapes
+/// (scalar root, `patrol: enabled`, non-string values) are treated as absent
+/// so they surface as findings instead of crashing the command.
 class SharedCheckContext {
   SharedCheckContext({required this.probe}) {
     final contents = probe.readFile('pubspec.yaml');
-    Map<dynamic, dynamic>? pubspec;
+    Object? root;
     if (contents != null) {
       try {
-        pubspec = loadYaml(contents) as Map<dynamic, dynamic>?;
+        root = loadYaml(contents);
       } on YamlException {
-        pubspec = null;
+        root = null;
       }
     }
-    _pubspec = pubspec;
+    _pubspec = root is Map ? root : null;
   }
 
   final ProjectProbe probe;
@@ -32,11 +34,15 @@ class SharedCheckContext {
 
   /// Add-to-app Flutter modules (`flutter: module:` in pubspec.yaml) don't
   /// use the standalone-app setup the docs describe at all.
-  bool get isAddToAppModule =>
-      (_pubspec?['flutter'] as Map<dynamic, dynamic>?)?['module'] != null;
+  bool get isAddToAppModule {
+    final flutter = _pubspec?['flutter'];
+    return flutter is Map && flutter['module'] != null;
+  }
 
-  Map<dynamic, dynamic>? get patrolSection =>
-      _pubspec?['patrol'] as Map<dynamic, dynamic>?;
+  Map<dynamic, dynamic>? get patrolSection {
+    final patrol = _pubspec?['patrol'];
+    return patrol is Map ? patrol : null;
+  }
 
   bool get patrolDependencyDeclared {
     for (final section in [
@@ -44,8 +50,8 @@ class SharedCheckContext {
       'dev_dependencies',
       'dependency_overrides',
     ]) {
-      final deps = _pubspec?[section] as Map<dynamic, dynamic>?;
-      if (deps?.containsKey('patrol') ?? false) {
+      final deps = _pubspec?[section];
+      if (deps is Map && deps.containsKey('patrol')) {
         return true;
       }
     }
@@ -58,11 +64,15 @@ class SharedCheckContext {
       if (patrolSection?[platform] is Map) platform,
   };
 
-  String get testDirectory =>
-      patrolSection?['test_directory'] as String? ?? 'patrol_test';
+  String get testDirectory {
+    final value = patrolSection?['test_directory'];
+    return value is String ? value : 'patrol_test';
+  }
 
-  String get testFileSuffix =>
-      patrolSection?['test_file_suffix'] as String? ?? '_test.dart';
+  String get testFileSuffix {
+    final value = patrolSection?['test_file_suffix'];
+    return value is String ? value : '_test.dart';
+  }
 
   bool testFilesIn(String directory) => probe
       .listFilesRecursively(directory)
@@ -103,13 +113,17 @@ Finding? checkPatrolSection(SharedCheckContext ctx) {
   final missing = <String>[];
 
   final topLevelAppName = patrol['app_name'] is String;
-  bool platformHas(String platform, String key) =>
-      (patrol[platform] as Map?)?[key] is String;
+  bool platformHas(String platform, String key) {
+    final section = patrol[platform];
+    return section is Map && section[key] is String;
+  }
 
+  // An empty declared-platform set must not vacuously satisfy app_name.
   if (!topLevelAppName &&
-      !ctx.declaredPlatforms.every(
-        (platform) => platformHas(platform, 'app_name'),
-      )) {
+      (ctx.declaredPlatforms.isEmpty ||
+          !ctx.declaredPlatforms.every(
+            (platform) => platformHas(platform, 'app_name'),
+          ))) {
     missing.add('app_name');
   }
   if (ctx.declaredPlatforms.contains('android') &&

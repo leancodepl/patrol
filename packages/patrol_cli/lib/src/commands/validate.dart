@@ -1,4 +1,5 @@
 import 'package:file/file.dart';
+import 'package:meta/meta.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/runner/patrol_command.dart';
 import 'package:patrol_cli/src/setup_validator/presenter.dart';
@@ -10,9 +11,11 @@ class ValidateCommand extends PatrolCommand {
     required Directory projectRoot,
     required Platform platform,
     required Logger logger,
+    @visibleForTesting SetupValidator? setupValidator,
   }) : _projectRoot = projectRoot,
        _platform = platform,
-       _logger = logger {
+       _logger = logger,
+       _setupValidator = setupValidator {
     argParser
       ..addMultiOption(
         'platform',
@@ -31,6 +34,7 @@ class ValidateCommand extends PatrolCommand {
   final Directory _projectRoot;
   final Platform _platform;
   final Logger _logger;
+  final SetupValidator? _setupValidator;
 
   @override
   String get name => 'validate';
@@ -50,10 +54,16 @@ class ValidateCommand extends PatrolCommand {
     }
 
     final platforms = stringsArg('platform');
-    final report = SetupValidator(
-      projectRoot: _projectRoot,
-      platform: _platform,
-    ).validate(platformFilter: platforms.isEmpty ? null : platforms.toSet());
+    final validator =
+        _setupValidator ??
+        SetupValidator(
+          projectRoot: _projectRoot,
+          platform: _platform,
+          flutterExecutable: flutterCommand.executable,
+        );
+    final report = validator.validate(
+      platformFilter: platforms.isEmpty ? null : platforms.toSet(),
+    );
 
     ValidationPresenter(
       logger: _logger,

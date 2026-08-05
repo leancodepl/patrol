@@ -177,15 +177,22 @@ Finding? checkMacosEmbedding(MacOSCheckContext ctx) {
   return null; // M0 already reported the missing mechanism.
 }
 
-/// M4: the two macos_assemble Run Script build phases exist.
+/// M4: the two macos_assemble Run Script build phases exist on the
+/// RunnerUITests target. Scoped to that target's referenced phases — the
+/// standard Runner target has its own macos_assemble phases, so a global
+/// probe would always pass.
 Finding? checkMacosAssembleBuildPhases(MacOSCheckContext ctx) {
-  final contents = ctx.pbxproj!;
-  final hasBuild = RegExp(
-    r'macos_assemble\.sh[\\"' "'" r']*\s+build',
-  ).hasMatch(contents);
-  final hasEmbed = RegExp(
-    r'macos_assemble\.sh[\\"' "'" r']*\s+embed',
-  ).hasMatch(contents);
+  final scripts = ctx.runnerUITestsScriptPhases;
+  if (scripts == null) {
+    // M2 reports the missing target.
+    return null;
+  }
+  final hasBuild = scripts.any(
+    RegExp(r'macos_assemble\.sh[\\"' "'" r']*\s+build').hasMatch,
+  );
+  final hasEmbed = scripts.any(
+    RegExp(r'macos_assemble\.sh[\\"' "'" r']*\s+embed').hasMatch,
+  );
   if (hasBuild && hasEmbed) {
     return null;
   }
