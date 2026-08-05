@@ -1,6 +1,6 @@
 ## Unreleased
 
-- Fix macOS builds failing with `module 'PatrolImpl' not found` under Swift Package Manager, which broke every macOS app that merely depended on Patrol, even without any Patrol macOS setup (#3177). Under SPM the Objective-C runner macros moved from module `patrol` to module `PatrolRunner`; add `@import PatrolRunner;` to `RunnerUITests.m` as shown in the [setup docs](https://patrol.leancode.co/documentation). CocoaPods is unaffected.
+- Fix macOS builds failing with `module 'PatrolImpl' not found` under Swift Package Manager, which broke every macOS app that merely depended on Patrol, even without any Patrol macOS setup (#3205). Under SPM the Objective-C runner macros moved from module `patrol` to module `PatrolRunner`; add `@import PatrolRunner;` to `RunnerUITests.m` as shown in the [setup docs](https://patrol.leancode.co/documentation). CocoaPods is unaffected.
 - Fix `AndroidNativeView.visibleBounds` always having zero height. (#3202)
 - Collect Chrome JavaScript coverage in the web runner when `patrol test --coverage` runs on the web platform.
 
