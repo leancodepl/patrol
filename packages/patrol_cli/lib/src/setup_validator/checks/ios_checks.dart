@@ -234,13 +234,22 @@ Finding? checkSpmLinkage(IOSCheckContext ctx) {
   );
 }
 
-/// I7: the two xcode_backend Run Script build phases exist.
+/// I7: the two xcode_backend Run Script build phases exist on the
+/// RunnerUITests target. Scoped to that target's referenced phases — the
+/// standard Runner target has its own xcode_backend phases, so a global
+/// probe would always pass.
 Finding? checkXcodeBackendBuildPhases(IOSCheckContext ctx) {
-  final contents = ctx.pbxproj!;
-  final hasBuild = RegExp(
-    r'xcode_backend\.sh[\\"' "'" r']*\s+build',
-  ).hasMatch(contents);
-  final hasEmbed = contents.contains('embed_and_thin');
+  final scripts = ctx.runnerUITestsScriptPhases;
+  if (scripts == null) {
+    // I2 reports the missing target.
+    return null;
+  }
+  final hasBuild = scripts.any(
+    RegExp(r'xcode_backend\.sh[\\"' "'" r']*\s+build').hasMatch,
+  );
+  final hasEmbed = scripts.any(
+    (script) => script.contains('embed_and_thin'),
+  );
   if (hasBuild && hasEmbed) {
     return null;
   }

@@ -28,8 +28,19 @@ class EnvironmentChecks {
   List<Finding> check({
     required Set<String> declaredPlatforms,
     required bool webPresent,
+    String flutterExecutable = 'flutter',
   }) {
     return [
+      if (!_isToolInstalled(flutterExecutable))
+        Finding(
+          id: 'E0',
+          severity: Severity.error,
+          summary: 'Program `$flutterExecutable` not found on PATH.',
+          fix:
+              'Install Flutter, or point Patrol at it with '
+              '--flutter-command / the PATROL_FLUTTER_COMMAND environment '
+              'variable.',
+        ),
       if (declaredPlatforms.contains('android')) ..._android(),
       if (declaredPlatforms.contains('ios') ||
           declaredPlatforms.contains('macos'))

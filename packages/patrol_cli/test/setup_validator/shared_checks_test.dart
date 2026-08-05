@@ -172,6 +172,56 @@ patrol:
     });
   });
 
+  group('malformed pubspec shapes', () {
+    test('scalar patrol section does not crash and reports S2', () {
+      final ctx = contextWith(
+        mutate: () => fs.file('/project/pubspec.yaml').writeAsStringSync('''
+name: example_app
+dev_dependencies:
+  patrol: ^4.0.0
+patrol: enabled
+'''),
+      );
+      expect(checkPatrolSection(ctx)?.severity, Severity.error);
+      expect(checkPatrolDependency(ctx), isNull);
+    });
+
+    test('non-string test_directory falls back to the default', () {
+      final ctx = contextWith(
+        mutate: () => fs.file('/project/pubspec.yaml').writeAsStringSync('''
+name: example_app
+dev_dependencies:
+  patrol: ^4.0.0
+patrol:
+  app_name: My App
+  test_directory: 123
+'''),
+      );
+      expect(ctx.testDirectory, 'patrol_test');
+      expect(checkTestDirectory(ctx), isNull);
+    });
+
+    test('scalar YAML root does not crash', () {
+      final ctx = contextWith(
+        mutate: () =>
+            fs.file('/project/pubspec.yaml').writeAsStringSync('just a string'),
+      );
+      expect(checkPatrolDependency(ctx)?.severity, Severity.error);
+    });
+
+    test('empty patrol section reports missing app_name', () {
+      final ctx = contextWith(
+        mutate: () => fs.file('/project/pubspec.yaml').writeAsStringSync('''
+name: example_app
+dev_dependencies:
+  patrol: ^4.0.0
+patrol: {}
+'''),
+      );
+      expect(checkPatrolSection(ctx)?.summary, contains('app_name'));
+    });
+  });
+
   group('S3 stray patrol.yaml', () {
     test('warns when patrol.yaml exists', () {
       final ctx = contextWith(

@@ -122,7 +122,8 @@ Finding? checkTestClassPackage(AndroidCheckContext ctx) {
         severity: Severity.warning,
         summary:
             'Test class $path declares `package $package`, which does not '
-            'match its directory path — this will not compile.',
+            'match its directory path — usually a copy-paste slip from the '
+            'docs snippet.',
         fix:
             'Move the file so its path mirrors the package, or fix the '
             '`package` declaration.',

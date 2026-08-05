@@ -98,6 +98,32 @@ class DarwinCheckContext {
     return (uiTests: uiTests, app: app);
   }
 
+  /// Object blocks referenced from the RunnerUITests target block (one hop),
+  /// e.g. its build phases. Null when the target block cannot be isolated.
+  ///
+  /// Scoping probes to these blocks matters: the standard Runner target has
+  /// its own xcode_backend phases and package linkage, so a whole-pbxproj
+  /// probe would pass even when RunnerUITests is missing them.
+  List<String>? get runnerUITestsReferencedBlocks {
+    final block = runnerUITestsTargetBlock;
+    if (block == null) {
+      return null;
+    }
+    final contents = pbxproj!;
+    return RegExp(r'\b[A-F0-9]{24}\b')
+        .allMatches(block)
+        .map((match) => match.group(0)!)
+        .toSet()
+        .map(
+          (id) => RegExp(
+            '$id /\\*[^*]*\\*/ = \\{.*?\\n\\t\\t\\};',
+            dotAll: true,
+          ).firstMatch(contents)?.group(0),
+        )
+        .nonNulls
+        .toList();
+  }
+
   /// Whether FlutterGeneratedPluginSwiftPackage is linked to RunnerUITests.
   /// Null when the target block cannot be isolated.
   ///
@@ -113,22 +139,16 @@ class DarwinCheckContext {
     if (block.contains('FlutterGeneratedPluginSwiftPackage')) {
       return true;
     }
-
-    final contents = pbxproj!;
-    final referencedIds = RegExp(
-      r'\b[A-F0-9]{24}\b',
-    ).allMatches(block).map((match) => match.group(0)!).toSet();
-    for (final id in referencedIds) {
-      final referenced = RegExp(
-        '$id /\\*[^*]*\\*/ = \\{.*?\\n\\t\\t\\};',
-        dotAll: true,
-      ).firstMatch(contents)?.group(0);
-      if (referenced != null &&
+    return runnerUITestsReferencedBlocks!.any(
+      (referenced) =>
           referenced.contains('PBXFrameworksBuildPhase') &&
-          referenced.contains('FlutterGeneratedPluginSwiftPackage')) {
-        return true;
-      }
-    }
-    return false;
+          referenced.contains('FlutterGeneratedPluginSwiftPackage'),
+    );
   }
+
+  /// The PBXShellScriptBuildPhase blocks of the RunnerUITests target, or
+  /// null when the target block cannot be isolated.
+  List<String>? get runnerUITestsScriptPhases => runnerUITestsReferencedBlocks
+      ?.where((block) => block.contains('PBXShellScriptBuildPhase'))
+      .toList();
 }
