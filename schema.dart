@@ -39,6 +39,16 @@ abstract class PatrolAppService<IOSClient, AndroidClient, DartServer> {
 
 class ConfigureRequest {
   late int findTimeoutMillis;
+  // Android only. When true, Patrol acquires UiAutomation with
+  // FLAG_DONT_SUPPRESS_ACCESSIBILITY_SERVICES so third-party
+  // AccessibilityServices keep running during the session. Defaults to today's
+  // behavior (suppressed) when absent.
+  bool? androidDontSuppressAccessibilityServices;
+  // Android only. When false, Patrol clears the
+  // FLAG_RETRIEVE_INTERACTIVE_WINDOWS that uiautomator 2.3.0 force-enables,
+  // which restores WebView accessibility-tree population. Defaults to today's
+  // behavior (flag retained) when absent.
+  bool? androidRetrieveInteractiveWindows;
 }
 
 class OpenAppRequest {

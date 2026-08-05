@@ -66,6 +66,18 @@ class PlatformAutomatorConfig {
     /// Name of the application under test on iOS.
     String? iosAppName,
 
+    /// Whether Patrol should keep third-party `AccessibilityService`s running
+    /// during the test session.
+    ///
+    /// Android only. See [AndroidAutomatorConfig.dontSuppressAccessibilityServices].
+    bool? androidDontSuppressAccessibilityServices,
+
+    /// Whether Patrol keeps `FLAG_RETRIEVE_INTERACTIVE_WINDOWS` on its
+    /// `UiAutomation`.
+    ///
+    /// Android only. See [AndroidAutomatorConfig.retrieveInteractiveWindows].
+    bool? androidRetrieveInteractiveWindows,
+
     /// Called when a native action is performed.
     void Function(String)? logger,
   }) {
@@ -74,6 +86,9 @@ class PlatformAutomatorConfig {
         packageName: packageName,
         appName: androidAppName,
         keyboardBehavior: keyboardBehavior,
+        dontSuppressAccessibilityServices:
+            androidDontSuppressAccessibilityServices,
+        retrieveInteractiveWindows: androidRetrieveInteractiveWindows,
         connectionTimeout: connectionTimeout,
         findTimeout: findTimeout,
         logger: logger,

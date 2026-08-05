@@ -1,5 +1,6 @@
 package pl.leancode.patrol
 
+import android.accessibilityservice.AccessibilityServiceInfo
 import android.app.Instrumentation
 import android.app.UiAutomation
 import android.content.Context
@@ -105,11 +106,26 @@ class Automator private constructor() {
         }
     }
 
-    fun configure(waitForSelectorTimeout: Long) {
+    fun configure(
+        waitForSelectorTimeout: Long,
+        dontSuppressAccessibilityServices: Boolean = false,
+        retrieveInteractiveWindows: Boolean = true,
+    ) {
         timeoutMillis = waitForSelectorTimeout
         configurator.waitForSelectorTimeout = waitForSelectorTimeout
         configurator.waitForIdleTimeout = 5000
         configurator.keyInjectionDelay = 50
+
+        // Opt-in (#3201): keep third-party AccessibilityServices alive during the
+        // session instead of letting the platform suppress them.
+        if (dontSuppressAccessibilityServices) {
+            configureDontSuppressAccessibilityServices()
+        }
+        // Opt-in (#3178): undo uiautomator 2.3.0 force-enabling
+        // FLAG_RETRIEVE_INTERACTIVE_WINDOWS, which breaks WebView tree population.
+        if (!retrieveInteractiveWindows) {
+            clearRetrieveInteractiveWindowsFlag()
+        }
 
         Logger.i("Timeout: $timeoutMillis ms")
         Logger.i("Android UiAutomator configuration:")
@@ -119,6 +135,89 @@ class Automator private constructor() {
         Logger.i("\tactionAcknowledgmentTimeout: ${configurator.actionAcknowledgmentTimeout} ms")
         Logger.i("\tscrollAcknowledgmentTimeout: ${configurator.scrollAcknowledgmentTimeout} ms")
         Logger.i("\ttoolType: ${configurator.toolType}")
+        Logger.i("\tuiAutomationFlags: ${configurator.uiAutomationFlags}")
+        Logger.i("\tdontSuppressAccessibilityServices: $dontSuppressAccessibilityServices")
+        Logger.i("\tretrieveInteractiveWindows: $retrieveInteractiveWindows")
+    }
+
+    // See https://github.com/leancodepl/patrol/issues/3201.
+    private fun configureDontSuppressAccessibilityServices() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            Logger.i("dontSuppressAccessibilityServices requires API 24+, ignoring")
+            return
+        }
+
+        // UiDevice.getUiAutomation() forwards Configurator.uiAutomationFlags to
+        // Instrumentation.getUiAutomation(flags), so setting it here is enough for
+        // uiautomator's own queries.
+        configurator.uiAutomationFlags = UiAutomation.FLAG_DONT_SUPPRESS_ACCESSIBILITY_SERVICES
+
+        // getUiAutomation(flags) reuses an existing instance only when the flags
+        // match, otherwise it reconnects. Re-acquiring our own reference forces the
+        // reconnect now and keeps it consistent with what UiDevice will use.
+        uiAutomation = uiAutomationForConfiguredFlags()
+        Logger.i("Acquired UiAutomation with FLAG_DONT_SUPPRESS_ACCESSIBILITY_SERVICES")
+    }
+
+    // Instrumentation.getUiAutomation(flags) exists only on API 24+. Below that,
+    // the flags-based opt-ins are unavailable and Configurator.uiAutomationFlags
+    // stays at its default (0), so the no-arg overload is equivalent.
+    private fun uiAutomationForConfiguredFlags(): UiAutomation {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            instrumentation.getUiAutomation(configurator.uiAutomationFlags)
+        } else {
+            instrumentation.uiAutomation
+        }
+    }
+
+    // See https://github.com/leancodepl/patrol/issues/3178.
+    private fun clearRetrieveInteractiveWindowsFlag() {
+        try {
+            // Same instance UiDevice queries with (both route through
+            // Instrumentation.getUiAutomation(Configurator.uiAutomationFlags)).
+            val automation = uiAutomationForConfiguredFlags()
+            val serviceInfo = automation.serviceInfo
+            if (serviceInfo == null) {
+                Logger.e("Cannot clear FLAG_RETRIEVE_INTERACTIVE_WINDOWS: serviceInfo is null")
+                return
+            }
+
+            // Mirror uiautomator 2.3.0's own (non-compressed) flag setup, minus the
+            // interactive-windows bit. Keeping FLAG_INCLUDE_NOT_IMPORTANT_VIEWS
+            // preserves normal selector behavior.
+            var flags = serviceInfo.flags
+            flags = flags or AccessibilityServiceInfo.FLAG_INCLUDE_NOT_IMPORTANT_VIEWS
+            flags = flags and AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS.inv()
+            serviceInfo.flags = flags
+            automation.setServiceInfo(serviceInfo)
+            uiAutomation = automation
+
+            // UiDevice.getUiAutomation() re-adds FLAG_RETRIEVE_INTERACTIVE_WINDOWS
+            // whenever serviceInfo.flags != mCachedServiceFlags, or every
+            // SERVICE_FLAGS_TIMEOUT (2s). Pin its private cache so it never rewrites
+            // the flags we just set.
+            pinUiDeviceServiceFlags(flags)
+
+            Logger.i("Cleared FLAG_RETRIEVE_INTERACTIVE_WINDOWS (serviceInfo.flags=$flags)")
+        } catch (e: Throwable) {
+            Logger.e("Failed to clear FLAG_RETRIEVE_INTERACTIVE_WINDOWS, keeping default behavior", e)
+        }
+    }
+
+    private fun pinUiDeviceServiceFlags(flags: Int) {
+        val uiDeviceClass = uiDevice.javaClass
+        uiDeviceClass.getDeclaredField("mCachedServiceFlags")
+            .apply { isAccessible = true }
+            .setInt(uiDevice, flags)
+        try {
+            uiDeviceClass.getDeclaredField("mLastServiceFlagsTime")
+                .apply { isAccessible = true }
+                .setLong(uiDevice, Long.MAX_VALUE)
+        } catch (e: NoSuchFieldException) {
+            // Older uiautomator without the periodic re-check; syncing the cached
+            // flags alone is enough there.
+            Logger.i("mLastServiceFlagsTime not present, cache sync alone is enough")
+        }
     }
 
     private fun executeShellCommand(cmd: String) {

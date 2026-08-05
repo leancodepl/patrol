@@ -40,7 +40,11 @@ class AutomatorServer(private val automation: Automator) : MobileAutomatorServer
     }
 
     override fun configure(request: ConfigureRequest) {
-        automation.configure(waitForSelectorTimeout = request.findTimeoutMillis)
+        automation.configure(
+            waitForSelectorTimeout = request.findTimeoutMillis,
+            dontSuppressAccessibilityServices = request.androidDontSuppressAccessibilityServices ?: false,
+            retrieveInteractiveWindows = request.androidRetrieveInteractiveWindows ?: true,
+        )
     }
 
     override fun pressHome() {

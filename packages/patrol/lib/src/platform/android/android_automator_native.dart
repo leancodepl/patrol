@@ -56,6 +56,14 @@ class AndroidAutomator extends NativeMobileAutomator
 
   late final AndroidAutomatorClient _client;
 
+  @override
+  ConfigureRequest buildConfigureRequest() => ConfigureRequest(
+    findTimeoutMillis: _config.findTimeout.inMilliseconds,
+    androidDontSuppressAccessibilityServices:
+        _config.dontSuppressAccessibilityServices,
+    androidRetrieveInteractiveWindows: _config.retrieveInteractiveWindows,
+  );
+
   /// Opens a platform-specific app.
   ///
   /// On Android, opens the app specified by [androidAppId] (package name).
