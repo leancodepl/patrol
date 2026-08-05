@@ -1,0 +1,63 @@
+---
+title: validate
+---
+
+### Synopsis
+
+Validate that this project completed the Patrol setup.
+
+```
+patrol validate
+```
+
+To see all available options and flags, run `patrol validate --help`.
+
+### Description
+
+`patrol validate` checks your Flutter project for missing Patrol configuration
+described in the [setup docs]. It starts with the environment tooling (the same
+checks as `patrol doctor`, scoped to the platforms declared under the `patrol:`
+section of your `pubspec.yaml`), then inspects the project files: the pubspec
+configuration, the Android Gradle setup and test class, and the iOS/macOS
+Xcode projects (CocoaPods, Swift Package Manager, and hybrid integrations are
+all recognized).
+
+Every reported finding says what is wrong, how to fix it, and links the docs
+section that covers the step.
+
+Findings have three severities:
+
+- **Error** — a required setup step is definitively missing. Any error makes
+  the command exit with code 1.
+- **Warning** — likely wrong, but the check can be mistaken. Warnings never
+  affect the exit code, so they won't fail your CI.
+- **Notice** — informational: steps to verify manually in Xcode, platforms
+  present in the project but not declared for Patrol, minor advice.
+
+Run it whenever a `patrol test` or `patrol build` run fails, or when the test
+summary reports `Total: 0` — that usually means the native setup is
+incomplete.
+
+### Examples
+
+Validate only selected platforms:
+
+```
+patrol validate --platform android,ios
+```
+
+Suppress notices (for example in scripts):
+
+```
+patrol validate --quiet
+```
+
+### Notes
+
+- The validator detects omission — it cannot prove a setup is fully correct.
+  A green result with failing tests means the remaining suspects are the
+  manual-verify items it lists.
+- Add-to-app Flutter modules (`flutter: module:` in `pubspec.yaml`) are
+  recognized and skipped — in add-to-app, Patrol tests run from the host apps.
+
+[setup docs]: /documentation#setup

@@ -24,6 +24,7 @@ import 'package:patrol_cli/src/commands/doctor.dart';
 import 'package:patrol_cli/src/commands/test.dart';
 import 'package:patrol_cli/src/commands/test_without_building.dart';
 import 'package:patrol_cli/src/commands/update.dart';
+import 'package:patrol_cli/src/commands/validate.dart';
 import 'package:patrol_cli/src/compatibility_checker/compatibility_checker.dart';
 import 'package:patrol_cli/src/compatibility_checker/version_compatibility.dart';
 import 'package:patrol_cli/src/coverage/coverage_tool.dart';
@@ -278,6 +279,14 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
     addCommand(CoverageCommand(logger: _logger, fs: _fs));
 
     addCommand(DoctorCommand(logger: _logger, platform: _platform));
+
+    addCommand(
+      ValidateCommand(
+        projectRoot: rootDirectory,
+        platform: _platform,
+        logger: _logger,
+      ),
+    );
 
     addCommand(
       UpdateCommand(

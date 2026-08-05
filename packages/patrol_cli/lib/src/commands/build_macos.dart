@@ -4,6 +4,7 @@ import 'package:meta/meta.dart';
 import 'package:path/path.dart' show join;
 import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
+import 'package:patrol_cli/src/base/hints.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/compatibility_checker/compatibility_checker.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
@@ -198,7 +199,8 @@ class BuildMacOSCommand extends PatrolCommand {
       _logger
         ..err('$err')
         ..detail('$st')
-        ..err(defaultFailureMessage);
+        ..err(defaultFailureMessage)
+        ..warn(validateHint, tag: 'HINT');
       rethrow;
     }
 

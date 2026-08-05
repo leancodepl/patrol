@@ -8,6 +8,7 @@ import 'package:glob/glob.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' show join;
 import 'package:patrol_cli/src/base/exceptions.dart';
+import 'package:patrol_cli/src/base/hints.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
@@ -530,6 +531,9 @@ class IOSTestBackend {
       // Don't print the summary in develop
       if (!interruptible) {
         _logger.info(patrolLogReader.summary);
+        if (patrolLogReader.totalTests == 0) {
+          _logger.warn(zeroTestsHint, tag: 'HINT');
+        }
         final recordingSummary = videoRecordingManager?.recordingSummary;
         if (recordingSummary != null) {
           _logger.info(recordingSummary);
