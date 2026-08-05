@@ -26,6 +26,33 @@ import 'custom_finders/patrol_integration_tester.dart';
 /// Signature for callback to [patrolTest].
 typedef PatrolTesterCallback = Future<void> Function(PatrolIntegrationTester $);
 
+/// Characters that must not appear in Patrol test (or group) names.
+///
+/// Android Test Orchestrator persists each test case using its name as a path
+/// component, so `/` breaks test execution (the run looks successful but the
+/// body never runs). See https://github.com/leancodepl/patrol/issues/1839.
+@internal
+const forbiddenTestNameCharacters = {'/'};
+
+/// Throws [ArgumentError] if [name] contains a character that Android Test
+/// Orchestrator cannot handle in a test name.
+///
+/// [kind] is used in the error message (e.g. `description`, `group name`).
+@internal
+void validateTestName(String name, {String kind = 'name'}) {
+  for (final character in forbiddenTestNameCharacters) {
+    if (name.contains(character)) {
+      throw ArgumentError.value(
+        name,
+        kind,
+        'Patrol test $kind must not contain "$character" because Android Test '
+        'Orchestrator uses the name as a file path. See '
+        'https://github.com/leancodepl/patrol/issues/1839',
+      );
+    }
+  }
+}
+
 /// A modification of [setUp] that works with Patrol's native automation.
 void patrolSetUp(dynamic Function() body) {
   setUp(() async {
@@ -102,6 +129,8 @@ void patrolTest(
   LiveTestWidgetsFlutterBindingFramePolicy framePolicy =
       LiveTestWidgetsFlutterBindingFramePolicy.fullyLive,
 }) {
+  validateTestName(description, kind: 'description');
+
   final patrolLog = PatrolLogWriter(config: {'printLogs': config.printLogs});
   if (nativeAutomatorConfig != null && platformAutomatorConfig != null) {
     throw StateError(
@@ -256,6 +285,8 @@ DartGroupEntry createDartTestGroup(
           throw StateError('Test is not allowed to be defined at level $level');
         }
 
+        validateTestName(name);
+
         if (tags != null) {
           final includeTagsSelector = BooleanSelector.parse(tags);
 
@@ -285,6 +316,11 @@ DartGroupEntry createDartTestGroup(
         );
 
       case Group _:
+        // Top-level unnamed root is skipped; named groups (file / group()) must
+        // not contain forbidden characters either.
+        if (name.isNotEmpty) {
+          validateTestName(name, kind: 'group name');
+        }
         groupDTO.entries.add(
           createDartTestGroup(
             entry,

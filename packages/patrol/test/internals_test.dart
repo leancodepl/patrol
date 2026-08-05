@@ -1,6 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/src/common.dart'
-    show createDartTestGroup, deduplicateGroupEntryName;
+    show
+        createDartTestGroup,
+        deduplicateGroupEntryName,
+        forbiddenTestNameCharacters,
+        validateTestName;
 import 'package:patrol/src/platform/contracts/contracts.dart';
 import 'package:test_api/backend.dart';
 import 'package:test_api/src/backend/group.dart';
@@ -8,6 +12,34 @@ import 'package:test_api/src/backend/invoker.dart' show LocalTest;
 import 'package:test_api/src/backend/metadata.dart';
 
 void main() {
+  group('validateTestName()', () {
+    test('accepts names without forbidden characters', () {
+      expect(() => validateTestName('counter increments'), returnsNormally);
+      expect(() => validateTestName('open maps'), returnsNormally);
+      expect(
+        () => validateTestName(r'weird but ok: \ : * ? " < > |'),
+        returnsNormally,
+      );
+    });
+
+    test('rejects names containing a forward slash', () {
+      expect(
+        () => validateTestName('Testing forward slash / breaking execution'),
+        throwsA(
+          isA<ArgumentError>().having(
+            (e) => e.message,
+            'message',
+            contains('must not contain "/"'),
+          ),
+        ),
+      );
+    });
+
+    test('forbidden set currently only includes forward slash', () {
+      expect(forbiddenTestNameCharacters, equals({'/'}));
+    });
+  });
+
   group('createDartTestGroup()', () {
     test('fails if a test is defined at top-level', () {
       // given
@@ -456,6 +488,44 @@ void main() {
             ],
           ),
         ),
+      );
+    });
+  });
+
+  group('createDartTestGroup() forbidden characters', () {
+    test('fails if a test name contains a forward slash', () {
+      final topLevelGroup = Group.root([
+        LocalTest('patrol_test_explorer', Metadata.empty, () {}),
+        Group('example_test', [
+          _localTest('example_test Testing forward slash / breaking'),
+        ]),
+      ]);
+
+      expect(
+        () => createDartTestGroup(topLevelGroup),
+        throwsA(
+          isA<ArgumentError>().having(
+            (e) => e.message,
+            'message',
+            allOf(contains('must not contain "/"'), contains('issues/1839')),
+          ),
+        ),
+      );
+    });
+
+    test('fails if a group name contains a forward slash', () {
+      final topLevelGroup = Group.root([
+        LocalTest('patrol_test_explorer', Metadata.empty, () {}),
+        Group('example_test', [
+          Group('example_test alpha/bravo', [
+            _localTest('example_test alpha/bravo first'),
+          ]),
+        ]),
+      ]);
+
+      expect(
+        () => createDartTestGroup(topLevelGroup),
+        throwsA(isA<ArgumentError>()),
       );
     });
   });
