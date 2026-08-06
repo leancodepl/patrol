@@ -358,6 +358,59 @@ void main() {
     });
   });
 
+  group('I7 phase ordering', () {
+    const buildRef =
+        '\t\t\t\tBBBBBBBBBBBBBBBBBBBBBBB2 /* xcode_backend build */,\n';
+    const embedRef =
+        '\t\t\t\tBBBBBBBBBBBBBBBBBBBBBBB3 /* xcode_backend embed_and_thin */,\n';
+    const sourcesRef = '\t\t\t\tACE0ACE0ACE0ACE0ACE0ACE1 /* Sources */,\n';
+    const frameworksRef =
+        '\t\t\t\tFACEFACEFACEFACEFACEFAC1 /* Frameworks */,\n';
+
+    String pbxprojWithPhases({required bool ordered}) {
+      final refs = ordered
+          ? '$buildRef$sourcesRef$frameworksRef$embedRef'
+          : '$sourcesRef$buildRef$embedRef$frameworksRef';
+      return _pbxproj()
+          .replaceFirst('$buildRef$embedRef', refs)
+          .replaceFirst(
+            '\t};\n}',
+            '\t\tACE0ACE0ACE0ACE0ACE0ACE1 /* Sources */ = {\n'
+                '\t\t\tisa = PBXSourcesBuildPhase;\n'
+                '\t\t};\n'
+                '\t\tFACEFACEFACEFACEFACEFAC1 /* Frameworks */ = {\n'
+                '\t\t\tisa = PBXFrameworksBuildPhase;\n'
+                '\t\t};\n'
+                '\t};\n}',
+          );
+    }
+
+    test('correct order passes and leaves ordering out of the notice', () {
+      writeSpmProject();
+      write(
+        'ios/Runner.xcodeproj/project.pbxproj',
+        pbxprojWithPhases(ordered: true),
+      );
+      final findings = iosFindings(context());
+      expect(idsOf(findings), isNot(contains('I7')));
+      final notice = findings.firstWhere((finding) => finding.id == 'I12');
+      expect(notice.summary, isNot(contains('ordered as in the docs')));
+    });
+
+    test('misordered phases produce an I7 warning', () {
+      writeSpmProject();
+      write(
+        'ios/Runner.xcodeproj/project.pbxproj',
+        pbxprojWithPhases(ordered: false),
+      );
+      final finding = iosFindings(
+        context(),
+      ).firstWhere((finding) => finding.id == 'I7');
+      expect(finding.severity, Severity.warning);
+      expect(finding.summary, contains('wrong order'));
+    });
+  });
+
   group('I8 user script sandboxing', () {
     test('warns on an explicit YES', () {
       writeSpmProject();
@@ -442,6 +495,9 @@ void main() {
       ).firstWhere((finding) => finding.id == 'I12');
       expect(finding.severity, Severity.notice);
       expect(finding.summary, contains('Configuration Set'));
+      // The fixture has no Sources/Frameworks phases, so ordering is not
+      // checkable and stays a manual item.
+      expect(finding.summary, contains('ordered as in the docs'));
       // Sandboxing is set in the fixture, so it must not be listed.
       expect(finding.summary, isNot(contains('User Script Sandboxing')));
       // No shared schemes in the fixture, so parallelism goes manual.

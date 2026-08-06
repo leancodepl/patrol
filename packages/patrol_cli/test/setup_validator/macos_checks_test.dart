@@ -214,6 +214,57 @@ void main() {
     expect(finding.summary, contains('macos_assemble embed'));
   });
 
+  group('M4 phase ordering', () {
+    const buildRef =
+        '\t\t\t\tBBBBBBBBBBBBBBBBBBBBBBB2 /* macos_assemble build */,\n';
+    const embedRef =
+        '\t\t\t\tBBBBBBBBBBBBBBBBBBBBBBB3 /* macos_assemble embed */,\n';
+    const sourcesRef = '\t\t\t\tACE0ACE0ACE0ACE0ACE0ACE1 /* Sources */,\n';
+    const frameworksRef =
+        '\t\t\t\tFACEFACEFACEFACEFACEFAC1 /* Frameworks */,\n';
+
+    String pbxprojWithPhases({required bool ordered}) {
+      final refs = ordered
+          ? '$buildRef$sourcesRef$frameworksRef$embedRef'
+          : '$sourcesRef$buildRef$embedRef$frameworksRef';
+      return _pbxproj
+          .replaceFirst('$buildRef$embedRef', refs)
+          .replaceFirst(
+            '\t};\n}',
+            '\t\tACE0ACE0ACE0ACE0ACE0ACE1 /* Sources */ = {\n'
+                '\t\t\tisa = PBXSourcesBuildPhase;\n'
+                '\t\t};\n'
+                '\t\tFACEFACEFACEFACEFACEFAC1 /* Frameworks */ = {\n'
+                '\t\t\tisa = PBXFrameworksBuildPhase;\n'
+                '\t\t};\n'
+                '\t};\n}',
+          );
+    }
+
+    test('correct order passes', () {
+      writeCompleteProject();
+      write(
+        'macos/Runner.xcodeproj/project.pbxproj',
+        pbxprojWithPhases(ordered: true),
+      );
+      final findings = macosFindings(context());
+      expect(idsOf(findings), isNot(contains('M4')));
+    });
+
+    test('misordered phases produce an M4 warning', () {
+      writeCompleteProject();
+      write(
+        'macos/Runner.xcodeproj/project.pbxproj',
+        pbxprojWithPhases(ordered: false),
+      );
+      final finding = macosFindings(
+        context(),
+      ).firstWhere((finding) => finding.id == 'M4');
+      expect(finding.severity, Severity.warning);
+      expect(finding.summary, contains('wrong order'));
+    });
+  });
+
   group('M5 Runner entitlements', () {
     test('errors when a sandboxed profile lacks network permissions', () {
       writeCompleteProject();
