@@ -170,6 +170,10 @@ jobs:
     name: Flutter ${{ matrix.flutter-version }}
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: read
+      statuses: write
+
     strategy:
       fail-fast: false
       matrix:
@@ -232,18 +236,6 @@ jobs:
           git add .
           ./gen_from_schema
           git diff --exit-code || (echo "Files are not regenerated from schema. Please run ./gen_from_schema locally and push changes" && exit 1)
-
-  pana-score:
-    name: pana score
-    runs-on: ubuntu-latest
-
-    permissions:
-      contents: read
-      statuses: write
-
-    steps:
-      - name: Clone repository
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
       - name: Score with pana
         continue-on-error: true

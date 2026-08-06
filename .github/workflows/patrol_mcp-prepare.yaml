@@ -11,6 +11,10 @@ jobs:
     name: Smoke (${{ matrix.resolution }} patrol_cli) on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
 
+    permissions:
+      contents: read
+      statuses: write
+
     strategy:
       fail-fast: false
       matrix:
@@ -46,19 +50,8 @@ jobs:
       - name: Unit tests
         run: dart test
 
-  pana-score:
-    name: pana score
-    runs-on: ubuntu-latest
-
-    permissions:
-      contents: read
-      statuses: write
-
-    steps:
-      - name: Clone repository
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
-
       - name: Score with pana
+        if: matrix.os == 'ubuntu-latest' && matrix.resolution == 'latest'
         continue-on-error: true
         uses: leancodepl/mobile-tools/.github/actions/pana-score@68d925e42153f53e69d6c2501534f0c3c0a1a3be # pana-score-v1.1
         with:

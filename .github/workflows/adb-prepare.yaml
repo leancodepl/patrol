@@ -11,6 +11,10 @@ jobs:
     name: Dart ${{ matrix.dart-version }}
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: read
+      statuses: write
+
     strategy:
       fail-fast: false
       matrix:
@@ -46,18 +50,6 @@ jobs:
 
       - name: dart pub publish --dry-run
         run: dart pub publish --dry-run
-
-  pana-score:
-    name: pana score
-    runs-on: ubuntu-latest
-
-    permissions:
-      contents: read
-      statuses: write
-
-    steps:
-      - name: Clone repository
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
       - name: Score with pana
         continue-on-error: true
