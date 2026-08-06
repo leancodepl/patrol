@@ -33,13 +33,13 @@ class DarwinCheckContext {
     pbxproj = pbxprojPath == null ? null : probe.readFile(pbxprojPath);
 
     podfileExists = probe.fileExists('$platformDir/Podfile');
+    // Flutter's SPM integration consists of adding
+    // FlutterGeneratedPluginSwiftPackage to the Xcode project, so the pbxproj
+    // marker is both necessary and sufficient. A Package.resolved under
+    // xcshareddata/swiftpm is deliberately NOT a signal: stale leftovers of
+    // it exist in real CocoaPods projects and would mis-detect SPM.
     spmDetected =
-        (pbxproj?.contains('FlutterGeneratedPluginSwiftPackage') ?? false) ||
-        (xcodeprojDir != null &&
-            probe.fileExists(
-              '$xcodeprojDir/project.xcworkspace/xcshareddata/swiftpm/'
-              'Package.resolved',
-            ));
+        pbxproj?.contains('FlutterGeneratedPluginSwiftPackage') ?? false;
   }
 
   final ProjectProbe probe;
