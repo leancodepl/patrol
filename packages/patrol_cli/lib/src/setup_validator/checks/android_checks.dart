@@ -256,8 +256,12 @@ Finding? checkMinificationAdvice(AndroidCheckContext ctx) {
     severity: Severity.notice,
     summary:
         'Minification is enabled in ${ctx.gradlePath} and your ProGuard '
-        'rules do not keep the Patrol packages — release-mode test runs can '
-        'fail with ClassNotFoundException.',
+        'rules do not keep the Patrol packages. Debug test runs are '
+        'unaffected (tests build against the debug build type by default), '
+        'but a release-mode run — `patrol test --release` with '
+        '`testBuildType = "release"`, e.g. for device farms — will crash '
+        'with ClassNotFoundException '
+        '(github.com/leancodepl/patrol/issues/1542).',
     fix:
         'Add `-keep class pl.leancode.patrol.** { *; }` to your ProGuard '
         'rules, or disable minification for the build type you test.',
