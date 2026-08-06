@@ -154,7 +154,7 @@ class SetupValidator {
                 fix:
                     'Add `$platform:` under the `patrol:` section in '
                     'pubspec.yaml and re-run `patrol validate`.',
-                docsUrl: setupDocsUrl,
+                docsUrl: '$docsBaseUrl#configure-pubspec',
               ),
             ],
           ),

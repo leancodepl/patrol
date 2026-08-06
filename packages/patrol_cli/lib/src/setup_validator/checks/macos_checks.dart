@@ -1,6 +1,4 @@
 import 'package:patrol_cli/src/setup_validator/checks/darwin_common.dart';
-import 'package:patrol_cli/src/setup_validator/checks/ios_checks.dart'
-    show faqDocsUrl;
 import 'package:patrol_cli/src/setup_validator/checks/shared_checks.dart';
 import 'package:patrol_cli/src/setup_validator/finding.dart';
 
@@ -26,7 +24,7 @@ List<Finding> macosFindings(MacOSCheckContext ctx) {
             'No Xcode project (macos/*.xcodeproj with project.pbxproj) '
             'found, so the macOS setup could not be verified.',
         fix: 'Make sure the Flutter project has a macos/ Xcode project.',
-        docsUrl: setupDocsUrl,
+        docsUrl: '$docsBaseUrl#macos-setup',
       ),
     ];
   }
@@ -79,7 +77,7 @@ Finding? checkMacosIntegrationMechanism(MacOSCheckContext ctx) {
     fix:
         'Set up plugin integration: keep the default Podfile, or migrate to '
         'SPM following the Flutter docs.',
-    docsUrl: setupDocsUrl,
+    docsUrl: '$docsBaseUrl#macos-setup',
   );
 }
 
@@ -106,7 +104,7 @@ Finding? checkMacosRunnerUITestsFile(MacOSCheckContext ctx) {
     fix:
         'Create the RunnerUITests UI Testing Bundle target and replace '
         'RunnerUITests.m contents with the snippet from the docs.',
-    docsUrl: setupDocsUrl,
+    docsUrl: '$docsBaseUrl#macos-setup-configure-runner-uitests',
   );
 }
 
@@ -127,7 +125,7 @@ Finding? checkMacosRunnerUITestsTarget(MacOSCheckContext ctx) {
     fix:
         'In Xcode: File > New > Target... > UI Testing Bundle, product name '
         '`RunnerUITests`, target to be tested `Runner`, language Objective-C.',
-    docsUrl: setupDocsUrl,
+    docsUrl: '$docsBaseUrl#macos-setup-create-test-target',
   );
 }
 
@@ -152,7 +150,7 @@ Finding? checkMacosEmbedding(MacOSCheckContext ctx) {
           "Inside the existing `target 'Runner'` block, nest: "
           "`target 'RunnerUITests' do inherit! :complete end`, then run "
           '`pod install --repo-update` in macos/.',
-      docsUrl: setupDocsUrl,
+      docsUrl: '$docsBaseUrl#macos-setup-configure-runner-uitests',
     );
   }
 
@@ -170,7 +168,7 @@ Finding? checkMacosEmbedding(MacOSCheckContext ctx) {
       fix:
           'In Xcode go to RunnerUITests > General > Frameworks and '
           'Libraries, click +, and select FlutterGeneratedPluginSwiftPackage.',
-      docsUrl: setupDocsUrl,
+      docsUrl: '$docsBaseUrl#macos-setup-configure-runner-uitests',
     );
   }
 
@@ -212,7 +210,7 @@ Finding? checkMacosAssembleBuildPhases(MacOSCheckContext ctx) {
         fix:
             'Drag the Build Phases into the order shown in the docs '
             'screenshot.',
-        docsUrl: setupDocsUrl,
+        docsUrl: '$docsBaseUrl#macos-setup-order-build-phases',
       );
     }
     return null;
@@ -231,7 +229,7 @@ Finding? checkMacosAssembleBuildPhases(MacOSCheckContext ctx) {
         'Add the two Run Script phases calling '
         r'"$FLUTTER_ROOT/packages/flutter_tools/bin/macos_assemble.sh" with '
         '`build` and `embed`, ordered as shown in the docs.',
-    docsUrl: setupDocsUrl,
+    docsUrl: '$docsBaseUrl#macos-setup-add-build-phases',
   );
 }
 
@@ -266,7 +264,7 @@ Finding? checkRunnerEntitlements(MacOSCheckContext ctx) {
         fix:
             'In Xcode go to Runner > Signing & Capabilities and check both '
             'network checkboxes in all App Sandbox sections.',
-        docsUrl: setupDocsUrl,
+        docsUrl: '$docsBaseUrl#macos-setup-enable-app-sandbox-connections',
       );
     }
   }
@@ -289,7 +287,7 @@ Finding? checkUITestsEntitlementsCopied(MacOSCheckContext ctx) {
     fix:
         'Copy DebugProfile.entitlements and Release.entitlements from '
         'macos/Runner/ to macos/RunnerUITests/.',
-    docsUrl: setupDocsUrl,
+    docsUrl: '$docsBaseUrl#macos-setup-copy-entitlements',
   );
 }
 
@@ -311,7 +309,7 @@ Finding? checkCodeSignEntitlements(MacOSCheckContext ctx) {
         'In RunnerUITests Build Settings set Code Signing Entitlements to '
         'RunnerUITests/DebugProfile.entitlements (Debug/Profile) and '
         'RunnerUITests/Release.entitlements (Release).',
-    docsUrl: setupDocsUrl,
+    docsUrl: '$docsBaseUrl#macos-setup-set-signing-entitlements',
   );
 }
 
@@ -327,7 +325,7 @@ Finding? checkMacosUserScriptSandboxing(MacOSCheckContext ctx) {
     fix:
         'Set User Script Sandboxing to No in Build Settings for the '
         'RunnerUITests (and Runner) targets.',
-    docsUrl: setupDocsUrl,
+    docsUrl: '$docsBaseUrl#macos-setup-disable-script-sandboxing',
   );
 }
 
@@ -351,7 +349,7 @@ Finding? checkMacosDeploymentTargets(MacOSCheckContext ctx) {
     fix:
         'Align the macOS Deployment Target of RunnerUITests with Runner in '
         'Build Settings.',
-    docsUrl: setupDocsUrl,
+    docsUrl: '$docsBaseUrl#macos-setup-set-min-macos-version',
   );
 }
 
@@ -368,7 +366,7 @@ Finding? checkMacosParallelExecution(MacOSCheckContext ctx) {
             'Scheme $path has parallel test execution enabled, which breaks '
             'Patrol.',
         fix: 'Disable parallel execution for all schemes.',
-        docsUrl: faqDocsUrl,
+        docsUrl: '$docsBaseUrl#macos-setup-disable-parallel-execution',
       );
     }
   }
@@ -390,7 +388,7 @@ Finding? checkMacosLaunchTestsFileDeleted(MacOSCheckContext ctx) {
         'macos RunnerUITestsLaunchTests.m still exists — the docs say to '
         'delete it.',
     fix: 'Delete it through Xcode (right click > Move to Trash).',
-    docsUrl: setupDocsUrl,
+    docsUrl: '$docsBaseUrl#macos-setup-delete-launch-tests',
   );
 }
 
@@ -420,6 +418,6 @@ Finding? macosManualVerificationNotice(MacOSCheckContext ctx) {
     id: 'M8',
     severity: Severity.notice,
     summary: 'Verify manually in Xcode: ${items.join('; ')}.',
-    docsUrl: faqDocsUrl,
+    docsUrl: '$docsBaseUrl#macos-setup',
   );
 }
