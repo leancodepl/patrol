@@ -134,6 +134,17 @@ flutter:
     expect(report.hasErrors, isFalse);
   });
 
+  test('--platform filter also hides undeclared-platform notices', () {
+    // macOS is present on disk but not declared; with --platform android its
+    // P1 notice must not appear (reported during team field-testing).
+    fs.directory('/project/macos').createSync();
+    final report = validator().validate(platformFilter: {'android'});
+    expect(
+      report.sections.map((section) => section.title),
+      isNot(contains('macOS')),
+    );
+  });
+
   test('--platform filter narrows validated platforms', () {
     final report = validator().validate(platformFilter: {'ios'});
     // android is declared but filtered out: its environment checks are

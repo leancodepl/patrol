@@ -66,9 +66,11 @@ class ValidationPresenter {
   void _printSummary(ValidationReport report) {
     final errors = report.countOf(Severity.error);
     final warnings = report.countOf(Severity.warning);
+    final notices = report.countOf(Severity.notice);
     final line =
         'Result: $errors ${_plural(errors, 'error')}, '
-        '$warnings ${_plural(warnings, 'warning')}';
+        '$warnings ${_plural(warnings, 'warning')}, '
+        '$notices ${_plural(notices, 'notice')}';
 
     if (errors > 0) {
       _logger.err('❌ $line');

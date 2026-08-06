@@ -316,16 +316,22 @@ Finding? checkVersionCompatibility(
     return null;
   }
 
+  final compatiblePatrol = getLatestCompatiblePatrolVersion(cli);
   final maxCliVersion = getMaxCompatibleCliVersion(patrol);
+  final options = [
+    if (compatiblePatrol != null)
+      'upgrade `patrol` to ^$compatiblePatrol in pubspec.yaml',
+    if (maxCliVersion != null)
+      'run `dart pub global activate patrol_cli $maxCliVersion` to match your current patrol version',
+  ];
   return Finding(
     id: 'S7',
     severity: Severity.error,
     summary:
         'patrol $patrolVersion is not compatible with patrol_cli $cliVersion.',
-    fix: maxCliVersion != null
-        ? 'Run `dart pub global activate patrol_cli $maxCliVersion`, or '
-              'upgrade both packages to the latest versions.'
-        : 'Upgrade both `patrol` and `patrol_cli` to the latest versions.',
+    fix: options.isEmpty
+        ? 'Upgrade both `patrol` and `patrol_cli` to the latest versions.'
+        : 'Either ${options.join(', or ')}.',
     docsUrl: compatibilityTableUrl,
   );
 }

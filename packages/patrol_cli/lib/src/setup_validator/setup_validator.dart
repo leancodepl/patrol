@@ -102,7 +102,7 @@ class SetupValidator {
           ),
         ),
         ValidationSection(title: 'Shared', findings: _sharedFindings(ctx)),
-        ..._platformSections(ctx, filtered),
+        ..._platformSections(ctx, filtered, platformFilter),
       ],
     );
   }
@@ -123,10 +123,16 @@ class SetupValidator {
   List<ValidationSection> _platformSections(
     SharedCheckContext ctx,
     Set<String> validatedPlatforms,
+    Set<String>? platformFilter,
   ) {
     final sections = <ValidationSection>[];
 
     for (final platform in _platforms) {
+      if (platformFilter != null && !platformFilter.contains(platform)) {
+        // Excluded by --platform: skip entirely, including the
+        // present-but-undeclared notice below.
+        continue;
+      }
       if (validatedPlatforms.contains(platform)) {
         final findings = switch (platform) {
           'android' => androidFindings(AndroidCheckContext(probe: _probe)),
