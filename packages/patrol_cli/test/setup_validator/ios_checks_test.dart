@@ -411,6 +411,93 @@ void main() {
     });
   });
 
+  group('I13 configuration sets', () {
+    /// Appends configuration lists: Runner has [runnerConfigs], RunnerUITests
+    /// has [uiTestsConfigs].
+    String pbxprojWithConfigLists(
+      List<String> runnerConfigs,
+      List<String> uiTestsConfigs,
+    ) {
+      String configBlock(String id, String name) =>
+          '\t\t$id /* $name */ = {\n'
+          '\t\t\tisa = XCBuildConfiguration;\n'
+          '\t\t\tname = "$name";\n'
+          '\t\t};\n';
+      String listBlock(String id, Map<String, String> configs) =>
+          '\t\t$id /* Build configuration list */ = {\n'
+          '\t\t\tisa = XCConfigurationList;\n'
+          '\t\t\tbuildConfigurations = (\n'
+          '${configs.keys.map((key) => '\t\t\t\t$key /* ${configs[key]} */,\n').join()}'
+          '\t\t\t);\n'
+          '\t\t};\n';
+
+      final runnerMap = {
+        for (final (index, name) in runnerConfigs.indexed)
+          'ADDADDADDADDADDADDADD${index}A0': name,
+      };
+      final uiTestsMap = {
+        for (final (index, name) in uiTestsConfigs.indexed)
+          'BEDBEDBEDBEDBEDBEDBED${index}B0': name,
+      };
+
+      return _pbxproj()
+          .replaceFirst(
+            '\t\t\tname = Runner;\n',
+            '\t\t\tname = Runner;\n'
+                '\t\t\tbuildConfigurationList = CACACACACACACACACACACAC1;\n',
+          )
+          .replaceFirst(
+            '\t\t\tname = RunnerUITests;\n',
+            '\t\t\tname = RunnerUITests;\n'
+                '\t\t\tbuildConfigurationList = CACACACACACACACACACACAC2;\n',
+          )
+          .replaceFirst(
+            '\t};\n}',
+            '${listBlock('CACACACACACACACACACACAC1', runnerMap)}'
+                '${listBlock('CACACACACACACACACACACAC2', uiTestsMap)}'
+                '${runnerMap.entries.map((entry) => configBlock(entry.key, entry.value)).join()}'
+                '${uiTestsMap.entries.map((entry) => configBlock(entry.key, entry.value)).join()}'
+                '\t};\n}',
+          );
+    }
+
+    test('matching sets pass and leave the item out of the notice', () {
+      writeSpmProject();
+      write(
+        'ios/Runner.xcodeproj/project.pbxproj',
+        pbxprojWithConfigLists(
+          ['Debug', 'Release-prod'],
+          ['Debug', 'Release-prod'],
+        ),
+      );
+      final findings = iosFindings(context());
+      expect(idsOf(findings), isNot(contains('I13')));
+      final notice = findings.firstWhere((finding) => finding.id == 'I12');
+      expect(notice.summary, isNot(contains('Configuration Set')));
+    });
+
+    test('warns when RunnerUITests misses a Runner configuration', () {
+      writeSpmProject();
+      write(
+        'ios/Runner.xcodeproj/project.pbxproj',
+        pbxprojWithConfigLists(['Debug', 'Release-prod'], ['Debug']),
+      );
+      final finding = iosFindings(
+        context(),
+      ).firstWhere((finding) => finding.id == 'I13');
+      expect(finding.severity, Severity.warning);
+      expect(finding.summary, contains('Release-prod'));
+    });
+
+    test('stays a manual item when config lists cannot be isolated', () {
+      writeSpmProject();
+      final notice = iosFindings(
+        context(),
+      ).firstWhere((finding) => finding.id == 'I12');
+      expect(notice.summary, contains('Configuration Set'));
+    });
+  });
+
   group('I8 user script sandboxing', () {
     test('warns on an explicit YES', () {
       writeSpmProject();
