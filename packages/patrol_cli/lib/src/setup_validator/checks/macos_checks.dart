@@ -177,23 +177,44 @@ Finding? checkMacosEmbedding(MacOSCheckContext ctx) {
   return null; // M0 already reported the missing mechanism.
 }
 
+final _macosAssembleBuildScript = RegExp(
+  r'macos_assemble\.sh[\\"' "'" r']*\s+build',
+);
+final _macosAssembleEmbedScript = RegExp(
+  r'macos_assemble\.sh[\\"' "'" r']*\s+embed',
+);
+
 /// M4: the two macos_assemble Run Script build phases exist on the
-/// RunnerUITests target. Scoped to that target's referenced phases — the
-/// standard Runner target has its own macos_assemble phases, so a global
-/// probe would always pass.
+/// RunnerUITests target and are ordered as in the docs. Scoped to that
+/// target's referenced phases — the standard Runner target has its own
+/// macos_assemble phases, so a global probe would always pass.
 Finding? checkMacosAssembleBuildPhases(MacOSCheckContext ctx) {
   final scripts = ctx.runnerUITestsScriptPhases;
   if (scripts == null) {
     // M2 reports the missing target.
     return null;
   }
-  final hasBuild = scripts.any(
-    RegExp(r'macos_assemble\.sh[\\"' "'" r']*\s+build').hasMatch,
-  );
-  final hasEmbed = scripts.any(
-    RegExp(r'macos_assemble\.sh[\\"' "'" r']*\s+embed').hasMatch,
-  );
+  final hasBuild = scripts.any(_macosAssembleBuildScript.hasMatch);
+  final hasEmbed = scripts.any(_macosAssembleEmbedScript.hasMatch);
   if (hasBuild && hasEmbed) {
+    final ordered = ctx.scriptPhasesOrdered(
+      buildScript: _macosAssembleBuildScript,
+      embedScript: _macosAssembleEmbedScript,
+    );
+    if (ordered == false) {
+      return const Finding(
+        id: 'M4',
+        severity: Severity.warning,
+        summary:
+            'The macos_assemble Run Script phases of RunnerUITests are in '
+            'the wrong order: `macos_assemble build` must run before Compile '
+            'Sources and `macos_assemble embed` after Frameworks.',
+        fix:
+            'Drag the Build Phases into the order shown in the docs '
+            'screenshot.',
+        docsUrl: setupDocsUrl,
+      );
+    }
     return null;
   }
   final missing = [
@@ -379,10 +400,17 @@ Finding? macosManualVerificationNotice(MacOSCheckContext ctx) {
   final sandboxingKnown = ctx.pbxproj!.contains(
     'ENABLE_USER_SCRIPT_SANDBOXING',
   );
+  final orderCheckable =
+      ctx.scriptPhasesOrdered(
+        buildScript: _macosAssembleBuildScript,
+        embedScript: _macosAssembleEmbedScript,
+      ) !=
+      null;
 
   final items = [
     'RunnerUITests uses the same Configuration Set as Runner',
-    'the two macos_assemble Build Phases are ordered as in the docs',
+    if (!orderCheckable)
+      'the two macos_assemble Build Phases are ordered as in the docs',
     if (!sandboxingKnown) 'User Script Sandboxing is set to No',
     if (!hasSharedSchemes)
       'parallel execution is disabled for all schemes (no shared schemes to verify)',

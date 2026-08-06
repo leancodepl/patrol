@@ -98,6 +98,19 @@ class DarwinCheckContext {
     return (uiTests: uiTests, app: app);
   }
 
+  /// The object block that [id] points at, or null when it cannot be
+  /// isolated.
+  String? blockFor(String id) {
+    final contents = pbxproj;
+    if (contents == null) {
+      return null;
+    }
+    return RegExp(
+      '$id /\\*[^*]*\\*/ = \\{.*?\\n\\t\\t\\};',
+      dotAll: true,
+    ).firstMatch(contents)?.group(0);
+  }
+
   /// Object blocks referenced from the RunnerUITests target block (one hop),
   /// e.g. its build phases. Null when the target block cannot be isolated.
   ///
@@ -109,19 +122,69 @@ class DarwinCheckContext {
     if (block == null) {
       return null;
     }
-    final contents = pbxproj!;
     return RegExp(r'\b[A-F0-9]{24}\b')
         .allMatches(block)
         .map((match) => match.group(0)!)
         .toSet()
-        .map(
-          (id) => RegExp(
-            '$id /\\*[^*]*\\*/ = \\{.*?\\n\\t\\t\\};',
-            dotAll: true,
-          ).firstMatch(contents)?.group(0),
-        )
+        .map(blockFor)
         .nonNulls
         .toList();
+  }
+
+  /// Whether the two Flutter script phases on RunnerUITests are ordered as
+  /// the docs require: the build script before Compile Sources, the embed
+  /// script after Frameworks. The buildPhases array order is the phase order.
+  ///
+  /// Null when any of the four phases cannot be identified — callers should
+  /// then fall back to the manual-verify notice.
+  bool? scriptPhasesOrdered({
+    required RegExp buildScript,
+    required RegExp embedScript,
+  }) {
+    final block = runnerUITestsTargetBlock;
+    if (block == null) {
+      return null;
+    }
+    final list = RegExp(
+      r'buildPhases = \((.*?)\);',
+      dotAll: true,
+    ).firstMatch(block)?.group(1);
+    if (list == null) {
+      return null;
+    }
+
+    int? buildIndex;
+    int? embedIndex;
+    int? sourcesIndex;
+    int? frameworksIndex;
+    final ids = RegExp(
+      r'\b[A-F0-9]{24}\b',
+    ).allMatches(list).map((match) => match.group(0)!).toList();
+    for (final (index, id) in ids.indexed) {
+      final referenced = blockFor(id);
+      if (referenced == null) {
+        continue;
+      }
+      if (referenced.contains('PBXSourcesBuildPhase')) {
+        sourcesIndex = index;
+      } else if (referenced.contains('PBXFrameworksBuildPhase')) {
+        frameworksIndex = index;
+      } else if (referenced.contains('PBXShellScriptBuildPhase')) {
+        if (buildScript.hasMatch(referenced)) {
+          buildIndex = index;
+        } else if (embedScript.hasMatch(referenced)) {
+          embedIndex = index;
+        }
+      }
+    }
+
+    if (buildIndex == null ||
+        embedIndex == null ||
+        sourcesIndex == null ||
+        frameworksIndex == null) {
+      return null;
+    }
+    return buildIndex < sourcesIndex && embedIndex > frameworksIndex;
   }
 
   /// Whether FlutterGeneratedPluginSwiftPackage is linked to RunnerUITests.

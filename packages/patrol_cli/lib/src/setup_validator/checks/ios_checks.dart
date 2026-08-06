@@ -234,23 +234,43 @@ Finding? checkSpmLinkage(IOSCheckContext ctx) {
   );
 }
 
+final _xcodeBackendBuildScript = RegExp(
+  r'xcode_backend\.sh[\\"' "'" r']*\s+build',
+);
+final _xcodeBackendEmbedScript = RegExp('embed_and_thin');
+
 /// I7: the two xcode_backend Run Script build phases exist on the
-/// RunnerUITests target. Scoped to that target's referenced phases — the
-/// standard Runner target has its own xcode_backend phases, so a global
-/// probe would always pass.
+/// RunnerUITests target and are ordered as in the docs (build before Compile
+/// Sources, embed_and_thin after Frameworks). Scoped to that target's
+/// referenced phases — the standard Runner target has its own xcode_backend
+/// phases, so a global probe would always pass.
 Finding? checkXcodeBackendBuildPhases(IOSCheckContext ctx) {
   final scripts = ctx.runnerUITestsScriptPhases;
   if (scripts == null) {
     // I2 reports the missing target.
     return null;
   }
-  final hasBuild = scripts.any(
-    RegExp(r'xcode_backend\.sh[\\"' "'" r']*\s+build').hasMatch,
-  );
-  final hasEmbed = scripts.any(
-    (script) => script.contains('embed_and_thin'),
-  );
+  final hasBuild = scripts.any(_xcodeBackendBuildScript.hasMatch);
+  final hasEmbed = scripts.any(_xcodeBackendEmbedScript.hasMatch);
   if (hasBuild && hasEmbed) {
+    final ordered = ctx.scriptPhasesOrdered(
+      buildScript: _xcodeBackendBuildScript,
+      embedScript: _xcodeBackendEmbedScript,
+    );
+    if (ordered == false) {
+      return const Finding(
+        id: 'I7',
+        severity: Severity.warning,
+        summary:
+            'The xcode_backend Run Script phases of RunnerUITests are in the '
+            'wrong order: `xcode_backend build` must run before Compile '
+            'Sources and `xcode_backend embed_and_thin` after Frameworks.',
+        fix:
+            'Drag the Build Phases into the order shown in the docs '
+            'screenshot.',
+        docsUrl: setupDocsUrl,
+      );
+    }
     return null;
   }
   final missing = [
@@ -369,10 +389,17 @@ Finding? manualVerificationNotice(IOSCheckContext ctx) {
   final sandboxingKnown = ctx.pbxproj!.contains(
     'ENABLE_USER_SCRIPT_SANDBOXING',
   );
+  final orderCheckable =
+      ctx.scriptPhasesOrdered(
+        buildScript: _xcodeBackendBuildScript,
+        embedScript: _xcodeBackendEmbedScript,
+      ) !=
+      null;
 
   final items = [
     'RunnerUITests uses the same Configuration Set as Runner',
-    'the two xcode_backend Build Phases are ordered as in the docs',
+    if (!orderCheckable)
+      'the two xcode_backend Build Phases are ordered as in the docs',
     if (!sandboxingKnown) 'User Script Sandboxing is set to No',
     if (!hasSharedSchemes)
       'parallel execution is disabled for all schemes (no shared schemes to verify)',
