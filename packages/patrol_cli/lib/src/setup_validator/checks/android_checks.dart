@@ -61,7 +61,7 @@ List<Finding> androidFindings(AndroidCheckContext ctx) {
         fix:
             'Make sure the project has an android/app module with a Gradle '
             'build file.',
-        docsUrl: setupDocsUrl,
+        docsUrl: '$docsBaseUrl#android-setup-open-build-gradle',
       ),
     );
   } else {
@@ -92,7 +92,7 @@ Finding? checkInstrumentationTestClass(AndroidCheckContext ctx) {
     fix:
         'Create MainActivityTest.java in '
         '$_androidTestDir/java/<your package path>/ — copy it from the docs.',
-    docsUrl: setupDocsUrl,
+    docsUrl: '$docsBaseUrl#android-setup-create-mainactivitytest',
   );
 }
 
@@ -127,7 +127,7 @@ Finding? checkTestClassPackage(AndroidCheckContext ctx) {
         fix:
             'Move the file so its path mirrors the package, or fix the '
             '`package` declaration.',
-        docsUrl: setupDocsUrl,
+        docsUrl: '$docsBaseUrl#android-setup-create-mainactivitytest',
       );
     }
 
@@ -143,7 +143,7 @@ Finding? checkTestClassPackage(AndroidCheckContext ctx) {
             'This is fine if the difference comes from flavors '
             '(applicationIdSuffix); otherwise align the package with your '
             'applicationId.',
-        docsUrl: setupDocsUrl,
+        docsUrl: '$docsBaseUrl#android-setup-create-mainactivitytest',
       );
     }
   }
@@ -168,7 +168,7 @@ Finding? checkInstrumentationRunner(AndroidCheckContext ctx) {
         'Add `testInstrumentationRunner = '
         '"pl.leancode.patrol.PatrolJUnitRunner"` to the defaultConfig '
         'section.',
-    docsUrl: setupDocsUrl,
+    docsUrl: '$docsBaseUrl#android-setup-set-test-runner',
   );
 }
 
@@ -185,7 +185,7 @@ Finding? checkClearPackageData(AndroidCheckContext ctx) {
     fix:
         'Add `testInstrumentationRunnerArguments["clearPackageData"] = '
         '"true"` to the defaultConfig section.',
-    docsUrl: setupDocsUrl,
+    docsUrl: '$docsBaseUrl#android-setup-set-test-runner',
   );
 }
 
@@ -203,7 +203,7 @@ Finding? checkOrchestratorExecution(AndroidCheckContext ctx) {
     fix:
         'Add a `testOptions { execution = "ANDROIDX_TEST_ORCHESTRATOR" }` '
         'block to the android section.',
-    docsUrl: setupDocsUrl,
+    docsUrl: '$docsBaseUrl#android-setup-enable-test-orchestrator',
   );
 }
 
@@ -223,7 +223,7 @@ Finding? checkOrchestratorDependency(AndroidCheckContext ctx) {
         'Add `androidTestUtil("androidx.test:orchestrator:1.5.1")` to the '
         'dependencies section. Do not add androidx.test:rules/runner '
         'manually.',
-    docsUrl: setupDocsUrl,
+    docsUrl: '$docsBaseUrl#android-setup-add-orchestrator-dependency',
   );
 }
 
@@ -247,6 +247,6 @@ Finding? checkMinificationAdvice(AndroidCheckContext ctx) {
     fix:
         'Keep the Patrol packages in your ProGuard config, or disable '
         'minification for the build type you test.',
-    docsUrl: setupDocsUrl,
+    docsUrl: '$docsBaseUrl#android-setup',
   );
 }

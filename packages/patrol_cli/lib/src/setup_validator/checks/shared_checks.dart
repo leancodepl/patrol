@@ -5,7 +5,8 @@ import 'package:patrol_cli/src/setup_validator/project_probe.dart';
 import 'package:version/version.dart';
 import 'package:yaml/yaml.dart';
 
-const setupDocsUrl = 'https://patrol.leancode.co/documentation#setup';
+const docsBaseUrl = 'https://patrol.leancode.co/documentation';
+const setupDocsUrl = '$docsBaseUrl#setup';
 const compatibilityTableUrl =
     'https://patrol.leancode.co/documentation/compatibility-table';
 
@@ -90,7 +91,7 @@ Finding? checkPatrolDependency(SharedCheckContext ctx) {
     severity: Severity.error,
     summary: 'The `patrol` package is not declared in pubspec.yaml.',
     fix: 'Run `flutter pub add patrol --dev`.',
-    docsUrl: setupDocsUrl,
+    docsUrl: '$docsBaseUrl#add-patrol-dependency',
   );
 }
 
@@ -106,7 +107,7 @@ Finding? checkPatrolSection(SharedCheckContext ctx) {
       fix:
           'Add a top-level `patrol:` section with `app_name` and your '
           'platform identifiers (android.package_name, ios.bundle_id, ...).',
-      docsUrl: setupDocsUrl,
+      docsUrl: '$docsBaseUrl#configure-pubspec',
     );
   }
 
@@ -147,7 +148,7 @@ Finding? checkPatrolSection(SharedCheckContext ctx) {
         'The `patrol:` section in pubspec.yaml is missing: '
         '${missing.join(', ')}.',
     fix: 'Add the missing keys to the `patrol:` section.',
-    docsUrl: setupDocsUrl,
+    docsUrl: '$docsBaseUrl#configure-pubspec',
   );
 }
 
@@ -164,7 +165,7 @@ Finding? checkStrayPatrolYaml(SharedCheckContext ctx) {
         'Move the configuration to pubspec.yaml under the `patrol:` key. '
         'Config lives in pubspec.yaml by design; see '
         'https://github.com/leancodepl/patrol/issues/2065.',
-    docsUrl: setupDocsUrl,
+    docsUrl: '$docsBaseUrl#configure-pubspec',
   );
 }
 
@@ -179,7 +180,7 @@ Finding? checkTestDirectory(SharedCheckContext ctx) {
       fix:
           'Create `$directory/example_test.dart`, or point Patrol at your '
           'tests with `test_directory:` in the `patrol:` section.',
-      docsUrl: setupDocsUrl,
+      docsUrl: '$docsBaseUrl#create-integration-test',
     );
   }
   if (!ctx.testFilesIn(directory)) {
@@ -190,7 +191,7 @@ Finding? checkTestDirectory(SharedCheckContext ctx) {
           'Test directory `$directory/` contains no '
           '`*${ctx.testFileSuffix}` files.',
       fix: 'Add at least one test file, e.g. `$directory/example_test.dart`.',
-      docsUrl: setupDocsUrl,
+      docsUrl: '$docsBaseUrl#create-integration-test',
     );
   }
   return null;
@@ -217,7 +218,7 @@ Finding? checkIntegrationTestDirectory(SharedCheckContext ctx) {
     fix:
         'Move the tests to `${ctx.testDirectory}/`, or set '
         '`test_directory: integration_test` in the `patrol:` section.',
-    docsUrl: setupDocsUrl,
+    docsUrl: '$docsBaseUrl#configure-pubspec',
   );
 }
 

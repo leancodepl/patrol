@@ -22,7 +22,7 @@ List<Finding> iosFindings(IOSCheckContext ctx) {
             'No Xcode project (ios/*.xcodeproj with project.pbxproj) found, '
             'so the iOS setup could not be verified.',
         fix: 'Make sure the Flutter project has an ios/ Xcode project.',
-        docsUrl: setupDocsUrl,
+        docsUrl: '$docsBaseUrl#ios-setup',
       ),
     ];
   }
@@ -76,7 +76,7 @@ Finding? checkIntegrationMechanism(IOSCheckContext ctx) {
     fix:
         'Set up plugin integration: keep the default Podfile, or migrate to '
         'SPM following the Flutter docs.',
-    docsUrl: setupDocsUrl,
+    docsUrl: '$docsBaseUrl#ios-setup',
   );
 }
 
@@ -104,7 +104,7 @@ Finding? checkRunnerUITestsFile(IOSCheckContext ctx) {
     fix:
         'Create the RunnerUITests UI Testing Bundle target and replace '
         'RunnerUITests.m contents with the snippet from the docs.',
-    docsUrl: setupDocsUrl,
+    docsUrl: '$docsBaseUrl#ios-setup-configure-runner-uitests',
   );
 }
 
@@ -126,7 +126,7 @@ Finding? checkRunnerUITestsTarget(IOSCheckContext ctx) {
     fix:
         'In Xcode: File > New > Target... > UI Testing Bundle, product name '
         '`RunnerUITests`, target to be tested `Runner`, language Objective-C.',
-    docsUrl: setupDocsUrl,
+    docsUrl: '$docsBaseUrl#ios-setup-create-test-target',
   );
 }
 
@@ -144,7 +144,7 @@ Finding? checkLaunchTestsFileDeleted(IOSCheckContext ctx) {
     summary:
         'RunnerUITestsLaunchTests.m still exists — the docs say to delete it.',
     fix: 'Delete it through Xcode (right click > Move to Trash).',
-    docsUrl: setupDocsUrl,
+    docsUrl: '$docsBaseUrl#ios-setup-delete-launch-tests',
   );
 }
 
@@ -174,7 +174,7 @@ Finding? checkPodfileUITestsTarget(IOSCheckContext ctx) {
         "Inside the existing `target 'Runner'` block, nest: "
         "`target 'RunnerUITests' do inherit! :complete end`, then run "
         '`pod install --repo-update`.',
-    docsUrl: setupDocsUrl,
+    docsUrl: '$docsBaseUrl#ios-setup-configure-runner-uitests',
   );
 }
 
@@ -191,7 +191,7 @@ Finding? checkPodsInstalled(IOSCheckContext ctx) {
       severity: Severity.warning,
       summary: 'ios/Podfile.lock not found — pods look uninstalled.',
       fix: 'Run `pod install --repo-update` in the ios/ directory.',
-      docsUrl: setupDocsUrl,
+      docsUrl: '$docsBaseUrl#ios-setup-pod-install',
     );
   }
   if (lock.contains('patrol')) {
@@ -202,7 +202,7 @@ Finding? checkPodsInstalled(IOSCheckContext ctx) {
     severity: Severity.warning,
     summary: 'ios/Podfile.lock does not mention patrol — pods look stale.',
     fix: 'Run `pod install --repo-update` in the ios/ directory.',
-    docsUrl: setupDocsUrl,
+    docsUrl: '$docsBaseUrl#ios-setup-pod-install',
   );
 }
 
@@ -230,7 +230,7 @@ Finding? checkSpmLinkage(IOSCheckContext ctx) {
     fix:
         'In Xcode go to RunnerUITests > General > Frameworks and Libraries, '
         'click +, and select FlutterGeneratedPluginSwiftPackage.',
-    docsUrl: setupDocsUrl,
+    docsUrl: '$docsBaseUrl#ios-setup-configure-runner-uitests',
   );
 }
 
@@ -268,7 +268,7 @@ Finding? checkXcodeBackendBuildPhases(IOSCheckContext ctx) {
         fix:
             'Drag the Build Phases into the order shown in the docs '
             'screenshot.',
-        docsUrl: setupDocsUrl,
+        docsUrl: '$docsBaseUrl#ios-setup-order-build-phases',
       );
     }
     return null;
@@ -287,7 +287,7 @@ Finding? checkXcodeBackendBuildPhases(IOSCheckContext ctx) {
         'Add the two Run Script phases calling '
         r'"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh" with '
         '`build` and `embed_and_thin`, ordered as shown in the docs.',
-    docsUrl: setupDocsUrl,
+    docsUrl: '$docsBaseUrl#ios-setup-add-build-phases',
   );
 }
 
@@ -303,7 +303,7 @@ Finding? checkUserScriptSandboxing(IOSCheckContext ctx) {
     fix:
         'Set User Script Sandboxing to No in Build Settings for the '
         'RunnerUITests (and Runner) targets.',
-    docsUrl: setupDocsUrl,
+    docsUrl: '$docsBaseUrl#ios-setup-disable-script-sandboxing',
   );
 }
 
@@ -328,7 +328,7 @@ Finding? checkDeploymentTargets(IOSCheckContext ctx) {
     fix:
         'Align the iOS Deployment Target of RunnerUITests with Runner in '
         'Build Settings.',
-    docsUrl: setupDocsUrl,
+    docsUrl: '$docsBaseUrl#ios-setup-set-min-ios-version',
   );
 }
 
@@ -345,7 +345,7 @@ Finding? checkParallelExecution(IOSCheckContext ctx) {
             'Scheme $path has parallel test execution enabled, which breaks '
             'Patrol (the simulator gets cloned).',
         fix: 'Disable parallel execution for all schemes.',
-        docsUrl: faqDocsUrl,
+        docsUrl: '$docsBaseUrl#ios-setup-disable-parallel-execution',
       );
     }
   }
@@ -377,7 +377,7 @@ Finding? checkStrayFlutterTarget(IOSCheckContext ctx) {
         'Remove FLUTTER_TARGET (key and value) from *.xcconfig and pbxproj, '
         'then run `flutter build ios --config-only <your test>` to '
         'regenerate it.',
-    docsUrl: faqDocsUrl,
+    docsUrl: '$docsBaseUrl#faq-test-stops-wait-for-idle',
   );
 }
 
@@ -410,6 +410,6 @@ Finding? manualVerificationNotice(IOSCheckContext ctx) {
     id: 'I12',
     severity: Severity.notice,
     summary: 'Verify manually in Xcode: ${items.join('; ')}.',
-    docsUrl: faqDocsUrl,
+    docsUrl: '$docsBaseUrl#ios-setup',
   );
 }
