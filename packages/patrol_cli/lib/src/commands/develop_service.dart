@@ -188,6 +188,7 @@ class DevelopService {
       'INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE': 'false',
       'PATROL_TEST_LABEL_ENABLED': options.displayLabel.toString(),
       'PATROL_TEST_DIRECTORY': config.testDirectory,
+      'PATROL_SCREENSHOT_ON_FAILURE': config.screenshotOnFailure.toString(),
       // develop-specific
       ...{
         'PATROL_HOT_RESTART': 'true',
@@ -243,6 +244,7 @@ class DevelopService {
       appServerPort: options.appServerPort,
       testServerPort: options.testServerPort,
       uninstall: options.uninstall,
+      urlSafeTestNames: config.urlSafeTestNames,
     );
 
     final iosOpts = IOSAppOptions(

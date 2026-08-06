@@ -5,11 +5,13 @@ import android.app.UiAutomation
 import android.content.Context
 import android.content.Context.LOCATION_SERVICE
 import android.content.Intent
+import android.graphics.Bitmap
 import android.location.Location
 import android.location.LocationManager
 import android.location.provider.ProviderProperties
 import android.net.Uri
 import android.os.Build
+import android.os.Environment
 import android.os.SystemClock
 import android.provider.Settings
 import android.view.KeyEvent.KEYCODE_VOLUME_DOWN
@@ -17,6 +19,7 @@ import android.view.KeyEvent.KEYCODE_VOLUME_UP
 import android.widget.AutoCompleteTextView
 import android.widget.EditText
 import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.runner.screenshot.Screenshot
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.BySelector
 import androidx.test.uiautomator.Configurator
@@ -31,6 +34,8 @@ import pl.leancode.patrol.contracts.Contracts.KeyboardBehavior
 import pl.leancode.patrol.contracts.Contracts.Notification
 import pl.leancode.patrol.contracts.Contracts.Point2D
 import pl.leancode.patrol.contracts.Contracts.Rectangle
+import java.io.File
+import java.io.FileOutputStream
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
@@ -87,6 +92,12 @@ class Automator private constructor() {
 
     @Volatile private var currentLongitude: Double = 0.0
 
+    // Identity of the currently executing JUnit test, set by PatrolJUnitRunner.
+    // Used to name screenshots so BrowserStack associates them with the test.
+    @Volatile var currentDartTestName: String? = null
+
+    @Volatile var testClassName: String? = null
+
     fun initialize() {
         if (!this::instrumentation.isInitialized) {
             instrumentation = InstrumentationRegistry.getInstrumentation()
@@ -127,6 +138,35 @@ class Automator private constructor() {
     }
 
     private fun delay(ms: Long = 1000) = SystemClock.sleep(ms)
+
+    // Captures the current device screen to the path BrowserStack's Espresso
+    // debugscreenshots collector scans:
+    // Downloads/screenshots/<className>/<methodName>/<timestamp>_<tag>.png.
+    // methodName is the reported JUnit name, used verbatim (no sanitization).
+    // Never throws into the test - a failed screenshot must not flake the test.
+    fun takeNativeScreenshot(tag: String) {
+        try {
+            val className = testClassName ?: "${targetContext.packageName}.MainActivityTest"
+            val methodName = "runDartTest[${currentDartTestName ?: "unknown"}]"
+
+            val dir = File(
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+                "screenshots/$className/$methodName"
+            )
+            if (!dir.exists()) {
+                dir.mkdirs()
+            }
+
+            val bitmap = Screenshot.capture().bitmap
+            val file = File(dir, "${System.currentTimeMillis()}_$tag.png")
+            FileOutputStream(file).use { out ->
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
+            }
+            Logger.i("Native screenshot saved to ${file.absolutePath}")
+        } catch (e: Throwable) {
+            Logger.e("Failed to take native screenshot (tag=$tag)", e)
+        }
+    }
 
     fun openApp(packageName: String) {
         val intent = targetContext.packageManager!!.getLaunchIntentForPackage(packageName)

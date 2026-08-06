@@ -215,6 +215,15 @@ class PlatformAutomator {
     );
   }
 
+  /// Captures a native screenshot of the current screen and saves it on the
+  /// device.
+  ///
+  /// Currently implemented on Android only (used for BrowserStack failure
+  /// screenshots); a no-op on other platforms. Never throws if capture fails.
+  Future<void> takeNativeScreenshot(String tag) async {
+    await action.maybe(android: () => android.takeNativeScreenshot(tag));
+  }
+
   /// None of the native actions are supported on MacOS, so we will just always throw.
   static T _throwOnMacOS<T>() {
     throw UnsupportedError('MacOS native actions are not supported');

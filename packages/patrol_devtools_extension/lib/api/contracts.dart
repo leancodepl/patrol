@@ -2,6 +2,7 @@
 //  Generated code. Do not modify.
 //  source: schema.dart
 //
+// ignore_for_file: public_member_api_docs
 
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
@@ -1258,6 +1259,23 @@ class AndroidTakeCameraPhotoRequest with Equatable {
     doneButtonSelector,
     timeoutMillis,
   ];
+}
+
+@JsonSerializable()
+class AndroidTakeNativeScreenshotRequest with Equatable {
+  const AndroidTakeNativeScreenshotRequest({required this.tag});
+
+  factory AndroidTakeNativeScreenshotRequest.fromJson(
+    Map<String, dynamic> json,
+  ) => _$AndroidTakeNativeScreenshotRequestFromJson(json);
+
+  final String tag;
+
+  Map<String, dynamic> toJson() =>
+      _$AndroidTakeNativeScreenshotRequestToJson(this);
+
+  @override
+  List<Object?> get props => [tag];
 }
 
 @JsonSerializable()

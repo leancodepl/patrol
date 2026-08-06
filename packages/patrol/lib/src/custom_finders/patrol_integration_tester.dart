@@ -64,4 +64,18 @@ class PatrolIntegrationTester extends finders.PatrolTester {
   void log(String message) {
     _patrolLog.log(LogEntry(message: message));
   }
+
+  /// Captures a native screenshot of the current screen and saves it on the
+  /// device, e.g. so BrowserStack can display it in the Screenshots tab.
+  ///
+  /// [tag] is appended to the generated file name. Implemented on Android only
+  /// (a no-op on other platforms). Never throws - a failed screenshot will not
+  /// fail the test.
+  Future<void> takeScreenshot(String tag) async {
+    try {
+      await platformAutomator.takeNativeScreenshot(tag);
+    } catch (err) {
+      _patrolLog.log(LogEntry(message: 'takeScreenshot("$tag") failed: $err'));
+    }
+  }
 }
