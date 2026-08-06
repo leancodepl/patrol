@@ -24,7 +24,7 @@ class ValidationPresenter {
         continue;
       }
 
-      _logger.info('${section.title}:');
+      _logger.info(styleBold.wrap('${_decorate(section.title)}:'));
       if (findings.isEmpty) {
         _logger.success('✓ all checks passed');
       }
@@ -32,13 +32,18 @@ class ValidationPresenter {
       _logger.info('');
     }
 
-    final errors = report.countOf(Severity.error);
-    final warnings = report.countOf(Severity.warning);
-    _logger.info(
-      'Result: $errors ${_plural(errors, 'error')}, '
-      '$warnings ${_plural(warnings, 'warning')}',
-    );
+    _printSummary(report);
   }
+
+  String _decorate(String title) => switch (title) {
+    'Environment' => '🩺 Environment',
+    'Shared' => '📦 Shared',
+    'Project' => '📁 Project',
+    'Android' => '🤖 Android',
+    'iOS' => '🍎 iOS',
+    'macOS' => '🖥️ macOS',
+    _ => title,
+  };
 
   void _printFinding(Finding finding) {
     final headline = '[${finding.id}] ${finding.summary}';
@@ -51,10 +56,26 @@ class ValidationPresenter {
         _logger.info('• $headline');
     }
     if (finding.fix != null) {
-      _logger.info('    Fix: ${finding.fix}');
+      _logger.info('    ${lightCyan.wrap('Fix:')} ${finding.fix}');
     }
     if (finding.docsUrl != null) {
-      _logger.info('    Docs: ${finding.docsUrl}');
+      _logger.info('    ${darkGray.wrap('Docs: ${finding.docsUrl}')}');
+    }
+  }
+
+  void _printSummary(ValidationReport report) {
+    final errors = report.countOf(Severity.error);
+    final warnings = report.countOf(Severity.warning);
+    final line =
+        'Result: $errors ${_plural(errors, 'error')}, '
+        '$warnings ${_plural(warnings, 'warning')}';
+
+    if (errors > 0) {
+      _logger.err('❌ $line');
+    } else if (warnings > 0) {
+      _logger.info(lightYellow.wrap('⚠️ $line'));
+    } else {
+      _logger.info(lightGreen.wrap('✅ $line'));
     }
   }
 
