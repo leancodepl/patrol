@@ -69,9 +69,10 @@ class EnvironmentChecks {
   }
 
   List<Finding> _apple(Set<String> declaredPlatforms) {
-    final platforms = ['ios', 'macos']
-        .where(declaredPlatforms.contains)
-        .join('/');
+    final platforms = [
+      'ios',
+      'macos',
+    ].where(declaredPlatforms.contains).join('/');
 
     if (!_platform.isMacOS) {
       return [

@@ -19,7 +19,8 @@ class AndroidCheckContext {
         .listFilesRecursively(_androidTestDir)
         .where((path) => path.endsWith('.java') || path.endsWith('.kt'))
         .where(
-          (path) => probe.readFile(path)?.contains('PatrolJUnitRunner') ?? false,
+          (path) =>
+              probe.readFile(path)?.contains('PatrolJUnitRunner') ?? false,
         )
         .toList();
   }
@@ -37,9 +38,9 @@ class AndroidCheckContext {
     if (contents == null) {
       return null;
     }
-    return RegExp(r'''applicationId\s*=?\s*["']([A-Za-z0-9_.]+)["']''')
-        .firstMatch(contents)
-        ?.group(1);
+    return RegExp(
+      r'''applicationId\s*=?\s*["']([A-Za-z0-9_.]+)["']''',
+    ).firstMatch(contents)?.group(1);
   }
 }
 
@@ -180,7 +181,8 @@ Finding? checkClearPackageData(AndroidCheckContext ctx) {
   return Finding(
     id: 'A4',
     severity: Severity.error,
-    summary: 'The `clearPackageData` runner argument is not set in '
+    summary:
+        'The `clearPackageData` runner argument is not set in '
         '${ctx.gradlePath}.',
     fix:
         'Add `testInstrumentationRunnerArguments["clearPackageData"] = '

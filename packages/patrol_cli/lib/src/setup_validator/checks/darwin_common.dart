@@ -95,11 +95,9 @@ class DarwinCheckContext {
     }
 
     final names = <String>{};
-    final ids = RegExp(r'\b[A-F0-9]{24}\b')
-        .allMatches(list)
-        .map((match) => match.group(0)!)
-        .toSet()
-      ..remove(listId);
+    final ids = RegExp(
+      r'\b[A-F0-9]{24}\b',
+    ).allMatches(list).map((match) => match.group(0)!).toSet()..remove(listId);
     for (final id in ids) {
       final config = blockFor(id);
       if (config == null || !config.contains('XCBuildConfiguration')) {

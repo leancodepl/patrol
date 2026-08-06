@@ -202,10 +202,14 @@ Finding? checkMacosEmbedding(MacOSCheckContext ctx) {
 }
 
 final _macosAssembleBuildScript = RegExp(
-  r'macos_assemble\.sh[\\"' "'" r']*\s+build',
+  r'macos_assemble\.sh[\\"'
+  "'"
+  r']*\s+build',
 );
 final _macosAssembleEmbedScript = RegExp(
-  r'macos_assemble\.sh[\\"' "'" r']*\s+embed',
+  r'macos_assemble\.sh[\\"'
+  "'"
+  r']*\s+embed',
 );
 
 /// M4: the two macos_assemble Run Script build phases exist on the
@@ -259,9 +263,8 @@ Finding? checkMacosAssembleBuildPhases(MacOSCheckContext ctx) {
   );
 }
 
-bool _plistBoolTrue(String plist, String key) => RegExp(
-  '<key>${RegExp.escape(key)}</key>\\s*<true\\s*/>',
-).hasMatch(plist);
+bool _plistBoolTrue(String plist, String key) =>
+    RegExp('<key>${RegExp.escape(key)}</key>\\s*<true\\s*/>').hasMatch(plist);
 
 /// M5: with App Sandbox enabled, the Runner entitlements must allow network
 /// client and server connections — Patrol's test server needs them. Files
@@ -308,8 +311,7 @@ Finding? checkUITestsEntitlementsCopied(MacOSCheckContext ctx) {
   return Finding(
     id: 'M6',
     severity: Severity.error,
-    summary:
-        'Missing in macos/RunnerUITests/: ${missing.join(', ')}.',
+    summary: 'Missing in macos/RunnerUITests/: ${missing.join(', ')}.',
     fix:
         'Copy DebugProfile.entitlements and Release.entitlements from '
         'macos/Runner/ to macos/RunnerUITests/.',
