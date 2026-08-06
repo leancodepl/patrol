@@ -156,6 +156,18 @@ void main() {
       expect(idsOf(findings), isNot(contains('I1')));
     });
 
+    test('stale swiftpm Package.resolved does not mis-detect SPM', () {
+      // Real CocoaPods projects can carry a leftover Package.resolved (e.g.
+      // old Firebase pins) without any actual Flutter SPM integration.
+      writePodsProject();
+      write(
+        'ios/Runner.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/'
+        'Package.resolved',
+        '{"pins": []}',
+      );
+      expect(idsOf(iosFindings(context())), ['I12']);
+    });
+
     test('Pods and ephemeral directories are ignored', () {
       writeSpmProject();
       write('ios/Pods/SomePod/RunnerUITestsLaunchTests.m', '');
