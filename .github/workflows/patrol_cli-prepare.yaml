@@ -64,3 +64,21 @@ jobs:
 
       - name: dart pub publish --dry-run
         run: dart pub publish --dry-run
+
+  pana-score:
+    name: pana score
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      statuses: write
+
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+
+      - name: Score with pana
+        continue-on-error: true
+        uses: leancodepl/mobile-tools/.github/actions/pana-score@pana-score-v1.1
+        with:
+          path: packages/patrol_cli
