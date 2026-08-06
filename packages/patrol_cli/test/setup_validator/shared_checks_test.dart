@@ -59,6 +59,7 @@ void main() {
       final ctx = contextWith();
       expect(checkPatrolDependency(ctx), isNull);
       expect(checkPatrolSection(ctx), isNull);
+      expect(checkAppName(ctx), isNull);
       expect(checkStrayPatrolYaml(ctx), isNull);
       expect(checkTestDirectory(ctx), isNull);
       expect(checkIntegrationTestDirectory(ctx), isNull);
@@ -142,7 +143,7 @@ patrol:
       expect(finding?.summary, contains('macos.bundle_id'));
     });
 
-    test('errors when app_name is missing everywhere', () {
+    test('warns when app_name is missing everywhere', () {
       final ctx = contextWith(
         mutate: () => fs.file('/project/pubspec.yaml').writeAsStringSync('''
 name: example_app
@@ -153,7 +154,10 @@ patrol:
     package_name: com.example.myapp
 '''),
       );
-      expect(checkPatrolSection(ctx)?.summary, contains('app_name'));
+      final finding = checkAppName(ctx);
+      expect(finding?.severity, Severity.warning);
+      expect(finding?.fix, contains('--app-name'));
+      expect(checkPatrolSection(ctx), isNull);
     });
 
     test('passes when app_name is set per platform', () {
@@ -209,7 +213,7 @@ patrol:
       expect(checkPatrolDependency(ctx)?.severity, Severity.error);
     });
 
-    test('empty patrol section reports missing app_name', () {
+    test('empty patrol section warns about missing app_name', () {
       final ctx = contextWith(
         mutate: () => fs.file('/project/pubspec.yaml').writeAsStringSync('''
 name: example_app
@@ -218,7 +222,8 @@ dev_dependencies:
 patrol: {}
 '''),
       );
-      expect(checkPatrolSection(ctx)?.summary, contains('app_name'));
+      expect(checkPatrolSection(ctx), isNull);
+      expect(checkAppName(ctx)?.severity, Severity.warning);
     });
   });
 

@@ -111,6 +111,7 @@ class SetupValidator {
     return [
       checkPatrolDependency(ctx),
       checkPatrolSection(ctx),
+      checkAppName(ctx),
       checkStrayPatrolYaml(ctx),
       checkTestDirectory(ctx),
       checkIntegrationTestDirectory(ctx),
