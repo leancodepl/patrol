@@ -38,7 +38,8 @@ const _sandboxedEntitlements = '''
 </plist>
 ''';
 
-const _pbxproj = '// !\$*UTF8*\$!\n'
+const _pbxproj =
+    '// !\$*UTF8*\$!\n'
     '{\n'
     '\tobjects = {\n'
     '\t\tAA1 /* Runner */ = {\n'
@@ -109,10 +110,7 @@ void main() {
       'macos/RunnerUITests/DebugProfile.entitlements',
       _sandboxedEntitlements,
     );
-    write(
-      'macos/RunnerUITests/Release.entitlements',
-      _sandboxedEntitlements,
-    );
+    write('macos/RunnerUITests/Release.entitlements', _sandboxedEntitlements);
   }
 
   List<String> idsOf(List<Finding> findings) =>
@@ -294,9 +292,7 @@ void main() {
 
   test('M6 errors when entitlements are not copied to RunnerUITests', () {
     writeCompleteProject();
-    fs
-        .file('/project/macos/RunnerUITests/Release.entitlements')
-        .deleteSync();
+    fs.file('/project/macos/RunnerUITests/Release.entitlements').deleteSync();
     final finding = macosFindings(
       context(),
     ).firstWhere((finding) => finding.id == 'M6');
@@ -340,11 +336,13 @@ void main() {
         'macos/Runner.xcodeproj/xcshareddata/xcschemes/Runner.xcscheme',
         '<TestableReference parallelizable = "YES"></TestableReference>',
       );
-      write('macos/RunnerUITests/RunnerUITestsLaunchTests.m', '@import XCTest;');
+      write(
+        'macos/RunnerUITests/RunnerUITestsLaunchTests.m',
+        '@import XCTest;',
+      );
       final findings = macosFindings(context());
       final m8 = findings.where(
-        (finding) =>
-            finding.id == 'M8' && finding.severity == Severity.warning,
+        (finding) => finding.id == 'M8' && finding.severity == Severity.warning,
       );
       expect(m8, hasLength(4));
     });
@@ -352,8 +350,7 @@ void main() {
     test('manual notice adapts to project state', () {
       writeCompleteProject();
       final notice = macosFindings(context()).firstWhere(
-        (finding) =>
-            finding.id == 'M8' && finding.severity == Severity.notice,
+        (finding) => finding.id == 'M8' && finding.severity == Severity.notice,
       );
       expect(notice.summary, contains('Configuration Set'));
       expect(notice.summary, isNot(contains('User Script Sandboxing')));

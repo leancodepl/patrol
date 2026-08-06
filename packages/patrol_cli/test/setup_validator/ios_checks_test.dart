@@ -162,7 +162,7 @@ void main() {
       writePodsProject();
       write(
         'ios/Runner.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/'
-        'Package.resolved',
+            'Package.resolved',
         '{"pins": []}',
       );
       expect(idsOf(iosFindings(context())), ['I12']);
@@ -279,11 +279,11 @@ void main() {
   });
 
   group('I6 linkage via referenced Frameworks phase', () {
-    test('passes with the real template layout (phase object, not target)',
-        () {
+    test('passes with the real template layout (phase object, not target)', () {
       // RunnerUITests references a Frameworks phase by ID; the package
       // linkage lives in that separate PBXFrameworksBuildPhase object.
-      const pbxproj = '// !\$*UTF8*\$!\n'
+      const pbxproj =
+          '// !\$*UTF8*\$!\n'
           '{\n'
           '\tobjects = {\n'
           '\t\tAAAAAAAAAAAAAAAAAAAAAAA1 /* Runner */ = {\n'
@@ -349,7 +349,10 @@ void main() {
           '\t\t\t);\n';
       final pbxproj = _pbxproj()
           .replaceFirst(phaseRefs, '')
-          .replaceFirst('\t\t\tname = Runner;\n', '$phaseRefs\t\t\tname = Runner;\n');
+          .replaceFirst(
+            '\t\t\tname = Runner;\n',
+            '$phaseRefs\t\t\tname = Runner;\n',
+          );
       write('ios/Runner.xcodeproj/project.pbxproj', pbxproj);
       final finding = iosFindings(
         context(),

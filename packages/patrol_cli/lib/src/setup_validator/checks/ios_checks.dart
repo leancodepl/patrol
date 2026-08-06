@@ -128,8 +128,7 @@ Finding? checkRunnerUITestsFile(IOSCheckContext ctx) {
   return const Finding(
     id: 'I1',
     severity: Severity.error,
-    summary:
-        'No RunnerUITests.m with the $macro macro found under ios/.',
+    summary: 'No RunnerUITests.m with the $macro macro found under ios/.',
     fix:
         'Create the RunnerUITests UI Testing Bundle target and replace '
         'RunnerUITests.m contents with the snippet from the docs.',
@@ -264,7 +263,9 @@ Finding? checkSpmLinkage(IOSCheckContext ctx) {
 }
 
 final _xcodeBackendBuildScript = RegExp(
-  r'xcode_backend\.sh[\\"' "'" r']*\s+build',
+  r'xcode_backend\.sh[\\"'
+  "'"
+  r']*\s+build',
 );
 final _xcodeBackendEmbedScript = RegExp('embed_and_thin');
 

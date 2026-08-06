@@ -81,9 +81,7 @@ void main() {
           .writeAsStringSync(gradleKts);
     }
     if (gradleGroovy != null) {
-      fs
-          .file('/project/android/app/build.gradle')
-          .createSync(recursive: true);
+      fs.file('/project/android/app/build.gradle').createSync(recursive: true);
       fs
           .file('/project/android/app/build.gradle')
           .writeAsStringSync(gradleGroovy);
@@ -102,7 +100,9 @@ void main() {
 
     test('Groovy project passes all checks', () {
       expect(
-        androidFindings(contextWith(gradleKts: null, gradleGroovy: _gradleGroovy)),
+        androidFindings(
+          contextWith(gradleKts: null, gradleGroovy: _gradleGroovy),
+        ),
         isEmpty,
       );
     });
@@ -233,7 +233,8 @@ class MainActivityTest
   group('A7 minification advice', () {
     test('notices when minification is enabled (Kotlin DSL)', () {
       final ctx = contextWith(
-        gradleKts: '$_gradleKts\nandroid { buildTypes { debug { isMinifyEnabled = true } } }',
+        gradleKts:
+            '$_gradleKts\nandroid { buildTypes { debug { isMinifyEnabled = true } } }',
       );
       expect(checkMinificationAdvice(ctx)?.severity, Severity.notice);
     });
@@ -241,7 +242,8 @@ class MainActivityTest
     test('notices when minification is enabled (Groovy)', () {
       final ctx = contextWith(
         gradleKts: null,
-        gradleGroovy: '$_gradleGroovy\nandroid { buildTypes { debug { minifyEnabled true } } }',
+        gradleGroovy:
+            '$_gradleGroovy\nandroid { buildTypes { debug { minifyEnabled true } } }',
       );
       expect(checkMinificationAdvice(ctx)?.severity, Severity.notice);
     });

@@ -44,12 +44,12 @@ void main() {
   SharedCheckContext contextWith({void Function()? mutate}) {
     fs.file('/project/pubspec.yaml').writeAsStringSync(_completePubspec);
     fs.file('/project/pubspec.lock').writeAsStringSync(_compatibleLock);
-    fs.file('/project/patrol_test/example_test.dart').createSync(
-      recursive: true,
-    );
-    fs.file('/project/.gitignore').writeAsStringSync(
-      'patrol_test/test_bundle.dart\n',
-    );
+    fs
+        .file('/project/patrol_test/example_test.dart')
+        .createSync(recursive: true);
+    fs
+        .file('/project/.gitignore')
+        .writeAsStringSync('patrol_test/test_bundle.dart\n');
     mutate?.call();
     return SharedCheckContext(probe: ProjectProbe(projectRoot: projectRoot));
   }
@@ -324,14 +324,15 @@ patrol:
 
   group('pub workspace layout', () {
     SharedCheckContext workspaceContext() {
-      final appRoot = fs.directory('/workspace/app')..createSync(recursive: true);
-      fs.file('/workspace/app/pubspec.yaml').writeAsStringSync(
-        _completePubspec,
-      );
+      final appRoot = fs.directory('/workspace/app')
+        ..createSync(recursive: true);
+      fs
+          .file('/workspace/app/pubspec.yaml')
+          .writeAsStringSync(_completePubspec);
       fs.file('/workspace/pubspec.lock').writeAsStringSync(_compatibleLock);
-      fs.file('/workspace/.gitignore').writeAsStringSync(
-        'app/patrol_test/test_bundle.dart\n',
-      );
+      fs
+          .file('/workspace/.gitignore')
+          .writeAsStringSync('app/patrol_test/test_bundle.dart\n');
       fs
           .file('/workspace/app/patrol_test/example_test.dart')
           .createSync(recursive: true);

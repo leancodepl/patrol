@@ -14,7 +14,8 @@ class ProjectProbe {
 
   String _absolute(String relative) => _fs.path.join(_root.path, relative);
 
-  bool fileExists(String relative) => _fs.file(_absolute(relative)).existsSync();
+  bool fileExists(String relative) =>
+      _fs.file(_absolute(relative)).existsSync();
 
   bool dirExists(String relative) =>
       _fs.directory(_absolute(relative)).existsSync();

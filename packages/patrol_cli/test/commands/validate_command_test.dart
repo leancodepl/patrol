@@ -74,9 +74,7 @@ packages:
       writeCleanProject();
       fs.directory('/project/patrol_test').deleteSync(recursive: true);
       expect(await runner.run(['validate']), 1);
-      verify(
-        () => mockLogger.err(any(that: contains('[S4]'))),
-      ).called(1);
+      verify(() => mockLogger.err(any(that: contains('[S4]')))).called(1);
     });
 
     test('returns 1 when there is no pubspec.yaml', () async {
