@@ -511,6 +511,10 @@ To install a specific version of Patrol CLI, run:
 
     if (commandName == 'update' ||
         commandName == 'doctor' ||
+        // validate reports the incompatibility itself (S7); the banner would
+        // duplicate it and its activate suggestion would replace a
+        // path/git-activated CLI under test.
+        commandName == 'validate' ||
         commandName == HandleCompletionRequestCommand.commandName) {
       return false;
     }
