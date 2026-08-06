@@ -12,18 +12,15 @@ static NSString *const kGetRuntimePortsMethod = @"getRuntimePorts";
   NSObject<FlutterBinaryMessenger> *messenger = [registrar messenger];
 #endif
 
-  FlutterMethodChannel *channel =
-      [FlutterMethodChannel methodChannelWithName:kChannelName binaryMessenger:messenger];
+  FlutterMethodChannel *channel = [FlutterMethodChannel methodChannelWithName:kChannelName binaryMessenger:messenger];
   PatrolPlugin *instance = [[PatrolPlugin alloc] init];
   [registrar addMethodCallDelegate:instance channel:channel];
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if ([call.method isEqualToString:kGetRuntimePortsMethod]) {
-    NSDictionary<NSString *, NSString *> *environment =
-        [NSProcessInfo processInfo].environment;
-    NSMutableDictionary<NSString *, NSString *> *ports =
-        [NSMutableDictionary dictionary];
+    NSDictionary<NSString *, NSString *> *environment = [NSProcessInfo processInfo].environment;
+    NSMutableDictionary<NSString *, NSString *> *ports = [NSMutableDictionary dictionary];
     ports[@"testServerPort"] = environment[@"PATROL_TEST_SERVER_PORT"];
     ports[@"appServerPort"] = environment[@"PATROL_APP_SERVER_PORT"];
     result(ports);

@@ -39,11 +39,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface ObjCPatrolAppServiceClient : NSObject
 - (instancetype)init;
-- (void)listDartTestsWithCompletion:
-    (void (^)(NSArray<NSDictionary *> *_Nullable tests, NSError *_Nullable error))completion;
+- (void)listDartTestsWithCompletion:(void (^)(NSArray<NSDictionary *> *_Nullable tests,
+                                              NSError *_Nullable error))completion;
 - (void)runDartTestWithName:(NSString *)name
-                 completion:(void (^)(ObjCRunDartTestResponse *_Nullable response,
-                                      NSError *_Nullable error))completion;
+                 completion:(void (^)(ObjCRunDartTestResponse *_Nullable response, NSError *_Nullable error))completion;
 @end
 
 @interface ObjCLocalization : NSObject
@@ -52,7 +51,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 NS_ASSUME_NONNULL_END
 
-#import "PatrolPlugin.h"
 #import "PatrolExtensionRegistry.h"
 #import "PatrolIntegrationTestIosRunner.h"
 #import "PatrolIntegrationTestMacosRunner.h"
+#import "PatrolPlugin.h"
