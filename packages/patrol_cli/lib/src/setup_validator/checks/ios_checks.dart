@@ -361,19 +361,26 @@ Finding? checkDeploymentTargets(IOSCheckContext ctx) {
   );
 }
 
-/// I10: parallel execution breaks Patrol; checkable only in shared schemes.
+/// I10: parallel execution breaks Patrol. Schemes carry it as a
+/// `parallelizable` attribute (absent = disabled); Xcode 26 test plans as a
+/// `"parallelizable": true` entry.
 Finding? checkParallelExecution(IOSCheckContext ctx) {
-  final schemes = ctx.files.where((path) => path.endsWith('.xcscheme'));
-  for (final path in schemes) {
+  final carriers = ctx.files.where(
+    (path) => path.endsWith('.xcscheme') || path.endsWith('.xctestplan'),
+  );
+  for (final path in carriers) {
     final contents = ctx.probe.readFile(path) ?? '';
-    if (RegExp(r'parallelizable\s*=\s*"YES"').hasMatch(contents)) {
+    final enabled = path.endsWith('.xcscheme')
+        ? RegExp(r'parallelizable\s*=\s*"YES"').hasMatch(contents)
+        : RegExp(r'"parallelizable"\s*:\s*true').hasMatch(contents);
+    if (enabled) {
       return Finding(
         id: 'I10',
         severity: Severity.warning,
         summary:
-            'Scheme $path has parallel test execution enabled, which breaks '
+            '$path has parallel test execution enabled, which breaks '
             'Patrol (the simulator gets cloned).',
-        fix: 'Disable parallel execution for all schemes.',
+        fix: 'Disable parallel execution for all schemes and test plans.',
         docsUrl: '$docsBaseUrl#ios-setup-disable-parallel-execution',
       );
     }
@@ -412,11 +419,12 @@ Finding? checkStrayFlutterTarget(IOSCheckContext ctx) {
 
 /// I12: steps that cannot be verified from files, kept to one compact notice.
 Finding? manualVerificationNotice(IOSCheckContext ctx) {
-  final hasSharedSchemes = ctx.files.any(
-    (path) => path.endsWith('.xcscheme'),
-  );
-  final sandboxingKnown = ctx.pbxproj!.contains(
-    'ENABLE_USER_SCRIPT_SANDBOXING',
+  // Sandboxing is deliberately NOT listed when the setting is absent:
+  // xcodebuild's own default is NO (verified empirically with
+  // -showBuildSettings); only Xcode's new-target template writes an explicit
+  // YES, which I8 catches.
+  final hasParallelismCarriers = ctx.files.any(
+    (path) => path.endsWith('.xcscheme') || path.endsWith('.xctestplan'),
   );
   final orderCheckable =
       ctx.scriptPhasesOrdered(
@@ -433,9 +441,8 @@ Finding? manualVerificationNotice(IOSCheckContext ctx) {
       'RunnerUITests uses the same Configuration Set as Runner',
     if (!orderCheckable)
       'the two xcode_backend Build Phases are ordered as in the docs',
-    if (!sandboxingKnown) 'User Script Sandboxing is set to No',
-    if (!hasSharedSchemes)
-      'parallel execution is disabled for all schemes (no shared schemes to verify)',
+    if (!hasParallelismCarriers)
+      'parallel execution is disabled for all schemes (no scheme or test-plan files to verify)',
     'for physical devices, see $physicalIosDocsUrl',
   ];
 

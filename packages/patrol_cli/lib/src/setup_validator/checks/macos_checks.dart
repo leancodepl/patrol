@@ -379,19 +379,25 @@ Finding? checkMacosDeploymentTargets(MacOSCheckContext ctx) {
   );
 }
 
-/// M8: parallel execution breaks Patrol; checkable only in shared schemes.
+/// M8: parallel execution breaks Patrol. Schemes carry it as a
+/// `parallelizable` attribute (absent = disabled); Xcode 26 test plans as a
+/// `"parallelizable": true` entry.
 Finding? checkMacosParallelExecution(MacOSCheckContext ctx) {
-  final schemes = ctx.files.where((path) => path.endsWith('.xcscheme'));
-  for (final path in schemes) {
+  final carriers = ctx.files.where(
+    (path) => path.endsWith('.xcscheme') || path.endsWith('.xctestplan'),
+  );
+  for (final path in carriers) {
     final contents = ctx.probe.readFile(path) ?? '';
-    if (RegExp(r'parallelizable\s*=\s*"YES"').hasMatch(contents)) {
+    final enabled = path.endsWith('.xcscheme')
+        ? RegExp(r'parallelizable\s*=\s*"YES"').hasMatch(contents)
+        : RegExp(r'"parallelizable"\s*:\s*true').hasMatch(contents);
+    if (enabled) {
       return Finding(
         id: 'M8',
         severity: Severity.warning,
         summary:
-            'Scheme $path has parallel test execution enabled, which breaks '
-            'Patrol.',
-        fix: 'Disable parallel execution for all schemes.',
+            '$path has parallel test execution enabled, which breaks Patrol.',
+        fix: 'Disable parallel execution for all schemes and test plans.',
         docsUrl: '$docsBaseUrl#macos-setup-disable-parallel-execution',
       );
     }
@@ -420,9 +426,11 @@ Finding? checkMacosLaunchTestsFileDeleted(MacOSCheckContext ctx) {
 
 /// M8: steps that cannot be verified from files, one compact notice.
 Finding? macosManualVerificationNotice(MacOSCheckContext ctx) {
-  final hasSharedSchemes = ctx.files.any((path) => path.endsWith('.xcscheme'));
-  final sandboxingKnown = ctx.pbxproj!.contains(
-    'ENABLE_USER_SCRIPT_SANDBOXING',
+  // Sandboxing is deliberately NOT listed when the setting is absent:
+  // xcodebuild's own default is NO; only Xcode's new-target template writes
+  // an explicit YES, which the sandboxing check catches.
+  final hasParallelismCarriers = ctx.files.any(
+    (path) => path.endsWith('.xcscheme') || path.endsWith('.xctestplan'),
   );
   final orderCheckable =
       ctx.scriptPhasesOrdered(
@@ -439,9 +447,8 @@ Finding? macosManualVerificationNotice(MacOSCheckContext ctx) {
       'RunnerUITests uses the same Configuration Set as Runner',
     if (!orderCheckable)
       'the two macos_assemble Build Phases are ordered as in the docs',
-    if (!sandboxingKnown) 'User Script Sandboxing is set to No',
-    if (!hasSharedSchemes)
-      'parallel execution is disabled for all schemes (no shared schemes to verify)',
+    if (!hasParallelismCarriers)
+      'parallel execution is disabled for all schemes (no scheme or test-plan files to verify)',
   ];
 
   return Finding(

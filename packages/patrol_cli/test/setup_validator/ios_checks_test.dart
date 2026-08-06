@@ -554,6 +554,41 @@ void main() {
       );
       expect(idsOf(iosFindings(context())), contains('I10'));
     });
+
+    test('warns when an Xcode 26 test plan enables parallel testing', () {
+      writeSpmProject();
+      write(
+        'ios/RunnerUITests.xctestplan',
+        '{"testTargets": [{"parallelizable": true}]}',
+      );
+      expect(idsOf(iosFindings(context())), contains('I10'));
+    });
+
+    test('a non-parallel test plan makes parallelism verified', () {
+      writeSpmProject();
+      write('ios/RunnerUITests.xctestplan', '{"testTargets": [{}]}');
+      final findings = iosFindings(context());
+      expect(idsOf(findings), isNot(contains('I10')));
+      final notice = findings.firstWhere((finding) => finding.id == 'I12');
+      expect(notice.summary, isNot(contains('parallel execution')));
+    });
+  });
+
+  group('I8/I12 sandboxing default', () {
+    test('an absent setting is silent — xcodebuild defaults to NO', () {
+      writeSpmProject();
+      write(
+        'ios/Runner.xcodeproj/project.pbxproj',
+        _pbxproj().replaceFirst(
+          '\t\t\t\tENABLE_USER_SCRIPT_SANDBOXING = NO;\n',
+          '',
+        ),
+      );
+      final findings = iosFindings(context());
+      expect(idsOf(findings), isNot(contains('I8')));
+      final notice = findings.firstWhere((finding) => finding.id == 'I12');
+      expect(notice.summary, isNot(contains('User Script Sandboxing')));
+    });
   });
 
   group('I11 stray FLUTTER_TARGET', () {
