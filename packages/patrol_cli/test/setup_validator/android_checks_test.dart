@@ -249,6 +249,30 @@ class MainActivityTest
     test('is silent when minification is not mentioned', () {
       expect(checkMinificationAdvice(contextWith()), isNull);
     });
+
+    test('is silent when proguard rules already keep Patrol', () {
+      fs.file('/project/android/app/proguard-rules.pro')
+        ..createSync(recursive: true)
+        ..writeAsStringSync('-keep class pl.leancode.patrol.** { *; }\n');
+      final ctx = contextWith(
+        gradleKts:
+            '$_gradleKts\nandroid { buildTypes { release { isMinifyEnabled = true } } }',
+      );
+      expect(checkMinificationAdvice(ctx), isNull);
+    });
+
+    test('mentions the keep rule when proguard rules lack Patrol', () {
+      fs.file('/project/android/app/proguard-rules.pro')
+        ..createSync(recursive: true)
+        ..writeAsStringSync('-keep class io.flutter.** { *; }\n');
+      final ctx = contextWith(
+        gradleKts:
+            '$_gradleKts\nandroid { buildTypes { release { isMinifyEnabled = true } } }',
+      );
+      final finding = checkMinificationAdvice(ctx);
+      expect(finding?.severity, Severity.notice);
+      expect(finding?.fix, contains('pl.leancode.patrol.**'));
+    });
   });
 
   group('missing gradle file', () {

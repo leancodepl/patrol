@@ -227,9 +227,10 @@ Finding? checkOrchestratorDependency(AndroidCheckContext ctx) {
   );
 }
 
-/// A7: minification looks enabled — ProGuard without keep rules breaks
-/// Patrol with ClassNotFoundException (issue #1542). Silent when no
-/// minification marker is found.
+/// A7: minification looks enabled and the ProGuard rules don't keep the
+/// Patrol packages — release-mode runs (e.g. device farms) then fail with
+/// ClassNotFoundException (issue #1542). Silent when no minification marker
+/// is found or when a proguard file already keeps `pl.leancode.patrol`.
 Finding? checkMinificationAdvice(AndroidCheckContext ctx) {
   final contents = ctx.gradleContents!;
   final minifyEnabled =
@@ -238,15 +239,28 @@ Finding? checkMinificationAdvice(AndroidCheckContext ctx) {
   if (!minifyEnabled) {
     return null;
   }
+
+  final patrolKept = ctx.probe
+      .listFilesRecursively('android/app')
+      .where((path) => path.endsWith('.pro') && !path.contains('/build/'))
+      .any(
+        (path) =>
+            ctx.probe.readFile(path)?.contains('pl.leancode.patrol') ?? false,
+      );
+  if (patrolKept) {
+    return null;
+  }
+
   return Finding(
     id: 'A7',
     severity: Severity.notice,
     summary:
-        'Minification appears enabled in ${ctx.gradlePath}. ProGuard without '
-        'keep rules can break Patrol tests with ClassNotFoundException.',
+        'Minification is enabled in ${ctx.gradlePath} and your ProGuard '
+        'rules do not keep the Patrol packages — release-mode test runs can '
+        'fail with ClassNotFoundException.',
     fix:
-        'Keep the Patrol packages in your ProGuard config, or disable '
-        'minification for the build type you test.',
+        'Add `-keep class pl.leancode.patrol.** { *; }` to your ProGuard '
+        'rules, or disable minification for the build type you test.',
     docsUrl: '$docsBaseUrl#android-setup',
   );
 }
