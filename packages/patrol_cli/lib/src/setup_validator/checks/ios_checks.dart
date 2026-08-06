@@ -39,10 +39,39 @@ List<Finding> iosFindings(IOSCheckContext ctx) {
     checkXcodeBackendBuildPhases(ctx),
     checkUserScriptSandboxing(ctx),
     checkDeploymentTargets(ctx),
+    checkConfigurationSets(ctx),
     checkParallelExecution(ctx),
     checkStrayFlutterTarget(ctx),
     manualVerificationNotice(ctx),
   ].nonNulls.toList();
+}
+
+/// I13: RunnerUITests has a build configuration matching each of Runner's —
+/// the docs' "same Configuration Set" requirement. With flavors, a missing
+/// RunnerUITests configuration makes xcodebuild fall back to a default one
+/// and the test target builds with the wrong settings.
+Finding? checkConfigurationSets(IOSCheckContext ctx) {
+  final runner = ctx.configurationNames('Runner');
+  final uiTests = ctx.configurationNames('RunnerUITests');
+  if (runner == null || uiTests == null) {
+    // Renamed project or unexpected formatting — stays a manual-verify item.
+    return null;
+  }
+  final missing = runner.difference(uiTests);
+  if (missing.isEmpty) {
+    return null;
+  }
+  return Finding(
+    id: 'I13',
+    severity: Severity.warning,
+    summary:
+        'RunnerUITests is missing build configurations that Runner has: '
+        '${(missing.toList()..sort()).join(', ')}.',
+    fix:
+        'In Xcode, give RunnerUITests the same set of build configurations '
+        'as Runner (see the Configuration Set screenshot in the docs).',
+    docsUrl: '$docsBaseUrl#ios-setup-match-build-configs',
+  );
 }
 
 /// P2: the Xcode project is not named Runner — file checks adapt, but other
@@ -395,9 +424,13 @@ Finding? manualVerificationNotice(IOSCheckContext ctx) {
         embedScript: _xcodeBackendEmbedScript,
       ) !=
       null;
+  final configSetsCheckable =
+      ctx.configurationNames('Runner') != null &&
+      ctx.configurationNames('RunnerUITests') != null;
 
   final items = [
-    'RunnerUITests uses the same Configuration Set as Runner',
+    if (!configSetsCheckable)
+      'RunnerUITests uses the same Configuration Set as Runner',
     if (!orderCheckable)
       'the two xcode_backend Build Phases are ordered as in the docs',
     if (!sandboxingKnown) 'User Script Sandboxing is set to No',

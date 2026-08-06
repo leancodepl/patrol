@@ -60,17 +60,59 @@ class DarwinCheckContext {
 
   bool get hybrid => podfileExists && spmDetected;
 
-  /// The `PBXNativeTarget` block of RunnerUITests, or null when it cannot be
+  /// The `PBXNativeTarget` block of [name], or null when it cannot be
   /// isolated (missing target or unexpected pbxproj formatting).
-  String? get runnerUITestsTargetBlock {
+  String? nativeTargetBlock(String name) {
     final contents = pbxproj;
     if (contents == null) {
       return null;
     }
     return RegExp(
-      r'/\* RunnerUITests \*/ = \{\s*isa = PBXNativeTarget;.*?\n\t\t\};',
+      '/\\* ${RegExp.escape(name)} \\*/ = \\{\\s*isa = PBXNativeTarget;'
+      r'.*?\n\t\t\};',
       dotAll: true,
     ).firstMatch(contents)?.group(0);
+  }
+
+  String? get runnerUITestsTargetBlock => nativeTargetBlock('RunnerUITests');
+
+  /// Build-configuration names of the [targetName] target, resolved through
+  /// its XCConfigurationList. Null when they cannot be isolated.
+  Set<String>? configurationNames(String targetName) {
+    final target = nativeTargetBlock(targetName);
+    if (target == null) {
+      return null;
+    }
+    final listId = RegExp(
+      'buildConfigurationList = ([A-F0-9]{24})',
+    ).firstMatch(target)?.group(1);
+    if (listId == null) {
+      return null;
+    }
+    final list = blockFor(listId);
+    if (list == null || !list.contains('XCConfigurationList')) {
+      return null;
+    }
+
+    final names = <String>{};
+    final ids = RegExp(r'\b[A-F0-9]{24}\b')
+        .allMatches(list)
+        .map((match) => match.group(0)!)
+        .toSet()
+      ..remove(listId);
+    for (final id in ids) {
+      final config = blockFor(id);
+      if (config == null || !config.contains('XCBuildConfiguration')) {
+        continue;
+      }
+      final name = RegExp(
+        r'\n\t\t\tname = "?([^";\n]+)"?;',
+      ).firstMatch(config)?.group(1);
+      if (name != null) {
+        names.add(name);
+      }
+    }
+    return names.isEmpty ? null : names;
   }
 
   /// Deployment-target values grouped by owner: build configurations with

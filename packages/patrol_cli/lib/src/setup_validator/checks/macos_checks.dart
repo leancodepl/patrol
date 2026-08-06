@@ -41,10 +41,36 @@ List<Finding> macosFindings(MacOSCheckContext ctx) {
     checkCodeSignEntitlements(ctx),
     checkMacosUserScriptSandboxing(ctx),
     checkMacosDeploymentTargets(ctx),
+    checkMacosConfigurationSets(ctx),
     checkMacosParallelExecution(ctx),
     checkMacosLaunchTestsFileDeleted(ctx),
     macosManualVerificationNotice(ctx),
   ].nonNulls.toList();
+}
+
+/// M8: RunnerUITests has a build configuration matching each of Runner's —
+/// the "same Configuration Set" requirement, same rule as iOS I13.
+Finding? checkMacosConfigurationSets(MacOSCheckContext ctx) {
+  final runner = ctx.configurationNames('Runner');
+  final uiTests = ctx.configurationNames('RunnerUITests');
+  if (runner == null || uiTests == null) {
+    return null;
+  }
+  final missing = runner.difference(uiTests);
+  if (missing.isEmpty) {
+    return null;
+  }
+  return Finding(
+    id: 'M8',
+    severity: Severity.warning,
+    summary:
+        'RunnerUITests is missing build configurations that Runner has: '
+        '${(missing.toList()..sort()).join(', ')}.',
+    fix:
+        'In Xcode, give RunnerUITests the same set of build configurations '
+        'as Runner.',
+    docsUrl: '$docsBaseUrl#macos-setup',
+  );
 }
 
 /// P2: non-standard project name — same rule as on iOS (issue #1878).
@@ -404,9 +430,13 @@ Finding? macosManualVerificationNotice(MacOSCheckContext ctx) {
         embedScript: _macosAssembleEmbedScript,
       ) !=
       null;
+  final configSetsCheckable =
+      ctx.configurationNames('Runner') != null &&
+      ctx.configurationNames('RunnerUITests') != null;
 
   final items = [
-    'RunnerUITests uses the same Configuration Set as Runner',
+    if (!configSetsCheckable)
+      'RunnerUITests uses the same Configuration Set as Runner',
     if (!orderCheckable)
       'the two macos_assemble Build Phases are ordered as in the docs',
     if (!sandboxingKnown) 'User Script Sandboxing is set to No',
