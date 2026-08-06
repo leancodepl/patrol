@@ -113,27 +113,13 @@ Finding? checkPatrolSection(SharedCheckContext ctx) {
 
   final missing = <String>[];
 
-  final topLevelAppName = patrol['app_name'] is String;
-  bool platformHas(String platform, String key) {
-    final section = patrol[platform];
-    return section is Map && section[key] is String;
-  }
-
-  // An empty declared-platform set must not vacuously satisfy app_name.
-  if (!topLevelAppName &&
-      (ctx.declaredPlatforms.isEmpty ||
-          !ctx.declaredPlatforms.every(
-            (platform) => platformHas(platform, 'app_name'),
-          ))) {
-    missing.add('app_name');
-  }
   if (ctx.declaredPlatforms.contains('android') &&
-      !platformHas('android', 'package_name')) {
+      !_platformHas(patrol, 'android', 'package_name')) {
     missing.add('android.package_name');
   }
   for (final platform in ['ios', 'macos']) {
     if (ctx.declaredPlatforms.contains(platform) &&
-        !platformHas(platform, 'bundle_id')) {
+        !_platformHas(patrol, platform, 'bundle_id')) {
       missing.add('$platform.bundle_id');
     }
   }
@@ -148,6 +134,46 @@ Finding? checkPatrolSection(SharedCheckContext ctx) {
         'The `patrol:` section in pubspec.yaml is missing: '
         '${missing.join(', ')}.',
     fix: 'Add the missing keys to the `patrol:` section.',
+    docsUrl: '$docsBaseUrl#configure-pubspec',
+  );
+}
+
+bool _platformHas(Map<dynamic, dynamic> patrol, String platform, String key) {
+  final section = patrol[platform];
+  return section is Map && section[key] is String;
+}
+
+/// S2 (soft part): app_name is in the docs' pubspec snippet, but tests run
+/// without it — it feeds the PATROL_*_APP_NAME dart-defines, which can also
+/// come from --app-name, a manual --dart-define, or an in-code
+/// AutomatorConfig. Only native interactions that use the app's display name
+/// (e.g. permission dialogs) need it, so this is a Warning, not an Error.
+Finding? checkAppName(SharedCheckContext ctx) {
+  final patrol = ctx.patrolSection;
+  if (patrol == null) {
+    // checkPatrolSection already reports the missing section.
+    return null;
+  }
+  final topLevelAppName = patrol['app_name'] is String;
+  // An empty declared-platform set must not vacuously satisfy app_name.
+  final perPlatform =
+      ctx.declaredPlatforms.isNotEmpty &&
+      ctx.declaredPlatforms.every(
+        (platform) => _platformHas(patrol, platform, 'app_name'),
+      );
+  if (topLevelAppName || perPlatform) {
+    return null;
+  }
+  return const Finding(
+    id: 'S2',
+    severity: Severity.warning,
+    summary:
+        'No `app_name` in the `patrol:` section. Tests will run, but native '
+        "interactions that use the app's display name (e.g. permission "
+        'dialogs) will not work without it.',
+    fix:
+        'Add `app_name:` to the `patrol:` section — unless you already pass '
+        'it via `--app-name` or a PATROL_*_APP_NAME dart-define.',
     docsUrl: '$docsBaseUrl#configure-pubspec',
   );
 }
