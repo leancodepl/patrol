@@ -1,10 +1,13 @@
-## Unreleased
+## 0.2.0
 
-- Fix `screenshot` and `native-tree` MCP tools failing with `error: more than one device/emulator` (Android) or capturing the wrong simulator (iOS) when multiple devices are attached. Both now target the active session's device explicitly.
-- Exit on client disconnect (stdin EOF), not just `SIGTERM`/`SIGINT`, and tear down the active develop session on shutdown so it doesn't orphan.
-- Return structured output (`structuredContent`) from `run`/`status`/`native-tree`, and reply with a clear error instead of crashing when `quit` has no active session.
-- Don't listen for `SIGTERM` on Windows, where it is not supported and throws an unhandled `SignalException` that prevented the MCP server from starting. (#3035)
-- Update README: fix and simplify the GitHub Copilot MCP setup (#3089)
+- Multi-device support: `run` auto-selects a device (Android before iOS, real before emulator/simulator) or targets one you pass as `device`, and a new `devices` tool lists what's attached. A `--device` in `PATROL_FLAGS` still wins.
+- Simplified setup: drop the `run-patrol` wrapper and point your MCP config straight at `dart run patrol_mcp`; FVM-pinned projects use the pinned Flutter automatically. See the README.
+- More reliable runs and cleanup:
+  - `run` returns a failed run instead of hanging when the app exits before the test finishes (needs `patrol` 4.7.0+); a timed-out run is distinguishable from a still-running one.
+  - No orphaned processes — sessions are torn down on cancel, client disconnect, and shutdown; the server force-exits if teardown stalls.
+  - `screenshot` and `native-tree` work with multiple devices attached.
+  - `quit` isn't misreported as a crash, and errors clearly when there's no active session.
+  - Structured output from `run`/`status`/`native-tree`; `run` works from a different working directory (`PROJECT_ROOT`); starts on Windows.
 
 
 ## 0.1.4

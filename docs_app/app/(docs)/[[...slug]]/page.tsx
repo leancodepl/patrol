@@ -4,9 +4,41 @@ import { getMDXComponents } from "@/mdx-components"
 import { createRelativeLink } from "fumadocs-ui/mdx"
 import { DocsBody, DocsDescription, DocsPage, DocsTitle } from "fumadocs-ui/page"
 import { notFound } from "next/navigation"
+import type { TableOfContents } from "fumadocs-core/toc"
 import type { Metadata } from "next"
 
 export const dynamicParams = false
+
+type TocExtra = NonNullable<ReturnType<typeof source.getPage>>["data"]["tocExtra"]
+
+// Weave frontmatter-declared `tocExtra` entries into the heading-derived TOC. Each
+// extra entry is emitted right after the existing item whose url matches its `after`
+// (entries sharing an anchor keep their authored order); anything unmatched is
+// appended. Purely additive, so pages without `tocExtra` get the original array back.
+function mergeToc(toc: TableOfContents, extra: TocExtra): TableOfContents {
+  if (!extra?.length) return toc
+
+  const byAfter = new Map<string, TableOfContents>()
+  const trailing: TableOfContents = []
+  for (const { title, url, depth, after } of extra) {
+    const entry = { title, url, depth }
+    if (after !== undefined && toc.some(item => item.url === after)) {
+      const group = byAfter.get(after) ?? []
+      group.push(entry)
+      byAfter.set(after, group)
+    } else {
+      trailing.push(entry)
+    }
+  }
+
+  const merged: TableOfContents = []
+  for (const item of toc) {
+    merged.push(item)
+    const inserted = byAfter.get(item.url)
+    if (inserted) merged.push(...inserted)
+  }
+  return [...merged, ...trailing]
+}
 
 function isNextInternalSegmentPath(slugs: string[]) {
   return slugs.some(slug => {
@@ -53,10 +85,11 @@ export default async function Page(props: PageProps<"/[[...slug]]">) {
 
   const MDX = page.data.body
   const footer = getFooterNavigation(page)
+  const toc = mergeToc(page.data.toc, page.data.tocExtra)
 
   return (
     <DocsPage
-      toc={page.data.toc}
+      toc={toc}
       full={page.data.full}
       tableOfContent={{
         style: "clerk",

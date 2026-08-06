@@ -4,12 +4,15 @@ import 'dart:io' show Process;
 import 'package:adb/adb.dart';
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
+import 'package:meta/meta.dart';
+import 'package:patrol_cli/src/android/android_video_recording_manager.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/extensions/completer.dart';
 import 'package:patrol_cli/src/base/hints.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
+import 'package:patrol_cli/src/crossplatform/video_recording_config.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
 import 'package:patrol_cli/src/runner/flutter_command.dart';
@@ -48,6 +51,7 @@ class AndroidTestBackend {
 
   Future<void> build(AndroidAppOptions options) async {
     await buildApkConfigOnly(options.flutter);
+    verifyAndroidSdkResolved();
     await loadJavaPathFromFlutterDoctor(options.flutter.command);
     await detectOrchestratorVersion(options);
 
@@ -117,6 +121,77 @@ class AndroidTestBackend {
         throw Exception(cause);
       }
     });
+  }
+
+  /// Verifies that Gradle will be able to locate the Android SDK before it is
+  /// invoked.
+  ///
+  /// [buildApkConfigOnly] runs `flutter build apk --config-only`, which
+  /// resolves the Android SDK the same way Flutter does — the `ANDROID_HOME`/
+  /// `ANDROID_SDK_ROOT` env vars, `flutter config --android-sdk`, the default
+  /// Android Studio location, etc. — and writes the resolved path to
+  /// `android/local.properties` as `sdk.dir`. When Flutter can't resolve it,
+  /// that entry is missing and the subsequent gradlew invocation hangs with no
+  /// clear error. Fail fast with an actionable message instead.
+  ///
+  /// Must be called after [buildApkConfigOnly]. See
+  /// https://github.com/leancodepl/patrol/issues/2364.
+  @visibleForTesting
+  void verifyAndroidSdkResolved() {
+    final localProperties = _rootDirectory
+        .childDirectory('android')
+        .childFile('local.properties');
+
+    final sdkDir = localProperties.existsSync()
+        ? _readSdkDir(localProperties.readAsStringSync())
+        : null;
+
+    if (sdkDir == null) {
+      throwToolExit(
+        "Couldn't locate the Android SDK. Set the ANDROID_HOME environment "
+        'variable to your Android SDK path, configure it with '
+        '`flutter config --android-sdk <path>`, or run `patrol doctor` to '
+        'diagnose your setup.',
+      );
+    }
+
+    if (!_rootDirectory.fileSystem.directory(sdkDir).existsSync()) {
+      throwToolExit(
+        'The configured Android SDK directory does not exist: $sdkDir. Fix '
+        '`sdk.dir` in android/local.properties (or the ANDROID_HOME '
+        'environment variable), or run `patrol doctor` to diagnose your setup.',
+      );
+    }
+  }
+
+  /// Reads the `sdk.dir` value from the contents of a `local.properties` file,
+  /// or `null` when it is absent or empty.
+  static String? _readSdkDir(String localProperties) {
+    for (final line in localProperties.split(RegExp(r'\r?\n'))) {
+      final trimmed = line.trim();
+      if (trimmed.startsWith('sdk.dir=')) {
+        final value = _unescapePropertyValue(
+          trimmed.substring('sdk.dir='.length).trim(),
+        );
+        return value.isEmpty ? null : value;
+      }
+    }
+    return null;
+  }
+
+  /// Undoes the `.properties` escaping Flutter applies when writing `sdk.dir`,
+  /// e.g. `C\:\\Users\\me\\Android\\sdk` on Windows.
+  static String _unescapePropertyValue(String value) {
+    final buffer = StringBuffer();
+    for (var i = 0; i < value.length; i++) {
+      final char = value[i];
+      if (char == r'\' && i + 1 < value.length) {
+        buffer.write(value[++i]);
+      } else {
+        buffer.write(char);
+      }
+    }
+    return buffer.toString();
   }
 
   /// Load the Java path from the output of `flutter doctor`.
@@ -231,6 +306,8 @@ class AndroidTestBackend {
             }
           })
           .disposedBy(scope);
+      // Drain stderr, or the process hangs on Windows when the pipe fills.
+      process.listenStdErr((l) => _logger.detail('\t$l')).disposedBy(scope);
 
       await process.exitCode;
     });
@@ -251,8 +328,22 @@ class AndroidTestBackend {
     required bool hideTestSteps,
     required bool clearTestSteps,
     void Function(Entry entry)? onLogEntry,
+    VideoRecordingConfig? videoConfig,
   }) async {
     await _disposeScope.run((scope) async {
+      // Create video recording manager if enabled
+      AndroidVideoRecordingManager? videoRecordingManager;
+      if (videoConfig?.enabled ?? false) {
+        videoRecordingManager = AndroidVideoRecordingManager(
+          processManager: _processManager,
+          rootDirectory: _rootDirectory,
+          logger: _logger,
+          config: videoConfig!,
+          device: device,
+          scope: scope,
+        );
+      }
+
       // Read patrol logs from logcat
       final processLogcat =
           await _adb.logcat(
@@ -280,7 +371,9 @@ class AndroidTestBackend {
               showFlutterLogs: showFlutterLogs,
               hideTestSteps: hideTestSteps,
               clearTestSteps: clearTestSteps,
-              onLogEntry: onLogEntry,
+              onLogEntry:
+                  videoRecordingManager?.wrapOnLogEntry(onLogEntry) ??
+                  onLogEntry,
             )
             ..listen()
             ..startTimer();
@@ -318,11 +411,18 @@ class AndroidTestBackend {
       patrolLogReader.stopTimer();
       processLogcat.kill();
 
+      // Cleanup video recording manager
+      await videoRecordingManager?.dispose();
+
       // Don't print the summary in develop
       if (!interruptible) {
         _logger.info(patrolLogReader.summary);
         if (patrolLogReader.totalTests == 0) {
           _logger.warn(zeroTestsHint, tag: 'HINT');
+        }
+        final recordingSummary = videoRecordingManager?.recordingSummary;
+        if (recordingSummary != null) {
+          _logger.info(recordingSummary);
         }
       }
 

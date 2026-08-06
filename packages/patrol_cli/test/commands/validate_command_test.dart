@@ -48,14 +48,14 @@ void main() {
       fs.file('/project/pubspec.yaml').writeAsStringSync('''
 name: example_app
 dev_dependencies:
-  patrol: ^4.6.0
+  patrol: ^4.7.0
 patrol:
   app_name: My App
 ''');
       fs.file('/project/pubspec.lock').writeAsStringSync('''
 packages:
   patrol:
-    version: "4.6.0"
+    version: "4.7.0"
 ''');
       fs
           .file('/project/patrol_test/example_test.dart')
@@ -99,7 +99,7 @@ packages:
       fs.file('/project/pubspec.yaml').writeAsStringSync('''
 name: example_app
 dev_dependencies:
-  patrol: ^4.6.0
+  patrol: ^4.7.0
 patrol:
   app_name: My App
   android:

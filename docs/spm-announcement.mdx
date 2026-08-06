@@ -1,0 +1,14 @@
+---
+title: Swift Package Manager support is here!
+hidePrevious: true
+---
+
+Starting with Patrol 4.7.0 and Patrol CLI 4.5.0, Patrol supports Swift Package Manager (SPM) on iOS and macOS, integrating with [Flutter's native SPM support](https://docs.flutter.dev/packages-and-plugins/swift-package-manager/for-app-developers). CocoaPods remains fully supported for projects that haven't migrated yet.
+
+If you switch your project to SPM, a few small changes to the Patrol setup are needed — most notably adding `FlutterGeneratedPluginSwiftPackage` to the `RunnerUITests` target. Everything is described in the updated setup guide:
+
+ - [SPM configuration step in the iOS setup](/documentation#ios-setup-configure-runner-uitests)
+ - [SPM configuration step in the macOS setup](/documentation#macos-setup-configure-runner-uitests)
+ - [Swift Package Manager support PR on GitHub](https://github.com/leancodepl/patrol/pull/2976)
+
+If you have any questions or want to submit feedback, head on to [GitHub](https://github.com/leancodepl/patrol) or [our Discord server](https://discord.gg/ukBK5t4EZg).

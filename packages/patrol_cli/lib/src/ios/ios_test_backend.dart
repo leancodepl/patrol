@@ -12,7 +12,9 @@ import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/crossplatform/patrol_build_environment.dart';
+import 'package:patrol_cli/src/crossplatform/video_recording_config.dart';
 import 'package:patrol_cli/src/devices.dart';
+import 'package:patrol_cli/src/ios/ios_video_recording_manager.dart';
 import 'package:patrol_log/patrol_log.dart';
 import 'package:patrol_log/patrol_log_reader.dart';
 import 'package:platform/platform.dart';
@@ -178,11 +180,36 @@ class IOSTestBackend {
     required bool hideTestSteps,
     required bool clearTestSteps,
     void Function(Entry entry)? onLogEntry,
+    VideoRecordingConfig? videoConfig,
   }) async {
     await _disposeScope.run((scope) async {
+      // Create video recording manager if enabled
+      IOSVideoRecordingManager? videoRecordingManager;
+      if (videoConfig?.enabled ?? false) {
+        videoRecordingManager = IOSVideoRecordingManager(
+          processManager: _processManager,
+          rootDirectory: _rootDirectory,
+          logger: _logger,
+          config: videoConfig!,
+          device: device,
+          scope: scope,
+        );
+      }
+
       final patrolLogCommand = device.real
           ? ['idevicesyslog']
-          : ['log', 'stream'];
+          : [
+              'xcrun',
+              'simctl',
+              'spawn',
+              device.id,
+              'log',
+              'stream',
+              '--type',
+              'log',
+              '--color',
+              'none',
+            ];
 
       // Read patrol logs from log stream
       final processLogs =
@@ -202,7 +229,9 @@ class IOSTestBackend {
               showFlutterLogs: showFlutterLogs,
               hideTestSteps: hideTestSteps,
               clearTestSteps: clearTestSteps,
-              onLogEntry: onLogEntry,
+              onLogEntry:
+                  videoRecordingManager?.wrapOnLogEntry(onLogEntry) ??
+                  onLogEntry,
             )
             ..listen()
             ..startTimer();
@@ -240,11 +269,18 @@ class IOSTestBackend {
       patrolLogReader.stopTimer();
       processLogs.kill();
 
+      // Cleanup video recording manager
+      await videoRecordingManager?.dispose();
+
       // Don't print the summary in develop
       if (!interruptible) {
         _logger.info(patrolLogReader.summary);
         if (patrolLogReader.totalTests == 0) {
           _logger.warn(zeroTestsHint, tag: 'HINT');
+        }
+        final recordingSummary = videoRecordingManager?.recordingSummary;
+        if (recordingSummary != null) {
+          _logger.info(recordingSummary);
         }
       }
 

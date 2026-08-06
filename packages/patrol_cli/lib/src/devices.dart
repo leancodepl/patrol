@@ -224,6 +224,12 @@ class Device {
     required this.real,
   });
 
+  /// The [Device] that `patrol test` bundles for [name], letting the caller
+  /// skip looking up a matching real device. Returns null if [name] isn't
+  /// bundled for `patrol test`.
+  static Device? bundledForTest(String name) =>
+      _testBundledDevices[name.trim().toLowerCase()];
+
   final String name;
   final String id;
   final TargetPlatform targetPlatform;
@@ -259,6 +265,15 @@ class Device {
     }
   }
 }
+
+const _testBundledDevices = {
+  'chrome': Device(
+    name: 'Chrome',
+    id: 'chrome',
+    targetPlatform: TargetPlatform.web,
+    real: true,
+  ),
+};
 
 enum TargetPlatform { iOS, android, macOS, web }
 

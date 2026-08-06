@@ -451,42 +451,11 @@ class WebTestBackend {
               ['npx', 'playwright', 'test', 'tests/test.spec.ts'],
               workingDirectory: webRunnerPath,
               environment: {
+                ...Platform.environment,
                 'BASE_URL': baseUrl,
                 'PATROL_TEST_RESULTS_DIR': testResultsDir,
                 'PATROL_TEST_REPORT_DIR': testReportDir,
-                if (options.retries != null)
-                  'PATROL_WEB_RETRIES': options.retries.toString(),
-                if (options.video != null)
-                  'PATROL_WEB_VIDEO': options.video.toString(),
-                if (options.timeout != null)
-                  'PATROL_WEB_TIMEOUT': options.timeout.toString(),
-                if (options.workers != null)
-                  'PATROL_WEB_WORKERS': options.workers.toString(),
-                if (options.reporter != null)
-                  'PATROL_WEB_REPORTER': options.reporter.toString(),
-                if (options.locale != null)
-                  'PATROL_WEB_LOCALE': options.locale.toString(),
-                if (options.timezone != null)
-                  'PATROL_WEB_TIMEZONE': options.timezone.toString(),
-                if (options.colorScheme != null)
-                  'PATROL_WEB_COLOR_SCHEME': options.colorScheme.toString(),
-                if (options.geolocation != null)
-                  'PATROL_WEB_GEOLOCATION': options.geolocation.toString(),
-                if (options.permissions != null)
-                  'PATROL_WEB_PERMISSIONS': options.permissions.toString(),
-                if (options.userAgent != null)
-                  'PATROL_WEB_USER_AGENT': options.userAgent.toString(),
-                if (options.viewport != null)
-                  'PATROL_WEB_VIEWPORT': options.viewport.toString(),
-                if (options.globalTimeout != null)
-                  'PATROL_WEB_GLOBAL_TIMEOUT': options.globalTimeout.toString(),
-                if (options.shard != null)
-                  'PATROL_WEB_SHARD': options.shard.toString(),
-                if (options.headless != null)
-                  'PATROL_WEB_HEADLESS': options.headless.toString(),
-                if (options.browserArgs != null)
-                  'PATROL_WEB_BROWSER_ARGS': options.browserArgs.toString(),
-                ...Platform.environment,
+                ...options.toEnvironmentVariables(),
               },
               runInShell: true,
             )
@@ -731,7 +700,7 @@ class WebTestBackend {
       ..info('Node.js dependencies installed successfully.')
       ..info('Installing Playwright dependencies...');
     final result = await _processManager.run(
-      ['npx', 'playwright', 'install'],
+      ['npx', 'playwright', 'install', 'chromium'],
       workingDirectory: webRunnerPath,
       runInShell: true,
     );
@@ -739,7 +708,7 @@ class WebTestBackend {
     if (result.exitCode != 0) {
       throw ProcessException(
         'npx',
-        ['playwright', 'install'],
+        ['playwright', 'install', 'chromium'],
         'Failed to install Playwright dependencies:\n'
             'STDOUT: ${result.stdout}\n'
             'STDERR: ${result.stderr}',

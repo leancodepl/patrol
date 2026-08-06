@@ -42,7 +42,7 @@ patrol:
     fs.file('/project/pubspec.lock').writeAsStringSync('''
 packages:
   patrol:
-    version: "4.6.0"
+    version: "4.7.0"
 ''');
     fs
         .file('/project/patrol_test/example_test.dart')
