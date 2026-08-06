@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Fix macOS builds failing with `module 'PatrolImpl' not found` under Swift Package Manager (#3177). The public `patrol` module no longer `@import`s the Swift implementation; `PatrolPlugin` is ObjC and macro-facing types are declared as ObjC interfaces in the umbrella, so app builds and RunnerUITests keep working with a single `@import patrol` / `import patrol`.
 - Fix `AndroidNativeView.visibleBounds` always having zero height. (#3202)
 - Collect Chrome JavaScript coverage in the web runner when `patrol test --coverage` runs on the web platform.
 
