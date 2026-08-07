@@ -251,8 +251,8 @@ abstract interface class AndroidAutomator implements MobileAutomator {
   );
 
   /// Captures a native screenshot of the current screen and saves it on the
-  /// device where BrowserStack's Espresso `debugscreenshots` collector looks
-  /// for it.
+  /// device (under `Download/screenshots/<class>/<method>/`) so a device farm
+  /// can collect it as a run artifact.
   ///
   /// [tag] is appended to the generated file name. Uses the native
   /// `androidx.test` screenshot API. Never throws if the capture fails.
