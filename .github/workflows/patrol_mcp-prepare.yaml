@@ -60,6 +60,6 @@ jobs:
 
       - name: Score with pana
         continue-on-error: true
-        uses: leancodepl/mobile-tools/.github/actions/pana-score@30beea0392b82bd2e650d63fbb1318b161b95722
+        uses: leancodepl/mobile-tools/.github/actions/pana-score@e9f138c252f8e2254c88273367958fcc6bb39cad # pana-score-v1.3
         with:
           path: packages/patrol_mcp
