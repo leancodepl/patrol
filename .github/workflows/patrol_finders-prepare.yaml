@@ -73,6 +73,7 @@ jobs:
         run: flutter test
 
       - name: Score with pana
+        if: success() || failure()
         continue-on-error: true
         uses: leancodepl/mobile-tools/.github/actions/pana-score@d5b02aa28c6f34697d64b1021a86544172bbea5d # pana-score-v1.2
         with:
