@@ -1,0 +1,236 @@
+---
+title: Build-time test discovery
+---
+
+Build-time test discovery is an **experimental, opt-in** mode that discovers your
+Dart tests when you build the app — instead of at runtime, when the app first
+launches on the device — and generates a real, statically-declared native test
+method for each Dart test.
+
+The payoff: every Dart test becomes an individually-addressable native test, which
+unlocks per-test sharding, running a single test without rebuilding, cleaner test
+reports, and compatibility with external test-distribution tools.
+
+<Warning>
+  This feature is experimental. Read the [Trade-offs](#trade-offs) section before
+  enabling it — in particular the host-vs-device discovery caveat.
+</Warning>
+
+## How it works
+
+Normally, Patrol discovers your tests at runtime: the app is launched once, and the
+native runner asks the Dart side for the list of tests, then registers them
+dynamically (`class_addMethod` on iOS, a parameterized JUnit runner on Android).
+Nothing about your tests exists in the compiled test binary until the app runs.
+
+With build-time discovery, `patrol build` / `patrol test`:
+
+1. Runs a host `flutter test` in a special discovery mode
+   (`--dart-define PATROL_TEST_DISCOVERY=true`) that walks your test tree without
+   executing the bodies, and serializes it to
+   `build/patrol/patrol_test_manifest.json`.
+2. Generates a static native test class from that manifest:
+   - **iOS**: `ios/RunnerUITests/PatrolGeneratedTests.inc` — one
+     `- (void)test_<name>_<index>` method per Dart test, `#include`d into
+     `RunnerUITests`.
+   - **Android**: `PatrolGeneratedTests.java` in your `androidTest` source set —
+     one `@Test public void <name>()` per Dart test.
+3. Compiles those methods into the test binary, so the native test framework
+   (XCTest / JUnit) discovers them natively.
+
+The native method names are sanitized (Dart names contain spaces and punctuation)
+and get a uniqueness suffix, so they are *not* the Dart names verbatim. What stays
+byte-identical is the Dart test name embedded in each method body and handed to
+Patrol — so the tests run exactly the same as under runtime discovery, they just
+also exist statically. Use the generated method names when building native
+selectors, and the Dart names when selecting tests through Patrol
+(e.g. `--only`).
+
+## Setup
+
+<Steps>
+
+### Enable it in `pubspec.yaml`
+
+```yaml
+patrol:
+  emit_test_manifest: true
+```
+
+You can also enable it ad-hoc for a single command with the
+`--emit-test-manifest` flag (the flag overrides the pubspec value), or turn it off
+with `--no-emit-test-manifest`.
+
+### iOS only — switch `RunnerUITests.m` to the static runner
+
+The **default** `RunnerUITests.m` uses the runtime macro
+`PATROL_INTEGRATION_TEST_IOS_RUNNER(RunnerUITests)`, and that's what you keep for
+normal (runtime-discovery) runs. The generated `PatrolGeneratedTests.inc` is only
+compiled in when the runner uses the static macro, so when you opt in, replace the
+runtime macro in `ios/RunnerUITests/RunnerUITests.m` with:
+
+```objc
+@import XCTest;
+@import patrol;
+@import ObjectiveC.runtime;
+
+PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN(RunnerUITests)
+#include "PatrolGeneratedTests.inc"
+PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_END
+```
+
+<Warning>
+  This iOS runner change is part of the opt-in — the static macro requires the
+  generated `.inc`, so a build **without** `--emit-test-manifest` won't compile.
+  To go back to runtime discovery you must restore the
+  `PATROL_INTEGRATION_TEST_IOS_RUNNER(RunnerUITests)` macro; `--no-emit-test-manifest`
+  alone is not enough on iOS.
+</Warning>
+
+<Info>
+  If you enable `emit_test_manifest` but forget this step, `patrol build ios`
+  fails fast with an explanatory error rather than silently falling back to
+  runtime discovery. On **Android** no manual change is needed — the generated
+  class is created and selected automatically.
+</Info>
+
+### Build
+
+```bash
+patrol build ios --emit-test-manifest    # or: patrol build android
+```
+
+After discovery, the CLI prints the discovered tests grouped by source file, and
+where the generated code landed.
+
+</Steps>
+
+## Running tests without rebuilding
+
+Once you've built with build-time discovery, you can run the already-built tests
+**without rebuilding** — reusing the artifacts from the previous `patrol build` —
+with `patrol test-without-building`:
+
+```bash
+# Run all discovered tests, no rebuild.
+patrol test-without-building
+
+# Run a single test by its exact Dart name (as printed during discovery).
+patrol test-without-building --only "example_test tap counter increments"
+```
+
+It's a separate command rather than a flag on `patrol test` because nothing is
+bundled, built or reinstalled here — so the options that shape a build
+(`--target`, `--tags`, `--dart-define`, …) don't apply and aren't accepted. It
+needs a prior `patrol build` with `emit_test_manifest`, since selecting individual
+tests natively is only possible thanks to the generated static tests. Under the
+hood it runs
+`xcodebuild test-without-building -only-testing …` on iOS and
+`adb shell am instrument -e class <fqcn>#<method> …` on Android — no compilation
+step. This is ideal for a fast edit-nothing / re-run-one-test loop and for
+debugging a single failing test.
+
+## Sharding & external tools
+
+Because each Dart test is now a real, statically-declared native test, it can be
+targeted individually:
+
+- **iOS**: `-only-testing RunnerUITests/RunnerUITests/test_<name>_<index>`.
+- **Android**: `-e class <fqcn>#<method>` (or a balanced, per-test split).
+
+This is what enables per-test sharding across machines (e.g. SauceLabs
+`testListFile`, or any tool that enumerates the compiled test bundle), balanced
+Android sharding, and clean per-test names in reports.
+
+### iOS sharding on device farms that need a test list
+
+XCUITest has no built-in sharding. Device farms shard it by taking an **explicit
+list of test identifiers** (`Bundle/Class/method`) and splitting it across
+parallel runners — for example SauceLabs' `testListFile` (with
+`shard: concurrency`) or BrowserStack's XCUITest sharding.
+
+With stock Patrol this is impossible: tests are registered at runtime
+(`class_addMethod`) only after the app launches, so no static list of test
+identifiers exists before the run — there's nothing to hand to the farm.
+
+Build-time discovery fixes exactly this. Because every Dart test is compiled into
+a real `RunnerUITests/RunnerUITests/test_<name>_<index>` method, you can extract
+the full list of selectors straight from the built test bundle (or from the
+generated `PatrolGeneratedTests.inc`) and feed it to the farm's test-list
+sharding. Each shard then runs its slice with `-only-testing`, in parallel, on a
+separate machine — which also sidesteps the fixed-port limitation, since each
+shard gets its own host.
+
+Deriving the list from the generated `.inc` keeps it byte-identical to what
+XCTest discovers. For example, to produce a SauceLabs `testListFile`:
+
+```bash
+grep -oE '^- \(void\)test_[A-Za-z0-9_]+' ios/RunnerUITests/PatrolGeneratedTests.inc \
+  | sed -E 's#^- \(void\)#RunnerUITests/RunnerUITests/#' \
+  > .sauce/ios_testlist.txt
+```
+
+Then point SauceLabs at it with `shard: concurrency` + `testListFile`. See
+`dev/e2e_app/scripts/generate_ios_testlist.sh` for a ready-made version
+(`SAUCE_DEVICE=real|simulator`).
+
+<Warning>
+  The `testListFile` entry format differs by device type: SauceLabs expects
+  `TestTarget/TestClass/testMethod` on **simulators** but
+  `TestTarget.TestClass/testMethod` (a dot between target and class) on **real
+  devices**. Using the wrong one matches no tests, so the run installs the UITest
+  runner and then hangs on a blank/gray screen. The `sed` above produces the
+  simulator format; for real devices replace the first `/` with `.`
+  (`RunnerUITests.RunnerUITests/`), or run the script with `SAUCE_DEVICE=real`.
+</Warning>
+
+<Info>
+  Generate the test list on every build and don't commit it — the `_<index>`
+  suffix depends on the number and order of tests, so selectors change as your
+  test set changes.
+</Info>
+
+## Trade-offs
+
+**Benefits**
+
+- **Re-run without rebuilding.** `patrol test-without-building` re-runs the whole
+  suite against the already-built artifacts, skipping compilation entirely.
+- **Run a single test without rebuilding.** `patrol test-without-building --only
+  "<dart name>"` runs just one test from the built set — a fast loop for debugging
+  a single failing test.
+- Per-test selection → sharding across machines and device farms.
+- Cleaner reports: each test appears under its own name (Android no longer groups
+  everything under a parameterized `runDartTest[...]` wrapper).
+- Tests show up in the Xcode test navigator and in test plans.
+
+**Limitations & caveats**
+
+- **Host-vs-device discovery.** Discovery runs on the host (`flutter test`), not on
+  the device. Tests that are registered conditionally based on the runtime
+  environment — e.g. `Platform.isIOS`, or a description built from a
+  `--dart-define` — may be discovered differently than they would on-device, and a
+  conditionally-registered test could be silently missing from the manifest. Keep
+  your test registration platform-independent.
+- **Test location.** Discovery needs your tests to run as plain widget tests on the
+  host. Tests kept under `integration_test/` are treated by Flutter as integration
+  tests (they require a device and a direct `integration_test` dependency), so
+  discovery won't run for them. Keep your Patrol tests under `patrol_test/` (the
+  default) or another non-`integration_test/` directory.
+- **Parallel simulators on one host.** Patrol talks to its server on fixed ports,
+  and iOS simulators share the host loopback, so running several shards in parallel
+  on a single machine collides on those ports. Shard across separate hosts/VMs
+  (one simulator each) — which is how cloud device farms already work.
+- **Slower initial build.** Discovery adds a host `flutter test` pass to every
+  `patrol build`, so the first build takes a bit longer. This cost is paid once —
+  subsequent `patrol test-without-building` runs skip building altogether.
+- **`test-without-building` reuses the previous build.** It runs exactly what was
+  last built,
+  so re-run it only when the app and test code are unchanged (change Dart or native
+  code → rebuild). On Android it targets the instrumentation resolved from the
+  device (`pm list instrumentation`); a custom `testApplicationId` or runner is
+  picked up when installed, but an exotic setup that can't be resolved falls back
+  to the default `<applicationId>.test` / `PatrolJUnitRunner`, and a flavor
+  `applicationIdSuffix` that isn't reflected in `patrol.android.package_name` may
+  not match. For those setups, prefer a normal `patrol test`.
+- Experimental: the setup and flags may change.
