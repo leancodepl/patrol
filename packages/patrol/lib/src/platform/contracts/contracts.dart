@@ -1262,6 +1262,23 @@ class AndroidTakeCameraPhotoRequest with Equatable {
 }
 
 @JsonSerializable()
+class AndroidTakeNativeScreenshotRequest with Equatable {
+  const AndroidTakeNativeScreenshotRequest({required this.tag});
+
+  factory AndroidTakeNativeScreenshotRequest.fromJson(
+    Map<String, dynamic> json,
+  ) => _$AndroidTakeNativeScreenshotRequestFromJson(json);
+
+  final String tag;
+
+  Map<String, dynamic> toJson() =>
+      _$AndroidTakeNativeScreenshotRequestToJson(this);
+
+  @override
+  List<Object?> get props => [tag];
+}
+
+@JsonSerializable()
 class IOSTakeCameraPhotoRequest with Equatable {
   const IOSTakeCameraPhotoRequest({
     this.shutterButtonSelector,

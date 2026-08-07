@@ -153,6 +153,7 @@ class BuildAndroidCommand extends PatrolCommand {
       'PATROL_ANDROID_APP_NAME': appName,
       'PATROL_TEST_LABEL_ENABLED': displayLabel.toString(),
       'PATROL_TEST_DIRECTORY': config.testDirectory,
+      'PATROL_SCREENSHOT_ON_FAILURE': config.screenshotOnFailure.toString(),
       'INTEGRATION_TEST_SHOULD_REPORT_RESULTS_TO_NATIVE': 'false',
     }.withNullsRemoved();
 
@@ -196,6 +197,7 @@ class BuildAndroidCommand extends PatrolCommand {
       appServerPort: super.appServerPort,
       testServerPort: super.testServerPort,
       uninstall: uninstall,
+      urlSafeTestNames: config.urlSafeTestNames,
     );
 
     try {

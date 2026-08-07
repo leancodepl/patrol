@@ -1,6 +1,7 @@
 ## Unreleased
 
 - Bump `equatable` to `^2.1.0` and migrate API contract types from deprecated `EquatableMixin` to `with Equatable`.
+- Regenerate API contracts (adds `AndroidTakeNativeScreenshotRequest`). (#3222)
 
 ## 0.4.0
 

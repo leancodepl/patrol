@@ -60,6 +60,7 @@ class AndroidAppOptions {
     required this.appServerPort,
     required this.testServerPort,
     required this.uninstall,
+    this.urlSafeTestNames = false,
   });
 
   final FlutterAppOptions flutter;
@@ -67,6 +68,10 @@ class AndroidAppOptions {
   final int appServerPort;
   final int testServerPort;
   final bool uninstall;
+
+  /// Whether the native side should report URL-safe JUnit test names. Passed to
+  /// Gradle so the patrol Android library can read it via `BuildConfig`.
+  final bool urlSafeTestNames;
 
   String get description => 'apk with entrypoint ${basename(flutter.target)}';
 
@@ -178,7 +183,9 @@ class AndroidAppOptions {
     // Add app and test server ports
     cmd
       ..add('-Papp-server-port=$appServerPort')
-      ..add('-Ptest-server-port=$testServerPort');
+      ..add('-Ptest-server-port=$testServerPort')
+      // Forward the URL-safe test names flag to the patrol Android library.
+      ..add('-Purl-safe-test-names=$urlSafeTestNames');
 
     return cmd;
   }

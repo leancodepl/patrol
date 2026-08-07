@@ -318,6 +318,10 @@ class AndroidTakeCameraPhotoRequest {
   late int? timeoutMillis;
 }
 
+class AndroidTakeNativeScreenshotRequest {
+  late String tag;
+}
+
 class IOSTakeCameraPhotoRequest {
   IOSSelector? shutterButtonSelector;
   IOSSelector? doneButtonSelector;
@@ -420,6 +424,9 @@ abstract class AndroidAutomator<AndroidServer, DartClient> {
   void enterText(AndroidEnterTextRequest request);
   void waitUntilVisible(AndroidWaitUntilVisibleRequest request);
   void swipe(AndroidSwipeRequest request);
+
+  // screenshots
+  void takeNativeScreenshot(AndroidTakeNativeScreenshotRequest request);
 
   // services
   void enableLocation();

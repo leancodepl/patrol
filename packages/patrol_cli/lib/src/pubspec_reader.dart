@@ -13,6 +13,8 @@ class PatrolPubspecConfig with Equatable {
     required this.macos,
     this.testDirectory = 'patrol_test',
     this.testFileSuffix = '_test.dart',
+    this.screenshotOnFailure = false,
+    this.urlSafeTestNames = false,
   });
 
   PatrolPubspecConfig.empty({required String flutterPackageName})
@@ -30,6 +32,17 @@ class PatrolPubspecConfig with Equatable {
   String testDirectory;
   String testFileSuffix;
 
+  /// Whether patrol should capture a native screenshot when a test fails.
+  /// Off by default. Currently used for BrowserStack failure screenshots on
+  /// Android.
+  bool screenshotOnFailure;
+
+  /// Whether patrol should sanitize the reported Android JUnit test names to be
+  /// URL-safe (`[^A-Za-z0-9._-]` → `_`), keeping the original name for
+  /// execution. Off by default. Stopgap so screenshot URLs render on
+  /// BrowserStack until it fixes rendering of paths with spaces/commas.
+  bool urlSafeTestNames;
+
   @override
   List<Object?> get props => [
     android,
@@ -37,6 +50,8 @@ class PatrolPubspecConfig with Equatable {
     macos,
     testDirectory,
     testFileSuffix,
+    screenshotOnFailure,
+    urlSafeTestNames,
   ];
 }
 
@@ -179,6 +194,16 @@ class PubspecReader {
     final dynamic testFileSuffix = patrol['test_file_suffix'];
     if (testFileSuffix != null && testFileSuffix is String) {
       config.testFileSuffix = testFileSuffix;
+    }
+
+    final dynamic screenshotOnFailure = patrol['screenshot_on_failure'];
+    if (screenshotOnFailure != null && screenshotOnFailure is bool) {
+      config.screenshotOnFailure = screenshotOnFailure;
+    }
+
+    final dynamic urlSafeTestNames = patrol['url_safe_test_names'];
+    if (urlSafeTestNames != null && urlSafeTestNames is bool) {
+      config.urlSafeTestNames = urlSafeTestNames;
     }
 
     final android = patrol['android'] as Map?;

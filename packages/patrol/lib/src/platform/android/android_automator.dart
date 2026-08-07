@@ -250,6 +250,14 @@ abstract interface class AndroidAutomator implements MobileAutomator {
     AndroidSelector? selector,
   );
 
+  /// Captures a native screenshot of the current screen and saves it on the
+  /// device (under `Download/screenshots/<class>/<method>/`) so a device farm
+  /// can collect it as a run artifact.
+  ///
+  /// [tag] is appended to the generated file name. Uses the native
+  /// `androidx.test` screenshot API. Never throws if the capture fails.
+  Future<void> takeNativeScreenshot(String tag);
+
   /// Take and confirm the photo
   ///
   /// This method taps on the camera shutter button to take a photo, then taps

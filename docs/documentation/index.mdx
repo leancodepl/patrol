@@ -132,6 +132,42 @@ Check out our video version of this tutorial on YouTube!
         ```
     </Info>
 
+    <Info>
+        **Native failure screenshots (device farms)**: Set
+        `screenshot_on_failure: true` to make Patrol capture a native screenshot
+        of the failing screen when a test fails. Patrol only writes the PNG on
+        the device, to `/sdcard/Download/screenshots/<class>/<method>/`. How it
+        reaches your run's artifacts depends on the farm:
+
+        - **BrowserStack App Automate**: enable the Espresso
+          `debugscreenshots: true` capability; images appear in the Screenshots tab.
+        - **Firebase Test Lab**: pass
+          `--directories-to-pull=/sdcard/Download/screenshots` so the files are
+          copied to the results bucket.
+        - **Other farms / local runs**: pull them yourself, e.g.
+          `adb pull /sdcard/Download/screenshots`.
+
+        It is off by default and currently applies to Android only (a no-op on
+        iOS). It works in the `patrol build android` APK as well as
+        `patrol test`/`develop`. You can also capture on demand from a test with
+        `await $.takeScreenshot('tag')`.
+
+        `url_safe_test_names: true` sanitizes the reported Android JUnit test
+        names (`[^A-Za-z0-9._-]` → `_`) while keeping the original names for
+        execution. It keeps screenshot paths free of spaces/commas — mainly a
+        stopgap for BrowserStack, which currently can't render such URLs. Off by
+        default; when off, reported test names are unchanged.
+
+        ```yaml title="pubspec.yaml (optional)"
+        patrol:
+          app_name: My App
+          screenshot_on_failure: true
+          url_safe_test_names: true # only needed until BrowserStack fixes path rendering
+          android:
+            package_name: com.example.myapp
+        ```
+    </Info>
+
     <Warning>
         In this tutorial, we are using example app, which has package name
         `com.example.myapp` on Android, bundle id `com.example.MyApp` on iOS,
