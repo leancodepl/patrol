@@ -61,6 +61,6 @@ jobs:
 
       - name: Score with pana
         continue-on-error: true
-        uses: leancodepl/mobile-tools/.github/actions/pana-score@76937cff13133f1d17e4849b03ac9a8f001159ba
+        uses: leancodepl/mobile-tools/.github/actions/pana-score@30beea0392b82bd2e650d63fbb1318b161b95722
         with:
           path: packages/adb
