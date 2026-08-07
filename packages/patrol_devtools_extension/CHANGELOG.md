@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Regenerate API contracts for the new Android `ConfigureRequest` accessibility flags. (#3216)
 - Bump `equatable` to `^2.1.0` and migrate API contract types from deprecated `EquatableMixin` to `with Equatable`.
 
 ## 0.4.0

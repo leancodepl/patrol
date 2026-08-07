@@ -216,8 +216,17 @@ class Contracts {
   }
 
   data class ConfigureRequest (
-    val findTimeoutMillis: Long
-  )
+    val findTimeoutMillis: Long,
+    val androidDontSuppressAccessibilityServices: Boolean? = null,
+    val androidRetrieveInteractiveWindows: Boolean? = null
+  ){
+    fun hasAndroidDontSuppressAccessibilityServices(): Boolean {
+      return androidDontSuppressAccessibilityServices != null
+    }
+    fun hasAndroidRetrieveInteractiveWindows(): Boolean {
+      return androidRetrieveInteractiveWindows != null
+    }
+  }
 
   data class OpenAppRequest (
     val appId: String

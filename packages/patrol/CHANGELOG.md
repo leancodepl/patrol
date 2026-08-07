@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Add opt-in `AndroidAutomatorConfig.dontSuppressAccessibilityServices` (dart-define `PATROL_ANDROID_DONT_SUPPRESS_ACCESSIBILITY_SERVICES`) to keep third-party `AccessibilityService`s running during the session. Defaults to today's behavior. (#3216)
+- Add opt-in `AndroidAutomatorConfig.retrieveInteractiveWindows` (dart-define `PATROL_ANDROID_RETRIEVE_INTERACTIVE_WINDOWS`); set it to `false` to clear the `FLAG_RETRIEVE_INTERACTIVE_WINDOWS` that uiautomator 2.3.0 force-enables, restoring WebView native selectors. Defaults to today's behavior. (#3216)
 - Fix `AndroidNativeView.visibleBounds` always having zero height. (#3202)
 - Collect Chrome JavaScript coverage in the web runner when `patrol test --coverage` runs on the web platform.
 
