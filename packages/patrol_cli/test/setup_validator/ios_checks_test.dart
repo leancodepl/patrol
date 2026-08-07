@@ -372,8 +372,10 @@ void main() {
 
     String pbxprojWithPhases({required bool ordered}) {
       final refs = ordered
-          ? '$buildRef$sourcesRef$frameworksRef$embedRef'
-          : '$sourcesRef$buildRef$embedRef$frameworksRef';
+          // The docs-screenshot deviation (build after Sources) is fine;
+          // only embed-before-build is load-bearing.
+          ? '$sourcesRef$frameworksRef$buildRef$embedRef'
+          : '$sourcesRef$frameworksRef$embedRef$buildRef';
       return _pbxproj()
           .replaceFirst('$buildRef$embedRef', refs)
           .replaceFirst(
@@ -410,7 +412,7 @@ void main() {
         context(),
       ).firstWhere((finding) => finding.id == 'I7');
       expect(finding.severity, Severity.warning);
-      expect(finding.summary, contains('wrong order'));
+      expect(finding.summary, contains('embed_and_thin` runs before'));
     });
   });
 
@@ -620,9 +622,9 @@ void main() {
       ).firstWhere((finding) => finding.id == 'I12');
       expect(finding.severity, Severity.notice);
       expect(finding.summary, contains('Configuration Set'));
-      // The fixture has no Sources/Frameworks phases, so ordering is not
-      // checkable and stays a manual item.
-      expect(finding.summary, contains('ordered as in the docs'));
+      // Both script phases are identifiable, so ordering is verified and
+      // leaves the manual list.
+      expect(finding.summary, isNot(contains('ordered as in the docs')));
       // Sandboxing is set in the fixture, so it must not be listed.
       expect(finding.summary, isNot(contains('User Script Sandboxing')));
       // No shared schemes in the fixture, so parallelism goes manual.

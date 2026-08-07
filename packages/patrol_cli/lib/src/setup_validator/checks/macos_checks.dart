@@ -234,12 +234,12 @@ Finding? checkMacosAssembleBuildPhases(MacOSCheckContext ctx) {
         id: 'M4',
         severity: Severity.warning,
         summary:
-            'The macos_assemble Run Script phases of RunnerUITests are in '
-            'the wrong order: `macos_assemble build` must run before Compile '
-            'Sources and `macos_assemble embed` after Frameworks.',
+            'In RunnerUITests, `macos_assemble embed` runs before '
+            '`macos_assemble build` — embedding needs the artifacts the '
+            'build phase produces.',
         fix:
-            'Drag the Build Phases into the order shown in the docs '
-            'screenshot.',
+            'Drag `macos_assemble build` above `macos_assemble embed` '
+            '(the docs screenshot shows the recommended full order).',
         docsUrl: '$docsBaseUrl#macos-setup-order-build-phases',
       );
     }

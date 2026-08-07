@@ -292,12 +292,12 @@ Finding? checkXcodeBackendBuildPhases(IOSCheckContext ctx) {
         id: 'I7',
         severity: Severity.warning,
         summary:
-            'The xcode_backend Run Script phases of RunnerUITests are in the '
-            'wrong order: `xcode_backend build` must run before Compile '
-            'Sources and `xcode_backend embed_and_thin` after Frameworks.',
+            'In RunnerUITests, `xcode_backend embed_and_thin` runs before '
+            '`xcode_backend build` — embedding needs the artifacts the '
+            'build phase produces.',
         fix:
-            'Drag the Build Phases into the order shown in the docs '
-            'screenshot.',
+            'Drag `xcode_backend build` above `xcode_backend embed_and_thin` '
+            '(the docs screenshot shows the recommended full order).',
         docsUrl: '$docsBaseUrl#ios-setup-order-build-phases',
       );
     }

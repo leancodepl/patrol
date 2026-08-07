@@ -223,8 +223,10 @@ void main() {
 
     String pbxprojWithPhases({required bool ordered}) {
       final refs = ordered
-          ? '$buildRef$sourcesRef$frameworksRef$embedRef'
-          : '$sourcesRef$buildRef$embedRef$frameworksRef';
+          // The docs-screenshot deviation (build after Sources) is fine;
+          // only embed-before-build is load-bearing.
+          ? '$sourcesRef$frameworksRef$buildRef$embedRef'
+          : '$sourcesRef$frameworksRef$embedRef$buildRef';
       return _pbxproj
           .replaceFirst('$buildRef$embedRef', refs)
           .replaceFirst(
@@ -259,7 +261,7 @@ void main() {
         context(),
       ).firstWhere((finding) => finding.id == 'M4');
       expect(finding.severity, Severity.warning);
-      expect(finding.summary, contains('wrong order'));
+      expect(finding.summary, contains('embed` runs before'));
     });
   });
 

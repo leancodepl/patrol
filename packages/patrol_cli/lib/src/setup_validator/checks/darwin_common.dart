@@ -171,11 +171,17 @@ class DarwinCheckContext {
         .toList();
   }
 
-  /// Whether the two Flutter script phases on RunnerUITests are ordered as
-  /// the docs require: the build script before Compile Sources, the embed
-  /// script after Frameworks. The buildPhases array order is the phase order.
+  /// Whether the two Flutter script phases on RunnerUITests satisfy the one
+  /// load-bearing ordering constraint: the build script must run before the
+  /// embed script, because embedding needs the artifacts build produces.
+  /// The buildPhases array order is the phase order.
   ///
-  /// Null when any of the four phases cannot be identified — callers should
+  /// The docs screenshot additionally places build before Compile Sources,
+  /// but that part is style, not mechanics — the test bundle's own sources
+  /// don't depend on the Flutter artifacts, and projects deviating from the
+  /// screenshot demonstrably work.
+  ///
+  /// Null when either script phase cannot be identified — callers should
   /// then fall back to the manual-verify notice.
   bool? scriptPhasesOrdered({
     required RegExp buildScript,
@@ -195,36 +201,25 @@ class DarwinCheckContext {
 
     int? buildIndex;
     int? embedIndex;
-    int? sourcesIndex;
-    int? frameworksIndex;
     final ids = RegExp(
       r'\b[A-F0-9]{24}\b',
     ).allMatches(list).map((match) => match.group(0)!).toList();
     for (final (index, id) in ids.indexed) {
       final referenced = blockFor(id);
-      if (referenced == null) {
+      if (referenced == null || !referenced.contains('PBXShellScriptBuildPhase')) {
         continue;
       }
-      if (referenced.contains('PBXSourcesBuildPhase')) {
-        sourcesIndex = index;
-      } else if (referenced.contains('PBXFrameworksBuildPhase')) {
-        frameworksIndex = index;
-      } else if (referenced.contains('PBXShellScriptBuildPhase')) {
-        if (buildScript.hasMatch(referenced)) {
-          buildIndex = index;
-        } else if (embedScript.hasMatch(referenced)) {
-          embedIndex = index;
-        }
+      if (buildScript.hasMatch(referenced)) {
+        buildIndex = index;
+      } else if (embedScript.hasMatch(referenced)) {
+        embedIndex = index;
       }
     }
 
-    if (buildIndex == null ||
-        embedIndex == null ||
-        sourcesIndex == null ||
-        frameworksIndex == null) {
+    if (buildIndex == null || embedIndex == null) {
       return null;
     }
-    return buildIndex < sourcesIndex && embedIndex > frameworksIndex;
+    return buildIndex < embedIndex;
   }
 
   /// Whether FlutterGeneratedPluginSwiftPackage is linked to RunnerUITests.
