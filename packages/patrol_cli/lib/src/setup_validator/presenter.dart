@@ -2,10 +2,8 @@ import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/setup_validator/finding.dart';
 import 'package:patrol_cli/src/setup_validator/setup_validator.dart';
 
-/// Renders a [ValidationReport] for the terminal.
-///
-/// Kept separate from the validator so other output formats stay a new
-/// formatter, not a refactor.
+/// Renders a [ValidationReport] for the terminal. Kept separate from the
+/// validator so other output formats are a new formatter, not a refactor.
 class ValidationPresenter {
   ValidationPresenter({required Logger logger}) : _logger = logger;
 

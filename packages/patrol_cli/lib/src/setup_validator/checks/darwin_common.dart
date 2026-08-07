@@ -1,12 +1,8 @@
 import 'package:collection/collection.dart';
 import 'package:patrol_cli/src/setup_validator/project_probe.dart';
 
-/// Shared Xcode-project state for the iOS and macOS checks.
-///
-/// The project name is discovered, never assumed to be `Runner`
-/// (issue #1878). CocoaPods and SPM are detected independently by evidence,
-/// because hybrid projects exist (SPM enabled while a Podfile remains for
-/// not-yet-migrated plugins).
+/// Shared Xcode-project state for the iOS and macOS checks. The project name
+/// is discovered (#1878); CocoaPods and SPM are detected independently.
 class DarwinCheckContext {
   DarwinCheckContext({required this.probe, required this.platformDir}) {
     files = probe
@@ -33,11 +29,8 @@ class DarwinCheckContext {
     pbxproj = pbxprojPath == null ? null : probe.readFile(pbxprojPath);
 
     podfileExists = probe.fileExists('$platformDir/Podfile');
-    // Flutter's SPM integration consists of adding
-    // FlutterGeneratedPluginSwiftPackage to the Xcode project, so the pbxproj
-    // marker is both necessary and sufficient. A Package.resolved under
-    // xcshareddata/swiftpm is deliberately NOT a signal: stale leftovers of
-    // it exist in real CocoaPods projects and would mis-detect SPM.
+    // The pbxproj marker is necessary and sufficient; a stale
+    // swiftpm/Package.resolved must not count (real-world false positive).
     spmDetected =
         pbxproj?.contains('FlutterGeneratedPluginSwiftPackage') ?? false;
   }
@@ -113,12 +106,8 @@ class DarwinCheckContext {
     return names.isEmpty ? null : names;
   }
 
-  /// Deployment-target values grouped by owner: build configurations with
-  /// TEST_TARGET_NAME belong to RunnerUITests, the rest to the app targets.
-  ///
-  /// Apps legitimately vary the target across flavors (observed in the
-  /// field: dev 14.0, prod 15.0), so a mismatch is only suspicious when the
-  /// UITests configs use a value the app never uses.
+  /// Deployment targets grouped by owner: configs with TEST_TARGET_NAME are
+  /// RunnerUITests'. Apps legitimately vary the value across flavors.
   ({Set<String> uiTests, Set<String> app}) deploymentTargets(String variable) {
     final uiTests = <String>{};
     final app = <String>{};
@@ -151,12 +140,8 @@ class DarwinCheckContext {
     ).firstMatch(contents)?.group(0);
   }
 
-  /// Object blocks referenced from the RunnerUITests target block (one hop),
-  /// e.g. its build phases. Null when the target block cannot be isolated.
-  ///
-  /// Scoping probes to these blocks matters: the standard Runner target has
-  /// its own xcode_backend phases and package linkage, so a whole-pbxproj
-  /// probe would pass even when RunnerUITests is missing them.
+  /// Blocks referenced from the RunnerUITests target (one hop). Scoping
+  /// matters: the Runner target has its own phases and package linkage.
   List<String>? get runnerUITestsReferencedBlocks {
     final block = runnerUITestsTargetBlock;
     if (block == null) {
@@ -171,18 +156,8 @@ class DarwinCheckContext {
         .toList();
   }
 
-  /// Whether the two Flutter script phases on RunnerUITests satisfy the one
-  /// load-bearing ordering constraint: the build script must run before the
-  /// embed script, because embedding needs the artifacts build produces.
-  /// The buildPhases array order is the phase order.
-  ///
-  /// The docs screenshot additionally places build before Compile Sources,
-  /// but that part is style, not mechanics — the test bundle's own sources
-  /// don't depend on the Flutter artifacts, and projects deviating from the
-  /// screenshot demonstrably work.
-  ///
-  /// Null when either script phase cannot be identified — callers should
-  /// then fall back to the manual-verify notice.
+  /// True when the build script phase runs before the embed one — the only
+  /// load-bearing order; the docs' full layout is style. Null if unidentified.
   bool? scriptPhasesOrdered({
     required RegExp buildScript,
     required RegExp embedScript,
@@ -206,7 +181,8 @@ class DarwinCheckContext {
     ).allMatches(list).map((match) => match.group(0)!).toList();
     for (final (index, id) in ids.indexed) {
       final referenced = blockFor(id);
-      if (referenced == null || !referenced.contains('PBXShellScriptBuildPhase')) {
+      if (referenced == null ||
+          !referenced.contains('PBXShellScriptBuildPhase')) {
         continue;
       }
       if (buildScript.hasMatch(referenced)) {
@@ -222,13 +198,8 @@ class DarwinCheckContext {
     return buildIndex < embedIndex;
   }
 
-  /// Whether FlutterGeneratedPluginSwiftPackage is linked to RunnerUITests.
-  /// Null when the target block cannot be isolated.
-  ///
-  /// Xcode records the linkage either directly in the target block
-  /// (packageProductDependencies) or in a referenced PBXFrameworksBuildPhase
-  /// object — the layout leancode_flutter_template uses — so referenced
-  /// blocks are followed one hop.
+  /// Whether FlutterGeneratedPluginSwiftPackage is linked to RunnerUITests —
+  /// Xcode may record it in a referenced PBXFrameworksBuildPhase (one hop).
   bool? get spmLinkedToRunnerUITests {
     final block = runnerUITestsTargetBlock;
     if (block == null) {

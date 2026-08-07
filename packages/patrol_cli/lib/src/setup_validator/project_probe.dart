@@ -1,9 +1,7 @@
 import 'package:file/file.dart';
 
-/// Read-only access to the project's files for setup checks.
-///
-/// All paths are relative to the project root. Backed by `package:file`, so
-/// tests can inject a `MemoryFileSystem`.
+/// Read-only, project-root-relative file access for the setup checks;
+/// backed by `package:file` so tests can inject a `MemoryFileSystem`.
 class ProjectProbe {
   ProjectProbe({required Directory projectRoot})
     : _root = projectRoot,
@@ -33,9 +31,8 @@ class ProjectProbe {
     }
   }
 
-  /// Reads every file named [name] in the project root and its ancestor
-  /// directories, nearest first. Pub workspaces keep pubspec.lock (and often
-  /// .gitignore) at the workspace root, above the app's own directory.
+  /// Reads every file named [name] here and in ancestor directories, nearest
+  /// first — pub workspaces keep pubspec.lock at the workspace root.
   List<String> readFilesHereAndAbove(String name) {
     final contents = <String>[];
     var dir = _root.absolute;

@@ -212,10 +212,8 @@ final _macosAssembleEmbedScript = RegExp(
   r']*\s+embed',
 );
 
-/// M4: the two macos_assemble Run Script build phases exist on the
-/// RunnerUITests target and are ordered as in the docs. Scoped to that
-/// target's referenced phases — the standard Runner target has its own
-/// macos_assemble phases, so a global probe would always pass.
+/// M4: both macos_assemble phases exist on RunnerUITests (scoped — the
+/// Runner target has its own copies) and build runs before embed.
 Finding? checkMacosAssembleBuildPhases(MacOSCheckContext ctx) {
   final scripts = ctx.runnerUITestsScriptPhases;
   if (scripts == null) {
@@ -266,9 +264,8 @@ Finding? checkMacosAssembleBuildPhases(MacOSCheckContext ctx) {
 bool _plistBoolTrue(String plist, String key) =>
     RegExp('<key>${RegExp.escape(key)}</key>\\s*<true\\s*/>').hasMatch(plist);
 
-/// M5: with App Sandbox enabled, the Runner entitlements must allow network
-/// client and server connections — Patrol's test server needs them. Files
-/// without the sandbox key (sandbox off) have nothing to restrict.
+/// M5: with App Sandbox enabled the Runner entitlements must allow network
+/// client+server (Patrol's test server); sandbox-off profiles pass.
 Finding? checkRunnerEntitlements(MacOSCheckContext ctx) {
   for (final name in _entitlementsFiles) {
     final path = 'macos/Runner/$name';
@@ -381,9 +378,8 @@ Finding? checkMacosDeploymentTargets(MacOSCheckContext ctx) {
   );
 }
 
-/// M8: parallel execution breaks Patrol. Schemes carry it as a
-/// `parallelizable` attribute (absent = disabled); Xcode 26 test plans as a
-/// `"parallelizable": true` entry.
+/// M8: parallel execution breaks Patrol; carried by scheme attributes and
+/// Xcode 26 test plans (an absent attribute means disabled).
 Finding? checkMacosParallelExecution(MacOSCheckContext ctx) {
   final carriers = ctx.files.where(
     (path) => path.endsWith('.xcscheme') || path.endsWith('.xctestplan'),
@@ -428,9 +424,8 @@ Finding? checkMacosLaunchTestsFileDeleted(MacOSCheckContext ctx) {
 
 /// M8: steps that cannot be verified from files, one compact notice.
 Finding? macosManualVerificationNotice(MacOSCheckContext ctx) {
-  // Sandboxing is deliberately NOT listed when the setting is absent:
-  // xcodebuild's own default is NO; only Xcode's new-target template writes
-  // an explicit YES, which the sandboxing check catches.
+  // Sandboxing absent = xcodebuild's own default NO; only the explicit YES
+  // written by Xcode's new-target template matters, and M8 catches it.
   final hasParallelismCarriers = ctx.files.any(
     (path) => path.endsWith('.xcscheme') || path.endsWith('.xctestplan'),
   );
