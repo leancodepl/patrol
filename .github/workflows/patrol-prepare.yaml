@@ -239,6 +239,6 @@ jobs:
 
       - name: Score with pana
         continue-on-error: true
-        uses: leancodepl/mobile-tools/.github/actions/pana-score@68d925e42153f53e69d6c2501534f0c3c0a1a3be # pana-score-v1.1
+        uses: leancodepl/mobile-tools/.github/actions/pana-score@d2876bb0b3bcbcd769a6a6e2240a6f18f0a2c548 # unreleased, not yet tagged
         with:
           path: packages/patrol
