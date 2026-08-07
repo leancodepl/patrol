@@ -4,6 +4,7 @@ import 'package:glob/glob.dart';
 import 'package:patrol_cli/src/analytics/analytics.dart';
 import 'package:patrol_cli/src/android/android_test_backend.dart';
 import 'package:patrol_cli/src/base/extensions/core.dart';
+import 'package:patrol_cli/src/base/hints.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/commands/dart_define_utils.dart';
 import 'package:patrol_cli/src/compatibility_checker/compatibility_checker.dart';
@@ -507,7 +508,8 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       _logger
         ..err('$err')
         ..detail('$st')
-        ..err(defaultFailureMessage);
+        ..err(defaultFailureMessage)
+        ..warn(validateHint, tag: 'HINT');
       rethrow;
     }
   }
@@ -586,7 +588,8 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       _logger
         ..err('$err')
         ..detail('$st')
-        ..err(defaultFailureMessage);
+        ..err(defaultFailureMessage)
+        ..warn(validateHint, tag: 'HINT');
       allPassed = false;
     } finally {
       try {

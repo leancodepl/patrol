@@ -5,6 +5,7 @@
 
 ## Unreleased
 
+- Add `patrol validate` command that checks whether the project's Patrol setup is complete and says how to fix what's missing. Failed `patrol test`/`patrol build` runs and runs that discover no tests (`Total: 0`) now print a hint pointing at it. (#3217)
 - Add `--record-video` flag to `patrol test` and `patrol develop` to record a video per test case (Android and iOS simulators). (#2741)
 - Fix `patrol test`/`patrol develop` not reading logs from iOS simulators, by streaming the simulator's log via `simctl spawn`. (#3198)
 

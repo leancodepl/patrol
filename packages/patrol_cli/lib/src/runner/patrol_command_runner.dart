@@ -22,6 +22,7 @@ import 'package:patrol_cli/src/commands/devices.dart';
 import 'package:patrol_cli/src/commands/doctor.dart';
 import 'package:patrol_cli/src/commands/test.dart';
 import 'package:patrol_cli/src/commands/update.dart';
+import 'package:patrol_cli/src/commands/validate.dart';
 import 'package:patrol_cli/src/compatibility_checker/compatibility_checker.dart';
 import 'package:patrol_cli/src/compatibility_checker/version_compatibility.dart';
 import 'package:patrol_cli/src/coverage/coverage_tool.dart';
@@ -264,6 +265,14 @@ class PatrolCommandRunner extends CompletionCommandRunner<int> {
     addCommand(DoctorCommand(logger: _logger, platform: _platform));
 
     addCommand(
+      ValidateCommand(
+        projectRoot: rootDirectory,
+        platform: _platform,
+        logger: _logger,
+      ),
+    );
+
+    addCommand(
       UpdateCommand(
         pubUpdater: _pubUpdater,
         analytics: _analytics,
@@ -502,6 +511,9 @@ To install a specific version of Patrol CLI, run:
 
     if (commandName == 'update' ||
         commandName == 'doctor' ||
+        // validate reports incompatibility itself (S7); the banner would
+        // duplicate it and suggest replacing a path-activated CLI under test.
+        commandName == 'validate' ||
         commandName == HandleCompletionRequestCommand.commandName) {
       return false;
     }

@@ -5,6 +5,7 @@ import 'dart:io';
 
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:package_config/package_config.dart';
+import 'package:patrol_cli/src/base/hints.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
@@ -500,6 +501,9 @@ class WebTestBackend {
           patrolLogReader.stopTimer();
           // TODO: Don't print the summary in develop
           _logger.info(patrolLogReader.summary);
+          if (patrolLogReader.totalTests == 0) {
+            _logger.warn(zeroTestsHintWeb, tag: 'HINT');
+          }
 
           if (patrolLogReader.failedTestsCount > 0) {
             completer.completeError('Some tests failed.');
