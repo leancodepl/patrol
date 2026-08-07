@@ -129,12 +129,14 @@ Check out our video version of this tutorial on YouTube!
     <Info>
         **Native failure screenshots (Android/BrowserStack)**: Set
         `screenshot_on_failure: true` to make Patrol capture a native screenshot
-        of the failing screen when a test fails. This is intended for
-        BrowserStack App Automate, where Espresso `debugscreenshots` collects
-        images from `Downloads/screenshots/<class>/<method>/`. It is off by
-        default and currently applies to Android only (a no-op on iOS). It works
-        in the `patrol build android` APK as well as `patrol test`/`develop`.
-        You can also capture on demand from a test with `await $.takeScreenshot('tag')`.
+        of the failing screen when a test fails. Patrol only writes the PNG on
+        the device (to `Download/screenshots/<class>/<method>/`); a device farm
+        collects it. On BrowserStack App Automate you must enable the Espresso
+        `debugscreenshots: true` capability, which collects those images into the
+        Screenshots tab. It is off by default and currently applies to Android
+        only (a no-op on iOS). It works in the `patrol build android` APK as well
+        as `patrol test`/`develop`. You can also capture on demand from a test
+        with `await $.takeScreenshot('tag')`.
 
         `url_safe_test_names: true` sanitizes the reported Android JUnit test
         names (`[^A-Za-z0-9._-]` → `_`) while keeping the original names for

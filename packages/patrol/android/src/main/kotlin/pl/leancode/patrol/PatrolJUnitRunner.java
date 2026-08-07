@@ -96,10 +96,9 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
 
         // Record the JUnit test class so native screenshots are written to the
         // path BrowserStack scans: Downloads/screenshots/<className>/<methodName>/.
-        Package activityPackage = activityClass.getPackage();
-        String appPackage = activityPackage != null
-                ? activityPackage.getName()
-                : instrumentation.getTargetContext().getPackageName();
+        // Use the app-under-test package (not the activity's, which may be a
+        // framework class such as FlutterActivity) as the MainActivityTest package.
+        String appPackage = instrumentation.getTargetContext().getPackageName();
         Automator.Companion.getInstance().setTestClassName(appPackage + ".MainActivityTest");
 
         PatrolServer patrolServer = new PatrolServer();

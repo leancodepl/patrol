@@ -157,8 +157,11 @@ class Automator private constructor() {
                 dir.mkdirs()
             }
 
+            // `tag` is public API input; sanitize it so a value with '/' (or
+            // other path chars) can't break out of the target directory.
+            val safeTag = tag.replace(Regex("[^A-Za-z0-9._-]"), "_")
             val bitmap = Screenshot.capture().bitmap
-            val file = File(dir, "${System.currentTimeMillis()}_$tag.png")
+            val file = File(dir, "${System.currentTimeMillis()}_$safeTag.png")
             FileOutputStream(file).use { out ->
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
             }
