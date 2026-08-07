@@ -31,12 +31,8 @@ class ValidationReport {
   bool get hasErrors => countOf(Severity.error) > 0;
 }
 
-/// Validates a Flutter project's Patrol setup against the setup docs.
-///
-/// Checks probe for characteristic markers; a missing marker is an Error,
-/// presence passes silently — the validator detects omission, it does not
-/// prove correctness. Platforms declared under `patrol:` in pubspec.yaml are validated
-/// strictly; merely present platform directories get one actionable Notice.
+/// Validates the project's Patrol setup against the setup docs: a missing
+/// marker is an Error, presence passes silently (detects omission only).
 class SetupValidator {
   SetupValidator({
     required Directory projectRoot,
@@ -64,8 +60,7 @@ class SetupValidator {
 
     if (ctx.isAddToAppModule) {
       // The documented setup targets standalone apps; erroring here would
-      // send add-to-app users down the wrong path (found on an add2app
-      // module during field-testing).
+      // send add-to-app users down the wrong path.
       return const ValidationReport(
         sections: [
           ValidationSection(

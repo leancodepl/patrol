@@ -3,11 +3,8 @@ import 'dart:io' as io;
 import 'package:patrol_cli/src/setup_validator/finding.dart';
 import 'package:platform/platform.dart';
 
-/// Machine-level tooling checks, reusing what `patrol doctor` verifies but
-/// expressed as [Finding]s and scoped to the platforms the project declares.
-///
-/// Missing tooling for a declared platform is an Error; everything else is
-/// a Notice.
+/// Doctor-style tooling checks as [Finding]s: missing tooling for a declared
+/// platform is an Error, everything else a Notice.
 class EnvironmentChecks {
   EnvironmentChecks({
     required Platform platform,

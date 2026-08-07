@@ -1,8 +1,5 @@
-/// Failure-time pointers to `patrol validate`.
-///
-/// `patrol test` and `patrol build` never run setup validation themselves —
-/// on failure signals they only print these hints. A heuristic validator
-/// blocking every build on a false positive would erode trust in the CLI.
+/// Failure-time pointers to `patrol validate` — test/build never validate
+/// themselves; a heuristic preflight blocking builds would erode trust.
 library;
 
 /// Printed after a failed build or test run.

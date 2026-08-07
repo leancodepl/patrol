@@ -97,9 +97,8 @@ Finding? checkInstrumentationTestClass(AndroidCheckContext ctx) {
   );
 }
 
-/// A2: the test class `package` matches its directory path (a Java
-/// requirement) and the applicationId (Warning-grade: flavors with
-/// applicationIdSuffix legitimately differ).
+/// A2: the test class package must mirror its directory; matching the
+/// applicationId is soft — applicationIdSuffix flavors legitimately differ.
 Finding? checkTestClassPackage(AndroidCheckContext ctx) {
   for (final path in ctx.patrolTestClasses) {
     final contents = ctx.probe.readFile(path);
@@ -151,10 +150,8 @@ Finding? checkTestClassPackage(AndroidCheckContext ctx) {
   return null;
 }
 
-/// A3: testInstrumentationRunner points at a Patrol runner. The probe is the
-/// package prefix, not the exact class, so device-farm variants
-/// (BrowserstackPatrolJUnitRunner, LambdaTestPatrolJUnitRunner — issue #2493)
-/// pass too.
+/// A3: the runner probe is the pl.leancode.patrol. prefix, so device-farm
+/// runner variants pass too (#2493).
 Finding? checkInstrumentationRunner(AndroidCheckContext ctx) {
   if (ctx.gradleContents!.contains('pl.leancode.patrol.')) {
     return null;
@@ -229,10 +226,8 @@ Finding? checkOrchestratorDependency(AndroidCheckContext ctx) {
   );
 }
 
-/// A7: minification looks enabled and the ProGuard rules don't keep the
-/// Patrol packages — release-mode runs (e.g. device farms) then fail with
-/// ClassNotFoundException (issue #1542). Silent when no minification marker
-/// is found or when a proguard file already keeps `pl.leancode.patrol`.
+/// A7: minification without Patrol keep rules crashes release-mode runs
+/// (#1542); silent once a .pro file keeps `pl.leancode.patrol`.
 Finding? checkMinificationAdvice(AndroidCheckContext ctx) {
   final contents = ctx.gradleContents!;
   final minifyEnabled =

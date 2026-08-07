@@ -10,10 +10,8 @@ const setupDocsUrl = '$docsBaseUrl#setup';
 const compatibilityTableUrl =
     'https://patrol.leancode.co/documentation/compatibility-table';
 
-/// Parsed pubspec state shared by the checks. Absence probes only —
-/// presence is a silent pass, so we never validate values. Malformed shapes
-/// (scalar root, `patrol: enabled`, non-string values) are treated as absent
-/// so they surface as findings instead of crashing the command.
+/// Parsed pubspec state for the checks. Malformed shapes (scalar root,
+/// non-string values) read as absent so they surface as findings, not crashes.
 class SharedCheckContext {
   SharedCheckContext({required this.probe}) {
     final contents = probe.readFile('pubspec.yaml');
@@ -143,11 +141,8 @@ bool _platformHas(Map<dynamic, dynamic> patrol, String platform, String key) {
   return section is Map && section[key] is String;
 }
 
-/// S2 (soft part): app_name is in the docs' pubspec snippet, but tests run
-/// without it — it feeds the PATROL_*_APP_NAME dart-defines, which can also
-/// come from --app-name, a manual --dart-define, or an in-code
-/// AutomatorConfig. Only native interactions that use the app's display name
-/// (e.g. permission dialogs) need it, so this is a Warning, not an Error.
+/// S2 (soft): app_name only feeds the PATROL_*_APP_NAME dart-defines, which
+/// can equally come from --app-name/dart-define/in-code config — a Warning.
 Finding? checkAppName(SharedCheckContext ctx) {
   final patrol = ctx.patrolSection;
   if (patrol == null) {

@@ -6,7 +6,7 @@ const faqDocsUrl = 'https://patrol.leancode.co/documentation#faq';
 const physicalIosDocsUrl =
     'https://patrol.leancode.co/documentation/physical-ios-devices-setup';
 
-/// iOS project state shared by checks I0-I12.
+/// iOS project state shared by checks I0-I13.
 class IOSCheckContext extends DarwinCheckContext {
   IOSCheckContext({required super.probe}) : super(platformDir: 'ios');
 }
@@ -46,10 +46,8 @@ List<Finding> iosFindings(IOSCheckContext ctx) {
   ].nonNulls.toList();
 }
 
-/// I13: RunnerUITests has a build configuration matching each of Runner's —
-/// the docs' "same Configuration Set" requirement. With flavors, a missing
-/// RunnerUITests configuration makes xcodebuild fall back to a default one
-/// and the test target builds with the wrong settings.
+/// I13: RunnerUITests must have a build configuration matching each of
+/// Runner's — otherwise flavored xcodebuild falls back to a default config.
 Finding? checkConfigurationSets(IOSCheckContext ctx) {
   final runner = ctx.configurationNames('Runner');
   final uiTests = ctx.configurationNames('RunnerUITests');
@@ -177,8 +175,7 @@ Finding? checkLaunchTestsFileDeleted(IOSCheckContext ctx) {
 }
 
 /// I4: with CocoaPods present, the Podfile embeds RunnerUITests with
-/// `inherit! :complete`. Error also in hybrid projects — the known-good
-/// hybrid template config includes this block.
+/// `inherit! :complete` — required also in hybrid projects.
 Finding? checkPodfileUITestsTarget(IOSCheckContext ctx) {
   if (!ctx.podfileExists) {
     return null;
@@ -269,11 +266,8 @@ final _xcodeBackendBuildScript = RegExp(
 );
 final _xcodeBackendEmbedScript = RegExp('embed_and_thin');
 
-/// I7: the two xcode_backend Run Script build phases exist on the
-/// RunnerUITests target and are ordered as in the docs (build before Compile
-/// Sources, embed_and_thin after Frameworks). Scoped to that target's
-/// referenced phases — the standard Runner target has its own xcode_backend
-/// phases, so a global probe would always pass.
+/// I7: both xcode_backend phases exist on RunnerUITests (scoped — the Runner
+/// target has its own copies) and build runs before embed_and_thin.
 Finding? checkXcodeBackendBuildPhases(IOSCheckContext ctx) {
   final scripts = ctx.runnerUITestsScriptPhases;
   if (scripts == null) {
@@ -337,9 +331,8 @@ Finding? checkUserScriptSandboxing(IOSCheckContext ctx) {
   );
 }
 
-/// I9: the RunnerUITests deployment target should match Runner's. Apps
-/// legitimately vary the value across flavors, so only a UITests value the
-/// app never uses is reported.
+/// I9: only a UITests deployment target the app never uses is reported —
+/// apps legitimately vary the value across flavors.
 Finding? checkDeploymentTargets(IOSCheckContext ctx) {
   final targets = ctx.deploymentTargets('IPHONEOS_DEPLOYMENT_TARGET');
   if (targets.uiTests.isEmpty ||
@@ -362,9 +355,8 @@ Finding? checkDeploymentTargets(IOSCheckContext ctx) {
   );
 }
 
-/// I10: parallel execution breaks Patrol. Schemes carry it as a
-/// `parallelizable` attribute (absent = disabled); Xcode 26 test plans as a
-/// `"parallelizable": true` entry.
+/// I10: parallel execution breaks Patrol; carried by scheme attributes and
+/// Xcode 26 test plans (an absent attribute means disabled).
 Finding? checkParallelExecution(IOSCheckContext ctx) {
   final carriers = ctx.files.where(
     (path) => path.endsWith('.xcscheme') || path.endsWith('.xctestplan'),
@@ -389,9 +381,8 @@ Finding? checkParallelExecution(IOSCheckContext ctx) {
   return null;
 }
 
-/// I11: a committed FLUTTER_TARGET override is a known cause of "wrong app
-/// opens" / "waits for idle forever" (docs FAQ). The generated
-/// Flutter/Generated.xcconfig legitimately contains it and is skipped.
+/// I11: a committed FLUTTER_TARGET override makes runs open the plain app
+/// (docs FAQ); the generated Generated.xcconfig legitimately contains it.
 Finding? checkStrayFlutterTarget(IOSCheckContext ctx) {
   final offenders = <String>[
     for (final path in ctx.files)
@@ -420,10 +411,8 @@ Finding? checkStrayFlutterTarget(IOSCheckContext ctx) {
 
 /// I12: steps that cannot be verified from files, kept to one compact notice.
 Finding? manualVerificationNotice(IOSCheckContext ctx) {
-  // Sandboxing is deliberately NOT listed when the setting is absent:
-  // xcodebuild's own default is NO (verified empirically with
-  // -showBuildSettings); only Xcode's new-target template writes an explicit
-  // YES, which I8 catches.
+  // Sandboxing absent = xcodebuild's own default NO; only the explicit YES
+  // written by Xcode's new-target template matters, and I8 catches it.
   final hasParallelismCarriers = ctx.files.any(
     (path) => path.endsWith('.xcscheme') || path.endsWith('.xctestplan'),
   );
