@@ -5,7 +5,7 @@
 
 ## Unreleased
 
-- Add `patrol validate` command that checks the project for missing Patrol setup: environment tooling, the pubspec configuration, the Android Gradle setup and test class, and the iOS/macOS Xcode projects — CocoaPods/SPM/hybrid integration, the xcode_backend/macos_assemble build phases and their order, Configuration Sets, deployment targets, parallel execution (schemes and Xcode 26 test plans), script sandboxing, and macOS entitlements. Every finding says how to fix the problem and links the exact setup-docs step; add-to-app modules are recognized and skipped. Failed `patrol test`/`patrol build` runs and runs that discover no tests (`Total: 0`) now print a hint pointing at the command. (#3217)
+- Add `patrol validate` command that checks whether the project's Patrol setup is complete and says how to fix what's missing. Failed `patrol test`/`patrol build` runs and runs that discover no tests (`Total: 0`) now print a hint pointing at it. (#3217)
 - Add `--record-video` flag to `patrol test` and `patrol develop` to record a video per test case (Android and iOS simulators). (#2741)
 - Fix `patrol test`/`patrol develop` not reading logs from iOS simulators, by streaming the simulator's log via `simctl spawn`. (#3198)
 
