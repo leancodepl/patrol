@@ -37,6 +37,7 @@ This document describes all GitHub Actions workflows used in the Patrol project.
 | Workflow name | Triggered | Dart/Flutter version | Description |
 |--------------|---------|---------------------|-------------|
 | [patrol prepare][patrol-prepare] | PR (on patrol package changes), manual | Flutter 3.38.x (stable) | Runs CI checks for the `patrol` package: Android builds (Windows/Linux), Darwin code formatting (swift-format, clang-format), Flutter tests, analyzer, formatter, and schema regeneration. |
+| [patrol SPM app build][patrol-spm-app-build] | PR (on `packages/patrol/darwin/**` or this workflow), manual | Flutter 3.38.x (stable) | Regression guard for [#3177](https://github.com/leancodepl/patrol/issues/3177): builds a stock `flutter create` app with `patrol` as a path `dev_dependency` and SPM enabled on iOS and macOS — no Patrol test setup. Asserts patrol resolved via SPM, not CocoaPods. |
 | [patrol_cli prepare][patrol_cli-prepare] | PR (on patrol_cli changes), manual | Flutter 3.38.x (stable) | Runs CI checks for `patrol_cli` package on Ubuntu and Windows: builds executable, runs tests, analyzer, formatter, and pub publish dry-run. |
 | [patrol_finders prepare][patrol_finders-prepare] | PR (on patrol_finders changes), manual | Flutter 3.38.x (stable) | Runs CI checks for `patrol_finders` package: tests, analyzer, formatter, and pub publish dry-run. |
 | [patrol_log prepare][patrol_log-prepare] | PR (on patrol_log changes), manual | Flutter 3.38.x (stable) | Runs CI checks for `patrol_log` package: analyzer, formatter, and pub publish dry-run. |
@@ -161,6 +162,7 @@ A test is selected if it matches ALL conditions in the boolean expression (AND o
 [test-macos]: workflows/test-macos.yaml
 [test-patrol-develop]: workflows/test-patrol-develop.yaml
 [patrol-prepare]: workflows/patrol-prepare.yaml
+[patrol-spm-app-build]: workflows/patrol-spm-app-build.yaml
 [patrol_cli-prepare]: workflows/patrol_cli-prepare.yaml
 [patrol_finders-prepare]: workflows/patrol_finders-prepare.yaml
 [patrol_log-prepare]: workflows/patrol_log-prepare.yaml

@@ -1,4 +1,0 @@
-module patrol {
-  umbrella header "patrol.h"
-  export *
-}

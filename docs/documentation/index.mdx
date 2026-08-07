@@ -400,11 +400,17 @@ Check out our video version of this tutorial on YouTube!
           @import ObjectiveC.runtime;
 
           #if !defined(PATROL_INTEGRATION_TEST_IOS_RUNNER)
-          #import "PatrolIntegrationTestIosRunner.h"
+          @import PatrolRunner;
           #endif
 
           PATROL_INTEGRATION_TEST_IOS_RUNNER(RunnerUITests)
           ```
+
+          <Info>
+            The `PatrolRunner` import is what makes this work under Swift Package Manager,
+            where the Objective-C runner macros live in their own module. Under CocoaPods
+            `@import patrol;` already defines the macro, so the guard skips it.
+          </Info>
 
           <Tabs
             defaultIndex={0}
@@ -556,11 +562,17 @@ Check out our video version of this tutorial on YouTube!
           @import ObjectiveC.runtime;
 
           #if !defined(PATROL_INTEGRATION_TEST_MACOS_RUNNER)
-          #import "PatrolIntegrationTestMacosRunner.h"
+          @import PatrolRunner;
           #endif
 
           PATROL_INTEGRATION_TEST_MACOS_RUNNER(RunnerUITests)
           ```
+
+          <Info>
+            The `PatrolRunner` import is what makes this work under Swift Package Manager,
+            where the Objective-C runner macros live in their own module. Under CocoaPods
+            `@import patrol;` already defines the macro, so the guard skips it.
+          </Info>
 
           <Tabs
             defaultIndex={0}
