@@ -3,7 +3,7 @@ import 'dart:convert' show LineSplitter;
 import 'dart:io' show Process;
 
 import 'package:adb/adb.dart';
-import 'package:dispose_scope/dispose_scope.dart';
+import 'package:dispose_scope/dispose_scope.dart' hide ProcessDisposed;
 import 'package:file/file.dart';
 import 'package:meta/meta.dart';
 import 'package:patrol_cli/src/android/android_test_codegen.dart';
@@ -821,6 +821,47 @@ class AndroidTestBackend {
     await _adb.uninstall(appId, device: device.id);
     _logger.detail('Uninstalling $appId.test from ${device.name}');
     await _adb.uninstall('$appId.test', device: device.id);
+  }
+
+  /// Stops [appId] and its instrumentation on [device].
+  ///
+  /// The Gradle Test Platform process waits for `am instrument` to return, and
+  /// in develop mode the instrumentation stays alive on purpose so Hot Restart
+  /// has something to restart. Quitting therefore has to end it explicitly, or
+  /// that process outlives the session - on Windows holding `utp.0.log.lck` and
+  /// failing the next `connectedAndroidTest`. (#3209)
+  Future<void> stopInstrumentation(String appId, Device device) async {
+    // Resolved rather than assumed to be `$appId.test`, so a custom
+    // testApplicationId is stopped too - otherwise the instrumentation keeps
+    // running in exactly the setups that need this most. Never let the lookup
+    // itself abort the shutdown; the conventional name is a good enough guess.
+    var testPackageName = '$appId.test';
+    try {
+      (testPackageName, _) = await _resolveInstrumentationComponent(
+        appId,
+        device,
+      );
+    } catch (err) {
+      _logger.detail('Could not resolve the instrumentation package: $err');
+    }
+
+    for (final packageName in {appId, testPackageName}) {
+      _logger.detail('Stopping $packageName on ${device.name}');
+      try {
+        await _processManager.run([
+          'adb',
+          '-s',
+          device.id,
+          'shell',
+          'am',
+          'force-stop',
+          packageName,
+        ], runInShell: true);
+      } catch (err) {
+        // Best effort - the app or the device may already be gone.
+        _logger.detail('Failed to stop $packageName: $err');
+      }
+    }
   }
 
   /// Generates the Android test report path based on build mode and flavor.

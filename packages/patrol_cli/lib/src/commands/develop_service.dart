@@ -372,6 +372,9 @@ class DevelopService {
   }) async {
     Future<void> Function() action;
     Future<void> Function()? finalizer;
+
+    // Ends what is still running on the device when the user quits. (#3209)
+    Future<void> Function()? stopOnDevice;
     String? appId;
 
     switch (device.targetPlatform) {
@@ -389,8 +392,12 @@ class DevelopService {
           videoConfig: videoConfig,
         );
         final package = android.packageName;
-        if (package != null && uninstall) {
-          finalizer = () => _androidTestBackend.uninstall(package, device);
+        if (package != null) {
+          stopOnDevice = () =>
+              _androidTestBackend.stopInstrumentation(package, device);
+          if (uninstall) {
+            finalizer = () => _androidTestBackend.uninstall(package, device);
+          }
         }
       case TargetPlatform.macOS:
         appId = macos.bundleId;
@@ -463,7 +470,12 @@ class DevelopService {
           openDevtools: openDevtools,
           flavor: flutterOpts.flavor,
           attachUsingUrl: device.targetPlatform == TargetPlatform.macOS,
-          onQuit: onQuitCleanup,
+          // Stop the device side first, so the processes running the tests can
+          // finish on their own before the backend is torn down.
+          onQuit: () async {
+            await onQuitCleanup();
+            await stopOnDevice?.call();
+          },
         );
       }
 
