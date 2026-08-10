@@ -6,6 +6,7 @@
 ## Unreleased
 
 - Add `--record-video` flag to `patrol test` and `patrol develop` to record a video per test case (Android and iOS simulators). (#2741)
+- Fix `patrol test`/`patrol develop` not reading logs from iOS simulators, by streaming the simulator's log via `simctl spawn`. (#3198)
 
 ## 4.6.0
 
@@ -33,6 +34,7 @@
   - `--web-accept-downloads`
 - Convert `--web-headless` to a flag. Use `--web-headless`/`--no-web-headless` instead of `--web-headless true/false`. The old syntax still works, but is deprecated and will be removed in a future release. (#3155)
 - Fix `--web-*` options being silently overridden by a same-named variable already set in the host shell environment when running web tests. (#3155)
+- Add `patrol test --coverage` support for the web platform, producing the same `coverage/patrol_lcov.info` report as mobile. Requires a debug build (the default); Chromium only.
 
 ## 4.5.1
 

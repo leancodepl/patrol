@@ -1,6 +1,8 @@
 ## Unreleased
 
 - Add Marathon integration for running Patrol tests on Android and iOS simulators. See the [Marathon integration guide](https://patrol.leancode.co/documentation/integrations/marathon).
+- Fix `AndroidNativeView.visibleBounds` always having zero height. (#3202)
+- Collect Chrome JavaScript coverage in the web runner when `patrol test --coverage` runs on the web platform.
 
 ## 4.8.0
 
@@ -25,6 +27,7 @@
   - accept downloads
 - Add support for Patrol extensions. (#3160)
 - Bump ktor packages. (#3187)
+- Fix incorrect test description in the failure log entry when a test fails in `patrol develop` (hot restart) mode. (#3167)
 
 ## 4.7.1
 

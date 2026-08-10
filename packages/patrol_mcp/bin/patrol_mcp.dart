@@ -384,7 +384,10 @@ Future<int> _runStdio(McpServer server, PatrolSession patrolSession) async {
     await server.close(); // closes the transport too
   }
 
-  await shutdown().timeout(const Duration(seconds: 10), onTimeout: () => exit(0));
+  await shutdown().timeout(
+    const Duration(seconds: 10),
+    onTimeout: () => exit(0),
+  );
   logger.info('Stopped');
   return 0;
 }

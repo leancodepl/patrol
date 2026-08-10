@@ -7,7 +7,9 @@ import 'package:patrol_cli/src/base/extensions/core.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/commands/dart_define_utils.dart';
 import 'package:patrol_cli/src/compatibility_checker/compatibility_checker.dart';
+import 'package:patrol_cli/src/coverage/coverage_mode.dart';
 import 'package:patrol_cli/src/coverage/coverage_tool.dart';
+import 'package:patrol_cli/src/coverage/web_coverage_tool.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/crossplatform/video_recording_config.dart';
 import 'package:patrol_cli/src/dart_defines_reader.dart';
@@ -33,6 +35,7 @@ class TestCommand extends PatrolCommand {
     required MacOSTestBackend macOSTestBackend,
     required WebTestBackend webTestBackend,
     required CoverageTool coverageTool,
+    required WebCoverageTool webCoverageTool,
     required Analytics analytics,
     required Logger logger,
   }) : _deviceFinder = deviceFinder,
@@ -46,6 +49,7 @@ class TestCommand extends PatrolCommand {
        _macosTestBackend = macOSTestBackend,
        _webTestBackend = webTestBackend,
        _coverageTool = coverageTool,
+       _webCoverageTool = webCoverageTool,
        _analytics = analytics,
        _logger = logger {
     usesTargetOption();
@@ -87,6 +91,7 @@ class TestCommand extends PatrolCommand {
   final MacOSTestBackend _macosTestBackend;
   final WebTestBackend _webTestBackend;
   final CoverageTool _coverageTool;
+  final WebCoverageTool _webCoverageTool;
 
   final Analytics _analytics;
   final Logger _logger;
@@ -222,9 +227,35 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
     final uninstall = boolArg('uninstall');
     final noTreeShakeIcons = boolArg('no-tree-shake-icons');
     final coverageEnabled = boolArg('coverage');
+
+    final coverageMode = switch ((coverageEnabled, isWeb)) {
+      (false, _) => CoverageMode.none,
+      (true, false) => CoverageMode.vm,
+      (true, true) => CoverageMode.web,
+    };
+
+    if (coverageMode != CoverageMode.none && buildMode.name != 'debug') {
+      _logger.err(
+        'Coverage requires a debug build. '
+        'Please remove the --${buildMode.name} flag.',
+      );
+      return 1;
+    }
+
     final coverageWorkspace = boolArg('coverage-workspace');
     final ignoreGlobs = stringsArg('coverage-ignore').map(Glob.new).toSet();
     final coveragePackagesRegExps = stringsArg('coverage-package');
+    final coveragePackages = switch ((
+      coveragePackagesRegExps.length,
+      coverageWorkspace,
+    )) {
+      // No --coverage-package and no --coverage-workspace: fall back to
+      // the current package only.
+      (0, false) => {RegExp(config.flutterPackageName)},
+      // --coverage-workspace alone: rely entirely on workspace members.
+      (0, true) => const <RegExp>{},
+      _ => coveragePackagesRegExps.map(RegExp.new).toSet(),
+    };
 
     final customDartDefines = {
       ..._dartDefinesReader.fromFile(),
@@ -244,7 +275,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
         'PATROL_TEST_SERVER_PORT': super.testServerPort.toString(),
         'PATROL_APP_SERVER_PORT': super.appServerPort.toString(),
       },
-      'COVERAGE_ENABLED': coverageEnabled.toString(),
+      'COVERAGE_ENABLED': (coverageMode == CoverageMode.vm).toString(),
     }.withNullsRemoved();
 
     final dartDefines = {...customDartDefines, ...internalDartDefines};
@@ -318,6 +349,10 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       testServerPort: super.testServerPort,
     );
 
+    final webCoverageDataDir = coverageMode == CoverageMode.web
+        ? (await _webCoverageTool.prepareDataDirectory()).path
+        : null;
+
     final webOpts = WebAppOptions(
       flutter: flutterOpts,
       resultsDir: stringArg('web-results-dir'),
@@ -358,6 +393,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       trace: stringArg('web-trace'),
       storageState: stringArg('web-storage-state'),
       acceptDownloads: optionalBoolArg('web-accept-downloads'),
+      coverageDir: webCoverageDataDir,
     );
 
     // No need to build web app for testing. It's done in the execute method.
@@ -367,7 +403,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
 
     await _preExecute(androidOpts, iosOpts, macosOpts, device, uninstall);
 
-    if (coverageEnabled) {
+    if (coverageMode == CoverageMode.vm) {
       unawaited(
         _coverageTool.run(
           device: device,
@@ -376,17 +412,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
           ignoreGlobs: ignoreGlobs,
           flutterCommand: flutterCommand,
           includeWorkspacePackages: coverageWorkspace,
-          packagesRegExps: switch ((
-            coveragePackagesRegExps.length,
-            coverageWorkspace,
-          )) {
-            // No --coverage-package and no --coverage-workspace: fall back to
-            // the current package only.
-            (0, false) => {RegExp(config.flutterPackageName)},
-            // --coverage-workspace alone: rely entirely on workspace members.
-            (0, true) => const <RegExp>{},
-            _ => coveragePackagesRegExps.map(RegExp.new).toSet(),
-          },
+          packagesRegExps: coveragePackages,
         ),
       );
     }
@@ -404,6 +430,18 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       clearTestSteps: boolArg('clear-test-steps'),
       testDirectory: testDirectory,
     );
+
+    // Converted after the run, once the runner has written the raw JS coverage.
+    // _execute signals failures via its return value, so failed runs still
+    // produce a report.
+    if (coverageMode == CoverageMode.web) {
+      await _webCoverageTool.run(
+        flutterPackageName: config.flutterPackageName,
+        packagesRegExps: coveragePackages,
+        includeWorkspacePackages: coverageWorkspace,
+        ignoreGlobs: ignoreGlobs,
+      );
+    }
 
     return allPassed ? 0 : 1;
   }
@@ -564,7 +602,13 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
 
   void useCoverageOptions() {
     argParser
-      ..addFlag('coverage', help: 'Generate coverage.')
+      ..addFlag(
+        'coverage',
+        help:
+            'Generate coverage. On the web, reports only covered/uncovered '
+            'lines, without the per-line hit counts available on other '
+            'platforms.',
+      )
       ..addFlag(
         'coverage-workspace',
         help:
