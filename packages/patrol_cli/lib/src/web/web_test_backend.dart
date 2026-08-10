@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'dart:io' as io;
 import 'dart:io';
 
-import 'package:dispose_scope/dispose_scope.dart';
+import 'package:dispose_scope/dispose_scope.dart' hide ProcessDisposed;
 import 'package:package_config/package_config.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
