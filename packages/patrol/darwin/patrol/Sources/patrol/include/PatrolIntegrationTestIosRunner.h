@@ -60,11 +60,12 @@
                                                                                                                     \
   +(BOOL)instancesRespondToSelector : (SEL)aSelector {                                                              \
     NSString *name = NSStringFromSelector(aSelector);                                                               \
-    /* Patrol Dart test selectors contain spaces, '+', or escaped literal '+' (__PLUS__). */                        \
+0    /* Accumulate Marathon/dart selectors (spaces, '+', or escaped '+'). */                                        \
     if ([name containsString:@" "] || [name containsString:@"+"] || [name containsString:@"__PLUS__"]) {            \
       [self addSelectedTestName:name];                                                                              \
-      [self defaultTestSuite]; /* calls testInvocations to register the method */                                   \
     }                                                                                                               \
+    /* Always register dynamic methods - including develop keep-alive. */                                           \
+    [self defaultTestSuite];
     [super instancesRespondToSelector:aSelector];                                                                   \
     return true;                                                                                                    \
   }                                                                                                                 \
