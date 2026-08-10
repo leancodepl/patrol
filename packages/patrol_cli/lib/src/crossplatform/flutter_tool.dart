@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io' as io;
 import 'dart:io' show exit;
 
-import 'package:dispose_scope/dispose_scope.dart';
+import 'package:dispose_scope/dispose_scope.dart' hide ProcessDisposed;
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' show basename;
 import 'package:patrol_cli/src/base/logger.dart';
