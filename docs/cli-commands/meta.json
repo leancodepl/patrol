@@ -6,6 +6,7 @@
     "index",
     "test",
     "build",
+    "validate",
     "doctor",
     "update",
     "devices"

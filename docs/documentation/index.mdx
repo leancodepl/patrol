@@ -679,6 +679,23 @@ Check out our video version of this tutorial on YouTube!
     </Accordions>
     </Step>
 
+    <Step id="verify-setup">
+    Verify your setup
+
+    Run the following command in your project root:
+
+    ```
+    patrol validate
+    ```
+
+    It checks your environment tooling and the project files against the
+    setup steps above — for every platform declared in the `patrol` section
+    of your `pubspec.yaml` — and for anything missing it prints what's wrong,
+    how to fix it, and a link to the relevant docs step. Some Xcode UI
+    settings can't be read from files; the command lists them as items to
+    verify manually.
+    </Step>
+
     <Step id="create-integration-test">
     Create a simple integration test
 
@@ -739,8 +756,9 @@ Check out our video version of this tutorial on YouTube!
         📊 Report: <some path>
         ⏱️  Duration: 4s
         ```
-    If something went wrong, please proceed to the [FAQ] section which might
-    contain an answer to your issue.
+    If something went wrong, run `patrol validate` to check your setup for
+    missing configuration, and see the [FAQ] section which might contain an
+    answer to your issue.
     </Step>
 </Steps>
 
@@ -796,8 +814,10 @@ Check out our video version of this tutorial on YouTube!
 <Accordions>
 
 <Accordion id="faq-test-bundle-error" title="Testing fails with error inside 'patrol_test/test_bundle.dart'">
-  The reason is probably a mismatch of `patrol` and `patrol_cli` versions. Go to [Compatibility table]
-  and make sure that the versions of `patrol` and `patrol_cli` you are using are compatible.
+  The reason is probably a mismatch of `patrol` and `patrol_cli` versions.
+  Run `patrol validate` (it checks the compatibility for you), or go to
+  [Compatibility table] and make sure that the versions of `patrol` and
+  `patrol_cli` you are using are compatible.
 </Accordion>
 
 <Accordion id="faq-app-not-running-in-test" title="'example_test.dart' passed but I can't get my application to run within the patrol test.">

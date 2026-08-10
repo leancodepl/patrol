@@ -4,6 +4,7 @@ import 'package:args/command_runner.dart';
 import 'package:file/memory.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:path/path.dart' show join;
+import 'package:patrol_cli/src/base/hints.dart';
 import 'package:patrol_cli/src/commands/build_android.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
@@ -523,6 +524,16 @@ void main() {
         await expectLater(runCommand, throwsA(isA<Exception>()));
 
         verify(() => mockLogger.err('Exception: $error')).called(1);
+      });
+
+      test('points at patrol validate when build fails', () async {
+        when(
+          () => mockAndroidTestBackend.build(any()),
+        ).thenThrow(Exception('Build process failed'));
+
+        await expectLater(runCommand, throwsA(isA<Exception>()));
+
+        verify(() => mockLogger.warn(validateHint, tag: 'HINT')).called(1);
       });
     });
 
