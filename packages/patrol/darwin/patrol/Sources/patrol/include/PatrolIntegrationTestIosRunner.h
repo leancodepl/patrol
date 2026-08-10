@@ -60,12 +60,12 @@
                                                                                                                     \
   +(BOOL)instancesRespondToSelector : (SEL)aSelector {                                                              \
     NSString *name = NSStringFromSelector(aSelector);                                                               \
-0    /* Accumulate Marathon/dart selectors (spaces, '+', or escaped '+'). */                                        \
+    /* Accumulate Marathon/dart selectors (spaces, '+', or escaped '+'). */                                         \
     if ([name containsString:@" "] || [name containsString:@"+"] || [name containsString:@"__PLUS__"]) {            \
       [self addSelectedTestName:name];                                                                              \
     }                                                                                                               \
     /* Always register dynamic methods - including develop keep-alive. */                                           \
-    [self defaultTestSuite];
+    [self defaultTestSuite];                                                                                        \
     [super instancesRespondToSelector:aSelector];                                                                   \
     return true;                                                                                                    \
   }                                                                                                                 \
