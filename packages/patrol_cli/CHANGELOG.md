@@ -1,13 +1,13 @@
-## 4.6.1
-
-- Fix `patrol develop` printing "You must specify a --flavor option" on iOS/macOS projects with schemes, by passing the flavor to `flutter attach`.
-- Fail fast with a clear error instead of hanging on gradlew when the Android SDK can't be located (`sdk.dir` missing from `android/local.properties` after the config-only build). (#3168)
-
-## Unreleased
+## 4.7.0-dev.1
 
 - Add `patrol validate` command that checks whether the project's Patrol setup is complete and says how to fix what's missing. Failed `patrol test`/`patrol build` runs and runs that discover no tests (`Total: 0`) now print a hint pointing at it. (#3217)
 - Add `--record-video` flag to `patrol test` and `patrol develop` to record a video per test case (Android and iOS simulators). (#2741)
 - Fix `patrol test`/`patrol develop` not reading logs from iOS simulators, by streaming the simulator's log via `simctl spawn`. (#3198)
+
+## 4.6.1
+
+- Fix `patrol develop` printing "You must specify a --flavor option" on iOS/macOS projects with schemes, by passing the flavor to `flutter attach`.
+- Fail fast with a clear error instead of hanging on gradlew when the Android SDK can't be located (`sdk.dir` missing from `android/local.properties` after the config-only build). (#3168)
 
 ## 4.6.0
 
