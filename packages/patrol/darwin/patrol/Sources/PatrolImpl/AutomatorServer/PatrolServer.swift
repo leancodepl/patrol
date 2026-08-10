@@ -153,7 +153,7 @@ import Foundation
 
     let bindResult = withUnsafePointer(to: &addr) {
       $0.withMemoryRebound(to: sockaddr.self, capacity: 1) {
-        bind(socketFD, $0, socklen_t(MemoryLayout<sockaddr_in>.size))
+        Darwin.bind(socketFD, $0, socklen_t(MemoryLayout<sockaddr_in>.size))
       }
     }
     return bindResult == 0

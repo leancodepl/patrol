@@ -33,8 +33,7 @@
   }                                                                                                                 \
                                                                                                                     \
   +(NSString *)patrolSelectorForDartTestName : (NSString *)dartTestName {                                           \
-    NSString *escaped =                                                                                             \
-        [dartTestName stringByReplacingOccurrencesOfString:@"+" withString:@"__PLUS__"];                            \
+    NSString *escaped = [dartTestName stringByReplacingOccurrencesOfString:@"+" withString:@"__PLUS__"];            \
     return [escaped stringByReplacingOccurrencesOfString:@" " withString:@"+"];                                     \
   }                                                                                                                 \
                                                                                                                     \
