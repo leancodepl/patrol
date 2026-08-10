@@ -1,5 +1,6 @@
 ## Unreleased
 
+- Add Marathon integration for running Patrol tests on Android and iOS simulators. See the [Marathon integration guide](https://patrol.leancode.co/documentation/integrations/marathon).
 - Fix `AndroidNativeView.visibleBounds` always having zero height. (#3202)
 - Collect Chrome JavaScript coverage in the web runner when `patrol test --coverage` runs on the web platform.
 
