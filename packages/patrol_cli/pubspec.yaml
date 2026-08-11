@@ -14,12 +14,19 @@ screenshots:
 environment:
   sdk: '>=3.8.0 <4.0.0'
 
+# Some dependencies below are constrained across two major versions instead of
+# with a caret. Their newest majors raise their own SDK lower bound above ours,
+# so a caret would force us to raise `sdk:` too and drop users on older Dart
+# SDKs. A range lets pub pick the newest major on new SDKs and the previous one
+# on older SDKs. Only widen a range like this when the majors we span are
+# source-compatible for the API we actually use.
 dependencies:
   adb: ^0.6.0
   ansi_styles: ^0.3.2+1
   args: ^2.4.2
   ci: ^0.1.0
-  cli_completion: ^0.5.1
+  # 0.6.0 requires Dart 3.12; API-compatible with 0.5.x.
+  cli_completion: '>=0.5.1 <0.7.0'
   collection: ^1.18.0
   coverage: ^1.9.0
   dispose_scope: ^2.1.0
@@ -29,12 +36,15 @@ dependencies:
   http: ^1.1.0
   mason_logger: ^0.3.5
   meta: ^1.10.0
-  package_config: ^2.1.1
+  # 3.0.0 requires Dart 3.11 and drops the `.packages` support we never used;
+  # `loadPackageConfig` and `findPackageConfig` are unchanged.
+  package_config: '>=2.1.1 <4.0.0'
   path: ^1.8.3
   patrol_log: ^0.10.0
   platform: ^3.1.3
   process: ^5.0.1
-  pub_updater: ^0.5.0
+  # 0.6.0 requires Dart 3.12; API-compatible with 0.5.x.
+  pub_updater: '>=0.5.0 <0.7.0'
   uuid: ^4.2.1
   version: ^3.0.2
   vm_service: ^15.0.0

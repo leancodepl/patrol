@@ -15,6 +15,9 @@
   discovery. (#3197)
 - Add `--record-video` flag to `patrol test` and `patrol develop` to record a video per test case (Android and iOS simulators). (#2741)
 - Fix `patrol test`/`patrol develop` not reading logs from iOS simulators, by streaming the simulator's log via `simctl spawn`. (#3198)
+- Allow the latest `package_config` (3.x), `cli_completion` (0.6.x) and `pub_updater` (0.6.x).
+  Each is constrained across two majors so pub picks the newest one on Dart 3.12+ and the
+  previous one on older SDKs; the `sdk: '>=3.8.0 <4.0.0'` constraint is unchanged.
 
 ## 4.6.0
 
