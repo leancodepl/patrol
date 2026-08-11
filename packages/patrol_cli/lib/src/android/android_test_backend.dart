@@ -328,6 +328,7 @@ class AndroidTestBackend {
     required bool clearTestSteps,
     void Function(Entry entry)? onLogEntry,
     VideoRecordingConfig? videoConfig,
+    bool pullScreenshots = false,
   }) async {
     await _disposeScope.run((scope) async {
       // Create video recording manager if enabled
@@ -413,6 +414,13 @@ class AndroidTestBackend {
       // Cleanup video recording manager
       await videoRecordingManager?.dispose();
 
+      // Pull native screenshots (e.g. failure screenshots) off the device.
+      // Runs whether tests passed or failed - before the exit-code check below
+      // that throws on failure - so failing runs still yield their screenshots.
+      if (pullScreenshots) {
+        await _pullScreenshots(device);
+      }
+
       // Don't print the summary in develop
       if (!interruptible) {
         _logger.info(patrolLogReader.summary);
@@ -443,6 +451,52 @@ class AndroidTestBackend {
     await _adb.uninstall(appId, device: device.id);
     _logger.detail('Uninstalling $appId.test from ${device.name}');
     await _adb.uninstall('$appId.test', device: device.id);
+  }
+
+  /// Where patrol writes native screenshots on the device (see the
+  /// `screenshot_on_failure` pubspec option).
+  static const _deviceScreenshotsDir = '/sdcard/Download/screenshots';
+
+  /// Pulls native screenshots from [device] into a local `screenshots/`
+  /// directory. Best-effort: never throws, and a missing directory (no
+  /// screenshots captured) is logged at detail level, not treated as an error.
+  Future<void> _pullScreenshots(Device device) async {
+    try {
+      final pullResult = await _processManager.run([
+        'adb',
+        if (device.id.isNotEmpty) ...['-s', device.id],
+        'pull',
+        _deviceScreenshotsDir,
+        _rootDirectory.path,
+      ], runInShell: true);
+
+      if (pullResult.exitCode != 0) {
+        // Most commonly: no test failed, so nothing was captured.
+        _logger.detail('No screenshots to pull from device.');
+        return;
+      }
+
+      _logger.info(
+        'Screenshots saved to '
+        '${_rootDirectory.childDirectory('screenshots').path}',
+      );
+
+      // Remove them from the device so the next run doesn't re-pull stale files.
+      try {
+        await _processManager.run([
+          'adb',
+          if (device.id.isNotEmpty) ...['-s', device.id],
+          'shell',
+          'rm',
+          '-rf',
+          _deviceScreenshotsDir,
+        ], runInShell: true);
+      } catch (err) {
+        _logger.detail('Failed to remove screenshots from device: $err');
+      }
+    } catch (err) {
+      _logger.warn('Failed to pull screenshots from device: $err');
+    }
   }
 
   /// Generates the Android test report path based on build mode and flavor.

@@ -133,13 +133,16 @@ Check out our video version of this tutorial on YouTube!
         the device, to `/sdcard/Download/screenshots/<class>/<method>/`. How it
         reaches your run's artifacts depends on the farm:
 
+        - **Local runs (`patrol test`)**: Patrol pulls them into a
+          `screenshots/` directory in your project after the run (works with
+          emulators too).
         - **BrowserStack App Automate**: enable the Espresso
           `debugscreenshots: true` capability; images appear in the Screenshots tab.
         - **Firebase Test Lab**: pass
           `--directories-to-pull=/sdcard/Download/screenshots` so the files are
           copied to the results bucket.
-        - **Other farms / local runs**: pull them yourself, e.g.
-          `adb pull /sdcard/Download/screenshots`.
+        - **Other farms**: use the farm's file-collection mechanism, or pull them
+          yourself with `adb pull /sdcard/Download/screenshots`.
 
         It is off by default and currently applies to Android only (a no-op on
         iOS). It works in the `patrol build android` APK as well as
