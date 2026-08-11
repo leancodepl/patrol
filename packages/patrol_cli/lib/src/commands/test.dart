@@ -76,6 +76,7 @@ class TestCommand extends PatrolCommand {
     usesAndroidOptions();
     usesIOSOptions();
     usesVideoRecordingOptions();
+    usesEmitTestManifestOption();
 
     usesWeb();
   }
@@ -185,6 +186,9 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
 
     final device = devices.single;
     final isWeb = device.targetPlatform == TargetPlatform.web;
+
+    final emitTestManifest =
+        optionalBoolArg('emit-test-manifest') ?? config.emitTestManifest;
 
     // Validate that flavors are not used with web platform
     if (isWeb && stringArg('flavor') != null) {
@@ -328,6 +332,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       testServerPort: super.testServerPort,
       uninstall: uninstall,
       urlSafeTestNames: config.urlSafeTestNames,
+      emitTestManifest: emitTestManifest,
     );
 
     final iosOpts = IOSAppOptions(
@@ -341,6 +346,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       testServerPort: super.testServerPort,
       fullIsolation: boolArg('full-isolation'),
       clearIOSPermissions: boolArg('clear-permissions'),
+      emitTestManifest: emitTestManifest,
     );
 
     final macosOpts = MacOSAppOptions(

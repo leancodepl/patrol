@@ -15,6 +15,7 @@ class PatrolPubspecConfig with Equatable {
     this.testFileSuffix = '_test.dart',
     this.screenshotOnFailure = false,
     this.urlSafeTestNames = false,
+    this.emitTestManifest = false,
   });
 
   PatrolPubspecConfig.empty({required String flutterPackageName})
@@ -43,6 +44,11 @@ class PatrolPubspecConfig with Equatable {
   /// BrowserStack until it fixes rendering of paths with spaces/commas.
   bool urlSafeTestNames;
 
+  /// Whether build-time test discovery + static native test codegen is enabled
+  /// for this project (the persistent equivalent of the `--emit-test-manifest`
+  /// CLI flag). See `patrol.emit_test_manifest` in pubspec.yaml.
+  bool emitTestManifest;
+
   @override
   List<Object?> get props => [
     android,
@@ -52,6 +58,7 @@ class PatrolPubspecConfig with Equatable {
     testFileSuffix,
     screenshotOnFailure,
     urlSafeTestNames,
+    emitTestManifest,
   ];
 }
 
@@ -204,6 +211,11 @@ class PubspecReader {
     final dynamic urlSafeTestNames = patrol['url_safe_test_names'];
     if (urlSafeTestNames != null && urlSafeTestNames is bool) {
       config.urlSafeTestNames = urlSafeTestNames;
+    }
+
+    final dynamic emitTestManifest = patrol['emit_test_manifest'];
+    if (emitTestManifest != null && emitTestManifest is bool) {
+      config.emitTestManifest = emitTestManifest;
     }
 
     final android = patrol['android'] as Map?;

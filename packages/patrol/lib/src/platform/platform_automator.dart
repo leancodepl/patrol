@@ -68,6 +68,12 @@ class PlatformAutomatorConfig {
 
     /// Called when a native action is performed.
     void Function(String)? logger,
+
+    /// Host of the native Patrol automation server.
+    String? host,
+
+    /// Port of the native Patrol automation server.
+    String? port,
   }) {
     return PlatformAutomatorConfig(
       androidConfig: AndroidAutomatorConfig(
@@ -77,6 +83,8 @@ class PlatformAutomatorConfig {
         connectionTimeout: connectionTimeout,
         findTimeout: findTimeout,
         logger: logger,
+        host: host,
+        port: port,
       ),
       iosConfig: IOSAutomatorConfig(
         iosInstalledApps: iosInstalledApps,
@@ -86,6 +94,8 @@ class PlatformAutomatorConfig {
         connectionTimeout: connectionTimeout,
         findTimeout: findTimeout,
         logger: logger,
+        host: host,
+        port: port,
       ),
       webConfig: WebAutomatorConfig(logger: logger),
     );

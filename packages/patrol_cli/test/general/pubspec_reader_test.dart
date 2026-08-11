@@ -57,6 +57,26 @@ patrol:
         expect(reader.read().ios.flavor, equals('dev'));
       });
 
+      test('emit_test_manifest defaults to false', () {
+        fs.file('pubspec.yaml').writeAsStringSync('''
+$_pubspecBase
+patrol:
+  app_name: Example
+''');
+
+        expect(reader.read().emitTestManifest, isFalse);
+      });
+
+      test('reads emit_test_manifest', () {
+        fs.file('pubspec.yaml').writeAsStringSync('''
+$_pubspecBase
+patrol:
+  emit_test_manifest: true
+''');
+
+        expect(reader.read().emitTestManifest, isTrue);
+      });
+
       test('reads `android` block', () {
         fs.file('pubspec.yaml').writeAsStringSync('''
 $_pubspecBase

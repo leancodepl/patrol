@@ -5,6 +5,14 @@
 
 ## Unreleased
 
+- Support running Patrol tests on multiple iOS simulators in parallel, by reading the native automation ports at runtime in the generated test bundle. See the [Marathon integration guide](https://patrol.leancode.co/documentation/integrations/marathon).
+- Add experimental build-time test discovery, enabled with `patrol.emit_test_manifest` in
+  pubspec.yaml (or `--emit-test-manifest`): Dart tests are discovered while building and each
+  one becomes a real, individually-selectable native test, which makes per-test sharding on
+  device farms possible. (#3197)
+- Add `patrol test-without-building`, which runs the tests from a previous `patrol build`
+  without rebuilding, optionally just one of them with `--only`. Requires build-time test
+  discovery. (#3197)
 - Add `--record-video` flag to `patrol test` and `patrol develop` to record a video per test case (Android and iOS simulators). (#2741)
 - Add `screenshot_on_failure` option to the pubspec's `patrol` section, forwarded to the app (via a dart-define) across `build`, `test`, and `develop` so patrol can capture native failure screenshots on Android device farms (e.g. BrowserStack, Firebase Test Lab). Off by default. (#3222)
 - Add `url_safe_test_names` option to the pubspec's `patrol` section, forwarded to the Android build (via a Gradle `-P` / `BuildConfig`) so the native runner reports URL-safe JUnit names. Stopgap for BrowserStack screenshot URLs; off by default. (#3222)

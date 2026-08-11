@@ -193,13 +193,30 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
             dartTestName = name;
         }
 
-        final String TAG = "PatrolJUnitRunner.runDartTest(" + dartTestName + "): ";
-
         // Expose the reported name so a Dart-triggered native screenshot names
         // its file to match the folder BrowserStack scans for this test.
         Automator.Companion.getInstance().setCurrentDartTestName(name);
 
+        // Runtime-discovery path: the skip flag was recorded by listDartTests().
+        // Guard against a missing entry so a null Boolean can't NPE on unboxing.
         final Boolean skip = dartTestCaseSkipMap.get(dartTestName);
+        return runDartTest(dartTestName, Boolean.TRUE.equals(skip));
+    }
+
+    /**
+     * Requests execution of a Dart test and waits for it to finish.
+     * Throws AssertionError if the test fails.
+     *
+     * <p>
+     * This overload takes the [skip] flag explicitly, so it works without a
+     * prior {@link #listDartTests()} call. It's used by the statically generated
+     * test class produced by build-time test discovery
+     * (`patrol build android --emit-test-manifest`).
+     * </p>
+     */
+    public RunDartTestResponse runDartTest(String name, boolean skip) {
+        final String TAG = "PatrolJUnitRunner.runDartTest(" + name + "): ";
+
         if (skip) {
             Logger.INSTANCE.i(TAG + "Test skipped");
             assumeFalse(skip);
@@ -207,9 +224,9 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
 
         try {
             Logger.INSTANCE.i(TAG + "Requested execution");
-            RunDartTestResponse response = patrolAppServiceClient.runDartTest(dartTestName);
+            RunDartTestResponse response = patrolAppServiceClient.runDartTest(name);
             if (response.getResult() == Contracts.RunDartTestResponseResult.failure) {
-                throw new AssertionError("Dart test failed: " + dartTestName + "\n" + response.getDetails());
+                throw new AssertionError("Dart test failed: " + name + "\n" + response.getDetails());
             }
             Logger.INSTANCE.i(TAG + "Test execution succeeded");
             return response;

@@ -249,6 +249,15 @@ features such as reporting. To see the full list of supported arguments, run `pa
 - `--clear-permissions`: Not applicable to web platform
 - `--full-isolation`: Not applicable to web platform
 
+### Running without rebuilding
+
+When [build-time test discovery][discovery] is enabled
+(`patrol.emit_test_manifest: true`), already-built tests can be re-run without
+rebuilding using a separate command — see
+[`patrol test-without-building`](/cli-commands/test-without-building).
+
+[discovery]: /documentation/ci/build-time-test-discovery
+
 ### Under the hood
 
 `patrol test` basically calls `patrol build` and then runs the built app

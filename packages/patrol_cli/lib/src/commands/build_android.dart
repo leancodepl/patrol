@@ -50,6 +50,7 @@ class BuildAndroidCommand extends PatrolCommand {
 
     usesAndroidOptions();
     usesAppNameOption();
+    usesEmitTestManifestOption();
   }
 
   final TestFinderFactory _testFinderFactory;
@@ -198,6 +199,8 @@ class BuildAndroidCommand extends PatrolCommand {
       testServerPort: super.testServerPort,
       uninstall: uninstall,
       urlSafeTestNames: config.urlSafeTestNames,
+      emitTestManifest:
+          optionalBoolArg('emit-test-manifest') ?? config.emitTestManifest,
     );
 
     try {
