@@ -197,6 +197,34 @@ Videos are saved as `.mp4` files in `<test-directory>/videos` (override with
     [Playwright videos docs](https://playwright.dev/docs/videos).
 </Info>
 
+### Screenshots
+
+Patrol can capture native screenshots on Android — automatically on test
+failure (opt-in) and on demand from a test:
+
+- Enable failure screenshots by adding `screenshot_on_failure: true` to the
+  `patrol` section of your `pubspec.yaml`.
+- Capture on demand with `await $.takeNativeScreenshot('tag')` inside a test.
+
+The capture happens natively (via `androidx.test`) at the moment of failure,
+before teardown, so it shows the actual failing screen. Patrol writes the PNG on
+the device to `/sdcard/Download/screenshots/<class>/<method>/`.
+
+On `patrol test`, screenshots are pulled to `<test-directory>/screenshots` after
+the run (override with `--screenshots-output-dir`). On device farms the farm
+collects them:
+
+- **BrowserStack App Automate**: enable the Espresso `debugscreenshots: true`
+  capability; images appear in the Screenshots tab.
+- **Firebase Test Lab**: pass `--directories-to-pull=/sdcard/Download/screenshots`.
+
+<Info>
+    Android only for now (a no-op on iOS). Works in the `patrol build android`
+    APK as well as `patrol test`. `url_safe_test_names: true` sanitizes the
+    reported JUnit names so screenshot paths render on BrowserStack (a stopgap;
+    off by default, reported names unchanged when off).
+</Info>
+
 ### Web Platform
 
 Patrol supports running tests on Flutter web using Playwright. To run tests on web:

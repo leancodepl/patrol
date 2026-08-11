@@ -1,3 +1,5 @@
+import 'dart:io' show ProcessResult;
+
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
@@ -10,6 +12,7 @@ import 'package:patrol_cli/src/runner/flutter_command.dart';
 import 'package:platform/platform.dart';
 import 'package:test/test.dart';
 
+import '../src/fixtures.dart';
 import '../src/mocks.dart';
 
 void main() {
@@ -48,6 +51,85 @@ void main() {
       when(
         () => processManager.start(any(), runInShell: any(named: 'runInShell')),
       ).thenAnswer((_) async => process);
+    });
+
+    group('pullDeviceScreenshots', () {
+      setUp(() {
+        when(
+          () => processManager.run(any(), runInShell: any(named: 'runInShell')),
+        ).thenAnswer((_) async => ProcessResult(0, 0, '', ''));
+      });
+
+      test(
+        'pulls the device screenshots dir and removes it on success',
+        () async {
+          await androidTestBackend.pullDeviceScreenshots(
+            androidDevice,
+            'screenshots',
+          );
+
+          final expectedParent = rootDirectory
+              .childDirectory('screenshots')
+              .parent
+              .path;
+          final captured = verify(
+            () => processManager.run(
+              captureAny(),
+              runInShell: any(named: 'runInShell'),
+            ),
+          ).captured;
+
+          expect(captured, hasLength(2)); // pull + rm
+          expect(
+            captured.first,
+            equals([
+              'adb',
+              '-s',
+              androidDeviceId,
+              'pull',
+              '/sdcard/Download/screenshots',
+              expectedParent,
+            ]),
+          );
+          expect(
+            captured.last,
+            equals([
+              'adb',
+              '-s',
+              androidDeviceId,
+              'shell',
+              'rm',
+              '-rf',
+              '/sdcard/Download/screenshots',
+            ]),
+          );
+        },
+      );
+
+      test(
+        'does not throw and skips removal when nothing was captured',
+        () async {
+          when(
+            () =>
+                processManager.run(any(), runInShell: any(named: 'runInShell')),
+          ).thenAnswer((_) async => ProcessResult(0, 1, '', 'No such file'));
+
+          await androidTestBackend.pullDeviceScreenshots(
+            androidDevice,
+            'screenshots',
+          );
+
+          // Only the pull was attempted; no `rm` after a failed pull.
+          final captured = verify(
+            () => processManager.run(
+              captureAny(),
+              runInShell: any(named: 'runInShell'),
+            ),
+          ).captured;
+          expect(captured, hasLength(1));
+          expect(captured.first, contains('pull'));
+        },
+      );
     });
 
     group('buildApkConfigOnly', () {

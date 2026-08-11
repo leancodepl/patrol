@@ -329,6 +329,7 @@ class AndroidTestBackend {
     void Function(Entry entry)? onLogEntry,
     VideoRecordingConfig? videoConfig,
     bool pullScreenshots = false,
+    String screenshotsOutputDir = 'screenshots',
   }) async {
     await _disposeScope.run((scope) async {
       // Create video recording manager if enabled
@@ -414,11 +415,11 @@ class AndroidTestBackend {
       // Cleanup video recording manager
       await videoRecordingManager?.dispose();
 
-      // Pull native screenshots (e.g. failure screenshots) off the device.
+      // Pull native screenshots (failure and on-demand) off the device.
       // Runs whether tests passed or failed - before the exit-code check below
       // that throws on failure - so failing runs still yield their screenshots.
       if (pullScreenshots) {
-        await _pullScreenshots(device);
+        await pullDeviceScreenshots(device, screenshotsOutputDir);
       }
 
       // Don't print the summary in develop
@@ -457,29 +458,44 @@ class AndroidTestBackend {
   /// `screenshot_on_failure` pubspec option).
   static const _deviceScreenshotsDir = '/sdcard/Download/screenshots';
 
-  /// Pulls native screenshots from [device] into a local `screenshots/`
-  /// directory. Best-effort: never throws, and a missing directory (no
+  /// Pulls native screenshots from [device] into [outputDir] (relative to the
+  /// project root). Best-effort: never throws, and a missing directory (no
   /// screenshots captured) is logged at detail level, not treated as an error.
-  Future<void> _pullScreenshots(Device device) async {
+  @visibleForTesting
+  Future<void> pullDeviceScreenshots(Device device, String outputDir) async {
     try {
+      final localDir = _rootDirectory.childDirectory(outputDir);
+      final parent = localDir.parent;
+      if (!parent.existsSync()) {
+        parent.createSync(recursive: true);
+      }
+
+      // `adb pull <dir> <parent>` creates <parent>/screenshots (the device
+      // dir's basename), which equals [outputDir] for the default.
       final pullResult = await _processManager.run([
         'adb',
         if (device.id.isNotEmpty) ...['-s', device.id],
         'pull',
         _deviceScreenshotsDir,
-        _rootDirectory.path,
+        parent.path,
       ], runInShell: true);
 
       if (pullResult.exitCode != 0) {
-        // Most commonly: no test failed, so nothing was captured.
+        // Most commonly: nothing was captured this run.
         _logger.detail('No screenshots to pull from device.');
         return;
       }
 
-      _logger.info(
-        'Screenshots saved to '
-        '${_rootDirectory.childDirectory('screenshots').path}',
-      );
+      // If the requested dir isn't named `screenshots`, move the pulled folder.
+      final pulled = parent.childDirectory('screenshots');
+      if (pulled.path != localDir.path && pulled.existsSync()) {
+        if (localDir.existsSync()) {
+          localDir.deleteSync(recursive: true);
+        }
+        pulled.renameSync(localDir.path);
+      }
+
+      _logger.info('Screenshots saved to ${localDir.path}');
 
       // Remove them from the device so the next run doesn't re-pull stale files.
       try {

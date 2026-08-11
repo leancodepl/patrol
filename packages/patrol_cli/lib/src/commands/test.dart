@@ -431,7 +431,8 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
       hideTestSteps: boolArg('hide-test-steps'),
       clearTestSteps: boolArg('clear-test-steps'),
       testDirectory: testDirectory,
-      pullScreenshots: config.screenshotOnFailure,
+      screenshotsOutputDir:
+          stringArg('screenshots-output-dir') ?? '$testDirectory/screenshots',
     );
 
     // Converted after the run, once the runner has written the raw JS coverage.
@@ -527,7 +528,7 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
     required bool hideTestSteps,
     required bool clearTestSteps,
     required String testDirectory,
-    required bool pullScreenshots,
+    required String screenshotsOutputDir,
   }) async {
     Future<void> Function() action;
     Future<void> Function()? finalizer;
@@ -549,7 +550,8 @@ See https://github.com/leancodepl/patrol/issues/1316 to learn more.
           flavor: flutterOpts.flavor,
           clearTestSteps: clearTestSteps,
           videoConfig: videoConfig,
-          pullScreenshots: pullScreenshots,
+          pullScreenshots: true,
+          screenshotsOutputDir: screenshotsOutputDir,
         );
         final package = android.packageName;
         if (package != null && uninstall) {

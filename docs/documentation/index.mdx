@@ -133,9 +133,9 @@ Check out our video version of this tutorial on YouTube!
         the device, to `/sdcard/Download/screenshots/<class>/<method>/`. How it
         reaches your run's artifacts depends on the farm:
 
-        - **Local runs (`patrol test`)**: Patrol pulls them into a
-          `screenshots/` directory in your project after the run (works with
-          emulators too).
+        - **Local runs (`patrol test`)**: Patrol pulls them into
+          `<test-directory>/screenshots` after the run (override with
+          `--screenshots-output-dir`; works with emulators too).
         - **BrowserStack App Automate**: enable the Espresso
           `debugscreenshots: true` capability; images appear in the Screenshots tab.
         - **Firebase Test Lab**: pass
@@ -147,7 +147,7 @@ Check out our video version of this tutorial on YouTube!
         It is off by default and currently applies to Android only (a no-op on
         iOS). It works in the `patrol build android` APK as well as
         `patrol test`/`develop`. You can also capture on demand from a test with
-        `await $.takeScreenshot('tag')`.
+        `await $.takeNativeScreenshot('tag')`.
 
         `url_safe_test_names: true` sanitizes the reported Android JUnit test
         names (`[^A-Za-z0-9._-]` → `_`) while keeping the original names for
