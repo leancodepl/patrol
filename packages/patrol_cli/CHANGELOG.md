@@ -1,8 +1,3 @@
-## 4.6.1
-
-- Fix `patrol develop` printing "You must specify a --flavor option" on iOS/macOS projects with schemes, by passing the flavor to `flutter attach`.
-- Fail fast with a clear error instead of hanging on gradlew when the Android SDK can't be located (`sdk.dir` missing from `android/local.properties` after the config-only build). (#3168)
-
 ## Unreleased
 
 - Support running Patrol tests on multiple iOS simulators in parallel, by reading the native automation ports at runtime in the generated test bundle. See the [Marathon integration guide](https://patrol.leancode.co/documentation/integrations/marathon).
@@ -15,9 +10,12 @@
   discovery. (#3197)
 - Add `--record-video` flag to `patrol test` and `patrol develop` to record a video per test case (Android and iOS simulators). (#2741)
 - Fix `patrol test`/`patrol develop` not reading logs from iOS simulators, by streaming the simulator's log via `simctl spawn`. (#3198)
-- Allow the latest `package_config` (3.x), `cli_completion` (0.6.x) and `pub_updater` (0.6.x).
-  Each is constrained across two majors so pub picks the newest one on Dart 3.12+ and the
-  previous one on older SDKs; the `sdk: '>=3.8.0 <4.0.0'` constraint is unchanged.
+- Allow the latest `package_config` (3.x), `cli_completion` (0.6.x) and `pub_updater` (0.6.x), without raising the minimum Dart SDK.
+
+## 4.6.1
+
+- Fix `patrol develop` printing "You must specify a --flavor option" on iOS/macOS projects with schemes, by passing the flavor to `flutter attach`.
+- Fail fast with a clear error instead of hanging on gradlew when the Android SDK can't be located (`sdk.dir` missing from `android/local.properties` after the config-only build). (#3168)
 
 ## 4.6.0
 
