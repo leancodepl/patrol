@@ -217,10 +217,10 @@ Then point SauceLabs at it with `shard: concurrency` + `testListFile`. See
   tests (they require a device and a direct `integration_test` dependency), so
   discovery won't run for them. Keep your Patrol tests under `patrol_test/` (the
   default) or another non-`integration_test/` directory.
-- **Parallel simulators on one host.** Patrol talks to its server on fixed ports,
-  and iOS simulators share the host loopback, so running several shards in parallel
-  on a single machine collides on those ports. Shard across separate hosts/VMs
-  (one simulator each) — which is how cloud device farms already work.
+- **Parallel simulators on one host.** Supported on iOS: the native server picks a
+  free port pair per run and the app reads it at launch, so shards on one machine
+  don't collide. See the [Marathon integration guide](/documentation/integrations/marathon).
+  On Android, shard across separate hosts/VMs (one emulator each).
 - **Slower initial build.** Discovery adds a host `flutter test` pass to every
   `patrol build`, so the first build takes a bit longer. This cost is paid once —
   subsequent `patrol test-without-building` runs skip building altogether.

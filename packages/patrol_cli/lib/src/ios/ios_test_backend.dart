@@ -197,25 +197,6 @@ class IOSTestBackend {
     });
   }
 
-  /// Generates static XCTest methods from the manifest into the RunnerUITests
-  /// target. The file is `#included` by RunnerUITests.m (between the
-  /// PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN/END macros), so it compiles
-  /// as part of the test target - no project.pbxproj surgery needed.
-  ///
-  /// Because the tests are now real, statically-discoverable XCTest methods,
-  /// each can be selected individually with
-  /// `-only-testing RunnerUITests/RunnerUITests/test_...`. That enables sharding
-  /// by splitting the selectors across runners.
-  ///
-  /// CAVEAT - parallelism on a single host (e.g. bluepill,
-  /// `xcodebuild -parallel-testing-enabled`): this does NOT work out of the box
-  /// yet. Every Patrol test talks to PatrolServer on FIXED ports (PATROL_TEST/
-  /// APP_SERVER_PORT, default 8081/8082, baked into the app as dart-defines).
-  /// iOS simulators share the host loopback, so running several shards in
-  /// parallel on one machine collides on those ports. Sharding across SEPARATE
-  /// hosts (one simulator each) works today; parallel-on-one-host first needs
-  /// per-shard port isolation (and the app must learn its port at runtime rather
-  /// than from a build-time dart-define).
   /// Fails fast when build-time discovery is enabled but the iOS UITest runner
   /// hasn't been switched to the static form. The generated
   /// `PatrolGeneratedTests.inc` is only compiled in when `RunnerUITests.m` uses
@@ -291,6 +272,15 @@ class IOSTestBackend {
       .childDirectory('RunnerUITests')
       .childFile('PatrolGeneratedTests.inc');
 
+  /// Generates static XCTest methods from the manifest into the RunnerUITests
+  /// target. The file is `#included` by RunnerUITests.m (between the
+  /// PATROL_INTEGRATION_TEST_IOS_RUNNER_STATIC_BEGIN/END macros), so it compiles
+  /// as part of the test target - no project.pbxproj surgery needed.
+  ///
+  /// Because the tests are now real, statically-discoverable XCTest methods,
+  /// each can be selected individually with
+  /// `-only-testing RunnerUITests/RunnerUITests/test_...`, which is what makes
+  /// sharding across runners possible.
   void _generateXcodeTests(String manifestPath) {
     final output = _generatedIncFile;
     final count = XcodeTestCodegen(
