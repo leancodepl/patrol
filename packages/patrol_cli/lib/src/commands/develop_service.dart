@@ -461,7 +461,6 @@ class DevelopService {
           appId: appId,
           dartDefines: flutterOpts.dartDefines,
           openDevtools: openDevtools,
-          flavor: flutterOpts.flavor,
           attachUsingUrl: device.targetPlatform == TargetPlatform.macOS,
           onQuit: onQuitCleanup,
         );
