@@ -5,6 +5,7 @@
 
 ## Unreleased
 
+- Fix hot restart silently doing nothing for the whole `patrol develop` session on projects with a flavor, by no longer passing `--flavor` to `flutter attach`, which defines no such option and exited with a usage error. Regressed in 4.6.1.
 - Support running Patrol tests on multiple iOS simulators in parallel, by reading the native automation ports at runtime in the generated test bundle. See the [Marathon integration guide](https://patrol.leancode.co/documentation/integrations/marathon).
 - Add experimental build-time test discovery, enabled with `patrol.emit_test_manifest` in
   pubspec.yaml (or `--emit-test-manifest`): Dart tests are discovered while building and each
