@@ -54,9 +54,11 @@ void main() {
       verify(() => processManager.start(any(that: contains('testDeviceId'))));
     });
 
-    // `flutter attach` defines no --flavor option and exits with a usage error
-    // if it is passed one.
-    test('attach never passes --flavor', () {
+    // `flutter attach` exits with a usage error on an option it does not
+    // define, and that failure is silent, so an unvetted option here disables
+    // hot restart for a whole develop session. Check `flutter attach --help`
+    // before extending this set.
+    test('attach passes only options flutter attach defines', () {
       final process = MockProcess();
       when(
         () => process.stdout,
@@ -71,13 +73,26 @@ void main() {
         deviceId: 'testDeviceId',
         target: 'target',
         appId: 'appId',
-        dartDefines: {},
+        debugUrl: 'http://127.0.0.1:1234/abc=/',
+        dartDefines: {'key': 'value'},
         openBrowser: false,
       );
 
-      verify(
-        () => processManager.start(any(that: isNot(contains('--flavor')))),
-      );
+      final args =
+          (verify(() => processManager.start(captureAny())).captured.single
+                  as List<Object>)
+              .map((arg) => arg.toString());
+
+      expect(args.where((arg) => arg.startsWith('--')).toSet(), {
+        '--no-version-check',
+        '--suppress-analytics',
+        '--debug',
+        '--device-id',
+        '--debug-url',
+        '--app-id',
+        '--target',
+        '--dart-define',
+      });
     });
   });
 
