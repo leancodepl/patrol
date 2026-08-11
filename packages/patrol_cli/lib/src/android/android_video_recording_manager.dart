@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
+import 'package:patrol_cli/src/android/adb_commands.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/crossplatform/video_recording_config.dart';
 import 'package:patrol_cli/src/crossplatform/video_recording_manager.dart';
@@ -178,13 +179,12 @@ class AndroidVideoRecordingManager extends VideoRecordingManager {
 
       // Pull the video file from device
       final localVideoPath = outputDir.childFile(_currentVideoFilename!).path;
-      final pullResult = await _processManager.run([
-        'adb',
-        if (_device.id.isNotEmpty) ...['-s', _device.id],
-        'pull',
-        _currentDeviceVideoPath!,
-        localVideoPath,
-      ], runInShell: true);
+      final pullResult = await adbPull(
+        _processManager,
+        source: _currentDeviceVideoPath!,
+        destination: localVideoPath,
+        deviceId: _device.id,
+      );
 
       if (pullResult.exitCode != 0) {
         throw Exception('Failed to pull video file: ${pullResult.stderr}');
@@ -192,13 +192,11 @@ class AndroidVideoRecordingManager extends VideoRecordingManager {
 
       // Clean up the file from device
       try {
-        final removeResult = await _processManager.run([
-          'adb',
-          if (_device.id.isNotEmpty) ...['-s', _device.id],
-          'shell',
-          'rm',
-          _currentDeviceVideoPath!,
-        ], runInShell: true);
+        final removeResult = await adbRemove(
+          _processManager,
+          path: _currentDeviceVideoPath!,
+          deviceId: _device.id,
+        );
 
         if (removeResult.exitCode != 0) {
           _logger.detail(

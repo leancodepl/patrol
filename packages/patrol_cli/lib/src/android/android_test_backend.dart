@@ -5,6 +5,7 @@ import 'package:adb/adb.dart';
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
 import 'package:meta/meta.dart';
+import 'package:patrol_cli/src/android/adb_commands.dart';
 import 'package:patrol_cli/src/android/android_video_recording_manager.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/extensions/completer.dart';
@@ -471,13 +472,12 @@ class AndroidTestBackend {
         parent.createSync(recursive: true);
       }
 
-      final pullResult = await _processManager.run([
-        'adb',
-        if (device.id.isNotEmpty) ...['-s', device.id],
-        'pull',
-        _deviceScreenshotsDir,
-        parent.path,
-      ], runInShell: true);
+      final pullResult = await adbPull(
+        _processManager,
+        source: _deviceScreenshotsDir,
+        destination: parent.path,
+        deviceId: device.id,
+      );
 
       if (pullResult.exitCode != 0) {
         // Most commonly: nothing was captured this run.
@@ -491,14 +491,12 @@ class AndroidTestBackend {
 
       // Remove them from the device so the next run doesn't re-pull stale files.
       try {
-        await _processManager.run([
-          'adb',
-          if (device.id.isNotEmpty) ...['-s', device.id],
-          'shell',
-          'rm',
-          '-rf',
-          _deviceScreenshotsDir,
-        ], runInShell: true);
+        await adbRemove(
+          _processManager,
+          path: _deviceScreenshotsDir,
+          deviceId: device.id,
+          recursive: true,
+        );
       } catch (err) {
         _logger.detail('Failed to remove screenshots from device: $err');
       }
