@@ -149,7 +149,13 @@ class Automator private constructor() {
     // Never throws into the test - a failed screenshot must not flake the test.
     fun takeNativeScreenshot(tag: String) {
         try {
-            val className = testClassName ?: "${targetContext.packageName}.MainActivityTest"
+            // Set by PatrolJUnitRunner before any test runs; the class-name
+            // convention lives there and isn't duplicated here.
+            val className = testClassName
+            if (className == null) {
+                Logger.e("Native screenshot skipped: test class name is not set")
+                return
+            }
             val methodName = "runDartTest[${currentDartTestName ?: "unknown"}]"
             // `tag` is public API input; sanitize it so a value with '/' (or
             // other path chars) can't break out of the target directory.

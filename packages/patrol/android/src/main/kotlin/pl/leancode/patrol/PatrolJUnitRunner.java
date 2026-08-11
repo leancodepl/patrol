@@ -166,8 +166,10 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
                     while (reportedNameToDartName.containsKey(reportedName)) {
                         reportedName = base + "_" + suffix++;
                     }
+                    // Only needed to map the sanitized name back for execution.
+                    // When off, runDartTest falls back to the name as-is.
+                    reportedNameToDartName.put(reportedName, dartTestName);
                 }
-                reportedNameToDartName.put(reportedName, dartTestName);
                 dartTestCaseNamesList.add(reportedName);
             }
             Object[] dartTestCaseNames = dartTestCaseNamesList.toArray();

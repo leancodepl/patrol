@@ -464,14 +464,13 @@ class AndroidTestBackend {
   @visibleForTesting
   Future<void> pullDeviceScreenshots(Device device, String outputDir) async {
     try {
-      final localDir = _rootDirectory.childDirectory(outputDir);
-      final parent = localDir.parent;
+      // `adb pull <dir> <parent>` recreates the device dir's `screenshots`
+      // basename under [parent]; for the default this is [outputDir] itself.
+      final parent = _rootDirectory.childDirectory(outputDir).parent;
       if (!parent.existsSync()) {
         parent.createSync(recursive: true);
       }
 
-      // `adb pull <dir> <parent>` creates <parent>/screenshots (the device
-      // dir's basename), which equals [outputDir] for the default.
       final pullResult = await _processManager.run([
         'adb',
         if (device.id.isNotEmpty) ...['-s', device.id],
@@ -486,16 +485,9 @@ class AndroidTestBackend {
         return;
       }
 
-      // If the requested dir isn't named `screenshots`, move the pulled folder.
-      final pulled = parent.childDirectory('screenshots');
-      if (pulled.path != localDir.path && pulled.existsSync()) {
-        if (localDir.existsSync()) {
-          localDir.deleteSync(recursive: true);
-        }
-        pulled.renameSync(localDir.path);
-      }
-
-      _logger.info('Screenshots saved to ${localDir.path}');
+      _logger.info(
+        'Screenshots saved to ${parent.childDirectory('screenshots').path}',
+      );
 
       // Remove them from the device so the next run doesn't re-pull stale files.
       try {
