@@ -193,14 +193,12 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
             dartTestName = name;
         }
 
-        // Expose the reported name so a Dart-triggered native screenshot names
-        // its file to match the folder BrowserStack scans for this test.
-        Automator.Companion.getInstance().setCurrentDartTestName(name);
-
         // Runtime-discovery path: the skip flag was recorded by listDartTests().
         // Guard against a missing entry so a null Boolean can't NPE on unboxing.
         final Boolean skip = dartTestCaseSkipMap.get(dartTestName);
-        return runDartTest(dartTestName, Boolean.TRUE.equals(skip));
+        // The reported JUnit method is runDartTest[<name>], so pass `name` as the
+        // reported name for native screenshot naming.
+        return runDartTest(dartTestName, Boolean.TRUE.equals(skip), name);
     }
 
     /**
@@ -215,6 +213,17 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
      * </p>
      */
     public RunDartTestResponse runDartTest(String name, boolean skip) {
+        // Called directly by the generated test class, which has no separate
+        // reported name; use the Dart name so a native screenshot isn't tagged
+        // "unknown".
+        return runDartTest(name, skip, name);
+    }
+
+    private RunDartTestResponse runDartTest(String name, boolean skip, String reportedName) {
+        // Expose the reported name so a Dart-triggered native screenshot names
+        // its file to match the folder the device farm scans for this test.
+        Automator.Companion.getInstance().setCurrentDartTestName(reportedName);
+
         final String TAG = "PatrolJUnitRunner.runDartTest(" + name + "): ";
 
         if (skip) {
