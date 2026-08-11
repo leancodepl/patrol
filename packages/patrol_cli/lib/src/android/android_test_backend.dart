@@ -1,16 +1,20 @@
 import 'dart:async';
+import 'dart:convert' show LineSplitter;
 import 'dart:io' show Process;
 
 import 'package:adb/adb.dart';
 import 'package:dispose_scope/dispose_scope.dart';
 import 'package:file/file.dart';
 import 'package:meta/meta.dart';
+import 'package:patrol_cli/src/android/android_test_codegen.dart';
 import 'package:patrol_cli/src/android/android_video_recording_manager.dart';
 import 'package:patrol_cli/src/base/exceptions.dart';
 import 'package:patrol_cli/src/base/extensions/completer.dart';
 import 'package:patrol_cli/src/base/logger.dart';
 import 'package:patrol_cli/src/base/process.dart';
 import 'package:patrol_cli/src/crossplatform/app_options.dart';
+import 'package:patrol_cli/src/crossplatform/test_manifest.dart';
+import 'package:patrol_cli/src/crossplatform/test_manifest_generator.dart';
 import 'package:patrol_cli/src/crossplatform/video_recording_config.dart';
 import 'package:patrol_cli/src/devices.dart';
 import 'package:patrol_cli/src/ios/ios_test_backend.dart';
@@ -60,6 +64,49 @@ class AndroidTestBackend {
 
       Process process;
       int exitCode;
+
+      // Build-time test discovery + static JUnit codegen (experimental,
+      // opt-in). Runs a host `flutter test` in discovery mode to obtain a
+      // manifest of the Dart test tree, then generates a static JUnit class so
+      // each Dart test becomes a real, individually-selectable native @Test
+      // (and shows up under its own name in reports, not under the parameterized
+      // `runDartTest[...]` wrapper). Failures are non-fatal: the build falls
+      // back to the runtime-discovery host class.
+      // Always start from a clean slate: remove any previously generated class
+      // so a stale one can't linger after a failed discovery or an opt-out
+      // (which would double-run tests alongside the runtime host class).
+      final codegen = AndroidTestCodegen(_rootDirectory.fileSystem);
+      final androidDir = _rootDirectory.childDirectory('android');
+      codegen.deleteGenerated(androidDir);
+
+      if (options.emitTestManifest) {
+        final manifestPath = await TestManifestGenerator(
+          processManager: _processManager,
+          rootDirectory: _rootDirectory,
+          logger: _logger,
+        ).generate(options.flutter, scope);
+        if (manifestPath == null) {
+          throwToolExit(
+            'Build-time test discovery failed; fix the errors above or disable '
+            'emit_test_manifest.',
+          );
+        }
+        final result = codegen.generate(
+          manifestPath: manifestPath,
+          androidDir: androidDir,
+        );
+        if (result != null) {
+          _logger.info(
+            'Generated ${result.testCount} static JUnit test method(s) → '
+            '${result.outputPath}',
+          );
+        } else {
+          _logger.warn(
+            'Could not locate the androidTest host class; falling back to '
+            'runtime test discovery',
+          );
+        }
+      }
 
       // :app:assembleDebug
 
@@ -380,10 +427,20 @@ class AndroidTestBackend {
       final subject = '${options.description} on ${device.description}';
       final task = _logger.task('Executing tests of $subject');
 
+      // When static codegen ran, restrict the run to the generated class so the
+      // parameterized host class doesn't also perform its runtime-discovery
+      // launch (which would run every test a second time).
+      final onlyTestClass = options.emitTestManifest
+          ? AndroidTestCodegen(
+              _rootDirectory.fileSystem,
+            ).findGeneratedClassName(_rootDirectory.childDirectory('android'))
+          : null;
+
       final process =
           await _processManager.start(
               options.toGradleConnectedTestInvocation(
                 isWindows: _platform.isWindows,
+                onlyTestClass: onlyTestClass,
               ),
               runInShell: true,
               environment: {
@@ -438,6 +495,327 @@ class AndroidTestBackend {
     });
   }
 
+  /// Runs already-built tests without rebuilding, via `adb shell am instrument`
+  /// (the true no-rebuild path — no Gradle up-to-date check). Requires a prior
+  /// `patrol build android --emit-test-manifest`, whose generated JUnit class
+  /// makes each Dart test an individually-addressable `<fqcn>#<method>`.
+  ///
+  /// [onlyTests] are Dart test names (as shown by discovery); empty runs the
+  /// whole generated class. Backs `patrol test-without-building [--only ...]`.
+  Future<void> executeWithoutBuilding(
+    AndroidAppOptions options,
+    Device device, {
+    String? flavor,
+    required bool showFlutterLogs,
+    required bool hideTestSteps,
+    required bool clearTestSteps,
+    List<String> onlyTests = const [],
+    void Function(Entry entry)? onLogEntry,
+  }) async {
+    final packageName = options.packageName;
+    if (packageName == null) {
+      throwToolExit(
+        'Android applicationId is unknown. Set patrol.android.package_name in '
+        'pubspec.yaml or pass --package-name.',
+      );
+    }
+
+    final fqcn = AndroidTestCodegen(
+      _rootDirectory.fileSystem,
+    ).findGeneratedClassName(_rootDirectory.childDirectory('android'));
+    if (fqcn == null) {
+      throwToolExit(
+        'No generated test class found. Run `patrol build android '
+        '--emit-test-manifest` (or set patrol.emit_test_manifest in pubspec) '
+        'before `patrol test-without-building`.',
+      );
+    }
+
+    final classArg = _resolveClassArg(fqcn, onlyTests);
+
+    // `patrol build android` only ASSEMBLES the app + androidTest APKs; it does
+    // not install them. Install both now so a clean device works with the
+    // documented `patrol build` -> `patrol test-without-building` flow.
+    await _installApks(options, device, flavor: flavor);
+
+    // Resolve the real instrumentation component from the device so custom
+    // testApplicationId / custom runners are honored; falls back to the default.
+    final (instrumentPackage, instrumentRunner) =
+        await _resolveInstrumentationComponent(packageName, device);
+
+    await _disposeScope.run((scope) async {
+      final processLogcat =
+          await _adb.logcat(
+              device: device.id,
+              arguments: {'-T': '1'},
+              filter: 'PatrolServer:I Patrol:I flutter:I *:S',
+            )
+            ..disposedBy(scope);
+
+      final path = generateTestReportPath(
+        rootPath: _rootDirectory.path,
+        buildMode: options.flutter.buildMode,
+        flavor: flavor,
+      );
+      final reportPath = _platform.isWindows
+          ? path.replaceAll(r'\', '/')
+          : path;
+
+      final patrolLogReader =
+          PatrolLogReader(
+              listenStdOut: processLogcat.listenStdOut,
+              scope: scope,
+              log: _logger.info,
+              reportPath: reportPath,
+              showFlutterLogs: showFlutterLogs,
+              hideTestSteps: hideTestSteps,
+              clearTestSteps: clearTestSteps,
+              onLogEntry: onLogEntry,
+            )
+            ..listen()
+            ..startTimer();
+
+      final subject = '${options.description} on ${device.description}';
+      final task = _logger.task('Executing tests of $subject (no build)');
+
+      // `am instrument -w` exits 0 even when tests fail, so detect failure from
+      // its textual output instead of the exit code.
+      var failed = false;
+      final process =
+          await _adb.instrument(
+              packageName: instrumentPackage,
+              intentClass: instrumentRunner,
+              device: device.id,
+              arguments: {'class': classArg},
+            )
+            ..disposedBy(scope);
+      process
+          .listenStdOut((l) {
+            if (l.contains('FAILURES!!!') ||
+                l.contains('INSTRUMENTATION_FAILED') ||
+                l.contains('Process crashed')) {
+              failed = true;
+            }
+            _logger.detail('\t: $l');
+          })
+          .disposedBy(scope);
+      process.listenStdErr((l) => _logger.detail('\t$l')).disposedBy(scope);
+
+      final exitCode = await process.exitCode;
+      patrolLogReader.stopTimer();
+      processLogcat.kill();
+      _logger.info(patrolLogReader.summary);
+
+      if (exitCode == 0 && !failed) {
+        task.complete('Completed executing $subject');
+      } else {
+        const cause = 'am instrument reported failing tests';
+        task.fail('Failed to execute tests of $subject ($cause)');
+        throw Exception(cause);
+      }
+    });
+  }
+
+  /// Builds the `-e class` value for `am instrument`: the bare [fqcn] to run the
+  /// whole generated class, or a comma-separated `<fqcn>#<method>` list mapped
+  /// from the requested [onlyTests] Dart names via the build-time manifest.
+  String _resolveClassArg(String fqcn, List<String> onlyTests) {
+    if (onlyTests.isEmpty) {
+      return fqcn;
+    }
+    final manifest = TestManifest.loadFromBuild(_rootDirectory);
+    if (manifest == null) {
+      throwToolExit(
+        'No build-time test manifest found. Run `patrol build android '
+        '--emit-test-manifest` before `patrol test-without-building`.',
+      );
+    }
+    final tests = manifest.tests;
+    final methods = generateAndroidMethodNames(tests);
+    final out = <String>[];
+    for (var i = 0; i < tests.length; i++) {
+      if (onlyTests.contains(tests[i].dartName)) {
+        out.add('$fqcn#${methods[i]}');
+      }
+    }
+    if (out.isEmpty) {
+      throwToolExit(
+        'None of the requested --only test(s) were found in the manifest.\n'
+        'Available tests:\n${tests.map((t) => '  ${t.dartName}').join('\n')}',
+      );
+    }
+    return out.join(',');
+  }
+
+  /// Installs the app + androidTest APKs produced by `patrol build android`
+  /// onto [device] (via `adb install -r -t`, no Gradle). Required before
+  /// `am instrument` in the test-without-building flow, because `patrol build` only
+  /// assembles the APKs, it does not install them.
+  Future<void> _installApks(
+    AndroidAppOptions options,
+    Device device, {
+    String? flavor,
+  }) async {
+    final buildMode = options.flutter.buildMode.androidName.toLowerCase();
+    final apkDir = _rootDirectory
+        .childDirectory('build')
+        .childDirectory('app')
+        .childDirectory('outputs')
+        .childDirectory('apk');
+
+    if (!apkDir.existsSync()) {
+      throwToolExit(
+        'No built APKs found under ${apkDir.path}. Run `patrol build android '
+        '--emit-test-manifest` before `patrol test-without-building`.',
+      );
+    }
+
+    bool matches(File apk) {
+      final segments = apk.path.split(RegExp(r'[/\\]'));
+      if (!segments.contains(buildMode)) {
+        return false;
+      }
+      // When a flavor is set, its (case-sensitive) directory segment is present
+      // in both the app and androidTest APK paths; use it to disambiguate.
+      if (flavor != null && !segments.contains(flavor)) {
+        return false;
+      }
+      return true;
+    }
+
+    File? appApk;
+    File? testApk;
+    for (final entity in apkDir.listSync(recursive: true)) {
+      if (entity is! File || !entity.path.endsWith('.apk')) {
+        continue;
+      }
+      if (!matches(entity)) {
+        continue;
+      }
+      final inAndroidTestDir = entity.path
+          .split(RegExp(r'[/\\]'))
+          .contains('androidTest');
+      if (entity.path.endsWith('-androidTest.apk')) {
+        testApk ??= entity;
+      } else if (!inAndroidTestDir) {
+        appApk ??= entity;
+      }
+    }
+
+    if (appApk == null || testApk == null) {
+      throwToolExit(
+        'Could not locate the built app and androidTest APKs under '
+        '${apkDir.path}. Run `patrol build android --emit-test-manifest` '
+        'before `patrol test-without-building`.',
+      );
+    }
+
+    _logger.detail('Installing app APK: ${appApk.path}');
+    await _adbInstall(appApk.path, device);
+    _logger.detail('Installing androidTest APK: ${testApk.path}');
+    await _adbInstall(testApk.path, device);
+  }
+
+  /// Runs `adb install -r -t <path>` on [device]. `Adb.install` does not pass
+  /// the reinstall/allow-test-package flags, so shell out directly.
+  Future<void> _adbInstall(String path, Device device) async {
+    final result = await _processManager.run([
+      'adb',
+      ...['-s', device.id],
+      'install',
+      ...['-r', '-t'],
+      path,
+    ], runInShell: true);
+    if (result.exitCode != 0) {
+      throwToolExit(
+        'Failed to install $path (adb install exited ${result.exitCode}):\n'
+        '${result.stdErr}',
+      );
+    }
+  }
+
+  /// Resolves the `<package>/<runner>` component for `am instrument` by querying
+  /// `pm list instrumentation` on [device]. This makes custom `testApplicationId`
+  /// and custom runners (e.g. BrowserStack's `BrowserstackPatrolJUnitRunner`)
+  /// authoritative while keeping the conventional
+  /// `${packageName}.test/pl.leancode.patrol.PatrolJUnitRunner` as the fallback.
+  Future<(String, String)> _resolveInstrumentationComponent(
+    String packageName,
+    Device device,
+  ) async {
+    final fallback = (
+      '$packageName.test',
+      'pl.leancode.patrol.PatrolJUnitRunner',
+    );
+
+    final result = await _processManager.run([
+      'adb',
+      ...['-s', device.id],
+      'shell',
+      ...['pm', 'list', 'instrumentation'],
+    ], runInShell: true);
+
+    if (result.exitCode != 0) {
+      _logger.detail(
+        'Could not query instrumentation (`pm list instrumentation` exited '
+        '${result.exitCode}); using default component '
+        '${fallback.$1}/${fallback.$2}',
+      );
+      return fallback;
+    }
+
+    final entries = _parseInstrumentation(result.stdOut);
+    // Prefer an exact applicationId (target) match; fall back to a prefix match
+    // to tolerate a flavor's applicationIdSuffix.
+    final exact = entries.where((e) => e.target == packageName).toList();
+    final prefixed = entries
+        .where((e) => e.target != null && e.target!.startsWith(packageName))
+        .toList();
+    final candidates = exact.isNotEmpty ? exact : prefixed;
+    if (candidates.isEmpty) {
+      _logger.detail(
+        'No instrumentation targeting $packageName found; using default '
+        'component ${fallback.$1}/${fallback.$2}',
+      );
+      return fallback;
+    }
+    // Among matches, prefer a Patrol runner.
+    candidates.sort((a, b) {
+      int rank(_Instrumentation e) =>
+          e.runner.contains('PatrolJUnitRunner') ? 0 : 1;
+      return rank(a).compareTo(rank(b));
+    });
+    final chosen = candidates.first;
+    _logger.detail(
+      'Using instrumentation component ${chosen.package}/${chosen.runner} '
+      '(target=${chosen.target})',
+    );
+    return (chosen.package, chosen.runner);
+  }
+
+  /// Parses `pm list instrumentation` output lines of the form
+  /// `instrumentation:<pkg>/<runner> (target=<applicationId>)`.
+  List<_Instrumentation> _parseInstrumentation(String output) {
+    final regex = RegExp(
+      r'^instrumentation:(\S+?)/(\S+?)\s+\(target=([^)]+)\)',
+    );
+    final out = <_Instrumentation>[];
+    for (final line in const LineSplitter().convert(output)) {
+      final match = regex.firstMatch(line.trim());
+      if (match == null) {
+        continue;
+      }
+      out.add(
+        _Instrumentation(
+          package: match.group(1)!,
+          runner: match.group(2)!,
+          target: match.group(3),
+        ),
+      );
+    }
+    return out;
+  }
+
   Future<void> uninstall(String appId, Device device) async {
     _logger.detail('Uninstalling $appId from ${device.name}');
     await _adb.uninstall(appId, device: device.id);
@@ -467,4 +845,23 @@ class AndroidTestBackend {
 
     return 'file://$rootPath/build/app/reports/androidTests/connected/${buildModeAndFlavorPath}index.html';
   }
+}
+
+/// A single entry parsed from `adb shell pm list instrumentation`.
+class _Instrumentation {
+  _Instrumentation({
+    required this.package,
+    required this.runner,
+    required this.target,
+  });
+
+  /// The instrumentation's own package (the test APK's applicationId).
+  final String package;
+
+  /// The fully-qualified runner class.
+  final String runner;
+
+  /// The `target` applicationId the instrumentation runs against, or `null`
+  /// when the line carried no `(target=...)`.
+  final String? target;
 }
