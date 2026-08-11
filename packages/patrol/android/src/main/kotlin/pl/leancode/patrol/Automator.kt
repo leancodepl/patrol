@@ -2,6 +2,7 @@ package pl.leancode.patrol
 
 import android.app.Instrumentation
 import android.app.UiAutomation
+import android.content.ContentValues
 import android.content.Context
 import android.content.Context.LOCATION_SERVICE
 import android.content.Intent
@@ -13,6 +14,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.os.SystemClock
+import android.provider.MediaStore
 import android.provider.Settings
 import android.view.KeyEvent.KEYCODE_VOLUME_DOWN
 import android.view.KeyEvent.KEYCODE_VOLUME_UP
@@ -36,6 +38,7 @@ import pl.leancode.patrol.contracts.Contracts.Point2D
 import pl.leancode.patrol.contracts.Contracts.Rectangle
 import java.io.File
 import java.io.FileOutputStream
+import java.io.IOException
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
@@ -148,24 +151,48 @@ class Automator private constructor() {
         try {
             val className = testClassName ?: "${targetContext.packageName}.MainActivityTest"
             val methodName = "runDartTest[${currentDartTestName ?: "unknown"}]"
-
-            val dir = File(
-                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
-                "screenshots/$className/$methodName"
-            )
-            if (!dir.exists()) {
-                dir.mkdirs()
-            }
-
             // `tag` is public API input; sanitize it so a value with '/' (or
             // other path chars) can't break out of the target directory.
             val safeTag = tag.replace(Regex("[^A-Za-z0-9._-]"), "_")
+            val relativeDir = "screenshots/$className/$methodName"
+            val fileName = "${System.currentTimeMillis()}_$safeTag.png"
+
             val bitmap = Screenshot.capture().bitmap
-            val file = File(dir, "${System.currentTimeMillis()}_$safeTag.png")
-            FileOutputStream(file).use { out ->
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                // Scoped storage blocks raw writes to public Downloads, so go
+                // through MediaStore. The file still lands at Download/<relativeDir>/,
+                // where farm collectors (and `adb pull`) find it.
+                val values = ContentValues().apply {
+                    put(MediaStore.Downloads.DISPLAY_NAME, fileName)
+                    put(MediaStore.Downloads.MIME_TYPE, "image/png")
+                    put(
+                        MediaStore.Downloads.RELATIVE_PATH,
+                        "${Environment.DIRECTORY_DOWNLOADS}/$relativeDir"
+                    )
+                }
+                val resolver = targetContext.contentResolver
+                val uri = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values)
+                    ?: throw IOException("MediaStore insert returned null")
+                resolver.openOutputStream(uri).use { out ->
+                    if (out == null) throw IOException("Null output stream for $uri")
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
+                }
+                Logger.i("Native screenshot saved to Download/$relativeDir/$fileName")
+            } else {
+                val dir = File(
+                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+                    relativeDir
+                )
+                if (!dir.exists()) {
+                    dir.mkdirs()
+                }
+                val file = File(dir, fileName)
+                FileOutputStream(file).use { out ->
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
+                }
+                Logger.i("Native screenshot saved to ${file.absolutePath}")
             }
-            Logger.i("Native screenshot saved to ${file.absolutePath}")
         } catch (e: Throwable) {
             Logger.e("Failed to take native screenshot (tag=$tag)", e)
         }
