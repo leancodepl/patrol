@@ -225,11 +225,8 @@ class PlatformAutomator {
     );
   }
 
-  /// Captures a native screenshot of the current screen and saves it on the
-  /// device (for device farms to collect as a run artifact).
-  ///
-  /// Currently implemented on Android only; a no-op on other platforms. Never
-  /// throws if capture fails.
+  /// Captures a native screenshot (for a device farm to collect). Android only;
+  /// a no-op elsewhere.
   Future<void> takeNativeScreenshot(String tag) async {
     await action.maybe(android: () => android.takeNativeScreenshot(tag));
   }

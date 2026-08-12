@@ -2,9 +2,8 @@ import 'dart:io' show ProcessResult;
 
 import 'package:process/process.dart';
 
-/// Runs `adb [-s <deviceId>] pull <source> <destination>` via [processManager].
-///
-/// Returns the raw [ProcessResult] so callers keep their own exit-code handling.
+/// Runs `adb pull` via [processManager], returning the raw result for the caller
+/// to handle.
 Future<ProcessResult> adbPull(
   ProcessManager processManager, {
   required String source,
@@ -20,9 +19,8 @@ Future<ProcessResult> adbPull(
   ], runInShell: true);
 }
 
-/// Runs `adb [-s <deviceId>] shell rm [-rf] <path>` via [processManager].
-///
-/// Returns the raw [ProcessResult] so callers keep their own exit-code handling.
+/// Runs `adb shell rm [-rf]` via [processManager], returning the raw result for
+/// the caller to handle.
 Future<ProcessResult> adbRemove(
   ProcessManager processManager, {
   required String path,

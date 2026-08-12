@@ -833,18 +833,15 @@ class AndroidTestBackend {
     await _adb.uninstall('$appId.test', device: device.id);
   }
 
-  /// Where patrol writes native screenshots on the device (see the
-  /// `screenshot_on_failure` pubspec option).
+  /// Where patrol writes native screenshots on the device.
   static const _deviceScreenshotsDir = '/sdcard/Download/screenshots';
 
-  /// Pulls native screenshots from [device] into [outputDir] (relative to the
-  /// project root). Best-effort: never throws, and a missing directory (no
-  /// screenshots captured) is logged at detail level, not treated as an error.
+  /// Pulls native screenshots from [device] into [outputDir]. Best-effort: never
+  /// throws; a missing directory (nothing captured) is not an error.
   @visibleForTesting
   Future<void> pullDeviceScreenshots(Device device, String outputDir) async {
     try {
-      // `adb pull <dir> <parent>` recreates the device dir's `screenshots`
-      // basename under [parent]; for the default this is [outputDir] itself.
+      // adb pull recreates the `screenshots` basename under [parent].
       final parent = _rootDirectory.childDirectory(outputDir).parent;
       if (!parent.existsSync()) {
         parent.createSync(recursive: true);
@@ -858,7 +855,6 @@ class AndroidTestBackend {
       );
 
       if (pullResult.exitCode != 0) {
-        // Most commonly: nothing was captured this run.
         _logger.detail('No screenshots to pull from device.');
         return;
       }
@@ -867,7 +863,7 @@ class AndroidTestBackend {
         'Screenshots saved to ${parent.childDirectory('screenshots').path}',
       );
 
-      // Remove them from the device so the next run doesn't re-pull stale files.
+      // Remove them so the next run doesn't re-pull stale files.
       try {
         await adbRemove(
           _processManager,

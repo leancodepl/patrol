@@ -95,9 +95,7 @@ class Automator private constructor() {
 
     @Volatile private var currentLongitude: Double = 0.0
 
-    // JUnit identity of the currently running test, recorded by
-    // PatrolTestNameListener from the test's Description. Used verbatim to name
-    // screenshots so a device farm associates them with the reported test.
+    // Set by PatrolTestNameListener; the JUnit identity used to name screenshots.
     @Volatile var screenshotClassName: String? = null
 
     @Volatile var screenshotMethodName: String? = null
@@ -143,24 +141,16 @@ class Automator private constructor() {
 
     private fun delay(ms: Long = 1000) = SystemClock.sleep(ms)
 
-    // Captures the current device screen to the path a device farm's Espresso
-    // debugscreenshots collector scans:
-    // Downloads/screenshots/<className>/<methodName>/<timestamp>_<tag>.png.
-    // className/methodName are the reported JUnit identity (from the test's
-    // Description), used verbatim so the folder matches what the farm reports.
     // Never throws into the test - a failed screenshot must not flake the test.
     fun takeNativeScreenshot(tag: String) {
         try {
-            // Recorded by PatrolTestNameListener from the running test's
-            // Description; the JUnit identity isn't reconstructed here.
             val className = screenshotClassName
             val methodName = screenshotMethodName
             if (className == null || methodName == null) {
                 Logger.e("Native screenshot skipped: no running JUnit test recorded")
                 return
             }
-            // `tag` is public API input; sanitize it so a value with '/' (or
-            // other path chars) can't break out of the target directory.
+            // Sanitize the caller-supplied tag so it can't escape the directory.
             val safeTag = tag.replace(Regex("[^A-Za-z0-9._-]"), "_")
             val relativeDir = "screenshots/$className/$methodName"
             val fileName = "${System.currentTimeMillis()}_$safeTag.png"
@@ -168,9 +158,7 @@ class Automator private constructor() {
             val bitmap = Screenshot.capture().bitmap
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                // Scoped storage blocks raw writes to public Downloads, so go
-                // through MediaStore. The file still lands at Download/<relativeDir>/,
-                // where farm collectors (and `adb pull`) find it.
+                // Scoped storage blocks raw writes to Downloads on API 29+; use MediaStore.
                 val values = ContentValues().apply {
                     put(MediaStore.Downloads.DISPLAY_NAME, fileName)
                     put(MediaStore.Downloads.MIME_TYPE, "image/png")

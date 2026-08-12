@@ -65,18 +65,8 @@ class PatrolIntegrationTester extends finders.PatrolTester {
     _patrolLog.log(LogEntry(message: message));
   }
 
-  /// Captures a native screenshot of the current screen and saves it on the
-  /// device so a device farm (e.g. BrowserStack, Firebase Test Lab) can collect
-  /// it as a run artifact. On `patrol test` it is pulled to the local
-  /// screenshots directory.
-  ///
-  /// This is distinct from `IntegrationTestWidgetsFlutterBinding.takeScreenshot`
-  /// - it captures the device screen natively (via `androidx.test`), not the
-  /// Flutter surface.
-  ///
-  /// [tag] is appended to the generated file name. Implemented on Android only
-  /// (a no-op on other platforms). Never throws - a failed screenshot will not
-  /// fail the test.
+  /// Captures a native screenshot ([tag] is added to the file name) for a device
+  /// farm to collect. Android only (a no-op elsewhere); never throws.
   Future<void> takeNativeScreenshot(String tag) async {
     try {
       await platformAutomator.takeNativeScreenshot(tag);

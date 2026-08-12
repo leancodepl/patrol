@@ -194,7 +194,6 @@ void patrolTest(
         await callback(patrolTester);
       } catch (_) {
         // Capture the failing screen before teardown pumps the next frame.
-        // Opt-in; Android-only; swallows its own errors so it never flakes.
         if (constants.screenshotOnFailureEnabled) {
           await patrolTester.takeNativeScreenshot('failure');
         }

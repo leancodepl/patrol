@@ -32,9 +32,7 @@ class PatrolPubspecConfig with Equatable {
   String testDirectory;
   String testFileSuffix;
 
-  /// Whether patrol should capture a native screenshot when a test fails.
-  /// Off by default. Currently used for BrowserStack failure screenshots on
-  /// Android.
+  /// Whether patrol captures a native screenshot when a test fails (Android).
   bool screenshotOnFailure;
 
   /// Whether build-time test discovery + static native test codegen is enabled

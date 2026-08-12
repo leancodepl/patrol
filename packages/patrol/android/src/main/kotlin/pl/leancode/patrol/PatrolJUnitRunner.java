@@ -42,9 +42,7 @@ public class PatrolJUnitRunner extends AndroidJUnitRunner {
 
     @Override
     public void onCreate(Bundle arguments) {
-        // Register a RunListener that records each test's JUnit class/method
-        // (from its Description) so native screenshots can be named to match
-        // what the device farm reports for the test.
+        // Register the listener that records each test's JUnit name for screenshots.
         String listeners = arguments.getString("listener");
         String patrolListener = PatrolTestNameListener.class.getName();
         arguments.putString(
