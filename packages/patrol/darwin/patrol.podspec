@@ -13,16 +13,17 @@ Runs tests that use flutter_test and patrol APIs as native macOS / iOS integrati
   s.license          = { :file => '../LICENSE' }
   s.author           = { 'Bartek Pacia' => 'bartek.pacia@leancode.pl' }
   s.source           = { :http => 'https://github.com/leancodepl/patrol/tree/master/packages/patrol' }
-  # Swift sources live in PatrolImpl, the ObjC runner macros in patrol/include.
+  # Swift sources live in PatrolImpl; ObjC PatrolPlugin + runner macros in patrol/.
   # CocoaPods compiles them all into a single `patrol` module (DEFINES_MODULE),
-  # so `@import patrol` exposes both — unlike SwiftPM, which requires the split.
+  # so `@import patrol` exposes both — unlike SwiftPM, where PatrolImpl is a
+  # separate module linked behind the Clang `patrol` interface (see Package.swift).
   s.source_files = 'patrol/Sources/patrol/**/*.{swift,h,m}', 'patrol/Sources/PatrolImpl/**/*.{swift,h,m}', 'patrol/Sources/HTTPParserC/**/*.{c,h}'
   s.public_header_files = 'patrol/Sources/patrol/include/**/*.h', 'patrol/Sources/HTTPParserC/include/**/*.h'
   # SwiftPM-only files must not be picked up by CocoaPods:
   #  - module.modulemap: CocoaPods generates its own.
-  #  - patrol.h: SwiftPM umbrella that `@import PatrolImpl` (a module that only
-  #    exists under SwiftPM). Under CocoaPods the runner-macro headers are exposed
-  #    directly as public headers and the Swift sources are in the same module.
+  #  - patrol.h: SwiftPM umbrella with ObjC stubs for PatrolImpl @objc types.
+  #    Under CocoaPods the Swift sources are in the same module, so those stubs
+  #    would duplicate the generated interfaces.
   s.exclude_files = 'patrol/Sources/patrol/include/module.modulemap', 'patrol/Sources/patrol/include/patrol.h'
   s.ios.dependency 'Flutter'
   s.osx.dependency 'FlutterMacOS'
