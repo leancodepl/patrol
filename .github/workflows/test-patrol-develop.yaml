@@ -2,7 +2,9 @@ name: test patrol develop
 
 on:
   workflow_dispatch:
-  pull_request_target:
+  # Not `pull_request_target`: this workflow needs no secrets, and that trigger
+  # checked out the base branch, so every run tested master instead of the PR.
+  pull_request:
     types: [opened, synchronize]
     paths:
       - 'packages/patrol/**'

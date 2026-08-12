@@ -1,4 +1,5 @@
 import { test as base } from "@playwright/test"
+import { startCoverage, stopAndSaveCoverage } from "./coverage"
 import { initialise } from "./initialise"
 import { logger } from "./logger"
 import { PageManager } from "./pageManager"
@@ -11,7 +12,7 @@ if (tests.length === 0) {
 }
 
 export const patrolTest = base.extend({
-  page: async ({ page, context }, use) => {
+  page: async ({ page, context }, use, testInfo) => {
     page.on("console", message => {
       const text = message.text()
       if (text.startsWith("PATROL_LOG")) {
@@ -24,6 +25,8 @@ export const patrolTest = base.extend({
       console.log(`Playwright: ${text}`)
     })
 
+    await startCoverage(page)
+
     await page.goto("/", { waitUntil: "load" })
 
     const pageManager = new PageManager(context, page)
@@ -32,6 +35,8 @@ export const patrolTest = base.extend({
     await initialise(page)
 
     await use(page)
+
+    await stopAndSaveCoverage(page, testInfo)
 
     // Teardown: close all secondary pages (not the initial one)
     for (const p of context.pages()) {

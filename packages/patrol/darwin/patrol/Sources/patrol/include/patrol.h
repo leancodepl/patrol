@@ -17,5 +17,6 @@
 // are already visible without PatrolImpl.
 @import PatrolImpl;
 
+#import "PatrolExtensionRegistry.h"
 #import "PatrolIntegrationTestIosRunner.h"
 #import "PatrolIntegrationTestMacosRunner.h"

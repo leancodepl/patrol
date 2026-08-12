@@ -49,6 +49,7 @@ class FlutterTool {
     required String? appId,
     required Map<String, String> dartDefines,
     required bool openDevtools,
+    String? flavor,
     bool attachUsingUrl = false,
     Future<void> Function()? onQuit,
   }) async {
@@ -82,6 +83,7 @@ class FlutterTool {
         debugUrl: url,
         dartDefines: dartDefines,
         openBrowser: openDevtools,
+        flavor: flavor,
         onQuit: onQuitWithRevertInteractiveMode,
       );
     } else {
@@ -94,6 +96,7 @@ class FlutterTool {
           appId: appId,
           dartDefines: dartDefines,
           openBrowser: openDevtools,
+          flavor: flavor,
           onQuit: onQuitWithRevertInteractiveMode,
         ),
       ]);
@@ -115,6 +118,7 @@ class FlutterTool {
     required String? appId,
     required Map<String, String> dartDefines,
     required bool openBrowser,
+    String? flavor,
     Future<void> Function()? onQuit,
   }) async {
     await _disposeScope.run((scope) async {
@@ -128,6 +132,7 @@ class FlutterTool {
               ...['--device-id', deviceId],
               if (debugUrl != null) ...['--debug-url', debugUrl],
               if (appId != null) ...['--app-id', appId],
+              if (flavor != null) ...['--flavor', flavor],
               ...['--target', target],
               for (final dartDefine in dartDefines.entries) ...[
                 '--dart-define',

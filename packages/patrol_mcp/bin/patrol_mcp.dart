@@ -6,12 +6,16 @@ import 'package:args/args.dart';
 import 'package:logging/logging.dart' as logging;
 import 'package:mcp_dart/mcp_dart.dart';
 import 'package:path/path.dart' as p;
+import 'package:patrol_cli/patrol_cli.dart' show FlutterCommand;
+import 'package:patrol_mcp/src/device_lister.dart';
+import 'package:patrol_mcp/src/device_selection.dart';
+import 'package:patrol_mcp/src/flutter_command_resolver.dart';
 import 'package:patrol_mcp/src/native_tree_service.dart';
 import 'package:patrol_mcp/src/patrol_session.dart';
 import 'package:patrol_mcp/src/screenshot_service.dart';
 
 /// Version of patrol_mcp. Must be kept in sync with pubspec.yaml.
-const version = '0.1.4';
+const version = '0.2.0';
 
 const double _defaultTimeoutMinutes = 5;
 
@@ -53,10 +57,16 @@ Duration _parseTimeout(num? timeoutMinutes) {
 class _PatrolRunArgs {
   _PatrolRunArgs.fromJson(Map<String, dynamic> json)
     : testFile = json['testFile'] as String,
-      timeout = _parseTimeout(json['timeoutMinutes'] as num?);
+      timeout = _parseTimeout(json['timeoutMinutes'] as num?),
+      device = (json['device'] as String?)?.trim().nullIfEmpty;
 
   final String testFile;
   final Duration timeout;
+  final String? device;
+}
+
+extension on String {
+  String? get nullIfEmpty => isEmpty ? null : this;
 }
 
 /// Output schema for `run` and `status` -- a serialized [PatrolStatus].
@@ -69,6 +79,7 @@ const _sessionStatusSchema = JsonObject(
     ),
     'currentTestFile': JsonString(),
     'warning': JsonString(),
+    'deviceSelectionNote': JsonString(),
     'deviceName': JsonString(),
     'deviceId': JsonString(),
     'devicePlatform': JsonString(),
@@ -136,6 +147,7 @@ Future<int> main(List<String> args) async {
                   '- run waits for test completion.\n'
                   '- If no session is running, run starts a new session.\n'
                   '- If a session is already running, run triggers a restart for the requested test.\n'
+                  '- run auto-selects a device; to target a specific one, call devices and pass its id as run\'s "device".\n'
                   '- status is optional and mainly useful for debugging session state and recent output.\n'
                   '- native-tree is intended for native interactions and cross-app/native context inspection.',
             ),
@@ -155,6 +167,13 @@ Future<int> main(List<String> args) async {
                 ),
                 'timeoutMinutes': JsonNumber(
                   description: 'Optional timeout in minutes (default: 5)',
+                ),
+                'device': JsonString(
+                  description:
+                      'Optional device id or name to run on (from the '
+                      '`devices` tool). Omit to auto-select (Android device '
+                      '> Android emulator > iOS device > iOS simulator). A '
+                      '`--device` in PATROL_FLAGS takes precedence.',
                 ),
               },
               required: ['testFile'],
@@ -177,15 +196,68 @@ Future<int> main(List<String> args) async {
               }
 
               final runArgs = _PatrolRunArgs.fromJson(args);
-              final result = await patrolSession.startAndWait(
-                runArgs.testFile,
-                timeout: runArgs.timeout,
-              );
-              final status = result.toMap();
-              return CallToolResult(
-                content: [TextContent(text: jsonEncode(status))],
-                structuredContent: status,
-              );
+
+              // If the client cancels the run (MCP notifications/cancelled),
+              // tear the develop session down so it isn't left orphaned.
+              final abortSub = extra.signal.onAbort.listen((_) {
+                unawaited(patrolSession.dispose());
+              });
+              try {
+                final result = await patrolSession.startAndWait(
+                  runArgs.testFile,
+                  timeout: runArgs.timeout,
+                  device: runArgs.device,
+                );
+                final status = result.toMap();
+                return CallToolResult(
+                  content: [TextContent(text: jsonEncode(status))],
+                  structuredContent: status,
+                );
+              } finally {
+                await abortSub.cancel();
+              }
+            },
+          )
+          ..registerTool(
+            'devices',
+            description:
+                'List attached devices patrol can run on (Android, iOS). Use '
+                'to resolve a device name/id to pass as `device` to run.',
+            annotations: const ToolAnnotations(title: 'List Devices'),
+            callback: (args, extra) async {
+              // Resolve Flutter the same way `run` does (FVM autodetect,
+              // `PATROL_FLUTTER_COMMAND` escape hatch) so device enumeration
+              // works in FVM projects without a global `flutter` on PATH.
+              final flutterCommand = FlutterCommandResolver()
+                  .resolve(projectRoot: projectRoot)
+                  .command;
+              try {
+                final attached = await listAttachedDevices(
+                  flutterCommand:
+                      flutterCommand ?? const FlutterCommand('flutter'),
+                );
+                final devices = [
+                  for (final d in supportedDevices(attached))
+                    {
+                      'id': d.id,
+                      'name': d.name,
+                      'platform': d.targetPlatform.name,
+                      'isEmulator': !d.real,
+                    },
+                ];
+                final payload = {'devices': devices};
+                return CallToolResult(
+                  content: [TextContent(text: jsonEncode(payload))],
+                  structuredContent: payload,
+                );
+              } catch (e) {
+                return CallToolResult(
+                  content: [
+                    TextContent(text: 'Failed to list attached devices: $e'),
+                  ],
+                  isError: true,
+                );
+              }
             },
           )
           ..registerTool(
@@ -304,10 +376,18 @@ Future<int> _runStdio(McpServer server, PatrolSession patrolSession) async {
   exitSignal.cancel();
   logger.info('Shutting down (signal or client disconnect)');
 
-  // Tear down any active session so its child processes don't outlive us.
-  await patrolSession.dispose();
+  // Tear down the active session and close the transport, but never block
+  // forever: a stalled teardown (e.g. a run cancelled mid-build) would orphan
+  // the server process. Force-exit if it doesn't finish in time.
+  Future<void> shutdown() async {
+    await patrolSession.dispose();
+    await server.close(); // closes the transport too
+  }
 
-  await server.close(); // closes the transport too
+  await shutdown().timeout(
+    const Duration(seconds: 10),
+    onTimeout: () => exit(0),
+  );
   logger.info('Stopped');
   return 0;
 }

@@ -21,7 +21,10 @@ void main() {
     String join(String dir, String a, [String? b]) =>
         b == null ? p.join(dir, a) : p.join(dir, a, b);
 
-    const root = '/repo/app';
+    // Canonicalized so the literals match what the resolver computes: it
+    // canonicalizes projectRoot, which on Windows also prepends a drive letter.
+    final root = p.canonicalize('/repo/app');
+    final repo = p.canonicalize('/repo');
 
     test('PATROL_FLUTTER_COMMAND takes precedence over FVM detection', () {
       final r = resolver(
@@ -82,11 +85,11 @@ void main() {
 
     test('detects a pin in an ancestor directory', () {
       final r = resolver(
-        existing: {join('/repo', '.fvmrc')},
+        existing: {join(repo, '.fvmrc')},
       ).resolve(projectRoot: root);
 
       expect(r.command!.executable, 'fvm');
-      expect(r.reason, contains('/repo'));
+      expect(r.reason, contains(repo));
     });
 
     test(
@@ -132,7 +135,7 @@ void main() {
       // .git marks /repo/app as the repo root; the pin one level up must not
       // be picked up.
       final r = resolver(
-        existing: {join(root, '.git'), join('/repo', '.fvmrc')},
+        existing: {join(root, '.git'), join(repo, '.fvmrc')},
       ).resolve(projectRoot: root);
 
       expect(r.command, isNull);
