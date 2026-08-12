@@ -144,10 +144,13 @@ Check out our video version of this tutorial on YouTube!
           `--screenshots-output-dir`; works with emulators too).
         - **BrowserStack App Automate**: enable the Espresso
           `debugscreenshots: true` capability; images appear in the Screenshots
-          tab. Also enable build-time test discovery (`emit_test_manifest`)
-          so each test reports a URL-safe name — BrowserStack currently can't
-          render screenshot URLs with spaces/commas, which the default
-          `runDartTest[...]` names contain.
+          tab. Also enable build-time test discovery (`emit_test_manifest`) so
+          each test reports a URL-safe name. On the default path the folder is
+          named from the raw Dart test name (`runDartTest[...]`), which
+          BrowserStack can't render when it has spaces/commas — and characters
+          like `:`/`/` are rewritten by Android's `MediaStore` (API 29+) so the
+          folder no longer matches the reported test. `emit_test_manifest`
+          avoids both (its generated names are identifiers).
         - **Firebase Test Lab**: pass
           `--directories-to-pull=/sdcard/Download/screenshots` so the files are
           copied to the results bucket.

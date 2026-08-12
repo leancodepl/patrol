@@ -226,6 +226,19 @@ collects them:
     APK as well as `patrol test`.
 </Info>
 
+<Warning>
+    **Default-path naming limitation.** On the default (runtime-discovery) path
+    each test reports `runDartTest[<dart test name>]`, so the screenshot folder
+    is named from the raw Dart test name. That name may contain spaces/commas
+    (BrowserStack can't render such URLs) or characters like `:` and `/` that
+    Android's `MediaStore` rewrites to `_` on API 29+, which then no longer
+    matches the name the farm reports — so the screenshot isn't associated with
+    the test. Locally (`patrol test`) this is harmless: the files are still
+    pulled to `<test-directory>/screenshots`. For reliable **farm** screenshots,
+    use `emit_test_manifest`: its generated per-test names are identifiers, so
+    they are both filesystem- and URL-safe.
+</Warning>
+
 ### Web Platform
 
 Patrol supports running tests on Flutter web using Playwright. To run tests on web:
