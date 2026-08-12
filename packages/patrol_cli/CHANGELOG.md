@@ -5,6 +5,7 @@
 
 ## Unreleased
 
+- Pass `-Ppatrol-enabled=true` to Android Gradle builds so apps can detect a Patrol build.
 - Support running Patrol tests on multiple iOS simulators in parallel, by reading the native automation ports at runtime in the generated test bundle. See the [Marathon integration guide](https://patrol.leancode.co/documentation/integrations/marathon).
 - Add experimental build-time test discovery, enabled with `patrol.emit_test_manifest` in
   pubspec.yaml (or `--emit-test-manifest`): Dart tests are discovered while building and each
